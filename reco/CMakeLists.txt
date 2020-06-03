@@ -1,0 +1,14 @@
+# CMakeList file for libraries CbmRecoXXXXX
+# P.-A. Loizeau, 7 February 2020
+
+add_subdirectory(base)
+add_subdirectory(calibration)
+add_subdirectory(detectors)
+add_subdirectory(eventbuilder)
+add_subdirectory(global)
+add_subdirectory(KF)
+add_subdirectory(L1)
+add_subdirectory(littrack)
+add_subdirectory(tracking)
+add_subdirectory(qa)
+

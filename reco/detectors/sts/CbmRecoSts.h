@@ -1,0 +1,286 @@
+/** @file CbmRecoSts.h
+ ** @author Volker Friese <v.friese@gsi.de>
+ ** @since 22.03.2020
+ **/
+
+
+#ifndef CBMRECOSTS_H
+#define CBMRECOSTS_H 1
+
+
+#include <TStopwatch.h>
+#include <FairTask.h>
+
+
+class CbmDigiManager;
+class CbmEvent;
+class CbmStsElement;
+class CbmStsParAsic;
+class CbmStsParModule;
+class CbmStsParSensor;
+class CbmStsParSensorCond;
+class CbmStsParSetModule;
+class CbmStsParSetSensor;
+class CbmStsParSetSensorCond;
+class CbmStsParSim;
+class CbmStsRecoModule;
+class CbmStsSensor;
+class CbmStsSetup;
+
+
+
+/** @enum ECbmMode
+ ** @brief Time-slice or event-by-event mode
+ **/
+enum ECbmRecoMode{kCbmRecoTimeslice, kCbmRecoEvent};
+
+
+/** @class CbmRecoSts
+ ** @brief Task class for local reconstruction in the STS
+ ** @author Volker Friese <v.friese@gsi.de>
+ ** @author Florian Boeck (FIAS)
+ ** @since 16.06.2014
+ ** @date 22.03.2019
+ **
+ ** Local reconstruction in the STS comprises cluster finding,
+ ** cluster analysis, and hit finding. All these tasks are
+ ** performed separately on each module, which can be parallelised.
+ **
+ ** In the mode kCbmRecoTimeslice, the complete input array of digis
+ ** is processed. In the mode kCbmRecoEvent, only digis belonging to
+ ** the respective event are processed.
+ **
+ ** Parallelisation using OpenMP was introduced by F. Boek from FIAS.
+ **/
+class CbmRecoSts : public FairTask
+{
+
+  public:
+
+    /** @brief Constructor **/
+    CbmRecoSts(ECbmRecoMode mode = kCbmRecoTimeslice,
+               Bool_t writeClusters = kFALSE,
+               Bool_t runParallel = kFALSE);
+
+
+    /** @brief Copy constructor (disabled) **/
+    CbmRecoSts(const CbmRecoSts&) = delete;
+
+
+    /** @brief Assignment operator (disabled) **/
+    CbmRecoSts operator=(const CbmRecoSts&) = delete;
+
+
+    /** @brief Destructor  **/
+    virtual ~CbmRecoSts();
+
+
+    /** @brief Task execution **/
+    virtual void Exec(Option_t* opt);
+
+
+    /** @brief End-of-run action **/
+    virtual void Finish();
+
+
+    /** @brief Access to output array of clusters **/
+    TClonesArray* GetClusters() { return fClusters; }
+
+
+    /** @brief Initialisation **/
+    virtual InitStatus Init();
+
+
+    /** @brief Set event-by-event mode
+     ** @param choice  If true, event-by-event mode is used
+     **
+     ** In the event-by-event mode, the event objects in the input tree
+     ** are used, and events are processed one after the other.
+     ** An event builder has to be run before, creating the event objects.
+     ** By default, time-slice mode is applied.
+     **
+     ** Alternative to using SetMode.
+     **/
+    void SetEventMode(Bool_t choice = kTRUE) {
+      fMode = ( choice ? kCbmRecoEvent : kCbmRecoTimeslice );
+    }
+
+
+    /** @brief Set execution mode
+     ** @param mode  Time-slice or event
+     **
+     ** In the time-slice mode, the entire time-slice (input arrays)
+     ** will be processed. In the event mode, events read from the event
+     ** branch are processed one after the other.
+     **/
+    void SetMode(ECbmRecoMode mode) { fMode = mode; }
+
+
+    /** @brief Define the needed parameter containers **/
+    virtual void SetParContainers();
+
+
+    /** @brief Time cut on clusters for hit finding
+     ** @param value  Maximal time difference between two clusters in a hit [ns]
+     **
+     ** Two clusters are considered compatible if their time difference
+     ** is below value.
+     ** Setting this cut parameter to a positive value will override
+     ** the time cut defined by SetTimeCutClustersSig.
+     **/
+    void SetTimeCutClustersAbs(Double_t value) { fTimeCutClustersAbs = value; }
+
+
+    /** @brief Time cut on clusters for hit finding
+     ** @param value  Maximal time difference in units of error
+     **
+     ** Two clusters are considered compatible if their time difference
+     ** is below value * sqrt(terr1**2 + terr2*+2).
+     **/
+    void SetTimeCutClustersSig(Double_t value) { fTimeCutClustersSig = value; }
+
+
+    /** @brief Time cut on digis for cluster finding
+     ** @param value  Maximal time difference between two digis in a cluster [ns]
+     **
+     ** Two digis are considered compatible if their time difference
+     ** is below value.
+     ** Setting this cut parameter to a positive value will override
+     ** the time cut defined by SetTimeCutDigisSig.
+     **/
+    void SetTimeCutDigisAbs(Double_t value) { fTimeCutDigisAbs = value; }
+
+
+    /** @brief Time cut on digis for hit finding
+     ** @param value  Maximal time difference in units of error
+     **
+     ** Two digis are considered compatible if their time difference
+     ** is below value * sqrt2 * sigma(t), where the time error of
+     ** the digis is assumed to be the same.
+     **/
+    void SetTimeCutDigisSig(Double_t value) { fTimeCutDigisSig = value; }
+
+
+    /** @brief User-defined module parameters
+     ** @param parModule Module parameter object
+     **
+     ** If defined, these parameters will be used for all modules instead
+     ** of those found in the runtimeDb.
+     */
+    void UseModulePar(CbmStsParModule* modulePar) {
+      fUserParModule = modulePar;
+    }
+
+
+    /** @brief User-defined sensor parameters
+      ** @param parModule Sensor parameter object
+      **
+      ** If defined, these parameters will be used for all sensors instead
+      ** of those found in the runtimeDb.
+      */
+     void UseSensorCond(CbmStsParSensorCond* sensorCond) {
+       fUserParSensorCond = sensorCond;
+     }
+
+
+    /** @brief User-defined sensor parameters
+     ** @param parModule Sensor parameter object
+     **
+     ** If defined, these parameters will be used for all sensors instead
+     ** of those found in the runtimeDb.
+     */
+    void UseSensorPar(CbmStsParSensor* sensorPar) {
+      fUserParSensor = sensorPar;
+    }
+
+
+  private:
+
+    /** @brief Average Lorentz Shift in a sensor
+     ** @param conditions  Sensor operating conditions
+     ** @param dZ  Sensor thickness [cm]
+     ** @param bY  y component of magnetic field in sensor centre
+     ** @return Mean Lorentz shift front side and back side [cm]
+     **
+     ** The Lorentz shift will be corrected for in hit finding.
+     **/
+    std::pair<Double_t, Double_t>
+    LorentzShift(const CbmStsParSensorCond& conditions,
+                 Double_t dZ, Double_t bY);
+
+
+    /** @brief Instantiate reconstruction modules
+     ** @value Number of modules created
+     **/
+    UInt_t CreateModules();
+
+
+    /** @brief Get the sensor parameters
+     ** @param geoSensor Pointer to setup sensor
+     **/
+    void GetSensorParameters(CbmStsElement* geoSensor);
+
+
+    /** @brief Process one time slice or event
+     ** @param event  Pointer to CbmEvent object
+     **
+     ** If a null event pointer is given, the entire input array is processed.
+     **/
+    void ProcessData(CbmEvent* event = nullptr);
+
+
+  private:
+
+    // --- I/O
+    TClonesArray*   fEvents      = nullptr;   //! Input array of events
+    CbmDigiManager* fDigiManager = nullptr;   //! Interface to digi branch
+    TClonesArray*   fClusters    = nullptr;   //! Output cluster array
+    TClonesArray*   fHits        = nullptr;   //! Output hit array
+
+    // --- Setup and parameters
+    CbmStsSetup*  fSetup                = nullptr; //! Instance of STS setup
+    CbmStsParSim* fParSim               = nullptr; ///< Simulation settings
+    CbmStsParSetModule* fParSetModule   = nullptr; ///< Module parameters
+    CbmStsParSetSensor* fParSetSensor   = nullptr; ///< Sensor parameters
+    CbmStsParSetSensorCond* fParSetCond = nullptr; ///< Sensor conditions
+
+    // --- User-defined parameters, not from database
+    CbmStsParAsic* fUserParAsic             = nullptr;
+    CbmStsParModule* fUserParModule         = nullptr;
+    CbmStsParSensor* fUserParSensor         = nullptr;
+    CbmStsParSensorCond* fUserParSensorCond = nullptr;
+
+    // --- Settings
+    ECbmRecoMode fMode = kCbmRecoEvent; ///< Time-slice or event
+    Double_t fTimeCutDigisSig    =  3.; ///< Time cut for cluster finding
+    Double_t fTimeCutDigisAbs    = -1.; ///< Time cut for cluster finding [ns]
+    Double_t fTimeCutClustersSig =  4.; ///< Time cut for hit finding
+    Double_t fTimeCutClustersAbs = -1.; ///< Time cut for hit finding [ns]
+    Bool_t fWriteClusters = kFALSE;     ///< Write clusters to tree
+    Bool_t fRunParallel = kFALSE;       ///< Use OpenMP multithreading
+
+    // --- Counters
+    TStopwatch fTimer { };           //! ROOT timer
+    Int_t      fNofTimeslices = 0;   ///< Number of time slices processed
+    Int_t      fNofEvents = 0;       ///< Number of events processed
+    Double_t   fNofDigis = 0;        ///< Total number of digis processed
+    Double_t   fNofDigisUsed = 0;    ///< Total number of used digis
+    Double_t   fNofDigisIgnored = 0; ///< Total number of ignored digis
+    Double_t   fNofClusters = 0;     ///< Total number of clusters produced
+    Double_t   fNofHits = 0;         ///< Total number of clusters produced
+    Double_t   fTimeTot = 0.;        ///< Total execution time
+    Double_t   fTime1 = 0.;          ///< Time for resetting modules
+    Double_t   fTime2 = 0.;          ///< Time for distributing data
+    Double_t   fTime3 = 0.;          ///< Time for reconstruction
+    Double_t   fTime4 = 0.;          ///< Time for output results
+
+    // --- Reconstruction modules
+    std::map<UInt_t, CbmStsRecoModule*> fModules { };   //!
+    std::vector<CbmStsRecoModule*> fModuleIndex { };    //!
+
+
+    ClassDef(CbmRecoSts, 1);
+};
+
+#endif
+

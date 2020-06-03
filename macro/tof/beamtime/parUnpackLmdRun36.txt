@@ -1,0 +1,68 @@
+##############################################################################
+# Class:   TMbsUnpackTofPar
+# Context: TestDefaultContext
+##############################################################################
+[TMbsUnpackTofPar]
+//----------------------------------------------------------------------------
+//******************************//
+//   Input selector             //
+//******************************//
+// GETEVT__FILE     1 <- LMD File
+// GETEVT__STREAM   2 <- Stream client
+// GETEVT__TRANS    3 <- Transport client
+// GETEVT__EVENT    4 <- Event client
+// GETEVT__REVSERV  5 <- Remote event client
+MbsSourceMode: Int_t 1
+// Switch ON/OFF the writing of data in the output root file of cbmroot analysis
+WriteDataInCbmOut: Int_t 0
+// Switch ON/OFF debug tests in VFTX unpacker
+VftxDebug: Int_t     0 
+// Number of possible VME boards in the MBS event
+MbsNbVmeBoards: Int_t 27
+// BoardTypes
+//      undef      =  0,  // unknown type, default value
+//      caenV1290  =  1,  // CAEN v1290A and CAEN v1290N VME boards based on HPTDC chips
+//      vftx       =  2,  // FPGA TDC of the VFTX family (E. Bayer dev.)
+//      trb3       =  3,  // FPGA TDC of the HADES TRB3 family
+//      get4       =  4,  // GET4 chips
+//      triglog    = 10,  // VULOM TRIGLOG board
+//      scalormu   = 11,  // VULOM Scaler Or Multiplicity board 
+//      scalormu   = 12,  // VULOM Scaler Or Multiplicity board  32 channel version ? not used for now
+//      caenv965   = 20,  // CAEN v965A and CAEN v965N VME QDC boards
+//      lecroy1182 = 21,  // LECROY 1182 VME QDC/ADC board 
+//      vulqfwread = 22   // VULOM QFW board (Charge to Frequency Converter Readout) 
+// BoardIndex Active    Address AddMod     TokenA     TokenB Type
+MbsVmeMapping: Int_t \
+   0,   1, 0x14000000, 0x09, 0x74726c6f, 0x6f6c7274, 10, \
+   1,   0, 0x0F000000, 0x09, 0x74646331, 0x31636474,  1, \
+   2,   0, 0x11000000, 0x09, 0x74646332, 0x32636474,  1, \
+   3,   0, 0x12000000, 0x09, 0x74646333, 0x33636474,  1, \
+   4,   0, 0x14000000, 0x09, 0x74646334, 0x34636474,  1, \
+   5,   0, 0x15000000, 0x09, 0x74646335, 0x35636474,  1, \
+   6,   0, 0x17000000, 0x09, 0x74646336, 0x36636474,  1, \
+   7,   0, 0x18000000, 0x09, 0x74646337, 0x37636474,  1, \
+   8,   0, 0x19000000, 0x09, 0x74646338, 0x38636474,  1, \
+   9,   1, 0x03000000, 0x09, 0x66706731, 0x31677066,  2, \
+  10,   1, 0x04000000, 0x09, 0x66706732, 0x32677066,  2, \
+  11,   1, 0x05000000, 0x09, 0x66706733, 0x33677066,  2, \
+  12,   1, 0x06000000, 0x09, 0x66706734, 0x34677066,  2, \
+  13,   1, 0x07000000, 0x09, 0x66706735, 0x35677066,  2, \
+  14,   1, 0x08000000, 0x09, 0x66706736, 0x36677066,  2, \
+  15,   1, 0x09000000, 0x09, 0x66706737, 0x37677066,  2, \
+  16,   1, 0x0A000000, 0x09, 0x66706738, 0x38677066,  2, \
+  17,   1, 0x0B000000, 0x09, 0x66706739, 0x39677066,  2, \
+  18,   1, 0x0C000000, 0x09, 0x6670673a, 0x3a677066,  2, \
+  19,   0, 0x0D000000, 0x09, 0x6670673b, 0x3b677066,  2, \
+  20,   0, 0x0A000000, 0x09, 0x71646332, 0x32636471, 20, \
+  21,   0, 0x0B000000, 0x09, 0x71646333, 0x33636471, 20, \
+  22,   0, 0x00600000, 0x39, 0x31313832, 0x32383131, 21, \
+  23,   0, 0x00700000, 0x39, 0x31313833, 0x33383131, 21, \
+  24,   0, 0x07000000, 0x09, 0x71667731, 0x31776671, 22, \
+  25,   1, 0x12000000, 0x09, 0x73636f6d, 0x6d6f6373, 11, \
+  26,   0, 0x13000000, 0x09, 0x736f6d62, 0x626d6f73, 11 
+// Number of possible Non-VME boards in the MBS event
+NbNonVmeBoards: Int_t  0
+// Trigger from the Triglog board for which event are jump by Calib, mapping and conv
+// For now only jumping work for GET4 data!!
+TriggerRejection: Int_t  -1
+###########################

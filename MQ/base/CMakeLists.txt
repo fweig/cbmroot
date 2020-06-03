@@ -1,0 +1,40 @@
+set(INCLUDE_DIRECTORIES
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}/MQ/base
+)
+
+Set(SYSTEM_INCLUDE_DIRECTORIES
+    ${SYSTEM_INCLUDE_DIRECTORIES}
+    ${FAIRMQ_INCLUDE_DIR}
+)
+
+include_directories(${INCLUDE_DIRECTORIES})
+include_directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
+
+set(LINK_DIRECTORIES
+  ${FAIRMQ_LIBRARY_DIR}
+)
+
+link_directories(${LINK_DIRECTORIES})
+
+set(FAIR_LIBS
+  FairMQ
+)
+
+If(FAIRLOGGER_FOUND)
+  set(FAIR_LIBS
+      ${FAIR_LIBS}
+      FairLogger
+     )
+EndIf()
+
+set(SRCS
+  CbmMQChannels.cxx
+)
+
+Set(LIBRARY_NAME CbmMQBase)
+Set(DEPENDENCIES
+    ${FAIR_LIBS}
+)
+
+GENERATE_LIBRARY()

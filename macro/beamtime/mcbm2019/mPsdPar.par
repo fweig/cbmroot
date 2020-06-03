@@ -1,0 +1,16 @@
+[CbmMcbm2018PsdPar]
+//----------------------------------------------------------------------------
+NrOfGdpbs: Int_t 1
+GdpbIdArray: Int_t \
+0x193d
+NrOfFeesPerGdpb: Int_t 1
+NrOfChannelsPerFee: Int_t 32
+NrOfGbtx: Int_t 1
+NrOfModules: Int_t 1
+ModuleId: Int_t \
+  1  
+NbMsTot: Int_t 100
+NbMsOverlap: Int_t 1
+SizeMsInNs: Double_t 102400.0
+//SizeMsInNs: Double_t 1638400
+TsDeadtimePeriod: Double_t 62.5

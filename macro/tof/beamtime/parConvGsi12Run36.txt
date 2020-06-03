@@ -1,0 +1,65 @@
+##############################################################################
+# Class:   TMbsConvTofPar
+# Context: TestDefaultContext
+##############################################################################
+[TMbsConvTofPar]
+//----------------------------------------------------------------------------
+// Switch ON/OFF debug tests, output & histos in Conversion
+ConvDebug: Int_t               0
+//----------------------------------------------------------------------------
+// Name and path of the ROOT file in which the tree will be save
+FilenameOut: Text_t TestTreeOut.root
+// Enable/Disable the Triglog data in the output tree
+EnableTriglog: Int_t           1
+// Nb of scaler boards saved in the TTree (1)
+NbOutScalers: Int_t            3
+// Index of the scaler boards to be save under specified output scaler index
+// Number of fields HAS TO match (1) except if (1) = 0
+ScalersIndex: Int_t \
+  0   1   2
+// Number of scalers groups for each of the output scalers (maybe in scaler unpacker parameter)
+//      TArrayI  fiScalersNb;
+// Number of channels per scaler group for each of the output scalers (maybe in scaler unpacker parameter)
+//      TArrayI  fiScalersChNb;
+// Number of VFTX boards saved in output TTree (2)
+NbOutVftx: Int_t               1
+// Index of the VFTX boards to be save under specified output VFTX index
+// Number of fields HAS TO match (2) except if (2) = 0
+VftxIndex: Int_t \
+  0
+//  0   1   2   3   4   5   6   7   8   9
+// Number of RPCs to be saved in output TTree (3)
+NbRpc: Int_t                   2
+// Unique address of the RPC to be saved under specified output RPC index
+// Detectors Unique ID
+// 0xFF000000 = Channel ID   = 0 (unused here)
+// 0x00800000 = Channel Side = 0 (unused here)
+// 0x007F0000 = RPC ID       = or detector ID
+// 0x0000F000 = SM Type      = e.g. 0 for HD, 1 for Buc, 2 for plastics, 3 for Pad CRPC, 4 for reference signal 1 & 2, 5 for HD Big RPC, 6 for Buc multiple...
+// 0x00000FF0 = SM ID        = e.g. 0 for HD, 1 for Buc, 2 for plastics, 3 for Pad CRPC, 4 for reference signal 1 & 2, 5 for HD Big RPC, 6 for Buc multiple ...
+// 0x0000000F = System ID    = always 6 for TOF
+// Number of fields HAS TO match (3) except if (3) = 0
+RpcUniqueAdd: Int_t \
+0x00001016 0x00000006
+// Channel type ( 1 = pad, 2 = strip, ...) for specified output RPC index
+// Number of fields HAS TO match (3) except if (3) = 0
+RpcChType: Int_t \
+         2          2
+// Number of Plastics to be saved in output TTree (4)
+NbPlastics: Int_t              2
+// Unique address of the Plastics (mapped as a 1 channel RPC) to be saved under specified output plastic index
+// Detectors Unique ID
+// 0xFF000000 = Channel ID   = 0 (unused here)
+// 0x00800000 = Channel Side = 0 (unused here)
+// 0x007F0000 = RPC ID       = or detector ID
+// 0x0000F000 = SM Type      = e.g. 0 for HD, 1 for Buc, 2 for plastics, 3 for Pad CRPC, 4 for reference signal 1 & 2, 5 for HD Big RPC, 6 for Buc multiple...
+// 0x00000FF0 = SM ID        = e.g. 0 for HD, 1 for Buc, 2 for plastics, 3 for Pad CRPC, 4 for reference signal 1 & 2, 5 for HD Big RPC, 6 for Buc multiple ...
+// 0x0000000F = System ID    = always 6 for TOF
+// Number of fields HAS TO match (4) except if (4) = 0
+PlaUniqueAdd: Int_t \
+0x00002026 0x00012026
+// Ends readout type ( 1 = single end, 2 = both ends, ...) for specified output plastic index
+// Number of fields HAS TO match (4) except if (4) = 0
+PlaEndsNb: Int_t \
+         2          2
+###########################  

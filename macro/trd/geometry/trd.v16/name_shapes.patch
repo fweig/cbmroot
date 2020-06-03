@@ -1,0 +1,461 @@
+--- Create_TRD_Geometry_v16a_3e.C.buf	2016-07-21 21:46:17.632707424 +0200
++++ Create_TRD_Geometry_v16a_3e.C	2016-07-21 22:01:46.061187505 +0200
+@@ -1308,7 +1308,7 @@
+    {
+      // Radiator
+      //   TGeoBBox* trd_radiator = new TGeoBBox("", activeAreaX /2., activeAreaY /2., radiator_thickness /2.);
+-     TGeoBBox* trd_radiator = new TGeoBBox("", sizeX /2., sizeY /2., radiator_thickness /2.);
++     TGeoBBox* trd_radiator = new TGeoBBox("trd_radiator", sizeX /2., sizeY /2., radiator_thickness /2.);
+      TGeoVolume* trdmod1_radvol = new TGeoVolume("radiator", trd_radiator, radVolMed);
+      //     TGeoVolume* trdmod1_radvol = new TGeoVolume(Form("module%d_radiator", moduleType), trd_radiator, radVolMed);
+      //     TGeoVolume* trdmod1_radvol = new TGeoVolume(Form("trd1mod%dradiator", moduleType), trd_radiator, radVolMed);
+@@ -1326,11 +1326,11 @@
+      {
+        //     printf("lattice type %d\n", type);
+        // drift window - lattice grid - sprossenfenster
+-       TGeoBBox* trd_lattice_mod0_ho = new TGeoBBox("", sizeX/2.,                       lattice_o_width[type]/2.,       lattice_thickness/2.);                // horizontal outer
+-       TGeoBBox* trd_lattice_mod0_hi = new TGeoBBox("", sizeX/2.-lattice_o_width[type], lattice_i_width[type]/2.,       lattice_thickness/2.);                // horizontal inner
+-       TGeoBBox* trd_lattice_mod0_vo = new TGeoBBox("", lattice_o_width[type]/2.,       sizeX/2.-lattice_o_width[type], lattice_thickness/2.);                // vertical outer
+-       TGeoBBox* trd_lattice_mod0_vi = new TGeoBBox("", lattice_i_width[type]/2.,       0.20*activeAreaY/2.-lattice_i_width[type]/2., lattice_thickness/2.);  // vertical inner
+-       TGeoBBox* trd_lattice_mod0_vb = new TGeoBBox("", lattice_i_width[type]/2.,       0.20*activeAreaY/2.-lattice_i_width[type]/4., lattice_thickness/2.);  // vertical border 
++       TGeoBBox* trd_lattice_mod0_ho = new TGeoBBox("trd_lattice_mod0_ho", sizeX/2.,                       lattice_o_width[type]/2.,       lattice_thickness/2.);                // horizontal outer
++       TGeoBBox* trd_lattice_mod0_hi = new TGeoBBox("trd_lattice_mod0_hi", sizeX/2.-lattice_o_width[type], lattice_i_width[type]/2.,       lattice_thickness/2.);                // horizontal inner
++       TGeoBBox* trd_lattice_mod0_vo = new TGeoBBox("trd_lattice_mod0_vo", lattice_o_width[type]/2.,       sizeX/2.-lattice_o_width[type], lattice_thickness/2.);                // vertical outer
++       TGeoBBox* trd_lattice_mod0_vi = new TGeoBBox("trd_lattice_mod0_vi", lattice_i_width[type]/2.,       0.20*activeAreaY/2.-lattice_i_width[type]/2., lattice_thickness/2.);  // vertical inner
++       TGeoBBox* trd_lattice_mod0_vb = new TGeoBBox("trd_lattice_mod0_vb", lattice_i_width[type]/2.,       0.20*activeAreaY/2.-lattice_i_width[type]/4., lattice_thickness/2.);  // vertical border 
+ 
+        TGeoVolume* trd_lattice_mod0_vol_ho = new TGeoVolume("lattice0ho", trd_lattice_mod0_ho, latticeVolMed);
+        TGeoVolume* trd_lattice_mod0_vol_hi = new TGeoVolume("lattice0hi", trd_lattice_mod0_hi, latticeVolMed);
+@@ -1368,7 +1368,7 @@
+ 
+ //       TGeoVolumeAssembly* trdmod0_lattice = new TGeoVolumeAssembly("mod0lattice"); // volume for lattice grid
+ 
+-       TGeoBBox* trd_lattice_mod0  = new TGeoBBox("", sizeX /2., sizeY /2., lattice_thickness /2.);
++       TGeoBBox* trd_lattice_mod0  = new TGeoBBox("trd_lattice_mod0", sizeX /2., sizeY /2., lattice_thickness /2.);
+        TGeoVolume* trdmod0_lattice = new TGeoVolume("lat_grid_mod0", trd_lattice_mod0, keepVolMed);
+ 
+        //       trdmod0_lattice->SetLineColor(kGreen);  // set color for keeping volume
+@@ -1412,11 +1412,11 @@
+      {
+        //     printf("lattice type %d\n", type);
+        // drift window - lattice grid - sprossenfenster
+-       TGeoBBox *trd_lattice_mod1_ho = new TGeoBBox("", sizeX/2.,                       lattice_o_width[type]/2.,       lattice_thickness/2.);                 // horizontal outer
+-       TGeoBBox *trd_lattice_mod1_hi = new TGeoBBox("", sizeX/2.-lattice_o_width[type], lattice_i_width[type]/2.,       lattice_thickness/2.);                 // horizontal inner
+-       TGeoBBox *trd_lattice_mod1_vo = new TGeoBBox("", lattice_o_width[type]/2.,       sizeX/2.-lattice_o_width[type], lattice_thickness/2.);                 // vertical outer  
+-       TGeoBBox *trd_lattice_mod1_vi = new TGeoBBox("", lattice_i_width[type]/2.,       0.125*activeAreaY/2.-lattice_i_width[type]/2., lattice_thickness/2.);  // vertical inner  
+-       TGeoBBox *trd_lattice_mod1_vb = new TGeoBBox("", lattice_i_width[type]/2.,       0.125*activeAreaY/2.-lattice_i_width[type]/4., lattice_thickness/2.);  // vertical border 
++       TGeoBBox *trd_lattice_mod1_ho = new TGeoBBox("trd_lattice_mod1_ho", sizeX/2.,                       lattice_o_width[type]/2.,       lattice_thickness/2.);                 // horizontal outer
++       TGeoBBox *trd_lattice_mod1_hi = new TGeoBBox("trd_lattice_mod1_hi", sizeX/2.-lattice_o_width[type], lattice_i_width[type]/2.,       lattice_thickness/2.);                 // horizontal inner
++       TGeoBBox *trd_lattice_mod1_vo = new TGeoBBox("trd_lattice_mod1_vo", lattice_o_width[type]/2.,       sizeX/2.-lattice_o_width[type], lattice_thickness/2.);                 // vertical outer  
++       TGeoBBox *trd_lattice_mod1_vi = new TGeoBBox("trd_lattice_mod1_vi", lattice_i_width[type]/2.,       0.125*activeAreaY/2.-lattice_i_width[type]/2., lattice_thickness/2.);  // vertical inner  
++       TGeoBBox *trd_lattice_mod1_vb = new TGeoBBox("trd_lattice_mod1_vb", lattice_i_width[type]/2.,       0.125*activeAreaY/2.-lattice_i_width[type]/4., lattice_thickness/2.);  // vertical border 
+ 
+        TGeoVolume* trd_lattice_mod1_vol_ho = new TGeoVolume("lattice1ho", trd_lattice_mod1_ho, latticeVolMed);
+        TGeoVolume* trd_lattice_mod1_vol_hi = new TGeoVolume("lattice1hi", trd_lattice_mod1_hi, latticeVolMed);
+@@ -1463,7 +1463,7 @@
+     
+ //       TGeoVolumeAssembly* trdmod1_lattice = new TGeoVolumeAssembly("mod1lattice"); // volume for lattice grid
+ 
+-       TGeoBBox* trd_lattice_mod1  = new TGeoBBox("", sizeX /2., sizeY /2., lattice_thickness /2.);
++       TGeoBBox* trd_lattice_mod1  = new TGeoBBox("trd_lattice_mod1", sizeX /2., sizeY /2., lattice_thickness /2.);
+        TGeoVolume* trdmod1_lattice = new TGeoVolume("lat_grid_mod1", trd_lattice_mod1, keepVolMed);
+ 
+        //       trdmod1_lattice->SetLineColor(kGreen);  // set color for keeping volume
+@@ -1508,7 +1508,7 @@
+    if(IncludeKaptonFoil)
+    {
+      // Kapton Foil
+-     TGeoBBox* trd_kapton = new TGeoBBox("", sizeX /2., sizeY /2., kapton_thickness /2.);
++     TGeoBBox* trd_kapton = new TGeoBBox("trd_kapton", sizeX /2., sizeY /2., kapton_thickness /2.);
+      TGeoVolume* trdmod1_kaptonvol = new TGeoVolume("kaptonfoil", trd_kapton, kaptonVolMed);
+      //   TGeoVolume* trdmod1_kaptonvol = new TGeoVolume(Form("module%d_kaptonfoil", moduleType), trd_kapton, kaptonVolMed);
+      //   TGeoVolume* trdmod1_kaptonvol = new TGeoVolume(Form("trd1mod%dkapton", moduleType), trd_kapton, kaptonVolMed);
+@@ -1519,7 +1519,7 @@
+ 
+    // start of Frame in z
+    // Gas
+-   TGeoBBox* trd_gas = new TGeoBBox("", activeAreaX /2., activeAreaY /2., gas_thickness /2.);
++   TGeoBBox* trd_gas = new TGeoBBox("trd_gas", activeAreaX /2., activeAreaY /2., gas_thickness /2.);
+    TGeoVolume* trdmod1_gasvol = new TGeoVolume("gas", trd_gas, gasVolMed);
+    //   TGeoVolume* trdmod1_gasvol = new TGeoVolume(Form("module%d_gas", moduleType), trd_gas, gasVolMed);
+    //   TGeoVolume* trdmod1_gasvol = new TGeoVolume(Form("trd1mod%dgas", moduleType), trd_gas, gasVolMed);
+@@ -1533,7 +1533,7 @@
+    if(IncludeGasFrame)
+    {
+      // frame1
+-     TGeoBBox* trd_frame1 = new TGeoBBox("", sizeX /2., frameWidth /2., frame_thickness/2.);
++     TGeoBBox* trd_frame1 = new TGeoBBox("trd_frame1", sizeX /2., frameWidth /2., frame_thickness/2.);
+      TGeoVolume* trdmod1_frame1vol = new TGeoVolume("frame1", trd_frame1, frameVolMed);
+      //   TGeoVolume* trdmod1_frame1vol = new TGeoVolume(Form("module%d_frame1", moduleType), trd_frame1, frameVolMed);
+      //   TGeoVolume* trdmod1_frame1vol = new TGeoVolume(Form("trd1mod%dframe1", moduleType), trd_frame1, frameVolMed);
+@@ -1547,7 +1547,7 @@
+      
+      
+      // frame2
+-     TGeoBBox* trd_frame2 = new TGeoBBox("", frameWidth /2., activeAreaY /2., frame_thickness /2.);
++     TGeoBBox* trd_frame2 = new TGeoBBox("trd_frame2", frameWidth /2., activeAreaY /2., frame_thickness /2.);
+      TGeoVolume* trdmod1_frame2vol = new TGeoVolume("frame2", trd_frame2, frameVolMed);
+      //   TGeoVolume* trdmod1_frame2vol = new TGeoVolume(Form("module%d_frame2", moduleType), trd_frame2, frameVolMed);
+      //   TGeoVolume* trdmod1_frame2vol = new TGeoVolume(Form("trd1mod%dframe2", moduleType), trd_frame2, frameVolMed);
+@@ -1563,7 +1563,7 @@
+    if(IncludePadplane)
+    {
+      // Pad Copper
+-     TGeoBBox *trd_padcopper = new TGeoBBox("", sizeX /2., sizeY /2., padcopper_thickness /2.);
++     TGeoBBox* trd_padcopper = new TGeoBBox("trd_padcopper", sizeX /2., sizeY /2., padcopper_thickness /2.);
+      TGeoVolume* trdmod1_padcoppervol = new TGeoVolume("padcopper", trd_padcopper, padcopperVolMed);
+      //   TGeoVolume* trdmod1_padcoppervol = new TGeoVolume(Form("module%d_padcopper", moduleType), trd_padcopper, padcopperVolMed);
+      //   TGeoVolume* trdmod1_padcoppervol = new TGeoVolume(Form("trd1mod%dpadcopper", moduleType), trd_padcopper, padcopperVolMed);
+@@ -1572,7 +1572,7 @@
+      module->AddNode(trdmod1_padcoppervol, 1, trd_padcopper_trans);
+   
+      // Pad Plane
+-     TGeoBBox* trd_padpcb = new TGeoBBox("", sizeX /2., sizeY /2., padplane_thickness /2.);
++     TGeoBBox* trd_padpcb = new TGeoBBox("trd_padpcb", sizeX /2., sizeY /2., padplane_thickness /2.);
+      TGeoVolume* trdmod1_padpcbvol = new TGeoVolume("padplane", trd_padpcb, padpcbVolMed);
+      //   TGeoVolume* trdmod1_padpcbvol = new TGeoVolume(Form("module%d_padplane", moduleType), trd_padpcb, padpcbVolMed);
+      //   TGeoVolume* trdmod1_padpcbvol = new TGeoVolume(Form("trd1mod%dpadplane", moduleType), trd_padpcb, padpcbVolMed);
+@@ -1584,7 +1584,7 @@
+    if(IncludeBackpanel)
+    { 
+      // Honeycomb
+-     TGeoBBox* trd_honeycomb = new TGeoBBox("", sizeX /2., sizeY /2., honeycomb_thickness /2.);
++     TGeoBBox* trd_honeycomb = new TGeoBBox("trd_honeycomb", sizeX /2., sizeY /2., honeycomb_thickness /2.);
+      TGeoVolume* trdmod1_honeycombvol = new TGeoVolume("honeycomb", trd_honeycomb, honeycombVolMed);
+      //   TGeoVolume* trdmod1_honeycombvol = new TGeoVolume(Form("module%d_honeycomb", moduleType), trd_honeycomb, honeycombVolMed);
+      //   TGeoVolume* trdmod1_honeycombvol = new TGeoVolume(Form("trd1mod%dhoneycomb", moduleType), trd_honeycomb, honeycombVolMed);
+@@ -1593,7 +1593,7 @@
+      module->AddNode(trdmod1_honeycombvol, 1, trd_honeycomb_trans);
+   
+      // Carbon fiber layers
+-     TGeoBBox* trd_carbon = new TGeoBBox("", sizeX /2., sizeY /2., carbon_thickness /2.);
++     TGeoBBox* trd_carbon = new TGeoBBox("trd_carbon", sizeX /2., sizeY /2., carbon_thickness /2.);
+      TGeoVolume* trdmod1_carbonvol = new TGeoVolume("carbonsheet", trd_carbon, carbonVolMed);
+      //   TGeoVolume* trdmod1_carbonvol = new TGeoVolume(Form("module%d_carbonsheet", moduleType), trd_carbon, carbonVolMed);
+      //   TGeoVolume* trdmod1_carbonvol = new TGeoVolume(Form("trd1mod%dcarbon", moduleType), trd_carbon, carbonVolMed);
+@@ -1649,7 +1649,7 @@
+       (*incline_feb) = (*trd_feb_trans1) * (*trd_feb_rotation) * (*trd_feb_trans2);  // OK
+ 
+       // Create all FEBs and place them in an assembly which will be added to the TRD module
+-      TGeoBBox* trd_feb = new TGeoBBox("", activeAreaX/2., feb_thickness/2., febvol_thickness/2.);   // the FEB itself - as a cuboid
++      TGeoBBox* trd_feb = new TGeoBBox("trd_feb", activeAreaX/2., feb_thickness/2., febvol_thickness/2.);   // the FEB itself - as a cuboid
+       TGeoVolume* trdmod1_feb = new TGeoVolume("feb", trd_feb, febVolMed);  // the FEB made of a certain medium
+       //      TGeoVolume* trdmod1_feb = new TGeoVolume(Form("module%d_feb", moduleType), trd_feb, febVolMed);  // the FEB made of a certain medium
+       //      TGeoVolume* trdmod1_feb = new TGeoVolume(Form("trd1mod%dfeb", moduleType), trd_feb, febVolMed);  // the FEB made of a certain medium
+@@ -1666,7 +1666,7 @@
+       {
+         TGeoHMatrix *incline_asic;
+         // put many ASICs on each inclined FEB
+-        TGeoBBox* trd_asic = new TGeoBBox("", asic_width/2., asic_thickness/2., asic_width/2.);              // ASIC dimensions
++        TGeoBBox* trd_asic = new TGeoBBox("trd_asic", asic_width/2., asic_thickness/2., asic_width/2.);              // ASIC dimensions
+         // TODO: use Silicon as ASICs material
+         TGeoVolume* trdmod1_asic = new TGeoVolume("asic", trd_asic, asicVolMed);   // the ASIC made of a certain medium
+ 	//        TGeoVolume* trdmod1_asic = new TGeoVolume(Form("module%d_asic", moduleType), trd_asic, asicVolMed);   // the ASIC made of a certain medium
+@@ -1773,7 +1773,7 @@
+         Double_t rob_thickness = feb_thickness;
+   
+         TGeoVolumeAssembly* trd_rob_box = new TGeoVolumeAssembly("robbox");  // volume for inclined FEBs, then shifted along y
+-        TGeoBBox* trd_rob = new TGeoBBox("", rob_size_x/2., rob_size_y/2., rob_thickness/2.);   // the ROB itself
++        TGeoBBox* trd_rob = new TGeoBBox("trd_rob", rob_size_x/2., rob_size_y/2., rob_thickness/2.);   // the ROB itself
+         TGeoVolume* trdmod1_rob = new TGeoVolume("rob", trd_rob, febVolMed);  // the ROB made of a certain medium
+         trdmod1_rob->SetLineColor(kRed);    // set color
+   
+@@ -1793,7 +1793,7 @@
+         const Double_t gbtx_width     = 3.0;  // 2.0;  1.0;   // 1 cm
+   
+         // put many GBTXs on each inclined FEB
+-        TGeoBBox* trd_gbtx = new TGeoBBox("", gbtx_width/2., gbtx_width/2., gbtx_thickness/2.); // GBTX dimensions
++        TGeoBBox* trd_gbtx = new TGeoBBox("trd_gbtx", gbtx_width/2., gbtx_width/2., gbtx_thickness/2.); // GBTX dimensions
+         TGeoVolume* trdmod1_gbtx = new TGeoVolume("gbtx", trd_gbtx, asicVolMed);   // the GBTX made of a certain medium
+         trdmod1_gbtx->SetLineColor(kGreen);  // set color for GBTXs
+   
+@@ -2496,11 +2496,11 @@
+ //   T->SetVisibility(kFALSE);
+   TGeoVolume* T = new TGeoVolumeAssembly("Tbox"); // volume for T
+ 
+-  TGeoBBox *Tbar1b = new TGeoBBox("", 4., 16., 4.);  // | vertical
++  TGeoBBox* Tbar1b = new TGeoBBox("trd_Tbar1b", 4., 16., 4.);  // | vertical
+   TGeoVolume *Tbar1 = new TGeoVolume("Tbar1", Tbar1b, textVolMed);
+   Tbar1->SetLineColor(Tcolor);
+   T->AddNode(Tbar1, 1, tr01);
+-  TGeoBBox *Tbar2b = new TGeoBBox("", 16, 4., 4.);  // - top
++  TGeoBBox* Tbar2b = new TGeoBBox("trd_Tbar2b", 16, 4., 4.);  // - top
+   TGeoVolume *Tbar2 = new TGeoVolume("Tbar2", Tbar2b, textVolMed);
+   Tbar2->SetLineColor(Tcolor);
+   T->AddNode(Tbar2, 1, tr02);
+@@ -2510,20 +2510,20 @@
+ //   R->SetVisibility(kFALSE);
+   TGeoVolume* R = new TGeoVolumeAssembly("Rbox"); // volume for R
+ 
+-  TGeoBBox *Rbar1b = new TGeoBBox("", 4., 20, 4.);
++  TGeoBBox* Rbar1b = new TGeoBBox("trd_Rbar1b", 4., 20, 4.);
+   TGeoVolume *Rbar1 = new TGeoVolume("Rbar1", Rbar1b, textVolMed);
+   Rbar1->SetLineColor(Rcolor);
+   R->AddNode(Rbar1, 1, tr11);
+-  TGeoBBox *Rbar2b = new TGeoBBox("", 4., 4., 4.);
++  TGeoBBox* Rbar2b = new TGeoBBox("trd_Rbar2b", 4., 4., 4.);
+   TGeoVolume *Rbar2 = new TGeoVolume("Rbar2", Rbar2b, textVolMed);
+   Rbar2->SetLineColor(Rcolor);
+   R->AddNode(Rbar2, 1, tr12);
+   R->AddNode(Rbar2, 2, tr13);
+-  TGeoTubeSeg *Rtub1b = new TGeoTubeSeg("", 4., 12, 4., 90., 270.);
++  TGeoTubeSeg* Rtub1b = new TGeoTubeSeg("trd_Rtub1b", 4., 12, 4., 90., 270.);
+   TGeoVolume *Rtub1 = new TGeoVolume("Rtub1", (TGeoShape *) Rtub1b, textVolMed);
+   Rtub1->SetLineColor(Rcolor);
+   R->AddNode(Rtub1, 1, tr14);
+-  TGeoArb8 *Rbar3b = new TGeoArb8("", 4.);
++  TGeoArb8* Rbar3b = new TGeoArb8("trd_Rbar3b", 4.);
+   TGeoVolume *Rbar3 = new TGeoVolume("Rbar3", Rbar3b, textVolMed);
+   Rbar3->SetLineColor(Rcolor);
+   TGeoArb8 *arb = (TGeoArb8*)Rbar3->GetShape();
+@@ -2542,16 +2542,16 @@
+ //   D->SetVisibility(kFALSE);
+   TGeoVolume* D = new TGeoVolumeAssembly("Dbox"); // volume for D
+ 
+-  TGeoBBox *Dbar1b = new TGeoBBox("", 4., 20, 4.);
++  TGeoBBox* Dbar1b = new TGeoBBox("trd_Dbar1b", 4., 20, 4.);
+   TGeoVolume *Dbar1 = new TGeoVolume("Dbar1", Dbar1b, textVolMed);
+   Dbar1->SetLineColor(Dcolor);
+   D->AddNode(Dbar1, 1, tr21);
+-  TGeoBBox *Dbar2b = new TGeoBBox("", 2., 4., 4.);
++  TGeoBBox* Dbar2b = new TGeoBBox("trd_Dbar2b", 2., 4., 4.);
+   TGeoVolume *Dbar2 = new TGeoVolume("Dbar2", Dbar2b, textVolMed);
+   Dbar2->SetLineColor(Dcolor);
+   D->AddNode(Dbar2, 1, tr22);
+   D->AddNode(Dbar2, 2, tr23);
+-  TGeoTubeSeg *Dtub1b = new TGeoTubeSeg("", 12, 20, 4., 90., 270.);
++  TGeoTubeSeg* Dtub1b = new TGeoTubeSeg("trd_Dtub1b", 12, 20, 4., 90., 270.);
+   TGeoVolume *Dtub1 = new TGeoVolume("Dtub1", (TGeoShape *) Dtub1b, textVolMed);
+   Dtub1->SetLineColor(Dcolor);
+   D->AddNode(Dtub1, 1, tr24);
+@@ -2559,11 +2559,11 @@
+ // make letter I
+   TGeoVolume* I = new TGeoVolumeAssembly("Ibox"); // volume for I
+ 
+-  TGeoBBox *Ibar1b = new TGeoBBox("", 4., 12., 4.);  // | vertical
++  TGeoBBox* Ibar1b = new TGeoBBox("trd_Ibar1b", 4., 12., 4.);  // | vertical
+   TGeoVolume *Ibar1 = new TGeoVolume("Ibar1", Ibar1b, textVolMed);
+   Ibar1->SetLineColor(Icolor);
+   I->AddNode(Ibar1, 1, tr31);
+-  TGeoBBox *Ibar2b = new TGeoBBox("", 10., 4., 4.);  // - top
++  TGeoBBox* Ibar2b = new TGeoBBox("trd_Ibar2b", 10., 4., 4.);  // - top
+   TGeoVolume *Ibar2 = new TGeoVolume("Ibar2", Ibar2b, textVolMed);
+   Ibar2->SetLineColor(Icolor);
+   I->AddNode(Ibar2, 1, tr32);
+@@ -2753,10 +2753,10 @@
+   if (ShowLayer[0])  // if geometry contains layer 1 (1st layer of station 1)
+     {
+ //      TGeoBBox* trd_I_vert1_keep  = new TGeoBBox("", I_thick /2., I_height /2. - I_thick, (BeamHeight + (AperY[0]+I_height) ) /2.);
+-      TGeoBBox* trd_I_vert1_keep  = new TGeoBBox("", I_thick /2., I_height /2. - I_thick, ( (AperYbot[0]+I_height) + (AperY[0]+I_height) ) /2.);
++      TGeoBBox* trd_I_vert1_keep  = new TGeoBBox("trd_I_vert1_keep", I_thick /2., I_height /2. - I_thick, ( (AperYbot[0]+I_height) + (AperY[0]+I_height) ) /2.);
+       TGeoVolume* trd_I_vert1     = new TGeoVolume("trd_I_y11", trd_I_vert1_keep, aluminiumVolMed);
+       //      TGeoBBox* trd_I_vert2_keep  = new TGeoBBox("", I_width /2.,            I_thick /2., (BeamHeight + (AperY[0]+I_height) ) /2.);
+-      TGeoBBox* trd_I_vert2_keep  = new TGeoBBox("", I_width /2.,            I_thick /2., ( (AperYbot[0]+I_height) + (AperY[0]+I_height) ) /2.);
++      TGeoBBox* trd_I_vert2_keep  = new TGeoBBox("trd_I_vert2_keep", I_width /2.,            I_thick /2., ( (AperYbot[0]+I_height) + (AperY[0]+I_height) ) /2.);
+       TGeoVolume* trd_I_vert2     = new TGeoVolume("trd_I_y12", trd_I_vert2_keep, aluminiumVolMed);
+ 
+       trd_I_vert1->SetLineColor(kGreen);  // kBlue);  // Yellow);  // kOrange);
+@@ -2767,7 +2767,7 @@
+       TGeoTranslation *ty03 = new TGeoTranslation("ty03", 0., -(I_height-I_thick) /2., 0.);
+ 
+       //      TGeoBBox* trd_I_vert_vol1_keep = new TGeoBBox("", I_width /2., I_height /2., (BeamHeight + (AperY[0]+I_height) ) /2.);
+-      TGeoBBox* trd_I_vert_vol1_keep = new TGeoBBox("", I_width /2., I_height /2., ( (AperYbot[0]+I_height) + (AperY[0]+I_height) ) /2.);
++      TGeoBBox* trd_I_vert_vol1_keep = new TGeoBBox("trd_I_vert_vol1_keep", I_width /2., I_height /2., ( (AperYbot[0]+I_height) + (AperY[0]+I_height) ) /2.);
+       TGeoVolume* trd_I_vert_vol1    = new TGeoVolume("trd_I_y10", trd_I_vert_vol1_keep, keepVolMed);
+ 
+       // set green color for keeping volume of I profile, seen with gGeoManager->SetVisLevel(2)
+@@ -2779,7 +2779,7 @@
+       trd_I_vert_vol1->AddNode(trd_I_vert2, 3, ty03);
+ 
+       // close gap to horizontal z-bars
+-      TGeoBBox* trd_I_vert3_keep  = new TGeoBBox("", (I_width-I_thick)/2. /2., I_height /2. - I_thick, I_thick /2.);
++      TGeoBBox* trd_I_vert3_keep  = new TGeoBBox("trd_I_vert3_keep", (I_width-I_thick)/2. /2., I_height /2. - I_thick, I_thick /2.);
+       TGeoVolume* trd_I_vert3     = new TGeoVolume("trd_I_y13", trd_I_vert3_keep, aluminiumVolMed);
+       trd_I_vert3->SetLineColor(kGreen);
+ //      TGeoTranslation *ty04 = new TGeoTranslation("ty04",  (I_thick/2. + (I_width-I_thick)/2./2.), 0., -( (AperYbot[0]+I_height) + (AperY[0]+I_height) - I_width) /2.);  // top
+@@ -2804,9 +2804,9 @@
+   // station 2
+   if (ShowLayer[4])  // if geometry contains layer 5 (1st layer of station 2)
+     {
+-      TGeoBBox* trd_I_vert1_keep  = new TGeoBBox("", I_thick /2., I_height /2. - I_thick, (BeamHeight + (AperY[1]+I_height) ) /2.);
++      TGeoBBox* trd_I_vert1_keep  = new TGeoBBox("trd_I_vert1_keep", I_thick /2., I_height /2. - I_thick, (BeamHeight + (AperY[1]+I_height) ) /2.);
+       TGeoVolume* trd_I_vert1     = new TGeoVolume("trd_I_y21", trd_I_vert1_keep, aluminiumVolMed);
+-      TGeoBBox* trd_I_vert2_keep  = new TGeoBBox("", I_width /2.,            I_thick /2., (BeamHeight + (AperY[1]+I_height) ) /2.);
++      TGeoBBox* trd_I_vert2_keep  = new TGeoBBox("trd_I_vert2_keep", I_width /2.,            I_thick /2., (BeamHeight + (AperY[1]+I_height) ) /2.);
+       TGeoVolume* trd_I_vert2     = new TGeoVolume("trd_I_y22", trd_I_vert2_keep, aluminiumVolMed);
+ 
+       trd_I_vert1->SetLineColor(kGreen);
+@@ -2816,7 +2816,7 @@
+       TGeoTranslation *ty02 = new TGeoTranslation("ty02", 0.,  (I_height-I_thick) /2., 0.);
+       TGeoTranslation *ty03 = new TGeoTranslation("ty03", 0., -(I_height-I_thick) /2., 0.);
+ 
+-      TGeoBBox* trd_I_vert_vol1_keep = new TGeoBBox("", I_width /2., I_height /2., (BeamHeight + (AperY[1]+I_height) ) /2.);
++      TGeoBBox* trd_I_vert_vol1_keep = new TGeoBBox("trd_I_vert_vol1_keep", I_width /2., I_height /2., (BeamHeight + (AperY[1]+I_height) ) /2.);
+       TGeoVolume* trd_I_vert_vol1    = new TGeoVolume("trd_I_y20", trd_I_vert_vol1_keep, keepVolMed);
+ 
+       // set green color for keeping volume of I profile, seen with gGeoManager->SetVisLevel(2)
+@@ -2828,7 +2828,7 @@
+       trd_I_vert_vol1->AddNode(trd_I_vert2, 3, ty03);
+ 
+       // close gap to horizontal z-bars
+-      TGeoBBox* trd_I_vert3_keep  = new TGeoBBox("", (I_width-I_thick)/2. /2., I_height /2. - I_thick, I_thick /2.);
++      TGeoBBox* trd_I_vert3_keep  = new TGeoBBox("trd_I_vert3_keep", (I_width-I_thick)/2. /2., I_height /2. - I_thick, I_thick /2.);
+       TGeoVolume* trd_I_vert3     = new TGeoVolume("trd_I_y23", trd_I_vert3_keep, aluminiumVolMed);
+       trd_I_vert3->SetLineColor(kGreen);
+       TGeoTranslation *ty04 = new TGeoTranslation("ty04",  (I_thick/2. + (I_width-I_thick)/2./2.), 0., -(BeamHeight + (AperY[1]+I_height) - I_width) /2.);          // top
+@@ -2851,9 +2851,9 @@
+   // station 3
+   if (ShowLayer[8])  // if geometry contains layer 9 (1st layer of station 3)
+     {
+-      TGeoBBox* trd_I_vert1_keep  = new TGeoBBox("", I_thick /2., I_height /2. - I_thick, (BeamHeight + (AperY[2]+I_height) ) /2.);
++      TGeoBBox* trd_I_vert1_keep  = new TGeoBBox("trd_I_vert1_keep", I_thick /2., I_height /2. - I_thick, (BeamHeight + (AperY[2]+I_height) ) /2.);
+       TGeoVolume* trd_I_vert1     = new TGeoVolume("trd_I_y31", trd_I_vert1_keep, aluminiumVolMed);
+-      TGeoBBox* trd_I_vert2_keep  = new TGeoBBox("", I_width /2.,            I_thick /2., (BeamHeight + (AperY[2]+I_height) ) /2.);
++      TGeoBBox* trd_I_vert2_keep  = new TGeoBBox("trd_I_vert2_keep", I_width /2.,            I_thick /2., (BeamHeight + (AperY[2]+I_height) ) /2.);
+       TGeoVolume* trd_I_vert2     = new TGeoVolume("trd_I_y32", trd_I_vert2_keep, aluminiumVolMed);
+ 
+       trd_I_vert1->SetLineColor(kGreen);
+@@ -2863,7 +2863,7 @@
+       TGeoTranslation *ty02 = new TGeoTranslation("ty02", 0.,  (I_height-I_thick) /2., 0.);
+       TGeoTranslation *ty03 = new TGeoTranslation("ty03", 0., -(I_height-I_thick) /2., 0.);
+     
+-      TGeoBBox* trd_I_vert_vol1_keep = new TGeoBBox("", I_width /2., I_height /2., (BeamHeight + (AperY[2]+I_height) ) /2.);
++      TGeoBBox* trd_I_vert_vol1_keep = new TGeoBBox("trd_I_vert_vol1_keep", I_width /2., I_height /2., (BeamHeight + (AperY[2]+I_height) ) /2.);
+       TGeoVolume* trd_I_vert_vol1    = new TGeoVolume("trd_I_y30", trd_I_vert_vol1_keep, keepVolMed);
+ 
+       // set green color for keeping volume of I profile, seen with gGeoManager->SetVisLevel(2)
+@@ -2875,7 +2875,7 @@
+       trd_I_vert_vol1->AddNode(trd_I_vert2, 3, ty03);
+ 
+       // close gap to horizontal z-bars
+-      TGeoBBox* trd_I_vert3_keep  = new TGeoBBox("", (I_width-I_thick)/2. /2., I_height /2. - I_thick, I_thick /2.);
++      TGeoBBox* trd_I_vert3_keep  = new TGeoBBox("trd_I_vert3_keep", (I_width-I_thick)/2. /2., I_height /2. - I_thick, I_thick /2.);
+       TGeoVolume* trd_I_vert3     = new TGeoVolume("trd_I_y33", trd_I_vert3_keep, aluminiumVolMed);
+       trd_I_vert3->SetLineColor(kGreen);
+       TGeoTranslation *ty04 = new TGeoTranslation("ty04",  (I_thick/2. + (I_width-I_thick)/2./2.), 0., -(BeamHeight + (AperY[2]+I_height) - I_width) /2.);          // top
+@@ -2903,9 +2903,9 @@
+   // station 1
+   if (ShowLayer[0])  // if geometry contains layer 1 (1st layer of station 1)
+     {
+-      TGeoBBox* trd_I_hori1_keep  = new TGeoBBox("", I_thick /2., I_height /2. - I_thick, AperX[0]);
++      TGeoBBox* trd_I_hori1_keep  = new TGeoBBox("trd_I_hori1_keep", I_thick /2., I_height /2. - I_thick, AperX[0]);
+       TGeoVolume* trd_I_hori1     = new TGeoVolume("trd_I_x11", trd_I_hori1_keep, aluminiumVolMed);
+-      TGeoBBox* trd_I_hori2_keep  = new TGeoBBox("", I_width /2.,            I_thick /2., AperX[0]);
++      TGeoBBox* trd_I_hori2_keep  = new TGeoBBox("trd_I_hori2_keep", I_width /2.,            I_thick /2., AperX[0]);
+       TGeoVolume* trd_I_hori2     = new TGeoVolume("trd_I_x12", trd_I_hori2_keep, aluminiumVolMed);
+ 
+       trd_I_hori1->SetLineColor(kRed);  // Yellow);
+@@ -2915,7 +2915,7 @@
+       TGeoTranslation *tx02 = new TGeoTranslation("tx02", 0.,  (I_height-I_thick) /2., 0.);
+       TGeoTranslation *tx03 = new TGeoTranslation("tx03", 0., -(I_height-I_thick) /2., 0.);
+     
+-      TGeoBBox* trd_I_hori_vol1_keep = new TGeoBBox("", I_width /2., I_height /2., AperX[0]);
++      TGeoBBox* trd_I_hori_vol1_keep = new TGeoBBox("trd_I_hori_vol1_keep", I_width /2., I_height /2., AperX[0]);
+       TGeoVolume* trd_I_hori_vol1    = new TGeoVolume("trd_I_x10", trd_I_hori_vol1_keep, keepVolMed);
+ 
+       // set red color for keeping volume of I profile, seen with gGeoManager->SetVisLevel(2)
+@@ -2939,9 +2939,9 @@
+   // station 2
+   if (ShowLayer[4])  // if geometry contains layer 5 (1st layer of station 2)
+     {
+-      TGeoBBox* trd_I_hori1_keep  = new TGeoBBox("", I_thick /2., I_height /2. - I_thick, AperX[1]);
++      TGeoBBox* trd_I_hori1_keep  = new TGeoBBox("trd_I_hori1_keep", I_thick /2., I_height /2. - I_thick, AperX[1]);
+       TGeoVolume* trd_I_hori1     = new TGeoVolume("trd_I_x21", trd_I_hori1_keep, aluminiumVolMed);
+-      TGeoBBox* trd_I_hori2_keep  = new TGeoBBox("", I_width /2.,            I_thick /2., AperX[1]);
++      TGeoBBox* trd_I_hori2_keep  = new TGeoBBox("trd_I_hori2_keep", I_width /2.,            I_thick /2., AperX[1]);
+       TGeoVolume* trd_I_hori2     = new TGeoVolume("trd_I_x22", trd_I_hori2_keep, aluminiumVolMed);
+ 
+       trd_I_hori1->SetLineColor(kRed);
+@@ -2951,7 +2951,7 @@
+       TGeoTranslation *tx02 = new TGeoTranslation("tx02", 0.,  (I_height-I_thick) /2., 0.);
+       TGeoTranslation *tx03 = new TGeoTranslation("tx03", 0., -(I_height-I_thick) /2., 0.);
+     
+-      TGeoBBox* trd_I_hori_vol1_keep = new TGeoBBox("", I_width /2., I_height /2., AperX[1]);
++      TGeoBBox* trd_I_hori_vol1_keep = new TGeoBBox("trd_I_hori_vol1_keep", I_width /2., I_height /2., AperX[1]);
+       TGeoVolume* trd_I_hori_vol1    = new TGeoVolume("trd_I_x20", trd_I_hori_vol1_keep, keepVolMed);
+ 
+       // set red color for keeping volume of I profile, seen with gGeoManager->SetVisLevel(2)
+@@ -2975,9 +2975,9 @@
+   // station 3
+   if (ShowLayer[8])  // if geometry contains layer 9 (1st layer of station 3)
+     {
+-      TGeoBBox* trd_I_hori1_keep  = new TGeoBBox("", I_thick /2., I_height /2. - I_thick, AperX[2]);
++      TGeoBBox* trd_I_hori1_keep  = new TGeoBBox("trd_I_hori1_keep", I_thick /2., I_height /2. - I_thick, AperX[2]);
+       TGeoVolume* trd_I_hori1     = new TGeoVolume("trd_I_x31", trd_I_hori1_keep, aluminiumVolMed);
+-      TGeoBBox* trd_I_hori2_keep  = new TGeoBBox("", I_width /2.,            I_thick /2., AperX[2]);
++      TGeoBBox* trd_I_hori2_keep  = new TGeoBBox("trd_I_hori2_keep", I_width /2.,            I_thick /2., AperX[2]);
+       TGeoVolume* trd_I_hori2     = new TGeoVolume("trd_I_x32", trd_I_hori2_keep, aluminiumVolMed);
+ 
+       trd_I_hori1->SetLineColor(kRed);
+@@ -2987,7 +2987,7 @@
+       TGeoTranslation *tx02 = new TGeoTranslation("tx02", 0.,  (I_height-I_thick) /2., 0.);
+       TGeoTranslation *tx03 = new TGeoTranslation("tx03", 0., -(I_height-I_thick) /2., 0.);
+     
+-      TGeoBBox* trd_I_hori_vol1_keep = new TGeoBBox("", I_width /2., I_height /2., AperX[2]);
++      TGeoBBox* trd_I_hori_vol1_keep = new TGeoBBox("trd_I_hori_vol1_keep", I_width /2., I_height /2., AperX[2]);
+       TGeoVolume* trd_I_hori_vol1    = new TGeoVolume("trd_I_x30", trd_I_hori_vol1_keep, keepVolMed);
+ 
+       // set red color for keeping volume of I profile, seen with gGeoManager->SetVisLevel(2)
+@@ -3016,9 +3016,9 @@
+   // station 1
+   if (ShowLayer[0])  // if geometry contains layer 1 (1st layer of station 1)
+     {
+-      TGeoBBox* trd_I_slope1_keep  = new TGeoBBox("", I_thick /2., I_height /2. - I_thick, (PilPosZ[1]-PilPosZ[0]-I_width)/2.);
++      TGeoBBox* trd_I_slope1_keep  = new TGeoBBox("trd_I_slope1_keep", I_thick /2., I_height /2. - I_thick, (PilPosZ[1]-PilPosZ[0]-I_width)/2.);
+       TGeoVolume* trd_I_slope1     = new TGeoVolume("trd_I_z11", trd_I_slope1_keep, aluminiumVolMed);
+-      TGeoBBox* trd_I_slope2_keep  = new TGeoBBox("", I_width /2.,            I_thick /2., (PilPosZ[1]-PilPosZ[0]-I_width)/2.);
++      TGeoBBox* trd_I_slope2_keep  = new TGeoBBox("trd_I_slope2_keep", I_width /2.,            I_thick /2., (PilPosZ[1]-PilPosZ[0]-I_width)/2.);
+       TGeoVolume* trd_I_slope2     = new TGeoVolume("trd_I_z12", trd_I_slope2_keep, aluminiumVolMed);
+ 
+       trd_I_slope1->SetLineColor(kYellow);
+@@ -3028,7 +3028,7 @@
+       TGeoTranslation *tz02 = new TGeoTranslation("tz02", 0.,  (I_height-I_thick) /2., 0.);
+       TGeoTranslation *tz03 = new TGeoTranslation("tz03", 0., -(I_height-I_thick) /2., 0.);
+     
+-      TGeoBBox* trd_I_slope_vol1_keep = new TGeoBBox("", I_width /2., I_height /2., (PilPosZ[1]-PilPosZ[0]-I_width)/2.);
++      TGeoBBox* trd_I_slope_vol1_keep = new TGeoBBox("trd_I_slope_vol1_keep", I_width /2., I_height /2., (PilPosZ[1]-PilPosZ[0]-I_width)/2.);
+       TGeoVolume* trd_I_slope_vol1    = new TGeoVolume("trd_I_z10", trd_I_slope_vol1_keep, keepVolMed);
+ 
+       // set yellow color for keeping volume of I profile, seen with gGeoManager->SetVisLevel(2)
+@@ -3054,9 +3054,9 @@
+   // station 2
+   if (ShowLayer[4])  // if geometry contains layer 5 (1st layer of station 2)
+     {
+-      TGeoBBox* trd_I_slope1_keep  = new TGeoBBox("", I_thick /2., I_height /2. - I_thick, (PilPosZ[3]-PilPosZ[2]-I_width)/2.);
++      TGeoBBox* trd_I_slope1_keep  = new TGeoBBox("trd_I_slope1_keep", I_thick /2., I_height /2. - I_thick, (PilPosZ[3]-PilPosZ[2]-I_width)/2.);
+       TGeoVolume* trd_I_slope1     = new TGeoVolume("trd_I_z21", trd_I_slope1_keep, aluminiumVolMed);
+-      TGeoBBox* trd_I_slope2_keep  = new TGeoBBox("", I_width /2.,            I_thick /2., (PilPosZ[3]-PilPosZ[2]-I_width)/2.);
++      TGeoBBox* trd_I_slope2_keep  = new TGeoBBox("trd_I_slope2_keep", I_width /2.,            I_thick /2., (PilPosZ[3]-PilPosZ[2]-I_width)/2.);
+       TGeoVolume* trd_I_slope2     = new TGeoVolume("trd_I_z22", trd_I_slope2_keep, aluminiumVolMed);
+ 
+       trd_I_slope1->SetLineColor(kYellow);
+@@ -3066,7 +3066,7 @@
+       TGeoTranslation *tz02 = new TGeoTranslation("tz02", 0.,  (I_height-I_thick) /2., 0.);
+       TGeoTranslation *tz03 = new TGeoTranslation("tz03", 0., -(I_height-I_thick) /2., 0.);
+     
+-      TGeoBBox* trd_I_slope_vol1_keep = new TGeoBBox("", I_width /2., I_height /2., (PilPosZ[3]-PilPosZ[2]-I_width)/2.);
++      TGeoBBox* trd_I_slope_vol1_keep = new TGeoBBox("trd_I_slope_vol1_keep", I_width /2., I_height /2., (PilPosZ[3]-PilPosZ[2]-I_width)/2.);
+       TGeoVolume* trd_I_slope_vol1    = new TGeoVolume("trd_I_z20", trd_I_slope_vol1_keep, keepVolMed);
+ 
+       // set yellow color for keeping volume of I profile, seen with gGeoManager->SetVisLevel(2)
+@@ -3092,9 +3092,9 @@
+   // station 3
+   if (ShowLayer[8])  // if geometry contains layer 9 (1st layer of station 3)
+     {
+-      TGeoBBox* trd_I_slope1_keep  = new TGeoBBox("", I_thick /2., I_height /2. - I_thick, (PilPosZ[5]-PilPosZ[4]-I_width)/2.);
++      TGeoBBox* trd_I_slope1_keep  = new TGeoBBox("trd_I_slope1_keep", I_thick /2., I_height /2. - I_thick, (PilPosZ[5]-PilPosZ[4]-I_width)/2.);
+       TGeoVolume* trd_I_slope1     = new TGeoVolume("trd_I_z31", trd_I_slope1_keep, aluminiumVolMed);
+-      TGeoBBox* trd_I_slope2_keep  = new TGeoBBox("", I_width /2.,            I_thick /2., (PilPosZ[5]-PilPosZ[4]-I_width)/2.);
++      TGeoBBox* trd_I_slope2_keep  = new TGeoBBox("trd_I_slope2_keep", I_width /2.,            I_thick /2., (PilPosZ[5]-PilPosZ[4]-I_width)/2.);
+       TGeoVolume* trd_I_slope2     = new TGeoVolume("trd_I_z32", trd_I_slope2_keep, aluminiumVolMed);
+ 
+       trd_I_slope1->SetLineColor(kYellow);
+@@ -3104,7 +3104,7 @@
+       TGeoTranslation *tz02 = new TGeoTranslation("tz02", 0.,  (I_height-I_thick) /2., 0.);
+       TGeoTranslation *tz03 = new TGeoTranslation("tz03", 0., -(I_height-I_thick) /2., 0.);
+     
+-      TGeoBBox* trd_I_slope_vol1_keep = new TGeoBBox("", I_width /2., I_height /2., (PilPosZ[5]-PilPosZ[4]-I_width)/2.);
++      TGeoBBox* trd_I_slope_vol1_keep = new TGeoBBox("trd_I_slope_vol1_keep", I_width /2., I_height /2., (PilPosZ[5]-PilPosZ[4]-I_width)/2.);
+       TGeoVolume* trd_I_slope_vol1    = new TGeoVolume("trd_I_z30", trd_I_slope_vol1_keep, keepVolMed);
+ 
+       // set yellow color for keeping volume of I profile, seen with gGeoManager->SetVisLevel(2)

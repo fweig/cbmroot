@@ -1,0 +1,31 @@
+[CbmMcbm2018TofPar]
+//----------------------------------------------------------------------------
+NrOfGdpbs: Int_t 1
+GdpbIdArray: Int_t \
+0x4ef6
+NrOfFeesPerGdpb: Int_t 30
+NrOfGet4PerFee: Int_t 8
+NrOfChannelsPerGet4: Int_t 4
+NrOfGbtx: Int_t 6
+NrOfModule: Int_t 6
+NrOfRpc: Int_t \
+  1  1  1  1  1  1
+RpcType: Int_t \
+  5  5  5  5  5  5
+RpcSide: Int_t \
+  0  1  2  3  4  5
+ModuleId: Int_t \
+  0  0  0  0  0  0
+NbMsTot: Int_t 100
+NbMsOverlap: Int_t 1
+SizeMsInNs: Double_t 102400.0
+//SizeMsInNs: Double_t 1638400
+StarTriggerDeadtime:  Double_t \
+ 1000.0  1000.0  1000.0  1000.0  1000.0
+StarTriggerDelay: Double_t \
+ 2000.0  2000.0  2000.0  2000.0  2000.0
+//  2000.0  2000.0  2000.0  2000.0  2000.0
+//-23000.0  -23000.0  -23000.0  -23000.0  -23000.0
+StarTriggerWinSize: Double_t \
+ 2000.0  2000.0  2000.0  2000.0  2000.0
+TsDeadtimePeriod: Double_t 62.5

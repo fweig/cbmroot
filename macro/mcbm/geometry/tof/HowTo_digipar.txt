@@ -1,0 +1,18 @@
+#
+##   Howto generate digi.par files for mTOF
+#
+
+# November 2017
+
+# by Pierre and David
+
+1) Create the geo root file vXXX_mcbm
+2) Place it in the trunk/geometry/tof folder
+3) Howto create the digi.par file:
+cd trunk/macro/tof/geometry
+root -l -q 'make_geofile.C("tof_vXXi_mcbm")'
+root -l 'create_digipar.C("tof_vXXi_mcbm")'
+4) Copy the digi.par in parameters/tof
+cp tof_vXXi_mcbm.digi.par trunk/parameters/tof
+5) cd parameters/tof
+ln -s tof_v18e_mcbm.digibdf.par tof_v18i_mcbm.digibdf.par

@@ -1,0 +1,4 @@
+cd /home/aghoehne/Documents/CbmRoot/build/
+make -j 3
+cd -
+root -l run_ronchi.C

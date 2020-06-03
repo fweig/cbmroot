@@ -1,0 +1,28 @@
+##############################################################################
+# Class:   CbmCern2017UnpackParSts
+# Context: For STSXYTER testing
+##############################################################################
+[CbmCern2017UnpackParSts]
+//----------------------------------------------------------------------------
+NrOfDpbs: Int_t 1
+// Array size has to match NrOfDpbs
+DbpIdArray: Int_t \
+  0x55ef
+NbElinksPerDpb: Int_t 30
+NbStsXyters: Int_t 6
+NbChanPerAsic: Int_t 128
+// Array size has to match NrOfDpbs * NbElinksPerDpb
+// Fields have to be smaller than NbStsXyters (index)
+// Unused eLinks should be indicated by 0xFFFF
+ElinkToAsicMap: Int_t \
+ 0x0000 0x0000 0x0000 0x0000 0x0000 \
+ 0x0001 0x0001 0x0001 0x0001 0x0001 \
+ 0x0002 0x0002 0x0002 0x0002 0x0002 \
+ 0x0003 0x0003 0x0003 0x0003 0x0003 \
+ 0x0004 0x0004 0x0004 0x0004 0x0004 \
+ 0x0005 0x0005 0x0005 0x0005 0x0005
+AsicIdxSts1N: Int_t 0
+AsicIdxSts1P: Int_t 1
+AsicIdxSts2N: Int_t 4
+AsicIdxSts2P: Int_t 5
+######################

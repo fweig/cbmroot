@@ -1,0 +1,43 @@
+*** create_bpipe_geometry_v14l.C	2017-11-10 13:59:26.917964459 +0100
+--- create_bpipe_geometry_v14l.C6	2017-11-10 13:59:02.673605693 +0100
+***************
+*** 27,32 ****
+--- 27,33 ----
+  #include <iostream>
+  #include "TGeoManager.h"
+  
++ #include "TGeoPcon.h"
+  
+  using namespace std;
+  
+***************
+*** 46,51 ****
+--- 47,57 ----
+  TString pipeName = "pipe_v14l";
+  // ----------------------------------------------------------------------------
+  
++ TGeoVolume* MakePipe(Int_t iPart, Int_t nSects, Double_t* z, Double_t* rin,
++ 		     Double_t* rout, TGeoMedium* medium, fstream* infoFile);
++ 
++ TGeoVolume* MakeVacuum(Int_t iPart, Int_t nSects, Double_t* z, Double_t* rin,
++ 		       Double_t* rout, TGeoMedium* medium, fstream* infoFile);
+  
+  // ============================================================================
+  // ======                         Main function                           =====
+***************
+*** 124,137 ****
+  
+    // --------------------------------------------------------------------------
+  
+-   // -------------  Load the necessary FairRoot libraries   -------------------
+-   gROOT->LoadMacro("$VMCWORKDIR/gconfig/basiclibs.C");
+-   basiclibs();
+-   gSystem->Load("libGeoBase");
+-   gSystem->Load("libParBase");
+-   gSystem->Load("libBase");
+-   // --------------------------------------------------------------------------
+- 
+  
+    // -------   Open info file   -----------------------------------------------
+    TString infoFileName = rootFileName;
+--- 130,135 ----

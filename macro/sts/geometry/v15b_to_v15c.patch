@@ -1,0 +1,70 @@
+*** create_stsgeo_v15b.C	2015-11-04 05:10:07.995894893 +0100
+--- create_stsgeo_v15c.C	2015-11-04 15:00:44.287613974 +0100
+***************
+*** 1,7 ****
+  /******************************************************************************
+   ** Creation of STS geometry in ROOT format (TGeo).
+   **
+!  ** @file create_stsgeo_v15b.C
+   ** @author Volker Friese <v.friese@gsi.de>
+   ** @since 15 June 2012
+   ** @date 09.05.2014
+--- 1,7 ----
+  /******************************************************************************
+   ** Creation of STS geometry in ROOT format (TGeo).
+   **
+!  ** @file create_stsgeo_v15c.C
+   ** @author Volker Friese <v.friese@gsi.de>
+   ** @since 15 June 2012
+   ** @date 09.05.2014
+***************
+*** 149,155 ****
+  const Bool_t   gkConstructCables = kTRUE;
+  
+  // ---> Switch to construct / not to construct frames
+! const Bool_t   gkConstructCones       = kTRUE;  // kFALSE;  // switch this false for v15a
+  const Bool_t   gkConstructFrames      = kTRUE;  // kFALSE;  // switch this false for v15a
+  const Bool_t   gkConstructSmallFrames = kTRUE;  // kFALSE;
+  const Bool_t   gkCylindricalFrames    = kTRUE;  // kFALSE;
+--- 149,155 ----
+  const Bool_t   gkConstructCables = kTRUE;
+  
+  // ---> Switch to construct / not to construct frames
+! const Bool_t   gkConstructCones       = kFALSE;  // kFALSE;  // switch this false for v15a
+  const Bool_t   gkConstructFrames      = kTRUE;  // kFALSE;  // switch this false for v15a
+  const Bool_t   gkConstructSmallFrames = kTRUE;  // kFALSE;
+  const Bool_t   gkCylindricalFrames    = kTRUE;  // kFALSE;
+***************
+*** 197,203 ****
+  // ======                         Main function                           =====
+  // ============================================================================
+  
+! void create_stsgeo_v15b(const char* geoTag="v15b")
+  {
+  
+    // -------   Geometry file name (output)   ----------------------------------
+--- 197,203 ----
+  // ======                         Main function                           =====
+  // ============================================================================
+  
+! void create_stsgeo_v15c(const char* geoTag="v15c")
+  {
+  
+    // -------   Geometry file name (output)   ----------------------------------
+***************
+*** 211,217 ****
+    infoFileName.ReplaceAll("root", "info");
+    fstream infoFile;
+    infoFile.open(infoFileName.Data(), fstream::out);
+!   infoFile << "STS geometry created with create_stsgeo_v15b.C" << endl << endl;
+    infoFile << "Global variables: " << endl;
+    infoFile << "Sensor thickness = " << gkSensorThickness << " cm" << endl;
+    infoFile << "Vertical gap in sensor chain = " 
+--- 211,217 ----
+    infoFileName.ReplaceAll("root", "info");
+    fstream infoFile;
+    infoFile.open(infoFileName.Data(), fstream::out);
+!   infoFile << "STS geometry created with create_stsgeo_v15c.C" << endl << endl;
+    infoFile << "Global variables: " << endl;
+    infoFile << "Sensor thickness = " << gkSensorThickness << " cm" << endl;
+    infoFile << "Vertical gap in sensor chain = " 

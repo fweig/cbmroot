@@ -1,0 +1,44 @@
+set(INCLUDE_DIRECTORIES
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  ${CBMDATA_DIR}
+  ${CBMDATA_DIR}/global
+  ${CBMDATA_DIR}/base
+  ${CBMDATA_DIR}/psd
+  ${CBMDATA_DIR}/trd
+  ${CBMDATA_DIR}/tof
+  ${CBMDATA_DIR}/sts
+
+  ${CBMBASE_DIR}
+  ${CBMBASE_DIR}/draw
+  ${CBMBASE_DIR}/utils
+  ${CBMBASE_DIR}/report
+)
+
+include_directories(${INCLUDE_DIRECTORIES})
+
+set(SYSTEM_INCLUDE_DIRECTORIES
+  ${BASE_INCLUDE_DIRECTORIES} 
+)
+
+include_directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
+
+set(LINK_DIRECTORIES
+  ${ROOT_LIBRARY_DIR}
+  ${FAIRROOT_LIBRARY_DIR}
+  ${Boost_LIBRARY_DIRS}
+)
+ 
+link_directories(${LINK_DIRECTORIES})
+
+set(SRCS
+  CbmPsdMCbmQaReal.cxx
+)
+
+set(LINKDEF CbmPsdAnaLinkDef.h)
+set(LIBRARY_NAME CbmPsdAna)
+set(DEPENDENCIES
+    CbmData CbmBase Base 
+)
+
+GENERATE_LIBRARY()
+

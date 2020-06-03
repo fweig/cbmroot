@@ -1,0 +1,146 @@
+void run_qa(
+        const string& mcFile = "/Users/slebedev/Development/cbm/data/sim/rich/reco/mc.00000.root",
+        const string& parFile = "/Users/slebedev/Development/cbm/data/sim/rich/reco/param.00000.root",
+        const string& digiFile = "/Users/slebedev/Development/cbm/data/sim/rich/reco/digi.00000.root",
+        const string& recoFile = "/Users/slebedev/Development/cbm/data/sim/rich/reco/reco.00000.root",
+        const string& qaFile = "/Users/slebedev/Development/cbm/data/sim/rich/reco/qa.00000.root",
+        const string& geoSetup = "sis100_electron",
+        const string& resultDir = "results_recoqa_newqa/",
+        int nEvents = 100
+)
+{
+    TTree::SetMaxTreeSize(90000000000);
+
+    TString myName = "run_reco";
+    TString srcDir = gSystem->Getenv("VMCWORKDIR");
+
+    remove(qaFile.c_str());
+
+    TString setupFile = srcDir + "/geometry/setup/setup_" + geoSetup + ".C";
+    TString setupFunct = "setup_" + geoSetup + "()";
+    gROOT->LoadMacro(setupFile);
+    gROOT->ProcessLine(setupFunct);
+
+
+    std::cout << std::endl << "-I- " << myName << ": Defining parameter files " << std::endl;
+    TList *parFileList = new TList();
+    TString geoTag;
+
+    // - TRD digitisation parameters
+    if ( CbmSetup::Instance()->GetGeoTag(kTrd, geoTag) ) {
+        const Char_t *npar[4]={"asic", "digi", "gas", "gain"};
+        TObjString* trdParFile(NULL);
+        for(Int_t i(0); i<4; i++){
+            trdParFile = new TObjString(srcDir + "/parameters/trd/trd_" + geoTag + "."+npar[i]+".par");
+            parFileList->Add(trdParFile);
+            std::cout << "-I- " << myName << ": Using parameter file " << trdParFile->GetString() << std::endl;
+        }
+    }
+
+    // - TOF digitisation parameters
+    if ( CbmSetup::Instance()->GetGeoTag(kTof, geoTag) ) {
+        TObjString* tofFile = new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digi.par");
+        parFileList->Add(tofFile);
+        std::cout << "-I- " << myName << ": Using parameter file " << tofFile->GetString() << std::endl;
+        TObjString* tofBdfFile = new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
+        parFileList->Add(tofBdfFile);
+        std::cout << "-I- " << myName << ": Using parameter file " << tofBdfFile->GetString() << std::endl;
+    }
+
+    TStopwatch timer;
+    timer.Start();
+    gDebug = 0;
+
+
+    FairRunAna *run = new FairRunAna();
+    FairFileSource* inputSource = new FairFileSource(digiFile.c_str());
+    inputSource->AddFriend(mcFile.c_str());
+    inputSource->AddFriend(recoFile.c_str());
+    run->SetSource(inputSource);
+    run->SetOutputFile(qaFile.c_str());
+    run->SetGenerateRunInfo(kTRUE);
+
+
+    FairLogger::GetLogger()->SetLogScreenLevel("INFO");
+    FairLogger::GetLogger()->SetLogVerbosityLevel("LOW");
+
+
+    CbmMCDataManager* mcManager=new CbmMCDataManager("MCManager", 1);
+    mcManager->AddFile(mcFile.c_str());
+    run->AddTask(mcManager);
+
+    //    // RICH reco QA
+    CbmRichRecoQa* richRecoQa = new CbmRichRecoQa();
+    richRecoQa->SetOutputDir(resultDir);
+     run->AddTask(richRecoQa);
+
+    //    // Reconstruction Qa
+    CbmLitTrackingQa* trackingQa = new CbmLitTrackingQa();
+    trackingQa->SetMinNofPointsSts(4);
+    trackingQa->SetUseConsecutivePointsInSts(true);
+    trackingQa->SetMinNofPointsTrd(2);
+    trackingQa->SetMinNofPointsMuch(10);
+    trackingQa->SetMinNofPointsTof(1);
+    trackingQa->SetQuota(0.7);
+    trackingQa->SetMinNofHitsTrd(2);
+    trackingQa->SetMinNofHitsMuch(10);
+    trackingQa->SetVerbose(0);
+    trackingQa->SetMinNofHitsRich(7);
+    trackingQa->SetQuotaRich(0.6);
+    trackingQa->SetOutputDir(resultDir);
+    trackingQa->SetPRange(12, 0., 6.);
+    // trackingQa->SetTrdAnnCut(trdAnnCut);
+    std::vector<std::string> trackCat, richCat;
+    trackCat.push_back("All");
+    trackCat.push_back("Electron");
+    richCat.push_back("Electron");
+    richCat.push_back("ElectronReference");
+    trackingQa->SetTrackCategories(trackCat);
+    trackingQa->SetRingCategories(richCat);
+   // run->AddTask(trackingQa);
+
+    CbmLitFitQa* fitQa = new CbmLitFitQa();
+    fitQa->SetMvdMinNofHits(0);
+    fitQa->SetStsMinNofHits(6);
+    fitQa->SetMuchMinNofHits(10);
+    fitQa->SetTrdMinNofHits(2);
+    fitQa->SetOutputDir(resultDir);
+    // run->AddTask(fitQa);
+
+    CbmLitClusteringQa* clusteringQa = new CbmLitClusteringQa();
+    clusteringQa->SetOutputDir(resultDir);
+    // run->AddTask(clusteringQa);
+
+    CbmLitTofQa* tofQa = new CbmLitTofQa();
+    tofQa->SetOutputDir(std::string(resultDir));
+    // run->AddTask(tofQa);
+
+    std::cout << std::endl << std::endl << "-I- " << myName << ": Set runtime DB" << std::endl;
+    FairRuntimeDb* rtdb = run->GetRuntimeDb();
+    FairParRootFileIo* parIo1 = new FairParRootFileIo();
+    FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
+    parIo1->open(parFile.c_str(),"UPDATE");
+    rtdb->setFirstInput(parIo1);
+    if ( ! parFileList->IsEmpty() ) {
+        parIo2->open(parFileList, "in");
+        rtdb->setSecondInput(parIo2);
+    }
+
+    std::cout << std::endl << "-I- " << myName << ": Initialise run" << std::endl;
+    run->Init();
+
+    rtdb->setOutput(parIo1);
+    rtdb->saveOutput();
+    rtdb->print();
+
+    std::cout << "-I- " << myName << ": Starting run" << std::endl;
+    run->Run(0,nEvents);
+
+    timer.Stop();
+    std::cout << std::endl << std::endl;
+    std::cout << "Macro finished succesfully." << std::endl;
+    std::cout << "Output file is " << recoFile << std::endl;
+    std::cout << "Parameter file is " << parFile << std::endl;
+    std::cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime() << " s" << std::endl;
+    std::cout << std::endl << "Test passed" << std::endl << "All ok" << std::endl;
+}

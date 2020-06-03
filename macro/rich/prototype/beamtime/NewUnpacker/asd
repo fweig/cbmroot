@@ -1,0 +1,14 @@
+#!/bin/bash
+
+cd ~/cbmroot/build_trunk/
+make -j4
+cd -
+
+#exit
+
+rm -f output/*
+rm -f calib/*
+rm -f calibration.root
+root -l -b -q "run_analysis_single.C(kTRUE)" > output/out2.txt
+rm -f output/testtest.root
+root -l -b -q "run_analysis_single.C(kFALSE)" > output/out.txt

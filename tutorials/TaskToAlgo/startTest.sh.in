@@ -1,0 +1,36 @@
+#!/bin/bash
+if [ -e $FAIRROOTPATH/bin/shmmonitor ]; then
+  $FAIRROOTPATH/bin/shmmonitor --cleanup
+fi
+
+if [ -z "$1" ]; then 
+  echo "You must call the script with one parameter which is the location of a MC file with StsPoint data inside"
+  exit 1
+fi
+
+_filename="$1"
+_paramfile=@VMCWORKDIR@/parameters/trd/trd_v17n_1e.gas.par
+
+SAMPLER="MCPointSource"
+SAMPLER+=" --id sampler1"
+SAMPLER+=" --max-events 10"
+SAMPLER+=" --filename $_filename"
+SAMPLER+=" --transport shmem"
+SAMPLER+=" --channel-config name=StsPoint,type=push,method=bind,address=tcp://127.0.0.1:5555"
+xterm -geometry 80x23+0+0 -hold -e /opt/cbmroot/build/trunk_fr_v18.2.0_fs_jun19p1/bin/MQ/source/$SAMPLER &
+
+SINK="StsHitProducerIdeal"
+SINK+=" --id sink1"
+SINK+=" --channel-config name=StsPoint,type=pull,method=connect,address=tcp://127.0.0.1:5555"
+SINK+=" --channel-config name=parameters,type=req,method=connect,transport=zeromq,address=tcp://127.0.0.1:5005"
+SINK+=" --transport shmem"
+xterm -geometry 80x23+500+0 -hold -e /opt/cbmroot/build/trunk_fr_v18.2.0_fs_jun19p1/bin/MQ/sts/$SINK &
+
+PARAMETERSERVER="parmq-server"
+PARAMETERSERVER+=" --id parmq-server"
+PARAMETERSERVER+=" --channel-name parameters"
+PARAMETERSERVER+=" --channel-config name=parameters,type=rep,method=bind,transport=zeromq,address=tcp://127.0.0.1:5005"
+PARAMETERSERVER+=" --first-input-name $_paramfile"
+PARAMETERSERVER+=" --first-input-type ASCII"
+PARAMETERSERVER+=" --libs-to-load=CbmTrd"
+xterm -geometry 80x23+1000+0 -hold -e /opt/cbmroot/build/trunk_fr_v18.2.0_fs_jun19p1/bin/MQ/parmq/$PARAMETERSERVER &

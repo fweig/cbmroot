@@ -1,0 +1,178 @@
+// -----------------------------------------------------------------------------
+// -----                                                                   -----
+// -----                      CbmOffsetDigiTime                            -----
+// -----               Created 13.02.2020 by P.-A. Loizeau                 -----
+// -----                                                                   -----
+// -----------------------------------------------------------------------------
+
+/// CbmRoot (+externals) headers
+
+/// FairRoot headers
+#include "FairLogger.h"
+#include "FairRootManager.h"
+#include "FairRunOnline.h"
+
+/// Fairsoft (Root, Boost, ...) headers
+
+/// C/C++ headers
+
+// ---- Default constructor -------------------------------------------
+template< class TDigi >
+CbmOffsetDigiTime< TDigi >::CbmOffsetDigiTime( TString sDigiBranchName, TString sDigiCalBranchName, TString sDigiCalBranchDescr )
+  : FairTask("CbmOffsetDigiTime"),
+    fsDigiBranchName( sDigiBranchName ),
+    fsDigiBranchNameCal( sDigiCalBranchName ),
+    fsDigiBranchDescrCal( sDigiCalBranchDescr )
+{
+}
+
+// ---- Destructor ----------------------------------------------------
+template< class TDigi >
+CbmOffsetDigiTime< TDigi >::~CbmOffsetDigiTime()
+{
+   /*
+   if( nullptr != fvDigiIn )
+   {
+      fvDigiIn->clear();
+      delete fvDigiIn;
+   } // if( nullptr != fvDigiIn )
+   */
+   if( nullptr != fvDigiOut )
+   {
+      fvDigiOut->clear();
+      delete fvDigiOut;
+   } // if( nullptr != fvDigiOut )
+}
+
+// ----  Initialisation  ----------------------------------------------
+template< class TDigi >
+void CbmOffsetDigiTime< TDigi >::SetParContainers()
+{
+}
+
+// ---- Init ----------------------------------------------------------
+template< class TDigi >
+InitStatus CbmOffsetDigiTime< TDigi >::Init()
+{
+   /// Get a handle from the IO manager
+   FairRootManager* frm = FairRootManager::Instance();
+
+   /// Try to find a vector branch for the input
+   fvDigiIn = frm->InitObjectAs< std::vector< TDigi > const * >( fsDigiBranchName.Data() );
+
+   if( "" == fsDigiBranchNameCal )
+      fsDigiBranchNameCal = fsDigiBranchName + "Cal";
+
+   /// Check if the branch with a vector was found
+   if( nullptr == fvDigiIn )
+   {
+      /// Try to find a TClonesArray branch for the input if not vector found
+      fArrayDigiIn = static_cast< TClonesArray * >( frm->GetObject( fsDigiBranchName ) );
+      if( nullptr == fArrayDigiIn )
+      {
+         LOG(fatal) << "Failed recovering the input ector ";
+      } // if( nullptr == fArrayDigiIn )
+
+      /// Check first if output not already existing due to other unpacker!
+      fArrayDigiOut = static_cast< TClonesArray * >( frm->GetObject( fsDigiBranchNameCal ) );
+      if( nullptr == fArrayDigiOut )
+      {
+         /// No existing array => create it!
+//         fArrayDigiOut= new TClonesArray( TDigi::GetName(), 10);
+         if( nullptr == fArrayDigiOut )
+         {
+            LOG(fatal) << "Failed creating the output Digi TClonesarray ";
+         } //  if( nullptr == fArrayDigiOut )
+         frm->Register( fsDigiBranchName,
+                        ( "" == fsDigiBranchDescrCal ? fsDigiBranchNameCal : fsDigiBranchDescrCal),
+                        fArrayDigiOut, fbWriteOutput);
+      } // if( nullptr == fArrayDigiOut )
+   } // if( nullptr == fvDigiIn )
+      else
+      {
+         /// Check first if output not already existing due to other unpacker!
+         /// => Not working with FairRoot v18.2.x due to requirement of const qualifier!!!
+//         fvDigiOut = frm->InitObjectAs< std::vector< TDigi > * >( fsDigiBranchNameCal.Data() );
+
+         if( nullptr == fvDigiOut )
+         {
+            /// No existing array => create it!
+            fvDigiOut = new std::vector< TDigi >();
+            if( nullptr == fvDigiOut )
+            {
+               LOG(fatal) << "Failed creating the IO vector ";
+            } // if( nullptr == fvDigiOut )
+            frm->RegisterAny( fsDigiBranchName,
+//                              ( "" == fsDigiBranchDescrCal ? fsDigiBranchNameCal : fsDigiBranchDescrCal),
+                              fvDigiOut, fbWriteOutput);
+         } // if( nullptr == fvDigiOut )
+      } // else of if( nullptr == fvDigiIn )
+
+   fmitNextOffset = fmOffsets.begin();
+
+   return kSUCCESS;
+}
+
+// ---- ReInit  -------------------------------------------------------
+template< class TDigi >
+InitStatus CbmOffsetDigiTime< TDigi >::ReInit()
+{
+  return kSUCCESS;
+}
+
+// ---- Exec ----------------------------------------------------------
+template< class TDigi >
+void CbmOffsetDigiTime< TDigi >::Exec(Option_t* /*option*/)
+{
+   if( fmitNextOffset->first <= fulTsCounter )
+   {
+      fdCurrentOffset = fmitNextOffset->second;
+      fmitNextOffset++;
+   } // if( fmitNextOffset.first() <= fulTsCounter )
+
+   if( nullptr == fvDigiIn )
+   {
+      /// Clear TClonesArray before usage.
+      fArrayDigiOut->Delete();
+
+      /// TClonesArray operation
+      UInt_t uNbDigis = fArrayDigiIn->GetEntriesFast();
+      for( UInt_t uDigiIdx = 0; uDigiIdx < uNbDigis; ++uDigiIdx)
+      {
+         TDigi* pDigi = dynamic_cast< TDigi * >( fArrayDigiIn->At( uDigiIdx ) );
+
+         pDigi->SetTime( pDigi->GetTime() - fdCurrentOffset );
+
+         new( (*fArrayDigiOut)[ fArrayDigiOut->GetEntriesFast() ] ) TDigi( *pDigi ) ;
+      } // for( UInt_t uDigiIdx = 0; uDigiIdx < uNbDigis; ++uDigiIdx)
+   } // if( nullptr == fvDigiIn )
+   else
+   {
+      /// Clear vector before usage.
+      fvDigiOut->clear();
+
+      /// vector operation
+      UInt_t uNbDigis = fvDigiIn->size();
+      for( UInt_t uDigiIdx = 0; uDigiIdx < uNbDigis; ++uDigiIdx)
+      {
+         TDigi digi = (*fvDigiIn)[ uDigiIdx ];
+
+         /// Apply offset only if the set of addresses is empty or if the address is found
+         if( 0 == fsAddrToOffset.size() ||
+             fsAddrToOffset.end() != fsAddrToOffset.find( digi.GetAddress() ) )
+            digi.SetTime( digi.GetTime() - fdCurrentOffset );
+
+         fvDigiOut->push_back( digi );
+      } // for( UInt_t uDigiIdx = 0; uDigiIdx < uNbDigis; ++uDigiIdx)
+   } // else of if( nullptr == fvDigiIn )
+   fulTsCounter ++;
+}
+
+// ---- Finish --------------------------------------------------------
+template< class TDigi >
+void CbmOffsetDigiTime< TDigi >::Finish()
+{
+
+}
+
+//ClassImp(CbmOffsetDigiTime)

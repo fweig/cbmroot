@@ -1,0 +1,9 @@
+#!/bin/bash
+
+cd ../../../../../../BUILD/
+### cd ../../../../../../BUILD/rich/
+make install -j8
+cd -
+cd /lustre/nyx/cbm/users/jbendar/CBMINSTALL_Root5/share/cbmroot/macro/rich/position
+chmod +x run_position.sh position.sh
+cd -

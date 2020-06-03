@@ -1,0 +1,1683 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+
+<define>
+<position name="central" x="0" y="0" z="0" unit="mm"/>
+<rotation name="identity" x="0" y="0" z="0" unit="degree"/>
+<variable name="DEGtoRAD" value="1.74532925199433E-02"/>
+<variable name="Acceptance_angle" value="25"/>
+<variable name="Acceptance_scaling_factor" value="1.5"/>
+<variable name="RICH_length" value="1900"/>
+<variable name="RICH_height" value="5000"/>
+<variable name="RICH_width" value="5268"/>
+<variable name="RICH_entrance_vertical_gap" value="1800"/>
+<variable name="RICH_covering_thickness" value="5"/>
+<variable name="RICH_entrance_thickness" value="0.25"/>
+<variable name="RICH_exit_thickness" value="5"/>
+<variable name="RICH_addend_Z_size" value="200"/>
+<variable name="RICH_pipe_outer_radius_at_entrance" value="74.2"/>
+<variable name="RICH_pipe_thickness_at_entrance" value="1.48"/>
+<variable name="RICH_pipe_outer_radius_at_exit" value="161.6"/>
+<variable name="RICH_pipe_thickness_at_exit" value="3.2"/>
+<variable name="RICH_pipe_cyl_part_length" value="100"/>
+<variable name="RICH_pipe_flange_thickness" value="3"/>
+<variable name="RICH_mirror_radius" value="3000"/>
+<variable name="RICH_mirror_position" value="3500"/>
+_RICH_OPTIMIZATION_PARAMATERS_
+<variable name="RICH_camera_radius" value="1697"/>
+<variable name="RICH_mirror_phi_size" value="8.425"/>
+<variable name="RICH_mirror_phi_step" value="8.5"/>
+<variable name="RICH_mirror_theta_gap" value="0.0745"/>
+<variable name="RICH_pixel_size_middle" value="6"/>
+<variable name="RICH_pixel_size_surrounding" value="6.25"/>
+<variable name="RICH_pmt_size" value="52"/>
+<variable name="RICH_pmt_depth" value="38.71"/>
+<variable name="RICH_camera_module_depth" value="250"/>
+<variable name="RICH_camera_gap_size" value="1"/>
+<variable name="RICH_camera_height" value="7*(2*RICH_pmt_size+RICH_camera_gap_size) + 6*RICH_camera_gap_size"/>
+<variable name="RICH_camera_touch_width" value="157.5"/>
+<variable name="RICH_camera_touch_radius" value="sqrt((RICH_camera_radius-10-RICH_pmt_depth)*(RICH_camera_radius-10-RICH_pmt_depth) + RICH_camera_touch_width*RICH_camera_touch_width/4)"/>
+<variable name="RICH_camera_segment_angle" value="(2*asin((RICH_camera_touch_width/2)/RICH_camera_touch_radius)/DEGtoRAD)"/>
+<variable name="RICH_camera_alu_frame_height" value="800"/>
+<variable name="Sens_plane_pos" value="-250"/>
+<variable name="Sh_box_thickness_top" value="30"/>
+<variable name="Sh_box_thickness_bottom" value="60"/>
+<variable name="Sh_box_thickness_sides" value="40"/>
+<variable name="Sh_box_thickness_back" value="50"/>
+<variable name="Sh_box_thickness_nose" value="60"/>
+<variable name="Sh_box_vert_space" value="800"/>
+<variable name="Sh_box_horiz_spread_angle" value="78"/>
+<variable name="Sh_box_horiz_add" value="40"/>
+<variable name="Sh_box_Rmin" value="1390"/>
+<variable name="Sh_box_Rmax" value="1680"/>
+<variable name="Sh_box_Rmax_bottom" value="1600"/>
+<variable name="Sh_box_nose_angle" value="45"/>
+<variable name="Sh_box_nose_vert_size" value="593"/>
+<variable name="Sh_box_cut_Z_coord" value="1600"/>
+<variable name="Back_cut_enabled" value="false"/>
+<variable name="Nose_enabled" value="true"/>
+<variable name="E" value="sin(((90-Acceptance_angle-RICH_mirror_tilt_angle))*DEGtoRAD) / sin((Acceptance_angle)*DEGtoRAD)"/>
+<variable name="A" value="(4*E*E+4*E*sin((RICH_mirror_tilt_angle)*DEGtoRAD)+1) / (cos((RICH_mirror_tilt_angle)*DEGtoRAD)*cos((RICH_mirror_tilt_angle)*DEGtoRAD))"/>
+<variable name="B" value="(2*(2*E+sin((RICH_mirror_tilt_angle)*DEGtoRAD))/cos((RICH_mirror_tilt_angle)*DEGtoRAD)) * (1 - RICH_mirror_position/(RICH_mirror_radius*cos((RICH_mirror_tilt_angle)*DEGtoRAD)))"/>
+<variable name="C" value="RICH_mirror_position*(RICH_mirror_position-2*RICH_mirror_radius*cos((RICH_mirror_tilt_angle)*DEGtoRAD)) / (RICH_mirror_radius*RICH_mirror_radius*cos((RICH_mirror_tilt_angle)*DEGtoRAD)*cos((RICH_mirror_tilt_angle)*DEGtoRAD))"/>
+<variable name="t1" value="(-B+sqrt(B*B-4*A*C)) / (2*A)"/>
+<variable name="t2" value="(-B-sqrt(B*B-4*A*C)) / (2*A)"/>
+<variable name="alpha1" value="(asin(t1)/DEGtoRAD)"/>
+<variable name="alpha2" value="(asin(t2)/DEGtoRAD)"/>
+<variable name="psi" value="(atan((RICH_mirror_radius*(sin((alpha1)*DEGtoRAD)*cos((RICH_mirror_tilt_angle)*DEGtoRAD) - sin((RICH_mirror_tilt_angle)*DEGtoRAD)*(1-cos((alpha1)*DEGtoRAD))))/RICH_mirror_position)/DEGtoRAD)"/>
+<variable name="Camera_full_Xrot" value="(psi+2*RICH_mirror_tilt_angle - RICH_camera_tilt_angle)"/>
+<variable name="Camera_origin_Y_coord" value="RICH_mirror_position*tan((psi)*DEGtoRAD) + (RICH_mirror_radius/2)*sin(((psi+2*RICH_mirror_tilt_angle))*DEGtoRAD) + RICH_camera_radius*sin((Camera_full_Xrot)*DEGtoRAD)"/>
+<variable name="Camera_origin_Z_coord" value="RICH_mirror_position - (RICH_mirror_radius/2)*cos(((psi+2*RICH_mirror_tilt_angle))*DEGtoRAD) - RICH_camera_radius*cos((Camera_full_Xrot)*DEGtoRAD)"/>
+<variable name="Mirror_origin_Y_coord" value="RICH_mirror_radius * sin(((RICH_mirror_tilt_angle+alpha1))*DEGtoRAD)"/>
+<variable name="Mirror_origin_Z_coord" value="RICH_mirror_position - RICH_mirror_radius*cos((RICH_mirror_tilt_angle)*DEGtoRAD)"/>
+</define>
+
+<materials>
+<material name="CsI" Z="1.0">
+<D value="1"/>
+<atom value="1"/>
+</material>
+<material name="RICHgas_CO2_dis" Z="1.0">
+<D value="1"/>
+<atom value="1"/>
+</material>
+<material name="aluminium" Z="1.0">
+<D value="1"/>
+<atom value="1"/>
+</material>
+<material name="vacuum" Z="1.0">
+<D value="1"/>
+<atom value="1"/>
+</material>
+<material name="RICHglass" Z="1.0">
+<D value="1"/>
+<atom value="1"/>
+</material>
+<material name="kapton" Z="1.0">
+<D value="1"/>
+<atom value="1"/>
+</material>
+<material name="iron" Z="1.0">
+<D value="1"/>
+<atom value="1"/>
+</material>
+<material name="RICHgas_CO2_dis+" Z="1.0">
+<D value="1"/>
+<atom value="1"/>
+</material>
+</materials>
+
+<solids>
+<box name="pmt_pixel_PartBody" x="((RICH_pixel_size_middle/2) * 1)*2" y="((RICH_pixel_size_middle/2) * 1)*2" z="(0.250000)*2" lunit="mm"/>
+<box name="pmt_pixel_wide_PartBody" x="((RICH_pixel_size_surrounding/2) * 1)*2" y="((RICH_pixel_size_surrounding/2) * 1)*2" z="(0.250000)*2" lunit="mm"/>
+<box name="pmt_pixel_vertical_PartBody" x="((RICH_pixel_size_middle/2) * 1)*2" y="((RICH_pixel_size_surrounding/2) * 1)*2" z="(0.250000)*2" lunit="mm"/>
+<box name="pmt_pixel_horisontal_PartBody" x="((RICH_pixel_size_surrounding/2) * 1)*2" y="((RICH_pixel_size_middle/2) * 1)*2" z="(0.250000)*2" lunit="mm"/>
+<box name="pmt_PartBody" x="((RICH_pmt_size/2) * 1)*2" y="((RICH_pmt_size/2) * 1)*2" z="((RICH_pmt_depth/2) * 1)*2" lunit="mm"/>
+<box name="pmt_container_PartBody" x="((RICH_pmt_size/2) * 1)*2" y="((RICH_pmt_size/2) * 1)*2" z="((RICH_pmt_depth/2) * 1)*2" lunit="mm"/>
+<box name="camera_module_PartBody" x="(((3*RICH_pmt_size+2*RICH_camera_gap_size)/2) * 1)*2" y="(((2*RICH_pmt_size+RICH_camera_gap_size)/2) * 1)*2" z="((RICH_pmt_depth/2) * 1)*2" lunit="mm"/>
+<box name="alu_frame_PartBody" x="((RICH_camera_touch_width/2) * 1)*2" y="(((14*RICH_pmt_size+13*RICH_camera_gap_size)/2) * 1)*2" z="(5.000000)*2" lunit="mm"/>
+<box name="camera_strip_PartBody_op0" x="(((3*RICH_pmt_size+2*RICH_camera_gap_size)/2) * 1)*2" y="(((7*(2*RICH_pmt_size+RICH_camera_gap_size) + 6*RICH_camera_gap_size)/2) * 1)*2" z="((RICH_pmt_depth/2) * 1)*2" lunit="mm"/>
+<box name="camera_strip_PartBody_op1" x="((RICH_camera_touch_width/2) * 1)*2" y="(((7*(2*RICH_pmt_size+RICH_camera_gap_size) + 6*RICH_camera_gap_size)/2) * 1)*2" z="(5.000000)*2" lunit="mm"/>
+<union name="camera_strip_PartBody">
+<first ref="camera_strip_PartBody_op0"/>
+<second ref="camera_strip_PartBody_op1"/>
+<position name="camera_strip_PartBody__1_pos_0" x="0" y="0" z="(-RICH_pmt_depth/2-5) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</union>
+<tube name="rich_cyl_pipe_section_vac_PartBody" rmin="0.000000" rmax="(RICH_pipe_outer_radius_at_entrance-RICH_pipe_thickness_at_entrance) * 1" z="((RICH_pipe_cyl_part_length/2) * 1)*2" startphi="0.000000" deltaphi="360.000000" aunit="deg" lunit="mm"/>
+<tube name="rich_cyl_pipe_section_PartBody" rmin="0.000000" rmax="(RICH_pipe_outer_radius_at_entrance) * 1" z="((RICH_pipe_cyl_part_length/2) * 1)*2" startphi="0.000000" deltaphi="360.000000" aunit="deg" lunit="mm"/>
+<tube name="rich_pipe_flange_PartBody" rmin="(RICH_pipe_outer_radius_at_entrance) * 1" rmax="80.000000" z="((RICH_pipe_flange_thickness/2) * 1)*2" startphi="0.000000" deltaphi="360.000000" aunit="deg" lunit="mm"/>
+<cone name="rich_pipe_section_vac_PartBody" rmin1="0.000000" rmax1="(RICH_pipe_outer_radius_at_entrance-RICH_pipe_thickness_at_entrance) * 1" rmin2="0.000000" rmax2="(RICH_pipe_outer_radius_at_exit-RICH_pipe_thickness_at_exit) * 1" z="((RICH_length/2) * 1)*2" startphi="0.000000" deltaphi="360.000000" aunit="deg" lunit="mm"/>
+<cone name="rich_pipe_section_PartBody" rmin1="0.000000" rmax1="(RICH_pipe_outer_radius_at_entrance) * 1" rmin2="0.000000" rmax2="(RICH_pipe_outer_radius_at_exit) * 1" z="((RICH_length/2) * 1)*2" startphi="0.000000" deltaphi="360.000000" aunit="deg" lunit="mm"/>
+<sphere name="mirror_tile_type0_PartBody_op0" rmin="(RICH_mirror_radius) * 1" rmax="(RICH_mirror_radius+6) * 1" startphi="(-RICH_mirror_phi_size/2) * 1" deltaphi="(RICH_mirror_phi_size) * 1" starttheta="(90+RICH_mirror_tilt_angle+alpha1/2+RICH_mirror_theta_gap*3/4) * 1" deltatheta="(alpha1/2 - RICH_mirror_theta_gap*3/4) * 1" aunit="deg" lunit="mm"/>
+<box name="mirror_tile_type0_PartBody_op1" x="(5000.000000)*2" y="((RICH_width/2) * 1)*2" z="(100.000000)*2" lunit="mm"/>
+<subtraction name="mirror_tile_type0_PartBody">
+<first ref="mirror_tile_type0_PartBody_op0"/>
+<second ref="mirror_tile_type0_PartBody_op1"/>
+<position name="mirror_tile_type0_PartBody__1_pos_0" x="0" y="0" z="(-Mirror_origin_Y_coord-100) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</subtraction>
+<sphere name="mirror_tile_type1_PartBody" rmin="(RICH_mirror_radius) * 1" rmax="(RICH_mirror_radius+6) * 1" startphi="(-RICH_mirror_phi_size/2) * 1" deltaphi="(RICH_mirror_phi_size) * 1" starttheta="(90+RICH_mirror_tilt_angle+RICH_mirror_theta_gap/2) * 1" deltatheta="(alpha1/2 - RICH_mirror_theta_gap*3/4) * 1" aunit="deg" lunit="mm"/>
+<sphere name="mirror_tile_type2_PartBody" rmin="(RICH_mirror_radius) * 1" rmax="(RICH_mirror_radius+6) * 1" startphi="(-RICH_mirror_phi_size/2) * 1" deltaphi="(RICH_mirror_phi_size) * 1" starttheta="(90+RICH_mirror_tilt_angle-alpha1/2+RICH_mirror_theta_gap/4) * 1" deltatheta="(alpha1/2 - RICH_mirror_theta_gap*3/4) * 1" aunit="deg" lunit="mm"/>
+<sphere name="mirror_tile_type3_PartBody" rmin="(RICH_mirror_radius) * 1" rmax="(RICH_mirror_radius+6) * 1" startphi="(-RICH_mirror_phi_size/2) * 1" deltaphi="(RICH_mirror_phi_size) * 1" starttheta="(90+RICH_mirror_tilt_angle-alpha1) * 1" deltatheta="(alpha1/2 - RICH_mirror_theta_gap*3/4) * 1" aunit="deg" lunit="mm"/>
+<sphere name="mirror_tile_type4_PartBody_op0" rmin="(RICH_mirror_radius) * 1" rmax="(RICH_mirror_radius+6) * 1" startphi="(-RICH_mirror_phi_size/2) * 1" deltaphi="(RICH_mirror_phi_size) * 1" starttheta="(90+RICH_mirror_tilt_angle+alpha1/2+RICH_mirror_theta_gap*3/4) * 1" deltatheta="(alpha1/2 - RICH_mirror_theta_gap*3/4) * 1" aunit="deg" lunit="mm"/>
+<box name="mirror_tile_type4_PartBody_op1" x="(5000.000000)*2" y="((RICH_width/2) * 1)*2" z="(100.000000)*2" lunit="mm"/>
+<subtraction name="mirror_tile_type4_PartBody_op01">
+<first ref="mirror_tile_type4_PartBody_op0"/>
+<second ref="mirror_tile_type4_PartBody_op1"/>
+<position name="mirror_tile_type4_PartBody__1_pos_0" x="0" y="0" z="(-Mirror_origin_Y_coord-100) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</subtraction>
+<tube name="mirror_tile_type4_PartBody_op2" rmin="0.000000" rmax="800.000000" z="(3200.000000)*2" startphi="-90.000000" deltaphi="135.000000" aunit="deg" lunit="mm"/>
+<subtraction name="mirror_tile_type4_PartBody">
+<first ref="mirror_tile_type4_PartBody_op01"/>
+<second ref="mirror_tile_type4_PartBody_op2"/>
+<position name="mirror_tile_type4_PartBody__2_pos_01" x="0" y="0" z="(-RICH_mirror_radius*sin(((RICH_mirror_tilt_angle+alpha1))*DEGtoRAD)) * 1" unit="mm"/>
+<rotation name="mirror_tile_type4_PartBody__2_rot_01" x="90.0" y="0" z="90.0" unit="deg"/>
+</subtraction>
+<sphere name="mirror_tile_type5_PartBody_op0" rmin="(RICH_mirror_radius) * 1" rmax="(RICH_mirror_radius+6) * 1" startphi="(-RICH_mirror_phi_size/2) * 1" deltaphi="(RICH_mirror_phi_size) * 1" starttheta="(90+RICH_mirror_tilt_angle+alpha1/2+RICH_mirror_theta_gap*3/4) * 1" deltatheta="(alpha1/2 - RICH_mirror_theta_gap*3/4) * 1" aunit="deg" lunit="mm"/>
+<box name="mirror_tile_type5_PartBody_op1" x="(5000.000000)*2" y="((RICH_width/2) * 1)*2" z="(100.000000)*2" lunit="mm"/>
+<subtraction name="mirror_tile_type5_PartBody_op01">
+<first ref="mirror_tile_type5_PartBody_op0"/>
+<second ref="mirror_tile_type5_PartBody_op1"/>
+<position name="mirror_tile_type5_PartBody__1_pos_0" x="0" y="0" z="(-Mirror_origin_Y_coord-100) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</subtraction>
+<tube name="mirror_tile_type5_PartBody_op2" rmin="0.000000" rmax="800.000000" z="(3200.000000)*2" startphi="135.000000" deltaphi="135.000000" aunit="deg" lunit="mm"/>
+<subtraction name="mirror_tile_type5_PartBody">
+<first ref="mirror_tile_type5_PartBody_op01"/>
+<second ref="mirror_tile_type5_PartBody_op2"/>
+<position name="mirror_tile_type5_PartBody__2_pos_01" x="0" y="0" z="(-RICH_mirror_radius*sin(((RICH_mirror_tilt_angle+alpha1))*DEGtoRAD)) * 1" unit="mm"/>
+<rotation name="mirror_tile_type5_PartBody__2_rot_01" x="90.0" y="0" z="90.0" unit="deg"/>
+</subtraction>
+<box name="rich_entrance_PartBody_op0" x="((RICH_width/2) * 1)*2" y="((RICH_entrance_vertical_gap/2) * 1)*2" z="((RICH_entrance_thickness/2) * 1)*2" lunit="mm"/>
+<cone name="rich_entrance_PartBody_op1" rmin1="0.000000" rmax1="(RICH_pipe_outer_radius_at_entrance) * 1" rmin2="0.000000" rmax2="(RICH_pipe_outer_radius_at_exit) * 1" z="((RICH_length/2) * 1)*2" startphi="0.000000" deltaphi="360.000000" aunit="deg" lunit="mm"/>
+<subtraction name="rich_entrance_PartBody">
+<first ref="rich_entrance_PartBody_op0"/>
+<second ref="rich_entrance_PartBody_op1"/>
+<position name="rich_entrance_PartBody__1_pos_0" x="0" y="0" z="(RICH_length/2-RICH_entrance_thickness/2) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</subtraction>
+<box name="rich_exit_PartBody_op0" x="((RICH_width/2) * 1)*2" y="((RICH_height/2) * 1)*2" z="((RICH_exit_thickness/2) * 1)*2" lunit="mm"/>
+<cone name="rich_exit_PartBody_op1" rmin1="0.000000" rmax1="(RICH_pipe_outer_radius_at_entrance) * 1" rmin2="0.000000" rmax2="(RICH_pipe_outer_radius_at_exit) * 1" z="((RICH_length/2) * 1)*2" startphi="0.000000" deltaphi="360.000000" aunit="deg" lunit="mm"/>
+<subtraction name="rich_exit_PartBody">
+<first ref="rich_exit_PartBody_op0"/>
+<second ref="rich_exit_PartBody_op1"/>
+<position name="rich_exit_PartBody__1_pos_0" x="0" y="0" z="(-RICH_length/2+RICH_exit_thickness/2) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</subtraction>
+<tube name="Shielding_box_top_PartBody" rmin="(Sh_box_Rmin - Sh_box_thickness_back) * 1" rmax="Sh_box_Rmax * 1" z="((Sh_box_thickness_top/2) * 1)*2" startphi="(-Sh_box_horiz_spread_angle/2) * 1" deltaphi="(Sh_box_horiz_spread_angle) * 1" aunit="deg" lunit="mm"/>
+<tube name="Shielding_box_back_PartBody_op0" rmin="(Sh_box_Rmin-Sh_box_thickness_back) * 1" rmax="(Sh_box_Rmin) * 1" z="((Sh_box_vert_space/2) * 1)*2" startphi="(-Sh_box_horiz_spread_angle/2) * 1" deltaphi="(Sh_box_horiz_spread_angle) * 1" aunit="deg" lunit="mm"/>
+<box name="Shielding_box_back_PartBody_op1" x="(500.000000)*2" y="(2000.000000)*2" z="(3000.000000)*2" lunit="mm"/>
+<subtraction name="Shielding_box_back_PartBody">
+<first ref="Shielding_box_back_PartBody_op0"/>
+<second ref="Shielding_box_back_PartBody_op1"/>
+<position name="Shielding_box_back_PartBody__1_pos_0" x="(Camera_origin_Y_coord*sin((Camera_full_Xrot)*DEGtoRAD) + (Sh_box_cut_Z_coord-500-Camera_origin_Z_coord)*cos((Camera_full_Xrot)*DEGtoRAD)) * 1" y="0" z="(-Camera_origin_Y_coord*cos((Camera_full_Xrot)*DEGtoRAD) + (Sh_box_cut_Z_coord-500-Camera_origin_Z_coord)*sin((Camera_full_Xrot)*DEGtoRAD)) * 1" unit="mm"/>
+<rotation name="Shielding_box_back_PartBody__1_rot_0" x="0" y="(-Camera_full_Xrot) * 1" z="0" unit="deg"/>
+</subtraction>
+<cone name="Shielding_box_bottom_PartBody_op0" rmin1="(Sh_box_Rmin-Sh_box_thickness_back) * 1" rmax1="(Sh_box_Rmax_bottom-Sh_box_thickness_nose+Sh_box_thickness_bottom*tan((Sh_box_nose_angle)*DEGtoRAD)) * 1" rmin2="(Sh_box_Rmin-Sh_box_thickness_back) * 1" rmax2="(Sh_box_Rmax_bottom-Sh_box_thickness_nose) * 1" z="((Sh_box_thickness_bottom/2) * 1)*2" startphi="(-Sh_box_horiz_spread_angle/2) * 1" deltaphi="(Sh_box_horiz_spread_angle) * 1" aunit="deg" lunit="mm"/>
+<box name="Shielding_box_bottom_PartBody_op1" x="(500.000000)*2" y="(2000.000000)*2" z="(3000.000000)*2" lunit="mm"/>
+<subtraction name="Shielding_box_bottom_PartBody">
+<first ref="Shielding_box_bottom_PartBody_op0"/>
+<second ref="Shielding_box_bottom_PartBody_op1"/>
+<position name="Shielding_box_bottom_PartBody__1_pos_0" x="(Camera_origin_Y_coord*sin((Camera_full_Xrot)*DEGtoRAD) + (Sh_box_cut_Z_coord-500-Camera_origin_Z_coord)*cos((Camera_full_Xrot)*DEGtoRAD)) * 1" y="0" z="(-Camera_origin_Y_coord*cos((Camera_full_Xrot)*DEGtoRAD) + (Sh_box_cut_Z_coord-500-Camera_origin_Z_coord)*sin((Camera_full_Xrot)*DEGtoRAD) + (Sh_box_vert_space+Sh_box_thickness_bottom)/2) * 1" unit="mm"/>
+<rotation name="Shielding_box_bottom_PartBody__1_rot_0" x="0" y="(-Camera_full_Xrot) * 1" z="0" unit="deg"/>
+</subtraction>
+<box name="Shielding_box_top_horiz_add_PartBody" x="(((Sh_box_Rmax-Sh_box_Rmin+Sh_box_thickness_back)/2) * 1)*2" y="(((Sh_box_horiz_add+Sh_box_thickness_sides)/2) * 1)*2" z="((Sh_box_thickness_top/2) * 1)*2" lunit="mm"/>
+<box name="Shielding_box_back_horiz_add_PartBody_op0" x="((Sh_box_thickness_back/2) * 1)*2" y="(((Sh_box_horiz_add+Sh_box_thickness_sides)/2) * 1)*2" z="((Sh_box_vert_space/2) * 1)*2" lunit="mm"/>
+<box name="Shielding_box_back_horiz_add_PartBody_op1" x="(500.000000)*2" y="(2000.000000)*2" z="(3000.000000)*2" lunit="mm"/>
+<subtraction name="Shielding_box_back_horiz_add_PartBody">
+<first ref="Shielding_box_back_horiz_add_PartBody_op0"/>
+<second ref="Shielding_box_back_horiz_add_PartBody_op1"/>
+<position name="Shielding_box_back_horiz_add_PartBody__1_pos_0" x="0" y="0" z="(-Camera_origin_Y_coord*cos((Camera_full_Xrot)*DEGtoRAD) + (Sh_box_cut_Z_coord-500-Camera_origin_Z_coord)*sin((Camera_full_Xrot)*DEGtoRAD) + (Sh_box_vert_space+Sh_box_thickness_bottom)/2) * 1" unit="mm"/>
+<rotation name="Shielding_box_back_horiz_add_PartBody__1_rot_0" x="0" y="(-Camera_full_Xrot) * 1" z="(-Sh_box_horiz_spread_angle/2) * 1" unit="deg"/>
+</subtraction>
+<box name="Shielding_box_back_horiz_add_sym_PartBody_op0" x="((Sh_box_thickness_back/2) * 1)*2" y="(((Sh_box_horiz_add+Sh_box_thickness_sides)/2) * 1)*2" z="((Sh_box_vert_space/2) * 1)*2" lunit="mm"/>
+<box name="Shielding_box_back_horiz_add_sym_PartBody_op1" x="(500.000000)*2" y="(2000.000000)*2" z="(3000.000000)*2" lunit="mm"/>
+<subtraction name="Shielding_box_back_horiz_add_sym_PartBody">
+<first ref="Shielding_box_back_horiz_add_sym_PartBody_op0"/>
+<second ref="Shielding_box_back_horiz_add_sym_PartBody_op1"/>
+<position name="Shielding_box_back_horiz_add_sym_PartBody__1_pos_0" x="0" y="0" z="(-Camera_origin_Y_coord*cos((Camera_full_Xrot)*DEGtoRAD) + (Sh_box_cut_Z_coord-500-Camera_origin_Z_coord)*sin((Camera_full_Xrot)*DEGtoRAD) + (Sh_box_vert_space+Sh_box_thickness_bottom)/2) * 1" unit="mm"/>
+<rotation name="Shielding_box_back_horiz_add_sym_PartBody__1_rot_0" x="0" y="(-Camera_full_Xrot) * 1" z="(Sh_box_horiz_spread_angle/2) * 1" unit="deg"/>
+</subtraction>
+<trap name="Shielding_box_bottom_horiz_add_PartBody_op0" z="((Sh_box_thickness_bottom/2) * 1)*2" theta="-atan(tan((Sh_box_nose_angle)*DEGtoRAD)/2)/DEGtoRAD" phi="0.000000" y1="(((Sh_box_horiz_add+Sh_box_thickness_sides)/2) * 1)*2" x1="(((Sh_box_Rmax_bottom-Sh_box_Rmin+Sh_box_thickness_back-Sh_box_thickness_nose+Sh_box_thickness_bottom*tan((Sh_box_nose_angle)*DEGtoRAD))/2) * 1)*2" x2="(((Sh_box_Rmax_bottom-Sh_box_Rmin+Sh_box_thickness_back-Sh_box_thickness_nose+Sh_box_thickness_bottom*tan((Sh_box_nose_angle)*DEGtoRAD))/2) * 1)*2" alpha1="0.000000" y2="(((Sh_box_horiz_add+Sh_box_thickness_sides)/2) * 1)*2" x3="(((Sh_box_Rmax_bottom-Sh_box_Rmin+Sh_box_thickness_back-Sh_box_thickness_nose)/2) * 1)*2" x4="(((Sh_box_Rmax_bottom-Sh_box_Rmin+Sh_box_thickness_back-Sh_box_thickness_nose)/2) * 1)*2" alpha2="0.000000" aunit="deg" lunit="mm"/>
+<box name="Shielding_box_bottom_horiz_add_PartBody_op1" x="(500.000000)*2" y="(2000.000000)*2" z="(3000.000000)*2" lunit="mm"/>
+<subtraction name="Shielding_box_bottom_horiz_add_PartBody">
+<first ref="Shielding_box_bottom_horiz_add_PartBody_op0"/>
+<second ref="Shielding_box_bottom_horiz_add_PartBody_op1"/>
+<position name="Shielding_box_bottom_horiz_add_PartBody__1_pos_0" x="0" y="0" z="(-Camera_origin_Y_coord*cos((Camera_full_Xrot)*DEGtoRAD) + (Sh_box_cut_Z_coord-500-Camera_origin_Z_coord)*sin((Camera_full_Xrot)*DEGtoRAD) + (Sh_box_vert_space+Sh_box_thickness_bottom)/2) * 1" unit="mm"/>
+<rotation name="Shielding_box_bottom_horiz_add_PartBody__1_rot_0" x="0" y="(-Camera_full_Xrot) * 1" z="(-Sh_box_horiz_spread_angle/2) * 1" unit="deg"/>
+</subtraction>
+<trap name="Shielding_box_bottom_horiz_add_sym_PartBody_op0" z="((Sh_box_thickness_bottom/2) * 1)*2" theta="-atan(tan((Sh_box_nose_angle)*DEGtoRAD)/2)/DEGtoRAD" phi="0.000000" y1="(((Sh_box_horiz_add+Sh_box_thickness_sides)/2) * 1)*2" x1="(((Sh_box_Rmax_bottom-Sh_box_Rmin+Sh_box_thickness_back-Sh_box_thickness_nose+Sh_box_thickness_bottom*tan((Sh_box_nose_angle)*DEGtoRAD))/2) * 1)*2" x2="(((Sh_box_Rmax_bottom-Sh_box_Rmin+Sh_box_thickness_back-Sh_box_thickness_nose+Sh_box_thickness_bottom*tan((Sh_box_nose_angle)*DEGtoRAD))/2) * 1)*2" alpha1="0.000000" y2="(((Sh_box_horiz_add+Sh_box_thickness_sides)/2) * 1)*2" x3="(((Sh_box_Rmax_bottom-Sh_box_Rmin+Sh_box_thickness_back-Sh_box_thickness_nose)/2) * 1)*2" x4="(((Sh_box_Rmax_bottom-Sh_box_Rmin+Sh_box_thickness_back-Sh_box_thickness_nose)/2) * 1)*2" alpha2="0.000000" aunit="deg" lunit="mm"/>
+<box name="Shielding_box_bottom_horiz_add_sym_PartBody_op1" x="(500.000000)*2" y="(2000.000000)*2" z="(3000.000000)*2" lunit="mm"/>
+<subtraction name="Shielding_box_bottom_horiz_add_sym_PartBody">
+<first ref="Shielding_box_bottom_horiz_add_sym_PartBody_op0"/>
+<second ref="Shielding_box_bottom_horiz_add_sym_PartBody_op1"/>
+<position name="Shielding_box_bottom_horiz_add_sym_PartBody__1_pos_0" x="0" y="0" z="(-Camera_origin_Y_coord*cos((Camera_full_Xrot)*DEGtoRAD) + (Sh_box_cut_Z_coord-500-Camera_origin_Z_coord)*sin((Camera_full_Xrot)*DEGtoRAD) + (Sh_box_vert_space+Sh_box_thickness_bottom)/2) * 1" unit="mm"/>
+<rotation name="Shielding_box_bottom_horiz_add_sym_PartBody__1_rot_0" x="0" y="(-Camera_full_Xrot) * 1" z="(Sh_box_horiz_spread_angle/2) * 1" unit="deg"/>
+</subtraction>
+<box name="Shielding_box_side_PartBody_op0" x="(((Sh_box_Rmax-Sh_box_Rmin)/2) * 1)*2" y="((Sh_box_thickness_sides/2) * 1)*2" z="((Sh_box_vert_space/2) * 1)*2" lunit="mm"/>
+<box name="Shielding_box_side_PartBody_op1" x="(500.000000)*2" y="(2000.000000)*2" z="(3000.000000)*2" lunit="mm"/>
+<subtraction name="Shielding_box_side_PartBody">
+<first ref="Shielding_box_side_PartBody_op0"/>
+<second ref="Shielding_box_side_PartBody_op1"/>
+<positionref ref="central"/>
+<rotation name="Shielding_box_side_PartBody__1_rot_0" x="0" y="(-Camera_full_Xrot) * 1" z="(-Sh_box_horiz_spread_angle/2) * 1" unit="deg"/>
+</subtraction>
+<box name="Shielding_box_side_sym_PartBody_op0" x="(((Sh_box_Rmax-Sh_box_Rmin)/2) * 1)*2" y="((Sh_box_thickness_sides/2) * 1)*2" z="((Sh_box_vert_space/2) * 1)*2" lunit="mm"/>
+<box name="Shielding_box_side_sym_PartBody_op1" x="(500.000000)*2" y="(2000.000000)*2" z="(3000.000000)*2" lunit="mm"/>
+<subtraction name="Shielding_box_side_sym_PartBody">
+<first ref="Shielding_box_side_sym_PartBody_op0"/>
+<second ref="Shielding_box_side_sym_PartBody_op1"/>
+<position name="Shielding_box_side_sym_PartBody__1_pos_0" x="0" y="0" z="(-Camera_origin_Y_coord*cos((Camera_full_Xrot)*DEGtoRAD) + (Sh_box_cut_Z_coord-500-Camera_origin_Z_coord)*sin((Camera_full_Xrot)*DEGtoRAD)) * 1" unit="mm"/>
+<rotation name="Shielding_box_side_sym_PartBody__1_rot_0" x="0" y="(-Camera_full_Xrot) * 1" z="(Sh_box_horiz_spread_angle/2) * 1" unit="deg"/>
+</subtraction>
+<trap name="Shielding_box_nose_horiz_add_PartBody" z="((Sh_box_nose_vert_size/2) * 1)*2" theta="(-Sh_box_nose_angle) * 1" phi="0.000000" y1="(((Sh_box_horiz_add+Sh_box_thickness_sides)/2) * 1)*2" x1="((Sh_box_thickness_nose/2) * 1)*2" x2="((Sh_box_thickness_nose/2) * 1)*2" alpha1="0.000000" y2="(((Sh_box_horiz_add+Sh_box_thickness_sides)/2) * 1)*2" x3="((Sh_box_thickness_nose/2) * 1)*2" x4="((Sh_box_thickness_nose/2) * 1)*2" alpha2="0.000000" aunit="deg" lunit="mm"/>
+<trap name="Shielding_box_small_piece_PartBody" z="((Sh_box_thickness_bottom/2) * 1)*2" theta="-atan(tan((Sh_box_nose_angle)*DEGtoRAD)/2)/DEGtoRAD" phi="0.000000" y1="((Sh_box_thickness_sides/2) * 1)*2" x1="(((Sh_box_Rmax-Sh_box_Rmax_bottom-Sh_box_thickness_bottom*tan((Sh_box_nose_angle)*DEGtoRAD))/2) * 1)*2" x2="(((Sh_box_Rmax-Sh_box_Rmax_bottom-Sh_box_thickness_bottom*tan((Sh_box_nose_angle)*DEGtoRAD))/2) * 1)*2" alpha1="0.000000" y2="((Sh_box_thickness_sides/2) * 1)*2" x3="(((Sh_box_Rmax-Sh_box_Rmax_bottom)/2) * 1)*2" x4="(((Sh_box_Rmax-Sh_box_Rmax_bottom)/2) * 1)*2" alpha2="0.000000" aunit="deg" lunit="mm"/>
+<cone name="Shielding_box_nose_PartBody_op0" rmin1="(Sh_box_Rmax_bottom-Sh_box_thickness_nose+Sh_box_nose_vert_size*tan((Sh_box_nose_angle)*DEGtoRAD)) * 1" rmax1="(Sh_box_Rmax_bottom+Sh_box_nose_vert_size*tan((Sh_box_nose_angle)*DEGtoRAD)) * 1" rmin2="(Sh_box_Rmax_bottom-Sh_box_thickness_nose) * 1" rmax2="(Sh_box_Rmax_bottom) * 1" z="((Sh_box_nose_vert_size/2) * 1)*2" startphi="(-Sh_box_horiz_spread_angle/2) * 1" deltaphi="(Sh_box_horiz_spread_angle) * 1" aunit="deg" lunit="mm"/>
+<elcone name="Shielding_box_nose_PartBody_op1" dx="(1901.782178)/4078.385024" dy="(2852.673267)/4078.385024" zmax="(4078.385024)/2" zcut="(4078.385024)/2" lunit="mm"/>
+<subtraction name="Shielding_box_nose_PartBody">
+<first ref="Shielding_box_nose_PartBody_op0"/>
+<second ref="Shielding_box_nose_PartBody_op1"/>
+<position name="Shielding_box_nose_PartBody__1_pos_0" x="(Camera_origin_Y_coord*sin((Camera_full_Xrot)*DEGtoRAD) + (4078.385024/2-Camera_origin_Z_coord)*cos((Camera_full_Xrot)*DEGtoRAD)) * 1" y="0" z="(-(Camera_origin_Y_coord*cos((Camera_full_Xrot)*DEGtoRAD) - (4078.385024/2-Camera_origin_Z_coord)*sin((Camera_full_Xrot)*DEGtoRAD) - (Sh_box_vert_space+Sh_box_nose_vert_size)/2)) * 1" unit="mm"/>
+<rotation name="Shielding_box_nose_PartBody__1_rot_0" x="0" y="(-90-Camera_full_Xrot) * 1" z="0" unit="deg"/>
+</subtraction>
+<box name="sens_plane_PartBody_op0" x="(500.000000)*2" y="(500.000000)*2" z="(0.500000)*2" lunit="mm"/>
+<cone name="sens_plane_PartBody_op1" rmin1="0.000000" rmax1="(RICH_pipe_outer_radius_at_entrance) * 1" rmin2="0.000000" rmax2="(RICH_pipe_outer_radius_at_exit) * 1" z="((RICH_length/2) * 1)*2" startphi="0.000000" deltaphi="360.000000" aunit="deg" lunit="mm"/>
+<subtraction name="sens_plane_PartBody">
+<first ref="sens_plane_PartBody_op0"/>
+<second ref="sens_plane_PartBody_op1"/>
+<position name="sens_plane_PartBody__1_pos_0" x="0" y="0" z="(-Sens_plane_pos + (RICH_exit_thickness-RICH_entrance_thickness)/2) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</subtraction>
+<sphere name="Mirror_PartBody_op0" rmin="(RICH_mirror_radius) * 1" rmax="(RICH_mirror_radius+6) * 1" startphi="(-(RICH_mirror_phi_step*9/2+RICH_mirror_phi_size/2)) * 1" deltaphi="(RICH_mirror_phi_step*9+RICH_mirror_phi_size) * 1" starttheta="(90+RICH_mirror_tilt_angle-alpha1) * 1" deltatheta="(2*alpha1) * 1" aunit="deg" lunit="mm"/>
+<box name="Mirror_PartBody_op1" x="(5000.000000)*2" y="((RICH_width/2) * 1)*2" z="(100.000000)*2" lunit="mm"/>
+<subtraction name="Mirror_PartBody_op01">
+<first ref="Mirror_PartBody_op0"/>
+<second ref="Mirror_PartBody_op1"/>
+<position name="Mirror_PartBody__1_pos_0" x="0" y="0" z="(-Mirror_origin_Y_coord-100) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</subtraction>
+<box name="Mirror_PartBody_op2" x="(5000.000000)*2" y="(185.000000)*2" z="(185.000000)*2" lunit="mm"/>
+<subtraction name="Mirror_PartBody">
+<first ref="Mirror_PartBody_op01"/>
+<second ref="Mirror_PartBody_op2"/>
+<position name="Mirror_PartBody__2_pos_01" x="0" y="0" z="(-Mirror_origin_Y_coord) * 1" unit="mm"/>
+<rotation name="Mirror_PartBody__2_rot_01" x="45.0000000000647" y="0" z="0" unit="deg"/>
+</subtraction>
+<tube name="Camera_PartBody" rmin="(RICH_camera_radius-0.5) * 1" rmax="(RICH_camera_radius) * 1" z="(((7*(2*RICH_pmt_size+RICH_camera_gap_size) + 6*RICH_camera_gap_size)/2) * 1)*2" startphi="(-7 * RICH_camera_segment_angle) * 1" deltaphi="(14 * RICH_camera_segment_angle) * 1" aunit="deg" lunit="mm"/>
+<tube name="Solid_behind_camera_PartBody" rmin="(RICH_camera_radius-10.5) * 1" rmax="(RICH_camera_radius-0.5) * 1" z="((RICH_camera_height/2) * 1)*2" startphi="(-7 * RICH_camera_segment_angle) * 1" deltaphi="(14 * RICH_camera_segment_angle) * 1" aunit="deg" lunit="mm"/>
+<box name="mainframe_part2_gas_PartBody" x="(1395.000000)*2" y="(43.000000)*2" z="(43.000000)*2" lunit="mm"/>
+<box name="mainframe_part3_gas_PartBody" x="(43.000000)*2" y="(43.000000)*2" z="(432.919390)*2" lunit="mm"/>
+<trap name="mainframe_part5_gas_PartBody" z="(43.000000)*2" theta="-26.016698" phi="0.000000" y1="(43.000000)*2" x1="(719.697521)*2" x2="(719.697521)*2" alpha1="0.000000" y2="(43.000000)*2" x3="(624.000148)*2" x4="(624.000148)*2" alpha2="0.000000" aunit="deg" lunit="mm"/>
+<box name="mainframe_part8_gas_PartBody" x="(43.000000)*2" y="((RICH_height/2-RICH_covering_thickness-100) * 1)*2" z="(43.000000)*2" lunit="mm"/>
+<box name="mainframe_part9_gas_PartBody" x="(2629.000000)*2" y="(43.000000)*2" z="(43.000000)*2" lunit="mm"/>
+<box name="mainframe_part10_gas_PartBody" x="(43.000000)*2" y="(43.000000)*2" z="(461.955610)*2" lunit="mm"/>
+<box name="mainframe_part2_PartBody" x="(1395.000000)*2" y="(50.000000)*2" z="(50.000000)*2" lunit="mm"/>
+<box name="mainframe_part3_PartBody" x="(50.000000)*2" y="(50.000000)*2" z="(432.919390)*2" lunit="mm"/>
+<trap name="mainframe_part5_PartBody" z="(50.000000)*2" theta="-26.016698" phi="0.000000" y1="(50.000000)*2" x1="(727.486842)*2" x2="(727.486842)*2" alpha1="0.000000" y2="(50.000000)*2" x3="(616.210827)*2" x4="(616.210827)*2" alpha2="0.000000" aunit="deg" lunit="mm"/>
+<box name="mainframe_part8_PartBody" x="(50.000000)*2" y="((RICH_height/2-RICH_covering_thickness-100) * 1)*2" z="(50.000000)*2" lunit="mm"/>
+<box name="mainframe_part9_PartBody" x="(2629.000000)*2" y="(50.000000)*2" z="(50.000000)*2" lunit="mm"/>
+<box name="mainframe_part10_PartBody" x="(50.000000)*2" y="(50.000000)*2" z="(461.955610)*2" lunit="mm"/>
+<box name="rich_gas_PartBody_op0" x="((RICH_width/2-RICH_covering_thickness) * 1)*2" y="((RICH_height/2-RICH_covering_thickness) * 1)*2" z="(((RICH_length-RICH_entrance_thickness-RICH_exit_thickness)/2) * 1)*2" lunit="mm"/>
+<box name="rich_gas_PartBody_op1" x="((RICH_width/2-RICH_covering_thickness) * 1)*2" y="((((RICH_height-RICH_entrance_vertical_gap)/2 - 2*RICH_covering_thickness)/2) * 1)*2" z="(((RICH_addend_Z_size-RICH_covering_thickness + RICH_entrance_thickness)/2) * 1)*2" lunit="mm"/>
+<union name="rich_gas_PartBody_op01">
+<first ref="rich_gas_PartBody_op0"/>
+<second ref="rich_gas_PartBody_op1"/>
+<position name="rich_gas_PartBody__1_pos_0" x="0" y="((RICH_height/2 + RICH_entrance_vertical_gap/2)/2) * 1" z="(-RICH_length/2-RICH_addend_Z_size/2 + RICH_covering_thickness) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</union>
+<box name="rich_gas_PartBody_op2" x="((RICH_width/2-RICH_covering_thickness) * 1)*2" y="((((RICH_height-RICH_entrance_vertical_gap)/2 - 2*RICH_covering_thickness)/2) * 1)*2" z="(((RICH_addend_Z_size-RICH_covering_thickness + RICH_entrance_thickness)/2) * 1)*2" lunit="mm"/>
+<union name="rich_gas_PartBody_op012">
+<first ref="rich_gas_PartBody_op01"/>
+<second ref="rich_gas_PartBody_op2"/>
+<position name="rich_gas_PartBody__2_pos_01" x="0" y="(-(RICH_height/2 + RICH_entrance_vertical_gap/2)/2) * 1" z="(-RICH_length/2-RICH_addend_Z_size/2 + RICH_covering_thickness) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</union>
+<cone name="rich_gas_PartBody_op3" rmin1="0.000000" rmax1="(RICH_pipe_outer_radius_at_entrance) * 1" rmin2="0.000000" rmax2="(RICH_pipe_outer_radius_at_exit) * 1" z="((RICH_length/2) * 1)*2" startphi="0.000000" deltaphi="360.000000" aunit="deg" lunit="mm"/>
+<subtraction name="rich_gas_PartBody">
+<first ref="rich_gas_PartBody_op012"/>
+<second ref="rich_gas_PartBody_op3"/>
+<position name="rich_gas_PartBody__3_pos_012" x="0" y="0" z="(-(RICH_entrance_thickness-RICH_exit_thickness)/2) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</subtraction>
+<box name="rich_container_PartBody_op0" x="((RICH_width/2) * 1)*2" y="((RICH_height/2) * 1)*2" z="((RICH_length/2) * 1)*2" lunit="mm"/>
+<box name="rich_container_PartBody_op1" x="((RICH_width/2) * 1)*2" y="((((RICH_height-RICH_entrance_vertical_gap)/2)/2) * 1)*2" z="((RICH_addend_Z_size/2) * 1)*2" lunit="mm"/>
+<union name="rich_container_PartBody_op01">
+<first ref="rich_container_PartBody_op0"/>
+<second ref="rich_container_PartBody_op1"/>
+<position name="rich_container_PartBody__1_pos_0" x="0" y="((RICH_height/2 + RICH_entrance_vertical_gap/2)/2) * 1" z="(-RICH_length/2-RICH_addend_Z_size/2) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</union>
+<box name="rich_container_PartBody_op2" x="((RICH_width/2) * 1)*2" y="((((RICH_height-RICH_entrance_vertical_gap)/2)/2) * 1)*2" z="((RICH_addend_Z_size/2) * 1)*2" lunit="mm"/>
+<union name="rich_container_PartBody">
+<first ref="rich_container_PartBody_op01"/>
+<second ref="rich_container_PartBody_op2"/>
+<position name="rich_container_PartBody__2_pos_01" x="0" y="(-(RICH_height/2 + RICH_entrance_vertical_gap/2)/2) * 1" z="(-RICH_length/2-RICH_addend_Z_size/2) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</union>
+</solids>
+<structure>
+<volume name="pmt_pixel">
+<materialref ref="CsI"/>
+<solidref ref="pmt_pixel_PartBody"/>
+</volume>
+<volume name="pmt_pixel_wide">
+<materialref ref="CsI"/>
+<solidref ref="pmt_pixel_wide_PartBody"/>
+</volume>
+<volume name="pmt_pixel_vertical">
+<materialref ref="CsI"/>
+<solidref ref="pmt_pixel_vertical_PartBody"/>
+</volume>
+<volume name="pmt_pixel_horisontal">
+<materialref ref="CsI"/>
+<solidref ref="pmt_pixel_horisontal_PartBody"/>
+</volume>
+<volume name="pmt">
+<materialref ref="RICHgas_CO2_dis"/>
+<solidref ref="pmt_PartBody"/>
+<physvol copynumber="1">
+<volumeref ref="pmt_pixel_wide"/>
+<position name="pmt_pixel_wide_pos_pmt" x="(3*RICH_pixel_size_middle+RICH_pixel_size_surrounding/2) * 1" y="(3*RICH_pixel_size_middle+RICH_pixel_size_surrounding/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="2">
+<volumeref ref="pmt_pixel_wide"/>
+<position name="pmt_pixel_wide_pos_pmt" x="(-3*RICH_pixel_size_middle-RICH_pixel_size_surrounding/2) * 1" y="(3*RICH_pixel_size_middle+RICH_pixel_size_surrounding/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="3">
+<volumeref ref="pmt_pixel_wide"/>
+<position name="pmt_pixel_wide_pos_pmt" x="(3*RICH_pixel_size_middle+RICH_pixel_size_surrounding/2) * 1" y="(-3*RICH_pixel_size_middle-RICH_pixel_size_surrounding/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="4">
+<volumeref ref="pmt_pixel_wide"/>
+<position name="pmt_pixel_wide_pos_pmt" x="(-3*RICH_pixel_size_middle-RICH_pixel_size_surrounding/2) * 1" y="(-3*RICH_pixel_size_middle-RICH_pixel_size_surrounding/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="1">
+<volumeref ref="pmt_pixel"/>
+<position name="pmt_pixel_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1" y="(RICH_pixel_size_middle*5/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="2">
+<volumeref ref="pmt_pixel"/>
+<position name="pmt_pixel_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1+6" y="(RICH_pixel_size_middle*5/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="3">
+<volumeref ref="pmt_pixel"/>
+<position name="pmt_pixel_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1+12" y="(RICH_pixel_size_middle*5/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="4">
+<volumeref ref="pmt_pixel"/>
+<position name="pmt_pixel_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1+18" y="(RICH_pixel_size_middle*5/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="5">
+<volumeref ref="pmt_pixel"/>
+<position name="pmt_pixel_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1+24" y="(RICH_pixel_size_middle*5/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="6">
+<volumeref ref="pmt_pixel"/>
+<position name="pmt_pixel_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1+30" y="(RICH_pixel_size_middle*5/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="7">
+<volumeref ref="pmt_pixel"/>
+<position name="pmt_pixel_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1" y="(RICH_pixel_size_middle*3/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="8">
+<volumeref ref="pmt_pixel"/>
+<position name="pmt_pixel_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1+6" y="(RICH_pixel_size_middle*3/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="9">
+<volumeref ref="pmt_pixel"/>
+<position name="pmt_pixel_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1+12" y="(RICH_pixel_size_middle*3/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="10">
+<volumeref ref="pmt_pixel"/>
+<position name="pmt_pixel_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1+18" y="(RICH_pixel_size_middle*3/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="11">
+<volumeref ref="pmt_pixel"/>
+<position name="pmt_pixel_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1+24" y="(RICH_pixel_size_middle*3/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="12">
+<volumeref ref="pmt_pixel"/>
+<position name="pmt_pixel_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1+30" y="(RICH_pixel_size_middle*3/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="13">
+<volumeref ref="pmt_pixel"/>
+<position name="pmt_pixel_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1" y="(RICH_pixel_size_middle*1/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="14">
+<volumeref ref="pmt_pixel"/>
+<position name="pmt_pixel_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1+6" y="(RICH_pixel_size_middle*1/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="15">
+<volumeref ref="pmt_pixel"/>
+<position name="pmt_pixel_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1+12" y="(RICH_pixel_size_middle*1/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="16">
+<volumeref ref="pmt_pixel"/>
+<position name="pmt_pixel_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1+18" y="(RICH_pixel_size_middle*1/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="17">
+<volumeref ref="pmt_pixel"/>
+<position name="pmt_pixel_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1+24" y="(RICH_pixel_size_middle*1/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="18">
+<volumeref ref="pmt_pixel"/>
+<position name="pmt_pixel_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1+30" y="(RICH_pixel_size_middle*1/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="19">
+<volumeref ref="pmt_pixel"/>
+<position name="pmt_pixel_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1" y="(-RICH_pixel_size_middle*1/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="20">
+<volumeref ref="pmt_pixel"/>
+<position name="pmt_pixel_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1+6" y="(-RICH_pixel_size_middle*1/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="21">
+<volumeref ref="pmt_pixel"/>
+<position name="pmt_pixel_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1+12" y="(-RICH_pixel_size_middle*1/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="22">
+<volumeref ref="pmt_pixel"/>
+<position name="pmt_pixel_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1+18" y="(-RICH_pixel_size_middle*1/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="23">
+<volumeref ref="pmt_pixel"/>
+<position name="pmt_pixel_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1+24" y="(-RICH_pixel_size_middle*1/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="24">
+<volumeref ref="pmt_pixel"/>
+<position name="pmt_pixel_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1+30" y="(-RICH_pixel_size_middle*1/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="25">
+<volumeref ref="pmt_pixel"/>
+<position name="pmt_pixel_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1" y="(-RICH_pixel_size_middle*3/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="26">
+<volumeref ref="pmt_pixel"/>
+<position name="pmt_pixel_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1+6" y="(-RICH_pixel_size_middle*3/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="27">
+<volumeref ref="pmt_pixel"/>
+<position name="pmt_pixel_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1+12" y="(-RICH_pixel_size_middle*3/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="28">
+<volumeref ref="pmt_pixel"/>
+<position name="pmt_pixel_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1+18" y="(-RICH_pixel_size_middle*3/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="29">
+<volumeref ref="pmt_pixel"/>
+<position name="pmt_pixel_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1+24" y="(-RICH_pixel_size_middle*3/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="30">
+<volumeref ref="pmt_pixel"/>
+<position name="pmt_pixel_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1+30" y="(-RICH_pixel_size_middle*3/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="31">
+<volumeref ref="pmt_pixel"/>
+<position name="pmt_pixel_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1" y="(-RICH_pixel_size_middle*5/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="32">
+<volumeref ref="pmt_pixel"/>
+<position name="pmt_pixel_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1+6" y="(-RICH_pixel_size_middle*5/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="33">
+<volumeref ref="pmt_pixel"/>
+<position name="pmt_pixel_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1+12" y="(-RICH_pixel_size_middle*5/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="34">
+<volumeref ref="pmt_pixel"/>
+<position name="pmt_pixel_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1+18" y="(-RICH_pixel_size_middle*5/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="35">
+<volumeref ref="pmt_pixel"/>
+<position name="pmt_pixel_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1+24" y="(-RICH_pixel_size_middle*5/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="36">
+<volumeref ref="pmt_pixel"/>
+<position name="pmt_pixel_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1+30" y="(-RICH_pixel_size_middle*5/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="1">
+<volumeref ref="pmt_pixel_vertical"/>
+<position name="pmt_pixel_vertical_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1" y="(RICH_pixel_size_middle*3+RICH_pixel_size_surrounding/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="2">
+<volumeref ref="pmt_pixel_vertical"/>
+<position name="pmt_pixel_vertical_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1+6" y="(RICH_pixel_size_middle*3+RICH_pixel_size_surrounding/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="3">
+<volumeref ref="pmt_pixel_vertical"/>
+<position name="pmt_pixel_vertical_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1+12" y="(RICH_pixel_size_middle*3+RICH_pixel_size_surrounding/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="4">
+<volumeref ref="pmt_pixel_vertical"/>
+<position name="pmt_pixel_vertical_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1+18" y="(RICH_pixel_size_middle*3+RICH_pixel_size_surrounding/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="5">
+<volumeref ref="pmt_pixel_vertical"/>
+<position name="pmt_pixel_vertical_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1+24" y="(RICH_pixel_size_middle*3+RICH_pixel_size_surrounding/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="6">
+<volumeref ref="pmt_pixel_vertical"/>
+<position name="pmt_pixel_vertical_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1+30" y="(RICH_pixel_size_middle*3+RICH_pixel_size_surrounding/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="7">
+<volumeref ref="pmt_pixel_vertical"/>
+<position name="pmt_pixel_vertical_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1" y="(-RICH_pixel_size_middle*3-RICH_pixel_size_surrounding/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="8">
+<volumeref ref="pmt_pixel_vertical"/>
+<position name="pmt_pixel_vertical_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1+6" y="(-RICH_pixel_size_middle*3-RICH_pixel_size_surrounding/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="9">
+<volumeref ref="pmt_pixel_vertical"/>
+<position name="pmt_pixel_vertical_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1+12" y="(-RICH_pixel_size_middle*3-RICH_pixel_size_surrounding/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="10">
+<volumeref ref="pmt_pixel_vertical"/>
+<position name="pmt_pixel_vertical_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1+18" y="(-RICH_pixel_size_middle*3-RICH_pixel_size_surrounding/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="11">
+<volumeref ref="pmt_pixel_vertical"/>
+<position name="pmt_pixel_vertical_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1+24" y="(-RICH_pixel_size_middle*3-RICH_pixel_size_surrounding/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="12">
+<volumeref ref="pmt_pixel_vertical"/>
+<position name="pmt_pixel_vertical_pos_pmt" x="(-RICH_pixel_size_middle*5/2) * 1+30" y="(-RICH_pixel_size_middle*3-RICH_pixel_size_surrounding/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="1">
+<volumeref ref="pmt_pixel_horisontal"/>
+<position name="pmt_pixel_horisontal_pos_pmt" x="(-RICH_pixel_size_middle*3-RICH_pixel_size_surrounding/2) * 1" y="(-RICH_pixel_size_middle*5/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="2">
+<volumeref ref="pmt_pixel_horisontal"/>
+<position name="pmt_pixel_horisontal_pos_pmt" x="(-RICH_pixel_size_middle*3-RICH_pixel_size_surrounding/2) * 1" y="(-RICH_pixel_size_middle*5/2) * 1+6" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="3">
+<volumeref ref="pmt_pixel_horisontal"/>
+<position name="pmt_pixel_horisontal_pos_pmt" x="(-RICH_pixel_size_middle*3-RICH_pixel_size_surrounding/2) * 1" y="(-RICH_pixel_size_middle*5/2) * 1+12" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="4">
+<volumeref ref="pmt_pixel_horisontal"/>
+<position name="pmt_pixel_horisontal_pos_pmt" x="(-RICH_pixel_size_middle*3-RICH_pixel_size_surrounding/2) * 1" y="(-RICH_pixel_size_middle*5/2) * 1+18" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="5">
+<volumeref ref="pmt_pixel_horisontal"/>
+<position name="pmt_pixel_horisontal_pos_pmt" x="(-RICH_pixel_size_middle*3-RICH_pixel_size_surrounding/2) * 1" y="(-RICH_pixel_size_middle*5/2) * 1+24" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="6">
+<volumeref ref="pmt_pixel_horisontal"/>
+<position name="pmt_pixel_horisontal_pos_pmt" x="(-RICH_pixel_size_middle*3-RICH_pixel_size_surrounding/2) * 1" y="(-RICH_pixel_size_middle*5/2) * 1+30" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="7">
+<volumeref ref="pmt_pixel_horisontal"/>
+<position name="pmt_pixel_horisontal_pos_pmt" x="(RICH_pixel_size_middle*3+RICH_pixel_size_surrounding/2) * 1" y="(-RICH_pixel_size_middle*5/2) * 1" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="8">
+<volumeref ref="pmt_pixel_horisontal"/>
+<position name="pmt_pixel_horisontal_pos_pmt" x="(RICH_pixel_size_middle*3+RICH_pixel_size_surrounding/2) * 1" y="(-RICH_pixel_size_middle*5/2) * 1+6" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="9">
+<volumeref ref="pmt_pixel_horisontal"/>
+<position name="pmt_pixel_horisontal_pos_pmt" x="(RICH_pixel_size_middle*3+RICH_pixel_size_surrounding/2) * 1" y="(-RICH_pixel_size_middle*5/2) * 1+12" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="10">
+<volumeref ref="pmt_pixel_horisontal"/>
+<position name="pmt_pixel_horisontal_pos_pmt" x="(RICH_pixel_size_middle*3+RICH_pixel_size_surrounding/2) * 1" y="(-RICH_pixel_size_middle*5/2) * 1+18" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="11">
+<volumeref ref="pmt_pixel_horisontal"/>
+<position name="pmt_pixel_horisontal_pos_pmt" x="(RICH_pixel_size_middle*3+RICH_pixel_size_surrounding/2) * 1" y="(-RICH_pixel_size_middle*5/2) * 1+24" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="12">
+<volumeref ref="pmt_pixel_horisontal"/>
+<position name="pmt_pixel_horisontal_pos_pmt" x="(RICH_pixel_size_middle*3+RICH_pixel_size_surrounding/2) * 1" y="(-RICH_pixel_size_middle*5/2) * 1+30" z="(RICH_pmt_depth/2-0.25) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+</volume>
+<volume name="pmt_container">
+<materialref ref="RICHgas_CO2_dis"/>
+<solidref ref="pmt_container_PartBody"/>
+<physvol copynumber="1">
+<volumeref ref="pmt"/>
+<positionref ref="central"/>
+<rotationref ref="identity"/>
+</physvol>
+</volume>
+<volume name="camera_module">
+<materialref ref="RICHgas_CO2_dis"/>
+<solidref ref="camera_module_PartBody"/>
+<physvol copynumber="1">
+<volumeref ref="pmt_container"/>
+<position name="pmt_container_pos_camera_module" x="(-RICH_pmt_size-RICH_camera_gap_size) * 1" y="((RICH_pmt_size+RICH_camera_gap_size)/2) * 1" z="0" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="2">
+<volumeref ref="pmt_container"/>
+<position name="pmt_container_pos_camera_module" x="0" y="((RICH_pmt_size+RICH_camera_gap_size)/2) * 1" z="0" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="3">
+<volumeref ref="pmt_container"/>
+<position name="pmt_container_pos_camera_module" x="(RICH_pmt_size+RICH_camera_gap_size) * 1" y="((RICH_pmt_size+RICH_camera_gap_size)/2) * 1" z="0" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="4">
+<volumeref ref="pmt_container"/>
+<position name="pmt_container_pos_camera_module" x="(-RICH_pmt_size-RICH_camera_gap_size) * 1" y="(-(RICH_pmt_size+RICH_camera_gap_size)/2) * 1" z="0" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="5">
+<volumeref ref="pmt_container"/>
+<position name="pmt_container_pos_camera_module" x="0" y="(-(RICH_pmt_size+RICH_camera_gap_size)/2) * 1" z="0" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="6">
+<volumeref ref="pmt_container"/>
+<position name="pmt_container_pos_camera_module" x="(RICH_pmt_size+RICH_camera_gap_size) * 1" y="(-(RICH_pmt_size+RICH_camera_gap_size)/2) * 1" z="0" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+</volume>
+<volume name="alu_frame">
+<materialref ref="aluminium"/>
+<solidref ref="alu_frame_PartBody"/>
+</volume>
+<volume name="camera_strip">
+<materialref ref="RICHgas_CO2_dis"/>
+<solidref ref="camera_strip_PartBody"/>
+<physvol copynumber="1">
+<volumeref ref="camera_module"/>
+<position name="camera_module_pos_camera_strip" x="0" y="(-3*(2*RICH_pmt_size+2*RICH_camera_gap_size)) * 1" z="0" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="2">
+<volumeref ref="camera_module"/>
+<position name="camera_module_pos_camera_strip" x="0" y="(-3*(2*RICH_pmt_size+2*RICH_camera_gap_size)) * 1+106" z="0" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="3">
+<volumeref ref="camera_module"/>
+<position name="camera_module_pos_camera_strip" x="0" y="(-3*(2*RICH_pmt_size+2*RICH_camera_gap_size)) * 1+212" z="0" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="4">
+<volumeref ref="camera_module"/>
+<position name="camera_module_pos_camera_strip" x="0" y="(-3*(2*RICH_pmt_size+2*RICH_camera_gap_size)) * 1+318" z="0" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="5">
+<volumeref ref="camera_module"/>
+<position name="camera_module_pos_camera_strip" x="0" y="(-3*(2*RICH_pmt_size+2*RICH_camera_gap_size)) * 1+424" z="0" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="6">
+<volumeref ref="camera_module"/>
+<position name="camera_module_pos_camera_strip" x="0" y="(-3*(2*RICH_pmt_size+2*RICH_camera_gap_size)) * 1+530" z="0" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="7">
+<volumeref ref="camera_module"/>
+<position name="camera_module_pos_camera_strip" x="0" y="(-3*(2*RICH_pmt_size+2*RICH_camera_gap_size)) * 1+636" z="0" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="1">
+<volumeref ref="alu_frame"/>
+<position name="alu_frame_pos_camera_strip" x="0" y="0" z="(-RICH_pmt_depth/2-5) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+</volume>
+<assembly name="camera_container">
+<physvol copynumber="1">
+<volumeref ref="camera_strip"/>
+<position name="camera_strip_pos_camera_container" x="((RICH_camera_radius-RICH_pmt_depth/2) * sin((RICH_camera_segment_angle*(-7+0.5))*DEGtoRAD)) * 1" y="0" z="((RICH_camera_radius-RICH_pmt_depth/2) * cos((RICH_camera_segment_angle*(-7+0.5))*DEGtoRAD)) * 1" unit="mm"/>
+<rotation name="camera_strip_rot_camera_container" x="-(0)" y="-((RICH_camera_segment_angle*(-7+0.5)) * 1)" z="-(0)" unit="deg"/>
+</physvol>
+<physvol copynumber="2">
+<volumeref ref="camera_strip"/>
+<position name="camera_strip_pos_camera_container" x="((RICH_camera_radius-RICH_pmt_depth/2) * sin((RICH_camera_segment_angle*(-6+0.5))*DEGtoRAD)) * 1" y="0" z="((RICH_camera_radius-RICH_pmt_depth/2) * cos((RICH_camera_segment_angle*(-6+0.5))*DEGtoRAD)) * 1" unit="mm"/>
+<rotation name="camera_strip_rot_camera_container" x="-(0)" y="-((RICH_camera_segment_angle*(-6+0.5)) * 1)" z="-(0)" unit="deg"/>
+</physvol>
+<physvol copynumber="3">
+<volumeref ref="camera_strip"/>
+<position name="camera_strip_pos_camera_container" x="((RICH_camera_radius-RICH_pmt_depth/2) * sin((RICH_camera_segment_angle*(-5+0.5))*DEGtoRAD)) * 1" y="0" z="((RICH_camera_radius-RICH_pmt_depth/2) * cos((RICH_camera_segment_angle*(-5+0.5))*DEGtoRAD)) * 1" unit="mm"/>
+<rotation name="camera_strip_rot_camera_container" x="-(0)" y="-((RICH_camera_segment_angle*(-5+0.5)) * 1)" z="-(0)" unit="deg"/>
+</physvol>
+<physvol copynumber="4">
+<volumeref ref="camera_strip"/>
+<position name="camera_strip_pos_camera_container" x="((RICH_camera_radius-RICH_pmt_depth/2) * sin((RICH_camera_segment_angle*(-4+0.5))*DEGtoRAD)) * 1" y="0" z="((RICH_camera_radius-RICH_pmt_depth/2) * cos((RICH_camera_segment_angle*(-4+0.5))*DEGtoRAD)) * 1" unit="mm"/>
+<rotation name="camera_strip_rot_camera_container" x="-(0)" y="-((RICH_camera_segment_angle*(-4+0.5)) * 1)" z="-(0)" unit="deg"/>
+</physvol>
+<physvol copynumber="5">
+<volumeref ref="camera_strip"/>
+<position name="camera_strip_pos_camera_container" x="((RICH_camera_radius-RICH_pmt_depth/2) * sin((RICH_camera_segment_angle*(-3+0.5))*DEGtoRAD)) * 1" y="0" z="((RICH_camera_radius-RICH_pmt_depth/2) * cos((RICH_camera_segment_angle*(-3+0.5))*DEGtoRAD)) * 1" unit="mm"/>
+<rotation name="camera_strip_rot_camera_container" x="-(0)" y="-((RICH_camera_segment_angle*(-3+0.5)) * 1)" z="-(0)" unit="deg"/>
+</physvol>
+<physvol copynumber="6">
+<volumeref ref="camera_strip"/>
+<position name="camera_strip_pos_camera_container" x="((RICH_camera_radius-RICH_pmt_depth/2) * sin((RICH_camera_segment_angle*(-2+0.5))*DEGtoRAD)) * 1" y="0" z="((RICH_camera_radius-RICH_pmt_depth/2) * cos((RICH_camera_segment_angle*(-2+0.5))*DEGtoRAD)) * 1" unit="mm"/>
+<rotation name="camera_strip_rot_camera_container" x="-(0)" y="-((RICH_camera_segment_angle*(-2+0.5)) * 1)" z="-(0)" unit="deg"/>
+</physvol>
+<physvol copynumber="7">
+<volumeref ref="camera_strip"/>
+<position name="camera_strip_pos_camera_container" x="((RICH_camera_radius-RICH_pmt_depth/2) * sin((RICH_camera_segment_angle*(-1+0.5))*DEGtoRAD)) * 1" y="0" z="((RICH_camera_radius-RICH_pmt_depth/2) * cos((RICH_camera_segment_angle*(-1+0.5))*DEGtoRAD)) * 1" unit="mm"/>
+<rotation name="camera_strip_rot_camera_container" x="-(0)" y="-((RICH_camera_segment_angle*(-1+0.5)) * 1)" z="-(0)" unit="deg"/>
+</physvol>
+<physvol copynumber="8">
+<volumeref ref="camera_strip"/>
+<position name="camera_strip_pos_camera_container" x="((RICH_camera_radius-RICH_pmt_depth/2) * sin((RICH_camera_segment_angle*(1-0.5))*DEGtoRAD)) * 1" y="0" z="((RICH_camera_radius-RICH_pmt_depth/2) * cos((RICH_camera_segment_angle*(1-0.5))*DEGtoRAD)) * 1" unit="mm"/>
+<rotation name="camera_strip_rot_camera_container" x="-(0)" y="-((RICH_camera_segment_angle*(1-0.5)) * 1)" z="-(0)" unit="deg"/>
+</physvol>
+<physvol copynumber="9">
+<volumeref ref="camera_strip"/>
+<position name="camera_strip_pos_camera_container" x="((RICH_camera_radius-RICH_pmt_depth/2) * sin((RICH_camera_segment_angle*(2-0.5))*DEGtoRAD)) * 1" y="0" z="((RICH_camera_radius-RICH_pmt_depth/2) * cos((RICH_camera_segment_angle*(2-0.5))*DEGtoRAD)) * 1" unit="mm"/>
+<rotation name="camera_strip_rot_camera_container" x="-(0)" y="-((RICH_camera_segment_angle*(2-0.5)) * 1)" z="-(0)" unit="deg"/>
+</physvol>
+<physvol copynumber="10">
+<volumeref ref="camera_strip"/>
+<position name="camera_strip_pos_camera_container" x="((RICH_camera_radius-RICH_pmt_depth/2) * sin((RICH_camera_segment_angle*(3-0.5))*DEGtoRAD)) * 1" y="0" z="((RICH_camera_radius-RICH_pmt_depth/2) * cos((RICH_camera_segment_angle*(3-0.5))*DEGtoRAD)) * 1" unit="mm"/>
+<rotation name="camera_strip_rot_camera_container" x="-(0)" y="-((RICH_camera_segment_angle*(3-0.5)) * 1)" z="-(0)" unit="deg"/>
+</physvol>
+<physvol copynumber="11">
+<volumeref ref="camera_strip"/>
+<position name="camera_strip_pos_camera_container" x="((RICH_camera_radius-RICH_pmt_depth/2) * sin((RICH_camera_segment_angle*(4-0.5))*DEGtoRAD)) * 1" y="0" z="((RICH_camera_radius-RICH_pmt_depth/2) * cos((RICH_camera_segment_angle*(4-0.5))*DEGtoRAD)) * 1" unit="mm"/>
+<rotation name="camera_strip_rot_camera_container" x="-(0)" y="-((RICH_camera_segment_angle*(4-0.5)) * 1)" z="-(0)" unit="deg"/>
+</physvol>
+<physvol copynumber="12">
+<volumeref ref="camera_strip"/>
+<position name="camera_strip_pos_camera_container" x="((RICH_camera_radius-RICH_pmt_depth/2) * sin((RICH_camera_segment_angle*(5-0.5))*DEGtoRAD)) * 1" y="0" z="((RICH_camera_radius-RICH_pmt_depth/2) * cos((RICH_camera_segment_angle*(5-0.5))*DEGtoRAD)) * 1" unit="mm"/>
+<rotation name="camera_strip_rot_camera_container" x="-(0)" y="-((RICH_camera_segment_angle*(5-0.5)) * 1)" z="-(0)" unit="deg"/>
+</physvol>
+<physvol copynumber="13">
+<volumeref ref="camera_strip"/>
+<position name="camera_strip_pos_camera_container" x="((RICH_camera_radius-RICH_pmt_depth/2) * sin((RICH_camera_segment_angle*(6-0.5))*DEGtoRAD)) * 1" y="0" z="((RICH_camera_radius-RICH_pmt_depth/2) * cos((RICH_camera_segment_angle*(6-0.5))*DEGtoRAD)) * 1" unit="mm"/>
+<rotation name="camera_strip_rot_camera_container" x="-(0)" y="-((RICH_camera_segment_angle*(6-0.5)) * 1)" z="-(0)" unit="deg"/>
+</physvol>
+<physvol copynumber="14">
+<volumeref ref="camera_strip"/>
+<position name="camera_strip_pos_camera_container" x="((RICH_camera_radius-RICH_pmt_depth/2) * sin((RICH_camera_segment_angle*(7-0.5))*DEGtoRAD)) * 1" y="0" z="((RICH_camera_radius-RICH_pmt_depth/2) * cos((RICH_camera_segment_angle*(7-0.5))*DEGtoRAD)) * 1" unit="mm"/>
+<rotation name="camera_strip_rot_camera_container" x="-(0)" y="-((RICH_camera_segment_angle*(7-0.5)) * 1)" z="-(0)" unit="deg"/>
+</physvol>
+</assembly>
+<volume name="rich_cyl_pipe_section_vac">
+<materialref ref="vacuum"/>
+<solidref ref="rich_cyl_pipe_section_vac_PartBody"/>
+</volume>
+<volume name="rich_cyl_pipe_section">
+<materialref ref="aluminium"/>
+<solidref ref="rich_cyl_pipe_section_PartBody"/>
+<physvol copynumber="1">
+<volumeref ref="rich_cyl_pipe_section_vac"/>
+<positionref ref="central"/>
+<rotationref ref="identity"/>
+</physvol>
+</volume>
+<volume name="rich_pipe_flange">
+<materialref ref="aluminium"/>
+<solidref ref="rich_pipe_flange_PartBody"/>
+</volume>
+<volume name="rich_pipe_section_vac">
+<materialref ref="vacuum"/>
+<solidref ref="rich_pipe_section_vac_PartBody"/>
+</volume>
+<volume name="rich_pipe_section">
+<materialref ref="aluminium"/>
+<solidref ref="rich_pipe_section_PartBody"/>
+<physvol copynumber="1">
+<volumeref ref="rich_pipe_section_vac"/>
+<positionref ref="central"/>
+<rotationref ref="identity"/>
+</physvol>
+</volume>
+<volume name="mirror_tile_type0">
+<materialref ref="RICHglass"/>
+<solidref ref="mirror_tile_type0_PartBody"/>
+</volume>
+<volume name="mirror_tile_type1">
+<materialref ref="RICHglass"/>
+<solidref ref="mirror_tile_type1_PartBody"/>
+</volume>
+<volume name="mirror_tile_type2">
+<materialref ref="RICHglass"/>
+<solidref ref="mirror_tile_type2_PartBody"/>
+</volume>
+<volume name="mirror_tile_type3">
+<materialref ref="RICHglass"/>
+<solidref ref="mirror_tile_type3_PartBody"/>
+</volume>
+<volume name="mirror_tile_type4">
+<materialref ref="RICHglass"/>
+<solidref ref="mirror_tile_type4_PartBody"/>
+</volume>
+<volume name="mirror_tile_type5">
+<materialref ref="RICHglass"/>
+<solidref ref="mirror_tile_type5_PartBody"/>
+</volume>
+<assembly name="mirror_full_half_no_misalign">
+<physvol copynumber="1">
+<volumeref ref="mirror_tile_type0"/>
+<positionref ref="central"/>
+<rotation name="mirror_tile_type0_rot_mirror_full_half_no_misalign" x="-(0)" y="-(0)" z="-((-RICH_mirror_phi_step*9/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="2">
+<volumeref ref="mirror_tile_type0"/>
+<positionref ref="central"/>
+<rotation name="mirror_tile_type0_rot_mirror_full_half_no_misalign" x="-(0)" y="-(0)" z="-((-RICH_mirror_phi_step*7/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="3">
+<volumeref ref="mirror_tile_type0"/>
+<positionref ref="central"/>
+<rotation name="mirror_tile_type0_rot_mirror_full_half_no_misalign" x="-(0)" y="-(0)" z="-((-RICH_mirror_phi_step*5/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="4">
+<volumeref ref="mirror_tile_type0"/>
+<positionref ref="central"/>
+<rotation name="mirror_tile_type0_rot_mirror_full_half_no_misalign" x="-(0)" y="-(0)" z="-((-RICH_mirror_phi_step*3/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="1">
+<volumeref ref="mirror_tile_type4"/>
+<positionref ref="central"/>
+<rotation name="mirror_tile_type4_rot_mirror_full_half_no_misalign" x="-(0)" y="-(0)" z="-((-RICH_mirror_phi_step*1/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="1">
+<volumeref ref="mirror_tile_type5"/>
+<positionref ref="central"/>
+<rotation name="mirror_tile_type5_rot_mirror_full_half_no_misalign" x="-(0)" y="-(0)" z="-((RICH_mirror_phi_step*1/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="5">
+<volumeref ref="mirror_tile_type0"/>
+<positionref ref="central"/>
+<rotation name="mirror_tile_type0_rot_mirror_full_half_no_misalign" x="-(0)" y="-(0)" z="-((RICH_mirror_phi_step*3/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="6">
+<volumeref ref="mirror_tile_type0"/>
+<positionref ref="central"/>
+<rotation name="mirror_tile_type0_rot_mirror_full_half_no_misalign" x="-(0)" y="-(0)" z="-((RICH_mirror_phi_step*5/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="7">
+<volumeref ref="mirror_tile_type0"/>
+<positionref ref="central"/>
+<rotation name="mirror_tile_type0_rot_mirror_full_half_no_misalign" x="-(0)" y="-(0)" z="-((RICH_mirror_phi_step*7/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="8">
+<volumeref ref="mirror_tile_type0"/>
+<positionref ref="central"/>
+<rotation name="mirror_tile_type0_rot_mirror_full_half_no_misalign" x="-(0)" y="-(0)" z="-((RICH_mirror_phi_step*9/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="1">
+<volumeref ref="mirror_tile_type1"/>
+<positionref ref="central"/>
+<rotation name="mirror_tile_type1_rot_mirror_full_half_no_misalign" x="-(0)" y="-(0)" z="-((-RICH_mirror_phi_step*9/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="2">
+<volumeref ref="mirror_tile_type1"/>
+<positionref ref="central"/>
+<rotation name="mirror_tile_type1_rot_mirror_full_half_no_misalign" x="-(0)" y="-(0)" z="-((-RICH_mirror_phi_step*7/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="3">
+<volumeref ref="mirror_tile_type1"/>
+<positionref ref="central"/>
+<rotation name="mirror_tile_type1_rot_mirror_full_half_no_misalign" x="-(0)" y="-(0)" z="-((-RICH_mirror_phi_step*5/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="4">
+<volumeref ref="mirror_tile_type1"/>
+<positionref ref="central"/>
+<rotation name="mirror_tile_type1_rot_mirror_full_half_no_misalign" x="-(0)" y="-(0)" z="-((-RICH_mirror_phi_step*3/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="5">
+<volumeref ref="mirror_tile_type1"/>
+<positionref ref="central"/>
+<rotation name="mirror_tile_type1_rot_mirror_full_half_no_misalign" x="-(0)" y="-(0)" z="-((-RICH_mirror_phi_step*1/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="6">
+<volumeref ref="mirror_tile_type1"/>
+<positionref ref="central"/>
+<rotation name="mirror_tile_type1_rot_mirror_full_half_no_misalign" x="-(0)" y="-(0)" z="-((RICH_mirror_phi_step*1/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="7">
+<volumeref ref="mirror_tile_type1"/>
+<positionref ref="central"/>
+<rotation name="mirror_tile_type1_rot_mirror_full_half_no_misalign" x="-(0)" y="-(0)" z="-((RICH_mirror_phi_step*3/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="8">
+<volumeref ref="mirror_tile_type1"/>
+<positionref ref="central"/>
+<rotation name="mirror_tile_type1_rot_mirror_full_half_no_misalign" x="-(0)" y="-(0)" z="-((RICH_mirror_phi_step*5/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="9">
+<volumeref ref="mirror_tile_type1"/>
+<positionref ref="central"/>
+<rotation name="mirror_tile_type1_rot_mirror_full_half_no_misalign" x="-(0)" y="-(0)" z="-((RICH_mirror_phi_step*7/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="10">
+<volumeref ref="mirror_tile_type1"/>
+<positionref ref="central"/>
+<rotation name="mirror_tile_type1_rot_mirror_full_half_no_misalign" x="-(0)" y="-(0)" z="-((RICH_mirror_phi_step*9/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="1">
+<volumeref ref="mirror_tile_type2"/>
+<positionref ref="central"/>
+<rotation name="mirror_tile_type2_rot_mirror_full_half_no_misalign" x="-(0)" y="-(0)" z="-((-RICH_mirror_phi_step*9/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="2">
+<volumeref ref="mirror_tile_type2"/>
+<positionref ref="central"/>
+<rotation name="mirror_tile_type2_rot_mirror_full_half_no_misalign" x="-(0)" y="-(0)" z="-((-RICH_mirror_phi_step*7/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="3">
+<volumeref ref="mirror_tile_type2"/>
+<positionref ref="central"/>
+<rotation name="mirror_tile_type2_rot_mirror_full_half_no_misalign" x="-(0)" y="-(0)" z="-((-RICH_mirror_phi_step*5/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="4">
+<volumeref ref="mirror_tile_type2"/>
+<positionref ref="central"/>
+<rotation name="mirror_tile_type2_rot_mirror_full_half_no_misalign" x="-(0)" y="-(0)" z="-((-RICH_mirror_phi_step*3/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="5">
+<volumeref ref="mirror_tile_type2"/>
+<positionref ref="central"/>
+<rotation name="mirror_tile_type2_rot_mirror_full_half_no_misalign" x="-(0)" y="-(0)" z="-((-RICH_mirror_phi_step*1/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="6">
+<volumeref ref="mirror_tile_type2"/>
+<positionref ref="central"/>
+<rotation name="mirror_tile_type2_rot_mirror_full_half_no_misalign" x="-(0)" y="-(0)" z="-((RICH_mirror_phi_step*1/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="7">
+<volumeref ref="mirror_tile_type2"/>
+<positionref ref="central"/>
+<rotation name="mirror_tile_type2_rot_mirror_full_half_no_misalign" x="-(0)" y="-(0)" z="-((RICH_mirror_phi_step*3/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="8">
+<volumeref ref="mirror_tile_type2"/>
+<positionref ref="central"/>
+<rotation name="mirror_tile_type2_rot_mirror_full_half_no_misalign" x="-(0)" y="-(0)" z="-((RICH_mirror_phi_step*5/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="9">
+<volumeref ref="mirror_tile_type2"/>
+<positionref ref="central"/>
+<rotation name="mirror_tile_type2_rot_mirror_full_half_no_misalign" x="-(0)" y="-(0)" z="-((RICH_mirror_phi_step*7/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="10">
+<volumeref ref="mirror_tile_type2"/>
+<positionref ref="central"/>
+<rotation name="mirror_tile_type2_rot_mirror_full_half_no_misalign" x="-(0)" y="-(0)" z="-((RICH_mirror_phi_step*9/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="1">
+<volumeref ref="mirror_tile_type3"/>
+<positionref ref="central"/>
+<rotation name="mirror_tile_type3_rot_mirror_full_half_no_misalign" x="-(0)" y="-(0)" z="-((-RICH_mirror_phi_step*9/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="2">
+<volumeref ref="mirror_tile_type3"/>
+<positionref ref="central"/>
+<rotation name="mirror_tile_type3_rot_mirror_full_half_no_misalign" x="-(0)" y="-(0)" z="-((-RICH_mirror_phi_step*7/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="3">
+<volumeref ref="mirror_tile_type3"/>
+<positionref ref="central"/>
+<rotation name="mirror_tile_type3_rot_mirror_full_half_no_misalign" x="-(0)" y="-(0)" z="-((-RICH_mirror_phi_step*5/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="4">
+<volumeref ref="mirror_tile_type3"/>
+<positionref ref="central"/>
+<rotation name="mirror_tile_type3_rot_mirror_full_half_no_misalign" x="-(0)" y="-(0)" z="-((-RICH_mirror_phi_step*3/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="5">
+<volumeref ref="mirror_tile_type3"/>
+<positionref ref="central"/>
+<rotation name="mirror_tile_type3_rot_mirror_full_half_no_misalign" x="-(0)" y="-(0)" z="-((-RICH_mirror_phi_step*1/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="6">
+<volumeref ref="mirror_tile_type3"/>
+<positionref ref="central"/>
+<rotation name="mirror_tile_type3_rot_mirror_full_half_no_misalign" x="-(0)" y="-(0)" z="-((RICH_mirror_phi_step*1/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="7">
+<volumeref ref="mirror_tile_type3"/>
+<positionref ref="central"/>
+<rotation name="mirror_tile_type3_rot_mirror_full_half_no_misalign" x="-(0)" y="-(0)" z="-((RICH_mirror_phi_step*3/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="8">
+<volumeref ref="mirror_tile_type3"/>
+<positionref ref="central"/>
+<rotation name="mirror_tile_type3_rot_mirror_full_half_no_misalign" x="-(0)" y="-(0)" z="-((RICH_mirror_phi_step*5/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="9">
+<volumeref ref="mirror_tile_type3"/>
+<positionref ref="central"/>
+<rotation name="mirror_tile_type3_rot_mirror_full_half_no_misalign" x="-(0)" y="-(0)" z="-((RICH_mirror_phi_step*7/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="10">
+<volumeref ref="mirror_tile_type3"/>
+<positionref ref="central"/>
+<rotation name="mirror_tile_type3_rot_mirror_full_half_no_misalign" x="-(0)" y="-(0)" z="-((RICH_mirror_phi_step*9/2) * 1)" unit="deg"/>
+</physvol>
+</assembly>
+<volume name="rich_entrance">
+<materialref ref="kapton"/>
+<solidref ref="rich_entrance_PartBody"/>
+</volume>
+<volume name="rich_exit">
+<materialref ref="kapton"/>
+<solidref ref="rich_exit_PartBody"/>
+</volume>
+<volume name="Shielding_box_top">
+<materialref ref="iron"/>
+<solidref ref="Shielding_box_top_PartBody"/>
+</volume>
+<volume name="Shielding_box_back">
+<materialref ref="iron"/>
+<solidref ref="Shielding_box_back_PartBody"/>
+</volume>
+<volume name="Shielding_box_bottom">
+<materialref ref="iron"/>
+<solidref ref="Shielding_box_bottom_PartBody"/>
+</volume>
+<volume name="Shielding_box_top_horiz_add">
+<materialref ref="iron"/>
+<solidref ref="Shielding_box_top_horiz_add_PartBody"/>
+</volume>
+<volume name="Shielding_box_back_horiz_add">
+<materialref ref="iron"/>
+<solidref ref="Shielding_box_back_horiz_add_PartBody"/>
+</volume>
+<volume name="Shielding_box_back_horiz_add_sym">
+<materialref ref="iron"/>
+<solidref ref="Shielding_box_back_horiz_add_sym_PartBody"/>
+</volume>
+<volume name="Shielding_box_bottom_horiz_add">
+<materialref ref="iron"/>
+<solidref ref="Shielding_box_bottom_horiz_add_PartBody"/>
+</volume>
+<volume name="Shielding_box_bottom_horiz_add_sym">
+<materialref ref="iron"/>
+<solidref ref="Shielding_box_bottom_horiz_add_sym_PartBody"/>
+</volume>
+<volume name="Shielding_box_side">
+<materialref ref="iron"/>
+<solidref ref="Shielding_box_side_PartBody"/>
+</volume>
+<volume name="Shielding_box_side_sym">
+<materialref ref="iron"/>
+<solidref ref="Shielding_box_side_sym_PartBody"/>
+</volume>
+<volume name="Shielding_box_nose_horiz_add">
+<materialref ref="iron"/>
+<solidref ref="Shielding_box_nose_horiz_add_PartBody"/>
+</volume>
+<volume name="Shielding_box_small_piece">
+<materialref ref="iron"/>
+<solidref ref="Shielding_box_small_piece_PartBody"/>
+</volume>
+<volume name="Shielding_box_nose">
+<materialref ref="iron"/>
+<solidref ref="Shielding_box_nose_PartBody"/>
+</volume>
+<assembly name="shielding_box_container">
+<physvol copynumber="1">
+<volumeref ref="Shielding_box_top"/>
+<position name="Shielding_box_top_pos_shielding_box_container" x="0" y="0" z="((Sh_box_vert_space+Sh_box_thickness_top)/2) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="1">
+<volumeref ref="Shielding_box_back"/>
+<positionref ref="central"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="1">
+<volumeref ref="Shielding_box_bottom"/>
+<position name="Shielding_box_bottom_pos_shielding_box_container" x="0" y="0" z="(-(Sh_box_vert_space+Sh_box_thickness_bottom)/2) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="1">
+<volumeref ref="Shielding_box_top_horiz_add"/>
+<position name="Shielding_box_top_horiz_add_pos_shielding_box_container" x="(((Sh_box_Rmax+Sh_box_Rmin-Sh_box_thickness_back)/2) * cos(((Sh_box_horiz_spread_angle/2))*DEGtoRAD) - ((Sh_box_horiz_add+Sh_box_thickness_sides)/2) * sin(((Sh_box_horiz_spread_angle/2))*DEGtoRAD)) * 1" y="(((Sh_box_Rmax+Sh_box_Rmin-Sh_box_thickness_back)/2) * sin(((Sh_box_horiz_spread_angle/2))*DEGtoRAD) + ((Sh_box_horiz_add+Sh_box_thickness_sides)/2) * cos(((Sh_box_horiz_spread_angle/2))*DEGtoRAD)) * 1" z="((Sh_box_vert_space+Sh_box_thickness_top)/2) * 1" unit="mm"/>
+<rotation name="Shielding_box_top_horiz_add_rot_shielding_box_container" x="-(0)" y="-(0)" z="-((Sh_box_horiz_spread_angle/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="2">
+<volumeref ref="Shielding_box_top_horiz_add"/>
+<position name="Shielding_box_top_horiz_add_pos_shielding_box_container" x="(((Sh_box_Rmax+Sh_box_Rmin-Sh_box_thickness_back)/2) * cos(((Sh_box_horiz_spread_angle/2))*DEGtoRAD) - ((Sh_box_horiz_add+Sh_box_thickness_sides)/2) * sin(((Sh_box_horiz_spread_angle/2))*DEGtoRAD)) * 1" y="(-((Sh_box_Rmax+Sh_box_Rmin-Sh_box_thickness_back)/2) * sin(((Sh_box_horiz_spread_angle/2))*DEGtoRAD) - ((Sh_box_horiz_add+Sh_box_thickness_sides)/2) * cos(((Sh_box_horiz_spread_angle/2))*DEGtoRAD)) * 1" z="((Sh_box_vert_space+Sh_box_thickness_top)/2) * 1" unit="mm"/>
+<rotation name="Shielding_box_top_horiz_add_rot_shielding_box_container" x="-(0)" y="-(0)" z="-((-Sh_box_horiz_spread_angle/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="1">
+<volumeref ref="Shielding_box_back_horiz_add"/>
+<position name="Shielding_box_back_horiz_add_pos_shielding_box_container" x="((Sh_box_Rmin-Sh_box_thickness_back/2) * cos(((Sh_box_horiz_spread_angle/2))*DEGtoRAD) - ((Sh_box_horiz_add+Sh_box_thickness_sides)/2) * sin(((Sh_box_horiz_spread_angle/2))*DEGtoRAD)) * 1" y="((Sh_box_Rmin-Sh_box_thickness_back/2) * sin(((Sh_box_horiz_spread_angle/2))*DEGtoRAD) + ((Sh_box_horiz_add+Sh_box_thickness_sides)/2) * cos(((Sh_box_horiz_spread_angle/2))*DEGtoRAD)) * 1" z="0" unit="mm"/>
+<rotation name="Shielding_box_back_horiz_add_rot_shielding_box_container" x="-(0)" y="-(0)" z="-((Sh_box_horiz_spread_angle/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="1">
+<volumeref ref="Shielding_box_back_horiz_add_sym"/>
+<position name="Shielding_box_back_horiz_add_sym_pos_shielding_box_container" x="((Sh_box_Rmin-Sh_box_thickness_back/2) * cos(((Sh_box_horiz_spread_angle/2))*DEGtoRAD) - ((Sh_box_horiz_add+Sh_box_thickness_sides)/2) * sin(((Sh_box_horiz_spread_angle/2))*DEGtoRAD)) * 1" y="(-(Sh_box_Rmin-Sh_box_thickness_back/2) * sin(((Sh_box_horiz_spread_angle/2))*DEGtoRAD) - ((Sh_box_horiz_add+Sh_box_thickness_sides)/2) * cos(((Sh_box_horiz_spread_angle/2))*DEGtoRAD)) * 1" z="0" unit="mm"/>
+<rotation name="Shielding_box_back_horiz_add_sym_rot_shielding_box_container" x="-(0)" y="-(0)" z="-((-Sh_box_horiz_spread_angle/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="1">
+<volumeref ref="Shielding_box_bottom_horiz_add"/>
+<position name="Shielding_box_bottom_horiz_add_pos_shielding_box_container" x="(((Sh_box_Rmax_bottom-Sh_box_thickness_nose+Sh_box_Rmin-Sh_box_thickness_back+Sh_box_thickness_bottom*tan((Sh_box_nose_angle)*DEGtoRAD)/2)/2) * cos(((Sh_box_horiz_spread_angle/2))*DEGtoRAD) - ((Sh_box_horiz_add+Sh_box_thickness_sides)/2) * sin(((Sh_box_horiz_spread_angle/2))*DEGtoRAD)) * 1" y="(((Sh_box_Rmax_bottom-Sh_box_thickness_nose+Sh_box_Rmin-Sh_box_thickness_back+Sh_box_thickness_bottom*tan((Sh_box_nose_angle)*DEGtoRAD)/2)/2) * sin(((Sh_box_horiz_spread_angle/2))*DEGtoRAD) + ((Sh_box_horiz_add+Sh_box_thickness_sides)/2) * cos(((Sh_box_horiz_spread_angle/2))*DEGtoRAD)) * 1" z="(-(Sh_box_vert_space+Sh_box_thickness_bottom)/2) * 1" unit="mm"/>
+<rotation name="Shielding_box_bottom_horiz_add_rot_shielding_box_container" x="-(0)" y="-(0)" z="-((Sh_box_horiz_spread_angle/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="1">
+<volumeref ref="Shielding_box_bottom_horiz_add_sym"/>
+<position name="Shielding_box_bottom_horiz_add_sym_pos_shielding_box_container" x="(((Sh_box_Rmax_bottom-Sh_box_thickness_nose+Sh_box_Rmin-Sh_box_thickness_back+Sh_box_thickness_bottom*tan((Sh_box_nose_angle)*DEGtoRAD)/2)/2) * cos(((Sh_box_horiz_spread_angle/2))*DEGtoRAD) - ((Sh_box_horiz_add+Sh_box_thickness_sides)/2) * sin(((Sh_box_horiz_spread_angle/2))*DEGtoRAD)) * 1" y="(-((Sh_box_Rmax_bottom-Sh_box_thickness_nose+Sh_box_Rmin-Sh_box_thickness_back+Sh_box_thickness_bottom*tan((Sh_box_nose_angle)*DEGtoRAD)/2)/2) * sin(((Sh_box_horiz_spread_angle/2))*DEGtoRAD) - ((Sh_box_horiz_add+Sh_box_thickness_sides)/2) * cos(((Sh_box_horiz_spread_angle/2))*DEGtoRAD)) * 1" z="(-(Sh_box_vert_space+Sh_box_thickness_bottom)/2) * 1" unit="mm"/>
+<rotation name="Shielding_box_bottom_horiz_add_sym_rot_shielding_box_container" x="-(0)" y="-(0)" z="-((-Sh_box_horiz_spread_angle/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="1">
+<volumeref ref="Shielding_box_side"/>
+<position name="Shielding_box_side_pos_shielding_box_container" x="(((Sh_box_Rmax+Sh_box_Rmin)/2) * cos(((Sh_box_horiz_spread_angle/2))*DEGtoRAD) - (Sh_box_horiz_add+Sh_box_thickness_sides/2) * sin(((Sh_box_horiz_spread_angle/2))*DEGtoRAD)) * 1" y="(((Sh_box_Rmax+Sh_box_Rmin)/2) * sin(((Sh_box_horiz_spread_angle/2))*DEGtoRAD) + (Sh_box_horiz_add+Sh_box_thickness_sides/2) * cos(((Sh_box_horiz_spread_angle/2))*DEGtoRAD)) * 1" z="0" unit="mm"/>
+<rotation name="Shielding_box_side_rot_shielding_box_container" x="-(0)" y="-(0)" z="-((Sh_box_horiz_spread_angle/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="1">
+<volumeref ref="Shielding_box_side_sym"/>
+<position name="Shielding_box_side_sym_pos_shielding_box_container" x="(((Sh_box_Rmax+Sh_box_Rmin)/2) * cos(((Sh_box_horiz_spread_angle/2))*DEGtoRAD) - (Sh_box_horiz_add+Sh_box_thickness_sides/2) * sin(((Sh_box_horiz_spread_angle/2))*DEGtoRAD)) * 1" y="(-((Sh_box_Rmax+Sh_box_Rmin)/2) * sin(((Sh_box_horiz_spread_angle/2))*DEGtoRAD) - (Sh_box_horiz_add+Sh_box_thickness_sides/2) * cos(((Sh_box_horiz_spread_angle/2))*DEGtoRAD)) * 1" z="0" unit="mm"/>
+<rotation name="Shielding_box_side_sym_rot_shielding_box_container" x="-(0)" y="-(0)" z="-((-Sh_box_horiz_spread_angle/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="1">
+<volumeref ref="Shielding_box_nose_horiz_add"/>
+<position name="Shielding_box_nose_horiz_add_pos_shielding_box_container" x="((Sh_box_Rmax_bottom+Sh_box_nose_vert_size*tan((Sh_box_nose_angle)*DEGtoRAD)/2-Sh_box_thickness_nose/2) * cos(((Sh_box_horiz_spread_angle/2))*DEGtoRAD) - ((Sh_box_horiz_add+Sh_box_thickness_sides)/2) * sin(((Sh_box_horiz_spread_angle/2))*DEGtoRAD)) * 1" y="((Sh_box_Rmax_bottom+Sh_box_nose_vert_size*tan((Sh_box_nose_angle)*DEGtoRAD)/2-Sh_box_thickness_nose/2) * sin(((Sh_box_horiz_spread_angle/2))*DEGtoRAD) + ((Sh_box_horiz_add+Sh_box_thickness_sides)/2) * cos(((Sh_box_horiz_spread_angle/2))*DEGtoRAD)) * 1" z="((-Sh_box_vert_space-Sh_box_nose_vert_size)/2) * 1" unit="mm"/>
+<rotation name="Shielding_box_nose_horiz_add_rot_shielding_box_container" x="-(0)" y="-(0)" z="-((Sh_box_horiz_spread_angle/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="2">
+<volumeref ref="Shielding_box_nose_horiz_add"/>
+<position name="Shielding_box_nose_horiz_add_pos_shielding_box_container" x="((Sh_box_Rmax_bottom+Sh_box_nose_vert_size*tan((Sh_box_nose_angle)*DEGtoRAD)/2-Sh_box_thickness_nose/2) * cos(((Sh_box_horiz_spread_angle/2))*DEGtoRAD) - ((Sh_box_horiz_add+Sh_box_thickness_sides)/2) * sin(((Sh_box_horiz_spread_angle/2))*DEGtoRAD)) * 1" y="(-(Sh_box_Rmax_bottom+Sh_box_nose_vert_size*tan((Sh_box_nose_angle)*DEGtoRAD)/2-Sh_box_thickness_nose/2) * sin(((Sh_box_horiz_spread_angle/2))*DEGtoRAD) - ((Sh_box_horiz_add+Sh_box_thickness_sides)/2) * cos(((Sh_box_horiz_spread_angle/2))*DEGtoRAD)) * 1" z="((-Sh_box_vert_space-Sh_box_nose_vert_size)/2) * 1" unit="mm"/>
+<rotation name="Shielding_box_nose_horiz_add_rot_shielding_box_container" x="-(0)" y="-(0)" z="-((-Sh_box_horiz_spread_angle/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="1">
+<volumeref ref="Shielding_box_small_piece"/>
+<position name="Shielding_box_small_piece_pos_shielding_box_container" x="(((Sh_box_Rmax+Sh_box_Rmax_bottom+Sh_box_thickness_bottom*tan((Sh_box_nose_angle)*DEGtoRAD)/2)/2) * cos(((Sh_box_horiz_spread_angle/2))*DEGtoRAD) - (Sh_box_horiz_add+Sh_box_thickness_sides/2) * sin(((Sh_box_horiz_spread_angle/2))*DEGtoRAD)) * 1" y="(((Sh_box_Rmax+Sh_box_Rmax_bottom+Sh_box_thickness_bottom*tan((Sh_box_nose_angle)*DEGtoRAD)/2)/2) * sin(((Sh_box_horiz_spread_angle/2))*DEGtoRAD) + (Sh_box_horiz_add+Sh_box_thickness_sides/2) * cos(((Sh_box_horiz_spread_angle/2))*DEGtoRAD)) * 1" z="(-(Sh_box_vert_space+Sh_box_thickness_bottom)/2) * 1" unit="mm"/>
+<rotation name="Shielding_box_small_piece_rot_shielding_box_container" x="-(0)" y="-(0)" z="-((Sh_box_horiz_spread_angle/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="2">
+<volumeref ref="Shielding_box_small_piece"/>
+<position name="Shielding_box_small_piece_pos_shielding_box_container" x="(((Sh_box_Rmax+Sh_box_Rmax_bottom+Sh_box_thickness_bottom*tan((Sh_box_nose_angle)*DEGtoRAD)/2)/2) * cos(((Sh_box_horiz_spread_angle/2))*DEGtoRAD) - (Sh_box_horiz_add+Sh_box_thickness_sides/2) * sin(((Sh_box_horiz_spread_angle/2))*DEGtoRAD)) * 1" y="(-((Sh_box_Rmax+Sh_box_Rmax_bottom+Sh_box_thickness_bottom*tan((Sh_box_nose_angle)*DEGtoRAD)/2)/2) * sin(((Sh_box_horiz_spread_angle/2))*DEGtoRAD) - (Sh_box_horiz_add+Sh_box_thickness_sides/2) * cos(((Sh_box_horiz_spread_angle/2))*DEGtoRAD)) * 1" z="(-(Sh_box_vert_space+Sh_box_thickness_bottom)/2) * 1" unit="mm"/>
+<rotation name="Shielding_box_small_piece_rot_shielding_box_container" x="-(0)" y="-(0)" z="-((-Sh_box_horiz_spread_angle/2) * 1)" unit="deg"/>
+</physvol>
+<physvol copynumber="1">
+<volumeref ref="Shielding_box_nose"/>
+<position name="Shielding_box_nose_pos_shielding_box_container" x="0" y="0" z="((-Sh_box_vert_space-Sh_box_nose_vert_size)/2) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+</assembly>
+<volume name="sens_plane">
+<materialref ref="RICHgas_CO2_dis+"/>
+<solidref ref="sens_plane_PartBody"/>
+</volume>
+<!--
+<volume name="Mirror">
+<materialref ref="RICHglass"/>
+<solidref ref="Mirror_PartBody"/>
+</volume>
+<volume name="Camera">
+<materialref ref="CsI"/>
+<solidref ref="Camera_PartBody"/>
+</volume>
+<volume name="Solid_behind_camera">
+<materialref ref="aluminium"/>
+<solidref ref="Solid_behind_camera_PartBody"/>
+</volume>
+-->
+<volume name="mainframe_part2_gas">
+<materialref ref="RICHgas_CO2_dis"/>
+<solidref ref="mainframe_part2_gas_PartBody"/>
+</volume>
+<volume name="mainframe_part3_gas">
+<materialref ref="RICHgas_CO2_dis"/>
+<solidref ref="mainframe_part3_gas_PartBody"/>
+</volume>
+<volume name="mainframe_part5_gas">
+<materialref ref="RICHgas_CO2_dis"/>
+<solidref ref="mainframe_part5_gas_PartBody"/>
+</volume>
+<volume name="mainframe_part8_gas">
+<materialref ref="RICHgas_CO2_dis"/>
+<solidref ref="mainframe_part8_gas_PartBody"/>
+</volume>
+<volume name="mainframe_part9_gas">
+<materialref ref="RICHgas_CO2_dis"/>
+<solidref ref="mainframe_part9_gas_PartBody"/>
+</volume>
+<volume name="mainframe_part10_gas">
+<materialref ref="RICHgas_CO2_dis"/>
+<solidref ref="mainframe_part10_gas_PartBody"/>
+</volume>
+<volume name="mainframe_part2">
+<materialref ref="aluminium"/>
+<solidref ref="mainframe_part2_PartBody"/>
+<physvol copynumber="1">
+<volumeref ref="mainframe_part2_gas"/>
+<positionref ref="central"/>
+<rotationref ref="identity"/>
+</physvol>
+</volume>
+<volume name="mainframe_part3">
+<materialref ref="aluminium"/>
+<solidref ref="mainframe_part3_PartBody"/>
+<physvol copynumber="1">
+<volumeref ref="mainframe_part3_gas"/>
+<positionref ref="central"/>
+<rotationref ref="identity"/>
+</physvol>
+</volume>
+<volume name="mainframe_part5">
+<materialref ref="aluminium"/>
+<solidref ref="mainframe_part5_PartBody"/>
+<physvol copynumber="1">
+<volumeref ref="mainframe_part5_gas"/>
+<positionref ref="central"/>
+<rotationref ref="identity"/>
+</physvol>
+</volume>
+<volume name="mainframe_part8">
+<materialref ref="aluminium"/>
+<solidref ref="mainframe_part8_PartBody"/>
+<physvol copynumber="1">
+<volumeref ref="mainframe_part8_gas"/>
+<positionref ref="central"/>
+<rotationref ref="identity"/>
+</physvol>
+</volume>
+<volume name="mainframe_part9">
+<materialref ref="aluminium"/>
+<solidref ref="mainframe_part9_PartBody"/>
+<physvol copynumber="1">
+<volumeref ref="mainframe_part9_gas"/>
+<positionref ref="central"/>
+<rotationref ref="identity"/>
+</physvol>
+</volume>
+<volume name="mainframe_part10">
+<materialref ref="aluminium"/>
+<solidref ref="mainframe_part10_PartBody"/>
+<physvol copynumber="1">
+<volumeref ref="mainframe_part10_gas"/>
+<positionref ref="central"/>
+<rotationref ref="identity"/>
+</physvol>
+</volume>
+<assembly name="mainframe_assembly">
+<physvol copynumber="1">
+<volumeref ref="mainframe_part8"/>
+<position name="mainframe_part8_pos_mainframe_assembly" x="-2579" y="0" z="511.95561" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="2">
+<volumeref ref="mainframe_part8"/>
+<position name="mainframe_part8_pos_mainframe_assembly" x="2579" y="0" z="511.95561" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="3">
+<volumeref ref="mainframe_part8"/>
+<position name="mainframe_part8_pos_mainframe_assembly" x="-2579" y="0" z="-511.95561" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="4">
+<volumeref ref="mainframe_part8"/>
+<position name="mainframe_part8_pos_mainframe_assembly" x="2579" y="0" z="-511.95561" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="1">
+<volumeref ref="mainframe_part9"/>
+<position name="mainframe_part9_pos_mainframe_assembly" x="0" y="(RICH_height/2-RICH_covering_thickness-50) * 1" z="511.95561" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="2">
+<volumeref ref="mainframe_part9"/>
+<position name="mainframe_part9_pos_mainframe_assembly" x="0" y="(RICH_height/2-RICH_covering_thickness-50) * 1" z="-511.95561" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="3">
+<volumeref ref="mainframe_part9"/>
+<position name="mainframe_part9_pos_mainframe_assembly" x="0" y="(-RICH_height/2+RICH_covering_thickness+50) * 1" z="511.95561" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="4">
+<volumeref ref="mainframe_part9"/>
+<position name="mainframe_part9_pos_mainframe_assembly" x="0" y="(-RICH_height/2+RICH_covering_thickness+50) * 1" z="-511.95561" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="1">
+<volumeref ref="mainframe_part10"/>
+<position name="mainframe_part10_pos_mainframe_assembly" x="-2579" y="(RICH_height/2-RICH_covering_thickness-50) * 1" z="0" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="2">
+<volumeref ref="mainframe_part10"/>
+<position name="mainframe_part10_pos_mainframe_assembly" x="-2579" y="(-RICH_height/2+RICH_covering_thickness+50) * 1" z="0" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="3">
+<volumeref ref="mainframe_part10"/>
+<position name="mainframe_part10_pos_mainframe_assembly" x="2579" y="(RICH_height/2-RICH_covering_thickness-50) * 1" z="0" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="4">
+<volumeref ref="mainframe_part10"/>
+<position name="mainframe_part10_pos_mainframe_assembly" x="2579" y="(-RICH_height/2+RICH_covering_thickness+50) * 1" z="0" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="1">
+<volumeref ref="mainframe_part5"/>
+<position name="mainframe_part5_pos_mainframe_assembly" x="1964.811997" y="(RICH_height/2-RICH_covering_thickness-50) * 1" z="-917.898222" unit="mm"/>
+<rotation name="mainframe_part5_rot_mainframe_assembly" x="-(0)" y="-(-31.991651000046)" z="-(0)" unit="deg"/>
+</physvol>
+<physvol copynumber="2">
+<volumeref ref="mainframe_part5"/>
+<position name="mainframe_part5_pos_mainframe_assembly" x="1964.811997" y="(-RICH_height/2+RICH_covering_thickness+50) * 1" z="-917.898222" unit="mm"/>
+<rotation name="mainframe_part5_rot_mainframe_assembly" x="-(0)" y="-(-31.991651000046)" z="-(0)" unit="deg"/>
+</physvol>
+<physvol copynumber="3">
+<volumeref ref="mainframe_part5"/>
+<position name="mainframe_part5_pos_mainframe_assembly" x="-1964.811997" y="(RICH_height/2-RICH_covering_thickness-50) * 1" z="-917.898222" unit="mm"/>
+<rotation name="mainframe_part5_rot_mainframe_assembly" x="-(0)" y="-(31.991651000092)" z="-(180.0)" unit="deg"/>
+</physvol>
+<physvol copynumber="4">
+<volumeref ref="mainframe_part5"/>
+<position name="mainframe_part5_pos_mainframe_assembly" x="-1964.811997" y="(-RICH_height/2+RICH_covering_thickness+50) * 1" z="-917.898222" unit="mm"/>
+<rotation name="mainframe_part5_rot_mainframe_assembly" x="-(0)" y="-(31.991651000092)" z="-(180.0)" unit="deg"/>
+</physvol>
+<physvol copynumber="1">
+<volumeref ref="mainframe_part3"/>
+<position name="mainframe_part3_pos_mainframe_assembly" x="-1345" y="(RICH_height/2-RICH_covering_thickness-50) * 1" z="-994.875" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="2">
+<volumeref ref="mainframe_part3"/>
+<position name="mainframe_part3_pos_mainframe_assembly" x="-1345" y="(-RICH_height/2+RICH_covering_thickness+50) * 1" z="-994.875" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="3">
+<volumeref ref="mainframe_part3"/>
+<position name="mainframe_part3_pos_mainframe_assembly" x="1345" y="(RICH_height/2-RICH_covering_thickness-50) * 1" z="-994.875" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="4">
+<volumeref ref="mainframe_part3"/>
+<position name="mainframe_part3_pos_mainframe_assembly" x="1345" y="(-RICH_height/2+RICH_covering_thickness+50) * 1" z="-994.875" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="5">
+<volumeref ref="mainframe_part8"/>
+<position name="mainframe_part8_pos_mainframe_assembly" x="2151.316481" y="0" z="-801.395071" unit="mm"/>
+<rotation name="mainframe_part8_rot_mainframe_assembly" x="-(0)" y="-(-31.991651000046)" z="-(0)" unit="deg"/>
+</physvol>
+<physvol copynumber="6">
+<volumeref ref="mainframe_part8"/>
+<position name="mainframe_part8_pos_mainframe_assembly" x="1781.11648" y="0" z="-1032.646704" unit="mm"/>
+<rotation name="mainframe_part8_rot_mainframe_assembly" x="-(0)" y="-(-31.991651000046)" z="-(0)" unit="deg"/>
+</physvol>
+<physvol copynumber="7">
+<volumeref ref="mainframe_part8"/>
+<position name="mainframe_part8_pos_mainframe_assembly" x="1463.896048" y="0" z="-1230.803763" unit="mm"/>
+<rotation name="mainframe_part8_rot_mainframe_assembly" x="-(0)" y="-(-31.991651000046)" z="-(0)" unit="deg"/>
+</physvol>
+<physvol copynumber="8">
+<volumeref ref="mainframe_part8"/>
+<position name="mainframe_part8_pos_mainframe_assembly" x="-2151.316481" y="0" z="-801.395071" unit="mm"/>
+<rotation name="mainframe_part8_rot_mainframe_assembly" x="-(0)" y="-(31.991651000046)" z="-(0)" unit="deg"/>
+</physvol>
+<physvol copynumber="9">
+<volumeref ref="mainframe_part8"/>
+<position name="mainframe_part8_pos_mainframe_assembly" x="-1781.11648" y="0" z="-1032.646704" unit="mm"/>
+<rotation name="mainframe_part8_rot_mainframe_assembly" x="-(0)" y="-(31.991651000046)" z="-(0)" unit="deg"/>
+</physvol>
+<physvol copynumber="10">
+<volumeref ref="mainframe_part8"/>
+<position name="mainframe_part8_pos_mainframe_assembly" x="-1463.896048" y="0" z="-1230.803763" unit="mm"/>
+<rotation name="mainframe_part8_rot_mainframe_assembly" x="-(0)" y="-(31.991651000046)" z="-(0)" unit="deg"/>
+</physvol>
+<physvol copynumber="1">
+<volumeref ref="mainframe_part2"/>
+<position name="mainframe_part2_pos_mainframe_assembly" x="0" y="1000" z="-1282.79439" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="2">
+<volumeref ref="mainframe_part2"/>
+<position name="mainframe_part2_pos_mainframe_assembly" x="0" y="-1000" z="-1282.79439" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="5">
+<volumeref ref="mainframe_part10"/>
+<position name="mainframe_part10_pos_mainframe_assembly" x="-1345" y="(RICH_height/2-RICH_covering_thickness-50) * 1" z="0" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="6">
+<volumeref ref="mainframe_part10"/>
+<position name="mainframe_part10_pos_mainframe_assembly" x="-1345" y="(-RICH_height/2+RICH_covering_thickness+50) * 1" z="0" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="7">
+<volumeref ref="mainframe_part10"/>
+<position name="mainframe_part10_pos_mainframe_assembly" x="1345" y="(RICH_height/2-RICH_covering_thickness-50) * 1" z="0" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="8">
+<volumeref ref="mainframe_part10"/>
+<position name="mainframe_part10_pos_mainframe_assembly" x="1345" y="(-RICH_height/2+RICH_covering_thickness+50) * 1" z="0" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="9">
+<volumeref ref="mainframe_part10"/>
+<position name="mainframe_part10_pos_mainframe_assembly" x="0" y="(RICH_height/2-RICH_covering_thickness-50) * 1" z="0" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="10">
+<volumeref ref="mainframe_part10"/>
+<position name="mainframe_part10_pos_mainframe_assembly" x="0" y="(-RICH_height/2+RICH_covering_thickness+50) * 1" z="0" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="11">
+<volumeref ref="mainframe_part10"/>
+<position name="mainframe_part10_pos_mainframe_assembly" x="2579" y="878" z="0" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="12">
+<volumeref ref="mainframe_part10"/>
+<position name="mainframe_part10_pos_mainframe_assembly" x="2579" y="-878" z="0" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="13">
+<volumeref ref="mainframe_part10"/>
+<position name="mainframe_part10_pos_mainframe_assembly" x="-2579" y="878" z="0" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="14">
+<volumeref ref="mainframe_part10"/>
+<position name="mainframe_part10_pos_mainframe_assembly" x="-2579" y="-878" z="0" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="15">
+<volumeref ref="mainframe_part10"/>
+<position name="mainframe_part10_pos_mainframe_assembly" x="-1926" y="(RICH_height/2-RICH_covering_thickness-50) * 1" z="0" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="16">
+<volumeref ref="mainframe_part10"/>
+<position name="mainframe_part10_pos_mainframe_assembly" x="-1926" y="(-RICH_height/2+RICH_covering_thickness+50) * 1" z="0" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="17">
+<volumeref ref="mainframe_part10"/>
+<position name="mainframe_part10_pos_mainframe_assembly" x="1926" y="(RICH_height/2-RICH_covering_thickness-50) * 1" z="0" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="18">
+<volumeref ref="mainframe_part10"/>
+<position name="mainframe_part10_pos_mainframe_assembly" x="1926" y="(-RICH_height/2+RICH_covering_thickness+50) * 1" z="0" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="3">
+<volumeref ref="mainframe_part2"/>
+<position name="mainframe_part2_pos_mainframe_assembly" x="0" y="(RICH_height/2-RICH_covering_thickness-50) * 1" z="-1477.79439" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="4">
+<volumeref ref="mainframe_part2"/>
+<position name="mainframe_part2_pos_mainframe_assembly" x="0" y="(-RICH_height/2+RICH_covering_thickness+50) * 1" z="-1477.79439" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+</assembly>
+<volume name="rich_gas">
+<materialref ref="RICHgas_CO2_dis"/>
+<solidref ref="rich_gas_PartBody"/>
+<!--
+<physvol copynumber="1">
+<volumeref ref="shielding_box_container"/>
+<position name="shielding_box_container_pos_rich_gas" x="0" y="(Camera_origin_Y_coord) * 1" z="(-1800-1900/2+Camera_origin_Z_coord) * 1" unit="mm"/>
+<rotation name="shielding_box_container_rot_rich_gas" x="-((-90+Camera_full_Xrot) * 1)" y="-(0)" z="-(-90.0)" unit="deg"/>
+</physvol>
+<physvol copynumber="2">
+<volumeref ref="shielding_box_container"/>
+<position name="shielding_box_container_pos_rich_gas" x="0" y="(-Camera_origin_Y_coord) * 1" z="(-1800-1900/2+Camera_origin_Z_coord) * 1" unit="mm"/>
+<rotation name="shielding_box_container_rot_rich_gas" x="-((90-Camera_full_Xrot) * 1)" y="-(0)" z="-(90.0)" unit="deg"/>
+</physvol>
+-->
+<physvol copynumber="1">
+<volumeref ref="camera_container"/>
+<position name="camera_container_pos_rich_gas" x="0" y="(Camera_origin_Y_coord + RICH_camera_shift_Y) * 1" z="(-1800-RICH_length/2+Camera_origin_Z_coord+RICH_camera_shift_Z) * 1" unit="mm"/>
+<rotation name="camera_container_rot_rich_gas" x="-((Camera_full_Xrot) * 1)" y="-(0)" z="-(0)" unit="deg"/>
+</physvol>
+<physvol copynumber="2">
+<volumeref ref="camera_container"/>
+<position name="camera_container_pos_rich_gas" x="0" y="(-Camera_origin_Y_coord-RICH_camera_shift_Y) * 1" z="(-1800-RICH_length/2+Camera_origin_Z_coord+RICH_camera_shift_Z) * 1" unit="mm"/>
+<rotation name="camera_container_rot_rich_gas" x="-((-Camera_full_Xrot) * 1)" y="-(0)" z="-(0)" unit="deg"/>
+</physvol>
+<physvol copynumber="1">
+<volumeref ref="mirror_full_half_no_misalign"/>
+<position name="mirror_full_half_no_misalign_pos_rich_gas" x="0" y="(Mirror_origin_Y_coord) * 1" z="(-1800-RICH_length/2+Mirror_origin_Z_coord) * 1" unit="mm"/>
+<rotation name="mirror_full_half_no_misalign_rot_rich_gas" x="-(-90.0)" y="-(0)" z="-(-90.0)" unit="deg"/>
+</physvol>
+<physvol copynumber="2">
+<volumeref ref="mirror_full_half_no_misalign"/>
+<position name="mirror_full_half_no_misalign_pos_rich_gas" x="0" y="(-Mirror_origin_Y_coord) * 1" z="(-1800-RICH_length/2+Mirror_origin_Z_coord) * 1" unit="mm"/>
+<rotation name="mirror_full_half_no_misalign_rot_rich_gas" x="-(90.0)" y="-(0)" z="-(90.0)" unit="deg"/>
+</physvol>
+<physvol copynumber="1">
+<volumeref ref="sens_plane"/>
+<position name="sens_plane_pos_rich_gas" x="0" y="0" z="-300" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="1">
+<volumeref ref="mainframe_assembly"/>
+<position name="mainframe_assembly_pos_rich_gas" x="0" y="0" z="385.41939" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<!--
+<physvol copynumber="1">
+<volumeref ref="Mirror"/>
+<position name="Mirror_pos_rich_gas" x="0" y="Mirror_origin_Y_coord * 1" z="(-1800-RICH_length/2+Mirror_origin_Z_coord) * 1" unit="mm"/>
+<rotation name="Mirror_rot_rich_gas" x="-(-90.0)" y="-(0)" z="-(-90.0)" unit="deg"/>
+</physvol>
+<physvol copynumber="2">
+<volumeref ref="Mirror"/>
+<position name="Mirror_pos_rich_gas" x="0" y="(-Mirror_origin_Y_coord) * 1" z="(-1800-1900/2+Mirror_origin_Z_coord) * 1" unit="mm"/>
+<rotation name="Mirror_rot_rich_gas" x="-(90.0)" y="-(0)" z="-(90.0)" unit="deg"/>
+</physvol>
+<physvol copynumber="1">
+<volumeref ref="Camera"/>
+<position name="Camera_pos_rich_gas" x="0" y="(Camera_origin_Y_coord + RICH_camera_shift_Y) * 1" z="(-1800-RICH_length/2+Camera_origin_Z_coord + RICH_camera_shift_Z) * 1" unit="mm"/>
+<rotation name="Camera_rot_rich_gas" x="-((-90+Camera_full_Xrot) * 1)" y="-(0)" z="-(-90.0)" unit="deg"/>
+</physvol>
+<physvol copynumber="2">
+<volumeref ref="Camera"/>
+<position name="Camera_pos_rich_gas" x="0" y="(-Camera_origin_Y_coord-RICH_camera_shift_Y) * 1" z="(-1800-RICH_length/2+Camera_origin_Z_coord+RICH_camera_shift_Z) * 1" unit="mm"/>
+<rotation name="Camera_rot_rich_gas" x="-((90-Camera_full_Xrot) * 1)" y="-(0)" z="-(90.0)" unit="deg"/>
+</physvol>
+<physvol copynumber="1">
+<volumeref ref="Solid_behind_camera"/>
+<position name="Solid_behind_camera_pos_rich_gas" x="0" y="(Camera_origin_Y_coord+RICH_camera_shift_Y) * 1" z="(-1800-RICH_length/2+Camera_origin_Z_coord+RICH_camera_shift_Z) * 1" unit="mm"/>
+<rotation name="Solid_behind_camera_rot_rich_gas" x="-((-90+Camera_full_Xrot) * 1)" y="-(0)" z="-(-90.0)" unit="deg"/>
+</physvol>
+<physvol copynumber="2">
+<volumeref ref="Solid_behind_camera"/>
+<position name="Solid_behind_camera_pos_rich_gas" x="0" y="(-Camera_origin_Y_coord-RICH_camera_shift_Y) * 1" z="(-1800-RICH_length/2+Camera_origin_Z_coord+RICH_camera_shift_Z) * 1" unit="mm"/>
+<rotation name="Solid_behind_camera_rot_rich_gas" x="-((90-Camera_full_Xrot) * 1)" y="-(0)" z="-(90.0)" unit="deg"/>
+</physvol>
+-->
+</volume>
+<volume name="rich_container">
+<materialref ref="aluminium"/>
+<solidref ref="rich_container_PartBody"/>
+<physvol copynumber="1">
+<volumeref ref="rich_gas"/>
+<position name="rich_gas_pos_rich_container" x="0" y="0" z="((RICH_entrance_thickness-RICH_exit_thickness)/2) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="1">
+<volumeref ref="rich_entrance"/>
+<position name="rich_entrance_pos_rich_container" x="0" y="0" z="(-RICH_length/2+RICH_entrance_thickness/2) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="1">
+<volumeref ref="rich_exit"/>
+<position name="rich_exit_pos_rich_container" x="0" y="0" z="(RICH_length/2-RICH_exit_thickness/2) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="1">
+<volumeref ref="rich_pipe_section"/>
+<positionref ref="central"/>
+<rotationref ref="identity"/>
+</physvol>
+</volume>
+<assembly name="rich_opt">
+<physvol copynumber="1">
+<volumeref ref="rich_container"/>
+<position name="rich_container_pos_rich_opt" x="0" y="0" z="(1800 + RICH_length/2) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="1">
+<volumeref ref="rich_cyl_pipe_section"/>
+<position name="rich_cyl_pipe_section_pos_rich_opt" x="0" y="0" z="(1800 - RICH_pipe_cyl_part_length/2) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+<physvol copynumber="1">
+<volumeref ref="rich_pipe_flange"/>
+<position name="rich_pipe_flange_pos_rich_opt" x="0" y="0" z="(1800 - RICH_pipe_cyl_part_length + RICH_pipe_flange_thickness/2) * 1" unit="mm"/>
+<rotationref ref="identity"/>
+</physvol>
+</assembly>
+</structure>
+<setup name="FAIRgeom" version="1.0">
+<world ref="rich_opt"/>
+</setup>
+</gdml>

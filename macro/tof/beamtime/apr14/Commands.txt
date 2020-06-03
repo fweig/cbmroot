@@ -1,0 +1,6 @@
+
+FairRunOnline* run = new FairRunOnline();
+.x setup_analysis.C(1000000,30,300,2,"MbsTrbSat")
+.x setup_analysis.C(1000000,0,300,2,"MbsTrbSatAft")
+run->Run(10000,0);
+run->Finish();

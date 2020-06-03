@@ -1,0 +1,4 @@
+FairRunOnline *run = new FairRunOnline();
+.x setup_unpack.C(19,0,100,1,"CbmTofQa_14Nov1551_rpc_200_nb",0);
+run->Run(100000);
+run->Finish();

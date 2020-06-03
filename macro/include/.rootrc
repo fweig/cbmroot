@@ -1,0 +1,4 @@
+# Load the rootalias file from the macro/include directory.
+# The file contains some functions which are needed for several different ROOT macros.
+# Instead of putting them in all ROOT macros they are defined only once and can be used everywhere.
+Rint.Load:                $VMCWORKDIR/macro/include/rootalias.C

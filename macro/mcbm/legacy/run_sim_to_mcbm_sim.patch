@@ -1,0 +1,299 @@
+*** ../run/run_sim.C	2016-01-28 05:10:08.999692489 +0100
+--- mcbm_sim.C	2016-01-28 12:12:14.765276179 +0100
+***************
+*** 51,57 ****
+  
+  TString defaultInputFile="";
+  
+! void run_sim(Int_t nEvents = 2, const char* setup = "sis100_electron")
+  {
+  
+    // ========================================================================
+--- 51,57 ----
+  
+  TString defaultInputFile="";
+  
+! void mcbm_sim(Int_t nEvents = 1, const char* setup = "sis18_mcbm")
+  {
+  
+    // ========================================================================
+***************
+*** 75,84 ****
+  
+    TString inFile  = inDir + defaultInputFile;
+  
+!   // Function needed for CTest runtime dependency
+!   TString depFile = Remove_CTest_Dependency_File(outDir, "run_sim" , setup);
+  
+!   Bool_t hasFairMonitor = Has_Fair_Monitor();
+  
+    // --- Logger settings ----------------------------------------------------
+    TString logLevel = "INFO";   // "DEBUG";
+--- 75,84 ----
+  
+    TString inFile  = inDir + defaultInputFile;
+  
+! //  // Function needed for CTest runtime dependency
+! //  TString depFile = Remove_CTest_Dependency_File(outDir, "run_sim" , setup);
+  
+! //  Bool_t hasFairMonitor = Has_Fair_Monitor();
+  
+    // --- Logger settings ----------------------------------------------------
+    TString logLevel = "INFO";   // "DEBUG";
+***************
+*** 97,108 ****
+    // created by the placement of the target.
+    //
+    TString  targetElement   = "Gold";
+!   Double_t targetThickness = 0.025;  // full thickness in cm
+    Double_t targetDiameter  = 2.5;    // diameter in cm
+    Double_t targetPosX      = 0.;     // target x position in global c.s. [cm]
+    Double_t targetPosY      = 0.;     // target y position in global c.s. [cm]
+    Double_t targetPosZ      = 0.;     // target z position in global c.s. [cm]
+    Double_t targetRotY      = 0.;     // target rotation angle around the y axis [deg]
+    // ------------------------------------------------------------------------
+  
+  
+--- 97,109 ----
+    // created by the placement of the target.
+    //
+    TString  targetElement   = "Gold";
+!   Double_t targetThickness = 0.25;  // full thickness in cm
+    Double_t targetDiameter  = 2.5;    // diameter in cm
+    Double_t targetPosX      = 0.;     // target x position in global c.s. [cm]
+    Double_t targetPosY      = 0.;     // target y position in global c.s. [cm]
+    Double_t targetPosZ      = 0.;     // target z position in global c.s. [cm]
+    Double_t targetRotY      = 0.;     // target rotation angle around the y axis [deg]
++   Double_t beamRotY      = -30.;   // beam rotation angle around the y axis [deg]
+    // ------------------------------------------------------------------------
+  
+  
+***************
+*** 116,123 ****
+    //
+    Bool_t smearVertexXY = kTRUE;
+    Bool_t smearVertexZ  = kTRUE;
+!   Double_t beamWidthX   = 1.;  // Gaussian sigma of the beam profile in x [cm]
+!   Double_t beamWidthY   = 1.;  // Gaussian sigma of the beam profile in y [cm]
+    // ------------------------------------------------------------------------
+    
+  
+--- 117,124 ----
+    //
+    Bool_t smearVertexXY = kTRUE;
+    Bool_t smearVertexZ  = kTRUE;
+!   Double_t beamWidthX  = 0.5;  // Gaussian sigma of the beam profile in x [cm]
+!   Double_t beamWidthY  = 0.5;  // Gaussian sigma of the beam profile in y [cm]
+    // ------------------------------------------------------------------------
+    
+  
+***************
+*** 175,181 ****
+    		                              targetThickness,
+    		                              targetDiameter);
+    target->SetPosition(targetPosX, targetPosY, targetPosZ);
+!   target->SetRotation(targetRotY);
+    run->AddModule(target);
+  
+    if ( magnetGeom != "" ) {
+--- 176,182 ----
+    		                              targetThickness,
+    		                              targetDiameter);
+    target->SetPosition(targetPosX, targetPosY, targetPosZ);
+!   //  target->SetRotation(targetRotY);
+    run->AddModule(target);
+  
+    if ( magnetGeom != "" ) {
+***************
+*** 250,263 ****
+    // ------------------------------------------------------------------------
+  
+    // -----   Create magnetic field   ----------------------------------------
+!   CbmFieldMap* magField = NULL;
+!   if ( 2 == fieldSymType ) {
+!     magField = new CbmFieldMapSym2(fieldMap);
+!   }  else if ( 3 == fieldSymType ) {
+!     magField = new CbmFieldMapSym3(fieldMap);
+!   } 
+!   magField->SetPosition(0., 0., fieldZ);
+!   magField->SetScale(fieldScale);
+    run->SetField(magField);
+    // ------------------------------------------------------------------------
+  
+--- 251,265 ----
+    // ------------------------------------------------------------------------
+  
+    // -----   Create magnetic field   ----------------------------------------
+! //  CbmFieldMap* magField = NULL;
+! //  if ( 2 == fieldSymType ) {
+! //    magField = new CbmFieldMapSym2(fieldMap);
+! //  }  else if ( 3 == fieldSymType ) {
+! //    magField = new CbmFieldMapSym3(fieldMap);
+! //  } 
+! //  magField->SetPosition(0., 0., fieldZ);
+! //  magField->SetScale(fieldScale);
+!   FairConstField* magField = new FairConstField();
+    run->SetField(magField);
+    // ------------------------------------------------------------------------
+  
+***************
+*** 276,281 ****
+--- 278,284 ----
+    	tDz = target->GetThickness();
+    }
+    primGen->SetTarget(tZ, tDz);
++   //  primGen->SetTargetRotAngle(0., beamRotY * TMath::Pi()/180.);
+    primGen->SetBeam(0., 0., beamWidthX, beamWidthY);
+    primGen->SmearGausVertexXY(smearVertexXY);
+    primGen->SmearVertexZ(smearVertexZ);
+***************
+*** 288,322 ****
+  
+    // Use the CbmUnigenGenrator for the input
+    CbmUnigenGenerator*  uniGen = new CbmUnigenGenerator(inFile);
+    primGen->AddGenerator(uniGen);
+    run->SetGenerator(primGen);
+    // ------------------------------------------------------------------------
+  
+!  
+!   // Visualisation of trajectories (TGeoManager Only)
+    // Switch this on if you want to visualise tracks in the event display.
+    // This is normally switch off, because of the huge files created
+    // when it is switched on. 
+!   run->SetStoreTraj(kFALSE);
+  
+    // -----   Run initialisation   -------------------------------------------
+    run->Init();
+    // ------------------------------------------------------------------------
+    
+!   // Set cuts for storing the trajectories.
+!   // Switch this on only if trajectories are stored.
+!   // Choose this cuts according to your needs, but be aware
+!   // that the file size of the output file depends on these cuts
+! 
+!    FairTrajFilter* trajFilter = FairTrajFilter::Instance();
+!    if ( trajFilter ) {
+!   	 trajFilter->SetStepSizeCut(0.01); // 1 cm
+!   	 trajFilter->SetVertexCut(-2000., -2000., 4., 2000., 2000., 100.);
+!   	 trajFilter->SetMomentumCutP(10e-3); // p_lab > 10 MeV
+!   	 trajFilter->SetEnergyCut(0., 1.02); // 0 < Etot < 1.04 GeV
+!   	 trajFilter->SetStorePrimaries(kTRUE);
+!   	 trajFilter->SetStoreSecondaries(kTRUE);
+!    }
+  
+    // -----   Runtime database   ---------------------------------------------
+    CbmFieldPar* fieldPar = (CbmFieldPar*) rtdb->getContainer("CbmFieldPar");
+--- 291,348 ----
+  
+    // Use the CbmUnigenGenrator for the input
+    CbmUnigenGenerator*  uniGen = new CbmUnigenGenerator(inFile);
++   uniGen->SetEventPlane(0. , 360.);
+    primGen->AddGenerator(uniGen);
++   primGen->SetBeamAngle(beamRotY * TMath::Pi()/180.,0,0,0);  // set direction of beam to 30 degrees
+    run->SetGenerator(primGen);
+    // ------------------------------------------------------------------------
+  
+!   //  // -----   Create Electron gun as alternative -----------------------------                  
+!   //  FairPrimaryGenerator* primGen = new FairPrimaryGenerator();                                  
+!   //  // Use the FairBoxGenerator which generates a soingle electron                               
+!   //  FairBoxGenerator *eminus = new FairBoxGenerator();                                           
+!   //  eminus->SetPDGType(11);                                                                      
+!   //  eminus->SetMultiplicity(1000);                                                               
+!   //  //  eminus->SetBoxXYZ(32.,-32.,32.,-32.,0.);  // shoot at corner of diagonal modules         
+!   //  //  eminus->SetBoxXYZ(0., 0., 0., 0., 0.);  // shoot at corner of diagonal modules           
+!   //  //  eminus->SetBoxXYZ(57.,-57., 0., 0.,0.);  // shoot at corner of diagonal modules          
+!   //  //  eminus->SetBoxXYZ(-57.,-57., 57., 57.,0.);  // shoot at corner of diagonal modules       
+!   //  eminus->SetBoxXYZ(-180.,-15.,-150.,15.,0.);  // shoot at corner of diagonal modules          
+!   //  eminus->SetPRange(2.,2.);                                                                    
+!   //  eminus->SetPhiRange(0.,360.);                                                                
+!   //  eminus->SetThetaRange(0.,0.);                                                                
+!   //  primGen->AddGenerator(eminus);                                                               
+!   //                                                                                               
+!   //  //  primGen->SetBeamAngle(30*TMath::Pi()/180.,0,0,0);  // set direction of beam to 30 degrees
+!   //                                                                                               
+!   //  fRun->SetGenerator(primGen);                                                                 
+!   //  // ------------------------------------------------------------------------                  
+! 
+! 
+!    // Visualisation of trajectories (TGeoManager Only)
+    // Switch this on if you want to visualise tracks in the event display.
+    // This is normally switch off, because of the huge files created
+    // when it is switched on. 
+!   run->SetStoreTraj(kTRUE);
+  
+    // -----   Run initialisation   -------------------------------------------
+    run->Init();
+    // ------------------------------------------------------------------------
+    
+! //  // Set cuts for storing the trajectories.
+! //  // Switch this on only if trajectories are stored.
+! //  // Choose this cuts according to your needs, but be aware
+! //  // that the file size of the output file depends on these cuts
+! //
+! //   FairTrajFilter* trajFilter = FairTrajFilter::Instance();
+! //   if ( trajFilter ) {
+! //  	 trajFilter->SetStepSizeCut(0.01); // 1 cm
+! //  	 trajFilter->SetVertexCut(-2000., -2000., 4., 2000., 2000., 100.);
+! //  	 trajFilter->SetMomentumCutP(10e-3); // p_lab > 10 MeV
+! //  	 trajFilter->SetEnergyCut(0., 1.02); // 0 < Etot < 1.04 GeV
+! //  	 trajFilter->SetStorePrimaries(kTRUE);
+! //  	 trajFilter->SetStoreSecondaries(kTRUE);
+! //   }
+  
+    // -----   Runtime database   ---------------------------------------------
+    CbmFieldPar* fieldPar = (CbmFieldPar*) rtdb->getContainer("CbmFieldPar");
+***************
+*** 349,374 ****
+         << "s" << std::endl << std::endl;
+    // ------------------------------------------------------------------------
+  
+!   if (hasFairMonitor) {
+!     // Extract the maximal used memory an add is as Dart measurement
+!     // This line is filtered by CTest and the value send to CDash
+!     FairSystemInfo sysInfo;
+!     Float_t maxMemory=sysInfo.GetMaxMemory();
+!     cout << "<DartMeasurement name=\"MaxMemory\" type=\"numeric/double\">";
+!     cout << maxMemory;
+!     cout << "</DartMeasurement>" << endl;
+! 
+!     Float_t cpuUsage=ctime/rtime;
+!     cout << "<DartMeasurement name=\"CpuLoad\" type=\"numeric/double\">";
+!     cout << cpuUsage;
+!     cout << "</DartMeasurement>" << endl;
+!   }
+  
+    std::cout << " Test passed" << std::endl;
+    std::cout << " All ok " << std::endl;
+  
+!   // Function needed for CTest runtime dependency
+!   Generate_CTest_Dependency_File(depFile);
+  
+  }
+  
+--- 375,400 ----
+         << "s" << std::endl << std::endl;
+    // ------------------------------------------------------------------------
+  
+! //  if (hasFairMonitor) {
+! //    // Extract the maximal used memory an add is as Dart measurement
+! //    // This line is filtered by CTest and the value send to CDash
+! //    FairSystemInfo sysInfo;
+! //    Float_t maxMemory=sysInfo.GetMaxMemory();
+! //    cout << "<DartMeasurement name=\"MaxMemory\" type=\"numeric/double\">";
+! //    cout << maxMemory;
+! //    cout << "</DartMeasurement>" << endl;
+! //
+! //    Float_t cpuUsage=ctime/rtime;
+! //    cout << "<DartMeasurement name=\"CpuLoad\" type=\"numeric/double\">";
+! //    cout << cpuUsage;
+! //    cout << "</DartMeasurement>" << endl;
+! //  }
+  
+    std::cout << " Test passed" << std::endl;
+    std::cout << " All ok " << std::endl;
+  
+! //  // Function needed for CTest runtime dependency
+! //  Generate_CTest_Dependency_File(depFile);
+  
+  }
+  

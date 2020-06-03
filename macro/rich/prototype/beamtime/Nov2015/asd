@@ -1,0 +1,5 @@
+#!/bin/bash
+
+cd ~/SOFT/cbmroot_build/
+make -j4
+cd -

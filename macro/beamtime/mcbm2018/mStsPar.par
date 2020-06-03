@@ -1,0 +1,65 @@
+##############################################################################
+# Class:   CbmMcbm2018StsPar
+# Context: For mSTS testing
+##############################################################################
+[CbmMcbm2018StsPar]
+//----------------------------------------------------------------------------
+// Total number of STS modules in the setup
+NbModules: Int_t 4
+// Type of each module: 0 for connectors on the right, 1 for connectors on the left
+ModuleType: Int_t \
+           1          1           0          0
+// STS address for the first strip of each module
+// 1 Line per ladder, from above beam to under beam
+ModAddress: Int_t \
+  0x10018002  0x10008002 \
+  0x10018402  0x10008402
+// Offset of module center in X, in mm (Should be done by geometry for the unpacker!)
+ModCenterPosX: Double_t \
+        -3.0        -3.0 \
+         3.0         3.0
+// Offset of module center in Y, in mm (Should be done by geometry for the unpacker!)
+ModCenterPosY: Double_t \
+         3.0        -3.0 \
+         3.0        -3.0
+// Total number of STS DPBs in system
+NrOfDpbs: Int_t 2
+// Array to hold the unique IDs (equipment ID) for all STS DPBs, Array size has to match NrOfDpbs
+DbpIdArray: Int_t \
+  0x193d 0x5c0b
+// Array to hold the active flag for all CROBs, [ NbDpb * kuNbCrobPerDpb ] = [ NbDpb * 1 ]
+CrobActiveFlag: Int_t \
+  1  1
+// Index of the STS module for each FEB, [ NbDpb * kuNbCrobPerDpb * kuNbFebsPerCrob ] = = [ NbDpb * 1 * 5 ], -1 if inactive
+FebModuleIdx: Int_t \
+ -1  0  0  1  1 \
+ -1 -1 -1 -1 -1
+// -1 -1 -1  1  1 \
+// -1 -1 -1 -1  2
+// -1  0  0  1  1 \
+// -1  3  3  3  2
+// STS module side for each FEB, [ NbDpb * kuNbCrobPerDpb * kuNbFebsPerCrob ], 0 = P, 1 = N, -1 if inactive
+FebModuleSide: Int_t \
+  0  0  1  0  1 \
+  0  1  0  1  0
+// ADC Gain in e-/ADC bin for each FEB, [ NbDpb * kuNbCrobPerDpb * kuNbFebsPerCrob ]
+//  2000.0     0.0     0.0  2100.0  2100.0 Example of ADC gain values
+FebAdcGain: Double_t \
+     1.0     1.0     1.0     1.0     1.0 \
+     1.0     1.0     1.0     1.0     1.0
+// Base at Cal. Thr. in e- for each FEB, [ NbDpb * kuNbCrobPerDpb * kuNbFebsPerCrob ]
+//  2000.0     0.0     0.0  2100.0  2100.0 Example of ADC base value
+FebAdcBase: Double_t \
+     0.0     0.0     0.0     0.0     0.0 \
+     0.0     0.0     0.0     0.0     0.0
+// Thr. step in e-/Thr. Unit for each FEB, [ NbDpb * kuNbCrobPerDpb * kuNbFebsPerCrob ]
+//     0.0     0.0     0.0  2310.0  2310.0 Example of Base offset per threshold unit from calibration point
+FebAdcThrGain: Double_t \
+     1.0     1.0     1.0     1.0     1.0 \
+     1.0     1.0     1.0     1.0     1.0
+// Thr. offset in Units vs Cal. Thr. for each FEB, [ NbDpb * kuNbCrobPerDpb * kuNbFebsPerCrob ]
+//     0       0       0       0       0 Example of threshold relative to calibration point: if 56 while calibrated at 58 => -2
+FebAdcThrOffs: Int_t \
+     0       0       0       0       0 \
+     0       0       0       0       0
+#######################

@@ -1,0 +1,242 @@
+*** Create_TRD_Geometry_v17a.C	2017-05-02 12:31:02.455558193 +0200
+--- Create_TRD_Geometry_v18e.C	2017-05-02 12:27:31.276168745 +0200
+***************
+*** 1,5 ****
+  ///                                             
+! /// \file Create_TRD_Geometry_v17a.C
+  /// \brief Generates TRD geometry in Root format.
+  ///                                             
+  
+--- 1,5 ----
+  ///                                             
+! /// \file Create_TRD_Geometry_v18e.C
+  /// \brief Generates TRD geometry in Root format.
+  ///                                             
+  
+***************
+*** 88,94 ****
+  #include <iostream>
+  
+  // Name of output file with geometry
+! const TString tagVersion   = "v17a";
+  //const TString subVersion   = "_1h";
+  //const TString subVersion   = "_1e";
+  //const TString subVersion   = "_1m";
+--- 88,94 ----
+  #include <iostream>
+  
+  // Name of output file with geometry
+! const TString tagVersion   = "v18e";
+  //const TString subVersion   = "_1h";
+  //const TString subVersion   = "_1e";
+  //const TString subVersion   = "_1m";
+***************
+*** 96,113 ****
+  //const TString subVersion   = "_3m";
+  
+  const Int_t setupid = 1;  // 1e is the default
+! const Double_t zfront[5]  = { 260., 410., 360., 410., 550. };
+  const TString setupVer[5] = { "_1h", "_1e", "_1m", "_3e", "_3m" };
+  const TString subVersion = setupVer[setupid];
+  
+  const TString geoVersion   = "trd_" + tagVersion + subVersion;
+! const TString FileNameSim  = geoVersion + ".geo.root";
+! const TString FileNameGeo  = geoVersion + "_geo.root";
+! const TString FileNameInfo = geoVersion + ".geo.info";
+  const TString FileNamePads = "CbmTrdPads_" + tagVersion + ".h";
+  
+  // display switches
+! const Bool_t IncludeRadiator    = true;  // false;  // true, if radiator is included in geometry
+  const Bool_t IncludeLattice     = true;  // false;  // true, if lattice grid is included in geometry
+  
+  const Bool_t IncludeKaptonFoil  = true;  // false;  // true, if entrance window is included in geometry
+--- 96,114 ----
+  //const TString subVersion   = "_3m";
+  
+  const Int_t setupid = 1;  // 1e is the default
+! //const Double_t zfront[5]  = { 260., 410., 360., 410., 550. };
+! const Double_t zfront[5]  = { 260., 110., 360., 410., 550. };
+  const TString setupVer[5] = { "_1h", "_1e", "_1m", "_3e", "_3m" };
+  const TString subVersion = setupVer[setupid];
+  
+  const TString geoVersion   = "trd_" + tagVersion + subVersion;
+! const TString FileNameSim  = geoVersion + "_mcbm.geo.root";
+! const TString FileNameGeo  = geoVersion + "_mcbm_geo.root";
+! const TString FileNameInfo = geoVersion + "_mcbm.geo.info";
+  const TString FileNamePads = "CbmTrdPads_" + tagVersion + ".h";
+  
+  // display switches
+! const Bool_t IncludeRadiator    = false;  // false;  // true, if radiator is included in geometry
+  const Bool_t IncludeLattice     = true;  // false;  // true, if lattice grid is included in geometry
+  
+  const Bool_t IncludeKaptonFoil  = true;  // false;  // true, if entrance window is included in geometry
+***************
+*** 115,127 ****
+  const Bool_t IncludePadplane    = true;  // false;  // true, if padplane is included in geometry
+  const Bool_t IncludeBackpanel   = true;  // false;  // true, if backpanel is included in geometry
+  const Bool_t IncludeAluLedge    = true;  // false;  // true, if Al-ledge around the backpanel is included in geometry
+! const Bool_t IncludePowerbars   = true;  // false;  // true, if LV copper bus bars to be drawn
+  
+  const Bool_t IncludeFebs        = true;  // false;  // true, if FEBs are included in geometry
+  const Bool_t IncludeRobs        = true;  // false;  // true, if ROBs are included in geometry
+  const Bool_t IncludeAsics       = true;  // false;  // true, if ASICs are included in geometry
+! const Bool_t IncludeSupports    = true;  // false;  // true, if support structure is included in geometry
+! const Bool_t IncludeLabels      = true;  // false;  // true, if TRD (I, II, III) labels are plotted in (VisLevel 5)
+  const Bool_t IncludeFieldVector = false;  // true, if magnetic field vector to be shown (in the magnet)
+  
+  // positioning switches
+--- 116,128 ----
+  const Bool_t IncludePadplane    = true;  // false;  // true, if padplane is included in geometry
+  const Bool_t IncludeBackpanel   = true;  // false;  // true, if backpanel is included in geometry
+  const Bool_t IncludeAluLedge    = true;  // false;  // true, if Al-ledge around the backpanel is included in geometry
+! const Bool_t IncludePowerbars   = false;  // false;  // true, if LV copper bus bars to be drawn
+  
+  const Bool_t IncludeFebs        = true;  // false;  // true, if FEBs are included in geometry
+  const Bool_t IncludeRobs        = true;  // false;  // true, if ROBs are included in geometry
+  const Bool_t IncludeAsics       = true;  // false;  // true, if ASICs are included in geometry
+! const Bool_t IncludeSupports    = false;  // false;  // true, if support structure is included in geometry
+! const Bool_t IncludeLabels      = false;  // false;  // true, if TRD (I, II, III) labels are plotted in (VisLevel 5)
+  const Bool_t IncludeFieldVector = false;  // true, if magnetic field vector to be shown (in the magnet)
+  
+  // positioning switches
+***************
+*** 198,204 ****
+  //Double_t LayerPosition[MaxLayers] = { 460. }; // start position - 2013-06-25 - DE - v13n trd300_rich_stretched   (10 layers, z = 4600 )
+  
+  
+! const Double_t LayerThickness = 45.0; // Thickness of one TRD layer in cm
+  
+  const Double_t LayerOffset[MaxLayers] = {   0.,   0.,   0.,   0.,   5.,   0.,   0.,   0.,   5.,   0. };  // v13x[4,5] - z offset in addition to LayerThickness 
+  //const Double_t LayerOffset[MaxLayers] = {   0.,   0.,   0.,   0.,   0.,   0.,   0.,   0.,   0.,   0. };  // SIS100 - z offset in addition to LayerThickness 
+--- 199,206 ----
+  //Double_t LayerPosition[MaxLayers] = { 460. }; // start position - 2013-06-25 - DE - v13n trd300_rich_stretched   (10 layers, z = 4600 )
+  
+  
+! const Double_t LayerThickness = 25.0; // miniCBM - Thickness of one TRD layer in cm
+! //const Double_t LayerThickness = 45.0; // Thickness of one TRD layer in cm
+  
+  const Double_t LayerOffset[MaxLayers] = {   0.,   0.,   0.,   0.,   5.,   0.,   0.,   0.,   5.,   0. };  // v13x[4,5] - z offset in addition to LayerThickness 
+  //const Double_t LayerOffset[MaxLayers] = {   0.,   0.,   0.,   0.,   0.,   0.,   0.,   0.,   0.,   0. };  // SIS100 - z offset in addition to LayerThickness 
+***************
+*** 211,233 ****
+  
+  // ### Layer Type 1
+  // v14x - module types in the inner sector of layer type 1 - looking upstream
+! const Int_t layer1i[5][5] = { { 323,  323,  321,  321,  321 },    // abc: a module type - b orientation (x90 deg) in odd - c even layers
+!                               { 223,  123,  121,  121,  221 },  
+!                               { 203,  103,    0,  101,  201 },  
+!                               { 203,  103,  101,  101,  201 },  
+!                               { 303,  303,  301,  301,  301 } };
+  // number of modules: 24
+  
+  // v14x - module types in the outer sector of layer type 1 - looking upstream
+  const Int_t layer1o[9][11]= { {  0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0 },
+                                {  0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0 },
+!                               {  0,    0,  823,  823,  723,  721,  721,  821,  821,    0,    0 },
+!                               {  0,    0,  823,  623,    0,    0,    0,  621,  821,    0,    0 },
+!                               {  0,    0,  703,  603,    0,    0,    0,  601,  701,    0,    0 },
+!                               {  0,    0,  803,  603,    0,    0,    0,  601,  801,    0,    0 },
+!                               {  0,    0,  803,  803,  703,  701,  701,  801,  801,    0,    0 },
+                                {  0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0 },
+                                {  0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0 } };
+  // number of modules: 26
+  // Layer1 =  24 + 26;   // v14a
+  
+--- 213,252 ----
+  
+  // ### Layer Type 1
+  // v14x - module types in the inner sector of layer type 1 - looking upstream
+! const Int_t layer1i[5][5] = { {   0,    0,    0,    0,    0 },  
+!                               {   0,    0,    0,    0,    0 },  
+!                               {   0,    0,    0,    0,    0 },  
+! 			      //                            {   0,    0,  101,    0,    0 },  
+!                               {   0,    0,    0,    0,    0 },  
+!                               {   0,    0,    0,    0,    0 } };
+! 
+! //const Int_t layer1i[5][5] = { { 323,  323,  321,  321,  321 },    // abc: a module type - b orientation (x90 deg) in odd - c even layers
+! //                              { 223,  123,  121,  121,  221 },  
+! //                              { 203,  103,    0,  101,  201 },  
+! //                              { 203,  103,  101,  101,  201 },  
+! //                              { 303,  303,  301,  301,  301 } };
+  // number of modules: 24
+  
+  // v14x - module types in the outer sector of layer type 1 - looking upstream
+  const Int_t layer1o[9][11]= { {  0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0 },
+                                {  0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0 },
+!                               {  0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0 },
+!                               {  0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0 },
+!                               {  0,    0,    0,    0,    0,  821,    0,    0,    0,    0,    0 },
+!                               {  0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0 },
+!                               {  0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0 },
+                                {  0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0 },
+                                {  0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0 } };
++ //// v14x - module types in the outer sector of layer type 1 - looking upstream
++ //const Int_t layer1o[9][11]= { {  0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0 },
++ //                              {  0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0 },
++ //                              {  0,    0,  823,  823,  723,  721,  721,  821,  821,    0,    0 },
++ //                              {  0,    0,  823,  623,    0,    0,    0,  621,  821,    0,    0 },
++ //                              {  0,    0,  703,  603,    0,    0,    0,  601,  701,    0,    0 },
++ //                              {  0,    0,  803,  603,    0,    0,    0,  601,  801,    0,    0 },
++ //                              {  0,    0,  803,  803,  703,  701,  701,  801,  801,    0,    0 },
++ //                              {  0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0 },
++ //                              {  0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0 } };
+  // number of modules: 26
+  // Layer1 =  24 + 26;   // v14a
+  
+***************
+*** 299,306 ****
+  //const Int_t RobTypeOnModule[NofModuleTypes] = { 77, 53,  5,  0,  0, 55,  5,  3 }; // for .geo.info - TODO: merge with above GbtxPerRob
+  
+  // super density for type 1 modules - 2017 - 540 mm
+! //const Int_t FebsPerModule[NofModuleTypes] = {  9,  5,  6,  4, 12,  8,  4,  3 }; // number of FEBs on backside
+! const Int_t FebsPerModule[NofModuleTypes] = {  9,  6,  3,  4, 12,  8,  4,  2 }; // number of FEBs on backside
+  const Int_t AsicsPerFeb[NofModuleTypes]   = {210,210,210,105,108,108,108,108 }; // %100 gives number of ASICs on FEB, /100 gives grouping
+  //// ultimate density - 540 mm
+  //const Int_t FebsPerModule[NofModuleTypes] = {  6,  5,  6,  4, 12,  8,  4,  3 }; // number of FEBs on backside - reduced FEBs (64 ch ASICs)
+--- 318,325 ----
+  //const Int_t RobTypeOnModule[NofModuleTypes] = { 77, 53,  5,  0,  0, 55,  5,  3 }; // for .geo.info - TODO: merge with above GbtxPerRob
+  
+  // super density for type 1 modules - 2017 - 540 mm
+! const Int_t FebsPerModule[NofModuleTypes] = {  9,  5,  6,  4, 12,  8,  4,  3 }; // number of FEBs on backside
+! //const Int_t FebsPerModule[NofModuleTypes] = {  9,  6,  3,  4, 12,  8,  4,  2 }; // number of FEBs on backside
+  const Int_t AsicsPerFeb[NofModuleTypes]   = {210,210,210,105,108,108,108,108 }; // %100 gives number of ASICs on FEB, /100 gives grouping
+  //// ultimate density - 540 mm
+  //const Int_t FebsPerModule[NofModuleTypes] = {  6,  5,  6,  4, 12,  8,  4,  3 }; // number of FEBs on backside - reduced FEBs (64 ch ASICs)
+***************
+*** 370,377 ****
+  Int_t ModuleStats[MaxLayers][NofModuleTypes] = { 0 };
+  
+  // z - geometry of TRD modules
+! //const Double_t radiator_thickness     =  35.0;    // 35 cm thickness of radiator
+! const Double_t radiator_thickness     =  30.0;    // 30 cm thickness of radiator + shift pad plane to integer multiple of 1 mm
+  const Double_t radiator_position      =  - LayerThickness/2. + radiator_thickness/2.;
+  
+  //const Double_t lattice_thickness      =   1.0;  // 1.0;  // 10 mm thick lattice frames
+--- 389,396 ----
+  Int_t ModuleStats[MaxLayers][NofModuleTypes] = { 0 };
+  
+  // z - geometry of TRD modules
+! const Double_t radiator_thickness     =  0.0;    // 35 cm thickness of radiator
+! //const Double_t radiator_thickness     =  30.0;    // 30 cm thickness of radiator + shift pad plane to integer multiple of 1 mm
+  const Double_t radiator_position      =  - LayerThickness/2. + radiator_thickness/2.;
+  
+  //const Double_t lattice_thickness      =   1.0;  // 1.0;  // 10 mm thick lattice frames
+***************
+*** 464,471 ****
+  void dump_digi_file();
+  
+  
+! //void Create_TRD_Geometry_v17a(const Int_t setupid = 1) {
+! void Create_TRD_Geometry_v17a() {
+  
+    // declare TRD layer layout
+    if (setupid > 2)
+--- 483,490 ----
+  void dump_digi_file();
+  
+  
+! //void Create_TRD_Geometry_v18e(const Int_t setupid = 1) {
+! void Create_TRD_Geometry_v18e() {
+  
+    // declare TRD layer layout
+    if (setupid > 2)

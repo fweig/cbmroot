@@ -1,0 +1,63 @@
+##############################################################################
+# Class:   CbmCern2017UnpackParHodo
+# Context: For STSXYTER testing
+##############################################################################
+[CbmCern2017UnpackParHodo]
+//----------------------------------------------------------------------------
+NrOfDpbs: Int_t 2
+// Array size has to match NrOfDpbs
+DbpIdArray: Int_t \
+  0x18ef 0x0b5c
+//   0x6161
+NbElinksPerDpb: Int_t 20
+NbStsXyters: Int_t 6
+NbChanPerAsic: Int_t 128
+// Array size has to match NrOfDpbs * NbElinksPerDpb
+// Fields have to be smaller than NbStsXyters (index)
+// Unused eLinks should be indicated by 0xFFFF
+ElinkToAsicMap: Int_t \
+ 0x0000 0x0000 0x0000 0x0000 0x0000 \
+ 0x0001 0x0001 0x0001 0x0001 0x0001 \
+ 0x0002 0x0002 0x0002 0x0002 0x0002 \
+ 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF \
+ 0x0003 0x0003 0x0003 0x0003 0x0003 \
+ 0x0004 0x0004 0x0004 0x0004 0x0004 \
+ 0x0005 0x0005 0x0005 0x0005 0x0005 \
+ 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF
+ChannelToFiberMap: Int_t \
+ 0 32 16 48 15 47 31 63  1 33 17 49 14 46 30 62 \
+ 2 34 18 50 13 45 29 61  3 35 19 51 12 44 28 60 \
+ 4 36 20 52 11 43 27 59  5 37 21 53 10 42 26 58 \
+ 6 38 22 54  9 41 25 57  7 39 23 55  8 40 24 56 \
+ 0 32 16 48 15 47 31 63  1 33 17 49 14 46 30 62 \
+ 2 34 18 50 13 45 29 61  3 35 19 51 12 44 28 60 \
+ 4 36 20 52 11 43 27 59  5 37 21 53 10 42 26 58 \
+ 6 38 22 54  9 41 25 57  7 39 23 55  8 40 24 56
+ChannelToPixelMap: Int_t \
+ 1  5  3  7  2  6  4  8  9 13 11 15 10 14 12 16 \
+17 21 19 23 18 22 20 24 25 29 27 31 26 30 28 32 \
+33 37 35 39 34 38 36 40 41 45 43 47 42 46 44 48 \
+49 53 51 55 50 54 52 56 57 61 59 63 58 62 60 64 \
+ 1  5  3  7  2  6  4  8  9 13 11 15 10 14 12 16 \
+17 21 19 23 18 22 20 24 25 29 27 31 26 30 28 32 \
+33 37 35 39 34 38 36 40 41 45 43 47 42 46 44 48 \
+49 53 51 55 50 54 52 56 57 61 59 63 58 62 60 64
+ChannelToPlaneMap: Int_t \
+ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 \
+ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 \
+ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 \
+ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 \
+ 1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1 \
+ 1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1 \
+ 1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1 \
+ 1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1
+AsicIdxHodo1: Int_t 3
+//AsicIdxHodo2: Int_t 4
+AsicIdxHodo2: Int_t 4
+SwapHodo1XY:  Int_t 0
+SwapHodo2XY:  Int_t 1
+InvertHodo1X: Int_t 0
+InvertHodo1Y: Int_t 0
+InvertHodo2X: Int_t 0
+InvertHodo2Y: Int_t 0
+#######################

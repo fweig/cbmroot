@@ -1,0 +1,9 @@
+#!/bin/bash
+
+cd ~/cbmroot/build_trunk/
+make -j4
+cd -
+
+exit
+
+root -l -q "run_analysis_ringscan.C(kFALSE, \"/store/cbm_rich_data_2014/WLS/WLS_off/nonstretched/ringG1/offset00250/te14326015054.hld\", \"output/te14326015054.root\", \"calib_save/calib_te14326015054.hld.root\", \"output/histo_te14326015054.root\", \"output/histo2_te14326015054.root\", \"te14326015054.hld\", 1000)" > output/out.txt 2> output/err.txt

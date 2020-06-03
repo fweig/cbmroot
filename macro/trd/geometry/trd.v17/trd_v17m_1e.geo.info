@@ -1,0 +1,116 @@
+#
+##   trd_v17m_1e information file
+#
+
+# created 20170601
+
+# envelope
+0.000000 cm   start of TRD (z)
+180.000000 cm   end   of TRD (z)
+
+# thickness
+45.000000 cm   per single layer (z)
+
+# extra gaps
+ 0.000000 0.000000 0.000000 0.000000    extra gaps in z (cm)
+
+# generated TRD layers
+  1  2  3  4    planeID
+
+# dimensions in x
+-388.500000 cm to 388.500000 cm x-dimension of layer  1
+-388.500000 cm to 388.500000 cm x-dimension of layer  2
+-388.500000 cm to 388.500000 cm x-dimension of layer  3
+-388.500000 cm to 388.500000 cm x-dimension of layer  4
+
+# dimensions in y
+-277.500000 cm to 277.500000 cm y-dimension of layer  1
+-277.500000 cm to 277.500000 cm y-dimension of layer  2
+-277.500000 cm to 277.500000 cm y-dimension of layer  3
+-277.500000 cm to 277.500000 cm y-dimension of layer  4
+
+# z-positions of layer front
+0.000000 cm   z-position of layer  1
+45.000000 cm   z-position of layer  2
+90.000000 cm   z-position of layer  3
+135.000000 cm   z-position of layer  4
+
+# flags
+support structure is    : included
+radiator is             : included
+lattice grid is         : included
+kapton window is        : included
+gas frame is            : included
+padplane is             : included
+backpanel is            : included
+Aluminium ledge is      : included
+Power bus bars are      : included
+asics are               : included
+front-end boards are    : included
+GBTX readout boards are : included
+
+# modules
+     mod1     mod2     mod3     mod4     mod5     mod6     mod7     mod8    total
+---------------------------------------------------------------------------------
+       10        0       24        0        0        8        0       12            layer  1
+       10        0       24        0        0        8        0       12            layer  2
+       10        0       24        0        0        8        0       12            layer  3
+       10        0       24        0        0        8        0       12            layer  4
+
+---------------------------------------------------------------------------------
+       40        0       96        0        0       32        0       48      216   number of modules
+# febs
+        8s       4s       2s       4       24       12        6        4            FEBs per module
+                                                                                0   ultimate  FEBs
+      320s       0s     192s                                                  512   super     FEBs
+                                   0        0      384        0      192      576   regular   FEBs
+      320        0      192        0        0      384        0      192     1088   number of FEBs
+# asics
+       10       10       10        5       10       10       10       10            ASICs per FEB
+       80       40       20       20      240      120       60       40            ASICs per module
+     3200        0     1920        0        0     3840        0     1920    10880   number of ASICs
+# gbtx
+       12        6        3        0        0       18        9        6            GBTXs per module
+      480        0      288        0        0      576        0      288     1632   number of GBTXs
+     3333       33        3        0        0   333333      333       33            GBTX ROB types on module
+        0        0        0        0        0        0        0        0        0   number of GBTX ROB7
+        0        0        0        0        0        0        0        0        0   number of GBTX ROB5
+      160        0       96        0        0      192        0       96      544   number of GBTX ROB3
+# e-links
+      160       80       40       40      480      240      120       80    21760   e-links used
+      168       84       42        0        0      252      126       84    22848   e-links available
+    95.2%        -    95.2%        -        -    95.2%        -    95.2%    95.2%   e-link efficiency
+
+# channels
+     2560     1280      640      640     7680     3840     1920     1280            channels per module
+      320      320      320      160      320      320      320      320            channels per feb
+   102400        0    61440        0        0   122880        0    61440   348160   channels used
+   102400s       0s   61440s       0        0   122880        0    61440   348160   channels available
+     0.0%u   47.1%s   52.9%r                                                        channel ratio
+
+   100.0%   channel efficiency
+
+ 142.75 m2      total surface    
+ 132.97 m2      total active area
+   1.60 m3      total gas volume 
+   3.82 cm2/ch  average channel size
+2618.34 ch/m2   channels per m2 active area
+
+# gas volume position
+   31.6000 cm   position of gas volume - layer  1
+   76.6000 cm   position of gas volume - layer  2
+  121.6000 cm   position of gas volume - layer  3
+  166.6000 cm   position of gas volume - layer  4
+
+# angles of acceptance
+v: 83.38 deg, h: 84.52 deg - vertical/horizontal - layer  1
+v: 74.45 deg, h: 77.06 deg - vertical/horizontal - layer  2
+v: 66.23 deg, h: 70.01 deg - vertical/horizontal - layer  3
+v: 58.93 deg, h: 63.54 deg - vertical/horizontal - layer  4
+
+# inner aperture
+v: 41.49 deg, h: 60.52 deg - vertical/horizontal - layer  1
+v: 20.26 deg, h: 36.43 deg - vertical/horizontal - layer  2
+v: 13.13 deg, h: 25.00 deg - vertical/horizontal - layer  3
+v:  9.67 deg, h: 18.82 deg - vertical/horizontal - layer  4
+

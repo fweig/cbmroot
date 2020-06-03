@@ -1,0 +1,41 @@
+#$ -wd /tmp 
+
+#$ -j y
+# Number of subtasks to start
+#$ -t 1-11 
+
+XXXXX=$(printf "%05d" "$SGE_TASK_ID")
+
+outdir=/hera/cbm/users/tofGsiApr14/sep14/calib/
+
+
+# Needed to run macro via script
+export ANA_SCRIPT=yes
+
+# Number of events to run: all available!
+nevents=-1
+
+#create the needed directories
+mkdir -p ${outdir}
+mkdir -p ${outdir}/log
+
+
+# setup the run environment
+source /hera/cbm/users/tofGsiApr14/beamtimeSep14/build/config.sh
+
+# This line is needed, otherwise root will crash
+export DISPLAY=localhost:0.0
+
+# create special and enter special workdir for job
+username=$(whoami)
+workdir=/tmp/$username/$JOB_ID.$SGE_TASK_ID
+mkdir -p $workdir
+cd $workdir
+
+root -b -l -q "/hera/cbm/users/tofGsiApr14/beamtimeSep14/source/macro/tof/beamtime/sep14/batch_ana.C(${SGE_TASK_ID}, kTRUE, kFALSE, ${nevents} )"
+
+cp -v ${SGE_STDOUT_PATH} ${outdir}/log/${JOB_ID}.${SGE_TASK_ID}.log
+cp -v $workdir/tofMbsCal.hst.root ${outdir}/${SGE_TASK_ID}.tofMbsCal.hst.root
+cp -v $workdir/tofMbsUnp.hst.root ${outdir}/${SGE_TASK_ID}.tofMbsUnp.hst.root
+
+rm -rf ${workdir}

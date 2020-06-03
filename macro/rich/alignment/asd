@@ -1,0 +1,12 @@
+#!/bin/bash
+
+cd ../../../../../build
+make install -j8
+### make install -j8 Rich
+cd -
+cd /lustre/nyx/cbm/users/jbendar/CBMINSTALL/share/cbmroot/macro/rich/position
+chmod +x run_position.sh
+cd -
+cd /lustre/nyx/cbm/users/jbendar/CBMINSTALL/share/cbmroot/macro/rich/matching
+chmod +x run_matching.sh
+cd -

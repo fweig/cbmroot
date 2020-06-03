@@ -1,0 +1,81 @@
+*** CbmMuch.cxx	2017-05-04 23:47:32.982749135 +0200
+--- CbmMuch_mcbm2017.cxx	2017-05-04 23:46:22.066963278 +0200
+***************
+*** 394,417 ****
+        gGeoManager->Node(layerName,0,stationName,0.,0.,layerZ,0,kTRUE,buf,0);
+  
+        // Create support
+!       TString  supportName1  = Form("muchstation%02ilayer%isupport1",iStation+1,iLayer+1);
+!       TString  supportName2  = Form("muchstation%02ilayer%isupport2",iStation+1,iLayer+1);
+!       TGeoVolume* voSupport1 = new TGeoVolume(supportName1,shSupport,supportMat);
+!       TGeoVolume* voSupport2 = new TGeoVolume(supportName2,shSupport,supportMat);
+!       voSupport1->SetLineColor(kYellow);
+!       voSupport2->SetLineColor(kYellow);
+!       if(TMath::Abs(supportDz) > 1e-5) { // Do not create support if it does not exist
+!         gGeoManager->Node(supportName1,0,layerName,+supportDx/2.,0.,0.,    0,kTRUE,buf,0);
+!         gGeoManager->Node(supportName2,0,layerName,-supportDx/2.,0.,0.,krotZ,kTRUE,buf,0);
+!       }
+  
+        // Create layer sides
+!       for (Int_t iSide=0;iSide<2;iSide++){
+          const CbmMuchLayerSide* side = layer->GetSide(iSide);
+          Char_t cside = (iSide==1) ? 'b' : 'f';
+  
+          // Create modules
+!         for (Int_t iModule=0;iModule<side->GetNModules();iModule++){
+            CbmMuchModule* module = side->GetModule(iModule);
+            TVector3 pos = module->GetPosition();
+            TVector3 size = module->GetSize();
+--- 394,419 ----
+        gGeoManager->Node(layerName,0,stationName,0.,0.,layerZ,0,kTRUE,buf,0);
+  
+        // Create support
+! // DE      TString  supportName1  = Form("muchstation%02ilayer%isupport1",iStation+1,iLayer+1);
+! // DE      TString  supportName2  = Form("muchstation%02ilayer%isupport2",iStation+1,iLayer+1);
+! // DE      TGeoVolume* voSupport1 = new TGeoVolume(supportName1,shSupport,supportMat);
+! // DE      TGeoVolume* voSupport2 = new TGeoVolume(supportName2,shSupport,supportMat);
+! // DE      voSupport1->SetLineColor(kYellow);
+! // DE      voSupport2->SetLineColor(kYellow);
+! // DE      if(TMath::Abs(supportDz) > 1e-5) { // Do not create support if it does not exist
+! // DE        gGeoManager->Node(supportName1,0,layerName,+supportDx/2.,0.,0.,    0,kTRUE,buf,0);
+! // DE        gGeoManager->Node(supportName2,0,layerName,-supportDx/2.,0.,0.,krotZ,kTRUE,buf,0);
+! // DE      }
+  
+        // Create layer sides
+!       // DE      for (Int_t iSide=0;iSide<2;iSide++){
+!       for (Int_t iSide=0;iSide<1;iSide++){
+          const CbmMuchLayerSide* side = layer->GetSide(iSide);
+          Char_t cside = (iSide==1) ? 'b' : 'f';
+  
+          // Create modules
+! 	// DE        for (Int_t iModule=0;iModule<side->GetNModules();iModule++){
+!         for (Int_t iModule = 0; iModule < 1; iModule++){
+            CbmMuchModule* module = side->GetModule(iModule);
+            TVector3 pos = module->GetPosition();
+            TVector3 size = module->GetSize();
+***************
+*** 469,479 ****
+              TGeoVolume* voActive = new TGeoVolume(activeName,shActive,argon);
+              TGeoVolume* voSpacer = new TGeoVolume(spacerName,shSpacer,noryl);
+              Double_t phi0 = 360./(layer->GetSide(0)->GetNModules()+layer->GetSide(1)->GetNModules());
+!             Double_t angle =  phi0*(2*iModule+iSide);
+              Int_t krot;
+              gMC->Matrix(krot,90,angle-90,90,angle,0,0);
+!             gGeoManager->Node(activeName,0,layerName,pos[0],pos[1],pos[2]-layer->GetZ(),krot,kTRUE,buf,0);
+!             gGeoManager->Node(spacerName,0,layerName,pos[0],pos[1],pos[2]-layer->GetZ(),krot,kTRUE,buf,0);
+              AddSensitiveVolume(voActive);
+              continue;
+            }
+--- 471,482 ----
+              TGeoVolume* voActive = new TGeoVolume(activeName,shActive,argon);
+              TGeoVolume* voSpacer = new TGeoVolume(spacerName,shSpacer,noryl);
+              Double_t phi0 = 360./(layer->GetSide(0)->GetNModules()+layer->GetSide(1)->GetNModules());
+! 	    // DE            Double_t angle =  phi0*(2*iModule+iSide);
+!             Double_t angle = 270;  // rotate tip of GEM sectors pointing upwards
+              Int_t krot;
+              gMC->Matrix(krot,90,angle-90,90,angle,0,0);
+!             gGeoManager->Node(activeName,0,layerName,pos[0]-60.,pos[1],pos[2]-layer->GetZ()+30.,krot,kTRUE,buf,0);
+!             gGeoManager->Node(spacerName,0,layerName,pos[0]-60.,pos[1],pos[2]-layer->GetZ()+30.,krot,kTRUE,buf,0);
+              AddSensitiveVolume(voActive);
+              continue;
+            }

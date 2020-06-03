@@ -1,0 +1,51 @@
+set(INCLUDE_DIRECTORIES
+  ${CMAKE_CURRENT_SOURCE_DIR}
+
+  ${CBMDETECTORBASE_DIR}/rich
+
+  ${CBMROOT_SOURCE_DIR}/sim/transport/base
+
+  ${CBMBASE_DIR}
+  ${CBMBASE_DIR}/utils
+
+  ${CBMDATA_DIR}
+  ${CBMDATA_DIR}/rich
+)
+
+include_directories(${INCLUDE_DIRECTORIES})
+
+set(SYSTEM_INCLUDE_DIRECTORIES
+  ${BASE_INCLUDE_DIRECTORIES}
+  ${Boost_INCLUDE_DIR}
+)
+
+include_directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
+
+set(LINK_DIRECTORIES
+  ${ROOT_LIBRARY_DIR}
+  ${FAIRROOT_LIBRARY_DIR}
+  ${Boost_LIBRARY_DIRS}
+)
+
+link_directories(${LINK_DIRECTORIES})
+
+set(SRCS
+  CbmRich.cxx
+  CbmRichDigitizer.cxx
+)
+
+IF (SSE_FOUND)
+  ADD_DEFINITIONS(-DHAVE_SSE)
+  SET_SOURCE_FILES_PROPERTIES(${SRCS} PROPERTIES COMPILE_FLAGS "-msse -O3")
+  Message(STATUS "Rich will be compiled with SSE support")
+ELSE (SSE_FOUND)
+  Message(STATUS "Rich will be compiled without SSE support")
+  SET_SOURCE_FILES_PROPERTIES(${SRCS} PROPERTIES COMPILE_FLAGS "-O3")
+ENDIF (SSE_FOUND)
+
+set(LINKDEF  CbmRichSimLinkDef.h)
+
+Set(LIBRARY_NAME CbmRichSim)
+Set(DEPENDENCIES Base CbmData CbmRichBase Gdml)
+
+GENERATE_LIBRARY()

@@ -1,0 +1,48 @@
+##############################################################################
+# Class:   CbmMcbm2018StsPar
+# Context: For mSTS testing
+##############################################################################
+[CbmMcbm2018StsPar]
+//----------------------------------------------------------------------------
+// Total number of STS modules in the setup
+NbModules: Int_t 1
+// Type of each module: 0 for connectors on the right, 1 for connectors on the left
+ModuleType: Int_t \
+           0
+// STS address for the first strip of each module
+// 1 Line per ladder, from above beam to under beam
+ModAddress: Int_t \
+  0x10008002
+// Offset of module center in X, in mm (Should be done by geometry for the unpacker!)
+ModCenterPosX: Double_t \
+         0.0
+// Offset of module center in Y, in mm (Should be done by geometry for the unpacker!)
+ModCenterPosY: Double_t \
+         0.0
+// Total number of STS DPBs in system
+NrOfDpbs: Int_t 1
+// Array to hold the unique IDs (equipment ID) for all STS DPBs, Array size has to match NrOfDpbs
+DbpIdArray: Int_t \
+  0x5c06
+// Array to hold the active flag for all CROBs, [ NbDpb * kuNbCrobPerDpb ] = [ NbDpb * 1 ]
+CrobActiveFlag: Int_t \
+  1
+// Index of the STS module for each FEB, [ NbDpb * kuNbCrobPerDpb * kuNbFebsPerCrob ] = = [ NbDpb * 1 * 5 ], -1 if inactive
+FebModuleIdx: Int_t \
+  0 -1 -1 -1 -1
+// STS module side for each FEB, [ NbDpb * kuNbCrobPerDpb * kuNbFebsPerCrob ], 0 = P, 1 = N, -1 if inactive
+FebModuleSide: Int_t \
+  0  1  0  0  1
+// ADC Gain in e-/ADC bin for each FEB, [ NbDpb * kuNbCrobPerDpb * kuNbFebsPerCrob ]
+FebAdcGain: Double_t \
+     1.0     1.0     1.0     1.0     1.0
+// Base at Cal. Thr. in e- for each FEB, [ NbDpb * kuNbCrobPerDpb * kuNbFebsPerCrob ]
+FebAdcBase: Double_t \
+     1.0     1.0     1.0     1.0     1.0
+// Thr. step in e-/Thr. Unit for each FEB, [ NbDpb * kuNbCrobPerDpb * kuNbFebsPerCrob ]
+FebAdcThrGain: Double_t \
+     0.0     0.0     0.0     0.0     0.0
+// Thr. offset in Units vs Cal. Thr. for each FEB, [ NbDpb * kuNbCrobPerDpb * kuNbFebsPerCrob ]
+FebAdcThrOffs: Int_t \
+     0       0       0       0       0
+#######################

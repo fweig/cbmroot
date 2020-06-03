@@ -1,0 +1,78 @@
+*** Create_TRD_Geometry_v15c_3e.C	2015-12-14 15:50:35.830604577 +0100
+--- Create_TRD_Geometry_v15c_1m.C	2015-12-14 15:50:50.430676975 +0100
+***************
+*** 84,91 ****
+  const TString tagVersion   = "v15c";
+  //const TString subVersion   = "_1h";
+  //const TString subVersion   = "_1e";
+! //const TString subVersion   = "_1m";
+! const TString subVersion   = "_3e";
+  //const TString subVersion   = "_3m";
+  const TString geoVersion   = "trd_" + tagVersion + subVersion;
+  const TString FileNameSim  = geoVersion + ".geo.root";
+--- 84,91 ----
+  const TString tagVersion   = "v15c";
+  //const TString subVersion   = "_1h";
+  //const TString subVersion   = "_1e";
+! const TString subVersion   = "_1m";
+! //const TString subVersion   = "_3e";
+  //const TString subVersion   = "_3m";
+  const TString geoVersion   = "trd_" + tagVersion + subVersion;
+  const TString FileNameSim  = geoVersion + ".geo.root";
+***************
+*** 151,159 ****
+  //const Int_t    ShowLayer[MaxLayers] = { 1, 1, 0, 0, 0, 0, 0, 0, 0, 0 };  // SIS100-2l  // 1: plot, 0: hide
+  //const Int_t    ShowLayer[MaxLayers] = { 1, 1, 1, 0, 0, 0, 0, 0, 0, 0 };  // SIS100-3l  // 1: plot, 0: hide
+  //
+! //const Int_t    ShowLayer[MaxLayers] = { 1, 1, 1, 1, 0, 0, 0, 0, 0, 0 };  // SIS100-4l  // 1: plot, 0: hide
+  //const Int_t    ShowLayer[MaxLayers] = { 0, 0, 0, 0, 1, 1, 1, 1, 1, 1 };  // SIS300-mu  // 1: plot, 0: hide
+! const Int_t    ShowLayer[MaxLayers] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };  // SIS300-e   // 1: plot, 0: hide
+  
+  Int_t    PlaneId[MaxLayers]; // automatically filled with layer ID
+  
+--- 151,159 ----
+  //const Int_t    ShowLayer[MaxLayers] = { 1, 1, 0, 0, 0, 0, 0, 0, 0, 0 };  // SIS100-2l  // 1: plot, 0: hide
+  //const Int_t    ShowLayer[MaxLayers] = { 1, 1, 1, 0, 0, 0, 0, 0, 0, 0 };  // SIS100-3l  // 1: plot, 0: hide
+  //
+! const Int_t    ShowLayer[MaxLayers] = { 1, 1, 1, 1, 0, 0, 0, 0, 0, 0 };  // SIS100-4l  // 1: plot, 0: hide
+  //const Int_t    ShowLayer[MaxLayers] = { 0, 0, 0, 0, 1, 1, 1, 1, 1, 1 };  // SIS300-mu  // 1: plot, 0: hide
+! //const Int_t    ShowLayer[MaxLayers] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };  // SIS300-e   // 1: plot, 0: hide
+  
+  Int_t    PlaneId[MaxLayers]; // automatically filled with layer ID
+  
+***************
+*** 168,175 ****
+  // 5x z-positions from 260 till 550 cm
+  //Double_t LayerPosition[MaxLayers] = { 260. }; // start position - 2013-10-28 - DE - v14_1h - SIS 100 hadron         ( 4 layers, z = 2600 )
+  //Double_t LayerPosition[MaxLayers] = { 410. }; // start position - 2013-10-28 - DE - v14_1e - SIS 100 electron       ( 4 layers, z = 4100 )
+! //Double_t LayerPosition[MaxLayers] = { 490. }; // start position - 2015-12-14 - DE - v14_1m - SIS 100 muon           ( 4 layers, z = 4900 )
+! Double_t LayerPosition[MaxLayers] = { 410. }; // start position - 2013-10-28 - DE - v14_3e - SIS 300 electron       (10 layers, z = 4100 )
+  //Double_t LayerPosition[MaxLayers] = { 550. }; // start position - 2013-10-28 - DE - v14_3m - SIS 300 muon     6_abs (10 layers, z = 5500 )
+  //
+  // obsolete variants
+--- 168,175 ----
+  // 5x z-positions from 260 till 550 cm
+  //Double_t LayerPosition[MaxLayers] = { 260. }; // start position - 2013-10-28 - DE - v14_1h - SIS 100 hadron         ( 4 layers, z = 2600 )
+  //Double_t LayerPosition[MaxLayers] = { 410. }; // start position - 2013-10-28 - DE - v14_1e - SIS 100 electron       ( 4 layers, z = 4100 )
+! Double_t LayerPosition[MaxLayers] = { 490. }; // start position - 2015-12-14 - DE - v14_1m - SIS 100 muon           ( 4 layers, z = 4900 )
+! //Double_t LayerPosition[MaxLayers] = { 410. }; // start position - 2013-10-28 - DE - v14_3e - SIS 300 electron       (10 layers, z = 4100 )
+  //Double_t LayerPosition[MaxLayers] = { 550. }; // start position - 2013-10-28 - DE - v14_3m - SIS 300 muon     6_abs (10 layers, z = 5500 )
+  //
+  // obsolete variants
+***************
+*** 417,423 ****
+  void dump_digi_file();
+  
+  
+! void Create_TRD_Geometry_v15c_3e() {
+  
+    // Load needed material definition from media.geo file
+    create_materials_from_media_file();
+--- 417,423 ----
+  void dump_digi_file();
+  
+  
+! void Create_TRD_Geometry_v15c_1m() {
+  
+    // Load needed material definition from media.geo file
+    create_materials_from_media_file();

@@ -1,0 +1,12 @@
+
+#setupMacroTemp=geosetup_v1512_8gev.C
+#setupDirNameTemp=geosetup_v1512_8gev
+collEnergyTemp=8gev
+NUMB=00001
+
+for FLAG in 0 1
+do
+	sbatch -l mem=2G,ct=01:00:00 -v Flag=${FLAG} -v Numb=${NUMB} -v coll_energy=${collEnergyTemp} ./sim.sge
+done
+
+#qsub -l mem=2G,ct=23:00:00 -v setupMacro=${setupMacroTemp} -v setupDirName=${setupDirNameTemp} -v coll_energy=${collEnergyTemp} -v pluto_particle=qgp ./sim.sge

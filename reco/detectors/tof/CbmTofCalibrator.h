@@ -1,0 +1,92 @@
+/** @file CbmTofCalibrator.h
+ ** @author nh <N.Herrmann@gsi.de>
+ ** @date 28.02.2020
+ **/
+
+#ifndef CBMTOFCALIBRATOR_H
+#define CBMTOFCALIBRATOR_H 1
+
+// TOF Classes and includes
+class CbmTofDigi;
+class CbmTofHit;
+class CbmMatch;
+class CbmEvent;
+class CbmVertex;
+   // Geometry
+class CbmTofGeoHandler;
+class CbmTofDetectorId;
+class CbmTofDigiPar;
+class CbmTofDigiBdfPar;
+class CbmTofCell;
+class CbmTofFindTracks;
+class CbmDigiManager;
+
+#include "CbmDigiManager.h"
+#include "CbmTofEventClusterizer.h"
+#include "CbmTofFindTracks.h"
+#include "CbmTofTrackletParam.h"
+#include "FairTrackParam.h"
+#include "CbmTofDigi.h"
+#include "CbmTofHit.h"
+#include "CbmTofTracklet.h"
+#include "CbmTofTrackletTools.h"
+#include "TMath.h"
+#include "TH1.h"
+#include "TH2.h"
+#include <vector>
+
+class TClonesArray;
+
+/** @class CbmTofCalibrator
+ ** @brief  contains filling and updating of calibration histos
+ ** @author nh
+ **/
+class CbmTofCalibrator: public FairTask
+{
+
+  public:
+	/**   Constructor   **/
+	CbmTofCalibrator();
+
+	/**   Destructor   **/
+	virtual ~CbmTofCalibrator();
+
+	InitStatus Init();
+	Bool_t  InitParameters();
+	Bool_t  CreateCalHist();
+	void      FillCalHist(CbmTofTracklet *pTrk);
+	Bool_t UpdateCalHist(Int_t iOpt);
+	void ReadHist(TFile *fhFile);		      	
+	void WriteHist(TFile *fhFile);
+	
+ private:
+	CbmDigiManager*               fDigiMan;
+	CbmTofEventClusterizer* fTofClusterizer;
+	CbmTofFindTracks*           fTofFindTracks;
+	CbmTofTrackletTools*     fTrackletTools; 
+
+	CbmTofDigiPar*        fDigiPar;
+	CbmTofDigiBdfPar* fDigiBdfPar;
+	TClonesArray*           fTofDigiMatchColl;     // TOF Digi Links
+
+	std::vector< TH2* > fhCalPos;    // [nbDet]
+	std::vector< TH2* > fhCalTOff;  // [nbDet]
+	std::vector< TH2* > fhCalTot;    // [nbDet]
+	std::vector< std::vector< std::vector<TH2 *> > >fhCalWalk; // [nbDet][nbCh][nSide]
+
+	std::vector< TH1* > fhCorPos;    // [nbDet]
+	std::vector< TH1* > fhCorTOff;  // [nbDet]
+	std::vector< TH1* > fhCorTot;    // [nbDet]
+	std::vector< TH1* > fhCorTotOff;    // [nbDet]
+	std::vector< TH1* > fhCorSvel;   // [nbDet]
+	std::vector< std::vector< std::vector<TH1 *> > >fhCorWalk; // [nbDet][nbCh][nSide]	
+	  
+	std::map<UInt_t, UInt_t> fDetIdIndexMap;
+
+	CbmTofCalibrator(const CbmTofCalibrator&) = delete;
+	CbmTofCalibrator operator=(const CbmTofCalibrator&) = delete;
+	
+	ClassDef(CbmTofCalibrator, 1);
+};
+
+#endif /* CBMTOFCALIBRATOR_H */

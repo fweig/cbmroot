@@ -1,0 +1,225 @@
+// -----------------------------------------------------------------------------
+// -----                                                                   -----
+// -----                        CbmUnpackTask                              -----
+// -----               Created 11.02.2020 by P.-A. Loizeau                 -----
+// -----                                                                   -----
+// -----------------------------------------------------------------------------
+
+/// CbmRoot (+externals) headers
+
+/// FairRoot headers
+#include <FairLogger.h>
+#include <FairRootManager.h>
+#include <FairRun.h>
+#include <FairRuntimeDb.h>
+#include <FairRunOnline.h>
+#include <FairParGenericSet.h>
+
+/// Fairsoft (Root, Boost, ...) headers
+#include <THttpServer.h>
+#include <TROOT.h>
+#include <TClonesArray.h>
+#include <TCanvas.h>
+#include <TFile.h>
+
+/// C/C++ headers
+#include <iostream>
+#include <stdint.h>
+#include <iomanip>
+#include <fstream>
+#include <chrono>
+
+
+template< class TDigi, class TAlgo, class TParam >
+CbmUnpackTask< TDigi, TAlgo, TParam >::CbmUnpackTask( TString sDigiBranchName, TString sDigiBranchDescr )
+  : TObject(),
+    fsDigiBranchName( sDigiBranchName ),
+    fsDigiBranchDescr( sDigiBranchDescr )
+{
+   fvDigiIO      = new std::vector< TDigi >();
+   fUnpackerAlgo = new TAlgo();
+}
+
+template< class TDigi, class TAlgo, class TParam >
+CbmUnpackTask< TDigi, TAlgo, TParam >::~CbmUnpackTask()
+{
+   if( nullptr != fUnpackerAlgo )
+      delete fUnpackerAlgo;
+   if( nullptr != fvDigiIO )
+   {
+      fvDigiIO.clear();
+      delete fvDigiIO;
+   }
+}
+
+/** TODO:
+ 1) proper way to access the branchname and description
+ **/
+template< class TDigi, class TAlgo, class TParam >
+Bool_t CbmUnpackTask< TDigi, TAlgo, TParam >::Init()
+{
+   LOG(info) << "CbmUnpackTask::Init => "
+             << "Initializing Unpacker task for the following specializations: ";
+
+   FairRootManager* ioman = FairRootManager::Instance();
+   if( NULL == ioman )
+   {
+      LOG(fatal) << "No FairRootManager instance";
+   }
+
+   /// Check first if array not already existing due to other unpacker!
+   fvDigiIO = static_cast< std::vector< TDigi > *>(ioman->GetObject( fsDigiBranchName ));
+   if( nullptr == fvDigiIO )
+   {
+      /// No existing array => create it!
+      fvDigiIO = new std::vector< TDigi >();
+      if( nullptr == fvDigiIO )
+      {
+         LOG(fatal) << "Failed creating the IO vector ";
+      } // if( nullptr == fvDigiIO )
+      ioman->RegisterAny( fsDigiBranchName,
+//                       ( "" == fsDigiBranchDescr ? fsDigiBranchName : fsDigiBranchDescr),
+                          fvDigiIO, fbWriteOutput);
+   } // if( nullptr == fvDigiIO )
+      else LOG(info) << "--> Found existing IO vector, re-using it.";
+
+   return kTRUE;
+}
+
+
+template< class TDigi, class TAlgo, class TParam >
+void CbmUnpackTask< TDigi, TAlgo, TParam >::SetParContainers()
+{
+   LOG(info) << "Setting parameter containers for " << GetName();
+
+   TList* fParCList = fUnpackerAlgo->GetParList();
+
+   for( Int_t iparC = 0; iparC < fParCList->GetEntries(); ++iparC )
+   {
+      FairParGenericSet* tempObj = (FairParGenericSet*)(fParCList->At( iparC ));
+      fParCList->Remove(tempObj);
+
+      std::string sParamName{ tempObj->GetName() };
+      FairParGenericSet* newObj = dynamic_cast<FairParGenericSet*>( FairRun::Instance()->GetRuntimeDb()->getContainer( sParamName.data() ) );
+
+      if( nullptr == newObj )
+      {
+         LOG(error) << "Failed to obtain parameter container " << sParamName
+                    << ", for parameter index " << iparC;
+         return;
+      } // if( nullptr == newObj )
+
+      fParCList->AddAt(newObj, iparC);
+//      delete tempObj;
+   } // for( Int_t iparC = 0; iparC < fParCList->GetEntries(); ++iparC )
+}
+
+template< class TDigi, class TAlgo, class TParam >
+Bool_t CbmUnpackTask< TDigi, TAlgo, TParam >::InitContainers()
+{
+   LOG(info) << "Init parameter containers for " << GetName();
+
+   Bool_t initOK = fUnpackerAlgo->InitContainers();
+
+   /// If monitor mode enabled, trigger histos creation, obtain pointer on them and add them to the HTTP server
+   if( kTRUE == fbMonitorMode )
+   {
+      /// Trigger histo creation on all associated algos
+      initOK &= fUnpackerAlgo->CreateHistograms();
+
+      /// Obtain vector of pointers on each histo from the algo (+ optionally desired folder)
+      std::vector< std::pair< TNamed *, std::string > > vHistos = fUnpackerAlgo->GetHistoVector();
+
+      /// Register the histos in the HTTP server
+      THttpServer* server = FairRunOnline::Instance()->GetHttpServer();
+      if( nullptr != server )
+      {
+         for( UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto )
+         {
+            server->Register( Form( "/%s", vHistos[ uHisto ].second.data() ), vHistos[ uHisto ].first );
+         } // for( UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto )
+
+//         server->RegisterCommand("/Reset_UnpSts_Hist", "bMcbm2018UnpackerTaskStsResetHistos=kTRUE");
+//         server->Restrict("/Reset_UnpSts_Hist", "allow=admin");
+      } // if( nullptr != server )
+
+   } // if( kTRUE == fbMonitorMode )
+
+   fUnpackerAlgo->SetMonitorMode( fbMonitorMode );
+
+   return initOK;
+}
+
+template< class TDigi, class TAlgo, class TParam >
+Bool_t CbmUnpackTask< TDigi, TAlgo, TParam >::ReInitContainers()
+{
+   LOG(info) << "ReInit parameter containers for " << GetName();
+   Bool_t initOK = fUnpackerAlgo->ReInitContainers();
+
+   return initOK;
+}
+
+template< class TDigi, class TAlgo, class TParam >
+void CbmUnpackTask< TDigi, TAlgo, TParam >::AddMsComponentToList( size_t component, UShort_t usDetectorId )
+{
+   fUnpackerAlgo->AddMsComponentToList( component, usDetectorId );
+}
+
+template< class TDigi, class TAlgo, class TParam >
+void CbmUnpackTask< TDigi, TAlgo, TParam >::Reset()
+{
+   fvDigiIO->clear();
+}
+
+template< class TDigi, class TAlgo, class TParam >
+void CbmUnpackTask< TDigi, TAlgo, TParam >::Finish()
+{
+   /// If monitor mode enabled, trigger histos creation, obtain pointer on them and add them to the HTTP server
+   if( kTRUE == fbMonitorMode )
+   {
+      /// Obtain vector of pointers on each histo from the algo (+ optionally desired folder)
+      std::vector< std::pair< TNamed *, std::string > > vHistos = fUnpackerAlgo->GetHistoVector();
+
+      /// (Re-)Create ROOT file to store the histos
+      TDirectory * oldDir = NULL;
+      TFile * histoFile = NULL;
+      // Store current directory position to allow restore later
+      oldDir = gDirectory;
+      // open separate histo file in recreate mode
+      histoFile = new TFile( "data/HistosUnpackerSts.root" , "RECREATE");
+      histoFile->cd();
+
+      /// Register the histos in the HTTP server
+      for( UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto )
+      {
+         /// Make sure we end up in chosen folder
+         TString sFolder = vHistos[ uHisto ].second.data();
+         if( nullptr == gDirectory->Get( sFolder ) )
+            gDirectory->mkdir( sFolder );
+         gDirectory->cd( sFolder );
+
+         /// Write plot
+         vHistos[ uHisto ].first->Write();
+
+         histoFile->cd();
+      } // for( UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto )
+
+     // Restore original directory position
+     oldDir->cd();
+     histoFile->Close();
+   } // if( kTRUE == fbMonitorMode )
+}
+
+template< class TDigi, class TAlgo, class TParam >
+void CbmUnpackTask< TDigi, TAlgo, TParam >::SetIgnoreOverlapMs( Bool_t bFlagIn )
+{
+   fUnpackerAlgo->SetIgnoreOverlapMs( bFlagIn );
+}
+
+/*
+template< class TDigi, class TAlgo, class TParam >
+void CbmUnpackTask< TDigi, TAlgo, TParam >::SetTimeOffsetNs( Double_t dOffsetIn )
+{
+   fUnpackerAlgo->SetTimeOffsetNs( dOffsetIn );
+}
+*/

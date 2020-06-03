@@ -1,0 +1,57 @@
+*** Create_TRD_Geometry_v16a_3e.C	2016-07-05 16:00:18.118844346 +0200
+--- Create_TRD_Geometry_v16a_3m.C	2016-07-05 16:14:15.798998178 +0200
+***************
+*** 89,96 ****
+  //const TString subVersion   = "_1h";
+  //const TString subVersion   = "_1e";
+  //const TString subVersion   = "_1m";
+! const TString subVersion   = "_3e";
+! //const TString subVersion   = "_3m";
+  const TString geoVersion   = "trd_" + tagVersion + subVersion;
+  const TString FileNameSim  = geoVersion + ".geo.root";
+  const TString FileNameGeo  = geoVersion + "_geo.root";
+--- 89,96 ----
+  //const TString subVersion   = "_1h";
+  //const TString subVersion   = "_1e";
+  //const TString subVersion   = "_1m";
+! //const TString subVersion   = "_3e";
+! const TString subVersion   = "_3m";
+  const TString geoVersion   = "trd_" + tagVersion + subVersion;
+  const TString FileNameSim  = geoVersion + ".geo.root";
+  const TString FileNameGeo  = geoVersion + "_geo.root";
+***************
+*** 173,180 ****
+  //Double_t LayerPosition[MaxLayers] = { 260. }; // start position - 2013-10-28 - DE - v14_1h - SIS 100 hadron         ( 4 layers, z = 2600 )
+  //Double_t LayerPosition[MaxLayers] = { 410. }; // start position - 2013-10-28 - DE - v14_1e - SIS 100 electron       ( 4 layers, z = 4100 )
+  //Double_t LayerPosition[MaxLayers] = { 360. }; // start position - 2014-06-16 - DE - v14_1m - SIS 100 muon           ( 4 layers, z = 3600 ) was 460.
+! Double_t LayerPosition[MaxLayers] = { 410. }; // start position - 2013-10-28 - DE - v14_3e - SIS 300 electron       (10 layers, z = 4100 )
+! //Double_t LayerPosition[MaxLayers] = { 550. }; // start position - 2013-10-28 - DE - v14_3m - SIS 300 muon     6_abs (10 layers, z = 5500 )
+  //
+  // obsolete variants
+  //Double_t LayerPosition[MaxLayers] = { 460. }; // start position - 2013-10-28 - DE - v13x3 - SIS 100 muon         ( 4 layers, z = 4600 )
+--- 173,180 ----
+  //Double_t LayerPosition[MaxLayers] = { 260. }; // start position - 2013-10-28 - DE - v14_1h - SIS 100 hadron         ( 4 layers, z = 2600 )
+  //Double_t LayerPosition[MaxLayers] = { 410. }; // start position - 2013-10-28 - DE - v14_1e - SIS 100 electron       ( 4 layers, z = 4100 )
+  //Double_t LayerPosition[MaxLayers] = { 360. }; // start position - 2014-06-16 - DE - v14_1m - SIS 100 muon           ( 4 layers, z = 3600 ) was 460.
+! //Double_t LayerPosition[MaxLayers] = { 410. }; // start position - 2013-10-28 - DE - v14_3e - SIS 300 electron       (10 layers, z = 4100 )
+! Double_t LayerPosition[MaxLayers] = { 550. }; // start position - 2013-10-28 - DE - v14_3m - SIS 300 muon     6_abs (10 layers, z = 5500 )
+  //
+  // obsolete variants
+  //Double_t LayerPosition[MaxLayers] = { 460. }; // start position - 2013-10-28 - DE - v13x3 - SIS 100 muon         ( 4 layers, z = 4600 )
+***************
+*** 421,427 ****
+  void dump_digi_file();
+  
+  
+! void Create_TRD_Geometry_v16a_3e() {
+  
+    // Load needed material definition from media.geo file
+    create_materials_from_media_file();
+--- 421,427 ----
+  void dump_digi_file();
+  
+  
+! void Create_TRD_Geometry_v16a_3m() {
+  
+    // Load needed material definition from media.geo file
+    create_materials_from_media_file();

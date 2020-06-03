@@ -1,0 +1,198 @@
+ToF unpacker usage
+
+1) Classes organization
+
+a) TTriglogUnpackTof <= FairUnpack
+   |_> 1*TTofTriglogUnpacker
+     |-> 1*TTofTriglogBoard
+     |_> 1*TTofScalerBoard
+
+a) TMbsUnpackTof <= FairUnpack
+   |-> 1*TTofVftxUnpacker
+     |_> i*TTofVftxBoard <= TTofTdcBoard
+          |_> ?*TTofVftxData <= TTofTdcData
+   |-> 1*TTofV1290Unpacker
+     |_> j*TTofGet4Board <= TTofTdcBoard
+          |_> ?*TTofGet4Data <= TTofTdcData
+   |-> 1*TTofScomUnpacker
+     |_> k*TTofScalerBoard
+   |_> (l*TTofTrb3Unpacker) <- Not implemented, maybe in independent sub-event
+     |_> (1*TTofTrb3Board <= TTofTdcBoard)
+          |_> (?*TTofTrb3Data <= TTofTdcData)
+
+a) TGet4UnpackTof <= FairUnpack
+   |_> 1*TTofGet4Unpacker
+     |_> l*TTofGet4Board <= TTofTdcBoard
+          |_> n*TTofGet4Data <= TTofTdcData
+
+b) TMbsUnpTofMonitor <= FairTask
+
+c) TMbsCalibTof <= FairTask
+   |-> 1*TMbsCalibTdcTof
+     |_> ?*TTofCalibData
+   |_> 1*TMbsCalibScalTof
+     |_> 1*TTofCalibScaler
+
+d) TMbsMappingTof <= FairTask
+     |_> ?*CbmTofDigi or ?*CbmTofDigiExp
+
+e) TMbsConvTof <= FairTask
+     |_> TTree
+         |-> a*TVftxBoardData
+         |-> b*Scalers_Event
+         |-> c*Plastics_Event
+             |_> 4*std::vector<Plastics_Hit>
+                 |_> ?*Plastics_Hit
+         |_> d*Rpc_Event
+             |_> 1*Rpc_Cluster
+                 |_> ?*Rpc_Hit
+
+2) Parameter
+   cf parameter files comments for the allowed values for each options.
+
+   a) ParUnpackLmdXxx.txt
+      i)   WriteDataInCbmOut: Choose wether the intermediate data should be 
+           written in the CBMRoot output root file 
+      ii)  MbsNbVmeBoards: Nb of VME boards defined (=/= active), should be
+           taken from the beamtime/XXXXX/mbs/cbmvme0.h file for all recent
+           tof beamtime (after COSY Nov 2011)
+      iii) MbsVmeMapping: Mapping of VME boards defined (=/= active), should 
+           be adapted from the beamtime/XXXXX/mbs/cbmvme0.h file for all recent
+           tof beamtime (after COSY Nov 2011). Activating a board automatically
+           generate the needed unpackers, data objects and calibrators.
+      iv)  NbNonVmeBoards: Nb of VME boards defined
+      v)   NonVmeMapping: Mapping of the Non-VME boards, on the model of the
+           MbsVmeMapping one
+      vi)  TriggerRejection: Trigger to be rejected, allow to have a pulser 
+           trigger for buffer emptying, works only if a TRIGLOG board is in 
+           the data and the Triglog Unpacker is in use.
+   b) ParCalXxx.txt
+         Scalers calibration option
+      i)   CalibScalRefClk: control is calibrator use a fixed clock frequency or 
+           tries to calibrate it using the TRIGLOG sub-event Linux time
+           
+         TDCs calibration parameters
+               General Parameters
+      i)    MinNbHitsCalib: same as in GO4 unpacker, minimal nb of hits needed 
+            for online calibration. Before it only offline calibration is used 
+            if available.
+      ii)   FactMinNbOnlyNewCalib: Nb of times the minimum nb of hits until which
+            both the offline calibration and the new data are used. After it only
+            new data online calibration is used.
+      iii)  InitialCalibFilename: ROOT file containing offline calibration data 
+            for as many as possible TDCs
+      iv)   NbVftxCalib, NbCaenCalib, NbTrb3Calib, NbGet4Calib: Number of boards
+            of each type present in the offline calibration ROOT file
+      v)    InitialCalIndexVftx, InitialCalIndexCaen, InitialCalIndexTrb3, 
+            InitialCalIndexGet4: Index of offline calibration board to use for 
+            each unpacked board in current run. Allow remapping.
+      vi)   EnableCalibOutput: Enable/disable the generation of a new calibration 
+            file with current data at the end of the run.
+      vii)  SingleChCalibFilesEna: Use 1 offline calibration ROOT file form the
+            calib sub-folder for each board instead of a single ROOT file for all.
+            Allow merging of calibrations realized at different times.
+      viii) SingleChCalibFilesOut:Enable/disable the generation of a new  
+            calibrationfile in the calib sub-folder with current data for each  
+            active board at the end of the run.
+            
+               Offsets Options (Described only for VFTX, similar for all other 
+               TDC types)
+      i)    NbVftxOffset: Nb of boards for which the "hardware" offsets were 
+            measured
+      ii)   BoardIndexVftx: Mapping from measured boards to active board
+      iii)  EnableTimeOffCalib: Enable usage of the measured offset for the time 
+            variable
+      iv)   TimeOffsetVftx: Values of the time offset for each channel on each 
+            measured board.
+      v)    MeanTimeOffsetVftx: Mean value of the time offset for each channel,  
+            used if the board was not measured.
+      vi)   EnableTotCalibration: Enable usage of the measured offset for the  
+            tot variable
+      vii)  TotOffsetVftx: Values of the tot offset for each channel on each 
+            measured board.
+      viii) MeanTotOffsetVftx: Mean value of the tot offset for each channel,  
+            used if the board was not measured
+      ix)   ManualTdcOffsetEnable: Enable manual shift of TDCs relative to TDC
+            0 in units of Clock cycles
+      x)    TdcToTdcOffsetVftx: Offset for each TDC in clock cycle
+      xi)   AutomaticOffsetEnable: Enable automatic detection of clock cycle 
+            shift of TDCs relative to a reference TDC in units of Clock cycles
+            => Present in GO4 unpacker, Not implemented HERE !!!!
+      xii)  MainReferenceTdcVftx: TDC to be used as reference for automatice 
+            clock cycles shift detection
+            => Present in GO4 unpacker, Not implemented HERE !!!!
+            
+               ToT calculation options (Described only for VFTX, similar for all  
+               other TDC types)
+      i)    TotModeVftx: ToT calculation mode
+      ii)   NbVftxTotInvFlag: Nb of board for which inversion flags are provided
+      iii)  TotInversionFlagVftx: Flag allowing to invert the time and tot 
+            information in TDCs where ToT is not already computed in hardware. 
+            One flag per channel in each board.
+            
+            Histograms control
+      i)    TimeHistEnable: Enable time to trigger control histograms
+      ii)   TimeHistSinglesEnable: Same for channels with only 1 data in the 
+            event
+      iii)  TotHistoEnable: Enable ToT control histograms
+      iv)   MultiHitsDistHistoEna: Eanble time distance between consecutive 
+            hits on same channel histograms
+      
+   c) ParMapXxx.txt
+      i)   NbMappedTdc: Number of TDCs which will be used in mapping (all type)
+      ii)  NbChanTdc: Number of channels for each of those TDCs
+      iii) TdcUniqueId: TDC mapping, identify through an UID the TDC which
+           corresponds to each global index until NbMappedTdc. The TDC UID can 
+           be generated using the macro/tof/beamtime/RPC_UID_Generator.xls or
+           macro/tof/beamtime/RPC_UID_Generator.xlsx files (Google spreadsheet 
+           available on request to P.-A. Loizeau)
+      iv)  Mapping: Map for each TDC and each channel to which detector channel
+           the data should be associated by providing its CbmTofAddress value.
+           The UID (CbmTofAddress) line for each TDc can be generated using the 
+           macro/tof/beamtime/RPC_UID_Generator.xls or
+           macro/tof/beamtime/RPC_UID_Generator.xlsx files (Google spreadsheet 
+           available on request to P.-A. Loizeau).
+      v)   UseExtDigi: Choose whether to use CbmTofDigiExp or CbmTofDigi as 
+           output objects
+      vi)  NbMappedDet: For control histograms, number of detectors mapped.
+      vii) DetUniqueId: UID of 1st channel in each detector. Number of channels
+           per SM type is for now defined in the constant fgkiNbChDetType on 
+           line 26 of unpack/tof/mapping/TMbsMappingTofPar.cxx
+      
+   d) ParConvXxx.txt
+      i)    FilenameOut: Name of the output ROOT file containing the TTree
+      ii)   EnableTriglog: Enable Triglog fields in the Tree if Triglog unpacked
+      iii)  NbOutScalers: Number of scalers to be saved in Tree
+      iv)   ScalersIndex: Index of scalers to be saved in Tree. If Triglog is 
+            unpacked, it has scaler index 0 and the ScalOrMu indices start at 1.
+      v)    NbOutVftx: Number of VFTX for which the calibrated sdata should be 
+            saved
+      vi)   VftxIndex: indices of the VFTX for which calibrated data are saved
+      vii)  NbRpc: Number of RPC detectors (strips arrays with all Rpc_Hit in a
+            single Rpc_Cluster)
+      viii) RpcUniqueAdd: UID of the 1st channel in each RPC, used as mask to 
+            separate its data
+      ix)   RpcChType: pad, Double ended strips, ...
+      x)    NbPlastics: Number of Plastics detectors (a vector<Plastics_Hit> for
+            each)
+      xi)   PlaUniqueAdd: UID of the 1st channel in each plastic, used as mask to 
+            separate its data. Scintillators with same SM type or stored in the 
+            same Plastics_Event.
+      xi)   PlaEndsNb: Number of scintillators end readout for each plastic
+
+3) Usage hints
+   a) Make a copy of unpack_run36_Fair.C or unpack_get4_Fair.C
+   b) Modify the input LMD files around l50 (No wildcards, for multiple files 
+      they must be added one by one, in a loop for example like in get4 macro)
+   c) Adjust the options in ParUnpackLmdXxx.txt to reflect your electronics
+      setup
+   d) Adjust the calibration options in ParCalXxx.txt
+   e) Adjust the mapping in ParMapXxx.txt to reflect your setup
+   f) If necessary (compatibility with output of older GO4 unpacker), adjust 
+      the options in ParConvXxx.txt
+   g) If you modified the names of the option files, change them also in the 
+      C macro around line 25
+   h) Run the macro with ROOT and go for coffee (or other if many files) while 
+      it runs
+   i) Control histograms will appear in *.hst.root files, all other outputs are
+      also in the same folder

@@ -1,0 +1,110 @@
+/**
+  * @file CbmMcbm2018UnpackerTaskTrdR.h
+  * @author Dennis Spicker <dspicker@ikf.uni-frankfurt.de>
+  * @date 2020-01-20
+ **/
+
+#ifndef CbmMcbm2018UnpackerTaskTrdR_H
+#define CbmMcbm2018UnpackerTaskTrdR_H
+
+#include "TString.h"
+
+#include "CbmMcbmUnpack.h"
+#include "CbmTrdDigi.h"
+#include "CbmTrdRawMessageSpadic.h"
+
+class CbmMcbm2018UnpackerAlgoTrdR;
+
+/**
+  *  @class CbmMcbm2018UnpackerTaskTrdR
+  *  @brief Timeslice unpacker FairTask for Spadic v.2.2 .
+  *
+  *
+ **/
+class CbmMcbm2018UnpackerTaskTrdR : public CbmMcbmUnpack
+{
+public:
+	/** Default Constructor */
+	CbmMcbm2018UnpackerTaskTrdR();
+
+	virtual ~CbmMcbm2018UnpackerTaskTrdR();
+
+	/** Copy Constructor */
+	CbmMcbm2018UnpackerTaskTrdR(const CbmMcbm2018UnpackerTaskTrdR &);
+	/** Assignment Operator */
+	CbmMcbm2018UnpackerTaskTrdR operator=(const CbmMcbm2018UnpackerTaskTrdR &);
+
+	/**
+	 * @brief Registers output-data containers at the FairRootManager.
+	 *
+	 * Called in CbmMcbm2018Source::Init() .
+	 * @return kTRUE if successfull, kFALSE if not.
+	 **/
+	virtual Bool_t Init();
+
+	/** Called in CbmMcbm2018Source::FillBuffer() for each timesclice */
+	virtual Bool_t DoUnpack(const fles::Timeslice &ts, size_t component);
+
+	/** Called in CbmMcbm2018Source::Reset() */
+	virtual void Reset();
+
+	// Called in CbmMcbm2018Source::Close() */
+	virtual void Finish();
+
+	/** Called in CbmMcbm2018Source::SetParUnpackers() */
+	virtual void SetParContainers();
+
+	virtual Bool_t InitContainers();
+
+	virtual Bool_t ReInitContainers();
+
+	/**
+	 * @brief Adds an input component to the list of active components for this unpacker.
+	 **/
+	virtual void AddMsComponentToList(size_t component, UShort_t usDetectorId);
+
+	/**
+	 * @brief Sets numbers of Core Microslices and overlap Microslices per Timeslice.
+	 **/
+	virtual void SetNbMsInTs(size_t uCoreMsNb, size_t uOverlapMsNb);
+
+	void SetMonitorMode(Bool_t bFlagIn = kTRUE) 	 { fbMonitorMode = bFlagIn; }
+	void SetDebugMonitorMode(Bool_t bFlagIn = kTRUE) { fbDebugMonitorMode = bFlagIn; }
+	void SetWriteOutput(Bool_t bFlagIn = kTRUE) 	 { fbWriteOutput = bFlagIn; }
+	void SetDebugWriteOutput(Bool_t bFlagIn = kTRUE) { fbDebugWriteOutput = bFlagIn; }
+	void SetSystemIdentifier(std::uint8_t id)		 { fSystemIdentifier = id; }	
+
+	/**
+	 *  @brief Call this when Spadic Average-Baseline feature is enabled.
+	 **/
+	void SetBaselineAvg(Bool_t bFlagIn = kTRUE) { fbBaselineAvg = bFlagIn; }
+
+	void SetHistoFileName(TString filename);
+
+private:
+	// Control flags
+	Bool_t fbMonitorMode;	  ///< Switch ON the filling of a minimal set of histograms.
+	Bool_t fbDebugMonitorMode; ///< Switch ON the filling of a additional set of histograms.
+	Bool_t fbWriteOutput;	  ///< If ON the output Vector of digis is written to disk.
+	Bool_t fbDebugWriteOutput; ///< If ON the output vector of raw messages is filled and written to disk.
+	Bool_t fbBaselineAvg;	  ///< Set to true if Baseline Averaging is activated in Spadic.
+	std::uint8_t fSystemIdentifier; ///< by default set to: fles::SubsystemIdentifier::TRD, changable via setter
+
+	TString fMonitorHistoFileName;
+
+	/// Output Digi vector
+	std::vector<CbmTrdDigi> *fTrdDigiVector;
+
+	/// Output Spadic raw messages for debugging
+	std::vector<CbmTrdRawMessageSpadic> *fTrdRawMessageVector;
+
+	/// vector< pair< fulltime, word > >
+	std::vector< std::pair<std::uint64_t, std::uint64_t> > *fSpadicInfoMsgVector;
+
+	/// Processing algo
+	CbmMcbm2018UnpackerAlgoTrdR *fUnpackerAlgo;
+
+	ClassDef(CbmMcbm2018UnpackerTaskTrdR, 1)
+};
+
+#endif
