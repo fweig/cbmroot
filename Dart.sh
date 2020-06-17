@@ -80,6 +80,8 @@ fi
 
 if [ "${ctest_model}" == "Weekly" ]; then
   export LABEL1=${LINUX_FLAVOUR}-$SYSTEM-$COMPILER$GCC_VERSION-${ctest_model}-fairsoft_$FAIRSOFT_VERSION-fairroot_$FAIRROOT_VERSION
+elif [ "${ctest_model}" == "Continuous" ]; then
+  export LABEL1=${LINUX_FLAVOUR}-$SYSTEM-$COMPILER$GCC_VERSION-fairsoft_$FAIRSOFT_VERSION-fairroot_${FAIRROOT_VERSION}_MR-$CI_MERGE_REQUEST_IID
 else
   export LABEL1=${LINUX_FLAVOUR}-$SYSTEM-$COMPILER$GCC_VERSION-fairsoft_$FAIRSOFT_VERSION-fairroot_$FAIRROOT_VERSION
 fi

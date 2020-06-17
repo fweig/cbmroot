@@ -10,7 +10,7 @@ CbmRoot_Continuous:
     - master
   only:
     variables:
-      - $CI_PROJECT_PATH == "CbmSoft/CbmRoot"
+      - $CI_PROJECT_PATH == "computing/cbmroot"
   cache:
     paths:
       - build/
@@ -56,27 +56,27 @@ CbmRoot_Continuous:
     - find . -name "all_*.par" -delete
     - cd ..
 
-FormatCheck:
-  stage: build
-  tags:
-    - CbmRoot
-  only:
-    - merge_requests
-  only:
-    variables:
-      - $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == "CbmSoft/CbmRoot"
-  script:
-    - set -xv
-    - echo "export FAIRSOFT_VERSION=jun19p1" >> Dart.cfg
-    - echo "export FAIRROOT_VERSION=v18.2.0" >> Dart.cfg
-    - echo "export SIMPATH=/cvmfs/fairroot.gsi.de/fairsoft/\${FAIRSOFT_VERSION}" >> env.sh
-    - echo "export BUILDDIR=$PWD/build" >> env.sh
-    - echo "export SOURCEDIR=$PWD" >> env.sh
-    - echo "export PATH=\$SIMPATH/bin:$PATH" >> env.sh
-    - ls
-    - pwd
-    - cat env.sh
-    - . ./env.sh && ctest -S cmake/scripts/checkformat.cmake -VV
+#FormatCheck:
+#  stage: build
+#  tags:
+#    - CbmRoot
+#  only:
+#    - merge_requests
+#  only:
+#    variables:
+#      - $CI_MERGE_REQUEST_PROJECT_PATH == "computing/cbmroot"
+#  script:
+#    - set -xv
+#    - echo "export FAIRSOFT_VERSION=jun19p1" >> Dart.cfg
+#    - echo "export FAIRROOT_VERSION=v18.2.0" >> Dart.cfg
+#    - echo "export SIMPATH=/cvmfs/fairroot.gsi.de/fairsoft/\${FAIRSOFT_VERSION}" >> env.sh
+#    - echo "export BUILDDIR=$PWD/build" >> env.sh
+#    - echo "export SOURCEDIR=$PWD" >> env.sh
+#    - echo "export PATH=\$SIMPATH/bin:$PATH" >> env.sh
+#    - ls
+#    - pwd
+#    - cat env.sh
+#    - . ./env.sh && ctest -S cmake/scripts/checkformat.cmake -VV
 
 CbmRoot_Merge:
   stage: build
@@ -84,11 +84,19 @@ CbmRoot_Merge:
     - CbmRoot
   only:
     - merge_requests  
-  only:
-    variables:
-      - $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == "CbmSoft/CbmRoot"
+#  only:
+#    variables:
+#      - $CI_MERGE_REQUEST_PROJECT_PATH == "computing/cbmroot"
   script:
-    - set -xv
+#    - set -xv
+    - echo $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH
+    - echo $CI_MERGE_REQUEST_PROJECT_PATH
+#    - if [ "$CI_MERGE_REQUEST_PROJECT_PATH" == "computing/cbmroot" ]; then
+#    -   echo "Here"
+#    - fi
+    - echo $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
+    - echo $CI_MERGE_REQUEST_ID
+    - echo $CI_MERGE_REQUEST_IID
     - echo "export LINUX_FLAVOUR=Debian8.11" >> Dart.cfg
     - echo "export FAIRSOFT_VERSION=jun19p1" >> Dart.cfg
     - echo "export FAIRROOT_VERSION=v18.2.0" >> Dart.cfg
@@ -101,7 +109,7 @@ CbmRoot_Merge:
     - ls
     - pwd
     - cat Dart.cfg
-    - $PWD/Dart.sh Nightly Dart.cfg
+    - $PWD/Dart.sh Continuous Dart.cfg
 
 pages:
   stage: documentation

@@ -6,11 +6,11 @@ Set(CTEST_CMAKE_GENERATOR "Unix Makefiles")
 Set(CTEST_PROJECT_NAME "CBMROOT")
 Set(EXTRA_FLAGS $ENV{EXTRA_FLAGS})
 
-Set(CTEST_UPDATE_COMMAND "svn")
+Set(CTEST_UPDATE_COMMAND "git")
 
-If($ENV{ctest_model} MATCHES Continuous)
-  Set(CTEST_SVN_UPDATE_OPTIONS "$ENV{REVISION}")
-EndIf($ENV{ctest_model} MATCHES Continuous)
+#If($ENV{ctest_model} MATCHES Continuous)
+#  Set(CTEST_SVN_UPDATE_OPTIONS "$ENV{REVISION}")
+#EndIf($ENV{ctest_model} MATCHES Continuous)
 
 Set(BUILD_COMMAND "make")
 Set(CTEST_BUILD_COMMAND "${BUILD_COMMAND} -i -k -j$ENV{number_of_processors}")
@@ -84,6 +84,10 @@ Configure_File(${CTEST_SOURCE_DIRECTORY}/CTestCustom.cmake
 Ctest_Read_Custom_Files("${CTEST_BINARY_DIRECTORY}")
 
 Ctest_Start($ENV{ctest_model})
+
+If($ENV{ctest_model} MATCHES Continuous)
+  set(ENV{ctest_model} Nightly)
+EndIf()
 
 If(NOT $ENV{ctest_model} MATCHES Experimental)
   Ctest_Update(SOURCE "${CTEST_SOURCE_DIRECTORY}")
