@@ -48,6 +48,8 @@ CbmTrdParManager::CbmTrdParManager(Bool_t fasp)
   ,fGasPar(nullptr)
   ,fGainPar(nullptr)
   ,fGeoHandler(new CbmTrdGeoHandler())
+  ,fGeometryTag("")
+  ,fHardwareSetup()
 {
   // Get the maximum number of sectors. All arrays will have this number of entries.
   fMaxSectors = fst1_sect_count;
@@ -89,6 +91,8 @@ InitStatus CbmTrdParManager::Init()
     TGeoNode* node = static_cast<TGeoNode*>(nodes->At(iNode));
     if (!TString(node->GetName()).Contains("trd")) continue; // trd_vXXy top node, e.g. trd_v13a, trd_v14b
     TGeoNode* station = node;
+    fGeometryTag = station->GetName();
+    fHardwareSetup.SelectComponentIdMap(fGeometryTag);
     TObjArray* layers = station->GetNodes();
     for (Int_t iLayer = 0; iLayer < layers->GetEntriesFast(); iLayer++) {
         TGeoNode* layer = static_cast<TGeoNode*>(layers->At(iLayer));
@@ -167,9 +171,7 @@ void CbmTrdParManager::CreateModuleParameters(const TString& path)
   // Orientation of the detector layers
   // Odd  layers (1,3,5..) have resolution in x-direction (isRotated == 0) - vertical pads
   // Even layers (2,4,6..) have resolution in y-direction (isRotated == 1) - horizontal pads
-  //   Int_t layerNr = CbmTrdAddress::GetLayerId(moduleAddress) + 1;
-  //   Int_t isRotated = fGeoHandler->GetModuleOrientation(path);
-  //      printf("layer %02d %d isRotated\n", layerNr, isRotated);   // check, if even layers are isRotated == 1
+  // Int_t isRotated = fGeoHandler->GetModuleOrientation(path);
   //   if( (isRotated%2) == 1 ) {  // flip pads for even layers
   //      Double_t copybuf;
   //      for (Int_t i = 0; i < fMaxSectors; i++) {
@@ -231,21 +233,22 @@ void CbmTrdParManager::CreateModuleParameters(const TString& path)
   else {
     asics = new CbmTrdParSetAsic("TrdParModSpadic", Form("Spadic set for Module %d", moduleAddress));     asics->SetAsicType(moduleType);
     CbmTrdParSpadic *asic(nullptr);
-    Int_t nAsicsPerCrob = CbmTrdParSpadic::GetNasicsPerCrob(moduleType);
-    Int_t cRobCounter(0);
-    Int_t cRobId(0);
-    Int_t eLinkId(98);  // default for undefined, since 98 should never be in use
+    // Int_t nAsicsPerCrob = CbmTrdParSpadic::GetNasicsPerCrob(moduleType);
+    // Int_t cRobCounter(0);
+    // Int_t cRobId(0);
+    // Int_t eLinkId(98);  // default for undefined, since 98 should never be in use
     Int_t nModuleColumns(digi->GetNofColumns());
     Int_t nModuleRows(digi->GetNofRows());
+    Int_t nModuleChannels(nModuleColumns * nModuleRows);
     
     Int_t nAsicsAlongColumns(-1);
     
     std::vector<Int_t> chAddressesVec;
     for (Int_t iAsic = 0; iAsic < CbmTrdParSpadic::GetNasicsOnModule(moduleType); iAsic++)
     {
-      asic = new CbmTrdParSpadic( 1000 *  moduleAddress + iAsic); // nTh-asic + module address define asicAddress
-      eLinkId = (iAsic % nAsicsPerCrob) * 2;
-      cRobCounter = iAsic / nAsicsPerCrob;
+      asic = new CbmTrdParSpadic( 1000 *  moduleAddress + iAsic); // nTh-asic + module address define asicAddress counting for asic starts at bottom left and goes left to right row by row
+      // eLinkId = (iAsic % nAsicsPerCrob) * 2;
+      // cRobCounter = iAsic / nAsicsPerCrob;
       Int_t nAsicChannels(asic->GetNchannels());
       nAsicsAlongColumns = nModuleColumns < nModuleRows ? nModuleRows / 2 : nModuleColumns / (nAsicChannels/2) ;
       Int_t nThAsicRow(iAsic / nAsicsAlongColumns);
@@ -259,19 +262,26 @@ void CbmTrdParManager::CreateModuleParameters(const TString& path)
       for (auto channelAddress : chAddressesVec)
       {
         channelAddress = asic->GetElinkChannel(iAsicChannel);
-        if((iAsicChannel % 2 == 0)) channelAddress += nModuleColumns; // one asic is split over two rows thus, with even channels in the bottom row, thus there address is placed in the next column 
-        
+        if((iAsicChannel % 2 != 0)) channelAddress += nModuleColumns; // one asic is split over two rows thus, with odd channels in the top row, thus there address is placed in the next column 
         channelAddress += nThAsicColumn * nAsicChannels / 2; // one asic is split over two rows
         channelAddress += nThAsicRow    * nModuleColumns * 2; // one asic is split over two rows
+        if(orientation == 2)
+        {
+          channelAddress *= (-1);
+          channelAddress += (nModuleChannels-1);
+        } 
         chAddressesVec.at(iAsicChannel) = channelAddress;
         iAsicChannel++;
       }
 
       asic->SetChannelAddresses(chAddressesVec);
-      asic->SetComponentId(moduleAddress * CbmTrdParAsic::kCriIdPosition + cRobId * CbmTrdParAsic::kCrobIdPosition + cRobCounter * CbmTrdParAsic::kCrobNrPosition + eLinkId * CbmTrdParAsic::kElinkIdPosition); // Remark: This is and will not be the correct componentId (CRI/AFCK Id). However, every asic connected to the nTh cRob of a given module will have the same componentId. Thus, this makes it easier to change to the correct Id for all relevant asics.
+      // asic->SetComponentId(moduleAddress * CbmTrdParAsic::kCriIdPosition + cRobId * CbmTrdParAsic::kCrobIdPosition + cRobCounter * CbmTrdParAsic::kCrobNrPosition + eLinkId * CbmTrdParAsic::kElinkIdPosition); // Remark: This is and will not be the correct componentId (CRI/AFCK Id). However, every asic connected to the nTh cRob of a given module will have the same componentId. Thus, this makes it easier to change to the correct Id for all relevant asics.
+      asic->SetComponentId(fHardwareSetup.GetComponentId(asic->GetAddress()));
       asics->SetAsicPar(asic->GetAddress(), asic);
     }
   }
+  
+  
   asics->Print();
   fAsicPar->AddParameters(asics);
 

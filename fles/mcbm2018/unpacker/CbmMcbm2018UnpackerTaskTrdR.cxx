@@ -19,7 +19,9 @@ CbmMcbm2018UnpackerTaskTrdR::CbmMcbm2018UnpackerTaskTrdR()
 	  , fbDebugWriteOutput(kFALSE)
 	  , fbBaselineAvg(kFALSE)
 	  , fSystemIdentifier((std::uint8_t)fles::SubsystemIdentifier::TRD)
+	  , fdMsSizeInNs(1.28e6)  // default value corresponds to mCbm 2020 value
 	  , fMonitorHistoFileName("")
+	  , fIsActiveHistoVec(CbmMcbm2018UnpackerAlgoTrdR::kEndDefinedHistos, false)
 	  , fTrdDigiVector(nullptr)
 	  , fTrdRawMessageVector(nullptr)
 	  , fSpadicInfoMsgVector(nullptr)
@@ -75,6 +77,7 @@ Bool_t CbmMcbm2018UnpackerTaskTrdR::Init()
 		}
 	}
 
+	fUnpackerAlgo->SetMsSizeInNs(fdMsSizeInNs); // TODO handle this with asic parameter files
 	initOK &= fUnpackerAlgo->Init() ;
 
 	if ( initOK ){
@@ -190,6 +193,8 @@ Bool_t CbmMcbm2018UnpackerTaskTrdR::InitContainers()
 	fUnpackerAlgo->SetWriteOutput(fbWriteOutput);
 	fUnpackerAlgo->SetDebugWriteOutput(fbDebugWriteOutput);
 	fUnpackerAlgo->SetBaselineAvg(fbBaselineAvg);
+	// Activate histograms in unpacker
+	fUnpackerAlgo->SetActiveHistograms(fIsActiveHistoVec);
 
 	Bool_t initOK = fUnpackerAlgo->InitContainers();
 
@@ -217,7 +222,10 @@ Bool_t CbmMcbm2018UnpackerTaskTrdR::InitContainers()
 		}
 		else
 		{
-			initOK &= 0;
+			//			initOK &= 0;
+			/// Avoid crash in other unpackers due to the FAIRROOT "feature" that a 0 return value goes on with the run without initializing 
+			/// tasks which are later in the alphabetical order
+			LOG(warning) << "The histograms from CbmMcbm2018UnpackerTaskTrdR will not be available online as no server present";
 		} // end if( nullptr != server )
 	}	 // end if (fbMonitorMode == kTRUE || fbDebugMonitorMode == kTRUE)
 
@@ -258,5 +266,10 @@ void CbmMcbm2018UnpackerTaskTrdR::SetHistoFileName(TString filename)
 	SetMonitorMode(kTRUE);
 }
 
+void CbmMcbm2018UnpackerTaskTrdR::SetTimeOffsetNs( Double_t dOffsetIn )
+{
+	if ( fUnpackerAlgo != nullptr )
+		fUnpackerAlgo->SetTimeOffsetNs( dOffsetIn );
+}
 
 ClassImp(CbmMcbm2018UnpackerTaskTrdR)

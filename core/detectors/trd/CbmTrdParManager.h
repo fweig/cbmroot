@@ -20,6 +20,8 @@
 
 #include "FairTask.h"    // for FairTask, InitStatus
 
+#include "CbmTrdHardwareSetupR.h" //for CbmTrdHardwareSetupR
+
 class CbmTrdGeoHandler;
 class CbmTrdParSetAsic;
 class CbmTrdParSetDigi;
@@ -94,6 +96,9 @@ private:
    CbmTrdParSetGain* fGainPar;  ///< The set of gain conversion parameters
 
    CbmTrdGeoHandler* fGeoHandler;
+
+   TString fGeometryTag;
+   CbmTrdHardwareSetupR fHardwareSetup;
 
    CbmTrdParManager(const CbmTrdParManager&);
    CbmTrdParManager& operator=(const CbmTrdParManager&);

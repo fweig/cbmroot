@@ -73,13 +73,17 @@ public:
 	void SetWriteOutput(Bool_t bFlagIn = kTRUE) 	 { fbWriteOutput = bFlagIn; }
 	void SetDebugWriteOutput(Bool_t bFlagIn = kTRUE) { fbDebugWriteOutput = bFlagIn; }
 	void SetSystemIdentifier(std::uint8_t id)		 { fSystemIdentifier = id; }	
+	void SetTimeOffsetNs( Double_t dOffsetIn = 0.0 );
 
 	/**
 	 *  @brief Call this when Spadic Average-Baseline feature is enabled.
 	 **/
 	void SetBaselineAvg(Bool_t bFlagIn = kTRUE) { fbBaselineAvg = bFlagIn; }
 
+	void SetActiveHistograms(std::vector<bool> isActiveHistoVec)  { fIsActiveHistoVec = isActiveHistoVec; }
 	void SetHistoFileName(TString filename);
+
+	void SetMsSizeInNs( Double_t msSizeInNs )   { fdMsSizeInNs = msSizeInNs; } // TODO handle this with asic parameter files
 
 private:
 	// Control flags
@@ -89,8 +93,10 @@ private:
 	Bool_t fbDebugWriteOutput; ///< If ON the output vector of raw messages is filled and written to disk.
 	Bool_t fbBaselineAvg;	  ///< Set to true if Baseline Averaging is activated in Spadic.
 	std::uint8_t fSystemIdentifier; ///< by default set to: fles::SubsystemIdentifier::TRD, changable via setter
+	Double_t fdMsSizeInNs; 	  ///< microslice size in ns to be passed to the unpacker // TODO handle this with asic parameter files
 
 	TString fMonitorHistoFileName;
+	std::vector<bool> fIsActiveHistoVec;	// Define active histos in algo
 
 	/// Output Digi vector
 	std::vector<CbmTrdDigi> *fTrdDigiVector;

@@ -441,17 +441,13 @@ CbmTrdHit* CbmTrdModuleRecR::MakeHit(Int_t clusterId, const CbmTrdCluster* /*clu
     //    if (digiCharge <= 0)     {std::cout<<" charge 0 " << std::endl;continue;}
     if (digiCharge <= 0.05)     {continue;}
 
-    Int_t ncols= fDigiPar->GetNofColumns();
-    //    Int_t nrows= fDigiPar->GetNofRows();
-    Int_t row= digi->GetAddressChannel()/ncols;
-    Int_t col= digi->GetAddressChannel()%ncols; 
-    Int_t srow, sector= fDigiPar->GetSectorRow(row, srow);
     time += digi->GetTime();
     //    time += digi->GetTimeDAQ();
     
     totalCharge += digi->GetCharge();
-    //    fDigiPar->GetPadPosition(digi->GetAddress(), local_pad_posV, local_pad_dposV);
-    fDigiPar->GetPadPosition(sector, col, srow, local_pad_posV, local_pad_dposV);
+    
+    fDigiPar->GetPadPosition(digi->GetAddressChannel(), true, local_pad_posV, local_pad_dposV);
+    
     
     Double_t xMin = local_pad_posV[0] - local_pad_dposV[0];
     Double_t xMax = local_pad_posV[0] + local_pad_dposV[0];

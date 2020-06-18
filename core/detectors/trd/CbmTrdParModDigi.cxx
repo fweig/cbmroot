@@ -725,51 +725,38 @@ void CbmTrdParModDigi::GetPadPosition(
  * Get address of a pad, return position relative to module center
  */
 
-  Double_t posX = 0;
-  Double_t posY = 0;
-  Double_t posZ = 0;
+  // Double_t posX = 0;
+  // Double_t posY = 0;
+  // Double_t posZ = 0;
    
   Int_t sectorId = CbmTrdAddress::GetSectorId(padAddress);
   Int_t rowId    = CbmTrdAddress::GetRowId(padAddress);
   Int_t columnId = CbmTrdAddress::GetColumnId(padAddress);
 
-  Double_t padsizex = fPadSizeX.At(sectorId);
-  Double_t padsizey = fPadSizeY.At(sectorId);
-
-  // calculate position in sector coordinate system 
-  // with the origin in the lower left corner (looking upstream)
-  posX = (((Double_t)columnId + 0.5) * padsizex);
-  posY = (((Double_t)rowId    + 0.5) * padsizey);
-
-  //  LOG(info) << "  sector: "<< sectorId<<"   row: " << rowId<<"   col: " << columnId
-  //            <<"   size x: " << padsizex<<"  size y: "<< padsizey<<" posx: "<< posX<<" posY: "<< posY;
-  
-  // calculate position in module coordinate system
-  // with the origin in the lower left corner (looking upstream)
-  posX += fSectorBeginX.GetAt(sectorId);
-  posY += fSectorBeginY.GetAt(sectorId);
-
-  //  LOG(info)<<"  posX: "<< posX<<"   posY: "<< posY;
-  
-  // calculate position in the module coordinate system
-  // with origin in the middle of the module
-  posX -= fSizeX;
-  posY -= fSizeY;
-  posZ  = 0; // fSizeZ;
-
-  //  LOG(info)<<"  posX: "<< posX<<"   posY: "<< posY;
-  
-  // check limits
-  if ( fabs(posX) > fSizeX )
-    LOG(fatal) << "CbmTrdParModDigi::GetPadPosition posX=" << posX << " is out of bounds!";
-  // check limits
-  if ( fabs(posY) > fSizeY )
-    LOG(fatal) << "CbmTrdParModDigi::GetPadPosition posY=" << posY << " is out of bounds!";
-
-  padPos.SetXYZ(posX, posY, posZ);
-  padPosErr.SetXYZ(padsizex/2.,padsizey/2., 0.);
+  return GetPadPosition(sectorId, rowId, columnId, padPos, padPosErr);
 }
 
+//___________________________________________________________________________
+void CbmTrdParModDigi::GetPadPosition(
+				      const Int_t padAddress,
+              bool isCbmTrdDigiAddress,
+				      TVector3& padPos,
+				      TVector3& padPosErr) const
+{
+/** 
+ * Get address of a pad, based on the channel address stored in the CbmTrdDigi
+ */
+  if(!isCbmTrdDigiAddress) LOG(error) << "Trying to get a CbmTrd PadPosition from DigiAddress format function without digiAddress format";
+
+  
+  Int_t row = GetPadRow(padAddress);
+  Int_t col = GetPadColumn(padAddress);
+
+  Int_t srow(-1);
+  Int_t sector= GetSectorRow(row, srow);
+
+  return GetPadPosition(sector, col, srow, padPos, padPosErr);
+}
 
 //___________________________________________________________________________
 void CbmTrdParModDigi::GetPosition(
@@ -859,5 +846,34 @@ void CbmTrdParModDigi::GetPosition(
   padPos.SetXYZ(posX, posY, posZ);
   padSize.SetXYZ(padsizex,padsizey, 0.);
 }
+
+//___________________________________________________________________________
+Int_t CbmTrdParModDigi::GetPadColumn(const Int_t channelNumber) const
+{
+  // calculate the pad column based on
+  // the channeNumber as defined in the
+  // CbmTrdDigi
+
+  Int_t ncols = GetNofColumns();
+  Int_t col = channelNumber % ncols;
+
+  return col;
+}
+
+//___________________________________________________________________________
+Int_t CbmTrdParModDigi::GetPadRow(const Int_t channelNumber) const
+{
+  // calculate the pad row based on
+  // the channeNumber as defined in the
+  // CbmTrdDigi
+
+  Int_t ncols = GetNofColumns();
+  Int_t row = channelNumber / ncols;
+
+  return row;
+}
+
+
+
 
 ClassImp(CbmTrdParModDigi)

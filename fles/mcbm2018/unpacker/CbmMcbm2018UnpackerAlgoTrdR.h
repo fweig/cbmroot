@@ -69,9 +69,41 @@ public:
   void AddMsComponentToList(size_t component, UShort_t usDetectorId);
   void SetNbMsInTs(size_t uCoreMsNb, size_t uOverlapMsNb);
 
-  Bool_t CreateHistograms();
+  enum ECbmTrdUnpackerHistograms : Int_t 
+  {
+    kBeginDefinedHistos = 0
+    , kRawMessage_Signalshape_all = 0
+    , kRawMessage_Signalshape_St
+    , kRawMessage_Signalshape_Nt
+    , kRawMessage_Signalshape_filtered
+    , kRawDistributionMapModule5
+    , kRawHitType
+    , kRawPulserDeltaT
+    , kSpadic_Info_Types
+    , kBeginDigiHistos
+    , kDigiPulserDeltaT = kBeginDigiHistos
+    , kDigiDeltaT // Heavy histogram add with care
+    , kDigiMeanHitFrequency // Heavy histogram add with care
+    , kDigiHitFrequency
+    , kDigiRelativeTimeMicroslice
+    , kDigiDistributionMap
+    , kDigiDistributionMapSt
+    , kDigiDistributionMapNt
+    , kDigiChargeSpectrum
+    , kDigiChargeSpectrumSt
+    , kDigiChargeSpectrumNt
+    , kDigiTriggerType
+    , kEndDefinedHistos
+  };
+  void   SetActiveHistograms(std::vector<bool> isActiveHistoVec)  { fIsActiveHistoVec = isActiveHistoVec; }
+  Bool_t CreateHistograms();  ///< Goes through fIsActiveHistoVec and creates the activated histograms
+  Bool_t CreateHistogram(ECbmTrdUnpackerHistograms iHisto); ///< create the histogram correlated to iHisto
+  
   Bool_t FillHistograms();
+  Bool_t FillHistograms(CbmTrdDigi const &digi);
+  Bool_t FillHistograms(CbmTrdRawMessageSpadic const &raw);
   Bool_t ResetHistograms();
+  
 
   std::vector<CbmTrdRawMessageSpadic> GetRawMessageVector() { return *(fTrdRawMessageVector); }
   TString GetRefGeoTag() { return fRefGeoTag; }
@@ -80,6 +112,7 @@ public:
   void SetDebugMonitorMode(Bool_t bFlagIn = kTRUE) { fbDebugMonitorMode = bFlagIn; }
   void SetWriteOutput(Bool_t bFlagIn = kTRUE) { fbWriteOutput = bFlagIn; }
   void SetDebugWriteOutput(Bool_t bFlagIn = kTRUE) { fbDebugWriteOutput = bFlagIn; }
+  inline void SetTimeOffsetNs( Double_t dOffsetIn = 0.0 ) { fdTimeOffsetNs = dOffsetIn; }
 
   /**
 	 *  @brief Call this when Spadic Average-Baseline feature is enabled.
@@ -102,6 +135,7 @@ public:
 
   void SetRefGeoTag(TString geoTag)           { fRefGeoTag = geoTag; }
   void SetFirstChannelsElinkEven(bool isEven) { fIsFirstChannelsElinkEven = isEven; }
+  void SetMsSizeInNs( Double_t msSizeInNs )   { fdMsSizeInNs = msSizeInNs; } // TODO handle this with asic parameter files
 
 private:
 
@@ -134,6 +168,9 @@ private:
   Bool_t fbDebugWriteOutput; ///< If ON the raw messages output vector is filled and written to disk.
   Bool_t fbBaselineAvg;      ///< Set to true if Baseline Averaging is activated in Spadic.
 
+  /// User settings: Data correction parameters
+  Double_t fdTimeOffsetNs = 0.0;
+
   /// Output Digi vector
   std::vector<CbmTrdDigi> *fTrdDigiVector;
 
@@ -146,7 +183,9 @@ private:
   //std::map< TString, std::shared_ptr<TH1> > fHistoMap ;
 
   /// Stores all Histograms.
+  std::vector<bool> fIsActiveHistoVec;
   TObjArray fHistoArray;
+  std::vector<std::uint64_t> fLastDigiTimeVec;
 
   /**
    *  @brief Instance of RawToDigi class.

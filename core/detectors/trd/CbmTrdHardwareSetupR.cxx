@@ -3,7 +3,7 @@
  * Created Date: Thursday March 5th 2020
  * Author: Pascal Raisig -- praisig@ikf.uni-frankfurt.de
  * -----
- * Last Modified: Tuesday March 24th 2020 15:02:04
+ * Last Modified: Friday June 5th 2020 16:34:54
  * Modified By: Pascal Raisig
  * -----
  * Purpose: This class contains the hardware mapping for asics at a given beamtime and provides the functionalities to
@@ -236,20 +236,53 @@ bool CbmTrdHardwareSetupR::WriteComponentIdsToParams()
 }
 
 // ---- SelectComponentIdMap ----------------------------------------------------
+void CbmTrdHardwareSetupR::SelectComponentIdMap(TString geoTag)
+{
+    ECbmTrdHardwareSetupVersion hwSetupVersion(ECbmTrdHardwareSetupVersion::kUndefined);
+    if(geoTag.Contains("mcbm"))
+    {
+        hwSetupVersion = ECbmTrdHardwareSetupVersion::kMcbm2020;
+    }
+    else if(geoTag.Contains("trd_ikfLabOneSpadic"))
+    {
+        hwSetupVersion = ECbmTrdHardwareSetupVersion::kLabIkfOneSpadic;
+    }
+    else if(geoTag.Contains("trd_Desy2019"))
+    {
+        hwSetupVersion = ECbmTrdHardwareSetupVersion::kDesy2019;
+    }
+    else if(geoTag.Contains("trd_v"))
+    {
+        hwSetupVersion = ECbmTrdHardwareSetupVersion::kCbm2025;
+    }
+    else
+    {
+        LOG(fatal) << Form("CbmTrdHardwareSetupR::SelectComponentIdMap(%s), unknown geoTag", geoTag.Data());
+    }
+    SelectComponentIdMap(hwSetupVersion);
+}
+
+// ---- SelectComponentIdMap ----------------------------------------------------
 void CbmTrdHardwareSetupR::SelectComponentIdMap(ECbmTrdHardwareSetupVersion hwSetup)
 {
     switch (hwSetup)
     {
+    case ECbmTrdHardwareSetupVersion::kUndefined :
+        fComponentIdMap = {{0,0}};
+        break;
     case ECbmTrdHardwareSetupVersion::kMcbm2020 :
-        // REMARK This map is incomplete! eLinkId status from 03/24/2020. CriId status 03/24/3030.  Needs to be filled with correct values, whenever they are known.
+        // REMARK eLinkId status from 03/24/2020. CriId status 03/24/3030.  Needs to be filled with correct values, whenever they are known.
         fComponentIdMap = 
         { 
             // Module 5
-            {5000, 2498200098}, {5001, 2498200000}, {5002, 2498200002}, {5003, 2498200004}, {5004, 2498200006}, {5005, 2498200008}, {5006, 2498200010}, {5007, 2498200012},
+            {5000, 2498200098}, {5001, 2498200028}, {5002, 2498200030}, {5003, 2498200032}, {5004, 2498200034}, {5005, 2498200036}, {5006, 2498200038}, {5007, 2498200040},
+
             {5008, 2498200098}, {5009, 2498200014}, {5010, 2498200016}, {5011, 2498200018}, {5012, 2498200020}, {5013, 2498200022}, {5014, 2498200024}, {5015, 2498200026},
-            {5016, 2498200098}, {5017, 2498200028}, {5018, 2498200030}, {5019, 2498200032}, {5020, 2498200034}, {5021, 2498200036}, {5022, 2498200038}, {5023, 2498200040}
+
+            {5016, 2498200098}, {5017, 2498200000}, {5018, 2498200002}, {5019, 2498200004}, {5020, 2498200006}, {5021, 2498200008}, {5022, 2498200010}, {5023, 2498200012},
+            
             // Module 21
-            , {21000, 2498200098}, {21001, 2498200000}, {21002, 2498200002}, {21003, 2498200004}, {21004, 2498200006}, {21005, 2498200008}, {21006, 2498200010}, {21007, 2498200012},
+            {21000, 2498200098}, {21001, 2498200000}, {21002, 2498200002}, {21003, 2498200004}, {21004, 2498200006}, {21005, 2498200008}, {21006, 2498200010}, {21007, 2498200012},
             {21008, 2498200098}, {21009, 2498200014}, {21010, 2498200016}, {21011, 2498200018}, {21012, 2498200020}, {21013, 2498200022}, {21014, 2498200024}, {21015, 2498200026},
             {21016, 2498200098}, {21017, 2498200028}, {21018, 2498200030}, {21019, 2498200032}, {21020, 2498200034}, {21021, 2498200036}, {21022, 2498200038}, {21023, 2498200040}
         };
@@ -264,7 +297,22 @@ void CbmTrdHardwareSetupR::SelectComponentIdMap(ECbmTrdHardwareSetupVersion hwSe
             {5016, 100098}, {5017, 100098}, {5018, 100098}, {5019, 100098}, {5020, 100098}, {5021, 100098}, {5022, 100098}, {5023, 100098}
         };
         break;
-    
+    case ECbmTrdHardwareSetupVersion::kDesy2019 :
+        // Map for the DESY 2019 beamtime setup, 5012 - in beam, 5006 - Fe source.
+        fComponentIdMap = 
+        { 
+            // Module 5
+            {5000, 100098}, {5001, 100098}, {5002, 100098}, {5003, 100098},
+            {5004, 100098}, {5005, 100098}, {5006, 4352000002}, {5007, 100098},
+
+            {5008, 100098}, {5009, 100098}, {5010, 100098}, {5011, 100098},
+            {5012, 4352000000}, {5013, 100098}, {5014, 100098}, {5015, 100098},
+
+            {5016, 100098}, {5017, 100098}, {5018, 100098}, {5019, 100098},
+            {5020, 100098}, {5021, 100098}, {5022, 100098}, {5023, 100098},
+        };
+        break;
+
     case ECbmTrdHardwareSetupVersion::kCbm2025 :
         // REMARK This map is a dummy! Needs to be filled with correct values, whenever they are known.
         fComponentIdMap = 

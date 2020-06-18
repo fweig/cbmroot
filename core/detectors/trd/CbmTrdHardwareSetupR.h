@@ -3,7 +3,7 @@
  * Created Date: Thursday March 5th 2020
  * Author: Pascal Raisig -- praisig@ikf.uni-frankfurt.de
  * -----
- * Last Modified: Saturday March 21st 2020 14:30:16
+ * Last Modified: Friday June 5th 2020 16:24:20
  * Modified By: Pascal Raisig
  * -----
  * Purpose: This class contains the hardware mapping for asics at a given beamtime and provides the functionalities to
@@ -28,6 +28,7 @@ enum class ECbmTrdHardwareSetupVersion : Int_t
     kUndefined = 0
     , kMcbm2020  = 1
     , kLabIkfOneSpadic
+    , kDesy2019
     , kCbm2025
 }; ///< Enum for hardware setup versions, they are for example correlated to the componentId setup.
 
@@ -50,6 +51,7 @@ public:
     std::map<std::uint64_t, Int_t> CreateHwToSwAsicAddressTranslatorMap(bool isLoadedParameters);
     std::map<Int_t, std::vector<Int_t>> CreateAsicChannelMap(bool isLoadedParameters);
     void SelectComponentIdMap(ECbmTrdHardwareSetupVersion hwSetup);
+    void SelectComponentIdMap(TString geoTag);
     bool WriteComponentIdsToParams();
 
 private:

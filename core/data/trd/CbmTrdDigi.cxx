@@ -15,7 +15,7 @@ using std::stringstream;
 using std::string;
 
 /**
- * fAddress defition ATTf.ffnn nLLL.LMMM MMMM.pppp pppp.pppp
+ * fInfo defition ATTf.ffnn nLLL.LMMM MMMM.pppp pppp.pppp
  * A - Asic type according to CbmTrdAsicType
  * T - trigger type according to CbmTrdTriggerType
  * f - flags according to CbmTrdDigiDef
@@ -28,14 +28,14 @@ Double_t CbmTrdDigi::fgClk[] = {62.5, 12.5};
 Float_t CbmTrdDigi::fgPrecission[] = {1.e3, 1.};
 //__________________________________________________________________________________________
 CbmTrdDigi::CbmTrdDigi()
-  : fAddress(0)
+  : fInfo(0)
   ,fCharge(0)
   ,fTime(0)
 {  
 }
 //__________________________________________________________________________________________
-CbmTrdDigi::CbmTrdDigi(Int_t address, Float_t chargeT, Float_t chargeR, ULong64_t time)
-  : fAddress(0)
+CbmTrdDigi::CbmTrdDigi(Int_t padChNr, Float_t chargeT, Float_t chargeR, ULong64_t time)
+  : fInfo(0)
   ,fCharge(0.)
   ,fTime(time)
 {  
@@ -50,13 +50,13 @@ CbmTrdDigi::CbmTrdDigi(Int_t address, Float_t chargeT, Float_t chargeR, ULong64_
  * r - rectangle paired charge
  */
   SetAsic(kFASP);
-  SetChannel(address); 
+  SetChannel(padChNr); 
   SetCharge(chargeT, chargeR);
 }
 
 //__________________________________________________________________________________________
-CbmTrdDigi::CbmTrdDigi(Int_t address, Float_t charge, ULong64_t time, Int_t triggerType, Int_t errClass)
-  : fAddress(0)
+CbmTrdDigi::CbmTrdDigi(Int_t padChNr, Float_t charge, ULong64_t time, Int_t triggerType, Int_t errClass)
+  : fInfo(0)
   ,fCharge(0.)
   ,fTime(time)
 {
@@ -71,7 +71,7 @@ CbmTrdDigi::CbmTrdDigi(Int_t address, Float_t charge, ULong64_t time, Int_t trig
  * fCharge definition UInt_t(charge*fgPrecission)
 */
   SetAsic(kSPADIC);
-  SetChannel(address); 
+  SetChannel(padChNr); 
   SetCharge(charge);
   SetTriggerType(triggerType);
   SetErrorClass(errClass);
@@ -117,7 +117,7 @@ Int_t CbmTrdDigi::GetAddressChannel() const
 {
 /**  Returns index of the read-out unit in the module in the format row x ncol + col
  */
-  return (fAddress>>fgkRoOffset)&0xfff;
+  return (fInfo>>fgkRoOffset)&0xfff;
 }
 
 //__________________________________________________________________________________________
@@ -166,7 +166,7 @@ Double_t CbmTrdDigi::GetChargeError()  const
 Bool_t CbmTrdDigi::IsFlagged(const Int_t iflag)  const
 {
   if(iflag<0||iflag>=kNflags) return kFALSE;
-  return (fAddress>>(fgkFlgOffset+iflag))&0x1;
+  return (fInfo>>(fgkFlgOffset+iflag))&0x1;
 }
 
 //__________________________________________________________________________________________
@@ -179,8 +179,8 @@ void CbmTrdDigi::SetAddress(Int_t address)
 //__________________________________________________________________________________________
 void CbmTrdDigi::SetAsic(CbmTrdAsicType ty)
 { 
-  if(ty==kSPADIC) CLRBIT(fAddress, fgkTypOffset);
-  else  SETBIT(fAddress, fgkTypOffset);
+  if(ty==kSPADIC) CLRBIT(fInfo, fgkTypOffset);
+  else  SETBIT(fInfo, fgkTypOffset);
 }
 
 //__________________________________________________________________________________________
@@ -216,8 +216,8 @@ void CbmTrdDigi::SetCharge(Float_t c)
 void CbmTrdDigi::SetFlag(const Int_t iflag, Bool_t set)
 {
   if(iflag<0||iflag>=kNflags) return;
-  if(set) SETBIT(fAddress, fgkFlgOffset+iflag);
-  else CLRBIT(fAddress, fgkFlgOffset+iflag);
+  if(set) SETBIT(fInfo, fgkFlgOffset+iflag);
+  else CLRBIT(fInfo, fgkFlgOffset+iflag);
 }
 
 //__________________________________________________________________________________________
@@ -237,8 +237,8 @@ void CbmTrdDigi::SetTimeOffset(Char_t t)
 //__________________________________________________________________________________________
 void CbmTrdDigi::SetTriggerType(const Int_t ttype)
 {
-  if(ttype<0||ttype>=kNTrg) return;
-  fAddress|=(ttype<<fgkTrgOffset);
+  if(ttype<kBeginTriggerTypes||ttype>=kNTrg) return;
+  fInfo|=(ttype<<fgkTrgOffset);
 }
 
 //__________________________________________________________________________________________

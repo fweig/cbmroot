@@ -1,6 +1,7 @@
 #include "CbmMcbm2018UnpackerAlgoTrdR.h"
 #include "CbmTrdHardwareSetupR.h"
 #include "CbmTrdParSpadic.h"
+#include "CbmTrdParModDigi.h"
 #include "CbmTrdAddress.h"
 
 #include "FairLogger.h"
@@ -10,37 +11,42 @@
 
 #include "TObjString.h"
 #include "TSystem.h"
+#include "TH2I.h"
+#include "TProfile.h"
+#include "TVector3.h"
 
 #include <iostream>
 #include <map>
 
 CbmMcbm2018UnpackerAlgoTrdR::CbmMcbm2018UnpackerAlgoTrdR()
-    : CbmStar2019Algo(),
-      //fRawToDigi( new CbmTrdRawToDigiR ),
-      fdMsSizeInCC(0),
-      fbMonitorMode(kFALSE),
-      fbDebugMonitorMode(kFALSE),
-      fbWriteOutput(kTRUE),
-      fbDebugWriteOutput(kFALSE),
-      fbBaselineAvg(kFALSE),
-      fTrdDigiVector(nullptr),
-      fTrdRawMessageVector(nullptr),
-      fSpadicInfoMsgVector(nullptr),
-      //fHistoMap(),
-      fHistoArray(),
-      fNbTimeslices(0),
-      fCurrTsIdx(0),
-      fMsIndex(0),
-      fTsStartTime(0.0),
-      fTsStopTimeCore(0.0),
-      fMsTime(0.0),
-      fSpadicEpoch(0),
-      fLastFulltime(0),
-      fNbSpadicRawMsg(0),
-      fNbWildRda(0),
-      fNbSpadicErrorMsg(0),
-      fNbUnkownWord(0),
-      fNbSpadicEpochMsg(0)
+    : CbmStar2019Algo()
+      //, fRawToDigi( new CbmTrdRawToDigiR )
+      , fdMsSizeInCC(0)
+      , fbMonitorMode(kFALSE)
+      , fbDebugMonitorMode(kFALSE)
+      , fbWriteOutput(kTRUE)
+      , fbDebugWriteOutput(kFALSE)
+      , fbBaselineAvg(kFALSE)
+      , fTrdDigiVector(nullptr)
+      , fTrdRawMessageVector(nullptr)
+      , fSpadicInfoMsgVector(nullptr)
+      //, fHistoMap()
+      , fIsActiveHistoVec(ECbmTrdUnpackerHistograms::kEndDefinedHistos, false)
+      , fHistoArray()
+      , fLastDigiTimeVec()
+      , fNbTimeslices(0)
+      , fCurrTsIdx(0)
+      , fMsIndex(0)
+      , fTsStartTime(0.0)
+      , fTsStopTimeCore(0.0)
+      , fMsTime(0.0)
+      , fSpadicEpoch(0)
+      , fLastFulltime(0)
+      , fNbSpadicRawMsg(0)
+      , fNbWildRda(0)
+      , fNbSpadicErrorMsg(0)
+      , fNbUnkownWord(0)
+      , fNbSpadicEpochMsg(0)
       , fParContList(nullptr)
       , fRefGeoTag("trd_v18q_mcbm")
       , fAsicPar(nullptr)
@@ -66,7 +72,7 @@ Bool_t CbmMcbm2018UnpackerAlgoTrdR::Init()
     LOG(debug) << "Initializing CbmMcbm2018UnpackerAlgoTrdR";
     //fRawToDigi->Init();
     fbIgnoreOverlapMs = kTRUE ;
-    fdMsSizeInNs = 1.28e6; //FIXME time should come from parameter file
+    // fdMsSizeInNs = 1.28e6; //FIXME time should come from parameter file
     fdMsSizeInCC = fdMsSizeInNs / 62.5;
 
     return kTRUE ;
@@ -211,6 +217,14 @@ Bool_t CbmMcbm2018UnpackerAlgoTrdR::ProcessTs(const fles::Timeslice &ts)
 
             if (kFALSE == ProcessMs(ts, uMsComp, MsIndex))
             {
+                /// Sort the output vector according to the time
+                /// => this assumes all digis before failure were OK. If not we should instead clear it!
+                std::sort(fTrdDigiVector->begin(), fTrdDigiVector->end(),
+                    [](const CbmTrdDigi & a, const CbmTrdDigi & b) -> bool
+                    {
+                      return a.GetTime() < b.GetTime();
+                    });
+
                 LOG(error) << "Failed to process ts " << fCurrTsIdx << " MS " << MsIndex
                            << " for component " << uMsComp;
                 return kFALSE;
@@ -232,9 +246,9 @@ Bool_t CbmMcbm2018UnpackerAlgoTrdR::ProcessTs(const fles::Timeslice &ts)
 Bool_t CbmMcbm2018UnpackerAlgoTrdR::ProcessMs(const fles::Timeslice &ts, size_t uMsCompIdx, size_t uMsIdx)
 {
     fles::MicrosliceDescriptor msDesc = ts.descriptor(uMsCompIdx, uMsIdx ) ;
-//    uint16_t msEquipmentID = msDesc.eq_id;   ///< Equipment identifier. Specifies the FLES input link. #FU 27.03.20 unused
+    // uint16_t msEquipmentID = msDesc.eq_id;   ///< Equipment identifier. Specifies the FLES input link. #FU 27.03.20 unused
     uint32_t msSize = msDesc.size;     ///< Content size. This is the size (in bytes) of the microslice data content.
-//    uint64_t msTime = msDesc.idx;      ///< Start time of the microslice in ns since global time zero. #FU 27.03.20 unused
+    // uint64_t msTime = msDesc.idx;      ///< Start time of the microslice in ns since global time zero. #FU 27.03.20 unused
     uint32_t msNbWords = ( msSize - (msSize % kBytesPerWord )) / kBytesPerWord ;   ///< Number of complete Words in the input MS buffer.
 
     const uint8_t * msPointer = reinterpret_cast<const uint8_t*>( ts.content( uMsCompIdx, uMsIdx ) );
@@ -277,51 +291,20 @@ Bool_t CbmMcbm2018UnpackerAlgoTrdR::ProcessMs(const fles::Timeslice &ts, size_t 
 
             /// Message should now be complete. TODO: Generate Digi and save raw message if needed.
             std::shared_ptr<CbmTrdDigi> digi = MakeDigi(raw);
-            fTrdDigiVector->push_back(*digi);
-
+            if(digi)    fTrdDigiVector->emplace_back(*digi);
             /// Save raw message:
             if ( fbDebugWriteOutput && (fTrdRawMessageVector != nullptr) )
             {
-                fTrdRawMessageVector->push_back(raw) ;
+                fTrdRawMessageVector->emplace_back(raw) ;
             }
-
 
             /// Fill histograms:
             if (fbMonitorMode || fbDebugMonitorMode )
             {
-                TString HistName = "RawMessage_Signalshape_all";
-                for (unsigned int i = 0; i < raw.GetSamples().size(); i++)
-                {
-                    //fHistoMap.at(HistName.Data())->Fill(i, raw.GetSamples()[i]);
-                    ((TH2I*)fHistoArray.FindObject(HistName.Data()))->Fill(i, raw.GetSamples()[i]) ;
-                }
-
-                if (raw.GetChannelId() == 9 && raw.GetElinkId() == 0 )//&& ( iWord >= msNbWords-10  || iWord <= 10 ) )
-                {
-                    HistName = "Delta_T";
-                    Long64_t dt = ((Long64_t)raw.GetFullTime() - (Long64_t)fLastFulltime);
-                    //if ( dt != 0 )
-                    //if ( abs(dt) > 2048 ) LOG(warning) << "[CbmMcbm2018UnpackerAlgoTrdR::ProcessMs]  |dt| = " << dt ;
-                    //if (dt<0)
-                        //std::cout << "[CbmMcbm2018UnpackerAlgoTrdR::ProcessMs]  dt = " << dt << std::endl ;
-                    /*std::cout << raw.GetFullTime() << std::endl;
-                    std::cout << fLastFulltime << std::endl; */
-                    ((TH1I *)fHistoArray.FindObject(HistName.Data()))->Fill(dt);
-                    fLastFulltime = raw.GetFullTime();
-                }
-
-                if (raw.GetHitType() < 2 && !raw.GetMultiHit())
-                {
-                    HistName = "RawMessage_Signalshape_filtered";
-                    for (unsigned int i = 0; i < raw.GetSamples().size(); i++)
-                    {
-                        //fHistoMap.at(HistName.Data())->Fill(i, raw.GetSamples()[i]);
-                        ((TH2I*)fHistoArray.FindObject(HistName.Data()))->Fill(i, raw.GetSamples()[i]) ;
-                    }
-                }
+                FillHistograms(); // fill histograms not based on digi or rawMessage input
+                if(digi && fbMonitorMode) if(!FillHistograms(*digi)) LOG(error) << "Failed to fill CbmTrdDigi histograms"; // fill digi histograms
+                if(fbDebugMonitorMode)    if(!FillHistograms(raw)) LOG(error) << "Failed to fill CbmTrdRawMessageSpadic histograms";  // fill rawMessage histograms
             }
-
-
         } // endif (wordType == kSOM )
 
         if ( wordType == Spadic::MsMessageType::kRDA )
@@ -336,26 +319,16 @@ Bool_t CbmMcbm2018UnpackerAlgoTrdR::ProcessMs(const fles::Timeslice &ts, size_t 
             /// Save info message if needed.
             if (fbDebugWriteOutput && (fSpadicInfoMsgVector != nullptr))
             {
-                fSpadicInfoMsgVector->push_back(std::make_pair(fLastFulltime, curWord));
+                fSpadicInfoMsgVector->emplace_back(std::make_pair(fLastFulltime, curWord));
             }
             fNbSpadicErrorMsg++;
 
             Spadic::MsInfoType infoType = GetInfoType(curWord);
-            TString HistName = "Spadic_Info_Types";
-            ((TH2I*)fHistoArray.FindObject(HistName.Data()))->Fill(fLastFulltime, (Int_t)infoType) ;
-
-/* FU 270320 Only for debug purpose see Redmine issue #1653
-            Int_t channel = 0;
-            if ( infoType != Spadic::MsInfoType::kMIS )
+            // "Spadic_Info_Types";
+            if(fIsActiveHistoVec[kSpadic_Info_Types])
             {
-                uint64_t mask = 0x0F;
-                channel = (Int_t)( curWord & mask );
+                ((TH2I*)fHistoArray.At(kSpadic_Info_Types))->Fill(fLastFulltime, (Int_t)infoType) ;
             }
-
-            uint8_t elink = 0;
-            uint64_t mask = 0x3F ;
-            elink = (uint8_t)((curWord >> 54 ) & mask );
-*/
         }
 
         if ( wordType == Spadic::MsMessageType::kNUL )
@@ -378,7 +351,7 @@ Bool_t CbmMcbm2018UnpackerAlgoTrdR::ProcessMs(const fles::Timeslice &ts, size_t 
             mask = mask << 32;
             uint64_t uTS_MSB = (uint64_t)((curWord & mask) >> 32);
             Long64_t dt_epoch = uTS_MSB - fSpadicEpoch;
-            if ( dt_epoch != 1 ) LOG(warning) << "[CbmMcbm2018UnpackerAlgoTrdR::ProcessMs]  dt_epoch = " << dt_epoch ;
+            if ( dt_epoch != 1 ) LOG(debug4) << "[CbmMcbm2018UnpackerAlgoTrdR::ProcessMs]  dt_epoch = " << dt_epoch ;
 
             //fLastFulltime = uTS_MSB;
             fNbSpadicEpochMsg++;
@@ -397,8 +370,8 @@ void CbmMcbm2018UnpackerAlgoTrdR::AddMsComponentToList(size_t component, UShort_
         if (component == fvMsComponentsList[uCompIdx])
             return;
 
-    /// Add to lis
-    fvMsComponentsList.push_back(component);
+    /// Add to list
+    fvMsComponentsList.emplace_back(component);
 
     LOG(info) << "CbmMcbm2018UnpackerAlgoTrdR::AddMsComponentToList => Component "
               << component << " with detector ID 0x"
@@ -417,53 +390,376 @@ Bool_t CbmMcbm2018UnpackerAlgoTrdR::CreateHistograms()
 {
     if (!fbMonitorMode && !fbDebugMonitorMode )
         return kFALSE;
-    /*
-    TString HistName = "RawMessage_Signalshape_all";
-    fHistoMap.insert(std::make_pair(HistName.Data(), std::make_shared<TH2I>(TH2I(HistName.Data(), HistName.Data(), 32, -0.5, 31.5, 512, -256.5, 255.5))));
-    AddHistoToVector(fHistoMap.at(HistName.Data()).get(), "");
 
-    HistName = "RawMessage_Signalshape_filtered";
-    fHistoMap.insert(std::make_pair(HistName.Data(), std::make_shared<TH2I>(TH2I(HistName.Data(), HistName.Data(), 32, -0.5, 31.5, 512, -256.5, 255.5))));
-    AddHistoToVector(fHistoMap.at(HistName.Data()).get(), "");
-    */
     fHistoArray.SetOwner(kTRUE);
 
-    TString HistName = "RawMessage_Signalshape_all";
-    fHistoArray.Add(new TH2I(HistName.Data(), HistName.Data(), 32, -0.5, 31.5, 512, -256.5, 255.5) );
-    AddHistoToVector( (TH2I*)fHistoArray.Last(), "");
-
-    HistName = "RawMessage_Signalshape_filtered";
-    fHistoArray.Add(new TH2I(HistName.Data(), HistName.Data(), 32, -0.5, 31.5, 512, -256.5, 255.5) );
-    AddHistoToVector( (TH2I*)fHistoArray.Last(), "");
-
-    HistName = "Delta_T";
-    fHistoArray.Add(new TH1I(HistName.Data(), HistName.Data(), 202500, -2500, 200000) );
-    AddHistoToVector( (TH1I*)fHistoArray.Last(), "");
-
-    HistName = "Spadic_Info_Types";
-    fHistoArray.Add(new TH2I(HistName.Data(), HistName.Data(), 500000, 0, 5e9, 5, -0.5, 4.5) );
-    ((TH2I*)fHistoArray.Last())->SetXTitle("t /Clockcycles") ;
-    ((TH2I*)fHistoArray.Last())->SetYTitle("messagetype") ;
-    ((TH2I*)fHistoArray.Last())->GetYaxis()->SetBinLabel(1,"BOM") ;
-    ((TH2I*)fHistoArray.Last())->GetYaxis()->SetBinLabel(2,"MSB") ;
-    ((TH2I*)fHistoArray.Last())->GetYaxis()->SetBinLabel(3,"BUF") ;
-    ((TH2I*)fHistoArray.Last())->GetYaxis()->SetBinLabel(4,"UNU") ;
-    ((TH2I*)fHistoArray.Last())->GetYaxis()->SetBinLabel(5,"MIS") ;
-    AddHistoToVector( (TH2I*)fHistoArray.Last(), "");
-
-    if (fbDebugMonitorMode)
+    Bool_t createHistosOk = kTRUE;
+    Int_t iHisto(ECbmTrdUnpackerHistograms::kBeginDefinedHistos);
+    for (auto isActive : fIsActiveHistoVec)
     {
-        //create additional histograms here.
+        if(isActive)
+        {
+            createHistosOk &= CreateHistogram((ECbmTrdUnpackerHistograms)iHisto);
+        }
+        iHisto++;
     }
 
-    return kTRUE;
+    return createHistosOk;
+}
+
+// ----    CreateHistogram    ----
+Bool_t CbmMcbm2018UnpackerAlgoTrdR::CreateHistogram(ECbmTrdUnpackerHistograms iHisto)
+{
+    Bool_t createHistoOk = kFALSE;
+    TString histName = "";
+    TH1 *newHisto = nullptr;
+    std::map<Int_t, CbmTrdParMod*> parDigiModuleMap = (std::map<Int_t, CbmTrdParMod*>)fDigiPar->GetModuleMap();
+    // Raw Message Histos still need to be separated into module wise histo
+    for (auto mapIt : parDigiModuleMap)
+    {
+        CbmTrdParModDigi* parDigiModule = (CbmTrdParModDigi*) mapIt.second;
+        Int_t moduleId = parDigiModule->GetModuleId();
+        histName.Form("Module%d-", moduleId);
+        switch (iHisto)
+        {
+        case kRawMessage_Signalshape_all:
+            histName += "RawMessage_Signalshape_all";
+            newHisto = new TH2I(histName.Data(), histName.Data(), 32, -0.5, 31.5, 512, -256.5, 255.5);
+            newHisto->SetXTitle("time [cc]");
+            newHisto->SetYTitle("Pulse height [ADC channels]");
+            break;
+        case kRawMessage_Signalshape_St:
+            histName += "RawMessage_Signalshape_St";
+            newHisto = new TH2I(histName.Data(), histName.Data(), 32, -0.5, 31.5, 512, -256.5, 255.5);
+            newHisto->SetXTitle("time [cc]");
+            newHisto->SetYTitle("Pulse height [ADC channels]");
+            break;
+        case kRawMessage_Signalshape_Nt:
+            histName += "RawMessage_Signalshape_Nt";
+            newHisto = new TH2I(histName.Data(), histName.Data(), 32, -0.5, 31.5, 512, -256.5, 255.5);
+            newHisto->SetXTitle("time [cc]");
+            newHisto->SetYTitle("Pulse height [ADC channels]");
+            break;
+        case kRawMessage_Signalshape_filtered:
+            histName += "RawMessage_Signalshape_filtered";
+            newHisto = new TH2I(histName.Data(), histName.Data(), 32, -0.5, 31.5, 512, -256.5, 255.5);
+            break;
+        case kRawDistributionMapModule5 :
+            histName += "RawDistributionMapModule5";
+            newHisto = new TH2I(histName.Data(), histName.Data(), 42, -0.5, 41.5, 16, -0.5, 15.5);
+            break;
+        case kRawHitType :
+            histName += "RawHitTypes";
+            newHisto = new TH1I(histName.Data(), histName.Data(), ((Int_t)Spadic::TriggerType::kSandN + 1), ((Int_t)Spadic::TriggerType::kGlobal - 0.5), ((Int_t)Spadic::TriggerType::kSandN) + 0.5);
+            break;
+        case kRawPulserDeltaT:
+            histName += "RawPulserDeltaT";
+            newHisto = new TH1I(histName.Data(), histName.Data(), 40000, 0, 4000000);
+            newHisto->SetXTitle("#Delta t [cc]");
+            newHisto->SetYTitle("Counts");
+            break;
+        case kSpadic_Info_Types:
+            histName += "Spadic_Info_Types";
+            newHisto = new TH2I(histName.Data(), histName.Data(), 500000, 0, 5e9, 5, -0.5, 4.5);
+            ((TH2I*)newHisto)->SetXTitle("t /Clockcycles") ;
+            ((TH2I*)newHisto)->SetYTitle("messagetype") ;
+            ((TH2I*)newHisto)->GetYaxis()->SetBinLabel(1,"BOM") ;
+            ((TH2I*)newHisto)->GetYaxis()->SetBinLabel(2,"MSB") ;
+            ((TH2I*)newHisto)->GetYaxis()->SetBinLabel(3,"BUF") ;
+            ((TH2I*)newHisto)->GetYaxis()->SetBinLabel(4,"UNU") ;
+            ((TH2I*)newHisto)->GetYaxis()->SetBinLabel(5,"MIS") ;
+            break;
+        case kDigiPulserDeltaT:
+            histName += "DigiPulserDeltaT";
+            newHisto = new TH1I(histName.Data(), histName.Data(), 60000, 0, 6e8);
+            newHisto->SetXTitle("#Delta t [ns]");
+            newHisto->SetYTitle("Counts");
+            break;
+        case kDigiDeltaT :
+            histName += "DigiDeltaT";
+            newHisto = new TH1I(histName.Data(), histName.Data(), 6000, -10, ((6e7)-10));
+            // FIXME this should be more flexibel and made available for all modules of a given geometry
+            fLastDigiTimeVec = std::vector<std::uint64_t>(((CbmTrdParModDigi*)fDigiPar->GetModulePar(5))->GetNofColumns()*((CbmTrdParModDigi*)fDigiPar->GetModulePar(5))->GetNofRows(), 0);
+            newHisto->SetXTitle("#Delta t [ns]");
+            newHisto->SetYTitle("Counts");
+            break;
+        case kDigiMeanHitFrequency :
+            histName += "DigiMeanHitFrequency";
+            newHisto = new TProfile(histName.Data(), histName.Data(), parDigiModule->GetNofColumns()* parDigiModule->GetNofRows(), -0.5, parDigiModule->GetNofColumns()* parDigiModule->GetNofRows()-0.5);
+            // FIXME this should be more flexibel and made available for all modules of a given geometry
+            fLastDigiTimeVec = std::vector<std::uint64_t>(((CbmTrdParModDigi*)fDigiPar->GetModulePar(5))->GetNofColumns()*((CbmTrdParModDigi*)fDigiPar->GetModulePar(5))->GetNofRows(), 0);
+            newHisto->SetXTitle("Pad-Channel");
+            newHisto->SetYTitle("Hit frequency [kHz]");
+            break;
+        case kDigiDistributionMap:
+            histName += "DigiDistributionMap";
+            newHisto = new TH2I(histName.Data(), histName.Data(), parDigiModule->GetNofColumns(), -0.5, (parDigiModule->GetNofColumns() - 0.5), parDigiModule->GetNofRows(), -0.5, (parDigiModule->GetNofRows() - 0.5));
+            // newHisto = new TH2I(histName.Data(), histName.Data(), 128, -0.5, 127.5, 6, -0.5, 5.5);  // invert row value since they are count from top to bottom
+            newHisto->SetXTitle("Pad column");
+            newHisto->SetYTitle("Pad row");
+            break;
+        case kDigiDistributionMapSt:
+            histName += "DigiDistributionMapSt";
+            newHisto = new TH2I(histName.Data(), histName.Data(), parDigiModule->GetNofColumns(), -0.5, (parDigiModule->GetNofColumns() - 0.5), parDigiModule->GetNofRows(), -0.5, (parDigiModule->GetNofRows() - 0.5));
+            // newHisto = new TH2I(histName.Data(), histName.Data(), 128, -0.5, 127.5, 6, -0.5, 5.5);  // invert row value since they are count from top to bottom
+            newHisto->SetXTitle("Pad column");
+            newHisto->SetYTitle("Pad row");
+            break;
+        case kDigiDistributionMapNt:
+            histName += "DigiDistributionMapNt";
+            newHisto = new TH2I(histName.Data(), histName.Data(), parDigiModule->GetNofColumns(), -0.5, (parDigiModule->GetNofColumns() - 0.5), parDigiModule->GetNofRows(), -0.5, (parDigiModule->GetNofRows() - 0.5));
+            // newHisto = new TH2I(histName.Data(), histName.Data(), 128, -0.5, 127.5, 6, -0.5, 5.5);  // invert row value since they are count from top to bottom
+            newHisto->SetXTitle("Pad column");
+            newHisto->SetYTitle("Pad row");
+            break;
+        case kDigiChargeSpectrum :
+            histName += "DigiChargeSpectrum";
+            newHisto = new TH1I(histName.Data(), histName.Data(), 512, 0, 512);
+            newHisto->SetYTitle("Counts");
+            newHisto->SetXTitle("MaxAdc [ADC channels]");
+            break;
+        case kDigiChargeSpectrumSt :
+            histName += "DigiChargeSpectrumSt";
+            newHisto = new TH1I(histName.Data(), histName.Data(), 512, 0, 512);
+            newHisto->SetYTitle("Counts");
+            newHisto->SetXTitle("MaxAdc [ADC channels]");
+            break;
+        case kDigiChargeSpectrumNt :
+            histName += "DigiChargeSpectrumNt";
+            newHisto = new TH1I(histName.Data(), histName.Data(), 512, 0, 512);
+            newHisto->SetYTitle("Counts");
+            newHisto->SetXTitle("MaxAdc [ADC channels]");
+            break;
+        case kDigiRelativeTimeMicroslice :
+            histName += "DigiRelativeTimeMicroslice";
+            newHisto = new TH1D(histName.Data(), histName.Data(), fdMsSizeInNs, 0, fdMsSizeInNs);
+            break;
+        case kDigiTriggerType :
+            histName += "DigiTriggerType";
+            newHisto = new TH1I(histName.Data(), histName.Data(), CbmTrdDigi::kNTrg, -0.5,(CbmTrdDigi::kNTrg - 0.5));
+            break;
+        case kDigiHitFrequency :
+            histName += "DigiHitFrequency";
+            newHisto = new TProfile(histName.Data(), histName.Data(), 100000, 0, 100000);
+            newHisto->SetXTitle("Timeslice");
+            newHisto->SetYTitle("#langle hit frequency #rangle");
+            break;
+        default :
+            return createHistoOk;
+            break;
+        }
+        LOG(debug4) << Form("UnpackerTrdAlgo - Histo[%d]-%s - initialize", iHisto, histName.Data());
+        if(newHisto)
+        {
+            TString moduleName(Form("%d", moduleId));
+            if(iHisto < kBeginDigiHistos)
+            {
+                fHistoArray.AddAtAndExpand(newHisto, iHisto);
+            }
+            else
+            {
+                Int_t bitShift = Int_t(std::log2(std::double_t(kEndDefinedHistos))) + 1;
+                Int_t histoPosition = moduleId << bitShift;
+                histoPosition += iHisto;
+                if(iHisto >= kBeginDigiHistos) fHistoArray.AddAtAndExpand(newHisto, histoPosition);
+            }
+            // If new HistosTypes are added, they need to be added here!
+            if(newHisto->IsA() == TProfile::Class())  AddHistoToVector( (TProfile*)newHisto, moduleName.Data());
+
+            if(newHisto->IsA() == TH2I::Class())  AddHistoToVector( (TH2I*)newHisto, moduleName.Data());
+
+            if(newHisto->IsA() == TH1I::Class())  AddHistoToVector( (TH1I*)newHisto, moduleName.Data());
+
+            if(newHisto->IsA() == TH1D::Class())  AddHistoToVector( (TH1D*)newHisto, moduleName.Data());
+
+            createHistoOk = kTRUE;
+        }
+    }
+    return createHistoOk;
 }
 
 Bool_t CbmMcbm2018UnpackerAlgoTrdR::FillHistograms()
 {
-    // Histograms are being filled in the main message loop in CbmMcbm2018UnpackerAlgoTrdR::ProcessMs.
-  return kTRUE; 
+    return kTRUE;
 }
+
+// ----    FillHistograms(CbmTrdDigi)    ----
+Bool_t CbmMcbm2018UnpackerAlgoTrdR::FillHistograms(CbmTrdDigi const &digi)
+{
+    Bool_t isOkFill = kTRUE;
+    Int_t channelAddress = digi.GetAddressChannel();
+    Int_t histoBaseId = digi.GetAddressModule() << (Int_t(std::log2(std::double_t(kEndDefinedHistos))) + 1);
+    //Digi position monitoring
+    if(fIsActiveHistoVec[kDigiDistributionMap] || fIsActiveHistoVec[kDigiDistributionMapSt] || fIsActiveHistoVec[kDigiDistributionMapNt])
+    {   
+        CbmTrdParModDigi *parModDigi = (CbmTrdParModDigi*) fDigiPar->GetModulePar(digi.GetAddressModule());
+        Int_t rotatedAddress = parModDigi->GetOrientation() == 2 ? (channelAddress*(-1) + (parModDigi->GetNofRows() * parModDigi->GetNofColumns()) - 1) : channelAddress;
+        Int_t row = parModDigi->GetPadRow(rotatedAddress);
+        Int_t column = parModDigi->GetPadColumn(rotatedAddress);
+
+        // "DigiDistributionModule5"
+        if(fIsActiveHistoVec[kDigiDistributionMap])
+        {
+            ((TH2I*)fHistoArray.At(histoBaseId+kDigiDistributionMap))->Fill(column, row);
+        }
+        if(fIsActiveHistoVec[kDigiDistributionMapSt])
+        {
+            if(digi.GetAddressModule() == 5 && digi.GetTriggerType() == CbmTrdDigi::kSelf) ((TH2I*)fHistoArray.At(histoBaseId+kDigiDistributionMapSt))->Fill(column, row);
+        }
+        if(fIsActiveHistoVec[kDigiDistributionMapNt])
+        {
+            if(digi.GetAddressModule() == 5 && digi.GetTriggerType() == CbmTrdDigi::kNeighbor) ((TH2I*)fHistoArray.At(histoBaseId+kDigiDistributionMapNt))->Fill(column, row);
+        }
+    }
+    // "DigiRelativeTinTimeslice"
+    if(fIsActiveHistoVec[kDigiRelativeTimeMicroslice])
+    {
+        std::uint64_t digiTime = digi.GetTime();
+        std::uint64_t deltaT = digiTime - (fSpadicEpoch * fdMsSizeInCC * 62.5); // in clockcycles
+        ((TH1D*)fHistoArray.At(histoBaseId+kDigiRelativeTimeMicroslice))->Fill( deltaT );
+    }
+    // "kDigiChargeSpectrum"
+    if(fIsActiveHistoVec[kDigiChargeSpectrum])
+    {
+        ((TH1I*)fHistoArray.At(histoBaseId+kDigiChargeSpectrum))->Fill( digi.GetCharge());
+    }
+    // "kDigiChargeSpectrumSt"
+    if(fIsActiveHistoVec[kDigiChargeSpectrumSt])
+    {
+        if(digi.GetTriggerType() == CbmTrdDigi::kSelf)
+        ((TH1I*)fHistoArray.At(histoBaseId+kDigiChargeSpectrumSt))->Fill( digi.GetCharge());
+    }
+    // "kDigiChargeSpectrumNt"
+    if(fIsActiveHistoVec[kDigiChargeSpectrumNt])
+    {
+        if(digi.GetTriggerType() == CbmTrdDigi::kNeighbor) ((TH1I*)fHistoArray.At(histoBaseId+kDigiChargeSpectrumNt))->Fill( digi.GetCharge());
+    }
+    // "kDigiChargeSpectrumNt"
+    if(fIsActiveHistoVec[kDigiTriggerType])
+    {
+        ((TH1I*)fHistoArray.At(histoBaseId+kDigiTriggerType))->Fill( digi.GetTriggerType());
+    }
+
+
+
+    // "kDigiDeltaT" // DigiPulserDeltaT // "kDigiMeanHitFrequency" // FIXME this works currently with only one module
+    if(fIsActiveHistoVec[kDigiDeltaT] || fIsActiveHistoVec[kDigiMeanHitFrequency] || fIsActiveHistoVec[kDigiPulserDeltaT])
+    {
+        std::uint64_t dt = ((std::uint64_t)digi.GetTime() - fLastDigiTimeVec.at(channelAddress));
+        if(dt > 0)
+        {
+            // "kDigiDeltaT"
+            if(fIsActiveHistoVec[kDigiDeltaT])
+            {
+                ((TH1I*)fHistoArray.At(histoBaseId+kDigiDeltaT))->Fill(dt);
+            }
+            // "kDigiMeanHitFrequency"
+            if(fIsActiveHistoVec[kDigiMeanHitFrequency])
+            {
+                if(dt > 0 && dt < fdTsFullSizeInNs)
+                {
+                    Double_t hitFreq = (Double_t) dt;
+                    hitFreq *= 1e-9;
+                    hitFreq = 1.0/hitFreq;
+                    hitFreq /= 1000.0;
+                    ((TProfile*)fHistoArray.At(histoBaseId+kDigiMeanHitFrequency))->Fill(channelAddress, hitFreq);
+                }
+            }
+            // DigiPulserDeltaT
+            if(fIsActiveHistoVec[kDigiPulserDeltaT])
+            {
+                Int_t pulserChannelAddress(663);   // status 03/27/2020
+                Int_t pulserModule(5);     // status 03/27/2020
+                if( channelAddress == pulserChannelAddress && digi.GetAddressModule() == pulserModule && digi.GetTriggerType() == CbmTrdDigi::kSelf )
+                {
+                    ((TH1I *)fHistoArray.At(histoBaseId+kDigiPulserDeltaT))->Fill(dt);
+                }
+            }
+            // "kDigiMeanHitFrequency"
+            if(fIsActiveHistoVec[kDigiHitFrequency])
+            {
+                if(dt > 0 && dt < fdTsFullSizeInNs)
+                {
+                    Int_t tsCounter = fNbTimeslices % ((TProfile*)fHistoArray.At(histoBaseId+kDigiHitFrequency))->GetNbinsX();
+                    Double_t hitFreq = (Double_t) dt;
+                    hitFreq *= 1e-9;
+                    hitFreq = 1.0/hitFreq;
+                    hitFreq /= 1000.0;
+                    ((TProfile*)fHistoArray.At(histoBaseId+kDigiHitFrequency))->Fill(tsCounter, hitFreq);
+                    if(tsCounter == 0) ((TProfile*)fHistoArray.At(histoBaseId+kDigiHitFrequency))->Reset();
+                }
+            }
+            fLastDigiTimeVec.at(channelAddress) = (std::uint64_t)digi.GetTime();
+        }
+    }
+    return isOkFill;
+}
+
+// ----    FillHistograms(CbmTrdSpadicRawMessage)    ----
+Bool_t CbmMcbm2018UnpackerAlgoTrdR::FillHistograms(CbmTrdRawMessageSpadic const &raw)
+{
+    Bool_t isOkFill = kTRUE;
+    // "RawMessage_Signalshape_filtered"
+    if(fIsActiveHistoVec[kRawMessage_Signalshape_filtered])
+    {
+        if (raw.GetHitType() < 2 && !raw.GetMultiHit())
+        {
+            for (unsigned int i = 0; i < raw.GetSamples().size(); i++)
+            {
+                ((TH2I*)fHistoArray.At(kRawMessage_Signalshape_filtered))->Fill(i, raw.GetSamples()[i]) ;
+            }
+        }
+    }
+        // "RawMessage_Signalshape_all"
+    if(fIsActiveHistoVec[kRawMessage_Signalshape_all])
+    {
+        for (unsigned int i = 0; i < raw.GetSamples().size(); i++)
+        {
+            //fHistoMap.at(HistName.Data())->Fill(i, raw.GetSamples()[i]);
+            ((TH2I*)fHistoArray.At(kRawMessage_Signalshape_all))->Fill(i, raw.GetSamples()[i]);
+        }
+    }
+    // "kRawMessage_Signalshape_St"
+    if(fIsActiveHistoVec[kRawMessage_Signalshape_St])
+    {
+        for (unsigned int i = 0; i < raw.GetSamples().size(); i++)
+        {
+            if( raw.GetHitType() == (Int_t)Spadic::TriggerType::kSelf || raw.GetHitType() == (Int_t)Spadic::TriggerType::kSandN )   ((TH2I*)fHistoArray.At(kRawMessage_Signalshape_St))->Fill(i, raw.GetSamples()[i]);
+        }
+    }
+    // "kRawMessage_Signalshape_Nt"
+    if(fIsActiveHistoVec[kRawMessage_Signalshape_Nt])
+    {
+        for (unsigned int i = 0; i < raw.GetSamples().size(); i++)
+        {
+            if( raw.GetHitType() == (Int_t)Spadic::TriggerType::kNeigh )   ((TH2I*)fHistoArray.At(kRawMessage_Signalshape_Nt))->Fill(i, raw.GetSamples()[i]);
+        }
+    }
+    // "RawDistributionMapModule5"
+    if(fIsActiveHistoVec[kRawDistributionMapModule5])
+    {
+        ((TH1I *)fHistoArray.At(kRawDistributionMapModule5))->Fill(raw.GetElinkId(), raw.GetChannelId());
+    }
+    // "kRawHitType"
+    if(fIsActiveHistoVec[kRawHitType])
+    {
+        ((TH1I*)fHistoArray.At(kRawHitType))->Fill( raw.GetHitType());
+    }
+    // "RawPulserDeltaT"
+    if(fIsActiveHistoVec[kRawPulserDeltaT])
+    {
+        std::uint8_t pulserChannelId = 0;   // status 03/27/2020
+        std::uint8_t pulserElinkId = 29;     // status 03/27/2020
+        if(raw.GetChannelId() == pulserChannelId && raw.GetElinkId() == pulserElinkId )
+        {
+            Long64_t dt = ((Long64_t)raw.GetFullTime() - (Long64_t)fLastFulltime);
+            ((TH1I *)fHistoArray.At(kRawPulserDeltaT))->Fill(dt);
+            fLastFulltime = raw.GetFullTime();
+        }
+    }
+    return isOkFill;
+}
+
 
 Bool_t CbmMcbm2018UnpackerAlgoTrdR::ResetHistograms()
 {
@@ -476,7 +772,7 @@ Bool_t CbmMcbm2018UnpackerAlgoTrdR::ResetHistograms()
 
     for ( auto it = fHistoArray.begin() ; it != fHistoArray.end() ; ++it )
     {
-        ((TH2I*)*it)->Reset();
+        ((TH1*)*it)->Reset();
     }
     return kTRUE;
 
@@ -523,9 +819,14 @@ Bool_t CbmMcbm2018UnpackerAlgoTrdR::SetRawOutputPointer(std::vector<CbmTrdRawMes
 std::shared_ptr<CbmTrdDigi> CbmMcbm2018UnpackerAlgoTrdR::MakeDigi(CbmTrdRawMessageSpadic raw)
 {
     Int_t digiAddress = -1;
-    Float_t digiCharge = (Float_t)raw.GetMaxAdc();
-    ULong64_t digiTime = raw.GetFullTime();
-    Int_t digiTriggerType = raw.GetHitType() ; // Spadic::TriggerType
+    Float_t digiCharge = (Float_t)raw.GetMaxAdc() + 256; // REMARK raw.GetMaxADC returns a the value in the range of -256 til 255. However, the digiCharge is stored as unsigned.  // TODO make Settable
+    ULong64_t digiTime = raw.GetFullTime_ns() - fdTimeOffsetNs;
+    // Int_t digiTriggerType = raw.GetHitType() ; // Spadic::TriggerType this does not work 03/27/2020 - PR digiTriggerType is not Spadic::TriggerType!
+    Int_t digiTriggerType = raw.GetHitType();
+    if(digiTriggerType == 1) digiTriggerType = 0; // Shift self trigger to digi selftrigger
+    if(digiTriggerType == 2) digiTriggerType = 1; // Shift neighbour trigger to digi neighbour
+    if(digiTriggerType == 3) digiTriggerType = 0; // Hide spadic kSandN in Self
+
     Int_t digiErrClass = 0;
 
     std::uint64_t spadicHwAddress(0);
@@ -533,7 +834,13 @@ std::shared_ptr<CbmTrdDigi> CbmMcbm2018UnpackerAlgoTrdR::MakeDigi(CbmTrdRawMessa
                     + (CbmTrdParAsic::kCriIdPosition * raw.GetCriId())
                     + (CbmTrdParAsic::kCrobIdPosition * raw.GetCrobId());
     Int_t asicAddress(0);
-    asicAddress = (fSpadicMap.find(spadicHwAddress))->second;
+    auto mapIt = fSpadicMap.find(spadicHwAddress);  // check if asic exists
+    if(mapIt == fSpadicMap.end())
+    {
+        LOG(debug4) << Form("CbmMcbm2018UnpackerAlgoTrdR::MakeDigi - No asic address found for Spadic hardware address %lu", spadicHwAddress);
+        return nullptr;
+    }
+    asicAddress = mapIt->second;
     Int_t uniqueModuleId = asicAddress / 1000;
     Int_t layerId(CbmTrdAddress::GetLayerId(uniqueModuleId));
     Int_t moduleId(CbmTrdAddress::GetModuleId(uniqueModuleId));
@@ -542,9 +849,7 @@ std::shared_ptr<CbmTrdDigi> CbmMcbm2018UnpackerAlgoTrdR::MakeDigi(CbmTrdRawMessa
     digiAddress = (fAsicChannelMap.find(asicAddress))->second.at(asicChannelId);
 
     std::shared_ptr<CbmTrdDigi> digi = std::make_shared<CbmTrdDigi> ( CbmTrdDigi(digiAddress, digiCharge, digiTime, digiTriggerType, digiErrClass) );
-
-    digi->SetAddress(CbmTrdAddress::GetAddress(layerId, moduleId, 0, 0, 0)); // TODO this could be skipped is shifting the address components back and forth, however the digi setter would need to be enhanced
-
+    digi->SetAddress(CbmTrdAddress::GetAddress(layerId, moduleId, 0, 0, 0)); // TODO this could be skipped, it is shifting the address components back and forth, however the digi setter would need to be enhanced 
 
     // Int_t channelAddress = digi->GetAddressChannel();
     // Int_t address = digi->GetAddress();
@@ -626,8 +931,6 @@ CbmTrdRawMessageSpadic CbmMcbm2018UnpackerAlgoTrdR::CreateRawMessage(const uint6
     uint8_t hitType = 0, nSamples = 0;
     bool multihit = false;
     uint16_t timestamp = 0;
-//    uint64_t ts_overlap = 0;  ///< 3bit of th spadic ts and the epoch counter should be the same (FU 270320 Redmine issue#1563)
-    //extract elinkid
     uint64_t mask = 0x3F;
     mask = mask << 55;
     elinkId = (char)((word & mask) >> 55);
@@ -636,18 +939,14 @@ CbmTrdRawMessageSpadic CbmMcbm2018UnpackerAlgoTrdR::CreateRawMessage(const uint6
     mask = mask << 51;
     chId = (char)((word & mask) >> 51);
     //extract timestamp
-    mask = 0x7FF;
+    mask = 0xFFFF;
     mask = mask << 35;
     timestamp = (uint16_t)((word & mask) >> 35);
-    // extract timestamp overlap
-    mask = 0xFF;
-    mask = mask << 46;
-//    ts_overlap = (uint64_t)((word & mask) >> 46); (FU 270320 Redmine issue#1563)
     //extract hitType
     mask = 0x3;
     mask = mask << 33;
     hitType = (uint8_t)((word & mask) >> 33);
-    //extract MultiHi
+    //extract MultiHit
     mask = 0x1;
     mask = mask << 32;
     multihit = (bool)((word & mask) >> 32);
@@ -660,20 +959,13 @@ CbmTrdRawMessageSpadic CbmMcbm2018UnpackerAlgoTrdR::CreateRawMessage(const uint6
     // get the correct fulltime
     uint64_t fulltime = timestamp + (fSpadicEpoch * fdMsSizeInCC); // this is in units of clock cycles
     //uint64_t epoch = fSpadicEpoch >> 3 ;
-    //uint64_t fulltime = timestamp + (ts_overlap << 11 ) + (epoch << 14); // this is in units of clock cycles
-/*
-    mask = 0x7;
-    uint64_t compare = (mask & fSpadicEpoch) ;
-    //LOG(info) << "[CbmMcbm2018UnpackerAlgoTrdR::CreateRawMessage] ts_overlap = " << (UInt_t)ts_overlap ;
-    if ( compare != (uint64_t)ts_overlap ) LOG(warning) << "[CbmMcbm2018UnpackerAlgoTrdR::CreateRawMessage] " << compare << " != " << (UInt_t)ts_overlap ;
-*/
 
 
     // put the first 3 samples, contained in som, into the message.
     std::vector<int16_t> samples;
     for (int i = 0; i < nSamples && i < 3; i++)
     {
-        samples.push_back(ExtractSample(word, i, multihit));
+        samples.emplace_back(ExtractSample(word, i, multihit));
     }
 
     // Create message
@@ -717,7 +1009,6 @@ int16_t CbmMcbm2018UnpackerAlgoTrdR::ExtractSample(const uint64_t word, uint8_t 
         LOG(error) << "[CbmMcbm2018UnpackerAlgoTrdR::ExtractSample]  Wrong sample index!";
         return -256;
     }
-
     uint16_t index = indices[sample];
 
     mask = mask << (9 * (6 - index));

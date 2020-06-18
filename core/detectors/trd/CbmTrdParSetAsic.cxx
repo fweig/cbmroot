@@ -169,7 +169,7 @@ void CbmTrdParSetAsic::putParams(FairParamList *l)
       for (auto iModuleIt : mod->fModuleMap) {
         int offset = iAsicNr * sizePerFasp;
         asicInfo[ offset ] = iModuleIt.first;
-	Int_t nchannels(((CbmTrdParAsic*)iModuleIt.second)->GetNchannels());
+	      Int_t nchannels(((CbmTrdParAsic*)iModuleIt.second)->GetNchannels());
         CbmTrdParFasp *fasp = (CbmTrdParFasp*)iModuleIt.second;
 
         for(Int_t ich(0); ich<nchannels; ich+=2){

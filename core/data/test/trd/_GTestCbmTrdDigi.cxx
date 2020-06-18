@@ -9,21 +9,38 @@ TEST(_GTestCbmTrdDigi , CheckDefaultConstructor)
 {
   // Create object
   CbmTrdDigi test;
-
-  compareTrdDigiDataMembers(test, ToIntegralType(ECbmModuleId::kTrd), ECbmModuleId::kTrd, 0, 0);
+  compareTrdDigiDataMembers(test, 0, ECbmModuleId::kTrd, 0, 0);
 
   CbmTrdDigi* test1 = new CbmTrdDigi();
 
-  compareTrdDigiDataMembers(*test1, ToIntegralType(ECbmModuleId::kTrd), ECbmModuleId::kTrd, 0, 0);
+  compareTrdDigiDataMembers(*test1, 0, ECbmModuleId::kTrd, 0, 0);
 
 }
+
+TEST(_GTestCbmTrdDigi , CheckStandardConstructor)
+{
+  // Create object
+  // This creates a Spadic standard digi, fasp test to be added here
+  Int_t padChNr = 42;
+  Double_t charge = 42.42;
+  ULong64_t digiTime = 42001;
+  Int_t errClass = 0;
+  CbmTrdDigi test(padChNr, charge, digiTime, ((Int_t)CbmTrdDigi::kSelf), errClass);
+  compareTrdDigiDataMembers(test, padChNr, ECbmModuleId::kTrd, digiTime, charge);
+
+  CbmTrdDigi* test1 = new CbmTrdDigi(padChNr, charge, digiTime, ((Int_t)CbmTrdDigi::kSelf), errClass);
+
+  compareTrdDigiDataMembers(*test1, padChNr, ECbmModuleId::kTrd, digiTime, charge);;
+
+}
+
 
 TEST(_GTestCbmTrdDigi, CheckGetClassName)
 {
   // Create object
   CbmTrdDigi test;
 
-  compareTrdDigiDataMembers(test, ToIntegralType(ECbmModuleId::kTrd), ECbmModuleId::kTrd, 0, 0);
+  compareTrdDigiDataMembers(test, 0, ECbmModuleId::kTrd, 0, 0);
 
   EXPECT_STREQ("CbmTrdDigi", test.GetClassName());
 }

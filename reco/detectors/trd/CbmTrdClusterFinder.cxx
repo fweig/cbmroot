@@ -74,9 +74,6 @@ CbmTrdClusterFinder::~CbmTrdClusterFinder()
     fClusters->Delete();
     delete fClusters;
   }
-  if(fDigiPar){
-    delete fDigiPar;
-  }
   if(fGeoPar){
     delete fGeoPar;
   }
