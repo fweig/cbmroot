@@ -76,18 +76,6 @@
 #pragma link C++ class CbmTofTracklet+;
 #pragma link C++ class CbmTofTrackletParam+;
 
-/*
-#pragma link C++ class CbmEcalPoint+;
-#pragma link C++ class CbmEcalHit+;
-#pragma link C++ class CbmEcalHitFastMC+;
-#pragma link C++ class CbmEcalPointLite+;
-#pragma link C++ class CbmEcalCell+;
-#pragma link C++ class CbmEcalMaximum+;
-#pragma link C++ class CbmEcalCluster+;
-#pragma link C++ class CbmEcalRecParticle+;
-#pragma link C++ class CbmEcalIdParticle+;
-*/
-
 #pragma link C++ class CbmPsdDigi;
 #pragma link C++ class CbmPsdHit;
 #pragma link C++ class CbmPsdPoint+;
@@ -98,15 +86,6 @@
 #pragma link C++ class CbmTofTrack+;
 #pragma link C++ class CbmVertex+;
 
-/*
-#pragma link C++ class CbmRawMessage;
-#pragma link C++ class CbmSpadicRawMessage;
-#pragma link C++ class CbmTrdRawMessage;
-#pragma link C++ class CbmNxyterRawMessage;
-#pragma link C++ class CbmNxyterRawSyncMessage;
-#pragma link C++ class CbmStsxyterRawHitMessage;
-#pragma link C++ class CbmTrbRawMessage;
-*/
 #pragma link C++ class stsxyter::Message;
 #pragma link C++ class gdpbv100::Message;
 #pragma link C++ class gdpbv100::FullMessage;

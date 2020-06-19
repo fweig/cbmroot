@@ -62,8 +62,6 @@ ${CBMROOT_SOURCE_DIR}/rich/sim
 ${CBMROOT_SOURCE_DIR}/much/sim
 ${CBMROOT_SOURCE_DIR}/trd/sim
 ${CBMROOT_SOURCE_DIR}/tof/sim
-#${CBMDATA_DIR}/ecal
-#${CBMROOT_SOURCE_DIR}/ecal
 ${CBMROOT_SOURCE_DIR}/psd/sim
 ${CBMROOT_SOURCE_DIR}/sim/passive
 ${CBMROOT_SOURCE_DIR}/field

@@ -12,7 +12,6 @@ set(INCLUDE_DIRECTORIES
   ${CMAKE_CURRENT_SOURCE_DIR}/trd
   ${CMAKE_CURRENT_SOURCE_DIR}/tof
   ${CMAKE_CURRENT_SOURCE_DIR}/rich
-#  ${CMAKE_CURRENT_SOURCE_DIR}/ecal
   ${CMAKE_CURRENT_SOURCE_DIR}/psd
   ${CMAKE_CURRENT_SOURCE_DIR}/global
 )
@@ -103,16 +102,6 @@ set(SRCS
   tof/CbmTofTracklet.cxx
   tof/CbmTofTrackletParam.cxx
 
-#  ecal/CbmEcalHit.cxx
-#  ecal/CbmEcalPoint.cxx
-#  ecal/CbmEcalPointLite.cxx
-#  ecal/CbmEcalHitFastMC.cxx
-#  ecal/CbmEcalCell.cxx
-#  ecal/CbmEcalMaximum.cxx
-#  ecal/CbmEcalCluster.cxx
-#  ecal/CbmEcalRecParticle.cxx
-#  ecal/CbmEcalIdParticle.cxx
-
   psd/CbmPsdDigi.cxx
   psd/CbmPsdHit.cxx
   psd/CbmPsdPoint.cxx
@@ -124,19 +113,6 @@ set(SRCS
   global/CbmTofTrack.cxx
   global/CbmTrackParam.cxx
 
-#  beamtime/CbmAuxDigi.cxx
-#  beamtime/CbmTbEvent.cxx
-#  beamtime/fhodo/CbmFiberHodoDigi.cxx
-#  beamtime/fhodo/CbmFiberHodoCluster.cxx
-#  beamtime/fhodo/CbmFiberHodoAddress.cxx
-
-#  raw/CbmRawMessage.cxx
-#  raw/CbmSpadicRawMessage.cxx
-#  raw/CbmTrdRawMessage.cxx
-#  raw/CbmNxyterRawMessage.cxx
-#  raw/CbmNxyterRawSyncMessage.cxx
-#  raw/CbmStsxyterRawHitMessage.cxx
-#  raw/CbmTrbRawMessage.cxx
   raw/StsXyterMessage.cxx
   raw/gDpbMessv100.cxx
   raw/TimesliceMetaData.cxx

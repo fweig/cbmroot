@@ -13,7 +13,6 @@ set(INCLUDE_DIRECTORIES
     ${CBMDATA_DIR}/much
     ${CBMDATA_DIR}/trd
     ${CBMDATA_DIR}/tof
-#    ${CBMDATA_DIR}/ecal
     ${CBMDATA_DIR}/psd
 )
 

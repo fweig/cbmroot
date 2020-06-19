@@ -22,7 +22,6 @@ ${CBMDATA_DIR}/rich
 ${CBMDATA_DIR}/sts 
 ${CBMDATA_DIR}/trd 
 ${CBMDATA_DIR}/tof 
-#${CBMDATA_DIR}/ecal 
 ${CBMDATA_DIR}/psd 
 
 # needed by CbmMuchFindVectors
