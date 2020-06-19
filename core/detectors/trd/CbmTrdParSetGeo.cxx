@@ -34,6 +34,12 @@ Bool_t CbmTrdParSetGeo::Init()
   CbmTrdGeoHandler geo;
   TGeoNode* topNode = gGeoManager->GetTopNode();
   TObjArray* nodes = topNode->GetNodes();
+  if (!nodes)
+  {
+     LOG(error) << "CbmTrdParSetGeo::Init: nodes is null!";
+	 return kFALSE;
+  }
+
   for (Int_t iNode = 0; iNode < nodes->GetEntriesFast(); iNode++) {
     TGeoNode* node = static_cast<TGeoNode*>(nodes->At(iNode));
     if (!TString(node->GetName()).Contains("trd", TString::kIgnoreCase)) continue; // trd_vXXy top node, e.g. trd_v13a, trd_v14b
