@@ -203,7 +203,7 @@ private:
   static const Int_t fgkTrgOffset =  29;
   static const Int_t fgkTypOffset =  31;
   
-  ClassDefNV(CbmTrdDigi, 2);   // Production ready TRD digit
+  ClassDefNV(CbmTrdDigi, 3);   // Production ready TRD digit
 };
 
 #endif
