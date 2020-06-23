@@ -1614,7 +1614,7 @@ void unpack_tsa_mcbm_mfles( UInt_t uRunId = 0, UInt_t nrEvents=0, TString outDir
 //  source->AddUnpacker(unpacker_hodo, 0x10, ECbmModuleId::kHodo );//HODO xyter
 
   // --- Event header
-  FairEventHeader* event = new CbmTbEvent();
+  FairEventHeader* event = new FairEventHeader();
   event->SetRunId(uRunId);
 
   // --- RootFileSink

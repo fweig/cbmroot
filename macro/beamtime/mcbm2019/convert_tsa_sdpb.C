@@ -53,7 +53,7 @@ void convert_tsa_sdpb(TString inFile = "", Int_t nrEvents=0)
   source->AddUnpacker(raw_conv_sdpb, 0x10, ECbmModuleId::kSts);//STS xyter from STS and MUCH
 
   // --- Event header
-  FairEventHeader* event = new CbmTbEvent();
+  FairEventHeader* event = new FairEventHeader();
   event->SetRunId(1);
 
   // --- Run

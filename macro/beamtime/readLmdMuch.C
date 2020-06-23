@@ -77,7 +77,7 @@ void readLmdMuch()
   source->AddFile(inFile);
 
   // --- Event header
-  FairEventHeader* event = new CbmTbEvent();
+  FairEventHeader* event = new FairEventHeader();
   event->SetRunId(021);
 
   // --- Run

@@ -243,7 +243,7 @@ void unpack_tsa_mcbm_kronos( UInt_t uRunId = 0, UInt_t nrEvents=0, TString outDi
   source->AddUnpacker(unpacker_psd,  0x80, ECbmModuleId::kPsd  );//PSD
 
   // --- Event header
-  FairEventHeader* event = new CbmTbEvent();
+  FairEventHeader* event = new FairEventHeader();
   event->SetRunId(uRunId);
 
   // --- RootFileSink

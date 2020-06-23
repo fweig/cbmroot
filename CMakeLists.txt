@@ -346,7 +346,6 @@ If(FAIRMQ_FOUND)
 EndIf()
 
 add_subdirectory(tutorials)
-add_subdirectory (beamtime)
 
 add_custom_target(cleanlib
                   COMMAND ${CMAKE_COMMAND} -E remove libCbm*

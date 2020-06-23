@@ -54,7 +54,7 @@ void convert_tsa_gdpb(TString inFile = "", Int_t nrEvents=0)
   source->AddUnpacker(raw_conv_gdpb,  0x90, ECbmModuleId::kTof  );//gDPB T0 A & B
 
   // --- Event header
-  FairEventHeader* event = new CbmTbEvent();
+  FairEventHeader* event = new FairEventHeader();
   event->SetRunId(1);
 
   // --- Run

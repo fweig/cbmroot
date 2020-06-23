@@ -81,7 +81,7 @@ void readLmd_Anna()
   source->SetTriggeredMode(trigger);
 
   // --- Event header
-  FairEventHeader* event = new CbmTbEvent();
+  FairEventHeader* event = new FairEventHeader();
   event->SetRunId(012);
 
   // --- Run

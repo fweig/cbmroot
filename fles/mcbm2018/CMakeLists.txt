@@ -7,8 +7,6 @@ Set(INCLUDE_DIRECTORIES
 
   ${CBMDATA_DIR}
   ${CBMDATA_DIR}/base
-  ${CBMDATA_DIR}/beamtime
-  ${CBMDATA_DIR}/beamtime/fhodo
   ${CBMDATA_DIR}/raw
   ${CBMDATA_DIR}/sts
   ${CBMDATA_DIR}/much
@@ -17,8 +15,6 @@ Set(INCLUDE_DIRECTORIES
   ${CBMDATA_DIR}/tof
   ${CBMDATA_DIR}/psd
   ${CBMDATA_DIR}/trd
-
-  ${CBMROOT_SOURCE_DIR}/beamtime/base
 
   ${CBMROOT_SOURCE_DIR}/fles/flestools
 
@@ -135,7 +131,7 @@ EndIf()
 Set(LINKDEF CbmFlibMcbm2018LinkDef.h )
 Set(LIBRARY_NAME CbmFlibMcbm2018)
 Set(DEPENDENCIES
-    CbmFlibFlesTools CbmData CbmBase CbmBeamtimeBase fles_ipc Eve Base CbmTrdBase
+    CbmFlibFlesTools CbmData CbmBase fles_ipc Eve Base CbmTrdBase
 )
 
 GENERATE_LIBRARY()

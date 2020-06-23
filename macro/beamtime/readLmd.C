@@ -48,7 +48,7 @@ void readLmd()
   source->AddFile(inFile);
 
   // --- Event header
-  FairEventHeader* event = new CbmTbEvent();
+  FairEventHeader* event = new FairEventHeader();
   event->SetRunId(260);
 
   // --- Run

@@ -253,7 +253,7 @@ void unpack_tsa_mcbm(TString inFile = "", UInt_t uRunId = 0, UInt_t nrEvents=0, 
 //  source->AddUnpacker(unpacker_hodo, 0x10, kHodo );//HODO xyter
 
   // --- Event header
-  FairEventHeader* event = new CbmTbEvent();
+  FairEventHeader* event = new FairEventHeader();
   event->SetRunId(uRunId);
 
   // --- RootFileSink
