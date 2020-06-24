@@ -230,13 +230,11 @@ void CbmTrdParManager::CreateModuleParameters(const TString& path)
     }
     if(asic) asics->SetAsicPar(asicAddress, asic);
   } 
-  else {
+  else { // Here only rectangular modules should enter. Hence, we have spadics in use.
     asics = new CbmTrdParSetAsic("TrdParModSpadic", Form("Spadic set for Module %d", moduleAddress));     asics->SetAsicType(moduleType);
     CbmTrdParSpadic *asic(nullptr);
-    // Int_t nAsicsPerCrob = CbmTrdParSpadic::GetNasicsPerCrob(moduleType);
-    // Int_t cRobCounter(0);
-    // Int_t cRobId(0);
-    // Int_t eLinkId(98);  // default for undefined, since 98 should never be in use
+
+    // To write the channelAddresses to the parameter files we first of all need to now the number of columns, rows and channels. The numbering of the channels starts at the bottom left and goes along the short side (column) of the pads row by row, for a not rotated module. The rotation is also taken care about in the following code.
     Int_t nModuleColumns(digi->GetNofColumns());
     Int_t nModuleRows(digi->GetNofRows());
     Int_t nModuleChannels(nModuleColumns * nModuleRows);
@@ -247,13 +245,16 @@ void CbmTrdParManager::CreateModuleParameters(const TString& path)
     for (Int_t iAsic = 0; iAsic < CbmTrdParSpadic::GetNasicsOnModule(moduleType); iAsic++)
     {
       asic = new CbmTrdParSpadic( 1000 *  moduleAddress + iAsic); // nTh-asic + module address define asicAddress counting for asic starts at bottom left and goes left to right row by row
-      // eLinkId = (iAsic % nAsicsPerCrob) * 2;
-      // cRobCounter = iAsic / nAsicsPerCrob;
+      
       Int_t nAsicChannels(asic->GetNchannels());
+
+      // Figure out the number of asics per column, this is required since one spadic is connected to two rows
       nAsicsAlongColumns = nModuleColumns < nModuleRows ? nModuleRows / 2 : nModuleColumns / (nAsicChannels/2) ;
+
+      // Get the asic-row (= rows/2) for the given asic
       Int_t nThAsicRow(iAsic / nAsicsAlongColumns);
+
       Int_t nThAsicColumn(iAsic % nAsicsAlongColumns);
-      // TODO check if rotation is handled correctly
 
       chAddressesVec.clear();
       chAddressesVec.resize(nAsicChannels);
@@ -261,10 +262,13 @@ void CbmTrdParManager::CreateModuleParameters(const TString& path)
       Int_t iAsicChannel(0);
       for (auto channelAddress : chAddressesVec)
       {
+        // Each row of asic channels for one spadic has its own eLink. The numbering of the channels is stored in the GetElinkChannel() function
         channelAddress = asic->GetElinkChannel(iAsicChannel);
-        if((iAsicChannel % 2 != 0)) channelAddress += nModuleColumns; // one asic is split over two rows thus, with odd channels in the top row, thus there address is placed in the next column 
+        if((iAsicChannel % 2 != 0)) channelAddress += nModuleColumns; // one asic is split over two rows with odd channels in the top row, thus there address is placed in the next column 
         channelAddress += nThAsicColumn * nAsicChannels / 2; // one asic is split over two rows
         channelAddress += nThAsicRow    * nModuleColumns * 2; // one asic is split over two rows
+
+        // if the module is rotated 180 or 270 degrees, the channel number counting has to be rotated as well, since the X-Y placing in CbmTrdParModDigi expect it in this way.
         if(orientation == 2)
         {
           channelAddress *= (-1);
@@ -275,7 +279,7 @@ void CbmTrdParManager::CreateModuleParameters(const TString& path)
       }
 
       asic->SetChannelAddresses(chAddressesVec);
-      // asic->SetComponentId(moduleAddress * CbmTrdParAsic::kCriIdPosition + cRobId * CbmTrdParAsic::kCrobIdPosition + cRobCounter * CbmTrdParAsic::kCrobNrPosition + eLinkId * CbmTrdParAsic::kElinkIdPosition); // Remark: This is and will not be the correct componentId (CRI/AFCK Id). However, every asic connected to the nTh cRob of a given module will have the same componentId. Thus, this makes it easier to change to the correct Id for all relevant asics.
+      // Get the according hardware component Id for the real asic placed at the according position in the experiment
       asic->SetComponentId(fHardwareSetup.GetComponentId(asic->GetAddress()));
       asics->SetAsicPar(asic->GetAddress(), asic);
     }

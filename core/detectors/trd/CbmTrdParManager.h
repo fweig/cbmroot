@@ -103,6 +103,6 @@ private:
    CbmTrdParManager(const CbmTrdParManager&);
    CbmTrdParManager& operator=(const CbmTrdParManager&);
 
-   ClassDef(CbmTrdParManager, 1)
+   ClassDef(CbmTrdParManager, 2)
 };
 #endif //CBMTRDPARMANAGER_H
