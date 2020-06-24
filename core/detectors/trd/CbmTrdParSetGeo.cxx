@@ -36,8 +36,8 @@ Bool_t CbmTrdParSetGeo::Init()
   TObjArray* nodes = topNode->GetNodes();
   if (!nodes)
   {
-     LOG(error) << "CbmTrdParSetGeo::Init: nodes is null!";
-	 return kFALSE;
+    LOG(fatal) << "CbmTrdParSetGeo::Init: nodes is null!";
+	  return kFALSE;
   }
 
   for (Int_t iNode = 0; iNode < nodes->GetEntriesFast(); iNode++) {
