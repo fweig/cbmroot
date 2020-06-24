@@ -1,4 +1,4 @@
-set(PARAMETER_VERSION 2e986d341101eb0b9693062fa0123e3d01c2c12f)
+set(PARAMETER_VERSION 6e663efc486a146b43a5b712985a2089df8168c0)
 
 set(PARAMETER_SRC_URL "https://git.cbm.gsi.de/CbmSoft/cbmroot_parameter.git")
 
