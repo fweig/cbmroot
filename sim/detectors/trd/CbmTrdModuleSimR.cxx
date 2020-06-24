@@ -123,7 +123,7 @@ void CbmTrdModuleSimR::AddDigi(Int_t address, Double_t charge, Double_t /*charge
     digiMatch->AddLink(CbmLink(weighting, fPointId, fEventId, fInputId));
     AddNoise(charge);  
 
-    CbmTrdDigi *digi = new CbmTrdDigi(channel, charge*1e6, ULong64_t(time), 0, 0);
+    CbmTrdDigi *digi = new CbmTrdDigi(channel, fModAddress, charge*1e6, ULong64_t(time), 0, 0);
 
     digi->SetFlag(0,true);
     if(fDigiPar->GetPadSizeY(sec) == 1.5)     digi->SetErrorClass(1);
@@ -134,7 +134,7 @@ void CbmTrdModuleSimR::AddDigi(Int_t address, Double_t charge, Double_t /*charge
     fDigiMap[address] = std::make_pair(digi, digiMatch);
 
     it = fDigiMap.find(address);    
-    it->second.first->SetAddressModule(fModAddress);//module);
+    // it->second.first->SetAddressModule(fModAddress);//module); <- now handled in the digi contructor
     if(trigger==1)    it->second.first->SetTriggerType(CbmTrdDigi::kSelf);
     if(trigger==2)    it->second.first->SetTriggerType(CbmTrdDigi::kNeighbor);
   }
@@ -227,9 +227,9 @@ void CbmTrdModuleSimR::ProcessPulseBuffer(Int_t address, Bool_t FNcall, Bool_t M
     }
   }
   
-  CbmTrdDigi* digi=NULL;
-  if(fTimeBuffer[address] + corr - shift > 0.)  digi = fMessageConverter->MakeDigi(temp,channel,0,0,fTimeBuffer[address] + corr - shift,true);
-  else digi = fMessageConverter->MakeDigi(temp,channel,0,0,fTimeBuffer[address] + corr,true);
+  CbmTrdDigi* digi = nullptr;
+  if(fTimeBuffer[address] + corr - shift > 0.)  digi = fMessageConverter->MakeDigi(temp, channel, fModAddress, fTimeBuffer[address] + corr - shift,true);
+  else digi = fMessageConverter->MakeDigi(temp, fModAddress, channel, fTimeBuffer[address] + corr,true);
 
   if(fDigiPar->GetPadSizeY(sec) == 1.5)     digi->SetErrorClass(1);
   if(fDigiPar->GetPadSizeY(sec) == 4.)      digi->SetErrorClass(2);
@@ -342,7 +342,7 @@ void CbmTrdModuleSimR::ProcessPulseBuffer(Int_t address, Bool_t FNcall, Bool_t M
   }
   
   
-  digi->SetAddressModule(fModAddress);
+  // digi->SetAddressModule(fModAddress); Not required anymore, now handled in the digi c'tor
 
   if(trigger==1){
     digi->SetTriggerType(CbmTrdDigi::kSelf);
@@ -438,9 +438,8 @@ void CbmTrdModuleSimR::AddDigitoBuffer(Int_t address, Double_t charge, Double_t 
   channel += ncols * row + col;
 
   //  std::cout<<charge*1e6<<"   "<<fTimeBuffer[address]/CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC)<<std::endl;
-  CbmTrdDigi* digi= new CbmTrdDigi(channel, charge*1e6, ULong64_t(time/CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC)), 0, 0);
+  CbmTrdDigi* digi= new CbmTrdDigi(channel, fModAddress, charge*1e6, ULong64_t(time/CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC)), 0, 0);
 
-  digi->SetAddressModule(fModAddress);//module);
   if(trigger==1)  digi->SetTriggerType(CbmTrdDigi::kSelf);
   if(trigger==2)  digi->SetTriggerType(CbmTrdDigi::kNeighbor);
   //digi->SetMatch(digiMatch);

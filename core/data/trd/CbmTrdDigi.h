@@ -50,7 +50,7 @@ public:
    * \param[in] triggerType SPADIC trigger type see CbmTrdTriggerType.
    * \param[in] errClass SPADIC signal error parametrization based on message type.
    */
-  CbmTrdDigi(Int_t padChNr, Float_t charge, ULong64_t time, Int_t triggerType, Int_t errClass/*nrSamples*/);
+  CbmTrdDigi(Int_t padChNr, Int_t uniqueModuleId, Float_t charge, ULong64_t time, Int_t triggerType, Int_t errClass/*nrSamples*/);
   
   /**
    * \brief Constructor for backward compatibillity.

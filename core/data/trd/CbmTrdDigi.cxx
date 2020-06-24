@@ -55,7 +55,7 @@ CbmTrdDigi::CbmTrdDigi(Int_t padChNr, Float_t chargeT, Float_t chargeR, ULong64_
 }
 
 //__________________________________________________________________________________________
-CbmTrdDigi::CbmTrdDigi(Int_t padChNr, Float_t charge, ULong64_t time, Int_t triggerType, Int_t errClass)
+CbmTrdDigi::CbmTrdDigi(Int_t padChNr, Int_t uniqueModuleId, Float_t charge, ULong64_t time, Int_t triggerType, Int_t errClass)
   : fInfo(0)
   ,fCharge(0.)
   ,fTime(time)
@@ -71,7 +71,8 @@ CbmTrdDigi::CbmTrdDigi(Int_t padChNr, Float_t charge, ULong64_t time, Int_t trig
  * fCharge definition UInt_t(charge*fgPrecission)
 */
   SetAsic(kSPADIC);
-  SetChannel(padChNr); 
+  SetChannel(padChNr);
+  SetAddress(uniqueModuleId);
   SetCharge(charge);
   SetTriggerType(triggerType);
   SetErrorClass(errClass);

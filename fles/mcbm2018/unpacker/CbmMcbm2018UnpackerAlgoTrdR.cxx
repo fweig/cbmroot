@@ -842,14 +842,14 @@ std::shared_ptr<CbmTrdDigi> CbmMcbm2018UnpackerAlgoTrdR::MakeDigi(CbmTrdRawMessa
     }
     asicAddress = mapIt->second;
     Int_t uniqueModuleId = asicAddress / 1000;
-    Int_t layerId(CbmTrdAddress::GetLayerId(uniqueModuleId));
-    Int_t moduleId(CbmTrdAddress::GetModuleId(uniqueModuleId));
+    // Int_t layerId(CbmTrdAddress::GetLayerId(uniqueModuleId));
+    // Int_t moduleId(CbmTrdAddress::GetModuleId(uniqueModuleId));
     Int_t asicChannelId(0);
     asicChannelId = (raw.GetElinkId() % 2) == fIsFirstChannelsElinkEven ? raw.GetChannelId() : raw.GetChannelId() + NSPADICCH/2;
     digiAddress = (fAsicChannelMap.find(asicAddress))->second.at(asicChannelId);
 
-    std::shared_ptr<CbmTrdDigi> digi = std::make_shared<CbmTrdDigi> ( CbmTrdDigi(digiAddress, digiCharge, digiTime, digiTriggerType, digiErrClass) );
-    digi->SetAddress(CbmTrdAddress::GetAddress(layerId, moduleId, 0, 0, 0)); // TODO this could be skipped, it is shifting the address components back and forth, however the digi setter would need to be enhanced 
+    std::shared_ptr<CbmTrdDigi> digi = std::make_shared<CbmTrdDigi> ( CbmTrdDigi(digiAddress, uniqueModuleId, digiCharge, digiTime, digiTriggerType, digiErrClass) );
+    // digi->SetAddress(CbmTrdAddress::GetAddress(layerId, moduleId, 0, 0, 0));
 
     // Int_t channelAddress = digi->GetAddressChannel();
     // Int_t address = digi->GetAddress();

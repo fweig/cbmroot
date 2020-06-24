@@ -12,9 +12,8 @@ void compareTrdDigiDataMembers(CbmTrdDigi& test,
   retValInt = test.GetAddressChannel();
   EXPECT_EQ(padChNr, retValInt);
 
-  test.SetAddressModule(5);
   retValInt = test.GetAddressModule();
-  EXPECT_EQ(5, retValInt);
+  EXPECT_EQ((Int_t) systemid, retValInt);
 
   // GetAddress() returns the full Address part of the fInfo data member. However, since Module-5 translated via CbmTrdAddress corresponds to the value 0 it should return the setted channel number.
   retValInt = test.GetAddress();

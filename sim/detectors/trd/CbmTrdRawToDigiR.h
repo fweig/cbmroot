@@ -38,7 +38,7 @@ class CbmTrdRawToDigiR : public TObject
   virtual ~CbmTrdRawToDigiR() {;}    
 
   //  CbmTrdDigi* MakeDigi(CbmSpadicRawMessage22* raw);
-  CbmTrdDigi* MakeDigi(std::vector<Int_t> samples, Int_t channel,Int_t module,Int_t layer,ULong64_t time,Bool_t FN=false);
+  CbmTrdDigi* MakeDigi(std::vector<Int_t> samples, Int_t channel, Int_t uniqueModuleId, ULong64_t time,Bool_t FN=false);
 
   Float_t  GetTimeShift(std::vector<Int_t> samples);
   Double_t GetCharge(std::vector<Int_t> samples, Int_t shift=-1);  

@@ -339,7 +339,7 @@ void CbmTrdRawToDigiR::ReadMaps(std::string file){
   
 }
 
-CbmTrdDigi* CbmTrdRawToDigiR::MakeDigi(std::vector<Int_t> samples, Int_t channel,Int_t module,Int_t layer,ULong64_t time,Bool_t FN){
+CbmTrdDigi* CbmTrdRawToDigiR::MakeDigi(std::vector<Int_t> samples, Int_t channel, Int_t uniqueModuleId, ULong64_t time, Bool_t FN){
   Float_t digicharge=0;
   Int_t samplesum=0;
   for(size_t i=0;i<fSampleMask.size();i++){
@@ -369,9 +369,8 @@ CbmTrdDigi* CbmTrdRawToDigiR::MakeDigi(std::vector<Int_t> samples, Int_t channel
     
   }
   
-  CbmTrdDigi* digi= new CbmTrdDigi(channel, digicharge, time, 0, 0); 
-  digi->SetAddress(CbmTrdAddress::GetAddress(layer, module, 0, 0, 0));
-  
+  CbmTrdDigi* digi= new CbmTrdDigi(channel, uniqueModuleId, digicharge, time, 0, 0); 
+    
   return digi;
   
 }
