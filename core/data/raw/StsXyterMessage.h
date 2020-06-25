@@ -55,6 +55,14 @@ namespace stsxyter {
       msg_print_Human  = (0x1 << 3)
    };
    ENABLE_BITMASK_OPERATORS( stsxyter::MessagePrintMask ) // Preproc macro!
+      /// MS error flags
+   enum class MsErrorFlags : uint16_t
+   {
+      MsErrOutFifoAlmostFull =  (0x1 << 0),
+      MsErrOutFifoOverflow   =  (0x1 << 1),
+      MsErrTimeoutBinReadout =  (0x1 << 2),
+      MsErrBinOverflow       =  (0x1 << 3)
+   };
 
       /// Fields position (Start bit index)
    static const uint16_t kusPosNotHitFlag = 31;
@@ -79,8 +87,8 @@ namespace stsxyter {
    static const uint16_t kusPosStatCpFlag =  0;
          // Empty/End of MS
    static const uint16_t kusPosEmptyFlag  = 28;
-   static const uint16_t kusPosMsErrFlag  =  2;
-   static const uint16_t kusPosMsErrType  =  0;
+   static const uint16_t kusPosMsErrType  =  1;
+   static const uint16_t kusPosMsErrFlag  =  0;
 
       /// Fields length (bits)
    static const uint16_t kusLenNotHitFlag =  1;
@@ -107,8 +115,8 @@ namespace stsxyter {
    static const uint16_t kusLenStatCpFlag =  1;
          // Empty/End of MS
    static const uint16_t kusLenEmptyFlag  =  1;
+   static const uint16_t kusLenMsErrType  =  4;
    static const uint16_t kusLenMsErrFlag  =  1;
-   static const uint16_t kusLenMsErrType  =  2;
 
       /// Fields Info
    static const MessField kFieldLinkIndex(  kusPosLinkIndex,  kusLenLinkIndex );
