@@ -11,17 +11,32 @@
 class TimesliceMetaData : public TObject
 {
    public:
-      TimesliceMetaData( ULong64_t ulStart = 0, ULong64_t ulDur = 10240000 );
+      TimesliceMetaData( ULong64_t ulStart = 0, ULong64_t ulDur = 12800000, ULong64_t ulOverDur = 1280000, ULong64_t ulIndex = 0 );
+
+      /// Copy construction
+      TimesliceMetaData( const TimesliceMetaData &  ) = default;
+      /// Move constuctor
+      TimesliceMetaData( TimesliceMetaData && ) = default;
+      /// Copy operator
+      TimesliceMetaData& operator=(const TimesliceMetaData&) = default;
 
       void SetStartTime( ULong64_t ulStart ) { fulStartTimeNs = ulStart; }
       void SetDuration( ULong64_t ulDur ) { fulDurationNs = ulDur; }
+      void SetOverlapDuration( ULong64_t ulDur ) { fulOverlapNs = ulDur; }
+      void SetIndex( ULong64_t ulIdx ) { fulIndex = ulIdx; }
 
-      ULong64_t GetStartTime() { return fulStartTimeNs; }
-      ULong64_t GetDuration() { return fulDurationNs; }
+      ULong64_t GetStartTime() const { return fulStartTimeNs; }
+      ULong64_t GetDuration() const { return fulDurationNs; }
+      ULong64_t GetOverlapStartTime() const { return fulStartTimeNs + fulDurationNs; }
+      ULong64_t GetOverlapDuration() const { return fulOverlapNs; }
+      ULong64_t GetIndex() const { return fulIndex; }
 
    private:
       ULong64_t fulStartTimeNs  = 0;
-      ULong64_t fulDurationNs   = 10240000; // 100 MS * 102400 ns
+//      ULong64_t fulDurationNs   = 10240000; // 100 MS *  102400 ns (no TRD), default to update in source
+      ULong64_t fulDurationNs   = 12800000; //  10 MS * 1280000 ns (with TRD), default to update in source
+      ULong64_t fulOverlapNs    =  1280000; //   1 MS * 1280000 ns (with TRD), default to update in source
+      ULong64_t fulIndex        = 0;
 /*
       ULong64_t fulErrorsNbT0   = 0;
       ULong64_t fulErrorsNbSts  = 0;
@@ -32,7 +47,7 @@ class TimesliceMetaData : public TObject
       ULong64_t fulErrorsNbPsd  = 0;
 */
 
-   ClassDef(TimesliceMetaData,1);
+   ClassDef(TimesliceMetaData,2);
 };
 
 #endif // TIMESLICE_METADATA_H
