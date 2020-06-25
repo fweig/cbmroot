@@ -229,7 +229,7 @@ void CbmTrdModuleSimR::ProcessPulseBuffer(Int_t address, Bool_t FNcall, Bool_t M
   
   CbmTrdDigi* digi = nullptr;
   if(fTimeBuffer[address] + corr - shift > 0.)  digi = fMessageConverter->MakeDigi(temp, channel, fModAddress, fTimeBuffer[address] + corr - shift,true);
-  else digi = fMessageConverter->MakeDigi(temp, fModAddress, channel, fTimeBuffer[address] + corr,true);
+  else digi = fMessageConverter->MakeDigi(temp, channel, fModAddress, fTimeBuffer[address] + corr,true);
 
   if(fDigiPar->GetPadSizeY(sec) == 1.5)     digi->SetErrorClass(1);
   if(fDigiPar->GetPadSizeY(sec) == 4.)      digi->SetErrorClass(2);
