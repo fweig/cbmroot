@@ -11,6 +11,7 @@ add_subdirectory(detectors/rich)
 add_subdirectory(detectors/much)
 add_subdirectory(detectors/tof)
 add_subdirectory(detectors/sts)
+add_subdirectory(detectors/psd)
 
 Execute_Process(COMMAND ${ROOT_CONFIG_EXECUTABLE} --has-opengl
                 OUTPUT_VARIABLE EveIsBuild
