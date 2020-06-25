@@ -167,6 +167,41 @@ template <class Digi> void CbmDigiManager::SetBranch() {
       delete branch;
     }
 
+    // Special cases for mCBM TOF
+    if ( systemId == ECbmModuleId::kTof) {
+      if ( fBranches.find(systemId) == fBranches.end() ) {
+        branchName = "TofCalDigi";
+        branch = new CbmDigiBranch<Digi>(branchName.c_str());
+        if ( branch->ConnectToTree() ) {
+  	  LOG(info) << "DigiManager: Search branch " << branchName << " for class "
+	    	    << className << ": successful";
+	  fBranches[systemId] = branch;
+        } else {
+	  LOG(info) << "DigiManager: Search branch " << branchName << " for class "
+                    << className << ": failed";
+	  delete branch;
+        }
+      } 
+      if ( fBranches.find(systemId) == fBranches.end() ) {
+        branchName = "CbmTofDigi";
+        branch = new CbmDigiBranch<Digi>(branchName.c_str());
+        if ( branch->ConnectToTree() ) {
+	  LOG(info) << "DigiManager: Search branch " << branchName << " for class "
+	  	    << className << ": successful";
+	  fBranches[systemId] = branch;
+        } else {
+	  LOG(info) << "DigiManager: Search branch " << branchName << " for class "
+                    << className << ": failed";
+	  delete branch;
+        }
+      }
+      if ( fBranches.find(systemId) == fBranches.end() ) {
+    	branchName = "CbmTofCalDigi";
+        branch = new CbmDigiBranch<Digi>(branchName.c_str());
+        if ( branch->ConnectToTree() ) fBranches[systemId] = branch;
+        else delete branch;
+      }
+    }       
 }
 // -------------------------------------------------------------------------
 
