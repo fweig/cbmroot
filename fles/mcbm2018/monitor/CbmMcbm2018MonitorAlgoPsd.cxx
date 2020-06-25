@@ -52,6 +52,7 @@ CbmMcbm2018MonitorAlgoPsd::CbmMcbm2018MonitorAlgoPsd() :
    fdTsStartTime( -1.0 ),
    fdTsStopTimeCore( -1.0 ),
    fdMsTime( -1.0 ),
+   fdPrevMsTime( -1.0 ),
    fuMsIndex( 0 ),
    fuCurrentEquipmentId( 0 ),
    fuCurrDpbId( 0 ),
@@ -84,6 +85,7 @@ CbmMcbm2018MonitorAlgoPsd::CbmMcbm2018MonitorAlgoPsd() :
    fvhHitChargeByWfmChan( kuNbChanPsd, nullptr ),
    fvhHitChargeEvoChan( kuNbChanPsd, nullptr ),
    fvhHitWfmChan( kuNbChanPsd, nullptr ),
+   fvhHitFitWfmChan( kuNbChanPsd, nullptr ),
    kvuWfmRanges( kuNbWfmRanges, 0 ),
    kvuWfmInRangeToChangeChan( kuNbChanPsd*kuNbWfmRanges, 0 ),
    fv3hHitWfmFlattenedChan( kuNbChanPsd*kuNbWfmRanges*kuNbWfmExamples, nullptr ),
@@ -104,10 +106,14 @@ CbmMcbm2018MonitorAlgoPsd::CbmMcbm2018MonitorAlgoPsd() :
    fhLostMsgsCntEvo( nullptr ),
    fhReadEvtsCntEvo( nullptr ),
    fhAdcTimeEvo( nullptr ),
+   fhMsLengthEvo( nullptr ),
    fhMsgsCntPerMsEvo( nullptr ),
    fhReadMsgsCntPerMsEvo( nullptr ),
    fhLostMsgsCntPerMsEvo( nullptr ),
    fhReadEvtsCntPerMsEvo( nullptr ),
+   fvhFitHarmonic1Chan( kuNbChanPsd, nullptr ),
+   fvhFitHarmonic2Chan( kuNbChanPsd, nullptr ),
+   fvhFitQaChan( kuNbChanPsd, nullptr ),
    fcSummary( nullptr ),
    fcHitMaps( nullptr ),
    fcChargesFPGA( nullptr ),
@@ -440,6 +446,8 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs( const fles::Timeslice& ts, size_t u
                UInt_t uHitChannel = PsdReader.VectHitHdr.at(hit_iter).uHitChannel;
                UInt_t uSignalCharge = PsdReader.VectHitHdr.at(hit_iter).uSignalCharge;
                UInt_t uZeroLevel = PsdReader.VectHitHdr.at(hit_iter).uZeroLevel;
+               std::vector<uint16_t> uWfm = PsdReader.VectHitData.at(hit_iter).uWfm;
+
                if(uHitChannel >= kuNbChanPsd) //uHitChannel numerated from 0
                {
                   LOG(error) << "hit channel number out of range! channel index: " << uHitChannel << " max: " << GetNbChanPsd();
@@ -463,11 +471,12 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs( const fles::Timeslice& ts, size_t u
                uint16_t uHitAmlpitude = 0;
                uint16_t uHitChargeWfm = 0;
                fvhHitWfmChan[ uHitChannel ]->Reset();
-               for(UInt_t wfm_iter = 0; wfm_iter < PsdReader.VectHitData.at(hit_iter).uWfm.size(); wfm_iter++)
+               fvhHitFitWfmChan[ uHitChannel ]->Reset();
+               for(UInt_t wfm_iter = 0; wfm_iter < uWfm.size(); wfm_iter++)
                {
-                  if(PsdReader.VectHitData.at(hit_iter).uWfm.at(wfm_iter) > uHitAmlpitude) uHitAmlpitude = PsdReader.VectHitData.at(hit_iter).uWfm.at(wfm_iter);
-                  uHitChargeWfm += PsdReader.VectHitData.at(hit_iter).uWfm.at(wfm_iter) - uZeroLevel;
-                  fvhHitWfmChan[ uHitChannel ]->Fill(wfm_iter, PsdReader.VectHitData.at(hit_iter).uWfm.at(wfm_iter));
+                  if(uWfm.at(wfm_iter) > uHitAmlpitude) uHitAmlpitude = uWfm.at(wfm_iter);
+                  uHitChargeWfm += uWfm.at(wfm_iter) - uZeroLevel;
+                  fvhHitWfmChan[ uHitChannel ]->Fill(wfm_iter, uWfm.at(wfm_iter));
                }
                fvhHitWfmChan[ uHitChannel ]->SetTitle(Form( "Waveform channel %03u charge %0u zero level %0u; Time [adc counts]; Amplitude [adc counts]", uHitChannel, uSignalCharge, uZeroLevel ));
                uHitAmlpitude -= uZeroLevel;
@@ -484,8 +493,8 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs( const fles::Timeslice& ts, size_t u
 		     UInt_t uFlatIndexHisto = uWfmExampleIter * kuNbWfmRanges * kuNbChanPsd + i * kuNbChanPsd + uHitChannel;
                      fv3hHitWfmFlattenedChan[ uFlatIndexHisto ]->Reset();
 
-                     for(UInt_t wfm_iter = 0; wfm_iter < PsdReader.VectHitData.at(hit_iter).uWfm.size(); wfm_iter++)
-                        fv3hHitWfmFlattenedChan[ uFlatIndexHisto ]->Fill(wfm_iter, PsdReader.VectHitData.at(hit_iter).uWfm.at(wfm_iter));
+                     for(UInt_t wfm_iter = 0; wfm_iter < uWfm.size(); wfm_iter++)
+                        fv3hHitWfmFlattenedChan[ uFlatIndexHisto ]->Fill(wfm_iter, uWfm.at(wfm_iter));
                      fv3hHitWfmFlattenedChan[ uFlatIndexHisto ]->SetTitle(Form( "Waveform channel %03u charge %0u zero level %0u; Time [adc counts]; Amplitude [adc counts]", uHitChannel, uSignalCharge, uZeroLevel ));
 
                      kvuWfmInRangeToChangeChan.at(uFlatIndexOfChange) ++;
@@ -494,6 +503,36 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs( const fles::Timeslice& ts, size_t u
 		  }// if( uSignalCharge > kvuWfmRanges.at(i) && uSignalCharge < kvuWfmRanges.at(i+1) )
                }// for (uint8_t i=0; i<kuNbWfmRanges; ++i)
 
+
+               int gate_beg = 0;
+               int gate_end = 7;
+               PsdSignalFitting::PronyFitter Pfitter(2,2,gate_beg,gate_end);
+
+               Pfitter.SetDebugMode(0);
+               Pfitter.SetWaveform(uWfm, uZeroLevel);
+               int SignalBeg = 2;
+               Int_t best_signal_begin = Pfitter.ChooseBestSignalBeginHarmonics(SignalBeg-1, SignalBeg+1);
+
+               Pfitter.SetSignalBegin(best_signal_begin);
+               Pfitter.CalculateFitHarmonics();
+               Pfitter.CalculateFitAmplitudes();
+
+               Float_t fit_integral = Pfitter.GetIntegral(gate_beg, gate_end);
+               Float_t fit_R2 = Pfitter.GetRSquare(gate_beg, gate_end);
+
+               std::complex<float>* harmonics = Pfitter.GetHarmonics();
+               std::vector<uint16_t> uFitWfm = Pfitter.GetFitWfm();
+               for(UInt_t wfm_iter = 0; wfm_iter < uFitWfm.size(); wfm_iter++)
+               {
+                  fvhHitFitWfmChan[ uHitChannel ]->Fill(wfm_iter, uFitWfm.at(wfm_iter));
+                  fvhHitWfmChan[ uHitChannel ]->SetTitle(Form( "Waveform channel %03u charge %0u zero level %0u R2 %.5f; Time [adc counts]; Amplitude [adc counts]", uHitChannel, uSignalCharge, uZeroLevel, fit_R2 ));
+               }
+
+               fvhFitQaChan[ uHitChannel ]->Fill(fit_integral, fit_R2);
+
+               if(fit_R2 > 0.02) continue;
+               fvhFitHarmonic1Chan[ uHitChannel ]->Fill(std::real(harmonics[1]), std::imag(harmonics[1]));
+               fvhFitHarmonic2Chan[ uHitChannel ]->Fill(std::real(harmonics[2]), std::imag(harmonics[2]));
             } // for(int hit_iter = 0; hit_iter < PsdReader.EvHdrAb.uHitsNumber; hit_iter++)
 
          }
@@ -540,6 +579,12 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs( const fles::Timeslice& ts, size_t u
          }
       }
 
+      if( fulCurrentMsIdx != PsdReader.EvHdrAb.ulMicroSlice )
+         LOG(error) << "Wrong MS index!"
+                    << " in microslice " << fulCurrentMsIdx
+                    << " by PsdReader "  << PsdReader.EvHdrAb.ulMicroSlice
+                    << "\n";
+
       fhMsgsCntEvo->AddBinContent( fdMsTime - fdStartTime, uNbMessages );
       fhReadMsgsCntEvo->AddBinContent( fdMsTime - fdStartTime, PsdReader.GetTotalGbtWordsRead() );
       fhLostMsgsCntEvo->AddBinContent( fdMsTime - fdStartTime, uNbMessages - PsdReader.GetTotalGbtWordsRead() );
@@ -551,6 +596,13 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs( const fles::Timeslice& ts, size_t u
 
    }//if(uSize != 0)
 
+   if(fdPrevMsTime < 0.) fdPrevMsTime = fdMsTime;
+   else
+   {
+      fhMsLengthEvo->Fill( fdMsTime - fdStartTime, 1e9* (fdMsTime - fdPrevMsTime));
+      fdPrevMsTime = fdMsTime;
+   }
+
    /// Fill histograms
    FillHistograms();
 
@@ -560,7 +612,7 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs( const fles::Timeslice& ts, size_t u
 Bool_t CbmMcbm2018MonitorAlgoPsd::CreateHistograms()
 {
    std::string sFolder = "MoniPsd";
-
+   std::string sFitFolder = "PronyFit";
    LOG(info) << "create Histos for PSD monitoring ";
 
    /// Logarithmic bining
@@ -601,6 +653,9 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::CreateHistograms()
    fhAdcTimeEvo     = new TH2I( "hAdcTimeEvo", "Evolution of ADC time vs time in run; Time in run [s]; Adc time *12.5[ns]",
                         fuHistoryHistoSize, 0, fuHistoryHistoSize, 500, 0, 9000 );
 
+   fhMsLengthEvo    = new TH2I( "hMsLengthEvo", "Evolution of MS length vs time in run; Time in run [s]; MS length [ns]",
+                        fuHistoryHistoSize, 0, fuHistoryHistoSize, (Int_t)1e2, 0, 1e8);
+
    fhMsgsCntPerMsEvo     = new TH2I( "hMsgsCntPerMsEvo",
          "Evolution of TotalMsgs counts, per MS vs time in run; Time in run [s]; TotalMsgs Count/MS []; MS",
          fuHistoryHistoSize, 0, fuHistoryHistoSize,
@@ -633,6 +688,7 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::CreateHistograms()
    AddHistoToVector( fhReadEvtsCntEvo, sFolder );
 
    AddHistoToVector( fhAdcTimeEvo, sFolder );
+   AddHistoToVector( fhMsLengthEvo, sFolder );
 
    AddHistoToVector( fhMsgsCntPerMsEvo, sFolder );
    AddHistoToVector( fhReadMsgsCntPerMsEvo, sFolder );
@@ -682,6 +738,15 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::CreateHistograms()
             Form( "hHitWfmChan%03u", uChan ),
             Form( "HitWfmChan%03u", uChan ),
             8, 0, 8);
+      fvhHitWfmChan[ uChan ]->SetMarkerStyle(31);
+      fvhHitWfmChan[ uChan ]->SetMarkerSize(0.5);
+
+      fvhHitFitWfmChan[ uChan ] = new TH1I(
+            Form( "hHitFitWfmChan%03u", uChan ),
+            Form( "HitFitWfmChan%03u", uChan ),
+            8, 0, 8);
+      fvhHitFitWfmChan[ uChan ]->SetLineColor(kRed);
+      fvhHitFitWfmChan[ uChan ]->SetLineWidth(2);
 
       for( UInt_t uWfmRangeIter = 0; uWfmRangeIter < kuNbWfmRanges; uWfmRangeIter ++)
       {
@@ -696,6 +761,23 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::CreateHistograms()
          }// for( UInt_t uWfmRangeIter = 0; uWfmRangeIter < kuNbWfmRanges; uWfmRangeIter ++)
       } // for( UInt_t uWfmExampleIter = 0; uWfmExampleIter < kuNbWfmExamples; uWfmExampleIter ++)
 
+      fvhFitHarmonic1Chan[ uChan ] = new TH2I(
+            Form( "hFitHarmonic1Chan%03u", uChan ),
+            Form( "Waveform fit harmonic 1 for channel %03u; Real part []; Imag part []", uChan ),
+            400, -2, 2, 200, -1, 1 );
+      fvhFitHarmonic1Chan[ uChan ]->SetMarkerColor(kRed);
+
+      fvhFitHarmonic2Chan[ uChan ] = new TH2I(
+            Form( "hFitHarmonic2Chan%03u", uChan ),
+            Form( "Waveform fit harmonic 2 for channel %03u; Real part []; Imag part []", uChan ),
+            400, -2, 2, 200, -1, 1 );
+      fvhFitHarmonic2Chan[ uChan ]->SetMarkerColor(kBlue);
+
+      fvhFitQaChan[ uChan ] = new TH2I(
+            Form( "hFitQaChan%03u", uChan ),
+            Form( "Waveform fit QA for channel %03u;  Integral [adc counts]; R2 []", uChan ),
+            fviHistoChargeArgs.at(0), fviHistoChargeArgs.at(1), fviHistoChargeArgs.at(2), 500, 0, 1 );
+
 
       /// Add pointers to the vector with all histo for access by steering class
       AddHistoToVector( fvhHitCntEvoChan[ uChan ], sFolder );
@@ -706,10 +788,13 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::CreateHistograms()
       AddHistoToVector( fvhHitChargeByWfmChan[ uChan ], sFolder );
       AddHistoToVector( fvhHitChargeEvoChan[ uChan ], sFolder );
 
+      AddHistoToVector( fvhFitHarmonic1Chan[ uChan ], sFitFolder );
+      AddHistoToVector( fvhFitHarmonic2Chan[ uChan ], sFitFolder );
+      AddHistoToVector( fvhFitQaChan[ uChan ], sFitFolder );
+
    } // for( UInt_t uChan = 0; uChan < kuNbChanPsd; ++uChan )
 
-   /// Cleanup array of log bins
-//   delete dBinsLog;
+
 
    /*******************************************************************/
 
@@ -765,6 +850,13 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::CreateHistograms()
    gPad->SetGridy();
    gPad->SetLogz();
    fhHitChargeMap->Draw("colz");
+
+   fcSummary->cd( 4 );
+   gPad->SetGridx();
+   gPad->SetGridy();
+   gPad->SetLogy();
+   gPad->SetLogz();
+   fhMsLengthEvo->Draw("colz");
 
    AddCanvasToVector( fcSummary, "canvases" );
    /*******************************************************************/
@@ -871,7 +963,8 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::CreateHistograms()
    for( UInt_t uChan = 0; uChan < kuNbChanPsd; uChan ++)
    {
       fcWfmsAllChannels->cd( 1 + uChan );
-      fvhHitWfmChan[ uChan ]->Draw("HIST LP");
+      fvhHitWfmChan[ uChan ]->Draw("HIST P");
+      fvhHitFitWfmChan[ uChan ]->Draw("L SAME");
    } // for( UInt_t uChan = 0; uChan < kuNbChanPsd; uChan ++)
 
    AddCanvasToVector( fcWfmsAllChannels, "waveforms" );
@@ -898,6 +991,26 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::CreateHistograms()
 
       AddCanvasToVector( fvcWfmsChan[ uChan ], "waveforms" );
    }// for( UInt_t uChan = 0; uChan < kuNbChanPsd; uChan ++)
+
+   /*******************************************************************/
+
+   fcPronyFit = new TCanvas( "cPronyFit", "Prony wfm fitting", w, h);
+   fcPronyFit->Divide( 2 );
+
+   fcPronyFit->cd( 1 );
+   for( UInt_t uChan = 0; uChan < kuNbChanPsd; uChan ++)
+   {
+      fvhFitHarmonic1Chan[ uChan ]->Draw( "same" );
+      fvhFitHarmonic2Chan[ uChan ]->Draw( "same" );
+   }
+
+   fcPronyFit->cd( 2 );
+   for( UInt_t uChan = 0; uChan < kuNbChanPsd; uChan ++)
+   {
+      fvhFitQaChan[ uChan ]->Draw( "same" );
+   }
+
+   AddCanvasToVector( fcPronyFit, "PronyFit" );
 
    /*******************************************************************/
 
@@ -938,6 +1051,11 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ResetHistograms()
       fvhHitChargeByWfmChan[ uChan ]->Reset();
       fvhHitChargeEvoChan[ uChan ]->Reset();
       fvhHitWfmChan[ uChan ]->Reset();
+      fvhHitFitWfmChan[ uChan ]->Reset();
+
+      fvhFitHarmonic1Chan[ uChan ]->Reset();
+      fvhFitHarmonic2Chan[ uChan ]->Reset();
+      fvhFitQaChan[ uChan ]->Reset();
    } // for( UInt_t uChan = 0; uChan < kuNbChanPsd; ++uChan )
 
    for( UInt_t uFlatIndex = 0; uFlatIndex < kuNbChanPsd*kuNbWfmRanges*kuNbWfmExamples; ++uFlatIndex )
@@ -961,6 +1079,7 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ResetHistograms()
    fhReadEvtsCntEvo->Reset();
 
    fhAdcTimeEvo->Reset();
+   fhMsLengthEvo->Reset();
 
    fhMsgsCntPerMsEvo->Reset();
    fhReadMsgsCntPerMsEvo->Reset();

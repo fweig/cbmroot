@@ -27,6 +27,7 @@ Set(INCLUDE_DIRECTORIES
   ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/tasks
 
   ${CBMDETECTORBASE_DIR}/trd # required for parameter handling of the trd
+  ${CBMDETECTORBASE_DIR}/psd
 )
 
 Set(SYSTEM_INCLUDE_DIRECTORIES
@@ -131,7 +132,7 @@ EndIf()
 Set(LINKDEF CbmFlibMcbm2018LinkDef.h )
 Set(LIBRARY_NAME CbmFlibMcbm2018)
 Set(DEPENDENCIES
-    CbmFlibFlesTools CbmData CbmBase fles_ipc Eve Base CbmTrdBase
+    CbmFlibFlesTools CbmData CbmBase fles_ipc Eve Base CbmTrdBase CbmPsdBase
 )
 
 GENERATE_LIBRARY()

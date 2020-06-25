@@ -27,6 +27,7 @@ class CbmMcbm2018TofPar;
 class TH1;
 class TH2;
 class TProfile;
+class TProfile2D;
 
 class CbmMcbm2018MonitorAlgoTof : public CbmStar2019Algo<CbmTofDigi>
 {
@@ -62,12 +63,15 @@ class CbmMcbm2018MonitorAlgoTof : public CbmStar2019Algo<CbmTofDigi>
 
       inline void SetGdpbIndex( Int_t iGdpb = -1 ) { fiGdpbIndex = iGdpb; }
 
+      inline void UseAbsoluteTime( Bool_t bFlagIn = kTRUE) { fbUseAbsoluteTime = bFlagIn; }
+
    private:
       /// Control flags
       Bool_t fbDebugMonitorMode; //! Switch ON the filling of a additional set of histograms
       Bool_t fbIgnoreCriticalErrors; //! If ON not printout at all for critical errors
       std::vector< Bool_t >    fvbMaskedComponents;
       Int_t  fiGdpbIndex;
+      Bool_t fbUseAbsoluteTime = kFALSE;  //! Switch ON the usage of abolute time scale for the evo histo (no start time)
 
       /// Settings from parameter file
       CbmMcbm2018TofPar* fUnpackPar;      //!
@@ -161,6 +165,7 @@ class CbmMcbm2018MonitorAlgoTof : public CbmStar2019Algo<CbmTofDigi>
       TH2* fhGdpbEpochMissEvo;                                          //!
       TH1* fhGdpbEndMsBufferNotEmpty;                                   //!
       TH2* fhGdpbEndMsDataLost;                                         //!
+      TH2* fhGdpbHitRate;                                              //!
             /// Per GET4 in gDPB
       std::vector< TH2* > fvhGdpbGet4MessType;                          //!
       std::vector< TH2* > fvhGdpbGet4ChanScm;                           //!
@@ -184,6 +189,7 @@ class CbmMcbm2018MonitorAlgoTof : public CbmStar2019Algo<CbmTofDigi>
       std::vector< TH2      * > fvhRemapTot_gDPB;                       //!
       std::vector< TH1      * > fvhRemapChCount_gDPB;                   //!
       std::vector< TH2      * > fvhRemapChRate_gDPB;                    //!
+      std::vector< TProfile2D * > fvhRemapChErrFract_gDPB;                //!
          /// Pattern Messages
             /// Pattern messages per gDPB
       std::vector< UInt_t > fuNbMissmatchPattern;

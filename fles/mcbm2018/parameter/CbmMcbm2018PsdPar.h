@@ -63,9 +63,6 @@ class CbmMcbm2018PsdPar : public FairParGenericSet
    inline Int_t    GetNbMsOverlap() { return fiNbMsOverlap;}
    inline Double_t GetSizeMsInNs() { return fdSizeMsInNs;}
 
-   Double_t GetStarTriggDeadtime( UInt_t uGdpb );
-   Double_t GetStarTriggDelay( UInt_t uGdpb );
-   Double_t GetStarTriggWinSize( UInt_t uGdpb );
    Double_t GetTsDeadtimePeriod();// { return fdTsDeadtimePeriod;}
 
 
@@ -101,9 +98,6 @@ class CbmMcbm2018PsdPar : public FairParGenericSet
    Int_t    fiNbMsOverlap; // Number of overlap MS per TS
    Double_t fdSizeMsInNs; // Size of the MS in ns, needed for MS border detection
 
-   TArrayD  fdStarTriggerDeadtime; // STAR: Array to hold for each gDPB the deadtime between triggers in ns
-   TArrayD  fdStarTriggerDelay; // STAR: Array to hold for each gDPB the Delay in ns to subtract when looking for beginning of coincidence of data with trigger window
-   TArrayD  fdStarTriggerWinSize; // STAR: Array to hold for each gDPB the Size of the trigger window in ns
    Double_t fdTsDeadtimePeriod; // Period (ns) in the first MS of each TS where events with missing triggers should be built using the overlap MS of previous TS (overlap events)
 
    ClassDef(CbmMcbm2018PsdPar,1);

@@ -165,10 +165,12 @@ class CbmMcbm2018MonitorAlgoT0 : public CbmStar2019Algo<CbmTofDigi>
       static const UInt_t kuNbSpillPlots = 5;
 //      UInt_t  kuDiamChanMap[ kuNbChanDiamond ] = { 2, 3, 4, 5, 0, 1, 6, 7 }; //! Map from electronics channel to Diamond strip
       UInt_t  fuDiamChanMap[ kuNbChanDiamond ] = { 0, 1, 2, 3, 4, 5, 6, 7 }; //! Map from electronics channel to Diamond strip
+      TH1      * fhDpbMap = nullptr;
       TH1      * fhChannelMap;
       TH2      * fhHitMapEvo;
       TH2      * fhHitTotEvo;
       TH2      * fhChanHitMapEvo;
+      std::vector< TH1      * > fvhDpbMapSpill = {};
       std::vector< TH1      * > fvhChannelMapSpill;
       TH1      * fhHitsPerSpill;
          /// Global Rate
@@ -196,6 +198,7 @@ class CbmMcbm2018MonitorAlgoT0 : public CbmStar2019Algo<CbmTofDigi>
       TCanvas * fcGenCntsPerMs;
       TCanvas * fcSpillCounts;
       TCanvas * fcSpillCountsHori;
+      TCanvas * fcSpillDpbCountsHori = nullptr;
 
 /*
       void ProcessEpochCycle( uint64_t ulCycleData );

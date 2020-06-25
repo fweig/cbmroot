@@ -264,6 +264,9 @@ private:
    std::vector< TProfile *>   fhStsFebSmxErrRatioCopySameAdcEvo;
    std::vector< TProfile2D *> fhStsFebSmxErrRatioCopySameAdcEvoAsic;
 
+   /// Binning FW error flag
+   TH2* fhMsErrorsEvo = nullptr;
+
       /// Canvases
    std::vector< TCanvas * > fvcStsSumm;
    std::vector< TCanvas * > fvcStsSmxErr;

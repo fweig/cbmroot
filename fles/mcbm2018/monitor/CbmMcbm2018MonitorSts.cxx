@@ -353,6 +353,10 @@ Bool_t CbmMcbm2018MonitorSts::InitStsParameters()
       } // for( UInt_t uCrobIdx = 0; uCrobIdx < fUnpackParSts->GetNbCrobsPerDpb(); ++uCrobIdx )
    } // for( UInt_t uDpb = 0; uDpb < fuNrOfDpbs; ++uDpb )
 
+   if( fbBinningFw )
+      LOG(info) << "Unpacking data in bin sorter FW mode";
+      else LOG(info) << "Unpacking data in full time sorter FW mode (legacy)";
+
    // Internal status initialization
    fvulCurrentTsMsb.resize( fuNrOfDpbs );
    fvuCurrentTsMsbCycle.resize( fuNrOfDpbs );
@@ -971,6 +975,10 @@ void CbmMcbm2018MonitorSts::CreateHistograms()
       } // for( UInt_t uFebIdx = 0; uFebIdx < fuNbFebs; ++uFebIdx )
    } // if( kTRUE == fbEnableCheckBugSmx20 )
 ///------------------------------------------------------------------///
+
+   fhMsErrorsEvo = new TH2I( "fhMsErrorsEvo", "; MS index [s]; Error type []; Counts []",
+       600,  0.0,  600.0,
+         4, -0.5,    3.5 );
 ///++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++///
 
    // Miscroslice properties histos
@@ -1039,6 +1047,8 @@ void CbmMcbm2018MonitorSts::CreateHistograms()
             } // if( kTRUE == fbEnableCheckBugSmx20 )
          } // if( kTRUE == fUnpackParSts->IsFebActive( uFebIdx ) )
       } // for( UInt_t uFebIdx = 0; uFebIdx < fuNbFebs; ++uFebIdx )
+
+      server->Register("/StsRaw", fhMsErrorsEvo );
 /*
       for( UInt_t uModIdx = 0; uModIdx < fuNbModules; ++ uModIdx )
       {
@@ -1893,8 +1903,23 @@ Bool_t CbmMcbm2018MonitorSts::ProcessStsMs( const fles::Timeslice& ts, size_t uM
    if( kFALSE == fvuInitialHeaderDone[ fuCurrDpbIdx ] )
    {
       fvuInitialTsMsbCycleHeader[ fuCurrDpbIdx ] = uTsMsbCycleHeader;
+      fvulCurrentTsMsb[fuCurrDpbIdx] = 0;
       fvuInitialHeaderDone[ fuCurrDpbIdx ] = kTRUE;
    } // if( kFALSE == fvuInitialHeaderDone[ fuCurrDpbIdx ] )
+   else if( 0 == uMsIdx )
+   {
+      if( uTsMsbCycleHeader != fvuCurrentTsMsbCycle[ fuCurrDpbIdx ] )
+         LOG(info) << " TS " << std::setw( 12 ) << fulCurrentTsIdx
+                   << " MS " << std::setw( 12 ) << fulCurrentMsIdx
+                   << " MS Idx " << std::setw( 4 ) << uMsIdx
+                   << " Msg Idx " << std::setw( 5 ) << 0
+                   << " DPB " << std::setw( 2 ) << fuCurrDpbIdx
+                   << " Old TsMsb " << std::setw( 5 ) << fvulCurrentTsMsb[fuCurrDpbIdx]
+                   << " Old MsbCy " << std::setw( 5 ) << fvuCurrentTsMsbCycle[fuCurrDpbIdx]
+                   << " New MsbCy " << uTsMsbCycleHeader;
+      fvuCurrentTsMsbCycle[ fuCurrDpbIdx ] = uTsMsbCycleHeader;
+      fvulCurrentTsMsb[fuCurrDpbIdx] = 0;
+   } // if( 0 == uMsIdx )
    else if( uTsMsbCycleHeader != fvuCurrentTsMsbCycle[ fuCurrDpbIdx ] &&
             4194303 != fvulCurrentTsMsb[fuCurrDpbIdx] )
    {
@@ -1906,6 +1931,30 @@ Bool_t CbmMcbm2018MonitorSts::ProcessStsMs( const fles::Timeslice& ts, size_t uM
                     << " VS " << uTsMsbCycleHeader;
       fvuCurrentTsMsbCycle[ fuCurrDpbIdx ] = uTsMsbCycleHeader;
    }
+   else if( uTsMsbCycleHeader != fvuCurrentTsMsbCycle[ fuCurrDpbIdx ] )
+   {
+      if( 4194303 == fvulCurrentTsMsb[fuCurrDpbIdx] )
+      {
+         LOG(info) << " TS " << std::setw( 12 ) << fulCurrentTsIdx
+                   << " MS " << std::setw( 12 ) << fulCurrentMsIdx
+                   << " MS Idx " << std::setw( 4 ) << uMsIdx
+                   << " Msg Idx " << std::setw( 5 ) << 0
+                   << " DPB " << std::setw( 2 ) << fuCurrDpbIdx
+                   << " Old TsMsb " << std::setw( 5 ) << fvulCurrentTsMsb[fuCurrDpbIdx]
+                   << " Old MsbCy " << std::setw( 5 ) << fvuCurrentTsMsbCycle[fuCurrDpbIdx]
+                   << " New MsbCy " << uTsMsbCycleHeader;
+      }
+         else
+         {
+            LOG(warning) << "TS MSB cycle from MS header does not match current cycle from data "
+                          << "for TS " << std::setw( 12 ) << fulCurrentTsIdx
+                          << " MS " << std::setw( 12 ) << fulCurrentMsIdx
+                          << " MsInTs " << std::setw( 3 ) << uMsIdx
+                          << " ====> " << fvuCurrentTsMsbCycle[ fuCurrDpbIdx ]
+                          << " (cnt) VS " << uTsMsbCycleHeader << " (header)";
+         } // else of if( 4194303 == fvulCurrentTsMsb[fuCurrDpbIdx] )
+      fvuCurrentTsMsbCycle[ fuCurrDpbIdx ] = uTsMsbCycleHeader;
+   } // else if( uTsMsbCycleHeader != fvuCurrentTsMsbCycle[ fuCurrDpbIdx ] )
 
    // If not integer number of message in input buffer, print warning/error
    if( 0 != ( uSize % kuBytesPerMessage ) )
@@ -1947,6 +1996,10 @@ Bool_t CbmMcbm2018MonitorSts::ProcessStsMs( const fles::Timeslice& ts, size_t uM
          {
             // Extract the eLink and Asic indices => Should GO IN the fill method now that obly hits are link/asic specific!
             UShort_t usElinkIdx = mess.GetLinkIndex();
+            /// => Quick and dirty hack for binning FW!!!
+            if( kTRUE == fbBinningFw )
+               usElinkIdx = mess.GetLinkIndexHitBinning();
+
             fhStsMessTypePerElink->Fill( fuCurrDpbIdx * fUnpackParSts->GetNbElinkPerDpb() + usElinkIdx,
                                          static_cast< uint16_t > (typeMess) );
             fhStsHitsElinkPerDpb->Fill( fuCurrDpbIdx, usElinkIdx );
@@ -2031,6 +2084,20 @@ Bool_t CbmMcbm2018MonitorSts::ProcessStsMs( const fles::Timeslice& ts, size_t uM
 //                   FillTsMsbInfo( mess );
             break;
          } // case stsxyter::MessType::Empty :
+         case stsxyter::MessType::EndOfMs :
+         {
+//            ++vNbMessType[5];
+//            sMessPatt += " En";
+//            bError = pMess[uIdx].IsMsErrorFlagOn();
+
+//            fhStsMessTypePerElink->Fill( fuCurrDpbIdx * fUnpackPar->GetNbElinkPerDpb(), static_cast< uint16_t > (typeMess) );
+//                   FillTsMsbInfo( pMess[uIdx] );
+            if( mess.IsMsErrorFlagOn() )
+            {
+               fhMsErrorsEvo->Fill( 1e-9 * fulCurrentMsIdx, mess.GetMsErrorType() );
+            } // if( pMess[uIdx].IsMsErrorFlagOn() )
+            break;
+         } // case stsxyter::MessType::EndOfMs :
          case stsxyter::MessType::Dummy :
          {
             fhStsMessTypePerElink->Fill( fuCurrDpbIdx * fUnpackParSts->GetNbElinkPerDpb(), static_cast< uint16_t > (typeMess) );
@@ -2269,7 +2336,11 @@ void CbmMcbm2018MonitorSts::FillTsMsbInfo( stsxyter::Message mess, UInt_t uMessI
    } // if( uVal < fvulCurrentTsMsb[fuCurrDpbIdx] )
    if( uVal != fvulCurrentTsMsb[fuCurrDpbIdx] + 1 &&
        0 != uVal && 4194303 != fvulCurrentTsMsb[fuCurrDpbIdx] &&
-       1 != uMessIdx )
+       1 != uMessIdx && /// First TS_MSB in MS may jump if TS dropped by DAQ
+       !( 0 == uVal && 0 == fvulCurrentTsMsb[fuCurrDpbIdx] && 2 == uMessIdx ) && /// case with cycle et edge of 2 MS
+       !( uVal == fvulCurrentTsMsb[fuCurrDpbIdx] && 2 == uMessIdx ) && /// Msg 1 and 2 will be same TS_MSB if data in 1st bin
+       uVal < fvulCurrentTsMsb[fuCurrDpbIdx]  /// New FW introduced TS_MSB suppression + large TS_MSB => warning only if value not increasing
+     )
    {
       LOG(info) << "TS MSb Jump in "
                 << " TS " << std::setw( 12 ) << fulCurrentTsIdx

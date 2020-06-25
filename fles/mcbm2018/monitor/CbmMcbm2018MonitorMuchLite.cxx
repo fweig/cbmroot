@@ -70,7 +70,7 @@ CbmMcbm2018MonitorMuchLite::CbmMcbm2018MonitorMuchLite() :
    fUnpackParMuch->GetNbChanPerAsic()(0),
    fuNbFebs(0),
    */
-   fsHistoFileFullname( "data/SetupHistos.root" ),
+   fsHistoFileFullname( "data/HistosMonitorMuch.root" ),
    fbPrintMessages( kFALSE ),
    fPrintMessCtrl( stsxyter::MessagePrintMask::msg_print_Human ),
    fulCurrentTsIdx( 0 ),
@@ -236,6 +236,10 @@ Bool_t CbmMcbm2018MonitorMuchLite::InitMuchParameters()
          LOG(info) << Form("DPB #%02u CROB #%02u Active:  ", uDpb, uCrobIdx) <<  fvbCrobActiveFlag[ uDpb ][ uCrobIdx ];
       } // for( UInt_t uCrobIdx = 0; uCrobIdx < fUnpackParMuch->GetNbCrobsPerDpb(); ++uCrobIdx )
    } // for( UInt_t uDpb = 0; uDpb < fuNrOfDpbs; ++uDpb )
+
+   if( fbBinningFw )
+      LOG(info) << "Unpacking data in bin sorter FW mode";
+      else LOG(info) << "Unpacking data in full time sorter FW mode (legacy)";
 
    // Internal status initialization
    fvulCurrentTsMsb.resize( fuNrOfDpbs );
@@ -489,6 +493,12 @@ void CbmMcbm2018MonitorMuchLite::CreateHistograms()
    title = "Rate in kHz with Adc cut";
    fhRateAdcCut = new TH1I(sHistName, title, 10000, -0.5, 9999.5);
 
+
+   sHistName = "hFEBcount";
+   title = "Count vs FEB number; FEB Number; Count";
+   fhFEBcount = new TH1I(sHistName, title, 40, -0.5, 39.5);
+
+
    sHistName = "hSysMessTypePerDpb";
    title = "Nb of system message of each type for each DPB; DPB; System Type";
    fhMuchSysMessTypePerDpb = new TH2I(sHistName, title, fuNrOfDpbs, 0, fuNrOfDpbs, 17, 0., 17.);
@@ -578,6 +588,22 @@ void CbmMcbm2018MonitorMuchLite::CreateHistograms()
       //title = Form( "Hits Count per channel in good MS (SX2 bug flag off), FEB #%03u; Channel; Hits []", uFebIdx );
       //fhMuchFebChanCntRawGood.push_back( new TH1I(sHistName, title,
       //                          fUnpackParMuch->GetNbChanPerFeb(), -0.5, fUnpackParMuch->GetNbChanPerFeb() - 0.5 ) );
+
+      sHistName = Form( "fhMuchFebSpill_%03u", uFebIdx );
+      title = Form( "Time distribution of hits, FEB #%03u; Time ; Counts ", uFebIdx );
+      fhMuchFebSpill.push_back( new TH1I(sHistName, title, 1000,0,1000 ) );
+
+
+      sHistName = Form( "hMuchChannelTime_FEB%03u", uFebIdx );
+      title = Form( "Time vs Channel, FEB #%03u; TIME(s) ; CHANNEL ", uFebIdx );
+      fhMuchChannelTime.push_back( new TH2I(sHistName, title, 1000,0,1000, 129, -0.5 , 128.5 ) );
+
+
+
+      sHistName = Form( "hMuchFebADC_%03u", uFebIdx );
+      title = Form( "CHANNEL vs ADC, FEB #%03u; CHANNEL ; ADC ", uFebIdx );
+      fhMuchFebADC.push_back( new TH2I(sHistName, title, 129,-0.5,128.5, 34, -0.5, 33.5 ) );
+
 
       /// Raw Adc Distribution
       sHistName = Form( "hMuchFebChanAdcRaw_%03u", uFebIdx );
@@ -683,6 +709,10 @@ void CbmMcbm2018MonitorMuchLite::CreateHistograms()
    } // for( UInt_t uFebIdx = 0; uFebIdx < fuNbFebs; ++uFebIdx )
 
 ///++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++///
+   fhDpbMsErrors = new TH2I( "fhDpbMsErrors", "; DPB []; Error type []; Counts []",
+       fuNrOfDpbs, 0, fuNrOfDpbs,
+         4, -0.5,    3.5 );
+///++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++///
 
   // Miscroslice properties histos
    for( Int_t component = 0; component < kiMaxNbFlibLinks; component ++ )
@@ -697,18 +727,19 @@ void CbmMcbm2018MonitorMuchLite::CreateHistograms()
    {
      for( UInt_t uModuleId = 0; uModuleId < 2; ++uModuleId )
      {
-      server->Register("/MuchRaw", fHistPadDistr[uModuleId] );
-      server->Register("/MuchRaw", fRealHistPadDistr[uModuleId] );
-      server->Register("/MuchFeb", fhMuchFebDuplicateHitProf[uModuleId] );
+     // server->Register("/MuchRaw", fHistPadDistr[uModuleId] );
+     // server->Register("/MuchRaw", fRealHistPadDistr[uModuleId] );
+     // server->Register("/MuchFeb", fhMuchFebDuplicateHitProf[uModuleId] );
      }
 
-      server->Register("/MuchRaw", fhRate );
-      server->Register("/MuchRaw", fhRateAdcCut );
+    //  server->Register("/MuchRaw", fhRate );
+    //  server->Register("/MuchRaw", fhRateAdcCut );
+      server->Register("/MuchRaw", fhFEBcount );
       server->Register("/MuchRaw", fhMuchMessType );
-      server->Register("/MuchRaw", fhMuchSysMessType );
+     // server->Register("/MuchRaw", fhMuchSysMessType );
       server->Register("/MuchRaw", fhMuchMessTypePerDpb );
       server->Register("/MuchRaw", fhMuchSysMessTypePerDpb );
-      server->Register("/MuchRaw", fhStatusMessType );
+     // server->Register("/MuchRaw", fhStatusMessType );
       server->Register("/MuchRaw", fhMsStatusFieldType );
       server->Register("/MuchRaw", fhMuchHitsElinkPerDpb );
       server->Register("/MuchRaw", fhMuchFebChanAdcRaw_combined );
@@ -717,19 +748,23 @@ void CbmMcbm2018MonitorMuchLite::CreateHistograms()
          if( kTRUE == fUnpackParMuch->IsFebActive( uFebIdx ) )
          {
             server->Register("/MuchFeb", fhMuchFebChanCntRaw[ uFebIdx ] );
+            server->Register( "/MuchFeb",fhMuchFebSpill[ uFebIdx ] );
+            server->Register( "/MuchFeb",fhMuchFebADC[ uFebIdx ] );
+            server->Register( "/MuchFeb",fhMuchChannelTime[ uFebIdx ] );
+
             //server->Register("/MuchFeb", fhMuchFebChanCntRawGood[ uFebIdx ] );
-            server->Register("/MuchFeb", fhMuchFebChanAdcRaw[ uFebIdx ] );
-            server->Register("/MuchFeb", fhMuchFebChanAdcRawProf[ uFebIdx ] );
+         ////   server->Register("/MuchFeb", fhMuchFebChanAdcRaw[ uFebIdx ] );
+          //  server->Register("/MuchFeb", fhMuchFebChanAdcRawProf[ uFebIdx ] );
             //server->Register("/MuchFeb", fhMuchFebChanAdcCal[ uFebIdx ] );
             //server->Register("/MuchFeb", fhMuchFebChanAdcCalProf[ uFebIdx ] );
-            server->Register("/MuchFeb", fhMuchFebChanRawTs[ uFebIdx ] );
-            server->Register("/MuchFeb", fhMuchFebChanHitRateEvo[ uFebIdx ] );
-            server->Register("/MuchFeb", fhMuchFebChanHitRateProf[ uFebIdx ] );
+           //// server->Register("/MuchFeb", fhMuchFebChanRawTs[ uFebIdx ] );
+            //server->Register("/MuchFeb", fhMuchFebChanHitRateEvo[ uFebIdx ] );
+           // server->Register("/MuchFeb", fhMuchFebChanHitRateProf[ uFebIdx ] );
             //server->Register("/MuchFeb", fhMuchFebAsicHitRateEvo[ uFebIdx ] );
-            server->Register("/MuchFeb", fhMuchFebHitRateEvo[ uFebIdx ] );
-            server->Register("/MuchFeb", fhMuchFebHitRateEvo_mskch[ uFebIdx ] );
-            server->Register("/MuchFeb", fhMuchFebHitRateEvo_mskch_adccut[ uFebIdx ] );
-            server->Register("/MuchFeb", fhMuchFebHitRateEvo_WithoutDupli[ uFebIdx ] );
+           // server->Register("/MuchFeb", fhMuchFebHitRateEvo[ uFebIdx ] );
+          ////  server->Register("/MuchFeb", fhMuchFebHitRateEvo_mskch[ uFebIdx ] );
+           // server->Register("/MuchFeb", fhMuchFebHitRateEvo_mskch_adccut[ uFebIdx ] );
+           // server->Register("/MuchFeb", fhMuchFebHitRateEvo_WithoutDupli[ uFebIdx ] );
    	    LOG(debug)<< "Initialized fhMuchFebHitRateEvo_WithoutDupli number "<< uFebIdx;
             /*server->Register("/MuchFeb", fhMuchFebChanHitRateEvoLong[ uFebIdx ] );
             server->Register("/MuchFeb", fhMuchFebAsicHitRateEvoLong[ uFebIdx ] );
@@ -737,6 +772,7 @@ void CbmMcbm2018MonitorMuchLite::CreateHistograms()
             server->Register("/MuchFeb", fhMuchFebChanDistT[ uFebIdx ] );*/
 
 	 } // if( kTRUE == fUnpackParMuch->IsFebActive( uFebIdx ) )
+      server->Register("/MuchRaw", fhDpbMsErrors );
       } // for( UInt_t uFebIdx = 0; uFebIdx < fuNbFebs; ++uFebIdx )
 
       LOG(debug)<< "Initialized FEB  8th Histo";
@@ -753,56 +789,79 @@ void CbmMcbm2018MonitorMuchLite::CreateHistograms()
    Double_t w = 10;
    Double_t h = 10;
    LOG(debug)<< "Initialized 7th Histo before Summary per FEB";
+
+    TCanvas* cChannel = new TCanvas( Form("CHANNELS"),
+                                       Form("CHANNELS") ); //,
+//                                          w, h);
+    cChannel->Divide( 4, 9 );
       // Summary per FEB
    for( UInt_t uFebIdx = 0; uFebIdx < fuNbFebs; ++uFebIdx )
    {
       if( kTRUE == fUnpackParMuch->IsFebActive( uFebIdx ) )
       {
-         TCanvas* cMuchSumm = new TCanvas( Form("cMuchSum_%03u", uFebIdx ),
-                                          Form("Summary plots for FEB %03u", uFebIdx ),
-                                          w, h);
-         cMuchSumm->Divide( 2, 2 );
-
-         cMuchSumm->cd(1);
-         gPad->SetGridx();
-         gPad->SetGridy();
+         cChannel->cd(uFebIdx+1);
+        //// gPad->SetGridx();
+        // gPad->SetGridy();
          gPad->SetLogy();
          fhMuchFebChanCntRaw[ uFebIdx ]->Draw();
-
-         cMuchSumm->cd(2);
-         gPad->SetGridx();
-         gPad->SetGridy();
-         gPad->SetLogy();
-         fhMuchFebChanHitRateProf[ uFebIdx ]->Draw( "e0" );
-
-         cMuchSumm->cd(3);
-         gPad->SetGridx();
-         gPad->SetGridy();
-         gPad->SetLogz();
-         fhMuchFebChanAdcRaw[ uFebIdx ]->Draw( "colz" );
-
-         cMuchSumm->cd(4);
-         gPad->SetGridx();
-         gPad->SetGridy();
-	 //      gPad->SetLogy();
-         fhMuchFebChanAdcRawProf[ uFebIdx ]->Draw();
-
-         /*cMuchSumm->cd(5);
-         gPad->SetGridx();
-         gPad->SetGridy();
-         gPad->SetLogz();
-         //fhMuchFebChanAdcCal[ uFebIdx ]->Draw( "colz" );
-
-         cMuchSumm->cd(6);
-         gPad->SetGridx();
-         gPad->SetGridy();
-	 //      gPad->SetLogy();
-         //fhMuchFebChanAdcCalProf[ uFebIdx ]->Draw();*/
 
       } // if( kTRUE == fUnpackParMuch->IsFebActive( uFebIdx ) )
    } // for( UInt_t uFebIdx = 0; uFebIdx < fuNbFebs; ++uFebIdx )
 
+    server->Register("/canvases", cChannel);
+   //All Feb hit rate together on one Canvas
 
+  TCanvas* cspill = new TCanvas(  Form("SPILLS"),Form("SPILLS") ); //,w, h);
+  cspill->Divide( 4, 9 );
+
+   for( UInt_t uFebIdx = 0; uFebIdx < fuNbFebs; ++uFebIdx )
+   {
+      if( kTRUE == fUnpackParMuch->IsFebActive( uFebIdx ) )
+      {
+	UInt_t flPad = 1+ uFebIdx;
+         cspill->cd(flPad);
+         //gPad->SetGridx();
+         //gPad->SetGridy();
+	 // gPad->SetLogy();
+         fhMuchFebSpill[ uFebIdx ]->Draw();
+      }
+   // server->Register("/canvases", cspill);
+    }
+   server->Register("/canvases", cspill);
+
+  TCanvas* cadc = new TCanvas(  Form("ADC"),Form("ADC"),w, h);
+   cadc->Divide( 4, 9 );
+
+   for( UInt_t uFebIdx = 0; uFebIdx < fuNbFebs; ++uFebIdx )
+   {
+      if( kTRUE == fUnpackParMuch->IsFebActive( uFebIdx ) )
+      {
+	UInt_t flPad = 1+ uFebIdx;
+         cadc->cd(flPad);
+         //gPad->SetGridx();
+         //gPad->SetGridy();
+         //gPad->SetLogy();
+         fhMuchFebADC[ uFebIdx ]->Draw("colz");
+      }
+    }
+   server->Register("/canvases", cadc);
+
+  TCanvas* cChanneltime = new TCanvas(  Form("ChannelvsTime"),Form("ChannelvsTime"),w, h);
+   cChanneltime->Divide( 4, 9 );
+
+   for( UInt_t uFebIdx = 0; uFebIdx < fuNbFebs; ++uFebIdx )
+   {
+      if( kTRUE == fUnpackParMuch->IsFebActive( uFebIdx ) )
+      {
+	UInt_t flPad = 1+ uFebIdx;
+         cChanneltime->cd(flPad);
+         //gPad->SetGridx();
+         //gPad->SetGridy();
+         //gPad->SetLogy();
+         fhMuchChannelTime[ uFebIdx ]->Draw("colz");
+      }
+    }
+   server->Register("/canvases", cChanneltime);
   //====================================================================//
      LOG(debug)<< "Initialized Last Histo before exiting CreateHistograms";
   //====================================================================//
@@ -812,9 +871,10 @@ void CbmMcbm2018MonitorMuchLite::CreateHistograms()
   fcMsSizeAll = dynamic_cast<TCanvas *>( gROOT->FindObject( "cMsSizeAll" ) );
   if( NULL == fcMsSizeAll )
   {
-     fcMsSizeAll = new TCanvas("cMsSizeAll", "Evolution of MS size in last 300 s", w, h);
-     fcMsSizeAll->Divide( 4, 4 );
+     fcMsSizeAll = new TCanvas("cMsSizeAll", "Evolution of MS size in last 300 s"); //, w, h);
+     fcMsSizeAll->Divide( 1, 8 );
       LOG(info) << "Created MS size canvas in Much monitor";
+      server->Register("/canvases",fcMsSizeAll);
   } // if( NULL == fcMsSizeAll )
       else LOG(info) << "Recovered MS size canvas in Much monitor";
 //====================================================================//
@@ -951,6 +1011,15 @@ Bool_t CbmMcbm2018MonitorMuchLite::DoUnpack(const fles::Timeslice& ts, size_t co
              * static_cast<ULong64_t>( fvulCurrentTsMsb[fuCurrDpbIdx])
              + static_cast<ULong64_t>( stsxyter::kulTsCycleNbBins )
              * static_cast<ULong64_t>( fvuCurrentTsMsbCycle[fuCurrDpbIdx] );
+
+         /// => Quick and dirty hack for binning FW!!!
+         if( kTRUE == fbBinningFw )
+            dTsMsbTime =
+                     static_cast<ULong64_t>( stsxyter::kuHitNbTsBinsBinning )
+                   * static_cast<ULong64_t>( fvulCurrentTsMsb[fuCurrDpbIdx])
+                   + static_cast<ULong64_t>( stsxyter::kulTsCycleNbBinsBinning )
+                   * static_cast<ULong64_t>( fvuCurrentTsMsbCycle[fuCurrDpbIdx] )
+                   ;
          dTsMsbTime *= stsxyter::kdClockCycleNs * 1e-9;
 
          LOG(info) << "End of TS " << std::setw(7) << ts.index()
@@ -1083,6 +1152,13 @@ Bool_t CbmMcbm2018MonitorMuchLite::ProcessMuchMs( const fles::Timeslice& ts, siz
    UInt_t uTsMsbCycleHeader = std::floor( fulCurrentMsIdx /
                                           ( stsxyter::kulTsCycleNbBins * stsxyter::kdClockCycleNs ) )
                               - fvuInitialTsMsbCycleHeader[ fuCurrDpbIdx ];
+
+   /// => Quick and dirty hack for binning FW!!!
+   if( kTRUE == fbBinningFw )
+      uTsMsbCycleHeader = std::floor( fulCurrentMsIdx /
+                                      ( stsxyter::kulTsCycleNbBinsBinning * stsxyter::kdClockCycleNs ) )
+                           - fvuInitialTsMsbCycleHeader[ fuCurrDpbIdx ];
+
    if( kFALSE == fvuInitialHeaderDone[ fuCurrDpbIdx ] )
    {
       fvuInitialTsMsbCycleHeader[ fuCurrDpbIdx ] = uTsMsbCycleHeader;
@@ -1132,8 +1208,8 @@ Bool_t CbmMcbm2018MonitorMuchLite::ProcessMuchMs( const fles::Timeslice& ts, siz
 */
       stsxyter::MessType typeMess = mess.GetMessType();
       fmMsgCounter[ typeMess ] ++;
-      fhMuchMessType->Fill( static_cast< uint16_t > (typeMess) );
-      fhMuchMessTypePerDpb->Fill( fuCurrDpbIdx, static_cast< uint16_t > (typeMess) );
+     // fhMuchMessType->Fill( static_cast< uint16_t > (typeMess) );
+     // fhMuchMessTypePerDpb->Fill( fuCurrDpbIdx, static_cast< uint16_t > (typeMess) );
 
       switch( typeMess )
       {
@@ -1141,6 +1217,10 @@ Bool_t CbmMcbm2018MonitorMuchLite::ProcessMuchMs( const fles::Timeslice& ts, siz
          {
             // Extract the eLink and Asic indices => Should GO IN the fill method now that obly hits are link/asic specific!
             UShort_t usElinkIdx = mess.GetLinkIndex();
+            /// => Quick and dirty hack for binning FW!!!
+            if( kTRUE == fbBinningFw )
+               usElinkIdx = mess.GetLinkIndexHitBinning();
+
             UInt_t   uCrobIdx   = usElinkIdx / fUnpackParMuch->GetNbElinkPerCrob();
             Int_t   uFebIdx    = fUnpackParMuch->ElinkIdxToFebIdx( usElinkIdx );
 //            if(usElinkIdx!=0)
@@ -1190,7 +1270,7 @@ Bool_t CbmMcbm2018MonitorMuchLite::ProcessMuchMs( const fles::Timeslice& ts, siz
 
             UShort_t usStatusField = mess.GetStatusStatus();
 
-            fhStatusMessType->Fill( uAsicIdx, usStatusField );
+           // fhStatusMessType->Fill( uAsicIdx, usStatusField );
             /// Always print status messages... or not?
             if( fbPrintMessages )
             {
@@ -1205,6 +1285,14 @@ Bool_t CbmMcbm2018MonitorMuchLite::ProcessMuchMs( const fles::Timeslice& ts, siz
 //                   FillTsMsbInfo( mess );
             break;
          } // case stsxyter::MessType::Empty :
+         case stsxyter::MessType::EndOfMs :
+         {
+            if( mess.IsMsErrorFlagOn() )
+            {
+               fhDpbMsErrors->Fill( fuCurrDpbIdx, mess.GetMsErrorType() );
+            } // if( pMess[uIdx].IsMsErrorFlagOn() )
+            break;
+         } // case stsxyter::MessType::EndOfMs :
          case stsxyter::MessType::Dummy :
          {
             break;
@@ -1232,12 +1320,17 @@ void CbmMcbm2018MonitorMuchLite::FillHitInfo( stsxyter::Message mess, const USho
    //Below FebID is according to FEB Position in Module GEM A or Module GEM B (Carefully write MUCH Par file)
    Int_t FebId = fUnpackParMuch->GetFebId(uAsicIdx);
 
+   /// => Quick and dirty hack for binning FW!!!
+   if( kTRUE == fbBinningFw )
+      usRawTs  = mess.GetHitTimeBinning();
+
 //   UInt_t uFebIdx    = uAsicIdx / fUnpackParMuch->GetNbAsicsPerFeb();
 	//For MUCH each FEB has one StsXyter
    UInt_t uFebIdx    = uAsicIdx;
 //   UInt_t uCrobIdx   = usElinkIdx / fUnpackParMuch->GetNbElinkPerCrob();
 //   UInt_t uAsicInFeb = uAsicIdx % fUnpackParMuch->GetNbAsicsPerFeb();
    UInt_t uChanInFeb = usChan + fUnpackParMuch->GetNbChanPerAsic() * (uAsicIdx % fUnpackParMuch->GetNbAsicsPerFeb());
+   Int_t ModuleNr = fUnpackParMuch->GetModule(uAsicIdx);
    Int_t sector  = fUnpackParMuch->GetPadXA(FebId, usChan);
    Int_t channel = fUnpackParMuch->GetPadYA(FebId, usChan);
 
@@ -1251,26 +1344,27 @@ void CbmMcbm2018MonitorMuchLite::FillHitInfo( stsxyter::Message mess, const USho
 	ActualX = 1000-ActualX;
         channel = 96 - channel;
 
-   Int_t ModuleNr = fUnpackParMuch->GetModule(uAsicIdx);
-
    LOG(debug)<< "Module Nr " << ModuleNr << " Sector Nr "<< sector <<" Channel Nr "<<channel << "Actual X "<< ActualX << "Actual Y " <<ActualY << "uAsicIdx "<<uAsicIdx;
 
 
-   fHistPadDistr[ModuleNr]->Fill(sector, channel);
-   fRealHistPadDistr[ModuleNr]->Fill(ActualY, ActualX);
+//   fHistPadDistr[ModuleNr]->Fill(sector, channel);
+//   fRealHistPadDistr[ModuleNr]->Fill(ActualY, ActualX);
 
    //Double_t dCalAdc = fvdFebAdcOffs[ fuCurrDpbIdx ][ uCrobIdx ][ uFebIdx ]
    //                  + (usRawAdc - 1)* fvdFebAdcGain[ fuCurrDpbIdx ][ uCrobIdx ][ uFebIdx ];
-
+   fhFEBcount->Fill(uFebIdx);
+//   fhMuchFebSpill[uFebIdx] ->Fill(usRawTs);
    fhMuchFebChanCntRaw[  uFebIdx ]->Fill( uChanInFeb );
-   fhMuchFebChanAdcRaw[  uFebIdx ]->Fill( uChanInFeb, usRawAdc );
-   fhMuchFebChanAdcRawProf[  uFebIdx ]->Fill( uChanInFeb, usRawAdc );
+//   fhMuchFebChanAdcRaw[  uFebIdx ]->Fill( uChanInFeb, usRawAdc );
+ //  fhMuchFebChanAdcRawProf[  uFebIdx ]->Fill( uChanInFeb, usRawAdc );
    //fhMuchFebChanAdcCal[  uFebIdx ]->Fill(     uChanInFeb, dCalAdc );
    //fhMuchFebChanAdcCalProf[  uFebIdx ]->Fill( uChanInFeb, dCalAdc );
-   fhMuchFebChanRawTs[   uFebIdx ]->Fill( usChan, usRawTs );
+  // fhMuchFebChanRawTs[   uFebIdx ]->Fill( usChan, usRawTs );
    //fhMuchFebChanMissEvt[ uFebIdx ]->Fill( usChan, mess.IsHitMissedEvts() );
-   fhMuchFebChanAdcRaw_combined->Fill(usRawAdc);
+ //  fhMuchFebChanAdcRaw_combined->Fill(usRawAdc);
 
+
+   fhMuchFebADC[uFebIdx]->Fill(usChan,usRawAdc);
    // Compute the Full time stamp
    ULong64_t ulOldHitTime = fvulChanLastHitTime[ uAsicIdx ][ usChan ];
 //   Long64_t dOldHitTime  = fvdChanLastHitTime[ uAsicIdx ][ usChan ];
@@ -1285,6 +1379,15 @@ void CbmMcbm2018MonitorMuchLite::FillHitInfo( stsxyter::Message mess, const USho
              * static_cast<ULong64_t>( fvuCurrentTsMsbCycle[fuCurrDpbIdx] )
              ;
 
+   /// => Quick and dirty hack for binning FW!!!
+   if( kTRUE == fbBinningFw )
+      fvulChanLastHitTime[ uAsicIdx ][ usChan ] = usRawTs +
+               static_cast<ULong64_t>( stsxyter::kuHitNbTsBinsBinning )
+             * static_cast<ULong64_t>( fvulCurrentTsMsb[fuCurrDpbIdx])
+             + static_cast<ULong64_t>( stsxyter::kulTsCycleNbBinsBinning )
+             * static_cast<ULong64_t>( fvuCurrentTsMsbCycle[fuCurrDpbIdx] )
+             ;
+
 
    // Convert the Hit time in bins to Hit time in ns
    Long64_t dHitTimeNs = fvulChanLastHitTime[ uAsicIdx ][ usChan ] * stsxyter::kdClockCycleNs;
@@ -1293,10 +1396,11 @@ void CbmMcbm2018MonitorMuchLite::FillHitInfo( stsxyter::Message mess, const USho
    fvdChanLastHitTime[ uAsicIdx ][ usChan ] = fvulChanLastHitTime[ uAsicIdx ][ usChan ] * stsxyter::kdClockCycleNs;
    // For StsXyter2.0 Duplicate Hit Error
    //Int_t ModuleNr = fUnpackParMuch->GetModule(uAsicIdx);
+/*
    fhMuchFebDuplicateHitProf[ModuleNr]->Fill(FebId,0);
    if( ulOldHitTime == fvulChanLastHitTime[uAsicIdx][usChan] )
   		     fhMuchFebDuplicateHitProf[ModuleNr]->Fill(FebId,1);
-
+*/
 
 /*
    LOG(info) << " Asic " << std::setw( 2 ) << uAsicIdx
@@ -1330,8 +1434,8 @@ void CbmMcbm2018MonitorMuchLite::FillHitInfo( stsxyter::Message mess, const USho
 	}
 	else
 	{
-		fhRate->Fill(Counter);
-                fhRateAdcCut->Fill(Counter1);
+		//fhRate->Fill(Counter);
+               // fhRateAdcCut->Fill(Counter1);
 		Counter=0;
                 Counter1=0;
 	        prevtime_new = fvdChanLastHitTime[ uAsicIdx ][ usChan ];
@@ -1345,14 +1449,18 @@ void CbmMcbm2018MonitorMuchLite::FillHitInfo( stsxyter::Message mess, const USho
    fviFebCountsSinceLastRateUpdate[uFebIdx]++;
    fvdFebChanCountsSinceLastRateUpdate[uFebIdx][uChanInFeb] += 1;
 
-   fhMuchFebChanHitRateEvo[ uFebIdx ]->Fill( dTimeSinceStartSec, uChanInFeb );
+  // fhMuchFebChanHitRateEvo[ uFebIdx ]->Fill( dTimeSinceStartSec, uChanInFeb );
    //fhMuchFebAsicHitRateEvo[ uFebIdx ]->Fill( dTimeSinceStartSec, uAsicInFeb );
-   fhMuchFebHitRateEvo[ uFebIdx ]->Fill( dTimeSinceStartSec );
-   fhMuchFebHitRateEvo_mskch[ uFebIdx ]->Fill( dTimeSinceStartSec );
-   if(usRawAdc>1)fhMuchFebHitRateEvo_mskch_adccut[ uFebIdx ]->Fill(     dTimeSinceStartSec );
+  // fhMuchFebHitRateEvo[ uFebIdx ]->Fill( dTimeSinceStartSec );
+  // fhMuchFebHitRateEvo_mskch[ uFebIdx ]->Fill( dTimeSinceStartSec );
+  // if(usRawAdc>1)fhMuchFebHitRateEvo_mskch_adccut[ uFebIdx ]->Fill(     dTimeSinceStartSec );
    //fhMuchFebChanHitRateEvoLong[ uFebIdx ]->Fill( dTimeSinceStartMin, uChanInFeb, 1.0/60.0 );
    //fhMuchFebAsicHitRateEvoLong[ uFebIdx ]->Fill( dTimeSinceStartMin, uAsicInFeb,   1.0/60.0 );
    //fhMuchFebHitRateEvoLong[ uFebIdx ]->Fill(     dTimeSinceStartMin,             1.0/60.0 );
+
+  fhMuchFebSpill[uFebIdx] ->Fill(dTimeSinceStartSec);
+   fhMuchFebChanCntRaw[  uFebIdx ]->Fill( usChan );
+ fhMuchChannelTime[uFebIdx]->Fill(dTimeSinceStartSec,usChan);
 
    /*
    if( mess.IsHitMissedEvts() )
@@ -1369,7 +1477,7 @@ void CbmMcbm2018MonitorMuchLite::FillHitInfo( stsxyter::Message mess, const USho
    }
    else
    {
-     fhMuchFebHitRateEvo_WithoutDupli[ uFebIdx ]->Fill( dTimeSinceStartSec );
+    // fhMuchFebHitRateEvo_WithoutDupli[ uFebIdx ]->Fill( dTimeSinceStartSec );
    }
    prevTime = fvdChanLastHitTime[ uAsicIdx ][ usChan ];
    prevChan = usChan;
@@ -1379,6 +1487,10 @@ void CbmMcbm2018MonitorMuchLite::FillHitInfo( stsxyter::Message mess, const USho
 void CbmMcbm2018MonitorMuchLite::FillTsMsbInfo( stsxyter::Message mess, UInt_t /*uMessIdx*/, UInt_t /*uMsIdx*/ )
 {
    UInt_t uVal    = mess.GetTsMsbVal();
+   /// => Quick and dirty hack for binning FW!!!
+   if( kTRUE == fbBinningFw )
+      uVal = mess.GetTsMsbValBinning();
+
    // Update Status counters
    if( uVal < fvulCurrentTsMsb[fuCurrDpbIdx] )
    {
@@ -1442,20 +1554,22 @@ void CbmMcbm2018MonitorMuchLite::SaveAllHistos( TString sFileName )
 
    for( UInt_t uModuleId = 0; uModuleId < 2; ++uModuleId )
    {
-	   fHistPadDistr[uModuleId]->Write();
-	   fRealHistPadDistr[uModuleId]->Write();
-	   fhMuchFebDuplicateHitProf[uModuleId]->Write();
+	 //  fHistPadDistr[uModuleId]->Write();
+	  // fRealHistPadDistr[uModuleId]->Write();
+	  // fhMuchFebDuplicateHitProf[uModuleId]->Write();
    }
-   fhRate->Write();
-   fhRateAdcCut->Write();
-   fhMuchMessType->Write();
-   fhMuchSysMessType->Write();
-   fhMuchMessTypePerDpb->Write();
-   fhMuchSysMessTypePerDpb->Write();
-   fhStatusMessType->Write();
+ //  fhRate->Write();
+ //  fhRateAdcCut->Write();
+   fhFEBcount->Write();
+//   fhMuchMessType->Write();
+ //  fhMuchSysMessType->Write();
+//   fhMuchMessTypePerDpb->Write();
+ //  fhMuchSysMessTypePerDpb->Write();
+  // fhStatusMessType->Write();
    fhMsStatusFieldType->Write();
    fhMuchHitsElinkPerDpb->Write();
-   fhMuchFebChanAdcRaw_combined->Write();
+  // fhMuchFebChanAdcRaw_combined->Write();
+  fhDpbMsErrors->Write();
    gDirectory->cd("..");
    /***************************/
 
@@ -1467,18 +1581,21 @@ void CbmMcbm2018MonitorMuchLite::SaveAllHistos( TString sFileName )
       if( kTRUE == fUnpackParMuch->IsFebActive( uFebIdx ) )
       {
          fhMuchFebChanCntRaw[ uFebIdx ]->Write();
+         fhMuchFebSpill[ uFebIdx ]->Write();
+         fhMuchChannelTime[ uFebIdx ]->Write();
+         fhMuchFebADC[ uFebIdx ]->Write();
          //fhMuchFebChanCntRawGood[ uFebIdx ]->Write();
-         fhMuchFebChanAdcRaw[ uFebIdx ]->Write();
-         fhMuchFebChanAdcRawProf[ uFebIdx ]->Write();
+        // fhMuchFebChanAdcRaw[ uFebIdx ]->Write();
+        // fhMuchFebChanAdcRawProf[ uFebIdx ]->Write();
          //fhMuchFebChanAdcCal[ uFebIdx ]->Write();
          //fhMuchFebChanAdcCalProf[ uFebIdx ]->Write();
-         fhMuchFebChanRawTs[ uFebIdx ]->Write();
-         fhMuchFebChanHitRateProf[ uFebIdx ]->Write();
+        // fhMuchFebChanRawTs[ uFebIdx ]->Write();
+        // fhMuchFebChanHitRateProf[ uFebIdx ]->Write();
          //fhMuchFebAsicHitRateEvo[ uFebIdx ]->Write();
-         fhMuchFebHitRateEvo[ uFebIdx ]->Write();
-         fhMuchFebHitRateEvo_mskch[ uFebIdx ]->Write();
-         fhMuchFebHitRateEvo_mskch_adccut[ uFebIdx ]->Write();
-         fhMuchFebHitRateEvo_WithoutDupli[ uFebIdx ]->Write();
+        // fhMuchFebHitRateEvo[ uFebIdx ]->Write();
+        // fhMuchFebHitRateEvo_mskch[ uFebIdx ]->Write();
+        // fhMuchFebHitRateEvo_mskch_adccut[ uFebIdx ]->Write();
+        // fhMuchFebHitRateEvo_WithoutDupli[ uFebIdx ]->Write();
          /*fhMuchFebChanHitRateEvoLong[ uFebIdx ]->Write();
          fhMuchFebAsicHitRateEvoLong[ uFebIdx ]->Write();
          fhMuchFebHitRateEvoLong[ uFebIdx ]->Write();
@@ -1525,39 +1642,44 @@ void CbmMcbm2018MonitorMuchLite::ResetAllHistos()
 
    for( UInt_t uModuleId = 0; uModuleId < 2; ++uModuleId )
    {
-   fHistPadDistr[uModuleId]->Reset();
-   fRealHistPadDistr[uModuleId]->Reset();
+   //fHistPadDistr[uModuleId]->Reset();
+   //fRealHistPadDistr[uModuleId]->Reset();
    fhMuchFebDuplicateHitProf[uModuleId]->Reset();
    }
-   fhRate->Reset();
-   fhRateAdcCut->Reset();
-   fhMuchMessType->Reset();
-   fhMuchSysMessType->Reset();
-   fhMuchMessTypePerDpb->Reset();
-   fhMuchSysMessTypePerDpb->Reset();
-   fhStatusMessType->Reset();
+  // fhRate->Reset();
+  // fhRateAdcCut->Reset();
+   fhFEBcount->Reset();
+  // fhMuchMessType->Reset();
+  // fhMuchSysMessType->Reset();
+  // fhMuchMessTypePerDpb->Reset();
+  // fhMuchSysMessTypePerDpb->Reset();
+  // fhStatusMessType->Reset();
    fhMsStatusFieldType->Reset();
    fhMuchHitsElinkPerDpb->Reset();
-   fhMuchFebChanAdcRaw_combined->Reset();
+  // fhMuchFebChanAdcRaw_combined->Reset();
+  fhDpbMsErrors->Reset();
 
    for( UInt_t uFebIdx = 0; uFebIdx < fuNbFebs; ++uFebIdx )
    {
       if( kTRUE == fUnpackParMuch->IsFebActive( uFebIdx ) )
       {
          fhMuchFebChanCntRaw[ uFebIdx ]->Reset();
+         fhMuchFebSpill[ uFebIdx ] ->Reset();
+         fhMuchChannelTime[ uFebIdx ]->Reset();
+         fhMuchFebADC[ uFebIdx ] ->Reset();
          //fhMuchFebChanCntRawGood[ uFebIdx ]->Reset();
-         fhMuchFebChanAdcRaw[ uFebIdx ]->Reset();
-         fhMuchFebChanAdcRawProf[ uFebIdx ]->Reset();
+        //// fhMuchFebChanAdcRaw[ uFebIdx ]->Reset();
+         //fhMuchFebChanAdcRawProf[ uFebIdx ]->Reset();
          //fhMuchFebChanAdcCal[ uFebIdx ]->Reset();
          //fhMuchFebChanAdcCalProf[ uFebIdx ]->Reset();
-         fhMuchFebChanRawTs[ uFebIdx ]->Reset();
-         fhMuchFebChanHitRateEvo[ uFebIdx ]->Reset();
-         fhMuchFebChanHitRateProf[ uFebIdx ]->Reset();
+         ////fhMuchFebChanRawTs[ uFebIdx ]->Reset();
+     //    fhMuchFebChanHitRateEvo[ uFebIdx ]->Reset();
+        // fhMuchFebChanHitRateProf[ uFebIdx ]->Reset();
          //fhMuchFebAsicHitRateEvo[ uFebIdx ]->Reset();
-         fhMuchFebHitRateEvo[ uFebIdx ]->Reset();
-         fhMuchFebHitRateEvo_mskch[ uFebIdx ]->Reset();
-         fhMuchFebHitRateEvo_mskch_adccut[ uFebIdx ]->Reset();
-         fhMuchFebHitRateEvo_WithoutDupli[ uFebIdx ]->Reset();
+        //// fhMuchFebHitRateEvo[ uFebIdx ]->Reset();
+        // fhMuchFebHitRateEvo_mskch[ uFebIdx ]->Reset();
+       //  fhMuchFebHitRateEvo_mskch_adccut[ uFebIdx ]->Reset();
+      //   fhMuchFebHitRateEvo_WithoutDupli[ uFebIdx ]->Reset();
          /*fhMuchFebChanHitRateEvoLong[ uFebIdx ]->Reset();
          fhMuchFebAsicHitRateEvoLong[ uFebIdx ]->Reset();
          fhMuchFebHitRateEvoLong[ uFebIdx ]->Reset();

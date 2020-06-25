@@ -19,6 +19,7 @@
 #include "FairRuntimeDb.h"
 #include "FairRunOnline.h"
 
+#include "TProfile2D.h"
 #include "TROOT.h"
 #include "TList.h"
 #include "TString.h"
@@ -101,6 +102,7 @@ CbmMcbm2018MonitorAlgoTof::CbmMcbm2018MonitorAlgoTof() :
    fhGdpbEpochMissEvo( nullptr ),
    fhGdpbEndMsBufferNotEmpty( nullptr ),
    fhGdpbEndMsDataLost( nullptr ),
+   fhGdpbHitRate( nullptr ),
    fvhGdpbGet4MessType(),
    fvhGdpbGet4ChanScm(),
    fvhGdpbGet4ChanErrors(),
@@ -121,6 +123,7 @@ CbmMcbm2018MonitorAlgoTof::CbmMcbm2018MonitorAlgoTof() :
    fvhRemapTot_gDPB(),
    fvhRemapChCount_gDPB(),
    fvhRemapChRate_gDPB(),
+   fvhRemapChErrFract_gDPB(),
    fuNbMissmatchPattern(),
    fhNbMissPatternPerMs( nullptr ),
    fhPatternMissmatch( nullptr ),
@@ -448,12 +451,13 @@ Bool_t CbmMcbm2018MonitorAlgoTof::ProcessMs( const fles::Timeslice& ts, size_t u
 
    /// Save start time of first valid MS )
    if( fdStartTime < 0 )
-      fdStartTime = fdMsTime;
+      fdStartTime = ( fbUseAbsoluteTime ? 0.0 : fdMsTime );
    /// Reset the histograms if reached the end of the evolution histos range
    else if( fuHistoryHistoSize < fdMsTime - fdStartTime )
    {
       ResetEvolutionHistograms();
-      fdStartTime = fdMsTime;
+      fdStartTime = ( fbUseAbsoluteTime ? fuHistoryHistoSize * static_cast< uint32_t >( fdMsTime / fuHistoryHistoSize ) :
+                                          fdMsTime);
    } // else if( fuHistoryHistoSize < fdMsTime - fdStartTime )
 /*
       /// In Run rate evolution
@@ -522,6 +526,7 @@ Bool_t CbmMcbm2018MonitorAlgoTof::ProcessMs( const fles::Timeslice& ts, size_t u
                else
                {
                   /// Histogramming
+                  fhGdpbHitRate->Fill( fdMsTime - fdStartTime, fuCurrDpbIdx );
                   fhGet4MessType->Fill( fuGet4Nr, 0 );
                   fvhGdpbGet4MessType[ fuCurrDpbIdx ]->Fill( fuGet4Id, 0 );
 
@@ -822,6 +827,8 @@ void CbmMcbm2018MonitorAlgoTof::ProcessHit( gdpbv100::FullMessage mess )
    if (0 <= fdStartTime)
    {
       fvhRemapChRate_gDPB[ fuCurrDpbIdx ]->Fill( 1e-9 * dHitTime - fdStartTime, uRemappedChannelNr );
+      if( kTRUE == fbDebugMonitorMode )
+            fvhRemapChErrFract_gDPB[ fuCurrDpbIdx ]->Fill( 1e-9 * dHitTime - fdStartTime, uRemappedChannelNr, 0 );
 //      fvhFeeRate_gDPB[(fuCurrDpbIdx * fuNrOfFeePerGdpb) + uFeeNr]->Fill( 1e-9 * (dHitTime - fdStartTime));
 //      fvhFeeErrorRatio_gDPB[(fuCurrDpbIdx * fuNrOfFeePerGdpb) + uFeeNr]->Fill( 1e-9 * (dHitTime - fdStartTime), 0, 1);
    } // if (0 <= fdStartTime)
@@ -923,6 +930,14 @@ void CbmMcbm2018MonitorAlgoTof::ProcessError( gdpbv100::FullMessage mess )
    } // if (0 <= fdStartTime)
 */
    Int_t dGdpbChId =  fuGet4Id * fuNrOfChannelsPerGet4 + mess.getGdpbSysErrChanId();
+   UInt_t uChannelNrInFee    = (fuGet4Id % fuNrOfGet4PerFee) * fuNrOfChannelsPerGet4 + mess.getGdpbSysErrChanId();
+   UInt_t uFeeNr             = (fuGet4Id / fuNrOfGet4PerFee);
+//   UInt_t uFeeNrInSys        = fuCurrDpbIdx * fuNrOfFeePerGdpb + uFeeNr;
+   UInt_t uRemappedChannelNr = uFeeNr * fuNrOfChannelsPerFee + fUnpackPar->Get4ChanToPadiChan( uChannelNrInFee );
+      /// Diamond FEE have straight connection from Get4 to eLink and from PADI to GET4
+   if( 0x90 == fuCurrentMsSysId )
+      uRemappedChannelNr = uFeeNr * fuNrOfChannelsPerFee + uChannelNrInFee;
+
    Int_t dFullChId =  fuGet4Nr * fuNrOfChannelsPerGet4 + mess.getGdpbSysErrChanId();
 
    switch( uErrorType )
@@ -1009,42 +1024,56 @@ void CbmMcbm2018MonitorAlgoTof::ProcessError( gdpbv100::FullMessage mess )
       {
          fhGet4ChanErrors->Fill(dFullChId, 13);
          fvhGdpbGet4ChanErrors[ fuCurrDpbIdx ]->Fill( dGdpbChId, 13 );
+         if( kTRUE == fbDebugMonitorMode )
+            fvhRemapChErrFract_gDPB[ fuCurrDpbIdx ]->Fill( fdMsTime - fdStartTime, uRemappedChannelNr, 1 );
          break;
       } // case gdpbv100::GET4_V2X_ERR_TOT_OVERWRT:
       case gdpbv100::GET4_V2X_ERR_TOT_RANGE:
       {
          fhGet4ChanErrors->Fill(dFullChId, 14);
          fvhGdpbGet4ChanErrors[ fuCurrDpbIdx ]->Fill( dGdpbChId, 14 );
+         if( kTRUE == fbDebugMonitorMode )
+            fvhRemapChErrFract_gDPB[ fuCurrDpbIdx ]->Fill( fdMsTime - fdStartTime, uRemappedChannelNr, 1 );
          break;
       } // case gdpbv100::GET4_V2X_ERR_TOT_RANGE:
       case gdpbv100::GET4_V2X_ERR_EVT_DISCARD:
       {
          fhGet4ChanErrors->Fill(dFullChId, 15);
          fvhGdpbGet4ChanErrors[ fuCurrDpbIdx ]->Fill( dGdpbChId, 15 );
+         if( kTRUE == fbDebugMonitorMode )
+            fvhRemapChErrFract_gDPB[ fuCurrDpbIdx ]->Fill( fdMsTime - fdStartTime, uRemappedChannelNr, 1 );
          break;
       } // case gdpbv100::GET4_V2X_ERR_EVT_DISCARD:
       case gdpbv100::GET4_V2X_ERR_ADD_RIS_EDG:
       {
          fhGet4ChanErrors->Fill(dFullChId, 16);
          fvhGdpbGet4ChanErrors[ fuCurrDpbIdx ]->Fill( dGdpbChId, 16 );
+         if( kTRUE == fbDebugMonitorMode )
+            fvhRemapChErrFract_gDPB[ fuCurrDpbIdx ]->Fill( fdMsTime - fdStartTime, uRemappedChannelNr, 1 );
          break;
       } // case gdpbv100::GET4_V2X_ERR_ADD_RIS_EDG:
       case gdpbv100::GET4_V2X_ERR_UNPAIR_FALL:
       {
          fhGet4ChanErrors->Fill(dFullChId, 17);
          fvhGdpbGet4ChanErrors[ fuCurrDpbIdx ]->Fill( dGdpbChId, 17 );
+         if( kTRUE == fbDebugMonitorMode )
+            fvhRemapChErrFract_gDPB[ fuCurrDpbIdx ]->Fill( fdMsTime - fdStartTime, uRemappedChannelNr, 1 );
          break;
       } // case gdpbv100::GET4_V2X_ERR_UNPAIR_FALL:
       case gdpbv100::GET4_V2X_ERR_SEQUENCE_ER:
       {
          fhGet4ChanErrors->Fill(dFullChId, 18);
          fvhGdpbGet4ChanErrors[ fuCurrDpbIdx ]->Fill( dGdpbChId, 18 );
+         if( kTRUE == fbDebugMonitorMode )
+            fvhRemapChErrFract_gDPB[ fuCurrDpbIdx ]->Fill( fdMsTime - fdStartTime, uRemappedChannelNr, 1 );
          break;
       } // case gdpbv100::GET4_V2X_ERR_SEQUENCE_ER:
       case gdpbv100::GET4_V2X_ERR_EPOCH_OVERF:
       {
          fhGet4ChanErrors->Fill(dFullChId, 19);
          fvhGdpbGet4ChanErrors[ fuCurrDpbIdx ]->Fill( dGdpbChId, 19 );
+         if( kTRUE == fbDebugMonitorMode )
+            fvhRemapChErrFract_gDPB[ fuCurrDpbIdx ]->Fill( fdMsTime - fdStartTime, uRemappedChannelNr, 1 );
          break;
       } // case gdpbv100::GET4_V2X_ERR_EPOCH_OVERF:
       case gdpbv100::GET4_V2X_ERR_UNKNOWN:
@@ -1506,6 +1535,10 @@ Bool_t CbmMcbm2018MonitorAlgoTof::CreateHistograms()
                                   fuNrOfGdpbs, dGdpbMin, dGdpbMax,
                                   iNbBinsLog, dBinsLog );
 
+   fhGdpbHitRate = new TH2D( "fhGdpbHitRate", "Hit rate per second and gDPB; Time[s];  gDPB #; HITS Nb",
+                                  fuHistoryHistoSize, 0, fuHistoryHistoSize,
+                                  fuNrOfGdpbs, dGdpbMin, dGdpbMax );
+
    if( kTRUE == fbDebugMonitorMode )
    {
       fhNbMissPatternPerMs = new TH2I( "hNbMissPatternPerMs",
@@ -1544,6 +1577,7 @@ Bool_t CbmMcbm2018MonitorAlgoTof::CreateHistograms()
    AddHistoToVector( fhGdpbEpochMissEvo, sFolder );
    AddHistoToVector( fhGdpbEndMsBufferNotEmpty, sFolder );
    AddHistoToVector( fhGdpbEndMsDataLost, sFolder );
+   AddHistoToVector( fhGdpbHitRate, sFolder );
          /// Pattern Messages
             /// Pattern messages per gDPB
    if( kTRUE == fbDebugMonitorMode )
@@ -1645,6 +1679,13 @@ Bool_t CbmMcbm2018MonitorAlgoTof::CreateHistograms()
                Form("RemapChRate_gDPB_%02u", uGdpbIndex),
                Form("PADI channel rate gDPB %02u; Time in run [s]; PADI channel; Rate [1/s]", uGdpbIndex),
                fuHistoryHistoSize, 0, fuHistoryHistoSize,
+               fuNrOfFeePerGdpb * fuNrOfChannelsPerFee, 0, fuNrOfFeePerGdpb * fuNrOfChannelsPerFee ) );
+
+      if( kTRUE == fbDebugMonitorMode )
+         fvhRemapChErrFract_gDPB.push_back( new TProfile2D(
+               Form("RemapChErrFract_gDPB_%02u", uGdpbIndex),
+               Form("PADI channel error fraction gDPB %02u; Time in run [s]; PADI channel; Fraction []", uGdpbIndex),
+               18000, 0, 180,
                fuNrOfFeePerGdpb * fuNrOfChannelsPerFee, 0, fuNrOfFeePerGdpb * fuNrOfChannelsPerFee ) );
 
       /// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ ///
@@ -1792,6 +1833,7 @@ Bool_t CbmMcbm2018MonitorAlgoTof::CreateHistograms()
       AddHistoToVector( fvhRemapChRate_gDPB[ uGdpb ],  sFolderGdpb );
       if( kTRUE == fbDebugMonitorMode )
       {
+         AddHistoToVector( fvhRemapChErrFract_gDPB[ uGdpb ],  sFolderGdpb );
                /// Per MS in gDPB
          AddHistoToVector( fvhGdpbPatternMissmatchEvo[ uGdpb ], sFolderGdpbPatt );
          AddHistoToVector( fvhGdpbPatternEnableEvo[ uGdpb ],    sFolderGdpbPatt );
@@ -2147,6 +2189,7 @@ Bool_t CbmMcbm2018MonitorAlgoTof::ResetHistograms( Bool_t bResetTime )
    fhGdpbEpochMissEvo   ->Reset();
    fhGdpbEndMsBufferNotEmpty->Reset();
    fhGdpbEndMsDataLost  ->Reset();
+   fhGdpbHitRate        ->Reset();
    if( kTRUE == fbDebugMonitorMode )
    {
       fhNbMissPatternPerMs->Reset();
@@ -2170,6 +2213,7 @@ Bool_t CbmMcbm2018MonitorAlgoTof::ResetHistograms( Bool_t bResetTime )
       fvhRemapChRate_gDPB[ uGdpb ]        ->Reset();
       if( kTRUE == fbDebugMonitorMode )
       {
+         fvhRemapChErrFract_gDPB[ uGdpb ]    ->Reset();
          fvhGdpbPatternMissmatchEvo[ uGdpb ] ->Reset();
          fvhGdpbPatternEnableEvo[ uGdpb ]    ->Reset();
          fvhGdpbPatternResyncEvo[ uGdpb ]    ->Reset();
@@ -2218,6 +2262,7 @@ void CbmMcbm2018MonitorAlgoTof::ResetEvolutionHistograms()
       fvhRemapChRate_gDPB[ uGdpb ]->Reset();
       if( kTRUE == fbDebugMonitorMode )
       {
+         fvhRemapChErrFract_gDPB[ uGdpb ]->Reset();
 //         fvhGdpbPatternMissmatchEvo[ uGdpb ] ->Reset();
 //         fvhGdpbPatternEnableEvo[ uGdpb ]    ->Reset();
 //         fvhGdpbPatternResyncEvo[ uGdpb ]    ->Reset();

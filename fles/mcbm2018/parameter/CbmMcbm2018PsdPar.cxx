@@ -30,9 +30,6 @@ CbmMcbm2018PsdPar::CbmMcbm2018PsdPar(const char* name,
     fiNbMsTot(0),
     fiNbMsOverlap(0),
     fdSizeMsInNs(0.0),
-    fdStarTriggerDeadtime(),
-    fdStarTriggerDelay(),
-    fdStarTriggerWinSize(),
     fdTsDeadtimePeriod(0.0)
 {
    detName="Psd";
@@ -71,9 +68,6 @@ void CbmMcbm2018PsdPar::putParams(FairParamList* l)
    l->add("NbMsTot",             fiNbMsTot);
    l->add("NbMsOverlap",         fiNbMsOverlap);
    l->add("SizeMsInNs",          fdSizeMsInNs);
-   l->add("StarTriggerDeadtime", fdStarTriggerDeadtime);
-   l->add("StarTriggerDelay",    fdStarTriggerDelay);
-   l->add("StarTriggerWinSize",  fdStarTriggerWinSize);
    l->add("TsDeadtimePeriod",    fdTsDeadtimePeriod);
 }
 
@@ -103,12 +97,6 @@ Bool_t CbmMcbm2018PsdPar::getParams(FairParamList* l) {
    if ( ! l->fill("NbMsOverlap", &fiNbMsOverlap) ) return kFALSE;
    if ( ! l->fill("SizeMsInNs",  &fdSizeMsInNs) ) return kFALSE;
 
-   fdStarTriggerDeadtime.Set(fiNrOfGdpb);
-   fdStarTriggerDelay.Set(fiNrOfGdpb);
-   fdStarTriggerWinSize.Set(fiNrOfGdpb);
-   if ( ! l->fill("StarTriggerDeadtime", &fdStarTriggerDeadtime) ) return kFALSE;
-   if ( ! l->fill("StarTriggerDelay",    &fdStarTriggerDelay) ) return kFALSE;
-   if ( ! l->fill("StarTriggerWinSize",  &fdStarTriggerWinSize) ) return kFALSE;
    if ( ! l->fill("TsDeadtimePeriod",  &fdTsDeadtimePeriod) ) return kFALSE;
 
    return kTRUE;

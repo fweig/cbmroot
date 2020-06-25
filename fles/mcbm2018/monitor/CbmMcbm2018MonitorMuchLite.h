@@ -80,11 +80,18 @@ public:
 
 //   void SetTimeBin( size_t uTimeBin );
    void UseDaqBuffer(Bool_t) {}; //Virtual function in Mother Class, Need to update accordingly. VS
+
+   /// => Quick and dirty hack for binning FW!!!
+   void SetBinningFwFlag( Bool_t bEnable = kTRUE ) { fbBinningFw = bEnable; }
+
 private:
    // Parameters
       // Control flags
    Bool_t fbMuchMode;
    std::vector< Bool_t >    fvbMaskedComponents;
+         /// => Quick and dirty hack for binning FW!!!
+   Bool_t                fbBinningFw = kFALSE;
+
       // FLES containers
    std::vector< size_t >    fvMsComponentsList; //!
    size_t                   fuNbCoreMsPerTs; //!
@@ -185,6 +192,7 @@ private:
 
    TH1* fhRate;
    TH1* fhRateAdcCut;
+   TH1* fhFEBcount = nullptr;
   // std::vector<TH1 *>     fhMuchFebChanRateEvo;
 
       /// Plots per FEB-8
@@ -195,12 +203,15 @@ private:
 
    //Double_t fdFebChanCoincidenceLimit; // ns
    std::vector<TH1 *>     fhMuchFebChanCntRaw;
+   std::vector<TH1 *>   fhMuchFebSpill = {};
+   std::vector<TH2 *>   fhMuchFebADC = {};
    //std::vector<TH1 *>     fhMuchFebChanCntRawGood;
    std::vector<TH2 *>     fhMuchFebChanAdcRaw;
    std::vector<TProfile*> fhMuchFebChanAdcRawProf;
    //std::vector<TH2 *>     fhMuchFebChanAdcCal;
    //std::vector<TProfile*> fhMuchFebChanAdcCalProf;
    std::vector<TH2*>      fhMuchFebChanRawTs;
+   std::vector<TH2*>      fhMuchChannelTime = {};
    //std::vector<TH2*>      fhMuchFebChanMissEvt;
    //std::vector<TH2*>      fhMuchFebChanMissEvtEvo;
    //std::vector<TH2*>      fhMuchFebAsicMissEvtEvo;
@@ -220,6 +231,9 @@ private:
    //std::vector< std::vector<TH1*> > fhMuchFebChanDtCoinc;
    //std::vector< std::vector<TH2*> > fhMuchFebChanCoinc;
    std::vector<TProfile*> fhMuchFebDuplicateHitProf;
+
+   /// Binning FW error flag
+   TH2* fhDpbMsErrors = nullptr;
 
    TCanvas*  fcMsSizeAll;
    TH1*      fhMsSz[kiMaxNbFlibLinks];

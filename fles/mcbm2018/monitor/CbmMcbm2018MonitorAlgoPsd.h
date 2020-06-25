@@ -14,6 +14,7 @@
 // Data
 #include "PsdGbtReader.h"
 #include "CbmPsdDigi.h"
+#include "PronyFitter.h"
 
 // CbmRoot
 
@@ -25,10 +26,6 @@
 #include <map>
 
 class CbmMcbm2018PsdPar;
-/*
-class TCanvas;
-class THttpServer;
-*/
 class TH1;
 class TH2;
 class TProfile;
@@ -68,13 +65,13 @@ class CbmMcbm2018MonitorAlgoPsd : public CbmStar2019Algo<CbmPsdDigi>
 
 
    private:
-      /// Control flags
+         /// Control flags
       Bool_t fbMonitorMode;      //! Switch ON the filling of a minimal set of histograms
       Bool_t fbDebugMonitorMode; //! Switch ON the filling of a additional set of histograms
       std::vector< Bool_t >    fvbMaskedComponents;
       Bool_t fbFirstPackageError;
 
-      /// Settings from parameter file
+         /// Settings from parameter file
       CbmMcbm2018PsdPar* fUnpackPar;      //!
          /// Readout chain dimensions and mapping
       UInt_t fuNrOfGdpbs;           //! Total number of GDPBs in the system
@@ -83,19 +80,20 @@ class CbmMcbm2018MonitorAlgoPsd : public CbmStar2019Algo<CbmPsdDigi>
       UInt_t fuNrOfChannelsPerFee;  //! Number of channels in each FEE
       UInt_t fuNrOfChannelsPerGdpb; //! Number of channels per GDPB
 
-      /// Constants
+         /// Constants
       static const Int_t    kiMaxNbFlibLinks  = 32;
       static const UInt_t   kuBytesPerMessage =  8;
-      static const UInt_t   kuNbChanPsd = 32;
+      static const UInt_t   kuNbChanPsd = 10;
 
       static constexpr UInt_t GetNbChanPsd()  { return kuNbChanPsd; }
-      /// Running indices
+         /// Running indices
          /// TS/MS info
       ULong64_t             fulCurrentTsIdx;
       ULong64_t             fulCurrentMsIdx;
       Double_t              fdTsStartTime;         //! Time in ns of current TS from the index of the first MS first component
       Double_t              fdTsStopTimeCore;      //! End Time in ns of current TS Core from the index of the first MS first component
       Double_t              fdMsTime;              //! Start Time in ns of current MS from its index field in header
+      Double_t              fdPrevMsTime;          //! Start Time in ns of previous MS from its index field in header
       UInt_t                fuMsIndex;             //! Index of current MS within the TS
 
          /// Current data properties
@@ -115,13 +113,13 @@ class CbmMcbm2018MonitorAlgoPsd : public CbmStar2019Algo<CbmPsdDigi>
       Double_t              fdStartTimeMsSz;       /** Time of first microslice, used as reference for evolution plots**/
       std::chrono::steady_clock::time_point ftStartTimeUnix; /** Time of run Start from UNIX system, used as reference for long evolution plots against reception time **/
 
-      /// Histograms related variables
+         /// Histograms related variables
       UInt_t   fuHistoryHistoSize; /** Size in seconds of the evolution histograms **/
       std::vector< Int_t > fviHistoChargeArgs; /** Charge histogram arguments in adc counts **/
       std::vector< Int_t > fviHistoAmplArgs;   /** Amplitude histogram arguments in adc counts **/
       std::vector< Int_t > fviHistoZLArgs;     /** ZeroLevel histogram arguments in adc counts **/
 
-      /// Histograms
+         /// Histograms
       UInt_t                fuReadEvtCnt;
       UInt_t                fuMsgsCntInMs;
       UInt_t                fuReadMsgsCntInMs;
@@ -140,6 +138,7 @@ class CbmMcbm2018MonitorAlgoPsd : public CbmStar2019Algo<CbmPsdDigi>
       std::vector< TH1      * > fvhHitChargeByWfmChan;
       std::vector< TH2      * > fvhHitChargeEvoChan;
       std::vector< TH1      * > fvhHitWfmChan;
+      std::vector< TH1      * > fvhHitFitWfmChan;
 
       static const UInt_t kuNbWfmRanges = 8;
       static const UInt_t kuNbWfmExamples = 8;
@@ -172,13 +171,19 @@ class CbmMcbm2018MonitorAlgoPsd : public CbmStar2019Algo<CbmPsdDigi>
       TH1      * fhReadEvtsCntEvo;
 
       TH2      * fhAdcTimeEvo;
+      TH2      * fhMsLengthEvo;
 
       TH2      * fhMsgsCntPerMsEvo;
       TH2      * fhReadMsgsCntPerMsEvo;
       TH2      * fhLostMsgsCntPerMsEvo;
       TH2      * fhReadEvtsCntPerMsEvo;
 
-      /// Canvases
+         /// Waveform fitting
+      std::vector< TH2      * > fvhFitHarmonic1Chan;
+      std::vector< TH2      * > fvhFitHarmonic2Chan;
+      std::vector< TH2      * > fvhFitQaChan;
+
+         /// Canvases
       TCanvas * fcSummary;
       TCanvas * fcHitMaps;
       TCanvas * fcChargesFPGA;
@@ -189,6 +194,7 @@ class CbmMcbm2018MonitorAlgoPsd : public CbmStar2019Algo<CbmPsdDigi>
       TCanvas * fcSpillCountsHori;
       TCanvas * fcWfmsAllChannels;
       std::vector< TCanvas  * > fvcWfmsChan;
+      TCanvas * fcPronyFit;
 
       CbmMcbm2018MonitorAlgoPsd(const CbmMcbm2018MonitorAlgoPsd&);
       CbmMcbm2018MonitorAlgoPsd operator=(const CbmMcbm2018MonitorAlgoPsd&);

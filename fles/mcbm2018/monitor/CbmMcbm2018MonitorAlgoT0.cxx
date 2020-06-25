@@ -368,9 +368,9 @@ Bool_t CbmMcbm2018MonitorAlgoT0::ProcessMs( const fles::Timeslice& ts, size_t uM
                             static_cast<unsigned int>(msDescriptor.hdr_id),
                             static_cast<unsigned int>(msDescriptor.hdr_ver), msDescriptor.eq_id, msDescriptor.flags,
                             static_cast<unsigned int>(msDescriptor.sys_id),
-                            static_cast<unsigned int>(msDescriptor.sys_ver), 
+                            static_cast<unsigned int>(msDescriptor.sys_ver),
                             static_cast<unsigned long>(msDescriptor.idx), msDescriptor.crc,
-                            msDescriptor.size, 
+                            msDescriptor.size,
                             static_cast<unsigned long>(msDescriptor.offset) );
    } // if( fulCurrentTsIdx < 10 && 0 == uMsIdx )
 /*
@@ -424,6 +424,7 @@ Bool_t CbmMcbm2018MonitorAlgoT0::ProcessMs( const fles::Timeslice& ts, size_t uM
             fuCurrentSpillIdx++;
             fuCurrentSpillPlot = ( fuCurrentSpillPlot + 1 ) % kuNbSpillPlots;
             fdStartTimeSpill = fdMsTime;
+            fvhDpbMapSpill[ fuCurrentSpillPlot ]->Reset();
             fvhChannelMapSpill[ fuCurrentSpillPlot ]->Reset();
          } // if( fbSpillOn && fuCountsLastSecond < fuOffSpillCountLimit )
          else if( fuOffSpillCountLimit < fuCountsLastSecond  )
@@ -513,8 +514,10 @@ Bool_t CbmMcbm2018MonitorAlgoT0::ProcessMs( const fles::Timeslice& ts, size_t uM
                   UInt_t uTot     = mess.getGdpbHit32Tot();
                   if( uTot < fuMinTotPulser || fuMaxTotPulser < uTot )
                   {
+                     fhDpbMap->Fill( fuCurrDpbIdx );
                      fhChannelMap->Fill( uChannelT0 );
 
+                     fvhDpbMapSpill[ fuCurrentSpillPlot ]->Fill( fuCurrDpbIdx );
                      fvhChannelMapSpill[ fuCurrentSpillPlot ]->Fill( fuDiamChanMap[ uChannelT0 ] );
                      fhHitsPerSpill->Fill( fuCurrentSpillIdx );
                   } // if( uTot < fuMinTotPulser || fuMaxTotPulser < uTot )
@@ -879,14 +882,16 @@ Bool_t CbmMcbm2018MonitorAlgoT0::CreateHistograms()
    uint32_t iNbBinsLog = 0;
       /// Parameters are NbDecadesLog, NbStepsDecade, NbSubStepsInStep
    std::vector<double> dBinsLogVector = GenerateLogBinArray( 4, 9, 1, iNbBinsLog );
-   double* dBinsLog = dBinsLogVector.data();                     
+   double* dBinsLog = dBinsLogVector.data();
 //   double * dBinsLog = GenerateLogBinArray( 4, 9, 1, iNbBinsLog );
 
    /*******************************************************************/
+   fhDpbMap = new TH1I( "hDpbMap", "Map of hits on T0 detector; DPB; Hits Count []",
+                           fuNrOfGdpbs, -0.5, fuNrOfGdpbs - 0.5 );
    fhChannelMap = new TH1I( "hChannelMap", "Map of hits on T0 detector; Strip; Hits Count []",
-                           kuNbChanDiamond, 0., kuNbChanDiamond);
+                           kuNbChanDiamond, -0.5, kuNbChanDiamond - 0.5 );
    fhHitMapEvo = new TH2I( "hHitMapEvo", "Map of hits on T0 detector vs time in run; Chan; Time in run [s]; Hits Count []",
-                           kuNbChanDiamond, 0., kuNbChanDiamond,
+                           kuNbChanDiamond, -0.5, kuNbChanDiamond - 0.5,
                            fuHistoryHistoSize, 0, fuHistoryHistoSize );
    fhHitTotEvo = new TH2I( "hHitTotEvo", "Evolution of TOT in T0 detector vs time in run; Time in run [s]; TOT [ bin ]; Hits Count []",
                            fuHistoryHistoSize, 0, fuHistoryHistoSize,
@@ -896,9 +901,12 @@ Bool_t CbmMcbm2018MonitorAlgoT0::CreateHistograms()
                            fuHistoryHistoSize, 0, fuHistoryHistoSize );
    for( UInt_t uSpill = 0; uSpill < kuNbSpillPlots; uSpill ++)
    {
+      fvhDpbMapSpill.push_back( new TH1I( Form("hDpbMapSpill%02u", uSpill),
+                                     Form("Map of hits on T0 detector in current spill %02u; DPB; Hits Count []", uSpill),
+                              fuNrOfGdpbs, -0.5, fuNrOfGdpbs - 0.5) );
       fvhChannelMapSpill.push_back( new TH1I( Form("hChannelMapSpill%02u", uSpill),
                                      Form("Map of hits on T0 detector in current spill %02u; Strip; Hits Count []", uSpill),
-                              kuNbChanDiamond, 0., kuNbChanDiamond) );
+                              kuNbChanDiamond, -0.5, kuNbChanDiamond - 0.5) );
    } // for( UInt_t uSpill = 0; uSpill < kuNbSpillPlots; uSpill ++)
    fhHitsPerSpill = new TH1I( "hHitsPerSpill", "Hit count per spill; Spill; Hits Count []",
                            2000, 0., 2000);
@@ -954,12 +962,16 @@ Bool_t CbmMcbm2018MonitorAlgoT0::CreateHistograms()
                            fuHistoryHistoSize, 0, fuHistoryHistoSize );
 
    /// Add pointers to the vector with all histo for access by steering class
+   AddHistoToVector( fhDpbMap, sFolder );
    AddHistoToVector( fhChannelMap, sFolder );
    AddHistoToVector( fhHitMapEvo, sFolder );
    AddHistoToVector( fhHitTotEvo, sFolder );
    AddHistoToVector( fhChanHitMapEvo, sFolder );
    for( UInt_t uSpill = 0; uSpill < kuNbSpillPlots; uSpill ++)
+   {
+      AddHistoToVector( fvhDpbMapSpill[ uSpill ], sFolder );
       AddHistoToVector( fvhChannelMapSpill[ uSpill ], sFolder );
+   } // for( UInt_t uSpill = 0; uSpill < kuNbSpillPlots; uSpill ++)
    AddHistoToVector( fhHitsPerSpill, sFolder );
 
    AddHistoToVector( fhMsgCntEvo, sFolder );
@@ -1204,6 +1216,30 @@ Bool_t CbmMcbm2018MonitorAlgoT0::CreateHistograms()
    AddCanvasToVector( fcSpillCountsHori, "canvases" );
    /*******************************************************************/
 
+   /*******************************************************************/
+   /// General summary: Hit maps, Hit rate vs time in run, error fraction vs time un run
+   fcSpillDpbCountsHori = new TCanvas( "cSpillDpbCountsHori", "Counts in DPB per spill, last 5 spills including current one", w, h);
+   fcSpillDpbCountsHori->Divide( kuNbSpillPlots );
+
+   for( UInt_t uSpill = 0; uSpill < kuNbSpillPlots; uSpill ++)
+   {
+      fcSpillDpbCountsHori->cd( 1 + uSpill );
+      gPad->SetGridx();
+      gPad->SetGridy();
+      gPad->SetLogy();
+      fvhDpbMapSpill[ uSpill ]->Draw();
+      gPad->Update();
+      TPaveStats* st = (TPaveStats *)fvhDpbMapSpill[ uSpill ]->FindObject( "stats" );
+      st->SetOptStat( 110 );
+      st->SetX1NDC( 0.25 );
+      st->SetX2NDC( 0.95 );
+      st->SetY1NDC( 0.90 );
+      st->SetY2NDC( 0.95 );
+   } // for( UInt_t uSpill = 0; uSpill < kuNbSpillPlots; uSpill ++)
+
+   AddCanvasToVector( fcSpillDpbCountsHori, "canvases" );
+   /*******************************************************************/
+
    return kTRUE;
 }
 Bool_t CbmMcbm2018MonitorAlgoT0::FillHistograms()
@@ -1253,7 +1289,7 @@ Bool_t CbmMcbm2018MonitorAlgoT0::FillHistograms()
 
    return kTRUE;
 }
-Bool_t CbmMcbm2018MonitorAlgoT0::ResetHistograms(  Bool_t bResetTime )
+Bool_t CbmMcbm2018MonitorAlgoT0::ResetHistograms( Bool_t bResetTime )
 {
    for( UInt_t uChan = 0; uChan < kuNbChanDiamond; ++uChan )
    {
@@ -1278,10 +1314,14 @@ Bool_t CbmMcbm2018MonitorAlgoT0::ResetHistograms(  Bool_t bResetTime )
 
    fuCurrentSpillIdx = 0;
    fuCurrentSpillPlot = 0;
+   fhDpbMap->Reset();
    fhChannelMap->Reset();
    fhHitMapEvo->Reset();
    for( UInt_t uSpill = 0; uSpill < kuNbSpillPlots; uSpill ++)
+   {
+      fvhDpbMapSpill[ uSpill ]->Reset();
       fvhChannelMapSpill[ uSpill ]->Reset();
+   } // for( UInt_t uSpill = 0; uSpill < kuNbSpillPlots; uSpill ++)
    fhHitsPerSpill->Reset();
 
    fhMsgCntEvo->Reset();
