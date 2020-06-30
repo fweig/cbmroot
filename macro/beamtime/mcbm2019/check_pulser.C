@@ -46,7 +46,7 @@ void check_pulser( UInt_t uRunId = 0, Int_t nrEvents = 0, TString sDir="data" )
   CbmMcbm2019CheckPulser* pulserChecker = new CbmMcbm2019CheckPulser();
   pulserChecker->SetT0PulserTotLimits(     184,   191 );
   pulserChecker->SetStsPulserAdcLimits(     31,     0 );
-  pulserChecker->SetMuchPulseradcLimits(     5,    10 );
+  pulserChecker->SetMuchPulserAdcLimits(     5,    10 );
   pulserChecker->SetTofPulserTotLimits(    184,   191 );
   pulserChecker->SetRichPulserTotLimits(     1,     0 );
   pulserChecker->SetPsdPulserAdcLimits(      0, 70000 );
