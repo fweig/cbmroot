@@ -222,7 +222,8 @@ Bool_t CbmMcbm2018UnpackerTaskTof::DoUnpack(const fles::Timeslice& ts, size_t /*
 
    vDigi.clear();
    fUnpackerAlgo->ClearVector();
-
+   if( kTRUE == fbMonitorMode )
+   {
    if( kTRUE == fbSeparateArrayT0 )
    {
      fhArraySize->Fill( fulTsCounter, fpvDigiTof->size() + fpvDigiT0->size() );
@@ -233,6 +234,7 @@ Bool_t CbmMcbm2018UnpackerTaskTof::DoUnpack(const fles::Timeslice& ts, size_t /*
         fhArraySize->Fill( fulTsCounter, fpvDigiTof->size()  );
         fhArrayCapacity->Fill( fulTsCounter, fpvDigiTof->capacity()  );
       } // else of if( kTRUE == fbSeparateArrayT0 )
+   } // if( kTRUE == fbMonitorMode )
 
    if( 0 == fulTsCounter % 10000 )
       LOG(info) << "Processed " << fulTsCounter << "TS";

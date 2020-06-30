@@ -17,6 +17,13 @@
 class CbmMcbm2018UnpackerAlgoMuch;
 //class TClonesArray;
 
+struct MuchFebChanMask
+{
+   UInt_t uFeb;
+   UInt_t uChan;
+   Bool_t bMasked;
+};
+
 class CbmMcbm2018UnpackerTaskMuch : public CbmMcbmUnpack
 {
    public:
@@ -51,14 +58,25 @@ class CbmMcbm2018UnpackerTaskMuch : public CbmMcbmUnpack
       void SetTimeOffsetNsAsic( UInt_t uAsicIdx, Double_t dOffsetIn = 0.0 );
 
       void EnableAsicType( Int_t fiFlag = 0 );
+
+      /// => Quick and dirty hack for binning FW!!!
+      void SetBinningFwFlag( Bool_t bEnable = kTRUE );
+
       /// Task settings
       void SetWriteOutputFlag( Bool_t bFlagIn ) { fbWriteOutput = bFlagIn; }
+      //Masking Noisy Channels
+      void MaskNoisyChannel( UInt_t uFeb, UInt_t uChan, Bool_t bMasked = kTRUE );
+      /// ADC cut
+      void SetAdcCut( UInt_t uAdc );
 
    private:
       /// Control flags
       Bool_t fbMonitorMode;  //! Switch ON the filling of a minimal set of histograms
       Bool_t fbDebugMonitorMode; //! Switch ON the filling of a additional set of histograms
       Bool_t fbWriteOutput; //! If ON the output TClonesArray of digi is written to disk
+
+      /// Temporary storage of user parameters
+      std::vector< MuchFebChanMask > fvChanMasks;
 
       /// Statistics & first TS rejection
       uint64_t fulTsCounter;

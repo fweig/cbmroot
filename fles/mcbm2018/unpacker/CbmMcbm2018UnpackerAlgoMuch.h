@@ -62,9 +62,16 @@ class CbmMcbm2018UnpackerAlgoMuch : public CbmStar2019Algo<CbmMuchBeamTimeDigi>
       inline void SetMonitorMode( Bool_t bFlagIn = kTRUE ) { fbMonitorMode = bFlagIn; }
       inline void SetTimeOffsetNs( Double_t dOffsetIn = 0.0 ) { fdTimeOffsetNs = dOffsetIn; }
       void SetTimeOffsetNsAsic( UInt_t uAsicIdx, Double_t dOffsetIn = 0.0 );
-
+      void MaskNoisyChannel( UInt_t uFeb, UInt_t uChan, Bool_t bMasked = kTRUE );
       void EnableAsicType( Int_t flag = 0 ) { fiFlag = flag; }
+
+      /// => Quick and dirty hack for binning FW!!!
+      void SetBinningFwFlag( Bool_t bEnable = kTRUE ) { fbBinningFw = bEnable; }
+
       inline void SetVectCapInc( Double_t dIncFact ) { fdCapacityIncFactor = dIncFact; }
+
+      void SetAdcCut( UInt_t uAdc ) { fdAdcCut = uAdc; }
+
 
       CbmMuchBeamTimeDigi * CreateMuchDigi(stsxyter::FinalHit *);
 
@@ -74,6 +81,8 @@ class CbmMcbm2018UnpackerAlgoMuch : public CbmStar2019Algo<CbmMuchBeamTimeDigi>
       Bool_t fbMonitorMode;      //! Switch ON the filling of a minimal set of histograms
       Bool_t fbDebugMonitorMode; //! Switch ON the filling of a additional set of histograms
       std::vector< Bool_t >    fvbMaskedComponents;
+         /// => Quick and dirty hack for binning FW!!!
+      Bool_t fbBinningFw = kFALSE;
 
       Int_t fiFlag;              //! Switch to smx2.0/smx2.1 data-> fiFlag = 0 for 2.0 and fiFlag = 1 for 2.1
 
@@ -89,7 +98,11 @@ class CbmMcbm2018UnpackerAlgoMuch : public CbmStar2019Algo<CbmMuchBeamTimeDigi>
       /// User settings: Data correction parameters
       Double_t fdTimeOffsetNs;
       std::vector< Double_t > fvdTimeOffsetNsAsics;
+      //std::vector< Int_t >     fviFebAddress;  //! Much address for each FEB, [ NbDpb * NbCrobPerDpb * NbFebsPerCrob ]
 
+      Bool_t fbUseChannelMask;
+      std::vector< std::vector< bool > > fvvbMaskedChannels; //! Vector of channel masks, [ NbFeb ][ NbCHanInFeb ], used only if fbUseChannelMask is true
+      UInt_t fdAdcCut;
       /// Constants
       static const Int_t    kiMaxNbFlibLinks = 32;
 

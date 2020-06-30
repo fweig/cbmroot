@@ -35,6 +35,7 @@ CbmMcbm2018UnpackerTaskMuch::CbmMcbm2018UnpackerTaskMuch( UInt_t /*uNbGdpb*/ )
   : CbmMcbmUnpack(),
     fbMonitorMode( kFALSE ),
     fbWriteOutput( kTRUE ),
+    fvChanMasks(),
     fulTsCounter( 0 ),
     fUnpackerAlgo( nullptr )
 {
@@ -141,6 +142,11 @@ Bool_t CbmMcbm2018UnpackerTaskMuch::InitContainers()
    } // if( kTRUE == fbMonitorMode )
 
    fUnpackerAlgo->SetMonitorMode( fbMonitorMode );
+
+   for( std::vector< MuchFebChanMask >::iterator it = fvChanMasks.begin();
+        it < fvChanMasks.end();
+        ++it )
+      fUnpackerAlgo->MaskNoisyChannel( (*it).uFeb, (*it).uChan, (*it).bMasked );
 
    return initOK;
 }
@@ -254,4 +260,23 @@ void CbmMcbm2018UnpackerTaskMuch::EnableAsicType( Int_t fiFlag )
 {
    fUnpackerAlgo->EnableAsicType( fiFlag );
 }
+
+void CbmMcbm2018UnpackerTaskMuch::SetBinningFwFlag( Bool_t bEnable )
+{
+   fUnpackerAlgo->SetBinningFwFlag( bEnable );
+}
+
+void CbmMcbm2018UnpackerTaskMuch::MaskNoisyChannel( UInt_t uFeb, UInt_t uChan, Bool_t bMasked )
+{
+
+   fvChanMasks.push_back( MuchFebChanMask{ uFeb, uChan, bMasked } );
+
+}
+
+void CbmMcbm2018UnpackerTaskMuch::SetAdcCut( UInt_t uAdc )
+{
+   fUnpackerAlgo->SetAdcCut( uAdc );
+}
+
+
 ClassImp(CbmMcbm2018UnpackerTaskMuch)

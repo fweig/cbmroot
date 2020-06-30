@@ -42,9 +42,13 @@ CbmMcbm2018UnpackerAlgoMuch::CbmMcbm2018UnpackerAlgoMuch() :
    fDpbIdIndexMap(),
    fvbCrobActiveFlag(),
    fuNbFebs( 0 ),
+   //fviFebAddress(),
    fuNbStsXyters( 0 ),
    fdTimeOffsetNs( 0.0 ),
    fvdTimeOffsetNsAsics(),
+   fbUseChannelMask( kFALSE ),
+   fvvbMaskedChannels(),
+   fdAdcCut( 0 ),
    fulCurrentTsIdx( 0 ),
    fulCurrentMsIdx( 0 ),
    fdTsStartTime( -1.0 ),
@@ -86,6 +90,11 @@ CbmMcbm2018UnpackerAlgoMuch::~CbmMcbm2018UnpackerAlgoMuch()
       fvmHitsInMs[ uDpb ].clear();
    } // for( UInt_t uDpb = 0; uDpb < fuNrOfDpbs; ++uDpb )
 */
+
+   if( nullptr != fParCList )
+      delete fParCList;
+   if( nullptr != fUnpackPar )
+      delete fUnpackPar;
 }
 
 // -------------------------------------------------------------------------
@@ -204,6 +213,11 @@ Bool_t CbmMcbm2018UnpackerAlgoMuch::InitParameters()
       } // for( UInt_t uCrobIdx = 0; uCrobIdx < fUnpackPar->GetNbCrobsPerDpb(); ++uCrobIdx )
    } // for( UInt_t uDpb = 0; uDpb < fuNrOfDpbs; ++uDpb )
 */
+
+   if( fbBinningFw )
+      LOG(info) << "Unpacking data in bin sorter FW mode";
+      else LOG(info) << "Unpacking data in full time sorter FW mode (legacy)";
+
    // Internal status initialization
    fvulCurrentTsMsb.resize( fuNrOfDpbs );
    fvuCurrentTsMsbCycle.resize( fuNrOfDpbs );
@@ -553,6 +567,11 @@ Bool_t CbmMcbm2018UnpackerAlgoMuch::ProcessMs( const fles::Timeslice& ts, size_t
    UInt_t uTsMsbCycleHeader = std::floor( fulCurrentMsIdx /
                                           ( stsxyter::kulTsCycleNbBins * stsxyter::kdClockCycleNs ) );
 
+   /// => Quick and dirty hack for binning FW!!!
+   if( kTRUE == fbBinningFw )
+      uTsMsbCycleHeader = std::floor( fulCurrentMsIdx /
+                                          ( stsxyter::kulTsCycleNbBinsBinning * stsxyter::kdClockCycleNs ) );
+
    if( 0 == uMsIdx )
    {
       if( uTsMsbCycleHeader != fvuCurrentTsMsbCycle[ fuCurrDpbIdx ] )
@@ -617,6 +636,9 @@ Bool_t CbmMcbm2018UnpackerAlgoMuch::ProcessMs( const fles::Timeslice& ts, size_t
          {
             // Extract the eLink and Asic indices => Should GO IN the fill method now that obly hits are link/asic specific!
             UShort_t usElinkIdx = pMess[uIdx].GetLinkIndex();
+            /// => Quick and dirty hack for binning FW!!!
+            if( kTRUE == fbBinningFw )
+               usElinkIdx = pMess[uIdx].GetLinkIndexHitBinning();
 //            fhStsMessTypePerElink->Fill( usElinkIdx, static_cast< uint16_t > (typeMess) );
 //            fhStsHitsElinkPerDpb->Fill( fuCurrDpbIdx, usElinkIdx );
 
@@ -686,6 +708,16 @@ Bool_t CbmMcbm2018UnpackerAlgoMuch::ProcessMs( const fles::Timeslice& ts, size_t
 //                   FillTsMsbInfo( pMess[uIdx] );
             break;
          } // case stsxyter::MessType::Empty :
+         case stsxyter::MessType::EndOfMs :
+         {
+            if( pMess[uIdx].IsMsErrorFlagOn() )
+            {
+               fErrVect.push_back( CbmErrorMessage( ECbmModuleId::kMuch, fulCurrentMsIdx,
+                                                    fuCurrDpbIdx, 0x20,
+                                                    pMess[uIdx].GetMsErrorType() ) );
+            } // if( pMess[uIdx].IsMsErrorFlagOn() )
+            break;
+         } // case stsxyter::MessType::EndOfMs :
          case stsxyter::MessType::Dummy :
          {
 //            fhStsMessTypePerElink->Fill( fuCurrDpbIdx * fUnpackPar->GetNbElinkPerDpb(), static_cast< uint16_t > (typeMess) );
@@ -711,6 +743,10 @@ void CbmMcbm2018UnpackerAlgoMuch::ProcessHitInfo( const stsxyter::Message & mess
 //   UShort_t usFullTs = mess.GetHitTimeFull();
 //   UShort_t usTsOver = mess.GetHitTimeOver();
    UShort_t usRawTs  = mess.GetHitTime();
+
+   /// => Quick and dirty hack for binning FW!!!
+   if( kTRUE == fbBinningFw )
+      usRawTs  = mess.GetHitTimeBinning();
 
    /// Cheat needed only for modules with FEB at bottom of module or the Test module
 //   usChan = 127 - usChan;
@@ -763,10 +799,29 @@ void CbmMcbm2018UnpackerAlgoMuch::ProcessHitInfo( const stsxyter::Message & mess
              + static_cast<ULong64_t>( stsxyter::kulTsCycleNbBins )
              * static_cast<ULong64_t>( fvuCurrentTsMsbCycle[fuCurrDpbIdx] );
 
+   /// => Quick and dirty hack for binning FW!!!
+   if( kTRUE == fbBinningFw )
+      ulHitTime = usRawTs +
+               static_cast<ULong64_t>( stsxyter::kuHitNbTsBinsBinning )
+             * static_cast<ULong64_t>( fvulCurrentTsMsb[fuCurrDpbIdx])
+             + static_cast<ULong64_t>( stsxyter::kulTsCycleNbBinsBinning )
+             * static_cast<ULong64_t>( fvuCurrentTsMsbCycle[fuCurrDpbIdx] )
+             ;
+
    // Convert the Hit time in bins to Hit time in ns
    Double_t dHitTimeNs = ulHitTime * stsxyter::kdClockCycleNs;
 
-   fvmHitsInMs.push_back( stsxyter::FinalHit( ulHitTime, usRawAdc, uAsicIdx, usChan, fuCurrDpbIdx, uCrobIdx ) );
+   /// Store hit for output only if it is mapped to a module!!!
+   //if( 0 != fviFebAddress[ uFebIdx ] && fdAdcCut < usRawAdc )
+   if( fdAdcCut < usRawAdc )
+   {
+      /// Store only if masking is disabled or if channeld is not masked
+      /// 2D vector is safe as always right size if masking enabled
+      if( kFALSE == fbUseChannelMask || false == fvvbMaskedChannels[ uAsicIdx ][ usChan ] )
+         fvmHitsInMs.push_back( stsxyter::FinalHit( ulHitTime, usRawAdc, uAsicIdx, usChan, fuCurrDpbIdx, uCrobIdx ) );
+   } // if( 0 != fviFebAddress[ uFebIdx ] )
+
+   // fvmHitsInMs.push_back( stsxyter::FinalHit( ulHitTime, usRawAdc, uAsicIdx, usChan, fuCurrDpbIdx, uCrobIdx ) );
 
    /// If EM flag ON, store a corresponding error message with the next flag after all other possible status flags set
    if( mess.IsHitMissedEvts() )
@@ -812,6 +867,10 @@ void CbmMcbm2018UnpackerAlgoMuch::ProcessTsMsbInfo( const stsxyter::Message & me
 {
    UInt_t uVal    = mess.GetTsMsbVal();
 
+   /// => Quick and dirty hack for binning FW!!!
+   if( kTRUE == fbBinningFw )
+      uVal = mess.GetTsMsbValBinning();
+
 /*
    if( (uVal != fvulCurrentTsMsb[fuCurrDpbIdx] + 1) && 0 < uVal  &&
        !( 1 == uMessIdx && usVal == fvulCurrentTsMsb[fuCurrDpbIdx] ) ) // 1st TS_MSB in MS is always a repeat of the last one in previous MS!
@@ -846,7 +905,9 @@ void CbmMcbm2018UnpackerAlgoMuch::ProcessTsMsbInfo( const stsxyter::Message & me
    if( uVal != fvulCurrentTsMsb[fuCurrDpbIdx] + 1 &&
        !( 0 == uVal && 4194303 == fvulCurrentTsMsb[fuCurrDpbIdx] ) && /// Case where we reach a normal cycle edge
        1 != uMessIdx && /// First TS_MSB in MS may jump if TS dropped by DAQ
-       !( 0 == uVal && 0 == fvulCurrentTsMsb[fuCurrDpbIdx] && 2 == uMessIdx ) ) /// case with cycle et edge of 2 MS
+       !( 0 == uVal && 0 == fvulCurrentTsMsb[fuCurrDpbIdx] && 2 == uMessIdx ) && /// case with cycle et edge of 2 MS
+       uVal < fvulCurrentTsMsb[fuCurrDpbIdx]  /// New FW introduced TS_MSB suppression + large TS_MSB => warning only if value not increasing
+      )
    {
       LOG(info) << "TS MSb Jump in "
                 << " TS " << std::setw( 12 ) << fulCurrentTsIdx
@@ -914,6 +975,14 @@ void CbmMcbm2018UnpackerAlgoMuch::ProcessStatusInfo( const stsxyter::Message & m
                     * static_cast<ULong64_t>( fvulCurrentTsMsb[fuCurrDpbIdx])
                     + static_cast<ULong64_t>( stsxyter::kulTsCycleNbBins )
                     * static_cast<ULong64_t>( fvuCurrentTsMsbCycle[fuCurrDpbIdx] );
+
+   /// => Quick and dirty hack for binning FW!!!
+   if( kTRUE == fbBinningFw )
+      ulTime =  static_cast<ULong64_t>( stsxyter::kuHitNbTsBinsBinning )
+              * static_cast<ULong64_t>( fvulCurrentTsMsb[fuCurrDpbIdx])
+              + static_cast<ULong64_t>( stsxyter::kulTsCycleNbBinsBinning )
+              * static_cast<ULong64_t>( fvuCurrentTsMsbCycle[fuCurrDpbIdx] );
+
       /// Convert the time in bins to Hit time in ns
    Double_t dTimeNs = ulTime * stsxyter::kdClockCycleNs;
 
@@ -1232,3 +1301,22 @@ void CbmMcbm2018UnpackerAlgoMuch::SetTimeOffsetNsAsic( UInt_t uAsicIdx, Double_t
    fvdTimeOffsetNsAsics[ uAsicIdx ] = dOffsetIn;
 }
 // -------------------------------------------------------------------------
+void CbmMcbm2018UnpackerAlgoMuch::MaskNoisyChannel( UInt_t uFeb, UInt_t uChan, Bool_t bMasked )
+{
+   if( kFALSE == fbUseChannelMask )
+   {
+      fbUseChannelMask = kTRUE;
+      fvvbMaskedChannels.resize( fuNbFebs );
+      for( UInt_t uFebIdx = 0; uFebIdx < fuNbFebs; ++uFebIdx )
+      {
+         fvvbMaskedChannels[ uFebIdx ].resize( fUnpackPar->GetNbChanPerFeb(), false );
+      } // for( UInt_t uFeb = 0; uFeb < fuNbFebs; ++uFeb )
+   } // if( kFALSE == fbUseChannelMask )
+   if( uFeb < fuNbFebs && uChan < fUnpackPar->GetNbChanPerFeb() )
+      fvvbMaskedChannels[ uFeb ][ uChan ] = bMasked;
+      else LOG( fatal ) << "CbmMcbm2018UnpackerAlgoMuch::MaskNoisyChannel => Invalid FEB and/or CHAN index:"
+                        << Form( " %u vs %u and %u vs %u",  uFeb, fuNbFebs, uChan, fUnpackPar->GetNbChanPerFeb() );
+}
+// -------------------------------------------------------------------------
+
+

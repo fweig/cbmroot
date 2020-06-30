@@ -121,6 +121,10 @@ CbmMcbm2018UnpackerAlgoTof::~CbmMcbm2018UnpackerAlgoTof()
    {
       fvvmEpSupprBuffer[ uGdpb ].clear();
    } // for( UInt_t uGdpb = 0; uGdpb < fuNrOfGdpbs; ++uGdpb )
+   if( nullptr != fParCList )
+      delete fParCList;
+   if( nullptr != fUnpackPar )
+      delete fUnpackPar;
 }
 
 // -------------------------------------------------------------------------
@@ -474,6 +478,8 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::InitParameters()
    {
       if( 0 == uCh % 8 )
          sPrintout += "\n";
+      if( 0 == uCh % fuNrOfChannelsPerGdpb )
+         sPrintout += Form( "\n Gdpb %u\n", uCh / fuNrOfChannelsPerGdpb );
       sPrintout += Form(" 0x%08x", fviRpcChUId[ uCh ] );
    } // for( UInt_t i = 0; i < uNrOfChannels; ++i)
    LOG(info) << sPrintout;
@@ -720,6 +726,8 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::ProcessMs( const fles::Timeslice& ts, size_t 
       messageType = pMess[ uIdx ].getMessageType();
 
       fuGet4Id = fUnpackPar->ElinkIdxToGet4Idx( pMess[ uIdx ].getGdpbGenChipId() );
+      if( fuDiamondDpbIdx == fuCurrDpbIdx || 0x90 == fuCurrentMsSysId )
+         fuGet4Id = pMess[ uIdx ].getGdpbGenChipId();
       fuGet4Nr = (fuCurrDpbIdx * fuNrOfGet4PerGdpb) + fuGet4Id;
 
       if( fuNrOfGet4PerGdpb <= fuGet4Id &&
