@@ -22,6 +22,7 @@
 
 class TClonesArray;
 class TH1;
+class TH2;
 class CbmDigiManager;
 
 
@@ -79,6 +80,8 @@ class CbmMcbm2018EventBuilder : public FairTask
     virtual void Finish();
 
     void SetFillHistos(Bool_t var) {fFillHistos = var;}
+    void SetOutFilename( TString sNameIn ) { fOutFileName = sNameIn; }
+
     void SetEventBuilderAlgo(EventBuilderAlgo algo = EventBuilderAlgo::FixedTimeWindow)
         {fEventBuilderAlgo = algo;}
     void SetFixedTimeWindow(Double_t val) {fFixedTimeWindow = val;}
@@ -87,10 +90,12 @@ class CbmMcbm2018EventBuilder : public FairTask
     void SetTriggerMinNumberT0(Int_t val)   {fTriggerMinT0Digis = val;}
     void SetTriggerMinNumberSts(Int_t val)  {fTriggerMinStsDigis = val;}
     void SetTriggerMinNumberMuch(Int_t val) {fTriggerMinMuchDigis = val;}
+    void SetTriggerMinNumberTrd(Int_t val)  {fTriggerMinTrdDigis = val;}
     void SetTriggerMinNumberTof(Int_t val)  {fTriggerMinTofDigis = val;}
     void SetTriggerMinNumberRich(Int_t val) {fTriggerMinRichDigis = val;}
     void SetTriggerMinNumberPsd(Int_t val)  {fTriggerMinPsdDigis = val;}
 
+    void SetUseBaseMuchDigi( Bool_t bFlag = kTRUE ) { fbUseBaseMuchDigi = bFlag; }
   private:
 
     void InitSorter();
@@ -110,6 +115,7 @@ class CbmMcbm2018EventBuilder : public FairTask
     Int_t fNrTs{0};         //! Timeslice Counter
     Double_t fPrevTime{0.}; //! Save previous time information
 
+    Bool_t fbUseBaseMuchDigi = kFALSE;
     CbmDigiManager* fDigiMan = nullptr;  //!
     const std::vector<CbmTofDigi>* fT0DigiVec = nullptr; //!
     TClonesArray* fT0DigiArr = nullptr;   //! input container of TO digis
@@ -126,6 +132,17 @@ class CbmMcbm2018EventBuilder : public FairTask
     std::vector<CbmEvent*> fEventVector;    //! vector with all created events
 
     TH1* fDiffTime{nullptr};                //! histogram with the time difference between two consecutive digis
+    TH1* fhEventTime{nullptr};              //! histogram with the seed time of the events
+    TH1* fhEventDt{nullptr};                //! histogram with the interval in seed time of consecutive events
+    TH1* fhEventSize{nullptr};              //! histogram with the nb of all  digis in the event
+    TH2* fhNbDigiPerEvtTime{nullptr};       //! histogram with the nb of all  digis per event vs seed time of the events
+    TH2* fhNbDigiPerEvtTimeT0{nullptr};     //! histogram with the nb of T0   digis per event vs seed time of the events
+    TH2* fhNbDigiPerEvtTimeSts{nullptr};    //! histogram with the nb of STS  digis per event vs seed time of the events
+    TH2* fhNbDigiPerEvtTimeMuch{nullptr};   //! histogram with the nb of MUCH digis per event vs seed time of the events
+    TH2* fhNbDigiPerEvtTimeTrd{nullptr};    //! histogram with the nb of TRD  digis per event vs seed time of the events
+    TH2* fhNbDigiPerEvtTimeTof{nullptr};    //! histogram with the nb of TOF  digis per event vs seed time of the events
+    TH2* fhNbDigiPerEvtTimeRich{nullptr};   //! histogram with the nb of RICH digis per event vs seed time of the events
+    TH2* fhNbDigiPerEvtTimePsd{nullptr};    //! histogram with the nb of PSD  digis per event vs seed time of the events
     Bool_t fFillHistos{kTRUE};              //! Switch ON/OFF filling of histograms
 
     /** Used event building algorithm **/
@@ -143,6 +160,8 @@ class CbmMcbm2018EventBuilder : public FairTask
     Int_t fTriggerMinStsDigis{0};
     /** Minimum number of Much digis needed to generate a trigger, 0 means don't use Much for trigger generation **/
     Int_t fTriggerMinMuchDigis{0};
+    /** Minimum number of Trd digis needed to generate a trigger, 0 means don't use Trd for trigger generation **/
+    Int_t fTriggerMinTrdDigis{0};
     /** Minimum number of Tof digis needed to generate a trigger, 0 means don't use Tof for trigger generation **/
     Int_t fTriggerMinTofDigis{0};
     /** Minimum number of Rich digis needed to generate a trigger, 0 means don't use Rich for trigger generation **/
@@ -151,7 +170,7 @@ class CbmMcbm2018EventBuilder : public FairTask
     Int_t fTriggerMinPsdDigis{0};
 
     /** Name of the histogram output file **/
-    TString fOutFileName{"test1.root"};
+    TString fOutFileName{"HistosEventBuilder.root"};
 
     ClassDef(CbmMcbm2018EventBuilder,2);
 };

@@ -65,6 +65,7 @@ InitStatus CbmCheckEvents::Init()
 
   // DigiManager
   fDigiMan = CbmDigiManager::Instance();
+  fDigiMan->UseMuchBeamTimeDigi();
   fDigiMan->Init();
 
   // Get a pointer to the previous already existing data level
@@ -186,7 +187,7 @@ void CbmCheckEvents::AnalyseEvent(CbmEvent* event)
   // difference between the digis
   GetTimeDiffT0(event, fT0DeltaT, fT0InEvent);
   GetTimeDiff<CbmStsDigi>(event, fStsDeltaT, fStsInEvent, ECbmDataType::kStsDigi);
-  GetTimeDiff<CbmMuchDigi>(event, fMuchDeltaT, fMuchInEvent, ECbmDataType::kMuchDigi);
+  GetTimeDiff<CbmMuchBeamTimeDigi>(event, fMuchDeltaT, fMuchInEvent, ECbmDataType::kMuchDigi);
   GetTimeDiff<CbmTofDigi>(event, fTofDeltaT, fTofInEvent, ECbmDataType::kTofDigi);
 }
 

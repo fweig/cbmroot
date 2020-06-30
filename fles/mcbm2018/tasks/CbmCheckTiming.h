@@ -69,6 +69,9 @@ class CbmCheckTiming : public FairTask
     void SetMuchOffsetSearchRange(Int_t val = 1000)
        { fMuchOffsetRange = val; }
 
+    void SetTrdOffsetSearchRange(Int_t val = 1000)
+       { fTrdOffsetRange = val; }
+
     void SetTofOffsetSearchRange(Int_t val = 1000)
        { fTofOffsetRange = val; }
 
@@ -125,6 +128,7 @@ class CbmCheckTiming : public FairTask
     Double_t fPrevTimeT0 = 0.;
     Double_t fPrevTimeSts = 0.;
     Double_t fPrevTimeMuch = 0.;
+    Double_t fPrevTimeTrd = 0.;
     Double_t fPrevTimeTof = 0.;
     Double_t fPrevTimeRich = 0.;
     Double_t fPrevTimePsd = 0.;
@@ -133,6 +137,7 @@ class CbmCheckTiming : public FairTask
     /// => Time-order means the time window for following one can only be in a later digi
     Int_t fPrevT0FirstDigiSts = 0;
     Int_t fPrevT0FirstDigiMuch = 0;
+    Int_t fPrevT0FirstDigiTrd = 0;
     Int_t fPrevT0FirstDigiTof = 0;
     Int_t fPrevT0FirstDigiRich = 0;
     Int_t fPrevT0FirstDigiPsd = 0;
@@ -152,6 +157,8 @@ class CbmCheckTiming : public FairTask
     Int_t fNrOfStsDigis = 0;
     Int_t fNrOfMuchErrors = 0;
     Int_t fNrOfMuchDigis = 0;
+    Int_t fNrOfTrdErrors = 0;
+    Int_t fNrOfTrdDigis = 0;
     Int_t fNrOfTofErrors = 0;
     Int_t fNrOfTofDigis = 0;
     Int_t fNrOfRichErrors = 0;
@@ -165,6 +172,7 @@ class CbmCheckTiming : public FairTask
     Int_t fOffsetRange = 1000;
     Int_t fStsOffsetRange = 1000;
     Int_t fMuchOffsetRange = 1000;
+    Int_t fTrdOffsetRange = 1000;
     Int_t fTofOffsetRange = 1000;
     Int_t fRichOffsetRange = 1000;
     Int_t fPsdOffsetRange = 1000;
@@ -173,24 +181,28 @@ class CbmCheckTiming : public FairTask
 
     TH1* fT0StsDiff = nullptr;
     TH1* fT0MuchDiff = nullptr;
+    TH1* fT0TrdDiff = nullptr;
     TH1* fT0TofDiff = nullptr;
     TH1* fT0RichDiff = nullptr;
     TH1* fT0PsdDiff = nullptr;
 
     TH2* fT0StsDiffCharge = nullptr;
     TH2* fT0MuchDiffCharge = nullptr;
+    TH2* fT0TrdDiffCharge = nullptr;
     TH2* fT0TofDiffCharge = nullptr;
     TH2* fT0RichDiffCharge = nullptr;
     TH2* fT0PsdDiffCharge = nullptr;
 
     TH2* fT0StsDiffEvo = nullptr;
     TH2* fT0MuchDiffEvo = nullptr;
+    TH2* fT0TrdDiffEvo = nullptr;
     TH2* fT0TofDiffEvo = nullptr;
     TH2* fT0RichDiffEvo = nullptr;
     TH2* fT0PsdDiffEvo = nullptr;
 
     TH2* fT0StsDiffEvoLong = nullptr;
     TH2* fT0MuchDiffEvoLong = nullptr;
+    TH2* fT0TrdDiffEvoLong = nullptr;
     TH2* fT0TofDiffEvoLong = nullptr;
     TH2* fT0RichDiffEvoLong = nullptr;
     TH2* fT0PsdDiffEvoLong = nullptr;
@@ -198,6 +210,7 @@ class CbmCheckTiming : public FairTask
     TH1* fT0T0Diff = nullptr;
     TH1* fStsStsDiff = nullptr;
     TH1* fMuchMuchDiff = nullptr;
+    TH1* fTrdTrdDiff = nullptr;
     TH1* fTofTofDiff = nullptr;
     TH1* fRichRichDiff = nullptr;
     TH1* fPsdPsdDiff = nullptr;
@@ -221,6 +234,7 @@ class CbmCheckTiming : public FairTask
     std::vector< Double_t > fvdTimeSelectedT0;
     TH1* fSelT0StsDiff  = nullptr;
     TH1* fSelT0MuchDiff = nullptr;
+    TH1* fSelT0TrdDiff  = nullptr;
     TH1* fSelT0TofDiff  = nullptr;
     TH1* fSelT0RichDiff = nullptr;
     TH1* fSelT0PsdDiff  = nullptr;

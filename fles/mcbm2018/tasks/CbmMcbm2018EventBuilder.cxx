@@ -12,12 +12,15 @@
 #include "FairRunOnline.h"
 
 #include "TClonesArray.h"
+#include "TH2.h"
 #include "TH1.h"
 #include "THttpServer.h"
 #include <TFile.h>
 
 #include "CbmStsDigi.h"
 #include "CbmMuchBeamTimeDigi.h"
+#include "CbmMuchDigi.h"
+#include "CbmTrdDigi.h"
 #include "CbmTofDigi.h"
 #include "CbmRichDigi.h"
 #include "CbmPsdDigi.h"
@@ -64,7 +67,8 @@ InitStatus CbmMcbm2018EventBuilder::Init()
 
   // Get a pointer to the previous already existing data level
   fDigiMan = CbmDigiManager::Instance();
-  fDigiMan->UseMuchBeamTimeDigi();
+  if( kFALSE == fbUseBaseMuchDigi )
+    fDigiMan->UseMuchBeamTimeDigi();
   fDigiMan->Init();
 
   // T0 is not included in DigiManager
@@ -82,6 +86,10 @@ InitStatus CbmMcbm2018EventBuilder::Init()
 
   if ( ! fDigiMan->IsPresent(ECbmModuleId::kMuch) ) {
     LOG(info) << "No MUCH digi input.";
+  }
+
+  if ( ! fDigiMan->IsPresent(ECbmModuleId::kTrd) ) {
+    LOG(info) << "No TRD digi input.";
   }
 
   if ( ! fDigiMan->IsPresent(ECbmModuleId::kTof) ) {
@@ -104,7 +112,50 @@ InitStatus CbmMcbm2018EventBuilder::Init()
   if ( ! fEvents ) LOG(fatal) << "Output branch was not created";
 
 
-  fDiffTime = new TH1F("fDiffTime","Time difference between two consecutive digis;time diff [ns];Counts", 420, -100.5, 1999.5);
+  if( fFillHistos )
+  {
+    fDiffTime   = new TH1F("fDiffTime","Time difference between two consecutive digis;time diff [ns];Counts", 420, -100.5, 1999.5);
+    fhEventTime = new TH1F( "hEventTime", "seed time of the events; Seed time [s]; Events",
+                          60000, 0, 600 );
+    fhEventDt   = new TH1F( "fhEventDt", "interval in seed time of consecutive events; Seed time [s]; Events",
+                          2100, -100.5, 1999.5);
+    fhEventSize = new TH1F( "hEventSize",
+                           "nb of all  digis in the event; Nb Digis []; Events []",
+                           10000, 0, 10000 );
+    fhNbDigiPerEvtTime= new TH2I( "hNbDigiPerEvtTime",
+                                  "nb of all  digis per event vs seed time of the events; Seed time [s]; Nb Digis []; Events []",
+                                   600, 0,   600,
+                                  1000, 0, 10000 );
+
+    fhNbDigiPerEvtTimeT0   = new TH2I( "hNbDigiPerEvtTimeT0",
+                                       "nb of T0   digis per event vs seed time of the events; Seed time [s]; Nb Digis []; Events []",
+                                        600, 0,   600,
+                                       4000, 0,  4000 );
+    fhNbDigiPerEvtTimeSts  = new TH2I( "hNbDigiPerEvtTimeSts",
+                                       "nb of STS  digis per event vs seed time of the events; Seed time [s]; Nb Digis []; Events []",
+                                        600, 0,   600,
+                                       4000, 0,  4000 );
+    fhNbDigiPerEvtTimeMuch = new TH2I( "hNbDigiPerEvtTimeMuch",
+                                       "nb of MUCH digis per event vs seed time of the events; Seed time [s]; Nb Digis []; Events []",
+                                        600, 0,   600,
+                                       4000, 0,  4000 );
+    fhNbDigiPerEvtTimeTrd  = new TH2I( "hNbDigiPerEvtTimeTrd",
+                                       "nb of TRD  digis per event vs seed time of the events; Seed time [s]; Nb Digis []; Events []",
+                                        600, 0,   600,
+                                       4000, 0,  4000 );
+    fhNbDigiPerEvtTimeTof  = new TH2I( "hNbDigiPerEvtTimeTof",
+                                       "nb of TOF  digis per event vs seed time of the events; Seed time [s]; Nb Digis []; Events []",
+                                        600, 0,   600,
+                                       4000, 0,  4000 );
+    fhNbDigiPerEvtTimeRich = new TH2I( "hNbDigiPerEvtTimeRich",
+                                       "nb of RICH digis per event vs seed time of the events; Seed time [s]; Nb Digis []; Events []",
+                                        600, 0,   600,
+                                       4000, 0,  4000 );
+    fhNbDigiPerEvtTimePsd  = new TH2I( "hNbDigiPerEvtTimePsd",
+                                       "nb of PSD  digis per event vs seed time of the events; Seed time [s]; Nb Digis []; Events []",
+                                        600, 0,   600,
+                                       4000, 0,  4000 );
+  } // if( fFillHistos )
 
   return kSUCCESS;
 }
@@ -127,9 +178,12 @@ void CbmMcbm2018EventBuilder::Exec(Option_t* /*option*/)
 
   LOG(debug) << "Found " << fEventVector.size() << " events";
 
-  FillHisto();
-
   DefineGoodEvents();
+
+  if( fFillHistos )
+  {
+    FillHisto();
+  } // if( fFillHistos )
 
   LOG(debug) << "Found " << fEventVector.size() << " triggered events";
 
@@ -150,6 +204,7 @@ void CbmMcbm2018EventBuilder::InitSorter()
   else if ( fT0DigiArr ) nrT0Digis = fT0DigiArr->GetEntriesFast();
   Int_t nrStsDigis  = fDigiMan->GetNofDigis( ECbmModuleId::kSts );
   Int_t nrMuchDigis = fDigiMan->GetNofDigis( ECbmModuleId::kMuch );
+  Int_t nrTrdDigis  = fDigiMan->GetNofDigis( ECbmModuleId::kTrd );
   Int_t nrTofDigis  = fDigiMan->GetNofDigis( ECbmModuleId::kTof );
   Int_t nrRichDigis = fDigiMan->GetNofDigis( ECbmModuleId::kRich );
   Int_t nrPsdDigis  = fDigiMan->GetNofDigis( ECbmModuleId::kPsd );
@@ -157,6 +212,7 @@ void CbmMcbm2018EventBuilder::InitSorter()
   LOG(debug) << "T0Digis: " << nrT0Digis;
   LOG(debug) << "StsDigis: " << nrStsDigis;
   LOG(debug) << "MuchDigis: " << nrMuchDigis;
+  LOG(debug) << "TrdDigis: " << nrTrdDigis;
   LOG(debug) << "TofDigis: " << nrTofDigis;
   LOG(debug) << "RichDigis: " << nrRichDigis;
   LOG(debug) << "PsdDigis: " << nrPsdDigis;
@@ -170,7 +226,17 @@ void CbmMcbm2018EventBuilder::InitSorter()
     AddDigiToSorter< CbmStsDigi >(ECbmModuleId::kSts, 0);
   }
   if (nrMuchDigis>0) {
-    AddDigiToSorter< CbmMuchBeamTimeDigi >(ECbmModuleId::kMuch, 0);
+    if( fbUseBaseMuchDigi )
+    {
+      AddDigiToSorter< CbmMuchDigi >(ECbmModuleId::kMuch, 0);
+    }  // if( fbUseBaseMuchDigi )
+      else
+      {
+        AddDigiToSorter< CbmMuchBeamTimeDigi >(ECbmModuleId::kMuch, 0);
+      } // else of if( fbUseBaseMuchDigi )
+  }
+  if (nrTrdDigis>0) {
+    AddDigiToSorter< CbmTrdDigi >(ECbmModuleId::kTrd, 0);
   }
   if (nrTofDigis>0) {
     AddDigiToSorter< CbmTofDigi >(ECbmModuleId::kTof, 0);
@@ -221,7 +287,8 @@ void CbmMcbm2018EventBuilder::BuildEvents()
     }
     AddDigiToEvent(system, entry);
 
-    if (fFillHistos) fVect.emplace_back(make_pair(system, entry));
+    if( fFillHistos )
+      fVect.emplace_back(make_pair(system, entry));
 
     // Remove the first element from the set and insert the next digi
     // from the same system
@@ -233,27 +300,39 @@ void CbmMcbm2018EventBuilder::BuildEvents()
       {
         AddDigiToSorter< CbmStsDigi >(system, ++entry);
         break;
-      } // case ECbmModuleId::kHodo
+      } // case ECbmModuleId::kSts
       case ECbmModuleId::kMuch:
       {
-        AddDigiToSorter< CbmMuchBeamTimeDigi >(system, ++entry);
+        if( fbUseBaseMuchDigi )
+        {
+          AddDigiToSorter< CbmMuchDigi >(system, ++entry);
+        } // if( fbUseBaseMuchDigi )
+          else
+          {
+            AddDigiToSorter< CbmMuchBeamTimeDigi >(system, ++entry);
+          } // else of if( fbUseBaseMuchDigi )
         break;
-      } // case ECbmModuleId::kHodo
+      } // case ECbmModuleId::kMuch
+      case ECbmModuleId::kTrd:
+      {
+        AddDigiToSorter< CbmTrdDigi >(system, ++entry);
+        break;
+      } // case ECbmModuleId::kTrd
       case ECbmModuleId::kTof:
       {
         AddDigiToSorter< CbmTofDigi >(system, ++entry);
         break;
-      } // case ECbmModuleId::kHodo
+      } // case ECbmModuleId::kTof
       case ECbmModuleId::kRich:
       {
         AddDigiToSorter< CbmRichDigi >(system, ++entry);
         break;
-      } // case ECbmModuleId::kHodo
+      } // case ECbmModuleId::kRich
       case ECbmModuleId::kPsd:
       {
         AddDigiToSorter< CbmPsdDigi >(system, ++entry);
         break;
-      } // case ECbmModuleId::kHodo
+      } // case ECbmModuleId::kPsd
       case ECbmModuleId::kHodo:
       {
         AddDigiToSorter< CbmTofDigi >(system, ++entry);
@@ -293,6 +372,9 @@ Bool_t CbmMcbm2018EventBuilder::HasTrigger(CbmEvent* event)
   if (fDigiMan->IsPresent(ECbmModuleId::kMuch) && fTriggerMinMuchDigis > 0) {
     hasTrigger = hasTrigger && (event->GetNofData(ECbmDataType::kMuchDigi) >= fTriggerMinMuchDigis);
   }
+  if (fDigiMan->IsPresent(ECbmModuleId::kTrd) && fTriggerMinTrdDigis > 0) {
+    hasTrigger = hasTrigger && (event->GetNofData(ECbmDataType::kTrdDigi) >= fTriggerMinTrdDigis);
+  }
   if (fDigiMan->IsPresent(ECbmModuleId::kTof) && fTriggerMinTofDigis > 0) {
     hasTrigger = hasTrigger && (event->GetNofData(ECbmDataType::kTofDigi) >= fTriggerMinTofDigis);
   }
@@ -320,7 +402,7 @@ void CbmMcbm2018EventBuilder::FillHisto()
     Int_t _entry = _pair.second;
     CbmDigi* digi = static_cast<CbmDigi*>(fLinkArray[_system]->At(_entry));
     Double_t difftime = digi->GetTime() - fPrevTime;
-    if (fFillHistos) fDiffTime->Fill(difftime);
+    fDiffTime->Fill(difftime);
     if (difftime < 0.) {
       fErrors++;
       LOG(info) << fixed << setprecision(15)
@@ -336,9 +418,30 @@ void CbmMcbm2018EventBuilder::FillHisto()
     prevSystem = _system;
     prevEntry = _entry;
   }
+  */
   fVect.clear();
 
-  */
+  Double_t dPreEvtTime = -1.0;
+  for( CbmEvent * evt: fEventVector )
+  {
+    fhEventTime->Fill( evt->GetStartTime() * 1e-9 );
+    if( 0.0 <= dPreEvtTime )
+    {
+      fhEventDt->Fill( evt->GetStartTime() - dPreEvtTime );
+    } // if( 0.0 <= dPreEvtTime )
+    fhEventSize->Fill( evt->GetNofData() );
+    fhNbDigiPerEvtTime->Fill( evt->GetStartTime() * 1e-9, evt->GetNofData() );
+
+    fhNbDigiPerEvtTimeT0  ->Fill( evt->GetStartTime() * 1e-9, evt->GetNofData( ECbmDataType::kT0Digi ) );
+    fhNbDigiPerEvtTimeSts ->Fill( evt->GetStartTime() * 1e-9, evt->GetNofData( ECbmDataType::kStsDigi ) );
+    fhNbDigiPerEvtTimeMuch->Fill( evt->GetStartTime() * 1e-9, evt->GetNofData( ECbmDataType::kMuchDigi ) );
+    fhNbDigiPerEvtTimeTrd ->Fill( evt->GetStartTime() * 1e-9, evt->GetNofData( ECbmDataType::kTrdDigi ) );
+    fhNbDigiPerEvtTimeTof ->Fill( evt->GetStartTime() * 1e-9, evt->GetNofData( ECbmDataType::kTofDigi ) );
+    fhNbDigiPerEvtTimeRich->Fill( evt->GetStartTime() * 1e-9, evt->GetNofData( ECbmDataType::kRichDigi ) );
+    fhNbDigiPerEvtTimePsd ->Fill( evt->GetStartTime() * 1e-9, evt->GetNofData( ECbmDataType::kPsdDigi ) );
+
+    dPreEvtTime = evt->GetStartTime();
+  } // for( CbmEvent * evt: fEventVector )
 }
 
 void CbmMcbm2018EventBuilder::DefineGoodEvents()
@@ -407,6 +510,7 @@ void CbmMcbm2018EventBuilder::AddDigiToSorter( ECbmModuleId _system, Int_t _entr
   {
     case ECbmModuleId::kSts:
     case ECbmModuleId::kMuch:
+    case ECbmModuleId::kTrd:
     case ECbmModuleId::kTof:
     case ECbmModuleId::kRich:
     case ECbmModuleId::kPsd:
@@ -460,6 +564,19 @@ void CbmMcbm2018EventBuilder::Finish()
     TFile* outfile = TFile::Open(fOutFileName,"RECREATE");
 
     fDiffTime->Write();
+
+    fhEventTime->Write();
+    fhEventDt->Write();
+    fhEventSize->Write();
+    fhNbDigiPerEvtTime->Write();
+
+    fhNbDigiPerEvtTimeT0->Write();
+    fhNbDigiPerEvtTimeSts->Write();
+    fhNbDigiPerEvtTimeMuch->Write();
+    fhNbDigiPerEvtTimeTrd->Write();
+    fhNbDigiPerEvtTimeTof->Write();
+    fhNbDigiPerEvtTimeRich->Write();
+    fhNbDigiPerEvtTimePsd->Write();
 
     outfile->Close();
     delete outfile;

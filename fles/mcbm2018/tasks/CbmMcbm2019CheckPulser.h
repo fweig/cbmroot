@@ -8,13 +8,19 @@
 #ifndef CBMMCBM2019CHECKPULSER_H
 #define CBMMCBM2019CHECKPULSER_H
 
-#include <vector>
+/// CBMROOT headers
 #include "CbmDefs.h"
+#include "TimesliceMetaData.h"
+#include "CbmTofDigi.h"
 
+/// FAIRROOT headers
 #include "FairTask.h"
 
+/// External headers (ROOT, boost, ...)
 #include "TString.h"
-#include "CbmTofDigi.h"
+
+/// C/C++ headers
+#include <vector>
 
 class TClonesArray;
 class TH1;
@@ -64,6 +70,9 @@ class CbmMcbm2019CheckPulser : public FairTask
     void SetMuchOffsetSearchRange(Int_t val = 1000)
        { fMuchOffsetRange = val; }
 
+    void SetTrdOffsetSearchRange(Int_t val = 1000)
+       { fTrdOffsetRange = val; }
+
     void SetTofOffsetSearchRange(Int_t val = 1000)
        { fTofOffsetRange = val; }
 
@@ -77,8 +86,10 @@ class CbmMcbm2019CheckPulser : public FairTask
         { fuMinTotPulserT0 = uMin;   fuMaxTotPulserT0 = uMax; }
     inline void SetStsPulserAdcLimits( UInt_t uMin, UInt_t uMax )
         { fuMinAdcPulserSts = uMin;  fuMaxAdcPulserSts = uMax; }
-    inline void SetMuchPulseradcLimits( UInt_t uMin, UInt_t uMax )
+    inline void SetMuchPulserAdcLimits( UInt_t uMin, UInt_t uMax )
         { fuMinAdcPulserMuch = uMin; fuMaxAdcPulserMuch = uMax; }
+    inline void SetTrdPulserChargeLimits( UInt_t uMin, UInt_t uMax )
+        { fuMinChargePulserTrd = uMin;  fuMaxChargePulserTrd = uMax; }
     inline void SetTofPulserTotLimits( UInt_t uMin, UInt_t uMax )
         { fuMinTotPulserTof = uMin;  fuMaxTotPulserTof = uMax; }
     inline void SetRichPulserTotLimits( UInt_t uMin, UInt_t uMax )
@@ -88,9 +99,12 @@ class CbmMcbm2019CheckPulser : public FairTask
 
     inline void SetOutFilename( TString sNameIn ) { fOutFileName = sNameIn; }
 
+    inline void SetStsAddress( UInt_t uAddress ) { fuStsAddress = uAddress; }
     inline void SetMuchAsic( UInt_t uAsic ) { fuMuchAsic = uAsic; }
     inline void SetMuchChanRange( UInt_t uFirstChan, UInt_t uLastChan = kuNbChanSMX )
         { fuMuchFirstCha = uFirstChan; fuMuchLastChan = uLastChan; }
+    inline void SetTrdAddress( UInt_t uAddress ) { fuTrdAddress = uAddress; }
+    inline void SetPsdAddress( UInt_t uAddress ) { fuPsdAddress = uAddress; }
 
   private:
 
@@ -115,17 +129,22 @@ class CbmMcbm2019CheckPulser : public FairTask
     CbmDigiManager* fDigiMan = nullptr; //!
     const std::vector<CbmTofDigi>* fT0DigiVector = nullptr;   //!
     TClonesArray* fT0DigiArray = nullptr;         //!
+    TClonesArray* fTimeSliceMetaDataArray = nullptr; //!
+    const TimesliceMetaData* pTsMetaData = nullptr;
 
     /// Constants
-    static const UInt_t kuNbChanSMX      = 128;
-    static const UInt_t kuMaxNbStsDpbs   =   2;
-    static const UInt_t kuMaxNbMuchDpbs  =   6;
-    static const UInt_t kuMaxNbMuchAsics =  36;
+    static const UInt_t kuNbChanSMX      =        128;
+    static const UInt_t kuMaxNbStsDpbs   =          2;
+    static const UInt_t kuMaxNbMuchDpbs  =          6;
+    static const UInt_t kuMaxNbMuchAsics =         36;
+    static const UInt_t kuDefaultAddress = 0xFFFFFFFF;
+    static const UInt_t kuMaxChannelSts  =       3000;
 
     /// Variables to store the previous digi time
     Double_t fPrevTimeT0   = 0.;
     Double_t fPrevTimeSts  = 0.;
     Double_t fPrevTimeMuch = 0.;
+    Double_t fPrevTimeTrd  = 0.;
     Double_t fPrevTimeTof  = 0.;
     Double_t fPrevTimeRich = 0.;
     Double_t fPrevTimePsd  = 0.;
@@ -134,26 +153,36 @@ class CbmMcbm2019CheckPulser : public FairTask
     /// => Time-order means the time window for following one can only be in a later digi
     Int_t fPrevT0FirstDigiSts  = 0;
     Int_t fPrevT0FirstDigiMuch = 0;
+    Int_t fPrevT0FirstDigiTrd  = 0;
     Int_t fPrevT0FirstDigiTof  = 0;
     Int_t fPrevT0FirstDigiRich = 0;
     Int_t fPrevT0FirstDigiPsd  = 0;
 
     /// User settings: Data correction parameters
+        /// Charge cut
     UInt_t fuMinTotPulserT0   = 182;
     UInt_t fuMaxTotPulserT0   = 190;
     UInt_t fuMinAdcPulserSts  =  90;
     UInt_t fuMaxAdcPulserSts  = 100;
     UInt_t fuMinAdcPulserMuch =   5;
     UInt_t fuMaxAdcPulserMuch =  15;
+    UInt_t fuMinChargePulserTrd  = 0;
+    UInt_t fuMaxChargePulserTrd  = 70000;
     UInt_t fuMinTotPulserTof  = 182;
     UInt_t fuMaxTotPulserTof  = 190;
     UInt_t fuMinTotPulserRich =  90;
     UInt_t fuMaxTotPulserRich = 105;
     UInt_t fuMinAdcPulserPsd  =  90;
     UInt_t fuMaxAdcPulserPsd  = 100;
+        /// Channel selection
+    UInt_t fuStsAddress       = kuDefaultAddress;
+    UInt_t fuStsFirstCha      = kuMaxChannelSts;
+    UInt_t fuStsLastChan      = kuMaxChannelSts;
     UInt_t fuMuchAsic         = kuMaxNbMuchAsics;
     UInt_t fuMuchFirstCha     = kuNbChanSMX;
     UInt_t fuMuchLastChan     = kuNbChanSMX;
+    UInt_t fuTrdAddress       = kuDefaultAddress;
+    UInt_t fuPsdAddress       = kuDefaultAddress;
 
     //
     Int_t fNrTs = 0;
@@ -161,6 +190,7 @@ class CbmMcbm2019CheckPulser : public FairTask
     Int_t fOffsetRange     = 1000;
     Int_t fStsOffsetRange  = 1000;
     Int_t fMuchOffsetRange = 1000;
+    Int_t fTrdOffsetRange  = 1000;
     Int_t fTofOffsetRange  = 1000;
     Int_t fRichOffsetRange = 1000;
     Int_t fPsdOffsetRange  = 1000;
@@ -169,6 +199,7 @@ class CbmMcbm2019CheckPulser : public FairTask
 
     TH1* fT0StsDiff  = nullptr;
     TH1* fT0MuchDiff = nullptr;
+    TH1* fT0TrdDiff  = nullptr;
     TH1* fT0TofDiff  = nullptr;
     TH1* fT0RichDiff = nullptr;
     TH1* fT0PsdDiff  = nullptr;
@@ -176,12 +207,14 @@ class CbmMcbm2019CheckPulser : public FairTask
 
     TH2* fT0StsDiffEvo  = nullptr;
     TH2* fT0MuchDiffEvo = nullptr;
+    TH2* fT0TrdDiffEvo  = nullptr;
     TH2* fT0TofDiffEvo  = nullptr;
     TH2* fT0RichDiffEvo = nullptr;
     TH2* fT0PsdDiffEvo  = nullptr;
 
     TH2* fT0StsDiffEvoLong  = nullptr;
     TH2* fT0MuchDiffEvoLong = nullptr;
+    TH2* fT0TrdDiffEvoLong  = nullptr;
     TH2* fT0TofDiffEvoLong  = nullptr;
     TH2* fT0RichDiffEvoLong = nullptr;
     TH2* fT0PsdDiffEvoLong  = nullptr;
@@ -189,6 +222,7 @@ class CbmMcbm2019CheckPulser : public FairTask
     Double_t fdStartTime = -1;
     TProfile* fT0StsMeanEvo  = nullptr;
     TProfile* fT0MuchMeanEvo = nullptr;
+    TProfile* fT0TrdMeanEvo  = nullptr;
     TProfile* fT0TofMeanEvo  = nullptr;
     TProfile* fT0RichMeanEvo = nullptr;
     TProfile* fT0PsdMeanEvo  = nullptr;
@@ -196,9 +230,25 @@ class CbmMcbm2019CheckPulser : public FairTask
     TH1* fT0T0Diff     = nullptr;
     TH1* fStsStsDiff   = nullptr;
     TH1* fMuchMuchDiff = nullptr;
+    TH1* fTrdTrdDiff   = nullptr;
     TH1* fTofTofDiff   = nullptr;
     TH1* fRichRichDiff = nullptr;
     TH1* fPsdPsdDiff   = nullptr;
+
+    TH2* fT0StsNb  = nullptr;
+    TH2* fT0MuchNb = nullptr;
+    TH2* fT0TrdNb  = nullptr;
+    TH2* fT0TofNb  = nullptr;
+    TH2* fT0RichNb = nullptr;
+    TH2* fT0PsdNb  = nullptr;
+
+    Int_t fiT0Nb   = 0;
+    Int_t fiStsNb  = 0;
+    Int_t fiMuchNb = 0;
+    Int_t fiTrdNb  = 0;
+    Int_t fiTofNb  = 0;
+    Int_t fiRichNb = 0;
+    Int_t fiPsdNb  = 0;
 
     TH1* fT0Address = nullptr;
     TH1* fT0Channel = nullptr;
