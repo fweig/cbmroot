@@ -1054,10 +1054,10 @@ void create_stsgeo_v19s(const char* geoTag="v19s")
   CheckVolume(top);
   cout << endl << endl;
   gGeoMan->CloseGeometry();
-//  gGeoMan->CheckOverlaps(0.0001);
-//  gGeoMan->PrintOverlaps();
-//  gGeoMan->CheckOverlaps(0.0001, "s");
-//  gGeoMan->PrintOverlaps();
+  gGeoMan->CheckOverlaps(0.0001);
+  gGeoMan->PrintOverlaps();
+  gGeoMan->CheckOverlaps(0.0001, "s");
+  gGeoMan->PrintOverlaps();
   gGeoMan->Test();
 
   TFile* geoFile = new TFile(geoFileName, "RECREATE");
