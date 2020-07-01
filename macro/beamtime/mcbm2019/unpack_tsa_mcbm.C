@@ -232,8 +232,16 @@ void unpack_tsa_mcbm(TString inFile = "", UInt_t uRunId = 0, UInt_t nrEvents=0, 
         unpacker_much->SetTimeOffsetNsAsic( 34,       0.0 ); // Run 384, DPB 5 ASIC 4
         unpacker_much->SetTimeOffsetNsAsic( 35,       0.0 ); // Run 384, DPB 5 ASIC 5
 
+        unpacker_psd->SetTimeOffsetNs( -180.0 );
+
         break;
      } // 384
+
+     case 365:
+     {
+        unpacker_psd->SetTimeOffsetNs( -1007.0 );
+        break;
+     }
 
      default:
         break;
@@ -241,6 +249,7 @@ void unpack_tsa_mcbm(TString inFile = "", UInt_t uRunId = 0, UInt_t nrEvents=0, 
 
   // --- Source task
   CbmMcbm2018Source* source = new CbmMcbm2018Source();
+  source->SetWriteOutputFlag( kTRUE ); // For writing TS metadata
 
   source->SetFileName(inFile);
 //  source->SetInputDir(inDir);
