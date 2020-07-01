@@ -120,7 +120,7 @@ Bool_t CbmMcbm2018Source::Init()
   {
     LOG(fatal) << "Failed creating the TS meta data TClonesarray ";
   }
-  ioman->Register("CbmTsMeta", "TS Meta Data", fTimeSliceMetaDataArray, fbWriteOutput);
+  ioman->Register("TimesliceMetaData", "TS Meta Data", fTimeSliceMetaDataArray, fbWriteOutput);
 
   return kTRUE;
 }
