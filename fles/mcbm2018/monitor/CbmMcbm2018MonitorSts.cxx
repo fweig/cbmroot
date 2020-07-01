@@ -1933,6 +1933,7 @@ Bool_t CbmMcbm2018MonitorSts::ProcessStsMs( const fles::Timeslice& ts, size_t uM
    }
    else if( uTsMsbCycleHeader != fvuCurrentTsMsbCycle[ fuCurrDpbIdx ] )
    {
+      /// Catch Cycles happening by chance exactly at the TS border
       if( 4194303 == fvulCurrentTsMsb[fuCurrDpbIdx] )
       {
          LOG(info) << " TS " << std::setw( 12 ) << fulCurrentTsIdx
