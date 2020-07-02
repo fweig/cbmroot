@@ -10,6 +10,8 @@ add_subdirectory(sink)
 add_subdirectory(monitor)
 add_subdirectory(histoServer)
 
+add_subdirectory(mcbm)
+
 #add_subdirectory(sts)
 #add_subdirectory(test)
 

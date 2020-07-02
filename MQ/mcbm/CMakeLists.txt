@@ -1,0 +1,160 @@
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startMQMcbmPulserMonitor2020.sh.in ${CMAKE_BINARY_DIR}/bin/MQ/topologies/startMQMcbmPulserMonitor2020.sh)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startMQMcbmEvtBuilderWin2020.sh.in ${CMAKE_BINARY_DIR}/bin/MQ/topologies/startMQMcbmEvtBuilderWin2020.sh)
+
+set(INCLUDE_DIRECTORIES
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}/MQ/base
+    ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/unpacker
+    ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/tasks
+    ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/parameter
+    ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/dataformat
+    ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/commonMQ
+    ${CBMROOT_SOURCE_DIR}/fles/flestools
+    ${CBMDATA_DIR}
+    ${CBMDATA_DIR}/global
+    ${CBMDATA_DIR}/raw
+    ${CBMDATA_DIR}/sts
+    ${CBMDATA_DIR}/much
+    ${CBMDATA_DIR}/rich
+    ${CBMDATA_DIR}/tof
+    ${CBMDATA_DIR}/psd
+    ${CBMDATA_DIR}/trd
+    ${CBMDATA_DIR}/mvd # Feint to avoid crash of DigiManager due to missing source pointer
+    ${CBMBASE_DIR}
+
+    ${CBMDETECTORBASE_DIR}/trd # required for parameter handling of the trd
+    ${CBMDETECTORBASE_DIR}/psd # required for fitting tools of the psd
+)
+
+Set(SYSTEM_INCLUDE_DIRECTORIES
+    ${SYSTEM_INCLUDE_DIRECTORIES}
+    ${ZeroMQ_INCLUDE_DIR}
+    ${Boost_INCLUDE_DIR}
+    ${FAIRROOT_INCLUDE_DIR}
+    ${FAIRMQ_INCLUDE_DIR}
+    ${FAIRMQ_INCLUDE_DIR}/options
+
+    ${IPC_INCLUDE_DIRECTORY}
+    ${CBMROOT_SOURCE_DIR}/external/cppzmq
+)
+
+include_directories(${INCLUDE_DIRECTORIES})
+include_directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
+
+set(LINK_DIRECTORIES
+  ${ROOT_LIBRARY_DIR}
+  ${FAIRROOT_LIBRARY_DIR}
+  ${FAIRMQ_LIBRARY_DIR}
+  ${Boost_LIBRARY_DIRS}
+)
+
+link_directories(${LINK_DIRECTORIES})
+
+set(EXECUTABLE_OUTPUT_PATH "${EXECUTABLE_OUTPUT_PATH}/MQ/mcbm")
+
+Set(BOOST_LIBS
+  ${Boost_SYSTEM_LIBRARY}
+  ${Boost_SERIALIZATION_LIBRARY}
+  ${Boost_PROGRAM_OPTIONS_LIBRARY}
+  ${Boost_LOG_LIBRARY}
+)
+If(UNIX AND NOT APPLE)
+  List(APPEND BOOST_LIBS pthread)
+EndIf()
+
+set(FAIR_LIBS
+  FairMQ
+)
+
+If(FAIRLOGGER_FOUND)
+  set(FAIR_LIBS
+      ${FAIR_LIBS}
+      FairLogger
+     )
+EndIf()
+
+set(EXE_NAME McbmUnpack)
+set(SRCS CbmDeviceMcbmUnpack.cxx runMcbmUnpack.cxx)
+
+set(DEPENDENCIES
+  ${DEPENDENCIES}
+  ${FAIR_LIBS}
+  ${BOOST_LIBS}
+  fles_ipc
+  CbmFlibMcbm2018
+  CbmFlibFlesTools
+  CbmBase
+  CbmData
+  Core
+  RIO
+  Net
+  Hist
+  RHTTP
+)
+#GENERATE_LIBRARY()
+GENERATE_EXECUTABLE()
+
+set(EXE_NAME McbmMonitorPulser)
+set(SRCS CbmDeviceMcbmMonitorPulser.cxx runMcbmMonitorPulser.cxx)
+
+set(DEPENDENCIES
+  ${DEPENDENCIES}
+  ${FAIR_LIBS}
+  ${BOOST_LIBS}
+  fles_ipc
+  CbmFlibMcbm2018
+  CbmFlibFlesTools
+  CbmBase
+  CbmData
+  Core
+  RIO
+  Net
+  Hist
+  RHTTP
+)
+#GENERATE_LIBRARY()
+GENERATE_EXECUTABLE()
+
+set(EXE_NAME McbmEventBuilderWin)
+set(SRCS CbmDeviceMcbmEventBuilderWin.cxx runMcbmEvtBuilderWin.cxx)
+
+set(DEPENDENCIES
+  ${DEPENDENCIES}
+  ${FAIR_LIBS}
+  ${BOOST_LIBS}
+  fles_ipc
+  CbmFlibMcbm2018
+  CbmFlibFlesTools
+  CbmBase
+  CbmData
+  Core
+  RIO
+  Net
+  Hist
+  RHTTP
+)
+#GENERATE_LIBRARY()
+GENERATE_EXECUTABLE()
+
+set(EXE_NAME McbmEventSink)
+set(SRCS CbmDeviceMcbmEventSink.cxx runMcbmEventSink.cxx)
+
+set(DEPENDENCIES
+  ${DEPENDENCIES}
+  ${FAIR_LIBS}
+  ${BOOST_LIBS}
+  fles_ipc
+  CbmFlibMcbm2018
+  CbmFlibFlesTools
+  CbmBase
+  CbmData
+  Core
+  RIO
+  Tree
+  Net
+  Hist
+  RHTTP
+)
+#GENERATE_LIBRARY()
+GENERATE_EXECUTABLE()
+
