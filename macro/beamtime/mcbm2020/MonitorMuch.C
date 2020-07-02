@@ -10,7 +10,7 @@
 // In order to call later Finish, we make this global
 FairRunOnline *run = NULL;
 
-void MonitorMuch(TString inFile = "", TString sHostname = "en02",
+void MonitorMuch(TString inFile = "", TString sHostname = "en02", UInt_t uRunId = 0,
                  Int_t nEvents = -1,
                  Int_t iServerRefreshRate = 100, Int_t iServerHttpPort = 8080,
                  TString sHistoFile = "data/MuchHistos.root" )
@@ -32,7 +32,7 @@ void MonitorMuch(TString inFile = "", TString sHostname = "en02",
 
   // --- Define parameter files
   TList *parFileList = new TList();
-  TString paramDir = srcDir + "/macro/beamtime/mcbm2019/";
+  TString paramDir = srcDir + "/macro/beamtime/mcbm2020/";
 
   TString paramFileHodo = paramDir + "mMuchPar.par";
   TObjString* tutDetDigiFileHodo = new TObjString(paramFileHodo);
@@ -61,6 +61,10 @@ void MonitorMuch(TString inFile = "", TString sHostname = "en02",
 //  monitorSts->SetEnableCoincidenceMaps();
  // monitorSts->SetCoincidenceBorder(   0.0,  200 );
 //  monitorSts->SetMuchMode();
+
+  /// Starting from first run on Monday 04/05/2020, MUCH uses bin sorter FW
+  if( 811 <= uRunId )
+    monitorMuch->SetBinningFwFlag( kTRUE );
 
   // --- Source task
   CbmMcbm2018Source* source = new CbmMcbm2018Source();

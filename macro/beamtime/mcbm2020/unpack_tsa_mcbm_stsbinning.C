@@ -51,12 +51,9 @@ void unpack_tsa_mcbm_stsbinning(TString inFile = "", UInt_t uRunId = 0, UInt_t n
   parFileList->Add(parTofFileName);
 
   TString paramFileRich = paramDir + "mRichPar.par";
+  if (uRunId > 698) paramFileRich = paramDir + "mRichPar_70.par";
   TObjString* parRichFileName = new TObjString(paramFileRich);
   parFileList->Add(parRichFileName);
-
-  TString paramFileHodo = paramDir + "mHodoPar.par";
-  TObjString* parHodoFileName = new TObjString(paramFileHodo);
-  parFileList->Add(parHodoFileName);
 
   TString paramFilePsd = paramDir + "mPsdPar.par";
   TObjString* parPsdFileName = new TObjString(paramFilePsd);

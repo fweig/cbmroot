@@ -10,10 +10,10 @@
 // In order to call later Finish, we make this global
 FairRunOnline *run = NULL;
 
-void MonitorSts(TString inFile = "", TString sHostname = "en02", UInt_t uRunId = 0,
+void MonitorMuchBinning(TString inFile = "", TString sHostname = "en02",
+                 Int_t nEvents = -1,
                  Int_t iServerRefreshRate = 100, Int_t iServerHttpPort = 8080,
-                 TString sHistoFile = "data/StsHistos.root",
-                 Int_t nEvents = -1  )
+                 TString sHistoFile = "data/MuchMonitorHistos.root" )
 {
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
 
@@ -22,19 +22,19 @@ void MonitorSts(TString inFile = "", TString sHostname = "en02", UInt_t uRunId =
 //  Int_t nEvents = -1;
 
   // --- Specify output file name (this is just an example)
-  TString parFile = "data/sts_param.root";
+  TString parFile = "data/much_param.root";
 
   // --- Set log output levels
   FairLogger::GetLogger();
   gLogger->SetLogScreenLevel("INFO");
-//  gLogger->SetLogScreenLevel("DEBUG");
+  //gLogger->SetLogScreenLevel("DEBUG");
   gLogger->SetLogVerbosityLevel("LOW");
 
   // --- Define parameter files
   TList *parFileList = new TList();
   TString paramDir = srcDir + "/macro/beamtime/mcbm2020/";
 
-  TString paramFileHodo = paramDir + "mStsPar.par";
+  TString paramFileHodo = paramDir + "mMuchPar.par";
   TObjString* tutDetDigiFileHodo = new TObjString(paramFileHodo);
   parFileList->Add(tutDetDigiFileHodo);
 
@@ -49,21 +49,19 @@ void MonitorSts(TString inFile = "", TString sHostname = "en02", UInt_t uRunId =
   std::cout << std::endl;
   std::cout << ">>> Cern2017Monitor: Initialising..." << std::endl;
 
-  // Hodoscopes Monitor
-  CbmMcbm2018MonitorSts* monitorSts = new CbmMcbm2018MonitorSts();
-  monitorSts->SetHistoFileName( sHistoFile );
+  // MUCH Gem Monitor
+//  CbmMcbm2018MonitorMuch* monitorMuch = new CbmMcbm2018MonitorMuch();
+  CbmMcbm2018MonitorMuchLite* monitorMuch = new CbmMcbm2018MonitorMuchLite();
+  monitorMuch->SetHistoFileName( sHistoFile );
 //  monitorSts->SetPrintMessage();
-  monitorSts->SetMsOverlap( 1 );
-  monitorSts->SetIgnoreOverlapMs();
+  monitorMuch->SetMsOverlap( 1 );
+//  monitorMuch->SetEnableCoincidenceMaps( kFALSE );
 //  monitorSts->SetLongDurationLimits( 3600, 10 );
-  monitorSts->SetLongDurationLimits( 7200, 60 );
+ //  monitorSts->SetLongDurationLimits( 7200, 60 );
 //  monitorSts->SetEnableCoincidenceMaps();
-//  monitorSts->SetCoincidenceBorder(   0.0,  200 );
-  monitorSts->SetEnableCheckBugSmx20( kFALSE );
-
-  /// Starting from first run on Tuesday 28/04/2020, STS uses bin sorter FW
-  if( 692 <= uRunId )
-    monitorSts ->SetBinningFwFlag( kTRUE );
+ // monitorSts->SetCoincidenceBorder(   0.0,  200 );
+//  monitorSts->SetMuchMode();
+  monitorMuch->SetBinningFwFlag( kTRUE );
 
   // --- Source task
   CbmMcbm2018Source* source = new CbmMcbm2018Source();
@@ -76,7 +74,7 @@ void MonitorSts(TString inFile = "", TString sHostname = "en02", UInt_t uRunId =
          source->SetHostName( sHostname );
       } // else of if( "" != inFile )
 
-  source->AddUnpacker(monitorSts,  0x10, ECbmModuleId::kSts ); // stsXyter DPBs
+  source->AddUnpacker(monitorMuch,  0x50, ECbmModuleId::kMuch); // stsXyter DPBs
 
   source->SetSubscriberHwm( 10 );
 
