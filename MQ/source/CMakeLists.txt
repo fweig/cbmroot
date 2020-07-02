@@ -4,6 +4,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startMQSampler.sh.in ${CMAKE_BINARY_D
 set(INCLUDE_DIRECTORIES
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_SOURCE_DIR}/MQ/base
+    ${CBMROOT_SOURCE_DIR}/fles/flestools
     ${CBMBASE_DIR}
     ${CBMDATA_DIR}
     ${CBMDATA_DIR}/base
@@ -84,6 +85,7 @@ set(DEPENDENCIES
   ${BOOST_LIBS}
   fles_ipc
   CbmMQBase
+  CbmFlibFlesTools
 )
 GENERATE_EXECUTABLE()
 

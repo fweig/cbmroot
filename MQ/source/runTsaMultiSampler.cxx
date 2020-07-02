@@ -16,6 +16,19 @@ void addCustomOptions(bpo::options_description& options)
         ("send-ts-per-channel", bpo::value<bool>()->default_value(0), "Send a single TS per channel with all matching components")
         ("sysid-chan", bpo::value< std::vector< std::string > >(), "Pair a SysId in hex + channel name, separated by :, unique SysId!")
         ("flib-port", bpo::value<uint64_t>()->default_value(0), "Port where the timeslice server is running");
+
+   options.add_options() ( "ChNameMissTs", bpo::value< std::string >()->default_value( "" ),
+                           "MQ channel name for missed TS indices");
+   options.add_options() ( "ChNameCmds", bpo::value< std::string >()->default_value( "" ),
+                           "MQ channel name for commands to slaves");
+/*
+   options.add_options() ( "ChNameIn",      bpo::value< std::string >()->default_value( "histogram-in" ),
+                           "MQ channel name for histos");
+   options.add_options() ( "ChNameHistCfg", bpo::value< std::string >()->default_value( "histo-conf" ),
+                           "MQ channel name for histos config");
+   options.add_options() ( "ChNameCanvCfg", bpo::value< std::string >()->default_value( "canvas-conf" ),
+                           "MQ channel name for canvases config");
+*/
 }
 
 FairMQDevicePtr getDevice(const FairMQProgOptions& /*config*/)

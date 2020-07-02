@@ -41,8 +41,15 @@ class CbmMQTsaMultiSampler : public FairMQDevice
     bool fbNoSplitTs = false;
     bool fbSendTsPerSysId = false;
     bool fbSendTsPerChannel = false;
-
-    uint64_t fTSNumber;
+/*
+    std::string fsChannelNameHistosInput  = "histogram-in";
+    std::string fsChannelNameHistosConfig = "histo-conf";
+    std::string fsChannelNameCanvasConfig = "canvas-conf";
+    uint32_t    fuPublishFreqTs  = 100;
+    double_t    fdMinPublishTime =   0.5;
+    double_t    fdMaxPublishTime =   5;
+*/
+    uint64_t fuPrevTsIndex = 0;
     uint64_t fTSCounter;
     uint64_t fMessageCounter;
 
@@ -65,6 +72,11 @@ class CbmMQTsaMultiSampler : public FairMQDevice
     bool CreateAndSendFullTs( const fles::Timeslice& );
     bool SendData(const fles::StorableTimeslice&, int);
     bool SendData(const fles::StorableTimeslice&, std::string);
+    bool SendMissedTsIdx( std::vector< uint64_t > vIndices );
+    bool SendCommand( std::string sCommand );
+/*
+  bool SendHistograms();
+*/
 
     fles::TimesliceSource* fSource; //!
     std::chrono::steady_clock::time_point fTime;
@@ -96,6 +108,24 @@ class CbmMQTsaMultiSampler : public FairMQDevice
     bool fbListCompPerChannelReady = false;
     std::vector< std::string > fvChannelsToSend= {};
     std::vector< std::vector< uint32_t > > fvvCompPerChannel= {};
+
+    std::string fsChannelNameMissedTs = "";
+    std::string fsChannelNameCommands = "";
+/*
+    /// Obtain vector of pointers on each histo from the algo (+ optionally desired folder)
+    std::vector< std::pair< TNamed *, std::string > > vHistos = fMonitorAlgo->GetHistoVector();
+    /// Obtain vector of pointers on each canvas from the algo (+ optionally desired folder)
+    std::vector< std::pair< TCanvas *, std::string > > vCanvases = fMonitorAlgo->GetCanvasVector();
+
+    /// Array of histograms to send to the histogram server
+    TObjArray fArrayHisto = {};
+    /// Vector of string pairs with ( HistoName, FolderPath ) to send to the histogram server
+    std::vector< std::pair< std::string, std::string > > fvpsHistosFolder = {};
+    /// Vector of string pairs with ( CanvasName, CanvasConfig ) to send to the histogram server
+    /// Format of Can config is "NbPadX(U);NbPadY(U);ConfigPad1(s);....;ConfigPadXY(s)"
+    /// Format of Pad config is "GrixX(b),GridY(b),LogX(b),LogY(b),LogZ(b),HistoName(s),DrawOptions(s)"
+    std::vector< std::pair< std::string, std::string > > fvpsCanvasConfig = {};
+*/
 };
 
 #endif /* CBMMQTSASAMPLER_H_ */
