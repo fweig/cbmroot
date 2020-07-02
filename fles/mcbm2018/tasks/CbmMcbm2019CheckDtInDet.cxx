@@ -276,12 +276,14 @@ void CbmMcbm2019CheckDtInDet::Exec(Option_t* /*option*/)
   else if ( fT0DigiArray ) nrT0Digis = fT0DigiArray->GetEntriesFast();
   LOG(debug) << "T0Digis: " << nrT0Digis;
 
+/*
   Int_t nrStsDigis  = fDigiMan->GetNofDigis( ECbmModuleId::kSts);
   Int_t nrMuchDigis = fDigiMan->GetNofDigis( ECbmModuleId::kMuch);
   Int_t nrTrdDigis  = fDigiMan->GetNofDigis( ECbmModuleId::kTrd);
   Int_t nrTofDigis  = fDigiMan->GetNofDigis( ECbmModuleId::kTof);
   Int_t nrRichDigis = fDigiMan->GetNofDigis( ECbmModuleId::kRich);
   Int_t nrPsdDigis  = fDigiMan->GetNofDigis( ECbmModuleId::kPsd);
+*/
 
   /// Check dT in T0
   for( Int_t iT0 = 0; iT0 < nrT0Digis; ++iT0 )
@@ -295,7 +297,7 @@ void CbmMcbm2019CheckDtInDet::Exec(Option_t* /*option*/)
     assert(T0Digi);
 
     Double_t T0Time = T0Digi->GetTime();
-    Int_t T0Address = T0Digi->GetAddress();
+//    Int_t T0Address = T0Digi->GetAddress();
 
     Double_t T0TimeDiff = T0Time - fPrevTimeT0;
 
@@ -330,7 +332,7 @@ void CbmMcbm2019CheckDtInDet::Exec(Option_t* /*option*/)
 
 template <class Digi> void CbmMcbm2019CheckDtInDet::FillHistosPerDet(
                                               TH1* histoSameTime, TH1* histoDt,
-                                              TH1* histoDtLog, TH2* histoDtPerChan,
+                                              TH1* histoDtLog, TH2* /*histoDtPerChan*/,
                                               ECbmModuleId iDetId
                                             )
 {

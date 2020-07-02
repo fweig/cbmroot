@@ -559,7 +559,7 @@ Int_t CbmCheckTiming::FillSystemOffsetHistos(TH1* histo, TH2* histoCharge,
                                              TH2* histoEvo, TH2* histoEvoLong, TH2* histoAFCK,
                                              const Double_t T0Time, const Int_t offsetRange,
                                              Int_t iStartDigi,
-                                             Bool_t bSts, Bool_t bMuch, Bool_t bTof, Bool_t bPsd )
+                                             Bool_t bSts, Bool_t bMuch, Bool_t bTof, Bool_t /*bPsd*/ )
 {
   Int_t nrDigis=fDigiMan->GetNofDigis(Digi::GetSystem());
   Int_t iFirstDigiInWin = iStartDigi;
@@ -642,7 +642,7 @@ template <class Digi>
 Int_t CbmCheckTiming::FillHistosSelT0( TH1* histo,
                                        const Double_t T0Time, const Int_t offsetRange,
                                        Int_t iStartDigi,
-                                       Bool_t /*bSts*/, Bool_t /*bMuch*/, Bool_t bTof, Bool_t bPsd )
+                                       Bool_t /*bSts*/, Bool_t /*bMuch*/, Bool_t bTof, Bool_t /*bPsd*/ )
 {
   Int_t nrDigis=fDigiMan->GetNofDigis(Digi::GetSystem());
   Int_t iFirstDigiInWin = iStartDigi;

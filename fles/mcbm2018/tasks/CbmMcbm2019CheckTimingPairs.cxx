@@ -162,12 +162,15 @@ void CbmMcbm2019CheckTimingPairs::Exec(Option_t* /*option*/)
    UInt_t uNbT0Digis = 0;
    if ( fT0DigiVector ) uNbT0Digis = fT0DigiVector->size();
       else if ( fT0DigiArray ) uNbT0Digis = fT0DigiArray->GetEntriesFast();
+
+/*
    UInt_t uNbStsDigis  = fDigiMan->GetNofDigis(ECbmModuleId::kSts);
    UInt_t uNbMuchDigis = fDigiMan->GetNofDigis(ECbmModuleId::kMuch);
    UInt_t uNbTrdDigis  = fDigiMan->GetNofDigis(ECbmModuleId::kTrd);
    UInt_t uNbTofDigis  = fDigiMan->GetNofDigis(ECbmModuleId::kTof);
    UInt_t uNbRichDigis = fDigiMan->GetNofDigis(ECbmModuleId::kRich);
    UInt_t uNbPsdDigis  = fDigiMan->GetNofDigis(ECbmModuleId::kPsd);
+*/
 
    fuNbDigisWithCoincT0 = 0;
    for( UInt_t uT0Digi = 0; uT0Digi < uNbT0Digis; ++uT0Digi )
@@ -179,7 +182,7 @@ void CbmMcbm2019CheckTimingPairs::Exec(Option_t* /*option*/)
             pDigiT0 = dynamic_cast<CbmTofDigi*>( fT0DigiArray->At( uT0Digi ) );
       assert(pDigiT0);
 
-      UInt_t uChannel = pDigiT0->GetChannel();
+//      UInt_t uChannel = pDigiT0->GetChannel();
       Double_t dTimeT0  = pDigiT0->GetTime();
 
       fuNbCoincDigisSts  = 0;
@@ -375,7 +378,7 @@ UInt_t CbmMcbm2019CheckTimingPairs::FillCorrBuffer( Double_t dTimeT0, UInt_t uIn
             } // try/catch
             assert(stsDigi);
             UInt_t uAddr = stsDigi->GetAddress();
-            UInt_t uChan = stsDigi->GetChannel();
+//            UInt_t uChan = stsDigi->GetChannel();
 
             /// Reject pulser digis
             if( ( kuDefaultAddress != fuStsAddress && uAddr == fuStsAddress ) )
@@ -402,7 +405,7 @@ UInt_t CbmMcbm2019CheckTimingPairs::FillCorrBuffer( Double_t dTimeT0, UInt_t uIn
             } // try/catch
             assert(muchDigi);
             UInt_t uAsic = muchDigi->GetNxId();
-            UInt_t uChan = muchDigi->GetNxCh();
+//            UInt_t uChan = muchDigi->GetNxCh();
 
             /// Reject pulser digis
             if( ( kuMaxNbMuchAsics != fuMuchAsic && uAsic == fuMuchAsic ) )
@@ -542,7 +545,7 @@ void CbmMcbm2019CheckTimingPairs::FillHistosInter( UInt_t uIndexT0, UInt_t uInde
       else LOG( fatal ) << "CbmMcbm2019CheckTimingPairs => Unknown detector";
 }
 template <class DigiA, class DigiB>
-void CbmMcbm2019CheckTimingPairs::FillHistos( UInt_t uIndexT0, UInt_t uIndexDetA, UInt_t uIndexDetB,
+void CbmMcbm2019CheckTimingPairs::FillHistos( UInt_t uIndexT0, UInt_t /*uIndexDetA*/, UInt_t /*uIndexDetB*/,
                                               std::vector< DigiA > & vCorrDigA,
                                               std::vector< DigiB > & vCorrDigB,
                                               UInt_t uHistoIdx )
