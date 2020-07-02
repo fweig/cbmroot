@@ -265,7 +265,7 @@ TEST(_GTestCbmEvent, CheckSettersAndGetters)
      compareEventMap(test, 9,  3, ECbmDataType::kStsTrack,   ststrack);
    }
 
-   EXPECT_STREQ("Event -111 at t = 1 ns. Registered data types: 6, data objects: 9\n          -- Data type 0, number of data 2\n          -- Data type 200, number of data 1\n          -- Data type 201, number of data 1\n          -- Data type 202, number of data 1\n          -- Data type 203, number of data 1\n          -- Data type 204, number of data 3\n", test.ToString().c_str());
+   EXPECT_STREQ("Event -111 at t = 1 ns. Registered data types: 6, data objects: 9, without matches\n          -- Data type 0, number of data 2\n          -- Data type 200, number of data 1\n          -- Data type 201, number of data 1\n          -- Data type 202, number of data 1\n          -- Data type 203, number of data 1\n          -- Data type 204, number of data 3\n", test.ToString().c_str());
 
  }
 

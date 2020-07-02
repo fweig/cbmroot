@@ -60,7 +60,9 @@ std::string CbmEvent::ToString() const
    std::stringstream ss;
    ss << "Event " << fNumber << " at t = " << fTimeStart
   		<< " ns. Registered data types: " << fIndexMap.size()
-  		<< ", data objects: " << fNofData << "\n";
+  		<< ", data objects: " << fNofData
+                << ( nullptr != fMatch ? ", with matches" : ", without matches" )
+                << "\n";
    for (auto it = fIndexMap.begin(); it != fIndexMap.end(); it++) {
   	 ss << "          -- Data type " << it->first
   			<< ", number of data " << it->second.size() << "\n";

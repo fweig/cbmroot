@@ -18,7 +18,7 @@
 
 #include "CbmDefs.h"         // for ECbmDataType, ECbmModuleId::kStsTrack
 #include "CbmMatch.h"        // for CbmMatch
-#include "CbmVertex.h"       // for CbmVertex
+#include "CbmVertex.h"       // for CbmVertex, found in core/data/global
 
 /** @class CbmEvent
  ** @brief Class characterising one event by a collection of links (indices)
@@ -50,6 +50,9 @@ class CbmEvent: public TObject {
 		virtual ~CbmEvent() {
 			if ( fMatch ) delete fMatch;
 		}
+
+                /** Overload TObject Clear to clear the map! **/
+                void Clear( Option_t * /*option*/ ) { fIndexMap.clear(); }
 
 
 		/** Add a data object to the index map
