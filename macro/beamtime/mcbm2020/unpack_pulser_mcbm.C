@@ -56,11 +56,7 @@ void unpack_pulser_mcbm(UInt_t uRunId = 0, TString sHostname = "localhost",
   TString paramFileRich = paramDir + "mRichPar.par";
   TObjString* parRichFileName = new TObjString(paramFileRich);
   parFileList->Add(parRichFileName);
-/*
-  TString paramFileHodo = paramDir + "mHodoPar.par";
-  TObjString* parHodoFileName = new TObjString(paramFileHodo);
-  parFileList->Add(parHodoFileName);
-*/
+
   TString paramFilePsd = paramDir + "mPsdPar.par";
   TObjString* parPsdFileName = new TObjString(paramFilePsd);
   parFileList->Add(parPsdFileName);
