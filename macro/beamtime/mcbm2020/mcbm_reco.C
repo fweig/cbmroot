@@ -1,18 +1,12 @@
-
 // --------------------------------------------------------------------------
 //
 // Macro for reconstruction of mcbm data (2019)
 // Only STS local reconstruction (cluster + hit finder) for the time being
 //
-//
-//
 // --------------------------------------------------------------------------
 
-
-void mcbm_reco(Int_t nTimeslices=10)
+void mcbm_reco(Int_t runId = 812,Int_t nTimeslices = 0)
 {
-
-
 
   // --- Logger settings ----------------------------------------------------
   TString logLevel     = "INFO";
@@ -27,13 +21,11 @@ void mcbm_reco(Int_t nTimeslices=10)
 
 
   // -----   In- and output file names   ------------------------------------
-  TString inFile = "data/unp_mcbm_4.root";
-  TString parFile = "data/unp_mcbm_params_4.root";  
-  TString outFile = "data/reco_mcbm_4.root";
-//  outFile = Form("%s_%i.root",outFile.Data(),(int)(srcDir1.Atoi()*100));
-  TString geoFile = "data/test.geo.root";  // to be created by a simulation run
+  TString inFile  = Form("unp_mcbm_%i.root",runId);  
+  TString parFile = Form("unp_mcbm_params_%i.root",runId);
+  TString geoFile = "test.geo.root";  // to be created by a simulation run
+  TString outFile = Form("reco_mcbm_%i.root",runId);
   // ------------------------------------------------------------------------
-
 
 
   // -----   Timer   --------------------------------------------------------
@@ -47,14 +39,11 @@ void mcbm_reco(Int_t nTimeslices=10)
   // ------------------------------------------------------------------------
 
 
-
   // -----   FairRunAna   ---------------------------------------------------
   FairRunAna *run = new FairRunAna();
-  CbmStsFindHits *hit = new CbmStsFindHits();
-
   FairFileSource* inputSource = new FairFileSource(inFile);
   run->SetSource(inputSource);
-
+  
   run->SetOutputFile(outFile);
   run->SetGenerateRunInfo(kTRUE);
   run->SetGeomFile(geoFile);
@@ -75,21 +64,41 @@ void mcbm_reco(Int_t nTimeslices=10)
   
 
   // -----   Local reconstruction in STS   ----------------------------------
-  CbmStsReco* stsReco = new CbmStsReco();
-     // --- The parameter file for the STS Setup sensors needs to be explicitely set as
-     // --- 1) By default the CbmStsSetup creates only Stereo sensors with a 58 um pitch
-     // --- 2) The only place where this can be set is in the init of the CbmStsReco
-
-     // -----  Geometry Tags  --------------------------------------------------
-     TString hodoGeoTag       = "hodo_v19a_mcbm";    // 2019 LAB test
-     TString sHodoGeoPar      = hodoGeoTag + ".par";
-     // ------------------------------------------------------------------------
-     stsReco->SetSensorsParFile( sHodoGeoPar );
-
-  run->AddTask(stsReco);
-  std::cout << "-I- : Added task " << stsReco->GetName() << std::endl;
-  // ------------------------------------------------------------------------
+  CbmRecoSts* recoSts = new CbmRecoSts();
+  //recoSts->SetTimeCutDigisAbs( 100 );// cluster finder: time cut in ns
+  //recoSts->SetTimeCutClustersAbs(100.); // hit finder: time cut in ns
   
+  // ASIC params: #ADC channels, dyn. range, threshold, time resol., dead time,
+  // noise RMS, zero-threshold crossing rate
+  auto parAsic = new CbmStsParAsic(32, 75000., 3000., 5., 800., 1000., 3.9789e-3);
+  
+  // Module params: number of channels, number of channels per ASIC
+  auto parMod = new CbmStsParModule(2048, 128);
+  parMod->SetAllAsics(*parAsic);
+  recoSts->UseModulePar(parMod);
+  
+  // Sensor params
+  auto sensorPar = new CbmStsParSensor(CbmStsSensorClass::kDssdStereo);
+  sensorPar->SetPar(0, 6.2092);  // Extension in x
+  sensorPar->SetPar(1, 6.2);     // Extension in y
+  sensorPar->SetPar(2, 0.03);    // Extension in z
+  sensorPar->SetPar(3, 5.9692);  // Active size in y
+  sensorPar->SetPar(4, 1024.);   // Number of strips front side
+  sensorPar->SetPar(5, 1024.);   // Number of strips back side
+  sensorPar->SetPar(6, 0.0058);  // Strip pitch front side 
+  sensorPar->SetPar(7, 0.0058);  // Strip pitch back side
+  sensorPar->SetPar(8, 7.5);      // Stereo angle front side
+  sensorPar->SetPar(9, 0.0);     // Stereo angle back side
+  recoSts->UseSensorPar(sensorPar);
+  
+  // Sensor conditions: full depletion voltage, bias voltage, temperature,
+  // coupling capacitance, inter-strip capacitance
+  auto sensorCond = new CbmStsParSensorCond(70., 140., 268., 17.5, 1.);
+  recoSts->UseSensorCond(sensorCond);
+  
+  run->AddTask(recoSts);
+  std::cout << "-I- : Added task " << recoSts->GetName() << std::endl;
+  // ------------------------------------------------------------------------
 
 
 
@@ -119,8 +128,7 @@ void mcbm_reco(Int_t nTimeslices=10)
   // -----   Start run   ----------------------------------------------------
   std::cout << std::endl << std::endl;
   std::cout << "-I- " << myName << ": Starting run" << std::endl;
-   run->Run(0, nTimeslices);
-  //run->Run(0,nEvents);
+  run->Run(0, nTimeslices);
   // ------------------------------------------------------------------------
 
 
