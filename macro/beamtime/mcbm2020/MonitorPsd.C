@@ -51,11 +51,11 @@ void MonitorPsd( TString inFile = "", TString sHostname = "localhost",
   CbmMcbm2018MonitorTaskPsd  * monitor_psd  = new CbmMcbm2018MonitorTaskPsd();
 
   monitor_psd->SetIgnoreOverlapMs();
-  monitor_psd->SetHistoryHistoSize( 1000 );
+  monitor_psd->SetHistoryHistoSize( 3600 );
   monitor_psd->SetHistoFilename( outFileNameHistos );
 
-  std::vector< Int_t > fviHistoChargeArgs{500,0,40000};
-  std::vector< Int_t > fviHistoAmplArgs{100,0,3000};
+  std::vector< Int_t > fviHistoChargeArgs{500,0,5000};
+  std::vector< Int_t > fviHistoAmplArgs{100,0,500};
   std::vector< Int_t > fviHistoZLArgs{9000,0,9000};
   monitor_psd->SetChargeHistoArgs( fviHistoChargeArgs );
   monitor_psd->SetAmplHistoArgs( fviHistoAmplArgs );

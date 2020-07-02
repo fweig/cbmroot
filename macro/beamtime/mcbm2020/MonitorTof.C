@@ -32,8 +32,8 @@ void MonitorTof(TString inFile = "", TString sHostname = "localhost",
 
   // --- Define parameter files
   TList *parFileList = new TList();
-  //TString paramDir = srcDir + "/macro/beamtime/mcbm2020/";
-  TString paramDir = "/scratch/cbmroot_macro/macro/beamtime/mcbm2020/";
+  TString paramDir = srcDir + "/macro/beamtime/mcbm2020/";
+  //TString paramDir = "/scratch/cbmroot_macro/macro/beamtime/mcbm2020/";
 
   TString paramFileTof = paramDir + "mTofPar.par";
   TObjString* parTofFileName = new TObjString(paramFileTof);

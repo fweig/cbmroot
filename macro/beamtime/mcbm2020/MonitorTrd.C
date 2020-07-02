@@ -1,5 +1,5 @@
 /*
- * File: /unpack_trd_mcbm2020.C
+ * File: /MonitorTrd.C
  * Created Date: Wednesday March 25th 2020
  * Author: Pascal Raisig -- praisig@ikf.uni-frankfurt.de
  * -----
@@ -41,9 +41,10 @@ void MonitorTrd(TString inFile = "", TString sHostname = "localhost",
 
   // inFile = "/home/praisig/CBM/software/testEnv/data/desy2019/r0070_20190831_0159_0000.tsa"; // FIXME: This is just for testing smarter solution needed! One can probably iterate over files via SetInputDir and the code behind it.
   // inFile = "/home/dspicker/desy2019/r0004_20200220_1951_0000.tsa";
-  inFile = "/local/dschmidt/tsa/pulser07.tsa";    // long pulser file
+  if( "" == inFile && "" == sHostname )
+    inFile = "/local/dschmidt/tsa/pulser07.tsa";    // long pulser file
   // outDir = "/home/praisig/CBM/software/testEnv/data/desy2019/data/";
-  outDir = "output";
+  //outDir = "output";
 
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
 
@@ -53,8 +54,6 @@ void MonitorTrd(TString inFile = "", TString sHostname = "localhost",
 
   // --- Specify output file name (this is just an example)
   TString runId = TString::Format("%u", uRunId);
-  TString outFile = outDir + "/unp_mcbm_" + runId + ".root";
-  TString parFile = outDir + "/unp_mcbm_params_" + runId + ".root";
 
   // --- Set log output levels
   FairLogger::GetLogger();
@@ -85,12 +84,11 @@ void MonitorTrd(TString inFile = "", TString sHostname = "localhost",
   gDebug = 0;
 
   std::cout << std::endl;
-  std::cout << ">>> unpack_tsa: output file is " << outFile << std::endl;
 
   // ========================================================================
   // ========================================================================
   std::cout << std::endl;
-  std::cout << ">>> unpack_tsa: Initialising..." << std::endl;
+  std::cout << ">>> MonitorTrd: Initialising..." << std::endl;
 
   CbmMcbm2018UnpackerTaskTrdR * unpacker_trdR = new CbmMcbm2018UnpackerTaskTrdR();
 
@@ -123,7 +121,7 @@ void MonitorTrd(TString inFile = "", TString sHostname = "localhost",
 //   // --- Source task
   CbmMcbm2018Source* source = new CbmMcbm2018Source();
 
-  if( 0 < uRunId )
+  if( 0 < uRunId || "" != inFile )
   {
     source->SetFileName(inFile);
   } // if( "" != inFile )
@@ -170,7 +168,7 @@ void MonitorTrd(TString inFile = "", TString sHostname = "localhost",
   // --- Start run
   TStopwatch timer;
   timer.Start();
-  std::cout << ">>> unpack_tsa_mcbm: Starting run..." << std::endl;
+  std::cout << ">>> MonitorTrd: Starting run..." << std::endl;
   if ( 0 == nrEvents) {
     run->Run(nEvents, 0); // run until end of input file
   } else {
@@ -187,9 +185,8 @@ void MonitorTrd(TString inFile = "", TString sHostname = "localhost",
   Double_t rtime = timer.RealTime();
   Double_t ctime = timer.CpuTime();
   std::cout << std::endl << std::endl;
-  std::cout << ">>> unpack_tsa_mcbm: Macro finished successfully." << std::endl;
-  std::cout << ">>> unpack_tsa_mcbm: Output file is " << outFile << std::endl;
-  std::cout << ">>> unpack_tsa_mcbm: Real time " << rtime << " s, CPU time "
+  std::cout << ">>> MonitorTrd: Macro finished successfully." << std::endl;
+  std::cout << ">>> MonitorTrd: Real time " << rtime << " s, CPU time "
 	    << ctime << " s" << std::endl;
   std::cout << std::endl;
 
