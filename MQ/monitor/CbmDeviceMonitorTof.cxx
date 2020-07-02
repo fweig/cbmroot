@@ -71,6 +71,9 @@ try
    LOG(info) << "Histograms publication min. interval in s: " << fdMinPublishTime;
    LOG(info) << "Histograms publication max. interval in s: " << fdMaxPublishTime;
 
+   /// Set the Monitor Algo in Absolute time scale
+   fMonitorAlgo->UseAbsoluteTime();
+
    // Get the information about created channels from the device
    // Check if the defined channels from the topology (by name)
    // are in the list of channels which are possible/allowed
