@@ -122,6 +122,10 @@ Set(SRCS
    tasks/CbmMcbm2019CheckPulser.cxx
    tasks/CbmMcbm2019CheckDigisMuch.cxx
    tasks/CbmMcbm2019CheckDigisSts.cxx
+   tasks/CbmMcbm2019CheckDtInDet.cxx
+   tasks/CbmMcbm2019CheckTimingPairs.cxx
+   tasks/CbmMcbm2019TimeWinEventBuilderAlgo.cxx
+   tasks/CbmMcbm2019TimeWinEventBuilderTask.cxx
 )
 
 If(_UINT8_T_EXIST)

@@ -68,5 +68,9 @@
 #pragma link C++ class CbmMcbm2019CheckPulser;
 #pragma link C++ class CbmMcbm2019CheckDigisMuch;
 #pragma link C++ class CbmMcbm2019CheckDigisSts;
+#pragma link C++ class CbmMcbm2019CheckDtInDet;
+#pragma link C++ class CbmMcbm2019CheckTimingPairs+;
+#pragma link C++ class CbmMcbm2019TimeWinEventBuilderAlgo+;
+#pragma link C++ class CbmMcbm2019TimeWinEventBuilderTask+;
 
 #endif
