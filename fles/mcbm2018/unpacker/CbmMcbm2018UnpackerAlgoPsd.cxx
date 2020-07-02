@@ -305,6 +305,10 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs( const fles::Timeslice& ts, size_t 
       LOG(error) << "The input microslice buffer does NOT "
                  << "contain only complete nDPB messages!";
 
+   /// Save start time of first valid MS )
+   if( fdStartTime < 0 )
+      fdStartTime = fdMsTime;
+
    // If MS time is less than start time print error and return
    if( fdMsTime - fdStartTime < 0 )
    {
@@ -339,6 +343,9 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs( const fles::Timeslice& ts, size_t 
             {
                UInt_t uHitChannel = PsdReader.VectHitHdr.at(hit_iter).uHitChannel;
                UInt_t uSignalCharge = PsdReader.VectHitHdr.at(hit_iter).uSignalCharge;
+               UInt_t uZeroLevel = PsdReader.VectHitHdr.at(hit_iter).uZeroLevel;
+               std::vector<uint16_t> uWfm = PsdReader.VectHitData.at(hit_iter).uWfm;
+
                if(uHitChannel >= fviPsdChUId.size())
                {
                   LOG(error) << "hit channel number out of range! channel index: " << uHitChannel << " max: " << fviPsdChUId.size();
@@ -349,7 +356,17 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs( const fles::Timeslice& ts, size_t 
                UInt_t uRpdChId = uChId; //Should be map(uChId) TODO
                UInt_t uChanUId =  fviPsdChUId[ uRpdChId ]; //unique ID
 
+               UInt_t uHitAmlpitude = 0;
+               UInt_t uHitChargeWfm = 0;
+               for(UInt_t wfm_iter = 0; wfm_iter < uWfm.size(); wfm_iter++)
+               {
+                  if(uWfm.at(wfm_iter) > uHitAmlpitude) uHitAmlpitude = uWfm.at(wfm_iter);
+                  uHitChargeWfm += uWfm.at(wfm_iter) - uZeroLevel;
+               }
+               uHitAmlpitude -= uZeroLevel;
+
                //printf("0x%08x %u %u %u %f %f\n", uChanUId, uChId, CbmPsdAddress::GetModuleId(uChanUId), CbmPsdAddress::GetSectionId(uChanUId), (double)PsdReader.VectHitHdr.at(hit_iter).uSignalCharge, (double)PsdReader.EvHdrAc.uAdcTime );
+
                Double_t dAdcTime = (double)PsdReader.EvHdrAb.ulMicroSlice + (double)PsdReader.EvHdrAc.uAdcTime*12.5 - fdTimeOffsetNs;
 
                LOG(debug) << Form("Insert 0x%08x digi with charge ", uChanUId )
@@ -358,8 +375,9 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs( const fles::Timeslice& ts, size_t 
 
                fDigiVect.emplace_back( uChanUId, (double)uSignalCharge, dAdcTime );
 
-               //Do some staff with waveform
-               //PsdReader.VectHitData.at(hit_iter).uWfm.at(wfm_point)
+               fDigiVect.back().SetAmpl(uHitAmlpitude);
+               fDigiVect.back().SetEdepWfm(uHitChargeWfm);
+               fDigiVect.back().SetZL(uZeroLevel);
 
             } // for(int hit_iter = 0; hit_iter < PsdReader.EvHdrAb.uHitsNumber; hit_iter++)
          }
@@ -390,6 +408,12 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs( const fles::Timeslice& ts, size_t 
          LOG(error) << "Wrong amount of messages read!"
                     << " in microslice " << uNbMessages
                     << " by PsdReader " << PsdReader.GetTotalGbtWordsRead()
+                    << "\n";
+
+      if( fulCurrentMsIdx != PsdReader.EvHdrAb.ulMicroSlice )
+         LOG(error) << "Wrong MS index!"
+                    << " in microslice " << fulCurrentMsIdx
+                    << " by PsdReader "  << PsdReader.EvHdrAb.ulMicroSlice
                     << "\n";
 
    }//if(uSize != 0)

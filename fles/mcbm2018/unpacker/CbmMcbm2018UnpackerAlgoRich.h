@@ -30,6 +30,27 @@ class CbmMcbm2018RichPar;
 #define TOTMIN -20.
 #define TOTMAX 100.
 
+enum class TrbNetState
+	{
+		IDLE,
+		HEADER,
+		EPOCH,
+		TDC,
+		TRAILER,
+		CTS,
+		DEBUG
+	};
+
+enum class RichErrorType
+	{
+		mtsError,
+		tdcHeader,
+		tdcTrailer,
+		ctsHeader,
+		ctsTrailer,
+		subEventError
+	};
+
 class CbmMcbm2018UnpackerAlgoRich : public CbmStar2019Algo<CbmRichDigi>
 {
 public:
@@ -62,12 +83,18 @@ public:
 	virtual Bool_t ProcessTs( const fles::Timeslice& ts, size_t component );
 
 	virtual Bool_t ProcessMs( const fles::Timeslice& ts, size_t uMsCompIdx, size_t uMsIdx );
+    
+	Bool_t DebugMs( const fles::Timeslice& ts, size_t uMsCompIdx, size_t uMsIdx );
 
 	void SetMonitorMode( Bool_t bFlagIn = kTRUE ) { fbMonitorMode = bFlagIn; }
 	
 	inline void SetTimeOffsetNs( Double_t dOffsetIn = 0.0 ) { fdTimeOffsetNs = dOffsetIn; }
 	
 	inline void DoTotCorr( Bool_t bDoToTCorr = kTRUE ) { fbDoToTCorr = bDoToTCorr; }
+	
+	void SetRawDataMode (Bool_t bDebug = kFALSE) { fRawDataMode = bDebug;  }
+	
+	Int_t Debug( const uint8_t* ptr, const size_t size );
 
 private:
 
@@ -104,12 +131,12 @@ private:
 	 * Including TDC header, but not including TRB subsubevent header
 	 * Return number of processed bytes
 	 */
-	Int_t ProcessTRBsubsubevent(size_t const size, uint8_t const * const ptr);
+	Int_t ProcessTRBsubsubevent(size_t const size, uint8_t const * const ptr, Int_t const hubOffset, size_t const hubSize);
 
 	/**
 	 * Process a word written out by the TDC - TIMESTEMP, HEADER, TRAILER, DEBUG, EPOCH, ...
 	 */
-	void ProcessTDCword(uint8_t const * const ptr);
+	Int_t ProcessTDCword(uint8_t const * const ptr, Int_t const word, size_t const size);
 
 	/**
 	 * Process specifically a TIMESTAMP type of word
@@ -125,25 +152,43 @@ private:
 	 * Method which is called at the end of the timeslice processing
 	 */
 	void FinalizeTs();
+    
+    /**
+     * Write Errors to Histograms
+     */
+    void ErrorMsg(uint16_t errbits, RichErrorType type, uint16_t tdcAddr = 0);
 
 	Int_t GetPixelUID(Int_t fpgaID, Int_t ch) const {
 		// First 16 bits are used for the FPGA ID, then
 		// 8 bits unused and then 8 bits are used for the channel
 		return ((fpgaID << 16) | (ch & 0x00FF));
 	}
+	
+	void findTDCAlignmentError(uint8_t const * const ptr, size_t const size);
 
 private: // data members
 
 	/// Control flags
 	Bool_t fbMonitorMode;      //! Switch ON the filling of a minimal set of histograms
+	
 	Bool_t fbDebugMonitorMode; //! Switch ON the filling of a additional set of histograms
+	
+	Bool_t fRawDataMode;
+	
+	Bool_t fError;             //! flag for an error in the datastream
+	
+	TrbNetState  fTrbState;         // State of TrbNet (HEADER,TRAILER,...) 
+	
+	uint32_t fErrorCorr;       // Offset to correct a error in datastream
         
-        /// User setting: kTRUE activates ToT correction from Parameterfile
+    /// User setting: kTRUE activates ToT correction from Parameterfile
 	Bool_t fbDoToTCorr;
-        Bool_t fSkipMs;
+	
+	Bool_t fSkipMs;
 	/// User settings: Data correction parameters
 	Double_t fdTimeOffsetNs;
 
+	size_t fDataSize = 0;
  
         
 	/**
@@ -193,6 +238,19 @@ private: // data members
 	 */
 	Int_t fSubSubEvId; //!
 
+	/**
+	 * Flag to mark the last DiRICH on a Hub
+	 */
+	Bool_t fLastFeeOnHub = false;
+        
+        std::vector<Int_t> fTDCAlignmentErrorPositions;
+        
+        Int_t fTdcWordCorrectionCnt = 0;
+
+        Int_t fTdcWordCorrectionGlobalCnt = 0;        
+        
+        Int_t fSkipCnt = 0;
+        	
 private: // Stored timestamps
 
 	/**
@@ -293,7 +351,26 @@ public: // histograms
 
 	TH1* fhVectorSize        = nullptr;
 	TH1* fhVectorCapacity    = nullptr;
+    
+    //TH2* fhDigisInChnl       = nullptr;
+    //TH2* fhDigisInDiRICH     = nullptr;
+	
+	TH2D* fhTdcErrors = nullptr;
+	TH2D* fhEventErrors = nullptr;
 
+	TH2D* fhDiRICHWords = nullptr;
+	TH2D* fhChnlWords   = nullptr;
+	
+	TH1* fhEventSize        = nullptr;
+	TH2* fhSubEventSize     = nullptr;
+	TH2* fhSubSubEventSize  = nullptr;
+	TH2* fhChnlSize         = nullptr;
+	
+	std::array<unsigned int,33> fChnlMsgCnt; 
+
+	bool fDebugPrint = 0;
+	std::map<uint16_t, uint16_t> fMapFEE;
+	
 	std::map<Int_t, std::map<Int_t, TH1D*> > fhTotMap;
 
 	std::map<Int_t, TH2D*> fhTot2dMap;

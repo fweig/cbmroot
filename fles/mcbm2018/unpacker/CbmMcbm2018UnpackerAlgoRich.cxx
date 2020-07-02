@@ -68,12 +68,18 @@ fullTimeCorr = (T - AZ0R) - (AC2R-AC0R) + MSidx
 // CbmRoot
 #include "CbmMcbm2018RichPar.h"
 
+#include <iostream>
+
 CbmMcbm2018UnpackerAlgoRich::CbmMcbm2018UnpackerAlgoRich() :
 	CbmStar2019Algo(),
 	fbMonitorMode(kFALSE),
 	fbDebugMonitorMode(kFALSE),
+	fRawDataMode(kFALSE),
+	fError(kFALSE),
+	fTrbState(TrbNetState::IDLE),
+	fErrorCorr(0),
 	fbDoToTCorr(kTRUE),
-        fSkipMs(kFALSE),
+	fSkipMs(kFALSE),
 	fdTimeOffsetNs( 0.0 ),
 	fRICHcompIdx(6), //TODO experimentally obtained value
 	fUnpackPar(nullptr),
@@ -95,6 +101,7 @@ CbmMcbm2018UnpackerAlgoRich::CbmMcbm2018UnpackerAlgoRich() :
 	fhTDCch0re_minusPrevCTSch0re(nullptr),
 	fhTDCch0re_minusPrevCTSch2re(nullptr),
 	fhTDCch0re_minusPrevCTSch2fe(nullptr)*/
+	fMapFEE(),
 	fhTotMap(),
 	fhTot2dMap()
 {
@@ -103,11 +110,17 @@ CbmMcbm2018UnpackerAlgoRich::CbmMcbm2018UnpackerAlgoRich() :
 
 CbmMcbm2018UnpackerAlgoRich::~CbmMcbm2018UnpackerAlgoRich()
 {
+   if( nullptr != fParCList )
+      delete fParCList;
+   if( nullptr != fUnpackPar )
+      delete fUnpackPar;
 }
 
 Bool_t CbmMcbm2018UnpackerAlgoRich::Init()
 {
 	LOG(info) << "Initializing mCBM RICH 2019 unpacker algo";
+    //fhDigisInChnl   = new TH2D("fhDigisInChnl","fhDigisInChnl;channel;#Digis;" ,2304 , -0.5, 2303.5,  50, -0.5, 49.5);
+    //fhDigisInDiRICH = new TH2D("fhDigisInDiRICH","fhDigisInDiRICH;DiRICH;#Digis;",72 , -0.5, 71.5,  300, -0.5, 299.5);
 	return kTRUE;
 }
 
@@ -273,8 +286,12 @@ Bool_t CbmMcbm2018UnpackerAlgoRich::ProcessTs( const fles::Timeslice& ts, size_t
 		////mRichSupport::PrintRaw(msDesc.size, msContent);//TODO delete
 		////LOG(debug) << "=======================================================";
 		////////////////////////////////
-		ProcessMs(ts, component, iMS);//
+		//ProcessMs(ts, component, iMS);//
 		////////////////////////////////
+
+        if (!fRawDataMode) ProcessMs(ts, component, iMS);
+        if (fRawDataMode)  DebugMs(ts, component, iMS);
+
 		LOG(debug) << "=======================================================";
 	}
 
@@ -295,8 +312,11 @@ Bool_t CbmMcbm2018UnpackerAlgoRich::ProcessTs( const fles::Timeslice& ts, size_t
 			return a.GetTime() < b.GetTime();
 		});
 
-   fhVectorSize->Fill( ts.index(), fDigiVect.size() );
-   fhVectorCapacity->Fill( ts.index(), fDigiVect.capacity() );
+   if( fbMonitorMode || fbDebugMonitorMode )
+   {
+      fhVectorSize->Fill( ts.index(), fDigiVect.size() );
+      fhVectorCapacity->Fill( ts.index(), fDigiVect.capacity() );
+   } // if( fbMonitorMode || fbDebugMonitorMode )
 
    if( fuTsMaxVectorSize < fDigiVect.size() )
    {
@@ -329,6 +349,8 @@ Bool_t CbmMcbm2018UnpackerAlgoRich::ProcessMs( const fles::Timeslice& ts, size_t
 
 	offset = 4; mRichSupport::SwapBytes(4, ptr+offset); dataPtr = (Int_t*)(ptr+offset);
 	Int_t mbsNumber = (Int_t)(dataPtr[0] & 0xffffff);
+	uint8_t mts_error_msg = (uint8_t)((dataPtr[0]>>24) & 0xff);
+	ErrorMsg(static_cast<uint16_t>(mts_error_msg), RichErrorType::mtsError);
 	LOG(debug4) << "[" << fGwordCnt << "]\t" << mRichSupport::GetWordHexRepr(ptr+offset) << "\t" << "ok" << "\t"
 	            << "mbsNumber = " << mbsNumber;
 	fGwordCnt++;
@@ -385,7 +407,11 @@ Bool_t CbmMcbm2018UnpackerAlgoRich::ProcessMs( const fles::Timeslice& ts, size_t
 	/////////////////////////////////////////////
 	ProcessTRBevent(TRBeventSize2, ptr+offset);//
 	/////////////////////////////////////////////
-
+	
+	// Bytes in a TrbEvent
+	if (fbDebugMonitorMode) fhEventSize->Fill(TRBeventSize2);
+	
+	
 	if (fSkipMs == kTRUE) {
 	  // problem in data; delete vectors.
 	  fDigiVect.clear();
@@ -423,8 +449,8 @@ Int_t CbmMcbm2018UnpackerAlgoRich::ProcessTRBevent(size_t const size, uint8_t co
 		mRichSupport::SwapBytes(4, (uint8_t*)&headerCopy);
 		dataPtr = &headerCopy;
 
-                Int_t SubEvSize = (Int_t)((dataPtr[0] >> 16) & 0xffff);
-                Int_t HubId = (Int_t)((dataPtr[0]) & 0xffff);
+		Int_t SubEvSize = (Int_t)((dataPtr[0] >> 16) & 0xffff);
+		Int_t HubId     = (Int_t)((dataPtr[0]) & 0xffff);
 
 		// Process only CTS subevent
 		//FIXME change from 0xc001 to 0xc000 at some point // ?
@@ -443,6 +469,8 @@ Int_t CbmMcbm2018UnpackerAlgoRich::ProcessTRBevent(size_t const size, uint8_t co
 			//////////////////////////////////////////////////////////////
 			offset += (4 + ProcessCTSsubevent(SubEvSize*4, ptr+offset));//
 			//////////////////////////////////////////////////////////////
+			
+			//std::cout<<"Words in CTS 0x"<< std::hex << HubId << std::dec <<" : "<< SubEvSize <<std::endl;			
 			// In principle, should be reset here for safety
 			fSubSubEvId = 0;
 		} else {
@@ -479,23 +507,48 @@ Int_t CbmMcbm2018UnpackerAlgoRich::ProcessTRBevent(size_t const size, uint8_t co
 
 			// Skip CTS subevent as it has been already processed during the first run
 			offset += (4 + SubEvSize*4);
+			fLastFeeOnHub = false;
 		} else if (HubId == 0x5555) {
 			LOG(debug4) << "[" << fGwordCnt << "]\t" << mRichSupport::GetWordHexRepr(ptr+offset) << "\t" << "ok" << "\t"
 			            << "hub ID = 0x" << mRichSupport::GetHexRepresentation(2, ptr+offset) << "\t"
 			            << "subevent size = " << SubEvSize;
 			fGwordCnt++;
+			fLastFeeOnHub = false;
 			//TODO one could implement additional checks here about the
 			// words coming after the "event end" but we skip everything by now.
 			///////////////////////////////////////////////////////////////
 			offset += (4 + ProcessSKIPsubevent(SubEvSize*4, ptr+offset));//
 			///////////////////////////////////////////////////////////////
-		} else {
+		} else if ( ( (HubId >> 8 ) & 0xFF ) == 0x82 ){
 			LOG(debug4) << "[" << fGwordCnt << "]\t" << mRichSupport::GetWordHexRepr(ptr+offset) << "\t" << "ok" << "\t"
 			            << "hub ID = 0x" << mRichSupport::GetHexRepresentation(2, ptr+offset) << "\t"
 			            << "subevent size = " << SubEvSize;
 			fGwordCnt++;
+			fLastFeeOnHub = false;
+			//std::cout<<"Hub: "<<std::hex<<HubId <<std::dec<<"   Size:"<< SubEvSize<<std::endl;
 			//////////////////////////////////////////////////////////////
 			offset += (4 + ProcessTRBsubevent(SubEvSize*4, ptr+offset));//
+			//////////////////////////////////////////////////////////////
+			
+			//std::cout<<"Words in Hub 0x"<< std::hex << HubId << std::dec <<" : "<< SubEvSize <<std::endl;
+			// Bytes in a Hub
+			if (fbDebugMonitorMode) {
+				uint16_t combiner_address = ((HubId>>4) & 0xF)*3 + (HubId&0xF);
+				fhSubEventSize->Fill(combiner_address,(SubEvSize*4));
+			}
+			
+		} else {
+			LOG(WARN) << "[" << fGwordCnt << "]\t" << mRichSupport::GetWordHexRepr(ptr+offset) << "\t" << "ok" << "\t"
+			            << "hub ID = 0x" << mRichSupport::GetHexRepresentation(2, ptr+offset) << "\t"
+			            << "subevent size = " << SubEvSize << "\n"
+						<< "This is not a valid Combiner Id!"<<"\n"
+						<< "prev prev2:"<< mRichSupport::GetWordHexRepr(ptr+offset-12)<< "\n"
+						<< "prev prev: "<< mRichSupport::GetWordHexRepr(ptr+offset-8)<< "\n"
+						<< "prev:      "<< mRichSupport::GetWordHexRepr(ptr+offset-4) << "\n"
+						<< "next:      "<< mRichSupport::GetWordHexRepr(ptr+offset+4) << "\n"
+						<< "next next: "<< mRichSupport::GetWordHexRepr(ptr+offset+8)<< "\n";
+			//////////////////////////////////////////////////////////////
+			offset += (4 + SubEvSize*4);
 			//////////////////////////////////////////////////////////////
 		}
 	}
@@ -588,10 +641,20 @@ Int_t CbmMcbm2018UnpackerAlgoRich::ProcessSKIPsubevent(size_t const size, uint8_
 	////LOG(debug4) << "ProcessSKIPsubevent size=" << size << " bytes";
 
 	Int_t offset; // offset in bytes
-//	Int_t* dataPtr; (FU) not used
+	Int_t* dataPtr; //(FU) not used
+	uint16_t SubEventError = 0;
 
 	// Skip first word (already processed outside)
 	offset = 4;
+
+	//Start Error identification
+	mRichSupport::SwapBytes(4, ptr+offset);
+	dataPtr = (Int_t*)(ptr+offset);
+	SubEventError = (uint16_t)((dataPtr[0] >> 16) & 0xffff);
+	ErrorMsg(static_cast<uint16_t>(SubEventError), RichErrorType::subEventError);
+
+	offset = 8;
+	//End Error identification
 
 	while (static_cast<size_t>(offset) < size+4) {
 		mRichSupport::SwapBytes(4, ptr+offset);
@@ -664,7 +727,7 @@ Int_t CbmMcbm2018UnpackerAlgoRich::ProcessCTSsubevent(size_t const size, uint8_t
 	while (offset-8 < CTSinfo_size*4) {
 		mRichSupport::SwapBytes(4, ptr+offset); dataPtr = (Int_t*)(ptr+offset);
 		ULong_t MSidx = 102400UL * ((ULong_t)(*dataPtr) - 1);
-		LOG(debug4) << "[" << fGwordCnt << "]\t" << mRichSupport::GetWordHexRepr(ptr+offset) << "\t" << "ok" << "\t"
+		LOG(debug) << "[" << fGwordCnt << "]\t" << mRichSupport::GetWordHexRepr(ptr+offset) << "\t" << "ok" << "\t"
 		            << "CTS information" << " MSidx=" << MSidx;
 		fGwordCnt++;
 
@@ -674,9 +737,10 @@ Int_t CbmMcbm2018UnpackerAlgoRich::ProcessCTSsubevent(size_t const size, uint8_t
 	// size - full size including CTS header word, CTS informations words (CTSinfo_size) and TCD data
 	// Thus TDC data size = full size - 1 word (header) - CTSinfo_size words (CTS informations)
 	///////////////////////////////////////////////////////////////////////////
-	offset += (ProcessTRBsubsubevent((size-(1+CTSinfo_size)*4), ptr+offset));//
+	fChnlMsgCnt.fill(0);
+	offset += (ProcessTRBsubsubevent((size-(1+CTSinfo_size)*4), ptr+offset,0,0));//
 	///////////////////////////////////////////////////////////////////////////
-
+	
 	////LOG(debug4) << "Done processing CTS subevent. offset-4=" << offset-4 << "\tsize=" << size;
 	//TODO implement checks
 	if (size != static_cast<size_t>(offset-4)) {
@@ -696,135 +760,341 @@ Int_t CbmMcbm2018UnpackerAlgoRich::ProcessTRBsubevent(size_t const size, uint8_t
 
 	// Skip first word (already processed outside)
 	offset = 4;
-
+        
+	fTdcWordCorrectionCnt = 0;
+	
+    findTDCAlignmentError(ptr,size);
+	
 	//Int_t iIter = 0;
-	while (static_cast<size_t>(offset) < size) {
+	while (static_cast<size_t>(offset) < (size-2)) { // test for cases with odd number of corrections
 		if (fSkipMs == kTRUE) break;
 		//std::cout << "SSE iteration " << iIter++ << "\toffset=" << offset << "\tsize=" << size << std::endl;
-
+	
+		//correct for misalignment
+		if (fTDCAlignmentErrorPositions.size() > static_cast<unsigned int>(fTdcWordCorrectionCnt) &&
+			fTDCAlignmentErrorPositions[fTdcWordCorrectionCnt] == offset
+		   )
+		{
+			//std::cout<<"Correction in DiRICH Header: "<< fTDCAlignmentErrorPositions[fTdcWordCorrectionCnt]<<std::endl;
+			offset += 2;
+			fTdcWordCorrectionCnt++;
+		}
+	
 		// We suppose that the second word is the header of the subsubevent
 		// <Length> <SubSubEv.Id>
-		mRichSupport::SwapBytes(4, ptr+offset); dataPtr = (Int_t*)(ptr+offset);
+		mRichSupport::SwapBytes(4, ptr+offset);
+		dataPtr = (Int_t*)(ptr+offset);
 		Int_t SubSubEvSize = (Int_t)((dataPtr[0] >> 16) & 0xffff);
 		fSubSubEvId = (Int_t)((dataPtr[0]) & 0xffff);
-		LOG(debug4) << "[" << fGwordCnt << "]\t" << mRichSupport::GetWordHexRepr(ptr+offset) << "\t" << "ok" << "\t"
-		            << "subsubevent ID (FPGA ID) = 0x" << mRichSupport::GetHexRepresentation(2, ptr+offset) << "\t"
-		            << "subsubevent size = " << SubSubEvSize;
+	
+		//check if it is the last DiRICH in the Hub Data stream
+		//TODO CHECK!
+		if ( (static_cast<size_t>(offset) + SubSubEvSize*4 )>= size){
+			LOG(debug) <<"Last DiRICH on HUB";
+			fLastFeeOnHub = true;
+		}
+		
+		if (((fSubSubEvId >> 12 ) & 0xF ) != 0x7) {
+			LOG(error) << mRichSupport::GetWordHexRepr(ptr+offset-12) << "\t" << "er" << "\t" << "ILLEGAL SubSubEvent Id  prev";
+			LOG(error) << mRichSupport::GetWordHexRepr(ptr+offset-8 ) << "\t" << "er" << "\t" << "ILLEGAL SubSubEvent Id  prev";
+			LOG(error) << mRichSupport::GetWordHexRepr(ptr+offset-4 ) << "\t" << "er" << "\t" << "ILLEGAL SubSubEvent Id  prev";
+			LOG(error) << mRichSupport::GetWordHexRepr(ptr+offset)    << "\t" << "er" << "\t" << "ILLEGAL SubSubEvent Id  "
+					   << "Offset:" << static_cast<size_t>(offset) <<"  Size:"<< size;
+			LOG(error) << mRichSupport::GetWordHexRepr(ptr+offset+4)  << "\t" << "er" << "\t" << "ILLEGAL SubSubEvent Id next";
+			LOG(error) << mRichSupport::GetWordHexRepr(ptr+offset+8)  << "\t" << "er" << "\t" << "ILLEGAL SubSubEvent Id next";
+			LOG(error) << mRichSupport::GetWordHexRepr(ptr+offset+12) << "\t" << "er" << "\t" << "ILLEGAL SubSubEvent Id next";					   
+		}
+		
+		LOG(debug) << "[" << fGwordCnt << "]\t" << mRichSupport::GetWordHexRepr(ptr+offset) << "\t" << "ok" << "\t"
+				   << "subsubevent ID (FPGA ID) = 0x" << mRichSupport::GetHexRepresentation(2, ptr+offset) << "\t"
+				   << "subsubevent size = " << SubSubEvSize<< " | HUB Offset:" << static_cast<size_t>(offset) <<"  Size:"<< size;
 		fGwordCnt++;
 
-      if( size + 4 < static_cast<size_t>( offset + 4 + SubSubEvSize*4 ) ) {
-         LOG(WARN) << "CbmMcbm2018UnpackerAlgoRich::ProcessTRBsubevent() warning:"
-                   << "SubEvent out of bounds. This should not happen. ("
-                             << size << " VS " << ( offset + 4 + SubSubEvSize*4 ) << ")";
-         /// Probably corrupted MS, stop there and skip remaining data
-         fSkipMs = kTRUE;
-      }
-
+		if( size + 4 < static_cast<size_t>( offset + 4 + SubSubEvSize*4 - fTdcWordCorrectionCnt*2 ) ) {
+			LOG(WARN) << "CbmMcbm2018UnpackerAlgoRich::ProcessTRBsubevent() warning:"
+					  << "SubEvent out of bounds. This should not happen. ("
+					  << size << " VS " << ( offset + 4 + SubSubEvSize*4 - fTdcWordCorrectionCnt*2) << ")";
+			
+					  /// Probably corrupted MS, stop there and skip remaining data
+			//fSkipMs = kTRUE;
+		}   
+		
+		fChnlMsgCnt.fill(0);
+		
 		// Add 4 bytes which correspond to the header word
 		//////////////////////////////////////////////////////////////////////
-		offset += (4 + ProcessTRBsubsubevent(SubSubEvSize*4, ptr+offset+4));//
+		offset += (4 + ProcessTRBsubsubevent(SubSubEvSize*4, ptr+offset+4,offset+4,size));//
 		//////////////////////////////////////////////////////////////////////
-
+	
+		//std::cout<<"Words in DiRICH 0x"<< std::hex << fSubSubEvId << std::dec <<" : "<< SubSubEvSize <<std::endl;
+		
+		if (fbDebugMonitorMode){
+			//This address calculation is just for mCBM; will be a problem when using full CBM RICH acceptance
+			uint16_t DiRICH_address = ((fSubSubEvId>>8) & 0xF)*18 + ((fSubSubEvId>>4) & 0xF)*2 + (fSubSubEvId&0xF);
+			fhSubSubEventSize->Fill( DiRICH_address , SubSubEvSize); // Words in a DiRICH
+			
+			//Words per channel
+			for (size_t i=1; i<fChnlMsgCnt.size();++i) {
+				if (fChnlMsgCnt.at(i) > 0) fhChnlSize->Fill(static_cast<int>(i),fChnlMsgCnt.at(i));
+			}
+		}
+		
 		// In principle, should be reset here for safety
 		fSubSubEvId = 0;
 	}
+	
+	if (static_cast<Int_t>(fTDCAlignmentErrorPositions.size()) != fTdcWordCorrectionCnt) std::cout<<"Missing Correction"<<std::endl;
+	
+// 	if (fTDCAlignmentErrorPositions.size() > 0){
+// 		std::cout<<"Offset : "<<offset-4<<"   Size:"<< size <<std::endl;
+// 		std::cout<<"END of Hub    : "<<mRichSupport::GetWordHexRepr(ptr+offset-4)<<std::endl; // Last word, processed as TDCWord
+// 		std::cout<<"END of Hub +1 : "<<mRichSupport::GetWordHexRepr(ptr+offset+0)<<std::endl;
+// 		std::cout<<"END of Hub +2 : "<<mRichSupport::GetWordHexRepr(ptr+offset+4)<<std::endl;
+// 		std::cout<<"END of Hub +3 : "<<mRichSupport::GetWordHexRepr(ptr+offset+8)<<std::endl;
+// 	}
 
 	////LOG(debug4) << "Done processing TRB subevent. offset-4=" << offset-4 << "\tsize=" << size;
-	//TODO implement checks
-	if (size != static_cast<size_t>(offset-4)) {
+	if ( size != static_cast<size_t>(offset-4)) {
 		LOG(WARN) << "CbmMcbm2018UnpackerAlgoRich::ProcessTRBsubevent() warning:"
 		          << "Number of processed bytes is not equal to the expected size. This should not happen. ("
-                          << size << " VS " << (offset - 4) << ")";
+                          << size << " VS " << (offset - 4) << ")"
+                          << "  Correction: "<< fTdcWordCorrectionCnt * 2
+                          << "  fLastFeeOnHub:"<< fLastFeeOnHub;
+						  
       /// Probably corrupted MS, stop there and skip remaining data
-		fSkipMs = kTRUE;
+		//fSkipMs = kTRUE;
 	}
 
+	fTdcWordCorrectionGlobalCnt += fTdcWordCorrectionCnt;
+	
 	return size; //TODO check
 }
 
-Int_t CbmMcbm2018UnpackerAlgoRich::ProcessTRBsubsubevent(size_t const size, uint8_t const * const ptr)
-{
+Int_t CbmMcbm2018UnpackerAlgoRich::ProcessTRBsubsubevent(size_t const size, uint8_t const * const ptr, Int_t const hubOffset, size_t const hubSize)
+{   //size: Size of Data from DiRICH in Bytes
 	////LOG(debug4) << "ProcessTRBsubsubevent size=" << size  << " bytes";
-
 	Int_t offset = 0; // offset in bytes
-
 	fCurEpochCounter = 0; //TODO check
 	fInSubSubEvent = kFALSE; //TODO check
+	fTrbState = TrbNetState::IDLE;
+	Int_t TdcWordCorrection_local = 0;
+	Int_t WordCnt = 0;
+	bool break_flag = false;
+	
+	for (size_t iWord=0; iWord<size/4; iWord++) { // iWord is size in Lines
+		//correct for misalignment
+		//hubOffset is pointing to first word after DiRICH address
+		if (fTDCAlignmentErrorPositions.size() > static_cast<unsigned int>(fTdcWordCorrectionCnt) &&
+			fTDCAlignmentErrorPositions[fTdcWordCorrectionCnt] == static_cast<Int_t>(hubOffset + offset + iWord*4 )
+		   )
+		{
+			//BEGIN DEBUG
+//                 std::cout<<"DEBUG -1: "<< mRichSupport::GetWordHexRepr(ptr-hubOffset+fTDCAlignmentErrorPositions[fTdcWordCorrectionCnt]-4)   << std::endl;
+//                 std::cout<<"DEBUG  0: "<< mRichSupport::GetWordHexRepr(ptr-hubOffset+fTDCAlignmentErrorPositions[fTdcWordCorrectionCnt])   << std::endl;
+//                 std::cout<<"DEBUG +1: "<< mRichSupport::GetWordHexRepr(ptr-hubOffset+fTDCAlignmentErrorPositions[fTdcWordCorrectionCnt]+4)   << std::endl;
+//                 std::cout<<"DEBUG_  : "<< mRichSupport::GetWordHexRepr(ptr+iWord*4+offset)   << std::endl;
+//                 
+//                 std::cout<<"Correction in DiRICH Header: "<< fTDCAlignmentErrorPositions[fTdcWordCorrectionCnt]<<std::endl;
 
-	for (size_t iWord=0; iWord<size/4; iWord++) {
+			//END   DEBUG
+			offset += 2;
+			fTdcWordCorrectionCnt++;
+			TdcWordCorrection_local++;
+			// repeat word
+			iWord--; 
+			continue;
+		}
 		if (fSkipMs == kTRUE) break;
-		mRichSupport::SwapBytes(4, ptr+iWord*4);
+		
+		
+		//if (fTDCAlignmentErrorPositions.size() > 0 && fLastFeeOnHub) std::cout<<"Final Word: "<< mRichSupport::GetWordHexRepr(ptr+iWord*4+offset)<<std::endl;
+                
 		//////////////////////////////
-		ProcessTDCword(ptr+iWord*4);//
-		//////////////////////////////
-		offset += 4;
-	}
-        if (fSkipMs == kTRUE) return 0;
-	////LOG(debug4) << "Done processing TRB subsubevent. offset=" << offset << "\tsize=" << size;
+		if ( (hubSize > 0 ) && (hubOffset+offset+iWord*4 > hubSize) ) {
+			//std::cout<<"BREAKING   : "<<hubOffset+offset+iWord*4 <<" > "<<  hubSize <<" | "<< offset << " | "<< fTdcWordCorrectionCnt <<std::endl;
+			break_flag = true;
+			break;
+		}
+		//if (isCTSWord) std::cout<<"TDCWORD: "<<mRichSupport::GetWordHexRepr(ptr+iWord*4+offset)<<std::endl;
+		
+		mRichSupport::SwapBytes(4, ptr+iWord*4+offset);
+		ProcessTDCword(ptr+iWord*4+offset,iWord,size);//
+
+		WordCnt++;
+		
+		//std::cout<<"   "<< iWord <<"  "<< WordCnt <<std::endl;
+	} //END of for Loop
+
+// 	if (fTdcWordCorrectionCnt > 0){
+// 		std::cout<<"LAST Processed Word    : "<<mRichSupport::GetWordHexRepr(ptr+(WordCnt-1)*4+offset)<<std::endl;
+// 	}
+	//if (TdcWordCorrection_local != 0) printf(" --- TDC WORD FIX APPLIED ! --- [DiRICH : 0x%4x]\n",fSubSubEvId);
+	
+    if (fSkipMs == kTRUE) return 0;
+
 	//TODO Implement checks that the first word was the header and the last word was the trailer
-	if (size != static_cast<size_t>(offset)) {
+
+	//if (size != static_cast<size_t>((WordCnt)*4) && fTdcWordCorrectionCnt == 0) {
+	if ( !( (!break_flag && ((size) == static_cast<size_t>((WordCnt)*4)) ) || 
+		    ( break_flag && ((size - (fTdcWordCorrectionCnt*2) ) == static_cast<size_t>((WordCnt)*4)) )
+		  )
+	   )  
+	{
 		LOG(WARN) << "CbmMcbm2018UnpackerAlgoRich::ProcessTRBsubsubevent() warning:"
-		          << "Number of processed bytes is not equal to the expected size. This should not happen.";
-      /// Probably corrupted MS, stop there and skip remaining data
-		fSkipMs = kTRUE;
+				  << "Number of processed bytes is not equal to the expected size. This should not happen."<< static_cast<size_t>(WordCnt*4) <<"   "<<size;
+	    /// Probably corrupted MS, stop there and skip remaining data
+		//fSkipMs = kTRUE;
 	}
 
-	return size; //TODO check
+	
+	return (WordCnt*4 + offset); //TODO check
+	
 }
 
-void CbmMcbm2018UnpackerAlgoRich::ProcessTDCword(uint8_t const * const ptr)
+Int_t CbmMcbm2018UnpackerAlgoRich::ProcessTDCword(uint8_t const * const ptr, Int_t const word, size_t const size)
 {
 	Int_t* tdcDataPtr = (Int_t*)ptr;
 	Int_t tdcData = tdcDataPtr[0];
 	Int_t tdcTimeDataMarker = (tdcData >> 31) & 0x1; // 1 bit
 
-	if (tdcTimeDataMarker == 0x1) {
-		////////////////////////////////
-		ProcessTimestampWord(tdcData);//
-		////////////////////////////////
-	} else {
-		UInt_t tdcMarker = (tdcData >> 29) & 0x7; // 3 bits
-
-		if (tdcMarker == 0x0) { // TDC trailer
-			if (fInSubSubEvent) {
-				fInSubSubEvent = kFALSE; // go out of InSubSubEvent state
-				LOG(debug4) << "[" << fGwordCnt << "]\t" << mRichSupport::GetWordHexRepr(ptr) << "\t" << "ok" << "\t" << "TDC TRAILER";
-				fGwordCnt++;
+	bool errorInData = false;
+	
+		// A TDC Time i only valid after a EPOCH or another TDC value
+		if ( ( tdcTimeDataMarker == 0x1 && fTrbState == TrbNetState::TDC   ) ||
+			 ( tdcTimeDataMarker == 0x1 && fTrbState == TrbNetState::EPOCH )
+		   )
+		{
+			UInt_t tdcMarker = (tdcData >> 29) & 0x7; // 3 bits
+			if  (tdcMarker == 0x4 || tdcMarker == 0x5) {
+				fDebugPrint = 0;
+				////////////////////////////////
+				ProcessTimestampWord(tdcData);//
+				////////////////////////////////
+				fTrbState = TrbNetState::TDC;
 			} else {
-				LOG(info) << "[" << fGwordCnt << "]\t" << mRichSupport::GetWordHexRepr(ptr) << "\t" << "er" << "\t" << "UNKNOWN (TDC TRAILER not after header)";
-				fGwordCnt++;
-				fSkipMs = kTRUE;
-				//exit(EXIT_FAILURE); //TODO probably one should get rid of explicit EXIT calls not to ruin unpacking of other detectors?
+				std::cout<< "wrong TDC Word!!"<< std::endl;
+				errorInData = true;
 			}
-		} else if (tdcMarker == 0x1) { // TDC header
-		//	UInt_t randomCode = (tdcData >> 16) & 0xff; // 8 bits
-		//	UInt_t errorBits = (tdcData) & 0xffff; //16 bits
-			if (!fInSubSubEvent) {
-				fInSubSubEvent = kTRUE; // go into InSubSubEvent state
-				LOG(debug4) << "[" << fGwordCnt << "]\t" << mRichSupport::GetWordHexRepr(ptr) << "\t" << "ok" << "\t" << "TDC HEADER";
-				fGwordCnt++;
-			} else {
-				LOG(info) << "[" << fGwordCnt << "]\t" << mRichSupport::GetWordHexRepr(ptr) << "\t" << "er" << "\t" << "UNKNOWN (TDC HEADER not after trailer)";
-				fGwordCnt++;
-				fSkipMs = kTRUE;
-				//exit(EXIT_FAILURE); //TODO probably one should get rid of explicit EXIT calls not to ruin unpacking of other detectors?
-			}
-		} else if (tdcMarker == 0x2) { // DEBUG
-		//	UInt_t debugMode = (tdcData >> 24) & 0x1f; // 5 bits
-		//	UInt_t debugBits = (tdcData) & 0xffffff; // 24 bits
-			LOG(debug4) << "[" << fGwordCnt << "]\t" << mRichSupport::GetWordHexRepr(ptr) << "\t" << "ok" << "\t" << "DEBUG";
-			fGwordCnt++;
-			// currently no actions if a DEBUG message is encountered.
-		} else if (tdcMarker == 0x3) { // EPOCH counter
-			fCurEpochCounter = (tdcData) & 0xfffffff; // 28 bits
-			LOG(debug4) << "[" << fGwordCnt << "]\t" << mRichSupport::GetWordHexRepr(ptr) << "\t" << "ok" << "\t" << "EPOCH\t" << fCurEpochCounter;
-			fGwordCnt++;
+			
 		} else {
-			if (tdcTimeDataMarker != 0x1) {
-				LOG(error) << "[" << fGwordCnt++ << "]\t" << mRichSupport::GetWordHexRepr(ptr) << "\t" << "er" << "\t" << "UNKNOWN";
+			UInt_t tdcMarker = (tdcData >> 29) & 0x7; // 3 bits
+
+			if (tdcMarker == 0x0) { // TDC trailer
+				if (fInSubSubEvent)
+				{
+					if (!(fTrbState == TrbNetState::HEADER ||
+						  fTrbState == TrbNetState::EPOCH  ||
+						  fTrbState == TrbNetState::TDC)
+					   )
+					{
+						LOG(error) << "[" << fGwordCnt << "]\t" << mRichSupport::GetWordHexRepr(ptr) << "\t" << "er" << "\t" << "ILLEGAL TRAILER Position";
+						errorInData = true;
+					} 
+					else if ((size/4 - static_cast<size_t>(word)) > 1) 
+					{
+						//Trailer only at end of SubSubEvent!
+						LOG(error) << "[" << fGwordCnt << "]\t" << mRichSupport::GetWordHexRepr(ptr) << "\t" << "er" << "\t" << "Trailer only at end of SubSubEvent!"<<size/4<<"  "<<static_cast<size_t>(word);
+						errorInData = true;
+					} else {
+						fTrbState = TrbNetState::TRAILER;
+										
+						LOG(debug4) << "[" << fGwordCnt << "]\t" << mRichSupport::GetWordHexRepr(ptr) << "\t" << "ok" << "\t" << "TDC TRAILER";
+						//extract TDC Trailer Error
+						uint16_t errorBits = (tdcData) & 0xffff; //16 bits
+						ErrorMsg(errorBits, RichErrorType::tdcTrailer,fSubSubEvId);
+						fInSubSubEvent = kFALSE; // go out of InSubSubEvent state
+						//fGwordCnt++;
+						fDebugPrint = 0;
+					}
+				} else {
+					LOG(info) << "[" << fGwordCnt << "]\t" << mRichSupport::GetWordHexRepr(ptr) << "\t" << "er" << "\t" << "UNKNOWN (TDC TRAILER not after header)";
+					//fSkipMs = kTRUE;
+					errorInData = true;
+					//exit(EXIT_FAILURE); //TODO probably one should get rid of explicit EXIT calls not to ruin unpacking of other detectors?
+				}
+			} else if (tdcMarker == 0x1) { // TDC header
+			//	UInt_t randomCode = (tdcData >> 16) & 0xff; // 8 bits
+			//	UInt_t errorBits = (tdcData) & 0xffff; //16 bits
+				if (!fInSubSubEvent) 
+				{
+					fInSubSubEvent = kTRUE; // go into InSubSubEvent state
+					
+					if (!(fTrbState == TrbNetState::IDLE || fTrbState == TrbNetState::TRAILER))
+                                        {
+						LOG(error) << "[" << fGwordCnt << "]\t" << mRichSupport::GetWordHexRepr(ptr) << "\t" << "er" << "\t" << "ILLEGAL HEADER Position";
+						errorInData = true;
+					} 
+					else if (!((((tdcData>>8) & 0xFFFFFF) == 0x200096) ||
+							   (((tdcData>>8) & 0xFFFFFF) == 0x200095))
+							)
+					{
+						LOG(error) << "[" << fGwordCnt << "]\t" << mRichSupport::GetWordHexRepr(ptr) << "\t" << "er" << "\t" << "ILLEGAL HEADER Value";
+						errorInData = true;
+					} 
+					else 
+					{
+						fTrbState = TrbNetState::HEADER;
+						//extract TDC Header Error
+						uint8_t errorBits = (tdcData) & 0xff; //8 bits
+						ErrorMsg(errorBits, RichErrorType::tdcHeader,fSubSubEvId);
+						LOG(debug4) << "[" << fGwordCnt << "]\t" << mRichSupport::GetWordHexRepr(ptr) << "\t" << "ok" << "\t" << "TDC HEADER";
+					}
+					//fGwordCnt++;
+				} else 
+				{
+					LOG(info) << "[" << fGwordCnt << "]\t" << mRichSupport::GetWordHexRepr(ptr) << "\t" << "er" << "\t" << "UNKNOWN (TDC HEADER not after trailer)";
+					errorInData = true;
+					//fGwordCnt++;
+					//fSkipMs = kTRUE;
+					//exit(EXIT_FAILURE); //TODO probably one should get rid of explicit EXIT calls not to ruin unpacking of other detectors?
+				}
+			} else if (tdcMarker == 0x2) { // DEBUG
+			//	UInt_t debugMode = (tdcData >> 24) & 0x1f; // 5 bits
+			//	UInt_t debugBits = (tdcData) & 0xffffff; // 24 bits
+				//fTrbState = TrbNetState::DEBUG;
+				LOG(debug4) << "[" << fGwordCnt << "]\t" << mRichSupport::GetWordHexRepr(ptr) << "\t" << "ok" << "\t" << "DEBUG";
+				LOG(info) << "DEBUG VALUE [" << fGwordCnt << "]\t" << mRichSupport::GetWordHexRepr(ptr);
+				errorInData = true;
+				//fGwordCnt++;
+				// currently no actions if a DEBUG message is encountered.
+			} else if (tdcMarker == 0x3) { // EPOCH counter
+				if (!(fTrbState == TrbNetState::HEADER ||
+					  fTrbState == TrbNetState::TDC    ||
+					  fTrbState == TrbNetState::EPOCH)
+				   )
+				{
+					LOG(error) << "[" << fGwordCnt << "]\t" << mRichSupport::GetWordHexRepr(ptr) << "\t" << "er" << "\t" << "ILLEGAL EPOCH Position!";
+					errorInData = true;
+				} 
+				else if (((tdcData>>28) & 0xF) != 0x6) 
+				{ //EPOCH is always 0x6....
+					LOG(error) << "[" << fGwordCnt << "]\t" << mRichSupport::GetWordHexRepr(ptr) << "\t" << "er" << "\t" << "ILLEGAL EPOCH value :";
+					errorInData = true;
+				} else 
+				{
+					fTrbState = TrbNetState::EPOCH;	
+					fDebugPrint = 0;
+					fCurEpochCounter = (tdcData) & 0xfffffff; // 28 bits
+					LOG(debug4) << "[" << fGwordCnt << "]\t" << mRichSupport::GetWordHexRepr(ptr) << "\t" << "ok" << "\t" << "EPOCH\t" << fCurEpochCounter;
+					//fGwordCnt++;
+				}
+			} else {
+				if (tdcTimeDataMarker != 0x1) {
+					LOG(error) << "[" << fGwordCnt << "]\t" << mRichSupport::GetWordHexRepr(ptr) << "\t" << "er" << "\t" << "UNKNOWN";
+					errorInData = true;
+				}
 			}
 		}
+	
+	if (errorInData)  {
+		//Handle error
+		fSkipMs = kTRUE;
+		fSkipCnt++;
+		LOG(error) << " >>> Skipping MicroTS due to error in data! <<<";
 	}
+
+	
+	return 0;//correction;
 }
 
 void CbmMcbm2018UnpackerAlgoRich::ProcessTimestampWord(Int_t tdcData)
@@ -845,7 +1115,7 @@ void CbmMcbm2018UnpackerAlgoRich::ProcessTimestampWord(Int_t tdcData)
 	            << "coarse=" << coarse << "\t"
 	            << "fine=" << fine << "\t"
 	            << "full=" << fullTime;
-	fGwordCnt++;
+	//fGwordCnt++;
 
 	// Storing reference times
 	// =======================
@@ -951,6 +1221,9 @@ void CbmMcbm2018UnpackerAlgoRich::ProcessTimestampWord(Int_t tdcData)
 	} else {
 		this->ProcessFallingEdge(fSubSubEvId, channel, fullTimeCorr);
 	}
+	
+	fChnlMsgCnt.at(channel)++;
+	if (fTrbState == TrbNetState::EPOCH) fChnlMsgCnt.at(channel)++ ; // If there was a correp. EPOCH before
 }
 
 void CbmMcbm2018UnpackerAlgoRich::ProcessRisingEdge(Int_t subSubEvId, Int_t channel, Double_t time)
@@ -1116,10 +1389,48 @@ Bool_t CbmMcbm2018UnpackerAlgoRich::CreateHistograms()
 	AddHistoToVector(fhTDCch0re_minusPrevCTSch2re, "");
 	AddHistoToVector(fhTDCch0re_minusPrevCTSch2fe, "");
 */
+
+    fhTdcErrors = new TH2D( "fhTdcErrors", "Errors in TDC msgs;;",nTDCs, -0.5, nTDCs-0.5,9,-0.5,8.5 );
+    fhTdcErrors->GetYaxis()->SetBinLabel(1,"RingBuffOverw.");
+    fhTdcErrors->GetYaxis()->SetBinLabel(2,"noRefTime");
+    fhTdcErrors->GetYaxis()->SetBinLabel(3,"refTimePrecedes");
+    fhTdcErrors->GetYaxis()->SetBinLabel(4,"trigW/oRefTime");
+    fhTdcErrors->GetYaxis()->SetBinLabel(5,"markMisRefTime");
+    fhTdcErrors->GetYaxis()->SetBinLabel(6,"multiRefTime");
+    fhTdcErrors->GetYaxis()->SetBinLabel(7,"refTime<40ns");
+    fhTdcErrors->GetYaxis()->SetBinLabel(8,"noValidation");
+    fhTdcErrors->GetYaxis()->SetBinLabel(9,"trigger!=0x1");
+    fhTdcErrors->GetXaxis()->LabelsOption("v");
+    fhTdcErrors->GetYaxis()->SetTickSize(0.0);
+    fhTdcErrors->GetXaxis()->SetTickSize(0.0);
+    //fhTdcErrors->SetGrid();
+
+    fhEventErrors = new TH2D( "fhEventErrors", "Errors in Event/mts msgs;;",1,-0.5,0.5 ,13,-0.5,12.5 );
+    fhEventErrors->GetYaxis()->SetBinLabel(1,"UDPProblem");
+    fhEventErrors->GetYaxis()->SetBinLabel(2,"evNumMism");
+    fhEventErrors->GetYaxis()->SetBinLabel(3,"trigMism");
+    fhEventErrors->GetYaxis()->SetBinLabel(4,"wrongLength");
+    fhEventErrors->GetYaxis()->SetBinLabel(5,"answMissing");
+    fhEventErrors->GetYaxis()->SetBinLabel(6,"evRequFail");
+    fhEventErrors->GetYaxis()->SetBinLabel(7,"evPartFound");
+    fhEventErrors->GetYaxis()->SetBinLabel(8,"sevBuffProb");
+    fhEventErrors->GetYaxis()->SetBinLabel(9,"brokenEv");
+    fhEventErrors->GetYaxis()->SetBinLabel(10,"ethLinkDwn");
+    fhEventErrors->GetYaxis()->SetBinLabel(11,"subEvBuffAlmFull");
+    fhEventErrors->GetYaxis()->SetBinLabel(12,"eth/BufProb");
+    fhEventErrors->GetYaxis()->SetBinLabel(13,"timingTrigErr");
+    fhEventErrors->GetXaxis()->LabelsOption("v");
+    fhEventErrors->GetXaxis()->SetTickSize(0.0);
+    fhEventErrors->GetYaxis()->SetTickSize(0.0);
+
 	for (Int_t iTDC=0; iTDC<nTDCs; iTDC++) {
 		TString histoName;
 		TString histoTitle;
 		TString subFolder;
+
+		Int_t Addr = fUnpackPar->GetAddress(iTDC);
+		fMapFEE[Addr] = iTDC;
+		fhTdcErrors->GetXaxis()->SetBinLabel(iTDC+1,Form("0x%4x",Addr));
 /*
 		histoName.Form("fhTDC%dre_minusTDC%dch0re", iTDC, iTDC);
 		histoTitle.Form("TDC %d re - TDC %d ch0 re;channel;ns", iTDC, iTDC);
@@ -1191,13 +1502,34 @@ Bool_t CbmMcbm2018UnpackerAlgoRich::CreateHistograms()
 	}
 
 
-   fhVectorSize = new TH1I( "fhVectorSize", "Size of the vector VS TS index; TS index; Size [bytes]",
-                            10000, 0., 10000. );
-   fhVectorCapacity = new TH1I( "fhVectorCapacity", "Size of the vector VS TS index; TS index; Size [bytes]",
-                            10000, 0., 10000. );
-   AddHistoToVector( fhVectorSize, "" );
-   AddHistoToVector( fhVectorCapacity, "" );
+	AddHistoToVector( fhTdcErrors, "" );
+	AddHistoToVector( fhEventErrors, "" );
 
+	fhVectorSize     = new TH1I( "fhVectorSize", "Size of the vector VS TS index; TS index; Size [bytes]",
+                            10000, 0., 10000. );
+	fhVectorCapacity = new TH1I( "fhVectorCapacity", "Size of the vector VS TS index; TS index; Size [bytes]",
+                            10000, 0., 10000. );
+	AddHistoToVector( fhVectorSize, "" );
+	AddHistoToVector( fhVectorCapacity, "" );
+
+	if (fbDebugMonitorMode ) {
+		fhEventSize = new TH1I( "fhEventSize", "Size of the Event from TrbNet; Size [bytes]",
+								350, 0., 70000. );
+		AddHistoToVector( fhEventSize, "" );
+		
+		fhSubEventSize = new TH2I( "fhSubEventSize", "fhSubEventSize; HubId ; Size [bytes]; Entries",
+								6, 0, 6, 10000, 0., 10000. );
+		AddHistoToVector( fhSubEventSize, "" );
+		
+		fhSubSubEventSize = new TH2I( "fhSubSubEventSize", "fhSubSubEventSize; DiRICH ; Size [words]; Entries",
+								72, 0, 72, 510, 0., 510. );
+		AddHistoToVector( fhSubSubEventSize, "" );
+
+		fhChnlSize = new TH2I( "fhChnlSize", "fhChnlSize; channel; Size [words]; Entries",
+								33, 0, 33, 25, 0 , 25. );
+		AddHistoToVector( fhChnlSize, "" );		
+	}
+	
 	return kTRUE;
 }
 
@@ -1231,6 +1563,155 @@ TH2D* CbmMcbm2018UnpackerAlgoRich::GetTotH2(Int_t tdc)
 	return h;
 }
 
+ Bool_t CbmMcbm2018UnpackerAlgoRich::DebugMs( const fles::Timeslice& ts, size_t uMsCompIdx, size_t uMsIdx )
+ {
+ 	const fles::MicrosliceView mv = ts.get_microslice(uMsCompIdx, uMsIdx);
+ 	const fles::MicrosliceDescriptor& msDesc = mv.desc();
+ 	const uint8_t* ptr = mv.content();
+ 	const size_t size = msDesc.size;
+
+ 	if (size == 0) return kTRUE;
+	Debug(ptr,size);
+
+	return kTRUE;
+ }
+
+ Int_t CbmMcbm2018UnpackerAlgoRich::Debug( const uint8_t* ptr, const size_t size )
+ {
+
+ 	if (size == 0) return size;
+
+ 	//LOG(info)<<"DEBUG MODE IS ACTIVE; Printing raw data:";
+
+         uint8_t nblCnt = 0;
+         uint8_t wrdCnt = 0;
+         std::cout<<std::endl<<"SIZE: "<<std::dec<<size<<"Byte"<<std::endl;
+         for (size_t i =0; i< size; ++i){
+
+           //if (wrdCnt == 0) std::cout<<"HEX: ";
+           uint8_t *tdcDataPtr = (uint8_t*)(ptr+i);
+
+           if ( wrdCnt == 0 && nblCnt == 0 ) {
+               printf("%08d : ", static_cast<int>(i));
+           }
+
+           printf("%02x", unsigned(*tdcDataPtr));
+           nblCnt++;
+           if (nblCnt%2 == 0) {
+               printf(" ");
+           }
+           if (nblCnt%4 == 0) {
+               printf("  ");
+               wrdCnt++;
+               nblCnt=0;
+           }
+
+           if (wrdCnt==10) {
+               printf("\n");
+               wrdCnt = 0;
+           }
+
+         }
+         printf("\n");
+ 	return size;
+ }
+
+
+void CbmMcbm2018UnpackerAlgoRich::ErrorMsg(uint16_t errbits, RichErrorType type, uint16_t tdcAddr)
+{
+    if (fbMonitorMode) {
+        switch(type){
+            case RichErrorType::mtsError   :
+                    //UDP problem
+                    if ((errbits&0x1)==1) fhEventErrors->Fill(0.0,0.0);
+
+                    break;
+
+            case RichErrorType::tdcHeader  :
+                    // min. 1 rinǵ buffer overwritten
+                    if ((errbits&0x1)==1) fhTdcErrors->Fill(fMapFEE[tdcAddr],0.0);
+
+                    break;
+
+            case RichErrorType::tdcTrailer :
+                    // no reference time in trigger handler in TDC
+                    if (((errbits>>0)&0x1)==1) fhTdcErrors->Fill(fMapFEE[tdcAddr],1.0);
+
+                    // reference time precedes a non-timing trigger
+                    if (((errbits>>1)&0x1)==1) fhTdcErrors->Fill(fMapFEE[tdcAddr],2.0);
+
+                    // timing trigger is delivered without a reference time
+                    if (((errbits>>2)&0x1)==1) fhTdcErrors->Fill(fMapFEE[tdcAddr],3.0);
+
+                    // Set with the bit 2 to mark the missing reference time
+                    if (((errbits>>3)&0x1)==1) fhTdcErrors->Fill(fMapFEE[tdcAddr],4.0);
+
+                    // there are more than one detected reference time
+                    if (((errbits>>4)&0x1)==1) fhTdcErrors->Fill(fMapFEE[tdcAddr],5.0);
+
+                    // reference time was too short (<40 ns)
+                    if (((errbits>>5)&0x1)==1) fhTdcErrors->Fill(fMapFEE[tdcAddr],6.0);
+
+                    // no trigger validation arrives from the endpoint after a valid  reference time
+                    if (((errbits>>6)&0x1)==1) fhTdcErrors->Fill(fMapFEE[tdcAddr],7.0);
+
+                    // any timing trigger type except 0x1 is send
+                    if (((errbits>>7)&0x1)==1) fhTdcErrors->Fill(fMapFEE[tdcAddr],8.0);
+
+                    break;
+
+            case RichErrorType::ctsHeader  :
+                    // To be implemented
+                    break;
+
+            case RichErrorType::ctsTrailer :
+                    // To be implemented
+                    break;
+
+            case RichErrorType::subEventError :
+                    // event number mismatch
+                    if (((errbits>>0)&0x1)==1) fhEventErrors->Fill(0.0,1.0);
+
+                    // trigger code mismatch
+                    if (((errbits>>1)&0x1)==1) fhEventErrors->Fill(0.0,2.0);
+
+                    // wrong length
+                    if (((errbits>>2)&0x1)==1) fhEventErrors->Fill(0.0,3.0);
+
+                    // answer missing
+                    if (((errbits>>3)&0x1)==1) fhEventErrors->Fill(0.0,4.0);
+
+                    // event number request by CTS was not available (Not found)
+                    if (((errbits>>4)&0x1)==1) fhEventErrors->Fill(0.0,5.0);
+
+                    // event partially found in data buffer
+                    if (((errbits>>5)&0x1)==1) fhEventErrors->Fill(0.0,6.0);
+
+                    // Severe Problem with data buffer and/or read-out
+                    if (((errbits>>6)&0x1)==1) fhEventErrors->Fill(0.0,7.0);
+
+                    // Single broken event
+                    if (((errbits>>7)&0x1)==1) fhEventErrors->Fill(0.0,8.0);
+
+                    // Ethernet Link down
+                    if (((errbits>>8)&0x1)==1) fhEventErrors->Fill(0.0,9.0);
+
+                    // SubEvent buffer almost full
+                    if (((errbits>>9)&0x1)==1) fhEventErrors->Fill(0.0,10.0);
+
+                    // Ethernet/SubEventBuilder error
+                    if (((errbits>>10)&0x1)==1) fhEventErrors->Fill(0.0,11.0);
+
+                    // Timing trigger error
+                    if (((errbits>>11)&0x1)==1) fhEventErrors->Fill(0.0,12.0);
+
+                    break;
+
+            default: break;
+        }
+    }
+
+}
 
 /*
 Bool_t CbmMcbm2018UnpackerAlgoRich::FillHistograms()
@@ -1242,6 +1723,52 @@ Bool_t CbmMcbm2018UnpackerAlgoRich::ResetHistograms()
 {
 	//TODO: do something?
 	return kTRUE;
+}
+
+void CbmMcbm2018UnpackerAlgoRich::findTDCAlignmentError(uint8_t const * const ptr, size_t const size) {
+ 
+    fTDCAlignmentErrorPositions.clear();
+    
+//     mRichSupport::SwapBytes(4, ptr+size); 
+//     if((((((Int_t*)(ptr+size))[0]) >> 28) & 0xF) != 0x0) {
+//         LOG(WARN) << "CbmMcbm2018UnpackerAlgoRich::ProcessTRBsubevent() warning:"
+//                   << "End on Hub is not where expected. Is it a Buffer overflow?  LastWord: "<<mRichSupport::GetWordHexRepr(ptr+size);
+//     }
+//     mRichSupport::SwapBytes(4, ptr+size); 
+    
+    	/***
+	 * Signature of Error:
+	 *  82b7   8ca6
+	 *  8297  *34ad*
+	 * *34ad*  66af    // data Ptr
+	 * *cf8b* *cf8b*
+	 *  82c8   cca9
+	 */
+    
+    //start at 8 to skip header of Hub and first row as this has to be checked
+    //stop at size -4 to avoid comparing with following hub
+    
+    for (Int_t i=8; i<static_cast<Int_t>(size-4); i += 4) {  // i represents bytes (4 per line)
+        //TODO: Optimize the swaping
+        mRichSupport::SwapBytes(4, ptr+i-4); 
+        mRichSupport::SwapBytes(4, ptr+i);
+        mRichSupport::SwapBytes(4, ptr+i+4); 
+        bool problem = false;
+        if ((((Int_t*) (ptr+i-4))[0] & 0xFFFF) == ((((Int_t*)(ptr+i))[0] >> 16) & 0xFFFF)) {
+            if ((((Int_t*) (ptr+i+4))[0] & 0xFFFF) == ((((Int_t*)(ptr+i+4))[0] >> 16) & 0xFFFF)){
+                //Signature of problem!
+                problem = true;
+                fTDCAlignmentErrorPositions.push_back(i);
+                fTDCAlignmentErrorPositions.push_back(i+6);
+            }
+        }
+        
+        mRichSupport::SwapBytes(4, ptr+i-4); 
+        mRichSupport::SwapBytes(4, ptr+i);
+        mRichSupport::SwapBytes(4, ptr+i+4); 
+        
+        if (problem) i += 8;//jump after the problem
+    }
 }
 
 ClassImp(CbmMcbm2018UnpackerAlgoRich)

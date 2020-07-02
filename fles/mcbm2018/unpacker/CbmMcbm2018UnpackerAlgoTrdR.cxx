@@ -65,6 +65,19 @@ CbmMcbm2018UnpackerAlgoTrdR::~CbmMcbm2018UnpackerAlgoTrdR()
     {
         delete fTrdRawMessageVector;
     }
+   if( nullptr != fParCList )
+      delete fParCList;
+   if( nullptr != fParContList )
+      delete fParContList;
+
+   if( nullptr != fAsicPar )
+      delete fAsicPar;
+   if( nullptr != fDigiPar )
+      delete fDigiPar;
+   if( nullptr != fGasPar )
+      delete fGasPar;
+   if( nullptr != fGainPar )
+      delete fGainPar;
 }
 
 Bool_t CbmMcbm2018UnpackerAlgoTrdR::Init()

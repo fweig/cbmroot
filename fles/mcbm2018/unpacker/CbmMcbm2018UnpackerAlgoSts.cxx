@@ -98,6 +98,10 @@ CbmMcbm2018UnpackerAlgoSts::~CbmMcbm2018UnpackerAlgoSts()
       fvmHitsInMs[ uDpb ].clear();
    } // for( UInt_t uDpb = 0; uDpb < fuNrOfDpbs; ++uDpb )
 */
+   if( nullptr != fParCList )
+      delete fParCList;
+   if( nullptr != fUnpackPar )
+      delete fUnpackPar;
 }
 
 // -------------------------------------------------------------------------
@@ -228,10 +232,10 @@ Bool_t CbmMcbm2018UnpackerAlgoSts::InitParameters()
 
                      ///! FIXME: 1) Geometry is using front/back while we are using P/N !!!!
                      ///!            => Assuming that front facing modules have connectors on right side
-                     ///!            +> Volker warns that the front side should be electrons one so P
+                     ///!            +> Volker warns that the front side should be electrons one so N
                      ///!        2) No accessor/setter to change only the side field of an STS address
                      ///!            => hardcode the shift
-                     ///!            +> The big is unused in the current scheme: the side is encoded in the Digi channel
+                     ///!            +> The bit is unused in the current scheme: the side is encoded in the Digi channel
                      fviFebAddress.push_back( fviModAddress[ fviFebModuleIdx[ uDpb ][ uCrobIdx ][ uFebIdx ] ]
                                               + ( fviFebModuleSide[ uDpb ][ uCrobIdx ][ uFebIdx ] << 25 ) );
                      fviFebSide.push_back( fviFebModuleSide[ uDpb ][ uCrobIdx ][ uFebIdx ] );
@@ -245,10 +249,10 @@ Bool_t CbmMcbm2018UnpackerAlgoSts::InitParameters()
 
                      ///! FIXME: 1) Geometry is using front/back while we are using P/N !!!!
                      ///!            => Assuming that front facing modules have connectors on right side
-                     ///!            +> Volker warns that the front side should be electrons one so P
+                     ///!            +> Volker warns that the front side should be electrons one so N
                      ///!        2) No accessor/setter to change only the side field of an STS address
                      ///!            => hardcode the shift
-                     ///!            +> The big is unused in the current scheme: the side is encoded in the Digi channel
+                     ///!            +> The bit is unused in the current scheme: the side is encoded in the Digi channel
                      fviFebAddress.push_back( fviModAddress[ fviFebModuleIdx[ uDpb ][ uCrobIdx ][ uFebIdx ] ]
                                               + ( (!fviFebModuleSide[ uDpb ][ uCrobIdx ][ uFebIdx ]) << 25 ) );
                      fviFebSide.push_back( fviFebModuleSide[ uDpb ][ uCrobIdx ][ uFebIdx ] );
@@ -323,6 +327,10 @@ Bool_t CbmMcbm2018UnpackerAlgoSts::InitParameters()
          } // for( UInt_t uFebIdx = 0; uFebIdx < fUnpackPar->GetNbFebsPerCrob(); ++ uFebIdx )
       } // for( UInt_t uCrobIdx = 0; uCrobIdx < fUnpackPar->GetNbCrobsPerDpb(); ++uCrobIdx )
    } // for( UInt_t uDpb = 0; uDpb < fuNrOfDpbs; ++uDpb )
+
+   if( fbBinningFw )
+      LOG(info) << "Unpacking data in bin sorter FW mode";
+      else LOG(info) << "Unpacking data in full time sorter FW mode (legacy)";
 
    // Internal status initialization
    fvulCurrentTsMsb.resize( fuNrOfDpbs );
@@ -434,11 +442,11 @@ Bool_t CbmMcbm2018UnpackerAlgoSts::ProcessTs( const fles::Timeslice& ts )
          UInt_t uChanInMod = itHitIn->GetChan()
                             + fUnpackPar->GetNbChanPerAsic() * (itHitIn->GetAsic() % fUnpackPar->GetNbAsicsPerFeb());
          /// FIXME: see issue #1549
-         /// P side: 0-1023 =>    0-1023
-         /// N side: 0-1023 => 2047-1024
-         if( fviFebSide[ uFebIdx ] )
+         /// N side: 0-1023 =>    0-1023
+         /// P side: 0-1023 => 2047-1024
+         if( 0 == fviFebSide[ uFebIdx ] )
             uChanInMod = fUnpackPar->GetNbChanPerFeb() - uChanInMod - 1 // Invert channel order
-                        + fUnpackPar->GetNbChanPerFeb(); // Offset for N side
+                        + fUnpackPar->GetNbChanPerFeb(); // Offset for P (back) side
 
          Double_t dTimeInNs = itHitIn->GetTs() * stsxyter::kdClockCycleNs - fdTimeOffsetNs;
          if( uAsicIdx < fvdTimeOffsetNsAsics.size() )
@@ -554,7 +562,8 @@ Bool_t CbmMcbm2018UnpackerAlgoSts::ProcessMs( const fles::Timeslice& ts, size_t 
    } // if( it == fDpbIdIndexMap.end() )
       else fuCurrDpbIdx = fDpbIdIndexMap[ fuCurrDpbId ];
 
-   fhMsCntEvo->Fill( fulCurrentMsIdx * 1e-9 );
+   if( fbMonitorMode || fbDebugMonitorMode )
+      fhMsCntEvo->Fill( fulCurrentMsIdx * 1e-9 );
 
    /** Check the current TS_MSb cycle and correct it if wrong **/
    UInt_t uTsMsbCycleHeader = std::floor( fulCurrentMsIdx /
@@ -733,7 +742,8 @@ Bool_t CbmMcbm2018UnpackerAlgoSts::ProcessMs( const fles::Timeslice& ts, size_t 
 //                   FillTsMsbInfo( pMess[uIdx] );
             if( pMess[uIdx].IsMsErrorFlagOn() )
             {
-               fhMsErrorsEvo->Fill( 1e-9 * fulCurrentMsIdx, pMess[uIdx].GetMsErrorType() );
+               if( fbMonitorMode || fbDebugMonitorMode )
+                  fhMsErrorsEvo->Fill( 1e-9 * fulCurrentMsIdx, pMess[uIdx].GetMsErrorType() );
                fErrVect.push_back( CbmErrorMessage( ECbmModuleId::kSts, fulCurrentMsIdx,
                                                     fuCurrDpbIdx, 0x20,
                                                     pMess[uIdx].GetMsErrorType() ) );

@@ -14,6 +14,7 @@
 // Data
 #include "PsdGbtReader.h"
 #include "CbmPsdDigi.h"
+#include "PronyFitter.h"
 
 // CbmRoot
 
