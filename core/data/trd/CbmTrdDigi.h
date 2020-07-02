@@ -8,6 +8,9 @@
 
 #include "CbmDefs.h"     // for kTrd
 
+#include <boost/serialization/access.hpp>
+#include <boost/serialization/base_object.hpp>
+
 class CbmTrdDigi
 {
 public:
@@ -202,6 +205,16 @@ private:
   static const Int_t fgkFlgOffset =  26;
   static const Int_t fgkTrgOffset =  29;
   static const Int_t fgkTypOffset =  31;
+
+  /// BOOST serialization interface
+  friend class boost::serialization::access;
+  template <class Archive>
+  void serialize(Archive& ar, const unsigned int /*version*/)
+  {
+    ar& fInfo;
+    ar& fCharge;
+    ar& fTime;
+  }
   
   ClassDefNV(CbmTrdDigi, 3);   // Production ready TRD digit
 };

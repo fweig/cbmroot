@@ -24,6 +24,10 @@
 #include "CbmDefs.h"        // for ECbmModuleId::kPsd
 #include "CbmPsdAddress.h"  // for CbmPsdAddress
 
+#include <boost/serialization/access.hpp>
+#include <boost/serialization/base_object.hpp>
+
+
 class CbmPsdDigi
 {
 
@@ -33,23 +37,25 @@ class CbmPsdDigi
        **/
       CbmPsdDigi();
 
+
       /** @brief Constructor with assignment
        ** @param address Unique channel address
        ** @param edep    Energy deposition
-       ** @param time    Time [adc counts]
+       ** @param time    Time [ns]
        **/
       CbmPsdDigi( UInt_t address, Double_t edep, Double_t time );
+
 
       /** @brief Constructor with detailed assignment.
        ** @param moduleID      Module Identifier
        ** @param sectionID     Section Identifier
        ** @param edep          Energy deposition
-       ** @param time          Time [adc counts]
+       ** @param time          Time [ns]
        **/
       CbmPsdDigi( UInt_t moduleId, UInt_t sectionId, Double_t edep, Double_t time );
 
 
-      /** @brief Copy constructor **/
+      /**  Copy constructor **/
       CbmPsdDigi(const CbmPsdDigi&);
 
 
@@ -57,16 +63,18 @@ class CbmPsdDigi
       CbmPsdDigi(CbmPsdDigi&&);
 
 
-      /** @brief Destructor **/
-      ~CbmPsdDigi();
-
-
       /** Assignment operator  **/
       CbmPsdDigi& operator=(const CbmPsdDigi&);
 
 
-      /** Move assignment operator  **/
+      /** Move Assignment operator  **/
       CbmPsdDigi& operator=(CbmPsdDigi&&);
+
+
+      /** Destructor **/
+      ~CbmPsdDigi();
+
+
 
       /** @brief Address
        ** @return Unique channel address (see CbmPsdAddress)
@@ -134,6 +142,18 @@ class CbmPsdDigi
        **/
       std::string ToString() const;
 
+//additional
+      UInt_t GetAmpl() const { return fuAmpl; };
+      UInt_t GetZL() const { return fuZL; };
+      Double_t GetEdepWfm() const { return fdEdepWfm; };
+      void SetAmpl(UInt_t ampl) { fuAmpl = ampl; }
+      void SetZL(UInt_t zl) { fuZL = zl; }
+      void SetEdepWfm( Double_t edep ) { fdEdepWfm = edep; }
+
+      Float_t  ffFitHarmonic1 = 0.;
+      Float_t  ffFitHarmonic2 = 0.;
+      Float_t  ffFitR2 = 999.;
+      Float_t  ffFitEdep = 0.;
 
    private:
 
@@ -141,7 +161,29 @@ class CbmPsdDigi
       Double_t fdTime    = -1.;     /// Time of measurement
       UInt_t   fuAddress =  0;      /// Unique channel address
 
-      ClassDefNV(CbmPsdDigi, 3);
+//additional
+      UInt_t   fuAmpl    =  0;
+      UInt_t   fuZL      =  0;
+      Double_t fdEdepWfm =  0.;
+
+      /// BOOST serialization interface
+      friend class boost::serialization::access;
+      template <class Archive>
+      void serialize(Archive& ar, const unsigned int /*version*/)
+      {
+            ar& ffFitHarmonic1;
+            ar& ffFitHarmonic2;
+            ar& ffFitR2;
+            ar& ffFitEdep;
+            ar& fdEdep;
+            ar& fdTime;
+            ar& fuAddress;
+            ar& fuAmpl;
+            ar& fuZL;
+            ar& fdEdepWfm;
+      }
+
+      ClassDefNV(CbmPsdDigi, 4);
 };
 
-#endif // CBMPSDDIGIM_H
+#endif // CBMPSDDIGI_H

@@ -16,6 +16,8 @@
 
 #include "CbmDefs.h"     // for kRich
 
+#include <boost/serialization/access.hpp>
+#include <boost/serialization/base_object.hpp>
 
 #ifndef DATA_RICH_CBMRICHDIGI_H_
 #define DATA_RICH_CBMRICHDIGI_H_
@@ -95,6 +97,16 @@ private:
 	 * \brief Time-over-threshold, pulse width
 	 */
 	Double_t fToT;
+
+	/// BOOST serialization interface
+	friend class boost::serialization::access;
+	template <class Archive>
+	void serialize(Archive& ar, const unsigned int /*version*/)
+	{
+		ar& fAddress;
+		ar& fTime;
+		ar& fToT;
+	}
 
 	ClassDefNV(CbmRichDigi, 3);
 };
