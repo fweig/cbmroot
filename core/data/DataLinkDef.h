@@ -94,6 +94,7 @@
 
 #pragma link C++ class std::vector< stsxyter::Message >;
 #pragma link C++ class std::vector< gdpbv100::Message >;
+#pragma link C++ class std::vector<CbmTrdRawMessageSpadic>;
 
 #pragma link C++ enum ECbmTreeAccess;
 #pragma link C++ enum ECbmModuleId;
