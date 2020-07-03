@@ -288,7 +288,7 @@ void Create_TOF_Geometry_v20a_mcbm() {
   TGeoRotation* stand_rot = new TGeoRotation();
   stand_rot->RotateY(1.);
   TGeoCombiTrans* stand_combi_trans = new TGeoCombiTrans(*stand_trans, *stand_rot);
-//  tof->AddNode(tofstand, 1, stand_combi_trans);
+  //tof->AddNode(tofstand, 1, stand_combi_trans);
   tof->AddNode(tofstand,1);
 
   for(Int_t counterType = 0; counterType < NumberOfDifferentCounterTypes; counterType++) { 
@@ -339,11 +339,10 @@ void Create_TOF_Geometry_v20a_mcbm() {
   top->Write();
   //gGeoMan->Write();
   outfile1->Close();
-
+*/
   TFile* outfile2 = new TFile(FileNameGeo,"RECREATE");
   gGeoMan->Write();
   outfile2->Close();
-*/
 
   dump_info_file();
 
@@ -976,7 +975,7 @@ void position_inner_tof_modules(Int_t modNType)
  xPos=0.;
  yPos=0.;
  zPos=TOF_Z_Front;
- const Double_t ModDx[NModules]= { 0.,    0.,  1.5, 49.8, 49.8};
+ const Double_t ModDx[NModules]= { 0.,    0.,  0., 49.8, 49.8};
  //const Double_t ModDx[NModules]= { 1.5,    0., -1.5, 49.8, 55.8};
  const Double_t ModDy[NModules]= {  0.,    0.,     0.,   0.,     0. };
  const Double_t ModDz[NModules]= {  0., 16.5, 34.,    0.,   16.5};

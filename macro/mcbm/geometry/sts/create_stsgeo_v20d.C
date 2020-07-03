@@ -160,7 +160,7 @@ const Double_t gkCableThickness  = 0.02;
 const Double_t gkSectorOverlapY  = 0.27; // DEJH -> 0.3345 / 0.4600
 
 // ---> Gap in z between neighbouring sectors in a ladder [cm]
-const Double_t gkSectorGapZ      = 0.02; // DEJH -> 0.07 / 0.07
+const Double_t gkSectorGapZ      = 0.17; // Oleg mSTS CAD 06/05/2020
 
 // ---> Horizontal overlap of neighbouring ladders [cm]
 const Double_t gkLadderOverlapX  = 0.30; // DEJH -> 0.25 / 0.25
@@ -809,9 +809,8 @@ void create_stsgeo_v20d(const char* geoTag="v20d_mcbm")
   Double_t stsY = 0.;
   Double_t stsZ = 0.;
   Double_t stsBorder = 2*5.;  // 5 cm space for carbon ladders on each side
-  //  for (Int_t iStation = 1; iStation<=8; iStation++) {
-  //  for (Int_t iStation = 1; iStation<=2; iStation++) {
-  for (Int_t iStation = 1; iStation<=1; iStation++) {
+  Int_t nStation = 1; // set number of stations
+  for (Int_t iStation = 1; iStation <= nStation; iStation++) {
     TString statName = Form("Station%02d", iStation);
     TGeoVolume* station = gGeoMan->GetVolume(statName);
     TGeoBBox* shape = (TGeoBBox*) station->GetShape();
@@ -885,8 +884,7 @@ void create_stsgeo_v20d(const char* geoTag="v20d_mcbm")
   TGeoVolumeAssembly* sts = new TGeoVolumeAssembly(stsName.Data());   // do not produce keeping volumes
 
   // --- Place stations in the STS
-  //  for (Int_t iStation = 1; iStation <=8; iStation++) {
-  for (Int_t iStation = 1; iStation <=2; iStation++) {
+  for (Int_t iStation = 1; iStation <= nStation; iStation++) {
     TString statName = Form("Station%02d", iStation);
     TGeoVolume* station = gGeoMan->GetVolume(statName);
     Double_t posZ = statPos[iStation-1] - stsPosZ;

@@ -7,7 +7,7 @@
  ** @date 19.07.2016
  **
  ** mCBM
- ** pipe v19f    - based on pipe v19e without vaccum inside
+ ** pipe v19f    - reproduce v19e in a single piece as originally in v19b
  ** pipe v19e    - extend the downstream end of the pipe to the beam dump for 2021
  ** pipe v19d    - create two separate volumes, one with the targetbox the
  **                other one with the pipe
@@ -51,6 +51,7 @@
 
 using namespace std;
 
+const Bool_t IncludeVacuum = true;  // false;  // true, if vacuum to be placed inside the pipe
 
 // -------------   Steering variables       -----------------------------------
 // ---> Beam pipe material name
@@ -62,10 +63,8 @@ TString pipeMediumName = "iron"; // "carbon"; // "beryllium"; // "aluminium";
 // ---> Macro name to info file
 TString macroname = "create_bpipe_geometry_v19f.C";
 // ---> Geometry file name (output)
-TString targetBoxFileName = "pipe_v19f_tb_mcbm.geo.root";
-TString pipeFileName = "pipe_v19f_mcbm.geo.root";
+TString rootFileName = "pipe_v19f_mcbm.geo.root";
 // ---> Geometry name
-TString targetBoxName = "targetbox_v19f";
 TString pipeName = "pipe_v19f";
 // ----------------------------------------------------------------------------
 
@@ -128,7 +127,7 @@ void create_bpipe_geometry_v19f()
 
 
   // -------   Open info file   -----------------------------------------------
-  TString infoFileName = targetBoxFileName;
+  TString infoFileName = rootFileName;
   infoFileName.ReplaceAll("root", "info");
   fstream infoFile;
   fstream infoFileEmpty;
@@ -136,11 +135,6 @@ void create_bpipe_geometry_v19f()
   infoFile << "SIS-18 mCBM beam pipe geometry created with " + macroname << endl;
   infoFile << "Introducing the target chamber derived from CAD drawings." << endl << endl;
   //  infoFile << "It ends at z=610 mm downstream of the target." << endl << endl;
-  infoFile << "The targetbox and the pipe after the targetbox are implemented" << endl;
-  infoFile << "into two different TGeoVolumeAssemblies and exported into two" << endl;
-  infoFile << "different output files which both needs to be loaded in the" << endl;
-  infoFile << "simulation. This separation was done due to work around a" << endl;
-  infoFile << "problem with the TGeoManager."<< endl<< endl;
   infoFile << "The beam pipe is composed of iron with a varying wall thickness." << endl << endl;
   infoFile << "Material:  " << pipeMediumName << endl;
   // --------------------------------------------------------------------------
@@ -208,7 +202,6 @@ void create_bpipe_geometry_v19f()
   TGeoVolume* top = new TGeoVolumeAssembly("TOP");
   gGeoMan->SetTopVolume(top);
   TGeoVolume* pipe = new TGeoVolumeAssembly(pipeName.Data());
-  TGeoVolume* targetbox = new TGeoVolumeAssembly(targetBoxName.Data());
   // --------------------------------------------------------------------------
 
 
@@ -228,12 +221,13 @@ void create_bpipe_geometry_v19f()
   TGeoVolume *vpipe20 = gGeoManager->MakeCtub("pipe20", pipeMedium, rmin20, rmax20, length20/2., angle1, angle2, nlow[0], nlow[1], nlow[2], nhi[0], nhi[1], nhi[2]);
   TGeoTranslation* tra20 = new TGeoTranslation("tra20", 0, 0, -offset20 +length20/2.);
   vpipe20->SetLineColor(kBlue); 
-  targetbox->AddNode(vpipe20, 1, tra20);
+  pipe->AddNode(vpipe20, 1, tra20);
 
   TGeoVolume *vvacu20 = gGeoManager->MakeCtub("vacu20", vacuum, 0, rmin20, length20/2., angle1, angle2, nlow[0], nlow[1], nlow[2], nhi[0], nhi[1], nhi[2]);
   vvacu20->SetLineColor(kYellow);
   vvacu20->SetTransparency(50);
-  //  targetbox->AddNode(vvacu20, 1, tra20);
+  if(IncludeVacuum)
+    pipe->AddNode(vvacu20, 1, tra20);
 
   // upstream cover
   Double_t rmax21    = rmax20;
@@ -243,7 +237,7 @@ void create_bpipe_geometry_v19f()
   TGeoVolume *vwall21 = gGeoManager->MakeCtub("wall21", pipeMedium, rmin21, rmax21, length21/2., angle1, angle2, 0, 0,-1, 0, 0, 1);
   TGeoTranslation* tra21 = new TGeoTranslation("tra21", 0, 0, -offset20 -length21/2.);
   vwall21->SetLineColor(kBlue);
-  targetbox->AddNode(vwall21, 1, tra21);
+  pipe->AddNode(vwall21, 1, tra21);
 
 //=======================================================================================
 
@@ -313,7 +307,7 @@ void create_bpipe_geometry_v19f()
   TGeoVolume *vpipe22 = new TGeoVolume("wall22", compsha, pipeMedium);
   TGeoCombiTrans*  tra22 = new TGeoCombiTrans("tra22", 0, 0, -offset20 +length20 +length22/2., rot22);
   vpipe22->SetLineColor(kBlue); 
-  targetbox->AddNode(vpipe22, 1, tra22);
+  pipe->AddNode(vpipe22, 1, tra22);
 
 //=======================================================================================
    
@@ -326,13 +320,13 @@ void create_bpipe_geometry_v19f()
   TGeoVolume *tube23 = gGeoManager->MakeTube("shaft23", pipeMedium, 10.4/2., 10.8/2., height23/2.);
   TGeoCombiTrans* tra23 = new TGeoCombiTrans("tra23", 0, 28.0-height23/2., 0, rot23);
   tube23->SetLineColor(kBlue);
-  targetbox->AddNode(tube23, 1, tra23);
+  pipe->AddNode(tube23, 1, tra23);
 
   // diamond tube
   TGeoVolume *tube24 = gGeoManager->MakeTube("shaft24", pipeMedium, 10.4/2., 10.8/2., height23/2.);
   TGeoCombiTrans* tra24 = new TGeoCombiTrans("tra24", 0, 28.0-height23/2., -20.0, rot23);
   tube24->SetLineColor(kBlue);
-  targetbox->AddNode(tube24, 1, tra24);
+  pipe->AddNode(tube24, 1, tra24);
 
 //=======================================================================================
 
@@ -344,11 +338,12 @@ void create_bpipe_geometry_v19f()
   TGeoVolume *vpipe10 = gGeoManager->MakeCtub("pipe10", pipeMedium, rmin10, rmax10, length10/2., angle1, angle2, 0, 0,-1, 0, 0, 1);
   TGeoTranslation* tra10 = new TGeoTranslation("tra10", 0, 0, -offset20 -length10/2.);
   vpipe10->SetLineColor(kBlue);
-  targetbox->AddNode(vpipe10, 1, tra10);
+  pipe->AddNode(vpipe10, 1, tra10);
 
   TGeoVolume *vvacu10 = gGeoManager->MakeCtub("vacu10", vacuum, 0, rmin10, length10/2., angle1, angle2, 0, 0,-1, 0, 0, 1);
   vvacu10->SetLineColor(kYellow);
-  //  targetbox->AddNode(vvacu10, 1, tra10);
+  if(IncludeVacuum)
+    pipe->AddNode(vvacu10, 1, tra10);
   
   // upstream flange
   // size of flange
@@ -362,7 +357,7 @@ void create_bpipe_geometry_v19f()
   TGeoVolume *vfla11 = gGeoManager->MakeCtub("flange11", pipeMedium, rmin11, rmax11, length11/2., angle1, angle2, 0, 0,-1, 0, 0, 1);
   TGeoTranslation* tra11 = new TGeoTranslation("tra11", 0, 0, -offset20-length10+length11/2.);
   vfla11->SetLineColor(kBlue);
-  targetbox->AddNode(vfla11, 1, tra11);
+  pipe->AddNode(vfla11, 1, tra11);
 
 //=======================================================================================
 
@@ -376,12 +371,14 @@ void create_bpipe_geometry_v19f()
   Double_t length30 = 44.0+0.6;
 
   TGeoVolume *vpipe30 = gGeoManager->MakeCtub("pipe30", pipeMedium, rmin30, rmax30, length30/2., angle1, angle2, -nhi[0],-nhi[1],-nhi[2],-nlow[0],-nlow[1],-nlow[2]);
+  TGeoTranslation* tra30 = new TGeoTranslation("tra30", 0, 0, -offset20 +length20 +length30/2.);
   vpipe30->SetLineColor(kBlue);
-  pipe->AddNode(vpipe30, 1);
+  pipe->AddNode(vpipe30, 1, tra30);
 
   TGeoVolume *vvacu30 = gGeoManager->MakeCtub("vacu30", vacuum, 0, rmin30, length30/2., angle1, angle2, -nhi[0],-nhi[1],-nhi[2],-nlow[0],-nlow[1],-nlow[2]);
   vvacu30->SetLineColor(kYellow);
-  //  pipe->AddNode(vvacu30, 1);
+  if(IncludeVacuum)
+    pipe->AddNode(vvacu30, 1, tra30);
 
   // size of flange
   // Thickness  1.8 cm
@@ -391,9 +388,9 @@ void create_bpipe_geometry_v19f()
   Double_t rmin40   = rmax30;
   Double_t length40 =  1.8;
 
-  // 1st downstream flange
+  // downstream flange
   TGeoVolume *vfla31 = gGeoManager->MakeCtub("flange31", pipeMedium, rmin40, rmax40, length40/2., angle1, angle2, 0, 0,-1, 0, 0, 1);
-  TGeoTranslation* fla31 = new TGeoTranslation("fla31", 0., 0., +length30/2 -length40/2.);
+  TGeoTranslation* fla31 = new TGeoTranslation("fla31", 0, 0, -offset20 +length20 +length30 -length40/2.);
   vfla31->SetLineColor(kBlue);
   pipe->AddNode(vfla31, 1, fla31);
 
@@ -410,20 +407,21 @@ void create_bpipe_geometry_v19f()
 
   // 2nd downstream flange
   TGeoVolume *vfla32 = gGeoManager->MakeCtub("flange32", pipeMedium, rmax50, rmax40, length40/2., angle1, angle2, 0, 0,-1, 0, 0, 1);
-  TGeoTranslation* fla32 = new TGeoTranslation("fla32", 0., 0., +length30/2 +length40/2.);
-  //  TGeoTranslation* fla32 = new TGeoTranslation("fla32", 0., 0., +length30/2 +length40/2. + 20.);
+  TGeoTranslation* fla32 = new TGeoTranslation("fla32", 0., 0., -offset20 +length20 +length30 +length40/2.);
+  //  TGeoTranslation* fla32 = new TGeoTranslation("fla32", 0., 0., -offset20 +length20 +length30 +length40/2. + 20.);
   vfla32->SetLineColor(kRed);
   pipe->AddNode(vfla32, 1, fla32);
 
   TGeoVolume *vpipe50 = gGeoManager->MakeCtub("pipe50", pipeMedium, rmin50, rmax50, length50/2., angle1, angle2, 0, 0,-1, 0, 0, 1);
-  TGeoTranslation* fla50 = new TGeoTranslation("fla50", 0., 0., +length30/2 +length50/2.);
-  //  TGeoTranslation* fla50 = new TGeoTranslation("fla50", 0., 0., +length30/2 +length50/2. + 20.);
+  TGeoTranslation* fla50 = new TGeoTranslation("fla50", 0., 0., -offset20 +length20 +length30 +length50/2.);
+  //  TGeoTranslation* fla50 = new TGeoTranslation("fla50", 0., 0., -offset20 +length20 +length30 +length50/2. + 20.);
   vpipe50->SetLineColor(kRed);
   pipe->AddNode(vpipe50, 1, fla50);
 
   TGeoVolume *vvacu50 = gGeoManager->MakeCtub("vacu50", vacuum, 0, rmin50, length50/2., angle1, angle2, 0, 0,-1, 0, 0, 1);
   vvacu50->SetLineColor(kYellow);
-  //  pipe->AddNode(vvacu50, 1, fla50);
+  if(IncludeVacuum)
+    pipe->AddNode(vvacu50, 1, fla50);
 
 
 //=======================================================================================
@@ -442,38 +440,33 @@ void create_bpipe_geometry_v19f()
   // -----   End   --------------------------------------------------
 
   // ---------------   Finish   -----------------------------------------------
-  top->AddNode(targetbox, 1);
   top->AddNode(pipe, 1);
   cout << endl << endl;
   gGeoMan->CloseGeometry();
+  gGeoManager->SetNsegments(80);
+  gGeoMan->CheckOverlaps(0.0001);
+  gGeoMan->PrintOverlaps();
+  gGeoMan->Test();
 
-  targetbox->Export(targetBoxFileName);
+  pipe->Export(rootFileName);
   
-  TFile* targetBoxFile = new TFile(targetBoxFileName, "UPDATE");
+  //  TFile* rootFile = new TFile(rootFileName, "RECREATE");
+  //  top->Write();
+
+  TFile* rootFile = new TFile(rootFileName, "UPDATE");
 
   // rotate the PIPE around y
   TGeoRotation* pipe_rotation = new TGeoRotation();
   pipe_rotation->RotateY( pipe_angle );
-  TGeoCombiTrans* targetbox_placement = new TGeoCombiTrans("pipe_rot", 0., 0., 0, pipe_rotation);
-  targetbox_placement->Write();
+  //  TGeoCombiTrans* pipe_placement = new TGeoCombiTrans( sin( pipe_angle/180.*acos(-1) ) * z1[1]/2., 0., 0., pipe_rotation);
+  TGeoCombiTrans* pipe_placement = new TGeoCombiTrans("pipe_rot", 0., 0., 0, pipe_rotation);
+  pipe_placement->Write();
 
-  targetBoxFile->Close();
+  rootFile->Close();
 
   cout << endl;
   cout << "Geometry " << top->GetName() << " written to " 
-       << targetBoxFileName << endl;
-
-  pipe->Export(pipeFileName);
-  
-  TFile* pipeFile = new TFile(pipeFileName, "UPDATE");
-
-  TGeoTranslation* tra30 = new TGeoTranslation("tra30", 0, 0, -offset20 +length20 +length30/2.);
-  Double_t placement_x = TMath::Cos(pipe_angle * TMath::DegToRad()) * rmax20;
-  Double_t placement_z = TMath::Cos(pipe_angle * TMath::DegToRad()) * (-offset20 +length20 +length22 +length30/2.);
-  TGeoCombiTrans* pipe_placement = new TGeoCombiTrans("pipe_rot", placement_x, 0., placement_z, pipe_rotation);
-  pipe_placement->Write();
-
-  pipeFile->Close();
+       << rootFileName << endl;
 
   infoFile.close();
 
