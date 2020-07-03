@@ -100,3 +100,4 @@ Bool_t CbmTofDigiPar::getParams(FairParamList* l)
   }
   return kTRUE;
 }
+ 

@@ -9,6 +9,8 @@
 #include <map>                  // for map
 
 #include <FairParGenericSet.h>  // for FairParGenericSet
+#include <TGeoManager.h>
+#include <TNode.h>
 
 class CbmTofCell;
 class FairParamList;
@@ -45,8 +47,12 @@ class CbmTofDigiPar : public FairParGenericSet
     Int_t GetCellId(Int_t i) {return fCellIdArray[i];}
 
 
-    CbmTofCell* GetCell(Int_t i) {return fCellMap[i];}
-
+    CbmTofCell* GetCell(Int_t i)    {return fCellMap[i];}
+    
+    TGeoNode* GetNode(Int_t iCell) {return fCellNode[iCell];}
+    void  SetNode(Int_t iCell, TGeoNode* tGeoNode) { fCellNode.insert( std::pair<Int_t, TGeoNode*>(iCell,tGeoNode) ); }
+    void  SetNodeMap(std::map<Int_t, TGeoNode*> map) { fCellNode=map; }
+    
   private:
 
     /** Map of Unique Tof Cell Id to corresponding TofCell **/
@@ -59,8 +65,9 @@ class CbmTofDigiPar : public FairParGenericSet
     TArrayD fCellDxArray; // Array to hold the unique IDs for all cells
     TArrayD fCellDyArray; // Array to hold the unique IDs for all cells
     Int_t fNrOfCells; // Total number of cells
-
-    ClassDef(CbmTofDigiPar,2)
+    std::map<Int_t, TGeoNode*> fCellNode;
+    
+    ClassDef(CbmTofDigiPar,3)
 };
 
 #endif

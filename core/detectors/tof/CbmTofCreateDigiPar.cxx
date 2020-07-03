@@ -132,6 +132,18 @@ InitStatus CbmTofCreateDigiPar::Init(){
 	FillCellMapAsciiGeometry();
   }
 
+  // fill Transformation matrices for each cell
+  std::map<Int_t, TGeoNode*> nodemap;
+  for (Int_t iCell=0; iCell<fDigiPar->GetNrOfModules(); iCell++) {
+    Int_t iAddr=fDigiPar->GetCellId(iCell);
+    CbmTofCell *fChannelInfo = fDigiPar->GetCell(iAddr);
+    gGeoManager->FindNode(fChannelInfo->GetX(),fChannelInfo->GetY(),fChannelInfo->GetZ());
+    TGeoNode* tGeoNode = gGeoManager->GetCurrentNode();
+    nodemap.insert( std::pair<Int_t, TGeoNode*>(iAddr,tGeoNode) );
+    LOG(debug) << Form("Digipar for %d, addr 0x%08x: Node=%p",iCell,iAddr,tGeoNode);  
+  }
+  fDigiPar->SetNodeMap(nodemap);
+    
   return kSUCCESS;
 }
 // --------------------------------------------------------------------
@@ -473,7 +485,8 @@ void CbmTofCreateDigiPar::FillDigiPar()
 
   Int_t Nrcells = (Int_t)fCellMap.size();
   LOG(debug) <<"FillDigiPar:: Nr. of tof cells: "<<Nrcells;
-
+  SetParContainers();  
+  if (NULL == fDigiPar) LOG(fatal) << "Tof Digi Parameter container not available "; 
   fDigiPar->SetNrOfCells(Nrcells);        //transfer info to DigiPar
 
   TArrayI *CellId  = new TArrayI(Nrcells);
