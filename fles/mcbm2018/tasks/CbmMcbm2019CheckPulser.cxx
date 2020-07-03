@@ -779,7 +779,7 @@ Int_t CbmMcbm2019CheckPulser::FillSystemOffsetHistos(TH1* histo,
     {
       case ECbmModuleId::kSts: ///< Silicon Tracking System
       {
-        const CbmStsDigi* stsDigi;
+        const CbmStsDigi* stsDigi = nullptr;
         try {
           stsDigi =
               boost::any_cast<const CbmStsDigi*>( digi );

@@ -369,7 +369,7 @@ UInt_t CbmMcbm2019CheckTimingPairs::FillCorrBuffer( Double_t dTimeT0, UInt_t uIn
       {
          case ECbmModuleId::kSts: ///< Silicon Tracking System
          {
-            const CbmStsDigi* stsDigi;
+            const CbmStsDigi* stsDigi = nullptr;
             try {
                stsDigi = boost::any_cast<const CbmStsDigi*>( digi );
             } catch( ... ) {

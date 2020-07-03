@@ -3995,7 +3995,7 @@ void CbmHadronAnalysis::ReconstructSecondaries()
         //find old entry in vector
         Int_t ll=0;
         for( ; ll<iMul; ll++) 
-          if( (Int_t)CbmTrdAddress::GetLayerId(((CbmTrdHit*)fTrdHits->At(iTRD[i][ll]))->GetAddress()) == iTrdLayer ) break;
+          if( static_cast<UInt_t>(CbmTrdAddress::GetLayerId(((CbmTrdHit*)fTrdHits->At(iTRD[i][ll]))->GetAddress())) == iTrdLayer ) break;
         iTRD[i][ll]=l;
       }else { //add hit
         dTrdDistMin[i][iTrdLayer]=dDtrans;
@@ -4193,7 +4193,7 @@ void CbmHadronAnalysis::ReconstructSecondaries()
 		//find old entry in vector
 		Int_t ll=0;
 		for( ; ll<iMul; ll++) 
-		  if( (Int_t) CbmTrdAddress::GetLayerId(((CbmTrdHit*)fTrdHits->At(iTRD[i][ll]))->GetAddress()) == iTrdLayer ) break;
+		  if( static_cast<UInt_t>( CbmTrdAddress::GetLayerId(((CbmTrdHit*)fTrdHits->At(iTRD[i][ll]))->GetAddress()) ) == iTrdLayer ) break;
 		iTRD[i][ll]=l;
 	      }else { //add hit
 		dTrdDistMin[i][iTrdLayer]=dDtrans;

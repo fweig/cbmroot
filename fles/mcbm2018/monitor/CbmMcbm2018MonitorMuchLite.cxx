@@ -1261,14 +1261,14 @@ Bool_t CbmMcbm2018MonitorMuchLite::ProcessMuchMs( const fles::Timeslice& ts, siz
          } // case stsxyter::MessType::TsMsb :
          case stsxyter::MessType::Status :
          {
-            UShort_t usElinkIdx    = mess.GetStatusLink();
-            UInt_t   uCrobIdx   = usElinkIdx / fUnpackParMuch->GetNbElinkPerCrob();
+//            UShort_t usElinkIdx    = mess.GetStatusLink(); // commented 03.07.20 FU unused
+//            UInt_t   uCrobIdx   = usElinkIdx / fUnpackParMuch->GetNbElinkPerCrob(); // commented 03.07.20 FU unused
 //            Int_t   uFebIdx    = fUnpackParMuch->ElinkIdxToFebIdx( usElinkIdx );
-            UInt_t   uAsicIdx   = ( fuCurrDpbIdx * fUnpackParMuch->GetNbCrobsPerDpb() + uCrobIdx
-                                  ) * fUnpackParMuch->GetNbAsicsPerCrob()
-                                 + fUnpackParMuch->ElinkIdxToAsicIdx( usElinkIdx );
+//            UInt_t   uAsicIdx   = ( fuCurrDpbIdx * fUnpackParMuch->GetNbCrobsPerDpb() + uCrobIdx // commented 03.07.20 FU unused
+//                                  ) * fUnpackParMuch->GetNbAsicsPerCrob()
+//                                 + fUnpackParMuch->ElinkIdxToAsicIdx( usElinkIdx );
 
-            UShort_t usStatusField = mess.GetStatusStatus();
+//            UShort_t usStatusField = mess.GetStatusStatus(); // commented 03.07.20 FU unused
 
            // fhStatusMessType->Fill( uAsicIdx, usStatusField );
             /// Always print status messages... or not?
@@ -1366,7 +1366,7 @@ void CbmMcbm2018MonitorMuchLite::FillHitInfo( stsxyter::Message mess, const USho
 
    fhMuchFebADC[uFebIdx]->Fill(usChan,usRawAdc);
    // Compute the Full time stamp
-   ULong64_t ulOldHitTime = fvulChanLastHitTime[ uAsicIdx ][ usChan ];
+//   ULong64_t ulOldHitTime = fvulChanLastHitTime[ uAsicIdx ][ usChan ]; // commented 03.07.20 FU unused
 //   Long64_t dOldHitTime  = fvdChanLastHitTime[ uAsicIdx ][ usChan ];
 
       // Use TS w/o overlap bits as they will anyway come from the TS_MSB
