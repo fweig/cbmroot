@@ -1,5 +1,11 @@
-geometry
-input
-parameters
-build
-Dart.cfg
+# exclude top level directories
+# which are taken from other git repositories
+# The / at the beginning is important, otherwise all directories
+# containing the string are ignored 
+/geometry
+/input
+/parameters
+/build
+
+# Comment some single files
+Dart*.cfg
