@@ -18,6 +18,7 @@
 #include "CbmMatch.h"
 #include "CbmTrackMatchNew.h"
 #include "CbmTofTracklet.h"
+#include "CbmTofTrackletTools.h"
 #include "CbmEvent.h"
 #include "CbmVertex.h"
 #include "CbmTofPoint.h"
@@ -79,8 +80,7 @@ Double_t dDTD4Min=1.E8;
 static Double_t StartAnalysisTime =  0.;
 static Double_t dTLEvt=0.;
 static Double_t StartSpillTime       =  -100.;
-//const  Double_t SpillDuration     = 20.; // in seconds
-const Double_t fdSpillBreak = 0.9;
+
 Int_t  iNspills=0;
 
 static Double_t fdMemoryTime = 1.E12; // memory time in ns
@@ -405,6 +405,10 @@ CbmTofAnaTestbeam::CbmTofAnaTestbeam(const char* name, Int_t verbose)
     fhDutMul_Missed(NULL), 
     fhDutTIS_Found(NULL),     
     fhDutTIS_Missed(NULL), 
+    fhDutTIR_Found(NULL),     
+    fhDutTIR_Missed(NULL), 
+    fhDutVel_Found(NULL),     
+    fhDutVel_Missed(NULL), 
     fhDutDTLH_CluSize(NULL),     
     fhDutDTLH_Tot(NULL),     
     fhDutDTLH_Mul(NULL),     
@@ -554,6 +558,7 @@ CbmTofAnaTestbeam::CbmTofAnaTestbeam(const char* name, Int_t verbose)
     fhSelHitTupleResidualXYT_Width(NULL),
     fdMulDMax(0.),
     fdSpillDuration(20.),
+    fdSpillBreak(0.9),
     fdDTDia(0.),
     fdDTD4MAX(0.),
     fdMul0Max(0.),
@@ -610,6 +615,7 @@ CbmTofAnaTestbeam::CbmTofAnaTestbeam(const char* name, Int_t verbose)
     fEnableMatchPosScaling(kTRUE),
     fFindTracks(NULL),
     fClusterizer(NULL),
+    fTrackletTools(NULL),
     fbMonteCarloComparison(kFALSE),
     fbPointsInInputFile(kFALSE),
     fbTracksInInputFile(kFALSE),
@@ -636,6 +642,7 @@ CbmTofAnaTestbeam::CbmTofAnaTestbeam(const char* name, Int_t verbose)
     fbAttachDutHitToTracklet(kFALSE),
     fbBestSelTrackletOnly(kFALSE),
     fbUseSigCalib(kFALSE),
+    fiAnaMode(0),
     fdMCSIGLIM(3.),
     fdMCSIGT(100.),
     fdMCSIGX(1.),
@@ -682,6 +689,7 @@ InitStatus CbmTofAnaTestbeam::Init()
 
   fFindTracks = CbmTofFindTracks::Instance();
   fClusterizer= CbmTofTestBeamClusterizer::Instance();
+  fTrackletTools = new CbmTofTrackletTools(); // initialize tools
 
   if (NULL == fFindTracks) {
     //fdTShift   += fChannelInfoDut->GetZ()/30.;  // in ns 
@@ -786,8 +794,7 @@ void CbmTofAnaTestbeam::Exec(Option_t* opt)
     {
       CbmEvent* tEvent = dynamic_cast<CbmEvent*>(fEventsColl->At(iEvent));
       LOG(debug) << "Process event "<<iEvent<<" with "<< tEvent->GetNofData(ECbmDataType::kTofHit)<<" hits from "
-		 <<  tEvent->GetNofData(ECbmDataType::kTofDigi) << ", "<<tEvent->GetNofData(ECbmDataType::kTofCalDigi)<< " digis "
-		 ;
+        <<  tEvent->GetNofData(ECbmDataType::kTofDigi) << ", "<<tEvent->GetNofData(ECbmDataType::kTofCalDigi)<< " digis ";
 
       if(fTofDigisColl)     fTofDigisColl->Clear("C");
       //if(fTofDigisColl)     fTofDigisColl->Delete();
@@ -795,42 +802,46 @@ void CbmTofAnaTestbeam::Exec(Option_t* opt)
       if(fTofDigiMatchColl) fTofDigiMatchColl->Clear("C");
       if(fTofTrackColl)     fTofTrackColl->Clear("C");
 
-      
       Int_t iNbDigi=0;
+      /*
+      assert ( fTofDigisColl );
       for (Int_t iDigi = 0; iDigi < tEvent->GetNofData(ECbmDataType::kTofCalDigi); iDigi++)
       {
         Int_t iDigiIndex = static_cast<Int_t>(tEvent->GetIndex(ECbmDataType::kTofCalDigi, iDigi));
-        CbmTofDigi* tDigi = dynamic_cast<CbmTofDigi*>(fTofDigisCollIn->At(iDigiIndex));
-	new((*fTofDigisColl)[iNbDigi++]) CbmTofDigi(*tDigi);
+        const CbmTofDigi* tDigi = fDigiMan->Get<CbmTofDigi>(iDigiIndex);
+//        CbmTofDigi* tDigi = dynamic_cast<CbmTofDigi*>(fTofDigisCollIn->At(iDigiIndex));
+        assert (tDigi);
+        //LOG(INFO) << "Copy TofDigi " << iDigi << " from " <<  iDigiIndex << " to " << iNbDigi;
+        //new((*fTofDigisColl)[iNbDigi++]) CbmTofDigi(*tDigi); // does not work for tDigi, since no TObject
       }
-
+      */
       Int_t iNbHits=0;
       for (Int_t iHit = 0; iHit < tEvent->GetNofData(ECbmDataType::kTofHit); iHit++)
       {
         Int_t iHitIndex = static_cast<Int_t>(tEvent->GetIndex(ECbmDataType::kTofHit, iHit));
         CbmTofHit* tHit = dynamic_cast<CbmTofHit*>(fTofHitsCollIn->At(iHitIndex));
-	new((*fTofHitsColl)[iNbHits]) CbmTofHit(*tHit); 
+        new((*fTofHitsColl)[iNbHits]) CbmTofHit(*tHit); 
 
-	CbmMatch* tMatch = dynamic_cast<CbmMatch*>(fTofDigiMatchCollIn->At(iHitIndex));
-	new((*fTofDigiMatchColl)[iNbHits]) CbmMatch(*tMatch); 
+        CbmMatch* tMatch = dynamic_cast<CbmMatch*>(fTofDigiMatchCollIn->At(iHitIndex));
+	    new((*fTofDigiMatchColl)[iNbHits]) CbmMatch(*tMatch); 
 
-	iNbHits++;
+	    iNbHits++;
       }
 
       Int_t iNbTrks=0;
       for (Int_t iTrk = 0; iTrk < tEvent->GetNofData(ECbmDataType::kTofTrack); iTrk++)
       {
         Int_t iTrkIndex = static_cast<Int_t>(tEvent->GetIndex(ECbmDataType::kTofTrack, iTrk));
-	CbmTofTracklet* tTrk = dynamic_cast<CbmTofTracklet*>(fTofTrackCollIn->At(iTrkIndex));
-	new((*fTofTrackColl)[iNbTrks++]) CbmTofTracklet(*tTrk); 
+	    CbmTofTracklet* tTrk = dynamic_cast<CbmTofTracklet*>(fTofTrackCollIn->At(iTrkIndex));
+	    new((*fTofTrackColl)[iNbTrks++]) CbmTofTracklet(*tTrk); 
       }
 
       ExecEvent(opt);
 
-      if(iNbDigi)     fTofDigisColl->Delete(); //Clear("C"); // Clear causes memory leak, FIXME
-      if(iNbHits)      fTofHitsColl->Clear("C");
+      if(iNbDigi) fTofDigisColl->Delete(); //Clear("C"); // Clear causes memory leak, FIXME
+      if(iNbHits) fTofHitsColl->Clear("C");
       if(iNbHits) fTofDigiMatchColl->Delete(); //Clear("C");
-      if(iNbTrks)     fTofTrackColl->Delete(); //Clear("C");
+      if(iNbTrks) fTofTrackColl->Delete(); //Clear("C");
 
     }
   }
@@ -857,9 +868,9 @@ void CbmTofAnaTestbeam::ExecEvent(Option_t* /*option*/)
    //   if( 0 < fEvents )
    if( 0 == ( fEvents%100000 ) && 0 < fEvents )
    {
-      cout << "-I- CbmTofAnaTestbeam::Exec : "
-           << "event " << fEvents 
-	   << " in "<<iNspills<< " spills processed." << endl;
+      LOG(info) << "CbmTofAnaTestbeam::Exec : "
+                << "event " << fEvents 
+	            << " in "<<iNspills<< " spills processed.";
    }
    fEvents += 1;
 }
@@ -963,6 +974,19 @@ Bool_t   CbmTofAnaTestbeam::RegisterInputs()
    FairRootManager *fManager = FairRootManager::Instance();
 
    fEventsColl = dynamic_cast<TClonesArray*>(fManager->GetObject("Event"));
+   if(NULL ==  fEventsColl) 
+     fEventsColl = dynamic_cast<TClonesArray*>(fManager->GetObject("CbmEvent"));
+
+   if(NULL ==  fEventsColl) 
+     LOG(info) << "CbmEvent not found in input file, assume eventwise input" ;
+
+   fDigiMan = CbmDigiManager::Instance();
+   fDigiMan->Init();
+   if ( ! fDigiMan->IsPresent(ECbmModuleId::kTof) ) {
+     LOG(error) << GetName() << ": No digi input!";
+     return kFALSE;
+   }
+
 
    if (!fEventsColl) {
 
@@ -973,8 +997,7 @@ Bool_t   CbmTofAnaTestbeam::RegisterInputs()
        fTofDigisColl = (TClonesArray *) fManager->GetObject("TofCalDigi");
 
      if( NULL == fTofDigisColl){
-       LOG(WARNING)<<"CbmTofAnaTestbeam::RegisterInputs => Could not get the TofDigi TClonesArray!!! ... continuing with incomplete input "
-		   ;
+       LOG(WARNING)<<"CbmTofAnaTestbeam::RegisterInputs => Could not get the TofDigi TClonesArray!!! ... continuing with incomplete input ";
        // return kFALSE;
      }// if( NULL == fTofDigisColl)
 
@@ -990,6 +1013,7 @@ Bool_t   CbmTofAnaTestbeam::RegisterInputs()
        return kFALSE;
      } // if( NULL == fTofDigiMatchColl)
 
+
      fTofTrackColl   = (TClonesArray *) fManager->GetObject("TofTracks");
      if( NULL == fTofTrackColl) {
        LOG(info)<<"CbmTofAnaTestbeam::RegisterInputs => Could not get the TofTracklet TClonesArray!!!";
@@ -1000,6 +1024,14 @@ Bool_t   CbmTofAnaTestbeam::RegisterInputs()
      if( NULL == fTrbHeader) {
        LOG(info)<<"CbmTofAnaTestbeam::RegisterInputs => Could not get the TofTrbHeader Object";
      }
+     
+     fDigiMan = CbmDigiManager::Instance();
+     fDigiMan->Init();
+     if ( ! fDigiMan->IsPresent(ECbmModuleId::kTof) ) {
+       LOG(error) << GetName() << ": No input digis!";
+       //return kFALSE;
+     }else 
+        LOG(info) << "DigiManager has Tof Digis";
 
      if(fbMonteCarloComparison)
      {
@@ -1123,9 +1155,8 @@ Bool_t   CbmTofAnaTestbeam::RegisterInputs()
        fTofDigisCollIn = (TClonesArray *) fManager->GetObject("TofDigi");
      */
      if( NULL == fTofDigisCollIn){
-       LOG(WARNING)<<"CbmTofAnaTestbeam::RegisterInputs => Could not get the TofDigi TClonesArray!!! ... continuing with incomplete input "
-		   ;
-       return kFALSE;
+       LOG(WARNING)<<"CbmTofAnaTestbeam::RegisterInputs => Could not get the TofDigi TClonesArray!!! ... continuing with incomplete input ";
+       //return kFALSE;
      }// if( NULL == fTofDigisColl)
 
      fTofHitsCollIn   = (TClonesArray *) fManager->GetObject("TofHit");
@@ -1136,8 +1167,10 @@ Bool_t   CbmTofAnaTestbeam::RegisterInputs()
 
      fTofDigiMatchCollIn= (TClonesArray *) fManager->GetObject("TofDigiMatch");
      if( NULL == fTofDigiMatchCollIn) {
-       LOG(error)<<"CbmTofAnaTestbeam::RegisterInputs => Could not get the Match TClonesArray!!!";
-       //return kFALSE;
+       fTofDigiMatchCollIn= (TClonesArray *) fManager->GetObject("TofCalDigiMatch");
+       if( NULL == fTofDigiMatchCollIn) {
+         LOG(error)<<"CbmTofAnaTestbeam::RegisterInputs => Could not get the Match TClonesArray!!!";
+       }
      } // if( NULL == fTofDigiMatchColl)
 
      fTofTrackCollIn   = (TClonesArray *) fManager->GetObject("TofTracks");
@@ -1151,7 +1184,8 @@ Bool_t   CbmTofAnaTestbeam::RegisterInputs()
      if ( ! fDigiMan->IsPresent(ECbmModuleId::kTof) ) {
        LOG(error) << GetName() << ": No input digis!";
        return kFALSE;
-     }
+     }else 
+        LOG(info) << "DigiManager has Tof Digis";
 
      // Create work Arrays 
      fTofDigisColl     = new TClonesArray("CbmTofDigi",100);
@@ -1449,8 +1483,8 @@ Bool_t CbmTofAnaTestbeam::CreateHistos()
    gROOT->cd(); // <= To prevent histos from being sucked in by the param file of the TRootManager !
 
    // define histos here
-   Double_t TISmax   =   10.; //fdSpillDuration;
-   Double_t TISnbins =  100.; //50.;
+   Double_t TISmax   =   11.; //fdSpillDuration;
+   Double_t TISnbins =  110.; //50.;
    fhRate_all  = new TH1F("hRate_all", "Event Rate; Rate (Hz); t (sec)", 1000, 0, 100);
    fhTriggerPattern = new TH1I("tof_trb_trigger_pattern", "CTS trigger pattern", 16, 0, 16);
    fhTriggerType = new TH1I("tof_trb_trigger_types", "CTS trigger types", 16, 0, 16);
@@ -1461,15 +1495,15 @@ Bool_t CbmTofAnaTestbeam::CreateHistos()
    fhTIS_sel2 = new TH1F("TIS_sel2", "Time in Spill (sel2); t (sec)", TISnbins, 0, TISmax);
 
 
-   Double_t TIRmax   =  2000.; // Run duration 
-   Double_t TIRnbins =    200.; 
+   Double_t TIRmax   =  1800.; // Run duration 
+   Double_t TIRnbins = 18000.; 
    fhTIR_all  = new TH1F("TIR_all", "Time in Run (all); t (sec)", TIRnbins, 0, TIRmax);
    fhTIR_sel  = new TH1F("TIR_sel", "Time in Run (sel); t (sec)", TIRnbins, 0, TIRmax);
    fhTIR_sel1 = new TH1F("TIR_sel1", "Time in Run (sel1); t (sec)", TIRnbins, 0, TIRmax);
    fhTIR_sel2 = new TH1F("TIR_sel2", "Time in Run (sel2); t (sec)", TIRnbins, 0, TIRmax);
 
-   Double_t TISmax2   =  10.;
-   Double_t TISnbins2 =  1.E2;
+   Double_t TISmax2   =  11.;
+   Double_t TISnbins2 = 110.;
    fhTIS_Nhit = new TH2F("TIS_Nhit", "Time in Spill (Nhit); t (sec); N_{hit}", TISnbins2, 0, TISmax2,25,0,50);
    fhTIS_Ntrk = new TH2F("TIS_Ntrk", "Time in Spill (Ntrk); t (sec); N_{trk}", TISnbins2, 0, TISmax2,10,0,10);
 
@@ -1912,12 +1946,24 @@ Bool_t CbmTofAnaTestbeam::CreateHistos()
      fhDutMul_Missed=new TH1F(  Form("hDutMul_Missed_%03d",iDutId),
 			    Form("hDutMul_Missed_%03d; Hit Multiplicity",iDutId),
 			    32, 0., 32.);  
-     fhDutTIS_Found=new TH1F(  Form("hDutTIS_Found_%03d",iDutId),
+     fhDutTIS_Found=new TH2F(  Form("hDutTIS_Found_%03d",iDutId),
 			    Form("hDutTIS_Found_%03d; Time in spill (s)",iDutId),
-			    TISnbins, 0, TISmax);  
-     fhDutTIS_Missed=new TH1F(  Form("hDutTIS_Missed_%03d",iDutId),
+			    TISnbins, 0, TISmax,9,0,9);  
+     fhDutTIS_Missed=new TH2F(  Form("hDutTIS_Missed_%03d",iDutId),
 			    Form("hDutTIS_Missed_%03d; Time in spill (s)",iDutId),
-			    TISnbins, 0, TISmax);  
+			    TISnbins, 0, TISmax,9,0,9);  
+     fhDutTIR_Found=new TH2F(  Form("hDutTIR_Found_%03d",iDutId),
+			    Form("hDutTIR_Found_%03d; Time in spill (s)",iDutId),
+			    TIRnbins, 0, TIRmax,9,0,9);  
+     fhDutTIR_Missed=new TH2F(  Form("hDutTIR_Missed_%03d",iDutId),
+			    Form("hDutTIR_Missed_%03d; Time in spill (s)",iDutId),
+			    TIRnbins, 0, TIRmax,9,0,9);       
+     fhDutVel_Found=new TH1F(  Form("hDutVel_Found_%03d",iDutId),
+			    Form("hDutVel_Found_%03d; velocity (cm/ns)",iDutId),
+			    50, 0., 50.);  
+     fhDutVel_Missed=new TH1F(  Form("hDutVel_Missed_%03d",iDutId),
+			    Form("hDutVel_Missed_%03d; velocity (cm/ns)",iDutId),
+			    50, 0., 50.);  
      fhDutDTLH_CluSize=new TH2F(  Form("hDutDTLH_CluSize_%03d",iDutId),
 			    Form("hDutDTLH_CluSize_%03d;  log(#DeltaT); CluSize",iDutId),
 				50, 0., 12.,	10, 1., 11.);  
@@ -3215,6 +3261,8 @@ Bool_t CbmTofAnaTestbeam::FillHistos()
      Double_t dDTSpill=dTDia-StartSpillTime;
      StartSpillTime=dTDia;
    */
+   if(fdSpillBreak == 0.) StartSpillTime=dTAv;
+   
    Double_t dDTSpill=dTAv-StartSpillTime;
    if( fDetIdMap.size() > 3 && dMulD>0 ){  // FIXME - hardwired constants 
 	 Double_t dDTLEvt=dTAv-dTLEvt;
@@ -3228,7 +3276,8 @@ Bool_t CbmTofAnaTestbeam::FillHistos()
 			   dDTSpill/1.E9,fEvents,dMulD,(Int_t)fDetIdMap.size(),dDTLEvt/1.E9);
 	 }
    }
-   fhRate_all->Fill((dTAv-StartAnalysisTime)/1.E9,1./ fhRate_all->GetBinWidth(1));
+   Double_t dTIR=(dTAv-StartAnalysisTime)/1.E9;
+   fhRate_all->Fill(dTIR,1./ fhRate_all->GetBinWidth(1));
    if (StartSpillTime<0) {
      LOG(debug) << "SpillStartTime not available, abort Anatestbeam " ; 
      return kFALSE;
@@ -3286,7 +3335,7 @@ Bool_t CbmTofAnaTestbeam::FillHistos()
    if(fTrbHeader != NULL) fhTIS_all->Fill(fTrbHeader->GetTimeInSpill());
    else                   fhTIS_all->Fill((dTAv-StartSpillTime)/1.E9);
 
-   fhTIR_all->Fill((dTAv-StartAnalysisTime)/1.E9);
+   fhTIR_all->Fill(dTIR);
 
    LOG(debug)<<Form(" FoundMatches: %d with first chi2s = %12.1f, %12.1f, %12.1f, %12.1f",iNbMatchedHits,
 		    Chi2List[0],Chi2List[1],Chi2List[2],Chi2List[3])
@@ -3313,7 +3362,7 @@ Bool_t CbmTofAnaTestbeam::FillHistos()
 
     if(fTrbHeader != NULL) fhTIS_sel->Fill(fTrbHeader->GetTimeInSpill());
     else                   fhTIS_sel->Fill((dTAv-StartSpillTime)/1.E9);
-    fhTIR_sel->Fill((dTAv-StartAnalysisTime)/1.E9);
+    fhTIR_sel->Fill(dTIR);
 
     fhTofD4sel->Fill(pHitRef->GetTime()-dTDia);           //  general normalisation
     fhDTD4sel->Fill(dDTD4Min);                            //  general normalisation
@@ -3410,7 +3459,7 @@ Bool_t CbmTofAnaTestbeam::FillHistos()
 
       if(fTrbHeader != NULL) fhTIS_sel2->Fill(fTrbHeader->GetTimeInSpill());
       else                   fhTIS_sel2->Fill((dTAv-StartSpillTime)/1.E9);
-      fhTIR_sel2->Fill((dTAv-StartAnalysisTime)/1.E9);
+      fhTIR_sel2->Fill(dTIR);
 
       if(NULL != fClusterizer)
       if(fClusterizer->fdMemoryTime>0) {
@@ -3736,10 +3785,9 @@ Bool_t CbmTofAnaTestbeam::FillHistos()
        fhSelMatchEfficiency->Fill(kTRUE, fiNAccRefTracks);
        fhSelHitTupleMatchEfficiencyTIS->Fill(kTRUE, (dTAv - StartSpillTime)/1.E9);
 
-
        if(fTrbHeader != NULL) fhTIS_sel1->Fill(fTrbHeader->GetTimeInSpill());
        else                   fhTIS_sel1->Fill((dTAv-StartSpillTime)/1.E9);
-       fhTIR_sel1->Fill((dTAv-StartAnalysisTime)/1.E9);
+       fhTIR_sel1->Fill(dTIR);
 
        if(NULL != fClusterizer)
 	 if(fClusterizer->fdMemoryTime>0) {
@@ -4639,7 +4687,11 @@ Bool_t CbmTofAnaTestbeam::FillHistos()
    Bool_t bGoodSelTrackletDutMatch(kFALSE);
 
    auto itDutHitMatch = TrackletMatchedDutHitRedChiSq.find(iTrk);
-
+   
+   Double_t dVel= 0.;
+   Double_t dTt=fTrackletTools->FitTt(pTrk,fiDutAddr);
+   if(dTt > 0.) dVel=1./dTt;
+     
    if(NStations == pTrk->GetNofHits())
    {
      if(fbAttachDutHitToTracklet)
@@ -4825,6 +4877,7 @@ Bool_t CbmTofAnaTestbeam::FillHistos()
      Double_t dDYB= pTrk->GetYdif(fiDutAddr, pHit);                // ignore pHit in calc of reference
      Double_t dDT = pHit->GetTime() - pTrk->GetFitT(pHit->GetZ()); // pTrk->GetTdif(fStationType[iSt]);
      Double_t dDTB= pTrk->GetTdif(fiDutAddr, pHit);                // ignore pHit in calc of reference
+     
      fhDutPullX->Fill(dDX);
      fhDutPullXB->Fill(dDXB);
      fhDutPullY->Fill(dDY);
@@ -4832,6 +4885,33 @@ Bool_t CbmTofAnaTestbeam::FillHistos()
      fhDutPullT->Fill(dDT);
      fhDutPullTB->Fill(dDTB);
      fhDutChi_Found->Fill(pTrk->GetChiSq());
+     
+     Int_t iGet4=-1; 
+     Double_t dTot=0.;
+     CbmMatch* digiMatch=(CbmMatch *)fTofDigiMatchColl->At(iDutHitIndex);
+     if( NULL != digiMatch )
+     if (  fDigiMan->IsPresent(ECbmModuleId::kTof) ) 
+       for (Int_t iLink=0; iLink<digiMatch->GetNofLinks(); iLink++){  // loop over digis
+         CbmLink L0 = digiMatch->GetLink(iLink);  
+         Int_t iDigInd0=L0.GetIndex();
+         const CbmTofDigi* pDig0 = fDigiMan->Get<CbmTofDigi>(iDigInd0);
+         if(iGet4==-1) { 
+           iGet4 = Int_t(pDig0->GetChannel())%8 + 1;
+           dTot=pDig0->GetTot();
+         }
+         else {
+           if(iGet4>0) {
+             if(pDig0->GetTot() > dTot) {
+               iGet4 = Int_t(pDig0->GetChannel())%8 + 1;
+               dTot=pDig0->GetTot();  
+            }
+            //if ( Int_t(pDig0->GetChannel())%8 + 1 != iGet4 ) iGet4=0; 
+           }
+         }
+       } 
+     else LOG(error) << "no Tof Digis";
+     else LOG(error) << "no Tof Digi Match";
+     
      if(fbAttachDutHitToTracklet)
      {
 	 //	   fhDutChi_Match->Fill(vHitMap[iTrk].begin()->first);
@@ -4840,7 +4920,10 @@ Bool_t CbmTofAnaTestbeam::FillHistos()
      fhDutXY_Found->Fill(hitpos_local[0],hitpos_local[1]);
      fhDutDTLH_Found->Fill(dDelTLH); 
      fhDutMul_Found->Fill( dMul4 );  
-     fhDutTIS_Found->Fill( dTiS ); 
+     fhDutTIS_Found->Fill( dTiS , iGet4); 
+     fhDutTIR_Found->Fill( dTIR , iGet4); 
+     fhDutVel_Found->Fill( dVel ); 
+
      fhDutXYDX->Fill(hitpos_local[0],hitpos_local[1],dDX);
      fhDutXYDY->Fill(hitpos_local[0],hitpos_local[1],dDY);
      fhDutXYDT->Fill(hitpos_local[0],hitpos_local[1],dDTB);
@@ -5021,7 +5104,10 @@ Bool_t CbmTofAnaTestbeam::FillHistos()
        fhDutChi_Missed->Fill(pTrk->GetChiSq());
        fhDutXY_Missed->Fill(hitpos_local[0],hitpos_local[1]);
        fhDutMul_Missed->Fill( dMul4 );  
-       fhDutTIS_Missed->Fill( dTiS );
+       Int_t iGet4=((Int_t)hitpos_local[0]+16)%8 +1; 
+       fhDutTIS_Missed->Fill( dTiS, iGet4);
+       fhDutTIR_Missed->Fill( dTIR, iGet4);
+       fhDutVel_Missed->Fill( dVel );
        fhDutDTLH_Missed->Fill( dDelTLH );
        fhDutDTLH_Missed_TIS->Fill( dDelTLH, dTiS );  
        if(NULL != pLHit){

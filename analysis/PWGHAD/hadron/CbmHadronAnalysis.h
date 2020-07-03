@@ -451,6 +451,7 @@ public:
 
     virtual InitStatus Init();
     virtual void Exec(Option_t* option);
+    virtual void ExecEvent(Option_t* option);
     virtual void Finish();
 
     void WriteHistogramms();

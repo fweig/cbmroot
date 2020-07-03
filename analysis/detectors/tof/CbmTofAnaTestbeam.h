@@ -113,7 +113,8 @@ class CbmTofAnaTestbeam : public FairTask {
       inline void SetPosYS2Sel  (Double_t val)          { fdPosYS2Sel = val;}
       inline void SetPosYS2SelOff (Double_t val)        { fdPosYS2SelOff = val;}
       inline void SetSel2TOff  (Double_t val)           { fdSel2TOff = val;}
-      inline void SetSpillDuration   (Double_t val)           { fdSpillDuration = val;}
+      inline void SetSpillDuration (Double_t val)       { fdSpillDuration = val;}
+      inline void SetSpillBreak    (Double_t val)       { fdSpillBreak = val;}
       inline void SetMulDMax   (Double_t val)           { fdMulDMax = val;}
       inline void SetDTDia     (Double_t val)           { fdDTDia = val;}
       inline void SetDTD4MAX   (Double_t val)           { fdDTD4MAX = val;}
@@ -199,6 +200,7 @@ class CbmTofAnaTestbeam : public FairTask {
       inline void SetAttachDutHitToTracklet(Bool_t bval) { fbAttachDutHitToTracklet = bval; }
       inline void SetBestSelTrackletOnly(Bool_t bval) { fbBestSelTrackletOnly = bval; }
       inline void SetUseSigCalib(Bool_t bval) { fbUseSigCalib = bval; }
+      inline void SetAnaMode(Int_t ival)      { fiAnaMode = ival; }
 
       inline void SetMCSIGLIM ( Double_t val ) { fdMCSIGLIM = val; }
       inline void SetMCSIGT   ( Double_t val ) { fdMCSIGT = val; }
@@ -475,8 +477,12 @@ class CbmTofAnaTestbeam : public FairTask {
       TH1 * fhDutDTLH_Missed; 
       TH1 * fhDutMul_Found;     
       TH1 * fhDutMul_Missed; 
-      TH1 * fhDutTIS_Found;     
-      TH1 * fhDutTIS_Missed; 
+      TH2 * fhDutTIS_Found;     
+      TH2 * fhDutTIS_Missed; 
+      TH2 * fhDutTIR_Found;     
+      TH2 * fhDutTIR_Missed; 
+      TH1 * fhDutVel_Found;     
+      TH1 * fhDutVel_Missed;       
       TH2 * fhDutDTLH_CluSize;     
       TH2 * fhDutDTLH_Tot;     
       TH2 * fhDutDTLH_Mul;     
@@ -657,7 +663,8 @@ class CbmTofAnaTestbeam : public FairTask {
       TH1  *fhSelTypeNNResidualY_Width;   // 'calibration' histo
       TH1 *fhSelHitTupleResidualXYT_Width;// 'calibration' histo
       Double_t        fdMulDMax;          // max multiplicity in Diamond counter
-      Double_t        fdSpillDuration;          // spill length in sec
+      Double_t        fdSpillDuration;    // min. spill length in sec
+      Double_t        fdSpillBreak;       // min. spill break in sec
       Double_t        fdDTDia;            // max time difference between diamonds
       Double_t        fdDTD4MAX;          // max time difference between reference & diamond
       Double_t        fdMul0Max;          // max multiplicity in Dut
@@ -720,6 +727,7 @@ class CbmTofAnaTestbeam : public FairTask {
 
       CbmTofFindTracks*           fFindTracks;   // Pointer to Task 
       CbmTofTestBeamClusterizer*  fClusterizer;  // Pointer to Task 
+      CbmTofTrackletTools*        fTrackletTools;// Pointer to Class 
 
       Bool_t fbMonteCarloComparison;
       Bool_t fbPointsInInputFile;
@@ -749,6 +757,7 @@ class CbmTofAnaTestbeam : public FairTask {
       Bool_t fbAttachDutHitToTracklet;
       Bool_t fbBestSelTrackletOnly;
       Bool_t fbUseSigCalib;
+      Int_t fiAnaMode;
 
       Double_t fdMCSIGLIM;
       Double_t fdMCSIGT;
