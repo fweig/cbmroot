@@ -68,8 +68,11 @@ CbmRichHitProducer.cxx
 
 mcbm/CbmRichMCbmQa.cxx
 mcbm/CbmRichMCbmQaReal.cxx
+mcbm/CbmRichMCbmQaRichOnly.cxx
 mcbm/CbmRichMCbmHitProducer.cxx
-#mcbm/CbmRichMCbmTotShifter.cxx
+mcbm/CbmRichMCbmAerogelAna.cxx
+mcbm/CbmRichMCbmToTShifter.cxx
+mcbm/CbmRichMCbmSEDisplay.cxx
 
 qa/CbmRichRingFitterQa.cxx
 qa/CbmRichGeoOpt.cxx

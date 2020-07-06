@@ -14,7 +14,10 @@
 #pragma link C++ class CbmRichMCbmHitProducer;
 #pragma link C++ class CbmRichMCbmQa;
 #pragma link C++ class CbmRichMCbmQaReal;
-//#pragma link C++ class CbmRichMCbmToTShifter;
+#pragma link C++ class CbmRichMCbmQaRichOnly;
+#pragma link C++ class CbmRichMCbmAerogelAna;
+#pragma link C++ class CbmRichMCbmToTShifter;
+#pragma link C++ class CbmRichMCbmSEDisplay;
 
 //qa
 #pragma link C++ class CbmRichGeoTest+;

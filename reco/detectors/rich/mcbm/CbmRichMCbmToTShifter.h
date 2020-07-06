@@ -65,11 +65,11 @@ public:
     
 private:
 
-    CbmDigiManager* fDigiMan = nullptr;;
+    CbmDigiManager* fDigiMan = nullptr;
     
     Int_t fEventNum;
 
-    string fOutputDir; // output dir for results
+    std::string fOutputDir; // output dir for results
     
     std::map<Int_t, std::map<Int_t, TH1*> > fhTotMap;
     
@@ -83,6 +83,15 @@ private:
     TH1* GetTotH1(Int_t tdc, Int_t channel);
 
 
+    uint16_t calcDirichAddr( uint32_t cnt ){
+        return (0x7<<12) | ((cnt/18)<<8) | (((cnt%18)/2)<<4) | ((cnt%2)<<0);
+    };
+    
+    /**
+     * \brief Fill output lines with 0's if DiRICh Address is not in use in input file
+     */
+    std::string printEmpty();
+    
     /**
      * \brief Initialize histograms.
      */

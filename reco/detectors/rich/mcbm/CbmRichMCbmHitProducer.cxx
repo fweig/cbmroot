@@ -1,10 +1,10 @@
 
 #include "CbmRichMCbmHitProducer.h"
 
+#include "CbmRichDetectorData.h"  // for CbmRichPmtData, CbmRichPixelData
 #include "CbmRichPoint.h"
 #include "CbmRichHit.h"
 #include "CbmRichDigi.h"
-#include "CbmRichDetectorData.h"  // for CbmRichPmtData, CbmRichPixelData
 #include "TClonesArray.h"
 #include "CbmRichGeoManager.h"
 #include "CbmRichDigiMapManager.h"
@@ -126,15 +126,17 @@ void CbmRichMCbmHitProducer::ProcessData(
         CbmEvent* event)
 {
     if (event != NULL) {
-        LOG(info) << "CbmRichHitProducer CbmEvent mode. CbmEvent # " << event->GetNumber();
+        LOG(info) << "CbmRichMCbmHitProducer CbmEvent mode. CbmEvent # " << event->GetNumber();
         Int_t nofDigis = event->GetNofData(ECbmDataType::kRichDigi);
-        LOG(info) << "nofDigis: " << nofDigis;
+        //LOG(info) << "nofDigis: " << nofDigis;
 
+        fNofHits = 0;
         for (Int_t iDigi = 0; iDigi < nofDigis; iDigi++) {
             Int_t digiIndex = event->GetIndex(ECbmDataType::kRichDigi, iDigi);
             ProcessDigi(event, digiIndex);
         }
-
+        LOG(info) << "nofDigis: " <<nofDigis<< "\t\t "<<"nofHits : " << fNofHits;
+        fNofHits = 0;
     }
     else {
         for(Int_t iDigi = 0; iDigi < fDigiMan->GetNofDigis(ECbmModuleId::kRich); iDigi++){
@@ -170,7 +172,9 @@ void CbmRichMCbmHitProducer::ProcessDigi(
       
         //std::cout<<std::hex<<digi->GetAddress()<<std::dec<<"    "<<data->fX<<"   "<<data->fY<<"   "<<data->fZ<<std::endl;
         if (!RestrictToAcc(posPoint)) return;
-        AddHit(event,posPoint, digi->GetTime(),digi->GetToT(), digiIndex);
+        if (!RestrictToFullAcc(posPoint)) return;
+        if (!RestrictToAerogelAccDec2019(posPoint)) return;
+        AddHit(event,posPoint, digi, digiIndex,data->fPmtId);
     }
 }
 
@@ -179,9 +183,10 @@ void CbmRichMCbmHitProducer::ProcessDigi(
 void CbmRichMCbmHitProducer::AddHit(
         CbmEvent* event,
         TVector3 &posHit,
-        Double_t time,
-        Double_t tot,
-        Int_t index)
+        const CbmRichDigi *digi,
+        Int_t index,
+        Int_t PmtId
+                                   )
 {
     Int_t nofHits = fRichHits->GetEntriesFast();
     new((*fRichHits)[nofHits]) CbmRichHit();
@@ -190,11 +195,15 @@ void CbmRichMCbmHitProducer::AddHit(
     hit->SetDx(fHitError);
     hit->SetDy(fHitError);
     hit->SetRefId(index);
-    hit->SetTime(time);
-    hit->SetToT(tot);
+    hit->SetTime(digi->GetTime());
+    hit->SetToT(digi->GetToT());
+    hit->SetAddress(digi->GetAddress());
+    hit->SetPmtId(PmtId);
+    // Not Implemented in Digi: hit->SetPmtId(digi->GetPmtId());
 
     if (event != NULL) {
         event->AddData(ECbmDataType::kRichHit, nofHits);
+        fNofHits++;
     }
 }
 
@@ -262,6 +271,24 @@ bool CbmRichMCbmHitProducer::RestrictToFullAcc(Double_t x, Double_t y)
     }
     
     return inside;
+}
+
+bool CbmRichMCbmHitProducer::RestrictToAerogelAccDec2019(TVector3 &pos){
+    Double_t x = pos.X();
+    Double_t y = pos.Y();
+    
+    return this->RestrictToAerogelAccDec2019(x, y);
+}
+
+bool CbmRichMCbmHitProducer::RestrictToAerogelAccDec2019(Double_t x, Double_t y)
+{   //check if Track is in mRICH acceptance
+    if (fRestrictToAerogelAccDec2019 == false) return true;
+    //bool inside = false;
+    
+    if (y > 13.5) return false;
+    if (y >  8.0 && x < 12.5) return false;
+    
+    return true;
 }
 
 ClassImp(CbmRichMCbmHitProducer)

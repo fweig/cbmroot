@@ -12,10 +12,22 @@
 // In order to call later Finish, we make this global
 FairRunOnline *run = nullptr;
 
-void getToTOffset(TString inFile = "/lustre/nyx/cbm/users/ploizeau/mcbm2019/370_pn02_*.tsa;/lustre/nyx/cbm/users/ploizeau/mcbm2019/370_pn04_*.tsa;/lustre/nyx/cbm/users/ploizeau/mcbm2019/370_pn05_*.tsa;/lustre/nyx/cbm/users/ploizeau/mcbm2019/370_pn06_*.tsa;/lustre/nyx/cbm/users/ploizeau/mcbm2019/370_pn08_*.tsa;/lustre/nyx/cbm/users/ploizeau/mcbm2019/370_pn10_*.tsa;/lustre/nyx/cbm/users/ploizeau/mcbm2019/370_pn11_*.tsa;/lustre/nyx/cbm/users/ploizeau/mcbm2019/370_pn12_*.tsa;/lustre/nyx/cbm/users/ploizeau/mcbm2019/370_pn13_*.tsa;/lustre/nyx/cbm/users/ploizeau/mcbm2019/370_pn15_*.tsa", UInt_t uRunId = 370, UInt_t nrEvents=10000, TString outDir="/lustre/nyx/cbm/users/adrian/data/ToTOffset/", TString inDir="") //1Event is 1TS
+void getToTOffset( UInt_t uRunId = 831, UInt_t nrEvents=10000, TString outDir="./data/ToTOffset/", TString inDir="") //1Event is 1TS
 {
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
 
+  TString inputDir = "/lustre/cbm/users/ploizeau/mcbm2020/data";
+  TString inFile  = Form("%s/%u_pn02_*.tsa;",inputDir.Data(),uRunId);
+          inFile += Form("%s/%u_pn04_*.tsa;",inputDir.Data(),uRunId);
+          inFile += Form("%s/%u_pn05_*.tsa;",inputDir.Data(),uRunId);
+          inFile += Form("%s/%u_pn06_*.tsa;",inputDir.Data(),uRunId);
+          inFile += Form("%s/%u_pn08_*.tsa;",inputDir.Data(),uRunId);
+          inFile += Form("%s/%u_pn10_*.tsa;",inputDir.Data(),uRunId);
+          inFile += Form("%s/%u_pn11_*.tsa;",inputDir.Data(),uRunId);
+          inFile += Form("%s/%u_pn12_*.tsa;",inputDir.Data(),uRunId);
+          inFile += Form("%s/%u_pn13_*.tsa;",inputDir.Data(),uRunId);
+          inFile += Form("%s/%u_pn15_*.tsa" ,inputDir.Data(),uRunId);
+  
   // --- Specify number of events to be produced.
   // --- -1 means run until the end of the input file.
   Int_t nEvents=-1;
@@ -33,7 +45,7 @@ void getToTOffset(TString inFile = "/lustre/nyx/cbm/users/ploizeau/mcbm2019/370_
 
   // --- Define parameter files
   TList *parFileList = new TList();
-  TString paramDir = srcDir + "/macro/beamtime/mcbm2019/";
+  TString paramDir = srcDir + "/macro/beamtime/mcbm2020/";
 
   TString paramFileRich = paramDir + "mRichPar.par";
   TObjString* parRichFileName = new TObjString(paramFileRich);
@@ -66,7 +78,7 @@ void getToTOffset(TString inFile = "/lustre/nyx/cbm/users/ploizeau/mcbm2019/370_
 
   source->SetFileName(inFile);
   source->SetInputDir(inDir);
-  source->AddUnpacker(unpacker_rich, 0x30, kRich );//RICH trb
+  source->AddUnpacker(unpacker_rich, 0x30, ECbmModuleId::kRich );//RICH trb
 
   // --- Event header
   FairEventHeader* event = new CbmTbEvent();
@@ -87,8 +99,8 @@ void getToTOffset(TString inFile = "/lustre/nyx/cbm/users/ploizeau/mcbm2019/370_
   
   // Add ToT Correction Finder
   CbmRichMCbmToTShifter *tot = new CbmRichMCbmToTShifter();
-  tot->GeneratePDF();
-  tot->ShowTdcId(false);
+  //tot->GeneratePDF();
+  tot->ShowTdcId(true);
   run->AddTask(tot);
 
 

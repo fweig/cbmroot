@@ -7,9 +7,6 @@
 
 #include "CbmDigiManager.h"   // for ROOTCLING
 
-#include <map>         // for map
-#include <string>      // for string
-
 class TClonesArray;
 class TVector3;
 class CbmEvent;
@@ -133,12 +130,15 @@ private:
     bool fDoToT = false;
     bool fRestrictToAcc = false;
     bool fRestrictToFullAcc = false;
+    bool fRestrictToAerogelAccDec2019 = false;
     double fToTLimitLow  =   0.;
     double fToTLimitHigh = 1000.;
     
     std::map<Int_t,CbmRichMCbmMappingData> fRichMapping;
 
     Int_t fEventNum; // event number
+    
+    Int_t fNofHits = 0;
     
     Double_t fHitError;
 
@@ -154,6 +154,8 @@ private:
     bool RestrictToFullAcc(TVector3 &pos);
     bool RestrictToFullAcc(Double_t x, Double_t y);
 
+    bool RestrictToAerogelAccDec2019(TVector3 &pos);
+    bool RestrictToAerogelAccDec2019(Double_t x, Double_t y);
 
     /**
      * \brief Add hit to the output array (and) CbmEvent if it is not NULL.
@@ -162,9 +164,9 @@ private:
     void AddHit(
             CbmEvent* event,
             TVector3 &posHit,
-            Double_t time,
-            Double_t tot,
-            Int_t index);
+            const CbmRichDigi *digi,
+            Int_t index,
+            Int_t PmtId );
     
     /**
      * \brief Copy constructor.

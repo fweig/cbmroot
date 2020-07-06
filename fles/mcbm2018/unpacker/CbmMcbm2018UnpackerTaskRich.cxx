@@ -83,7 +83,7 @@ Bool_t CbmMcbm2018UnpackerTaskRich::DoUnpack(const fles::Timeslice& ts, size_t c
 
 /*
    /// Sort the buffers of hits due to the time offsets applied
-   => Done in the algo!!!
+   //=> Done in the algo!!!
    sort(fpvDigiRich->begin(), fpvDigiRich->end(),
         [](const CbmRichDigi & a, const CbmRichDigi & b) -> bool
         {

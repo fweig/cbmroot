@@ -55,7 +55,7 @@ InitStatus CbmRichMCbmToTShifter::Init()
  
      fDigiMan = CbmDigiManager::Instance();
      fDigiMan->Init();
-     if (! fDigiMan->IsPresent(kRich) ) {
+     if (! fDigiMan->IsPresent(ECbmModuleId::kRich) ) {
        Fatal("CbmRichMCbmToTShifter::Init", "No Rich Digis!");
      }
 
@@ -67,7 +67,7 @@ InitStatus CbmRichMCbmToTShifter::Init()
 void CbmRichMCbmToTShifter::Exec(Option_t* /*option*/)
 {
     fEventNum++;
-    int nofDigis = fDigiMan->GetNofDigis(kRich);
+    int nofDigis = fDigiMan->GetNofDigis(ECbmModuleId::kRich);
 
     for (int i=0; i < nofDigis; ++i){
         const CbmRichDigi* digi = fDigiMan->Get<CbmRichDigi>(i);
@@ -93,12 +93,24 @@ void CbmRichMCbmToTShifter::Finish()
      
      if (mean_cnt != 0) mean /= mean_cnt;
      
+     if (fShowTdcId) s << "TDC 0x"<<std::hex<<0xc000<< "  " <<std::dec<<" !";
+     s << printEmpty() << " \\"<< std::endl;
+     if (fShowTdcId) s << "TDC 0x"<<std::hex<<0xc001<< "  " <<std::dec<<" !";
+     s << printEmpty() << " \\"<< std::endl;
+     
      auto it = std::begin(fhTotMap);
+     uint32_t cnt = 0;
      for (auto const &outer : fhTotMap) {
         int tdc = outer.first;
         TCanvas* c = new TCanvas(Form("fhToT_%x",outer.first),Form("fhToT_%x",outer.first), 2000 , 2000);
         c->Divide(6,6);
-        if (fShowTdcId) s << "TDC 0x"<<std::hex<<outer.first<<std::dec<<" !";
+        while (calcDirichAddr(cnt) < static_cast<uint16_t>(tdc)) { // this dirich is not in use; fill up the parameter file with printEmpty
+            if (fShowTdcId) s << "TDC 0x"<<std::hex<<calcDirichAddr(cnt)<< "  " <<std::dec<<" !";
+            s << printEmpty();
+            if (std::next(it) != fhTotMap.end()) s<< " \\"<< std::endl;
+            cnt++;
+        }
+        if (fShowTdcId) s << "TDC 0x"<<std::hex<<outer.first<< "  " <<std::dec<<" !";
         s<<"  0.00";
         for (int i=0;i<32;++i){
           c->cd(1+i);   
@@ -113,20 +125,32 @@ void CbmRichMCbmToTShifter::Finish()
           }
         }
 
+        cnt++;
          
         if (it == fhTotMap.begin()) {
             if (fGeneratePDFs) c->Print("ToTs/Tdc_all.pdf(","pdf");
             s<< " \\"<< std::endl;
 
         } else if (std::next(it) == fhTotMap.end()) {
+            
             if (fGeneratePDFs) c->Print("ToTs/Tdc_all.pdf)","pdf");
-            s<<std::endl;
+            if (cnt == 71) s<<std::endl;
         } else {
             if (fGeneratePDFs) c->Print("ToTs/Tdc_all.pdf","pdf");
             s<< " \\"<< std::endl;
         }
         
         ++it;
+        
+     }
+     
+     //fill up till end of SetupSize
+     
+     for (uint16_t i=cnt;i<72;++i){
+        s<< " \\"<< std::endl; // from last output
+        
+        if (fShowTdcId) s << "TDC 0x"<<std::hex<<calcDirichAddr(i)<< "  " <<std::dec<<" !";
+        s << printEmpty();
      }
      
      std::cout<<s.str()<<std::endl;
@@ -158,6 +182,15 @@ Double_t CbmRichMCbmToTShifter::GetMaxH1(TH1 * h)
            }
         }
 	return h->GetBinCenter(b);
+}
+
+
+std::string CbmRichMCbmToTShifter::printEmpty(){
+    std::string s = "";
+    for (uint16_t i=0; i<33;++i){
+        s += "  0.00";
+    }
+    return s;
 }
 
 ClassImp(CbmRichMCbmToTShifter)
