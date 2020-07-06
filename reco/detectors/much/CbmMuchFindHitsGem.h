@@ -54,6 +54,8 @@ class CbmMuchFindHitsGem: public FairTask {
   void SetClusterSeparationTime(Double_t time)    { fClusterSeparationTime = time; }
   // Removing SetDaq functionality as Cluster and Hit Finder algorithm is same for both the Time Based and Event Based mode.
   // void SetDaq(Bool_t daq)                         { fDaq = daq; }
+  // Set functionality for accepting CbmMuchBeamTimeDigi generated from mCBM data.
+  void SetBeamTimeDigi(Bool_t beam)                         { bBeamTimeDigi = beam; }
   
  private:
   virtual InitStatus Init();
@@ -88,8 +90,13 @@ class CbmMuchFindHitsGem: public FairTask {
   // Removing SetDaq functionality as Cluster and Hit Finder algorithm is same for both the Time Based and Event Based mode.
   //Bool_t fDaq;                            // To daq or not to daq // TODO
   //CbmTimeSlice* fTimeSlice;               // Time slice object in the DAQ approach
-  std::vector<CbmMuchDigi> fDigiData;          // Vector of digis
+  // according to the input branch , below need to be used so using auto, such that runtime it will decide
+  //std::vector<CbmMuchDigi> fDigiData;          // Vector of digis
+  
+  // No need of fDigiDtata
+  //std::vector< auto > fDigiData;          // Vector of digis
   UInt_t fuClusters = 0; 				//Number of Clusters.
+  Bool_t bBeamTimeDigi = kFALSE;           // Boolean for Using Beam Time Digi 
   
   CbmMuchFindHitsGem(const CbmMuchFindHitsGem&);
   CbmMuchFindHitsGem operator=(const CbmMuchFindHitsGem&);
