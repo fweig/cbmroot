@@ -28,6 +28,8 @@ Include(InstallKFParticle.cmake)
 Include(InstallDataTree.cmake)
 Include(InstallDataTreeQA.cmake)
 Include(InstallNicaFemto.cmake)
+Include(InstallAnalysisTree.cmake)
+Include(InstallAnalysisTreeQA.cmake)
 
 Include(InstallParameter.cmake)
 Include(InstallInput.cmake)
