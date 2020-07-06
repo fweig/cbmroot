@@ -46,7 +46,7 @@
 #include "CbmTofDigiPar.h"         // in tof/TofParam
 #include "CbmTofDigiBdfPar.h"      // in tof/TofParam
 #include "CbmTofGeoHandler.h"      // in tof/TofTools
-
+#include "CbmTofCreateDigiPar.h"      // in tof/TofTools
 
 using std::cout;
 using std::endl;
@@ -57,6 +57,7 @@ using std::setw;
 
 // Gauss Integration Constants
 const Int_t    kiNbIntPts = 2;
+Bool_t bFakeBeamCounter=kFALSE;
 
 /************************************************************************************/
 struct CompTimesExp {  
@@ -235,10 +236,8 @@ InitStatus CbmTofDigitize::Init()
   std::cout << std::endl;
   LOG(info) << "=========================================================="
       ;
-  LOG(info) << GetName() << ": Initialisation"  
-      ;
-  if ( fEventMode ) LOG(info) << GetName() << ": Using event mode."
-      ;
+  LOG(info) << GetName() << ": Initialisation";
+  if ( fEventMode ) LOG(info) << GetName() << ": Using event mode.";
 
   // If input file was not set explicitly, use default one
   if ( fsBeamInputFile.IsNull() ) {
@@ -246,7 +245,7 @@ InitStatus CbmTofDigitize::Init()
     fileName += "/parameters/tof/test_bdf_input.root";
     SetInputFileName(fileName);
     LOG(info) << GetName() << ": Using default parameter file "
-        << fileName ;
+              << fileName ;
   }
 
   if( kFALSE == RegisterInputs() )
@@ -409,8 +408,7 @@ Bool_t   CbmTofDigitize::InitParameters()
    Int_t iGeoVersion = fGeoHandler->Init(isSimulation);
    if( k12b > iGeoVersion )
    {
-      LOG(error)<<"CbmTofDigitize::InitParameters => Only compatible with geometries after v12b !!!"
-                ;
+      LOG(error)<<"CbmTofDigitize::InitParameters => Only compatible with geometries after v12b !!!";
       return kFALSE;
    }
 
@@ -426,6 +424,16 @@ Bool_t   CbmTofDigitize::InitParameters()
       default:
          LOG(error)<<"CbmTofDigitize::InitParameters: Invalid Detector ID "<<iGeoVersion;
    }
+   
+   // create digitization parameters from geometry file
+   CbmTofCreateDigiPar* tofDigiPar = new CbmTofCreateDigiPar("TOF Digi Producer",
+                                                        "TOF task");
+   LOG(info) << "Create DigiPar";
+   tofDigiPar->Init();
+   
+   // Printout option for crosscheck
+   LOG(debug)<<"  CbmTofDigitize::LoadBeamtimeValues Digi Par contains "
+             << fDigiPar->GetNrOfModules() << " cells " ;
    return kTRUE;
 }
 Bool_t   CbmTofDigitize::LoadBeamtimeValues()
@@ -433,10 +441,6 @@ Bool_t   CbmTofDigitize::LoadBeamtimeValues()
    LOG(info) << fName << ": Load beamtime values from " << fsBeamInputFile;
 
    fDigiBdfPar->SetInputFile(fsBeamInputFile);
-
-   // Printout option for crosscheck
-   LOG(debug)<<"  CbmTofDigitize::LoadBeamtimeValues Digi Par contains "
-             << fDigiPar->GetNrOfModules() << " cells " ;
 
    // Add Param printout only if DEBUG level ON
    if( gLogger->IsLogNeeded( fair::Severity::debug ) )
@@ -484,6 +488,11 @@ Bool_t   CbmTofDigitize::LoadBeamtimeValues()
       fdChannelGain[iSmType].resize( iNbSm*iNbRpc );
       fvRpcChOffs[iSmType].resize( iNbSm );
 
+      if( iSmType==5 && iNbSm > 0) {
+	bFakeBeamCounter=kTRUE;
+	LOG(info) << "Generate Fake Beam Counter digis";
+      }
+      
       for( Int_t iSm = 0; iSm < iNbSm; iSm++ ){
          fvdSignalVelocityRpc[iSmType][iSm].resize( iNbRpc );
          for( Int_t iRpc = 0; iRpc < iNbRpc; iRpc++ )
@@ -1078,6 +1087,20 @@ Bool_t   CbmTofDigitize::DeleteHistos()
 // TODO: Charge summing up
 Bool_t   CbmTofDigitize::MergeSameChanDigis()
 {
+
+   if( bFakeBeamCounter) {
+     UInt_t  uChanUId=0x00005006;
+     Double_t dHitTime=fCurrentEventTime+gRandom->Gaus(0.,0.04);
+     const Double_t dHitTot=2.;
+     CbmTofDigi *tDigi=new CbmTofDigi(uChanUId, dHitTime, dHitTot);
+     CbmMatch* tMatch = new CbmMatch();
+     SendData(tDigi,tMatch);                        // Send digi to DAQ
+     fiNbDigis++;
+     LOG(debug) << Form("Add fake diamond digis 0x%08x mode with t = %7.3f",uChanUId,dHitTime);
+     //delete tDigi;
+     //delete tMatch;
+   }
+   
    Int_t iNbSmTypes = fDigiBdfPar->GetNbSmTypes();
 
    // loop over each (Smtype, Sm, Rpc, Channel, Side)
@@ -1161,7 +1184,7 @@ Bool_t   CbmTofDigitize::MergeSameChanDigis()
 			      // new digi  will be created and later deleted by CbmDaq.
 			      // The original digi will be deleted below, together with the unused digis from the buffer.
 			      CbmTofDigi* digi = new CbmTofDigi(*(fStorDigi[iSmType][iSm*iNbRpc + iRpc][iNbSides*iCh+iSide][iDigi0].first));
-                  CbmMatch* match = new CbmMatch(*(fStorDigi[iSmType][iSm*iNbRpc + iRpc][iNbSides*iCh+iSide][iDigi0].second));
+			      CbmMatch* match = new CbmMatch(*(fStorDigi[iSmType][iSm*iNbRpc + iRpc][iNbSides*iCh+iSide][iDigi0].second));
 
 			      digi->SetTime(digi->GetTime() * fdDigiTimeConvFactor + fCurrentEventTime);  // ns->ps
 			      SendData(digi, match);                        // Send digi to DAQ
@@ -1200,7 +1223,7 @@ Bool_t   CbmTofDigitize::MergeSameChanDigis()
 			// new digi  will be created and later deleted by CbmDaq.
 			// The original digi will be deleted below, together with the unused digis from the buffer.
 			CbmTofDigi* digi = new CbmTofDigi(*(fStorDigi[iSmType][iSm*iNbRpc + iRpc][iNbSides*iCh+iSide][iDigi0].first));
-            CbmMatch* match = new CbmMatch(*(fStorDigi[iSmType][iSm*iNbRpc + iRpc][iNbSides*iCh+iSide][iDigi0].second));
+			CbmMatch* match = new CbmMatch(*(fStorDigi[iSmType][iSm*iNbRpc + iRpc][iNbSides*iCh+iSide][iDigi0].second));
 			digi->SetTime(digi->GetTime() * fdDigiTimeConvFactor + fCurrentEventTime);  // ns->ps
 			SendData(digi, match);                        // Send digi to DAQ
                         fiNbDigis++;
@@ -1243,7 +1266,7 @@ Bool_t   CbmTofDigitize::MergeSameChanDigis()
                   } // for each (Ch, Side) pair
             } // for each (Sm, rpc) pair
       } // for( Int_t iSmType = 0; iSmType < iNbSmTypes; iSmType++ )
-
+      
    return kTRUE;
 }
 /************************************************************************************/
@@ -1552,9 +1575,15 @@ Bool_t   CbmTofDigitize::DigitizeDirectClusterSize()
 		   ;
       gGeoManager->GetCurrentNode();
       gGeoManager->GetCurrentMatrix();
+      
       Double_t poipos[3]={vPntPos.X(),vPntPos.Y(),vPntPos.Z()};
-      Double_t poipos_local[3];
-      gGeoManager->MasterToLocal(poipos, poipos_local);
+      Double_t poipos_local[3]; 
+      Double_t poipos_local_man[3]; 
+      gGeoManager->MasterToLocal(poipos, poipos_local_man);
+      fDigiPar->GetNode(iChanId)->MasterToLocal(poipos, poipos_local);
+      for (Int_t i=0; i<3; i++) 
+          if ( poipos_local[i] != poipos_local_man[i] ) 
+              LOG(fatal) << "Inconsistent M2L result " << i << ": "<< poipos_local[i] << " != " << poipos_local_man[i];
 
       if( 1 == iChType)
       {
@@ -1778,6 +1807,8 @@ Bool_t   CbmTofDigitize::DigitizeDirectClusterSize()
                            + ( poipos_local[1] )
 #endif
                              /fvdSignalVelocityRpc[iSmType][iSM][iRpc];
+                             LOG(debug)<<"Create DigiA TSRC " << iSmType << iSM << iRpc << iStripInd 
+                                       <<Form("at %f, ypos %f",dTimeA,poipos_local[1]);
                      CbmTofDigi * tofDigi = new CbmTofDigi( iSM, iRpc, iStripInd, dTimeA,
                            dStripCharge*fdChannelGain[iSmType][iSM*iNbRpc + iRpc][2*iStripInd+1]/2.0,
                            1, iSmType );
@@ -1800,6 +1831,8 @@ Bool_t   CbmTofDigitize::DigitizeDirectClusterSize()
                            - ( poipos_local[1] )
 #endif
                              /fvdSignalVelocityRpc[iSmType][iSM][iRpc];
+                             LOG(debug)<<"Create DigiB TSRC " << iSmType << iSM << iRpc << iStripInd 
+                                       <<Form("at %f, ypos %f",dTimeB,poipos_local[1]);
                      CbmTofDigi * tofDigi = new CbmTofDigi( iSM, iRpc, iStripInd, dTimeB,
                            dStripCharge*fdChannelGain[iSmType][iSM*iNbRpc + iRpc][2*iStripInd]/2.0,
                            0, iSmType );

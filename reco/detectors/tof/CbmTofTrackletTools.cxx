@@ -60,9 +60,9 @@ Double_t* CbmTofTrackletTools::Line3DFit( CbmTofTracklet *pTrk, Int_t iDetId ){
 
 Double_t CbmTofTrackletTools::FitTt( CbmTofTracklet *pTrk, Int_t iDetId ){
   Int_t    nValidHits=0;
-  Int_t    iHit1;
-  Double_t dDist1;
-  //LOG(info) << "FitTt: " << pTrk->GetNofHits() << " hits, exclude " << iDetId;  
+  Int_t    iHit1=0;
+  Double_t dDist1=100.;
+  //LOG(info) << "FitTt: " << pTrk->GetNofHits() << " hits, exclude " << Form("0x%08x",iDetId);  
   Double_t aR[pTrk->GetNofHits()-1];
   Double_t at[pTrk->GetNofHits()-1];
   Double_t ae[pTrk->GetNofHits()-1];
@@ -70,7 +70,7 @@ Double_t CbmTofTrackletTools::FitTt( CbmTofTracklet *pTrk, Int_t iDetId ){
     if ( iDetId == pTrk->GetTofDetIndex(iHit) ) continue;
     if(nValidHits==0){
       iHit1=iHit;
-      //LOG(info) << "Init Dist1";
+      //LOG(info) << "Init Dist1 with " << iHit1;
       Double_t *dPar=Line3DFit(pTrk, iDetId); // spatial fit without iDetId 
       dDist1=pTrk->GetTofHitPointer(iHit1)->GetZ()*TMath::Sqrt(1.+dPar[1]*dPar[1]+dPar[3]*dPar[3]);
       //LOG(info) << "Dist1 = " << dDist1;
@@ -80,8 +80,12 @@ Double_t CbmTofTrackletTools::FitTt( CbmTofTracklet *pTrk, Int_t iDetId ){
     aR[nValidHits]=dDist1+dSign*pTrk->Dist3D(pTrk->GetTofHitPointer(iHit),pTrk->GetTofHitPointer(iHit1));
     at[nValidHits]=pTrk->GetTofHitPointer(iHit)->GetTime();
     ae[nValidHits]=0.1;                         // const timing error, FIXME (?)
+    //LOG(info) << "Init vector index " << nValidHits;
     nValidHits++;    
   }
+  if( nValidHits  < 2 ) return 0.;
+  if( nValidHits == 2 ) return (at[0]-at[1])/(aR[0]-aR[1]);
+  
   Double_t RRsum=0;            //  Values will follow this procedure:
   Double_t Rsum=0;             //  $Rsum=\sum_{i}^{nValidHits}\frac{R_i}{e_i^2}$
   Double_t tsum=0;             //  where e_i will always be the error on the t measurement 

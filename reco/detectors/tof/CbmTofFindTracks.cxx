@@ -18,6 +18,7 @@
 #include "CbmTofDetectorId_v12b.h" // in cbmdata/tof
 #include "CbmTofDetectorId_v14a.h" // in cbmdata/tof
 #include "CbmTofCell.h"       // in tof/TofData
+#include "CbmTofCreateDigiPar.h"      // in tof/TofTools
 #include "CbmTofDigiPar.h"    // in tof/TofParam
 #include "CbmTofDigiBdfPar.h" // in tof/TofParam
 #include "CbmMatch.h"
@@ -285,6 +286,7 @@ InitStatus CbmTofFindTracks::Init()
   // if (fMinNofHits < 1) fMinNofHits=1;
 
     //fill RpcId - map
+    Bool_t bBeamCounter=kFALSE;
     Int_t iRpc=0;
     for (Int_t iCell=0; iCell < fDigiPar->GetNrOfModules(); iCell++){
       Int_t iCellId = fDigiPar->GetCellId(iCell);
@@ -294,12 +296,12 @@ InitStatus CbmTofFindTracks::Init()
 			iRpc, iCellId,
 			fTofId->GetSMType(iCellId), 
                         fTofId->GetSModule(iCellId), 
-                        fTofId->GetCounter(iCellId) )
-		 ;
+                        fTofId->GetCounter(iCellId) );
+        if(fTofId->GetSMType(iCellId) == 5) bBeamCounter=kTRUE;
         fMapRpcIdParInd[iCellId]=iRpc;
-	fRpcAddr.resize(fRpcAddr.size()+1);
-	fRpcAddr.push_back(iCellId);
-	iRpc++;
+	    fRpcAddr.resize(fRpcAddr.size()+1);
+	    fRpcAddr.push_back(iCellId);
+	    iRpc++;
       }
     }
     fStationHMul.resize(fNTofStations+1);
@@ -312,6 +314,10 @@ InitStatus CbmTofFindTracks::Init()
   if(fiCalOpt > 0) {	
    fTofCalibrator  = new CbmTofCalibrator();
    if ( fTofCalibrator->Init() != kSUCCESS ) return kFATAL; 
+   if(bBeamCounter) {
+       fTofCalibrator->SetR0Lim(2.);  // FIXME, hardwired parameter for debugging
+       LOG(info) << "Set CbmTofCalibrator::R0Lim to 2.";
+   }
   }
    
   LOG(info)<<Form("BeamCounter to be used in tracking: 0x%08x",fiBeamCounter);
@@ -428,13 +434,11 @@ Bool_t   CbmTofFindTracks::LoadCalParameter()
 	Int_t iUniqueId = it->first; 
 	CbmTofCell* fChannelInfo   = fDigiPar->GetCell(iUniqueId);
 	if(NULL != fChannelInfo) {
-          Double_t dVal=1.; // FIXME numeric constant in code, default for cosmic 
-	  //if (fiBeamCounter !=-1) 
-	  dVal = fChannelInfo->GetZ() * fTtTarg ; //  use calibration target value
+      Double_t dVal=0.; // FIXME numeric constant in code, default for cosmic 
+	  if (fiBeamCounter != iUniqueId ) 
+        dVal = fChannelInfo->GetZ() * fTtTarg ; //  use calibration target value
 	  fhPullT_Smt_Off->SetBinContent(iDet+1,dVal);
-	  LOG(info)<<Form("Initialize det 0x%08x at %d with TOff %6.2f",
-			  iUniqueId,iDet+1,dVal)
-		   ;
+	  LOG(info)<<Form("Initialize det 0x%08x at %d, z=%f with TOff %6.2f",iUniqueId,iDet+1,fChannelInfo->GetZ(),dVal);
 	}
       }
     }
@@ -509,7 +513,7 @@ Bool_t   CbmTofFindTracks::InitParameters()
       return kFALSE;
    }
 
-   LOG(info)<<"CbmTofFindTTracks::InitParameters: GeoVersion "<<iGeoVersion;
+   LOG(info)<<"CbmTofFindTracks::InitParameters: GeoVersion "<<iGeoVersion;
 
    switch(iGeoVersion){
        case k12b:
@@ -521,6 +525,12 @@ Bool_t   CbmTofFindTracks::InitParameters()
        default:
 	 LOG(error)<<"CbmTofFindTracks::InitParameters: Invalid Detector ID "<<iGeoVersion;
    }
+   
+   // create digitization parameters from geometry file 
+   CbmTofCreateDigiPar* tofDigiPar = new CbmTofCreateDigiPar("TOF Digi Producer","TOF task");
+   LOG(info) << "Create DigiPar ";
+   tofDigiPar->Init();
+   
    return kTRUE;
 }
 // -----  SetParContainers -------------------------------------------------
@@ -707,8 +717,8 @@ Bool_t CbmTofFindTracks::WriteHistos()
 	   if (dFMeanError < 0.05) { // FIXME: hardwired constant 
 	     if(dRMS<RMSmin) dRMS=RMSmin;
 	     if(dRMS>fSIGT*3.0) dRMS=fSIGT*3.;
-	     //if( fRpcAddr[ix] != fiBeamCounter )  // don't correct beam counter position
-	     fhPullT_Smt_Off->SetBinContent(ix+1,dVal);
+	     if( fRpcAddr[ix] != fiBeamCounter )  // don't correct beam counter position
+            fhPullT_Smt_Off->SetBinContent(ix+1,dVal);
 	     fhPullT_Smt_Width->SetBinContent(ix+1,dRMS);
 	   }
 	 }else{
@@ -1182,7 +1192,7 @@ void CbmTofFindTracks::CreateHistograms(){
 
   fhTrklChi2 =  new TH2F(  Form("hTrklChi2"),
 			  Form("Tracklet Chi;  HMul_{Tracklet}; #chi"),
-			  fNTofStations-1, 2, fNTofStations+1, 100, 0, ((CbmTofTrackFinderNN *)fFinder)->GetChiMaxAccept());  
+			  8, 2, 10, 100, 0, ((CbmTofTrackFinderNN *)fFinder)->GetChiMaxAccept());  
   
   fhTrackingTimeNhits  =  new TH2F(  Form("hTrackingTimeNhits"),
 			       Form("Tracking Time; NHits; #Deltat (s)"),
@@ -1190,7 +1200,7 @@ void CbmTofFindTracks::CreateHistograms(){
 
   fhTrklMulNhits =  new TH2F(  Form("hTrklMulNhits"),
 			       Form("Tracklet Multiplicity; NHits; NTracklet"),
-			       100, 0, 200, 20, 0, 20);
+			       150, 0, 150, 25, 0, 25);
 
   fhTrklMulMaxMM =  new TH2F(  Form("hTrklMulMaxMax-1"),
 			       Form("Tracklet Multiplicity; TMulMax; TMulMax-1"),
@@ -1201,31 +1211,31 @@ void CbmTofFindTracks::CreateHistograms(){
 
   fhTrklHMul =  new TH2F(  Form("hTrklHMul"),
 			   Form("Tracklet Hit - Multiplicity; HMul_{Tracklet}; Mul_{HMul}"),
-			   fNTofStations-1, 2, fNTofStations+1, 20, 0, 20);  
+			   8, 2, 10, 20, 0, 20);  
   fhTrklZ0xHMul =  new TH2F(  Form("hTrklZ0xHMul"),
 			   Form("Tracklet Z0x vs. Hit - Multiplicity; HMul_{Tracklet}; Z0x"),
-			   fNTofStations-1, 2, fNTofStations+1, 100, -500, 500);
+			   8, 2, 10, 100, -500, 500);
   fhTrklZ0yHMul =  new TH2F(  Form("hTrklZ0yHMul"),
 			   Form("Tracklet Z0y vs. Hit - Multiplicity; HMul_{Tracklet}; Z0y"),
-			   fNTofStations-1, 2, fNTofStations+1, 100, -300, 300);
+			   8, 2, 10, 100, -300, 300);
 
   fhTrklTxHMul =  new TH2F(  Form("hTrklTxHMul"),
 			   Form("Tracklet Tx vs. Hit - Multiplicity; HMul_{Tracklet}; Tx"),
-			   fNTofStations-1, 2, fNTofStations+1, 100, -0.65, 0.65);
+			   8, 2, 10, 100, -0.65, 0.65);
 
   fhTrklTyHMul =  new TH2F(  Form("hTrklTyHMul"),
 			   Form("Tracklet Ty vs. Hit - Multiplicity; HMul_{Tracklet}; Ty"),
-			   fNTofStations-1, 2, fNTofStations+1, 100, -0.65, 0.65);
+			   8, 2, 10, 100, -0.65, 0.65);
   Double_t TTMAX=0.2;
   fhTrklTtHMul =  new TH2F(  Form("hTrklTtHMul"),
 			   Form("Tracklet Tt vs. Hit - Multiplicity; HMul_{Tracklet}; Tt"),
-			   fNTofStations-1, 2, fNTofStations+1, 100, -TTMAX, TTMAX);
+			   8, 2, 10, 100, -TTMAX, TTMAX);
   fhTrklVelHMul =  new TH2F(  Form("hTrklVelHMul"),
 			   Form("Tracklet Vel vs. Hit - Multiplicity; HMul_{Tracklet}; v (cm/ns)"),
-			   fNTofStations-1, 2, fNTofStations+1, 100, 0., 50.);
+			   8, 2, 10, 100, 0., 50.);
   fhTrklT0HMul =  new TH2F(  Form("hTrklT0HMul"),
 			   Form("Tracklet T0 vs. Hit - Multiplicity; HMul_{Tracklet}; T0"),
-			   fNTofStations-1, 2, fNTofStations+1, 100, -0.5, 0.5);
+			   8, 2, 10, 100, -0.5, 0.5);
 
   fhTrklT0Mul =  new TH2F( Form("hTrklT0Mul"),
 			   Form("Tracklet #DeltaT0 vs. Trkl - Multiplicity; Mul_{Tracklet}; #Delta(T0)"),
@@ -1535,15 +1545,15 @@ void CbmTofFindTracks::FillHistograms(){
 	vhPullTB[iSt]->Fill(dDTB);
 	vhResidualTBWalk[iSt]->Fill(dTOT,dDTB);
 	vhResidualYWalk[iSt]->Fill(dTOT,dDY);
-	/*
+	
 	fhPullT_Smt->Fill((Double_t)fMapRpcIdParInd[fMapStationRpcId[iSt]],dDT);  
 	fhPullX_Smt->Fill((Double_t)fMapRpcIdParInd[fMapStationRpcId[iSt]],dDX);  
 	fhPullY_Smt->Fill((Double_t)fMapRpcIdParInd[fMapStationRpcId[iSt]],dDY);
-	*/
+	/*
 	fhPullT_Smt->Fill((Double_t)fMapRpcIdParInd[fMapStationRpcId[iSt]], fTrackletTools->GetTdif(pTrk,fMapStationRpcId[iSt], pHit) );  
 	fhPullX_Smt->Fill((Double_t)fMapRpcIdParInd[fMapStationRpcId[iSt]], fTrackletTools->GetXdif(pTrk,fMapStationRpcId[iSt], pHit) );  
 	fhPullY_Smt->Fill((Double_t)fMapRpcIdParInd[fMapStationRpcId[iSt]], fTrackletTools->GetYdif(pTrk,fMapStationRpcId[iSt], pHit) );
-	
+	*/
 	fhPullZ_Smt->Fill((Double_t)fMapRpcIdParInd[fMapStationRpcId[iSt]],dZZ);  
 
 	Double_t dDeltaTt=dTt - fTtTarg;
@@ -1785,7 +1795,7 @@ void CbmTofFindTracks::FillHistograms(){
     }
   }
   if(1)
-    if (fTrackArray->GetEntries() > 20 ) { // temporary  
+    if (fTrackArray->GetEntries() > 25 ) { // temporary  
      LOG(info)<<"Found  high multiplicity of " << fTrackArray->GetEntries() << " in event "<<fiEvent
 	     <<" from "<< fTofHitArray->GetEntries() << " hits " ;
     for (Int_t iTrk=0; iTrk<fTrackArray->GetEntries();iTrk++) {

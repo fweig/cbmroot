@@ -25,6 +25,7 @@
 #include "CbmEvent.h"
 #include "CbmVertex.h"
 #include "CbmDigiManager.h"
+#include "CbmTofCreateDigiPar.h"      // in tof/TofTools
 
 #include "TTrbHeader.h"
 
@@ -71,11 +72,12 @@ static Int_t    SelMask=DetMask;
 static Double_t fdStartAna10s=0.;
 static Double_t dTLEvt=0.;
 static Int_t iNSpill=0;
+static Int_t iNbTs=0;
 
 const  Double_t fdSpillDuration = 4.;    // in seconds
-const  Double_t fdSpillBreak      = 0.3;  // in seconds
+const  Double_t fdSpillBreak      = 0.9;  // in seconds
 
-static Bool_t bIsMC=kFALSE;
+static Bool_t bAddBeamCounterSideDigi=kTRUE;
 
 //   std::vector< CbmTofPoint* > vPtsRef;
 
@@ -342,25 +344,19 @@ void CbmTofEventClusterizer::SetParContainers()
 
 void CbmTofEventClusterizer::Exec(Option_t* option)
 {
-  /*
-  FairEventHeader* eventHeader = NULL;
-  if ( FairRunAna::Instance() )  eventHeader = FairRunAna::Instance()->GetEventHeader();
-  if( NULL != eventHeader) {
-    LOG(debug) << "MC event entry " <<  eventHeader->GetMCEntryNumber() <<" at t = " << eventHeader->GetEventTime();
-    if(eventHeader->GetMCEntryNumber() > 0) { // first MC event will not be recognized
-      bIsMC=kTRUE; 
-    }
-  }
-  */
+
   if(fTofCalDigiVecOut)  fTofCalDigiVecOut->clear();
   if(fEventsColl) {
-    LOG(debug)<<"CbmTofEventClusterizer::Exec => New time slice with "
-	      << fEventsColl->GetEntriesFast() << " events, "
-	      << fDigiMan->GetNofDigis(ECbmModuleId::kTof) << " TOF digis " ;
+    LOG(info)<<"CbmTofEventClusterizer::Exec => New timeslice " << iNbTs << " with "
+             << fEventsColl->GetEntriesFast() << " events, "
+             << fDigiMan->GetNofDigis(ECbmModuleId::kTof) << " TOF digis " ;
+    iNbTs++;
 
     Int_t iNbHits=0;
     Int_t iNbCalDigis = 0;
     fTofDigiMatchCollOut->Delete(); // costly, FIXME
+    fTofHitsCollOut->Delete();      // costly, FIXME
+    //fTofDigiMatchCollOut->Clear("C"); // not sufficient, memory leak 
     for(Int_t iEvent = 0; iEvent < fEventsColl->GetEntriesFast(); iEvent++)
     {
       CbmEvent* tEvent = dynamic_cast<CbmEvent*>(fEventsColl->At(iEvent));
@@ -374,7 +370,7 @@ void CbmTofEventClusterizer::Exec(Option_t* option)
         fTofDigiVec.push_back(CbmTofDigi(*tDigi));
         //new((*fTofDigisColl)[iNbDigis++]) CbmTofDigi(*tDigi);
       }
-
+    
       ExecEvent(option);
 
       // --- In event-by-event mode: copy caldigis, hits and matches to output array and register them to event
@@ -429,23 +425,6 @@ void CbmTofEventClusterizer::Exec(Option_t* option)
       const CbmTofDigi* tDigi = fDigiMan->Get<CbmTofDigi>(iDigi);
       fTofDigiVec.push_back(CbmTofDigi(*tDigi));
       //new((*fTofDigisColl)[iNbDigis++]) CbmTofDigi(*tDigi);
-    }
-
-    if(bIsMC) { // add fake diamond digis, this part should be moved to digitizer
-      //iNbDigis=fTofDigisColl->GetEntriesFast();
-      UInt_t  uChanUId=0x00005006;
-      Double_t dHitTime=gRandom->Gaus(0.,0.04);
-      const Double_t dHitTot=2.;
-      fTofDigiVec.push_back(CbmTofDigi(uChanUId, dHitTime, dHitTot));
-      //CbmTofDigi* tDigi = new CbmTofDigi(uChanUId, dHitTime, dHitTot);
-      //new((*fTofDigisColl)[iNbDigis++]) CbmTofDigi(*tDigi);
- 
-      uChanUId=0x00805006;
-      fTofDigiVec.push_back(CbmTofDigi(uChanUId, dHitTime, dHitTot));
-      //CbmTofDigi* tDigi1 = new CbmTofDigi(uChanUId, dHitTime, dHitTot);
-      //new((*fTofDigisColl)[iNbDigis++]) CbmTofDigi(*tDigi1);
-
-      LOG(debug) << Form("Add fake diamond digis 0x%08x in event mode with t = %7.3f",uChanUId,dHitTime);
     }
     ExecEvent(option);
   }
@@ -621,11 +600,16 @@ Bool_t   CbmTofEventClusterizer::InitParameters()
    Int_t iGeoVersion = fGeoHandler->Init(isSimulation);
    if( k14a > iGeoVersion )
    {
-      LOG(error)<<"CbmTofEventClusterizer::InitParameters => Only compatible with geometries after v14a !!!"
-                ;
+      LOG(error)<<"CbmTofEventClusterizer::InitParameters => Only compatible with geometries after v14a !!!";
       return kFALSE;
    }
    fTofId = new CbmTofDetectorId_v14a();
+   
+   // create digitization parameters from geometry file
+   CbmTofCreateDigiPar* tofDigiPar = new CbmTofCreateDigiPar("TOF Digi Producer",
+                                                        "TOF task");
+   LOG(info) << "Create DigiPar "; 
+   tofDigiPar->Init();
    
    fDigiPar = (CbmTofDigiPar*) (rtdb->getContainer("CbmTofDigiPar"));
    if( 0 == fDigiPar )
@@ -938,7 +922,7 @@ Bool_t   CbmTofEventClusterizer::LoadGeometry()
      Int_t smodule = fGeoHandler->GetSModule(cellId);
      Int_t module  = fGeoHandler->GetCounter(cellId);
      Int_t cell    = fGeoHandler->GetCell(cellId);
-
+ 
      Double_t x = fChannelInfo->GetX();
      Double_t y = fChannelInfo->GetY();
      Double_t z = fChannelInfo->GetZ();
@@ -957,8 +941,9 @@ Bool_t   CbmTofEventClusterizer::LoadGeometry()
                  ;
       if(icell==0) {
         TGeoHMatrix* cMatrix = gGeoManager->GetCurrentMatrix();
-	fNode->Print();
-	cMatrix->Print();
+	    fNode->Print();
+        fDigiPar->GetNode(cellId)->Print();
+	    cMatrix->Print();
       }
    }
 
@@ -1252,6 +1237,7 @@ Bool_t   CbmTofEventClusterizer::CreateHistos()
                   << ", RpcId "<<iRpcId<<" => UniqueId "<<Form("(0x%08x, 0x%08x)",iUniqueId,iUCellId)
                  <<", dx "<<fChannelInfo->GetSizex()
                  <<", dy "<<fChannelInfo->GetSizey()
+                 <<", z "<<fChannelInfo->GetZ()
                  <<Form(" ChPoi: %p ",fChannelInfo)
                   <<", nbCh "<<fDigiBdfPar->GetNbChan( iSmType, 0 )
                  ;
@@ -1302,7 +1288,7 @@ Bool_t   CbmTofEventClusterizer::CreateHistos()
        fhRpcCluRate10s[iDetIndx] =  new TH1D(
           Form("cl_SmT%01d_sm%03d_rpc%03d_rate10s", iSmType, iSmId, iRpcId ),
           Form("            Clu rate of Rpc #%03d in Sm %03d of type %d in last 10s; Time (s); Rate (Hz)", iRpcId, iSmId, iSmType ),
-	      10000,0.,10.); 
+	      100000,0.,10.); 
 
        fhRpcDTLastHits[iDetIndx] =  new TH1F(
           Form("cl_SmT%01d_sm%03d_rpc%03d_DTLastHits", iSmType, iSmId, iRpcId ),
@@ -1784,7 +1770,8 @@ Bool_t   CbmTofEventClusterizer::FillHistos()
      }
 
      if(fdStartAna10s>0.)
-       fhRpcCluRate10s[iDetIndx]->Fill(dTimeAna10s/1.E9,1./fhRpcCluRate10s[iDetIndx]->GetBinWidth(1));       
+       fhRpcCluRate10s[iDetIndx]->Fill(dTimeAna10s/1.E9,1.);       
+//       fhRpcCluRate10s[iDetIndx]->Fill(dTimeAna10s/1.E9,1./fhRpcCluRate10s[iDetIndx]->GetBinWidth(1));       
      
      if(fdMemoryTime>0. && fvLastHits[iSmType][iSm][iRpc][iCh].size()==0)
        LOG(fatal)<<Form(" <E> hit not stored in memory for TSRC %d%d%d%d",
@@ -2338,7 +2325,6 @@ Bool_t   CbmTofEventClusterizer::FillHistos()
 	     if(pHit->GetZ() < pTrig[iSel]->GetZ()) dZsign[iSel]=-1.;           }
 	   //// look for geometrical match  with selector hit
            if(  iSmType==fiBeamRefType      // to get entries in diamond/BeamRef histos  
-	   //if(  iSmType == 5                  // FIXME, to get entries in diamond histos  
              || TMath::Sqrt(TMath::Power(pHit->GetX()-dzscal*pTrig[iSel]->GetX(),2.)
                            +TMath::Power(pHit->GetY()-dzscal*pTrig[iSel]->GetY(),2.))<fdCaldXdYMax)
            {
@@ -2629,7 +2615,7 @@ Bool_t   CbmTofEventClusterizer::WriteHistos()
       iNent = (Int_t) fhRpcCluAvWalk[iDetIndx]->GetEntries();
      }
      if(0==iNent){
-       LOG(info)<<"WriteHistos: No entries in Walk histos for " 
+       LOG(debug)<<"WriteHistos: No entries in Walk histos for " 
                  <<"Smtype"<<iSmType<<", Sm "<<iSm<<", Rpc "<<iRpc 
                  ;
        // continue;
@@ -2727,7 +2713,7 @@ Bool_t   CbmTofEventClusterizer::WriteHistos()
      }
 
      if(NULL == htempPos_pfx) {
-       LOG(info)<<"WriteHistos: Projections not available, continue " ;
+       LOG(debug)<<"WriteHistos: Projections not available, continue " ;
        continue;
      }
 
@@ -2865,7 +2851,7 @@ Bool_t   CbmTofEventClusterizer::WriteHistos()
           }
           Int_t iNEntries=h2tmp0->GetEntries();
           if(iCh==0)  // condition to print message only once
-          LOG(info)<<Form(" Update Walk correction for SmT %d, Sm %d, Rpc %d, Ch %d, Sel%d: Entries %d",
+          LOG(debug)<<Form(" Update Walk correction for SmT %d, Sm %d, Rpc %d, Ch %d, Sel%d: Entries %d",
                           iSmType,iSm,iRpc,iCh,fCalSel,iNEntries)
                      ;
 
@@ -2892,7 +2878,7 @@ Bool_t   CbmTofEventClusterizer::WriteHistos()
                Double_t dWcor=(((TProfile *)htmp0)->GetBinContent(iWx+1) + ((TProfile *)htmp1)->GetBinContent(iWx+1))*0.5;
                fvCPWalk[iSmType][iSm*iNbRpc+iRpc][iCh][0][iWx]+=dWcor-dWMean;
                fvCPWalk[iSmType][iSm*iNbRpc+iRpc][iCh][1][iWx]+=dWcor-dWMean;
-	       LOG(info) << Form("Walk for TSR %d%d%d%d Tot %d set to %f",iSmType,iSm,iRpc,iCh,iWx, fvCPWalk[iSmType][iSm*iNbRpc+iRpc][iCh][0][iWx]) 
+	       LOG(debug) << Form("Walk for TSR %d%d%d%d Tot %d set to %f",iSmType,iSm,iRpc,iCh,iWx, fvCPWalk[iSmType][iSm*iNbRpc+iRpc][iCh][0][iWx]) 
 			  ;
              }
              break;
@@ -3159,7 +3145,7 @@ Bool_t   CbmTofEventClusterizer::WriteHistos()
         Int_t iNbRpc = fDigiBdfPar->GetNbRpc(  iSmType);
         Int_t iNbCh  = fDigiBdfPar->GetNbChan( iSmType, iRpc );
         if((fCalSmAddr < 0) || (fCalSmAddr != iSmAddr) ){     // select detectors for updating offsets
-         LOG(info)<<"WriteHistos (calMode==3): update Offsets and Gains, keep Walk and DelTof for "
+         LOG(debug)<<"WriteHistos (calMode==3): update Offsets and Gains, keep Walk and DelTof for "
                   <<"Smtype"<<iSmType<<", Sm "<<iSm<<", Rpc "<<iRpc<<" with " <<  iNbCh << " channels "
 		  <<" using selector "<<fCalSel;
          /*
@@ -3308,7 +3294,7 @@ Bool_t   CbmTofEventClusterizer::WriteHistos()
 	      else           TWMean=0.;
 	    }   
 	    if(  htempTOff_px->GetBinContent(iCh+1) > 0. ) 
-	    LOG(info) <<Form("CalibA %d,%2d,%2d: TSRC %d%d%d%d, hits %6.0f, TM %8.3f , TAV  %8.3f, TWM %8.3f, TOff %8.3f,  TOffnew  %8.3f, ",
+	    LOG(debug) <<Form("CalibA %d,%2d,%2d: TSRC %d%d%d%d, hits %6.0f, TM %8.3f , TAV  %8.3f, TWM %8.3f, TOff %8.3f,  TOffnew  %8.3f, ",
 			     fCalMode,fCalSel,fTRefMode,iSmType,iSm,iRpc,iCh,htempTOff_px->GetBinContent(iCh+1), TMean,
 			     ((TProfile *)hAvTOff_pfx)->GetBinContent(iSm*iNbRpc+iRpc+1), TWMean, fvCPTOff[iSmType][iSm*iNbRpc+iRpc][iCh][0],
 			     fvCPTOff[iSmType][iSm*iNbRpc+iRpc][iCh][0]+TMean-TWMean);
@@ -3319,7 +3305,7 @@ Bool_t   CbmTofEventClusterizer::WriteHistos()
           if(htempTOff_px->GetBinContent(iCh+1)>WalkNHmin){
             fvCPTOff[iSmType][iSm*iNbRpc+iRpc][iCh][0] += -dTYOff + TMean;
             fvCPTOff[iSmType][iSm*iNbRpc+iRpc][iCh][1] += +dTYOff + TMean;
-	    LOG(info)<<Form("CalibB %d,%2d,%2d: TSRC %d%d%d%d, hits %6.0f, dTY  %8.3f, TM %8.3f -> new Off %8.3f,%8.3f ",
+	    LOG(debug)<<Form("CalibB %d,%2d,%2d: TSRC %d%d%d%d, hits %6.0f, dTY  %8.3f, TM %8.3f -> new Off %8.3f,%8.3f ",
 			    fCalMode,fCalSel,fTRefMode,iSmType,iSm,iRpc,iCh,htempTOff_px->GetBinContent(iCh+1),
 			  dTYOff,TMean,
 			  fvCPTOff[iSmType][iSm*iNbRpc+iRpc][iCh][0],
@@ -3605,7 +3591,7 @@ Bool_t   CbmTofEventClusterizer::WriteHistos()
         Int_t iNbRpc = fDigiBdfPar->GetNbRpc(  iSmType);
         Int_t iNbCh  = fDigiBdfPar->GetNbChan( iSmType, iRpc );
         if((fCalSmAddr < 0) || (fCalSmAddr != iSmAddr) ){     // select detectors for updating offsets
-         LOG(info)<<"WriteHistos (calMode==5): update Offsets and Gains, keep Walk and DelTof for "
+         LOG(debug)<<"WriteHistos (calMode==5): update Offsets and Gains, keep Walk and DelTof for "
                   <<"Smtype"<<iSmType<<", Sm "<<iSm<<", Rpc "<<iRpc<<" with " <<  iNbCh << " channels "
                    <<" using selector "<<fCalSel
                   ;
@@ -3887,15 +3873,16 @@ Bool_t   CbmTofEventClusterizer::BuildClusters()
     LOG(warning) << "Too many digis in event " << fiNevtBuild  ;
     return kFALSE;
   }
-  if( kFALSE )
+  if( bAddBeamCounterSideDigi )
   {
     // Duplicate type "5" - digis
-    //Int_t iNbDigi=iNbTofDigi; (VF) not used
+    // Int_t iNbDigi=iNbTofDigi; 
     for( Int_t iDigInd = 0; iDigInd < iNbTofDigi; iDigInd++ )
     {
       CbmTofDigi* pDigi = &(fTofDigiVec.at(iDigInd));
       //CbmTofDigi *pDigi = (CbmTofDigi*) fTofDigisColl->At( iDigInd );
       if( pDigi->GetType() == 5 ) {
+        if( pDigi->GetSide() == 1 ) bAddBeamCounterSideDigi=kFALSE; // disable for current data set
         fTofDigiVec.push_back(CbmTofDigi(*pDigi));
         CbmTofDigi* pDigiN = &(fTofDigiVec.back());
         //	 CbmTofDigi *pDigiN  = new((*fTofDigisColl)[iNbDigi++]) CbmTofDigi( *pDigi );
@@ -4434,8 +4421,7 @@ void CbmTofEventClusterizer::CleanLHMemory()
       }
     }
   }
-  LOG(info) << Form("LH cleaning done after %8.0f events",fdEvent)
-	     ;       
+  LOG(info) << Form("LH cleaning done after %8.0f events",fdEvent);       
 }
 
 Bool_t CbmTofEventClusterizer::AddNextChan(Int_t iSmType, Int_t iSm, Int_t iRpc, Int_t iLastChan, Double_t dLastPosX, Double_t dLastPosY, Double_t dLastTime, Double_t dLastTotS){
@@ -4447,6 +4433,8 @@ Bool_t CbmTofEventClusterizer::AddNextChan(Int_t iSmType, Int_t iSm, Int_t iRpc,
   Int_t iDetIndx = fDetIdIndexMap[iDetId];  // Detector Index
 
   Int_t iCh=iLastChan+1;
+  Int_t iChId = CbmTofAddress::GetUniqueAddress(iSm,iRpc,iCh,0,iSmType);
+  
   while( fvDeadStrips[iDetIndx] & ( 1 << iCh )) {
     LOG(debug) << "Skip channel "<<iCh<<" of detector "<<Form("0x%08x",iDetId);
     iCh++; iLastChan++;
@@ -4482,7 +4470,7 @@ Bool_t CbmTofEventClusterizer::AddNextChan(Int_t iSmType, Int_t iSm, Int_t iRpc,
         Double_t dTime = 0.5 * ( xDigiA->GetTime() + xDigiB->GetTime() ) ; 
 	if(TMath::Abs(dTime-dLastTime)<fdMaxTimeDist){
 	  CbmTofDetectorInfo xDetInfo(ECbmModuleId::kTof, iSmType, iSm, iRpc, 0, iCh);
-	  Int_t iChId = fTofId->SetDetectorInfo( xDetInfo );
+	  iChId = fTofId->SetDetectorInfo( xDetInfo );
 	  fChannelInfo = fDigiPar->GetCell( iChId );
 	  gGeoManager->FindNode(fChannelInfo->GetX(),fChannelInfo->GetY(),fChannelInfo->GetZ());
 
@@ -4545,10 +4533,12 @@ Bool_t CbmTofEventClusterizer::AddNextChan(Int_t iSmType, Int_t iSm, Int_t iRpc,
     hitpos_local[1] = (gRandom->Rndm()-0.5)*fChannelInfo->GetSizey()*0.5;
   }
   */
-  Double_t hitpos[3];
-  /*TGeoNode*    cNode   = */gGeoManager->GetCurrentNode();
-  /*TGeoHMatrix* cMatrix = */gGeoManager->GetCurrentMatrix();
-  gGeoManager->LocalToMaster(hitpos_local, hitpos);
+  Double_t hitpos[3]={3*0.};
+  if( 5 != iSmType ) {  // Diamond beam counter always at (0,0,0)
+    /*TGeoNode*    cNode   = */gGeoManager->GetCurrentNode();
+    /*TGeoHMatrix* cMatrix = */gGeoManager->GetCurrentMatrix();
+    gGeoManager->LocalToMaster(hitpos_local, hitpos);
+  }
   TVector3 hitPos(hitpos[0],hitpos[1],hitpos[2]);
   TVector3 hitPosErr(0.5,0.5,0.5);  // FIXME including positioning uncertainty
   Int_t iChm=floor(dLastPosX/fChannelInfo->GetSizex())+iNbCh/2;
@@ -4745,8 +4735,7 @@ Bool_t   CbmTofEventClusterizer::BuildHits()
 				  << ", "<<Form("%f",(fStorDigiExp[iSmType][iSm*iNbRpc+iRpc][iCh][1])->GetTime())
 				  <<", DeltaT " <<(fStorDigiExp[iSmType][iSm*iNbRpc+iRpc][iCh][1])->GetTime() - 
 			                          (fStorDigiExp[iSmType][iSm*iNbRpc+iRpc][iCh][0])->GetTime()
-				  <<", array size: " <<  fStorDigiExp[iSmType][iSm*iNbRpc+iRpc][iCh].size() 
-				  ;
+				  <<", array size: " <<  fStorDigiExp[iSmType][iSm*iNbRpc+iRpc][iCh].size();
 		       if ( fStorDigiExp[iSmType][iSm*iNbRpc+iRpc][iCh][2]->GetSide() 
 			    == fStorDigiExp[iSmType][iSm*iNbRpc+iRpc][iCh][0]->GetSide() ) {
 			 LOG(debug) << "3 consecutive SameSide Digis! on TSRC "
@@ -4755,8 +4744,7 @@ Bool_t   CbmTofEventClusterizer::BuildHits()
 				    << ", "<<(fStorDigiExp[iSmType][iSm*iNbRpc+iRpc][iCh][1])->GetTime()
 				    <<", DeltaT " <<(fStorDigiExp[iSmType][iSm*iNbRpc+iRpc][iCh][1])->GetTime() - 
 			                            (fStorDigiExp[iSmType][iSm*iNbRpc+iRpc][iCh][0])->GetTime()
-				    <<", array size: " <<  fStorDigiExp[iSmType][iSm*iNbRpc+iRpc][iCh].size() 
-				    ;
+				    <<", array size: " <<  fStorDigiExp[iSmType][iSm*iNbRpc+iRpc][iCh].size();
 			 fStorDigiExp[iSmType][iSm*iNbRpc+iRpc][iCh].erase(fStorDigiExp[iSmType][iSm*iNbRpc+iRpc][iCh].begin());
 			 fStorDigiInd[iSmType][iSm*iNbRpc+iRpc][iCh].erase(fStorDigiInd[iSmType][iSm*iNbRpc+iRpc][iCh].begin());
 		       }else {
@@ -4771,15 +4759,13 @@ Bool_t   CbmTofEventClusterizer::BuildHits()
 			 else {
 			   LOG(debug) 
 			     << Form("Ev %8.0f, digis not properly time ordered, TSRCS %d%d%d%d%d ",
-				     fdEvent,iSmType,iSm,iRpc,iCh,(Int_t)fStorDigiExp[iSmType][iSm*iNbRpc+iRpc][iCh][0]->GetSide())
-			      ;
+				     fdEvent,iSmType,iSm,iRpc,iCh,(Int_t)fStorDigiExp[iSmType][iSm*iNbRpc+iRpc][iCh][0]->GetSide());
 			   fStorDigiExp[iSmType][iSm*iNbRpc+iRpc][iCh].erase(fStorDigiExp[iSmType][iSm*iNbRpc+iRpc][iCh].begin()+1);
 			   fStorDigiInd[iSmType][iSm*iNbRpc+iRpc][iCh].erase(fStorDigiInd[iSmType][iSm*iNbRpc+iRpc][iCh].begin()+1);
 			 }
 		       }
 		     }else{
-		       LOG(debug2)<<"SameSide Erase fStor entries(d) "<<iSmType<<", SR "<<iSm*iNbRpc+iRpc<<", Ch"<<iCh
-				  ;
+		       LOG(debug2)<<"SameSide Erase fStor entries(d) "<<iSmType<<", SR "<<iSm*iNbRpc+iRpc<<", Ch"<<iCh;
 		       fStorDigiExp[iSmType][iSm*iNbRpc+iRpc][iCh].erase(fStorDigiExp[iSmType][iSm*iNbRpc+iRpc][iCh].begin());
 		       fStorDigiInd[iSmType][iSm*iNbRpc+iRpc][iCh].erase(fStorDigiInd[iSmType][iSm*iNbRpc+iRpc][iCh].begin());
 		     }
@@ -4789,12 +4775,10 @@ Bool_t   CbmTofEventClusterizer::BuildHits()
 
 		   LOG(debug2) << "digis processing for " 
 			       << Form(" SmT %3d Sm %3d Rpc %3d Ch %3d # %3lu ",iSmType,iSm,iRpc,iCh,
-				       fStorDigiExp[iSmType][iSm*iNbRpc+iRpc][iCh].size())
-			       ;
+				       fStorDigiExp[iSmType][iSm*iNbRpc+iRpc][iCh].size());
 		   if(2 > fStorDigiExp[iSmType][iSm*iNbRpc+iRpc][iCh].size()) {
 		     LOG(debug)<<Form("Leaving digi processing for TSRC %d%d%d%d, size  %3lu",
-				      iSmType,iSm,iRpc,iCh,fStorDigiExp[iSmType][iSm*iNbRpc+iRpc][iCh].size())
-			       ;
+				      iSmType,iSm,iRpc,iCh,fStorDigiExp[iSmType][iSm*iNbRpc+iRpc][iCh].size());
 		     break;
 		   }
 		   /* Int_t iLastChId = iChId; // Save Last hit channel*/
@@ -4804,23 +4788,20 @@ Bool_t   CbmTofEventClusterizer::BuildHits()
 		   iChId = fTofId->SetDetectorInfo( xDetInfo );
 		   Int_t iUCellId=CbmTofAddress::GetUniqueAddress(iSm,iRpc,iCh,0,iSmType);
 		   LOG(debug1)<< Form(" TSRC %d%d%d%d size %3lu ",
-				      iSmType,iSm,iRpc,iCh,fStorDigiExp[iSmType][iSm*iNbRpc+iRpc][iCh].size())
-			      << Form(" ChId: 0x%08x 0x%08x ",iChId,iUCellId)
-			      ;
+                         iSmType,iSm,iRpc,iCh,fStorDigiExp[iSmType][iSm*iNbRpc+iRpc][iCh].size())
+                      << Form(" ChId: 0x%08x 0x%08x ",iChId,iUCellId);
 		   fChannelInfo = fDigiPar->GetCell( iChId );
 
 		   if(NULL == fChannelInfo){
 		     LOG(error)<<"CbmTofEventClusterizer::BuildClusters: no geometry info! "
-			       << Form(" %3d %3d %3d %3d 0x%08x 0x%08x ",iSmType, iSm, iRpc, iCh, iChId,iUCellId)
-			       ;
+			       << Form(" %3d %3d %3d %3d 0x%08x 0x%08x ",iSmType, iSm, iRpc, iCh, iChId,iUCellId);
 		     break;
 		   }
 
 		   TGeoNode *fNode=        // prepare local->global trafo
 		     gGeoManager->FindNode(fChannelInfo->GetX(),fChannelInfo->GetY(),fChannelInfo->GetZ());
 		   LOG(debug2)<<Form(" Node at (%6.1f,%6.1f,%6.1f) : %p",
-				     fChannelInfo->GetX(),fChannelInfo->GetY(),fChannelInfo->GetZ(),fNode)
-			      ;
+				     fChannelInfo->GetX(),fChannelInfo->GetY(),fChannelInfo->GetZ(),fNode);
 		   //          fNode->Print();      
 
 		   CbmTofDigi * xDigiA = fStorDigiExp[iSmType][iSm*iNbRpc+iRpc][iCh][0];
@@ -4835,8 +4816,7 @@ Bool_t   CbmTofEventClusterizer::BuildHits()
 		     LOG(debug)<<"CbmTofEventClusterizer::BuildClusters: Diamond hit in "
 			       << iSm <<" with inconsistent digits " 
 			       <<  xDigiA->GetTime() << ", " << xDigiB->GetTime()
-			       << " -> "<<dTimeDif
-			       ;
+			       << " -> "<<dTimeDif;
 		     LOG(debug) << "    "<<xDigiA->ToString();
 		     LOG(debug) << "    "<<xDigiB->ToString();
 		   }
@@ -4847,10 +4827,9 @@ Bool_t   CbmTofEventClusterizer::BuildHits()
 		     // 0 is the bottom side, 1 is the top side
 		     dPosY = -fDigiBdfPar->GetSigVel(iSmType,iSm,iRpc) * dTimeDif * 0.5;
 
-		   if(TMath::Abs(dPosY) > fChannelInfo->GetSizey() && fStorDigiExp[iSmType][iSm*iNbRpc+iRpc][iCh].size()>2) {
+		   while(TMath::Abs(dPosY) > fChannelInfo->GetSizey()*fPosYMaxScal && fStorDigiExp[iSmType][iSm*iNbRpc+iRpc][iCh].size()>2) {
 		     LOG(debug)<<"Hit candidate outside correlation window, check for better possible digis, "
-			       <<" mul "<< fStorDigiExp[iSmType][iSm*iNbRpc+iRpc][iCh].size()
-			       ;
+			       <<" mul "<< fStorDigiExp[iSmType][iSm*iNbRpc+iRpc][iCh].size();
 
 		     CbmTofDigi * xDigiC = fStorDigiExp[iSmType][iSm*iNbRpc+iRpc][iCh][2];
 		     Double_t dPosYN=0.;
@@ -4864,31 +4843,34 @@ Bool_t   CbmTofEventClusterizer::BuildHits()
 		       dPosYN = -fDigiBdfPar->GetSigVel(iSmType,iSm,iRpc) * dTimeDifN * 0.5;
 
 		     if(TMath::Abs(dPosYN)<TMath::Abs(dPosY)){
-		       LOG(debug)<<"Replace digi on side "<<xDigiC->GetSide()
-				 <<", yPosNext "<<dPosYN
-				 <<" old: "<<dPosY
-				 ;
+		       LOG(debug)<<"Replace digi on side "<<xDigiC->GetSide() <<", yPosNext "<<dPosYN <<" old: "<<dPosY;
 		       dTimeDif=dTimeDifN;
 		       dPosY=dPosYN;
 		       if( xDigiC->GetSide()==xDigiA->GetSide() ) {
-			 xDigiA=xDigiC;
-			 fStorDigiExp[iSmType][iSm*iNbRpc+iRpc][iCh].erase(fStorDigiExp[iSmType][iSm*iNbRpc+iRpc][iCh].begin());
-			 fStorDigiInd[iSmType][iSm*iNbRpc+iRpc][iCh].erase(fStorDigiInd[iSmType][iSm*iNbRpc+iRpc][iCh].begin());
+                 xDigiA=xDigiC;
+                 fStorDigiExp[iSmType][iSm*iNbRpc+iRpc][iCh].erase(fStorDigiExp[iSmType][iSm*iNbRpc+iRpc][iCh].begin());
+                 fStorDigiInd[iSmType][iSm*iNbRpc+iRpc][iCh].erase(fStorDigiInd[iSmType][iSm*iNbRpc+iRpc][iCh].begin());
 		       }else{
-			 xDigiB=xDigiC;
-			 fStorDigiExp[iSmType][iSm*iNbRpc+iRpc][iCh].erase(++(fStorDigiExp[iSmType][iSm*iNbRpc+iRpc][iCh].begin()+1));
-			 fStorDigiInd[iSmType][iSm*iNbRpc+iRpc][iCh].erase(++(fStorDigiInd[iSmType][iSm*iNbRpc+iRpc][iCh].begin()+1));
+                 xDigiB=xDigiC;
+                 fStorDigiExp[iSmType][iSm*iNbRpc+iRpc][iCh].erase(++(fStorDigiExp[iSmType][iSm*iNbRpc+iRpc][iCh].begin()+1));
+                 fStorDigiInd[iSmType][iSm*iNbRpc+iRpc][iCh].erase(++(fStorDigiInd[iSmType][iSm*iNbRpc+iRpc][iCh].begin()+1));
 		       }
 		     }
-					  
-		   }
+		     else 
+                 break;
+		   } //while loop end 
 
-		   if(xDigiA->GetSide() == xDigiB->GetSide()){
-		     LOG(fatal)<<"Wrong combinations of digis "
-			       << fStorDigiInd[iSmType][iSm*iNbRpc+iRpc][iCh][0]<<","
-			       << fStorDigiInd[iSmType][iSm*iNbRpc+iRpc][iCh][1]
-			       ;
-		   }
+           if(xDigiA->GetSide() == xDigiB->GetSide()){
+             LOG(fatal)<<"Wrong combinations of digis "
+                 << fStorDigiInd[iSmType][iSm*iNbRpc+iRpc][iCh][0]<<","
+                 << fStorDigiInd[iSmType][iSm*iNbRpc+iRpc][iCh][1];
+           }
+           
+		   if(TMath::Abs(dPosY) > fChannelInfo->GetSizey()*fPosYMaxScal) {  // remove both digis 
+             fStorDigiExp[iSmType][iSm*iNbRpc+iRpc][iCh].erase(fStorDigiExp[iSmType][iSm*iNbRpc+iRpc][iCh].begin());
+             fStorDigiInd[iSmType][iSm*iNbRpc+iRpc][iCh].erase(fStorDigiInd[iSmType][iSm*iNbRpc+iRpc][iCh].begin());
+             continue;
+           }
 		   // The "Strip" time is the mean time between each end
 		   dTime    =0.5 * ( xDigiA->GetTime() + xDigiB->GetTime() ) ; 
 
@@ -4963,18 +4945,19 @@ Bool_t   CbmTofEventClusterizer::BuildHits()
 			 hitpos_local[1] = (gRandom->Rndm()-0.5)*fChannelInfo->GetSizey();
 		       }
 		       */
-		       Double_t hitpos[3];
-		       TGeoNode*         cNode   = gGeoManager->GetCurrentNode();
-		       /*TGeoHMatrix* cMatrix =*/ gGeoManager->GetCurrentMatrix();
-		       //cNode->Print();
-		       //cMatrix->Print();
+		       Double_t hitpos[3]={3*0.};
+               if( 5 != iSmType ) { 
+		         /*TGeoNode*    cNode   =*/ gGeoManager->GetCurrentNode();
+		         /*TGeoHMatrix* cMatrix =*/ gGeoManager->GetCurrentMatrix();
+		         //cNode->Print();
+		         //cMatrix->Print();
 
-		       gGeoManager->LocalToMaster(hitpos_local, hitpos);
-		       LOG(debug1)<<
-			 Form(" LocalToMaster for node %p: (%6.1f,%6.1f,%6.1f) ->(%6.1f,%6.1f,%6.1f)", 
-			      cNode, hitpos_local[0], hitpos_local[1], hitpos_local[2], 
-			      hitpos[0], hitpos[1], hitpos[2])
-				  ;
+		         gGeoManager->LocalToMaster(hitpos_local, hitpos);
+               }
+               LOG(debug1)<<
+                  Form(" LocalToMaster: (%6.1f,%6.1f,%6.1f) ->(%6.1f,%6.1f,%6.1f)", 
+                  hitpos_local[0], hitpos_local[1], hitpos_local[2], 
+                  hitpos[0], hitpos[1], hitpos[2]);
 
 		       TVector3 hitPos(hitpos[0],hitpos[1],hitpos[2]);
 
@@ -5019,15 +5002,13 @@ Bool_t   CbmTofEventClusterizer::BuildHits()
 
 		       if(        vDigiIndRef.size() < 2 ){
 			 LOG(warning)<<"Digi refs for Hit "
-				     << fiNbHits<<":        vDigiIndRef.size()"
-				     ;
+				     << fiNbHits<<":        vDigiIndRef.size()";
 		       }                            
 		       if(fiNbHits>0){
 			 CbmTofHit *pHitL = (CbmTofHit*) fTofHitsColl->At(fiNbHits-1);
 			 if(iDetId == pHitL->GetAddress() && dWeightedTime==pHitL->GetTime()){
 			   LOG(debug)<<"Store Hit twice? "
-				     <<" fiNbHits "<<fiNbHits<<", "<<Form("0x%08x",iDetId)
-				     ;
+				     <<" fiNbHits "<<fiNbHits<<", "<<Form("0x%08x",iDetId);
 
 			   for (UInt_t i=0; i<vDigiIndRef.size();i++){
 			     CbmTofDigi *pDigiC = &(fTofCalDigiVec->at(vDigiIndRef.at(i)));
@@ -5037,6 +5018,13 @@ Bool_t   CbmTofEventClusterizer::BuildHits()
 			   for (Int_t i=0; i<digiMatchL->GetNofLinks();i++){
 			     CbmLink L0 = digiMatchL->GetLink(i);  
 			     Int_t iDigIndL=L0.GetIndex();
+                 if (iDigIndL >= (Int_t)vDigiIndRef.size() ) {
+                   if( iDetId != fiBeamRefAddr ) {
+                     LOG(warn) << Form("Invalid DigiRefInd for det 0x%08x",iDetId); 
+                     continue; 
+                   }
+                 }
+                 if (vDigiIndRef.at(iDigIndL) >= (Int_t)fTofCalDigiVec->size() ) { LOG(warn) << "Invalid CalDigiInd"; continue; }
 			     CbmTofDigi *pDigiC = &(fTofCalDigiVec->at(vDigiIndRef.at(iDigIndL)));
 			     LOG(debug)<<" DigiL "<<pDigiC->ToString();
 			   }
@@ -5120,8 +5108,8 @@ Bool_t   CbmTofEventClusterizer::BuildHits()
 		     } // else of if current Digis compatible with last fired chan
 		   } // if( 0 < iNbChanInHit)
 		   else {
-		     LOG(debug)<<Form("1.Hit on TSRC %d%d%d%d, time: %f, PosY %f",iSmType,iSm,iRpc,iCh,dTime,dPosY) 
-			       ;
+		     LOG(debug)<<Form("1.Hit on TSRC %d%d%d%d, time: %f, PosY %f, Tdif %f ",
+                              iSmType,iSm,iRpc,iCh,dTime,dPosY,dTimeDif);
 		     
 		     // first fired strip in this RPC
 		     dWeightedTime = dTime*dTotS;
@@ -5208,18 +5196,18 @@ Bool_t   CbmTofEventClusterizer::BuildHits()
 		 hitpos_local[1] = (gRandom->Rndm()-0.5)*fChannelInfo->GetSizey();
 	       }
 	       */	       
-	       Double_t hitpos[3];
-	       TGeoNode*        cNode= gGeoManager->GetCurrentNode();
-	       /*TGeoHMatrix* cMatrix =*/ gGeoManager->GetCurrentMatrix();
-	       //cNode->Print();
-	       //cMatrix->Print();
-	       
-	       gGeoManager->LocalToMaster(hitpos_local, hitpos);
+	       Double_t hitpos[3]={3*0.};
+           if( 5 != iSmType ) { 
+	         /*TGeoNode*       cNode=*/ gGeoManager->GetCurrentNode();
+	         /*TGeoHMatrix* cMatrix =*/ gGeoManager->GetCurrentMatrix();
+	         //cNode->Print();
+	         //cMatrix->Print();
+	         gGeoManager->LocalToMaster(hitpos_local, hitpos);
+           }
 	       LOG(debug1)<<
-		 Form(" LocalToMaster for V-node %p: (%6.1f,%6.1f,%6.1f) ->(%6.1f,%6.1f,%6.1f)", 
-		      cNode, hitpos_local[0], hitpos_local[1], hitpos_local[2], 
-		      hitpos[0], hitpos[1], hitpos[2])
-			  ;
+		      Form(" LocalToMaster for V-node: (%6.1f,%6.1f,%6.1f) ->(%6.1f,%6.1f,%6.1f)", 
+		      hitpos_local[0], hitpos_local[1], hitpos_local[2], 
+		      hitpos[0], hitpos[1], hitpos[2]);
 	       
 	       TVector3 hitPos(hitpos[0],hitpos[1],hitpos[2]);
 	       // Event errors, not properly done at all for now
@@ -5349,8 +5337,7 @@ Bool_t   CbmTofEventClusterizer::CalibRawDigis()
 	       <<Form("%2d",(Int_t)pDigi->GetChannel())<<" "
 	       <<pDigi->GetSide()<<" "
 	       <<Form("%f",pDigi->GetTime())<<" "
-	       <<pDigi->GetTot()
-	       ;
+	       <<pDigi->GetTot();
 		   
     if(pDigi->GetType()==5 || pDigi->GetType() == 8)   // for Pad counters generate fake digi to mockup a strip
       if(pDigi->GetSide()==1) continue;                // skip one side to avoid double entries
@@ -5386,8 +5373,7 @@ Bool_t   CbmTofEventClusterizer::CalibRawDigis()
 	       <<Form("%2d",(Int_t)pDigi->GetChannel())<<" "
 	       <<pDigi->GetSide()<<" "
 	       <<Form("%f",pDigi->GetTime())<<" "
-	       <<pDigi->GetTot()
-	       ;
+	       <<pDigi->GetTot();
 		   
     if(fbPs2Ns) {
       pCalDigi->SetTime(pCalDigi->GetTime()/1000.);        // for backward compatibility

@@ -1,7 +1,7 @@
 /** @file CbmTofCalibrator.cxx
  ** @author nh
  ** @date 28.02.2020
- **
+ ** 
  **/
 
 // CBMroot classes and includes
@@ -170,6 +170,7 @@ Bool_t CbmTofCalibrator::CreateCalHist( ){
 				   2*fDigiBdfPar->GetNbChan(iSmType,iRpcId),0,2*fDigiBdfPar->GetNbChan(iSmType,iRpcId),
 				   100, 0., TotMax);
     
+    TSumMax=1.;
     fhCalWalk[iDetIndx].resize( fDigiBdfPar->GetNbChan(iSmType,iRpcId) );
     for( Int_t iCh=0; iCh<fDigiBdfPar->GetNbChan(iSmType,iRpcId); iCh++){
       fhCalWalk[iDetIndx][iCh].resize( 2 );
@@ -187,9 +188,11 @@ Bool_t CbmTofCalibrator::CreateCalHist( ){
 
 void CbmTofCalibrator::FillCalHist( CbmTofTracklet *pTrk){
   // fill deviation histograms on walk level
-  if(pTrk->GetTt() < 0) return;                                   // take tracks with positive velocity only
+  if(pTrk->GetTt() < 0) return;                    // take tracks with positive velocity only
   if( ! pTrk->ContainsAddr( 0x00005006 ) ) return; // request beam counter hit for calibration
-  
+  if (fdR0Lim>0.)  // consider only tracks originating from nominal interaction point
+       if( pTrk->GetR0() > fdR0Lim) return;  
+
   for (Int_t iHit=0; iHit<pTrk->GetNofHits(); iHit++) {
     CbmTofHit* pHit=pTrk->GetTofHitPointer(iHit);
     Int_t iDetId = (pHit->GetAddress() & DetMask);
@@ -212,7 +215,8 @@ void CbmTofCalibrator::FillCalHist( CbmTofTracklet *pTrk){
     Double_t hitpos[3];
     hitpos[0]=pHit->GetX();    hitpos[1]=pHit->GetY();    hitpos[2]=pHit->GetZ();
     Double_t hlocal_p[3];
-//    TGeoNode* cNode= gGeoManager->GetCurrentNode();
+    //TGeoNode* cNode=
+    gGeoManager->GetCurrentNode();
     gGeoManager->MasterToLocal(hitpos, hlocal_p);
     hitpos[0]=pTrk->GetFitX(pHit->GetZ());    hitpos[1]=pTrk->GetFitY(pHit->GetZ());
     Double_t hlocal_f[3];
@@ -236,48 +240,64 @@ void CbmTofCalibrator::FillCalHist( CbmTofTracklet *pTrk){
       
       const CbmTofDigi* tDigi0 = fDigiMan->Get<CbmTofDigi>(iDigInd0);
       Int_t iCh0    = tDigi0->GetChannel();
-      Int_t iSide0 = tDigi0->GetSide();
-      fhCalWalk[iDetIndx][iCh0][iSide0]->Fill(tDigi0->GetTot(),tDigi0->GetTime()-fTrackletTools->GetTexpected(pTrk, iDetId, pHit) 
-    			                                                 -(1.-2.*tDigi0->GetSide())*hlocal_f[1]/fDigiBdfPar->GetSigVel(iSmType,iSm,iRpc)
-					                                 +fTofFindTracks->GetTOff(iDetId)
-					                                );
-
+      Int_t iSide0  = tDigi0->GetSide();
+      LOG(debug)<<"Fill Walk for "<<iDetIndx<<", TSRCS "<<iSmType<<iSm<<iRpc<<iCh0<<iSide0<<", "<<tDigi0<<", "<<pTrk;
+      if( iDetIndx > (Int_t)fhCalWalk.size() ) { LOG(error) << "Invalid DetIndx " << iDetIndx; continue;}
+      if( iCh0 > (Int_t) fhCalWalk[iDetIndx].size() ) { LOG(error) << "Invalid Ch0 " << iCh0; continue;}
+      if( iSide0 > (Int_t) fhCalWalk[iDetIndx][iCh0].size() ) { LOG(error) << "Invalid Side0 " << iSide0; continue;}
+  
+      fhCalWalk[iDetIndx][iCh0][iSide0]->Fill(tDigi0->GetTot(),tDigi0->GetTime()
+                                        +(1.-2.*tDigi0->GetSide())*hlocal_p[1]/fDigiBdfPar->GetSigVel(iSmType,iSm,iRpc)
+                                        -pTrk->GetFitT(pHit->GetZ()) //-fTrackletTools->GetTexpected(pTrk, iDetId, pHit) 
+                                        +fTofFindTracks->GetTOff(iDetId)
+                                        +2.*(1.-2.*tDigi0->GetSide())*(hlocal_p[1]-hlocal_f[1])/fDigiBdfPar->GetSigVel(iSmType,iSm,iRpc)
+                                        );
       /*      
-      LOG(info)<<"TSRCS "<<iSmType<<iSm<<iRpc<<iCh<<iSide0<<Form(": digo0 %f, ex %f, prop %f, Off %f, res %f",
-								tDigi0->GetTime(),
-								fTrackletTools->GetTexpected(pTrk, iDetId, pHit) ,
-								fTofFindTracks->GetTOff(iDetId),
-								(1.-2.*tDigi0->GetSide())*hlocal_f[1]/fDigiBdfPar->GetSigVel(iSmType,iSm,iRpc),
-								tDigi0->GetTime()-fTrackletTools->GetTexpected(pTrk, iDetId, pHit) 
-								-(1.-2.*tDigi0->GetSide())*hlocal_f[1]/fDigiBdfPar->GetSigVel(iSmType,iSm,iRpc));
-      */					
+      LOG(info)<<"TSRCS "<<iSmType<<iSm<<iRpc<<iCh<<iSide0<<Form(": digi0 %f, ex %f, prop %f, Off %f, res %f",
+                            tDigi0->GetTime(),
+                            fTrackletTools->GetTexpected(pTrk, iDetId, pHit) ,
+                            fTofFindTracks->GetTOff(iDetId),
+                            (1.-2.*tDigi0->GetSide())*hlocal_f[1]/fDigiBdfPar->GetSigVel(iSmType,iSm,iRpc),
+                            tDigi0->GetTime()-fTrackletTools->GetTexpected(pTrk, iDetId, pHit) 
+                            -(1.-2.*tDigi0->GetSide())*hlocal_f[1]/fDigiBdfPar->GetSigVel(iSmType,iSm,iRpc));
+      */
       
       const CbmTofDigi* tDigi1 = fDigiMan->Get<CbmTofDigi>(iDigInd1);
-      Int_t iCh1    = tDigi1->GetChannel();
+      Int_t iCh1   = tDigi1->GetChannel();
       Int_t iSide1 = tDigi1->GetSide();
-      fhCalWalk[iDetIndx][iCh1][iSide1]->Fill(tDigi1->GetTot(),tDigi1->GetTime()-fTrackletTools->GetTexpected(pTrk, iDetId, pHit) 
-    			                                                 -(1.-2.*tDigi1->GetSide())*hlocal_f[1]/fDigiBdfPar->GetSigVel(iSmType,iSm,iRpc)
-					                                 +fTofFindTracks->GetTOff(iDetId)					      
-					                                );
+      LOG(debug)<<"Fill Walk for "<<iDetIndx<<", TSRCS "<<iSmType<<iSm<<iRpc<<iCh1<<iSide1<<", "<<tDigi1<<", "<<pTrk;
+      if( iCh1 > (Int_t) fhCalWalk[iDetIndx].size() ) { LOG(error) << "Invalid Ch1 " << iCh1; continue;}
+      if( iSide1 > (Int_t) fhCalWalk[iDetIndx][iCh1].size() ) { LOG(error) << "Invalid Side1 " << iSide1; continue;}      
+      fhCalWalk[iDetIndx][iCh1][iSide1]->Fill(tDigi1->GetTot(),tDigi1->GetTime()
+                                        +(1.-2.*tDigi1->GetSide())*hlocal_p[1]/fDigiBdfPar->GetSigVel(iSmType,iSm,iRpc)
+                                        -pTrk->GetFitT(pHit->GetZ()) //-fTrackletTools->GetTexpected(pTrk, iDetId, pHit) 
+                                        +fTofFindTracks->GetTOff(iDetId)
+                                        +2.*(1.-2.*tDigi1->GetSide())*(hlocal_p[1]-hlocal_f[1])/fDigiBdfPar->GetSigVel(iSmType,iSm,iRpc)
+                                        );
     }
-   
   }
 }
 
 Bool_t CbmTofCalibrator::UpdateCalHist( Int_t iOpt){
   // get current calibration histos
   LOG(info) << "CbmTofCalibrator:: update histos from "
-                 << "file " << CbmTofEventClusterizer::Instance()->GetCalParFileName();
+                   << "file " << CbmTofEventClusterizer::Instance()->GetCalParFileName()
+	           << " with option " << iOpt;
   TFile* fCalParFile = new TFile(CbmTofEventClusterizer::Instance()->GetCalParFileName(),"");
+  if( NULL == fCalParFile ) {
+      LOG(warn) << "Could not open TofClusterizer calibration file, abort Update ";
+      return kFALSE;
+  }
   assert(fCalParFile);
   ReadHist(fCalParFile);
-  
+
+  const Double_t MINCTS=100.; //FIXME, numerical constant in code
   // modify calibration histograms 
   for(Int_t iDetIndx=0; iDetIndx< fDigiBdfPar->GetNbDet(); iDetIndx++){
     Int_t iUniqueId  = fDigiBdfPar->GetDetUId( iDetIndx );
-//    Int_t iSmAddr   = iUniqueId & DetMask; 
+    // Int_t iSmAddr   = iUniqueId & DetMask; 
     Int_t iSmType  = CbmTofAddress::GetSmType( iUniqueId );
-//    Int_t iSm           = CbmTofAddress::GetSmId( iUniqueId );
+    //  Int_t iSm           = CbmTofAddress::GetSmId( iUniqueId );
     Int_t iRpc          = CbmTofAddress::GetRpcId( iUniqueId );
     switch(iOpt) {
     case 0: // none
@@ -285,7 +305,7 @@ Bool_t CbmTofCalibrator::UpdateCalHist( Int_t iOpt){
     case 1: // update channel mean
       {
 	//LOG(info) << "Update Offsets for TSR "<<iSmType<<iSm<<iRpc;
-//	TProfile *hpP = fhCalPos[iDetIndx]->ProfileX();
+	TProfile *hpP = fhCalPos[iDetIndx]->ProfileX();
 	TProfile *hpT = fhCalTOff[iDetIndx]->ProfileX();
 	TH1* hCalT    = fhCalTOff[iDetIndx]->ProjectionX();
 	//fhCorPos[iDetIndx]->Add((TH1 *)hpP,-1.);
@@ -299,8 +319,12 @@ Bool_t CbmTofCalibrator::UpdateCalHist( Int_t iOpt){
 	    LOG(info) << Form("Update %s: bin %02d, Cts: %d, Old %f, dev %f, av %f, new %f", fhCorTOff[iDetIndx]->GetName() ,
 			      iBin, (Int_t)dCts, dCorT, dDt, dAvOff, dCorT- dDt + dAvOff); 
 	  }
-	  
-	  fhCorTOff[iDetIndx]->SetBinContent(iBin+1,dCorT+dDt+dAvOff);
+	  Double_t dDp=hpP->GetBinContent(iBin+1);
+	  Double_t dCorP=fhCorPos[iDetIndx]->GetBinContent(iBin+1);
+	  if (dCts > MINCTS) {
+	    fhCorTOff[iDetIndx]->SetBinContent(iBin+1,dCorT+dDt+dAvOff);
+	    fhCorPos[iDetIndx]->SetBinContent(iBin+1,dCorP+dDp);
+	  }
 	}
       }
       break;
@@ -311,8 +335,8 @@ Bool_t CbmTofCalibrator::UpdateCalHist( Int_t iOpt){
       {
 	for(Int_t iSide=0; iSide<2; iSide++) {
 	  //LOG(info) << "Get walk histo pointer for TSRCS " << iSmType<<iSm<<iRpc<<iCh<<iSide;
-	  TProfile *hpW = fhCalWalk[iDetIndx][iCh][iSide]->ProfileX();        // mean deviation
-	  TH1* hCW        = fhCalWalk[iDetIndx][iCh][iSide]->ProjectionX(); // contributing counts
+      TProfile *hpW = fhCalWalk[iDetIndx][iCh][iSide]->ProfileX();        // mean deviation
+      TH1* hCW      = fhCalWalk[iDetIndx][iCh][iSide]->ProjectionX(); // contributing counts
 
 	  Double_t dCorT=0;
 	  for (Int_t iBin=0; iBin<fhCorTOff[iDetIndx]->GetNbinsX(); iBin++) {
@@ -321,9 +345,27 @@ Bool_t CbmTofCalibrator::UpdateCalHist( Int_t iOpt){
 	    if (dCts > MinCounts) {
 	      dCorT=hpW->GetBinContent(iBin+1);
 	    }
-	    fhCorWalk[iDetIndx][iCh][iSide]->SetBinContent(iBin+1,dWOff-dCorT); //set new value
+	    fhCorWalk[iDetIndx][iCh][iSide]->SetBinContent(iBin+1,dWOff+dCorT); //set new value
 	  }
-	}
+	  // determine effective/count rate weighted mean
+	  Double_t dMean=0;
+      Double_t dCtsAll=0.;
+	  for (Int_t iBin=0; iBin<fhCorTOff[iDetIndx]->GetNbinsX(); iBin++) {
+	    Double_t dCts=hCW->GetBinContent(iBin+1);
+	    Double_t dWOff= fhCorWalk[iDetIndx][iCh][iSide]->GetBinContent(iBin+1); // current value
+	    if (dCts > MinCounts) {
+          dCtsAll += dCts;
+	      dMean   += dCts*dWOff;
+	    }
+	  }
+	  if(dCtsAll > 0. ) dMean /= dCtsAll;
+      // keep mean value at 0
+      for (Int_t iBin=0; iBin<fhCorTOff[iDetIndx]->GetNbinsX(); iBin++) {
+        Double_t dWOff= fhCorWalk[iDetIndx][iCh][iSide]->GetBinContent(iBin+1); // current value
+        fhCorWalk[iDetIndx][iCh][iSide]->SetBinContent(iBin+1,dWOff-dMean);     //set new value
+      }      
+      
+    }
       }
       break;
     } //switch( iOpt) end  
@@ -331,6 +373,7 @@ Bool_t CbmTofCalibrator::UpdateCalHist( Int_t iOpt){
   
   TFile* fCalParFileNew = new TFile(Form("New_%s",fCalParFile->GetName()),"RECREATE");
   WriteHist(fCalParFileNew);
+  fCalParFileNew->Close();
   
   return kTRUE;
 }
@@ -350,7 +393,7 @@ void CbmTofCalibrator::ReadHist( TFile* fHist){
   
   for(Int_t iDetIndx=0; iDetIndx< fDigiBdfPar->GetNbDet(); iDetIndx++){
     Int_t iUniqueId  = fDigiBdfPar->GetDetUId( iDetIndx );
-//    Int_t iSmAddr   = iUniqueId & DetMask; 
+    //Int_t iSmAddr   = iUniqueId & DetMask; 
     Int_t iSmType  = CbmTofAddress::GetSmType( iUniqueId );
     Int_t iSm           = CbmTofAddress::GetSmId( iUniqueId );
     Int_t iRpc          = CbmTofAddress::GetRpcId( iUniqueId );
@@ -384,29 +427,21 @@ void CbmTofCalibrator::WriteHist( TFile* fHist){
   TDirectory * oldir = gDirectory;
   fHist->cd();
   for(Int_t iDetIndx=0; iDetIndx< fDigiBdfPar->GetNbDet(); iDetIndx++){
-    Int_t iUniqueId  = fDigiBdfPar->GetDetUId( iDetIndx );
-//    Int_t iSmAddr   = iUniqueId & DetMask; 
-    Int_t iSmType  = CbmTofAddress::GetSmType( iUniqueId );
-//    Int_t iSm           = CbmTofAddress::GetSmId( iUniqueId );
-    Int_t iRpc          = CbmTofAddress::GetRpcId( iUniqueId );
-
     fhCorPos[iDetIndx]->Write();
     fhCorTOff[iDetIndx]->Write();
     fhCorTot[iDetIndx]->Write();
     fhCorTotOff[iDetIndx]->Write();
       
-    Int_t iNbCh = fDigiBdfPar->GetNbChan( iSmType, iRpc );
-    fhCorWalk[iDetIndx].resize(iNbCh);
+    Int_t iNbCh = (Int_t)fhCorWalk[iDetIndx].size();
     for( Int_t iCh = 0; iCh < iNbCh; iCh++ )
     {
-      fhCorWalk[iDetIndx][iNbCh].resize(2);
       for(Int_t iSide=0; iSide<2; iSide++){
-	fhCorWalk[iDetIndx][iCh][iSide]->Write();
+        fhCorWalk[iDetIndx][iCh][iSide]->Write();
       }
     }
     
   }
-  gDirectory = oldir;
+  oldir->cd();
 }
 
 ClassImp(CbmTofCalibrator)

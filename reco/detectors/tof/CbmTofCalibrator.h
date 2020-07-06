@@ -54,10 +54,12 @@ class CbmTofCalibrator: public FairTask
 	InitStatus Init();
 	Bool_t  InitParameters();
 	Bool_t  CreateCalHist();
-	void      FillCalHist(CbmTofTracklet *pTrk);
-	Bool_t UpdateCalHist(Int_t iOpt);
-	void ReadHist(TFile *fhFile);		      	
-	void WriteHist(TFile *fhFile);
+	void    FillCalHist(CbmTofTracklet *pTrk);
+	Bool_t  UpdateCalHist(Int_t iOpt);
+	void    ReadHist(TFile *fhFile);		      	
+	void    WriteHist(TFile *fhFile);
+    
+    inline void SetR0Lim(Double_t dVal) {fdR0Lim=dVal;}
 	
  private:
 	CbmDigiManager*               fDigiMan;
@@ -65,9 +67,9 @@ class CbmTofCalibrator: public FairTask
 	CbmTofFindTracks*           fTofFindTracks;
 	CbmTofTrackletTools*     fTrackletTools; 
 
-	CbmTofDigiPar*        fDigiPar;
+	CbmTofDigiPar*    fDigiPar;
 	CbmTofDigiBdfPar* fDigiBdfPar;
-	TClonesArray*           fTofDigiMatchColl;     // TOF Digi Links
+	TClonesArray*     fTofDigiMatchColl;     // TOF Digi Links
 
 	std::vector< TH2* > fhCalPos;    // [nbDet]
 	std::vector< TH2* > fhCalTOff;  // [nbDet]
@@ -82,7 +84,9 @@ class CbmTofCalibrator: public FairTask
 	std::vector< std::vector< std::vector<TH1 *> > >fhCorWalk; // [nbDet][nbCh][nSide]	
 	  
 	std::map<UInt_t, UInt_t> fDetIdIndexMap;
-
+    
+    Double_t fdR0Lim=0.;
+    
 	CbmTofCalibrator(const CbmTofCalibrator&) = delete;
 	CbmTofCalibrator operator=(const CbmTofCalibrator&) = delete;
 	
