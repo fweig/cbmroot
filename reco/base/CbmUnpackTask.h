@@ -66,7 +66,8 @@ class CbmUnpackTask : public CbmUnpackTaskBase
       uint64_t fulTsCounter     = 0;      //! TS counter, not same as TS index!
 
       /// Input/Output vector
-      std::vector< TDigi > * fvDigiIO = nullptr;   //! IO vector of Digis, passed to algo for filling and propagated to framework for outpu
+      std::vector< TDigi > * fvDigiIO = nullptr;   //! IO vector of Digis, passed to algo for filling and propagated to framework for output
+      std::vector< CbmErrorMessage > * fvErrorIO = nullptr;   //! IO vector of Errors, passed to algo for filling and propagated to framework for output
 
       /// Histograms for vector monitoring?
 //      TH1* fhArraySize     = nullptr;

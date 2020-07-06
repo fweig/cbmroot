@@ -8,12 +8,18 @@
 #ifndef CBMUNPACK_H
 #define CBMUNPACK_H
 
+/// CbmRoot (+externals) headers
 #include "Timeslice.hpp"
+#include "CbmErrorMessage.h"
 
+/// FairRoot headers
+
+/// Fairsoft (Root, Boost, ...) headers
 #include "Rtypes.h"
 
 #include <boost/any.hpp>
 
+/// C/C++ headers
 #include <vector>
 #include <string>
 #include <map>
@@ -50,6 +56,7 @@ class CbmUnpack
          fdTsFullSizeInNs(-1.0),
          fvpAllHistoPointers(),
          fDigiVect(),
+         fErrVect(),
          fParameterMap()
          {};
       virtual ~CbmUnpack() = default;
@@ -79,7 +86,8 @@ class CbmUnpack
       std::vector< std::pair< TCanvas *, std::string > > GetCanvasVector() { return fvpAllCanvasPointers; }
 
       /// Output vector
-      void AssignOutputVector( std::vector<T> & rVect ){ fDigiVect = rVect; }
+      void AssignOutputVector( std::vector< T > & rVect ){ fDigiVect = rVect; }
+      void AssignErrorVector( std::vector< CbmErrorMessage > & rVect ){ fErrVect = rVect; }
 //      void ClearVector() {fDigiVect->clear();}
 //      std::vector<T> * GetVector() {return fDigiVect;}
 
@@ -116,6 +124,7 @@ class CbmUnpack
 
       /// Output vector
       std::vector<T> & fDigiVect; //! Vector of digis FIXME: check that the reference works as expected
+      std::vector< CbmErrorMessage > & fErrVect = {}; //! Vector of error messages
 
       /// For any algo
       std::map<std::string, std::string> fParameterMap; //! Map of parameter name and type

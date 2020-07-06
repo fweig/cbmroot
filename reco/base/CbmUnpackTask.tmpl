@@ -36,7 +36,8 @@ CbmUnpackTask< TDigi, TAlgo, TParam >::CbmUnpackTask( TString sDigiBranchName, T
     fsDigiBranchName( sDigiBranchName ),
     fsDigiBranchDescr( sDigiBranchDescr )
 {
-   fvDigiIO      = new std::vector< TDigi >();
+//   fvDigiIO      = new std::vector< TDigi >();
+//   fvErrorIO     = new std::vector< CbmErrorMessage >();
    fUnpackerAlgo = new TAlgo();
 }
 
@@ -49,6 +50,11 @@ CbmUnpackTask< TDigi, TAlgo, TParam >::~CbmUnpackTask()
    {
       fvDigiIO.clear();
       delete fvDigiIO;
+   };
+   if( nullptr != fvErrorIO )
+   {
+      fvErrorIO.clear();
+      delete fvErrorIO;
    }
 }
 
@@ -82,6 +88,24 @@ Bool_t CbmUnpackTask< TDigi, TAlgo, TParam >::Init()
                           fvDigiIO, fbWriteOutput);
    } // if( nullptr == fvDigiIO )
       else LOG(info) << "--> Found existing IO vector, re-using it.";
+   fUnpackerAlgo->AssignOutputVector( fvDigiIO );
+
+   /// Check first if array not already existing due to other unpacker!
+   fvErrorIO = static_cast< std::vector< TDigi > *>(ioman->GetObject( "ErrorMessage" ));
+   if( nullptr == fvErrorIO )
+   {
+      /// No existing array => create it!
+      fvErrorIO = new std::vector< CbmErrorMessage >();
+      if( nullptr == fvErrorIO )
+      {
+         LOG(fatal) << "Failed creating the IO vector for error messages";
+      } // if( nullptr == fvErrorIO )
+      ioman->RegisterAny( "ErrorMessage",
+//                       ( "" == fsDigiBranchDescr ? fsDigiBranchName : fsDigiBranchDescr),
+                          fvErrorIO, fbWriteOutput);
+   } // if( nullptr == fvErrorIO )
+      else LOG(info) << "--> Found existing IO vector for error messages, re-using it.";
+   fUnpackerAlgo->AssignErrorVector( fvErrorIO );
 
    return kTRUE;
 }
@@ -169,6 +193,27 @@ template< class TDigi, class TAlgo, class TParam >
 void CbmUnpackTask< TDigi, TAlgo, TParam >::Reset()
 {
    fvDigiIO->clear();
+   fvErrorIO->clear();
+}
+
+template< class TDigi, class TAlgo, class TParam >
+Bool_t CbmUnpackTask< TDigi, TAlgo, TParam >::DoUnpack(const fles::Timeslice& ts, size_t /*component*/)
+{
+   if( kFALSE == fUnpackerAlgo->ProcessTs( ts ) )
+   {
+      LOG(error) << "Failed processing TS " << ts.index()
+                 << " in unpacker algorithm class";
+      return kTRUE;
+   } // if( kFALSE == fUnpackerAlgo->ProcessTs( ts ) )
+
+   if( 0 == ts.index() % 10000 )
+      LOG(info) << "Processed TS with index " << std::setw( 9 ) << fulTsCounter;
+
+   if( 0 == fulTsCounter % 10000 )
+      LOG(info) << "Processed " << std::setw( 9 ) << fulTsCounter << " TS ";
+   fulTsCounter++;
+
+   return kTRUE;
 }
 
 template< class TDigi, class TAlgo, class TParam >
