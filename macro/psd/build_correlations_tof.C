@@ -2,12 +2,12 @@
 #include <FairRuntimeDb.h>
 
 void build_correlations_tof(
-        const string& parFile  = "/home/nikolay/FairRoot/cbmroot_trunk/macro/beamtime/mcbm2019/data/unp_mcbm_params_384.root",
-        const string& digiFile = "/home/nikolay/FairRoot/cbmroot_trunk/macro/beamtime/mcbm2019/data/unp_mcbm_384.root",
-	const string& outDir   = "/home/nikolay/FairRoot/cbmroot_trunk/macro/beamtime/mcbm2019/data/",
-        const string& outFile  = "reco_mcbm_dec19.root",
-        const unsigned int uRunId = 384, // used for the output folder
-        int nEvents = 0
+        const string& digiFile = "/home/nikolay/FairRoot/cbmroot_trunk/macro/beamtime/mcbm2020/data/unp_mcbm_582.root",
+        const string& parFile  = "/home/nikolay/FairRoot/cbmroot_trunk/macro/beamtime/mcbm2020/data/unp_mcbm_params_582.root",
+	const string& outDir   = "/home/nikolay/FairRoot/cbmroot_trunk/macro/psd/Results/",
+        const string& outFile  = "reco_mcbm_mar20.root",
+        const unsigned int uRunId = 582, // used for the output folder
+        int nEvents = 100
 )
 {
 
@@ -26,15 +26,16 @@ void build_correlations_tof(
   TList *parFileList = new TList();
 
   const Double_t  eb_fixedTimeWindow {200.};
-  const Int_t eb_TriggerMinNumberT0  {1};
+  const Int_t eb_TriggerMinNumberT0  {0};
   const Int_t eb_TriggerMinNumberSts {0};
   const Int_t eb_TriggerMinNumberMuch{0};
-  const Int_t eb_TriggerMinNumberTof {10};
+  const Int_t eb_TriggerMinNumberTof {0};
   const Int_t eb_TriggerMinNumberPsd {1};
 
   //ToF Settings
   Int_t    calMode   = 93;
   Int_t    calSel    = 1;
+  Int_t  calSelRead  = 0;
   Int_t    calSm     = 40;
   Int_t    RefSel    = 1;
   TString  cFileId   = "385.100.-192.0";
@@ -78,9 +79,11 @@ void build_correlations_tof(
   fRun->SetEventHeaderPersistence(kFALSE);
   FairFileSource* inputSource = new FairFileSource(digiFile);
   fRun->SetSource(inputSource);
-  TString runId = TString::Format("%03u_", uRunId);
-  TString outFileName = outDir + "/events_" + runId + outFile;
+  TString runId = TString::Format("%03u", uRunId);
+  TString QaDir = outDir + "result_run" + runId;
+  TString outFileName = QaDir + "/events_" + runId + "_" + outFile;
   //remove(outFileName.c_str());
+  gSystem->Exec(Form("mkdir -p %s", QaDir.Data()));
   FairRootFileSink* outputSink = new FairRootFileSink(outFileName);
   fRun->SetSink(outputSink);
   //fRun->SetGenerateRunInfo(kTRUE);
@@ -139,9 +142,6 @@ void build_correlations_tof(
   //tofClust->SetDeadStrips(15,23);   // declare dead strip for T0M3,Rpc0,Strip 23
 
 
-  //Int_t calSelRead = calSel; //TODO CHECK!!!!
-  Int_t calSelRead = 0;
-  //if (calSel<0) calSelRead=0;
   TString cCalibFname=Form("/%s_set%09d_%02d_%01dtofClust.hst.root",cFileId.Data(),iCalSet,calMode,calSelRead);
   tofClust->SetCalParFileName(TofFileFolder + cCalibFname);
   TString cOutFname=Form("tofClust_%s_set%09d.hst.root",cFileId.Data(),iCalSet);
@@ -346,7 +346,7 @@ switch (calMode) {
 
 
     CbmPsdMCbmQaReal* qaTask = new CbmPsdMCbmQaReal();
-    qaTask->SetOutputDir(Form("result_run%d", uRunId));
+    qaTask->SetOutputDir(QaDir.Data());
     fRun->AddTask(qaTask);
 
 

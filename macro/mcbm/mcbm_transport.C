@@ -15,9 +15,9 @@
 void SetTrack(CbmTransport*, Double_t, Int_t, Double_t, Double_t, Double_t);
 
 void mcbm_transport(Int_t nEvents = 10,
-                    const char* setupName = "mcbm_beam_2019_11",
+                    const char* setupName = "mcbm_beam_2020_03",
+//                  const char* setupName = "mcbm_beam_2019_11",
 //                  const char* setupName = "mcbm_beam_2019_03",
-//                  const char* setupName = "mcbm_beam_2018_11",
 //                  const char* setupName = "sis18_mcbm_25deg_long",  
                     const char* output = "test",
                     const char* inputFile = "")
