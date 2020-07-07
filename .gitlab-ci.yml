@@ -7,8 +7,8 @@ CbmRoot_Continuous:
   tags:
     - CbmRoot
   only:
-    - master
-  only:
+    refs:
+      - master
     variables:
       - $CI_PROJECT_PATH == "computing/cbmroot"
   cache:
@@ -61,14 +61,14 @@ CbmRoot_Continuous:
 #  tags:
 #    - CbmRoot
 #  only:
-#    - merge_requests
-#  only:
+#    refs:
+#      - merge_requests
 #    variables:
 #      - $CI_MERGE_REQUEST_PROJECT_PATH == "computing/cbmroot"
 #  script:
 #    - set -xv
-#    - echo "export FAIRSOFT_VERSION=jun19p1" >> Dart.cfg
-#    - echo "export FAIRROOT_VERSION=v18.2.0" >> Dart.cfg
+#    - echo "export FAIRSOFT_VERSION=jun19p1" > env.sh
+#    - echo "export FAIRROOT_VERSION=v18.2.0" >> env.sh
 #    - echo "export SIMPATH=/cvmfs/fairroot.gsi.de/fairsoft/\${FAIRSOFT_VERSION}" >> env.sh
 #    - echo "export BUILDDIR=$PWD/build" >> env.sh
 #    - echo "export SOURCEDIR=$PWD" >> env.sh
@@ -90,7 +90,7 @@ CbmRoot_Merge:
     variables:
       - $CI_MERGE_REQUEST_PROJECT_PATH == "computing/cbmroot"
   script:
-    - set -xv
+#    - set -xv
     - echo $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH
     - echo $CI_MERGE_REQUEST_PROJECT_PATH
     - if [ "$CI_MERGE_REQUEST_PROJECT_PATH" != "computing/cbmroot" ]; then
