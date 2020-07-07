@@ -83,7 +83,7 @@ CbmRoot_Merge:
   tags:
     - CbmRoot
 #  only:
-#    - merge_requests  
+#    - merge_requests
   only:
     refs:
       - merge_requests
