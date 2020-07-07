@@ -85,7 +85,7 @@ Ctest_Read_Custom_Files("${CTEST_BINARY_DIRECTORY}")
 
 Ctest_Start($ENV{ctest_model})
 
-If($ENV{ctest_model} MATCHES Continuous)
+If($ENV{ctest_model} MATCHES Continuous OR $ENV{ctest_model} MATCHES MergeRequest)
   set(ENV{ctest_model} Nightly)
 EndIf()
 
@@ -102,7 +102,11 @@ If(NOT _RETVAL)
     CTest_Submit(PARTS Update Configure Build)
   EndIf()
 
-  Ctest_Test(BUILD "${CTEST_BINARY_DIRECTORY}" PARALLEL_LEVEL $ENV{number_of_processors})
+  Ctest_Test(BUILD "${CTEST_BINARY_DIRECTORY}" 
+             PARALLEL_LEVEL $ENV{number_of_processors}
+             RETURN_VALUE _ctest_test_ret_val
+            )
+
   If($ENV{ctest_model} MATCHES Continuous)
     CTest_Submit(PARTS Test)
   EndIf()
@@ -118,6 +122,12 @@ If(NOT _RETVAL)
   If(NOT $ENV{ctest_model} MATCHES Continuous)
     Ctest_Submit()
   EndIf()
+
+  # Pipeline should fail also in case of failed tests
+  if (_ctest_test_ret_val)
+    Message(FATAL_ERROR "Some tests failed.")
+  endif()
+
 Else()
   CTest_Submit()
 EndIf()

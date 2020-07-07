@@ -43,11 +43,11 @@ if [ "$#" -lt "2" ]; then
 fi
 
 # test if a ctest model is either Experimental or Nightly
-if [ "$1" == "Experimental" -o "$1" == "Nightly" -o "$1" == "Continuous" -o "$1" == "Profile" -o "$1" == "Weekly" ]; then
+if [ "$1" == "Experimental" -o "$1" == "Nightly" -o "$1" == "Continuous" -o "$1" == "Profile" -o "$1" == "Weekly" -o "$1" == "MergeRequest" ]; then
   echo ""
 else
   echo "-- Error -- This ctest model is not supported."
-  echo "-- Error -- Possible arguments are Nightly, Experimental, Continuous or Profile."
+  echo "-- Error -- Possible arguments are Nightly, Experimental, Continuous, Profile or MergeRequest."
   exit 1
 fi 
 
@@ -80,7 +80,7 @@ fi
 
 if [ "${ctest_model}" == "Weekly" ]; then
   export LABEL1=${LINUX_FLAVOUR}-$SYSTEM-$COMPILER$GCC_VERSION-${ctest_model}-fairsoft_$FAIRSOFT_VERSION-fairroot_$FAIRROOT_VERSION
-elif [ "${ctest_model}" == "Continuous" ]; then
+elif [ "${ctest_model}" == "MergeRequest" ]; then
   export LABEL1=${LINUX_FLAVOUR}-$SYSTEM-$COMPILER$GCC_VERSION-fairsoft_$FAIRSOFT_VERSION-fairroot_${FAIRROOT_VERSION}_MR-$CI_MERGE_REQUEST_IID
 else
   export LABEL1=${LINUX_FLAVOUR}-$SYSTEM-$COMPILER$GCC_VERSION-fairsoft_$FAIRSOFT_VERSION-fairroot_$FAIRROOT_VERSION

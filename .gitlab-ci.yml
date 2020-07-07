@@ -109,7 +109,7 @@ CbmRoot_Merge:
     - ls
     - pwd
     - cat Dart.cfg
-    - $PWD/Dart.sh Continuous Dart.cfg
+    - $PWD/Dart.sh MergeRequest Dart.cfg
 
 pages:
   stage: documentation
