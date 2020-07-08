@@ -357,6 +357,14 @@ add_custom_target(cleantest
                   COMMAND ${CMAKE_COMMAND} -P ${CMAKE_SOURCE_DIR}/cmake/scripts/cleantest.cmake
                  )
 
+find_package2(PRIVATE ClangFormat)
+if(ClangFormat_FOUND)
+  add_custom_target(FormatCheck
+    ${CMAKE_COMMAND} -E env FAIRROOT_GIT_CLANG_FORMAT_BIN=${GIT_CLANG_FORMAT_BIN} ${CMAKE_SOURCE_DIR}/cmake/scripts/check-format.sh
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  )
+endif()
+
 Option(BUILD_DOXYGEN "Build Doxygen" OFF)
 if(BUILD_DOXYGEN)
   MESSAGE(STATUS "*** Building the Doxygen documentaion ***")
