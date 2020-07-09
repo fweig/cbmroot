@@ -42,6 +42,7 @@ CbmRoot_Continuous:
     - echo "export FAIRSOFT_VERSION=jun19p1" >> Dart.cfg
     - echo "export FAIRROOT_VERSION=v18.2.0" >> Dart.cfg
     - echo "export SIMPATH=/cvmfs/fairroot.gsi.de/fairsoft/\${FAIRSOFT_VERSION}" >> Dart.cfg
+    - echo "export FAIRROOTPATH=/cvmfs/fairroot.gsi.de/fairroot/\${FAIRROOT_VERSION}_fairsoft-\${FAIRSOFT_VERSION}" >> Dart.cfg
     - echo "export BUILDDIR=$PWD/build" >> Dart.cfg
     - echo "export SOURCEDIR=$PWD" >> Dart.cfg
     - echo "export NCPU=5" >> Dart.cfg
