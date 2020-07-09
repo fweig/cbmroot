@@ -67,13 +67,8 @@ class CbmMcbm2019TimeWinEventBuilderTask : public FairTask
     void AddDetector( ECbmModuleId selDet );
     void RemoveDetector( ECbmModuleId selDet );
 
-    void SetTriggerMinNumberT0(   UInt_t uVal );
-    void SetTriggerMinNumberSts(  UInt_t uVal );
-    void SetTriggerMinNumberMuch( UInt_t uVal );
-    void SetTriggerMinNumberTrd(  UInt_t uVal );
-    void SetTriggerMinNumberTof(  UInt_t uVal );
-    void SetTriggerMinNumberRich( UInt_t uVal );
-    void SetTriggerMinNumberPsd(  UInt_t uVal );
+    void SetTriggerMinNumber( ECbmModuleId selDet, UInt_t uVal );
+    void SetTriggerMaxNumber( ECbmModuleId selDet, Int_t iVal );
 
     void SetTriggerWindow( ECbmModuleId det, Double_t dWinBeg, Double_t dWinEnd );
 

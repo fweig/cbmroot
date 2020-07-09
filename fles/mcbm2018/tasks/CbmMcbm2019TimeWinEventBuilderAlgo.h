@@ -59,18 +59,12 @@ class CbmMcbm2019TimeWinEventBuilderAlgo
     void SetFillHistos( Bool_t var ) { fbFillHistos = var; }
     void ResetHistograms( Bool_t bResetTime = kTRUE );
 
-    void SetReferenceDetector( ECbmModuleId refDet ) { fRefDet = refDet; }
+    void SetReferenceDetector( ECbmModuleId refDet );
     void AddDetector( ECbmModuleId selDet );
     void RemoveDetector( ECbmModuleId selDet );
 
     void SetTriggerMinNumber( ECbmModuleId selDet, UInt_t uVal );
-    void SetTriggerMinNumberT0(   UInt_t uVal ) { fuTriggerMinT0Digis   = uVal;}
-    void SetTriggerMinNumberSts(  UInt_t uVal ) { fuTriggerMinStsDigis  = uVal;}
-    void SetTriggerMinNumberMuch( UInt_t uVal ) { fuTriggerMinMuchDigis = uVal;}
-    void SetTriggerMinNumberTrd(  UInt_t uVal ) { fuTriggerMinTrdDigis  = uVal;}
-    void SetTriggerMinNumberTof(  UInt_t uVal ) { fuTriggerMinTofDigis  = uVal;}
-    void SetTriggerMinNumberRich( UInt_t uVal ) { fuTriggerMinRichDigis = uVal;}
-    void SetTriggerMinNumberPsd(  UInt_t uVal ) { fuTriggerMinPsdDigis  = uVal;}
+    void SetTriggerMaxNumber( ECbmModuleId selDet, Int_t iVal );
 
     void SetTriggerWindow( ECbmModuleId det, Double_t dWinBeg, Double_t dWinEnd );
 
@@ -103,6 +97,7 @@ class CbmMcbm2019TimeWinEventBuilderAlgo
     template< class DigiCheck > void SearchMatches( Double_t dSeedTime, ECbmModuleId detMatch, UInt_t & uStartIndex );
     void AddDigiToEvent( ECbmModuleId det, Int_t uIdx );
     Bool_t HasTrigger(CbmEvent*);
+    Bool_t CheckTriggerConditions( CbmEvent* event, ECbmModuleId det, ECbmDataType dataType );
 
     void UpdateTimeWinBoundariesExtrema();
     void UpdateWidestTimeWinRange();
@@ -135,6 +130,14 @@ class CbmMcbm2019TimeWinEventBuilderAlgo
     UInt_t fuTriggerMinRichDigis{0};
     /** Minimum number of Psd digis needed to generate a trigger, 0 means don't use Psd for trigger generation **/
     UInt_t fuTriggerMinPsdDigis{0};
+         /// Maximum number of digis per detector to generate an event, -1 means no cut, 0 means anti-coinc trigger
+    Int_t fiTriggerMaxT0Digis   = -1;
+    Int_t fiTriggerMaxStsDigis  = -1;
+    Int_t fiTriggerMaxMuchDigis = -1;
+    Int_t fiTriggerMaxTrdDigis  = -1;
+    Int_t fiTriggerMaxTofDigis  = -1;
+    Int_t fiTriggerMaxRichDigis = -1;
+    Int_t fiTriggerMaxPsdDigis  = -1;
          /// Trigger Window
     Double_t fdRefTimeWinBeg  = 0.0;
     Double_t fdT0TimeWinBeg   = 0.0;

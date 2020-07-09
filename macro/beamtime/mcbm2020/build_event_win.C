@@ -61,13 +61,13 @@ void build_event_win( UInt_t uRunId = 0, Int_t nEvents = 0, TString outDir="data
   eventBuilder->SetTriggerWindow( ECbmModuleId::kRich, -150,  20 );
   eventBuilder->SetTriggerWindow( ECbmModuleId::kPsd,   -50,  10 );
 //  eventBuilder->SetT0PulserTotLimits(   185, 191 );
-  eventBuilder->SetTriggerMinNumberT0(1);
-  eventBuilder->SetTriggerMinNumberSts(0);
-  eventBuilder->SetTriggerMinNumberMuch(0);
-  eventBuilder->SetTriggerMinNumberTrd(0);
-  eventBuilder->SetTriggerMinNumberTof(10);
-  eventBuilder->SetTriggerMinNumberRich(0);
-  eventBuilder->SetTriggerMinNumberPsd(0);
+  eventBuilder->SetTriggerMinNumber( ECbmModuleId::kT0,    1 );
+  eventBuilder->SetTriggerMinNumber( ECbmModuleId::kSts,   0 );
+  eventBuilder->SetTriggerMinNumber( ECbmModuleId::kMuch,  0 );
+  eventBuilder->SetTriggerMinNumber( ECbmModuleId::kTrd,   0 );
+  eventBuilder->SetTriggerMinNumber( ECbmModuleId::kTof,  10 );
+  eventBuilder->SetTriggerMinNumber( ECbmModuleId::kRich,  0 );
+  eventBuilder->SetTriggerMinNumber( ECbmModuleId::kPsd,   0 );
   if( 0 < uRunId )
     eventBuilder->SetOutFilename( Form( "%sHistosEvtWin_%03u.root", outDir.Data(), uRunId ) );
 

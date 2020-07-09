@@ -172,40 +172,15 @@ void CbmMcbm2019TimeWinEventBuilderTask::RemoveDetector( ECbmModuleId selDet )
       fpAlgo->RemoveDetector( selDet );
 }
 
-void CbmMcbm2019TimeWinEventBuilderTask::SetTriggerMinNumberT0(   UInt_t uVal )
+void CbmMcbm2019TimeWinEventBuilderTask::SetTriggerMinNumber( ECbmModuleId selDet, UInt_t uVal )
 {
    if( nullptr != fpAlgo  )
-      fpAlgo->SetTriggerMinNumberT0( uVal );
+      fpAlgo->SetTriggerMinNumber( selDet, uVal );
 }
-void CbmMcbm2019TimeWinEventBuilderTask::SetTriggerMinNumberSts(  UInt_t uVal )
+void CbmMcbm2019TimeWinEventBuilderTask::SetTriggerMaxNumber( ECbmModuleId selDet, Int_t iVal )
 {
    if( nullptr != fpAlgo  )
-      fpAlgo->SetTriggerMinNumberSts( uVal );
-}
-void CbmMcbm2019TimeWinEventBuilderTask::SetTriggerMinNumberMuch( UInt_t uVal )
-{
-   if( nullptr != fpAlgo  )
-      fpAlgo->SetTriggerMinNumberMuch( uVal );
-}
-void CbmMcbm2019TimeWinEventBuilderTask::SetTriggerMinNumberTrd(  UInt_t uVal )
-{
-   if( nullptr != fpAlgo  )
-      fpAlgo->SetTriggerMinNumberTrd( uVal );
-}
-void CbmMcbm2019TimeWinEventBuilderTask::SetTriggerMinNumberTof(  UInt_t uVal )
-{
-   if( nullptr != fpAlgo  )
-      fpAlgo->SetTriggerMinNumberTof( uVal );
-}
-void CbmMcbm2019TimeWinEventBuilderTask::SetTriggerMinNumberRich( UInt_t uVal )
-{
-   if( nullptr != fpAlgo  )
-      fpAlgo->SetTriggerMinNumberRich( uVal );
-}
-void CbmMcbm2019TimeWinEventBuilderTask::SetTriggerMinNumberPsd(  UInt_t uVal )
-{
-   if( nullptr != fpAlgo  )
-      fpAlgo->SetTriggerMinNumberPsd( uVal );
+      fpAlgo->SetTriggerMaxNumber( selDet, iVal );
 }
 
 void CbmMcbm2019TimeWinEventBuilderTask::SetTriggerWindow( ECbmModuleId det, Double_t dWinBeg, Double_t dWinEnd )

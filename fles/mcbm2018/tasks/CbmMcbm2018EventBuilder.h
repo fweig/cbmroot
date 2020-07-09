@@ -87,13 +87,35 @@ class CbmMcbm2018EventBuilder : public FairTask
     void SetFixedTimeWindow(Double_t val) {fFixedTimeWindow = val;}
     void SetMaximumTimeGap(Double_t val) {fMaximumTimeGap = val;}
 
+    /** Minimum number of T0 digis needed to generate a trigger, 0 means don't use T0 for trigger generation **/
     void SetTriggerMinNumberT0(Int_t val)   {fTriggerMinT0Digis = val;}
+    /** Minimum number of Sts digis needed to generate a trigger, 0 means don't use Sts for trigger generation **/
     void SetTriggerMinNumberSts(Int_t val)  {fTriggerMinStsDigis = val;}
+    /** Minimum number of Much digis needed to generate a trigger, 0 means don't use Much for trigger generation **/
     void SetTriggerMinNumberMuch(Int_t val) {fTriggerMinMuchDigis = val;}
+    /** Minimum number of Trd digis needed to generate a trigger, 0 means don't use Trd for trigger generation **/
     void SetTriggerMinNumberTrd(Int_t val)  {fTriggerMinTrdDigis = val;}
+    /** Minimum number of Tof digis needed to generate a trigger, 0 means don't use Tof for trigger generation **/
     void SetTriggerMinNumberTof(Int_t val)  {fTriggerMinTofDigis = val;}
+    /** Minimum number of Rich digis needed to generate a trigger, 0 means don't use Rich for trigger generation **/
     void SetTriggerMinNumberRich(Int_t val) {fTriggerMinRichDigis = val;}
+    /** Minimum number of Psd digis needed to generate a trigger, 0 means don't use Psd for trigger generation **/
     void SetTriggerMinNumberPsd(Int_t val)  {fTriggerMinPsdDigis = val;}
+
+    /** Maximum number of T0 digis needed to generate a trigger, -1 means no cut, 0 means anti-coinc trigger **/
+    void SetTriggerMaxNumberT0(Int_t val)   {fTriggerMaxT0Digis = val;}
+    /** Maximum number of Sts digis needed to generate a trigger, -1 means no cut, 0 means anti-coinc trigger **/
+    void SetTriggerMaxNumberSts(Int_t val)  {fTriggerMaxStsDigis = val;}
+    /** Maximum number of Much digis needed to generate a trigger, -1 means no cut, 0 means anti-coinc trigger **/
+    void SetTriggerMaxNumberMuch(Int_t val) {fTriggerMaxMuchDigis = val;}
+    /** Maximum number of Trd digis needed to generate a trigger, -1 means no cut, 0 means anti-coinc trigger **/
+    void SetTriggerMaxNumberTrd(Int_t val)  {fTriggerMaxTrdDigis = val;}
+    /** Maximum number of Tof digis needed to generate a trigger, -1 means no cut, 0 means anti-coinc trigger **/
+    void SetTriggerMaxNumberTof(Int_t val)  {fTriggerMaxTofDigis = val;}
+    /** Maximum number of Rich digis needed to generate a trigger, -1 means no cut, 0 means anti-coinc trigger **/
+    void SetTriggerMaxNumberRich(Int_t val) {fTriggerMaxRichDigis = val;}
+    /** Maximum number of Psd digis needed to generate a trigger, -1 means no cut, 0 means anti-coinc trigger **/
+    void SetTriggerMaxNumberPsd(Int_t val)  {fTriggerMaxPsdDigis = val;}
 
     void SetUseBaseMuchDigi( Bool_t bFlag = kTRUE ) { fbUseBaseMuchDigi = bFlag; }
   private:
@@ -168,6 +190,20 @@ class CbmMcbm2018EventBuilder : public FairTask
     Int_t fTriggerMinRichDigis{0};
     /** Minimum number of Psd digis needed to generate a trigger, 0 means don't use Psd for trigger generation **/
     Int_t fTriggerMinPsdDigis{0};
+    /** Maximum number of T0 digis needed to generate a trigger, -1 means no cut, 0 means anti-coinc trigger **/
+    Int_t fTriggerMaxT0Digis   = -1;
+    /** Maximum number of Sts digis needed to generate a trigger, -1 means no cut, 0 means anti-coinc trigger **/
+    Int_t fTriggerMaxStsDigis  = -1;
+    /** Maximum number of Much digis needed to generate a trigger, -1 means no cut, 0 means anti-coinc trigger **/
+    Int_t fTriggerMaxMuchDigis = -1;
+    /** Maximum number of Trd digis needed to generate a trigger, -1 means no cut, 0 means anti-coinc trigger **/
+    Int_t fTriggerMaxTrdDigis  = -1;
+    /** Maximum number of Tof digis needed to generate a trigger, -1 means no cut, 0 means anti-coinc trigger **/
+    Int_t fTriggerMaxTofDigis  = -1;
+    /** Maximum number of Rich digis needed to generate a trigger, -1 means no cut, 0 means anti-coinc trigger **/
+    Int_t fTriggerMaxRichDigis = -1;
+    /** Maximum number of Psd digis needed to generate a trigger, -1 means no cut, 0 means anti-coinc trigger **/
+    Int_t fTriggerMaxPsdDigis  = -1;
 
     /** Name of the histogram output file **/
     TString fOutFileName{"HistosEventBuilder.root"};

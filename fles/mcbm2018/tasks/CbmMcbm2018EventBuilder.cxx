@@ -344,6 +344,9 @@ void CbmMcbm2018EventBuilder::BuildEvents()
       } // default:
     } //? system
 
+    if( fFillHistos )
+      fDiffTime->Fill( time - fPrevTime );
+
     fPrevTime = time;
   }
   fCurrentEvent->SetEndTime(fPrevTime);
@@ -363,26 +366,48 @@ Bool_t CbmMcbm2018EventBuilder::IsDigiInEvent(Double_t time)
 Bool_t CbmMcbm2018EventBuilder::HasTrigger(CbmEvent* event)
 {
   Bool_t hasTrigger{kTRUE};
-  if ( (fT0DigiVec || fT0DigiArr) && fTriggerMinT0Digis > 0) {
+  if ( hasTrigger && (fT0DigiVec || fT0DigiArr) && fTriggerMinT0Digis > 0) {
     hasTrigger = hasTrigger && (event->GetNofData(ECbmDataType::kT0Digi) >= fTriggerMinT0Digis);
   }
-  if (fDigiMan->IsPresent(ECbmModuleId::kSts) && fTriggerMinStsDigis > 0) {
+  if (hasTrigger && fDigiMan->IsPresent(ECbmModuleId::kSts) && fTriggerMinStsDigis > 0) {
     hasTrigger = hasTrigger && (event->GetNofData(ECbmDataType::kStsDigi) >= fTriggerMinStsDigis);
   }
-  if (fDigiMan->IsPresent(ECbmModuleId::kMuch) && fTriggerMinMuchDigis > 0) {
+  if (hasTrigger && fDigiMan->IsPresent(ECbmModuleId::kMuch) && fTriggerMinMuchDigis > 0) {
     hasTrigger = hasTrigger && (event->GetNofData(ECbmDataType::kMuchDigi) >= fTriggerMinMuchDigis);
   }
-  if (fDigiMan->IsPresent(ECbmModuleId::kTrd) && fTriggerMinTrdDigis > 0) {
+  if (hasTrigger && fDigiMan->IsPresent(ECbmModuleId::kTrd) && fTriggerMinTrdDigis > 0) {
     hasTrigger = hasTrigger && (event->GetNofData(ECbmDataType::kTrdDigi) >= fTriggerMinTrdDigis);
   }
-  if (fDigiMan->IsPresent(ECbmModuleId::kTof) && fTriggerMinTofDigis > 0) {
+  if (hasTrigger && fDigiMan->IsPresent(ECbmModuleId::kTof) && fTriggerMinTofDigis > 0) {
     hasTrigger = hasTrigger && (event->GetNofData(ECbmDataType::kTofDigi) >= fTriggerMinTofDigis);
   }
-  if (fDigiMan->IsPresent(ECbmModuleId::kRich) && fTriggerMinRichDigis > 0) {
+  if (hasTrigger && fDigiMan->IsPresent(ECbmModuleId::kRich) && fTriggerMinRichDigis > 0) {
     hasTrigger = hasTrigger && (event->GetNofData(ECbmDataType::kRichDigi) >= fTriggerMinRichDigis);
   }
-  if (fDigiMan->IsPresent(ECbmModuleId::kPsd) && fTriggerMinPsdDigis > 0) {
+  if (hasTrigger && fDigiMan->IsPresent(ECbmModuleId::kPsd) && fTriggerMinPsdDigis > 0) {
     hasTrigger = hasTrigger && (event->GetNofData(ECbmDataType::kPsdDigi) >= fTriggerMinPsdDigis);
+  }
+
+  if (hasTrigger && (fT0DigiVec || fT0DigiArr) && fTriggerMaxT0Digis >= 0) {
+    hasTrigger = hasTrigger && (event->GetNofData(ECbmDataType::kT0Digi) < fTriggerMaxT0Digis);
+  }
+  if (hasTrigger && fDigiMan->IsPresent(ECbmModuleId::kSts) && fTriggerMaxStsDigis >= 0) {
+    hasTrigger = hasTrigger && (event->GetNofData(ECbmDataType::kStsDigi) < fTriggerMaxStsDigis);
+  }
+  if (hasTrigger && fDigiMan->IsPresent(ECbmModuleId::kMuch) && fTriggerMaxMuchDigis >= 0) {
+    hasTrigger = hasTrigger && (event->GetNofData(ECbmDataType::kMuchDigi) < fTriggerMaxMuchDigis);
+  }
+  if (hasTrigger && fDigiMan->IsPresent(ECbmModuleId::kTrd) && fTriggerMaxTrdDigis >= 0) {
+    hasTrigger = hasTrigger && (event->GetNofData(ECbmDataType::kTrdDigi) < fTriggerMaxTrdDigis);
+  }
+  if (hasTrigger && fDigiMan->IsPresent(ECbmModuleId::kTof) && fTriggerMaxTofDigis >= 0) {
+    hasTrigger = hasTrigger && (event->GetNofData(ECbmDataType::kTofDigi) < fTriggerMaxTofDigis);
+  }
+  if (hasTrigger && fDigiMan->IsPresent(ECbmModuleId::kRich) && fTriggerMaxRichDigis >= 0) {
+    hasTrigger = hasTrigger && (event->GetNofData(ECbmDataType::kRichDigi) < fTriggerMaxRichDigis);
+  }
+  if (hasTrigger && fDigiMan->IsPresent(ECbmModuleId::kPsd) && fTriggerMaxPsdDigis >= 0) {
+    hasTrigger = hasTrigger && (event->GetNofData(ECbmDataType::kPsdDigi) < fTriggerMaxPsdDigis);
   }
 
   return hasTrigger;

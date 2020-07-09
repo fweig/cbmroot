@@ -816,86 +816,145 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::AddDigiToEvent( ECbmModuleId _system, I
 
 Bool_t CbmMcbm2019TimeWinEventBuilderAlgo::HasTrigger(CbmEvent* event)
 {
-  Bool_t hasTrigger{ kTRUE };
-  if ( (fT0DigiVec ) && fuTriggerMinT0Digis > 0) {
-    Int_t iNbDigis = event->GetNofData( ECbmDataType::kT0Digi );
-    hasTrigger = hasTrigger && ( -1 != iNbDigis ) &&
-                 ( static_cast< UInt_t >( iNbDigis ) >= fuTriggerMinT0Digis );
-    if( !hasTrigger )
+  /// Check multiplicity trigger conditions
+  if( CheckTriggerConditions( event, ECbmModuleId::kT0,   ECbmDataType::kT0Digi   ) &&
+      CheckTriggerConditions( event, ECbmModuleId::kSts,  ECbmDataType::kStsDigi  ) &&
+      CheckTriggerConditions( event, ECbmModuleId::kMuch, ECbmDataType::kMuchDigi ) &&
+      CheckTriggerConditions( event, ECbmModuleId::kTrd,  ECbmDataType::kTrdDigi  ) &&
+      CheckTriggerConditions( event, ECbmModuleId::kTof,  ECbmDataType::kTofDigi  ) &&
+      CheckTriggerConditions( event, ECbmModuleId::kRich, ECbmDataType::kRichDigi ) &&
+      CheckTriggerConditions( event, ECbmModuleId::kPsd,  ECbmDataType::kPsdDigi  )
+    )
+  {
+    return kTRUE;
+  } // if all trigger conditions fullfilled
+    else
     {
-       LOG( debug2 ) << "Event does not have enough T0 digis: " << iNbDigis
-                    << " vs " << fuTriggerMinT0Digis;
-       return hasTrigger;
-    } // if( !hasTrigger )
-  }
-  if (fDigiMan->IsPresent(ECbmModuleId::kSts) && fuTriggerMinStsDigis > 0) {
-    Int_t iNbDigis = event->GetNofData( ECbmDataType::kStsDigi );
-    hasTrigger = hasTrigger && ( -1 != iNbDigis ) &&
-                 ( static_cast< UInt_t >( iNbDigis ) >= fuTriggerMinStsDigis );
-    if( !hasTrigger )
-    {
-       LOG( debug2 ) << "Event does not have enough STS digis: " << iNbDigis
-                    << " vs " << fuTriggerMinStsDigis;
-       return hasTrigger;
-    } // if( !hasTrigger )
-  }
-  if (fDigiMan->IsPresent(ECbmModuleId::kMuch) && fuTriggerMinMuchDigis > 0) {
-    Int_t iNbDigis = event->GetNofData( ECbmDataType::kMuchDigi );
-    hasTrigger = hasTrigger && ( -1 != iNbDigis ) &&
-                 ( static_cast< UInt_t >( iNbDigis ) >= fuTriggerMinMuchDigis );
-    if( !hasTrigger )
-    {
-       LOG( debug2 ) << "Event does not have enough MUCH digis: " << iNbDigis
-                    << " vs " << fuTriggerMinMuchDigis;
-       return hasTrigger;
-    } // if( !hasTrigger )
-  }
-  if (fDigiMan->IsPresent(ECbmModuleId::kTrd) && fuTriggerMinTrdDigis > 0) {
-    Int_t iNbDigis = event->GetNofData( ECbmDataType::kTrdDigi );
-    hasTrigger = hasTrigger && ( -1 != iNbDigis ) &&
-                 ( static_cast< UInt_t >( iNbDigis ) >= fuTriggerMinTrdDigis );
-    if( !hasTrigger )
-    {
-       LOG( debug2 ) << "Event does not have enough TRD digis: " << iNbDigis
-                    << " vs " << fuTriggerMinTrdDigis;
-       return hasTrigger;
-    } // if( !hasTrigger )
-  }
-  if (fDigiMan->IsPresent(ECbmModuleId::kTof) && fuTriggerMinTofDigis > 0) {
-    Int_t iNbDigis = event->GetNofData( ECbmDataType::kTofDigi );
-    hasTrigger = hasTrigger && ( -1 != iNbDigis ) &&
-                 ( static_cast< UInt_t >( iNbDigis ) >= fuTriggerMinTofDigis);
-    if( !hasTrigger )
-    {
-       LOG( debug2 ) << "Event does not have enough TOF digis: " << iNbDigis
-                    << " vs " << fuTriggerMinTofDigis;
-       return hasTrigger;
-    } // if( !hasTrigger )
-  }
-  if (fDigiMan->IsPresent(ECbmModuleId::kRich) && fuTriggerMinRichDigis > 0) {
-    Int_t iNbDigis = event->GetNofData( ECbmDataType::kRichDigi );
-    hasTrigger = hasTrigger && ( -1 != iNbDigis ) &&
-                 ( static_cast< UInt_t >( iNbDigis ) >= fuTriggerMinRichDigis );
-    if( !hasTrigger )
-    {
-       LOG( debug2 ) << "Event does not have enough RICH digis: " << iNbDigis
-                    << " vs " << fuTriggerMinRichDigis;
-       return hasTrigger;
-    } // if( !hasTrigger )
-  }
-  if (fDigiMan->IsPresent(ECbmModuleId::kPsd) && fuTriggerMinPsdDigis > 0) {
-    Int_t iNbDigis = event->GetNofData( ECbmDataType::kPsdDigi );
-    hasTrigger = hasTrigger && ( -1 != iNbDigis ) &&
-                 ( static_cast< UInt_t >( iNbDigis ) >= fuTriggerMinPsdDigis );
-    if( !hasTrigger )
-    {
-       LOG( debug2 ) << "Event does not have enough PSD digis: " << iNbDigis
-                    << " vs " << fuTriggerMinPsdDigis;
-       return hasTrigger;
-    } // if( !hasTrigger )
-  }
+      return kFALSE;
+    } // if at least one trigger condition failed
+}
 
-  return hasTrigger;
+Bool_t CbmMcbm2019TimeWinEventBuilderAlgo::CheckTriggerConditions( CbmEvent* event, ECbmModuleId det, ECbmDataType dataType )
+{
+  UInt_t uTrigMin =  0;
+  Int_t  iTrigMax = -1;
+  std::string sDet = "";
+  switch( det )
+  {
+    case ECbmModuleId::kSts:
+    {
+      uTrigMin = fuTriggerMinStsDigis;
+      iTrigMax = fiTriggerMaxStsDigis;
+      sDet = "STS";
+      break;
+    }
+    case ECbmModuleId::kRich:
+    {
+      uTrigMin = fuTriggerMinRichDigis;
+      iTrigMax = fiTriggerMaxRichDigis;
+      sDet = "RICH";
+      break;
+    }
+    case ECbmModuleId::kMuch:
+    {
+      uTrigMin = fuTriggerMinMuchDigis;
+      iTrigMax = fiTriggerMaxMuchDigis;
+      sDet = "MUCH";
+      break;
+    }
+    case ECbmModuleId::kTrd:
+    {
+      uTrigMin = fuTriggerMinTrdDigis;
+      iTrigMax = fiTriggerMaxTrdDigis;
+      sDet = "TRD";
+      break;
+    }
+    case ECbmModuleId::kTof:
+    {
+      uTrigMin = fuTriggerMinTofDigis;
+      iTrigMax = fiTriggerMaxTofDigis;
+      sDet = "TOF";
+      break;
+    }
+    case ECbmModuleId::kPsd:
+    {
+      uTrigMin = fuTriggerMinPsdDigis;
+      iTrigMax = fiTriggerMaxPsdDigis;
+      sDet = "PSD";
+      break;
+    }
+    case ECbmModuleId::kT0:
+    {
+      uTrigMin = fuTriggerMinT0Digis;
+      iTrigMax = fiTriggerMaxT0Digis;
+      sDet = "T0";
+      break;
+    }
+    default:
+    {
+      LOG( fatal ) << "CbmMcbm2019TimeWinEventBuilderAlgo::CheckTriggerConditions => "
+                   << "Unsupported or unknow detector enum";
+      break;
+    }
+  } // switch( det )
+
+  /// Check if both Trigger conditions disabled for this detector
+  if( 0 == uTrigMin && iTrigMax < 0 )
+  {
+    return kTRUE;
+  } // if( 0 == uTrigMin && iTrigMax < 0 )
+
+  /// Check if detector present
+  if( ECbmModuleId::kT0 == det )
+  {
+    /// FIXME: special case to be removed once T0 supported by DigiManager
+    if( !(fT0DigiVec) )
+    {
+       LOG( warning ) << "Event does not have digis storage for T0"
+                      << " while the following trigger minimum is defined: "
+                      << uTrigMin;
+      return kFALSE;
+    } // if( !(fT0DigiVec) )
+  } // if( ECbmDataType::kT0Digi == det )
+    else
+    {
+      if( !fDigiMan->IsPresent( det ) )
+      {
+         LOG( warning ) << "Event does not have digis storage for " << sDet
+                        << " while the following trigger minimum is defined: "
+                        << uTrigMin;
+        return kFALSE;
+      } // if( !fDigiMan->IsPresent( det ) )
+    } // else of if( ECbmDataType::kT0Digi == det )
+
+  /// Check Minimal trigger acceptance by minimal number
+  Int_t iNbDigis = event->GetNofData( dataType );
+  if( ( -1 != iNbDigis ) &&
+      ( uTrigMin <= static_cast< UInt_t >( iNbDigis )  )
+    )
+  {
+    return kTRUE;
+  } // if( ( -1 != iNbDigis ) && ( uTrigMin <= static_cast< UInt_t >( iNbDigis )  )
+    else
+    {
+       LOG( debug2 ) << "Event does not have enough digis: " << iNbDigis
+                    << " vs " << uTrigMin
+                    << " for " << sDet;
+       return kFALSE;
+    } // else of if( ( -1 != iNbDigis ) && ( uTrigMin <= static_cast< UInt_t >( iNbDigis )  )
+
+  /// Check trigger rejection by maximal number
+  if( iNbDigis < iTrigMax )
+  {
+    return kTRUE;
+  } // if( iNbDigis < iTrigMax )
+    else
+    {
+       LOG( debug2 ) << "Event Has too many digis: " << iNbDigis
+                    << " vs " << iTrigMax
+                    << " for " << sDet;
+       return kFALSE;
+    } // else of if( iNbDigis < iTrigMax )
 }
 
 //----------------------------------------------------------------------
@@ -1001,6 +1060,31 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::ResetHistograms( Bool_t /*bResetTime*/ 
 */
 }
 //----------------------------------------------------------------------
+void CbmMcbm2019TimeWinEventBuilderAlgo::SetReferenceDetector( ECbmModuleId refDet )
+{
+  for( std::vector< ECbmModuleId >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
+  {
+    if( *det  == refDet )
+    {
+      LOG( warning ) << "CbmMcbm2019TimeWinEventBuilderAlgo::SetReferenceDetector => Doing nothing, reference detector already in selection detector list!"
+                     << refDet;
+      LOG( warning ) << "                                                         => You may want to use RemoveDetector before this command to remove it?";
+      return;
+    } // if( *det  == selDet )
+  } // for( std::vector< ECbmModuleId >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
+
+  if( fRefDet == refDet )
+  {
+    LOG( warning ) << "CbmMcbm2019TimeWinEventBuilderAlgo::SetReferenceDetector => Doing nothing, identical reference detector already in use";
+  } // if( fRefDet == refDet )
+    else
+    {
+      LOG( info )    << "CbmMcbm2019TimeWinEventBuilderAlgo::SetReferenceDetector => Replacing " << fRefDet << " with " << refDet << " as reference detector";
+      LOG( warning ) << "                                                         => You may want to use AddDetector after this command to add in selection " << fRefDet;
+      LOG( warning ) << "                                                         => Please also remember to update the selection windows!";
+      fRefDet = refDet;
+    } // else of if( fRefDet == refDet )
+}
 void CbmMcbm2019TimeWinEventBuilderAlgo::AddDetector( ECbmModuleId selDet )
 {
   /// FIXME: This is not true in case TOF is used as reference !!!!!
@@ -1089,6 +1173,64 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::SetTriggerMinNumber( ECbmModuleId selDe
   } // switch( det )
 
   LOG( debug ) << "Set Trigger min limit for " << sDet << " to " << uVal;
+}
+void CbmMcbm2019TimeWinEventBuilderAlgo::SetTriggerMaxNumber( ECbmModuleId selDet, Int_t iVal )
+{
+  /// Store in corresponding members
+  std::string sDet = "";
+  switch( selDet )
+  {
+    case ECbmModuleId::kSts:
+    {
+      fiTriggerMaxStsDigis  = iVal;
+      sDet = "STS";
+      break;
+    }
+    case ECbmModuleId::kRich:
+    {
+      fiTriggerMaxRichDigis = iVal;
+      sDet = "RICH";
+      break;
+    }
+    case ECbmModuleId::kMuch:
+    {
+      fiTriggerMaxMuchDigis  = iVal;
+      sDet = "MUCH";
+      break;
+    }
+    case ECbmModuleId::kTrd:
+    {
+      fiTriggerMaxTrdDigis  = iVal;
+      sDet = "TRD";
+      break;
+    }
+    case ECbmModuleId::kTof:
+    {
+      fiTriggerMaxTofDigis = iVal;
+      sDet = "TOF";
+      break;
+    }
+    case ECbmModuleId::kPsd:
+    {
+      fiTriggerMaxPsdDigis  = iVal;
+      sDet = "PSD";
+      break;
+    }
+    case ECbmModuleId::kT0:
+    {
+      fiTriggerMaxT0Digis   = iVal;
+      sDet = "T0";
+      break;
+    }
+    default:
+    {
+      LOG( fatal ) << "CbmMcbm2019TimeWinEventBuilderAlgo::SetTriggerMaxNumber => "
+                   << "Unsupported or unknow detector enum";
+      break;
+    }
+  } // switch( det )
+
+  LOG( debug ) << "Set Trigger nax limit for " << sDet << " to " << iVal;
 }
 void CbmMcbm2019TimeWinEventBuilderAlgo::SetTriggerWindow( ECbmModuleId det, Double_t dWinBeg, Double_t dWinEnd )
 {
