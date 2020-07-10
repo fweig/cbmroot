@@ -1,5 +1,6 @@
 void mcbm_check_overlaps(const char* dataset = "test")
 {
+  // 2020-07-10 - DE - simplify overlap name checking
   // 2019-12-20 - FU - adapt expected overlaps to new targetbox name
   // 2019-08-13 - FU - Filter "expected overlaps"
   // 2017-11-06 - DE - adapt to mCBM
@@ -39,31 +40,9 @@ void mcbm_check_overlaps(const char* dataset = "test")
       std::cout << "Expected Overlap between gas_box/counter_0 and gas_box/counter_1" << endl;
       std::cout << ov->GetTitle() << std::endl << std::endl;
     }
-    else if (OverlapName.Contains("cave/pipe_v19b_0/vacu20_1 overlapping cave/tof_v19a_mcbm_0/tof_v19a_mcbmStand_1/module_5_0") ) {
-        std::cout << "Expected Overlap between pipevacuum and T0 counter" << endl;
-        std::cout << ov->GetTitle() << std::endl << std::endl;
-    }
-    else if (OverlapName.Contains("cave/pipe_v19b_0/vacu20_1 overlapping cave/tof_v19d_mcbm_0/tof_v19d_mcbmStand_1/module_5_0") ) {
-        std::cout << "Expected Overlap between pipevacuum and T0 counter" << endl;
-        std::cout << ov->GetTitle() << std::endl << std::endl;
-    }
-    else if (OverlapName.Contains("cave/pipe_v19b_0/vacu20_1 overlapping cave/tof_v19e_mcbm_0/tof_v19e_mcbmStand_1/module_5_0") ) {
-        std::cout << "Expected Overlap between pipevacuum and T0 counter" << endl;
-        std::cout << ov->GetTitle() << std::endl << std::endl;
-    }
-    else if (OverlapName.Contains("cave/pipe_v19b_0/vacu20_1 overlapping cave/tof_v20b_mcbm_0/tof_v20b_mcbmStand_1/module_5_0") ) {
-        std::cout << "Expected Overlap between pipevacuum and T0 counter" << endl;
-        std::cout << ov->GetTitle() << std::endl << std::endl;
-    }
-    else if (OverlapName.Contains("cave/pipe_v19f_0/vacu20_1 overlapping cave/tof_v20c_mcbm_0/tof_v20c_mcbmStand_1/module_5_0") ) {
-        std::cout << "Expected Overlap between pipevacuum and T0 counter" << endl;
-        std::cout << ov->GetTitle() << std::endl << std::endl;
-    }
-    else if (OverlapName.Contains("cave/targetbox_v19d_0/vacu20_1 overlapping cave/tof_v19b_mcbm_0/tof_v19b_mcbmStand_1/module_5_0") ) {
-        std::cout << "Expected Overlap between pipevacuum and T0 counter" << endl;
-        std::cout << ov->GetTitle() << std::endl << std::endl;
-    }
-    else if (OverlapName.Contains("cave/targetbox_v19d_0/vacu20_1 overlapping cave/tof_v19e_mcbm_0/tof_v19e_mcbmStand_1/module_5_0") ) {
+    // overlap of T0 detector with pipe vacuum geometry
+    else if (OverlapName.Contains("vacu20_1 overlapping") )
+      if (OverlapName.Contains("module_5_0") ) {
         std::cout << "Expected Overlap between pipevacuum and T0 counter" << endl;
         std::cout << ov->GetTitle() << std::endl << std::endl;
     }
