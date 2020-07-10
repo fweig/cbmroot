@@ -12,10 +12,8 @@
 
 #include "Timeslice.hpp"
 
-class CbmMcbmUnpack : public TObject
-{
- public:
-
+class CbmMcbmUnpack : public TObject {
+public:
   CbmMcbmUnpack();
   virtual ~CbmMcbmUnpack();
 
@@ -29,12 +27,13 @@ class CbmMcbmUnpack : public TObject
 
   virtual void SetParContainers() = 0;
 
-  virtual Bool_t InitContainers() {return kTRUE;}
+  virtual Bool_t InitContainers() { return kTRUE; }
 
-  virtual Bool_t ReInitContainers() {return kTRUE;}
+  virtual Bool_t ReInitContainers() { return kTRUE; }
 
-  virtual void AddMsComponentToList( size_t component, UShort_t usDetectorId ) = 0;
-  virtual void SetNbMsInTs( size_t uCoreMsNb, size_t uOverlapMsNb ) = 0;
+  virtual void AddMsComponentToList(size_t component,
+                                    UShort_t usDetectorId)        = 0;
+  virtual void SetNbMsInTs(size_t uCoreMsNb, size_t uOverlapMsNb) = 0;
 
   ClassDef(CbmMcbmUnpack, 0)
 };

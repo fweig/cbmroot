@@ -6,9 +6,9 @@
 #define CBMBUILDEVENTSIDEALNEW_H 1
 
 
-#include <vector>
-#include <FairTask.h>
 #include "CbmDefs.h"
+#include <FairTask.h>
+#include <vector>
 
 class TClonesArray;
 class CbmDigiManager;
@@ -28,35 +28,32 @@ class CbmStsDigi;
  **
  ** Using CbmEventStore (storable events).
  **/
-class CbmBuildEventsIdealNew: public FairTask {
+class CbmBuildEventsIdealNew : public FairTask {
 
-	public:
+public:
+  /** Constructor **/
+  CbmBuildEventsIdealNew();
 
-		/** Constructor **/
-		CbmBuildEventsIdealNew();
+  /** Destructor **/
+  virtual ~CbmBuildEventsIdealNew();
 
-		/** Destructor **/
-		virtual ~CbmBuildEventsIdealNew();
-
-		/** Task execution **/
-		virtual void Exec(Option_t* opt);
+  /** Task execution **/
+  virtual void Exec(Option_t* opt);
 
 
-	private:
+private:
+  CbmDigiManager* fDigiMan = nullptr;  //!
+  std::vector<ECbmModuleId> fSystems {};
+  TClonesArray* fEvents = nullptr;  //! Event array
+  Int_t fNofEntries     = 0;        //  Number of processed time slices
 
-		CbmDigiManager* fDigiMan = nullptr;  //!
-		std::vector<ECbmModuleId> fSystems { };
-		TClonesArray* fEvents = nullptr;     //! Event array
-		Int_t fNofEntries = 0;               //  Number of processed time slices
+  /** Task initialisation **/
+  virtual InitStatus Init();
 
-		/** Task initialisation **/
-		virtual InitStatus Init();
+  CbmBuildEventsIdealNew(const CbmBuildEventsIdealNew&) = delete;
+  CbmBuildEventsIdealNew& operator=(const CbmBuildEventsIdealNew&) = delete;
 
-		CbmBuildEventsIdealNew(const CbmBuildEventsIdealNew&) = delete;
-		CbmBuildEventsIdealNew& operator=(const CbmBuildEventsIdealNew&) = delete;
-
-		ClassDef(CbmBuildEventsIdealNew, 2);
-
+  ClassDef(CbmBuildEventsIdealNew, 2);
 };
 
 #endif /* CBMBUILDEVENTSIDEALNEW_H */

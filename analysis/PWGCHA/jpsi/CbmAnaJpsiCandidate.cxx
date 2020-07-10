@@ -8,5 +8,3 @@
 #include "CbmAnaJpsiCandidate.h"
 
 ClassImp(CbmAnaJpsiCandidate);
-
-

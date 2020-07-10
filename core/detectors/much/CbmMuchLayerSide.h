@@ -14,16 +14,14 @@
 
 #include <Rtypes.h>      // for THashConsistencyHolder, kYellow, ClassDef
 #include <RtypesCore.h>  // for Int_t, Double_t, Bool_t, Color_t, Double32_t
-#include <TObject.h>     // for TObject
 #include <TObjArray.h>   // for TObjArray
+#include <TObject.h>     // for TObject
 
 class CbmMuchModule;
 
-class CbmMuchLayerSide : public TObject
-{
+class CbmMuchLayerSide : public TObject {
 
- public:
-
+public:
   /** Default constructor **/
   CbmMuchLayerSide();
 
@@ -45,26 +43,30 @@ class CbmMuchLayerSide : public TObject
   virtual ~CbmMuchLayerSide();
 
   /** Accessors **/
-  Int_t      GetDetectorId()  const { return fDetectorId; }
-  Int_t      GetNModules()    const { return fModules.GetEntriesFast(); }
-  TObjArray* GetModules()            { return &fModules; }
-  Double_t   GetZ()                   { return fZ;}
-  void      SetZ(Double_t z)         { fZ = z; }
+  Int_t GetDetectorId() const { return fDetectorId; }
+  Int_t GetNModules() const { return fModules.GetEntriesFast(); }
+  TObjArray* GetModules() { return &fModules; }
+  Double_t GetZ() { return fZ; }
+  void SetZ(Double_t z) { fZ = z; }
 
-  CbmMuchModule* GetModule(Int_t iModule) const { return (CbmMuchModule*)fModules.At(iModule); }
+  CbmMuchModule* GetModule(Int_t iModule) const {
+    return (CbmMuchModule*) fModules.At(iModule);
+  }
 
   /** Adds given CbmMuchModuleGem to the internal list.
    *@param module  CbmMuchModule which should be added to the array. **/
   void AddModule(CbmMuchModule* module);
 
-  void DrawModules(Color_t color=kYellow,
-                   Bool_t modulesVisible=true, Bool_t sectorsVisible=true);
+  void DrawModules(Color_t color         = kYellow,
+                   Bool_t modulesVisible = true,
+                   Bool_t sectorsVisible = true);
 
- protected:
-  Int_t   fDetectorId;                      // Unique detector ID
-  Double32_t fZ;                            // z position of layer side center (midplane) [cm] in global cs
-  TObjArray  fModules;                      // Array of CbmMuchModuleGem objects
+protected:
+  Int_t fDetectorId;  // Unique detector ID
+  Double32_t
+    fZ;  // z position of layer side center (midplane) [cm] in global cs
+  TObjArray fModules;  // Array of CbmMuchModuleGem objects
 
-  ClassDef(CbmMuchLayerSide,1);
+  ClassDef(CbmMuchLayerSide, 1);
 };
 #endif

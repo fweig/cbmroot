@@ -9,9 +9,6 @@
 
 #include "NicaUnigenTrack.h"
 
-NicaUnigenTrack::NicaUnigenTrack(){
-}
+NicaUnigenTrack::NicaUnigenTrack() {}
 
-NicaUnigenTrack::~NicaUnigenTrack() {
-}
-
+NicaUnigenTrack::~NicaUnigenTrack() {}

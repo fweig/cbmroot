@@ -8,7 +8,7 @@
 #ifndef CBMMUCHCLUSTER_H
 #define CBMMUCHCLUSTER_H 1
 
-#include <Rtypes.h>      // for ClassDef
+#include <Rtypes.h>  // for ClassDef
 
 #include "CbmCluster.h"  // for CbmCluster
 
@@ -17,10 +17,8 @@
  * \author Evgeny Kryshen <e.kryshen@gsi.de>
  * \brief Data container for MUCH clusters.
  */
-class CbmMuchCluster : public CbmCluster
-{
+class CbmMuchCluster : public CbmCluster {
 public:
-
   /**
    * \brief Default constructor.
    */

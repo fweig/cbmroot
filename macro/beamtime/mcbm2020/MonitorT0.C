@@ -8,19 +8,21 @@
  ** Uses CbmMcbm2018Source as source task.
  */
 // In order to call later Finish, we make this global
-FairRunOnline *run = NULL;
+FairRunOnline* run = NULL;
 
-void MonitorT0( TString inFile = "", TString sHostname = "localhost",
-                Int_t iServerHttpPort = 8080, Int_t iServerRefreshRate = 100,
-                UInt_t uRunId = 0, UInt_t nrEvents=0)
-{
+void MonitorT0(TString inFile           = "",
+               TString sHostname        = "localhost",
+               Int_t iServerHttpPort    = 8080,
+               Int_t iServerRefreshRate = 100,
+               UInt_t uRunId            = 0,
+               UInt_t nrEvents          = 0) {
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
 
   // --- Specify number of events to be produced.
   // --- -1 means run until the end of the input file.
-  Int_t nEvents=-1;
+  Int_t nEvents = -1;
   // --- Specify output file name (this is just an example)
-  TString runId = TString::Format("%u", uRunId);
+  TString runId   = TString::Format("%u", uRunId);
   TString parFile = "data/moni_t0_params_" + runId + ".root";
 
   // --- Set log output levels
@@ -30,10 +32,10 @@ void MonitorT0( TString inFile = "", TString sHostname = "localhost",
   gLogger->SetLogVerbosityLevel("MEDIUM");
 
   // --- Define parameter files
-  TList *parFileList = new TList();
-  TString paramDir = srcDir + "/macro/beamtime/mcbm2020/";
+  TList* parFileList = new TList();
+  TString paramDir   = srcDir + "/macro/beamtime/mcbm2020/";
 
-  TString paramFileTof = paramDir + "mT0Par.par";
+  TString paramFileTof       = paramDir + "mT0Par.par";
   TObjString* parTofFileName = new TObjString(paramFileTof);
   parFileList->Add(parTofFileName);
 
@@ -46,34 +48,34 @@ void MonitorT0( TString inFile = "", TString sHostname = "localhost",
   // ========================================================================
   std::cout << std::endl;
   std::cout << ">>> MonitorT0: Initialising..." << std::endl;
-  CbmMcbm2018MonitorTaskT0  * monitor_t0  = new CbmMcbm2018MonitorTaskT0();
+  CbmMcbm2018MonitorTaskT0* monitor_t0 = new CbmMcbm2018MonitorTaskT0();
 
   monitor_t0->SetIgnoreOverlapMs();
-  monitor_t0->SetHistoryHistoSize( 1800 );
-  if( 0 < uRunId )
-    monitor_t0->SetHistoFilename( Form( "data/HistosMonitorT0_%03u.root", uRunId ) );
-  monitor_t0->SetPulserTotLimits( 180, 210 ); // for runs  >  86
+  monitor_t0->SetHistoryHistoSize(1800);
+  if (0 < uRunId)
+    monitor_t0->SetHistoFilename(
+      Form("data/HistosMonitorT0_%03u.root", uRunId));
+  monitor_t0->SetPulserTotLimits(180, 210);  // for runs  >  86
 
   // --- Source task
   CbmMcbm2018Source* source = new CbmMcbm2018Source();
 
-  if( "" != inFile )
-  {
+  if ("" != inFile) {
     source->SetFileName(inFile);
-  } // if( "" != inFile )
-      else
-      {
-         source->SetHostName( sHostname );
-      } // else of if( "" != inFile )
+  }  // if( "" != inFile )
+  else {
+    source->SetHostName(sHostname);
+  }  // else of if( "" != inFile )
 
   // Use kHodo since there is no entry for T0 in the enum yet
-  source->AddUnpacker(monitor_t0,  0x90, ECbmModuleId::kHodo  );//gDPB T0
+  source->AddUnpacker(monitor_t0, 0x90, ECbmModuleId::kHodo);  //gDPB T0
 
-  source->SetSubscriberHwm( 1000 );
+  source->SetSubscriberHwm(1000);
 
   // --- Run
   run = new FairRunOnline(source);
-  run->ActivateHttpServer( iServerRefreshRate, iServerHttpPort ); // refresh each 100 events
+  run->ActivateHttpServer(iServerRefreshRate,
+                          iServerHttpPort);  // refresh each 100 events
   /// To avoid the server sucking all Histos from gROOT when no output file is used
   /// ===> Need to explicitely add the canvases to the server in the task!
   run->GetHttpServer()->GetSniffer()->SetScanGlobalDir(kFALSE);
@@ -81,7 +83,7 @@ void MonitorT0( TString inFile = "", TString sHostname = "localhost",
 
 
   // -----   Runtime database   ---------------------------------------------
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
+  FairRuntimeDb* rtdb       = run->GetRuntimeDb();
   FairParAsciiFileIo* parIn = new FairParAsciiFileIo();
   parIn->open(parFileList, "in");
   rtdb->setFirstInput(parIn);
@@ -92,24 +94,25 @@ void MonitorT0( TString inFile = "", TString sHostname = "localhost",
   TStopwatch timer;
   timer.Start();
   std::cout << ">>> MonitorT0: Starting run..." << std::endl;
-  if ( 0 == nrEvents) {
-    run->Run(nEvents, 0); // run until end of input file
+  if (0 == nrEvents) {
+    run->Run(nEvents, 0);  // run until end of input file
   } else {
-    run->Run(0, nrEvents); // process  2000 Events
+    run->Run(0, nrEvents);  // process  2000 Events
   }
   run->Finish();
 
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
+            << std::endl;
 
   // --- End-of-run info
   Double_t rtime = timer.RealTime();
   Double_t ctime = timer.CpuTime();
   std::cout << std::endl << std::endl;
   std::cout << ">>> MonitorT0: Macro finished successfully." << std::endl;
-  std::cout << ">>> MonitorT0: Real time " << rtime << " s, CPU time "
-	    << ctime << " s" << std::endl;
+  std::cout << ">>> MonitorT0: Real time " << rtime << " s, CPU time " << ctime
+            << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

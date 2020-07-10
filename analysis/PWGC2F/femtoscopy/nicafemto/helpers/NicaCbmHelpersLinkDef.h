@@ -11,7 +11,7 @@
 #pragma link off all functions;
 
 #pragma link C++ namespace NicaCbmDetectorID;
-#pragma link C++ class CbmStsTrackMapProducer+;
-#pragma link C++ class NicaCbmFirstTask+;
-#pragma link C++ class CbmHelix+;
+#pragma link C++ class CbmStsTrackMapProducer + ;
+#pragma link C++ class NicaCbmFirstTask + ;
+#pragma link C++ class CbmHelix + ;
 #pragma link C++ enum NicaCbmSetup;

@@ -5,43 +5,39 @@
 #include "CbmErrorMessage.h"
 
 
-#include <iomanip>              // for operator<<, setw
-#include <sstream>              // for basic_ostream, operator<<, stringstream
-#include <string>               // for char_traits
+#include <iomanip>  // for operator<<, setw
+#include <sstream>  // for basic_ostream, operator<<, stringstream
+#include <string>   // for char_traits
 
 // -----   Standard constructor   ------------------------------------------
-CbmErrorMessage::CbmErrorMessage( ECbmModuleId sysId, Double_t dTime, UInt_t uAddress,
-                                  UInt_t uFlags, UInt_t uPayload ) :
-      fModuleId( sysId ),
-      fdTime( dTime ),
-      fuAddress( uAddress ),
-      fuFlags( uFlags ),
-      fuPayload( uPayload )
-{
-}
+CbmErrorMessage::CbmErrorMessage(ECbmModuleId sysId,
+                                 Double_t dTime,
+                                 UInt_t uAddress,
+                                 UInt_t uFlags,
+                                 UInt_t uPayload)
+  : fModuleId(sysId)
+  , fdTime(dTime)
+  , fuAddress(uAddress)
+  , fuFlags(uFlags)
+  , fuPayload(uPayload) {}
 // -------------------------------------------------------------------------
-
 
 
 // -----   Destructor   ----------------------------------------------------
-CbmErrorMessage::~CbmErrorMessage()
-{
-}
+CbmErrorMessage::~CbmErrorMessage() {}
 // -------------------------------------------------------------------------
 
 
-
 // -----   Info to string   ------------------------------------------------
-std::string CbmErrorMessage::ToString() const
-{
+std::string CbmErrorMessage::ToString() const {
   std::stringstream ss;
-  ss << "Error message: System " << GetSystemId()
-     << " | time " << GetTime()
+  ss << "Error message: System " << GetSystemId() << " | time " << GetTime()
      << " | address " << GetAddress();
-  char cPrev = ss.fill ('0');
-  ss << " | flags 0x" << std::hex << std::setw( 8 ) << GetFlags() << std::dec
-     << " | fulPayload 0x" << std::hex << std::setw( 8 ) << GetPayload() << std::dec ;
-  ss.fill( cPrev );
+  char cPrev = ss.fill('0');
+  ss << " | flags 0x" << std::hex << std::setw(8) << GetFlags() << std::dec
+     << " | fulPayload 0x" << std::hex << std::setw(8) << GetPayload()
+     << std::dec;
+  ss.fill(cPrev);
   return ss.str();
 }
 // -------------------------------------------------------------------------

@@ -8,11 +8,11 @@
 #ifndef CBMPSDMC_H
 #define CBMPSDMC_H 1
 
+#include "FairDetector.h"
+#include "FairRootManager.h"
 #include "TClonesArray.h"
 #include "TLorentzVector.h"
 #include "TString.h"
-#include "FairDetector.h"
-#include "FairRootManager.h"
 
 class FairVolume;
 
@@ -26,12 +26,10 @@ class FairVolume;
  ** transport simulation. It constructs the PSD transport geometry
  ** and creates objects of type CbmPsdPoints.
  **/
-class CbmPsdMC : public FairDetector
-{
+class CbmPsdMC : public FairDetector {
 
- public:
-
-    /** @brief Constructor
+public:
+  /** @brief Constructor
      ** @param active   If set true, ProcessHits will be called
      ** @param name     Name of detector object
      **/
@@ -50,8 +48,8 @@ class CbmPsdMC : public FairDetector
    ** Virtual from FairModule.
    **/
   virtual Bool_t CheckIfSensitive(std::string name) {
-      return ( TString(name).Contains("scint", TString::kIgnoreCase)
-               ? kTRUE : kFALSE );
+    return (TString(name).Contains("scint", TString::kIgnoreCase) ? kTRUE
+                                                                  : kFALSE);
   }
 
 
@@ -79,7 +77,7 @@ class CbmPsdMC : public FairDetector
    ** @value Pointer to TClonesArray with CbmPsdPoints
    **/
   virtual TClonesArray* GetCollection(Int_t iColl) const {
-    return ( iColl ? nullptr : fPsdPoints );
+    return (iColl ? nullptr : fPsdPoints);
   }
 
 
@@ -88,7 +86,6 @@ class CbmPsdMC : public FairDetector
    ** Virtual from TObject.
    **/
   virtual void Print(Option_t* opt = "") const;
-
 
 
   /** @brief Stepping action
@@ -100,16 +97,16 @@ class CbmPsdMC : public FairDetector
    ** collection.
    ** Abstract from FairDetector.
    **/
-  virtual Bool_t  ProcessHits(FairVolume* volume = 0);
+  virtual Bool_t ProcessHits(FairVolume* volume = 0);
 
 
   /** @brief Register the output array
    **
    ** Abstract from FairDetector.
    **/
-  virtual void  Register() {
-    FairRootManager::Instance()->Register("PsdPoint", GetName(),
-                                          fPsdPoints, kTRUE);
+  virtual void Register() {
+    FairRootManager::Instance()->Register(
+      "PsdPoint", GetName(), fPsdPoints, kTRUE);
   }
 
 
@@ -117,9 +114,7 @@ class CbmPsdMC : public FairDetector
    **
    ** Abstract from FairDetector.
    **/
-  virtual void Reset() {
-    fPsdPoints->Delete();
-  };
+  virtual void Reset() { fPsdPoints->Delete(); };
 
 
   /** @brief Define the PSD position in the cave
@@ -132,31 +127,30 @@ class CbmPsdMC : public FairDetector
    ** (xPos, 0, zPos) and a rotation around the y axis by rotY degrees.
    **/
   void SetPosition(Double_t xPos, Double_t zPos, Double_t rotY) {
-    fPosX = xPos;
-    fPosZ = zPos;
-    fRotY = rotY;
+    fPosX          = xPos;
+    fPosZ          = zPos;
+    fRotY          = rotY;
     fUserPlacement = kTRUE;
   }
 
 
- private:
-
-  Double_t   fPosX;    //  x position of PSD centre in cave [cm]
-  Double_t   fPosZ;    //  z position of PSD centre in cave [cm]
-  Double_t   fRotY;    //  Rotation angle of PSD around Y axis [degrees]
-  Bool_t fUserPlacement;  // Flag to override placement from file
-  TClonesArray*  fPsdPoints;         //! Output array
+private:
+  Double_t fPosX;            //  x position of PSD centre in cave [cm]
+  Double_t fPosZ;            //  z position of PSD centre in cave [cm]
+  Double_t fRotY;            //  Rotation angle of PSD around Y axis [degrees]
+  Bool_t fUserPlacement;     // Flag to override placement from file
+  TClonesArray* fPsdPoints;  //! Output array
 
   /** Track information to be temporarily stored **/
-  Int_t          fTrackID;           //!  track index
-  Int_t          fAddress;           //!  address (module and layer)
-  TLorentzVector fPos;               //!  position
-  TLorentzVector fMom;               //!  momentum
-  Double_t       fTime;              //!  time
-  Double_t       fLength;            //!  length
-  Double_t       fEloss;             //!  energy loss
-  Int_t          fLayerID;           //!  layer ID
-  Int_t          fModuleID;          //!  module ID
+  Int_t fTrackID;       //!  track index
+  Int_t fAddress;       //!  address (module and layer)
+  TLorentzVector fPos;  //!  position
+  TLorentzVector fMom;  //!  momentum
+  Double_t fTime;       //!  time
+  Double_t fLength;     //!  length
+  Double_t fEloss;      //!  energy loss
+  Int_t fLayerID;       //!  layer ID
+  Int_t fModuleID;      //!  module ID
 
   /** @brief Register all sensitive volumes
    ** @param node Pointer to start node
@@ -172,9 +166,8 @@ class CbmPsdMC : public FairDetector
   CbmPsdMC(const CbmPsdMC&) = delete;
   CbmPsdMC operator=(const CbmPsdMC&) = delete;
 
-  
-  ClassDef(CbmPsdMC,1)
 
+  ClassDef(CbmPsdMC, 1)
 };
 
 

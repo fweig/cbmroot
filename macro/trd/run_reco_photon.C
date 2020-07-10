@@ -18,39 +18,41 @@
 // --------------------------------------------------------------------------
 
 
-void run_reco_photon(Int_t nEvents = 1, Int_t urqmd = 0)
-{
+void run_reco_photon(Int_t nEvents = 1, Int_t urqmd = 0) {
 
   // ========================================================================
-  // geometry selection for sim + reco  by Cyrano                            
+  // geometry selection for sim + reco  by Cyrano
   // ========================================================================
   ifstream whichTrdGeo;
-  whichTrdGeo.open("whichTrdGeo",ios::in);
+  whichTrdGeo.open("whichTrdGeo", ios::in);
   TString digipar;
   if (whichTrdGeo) whichTrdGeo >> digipar;
-  cout << "selected geometry : >> " << digipar << " << (to select a different geometry, edit macro/trd/whichTrdGeo file)" << endl;
+  cout
+    << "selected geometry : >> " << digipar
+    << " << (to select a different geometry, edit macro/trd/whichTrdGeo file)"
+    << endl;
   whichTrdGeo.close();
   if (digipar.Length() == 0) digipar = "trd_standard";
 
   // ========================================================================
   //          Adjust this part according to your requirements
 
-  gStyle->SetPalette(1,0);
+  gStyle->SetPalette(1, 0);
   gROOT->SetStyle("Plain");
-  gStyle->SetPadTickX(1);                        
-  gStyle->SetPadTickY(1);  
+  gStyle->SetPadTickX(1);
+  gStyle->SetPadTickY(1);
 
   // Verbosity level (0=quiet, 1=event level, 2=track level, 3=debug)
   Int_t iVerbose = 0;
 
   // Input file (MC events)
-  TString inFile;// = "data/test.mc.root";
-  inFile.Form("data/test.mc.%04i.root",urqmd);
+  TString inFile;  // = "data/test.mc.root";
+  inFile.Form("data/test.mc.%04i.root", urqmd);
   // Parameter file
   TString parFile = "data/params.root";
 
   //  Digitisation files
-  TList *parFileList = new TList();
+  TList* parFileList = new TList();
 
   TString paramDir = gSystem->Getenv("VMCWORKDIR");
   paramDir += "/parameters";
@@ -68,26 +70,24 @@ void run_reco_photon(Int_t nEvents = 1, Int_t urqmd = 0)
 
   // Output file
   TString statistic;
-  statistic.Form(".%03ievents",nEvents);
-  TString outFile;// = "data/test.pa." + digipar + statistic + ".root";
-  outFile.Form("data/test.pa.%s.%04i.%03ievents.root",digipar.Data(),urqmd,nEvents);
+  statistic.Form(".%03ievents", nEvents);
+  TString outFile;  // = "data/test.pa." + digipar + statistic + ".root";
+  outFile.Form(
+    "data/test.pa.%s.%04i.%03ievents.root", digipar.Data(), urqmd, nEvents);
 
   // In general, the following parts need not be touched
   // ========================================================================
 
 
- 
   // ----    Debug option   -------------------------------------------------
   gDebug = 0;
   // ------------------------------------------------------------------------
-
 
 
   // -----   Timer   --------------------------------------------------------
   TStopwatch timer;
   timer.Start();
   // ------------------------------------------------------------------------
-
 
 
   // ----  Load libraries   -------------------------------------------------
@@ -111,17 +111,15 @@ void run_reco_photon(Int_t nEvents = 1, Int_t urqmd = 0)
   gSystem->Load("libGlobal");
   gSystem->Load("libL1");
   gSystem->Load("libLittrack");
-  gSystem->Load("libMinuit2"); // Nedded for rich ellipse fitter
+  gSystem->Load("libMinuit2");  // Nedded for rich ellipse fitter
   // ------------------------------------------------------------------------
-
 
 
   // -----   Reconstruction run   -------------------------------------------
-  FairRunAna *run= new FairRunAna();
+  FairRunAna* run = new FairRunAna();
   run->SetInputFile(inFile);
   run->SetOutputFile(outFile);
   // ------------------------------------------------------------------------
-  
 
 
   /*
@@ -468,8 +466,9 @@ void run_reco_photon(Int_t nEvents = 1, Int_t urqmd = 0)
   // =========================================================================
   
   */
-  
-  CbmTrdPhotonAnalysis *trdphot = new CbmTrdPhotonAnalysis("PhotonAnalysis","PhotonAnalysis",iVerbose);
+
+  CbmTrdPhotonAnalysis* trdphot =
+    new CbmTrdPhotonAnalysis("PhotonAnalysis", "PhotonAnalysis", iVerbose);
   run->AddTask(trdphot);
 
 
@@ -477,11 +476,11 @@ void run_reco_photon(Int_t nEvents = 1, Int_t urqmd = 0)
   //  TString stsDigi = gSystem->Getenv("VMCWORKDIR");
   //  stsDigi += "/parameters/sts/";
   //  stsDigi += stsDigiFile;
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
-  FairParRootFileIo* parIo1 = new FairParRootFileIo();
+  FairRuntimeDb* rtdb        = run->GetRuntimeDb();
+  FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
   parIo1->open(parFile.Data());
-  parIo2->open(parFileList,"in");
+  parIo2->open(parFileList, "in");
   rtdb->setFirstInput(parIo1);
   rtdb->setSecondInput(parIo2);
   rtdb->setOutput(parIo1);
@@ -489,14 +488,12 @@ void run_reco_photon(Int_t nEvents = 1, Int_t urqmd = 0)
   // ------------------------------------------------------------------------
 
 
-     
   // -----   Intialise and run   --------------------------------------------
   //  run->LoadGeometry();
   run->Init();
   cout << "Starting run" << endl;
-  run->Run(0,nEvents);
+  run->Run(0, nEvents);
   // ------------------------------------------------------------------------
-
 
 
   // -----   Finish   -------------------------------------------------------
@@ -505,7 +502,7 @@ void run_reco_photon(Int_t nEvents = 1, Int_t urqmd = 0)
   Double_t ctime = timer.CpuTime();
   cout << endl << endl;
   cout << "Macro finished succesfully." << endl;
-  cout << "Output file is "    << outFile << endl;
+  cout << "Output file is " << outFile << endl;
   cout << "Parameter file is " << parFile << endl;
   cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << endl;
   cout << endl;

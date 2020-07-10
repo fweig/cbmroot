@@ -5,22 +5,21 @@
 
 #include "CbmMuchPadRectangular.h"
 
-#include <TPave.h>              // for TPave
-#include <TColor.h>             // for TColor
+#include <TColor.h>  // for TColor
+#include <TPave.h>   // for TPave
 
 // -----  Default constructor  ----------------------------------------------
-CbmMuchPadRectangular::CbmMuchPadRectangular() 
-  : CbmMuchPad(),TPave()
-{
-}
+CbmMuchPadRectangular::CbmMuchPadRectangular() : CbmMuchPad(), TPave() {}
 // -------------------------------------------------------------------------
 
 // -----  Standard constructor  --------------------------------------------
-CbmMuchPadRectangular::CbmMuchPadRectangular(Int_t address, 
-    Double_t x, Double_t y, Double_t lx, Double_t ly)
-  :CbmMuchPad(address,x,y,lx,ly),
-   TPave(x-lx/2,y-ly/2,x+lx/2,y+ly/2,1)
-{
+CbmMuchPadRectangular::CbmMuchPadRectangular(Int_t address,
+                                             Double_t x,
+                                             Double_t y,
+                                             Double_t lx,
+                                             Double_t ly)
+  : CbmMuchPad(address, x, y, lx, ly)
+  , TPave(x - lx / 2, y - ly / 2, x + lx / 2, y + ly / 2, 1) {
   SetFillColor(kYellow);
   SetLineWidth(1);
   SetLineColor(34);
@@ -37,15 +36,20 @@ CbmMuchPadRectangular::CbmMuchPadRectangular(Int_t address,
 //
 //
 // -------------------------------------------------------------------------
-void CbmMuchPadRectangular::SetFired(Int_t iDigi, Int_t ADCcharge, Int_t nADCChannels){
+void CbmMuchPadRectangular::SetFired(Int_t iDigi,
+                                     Int_t ADCcharge,
+                                     Int_t nADCChannels) {
   fDigiIndex = iDigi;
-  if (fDigiIndex>=0) SetFillColor(TColor::GetColor(nADCChannels-1-ADCcharge,nADCChannels-1-ADCcharge,245));
-  else SetFillColor(kYellow);
+  if (fDigiIndex >= 0)
+    SetFillColor(TColor::GetColor(
+      nADCChannels - 1 - ADCcharge, nADCChannels - 1 - ADCcharge, 245));
+  else
+    SetFillColor(kYellow);
 }
 // -------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------
-void CbmMuchPadRectangular::DrawPad(){
+void CbmMuchPadRectangular::DrawPad() {
   Draw("f");
   Draw();
 }

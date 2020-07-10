@@ -14,9 +14,9 @@
 #ifndef CBMSTSTRACKFINDERQA_H
 #define CBMSTSTRACKFINDERQA_H 1
 
+#include "FairTask.h"
 #include "TStopwatch.h"
 #include "TVector3.h"
-#include "FairTask.h"
 
 class TH1F;
 class CbmEvent;
@@ -24,12 +24,9 @@ class CbmMCDataArray;
 class CbmStsSetup;
 
 
+class CbmStsFindTracksQa : public FairTask {
 
-class CbmStsFindTracksQa : public FairTask
-{
-
- public:
-
+public:
   /** Default constructor **/
   CbmStsFindTracksQa(Int_t iVerbose = 1);
 
@@ -62,9 +59,7 @@ class CbmStsFindTracksQa : public FairTask
   virtual void Exec(Option_t* opt);
 
 
-
- private:
-
+private:
   /** Finish **/
   virtual void Finish();
 
@@ -93,7 +88,8 @@ class CbmStsFindTracksQa : public FairTask
    *@param nGhosts  Number of ghost tracks (return)
    *@param nClones  Number of clone tracks (return)
    **/
-  void FillMatchMap(CbmEvent* event, Int_t& nRec, Int_t& nGhosts, Int_t& nClones);
+  void
+  FillMatchMap(CbmEvent* event, Int_t& nRec, Int_t& nGhosts, Int_t& nClones);
 
 
   /** Divide histograms (reco/all) with correct error for the efficiency
@@ -126,38 +122,39 @@ class CbmStsFindTracksQa : public FairTask
 
 
   /** Pointers to data arrays **/
-  TClonesArray* fEvents;             //! Event
-  CbmMCDataArray* fMCTracks;         //! MCtrack
-  CbmMCDataArray* fStsPoints;        //! StsPoints
-  TClonesArray* fStsHits;            //! StsHits
-  TClonesArray* fStsHitMatch;        //! StsHitMatch
-  TClonesArray* fStsTracks;          //! StsTrack
-  TClonesArray* fMatches;            //! StsTrackMatch
+  TClonesArray* fEvents;       //! Event
+  CbmMCDataArray* fMCTracks;   //! MCtrack
+  CbmMCDataArray* fStsPoints;  //! StsPoints
+  TClonesArray* fStsHits;      //! StsHits
+  TClonesArray* fStsHitMatch;  //! StsHitMatch
+  TClonesArray* fStsTracks;    //! StsTrack
+  TClonesArray* fMatches;      //! StsTrackMatch
 
   /** Flag for legacy mode (event-by-event w/o event objects) **/
   Bool_t fLegacy;
 
 
   /** Geometry parameters **/
-  TVector3 fTargetPos;                    // Target centre position
-  CbmStsSetup* fSetup;                    // STS setup interface
-  Int_t fNStations;                       // Number of STS stations
+  TVector3 fTargetPos;  // Target centre position
+  CbmStsSetup* fSetup;  // STS setup interface
+  Int_t fNStations;     // Number of STS stations
 
 
   /** Task parameters **/
-  Int_t fMinStations;   // Minimal number of stations with hits for considered MCTrack
+  Int_t
+    fMinStations;  // Minimal number of stations with hits for considered MCTrack
   Double_t fQuota;  // True/all hits for track to be considered reconstructed
 
 
   /** Histograms **/
-  TH1F *fhMomAccAll,  *fhMomRecAll,  *fhMomEffAll;   // eff. vs. p, all
+  TH1F *fhMomAccAll, *fhMomRecAll, *fhMomEffAll;     // eff. vs. p, all
   TH1F *fhMomAccPrim, *fhMomRecPrim, *fhMomEffPrim;  // eff. vs. p, vertex
-  TH1F *fhMomAccSec,  *fhMomRecSec,  *fhMomEffSec;   // eff. vs. p, non-vertex
-  TH1F *fhNpAccAll,   *fhNpRecAll,   *fhNpEffAll;    // eff. vs. np, all
-  TH1F *fhNpAccPrim,  *fhNpRecPrim,  *fhNpEffPrim;   // eff. vs. np, vertex
-  TH1F *fhNpAccSec,   *fhNpRecSec,   *fhNpEffSec;    // eff. vs. np, non-vertex
-  TH1F *fhZAccSec,    *fhZRecSec,    *fhZEffSec;     // eff. vs. z, non-vertex
-  TH1F *fhNhClones,   *fhNhGhosts;              // # hits of clones and ghosts   
+  TH1F *fhMomAccSec, *fhMomRecSec, *fhMomEffSec;     // eff. vs. p, non-vertex
+  TH1F *fhNpAccAll, *fhNpRecAll, *fhNpEffAll;        // eff. vs. np, all
+  TH1F *fhNpAccPrim, *fhNpRecPrim, *fhNpEffPrim;     // eff. vs. np, vertex
+  TH1F *fhNpAccSec, *fhNpRecSec, *fhNpEffSec;        // eff. vs. np, non-vertex
+  TH1F *fhZAccSec, *fhZRecSec, *fhZEffSec;           // eff. vs. z, non-vertex
+  TH1F *fhNhClones, *fhNhGhosts;  // # hits of clones and ghosts
 
 
   /** List of histograms **/
@@ -168,9 +165,9 @@ class CbmStsFindTracksQa : public FairTask
   Int_t fNAccAll, fNAccPrim, fNAccRef, fNAccSec;
   Int_t fNRecAll, fNRecPrim, fNRecRef, fNRecSec;
   Int_t fNGhosts, fNClones;
-  Int_t    fNEvents;        /** Number of events with success **/
-  Int_t    fNEventsFailed;  /** Number of events with failure **/
-  Double_t fTime;           /** Total real time used for good events **/
+  Int_t fNEvents;       /** Number of events with success **/
+  Int_t fNEventsFailed; /** Number of events with failure **/
+  Double_t fTime;       /** Total real time used for good events **/
 
   /** Timer **/
   TStopwatch fTimer;
@@ -178,10 +175,8 @@ class CbmStsFindTracksQa : public FairTask
   CbmStsFindTracksQa(const CbmStsFindTracksQa&);
   CbmStsFindTracksQa operator=(const CbmStsFindTracksQa&);
 
-  ClassDef(CbmStsFindTracksQa,2);
-
+  ClassDef(CbmStsFindTracksQa, 2);
 };
 
 
 #endif
-				 

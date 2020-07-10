@@ -6,24 +6,18 @@
  **/
 #include "CbmTofTrack.h"
 
-#include <TObject.h>            // for TObject
+#include <TObject.h>  // for TObject
 
-CbmTofTrack::CbmTofTrack() :
-   TObject(),
-   fGlbTrack(-1),
-   fTofHit(-1),
-   fTrackLength(0.),
-   fTrackPar(),
-   fPidHypo(-1),
-   fMass(-1.),
-   fDistance(0.)
-{
-}
+CbmTofTrack::CbmTofTrack()
+  : TObject()
+  , fGlbTrack(-1)
+  , fTofHit(-1)
+  , fTrackLength(0.)
+  , fTrackPar()
+  , fPidHypo(-1)
+  , fMass(-1.)
+  , fDistance(0.) {}
 
-CbmTofTrack::~CbmTofTrack() {
-}
+CbmTofTrack::~CbmTofTrack() {}
 
 ClassImp(CbmTofTrack)
-
-
-

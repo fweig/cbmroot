@@ -21,12 +21,10 @@
  *****************************************************************************/
 
 
-
-
-#include <iomanip>
-#include <iostream>
 #include "TGeoManager.h"
 #include "TGeoPcon.h"
+#include <iomanip>
+#include <iostream>
 
 
 using namespace std;
@@ -34,7 +32,7 @@ using namespace std;
 
 // -------------   Steering variables       -----------------------------------
 // ---> Beam pipe material name
-TString pipeMediumName = "aluminium"; // "beryllium" "carbon"
+TString pipeMediumName = "aluminium";  // "beryllium" "carbon"
 // ----------------------------------------------------------------------------
 
 
@@ -47,18 +45,27 @@ TString rootFileName = "pipe_v18c.root";
 TString pipeName = "pipe_v18c";
 // ----------------------------------------------------------------------------
 
-TGeoVolume* MakePipe(Int_t iPart, Int_t nSects, Double_t* z, Double_t* rin, 
-		     Double_t* rout, TGeoMedium* medium, fstream* infoFile);
+TGeoVolume* MakePipe(Int_t iPart,
+                     Int_t nSects,
+                     Double_t* z,
+                     Double_t* rin,
+                     Double_t* rout,
+                     TGeoMedium* medium,
+                     fstream* infoFile);
 
-TGeoVolume* MakeVacuum(Int_t iPart, Int_t nSects, Double_t* z, Double_t* rin, 
-		       Double_t* rout, TGeoMedium* medium, fstream* infoFile);
+TGeoVolume* MakeVacuum(Int_t iPart,
+                       Int_t nSects,
+                       Double_t* z,
+                       Double_t* rin,
+                       Double_t* rout,
+                       TGeoMedium* medium,
+                       fstream* infoFile);
 
 // ============================================================================
 // ======                         Main function                           =====
 // ============================================================================
 
-void create_bpipe_geometry_v18c()
-{
+void create_bpipe_geometry_v18c() {
   // -----   Define beam pipe sections   --------------------------------------
   /** For v18c:   **/
   /*
@@ -73,15 +80,15 @@ void create_bpipe_geometry_v18c()
   Double_t rin2[nSects2]  = {  18.,  18.,   30.,    60.,    90.,   105.86, 110.   };
   Double_t rout2[nSects2] = {  18.,  28.69, 39.3,   65.55,  94.14, 110.,   110.   };
   */
-  TString pipevac1name = "pipevac1";
-  const Int_t nSects01 = 2;
-  Double_t z01[nSects01]    = {   0., 150. }; // mm
-  Double_t rin01[nSects01]  = {   0.,   0. };
-  Double_t rout01[nSects01] = { 140., 140. };
+  TString pipevac1name      = "pipevac1";
+  const Int_t nSects01      = 2;
+  Double_t z01[nSects01]    = {0., 150.};  // mm
+  Double_t rin01[nSects01]  = {0., 0.};
+  Double_t rout01[nSects01] = {140., 140.};
   //  const Int_t nSects01 = 10;
-//  Double_t z01[nSects01]    = { -50., -5.,  -5., 140., 140., 140.7,  141.45, 143.71, 147.49, 150.17 }; // mm
-//  Double_t rin01[nSects01]  = {   0.,  0.,   0.,   0.,  18.,  28.69,  39.3,   65.55,  94.14, 110.   };
-//  Double_t rout01[nSects01] = {  25., 25., 140., 140., 140., 140.,   140.,   140.,   140.,   140.   };
+  //  Double_t z01[nSects01]    = { -50., -5.,  -5., 140., 140., 140.7,  141.45, 143.71, 147.49, 150.17 }; // mm
+  //  Double_t rin01[nSects01]  = {   0.,  0.,   0.,   0.,  18.,  28.69,  39.3,   65.55,  94.14, 110.   };
+  //  Double_t rout01[nSects01] = {  25., 25., 140., 140., 140., 140.,   140.,   140.,   140.,   140.   };
 
   /*
   TString pipe3name = "pipe3 - STS section";
@@ -130,11 +137,11 @@ void create_bpipe_geometry_v18c()
   // --------------------------------------------------------------------------
 
   // -------------  Load the necessary FairRoot libraries   -------------------
-//  gROOT->LoadMacro("$VMCWORKDIR/gconfig/basiclibs.C");
-//  basiclibs();
-//  gSystem->Load("libGeoBase");
-//  gSystem->Load("libParBase");
-//  gSystem->Load("libBase");
+  //  gROOT->LoadMacro("$VMCWORKDIR/gconfig/basiclibs.C");
+  //  basiclibs();
+  //  gSystem->Load("libGeoBase");
+  //  gSystem->Load("libParBase");
+  //  gSystem->Load("libBase");
   // --------------------------------------------------------------------------
 
 
@@ -144,72 +151,94 @@ void create_bpipe_geometry_v18c()
   fstream infoFile;
   fstream infoFileEmpty;
   infoFile.open(infoFileName.Data(), fstream::out);
-  infoFile << "SIS-100. Beam pipe geometry created with " + macrosname << endl << endl;
-  infoFile << "	  pipe_v18c = pipe_v14f + fixed sizes of vacuum chamber for mvd_v14a" << endl << endl;
-  infoFile << " The beam pipe is composed of aluminium with a thickness proportional to the" << endl;
-  infoFile << " diameter (D(z)mm/60). It is placed directly into the cave as mother volume." << endl;
-  infoFile << " The beam pipe consists of few sections excluding RICH section(1700-3700mm) " << endl;
-  infoFile << " because it is part of the RICH geometry. Each section has a PCON shape " << endl;
-  infoFile << " (including windows). There are two windows: first one @ 220mm with R600mm " << endl;
-  infoFile << " and 0.7mm thickness, second one of iron @ 6000mm with R600mm and 0.2mm " << endl;
-  infoFile << " thickness. The STS section is composed of cylinder D(z=220-500mm)=36mm and " << endl;
-  infoFile << " cone (z=500-1700mm). All sections of the beam pipe with conical shape have " << endl;
-  infoFile << " half opening angle 2.5deg. The PSD section of the beam pipe is missing " << endl;
-  infoFile << " because it is planned that it will be part of PSD geometry." << endl << endl;
-  
+  infoFile << "SIS-100. Beam pipe geometry created with " + macrosname << endl
+           << endl;
+  infoFile << "	  pipe_v18c = pipe_v14f + fixed sizes of vacuum chamber for "
+              "mvd_v14a"
+           << endl
+           << endl;
+  infoFile << " The beam pipe is composed of aluminium with a thickness "
+              "proportional to the"
+           << endl;
+  infoFile << " diameter (D(z)mm/60). It is placed directly into the cave as "
+              "mother volume."
+           << endl;
+  infoFile << " The beam pipe consists of few sections excluding RICH "
+              "section(1700-3700mm) "
+           << endl;
+  infoFile << " because it is part of the RICH geometry. Each section has a "
+              "PCON shape "
+           << endl;
+  infoFile << " (including windows). There are two windows: first one @ 220mm "
+              "with R600mm "
+           << endl;
+  infoFile << " and 0.7mm thickness, second one of iron @ 6000mm with R600mm "
+              "and 0.2mm "
+           << endl;
+  infoFile << " thickness. The STS section is composed of cylinder "
+              "D(z=220-500mm)=36mm and "
+           << endl;
+  infoFile << " cone (z=500-1700mm). All sections of the beam pipe with "
+              "conical shape have "
+           << endl;
+  infoFile << " half opening angle 2.5deg. The PSD section of the beam pipe is "
+              "missing "
+           << endl;
+  infoFile << " because it is planned that it will be part of PSD geometry."
+           << endl
+           << endl;
+
   infoFile << "Material:  " << pipeMediumName << endl;
   infoFile << "Thickness: D(z)mm/60" << endl << endl;
   // --------------------------------------------------------------------------
 
 
   // -------   Load media from media file   -----------------------------------
-  FairGeoLoader*    geoLoad = new FairGeoLoader("TGeo","FairGeoLoader");
+  FairGeoLoader* geoLoad    = new FairGeoLoader("TGeo", "FairGeoLoader");
   FairGeoInterface* geoFace = geoLoad->getGeoInterface();
-  TString geoPath = gSystem->Getenv("VMCWORKDIR");
-  TString medFile = geoPath + "/geometry/media.geo";
+  TString geoPath           = gSystem->Getenv("VMCWORKDIR");
+  TString medFile           = geoPath + "/geometry/media.geo";
   geoFace->setMediaFile(medFile);
   geoFace->readMedia();
   TGeoManager* gGeoMan = gGeoManager;
   // --------------------------------------------------------------------------
 
 
-
   // -----------------   Get and create the required media    -----------------
-  FairGeoMedia*   geoMedia = geoFace->getMedia();
+  FairGeoMedia* geoMedia   = geoFace->getMedia();
   FairGeoBuilder* geoBuild = geoLoad->getGeoBuilder();
-  
+
   // ---> pipe medium
   FairGeoMedium* fPipeMedium = geoMedia->getMedium(pipeMediumName.Data());
-  TString fairError = "FairMedium " + pipeMediumName + " not found";
-  if ( ! fPipeMedium ) Fatal("Main", fairError.Data());
+  TString fairError          = "FairMedium " + pipeMediumName + " not found";
+  if (!fPipeMedium) Fatal("Main", fairError.Data());
   geoBuild->createMedium(fPipeMedium);
   TGeoMedium* pipeMedium = gGeoMan->GetMedium(pipeMediumName.Data());
-  TString geoError = "Medium " + pipeMediumName + " not found";
-  if ( ! pipeMedium ) Fatal("Main", geoError.Data());
+  TString geoError       = "Medium " + pipeMediumName + " not found";
+  if (!pipeMedium) Fatal("Main", geoError.Data());
   // ---> iron
   FairGeoMedium* mIron = geoMedia->getMedium("iron");
-  if ( ! mIron ) Fatal("Main", "FairMedium iron not found");
+  if (!mIron) Fatal("Main", "FairMedium iron not found");
   geoBuild->createMedium(mIron);
   TGeoMedium* iron = gGeoMan->GetMedium("iron");
-  if ( ! iron ) Fatal("Main", "Medium iron not found");
+  if (!iron) Fatal("Main", "Medium iron not found");
   // ---> vacuum
   FairGeoMedium* mVacuum = geoMedia->getMedium("vacuum");
-  if ( ! mVacuum ) Fatal("Main", "FairMedium vacuum not found");
+  if (!mVacuum) Fatal("Main", "FairMedium vacuum not found");
   geoBuild->createMedium(mVacuum);
   TGeoMedium* vacuum = gGeoMan->GetMedium("vacuum");
-  if ( ! vacuum ) Fatal("Main", "Medium vacuum not found");
+  if (!vacuum) Fatal("Main", "Medium vacuum not found");
   // ---> air
   FairGeoMedium* mAir = geoMedia->getMedium("air");
-  if ( ! mAir ) Fatal("Main", "FairMedium air not found");
+  if (!mAir) Fatal("Main", "FairMedium air not found");
   geoBuild->createMedium(mAir);
   TGeoMedium* air = gGeoMan->GetMedium("air");
-  if ( ! air ) Fatal("Main", "Medium air not found");
+  if (!air) Fatal("Main", "Medium air not found");
   // --------------------------------------------------------------------------
 
 
-
   // --------------   Create geometry and top volume  -------------------------
-  gGeoMan = (TGeoManager*)gROOT->FindObject("FAIRGeom");
+  gGeoMan = (TGeoManager*) gROOT->FindObject("FAIRGeom");
   gGeoMan->SetName("PIPEgeom");
   TGeoVolume* top = new TGeoVolumeAssembly("TOP");
   gGeoMan->SetTopVolume(top);
@@ -218,23 +247,24 @@ void create_bpipe_geometry_v18c()
 
 
   // -----   Create sections  -------------------------------------------------
-//  infoFile << endl << "Beam pipe section: " << pipe1name << endl;
-//  infoFile << setw(2) << "i" << setw(10) << "Z,mm" << setw(10) << "Rin,mm" << setw(10) << "Rout,mm" << setw(10) << "h,mm" << endl;
-//  
-//  TGeoVolume* pipe1    = MakePipe  (1, nSects1,  z1,  rin1,  rout1,  pipeMedium, &infoFile); 
-//  pipe1->SetLineColor(kGray);
-//  pipe->AddNode(pipe1, 0);
-//  
-//  infoFile << endl << "Beam pipe section: " << pipe2name << endl;
-//  infoFile << setw(2) << "i" << setw(10) << "Z,mm" << setw(10) << "Rin,mm" << setw(10) << "Rout,mm" << setw(10) << "h,mm" << endl;
-//  TGeoVolume* pipe2    = MakePipe  (2, nSects2,  z2,  rin2,  rout2,  pipeMedium, &infoFile); 
-//  pipe2->SetLineColor(kBlue);
-//  pipe->AddNode(pipe2, 0);
-//  TGeoVolume* pipevac1 = MakeVacuum(1, nSects01, z01, rin01, rout01, vacuum,     &infoFile); 
-  TGeoVolume* pipevac1 = MakeVacuum(1, nSects01, z01, rin01, rout01, air,     &infoFile); 
+  //  infoFile << endl << "Beam pipe section: " << pipe1name << endl;
+  //  infoFile << setw(2) << "i" << setw(10) << "Z,mm" << setw(10) << "Rin,mm" << setw(10) << "Rout,mm" << setw(10) << "h,mm" << endl;
+  //
+  //  TGeoVolume* pipe1    = MakePipe  (1, nSects1,  z1,  rin1,  rout1,  pipeMedium, &infoFile);
+  //  pipe1->SetLineColor(kGray);
+  //  pipe->AddNode(pipe1, 0);
+  //
+  //  infoFile << endl << "Beam pipe section: " << pipe2name << endl;
+  //  infoFile << setw(2) << "i" << setw(10) << "Z,mm" << setw(10) << "Rin,mm" << setw(10) << "Rout,mm" << setw(10) << "h,mm" << endl;
+  //  TGeoVolume* pipe2    = MakePipe  (2, nSects2,  z2,  rin2,  rout2,  pipeMedium, &infoFile);
+  //  pipe2->SetLineColor(kBlue);
+  //  pipe->AddNode(pipe2, 0);
+  //  TGeoVolume* pipevac1 = MakeVacuum(1, nSects01, z01, rin01, rout01, vacuum,     &infoFile);
+  TGeoVolume* pipevac1 =
+    MakeVacuum(1, nSects01, z01, rin01, rout01, air, &infoFile);
   pipevac1->SetLineColor(kCyan);
   pipe->AddNode(pipevac1, 0);
-  
+
   /*
   infoFile << endl << "Beam pipe section: " << pipe3name << endl;
   infoFile << setw(2) << "i" << setw(10) << "Z,mm" << setw(10) << "Rin,mm" << setw(10) << "Rout,mm" << setw(10) << "h,mm" << endl;
@@ -269,8 +299,8 @@ void create_bpipe_geometry_v18c()
   pipe6->SetLineColor(kBlue);
   pipe->AddNode(pipe6, 0);
   */
-  
-  
+
+
   // -----   End   --------------------------------------------------
 
   // ---------------   Finish   -----------------------------------------------
@@ -280,7 +310,7 @@ void create_bpipe_geometry_v18c()
   gGeoMan->CheckOverlaps(0.0001);
   gGeoMan->PrintOverlaps();
   gGeoMan->Test();
-  
+
   // visualize it with ray tracing, OGL/X3D viewer
   //top->Raytrace();
   top->Draw("ogl");
@@ -289,12 +319,10 @@ void create_bpipe_geometry_v18c()
   TFile* rootFile = new TFile(rootFileName, "RECREATE");
   top->Write();
   cout << endl;
-  cout << "Geometry " << top->GetName() << " written to " 
-       << rootFileName << endl;
+  cout << "Geometry " << top->GetName() << " written to " << rootFileName
+       << endl;
   rootFile->Close();
   infoFile.close();
-
-
 }
 // ============================================================================
 // ======                   End of main function                          =====
@@ -302,69 +330,78 @@ void create_bpipe_geometry_v18c()
 
 
 // =====  Make the beam pipe volume   =========================================
-TGeoPcon* MakeShape(Int_t nSects, char* name, Double_t* z, Double_t* rin, 
-                    Double_t* rout, fstream* infoFile) {
+TGeoPcon* MakeShape(Int_t nSects,
+                    char* name,
+                    Double_t* z,
+                    Double_t* rin,
+                    Double_t* rout,
+                    fstream* infoFile) {
 
   // ---> Shape
   TGeoPcon* shape = new TGeoPcon(name, 0., 360., nSects);
   for (Int_t iSect = 0; iSect < nSects; iSect++) {
-    shape->DefineSection(iSect, z[iSect]/10., rin[iSect]/10., rout[iSect]/10.); // mm->cm
-    *infoFile << setw(2)  << iSect+1
-              << setw(10) << fixed << setprecision(2) << z[iSect]
-              << setw(10) << fixed << setprecision(2) << rin[iSect]
-              << setw(10) << fixed << setprecision(2) << rout[iSect]
-              << setw(10) << fixed << setprecision(2) << rout[iSect]-rin[iSect] << endl;
+    shape->DefineSection(
+      iSect, z[iSect] / 10., rin[iSect] / 10., rout[iSect] / 10.);  // mm->cm
+    *infoFile << setw(2) << iSect + 1 << setw(10) << fixed << setprecision(2)
+              << z[iSect] << setw(10) << fixed << setprecision(2) << rin[iSect]
+              << setw(10) << fixed << setprecision(2) << rout[iSect] << setw(10)
+              << fixed << setprecision(2) << rout[iSect] - rin[iSect] << endl;
   }
 
   return shape;
-
 }
 // ============================================================================
-
-
 
 
 // =====  Make the beam pipe volume   =========================================
-TGeoVolume* MakePipe(Int_t iPart, Int_t nSects, Double_t* z, Double_t* rin, 
-	                 Double_t* rout, TGeoMedium* medium, fstream* infoFile) {
+TGeoVolume* MakePipe(Int_t iPart,
+                     Int_t nSects,
+                     Double_t* z,
+                     Double_t* rin,
+                     Double_t* rout,
+                     TGeoMedium* medium,
+                     fstream* infoFile) {
 
   // ---> Shape
   TGeoPcon* shape = new TGeoPcon(0., 360., nSects);
   for (Int_t iSect = 0; iSect < nSects; iSect++) {
-    shape->DefineSection(iSect, z[iSect]/10., rin[iSect]/10., rout[iSect]/10.); // mm->cm
-    *infoFile << setw(2)  << iSect+1
-              << setw(10) << fixed << setprecision(2) << z[iSect]
-              << setw(10) << fixed << setprecision(2) << rin[iSect]
-              << setw(10) << fixed << setprecision(2) << rout[iSect]
-              << setw(10) << fixed << setprecision(2) << rout[iSect]-rin[iSect] << endl;
+    shape->DefineSection(
+      iSect, z[iSect] / 10., rin[iSect] / 10., rout[iSect] / 10.);  // mm->cm
+    *infoFile << setw(2) << iSect + 1 << setw(10) << fixed << setprecision(2)
+              << z[iSect] << setw(10) << fixed << setprecision(2) << rin[iSect]
+              << setw(10) << fixed << setprecision(2) << rout[iSect] << setw(10)
+              << fixed << setprecision(2) << rout[iSect] - rin[iSect] << endl;
   }
 
   // ---> Volume
-  TString volName = Form("pipe%i", iPart);
+  TString volName  = Form("pipe%i", iPart);
   TGeoVolume* pipe = new TGeoVolume(volName.Data(), shape, medium);
 
   return pipe;
-
 }
 // ============================================================================
 
 
-
 // =====   Make the volume for the vacuum inside the beam pipe   ==============
-TGeoVolume* MakeVacuum(Int_t iPart, Int_t nSects, Double_t* z, Double_t* rin, 
-	                   Double_t* rout, TGeoMedium* medium, fstream* infoFile) {
+TGeoVolume* MakeVacuum(Int_t iPart,
+                       Int_t nSects,
+                       Double_t* z,
+                       Double_t* rin,
+                       Double_t* rout,
+                       TGeoMedium* medium,
+                       fstream* infoFile) {
 
   // ---> Shape
   TGeoPcon* shape = new TGeoPcon(0., 360., nSects);
   for (Int_t iSect = 0; iSect < nSects; iSect++) {
-    shape->DefineSection(iSect, z[iSect]/10., rin[iSect]/10., rout[iSect]/10.); // mm->cm
+    shape->DefineSection(
+      iSect, z[iSect] / 10., rin[iSect] / 10., rout[iSect] / 10.);  // mm->cm
   }
 
   // ---> Volume
-  TString volName = Form("pipevac%i", iPart);
+  TString volName     = Form("pipevac%i", iPart);
   TGeoVolume* pipevac = new TGeoVolume(volName.Data(), shape, medium);
 
   return pipevac;
-
 }
 // ============================================================================

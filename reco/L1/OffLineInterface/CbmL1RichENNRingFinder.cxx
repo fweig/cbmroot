@@ -15,7 +15,6 @@
  */
 
 
-
 // CBM includes
 #include "CbmL1RichENNRingFinder.h"
 #include "CbmL1RichENNRingFinderParallel.h"
@@ -28,37 +27,32 @@
 
 #include "assert.h"
 #include <algorithm>
+#include <cmath>
 #include <iostream>
 #include <vector>
-#include <cmath>
 
-using std::vector;
 using std::cout;
 using std::endl;
+using std::fabs;
 using std::ios;
 using std::sqrt;
-using std::fabs;
+using std::vector;
 
 
 ClassImp(CbmL1RichENNRingFinder)
 
-CbmL1RichENNRingFinder::CbmL1RichENNRingFinder(Int_t verbose ):
-  finder(new CbmL1RichENNRingFinderParallel(verbose)),
-  fRecoTime(0),
-  fNEvents(0)
-{}
+  CbmL1RichENNRingFinder::CbmL1RichENNRingFinder(Int_t verbose)
+  : finder(new CbmL1RichENNRingFinderParallel(verbose))
+  , fRecoTime(0)
+  , fNEvents(0) {}
 
-CbmL1RichENNRingFinder::~CbmL1RichENNRingFinder()
-{
-}
+CbmL1RichENNRingFinder::~CbmL1RichENNRingFinder() {}
 
 
-void CbmL1RichENNRingFinder::Init()
-{ 
-}
+void CbmL1RichENNRingFinder::Init() {}
 
-Int_t CbmL1RichENNRingFinder::DoFind( TClonesArray* HitArray, TClonesArray* ProjArray,
-				      TClonesArray* RingArray )
-{
-  return finder->DoFind( HitArray, ProjArray, RingArray );
+Int_t CbmL1RichENNRingFinder::DoFind(TClonesArray* HitArray,
+                                     TClonesArray* ProjArray,
+                                     TClonesArray* RingArray) {
+  return finder->DoFind(HitArray, ProjArray, RingArray);
 }

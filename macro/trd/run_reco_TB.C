@@ -19,24 +19,26 @@
 // --------------------------------------------------------------------------
 
 
-void run_reco_TB(Int_t nEvents = 1) 
-{
- 
-  gStyle->SetNumberContours(99); 
-  gStyle->SetPalette(1,0);
+void run_reco_TB(Int_t nEvents = 1) {
+
+  gStyle->SetNumberContours(99);
+  gStyle->SetPalette(1, 0);
   gROOT->SetStyle("Plain");
   gStyle->SetPadTickX(1);
   gStyle->SetPadTickY(1);
   // ========================================================================
-  // geometry selection for sim + reco  by Cyrano                            
+  // geometry selection for sim + reco  by Cyrano
   // ========================================================================
   ifstream whichTrdGeo;
-  whichTrdGeo.open("whichTrdGeo",ios::in);
+  whichTrdGeo.open("whichTrdGeo", ios::in);
   TString selectGeo;
   if (whichTrdGeo) whichTrdGeo >> selectGeo;
-  TString digipar = selectGeo(0,11);
-  digipar.ReplaceAll(".ge","");
-  cout << "selected geometry : >> " << selectGeo << " << (to select a different geometry, edit macro/trd/whichTrdGeo file)" << endl;
+  TString digipar = selectGeo(0, 11);
+  digipar.ReplaceAll(".ge", "");
+  cout
+    << "selected geometry : >> " << selectGeo
+    << " << (to select a different geometry, edit macro/trd/whichTrdGeo file)"
+    << endl;
   cout << "selected digipar  : >> " << digipar << " << " << endl;
   whichTrdGeo.close();
   if (digipar.Length() == 0) digipar = "trd_standard";
@@ -58,26 +60,26 @@ void run_reco_TB(Int_t nEvents = 1)
 
   // Specify interaction rate in 1/s
   Double_t eventRate = 1.e6;
-  
+
   // Specify beam profile ( 1 = constant, 2 = Poissonian beam (default) )
   Int_t beamProfile = 2;
-  
+
   // Specify duration of time slices in output [ns]
   Double_t timeSliceSize = 1000.;
 
   // Specify log level (INFO, DEBUG, DEBUG1, ...)
   TString logLevel = "INFO";
-  FairLogger* log;  
+  FairLogger* log;
 
   //  Digitisation files.
   // Add TObjectString containing the different file names to
   // a TList which is passed as input to the FairParAsciiFileIo.
-  // The FairParAsciiFileIo will take care to create on the fly 
+  // The FairParAsciiFileIo will take care to create on the fly
   // a concatenated input parameter file which is then used during
   // the reconstruction.
-  TList *parFileList = new TList();
+  TList* parFileList = new TList();
 
-  TString workDir = gSystem->Getenv("VMCWORKDIR");
+  TString workDir  = gSystem->Getenv("VMCWORKDIR");
   TString paramDir = workDir + "/parameters";
 
   TObjString stsDigiFile = paramDir + "/sts/sts_v13d_std.digi.par";
@@ -105,22 +107,22 @@ void run_reco_TB(Int_t nEvents = 1)
   // ------------------------------------------------------------------------
 
   // -----   Reconstruction run   -------------------------------------------
-  CbmRunAna *run = new CbmRunAna();
-  run->SetAsync();                         // asynchroneous mode
+  CbmRunAna* run = new CbmRunAna();
+  run->SetAsync();  // asynchroneous mode
   run->SetInputFile(inFile);
   run->SetOutputFile(outFile);
   // ------------------------------------------------------------------------
 
 
-  // ---- Set the log level 	
+  // ---- Set the log level
   gLogger->SetLogScreenLevel(logLevel.Data());
 
-  
+
   // ---- MC Time simulation
-  Double_t rate = 1.e6;
+  Double_t rate     = 1.e6;
   FairTask* timeSim = new CbmMCTimeSim(eventRate, beamProfile);
   run->AddTask(timeSim);
- 
+
 
   // ------------------------------------------------------------------------
 
@@ -129,16 +131,17 @@ void run_reco_TB(Int_t nEvents = 1)
   // =========================================================================
 
   // Update of the values for the radiator F.U. 17.08.07
-  Int_t   trdNFoils = 130;    // number of polyethylene foils
-  Float_t trdDFoils = 0.0013; // thickness of 1 foil [cm]
-  Float_t trdDGap   = 0.02;   // thickness of gap between foils [cm]
-  Bool_t  simpleTR  = kTRUE;  // use fast and simple version for TR production
+  Int_t trdNFoils   = 130;     // number of polyethylene foils
+  Float_t trdDFoils = 0.0013;  // thickness of 1 foil [cm]
+  Float_t trdDGap   = 0.02;    // thickness of gap between foils [cm]
+  Bool_t simpleTR   = kTRUE;   // use fast and simple version for TR production
 
-  CbmTrdRadiator *radiator = new CbmTrdRadiator(simpleTR, trdNFoils, trdDFoils, trdDGap);
+  CbmTrdRadiator* radiator =
+    new CbmTrdRadiator(simpleTR, trdNFoils, trdDFoils, trdDGap);
 
   // -----   TRD hit producer   ----------------------------------------------
-  Double_t triggerThreshold = 0.5e-6;//SIS100
-  Bool_t triangularPads = false;
+  Double_t triggerThreshold = 0.5e-6;  //SIS100
+  Bool_t triangularPads     = false;
   //Double_t triggerThreshold = 1.0e-6;//SIS300
   //Double_t triggerThreshold = 3.0e-7;//0.5cm homogeniuse pad height
   //CbmTrdDigitizer* trdDigi = new CbmTrdDigitizer(radiator);
@@ -184,7 +187,7 @@ void run_reco_TB(Int_t nEvents = 1)
     }
   */
 
- 
+
   // ----- DAQ
   FairTask* daq = new CbmDaq(timeSliceSize);
   run->AddTask(daq);
@@ -204,8 +207,8 @@ void run_reco_TB(Int_t nEvents = 1)
 
 
   // -----  Parameter database   --------------------------------------------
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
-  FairParRootFileIo* parIo1 = new FairParRootFileIo();
+  FairRuntimeDb* rtdb        = run->GetRuntimeDb();
+  FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
   parIo1->open(parFile.Data());
   parIo2->open(parFileList, "in");
@@ -231,7 +234,8 @@ void run_reco_TB(Int_t nEvents = 1)
   cout << "Output file is " << outFile << endl;
   cout << "Parameter file is " << parFile << endl;
   cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << endl;
-  cout << "Real time " << rtime/60 << " min, CPU time " << ctime/60 << " min" << endl;
+  cout << "Real time " << rtime / 60 << " min, CPU time " << ctime / 60
+       << " min" << endl;
   cout << endl;
   // ------------------------------------------------------------------------
 

@@ -22,18 +22,14 @@ using std::vector;
 
 class CbmL1MCTrack;
 
-struct McVector
-{
-  vector< CbmL1MCTrack* >  mcTracks;
+struct McVector {
+  vector<CbmL1MCTrack*> mcTracks;
 };
 
-struct McTrackFind
-{
+struct McTrackFind {
   CbmL1MCTrack* mcTrack;
   int vNumber;
 };
 
 
-
 #endif
-

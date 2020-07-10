@@ -31,155 +31,157 @@ using std::string;
 * \author Semen Lebedev
 * \date 2012
 **/
-class CbmRichReconstruction : public FairTask
-{
+class CbmRichReconstruction : public FairTask {
 public:
-   /**
+  /**
     * \brief Default constructor.
     */
-   CbmRichReconstruction();
+  CbmRichReconstruction();
 
-   /**
+  /**
     * \brief Destructor.
     */
-   virtual ~CbmRichReconstruction();
+  virtual ~CbmRichReconstruction();
 
 
-   /**
+  /**
     * \brief Inherited from FairTask.
     */
-   virtual InitStatus Init();
+  virtual InitStatus Init();
 
-   /**
+  /**
     * \brief Inherited from FairTask.
     */
-   virtual void Exec(
-         Option_t* opt);
+  virtual void Exec(Option_t* opt);
 
-   /**
+  /**
     * \brief Inherited from FairTask.
     */
-   virtual void Finish();
+  virtual void Finish();
 
-   void SetRunExtrapolation(bool b){fRunExtrapolation = b;}
-   void SetRunProjection(bool b){fRunProjection = b;}
-   void SetRunFinder(bool b){fRunFinder = b;}
-   void SetRunFitter(bool b){fRunFitter = b;}
-   void SetRunTrackAssign(bool b){fRunTrackAssign = b;}
+  void SetRunExtrapolation(bool b) { fRunExtrapolation = b; }
+  void SetRunProjection(bool b) { fRunProjection = b; }
+  void SetRunFinder(bool b) { fRunFinder = b; }
+  void SetRunFitter(bool b) { fRunFitter = b; }
+  void SetRunTrackAssign(bool b) { fRunTrackAssign = b; }
 
-   void SetExtrapolationName(const string& n){fExtrapolationName = n;}
-   void SetProjectionName(const string& n){fProjectionName = n;}
-   void SetFinderName(const string& n){fFinderName = n;}
-   void SetFitterName(const string& n){fFitterName = n;}
-   void SetTrackAssignName(const string& n){fTrackAssignName = n;}
+  void SetExtrapolationName(const string& n) { fExtrapolationName = n; }
+  void SetProjectionName(const string& n) { fProjectionName = n; }
+  void SetFinderName(const string& n) { fFinderName = n; }
+  void SetFitterName(const string& n) { fFitterName = n; }
+  void SetTrackAssignName(const string& n) { fTrackAssignName = n; }
 
-   void SetUseHTAnnSelect(bool select){fUseHTAnnSelect = select;}
+  void SetUseHTAnnSelect(bool select) { fUseHTAnnSelect = select; }
 
-   /**
+  /**
     * \brief Set Z coordinate where STS tracks will be extrapolated.
     * \param[in] z Z coordinate.
     */
-   void SetZTrackExtrapolation(Double_t z){fZTrackExtrapolation = z;}
+  void SetZTrackExtrapolation(Double_t z) { fZTrackExtrapolation = z; }
 
-   void UseMCbmSetup() {
-       this->SetRunExtrapolation(false);
-       this->SetRunProjection(false);
-       this->SetRunTrackAssign(false);
-       this->SetUseHTAnnSelect(false);
-   }
+  void UseMCbmSetup() {
+    this->SetRunExtrapolation(false);
+    this->SetRunProjection(false);
+    this->SetRunTrackAssign(false);
+    this->SetUseHTAnnSelect(false);
+  }
 
 private:
-   TClonesArray* fRichHits;
-   TClonesArray* fRichRings;
-   TClonesArray* fRichProjections;
-   TClonesArray* fRichTrackParamZ;
-   TClonesArray* fGlobalTracks;
+  TClonesArray* fRichHits;
+  TClonesArray* fRichRings;
+  TClonesArray* fRichProjections;
+  TClonesArray* fRichTrackParamZ;
+  TClonesArray* fGlobalTracks;
 
-   CbmRichRingFinder* fRingFinder; // pointer to ring finder algorithm
-   CbmRichRingFitterBase* fRingFitter; // pointer to ring fitting algorithm
-   CbmRichTrackExtrapolationBase* fTrackExtrapolation; // pointer to track extrapolation algorithm
-   CbmRichProjectionProducerBase* fProjectionProducer; // pointer to projection producer
-   CbmRichRingTrackAssignBase* fRingTrackAssign; // pointer to track assignment algorithm
+  CbmRichRingFinder* fRingFinder;      // pointer to ring finder algorithm
+  CbmRichRingFitterBase* fRingFitter;  // pointer to ring fitting algorithm
+  CbmRichTrackExtrapolationBase*
+    fTrackExtrapolation;  // pointer to track extrapolation algorithm
+  CbmRichProjectionProducerBase*
+    fProjectionProducer;  // pointer to projection producer
+  CbmRichRingTrackAssignBase*
+    fRingTrackAssign;  // pointer to track assignment algorithm
 
-   // What do you wan to run.
-   bool fRunExtrapolation;
-   bool fRunProjection;
-   bool fRunFinder;
-   bool fRunFitter;
-   bool fRunTrackAssign;
+  // What do you wan to run.
+  bool fRunExtrapolation;
+  bool fRunProjection;
+  bool fRunFinder;
+  bool fRunFitter;
+  bool fRunTrackAssign;
 
-   bool fUseHTAnnSelect;
+  bool fUseHTAnnSelect;
 
-   // Algorithm names for each step of reconstruction.
-   string fExtrapolationName; // name of extrapolation algorithm
-   string fProjectionName; // name of track projection algorithm
-   string fFinderName; // name of ring finder algorithm
-   string fFitterName; // name of ring fitter algorithm
-   string fTrackAssignName; // name of track-ring matching algorithm
+  // Algorithm names for each step of reconstruction.
+  string fExtrapolationName;  // name of extrapolation algorithm
+  string fProjectionName;     // name of track projection algorithm
+  string fFinderName;         // name of ring finder algorithm
+  string fFitterName;         // name of ring fitter algorithm
+  string fTrackAssignName;    // name of track-ring matching algorithm
 
-   Double_t fZTrackExtrapolation; // Z coordinate to which one wants to extrapolate STS tracks
+  Double_t
+    fZTrackExtrapolation;  // Z coordinate to which one wants to extrapolate STS tracks
 
-   /**
+  /**
     * \brief
     */
-   void InitExtrapolation();
+  void InitExtrapolation();
 
-   /**
+  /**
     * \brief
     */
-   void InitProjection();
+  void InitProjection();
 
-   /**
+  /**
     * \brief
     */
-   void InitFinder();
+  void InitFinder();
 
-   /**
+  /**
     * \brief
     */
-   void InitFitter();
+  void InitFitter();
 
-   /**
+  /**
     * \brief
     */
-   void InitTrackAssign();
+  void InitTrackAssign();
 
-   /**
+  /**
     * \brief
     */
-   void RunExtrapolation();
+  void RunExtrapolation();
 
-   /**
+  /**
     * \brief
     */
-   void RunProjection();
+  void RunProjection();
 
-   /**
+  /**
     * \brief
     */
-   void RunFinder();
+  void RunFinder();
 
-   /**
+  /**
     * \brief
     */
-   void RunFitter();
+  void RunFitter();
 
-   /**
+  /**
     * \brief
     */
-   void RunTrackAssign();
+  void RunTrackAssign();
 
-   /**
+  /**
     * \brief Copy constructor.
     */
-   CbmRichReconstruction(const CbmRichReconstruction&);
+  CbmRichReconstruction(const CbmRichReconstruction&);
 
-   /**
+  /**
     * \brief Assignment operator.
     */
-   CbmRichReconstruction& operator=(const CbmRichReconstruction&);
+  CbmRichReconstruction& operator=(const CbmRichReconstruction&);
 
-   ClassDef(CbmRichReconstruction,1);
+  ClassDef(CbmRichReconstruction, 1);
 };
 
 #endif

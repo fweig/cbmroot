@@ -8,30 +8,25 @@
 #include "TObjArray.h"
 
 
-
 // -----   Default constructor   -------------------------------------------
-CbmMvdSensorTask::CbmMvdSensorTask() 
-: CbmMvdSensorPlugin(),
-  fInputBuffer(NULL),
-  fOutputBuffer(NULL),
-  fSensor(NULL)
-{
-}
+CbmMvdSensorTask::CbmMvdSensorTask()
+  : CbmMvdSensorPlugin()
+  , fInputBuffer(NULL)
+  , fOutputBuffer(NULL)
+  , fSensor(NULL) {}
 // -------------------------------------------------------------------------
 // -----  constructor   -------------------------------------------
 CbmMvdSensorTask::CbmMvdSensorTask(const char* name)
-: CbmMvdSensorPlugin(name),
-  fInputBuffer(NULL),
-  fOutputBuffer(NULL),
-  fSensor(NULL)
-{
-}
+  : CbmMvdSensorPlugin(name)
+  , fInputBuffer(NULL)
+  , fOutputBuffer(NULL)
+  , fSensor(NULL) {}
 // -------------------------------------------------------------------------
 
 // -----   Destructor   ----------------------------------------------------
 CbmMvdSensorTask::~CbmMvdSensorTask() {
   fInputBuffer->Delete();
- 
+
   fOutputBuffer->Delete();
 }
 // -------------------------------------------------------------------------

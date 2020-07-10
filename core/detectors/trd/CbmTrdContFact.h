@@ -1,7 +1,7 @@
 #ifndef CBMTRDCONTFACT_H
 #define CBMTRDCONTFACT_H
 
-#include <Rtypes.h>        // for ClassDef
+#include <Rtypes.h>  // for ClassDef
 
 #include "FairContFact.h"  // for FairContFact
 
@@ -13,11 +13,12 @@ private:
   void setAllContainers();
   CbmTrdContFact(const CbmTrdContFact&);
   CbmTrdContFact& operator=(const CbmTrdContFact&);
+
 public:
   CbmTrdContFact();
   ~CbmTrdContFact() {}
   FairParSet* createContainer(FairContainer*);
-  ClassDef(CbmTrdContFact,0) // Factory for all TRD parameter containers
+  ClassDef(CbmTrdContFact, 0)  // Factory for all TRD parameter containers
 };
 
-#endif  /* !CBMTRDCONTFACT_H */
+#endif /* !CBMTRDCONTFACT_H */

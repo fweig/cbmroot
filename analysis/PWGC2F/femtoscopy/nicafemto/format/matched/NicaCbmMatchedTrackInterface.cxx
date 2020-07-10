@@ -8,14 +8,13 @@
  */
 #include "NicaCbmMatchedTrackInterface.h"
 
-NicaCbmMatchedTrackInterface::NicaCbmMatchedTrackInterface() :
-fStsLink(NULL),fTofLink(NULL),fTrdLink(NULL),
-fRichLink(NULL),fMuchLink(NULL)
-{
-
-}
+NicaCbmMatchedTrackInterface::NicaCbmMatchedTrackInterface()
+  : fStsLink(NULL)
+  , fTofLink(NULL)
+  , fTrdLink(NULL)
+  , fRichLink(NULL)
+  , fMuchLink(NULL) {}
 
 NicaCbmMatchedTrackInterface::~NicaCbmMatchedTrackInterface() {
-	// TODO Auto-generated destructor stub
+  // TODO Auto-generated destructor stub
 }
-

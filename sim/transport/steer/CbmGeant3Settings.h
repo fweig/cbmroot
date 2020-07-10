@@ -16,11 +16,10 @@
 
 class TVirtualMC;
 
-class CbmGeant3Settings : public CbmVMCSettings 
-{
- public:
-  CbmGeant3Settings() = default;
-  ~CbmGeant3Settings() = default;
+class CbmGeant3Settings : public CbmVMCSettings {
+public:
+  CbmGeant3Settings()                         = default;
+  ~CbmGeant3Settings()                        = default;
   CbmGeant3Settings(const CbmGeant3Settings&) = delete;
   CbmGeant3Settings& operator=(const CbmGeant3Settings&) = delete;
 
@@ -29,7 +28,7 @@ class CbmGeant3Settings : public CbmVMCSettings
    **
    **/
   void Init(TVirtualMC*);
-  
+
   /** @brief Control the rayleigh scattering process
    ** @param[in] val Value to be set 
    **
@@ -40,7 +39,7 @@ class CbmGeant3Settings : public CbmVMCSettings
    **/
   void SetProcessRayleighScattering(Int_t val) {
     CheckValueInRange(val, 0, 1, "SetProcessRayleighScattering");
-    fProcessRayleighScattering=val;
+    fProcessRayleighScattering = val;
   }
 
   /** @brief Control the process of cherenkov production
@@ -54,7 +53,7 @@ class CbmGeant3Settings : public CbmVMCSettings
    **/
   void SetProcessCherenkovProduction(Int_t val) {
     CheckValueInRange(val, 0, 2, "SetProcessCherenkovProduction");
-    fProcessCherenkov=val;
+    fProcessCherenkov = val;
   }
 
   /** @brief Control the process of energy loss in thin materials
@@ -67,7 +66,7 @@ class CbmGeant3Settings : public CbmVMCSettings
    **/
   void SetProcessEneryLossStraggling(Int_t val) {
     CheckValueInRange(val, 0, 1, "SetProcessEneryLossStraggling");
-    fProcessEnergyLossStraggling=val;
+    fProcessEnergyLossStraggling = val;
   }
 
 
@@ -116,51 +115,51 @@ class CbmGeant3Settings : public CbmVMCSettings
     CheckValueInRange(val, -1, 2, "SetTrackingOptimizationMethod");
     fTrackingOptimizationMethod = val;
   }
-  
+
   /** @brief Control the calculation of the cross section tables
    ** @param[in] minekin  minimum kinetic energy in GeV
    ** @param[in] maxekin  maximum kinetic energy in GeV
    ** @param[in] bins     number of logarithmic bins (<200)
    **/
-  void SetCrossSectionTableLimits(Double_t minekin, Double_t maxekin, Int_t bins)
-  { 
-    CheckValueInRange(minekin, 0., 100., "SetCrossSectionTableLimits");  
-    CheckValueInRange(maxekin, 0., 100., "SetCrossSectionTableLimits");  
-    CheckValueInRange(bins, 1, 200, "SetCrossSectionTableLimits");  
+  void
+  SetCrossSectionTableLimits(Double_t minekin, Double_t maxekin, Int_t bins) {
+    CheckValueInRange(minekin, 0., 100., "SetCrossSectionTableLimits");
+    CheckValueInRange(maxekin, 0., 100., "SetCrossSectionTableLimits");
+    CheckValueInRange(bins, 1, 200, "SetCrossSectionTableLimits");
     fCrossSectionMinEnergy = minekin;
     fCrossSectionMaxEnergy = maxekin;
-    fCrossSectionBins = bins;
+    fCrossSectionBins      = bins;
   }
- 
+
   /** @brief Control the debug output
    ** @param[in] val Switch on/off the output of debug information at each step of transport
    ** @param[in] minevent First event for which debug output should be produced
    ** @param[in] maxevent Last event for which debug output should be produced
    ** The debug output will be produced for each event between the minevent and maxevent
    **/
-  void SetDebugOutput(Bool_t val=kTRUE, Int_t minevent = 0, Int_t maxevent = 100)
-  {
-    fDebugOutput=val;
-    fDebugMinEvent= minevent;
-    fDebugMaxEvent= maxevent;
+  void
+  SetDebugOutput(Bool_t val = kTRUE, Int_t minevent = 0, Int_t maxevent = 100) {
+    fDebugOutput   = val;
+    fDebugMinEvent = minevent;
+    fDebugMaxEvent = maxevent;
   }
 
- private: 
-  Int_t fProcessRayleighScattering{1};
-  Int_t fProcessCherenkov{1};
-  Int_t fProcessEnergyLossStraggling{0};
-  Int_t fAutomaticTrackingMediumParameters{1};
-  Int_t fStoppingMethod{2};
-  Int_t fTrackingOptimizationMethod{2};
-  
-  Double_t fCrossSectionMinEnergy{5.e-7}; // GeV				  
-  Double_t fCrossSectionMaxEnergy{1.e4};  // Gev
-  Double_t fCrossSectionBins{90};				  
+private:
+  Int_t fProcessRayleighScattering {1};
+  Int_t fProcessCherenkov {1};
+  Int_t fProcessEnergyLossStraggling {0};
+  Int_t fAutomaticTrackingMediumParameters {1};
+  Int_t fStoppingMethod {2};
+  Int_t fTrackingOptimizationMethod {2};
 
-  Bool_t fDebugOutput{kFALSE};
-  Int_t fDebugMinEvent{0};
-  Int_t fDebugMaxEvent{100};
-  
+  Double_t fCrossSectionMinEnergy {5.e-7};  // GeV
+  Double_t fCrossSectionMaxEnergy {1.e4};   // Gev
+  Double_t fCrossSectionBins {90};
+
+  Bool_t fDebugOutput {kFALSE};
+  Int_t fDebugMinEvent {0};
+  Int_t fDebugMaxEvent {100};
+
   ClassDef(CbmGeant3Settings, 1);
 };
 

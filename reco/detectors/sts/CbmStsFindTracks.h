@@ -31,11 +31,9 @@ class CbmStsDigiPar;
 class CbmStsTrackFinderIdeal;
 
 
-class CbmStsFindTracks : public FairTask
-{
+class CbmStsFindTracks : public FairTask {
 
- public:
-
+public:
   /** Default constructor **/
   CbmStsFindTracks();
 
@@ -46,10 +44,10 @@ class CbmStsFindTracks : public FairTask
    *@param finder   Pointer to STS track finder concrete class
    *@param useMvd   Include MVD hits in track finding
    **/
-  CbmStsFindTracks(Int_t iVerbose, 
-		   CbmStsTrackFinder* finder = NULL, 
-		   Bool_t useMvd = kTRUE,
-		   const char* name = "STSFindTracks");
+  CbmStsFindTracks(Int_t iVerbose,
+                   CbmStsTrackFinder* finder = NULL,
+                   Bool_t useMvd             = kTRUE,
+                   const char* name          = "STSFindTracks");
 
 
   /** Destructor **/
@@ -64,33 +62,30 @@ class CbmStsFindTracks : public FairTask
   CbmStsTrackFinder* GetFinder() { return fFinder; };
 
   /** Return if Mvd is used or not **/
-  Bool_t MvdUsage() const { return fUseMvd; } 
+  Bool_t MvdUsage() const { return fUseMvd; }
 
   /** Set concrete track finder **/
-  void UseFinder(CbmStsTrackFinder* finder) { 
-    if ( fFinder ) delete fFinder;
-    fFinder = finder; 
+  void UseFinder(CbmStsTrackFinder* finder) {
+    if (fFinder) delete fFinder;
+    fFinder = finder;
   };
 
 
-
- private:
-
-  Bool_t             fUseMvd;      // Inclusion of MVD hits
-  CbmGeoStsPar*      fGeoPar;      // STS geometry parameters
-  CbmStsDigiPar*     fDigiPar;     // STS digitisation parameters
+private:
+  Bool_t fUseMvd;           // Inclusion of MVD hits
+  CbmGeoStsPar* fGeoPar;    // STS geometry parameters
+  CbmStsDigiPar* fDigiPar;  // STS digitisation parameters
   //CbmStsDigiScheme*  fDigiScheme;  // STS digitisation scheme
-  FairField*         fField;       // Magnetic field
-  CbmStsTrackFinder* fFinder;      // TrackFinder concrete class
-  TClonesArray*      fMvdHits ;    // Input array of MVD hits
-  TClonesArray*      fStsHits ;    // Input array of STS hits
-  TClonesArray*      fTracks    ;  // Output array of CbmStsTracks
-  TStopwatch         fTimer;       // Timer
-  Int_t    fNEvents;        /** Number of events with success **/
-  Int_t    fNEventsFailed;  /** Number of events with failure **/
-  Double_t fTime;           /** Total real time used for good events **/
-  Double_t fNTracks;        /** Number of tracks created **/
-  
+  FairField* fField;           // Magnetic field
+  CbmStsTrackFinder* fFinder;  // TrackFinder concrete class
+  TClonesArray* fMvdHits;      // Input array of MVD hits
+  TClonesArray* fStsHits;      // Input array of STS hits
+  TClonesArray* fTracks;       // Output array of CbmStsTracks
+  TStopwatch fTimer;           // Timer
+  Int_t fNEvents;              /** Number of events with success **/
+  Int_t fNEventsFailed;        /** Number of events with failure **/
+  Double_t fTime;              /** Total real time used for good events **/
+  Double_t fNTracks;           /** Number of tracks created **/
 
 
   /** Get parameter containers **/
@@ -107,8 +102,7 @@ class CbmStsFindTracks : public FairTask
   CbmStsFindTracks(const CbmStsFindTracks&);
   CbmStsFindTracks operator=(const CbmStsFindTracks&);
 
-  ClassDef(CbmStsFindTracks,1);
-
+  ClassDef(CbmStsFindTracks, 1);
 };
 
 #endif

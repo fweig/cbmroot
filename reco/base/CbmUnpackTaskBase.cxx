@@ -6,13 +6,8 @@
 // -----------------------------------------------------------------------------
 #include "CbmUnpackTaskBase.h"
 
-CbmUnpackTaskBase::CbmUnpackTaskBase()
-  : TObject()
-{
-}
+CbmUnpackTaskBase::CbmUnpackTaskBase() : TObject() {}
 
-CbmUnpackTaskBase::~CbmUnpackTaskBase()
-{
-}
+CbmUnpackTaskBase::~CbmUnpackTaskBase() {}
 
 ClassImp(CbmUnpackTaskBase)

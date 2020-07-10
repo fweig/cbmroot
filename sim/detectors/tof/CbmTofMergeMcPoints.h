@@ -17,61 +17,61 @@ class TClonesArray;
 class CbmTofGeoHandler;
 class CbmTofDetectorId;
 
-class CbmTofMergeMcPoints : public FairTask
-{
-   public:
-      /**
+class CbmTofMergeMcPoints : public FairTask {
+public:
+  /**
       * \brief Constructor.
       */
-      CbmTofMergeMcPoints();
+  CbmTofMergeMcPoints();
 
-      /**
+  /**
       * \brief Destructor.
       */
-      virtual ~CbmTofMergeMcPoints();
+  virtual ~CbmTofMergeMcPoints();
 
-      /**
+  /**
       * \brief Derived from FairTask.
       */
-      virtual InitStatus Init();
+  virtual InitStatus Init();
 
-      /**
+  /**
       * \brief Derived from FairTask.
       */
-      virtual void Exec(
-       Option_t* opt);
+  virtual void Exec(Option_t* opt);
 
-      /**
+  /**
       * \brief Derived from FairTask.
       */
-      virtual void Finish();
+  virtual void Finish();
 
-   private:
-      /**
+private:
+  /**
       * \brief Read and create data branches.
       */
-      void ReadAndCreateDataBranches();
-       
-      void MergeRealisticTofPoints(
-          const TClonesArray* tracks,
-          const TClonesArray* points,
-          TClonesArray* realisticPoints,
-          TClonesArray* pointsMatches);
-          
-      CbmTofGeoHandler * fGeoHandler;
-      CbmTofDetectorId * fTofId;
-      
-      TClonesArray     * fMcTracksColl;  // MC tracks
-      TClonesArray     * fTofPointsColl; // CbmTofPoint array
-      
-      std::map< Int_t, std::vector< Int_t > > fTofPntTrkMap; // map of TrkId + vector of PntId
-      TClonesArray     * fRealTofPoints; // CbmTofPoint array for realistic TOF MC: 1 per (Trk, det) pair
-      TClonesArray     * fTofRealPntMatches; 	// CbmMatch array for MC TOF Pnt -> Realistic MC TOF Point
+  void ReadAndCreateDataBranches();
 
-      CbmTofMergeMcPoints(const CbmTofMergeMcPoints&);
-      CbmTofMergeMcPoints& operator=(const CbmTofMergeMcPoints&);
+  void MergeRealisticTofPoints(const TClonesArray* tracks,
+                               const TClonesArray* points,
+                               TClonesArray* realisticPoints,
+                               TClonesArray* pointsMatches);
 
-   ClassDef(CbmTofMergeMcPoints, 1);
+  CbmTofGeoHandler* fGeoHandler;
+  CbmTofDetectorId* fTofId;
+
+  TClonesArray* fMcTracksColl;   // MC tracks
+  TClonesArray* fTofPointsColl;  // CbmTofPoint array
+
+  std::map<Int_t, std::vector<Int_t>>
+    fTofPntTrkMap;  // map of TrkId + vector of PntId
+  TClonesArray*
+    fRealTofPoints;  // CbmTofPoint array for realistic TOF MC: 1 per (Trk, det) pair
+  TClonesArray*
+    fTofRealPntMatches;  // CbmMatch array for MC TOF Pnt -> Realistic MC TOF Point
+
+  CbmTofMergeMcPoints(const CbmTofMergeMcPoints&);
+  CbmTofMergeMcPoints& operator=(const CbmTofMergeMcPoints&);
+
+  ClassDef(CbmTofMergeMcPoints, 1);
 };
 
 #endif /* CBMTOFMERGEMCPOINTS_H_ */

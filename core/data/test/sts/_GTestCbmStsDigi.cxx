@@ -1,12 +1,11 @@
 #include "CbmStsDigi.h"
 
-#include "gtest/gtest.h"
 #include "gtest/gtest-spi.h"
+#include "gtest/gtest.h"
 
 #include "compareStsDigi.h"
 
-TEST(_GTestCbmStsDigi , CheckDefaultConstructor)
-{
+TEST(_GTestCbmStsDigi, CheckDefaultConstructor) {
   // Create object
   CbmStsDigi test;
 
@@ -15,11 +14,9 @@ TEST(_GTestCbmStsDigi , CheckDefaultConstructor)
   CbmStsDigi* test1 = new CbmStsDigi();
 
   compareStsDigiDataMembers(*test1, 0, 0, 0, ECbmModuleId::kSts, 0);
-
 }
 
-TEST(_GTestCbmStsDigi , CheckStandardConstructor)
-{
+TEST(_GTestCbmStsDigi, CheckStandardConstructor) {
   // Create object
   CbmStsDigi test(111, 42, 987654321, 23);
 
@@ -28,20 +25,18 @@ TEST(_GTestCbmStsDigi , CheckStandardConstructor)
   CbmStsDigi* test1 = new CbmStsDigi(111, 42, 897654321, 23);
 
   compareStsDigiDataMembers(*test1, 111, 23, 42, ECbmModuleId::kSts, 897654321);
-
 }
 
-TEST(_GTestCbmStsDigi , CheckCopyConstructor)
-{
+TEST(_GTestCbmStsDigi, CheckCopyConstructor) {
   // Create object
   CbmStsDigi test(111, 42, 987654321, 23);
 
   compareStsDigiDataMembers(test, 111, 23, 42, ECbmModuleId::kSts, 987654321);
 
   // Create object by copy constructing
-  // test should be equal to test2 and 
+  // test should be equal to test2 and
   // test should not be changed
-  CbmStsDigi test2{test};
+  CbmStsDigi test2 {test};
 
   compareStsDigiDataMembers(test2, 111, 23, 42, ECbmModuleId::kSts, 987654321);
 
@@ -49,8 +44,7 @@ TEST(_GTestCbmStsDigi , CheckCopyConstructor)
   compareStsDigiDataMembers(test, 111, 23, 42, ECbmModuleId::kSts, 987654321);
 }
 
-TEST(_GTestCbmStsDigi , CheckAssignmentOperator)
-{
+TEST(_GTestCbmStsDigi, CheckAssignmentOperator) {
 
   // Create object
   CbmStsDigi test(111, 42, 987654321, 23);
@@ -58,7 +52,7 @@ TEST(_GTestCbmStsDigi , CheckAssignmentOperator)
   compareStsDigiDataMembers(test, 111, 23, 42, ECbmModuleId::kSts, 987654321);
 
   // Create object by copy assignment
-  // test should be equal to test2 and 
+  // test should be equal to test2 and
   // test should not be changed
   CbmStsDigi test2;
   test2 = test;
@@ -69,15 +63,14 @@ TEST(_GTestCbmStsDigi , CheckAssignmentOperator)
   compareStsDigiDataMembers(test, 111, 23, 42, ECbmModuleId::kSts, 987654321);
 }
 
-TEST(_GTestCbmStsDigi , CheckMoveConstructor)
-{
+TEST(_GTestCbmStsDigi, CheckMoveConstructor) {
   // Create object
   CbmStsDigi test(111, 42, 987654321, 23);
 
   compareStsDigiDataMembers(test, 111, 23, 42, ECbmModuleId::kSts, 987654321);
 
   // Create object by move constructing
-  CbmStsDigi test2{std::move(test)};
+  CbmStsDigi test2 {std::move(test)};
 
   compareStsDigiDataMembers(test2, 111, 23, 42, ECbmModuleId::kSts, 987654321);
 
@@ -86,15 +79,14 @@ TEST(_GTestCbmStsDigi , CheckMoveConstructor)
   compareStsDigiDataMembers(test, 111, 23, 42, ECbmModuleId::kSts, 987654321);
 }
 
-TEST(_GTestCbmStsDigi , CheckAssignmentMoveConstructor)
-{
+TEST(_GTestCbmStsDigi, CheckAssignmentMoveConstructor) {
   // Create object
   CbmStsDigi test(111, 42, 987654321, 23);
 
   compareStsDigiDataMembers(test, 111, 23, 42, ECbmModuleId::kSts, 987654321);
 
   // Create object by move constructing
-  CbmStsDigi test2{};
+  CbmStsDigi test2 {};
   test2 = std::move(test);
 
   compareStsDigiDataMembers(test2, 111, 23, 42, ECbmModuleId::kSts, 987654321);
@@ -104,8 +96,7 @@ TEST(_GTestCbmStsDigi , CheckAssignmentMoveConstructor)
   compareStsDigiDataMembers(test, 111, 23, 42, ECbmModuleId::kSts, 987654321);
 }
 
-TEST(_GTestCbmStsDigi , CheckSetTime)
-{
+TEST(_GTestCbmStsDigi, CheckSetTime) {
   // Create object
   CbmStsDigi test(111, 42, 987654321, 23);
 
@@ -114,20 +105,18 @@ TEST(_GTestCbmStsDigi , CheckSetTime)
   test.SetTime(897654321.0);
 
   compareStsDigiDataMembers(test, 111, 23, 42, ECbmModuleId::kSts, 897654321);
-
 }
 
-TEST(_GTestCbmStsDigi, CheckToString)
-{
+TEST(_GTestCbmStsDigi, CheckToString) {
   CbmStsDigi test(111, 42, 987654321, 23);
 
   compareStsDigiDataMembers(test, 111, 23, 42, ECbmModuleId::kSts, 987654321);
 
-  EXPECT_STREQ("StsDigi: address 111 | channel 42 | charge 23 | time 987654321", test.ToString().c_str());
+  EXPECT_STREQ("StsDigi: address 111 | channel 42 | charge 23 | time 987654321",
+               test.ToString().c_str());
 }
 
-TEST(_GTestCbmStsDigi, CheckGetClassName)
-{
+TEST(_GTestCbmStsDigi, CheckGetClassName) {
   CbmStsDigi test(111, 42, 987654321, 23);
 
   compareStsDigiDataMembers(test, 111, 23, 42, ECbmModuleId::kSts, 987654321);

@@ -10,7 +10,7 @@
 #include <RtypesCore.h>  // for Double_t, Int_t
 #include <TObject.h>     // for TObject
 
-#include <map>           // for map
+#include <map>  // for map
 
 /** @class CbmRadDamage CbmRadDamage.h
  ** @author Volker Friese <v.friese@gsi.de>
@@ -20,12 +20,10 @@
  ** This class provides some functionality to calculate the effects
  ** of non-ionising irradiation on Silicon.
  **/
-class CbmRadDamage : public TObject
-{
+class CbmRadDamage : public TObject {
 
 
- public:
-
+public:
   /**   Constructor   **/
   CbmRadDamage();
 
@@ -45,9 +43,8 @@ class CbmRadDamage : public TObject
    **
    ** Formulae provided by S. Chatterji.
    **/
-  Double_t GetLeakageCurrent(Double_t fluence,
-			     Double_t volume,
-			     Double_t temperatur);
+  Double_t
+  GetLeakageCurrent(Double_t fluence, Double_t volume, Double_t temperatur);
 
   /**  Get NIEL factor
    *@param type   Particle Id (PDG code)
@@ -79,10 +76,7 @@ class CbmRadDamage : public TObject
   Double_t GetVfd(Double_t fluence, Double_t d);
 
 
-
-
- private:
-
+private:
   /** Tables of NIEL factors as fnct. of energy **/
   std::map<Double_t, Double_t> niel_neutron;
   std::map<Double_t, Double_t> niel_proton;
@@ -91,13 +85,13 @@ class CbmRadDamage : public TObject
 
 
   /** Proportionality constant of leakage current and fluence **/
-  Double_t fIAlpha;   //  [A/cm]
+  Double_t fIAlpha;  //  [A/cm]
 
 
   /** Constants for temperature dependence of leakage current **/
-  Double_t fEGap0;     // [eV]
-  Double_t fEGapAlpha; // [ev?k]
-  Double_t fEGapBeta;  // [K]
+  Double_t fEGap0;      // [eV]
+  Double_t fEGapAlpha;  // [ev?k]
+  Double_t fEGapBeta;   // [K]
 
 
   /** Constants for effective doping concentration
@@ -109,8 +103,8 @@ class CbmRadDamage : public TObject
 
 
   /** Permittivity of Silicon **/
-  Double_t fEpsilon; // [F/cm]
-      
+  Double_t fEpsilon;  // [F/cm]
+
 
   /** Initialisation
    **
@@ -123,11 +117,10 @@ class CbmRadDamage : public TObject
    *@param file  File name (in directory input)
    *@param map   Map to be filled
    **/
-  void ReadData(const char* file, std::map<Double_t, Double_t> &map);
+  void ReadData(const char* file, std::map<Double_t, Double_t>& map);
 
 
-  ClassDef(CbmRadDamage,1);
-
+  ClassDef(CbmRadDamage, 1);
 };
 
 #endif

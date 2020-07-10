@@ -8,11 +8,13 @@ class FairContainer;
 class CbmPassiveContFact : public FairContFact {
 private:
   void setAllContainers();
+
 public:
   CbmPassiveContFact();
   ~CbmPassiveContFact() {}
   FairParSet* createContainer(FairContainer*);
-  ClassDef( CbmPassiveContFact,0) // Factory for all Passive parameter containers
+  ClassDef(CbmPassiveContFact,
+           0)  // Factory for all Passive parameter containers
 };
 
-#endif  /* !CBMPASSIVECONTFACT_H */
+#endif /* !CBMPASSIVECONTFACT_H */

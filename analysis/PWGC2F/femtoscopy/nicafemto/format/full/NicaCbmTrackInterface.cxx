@@ -8,12 +8,11 @@
  */
 #include "NicaCbmTrackInterface.h"
 
-NicaCbmTrackInterface::NicaCbmTrackInterface():
-fStsTrack(NULL),fTofTrack(NULL),fTrdTrack(NULL),
-fRichRing(NULL),fMuchTrack(NULL)
-{
-}
+NicaCbmTrackInterface::NicaCbmTrackInterface()
+  : fStsTrack(NULL)
+  , fTofTrack(NULL)
+  , fTrdTrack(NULL)
+  , fRichRing(NULL)
+  , fMuchTrack(NULL) {}
 
-NicaCbmTrackInterface::~NicaCbmTrackInterface() {
-}
-
+NicaCbmTrackInterface::~NicaCbmTrackInterface() {}

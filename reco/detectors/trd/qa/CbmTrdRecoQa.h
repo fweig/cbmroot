@@ -39,16 +39,13 @@ class TCanvas;
 class TLine;
 class TPolyLine;
 
-class CbmTrdRecoQa : public FairTask
-{
- public:
-
+class CbmTrdRecoQa : public FairTask {
+public:
   /* Defaul constructor */
   CbmTrdRecoQa();
 
   /* Standard constructor */
-  CbmTrdRecoQa(const char* name,
-	       const char* title = "FairTask");
+  CbmTrdRecoQa(const char* name, const char* title = "FairTask");
 
   /* Destructor */
   virtual ~CbmTrdRecoQa();
@@ -65,7 +62,8 @@ class CbmTrdRecoQa : public FairTask
 
   void SetTriangularPads(Bool_t triangles);
   void SetTriggerThreshold(Double_t triggerthreshold);
- private:
+
+private:
   //TPolyLine *CreateTriangularPad(Int_t column, Int_t row, Double_t content);
   Bool_t fTrianglePads;
   Double_t fTriggerTH;
@@ -74,16 +72,16 @@ class CbmTrdRecoQa : public FairTask
   TClonesArray* fHits;
   TClonesArray* fMCPoints;
 
-  CbmTrdParSetDigi  *fDigiPar;    //!
-  CbmTrdParModDigi   *fModuleInfo; //!
-  CbmTrdGeoHandler* fGeoHandler; //!
+  CbmTrdParSetDigi* fDigiPar;     //!
+  CbmTrdParModDigi* fModuleInfo;  //!
+  CbmTrdGeoHandler* fGeoHandler;  //!
 
   //Int_t SecRowToGlobalRow(Int_t secRow);
 
 
   /* Write the QA histograms to file*/
   void WriteHistograms();
-  
+
   CbmTrdRecoQa(const CbmTrdRecoQa&);
   CbmTrdRecoQa& operator=(const CbmTrdRecoQa&);
 
@@ -92,9 +90,9 @@ class CbmTrdRecoQa : public FairTask
   std::map<Int_t, TH2D*> fModuleMapDigi;
   std::map<Int_t, TH2I*> fModuleMapCluster;
   std::map<Int_t, TGraphErrors*> fModuleMapHit;
-  std::map<Int_t, std::vector<TLine*>* > fModuleMapTrack;
+  std::map<Int_t, std::vector<TLine*>*> fModuleMapTrack;
   // map<moduleAdress, <v[0]=Mc; v[1]=digi; v[3]=cluster; v[4]=hit> >
   ClassDef(CbmTrdRecoQa, 1)
-    };
+};
 
 #endif

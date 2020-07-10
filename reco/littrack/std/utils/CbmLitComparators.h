@@ -2,14 +2,13 @@
 #define CBMLITCOMPARATORS_H_
 
 #include "data/CbmLitHit.h"
-#include "data/CbmLitStripHit.h"
 #include "data/CbmLitPixelHit.h"
+#include "data/CbmLitStripHit.h"
 #include "data/CbmLitTrackParam.h"
 #include "propagation/CbmLitMaterialInfo.h"
 
 #include <functional>
 #include <iostream>
-
 
 
 //class CompareMaterialInfoZLess:
@@ -37,7 +36,6 @@
 //      return par1.GetZ() < par2.GetZ();
 //   }
 //};
-
 
 
 //class ComparePixelHitPtrYLess :

@@ -1,7 +1,10 @@
-void check_events(Int_t nEvents = 10, UInt_t uRunId=0, TString inDir="data/", TString friendFile="", TString inFile="")
-{
+void check_events(Int_t nEvents      = 10,
+                  UInt_t uRunId      = 0,
+                  TString inDir      = "data/",
+                  TString friendFile = "",
+                  TString inFile     = "") {
   Int_t iVerbose = 1;
-  Int_t iBugCor=0;
+  Int_t iBugCor  = 0;
   //Specify log level (INFO, DEBUG, DEBUG1, ...)
   //TString logLevel = "FATAL";
   //TString logLevel = "ERROR";
@@ -14,26 +17,24 @@ void check_events(Int_t nEvents = 10, UInt_t uRunId=0, TString inDir="data/", TS
   gLogger->SetLogScreenLevel(logLevel);
   gLogger->SetLogVerbosityLevel("VERYHIGH");
 
-  TString workDir    = gSystem->Getenv("VMCWORKDIR");
+  TString workDir = gSystem->Getenv("VMCWORKDIR");
 
   TString runId = TString::Format("%03u", uRunId);
 
-  TString ParFile    = inDir + "/unp_mcbm_params_" + runId + ".root";
+  TString ParFile = inDir + "/unp_mcbm_params_" + runId + ".root";
 
-  TString InputFile  = inDir + "/unp_mcbm_" + runId + ".root";
-  TString InputFileEvent="";
-  if( "" == friendFile )
-  {
+  TString InputFile      = inDir + "/unp_mcbm_" + runId + ".root";
+  TString InputFileEvent = "";
+  if ("" == friendFile) {
     InputFileEvent = inDir + "/events_" + runId + ".root";
-  } // if( "" == friendFile )
-    else
-    {
-      InputFileEvent  = inDir + friendFile;
-    } // else of if( "" == friendFile )
+  }  // if( "" == friendFile )
+  else {
+    InputFileEvent = inDir + friendFile;
+  }  // else of if( "" == friendFile )
 
-   TString OutputFile = inDir + "/test_" + runId + ".out.root";
+  TString OutputFile = inDir + "/test_" + runId + ".out.root";
 
-   TList *parFileList = new TList();
+  TList* parFileList = new TList();
 
   // -----   Timer   --------------------------------------------------------
   TStopwatch timer;
@@ -41,7 +42,7 @@ void check_events(Int_t nEvents = 10, UInt_t uRunId=0, TString inDir="data/", TS
   // ------------------------------------------------------------------------
 
   // -----   Reconstruction run   -------------------------------------------
-  FairRunAna *run= new FairRunAna();
+  FairRunAna* run = new FairRunAna();
 
   FairFileSource* inputSource = new FairFileSource(InputFile);
   inputSource->AddFriend(InputFileEvent);
@@ -61,23 +62,23 @@ void check_events(Int_t nEvents = 10, UInt_t uRunId=0, TString inDir="data/", TS
 
   // -----  Parameter database   --------------------------------------------
 
-   FairRuntimeDb* rtdb = run->GetRuntimeDb();
-   Bool_t kParameterMerged = kTRUE;
-   FairParRootFileIo* parIo2 = new FairParRootFileIo(kParameterMerged);
-   parIo2->open(ParFile.Data(), "UPDATE");
-   parIo2->print();
-   rtdb->setFirstInput(parIo2);
+  FairRuntimeDb* rtdb       = run->GetRuntimeDb();
+  Bool_t kParameterMerged   = kTRUE;
+  FairParRootFileIo* parIo2 = new FairParRootFileIo(kParameterMerged);
+  parIo2->open(ParFile.Data(), "UPDATE");
+  parIo2->print();
+  rtdb->setFirstInput(parIo2);
 
-   FairParAsciiFileIo* parIo1 = new FairParAsciiFileIo();
-   parIo1->open(parFileList, "in");
-   parIo1->print();
-   rtdb->setSecondInput(parIo1);
-   rtdb->print();
-   rtdb->printParamContexts();
+  FairParAsciiFileIo* parIo1 = new FairParAsciiFileIo();
+  parIo1->open(parFileList, "in");
+  parIo1->print();
+  rtdb->setSecondInput(parIo1);
+  rtdb->print();
+  rtdb->printParamContexts();
 
-   //  FairParRootFileIo* parInput1 = new FairParRootFileIo();
-   //  parInput1->open(ParFile.Data());
-   //  rtdb->setFirstInput(parInput1);
+  //  FairParRootFileIo* parInput1 = new FairParRootFileIo();
+  //  parInput1->open(ParFile.Data());
+  //  rtdb->setFirstInput(parInput1);
 
   // -----   Intialise and run   --------------------------------------------
   run->Init();
@@ -99,12 +100,12 @@ void check_events(Int_t nEvents = 10, UInt_t uRunId=0, TString inDir="data/", TS
   // Extract the maximal used memory an add is as Dart measurement
   // This line is filtered by CTest and the value send to CDash
   FairSystemInfo sysInfo;
-  Float_t maxMemory=sysInfo.GetMaxMemory();
+  Float_t maxMemory = sysInfo.GetMaxMemory();
   cout << "<DartMeasurement name=\"MaxMemory\" type=\"numeric/double\">";
   cout << maxMemory;
   cout << "</DartMeasurement>" << endl;
 
-  Float_t cpuUsage=ctime/rtime;
+  Float_t cpuUsage = ctime / rtime;
   cout << "<DartMeasurement name=\"CpuLoad\" type=\"numeric/double\">";
   cout << cpuUsage;
   cout << "</DartMeasurement>" << endl;
@@ -112,7 +113,7 @@ void check_events(Int_t nEvents = 10, UInt_t uRunId=0, TString inDir="data/", TS
   FairMonitor* tempMon = FairMonitor::GetMonitor();
   tempMon->Print();
 
-//  RemoveGeoManager();
+  //  RemoveGeoManager();
   cout << " Test passed" << endl;
   cout << " All ok " << endl;
 }

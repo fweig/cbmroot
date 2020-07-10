@@ -6,13 +6,8 @@
 // -----------------------------------------------------------------------------
 #include "CbmMcbmUnpack.h"
 
-CbmMcbmUnpack::CbmMcbmUnpack()
-  : TObject()
-{
-}
+CbmMcbmUnpack::CbmMcbmUnpack() : TObject() {}
 
-CbmMcbmUnpack::~CbmMcbmUnpack()
-{
-}
+CbmMcbmUnpack::~CbmMcbmUnpack() {}
 
 ClassImp(CbmMcbmUnpack)

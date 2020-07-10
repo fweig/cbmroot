@@ -4,7 +4,6 @@
 // -------------------------------------------------------------------------
 
 
-
 /** CbmFieldMapCreator.h
  **@author V.Friese <v.friese@gsi.de>
  **@since 15.01.2008
@@ -21,19 +20,17 @@
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Double_t, Int_t, Bool_t
 
-#include <TString.h>     // for TString
-#include <TList.h>       // for TList
+#include <TList.h>    // for TList
+#include <TString.h>  // for TString
 
-#include <FairField.h>   // for FairField
+#include <FairField.h>  // for FairField
 
 class TArrayF;
 
-class CbmFieldMapCreator 
-{
+class CbmFieldMapCreator {
 
 
- public:
-
+public:
   /** Default constructor **/
   CbmFieldMapCreator();
 
@@ -53,9 +50,15 @@ class CbmFieldMapCreator
    **@param ymin,ymax  Extension in y coordinate
    **@param zmin,zmax  Extension in z coordinate
    **/
-  void SetGridParameters(Int_t nx, Double_t xmin, Double_t xmax,
-			 Int_t ny, Double_t ymin, Double_t ymax,
-			 Int_t nz, Double_t zmin, Double_t zmax);
+  void SetGridParameters(Int_t nx,
+                         Double_t xmin,
+                         Double_t xmax,
+                         Int_t ny,
+                         Double_t ymin,
+                         Double_t ymax,
+                         Int_t nz,
+                         Double_t zmin,
+                         Double_t zmax);
 
 
   /** Add an input field **/
@@ -72,39 +75,37 @@ class CbmFieldMapCreator
 
 
   /** Accessors **/
-  TString  GetMapName() const { return fMapName; }
-  Int_t    GetNx()      const { return fNx; }
-  Int_t    GetNy()      const { return fNy; }
-  Int_t    GetNz()      const { return fNz; }
-  Double_t GetXmin()    const { return fXmin; }
-  Double_t GetXmax()    const { return fXmax; }
-  Double_t GetYmin()    const { return fYmin; }
-  Double_t GetYmax()    const { return fYmax; }
-  Double_t GetZmin()    const { return fZmin; }
-  Double_t GetZmax()    const { return fZmax; }
-  TArrayF* GetBx()      const { return fBx; }
-  TArrayF* GetBy()      const { return fBy; }
-  TArrayF* GetBz()      const { return fBz; }
+  TString GetMapName() const { return fMapName; }
+  Int_t GetNx() const { return fNx; }
+  Int_t GetNy() const { return fNy; }
+  Int_t GetNz() const { return fNz; }
+  Double_t GetXmin() const { return fXmin; }
+  Double_t GetXmax() const { return fXmax; }
+  Double_t GetYmin() const { return fYmin; }
+  Double_t GetYmax() const { return fYmax; }
+  Double_t GetZmin() const { return fZmin; }
+  Double_t GetZmax() const { return fZmax; }
+  TArrayF* GetBx() const { return fBx; }
+  TArrayF* GetBy() const { return fBy; }
+  TArrayF* GetBz() const { return fBz; }
 
 
- private:
-
-  TString  fMapName;        // Name of field map to be created
-  Int_t    fNx, fNy, fNz;   // Number of grid points in each dimension
-  Double_t fXmin, fXmax;    // Field limits in x
-  Double_t fYmin, fYmax;    // Field limits in y
-  Double_t fZmin, fZmax;    // Field limits in z
-  TArrayF* fBx;             // Array of Bx values;
-  TArrayF* fBy;             // Array of By values;
-  TArrayF* fBz;             // Array of Bz values;
-  TList    fFieldList;      // List of input fields;
-  Bool_t   fInit;           // Flag whether map is initialised
+private:
+  TString fMapName;       // Name of field map to be created
+  Int_t fNx, fNy, fNz;    // Number of grid points in each dimension
+  Double_t fXmin, fXmax;  // Field limits in x
+  Double_t fYmin, fYmax;  // Field limits in y
+  Double_t fZmin, fZmax;  // Field limits in z
+  TArrayF* fBx;           // Array of Bx values;
+  TArrayF* fBy;           // Array of By values;
+  TArrayF* fBz;           // Array of Bz values;
+  TList fFieldList;       // List of input fields;
+  Bool_t fInit;           // Flag whether map is initialised
 
   CbmFieldMapCreator(const CbmFieldMapCreator&);
   CbmFieldMapCreator& operator=(const CbmFieldMapCreator&);
 
-  ClassDef(CbmFieldMapCreator,1);
-
+  ClassDef(CbmFieldMapCreator, 1);
 };
 
 #endif

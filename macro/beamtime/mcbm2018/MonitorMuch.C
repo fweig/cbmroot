@@ -8,12 +8,14 @@
  */
 
 // In order to call later Finish, we make this global
-FairRunOnline *run = NULL;
+FairRunOnline* run = NULL;
 
-void MonitorMuch(TString inFile = "", TString sHostname = "en02",
-                 Int_t iServerRefreshRate = 100, Int_t iServerHttpPort = 8080,
-                 Int_t iStartFile = -1, Int_t iStopFile = -1 )
-{
+void MonitorMuch(TString inFile           = "",
+                 TString sHostname        = "en02",
+                 Int_t iServerRefreshRate = 100,
+                 Int_t iServerHttpPort    = 8080,
+                 Int_t iStartFile         = -1,
+                 Int_t iStopFile          = -1) {
 
   // --- Specify number of events to be produced.
   // --- -1 means run until the end of the input file.
@@ -30,10 +32,10 @@ void MonitorMuch(TString inFile = "", TString sHostname = "en02",
   gLogger->SetLogVerbosityLevel("LOW");
 
   // --- Define parameter files
-  TList *parFileList = new TList();
-  TString paramDir = "./";
+  TList* parFileList = new TList();
+  TString paramDir   = "./";
 
-  TString paramFileHodo = paramDir + "mMuchPar.par";
+  TString paramFileHodo          = paramDir + "mMuchPar.par";
   TObjString* tutDetDigiFileHodo = new TObjString(paramFileHodo);
   parFileList->Add(tutDetDigiFileHodo);
 
@@ -52,46 +54,44 @@ void MonitorMuch(TString inFile = "", TString sHostname = "en02",
   // MUCH Gem Monitor
   CbmMcbm2018MonitorMuchLite* monitorMuch = new CbmMcbm2018MonitorMuchLite();
   //CbmMcbm2018MonitorMuchLite* monitorMuch = new CbmMcbm2018MonitorMuchLite();
-  monitorMuch->SetHistoFileName( "data/MuchHistos.root" );
-//  monitorSts->SetPrintMessage();
-  monitorMuch->SetMsOverlap( 1 );
-//  monitorSts->SetLongDurationLimits( 3600, 10 );
- //  monitorSts->SetLongDurationLimits( 7200, 60 );
-//  monitorSts->SetEnableCoincidenceMaps();
- // monitorSts->SetCoincidenceBorder(   0.0,  200 );
-//  monitorSts->SetMuchMode();
+  monitorMuch->SetHistoFileName("data/MuchHistos.root");
+  //  monitorSts->SetPrintMessage();
+  monitorMuch->SetMsOverlap(1);
+  //  monitorSts->SetLongDurationLimits( 3600, 10 );
+  //  monitorSts->SetLongDurationLimits( 7200, 60 );
+  //  monitorSts->SetEnableCoincidenceMaps();
+  // monitorSts->SetCoincidenceBorder(   0.0,  200 );
+  //  monitorSts->SetMuchMode();
 
   // --- Source task
   CbmMcbm2018Source* source = new CbmMcbm2018Source();
-  if( "" != inFile )
-  {
-      if( 0 <= iStartFile && iStartFile < iStopFile )
-      {
-         for( Int_t iFileIdx = iStartFile; iFileIdx < iStopFile; ++iFileIdx )
-         {
-            TString sFilePath = Form( "%s_%04u.tsa", inFile.Data(), iFileIdx );
-            source->AddFile( sFilePath  );
-            std::cout << "Added " << sFilePath <<std::endl;
-         } // for( Int_t iFileIdx = iStartFile; iFileIdx < iStopFile; ++iFileIdx )
-      } // if( 0 < iStartFile && 0 < iStopFile )
-         else source->SetFileName(inFile);
-  } // if( "" != inFile )
-      else
-      {
-         source->SetHostName( sHostname);
-         source->SetPortNumber( 5556 );
-      }
+  if ("" != inFile) {
+    if (0 <= iStartFile && iStartFile < iStopFile) {
+      for (Int_t iFileIdx = iStartFile; iFileIdx < iStopFile; ++iFileIdx) {
+        TString sFilePath = Form("%s_%04u.tsa", inFile.Data(), iFileIdx);
+        source->AddFile(sFilePath);
+        std::cout << "Added " << sFilePath << std::endl;
+      }  // for( Int_t iFileIdx = iStartFile; iFileIdx < iStopFile; ++iFileIdx )
+    }    // if( 0 < iStartFile && 0 < iStopFile )
+    else
+      source->SetFileName(inFile);
+  }  // if( "" != inFile )
+  else {
+    source->SetHostName(sHostname);
+    source->SetPortNumber(5556);
+  }
 
   //source->AddUnpacker(monitorMuch,  0x10, 6); // stsXyter DPBs
-  source->AddUnpacker(monitorMuch,  0x10, kMuch); // stsXyter DPBs
+  source->AddUnpacker(monitorMuch, 0x10, kMuch);  // stsXyter DPBs
 
   // --- Run
   run = new FairRunOnline(source);
-  run->ActivateHttpServer( iServerRefreshRate, iServerHttpPort ); // refresh each 100 events
+  run->ActivateHttpServer(iServerRefreshRate,
+                          iServerHttpPort);  // refresh each 100 events
   run->SetAutoFinish(kFALSE);
 
   // -----   Runtime database   ---------------------------------------------
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
+  FairRuntimeDb* rtdb       = run->GetRuntimeDb();
   FairParAsciiFileIo* parIn = new FairParAsciiFileIo();
   parIn->open(parFileList, "in");
   rtdb->setFirstInput(parIn);
@@ -102,10 +102,11 @@ void MonitorMuch(TString inFile = "", TString sHostname = "en02",
   TStopwatch timer;
   timer.Start();
   std::cout << ">>> MonitorSts: Starting run..." << std::endl;
-  run->Run(nEvents, 0); // run until end of input file
+  run->Run(nEvents, 0);  // run until end of input file
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
+            << std::endl;
 
   run->Finish();
 
@@ -115,8 +116,8 @@ void MonitorMuch(TString inFile = "", TString sHostname = "en02",
   std::cout << std::endl << std::endl;
   std::cout << ">>> MonitorSts: Macro finished successfully." << std::endl;
   std::cout << ">>> MonitorSts: Output file is " << outFile << std::endl;
-  std::cout << ">>> MonitorSts: Real time " << rtime << " s, CPU time "
-	         << ctime << " s" << std::endl;
+  std::cout << ">>> MonitorSts: Real time " << rtime << " s, CPU time " << ctime
+            << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

@@ -5,17 +5,16 @@
 
 
 class CbmCave : public FairModule {
-  public:
-    CbmCave(const char * name, const char *Title="Exp Cave");
-    CbmCave();
-    virtual ~CbmCave();
-    virtual void ConstructGeometry();
-    
+public:
+  CbmCave(const char* name, const char* Title = "Exp Cave");
+  CbmCave();
+  virtual ~CbmCave();
+  virtual void ConstructGeometry();
+
 
 private:
-     Double_t world[3];
-     ClassDef(CbmCave,1) //CBMCaveSD
+  Double_t world[3];
+  ClassDef(CbmCave, 1)  //CBMCaveSD
 };
 
-#endif //Cave_H
-
+#endif  //Cave_H

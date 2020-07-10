@@ -6,6 +6,6 @@
 
 #pragma link off all functions;
 
-#pragma link C++ class CbmRecoQa+;
+#pragma link C++ class CbmRecoQa + ;
 
 #endif

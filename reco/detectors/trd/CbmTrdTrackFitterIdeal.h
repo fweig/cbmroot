@@ -16,22 +16,22 @@ class CbmTrdTrack;
 class CbmTrdTrackFitterIdeal : public CbmTrdTrackFitter {
 
 private:
-    TClonesArray *fArrayTrdPoint;   // TRD points
-    TClonesArray *fArrayTrdHit;     // TRD hits
+  TClonesArray* fArrayTrdPoint;  // TRD points
+  TClonesArray* fArrayTrdHit;    // TRD hits
 
-    CbmTrdTrackFitterIdeal(const CbmTrdTrackFitterIdeal&);
-    CbmTrdTrackFitterIdeal& operator=(const CbmTrdTrackFitterIdeal&);
+  CbmTrdTrackFitterIdeal(const CbmTrdTrackFitterIdeal&);
+  CbmTrdTrackFitterIdeal& operator=(const CbmTrdTrackFitterIdeal&);
 
 public:
-    CbmTrdTrackFitterIdeal();
-    virtual ~CbmTrdTrackFitterIdeal();
+  CbmTrdTrackFitterIdeal();
+  virtual ~CbmTrdTrackFitterIdeal();
 
-    void Init();
-    Int_t DoFit(CbmTrdTrack* pTrack);
+  void Init();
+  Int_t DoFit(CbmTrdTrack* pTrack);
 
-    void SetTrackParam(CbmTrdPoint* point, FairTrackParam* trackParam);
+  void SetTrackParam(CbmTrdPoint* point, FairTrackParam* trackParam);
 
-    ClassDef(CbmTrdTrackFitterIdeal,1);
+  ClassDef(CbmTrdTrackFitterIdeal, 1);
 };
 
 #endif

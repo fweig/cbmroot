@@ -10,40 +10,36 @@
 #include "CbmAlgo.h"
 
 // Data
-#include "CbmStsPoint.h"
 #include "CbmStsHit.h"
+#include "CbmStsPoint.h"
 
 // CbmRoot
 
 // C/C++
 #include <vector>
 
-class CbmTemplateAlgo : public CbmAlgo<CbmStsPoint, CbmStsHit>
-{
-   public:
-      CbmTemplateAlgo();
-      ~CbmTemplateAlgo();
-      CbmTemplateAlgo(const CbmTemplateAlgo&) = delete;
-      CbmTemplateAlgo& operator=(const CbmTemplateAlgo&) = delete;
+class CbmTemplateAlgo : public CbmAlgo<CbmStsPoint, CbmStsHit> {
+public:
+  CbmTemplateAlgo();
+  ~CbmTemplateAlgo();
+  CbmTemplateAlgo(const CbmTemplateAlgo&) = delete;
+  CbmTemplateAlgo& operator=(const CbmTemplateAlgo&) = delete;
 
-      virtual Bool_t Init();
-      virtual void Reset();
-      virtual void Finish();
+  virtual Bool_t Init();
+  virtual void Reset();
+  virtual void Finish();
 
-      Bool_t InitContainers();
-      Bool_t ReInitContainers();
-      TList* GetParList();
+  Bool_t InitContainers();
+  Bool_t ReInitContainers();
+  TList* GetParList();
 
-      Bool_t InitParameters();
+  Bool_t InitParameters();
 
-      virtual std::vector<CbmStsHit> ProcessInputData( std::vector<CbmStsPoint>  );
+  virtual std::vector<CbmStsHit> ProcessInputData(std::vector<CbmStsPoint>);
 
-   private:
-
-      /// Settings from parameter file
-      //      CbmTemplatePar* fTemplatePar;      //!
-        
-
+private:
+  /// Settings from parameter file
+  //      CbmTemplatePar* fTemplatePar;      //!
 };
 
 #endif

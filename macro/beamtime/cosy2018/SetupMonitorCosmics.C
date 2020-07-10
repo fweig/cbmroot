@@ -8,12 +8,13 @@
  */
 
 // In order to call later Finish, we make this global
-FairRunOnline *run = NULL;
+FairRunOnline* run = NULL;
 
-void SetupMonitorCosmics(TString inFile = "",
-                 Int_t iServerRefreshRate = 100, Int_t iServerHttpPort = 8083,
-                 Int_t iStartFile = -1, Int_t iStopFile = -1 )
-{
+void SetupMonitorCosmics(TString inFile           = "",
+                         Int_t iServerRefreshRate = 100,
+                         Int_t iServerHttpPort    = 8083,
+                         Int_t iStartFile         = -1,
+                         Int_t iStopFile          = -1) {
   /*
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
   TString inDir  = srcDir + "/input/";
@@ -22,7 +23,7 @@ void SetupMonitorCosmics(TString inFile = "",
 */
   // --- Specify number of events to be produced.
   // --- -1 means run until the end of the input file.
-//  Int_t nEvents = 10000;
+  //  Int_t nEvents = 10000;
   Int_t nEvents = -1;
 
   // --- Specify output file name (this is just an example)
@@ -32,18 +33,18 @@ void SetupMonitorCosmics(TString inFile = "",
   // --- Set log output levels
   FairLogger::GetLogger();
   gLogger->SetLogScreenLevel("INFO");
-//  gLogger->SetLogScreenLevel("DEBUG");
+  //  gLogger->SetLogScreenLevel("DEBUG");
   gLogger->SetLogVerbosityLevel("LOW");
 
   // --- Define parameter files
-  TList *parFileList = new TList();
-  TString paramDir = "./";
+  TList* parFileList = new TList();
+  TString paramDir   = "./";
 
-  TString paramFileHodo = paramDir + "HodoUnpackPar.par";
+  TString paramFileHodo          = paramDir + "HodoUnpackPar.par";
   TObjString* tutDetDigiFileHodo = new TObjString(paramFileHodo);
   parFileList->Add(tutDetDigiFileHodo);
 
-  TString paramFileSts = paramDir + "StsUnpackPar.par";
+  TString paramFileSts          = paramDir + "StsUnpackPar.par";
   TObjString* tutDetDigiFileSts = new TObjString(paramFileSts);
   parFileList->Add(tutDetDigiFileSts);
 
@@ -61,36 +62,33 @@ void SetupMonitorCosmics(TString inFile = "",
 
   // Hodoscopes Monitor
   CbmCosy2018MonitorSetup* monitorSetup = new CbmCosy2018MonitorSetup();
-  monitorSetup->SetHistoFileName( "data/SetupCosmicsHistos.root" );
-//  monitorSetup->SetPrintMessage();
+  monitorSetup->SetHistoFileName("data/SetupCosmicsHistos.root");
+  //  monitorSetup->SetPrintMessage();
   monitorSetup->SetMsOverlap();
-  monitorSetup->EnableDualStsMode( kTRUE );
-//  monitorSetup->SetLongDurationLimits( 3600, 10 );
-  monitorSetup->SetLongDurationLimits( 288000, 60 );
-  monitorSetup->SetCoincidenceBorder( 150 );
+  monitorSetup->EnableDualStsMode(kTRUE);
+  //  monitorSetup->SetLongDurationLimits( 3600, 10 );
+  monitorSetup->SetLongDurationLimits(288000, 60);
+  monitorSetup->SetCoincidenceBorder(150);
 
   // --- Source task
   CbmTofStar2018Source* source = new CbmTofStar2018Source();
-  if( "" != inFile )
-  {
-      if( 0 <= iStartFile && iStartFile < iStopFile )
-      {
-         for( Int_t iFileIdx = iStartFile; iFileIdx < iStopFile; ++iFileIdx )
-         {
-            TString sFilePath = Form( "%s_%04u.tsa", inFile.Data(), iFileIdx );
-            source->AddFile( sFilePath  );
-            std::cout << "Added " << sFilePath <<std::endl;
-         } // for( Int_t iFileIdx = iStartFile; iFileIdx < iStopFile; ++iFileIdx )
-      } // if( 0 < iStartFile && 0 < iStopFile )
-         else source->SetFileName(inFile);
-  } // if( "" != inFile )
-      else
-      {
-         source->SetHostName( "cbmin002");
-         source->SetPortNumber( 5556 );
-      }
+  if ("" != inFile) {
+    if (0 <= iStartFile && iStartFile < iStopFile) {
+      for (Int_t iFileIdx = iStartFile; iFileIdx < iStopFile; ++iFileIdx) {
+        TString sFilePath = Form("%s_%04u.tsa", inFile.Data(), iFileIdx);
+        source->AddFile(sFilePath);
+        std::cout << "Added " << sFilePath << std::endl;
+      }  // for( Int_t iFileIdx = iStartFile; iFileIdx < iStopFile; ++iFileIdx )
+    }    // if( 0 < iStartFile && 0 < iStopFile )
+    else
+      source->SetFileName(inFile);
+  }  // if( "" != inFile )
+  else {
+    source->SetHostName("cbmin002");
+    source->SetPortNumber(5556);
+  }
 
-  source->AddUnpacker(monitorSetup,  0x10, 6); // stsXyter DPBs
+  source->AddUnpacker(monitorSetup, 0x10, 6);  // stsXyter DPBs
 
   // --- Event header
   FairEventHeader* event = new CbmTbEvent();
@@ -100,12 +98,13 @@ void SetupMonitorCosmics(TString inFile = "",
   run = new FairRunOnline(source);
   run->SetOutputFile(outFile);
   run->SetEventHeader(event);
-  run->ActivateHttpServer( iServerRefreshRate, iServerHttpPort ); // refresh each 100 events
+  run->ActivateHttpServer(iServerRefreshRate,
+                          iServerHttpPort);  // refresh each 100 events
   run->SetAutoFinish(kFALSE);
 
   // -----   Runtime database   ---------------------------------------------
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
-  Bool_t kParameterMerged = kTRUE;
+  FairRuntimeDb* rtdb       = run->GetRuntimeDb();
+  Bool_t kParameterMerged   = kTRUE;
   FairParRootFileIo* parOut = new FairParRootFileIo(kParameterMerged);
   FairParAsciiFileIo* parIn = new FairParAsciiFileIo();
   parOut->open(parFile.Data());
@@ -119,10 +118,11 @@ void SetupMonitorCosmics(TString inFile = "",
   TStopwatch timer;
   timer.Start();
   std::cout << ">>> Cern2017Monitor: Starting run..." << std::endl;
-  run->Run(nEvents, 0); // run until end of input file
+  run->Run(nEvents, 0);  // run until end of input file
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
+            << std::endl;
 
   run->Finish();
 
@@ -133,7 +133,7 @@ void SetupMonitorCosmics(TString inFile = "",
   std::cout << ">>> Cern2017Monitor: Macro finished successfully." << std::endl;
   std::cout << ">>> Cern2017Monitor: Output file is " << outFile << std::endl;
   std::cout << ">>> Cern2017Monitor: Real time " << rtime << " s, CPU time "
-	         << ctime << " s" << std::endl;
+            << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

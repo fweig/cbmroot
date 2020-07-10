@@ -4,94 +4,90 @@
 
 #include "FairTask.h"
 
-#include "CbmHistManager.h"
-#include "CbmKFVertex.h"
-#include "CbmVertex.h"
 #include "CbmAnaJpsiCandidate.h"
 #include "CbmAnaJpsiCuts.h"
 #include "CbmAnaJpsiHist.h"
 #include "CbmAnaJpsiKinematicParams.h"
+#include "CbmGlobalTrack.h"
+#include "CbmHistManager.h"
+#include "CbmKFVertex.h"
 #include "CbmRichRing.h"
 #include "CbmTrdTrack.h"
-#include "CbmGlobalTrack.h"
+#include "CbmVertex.h"
 
+#include "TClonesArray.h"
 #include "TH1D.h"
 #include "TH2D.h"
 #include "TH3D.h"
-#include "TClonesArray.h"
 
-#include <vector>
 #include <string>
+#include <vector>
 
 using namespace std;
 
-class CbmAnaJpsiTask : public FairTask
-{
+class CbmAnaJpsiTask : public FairTask {
 
 public:
-   /**
+  /**
     * \brief Standard constructor.
     */
-	CbmAnaJpsiTask();
+  CbmAnaJpsiTask();
 
-   /**
+  /**
     * \brief Standard destructor.
     */
-   virtual ~CbmAnaJpsiTask();
+  virtual ~CbmAnaJpsiTask();
 
-   /**
+  /**
     * \brief Inherited from FairTask.
     */
-   virtual InitStatus Init();
+  virtual InitStatus Init();
 
-   /**
+  /**
     * \brief Inherited from FairTask.
     */
-   virtual void Exec(
-		   Option_t* option);
+  virtual void Exec(Option_t* option);
 
-   /**
+  /**
     * \brief Inherited from FairTask.
     */
-   virtual void Finish();
-   
-
+  virtual void Finish();
 
 
 private:
   Int_t fEventNum;
-  
+
   TClonesArray* fMcTracks;
   TClonesArray* fStsPoints;
   TClonesArray* fStsHits;
   TClonesArray* fStsTracks;
   TClonesArray* fStsTrackMatches;
-  TClonesArray* fRichPoints; 
+  TClonesArray* fRichPoints;
   TClonesArray* fRichHits;
   TClonesArray* fRichRings;
   TClonesArray* fRichRingMatches;
-  TClonesArray* fTrdPoints; 
+  TClonesArray* fTrdPoints;
   TClonesArray* fTrdHits;
   TClonesArray* fTrdTracks;
   TClonesArray* fTrdTrackMatches;
-  TClonesArray* fTofPoints; 
+  TClonesArray* fTofPoints;
   TClonesArray* fTofHits;
   TClonesArray* fTofHitsMatches;
   TClonesArray* fGlobalTracks;
-  TClonesArray* fJpsiCandidates; //output array of Jpsi candidates
+  TClonesArray* fJpsiCandidates;  //output array of Jpsi candidates
 
 
   // Number of hits in the MC RICH ring
   std::map<Int_t, Int_t> fNofHitsInRingMap;
-  
+
   CbmVertex* fPrimVertex;
   CbmKFVertex fKFVertex;
 
-  std::vector<CbmAnaJpsiCandidate> fCandidates; // array of JPsi candidates
+  std::vector<CbmAnaJpsiCandidate> fCandidates;  // array of JPsi candidates
 
-  CbmAnaJpsiCuts fCuts; //electron identification and analysis cuts
+  CbmAnaJpsiCuts fCuts;  //electron identification and analysis cuts
 
-  Double_t fWeight; // Multiplicity * Branching Ratio of J/Psi;
+  Double_t fWeight;  // Multiplicity * Branching Ratio of J/Psi;
 
   CbmHistManager* fHM;
 
@@ -107,13 +103,12 @@ private:
        * \param[in] min Minimum value for X axis.
        * \param[in] max Maximum value for X axis.
        */
-  void CreateAnalysisStepsH1(
-        const string& name,
-        const string& axisX,
-        const string& axisY,
-        double nBins,
-        double min,
-        double max);
+  void CreateAnalysisStepsH1(const string& name,
+                             const string& axisX,
+                             const string& axisY,
+                             double nBins,
+                             double min,
+                             double max);
 
   /*
        * \brief Creates 2D histograms for each analysis step.
@@ -128,17 +123,16 @@ private:
        * \param[in] minY Minimum value for Y axis.
        * \param[in] maxY Maximum value for Y axis.
        */
-  void CreateAnalysisStepsH2(
-        const string& name,
-        const string& axisX,
-        const string& axisY,
-        const string& axisZ,
-        double nBinsX,
-        double minX,
-        double maxX,
-        double nBinsY,
-        double minY,
-        double maxY);
+  void CreateAnalysisStepsH2(const string& name,
+                             const string& axisX,
+                             const string& axisY,
+                             const string& axisZ,
+                             double nBinsX,
+                             double minX,
+                             double maxX,
+                             double nBinsY,
+                             double minY,
+                             double maxY);
 
 
   /*
@@ -150,13 +144,12 @@ private:
    * \param[in] min Minimum value.
    * \param[in] max Maximum value.
    */
-  void CreateSourceTypesH1(
-        const string& name,
-        const string& axisX,
-        const string& axisY,
-        double nBins,
-        double min,
-        double max);
+  void CreateSourceTypesH1(const string& name,
+                           const string& axisX,
+                           const string& axisY,
+                           double nBins,
+                           double min,
+                           double max);
 
 
   /*
@@ -172,117 +165,107 @@ private:
    * \param[in] minY Minimum value for Y axis.
    * \param[in] maxY Maximum value for Y axis.
    */
-  void CreateSourceTypesH2(
-        const string& name,
-        const string& axisX,
-        const string& axisY,
-        const string& axisZ,
-        double nBinsX,
-        double minX,
-        double maxX,
-        double nBinsY,
-        double minY,
-        double maxY);
+  void CreateSourceTypesH2(const string& name,
+                           const string& axisX,
+                           const string& axisY,
+                           const string& axisZ,
+                           double nBinsX,
+                           double minX,
+                           double maxX,
+                           double nBinsY,
+                           double minY,
+                           double maxY);
 
-  void CreateAnaStepsPairSourceH1(
-        const string& name,
-        const string& axisX,
-        const string& axisY,
-        double nBins,
-        double min,
-        double max);
+  void CreateAnaStepsPairSourceH1(const string& name,
+                                  const string& axisX,
+                                  const string& axisY,
+                                  double nBins,
+                                  double min,
+                                  double max);
 
-    void InitHist();
+  void InitHist();
 
-    void FillRichRingNofHits();
+  void FillRichRingNofHits();
 
-    void MCPairs();
+  void MCPairs();
 
-    void RichPmtXY();
+  void RichPmtXY();
 
-    /**
+  /**
      * \brief Fill fCandidates array with JPsiCandidates. Candidate should have STS, RICH, TRD, TOF local segments.
      *
      */
-    void FillCandidates();
+  void FillCandidates();
 
-    /**
+  /**
      * \brief Assign MC info to the candidates.
      */
-    void AssignMcToCandidates();
+  void AssignMcToCandidates();
 
-    /**
+  /**
      * \brief Return true if MC track is in detector acceptance
      */
-    Bool_t IsMcTrackAccepted(
-    		Int_t mcTrackInd);
+  Bool_t IsMcTrackAccepted(Int_t mcTrackInd);
 
-    void IsRecoTrackAccepted(
-    		CbmAnaJpsiCandidate* cand);
+  void IsRecoTrackAccepted(CbmAnaJpsiCandidate* cand);
 
-    void SingleParticleAcceptance();
+  void SingleParticleAcceptance();
 
-    /**
+  /**
      * \brief Fill histograms for MC and Acc pairs
      */
-    void PairMcAndAcceptance();
+  void PairMcAndAcceptance();
 
-    void PairSource(
-    		  CbmAnaJpsiCandidate* candP,
-    		  CbmAnaJpsiCandidate* candM,
-    	      CbmAnaJpsiAnalysisSteps step,
-    		  CbmAnaJpsiKinematicParams* parRec);
+  void PairSource(CbmAnaJpsiCandidate* candP,
+                  CbmAnaJpsiCandidate* candM,
+                  CbmAnaJpsiAnalysisSteps step,
+                  CbmAnaJpsiKinematicParams* parRec);
 
-    void TrackSource(
-    		CbmAnaJpsiCandidate* cand,
-			CbmAnaJpsiAnalysisSteps step,
-			Int_t pdg);
+  void TrackSource(CbmAnaJpsiCandidate* cand,
+                   CbmAnaJpsiAnalysisSteps step,
+                   Int_t pdg);
 
-    void FillPairHists(
-    	  CbmAnaJpsiCandidate* candP,
-          CbmAnaJpsiCandidate* candM,
-    	  CbmAnaJpsiKinematicParams* parMc,
-    	  CbmAnaJpsiKinematicParams* parRec,
-          CbmAnaJpsiAnalysisSteps step);
+  void FillPairHists(CbmAnaJpsiCandidate* candP,
+                     CbmAnaJpsiCandidate* candM,
+                     CbmAnaJpsiKinematicParams* parMc,
+                     CbmAnaJpsiKinematicParams* parRec,
+                     CbmAnaJpsiAnalysisSteps step);
 
-    void SignalAndBgReco();
+  void SignalAndBgReco();
 
-    /**
+  /**
      * \brief  Identifies particle as Electron (or not)
      */
-    void IsElectron(
-    		Int_t globalTrackIndex,
-    		Double_t momentum,
-    		CbmAnaJpsiCandidate* cand);
+  void IsElectron(Int_t globalTrackIndex,
+                  Double_t momentum,
+                  CbmAnaJpsiCandidate* cand);
 
 
-    void IsMismatch(
-    		CbmAnaJpsiCandidate* cand);
+  void IsMismatch(CbmAnaJpsiCandidate* cand);
 
-    /**
+  /**
      * \brief Fill histograms for signal and BG electrons
      */
-    void DifferenceSignalAndBg();
+  void DifferenceSignalAndBg();
 
-    /*
+  /*
      * \brief Copy candidates to the output array.
      */
-    void CopyCandidatesToOutputArray();
+  void CopyCandidatesToOutputArray();
 
 
-   /**
+  /**
     * \brief Copy constructor.
     */
-   CbmAnaJpsiTask(const CbmAnaJpsiTask&);
+  CbmAnaJpsiTask(const CbmAnaJpsiTask&);
 
-   /**
+  /**
     * \brief Assignment operator.
     */
-   CbmAnaJpsiTask& operator=(const CbmAnaJpsiTask&);
+  CbmAnaJpsiTask& operator=(const CbmAnaJpsiTask&);
 
 
-	ClassDef(CbmAnaJpsiTask,1)
+  ClassDef(CbmAnaJpsiTask, 1)
 };
 
 #endif
-

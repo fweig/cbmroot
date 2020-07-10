@@ -9,20 +9,19 @@
 #ifndef CBMMUCHTRACK_H_
 #define CBMMUCHTRACK_H_ 1
 
-#include <Rtypes.h>    // for ClassDef
+#include <Rtypes.h>  // for ClassDef
 
 #include "CbmTrack.h"  // for CbmTrack
 
-class CbmMuchTrack : public CbmTrack
-{
+class CbmMuchTrack : public CbmTrack {
 public:
-	/** Default constructor **/
-	CbmMuchTrack();
+  /** Default constructor **/
+  CbmMuchTrack();
 
-	/** Destructor **/
-	virtual ~CbmMuchTrack();
+  /** Destructor **/
+  virtual ~CbmMuchTrack();
 
-	ClassDef(CbmMuchTrack, 3);
+  ClassDef(CbmMuchTrack, 3);
 };
 
 #endif

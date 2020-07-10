@@ -10,82 +10,83 @@
 
 #include "FairMQDevice.h"
 
-#include "Timeslice.hpp"
 #include "MicrosliceDescriptor.hpp"
+#include "Timeslice.hpp"
 
 #include "CbmTofStarData2019.h"
 
-#include "TMessage.h"
 #include "Rtypes.h"
+#include "TMessage.h"
 
-#include <vector>
 #include <map>
+#include <vector>
 
 class CbmMQTMessage;
-// Relevant TOF classes  
+// Relevant TOF classes
 
-extern "C" int star_rhicf_write(unsigned int trg_word, void *dta, int bytes);
+extern "C" int star_rhicf_write(unsigned int trg_word, void* dta, int bytes);
 
 // ROOT Classes and includes
 class TString;
 
 // C++ Classes and includes
-#include <vector>
-#include <map>
 #include <list>
+#include <map>
+#include <vector>
 
-class CbmDeviceTriggerHandlerEtof: public FairMQDevice
-{
-  public:
-    CbmDeviceTriggerHandlerEtof();
-    virtual ~CbmDeviceTriggerHandlerEtof();
+class CbmDeviceTriggerHandlerEtof : public FairMQDevice {
+public:
+  CbmDeviceTriggerHandlerEtof();
+  virtual ~CbmDeviceTriggerHandlerEtof();
 
-  protected:
-    virtual void InitTask();
-    bool HandleData(FairMQParts&, int);
-    bool HandleMessage(FairMQMessagePtr&, int);
+protected:
+  virtual void InitTask();
+  bool HandleData(FairMQParts&, int);
+  bool HandleMessage(FairMQMessagePtr&, int);
 
-  private:
+private:
+  // Variables used for histo filling
 
-   // Variables used for histo filling
+  Bool_t IsChannelNameAllowed(std::string channelName);
 
-   Bool_t IsChannelNameAllowed(std::string channelName);
+  Bool_t InitWorkspace();
+  Bool_t InitContainers();
 
-   Bool_t InitWorkspace();
-   Bool_t InitContainers();
+  Bool_t ReInitContainers();
 
-   Bool_t ReInitContainers();
+  uint64_t fNumMessages;
+  std::vector<std::string> fAllowedChannels = {"tofcomponent",
+                                               "parameters",
+                                               "etofevts",
+                                               "tofhits",
+                                               "syscmd"};
 
-   uint64_t fNumMessages;
-   std::vector<std::string> fAllowedChannels = {"tofcomponent","parameters","etofevts","tofhits","syscmd"};
+  // Input variables
 
-   // Input variables 
+  // Output variables
 
-   // Output variables
+  // Constants or setting parameters
+  Int_t fiMsgCnt;
+  /// Control flags
+  Bool_t
+    fbMonitorMode;  //! Switch ON the filling of a minimal set of histograms
+  Bool_t
+    fbDebugMonitorMode;  //! Switch ON the filling of a additional set of histograms
+  Bool_t fbSandboxMode;  //! Switch OFF the emission of data toward the STAR DAQ
+  Bool_t
+    fbEventDumpEna;  //! Switch ON the dumping of the events to a binary file
 
-   // Constants or setting parameters
-   Int_t    fiMsgCnt;
-   /// Control flags
-   Bool_t fbMonitorMode;  //! Switch ON the filling of a minimal set of histograms
-   Bool_t fbDebugMonitorMode; //! Switch ON the filling of a additional set of histograms
-   Bool_t fbSandboxMode;  //! Switch OFF the emission of data toward the STAR DAQ
-   Bool_t fbEventDumpEna; //! Switch ON the dumping of the events to a binary file
-      
-   Double_t fdEvent;
+  Double_t fdEvent;
 
-   // histograms
-
+  // histograms
 };
 
 // special class to expose protected TMessage constructor
-class CbmMQTMessage : public TMessage
-{
-  public:
-    CbmMQTMessage(void* buf, Int_t len)
-        : TMessage(buf, len)
-    {
-        ResetBit(kIsOwner);
-    }
+class CbmMQTMessage : public TMessage {
+public:
+  CbmMQTMessage(void* buf, Int_t len) : TMessage(buf, len) {
+    ResetBit(kIsOwner);
+  }
 };
 
 #endif /* CBMDEVICETRIGGERHANDLERETOF_H_ */

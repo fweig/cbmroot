@@ -6,17 +6,20 @@
  ** Uses CbmMcbm2018Source as source task.
  */
 // In order to call later Finish, we make this global
-FairRunOnline *run = NULL;
+FairRunOnline* run = NULL;
 
-void unpack_tsa_sts_binning(TString inFile = "", UInt_t uRunId = 0, UInt_t nrEvents=0, TString outDir="data", TString inDir="")
-{
+void unpack_tsa_sts_binning(TString inFile  = "",
+                            UInt_t uRunId   = 0,
+                            UInt_t nrEvents = 0,
+                            TString outDir  = "data",
+                            TString inDir   = "") {
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
 
   // --- Specify number of events to be produced.
   // --- -1 means run until the end of the input file.
-  Int_t nEvents=-1;
+  Int_t nEvents = -1;
   // --- Specify output file name (this is just an example)
-  TString runId = TString::Format("%u", uRunId);
+  TString runId   = TString::Format("%u", uRunId);
   TString outFile = outDir + "/unp_sts_" + runId + ".root";
   TString parFile = outDir + "/unp_sts_params_" + runId + ".root";
 
@@ -28,10 +31,10 @@ void unpack_tsa_sts_binning(TString inFile = "", UInt_t uRunId = 0, UInt_t nrEve
   //gLogger->SetLogVerbosityLevel("LOW");
 
   // --- Define parameter files
-  TList *parFileList = new TList();
-  TString paramDir = srcDir + "/macro/beamtime/mcbm2020/";
+  TList* parFileList = new TList();
+  TString paramDir   = srcDir + "/macro/beamtime/mcbm2020/";
 
-  TString paramFileSts = paramDir + "mStsPar.par";
+  TString paramFileSts       = paramDir + "mStsPar.par";
   TObjString* parStsFileName = new TObjString(paramFileSts);
   parFileList->Add(parStsFileName);
 
@@ -46,11 +49,11 @@ void unpack_tsa_sts_binning(TString inFile = "", UInt_t uRunId = 0, UInt_t nrEve
   std::cout << std::endl;
   std::cout << ">>> unpack_tsa: Initialising..." << std::endl;
 
-  CbmMcbm2018UnpackerTaskSts  * unpacker_sts  = new CbmMcbm2018UnpackerTaskSts();
+  CbmMcbm2018UnpackerTaskSts* unpacker_sts = new CbmMcbm2018UnpackerTaskSts();
 
-  unpacker_sts ->SetMonitorMode();
-  unpacker_sts ->SetIgnoreOverlapMs();
-  unpacker_sts ->SetBinningFwFlag( kTRUE );
+  unpacker_sts->SetMonitorMode();
+  unpacker_sts->SetIgnoreOverlapMs();
+  unpacker_sts->SetBinningFwFlag(kTRUE);
 
   // ------------------------------ //
   // Enable Asic type for MUCH data.
@@ -66,8 +69,8 @@ void unpack_tsa_sts_binning(TString inFile = "", UInt_t uRunId = 0, UInt_t nrEve
   CbmMcbm2018Source* source = new CbmMcbm2018Source();
 
   source->SetFileName(inFile);
-//  source->SetInputDir(inDir);
-  source->AddUnpacker(unpacker_sts,  0x10, ECbmModuleId::kSts  );//STS xyter
+  //  source->SetInputDir(inDir);
+  source->AddUnpacker(unpacker_sts, 0x10, ECbmModuleId::kSts);  //STS xyter
 
   // --- Event header
   FairEventHeader* event = new CbmTbEvent();
@@ -76,7 +79,7 @@ void unpack_tsa_sts_binning(TString inFile = "", UInt_t uRunId = 0, UInt_t nrEve
   // --- RootFileSink
   // --- Open next outputfile after 4GB
   FairRootFileSink* sink = new FairRootFileSink(outFile);
-//  sink->GetOutTree()->SetMaxTreeSize(4294967295LL);
+  //  sink->GetOutTree()->SetMaxTreeSize(4294967295LL);
 
   // --- Run
   run = new FairRunOnline(source);
@@ -86,8 +89,8 @@ void unpack_tsa_sts_binning(TString inFile = "", UInt_t uRunId = 0, UInt_t nrEve
 
 
   // -----   Runtime database   ---------------------------------------------
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
-  Bool_t kParameterMerged = kTRUE;
+  FairRuntimeDb* rtdb       = run->GetRuntimeDb();
+  Bool_t kParameterMerged   = kTRUE;
   FairParRootFileIo* parOut = new FairParRootFileIo(kParameterMerged);
   FairParAsciiFileIo* parIn = new FairParAsciiFileIo();
   parOut->open(parFile.Data());
@@ -101,16 +104,17 @@ void unpack_tsa_sts_binning(TString inFile = "", UInt_t uRunId = 0, UInt_t nrEve
   TStopwatch timer;
   timer.Start();
   std::cout << ">>> unpack_tsa_mcbm: Starting run..." << std::endl;
-  if ( 0 == nrEvents) {
-    run->Run(nEvents, 0); // run until end of input file
+  if (0 == nrEvents) {
+    run->Run(nEvents, 0);  // run until end of input file
   } else {
-    run->Run(0, nrEvents); // process  N Events
+    run->Run(0, nrEvents);  // process  N Events
   }
   run->Finish();
 
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
+            << std::endl;
 
   // --- End-of-run info
   Double_t rtime = timer.RealTime();
@@ -119,7 +123,7 @@ void unpack_tsa_sts_binning(TString inFile = "", UInt_t uRunId = 0, UInt_t nrEve
   std::cout << ">>> unpack_tsa_mcbm: Macro finished successfully." << std::endl;
   std::cout << ">>> unpack_tsa_mcbm: Output file is " << outFile << std::endl;
   std::cout << ">>> unpack_tsa_mcbm: Real time " << rtime << " s, CPU time "
-	    << ctime << " s" << std::endl;
+            << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

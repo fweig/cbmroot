@@ -18,15 +18,14 @@
 
 class FairContainer;
 
-class CbmBinnedContFactory : public FairContFact
-{
+class CbmBinnedContFactory : public FairContFact {
 public:
-    CbmBinnedContFactory();
-    FairParSet* createContainer(FairContainer*);
-  
+  CbmBinnedContFactory();
+  FairParSet* createContainer(FairContainer*);
+
 private:
-    void setAllContainers();
-    ClassDef(CbmBinnedContFactory, 1)
+  void setAllContainers();
+  ClassDef(CbmBinnedContFactory, 1)
 };
 
 #endif /* CBM_BINNED_CONT_FACTORY_H */

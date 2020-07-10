@@ -9,17 +9,13 @@
 #include "CbmGhostCut.h"
 
 CbmGhostCut::CbmGhostCut() {
-	// TODO Auto-generated constructor stub
-
+  // TODO Auto-generated constructor stub
 }
 
-Bool_t CbmGhostCut::Init(Int_t task_id) {
-}
+Bool_t CbmGhostCut::Init(Int_t task_id) {}
 
-Bool_t CbmGhostCut::Pass(NicaTrack *track) {
-}
+Bool_t CbmGhostCut::Pass(NicaTrack* track) {}
 
 CbmGhostCut::~CbmGhostCut() {
-	// TODO Auto-generated destructor stub
+  // TODO Auto-generated destructor stub
 }
-

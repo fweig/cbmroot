@@ -10,56 +10,41 @@
 #include "CbmTrdPoint.h"
 #include "CbmTrdTrack.h"
 
-#include "FairRootManager.h"
 #include "CbmMCTrack.h"
+#include "FairRootManager.h"
 
 #include "TClonesArray.h"
-#include "TVector3.h"
-#include "TMath.h"
 #include "TH1F.h"
 #include "TH2F.h"
+#include "TMath.h"
+#include "TVector3.h"
 
 #include <iostream>
 using std::cout;
 using std::endl;
 
 CbmTrdDigitizerPRFQa::CbmTrdDigitizerPRFQa()
-: CbmTrdDigitizerPRFQa("TrdDigitizerPRFQa","")
-{
-}
+  : CbmTrdDigitizerPRFQa("TrdDigitizerPRFQa", "") {}
 
-CbmTrdDigitizerPRFQa::CbmTrdDigitizerPRFQa(const char* name,const char*)
-: FairTask(name)
-{
-}
+CbmTrdDigitizerPRFQa::CbmTrdDigitizerPRFQa(const char* name, const char*)
+  : FairTask(name) {}
 
-CbmTrdDigitizerPRFQa::~CbmTrdDigitizerPRFQa()
-{
-}
+CbmTrdDigitizerPRFQa::~CbmTrdDigitizerPRFQa() {}
 
-InitStatus CbmTrdDigitizerPRFQa::Init()
-{
+InitStatus CbmTrdDigitizerPRFQa::Init() {
   FairRootManager* rootMgr = FairRootManager::Instance();
-  if(NULL == rootMgr) {
+  if (NULL == rootMgr) {
     cout << "-E- CbmTrdDigitizerPRFQa::Init : "
-	 << "ROOT manager is not instantiated !" << endl;
+         << "ROOT manager is not instantiated !" << endl;
     return kFATAL;
   }
   PrepareHistograms();
   return kSUCCESS;
 }
-void CbmTrdDigitizerPRFQa::Exec(Option_t*)
-{
-}
-void CbmTrdDigitizerPRFQa::Finish()
-{
-  WriteHistograms();
-}
-void CbmTrdDigitizerPRFQa::PrepareHistograms()
-{
-}
-void CbmTrdDigitizerPRFQa::WriteHistograms()
-{
+void CbmTrdDigitizerPRFQa::Exec(Option_t*) {}
+void CbmTrdDigitizerPRFQa::Finish() { WriteHistograms(); }
+void CbmTrdDigitizerPRFQa::PrepareHistograms() {}
+void CbmTrdDigitizerPRFQa::WriteHistograms() {
   gDirectory->mkdir("CbmTrdDigitizerPRFQa");
   gDirectory->cd("CbmTrdDigitizerPRFQa");
   gDirectory->cd("..");

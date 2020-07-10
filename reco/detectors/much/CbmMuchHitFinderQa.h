@@ -9,18 +9,18 @@
 
 #include "FairTask.h"
 
-#include "TString.h"
+#include "CbmMuchDigi.h"
+#include "TClonesArray.h"
 #include "TH1.h"
 #include "TH2.h"
-#include "TClonesArray.h"
-#include "CbmMuchDigi.h"
+#include "TString.h"
 
 class CbmDigiManager;
 class CbmMuchGeoScheme;
 class TObjArray;
 class TVector2;
 
-Double_t LandauMPV(Double_t *x, Double_t *par);
+Double_t LandauMPV(Double_t* x, Double_t* par);
 Double_t MPV_n_e(Double_t Tkin, Double_t mass);
 
 class CbmMuchHitFinderQa : public FairTask {
@@ -29,12 +29,12 @@ public:
   CbmMuchHitFinderQa(const char* name = "MuchHitFinderQa", Int_t verbose = 1);
   virtual ~CbmMuchHitFinderQa();
   virtual InitStatus Init();
-  virtual void Exec(Option_t * option);
+  virtual void Exec(Option_t* option);
   virtual void FinishTask();
   virtual void SetParContainers();
-  void SetGeoFileName        (TString fileName) { fGeoFileName = fileName; }
-  void SetPerformanceFileName(TString fileName) { fFileName    = fileName; }
-  void SetGeometryID(Int_t flag) {fFlag = flag;}
+  void SetGeoFileName(TString fileName) { fGeoFileName = fileName; }
+  void SetPerformanceFileName(TString fileName) { fFileName = fileName; }
+  void SetGeometryID(Int_t flag) { fFlag = flag; }
 
   void SetPullsQa(Bool_t on) { fPullsQaOn = on; }
   void SetOccupancyQa(Bool_t on) { fOccupancyQaOn = on; }
@@ -73,21 +73,21 @@ private:
   CbmMuchGeoScheme* fGeoScheme;
   TString fGeoFileName;
   TString fFileName;
-  Int_t fSignalPoints;           // Number of signal MC points
-  Int_t fSignalHits;             // Number of signal hits
+  Int_t fSignalPoints;  // Number of signal MC points
+  Int_t fSignalHits;    // Number of signal hits
   Int_t fVerbose;
   Int_t fEvent;
   Int_t fFlag;
-  TClonesArray *fPoints;
-  TClonesArray *fDigis;
+  TClonesArray* fPoints;
+  TClonesArray* fDigis;
   CbmDigiManager* fDigiManager;
-  TClonesArray *fDigiMatches;
-  TClonesArray *fClusters;
-  TClonesArray *fHits;
-  TClonesArray *fMCTracks;
-  TClonesArray *fPointInfos;
+  TClonesArray* fDigiMatches;
+  TClonesArray* fClusters;
+  TClonesArray* fHits;
+  TClonesArray* fMCTracks;
+  TClonesArray* fPointInfos;
 
-  Int_t  fNstations;
+  Int_t fNstations;
 
   TObjArray* fChargeHistos;
   TH2D* fhChargeEnergyLog;
@@ -98,7 +98,7 @@ private:
   TH2D* fhChargeTrackLengthPi;
   TH2D* fhChargeTrackLengthPr;
   TH2D* fhChargeTrackLengthEl;
- // TH1D* fhCharge;
+  // TH1D* fhCharge;
   TH1D* fhChargeLog;
   TH1D* fhChargePr_1GeV_3mm;
   TH2D* fhNpadsVsS;
@@ -113,8 +113,8 @@ private:
   TH1D** fhPullYpads2;
   TH1D** fhPullXpads3;
   TH1D** fhPullYpads3;
-  Int_t  fnPadSizesX;
-  Int_t  fnPadSizesY;
+  Int_t fnPadSizesX;
+  Int_t fnPadSizesY;
 
   //TH1D** fhPullT;
   Int_t fNTimingPulls;
@@ -127,19 +127,19 @@ private:
   TH1D* fhResidualX;
   TH1D* fhResidualY;
   TH1D* fhResidualT;
-  
+
   TH1I** fhPointsInCluster;
   TH1I** fhDigisInCluster;
   TH1I** fhHitsInCluster;
 
-  Int_t *fNall;         // number of all tracks at the first station
-  Int_t *fNpr;          // number of protons at the first station
-  Int_t *fNpi;          // number of pions at the first station
-  Int_t *fNel;          // number of electrons at the first station
-  Int_t *fNmu;          // number of muons at the first station
-  Int_t *fNka;          // number of kaons at the first station
-  Int_t *fNprimary;     // number of primary tracks at the first station
-  Int_t *fNsecondary;   // number of secondary tracks at the first station
+  Int_t* fNall;        // number of all tracks at the first station
+  Int_t* fNpr;         // number of protons at the first station
+  Int_t* fNpi;         // number of pions at the first station
+  Int_t* fNel;         // number of electrons at the first station
+  Int_t* fNmu;         // number of muons at the first station
+  Int_t* fNka;         // number of kaons at the first station
+  Int_t* fNprimary;    // number of primary tracks at the first station
+  Int_t* fNsecondary;  // number of secondary tracks at the first station
 
   Int_t fPointsTotal;
   Int_t fPointsUnderCounted;
@@ -158,8 +158,8 @@ private:
   Double_t fPadMaxLx;
   Double_t fPadMaxLy;
 
-  FILE * pointsFile;
-  FILE * padsFile;
+  FILE* pointsFile;
+  FILE* padsFile;
 
   /** Defines whether the point with the given index is signal point. **/
   Bool_t IsSignalPoint(Int_t iPoint);
@@ -172,8 +172,7 @@ private:
   CbmMuchHitFinderQa(const CbmMuchHitFinderQa&);
   CbmMuchHitFinderQa& operator=(const CbmMuchHitFinderQa&);
 
-  ClassDef(CbmMuchHitFinderQa,1)
+  ClassDef(CbmMuchHitFinderQa, 1)
 };
 
 #endif
-

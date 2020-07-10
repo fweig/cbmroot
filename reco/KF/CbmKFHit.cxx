@@ -1,5 +1,4 @@
 
 #include "CbmKFHit.h"
 
-ClassImp( CbmKFHit )
-  ;
+ClassImp(CbmKFHit);

@@ -24,56 +24,54 @@ class CbmKFHit;
 class CbmKFVertexInterface;
 
 class CbmKFTrackInterface {
-  
- public:  
 
-  CbmKFTrackInterface():fId(){}
-  virtual ~CbmKFTrackInterface(){}
+public:
+  CbmKFTrackInterface() : fId() {}
+  virtual ~CbmKFTrackInterface() {}
 
   /** Information not to be changed
    */
 
-  virtual Double_t  GetMass()   { return 0.1396; } /// Mass hypothesis
-  virtual Bool_t    IsElectron(){ return 0; }      /// Is it electron
+  virtual Double_t GetMass() { return 0.1396; }  /// Mass hypothesis
+  virtual Bool_t IsElectron() { return 0; }      /// Is it electron
 
   /** I/O parameters for extrapolation routines
    */
 
-  virtual Double_t *GetTrack()    ; /// array[6] of track parameters(x,y,tx,ty,qp,z)
-  virtual Double_t *GetCovMatrix(); /// array[15] of covariance matrix
+  virtual Double_t*
+  GetTrack();  /// array[6] of track parameters(x,y,tx,ty,qp,z)
+  virtual Double_t* GetCovMatrix();  /// array[15] of covariance matrix
 
   /** Parameters during and after the track fit
    */
 
-  virtual Double_t &GetRefChi2(); /// Chi^2 after fit
-  virtual Int_t    &GetRefNDF() ; /// Number of Degrees of Freedom after fit
+  virtual Double_t& GetRefChi2();  /// Chi^2 after fit
+  virtual Int_t& GetRefNDF();      /// Number of Degrees of Freedom after fit
 
   /** Accessors to the track hits during track fit
    */
 
-  virtual Int_t     GetNOfHits()     { return 0; } /// Number of hits
-  virtual CbmKFHit *GetHit(Int_t){ return 0; } /// Access to i-th hit
+  virtual Int_t GetNOfHits() { return 0; }       /// Number of hits
+  virtual CbmKFHit* GetHit(Int_t) { return 0; }  /// Access to i-th hit
 
   /** Methods
    */
-  Int_t Extrapolate( Double_t z, Double_t *QP0=0 );
-  Int_t Fit( Bool_t downstream = 1 );
-  void Smooth( Double_t Z );
-  void Fit2Vertex( CbmKFVertexInterface  &vtx );
+  Int_t Extrapolate(Double_t z, Double_t* QP0 = 0);
+  Int_t Fit(Bool_t downstream = 1);
+  void Smooth(Double_t Z);
+  void Fit2Vertex(CbmKFVertexInterface& vtx);
 
-  Int_t Propagate( Double_t z_out, Double_t QP0 );
-  Int_t Propagate( Double_t z_out );
+  Int_t Propagate(Double_t z_out, Double_t QP0);
+  Int_t Propagate(Double_t z_out);
 
   int Id() const { return fId; };
-  void SetId( int id ){ fId = id; };
-  
- protected:
-  
-  int fId;
-  
-  ClassDef( CbmKFTrackInterface, 1 )
-};
+  void SetId(int id) { fId = id; };
 
+protected:
+  int fId;
+
+  ClassDef(CbmKFTrackInterface, 1)
+};
 
 
 /******************************************************************

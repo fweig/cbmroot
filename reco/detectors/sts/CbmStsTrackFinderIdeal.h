@@ -35,11 +35,9 @@ class TClonesArray;
  ** and the corresponding StsHits are attached using the correspondence
  ** between StsHit and StsPoint.
  **/
-class CbmStsTrackFinderIdeal : public CbmStsTrackFinder
-{
+class CbmStsTrackFinderIdeal : public CbmStsTrackFinder {
 
- public:
-
+public:
   /** Default constructor **/
   CbmStsTrackFinderIdeal();
 
@@ -66,14 +64,12 @@ class CbmStsTrackFinderIdeal : public CbmStsTrackFinder
    **
    *@value Number of tracks created
    **/
- virtual Int_t DoFind();
+  virtual Int_t DoFind();
 
- virtual Int_t FindTracks(CbmEvent* /*event*/) { return 0; }
+  virtual Int_t FindTracks(CbmEvent* /*event*/) { return 0; }
 
 
-
- private:
-
+private:
   /** Arrays of MC information **/
   TClonesArray* fMCTrackArray;
   TClonesArray* fMCPointArray;
@@ -81,8 +77,7 @@ class CbmStsTrackFinderIdeal : public CbmStsTrackFinder
   CbmStsTrackFinderIdeal(const CbmStsTrackFinderIdeal&);
   CbmStsTrackFinderIdeal operator=(const CbmStsTrackFinderIdeal&);
 
-  ClassDef(CbmStsTrackFinderIdeal,1);
-
+  ClassDef(CbmStsTrackFinderIdeal, 1);
 };
 
 

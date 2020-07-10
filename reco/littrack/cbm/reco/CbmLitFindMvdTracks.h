@@ -8,9 +8,9 @@
 #ifndef CBMLITFINDMVDTRACKS_H_
 #define CBMLITFINDMVDTRACKS_H_
 
+#include "FairTask.h"
 #include "base/CbmLitPtrTypes.h"
 #include "data/CbmLitHit.h"
-#include "FairTask.h"
 
 class CbmEvent;
 
@@ -25,84 +25,83 @@ class CbmEvent;
  * nearest MVD hits.
  *
  */
-class CbmLitFindMvdTracks : public FairTask
-{
+class CbmLitFindMvdTracks : public FairTask {
 public:
-   /**
+  /**
     * \brief Constructor.
     */
-   CbmLitFindMvdTracks();
+  CbmLitFindMvdTracks();
 
-   /**
+  /**
     * \brief Destructor.
     */
-   virtual ~CbmLitFindMvdTracks();
+  virtual ~CbmLitFindMvdTracks();
 
-   /**
+  /**
     * \brief Inherited from FairTask.
     */
-   virtual InitStatus Init();
+  virtual InitStatus Init();
 
-   /**
+  /**
     * \brief Inherited from FairTask.
     */
-   virtual void Exec(Option_t* opt);
+  virtual void Exec(Option_t* opt);
 
-   /**
+  /**
     * \brief Inherited from FairTask.
     */
-   virtual void SetParContainers();
+  virtual void SetParContainers();
 
 private:
-   /**
+  /**
     * \brief Inherited from FairTask.
     */
-   virtual void Finish();
+  virtual void Finish();
 
-   /**
+  /**
     * \brief Read necessary data branches from the input data files.
     */
-   void ReadAndCreateDataBranches();
+  void ReadAndCreateDataBranches();
 
-   /**
+  /**
     * \brief Convert input data from CBMROOT data classes to littrack data classes.
     */
-   void ConvertInputData(CbmEvent* event);
+  void ConvertInputData(CbmEvent* event);
 
-   /**
+  /**
     * \brief Convert output littrack data classes to CBMROOT data classes.
     */
-   void ConvertOutputData();
+  void ConvertOutputData();
 
-   /**
+  /**
     * \brief Run track reconstruction.
     */
-   void RunTrackReconstruction();
+  void RunTrackReconstruction();
 
-   /**
+  /**
     * \brief Clear arrays and free memory.
     */
-   void ClearArrays();
+  void ClearArrays();
 
-   // Pointers to data arrays
-   TClonesArray* fStsTracks; // CbmStsTrack array
-   TClonesArray* fMvdHits; // CbmMvdHits
-   TClonesArray* fEvents;
+  // Pointers to data arrays
+  TClonesArray* fStsTracks;  // CbmStsTrack array
+  TClonesArray* fMvdHits;    // CbmMvdHits
+  TClonesArray* fEvents;
 
-   // littrack data arrays
-   TrackPtrVector fLitStsTracks; // STS tracks
-   HitPtrVector fLitMvdHits; // MVD
-   TrackPtrVector fLitOutputTracks; // output Lit tracks
+  // littrack data arrays
+  TrackPtrVector fLitStsTracks;     // STS tracks
+  HitPtrVector fLitMvdHits;         // MVD
+  TrackPtrVector fLitOutputTracks;  // output Lit tracks
 
-   // Tools
-   TrackFinderPtr fFinder; // track finder
+  // Tools
+  TrackFinderPtr fFinder;  // track finder
 
-   Int_t fEventNo; // event counter
+  Int_t fEventNo;  // event counter
 
-   CbmLitFindMvdTracks(const CbmLitFindMvdTracks&);
-   CbmLitFindMvdTracks& operator=(const CbmLitFindMvdTracks&);
-   
-   ClassDef(CbmLitFindMvdTracks, 1);
+  CbmLitFindMvdTracks(const CbmLitFindMvdTracks&);
+  CbmLitFindMvdTracks& operator=(const CbmLitFindMvdTracks&);
+
+  ClassDef(CbmLitFindMvdTracks, 1);
 };
 
 #endif /* CBMLITFINDMVDTRACKS_H_ */

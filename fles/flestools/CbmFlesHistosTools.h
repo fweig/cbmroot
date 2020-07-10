@@ -9,11 +9,13 @@
 #define CbmFlesHistosTools_H
 
 #include <cstdint>
-#include <vector> 
+#include <vector>
 
 /**********************************************************************/
-std::vector<double> GenerateLogBinArray( uint32_t uNbDecadesLog, uint32_t uNbStepsDecade, uint32_t uNbSubStepsInStep,
-                                         uint32_t & uNbBinsLog );
+std::vector<double> GenerateLogBinArray(uint32_t uNbDecadesLog,
+                                        uint32_t uNbStepsDecade,
+                                        uint32_t uNbSubStepsInStep,
+                                        uint32_t& uNbBinsLog);
 /**********************************************************************/
 
-#endif // CbmFlesHistosTools_H
+#endif  // CbmFlesHistosTools_H

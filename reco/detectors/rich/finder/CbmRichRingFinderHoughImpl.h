@@ -10,11 +10,11 @@
 #ifndef CBM_RICH_RING_FINDER_HOUGH_IMPL
 #define CBM_RICH_RING_FINDER_HOUGH_IMPL
 
-#include "CbmRichRingLight.h"
 #include "CbmRichRingFinderData.h"
+#include "CbmRichRingLight.h"
 
-#include <vector>
 #include <map>
+#include <vector>
 
 using std::vector;
 
@@ -30,79 +30,82 @@ class CbmRichRingSelectAnn;
 * \author Semen Lebedev
 * \date 2008
 **/
-class CbmRichRingFinderHoughImpl
-{
+class CbmRichRingFinderHoughImpl {
 
 protected:
-	static const unsigned short MAX_NOF_HITS = 65000; // maximum number of hits in RICH detector
+  static const unsigned short MAX_NOF_HITS =
+    65000;  // maximum number of hits in RICH detector
 
-   // parameters of the Hough Transform algorithm
-	unsigned short fNofParts; // number of groups of hits for HT
+  // parameters of the Hough Transform algorithm
+  unsigned short fNofParts;  // number of groups of hits for HT
 
-	float fMaxDistance; // maximum distance between two hits
-	float fMinDistance; // minimum distance between two hits
-	float fMinDistanceSq; // = fMinDistance*fMinDistance
-	float fMaxDistanceSq; // = fMaxDistance*fMaxDistance
+  float fMaxDistance;    // maximum distance between two hits
+  float fMinDistance;    // minimum distance between two hits
+  float fMinDistanceSq;  // = fMinDistance*fMinDistance
+  float fMaxDistanceSq;  // = fMaxDistance*fMaxDistance
 
-	float fMinRadius; // minimum radius of the ring
-	float fMaxRadius; // maximum radius of the ring
+  float fMinRadius;  // minimum radius of the ring
+  float fMaxRadius;  // maximum radius of the ring
 
-	float fDx; // x bin width of the ring center histogram
-	float fDy; // y bin width of the ring center histogram
-	float fDr; // width of the ring radius histogram
-	unsigned short fNofBinsX; // number of bins in X direction
-	unsigned short fNofBinsY; // number of bins in Y direction
-	unsigned short fNofBinsXY; // fNofBinsX*fNofBinsY
+  float fDx;                  // x bin width of the ring center histogram
+  float fDy;                  // y bin width of the ring center histogram
+  float fDr;                  // width of the ring radius histogram
+  unsigned short fNofBinsX;   // number of bins in X direction
+  unsigned short fNofBinsY;   // number of bins in Y direction
+  unsigned short fNofBinsXY;  // fNofBinsX*fNofBinsY
 
-	unsigned short fHTCut; // cut number of entries in maximum bin of XY histogram
+  unsigned short
+    fHTCut;  // cut number of entries in maximum bin of XY histogram
 
-	unsigned short fNofBinsR;// number of bins in radius histogram
-	unsigned short fHTCutR; // cut number of entries in maximum bin of Radius histogram
+  unsigned short fNofBinsR;  // number of bins in radius histogram
+  unsigned short
+    fHTCutR;  // cut number of entries in maximum bin of Radius histogram
 
-	unsigned short fMinNofHitsInArea; // minimum number of hits in the local area
+  unsigned short fMinNofHitsInArea;  // minimum number of hits in the local area
 
-	float fRmsCoeffEl;
-	float fMaxCutEl;
-	float fRmsCoeffCOP;
-	float fMaxCutCOP;
+  float fRmsCoeffEl;
+  float fMaxCutEl;
+  float fRmsCoeffCOP;
+  float fMaxCutCOP;
 
-	float fAnnCut; //remove found hits only for good quality rings
-	float fUsedHitsAllCut; // percent of used hits
+  float fAnnCut;          //remove found hits only for good quality rings
+  float fUsedHitsAllCut;  // percent of used hits
 
-	double fTimeCut;
+  double fTimeCut;
 
-	float fCurMinX; // current minimum X position of the local area
-	float fCurMinY; // current minimum Y position of the local area
+  float fCurMinX;  // current minimum X position of the local area
+  float fCurMinY;  // current minimum Y position of the local area
 
-	bool fUseAnnSelect;
+  bool fUseAnnSelect;
 
-	vector<CbmRichHoughHit> fData; // Rich hits
-	vector<unsigned short> fHist; // XY histogram
-	vector<unsigned short> fHistR; // Radius histogram
-	vector< vector<unsigned int> > fHitInd; // store hit indexes for different group of hits
-	vector<CbmRichRingLight*> fFoundRings; // collect found rings
-	CbmRichRingFitterCOP* fFitCOP; // COP ring fitter
-	CbmRichRingSelectAnn* fANNSelect; // ANN selection criteria
+  vector<CbmRichHoughHit> fData;  // Rich hits
+  vector<unsigned short> fHist;   // XY histogram
+  vector<unsigned short> fHistR;  // Radius histogram
+  vector<vector<unsigned int>>
+    fHitInd;  // store hit indexes for different group of hits
+  vector<CbmRichRingLight*> fFoundRings;  // collect found rings
+  CbmRichRingFitterCOP* fFitCOP;          // COP ring fitter
+  CbmRichRingSelectAnn* fANNSelect;       // ANN selection criteria
 
-	double fCurTime;
+  double fCurTime;
 
 public:
-	/**
+  /**
 	 * \brief Standard constructor.
 	 */
-  	CbmRichRingFinderHoughImpl ();
+  CbmRichRingFinderHoughImpl();
 
-   /**
+  /**
     * \brief Distructor.
     */
-	virtual ~CbmRichRingFinderHoughImpl();
+  virtual ~CbmRichRingFinderHoughImpl();
 
-	/**
+  /**
 	 * \brief Set parameters of the algorithm.
 	 */
-	void SetParameters();
+  void SetParameters();
 
-	/**
+  /**
 	 * \brief Calculate circle center and radius.
 	 * \param[in] x[] Array of 3 X coordinates.
 	 * @param[in] y[] Array of 3 Y coordinates.
@@ -110,132 +113,108 @@ public:
 	 * @param[out] yc Y coordinate of the ring center.
 	 * @param[out] r Ring radius.
 	 */
-	void CalculateRingParameters(
-	      float x[],
-			float y[],
-			float *xc,
-			float *yc,
-			float *r);
+  void
+  CalculateRingParameters(float x[], float y[], float* xc, float* yc, float* r);
 
-	/**
+  /**
 	 * \brief Run HT for each hit.
 	 */
-	virtual void HoughTransformReconstruction();
+  virtual void HoughTransformReconstruction();
 
-	/**
+  /**
 	 * \brief Find hits in a local area.
 	 * \param[in] x0 X coordinate of the local area center.
 	 * \param[in] y0 Y coordinate of the local area center.
 	 * \param[out] indmin Minimum index of the hit in local area.
 	 * \param[out] indmax Maximum index of the hit in local area.
 	 */
-	virtual void DefineLocalAreaAndHits(
-	      float x0,
-	      float y0,
-	      int *indmin,
-	      int *indmax);
+  virtual void
+  DefineLocalAreaAndHits(float x0, float y0, int* indmin, int* indmax);
 
-	/**
+  /**
 	 * \brief Run HoughTransformGroup for each group of hits.
 	 * \param[in] indmin Minimum index of the hit in local area.
 	 * \param[in] indmax Maximum index of the hit in local area.
 	 */
-	virtual void HoughTransform(
-	      unsigned int indmin,
-			unsigned int indmax);
+  virtual void HoughTransform(unsigned int indmin, unsigned int indmax);
 
-	/**
+  /**
 	 * \brief Main procedure for Hough Transform.
 	 * \param[in] indmin Minimum index of the hit in local area.
     * \param[in] indmax Maximum index of the hit in local area.
     * \param[in] iPart Index of the hit group.
     */
-	virtual void HoughTransformGroup(
-	      unsigned int indmin,
-			unsigned int indmax,
-			int iPart);
+  virtual void
+  HoughTransformGroup(unsigned int indmin, unsigned int indmax, int iPart);
 
-	/**
+  /**
 	 * \brief Find peak in the HT histograms.
     * \param[in] indmin Minimum index of the hit in local area.
     * \param[in] indmax Maximum index of the hit in local area.
 	 */
-	void FindPeak(
-	      int indmin,
-	      int indmax);
+  void FindPeak(int indmin, int indmax);
 
-	/**
+  /**
 	 * \brief Ring selection procedure.
 	 */
-   void RingSelection();
+  void RingSelection();
 
-   /**
+  /**
     * \brief Reassign shared hits from two rings to only one of the rings.
     * \param[in,out] ringInd1 Index of the first ring.
     * \param[in,out] ringInd2 Index of the second ring.
     */
-   void ReAssignSharedHits(
-         int ringInd1,
-         int ringInd2);
+  void ReAssignSharedHits(int ringInd1, int ringInd2);
 
-   /**
+  /**
     * \brief Return hit indez in the internal Array.
     * \param[in] hitInd Index in TClonesArray.
     */
-   int GetHitIndexById(
-         unsigned int hitId);
+  int GetHitIndexById(unsigned int hitId);
 
-   /**
+  /**
     * \brief Set fIsUsed flag to true for hits attached to the ring.
     * \param[in] indmin Minimum index of the hit in local area.
     * \param[in] indmax Maximum index of the hit in local area.
     * \param[in] ring Found ring.
     */
-   void RemoveHitsAroundRing(
-         int indmin,
-         int indmax,
-         CbmRichRingLight* ring);
+  void RemoveHitsAroundRing(int indmin, int indmax, CbmRichRingLight* ring);
 
-   /**
+  /**
     * Initialize algorithm parameters.
     */
-	void Init();
+  void Init();
 
-	/**
+  /**
 	 * \brief Start point to run algorithm.
 	 */
-	void DoFind();
+  void DoFind();
 
-	/**
+  /**
 	 * \brief Set array of hits.
 	 * \param[in] data Array of hits.
 	 */
-	void SetData(
-	      const vector<CbmRichHoughHit>& data)
-	{
-		fData.clear();
-		fData = data;
-	}
+  void SetData(const vector<CbmRichHoughHit>& data) {
+    fData.clear();
+    fData = data;
+  }
 
-	/**
+  /**
 	 * \brief Return vector of found rings.
 	 */
-	vector<CbmRichRingLight*>& GetFoundRings()
-	{
-		return fFoundRings;
-	}
+  vector<CbmRichRingLight*>& GetFoundRings() { return fFoundRings; }
 
-	void SetUseAnnSelect(bool use) {fUseAnnSelect = use;}
+  void SetUseAnnSelect(bool use) { fUseAnnSelect = use; }
 
 private:
-   /**
+  /**
     * \brief Copy constructor.
     */
-   CbmRichRingFinderHoughImpl(const CbmRichRingFinderHoughImpl&);
+  CbmRichRingFinderHoughImpl(const CbmRichRingFinderHoughImpl&);
 
-   /**
+  /**
     * \brief Assignment operator.
     */
-   CbmRichRingFinderHoughImpl& operator=(const CbmRichRingFinderHoughImpl&);
+  CbmRichRingFinderHoughImpl& operator=(const CbmRichRingFinderHoughImpl&);
 };
 #endif

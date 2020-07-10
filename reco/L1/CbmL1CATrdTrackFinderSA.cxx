@@ -11,206 +11,203 @@
 #include "CbmL1TrdTracklet.h"
 #include "CbmL1TrdTracklet4.h"
 
+#include "CbmGeoTrdPar.h"
 #include "CbmKF.h"
+#include "CbmKFTrack.h"
 #include "CbmKFTrdHit.h"
+#include "CbmMCTrack.h"
+#include "CbmStsTrack.h"
+#include "CbmTrdHit.h"
+#include "CbmTrdPoint.h"
+#include "CbmTrdTrack.h"
+#include "CbmTrdTrackFitterKF.h"
+#include "CbmVertex.h"
+#include "FairBaseParSet.h"
+#include "FairDetector.h"
+#include "FairGeoNode.h"
 #include "FairMCPoint.h"
 #include "FairRootManager.h"
 #include "FairRunAna.h"
-#include "FairBaseParSet.h"
 #include "FairRuntimeDb.h"
-#include "FairDetector.h"
-#include "CbmTrdPoint.h"
-#include "CbmTrdHit.h"
-#include "CbmStsTrack.h"
-#include "CbmTrdTrack.h"
-#include "CbmMCTrack.h"
-#include "CbmGeoTrdPar.h"
-#include "FairGeoNode.h"
-#include "CbmVertex.h"
-#include "CbmTrdTrackFitterKF.h"
-#include "CbmKFTrack.h"
 
 #include "TClonesArray.h"
 #include "TH1F.h"
 #include "TH2F.h"
 #include "TLinearFitter.h"
 
+#include <cmath>
 #include <iostream>
-#include <vector>
 #include <list>
 #include <map>
-#include <cmath>
+#include <vector>
 
 using std::cout;
 using std::endl;
-using std::vector;
-using std::pair;
-using std::map;
-using std::set;
 using std::fabs;
+using std::map;
+using std::pair;
+using std::set;
+using std::vector;
 
 //#include "L1CATrdDraw.h"
 
 ClassImp(CbmL1CATrdTrackFinderSA);
 
 
-CbmL1CATrdTrackFinderSA *CbmL1CATrdTrackFinderSA::fInstance = 0;
+CbmL1CATrdTrackFinderSA* CbmL1CATrdTrackFinderSA::fInstance = 0;
 
 // ----------------------- Default constructor ---------------------------
-CbmL1CATrdTrackFinderSA::CbmL1CATrdTrackFinderSA():
-    geoLayer(),
-    fNTrdHits(0),
-fNoTrdStations(0),
-fNoTrdPerStation(0),
-planeHits(),
-fivTrdHitArr(),
-fArrayTrdHit(new TClonesArray("CbmTrdHit")),
-fArrayTrdTrack(new TClonesArray("CbmTrdTrack")),
-TrdPar(0),
-fEvents(0),
-fNofEvents(0),
-fMCTrackArray(0),
-fMCPointArray(0),
-trdTrackFitterKF(new CbmTrdTrackFitterKF(1,11)),
-fVerbose(1),
+CbmL1CATrdTrackFinderSA::CbmL1CATrdTrackFinderSA()
+  : geoLayer()
+  , fNTrdHits(0)
+  , fNoTrdStations(0)
+  , fNoTrdPerStation(0)
+  , planeHits()
+  , fivTrdHitArr()
+  , fArrayTrdHit(new TClonesArray("CbmTrdHit"))
+  , fArrayTrdTrack(new TClonesArray("CbmTrdTrack"))
+  , TrdPar(0)
+  , fEvents(0)
+  , fNofEvents(0)
+  , fMCTrackArray(0)
+  , fMCPointArray(0)
+  , trdTrackFitterKF(new CbmTrdTrackFitterKF(1, 11))
+  , fVerbose(1)
+  ,
 
-fvTempArray(),
-fvFoundTracks(),
-tempTrack(),
+  fvTempArray()
+  , fvFoundTracks()
+  , tempTrack()
+  ,
 
-iStation1(),
-iStation2(),
-fImapSt1(),
-fImapSt2(),
-itTrackletsLeft(),
-itTrackletsRight(),
+  iStation1()
+  , iStation2()
+  , fImapSt1()
+  , fImapSt2()
+  , itTrackletsLeft()
+  , itTrackletsRight()
+  ,
 
-      iHitMap1(0),
-      iHitMap2(0),
-      iHitMapY1(0),
-      iHitMapY2(0),
-      fTrd13_Z(0),
-      fTrd14_Z(0),
-      fTrd21_Z(0),
-      fTrd24_Z(0),
-      fTrd31_Z(0),
-      fKfTrack(0),
-      createSegments(),
-      findNeighbour(),
-      createSPs(),
-      createSPs_SL(),
-      sortSPs(),
-      doFind(),
-      sortHits(),
-      tagTracks(),
-      createTracks(),
-      selectTracks(),
-      delTime(),
-      secondLoopTime(),
-      refittingKF(),
-      thirdLoopTime(),
-      totCreateSegments(0),
-      totFindNeighbour(0),
-      totCreateSPs(0),
-      totCreateSPs_SL(0),
-      totSortSPs(0),
-      totDoFind(0),
-      totSortHits(0),
-      totTagTracks(0),
-      totCreateTracks(0),
-      totDelTime(0),
-      totSecondLoopTime(0),
-      totThirdLoopTime(0),
-      totSelectTracks(0),
-      totRefittingKF(0),
-      fh_chi2hit(0),
-      fh_chi2hit_plane(0),
-      fDistLongX(0),
-      fDistLongY(0),
-      fDistShortX(0),
-      fDistShortY(0),
-      fDistLongBX(0),
-      fDistLongBY(0),
-      fDistShortBX(0),
-      fDistShortBY(0),
-      fDistY12(0),
-      fMomDistLongPrimaryX(0),
-      fMomDistLongPrimaryY(0),
-      fMomDistLongExtraX(0),
-      fMomDistLongExtraY(0),
-      fMomDistExtrapolPrimaryX(0),
-      fMomDistExtrapolPrimaryY(0),
-      fMomDistExtrapolExtraX(0),
-      fMomDistExtrapolExtraY(0),
-      fMomDistShortPrimaryX(0),
-      fMomDistShortPrimaryY(0),
-      fMomDistShortExtraX(0),
-      fMomDistShortExtraY(0),
-      fDistY(0),
-      fDistX(0),
-      fPlane1Ydens(0),
-      fPlane5Ydens(0),
-      fPlane9Ydens(0),
-      fSPlength(0),
-      fSPlengthMC(0),
-      fYat0(0),
-      fYat0MC(0),
-      fNoEvTime(0),
-      fh_SP_xDiff_MC(0),
-      fh_SP_yDiff_MC(0),
-      fh_SP_xDiff_nMC(0),
-      fh_SP_yDiff_nMC(0),
-      fUsedHitsPerPlane(0),
-      fUnUsedHitsPerPlane(0),
-      fRUsedHits(),
-      fRUnUsedHits(),
-      fTotHits()
-{
-  if( !fInstance ) fInstance = this;
+  iHitMap1(0)
+  , iHitMap2(0)
+  , iHitMapY1(0)
+  , iHitMapY2(0)
+  , fTrd13_Z(0)
+  , fTrd14_Z(0)
+  , fTrd21_Z(0)
+  , fTrd24_Z(0)
+  , fTrd31_Z(0)
+  , fKfTrack(0)
+  , createSegments()
+  , findNeighbour()
+  , createSPs()
+  , createSPs_SL()
+  , sortSPs()
+  , doFind()
+  , sortHits()
+  , tagTracks()
+  , createTracks()
+  , selectTracks()
+  , delTime()
+  , secondLoopTime()
+  , refittingKF()
+  , thirdLoopTime()
+  , totCreateSegments(0)
+  , totFindNeighbour(0)
+  , totCreateSPs(0)
+  , totCreateSPs_SL(0)
+  , totSortSPs(0)
+  , totDoFind(0)
+  , totSortHits(0)
+  , totTagTracks(0)
+  , totCreateTracks(0)
+  , totDelTime(0)
+  , totSecondLoopTime(0)
+  , totThirdLoopTime(0)
+  , totSelectTracks(0)
+  , totRefittingKF(0)
+  , fh_chi2hit(0)
+  , fh_chi2hit_plane(0)
+  , fDistLongX(0)
+  , fDistLongY(0)
+  , fDistShortX(0)
+  , fDistShortY(0)
+  , fDistLongBX(0)
+  , fDistLongBY(0)
+  , fDistShortBX(0)
+  , fDistShortBY(0)
+  , fDistY12(0)
+  , fMomDistLongPrimaryX(0)
+  , fMomDistLongPrimaryY(0)
+  , fMomDistLongExtraX(0)
+  , fMomDistLongExtraY(0)
+  , fMomDistExtrapolPrimaryX(0)
+  , fMomDistExtrapolPrimaryY(0)
+  , fMomDistExtrapolExtraX(0)
+  , fMomDistExtrapolExtraY(0)
+  , fMomDistShortPrimaryX(0)
+  , fMomDistShortPrimaryY(0)
+  , fMomDistShortExtraX(0)
+  , fMomDistShortExtraY(0)
+  , fDistY(0)
+  , fDistX(0)
+  , fPlane1Ydens(0)
+  , fPlane5Ydens(0)
+  , fPlane9Ydens(0)
+  , fSPlength(0)
+  , fSPlengthMC(0)
+  , fYat0(0)
+  , fYat0MC(0)
+  , fNoEvTime(0)
+  , fh_SP_xDiff_MC(0)
+  , fh_SP_yDiff_MC(0)
+  , fh_SP_xDiff_nMC(0)
+  , fh_SP_yDiff_nMC(0)
+  , fUsedHitsPerPlane(0)
+  , fUnUsedHitsPerPlane(0)
+  , fRUsedHits()
+  , fRUnUsedHits()
+  , fTotHits() {
+  if (!fInstance) fInstance = this;
 }
 // -----------------------------------------------------------------------
 
 // --------------------------- Destructor --------------------------------
-CbmL1CATrdTrackFinderSA::~CbmL1CATrdTrackFinderSA()
-{
+CbmL1CATrdTrackFinderSA::~CbmL1CATrdTrackFinderSA() {
   delete fArrayTrdHit;
   delete fArrayTrdTrack;
   delete trdTrackFitterKF;
   //  delete fKfTrack;
-  if( fInstance==this ) fInstance = 0;
+  if (fInstance == this) fInstance = 0;
 }
 // -----------------------------------------------------------------------
 
 
-
 // ------------------------- Initialisation ------------------------------
-void CbmL1CATrdTrackFinderSA::Init()
-{
+void CbmL1CATrdTrackFinderSA::Init() {
   // Create histogramms
   CreateHistogramms();
   // Activate data branches
   DataBranches();
 
   FairRootManager* ioman = FairRootManager::Instance();
-  if (! ioman) {
+  if (!ioman) {
     cout << "-E- CbmL1CATrdTrackFinderSA::Init: "
-	 << "RootManager not instantised!" << endl;
+         << "RootManager not instantised!" << endl;
     return;
   }
 
   // Get MCTrack array
-  fMCTrackArray  = L1_DYNAMIC_CAST<TClonesArray*>( ioman->GetObject("MCTrack") );
-  if ( ! fMCTrackArray) {
-    cout << "-E- CbmL1CATrdTrackFinderSA::Init: No MCTrack array!"
-	 << endl;
+  fMCTrackArray = L1_DYNAMIC_CAST<TClonesArray*>(ioman->GetObject("MCTrack"));
+  if (!fMCTrackArray) {
+    cout << "-E- CbmL1CATrdTrackFinderSA::Init: No MCTrack array!" << endl;
     return;
   }
 
   // Get MCPoint array
-  fMCPointArray  = L1_DYNAMIC_CAST<TClonesArray*>( ioman->GetObject("TrdPoint") );
-  if ( ! fMCPointArray) {
-    cout << "-E- CbmL1CATrdTrackFinderSA::Init: No MCPoint array!"
-	 << endl;
+  fMCPointArray = L1_DYNAMIC_CAST<TClonesArray*>(ioman->GetObject("TrdPoint"));
+  if (!fMCPointArray) {
+    cout << "-E- CbmL1CATrdTrackFinderSA::Init: No MCPoint array!" << endl;
     return;
   }
 
@@ -223,17 +220,15 @@ void CbmL1CATrdTrackFinderSA::Init()
 // -----------------------------------------------------------------------
 
 
-
 // -------------------- Algorithm implementation -------------------------
-Int_t CbmL1CATrdTrackFinderSA::DoFind(TClonesArray *hitArray,
-				      TClonesArray *trackArray)
-{
+Int_t CbmL1CATrdTrackFinderSA::DoFind(TClonesArray* hitArray,
+                                      TClonesArray* trackArray) {
 
 #ifdef DRAW
   InitL1Draw();
 #endif
 
-  fArrayTrdHit = hitArray;
+  fArrayTrdHit   = hitArray;
   fArrayTrdTrack = trackArray;
 
   fNofEvents++;
@@ -242,49 +237,47 @@ Int_t CbmL1CATrdTrackFinderSA::DoFind(TClonesArray *hitArray,
 
   // Initialize control counters
   //  Int_t nNoTrdPoint  = 0;
-  Int_t nNoTrdHit  = 0;
-  Int_t trdPlaneID = 0;
-  Int_t ptIndex    = 0;
+  Int_t nNoTrdHit         = 0;
+  Int_t trdPlaneID        = 0;
+  Int_t ptIndex           = 0;
   Int_t noHitsPerTracklet = 4;
 
   // Create pointers to TRD hit and TrdPoint
-  CbmTrdHit*   pHit  = NULL;
+  CbmTrdHit* pHit    = NULL;
   CbmTrdPoint* pMCpt = NULL;
-//   CbmMCTrack*  pMCtr = NULL;
+  //   CbmMCTrack*  pMCtr = NULL;
 
   //--- Function: CreateSpacePoint --------------------------------------
-  Double_t           //    b
-    sigmaA_FL = 2, //3 3 3 2.5 2.5
-    sigmaB_FL = 2, //3 3 3 2.5 2.5
-    sigmaA_SL = 3,   //4 4 4 3   3
-    sigmaB_SL = 3,   //4 4 4 3   3
-    sigmaA_TL = 4,   //4 4 4 4   4
-    sigmaB_TL = 4;   //4 4 4 4   4
+  Double_t          //    b
+    sigmaA_FL = 2,  //3 3 3 2.5 2.5
+    sigmaB_FL = 2,  //3 3 3 2.5 2.5
+    sigmaA_SL = 3,  //4 4 4 3   3
+    sigmaB_SL = 3,  //4 4 4 3   3
+    sigmaA_TL = 4,  //4 4 4 4   4
+    sigmaB_TL = 4;  //4 4 4 4   4
   //--- Function: CreateSegments; Data from MC, look inside function ----
-  Double_t
-    dY_FL = 0.3, //0.5 0.5 0.5 0.4 0.4
-    dX_FL = 0.3, //0.5 0.5 0.5 0.4 0.4
-    dY_SL = 0.5, //0.7 0.6 0.8 0.6 0.6
-    dX_SL = 0.5, //0.8 0.8 0.8 0.6 0.6
-    dY_TL = 0.7, //0.7 0.6 0.8 0.7 0.8
-    dX_TL = 0.7; //0.8 0.8 0.8 0.7 0.8
+  Double_t dY_FL = 0.3,  //0.5 0.5 0.5 0.4 0.4
+    dX_FL        = 0.3,  //0.5 0.5 0.5 0.4 0.4
+    dY_SL        = 0.5,  //0.7 0.6 0.8 0.6 0.6
+    dX_SL        = 0.5,  //0.8 0.8 0.8 0.6 0.6
+    dY_TL        = 0.7,  //0.7 0.6 0.8 0.7 0.8
+    dX_TL        = 0.7;  //0.8 0.8 0.8 0.7 0.8
 
   //--- Function: FindNeighbour ------------------------------------------
   //distance from Y-propagated point, around which we look for neighbours
-  Double_t
-    distPropLongY_FL = 2.5, //3 3 3 3 2
-    distPropLongX_FL = 2.5, //3 3 3 3 2
-    distPropLongY_SL = 3,   //4 4 4 3 3
-    distPropLongX_SL = 3,   //8 6 8 3 3
-    distPropLongY_TL = 4,   //4 4 4 3 4
-    distPropLongX_TL = 4;   //8 6 8 3 4
+  Double_t distPropLongY_FL = 2.5,  //3 3 3 3 2
+    distPropLongX_FL        = 2.5,  //3 3 3 3 2
+    distPropLongY_SL        = 3,    //4 4 4 3 3
+    distPropLongX_SL        = 3,    //8 6 8 3 3
+    distPropLongY_TL        = 4,    //4 4 4 3 4
+    distPropLongX_TL        = 4;    //8 6 8 3 4
 
   //----------------------------------------------------------------------
   Bool_t competition    = true;
   Bool_t removeUsedHits = true;
   Bool_t secondLoop     = true;
   Bool_t thirdLoop      = true;
-  Int_t  segment        = 0; //0 = long tracks, 1 = segments only
+  Int_t segment         = 0;  //0 = long tracks, 1 = segments only
   //Int_t  nrLoop         = 1;
 
   //---- Simulate detector inefficiency -----------------------------------
@@ -297,18 +290,18 @@ Int_t CbmL1CATrdTrackFinderSA::DoFind(TClonesArray *hitArray,
   sortHits.Start();
   //--- hit sorting procedure ------------------------------------------------
   Int_t nTrdHit = hitArray->GetEntriesFast();
-  for (Int_t iHit = 0; iHit<nTrdHit; iHit++) {
+  for (Int_t iHit = 0; iHit < nTrdHit; iHit++) {
     // Loop over hits. Get corresponding MCPoint and MCTrack index
-    pHit = L1_DYNAMIC_CAST<CbmTrdHit*>( hitArray->At(iHit) );
+    pHit = L1_DYNAMIC_CAST<CbmTrdHit*>(hitArray->At(iHit));
 
-    if(!Rejection(accept)) {
+    if (!Rejection(accept)) {
       // Simulate detector inefficiency
       globalSetRejectedHits.insert(iHit);
       continue;
     }
-    if(!pHit) {
+    if (!pHit) {
       cout << "-E- CbmL1CATrdTrackFinderSA::DoFind: Empty slot "
-	   << "in HitArray at position " << iHit << endl;
+           << "in HitArray at position " << iHit << endl;
       nNoTrdHit++;
       continue;
     }
@@ -320,20 +313,20 @@ Int_t CbmL1CATrdTrackFinderSA::DoFind(TClonesArray *hitArray,
     //  nNoTrdPoint++;
     //  continue;
     //}
-//     pMCtr = L1_DYNAMIC_CAST<CbmMCTrack*>(fMCTrackArray->At(pMCpt->GetTrackID()));
+    //     pMCtr = L1_DYNAMIC_CAST<CbmMCTrack*>(fMCTrackArray->At(pMCpt->GetTrackID()));
     //if ( ! pMCtr ) continue;
 
-    trdPlaneID = pHit->GetPlaneId();
-    Int_t trdPlaneIDN = trdPlaneID-1;
+    trdPlaneID        = pHit->GetPlaneId();
+    Int_t trdPlaneIDN = trdPlaneID - 1;
 
     planeHits.mcTrackID = pMCpt->GetTrackID();
-    planeHits.hitIndex = iHit;
-    planeHits.X  = pHit->GetX();
-    planeHits.Y  = pHit->GetY();
-    planeHits.Z  = pHit->GetZ();
-    planeHits.DX = pHit->GetDx();
-    planeHits.DY = pHit->GetDy();
-    planeHits.planeID = trdPlaneID;
+    planeHits.hitIndex  = iHit;
+    planeHits.X         = pHit->GetX();
+    planeHits.Y         = pHit->GetY();
+    planeHits.Z         = pHit->GetZ();
+    planeHits.DX        = pHit->GetDx();
+    planeHits.DY        = pHit->GetDy();
+    planeHits.planeID   = trdPlaneID;
     fvTrdHitArr[trdPlaneIDN].push_back(planeHits);
 
     //    cout << "geoLayer: " <<geoLayer.Y[trdPlaneID] <<", "<< geoLayer.Z[trdPlaneID] << endl;
@@ -349,8 +342,8 @@ Int_t CbmL1CATrdTrackFinderSA::DoFind(TClonesArray *hitArray,
     //fvTrdPointArr[trdPlaneIDN].push_back(planeHits);
   }
 
-  for(Int_t i = 0; i < 12; i++){
-    sort(fvTrdHitArr[i].begin(),  fvTrdHitArr[i].end(),  CompareY);
+  for (Int_t i = 0; i < 12; i++) {
+    sort(fvTrdHitArr[i].begin(), fvTrdHitArr[i].end(), CompareY);
   }
 
   /*
@@ -383,10 +376,10 @@ Int_t CbmL1CATrdTrackFinderSA::DoFind(TClonesArray *hitArray,
   */
   sortHits.Stop();
 
-  if(fVerbose > 2) {
-    cout <<"-I- CbmL1CATrdTrackFinderSA::DoFind " << endl;
-    for(Int_t i = 0; i < 12; i++){
-      cout <<" Size of vector "<< i <<": "<< fvTrdHitArr[i].size() << endl;
+  if (fVerbose > 2) {
+    cout << "-I- CbmL1CATrdTrackFinderSA::DoFind " << endl;
+    for (Int_t i = 0; i < 12; i++) {
+      cout << " Size of vector " << i << ": " << fvTrdHitArr[i].size() << endl;
     }
   }
 
@@ -397,37 +390,44 @@ Int_t CbmL1CATrdTrackFinderSA::DoFind(TClonesArray *hitArray,
   //create vectors that will hold the mini-tracklet (2-hit) objects - Space Points
   vector<CbmL1TrdTracklet*> clSpacePoints[6];
 
-  if(noHitsPerTracklet == 4) { //noHitsPerTracklet == 4
+  if (noHitsPerTracklet == 4) {  //noHitsPerTracklet == 4
     //------ creation of mini tracklet 1-2 -------------------------------------
-    cout << endl << "-I- CbmL1CATrdTrackFinderSA::DoFind " << endl
-	 << "--------------------------------------------------" << endl
-	 << "     ### Start creation of Space Points" <<endl
-	 << "--------------------------------------------------" << endl;
+    cout << endl
+         << "-I- CbmL1CATrdTrackFinderSA::DoFind " << endl
+         << "--------------------------------------------------" << endl
+         << "     ### Start creation of Space Points" << endl
+         << "--------------------------------------------------" << endl;
 
     createSPs.Start();
-    for(Int_t i = 0, j = 0; i < 6; i++, j=j+2) {
-      CreateSpacePoints(fvTrdHitArr[j], fvTrdHitArr[j+1],
-			clSpacePoints[i], sigmaA_FL, sigmaB_FL);
+    for (Int_t i = 0, j = 0; i < 6; i++, j = j + 2) {
+      CreateSpacePoints(fvTrdHitArr[j],
+                        fvTrdHitArr[j + 1],
+                        clSpacePoints[i],
+                        sigmaA_FL,
+                        sigmaB_FL);
     }
     createSPs.Stop();
 
     //------- Sorting spacepoints -------------------------------------------------
     sortSPs.Start();
-    for(Int_t i = 0; i < 6; i++){
-      sort(clSpacePoints[i].begin(), clSpacePoints[i].end(), CbmL1TrdTracklet::Compare1);
+    for (Int_t i = 0; i < 6; i++) {
+      sort(clSpacePoints[i].begin(),
+           clSpacePoints[i].end(),
+           CbmL1TrdTracklet::Compare1);
     }
     sortSPs.Stop();
 
     // --------------- Creation tracklet from 4 space points ----------------
-    cout << endl << "-I- CbmL1CATrdTrackFinderSA::DoFind " << endl
-	 << "--------------------------------------------------" << endl
-	 << "     ### Start creation tracklets" <<endl
-	 << "--------------------------------------------------" << endl;
+    cout << endl
+         << "-I- CbmL1CATrdTrackFinderSA::DoFind " << endl
+         << "--------------------------------------------------" << endl
+         << "     ### Start creation tracklets" << endl
+         << "--------------------------------------------------" << endl;
     createSegments.Start();
     //joining SP together to create 4-hit tracklets
-    for(Int_t i = 0, j = 0; i < 3; i++, j=j+2) {
-      CreateSegments(clSpacePoints[j], clSpacePoints[j+1],
-		     clTracklets[i], dX_FL, dY_FL);
+    for (Int_t i = 0, j = 0; i < 3; i++, j = j + 2) {
+      CreateSegments(
+        clSpacePoints[j], clSpacePoints[j + 1], clTracklets[i], dX_FL, dY_FL);
     }
     createSegments.Stop();
 
@@ -478,68 +478,62 @@ Int_t CbmL1CATrdTrackFinderSA::DoFind(TClonesArray *hitArray,
     findNeighbour.Start();
 
     cout << "--- Finding neighbour 14-58" << endl;
-    FindNeighbour(clTracklets[0],clTracklets[1],
-		  distPropLongX_FL, distPropLongY_FL);
+    FindNeighbour(
+      clTracklets[0], clTracklets[1], distPropLongX_FL, distPropLongY_FL);
 
     cout << "--- Finding neighbour 58-912" << endl;
-    FindNeighbour(clTracklets[1],clTracklets[2],
-		  distPropLongX_FL, distPropLongY_FL);
+    FindNeighbour(
+      clTracklets[1], clTracklets[2], distPropLongX_FL, distPropLongY_FL);
 
     findNeighbour.Stop();
 
-  }//end of noHitsPerTracklet == 4
+  }  //end of noHitsPerTracklet == 4
 
   //###################################################################################################
 
 
-  cout << endl << "-I- CbmL1CATrdTrackFinderSA::DoFind " << endl
+  cout << endl
+       << "-I- CbmL1CATrdTrackFinderSA::DoFind " << endl
        << "--------------------------------------------------" << endl
-       << "     ### (FL) in Event No. " << fNofEvents << " ###" <<endl
+       << "     ### (FL) in Event No. " << fNofEvents << " ###" << endl
        << "--------------------------------------------------" << endl;
 
-  if(fVerbose > 2){
-    cout    << "size of segment vector 14 = "
-	    << clTracklets[0].size()
-	    << endl
-	    << "size of segment vector 58 = "
-	    << clTracklets[1].size()
-	    << endl
-	    << "size of segment vector 912 = "
-	    << clTracklets[2].size()
-	    << endl;
+  if (fVerbose > 2) {
+    cout << "size of segment vector 14 = " << clTracklets[0].size() << endl
+         << "size of segment vector 58 = " << clTracklets[1].size() << endl
+         << "size of segment vector 912 = " << clTracklets[2].size() << endl;
   }
 
-  if(fVerbose > 1)
+  if (fVerbose > 1)
     cout << "-I- CbmL1CATrdTrackFinderSA::DoFind " << endl
-	 << "Tracklet finding phase completed." << endl
-	 << "Now constructing tracks from tracklets..."
-	 << endl;
+         << "Tracklet finding phase completed." << endl
+         << "Now constructing tracks from tracklets..." << endl;
 
 
   tagTracks.Start();
 
-  if(noHitsPerTracklet == 4) {//noHitsPerTracklet == 4
+  if (noHitsPerTracklet == 4) {  //noHitsPerTracklet == 4
     //BEGIN: Tagging procedure ------------------------------------------------------
-    cout << endl << "-I- CbmL1CATrdTrackFinderSA::DoFind " << endl
-	 << "--------------------------------------------------" << endl
-	 << "     ### Starting tagging procedure" <<endl
-	 << "--------------------------------------------------" << endl;
+    cout << endl
+         << "-I- CbmL1CATrdTrackFinderSA::DoFind " << endl
+         << "--------------------------------------------------" << endl
+         << "     ### Starting tagging procedure" << endl
+         << "--------------------------------------------------" << endl;
 
     TagSegments(clTracklets[1], clTracklets[2], 1);
     cout << "--- Tagging 58-921 done." << endl;
 
     TagSegments(clTracklets[0], clTracklets[1], 0);
     cout << "--- Tagging 14-58 done." << endl;
-  } //end of noHitsPerTracklet == 4
+  }  //end of noHitsPerTracklet == 4
 
   tagTracks.Stop();
   //-------------------------------------------------------------------------
 
 
-
   //--------------------------------------------------------------------------------------
   //    Counting number of segments which have a value of 4, 3, 2, ... etc.
-  CbmL1TrdTracklet4* clSegRight; //segment nearer to the target
+  CbmL1TrdTracklet4* clSegRight;  //segment nearer to the target
 
   map<Int_t, Int_t> segValues14;
   map<Int_t, Int_t> segValues58;
@@ -548,65 +542,55 @@ Int_t CbmL1CATrdTrackFinderSA::DoFind(TClonesArray *hitArray,
 
   vector<CbmL1TrdTracklet4*>::iterator itclTrackletsRight;
   //for tracklets in the 1st station
-  for(itclTrackletsRight = clTracklets[0].begin();
-      itclTrackletsRight != clTracklets[0].end();
-      itclTrackletsRight++) {
+  for (itclTrackletsRight = clTracklets[0].begin();
+       itclTrackletsRight != clTracklets[0].end();
+       itclTrackletsRight++) {
 
     clSegRight = *itclTrackletsRight;
-    segValue = clSegRight->GetVal();
+    segValue   = clSegRight->GetVal();
     segValues14[segValue]++;
-    if(segValue == 3) clTrackletsNew[0].push_back(clSegRight);
+    if (segValue == 3) clTrackletsNew[0].push_back(clSegRight);
   }
 
   //for tracklets in the 2nd station
-  for(itclTrackletsRight = clTracklets[1].begin();
-      itclTrackletsRight != clTracklets[1].end();
-      itclTrackletsRight++) {
+  for (itclTrackletsRight = clTracklets[1].begin();
+       itclTrackletsRight != clTracklets[1].end();
+       itclTrackletsRight++) {
 
     clSegRight = *itclTrackletsRight;
-    segValue = clSegRight->GetVal();
+    segValue   = clSegRight->GetVal();
     segValues58[segValue]++;
-    if(segValue == 2) clTrackletsNew[1].push_back(clSegRight);
-
+    if (segValue == 2) clTrackletsNew[1].push_back(clSegRight);
   }
 
   //for tracklets in the 3rd station
-  for(itclTrackletsRight = clTracklets[2].begin();
-      itclTrackletsRight != clTracklets[2].end();
-      itclTrackletsRight++) {
+  for (itclTrackletsRight = clTracklets[2].begin();
+       itclTrackletsRight != clTracklets[2].end();
+       itclTrackletsRight++) {
 
     clSegRight = *itclTrackletsRight;
-    segValue = clSegRight->GetVal();
+    segValue   = clSegRight->GetVal();
     segValues912[segValue]++;
-    if(segValue == 1) clTrackletsNew[2].push_back(clSegRight);
+    if (segValue == 1) clTrackletsNew[2].push_back(clSegRight);
   }
 
   //--- For test only ----------------------------------------------------
-  if(fVerbose > 0) {
-    map<Int_t,Int_t>::iterator mIt;
+  if (fVerbose > 0) {
+    map<Int_t, Int_t>::iterator mIt;
 
     cout << "--- Map no. 14 has: " << endl;
-    for(mIt = segValues14.begin();
-	mIt != segValues14.end();
-	mIt++) {
-      cout << mIt->first << " segment has a count of "
-	   << mIt->second << endl;
+    for (mIt = segValues14.begin(); mIt != segValues14.end(); mIt++) {
+      cout << mIt->first << " segment has a count of " << mIt->second << endl;
     }
 
     cout << "--- Map no. 58 has: " << endl;
-    for(mIt = segValues58.begin();
-	mIt != segValues58.end();
-	mIt++) {
-      cout << mIt->first << " segment has a count of "
-	   << mIt->second << endl;
+    for (mIt = segValues58.begin(); mIt != segValues58.end(); mIt++) {
+      cout << mIt->first << " segment has a count of " << mIt->second << endl;
     }
 
     cout << "--- Map no. 912 has: " << endl;
-    for(mIt = segValues912.begin();
-	mIt != segValues912.end();
-	mIt++) {
-      cout << mIt->first << " segment has a count of "
-	   << mIt->second << endl;
+    for (mIt = segValues912.begin(); mIt != segValues912.end(); mIt++) {
+      cout << mIt->first << " segment has a count of " << mIt->second << endl;
     }
 
     cout << endl;
@@ -618,40 +602,44 @@ Int_t CbmL1CATrdTrackFinderSA::DoFind(TClonesArray *hitArray,
   //vector<CbmTrdTrack*>::iterator ivTempTrdTrackCand;
   //vector<CbmTrdTrack*> trackCand1;
 
-  cout
-    << "--------------------------------------------------" << endl
-    << "   ### Starting creating the tracks               " << endl
-    << "--------------------------------------------------" << endl;
+  cout << "--------------------------------------------------" << endl
+       << "   ### Starting creating the tracks               " << endl
+       << "--------------------------------------------------" << endl;
 
   createTracks.Start();
 
   set<Int_t> globalSetUsedHits;
   globalSetUsedHits.clear();
 
-  if(segment == 0) { //segment == 0 -> we create long tracks
+  if (segment == 0) {  //segment == 0 -> we create long tracks
 
-    if(fVerbose > 2) {
+    if (fVerbose > 2) {
       cout << "Outer area: " << endl
-	   << "--- size of fArrayTrdTrack    = " << fArrayTrdTrack->GetEntriesFast() << endl
-	   << "--- size of globalSetUsedHits = " << globalSetUsedHits.size() << endl;
+           << "--- size of fArrayTrdTrack    = "
+           << fArrayTrdTrack->GetEntriesFast() << endl
+           << "--- size of globalSetUsedHits = " << globalSetUsedHits.size()
+           << endl;
     }
 
     //create long tracks from 3 sorts of tracklets - station 1,2,3
-    CreateTracks(clTracklets[0], clTracklets[1],
-		 clTracklets[2],
-		 globalSetUsedHits,
-		 removeUsedHits, competition, 1);
+    CreateTracks(clTracklets[0],
+                 clTracklets[1],
+                 clTracklets[2],
+                 globalSetUsedHits,
+                 removeUsedHits,
+                 competition,
+                 1);
 
     createTracks.Stop();
 
     //clearing and removing objects that are not needed anymore
-    for(Int_t i = 0; i < 3; i++){
+    for (Int_t i = 0; i < 3; i++) {
       DeleteTracklets(clTracklets[i]);
       clTracklets[i].clear();
     }
     //----------------------------------------------------
 
-    for(Int_t i = 0; i < 6; i++){
+    for (Int_t i = 0; i < 6; i++) {
       DeleteTracklets(clSpacePoints[i]);
       clSpacePoints[i].clear();
     }
@@ -659,55 +647,56 @@ Int_t CbmL1CATrdTrackFinderSA::DoFind(TClonesArray *hitArray,
     //--- [Second Loop] ------------------------------------------------------
     secondLoopTime.Start();
 
-    cout << endl << "-I- CbmL1CATrdTrackFinderSA::DoFind (Second loop)" << endl
-	 << "--------------------------------------------------" << endl
-	 << "     ### (SL) in Event No. " << fNofEvents << " ###" <<endl
-	 << "--------------------------------------------------" << endl;
+    cout << endl
+         << "-I- CbmL1CATrdTrackFinderSA::DoFind (Second loop)" << endl
+         << "--------------------------------------------------" << endl
+         << "     ### (SL) in Event No. " << fNofEvents << " ###" << endl
+         << "--------------------------------------------------" << endl;
 
-    if(secondLoop) {
+    if (secondLoop) {
 
-      for(Int_t i = 0; i < 12; i++) {
-	fvTrdHitArr[i].clear();
+      for (Int_t i = 0; i < 12; i++) {
+        fvTrdHitArr[i].clear();
       }
 
       set<Int_t>::iterator iglobalSetUsedHits;
       set<Int_t>::iterator iglobalSetRejectedHits;
 
-      for (Int_t iHit = 0; iHit<nTrdHit; iHit++) {
-	pHit = L1_DYNAMIC_CAST<CbmTrdHit*>( hitArray->At(iHit) );
+      for (Int_t iHit = 0; iHit < nTrdHit; iHit++) {
+        pHit = L1_DYNAMIC_CAST<CbmTrdHit*>(hitArray->At(iHit));
 
-	//	if(!Rejection(accept)) continue;
+        //	if(!Rejection(accept)) continue;
 
-	if(!pHit) {
-	  cout << "-E- CbmL1CATrdTrackFinderSA::DoFind: Empty slot "
-	       << "in HitArray at position " << iHit << endl;
-	  nNoTrdHit++;
-	  continue;
-	}
+        if (!pHit) {
+          cout << "-E- CbmL1CATrdTrackFinderSA::DoFind: Empty slot "
+               << "in HitArray at position " << iHit << endl;
+          nNoTrdHit++;
+          continue;
+        }
 
-	//---- Simulate detector inefficiency -----------------------------------
-	iglobalSetRejectedHits = globalSetRejectedHits.find(iHit);
-	if(iglobalSetRejectedHits != globalSetRejectedHits.end()) continue;
-	//----------------------------------------------------------------------
+        //---- Simulate detector inefficiency -----------------------------------
+        iglobalSetRejectedHits = globalSetRejectedHits.find(iHit);
+        if (iglobalSetRejectedHits != globalSetRejectedHits.end()) continue;
+        //----------------------------------------------------------------------
 
-	iglobalSetUsedHits = globalSetUsedHits.find(iHit);
-	if(iglobalSetUsedHits != globalSetUsedHits.end()) continue;
+        iglobalSetUsedHits = globalSetUsedHits.find(iHit);
+        if (iglobalSetUsedHits != globalSetUsedHits.end()) continue;
 
-	trdPlaneID = pHit->GetPlaneId();
-	Int_t trdPlaneIDN = trdPlaneID-1;
+        trdPlaneID        = pHit->GetPlaneId();
+        Int_t trdPlaneIDN = trdPlaneID - 1;
 
-	planeHits.mcTrackID = pMCpt->GetTrackID();
-	planeHits.hitIndex = iHit;
-	planeHits.X  = pHit->GetX();
-	planeHits.Y  = pHit->GetY();
-	planeHits.Z  = pHit->GetZ();
-	planeHits.DX = pHit->GetDx();
-	planeHits.DY = pHit->GetDy();
-	fvTrdHitArr[trdPlaneIDN].push_back(planeHits);
+        planeHits.mcTrackID = pMCpt->GetTrackID();
+        planeHits.hitIndex  = iHit;
+        planeHits.X         = pHit->GetX();
+        planeHits.Y         = pHit->GetY();
+        planeHits.Z         = pHit->GetZ();
+        planeHits.DX        = pHit->GetDx();
+        planeHits.DY        = pHit->GetDy();
+        fvTrdHitArr[trdPlaneIDN].push_back(planeHits);
       }
 
-      for(Int_t i = 0; i < 12; i++){
-	sort(fvTrdHitArr[i].begin(),  fvTrdHitArr[i].end(),  CompareY);
+      for (Int_t i = 0; i < 12; i++) {
+        sort(fvTrdHitArr[i].begin(), fvTrdHitArr[i].end(), CompareY);
       }
 
       //for(Int_t i = 0; i < 12; i++){
@@ -718,43 +707,45 @@ Int_t CbmL1CATrdTrackFinderSA::DoFind(TClonesArray *hitArray,
       createSPs_SL.Start();
 
       //performing second step - make all previous tasks but with less restrictive conditions
-      cout << "[Second Loop]::Creating space points"<< endl;
+      cout << "[Second Loop]::Creating space points" << endl;
 
-      for(Int_t i = 0, j = 0; i < 6; i++, j=j+2) {
-	CreateSpacePoints(fvTrdHitArr[j], fvTrdHitArr[j+1],
-			  clSpacePoints[i], sigmaA_SL, sigmaB_SL);
+      for (Int_t i = 0, j = 0; i < 6; i++, j = j + 2) {
+        CreateSpacePoints(fvTrdHitArr[j],
+                          fvTrdHitArr[j + 1],
+                          clSpacePoints[i],
+                          sigmaA_SL,
+                          sigmaB_SL);
       }
       createSPs_SL.Stop();
 
-      for(Int_t i = 0; i < 6; i++){
-	sort(clSpacePoints[i].begin(), clSpacePoints[i].end(), CbmL1TrdTracklet::Compare1);
+      for (Int_t i = 0; i < 6; i++) {
+        sort(clSpacePoints[i].begin(),
+             clSpacePoints[i].end(),
+             CbmL1TrdTracklet::Compare1);
       }
 
       cout << "[Second Loop]::Creating tracklets" << endl;
-      for(Int_t i = 0, j = 0; i < 3; i++, j=j+2) {
-	CreateSegments(clSpacePoints[j], clSpacePoints[j+1],
-		       clTracklets[i], dX_SL, dY_SL);
+      for (Int_t i = 0, j = 0; i < 3; i++, j = j + 2) {
+        CreateSegments(
+          clSpacePoints[j], clSpacePoints[j + 1], clTracklets[i], dX_SL, dY_SL);
       }
 
-      if(fVerbose > 2){
-	cout << "--- size of segment vector 14 = "
-	     << clTracklets[0].size()
-	     << endl
-	     << "--- size of segment vector 58 = "
-	     << clTracklets[1].size()
-	     << endl
-	     << "--- size of segment vector 912 = "
-	     << clTracklets[2].size()
-	     << endl;
+      if (fVerbose > 2) {
+        cout << "--- size of segment vector 14 = " << clTracklets[0].size()
+             << endl
+             << "--- size of segment vector 58 = " << clTracklets[1].size()
+             << endl
+             << "--- size of segment vector 912 = " << clTracklets[2].size()
+             << endl;
       }
 
       cout << "[Second Loop]::Finding friends 14-58" << endl;
-      FindNeighbour(clTracklets[0],clTracklets[1],
-		    distPropLongX_SL, distPropLongY_SL);
+      FindNeighbour(
+        clTracklets[0], clTracklets[1], distPropLongX_SL, distPropLongY_SL);
 
       cout << "[Second Loop]::Finding friends 58-912" << endl;
-      FindNeighbour(clTracklets[1],clTracklets[2],
-		    distPropLongX_SL, distPropLongY_SL);
+      FindNeighbour(
+        clTracklets[1], clTracklets[2], distPropLongX_SL, distPropLongY_SL);
 
       cout << "[Second Loop]::Tagging segments 58-912" << endl;
       TagSegments(clTracklets[1], clTracklets[2], 1);
@@ -765,18 +756,21 @@ Int_t CbmL1CATrdTrackFinderSA::DoFind(TClonesArray *hitArray,
 
       //--------------------------------------------------------------------------------------------
       cout << "[Second Loop]::Creating tracks" << endl;
-      CreateTracks(clTracklets[0], clTracklets[1],
-		   clTracklets[2],
-		   globalSetUsedHits,
-		   removeUsedHits, competition, 2);
+      CreateTracks(clTracklets[0],
+                   clTracklets[1],
+                   clTracklets[2],
+                   globalSetUsedHits,
+                   removeUsedHits,
+                   competition,
+                   2);
       //competition -> selects the best track candidate from each branch
     }
 
-    for(Int_t i = 0; i < 3; i++){
+    for (Int_t i = 0; i < 3; i++) {
       DeleteTracklets(clTracklets[i]);
       clTracklets[i].clear();
     }
-    for(Int_t i = 0; i < 6; i++){
+    for (Int_t i = 0; i < 6; i++) {
       DeleteTracklets(clSpacePoints[i]);
       clSpacePoints[i].clear();
     }
@@ -785,94 +779,102 @@ Int_t CbmL1CATrdTrackFinderSA::DoFind(TClonesArray *hitArray,
 
     thirdLoopTime.Start();
 
-    cout << endl << "-I- CbmL1CATrdTrackFinderSA::DoFind (Third loop)" << endl
-	 << "--------------------------------------------------" << endl
-	 << "     ### (TL) in Event No. " << fNofEvents << " ###" <<endl
-	 << "--------------------------------------------------" << endl;
+    cout << endl
+         << "-I- CbmL1CATrdTrackFinderSA::DoFind (Third loop)" << endl
+         << "--------------------------------------------------" << endl
+         << "     ### (TL) in Event No. " << fNofEvents << " ###" << endl
+         << "--------------------------------------------------" << endl;
 
-    if(thirdLoop) {
+    if (thirdLoop) {
 
-      for(Int_t i = 0; i < 12; i++) {
-	fvTrdHitArr[i].clear();
+      for (Int_t i = 0; i < 12; i++) {
+        fvTrdHitArr[i].clear();
       }
 
       set<Int_t>::iterator iglobalSetUsedHits;
       set<Int_t>::iterator iglobalSetRejectedHits;
 
-      for (Int_t iHit = 0; iHit<nTrdHit; iHit++) {
-	pHit = L1_DYNAMIC_CAST<CbmTrdHit*>( hitArray->At(iHit) );
+      for (Int_t iHit = 0; iHit < nTrdHit; iHit++) {
+        pHit = L1_DYNAMIC_CAST<CbmTrdHit*>(hitArray->At(iHit));
 
-	//	if(!Rejection(accept)) continue;
+        //	if(!Rejection(accept)) continue;
 
-	if(!pHit) {
-	  cout << "-E- CbmL1CATrdTrackFinderSA::DoFind: Empty slot "
-	       << "in HitArray at position " << iHit << endl;
-	  nNoTrdHit++;
-	  continue;
-	}
+        if (!pHit) {
+          cout << "-E- CbmL1CATrdTrackFinderSA::DoFind: Empty slot "
+               << "in HitArray at position " << iHit << endl;
+          nNoTrdHit++;
+          continue;
+        }
 
-	//---- Simulate detector inefficiency -----------------------------------
-	iglobalSetRejectedHits = globalSetRejectedHits.find(iHit);
-	if(iglobalSetRejectedHits != globalSetRejectedHits.end()) continue;
-	//----------------------------------------------------------------------
+        //---- Simulate detector inefficiency -----------------------------------
+        iglobalSetRejectedHits = globalSetRejectedHits.find(iHit);
+        if (iglobalSetRejectedHits != globalSetRejectedHits.end()) continue;
+        //----------------------------------------------------------------------
 
-	iglobalSetUsedHits = globalSetUsedHits.find(iHit);
-	if(iglobalSetUsedHits != globalSetUsedHits.end()) continue;
+        iglobalSetUsedHits = globalSetUsedHits.find(iHit);
+        if (iglobalSetUsedHits != globalSetUsedHits.end()) continue;
 
-	trdPlaneID = pHit->GetPlaneId();
-	Int_t trdPlaneIDN = trdPlaneID-1;
+        trdPlaneID        = pHit->GetPlaneId();
+        Int_t trdPlaneIDN = trdPlaneID - 1;
 
-	planeHits.mcTrackID = pMCpt->GetTrackID();
-	planeHits.hitIndex = iHit;
-	planeHits.X  = pHit->GetX();
-	planeHits.Y  = pHit->GetY();
-	planeHits.Z  = pHit->GetZ();
-	planeHits.DX = pHit->GetDx();
-	planeHits.DY = pHit->GetDy();
-	fvTrdHitArr[trdPlaneIDN].push_back(planeHits);
+        planeHits.mcTrackID = pMCpt->GetTrackID();
+        planeHits.hitIndex  = iHit;
+        planeHits.X         = pHit->GetX();
+        planeHits.Y         = pHit->GetY();
+        planeHits.Z         = pHit->GetZ();
+        planeHits.DX        = pHit->GetDx();
+        planeHits.DY        = pHit->GetDy();
+        fvTrdHitArr[trdPlaneIDN].push_back(planeHits);
       }
 
-      for(Int_t i = 0; i < 12; i++){
-	sort(fvTrdHitArr[i].begin(),  fvTrdHitArr[i].end(),  CompareY);
+      for (Int_t i = 0; i < 12; i++) {
+        sort(fvTrdHitArr[i].begin(), fvTrdHitArr[i].end(), CompareY);
       }
 
-      for(Int_t i = 0, j = 0; i < 6; i++, j=j+2) {
-	CreateSpacePoints(fvTrdHitArr[j], fvTrdHitArr[j+1],
-			  clSpacePoints[i], sigmaA_TL, sigmaB_TL);
+      for (Int_t i = 0, j = 0; i < 6; i++, j = j + 2) {
+        CreateSpacePoints(fvTrdHitArr[j],
+                          fvTrdHitArr[j + 1],
+                          clSpacePoints[i],
+                          sigmaA_TL,
+                          sigmaB_TL);
       }
 
-      for(Int_t i = 0; i < 6; i++){
-	sort(clSpacePoints[i].begin(), clSpacePoints[i].end(), CbmL1TrdTracklet::Compare1);
+      for (Int_t i = 0; i < 6; i++) {
+        sort(clSpacePoints[i].begin(),
+             clSpacePoints[i].end(),
+             CbmL1TrdTracklet::Compare1);
       }
 
-      for(Int_t i = 0, j = 0; i < 3; i++, j=j+2) {
-	CreateSegments(clSpacePoints[j], clSpacePoints[j+1],
-		       clTracklets[i], dX_TL, dY_TL);
+      for (Int_t i = 0, j = 0; i < 3; i++, j = j + 2) {
+        CreateSegments(
+          clSpacePoints[j], clSpacePoints[j + 1], clTracklets[i], dX_TL, dY_TL);
       }
 
-      FindNeighbour(clTracklets[0],clTracklets[1],
-		    distPropLongX_TL, distPropLongY_TL);
-      FindNeighbour(clTracklets[1],clTracklets[2],
-		    distPropLongX_TL, distPropLongY_TL);
+      FindNeighbour(
+        clTracklets[0], clTracklets[1], distPropLongX_TL, distPropLongY_TL);
+      FindNeighbour(
+        clTracklets[1], clTracklets[2], distPropLongX_TL, distPropLongY_TL);
       TagSegments(clTracklets[1], clTracklets[2], 1);
 
       TagSegments(clTracklets[0], clTracklets[1], 0);
 
-      CreateTracks(clTracklets[0], clTracklets[1],
-		   clTracklets[2],
-		   globalSetUsedHits,
-		   removeUsedHits, competition, 3);
+      CreateTracks(clTracklets[0],
+                   clTracklets[1],
+                   clTracklets[2],
+                   globalSetUsedHits,
+                   removeUsedHits,
+                   competition,
+                   3);
     }
 
     thirdLoopTime.Stop();
 
-  } //end segment == 0
+  }  //end segment == 0
 
 
-  if(segment == 1) { //segment == 1 -> we create only 4-hit, 1-segment tracks!
+  if (segment == 1) {  //segment == 1 -> we create only 4-hit, 1-segment tracks!
     CreateAndManageSegments(clTracklets[0], clTracklets[1], clTracklets[2]);
   }
-
 
 
   //------ Used and Unused hists in the TRD's planes ------------------------
@@ -880,17 +882,17 @@ Int_t CbmL1CATrdTrackFinderSA::DoFind(TClonesArray *hitArray,
   set<Int_t>::iterator iglSetUsedHits;
   nTrdHit = hitArray->GetEntriesFast();
 
-  for (Int_t iHit = 0; iHit<nTrdHit; iHit++) {
-    pHit = L1_DYNAMIC_CAST<CbmTrdHit*>( hitArray->At(iHit) );
+  for (Int_t iHit = 0; iHit < nTrdHit; iHit++) {
+    pHit = L1_DYNAMIC_CAST<CbmTrdHit*>(hitArray->At(iHit));
 
     trdPlaneID = pHit->GetPlaneId();
     fTotHits[trdPlaneID]++;
 
     iglSetUsedHits = globalSetUsedHits.find(iHit);
-    if(iglSetUsedHits != globalSetUsedHits.end()){
+    if (iglSetUsedHits != globalSetUsedHits.end()) {
       fRUsedHits[trdPlaneID]++;
       //fUsedHitsPerPlane->Fill(trdPlaneID-1);
-    }else{
+    } else {
       fRUnUsedHits[trdPlaneID]++;
       //fUnUsedHitsPerPlane->Fill(trdPlaneID-1);
     }
@@ -898,32 +900,34 @@ Int_t CbmL1CATrdTrackFinderSA::DoFind(TClonesArray *hitArray,
   //---------------------------------------------------------------------------
 
 
-  cout << endl << "-I- CbmL1CATrdTrackFinderSA::DoFind " << endl
+  cout << endl
+       << "-I- CbmL1CATrdTrackFinderSA::DoFind " << endl
        << "--------------------------------------------------" << endl
        << "     ### Summary" << endl
        << "--------------------------------------------------" << endl
-       << "--- Number of found tracks: " << fArrayTrdTrack->GetEntriesFast() << endl
+       << "--- Number of found tracks: " << fArrayTrdTrack->GetEntriesFast()
+       << endl
        << endl;
 
   delTime.Start();
 
   cout << "\n-I- CbmL1CATrdTrackFinderSA::DoFind " << endl
        << "--------------------------------------------------" << endl
-       << "     ### Delete:Clear" <<endl
+       << "     ### Delete:Clear" << endl
        << "--------------------------------------------------" << endl;
 
-  for(Int_t i = 0; i < 12; i++){
+  for (Int_t i = 0; i < 12; i++) {
     fvTrdHitArr[i].clear();
   }
 
   //----------------------------------------------------
-  for(Int_t i = 0; i < 3; i++){
+  for (Int_t i = 0; i < 3; i++) {
     DeleteTracklets(clTracklets[i]);
     clTracklets[i].clear();
   }
 
   //----------------------------------------------------
-  for(Int_t i = 0; i < 6; i++){
+  for (Int_t i = 0; i < 6; i++) {
     DeleteTracklets(clSpacePoints[i]);
     clSpacePoints[i].clear();
   }
@@ -935,7 +939,6 @@ Int_t CbmL1CATrdTrackFinderSA::DoFind(TClonesArray *hitArray,
 
   delTime.Stop();
   doFind.Stop();
-
 
 
   //-------------------------------------------------------
@@ -967,7 +970,7 @@ Int_t CbmL1CATrdTrackFinderSA::DoFind(TClonesArray *hitArray,
   Draw2();
   DrawAsk();
 
-  for(Int_t i = 0; i < 12; i++){
+  for (Int_t i = 0; i < 12; i++) {
     fvTrdHitArr[i].clear();
   }
 
@@ -977,126 +980,174 @@ Int_t CbmL1CATrdTrackFinderSA::DoFind(TClonesArray *hitArray,
   //-------------------------------------------------------
 
 
-
   //-----------------------------------------------------------------
   Double_t rtime;
   Double_t ctime;
   Double_t qtime = Double_t(fNofEvents);
 
-  cout << endl <<"\n-I- CbmL1CATrdTrackFinderSA::DoFind " << endl
+  cout << endl
+       << "\n-I- CbmL1CATrdTrackFinderSA::DoFind " << endl
        << "--------------------------------------------------" << endl
-       << "     ### Time" <<endl
+       << "     ### Time" << endl
        << "--------------------------------------------------" << endl;
   cout << "         Do find: ";
 
   rtime = doFind.RealTime();
   ctime = doFind.CpuTime();
   totDoFind += ctime;
-  printf("RealTime=%4.2f s, CpuTime=%4.2f s, TotCpu=%4.2f s, %4.2f/event\n",rtime,ctime,totDoFind,totDoFind/qtime);
+  printf("RealTime=%4.2f s, CpuTime=%4.2f s, TotCpu=%4.2f s, %4.2f/event\n",
+         rtime,
+         ctime,
+         totDoFind,
+         totDoFind / qtime);
 
   cout << "       Sort Hits: ";
   rtime = sortHits.RealTime();
   ctime = sortHits.CpuTime();
   totSortHits += ctime;
-  printf("RealTime=%4.2f s, CpuTime=%4.2f s, TotCpu=%4.2f s, %4.2f/event\n",rtime,ctime,totSortHits,totSortHits/qtime);
+  printf("RealTime=%4.2f s, CpuTime=%4.2f s, TotCpu=%4.2f s, %4.2f/event\n",
+         rtime,
+         ctime,
+         totSortHits,
+         totSortHits / qtime);
 
   cout << "      Create SPs: ";
   rtime = createSPs.RealTime();
   ctime = createSPs.CpuTime();
   totCreateSPs += ctime;
-  printf("RealTime=%4.2f s, CpuTime=%4.2f s, TotCpu=%4.2f s, %4.2f/event\n",rtime,ctime,totCreateSPs,totCreateSPs/qtime);
+  printf("RealTime=%4.2f s, CpuTime=%4.2f s, TotCpu=%4.2f s, %4.2f/event\n",
+         rtime,
+         ctime,
+         totCreateSPs,
+         totCreateSPs / qtime);
 
   cout << "        Sort SPs: ";
   rtime = sortSPs.RealTime();
   ctime = sortSPs.CpuTime();
   totSortSPs += ctime;
-  printf("RealTime=%4.2f s, CpuTime=%4.2f s, TotCpu=%4.2f s, %4.2f/event\n",rtime,ctime,totSortSPs,totSortSPs/qtime);
+  printf("RealTime=%4.2f s, CpuTime=%4.2f s, TotCpu=%4.2f s, %4.2f/event\n",
+         rtime,
+         ctime,
+         totSortSPs,
+         totSortSPs / qtime);
 
   cout << " Create segments: ";
   rtime = createSegments.RealTime();
   ctime = createSegments.CpuTime();
   totCreateSegments += ctime;
-  printf("RealTime=%4.2f s, CpuTime=%4.2f s, TotCpu=%4.2f s, %4.2f/event\n",rtime,ctime,totCreateSegments,totCreateSegments/qtime);
+  printf("RealTime=%4.2f s, CpuTime=%4.2f s, TotCpu=%4.2f s, %4.2f/event\n",
+         rtime,
+         ctime,
+         totCreateSegments,
+         totCreateSegments / qtime);
 
   cout << "     Find friend: ";
   rtime = findNeighbour.RealTime();
   ctime = findNeighbour.CpuTime();
   totFindNeighbour += ctime;
-  printf("RealTime=%4.2f s, CpuTime=%4.2f s, TotCpu=%4.2f s, %4.2f/event\n",rtime,ctime,totFindNeighbour,totFindNeighbour/qtime);
+  printf("RealTime=%4.2f s, CpuTime=%4.2f s, TotCpu=%4.2f s, %4.2f/event\n",
+         rtime,
+         ctime,
+         totFindNeighbour,
+         totFindNeighbour / qtime);
 
   cout << "   Tag Tracklets: ";
   rtime = tagTracks.RealTime();
   ctime = tagTracks.CpuTime();
   totTagTracks += ctime;
-  printf("RealTime=%4.2f s, CpuTime=%4.2f s, TotCpu=%4.2f s, %4.2f/event\n",rtime,ctime,totTagTracks,totTagTracks/qtime);
+  printf("RealTime=%4.2f s, CpuTime=%4.2f s, TotCpu=%4.2f s, %4.2f/event\n",
+         rtime,
+         ctime,
+         totTagTracks,
+         totTagTracks / qtime);
 
   cout << "   Create Tracks: ";
   rtime = createTracks.RealTime();
   ctime = createTracks.CpuTime();
   totCreateTracks += ctime;
-  printf("RealTime=%4.2f s, CpuTime=%4.2f s, TotCpu=%4.2f s, %4.2f/event\n",rtime,ctime,totCreateTracks,totCreateTracks/qtime);
+  printf("RealTime=%4.2f s, CpuTime=%4.2f s, TotCpu=%4.2f s, %4.2f/event\n",
+         rtime,
+         ctime,
+         totCreateTracks,
+         totCreateTracks / qtime);
 
   cout << "Refitting Tracks: ";
   rtime = refittingKF.RealTime();
   ctime = refittingKF.CpuTime();
   totRefittingKF += ctime;
-  printf("RealTime=%4.2f s, CpuTime=%4.2f s, TotCpu=%4.2f s, %4.2f/event\n",rtime,ctime,totRefittingKF,totRefittingKF/qtime);
+  printf("RealTime=%4.2f s, CpuTime=%4.2f s, TotCpu=%4.2f s, %4.2f/event\n",
+         rtime,
+         ctime,
+         totRefittingKF,
+         totRefittingKF / qtime);
 
   cout << "     Second Loop: ";
   rtime = secondLoopTime.RealTime();
   ctime = secondLoopTime.CpuTime();
   totSecondLoopTime += ctime;
-  printf("RealTime=%4.2f s, CpuTime=%4.2f s, TotCpu=%4.2f s, %4.2f/event\n",rtime,ctime,totSecondLoopTime,totSecondLoopTime/qtime);
+  printf("RealTime=%4.2f s, CpuTime=%4.2f s, TotCpu=%4.2f s, %4.2f/event\n",
+         rtime,
+         ctime,
+         totSecondLoopTime,
+         totSecondLoopTime / qtime);
 
   cout << "      Third Loop: ";
   rtime = thirdLoopTime.RealTime();
   ctime = thirdLoopTime.CpuTime();
   totThirdLoopTime += ctime;
-  printf("RealTime=%4.2f s, CpuTime=%4.2f s, TotCpu=%4.2f s, %4.2f/event\n",rtime,ctime,totThirdLoopTime,totThirdLoopTime/qtime);
+  printf("RealTime=%4.2f s, CpuTime=%4.2f s, TotCpu=%4.2f s, %4.2f/event\n",
+         rtime,
+         ctime,
+         totThirdLoopTime,
+         totThirdLoopTime / qtime);
 
   cout << "Deleting Objects: ";
   rtime = delTime.RealTime();
   ctime = delTime.CpuTime();
   totDelTime += ctime;
-  printf("RealTime=%4.2f s, CpuTime=%4.2f s, TotCpu=%4.2f s, %4.2f/event\n",rtime,ctime,totDelTime,totDelTime/qtime);
+  printf("RealTime=%4.2f s, CpuTime=%4.2f s, TotCpu=%4.2f s, %4.2f/event\n",
+         rtime,
+         ctime,
+         totDelTime,
+         totDelTime / qtime);
 
-  cout<<"[Second Loop]"<< endl;
+  cout << "[Second Loop]" << endl;
   cout << "      Create SPs: ";
   rtime = createSPs_SL.RealTime();
   ctime = createSPs_SL.CpuTime();
   totCreateSPs_SL += ctime;
-  printf("RealTime=%4.2f s, CpuTime=%4.2f s, TotCpu=%4.2f s, %4.2f/event\n",rtime,ctime,totCreateSPs_SL,totCreateSPs_SL/qtime);
+  printf("RealTime=%4.2f s, CpuTime=%4.2f s, TotCpu=%4.2f s, %4.2f/event\n",
+         rtime,
+         ctime,
+         totCreateSPs_SL,
+         totCreateSPs_SL / qtime);
 
 
-  cout << endl << "-I- CbmL1CATrdTrackFinderSA::DoFind " << endl
+  cout << endl
+       << "-I- CbmL1CATrdTrackFinderSA::DoFind " << endl
        << "--------------------------------------------------" << endl
-       << "     ### END: Track constructing phase completed" <<endl
+       << "     ### END: Track constructing phase completed" << endl
        << "--------------------------------------------------" << endl;
 
-  fNoEvTime->Fill(fArrayTrdTrack->GetEntriesFast(),doFind.RealTime());
+  fNoEvTime->Fill(fArrayTrdTrack->GetEntriesFast(), doFind.RealTime());
 
   return 1;
 }
 // -----------------------------------------------------------------------
 
-void  CbmL1CATrdTrackFinderSA::DeleteTracklets(vector<CbmL1TrdTracklet4*> vect) {
+void CbmL1CATrdTrackFinderSA::DeleteTracklets(vector<CbmL1TrdTracklet4*> vect) {
 
   vector<CbmL1TrdTracklet4*>::iterator it;
-  for(it  = vect.begin();
-      it != vect.end();
-      it++) {
+  for (it = vect.begin(); it != vect.end(); it++) {
     delete (*it);
   }
 }
 
 // -----------------------------------------------------------------------
 
-void  CbmL1CATrdTrackFinderSA::DeleteTracklets(vector<CbmL1TrdTracklet*> vect)
-{
+void CbmL1CATrdTrackFinderSA::DeleteTracklets(vector<CbmL1TrdTracklet*> vect) {
   vector<CbmL1TrdTracklet*>::iterator it;
-  for(it  = vect.begin();
-      it != vect.end();
-      it++) {
+  for (it = vect.begin(); it != vect.end(); it++) {
     delete (*it);
   }
 }
@@ -1105,70 +1156,99 @@ void  CbmL1CATrdTrackFinderSA::DeleteTracklets(vector<CbmL1TrdTracklet*> vect)
 // ---------------------- Create histogramms -----------------------------
 void CbmL1CATrdTrackFinderSA::CreateHistogramms() {
 
-  fUsedHitsPerPlane   =  new TH1F("h_UsedHitsPerPlane",   "h_UsedHitsPerPlane",   13, 0, 13);
-  fUnUsedHitsPerPlane =  new TH1F("h_UnUsedHitsPerPlane", "h_UnUsedHitsPerPlane", 13, 0, 13);
+  fUsedHitsPerPlane =
+    new TH1F("h_UsedHitsPerPlane", "h_UsedHitsPerPlane", 13, 0, 13);
+  fUnUsedHitsPerPlane =
+    new TH1F("h_UnUsedHitsPerPlane", "h_UnUsedHitsPerPlane", 13, 0, 13);
 
 
   // Normalized distance to hit
-  fh_chi2hit = new TH1F("h_chi2hit",
-			"Normalized distance to hit",
-			500, 0., 50.);
+  fh_chi2hit =
+    new TH1F("h_chi2hit", "Normalized distance to hit", 500, 0., 50.);
   fh_chi2hit_plane = new TH2F("h_chi2hit_plane",
-			      "Normalized distance to hit vs. plane number",
-			      500, 0., 50.,
-			      12, 0., 12.);
+                              "Normalized distance to hit vs. plane number",
+                              500,
+                              0.,
+                              50.,
+                              12,
+                              0.,
+                              12.);
 
-  fDistLongX   = new TH1F("DistLongX",  "DistLongX",  100,-200,200);
-  fDistLongY   = new TH1F("DistLongY",  "DistLongY",  100,-200,200);
-  fDistShortX  = new TH1F("DistShortX", "DistShortX", 100,-10,10);
-  fDistShortY  = new TH1F("DistShortY", "DistShortY", 100,-10,10);
+  fDistLongX  = new TH1F("DistLongX", "DistLongX", 100, -200, 200);
+  fDistLongY  = new TH1F("DistLongY", "DistLongY", 100, -200, 200);
+  fDistShortX = new TH1F("DistShortX", "DistShortX", 100, -10, 10);
+  fDistShortY = new TH1F("DistShortY", "DistShortY", 100, -10, 10);
 
-  fDistLongBX   = new TH1F("DistLongBX",  "DistLongBX",  100,-200,200);
-  fDistLongBY   = new TH1F("DistLongBY",  "DistLongBY",  100,-200,200);
-  fDistShortBX  = new TH1F("DistShortBX", "DistShortBX", 100,-200,200);
-  fDistShortBY  = new TH1F("DistShortBY", "DistShortBY", 100,-200,200);
+  fDistLongBX  = new TH1F("DistLongBX", "DistLongBX", 100, -200, 200);
+  fDistLongBY  = new TH1F("DistLongBY", "DistLongBY", 100, -200, 200);
+  fDistShortBX = new TH1F("DistShortBX", "DistShortBX", 100, -200, 200);
+  fDistShortBY = new TH1F("DistShortBY", "DistShortBY", 100, -200, 200);
 
-  fDistY12 = new TH1F("DistY12","DistY12",100,-1,1);
+  fDistY12 = new TH1F("DistY12", "DistY12", 100, -1, 1);
 
-  fMomDistLongPrimaryX = new TH2F("MomDistLongPrimaryX",  "MomDistLongPrimaryX",  100,0,10,100,-30,30);
-  fMomDistLongPrimaryY = new TH2F("MomDistLongPrimaryY",  "MomDistLongPrimaryY",  100,0,10,100,-30,30);
-  fMomDistExtrapolPrimaryX = new TH2F("MomDistExtrapolPrimaryX",  "MomDistExtrapolPrimaryX",  100,0,10,200,-20,20);
-  fMomDistExtrapolPrimaryY = new TH2F("MomDistExtrapolPrimaryY",  "MomDistExtrapolPrimaryY",  100,0,10,200,-20,20);
+  fMomDistLongPrimaryX = new TH2F(
+    "MomDistLongPrimaryX", "MomDistLongPrimaryX", 100, 0, 10, 100, -30, 30);
+  fMomDistLongPrimaryY = new TH2F(
+    "MomDistLongPrimaryY", "MomDistLongPrimaryY", 100, 0, 10, 100, -30, 30);
+  fMomDistExtrapolPrimaryX = new TH2F("MomDistExtrapolPrimaryX",
+                                      "MomDistExtrapolPrimaryX",
+                                      100,
+                                      0,
+                                      10,
+                                      200,
+                                      -20,
+                                      20);
+  fMomDistExtrapolPrimaryY = new TH2F("MomDistExtrapolPrimaryY",
+                                      "MomDistExtrapolPrimaryY",
+                                      100,
+                                      0,
+                                      10,
+                                      200,
+                                      -20,
+                                      20);
 
-  fMomDistLongExtraX = new TH2F("MomDistLongExtraX",  "MomDistLongExtraX",  100,0,10,100,-30,30);
-  fMomDistLongExtraY = new TH2F("MomDistLongExtraY",  "MomDistLongExtraY",  100,0,10,100,-30,30);
-  fMomDistExtrapolExtraX = new TH2F("MomDistExtrapolExtraX",  "MomDistExtrapolExtraX",  100,0,10,200,-20,20);
-  fMomDistExtrapolExtraY = new TH2F("MomDistExtrapolExtraY",  "MomDistExtrapolExtraY",  100,0,10,200,-20,20);
+  fMomDistLongExtraX = new TH2F(
+    "MomDistLongExtraX", "MomDistLongExtraX", 100, 0, 10, 100, -30, 30);
+  fMomDistLongExtraY = new TH2F(
+    "MomDistLongExtraY", "MomDistLongExtraY", 100, 0, 10, 100, -30, 30);
+  fMomDistExtrapolExtraX = new TH2F(
+    "MomDistExtrapolExtraX", "MomDistExtrapolExtraX", 100, 0, 10, 200, -20, 20);
+  fMomDistExtrapolExtraY = new TH2F(
+    "MomDistExtrapolExtraY", "MomDistExtrapolExtraY", 100, 0, 10, 200, -20, 20);
 
-  fMomDistShortPrimaryX = new TH2F("MomDistShortPrimaryX",  "MomDistShortPrimaryX",  100,0,10,100,-5,5);
-  fMomDistShortPrimaryY = new TH2F("MomDistShortPrimaryY",  "MomDistShortPrimaryY",  100,0,10,100,-5,5);
-  fMomDistShortExtraX   = new TH2F("MomDistShortExtraX",    "MomDistShortExtraX",    100,0,10,100,-5,5);
-  fMomDistShortExtraY   = new TH2F("MomDistShortExtraY",    "MomDistShortExtraY",    100,0,10,100,-5,5);
+  fMomDistShortPrimaryX = new TH2F(
+    "MomDistShortPrimaryX", "MomDistShortPrimaryX", 100, 0, 10, 100, -5, 5);
+  fMomDistShortPrimaryY = new TH2F(
+    "MomDistShortPrimaryY", "MomDistShortPrimaryY", 100, 0, 10, 100, -5, 5);
+  fMomDistShortExtraX = new TH2F(
+    "MomDistShortExtraX", "MomDistShortExtraX", 100, 0, 10, 100, -5, 5);
+  fMomDistShortExtraY = new TH2F(
+    "MomDistShortExtraY", "MomDistShortExtraY", 100, 0, 10, 100, -5, 5);
 
-  fDistY = new TH1F("DistY","DistY",1000,-10,10);
-  fDistX = new TH1F("DistX","DistX",1000,-10,10);
+  fDistY = new TH1F("DistY", "DistY", 1000, -10, 10);
+  fDistX = new TH1F("DistX", "DistX", 1000, -10, 10);
 
-  fPlane1Ydens = new TH1F("Plane1Ydens","Plane1Ydens",1000,-1000,1000);
-  fPlane5Ydens = new TH1F("Plane5Ydens","Plane5Ydens",1000,-1000,1000);
-  fPlane9Ydens = new TH1F("Plane9Ydens","Plane9Ydens",1000,-1000,1000);
+  fPlane1Ydens = new TH1F("Plane1Ydens", "Plane1Ydens", 1000, -1000, 1000);
+  fPlane5Ydens = new TH1F("Plane5Ydens", "Plane5Ydens", 1000, -1000, 1000);
+  fPlane9Ydens = new TH1F("Plane9Ydens", "Plane9Ydens", 1000, -1000, 1000);
 
-  fSPlengthMC = new TH1F("SPlengthMC","SPlengthMC",200,0,20);
-  fSPlength   = new TH1F("SPlength",  "SPlength",  200,0,20);
+  fSPlengthMC = new TH1F("SPlengthMC", "SPlengthMC", 200, 0, 20);
+  fSPlength   = new TH1F("SPlength", "SPlength", 200, 0, 20);
 
-  fYat0   = new TH1F("Yat0",   "Yat0",   500,-500,500);
-  fYat0MC = new TH1F("Yat0MC", "Yat0MC", 500,-500,500);
+  fYat0   = new TH1F("Yat0", "Yat0", 500, -500, 500);
+  fYat0MC = new TH1F("Yat0MC", "Yat0MC", 500, -500, 500);
 
-  fNoEvTime = new TH2F("NoEvTime","NoEvTime",1000,0,1000,1000,0,5);
+  fNoEvTime = new TH2F("NoEvTime", "NoEvTime", 1000, 0, 1000, 1000, 0, 5);
 
-  fh_SP_xDiff_MC = new TH1F("fh_SP_xDiff_MC","fh_SP_xDiff_MC",400,-20,20);
-  fh_SP_yDiff_MC = new TH1F("fh_SP_yDiff_MC","fh_SP_yDiff_MC",400,-20,20);
+  fh_SP_xDiff_MC = new TH1F("fh_SP_xDiff_MC", "fh_SP_xDiff_MC", 400, -20, 20);
+  fh_SP_yDiff_MC = new TH1F("fh_SP_yDiff_MC", "fh_SP_yDiff_MC", 400, -20, 20);
 
-  fh_SP_xDiff_nMC = new TH1F("fh_SP_xDiff_nMC","fh_SP_xDiff_nMC",400,-20,20);
-  fh_SP_yDiff_nMC = new TH1F("fh_SP_yDiff_nMC","fh_SP_yDiff_nMC",400,-20,20);
-
+  fh_SP_xDiff_nMC =
+    new TH1F("fh_SP_xDiff_nMC", "fh_SP_xDiff_nMC", 400, -20, 20);
+  fh_SP_yDiff_nMC =
+    new TH1F("fh_SP_yDiff_nMC", "fh_SP_yDiff_nMC", 400, -20, 20);
 }
 // -----------------------------------------------------------------------
-
 
 
 // -------------------- Activates data branches --------------------------
@@ -1176,21 +1256,19 @@ void CbmL1CATrdTrackFinderSA::DataBranches() {
 
   // Get pointer to the ROOT manager
   FairRootManager* rootMgr = FairRootManager::Instance();
-  if(NULL == rootMgr) {
+  if (NULL == rootMgr) {
     cout << "-E- CbmL1CATrdTrackFinderSA::DataBranches : "
-	 << "ROOT manager is not instantiated" << endl;
+         << "ROOT manager is not instantiated" << endl;
     return;
   }
 
-  fArrayTrdHit  = L1_DYNAMIC_CAST<TClonesArray*>( rootMgr->GetObject("TrdHit") );
-  if ( ! fArrayTrdHit) {
-    cout << "-E- CbmL1CATrdTrackFinderSA::Init: No TrdHit array!"
-	 << endl;
+  fArrayTrdHit = L1_DYNAMIC_CAST<TClonesArray*>(rootMgr->GetObject("TrdHit"));
+  if (!fArrayTrdHit) {
+    cout << "-E- CbmL1CATrdTrackFinderSA::Init: No TrdHit array!" << endl;
     return;
   }
 }
 // -----------------------------------------------------------------------
-
 
 
 // ------------------- Determines the TRD layout -------------------------
@@ -1198,37 +1276,37 @@ void CbmL1CATrdTrackFinderSA::TrdLayout() {
 
   // Get the pointer to the singleton FairRunAna object
   FairRunAna* ana = FairRunAna::Instance();
-  if(NULL == ana) {
+  if (NULL == ana) {
     cout << "-E- CbmL1CATrdTrackFinderSA::TrdLayout :"
-	 <<" no FairRunAna object!" << endl;
+         << " no FairRunAna object!" << endl;
     return;
   }
   // Get the pointer to run-time data base
   FairRuntimeDb* rtdb = ana->GetRuntimeDb();
-  if(NULL == rtdb) {
+  if (NULL == rtdb) {
     cout << "-E- CbmL1CATrdTrackFinderSA::TrdLayout :"
-	 <<" no runtime database!" << endl;
+         << " no runtime database!" << endl;
     return;
   }
   // Get the pointer to container of base parameters
   FairBaseParSet* baseParSet =
-    L1_DYNAMIC_CAST<FairBaseParSet*>( rtdb->getContainer("FairBaseParSet") );
-  if(NULL == baseParSet) {
+    L1_DYNAMIC_CAST<FairBaseParSet*>(rtdb->getContainer("FairBaseParSet"));
+  if (NULL == baseParSet) {
     cout << "-E- CbmL1CATrdTrackFinderSA::TrdLayout :"
-	 <<" no container of base parameters!" << endl;
+         << " no container of base parameters!" << endl;
     return;
   }
 
-  TrdPar = L1_DYNAMIC_CAST<CbmGeoTrdPar*>( rtdb->findContainer("CbmGeoTrdPar") );
-  TObjArray *Nodes = TrdPar->GetGeoSensitiveNodes();
-  for( Int_t i=0;i<Nodes->GetEntries(); i++) {
-    FairGeoNode *node = dynamic_cast<FairGeoNode*> (Nodes->At(i));
+  TrdPar = L1_DYNAMIC_CAST<CbmGeoTrdPar*>(rtdb->findContainer("CbmGeoTrdPar"));
+  TObjArray* Nodes = TrdPar->GetGeoSensitiveNodes();
+  for (Int_t i = 0; i < Nodes->GetEntries(); i++) {
+    FairGeoNode* node = dynamic_cast<FairGeoNode*>(Nodes->At(i));
     //FairGeoNode *node = (FairGeoNode*) Nodes->At(i);
-    if ( !node ) continue;
+    if (!node) continue;
 
     TString name = node->getName();
     //TString Sname = node->getShapePointer()->GetName();
-    FairGeoVector nodeV = node->getLabTransform()->getTranslation(); //in cm
+    FairGeoVector nodeV = node->getLabTransform()->getTranslation();  //in cm
 
     //    FairGeoBasicShape *gShapePointer = (FairGeoBasicShape *)node->getShapePointer();
     //gShapePointer->printParam();
@@ -1237,9 +1315,7 @@ void CbmL1CATrdTrackFinderSA::TrdLayout() {
 
     //Int_t id = node->getMCid();
     //cout <<"name: "<< name <<"\tid: "<< id << endl;
-    cout <<" name: "<< name
-     	 <<"\t(z): "
-	 << nodeV.Z() <<endl;
+    cout << " name: " << name << "\t(z): " << nodeV.Z() << endl;
 
     //     if(name.Contains("trd13")) fTrd13_Z = nodeV.Z();
     //     if(name.Contains("trd14")) fTrd14_Z = nodeV.Z();
@@ -1247,50 +1323,50 @@ void CbmL1CATrdTrackFinderSA::TrdLayout() {
     //     if(name.Contains("trd24")) fTrd24_Z = nodeV.Z();
     //     if(name.Contains("trd31")) fTrd31_Z = nodeV.Z();
 
-    if(name == "trd1gas#3") fTrd13_Z = Int_t(nodeV.Z());
-    if(name == "trd1gas#4") fTrd14_Z = Int_t(nodeV.Z());
-    if(name == "trd2gas#1") fTrd21_Z = Int_t(nodeV.Z());
-    if(name == "trd2gas#4") fTrd24_Z = Int_t(nodeV.Z());
-    if(name == "trd3gas#1") fTrd31_Z = Int_t(nodeV.Z());
+    if (name == "trd1gas#3") fTrd13_Z = Int_t(nodeV.Z());
+    if (name == "trd1gas#4") fTrd14_Z = Int_t(nodeV.Z());
+    if (name == "trd2gas#1") fTrd21_Z = Int_t(nodeV.Z());
+    if (name == "trd2gas#4") fTrd24_Z = Int_t(nodeV.Z());
+    if (name == "trd3gas#1") fTrd31_Z = Int_t(nodeV.Z());
 
-//     if(name == "trd13") fTrd13_Z = nodeV.Z();
-//     if(name == "trd14") fTrd14_Z = nodeV.Z();
-//     if(name == "trd21") fTrd21_Z = nodeV.Z();
-//     if(name == "trd24") fTrd24_Z = nodeV.Z();
-//     if(name == "trd31") fTrd31_Z = nodeV.Z();
+    //     if(name == "trd13") fTrd13_Z = nodeV.Z();
+    //     if(name == "trd14") fTrd14_Z = nodeV.Z();
+    //     if(name == "trd21") fTrd21_Z = nodeV.Z();
+    //     if(name == "trd24") fTrd24_Z = nodeV.Z();
+    //     if(name == "trd31") fTrd31_Z = nodeV.Z();
 
-    if(name == "trd1gas#1") geoLayer.Z[0]  = nodeV.Z();
-    if(name == "trd1gas#2") geoLayer.Z[1]  = nodeV.Z();
-    if(name == "trd1gas#3") geoLayer.Z[2]  = nodeV.Z();
-    if(name == "trd1gas#4") geoLayer.Z[3]  = nodeV.Z();
-    if(name == "trd2gas#1") geoLayer.Z[4]  = nodeV.Z();
-    if(name == "trd2gas#2") geoLayer.Z[5]  = nodeV.Z();
-    if(name == "trd2gas#3") geoLayer.Z[6]  = nodeV.Z();
-    if(name == "trd2gas#4") geoLayer.Z[7]  = nodeV.Z();
-    if(name == "trd3gas#1") geoLayer.Z[8]  = nodeV.Z();
-    if(name == "trd3gas#2") geoLayer.Z[9]  = nodeV.Z();
-    if(name == "trd3gas#3") geoLayer.Z[10] = nodeV.Z();
-    if(name == "trd3gas#4") geoLayer.Z[11] = nodeV.Z();
+    if (name == "trd1gas#1") geoLayer.Z[0] = nodeV.Z();
+    if (name == "trd1gas#2") geoLayer.Z[1] = nodeV.Z();
+    if (name == "trd1gas#3") geoLayer.Z[2] = nodeV.Z();
+    if (name == "trd1gas#4") geoLayer.Z[3] = nodeV.Z();
+    if (name == "trd2gas#1") geoLayer.Z[4] = nodeV.Z();
+    if (name == "trd2gas#2") geoLayer.Z[5] = nodeV.Z();
+    if (name == "trd2gas#3") geoLayer.Z[6] = nodeV.Z();
+    if (name == "trd2gas#4") geoLayer.Z[7] = nodeV.Z();
+    if (name == "trd3gas#1") geoLayer.Z[8] = nodeV.Z();
+    if (name == "trd3gas#2") geoLayer.Z[9] = nodeV.Z();
+    if (name == "trd3gas#3") geoLayer.Z[10] = nodeV.Z();
+    if (name == "trd3gas#4") geoLayer.Z[11] = nodeV.Z();
   }
 
 #ifdef DRAW
-  for(int i = 0; i < 4; i++){
+  for (int i = 0; i < 4; i++) {
     geoLayer.Y[i] = 273.1;
   }
-  for(int i = 4; i < 8; i++){
+  for (int i = 4; i < 8; i++) {
     geoLayer.Y[i] = 396.0;
   }
-  for(int i = 8; i < 12; i++){
+  for (int i = 8; i < 12; i++) {
     geoLayer.Y[i] = 518.9;
   }
 
   Int_t scaleZ  = 300;
   Int_t scaleZA = 0;
-  for(int i = 0; i < 12; i++){
-    if(i == 4) scaleZA = 1000;
-    if(i == 8) scaleZA *= 2;
+  for (int i = 0; i < 12; i++) {
+    if (i == 4) scaleZA = 1000;
+    if (i == 8) scaleZA *= 2;
 
-    geoLayer.scale[i] += ((i+1)*scaleZ)+scaleZA;
+    geoLayer.scale[i] += ((i + 1) * scaleZ) + scaleZA;
     geoLayer.Z[i] += geoLayer.scale[i];
   }
 #endif
@@ -1318,39 +1394,40 @@ void CbmL1CATrdTrackFinderSA::TrdLayout() {
   */
 
   // Get the pointer to detector list
-  TObjArray *detList = baseParSet->GetDetList();
-  if(NULL == detList) {
+  TObjArray* detList = baseParSet->GetDetList();
+  if (NULL == detList) {
     cout << "-E- CbmL1CATrdTrackFinderSA::TrdLayout :"
-	 << " no detector list!" << endl;
+         << " no detector list!" << endl;
     return;
   }
   // Find TRD detector
-  FairDetector* trd = L1_DYNAMIC_CAST<FairDetector*>( detList->FindObject("TRD") );
-  if(NULL == trd) {
+  FairDetector* trd =
+    L1_DYNAMIC_CAST<FairDetector*>(detList->FindObject("TRD"));
+  if (NULL == trd) {
     cout << "-E- CbmL1CATrdTrackFinderSA::TrdLayout :"
-	 << " no TRD detector!" << endl;
+         << " no TRD detector!" << endl;
     return;
   }
   // Determine the geometry version
   TString name = trd->GetGeometryFileName();
-  if(name.Contains("9")) {
+  if (name.Contains("9")) {
     cout << "-I- CbmL1CATrdTrackFinderSA::TrdLayout :"
-	 << " TRD geometry : 3x3." << endl;
-    fNoTrdStations = 3;
+         << " TRD geometry : 3x3." << endl;
+    fNoTrdStations   = 3;
     fNoTrdPerStation = 3;
-  } else if(name.Contains("12")) {
+  } else if (name.Contains("12")) {
     cout << "-I- CbmL1CATrdTrackFinderSA::TrdLayout :"
-	 << " TRD geometry : 3x4." << endl;
-    fNoTrdStations = 3;
+         << " TRD geometry : 3x4." << endl;
+    fNoTrdStations   = 3;
     fNoTrdPerStation = 4;
-  } else if(name.Contains("6x2")) {
+  } else if (name.Contains("6x2")) {
     cout << "-I- CbmL1CATrdTrackFinderSA::TrdLayout :"
-	 << " TRD geometry : 6x2." << endl;
-    fNoTrdStations = 6;
+         << " TRD geometry : 6x2." << endl;
+    fNoTrdStations   = 6;
     fNoTrdPerStation = 2;
   }
-    fNoTrdStations = 3;
-    fNoTrdPerStation = 4;
+  fNoTrdStations   = 3;
+  fNoTrdPerStation = 4;
 }
 // -----------------------------------------------------------------------
 
@@ -1411,46 +1488,40 @@ void CbmL1CATrdTrackFinderSA::WriteHistogramms() {
   fh_SP_yDiff_nMC->Write();
 
 
-
   //---------------------------------------------------------------------
   map<Int_t, Int_t>::iterator iUsedHits;
   map<Int_t, Int_t>::iterator iUnUsedHits;
   map<Int_t, Int_t>::iterator iTotHits;
   Double_t nContent;
 
-  for(iUsedHits  = fRUsedHits.begin();
-      iUsedHits != fRUsedHits.end();
-      iUsedHits++){
+  for (iUsedHits = fRUsedHits.begin(); iUsedHits != fRUsedHits.end();
+       iUsedHits++) {
 
     iTotHits = fTotHits.find(iUsedHits->first);
-    nContent = (iUsedHits->second*100)/iTotHits->second;
-//     cout << iUsedHits->first  <<", "
-// 	 << iUsedHits->second <<", "
-// 	 << iTotHits->second <<", "
-// 	 << nContent << endl;
+    nContent = (iUsedHits->second * 100) / iTotHits->second;
+    //     cout << iUsedHits->first  <<", "
+    // 	 << iUsedHits->second <<", "
+    // 	 << iTotHits->second <<", "
+    // 	 << nContent << endl;
     fUsedHitsPerPlane->SetBinContent((iUsedHits->first), nContent);
   }
-  for(iUnUsedHits  = fRUnUsedHits.begin();
-      iUnUsedHits != fRUnUsedHits.end();
-      iUnUsedHits++){
+  for (iUnUsedHits = fRUnUsedHits.begin(); iUnUsedHits != fRUnUsedHits.end();
+       iUnUsedHits++) {
 
     iTotHits = fTotHits.find(iUnUsedHits->first);
-    nContent = (iUnUsedHits->second*100)/iTotHits->second;
+    nContent = (iUnUsedHits->second * 100) / iTotHits->second;
     fUnUsedHitsPerPlane->SetBinContent((iUnUsedHits->first), nContent);
   }
   fUsedHitsPerPlane->Write();
   fUnUsedHitsPerPlane->Write();
   //---------------------------------------------------------------------
-
-
-
 }
 // -----------------------------------------------------------------------
 
 
 // -----------------------------------------------------------------------
-Double_t CbmL1CATrdTrackFinderSA::FitLinear(CbmTrdTrack *tr,
-					    Int_t /*var*/ = 1) {
+Double_t CbmL1CATrdTrackFinderSA::FitLinear(CbmTrdTrack* tr,
+                                            Int_t /*var*/ = 1) {
   //fit using a least square method
 
 
@@ -1458,75 +1529,64 @@ Double_t CbmL1CATrdTrackFinderSA::FitLinear(CbmTrdTrack *tr,
   Int_t noHits = tr->GetNofHits();
   //  cout << "No Hits in the track : " << noHits << endl;
   Int_t iHit;
-  CbmTrdHit *hit;
+  CbmTrdHit* hit;
 
   Double_t C1[12];
   Double_t C2[12];
-  Double_t  Z[12];
+  Double_t Z[12];
 
   Double_t n = 12;
 
-  for(int i=0;i<12;i++) {
+  for (int i = 0; i < 12; i++) {
     C1[i] = 0;
     C2[i] = 0;
-    Z [i] = 0;
+    Z[i]  = 0;
   }
 
   //  Int_t ind = 0;
 
-  for(int i=0;i<noHits;i++) {
+  for (int i = 0; i < noHits; i++) {
 
     iHit = tr->GetHitIndex(i);
-    hit = L1_DYNAMIC_CAST<CbmTrdHit*>( fArrayTrdHit->At(iHit) );
+    hit  = L1_DYNAMIC_CAST<CbmTrdHit*>(fArrayTrdHit->At(iHit));
 
     C1[i] = hit->GetX();
     C2[i] = hit->GetY();
     Z[i]  = hit->GetZ();
   }
 
-  Double_t
-    sumXZ = 0,
-    sumYZ = 0,
-    sumX  = 0,
-    sumY  = 0,
-    sumZx = 0,
-    sumZy = 0,
-    sumX2 = 0,
-    sumY2 = 0,
-    sumZx2 = 0,
-    sumZy2 = 0;
+  Double_t sumXZ = 0, sumYZ = 0, sumX = 0, sumY = 0, sumZx = 0, sumZy = 0,
+           sumX2 = 0, sumY2 = 0, sumZx2 = 0, sumZy2 = 0;
 
-  for(int i=0;i<12;i+=2) {
+  for (int i = 0; i < 12; i += 2) {
     //    cout << "C1[" << i << "]=" << C1[i] << endl;
     //    cout << "C2[" << i << "]=" << C2[i] << endl;
 
     //    if(!(i % 2))
     {
-      sumXZ += C1[i]*Z[ i];
+      sumXZ += C1[i] * Z[i];
 
-      sumX  += C1[i];
-      sumX2 += C1[i]*C1[i];
+      sumX += C1[i];
+      sumX2 += C1[i] * C1[i];
 
-      sumZx  += Z[i];
-      sumZx2 += Z[i]*Z[ i];
-
-
+      sumZx += Z[i];
+      sumZx2 += Z[i] * Z[i];
     }
   }
 
-  for(int i=1;i<12;i+=2) {
+  for (int i = 1; i < 12; i += 2) {
     //    cout << "C1[" << i << "]=" << C1[i] << endl;
     //    cout << "C2[" << i << "]=" << C2[i] << endl;
 
     //    if(!((1i % 2))
     {
-      sumYZ += C2[i]*Z[ i];
+      sumYZ += C2[i] * Z[i];
 
-      sumY  += C2[i];
-      sumY2 += C2[i]*C2[i];
+      sumY += C2[i];
+      sumY2 += C2[i] * C2[i];
 
-      sumZy  += Z[ i];
-      sumZy2 += Z[ i]*Z[ i];
+      sumZy += Z[i];
+      sumZy2 += Z[i] * Z[i];
     }
   }
 
@@ -1534,12 +1594,16 @@ Double_t CbmL1CATrdTrackFinderSA::FitLinear(CbmTrdTrack *tr,
   cout << "";
   //   Double_t a = (n*sumXZ - sumX*sumZ)/(n*sumX2 - sumX*sumX);
   //   Double_t b = (sumZ - a*sumX)/n;
-  Double_t r1 = (n*sumXZ - sumX*sumZx)/sqrt((n*sumX2-sumX*sumX)*(n*sumZx2-sumZx*sumZx));
+  Double_t r1 =
+    (n * sumXZ - sumX * sumZx)
+    / sqrt((n * sumX2 - sumX * sumX) * (n * sumZx2 - sumZx * sumZx));
   //  Double_t Sa = sqrt((n*(sumY2 -a*sumXZ-b*sumY))/((n-2)*(n*sumX2-sumX*sumX)));
   //  Double_t Sb = Sa*sqrt(sumX2/n);
 
 
-  Double_t r2 = (n*sumYZ - sumY*sumZy)/sqrt((n*sumY2-sumY*sumY)*(n*sumZy2-sumZy*sumZy));
+  Double_t r2 =
+    (n * sumYZ - sumY * sumZy)
+    / sqrt((n * sumY2 - sumY * sumY) * (n * sumZy2 - sumZy * sumZy));
 
 
   //   cout << "Linear coefficients: a= "
@@ -1547,43 +1611,40 @@ Double_t CbmL1CATrdTrackFinderSA::FitLinear(CbmTrdTrack *tr,
   //        << ", r=" << r << ", chi2=" << tr->GetChi2() << endl;
 
 
-  return sqrt(r1*r1+r2*r2);
+  return sqrt(r1 * r1 + r2 * r2);
 }
 // -----------------------------------------------------------------------
 
 
-
 // -----------------------------------------------------------------------
 Double_t CbmL1CATrdTrackFinderSA::DistTwoTrackletsY(Int_t iIndexFirst,
-						    Int_t iIndexSecond,
-						    Double_t zed) {
+                                                    Int_t iIndexSecond,
+                                                    Double_t zed) {
   //returns an extrapolated coordinate
-  CbmTrdHit
-    *pHitFirst,
-    *pHitSecond;
+  CbmTrdHit *pHitFirst, *pHitSecond;
   Double_t dist;
 
   Double_t Y1 = 0;
   Double_t Z1 = 0;
 
   // Get hits from first and second plane in station
-  if(iIndexFirst != -1) {
-    pHitFirst  = L1_DYNAMIC_CAST<CbmTrdHit*>( fArrayTrdHit->At(iIndexFirst) );
-    Y1  = pHitFirst->GetY();
-    Z1  = pHitFirst->GetZ();
+  if (iIndexFirst != -1) {
+    pHitFirst = L1_DYNAMIC_CAST<CbmTrdHit*>(fArrayTrdHit->At(iIndexFirst));
+    Y1        = pHitFirst->GetY();
+    Z1        = pHitFirst->GetZ();
   }
 
-  pHitSecond = L1_DYNAMIC_CAST<CbmTrdHit*>( fArrayTrdHit->At(iIndexSecond) );
+  pHitSecond = L1_DYNAMIC_CAST<CbmTrdHit*>(fArrayTrdHit->At(iIndexSecond));
 
   // Get position Y & Z of hits
 
   Double_t Y4 = pHitSecond->GetY();
   Double_t Z4 = pHitSecond->GetZ();
 
-  Double_t a = (Y4 - Y1)/(Z4 - Z1);
-  Double_t b = Y1 - a*Z1;
-  Double_t Y = a*zed + b ;// - Y1;
-  dist = Y;
+  Double_t a = (Y4 - Y1) / (Z4 - Z1);
+  Double_t b = Y1 - a * Z1;
+  Double_t Y = a * zed + b;  // - Y1;
+  dist       = Y;
   //      cout << "From the coords (y1,z1) = ("
   // 	  << Y1 << ", " << Z1 << endl
   //           << "From the coords (y2,z2) = ("
@@ -1596,37 +1657,34 @@ Double_t CbmL1CATrdTrackFinderSA::DistTwoTrackletsY(Int_t iIndexFirst,
 // -----------------------------------------------------------------------
 
 
-
 // -----------------------------------------------------------------------
 
 Double_t CbmL1CATrdTrackFinderSA::DistTwoTrackletsX(Int_t iIndexFirst,
-						    Int_t iIndexSecond,
-						    Double_t zed) {
-  CbmTrdHit
-    *pHitFirst,
-    *pHitSecond;
+                                                    Int_t iIndexSecond,
+                                                    Double_t zed) {
+  CbmTrdHit *pHitFirst, *pHitSecond;
   Double_t dist;
 
   Double_t X1 = 0;
   Double_t Z1 = 0;
 
   // Get hits from first and second plane in station
-  if(iIndexFirst != -1) {
-    pHitFirst  = L1_DYNAMIC_CAST<CbmTrdHit*>( fArrayTrdHit->At(iIndexFirst) );
-    X1  = pHitFirst->GetX();
-    Z1  = pHitFirst->GetZ();
+  if (iIndexFirst != -1) {
+    pHitFirst = L1_DYNAMIC_CAST<CbmTrdHit*>(fArrayTrdHit->At(iIndexFirst));
+    X1        = pHitFirst->GetX();
+    Z1        = pHitFirst->GetZ();
   }
 
-  pHitSecond = L1_DYNAMIC_CAST<CbmTrdHit*>( fArrayTrdHit->At(iIndexSecond) );
+  pHitSecond = L1_DYNAMIC_CAST<CbmTrdHit*>(fArrayTrdHit->At(iIndexSecond));
 
 
   Double_t X4 = pHitSecond->GetX();
   Double_t Z4 = pHitSecond->GetZ();
 
-  Double_t a = (X4 - X1)/(Z4 - Z1);
-  Double_t b = X1 - a*Z1;
+  Double_t a = (X4 - X1) / (Z4 - Z1);
+  Double_t b = X1 - a * Z1;
   //  Double_t X = (dz)/(dx)*(zed - Z1);
-  Double_t X = a*zed + b;
+  Double_t X = a * zed + b;
   //    = dy/dz * (zed + Z1) - X1;
   dist = X;
   //       cout << "From the coords (x1,z1) = ("
@@ -1642,49 +1700,46 @@ Double_t CbmL1CATrdTrackFinderSA::DistTwoTrackletsX(Int_t iIndexFirst,
 // -----------------------------------------------------------------------
 
 // -----------------------------------------------------------------------
-void CbmL1CATrdTrackFinderSA::FindNeighbour(vector<CbmL1TrdTracklet4*> &v1,
-					    vector<CbmL1TrdTracklet4*> &v2,
-					    Double_t dY, Double_t dX) {
+void CbmL1CATrdTrackFinderSA::FindNeighbour(vector<CbmL1TrdTracklet4*>& v1,
+                                            vector<CbmL1TrdTracklet4*>& v2,
+                                            Double_t dY,
+                                            Double_t dX) {
 
   vector<CbmL1TrdTracklet4*>::iterator iv1;
-  CbmL1TrdTracklet4 *tr1;
+  CbmL1TrdTracklet4* tr1;
 
-  Double_t
-    extY = 0,extX = 0,  //two extrapolated coords from the first tracklet
-    mesY = 0,mesX = 0,  //two measured coords from the second tracklet
-    aminY, amaxY,
-    aminX, amaxX;
+  Double_t extY = 0,
+           extX = 0,     //two extrapolated coords from the first tracklet
+    mesY = 0, mesX = 0,  //two measured coords from the second tracklet
+    aminY, amaxY, aminX, amaxX;
   Int_t indexA, indexB;
-  Int_t
-    Left = 0,
-    Right,
-    Mid = 0;
+  Int_t Left = 0, Right, Mid = 0;
 
   Int_t il = 0;
-  for(iv1 = v1.begin(); iv1 != v1.end(); iv1++) {
+  for (iv1 = v1.begin(); iv1 != v1.end(); iv1++) {
     il++;
-    tr1 = *iv1;
-    extY = tr1->GetExt(0);
-    extX = tr1->GetExt(1);
+    tr1    = *iv1;
+    extY   = tr1->GetExt(0);
+    extX   = tr1->GetExt(1);
     indexA = tr1->GetIndex();
-    amaxY = extY + dY;
-    aminY = extY - dY;
-    amaxX = extX + dX;
-    aminX = extX - dX;
+    amaxY  = extY + dY;
+    aminY  = extY - dY;
+    amaxX  = extX + dX;
+    aminX  = extX - dX;
 
-    Left = 0;
+    Left  = 0;
     Right = v2.size();
-    Mid = 0;
+    Mid   = 0;
 
     // ----------- looking by bisection ------------------
-    while(Left < Right){
-      Mid = (Left+Right)/2;
+    while (Left < Right) {
+      Mid  = (Left + Right) / 2;
       mesY = v2[Mid]->GetCoord(0);
 
-      if (amaxY < mesY){
-	Left = Mid+1;
-      }else{
-	Right = Mid-1;
+      if (amaxY < mesY) {
+        Left = Mid + 1;
+      } else {
+        Right = Mid - 1;
       }
 
       /*
@@ -1698,7 +1753,7 @@ void CbmL1CATrdTrackFinderSA::FindNeighbour(vector<CbmL1TrdTracklet4*> &v1,
     //----------------------------------------------------
 
     Int_t size = v2.size();
-    for(Int_t i = Mid; i < size; i++) {
+    for (Int_t i = Mid; i < size; i++) {
       mesY = v2[i]->GetCoord(0);
       mesX = v2[i]->GetCoord(1);
       //cout <<"(mesX,MesY) "<< mesX <<"\t"<< mesY << endl;
@@ -1712,10 +1767,10 @@ void CbmL1CATrdTrackFinderSA::FindNeighbour(vector<CbmL1TrdTracklet4*> &v1,
 
       //      cout << aminX <<", "<< mesX <<", "<< amaxX << endl;
 
-      if(aminX < mesX && mesX < amaxX) {
-	tr1->vAccostRight.push_back(indexB);
-	v2[i]->vAccostLeft.push_back(indexA);
-	//	cout << aminX <<", "<< mesX <<", "<< amaxX << endl;
+      if (aminX < mesX && mesX < amaxX) {
+        tr1->vAccostRight.push_back(indexB);
+        v2[i]->vAccostLeft.push_back(indexA);
+        //	cout << aminX <<", "<< mesX <<", "<< amaxX << endl;
       }
     }
   }
@@ -1723,38 +1778,25 @@ void CbmL1CATrdTrackFinderSA::FindNeighbour(vector<CbmL1TrdTracklet4*> &v1,
 // -----------------------------------------------------------------------
 
 
-
 // -----------------------------------------------------------------------
-Bool_t CbmL1CATrdTrackFinderSA::OverlapsHitsXY(Int_t posA,
-					       Int_t posB)
-{
+Bool_t CbmL1CATrdTrackFinderSA::OverlapsHitsXY(Int_t posA, Int_t posB) {
   Bool_t overlap = false;
 
-  CbmTrdHit
-    *pHitA,
-    *pHitB;
+  CbmTrdHit *pHitA, *pHitB;
 
-  Double_t
-    hitPosA_X,
-    hitPosA_Y,
-    hitPosB_X,
-    hitPosB_Y,
-    dMul1 = 3, //sigma multiplier for calculating the range of overlapping hits
-    dMul2 = 3; //sigma multiplier for calculating the range of overlapping hits
+  Double_t hitPosA_X, hitPosA_Y, hitPosB_X, hitPosB_Y,
+    dMul1 = 3,  //sigma multiplier for calculating the range of overlapping hits
+    dMul2 = 3;  //sigma multiplier for calculating the range of overlapping hits
 
-  Double_t
-    hitPosA_DX,
-    hitPosA_DY,
-    hitPosB_DX,
-    hitPosB_DY;
+  Double_t hitPosA_DX, hitPosA_DY, hitPosB_DX, hitPosB_DY;
 
-  pHitA = L1_DYNAMIC_CAST<CbmTrdHit*>(  fArrayTrdHit->At(posA) );
+  pHitA      = L1_DYNAMIC_CAST<CbmTrdHit*>(fArrayTrdHit->At(posA));
   hitPosA_X  = pHitA->GetX();
   hitPosA_Y  = pHitA->GetY();
   hitPosA_DX = pHitA->GetDx();
   hitPosA_DY = pHitA->GetDy();
 
-  pHitB = L1_DYNAMIC_CAST<CbmTrdHit*>(  fArrayTrdHit->At(posB) );
+  pHitB      = L1_DYNAMIC_CAST<CbmTrdHit*>(fArrayTrdHit->At(posB));
   hitPosB_X  = pHitB->GetX();
   hitPosB_Y  = pHitB->GetY();
   hitPosB_DX = pHitB->GetDx();
@@ -1767,10 +1809,11 @@ Bool_t CbmL1CATrdTrackFinderSA::OverlapsHitsXY(Int_t posA,
   //     << endl;
 
 
-  if(((hitPosA_X+dMul1*hitPosA_DX) >= (hitPosB_X-dMul2*hitPosB_DX)) &&
-     ((hitPosA_X-dMul1*hitPosA_DX) <= (hitPosB_X+dMul2*hitPosB_DX)) &&
-     ((hitPosA_Y+dMul2*hitPosA_DY) >= (hitPosB_Y-dMul1*hitPosB_DY)) &&
-     ((hitPosA_Y-dMul2*hitPosA_DY) <= (hitPosB_Y+dMul1*hitPosB_DY))){
+  if (((hitPosA_X + dMul1 * hitPosA_DX) >= (hitPosB_X - dMul2 * hitPosB_DX))
+      && ((hitPosA_X - dMul1 * hitPosA_DX) <= (hitPosB_X + dMul2 * hitPosB_DX))
+      && ((hitPosA_Y + dMul2 * hitPosA_DY) >= (hitPosB_Y - dMul1 * hitPosB_DY))
+      && ((hitPosA_Y - dMul2 * hitPosA_DY)
+          <= (hitPosB_Y + dMul1 * hitPosB_DY))) {
     overlap = true;
   }
 
@@ -1785,9 +1828,10 @@ Bool_t CbmL1CATrdTrackFinderSA::OverlapsHitsXY(Int_t posA,
 
 
 // -----------------------------------------------------------------------
-void CbmL1CATrdTrackFinderSA::TagSegments(vector<CbmL1TrdTracklet4*>& clTrackletsA,
-					  vector<CbmL1TrdTracklet4*>& clTrackletsB,
-					  Int_t /*noCombSegments*/) {
+void CbmL1CATrdTrackFinderSA::TagSegments(
+  vector<CbmL1TrdTracklet4*>& clTrackletsA,
+  vector<CbmL1TrdTracklet4*>& clTrackletsB,
+  Int_t /*noCombSegments*/) {
   //asigning numbers to each segment, 4- highest, 0 - lowest
 
   //  cout << "TagSegments: engaging... " << endl;
@@ -1803,18 +1847,16 @@ void CbmL1CATrdTrackFinderSA::TagSegments(vector<CbmL1TrdTracklet4*>& clTracklet
   vector<Int_t>::iterator ivLeft;
   //  vector <Int_t>::iterator ivRight;
 
-  Int_t
-    valLeft  = 0,
-    valRight = 0;
+  Int_t valLeft = 0, valRight = 0;
 
   //     CbmL1TrdTracklet4* clSegLeft; //segment farther from the target
   //     CbmL1TrdTracklet4* clSegRight; //segment nearer to the target
 
 
   //  cout << "Engaging Right loop " << endl;
-  for(itclTrackletsRight = clTrackletsB.begin();
-      itclTrackletsRight != clTrackletsB.end();
-      itclTrackletsRight++) {
+  for (itclTrackletsRight = clTrackletsB.begin();
+       itclTrackletsRight != clTrackletsB.end();
+       itclTrackletsRight++) {
 
     clSegRight = *itclTrackletsRight;
     //cout << "---> X of tracklet = " << clSegRight->GetCoord(0) << endl;
@@ -1825,16 +1867,16 @@ void CbmL1CATrdTrackFinderSA::TagSegments(vector<CbmL1TrdTracklet4*>& clTracklet
     //    iHitRightB = clSegRight->GetInd(1);
 
     //      cout << "Tracklets 912: iHitRight:   " << iHitRight << "\t" << endl;
-    if(vLeft.size() > 0) {
+    if (vLeft.size() > 0) {
       //      cout << "Processing Comrade vector of size " << vLeft.size() << endl;
       valRight = clSegRight->GetVal();
-      if(valRight == 0) {
-	clSegRight->SetVal(1);
-	valRight++;
+      if (valRight == 0) {
+        clSegRight->SetVal(1);
+        valRight++;
       }
-      for(ivLeft = vLeft.begin(); ivLeft != vLeft.end(); ivLeft++) {
-	valLeft  = (clTrackletsA[*ivLeft])->GetVal();
-	if(valLeft <= valRight) clTrackletsA[*ivLeft]->SetVal(valRight+1);
+      for (ivLeft = vLeft.begin(); ivLeft != vLeft.end(); ivLeft++) {
+        valLeft = (clTrackletsA[*ivLeft])->GetVal();
+        if (valLeft <= valRight) clTrackletsA[*ivLeft]->SetVal(valRight + 1);
       }
     }
 
@@ -1849,41 +1891,36 @@ void CbmL1CATrdTrackFinderSA::TagSegments(vector<CbmL1TrdTracklet4*>& clTracklet
 // -----------------------------------------------------------------------
 
 
-
-
-
-
 // -----------------------------------------------------------------------
-void CbmL1CATrdTrackFinderSA::CreateTracks(vector<CbmL1TrdTracklet4*> clTracklets14,
-					   vector<CbmL1TrdTracklet4*> clTracklets58,
-					   vector<CbmL1TrdTracklet4*> clTracklets912,
-					   set<Int_t> &globalSetUsedHits,
-					   Bool_t removeUsedHits,
-					   Bool_t competition,
-					   Int_t /*nrLoop*/){
+void CbmL1CATrdTrackFinderSA::CreateTracks(
+  vector<CbmL1TrdTracklet4*> clTracklets14,
+  vector<CbmL1TrdTracklet4*> clTracklets58,
+  vector<CbmL1TrdTracklet4*> clTracklets912,
+  set<Int_t>& globalSetUsedHits,
+  Bool_t removeUsedHits,
+  Bool_t competition,
+  Int_t /*nrLoop*/) {
   //create long tracks from previously selected segments
 
-  if(fVerbose > 2) {
+  if (fVerbose > 2) {
     cout << "Inner area: " << endl
-	 << "--- size of fArrayTrdTrack    = " << fArrayTrdTrack->GetEntriesFast() << endl
-	 << "--- size of globalSetUsedHits = " << globalSetUsedHits.size() << endl;
+         << "--- size of fArrayTrdTrack    = "
+         << fArrayTrdTrack->GetEntriesFast() << endl
+         << "--- size of globalSetUsedHits = " << globalSetUsedHits.size()
+         << endl;
   }
 
-  CbmL1TrdTracklet4
-    *clTrdSeg1,
-    *clTrdSeg2;
+  CbmL1TrdTracklet4 *clTrdSeg1, *clTrdSeg2;
 
   vector<CbmL1TrdTracklet4*>::iterator itclSeg3;
 
   Bool_t isEmpty = true;
 
-  Int_t
-    licz = 0,
-    counter = 0;
+  Int_t licz = 0, counter = 0;
 
   CbmTrdTrack* tr1 = NULL;
   //  CbmTrdTrack* tr2 = NULL;
-//   CbmTrdHit* hit1 = NULL;
+  //   CbmTrdHit* hit1 = NULL;
   //CbmTrdHit* hit2 = NULL;
 
   vector<CbmTrdTrack*> vTempTrdTrackCand;
@@ -1893,21 +1930,23 @@ void CbmL1CATrdTrackFinderSA::CreateTracks(vector<CbmL1TrdTracklet4*> clTracklet
 
   vector<CbmTrdTrack*>::iterator ivTrdTrackCand;
 
-  Int_t iFakeTrack = 0;
-  Int_t iHit = 0;
+  Int_t iFakeTrack  = 0;
+  Int_t iHit        = 0;
   Bool_t bTrueTrack = true;
 
-  FairTrackParam *trParam;
+  FairTrackParam* trParam;
   trParam = new FairTrackParam();
   trParam->SetQp(0.);
 
   CbmVertex vtx;
-  TVector3 vzero(0,0,0);
+  TVector3 vzero(0, 0, 0);
   vtx.Position(vzero);
 
   Int_t iSecondLoop = 1;
-  Int_t trMax = 1;          //number of tracks from one tree accepted as tracks candidates
-  Int_t noHitsAccepted = 0; //number of used hits above which the tracks is recognized as fake; 0 = all tracks are fake.
+  Int_t trMax =
+    1;  //number of tracks from one tree accepted as tracks candidates
+  Int_t noHitsAccepted =
+    0;  //number of used hits above which the tracks is recognized as fake; 0 = all tracks are fake.
 
   vector<TempTrackStruct> auxTrack;
   auxTrack.clear();
@@ -1917,7 +1956,9 @@ void CbmL1CATrdTrackFinderSA::CreateTracks(vector<CbmL1TrdTracklet4*> clTracklet
 
   cout << "--- Engaging main loop..." << endl;
 
-  if(fVerbose > 2) cout << "--- No of outer iterations to go: " << clTracklets14.size() << endl;
+  if (fVerbose > 2)
+    cout << "--- No of outer iterations to go: " << clTracklets14.size()
+         << endl;
   //  Int_t vSize = Int_t(clTracklets14.size());
   //for(int i = 0; i < vSize; i++) {
   //  if( (clTracklets14[i])->GetVal() == 3) licz++;
@@ -1925,16 +1966,16 @@ void CbmL1CATrdTrackFinderSA::CreateTracks(vector<CbmL1TrdTracklet4*> clTracklet
   //   cout << "* No of 3 in vector: " << licz << endl;
 
   Int_t trackArrayInd = fArrayTrdTrack->GetEntriesFast();
-  Int_t trlsNo[] = {0,0,0};
+  Int_t trlsNo[]      = {0, 0, 0};
 
-  for(itclSeg3 = clTracklets14.begin();
-      itclSeg3 != clTracklets14.end();
-      itclSeg3++) { //loop over tracklets with value of 3
-    if((*itclSeg3)->GetVal() != 3) {
+  for (itclSeg3 = clTracklets14.begin(); itclSeg3 != clTracklets14.end();
+       itclSeg3++) {  //loop over tracklets with value of 3
+    if ((*itclSeg3)->GetVal() != 3) {
       trlsNo[0]++;
       continue;
     }
-    for(int i = 0; i < 12; i++) tempTrack.M[i] = 0;
+    for (int i = 0; i < 12; i++)
+      tempTrack.M[i] = 0;
 
     tempTrack.M[0] = (*itclSeg3)->GetInd(0);
     tempTrack.M[1] = (*itclSeg3)->GetInd(1);
@@ -1943,10 +1984,11 @@ void CbmL1CATrdTrackFinderSA::CreateTracks(vector<CbmL1TrdTracklet4*> clTracklet
 
     Int_t iInd2 = 0;
     Int_t size2 = Int_t((*itclSeg3)->vAccostRight.size());
-    for(Int_t iSeg2 = 0; iSeg2 < size2; iSeg2++) {//loop over clTracklets with value of 2
-      iInd2 = (*itclSeg3)->vAccostRight[iSeg2];
+    for (Int_t iSeg2 = 0; iSeg2 < size2;
+         iSeg2++) {  //loop over clTracklets with value of 2
+      iInd2     = (*itclSeg3)->vAccostRight[iSeg2];
       clTrdSeg2 = clTracklets58[iInd2];
-      if(clTrdSeg2->GetVal() != 2) continue;
+      if (clTrdSeg2->GetVal() != 2) continue;
 
       tempTrack.M[4] = clTrdSeg2->GetInd(0);
       tempTrack.M[5] = clTrdSeg2->GetInd(1);
@@ -1955,20 +1997,21 @@ void CbmL1CATrdTrackFinderSA::CreateTracks(vector<CbmL1TrdTracklet4*> clTracklet
 
       Int_t iInd1 = 0;
       Int_t size1 = Int_t(clTrdSeg2->vAccostRight.size());
-      for(Int_t iSeg1 = 0; iSeg1 < size1; iSeg1++) {//loop over clTracklets with value of 1
-	iInd1 = clTrdSeg2->vAccostRight[iSeg1];
-	clTrdSeg1 = clTracklets912[iInd1];
-	if(clTrdSeg1->GetVal() != 1) continue;
+      for (Int_t iSeg1 = 0; iSeg1 < size1;
+           iSeg1++) {  //loop over clTracklets with value of 1
+        iInd1     = clTrdSeg2->vAccostRight[iSeg1];
+        clTrdSeg1 = clTracklets912[iInd1];
+        if (clTrdSeg1->GetVal() != 1) continue;
 
-	tempTrack.M[8]  = clTrdSeg1->GetInd(0);
-	tempTrack.M[9]  = clTrdSeg1->GetInd(1);
-	tempTrack.M[10] = clTrdSeg1->GetInd(2);
-	tempTrack.M[11] = clTrdSeg1->GetInd(3);
+        tempTrack.M[8]  = clTrdSeg1->GetInd(0);
+        tempTrack.M[9]  = clTrdSeg1->GetInd(1);
+        tempTrack.M[10] = clTrdSeg1->GetInd(2);
+        tempTrack.M[11] = clTrdSeg1->GetInd(3);
 
-	counter++;
-	isEmpty = false;
+        counter++;
+        isEmpty = false;
 
-	/*
+        /*
 	//-------------------------------------
 	tr2 = new CbmTrdTrack();
 	tr2->SetParamFirst(*trParam);
@@ -1985,19 +2028,19 @@ void CbmL1CATrdTrackFinderSA::CreateTracks(vector<CbmL1TrdTracklet4*> clTracklet
 	delete tr2;
 	//-------------------------------------	  */
 
-	//tempTrack.Chi2 = FitTLinearFitter(tempTrack.M);
-	//tempTrack.Chi2 = FitLinear(tempTrack.M, 1);
-	//tempTrack.Chi2 = FitLSM(tempTrack.M);
-	tempTrack.Chi2 = Fit(tempTrack.M);
+        //tempTrack.Chi2 = FitTLinearFitter(tempTrack.M);
+        //tempTrack.Chi2 = FitLinear(tempTrack.M, 1);
+        //tempTrack.Chi2 = FitLSM(tempTrack.M);
+        tempTrack.Chi2 = Fit(tempTrack.M);
 
-	auxTrack.push_back(tempTrack);
+        auxTrack.push_back(tempTrack);
 
-	//if((counter%1000) == 0) {
-	//printf("\rTracks: %i",counter);
-	//fflush(stdout);
-	//}
-      }//end::loop 1
-    }//end::loop 2
+        //if((counter%1000) == 0) {
+        //printf("\rTracks: %i",counter);
+        //fflush(stdout);
+        //}
+      }  //end::loop 1
+    }    //end::loop 2
 
     //if(iSecondLoop%2 == 0)
     {
@@ -2010,24 +2053,22 @@ void CbmL1CATrdTrackFinderSA::CreateTracks(vector<CbmL1TrdTracklet4*> clTracklet
       //CbmTrdTrack *T3;
       //Double_t chiMax = 1000;
 
-      for(ikol = auxTrack.begin();
-	  ikol != auxTrack.end();
-	  ikol++) {
-	if(li >= trMax) break;
+      for (ikol = auxTrack.begin(); ikol != auxTrack.end(); ikol++) {
+        if (li >= trMax) break;
 
-	tr1 = new CbmTrdTrack();
+        tr1 = new CbmTrdTrack();
 
-	for(Int_t we = 0; we < 12; we++) {
-	  trdInd = (*ikol).M[we];
-// 	  hit1 = L1_DYNAMIC_CAST<CbmTrdHit*>( fArrayTrdHit->At(trdInd) );
+        for (Int_t we = 0; we < 12; we++) {
+          trdInd = (*ikol).M[we];
+          // 	  hit1 = L1_DYNAMIC_CAST<CbmTrdHit*>( fArrayTrdHit->At(trdInd) );
 
-	  tr1->AddHit(trdInd, kTRDHIT);
-	}
-//	tr1->SortHits();
-	//tr1->SetChi2((*ikol).Chi2);
-	//cout << tempTrack.Chi2 << endl;
+          tr1->AddHit(trdInd, kTRDHIT);
+        }
+        //	tr1->SortHits();
+        //tr1->SetChi2((*ikol).Chi2);
+        //cout << tempTrack.Chi2 << endl;
 
-	/*// Set reliable Q/p value. Based on MC values ----------------
+        /*// Set reliable Q/p value. Based on MC values ----------------
 	  CbmTrdPoint *pMCpt;
 	  CbmMCTrack *mcTr;
 	  Int_t ptIndex;
@@ -2047,17 +2088,17 @@ void CbmL1CATrdTrackFinderSA::CreateTracks(vector<CbmL1TrdTracklet4*> clTracklet
 	  //-------------------------------------------------------------
 	  */
 
-	tr1->SetParamFirst(trParam);
-	tr1->SetParamLast(trParam);
+        tr1->SetParamFirst(trParam);
+        tr1->SetParamLast(trParam);
 
-	//FitKF(tr1);
-	//  if(tr1->GetChi2() < chiMax){
-	// T3 = tr1;
-	//  chiMax = tr1->GetChi2();
-	//}
-	//if((*ikol).Chi2 < 3)
-	vTempTrdTrackCand.push_back(tr1);
-	li++;
+        //FitKF(tr1);
+        //  if(tr1->GetChi2() < chiMax){
+        // T3 = tr1;
+        //  chiMax = tr1->GetChi2();
+        //}
+        //if((*ikol).Chi2 < 3)
+        vTempTrdTrackCand.push_back(tr1);
+        li++;
       }
       //vTempTrdTrackCand.push_back(T3);
       auxTrack.clear();
@@ -2065,21 +2106,21 @@ void CbmL1CATrdTrackFinderSA::CreateTracks(vector<CbmL1TrdTracklet4*> clTracklet
     }
     //cout << iSecondLoop << endl;
     iSecondLoop++;
-  }//loop over 3s
+  }  //loop over 3s
 
   //cout << clTracklets14.size() <<"\t"
   //     << trlsNo[0] << endl;
 
   //  if(nrLoop == 2) competition = false;
-  if(competition) {
+  if (competition) {
     refittingKF.Start();
-    cout << "\n--- Refiting by KF..."<< endl;
+    cout << "\n--- Refiting by KF..." << endl;
     /* Refit using KF fitter                                                     */
     //Int_t iKlops = 0;
     //cout << "vTempTrdTrackCand.size(): " << vTempTrdTrackCand.size() << endl;
-    for(ivTempTrdTrackCand = vTempTrdTrackCand.begin();
-	ivTempTrdTrackCand != vTempTrdTrackCand.end();
-	ivTempTrdTrackCand++) {
+    for (ivTempTrdTrackCand = vTempTrdTrackCand.begin();
+         ivTempTrdTrackCand != vTempTrdTrackCand.end();
+         ivTempTrdTrackCand++) {
 
       //FitKF(*ivTempTrdTrackCand);
       //trdTrackFitterKF->DoFit(*ivTempTrdTrackCand, &vtx);
@@ -2095,14 +2136,15 @@ void CbmL1CATrdTrackFinderSA::CreateTracks(vector<CbmL1TrdTracklet4*> clTracklet
     }
     refittingKF.Stop();
 
-    sort(vTempTrdTrackCand.begin(),vTempTrdTrackCand.end(),CompareChi2TrdTrack);
+    sort(
+      vTempTrdTrackCand.begin(), vTempTrdTrackCand.end(), CompareChi2TrdTrack);
   }
 
-  CbmTrdTrack *trCand;
+  CbmTrdTrack* trCand;
   Int_t firstHitSunk = 0;
-  for(ivTrdTrackCand = vTempTrdTrackCand.begin();
-      ivTrdTrackCand != vTempTrdTrackCand.end();
-      ivTrdTrackCand++) { //Loop over track candidates; mark used hits
+  for (ivTrdTrackCand = vTempTrdTrackCand.begin();
+       ivTrdTrackCand != vTempTrdTrackCand.end();
+       ivTrdTrackCand++) {  //Loop over track candidates; mark used hits
     trCand = (*ivTrdTrackCand);
     //cout << "Track no " << trackInd++
     //	 << " has " << (*ivTrdTrackCand)->GetNofTrdHits()
@@ -2110,24 +2152,24 @@ void CbmL1CATrdTrackFinderSA::CreateTracks(vector<CbmL1TrdTracklet4*> clTracklet
 
     // if(nrLoop == 2) removeUsedHits = false;
 
-    if(removeUsedHits) {//RemoveHits
+    if (removeUsedHits) {  //RemoveHits
       Int_t noHitsA = trCand->GetNofHits();
 
-      bTrueTrack = true;
+      bTrueTrack   = true;
       firstHitSunk = 0;
 
-      for(int i = 0; i < noHitsA; i++) {
-	iHit = trCand->GetHitIndex(i);
-	iglobalSetUsedHits = globalSetUsedHits.find(iHit);
+      for (int i = 0; i < noHitsA; i++) {
+        iHit               = trCand->GetHitIndex(i);
+        iglobalSetUsedHits = globalSetUsedHits.find(iHit);
 
-	if(iglobalSetUsedHits != globalSetUsedHits.end()) {
-	  if(firstHitSunk == noHitsAccepted) {
-	    bTrueTrack = false;
-	    iFakeTrack++;
-	    break;
-	  }
-	  firstHitSunk++;
-	}
+        if (iglobalSetUsedHits != globalSetUsedHits.end()) {
+          if (firstHitSunk == noHitsAccepted) {
+            bTrueTrack = false;
+            iFakeTrack++;
+            break;
+          }
+          firstHitSunk++;
+        }
       }
 
       //       Int_t k = 0;
@@ -2142,24 +2184,24 @@ void CbmL1CATrdTrackFinderSA::CreateTracks(vector<CbmL1TrdTracklet4*> clTracklet
       //       }
 
       //if(firstHitSunk != 0) cout << firstHitSunk << endl;
-      if(bTrueTrack) {
-	new ((*fArrayTrdTrack)[trackArrayInd]) CbmTrdTrack(*trCand);
-	trackArrayInd++;
-	for(int i = 0; i < noHitsA; i++){
-	  iHit = trCand->GetHitIndex(i);
-	  globalSetUsedHits.insert(iHit);
-	}
-	delete trCand;
+      if (bTrueTrack) {
+        new ((*fArrayTrdTrack)[trackArrayInd]) CbmTrdTrack(*trCand);
+        trackArrayInd++;
+        for (int i = 0; i < noHitsA; i++) {
+          iHit = trCand->GetHitIndex(i);
+          globalSetUsedHits.insert(iHit);
+        }
+        delete trCand;
       }
 
-    }else{ // end of RemoveHits
+    } else {  // end of RemoveHits
       new ((*fArrayTrdTrack)[trackArrayInd]) CbmTrdTrack(*trCand);
       trackArrayInd++;
       delete trCand;
     }
   }
 
-  cout << "\n--- Finding tracks finished"<< endl;
+  cout << "\n--- Finding tracks finished" << endl;
   cout << ":::Track candidates: " << vTempTrdTrackCand.size() << endl
        << ":::Fake tracks:      " << iFakeTrack << endl
        << ":::fArrayTrdTrack:   " << fArrayTrdTrack->GetEntriesFast() << endl;
@@ -2167,47 +2209,46 @@ void CbmL1CATrdTrackFinderSA::CreateTracks(vector<CbmL1TrdTracklet4*> clTracklet
   vTempTrdTrackCand.clear();
   //  delete trParam;
 
-  if(!isEmpty) { licz++; isEmpty = true; }
+  if (!isEmpty) {
+    licz++;
+    isEmpty = true;
+  }
 }
 // -----------------------------------------------------------------------
 
 
-
 // -----------------------------------------------------------------------
-void CbmL1CATrdTrackFinderSA::CreateSegments(vector<CbmL1TrdTracklet*> clSpacePointsAB,
-					     vector<CbmL1TrdTracklet*> clSpacePointsCD,
-					     vector<CbmL1TrdTracklet4*> &clTrackletsAD,
-					     Double_t dX, Double_t dY) {
+void CbmL1CATrdTrackFinderSA::CreateSegments(
+  vector<CbmL1TrdTracklet*> clSpacePointsAB,
+  vector<CbmL1TrdTracklet*> clSpacePointsCD,
+  vector<CbmL1TrdTracklet4*>& clTrackletsAD,
+  Double_t dX,
+  Double_t dY) {
   //--- method to create 4-hit tracklets from Space Points (smaller 2-hit tracklets) ---
   vector<CbmL1TrdTracklet*>::iterator iSpacePtA;
   vector<CbmL1TrdTracklet*>::iterator iSpacePtB;
   vector<CbmL1TrdTracklet*>::iterator iSpacePtStart;
 
-  Int_t
-    iIndex = 0,       //index
-    indSpacePtA,       //index of 1st miniTracklet
-    indSpacePtB,       //index of 2nd miniTracklet
-    indSpacePtC,       //index of 3rd miniTracklet
-    indSpacePtD,       //index of 4th miniTracklet
-    noXSurv = 0,      //number of tracklets that survived the X distance cut
-    noYSurv = 0,      //number of tracklets that survived the Y distance cut
-    noXYSurv = 0,     //number of tracklets that survived both X & Y distance cuts
-    noAllPairs = 0,
-    iSegAcc14 = 0;
+  Int_t iIndex = 0,  //index
+    indSpacePtA,     //index of 1st miniTracklet
+    indSpacePtB,     //index of 2nd miniTracklet
+    indSpacePtC,     //index of 3rd miniTracklet
+    indSpacePtD,     //index of 4th miniTracklet
+    noXSurv  = 0,    //number of tracklets that survived the X distance cut
+    noYSurv  = 0,    //number of tracklets that survived the Y distance cut
+    noXYSurv = 0,  //number of tracklets that survived both X & Y distance cuts
+    noAllPairs = 0, iSegAcc14 = 0;
 
-  CbmL1TrdTracklet4 *clTr;
+  CbmL1TrdTracklet4* clTr;
 
-  CbmL1TrdTracklet
-    *trLeft,
-    *trRight;
+  CbmL1TrdTracklet *trLeft, *trRight;
 
-  iSpacePtStart  = clSpacePointsCD.begin();
+  iSpacePtStart = clSpacePointsCD.begin();
 
   //---------- BEGIN: Creation tracklet 12-34 ---------------------------------
-  for(iSpacePtA  = clSpacePointsAB.begin();
-      iSpacePtA != clSpacePointsAB.end();
-      iSpacePtA++) {
-    trLeft = *iSpacePtA;
+  for (iSpacePtA = clSpacePointsAB.begin(); iSpacePtA != clSpacePointsAB.end();
+       iSpacePtA++) {
+    trLeft      = *iSpacePtA;
     indSpacePtA = trLeft->GetIndLeft();
     indSpacePtB = trLeft->GetIndRight();
 
@@ -2216,19 +2257,13 @@ void CbmL1CATrdTrackFinderSA::CreateSegments(vector<CbmL1TrdTracklet*> clSpacePo
 
 
     //--- extrapolate --------------------------------------------
-    Double_t
-      y1  = trLeft->GetCoord(0),
-      x1  = trLeft->GetCoord(1),
-      y1z = trLeft->GetCoord(2),
-      x1z = trLeft->GetCoord(3),
-      x2  = 0,
-      y2  = 0,
-      distBetweenLayer = x1z-y1z,
-      y2z = y1z+distBetweenLayer*2,
-      x2z = x1z+distBetweenLayer*2;
+    Double_t y1 = trLeft->GetCoord(0), x1 = trLeft->GetCoord(1),
+             y1z = trLeft->GetCoord(2), x1z = trLeft->GetCoord(3), x2 = 0,
+             y2 = 0, distBetweenLayer = x1z - y1z,
+             y2z = y1z + distBetweenLayer * 2, x2z = x1z + distBetweenLayer * 2;
 
-    y2 = (y1/y1z)*y2z;
-    x2 = (x1/x1z)*x2z;
+    y2 = (y1 / y1z) * y2z;
+    x2 = (x1 / x1z) * x2z;
     //--- end: extrapolate --------------------------------------
 
     Bool_t bFirst = true;
@@ -2237,20 +2272,16 @@ void CbmL1CATrdTrackFinderSA::CreateSegments(vector<CbmL1TrdTracklet*> clSpacePo
     //trRight = clSpacePointsCD[y];
     //cout << trRight->GetCoord(0) << endl;
     //    Bool_t bFirst = true;
-    for(iSpacePtB  = iSpacePtStart;
-	iSpacePtB != clSpacePointsCD.end();
-	iSpacePtB++) {
+    for (iSpacePtB = iSpacePtStart; iSpacePtB != clSpacePointsCD.end();
+         iSpacePtB++) {
       trRight = *iSpacePtB;
 
       indSpacePtC = trRight->GetIndLeft();
       indSpacePtD = trRight->GetIndRight();
       noAllPairs++;
 
-      Double_t
-	yB  = trRight->GetCoord(0),
-	xB  = trRight->GetCoord(1),
-	yBz = trRight->GetCoord(2),
-	xBz = trRight->GetCoord(3);
+      Double_t yB = trRight->GetCoord(0), xB = trRight->GetCoord(1),
+               yBz = trRight->GetCoord(2), xBz = trRight->GetCoord(3);
 
       /*
       //--- for estimation dx and dy ----------------------------
@@ -2318,55 +2349,55 @@ void CbmL1CATrdTrackFinderSA::CreateSegments(vector<CbmL1TrdTracklet*> clSpacePo
       //--- end: for estimation dx and dy -------------------------------
       */
 
-      if(trRight->GetCoord(0) > y2+dY){
-	continue;
-      }else{
-	if(bFirst){
-	  bFirst = false;
-	  iSpacePtStart = iSpacePtB;
-	}
+      if (trRight->GetCoord(0) > y2 + dY) {
+        continue;
+      } else {
+        if (bFirst) {
+          bFirst        = false;
+          iSpacePtStart = iSpacePtB;
+        }
       }
-      if(trRight->GetCoord(0) < y2-dY) break;
+      if (trRight->GetCoord(0) < y2 - dY) break;
 
 
-      if((trRight->GetCoord(1) < x2+dX) &&
-      	 (trRight->GetCoord(1) > x2-dX)){
+      if ((trRight->GetCoord(1) < x2 + dX)
+          && (trRight->GetCoord(1) > x2 - dX)) {
 
-	iSegAcc14++;  //we have one more tracklet
-	//we create a new tracklet object to add it into a vector
-	clTr = new CbmL1TrdTracklet4();
+        iSegAcc14++;  //we have one more tracklet
+        //we create a new tracklet object to add it into a vector
+        clTr = new CbmL1TrdTracklet4();
 
-  	clTr->SetCoord(0, y1);
-  	clTr->SetCoord(1, x1);
-  	clTr->SetCoord(2, yB);
-  	clTr->SetCoord(3, xB);
+        clTr->SetCoord(0, y1);
+        clTr->SetCoord(1, x1);
+        clTr->SetCoord(2, yB);
+        clTr->SetCoord(3, xB);
 
-	clTr->M[0] = y1z;
-	clTr->M[1] = x1z;
-	clTr->M[2] = yBz;
-	clTr->M[3] = xBz;
+        clTr->M[0] = y1z;
+        clTr->M[1] = x1z;
+        clTr->M[2] = yBz;
+        clTr->M[3] = xBz;
 
-	//zed is a z-axis value to which we extrapolate
-	Double_t zed = 0;
+        //zed is a z-axis value to which we extrapolate
+        Double_t zed = 0;
 
-	//cout << trdHit1->GetZ() <<" : "<< trRight->GetCoord(3) << endl;
-	if(Int_t(trRight->GetCoord(3)+1) == fTrd14_Z){
-	  zed = fTrd21_Z;
-	  //cout <<"fTrd21_Z: "<< fTrd21_Z << endl;
-	}
-	//cout << trRight->GetCoord(3) <<"\t"<< fTrd14_Z << endl;
-	if(Int_t(trRight->GetCoord(3)+1) == fTrd24_Z){
-	  zed = fTrd31_Z;
-	  //cout <<"fTrd31_Z: "<< fTrd31_Z << endl;
-	}
-	//cout << trRight->GetCoord(3) <<"\t"<< fTrd24_Z << endl;
+        //cout << trdHit1->GetZ() <<" : "<< trRight->GetCoord(3) << endl;
+        if (Int_t(trRight->GetCoord(3) + 1) == fTrd14_Z) {
+          zed = fTrd21_Z;
+          //cout <<"fTrd21_Z: "<< fTrd21_Z << endl;
+        }
+        //cout << trRight->GetCoord(3) <<"\t"<< fTrd14_Z << endl;
+        if (Int_t(trRight->GetCoord(3) + 1) == fTrd24_Z) {
+          zed = fTrd31_Z;
+          //cout <<"fTrd31_Z: "<< fTrd31_Z << endl;
+        }
+        //cout << trRight->GetCoord(3) <<"\t"<< fTrd24_Z << endl;
 
-	//if(trRight->GetPlanesID(1) == 4) zed = fTrd21_Z;
-	//if(trRight->GetPlanesID(1) == 8) zed = fTrd31_Z;
-	//	if(trRight->GetPlanesID(1) == 4) zed = 970;
-	//if(trRight->GetPlanesID(1) == 8) zed = fTrd31_Z;
+        //if(trRight->GetPlanesID(1) == 4) zed = fTrd21_Z;
+        //if(trRight->GetPlanesID(1) == 8) zed = fTrd31_Z;
+        //	if(trRight->GetPlanesID(1) == 4) zed = 970;
+        //if(trRight->GetPlanesID(1) == 8) zed = fTrd31_Z;
 
-	/* //Extrapolated by CbmTrdTrackFitterKF::Extrapolate insteas fo DistTwoTrackletsY
+        /* //Extrapolated by CbmTrdTrackFitterKF::Extrapolate insteas fo DistTwoTrackletsY
 	   //Extrapolate && fo DistTwoTrackletsY give the same results
 	   CbmTrdTrack *trdTrack = new CbmTrdTrack();
 	   CbmTrdHit *hit1;
@@ -2401,29 +2432,31 @@ void CbmL1CATrdTrackFinderSA::CreateSegments(vector<CbmL1TrdTracklet*> clSpacePo
 	   << trParam->GetX() << endl;
 	*/
 
-	//set the extrapolated coordinates - Y
-	clTr->SetExt(0, DistTwoTrackletsY(indSpacePtA, indSpacePtC, zed));
-	//set the extrapolated coordinates - X
-	clTr->SetExt(1, DistTwoTrackletsX(indSpacePtB, indSpacePtD, zed+distBetweenLayer));
-	//set the indices of all 4 point in tracklet
-	clTr->SetInd(0, indSpacePtA);
-	clTr->SetInd(1, indSpacePtB);
-	clTr->SetInd(2, indSpacePtC);
-	clTr->SetInd(3, indSpacePtD);
-	//initial value is always 0; it is modified if necessary
-	clTr->SetVal(0);
+        //set the extrapolated coordinates - Y
+        clTr->SetExt(0, DistTwoTrackletsY(indSpacePtA, indSpacePtC, zed));
+        //set the extrapolated coordinates - X
+        clTr->SetExt(
+          1,
+          DistTwoTrackletsX(indSpacePtB, indSpacePtD, zed + distBetweenLayer));
+        //set the indices of all 4 point in tracklet
+        clTr->SetInd(0, indSpacePtA);
+        clTr->SetInd(1, indSpacePtB);
+        clTr->SetInd(2, indSpacePtC);
+        clTr->SetInd(3, indSpacePtD);
+        //initial value is always 0; it is modified if necessary
+        clTr->SetVal(0);
 
-	//position of the tracklet in tracklets vector
-	clTr->SetIndex(iIndex);
-	iIndex++;
+        //position of the tracklet in tracklets vector
+        clTr->SetIndex(iIndex);
+        iIndex++;
 
-	//add a tracklet to a vector
-	clTrackletsAD.push_back(clTr);
-	noXYSurv++;
+        //add a tracklet to a vector
+        clTrackletsAD.push_back(clTr);
+        noXYSurv++;
       }
     }
   }
-  if(fVerbose > 2) {
+  if (fVerbose > 2) {
     cout << " ----------- Tracklet 12-34 ------------------" << endl;
     cout << " Number of X survivors: " << noXSurv << endl;
     cout << " Number of Y survivors: " << noYSurv << endl;
@@ -2433,41 +2466,33 @@ void CbmL1CATrdTrackFinderSA::CreateSegments(vector<CbmL1TrdTracklet*> clSpacePo
 }
 // -----------------------------------------------------------------------
 
-void CbmL1CATrdTrackFinderSA::CreateSpacePoints(vector<LayerWithHits> vTrdHitArrayA,
-						vector<LayerWithHits> vTrdHitArrayB,
-						vector<CbmL1TrdTracklet*> &clSpacePointsAB,
-						Double_t sigmaA, Double_t sigmaB) {
+void CbmL1CATrdTrackFinderSA::CreateSpacePoints(
+  vector<LayerWithHits> vTrdHitArrayA,
+  vector<LayerWithHits> vTrdHitArrayB,
+  vector<CbmL1TrdTracklet*>& clSpacePointsAB,
+  Double_t sigmaA,
+  Double_t sigmaB) {
   //method to create Space Points (SP) from two individual detector hist
 
   vector<LayerWithHits>::iterator itA;
   vector<LayerWithHits>::iterator itB;
   vector<LayerWithHits>::iterator itStart;
 
-  Int_t
-    noOverlapsAB = 0,
-    //    noMCOverlapsAB = 0,
+  Int_t noOverlapsAB = 0,
+        //    noMCOverlapsAB = 0,
     iInd = 0;
 
-  CbmL1TrdTracklet *clSpacePt;
+  CbmL1TrdTracklet* clSpacePt;
 
-  Int_t
-    indA, indB;
+  Int_t indA, indB;
 
-  Double_t
-    A_X, A_Y, A_Z,
-    A_DX, A_DY;
+  Double_t A_X, A_Y, A_Z, A_DX, A_DY;
 
-  Double_t
-    B_X, B_Y, B_Z,
-    B_DX, B_DY;
+  Double_t B_X, B_Y, B_Z, B_DX, B_DY;
 
-  Int_t
-    A_planeID,
-    B_planeID;
+  Int_t A_planeID, B_planeID;
 
-  Int_t
-    A_mcTrID,
-    B_mcTrID;
+  Int_t A_mcTrID, B_mcTrID;
 
   //   Double_t SPlength;
 
@@ -2480,18 +2505,16 @@ void CbmL1CATrdTrackFinderSA::CreateSpacePoints(vector<LayerWithHits> vTrdHitArr
 
   itStart = vTrdHitArrayB.begin();
 
-  for(itA  = vTrdHitArrayA.begin();
-      itA != vTrdHitArrayA.end();
-      itA++) {
+  for (itA = vTrdHitArrayA.begin(); itA != vTrdHitArrayA.end(); itA++) {
 
-    indA = (*itA).hitIndex;
-    A_X  = (*itA).X;
-    A_Y  = (*itA).Y;
-    A_Z  = (*itA).Z;
-    A_DX = (*itA).DX;
-    A_DY = (*itA).DY;
+    indA      = (*itA).hitIndex;
+    A_X       = (*itA).X;
+    A_Y       = (*itA).Y;
+    A_Z       = (*itA).Z;
+    A_DX      = (*itA).DX;
+    A_DY      = (*itA).DY;
     A_planeID = (*itA).planeID;
-    A_mcTrID = (*itA).mcTrackID;
+    A_mcTrID  = (*itA).mcTrackID;
 
     /*//--- extrapolate --------------------------------------------
       Double_t distBetweenLayer = fTrd14_Z-fTrd13_Z;
@@ -2511,103 +2534,101 @@ void CbmL1CATrdTrackFinderSA::CreateSpacePoints(vector<LayerWithHits> vTrdHitArr
       x2 = (x1/z1x)*z2x;
       //--- end: extrapolate --------------------------------------*/
 
-      Bool_t bFirst = true;
-      for(itB  = itStart;
-	  itB != vTrdHitArrayB.end();
-	  itB++) {
+    Bool_t bFirst = true;
+    for (itB = itStart; itB != vTrdHitArrayB.end(); itB++) {
 
-	indB = (*itB).hitIndex;
-	B_X  = (*itB).X;
-	B_Y  = (*itB).Y;
-	B_Z  = (*itB).Z;
-	B_DX = (*itB).DX;
-	B_DY = (*itB).DY;
-	B_planeID = (*itB).planeID;
-	B_mcTrID = (*itB).mcTrackID;
+      indB      = (*itB).hitIndex;
+      B_X       = (*itB).X;
+      B_Y       = (*itB).Y;
+      B_Z       = (*itB).Z;
+      B_DX      = (*itB).DX;
+      B_DY      = (*itB).DY;
+      B_planeID = (*itB).planeID;
+      B_mcTrID  = (*itB).mcTrackID;
 
-	if (B_Y + sigmaB*B_DY < A_Y - sigmaA*A_DY){
-	  continue;
-	}else{
-	  /* Finding the bottom level to begin the second loop.
+      if (B_Y + sigmaB * B_DY < A_Y - sigmaA * A_DY) {
+        continue;
+      } else {
+        /* Finding the bottom level to begin the second loop.
 	     The value of bottom level is taken from previous "second loop".*/
-	  if (bFirst){
-	    itStart = itB;
-	    bFirst = false;
-	  }
-	}
-
-	if (B_Y - sigmaB*B_DY > A_Y + sigmaA*A_DY) break;
-
-	// cout <<"(A_X, A_DX, sigmaA*A_DX) "<< A_X <<", "<< A_DX <<", "<< sigmaA*A_DX <<", "<< endl;
-	// cout <<"(A_Y, A_DY, sigmaA*A_DY) "<< A_Y <<", "<< A_DY <<", "<< sigmaA*A_DY <<", "<< endl;
-	// cout <<"(B_X, B_DX, sigmaB*B_DX) "<< B_X <<", "<< B_DX <<", "<< sigmaB*B_DX <<", "<< endl;
-	// cout <<"(B_Y, B_DY, sigmaB*B_DY) "<< B_Y <<", "<< B_DY <<", "<< sigmaB*B_DY <<", "<< endl;
-	// cout <<"-----------------------------------------"<< endl;
-	//      if (B_Y < y2 - sigmaB*A_DY) continue;
-	//      if (B_Y > y2 + sigmaB*A_DY) break;
-	//      cout <<"[Extrapol, Real, Diff] "
-	//   << y2 <<", "<< B_Y <<", "<< B_Y-y2 << endl;
-
-	if((B_X - sigmaB*B_DX < A_X + sigmaA*A_DX) &&
-	   (B_X + sigmaB*B_DX > A_X - sigmaA*A_DX)){
-
-	  noOverlapsAB++;
-	  clSpacePt = new CbmL1TrdTracklet();
-
-	  clSpacePt->SetIndLeft(indA);
-	  clSpacePt->SetIndRight(indB);
-	  clSpacePt->SetVal(0);
-	  clSpacePt->SetIndex(iInd);
-	  clSpacePt->SetCoord(0, A_Y);
-	  clSpacePt->SetCoord(1, B_X);
-	  clSpacePt->SetCoord(2, A_Z);
-	  clSpacePt->SetCoord(3, B_Z);
-	  clSpacePt->SetPlanesID(A_planeID, B_planeID);
-
-	  // 	//----------------------------------------
-	  // 	TVector3 t1, t2, t3;
-	  // 	t1.SetXYZ(A_X, A_Y, A_Z);
-	  // 	t2.SetXYZ(B_X, B_Y, B_Z);
-	  // 	t3 = t2 - t1;
-	  // 	SPlength = t3.Mag();
-
-	  // 	Double_t
-	  // 	  x = 0,
-	  // 	  y = 0,
-	  // 	  z = 0,
-	  // 	  t = 0;
-
-	  // 	 t = (z - A_Z)/(B_Z - A_Z);
-	  // 	 x = A_X + t*(B_X-A_X);
-	  // 	 y = A_Y + t*(B_Y-A_Y);
-
-	  // 	//SPlength = sqrt(pow(B_Y-A_Y,2)+pow(B_Y-A_Y,2));
-	  // 	 if(Station == 1){
-	  // 	   if(A_mcTrID == B_mcTrID){
-	  // 	     noMCOverlapsAB++;
-	  // 	     fSPlengthMC->Fill(SPlength);
-	  // 	     fYat0MC->Fill(x);
-	  // 	   }else{
-	  // 	     fSPlength->Fill(SPlength);
-	  // 	     fYat0->Fill(x);
-	  // 	   }
-	  // 	 }
-	  iInd++;
-
-	  clSpacePointsAB.push_back(clSpacePt);
-
-	  if(A_mcTrID == B_mcTrID){
-	    fh_SP_xDiff_MC->Fill(A_X-B_X);
-	    fh_SP_yDiff_MC->Fill(A_Y-B_Y);
-	  }else{
-	    fh_SP_xDiff_nMC->Fill(A_X-B_X);
-	    fh_SP_yDiff_nMC->Fill(A_Y-B_Y);
-	  }
-	}
+        if (bFirst) {
+          itStart = itB;
+          bFirst  = false;
+        }
       }
+
+      if (B_Y - sigmaB * B_DY > A_Y + sigmaA * A_DY) break;
+
+      // cout <<"(A_X, A_DX, sigmaA*A_DX) "<< A_X <<", "<< A_DX <<", "<< sigmaA*A_DX <<", "<< endl;
+      // cout <<"(A_Y, A_DY, sigmaA*A_DY) "<< A_Y <<", "<< A_DY <<", "<< sigmaA*A_DY <<", "<< endl;
+      // cout <<"(B_X, B_DX, sigmaB*B_DX) "<< B_X <<", "<< B_DX <<", "<< sigmaB*B_DX <<", "<< endl;
+      // cout <<"(B_Y, B_DY, sigmaB*B_DY) "<< B_Y <<", "<< B_DY <<", "<< sigmaB*B_DY <<", "<< endl;
+      // cout <<"-----------------------------------------"<< endl;
+      //      if (B_Y < y2 - sigmaB*A_DY) continue;
+      //      if (B_Y > y2 + sigmaB*A_DY) break;
+      //      cout <<"[Extrapol, Real, Diff] "
+      //   << y2 <<", "<< B_Y <<", "<< B_Y-y2 << endl;
+
+      if ((B_X - sigmaB * B_DX < A_X + sigmaA * A_DX)
+          && (B_X + sigmaB * B_DX > A_X - sigmaA * A_DX)) {
+
+        noOverlapsAB++;
+        clSpacePt = new CbmL1TrdTracklet();
+
+        clSpacePt->SetIndLeft(indA);
+        clSpacePt->SetIndRight(indB);
+        clSpacePt->SetVal(0);
+        clSpacePt->SetIndex(iInd);
+        clSpacePt->SetCoord(0, A_Y);
+        clSpacePt->SetCoord(1, B_X);
+        clSpacePt->SetCoord(2, A_Z);
+        clSpacePt->SetCoord(3, B_Z);
+        clSpacePt->SetPlanesID(A_planeID, B_planeID);
+
+        // 	//----------------------------------------
+        // 	TVector3 t1, t2, t3;
+        // 	t1.SetXYZ(A_X, A_Y, A_Z);
+        // 	t2.SetXYZ(B_X, B_Y, B_Z);
+        // 	t3 = t2 - t1;
+        // 	SPlength = t3.Mag();
+
+        // 	Double_t
+        // 	  x = 0,
+        // 	  y = 0,
+        // 	  z = 0,
+        // 	  t = 0;
+
+        // 	 t = (z - A_Z)/(B_Z - A_Z);
+        // 	 x = A_X + t*(B_X-A_X);
+        // 	 y = A_Y + t*(B_Y-A_Y);
+
+        // 	//SPlength = sqrt(pow(B_Y-A_Y,2)+pow(B_Y-A_Y,2));
+        // 	 if(Station == 1){
+        // 	   if(A_mcTrID == B_mcTrID){
+        // 	     noMCOverlapsAB++;
+        // 	     fSPlengthMC->Fill(SPlength);
+        // 	     fYat0MC->Fill(x);
+        // 	   }else{
+        // 	     fSPlength->Fill(SPlength);
+        // 	     fYat0->Fill(x);
+        // 	   }
+        // 	 }
+        iInd++;
+
+        clSpacePointsAB.push_back(clSpacePt);
+
+        if (A_mcTrID == B_mcTrID) {
+          fh_SP_xDiff_MC->Fill(A_X - B_X);
+          fh_SP_yDiff_MC->Fill(A_Y - B_Y);
+        } else {
+          fh_SP_xDiff_nMC->Fill(A_X - B_X);
+          fh_SP_yDiff_nMC->Fill(A_Y - B_Y);
+        }
+      }
+    }
   }
   iInd = 0;
-  if(fVerbose > 1) cout <<"--- No Space Points: "<< noOverlapsAB << endl;
+  if (fVerbose > 1) cout << "--- No Space Points: " << noOverlapsAB << endl;
   //   cout <<"--- (No SP, MCSP) "
   //        << noOverlapsAB <<", "
   //        << noMCOverlapsAB <<endl;
@@ -2615,55 +2636,49 @@ void CbmL1CATrdTrackFinderSA::CreateSpacePoints(vector<LayerWithHits> vTrdHitArr
 
 
 // -----------------------------------------------------------------------
-void CbmL1CATrdTrackFinderSA::CreateAndManageSegments(vector<CbmL1TrdTracklet4*> clTracklets14,
-						      vector<CbmL1TrdTracklet4*> clTracklets58,
-						      vector<CbmL1TrdTracklet4*> clTracklets912){
+void CbmL1CATrdTrackFinderSA::CreateAndManageSegments(
+  vector<CbmL1TrdTracklet4*> clTracklets14,
+  vector<CbmL1TrdTracklet4*> clTracklets58,
+  vector<CbmL1TrdTracklet4*> clTracklets912) {
   //CreateAndManageSegments with no long track creation, 1 track = 1 segment
 
   vector<CbmL1TrdTracklet4*>::iterator itclSeg;
 
-  CbmTrdTrack *tr1 = NULL;
-//   CbmTrdHit* hit1 = NULL;
-//   CbmTrdHit* hit2 = NULL;
-//   CbmTrdHit* hit3 = NULL;
-//   CbmTrdHit* hit4 = NULL;
+  CbmTrdTrack* tr1 = NULL;
+  //   CbmTrdHit* hit1 = NULL;
+  //   CbmTrdHit* hit2 = NULL;
+  //   CbmTrdHit* hit3 = NULL;
+  //   CbmTrdHit* hit4 = NULL;
 
-  CbmL1TrdTracklet4
-    *clTrdSeg;
+  CbmL1TrdTracklet4* clTrdSeg;
 
-  Int_t
-    trackArrayInd = 0;
+  Int_t trackArrayInd = 0;
 
-  Int_t
-    indTrdHit1,
-    indTrdHit2,
-    indTrdHit3,
-    indTrdHit4;
+  Int_t indTrdHit1, indTrdHit2, indTrdHit3, indTrdHit4;
 
-  for(itclSeg = clTracklets14.begin();
-      itclSeg != clTracklets14.end();
-      itclSeg++) {
+  for (itclSeg = clTracklets14.begin(); itclSeg != clTracklets14.end();
+       itclSeg++) {
 
     clTrdSeg = *itclSeg;
-    tr1 = new CbmTrdTrack();
+    tr1      = new CbmTrdTrack();
 
     indTrdHit1 = clTrdSeg->GetInd(0);
-//     hit1 = L1_DYNAMIC_CAST<CbmTrdHit*>( fArrayTrdHit->At(indTrdHit1) );
+    //     hit1 = L1_DYNAMIC_CAST<CbmTrdHit*>( fArrayTrdHit->At(indTrdHit1) );
     tr1->AddHit(indTrdHit1, kTRDHIT);
 
     indTrdHit2 = clTrdSeg->GetInd(1);
-//     hit2 = L1_DYNAMIC_CAST<CbmTrdHit*>( fArrayTrdHit->At(indTrdHit2) );
+    //     hit2 = L1_DYNAMIC_CAST<CbmTrdHit*>( fArrayTrdHit->At(indTrdHit2) );
     tr1->AddHit(indTrdHit2, kTRDHIT);
 
     indTrdHit3 = clTrdSeg->GetInd(2);
-//     hit3 = L1_DYNAMIC_CAST<CbmTrdHit*>( fArrayTrdHit->At(indTrdHit3) );
+    //     hit3 = L1_DYNAMIC_CAST<CbmTrdHit*>( fArrayTrdHit->At(indTrdHit3) );
     tr1->AddHit(indTrdHit3, kTRDHIT);
 
     indTrdHit4 = clTrdSeg->GetInd(3);
-//     hit4 = L1_DYNAMIC_CAST<CbmTrdHit*>( fArrayTrdHit->At(indTrdHit4) );
+    //     hit4 = L1_DYNAMIC_CAST<CbmTrdHit*>( fArrayTrdHit->At(indTrdHit4) );
     tr1->AddHit(indTrdHit4, kTRDHIT);
 
-//    tr1->SortHits();
+    //    tr1->SortHits();
 
     new ((*fArrayTrdTrack)[trackArrayInd]) CbmTrdTrack(*tr1);
 
@@ -2671,30 +2686,29 @@ void CbmL1CATrdTrackFinderSA::CreateAndManageSegments(vector<CbmL1TrdTracklet4*>
     trackArrayInd++;
   }
 
-  for(itclSeg = clTracklets58.begin();
-      itclSeg != clTracklets58.end();
-      itclSeg++) {
+  for (itclSeg = clTracklets58.begin(); itclSeg != clTracklets58.end();
+       itclSeg++) {
 
     clTrdSeg = *itclSeg;
-    tr1 = new CbmTrdTrack();
+    tr1      = new CbmTrdTrack();
 
     indTrdHit1 = clTrdSeg->GetInd(0);
-//     hit1 = L1_DYNAMIC_CAST<CbmTrdHit*>( fArrayTrdHit->At(indTrdHit1) );
+    //     hit1 = L1_DYNAMIC_CAST<CbmTrdHit*>( fArrayTrdHit->At(indTrdHit1) );
     tr1->AddHit(indTrdHit1, kTRDHIT);
 
     indTrdHit2 = clTrdSeg->GetInd(1);
-//     hit2 = L1_DYNAMIC_CAST<CbmTrdHit*>( fArrayTrdHit->At(indTrdHit2) );
+    //     hit2 = L1_DYNAMIC_CAST<CbmTrdHit*>( fArrayTrdHit->At(indTrdHit2) );
     tr1->AddHit(indTrdHit2, kTRDHIT);
 
     indTrdHit3 = clTrdSeg->GetInd(2);
-//     hit3 = L1_DYNAMIC_CAST<CbmTrdHit*>( fArrayTrdHit->At(indTrdHit3) );
+    //     hit3 = L1_DYNAMIC_CAST<CbmTrdHit*>( fArrayTrdHit->At(indTrdHit3) );
     tr1->AddHit(indTrdHit3, kTRDHIT);
 
     indTrdHit4 = clTrdSeg->GetInd(3);
-//     hit4 = L1_DYNAMIC_CAST<CbmTrdHit*>( fArrayTrdHit->At(indTrdHit4) );
+    //     hit4 = L1_DYNAMIC_CAST<CbmTrdHit*>( fArrayTrdHit->At(indTrdHit4) );
     tr1->AddHit(indTrdHit4, kTRDHIT);
 
-//    tr1->SortHits();
+    //    tr1->SortHits();
 
     new ((*fArrayTrdTrack)[trackArrayInd]) CbmTrdTrack(*tr1);
 
@@ -2702,30 +2716,29 @@ void CbmL1CATrdTrackFinderSA::CreateAndManageSegments(vector<CbmL1TrdTracklet4*>
     trackArrayInd++;
   }
 
-  for(itclSeg = clTracklets912.begin();
-      itclSeg != clTracklets912.end();
-      itclSeg++) {
+  for (itclSeg = clTracklets912.begin(); itclSeg != clTracklets912.end();
+       itclSeg++) {
 
     clTrdSeg = *itclSeg;
-    tr1 = new CbmTrdTrack();
+    tr1      = new CbmTrdTrack();
 
     indTrdHit1 = clTrdSeg->GetInd(0);
-//     hit1 = L1_DYNAMIC_CAST<CbmTrdHit*>( fArrayTrdHit->At(indTrdHit1) );
+    //     hit1 = L1_DYNAMIC_CAST<CbmTrdHit*>( fArrayTrdHit->At(indTrdHit1) );
     tr1->AddHit(indTrdHit1, kTRDHIT);
 
     indTrdHit2 = clTrdSeg->GetInd(1);
-//     hit2 = L1_DYNAMIC_CAST<CbmTrdHit*>( fArrayTrdHit->At(indTrdHit2) );
+    //     hit2 = L1_DYNAMIC_CAST<CbmTrdHit*>( fArrayTrdHit->At(indTrdHit2) );
     tr1->AddHit(indTrdHit2, kTRDHIT);
 
     indTrdHit3 = clTrdSeg->GetInd(2);
-//     hit3 = L1_DYNAMIC_CAST<CbmTrdHit*>( fArrayTrdHit->At(indTrdHit3) );
+    //     hit3 = L1_DYNAMIC_CAST<CbmTrdHit*>( fArrayTrdHit->At(indTrdHit3) );
     tr1->AddHit(indTrdHit3, kTRDHIT);
 
     indTrdHit4 = clTrdSeg->GetInd(3);
-//     hit4 = L1_DYNAMIC_CAST<CbmTrdHit*>( fArrayTrdHit->At(indTrdHit4) );
+    //     hit4 = L1_DYNAMIC_CAST<CbmTrdHit*>( fArrayTrdHit->At(indTrdHit4) );
     tr1->AddHit(indTrdHit4, kTRDHIT);
 
-//    tr1->SortHits();
+    //    tr1->SortHits();
 
     new ((*fArrayTrdTrack)[trackArrayInd]) CbmTrdTrack(*tr1);
 
@@ -2736,21 +2749,17 @@ void CbmL1CATrdTrackFinderSA::CreateAndManageSegments(vector<CbmL1TrdTracklet4*>
 // -----------------------------------------------------------------------
 
 
-
 // -----------------------------------------------------------------------
-Double_t CbmL1CATrdTrackFinderSA::Fit(CbmTrdTrack *tr)
-{//fits a track with a straight line and caluculates each point's deviation
+Double_t CbmL1CATrdTrackFinderSA::Fit(
+  CbmTrdTrack*
+    tr) {  //fits a track with a straight line and caluculates each point's deviation
 
   Double_t chi2 = 0;
 
   Int_t iHit;
-  CbmTrdHit *pHit[12];
+  CbmTrdHit* pHit[12];
 
-  Double_t
-    y1,y2,
-    z1,z2,
-    yA[12], zA[12],
-    yB[12], zB[12];
+  Double_t y1, y2, z1, z2, yA[12], zA[12], yB[12], zB[12];
 
   Double_t dist1 = 0;
   Double_t dist2 = 0;
@@ -2761,10 +2770,10 @@ Double_t CbmL1CATrdTrackFinderSA::Fit(CbmTrdTrack *tr)
 
   Int_t noHits = tr->GetNofHits();
 
-  for(int i = 0; i < noHits; i++){
+  for (int i = 0; i < noHits; i++) {
     iHit = tr->GetHitIndex(i);
 
-    pHit[i]  = L1_DYNAMIC_CAST<CbmTrdHit*>(  fArrayTrdHit->At(iHit) );
+    pHit[i] = L1_DYNAMIC_CAST<CbmTrdHit*>(fArrayTrdHit->At(iHit));
   }
 
   //first and last X(orY) pointa in the track
@@ -2782,25 +2791,25 @@ Double_t CbmL1CATrdTrackFinderSA::Fit(CbmTrdTrack *tr)
   Int_t t1 = 0;
   Int_t t2 = 1;
 
-  for(int i = 0; i < 4; i++){
+  for (int i = 0; i < 4; i++) {
 
     //for X(orY) coordinates
-    t1+=2;
+    t1 += 2;
     y1 = fabs(pHit[t1]->GetY());
     z1 = pHit[t1]->GetZ();
 
-    yS1 = fabs((((yB[10]-yA[0])*(z1-zA[0]))/(zB[10]-zA[0]))+yA[0]);
-    dist1 = fabs(yS1-y1);
+    yS1 = fabs((((yB[10] - yA[0]) * (z1 - zA[0])) / (zB[10] - zA[0])) + yA[0]);
+    dist1 = fabs(yS1 - y1);
 
     //for Y(orX) coordinates
-    t2+=2;
+    t2 += 2;
     y2 = fabs(pHit[t2]->GetX());
     z2 = pHit[t2]->GetZ();
 
-    yS2 = fabs((((yB[11]-yA[1])*(z2-zA[1]))/(zB[11]-zA[1]))+yA[1]);
-    dist2 = fabs(yS2-y2);
+    yS2 = fabs((((yB[11] - yA[1]) * (z2 - zA[1])) / (zB[11] - zA[1])) + yA[1]);
+    dist2 = fabs(yS2 - y2);
 
-    chi2 += (dist1+dist2)/2;
+    chi2 += (dist1 + dist2) / 2;
   }
 
   //  cout << "chi2: " << chi2 << endl;
@@ -2827,7 +2836,6 @@ Double_t CbmL1CATrdTrackFinderSA::Fit(CbmTrdTrack *tr)
   //     sum2+=dist2;
   //   }
   //  chi2=sum1+sum2;
-
 
 
   // Calculate length of the track ---------------
@@ -2864,30 +2872,27 @@ Double_t CbmL1CATrdTrackFinderSA::Fit(CbmTrdTrack *tr)
 }
 // -----------------------------------------------------------------------
 
-Double_t CbmL1CATrdTrackFinderSA::Fit(Int_t M[])
-{//fits a track with a straight line and caluculates each point's deviation
+Double_t CbmL1CATrdTrackFinderSA::Fit(
+  Int_t M
+    []) {  //fits a track with a straight line and caluculates each point's deviation
 
   Double_t chi2 = 0;
 
   Int_t iHit;
-  CbmTrdHit *pHit[12];
+  CbmTrdHit* pHit[12];
 
-  Double_t
-    y1,y2,
-    z1,z2,
-    yA[12], zA[12],
-    yB[12], zB[12];
+  Double_t y1, y2, z1, z2, yA[12], zA[12], yB[12], zB[12];
 
   Double_t dist1 = 0;
   Double_t dist2 = 0;
-  Double_t yS1 = 0;
-  Double_t yS2 = 0;
+  Double_t yS1   = 0;
+  Double_t yS2   = 0;
 
   Int_t noHits = 12;
 
-  for(int i = 0; i < noHits; i++){
-    iHit = M[i];
-    pHit[i]  = L1_DYNAMIC_CAST<CbmTrdHit*>(  fArrayTrdHit->At(iHit) );
+  for (int i = 0; i < noHits; i++) {
+    iHit    = M[i];
+    pHit[i] = L1_DYNAMIC_CAST<CbmTrdHit*>(fArrayTrdHit->At(iHit));
   }
 
   //first and last X(orY) pointa in the track
@@ -2905,105 +2910,95 @@ Double_t CbmL1CATrdTrackFinderSA::Fit(Int_t M[])
   Int_t t1 = 0;
   Int_t t2 = 1;
 
-  for(int i = 0; i < 4; i++){
+  for (int i = 0; i < 4; i++) {
 
     //for X(orY) coordinates
-    t1+=2;
+    t1 += 2;
     y1 = fabs(pHit[t1]->GetY());
     z1 = pHit[t1]->GetZ();
 
-    yS1 = fabs((((yB[10]-yA[0])*(z1-zA[0]))/(zB[10]-zA[0]))+yA[0]);
-    dist1 = fabs(yS1-y1);
+    yS1 = fabs((((yB[10] - yA[0]) * (z1 - zA[0])) / (zB[10] - zA[0])) + yA[0]);
+    dist1 = fabs(yS1 - y1);
 
     //for Y(orX) coordinates
-    t2+=2;
+    t2 += 2;
     y2 = fabs(pHit[t2]->GetX());
     z2 = pHit[t2]->GetZ();
 
-    yS2 = fabs((((yB[11]-yA[1])*(z2-zA[1]))/(zB[11]-zA[1]))+yA[1]);
-    dist2 = fabs(yS2-y2);
+    yS2 = fabs((((yB[11] - yA[1]) * (z2 - zA[1])) / (zB[11] - zA[1])) + yA[1]);
+    dist2 = fabs(yS2 - y2);
 
     //chi2 += (dist2+dist1)/2;
-    chi2 += sqrt(pow(dist2,2)+pow(dist1,2));
+    chi2 += sqrt(pow(dist2, 2) + pow(dist1, 2));
   }
   return chi2;
 }
 // -----------------------------------------------------------------------
 
 // -----------------------------------------------------------------------
-Double_t CbmL1CATrdTrackFinderSA::FitLinear(Int_t M[],
-					    Int_t /*var*/ = 1) {
+Double_t CbmL1CATrdTrackFinderSA::FitLinear(Int_t M[], Int_t /*var*/ = 1) {
   //fit using a least square method
 
 
   Int_t noHits = 12;
 
   Int_t iHit;
-  CbmTrdHit *hit;
+  CbmTrdHit* hit;
 
   Double_t C1[12];
   Double_t C2[12];
-  Double_t  Z[12];
+  Double_t Z[12];
 
   Double_t n = 12;
 
-  for(int i=0;i<12;i++) {
+  for (int i = 0; i < 12; i++) {
     C1[i] = 0;
     C2[i] = 0;
-    Z [i] = 0;
+    Z[i]  = 0;
   }
 
   //  Int_t ind = 0;
 
-  for(int i=0;i<noHits;i++) {
+  for (int i = 0; i < noHits; i++) {
 
     iHit = M[i];
-    hit = L1_DYNAMIC_CAST<CbmTrdHit*>( fArrayTrdHit->At(iHit) );
+    hit  = L1_DYNAMIC_CAST<CbmTrdHit*>(fArrayTrdHit->At(iHit));
 
     C1[i] = hit->GetX();
     C2[i] = hit->GetY();
     Z[i]  = hit->GetZ();
   }
 
-  Double_t
-    sumXZ = 0,
-    sumYZ = 0,
-    sumX  = 0,
-    sumY  = 0,
-    sumZx = 0,
-    sumZy = 0,
-    sumX2 = 0,
-    sumY2 = 0,
-    sumZx2 = 0,
-    sumZy2 = 0;
+  Double_t sumXZ = 0, sumYZ = 0, sumX = 0, sumY = 0, sumZx = 0, sumZy = 0,
+           sumX2 = 0, sumY2 = 0, sumZx2 = 0, sumZy2 = 0;
 
-  for(int i=0;i<12;i+=2) {
+  for (int i = 0; i < 12; i += 2) {
     //    cout << "C1[" << i << "]=" << C1[i] << endl;
     //    cout << "C2[" << i << "]=" << C2[i] << endl;
     //    if(!(i % 2))
     {
-      sumXZ += C1[i]*Z[ i];
+      sumXZ += C1[i] * Z[i];
 
-      sumX  += C1[i];
-      sumX2 += C1[i]*C1[i];
+      sumX += C1[i];
+      sumX2 += C1[i] * C1[i];
 
-      sumZx  += Z[i];
-      sumZx2 += Z[i]*Z[ i];
+      sumZx += Z[i];
+      sumZx2 += Z[i] * Z[i];
     }
   }
 
-  for(int i=1;i<12;i+=2) {
+  for (int i = 1; i < 12; i += 2) {
     //    cout << "C1[" << i << "]=" << C1[i] << endl;
     //    cout << "C2[" << i << "]=" << C2[i] << endl;
     //    if(!((1i % 2))
     {
-      sumYZ += C2[i]*Z[ i];
+      sumYZ += C2[i] * Z[i];
 
-      sumY  += C2[i];
-      sumY2 += C2[i]*C2[i];
+      sumY += C2[i];
+      sumY2 += C2[i] * C2[i];
 
-      sumZy  += Z[ i];
-      sumZy2 += Z[ i]*Z[ i];
+      sumZy += Z[i];
+      sumZy2 += Z[i] * Z[i];
     }
   }
 
@@ -3011,12 +3006,16 @@ Double_t CbmL1CATrdTrackFinderSA::FitLinear(Int_t M[],
   cout << "";
   //   Double_t a = (n*sumXZ - sumX*sumZ)/(n*sumX2 - sumX*sumX);
   //   Double_t b = (sumZ - a*sumX)/n;
-  Double_t r1 = (n*sumXZ - sumX*sumZx)/sqrt((n*sumX2-sumX*sumX)*(n*sumZx2-sumZx*sumZx));
+  Double_t r1 =
+    (n * sumXZ - sumX * sumZx)
+    / sqrt((n * sumX2 - sumX * sumX) * (n * sumZx2 - sumZx * sumZx));
   //  Double_t Sa = sqrt((n*(sumY2 -a*sumXZ-b*sumY))/((n-2)*(n*sumX2-sumX*sumX)));
   //  Double_t Sb = Sa*sqrt(sumX2/n);
 
 
-  Double_t r2 = (n*sumYZ - sumY*sumZy)/sqrt((n*sumY2-sumY*sumY)*(n*sumZy2-sumZy*sumZy));
+  Double_t r2 =
+    (n * sumYZ - sumY * sumZy)
+    / sqrt((n * sumY2 - sumY * sumY) * (n * sumZy2 - sumZy * sumZy));
 
 
   //   cout << "Linear coefficients: a= "
@@ -3024,59 +3023,50 @@ Double_t CbmL1CATrdTrackFinderSA::FitLinear(Int_t M[],
   //        << ", r=" << r << ", chi2=" << tr->GetChi2() << endl;
 
 
-  return sqrt(r1*r1+r2*r2);
+  return sqrt(r1 * r1 + r2 * r2);
 }
 
-Double_t CbmL1CATrdTrackFinderSA::FitLSM(Int_t M[]){
+Double_t CbmL1CATrdTrackFinderSA::FitLSM(Int_t M[]) {
 
   Double_t chi2 = 0;
   Int_t iHit;
-  CbmTrdHit *pHit[12];
+  CbmTrdHit* pHit[12];
 
   Int_t noHits = 12;
-  for(int i = 0; i < noHits; i++){
-    iHit = M[i];
-    pHit[i]  = L1_DYNAMIC_CAST<CbmTrdHit*>(  fArrayTrdHit->At(iHit) );
+  for (int i = 0; i < noHits; i++) {
+    iHit    = M[i];
+    pHit[i] = L1_DYNAMIC_CAST<CbmTrdHit*>(fArrayTrdHit->At(iHit));
   }
 
-  Double_t
-    xAv = 0,
-    yAv = 0,
-    zAvx = 0,
-    zAvy = 0,
-    sumXiXav = 0,
-    sumYiYav = 0,
-    sumXiXav_ZiZAv = 0,
-    sumYiYav_ZiZAv = 0,
-    sumZiZav_x = 0,
-    sumZiZav_y = 0,
-    bY = 0,
-    bX = 0;
+  Double_t xAv = 0, yAv = 0, zAvx = 0, zAvy = 0, sumXiXav = 0, sumYiYav = 0,
+           sumXiXav_ZiZAv = 0, sumYiYav_ZiZAv = 0, sumZiZav_x = 0,
+           sumZiZav_y = 0, bY = 0, bX = 0;
 
-  for(int i = 0; i < 12; i+=2){
-    yAv  += pHit[i]->GetY();
+  for (int i = 0; i < 12; i += 2) {
+    yAv += pHit[i]->GetY();
     zAvy += pHit[i]->GetZ();
   }
-  for(int i = 1; i < 12; i+=2){
-    xAv  += pHit[i]->GetX();
+  for (int i = 1; i < 12; i += 2) {
+    xAv += pHit[i]->GetX();
     zAvx += pHit[i]->GetZ();
   }
 
-  for(int i = 0; i < 12; i+=2){
-    sumYiYav_ZiZAv += ((pHit[i]->GetY())-yAv)*((pHit[i]->GetZ())-zAvy);
-    sumYiYav += pow((pHit[i]->GetY())-yAv,2);
-    sumZiZav_y += pow((pHit[i]->GetZ())-zAvy,2);
+  for (int i = 0; i < 12; i += 2) {
+    sumYiYav_ZiZAv += ((pHit[i]->GetY()) - yAv) * ((pHit[i]->GetZ()) - zAvy);
+    sumYiYav += pow((pHit[i]->GetY()) - yAv, 2);
+    sumZiZav_y += pow((pHit[i]->GetZ()) - zAvy, 2);
   }
-  for(int i = 1; i < 12; i+=2){
-    sumXiXav_ZiZAv += ((pHit[i]->GetX())-xAv)*((pHit[i]->GetZ())-zAvx);
-    sumXiXav += pow((pHit[i]->GetX())-xAv,2);
-    sumZiZav_x += pow((pHit[i]->GetZ())-zAvx,2);
+  for (int i = 1; i < 12; i += 2) {
+    sumXiXav_ZiZAv += ((pHit[i]->GetX()) - xAv) * ((pHit[i]->GetZ()) - zAvx);
+    sumXiXav += pow((pHit[i]->GetX()) - xAv, 2);
+    sumZiZav_x += pow((pHit[i]->GetZ()) - zAvx, 2);
   }
 
-  bY = sumYiYav_ZiZAv/sumYiYav;
-  bX = sumXiXav_ZiZAv/sumXiXav;
+  bY = sumYiYav_ZiZAv / sumYiYav;
+  bX = sumXiXav_ZiZAv / sumXiXav;
 
-  chi2 = sqrt((sumZiZav_y-bY*sumYiYav_ZiZAv)/(4))+sqrt((sumZiZav_x-bX*sumXiXav_ZiZAv)/(4));
+  chi2 = sqrt((sumZiZav_y - bY * sumYiYav_ZiZAv) / (4))
+         + sqrt((sumZiZav_x - bX * sumXiXav_ZiZAv) / (4));
 
   return chi2;
 }
@@ -3085,38 +3075,41 @@ Double_t CbmL1CATrdTrackFinderSA::FitLSM(Int_t M[]){
 Double_t CbmL1CATrdTrackFinderSA::FitKF(CbmTrdTrack* pTrack) {
 
   // Declare variables outside the loop
-  CbmTrdHit* pHit = NULL;
+  CbmTrdHit* pHit     = NULL;
   CbmKFTrdHit* pKFHit = NULL;
-  Int_t hitIndex = 0;
-//   Int_t materialIndex = 0;
+  Int_t hitIndex      = 0;
+  //   Int_t materialIndex = 0;
   Double_t eLoss = 0.;
 
   // Loop over TRD hits of the track
   Int_t nTracks = pTrack->GetNofHits();
-  for(Int_t iHit = 0; iHit < nTracks; iHit++) {
+  for (Int_t iHit = 0; iHit < nTracks; iHit++) {
     // Get current hit index
     hitIndex = pTrack->GetHitIndex(iHit);
     //Get the pointer to the CbmTrdHit
-    pHit = L1_DYNAMIC_CAST<CbmTrdHit*>(  fArrayTrdHit->At(hitIndex) );
+    pHit = L1_DYNAMIC_CAST<CbmTrdHit*>(fArrayTrdHit->At(hitIndex));
     // Accumulate TR energy loss
     eLoss += pHit->GetELoss();
     // Create CbmKFTrdHit
     pKFHit = new CbmKFTrdHit();
     pKFHit->Create(pHit);
-//     materialIndex = pKFHit->MaterialIndex;
+    //     materialIndex = pKFHit->MaterialIndex;
     // Add to the KFTrack
     fKfTrack->fHits.push_back(pKFHit);
-  } // Loop over TRD hits
+  }  // Loop over TRD hits
 
   fKfTrack->GetRefChi2() = 0.;
-  fKfTrack->GetRefNDF() = 0;
-  fKfTrack->SetTrackParam(*(const_cast<FairTrackParam*>(pTrack->GetParamLast())));
+  fKfTrack->GetRefNDF()  = 0;
+  fKfTrack->SetTrackParam(
+    *(const_cast<FairTrackParam*>(pTrack->GetParamLast())));
 
   fKfTrack->Fit();
   // Store parameters at first layer
-  fKfTrack->GetTrackParam(*(const_cast<FairTrackParam*>(pTrack->GetParamFirst())));
+  fKfTrack->GetTrackParam(
+    *(const_cast<FairTrackParam*>(pTrack->GetParamFirst())));
   // Store parameters at last layer
-  fKfTrack->GetTrackParam(*(const_cast<FairTrackParam*>(pTrack->GetParamLast())));
+  fKfTrack->GetTrackParam(
+    *(const_cast<FairTrackParam*>(pTrack->GetParamLast())));
   // Store chi2 of fit
   pTrack->SetChiSq(fKfTrack->GetRefChi2());
   pTrack->SetNDF(fKfTrack->GetRefNDF());
@@ -3126,7 +3119,7 @@ Double_t CbmL1CATrdTrackFinderSA::FitKF(CbmTrdTrack* pTrack) {
 
   // Delete CbmKFTrdHit objects
   vector<CbmKFHit*>::iterator it;
-  for(it = fKfTrack->fHits.begin(); it != fKfTrack->fHits.end(); it++) {
+  for (it = fKfTrack->fHits.begin(); it != fKfTrack->fHits.end(); it++) {
     pKFHit = L1_DYNAMIC_CAST<CbmKFTrdHit*>(*it);
     delete pKFHit;
   }
@@ -3137,40 +3130,42 @@ Double_t CbmL1CATrdTrackFinderSA::FitKF(CbmTrdTrack* pTrack) {
 
 Double_t CbmL1CATrdTrackFinderSA::FitTLinearFitter(Int_t M[]) {
 
-  Double_t chi2  = 0;
-  Double_t chi2x = 0;
-  Double_t chi2y = 0;
+  Double_t chi2      = 0;
+  Double_t chi2x     = 0;
+  Double_t chi2y     = 0;
   const Int_t nrPnts = 12;
-  Int_t k = 0;
-  Int_t w = 0;
-  Int_t j = 6;
+  Int_t k            = 0;
+  Int_t w            = 0;
+  Int_t j            = 6;
   Double_t ax[6];
   Double_t ay[6];
   Double_t az1[6];
-//   Double_t az2[6];
+  //   Double_t az2[6];
 
-  CbmTrdHit *trdHit;
-  for(int i = 0; i < nrPnts; i++) {
-    trdHit = L1_DYNAMIC_CAST<CbmTrdHit*>(  fArrayTrdHit->At(M[i]) );
-    k = i+1;
-    if((k%2) == 0) {
+  CbmTrdHit* trdHit;
+  for (int i = 0; i < nrPnts; i++) {
+    trdHit = L1_DYNAMIC_CAST<CbmTrdHit*>(fArrayTrdHit->At(M[i]));
+    k      = i + 1;
+    if ((k % 2) == 0) {
       ax[w]  = trdHit->GetX();
       az1[w] = trdHit->GetZ();
       w++;
-    }else{
-      ay[w]  = trdHit->GetY();
-//       az2[w] = trdHit->GetZ();
+    } else {
+      ay[w] = trdHit->GetY();
+      //       az2[w] = trdHit->GetZ();
     }
   }
 
-  TLinearFitter *lf;
+  TLinearFitter* lf;
   lf = new TLinearFitter(2);
   lf->SetFormula("hyp2");
   lf->StoreData(0);
 
-  TVectorD x; x.Use(j,ax);
-  TVectorD z1; z1.Use(j,az1);
-  lf->AssignData(j,1,ax,az1);
+  TVectorD x;
+  x.Use(j, ax);
+  TVectorD z1;
+  z1.Use(j, az1);
+  lf->AssignData(j, 1, ax, az1);
   lf->Eval();
   chi2x = lf->GetChisquare();
 
@@ -3180,158 +3175,135 @@ Double_t CbmL1CATrdTrackFinderSA::FitTLinearFitter(Int_t M[]) {
   lf->SetFormula("hyp2");
   lf->StoreData(0);
 
-  TVectorD y; x.Use(j,ay);
-  TVectorD z2; z2.Use(j,az1);
-  lf->AssignData(j,1,ay,az1);
+  TVectorD y;
+  x.Use(j, ay);
+  TVectorD z2;
+  z2.Use(j, az1);
+  lf->AssignData(j, 1, ay, az1);
   lf->Eval();
   chi2y = lf->GetChisquare();
 
-  chi2 = chi2x+chi2y;
+  chi2 = chi2x + chi2y;
 
   return chi2;
 }
 
 Int_t CbmL1CATrdTrackFinderSA::PdgToCharge(Int_t pdgCode) {
   Int_t value;
-  switch (pdgCode) {//switch
-  case 11: //electron
+  switch (pdgCode) {  //switch
+    case 11:          //electron
     {
       value = -1;
       break;
     }
-  case -11: //positron
+    case -11:  //positron
     {
       value = +1;
       break;
     }
-  case 13: //muon-
+    case 13:  //muon-
     {
       value = -1;
       break;
     }
-  case -13: //muon+
+    case -13:  //muon+
     {
       value = +1;
       break;
     }
-  case 22:
-    {
-      value = 0; //gamma
+    case 22: {
+      value = 0;  //gamma
       break;
     }
-  case 211:
-    {
-      value = +1; //pi+
+    case 211: {
+      value = +1;  //pi+
       break;
     }
-  case -211:
-    {
-      value = -1; //pi-
+    case -211: {
+      value = -1;  //pi-
       break;
     }
-  case 111:
-    {
-      value = 0; //pi0
+    case 111: {
+      value = 0;  //pi0
       break;
     }
-  case 213:
-    {
-      value =  +1; //rho+
+    case 213: {
+      value = +1;  //rho+
       break;
     }
-  case -213:
-    {
-      value = -1; //rho-
+    case -213: {
+      value = -1;  //rho-
       break;
     }
-  case 113:
-    {
-      value = 0; //rho0
+    case 113: {
+      value = 0;  //rho0
       break;
     }
-  case 221:
-    {
-      value = 0; //eta
+    case 221: {
+      value = 0;  //eta
       break;
     }
-  case 323:
-    {
-      value = 0; //omega
+    case 323: {
+      value = 0;  //omega
       break;
     }
-  case 333:
-    {
-      value = 0; //phi
+    case 333: {
+      value = 0;  //phi
       break;
     }
-  case 321:
-    {
-      value = +1; //kaon+
+    case 321: {
+      value = +1;  //kaon+
       break;
     }
-  case -321:
-    {
-      value = -1; //kaon-
+    case -321: {
+      value = -1;  //kaon-
       break;
     }
 
-  case 443:
-    {
-      value = 0; //jpsi
+    case 443: {
+      value = 0;  //jpsi
       break;
     }
-  case 2112:
-    {
-      value = 0; //neutron
+    case 2112: {
+      value = 0;  //neutron
       break;
     }
-  case 2212:
-    {
-      value = +1; //proton
+    case 2212: {
+      value = +1;  //proton
       break;
     }
-  case -2212:
-    {
-      value = 0; //anti-proton (?!)
+    case -2212: {
+      value = 0;  //anti-proton (?!)
       break;
     }
-  case 3222:
-    {
-      value = +1; //sigma+
+    case 3222: {
+      value = +1;  //sigma+
       break;
     }
-  case 3112:
-    {
-      value = -1; //sigma-
+    case 3112: {
+      value = -1;  //sigma-
       break;
     }
-  case 3212:
-    {
-      value = 0; //sigma0
+    case 3212: {
+      value = 0;  //sigma0
       break;
     }
-  default:
-    {
+    default: {
       value = -1000;
       break;
     }
   }
   return value;
-
 }
 
-Bool_t CbmL1CATrdTrackFinderSA::Rejection(Double_t Procent, Int_t num){
+Bool_t CbmL1CATrdTrackFinderSA::Rejection(Double_t Procent, Int_t num) {
 
   Bool_t accept = true;
   Int_t random;
 
-  random = (rand()%num);
+  random = (rand() % num);
 
-  if(random >= Procent) accept = false;
+  if (random >= Procent) accept = false;
 
   return accept;
 }
-
-
-
-

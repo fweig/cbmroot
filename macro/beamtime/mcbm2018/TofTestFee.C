@@ -6,13 +6,14 @@
  */
 
 // In order to call later Finish, we make this global
-FairRunOnline *run = NULL;
+FairRunOnline* run = NULL;
 
-void TofTestFee(TString inFile = "", TString sHostname = "localhost",
-                 TString sHistoFile = "data/TofTestFeeHistos.root",
-                 Int_t iServerRefreshRate = 100, Int_t iServerHttpPort = 8080,
-                 TString sFileTag = ""   )
-{
+void TofTestFee(TString inFile           = "",
+                TString sHostname        = "localhost",
+                TString sHistoFile       = "data/TofTestFeeHistos.root",
+                Int_t iServerRefreshRate = 100,
+                Int_t iServerHttpPort    = 8080,
+                TString sFileTag         = "") {
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
 
   // --- Specify number of events to be produced.
@@ -26,15 +27,15 @@ void TofTestFee(TString inFile = "", TString sHostname = "localhost",
   // --- Set log output levels
   FairLogger::GetLogger();
   gLogger->SetLogScreenLevel("INFO");
-//  gLogger->SetLogScreenLevel("DEBUG");
-//  gLogger->SetLogScreenLevel("DEBUG2"); // Print raw messages
+  //  gLogger->SetLogScreenLevel("DEBUG");
+  //  gLogger->SetLogScreenLevel("DEBUG2"); // Print raw messages
   gLogger->SetLogVerbosityLevel("LOW");
 
   // --- Define parameter files
-  TList *parFileList = new TList();
-  TString paramDir = "./";
+  TList* parFileList = new TList();
+  TString paramDir   = "./";
 
-  TString paramFileTof = paramDir + "mTofPar.par";
+  TString paramFileTof          = paramDir + "mTofPar.par";
   TObjString* tutDetDigiFileTof = new TObjString(paramFileTof);
   parFileList->Add(tutDetDigiFileTof);
 
@@ -52,40 +53,43 @@ void TofTestFee(TString inFile = "", TString sHostname = "localhost",
 
   // Get4 Unpacker
   CbmMcbm2018TofTestFee* test_monitor_tof = new CbmMcbm2018TofTestFee();
-  test_monitor_tof->SetFitZoomWidthPs( );
-  test_monitor_tof->SetHistoryHistoSize( 4000 );
-/*
+  test_monitor_tof->SetFitZoomWidthPs();
+  test_monitor_tof->SetHistoryHistoSize(4000);
+  /*
   test_monitor_tof->SetMsOverlap();
 */
   test_monitor_tof->SetIgnoreMsOverlap();
-  test_monitor_tof->SetHistoFileName( sHistoFile );
-  test_monitor_tof->SelectTestFees( 1, 0, 0,    // DPB GBTx FEE
-                                    1, 0, 1 );  // DPB GBTx FEE
+  test_monitor_tof->SetHistoFileName(sHistoFile);
+  test_monitor_tof->SelectTestFees(1,
+                                   0,
+                                   0,  // DPB GBTx FEE
+                                   1,
+                                   0,
+                                   1);  // DPB GBTx FEE
 
   // --- Source task
   CbmMcbm2018Source* source = new CbmMcbm2018Source();
-  if( "" != inFile )
-  {
+  if ("" != inFile) {
     source->SetFileName(inFile);
-  } // if( "" != inFile )
-      else
-      {
-         source->SetHostName( sHostname );
-      }
+  }  // if( "" != inFile )
+  else {
+    source->SetHostName(sHostname);
+  }
 
-  source->AddUnpacker(test_monitor_tof,  0x60, 6); //gDPBs TOF
-  source->AddUnpacker(test_monitor_tof,  0x90, 6); //gDPBs T0
+  source->AddUnpacker(test_monitor_tof, 0x60, 6);  //gDPBs TOF
+  source->AddUnpacker(test_monitor_tof, 0x90, 6);  //gDPBs T0
 
   // --- Run
   run = new FairRunOnline(source);
-  run->ActivateHttpServer( iServerRefreshRate, iServerHttpPort ); // refresh each 100 events
+  run->ActivateHttpServer(iServerRefreshRate,
+                          iServerHttpPort);  // refresh each 100 events
   /// To avoid the server sucking all Histos from gROOT when no output file is used
   /// ===> Need to explicitely add the canvases to the server in the task!
   run->GetHttpServer()->GetSniffer()->SetScanGlobalDir(kFALSE);
   run->SetAutoFinish(kFALSE);
 
   // -----   Runtime database   ---------------------------------------------
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
+  FairRuntimeDb* rtdb       = run->GetRuntimeDb();
   FairParAsciiFileIo* parIn = new FairParAsciiFileIo();
   parIn->open(parFileList, "in");
   rtdb->setFirstInput(parIn);
@@ -96,10 +100,11 @@ void TofTestFee(TString inFile = "", TString sHostname = "localhost",
   TStopwatch timer;
   timer.Start();
   std::cout << ">>> TofTestFee: Starting run..." << std::endl;
-  run->Run(nEvents, 0); // run until end of input file
+  run->Run(nEvents, 0);  // run until end of input file
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
+            << std::endl;
 
   run->Finish();
 
@@ -109,7 +114,7 @@ void TofTestFee(TString inFile = "", TString sHostname = "localhost",
   std::cout << std::endl << std::endl;
   std::cout << ">>> TofTestFee: Macro finished successfully." << std::endl;
   std::cout << ">>> TofTestFee: Output file is " << outFile << std::endl;
-  std::cout << ">>> TofTestFee: Real time " << rtime << " s, CPU time "
-	    << ctime << " s" << std::endl;
+  std::cout << ">>> TofTestFee: Real time " << rtime << " s, CPU time " << ctime
+            << " s" << std::endl;
   std::cout << std::endl;
 }

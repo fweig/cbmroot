@@ -8,37 +8,30 @@
 #include "TObjArray.h"
 
 
-
 // -----   Default constructor   -------------------------------------------
-CbmMvdSensorPlugin::CbmMvdSensorPlugin() 
- : TObject(),
-   fNextPlugin(NULL), 
-   fPreviousPlugin(NULL),
-   bFlag(false),
-   initialized(kFALSE),
-    fShowDebugHistos(kFALSE),
-    fName("CbmMvdSensorPlugin")
-{
-}
+CbmMvdSensorPlugin::CbmMvdSensorPlugin()
+  : TObject()
+  , fNextPlugin(NULL)
+  , fPreviousPlugin(NULL)
+  , bFlag(false)
+  , initialized(kFALSE)
+  , fShowDebugHistos(kFALSE)
+  , fName("CbmMvdSensorPlugin") {}
 // -------------------------------------------------------------------------
 // -----   constructor   -------------------------------------------
 CbmMvdSensorPlugin::CbmMvdSensorPlugin(const char* name)
- : TObject(),
-   fNextPlugin(NULL), 
-   fPreviousPlugin(NULL),
-   bFlag(false),
-   initialized(kFALSE),
-fShowDebugHistos(kFALSE),
-fName(name)
-{
-}
+  : TObject()
+  , fNextPlugin(NULL)
+  , fPreviousPlugin(NULL)
+  , bFlag(false)
+  , initialized(kFALSE)
+  , fShowDebugHistos(kFALSE)
+  , fName(name) {}
 // -------------------------------------------------------------------------
 
 // -----   Destructor   ----------------------------------------------------
-CbmMvdSensorPlugin::~CbmMvdSensorPlugin() {
-}
+CbmMvdSensorPlugin::~CbmMvdSensorPlugin() {}
 // -------------------------------------------------------------------------
-
 
 
 ClassImp(CbmMvdSensorPlugin)

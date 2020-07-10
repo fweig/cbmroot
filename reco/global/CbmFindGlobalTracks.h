@@ -26,11 +26,9 @@ class CbmRichMerger;
 class CbmTofMerger;
 
 
-class CbmFindGlobalTracks : public FairTask
-{
+class CbmFindGlobalTracks : public FairTask {
 
- public:
-
+public:
   /** Default constructor **/
   CbmFindGlobalTracks();
 
@@ -41,16 +39,18 @@ class CbmFindGlobalTracks : public FairTask
    *@param tofMerger    concrete instance of CbmTofMerger class
    **/
   CbmFindGlobalTracks(CbmTrackMerger* trackMerger,
-		      CbmRichMerger* richMerger,
-		      CbmTofMerger* tofMerger, Int_t iVerbose = 1);
+                      CbmRichMerger* richMerger,
+                      CbmTofMerger* tofMerger,
+                      Int_t iVerbose = 1);
 
 
   /** Constructor with name and title **/
-  CbmFindGlobalTracks(const char* name, const char* title="Global",
-		      CbmTrackMerger* = NULL,
-		      CbmRichMerger*  = NULL,
-                      CbmTofMerger* = NULL,
-		      Int_t iVerbose = 1);
+  CbmFindGlobalTracks(const char* name,
+                      const char* title = "Global",
+                      CbmTrackMerger*   = NULL,
+                      CbmRichMerger*    = NULL,
+                      CbmTofMerger*     = NULL,
+                      Int_t iVerbose    = 1);
 
 
   /** Destructor **/
@@ -65,9 +65,7 @@ class CbmFindGlobalTracks : public FairTask
   virtual void Exec(Option_t* opt);
 
 
-
- private:
-
+private:
   /** Pointer to instance of CbmTrackMerger class **/
   CbmTrackMerger* fTrackMerger;
 
@@ -78,11 +76,11 @@ class CbmFindGlobalTracks : public FairTask
   CbmTofMerger* fTofMerger;
 
   /** Input and output arrays **/
-  TClonesArray* fStsTracks;      // input
-  TClonesArray* fTrdTracks;      // input
-  TClonesArray* fRichRings;      // input
-  TClonesArray* fTofHits;        // input
-  TClonesArray* fGlobalTracks;   // output
+  TClonesArray* fStsTracks;     // input
+  TClonesArray* fTrdTracks;     // input
+  TClonesArray* fRichRings;     // input
+  TClonesArray* fTofHits;       // input
+  TClonesArray* fGlobalTracks;  // output
 
   /** Verbosity level **/
   Int_t fVerbose;
@@ -98,8 +96,7 @@ class CbmFindGlobalTracks : public FairTask
   CbmFindGlobalTracks(const CbmFindGlobalTracks&);
   CbmFindGlobalTracks& operator=(const CbmFindGlobalTracks&);
 
-  ClassDef(CbmFindGlobalTracks,1);
-
+  ClassDef(CbmFindGlobalTracks, 1);
 };
 
 #endif

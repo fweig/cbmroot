@@ -5,11 +5,9 @@
 #include <RtypesCore.h>  // for Double_t, Int_t, Option_t
 #include <TNamed.h>      // for TNamed
 
-class CbmTofCell : public TNamed
-{
+class CbmTofCell : public TNamed {
 
- public:
-
+public:
   /** Default constructor **/
   CbmTofCell();
 
@@ -23,42 +21,42 @@ class CbmTofCell : public TNamed
    *@param sizey     cell size in y [cm]
    **/
 
-  CbmTofCell(Int_t detId, Double_t x, Double_t y, Double_t z,
-               Double_t sizex, Double_t sizey);
+  CbmTofCell(Int_t detId,
+             Double_t x,
+             Double_t y,
+             Double_t z,
+             Double_t sizex,
+             Double_t sizey);
 
   /** Destructor **/
   virtual ~CbmTofCell();
 
   /** Accessors **/
-  Int_t    GetDetectorId() const { return fDetectorId; }
-  Double_t GetX()          const { return fX; }
-  Double_t GetY()          const { return fY; }
-  Double_t GetZ()          const { return fZ; }
+  Int_t GetDetectorId() const { return fDetectorId; }
+  Double_t GetX() const { return fX; }
+  Double_t GetY() const { return fY; }
+  Double_t GetZ() const { return fZ; }
 
-  Double_t GetSizex()      const { return fSizex; }
-  Double_t GetSizey()      const { return fSizey; }
-  
-  void Print(Option_t* ="") const;
+  Double_t GetSizex() const { return fSizex; }
+  Double_t GetSizey() const { return fSizey; }
 
- private:
+  void Print(Option_t* = "") const;
 
+private:
   /** -------------   Data members   --------------------------**/
 
-  Int_t    fDetectorId;   // Unique detector ID
-  Double_t fX;            // center of module in global c.s. [cm]
-  Double_t fY;            // center of module in global c.s. [cm]
-  Double_t fZ;            // center of module in global c.s. [cm]
-  Double_t fSizex;        // module size in x [cm]
-  Double_t fSizey;        // module size in y [cm]
+  Int_t fDetectorId;  // Unique detector ID
+  Double_t fX;        // center of module in global c.s. [cm]
+  Double_t fY;        // center of module in global c.s. [cm]
+  Double_t fZ;        // center of module in global c.s. [cm]
+  Double_t fSizex;    // module size in x [cm]
+  Double_t fSizey;    // module size in y [cm]
 
   /** --------------- private functions ----------------------**/
 
 
-  ClassDef(CbmTofCell,1);
-
+  ClassDef(CbmTofCell, 1);
 };
-
-
 
 
 #endif

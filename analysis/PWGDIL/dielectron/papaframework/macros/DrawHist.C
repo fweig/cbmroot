@@ -17,17 +17,16 @@
 /// \date Jun 08, 2015
 ///
 
-void DrawHist(TString fin  = "./data/sis100_electron_TRDdigi.analysis.root")
-{
+void DrawHist(TString fin = "./data/sis100_electron_TRDdigi.analysis.root") {
   ///
   /// Draw histograms - Example macro (2 ways)
   ///
 
   /// files sed for QA trending
-  const Int_t nfiles=2;
-  TString fileList[nfiles]  = {"./data/sis100_electron_TRDdigi.analysis.root",
-			       "./data/sis100_electron_TRDclustering.analysis.root"
-  };
+  const Int_t nfiles       = 2;
+  TString fileList[nfiles] = {
+    "./data/sis100_electron_TRDdigi.analysis.root",
+    "./data/sis100_electron_TRDclustering.analysis.root"};
 
   ///  gErrorIgnoreLevel = kPrint, kInfo, kWarning, kError, kBreak, kSysError, kFatal;
   gErrorIgnoreLevel = kError;
@@ -37,8 +36,8 @@ void DrawHist(TString fin  = "./data/sis100_electron_TRDdigi.analysis.root")
   PairAnalysisStyler::LoadStyle();
 
   /// get histogram manager from file #1
-  PairAnalysisHistos *histos = new PairAnalysisHistos();
-  histos->ReadFromFile(fileList[0].Data(),"jbook","Acc");
+  PairAnalysisHistos* histos = new PairAnalysisHistos();
+  histos->ReadFromFile(fileList[0].Data(), "jbook", "Acc");
   /// Initialise superior histogram classes
   histos->SetReservedWords("Hit;Track;Pair");
 
@@ -59,7 +58,7 @@ void DrawHist(TString fin  = "./data/sis100_electron_TRDdigi.analysis.root")
   /// if option contains 'logx,y,z' the axis are plotted in log
   /// if option contains 'nomc' mc signals are not plotted
 
-  histos->DrawSame("Pt",   "CanLegNormE1P");
+  histos->DrawSame("Pt", "CanLegNormE1P");
   /// OR
   // histos->DrawSame(
   // 		   histos->AddHistogram("Track",
@@ -69,13 +68,9 @@ void DrawHist(TString fin  = "./data/sis100_electron_TRDdigi.analysis.root")
 
 
   //// via PairAnalysisHistos::GetHist("config","class","key")
-  TCanvas *can = new TCanvas("can","can",900,900);
+  TCanvas* can = new TCanvas("can", "can", 900, 900);
   can->cd();
-  TH1D *h1 = (TH1D*) histos->GetHist("Acc","Track.SE+-","Pt");
-  PairAnalysisStyler::Style(h1,0);
+  TH1D* h1 = (TH1D*) histos->GetHist("Acc", "Track.SE+-", "Pt");
+  PairAnalysisStyler::Style(h1, 0);
   h1->DrawCopy("E1P");
-
-
-
-
 }

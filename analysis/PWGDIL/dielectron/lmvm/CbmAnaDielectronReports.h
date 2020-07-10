@@ -7,9 +7,9 @@
 #ifndef CBM_ANA_DIELECTRON_REPORTS
 #define CBM_ANA_DIELECTRON_REPORTS
 
+#include "TObject.h"
 #include <string>
 #include <vector>
-#include "TObject.h"
 
 /**
  * \class CbmAnaDielectronReports
@@ -19,27 +19,24 @@
  * \date 2012
  *
  */
-class CbmAnaDielectronReports : public TObject
-{
+class CbmAnaDielectronReports : public TObject {
 public:
-   /**
+  /**
     * \brief Constructor.
     */
-   CbmAnaDielectronReports();
+  CbmAnaDielectronReports();
 
-   /**
+  /**
     * \brief Destructor.
     */
-   virtual ~CbmAnaDielectronReports();
+  virtual ~CbmAnaDielectronReports();
 
-   void CreateStudyReport(
-         const std::string& title,
-         const std::vector<std::string>& fileNames,
-         const std::vector<std::string>& studyNames,
-         const std::string& outputDir);
+  void CreateStudyReport(const std::string& title,
+                         const std::vector<std::string>& fileNames,
+                         const std::vector<std::string>& studyNames,
+                         const std::string& outputDir);
 
-   ClassDef(CbmAnaDielectronReports, 1);
-
+  ClassDef(CbmAnaDielectronReports, 1);
 };
 
 #endif

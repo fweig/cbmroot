@@ -18,14 +18,14 @@
 // --------------------------------------------------------------------------
 
 
-void run_reco_new(Int_t nEvents = 2,
-                        const char* setupName = "sis100_electron",
-//                        const char* setupName = "sis100_debug",
-//                        const char* setupName = "sis100_hadron",
-//                        const char* setupName = "sis100_muon_jpsi",
-//                        const char* setupName = "sis100_muon_lmvm",
-                        const char* inputFile = "")
-{
+void run_reco_new(
+  Int_t nEvents         = 2,
+  const char* setupName = "sis100_electron",
+  //                        const char* setupName = "sis100_debug",
+  //                        const char* setupName = "sis100_hadron",
+  //                        const char* setupName = "sis100_muon_jpsi",
+  //                        const char* setupName = "sis100_muon_lmvm",
+  const char* inputFile = "") {
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -43,10 +43,11 @@ void run_reco_new(Int_t nEvents = 2,
 
 
   // -----   In- and output file names   ------------------------------------
-  TString inFile = ""; // give here or as argument; otherwise default is taken
-  TString outDir  = "data/";
-  TString outFile = outDir + setupName + "_test.eds.root";  // Output file (reco)
-  TString parFile = outDir + setupName + "_params.root";    // Parameter file
+  TString inFile = "";  // give here or as argument; otherwise default is taken
+  TString outDir = "data/";
+  TString outFile =
+    outDir + setupName + "_test.eds.root";                // Output file (reco)
+  TString parFile = outDir + setupName + "_params.root";  // Parameter file
   // ------------------------------------------------------------------------
 
   // -----   Load the geometry setup   -------------------------------------
@@ -60,27 +61,30 @@ void run_reco_new(Int_t nEvents = 2,
   // -----   Parameter files as input to the runtime database   -------------
   std::cout << std::endl;
   std::cout << "-I- " << myName << ": Defining parameter files " << std::endl;
-  TList *parFileList = new TList();
+  TList* parFileList = new TList();
   TString geoTag;
 
   // - TRD digitisation parameters
-  if ( setup->GetGeoTag(kTrd, geoTag) ) {
-  	TObjString* trdFile = new TObjString(srcDir + "/parameters/trd/trd_" + geoTag + ".digi.par");
-  	parFileList->Add(trdFile);
+  if (setup->GetGeoTag(kTrd, geoTag)) {
+    TObjString* trdFile =
+      new TObjString(srcDir + "/parameters/trd/trd_" + geoTag + ".digi.par");
+    parFileList->Add(trdFile);
     std::cout << "-I- " << myName << ": Using parameter file "
-    		      << trdFile->GetString() << std::endl;
+              << trdFile->GetString() << std::endl;
   }
 
   // - TOF digitisation parameters
-  if ( setup->GetGeoTag(kTof, geoTag) ) {
-  	TObjString* tofFile = new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digi.par");
-  	parFileList->Add(tofFile);
+  if (setup->GetGeoTag(kTof, geoTag)) {
+    TObjString* tofFile =
+      new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digi.par");
+    parFileList->Add(tofFile);
     std::cout << "-I- " << myName << ": Using parameter file "
-    		      << tofFile->GetString() << std::endl;
-  	TObjString* tofBdfFile = new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
-  	parFileList->Add(tofBdfFile);
+              << tofFile->GetString() << std::endl;
+    TObjString* tofBdfFile =
+      new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
+    parFileList->Add(tofBdfFile);
     std::cout << "-I- " << myName << ": Using parameter file "
-    		      << tofBdfFile->GetString() << std::endl;
+              << tofBdfFile->GetString() << std::endl;
   }
   // ------------------------------------------------------------------------
 
@@ -102,27 +106,27 @@ void run_reco_new(Int_t nEvents = 2,
   // -----   Input file   ---------------------------------------------------
   std::cout << std::endl;
   TString defaultInputFile = "data/";
-  defaultInputFile = defaultInputFile + setupName + "_test.mc.root";
-  if ( inFile.IsNull() ) {  // Not defined in the macro explicitly
-  	if ( strcmp(inputFile, "") == 0 ) {  // not given as argument to the macro
-  		inFile = defaultInputFile;
-  	}
-  	else inFile = inputFile;
+  defaultInputFile         = defaultInputFile + setupName + "_test.mc.root";
+  if (inFile.IsNull()) {               // Not defined in the macro explicitly
+    if (strcmp(inputFile, "") == 0) {  // not given as argument to the macro
+      inFile = defaultInputFile;
+    } else
+      inFile = inputFile;
   }
   std::cout << "-I- " << myName << ": Using input file " << inFile << std::endl;
   // ------------------------------------------------------------------------
 
 
   // -----   FairRunAna   ---------------------------------------------------
-  FairRunAna *run = new FairRunAna();
+  FairRunAna* run             = new FairRunAna();
   FairFileSource* inputSource = new FairFileSource(inFile);
   run->SetSource(inputSource);
   run->SetOutputFile(outFile);
   run->SetGenerateRunInfo(kTRUE);
 
   // Define output file for FairMonitor histograms
-  TString monitorFile{outFile};
-  monitorFile.ReplaceAll("eds","eds.monitor");
+  TString monitorFile {outFile};
+  monitorFile.ReplaceAll("eds", "eds.monitor");
   FairMonitor::GetMonitor()->EnableMonitor(kTRUE, monitorFile);
   // ------------------------------------------------------------------------
 
@@ -133,7 +137,7 @@ void run_reco_new(Int_t nEvents = 2,
   // ------------------------------------------------------------------------
 
   // ----- Mc Data Manager   ------------------------------------------------
-  CbmMCDataManager* mcManager=new CbmMCDataManager("MCManager", 1);
+  CbmMCDataManager* mcManager = new CbmMCDataManager("MCManager", 1);
   mcManager->AddFile(inFile);
   run->AddTask(mcManager);
   // ------------------------------------------------------------------------
@@ -154,21 +158,21 @@ void run_reco_new(Int_t nEvents = 2,
   std::cout << "Loading macro " << macroName << std::endl;
   gROOT->LoadMacro(macroName);
   Bool_t recoSuccess = gROOT->ProcessLine("reconstruct()");
-  if ( ! recoSuccess ) {
-  	std::cerr << "-E-" << myName << ": error in executing " << macroName
-  			<< std::endl;
-  	return;
+  if (!recoSuccess) {
+    std::cerr << "-E-" << myName << ": error in executing " << macroName
+              << std::endl;
+    return;
   }
   std::cout << "-I-" << myName << ": " << macroName << " excuted successfully"
-  		<< std::endl;
+            << std::endl;
   // ------------------------------------------------------------------------
 
 
   // -----  Parameter database   --------------------------------------------
   std::cout << std::endl << std::endl;
   std::cout << "-I- " << myName << ": Set runtime DB" << std::endl;
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
-  FairParRootFileIo* parIo1 = new FairParRootFileIo();
+  FairRuntimeDb* rtdb        = run->GetRuntimeDb();
+  FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
   parIo1->open(parFile.Data());
   parIo2->open(parFileList, "in");
@@ -203,7 +207,7 @@ void run_reco_new(Int_t nEvents = 2,
   std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
   std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
-  		      << std::endl;
+            << std::endl;
   std::cout << std::endl;
   std::cout << " Test passed" << std::endl;
   std::cout << " All ok " << std::endl;
@@ -213,12 +217,12 @@ void run_reco_new(Int_t nEvents = 2,
   // Extract the maximal used memory an add is as Dart measurement
   // This line is filtered by CTest and the value send to CDash
   FairSystemInfo sysInfo;
-  Float_t maxMemory=sysInfo.GetMaxMemory();
+  Float_t maxMemory = sysInfo.GetMaxMemory();
   std::cout << "<DartMeasurement name=\"MaxMemory\" type=\"numeric/double\">";
   std::cout << maxMemory;
   std::cout << "</DartMeasurement>" << std::endl;
 
-  Float_t cpuUsage=ctime/rtime;
+  Float_t cpuUsage = ctime / rtime;
   std::cout << "<DartMeasurement name=\"CpuLoad\" type=\"numeric/double\">";
   std::cout << cpuUsage;
   std::cout << "</DartMeasurement>" << std::endl;

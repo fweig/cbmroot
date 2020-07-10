@@ -21,41 +21,38 @@ class CbmEvent;
  ** and calculates the percentage of correctly assigned digis
  ** based on their matched link (largest weight).
  **/
-class CbmBuildEventsQA: public FairTask {
+class CbmBuildEventsQA : public FairTask {
 
-	public:
+public:
+  /** Constructor **/
+  CbmBuildEventsQA();
 
-		/** Constructor **/
-		CbmBuildEventsQA();
+  /** Destructor **/
+  virtual ~CbmBuildEventsQA();
 
-		/** Destructor **/
-		virtual ~CbmBuildEventsQA();
-
-		/** Task execution **/
-		virtual void Exec(Option_t* opt);
-
-
-	private:
-
-		TClonesArray* fStsDigis;         ///< Input array (class CbmStsDigi)
-        TClonesArray* fStsDigiMatches;   ///< Input array (class CbmMatch)
-		TClonesArray* fEvents;           ///< Input array (class CbmEvent)
-		Int_t fNofEntries;               ///< Number of processed entries
-
-		/** Task initialisation **/
-		virtual InitStatus Init();
+  /** Task execution **/
+  virtual void Exec(Option_t* opt);
 
 
-		/** Match a reconstructed event to MC events+
+private:
+  TClonesArray* fStsDigis;        ///< Input array (class CbmStsDigi)
+  TClonesArray* fStsDigiMatches;  ///< Input array (class CbmMatch)
+  TClonesArray* fEvents;          ///< Input array (class CbmEvent)
+  Int_t fNofEntries;              ///< Number of processed entries
+
+  /** Task initialisation **/
+  virtual InitStatus Init();
+
+
+  /** Match a reconstructed event to MC events+
 		 ** @param event Pointer to reconstructed event
 		 **/
-		void MatchEvent(CbmEvent* event);
+  void MatchEvent(CbmEvent* event);
 
-                CbmBuildEventsQA(const CbmBuildEventsQA&);
-                CbmBuildEventsQA& operator=(const CbmBuildEventsQA&);
+  CbmBuildEventsQA(const CbmBuildEventsQA&);
+  CbmBuildEventsQA& operator=(const CbmBuildEventsQA&);
 
-		ClassDef(CbmBuildEventsQA, 1);
-
+  ClassDef(CbmBuildEventsQA, 1);
 };
 
 #endif /* CBMBUILDEVENTSQA_H */

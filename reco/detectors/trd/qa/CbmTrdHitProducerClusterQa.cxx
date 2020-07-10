@@ -10,56 +10,42 @@
 #include "CbmTrdPoint.h"
 #include "CbmTrdTrack.h"
 
-#include "FairRootManager.h"
 #include "CbmMCTrack.h"
+#include "FairRootManager.h"
 
 #include "TClonesArray.h"
-#include "TVector3.h"
-#include "TMath.h"
 #include "TH1F.h"
 #include "TH2F.h"
+#include "TMath.h"
+#include "TVector3.h"
 
 #include <iostream>
 using std::cout;
 using std::endl;
 
 CbmTrdHitProducerClusterQa::CbmTrdHitProducerClusterQa()
-: CbmTrdHitProducerClusterQa("TrdHitProducerClusterQa","")
-{
-}
+  : CbmTrdHitProducerClusterQa("TrdHitProducerClusterQa", "") {}
 
-CbmTrdHitProducerClusterQa::CbmTrdHitProducerClusterQa(const char* name,const char*)
-: FairTask(name)
-{
-}
+CbmTrdHitProducerClusterQa::CbmTrdHitProducerClusterQa(const char* name,
+                                                       const char*)
+  : FairTask(name) {}
 
-CbmTrdHitProducerClusterQa::~CbmTrdHitProducerClusterQa()
-{
-}
+CbmTrdHitProducerClusterQa::~CbmTrdHitProducerClusterQa() {}
 
-InitStatus CbmTrdHitProducerClusterQa::Init()
-{
+InitStatus CbmTrdHitProducerClusterQa::Init() {
   FairRootManager* rootMgr = FairRootManager::Instance();
-  if(NULL == rootMgr) {
+  if (NULL == rootMgr) {
     cout << "-E- CbmTrdHitProducerClusterQa::Init : "
-	 << "ROOT manager is not instantiated !" << endl;
+         << "ROOT manager is not instantiated !" << endl;
     return kFATAL;
   }
   PrepareHistograms();
   return kSUCCESS;
 }
-void CbmTrdHitProducerClusterQa::Exec(Option_t*)
-{
-}
-void CbmTrdHitProducerClusterQa::Finish()
-{
-  WriteHistograms();
-}
-void CbmTrdHitProducerClusterQa::PrepareHistograms()
-{
-}
-void CbmTrdHitProducerClusterQa::WriteHistograms()
-{
+void CbmTrdHitProducerClusterQa::Exec(Option_t*) {}
+void CbmTrdHitProducerClusterQa::Finish() { WriteHistograms(); }
+void CbmTrdHitProducerClusterQa::PrepareHistograms() {}
+void CbmTrdHitProducerClusterQa::WriteHistograms() {
   gDirectory->mkdir("CbmTrdHitProducerClusterQa");
   gDirectory->cd("CbmTrdHitProducerClusterQa");
   gDirectory->cd("..");

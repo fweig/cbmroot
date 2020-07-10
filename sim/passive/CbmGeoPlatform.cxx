@@ -8,15 +8,12 @@
 
 ClassImp(CbmGeoPlatform)
 
-CbmGeoPlatform::CbmGeoPlatform() 
-: FairGeoSet(),
-  modName(),
-  eleName()
-{
+  CbmGeoPlatform::CbmGeoPlatform()
+  : FairGeoSet(), modName(), eleName() {
   // Constructor
-  fName="platform";
-  maxSectors=0;
-  maxModules=1;
-  strcpy(modName,"p");
-  strcpy(eleName,"p");
+  fName      = "platform";
+  maxSectors = 0;
+  maxModules = 1;
+  strcpy(modName, "p");
+  strcpy(eleName, "p");
 }

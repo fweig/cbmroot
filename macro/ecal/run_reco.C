@@ -27,25 +27,25 @@ static TString richGeom;
 static TString muchGeom;
 static TString shieldGeom;
 static TString trdGeom;
-static TString tofGeom; 
+static TString tofGeom;
 static TString ecalGeom;
 static TString platformGeom;
 static TString psdGeom;
-static Double_t psdZpos; 
+static Double_t psdZpos;
 static Double_t psdXpos;
 
-static TString stsTag;  
+static TString stsTag;
 static TString trdTag;
 static TString tofTag;
 
 static TString stsDigi;
 static TString trdDigi;
-static TString tofDigi;  
+static TString tofDigi;
 
-static TString  fieldMap;
-static Double_t fieldZ;   
+static TString fieldMap;
+static Double_t fieldZ;
 static Double_t fieldScale;
-static Int_t    fieldSymType;
+static Int_t fieldSymType;
 
 static TString defaultInputFile;
 #endif
@@ -74,12 +74,12 @@ void run_reco(Int_t nEvents = 1) {
   // The FairParAsciiFileIo will take care to create on the fly
   // a concatenated input parameter file which is then used during
   // the reconstruction.
-  TList *parFileList = new TList();
+  TList* parFileList = new TList();
 
-  TString inDir = gSystem->Getenv("VMCWORKDIR");
+  TString inDir    = gSystem->Getenv("VMCWORKDIR");
   TString paramDir = inDir + "/parameters/";
 
-  TString setupFile = inDir + "/geometry/setup/sis300_electron_setup.C";
+  TString setupFile  = inDir + "/geometry/setup/sis300_electron_setup.C";
   TString setupFunct = "sis300_electron";
   setupFunct += "_setup()";
 
@@ -90,18 +90,18 @@ void run_reco(Int_t nEvents = 1) {
   // ---  for STS digitisation and should be eventually removed.
   TString tmp = paramDir + stsDigi;
   TObjString stsDigiFile;
-  stsDigiFile.SetString(tmp); 
+  stsDigiFile.SetString(tmp);
   parFileList->Add(&stsDigiFile);
   cout << "macro/run/run_reco.C using: " << tmp << endl;
 
   tmp = paramDir + trdDigi;
-  TObjString trdDigiFile; 
+  TObjString trdDigiFile;
   trdDigiFile.SetString(tmp);
   parFileList->Add(&trdDigiFile);
   cout << "macro/run/run_reco.C using: " << trdDigi << endl;
 
   tmp = paramDir + tofDigi;
-  TObjString tofDigiFile; 
+  TObjString tofDigiFile;
   tofDigiFile.SetString(tmp);
   parFileList->Add(&tofDigiFile);
   cout << "macro/run/run_reco.C using: " << tofDigi << endl;
@@ -122,19 +122,21 @@ void run_reco(Int_t nEvents = 1) {
 
 
   // -----   Reconstruction run   -------------------------------------------
-  FairRunAna *run = new FairRunAna();
+  FairRunAna* run = new FairRunAna();
   run->SetInputFile(inFile);
   run->SetOutputFile(outFile);
   // ------------------------------------------------------------------------
 
 
   // -----   MVD Digitiser   -------------------------------------------------
-  CbmMvdDigitizer* mvdDigitise = new CbmMvdDigitizer("MVD Digitiser", 0, iVerbose);
+  CbmMvdDigitizer* mvdDigitise =
+    new CbmMvdDigitizer("MVD Digitiser", 0, iVerbose);
   run->AddTask(mvdDigitise);
   // -------------------------------------------------------------------------
 
   // -----   MVD Clusterfinder   ---------------------------------------------
-  CbmMvdClusterfinder* mvdCluster = new CbmMvdClusterfinder("MVD Clusterfinder", 0, iVerbose);
+  CbmMvdClusterfinder* mvdCluster =
+    new CbmMvdClusterfinder("MVD Clusterfinder", 0, iVerbose);
   run->AddTask(mvdCluster);
   // -------------------------------------------------------------------------
 
@@ -143,20 +145,19 @@ void run_reco(Int_t nEvents = 1) {
   // -----   The parameters of the STS digitizer are set such as to match
   // -----   those in the old digitizer. Change them only if you know what you
   // -----   are doing.
-  Double_t dynRange       =   40960.;  // Dynamic range [e]
-  Double_t threshold      =    4000.;  // Digitisation threshold [e]
-  Int_t nAdc              =    4096;   // Number of ADC channels (12 bit)
-  Double_t timeResolution =       5.;  // time resolution [ns]
-  Double_t deadTime       = 9999999.;  // infinite dead time (integrate entire event)
-  Double_t noise          =       0.;  // ENC [e]
-  Int_t digiModel         =       1;   // Model: 1 = uniform charge distribution along track
+  Double_t dynRange       = 40960.;  // Dynamic range [e]
+  Double_t threshold      = 4000.;   // Digitisation threshold [e]
+  Int_t nAdc              = 4096;    // Number of ADC channels (12 bit)
+  Double_t timeResolution = 5.;      // time resolution [ns]
+  Double_t deadTime = 9999999.;  // infinite dead time (integrate entire event)
+  Double_t noise    = 0.;        // ENC [e]
+  Int_t digiModel   = 1;  // Model: 1 = uniform charge distribution along track
 
   CbmStsDigitize* stsDigi = new CbmStsDigitize(digiModel);
-  stsDigi->SetParameters(dynRange, threshold, nAdc, timeResolution,
-                                 deadTime, noise);
+  stsDigi->SetParameters(
+    dynRange, threshold, nAdc, timeResolution, deadTime, noise);
   run->AddTask(stsDigi);
   // -------------------------------------------------------------------------
-
 
 
   // =========================================================================
@@ -164,7 +165,8 @@ void run_reco(Int_t nEvents = 1) {
   // =========================================================================
 
   // -----   MVD Hit Finder   ------------------------------------------------
-  CbmMvdHitfinder* mvdHitfinder = new CbmMvdHitfinder("MVD Hit Finder", 0, iVerbose);
+  CbmMvdHitfinder* mvdHitfinder =
+    new CbmMvdHitfinder("MVD Hit Finder", 0, iVerbose);
   mvdHitfinder->UseClusterfinder(kTRUE);
   run->AddTask(mvdHitfinder);
   // -------------------------------------------------------------------------
@@ -190,8 +192,8 @@ void run_reco(Int_t nEvents = 1) {
 
 
   // -----  STS hit matching   -----------------------------------------------
-//  FairTask* stsMatchHits = new CbmStsMatchHits();
-//  run->AddTask(stsMatchHits);
+  //  FairTask* stsMatchHits = new CbmStsMatchHits();
+  //  run->AddTask(stsMatchHits);
   // -------------------------------------------------------------------------
 
 
@@ -215,22 +217,20 @@ void run_reco(Int_t nEvents = 1) {
   // =========================================================================
 
 
-
-
   // =========================================================================
   // ===                     TRD local reconstruction                      ===
   // =========================================================================
 
-  Bool_t  simpleTR  = kTRUE;  // use fast and simple version for TR production
-  CbmTrdRadiator *radiator = new CbmTrdRadiator(simpleTR,"K++");
+  Bool_t simpleTR = kTRUE;  // use fast and simple version for TR production
+  CbmTrdRadiator* radiator = new CbmTrdRadiator(simpleTR, "K++");
   //"K++" : micro structured POKALON
   //"H++" : PE foam foils
   //"G30" : ALICE fibers 30 layers
 
-  Bool_t triangularPads = false;// Bucharest triangular pad-plane layout
+  Bool_t triangularPads = false;  // Bucharest triangular pad-plane layout
   //Double_t triggerThreshold = 0.5e-6;//SIS100
-  Double_t triggerThreshold = 1.0e-6;//SIS300
-  Double_t trdNoiseSigma_keV = 0.1; //default best matching to test beam PRF
+  Double_t triggerThreshold  = 1.0e-6;  //SIS300
+  Double_t trdNoiseSigma_keV = 0.1;     //default best matching to test beam PRF
 
   CbmTrdDigitizerPRF* trdDigiPrf = new CbmTrdDigitizerPRF(radiator);
   trdDigiPrf->SetTriangularPads(triangularPads);
@@ -250,22 +250,20 @@ void run_reco(Int_t nEvents = 1) {
   run->AddTask(trdHit);
 
 
-
- // =========================================================================
+  // =========================================================================
   // ===                     TOF local reconstruction                      ===
   // =========================================================================
 
 
   // ------   TOF hit producer   ---------------------------------------------
-  CbmTofHitProducerNew* tofHitProd = new CbmTofHitProducerNew("TOF HitProducerNew",iVerbose);
+  CbmTofHitProducerNew* tofHitProd =
+    new CbmTofHitProducerNew("TOF HitProducerNew", iVerbose);
   tofHitProd->SetInitFromAscii(kFALSE);
   run->AddTask(tofHitProd);
   // -------------------------------------------------------------------------
 
   // ===                   End of TOF local reconstruction                 ===
   // =========================================================================
-
-
 
 
   // =========================================================================
@@ -301,24 +299,24 @@ void run_reco(Int_t nEvents = 1) {
   // ----------------------------------------------------
 
   // ----------- TRD track Pid Wkn ----------------------
-  CbmTrdSetTracksPidWkn* trdSetTracksPidTask = new CbmTrdSetTracksPidWkn(
-                "trdFindTracks", "trdFindTracks");
+  CbmTrdSetTracksPidWkn* trdSetTracksPidTask =
+    new CbmTrdSetTracksPidWkn("trdFindTracks", "trdFindTracks");
   run->AddTask(trdSetTracksPidTask);
   // ----------------------------------------------------
 
   // ----------- TRD track Pid Ann ----------------------
-  CbmTrdSetTracksPidANN* trdSetTracksPidAnnTask = new CbmTrdSetTracksPidANN(
-                "Ann", "Ann");
+  CbmTrdSetTracksPidANN* trdSetTracksPidAnnTask =
+    new CbmTrdSetTracksPidANN("Ann", "Ann");
   run->AddTask(trdSetTracksPidAnnTask);
   // ----------------------------------------------------
 
   // ----------- TRD track Pid Like ----------------------
   // Since in the newest version of this method depends on the global
   // track the task has to move after the global tracking
-// FU 08.02.12 Switch the task off since the input file needed for the new geometry has to be generated first.
-//  CbmTrdSetTracksPidLike* trdSetTracksPidLikeTask =
-//              new CbmTrdSetTracksPidLike("Likelihood", "Likelihood");
-//  run->AddTask(trdSetTracksPidLikeTask);
+  // FU 08.02.12 Switch the task off since the input file needed for the new geometry has to be generated first.
+  //  CbmTrdSetTracksPidLike* trdSetTracksPidLikeTask =
+  //              new CbmTrdSetTracksPidLike("Likelihood", "Likelihood");
+  //  run->AddTask(trdSetTracksPidLikeTask);
   // ----------------------------------------------------
 
 
@@ -327,25 +325,25 @@ void run_reco(Int_t nEvents = 1) {
   // =========================================================================
 
   if (richGeom.Length() != 0)  // if RICH is defined
-    {
-  // ---------------------RICH Hit Producer ----------------------------------
-  CbmRichHitProducer* richHitProd  = new CbmRichHitProducer();
-  richHitProd->SetDetectorType(4);
-  richHitProd->SetNofNoiseHits(220);
-  richHitProd->SetCollectionEfficiency(1.0);
-  richHitProd->SetSigmaMirror(0.06);
-  run->AddTask(richHitProd);
-  //--------------------------------------------------------------------------
+  {
+    // ---------------------RICH Hit Producer ----------------------------------
+    CbmRichHitProducer* richHitProd = new CbmRichHitProducer();
+    richHitProd->SetDetectorType(4);
+    richHitProd->SetNofNoiseHits(220);
+    richHitProd->SetCollectionEfficiency(1.0);
+    richHitProd->SetSigmaMirror(0.06);
+    run->AddTask(richHitProd);
+    //--------------------------------------------------------------------------
 
-  //--------------------- RICH Reconstruction ----------------------------------
-  CbmRichReconstruction* richReco = new CbmRichReconstruction();
-  run->AddTask(richReco);
+    //--------------------- RICH Reconstruction ----------------------------------
+    CbmRichReconstruction* richReco = new CbmRichReconstruction();
+    run->AddTask(richReco);
 
-  // ------------------- RICH Ring matching  ---------------------------------
-  CbmRichMatchRings* matchRings = new CbmRichMatchRings();
-  run->AddTask(matchRings);
-  // -------------------------------------------------------------------------
-    }
+    // ------------------- RICH Ring matching  ---------------------------------
+    CbmRichMatchRings* matchRings = new CbmRichMatchRings();
+    run->AddTask(matchRings);
+    // -------------------------------------------------------------------------
+  }
   // ===                 End of RICH local reconstruction                  ===
   // =========================================================================
 
@@ -356,51 +354,64 @@ void run_reco(Int_t nEvents = 1) {
 
   // -----   ECAL hit producer  ----------------------------------------------
 
-  CbmEcalStructureFiller* ecalFiller=new CbmEcalStructureFiller("ecalFiller", iVerbose, "ecal/ecal_v12a.geo");                                                 
-  ecalFiller->SetUseMCPoints(kTRUE); 
+  CbmEcalStructureFiller* ecalFiller =
+    new CbmEcalStructureFiller("ecalFiller", iVerbose, "ecal/ecal_v12a.geo");
+  ecalFiller->SetUseMCPoints(kTRUE);
   ecalFiller->StoreTrackInformation();
   run->AddTask(ecalFiller);
 
-  CbmEcalDigi* ecalDigi=new CbmEcalDigi("ecalDigi", iVerbose);
+  CbmEcalDigi* ecalDigi = new CbmEcalDigi("ecalDigi", iVerbose);
   run->AddTask(ecalDigi);
 
-  CbmEcalPrepare* ecalPrepare=new CbmEcalPrepare("ecalPrepare", iVerbose);
+  CbmEcalPrepare* ecalPrepare = new CbmEcalPrepare("ecalPrepare", iVerbose);
   run->AddTask(ecalPrepare);
 
-  CbmEcalTracking* ecalTracking=new CbmEcalTracking("ecalTracking", iVerbose);
-  CbmEcalTrackExtrapolationKF* ecalTrackExtrapolation=new CbmEcalTrackExtrapolationKF(iVerbose);
+  CbmEcalTracking* ecalTracking = new CbmEcalTracking("ecalTracking", iVerbose);
+  CbmEcalTrackExtrapolationKF* ecalTrackExtrapolation =
+    new CbmEcalTrackExtrapolationKF(iVerbose);
   ecalTracking->SetTrackExtrapolation(ecalTrackExtrapolation);
   run->AddTask(ecalTracking);
 
-  CbmEcalSCurveLib* ecalSCurve=new CbmEcalSCurveLib("ecalSCurveLib", 0);
+  CbmEcalSCurveLib* ecalSCurve = new CbmEcalSCurveLib("ecalSCurveLib", 0);
   ecalSCurve->AddFile("$VMCWORKDIR/parameters/ecal/scurve2_x22.root");
   ecalSCurve->AddFile("$VMCWORKDIR/parameters/ecal/scurve4_x25.root");
   run->AddTask(ecalSCurve);
 
-  CbmEcalCalibrationV2* ecalECalibration=new CbmEcalCalibrationV2("ecalECalibration", iVerbose, "$VMCWORKDIR/parameters/ecal/calibratione_x22.cfg");
+  CbmEcalCalibrationV2* ecalECalibration = new CbmEcalCalibrationV2(
+    "ecalECalibration",
+    iVerbose,
+    "$VMCWORKDIR/parameters/ecal/calibratione_x22.cfg");
   run->AddTask(ecalECalibration);
 
-  CbmEcalMaximumLocator* ecalLocator=new CbmEcalMaximumLocator("ecalMaximumLocator", 10);
+  CbmEcalMaximumLocator* ecalLocator =
+    new CbmEcalMaximumLocator("ecalMaximumLocator", 10);
   run->AddTask(ecalLocator);
-  
-  CbmEcalIdentification* ecalId=new CbmEcalIdentification("ecalId", iVerbose, "$VMCWORKDIR/parameters/ecal/id_jun25.cfg");
+
+  CbmEcalIdentification* ecalId = new CbmEcalIdentification(
+    "ecalId", iVerbose, "$VMCWORKDIR/parameters/ecal/id_jun25.cfg");
   run->AddTask(ecalId);
 
-  CbmEcalCalibrationV2* ecalCalibration=new CbmEcalCalibrationV2("ecalECalibration", iVerbose, "$VMCWORKDIR/parameters/ecal/calibration_x22.cfg");
+  CbmEcalCalibrationV2* ecalCalibration =
+    new CbmEcalCalibrationV2("ecalECalibration",
+                             iVerbose,
+                             "$VMCWORKDIR/parameters/ecal/calibration_x22.cfg");
   run->AddTask(ecalCalibration);
 
-  CbmEcalClusterFinder* ecalCls=new CbmEcalClusterFinder("ecalCls", iVerbose, "$VMCWORKDIR/parameters/ecal/clusterfinder_light.cfg");
+  CbmEcalClusterFinder* ecalCls = new CbmEcalClusterFinder(
+    "ecalCls", iVerbose, "$VMCWORKDIR/parameters/ecal/clusterfinder_light.cfg");
   run->AddTask(ecalCls);
 
-  CbmEcalShLibTable* ecalShLib=new CbmEcalShLibTable("ecalShLib", iVerbose);
+  CbmEcalShLibTable* ecalShLib = new CbmEcalShLibTable("ecalShLib", iVerbose);
   ecalShLib->AddFile("$VMCWORKDIR/parameters/ecal/shlib2_x22.root");
   ecalShLib->AddFile("$VMCWORKDIR/parameters/ecal/shlib4_x22.root");
   run->AddTask(ecalShLib);
 
-  CbmEcalReco* ecalReco=new CbmEcalReco("ecalReco", iVerbose, "$VMCWORKDIR/parameters/ecal/reco_light.cfg");
+  CbmEcalReco* ecalReco = new CbmEcalReco(
+    "ecalReco", iVerbose, "$VMCWORKDIR/parameters/ecal/reco_light.cfg");
   run->AddTask(ecalReco);
 
-  CbmEcalMatching* ecalMatch=new CbmEcalMatching("ecalMatching", iVerbose, "$VMCWORKDIR/parameters/ecal/matching_light.cfg");
+  CbmEcalMatching* ecalMatch = new CbmEcalMatching(
+    "ecalMatching", iVerbose, "$VMCWORKDIR/parameters/ecal/matching_light.cfg");
   run->AddTask(ecalMatch);
 
   // -------------------------------------------------------------------------
@@ -409,8 +420,8 @@ void run_reco(Int_t nEvents = 1) {
   // =========================================================================
 
   // -----  Parameter database   --------------------------------------------
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
-  FairParRootFileIo* parIo1 = new FairParRootFileIo();
+  FairRuntimeDb* rtdb        = run->GetRuntimeDb();
+  FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
   parIo1->open(parFile.Data());
   parIo2->open(parFileList, "in");
@@ -440,8 +451,8 @@ void run_reco(Int_t nEvents = 1) {
   cout << endl;
   // ------------------------------------------------------------------------
 
-//  delete run;
+  //  delete run;
 
   cout << " Test passed" << endl;
-	cout << " All ok " << endl;
+  cout << " All ok " << endl;
 }

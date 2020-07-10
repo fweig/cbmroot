@@ -22,12 +22,10 @@
 
 class TClonesArray;
 
-class CbmPsdSimpleDigitizer : public CbmDigitize<CbmPsdDigi>
-{
+class CbmPsdSimpleDigitizer : public CbmDigitize<CbmPsdDigi> {
 
- public:
-
-  /** Default constructor **/  
+public:
+  /** Default constructor **/
   CbmPsdSimpleDigitizer();
 
 
@@ -49,9 +47,7 @@ class CbmPsdSimpleDigitizer : public CbmDigitize<CbmPsdDigi>
   virtual void Finish();
 
 
-
- private:
-
+private:
   Int_t fNofEvents;
   Double_t fNofPoints;
   Double_t fNofDigis;
@@ -63,8 +59,7 @@ class CbmPsdSimpleDigitizer : public CbmDigitize<CbmPsdDigi>
   CbmPsdSimpleDigitizer(const CbmPsdSimpleDigitizer&);
   CbmPsdSimpleDigitizer operator=(const CbmPsdSimpleDigitizer&);
 
-  ClassDef(CbmPsdSimpleDigitizer,1);
-
+  ClassDef(CbmPsdSimpleDigitizer, 1);
 };
 
 #endif

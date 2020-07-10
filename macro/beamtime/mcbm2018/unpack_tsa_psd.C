@@ -7,15 +7,14 @@
  ** Uses CbmMcbm2018Source as source task.
  */
 // In order to call later Finish, we make this global
-FairRunOnline *run = NULL;
+FairRunOnline* run = NULL;
 
-void unpack_tsa_psd(TString inFile = "")
-{
+void unpack_tsa_psd(TString inFile = "") {
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
 
   // --- Specify number of events to be produced.
   // --- -1 means run until the end of the input file.
-  Int_t nEvents=-1;
+  Int_t nEvents = -1;
   // --- Specify output file name (this is just an example)
   TString outFile = "data/unp_psd.root";
   TString parFile = "data/unp_psd_params.root";
@@ -27,10 +26,10 @@ void unpack_tsa_psd(TString inFile = "")
   gLogger->SetLogVerbosityLevel("MEDIUM");
 
   // --- Define parameter files
-  TList *parFileList = new TList();
-  TString paramDir = "./";
+  TList* parFileList = new TList();
+  TString paramDir   = "./";
 
-  TString paramFileSts = paramDir + "mPsdPar.par";
+  TString paramFileSts       = paramDir + "mPsdPar.par";
   TObjString* parStsFileName = new TObjString(paramFileSts);
   parFileList->Add(parStsFileName);
 
@@ -45,10 +44,10 @@ void unpack_tsa_psd(TString inFile = "")
   std::cout << std::endl;
   std::cout << ">>> unpack_tsa: Initialising..." << std::endl;
 
-  CbmMcbm2018UnpackerTaskPsd  * unpacker_psd  = new CbmMcbm2018UnpackerTaskPsd();
+  CbmMcbm2018UnpackerTaskPsd* unpacker_psd = new CbmMcbm2018UnpackerTaskPsd();
 
-  unpacker_psd ->SetIgnoreOverlapMs();
-  unpacker_psd ->SetDiamondDpbIdx( 2 );
+  unpacker_psd->SetIgnoreOverlapMs();
+  unpacker_psd->SetDiamondDpbIdx(2);
 
   // --- Source task
   CbmMcbm2018Source* source = new CbmMcbm2018Source();
@@ -66,8 +65,8 @@ void unpack_tsa_psd(TString inFile = "")
   run->SetAutoFinish(kFALSE);
 
   // -----   Runtime database   ---------------------------------------------
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
-  Bool_t kParameterMerged = kTRUE;
+  FairRuntimeDb* rtdb       = run->GetRuntimeDb();
+  Bool_t kParameterMerged   = kTRUE;
   FairParRootFileIo* parOut = new FairParRootFileIo(kParameterMerged);
   FairParAsciiFileIo* parIn = new FairParAsciiFileIo();
   parOut->open(parFile.Data());
@@ -82,14 +81,15 @@ void unpack_tsa_psd(TString inFile = "")
   timer.Start();
   std::cout << ">>> unpack_tsa_psd: Starting run..." << std::endl;
 
-  run->Run(nEvents, 0); // run until end of input file
+  run->Run(nEvents, 0);  // run until end of input file
   //run->Run(0, nEvents); // process nEvents
 
   run->Finish();
 
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
+            << std::endl;
 
   // --- End-of-run info
   Double_t rtime = timer.RealTime();
@@ -98,7 +98,7 @@ void unpack_tsa_psd(TString inFile = "")
   std::cout << ">>> unpack_tsa_psd: Macro finished successfully." << std::endl;
   std::cout << ">>> unpack_tsa_psd: Output file is " << outFile << std::endl;
   std::cout << ">>> unpack_tsa_psd: Real time " << rtime << " s, CPU time "
-	    << ctime << " s" << std::endl;
+            << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

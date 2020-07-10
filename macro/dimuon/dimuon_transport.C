@@ -29,17 +29,16 @@
  ** @param inputFile  Name of input file
  ** @param iDecay     Decay mode from KFPartEfficiencies
  **/
-// 
+//
 // Anna Senger a.senger@gsi.de
-// 2019 
+// 2019
 // add PLUTO input
 //---------------------------------------------------
 
-void dimuon_transport(Int_t nEvents = 1000,
-		      const char* setupName = "sis100_muon_lmvm",
-                      const char* output = "test",
-		      const char* inputFile = "")
-{
+void dimuon_transport(Int_t nEvents         = 1000,
+                      const char* setupName = "sis100_muon_lmvm",
+                      const char* output    = "test",
+                      const char* inputFile = "") {
 
   // --- Logger settings ----------------------------------------------------
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
@@ -58,16 +57,16 @@ void dimuon_transport(Int_t nEvents = 1000,
   TString outFile = dataset + ".tra.root";
   TString parFile = dataset + ".par.root";
   TString geoFile = dataset + ".geo.root";
-  
+
   std::cout << std::endl;
   TString inFile;
-  if(strcmp(inputFile, "") == 0) {
+  if (strcmp(inputFile, "") == 0) {
     inFile = srcDir + "/input/pluto.auau.8gev.omega.mpmm.0001.root";
   } else {
     inFile = inputFile;
   }
   std::cout << "-I- " << myName << ": Using signal input file " << inFile
-            << std::endl;  
+            << std::endl;
   // ------------------------------------------------------------------------
 
 
@@ -78,7 +77,7 @@ void dimuon_transport(Int_t nEvents = 1000,
 
   // --- Transport run   ----------------------------------------------------
   CbmTransport run;
-  run.AddInput(inFile.Data(),kPluto); 
+  run.AddInput(inFile.Data(), kPluto);
   run.SetOutFileName(outFile);
   run.SetParFileName(parFile);
   run.SetGeoFileName(geoFile);
@@ -87,9 +86,9 @@ void dimuon_transport(Int_t nEvents = 1000,
   run.SetBeamPosition(0., 0., 0.1, 0.1);
   run.SetEngine(kGeant3);
   // ------------------------------------------------------------------------
-  
+
   run.Run(nEvents);
-  
+
   // ------------------------------------------------------------------------
 
 
@@ -99,21 +98,22 @@ void dimuon_transport(Int_t nEvents = 1000,
   Double_t ctime = timer.CpuTime();
   std::cout << std::endl << std::endl;
   std::cout << "Macro finished successfully." << std::endl;
-  std::cout << "Output file is "    << outFile << std::endl;
+  std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime
-      << "s" << std::endl << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s"
+            << std::endl
+            << std::endl;
   // ------------------------------------------------------------------------
 
 
   // -----   Resource monitoring   ------------------------------------------
   FairSystemInfo sysInfo;
-  Float_t maxMemory=sysInfo.GetMaxMemory();
+  Float_t maxMemory = sysInfo.GetMaxMemory();
   std::cout << "<DartMeasurement name=\"MaxMemory\" type=\"numeric/double\">";
   std::cout << maxMemory;
   std::cout << "</DartMeasurement>" << std::endl;
 
-  Float_t cpuUsage=ctime/rtime;
+  Float_t cpuUsage = ctime / rtime;
   std::cout << "<DartMeasurement name=\"CpuLoad\" type=\"numeric/double\">";
   std::cout << cpuUsage;
   std::cout << "</DartMeasurement>" << std::endl;
@@ -123,5 +123,4 @@ void dimuon_transport(Int_t nEvents = 1000,
   std::cout << " All ok " << std::endl;
   // ------------------------------------------------------------------------
 
-} // End of macro
-
+}  // End of macro

@@ -16,12 +16,12 @@
 #include <TPave.h>       // for TPave
 #include <TVector3.h>    // for TVector3
 
-#include <map>           // for multimap
-#include <utility>       // for pair
+#include <map>      // for multimap
+#include <utility>  // for pair
 
 class TClonesArray;
 
-class CbmMuchModule : public TPave{
+class CbmMuchModule : public TPave {
 public:
   /** Default constructor **/
   CbmMuchModule();
@@ -34,50 +34,57 @@ public:
    *@param size      Size of the module (all dimensions in [cm])
    *@param cutRadius Radius of the cut (if any, otherwise = -1.) [cm]
    **/
-  CbmMuchModule(Int_t iStation, Int_t iLayer, Bool_t iSide, Int_t iModule, TVector3 position, TVector3 size, Double_t cutRadius);
+  CbmMuchModule(Int_t iStation,
+                Int_t iLayer,
+                Bool_t iSide,
+                Int_t iModule,
+                TVector3 position,
+                TVector3 size,
+                Double_t cutRadius);
   /** Destructor **/
-  virtual ~CbmMuchModule(){}
+  virtual ~CbmMuchModule() {}
 
   /** Accessors */
-  Int_t    GetDetectorId()    const { return fDetectorId; }
-  Double_t GetCutRadius()     const { return fCutRadius; }
-  TVector3 GetSize()          const { return fSize; }
-  TVector3 GetPosition()      const { return fPosition; }
-  Int_t    GetDetectorType()  const { return fDetectorType; }
-  TClonesArray* GetPoints()   const { return fPoints;     }
-  TClonesArray* GetHits()     const { return fHits;       }
-  TClonesArray* GetClusters() const { return fClusters;   }
+  Int_t GetDetectorId() const { return fDetectorId; }
+  Double_t GetCutRadius() const { return fCutRadius; }
+  TVector3 GetSize() const { return fSize; }
+  TVector3 GetPosition() const { return fPosition; }
+  Int_t GetDetectorType() const { return fDetectorType; }
+  TClonesArray* GetPoints() const { return fPoints; }
+  TClonesArray* GetHits() const { return fHits; }
+  TClonesArray* GetClusters() const { return fClusters; }
 
-  virtual Bool_t InitModule() {return kTRUE;}
+  virtual Bool_t InitModule() { return kTRUE; }
   virtual void DrawModule(Color_t) {}
 
-  void SetPoints(TClonesArray* points)     { fPoints   = points;   }
-  void SetHits  (TClonesArray* hits)       { fHits     = hits;     }
+  void SetPoints(TClonesArray* points) { fPoints = points; }
+  void SetHits(TClonesArray* hits) { fHits = hits; }
   void SetClusters(TClonesArray* clusters) { fClusters = clusters; }
   /** */
-  void AddDigi(Double_t time,Int_t id) { fDigis.insert(std::pair<Double_t,Int_t>(time,id)); }
+  void AddDigi(Double_t time, Int_t id) {
+    fDigis.insert(std::pair<Double_t, Int_t>(time, id));
+  }
   /** */
-   void ClearDigis() { fDigis.clear(); }
-   /** */
-   std::multimap<Double_t,Int_t> GetDigis() { return fDigis; } 
+  void ClearDigis() { fDigis.clear(); }
+  /** */
+  std::multimap<Double_t, Int_t> GetDigis() { return fDigis; }
 
 protected:
-  Int_t                  fDetectorId;            // Unique detector ID
-  Int_t                  fDetectorType;          // Detector type
-  Double_t               fCutRadius;             // Radius of the cut (if any, otherwise = -1.) [cm]
-  TVector3               fSize;                  // Size vector of the module (all dimensions in [cm])
-  TVector3               fPosition;              // Location vector of the module center in global c.s. (all dimensions in [cm])
-  TClonesArray*          fPoints;                //!
-  TClonesArray*          fHits;                  //!
-  TClonesArray*          fClusters;              //!
-  std::multimap<Double_t,Int_t> fDigis;               //!
- 
- private:
+  Int_t fDetectorId;    // Unique detector ID
+  Int_t fDetectorType;  // Detector type
+  Double_t fCutRadius;  // Radius of the cut (if any, otherwise = -1.) [cm]
+  TVector3 fSize;       // Size vector of the module (all dimensions in [cm])
+  TVector3
+    fPosition;  // Location vector of the module center in global c.s. (all dimensions in [cm])
+  TClonesArray* fPoints;                  //!
+  TClonesArray* fHits;                    //!
+  TClonesArray* fClusters;                //!
+  std::multimap<Double_t, Int_t> fDigis;  //!
+
+private:
   CbmMuchModule(const CbmMuchModule&);
   CbmMuchModule& operator=(const CbmMuchModule&);
 
-  ClassDef(CbmMuchModule,2);
+  ClassDef(CbmMuchModule, 2);
 };
 #endif
-
-

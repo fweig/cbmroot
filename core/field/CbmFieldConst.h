@@ -21,15 +21,13 @@
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Double_t, Option_t
 
-#include <FairField.h>   // for FairField
+#include <FairField.h>  // for FairField
 
 class CbmFieldPar;
 
-class CbmFieldConst : public FairField
-{
+class CbmFieldConst : public FairField {
 
- public:    
-
+public:
   /** Default constructor **/
   CbmFieldConst();
 
@@ -41,9 +39,16 @@ class CbmFieldConst : public FairField
    ** @param zMin,zMax   z region of field (global coordinates)
    ** @param bX,bY,bZ    Field values [kG]
    **/
-  CbmFieldConst(const char* name, Double_t xMin, Double_t xMax,
-		Double_t yMin, Double_t yMax, Double_t zMin,
-		Double_t zMax, Double_t bX, Double_t bY, Double_t bZ);
+  CbmFieldConst(const char* name,
+                Double_t xMin,
+                Double_t xMax,
+                Double_t yMin,
+                Double_t yMax,
+                Double_t zMin,
+                Double_t zMax,
+                Double_t bX,
+                Double_t bY,
+                Double_t bZ);
 
 
   /** Constructor from CbmFieldPar **/
@@ -59,15 +64,19 @@ class CbmFieldConst : public FairField
    ** @param yMin,yMax   y region of field (global coordinates)
    ** @param zMin,zMax   z region of field (global coordinates)
    **/
-  void SetFieldRegion(Double_t xMin, Double_t xMax, Double_t yMin, 
-		      Double_t yMax, Double_t zMin, Double_t zMax);
+  void SetFieldRegion(Double_t xMin,
+                      Double_t xMax,
+                      Double_t yMin,
+                      Double_t yMax,
+                      Double_t zMin,
+                      Double_t zMax);
 
 
   /** Set the field values
    ** @param bX,bY,bZ    Field values [kG]
    **/
   void SetField(Double_t bX, Double_t bY, Double_t bZ);
-  
+
 
   /** Get components of field at a given point 
    ** @param x,y,z   Point coordinates [cm]
@@ -96,23 +105,21 @@ class CbmFieldConst : public FairField
   virtual void Print(Option_t* = "") const;
 
 
- private:
-
+private:
   /** Limits of the field region **/
-  Double_t fXmin;   
+  Double_t fXmin;
   Double_t fXmax;
   Double_t fYmin;
   Double_t fYmax;
   Double_t fZmin;
   Double_t fZmax;
-  
+
   /** Field components inside the field region **/
   Double_t fBx;
   Double_t fBy;
   Double_t fBz;
 
   ClassDef(CbmFieldConst, 1);
-
 };
 
 

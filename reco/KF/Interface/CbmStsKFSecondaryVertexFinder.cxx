@@ -15,50 +15,51 @@ using std::vector;
 
 ClassImp(CbmStsKFSecondaryVertexFinder)
 
-void CbmStsKFSecondaryVertexFinder::Clear(Option_t* /*opt*/){
+  void CbmStsKFSecondaryVertexFinder::Clear(Option_t* /*opt*/) {
   Finder.Clear();
   vStsTracks.clear();
   vKFTracks.clear();
 }
 
-void CbmStsKFSecondaryVertexFinder::AddTrack( CbmStsTrack *Track ){
-  if( !Track ) return;
+void CbmStsKFSecondaryVertexFinder::AddTrack(CbmStsTrack* Track) {
+  if (!Track) return;
   vStsTracks.push_back(Track);
   vKFTracks.push_back(CbmKFTrack(*Track));
 }
 
-void CbmStsKFSecondaryVertexFinder::SetApproximation( CbmVertex *Guess ){
-  if( !Guess ){
+void CbmStsKFSecondaryVertexFinder::SetApproximation(CbmVertex* Guess) {
+  if (!Guess) {
     Finder.SetApproximation();
-  }else{
-    VGuess.SetVertex( *Guess );
-    Finder.SetApproximation(&VGuess);   
+  } else {
+    VGuess.SetVertex(*Guess);
+    Finder.SetApproximation(&VGuess);
   }
 }
 
-void CbmStsKFSecondaryVertexFinder::SetMassConstraint( Double_t MotherMass ){
-  Finder.SetMassConstraint( MotherMass );
+void CbmStsKFSecondaryVertexFinder::SetMassConstraint(Double_t MotherMass) {
+  Finder.SetMassConstraint(MotherMass);
 }
 
-void CbmStsKFSecondaryVertexFinder::SetTopoConstraint( CbmVertex *Parent ){
-  if( !Parent ){
+void CbmStsKFSecondaryVertexFinder::SetTopoConstraint(CbmVertex* Parent) {
+  if (!Parent) {
     Finder.SetTopoConstraint();
-  }else{
-    VParent.SetVertex( *Parent );
-    Finder.SetTopoConstraint(&VParent);   
+  } else {
+    VParent.SetVertex(*Parent);
+    Finder.SetTopoConstraint(&VParent);
   }
 }
 
-void CbmStsKFSecondaryVertexFinder::Fit(){
+void CbmStsKFSecondaryVertexFinder::Fit() {
   Finder.ClearTracks();
-  for(vector<CbmKFTrack>::iterator i=vKFTracks.begin(); i!=vKFTracks.end(); ++i){
-    Finder.AddTrack( &*i );
+  for (vector<CbmKFTrack>::iterator i = vKFTracks.begin(); i != vKFTracks.end();
+       ++i) {
+    Finder.AddTrack(&*i);
   }
   Finder.Fit();
 }
 
-void CbmStsKFSecondaryVertexFinder::GetVertex( CbmVertex  &vtx ){
-  Finder.GetVertex( vtx );
+void CbmStsKFSecondaryVertexFinder::GetVertex(CbmVertex& vtx) {
+  Finder.GetVertex(vtx);
 }
 /*
 void CbmStsKFSecondaryVertexFinder::GetFittedTrack( Int_t itrack, CbmStsTrack *Track ){
@@ -76,13 +77,16 @@ void CbmStsKFSecondaryVertexFinder::GetFittedTrack( Int_t itrack, FairTrackParam
   CbmKFMath::CopyTC2TrackParam( Param, T, C ); 
 }
 */
-void CbmStsKFSecondaryVertexFinder::GetMotherTrack( CbmStsTrack *MotherTrack ){
-  if( !MotherTrack ) return;
+void CbmStsKFSecondaryVertexFinder::GetMotherTrack(CbmStsTrack* MotherTrack) {
+  if (!MotherTrack) return;
   double T[6], C[15];
-  Finder.GetMotherTrack( T, C );
-  FairTrackParam parFirst(*MotherTrack->GetParamFirst()), parLast(*MotherTrack->GetParamLast());
-  CbmKFMath::CopyTC2TrackParam(&parFirst, T, C);// MotherTrack->GetParamFirst(), T, C );
-  CbmKFMath::CopyTC2TrackParam(&parLast, T, C);//MotherTrack->GetParamLast(), T, C );
+  Finder.GetMotherTrack(T, C);
+  FairTrackParam parFirst(*MotherTrack->GetParamFirst()),
+    parLast(*MotherTrack->GetParamLast());
+  CbmKFMath::CopyTC2TrackParam(
+    &parFirst, T, C);  // MotherTrack->GetParamFirst(), T, C );
+  CbmKFMath::CopyTC2TrackParam(
+    &parLast, T, C);  //MotherTrack->GetParamLast(), T, C );
   MotherTrack->SetParamFirst(&parFirst);
   MotherTrack->SetParamLast(&parLast);
   MotherTrack->SetPidHypo(211);
@@ -90,14 +94,12 @@ void CbmStsKFSecondaryVertexFinder::GetMotherTrack( CbmStsTrack *MotherTrack ){
   MotherTrack->SetNDF(1);
 }
 
-void CbmStsKFSecondaryVertexFinder::GetMass( Double_t *M, Double_t *Error_ ){
-  Finder.GetMass( M, Error_ );
+void CbmStsKFSecondaryVertexFinder::GetMass(Double_t* M, Double_t* Error_) {
+  Finder.GetMass(M, Error_);
 }
 
-CbmStsTrack *CbmStsKFSecondaryVertexFinder::GetTrack( Int_t itrack ){
+CbmStsTrack* CbmStsKFSecondaryVertexFinder::GetTrack(Int_t itrack) {
   return vStsTracks[itrack];
 }
 
-Int_t CbmStsKFSecondaryVertexFinder::GetNTracks(){
-  return vStsTracks.size();
-}
+Int_t CbmStsKFSecondaryVertexFinder::GetNTracks() { return vStsTracks.size(); }

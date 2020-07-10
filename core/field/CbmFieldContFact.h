@@ -16,18 +16,16 @@
 #ifndef CBMFIELDCONTFACT_H
 #define CBMFIELDCONTFACT_H 1
 
-#include <Rtypes.h>        // for THashConsistencyHolder, ClassDef
+#include <Rtypes.h>  // for THashConsistencyHolder, ClassDef
 
 #include <FairContFact.h>  // for FairContFact
 
 class FairContainer;
 class FairParSet;
 
-class CbmFieldContFact : public FairContFact
-{
+class CbmFieldContFact : public FairContFact {
 
- public:
-
+public:
   /** Constructor **/
   CbmFieldContFact();
 
@@ -42,8 +40,7 @@ class CbmFieldContFact : public FairContFact
   FairParSet* createContainer(FairContainer* container);
 
 
- private:
-
+private:
   /** Set all containers  
    ** Creates container objects with all accepted contexts and adds them
    ** to the list of containers for the field library. 
@@ -51,8 +48,7 @@ class CbmFieldContFact : public FairContFact
   void SetAllContainers();
 
 
-  ClassDef(CbmFieldContFact,1);
-
+  ClassDef(CbmFieldContFact, 1);
 };
 
 #endif

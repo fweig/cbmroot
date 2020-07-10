@@ -5,17 +5,17 @@
 #include "CbmGlobalTrackFitterKF.h"
 
 #include "CbmKFStsHit.h"
-#include "CbmKFTrdHit.h"
 #include "CbmKFTrack.h"
+#include "CbmKFTrdHit.h"
 
-#include "FairRootManager.h"
-#include "CbmStsHit.h"
-#include "CbmTrdHit.h"
-#include "CbmTofHit.h"
-#include "CbmStsTrack.h"
-#include "CbmTrdTrack.h"
 #include "CbmGlobalTrack.h"
+#include "CbmStsHit.h"
+#include "CbmStsTrack.h"
+#include "CbmTofHit.h"
+#include "CbmTrdHit.h"
+#include "CbmTrdTrack.h"
 #include "CbmVertex.h"
+#include "FairRootManager.h"
 
 #include "TClonesArray.h"
 #include "TMath.h"
@@ -36,15 +36,14 @@ using std::vector;
 
 
 // ------------------------------------------------------------------
-CbmGlobalTrackFitterKF::CbmGlobalTrackFitterKF():
-  fArrayStsHit(NULL),
-  fArrayTrdHit(NULL),
-  fArrayTofHit(NULL),
-  fArrayStsTrack(NULL),
-  fArrayTrdTrack(NULL),
-  fPrimVertex(NULL),
-  fKfTrack(NULL)
-{
+CbmGlobalTrackFitterKF::CbmGlobalTrackFitterKF()
+  : fArrayStsHit(NULL)
+  , fArrayTrdHit(NULL)
+  , fArrayTofHit(NULL)
+  , fArrayStsTrack(NULL)
+  , fArrayTrdTrack(NULL)
+  , fPrimVertex(NULL)
+  , fKfTrack(NULL) {
   // Default constructor
 
   fKfTrack = new CbmKFTrack();
@@ -56,8 +55,7 @@ CbmGlobalTrackFitterKF::CbmGlobalTrackFitterKF():
 
 
 // ------------------------------------------------------------------
-CbmGlobalTrackFitterKF::~CbmGlobalTrackFitterKF()
-{
+CbmGlobalTrackFitterKF::~CbmGlobalTrackFitterKF() {
   // Destructor
   delete fKfTrack;
 }
@@ -65,43 +63,42 @@ CbmGlobalTrackFitterKF::~CbmGlobalTrackFitterKF()
 
 
 // ------------------------------------------------------------------
-void CbmGlobalTrackFitterKF::Init()
-{
+void CbmGlobalTrackFitterKF::Init() {
   // Initialisation
 
   // Get pointer to the ROOT I/O manager
   FairRootManager* rootMgr = FairRootManager::Instance();
-  if(NULL == rootMgr) {
+  if (NULL == rootMgr) {
     cout << "-E- CbmGlobalTrackFitterKF::Init :"
-	 << " ROOT manager is not instantiated" << endl;
+         << " ROOT manager is not instantiated" << endl;
     return;
   }
   // Get hit arrays
   fArrayStsHit = (TClonesArray*) rootMgr->GetObject("StsHit");
-  if(NULL == fArrayStsHit) {
+  if (NULL == fArrayStsHit) {
     cout << "-W- CbmGlobalTrackFitterKF::Init :"
-	 << " no Sts hit array" << endl;
+         << " no Sts hit array" << endl;
   }
   fArrayTrdHit = (TClonesArray*) rootMgr->GetObject("TrdHit");
-  if(NULL == fArrayTrdHit) {
+  if (NULL == fArrayTrdHit) {
     cout << "-W- CbmGlobalTrackFitterKF::Init :"
-	 << " no TRD hit array" << endl;
+         << " no TRD hit array" << endl;
   }
   fArrayTofHit = (TClonesArray*) rootMgr->GetObject("TofHit");
-  if(NULL == fArrayTofHit) {
+  if (NULL == fArrayTofHit) {
     cout << "-W- CbmGlobalTrackFitterKF::Init :"
-	 << " no TOF hit array" << endl;
+         << " no TOF hit array" << endl;
   }
   // Get track arrays
   fArrayStsTrack = (TClonesArray*) rootMgr->GetObject("StsTrack");
-  if(NULL == fArrayStsTrack) {
+  if (NULL == fArrayStsTrack) {
     cout << "-W- CbmGlobalTrackFitterKF::Init : "
-	 << "no STS track array!" << endl;
+         << "no STS track array!" << endl;
   }
   fArrayTrdTrack = (TClonesArray*) rootMgr->GetObject("TrdTrack");
-  if(NULL == fArrayTrdTrack) {
+  if (NULL == fArrayTrdTrack) {
     cout << "-W- CbmGlobalTrackFitterKF::Init : "
-	 << "no TRD track array!" << endl;
+         << "no TRD track array!" << endl;
   }
 
   // Get pointer to PrimaryVertex object from IOManager if it exists
@@ -113,19 +110,18 @@ void CbmGlobalTrackFitterKF::Init()
   }
   if (nullptr == fPrimVertex) {
     cout << "-W- CbmGlobalTrackFitterKF::Init : "
-	 << "no Primary Vertex!" << endl;
+         << "no Primary Vertex!" << endl;
   }
-
 }
 // ------------------------------------------------------------------
 
 
 // ------------------------------------------------------------------
-void CbmGlobalTrackFitterKF::DoFit(CbmGlobalTrack* glbTrack)
-{
+void CbmGlobalTrackFitterKF::DoFit(CbmGlobalTrack* glbTrack) {
   // Implementation of the fitting algorithm
-  if(NULL==glbTrack || NULL==fArrayStsTrack || NULL==fArrayTrdTrack ||
-     NULL==fArrayStsHit ||  NULL==fArrayTrdHit || NULL==fPrimVertex) return;
+  if (NULL == glbTrack || NULL == fArrayStsTrack || NULL == fArrayTrdTrack
+      || NULL == fArrayStsHit || NULL == fArrayTrdHit || NULL == fPrimVertex)
+    return;
 
 
   Double_t x_old;
@@ -134,32 +130,25 @@ void CbmGlobalTrackFitterKF::DoFit(CbmGlobalTrack* glbTrack)
   Double_t x_new;
   Double_t y_new;
   Double_t z_new;
-  Double_t z = fPrimVertex->GetZ();
+  Double_t z      = fPrimVertex->GetZ();
   Double_t length = 0.;
-  
-  
+
+
   // Get STS track index
   Int_t stsTrackIndex = glbTrack->GetStsTrackIndex();
-  if(-1 == stsTrackIndex) {
-    return;
-  }
+  if (-1 == stsTrackIndex) { return; }
   // Get STS track
-  CbmStsTrack* stsTrack = (CbmStsTrack*) fArrayStsTrack->
-    At(stsTrackIndex);
-  if(NULL == stsTrack) {
-    return;
-  }
-  const FairTrackParam *paramFirst;
+  CbmStsTrack* stsTrack = (CbmStsTrack*) fArrayStsTrack->At(stsTrackIndex);
+  if (NULL == stsTrack) { return; }
+  const FairTrackParam* paramFirst;
   paramFirst = stsTrack->GetParamFirst();
   fKfTrack->SetTrackParam(*paramFirst);
   fKfTrack->Extrapolate(z);
-  x_old = fKfTrack->GetTrack()[0];
-  y_old = fKfTrack->GetTrack()[1];
-  z_old = z;
+  x_old      = fKfTrack->GetTrack()[0];
+  y_old      = fKfTrack->GetTrack()[1];
+  z_old      = z;
   Double_t p = 1.;
-  if(paramFirst->GetQp()) {
-    p = TMath::Abs(1./paramFirst->GetQp());
-  }
+  if (paramFirst->GetQp()) { p = TMath::Abs(1. / paramFirst->GetQp()); }
 
   // Int_t stsHitIndex;
   // CbmStsHit* stsHit;
@@ -184,46 +173,39 @@ void CbmGlobalTrackFitterKF::DoFit(CbmGlobalTrack* glbTrack)
 
   // Get TRD track index
   Int_t trdTrackIndex = glbTrack->GetTrdTrackIndex();
-  if(-1 == trdTrackIndex) {
-    return;
-  }
+  if (-1 == trdTrackIndex) { return; }
   // Get TRD track
-  CbmTrdTrack* trdTrack = (CbmTrdTrack*) fArrayTrdTrack->
-    At(trdTrackIndex);
-  if(NULL == trdTrack) {
-    return;
-  }
-  if(trdTrack->GetNofHits() < 2) {
-    return;
-  }
+  CbmTrdTrack* trdTrack = (CbmTrdTrack*) fArrayTrdTrack->At(trdTrackIndex);
+  if (NULL == trdTrack) { return; }
+  if (trdTrack->GetNofHits() < 2) { return; }
   Int_t trdHitIndex = trdTrack->GetHitIndex(0);
   CbmTrdHit* trdHit = (CbmTrdHit*) fArrayTrdHit->At(trdHitIndex);
 
-  while(z < (trdHit->GetZ()-2.)) {
-    z += p*1.;
+  while (z < (trdHit->GetZ() - 2.)) {
+    z += p * 1.;
 
     fKfTrack->Extrapolate(z);
     x_new = fKfTrack->GetTrack()[0];
     y_new = fKfTrack->GetTrack()[1];
     z_new = z;
 
-    length += TMath::Sqrt(TMath::Power(x_new-x_old, 2) +
-  			  TMath::Power(y_new-y_old, 2) +
-  			  TMath::Power(z_new-z_old, 2));
+    length += TMath::Sqrt(TMath::Power(x_new - x_old, 2)
+                          + TMath::Power(y_new - y_old, 2)
+                          + TMath::Power(z_new - z_old, 2));
     x_old = x_new;
     y_old = y_new;
     z_old = z_new;
   }
 
   // Loop over hits of the TRD track
-  for(Int_t iTrd = 1; iTrd < trdTrack->GetNofHits(); iTrd++) {
+  for (Int_t iTrd = 1; iTrd < trdTrack->GetNofHits(); iTrd++) {
     // Get hit index
     trdHitIndex = trdTrack->GetHitIndex(iTrd);
     // Get hit
     trdHit = (CbmTrdHit*) fArrayTrdHit->At(trdHitIndex);
-    z = trdHit->GetZ();
+    z      = trdHit->GetZ();
     fKfTrack->Extrapolate(z);
-    if(trdHit->GetDx() > trdHit->GetDy()) {
+    if (trdHit->GetDx() > trdHit->GetDy()) {
       x_new = fKfTrack->GetTrack()[0];
       y_new = trdHit->GetY();
     } else {
@@ -231,27 +213,25 @@ void CbmGlobalTrackFitterKF::DoFit(CbmGlobalTrack* glbTrack)
       y_new = fKfTrack->GetTrack()[1];
     }
     z_new = z;
-    length += TMath::Sqrt(TMath::Power(x_new-x_old, 2) +
-			  TMath::Power(y_new-y_old, 2) +
-			  TMath::Power(z_new-z_old, 2));
+    length += TMath::Sqrt(TMath::Power(x_new - x_old, 2)
+                          + TMath::Power(y_new - y_old, 2)
+                          + TMath::Power(z_new - z_old, 2));
     x_old = x_new;
     y_old = y_new;
     z_old = z_new;
   }
 
-  
+
   Int_t tofIndex = glbTrack->GetTofHitIndex();
-  if(-1 == tofIndex) {
-    return;
-  }
-  CbmTofHit *tofHit = (CbmTofHit*)fArrayTofHit->At(tofIndex);
-  x_new = tofHit->GetX();
-  y_new = tofHit->GetY();
-  z_new = tofHit->GetZ();
-  length += TMath::Sqrt(TMath::Power(x_new-x_old, 2) +
-			TMath::Power(y_new-y_old, 2) +
-			TMath::Power(z_new-z_old, 2));
-  
+  if (-1 == tofIndex) { return; }
+  CbmTofHit* tofHit = (CbmTofHit*) fArrayTofHit->At(tofIndex);
+  x_new             = tofHit->GetX();
+  y_new             = tofHit->GetY();
+  z_new             = tofHit->GetZ();
+  length +=
+    TMath::Sqrt(TMath::Power(x_new - x_old, 2) + TMath::Power(y_new - y_old, 2)
+                + TMath::Power(z_new - z_old, 2));
+
 
   glbTrack->SetLength(length);
 }
@@ -259,4 +239,3 @@ void CbmGlobalTrackFitterKF::DoFit(CbmGlobalTrack* glbTrack)
 
 
 ClassImp(CbmGlobalTrackFitterKF);
-

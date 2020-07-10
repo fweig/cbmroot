@@ -11,12 +11,14 @@
 
 // TO CHECK in the code: IMPORTANT NOTE
 
-void run_sim_flow(Int_t nEvents = 2, Int_t En=25, const char* setupName = "sis300_electron_flow", const char* inputFile ="")
-{
+void run_sim_flow(Int_t nEvents         = 2,
+                  Int_t En              = 25,
+                  const char* setupName = "sis300_electron_flow",
+                  const char* inputFile = "") {
   // The energy is needed in the setup file to define the field scale
   // and the psd position
   TString energy = Form("%i", En);
-  gSystem->Setenv("BEAM_ENERGY",energy);
+  gSystem->Setenv("BEAM_ENERGY", energy);
   // ========================================================================
   //          Adjust this part according to your requirements
 
@@ -27,7 +29,7 @@ void run_sim_flow(Int_t nEvents = 2, Int_t En=25, const char* setupName = "sis30
 
 
   // -----   In- and output file names   ------------------------------------
-  TString inFile = ""; // give here or as argument; otherwise default is taken
+  TString inFile  = "";  // give here or as argument; otherwise default is taken
   TString outDir  = "data/";
   TString outFile = outDir + setupName + "_mc_evt.root";
   TString parFile = outDir + setupName + "_params_evt.root";
@@ -36,7 +38,7 @@ void run_sim_flow(Int_t nEvents = 2, Int_t En=25, const char* setupName = "sis30
 
 
   // --- Logger settings ----------------------------------------------------
-  TString logLevel     = "INFO";  
+  TString logLevel     = "INFO";
   TString logVerbosity = "LOW";
   // ------------------------------------------------------------------------
 
@@ -51,13 +53,13 @@ void run_sim_flow(Int_t nEvents = 2, Int_t En=25, const char* setupName = "sis30
   // in the responsibility of the user that no overlaps or extrusions are
   // created by the placement of the target.
   //
-  TString  targetElement   = "Gold";
+  TString targetElement    = "Gold";
   Double_t targetThickness = 0.025;  // full thickness in cm
   Double_t targetDiameter  = 2.5;    // diameter in cm
   Double_t targetPosX      = 0.;     // target x position in global c.s. [cm]
   Double_t targetPosY      = 0.;     // target y position in global c.s. [cm]
   Double_t targetPosZ      = 0.;     // target z position in global c.s. [cm]
-  Double_t targetRotY      = 0.;     // target rotation angle around the y axis [deg]
+  Double_t targetRotY = 0.;  // target rotation angle around the y axis [deg]
   // ------------------------------------------------------------------------
 
 
@@ -71,8 +73,8 @@ void run_sim_flow(Int_t nEvents = 2, Int_t En=25, const char* setupName = "sis30
   //
   Bool_t smearVertexXY = kTRUE;
   Bool_t smearVertexZ  = kTRUE;
-  Double_t beamWidthX   = 1.;  // Gaussian sigma of the beam profile in x [cm]
-  Double_t beamWidthY   = 1.;  // Gaussian sigma of the beam profile in y [cm]
+  Double_t beamWidthX  = 1.;  // Gaussian sigma of the beam profile in x [cm]
+  Double_t beamWidthY  = 1.;  // Gaussian sigma of the beam profile in y [cm]
   // ------------------------------------------------------------------------
 
 
@@ -81,10 +83,10 @@ void run_sim_flow(Int_t nEvents = 2, Int_t En=25, const char* setupName = "sis30
 
 
   // if kbeam==kTRUE, transport the beam for estimating required PSD x-shift
-  // if kbeam==kFALSE, transport particles from input models, 
+  // if kbeam==kFALSE, transport particles from input models,
   // gen=0 : UrQMD
   bool kbeam = kFALSE;
-  Int_t gen = 0;
+  Int_t gen  = 0;
 
   // -----   Timer   --------------------------------------------------------
   TStopwatch timer;
@@ -96,20 +98,19 @@ void run_sim_flow(Int_t nEvents = 2, Int_t En=25, const char* setupName = "sis30
   gDebug = 0;
   // ------------------------------------------------------------------------
 
-  
-  // -----   Remove old CTest runtime dependency file   ---------------------
-  TString depFile = Remove_CTest_Dependency_File(outDir, "run_sim" , setupName);
-  // ------------------------------------------------------------------------
 
+  // -----   Remove old CTest runtime dependency file   ---------------------
+  TString depFile = Remove_CTest_Dependency_File(outDir, "run_sim", setupName);
+  // ------------------------------------------------------------------------
 
 
   // -----   Create simulation run   ----------------------------------------
   FairRunSim* run = new FairRunSim();
-  run->SetName("TGeant4");              // Transport engine
-                                         // IMPORTANT NOTE: need G4 for hadronic calorimetry in PSD including projectile fragments (produced in SHIELD)
-                                         // IMPORTANT NOTE: change physics list (in gconfig/g4Config.C) to either FTFP_BERT or QGSP_BIC_HP (both tested)
-  run->SetOutputFile(outFile);          // Output file
-  run->SetGenerateRunInfo(kTRUE);       // Create FairRunInfo file
+  run->SetName("TGeant4");  // Transport engine
+    // IMPORTANT NOTE: need G4 for hadronic calorimetry in PSD including projectile fragments (produced in SHIELD)
+    // IMPORTANT NOTE: change physics list (in gconfig/g4Config.C) to either FTFP_BERT or QGSP_BIC_HP (both tested)
+  run->SetOutputFile(outFile);     // Output file
+  run->SetGenerateRunInfo(kTRUE);  // Create FairRunInfo file
   // ------------------------------------------------------------------------
 
 
@@ -121,9 +122,9 @@ void run_sim_flow(Int_t nEvents = 2, Int_t En=25, const char* setupName = "sis30
 
   // -----   Load the geometry setup   -------------------------------------
   std::cout << std::endl;
-  TString setupFile = srcDir + "/geometry/setup/setup_" + setupName + ".C";
+  TString setupFile  = srcDir + "/geometry/setup/setup_" + setupName + ".C";
   TString setupFunct = "setup_";
-  setupFunct = setupFunct + setupName + "()";
+  setupFunct         = setupFunct + setupName + "()";
   std::cout << "-I- " << myName << ": Loading macro " << setupFile << std::endl;
   gROOT->LoadMacro(setupFile);
   gROOT->ProcessLine(setupFunct);
@@ -133,11 +134,11 @@ void run_sim_flow(Int_t nEvents = 2, Int_t En=25, const char* setupName = "sis30
   // -----   Input file   ---------------------------------------------------
   std::cout << std::endl;
   TString defaultInputFile = srcDir + "/input/urqmd.auau.25gev.centr.root";
-  if ( inFile.IsNull() ) {  // Not defined in the macro explicitly
-  	if ( strcmp(inputFile, "") == 0 ) {  // not given as argument to the macro
-  		inFile = defaultInputFile;
-  	}
-  	else inFile = inputFile;
+  if (inFile.IsNull()) {               // Not defined in the macro explicitly
+    if (strcmp(inputFile, "") == 0) {  // not given as argument to the macro
+      inFile = defaultInputFile;
+    } else
+      inFile = inputFile;
   }
   std::cout << "-I- " << myName << ": Using input file " << inFile << std::endl;
   // ------------------------------------------------------------------------
@@ -146,7 +147,7 @@ void run_sim_flow(Int_t nEvents = 2, Int_t En=25, const char* setupName = "sis30
   // -----   Create media   -------------------------------------------------
   std::cout << std::endl;
   std::cout << "-I- " << myName << ": Setting media file" << std::endl;
-  run->SetMaterials("media.geo");       // Materials
+  run->SetMaterials("media.geo");  // Materials
   // ------------------------------------------------------------------------
 
 
@@ -163,9 +164,8 @@ void run_sim_flow(Int_t nEvents = 2, Int_t En=25, const char* setupName = "sis30
   // -----   Create and register the target   -------------------------------
   std::cout << std::endl;
   std::cout << "-I- " << myName << ": Registering target" << std::endl;
-  CbmTarget* target = new CbmTarget(targetElement.Data(),
-  		                              targetThickness,
-  		                              targetDiameter);
+  CbmTarget* target =
+    new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
   target->SetPosition(targetPosX, targetPosY, targetPosZ);
   target->SetRotation(targetRotY);
   target->Print();
@@ -177,9 +177,9 @@ void run_sim_flow(Int_t nEvents = 2, Int_t En=25, const char* setupName = "sis30
   std::cout << std::endl;
   std::cout << "-I- " << myName << ": Registering magnetic field" << std::endl;
   CbmFieldMap* magField = CbmSetup::Instance()->CreateFieldMap();
-  if ( ! magField ) {
-  	std::cout << "-E- run_sim_new: No valid field!";
-  	return;
+  if (!magField) {
+    std::cout << "-E- run_sim_new: No valid field!";
+    return;
   }
   run->SetField(magField);
   // ------------------------------------------------------------------------
@@ -203,27 +203,28 @@ void run_sim_flow(Int_t nEvents = 2, Int_t En=25, const char* setupName = "sis30
 
   // -----   Create PrimaryGenerator   --------------------------------------
   std::cout << std::endl;
-  std::cout << "-I- " << myName << ": Registering event generators" << std::endl;
+  std::cout << "-I- " << myName << ": Registering event generators"
+            << std::endl;
   FairPrimaryGenerator* primGen = new FairPrimaryGenerator();
   // --- Uniform distribution of event plane angle
   primGen->SetEventPlane(-TMath::Pi(), TMath::Pi());
   // --- Get target parameters
-  Double_t tX = 0.;
-  Double_t tY = 0.;
-  Double_t tZ = 0.;
+  Double_t tX  = 0.;
+  Double_t tY  = 0.;
+  Double_t tZ  = 0.;
   Double_t tDz = 0.;
-  if ( target ) {
-  	target->GetPosition(tX, tY, tZ);
-  	tDz = target->GetThickness();
+  if (target) {
+    target->GetPosition(tX, tY, tZ);
+    tDz = target->GetThickness();
   }
   primGen->SetTarget(tZ, tDz);
   primGen->SetBeam(0., 0., beamWidthX, beamWidthY);
   primGen->SmearGausVertexXY(smearVertexXY);
   primGen->SmearVertexZ(smearVertexZ);
-   // Include beam emittance
-   //primGen->SmearVertexZ(kTRUE);
-   //primGen->SmearVertexXY(kTRUE);
-   //primGen->SetBeam(0., 0., 0.15, 0.06, 2.2e-3, 2e-3); // emittance (SIS100) @ 10 AGeV ~ 2.2 mm.mrad (X) -> deltaX = +/- 1 mm && thetaX = +/- 2.2 mrad
+  // Include beam emittance
+  //primGen->SmearVertexZ(kTRUE);
+  //primGen->SmearVertexXY(kTRUE);
+  //primGen->SetBeam(0., 0., 0.15, 0.06, 2.2e-3, 2e-3); // emittance (SIS100) @ 10 AGeV ~ 2.2 mm.mrad (X) -> deltaX = +/- 1 mm && thetaX = +/- 2.2 mrad
 
   //
   // TODO: Currently, there is no guaranteed consistency of the beam profile
@@ -233,42 +234,43 @@ void run_sim_flow(Int_t nEvents = 2, Int_t En=25, const char* setupName = "sis30
   // ------------------------------------------------------------------------
 
   if (kbeam == kFALSE) {
-    
-    CbmUnigenGenerator*  urqmdGen = new CbmUnigenGenerator(inFile);
+
+    CbmUnigenGenerator* urqmdGen = new CbmUnigenGenerator(inFile);
     // IMPORTANT NOTE: event plane angle in [-pi, pi] by convention
-    // rotation is done in FairPrimaryGenerator    
+    // rotation is done in FairPrimaryGenerator
     primGen->AddGenerator(urqmdGen);
   } else {
-    
+
     Double_t bMom;
     if (En == 35) bMom = 35.926;
     if (En == 25) bMom = 25.92;
     if (En == 15) bMom = 15.91;
-    if (En == 10) bMom = 10.898; 
+    if (En == 10) bMom = 10.898;
     if (En == 8) bMom = 8.88889;
     if (En == 6) bMom = 6.87454;
     if (En == 4) bMom = 4.84832;
     if (En == 2) bMom = 2.78444;
-    
+
     int Nion;
     int pileup = 100;
-    Nion = nEvents*pileup;
-    
-    FairIonGenerator *fIongen= new FairIonGenerator(79, 197, 79, Nion, 0., 0., bMom, 0., 0., -1.); 
-    primGen->AddGenerator(fIongen);   
-    
+    Nion       = nEvents * pileup;
+
+    FairIonGenerator* fIongen =
+      new FairIonGenerator(79, 197, 79, Nion, 0., 0., bMom, 0., 0., -1.);
+    primGen->AddGenerator(fIongen);
+
     nEvents = 1;
   }
 
   run->SetGenerator(primGen);
   // ------------------------------------------------------------------------
 
- 
+
   // -Trajectories Visualization (TGeoManager Only )
   // Switch this on if you want to visualize tracks in the
   // eventdisplay.
   // This is normally switch off, because of the huge files created
-  // when it is switched on. 
+  // when it is switched on.
   // run->SetStoreTraj(kTRUE);
 
   // -----   Run initialisation   -------------------------------------------
@@ -276,7 +278,7 @@ void run_sim_flow(Int_t nEvents = 2, Int_t En=25, const char* setupName = "sis30
   std::cout << "-I- " << myName << ": Initialise run" << std::endl;
   run->Init();
   // ------------------------------------------------------------------------
-  
+
   // Set cuts for storing the trajectories.
   // Switch this on only if trajectories are stored.
   // Choose this cuts according to your needs, but be aware
@@ -297,12 +299,12 @@ void run_sim_flow(Int_t nEvents = 2, Int_t En=25, const char* setupName = "sis30
   // -----   Runtime database   ---------------------------------------------
   std::cout << std::endl << std::endl;
   std::cout << "-I- " << myName << ": Set runtime DB" << std::endl;
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
+  FairRuntimeDb* rtdb   = run->GetRuntimeDb();
   CbmFieldPar* fieldPar = (CbmFieldPar*) rtdb->getContainer("CbmFieldPar");
   fieldPar->SetParameters(magField);
   fieldPar->setChanged();
-  fieldPar->setInputVersion(run->GetRunId(),1);
-  Bool_t kParameterMerged = kTRUE;
+  fieldPar->setInputVersion(run->GetRunId(), 1);
+  Bool_t kParameterMerged   = kTRUE;
   FairParRootFileIo* parOut = new FairParRootFileIo(kParameterMerged);
   parOut->open(parFile.Data());
   rtdb->setOutput(parOut);
@@ -310,14 +312,14 @@ void run_sim_flow(Int_t nEvents = 2, Int_t En=25, const char* setupName = "sis30
   rtdb->print();
   // ------------------------------------------------------------------------
 
- 
+
   // -----   Start run   ----------------------------------------------------
   std::cout << std::endl << std::endl;
   std::cout << "-I- " << myName << ": Starting run" << std::endl;
   run->Run(nEvents);
   // ------------------------------------------------------------------------
 
-  
+
   // -----   Finish   -------------------------------------------------------
   run->CreateGeometryFile(geoFile);
   timer.Stop();
@@ -325,25 +327,26 @@ void run_sim_flow(Int_t nEvents = 2, Int_t En=25, const char* setupName = "sis30
   Double_t ctime = timer.CpuTime();
   std::cout << std::endl << std::endl;
   std::cout << "Macro finished successfully." << std::endl;
-  std::cout << "Output file is "    << outFile << std::endl;
+  std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Geometry file is "  << geoFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime 
-	    << "s" << std::endl << std::endl;
+  std::cout << "Geometry file is " << geoFile << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s"
+            << std::endl
+            << std::endl;
   // ------------------------------------------------------------------------
 
 
   // -----   Resource monitoring   ------------------------------------------
-  if ( Has_Fair_Monitor() ) {      // FairRoot Version >= 15.11
+  if (Has_Fair_Monitor()) {  // FairRoot Version >= 15.11
     // Extract the maximal used memory an add is as Dart measurement
     // This line is filtered by CTest and the value send to CDash
     FairSystemInfo sysInfo;
-    Float_t maxMemory=sysInfo.GetMaxMemory();
+    Float_t maxMemory = sysInfo.GetMaxMemory();
     std::cout << "<DartMeasurement name=\"MaxMemory\" type=\"numeric/double\">";
     std::cout << maxMemory;
     std::cout << "</DartMeasurement>" << std::endl;
 
-    Float_t cpuUsage=ctime/rtime;
+    Float_t cpuUsage = ctime / rtime;
     std::cout << "<DartMeasurement name=\"CpuLoad\" type=\"numeric/double\">";
     std::cout << cpuUsage;
     std::cout << "</DartMeasurement>" << std::endl;
@@ -355,6 +358,4 @@ void run_sim_flow(Int_t nEvents = 2, Int_t En=25, const char* setupName = "sis30
   // Function needed for CTest runtime dependency
   Generate_CTest_Dependency_File(depFile);
   // ------------------------------------------------------------------------
-
 }
-

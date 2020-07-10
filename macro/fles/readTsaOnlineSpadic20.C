@@ -8,18 +8,16 @@
  */
 
 // In order to call later Finish, we make this global
-FairRunOnline *run = NULL;
+FairRunOnline* run = NULL;
 
-void readTsaOnlineSpadic20(TString inFile = "")
-{
+void readTsaOnlineSpadic20(TString inFile = "") {
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
   TString inDir  = srcDir + "/input/";
-  if( "" != inFile )
-   inFile = inDir + inFile;
+  if ("" != inFile) inFile = inDir + inFile;
 
   // --- Specify number of events to be produced.
   // --- -1 means run until the end of the input file.
-//  Int_t nEvents = 10000;
+  //  Int_t nEvents = 10000;
   Int_t nEvents = -1;
 
   // --- Specify output file name (this is just an example)
@@ -33,10 +31,10 @@ void readTsaOnlineSpadic20(TString inFile = "")
   gLogger->SetLogVerbosityLevel("LOW");
 
   // --- Define parameter files
-  TList *parFileList = new TList();
-  TString paramDir = "./";
+  TList* parFileList = new TList();
+  TString paramDir   = "./";
 
-/*
+  /*
   TString paramFileMuch = paramDir + "MuchUnpackPar.par";
   TObjString* tutDetDigiFileMuch = new TObjString(paramFileMuch);
   parFileList->Add(tutDetDigiFileMuch);
@@ -58,10 +56,11 @@ void readTsaOnlineSpadic20(TString inFile = "")
   std::cout << ">>> eDpbMonitor: Initialising..." << std::endl;
 
   // Spadic 2.0 unpacker
-  CbmTSUnpackSpadic20OnlineMonitor* spadic20_unpacker = new CbmTSUnpackSpadic20OnlineMonitor();
+  CbmTSUnpackSpadic20OnlineMonitor* spadic20_unpacker =
+    new CbmTSUnpackSpadic20OnlineMonitor();
 
   // Dummy Unpacker
-  CbmTSUnpackDummy*    dummy_unpacker     = new CbmTSUnpackDummy();
+  CbmTSUnpackDummy* dummy_unpacker = new CbmTSUnpackDummy();
 
   // Much Monitor
   //CbmTSMonitorMuch* test_monitor_much = new CbmTSMonitorMuch();
@@ -74,25 +73,24 @@ void readTsaOnlineSpadic20(TString inFile = "")
   //test_monitor_tof->SetDiamondTsNbSpillOffThr(  50 );
   //test_monitor_tof->SetEpochSuppressedMode();
   //test_monitor_tof->SetBeamTuningMode();
-//  test_monitor_tof->SetRunStart( 20161209, 214100);
+  //  test_monitor_tof->SetRunStart( 20161209, 214100);
 
   // Spadic 2.0 Unpacker
 
   // --- Source task
   CbmFlibCern2016Source* source = new CbmFlibCern2016Source();
-  if( "" != inFile )
-      source->SetFileName(inFile);
-      else
-      {
-         source->SetHostName( "localhost");
-         source->SetPortNumber( 5556 );
-      }
+  if ("" != inFile)
+    source->SetFileName(inFile);
+  else {
+    source->SetHostName("localhost");
+    source->SetPortNumber(5556);
+  }
 
   //source->AddUnpacker(test_monitor_tof,  0x60, 6); //gDPBs
   //source->AddUnpacker(test_monitor_much, 0x10, 4); //nDPBs
-  source->AddUnpacker(dummy_unpacker, 0x10, 4);//gDPB A & B
+  source->AddUnpacker(dummy_unpacker, 0x10, 4);  //gDPB A & B
   //source->AddUnpacker(dummy_unpacker, 0x10, 5);
-  source->AddUnpacker(spadic20_unpacker, 0x10, 5); // FIXME: set correct values
+  source->AddUnpacker(spadic20_unpacker, 0x10, 5);  // FIXME: set correct values
 
   // --- Event header
   FairEventHeader* event = new CbmTbEvent();
@@ -102,12 +100,12 @@ void readTsaOnlineSpadic20(TString inFile = "")
   run = new FairRunOnline(source);
   run->SetOutputFile(outFile);
   run->SetEventHeader(event);
-  run->ActivateHttpServer(100); // refresh each 100 events
+  run->ActivateHttpServer(100);  // refresh each 100 events
   run->SetAutoFinish(kFALSE);
 
   // -----   Runtime database   ---------------------------------------------
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
-  Bool_t kParameterMerged = kTRUE;
+  FairRuntimeDb* rtdb       = run->GetRuntimeDb();
+  Bool_t kParameterMerged   = kTRUE;
   FairParRootFileIo* parOut = new FairParRootFileIo(kParameterMerged);
   FairParAsciiFileIo* parIn = new FairParAsciiFileIo();
   parOut->open(parFile.Data());
@@ -121,12 +119,13 @@ void readTsaOnlineSpadic20(TString inFile = "")
   TStopwatch timer;
   timer.Start();
   std::cout << ">>> eDpbMonitor: Starting run..." << std::endl;
-  run->Run(nEvents, 0); // run until end of input file
+  run->Run(nEvents, 0);  // run until end of input file
   timer.Stop();
 
   run->Finish();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
+            << std::endl;
 
   // --- End-of-run info
   Double_t rtime = timer.RealTime();
@@ -135,7 +134,7 @@ void readTsaOnlineSpadic20(TString inFile = "")
   std::cout << ">>> eDpbMonitor: Macro finished successfully." << std::endl;
   std::cout << ">>> eDpbMonitor: Output file is " << outFile << std::endl;
   std::cout << ">>> eDpbMonitor: Real time " << rtime << " s, CPU time "
-	    << ctime << " s" << std::endl;
+            << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

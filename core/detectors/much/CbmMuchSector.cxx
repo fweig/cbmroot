@@ -1,44 +1,40 @@
 #include "CbmMuchSector.h"
 
-#include <FairLogger.h>         // for Logger, LOG
+#include <FairLogger.h>  // for Logger, LOG
 
-#include <vector>               // for vector
+#include <vector>  // for vector
 
 using std::vector;
 
 // -----   Default constructor   -------------------------------------------
-CbmMuchSector::CbmMuchSector():
-    fAddress(0),
-    fNChannels(0),
-    fPads()
-{
-}
+CbmMuchSector::CbmMuchSector() : fAddress(0), fNChannels(0), fPads() {}
 // -------------------------------------------------------------------------
 
 // -----  Standard constructor  --------------------------------------------
-CbmMuchSector::CbmMuchSector(UInt_t modAddress, UInt_t index, Int_t nChannels):  
-    fAddress(CbmMuchAddress::SetElementId(modAddress,kMuchSector,index)),
-    fNChannels(nChannels),
-    fPads()
-{
+CbmMuchSector::CbmMuchSector(UInt_t modAddress, UInt_t index, Int_t nChannels)
+  : fAddress(CbmMuchAddress::SetElementId(modAddress, kMuchSector, index))
+  , fNChannels(nChannels)
+  , fPads() {
   fPads.resize(nChannels);
 }
 // -------------------------------------------------------------------------
 
-CbmMuchPad* CbmMuchSector::GetPadByChannelIndex(Int_t iChannel) const { 
-//  LOG(debug) << "iChannel=" << iChannel << " fPads.size()=" << fPads.size()
-//             << " fNChannels=" << fNChannels;
-  if (iChannel>=static_cast<Int_t>(fPads.size()) || iChannel<0) {
+CbmMuchPad* CbmMuchSector::GetPadByChannelIndex(Int_t iChannel) const {
+  //  LOG(debug) << "iChannel=" << iChannel << " fPads.size()=" << fPads.size()
+  //             << " fNChannels=" << fNChannels;
+  if (iChannel >= static_cast<Int_t>(fPads.size()) || iChannel < 0) {
     LOG(error) << "iChannel=" << iChannel << " fPads.size()=" << fPads.size();
-    LOG(error) << "  station index=" << CbmMuchAddress::GetStationIndex(fAddress);
+    LOG(error) << "  station index="
+               << CbmMuchAddress::GetStationIndex(fAddress);
     LOG(error) << "    layer index=" << CbmMuchAddress::GetLayerIndex(fAddress);
-    LOG(error) << "   module index=" << CbmMuchAddress::GetModuleIndex(fAddress);
-    LOG(error) << "   sector index=" << CbmMuchAddress::GetSectorIndex(fAddress);
+    LOG(error) << "   module index="
+               << CbmMuchAddress::GetModuleIndex(fAddress);
+    LOG(error) << "   sector index="
+               << CbmMuchAddress::GetSectorIndex(fAddress);
     return nullptr;
   }
-  return fPads[iChannel]; 
+  return fPads[iChannel];
 }
-
 
 
 //// -------------------------------------------------------------------------

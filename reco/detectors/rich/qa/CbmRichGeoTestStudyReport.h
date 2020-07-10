@@ -8,8 +8,8 @@
 #define CBM_RICH_GEO_TEST_STUDY_REPORT
 
 #include "CbmStudyReport.h"
-#include <string>
 #include "TSystem.h"
+#include <string>
 using std::string;
 
 /**
@@ -25,46 +25,41 @@ using std::string;
  * \date 2012
  *
  */
-class CbmRichGeoTestStudyReport : public CbmStudyReport
-{
+class CbmRichGeoTestStudyReport : public CbmStudyReport {
 public:
-   /**
+  /**
     * \brief Constructor.
     */
-   CbmRichGeoTestStudyReport();
+  CbmRichGeoTestStudyReport();
 
-   /**
+  /**
     * \brief Destructor.
     */
-   virtual ~CbmRichGeoTestStudyReport();
+  virtual ~CbmRichGeoTestStudyReport();
 
 protected:
-    /**
+  /**
     * \brief Inherited from CbmLitStudyReport.
     */
-   void Create();
+  void Create();
 
-   /**
+  /**
    * \brief Inherited from CbmLitStudyReport.
    */
   void Draw() {};
 
-   /**
+  /**
     * \brief Print one row in a table.
     * \param[in] property Name of the property in property tree.
     * \param[in] name Name of the row.
     * \return String with table row.
     */
-   virtual string PrintRow(
-      const string& property,
-      const string& name);
+  virtual string PrintRow(const string& property, const string& name);
 
-   /**
+  /**
     * \brief
     */
-   virtual string PrintValue(
-         int studyId,
-         const string& valueTitle);
+  virtual string PrintValue(int studyId, const string& valueTitle);
 };
 
 #endif

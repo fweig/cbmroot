@@ -8,12 +8,12 @@
  */
 
 // In order to call later Finish, we make this global
-FairRunOnline *run = NULL;
+FairRunOnline* run = NULL;
 
-void eDpbBeamMonitorOffline(Bool_t highP = true, TString inFile =
-		     "/home/cbm/readout/flesnet/build/r0004_20170803_1025/r0004_20170803_1025_0001.tsa"
-		     )
-{
+void eDpbBeamMonitorOffline(
+  Bool_t highP   = true,
+  TString inFile = "/home/cbm/readout/flesnet/build/r0004_20170803_1025/"
+                   "r0004_20170803_1025_0001.tsa") {
   //TString srcDir = gSystem->Getenv("VMCWORKDIR");
   //TString inDir  = srcDir + "/input/";
   //if( "" != inFile )
@@ -45,13 +45,14 @@ void eDpbBeamMonitorOffline(Bool_t highP = true, TString inFile =
 
   // Spadic 2.0 unpacker
   //CbmTSUnpackSpadic20OnlineMonitor* spadic20_unpacker = new CbmTSUnpackSpadic20OnlineMonitor(highP);
-  CbmTSUnpackSpadic20OnlineMonitor* spadic20_unpacker = new CbmTSUnpackSpadic20OnlineMonitor(false);
+  CbmTSUnpackSpadic20OnlineMonitor* spadic20_unpacker =
+    new CbmTSUnpackSpadic20OnlineMonitor(false);
 
   // --- Source task
   CbmFlibFileSourceNew* source = new CbmFlibFileSourceNew();
   //source->SetHostName("localhost");
   source->SetFileName(inFile);
-  source->AddUnpacker(spadic20_unpacker, 0x10); // FIXME: set correct values
+  source->AddUnpacker(spadic20_unpacker, 0x10);  // FIXME: set correct values
 
   // --- Event header
   //FairEventHeader* event = new CbmTbEvent();
@@ -61,7 +62,7 @@ void eDpbBeamMonitorOffline(Bool_t highP = true, TString inFile =
   run = new FairRunOnline(source);
   run->SetOutputFile(outFile);
   //run->SetEventHeader(event);
-  run->ActivateHttpServer(100); // refresh each 100 events
+  run->ActivateHttpServer(100);  // refresh each 100 events
   run->SetAutoFinish(kFALSE);
 
   //  gDebug=2;
@@ -74,7 +75,7 @@ void eDpbBeamMonitorOffline(Bool_t highP = true, TString inFile =
   TStopwatch timer;
   timer.Start();
   std::cout << ">>> eDpbMonitor: Starting run..." << std::endl;
-  run->Run(nEvents, 0); // run until end of input file
+  run->Run(nEvents, 0);  // run until end of input file
   timer.Stop();
 
   //run->Finish();
@@ -86,7 +87,7 @@ void eDpbBeamMonitorOffline(Bool_t highP = true, TString inFile =
   std::cout << ">>> eDpbMonitor: Macro finished successfully." << std::endl;
   std::cout << ">>> eDpbMonitor: Output file is " << outFile << std::endl;
   std::cout << ">>> eDpbMonitor: Real time " << rtime << " s, CPU time "
-	    << ctime << " s" << std::endl;
+            << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

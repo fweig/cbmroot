@@ -3,8 +3,8 @@
 
 #include "FairTask.h"
 
-#include <map>
 #include <list>
+#include <map>
 //#include <vector>
 #include "CbmTrdDigi.h"
 
@@ -24,16 +24,14 @@ class TProfile;
 class TProfile2D;
 class TCanvas;
 
-typedef struct Pad
-{
+typedef struct Pad {
   Double_t SizeX;
   Double_t SizeY;
   Bool_t Fired;
-Pad() : SizeX(0), SizeY(0), Fired(false) {}
+  Pad() : SizeX(0), SizeY(0), Fired(false) {}
 } Pad;
 
-typedef struct OccupancyModule
-{
+typedef struct OccupancyModule {
   Int_t Station;
   Int_t Layer;
   Int_t moduleAddress;
@@ -57,26 +55,39 @@ typedef struct OccupancyModule
   Float_t ModulePositionY;
   Float_t ModulePositionZ;
 
-  OccupancyModule () : Station(-1), Layer(-1), moduleAddress(-1), //PadPlane(), 
-    nPad(0),
-    nxPad(0), nyPad(0),
-		       /* NoSectors(0), SectorSizeX(), SectorSizeY(), PadSizeX(), 
+  OccupancyModule()
+    : Station(-1)
+    , Layer(-1)
+    , moduleAddress(-1)
+    ,  //PadPlane(),
+    nPad(0)
+    , nxPad(0)
+    , nyPad(0)
+    ,
+    /* NoSectors(0), SectorSizeX(), SectorSizeY(), PadSizeX(), 
 			  PadSizeY(), SecxPad(), SecyPad(), */
-    ModuleSizeX(0.), ModuleSizeY(0.), 
-    ModulePositionX(0.), ModulePositionY(0.), ModulePositionZ() {}
+    ModuleSizeX(0.)
+    , ModuleSizeY(0.)
+    , ModulePositionX(0.)
+    , ModulePositionY(0.)
+    , ModulePositionZ() {}
 } OccupancyModule;
 
 class CbmTrdOccupancyQa : public FairTask {
 
- public:
+public:
   CbmTrdOccupancyQa();
   //CbmTrdOccupancyQa(const char *name, const char *title="CBM Task", const char *geo="");
-  CbmTrdOccupancyQa(const char *name, const char *title="CBM Task", const char *geo="", Double_t triggerThreshold = 1.0e-6, Bool_t plotMergedResults=false);
+  CbmTrdOccupancyQa(const char* name,
+                    const char* title         = "CBM Task",
+                    const char* geo           = "",
+                    Double_t triggerThreshold = 1.0e-6,
+                    Bool_t plotMergedResults  = false);
   virtual ~CbmTrdOccupancyQa();
   virtual InitStatus ReInit();
   virtual InitStatus Init();
   virtual void SetParContainers();
-  virtual void Exec(Option_t * option);
+  virtual void Exec(Option_t* option);
   virtual void FinishEvent();
   virtual void FinishTask();
   void Register();
@@ -87,33 +98,33 @@ class CbmTrdOccupancyQa : public FairTask {
   void SetNeighbourReadout(Bool_t neighbourReadout);
   void SetTriggerThreshold(Double_t triggerthreshold);
   void SetNeighbourTrigger(Bool_t trigger);
- private:
+
+private:
   CbmTrdOccupancyQa& operator=(const CbmTrdOccupancyQa&);
   CbmTrdOccupancyQa(const CbmTrdOccupancyQa&);
-  TClonesArray*     fClusters; 
-  CbmTrdParSetDigi  *fDigiPar;    //!
-  CbmTrdParSetGeo  *fGeoPar;    //!
-  CbmTrdGeoHandler* fGeoHandler; //!
-  TH1I *fDigiChargeSpectrum;
-  TH2I *fLayerDummy;
+  TClonesArray* fClusters;
+  CbmTrdParSetDigi* fDigiPar;     //!
+  CbmTrdParSetGeo* fGeoPar;       //!
+  CbmTrdGeoHandler* fGeoHandler;  //!
+  TH1I* fDigiChargeSpectrum;
+  TH2I* fLayerDummy;
   Double_t fmin;
   Double_t fmax;
-  std::map<Int_t, OccupancyModule*> fModuleMap; //!
-  std::map<Int_t, OccupancyModule*>::iterator fModuleMapIt; //!  
-  std::map<Int_t, TH2I*> fModuleOccupancyMap; //!
-  std::map<Int_t, TH2I*>::iterator fModuleOccupancyMapIt; //!
-  std::map<Int_t, TH1F*> fModuleOccupancyMemoryMap; //!
-  std::map<Int_t, TH1F*>::iterator fModuleOccupancyMemoryMapIt; //!
-  std::map<Int_t, TCanvas*> fLayerOccupancyMap; //!
-  std::map<Int_t, TCanvas*>::iterator fLayerOccupancyMapIt; //!
-  std::map<Int_t, TProfile*> fLayerAverageOccupancyMap; //!
-  std::map<Int_t, TProfile*>::iterator fLayerAverageOccupancyMapIt; //!
+  std::map<Int_t, OccupancyModule*> fModuleMap;                      //!
+  std::map<Int_t, OccupancyModule*>::iterator fModuleMapIt;          //!
+  std::map<Int_t, TH2I*> fModuleOccupancyMap;                        //!
+  std::map<Int_t, TH2I*>::iterator fModuleOccupancyMapIt;            //!
+  std::map<Int_t, TH1F*> fModuleOccupancyMemoryMap;                  //!
+  std::map<Int_t, TH1F*>::iterator fModuleOccupancyMemoryMapIt;      //!
+  std::map<Int_t, TCanvas*> fLayerOccupancyMap;                      //!
+  std::map<Int_t, TCanvas*>::iterator fLayerOccupancyMapIt;          //!
+  std::map<Int_t, TProfile*> fLayerAverageOccupancyMap;              //!
+  std::map<Int_t, TProfile*>::iterator fLayerAverageOccupancyMapIt;  //!
   Double_t fTriggerThreshold;
   Bool_t fNeigbourReadout;
   Bool_t fPlotMergedResults;
   TString fGeo;
 
-  ClassDef(CbmTrdOccupancyQa,4)
-
-    };
-#endif // 
+  ClassDef(CbmTrdOccupancyQa, 4)
+};
+#endif  //

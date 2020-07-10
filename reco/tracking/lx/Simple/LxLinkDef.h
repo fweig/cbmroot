@@ -5,12 +5,12 @@
 #pragma link off all globals;
 #pragma link off all classes;
 #pragma link off all functions;
- 
-#pragma link C++ class  LxFinder+;
-#pragma link C++ class  LxTrackAna+;
+
+#pragma link C++ class LxFinder + ;
+#pragma link C++ class LxTrackAna + ;
 
 #ifdef LXPARALL
-#pragma link C++ class  LxParallFinder+;
+#pragma link C++ class LxParallFinder + ;
 #endif
 
 #endif

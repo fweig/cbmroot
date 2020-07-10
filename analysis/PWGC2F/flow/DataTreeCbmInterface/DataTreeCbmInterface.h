@@ -4,22 +4,22 @@
 #include "CbmKFPartEfficiencies.h"
 #include "CbmKFParticleFinder.h"
 
-#include "FairTask.h"
 #include "CbmVertex.h"
-#include <vector>
+#include "FairTask.h"
 #include "TLorentzVector.h"
-#include <map>
 #include <cstring>
+#include <map>
+#include <vector>
 
-#include <TGeoManager.h>
-#include "TGraphErrors.h"
-#include <iostream>
-#include "TClonesArray.h"
-#include "TProfile.h"
-#include "TH2F.h"
-#include "TCanvas.h"
-#include "TFile.h"
 #include "FairMCEventHeader.h"
+#include "TCanvas.h"
+#include "TClonesArray.h"
+#include "TFile.h"
+#include "TGraphErrors.h"
+#include "TH2F.h"
+#include "TProfile.h"
+#include <TGeoManager.h>
+#include <iostream>
 
 #include "CbmKFVertex.h"
 #include "CbmTrackMatch.h"
@@ -34,11 +34,9 @@ class TH2F;
 class CbmDigiManager;
 
 
-class DataTreeCbmInterface : public FairTask
-{
+class DataTreeCbmInterface : public FairTask {
 
 public:
-
   DataTreeCbmInterface();
   ~DataTreeCbmInterface();
 
@@ -48,13 +46,16 @@ public:
 
   void SetOutputFile(const TString filename) { fOutputFileName = filename; }
 
-  void LoadGeo(const TString &geoFile);
+  void LoadGeo(const TString& geoFile);
 
-  void SetKFParticleFinderTOF(const CbmKFParticleFinder* finder) { fFinderTOF = finder; }
-  void SetKFParticleFinderMC(const CbmKFParticleFinder* finder) { fFinderMC = finder; }
+  void SetKFParticleFinderTOF(const CbmKFParticleFinder* finder) {
+    fFinderTOF = finder;
+  }
+  void SetKFParticleFinderMC(const CbmKFParticleFinder* finder) {
+    fFinderMC = finder;
+  }
 
 private:
-
   void InitInput();
   void InitOutput();
   void InitOutputTree();
@@ -81,23 +82,23 @@ private:
   TClonesArray* flistMCtrack {nullptr};
   TClonesArray* flistSTSRECOtrack {nullptr};
   TClonesArray* flistSTStrackMATCH {nullptr};
-  TClonesArray *fGlobalTrackArray {nullptr};
-  TClonesArray *fTofHitArray {nullptr};
-  TClonesArray *fTofHitMatchArray {nullptr};
-  TClonesArray *fPsdPointArray {nullptr};
+  TClonesArray* fGlobalTrackArray {nullptr};
+  TClonesArray* fTofHitArray {nullptr};
+  TClonesArray* fTofHitMatchArray {nullptr};
+  TClonesArray* fPsdPointArray {nullptr};
 
   DataTreeEvent* fDTEvent {nullptr};
 
-  int fPsdModules{0};
+  int fPsdModules {0};
   TVector3 fPsdPosition;
-  std::map <int, TVector3 > fPsdModulePositions;
+  std::map<int, TVector3> fPsdModulePositions;
 
 
   std::vector<int> fMCTrackIDs;
   std::vector<int> fTrackIDs;
 
-  const CbmKFParticleFinder* fFinderTOF{nullptr};
-  const CbmKFParticleFinder* fFinderMC{nullptr};
+  const CbmKFParticleFinder* fFinderTOF {nullptr};
+  const CbmKFParticleFinder* fFinderMC {nullptr};
 
   ClassDef(DataTreeCbmInterface, 1)
 };

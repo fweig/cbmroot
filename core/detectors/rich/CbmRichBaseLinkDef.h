@@ -4,8 +4,7 @@
 #pragma link off all classes;
 #pragma link off all functions;
 
-#pragma link C++ class CbmRichPmt+;
+#pragma link C++ class CbmRichPmt + ;
 #pragma link C++ class CbmRichEventDisplay;
 
 #endif
-

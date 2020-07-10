@@ -17,58 +17,61 @@
 //
 // --------------------------------------------------------------------------
 
-TString caveGeom="";
-TString pipeGeom="";
-TString magnetGeom="";
-TString mvdGeom="";
-TString stsGeom="";
-TString richGeom="";
-TString muchGeom="";
-TString shieldGeom="";
-TString trdGeom="";
-TString tofGeom="";
-TString ecalGeom="";
-TString platformGeom="";
-TString psdGeom="";
-Double_t psdZpos=0.;
-Double_t psdXpos=0.;
+TString caveGeom     = "";
+TString pipeGeom     = "";
+TString magnetGeom   = "";
+TString mvdGeom      = "";
+TString stsGeom      = "";
+TString richGeom     = "";
+TString muchGeom     = "";
+TString shieldGeom   = "";
+TString trdGeom      = "";
+TString tofGeom      = "";
+TString ecalGeom     = "";
+TString platformGeom = "";
+TString psdGeom      = "";
+Double_t psdZpos     = 0.;
+Double_t psdXpos     = 0.;
 
-TString mvdTag="";
-TString stsTag="";
-TString trdTag="";
-TString tofTag="";
+TString mvdTag = "";
+TString stsTag = "";
+TString trdTag = "";
+TString tofTag = "";
 
-TString stsDigi="";
-TString muchDigi="";
-TString trdDigi="trd_v15a_3e.digi.par";
-TString tofDigi="";
-TString tofDigiBdf="";
+TString stsDigi    = "";
+TString muchDigi   = "";
+TString trdDigi    = "trd_v15a_3e.digi.par";
+TString tofDigi    = "";
+TString tofDigiBdf = "";
 
-TString mvdMatBudget="";
-TString stsMatBudget="";
+TString mvdMatBudget = "";
+TString stsMatBudget = "";
 
-TString  fieldMap="";
-Double_t fieldZ=0.;
-Double_t fieldScale=0.;
-Int_t    fieldSymType=0;
+TString fieldMap    = "";
+Double_t fieldZ     = 0.;
+Double_t fieldScale = 0.;
+Int_t fieldSymType  = 0;
 
-TString defaultInputFile="";
+TString defaultInputFile = "";
 
 #include "../include/rootalias.C"
 
 
-void run_reco_occupancy(Int_t nEvents = 1000, const char* setup = "sis100_electron",
-	      const char* rawfile="")
-{
+void run_reco_occupancy(Int_t nEvents       = 1000,
+                        const char* setup   = "sis100_electron",
+                        const char* rawfile = "") {
 
   // ========================================================================
   // geometry selection for sim + reco  by Cyrano
   // ========================================================================
   std::ifstream whichTrdGeo;
-  whichTrdGeo.open("whichTrdGeo",std::ios::in);
+  whichTrdGeo.open("whichTrdGeo", std::ios::in);
   TString digipar;
   if (whichTrdGeo) whichTrdGeo >> digipar;
-  std::cout << "selected geometry : >> " << digipar << " << (to select a different geometry, edit macro/trd/whichTrdGeo file)" << std::endl;
+  std::cout
+    << "selected geometry : >> " << digipar
+    << " << (to select a different geometry, edit macro/trd/whichTrdGeo file)"
+    << std::endl;
   whichTrdGeo.close();
   if (digipar.Length() == 0) digipar = "trd_standard";
 
@@ -76,22 +79,24 @@ void run_reco_occupancy(Int_t nEvents = 1000, const char* setup = "sis100_electr
   //          Adjust this part according to your requirements
 
   // Verbosity level (0=quiet, 1=event level, 2=track level, 3=debug)
-  Int_t iVerbose = 0;
+  Int_t iVerbose     = 0;
   FairLogger* logger = FairLogger::GetLogger();
   logger->SetLogScreenLevel("INFO");
   logger->SetLogVerbosityLevel("LOW");
 
-  TString outDir  = "/gluster2/cbm/sim/data/";
+  TString outDir = "/gluster2/cbm/sim/data/";
   //TString outDir  = "/opt/CBM/Daten/";
-  TRegexp Nr ("[.][0-9][0-9][0-9][0-9][0-9][.]");
+  TRegexp Nr("[.][0-9][0-9][0-9][0-9][0-9][.]");
   TString inFile  = outDir + setup + TString(rawfile)(Nr) + "_test.raw.root";
   TString parFile = outDir + setup + TString(rawfile)(Nr) + "_params.root";
-  TString outFile = outDir + setup + TString(rawfile)(Nr) + "_test.eds.root";      // Output file
-  TString geoFile = outDir + setup + TString(rawfile)(Nr) + "_geofile_full.root";
+  TString outFile =
+    outDir + setup + TString(rawfile)(Nr) + "_test.eds.root";  // Output file
+  TString geoFile =
+    outDir + setup + TString(rawfile)(Nr) + "_geofile_full.root";
 
 
   // Function needed for CTest runtime dependency
-  TString depFile = Remove_CTest_Dependency_File(outDir, "run_reco" , setup);
+  TString depFile = Remove_CTest_Dependency_File(outDir, "run_reco", setup);
 
   //  Digitisation files.
   // Add TObjectString containing the different file names to
@@ -99,13 +104,13 @@ void run_reco_occupancy(Int_t nEvents = 1000, const char* setup = "sis100_electr
   // The FairParAsciiFileIo will take care to create on the fly
   // a concatenated input parameter file which is then used during
   // the reconstruction.
-  TList *parFileList = new TList();
+  TList* parFileList = new TList();
 
-  TString inDir = gSystem->Getenv("VMCWORKDIR");
+  TString inDir    = gSystem->Getenv("VMCWORKDIR");
   TString paramDir = inDir + "/parameters/";
 
-  TString setupFile = inDir + "/geometry/setup/setup_" + setup + ".C";
-  TString setupFunct = TString("setup_")+setup;
+  TString setupFile  = inDir + "/geometry/setup/setup_" + setup + ".C";
+  TString setupFunct = TString("setup_") + setup;
   setupFunct += "()";
 
   gROOT->LoadMacro(setupFile);
@@ -121,7 +126,7 @@ void run_reco_occupancy(Int_t nEvents = 1000, const char* setup = "sis100_electr
   parFileList->Add(&trdDigiFile);
   std::cout << "macro/run/run_reco.C using: " << trdDigi << std::endl;
 
-/*
+  /*
   TObjString tofDigiFile(paramDir + tofDigi);
   parFileList->Add(&tofDigiFile);
   std::cout << "macro/run/run_reco.C using: " << tofDigi << std::endl;
@@ -146,8 +151,8 @@ void run_reco_occupancy(Int_t nEvents = 1000, const char* setup = "sis100_electr
   // ------------------------------------------------------------------------
 
   // -----   Reconstruction run   -------------------------------------------
-  FairRunAna *run = new FairRunAna();
-  FairSource *inputFile = new FairFileSource(inFile);
+  FairRunAna* run       = new FairRunAna();
+  FairSource* inputFile = new FairFileSource(inFile);
   run->SetSource(inputFile);
   //run->SetInputFile(inFile);
   run->SetGeomFile(geoFile);
@@ -155,14 +160,12 @@ void run_reco_occupancy(Int_t nEvents = 1000, const char* setup = "sis100_electr
 
   run->SetGenerateRunInfo(kTRUE);
   Bool_t hasFairMonitor = Has_Fair_Monitor();
-  if (hasFairMonitor) {
-    FairMonitor::GetMonitor()->EnableMonitor(kTRUE);
-  }
+  if (hasFairMonitor) { FairMonitor::GetMonitor()->EnableMonitor(kTRUE); }
 
   // ------------------------------------------------------------------------
 
   // ----- Mc Data Manager   ------------------------------------------------
-  CbmMCDataManager* mcManager=new CbmMCDataManager("MCManager", 1);
+  CbmMCDataManager* mcManager = new CbmMCDataManager("MCManager", 1);
   mcManager->AddFile(inFile);
   run->AddTask(mcManager);
   // ------------------------------------------------------------------------
@@ -172,7 +175,7 @@ void run_reco_occupancy(Int_t nEvents = 1000, const char* setup = "sis100_electr
   // ===             Detector Response Simulation (Digitiser)              ===
   // ===                          (where available)                        ===
   // =========================================================================
-/*
+  /*
 
 
   // -----   MVD Digitiser   -------------------------------------------------
@@ -186,7 +189,7 @@ void run_reco_occupancy(Int_t nEvents = 1000, const char* setup = "sis100_electr
   // -------------------------------------------------------------------------
 
 */
-/*
+  /*
 
   // -----   STS digitizer   -------------------------------------------------
   // -----   The parameters of the STS digitizer are set such as to match
@@ -213,7 +216,7 @@ void run_reco_occupancy(Int_t nEvents = 1000, const char* setup = "sis100_electr
   run->AddTask(stsDigitize);
   // -------------------------------------------------------------------------
 */
-/*
+  /*
 
   // -----   TOF digitizer   -------------------------------------------------
   CbmTofDigitizerBDF* tofDigitizerBdf = new CbmTofDigitizerBDF("TOF Digitizer BDF", 0);
@@ -226,7 +229,7 @@ void run_reco_occupancy(Int_t nEvents = 1000, const char* setup = "sis100_electr
 */
 
 
-/*
+  /*
 
   // =========================================================================
   // ===                     MVD local reconstruction                      ===
@@ -243,9 +246,7 @@ void run_reco_occupancy(Int_t nEvents = 1000, const char* setup = "sis100_electr
 */
 
 
-
-
-/*
+  /*
   // =========================================================================
   // ===                      STS local reconstruction                     ===
   // =========================================================================
@@ -302,22 +303,20 @@ void run_reco_occupancy(Int_t nEvents = 1000, const char* setup = "sis100_electr
 */
 
 
-
-
   // =========================================================================
   // ===                     TRD local reconstruction                      ===
   // =========================================================================
 
-  Bool_t  simpleTR  = kTRUE;  // use fast and simple version for TR production
-  CbmTrdRadiator *radiator = new CbmTrdRadiator(simpleTR,"K++");
+  Bool_t simpleTR = kTRUE;  // use fast and simple version for TR production
+  CbmTrdRadiator* radiator = new CbmTrdRadiator(simpleTR, "K++");
   //"K++" : micro structured POKALON
   //"H++" : PE foam foils
   //"G30" : ALICE fibers 30 layers
 
-  Bool_t triangularPads = false;// Bucharest triangular pad-plane layout
-  Double_t triggerThreshold = 0.5e-6;//SIS100
+  Bool_t triangularPads     = false;   // Bucharest triangular pad-plane layout
+  Double_t triggerThreshold = 0.5e-6;  //SIS100
   //Double_t triggerThreshold = 1.0e-6;//SIS300
-  Double_t trdNoiseSigma_keV = 0.1; //default best matching to test beam PRF
+  Double_t trdNoiseSigma_keV = 0.1;  //default best matching to test beam PRF
 
   CbmTrdDigitizerPRF* trdDigiPrf = new CbmTrdDigitizerPRF(radiator);
   trdDigiPrf->SetTriangularPads(triangularPads);
@@ -336,7 +335,8 @@ void run_reco_occupancy(Int_t nEvents = 1000, const char* setup = "sis100_electr
   trdHit->SetTriangularPads(triangularPads);
   run->AddTask(trdHit);
 
-  CbmTrdOccupancyQa* trdOccupancy = new CbmTrdOccupancyQa("TRD Occupancy", "TRD task", digipar);
+  CbmTrdOccupancyQa* trdOccupancy =
+    new CbmTrdOccupancyQa("TRD Occupancy", "TRD task", digipar);
   run->AddTask(trdOccupancy);
 
 
@@ -344,7 +344,7 @@ void run_reco_occupancy(Int_t nEvents = 1000, const char* setup = "sis100_electr
   // ===                 End of TRD local reconstruction                   ===
   // =========================================================================
 
-/*
+  /*
 
   // =========================================================================
   // ===                     TOF local reconstruction                      ===
@@ -366,23 +366,27 @@ void run_reco_occupancy(Int_t nEvents = 1000, const char* setup = "sis100_electr
 
   if (muchGeom.Length() != 0)  // if RICH is defined
   {
-   TString muchDigiFile(paramDir + muchDigi);
-   std::cout << "MuchDigiFile: " << muchDigiFile << std::endl;
+    TString muchDigiFile(paramDir + muchDigi);
+    std::cout << "MuchDigiFile: " << muchDigiFile << std::endl;
 
-   // ----- MUCH hits----------   --------4--------------------------------------
-   CbmMuchDigitizeGem* muchDigitize = new CbmMuchDigitizeGem(muchDigiFile.Data());
-   run->AddTask(muchDigitize);
-   CbmMuchDigitizeStraws* strawDigitize = new CbmMuchDigitizeStraws(muchDigiFile.Data());
-   run->AddTask(strawDigitize);
+    // ----- MUCH hits----------   --------4--------------------------------------
+    CbmMuchDigitizeGem* muchDigitize =
+      new CbmMuchDigitizeGem(muchDigiFile.Data());
+    run->AddTask(muchDigitize);
+    CbmMuchDigitizeStraws* strawDigitize =
+      new CbmMuchDigitizeStraws(muchDigiFile.Data());
+    run->AddTask(strawDigitize);
 
-   CbmMuchFindHitsGem* muchFindHits = new CbmMuchFindHitsGem(muchDigiFile.Data());
-   run->AddTask(muchFindHits);
-   CbmMuchFindHitsStraws* strawFindHits = new CbmMuchFindHitsStraws(muchDigiFile.Data());
-   run->AddTask(strawFindHits);
-   // --------------------------------------------------------------------------
+    CbmMuchFindHitsGem* muchFindHits =
+      new CbmMuchFindHitsGem(muchDigiFile.Data());
+    run->AddTask(muchFindHits);
+    CbmMuchFindHitsStraws* strawFindHits =
+      new CbmMuchFindHitsStraws(muchDigiFile.Data());
+    run->AddTask(strawFindHits);
+    // --------------------------------------------------------------------------
   }
 
-/*
+  /*
 
   // =========================================================================
   // ===                        Global tracking                            ===
@@ -412,7 +416,7 @@ void run_reco_occupancy(Int_t nEvents = 1000, const char* setup = "sis100_electr
   // =========================================================================
 */
 
-/*
+  /*
 
   // ----------- TRD track Pid Wkn ----------------------
   CbmTrdSetTracksPidWkn* trdSetTracksPidTask = new CbmTrdSetTracksPidWkn(
@@ -435,7 +439,7 @@ void run_reco_occupancy(Int_t nEvents = 1000, const char* setup = "sis100_electr
   // ----------------------------------------------------
 
 */
-/*
+  /*
   // =========================================================================
   // ===                        RICH reconstruction                        ===
   // =========================================================================
@@ -455,7 +459,7 @@ void run_reco_occupancy(Int_t nEvents = 1000, const char* setup = "sis100_electr
   // =========================================================================
 
 
-/*
+  /*
   // =========================================================================
   // ===                        ECAL reconstruction                        ===
   // =========================================================================
@@ -480,8 +484,8 @@ void run_reco_occupancy(Int_t nEvents = 1000, const char* setup = "sis100_electr
   // =========================================================================
 
   // -----  Parameter database   --------------------------------------------
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
-  FairParRootFileIo* parIo1 = new FairParRootFileIo();
+  FairRuntimeDb* rtdb        = run->GetRuntimeDb();
+  FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
   parIo1->open(parFile.Data());
   parIo2->open(parFileList, "in");
@@ -506,7 +510,8 @@ void run_reco_occupancy(Int_t nEvents = 1000, const char* setup = "sis100_electr
   std::cout << "Macro finished succesfully." << std::endl;
   std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
+            << std::endl;
   std::cout << std::endl;
   // ------------------------------------------------------------------------
 
@@ -514,12 +519,12 @@ void run_reco_occupancy(Int_t nEvents = 1000, const char* setup = "sis100_electr
     // Extract the maximal used memory an add is as Dart measurement
     // This line is filtered by CTest and the value send to CDash
     FairSystemInfo sysInfo;
-    Float_t maxMemory=sysInfo.GetMaxMemory();
+    Float_t maxMemory = sysInfo.GetMaxMemory();
     std::cout << "<DartMeasurement name=\"MaxMemory\" type=\"numeric/double\">";
     std::cout << maxMemory;
     std::cout << "</DartMeasurement>" << std::endl;
 
-    Float_t cpuUsage=ctime/rtime;
+    Float_t cpuUsage = ctime / rtime;
     std::cout << "<DartMeasurement name=\"CpuLoad\" type=\"numeric/double\">";
     std::cout << cpuUsage;
     std::cout << "</DartMeasurement>" << std::endl;

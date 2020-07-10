@@ -3,27 +3,26 @@
 
 #pragma GCC diagnostic ignored "-Weffc++"
 
-#include "FairTask.h"
-#include "TClonesArray.h"
 #include "CbmMuchPixelHit.h"
+#include "FairTask.h"
 #include "LxSettings.h"
+#include "LxTrackAnaSegments.h"
+#include "TClonesArray.h"
 #include <list>
 #include <vector>
-#include "LxTrackAnaSegments.h"
 
-struct LxSimplePoint
-{
+struct LxSimplePoint {
   Double_t x;
   Double_t y;
   Double_t z;
   Double_t tx;
   Double_t ty;
   LxSimplePoint() : x(0), y(0), z(0), tx(0), ty(0) {}
-  LxSimplePoint(Double_t X, Double_t Y, Double_t Z, Double_t Tx, Double_t Ty) : x(X), y(Y), z(Z), tx(Tx), ty(Ty) {}
+  LxSimplePoint(Double_t X, Double_t Y, Double_t Z, Double_t Tx, Double_t Ty)
+    : x(X), y(Y), z(Z), tx(Tx), ty(Ty) {}
 };
 
-struct LxSimpleTrack
-{
+struct LxSimpleTrack {
   Int_t pdgCode;
   Int_t motherId;
   Double_t p;
@@ -33,26 +32,46 @@ struct LxSimpleTrack
   Double_t pz;
   Double_t e;
   Double_t charge;
-  LxSimpleTrack(Int_t pdgc, Int_t mid, Double_t P, Double_t Pt, Double_t Px, Double_t Py, Double_t Pz, Double_t E) : pdgCode(pdgc),
-      motherId(mid), p(P), pt(Pt), px(Px), py(Py), pz(Pz), e(E), charge(0), linkedMuchTrack(0, 0), linkedStsTrack(0), parent(0) {}
+  LxSimpleTrack(Int_t pdgc,
+                Int_t mid,
+                Double_t P,
+                Double_t Pt,
+                Double_t Px,
+                Double_t Py,
+                Double_t Pz,
+                Double_t E)
+    : pdgCode(pdgc)
+    , motherId(mid)
+    , p(P)
+    , pt(Pt)
+    , px(Px)
+    , py(Py)
+    , pz(Pz)
+    , e(E)
+    , charge(0)
+    , linkedMuchTrack(0, 0)
+    , linkedStsTrack(0)
+    , parent(0) {}
   std::list<LxSimplePoint> stsPoints[LXSTSSTATIONS];
   std::list<LxSimplePoint> muchPoints[LXSTATIONS][LXLAYERS];
-  std::list<LxSimplePoint> muchMCPts[LXSTATIONS][LXLAYERS];// These array is used for storing MUCH MC points when the 'main' array contains hits.
+  std::list<LxSimplePoint> muchMCPts
+    [LXSTATIONS]
+    [LXLAYERS];  // These array is used for storing MUCH MC points when the 'main' array contains hits.
   std::pair<LxSimpleTrack*, Double_t> linkedMuchTrack;
-  std::list<std::pair<LxSimpleTrack*, Double_t> > linkedStsTracks;// The front() contains STS track with the minimal chi2.
+  std::list<std::pair<LxSimpleTrack*, Double_t>>
+    linkedStsTracks;  // The front() contains STS track with the minimal chi2.
   LxSimpleTrack* linkedStsTrack;
   LxSimpleTrack* parent;
   void RebindMuchTrack();
 };
 
-class LxTrackAnaTriplet : public FairTask
-{
+class LxTrackAnaTriplet : public FairTask {
 public:
   LxTrackAnaTriplet();
   ~LxTrackAnaTriplet();
-  InitStatus Init();// Inherited virtual.
-  void Exec(Option_t* opt);// Inherited virtual.
-  void FinishTask();// Inherited virtual.
+  InitStatus Init();         // Inherited virtual.
+  void Exec(Option_t* opt);  // Inherited virtual.
+  void FinishTask();         // Inherited virtual.
   bool GetUseHitsInStat() const { return useHitsInStat; }
   void SetUseHitsInStat(bool v) { useHitsInStat = v; }
   bool GetAveragePoints() const { return averagePoints; }
@@ -75,23 +94,22 @@ public:
   void SetCropHits(bool v) { cropHits = v; }
   bool GetBuildSegmentsStat() const { return buildSegmentsStat; }
   void SetBuildSegmentsStat(bool v) { buildSegmentsStat = v; }
-  void SetParticleType(TString v)
-  {
+  void SetParticleType(TString v) {
     particleType = v;
     segmentsAnalyzer.SetParticleType(v);
   }
-  void SetUseBgr(bool v)
-  {
-    segmentsAnalyzer.SetUseBgr(v);
-  }
+  void SetUseBgr(bool v) { segmentsAnalyzer.SetUseBgr(v); }
 
 private:
   void Clean();
   void AveragePoints();
   void BuildStatistics();
   void Connect(bool useCuts);
-  void Connect(LxSimpleTrack* muchTrack, LxSimplePoint muchPt0, Double_t txMuch, Double_t tyMuch,
-      bool useCuts);
+  void Connect(LxSimpleTrack* muchTrack,
+               LxSimplePoint muchPt0,
+               Double_t txMuch,
+               Double_t tyMuch,
+               bool useCuts);
 
   TClonesArray* listMCTracks;
   TClonesArray* listStsPts;
@@ -123,4 +141,4 @@ private:
   ClassDef(LxTrackAnaTriplet, 1);
 };
 
-#endif//LXTRACKANA_INCLUDED
+#endif  //LXTRACKANA_INCLUDED

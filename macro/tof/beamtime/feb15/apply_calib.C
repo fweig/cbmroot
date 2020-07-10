@@ -5,58 +5,59 @@
 // -----                                                                   -----
 // -----------------------------------------------------------------------------
 
-void apply_calib(Long64_t nEvents = 100000000, TString cFileId = "CernSps05Mar0041")
-{
+void apply_calib(Long64_t nEvents = 100000000,
+                 TString cFileId  = "CernSps05Mar0041") {
   TStopwatch timer;
   timer.Start();
 
   FairLogger::GetLogger();
 
-//  gLogger->SetLogScreenLevel("FATAL");
+  //  gLogger->SetLogScreenLevel("FATAL");
   gLogger->SetLogScreenLevel("ERROR");
-//  gLogger->SetLogScreenLevel("WARNING");
-//  gLogger->SetLogScreenLevel("INFO");
-//  gLogger->SetLogScreenLevel("DEBUG");
-//  gLogger->SetLogScreenLevel("DEBUG1");
-//  gLogger->SetLogScreenLevel("DEBUG2");
-//  gLogger->SetLogScreenLevel("DEBUG3");
+  //  gLogger->SetLogScreenLevel("WARNING");
+  //  gLogger->SetLogScreenLevel("INFO");
+  //  gLogger->SetLogScreenLevel("DEBUG");
+  //  gLogger->SetLogScreenLevel("DEBUG1");
+  //  gLogger->SetLogScreenLevel("DEBUG2");
+  //  gLogger->SetLogScreenLevel("DEBUG3");
 
-//  gLogger->SetLogVerbosityLevel("LOW");
+  //  gLogger->SetLogVerbosityLevel("LOW");
   gLogger->SetLogVerbosityLevel("MEDIUM");
-//  gLogger->SetLogVerbosityLevel("HIGH");
+  //  gLogger->SetLogVerbosityLevel("HIGH");
 
-  TString srcDir = gSystem->Getenv("VMCWORKDIR");
+  TString srcDir   = gSystem->Getenv("VMCWORKDIR");
   TString paramDir = srcDir + "/macro/tof/beamtime/feb15";
 
   TObjString unpParFile = (paramDir + "/parUnpack_basic.txt").Data();
   TObjString calParFile = (paramDir + "/parCalib_basic.txt").Data();
   TObjString mapParFile = (paramDir + "/parMapCernFeb2015.txt").Data();
 
-  TList *parFileList = new TList();
+  TList* parFileList = new TList();
   parFileList->Add(&unpParFile);
   parFileList->Add(&calParFile);
   parFileList->Add(&mapParFile);
 
   FairRunOnline* run = new FairRunOnline();
-//  run->SetAutoFinish(kFALSE);
+  //  run->SetAutoFinish(kFALSE);
 
   FairRuntimeDb* rtdb = run->GetRuntimeDb();
-  
+
   FairParAsciiFileIo* parIo1 = new FairParAsciiFileIo();
   parIo1->open(parFileList, "in");
   rtdb->setFirstInput(parIo1);
 
-  TString cOutfileId = Form("%s",cFileId.Data());
+  TString cOutfileId = Form("%s", cFileId.Data());
 
   TString outFile = "./unpack_" + cOutfileId + ".out.root";
 
   FairLmdSource* source = new FairLmdSource();
-  source->AddPath("/lustre/nyx/cbm/prod/beamtime/2015/02/cern/data/",Form("%s*.lmd",cFileId.Data()));
+  source->AddPath("/lustre/nyx/cbm/prod/beamtime/2015/02/cern/data/",
+                  Form("%s*.lmd", cFileId.Data()));
 
-  TTrbUnpackTof* tofTrbDataUnpacker = new TTrbUnpackTof(10,1,31,0,0);
+  TTrbUnpackTof* tofTrbDataUnpacker = new TTrbUnpackTof(10, 1, 31, 0, 0);
   tofTrbDataUnpacker->SetInspection(kFALSE);
   tofTrbDataUnpacker->SetSaveRawData(kFALSE);
-  source->AddUnpacker( tofTrbDataUnpacker );
+  source->AddUnpacker(tofTrbDataUnpacker);
 
   TMbsUnpTofMonitor* tofUnpMonitor = new TMbsUnpTofMonitor("Tof Unp Moni");
 
@@ -69,10 +70,10 @@ void apply_calib(Long64_t nEvents = 100000000, TString cFileId = "CernSps05Mar00
   tofCalibTrb->SetMinEntriesLocalFineLimits(10000);
   tofCalibTrb->SetTimeContinuum(kTRUE);
   tofCalibTrb->SetTrailingOffsetCycles(2);
-  tofCalibTrb->SetLowerLinearFineLimit(31);  // feb15
-  tofCalibTrb->SetUpperLinearFineLimit(480); // feb15
-//  tofCalibTrb->SetLowerLinearFineLimit(16);  // nov15
-//  tofCalibTrb->SetUpperLinearFineLimit(490); // nov15
+  tofCalibTrb->SetLowerLinearFineLimit(31);   // feb15
+  tofCalibTrb->SetUpperLinearFineLimit(480);  // feb15
+  //  tofCalibTrb->SetLowerLinearFineLimit(16);  // nov15
+  //  tofCalibTrb->SetUpperLinearFineLimit(490); // nov15
   tofCalibTrb->SetReferenceBoard(0);
   tofCalibTrb->SetToTSingleLeading(-100.);
 
@@ -88,8 +89,8 @@ void apply_calib(Long64_t nEvents = 100000000, TString cFileId = "CernSps05Mar00
   display->MonitorFSMockup(kFALSE);
   display->MonitorInspection(kFALSE);
   display->MonitorCalibration(kFALSE);
-//  display->SetUpdateInterval(10000);
-  display->SetUpdateInterval(100000000); // disables live updates (speed-up)
+  //  display->SetUpdateInterval(10000);
+  display->SetUpdateInterval(100000000);  // disables live updates (speed-up)
 
 
   run->AddTask(tofUnpMonitor);
@@ -120,4 +121,3 @@ void apply_calib(Long64_t nEvents = 100000000, TString cFileId = "CernSps05Mar00
   cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << endl;
   cout << endl;
 }
-

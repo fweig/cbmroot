@@ -15,33 +15,23 @@ using std::cout;
 using std::endl;
 
 
-
 // -----   Constructor   -----------------------------------------------------
-CbmRunAna::CbmRunAna() 
-  : FairRunAna(),
-    fAsync(kFALSE),
-    fMarkFill(kFALSE)
-{
-}
+CbmRunAna::CbmRunAna() : FairRunAna(), fAsync(kFALSE), fMarkFill(kFALSE) {}
 // ---------------------------------------------------------------------------
 
 
-
 // -----   Destructor   ------------------------------------------------------
-CbmRunAna::~CbmRunAna() {
-}
+CbmRunAna::~CbmRunAna() {}
 // ---------------------------------------------------------------------------
 
 
 // -----   Fill output tree   ------------------------------------------------
 void CbmRunAna::Fill() {
 
-        if ( fAsync ) return;
-	fRootManager->Fill();
-
+  if (fAsync) return;
+  fRootManager->Fill();
 }
 // ---------------------------------------------------------------------------
 
 
-    
 ClassImp(CbmRunAna)

@@ -18,16 +18,16 @@ void sts_reco(Int_t nEvents = 1) {
 
   // ========================================================================
   //          Adjust this part according to your requirements
-  
+
   // Input file (MC events)
   TString inFile = "sts.digi.root";
-  
+
   // Parameter file
   TString parFile = "params.root";
-  
+
   // STS digitisation file
   TString digiFile = "sts_v11a.digi.par";
-  
+
   // Output file
   TString outFile = "sts.reco.root";
 
@@ -35,7 +35,7 @@ void sts_reco(Int_t nEvents = 1) {
   Int_t iVerbose = 0;
   // ========================================================================
 
-  // ---   Screen output   --------------------------------------------------  
+  // ---   Screen output   --------------------------------------------------
   cout << "***************************************************" << endl;
   cout << "***   STS REALISTIC RECONSTRUCTION SCRIPT   *******" << endl;
   cout << "***************************************************" << endl;
@@ -46,24 +46,21 @@ void sts_reco(Int_t nEvents = 1) {
   cout << "*** Number of events  : " << nEvents << endl;
   cout << "***************************************************" << endl;
   cout << endl << endl;
- // ------------------------------------------------------------------------
+  // ------------------------------------------------------------------------
 
 
-        
   // ---  ROOT settings   ---------------------------------------------------
-  gStyle->SetPalette(1);  
+  gStyle->SetPalette(1);
   gDebug = 0;
   // ------------------------------------------------------------------------
- 
 
-  
+
   // -----   Timer   --------------------------------------------------------
   TStopwatch timer;
   timer.Start();
   // ------------------------------------------------------------------------
 
-    
-  
+
   // ----  Load libraries   -------------------------------------------------
   gROOT->LoadMacro("$VMCWORKDIR/gconfig/basiclibs.C");
   basiclibs();
@@ -86,18 +83,18 @@ void sts_reco(Int_t nEvents = 1) {
   gSystem->Load("libL1");
   // ------------------------------------------------------------------------
 
-  
 
   // -----   Reconstruction run   -------------------------------------------
-  FairRunAna* run= new FairRunAna();
+  FairRunAna* run = new FairRunAna();
   run->SetInputFile(inFile);
   run->SetOutputFile(outFile);
   // ------------------------------------------------------------------------
 
 
   // ---  STS Cluster Finder  ---------------------------------------------------------------------
- 
-  CbmStsClusterFinder* findClusters = new CbmStsClusterFinder("STSFindClusters", iVerbose);
+
+  CbmStsClusterFinder* findClusters =
+    new CbmStsClusterFinder("STSFindClusters", iVerbose);
   run->AddTask(findClusters);
 
   // ---  STS hit finding   -------------------------------------------------
@@ -106,7 +103,7 @@ void sts_reco(Int_t nEvents = 1) {
   run->AddTask(findHits);
 
   // -----   STS track finding   --------------------------------------------
-/*FairTask* kalman= new CbmKF();
+  /*FairTask* kalman= new CbmKF();
   run->AddTask(kalman);
   FairTask* l1 = new CbmL1();
   run->AddTask(l1);
@@ -128,25 +125,23 @@ void sts_reco(Int_t nEvents = 1) {
   stsDigiFile += "/parameters/sts/";
   stsDigiFile += digiFile;
   cout << "digi file = " << stsDigiFile << endl;
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
-  FairParRootFileIo*  parIo1 = new FairParRootFileIo();
+  FairRuntimeDb* rtdb        = run->GetRuntimeDb();
+  FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
   parIo1->open(parFile.Data());
-  parIo2->open(stsDigiFile.Data(),"in");
+  parIo2->open(stsDigiFile.Data(), "in");
   rtdb->setFirstInput(parIo1);
   rtdb->setSecondInput(parIo2);
   rtdb->setOutput(parIo1);
   rtdb->saveOutput();
   // ------------------------------------------------------------------------
 
-  
-  
+
   // -----   Initialise and run   -------------------------------------------
   run->LoadGeometry();
   run->Init();
   run->Run(0, nEvents);
   // ------------------------------------------------------------------------
-
 
 
   // -----   Finish   -------------------------------------------------------
@@ -157,13 +152,9 @@ void sts_reco(Int_t nEvents = 1) {
   Double_t ctime = timer.CpuTime();
   cout << endl << endl;
   cout << "Macro finished succesfully." << endl;
-  cout << "Output file is "         << outFile << endl;
-  cout << "Parameter file is "      << parFile << endl;
+  cout << "Output file is " << outFile << endl;
+  cout << "Parameter file is " << parFile << endl;
   cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << endl;
   cout << endl;
   // ------------------------------------------------------------------------
-
-
 }
-
-

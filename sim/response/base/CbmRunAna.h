@@ -16,11 +16,9 @@
 #include "FairRunAna.h"
 
 
-class CbmRunAna : public FairRunAna
-{
+class CbmRunAna : public FairRunAna {
 
- public:
-
+public:
   /**   Constructor   **/
   CbmRunAna();
 
@@ -36,10 +34,9 @@ class CbmRunAna : public FairRunAna
   /**   Set asynchronous output mode  **/
   void SetAsync(Bool_t async = kTRUE) { fAsync = async; }
 
- private:
-
-  Bool_t fAsync;       /** Flag for asynchronous output mode **/
-  Bool_t fMarkFill;    /** Flag for filling output tree at end of event **/
+private:
+  Bool_t fAsync;    /** Flag for asynchronous output mode **/
+  Bool_t fMarkFill; /** Flag for filling output tree at end of event **/
 
   /** Fill output tree
    **
@@ -50,8 +47,7 @@ class CbmRunAna : public FairRunAna
   void Fill();
 
 
-  ClassDef(CbmRunAna,3);
-
+  ClassDef(CbmRunAna, 3);
 };
 
 #endif

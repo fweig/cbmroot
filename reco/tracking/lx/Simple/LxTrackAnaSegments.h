@@ -8,8 +8,7 @@
 struct LxSimpleTrack;
 class LxTrackAna;
 
-class LxTrackAnaSegments
-{
+class LxTrackAnaSegments {
 public:
   explicit LxTrackAnaSegments(LxTrackAna& o);
   void Init();
@@ -23,4 +22,4 @@ private:
   Int_t stationsInAlgo;
 };
 
-#endif//LXTRACKANASEGMENTS_INCLUDED
+#endif  //LXTRACKANASEGMENTS_INCLUDED

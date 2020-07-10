@@ -7,43 +7,39 @@ class TClonesArray;
 class TH1F;
 class TH2F;
 
-class CbmTrdHitProducerClusterQa : public FairTask
-{
+class CbmTrdHitProducerClusterQa : public FairTask {
 public:
+  /* Defaul constructor */
+  CbmTrdHitProducerClusterQa();
 
-    /* Defaul constructor */
-    CbmTrdHitProducerClusterQa();
+  /* Standard constructor */
+  CbmTrdHitProducerClusterQa(const char* name, const char* title = "FairTask");
 
-    /* Standard constructor */
-    CbmTrdHitProducerClusterQa(const char* name,
-        		const char* title = "FairTask");
+  /* Destructor */
+  virtual ~CbmTrdHitProducerClusterQa();
 
-    /* Destructor */
-    virtual ~CbmTrdHitProducerClusterQa();
+  /* Initialisation */
+  InitStatus Init();
 
-    /* Initialisation */
-    InitStatus Init();
+  /* Execution */
+  virtual void Exec(Option_t* option);
 
-    /* Execution */
-    virtual void Exec(Option_t* option);
-
-    /* Finish at the end of each event */
-    virtual void Finish();
+  /* Finish at the end of each event */
+  virtual void Finish();
 
 
 private:
+  /* Prepare the QA histograms */
+  void PrepareHistograms();
 
-    /* Prepare the QA histograms */
-    void PrepareHistograms();
 
-
-    /* Write the QA histograms to file*/
+  /* Write the QA histograms to file*/
   void WriteHistograms();
-  
+
   CbmTrdHitProducerClusterQa(const CbmTrdHitProducerClusterQa&);
   CbmTrdHitProducerClusterQa& operator=(const CbmTrdHitProducerClusterQa&);
 
-    ClassDef(CbmTrdHitProducerClusterQa, 1)
+  ClassDef(CbmTrdHitProducerClusterQa, 1)
 };
 
 #endif

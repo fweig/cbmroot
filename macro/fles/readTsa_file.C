@@ -33,7 +33,7 @@ void readTsa_file(TString inFile = "nxdata_syncscale2.tsa")
   gDebug = 0;
 
   std::cout << std::endl;
-  std::cout << ">>> readTsa:  input file is " << inFile  << std::endl;
+  std::cout << ">>> readTsa:  input file is " << inFile << std::endl;
   std::cout << ">>> readTsa: output file is " << outFile << std::endl;
 
   // ========================================================================
@@ -50,7 +50,7 @@ void readTsa_file(TString inFile = "nxdata_syncscale2.tsa")
   //source->SetHostName("cbmflib01");
   source->SetFileName(inFile);
   //source->AddFile(inFile1);
-  source->AddUnpacker( nxyter_unpacker, 0x10 );
+  source->AddUnpacker(nxyter_unpacker, 0x10);
   // source->AddUnpacker(spadic_unpacker, 0x40);
 
   // --- Event header
@@ -58,17 +58,17 @@ void readTsa_file(TString inFile = "nxdata_syncscale2.tsa")
   //  event->SetRunId(260);
 
   // --- Run
-  FairRunOnline *run = new FairRunOnline(source);
+  FairRunOnline* run = new FairRunOnline(source);
   run->SetOutputFile(outFile);
-//  run->SetEventHeader(event);
+  //  run->SetEventHeader(event);
 
-//  gDebug=2;
-//  FairTask* spadicRawBeam = new CbmTrdRawBeamProfile();
-//  run->AddTask(spadicRawBeam);
-//
-//  CbmTrdOnlineDisplay* onlineDisplay = new CbmTrdOnlineDisplay();
-//  onlineDisplay->SetUpdateInterval(1000);
-//  run->AddTask(onlineDisplay);
+  //  gDebug=2;
+  //  FairTask* spadicRawBeam = new CbmTrdRawBeamProfile();
+  //  run->AddTask(spadicRawBeam);
+  //
+  //  CbmTrdOnlineDisplay* onlineDisplay = new CbmTrdOnlineDisplay();
+  //  onlineDisplay->SetUpdateInterval(1000);
+  //  run->AddTask(onlineDisplay);
 
 
   run->Init();
@@ -77,7 +77,7 @@ void readTsa_file(TString inFile = "nxdata_syncscale2.tsa")
   TStopwatch timer;
   timer.Start();
   std::cout << ">>> readTsa: Starting run..." << std::endl;
-  run->Run(nEvents, 0); // run until end of input file
+  run->Run(nEvents, 0);  // run until end of input file
   timer.Stop();
 
   // --- End-of-run info
@@ -86,8 +86,8 @@ void readTsa_file(TString inFile = "nxdata_syncscale2.tsa")
   std::cout << std::endl << std::endl;
   std::cout << ">>> readTsa: Macro finished successfully." << std::endl;
   std::cout << ">>> readTsa: Output file is " << outFile << std::endl;
-  std::cout << ">>> readTsa: Real time " << rtime << " s, CPU time "
-  					<< ctime << " s" << std::endl;
+  std::cout << ">>> readTsa: Real time " << rtime << " s, CPU time " << ctime
+            << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

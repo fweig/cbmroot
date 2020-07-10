@@ -7,75 +7,69 @@
 #include "CbmFindPrimaryVertexEvents.h"
 
 
-#include <cassert>
-#include <iomanip>
-#include <iostream>
-#include "TClonesArray.h"
-#include "FairLogger.h"
-#include "FairRootManager.h"
 #include "CbmEvent.h"
 #include "CbmPrimaryVertexFinder.h"
 #include "CbmVertex.h"
+#include "FairLogger.h"
+#include "FairRootManager.h"
+#include "TClonesArray.h"
+#include <cassert>
+#include <iomanip>
+#include <iostream>
 
 using namespace std;
 
 
 // -----   Default constructor   -------------------------------------------
 CbmFindPrimaryVertexEvents::CbmFindPrimaryVertexEvents()
-  : FairTask(),
-    fTimer(),
-    fFinder(NULL),
-	fEvents(NULL),
-    fTracks(NULL),
-    fPrimVert(NULL),
-	fNofEvents(0),
-	fTimeTot(0.)
-{
-	fName = "FindPrimaryVertex";
+  : FairTask()
+  , fTimer()
+  , fFinder(NULL)
+  , fEvents(NULL)
+  , fTracks(NULL)
+  , fPrimVert(NULL)
+  , fNofEvents(0)
+  , fTimeTot(0.) {
+  fName = "FindPrimaryVertex";
 }
 // -------------------------------------------------------------------------
-
 
 
 // -----   Standard constructor   ------------------------------------------
-CbmFindPrimaryVertexEvents::CbmFindPrimaryVertexEvents(CbmPrimaryVertexFinder* pvFinder)
-  : FairTask(),
-    fTimer(),
-    fFinder(pvFinder),
-	fEvents(NULL),
-    fTracks(NULL),
-    fPrimVert(NULL),
-	fNofEvents(0),
-	fTimeTot(0.)
-{
-	fName = "FindPrimaryVertex";
+CbmFindPrimaryVertexEvents::CbmFindPrimaryVertexEvents(
+  CbmPrimaryVertexFinder* pvFinder)
+  : FairTask()
+  , fTimer()
+  , fFinder(pvFinder)
+  , fEvents(NULL)
+  , fTracks(NULL)
+  , fPrimVert(NULL)
+  , fNofEvents(0)
+  , fTimeTot(0.) {
+  fName = "FindPrimaryVertex";
 }
 // -------------------------------------------------------------------------
-
 
 
 // -----  Constructor with name and title  ---------------------------------
-CbmFindPrimaryVertexEvents::CbmFindPrimaryVertexEvents(const char* name,
-					   const char*, 
-					   CbmPrimaryVertexFinder* finder) 
-  : FairTask(name),
-    fTimer(),
-    fFinder(finder),
-	fEvents(NULL),
-    fTracks(NULL),
-    fPrimVert(NULL),
-	fNofEvents(0),
-	fTimeTot(0.)
-{
-}
+CbmFindPrimaryVertexEvents::CbmFindPrimaryVertexEvents(
+  const char* name,
+  const char*,
+  CbmPrimaryVertexFinder* finder)
+  : FairTask(name)
+  , fTimer()
+  , fFinder(finder)
+  , fEvents(NULL)
+  , fTracks(NULL)
+  , fPrimVert(NULL)
+  , fNofEvents(0)
+  , fTimeTot(0.) {}
 // -------------------------------------------------------------------------
-
 
 
 // -----   Destructor   ----------------------------------------------------
-CbmFindPrimaryVertexEvents::~CbmFindPrimaryVertexEvents() { }
+CbmFindPrimaryVertexEvents::~CbmFindPrimaryVertexEvents() {}
 // -------------------------------------------------------------------------
-
 
 
 // -----   Initialisation  --------------------------------------------------
@@ -97,8 +91,10 @@ InitStatus CbmFindPrimaryVertexEvents::Init() {
 
   // Create and register CbmVertex object
   fPrimVert = new CbmVertex("Primary Vertex", "Global");
-  ioman->Register("PrimaryVertex.", "Global", fPrimVert,
-		          IsOutputBranchPersistent("PrimaryVertex"));
+  ioman->Register("PrimaryVertex.",
+                  "Global",
+                  fPrimVert,
+                  IsOutputBranchPersistent("PrimaryVertex"));
 
 
   // Initialise vertex finder
@@ -107,7 +103,6 @@ InitStatus CbmFindPrimaryVertexEvents::Init() {
   return kSUCCESS;
 }
 // -------------------------------------------------------------------------
-
 
 
 // -----   Task execution   ------------------------------------------------
@@ -119,30 +114,27 @@ void CbmFindPrimaryVertexEvents::Exec(Option_t*) {
              << " events ";
   for (Int_t iEvent = 0; iEvent < nEvents; iEvent++) {
 
-	fTimer.Start();
-    CbmEvent* event = static_cast<CbmEvent*> (fEvents->At(iEvent));
+    fTimer.Start();
+    CbmEvent* event = static_cast<CbmEvent*>(fEvents->At(iEvent));
 
     // --- Call find method of vertex finder
-//    Int_t status = fFinder->FindEventVertex(event, fTracks);
+    //    Int_t status = fFinder->FindEventVertex(event, fTracks);
     fFinder->FindEventVertex(event, fTracks);
 
     // --- Event log
-    LOG(info) << "+ " << setw(20) << GetName() << ": Event " << setw(6)
-    		      << right << event->GetNumber()
-    		      << ", real time " << fixed << setprecision(6)
-	              << fTimer.RealTime() << " s, tracks used: "
-		      << event->GetVertex()->GetNTracks();
+    LOG(info) << "+ " << setw(20) << GetName() << ": Event " << setw(6) << right
+              << event->GetNumber() << ", real time " << fixed
+              << setprecision(6) << fTimer.RealTime()
+              << " s, tracks used: " << event->GetVertex()->GetNTracks();
     LOG(debug) << fPrimVert->ToString();
 
     // --- Counters
     fNofEvents++;
-    fTimeTot        += fTimer.RealTime();
+    fTimeTot += fTimer.RealTime();
 
-  } //# events
-
+  }  //# events
 }
 // -------------------------------------------------------------------------
-
 
 
 // -----   End-of-run action   ---------------------------------------------
@@ -155,10 +147,8 @@ void CbmFindPrimaryVertexEvents::Finish() {
   LOG(info) << "Time per event     : " << fTimeTot / Double_t(fNofEvents)
             << " s ";
   LOG(info) << "=====================================";
-
 }
 // -------------------------------------------------------------------------
-
 
 
 ClassImp(CbmFindPrimaryVertexEvents)

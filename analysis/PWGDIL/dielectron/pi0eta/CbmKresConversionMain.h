@@ -1,61 +1,57 @@
 #ifndef CBM_KRES_CONVERSION_MAIN
 #define CBM_KRES_CONVERSION_MAIN
 
-#include "FairTask.h"
 #include "FairMCEventHeader.h"
+#include "FairTask.h"
 
 #include <TClonesArray.h>
 
 #include "CbmKFParticleFinder.h"
 #include "CbmKFParticleFinderQA.h"
+#include "CbmKresConversionCorrectedPhotons.h"
 #include "CbmKresConversionGeneral.h"
-#include "CbmKresConversionReconstruction.h"
 #include "CbmKresConversionKF.h"
 #include "CbmKresConversionManual.h"
 #include "CbmKresConversionManualmbias1.h"
 #include "CbmKresConversionManualmbias2.h"
 #include "CbmKresConversionManualmbias3.h"
 #include "CbmKresConversionManualmbias4.h"
-#include "CbmKresTemperature.h"
 #include "CbmKresConversionPhotons.h"
-#include "CbmKresConversionCorrectedPhotons.h"
-#include "CbmKresEtaMCAnalysis.h"
+#include "CbmKresConversionReconstruction.h"
 #include "CbmKresEta.h"
+#include "CbmKresEtaMCAnalysis.h"
+#include "CbmKresTemperature.h"
 
 using namespace std;
 
-class CbmKresConversionMain : public FairTask
-{
+class CbmKresConversionMain : public FairTask {
 
 public:
-   
   //***** brief Standard constructor.
   CbmKresConversionMain();
 
   //***** brief disallow Copy constructor.
-   CbmKresConversionMain(const CbmKresConversionMain&) = delete;
+  CbmKresConversionMain(const CbmKresConversionMain&) = delete;
 
   //***** brief disallow Assignment operator.
-   CbmKresConversionMain& operator=(const CbmKresConversionMain&) = delete;
+  CbmKresConversionMain& operator=(const CbmKresConversionMain&) = delete;
 
   //***** brief Standard destructor.
   virtual ~CbmKresConversionMain();
 
   //***** brief Inherited from FairTask.
-   virtual InitStatus Init();
+  virtual InitStatus Init();
 
   //***** brief Inherited from FairTask.
-   virtual void Exec(Option_t* option);
+  virtual void Exec(Option_t* option);
 
-   virtual void Finish();
+  virtual void Finish();
 
-   void SetKF(CbmKFParticleFinder* kfparticle, CbmKFParticleFinderQA* kfparticleQA);
-
-
+  void SetKF(CbmKFParticleFinder* kfparticle,
+             CbmKFParticleFinderQA* kfparticleQA);
 
 
 private:
- 
   void InitHistograms();
 
   Int_t DoKresGeneral;
@@ -65,28 +61,28 @@ private:
   Int_t DoKresManualmbias;
   Int_t DoKresTemperature;
   Int_t DoKresPhotons;
-  Int_t DoKresCorrectedPhotons;  
+  Int_t DoKresCorrectedPhotons;
   Int_t DoKresEtaMCAnalysis;
   Int_t DoKresEta;
 
 
-  CbmKresConversionGeneral        * fKresGeneral;
-  CbmKresConversionReconstruction * fKresReco;
-  CbmKresConversionKF             * fKresKF;
-  CbmKresConversionManual         * fKresManual;  
-  CbmKFParticleFinder             * fKFparticle;
-  CbmKFParticleFinderQA           * fKFparticleFinderQA;
+  CbmKresConversionGeneral* fKresGeneral;
+  CbmKresConversionReconstruction* fKresReco;
+  CbmKresConversionKF* fKresKF;
+  CbmKresConversionManual* fKresManual;
+  CbmKFParticleFinder* fKFparticle;
+  CbmKFParticleFinderQA* fKFparticleFinderQA;
 
-  CbmKresConversionManualmbias1   * fKresManualmbiasPart1;
-  CbmKresConversionManualmbias2   * fKresManualmbiasPart2;
-  CbmKresConversionManualmbias3   * fKresManualmbiasPart3;
-  CbmKresConversionManualmbias4   * fKresManualmbiasPart4;
+  CbmKresConversionManualmbias1* fKresManualmbiasPart1;
+  CbmKresConversionManualmbias2* fKresManualmbiasPart2;
+  CbmKresConversionManualmbias3* fKresManualmbiasPart3;
+  CbmKresConversionManualmbias4* fKresManualmbiasPart4;
 
-  CbmKresTemperature              * fKresTemperature;
-  CbmKresConversionPhotons        * fKresPhotons;  
-  CbmKresConversionCorrectedPhotons        * fKresCorrectedPhotons;  
-  CbmKresEtaMCAnalysis            * fKresEtaMCAnalysis;
-  CbmKresEta                      * fKresEta;
+  CbmKresTemperature* fKresTemperature;
+  CbmKresConversionPhotons* fKresPhotons;
+  CbmKresConversionCorrectedPhotons* fKresCorrectedPhotons;
+  CbmKresEtaMCAnalysis* fKresEtaMCAnalysis;
+  CbmKresEta* fKresEta;
 
 
   Int_t fEventNum;
@@ -95,8 +91,7 @@ private:
   Int_t fRealPID;
 
 
-	ClassDef(CbmKresConversionMain,1)
+  ClassDef(CbmKresConversionMain, 1)
 };
 
 #endif
-

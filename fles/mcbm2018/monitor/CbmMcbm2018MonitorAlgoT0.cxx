@@ -7,209 +7,183 @@
 
 #include "CbmMcbm2018MonitorAlgoT0.h"
 
+#include "CbmFlesHistosTools.h"
 #include "CbmFormatMsHeaderPrintout.h"
 #include "CbmMcbm2018TofPar.h"
 #include "CbmTofAddress.h"
-#include "CbmTofDetectorId_v14a.h" // in cbmdata/tof
-#include "CbmFlesHistosTools.h"
+#include "CbmTofDetectorId_v14a.h"  // in cbmdata/tof
 
 #include "FairLogger.h"
 #include "FairRootManager.h"
 #include "FairRun.h"
-#include "FairRuntimeDb.h"
 #include "FairRunOnline.h"
+#include "FairRuntimeDb.h"
 
-#include "TROOT.h"
-#include "TList.h"
-#include "TString.h"
-#include "TH2.h"
-#include "TProfile.h"
-#include "TH1.h"
 #include "TCanvas.h"
+#include "TH1.h"
+#include "TH2.h"
+#include "TList.h"
 #include "TPaveStats.h"
+#include "TProfile.h"
+#include "TROOT.h"
+#include "TString.h"
 
+#include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <stdint.h>
-#include <iomanip>
-#include <fstream>
 
 // -------------------------------------------------------------------------
-CbmMcbm2018MonitorAlgoT0::CbmMcbm2018MonitorAlgoT0() :
-   CbmStar2019Algo()
-{
-}
-CbmMcbm2018MonitorAlgoT0::~CbmMcbm2018MonitorAlgoT0()
-{
-   /// Clear buffers
-   fvmHitsInMs.clear();
-   for( UInt_t uGdpb = 0; uGdpb < fuNrOfGdpbs; ++uGdpb )
-   {
-//      fvmHitsInMs[ uDpb ].clear();
-      fvvmEpSupprBuffer[ uGdpb ].clear();
-   } // for( UInt_t uGdpb = 0; uGdpb < fuNrOfGdpbs; ++uGdpb )
+CbmMcbm2018MonitorAlgoT0::CbmMcbm2018MonitorAlgoT0() : CbmStar2019Algo() {}
+CbmMcbm2018MonitorAlgoT0::~CbmMcbm2018MonitorAlgoT0() {
+  /// Clear buffers
+  fvmHitsInMs.clear();
+  for (UInt_t uGdpb = 0; uGdpb < fuNrOfGdpbs; ++uGdpb) {
+    //      fvmHitsInMs[ uDpb ].clear();
+    fvvmEpSupprBuffer[uGdpb].clear();
+  }  // for( UInt_t uGdpb = 0; uGdpb < fuNrOfGdpbs; ++uGdpb )
 }
 
 // -------------------------------------------------------------------------
-Bool_t CbmMcbm2018MonitorAlgoT0::Init()
-{
-   LOG(info) << "Initializing mCBM T0 2019 monitor algo";
+Bool_t CbmMcbm2018MonitorAlgoT0::Init() {
+  LOG(info) << "Initializing mCBM T0 2019 monitor algo";
 
-   return kTRUE;
+  return kTRUE;
 }
-void CbmMcbm2018MonitorAlgoT0::Reset()
-{
-}
-void CbmMcbm2018MonitorAlgoT0::Finish()
-{
-   /// Printout Goodbye message and stats
+void CbmMcbm2018MonitorAlgoT0::Reset() {}
+void CbmMcbm2018MonitorAlgoT0::Finish() {
+  /// Printout Goodbye message and stats
 
-   /// Write Output histos
-
+  /// Write Output histos
 }
 
 // -------------------------------------------------------------------------
-Bool_t CbmMcbm2018MonitorAlgoT0::InitContainers()
-{
-   LOG(info) << "Init parameter containers for CbmMcbm2018MonitorAlgoT0";
-   Bool_t initOK = ReInitContainers();
+Bool_t CbmMcbm2018MonitorAlgoT0::InitContainers() {
+  LOG(info) << "Init parameter containers for CbmMcbm2018MonitorAlgoT0";
+  Bool_t initOK = ReInitContainers();
 
-   return initOK;
+  return initOK;
 }
-Bool_t CbmMcbm2018MonitorAlgoT0::ReInitContainers()
-{
-   LOG(info) << "**********************************************";
-   LOG(info) << "ReInit parameter containers for CbmMcbm2018MonitorAlgoT0";
+Bool_t CbmMcbm2018MonitorAlgoT0::ReInitContainers() {
+  LOG(info) << "**********************************************";
+  LOG(info) << "ReInit parameter containers for CbmMcbm2018MonitorAlgoT0";
 
-   fUnpackPar = (CbmMcbm2018TofPar*)fParCList->FindObject("CbmMcbm2018TofPar");
-   if( nullptr == fUnpackPar )
-      return kFALSE;
+  fUnpackPar = (CbmMcbm2018TofPar*) fParCList->FindObject("CbmMcbm2018TofPar");
+  if (nullptr == fUnpackPar) return kFALSE;
 
-   Bool_t initOK = InitParameters();
+  Bool_t initOK = InitParameters();
 
-   return initOK;
+  return initOK;
 }
-TList* CbmMcbm2018MonitorAlgoT0::GetParList()
-{
-   if( nullptr == fParCList )
-      fParCList = new TList();
-   fUnpackPar = new CbmMcbm2018TofPar("CbmMcbm2018TofPar");
-   fParCList->Add(fUnpackPar);
+TList* CbmMcbm2018MonitorAlgoT0::GetParList() {
+  if (nullptr == fParCList) fParCList = new TList();
+  fUnpackPar = new CbmMcbm2018TofPar("CbmMcbm2018TofPar");
+  fParCList->Add(fUnpackPar);
 
-   return fParCList;
+  return fParCList;
 }
-Bool_t CbmMcbm2018MonitorAlgoT0::InitParameters()
-{
+Bool_t CbmMcbm2018MonitorAlgoT0::InitParameters() {
 
-   fuNrOfGdpbs = fUnpackPar->GetNrOfGdpbs();
-   LOG(info) << "Nr. of Tof GDPBs: " << fuNrOfGdpbs;
+  fuNrOfGdpbs = fUnpackPar->GetNrOfGdpbs();
+  LOG(info) << "Nr. of Tof GDPBs: " << fuNrOfGdpbs;
 
-   fuNrOfFeePerGdpb = fUnpackPar->GetNrOfFeesPerGdpb();
-   LOG(info) << "Nr. of FEES per Tof GDPB: " << fuNrOfFeePerGdpb;
+  fuNrOfFeePerGdpb = fUnpackPar->GetNrOfFeesPerGdpb();
+  LOG(info) << "Nr. of FEES per Tof GDPB: " << fuNrOfFeePerGdpb;
 
-   fuNrOfGet4PerFee = fUnpackPar->GetNrOfGet4PerFee();
-   LOG(info) << "Nr. of GET4 per Tof FEE: " << fuNrOfGet4PerFee;
+  fuNrOfGet4PerFee = fUnpackPar->GetNrOfGet4PerFee();
+  LOG(info) << "Nr. of GET4 per Tof FEE: " << fuNrOfGet4PerFee;
 
-   fuNrOfChannelsPerGet4 = fUnpackPar->GetNrOfChannelsPerGet4();
-   LOG(info) << "Nr. of channels per GET4: " << fuNrOfChannelsPerGet4;
+  fuNrOfChannelsPerGet4 = fUnpackPar->GetNrOfChannelsPerGet4();
+  LOG(info) << "Nr. of channels per GET4: " << fuNrOfChannelsPerGet4;
 
-   fuNrOfChannelsPerFee = fuNrOfGet4PerFee * fuNrOfChannelsPerGet4;
-   LOG(info) << "Nr. of channels per FEE: " << fuNrOfChannelsPerFee;
+  fuNrOfChannelsPerFee = fuNrOfGet4PerFee * fuNrOfChannelsPerGet4;
+  LOG(info) << "Nr. of channels per FEE: " << fuNrOfChannelsPerFee;
 
-   fuNrOfGet4 = fuNrOfGdpbs * fuNrOfFeePerGdpb * fuNrOfGet4PerFee;
-   LOG(info) << "Nr. of GET4s: " << fuNrOfGet4;
+  fuNrOfGet4 = fuNrOfGdpbs * fuNrOfFeePerGdpb * fuNrOfGet4PerFee;
+  LOG(info) << "Nr. of GET4s: " << fuNrOfGet4;
 
-   fuNrOfGet4PerGdpb = fuNrOfFeePerGdpb * fuNrOfGet4PerFee;
-   LOG(info) << "Nr. of GET4s per GDPB: " << fuNrOfGet4PerGdpb;
+  fuNrOfGet4PerGdpb = fuNrOfFeePerGdpb * fuNrOfGet4PerFee;
+  LOG(info) << "Nr. of GET4s per GDPB: " << fuNrOfGet4PerGdpb;
 
-   fuNrOfChannelsPerGdpb = fuNrOfGet4PerGdpb * fuNrOfChannelsPerGet4;
-   LOG(info) << "Nr. of channels per GDPB: " << fuNrOfChannelsPerGdpb;
+  fuNrOfChannelsPerGdpb = fuNrOfGet4PerGdpb * fuNrOfChannelsPerGet4;
+  LOG(info) << "Nr. of channels per GDPB: " << fuNrOfChannelsPerGdpb;
 
-   fGdpbIdIndexMap.clear();
-   for( UInt_t i = 0; i < fuNrOfGdpbs; ++i )
-   {
-      fGdpbIdIndexMap[fUnpackPar->GetGdpbId(i)] = i;
-      LOG(info) << "GDPB Id of TOF  " << i << " : " << std::hex << fUnpackPar->GetGdpbId(i)
-                 << std::dec;
-   } // for( UInt_t i = 0; i < fuNrOfGdpbs; ++i )
+  fGdpbIdIndexMap.clear();
+  for (UInt_t i = 0; i < fuNrOfGdpbs; ++i) {
+    fGdpbIdIndexMap[fUnpackPar->GetGdpbId(i)] = i;
+    LOG(info) << "GDPB Id of TOF  " << i << " : " << std::hex
+              << fUnpackPar->GetGdpbId(i) << std::dec;
+  }  // for( UInt_t i = 0; i < fuNrOfGdpbs; ++i )
 
-   /// Internal status initialization
-   fvulCurrentEpoch.resize( fuNrOfGdpbs, 0 );
-   fvulCurrentEpochCycle.resize( fuNrOfGdpbs, 0 );
-   fvulCurrentEpochFull.resize( fuNrOfGdpbs, 0 );
+  /// Internal status initialization
+  fvulCurrentEpoch.resize(fuNrOfGdpbs, 0);
+  fvulCurrentEpochCycle.resize(fuNrOfGdpbs, 0);
+  fvulCurrentEpochFull.resize(fuNrOfGdpbs, 0);
 
-   /// Buffer initialization
-   fvvmEpSupprBuffer.resize( fuNrOfGdpbs );
+  /// Buffer initialization
+  fvvmEpSupprBuffer.resize(fuNrOfGdpbs);
 
-	return kTRUE;
+  return kTRUE;
 }
 // -------------------------------------------------------------------------
 
-void CbmMcbm2018MonitorAlgoT0::AddMsComponentToList( size_t component, UShort_t usDetectorId )
-{
-   /// Check for duplicates and ignore if it is the case
-   for( UInt_t uCompIdx = 0; uCompIdx < fvMsComponentsList.size(); ++uCompIdx )
-      if( component == fvMsComponentsList[ uCompIdx ] )
-         return;
+void CbmMcbm2018MonitorAlgoT0::AddMsComponentToList(size_t component,
+                                                    UShort_t usDetectorId) {
+  /// Check for duplicates and ignore if it is the case
+  for (UInt_t uCompIdx = 0; uCompIdx < fvMsComponentsList.size(); ++uCompIdx)
+    if (component == fvMsComponentsList[uCompIdx]) return;
 
-   /// Add to list
-   fvMsComponentsList.push_back( component );
+  /// Add to list
+  fvMsComponentsList.push_back(component);
 
-   LOG(info) << "CbmMcbm2018MonitorAlgoT0::AddMsComponentToList => Component "
-             << component << " with detector ID 0x"
-             << std::hex << usDetectorId << std::dec << " added to list";
-
+  LOG(info) << "CbmMcbm2018MonitorAlgoT0::AddMsComponentToList => Component "
+            << component << " with detector ID 0x" << std::hex << usDetectorId
+            << std::dec << " added to list";
 }
 // -------------------------------------------------------------------------
 
-Bool_t CbmMcbm2018MonitorAlgoT0::ProcessTs( const fles::Timeslice& ts )
-{
-   fulCurrentTsIdx = ts.index();
-   fdTsStartTime = static_cast< Double_t >( ts.descriptor( 0, 0 ).idx );
+Bool_t CbmMcbm2018MonitorAlgoT0::ProcessTs(const fles::Timeslice& ts) {
+  fulCurrentTsIdx = ts.index();
+  fdTsStartTime   = static_cast<Double_t>(ts.descriptor(0, 0).idx);
 
-   /// Ignore First TS as first MS is typically corrupt
-   if( 0 == fulCurrentTsIdx )
-      return kTRUE;
+  /// Ignore First TS as first MS is typically corrupt
+  if (0 == fulCurrentTsIdx) return kTRUE;
 
-   /// On first TS, extract the TS parameters from header (by definition stable over time)
-   if( -1.0 == fdTsCoreSizeInNs )
-   {
-      fuNbCoreMsPerTs = ts.num_core_microslices();
-      fuNbOverMsPerTs = ts.num_microslices( 0 ) - ts.num_core_microslices();
-      fdTsCoreSizeInNs = fdMsSizeInNs * ( fuNbCoreMsPerTs );
-      fdTsFullSizeInNs = fdMsSizeInNs * ( fuNbCoreMsPerTs + fuNbOverMsPerTs );
-      LOG(info) << "Timeslice parameters: each TS has "
-                << fuNbCoreMsPerTs << " Core MS and "
-                << fuNbOverMsPerTs << " Overlap MS, for a core duration of "
-                << fdTsCoreSizeInNs << " ns and a full duration of "
-                << fdTsFullSizeInNs << " ns";
+  /// On first TS, extract the TS parameters from header (by definition stable over time)
+  if (-1.0 == fdTsCoreSizeInNs) {
+    fuNbCoreMsPerTs  = ts.num_core_microslices();
+    fuNbOverMsPerTs  = ts.num_microslices(0) - ts.num_core_microslices();
+    fdTsCoreSizeInNs = fdMsSizeInNs * (fuNbCoreMsPerTs);
+    fdTsFullSizeInNs = fdMsSizeInNs * (fuNbCoreMsPerTs + fuNbOverMsPerTs);
+    LOG(info) << "Timeslice parameters: each TS has " << fuNbCoreMsPerTs
+              << " Core MS and " << fuNbOverMsPerTs
+              << " Overlap MS, for a core duration of " << fdTsCoreSizeInNs
+              << " ns and a full duration of " << fdTsFullSizeInNs << " ns";
 
-      /// Ignore overlap ms if flag set by user
-      fuNbMsLoop = fuNbCoreMsPerTs;
-      if( kFALSE == fbIgnoreOverlapMs )
-         fuNbMsLoop += fuNbOverMsPerTs;
-      LOG(info) << "In each TS " << fuNbMsLoop << " MS will be looped over";
-   } // if( -1.0 == fdTsCoreSizeInNs )
+    /// Ignore overlap ms if flag set by user
+    fuNbMsLoop = fuNbCoreMsPerTs;
+    if (kFALSE == fbIgnoreOverlapMs) fuNbMsLoop += fuNbOverMsPerTs;
+    LOG(info) << "In each TS " << fuNbMsLoop << " MS will be looped over";
+  }  // if( -1.0 == fdTsCoreSizeInNs )
 
-   /// Compute time of TS core end
-   fdTsStopTimeCore = fdTsStartTime + fdTsCoreSizeInNs;
-//      LOG(info) << Form( "TS %5d Start %12f Stop %12f", fulCurrentTsIdx, fdTsStartTime, fdTsStopTimeCore );
+  /// Compute time of TS core end
+  fdTsStopTimeCore = fdTsStartTime + fdTsCoreSizeInNs;
+  //      LOG(info) << Form( "TS %5d Start %12f Stop %12f", fulCurrentTsIdx, fdTsStartTime, fdTsStopTimeCore );
 
-   /// Loop over core microslices (and overlap ones if chosen)
-   for( fuMsIndex = 0; fuMsIndex < fuNbMsLoop; fuMsIndex ++ )
-   {
-      /// Loop over registered components
-      for( UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx )
-      {
-         UInt_t uMsComp = fvMsComponentsList[ uMsCompIdx ];
+  /// Loop over core microslices (and overlap ones if chosen)
+  for (fuMsIndex = 0; fuMsIndex < fuNbMsLoop; fuMsIndex++) {
+    /// Loop over registered components
+    for (UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size();
+         ++uMsCompIdx) {
+      UInt_t uMsComp = fvMsComponentsList[uMsCompIdx];
 
-         if( kFALSE == ProcessMs( ts, uMsComp, fuMsIndex ) )
-         {
-            LOG(error) << "Failed to process ts " << fulCurrentTsIdx << " MS " << fuMsIndex
-                       << " for component " << uMsComp;
-            return kFALSE;
-         } // if( kFALSE == ProcessMs( ts, uMsCompIdx, fuMsIndex ) )
-      } // for( UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx )
-/*
+      if (kFALSE == ProcessMs(ts, uMsComp, fuMsIndex)) {
+        LOG(error) << "Failed to process ts " << fulCurrentTsIdx << " MS "
+                   << fuMsIndex << " for component " << uMsComp;
+        return kFALSE;
+      }  // if( kFALSE == ProcessMs( ts, uMsCompIdx, fuMsIndex ) )
+    }  // for( UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx )
+       /*
       /// Sort the buffers of hits
       std::sort( fvmHitsInMs.begin(), fvmHitsInMs.end() );
 
@@ -227,79 +201,80 @@ Bool_t CbmMcbm2018MonitorAlgoT0::ProcessTs( const fles::Timeslice& ts )
          fDigiVect.push_back( CbmTofDigi( fviFebAddress[ uFebIdx ], uChanInFeb, ulTimeInNs, itHitIn->GetAdc() ) );
       } // for( auto itHitIn = fvmHitsInMs.begin(); itHitIn < fvmHitsInMs.end(); ++itHitIn )
 */
-      /// Clear the buffer of hits
-      fvmHitsInMs.clear();
-   } // for( fuMsIndex = 0; fuMsIndex < uNbMsLoop; fuMsIndex ++ )
+    /// Clear the buffer of hits
+    fvmHitsInMs.clear();
+  }  // for( fuMsIndex = 0; fuMsIndex < uNbMsLoop; fuMsIndex ++ )
 
-   /// Clear buffers to prepare for the next TS
-   fvmHitsInMs.clear();
-/*
+  /// Clear buffers to prepare for the next TS
+  fvmHitsInMs.clear();
+  /*
    for( UInt_t uDpb = 0; uDpb < fuNrOfDpbs; ++uDpb )
    {
       fvmHitsInMs[ uDpb ].clear();
    } // for( UInt_t uDpb = 0; uDpb < fuNrOfDpbs; ++uDpb )
 */
-   /// Fill plots if in monitor mode
-   if( fbMonitorMode )
-   {
-      if( kFALSE == FillHistograms() )
-      {
-         LOG(error) << "Failed to fill histos in ts " << fulCurrentTsIdx;
-         return kFALSE;
-      } // if( kFALSE == FillHistograms() )
-   } // if( fbMonitorMode )
+  /// Fill plots if in monitor mode
+  if (fbMonitorMode) {
+    if (kFALSE == FillHistograms()) {
+      LOG(error) << "Failed to fill histos in ts " << fulCurrentTsIdx;
+      return kFALSE;
+    }  // if( kFALSE == FillHistograms() )
+  }    // if( fbMonitorMode )
 
-   return kTRUE;
+  return kTRUE;
 }
 
-Bool_t CbmMcbm2018MonitorAlgoT0::ProcessMs( const fles::Timeslice& ts, size_t uMsCompIdx, size_t uMsIdx )
-{
-   auto msDescriptor = ts.descriptor( uMsCompIdx, uMsIdx );
-   fuCurrentEquipmentId = msDescriptor.eq_id;
-   const uint8_t* msContent = reinterpret_cast<const uint8_t*>( ts.content( uMsCompIdx, uMsIdx ) );
+Bool_t CbmMcbm2018MonitorAlgoT0::ProcessMs(const fles::Timeslice& ts,
+                                           size_t uMsCompIdx,
+                                           size_t uMsIdx) {
+  auto msDescriptor    = ts.descriptor(uMsCompIdx, uMsIdx);
+  fuCurrentEquipmentId = msDescriptor.eq_id;
+  const uint8_t* msContent =
+    reinterpret_cast<const uint8_t*>(ts.content(uMsCompIdx, uMsIdx));
 
-   uint32_t uSize  = msDescriptor.size;
-   fulCurrentMsIdx = msDescriptor.idx;
-   fdMsTime = (1e-9) * static_cast<double>(fulCurrentMsIdx);
-   LOG(debug) << "Microslice: " << fulCurrentMsIdx
-              << " from EqId " << std::hex << fuCurrentEquipmentId << std::dec
-              << " has size: " << uSize;
+  uint32_t uSize  = msDescriptor.size;
+  fulCurrentMsIdx = msDescriptor.idx;
+  fdMsTime        = (1e-9) * static_cast<double>(fulCurrentMsIdx);
+  LOG(debug) << "Microslice: " << fulCurrentMsIdx << " from EqId " << std::hex
+             << fuCurrentEquipmentId << std::dec << " has size: " << uSize;
 
-   if( 0 == fvbMaskedComponents.size() )
-      fvbMaskedComponents.resize( ts.num_components(), kFALSE );
+  if (0 == fvbMaskedComponents.size())
+    fvbMaskedComponents.resize(ts.num_components(), kFALSE);
 
-   fuCurrDpbId  = static_cast< uint32_t >( fuCurrentEquipmentId & 0xFFFF );
-//   fuCurrDpbIdx = fDpbIdIndexMap[ fuCurrDpbId ];
+  fuCurrDpbId = static_cast<uint32_t>(fuCurrentEquipmentId & 0xFFFF);
+  //   fuCurrDpbIdx = fDpbIdIndexMap[ fuCurrDpbId ];
 
-/*
+  /*
  * Should be only for first detected TS
  */
-   if( fulCurrentTsIdx < 10 && 0 == uMsIdx )
-   {
-      LOG(INFO) << "---------------------------------------------------------------";
-      LOG(INFO) << "Component " << uMsCompIdx
-                << " TS Idx " << fulCurrentTsIdx;
-      LOG(INFO) << "hi hv eqid flag si sv idx/start        crc      size     offset";
-      LOG(INFO) << Form( "%02x %02x %04x %04x %02x %02x %016lx %08x %08x %016lx",
-                            static_cast<unsigned int>(msDescriptor.hdr_id),
-                            static_cast<unsigned int>(msDescriptor.hdr_ver), msDescriptor.eq_id, msDescriptor.flags,
-                            static_cast<unsigned int>(msDescriptor.sys_id),
-                            static_cast<unsigned int>(msDescriptor.sys_ver),
-                            static_cast<unsigned long>(msDescriptor.idx), msDescriptor.crc,
-                            msDescriptor.size,
-                            static_cast<unsigned long>(msDescriptor.offset) );
-   } // if( fulCurrentTsIdx < 10 && 0 == uMsIdx )
-/*
+  if (fulCurrentTsIdx < 10 && 0 == uMsIdx) {
+    LOG(INFO)
+      << "---------------------------------------------------------------";
+    LOG(INFO) << "Component " << uMsCompIdx << " TS Idx " << fulCurrentTsIdx;
+    LOG(INFO)
+      << "hi hv eqid flag si sv idx/start        crc      size     offset";
+    LOG(INFO) << Form("%02x %02x %04x %04x %02x %02x %016lx %08x %08x %016lx",
+                      static_cast<unsigned int>(msDescriptor.hdr_id),
+                      static_cast<unsigned int>(msDescriptor.hdr_ver),
+                      msDescriptor.eq_id,
+                      msDescriptor.flags,
+                      static_cast<unsigned int>(msDescriptor.sys_id),
+                      static_cast<unsigned int>(msDescriptor.sys_ver),
+                      static_cast<unsigned long>(msDescriptor.idx),
+                      msDescriptor.crc,
+                      msDescriptor.size,
+                      static_cast<unsigned long>(msDescriptor.offset));
+  }  // if( fulCurrentTsIdx < 10 && 0 == uMsIdx )
+     /*
 */
 
-   /// Check if this sDPB ID was declared in parameter file and stop there if not
-   auto it = fGdpbIdIndexMap.find( fuCurrDpbId );
-   if( it == fGdpbIdIndexMap.end() )
-   {
-       if( kFALSE == fvbMaskedComponents[ uMsCompIdx ] )
-       {
-          LOG(info) << "---------------------------------------------------------------";
-/*
+  /// Check if this sDPB ID was declared in parameter file and stop there if not
+  auto it = fGdpbIdIndexMap.find(fuCurrDpbId);
+  if (it == fGdpbIdIndexMap.end()) {
+    if (kFALSE == fvbMaskedComponents[uMsCompIdx]) {
+      LOG(info)
+        << "---------------------------------------------------------------";
+      /*
           LOG(info) << "hi hv eqid flag si sv idx/start        crc      size     offset";
           LOG(info) << Form( "%02x %02x %04x %04x %02x %02x %016llx %08x %08x %016llx",
                             static_cast<unsigned int>(msDescriptor.hdr_id),
@@ -308,150 +283,141 @@ Bool_t CbmMcbm2018MonitorAlgoT0::ProcessMs( const fles::Timeslice& ts, size_t uM
                             static_cast<unsigned int>(msDescriptor.sys_ver), msDescriptor.idx, msDescriptor.crc,
                             msDescriptor.size, msDescriptor.offset );
 */
-         LOG(info) << FormatMsHeaderPrintout( msDescriptor );
-         LOG(warning) << "Could not find the gDPB index for AFCK id 0x"
-                   << std::hex << fuCurrDpbId << std::dec
-                   << " in timeslice " << fulCurrentTsIdx
-                   << " in microslice " << uMsIdx
-                   << " component " << uMsCompIdx
-                   << "\n"
-                   << "If valid this index has to be added in the TOF parameter file in the DbpIdArray field";
-         fvbMaskedComponents[ uMsCompIdx ] = kTRUE;
-      } // if( kFALSE == fvbMaskedComponents[ uMsComp ] )
-         else return kTRUE;
+      LOG(info) << FormatMsHeaderPrintout(msDescriptor);
+      LOG(warning) << "Could not find the gDPB index for AFCK id 0x" << std::hex
+                   << fuCurrDpbId << std::dec << " in timeslice "
+                   << fulCurrentTsIdx << " in microslice " << uMsIdx
+                   << " component " << uMsCompIdx << "\n"
+                   << "If valid this index has to be added in the TOF "
+                      "parameter file in the DbpIdArray field";
+      fvbMaskedComponents[uMsCompIdx] = kTRUE;
+    }  // if( kFALSE == fvbMaskedComponents[ uMsComp ] )
+    else
+      return kTRUE;
 
-      /// Try to get it from the second message in buffer (first is epoch cycle without gDPB ID)
-      /// TODO!!!!
+    /// Try to get it from the second message in buffer (first is epoch cycle without gDPB ID)
+    /// TODO!!!!
 
-      return kFALSE;
-   } // if( it == fGdpbIdIndexMap.end() )
-      else fuCurrDpbIdx = fGdpbIdIndexMap[ fuCurrDpbId ];
+    return kFALSE;
+  }  // if( it == fGdpbIdIndexMap.end() )
+  else
+    fuCurrDpbIdx = fGdpbIdIndexMap[fuCurrDpbId];
 
-   /// Spill Detection
-   if( 0 == fuCurrDpbIdx )
-   {
-      /// Check only every second
-      if( 1.0 < fdMsTime - fdLastSecondTime )
-      {
-         /// Spill Off detection
-         if( fbSpillOn && fuCountsLastSecond < fuOffSpillCountLimit )
-         {
-            fbSpillOn = kFALSE;
-            fuCurrentSpillIdx++;
-            fuCurrentSpillPlot = ( fuCurrentSpillPlot + 1 ) % kuNbSpillPlots;
-            fdStartTimeSpill = fdMsTime;
-            fvhDpbMapSpill[ fuCurrentSpillPlot ]->Reset();
-            fvhChannelMapSpill[ fuCurrentSpillPlot ]->Reset();
-         } // if( fbSpillOn && fuCountsLastSecond < fuOffSpillCountLimit )
-         else if( fuOffSpillCountLimit < fuCountsLastSecond  )
-            fbSpillOn = kTRUE;
+  /// Spill Detection
+  if (0 == fuCurrDpbIdx) {
+    /// Check only every second
+    if (1.0 < fdMsTime - fdLastSecondTime) {
+      /// Spill Off detection
+      if (fbSpillOn && fuCountsLastSecond < fuOffSpillCountLimit) {
+        fbSpillOn = kFALSE;
+        fuCurrentSpillIdx++;
+        fuCurrentSpillPlot = (fuCurrentSpillPlot + 1) % kuNbSpillPlots;
+        fdStartTimeSpill   = fdMsTime;
+        fvhDpbMapSpill[fuCurrentSpillPlot]->Reset();
+        fvhChannelMapSpill[fuCurrentSpillPlot]->Reset();
+      }  // if( fbSpillOn && fuCountsLastSecond < fuOffSpillCountLimit )
+      else if (fuOffSpillCountLimit < fuCountsLastSecond)
+        fbSpillOn = kTRUE;
 
-         fuCountsLastSecond = 0;
-         fdLastSecondTime = fdMsTime;
-      } // if( 1 < fdMsTime - fdLastSecondTime )
-   } // if( 0 == fuCurrDpbIdx )
+      fuCountsLastSecond = 0;
+      fdLastSecondTime   = fdMsTime;
+    }  // if( 1 < fdMsTime - fdLastSecondTime )
+  }    // if( 0 == fuCurrDpbIdx )
 
-   /// Save start time of first valid MS )
-   if( fdStartTime < 0 )
-      fdStartTime = fdMsTime;
-   /// Reset the histograms if reached the end of the evolution histos range
-   else if( fuHistoryHistoSize < fdMsTime - fdStartTime )
-   {
-      ResetHistograms();
-      fdStartTime = fdMsTime;
-   } // else if( fuHistoryHistoSize < fdMsTime - fdStartTime )
+  /// Save start time of first valid MS )
+  if (fdStartTime < 0) fdStartTime = fdMsTime;
+  /// Reset the histograms if reached the end of the evolution histos range
+  else if (fuHistoryHistoSize < fdMsTime - fdStartTime) {
+    ResetHistograms();
+    fdStartTime = fdMsTime;
+  }  // else if( fuHistoryHistoSize < fdMsTime - fdStartTime )
 
-   // If not integer number of message in input buffer, print warning/error
-   if( 0 != ( uSize % kuBytesPerMessage ) )
-      LOG(error) << "The input microslice buffer does NOT "
-                 << "contain only complete nDPB messages!";
+  // If not integer number of message in input buffer, print warning/error
+  if (0 != (uSize % kuBytesPerMessage))
+    LOG(error) << "The input microslice buffer does NOT "
+               << "contain only complete nDPB messages!";
 
-   // Compute the number of complete messages in the input microslice buffer
-   uint32_t uNbMessages = ( uSize - ( uSize % kuBytesPerMessage ) )
-                          / kuBytesPerMessage;
+  // Compute the number of complete messages in the input microslice buffer
+  uint32_t uNbMessages =
+    (uSize - (uSize % kuBytesPerMessage)) / kuBytesPerMessage;
 
-   // Prepare variables for the loop on contents
-   Int_t messageType = -111;
-   const uint64_t* pInBuff = reinterpret_cast<const uint64_t*>( msContent );
-   for( uint32_t uIdx = 0; uIdx < uNbMessages; uIdx++ )
-   {
-      // Fill message
-      uint64_t ulData = static_cast<uint64_t>(pInBuff[uIdx]);
+  // Prepare variables for the loop on contents
+  Int_t messageType       = -111;
+  const uint64_t* pInBuff = reinterpret_cast<const uint64_t*>(msContent);
+  for (uint32_t uIdx = 0; uIdx < uNbMessages; uIdx++) {
+    // Fill message
+    uint64_t ulData = static_cast<uint64_t>(pInBuff[uIdx]);
 
-      /// Catch the Epoch cycle block which is always the first 64b of the MS
-      if( 0 == uIdx )
-      {
-//         ProcessEpochCycle( ulData );
-         continue;
-      } // if( 0 == uIdx )
+    /// Catch the Epoch cycle block which is always the first 64b of the MS
+    if (0 == uIdx) {
+      //         ProcessEpochCycle( ulData );
+      continue;
+    }  // if( 0 == uIdx )
 
-      gdpbv100::Message mess(ulData);
-      /// Get message type
-      messageType = mess.getMessageType();
+    gdpbv100::Message mess(ulData);
+    /// Get message type
+    messageType = mess.getMessageType();
 
-      fuGet4Id = mess.getGdpbGenChipId();;
-      fuGet4Nr = (fuCurrDpbIdx * fuNrOfGet4PerGdpb) + fuGet4Id;
-//      UInt_t uChannelT0 = ( fuGet4Id < 32 ) ? ( fuGet4Id / 8 ) : (fuGet4Id / 8 - 1); /// December 2018 mapping
-      UInt_t uChannelT0 = fuGet4Id / 2 + 4 * fuCurrDpbIdx; /// 2019 mapping with 320/640 Mb/s FW
+    fuGet4Id = mess.getGdpbGenChipId();
+    ;
+    fuGet4Nr = (fuCurrDpbIdx * fuNrOfGet4PerGdpb) + fuGet4Id;
+    //      UInt_t uChannelT0 = ( fuGet4Id < 32 ) ? ( fuGet4Id / 8 ) : (fuGet4Id / 8 - 1); /// December 2018 mapping
+    UInt_t uChannelT0 =
+      fuGet4Id / 2 + 4 * fuCurrDpbIdx;  /// 2019 mapping with 320/640 Mb/s FW
 
-      if( fuNrOfGet4PerGdpb <= fuGet4Id &&
-          !mess.isStarTrigger()  &&
-          ( gdpbv100::kuChipIdMergedEpoch != fuGet4Id ) )
-         LOG(warning) << "Message with Get4 ID too high: " << fuGet4Id
-                      << " VS " << fuNrOfGet4PerGdpb << " set in parameters.";
+    if (fuNrOfGet4PerGdpb <= fuGet4Id && !mess.isStarTrigger()
+        && (gdpbv100::kuChipIdMergedEpoch != fuGet4Id))
+      LOG(warning) << "Message with Get4 ID too high: " << fuGet4Id << " VS "
+                   << fuNrOfGet4PerGdpb << " set in parameters.";
 
-      switch( messageType )
-      {
-         case gdpbv100::MSG_HIT:
-         {
-            if( mess.getGdpbHitIs24b() )
-            {
-               LOG(error) << "This event builder does not support 24b hit message!!!.";
-               continue;
-            } // if( getGdpbHitIs24b() )
-               else
-               {
-                  /// Spill detection
-                  fuCountsLastSecond ++;
+    switch (messageType) {
+      case gdpbv100::MSG_HIT: {
+        if (mess.getGdpbHitIs24b()) {
+          LOG(error)
+            << "This event builder does not support 24b hit message!!!.";
+          continue;
+        }  // if( getGdpbHitIs24b() )
+        else {
+          /// Spill detection
+          fuCountsLastSecond++;
 
-                  fhErrorFractEvo->Fill( fdMsTime - fdStartTime, 0.0 );
-                  fhLostEvtFractEvo->Fill( fdMsTime - fdStartTime, 0.0 );
-                  fvhErrorFractEvoChan[ uChannelT0 ]->Fill( fdMsTime - fdStartTime, 0.0 );
-                  fvhEvtLostFractEvoChan[ uChannelT0 ]->Fill( fdMsTime - fdStartTime, 0.0 );
+          fhErrorFractEvo->Fill(fdMsTime - fdStartTime, 0.0);
+          fhLostEvtFractEvo->Fill(fdMsTime - fdStartTime, 0.0);
+          fvhErrorFractEvoChan[uChannelT0]->Fill(fdMsTime - fdStartTime, 0.0);
+          fvhEvtLostFractEvoChan[uChannelT0]->Fill(fdMsTime - fdStartTime, 0.0);
 
-                  fhMsgCntEvo->Fill( fdMsTime - fdStartTime );
-                  fhHitCntEvo->Fill( fdMsTime - fdStartTime );
+          fhMsgCntEvo->Fill(fdMsTime - fdStartTime);
+          fhHitCntEvo->Fill(fdMsTime - fdStartTime);
 
-                  fvhHitCntEvoChan[ uChannelT0 ]->Fill( fdMsTime - fdStartTime );
+          fvhHitCntEvoChan[uChannelT0]->Fill(fdMsTime - fdStartTime);
 
-                  fvuHitCntChanMs[ uChannelT0 ]++;
+          fvuHitCntChanMs[uChannelT0]++;
 
-                  /// Do not fill the pulser hits to keep counts low for channel 0
-                  UInt_t uTot     = mess.getGdpbHit32Tot();
-                  if( uTot < fuMinTotPulser || fuMaxTotPulser < uTot )
-                  {
-                     fhDpbMap->Fill( fuCurrDpbIdx );
-                     fhChannelMap->Fill( uChannelT0 );
+          /// Do not fill the pulser hits to keep counts low for channel 0
+          UInt_t uTot = mess.getGdpbHit32Tot();
+          if (uTot < fuMinTotPulser || fuMaxTotPulser < uTot) {
+            fhDpbMap->Fill(fuCurrDpbIdx);
+            fhChannelMap->Fill(uChannelT0);
 
-                     fvhDpbMapSpill[ fuCurrentSpillPlot ]->Fill( fuCurrDpbIdx );
-                     fvhChannelMapSpill[ fuCurrentSpillPlot ]->Fill( fuDiamChanMap[ uChannelT0 ] );
-                     fhHitsPerSpill->Fill( fuCurrentSpillIdx );
-                  } // if( uTot < fuMinTotPulser || fuMaxTotPulser < uTot )
-                     else
-                     {
-                        fhChannelMapPulser->Fill( uChannelT0 );
-                        fhHitMapEvoPulser->Fill( uChannelT0, fdMsTime - fdStartTime );
-                     } // else of if( uTot < fuMinTotPulser || fuMaxTotPulser < uTot )
-                  fhHitMapEvo->Fill( uChannelT0, fdMsTime - fdStartTime );
-                  fhHitTotEvo->Fill( fdMsTime - fdStartTime, uTot );
-                  fhChanHitMapEvo->Fill( fuDiamChanMap[ uChannelT0 ], fdMsTime - fdStartTime );
-//                  fvvmEpSupprBuffer[fuCurrDpbIdx].push_back( mess );
-               } // else of if( getGdpbHitIs24b() )
-            break;
-         } // case gdpbv100::MSG_HIT:
-         case gdpbv100::MSG_EPOCH:
-         {
-/*
+            fvhDpbMapSpill[fuCurrentSpillPlot]->Fill(fuCurrDpbIdx);
+            fvhChannelMapSpill[fuCurrentSpillPlot]->Fill(
+              fuDiamChanMap[uChannelT0]);
+            fhHitsPerSpill->Fill(fuCurrentSpillIdx);
+          }  // if( uTot < fuMinTotPulser || fuMaxTotPulser < uTot )
+          else {
+            fhChannelMapPulser->Fill(uChannelT0);
+            fhHitMapEvoPulser->Fill(uChannelT0, fdMsTime - fdStartTime);
+          }  // else of if( uTot < fuMinTotPulser || fuMaxTotPulser < uTot )
+          fhHitMapEvo->Fill(uChannelT0, fdMsTime - fdStartTime);
+          fhHitTotEvo->Fill(fdMsTime - fdStartTime, uTot);
+          fhChanHitMapEvo->Fill(fuDiamChanMap[uChannelT0],
+                                fdMsTime - fdStartTime);
+          //                  fvvmEpSupprBuffer[fuCurrDpbIdx].push_back( mess );
+        }  // else of if( getGdpbHitIs24b() )
+        break;
+      }  // case gdpbv100::MSG_HIT:
+      case gdpbv100::MSG_EPOCH: {
+        /*
             if( gdpbv100::kuChipIdMergedEpoch == fuGet4Id )
             {
                ProcessEpoch(mess);
@@ -463,62 +429,58 @@ Bool_t CbmMcbm2018MonitorAlgoT0::ProcessMs( const fles::Timeslice& ts, size_t uM
                   continue;
                } // if single chip epoch message
 */
-            break;
-         } // case gdpbv100::MSG_EPOCH:
-         case gdpbv100::MSG_SLOWC:
-         {
-//            fvvmEpSupprBuffer[fuCurrDpbIdx].push_back( mess );
-            break;
-         } // case gdpbv100::MSG_SLOWC:
-         case gdpbv100::MSG_SYST:
-         {
-            if( gdpbv100::SYS_GET4_ERROR == mess.getGdpbSysSubType() )
-            {
-               fhErrorFractEvo->Fill( fdMsTime - fdStartTime, 0.0 );
-               fhLostEvtFractEvo->Fill( fdMsTime - fdStartTime, 0.0 );
-               fvhErrorFractEvoChan[ uChannelT0 ]->Fill( fdMsTime - fdStartTime, 0.0 );
-               fvhEvtLostFractEvoChan[ uChannelT0 ]->Fill( fdMsTime - fdStartTime, 0.0 );
+        break;
+      }  // case gdpbv100::MSG_EPOCH:
+      case gdpbv100::MSG_SLOWC: {
+        //            fvvmEpSupprBuffer[fuCurrDpbIdx].push_back( mess );
+        break;
+      }  // case gdpbv100::MSG_SLOWC:
+      case gdpbv100::MSG_SYST: {
+        if (gdpbv100::SYS_GET4_ERROR == mess.getGdpbSysSubType()) {
+          fhErrorFractEvo->Fill(fdMsTime - fdStartTime, 0.0);
+          fhLostEvtFractEvo->Fill(fdMsTime - fdStartTime, 0.0);
+          fvhErrorFractEvoChan[uChannelT0]->Fill(fdMsTime - fdStartTime, 0.0);
+          fvhEvtLostFractEvoChan[uChannelT0]->Fill(fdMsTime - fdStartTime, 0.0);
 
-               fhMsgCntEvo->Fill( fdMsTime - fdStartTime );
-               fhErrorCntEvo->Fill( fdMsTime - fdStartTime );
-               fhErrorFractEvo->Fill( fdMsTime - fdStartTime, 1.0 );
+          fhMsgCntEvo->Fill(fdMsTime - fdStartTime);
+          fhErrorCntEvo->Fill(fdMsTime - fdStartTime);
+          fhErrorFractEvo->Fill(fdMsTime - fdStartTime, 1.0);
 
-               fvhErrorCntEvoChan[   uChannelT0 ]->Fill( fdMsTime - fdStartTime );
-               fvhErrorFractEvoChan[ uChannelT0 ]->Fill( fdMsTime - fdStartTime, 1.0 );
+          fvhErrorCntEvoChan[uChannelT0]->Fill(fdMsTime - fdStartTime);
+          fvhErrorFractEvoChan[uChannelT0]->Fill(fdMsTime - fdStartTime, 1.0);
 
-               fvuErrorCntChanMs[ uChannelT0 ]++;
-               if( gdpbv100::GET4_V2X_ERR_LOST_EVT == mess.getGdpbSysErrData() )
-               {
-                  fhLostEvtCntEvo->Fill( fdMsTime - fdStartTime );
-                  fhLostEvtFractEvo->Fill( fdMsTime - fdStartTime, 1.0 );
+          fvuErrorCntChanMs[uChannelT0]++;
+          if (gdpbv100::GET4_V2X_ERR_LOST_EVT == mess.getGdpbSysErrData()) {
+            fhLostEvtCntEvo->Fill(fdMsTime - fdStartTime);
+            fhLostEvtFractEvo->Fill(fdMsTime - fdStartTime, 1.0);
 
-                  fvhEvtLostCntEvoChan[   uChannelT0 ]->Fill( fdMsTime - fdStartTime );
-                  fvhEvtLostFractEvoChan[ uChannelT0 ]->Fill( fdMsTime - fdStartTime, 1.0 );
+            fvhEvtLostCntEvoChan[uChannelT0]->Fill(fdMsTime - fdStartTime);
+            fvhEvtLostFractEvoChan[uChannelT0]->Fill(fdMsTime - fdStartTime,
+                                                     1.0);
 
-                  fvuEvtLostCntChanMs[ uChannelT0 ]++;
-               } // if( gdpbv100::GET4_V2X_ERR_LOST_EVT == mess.getGdpbSysErrData() )
-            } // if( gdpbv100::SYS_GET4_ERROR == mess.getGdpbSysSubType() )
-//            fvvmEpSupprBuffer[fuCurrDpbIdx].push_back( mess );
-            break;
-         } // case gdpbv100::MSG_SYST:
-         case gdpbv100::MSG_STAR_TRI_A:
-         case gdpbv100::MSG_STAR_TRI_B:
-         case gdpbv100::MSG_STAR_TRI_C:
-         case gdpbv100::MSG_STAR_TRI_D:
-         {
-            break;
-         } // case gdpbv100::MSG_STAR_TRI_A-D
-         default:
-            LOG(error) << "Message type " << std::hex
-                       << std::setw(2) << static_cast<uint16_t>(messageType)
-                       << " not included in Get4 unpacker.";
-      } // switch( mess.getMessageType() )
-   } // for (uint32_t uIdx = 0; uIdx < uNbMessages; uIdx ++)
+            fvuEvtLostCntChanMs[uChannelT0]++;
+          }  // if( gdpbv100::GET4_V2X_ERR_LOST_EVT == mess.getGdpbSysErrData() )
+        }    // if( gdpbv100::SYS_GET4_ERROR == mess.getGdpbSysSubType() )
+             //            fvvmEpSupprBuffer[fuCurrDpbIdx].push_back( mess );
+        break;
+      }  // case gdpbv100::MSG_SYST:
+      case gdpbv100::MSG_STAR_TRI_A:
+      case gdpbv100::MSG_STAR_TRI_B:
+      case gdpbv100::MSG_STAR_TRI_C:
+      case gdpbv100::MSG_STAR_TRI_D: {
+        break;
+      }  // case gdpbv100::MSG_STAR_TRI_A-D
+      default:
+        LOG(error) << "Message type " << std::hex << std::setw(2)
+                   << static_cast<uint16_t>(messageType)
+                   << " not included in Get4 unpacker.";
+    }  // switch( mess.getMessageType() )
+  }    // for (uint32_t uIdx = 0; uIdx < uNbMessages; uIdx ++)
 
-   /// Fill histograms
-   FillHistograms();
+  /// Fill histograms
+  FillHistograms();
 
-   return kTRUE;
+  return kTRUE;
 }
 /*
 // -------------------------------------------------------------------------
@@ -788,481 +750,646 @@ void CbmMcbm2018MonitorAlgoT0::ProcessPattern( gdpbv100::FullMessage mess )
 }
 // -------------------------------------------------------------------------
 */
-Bool_t CbmMcbm2018MonitorAlgoT0::CreateHistograms()
-{
-   std::string sFolder = "MoniT0";
+Bool_t CbmMcbm2018MonitorAlgoT0::CreateHistograms() {
+  std::string sFolder = "MoniT0";
 
-   LOG(info) << "create Histos for T0 monitoring ";
+  LOG(info) << "create Histos for T0 monitoring ";
 
-   /// Logarithmic bining
-   uint32_t iNbBinsLog = 0;
-      /// Parameters are NbDecadesLog, NbStepsDecade, NbSubStepsInStep
-   std::vector<double> dBinsLogVector = GenerateLogBinArray( 4, 9, 1, iNbBinsLog );
-   double* dBinsLog = dBinsLogVector.data();
-//   double * dBinsLog = GenerateLogBinArray( 4, 9, 1, iNbBinsLog );
+  /// Logarithmic bining
+  uint32_t iNbBinsLog = 0;
+  /// Parameters are NbDecadesLog, NbStepsDecade, NbSubStepsInStep
+  std::vector<double> dBinsLogVector = GenerateLogBinArray(4, 9, 1, iNbBinsLog);
+  double* dBinsLog                   = dBinsLogVector.data();
+  //   double * dBinsLog = GenerateLogBinArray( 4, 9, 1, iNbBinsLog );
 
-   /*******************************************************************/
-   fhDpbMap = new TH1I( "hDpbMap", "Map of hits on T0 detector; DPB; Hits Count []",
-                           fuNrOfGdpbs, -0.5, fuNrOfGdpbs - 0.5 );
-   fhChannelMap = new TH1I( "hChannelMap", "Map of hits on T0 detector; Strip; Hits Count []",
-                           kuNbChanDiamond, -0.5, kuNbChanDiamond - 0.5 );
-   fhHitMapEvo = new TH2I( "hHitMapEvo", "Map of hits on T0 detector vs time in run; Chan; Time in run [s]; Hits Count []",
-                           kuNbChanDiamond, -0.5, kuNbChanDiamond - 0.5,
-                           fuHistoryHistoSize, 0, fuHistoryHistoSize );
-   fhHitTotEvo = new TH2I( "hHitTotEvo", "Evolution of TOT in T0 detector vs time in run; Time in run [s]; TOT [ bin ]; Hits Count []",
-                           fuHistoryHistoSize, 0, fuHistoryHistoSize,
-                           256, -0.5, 255.5 );
-   fhChanHitMapEvo = new TH2I( "hChanHitMapEvo", "Map of hits on T0 detector vs time in run; Strip; Time in run [s]; Hits Count []",
-                           kuNbChanDiamond, 0., kuNbChanDiamond,
-                           fuHistoryHistoSize, 0, fuHistoryHistoSize );
-   for( UInt_t uSpill = 0; uSpill < kuNbSpillPlots; uSpill ++)
-   {
-      fvhDpbMapSpill.push_back( new TH1I( Form("hDpbMapSpill%02u", uSpill),
-                                     Form("Map of hits on T0 detector in current spill %02u; DPB; Hits Count []", uSpill),
-                              fuNrOfGdpbs, -0.5, fuNrOfGdpbs - 0.5) );
-      fvhChannelMapSpill.push_back( new TH1I( Form("hChannelMapSpill%02u", uSpill),
-                                     Form("Map of hits on T0 detector in current spill %02u; Strip; Hits Count []", uSpill),
-                              kuNbChanDiamond, -0.5, kuNbChanDiamond - 0.5) );
-   } // for( UInt_t uSpill = 0; uSpill < kuNbSpillPlots; uSpill ++)
-   fhHitsPerSpill = new TH1I( "hHitsPerSpill", "Hit count per spill; Spill; Hits Count []",
-                           2000, 0., 2000);
+  /*******************************************************************/
+  fhDpbMap        = new TH1I("hDpbMap",
+                      "Map of hits on T0 detector; DPB; Hits Count []",
+                      fuNrOfGdpbs,
+                      -0.5,
+                      fuNrOfGdpbs - 0.5);
+  fhChannelMap    = new TH1I("hChannelMap",
+                          "Map of hits on T0 detector; Strip; Hits Count []",
+                          kuNbChanDiamond,
+                          -0.5,
+                          kuNbChanDiamond - 0.5);
+  fhHitMapEvo     = new TH2I("hHitMapEvo",
+                         "Map of hits on T0 detector vs time in run; Chan; "
+                         "Time in run [s]; Hits Count []",
+                         kuNbChanDiamond,
+                         -0.5,
+                         kuNbChanDiamond - 0.5,
+                         fuHistoryHistoSize,
+                         0,
+                         fuHistoryHistoSize);
+  fhHitTotEvo     = new TH2I("hHitTotEvo",
+                         "Evolution of TOT in T0 detector vs time in run; Time "
+                         "in run [s]; TOT [ bin ]; Hits Count []",
+                         fuHistoryHistoSize,
+                         0,
+                         fuHistoryHistoSize,
+                         256,
+                         -0.5,
+                         255.5);
+  fhChanHitMapEvo = new TH2I("hChanHitMapEvo",
+                             "Map of hits on T0 detector vs time in run; "
+                             "Strip; Time in run [s]; Hits Count []",
+                             kuNbChanDiamond,
+                             0.,
+                             kuNbChanDiamond,
+                             fuHistoryHistoSize,
+                             0,
+                             fuHistoryHistoSize);
+  for (UInt_t uSpill = 0; uSpill < kuNbSpillPlots; uSpill++) {
+    fvhDpbMapSpill.push_back(new TH1I(
+      Form("hDpbMapSpill%02u", uSpill),
+      Form(
+        "Map of hits on T0 detector in current spill %02u; DPB; Hits Count []",
+        uSpill),
+      fuNrOfGdpbs,
+      -0.5,
+      fuNrOfGdpbs - 0.5));
+    fvhChannelMapSpill.push_back(
+      new TH1I(Form("hChannelMapSpill%02u", uSpill),
+               Form("Map of hits on T0 detector in current spill %02u; Strip; "
+                    "Hits Count []",
+                    uSpill),
+               kuNbChanDiamond,
+               -0.5,
+               kuNbChanDiamond - 0.5));
+  }  // for( UInt_t uSpill = 0; uSpill < kuNbSpillPlots; uSpill ++)
+  fhHitsPerSpill = new TH1I("hHitsPerSpill",
+                            "Hit count per spill; Spill; Hits Count []",
+                            2000,
+                            0.,
+                            2000);
 
-   fhMsgCntEvo = new TH1I( "hMsgCntEvo", "Evolution of Hit & error msgs counts vs time in run; Time in run [s]; Msgs Count []",
-                        fuHistoryHistoSize, 0, fuHistoryHistoSize );
-   fhHitCntEvo = new TH1I( "hHitCntEvo", "Evolution of Hit counts vs time in run; Time in run [s]; Hits Count []",
-                        fuHistoryHistoSize, 0, fuHistoryHistoSize );
-   fhErrorCntEvo = new TH1I( "hErrorCntEvo", "Evolution of Error counts vs time in run; Time in run [s]; Error Count []",
-                     fuHistoryHistoSize, 0, fuHistoryHistoSize );
-   fhLostEvtCntEvo = new TH1I( "hLostEvtCntEvo", "Evolution of LostEvent counts vs time in run; Time in run [s]; LostEvent Count []",
-                     fuHistoryHistoSize, 0, fuHistoryHistoSize );
+  fhMsgCntEvo = new TH1I("hMsgCntEvo",
+                         "Evolution of Hit & error msgs counts vs time in run; "
+                         "Time in run [s]; Msgs Count []",
+                         fuHistoryHistoSize,
+                         0,
+                         fuHistoryHistoSize);
+  fhHitCntEvo = new TH1I(
+    "hHitCntEvo",
+    "Evolution of Hit counts vs time in run; Time in run [s]; Hits Count []",
+    fuHistoryHistoSize,
+    0,
+    fuHistoryHistoSize);
+  fhErrorCntEvo = new TH1I(
+    "hErrorCntEvo",
+    "Evolution of Error counts vs time in run; Time in run [s]; Error Count []",
+    fuHistoryHistoSize,
+    0,
+    fuHistoryHistoSize);
+  fhLostEvtCntEvo = new TH1I("hLostEvtCntEvo",
+                             "Evolution of LostEvent counts vs time in run; "
+                             "Time in run [s]; LostEvent Count []",
+                             fuHistoryHistoSize,
+                             0,
+                             fuHistoryHistoSize);
 
-   fhErrorFractEvo = new TProfile( "hErrorFractEvo",
-         "Evolution of Error Fraction vs time in run; Time in run [s]; Error Fract []",
-         fuHistoryHistoSize, 0, fuHistoryHistoSize );
-   fhLostEvtFractEvo = new TProfile( "hLostEvtFractEvo",
-         "Evolution of LostEvent Fraction vs time in run; Time in run [s]; LostEvent Fract []",
-         fuHistoryHistoSize, 0, fuHistoryHistoSize );
+  fhErrorFractEvo   = new TProfile("hErrorFractEvo",
+                                 "Evolution of Error Fraction vs time in run; "
+                                 "Time in run [s]; Error Fract []",
+                                 fuHistoryHistoSize,
+                                 0,
+                                 fuHistoryHistoSize);
+  fhLostEvtFractEvo = new TProfile("hLostEvtFractEvo",
+                                   "Evolution of LostEvent Fraction vs time in "
+                                   "run; Time in run [s]; LostEvent Fract []",
+                                   fuHistoryHistoSize,
+                                   0,
+                                   fuHistoryHistoSize);
 
-   fhMsgCntPerMsEvo = new TH2I( "hMsgCntPerMsEvo",
-         "Evolution of Hit & error msgs counts, per MS vs time in run; Time in run [s]; Hits Count/MS []; MS",
-         fuHistoryHistoSize, 0, fuHistoryHistoSize,
-         iNbBinsLog, dBinsLog  );
-   fhHitCntPerMsEvo = new TH2I( "hHitCntPerMsEvo",
-         "Evolution of Hit counts, per MS vs time in run; Time in run [s]; Hits Count/MS []; MS",
-         fuHistoryHistoSize, 0, fuHistoryHistoSize,
-         iNbBinsLog, dBinsLog  );
-   fhErrorCntPerMsEvo = new TH2I( "hErrorCntPerMsEvo",
-         "Evolution of Error counts, per MS vs time in run; Time in run [s]; Error Count/MS []; MS",
-         fuHistoryHistoSize, 0, fuHistoryHistoSize,
-         iNbBinsLog, dBinsLog );
-   fhLostEvtCntPerMsEvo = new TH2I( "hLostEvtCntPerMsEvo",
-         "Evolution of LostEvent, per MS counts vs time in run; Time in run [s]; LostEvent Count/MS []; MS",
-         fuHistoryHistoSize, 0, fuHistoryHistoSize,
-         iNbBinsLog, dBinsLog  );
+  fhMsgCntPerMsEvo =
+    new TH2I("hMsgCntPerMsEvo",
+             "Evolution of Hit & error msgs counts, per MS vs time in run; "
+             "Time in run [s]; Hits Count/MS []; MS",
+             fuHistoryHistoSize,
+             0,
+             fuHistoryHistoSize,
+             iNbBinsLog,
+             dBinsLog);
+  fhHitCntPerMsEvo   = new TH2I("hHitCntPerMsEvo",
+                              "Evolution of Hit counts, per MS vs time in run; "
+                              "Time in run [s]; Hits Count/MS []; MS",
+                              fuHistoryHistoSize,
+                              0,
+                              fuHistoryHistoSize,
+                              iNbBinsLog,
+                              dBinsLog);
+  fhErrorCntPerMsEvo = new TH2I("hErrorCntPerMsEvo",
+                                "Evolution of Error counts, per MS vs time in "
+                                "run; Time in run [s]; Error Count/MS []; MS",
+                                fuHistoryHistoSize,
+                                0,
+                                fuHistoryHistoSize,
+                                iNbBinsLog,
+                                dBinsLog);
+  fhLostEvtCntPerMsEvo =
+    new TH2I("hLostEvtCntPerMsEvo",
+             "Evolution of LostEvent, per MS counts vs time in run; Time in "
+             "run [s]; LostEvent Count/MS []; MS",
+             fuHistoryHistoSize,
+             0,
+             fuHistoryHistoSize,
+             iNbBinsLog,
+             dBinsLog);
 
-   fhErrorFractPerMsEvo = new TH2I(
-         "hErrorFractPerMsEvo",
-         "Evolution of Error Fraction, per MS vs time in run; Time in run [s]; Error Fract/MS []; MS",
-         fuHistoryHistoSize, 0, fuHistoryHistoSize,
-         1000, 0, 1 );
-   fhLostEvtFractPerMsEvo = new TH2I(
-         "hLostEvtFractPerMsEvo",
-         "Evolution of LostEvent Fraction, per MS vs time in run; Time in run [s]; LostEvent Fract/MS []; MS",
-         fuHistoryHistoSize, 0, fuHistoryHistoSize,
-         1000, 0, 1 );
+  fhErrorFractPerMsEvo =
+    new TH2I("hErrorFractPerMsEvo",
+             "Evolution of Error Fraction, per MS vs time in run; Time in run "
+             "[s]; Error Fract/MS []; MS",
+             fuHistoryHistoSize,
+             0,
+             fuHistoryHistoSize,
+             1000,
+             0,
+             1);
+  fhLostEvtFractPerMsEvo =
+    new TH2I("hLostEvtFractPerMsEvo",
+             "Evolution of LostEvent Fraction, per MS vs time in run; Time in "
+             "run [s]; LostEvent Fract/MS []; MS",
+             fuHistoryHistoSize,
+             0,
+             fuHistoryHistoSize,
+             1000,
+             0,
+             1);
 
-   fhChannelMapPulser = new TH1I( "fhChannelMapPulser", "Map of pulser hits on T0 detector; Chan; Hits Count []",
-                           kuNbChanDiamond, 0., kuNbChanDiamond);
-   fhHitMapEvoPulser = new TH2I( "fhHitMapEvoPulser", "Map of hits on T0 detector vs time in run; Chan; Time in run [s]; Hits Count []",
-                           kuNbChanDiamond, 0., kuNbChanDiamond,
-                           fuHistoryHistoSize, 0, fuHistoryHistoSize );
+  fhChannelMapPulser =
+    new TH1I("fhChannelMapPulser",
+             "Map of pulser hits on T0 detector; Chan; Hits Count []",
+             kuNbChanDiamond,
+             0.,
+             kuNbChanDiamond);
+  fhHitMapEvoPulser = new TH2I("fhHitMapEvoPulser",
+                               "Map of hits on T0 detector vs time in run; "
+                               "Chan; Time in run [s]; Hits Count []",
+                               kuNbChanDiamond,
+                               0.,
+                               kuNbChanDiamond,
+                               fuHistoryHistoSize,
+                               0,
+                               fuHistoryHistoSize);
 
-   /// Add pointers to the vector with all histo for access by steering class
-   AddHistoToVector( fhDpbMap, sFolder );
-   AddHistoToVector( fhChannelMap, sFolder );
-   AddHistoToVector( fhHitMapEvo, sFolder );
-   AddHistoToVector( fhHitTotEvo, sFolder );
-   AddHistoToVector( fhChanHitMapEvo, sFolder );
-   for( UInt_t uSpill = 0; uSpill < kuNbSpillPlots; uSpill ++)
-   {
-      AddHistoToVector( fvhDpbMapSpill[ uSpill ], sFolder );
-      AddHistoToVector( fvhChannelMapSpill[ uSpill ], sFolder );
-   } // for( UInt_t uSpill = 0; uSpill < kuNbSpillPlots; uSpill ++)
-   AddHistoToVector( fhHitsPerSpill, sFolder );
+  /// Add pointers to the vector with all histo for access by steering class
+  AddHistoToVector(fhDpbMap, sFolder);
+  AddHistoToVector(fhChannelMap, sFolder);
+  AddHistoToVector(fhHitMapEvo, sFolder);
+  AddHistoToVector(fhHitTotEvo, sFolder);
+  AddHistoToVector(fhChanHitMapEvo, sFolder);
+  for (UInt_t uSpill = 0; uSpill < kuNbSpillPlots; uSpill++) {
+    AddHistoToVector(fvhDpbMapSpill[uSpill], sFolder);
+    AddHistoToVector(fvhChannelMapSpill[uSpill], sFolder);
+  }  // for( UInt_t uSpill = 0; uSpill < kuNbSpillPlots; uSpill ++)
+  AddHistoToVector(fhHitsPerSpill, sFolder);
 
-   AddHistoToVector( fhMsgCntEvo, sFolder );
-   AddHistoToVector( fhHitCntEvo, sFolder );
-   AddHistoToVector( fhErrorCntEvo, sFolder );
-   AddHistoToVector( fhLostEvtCntEvo, sFolder );
+  AddHistoToVector(fhMsgCntEvo, sFolder);
+  AddHistoToVector(fhHitCntEvo, sFolder);
+  AddHistoToVector(fhErrorCntEvo, sFolder);
+  AddHistoToVector(fhLostEvtCntEvo, sFolder);
 
-   AddHistoToVector( fhErrorFractEvo, sFolder );
-   AddHistoToVector( fhLostEvtFractEvo, sFolder );
+  AddHistoToVector(fhErrorFractEvo, sFolder);
+  AddHistoToVector(fhLostEvtFractEvo, sFolder);
 
-   AddHistoToVector( fhMsgCntPerMsEvo, sFolder );
-   AddHistoToVector( fhHitCntPerMsEvo, sFolder );
-   AddHistoToVector( fhErrorCntPerMsEvo, sFolder );
-   AddHistoToVector( fhLostEvtCntPerMsEvo, sFolder );
-   AddHistoToVector( fhErrorFractPerMsEvo, sFolder );
-   AddHistoToVector( fhLostEvtFractPerMsEvo, sFolder );
+  AddHistoToVector(fhMsgCntPerMsEvo, sFolder);
+  AddHistoToVector(fhHitCntPerMsEvo, sFolder);
+  AddHistoToVector(fhErrorCntPerMsEvo, sFolder);
+  AddHistoToVector(fhLostEvtCntPerMsEvo, sFolder);
+  AddHistoToVector(fhErrorFractPerMsEvo, sFolder);
+  AddHistoToVector(fhLostEvtFractPerMsEvo, sFolder);
 
-   AddHistoToVector( fhChannelMapPulser, sFolder );
-   AddHistoToVector( fhHitMapEvoPulser, sFolder );
+  AddHistoToVector(fhChannelMapPulser, sFolder);
+  AddHistoToVector(fhHitMapEvoPulser, sFolder);
 
-   /*******************************************************************/
-   for( UInt_t uChan = 0; uChan < kuNbChanDiamond; ++uChan )
-   {
-      fvhMsgCntEvoChan[ uChan ] = new TH1I(
-            Form( "hMsgCntEvoChan%02u", uChan ),
-            Form( "Evolution of Messages counts vs time in run for channel %02u; Time in run [s]; Messages Count []", uChan ),
-            fuHistoryHistoSize, 0, fuHistoryHistoSize );
-      fvhMsgCntPerMsEvoChan[ uChan ] = new TH2I(
-            Form( "hMsgCntPerMsEvoChan%02u", uChan ),
-            Form( "Evolution of Hit counts per MS vs time in run for channel %02u; Time in run [s]; Hits Count/MS []; MS", uChan ),
-            fuHistoryHistoSize, 0, fuHistoryHistoSize,
-            iNbBinsLog, dBinsLog );
+  /*******************************************************************/
+  for (UInt_t uChan = 0; uChan < kuNbChanDiamond; ++uChan) {
+    fvhMsgCntEvoChan[uChan] =
+      new TH1I(Form("hMsgCntEvoChan%02u", uChan),
+               Form("Evolution of Messages counts vs time in run for channel "
+                    "%02u; Time in run [s]; Messages Count []",
+                    uChan),
+               fuHistoryHistoSize,
+               0,
+               fuHistoryHistoSize);
+    fvhMsgCntPerMsEvoChan[uChan] =
+      new TH2I(Form("hMsgCntPerMsEvoChan%02u", uChan),
+               Form("Evolution of Hit counts per MS vs time in run for channel "
+                    "%02u; Time in run [s]; Hits Count/MS []; MS",
+                    uChan),
+               fuHistoryHistoSize,
+               0,
+               fuHistoryHistoSize,
+               iNbBinsLog,
+               dBinsLog);
 
-      fvhHitCntEvoChan[ uChan ] = new TH1I(
-            Form( "hHitCntEvoChan%02u", uChan ),
-            Form( "Evolution of Hit counts vs time in run for channel %02u; Time in run [s]; Hits Count []", uChan ),
-            fuHistoryHistoSize, 0, fuHistoryHistoSize );
-      fvhHitCntPerMsEvoChan[ uChan ] = new TH2I(
-            Form( "hHitCntPerMsEvoChan%02u", uChan ),
-            Form( "Evolution of Hit counts per MS vs time in run for channel %02u; Time in run [s]; Hits Count/MS []; MS", uChan ),
-            fuHistoryHistoSize, 0, fuHistoryHistoSize,
-            iNbBinsLog, dBinsLog );
+    fvhHitCntEvoChan[uChan] =
+      new TH1I(Form("hHitCntEvoChan%02u", uChan),
+               Form("Evolution of Hit counts vs time in run for channel %02u; "
+                    "Time in run [s]; Hits Count []",
+                    uChan),
+               fuHistoryHistoSize,
+               0,
+               fuHistoryHistoSize);
+    fvhHitCntPerMsEvoChan[uChan] =
+      new TH2I(Form("hHitCntPerMsEvoChan%02u", uChan),
+               Form("Evolution of Hit counts per MS vs time in run for channel "
+                    "%02u; Time in run [s]; Hits Count/MS []; MS",
+                    uChan),
+               fuHistoryHistoSize,
+               0,
+               fuHistoryHistoSize,
+               iNbBinsLog,
+               dBinsLog);
 
-      fvhErrorCntEvoChan[ uChan ] = new TH1I(
-            Form( "hErrorCntEvoChan%02u", uChan ),
-            Form( "Evolution of Error counts vs time in run for channel %02u; Time in run [s]; Error Count []", uChan ),
-            fuHistoryHistoSize, 0, fuHistoryHistoSize );
-      fvhErrorCntPerMsEvoChan[ uChan ] = new TH2I(
-            Form( "hErrorCntPerMsEvoChan%02u", uChan ),
-            Form( "Evolution of Error counts per MS vs time in run for channel %02u; Time in run [s]; Error Count/MS []; MS", uChan ),
-            fuHistoryHistoSize, 0, fuHistoryHistoSize,
-            iNbBinsLog, dBinsLog );
+    fvhErrorCntEvoChan[uChan] =
+      new TH1I(Form("hErrorCntEvoChan%02u", uChan),
+               Form("Evolution of Error counts vs time in run for channel "
+                    "%02u; Time in run [s]; Error Count []",
+                    uChan),
+               fuHistoryHistoSize,
+               0,
+               fuHistoryHistoSize);
+    fvhErrorCntPerMsEvoChan[uChan] =
+      new TH2I(Form("hErrorCntPerMsEvoChan%02u", uChan),
+               Form("Evolution of Error counts per MS vs time in run for "
+                    "channel %02u; Time in run [s]; Error Count/MS []; MS",
+                    uChan),
+               fuHistoryHistoSize,
+               0,
+               fuHistoryHistoSize,
+               iNbBinsLog,
+               dBinsLog);
 
-      fvhEvtLostCntEvoChan[ uChan ] = new TH1I(
-            Form( "hEvtLostCntEvoChan%02u", uChan ),
-            Form( "Evolution of LostEvent counts vs time in run for channel %02u; Time in run [s]; LostEvent Count []", uChan ),
-            fuHistoryHistoSize, 0, fuHistoryHistoSize );
-      fvhEvtLostCntPerMsEvoChan[ uChan ] = new TH2I(
-            Form( "hEvtLostCntPerMsEvoChan%02u", uChan ),
-            Form( "Evolution of LostEvent counts per MS vs time in run for channel %02u; Time in run [s]; LostEvent Count/MS []; MS", uChan ),
-            fuHistoryHistoSize, 0, fuHistoryHistoSize,
-            iNbBinsLog, dBinsLog );
+    fvhEvtLostCntEvoChan[uChan] =
+      new TH1I(Form("hEvtLostCntEvoChan%02u", uChan),
+               Form("Evolution of LostEvent counts vs time in run for channel "
+                    "%02u; Time in run [s]; LostEvent Count []",
+                    uChan),
+               fuHistoryHistoSize,
+               0,
+               fuHistoryHistoSize);
+    fvhEvtLostCntPerMsEvoChan[uChan] =
+      new TH2I(Form("hEvtLostCntPerMsEvoChan%02u", uChan),
+               Form("Evolution of LostEvent counts per MS vs time in run for "
+                    "channel %02u; Time in run [s]; LostEvent Count/MS []; MS",
+                    uChan),
+               fuHistoryHistoSize,
+               0,
+               fuHistoryHistoSize,
+               iNbBinsLog,
+               dBinsLog);
 
-      fvhErrorFractEvoChan[ uChan ] = new TProfile(
-            Form( "hErrorFractEvoChan%02u", uChan ),
-            Form( "Evolution of Error Fraction vs time in run for channel %02u; Time in run [s]; Error Fract []", uChan ),
-            fuHistoryHistoSize, 0, fuHistoryHistoSize );
-      fvhErrorFractPerMsEvoChan[ uChan ] = new TH2I(
-            Form( "hErrorFractPerMsEvoChan%02u", uChan ),
-            Form( "Evolution of Error Fraction, per MS vs time in run for channel %02u; Time in run [s]; Error Fract/MS []; MS", uChan ),
-            fuHistoryHistoSize, 0, fuHistoryHistoSize,
-            1000, 0, 1 );
+    fvhErrorFractEvoChan[uChan] =
+      new TProfile(Form("hErrorFractEvoChan%02u", uChan),
+                   Form("Evolution of Error Fraction vs time in run for "
+                        "channel %02u; Time in run [s]; Error Fract []",
+                        uChan),
+                   fuHistoryHistoSize,
+                   0,
+                   fuHistoryHistoSize);
+    fvhErrorFractPerMsEvoChan[uChan] =
+      new TH2I(Form("hErrorFractPerMsEvoChan%02u", uChan),
+               Form("Evolution of Error Fraction, per MS vs time in run for "
+                    "channel %02u; Time in run [s]; Error Fract/MS []; MS",
+                    uChan),
+               fuHistoryHistoSize,
+               0,
+               fuHistoryHistoSize,
+               1000,
+               0,
+               1);
 
-      fvhEvtLostFractEvoChan[ uChan ] = new TProfile(
-            Form( "hEvtLostFractEvoChan%02u", uChan ),
-            Form( "Evolution of LostEvent Fraction vs time in run for channel %02u; Time in run [s]; LostEvent Fract []", uChan ),
-            fuHistoryHistoSize, 0, fuHistoryHistoSize );
-      fvhEvtLostFractPerMsEvoChan[ uChan ] = new TH2I(
-            Form( "hEvtLostFractPerMsEvoChan%02u", uChan ),
-            Form( "Evolution of LostEvent Fraction, per MS vs time in run for channel %02u; Time in run [s]; LostEvent Fract/MS []; MS", uChan ),
-            fuHistoryHistoSize, 0, fuHistoryHistoSize,
-            1000, 0, 1 );
+    fvhEvtLostFractEvoChan[uChan] =
+      new TProfile(Form("hEvtLostFractEvoChan%02u", uChan),
+                   Form("Evolution of LostEvent Fraction vs time in run for "
+                        "channel %02u; Time in run [s]; LostEvent Fract []",
+                        uChan),
+                   fuHistoryHistoSize,
+                   0,
+                   fuHistoryHistoSize);
+    fvhEvtLostFractPerMsEvoChan[uChan] = new TH2I(
+      Form("hEvtLostFractPerMsEvoChan%02u", uChan),
+      Form("Evolution of LostEvent Fraction, per MS vs time in run for channel "
+           "%02u; Time in run [s]; LostEvent Fract/MS []; MS",
+           uChan),
+      fuHistoryHistoSize,
+      0,
+      fuHistoryHistoSize,
+      1000,
+      0,
+      1);
 
-      /// Add pointers to the vector with all histo for access by steering class
-      AddHistoToVector( fvhMsgCntEvoChan[ uChan ], sFolder );
-      AddHistoToVector( fvhMsgCntPerMsEvoChan[ uChan ], sFolder );
-      AddHistoToVector( fvhHitCntEvoChan[ uChan ], sFolder );
-      AddHistoToVector( fvhHitCntPerMsEvoChan[ uChan ], sFolder );
-      AddHistoToVector( fvhErrorCntEvoChan[ uChan ], sFolder );
-      AddHistoToVector( fvhErrorCntPerMsEvoChan[ uChan ], sFolder );
-      AddHistoToVector( fvhEvtLostCntEvoChan[ uChan ], sFolder );
-      AddHistoToVector( fvhEvtLostCntPerMsEvoChan[ uChan ], sFolder );
-      AddHistoToVector( fvhErrorFractEvoChan[ uChan ], sFolder );
-      AddHistoToVector( fvhErrorFractPerMsEvoChan[ uChan ], sFolder );
-      AddHistoToVector( fvhEvtLostFractEvoChan[ uChan ], sFolder );
-      AddHistoToVector( fvhEvtLostFractPerMsEvoChan[ uChan ], sFolder );
-   } // for( UInt_t uChan = 0; uChan < kuNbChanDiamond; ++uChan )
+    /// Add pointers to the vector with all histo for access by steering class
+    AddHistoToVector(fvhMsgCntEvoChan[uChan], sFolder);
+    AddHistoToVector(fvhMsgCntPerMsEvoChan[uChan], sFolder);
+    AddHistoToVector(fvhHitCntEvoChan[uChan], sFolder);
+    AddHistoToVector(fvhHitCntPerMsEvoChan[uChan], sFolder);
+    AddHistoToVector(fvhErrorCntEvoChan[uChan], sFolder);
+    AddHistoToVector(fvhErrorCntPerMsEvoChan[uChan], sFolder);
+    AddHistoToVector(fvhEvtLostCntEvoChan[uChan], sFolder);
+    AddHistoToVector(fvhEvtLostCntPerMsEvoChan[uChan], sFolder);
+    AddHistoToVector(fvhErrorFractEvoChan[uChan], sFolder);
+    AddHistoToVector(fvhErrorFractPerMsEvoChan[uChan], sFolder);
+    AddHistoToVector(fvhEvtLostFractEvoChan[uChan], sFolder);
+    AddHistoToVector(fvhEvtLostFractPerMsEvoChan[uChan], sFolder);
+  }  // for( UInt_t uChan = 0; uChan < kuNbChanDiamond; ++uChan )
 
-   /// Cleanup array of log bins
-//   delete dBinsLog;
+  /// Cleanup array of log bins
+  //   delete dBinsLog;
 
-   /*******************************************************************/
+  /*******************************************************************/
 
-   /// Canvases
-   Double_t w = 10;
-   Double_t h = 10;
+  /// Canvases
+  Double_t w = 10;
+  Double_t h = 10;
 
-   /*******************************************************************/
-   /// Map of hits over T0 detector and same vs time in run
-   fcHitMaps = new TCanvas( "cHitMaps", "Hit maps", w, h);
-   fcHitMaps->Divide( 2 );
+  /*******************************************************************/
+  /// Map of hits over T0 detector and same vs time in run
+  fcHitMaps = new TCanvas("cHitMaps", "Hit maps", w, h);
+  fcHitMaps->Divide(2);
 
-   fcHitMaps->cd( 1 );
-   gPad->SetGridx();
-   gPad->SetGridy();
-   gPad->SetLogy();
-   fhChannelMap->Draw();
+  fcHitMaps->cd(1);
+  gPad->SetGridx();
+  gPad->SetGridy();
+  gPad->SetLogy();
+  fhChannelMap->Draw();
 
-   fcHitMaps->cd( 2 );
-   gPad->SetGridx();
-   gPad->SetGridy();
-   gPad->SetLogz();
-   fhHitMapEvo->Draw( "colz" );
+  fcHitMaps->cd(2);
+  gPad->SetGridx();
+  gPad->SetGridy();
+  gPad->SetLogz();
+  fhHitMapEvo->Draw("colz");
 
-   AddCanvasToVector( fcHitMaps, "canvases" );
-   /*******************************************************************/
+  AddCanvasToVector(fcHitMaps, "canvases");
+  /*******************************************************************/
 
-   /*******************************************************************/
-   /// General summary: Hit maps, Hit rate vs time in run, error fraction vs time un run
-   fcSummary = new TCanvas( "cSummary", "Hit maps, Hit rate, Error fraction", w, h);
-   fcSummary->Divide( 2, 2 );
+  /*******************************************************************/
+  /// General summary: Hit maps, Hit rate vs time in run, error fraction vs time un run
+  fcSummary =
+    new TCanvas("cSummary", "Hit maps, Hit rate, Error fraction", w, h);
+  fcSummary->Divide(2, 2);
 
-   fcSummary->cd( 1 );
-   gPad->SetGridx();
-   gPad->SetGridy();
-   gPad->SetLogy();
-   fhChannelMap->Draw();
+  fcSummary->cd(1);
+  gPad->SetGridx();
+  gPad->SetGridy();
+  gPad->SetLogy();
+  fhChannelMap->Draw();
 
-   fcSummary->cd( 2 );
-   gPad->SetGridx();
-   gPad->SetGridy();
-   gPad->SetLogz();
-   fhHitMapEvo->Draw( "colz" );
+  fcSummary->cd(2);
+  gPad->SetGridx();
+  gPad->SetGridy();
+  gPad->SetLogz();
+  fhHitMapEvo->Draw("colz");
 
-   fcSummary->cd( 3 );
-   gPad->SetGridx();
-   gPad->SetGridy();
-   gPad->SetLogy();
-   fhHitCntEvo->Draw();
+  fcSummary->cd(3);
+  gPad->SetGridx();
+  gPad->SetGridy();
+  gPad->SetLogy();
+  fhHitCntEvo->Draw();
 
-   fcSummary->cd( 4 );
-   gPad->SetGridx();
-   gPad->SetGridy();
-   gPad->SetLogz();
-   fhErrorFractEvo->Draw( "hist" );
+  fcSummary->cd(4);
+  gPad->SetGridx();
+  gPad->SetGridy();
+  gPad->SetLogz();
+  fhErrorFractEvo->Draw("hist");
 
-   AddCanvasToVector( fcSummary, "canvases" );
-   /*******************************************************************/
+  AddCanvasToVector(fcSummary, "canvases");
+  /*******************************************************************/
 
-   /*******************************************************************/
-   /// General summary: Hit maps, Hit rate vs time in run, error fraction vs time un run
-   fcGenCntsPerMs = new TCanvas( "cGenCntsPerMs", "Messages and hit cnt per MS, Error and Evt Loss Fract. per MS ", w, h);
-   fcGenCntsPerMs->Divide( 2, 2 );
+  /*******************************************************************/
+  /// General summary: Hit maps, Hit rate vs time in run, error fraction vs time un run
+  fcGenCntsPerMs = new TCanvas(
+    "cGenCntsPerMs",
+    "Messages and hit cnt per MS, Error and Evt Loss Fract. per MS ",
+    w,
+    h);
+  fcGenCntsPerMs->Divide(2, 2);
 
-   fcGenCntsPerMs->cd( 1 );
-   gPad->SetGridx();
-   gPad->SetGridy();
-   gPad->SetLogy();
-   gPad->SetLogz();
-   fhMsgCntPerMsEvo->Draw( "colz" );
+  fcGenCntsPerMs->cd(1);
+  gPad->SetGridx();
+  gPad->SetGridy();
+  gPad->SetLogy();
+  gPad->SetLogz();
+  fhMsgCntPerMsEvo->Draw("colz");
 
-   fcGenCntsPerMs->cd( 2 );
-   gPad->SetGridx();
-   gPad->SetGridy();
-   gPad->SetLogy();
-   gPad->SetLogz();
-   fhHitCntPerMsEvo->Draw( "colz" );
+  fcGenCntsPerMs->cd(2);
+  gPad->SetGridx();
+  gPad->SetGridy();
+  gPad->SetLogy();
+  gPad->SetLogz();
+  fhHitCntPerMsEvo->Draw("colz");
 
-   fcGenCntsPerMs->cd( 3 );
-   gPad->SetGridx();
-   gPad->SetGridy();
-   gPad->SetLogy();
-   gPad->SetLogz();
-   fhErrorFractPerMsEvo->Draw( "colz" );
+  fcGenCntsPerMs->cd(3);
+  gPad->SetGridx();
+  gPad->SetGridy();
+  gPad->SetLogy();
+  gPad->SetLogz();
+  fhErrorFractPerMsEvo->Draw("colz");
 
-   fcGenCntsPerMs->cd( 4 );
-   gPad->SetGridx();
-   gPad->SetGridy();
-   gPad->SetLogy();
-   gPad->SetLogz();
-   fhLostEvtFractPerMsEvo->Draw( "colz" );
+  fcGenCntsPerMs->cd(4);
+  gPad->SetGridx();
+  gPad->SetGridy();
+  gPad->SetLogy();
+  gPad->SetLogz();
+  fhLostEvtFractPerMsEvo->Draw("colz");
 
-   AddCanvasToVector( fcGenCntsPerMs, "canvases" );
-   /*******************************************************************/
+  AddCanvasToVector(fcGenCntsPerMs, "canvases");
+  /*******************************************************************/
 
-   /*******************************************************************/
-   /// General summary: Hit maps, Hit rate vs time in run, error fraction vs time un run
-   fcSpillCounts = new TCanvas( "cSpillCounts", "Counts per spill, last 5 spills including current one", w, h);
-   fcSpillCounts->Divide( 1, kuNbSpillPlots );
+  /*******************************************************************/
+  /// General summary: Hit maps, Hit rate vs time in run, error fraction vs time un run
+  fcSpillCounts =
+    new TCanvas("cSpillCounts",
+                "Counts per spill, last 5 spills including current one",
+                w,
+                h);
+  fcSpillCounts->Divide(1, kuNbSpillPlots);
 
-   for( UInt_t uSpill = 0; uSpill < kuNbSpillPlots; uSpill ++)
-   {
-      fcSpillCounts->cd( 1 + uSpill );
-      gPad->SetGridx();
-      gPad->SetGridy();
-//      gPad->SetLogy();
-//      fvhChannelMapSpill[ uSpill ]->SetStats( kTRUE );
-      fvhChannelMapSpill[ uSpill ]->Draw();
-      gPad->Update();
-      TPaveStats* st = (TPaveStats *)fvhChannelMapSpill[ uSpill ]->FindObject( "stats" );
-      st->SetOptStat( 10 );
-      st->SetX1NDC( 0.25 );
-      st->SetX2NDC( 0.95 );
-      st->SetY1NDC( 0.90 );
-      st->SetY2NDC( 0.95 );
-   } // for( UInt_t uSpill = 0; uSpill < kuNbSpillPlots; uSpill ++)
+  for (UInt_t uSpill = 0; uSpill < kuNbSpillPlots; uSpill++) {
+    fcSpillCounts->cd(1 + uSpill);
+    gPad->SetGridx();
+    gPad->SetGridy();
+    //      gPad->SetLogy();
+    //      fvhChannelMapSpill[ uSpill ]->SetStats( kTRUE );
+    fvhChannelMapSpill[uSpill]->Draw();
+    gPad->Update();
+    TPaveStats* st =
+      (TPaveStats*) fvhChannelMapSpill[uSpill]->FindObject("stats");
+    st->SetOptStat(10);
+    st->SetX1NDC(0.25);
+    st->SetX2NDC(0.95);
+    st->SetY1NDC(0.90);
+    st->SetY2NDC(0.95);
+  }  // for( UInt_t uSpill = 0; uSpill < kuNbSpillPlots; uSpill ++)
 
-   AddCanvasToVector( fcSpillCounts, "canvases" );
-   /*******************************************************************/
+  AddCanvasToVector(fcSpillCounts, "canvases");
+  /*******************************************************************/
 
-   /*******************************************************************/
-   /// General summary: Hit maps, Hit rate vs time in run, error fraction vs time un run
-   fcSpillCountsHori = new TCanvas( "cSpillCountsHori", "Counts per spill, last 5 spills including current one", w, h);
-   fcSpillCountsHori->Divide( kuNbSpillPlots );
+  /*******************************************************************/
+  /// General summary: Hit maps, Hit rate vs time in run, error fraction vs time un run
+  fcSpillCountsHori =
+    new TCanvas("cSpillCountsHori",
+                "Counts per spill, last 5 spills including current one",
+                w,
+                h);
+  fcSpillCountsHori->Divide(kuNbSpillPlots);
 
-   for( UInt_t uSpill = 0; uSpill < kuNbSpillPlots; uSpill ++)
-   {
-      fcSpillCountsHori->cd( 1 + uSpill );
-      gPad->SetGridx();
-      gPad->SetGridy();
-      gPad->SetLogy();
-      fvhChannelMapSpill[ uSpill ]->Draw();
-      gPad->Update();
-      TPaveStats* st = (TPaveStats *)fvhChannelMapSpill[ uSpill ]->FindObject( "stats" );
-      st->SetOptStat( 10 );
-      st->SetX1NDC( 0.25 );
-      st->SetX2NDC( 0.95 );
-      st->SetY1NDC( 0.90 );
-      st->SetY2NDC( 0.95 );
-   } // for( UInt_t uSpill = 0; uSpill < kuNbSpillPlots; uSpill ++)
+  for (UInt_t uSpill = 0; uSpill < kuNbSpillPlots; uSpill++) {
+    fcSpillCountsHori->cd(1 + uSpill);
+    gPad->SetGridx();
+    gPad->SetGridy();
+    gPad->SetLogy();
+    fvhChannelMapSpill[uSpill]->Draw();
+    gPad->Update();
+    TPaveStats* st =
+      (TPaveStats*) fvhChannelMapSpill[uSpill]->FindObject("stats");
+    st->SetOptStat(10);
+    st->SetX1NDC(0.25);
+    st->SetX2NDC(0.95);
+    st->SetY1NDC(0.90);
+    st->SetY2NDC(0.95);
+  }  // for( UInt_t uSpill = 0; uSpill < kuNbSpillPlots; uSpill ++)
 
-   AddCanvasToVector( fcSpillCountsHori, "canvases" );
-   /*******************************************************************/
+  AddCanvasToVector(fcSpillCountsHori, "canvases");
+  /*******************************************************************/
 
-   /*******************************************************************/
-   /// General summary: Hit maps, Hit rate vs time in run, error fraction vs time un run
-   fcSpillDpbCountsHori = new TCanvas( "cSpillDpbCountsHori", "Counts in DPB per spill, last 5 spills including current one", w, h);
-   fcSpillDpbCountsHori->Divide( kuNbSpillPlots );
+  /*******************************************************************/
+  /// General summary: Hit maps, Hit rate vs time in run, error fraction vs time un run
+  fcSpillDpbCountsHori =
+    new TCanvas("cSpillDpbCountsHori",
+                "Counts in DPB per spill, last 5 spills including current one",
+                w,
+                h);
+  fcSpillDpbCountsHori->Divide(kuNbSpillPlots);
 
-   for( UInt_t uSpill = 0; uSpill < kuNbSpillPlots; uSpill ++)
-   {
-      fcSpillDpbCountsHori->cd( 1 + uSpill );
-      gPad->SetGridx();
-      gPad->SetGridy();
-      gPad->SetLogy();
-      fvhDpbMapSpill[ uSpill ]->Draw();
-      gPad->Update();
-      TPaveStats* st = (TPaveStats *)fvhDpbMapSpill[ uSpill ]->FindObject( "stats" );
-      st->SetOptStat( 110 );
-      st->SetX1NDC( 0.25 );
-      st->SetX2NDC( 0.95 );
-      st->SetY1NDC( 0.90 );
-      st->SetY2NDC( 0.95 );
-   } // for( UInt_t uSpill = 0; uSpill < kuNbSpillPlots; uSpill ++)
+  for (UInt_t uSpill = 0; uSpill < kuNbSpillPlots; uSpill++) {
+    fcSpillDpbCountsHori->cd(1 + uSpill);
+    gPad->SetGridx();
+    gPad->SetGridy();
+    gPad->SetLogy();
+    fvhDpbMapSpill[uSpill]->Draw();
+    gPad->Update();
+    TPaveStats* st = (TPaveStats*) fvhDpbMapSpill[uSpill]->FindObject("stats");
+    st->SetOptStat(110);
+    st->SetX1NDC(0.25);
+    st->SetX2NDC(0.95);
+    st->SetY1NDC(0.90);
+    st->SetY2NDC(0.95);
+  }  // for( UInt_t uSpill = 0; uSpill < kuNbSpillPlots; uSpill ++)
 
-   AddCanvasToVector( fcSpillDpbCountsHori, "canvases" );
-   /*******************************************************************/
+  AddCanvasToVector(fcSpillDpbCountsHori, "canvases");
+  /*******************************************************************/
 
-   return kTRUE;
+  return kTRUE;
 }
-Bool_t CbmMcbm2018MonitorAlgoT0::FillHistograms()
-{
-   Double_t dMsgCountChan;
-   Double_t dFractErrorsInMsChan;
-   Double_t dFractLostEvtInMsChan;
-   UInt_t   uCountHitsInMs = 0;
-   UInt_t   uCountErrorsInMs = 0;
-   UInt_t   uCountLostEvtInMs = 0;
-   for( UInt_t uChan = 0; uChan < kuNbChanDiamond; ++uChan )
-   {
-      dMsgCountChan = fvuHitCntChanMs[ uChan ] + fvuErrorCntChanMs[ uChan ];
-      dFractErrorsInMsChan  = fvuErrorCntChanMs[ uChan ];
-      dFractLostEvtInMsChan = fvuEvtLostCntChanMs[ uChan ];
+Bool_t CbmMcbm2018MonitorAlgoT0::FillHistograms() {
+  Double_t dMsgCountChan;
+  Double_t dFractErrorsInMsChan;
+  Double_t dFractLostEvtInMsChan;
+  UInt_t uCountHitsInMs    = 0;
+  UInt_t uCountErrorsInMs  = 0;
+  UInt_t uCountLostEvtInMs = 0;
+  for (UInt_t uChan = 0; uChan < kuNbChanDiamond; ++uChan) {
+    dMsgCountChan         = fvuHitCntChanMs[uChan] + fvuErrorCntChanMs[uChan];
+    dFractErrorsInMsChan  = fvuErrorCntChanMs[uChan];
+    dFractLostEvtInMsChan = fvuEvtLostCntChanMs[uChan];
 
-      dFractErrorsInMsChan  /= dMsgCountChan;
-      dFractLostEvtInMsChan /= dMsgCountChan;
+    dFractErrorsInMsChan /= dMsgCountChan;
+    dFractLostEvtInMsChan /= dMsgCountChan;
 
-      fvhMsgCntEvoChan[            uChan ]->Fill( fdMsTime - fdStartTime, dMsgCountChan );
-      fvhMsgCntPerMsEvoChan[       uChan ]->Fill( fdMsTime - fdStartTime, dMsgCountChan );
-      fvhHitCntPerMsEvoChan[       uChan ]->Fill( fdMsTime - fdStartTime, fvuHitCntChanMs[ uChan ] );
-      fvhErrorCntPerMsEvoChan[     uChan ]->Fill( fdMsTime - fdStartTime, fvuErrorCntChanMs[ uChan ] );
-      fvhEvtLostCntPerMsEvoChan[   uChan ]->Fill( fdMsTime - fdStartTime, fvuEvtLostCntChanMs[ uChan ] );
-      fvhErrorFractPerMsEvoChan[   uChan ]->Fill( fdMsTime - fdStartTime, dFractErrorsInMsChan );
-      fvhEvtLostFractPerMsEvoChan[ uChan ]->Fill( fdMsTime - fdStartTime, dFractLostEvtInMsChan );
+    fvhMsgCntEvoChan[uChan]->Fill(fdMsTime - fdStartTime, dMsgCountChan);
+    fvhMsgCntPerMsEvoChan[uChan]->Fill(fdMsTime - fdStartTime, dMsgCountChan);
+    fvhHitCntPerMsEvoChan[uChan]->Fill(fdMsTime - fdStartTime,
+                                       fvuHitCntChanMs[uChan]);
+    fvhErrorCntPerMsEvoChan[uChan]->Fill(fdMsTime - fdStartTime,
+                                         fvuErrorCntChanMs[uChan]);
+    fvhEvtLostCntPerMsEvoChan[uChan]->Fill(fdMsTime - fdStartTime,
+                                           fvuEvtLostCntChanMs[uChan]);
+    fvhErrorFractPerMsEvoChan[uChan]->Fill(fdMsTime - fdStartTime,
+                                           dFractErrorsInMsChan);
+    fvhEvtLostFractPerMsEvoChan[uChan]->Fill(fdMsTime - fdStartTime,
+                                             dFractLostEvtInMsChan);
 
-      uCountHitsInMs    += fvuHitCntChanMs[ uChan ];
-      uCountErrorsInMs  += fvuErrorCntChanMs[ uChan ];
-      uCountLostEvtInMs += fvuEvtLostCntChanMs[ uChan ];
+    uCountHitsInMs += fvuHitCntChanMs[uChan];
+    uCountErrorsInMs += fvuErrorCntChanMs[uChan];
+    uCountLostEvtInMs += fvuEvtLostCntChanMs[uChan];
 
-      fvuHitCntChanMs[ uChan ] = 0;
-      fvuErrorCntChanMs[ uChan ] = 0;
-      fvuEvtLostCntChanMs[ uChan ] = 0;
-   } // for( UInt_t uChan = 0; uChan < kuNbChanDiamond; ++uChan )
-   Double_t dFractErrorsInMs  = uCountErrorsInMs;
-   Double_t dFractLostEvtInMs = uCountLostEvtInMs;
-   dFractErrorsInMs  /= ( uCountHitsInMs + uCountErrorsInMs );
-   dFractLostEvtInMs /= ( uCountHitsInMs + uCountErrorsInMs );
+    fvuHitCntChanMs[uChan]     = 0;
+    fvuErrorCntChanMs[uChan]   = 0;
+    fvuEvtLostCntChanMs[uChan] = 0;
+  }  // for( UInt_t uChan = 0; uChan < kuNbChanDiamond; ++uChan )
+  Double_t dFractErrorsInMs  = uCountErrorsInMs;
+  Double_t dFractLostEvtInMs = uCountLostEvtInMs;
+  dFractErrorsInMs /= (uCountHitsInMs + uCountErrorsInMs);
+  dFractLostEvtInMs /= (uCountHitsInMs + uCountErrorsInMs);
 
-   fhMsgCntPerMsEvo->Fill(       fdMsTime - fdStartTime, uCountHitsInMs + uCountErrorsInMs );
-   fhHitCntPerMsEvo->Fill(       fdMsTime - fdStartTime, uCountHitsInMs );
-   fhErrorCntPerMsEvo->Fill(     fdMsTime - fdStartTime, uCountErrorsInMs );
-   fhLostEvtCntPerMsEvo->Fill(   fdMsTime - fdStartTime, uCountLostEvtInMs );
-   fhErrorFractPerMsEvo->Fill(   fdMsTime - fdStartTime, dFractErrorsInMs );
-   fhLostEvtFractPerMsEvo->Fill( fdMsTime - fdStartTime, dFractLostEvtInMs );
+  fhMsgCntPerMsEvo->Fill(fdMsTime - fdStartTime,
+                         uCountHitsInMs + uCountErrorsInMs);
+  fhHitCntPerMsEvo->Fill(fdMsTime - fdStartTime, uCountHitsInMs);
+  fhErrorCntPerMsEvo->Fill(fdMsTime - fdStartTime, uCountErrorsInMs);
+  fhLostEvtCntPerMsEvo->Fill(fdMsTime - fdStartTime, uCountLostEvtInMs);
+  fhErrorFractPerMsEvo->Fill(fdMsTime - fdStartTime, dFractErrorsInMs);
+  fhLostEvtFractPerMsEvo->Fill(fdMsTime - fdStartTime, dFractLostEvtInMs);
 
-   return kTRUE;
+  return kTRUE;
 }
-Bool_t CbmMcbm2018MonitorAlgoT0::ResetHistograms( Bool_t bResetTime )
-{
-   for( UInt_t uChan = 0; uChan < kuNbChanDiamond; ++uChan )
-   {
-      fvhMsgCntEvoChan[ uChan ]->Reset();
-      fvhMsgCntPerMsEvoChan[ uChan ]->Reset();
+Bool_t CbmMcbm2018MonitorAlgoT0::ResetHistograms(Bool_t bResetTime) {
+  for (UInt_t uChan = 0; uChan < kuNbChanDiamond; ++uChan) {
+    fvhMsgCntEvoChan[uChan]->Reset();
+    fvhMsgCntPerMsEvoChan[uChan]->Reset();
 
-      fvhHitCntEvoChan[ uChan ]->Reset();
-      fvhHitCntPerMsEvoChan[ uChan ]->Reset();
+    fvhHitCntEvoChan[uChan]->Reset();
+    fvhHitCntPerMsEvoChan[uChan]->Reset();
 
-      fvhErrorCntEvoChan[ uChan ]->Reset();
-      fvhErrorCntPerMsEvoChan[ uChan ]->Reset();
+    fvhErrorCntEvoChan[uChan]->Reset();
+    fvhErrorCntPerMsEvoChan[uChan]->Reset();
 
-      fvhEvtLostCntEvoChan[ uChan ]->Reset();
-      fvhEvtLostCntPerMsEvoChan[ uChan ]->Reset();
+    fvhEvtLostCntEvoChan[uChan]->Reset();
+    fvhEvtLostCntPerMsEvoChan[uChan]->Reset();
 
-      fvhErrorFractEvoChan[ uChan ]->Reset();
-      fvhErrorFractPerMsEvoChan[ uChan ]->Reset();
+    fvhErrorFractEvoChan[uChan]->Reset();
+    fvhErrorFractPerMsEvoChan[uChan]->Reset();
 
-      fvhEvtLostFractEvoChan[ uChan ]->Reset();
-      fvhEvtLostFractPerMsEvoChan[ uChan ]->Reset();
-   } // for( UInt_t uChan = 0; uChan < kuNbChanDiamond; ++uChan )
+    fvhEvtLostFractEvoChan[uChan]->Reset();
+    fvhEvtLostFractPerMsEvoChan[uChan]->Reset();
+  }  // for( UInt_t uChan = 0; uChan < kuNbChanDiamond; ++uChan )
 
-   fuCurrentSpillIdx = 0;
-   fuCurrentSpillPlot = 0;
-   fhDpbMap->Reset();
-   fhChannelMap->Reset();
-   fhHitMapEvo->Reset();
-   for( UInt_t uSpill = 0; uSpill < kuNbSpillPlots; uSpill ++)
-   {
-      fvhDpbMapSpill[ uSpill ]->Reset();
-      fvhChannelMapSpill[ uSpill ]->Reset();
-   } // for( UInt_t uSpill = 0; uSpill < kuNbSpillPlots; uSpill ++)
-   fhHitsPerSpill->Reset();
+  fuCurrentSpillIdx  = 0;
+  fuCurrentSpillPlot = 0;
+  fhDpbMap->Reset();
+  fhChannelMap->Reset();
+  fhHitMapEvo->Reset();
+  for (UInt_t uSpill = 0; uSpill < kuNbSpillPlots; uSpill++) {
+    fvhDpbMapSpill[uSpill]->Reset();
+    fvhChannelMapSpill[uSpill]->Reset();
+  }  // for( UInt_t uSpill = 0; uSpill < kuNbSpillPlots; uSpill ++)
+  fhHitsPerSpill->Reset();
 
-   fhMsgCntEvo->Reset();
-   fhHitCntEvo->Reset();
-   fhErrorCntEvo->Reset();
+  fhMsgCntEvo->Reset();
+  fhHitCntEvo->Reset();
+  fhErrorCntEvo->Reset();
 
-   fhErrorFractEvo->Reset();
-   fhLostEvtFractEvo->Reset();
+  fhErrorFractEvo->Reset();
+  fhLostEvtFractEvo->Reset();
 
-   fhMsgCntPerMsEvo->Reset();
-   fhHitCntPerMsEvo->Reset();
-   fhErrorCntPerMsEvo->Reset();
-   fhLostEvtCntPerMsEvo->Reset();
-   fhErrorFractPerMsEvo->Reset();
-   fhLostEvtFractPerMsEvo->Reset();
+  fhMsgCntPerMsEvo->Reset();
+  fhHitCntPerMsEvo->Reset();
+  fhErrorCntPerMsEvo->Reset();
+  fhLostEvtCntPerMsEvo->Reset();
+  fhErrorFractPerMsEvo->Reset();
+  fhLostEvtFractPerMsEvo->Reset();
 
-   fhChannelMapPulser->Reset();
-   fhHitMapEvoPulser->Reset();
+  fhChannelMapPulser->Reset();
+  fhHitMapEvoPulser->Reset();
 
-   if( kTRUE == bResetTime )
-   {
-      /// Also reset the Start time for the evolution plots!
-      fdStartTime = -1.0;
-   } // if( kTRUE == bResetTime )
+  if (kTRUE == bResetTime) {
+    /// Also reset the Start time for the evolution plots!
+    fdStartTime = -1.0;
+  }  // if( kTRUE == bResetTime )
 
-   return kTRUE;
+  return kTRUE;
 }
 // -------------------------------------------------------------------------

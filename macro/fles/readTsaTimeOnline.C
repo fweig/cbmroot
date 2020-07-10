@@ -9,14 +9,13 @@
  */
 
 
-
-void readTsaTimeOnline(Bool_t highP = true)   //TString inFile =
-	      //"data/98_ba2015.tsa"
-	      //"data/129_ba2015.tsa"
-		       //	      "data/22_sps2016.tsa"
-	      //"data/1076_cern2014.tsa"
-	      //"data/test.tsa"
-		       //	      )
+void readTsaTimeOnline(Bool_t highP = true)  //TString inFile =
+                                             //"data/98_ba2015.tsa"
+                                             //"data/129_ba2015.tsa"
+                                             //	      "data/22_sps2016.tsa"
+                                             //"data/1076_cern2014.tsa"
+                                             //"data/test.tsa"
+                                             //	      )
 {
 
   // --- Specify input file name (this is just an example)
@@ -35,7 +34,7 @@ void readTsaTimeOnline(Bool_t highP = true)   //TString inFile =
 
   // --- Set debug level
   gDebug = 0;
-  
+
   std::cout << std::endl;
   //std::cout << ">>> readTsa:  input file is " << inFile  << std::endl;
   std::cout << ">>> readTsa: output file is " << outFile << std::endl;
@@ -47,7 +46,8 @@ void readTsaTimeOnline(Bool_t highP = true)   //TString inFile =
   std::cout << ">>> readTsa: Initialising..." << std::endl;
 
   // Spadic Unpacker
-  CbmTSUnpackSpadic11OnlineMonitor* spadic_unpacker = new CbmTSUnpackSpadic11OnlineMonitor(highP);
+  CbmTSUnpackSpadic11OnlineMonitor* spadic_unpacker =
+    new CbmTSUnpackSpadic11OnlineMonitor(highP);
 
   // --- Source task
   CbmFlibFileSourceNew* source = new CbmFlibFileSourceNew();
@@ -57,7 +57,7 @@ void readTsaTimeOnline(Bool_t highP = true)   //TString inFile =
   source->SetHostName("flip00");
 
   // --- Run
-  FairRunOnline *run = new FairRunOnline(source);
+  FairRunOnline* run = new FairRunOnline(source);
   run->SetSource(source);
   run->SetOutputFile(outFile);
   run->ActivateHttpServer(100);
@@ -70,22 +70,22 @@ void readTsaTimeOnline(Bool_t highP = true)   //TString inFile =
 
   run->Init();
 
-  
+
   // --- Start run
   TStopwatch timer;
   timer.Start();
   std::cout << ">>> readTsa: Starting run..." << std::endl;
-  run->Run(nEvents, 0); // run until end of input file
+  run->Run(nEvents, 0);  // run until end of input file
   timer.Stop();
-  
+
   // --- End-of-run info
   Double_t rtime = timer.RealTime();
   Double_t ctime = timer.CpuTime();
   std::cout << std::endl << std::endl;
   std::cout << ">>> readTsa: Macro finished successfully." << std::endl;
   std::cout << ">>> readTsa: Output file is " << outFile << std::endl;
-  std::cout << ">>> readTsa: Real time " << rtime << " s, CPU time "
-	    << ctime << " s" << std::endl;
+  std::cout << ">>> readTsa: Real time " << rtime << " s, CPU time " << ctime
+            << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

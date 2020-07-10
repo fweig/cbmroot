@@ -6,13 +6,13 @@
 #ifndef CBMMCINPUTSET_H
 #define CBMMCINPUTSET_H 1
 
+#include "CbmDefs.h"
+#include "CbmMCInput.h"
+#include "TF1.h"
+#include "TObject.h"
 #include <map>
 #include <set>
 #include <utility>
-#include "TF1.h"
-#include "TObject.h"
-#include "CbmMCInput.h"
-#include "CbmDefs.h"
 
 
 /** @class CbmMCInputSet
@@ -31,51 +31,48 @@
  ** CbmMCInput::GetNextEntry(), until all inputs were used once, after
  ** which GetNextEntry() will return kTRUE.
  **/
-class CbmMCInputSet : public TObject
-{
+class CbmMCInputSet : public TObject {
 
-  public:
-
-    /** @brief Default constructor **/
-    CbmMCInputSet();
+public:
+  /** @brief Default constructor **/
+  CbmMCInputSet();
 
 
-    /** @brief Constructor
+  /** @brief Constructor
      ** @param rate   Event rate [1/s]. Must be positive.
      **/
-    CbmMCInputSet(Double_t rate);
+  CbmMCInputSet(Double_t rate);
 
 
-    /** @brief Destructor **/
-    virtual ~CbmMCInputSet();
+  /** @brief Destructor **/
+  virtual ~CbmMCInputSet();
 
 
-    /** @brief Activate and connect all input chains
+  /** @brief Activate and connect all input chains
      ** @param object  Pointer to pointer to branch class
      ** @param branchName  Name of branch
      **
      ** All input trees have to be connected to the argument object.
      **/
-    virtual Bool_t ActivateObject(TObject** object, const char* branchName);
+  virtual Bool_t ActivateObject(TObject** object, const char* branchName);
 
 
-    /** @brief Add an input to the set
+  /** @brief Add an input to the set
      ** @param inputId  Unique input identifier
      ** @param input    Pointer to CbmMCInput object
      **/
-    void AddInput(UInt_t inputId, TChain* chain,
-                  ECbmTreeAccess mode = ECbmTreeAccess::kRegular);
+  void AddInput(UInt_t inputId,
+                TChain* chain,
+                ECbmTreeAccess mode = ECbmTreeAccess::kRegular);
 
 
-    /** @brief List of branches
+  /** @brief List of branches
      ** @value Reference to branch list
      **/
-    const std::set<TString>& GetBranchList() const {
-      return fBranches;
-    }
+  const std::set<TString>& GetBranchList() const { return fBranches; }
 
 
-    /** @brief Time difference to next event
+  /** @brief Time difference to next event
      ** @value Time difference to next event [ns]
      **
      ** This method samples from the probability distribution for the time
@@ -83,31 +80,31 @@ class CbmMCInputSet : public TObject
      ** (exponential distribution).
      ** The return value is zero if the rate was specified to be non-positive.
      **/
-    Double_t GetDeltaT();
+  Double_t GetDeltaT();
 
 
-    /** @brief Accessor to first input
+  /** @brief Accessor to first input
      ** @value ID and Pointer to first CbmMCInput object.
      **
      ** Returns -1 for the ID and a null pointer if no input is connected.
      **/
-    std::pair<UInt_t, CbmMCInput*> GetFirstInput() {
-      return ( fInputs.empty() ?
-          std::make_pair(-1, nullptr) :
-          std::make_pair(fInputs.begin()->first, fInputs.begin()->second) );
-    }
+  std::pair<UInt_t, CbmMCInput*> GetFirstInput() {
+    return (fInputs.empty() ? std::make_pair(-1, nullptr)
+                            : std::make_pair(fInputs.begin()->first,
+                                             fInputs.begin()->second));
+  }
 
 
-    /** @brief Accessor to input
+  /** @brief Accessor to input
      ** @param id  Unique input identifier
      ** @value Pointer to CbmMCInput object. Null if ID is not used.
      **/
-    CbmMCInput* GetInput(UInt_t id) {
-      return ( fInputs.find(id) == fInputs.end() ? nullptr : fInputs[id] );
-    }
+  CbmMCInput* GetInput(UInt_t id) {
+    return (fInputs.find(id) == fInputs.end() ? nullptr : fInputs[id]);
+  }
 
 
-    /** @brief Maximal number of events to be read from the input set
+  /** @brief Maximal number of events to be read from the input set
      ** @value Maximal number of events
      **
      ** If there is at least one limited input (mode = kRegular),
@@ -116,10 +113,10 @@ class CbmMCInputSet : public TObject
      ** read sequentially. If all inputs are unlimited (kRepeat or kRandom),
      ** the return value is -1.
      */
-    Int_t GetMaxNofEvents() const;
+  Int_t GetMaxNofEvents() const;
 
 
-    /** @brief Get the next entry from the inputs
+  /** @brief Get the next entry from the inputs
      ** @value Status tuple
      **
      ** The return tuple consists of:
@@ -128,32 +125,28 @@ class CbmMCInputSet : public TObject
      ** Entry number from the used input. If -1, the end of this input
      ** was reached.
      **/
-    std::tuple<Bool_t, UInt_t, Int_t> GetNextEntry();
+  std::tuple<Bool_t, UInt_t, Int_t> GetNextEntry();
 
 
-
-    /** @brief Event rate
+  /** @brief Event rate
      ** @value Event rate [1/s]
      **/
-    Double_t GetRate() const {
-      return fRate;
-    }
+  Double_t GetRate() const { return fRate; }
 
 
-    /** @brief register all input chains to the FairRootManager **/
-    void RegisterChains();
+  /** @brief register all input chains to the FairRootManager **/
+  void RegisterChains();
 
 
-  private:
+private:
+  Double_t fRate;                                        // Event rate [1/s]
+  std::map<UInt_t, CbmMCInput*> fInputs;                 // Key is input ID
+  std::map<UInt_t, CbmMCInput*>::iterator fInputHandle;  // Handle for inputs
+  std::set<TString> fBranches;                           // List of branch names
+  TF1* fDeltaDist;  // Probability distribution for delta(t)
 
-    Double_t fRate;                // Event rate [1/s]
-    std::map<UInt_t, CbmMCInput*> fInputs; // Key is input ID
-    std::map<UInt_t, CbmMCInput*>::iterator fInputHandle; // Handle for inputs
-    std::set<TString> fBranches;   // List of branch names
-    TF1* fDeltaDist;               // Probability distribution for delta(t)
 
-
-    /** @brief Compare an input branch list with the reference branch list
+  /** @brief Compare an input branch list with the reference branch list
      ** @param input Pointer to CbmMCInput object
      ** @value kTRUE if the branch list of the input is compatible
      **
@@ -162,12 +155,10 @@ class CbmMCInputSet : public TObject
      ** in the input are not considered harmful. The reference branch list
      ** is defined by the first input.
      **/
-    Bool_t CheckBranchList(CbmMCInput* input);
+  Bool_t CheckBranchList(CbmMCInput* input);
 
 
-
-    ClassDef(CbmMCInputSet, 1);
-
+  ClassDef(CbmMCInputSet, 1);
 };
 
 #endif /* CBMMCINPUT_H */

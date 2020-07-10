@@ -13,17 +13,14 @@
 
 namespace bpo = boost::program_options;
 
-void addCustomOptions(bpo::options_description& /*options*/)
-{
-}
+void addCustomOptions(bpo::options_description& /*options*/) {}
 
 //std::unique_ptr<FairMQExHistoCanvasDrawer> getCanvasDrawer();
 
-FairMQDevicePtr getDevice(const FairMQProgOptions& /*config*/)
-{
-    CbmHistoServer* histoServer = new CbmHistoServer();
+FairMQDevicePtr getDevice(const FairMQProgOptions& /*config*/) {
+  CbmHistoServer* histoServer = new CbmHistoServer();
 
-//    histoServer->SetCanvasDrawer(getCanvasDrawer());
+  //    histoServer->SetCanvasDrawer(getCanvasDrawer());
 
-    return histoServer;
+  return histoServer;
 }

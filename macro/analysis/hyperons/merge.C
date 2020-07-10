@@ -1,7 +1,7 @@
 {
-  Double_t scale = 1.388; //Scale bgd with this factor
+  Double_t scale = 1.388;  //Scale bgd with this factor
 
-  TFile* f0 = new TFile("histo_bgd.root","read");
+  TFile* f0 = new TFile("histo_bgd.root", "read");
 
   fhBgdB1B2      = new TH2D(*hBgdB1B2);
   fhSigB1B2      = new TH2D(*hSigB1B2);
@@ -26,10 +26,10 @@
   fhBgdPcaBmoM   = new TH1D(*hBgdPcaBmoM);
   fhSigPcaBmoM   = new TH1D(*hSigPcaBmoM);
 
-  for (Int_t i=0;i<100;i++){
+  for (Int_t i = 0; i < 100; i++) {
     char fileName[40];
-    sprintf(fileName,"histo.%02i.root",i);
-    TFile* f = TFile::Open(fileName,"read");
+    sprintf(fileName, "histo.%02i.root", i);
+    TFile* f = TFile::Open(fileName, "read");
     if (!f) continue;
     hBgdB1B2      = (TH2D*) f->Get("hBgdB1B2");
     hSigB1B2      = (TH2D*) f->Get("hSigB1B2");
@@ -53,65 +53,64 @@
     hSigChiDcaM   = (TH1D*) f->Get("hSigChiDcaM");
     hBgdPcaBmoM   = (TH1D*) f->Get("hBgdPcaBmoM");
     hSigPcaBmoM   = (TH1D*) f->Get("hSigPcaBmoM");
-    fhBgdB1B2      ->Add(hBgdB1B2);
-    fhSigB1B2      ->Add(hSigB1B2);
-    fhBgdB1Chi2    ->Add(hBgdB1Chi2);
-    fhSigB1Chi2    ->Add(hSigB1Chi2);
-    fhBgdChi1Chi2  ->Add(hBgdChi1Chi2);
-    fhSigChi1Chi2  ->Add(hSigChi1Chi2);
-    fhBgdChiDca    ->Add(hBgdChiDca);
-    fhSigChiDca    ->Add(hSigChiDca);
-    fhBgdPcaBmo    ->Add(hBgdPcaBmo);
-    fhSigPcaBmo    ->Add(hSigPcaBmo);
-    fhBgdM         ->Add(hBgdM);
-    fhSigM         ->Add(hSigM);
-    fhBgdB1Chi2M   ->Add(hBgdB1Chi2M);
-    fhSigB1Chi2M   ->Add(hSigB1Chi2M);
-    fhBgdChi1Chi2M ->Add(hBgdChi1Chi2M);
-    fhSigChi1Chi2M ->Add(hSigChi1Chi2M);
-    fhBgdB1B2M     ->Add(hBgdB1B2M);
-    fhSigB1B2M     ->Add(hSigB1B2M);
-    fhBgdChiDcaM   ->Add(hBgdChiDcaM);
-    fhSigChiDcaM   ->Add(hSigChiDcaM);
-    fhBgdPcaBmoM   ->Add(hBgdPcaBmoM);
-    fhSigPcaBmoM   ->Add(hSigPcaBmoM);
+    fhBgdB1B2->Add(hBgdB1B2);
+    fhSigB1B2->Add(hSigB1B2);
+    fhBgdB1Chi2->Add(hBgdB1Chi2);
+    fhSigB1Chi2->Add(hSigB1Chi2);
+    fhBgdChi1Chi2->Add(hBgdChi1Chi2);
+    fhSigChi1Chi2->Add(hSigChi1Chi2);
+    fhBgdChiDca->Add(hBgdChiDca);
+    fhSigChiDca->Add(hSigChiDca);
+    fhBgdPcaBmo->Add(hBgdPcaBmo);
+    fhSigPcaBmo->Add(hSigPcaBmo);
+    fhBgdM->Add(hBgdM);
+    fhSigM->Add(hSigM);
+    fhBgdB1Chi2M->Add(hBgdB1Chi2M);
+    fhSigB1Chi2M->Add(hSigB1Chi2M);
+    fhBgdChi1Chi2M->Add(hBgdChi1Chi2M);
+    fhSigChi1Chi2M->Add(hSigChi1Chi2M);
+    fhBgdB1B2M->Add(hBgdB1B2M);
+    fhSigB1B2M->Add(hSigB1B2M);
+    fhBgdChiDcaM->Add(hBgdChiDcaM);
+    fhSigChiDcaM->Add(hSigChiDcaM);
+    fhBgdPcaBmoM->Add(hBgdPcaBmoM);
+    fhSigPcaBmoM->Add(hSigPcaBmoM);
     f->Close();
   }
-  fhBgdB1B2     ->Scale(scale);
-  fhBgdB1Chi2   ->Scale(scale);
-  fhBgdChi1Chi2 ->Scale(scale);
-  fhBgdChiDca   ->Scale(scale);
-  fhBgdPcaBmo   ->Scale(scale);
-  fhBgdM        ->Scale(scale);
-  fhBgdB1Chi2M  ->Scale(scale);
+  fhBgdB1B2->Scale(scale);
+  fhBgdB1Chi2->Scale(scale);
+  fhBgdChi1Chi2->Scale(scale);
+  fhBgdChiDca->Scale(scale);
+  fhBgdPcaBmo->Scale(scale);
+  fhBgdM->Scale(scale);
+  fhBgdB1Chi2M->Scale(scale);
   fhBgdChi1Chi2M->Scale(scale);
-  fhBgdB1B2M    ->Scale(scale);
-  fhBgdChiDcaM  ->Scale(scale);
-  fhBgdPcaBmoM  ->Scale(scale);
+  fhBgdB1B2M->Scale(scale);
+  fhBgdChiDcaM->Scale(scale);
+  fhBgdPcaBmoM->Scale(scale);
 
-  TFile* f = new TFile("histo.root","recreate");
-  fhBgdB1B2     ->Write();
-  fhSigB1B2     ->Write();
-  fhBgdB1Chi2   ->Write();
-  fhSigB1Chi2   ->Write();
-  fhBgdChi1Chi2 ->Write();
-  fhSigChi1Chi2 ->Write();
-  fhBgdChiDca   ->Write();
-  fhSigChiDca   ->Write();
-  fhBgdPcaBmo   ->Write();
-  fhSigPcaBmo   ->Write();
-  fhBgdM        ->Write();
-  fhSigM        ->Write();
-  fhBgdB1Chi2M  ->Write();
-  fhSigB1Chi2M  ->Write();
+  TFile* f = new TFile("histo.root", "recreate");
+  fhBgdB1B2->Write();
+  fhSigB1B2->Write();
+  fhBgdB1Chi2->Write();
+  fhSigB1Chi2->Write();
+  fhBgdChi1Chi2->Write();
+  fhSigChi1Chi2->Write();
+  fhBgdChiDca->Write();
+  fhSigChiDca->Write();
+  fhBgdPcaBmo->Write();
+  fhSigPcaBmo->Write();
+  fhBgdM->Write();
+  fhSigM->Write();
+  fhBgdB1Chi2M->Write();
+  fhSigB1Chi2M->Write();
   fhBgdChi1Chi2M->Write();
   fhSigChi1Chi2M->Write();
-  fhBgdB1B2M    ->Write();
-  fhSigB1B2M    ->Write();
-  fhBgdChiDcaM  ->Write();
-  fhSigChiDcaM  ->Write();
-  fhBgdPcaBmoM  ->Write();
-  fhSigPcaBmoM  ->Write();
+  fhBgdB1B2M->Write();
+  fhSigB1B2M->Write();
+  fhBgdChiDcaM->Write();
+  fhSigChiDcaM->Write();
+  fhBgdPcaBmoM->Write();
+  fhSigPcaBmoM->Write();
   f->Close();
-}  
-
+}

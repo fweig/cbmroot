@@ -20,27 +20,25 @@
 using std::cout;
 using std::endl;
 
-void run_reco_tb_digi(TString dataSet = "test", Int_t nSlices = -1)
- {
+void run_reco_tb_digi(TString dataSet = "test", Int_t nSlices = -1) {
 
   // =========================================================================
   // ===                      Settings                                     ===
   // =========================================================================
-  
-  
+
+
   // --- File names
-  TString inFile  = dataSet + ".raw.root";   // Input file (MC events)
-  TString parFile = dataSet + ".par.root";   // Parameter file
-  TString outFile = dataSet + ".rec.root";   // Output file
+  TString inFile  = dataSet + ".raw.root";  // Input file (MC events)
+  TString parFile = dataSet + ".par.root";  // Parameter file
+  TString outFile = dataSet + ".rec.root";  // Output file
 
   // Log level
-  TString logLevel = "INFO";  // switch to DEBUG or DEBUG1,... for more info
-  TString logVerbosity = "LOW"; // switch to MEDIUM or HIGH for more info
+  TString logLevel     = "INFO";  // switch to DEBUG or DEBUG1,... for more info
+  TString logVerbosity = "LOW";   // switch to MEDIUM or HIGH for more info
 
   // ----    Debug option   -------------------------------------------------
   gDebug = 0;
   // ========================================================================
-
 
 
   // -----   Timer   --------------------------------------------------------
@@ -49,58 +47,53 @@ void run_reco_tb_digi(TString dataSet = "test", Int_t nSlices = -1)
   // ------------------------------------------------------------------------
 
   // -----   Reconstruction run   -------------------------------------------
-  FairRunAna *run = new FairRunAna();
+  FairRunAna* run             = new FairRunAna();
   FairFileSource* inputSource = new FairFileSource(inFile);
   run->SetSource(inputSource);
   run->SetOutputFile(outFile);
   run->SetGenerateRunInfo(kTRUE);
 
-  TString monitorFile{outFile};
-  monitorFile.ReplaceAll("rec","rec.monitor");
+  TString monitorFile {outFile};
+  monitorFile.ReplaceAll("rec", "rec.monitor");
   FairMonitor::GetMonitor()->EnableMonitor(kTRUE, monitorFile);
   // ------------------------------------------------------------------------
 
 
-  // ---- Set the log level 	
+  // ---- Set the log level
   FairLogger::GetLogger()->SetLogScreenLevel(logLevel.Data());
   FairLogger::GetLogger()->SetLogVerbosityLevel(logVerbosity.Data());
-  
-  
-  
+
 
   // =========================================================================
   // ===                      Reconstruction chain                         ===
   // =========================================================================
-  
+
   // --- Event builder (from digis)
-  // --- In order to perform event-by-event reconstruction, use the 
+  // --- In order to perform event-by-event reconstruction, use the
   // --- ideal event builder (CbmBuildEventsIdeal) instead.
   run->AddTask(new CbmBuildEventsSimple());
-  
+
   // --- STS reconstruction (event mode)
   CbmStsReco* stsReco = new CbmStsReco();
   stsReco->SetMode(kCbmEvent);
   run->AddTask(stsReco);
 
-  
+
   // --- STS track finder (event-based)
   run->AddTask(new CbmKF());
   run->AddTask(new CbmL1());
   CbmStsTrackFinder* stsTrackFinder = new CbmL1StsTrackFinder();
   FairTask* stsFindTracks = new CbmStsFindTracksEvents(stsTrackFinder);
   run->AddTask(stsFindTracks);
-  
+
   // --- Simple QA task to check basics
   run->AddTask(new CbmStsRecoQa());
- 
-
-
 
 
   // -----  Parameter database   --------------------------------------------
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
+  FairRuntimeDb* rtdb       = run->GetRuntimeDb();
   FairParRootFileIo* parIo1 = new FairParRootFileIo();
-  parIo1->open(parFile.Data(),"UPDATE");
+  parIo1->open(parFile.Data(), "UPDATE");
   rtdb->setFirstInput(parIo1);
   // ------------------------------------------------------------------------
 
@@ -113,8 +106,10 @@ void run_reco_tb_digi(TString dataSet = "test", Int_t nSlices = -1)
   rtdb->print();
 
   cout << "Starting run " << gGeoManager << endl;
-  if ( nSlices < 0 ) run->Run();
-  else run->Run(nSlices);
+  if (nSlices < 0)
+    run->Run();
+  else
+    run->Run(nSlices);
   // ------------------------------------------------------------------------
 
 

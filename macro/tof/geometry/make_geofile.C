@@ -8,9 +8,8 @@
 //
 // --------------------------------------------------------------------------
 
-void make_geofile(TString stofGeom = "tof_v16a_1e" )
-{
-   Int_t nEvents = 1;
+void make_geofile(TString stofGeom = "tof_v16a_1e") {
+  Int_t nEvents = 1;
   // ========================================================================
   //          Adjust this part according to your requirements
 
@@ -20,9 +19,9 @@ void make_geofile(TString stofGeom = "tof_v16a_1e" )
   TString outDir  = ".";
   TString outFile = outDir + "/auaumbias." + stofGeom + ".mc.root";
   TString parFile = outDir + "/auaumbias." + stofGeom + ".params.root";
-  
+
   // -----  Geometries  -----------------------------------------------------
-  TString caveGeom   = "cave.geo";
+  TString caveGeom = "cave.geo";
   //TString targetGeom = "target_au_250mu.geo";
   //TString pipeGeom   = "pipe_standard.geo";
   TString targetGeom = "";
@@ -30,13 +29,13 @@ void make_geofile(TString stofGeom = "tof_v16a_1e" )
   TString magnetGeom = "";
   TString stsGeom    = "";
   //  TString tofGeom    = "tof/tof_V13-2b.geo";
-  TString tofGeom    = "tof/"+ stofGeom +".geo.root";
-  
+  TString tofGeom = "tof/" + stofGeom + ".geo.root";
+
   // -----   Magnetic field   -----------------------------------------------
-  TString fieldMap    = "field_v12b";   // name of field map
-  Double_t fieldZ     = 40.;             // field centre z position
-  Double_t fieldScale = 0.8;             // field scaling factor
-  
+  TString fieldMap    = "field_v12b";  // name of field map
+  Double_t fieldZ     = 40.;           // field centre z position
+  Double_t fieldScale = 0.8;           // field scaling factor
+
   // In general, the following parts need not be touched
   // ========================================================================
 
@@ -53,57 +52,56 @@ void make_geofile(TString stofGeom = "tof_v16a_1e" )
 
   // -----   Create simulation run   ----------------------------------------
   FairRunSim* fRun = new FairRunSim();
-  fRun->SetName("TGeant3");              // Transport engine
-  //fRun->SetTrackingDebugMode(kTRUE);   // Geant3 debug output can be set in ./gconfig/g3Config.C 
-  fRun->SetOutputFile(outFile);          // Output file
+  fRun->SetName("TGeant3");  // Transport engine
+  //fRun->SetTrackingDebugMode(kTRUE);   // Geant3 debug output can be set in ./gconfig/g3Config.C
+  fRun->SetOutputFile(outFile);  // Output file
   FairRuntimeDb* rtdb = fRun->GetRuntimeDb();
   // ------------------------------------------------------------------------
 
 
   // -----   Create media   -------------------------------------------------
-  fRun->SetMaterials("media.geo");       // Materials
+  fRun->SetMaterials("media.geo");  // Materials
   // ------------------------------------------------------------------------
 
 
   // -----   Create detectors and passive volumes   -------------------------
-  if ( caveGeom != "" ) {
+  if (caveGeom != "") {
     FairModule* cave = new CbmCave("CAVE");
     cave->SetGeometryFileName(caveGeom);
     fRun->AddModule(cave);
   }
 
-  if ( pipeGeom != "" ) {
+  if (pipeGeom != "") {
     FairModule* pipe = new CbmPipe("PIPE");
     pipe->SetGeometryFileName(pipeGeom);
     fRun->AddModule(pipe);
   }
-  
-  if ( targetGeom != "" ) {
+
+  if (targetGeom != "") {
     FairModule* target = new CbmTarget("Target");
     target->SetGeometryFileName(targetGeom);
     fRun->AddModule(target);
   }
 
-  if ( magnetGeom != "" ) {
+  if (magnetGeom != "") {
     FairModule* magnet = new CbmMagnet("MAGNET");
     magnet->SetGeometryFileName(magnetGeom);
     fRun->AddModule(magnet);
   }
-  
-  if ( stsGeom != "" ) {
+
+  if (stsGeom != "") {
     FairDetector* sts = new CbmStsMC(kTRUE);
     sts->SetGeometryFileName(stsGeom);
     fRun->AddModule(sts);
   }
 
-  if ( tofGeom != "" ) {
+  if (tofGeom != "") {
     FairDetector* tof = new CbmTof("TOF", kTRUE);
     tof->SetGeometryFileName(tofGeom);
     fRun->AddModule(tof);
   }
-  
-  // ------------------------------------------------------------------------
 
+  // ------------------------------------------------------------------------
 
 
   // -----   Create magnetic field   ----------------------------------------
@@ -117,9 +115,9 @@ void make_geofile(TString stofGeom = "tof_v16a_1e" )
 
   // Use the experiment specific MC Event header instead of the default one
   // This one stores additional information about the reaction plane
-   // => OBSOLETE, therefore removed
-//  CbmMCEventHeader* mcHeader = new CbmMCEventHeader();
-//  fRun->SetMCEventHeader(mcHeader);
+  // => OBSOLETE, therefore removed
+  //  CbmMCEventHeader* mcHeader = new CbmMCEventHeader();
+  //  fRun->SetMCEventHeader(mcHeader);
 
   FairPrimaryGenerator* primGen = new FairPrimaryGenerator();
 
@@ -130,26 +128,26 @@ void make_geofile(TString stofGeom = "tof_v16a_1e" )
 
   // Use the CbmUrqmdGenrator which calculates a reaction plane and
   // rotate all particles accordingly
-  if (1){
-  FairUrqmdGenerator*  urqmdGen = new FairUrqmdGenerator(inFile);
-  primGen->SetEventPlane(-TMath::Pi(), TMath::Pi());
-  //(CbmUrqmdGenerator *)urqmdGen->SetVertex(0.,0.,20.);   // test shifted vertex
-  //urqmdGen->SetEventPlane(-180., 180.);
-  primGen->AddGenerator(urqmdGen);
-  primGen->SetTarget(0., 0.025);
-  fRun->SetGenerator(primGen);
+  if (1) {
+    FairUrqmdGenerator* urqmdGen = new FairUrqmdGenerator(inFile);
+    primGen->SetEventPlane(-TMath::Pi(), TMath::Pi());
+    //(CbmUrqmdGenerator *)urqmdGen->SetVertex(0.,0.,20.);   // test shifted vertex
+    //urqmdGen->SetEventPlane(-180., 180.);
+    primGen->AddGenerator(urqmdGen);
+    primGen->SetTarget(0., 0.025);
+    fRun->SetGenerator(primGen);
   }
   // -Trajectories Visualization (TGeoManager only )
   // Switch this on if you want to visualize tracks in the
   // eventdisplay.
   // This is normally switch off, because of the huge files created
-  // when it is switched on. 
+  // when it is switched on.
   //  fRun->SetStoreTraj(kTRUE);
 
   // -----   Run initialisation   -------------------------------------------
   fRun->Init();
   // ------------------------------------------------------------------------
-  
+
   // Set cuts for storing the trajectories.
   // Switch this on only if trajectories are stored.
   // Choose this cuts according to your needs, but be aware
@@ -170,7 +168,7 @@ void make_geofile(TString stofGeom = "tof_v16a_1e" )
   fieldPar->setChanged();
   fieldPar->setInputVersion(fRun->GetRunId(),1);
   */
-  Bool_t kParameterMerged = kTRUE;
+  Bool_t kParameterMerged   = kTRUE;
   FairParRootFileIo* parOut = new FairParRootFileIo(kParameterMerged);
   parOut->open(parFile.Data());
   rtdb->setOutput(parOut);
@@ -180,7 +178,7 @@ void make_geofile(TString stofGeom = "tof_v16a_1e" )
   // -----   Start run   ----------------------------------------------------
   fRun->Run(nEvents);
   // ------------------------------------------------------------------------
-  fRun->CreateGeometryFile("./geofile_"+ stofGeom + ".root");
+  fRun->CreateGeometryFile("./geofile_" + stofGeom + ".root");
 
   // -----   Finish   -------------------------------------------------------
   timer.Stop();
@@ -188,13 +186,12 @@ void make_geofile(TString stofGeom = "tof_v16a_1e" )
   Double_t ctime = timer.CpuTime();
   cout << endl << endl;
   cout << "Macro finished succesfully." << endl;
-  cout << "Output file is "    << outFile << endl;
+  cout << "Output file is " << outFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime 
-       << "s" << endl << endl;
+  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl
+       << endl;
   // ------------------------------------------------------------------------
 
   cout << " Test passed" << endl;
   cout << " All ok " << endl;
 }
-

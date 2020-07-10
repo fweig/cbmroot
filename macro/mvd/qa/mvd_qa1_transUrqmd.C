@@ -6,36 +6,35 @@
 // V. Friese   06/02/2007
 //
 // --------------------------------------------------------------------------
-void mvd_qa1_transUrqmd( const char* setup = "sis100_electron")
-{
+void mvd_qa1_transUrqmd(const char* setup = "sis100_electron") {
   // ========================================================================
   //          Adjust this part according to your requirements
 
   // Input file
-  TString inDir   = gSystem->Getenv("VMCWORKDIR");
+  TString inDir = gSystem->Getenv("VMCWORKDIR");
 
   // Set the path to the directory with macros for Geant3 and Geant4
   // configuration
   TString tut_configdir = inDir + "/sim/transport/gconfig";
-  gSystem->Setenv("CONFIG_DIR",tut_configdir.Data());
+  gSystem->Setenv("CONFIG_DIR", tut_configdir.Data());
 
-  TString inFile  = "";
+  TString inFile = "";
 
   // Number of events
-  Int_t   nEvents = 5;
+  Int_t nEvents = 5;
 
   // Output file name
-  TString outDir="data/";
-  TString outFile = outDir+ "mvd.mcQA.root";
+  TString outDir  = "data/";
+  TString outFile = outDir + "mvd.mcQA.root";
 
   // Parameter file name
-  TString parFile = outDir+ "params.root";
+  TString parFile = outDir + "params.root";
 
   TString geoFile = outDir + "geoQA.root";
 
-  TString setupFile = inDir + "/geometry/setup/setup_"+ setup +".C";
+  TString setupFile  = inDir + "/geometry/setup/setup_" + setup + ".C";
   TString setupFunct = "setup_";
-  setupFunct = setupFunct + setup + "()";
+  setupFunct         = setupFunct + setup + "()";
   gROOT->LoadMacro(setupFile);
   gInterpreter->ProcessLine(setupFunct);
   CbmSetup* cbmsetup = CbmSetup::Instance();
@@ -52,8 +51,8 @@ void mvd_qa1_transUrqmd( const char* setup = "sis100_electron")
   gDebug = 0;
   // ------------------------------------------------------------------------
 
-    // --- Logger settings ----------------------------------------------------
-  TString logLevel = "INFO";   // "DEBUG";
+  // --- Logger settings ----------------------------------------------------
+  TString logLevel     = "INFO";  // "DEBUG";
   TString logVerbosity = "LOW";
   // ------------------------------------------------------------------------
 
@@ -74,13 +73,13 @@ void mvd_qa1_transUrqmd( const char* setup = "sis100_electron")
   // in the responsibility of the user that no overlaps or extrusions are
   // created by the placement of the target.
   //
-  TString  targetElement   = "Gold";
+  TString targetElement    = "Gold";
   Double_t targetThickness = 0.025;  // full thickness in cm
   Double_t targetDiameter  = 2.5;    // diameter in cm
   Double_t targetPosX      = 0.;     // target x position in global c.s. [cm]
   Double_t targetPosY      = 0.;     // target y position in global c.s. [cm]
   Double_t targetPosZ      = 0.;     // target z position in global c.s. [cm]
-  Double_t targetRotY      = 0.;     // target rotation angle around the y axis [deg]
+  Double_t targetRotY = 0.;  // target rotation angle around the y axis [deg]
   // ------------------------------------------------------------------------
 
 
@@ -94,18 +93,16 @@ void mvd_qa1_transUrqmd( const char* setup = "sis100_electron")
   //
   Bool_t smearVertexXY = kTRUE;
   Bool_t smearVertexZ  = kTRUE;
-  Double_t beamWidthX   = 1.;  // Gaussian sigma of the beam profile in x [cm]
-  Double_t beamWidthY   = 1.;  // Gaussian sigma of the beam profile in y [cm]
+  Double_t beamWidthX  = 1.;  // Gaussian sigma of the beam profile in x [cm]
+  Double_t beamWidthY  = 1.;  // Gaussian sigma of the beam profile in y [cm]
   // ------------------------------------------------------------------------
-  
-
 
 
   // -----   Create simulation run   ----------------------------------------
   FairRunSim* fRun = new FairRunSim();
-  fRun->SetName("TGeant3");              // Transport engine
-  fRun->SetOutputFile(outFile);          // Output file
-  fRun->SetGenerateRunInfo(kTRUE);       // Create FairRunInfo file
+  fRun->SetName("TGeant3");         // Transport engine
+  fRun->SetOutputFile(outFile);     // Output file
+  fRun->SetGenerateRunInfo(kTRUE);  // Create FairRunInfo file
   FairRuntimeDb* rtdb = fRun->GetRuntimeDb();
   // ------------------------------------------------------------------------
 
@@ -116,7 +113,7 @@ void mvd_qa1_transUrqmd( const char* setup = "sis100_electron")
 
 
   // -----   Create media   -------------------------------------------------
-  fRun->SetMaterials("media.geo");       // Materials
+  fRun->SetMaterials("media.geo");  // Materials
   // ------------------------------------------------------------------------
 
   // -----   Create and register modules   ----------------------------------
@@ -129,9 +126,8 @@ void mvd_qa1_transUrqmd( const char* setup = "sis100_electron")
 
 
   // -----   Create and register the target   -------------------------------
-  CbmTarget* target = new CbmTarget(targetElement.Data(),
-                                              targetThickness,
-                                              targetDiameter);
+  CbmTarget* target =
+    new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
   target->SetPosition(targetPosX, targetPosY, targetPosZ);
   target->SetRotation(targetRotY);
   std::cout << target->ToString();
@@ -140,9 +136,9 @@ void mvd_qa1_transUrqmd( const char* setup = "sis100_electron")
 
   // -----   Create magnetic field   ----------------------------------------
   CbmFieldMap* magField = CbmSetup::Instance()->CreateFieldMap();
-  if ( ! magField ) {
-        std::cout << "-E- run_sim_new: No valid field!";
-        return;
+  if (!magField) {
+    std::cout << "-E- run_sim_new: No valid field!";
+    return;
   }
   fRun->SetField(magField);
   // ------------------------------------------------------------------------
@@ -150,11 +146,11 @@ void mvd_qa1_transUrqmd( const char* setup = "sis100_electron")
   // -----   Input file   ---------------------------------------------------
   std::cout << std::endl;
   TString defaultInputFile = inDir + "/input/urqmd.auau.10gev.centr.root";
-  if ( inFile.IsNull() ) {  // Not defined in the macro explicitly
-//        if ( strcmp(inFile, "") == 0 ) {  // not given as argument to the macro
-                inFile = defaultInputFile;
-//        }
-//        else inFile = inputFile;
+  if (inFile.IsNull()) {  // Not defined in the macro explicitly
+    //        if ( strcmp(inFile, "") == 0 ) {  // not given as argument to the macro
+    inFile = defaultInputFile;
+    //        }
+    //        else inFile = inputFile;
   }
   // ------------------------------------------------------------------------
 
@@ -165,9 +161,9 @@ void mvd_qa1_transUrqmd( const char* setup = "sis100_electron")
   // --- Get target parameters
   TVector3 targetPos(0., 0., 0.);
   Double_t tDz = 0.;
-  if ( target ) {
-  	targetPos = target->GetPosition();
-  	tDz = target->GetThickness();
+  if (target) {
+    targetPos = target->GetPosition();
+    tDz       = target->GetThickness();
   }
   primGen->SetTarget(targetPos.Z(), tDz);
   primGen->SetBeam(0., 0., beamWidthX, beamWidthY);
@@ -181,30 +177,29 @@ void mvd_qa1_transUrqmd( const char* setup = "sis100_electron")
   // ------------------------------------------------------------------------
 
   // Use the CbmUnigenGenrator for the input
-  CbmUnigenGenerator*  uniGen = new CbmUnigenGenerator(inFile);
+  CbmUnigenGenerator* uniGen = new CbmUnigenGenerator(inFile);
   primGen->AddGenerator(uniGen);
   fRun->SetGenerator(primGen);
   // ------------------------------------------------------------------------
 
-    // Visualisation of trajectories (TGeoManager Only)
+  // Visualisation of trajectories (TGeoManager Only)
   // Switch this on if you want to visualise tracks in the event display.
   // This is normally switch off, because of the huge files created
-  // when it is switched on. 
+  // when it is switched on.
   fRun->SetStoreTraj(kFALSE);
 
- 
+
   // -----   Run initialisation   -------------------------------------------
   fRun->Init();
   // ------------------------------------------------------------------------
 
-  
-  
+
   // -----   Runtime database   ---------------------------------------------
   CbmFieldPar* fieldPar = (CbmFieldPar*) rtdb->getContainer("CbmFieldPar");
   fieldPar->SetParameters(magField);
   fieldPar->setChanged();
-  fieldPar->setInputVersion(fRun->GetRunId(),1);
-  Bool_t kParameterMerged = kTRUE;
+  fieldPar->setInputVersion(fRun->GetRunId(), 1);
+  Bool_t kParameterMerged   = kTRUE;
   FairParRootFileIo* parOut = new FairParRootFileIo(kParameterMerged);
   parOut->open(parFile.Data());
   rtdb->setOutput(parOut);
@@ -213,7 +208,6 @@ void mvd_qa1_transUrqmd( const char* setup = "sis100_electron")
   // ------------------------------------------------------------------------
 
 
- 
   // -----   Start run   ----------------------------------------------------
   fRun->Run(nEvents);
   // ------------------------------------------------------------------------
@@ -224,14 +218,12 @@ void mvd_qa1_transUrqmd( const char* setup = "sis100_electron")
   Double_t ctime = timer.CpuTime();
   cout << endl << endl;
   cout << "Macro finished succesfully." << endl;
-  cout << "Output file is "    << outFile << endl;
+  cout << "Output file is " << outFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime 
-       << "s" << endl << endl;
+  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl
+       << endl;
   // ------------------------------------------------------------------------
 
   cout << " Test passed" << endl;
   cout << " All ok " << endl;
-
 }
-

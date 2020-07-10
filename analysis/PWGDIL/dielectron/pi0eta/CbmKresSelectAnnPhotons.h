@@ -1,14 +1,13 @@
 #ifndef CBM_KRES_SELECT_ANN_PHOTONS
 #define CBM_KRES_SELECT_ANN_PHOTONS
 
-#include <TClonesArray.h>
-#include "TVector3.h"
 #include "TMultiLayerPerceptron.h"
+#include "TVector3.h"
+#include <TClonesArray.h>
 
 using namespace std;
 
-class CbmKresSelectAnnPhotons
-{
+class CbmKresSelectAnnPhotons {
 
 public:
   //***** brief Standard constructor.
@@ -18,11 +17,15 @@ public:
 
 
   void Init();
-  double DoSelect(double InvariantMass, double OpeningAngle, double PlaneAngle_last, double ZPos, TVector3 Momentum1, TVector3 Momentum2);
+  double DoSelect(double InvariantMass,
+                  double OpeningAngle,
+                  double PlaneAngle_last,
+                  double ZPos,
+                  TVector3 Momentum1,
+                  TVector3 Momentum2);
 
 
 private:
- 
   std::string fAnnWeights;
   TMultiLayerPerceptron* fNN;
 
@@ -33,8 +36,7 @@ private:
   CbmKresSelectAnnPhotons operator=(const CbmKresSelectAnnPhotons&);
 
 
-	ClassDef(CbmKresSelectAnnPhotons,1)
+  ClassDef(CbmKresSelectAnnPhotons, 1)
 };
 
 #endif
-

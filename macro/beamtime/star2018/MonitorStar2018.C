@@ -8,16 +8,17 @@
  */
 
 // In order to call later Finish, we make this global
-FairRunOnline *run = NULL;
+FairRunOnline* run = NULL;
 
-void MonitorStar2018(TString inFile = "", Bool_t bGet4v2Mode = kTRUE, Bool_t b24bModeOn = kFALSE,
-                     Bool_t bMergedEpochsOn = kFALSE,
-                     Int_t iServerRefreshRate = 100, Int_t iServerHttpPort = 8080 )
-{
+void MonitorStar2018(TString inFile           = "",
+                     Bool_t bGet4v2Mode       = kTRUE,
+                     Bool_t b24bModeOn        = kFALSE,
+                     Bool_t bMergedEpochsOn   = kFALSE,
+                     Int_t iServerRefreshRate = 100,
+                     Int_t iServerHttpPort    = 8080) {
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
   TString inDir  = srcDir + "/input/";
-  if( "" != inFile )
-   inFile = inDir + inFile;
+  if ("" != inFile) inFile = inDir + inFile;
 
   // --- Specify number of events to be produced.
   // --- -1 means run until the end of the input file.
@@ -30,15 +31,15 @@ void MonitorStar2018(TString inFile = "", Bool_t bGet4v2Mode = kTRUE, Bool_t b24
   // --- Set log output levels
   FairLogger::GetLogger();
   gLogger->SetLogScreenLevel("INFO");
-//  gLogger->SetLogScreenLevel("DEBUG");
-//  gLogger->SetLogScreenLevel("DEBUG2"); // Print raw messages
+  //  gLogger->SetLogScreenLevel("DEBUG");
+  //  gLogger->SetLogScreenLevel("DEBUG2"); // Print raw messages
   gLogger->SetLogVerbosityLevel("LOW");
 
   // --- Define parameter files
-  TList *parFileList = new TList();
-  TString paramDir = "./";
+  TList* parFileList = new TList();
+  TString paramDir   = "./";
 
-  TString paramFileTof = paramDir + "MapTofHD_v18b.par";
+  TString paramFileTof          = paramDir + "MapTofHD_v18b.par";
   TObjString* tutDetDigiFileTof = new TObjString(paramFileTof);
   parFileList->Add(tutDetDigiFileTof);
 
@@ -59,32 +60,46 @@ void MonitorStar2018(TString inFile = "", Bool_t bGet4v2Mode = kTRUE, Bool_t b24
 
 
   test_monitor_tof->SetPulserMode();
-//  test_monitor_tof->SetPulserFee(0, 0);
-  test_monitor_tof->SetPulserChans(   3,  35,  67,  99, 131, 163, 195, 227,
-                                    259, 291, 323, 355, 387, 419, 451, 483,
-                                    515, 547 );
+  //  test_monitor_tof->SetPulserFee(0, 0);
+  test_monitor_tof->SetPulserChans(3,
+                                   35,
+                                   67,
+                                   99,
+                                   131,
+                                   163,
+                                   195,
+                                   227,
+                                   259,
+                                   291,
+                                   323,
+                                   355,
+                                   387,
+                                   419,
+                                   451,
+                                   483,
+                                   515,
+                                   547);
 
-  test_monitor_tof->SetGet4v20Mode( bGet4v2Mode );
-  test_monitor_tof->SetMergedEpochs( bMergedEpochsOn );
-  test_monitor_tof->SetEpochSuppressedMode( bMergedEpochsOn );
-//  if( kTRUE == bMergedEpochsOn )
-//  test_monitor_tof->SetEpochSuppressedMode( kTRUE );
-  test_monitor_tof->SetFitZoomWidthPs( );
+  test_monitor_tof->SetGet4v20Mode(bGet4v2Mode);
+  test_monitor_tof->SetMergedEpochs(bMergedEpochsOn);
+  test_monitor_tof->SetEpochSuppressedMode(bMergedEpochsOn);
+  //  if( kTRUE == bMergedEpochsOn )
+  //  test_monitor_tof->SetEpochSuppressedMode( kTRUE );
+  test_monitor_tof->SetFitZoomWidthPs();
   test_monitor_tof->SetMsOverlap();
-  test_monitor_tof->SetHistoryHistoSize( 1200. );
-  test_monitor_tof->SetHistoryHistoSizeLong( 1200. );
+  test_monitor_tof->SetHistoryHistoSize(1200.);
+  test_monitor_tof->SetHistoryHistoSizeLong(1200.);
 
   // --- Source task
   CbmFlibCern2016Source* source = new CbmFlibCern2016Source();
-  if( "" != inFile )
-      source->SetFileName(inFile);
-      else
-      {
-         source->SetHostName( "localhost");
-         source->SetPortNumber( 5556 );
-      }
+  if ("" != inFile)
+    source->SetFileName(inFile);
+  else {
+    source->SetHostName("localhost");
+    source->SetPortNumber(5556);
+  }
 
-  source->AddUnpacker(test_monitor_tof,  0x60, 6); //gDPBs
+  source->AddUnpacker(test_monitor_tof, 0x60, 6);  //gDPBs
 
   // --- Event header
   FairEventHeader* event = new CbmTbEvent();
@@ -94,12 +109,13 @@ void MonitorStar2018(TString inFile = "", Bool_t bGet4v2Mode = kTRUE, Bool_t b24
   run = new FairRunOnline(source);
   run->SetOutputFile(outFile);
   run->SetEventHeader(event);
-  run->ActivateHttpServer( iServerRefreshRate, iServerHttpPort ); // refresh each 100 events
+  run->ActivateHttpServer(iServerRefreshRate,
+                          iServerHttpPort);  // refresh each 100 events
   run->SetAutoFinish(kFALSE);
 
   // -----   Runtime database   ---------------------------------------------
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
-  Bool_t kParameterMerged = kTRUE;
+  FairRuntimeDb* rtdb       = run->GetRuntimeDb();
+  Bool_t kParameterMerged   = kTRUE;
   FairParRootFileIo* parOut = new FairParRootFileIo(kParameterMerged);
   FairParAsciiFileIo* parIn = new FairParAsciiFileIo();
   parOut->open(parFile.Data());
@@ -113,10 +129,11 @@ void MonitorStar2018(TString inFile = "", Bool_t bGet4v2Mode = kTRUE, Bool_t b24
   TStopwatch timer;
   timer.Start();
   std::cout << ">>> ngDpbMonitorLab: Starting run..." << std::endl;
-  run->Run(nEvents, 0); // run until end of input file
+  run->Run(nEvents, 0);  // run until end of input file
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
+            << std::endl;
 
   // --- End-of-run info
   Double_t rtime = timer.RealTime();
@@ -125,7 +142,7 @@ void MonitorStar2018(TString inFile = "", Bool_t bGet4v2Mode = kTRUE, Bool_t b24
   std::cout << ">>> ngDpbMonitorLab: Macro finished successfully." << std::endl;
   std::cout << ">>> ngDpbMonitorLab: Output file is " << outFile << std::endl;
   std::cout << ">>> ngDpbMonitorLab: Real time " << rtime << " s, CPU time "
-	    << ctime << " s" << std::endl;
+            << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

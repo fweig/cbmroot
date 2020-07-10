@@ -2,8 +2,7 @@
 // Set the drawing style of different objects
 
 
-void Style(TH2* h, const char *xTitle, const char *yTitle)
-{
+void Style(TH2* h, const char* xTitle, const char* yTitle) {
   h->GetXaxis()->SetTitle(xTitle);
   h->GetXaxis()->SetTitleFont(42);
   h->GetXaxis()->SetLabelFont(42);
@@ -26,8 +25,7 @@ void Style(TH2* h, const char *xTitle, const char *yTitle)
   h->GetZaxis()->SetTitleOffset(1.4);
 }
 
-void Style(TH1* h, const char *xTitle, const char *yTitle)
-{
+void Style(TH1* h, const char* xTitle, const char* yTitle) {
   h->GetXaxis()->SetTitle(xTitle);
   h->GetXaxis()->SetTitleFont(42);
   h->GetXaxis()->SetLabelFont(42);
@@ -46,8 +44,7 @@ void Style(TH1* h, const char *xTitle, const char *yTitle)
   h->GetYaxis()->SetNdivisions(505);
 }
 
-void Style(TProfile* p, const char* xTitle, const char* yTitle)
-{
+void Style(TProfile* p, const char* xTitle, const char* yTitle) {
   p->GetXaxis()->SetTitle(xTitle);
   p->GetXaxis()->SetTitleFont(42);
   p->GetXaxis()->SetTitleColor(1);
@@ -59,32 +56,27 @@ void Style(TProfile* p, const char* xTitle, const char* yTitle)
   p->GetYaxis()->SetTitleOffset(1.8);
 }
 
-void Style(TPaveText *p)
-{
+void Style(TPaveText* p) {
   p->SetFillColor(10);
   p->SetBorderSize(-1);
   p->SetTextFont(42);
 }
 
-void Style(TPaveLabel *p)
-{
+void Style(TPaveLabel* p) {
   p->SetFillColor(10);
   p->SetBorderSize(-1);
   p->SetTextFont(42);
   p->SetTextSize(1.1);
 }
 
-void Style(TLegend *p)
-{
+void Style(TLegend* p) {
   p->SetFillColor(10);
   p->SetBorderSize(-1);
   p->SetTextFont(42);
 }
 
 
-
-TPstyle()
-{
+TPstyle() {
   //////////////////////////////////////////////////////////////////////
   //
   // ROOT style macro for the CBM technical proposal
@@ -114,12 +106,12 @@ TPstyle()
   gStyle->SetTitleColor(10);
 
   gStyle->SetTitleFont(42);
-  gStyle->SetLabelFont(42,"X");
-  gStyle->SetLabelFont(42,"Y");
+  gStyle->SetLabelFont(42, "X");
+  gStyle->SetLabelFont(42, "Y");
   gStyle->SetStatFont(42);
 
-  gStyle->SetTitleOffset(1.2,"X");
-  gStyle->SetTitleOffset(1.4,"Y");
+  gStyle->SetTitleOffset(1.2, "X");
+  gStyle->SetTitleOffset(1.4, "Y");
 
   gStyle->SetOptDate(0);
   gStyle->SetOptTitle(0);
@@ -130,11 +122,7 @@ TPstyle()
 }
 
 
-
-void Norm(TH1 *h1)
-{
-    h1->Scale(1./h1->Integral());
-    h1->Scale(1./h1->GetXaxis()->GetBinWidth(1));
+void Norm(TH1* h1) {
+  h1->Scale(1. / h1->Integral());
+  h1->Scale(1. / h1->GetXaxis()->GetBinWidth(1));
 }
-
-

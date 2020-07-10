@@ -12,10 +12,9 @@
 // --------------------------------------------------------------------------
 
 
-void create_digipar(TString fileName="tof_v16a_1e", Int_t nEvents = 0)
-{
+void create_digipar(TString fileName = "tof_v16a_1e", Int_t nEvents = 0) {
 
-  cout<<"fileName: "<<fileName<<endl;
+  cout << "fileName: " << fileName << endl;
 
 
   // ========================================================================
@@ -34,18 +33,16 @@ void create_digipar(TString fileName="tof_v16a_1e", Int_t nEvents = 0)
   TString outFile = "test.esd." + fileName + ".root";
 
   // Digi Parameter Output File
-//  TString digiFile = fileName + ".digi.par.long";
-    TString digiFile = fileName + ".digi.par";
+  //  TString digiFile = fileName + ".digi.par.long";
+  TString digiFile = fileName + ".digi.par";
 
   // In general, the following parts need not be touched
   // ========================================================================
 
 
-
   // ----    Debug option   -------------------------------------------------
   gDebug = 0;
   // ------------------------------------------------------------------------
-
 
 
   // -----   Timer   --------------------------------------------------------
@@ -55,22 +52,22 @@ void create_digipar(TString fileName="tof_v16a_1e", Int_t nEvents = 0)
 
 
   // -----   Reconstruction run   -------------------------------------------
-  FairRunAna *run= new FairRunAna();
+  FairRunAna* run = new FairRunAna();
   run->SetInputFile(inFile);
   run->SetOutputFile(outFile);
   run->SetGeomFile(geoFile);
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
-//  FairLogger::GetLogger()->SetLogScreenLevel("DEBUG2");
+  //  FairLogger::GetLogger()->SetLogScreenLevel("DEBUG2");
   // ------------------------------------------------------------------------
 
   FairRuntimeDb* rtdb = run->GetRuntimeDb();
 
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
-  parIo2->open(digiFile,"out");
+  parIo2->open(digiFile, "out");
   rtdb->setOutput(parIo2);
 
-  CbmTofCreateDigiPar* tofDigiProducer = new CbmTofCreateDigiPar("TOF Digi Producer",
-                                                        "TOF task");
+  CbmTofCreateDigiPar* tofDigiProducer =
+    new CbmTofCreateDigiPar("TOF Digi Producer", "TOF task");
   run->AddTask(tofDigiProducer);
 
   // -------------------------------------------------------------------------
@@ -84,11 +81,10 @@ void create_digipar(TString fileName="tof_v16a_1e", Int_t nEvents = 0)
   rtdb->print();
 
 
-  CbmTofDigiPar* DigiPar = (CbmTofDigiPar*)
-                           rtdb->getContainer("CbmTofDigiPar");
+  CbmTofDigiPar* DigiPar = (CbmTofDigiPar*) rtdb->getContainer("CbmTofDigiPar");
 
   DigiPar->setChanged();
-  DigiPar->setInputVersion(run->GetRunId(),1);
+  DigiPar->setInputVersion(run->GetRunId(), 1);
   rtdb->print();
   rtdb->saveOutput();
 
@@ -99,7 +95,7 @@ void create_digipar(TString fileName="tof_v16a_1e", Int_t nEvents = 0)
   Double_t ctime = timer.CpuTime();
   cout << endl << endl;
   cout << "Macro finished succesfully." << endl;
-  cout << "Output file is "    << outFile << endl;
+  cout << "Output file is " << outFile << endl;
   cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << endl;
   cout << endl;
   // ------------------------------------------------------------------------

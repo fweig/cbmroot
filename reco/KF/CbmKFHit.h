@@ -13,18 +13,18 @@
 
 #include "CbmKFTrackInterface.h"
 
-class CbmKFHit :public TObject { 
-  
- public:
+class CbmKFHit : public TObject {
 
-  CbmKFHit():MaterialIndex(0) {};
-  virtual ~CbmKFHit(){ }
+public:
+  CbmKFHit() : MaterialIndex(0) {};
+  virtual ~CbmKFHit() {}
 
   Int_t MaterialIndex;
 
-  virtual Int_t Filter( CbmKFTrackInterface &track, Bool_t downstream, Double_t &QP0 ) = 0;
+  virtual Int_t
+  Filter(CbmKFTrackInterface& track, Bool_t downstream, Double_t& QP0) = 0;
 
-  ClassDef( CbmKFHit, 1 )
+  ClassDef(CbmKFHit, 1)
 };
 
 #endif /* !CBMKFHIT_H */

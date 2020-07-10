@@ -1,13 +1,14 @@
 #ifndef COMPARETOFDIGI_H
 #define COMPARETOFDIGI_H 1
 
-void compareTofDigiDataMembers(CbmTofDigi& test, 
-    Int_t address, ECbmModuleId systemid, Double_t time,
-    Double_t tot)
-{
-  Int_t retValInt{-222};
-  Double_t retValDouble{-222.};
-  ECbmModuleId retVal{ECbmModuleId::kNotExist};
+void compareTofDigiDataMembers(CbmTofDigi& test,
+                               Int_t address,
+                               ECbmModuleId systemid,
+                               Double_t time,
+                               Double_t tot) {
+  Int_t retValInt {-222};
+  Double_t retValDouble {-222.};
+  ECbmModuleId retVal {ECbmModuleId::kNotExist};
 
   retValInt = test.GetAddress();
   EXPECT_EQ(address, retValInt);
@@ -23,7 +24,6 @@ void compareTofDigiDataMembers(CbmTofDigi& test,
 
   retValDouble = test.GetTot();
   EXPECT_FLOAT_EQ(tot, retValDouble);
-
 }
 
-#endif // COMPARETOFDIGI_H
+#endif  // COMPARETOFDIGI_H

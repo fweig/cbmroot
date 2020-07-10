@@ -32,8 +32,8 @@
 
 
 #include "CbmDefs.h"
-#include "FairGenericStack.h"
 #include "CbmStackFilter.h"
+#include "FairGenericStack.h"
 
 #include <map>
 #include <memory>
@@ -42,11 +42,9 @@
 class TClonesArray;
 
 
-class CbmStack : public FairGenericStack
-{
+class CbmStack : public FairGenericStack {
 
- public:
-
+public:
   /** Default constructor
    *param size  Estimated track number
    **/
@@ -79,12 +77,24 @@ class CbmStack : public FairGenericStack
    ** This method is pure virtual in TVirtualMCStack. It is called by the
    ** by the transport engine for tracks generated during the transport.
    **/
-  virtual void PushTrack(Int_t toBeDone, Int_t parentId, Int_t pdgCode,
-                         Double_t px, Double_t py, Double_t pz,
-                         Double_t e, Double_t vx, Double_t vy,
-                         Double_t vz, Double_t time, Double_t polx,
-                         Double_t poly, Double_t polz, TMCProcess process,
-                         Int_t& ntr, Double_t weight, Int_t status);
+  virtual void PushTrack(Int_t toBeDone,
+                         Int_t parentId,
+                         Int_t pdgCode,
+                         Double_t px,
+                         Double_t py,
+                         Double_t pz,
+                         Double_t e,
+                         Double_t vx,
+                         Double_t vy,
+                         Double_t vz,
+                         Double_t time,
+                         Double_t polx,
+                         Double_t poly,
+                         Double_t polz,
+                         TMCProcess process,
+                         Int_t& ntr,
+                         Double_t weight,
+                         Int_t status);
 
 
   /** @brief Add a track to the stack (FairGenericStack)
@@ -115,12 +125,24 @@ class CbmStack : public FairGenericStack
    ** decay is done in the generator itself. An example is the CbmPlutoGenerator.
    ** This parental relationship is preserved for the particles during transport.
    **/
-  virtual void PushTrack(Int_t toBeDone, Int_t parentId, Int_t pdgCode,
-                         Double_t px, Double_t py, Double_t pz,
-                         Double_t e, Double_t vx, Double_t vy,
-                         Double_t vz, Double_t time, Double_t polx,
-                         Double_t poly, Double_t polz, TMCProcess proc,
-                         Int_t& ntr, Double_t weight, Int_t is,
+  virtual void PushTrack(Int_t toBeDone,
+                         Int_t parentId,
+                         Int_t pdgCode,
+                         Double_t px,
+                         Double_t py,
+                         Double_t pz,
+                         Double_t e,
+                         Double_t vx,
+                         Double_t vy,
+                         Double_t vz,
+                         Double_t time,
+                         Double_t polx,
+                         Double_t poly,
+                         Double_t polz,
+                         TMCProcess proc,
+                         Int_t& ntr,
+                         Double_t weight,
+                         Int_t is,
                          Int_t generatorParentID);
 
 
@@ -141,14 +163,14 @@ class CbmStack : public FairGenericStack
    **
    ** This method is called when using TGeant4.
    **/
-  virtual TParticle* PopPrimaryForTracking(Int_t iPrim); 
+  virtual TParticle* PopPrimaryForTracking(Int_t iPrim);
 
 
   /** Set the current track number 
    ** Declared in TVirtualMCStack
    *@param iTrack  track number
    **/
-  virtual void SetCurrentTrack(Int_t iTrack)   { fCurrentTrack     = iTrack; }
+  virtual void SetCurrentTrack(Int_t iTrack) { fCurrentTrack = iTrack; }
 
 
   /** Get total number of tracks 
@@ -209,9 +231,9 @@ class CbmStack : public FairGenericStack
 
   /** Modifiers  **/
   void StoreSecondaries(Bool_t choice = kTRUE) { fStoreSecondaries = choice; }
-  void SetMinPoints(Int_t min)                 { fMinPoints        = min;    }
-  void SetEnergyCut(Double_t eMin)             { fEnergyCut        = eMin;   }
-  void StoreMothers(Bool_t choice = kTRUE)     { fStoreMothers     = choice; }
+  void SetMinPoints(Int_t min) { fMinPoints = min; }
+  void SetEnergyCut(Double_t eMin) { fEnergyCut = eMin; }
+  void StoreMothers(Bool_t choice = kTRUE) { fStoreMothers = choice; }
 
 
   /** @brief Set the stack filter class **/
@@ -242,11 +264,9 @@ class CbmStack : public FairGenericStack
   void DoTracking(Bool_t doTracking = kTRUE) { fdoTracking = doTracking; }
 
 
- private:
-
-
+private:
   /** STL stack (FILO) used to handle the TParticles for tracking **/
-  std::stack<TParticle*>  fStack;           //!
+  std::stack<TParticle*> fStack;  //!
 
 
   std::unique_ptr<CbmStackFilter> fFilter;  //! Stack filter class
@@ -255,7 +275,7 @@ class CbmStack : public FairGenericStack
   /** Array of TParticles (contains all TParticles put into or created
    ** by the transport 
    **/
-  TClonesArray* fParticles;            //!
+  TClonesArray* fParticles;  //!
 
 
   /** Array of CbmMCTracks containg the tracks written to the output **/
@@ -263,12 +283,12 @@ class CbmStack : public FairGenericStack
 
 
   /** STL map from particle index to track index  **/
-  std::map<Int_t, Int_t>            fIndexMap;        //!
-  std::map<Int_t, Int_t>::iterator  fIndexIter;       //!
+  std::map<Int_t, Int_t> fIndexMap;             //!
+  std::map<Int_t, Int_t>::iterator fIndexIter;  //!
 
 
   /** STL map from track index and detector ID to number of MCPoints **/
-  std::map<std::pair<Int_t, ECbmModuleId>, Int_t> fPointsMap;     //!
+  std::map<std::pair<Int_t, ECbmModuleId>, Int_t> fPointsMap;  //!
 
 
   /** Some indizes and counters **/
@@ -280,25 +300,19 @@ class CbmStack : public FairGenericStack
 
 
   /** Variables defining the criteria for output selection **/
-  Bool_t     fStoreSecondaries;
-  Int_t      fMinPoints;
+  Bool_t fStoreSecondaries;
+  Int_t fMinPoints;
   Double32_t fEnergyCut;
-  Bool_t     fStoreMothers;
+  Bool_t fStoreMothers;
 
   /** go to tracking  */
-  Bool_t fdoTracking; //! global switch for geant propagation
+  Bool_t fdoTracking;  //! global switch for geant propagation
 
   CbmStack(const CbmStack&);
   CbmStack& operator=(const CbmStack&);
 
-  ClassDef(CbmStack,3)
-
-
+  ClassDef(CbmStack, 3)
 };
 
 
-
-
-
-
-#endif 
+#endif

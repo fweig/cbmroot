@@ -9,20 +9,22 @@
 
 /// extra Doxygen comment 10/11/2011 by DE
 
-void run_reco_smearing(Int_t nEvents = 2)
-{
-  gStyle->SetPalette(1,0);
+void run_reco_smearing(Int_t nEvents = 2) {
+  gStyle->SetPalette(1, 0);
   gROOT->SetStyle("Plain");
-  gStyle->SetPadTickX(1);                        
-  gStyle->SetPadTickY(1);  
+  gStyle->SetPadTickX(1);
+  gStyle->SetPadTickY(1);
   // ========================================================================
   // geometry selection for sim + reco  by Cyrano
   // ========================================================================
   ifstream whichTrdGeo;
-  whichTrdGeo.open("whichTrdGeo",ios::in);
+  whichTrdGeo.open("whichTrdGeo", ios::in);
   TString digipar;
   if (whichTrdGeo) whichTrdGeo >> digipar;
-  cout << "selected geometry : >> " << digipar << " << (to select a different geometry, edit macro/trd/whichTrdGeo file)" << endl;
+  cout
+    << "selected geometry : >> " << digipar
+    << " << (to select a different geometry, edit macro/trd/whichTrdGeo file)"
+    << endl;
   whichTrdGeo.close();
   if (digipar.Length() == 0) digipar = "trd_standard";
 
@@ -44,7 +46,7 @@ void run_reco_smearing(Int_t nEvents = 2)
   //  Digitisation files.
   // The sts digi file is not needed. The code is only here to
   // show how one can load more than one digi file.
-  TList *parFileList = new TList();
+  TList* parFileList = new TList();
 
   TString paramDir = gSystem->Getenv("VMCWORKDIR");
   paramDir += "/parameters";
@@ -55,18 +57,17 @@ void run_reco_smearing(Int_t nEvents = 2)
   //  TObjString trdDigiFile =  paramDir + "/trd/trd_v10b.digi.par";
   //  parFileList->Add(&trdDigiFile);
 
-  TObjString trdDigiFile = paramDir + "/trd/" + digipar + ".digi.par";//"./trd.digi.par";
+  TObjString trdDigiFile =
+    paramDir + "/trd/" + digipar + ".digi.par";  //"./trd.digi.par";
   parFileList->Add(&trdDigiFile);
 
   // In general, the following parts need not be touched
   // ========================================================================
 
 
- 
   // ----    Debug option   -------------------------------------------------
   gDebug = 0;
   // ------------------------------------------------------------------------
-
 
 
   // -----   Timer   --------------------------------------------------------
@@ -75,9 +76,8 @@ void run_reco_smearing(Int_t nEvents = 2)
   // ------------------------------------------------------------------------
 
 
-
   // ----  Load libraries   -------------------------------------------------
- gROOT->LoadMacro("$VMCWORKDIR/gconfig/basiclibs.C");
+  gROOT->LoadMacro("$VMCWORKDIR/gconfig/basiclibs.C");
   basiclibs();
   gSystem->Load("libGeoBase");
   gSystem->Load("libParBase");
@@ -98,13 +98,12 @@ void run_reco_smearing(Int_t nEvents = 2)
   gSystem->Load("libGlobal");
   gSystem->Load("libL1");
   //  gSystem->Load("libLittrack");
-  gSystem->Load("libMinuit2"); // Nedded for rich ellipse fitter
+  gSystem->Load("libMinuit2");  // Nedded for rich ellipse fitter
   // ------------------------------------------------------------------------
 
 
-
   // -----   Reconstruction run   -------------------------------------------
-  FairRunAna *run= new FairRunAna();
+  FairRunAna* run = new FairRunAna();
   run->SetInputFile(inFile);
   run->SetOutputFile(outFile);
   // ------------------------------------------------------------------------
@@ -114,15 +113,17 @@ void run_reco_smearing(Int_t nEvents = 2)
   // =========================================================================
 
   // Update of the values for the radiator F.U. 17.08.07
-  Int_t   trdNFoils = 130;       // number of polyetylene foils
-  Float_t trdDFoils = 0.0013;    // thickness of 1 foil [cm]
-  Float_t trdDGap   = 0.02;      // thickness of gap between foils [cm]
-  Bool_t  simpleTR  = kTRUE;     // use fast and simple version for TR
-                                 // production
+  Int_t trdNFoils   = 130;     // number of polyetylene foils
+  Float_t trdDFoils = 0.0013;  // thickness of 1 foil [cm]
+  Float_t trdDGap   = 0.02;    // thickness of gap between foils [cm]
+  Bool_t simpleTR   = kTRUE;   // use fast and simple version for TR
+                               // production
 
-  CbmTrdRadiator *radiator = new CbmTrdRadiator(simpleTR, trdNFoils, trdDFoils, trdDGap);
+  CbmTrdRadiator* radiator =
+    new CbmTrdRadiator(simpleTR, trdNFoils, trdDFoils, trdDGap);
 
-  CbmTrdHitProducerSmearing* trdHitProd = new CbmTrdHitProducerSmearing(radiator);
+  CbmTrdHitProducerSmearing* trdHitProd =
+    new CbmTrdHitProducerSmearing(radiator);
   run->AddTask(trdHitProd);
 
   /*
@@ -134,13 +135,12 @@ void run_reco_smearing(Int_t nEvents = 2)
   // -------------------------------------------------------------------------
 
 
-
   // -----  Parameter database   --------------------------------------------
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
-  FairParRootFileIo* parIo1 = new FairParRootFileIo();
+  FairRuntimeDb* rtdb        = run->GetRuntimeDb();
+  FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
   parIo1->open(parFile.Data());
-  parIo2->open(parFileList,"in");
+  parIo2->open(parFileList, "in");
   rtdb->setFirstInput(parIo1);
   rtdb->setSecondInput(parIo2);
   //  rtdb->setOutput(parIo1);
@@ -148,13 +148,11 @@ void run_reco_smearing(Int_t nEvents = 2)
   // ------------------------------------------------------------------------
 
 
-     
   // -----   Intialise and run   --------------------------------------------
   run->Init();
   cout << "Starting run" << endl;
-  run->Run(0,nEvents);
+  run->Run(0, nEvents);
   // ------------------------------------------------------------------------
-
 
 
   // -----   Finish   -------------------------------------------------------
@@ -163,7 +161,7 @@ void run_reco_smearing(Int_t nEvents = 2)
   Double_t ctime = timer.CpuTime();
   cout << endl << endl;
   cout << "Macro finished succesfully." << endl;
-  cout << "Output file is "    << outFile << endl;
+  cout << "Output file is " << outFile << endl;
   cout << "Parameter file is " << parFile << endl;
   cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << endl;
   cout << endl;
@@ -172,5 +170,5 @@ void run_reco_smearing(Int_t nEvents = 2)
   cout << " Test passed" << endl;
   cout << " All ok " << endl;
 }
-  // Output file
-  TString outFile = "data/test.esd.root";
+// Output file
+TString outFile = "data/test.esd.root";

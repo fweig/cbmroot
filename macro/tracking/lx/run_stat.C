@@ -1,92 +1,91 @@
-void run_stat(int index = -1)
-{
-   Int_t nEvents = 1000;
-   const char* setupName = "sis100_electron";
-   //const char* setupName = "sis100_muon_jpsi";
-   TString system  = "auau";
-   TString beam    = "10gev";
-   TString trigger = "mbias";//"centr";
-   TString part = "jpsi";
-   TString channel = "epem";
-   //TString channel = "mpmm";
+void run_stat(int index = -1) {
+  Int_t nEvents         = 1000;
+  const char* setupName = "sis100_electron";
+  //const char* setupName = "sis100_muon_jpsi";
+  TString system  = "auau";
+  TString beam    = "10gev";
+  TString trigger = "mbias";  //"centr";
+  TString part    = "jpsi";
+  TString channel = "epem";
+  //TString channel = "mpmm";
 
-   bool useSig = true;
-   bool useBg = false;
-   bool sigAscii = false;
+  bool useSig   = true;
+  bool useBg    = false;
+  bool sigAscii = false;
 
-   if (!useSig && !useBg)
-   {
-      cout << "At least one of the signal or background must be set!" << endl;
-      return;
-   }
+  if (!useSig && !useBg) {
+    cout << "At least one of the signal or background must be set!" << endl;
+    return;
+  }
 
-   TString partDir = "charm";
+  TString partDir = "charm";
 
-   if (part != "jpsi")
-     partDir = "cktA";
+  if (part != "jpsi") partDir = "cktA";
 
-   char str[5];
-   sprintf(str, "%05d", index);
+  char str[5];
+  sprintf(str, "%05d", index);
 
-   char str2[4];
-   sprintf(str2, "%04d", index);
+  char str2[4];
+  sprintf(str2, "%04d", index);
 
-   TString suffix = "";
+  TString suffix = "";
 
-   if (useBg)
-     suffix += "." + trigger;
+  if (useBg) suffix += "." + trigger;
 
-   if (useSig)
-   {
-      if (sigAscii)
-         suffix += ".ascii";
-      else
-         suffix += "." + part;
-   }
+  if (useSig) {
+    if (sigAscii)
+      suffix += ".ascii";
+    else
+      suffix += "." + part;
+  }
 
-   TString inOutDir;
-   
-   if (index >= 0)
-      inOutDir= "/lustre/nyx/cbm/users/tablyaz/Lx/runs/data" + TString(str) + "/";
-   else
-      inOutDir = "/data.local/cbmrootdata/";
-   
-   TString inFile = inOutDir + setupName + ".mc." + system + "." + beam + suffix + ".root";
-   TString globalParFile = inOutDir + setupName + ".param." + system + "." + beam + suffix + ".root";
-   TString outFile = inOutDir + setupName + ".reco." + system + "." + beam + suffix + ".root";
+  TString inOutDir;
 
-   TString srcDir = gSystem->Getenv("VMCWORKDIR");
+  if (index >= 0)
+    inOutDir =
+      "/lustre/nyx/cbm/users/tablyaz/Lx/runs/data" + TString(str) + "/";
+  else
+    inOutDir = "/data.local/cbmrootdata/";
 
-   Int_t iVerbose = 1;
-   TStopwatch timer;
-   timer.Start();
+  TString inFile =
+    inOutDir + setupName + ".mc." + system + "." + beam + suffix + ".root";
+  TString globalParFile =
+    inOutDir + setupName + ".param." + system + "." + beam + suffix + ".root";
+  TString outFile =
+    inOutDir + setupName + ".reco." + system + "." + beam + suffix + ".root";
 
-   gROOT->LoadMacro("$VMCWORKDIR/macro/littrack/loadlibs.C");
-   loadlibs();
-   gSystem->Load("libLxTrack.so");
+  TString srcDir = gSystem->Getenv("VMCWORKDIR");
 
-   FairRunAna* run = new FairRunAna;
-   run->SetUseFairLinks(1);
-   run->SetInputFile(inFile);
-   run->SetOutputFile(outFile);
-   
-   CbmMCDataManager* mcManager = new CbmMCDataManager;
-   mcManager->AddFile(inFile);
-   run->AddTask(mcManager);
-   
-   // -----   Load the geometry setup   -------------------------------------
-   std::cout << std::endl;
-   TString setupFile = srcDir + "/geometry/setup/setup_" + setupName + ".C";
-   TString setupFunct = "setup_";
-   setupFunct = setupFunct + setupName + "()";
-   std::cout << "-I- : Loading macro " << setupFile << std::endl;
-   gROOT->LoadMacro(setupFile);
-   gROOT->ProcessLine(setupFunct);
-   CbmSetup* setup = CbmSetup::Instance();
-   // ------------------------------------------------------------------------
-   
-   TList* parFileList = new TList();
-   /*TString geoTag;
+  Int_t iVerbose = 1;
+  TStopwatch timer;
+  timer.Start();
+
+  gROOT->LoadMacro("$VMCWORKDIR/macro/littrack/loadlibs.C");
+  loadlibs();
+  gSystem->Load("libLxTrack.so");
+
+  FairRunAna* run = new FairRunAna;
+  run->SetUseFairLinks(1);
+  run->SetInputFile(inFile);
+  run->SetOutputFile(outFile);
+
+  CbmMCDataManager* mcManager = new CbmMCDataManager;
+  mcManager->AddFile(inFile);
+  run->AddTask(mcManager);
+
+  // -----   Load the geometry setup   -------------------------------------
+  std::cout << std::endl;
+  TString setupFile  = srcDir + "/geometry/setup/setup_" + setupName + ".C";
+  TString setupFunct = "setup_";
+  setupFunct         = setupFunct + setupName + "()";
+  std::cout << "-I- : Loading macro " << setupFile << std::endl;
+  gROOT->LoadMacro(setupFile);
+  gROOT->ProcessLine(setupFunct);
+  CbmSetup* setup = CbmSetup::Instance();
+  // ------------------------------------------------------------------------
+
+  TList* parFileList = new TList();
+  /*TString geoTag;
 
    if (setup->GetGeoTag(kTrd, geoTag))
    {
@@ -182,33 +181,34 @@ void run_stat(int index = -1)
    // ------------------------------------------------------------------------
    */
 
-   LxCalcStats* calcStats = new LxCalcStats;
-   run->AddTask(calcStats);
-    
+  LxCalcStats* calcStats = new LxCalcStats;
+  run->AddTask(calcStats);
 
-   // -----  Parameter database   --------------------------------------------
-   FairRuntimeDb* rtdb = run->GetRuntimeDb();
-   FairParRootFileIo* parIo1 = new FairParRootFileIo();
-   parIo1->open(globalParFile.Data());
-   rtdb->setFirstInput(parIo1);
-   rtdb->setOutput(parIo1);   
-   rtdb->saveOutput();
-   // ------------------------------------------------------------------------
 
-   // -----   Initialize and run   --------------------------------------------
-   run->Init();
-   //run->Run(900, 1000);
-   run->Run(0, nEvents);
-   // ------------------------------------------------------------------------
+  // -----  Parameter database   --------------------------------------------
+  FairRuntimeDb* rtdb       = run->GetRuntimeDb();
+  FairParRootFileIo* parIo1 = new FairParRootFileIo();
+  parIo1->open(globalParFile.Data());
+  rtdb->setFirstInput(parIo1);
+  rtdb->setOutput(parIo1);
+  rtdb->saveOutput();
+  // ------------------------------------------------------------------------
 
-   // -----   Finish   -------------------------------------------------------
-   timer.Stop();
-   cout << "Macro finished successfully." << endl;
-   cout << "Output file is "    << inFile << endl;
-   cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime() << " s" << endl;
-   cout << endl;
-   // ------------------------------------------------------------------------
+  // -----   Initialize and run   --------------------------------------------
+  run->Init();
+  //run->Run(900, 1000);
+  run->Run(0, nEvents);
+  // ------------------------------------------------------------------------
 
-   cout << " Test passed" << endl;
-   cout << " All ok " << endl;
+  // -----   Finish   -------------------------------------------------------
+  timer.Stop();
+  cout << "Macro finished successfully." << endl;
+  cout << "Output file is " << inFile << endl;
+  cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime()
+       << " s" << endl;
+  cout << endl;
+  // ------------------------------------------------------------------------
+
+  cout << " Test passed" << endl;
+  cout << " All ok " << endl;
 }

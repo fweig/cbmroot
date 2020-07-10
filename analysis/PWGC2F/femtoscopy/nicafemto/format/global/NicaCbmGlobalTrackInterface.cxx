@@ -8,10 +8,8 @@
  */
 #include "NicaCbmGlobalTrackInterface.h"
 
-NicaCbmGlobalTrackInterface::NicaCbmGlobalTrackInterface() {
-}
+NicaCbmGlobalTrackInterface::NicaCbmGlobalTrackInterface() {}
 
 NicaCbmGlobalTrackInterface::~NicaCbmGlobalTrackInterface() {
-	// TODO Auto-generated destructor stub
+  // TODO Auto-generated destructor stub
 }
-

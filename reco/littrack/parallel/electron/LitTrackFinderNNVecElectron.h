@@ -11,15 +11,15 @@
 #ifndef LITTRACKFINDERNNVECELECTRON_H_
 #define LITTRACKFINDERNNVECELECTRON_H_
 
-#include "LitDetectorGeometryElectron.h"
-#include "LitHitDataElectron.h"
 #include "../LitHit.h"
 #include "../LitTrack.h"
+#include "LitDetectorGeometryElectron.h"
+#include "LitHitDataElectron.h"
 
 namespace lit {
-namespace parallel {
+  namespace parallel {
 
-/**
+    /**
  * \class LitTrackFinderNNVecElectron
  *
  * \brief Parallel SIMDized implementation of TRD tracking.
@@ -36,114 +36,103 @@ namespace parallel {
  * \date 2010
  *
  **/
-class LitTrackFinderNNVecElectron
-{
-public:
-   /**
+    class LitTrackFinderNNVecElectron {
+    public:
+      /**
     * \brief Constructor.
     */
-   LitTrackFinderNNVecElectron();
+      LitTrackFinderNNVecElectron();
 
-   /**
+      /**
     * \brief Destructor.
     */
-   virtual ~LitTrackFinderNNVecElectron();
+      virtual ~LitTrackFinderNNVecElectron();
 
-   /**
+      /**
     * \brief Main function for track reconstruction.
     * \param[in] Hit array.
     * \param[in] Track seed array.
     * \param[out] Output array with reconstructed tracks.
     */
-   void DoFind(
-      const PixelHitArray& hits,
-      const TrackArray& trackSeeds,
-      TrackArray& tracks);
+      void DoFind(const PixelHitArray& hits,
+                  const TrackArray& trackSeeds,
+                  TrackArray& tracks);
 
-   /*
+      /*
     * \brief Set detector layout.
     * \param[in] layout Detector layout to be set.
     */
-   void SetDetectorLayout(
-         const LitDetectorLayoutElectron<fvec>& layout) {
-      fLayout = layout;
-      fHitData.SetDetectorLayout(layout);
-   }
+      void SetDetectorLayout(const LitDetectorLayoutElectron<fvec>& layout) {
+        fLayout = layout;
+        fHitData.SetDetectorLayout(layout);
+      }
 
-private:
+    private:
+      void ArrangeHits(const PixelHitArray& hits);
 
-   void ArrangeHits(
-       const PixelHitArray& hits);
+      void InitTrackSeeds(const TrackArray& trackSeeds);
 
-   void InitTrackSeeds(
-      const TrackArray& trackSeeds);
-
-   /* Follows tracks through the detector
+      /* Follows tracks through the detector
     * @param itBegin Iterator to the first track.
     * @param itEnd Iterator to the last track.
     */
-   void FollowTracks();
+      void FollowTracks();
 
-   /* TODO: Add comments
+      /* TODO: Add comments
     *
     */
-   void PropagateToFirstStation(
-      LitScalTrack* tracks[]);
+      void PropagateToFirstStation(LitScalTrack* tracks[]);
 
-   /*
+      /*
     * TODO Add comments
     */
-   void CollectHits(
-      LitTrackParamScal* par,
-      LitScalTrack* track,
-      unsigned char stationGroup,
-      unsigned char station);
+      void CollectHits(LitTrackParamScal* par,
+                       LitScalTrack* track,
+                       unsigned char stationGroup,
+                       unsigned char station);
 
-   /* TODO: Add comment
+      /* TODO: Add comment
     *
     */
-   inline void ProcessStation(
-      LitScalTrack* tracks[],
-      unsigned char stationGroup,
-      unsigned char station);
+      inline void ProcessStation(LitScalTrack* tracks[],
+                                 unsigned char stationGroup,
+                                 unsigned char station);
 
-   /*
+      /*
     *
     */
-   bool AddNearestHit(
-      LitScalTrack* track,
-      const PixelHitConstIteratorPair& hits,
-      unsigned int nofHits,
-      int stationGroup,
-      int station);
+      bool AddNearestHit(LitScalTrack* track,
+                         const PixelHitConstIteratorPair& hits,
+                         unsigned int nofHits,
+                         int stationGroup,
+                         int station);
 
-   /*
+      /*
     *
     */
-   void MinMaxIndex(
-      const LitTrackParamScal* par,
-      const PixelHitArray& hits,
-      fscal maxErr,
-      PixelHitConstIterator& first,
-      PixelHitConstIterator& last);
+      void MinMaxIndex(const LitTrackParamScal* par,
+                       const PixelHitArray& hits,
+                       fscal maxErr,
+                       PixelHitConstIterator& first,
+                       PixelHitConstIterator& last);
 
-private:
-   /* Local copy of tracks */
-   TrackArray fTracks;
-   /* Detector geometry */
-   LitDetectorLayoutElectron<fvec> fLayout;
-   /* Arranged hits */
-   LitHitDataElectron<fvec> fHitData;
-   /* Maximum number of missing hits */
-   unsigned char fMaxNofMissingHits;
-   /* Sigma coefficient for fast hit search */
-   fscal fSigmaCoef;
-   /* Maximum covariance value */
-   fscal fMaxCovSq;
-   /* Chi square cut for pixel hits */
-   fvec fChiSqPixelHitCut;
-};
+    private:
+      /* Local copy of tracks */
+      TrackArray fTracks;
+      /* Detector geometry */
+      LitDetectorLayoutElectron<fvec> fLayout;
+      /* Arranged hits */
+      LitHitDataElectron<fvec> fHitData;
+      /* Maximum number of missing hits */
+      unsigned char fMaxNofMissingHits;
+      /* Sigma coefficient for fast hit search */
+      fscal fSigmaCoef;
+      /* Maximum covariance value */
+      fscal fMaxCovSq;
+      /* Chi square cut for pixel hits */
+      fvec fChiSqPixelHitCut;
+    };
 
-} // namespace parallel
-} // namespace lit
+  }  // namespace parallel
+}  // namespace lit
 #endif /* LITTRACKFINDERNNVECELECTRON_H_ */

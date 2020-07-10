@@ -4,12 +4,8 @@
  **/
 #include "CbmMuchTrack.h"
 
-CbmMuchTrack::CbmMuchTrack()
-{
-}
+CbmMuchTrack::CbmMuchTrack() {}
 
-CbmMuchTrack::~CbmMuchTrack()
-{
-}
+CbmMuchTrack::~CbmMuchTrack() {}
 
 ClassImp(CbmMuchTrack);

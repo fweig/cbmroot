@@ -17,18 +17,17 @@
 //
 // 20130605 - checked by DE
 // --------------------------------------------------------------------------
-void trd_digi2(Int_t nEvents = 1,
-             const char* setupName = "sis100_electron")
+void trd_digi2(Int_t nEvents = 1, const char* setupName = "sis100_electron")
 //             const char* setupName = "sis100_hadron")
 //               const char* setupName = "sis100_debug")
 {
 
-  gStyle->SetPalette(1,0);
+  gStyle->SetPalette(1, 0);
   gROOT->SetStyle("Plain");
   gStyle->SetPadTickX(1);
   gStyle->SetPadTickY(1);
 
-  FairLogger *logger = FairLogger::GetLogger();
+  FairLogger* logger = FairLogger::GetLogger();
   logger->SetLogFileName("MyLog.log");
   logger->SetLogToScreen(kTRUE);
   //  logger->SetLogToFile(kFALSE);
@@ -55,13 +54,13 @@ void trd_digi2(Int_t nEvents = 1,
   // Output file
   TString outFile = "data/test.eds.root";
 
-  TString inDir = gSystem->Getenv("VMCWORKDIR");
+  TString inDir    = gSystem->Getenv("VMCWORKDIR");
   TString paramDir = inDir + "/parameters";
 
-  TString setupFile = inDir + "/geometry/setup/setup_" + setupName + ".C";
+  TString setupFile  = inDir + "/geometry/setup/setup_" + setupName + ".C";
   TString setupFunct = "setup_";
-  setupFunct = setupFunct + setupName + "()";
-  
+  setupFunct         = setupFunct + setupName + "()";
+
   gROOT->LoadMacro(setupFile);
   gInterpreter->ProcessLine(setupFunct);
   CbmSetup* cbmsetup = CbmSetup::Instance();
@@ -69,34 +68,37 @@ void trd_digi2(Int_t nEvents = 1,
   //  Digitisation files.
   // Add TObjectString containing the different file names to
   // a TList which is passed as input to the FairParAsciiFileIo.
-  // The FairParAsciiFileIo will take care to create on the fly 
+  // The FairParAsciiFileIo will take care to create on the fly
   // a concatenated input parameter file which is then used during
   // the reconstruction.
-  TList *parFileList = new TList();
+  TList* parFileList = new TList();
   TString geoTag;
 
   // - TRD digitisation parameters
-  if ( cbmsetup->GetGeoTag(kTrd, geoTag) ) {
-    TObjString* trdFile = new TObjString(inDir + "/parameters/trd/trd_" + geoTag + ".digi.par");
+  if (cbmsetup->GetGeoTag(kTrd, geoTag)) {
+    TObjString* trdFile =
+      new TObjString(inDir + "/parameters/trd/trd_" + geoTag + ".digi.par");
     parFileList->Add(trdFile);
-    std::cout << "-I- Using parameter file "
-              << trdFile->GetString() << std::endl;
+    std::cout << "-I- Using parameter file " << trdFile->GetString()
+              << std::endl;
   }
 
   // - TOF digitisation parameters
-  if ( cbmsetup->GetGeoTag(kTof, geoTag) ) {
-    TObjString* tofFile = new TObjString(inDir + "/parameters/tof/tof_" + geoTag + ".digi.par");
+  if (cbmsetup->GetGeoTag(kTof, geoTag)) {
+    TObjString* tofFile =
+      new TObjString(inDir + "/parameters/tof/tof_" + geoTag + ".digi.par");
     parFileList->Add(tofFile);
-    std::cout << "-I- Using parameter file "
-              << tofFile->GetString() << std::endl;
-    TObjString* tofBdfFile = new TObjString(inDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
+    std::cout << "-I- Using parameter file " << tofFile->GetString()
+              << std::endl;
+    TObjString* tofBdfFile =
+      new TObjString(inDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
     parFileList->Add(tofBdfFile);
-    std::cout << "-I- Using parameter file "
-              << tofBdfFile->GetString() << std::endl;
+    std::cout << "-I- Using parameter file " << tofBdfFile->GetString()
+              << std::endl;
   }
 
-   // Function needed for CTest runtime dependency
-   TString depFile = Remove_CTest_Dependency_File(outDir, "trd_digi1");
+  // Function needed for CTest runtime dependency
+  TString depFile = Remove_CTest_Dependency_File(outDir, "trd_digi1");
 
   // In general, the following parts need not be touched
   // ========================================================================
@@ -113,13 +115,11 @@ void trd_digi2(Int_t nEvents = 1,
   // ------------------------------------------------------------------------
 
   // -----   Reconstruction run   -------------------------------------------
-  FairRunAna *run = new FairRunAna();
+  FairRunAna* run = new FairRunAna();
   run->SetInputFile(inFile);
   run->SetOutputFile(outFile);
   Bool_t hasFairMonitor = Has_Fair_Monitor();
-  if (hasFairMonitor) {
-    FairMonitor::GetMonitor()->EnableMonitor(kTRUE);
-  }
+  if (hasFairMonitor) { FairMonitor::GetMonitor()->EnableMonitor(kTRUE); }
   // ------------------------------------------------------------------------
 
   // =========================================================================
@@ -127,12 +127,13 @@ void trd_digi2(Int_t nEvents = 1,
   // =========================================================================
 
   // Update of the values for the radiator F.U. 17.08.07
-  Int_t   trdNFoils = 130;    // number of polyethylene foils
-  Float_t trdDFoils = 0.0013; // thickness of 1 foil [cm]
-  Float_t trdDGap   = 0.02;   // thickness of gap between foils [cm]
-  Bool_t  simpleTR  = kTRUE;  // use fast and simple version for TR production
+  Int_t trdNFoils   = 130;     // number of polyethylene foils
+  Float_t trdDFoils = 0.0013;  // thickness of 1 foil [cm]
+  Float_t trdDGap   = 0.02;    // thickness of gap between foils [cm]
+  Bool_t simpleTR   = kTRUE;   // use fast and simple version for TR production
 
-  CbmTrdRadiator *radiator = new CbmTrdRadiator(simpleTR, trdNFoils, trdDFoils, trdDGap);
+  CbmTrdRadiator* radiator =
+    new CbmTrdRadiator(simpleTR, trdNFoils, trdDFoils, trdDGap);
 
   // -----   TRD hit producer   ----------------------------------------------
   CbmTrdDigitizerPRF* trdDigiPrf = new CbmTrdDigitizerPRF(radiator);
@@ -144,7 +145,7 @@ void trd_digi2(Int_t nEvents = 1,
   CbmTrdHitProducerCluster* trdHit = new CbmTrdHitProducerCluster();
   run->AddTask(trdHit);
 
-//CbmTrdHitProducerSmearing* trdHitProd = new CbmTrdHitProducerSmearing(radiator);
+  //CbmTrdHitProducerSmearing* trdHitProd = new CbmTrdHitProducerSmearing(radiator);
   //run->AddTask(trdHitProd);
 
   //  CbmTrdDigitizer* trdDigitizer = new CbmTrdDigitizer(radiator);
@@ -159,8 +160,8 @@ void trd_digi2(Int_t nEvents = 1,
 
 
   // -----  Parameter database   --------------------------------------------
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
-  FairParRootFileIo* parIo1 = new FairParRootFileIo();
+  FairRuntimeDb* rtdb        = run->GetRuntimeDb();
+  FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
   parIo1->open(parFile.Data());
   parIo2->open(parFileList, "in");
@@ -193,12 +194,12 @@ void trd_digi2(Int_t nEvents = 1,
     // Extract the maximal used memory an add is as Dart measurement
     // This line is filtered by CTest and the value send to CDash
     FairSystemInfo sysInfo;
-    Float_t maxMemory=sysInfo.GetMaxMemory();
+    Float_t maxMemory = sysInfo.GetMaxMemory();
     cout << "<DartMeasurement name=\"MaxMemory\" type=\"numeric/double\">";
     cout << maxMemory;
     cout << "</DartMeasurement>" << endl;
 
-    Float_t cpuUsage=ctime/rtime;
+    Float_t cpuUsage = ctime / rtime;
     cout << "<DartMeasurement name=\"CpuLoad\" type=\"numeric/double\">";
     cout << cpuUsage;
     cout << "</DartMeasurement>" << endl;

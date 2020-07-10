@@ -8,12 +8,11 @@
  */
 
 
-void MuchRawData(TString inFile = "ndpbGems2FEB_source.tsa")
-{
+void MuchRawData(TString inFile = "ndpbGems2FEB_source.tsa") {
 
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
   TString inDir  = srcDir + "/input/";
-  inFile = inDir + inFile;
+  inFile         = inDir + inFile;
 
   // --- Specify number of events to be produced.
   // --- -1 means run until the end of the input file.
@@ -29,17 +28,17 @@ void MuchRawData(TString inFile = "ndpbGems2FEB_source.tsa")
   gLogger->SetLogVerbosityLevel("LOW");
 
   // --- Define parameter files
-  TList *parFileList = new TList();
-  TString paramDir = "./";
-//  TString paramFile = paramDir + "test.par";
+  TList* parFileList = new TList();
+  TString paramDir   = "./";
+  //  TString paramFile = paramDir + "test.par";
 
-  TString paramFile = paramDir + "MuchUnpackPar.par";
+  TString paramFile          = paramDir + "MuchUnpackPar.par";
   TObjString* tutDetDigiFile = new TObjString(paramFile);
   parFileList->Add(tutDetDigiFile);
 
   // --- Set debug level
   gDebug = 0;
-  
+
   std::cout << std::endl;
   std::cout << ">>> FHodoLabSetup: output file is " << outFile << std::endl;
 
@@ -53,10 +52,9 @@ void MuchRawData(TString inFile = "ndpbGems2FEB_source.tsa")
   // NXyter Unpacker
   // CbmTSUnpackFHodo*    test_unpacker     = new CbmTSUnpackFHodo();
   //  test_unpacker->CreateRawMessageOutput(kTRUE);
-  
+
   // NXyter Unpacker
-  CbmTSUnpackMuch*    much_unpacker     = new CbmTSUnpackMuch();
-	
+  CbmTSUnpackMuch* much_unpacker = new CbmTSUnpackMuch();
 
 
   // Get4 Unpacker
@@ -67,40 +65,41 @@ void MuchRawData(TString inFile = "ndpbGems2FEB_source.tsa")
   source->SetFileName(inFile);
   // source->AddUnpacker(test_unpacker_tof, 0x60, 20);//gDPB A & B
   // source->AddUnpacker(test_unpacker,     0x10, 10);//nDPB A & B = HODO 1 + 2
-  source->AddUnpacker(much_unpacker,     0x10, 10);//nDPB A & B = HODO 1 + 2
+  source->AddUnpacker(much_unpacker, 0x10, 10);  //nDPB A & B = HODO 1 + 2
 
   // --- Event header
   FairEventHeader* event = new CbmTbEvent();
   event->SetRunId(1);
 
   // --- Run
-  FairRunOnline *run = new FairRunOnline(source);
+  FairRunOnline* run = new FairRunOnline(source);
   run->SetOutputFile(outFile);
   run->SetEventHeader(event);
   FairRuntimeDb* rtdb = run->GetRuntimeDb();
 
   // -----   Runtime database   ---------------------------------------------
-  Bool_t kParameterMerged = kTRUE;
+  Bool_t kParameterMerged   = kTRUE;
   FairParRootFileIo* parOut = new FairParRootFileIo(kParameterMerged);
   FairParAsciiFileIo* parIn = new FairParAsciiFileIo();
   parOut->open(parFile.Data());
   parIn->open(parFileList, "in");
   rtdb->setFirstInput(parIn);
   rtdb->setOutput(parOut);
-  if(!run)cout << " BAD pointer RUN -----" << endl;
+  if (!run) cout << " BAD pointer RUN -----" << endl;
   run->Init();
   cout << " --------------- UNPACKER Initialized ------- " << endl;
-//	return;  
+  //	return;
 
   // --- Start run
   TStopwatch timer;
   timer.Start();
   std::cout << ">>> MuchTestSetup: Starting run..." << std::endl;
-  run->Run(nEvents, 0); // run until end of input file
+  run->Run(nEvents, 0);  // run until end of input file
   timer.Stop();
-  
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
-    
+
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
+            << std::endl;
+
   // --- End-of-run info
   Double_t rtime = timer.RealTime();
   Double_t ctime = timer.CpuTime();
@@ -108,7 +107,7 @@ void MuchRawData(TString inFile = "ndpbGems2FEB_source.tsa")
   std::cout << ">>> MuchTestSetup: Macro finished successfully." << std::endl;
   std::cout << ">>> MuchTestSetup: Output file is " << outFile << std::endl;
   std::cout << ">>> MuchTestSetup: Real time " << rtime << " s, CPU time "
-	    << ctime << " s" << std::endl;
+            << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

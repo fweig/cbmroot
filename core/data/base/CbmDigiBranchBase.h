@@ -6,13 +6,13 @@
 #ifndef CBMDIGIBRANCHBASE_H
 #define CBMDIGIBRANCHBASE_H 1
 
-#include <RtypesCore.h>   // for Bool_t, UInt_t
-#include <TString.h>      // for TString
+#include <RtypesCore.h>  // for Bool_t, UInt_t
+#include <TString.h>     // for TString
 
 #include <boost/any.hpp>  // for any
 
-#include <stddef.h>       // for size_t
-#include <string>         // for string
+#include <stddef.h>  // for size_t
+#include <string>    // for string
 
 class CbmMatch;
 
@@ -22,69 +22,61 @@ class CbmMatch;
  **
  ** Abstract interface to branches holding digi objects.
  **/
-class CbmDigiBranchBase
-{
+class CbmDigiBranchBase {
 
-	public:
-
-		/** @brief Constructor
+public:
+  /** @brief Constructor
 		 ** @param system  System identifier (ECbmModuleId)
 		 ** @param name    Branch name
 		 **/
-		CbmDigiBranchBase(const char* name = "unknown") :
-			fName(name) {
-		}
+  CbmDigiBranchBase(const char* name = "unknown") : fName(name) {}
 
 
-		/** @brief Destructor **/
-		virtual ~CbmDigiBranchBase() {
-		}
+  /** @brief Destructor **/
+  virtual ~CbmDigiBranchBase() {}
 
 
-		/** @brief Connect the branch to the ROOT tree
+  /** @brief Connect the branch to the ROOT tree
 		 ** @param ioMan  Pointer to FairRootManager singleton instance
 		 ** @return kTRUE if branch was found
 		 **/
-		virtual Bool_t ConnectToTree() = 0;
+  virtual Bool_t ConnectToTree() = 0;
 
 
-		/** @brief Get a digi from the branch
+  /** @brief Get a digi from the branch
 		 ** @param index Index of digi in branch
 		 ** @return Pointer to constant digi object
 		 **/
-		virtual boost::any GetDigi(UInt_t index) = 0;
+  virtual boost::any GetDigi(UInt_t index) = 0;
 
 
-		/** @brief Get a digi from the branch
+  /** @brief Get a digi from the branch
 		 ** @param index Index of digi in branch
 		 ** @return Pointer to constant digi object
 		 **/
-		virtual const CbmMatch* GetDigiMatch(UInt_t index) = 0;
+  virtual const CbmMatch* GetDigiMatch(UInt_t index) = 0;
 
 
-		/** @brief Presence of match branch
+  /** @brief Presence of match branch
 		 ** @return kTRUE if a match branch is connected
 		 **/
-		virtual Bool_t HasMatches() = 0;
+  virtual Bool_t HasMatches() = 0;
 
 
-		/** @brief Name of branch **/
-		TString GetName() const { return fName; }
+  /** @brief Name of branch **/
+  TString GetName() const { return fName; }
 
 
-		/** @brief Get the number of digis in the branch **/
-		virtual std::size_t GetNofDigis() const = 0;
+  /** @brief Get the number of digis in the branch **/
+  virtual std::size_t GetNofDigis() const = 0;
 
 
-	  /** @brief String output **/
-	  virtual std::string ToString() const { return ""; }
+  /** @brief String output **/
+  virtual std::string ToString() const { return ""; }
 
 
-
-	protected:
-
-		TString fName;          ///< Branch name
-
+protected:
+  TString fName;  ///< Branch name
 };
 
 

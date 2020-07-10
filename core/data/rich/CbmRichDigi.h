@@ -12,9 +12,9 @@
 #include <Rtypes.h>      // for ClassDef
 #include <RtypesCore.h>  // for Double_t, Int_t
 
-#include <string>        // for basic_string, string
+#include <string>  // for basic_string, string
 
-#include "CbmDefs.h"     // for kRich
+#include "CbmDefs.h"  // for kRich
 
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/base_object.hpp>
@@ -22,93 +22,89 @@
 #ifndef DATA_RICH_CBMRICHDIGI_H_
 #define DATA_RICH_CBMRICHDIGI_H_
 
-class CbmRichDigi
-{
+class CbmRichDigi {
 public:
+  CbmRichDigi();
 
-	CbmRichDigi();
+  CbmRichDigi(Int_t addr, Double_t time, Double_t tot);
 
-	CbmRichDigi(Int_t addr, Double_t time, Double_t tot);
+  ~CbmRichDigi();
 
-	~CbmRichDigi();
-
-	/*
+  /*
 	 * \brief Inherited from CbmDigi
 	 * @value Unique address of pixel channel
 	 */
-	Int_t GetAddress() const { return fAddress; }
+  Int_t GetAddress() const { return fAddress; }
 
-	/** @brief Charge
+  /** @brief Charge
 	 ** @return Returns TOT as charge
 	 **
          ** Alias for GetToT, conversion factor should be added if needed.
 	 ** For compatibility with template methods
 	 **/
-	Double_t GetCharge() const { return fToT; }
+  Double_t GetCharge() const { return fToT; }
 
   /** @brief Class name (static)
    ** @return CbmRichDigi
    **/
   static const char* GetClassName() { return "CbmRichDigi"; }
 
-	/** @brief System identifier
+  /** @brief System identifier
 	 ** @return kRich (ECbmModuleId), static
 	 **/
-	static ECbmModuleId GetSystem() { return ECbmModuleId::kRich; }
+  static ECbmModuleId GetSystem() { return ECbmModuleId::kRich; }
 
-	/*
+  /*
 	 * @brief Time
 	 * @value Time [ns]
 	 */
-	Double_t GetTime() const { return fTime; }
+  Double_t GetTime() const { return fTime; }
 
-	/*
+  /*
 	 * \brief Get Time-over-threshold
 	 * @value Time-over-threshold, pulse width [ns]
 	 */
-	Double_t GetToT() const { return fToT; }
+  Double_t GetToT() const { return fToT; }
 
-	/*
+  /*
 	 * \brief Set pixel Address
 	 */
-	void SetAddress(Int_t address) { fAddress = address; }
+  void SetAddress(Int_t address) { fAddress = address; }
 
-	/*
+  /*
 	 * \brief Set pixel Address
 	 */
-	void SetTime(Double_t time) { fTime = time; }
+  void SetTime(Double_t time) { fTime = time; }
 
 
-	std::string ToString() const { return std::string{""}; }
+  std::string ToString() const { return std::string {""}; }
 
 private:
-
-	/**
+  /**
 	 * \brief Unique pixel address
 	 */
-	Int_t fAddress;
+  Int_t fAddress;
 
-	/**
+  /**
 	 * \brief Leading (rising) edge time
 	 */
-	Double_t fTime;
+  Double_t fTime;
 
-	/**
+  /**
 	 * \brief Time-over-threshold, pulse width
 	 */
-	Double_t fToT;
+  Double_t fToT;
 
-	/// BOOST serialization interface
-	friend class boost::serialization::access;
-	template <class Archive>
-	void serialize(Archive& ar, const unsigned int /*version*/)
-	{
-		ar& fAddress;
-		ar& fTime;
-		ar& fToT;
-	}
+  /// BOOST serialization interface
+  friend class boost::serialization::access;
+  template<class Archive>
+  void serialize(Archive& ar, const unsigned int /*version*/) {
+    ar& fAddress;
+    ar& fTime;
+    ar& fToT;
+  }
 
-	ClassDefNV(CbmRichDigi, 3);
+  ClassDefNV(CbmRichDigi, 3);
 };
 
 #endif /* DATA_RICH_CBMRICHDIGI_H_ */

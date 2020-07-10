@@ -7,43 +7,39 @@ class TClonesArray;
 class TH1F;
 class TH2F;
 
-class CbmTrdClusterizerFastQa : public FairTask
-{
+class CbmTrdClusterizerFastQa : public FairTask {
 public:
+  /* Defaul constructor */
+  CbmTrdClusterizerFastQa();
 
-    /* Defaul constructor */
-    CbmTrdClusterizerFastQa();
+  /* Standard constructor */
+  CbmTrdClusterizerFastQa(const char* name, const char* title = "FairTask");
 
-    /* Standard constructor */
-    CbmTrdClusterizerFastQa(const char* name,
-        		const char* title = "FairTask");
+  /* Destructor */
+  virtual ~CbmTrdClusterizerFastQa();
 
-    /* Destructor */
-    virtual ~CbmTrdClusterizerFastQa();
+  /* Initialisation */
+  InitStatus Init();
 
-    /* Initialisation */
-    InitStatus Init();
+  /* Execution */
+  virtual void Exec(Option_t* option);
 
-    /* Execution */
-    virtual void Exec(Option_t* option);
-
-    /* Finish at the end of each event */
-    virtual void Finish();
+  /* Finish at the end of each event */
+  virtual void Finish();
 
 
 private:
+  /* Prepare the QA histograms */
+  void PrepareHistograms();
 
-    /* Prepare the QA histograms */
-    void PrepareHistograms();
 
-
-    /* Write the QA histograms to file*/
+  /* Write the QA histograms to file*/
   void WriteHistograms();
-  
+
   CbmTrdClusterizerFastQa(const CbmTrdClusterizerFastQa&);
   CbmTrdClusterizerFastQa& operator=(const CbmTrdClusterizerFastQa&);
 
-    ClassDef(CbmTrdClusterizerFastQa, 1)
+  ClassDef(CbmTrdClusterizerFastQa, 1)
 };
 
 #endif

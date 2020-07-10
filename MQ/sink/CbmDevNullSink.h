@@ -10,19 +10,18 @@
 
 #include "FairMQDevice.h"
 
-class CbmDevNullSink : public FairMQDevice
-{
-  public:
-    CbmDevNullSink();
-    virtual ~CbmDevNullSink();
+class CbmDevNullSink : public FairMQDevice {
+public:
+  CbmDevNullSink();
+  virtual ~CbmDevNullSink();
 
-  protected:
-    virtual void InitTask();
-    virtual void Init();
-    bool HandleData(FairMQMessagePtr&, int);
+protected:
+  virtual void InitTask();
+  virtual void Init();
+  bool HandleData(FairMQMessagePtr&, int);
 
-  private:
-    uint64_t fNumMessages;
+private:
+  uint64_t fNumMessages;
 };
 
 #endif /* CBMDEVNULLSINK_H_ */

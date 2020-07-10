@@ -21,46 +21,59 @@
 
 class FairRuntimeDb;
 
-class ParameterMQServer : public FairMQDevice
-{
-  public:
-    ParameterMQServer();
+class ParameterMQServer : public FairMQDevice {
+public:
+  ParameterMQServer();
 
-    ParameterMQServer(const ParameterMQServer&) = delete;
-    ParameterMQServer operator=(const ParameterMQServer&) = delete;
+  ParameterMQServer(const ParameterMQServer&) = delete;
+  ParameterMQServer operator=(const ParameterMQServer&) = delete;
 
-    virtual ~ParameterMQServer();
+  virtual ~ParameterMQServer();
 
-    virtual void Run();
-    virtual void InitTask();
+  virtual void Run();
+  virtual void InitTask();
 
-    void SetFirstInputName(const std::string& firstInputName) { fFirstInputName = firstInputName; }
-    std::string GetFirstInputName() { return fFirstInputName; }
-    void SetFirstInputType(const std::string& firstInputType) { fFirstInputType = firstInputType; }
-    std::string GetFirstInputType() { return fFirstInputType; }
-    void SetSecondInputName(const std::string& secondInputName) { fSecondInputName = secondInputName; }
-    std::string GetSecondInputName() { return fSecondInputName; }
-    void SetSecondInputType(const std::string& secondInputType) { fSecondInputType = secondInputType; }
-    std::string GetSecondInputType() { return fSecondInputType; }
-    void SetOutputName(const std::string& outputName) { fOutputName = outputName; }
-    std::string GetOutputName() { return fOutputName; }
-    void SetOutputType(const std::string& outputType) { fOutputType = outputType; }
-    std::string GetOutputType() { return fOutputType; }
+  void SetFirstInputName(const std::string& firstInputName) {
+    fFirstInputName = firstInputName;
+  }
+  std::string GetFirstInputName() { return fFirstInputName; }
+  void SetFirstInputType(const std::string& firstInputType) {
+    fFirstInputType = firstInputType;
+  }
+  std::string GetFirstInputType() { return fFirstInputType; }
+  void SetSecondInputName(const std::string& secondInputName) {
+    fSecondInputName = secondInputName;
+  }
+  std::string GetSecondInputName() { return fSecondInputName; }
+  void SetSecondInputType(const std::string& secondInputType) {
+    fSecondInputType = secondInputType;
+  }
+  std::string GetSecondInputType() { return fSecondInputType; }
+  void SetOutputName(const std::string& outputName) {
+    fOutputName = outputName;
+  }
+  std::string GetOutputName() { return fOutputName; }
+  void SetOutputType(const std::string& outputType) {
+    fOutputType = outputType;
+  }
+  std::string GetOutputType() { return fOutputType; }
 
-    void SetChannelName(const std::string& channelName) { fChannelName = channelName; }
-    std::string GetChannelName() { return fChannelName; }
+  void SetChannelName(const std::string& channelName) {
+    fChannelName = channelName;
+  }
+  std::string GetChannelName() { return fChannelName; }
 
-  private:
-    FairRuntimeDb* fRtdb;
+private:
+  FairRuntimeDb* fRtdb;
 
-    std::string fFirstInputName;
-    std::string fFirstInputType;
-    std::string fSecondInputName;
-    std::string fSecondInputType;
-    std::string fOutputName;
-    std::string fOutputType;
+  std::string fFirstInputName;
+  std::string fFirstInputType;
+  std::string fSecondInputName;
+  std::string fSecondInputType;
+  std::string fOutputName;
+  std::string fOutputType;
 
-    std::string fChannelName;
+  std::string fChannelName;
 };
 
 #endif /* PARAMETERMQSERVER_H_ */

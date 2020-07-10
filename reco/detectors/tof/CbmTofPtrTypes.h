@@ -8,15 +8,15 @@
 #ifndef CBMLITPTRTYPES_H_
 #define CBMLITPTRTYPES_H_
 
+#include "../littrack/std/interface/CbmLitGeoNavigator.h"
+#include "../littrack/std/interface/CbmLitHitToTrackMerger.h"
+#include "../littrack/std/interface/CbmLitMaterialEffects.h"
 #include "../littrack/std/interface/CbmLitTrackExtrapolator.h"
-#include "../littrack/std/interface/CbmLitTrackPropagator.h"
+#include "../littrack/std/interface/CbmLitTrackFinder.h"
 #include "../littrack/std/interface/CbmLitTrackFitter.h"
+#include "../littrack/std/interface/CbmLitTrackPropagator.h"
 #include "../littrack/std/interface/CbmLitTrackSelection.h"
 #include "../littrack/std/interface/CbmLitTrackUpdate.h"
-#include "../littrack/std/interface/CbmLitGeoNavigator.h"
-#include "../littrack/std/interface/CbmLitMaterialEffects.h"
-#include "../littrack/std/interface/CbmLitTrackFinder.h"
-#include "../littrack/std/interface/CbmLitHitToTrackMerger.h"
 
 #include <boost/shared_ptr.hpp>
 typedef boost::shared_ptr<CbmLitTrackExtrapolator> TrackExtrapolatorPtr;

@@ -5,14 +5,14 @@
 #pragma link off all functions;
 
 // --- transport/base
-#pragma link C++ class CbmPhsdGenerator+;
-#pragma link C++ class CbmPlutoGenerator+;
-#pragma link C++ class CbmShieldGenerator+;
-#pragma link C++ class CbmUnigenGenerator+;
+#pragma link C++ class CbmPhsdGenerator + ;
+#pragma link C++ class CbmPlutoGenerator + ;
+#pragma link C++ class CbmShieldGenerator + ;
+#pragma link C++ class CbmUnigenGenerator + ;
 
-#pragma link C++ class URun+;
-#pragma link C++ class UEvent+;
-#pragma link C++ class UParticle+;
+#pragma link C++ class URun + ;
+#pragma link C++ class UEvent + ;
+#pragma link C++ class UParticle + ;
 
 #pragma link C++ class PDataBase;
 #pragma link C++ class PMesh;
@@ -23,6 +23,3 @@
 
 
 #endif /* __CINT__ */
-
-
-

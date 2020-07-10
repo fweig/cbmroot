@@ -6,16 +6,16 @@
  **/
 
 void draw_dedx() {
-	gROOT->LoadMacro("$VMCWORKDIR/gconfig/basiclibs.C");
-	basiclibs();
-	gROOT->LoadMacro("$VMCWORKDIR/macro/littrack/cbmrootlibs.C");
-	cbmrootlibs();
+  gROOT->LoadMacro("$VMCWORKDIR/gconfig/basiclibs.C");
+  basiclibs();
+  gROOT->LoadMacro("$VMCWORKDIR/macro/littrack/cbmrootlibs.C");
+  cbmrootlibs();
 
-	CbmLitCheckEnergyLossMuons checker;
-	checker.SetMaterial("iron");
-	checker.Check();
+  CbmLitCheckEnergyLossMuons checker;
+  checker.SetMaterial("iron");
+  checker.Check();
 
-//	CbmLitCheckBrem checker;
-//	checker.SetMaterial("iron");
-//	checker.Check();
+  //	CbmLitCheckBrem checker;
+  //	checker.SetMaterial("iron");
+  //	checker.Check();
 }

@@ -22,15 +22,14 @@ class CbmMCEventList;
  ** It operates within one time slice; splitting of events between
  ** time slice is not treated.
  **/
-class CbmBuildEventsFromTracksIdeal: public FairTask 
-{
- public:
-
+class CbmBuildEventsFromTracksIdeal : public FairTask {
+public:
   /** Constructor **/
   CbmBuildEventsFromTracksIdeal();
 
   CbmBuildEventsFromTracksIdeal(const CbmBuildEventsFromTracksIdeal&) = delete;
-  CbmBuildEventsFromTracksIdeal& operator=(const CbmBuildEventsFromTracksIdeal&) = delete;
+  CbmBuildEventsFromTracksIdeal&
+  operator=(const CbmBuildEventsFromTracksIdeal&) = delete;
 
   /** Destructor **/
   virtual ~CbmBuildEventsFromTracksIdeal();
@@ -38,14 +37,13 @@ class CbmBuildEventsFromTracksIdeal: public FairTask
   /** Task execution **/
   virtual void Exec(Option_t* opt);
 
- private:
-
-  TClonesArray* fStsDigis;   ///< Input array (class CbmStsDigi)
+private:
+  TClonesArray* fStsDigis;    ///< Input array (class CbmStsDigi)
   TClonesArray* fStsTracks;   ///< Input array (class CbmStsDigi)
-  CbmMCDataArray* fMCTracks;   ///< Input array (class CbmStsDigi)
-  TClonesArray* fStsHits;   ///< Input array (class CbmStsDigi)
-  TClonesArray* fMcPoints;   ///< Input array (class CbmStsDigi)
-  TClonesArray* fEvents;     ///< Output array (class CbmEvent)
+  CbmMCDataArray* fMCTracks;  ///< Input array (class CbmStsDigi)
+  TClonesArray* fStsHits;     ///< Input array (class CbmStsDigi)
+  TClonesArray* fMcPoints;    ///< Input array (class CbmStsDigi)
+  TClonesArray* fEvents;      ///< Output array (class CbmEvent)
   TClonesArray* fStsTrackMatchArray;
 
   CbmMCEventList* fEventList;
@@ -53,9 +51,8 @@ class CbmBuildEventsFromTracksIdeal: public FairTask
   /** Task initialisation **/
   virtual InitStatus Init();
 
- 
-  ClassDef(CbmBuildEventsFromTracksIdeal, 1);
 
+  ClassDef(CbmBuildEventsFromTracksIdeal, 1);
 };
 
 #endif /* CBMBUILDEVENTSFROMTRACKS_H */

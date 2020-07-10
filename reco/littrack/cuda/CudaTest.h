@@ -5,19 +5,18 @@
 
 #include "TObject.h"
 
-class CudaTest : public TObject
-{
+class CudaTest : public TObject {
 public:
-   CudaTest() {;}
-   virtual ~CudaTest() {;}
+  CudaTest() { ; }
+  virtual ~CudaTest() { ; }
 
-   void MyDeviceInfo() {fCuda.MyDeviceInfo();}
-   void MyAddVec() {fCuda.MyAddVec();}
+  void MyDeviceInfo() { fCuda.MyDeviceInfo(); }
+  void MyAddVec() { fCuda.MyAddVec(); }
 
 private:
-   LitCudaTest fCuda;
+  LitCudaTest fCuda;
 
-   ClassDef(CudaTest, 1)
+  ClassDef(CudaTest, 1)
 };
 
 

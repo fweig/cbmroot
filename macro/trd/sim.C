@@ -4,13 +4,12 @@
 
   TStopwatch timer;
   timer.Start();
-  gDebug=0;
+  gDebug = 0;
 
 
   // Load basic libraries
   gROOT->LoadMacro("$VMCWORKDIR/gconfig/basiclibs.C");
   basiclibs();
-
 
 
   // Load this example libraries
@@ -25,11 +24,10 @@
   gSystem->Load("libGen");
 
 
-
   // In- and out-file names
-  TString inFile = "/d/cbm01/cbmsim/urqmd/auau/25gev/centr/\
+  TString inFile    = "/d/cbm01/cbmsim/urqmd/auau/25gev/centr/\
 urqmd.auau.25gev.centr.0000.ftn14";
-  TString outFile = "test.mc.root";
+  TString outFile   = "test.mc.root";
   TString paramFile = "test.mc.param.root";
 
 
@@ -37,9 +35,8 @@ urqmd.auau.25gev.centr.0000.ftn14";
   Int_t nEvents = 1;
 
 
-
   // Create run object
-  FairRunSim *fRun = new FairRunSim();
+  FairRunSim* fRun = new FairRunSim();
 
   // set the MC version used
   fRun->SetName("TGeant3");
@@ -50,40 +47,38 @@ urqmd.auau.25gev.centr.0000.ftn14";
   fRun->SetMaterials("media.geo");
 
 
-
-
   // Create and add detectors
   //-------------------------
 
-  FairModule *Cave= new CbmCave("CAVE");
+  FairModule* Cave = new CbmCave("CAVE");
   Cave->SetGeometryFileName("cave.geo");
   fRun->AddModule(Cave);
 
-  FairModule *Pipe= new CbmPipe("PIPE");
+  FairModule* Pipe = new CbmPipe("PIPE");
   Pipe->SetGeometryFileName("pipe.geo");
   fRun->AddModule(Pipe);
 
   // Active shielding Geometry
-  FairModule *Magnet= new CbmMagnet("MAGNET");
+  FairModule* Magnet = new CbmMagnet("MAGNET");
   Magnet->SetGeometryFileName("magnet_active.geo");
   fRun->AddModule(Magnet);
-  
-  FairDetector *Sts= new CbmSts("STS", kTRUE);
+
+  FairDetector* Sts = new CbmSts("STS", kTRUE);
   Sts->SetGeometryFileName("sts.geo");
   fRun->AddModule(Sts);
 
-  FairModule *Target= new CbmTarget("Target");
+  FairModule* Target = new CbmTarget("Target");
   Target->SetGeometryFileName("target.geo");
-  fRun->AddModule(Target);		
-/*
+  fRun->AddModule(Target);
+  /*
   FairDetector *Tof= new CbmTof("TOF", kTRUE );
   Tof->SetGeometryFileName("tof.geo");
   fRun->AddModule(Tof);
 */
-  FairDetector *Trd= new CbmTrd("TRD",kTRUE );
+  FairDetector* Trd = new CbmTrd("TRD", kTRUE);
   Trd->SetGeometryFileName("trd_9.geo");
   fRun->AddModule(Trd);
-/*
+  /*
   FairDetector *Rich= new CbmRich("RICH", kTRUE);
   Rich->SetGeometryFileName("rich.geo");
   fRun->AddModule(Rich);
@@ -92,8 +87,6 @@ urqmd.auau.25gev.centr.0000.ftn14";
   Ecal->SetGeometryFileName("ecal.geo");
   fRun->AddModule(Ecal);
 */
-
-
 
 
   // Create and Set Event Generator
@@ -105,24 +98,20 @@ urqmd.auau.25gev.centr.0000.ftn14";
   primGen->AddGenerator(urqmdGen);
 
 
-
   // Magnet with active Shielding
-  CbmField *fMagField=new CbmField("Magnet Active Shielding map");
-     fMagField->readRootfile("$VMCWORKDIR/input/FieldActive.root", "NewMap");
-   fRun->SetField(fMagField);
+  CbmField* fMagField = new CbmField("Magnet Active Shielding map");
+  fMagField->readRootfile("$VMCWORKDIR/input/FieldActive.root", "NewMap");
+  fRun->SetField(fMagField);
 
 
-
-// -Trajectories Visualization (TGeoManager Only )
-//   fRun->SetStoreTraj(kTRUE);
-
+  // -Trajectories Visualization (TGeoManager Only )
+  //   fRun->SetStoreTraj(kTRUE);
 
 
-   fRun->Init();
+  fRun->Init();
 
 
-
- // Set cuts for storing the trajectpries
+  // Set cuts for storing the trajectpries
   /* FairTrajFilter* trajFilter = FairTrajFilter::Instance();
      trajFilter->SetStepSizeCut(0.01); // 1 cm
      trajFilter->SetVertexCut(-2000., -2000., 4., 2000., 2000., 100.);
@@ -133,26 +122,22 @@ urqmd.auau.25gev.centr.0000.ftn14";
    */
 
 
-
   // Fill the Parameter containers for this run
-  FairRuntimeDb *rtdb=fRun->GetRuntimeDb();
-  Bool_t kParameterMerged=kTRUE;
-  FairParRootFileIo* output=new FairParRootFileIo(kParameterMerged);
+  FairRuntimeDb* rtdb       = fRun->GetRuntimeDb();
+  Bool_t kParameterMerged   = kTRUE;
+  FairParRootFileIo* output = new FairParRootFileIo(kParameterMerged);
   output->open(paramFile.Data());
   rtdb->setOutput(output);
   rtdb->saveOutput();
   rtdb->print();
 
 
-
   // Transport nEvents
   fRun->Run(nEvents);
-
 
 
   timer.Stop();
   Double_t rtime = timer.RealTime();
   Double_t ctime = timer.CpuTime();
-  printf("RealTime=%f seconds, CpuTime=%f seconds\n",rtime,ctime);
-}  
-  
+  printf("RealTime=%f seconds, CpuTime=%f seconds\n", rtime, ctime);
+}

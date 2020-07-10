@@ -24,11 +24,9 @@
 class TClonesArray;
 
 
-class CbmTrdTrackFinderIdeal : public CbmTrdTrackFinder
-{
+class CbmTrdTrackFinderIdeal : public CbmTrdTrackFinder {
 
- public:
-
+public:
   /** Default constructor **/
   CbmTrdTrackFinderIdeal();
 
@@ -51,24 +49,21 @@ class CbmTrdTrackFinderIdeal : public CbmTrdTrackFinder
    **
    *@value Number of tracks created
    **/
-  virtual Int_t DoFind(TClonesArray* hitArray,
-		      TClonesArray* trackArray);
+  virtual Int_t DoFind(TClonesArray* hitArray, TClonesArray* trackArray);
 
 private:
-
   CbmTrdTrackFinderIdeal& operator=(const CbmTrdTrackFinderIdeal&);
   CbmTrdTrackFinderIdeal(const CbmTrdTrackFinderIdeal&);
 
   TClonesArray* fMcTracks;
   TClonesArray* fTrdPoints;
-  TClonesArray* fTrdHitMatches;// this is needed for clustering
+  TClonesArray* fTrdHitMatches;  // this is needed for clustering
 
-  std::string fTrdHitProducerType; //smearing or digi
+  std::string fTrdHitProducerType;  //smearing or digi
 
   Int_t fEventNum;
 
-  ClassDef(CbmTrdTrackFinderIdeal,1);
-
+  ClassDef(CbmTrdTrackFinderIdeal, 1);
 };
 
 #endif

@@ -1,16 +1,15 @@
 #ifndef CBM_KRES_TRAIN_ANN_DIRECT_PHOTONS
 #define CBM_KRES_TRAIN_ANN_DIRECT_PHOTONS
 
+#include "TCanvas.h"
+#include "TH2D.h"
+#include "TVector3.h"
 #include <TClonesArray.h>
 #include <vector>
-#include "TVector3.h"
-#include "TH2D.h"
-#include "TCanvas.h"
 
 using namespace std;
 
-class CbmKresTrainAnnDirectPhotons
-{
+class CbmKresTrainAnnDirectPhotons {
 
 public:
   //***** brief Standard constructor.
@@ -22,7 +21,14 @@ public:
   void Init();
   void InitHistograms();
 
-  void Exec(int event, int IdForANN, double InvariantMass, double OpeningAngle, double PlaneAngle_last, double ZPos, TVector3 Momentum1, TVector3 Momentum2);
+  void Exec(int event,
+            int IdForANN,
+            double InvariantMass,
+            double OpeningAngle,
+            double PlaneAngle_last,
+            double ZPos,
+            TVector3 Momentum1,
+            TVector3 Momentum2);
   void TrainAndTestAnn();
   void Draw();
 
@@ -47,10 +53,10 @@ private:
   vector<double> Mom2_wrong;
 
   vector<TH1*> fHists;
-  TH1D * fhAnnOutput_correct;
-  TH1D * fhAnnOutput_wrong;
-  TH1D * fhCumProb_correct;
-  TH1D * fhCumProb_wrong;
+  TH1D* fhAnnOutput_correct;
+  TH1D* fhAnnOutput_wrong;
+  TH1D* fhCumProb_correct;
+  TH1D* fhCumProb_wrong;
 
 
   //***** brief Copy constructor.
@@ -60,8 +66,7 @@ private:
   CbmKresTrainAnnDirectPhotons operator=(const CbmKresTrainAnnDirectPhotons&);
 
 
-  ClassDef(CbmKresTrainAnnDirectPhotons,1)
+  ClassDef(CbmKresTrainAnnDirectPhotons, 1)
 };
 
 #endif
-

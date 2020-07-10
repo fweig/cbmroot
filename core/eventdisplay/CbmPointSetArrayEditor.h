@@ -29,27 +29,30 @@ class TGWindow;
 class TObject;
 
 
-class CbmPointSetArrayEditor : public TGedFrame
- {
-    CbmPointSetArrayEditor(const CbmPointSetArrayEditor&);            // Not implemented
-    CbmPointSetArrayEditor& operator=(const CbmPointSetArrayEditor&); // Not implemented
- 
- protected:
+class CbmPointSetArrayEditor : public TGedFrame {
+  CbmPointSetArrayEditor(const CbmPointSetArrayEditor&);  // Not implemented
+  CbmPointSetArrayEditor&
+  operator=(const CbmPointSetArrayEditor&);  // Not implemented
 
-    CbmPointSetArray* fM;          // pointer to CbmPointSetArray
-    TGComboBox* fComboColor;       // ComboBox for Color-Coding
-    TGComboBox* fComboMarker;      // ComboBox for Marker-Coding
+protected:
+  CbmPointSetArray* fM;      // pointer to CbmPointSetArray
+  TGComboBox* fComboColor;   // ComboBox for Color-Coding
+  TGComboBox* fComboMarker;  // ComboBox for Marker-Coding
 
- public:
-    CbmPointSetArrayEditor(const TGWindow* p=0, Int_t width=170, Int_t height=30, UInt_t options=kChildFrame, Pixel_t back=GetDefaultFrameBackground());
-    ~CbmPointSetArrayEditor();
- 
-    virtual void SetModel(TObject* obj);
+public:
+  CbmPointSetArrayEditor(const TGWindow* p = 0,
+                         Int_t width       = 170,
+                         Int_t height      = 30,
+                         UInt_t options    = kChildFrame,
+                         Pixel_t back      = GetDefaultFrameBackground());
+  ~CbmPointSetArrayEditor();
 
-    void DoColor();                // perform when ComboBox Color is selected
-    void DoMarker();               // perform when ComboBox Marker is selected
+  virtual void SetModel(TObject* obj);
 
-    ClassDef(CbmPointSetArrayEditor, 0); // Editor for CbmPointSetArray class.
- };
- 
+  void DoColor();   // perform when ComboBox Color is selected
+  void DoMarker();  // perform when ComboBox Marker is selected
+
+  ClassDef(CbmPointSetArrayEditor, 0);  // Editor for CbmPointSetArray class.
+};
+
 #endif

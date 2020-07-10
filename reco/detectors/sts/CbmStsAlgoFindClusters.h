@@ -7,8 +7,8 @@
 #define CBMSTSALGOFINDCLUSTERS_H 1
 
 
-#include <vector>
 #include <Rtypes.h>
+#include <vector>
 
 class CbmStsCluster;
 class CbmStsDigi;
@@ -51,24 +51,22 @@ class CbmStsParModule;
  ** The algorithm is described in:
  ** V. Friese, EPJ Web of Conferences 214 (2019) 01008
  **/
-class CbmStsAlgoFindClusters
-{
+class CbmStsAlgoFindClusters {
 
-  public:
-
-    /** @brief Typedef for input data **/
-    typedef std::pair<const CbmStsDigi*, Long64_t > InputData;
+public:
+  /** @brief Typedef for input data **/
+  typedef std::pair<const CbmStsDigi*, Long64_t> InputData;
 
 
-    /** @brief Default constructor **/
-    CbmStsAlgoFindClusters() { };
+  /** @brief Default constructor **/
+  CbmStsAlgoFindClusters() {};
 
 
-    /** @brief Destructor **/
-    virtual ~CbmStsAlgoFindClusters() { };
+  /** @brief Destructor **/
+  virtual ~CbmStsAlgoFindClusters() {};
 
 
-    /** @brief Algorithm execution
+  /** @brief Algorithm execution
      ** @param input  Vector of input data (pairs of digi and index)
      ** @param output Vector of output clusters
      ** @param address  Cluster address (module)
@@ -84,46 +82,45 @@ class CbmStsAlgoFindClusters
      ** channelOffset. If connectEdge is specififed, the first channel
      ** and the last channel are considered neighbours.
      **/
-    Long64_t Exec(const std::vector<InputData>& input,
-                  std::vector<CbmStsCluster>& output,
-                  UInt_t address,
-                  UShort_t nChannels,
-                  UShort_t channelOffset,
-                  Double_t timeCutSigma,
-                  Double_t timeCutAbs,
-                  Bool_t connectEdge,
-                  const CbmStsParModule* modPar);
+  Long64_t Exec(const std::vector<InputData>& input,
+                std::vector<CbmStsCluster>& output,
+                UInt_t address,
+                UShort_t nChannels,
+                UShort_t channelOffset,
+                Double_t timeCutSigma,
+                Double_t timeCutAbs,
+                Bool_t connectEdge,
+                const CbmStsParModule* modPar);
 
 
-  private:
-
-    /** @brief Number of left neighbour channel
+private:
+  /** @brief Number of left neighbour channel
      ** @param channel  Channel number
      ** @return Number of left neighbour
      **
      ** In case of clustering round-the-edge, the left neighbour of the
      ** first channel is the last channel. Otherwise, it is -1.
      **/
-    Short_t ChanLeft(UShort_t channel) {
-      if (fConnectEdge) return (channel == 0 ? fNofChannels-1 : channel-1);
-      return channel-1;
-    }
+  Short_t ChanLeft(UShort_t channel) {
+    if (fConnectEdge) return (channel == 0 ? fNofChannels - 1 : channel - 1);
+    return channel - 1;
+  }
 
 
-    /** @brief Number of right neighbour channel
+  /** @brief Number of right neighbour channel
      ** @param channel  Channel number
      ** @return Number of right neighbour
      **
      ** In case of clustering round-the-edge, the right neighbour of the
      ** last channel is the first channel. Otherwise, it is the increment.
      **/
-    Short_t ChanRight(UShort_t channel) {
-      if (fConnectEdge) return (channel == fNofChannels-1 ? 0 : channel+1);
-      return channel+1;
-    }
+  Short_t ChanRight(UShort_t channel) {
+    if (fConnectEdge) return (channel == fNofChannels - 1 ? 0 : channel + 1);
+    return channel + 1;
+  }
 
 
-    /** @brief Check for a matching digi in a given channel
+  /** @brief Check for a matching digi in a given channel
      ** @param channel  Channel number
      ** @param time     Time [ns]
      ** @return         kTRUE if matching digi found
@@ -132,10 +129,10 @@ class CbmStsAlgoFindClusters
      ** the time argument and the time of the active digi in the channel
      ** is within the time window defined by the cut value.
      **/
-    Bool_t CheckChannel(Short_t channel, Double_t time);
+  Bool_t CheckChannel(Short_t channel, Double_t time);
 
 
-    /** @brief Create a cluster from an active channel
+  /** @brief Create a cluster from an active channel
      ** @param channel  Channel number
      **
      ** Starting from the specified channel, a cluster is created
@@ -144,20 +141,20 @@ class CbmStsAlgoFindClusters
      **
      ** No action if the channel is not active.
      **/
-    void CreateCluster(UShort_t channel);
+  void CreateCluster(UShort_t channel);
 
 
-    /** @brief Check for a channel being active
+  /** @brief Check for a channel being active
      ** @param channel  Channel number
      ** @return kTRUE is the channel is active; else kFALSE
      **/
-    Bool_t IsActive(Short_t channel) {
-      if ( channel < 0 || channel >= fNofChannels ) return kFALSE;
-      return fStatus[channel].first > -1;
-    }
+  Bool_t IsActive(Short_t channel) {
+    if (channel < 0 || channel >= fNofChannels) return kFALSE;
+    return fStatus[channel].first > -1;
+  }
 
 
-    /** @brief Process one input digi
+  /** @brief Process one input digi
      ** @param channel   Channel number
      ** @param time      Digi time [ns]
      ** @param index     Index of digi object in its TClonesArray
@@ -166,30 +163,28 @@ class CbmStsAlgoFindClusters
      ** Depending on the state of the respective channel,
      ** the proper action is taken.
      **/
-    Bool_t ProcessDigi(UShort_t channel, Double_t time, Int_t index);
+  Bool_t ProcessDigi(UShort_t channel, Double_t time, Int_t index);
 
 
-  private:
-
-    /** @brief Status buffer
+private:
+  /** @brief Status buffer
      **
      ** The vector index is the channel number. The first element of the
      ** content is the digi index, the second one the time.
      **/
-    std::vector<std::pair<Long64_t, Double_t>> fStatus {1024, {-1, 0.} };  //!
+  std::vector<std::pair<Long64_t, Double_t>> fStatus {1024, {-1, 0.}};  //!
 
-    /** @brief Pointer to output vector **/
-    std::vector<CbmStsCluster>* fOutput = nullptr; //!
+  /** @brief Pointer to output vector **/
+  std::vector<CbmStsCluster>* fOutput = nullptr;  //!
 
-    // Required parameters
-    UInt_t   fAddress       = 0;       ///< Unique module address for clusters
-    UShort_t fNofChannels   = 0;       ///< Number of channels
-    UShort_t fChannelOffset = 0;       ///< Number of first channel
-    Double_t fTimeCutSig    = 0.;      ///< Time cut in multiples of error
-    Double_t fTimeCutAbs    = 0.;      ///< Absolute time cut [ns]
-    Bool_t   fConnectEdge   = kFALSE;  ///< Connect last and first channel
-    const CbmStsParModule* fModPar = nullptr; //! Module parameters
-
+  // Required parameters
+  UInt_t fAddress                = 0;   ///< Unique module address for clusters
+  UShort_t fNofChannels          = 0;   ///< Number of channels
+  UShort_t fChannelOffset        = 0;   ///< Number of first channel
+  Double_t fTimeCutSig           = 0.;  ///< Time cut in multiples of error
+  Double_t fTimeCutAbs           = 0.;  ///< Absolute time cut [ns]
+  Bool_t fConnectEdge            = kFALSE;   ///< Connect last and first channel
+  const CbmStsParModule* fModPar = nullptr;  //! Module parameters
 };
 
 #endif /* CBMSTSALGOFINDCLUSTERS_H */

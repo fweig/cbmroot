@@ -1,7 +1,7 @@
 #include "CbmDefs.h"
 
-#include <stdexcept>         // for out_of_range
-#include <string>            // for to_string
+#include <stdexcept>  // for out_of_range
+#include <string>     // for to_string
 
 // operator ++ for ECbmModuleId for convenient usage in loops
 // This operator is tuned for ECbmModuleID. It takes into account non
@@ -14,17 +14,16 @@
 // The opeartor takes care about the non continuous values for the enum
 // When it reaches the last detector it automatically continuous with the
 // first passive module
-ECbmModuleId& operator ++ (ECbmModuleId& e)
-{
-    if (e == ECbmModuleId::kLastModule) {
-        throw std::out_of_range("for ECbmModuleId& operator ++ (ECbmModuleId&)");
-    }
-    else if (e == ECbmModuleId::kT0) {
-      e = ECbmModuleId::kMagnet;
-    } else {
-      e = ECbmModuleId(static_cast<std::underlying_type<ECbmModuleId>::type>(e) + 1);
-    }
-    return e;
+ECbmModuleId& operator++(ECbmModuleId& e) {
+  if (e == ECbmModuleId::kLastModule) {
+    throw std::out_of_range("for ECbmModuleId& operator ++ (ECbmModuleId&)");
+  } else if (e == ECbmModuleId::kT0) {
+    e = ECbmModuleId::kMagnet;
+  } else {
+    e = ECbmModuleId(static_cast<std::underlying_type<ECbmModuleId>::type>(e)
+                     + 1);
+  }
+  return e;
 }
 
 // operator << for convenient output to std::ostream.

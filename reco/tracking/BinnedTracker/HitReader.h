@@ -15,40 +15,42 @@
 #define HITREADER_H
 
 #include "CbmPixelHit.h"
-#include <vector>
+#include "Settings.h"
+#include "TClonesArray.h"
 #include <map>
 #include <string>
-#include "TClonesArray.h"
-#include "Settings.h"
+#include <vector>
 
 class CbmBinnedStation;
 
-class CbmBinnedHitReader
-{
+class CbmBinnedHitReader {
 public:
-    static CbmBinnedHitReader* Instance();
-    static CbmBinnedHitReader* Instance(const char* name);
-    static void AddReader(const char* name);
-    static void SetSettings(CbmBinnedSettings* v) { fSettings = v; }
-    
+  static CbmBinnedHitReader* Instance();
+  static CbmBinnedHitReader* Instance(const char* name);
+  static void AddReader(const char* name);
+  static void SetSettings(CbmBinnedSettings* v) { fSettings = v; }
+
 public:
-    CbmBinnedHitReader();
-    CbmBinnedHitReader(const CbmBinnedHitReader&) = delete;
-    CbmBinnedHitReader& operator=(const CbmBinnedHitReader&) = delete;
-    virtual ~CbmBinnedHitReader();
-    virtual void AddStation(CbmBinnedStation* station) { fStations.push_back(station); }
-    virtual void Read() = 0;
-    virtual void Handle() {}// Called optionally and is not implemented by the most of readers.
-    virtual void Finish() {}// Called optionally and is not implemented by the most of readers.
-    
+  CbmBinnedHitReader();
+  CbmBinnedHitReader(const CbmBinnedHitReader&) = delete;
+  CbmBinnedHitReader& operator=(const CbmBinnedHitReader&) = delete;
+  virtual ~CbmBinnedHitReader();
+  virtual void AddStation(CbmBinnedStation* station) {
+    fStations.push_back(station);
+  }
+  virtual void Read() = 0;
+  virtual void Handle() {
+  }  // Called optionally and is not implemented by the most of readers.
+  virtual void Finish() {
+  }  // Called optionally and is not implemented by the most of readers.
+
 protected:
-    std::vector<CbmBinnedStation*> fStations;
-    TClonesArray* fHitArray;
-    
+  std::vector<CbmBinnedStation*> fStations;
+  TClonesArray* fHitArray;
+
 protected:
-    static std::map<std::string, CbmBinnedHitReader*> fReaders;
-    static CbmBinnedSettings* fSettings;
+  static std::map<std::string, CbmBinnedHitReader*> fReaders;
+  static CbmBinnedSettings* fSettings;
 };
 
 #endif /* HITREADER_H */
-

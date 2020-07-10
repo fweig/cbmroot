@@ -6,15 +6,14 @@
 
 // Includes needed for IDE
 #if !defined(__CLING__)
-#include <iostream>
-#include "TStopwatch.h"
-#include "TString.h"
-#include "FairIonGenerator.h"
-#include "FairSystemInfo.h"
 #include "CbmFieldConst.h"
 #include "CbmTransport.h"
+#include "FairIonGenerator.h"
+#include "FairSystemInfo.h"
+#include "TStopwatch.h"
+#include "TString.h"
+#include <iostream>
 #endif
-
 
 
 /** @brief Main method
@@ -36,16 +35,15 @@
  **
  ** The beam profile width must be changed in the macro body, if necessary.
  **/
-void mcbm_transport_beam(UInt_t nEvents = 1,
-                         TString output = "mcbm_beam",
-                         TString setup = "mcbm_beam_2019_03",
+void mcbm_transport_beam(UInt_t nEvents     = 1,
+                         TString output     = "mcbm_beam",
+                         TString setup      = "mcbm_beam_2019_03",
                          Double_t beamAngle = 25.,
-                         TString beamType = "Silver",
-                         Double_t eKin = 1.65,
+                         TString beamType   = "Silver",
+                         Double_t eKin      = 1.65,
                          TString targetType = "Gold",
-                         Double_t targetDz = 0.025,
-                         Double_t targetR = 1.5)
-{
+                         Double_t targetDz  = 0.025,
+                         Double_t targetR   = 1.5) {
 
   // -----   Define file names   ---------------------------------------------
   TString outFileName = output + ".tra.root";
@@ -55,18 +53,17 @@ void mcbm_transport_beam(UInt_t nEvents = 1,
 
 
   // -----   Define beam   ---------------------------------------------------
-  Int_t beamZ = 0;      ///< Atomic number
-  Int_t beamA = 0;      ///< Atomic mass number
-  Int_t beamQ = 0;      ///< Beam charge per nucleon
-  if ( beamType.EqualTo("Silver", TString::kIgnoreCase) ||
-       beamType.EqualTo("Ag", TString::kIgnoreCase) ) {
+  Int_t beamZ = 0;  ///< Atomic number
+  Int_t beamA = 0;  ///< Atomic mass number
+  Int_t beamQ = 0;  ///< Beam charge per nucleon
+  if (beamType.EqualTo("Silver", TString::kIgnoreCase)
+      || beamType.EqualTo("Ag", TString::kIgnoreCase)) {
     beamZ = 47;
     beamA = 107;
     beamQ = 47;
-  }
-  else {
+  } else {
     std::cout << "Beam species " << beamType
-        << " not supported; please define in macro body." << std::endl;
+              << " not supported; please define in macro body." << std::endl;
     return;
   }
   Double_t beamWidthX = 0.1;
@@ -76,29 +73,28 @@ void mcbm_transport_beam(UInt_t nEvents = 1,
 
 
   // -----   Define beam generator    ----------------------------------------
-  beamAngle = beamAngle * TMath::DegToRad();
-  Double_t beamStart = 1.;       // Distance of beam start from origin [cm]
-  Double_t mProt = 0.937272;     // Proton mass
-  Double_t eBeam = eKin + mProt; // Beam energy per nucleon
-  Double_t pBeam = TMath::Sqrt( eBeam * eBeam - mProt * mProt ); // Beam momentum
-  Int_t mult = 1;  // Multiplicity per event
+  beamAngle          = beamAngle * TMath::DegToRad();
+  Double_t beamStart = 1.;            // Distance of beam start from origin [cm]
+  Double_t mProt     = 0.937272;      // Proton mass
+  Double_t eBeam     = eKin + mProt;  // Beam energy per nucleon
+  Double_t pBeam = TMath::Sqrt(eBeam * eBeam - mProt * mProt);  // Beam momentum
+  Int_t mult     = 1;  // Multiplicity per event
   // -------------------------------------------------------------------------
 
 
   // -----   Define target   -------------------------------------------------
   TString targetElement = "";
-  if ( targetType.EqualTo("Gold", TString::kIgnoreCase) ||
-       targetType.EqualTo("Au", TString::kIgnoreCase) ) {
+  if (targetType.EqualTo("Gold", TString::kIgnoreCase)
+      || targetType.EqualTo("Au", TString::kIgnoreCase)) {
     targetElement = "Gold";
-  }
-  else {
+  } else {
     std::cout << "Beam species " << beamType
-        << " not supported; please define in macro body." << std::endl;
+              << " not supported; please define in macro body." << std::endl;
     return;
   }
-  Double_t targetX = 0.;
-  Double_t targetY = 0.;
-  Double_t targetZ = 0.;
+  Double_t targetX    = 0.;
+  Double_t targetY    = 0.;
+  Double_t targetZ    = 0.;
   Double_t targetRotY = beamAngle;
   // -------------------------------------------------------------------------
 
@@ -114,8 +110,8 @@ void mcbm_transport_beam(UInt_t nEvents = 1,
   run.SetGeoFileName(geoFileName);
   run.LoadSetup(setup);
   run.SetField(new CbmFieldConst());
-  run.SetTarget(targetElement, targetDz, targetR,
-                targetX, targetY, targetZ, targetRotY);
+  run.SetTarget(
+    targetElement, targetDz, targetR, targetX, targetY, targetZ, targetRotY);
   run.SetVertexSmearZ(kFALSE);
 
   run.SetBeamPosition(0., 0., beamWidthX, beamWidthY, beamStartZ);
@@ -137,21 +133,22 @@ void mcbm_transport_beam(UInt_t nEvents = 1,
   Double_t ctime = timer.CpuTime();
   std::cout << std::endl << std::endl;
   std::cout << "Macro finished successfully." << std::endl;
-  std::cout << "Output file is "    << outFileName << std::endl;
+  std::cout << "Output file is " << outFileName << std::endl;
   std::cout << "Parameter file is " << parFileName << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime
-      << "s" << std::endl << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s"
+            << std::endl
+            << std::endl;
   // ------------------------------------------------------------------------
 
 
   // -----   Resource monitoring   ------------------------------------------
   FairSystemInfo sysInfo;
-  Float_t maxMemory=sysInfo.GetMaxMemory();
+  Float_t maxMemory = sysInfo.GetMaxMemory();
   std::cout << "<DartMeasurement name=\"MaxMemory\" type=\"numeric/double\">";
   std::cout << maxMemory;
   std::cout << "</DartMeasurement>" << std::endl;
 
-  Float_t cpuUsage=ctime/rtime;
+  Float_t cpuUsage = ctime / rtime;
   std::cout << "<DartMeasurement name=\"CpuLoad\" type=\"numeric/double\">";
   std::cout << cpuUsage;
   std::cout << "</DartMeasurement>" << std::endl;
@@ -159,7 +156,4 @@ void mcbm_transport_beam(UInt_t nEvents = 1,
   std::cout << " Test passed" << std::endl;
   std::cout << " All ok " << std::endl;
   // ------------------------------------------------------------------------
-
-
 }
-

@@ -4,7 +4,6 @@
 // --------------------------------------------------------------------------
 
 
-
 #ifndef CBMTOFCREATEDIGIPAR_H
 #define CBMTOFCREATEDIGIPAR_H
 
@@ -12,10 +11,10 @@
 #include <RtypesCore.h>  // for Int_t, Double_t, Option_t
 #include <TString.h>     // for TString
 
-#include <map>           // for map, map<>::iterator
-#include <vector>        // for vector
+#include <map>     // for map, map<>::iterator
+#include <vector>  // for vector
 
-#include <FairTask.h>    // for InitStatus, FairTask
+#include <FairTask.h>  // for InitStatus, FairTask
 
 class CbmTofCell;
 class CbmTofDigiPar;
@@ -23,69 +22,67 @@ class CbmTofGeoHandler;
 
 class CbmTofCreateDigiPar : public FairTask {
 
-  public:
+public:
+  /** Default constructor **/
+  CbmTofCreateDigiPar();
 
-    /** Default constructor **/
-    CbmTofCreateDigiPar();
+  /** Standard constructor **/
+  CbmTofCreateDigiPar(const char* name, const char* title = "CBM Task");
 
-    /** Standard constructor **/
-    CbmTofCreateDigiPar(const char *name, const char *title="CBM Task");
+  /** Destructor **/
+  virtual ~CbmTofCreateDigiPar();
 
-    /** Destructor **/
-    virtual ~CbmTofCreateDigiPar();
+  /** Initialisation **/
+  virtual InitStatus ReInit();
+  virtual InitStatus Init();
+  virtual void SetParContainers();
 
-    /** Initialisation **/
-    virtual InitStatus ReInit();
-    virtual InitStatus Init();
-    virtual void SetParContainers();
+  /** Executed task **/
+  virtual void Exec(Option_t* option);
 
-    /** Executed task **/
-    virtual void Exec(Option_t * option);
+  /** Finish (called after each event) **/
+  virtual void FinishEvent() { ; }
 
-    /** Finish (called after each event) **/
-    virtual void FinishEvent(){;}
- 
-   /** Finish task (called after all event) **/
-    virtual void FinishTask();
+  /** Finish task (called after all event) **/
+  virtual void FinishTask();
 
 
 private:
+  void FillCellInfoFromGeoHandler(TString FullPath);
+  void FillDigiPar();
 
-    void FillCellInfoFromGeoHandler(TString FullPath);
-    void FillDigiPar();
-
-    void FillCellMapRootGeometry();
-    void FillCellMapAsciiGeometry();
+  void FillCellMapRootGeometry();
+  void FillCellMapAsciiGeometry();
 
 
-    Int_t fSMType;      //super module type (needed for root geometry)
-    Int_t fSModule;     //super module NR
-    Int_t fCounter;     //module/counter number
-    Int_t fGap;         //gap number (probably not needed)
-    Int_t fCell;        //cell number
-    Int_t fRegion;      //region (needed for ascii geometry)
+  Int_t fSMType;   //super module type (needed for root geometry)
+  Int_t fSModule;  //super module NR
+  Int_t fCounter;  //module/counter number
+  Int_t fGap;      //gap number (probably not needed)
+  Int_t fCell;     //cell number
+  Int_t fRegion;   //region (needed for ascii geometry)
 
-    Double_t fSizex;
-    Double_t fSizey;
-    Double_t fX;
-    Double_t fY;
-    Double_t fZ;
+  Double_t fSizex;
+  Double_t fSizey;
+  Double_t fX;
+  Double_t fY;
+  Double_t fZ;
 
-    Int_t   fDetID; //Unique number for detector element (including gap)
-    Int_t   fCellID; //Unique number for a detector cell (8 gaps add up to one cell)
+  Int_t fDetID;  //Unique number for detector element (including gap)
+  Int_t
+    fCellID;  //Unique number for a detector cell (8 gaps add up to one cell)
 
-    /** Map of Unique Tof Cell Id to corresponding TofCell **/
-    std::map<Int_t, std::vector<CbmTofCell*> > fCellMap;                  //!
-    std::map<Int_t, std::vector<CbmTofCell*> >::iterator fCellMapIt;      //!
+  /** Map of Unique Tof Cell Id to corresponding TofCell **/
+  std::map<Int_t, std::vector<CbmTofCell*>> fCellMap;              //!
+  std::map<Int_t, std::vector<CbmTofCell*>>::iterator fCellMapIt;  //!
 
-    CbmTofDigiPar *fDigiPar;    //! pointer to digi parameters
+  CbmTofDigiPar* fDigiPar;  //! pointer to digi parameters
 
-    CbmTofGeoHandler* fGeoHandler;
-  
-    CbmTofCreateDigiPar(const CbmTofCreateDigiPar&);
-    CbmTofCreateDigiPar& operator=(const CbmTofCreateDigiPar&);
+  CbmTofGeoHandler* fGeoHandler;
 
-    ClassDef(CbmTofCreateDigiPar,1)
+  CbmTofCreateDigiPar(const CbmTofCreateDigiPar&);
+  CbmTofCreateDigiPar& operator=(const CbmTofCreateDigiPar&);
 
-    };
-#endif //CBMTOFCREATEDIGIPAR_H
+  ClassDef(CbmTofCreateDigiPar, 1)
+};
+#endif  //CBMTOFCREATEDIGIPAR_H

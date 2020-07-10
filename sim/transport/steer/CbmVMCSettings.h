@@ -17,27 +17,29 @@
 
 #include "FairLogger.h"
 
-template <typename T>
-void CheckValueInRange(const T& value, const T& low, const T& high, std::string functionName) 
-{
-  if ( (value < low) || (value > high) ) {
-    LOG(fatal) << "You try to set the value " << value << "which is out of the bounds(" 
-               << low << "," << high << ") for the function " << functionName;   
+template<typename T>
+void CheckValueInRange(const T& value,
+                       const T& low,
+                       const T& high,
+                       std::string functionName) {
+  if ((value < low) || (value > high)) {
+    LOG(fatal) << "You try to set the value " << value
+               << "which is out of the bounds(" << low << "," << high
+               << ") for the function " << functionName;
   }
 }
 
 class TVirtualMC;
 
-class CbmVMCSettings : public TObject
-{
+class CbmVMCSettings : public TObject {
 
- public:
-  CbmVMCSettings() = default;
-  ~CbmVMCSettings() = default;
+public:
+  CbmVMCSettings()                      = default;
+  ~CbmVMCSettings()                     = default;
   CbmVMCSettings(const CbmVMCSettings&) = delete;
   CbmVMCSettings& operator=(const CbmVMCSettings&) = delete;
 
-  
+
   /** @brief Set all parameters defined in this class
    ** @param[in] vmc Pointer to the VirtualMC class
    **
@@ -53,11 +55,11 @@ class CbmVMCSettings : public TObject
    **     = 2 Pair production without generation of secondary e+/e-
    ** @endcode
    **/
-  void SetProcessPairProduction(Int_t val) { 
+  void SetProcessPairProduction(Int_t val) {
     CheckValueInRange(val, 0, 2, "SetProcessPairProduction");
-    fProcessPairProduction=val;
+    fProcessPairProduction = val;
   }
-  
+
   /** @brief Control the Compton scattering process
    ** @param[in] val Value to be set 
    **
@@ -67,11 +69,11 @@ class CbmVMCSettings : public TObject
    **     = 2 Compton scattering without production of e-
    ** @endcode
    **/
-  void SetProcessComptonScattering(Int_t val) { 
+  void SetProcessComptonScattering(Int_t val) {
     CheckValueInRange(val, 0, 2, "SetProcessComptonScattering");
-    fProcessComptonScattering=val;
+    fProcessComptonScattering = val;
   }
-  
+
   /** @brief Control the photo-electric effect
    ** @param[in] val Value to be set 
    **
@@ -83,7 +85,7 @@ class CbmVMCSettings : public TObject
    **/
   void SetProcessPhotoEffect(Int_t val) {
     CheckValueInRange(val, 0, 2, "SetProcessPhotoEffect");
-    fProcessPhotoEffect=val;
+    fProcessPhotoEffect = val;
   }
 
   /** @brief Control the process of nuclear fission induced by a photon
@@ -97,7 +99,7 @@ class CbmVMCSettings : public TObject
    **/
   void SetProcessPhotoFission(Int_t val) {
     CheckValueInRange(val, 0, 2, "SetProcessPhotoFission");
-    fProcessPhotoFission=val;
+    fProcessPhotoFission = val;
   }
 
   /** @brief Control the delta ray production
@@ -111,7 +113,7 @@ class CbmVMCSettings : public TObject
    **/
   void SetProcessDeltaRay(Int_t val) {
     CheckValueInRange(val, 0, 2, "SetProcessDeltaRay");
-    fProcessDeltaRay=val;
+    fProcessDeltaRay = val;
   }
 
   /** @brief Control the positron annihilation process
@@ -125,7 +127,7 @@ class CbmVMCSettings : public TObject
    **/
   void SetProcessAnnihilation(Int_t val) {
     CheckValueInRange(val, 0, 2, "SetProcessAnnihilation");
-    fProcessAnnihilation=val;
+    fProcessAnnihilation = val;
   }
 
   /** @brief Control the process of bremsstrahlung
@@ -139,7 +141,7 @@ class CbmVMCSettings : public TObject
    **/
   void SetProcessBremsstrahlung(Int_t val) {
     CheckValueInRange(val, 0, 2, "SetProcessBremsstrahlung");
-    fProcessBremsstrahlung=val;
+    fProcessBremsstrahlung = val;
   }
 
   /** @brief Control the hadronic interactions
@@ -155,7 +157,7 @@ class CbmVMCSettings : public TObject
    **/
   void SetProcessHadronicInteraction(Int_t val) {
     CheckValueInRange(val, 0, 5, "SetProcessHadronicInteraction");
-    fProcessHadronicInteraction=val;
+    fProcessHadronicInteraction = val;
   }
 
   /** @brief Control the muon-nucleus interaction
@@ -169,7 +171,7 @@ class CbmVMCSettings : public TObject
    **/
   void SetProcessMuonNuclearInteraction(Int_t val) {
     CheckValueInRange(val, 0, 2, "SetProcessMuonNuclearInteraction");
-    fProcessMuonNuclearInteraction=val;
+    fProcessMuonNuclearInteraction = val;
   }
 
   /** @brief Control the decay of particles in flight
@@ -183,7 +185,7 @@ class CbmVMCSettings : public TObject
    **/
   void SetProcessDecay(Int_t val) {
     CheckValueInRange(val, 0, 2, "SetProcessDecay");
-    fProcessDecay=val;
+    fProcessDecay = val;
   }
 
   /** @brief Control the continuous enery loss process 
@@ -202,7 +204,7 @@ class CbmVMCSettings : public TObject
    **/
   void SetProcessEnergyLossModel(Int_t val) {
     CheckValueInRange(val, 0, 4, "SetProcessEnergyLossModel");
-    fProcessEnergyLossModel=val;
+    fProcessEnergyLossModel = val;
   }
 
   /** @brief Control the multiple scattering process
@@ -217,9 +219,9 @@ class CbmVMCSettings : public TObject
    **/
   void SetProcessMultipleScattering(Int_t val) {
     CheckValueInRange(val, 0, 3, "SetProcessMultipleScattering");
-    fProcessMultipleScattering=val;
+    fProcessMultipleScattering = val;
   }
-  
+
   /** @brief Set the energy threshold for the transport of gammas
    ** @param[in] val Value to be set 
    **
@@ -227,17 +229,17 @@ class CbmVMCSettings : public TObject
    **/
   void SetEnergyCutGammas(Double_t val) {
     CheckValueInRange(val, 0., 100., "SetEnergyCutGammas");
-    fEnergyCutGammas=val;
+    fEnergyCutGammas = val;
   }
 
-   /** @brief Set the energy threshold for the transport of electros and positrons
+  /** @brief Set the energy threshold for the transport of electros and positrons
    ** @param[in] val Value to be set 
    **
    ** The parameter is the kinetic energy in GeV
    **/
   void SetEnergyCutElectrons(Double_t val) {
     CheckValueInRange(val, 0., 100., "SetEnergyCutElectrons");
-    fEnergyCutElectrons=val;
+    fEnergyCutElectrons = val;
   }
 
   /** @brief Set the energy threshold for the transport of neutral hadrons
@@ -247,7 +249,7 @@ class CbmVMCSettings : public TObject
    **/
   void SetEnergyCutNeutralHadrons(Double_t val) {
     CheckValueInRange(val, 0., 100., "SetEnergyCutNeutralHadrons");
-    fEnergyCutNeutralHadrons=val;
+    fEnergyCutNeutralHadrons = val;
   }
 
   /** @brief Set the energy threshold for the transport of charged hadrons and ions
@@ -257,7 +259,7 @@ class CbmVMCSettings : public TObject
    **/
   void SetEnergyCutChargedHadrons(Double_t val) {
     CheckValueInRange(val, 0., 100., "SetEnergyCutChargedHadrons");
-    fEnergyCutChargedHadrons=val;
+    fEnergyCutChargedHadrons = val;
   }
 
   /** @brief Set the energy threshold for the transport of muons
@@ -267,9 +269,9 @@ class CbmVMCSettings : public TObject
    **/
   void SetEnergyCutMuons(Double_t val) {
     CheckValueInRange(val, 0., 100., "SetEnergyCutMuons");
-    fEnergyCutMuons=val;
+    fEnergyCutMuons = val;
   }
-  
+
   /** @brief Set the energy threshold for photons produced by electron bremsstrahlung
    ** @param[in] val Value to be set 
    **
@@ -277,7 +279,7 @@ class CbmVMCSettings : public TObject
    **/
   void SetEnergyCutElectronBremsstrahlung(Double_t val) {
     CheckValueInRange(val, 0., 100., "SetEnergyCutElectronBremsstrahlung");
-    fEnergyCutElectronBremsstrahlung=val;
+    fEnergyCutElectronBremsstrahlung = val;
   }
 
   /** @brief Set the energy threshold for photons produced by muon bremsstrahlung
@@ -287,7 +289,7 @@ class CbmVMCSettings : public TObject
    **/
   void SetEnergyCutMuonHadronBremsstrahlung(Double_t val) {
     CheckValueInRange(val, 0., 100., "SetEnergyCutMuonHadronBremsstrahlung");
-    fEnergyCutMuonHadronBremsstrahlung=val;
+    fEnergyCutMuonHadronBremsstrahlung = val;
   }
 
   /** @brief Set the energy threshold for electrons produced by electron delta-rays
@@ -297,7 +299,7 @@ class CbmVMCSettings : public TObject
    **/
   void SetEnergyCutElectronDeltaRay(Double_t val) {
     CheckValueInRange(val, 0., 100., "SetEnergyCutElectronDeltaRay");
-    fEnergyCutElectronDeltaRay=val;
+    fEnergyCutElectronDeltaRay = val;
   }
 
   /** @brief Set the energy threshold for electrons produced by muon or hadron delta-rays
@@ -307,7 +309,7 @@ class CbmVMCSettings : public TObject
    **/
   void SetEnergyCutMuonDeltaRay(Double_t val) {
     CheckValueInRange(val, 0., 100., "SetEnergyCutMuonDeltaRay");
-    fEnergyCutMuonDeltaRay=val;
+    fEnergyCutMuonDeltaRay = val;
   }
 
   /** @brief Set the energy threshold for e+e- direct pair production by muons
@@ -317,7 +319,7 @@ class CbmVMCSettings : public TObject
    **/
   void SetEnergyCutMuonPairProduction(Double_t val) {
     CheckValueInRange(val, 0., 100., "SetEnergyCutMuonPairProduction");
-    fEnergyCutMuonPairProduction=val;
+    fEnergyCutMuonPairProduction = val;
   }
 
   /** @brief Set the time of flight threshold from the primary interaction time
@@ -327,36 +329,36 @@ class CbmVMCSettings : public TObject
    **/
   void SetTimeCutTof(Double_t val) {
     CheckValueInRange(val, 0., 2., "SetTimeCutTof");
-    fTimeCutTof=val;
+    fTimeCutTof = val;
   }
 
- private:
-  Int_t fProcessPairProduction{1};
-  Int_t fProcessComptonScattering{1};
-  Int_t fProcessPhotoEffect{1};
-  Int_t fProcessPhotoFission{0};
-  Int_t fProcessDeltaRay{1};
-  Int_t fProcessAnnihilation{1};
-  Int_t fProcessBremsstrahlung{1};
-  Int_t fProcessHadronicInteraction{1};
-  Int_t fProcessMuonNuclearInteraction{1};
-  Int_t fProcessDecay{1};
-  Int_t fProcessEnergyLossModel{1};
-  Int_t fProcessMultipleScattering{1};
-  
-  Double_t fEnergyCutGammas{1.e-3}; // GeV
-  Double_t fEnergyCutElectrons{1.e-3}; // GeV
-  Double_t fEnergyCutNeutralHadrons{1.e-3}; // GeV
-  Double_t fEnergyCutChargedHadrons{1.e-3}; // GeV
-  Double_t fEnergyCutMuons{1.e-3}; // GeV
-  Double_t fEnergyCutElectronBremsstrahlung{1.e-3}; // GeV
-  Double_t fEnergyCutMuonHadronBremsstrahlung{1.e-3}; // GeV
-  Double_t fEnergyCutElectronDeltaRay{1.e-3}; // GeV
-  Double_t fEnergyCutMuonDeltaRay{1.e-3}; // GeV
-  Double_t fEnergyCutMuonPairProduction{1.e-3}; // GeV
-  
-  Double_t fTimeCutTof{1.0}; // s
-  
+private:
+  Int_t fProcessPairProduction {1};
+  Int_t fProcessComptonScattering {1};
+  Int_t fProcessPhotoEffect {1};
+  Int_t fProcessPhotoFission {0};
+  Int_t fProcessDeltaRay {1};
+  Int_t fProcessAnnihilation {1};
+  Int_t fProcessBremsstrahlung {1};
+  Int_t fProcessHadronicInteraction {1};
+  Int_t fProcessMuonNuclearInteraction {1};
+  Int_t fProcessDecay {1};
+  Int_t fProcessEnergyLossModel {1};
+  Int_t fProcessMultipleScattering {1};
+
+  Double_t fEnergyCutGammas {1.e-3};                    // GeV
+  Double_t fEnergyCutElectrons {1.e-3};                 // GeV
+  Double_t fEnergyCutNeutralHadrons {1.e-3};            // GeV
+  Double_t fEnergyCutChargedHadrons {1.e-3};            // GeV
+  Double_t fEnergyCutMuons {1.e-3};                     // GeV
+  Double_t fEnergyCutElectronBremsstrahlung {1.e-3};    // GeV
+  Double_t fEnergyCutMuonHadronBremsstrahlung {1.e-3};  // GeV
+  Double_t fEnergyCutElectronDeltaRay {1.e-3};          // GeV
+  Double_t fEnergyCutMuonDeltaRay {1.e-3};              // GeV
+  Double_t fEnergyCutMuonPairProduction {1.e-3};        // GeV
+
+  Double_t fTimeCutTof {1.0};  // s
+
   ClassDef(CbmVMCSettings, 1);
 };
 

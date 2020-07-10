@@ -20,19 +20,19 @@
 #pragma link C++ class CbmMcbm2018RawConverterGdpb;
 
 #pragma link C++ class CbmMcbm2018UnpackerAlgoSts;
-#pragma link C++ class CbmMcbm2018UnpackerTaskSts+;
+#pragma link C++ class CbmMcbm2018UnpackerTaskSts + ;
 #pragma link C++ class CbmMcbm2018UnpackerAlgoMuch;
-#pragma link C++ class CbmMcbm2018UnpackerTaskMuch+;
+#pragma link C++ class CbmMcbm2018UnpackerTaskMuch + ;
 #pragma link C++ class CbmMcbm2018UnpackerAlgoTof;
-#pragma link C++ class CbmMcbm2018UnpackerTaskTof+;
+#pragma link C++ class CbmMcbm2018UnpackerTaskTof + ;
 #pragma link C++ class CbmMcbm2018UnpackerAlgoRich;
-#pragma link C++ class CbmMcbm2018UnpackerTaskRich+;
+#pragma link C++ class CbmMcbm2018UnpackerTaskRich + ;
 #pragma link C++ class CbmMcbm2018UnpackerAlgoHodo;
-#pragma link C++ class CbmMcbm2018UnpackerTaskHodo+;
+#pragma link C++ class CbmMcbm2018UnpackerTaskHodo + ;
 #pragma link C++ class CbmMcbm2018UnpackerAlgoPsd;
-#pragma link C++ class CbmMcbm2018UnpackerTaskPsd+;
-#pragma link C++ class CbmMcbm2018UnpackerAlgoTrdR+;
-#pragma link C++ class CbmMcbm2018UnpackerTaskTrdR+;
+#pragma link C++ class CbmMcbm2018UnpackerTaskPsd + ;
+#pragma link C++ class CbmMcbm2018UnpackerAlgoTrdR + ;
+#pragma link C++ class CbmMcbm2018UnpackerTaskTrdR + ;
 
 #pragma link C++ class CbmCheckDataFormatGdpb2018;
 #pragma link C++ class CbmMcbm2018MonitorDataRates;
@@ -69,8 +69,8 @@
 #pragma link C++ class CbmMcbm2019CheckDigisMuch;
 #pragma link C++ class CbmMcbm2019CheckDigisSts;
 #pragma link C++ class CbmMcbm2019CheckDtInDet;
-#pragma link C++ class CbmMcbm2019CheckTimingPairs+;
-#pragma link C++ class CbmMcbm2019TimeWinEventBuilderAlgo+;
-#pragma link C++ class CbmMcbm2019TimeWinEventBuilderTask+;
+#pragma link C++ class CbmMcbm2019CheckTimingPairs + ;
+#pragma link C++ class CbmMcbm2019TimeWinEventBuilderAlgo + ;
+#pragma link C++ class CbmMcbm2019TimeWinEventBuilderTask + ;
 
 #endif

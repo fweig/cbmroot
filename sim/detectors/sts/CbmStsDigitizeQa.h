@@ -1,12 +1,12 @@
 #ifndef CBMSTSDIGITIZEQA_H_
 #define CBMSTSDIGITIZEQA_H_
 
-#include "FairTask.h"
-#include "CbmStsDigi.h"
 #include "CbmHistManager.h"
 #include "CbmMCDataArray.h"
-#include <iostream>
+#include "CbmStsDigi.h"
+#include "FairTask.h"
 #include <fstream>
+#include <iostream>
 #include <vector>
 class TClonesArray;
 class CbmDigiManager;
@@ -16,53 +16,53 @@ class CbmStsParSim;
 class CbmStsParSetModule;
 class CbmStsSetup;
 
-class CbmStsDigitizeQa : public FairTask
-{
-    public:
-	CbmStsDigitizeQa(CbmStsDigitize * digitizer=NULL);
+class CbmStsDigitizeQa : public FairTask {
+public:
+  CbmStsDigitizeQa(CbmStsDigitize* digitizer = NULL);
 
-	virtual ~CbmStsDigitizeQa();
+  virtual ~CbmStsDigitizeQa();
 
-	virtual InitStatus Init();
+  virtual InitStatus Init();
 
-	virtual void Exec(Option_t* opt);
+  virtual void Exec(Option_t* opt);
 
-        virtual void SetParContainers();
-        
-	virtual void Finish();
+  virtual void SetParContainers();
 
-	void SetOutputDir(const std::string& outputDir) { fOutputDir = outputDir; }
+  virtual void Finish();
 
-	void CreateHistograms();
+  void SetOutputDir(const std::string& outputDir) { fOutputDir = outputDir; }
 
-	void CreateNofObjectsHistograms();
+  void CreateHistograms();
 
-	void CreateDigiHistograms();
+  void CreateNofObjectsHistograms();
 
-	void ProcessDigisAndPoints(const TClonesArray * points);
-	void ProcessAngles();
+  void CreateDigiHistograms();
 
-    private:
-	void ReadDataBranches();
+  void ProcessDigisAndPoints(const TClonesArray* points);
+  void ProcessAngles();
 
-	CbmHistManager* fHM;
-	CbmDigiManager* fDigiManager;
-	std::string fOutputDir;
-	TClonesArray* fStsPoints;
-	CbmStsSetup * fSetup;
-	Int_t fNofStation;
-	const CbmStsParSim* fSettings = nullptr;
-	CbmStsParSetModule* fModuleParSet = nullptr;
-	const CbmStsParAsic* fAsicPar = nullptr;
+private:
+  void ReadDataBranches();
 
-	Int_t fMaxScale;
-	std::ofstream fOutFile;
-	std::vector < std::vector <std::vector <std::vector < std::vector <Int_t>>>>> fnOfDigisChip;
+  CbmHistManager* fHM;
+  CbmDigiManager* fDigiManager;
+  std::string fOutputDir;
+  TClonesArray* fStsPoints;
+  CbmStsSetup* fSetup;
+  Int_t fNofStation;
+  const CbmStsParSim* fSettings     = nullptr;
+  CbmStsParSetModule* fModuleParSet = nullptr;
+  const CbmStsParAsic* fAsicPar     = nullptr;
 
-	CbmStsDigitizeQa(const CbmStsDigitizeQa&);
-	CbmStsDigitizeQa& operator=(const CbmStsDigitizeQa&);
+  Int_t fMaxScale;
+  std::ofstream fOutFile;
+  std::vector<std::vector<std::vector<std::vector<std::vector<Int_t>>>>>
+    fnOfDigisChip;
 
-	ClassDef(CbmStsDigitizeQa, 1);
+  CbmStsDigitizeQa(const CbmStsDigitizeQa&);
+  CbmStsDigitizeQa& operator=(const CbmStsDigitizeQa&);
+
+  ClassDef(CbmStsDigitizeQa, 1);
 };
 
 #endif

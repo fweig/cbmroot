@@ -13,23 +13,21 @@
  **/
 
 #ifndef CBMPSDHitProducer_H
-#define CBMPSDHitProducer_H 
+#define CBMPSDHitProducer_H
 
 
+#include "CbmDigiManager.h"
 #include "FairTask.h"
 #include "TH1F.h"
-#include "CbmDigiManager.h"
 
 class TClonesArray;
-const Int_t NPsdMod = 44; //with 4 central mods
+const Int_t NPsdMod = 44;  //with 4 central mods
 
 
-class CbmPsdHitProducer : public FairTask
-{
+class CbmPsdHitProducer : public FairTask {
 
- public:
-
-  /** Default constructor **/  
+public:
+  /** Default constructor **/
   CbmPsdHitProducer();
 
 
@@ -46,9 +44,9 @@ class CbmPsdHitProducer : public FairTask
   virtual void Finish();
 
 
- private:
-  Int_t             fNHits;
-   
+private:
+  Int_t fNHits;
+
   /** Output array of CbmPsdHit **/
   TClonesArray* fHitArray;
 
@@ -60,14 +58,13 @@ class CbmPsdHitProducer : public FairTask
 
   void Reset();
 
-  Float_t       fXi[NPsdMod];  //X coordinate of center of module
-  Float_t       fYi[NPsdMod];  //X coordinate of center of module
+  Float_t fXi[NPsdMod];  //X coordinate of center of module
+  Float_t fYi[NPsdMod];  //X coordinate of center of module
 
-  TH1F *fhModXNewEn; //edep in each module for Marina
- 
+  TH1F* fhModXNewEn;  //edep in each module for Marina
 
-  ClassDef(CbmPsdHitProducer,2);
 
+  ClassDef(CbmPsdHitProducer, 2);
 };
 
 #endif

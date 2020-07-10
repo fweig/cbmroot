@@ -18,23 +18,18 @@
 #include "CbmMvdSensorDataSheet.h"
 
 
+class CbmMvdMimosa34 : public CbmMvdSensorDataSheet {
 
-class CbmMvdMimosa34 : public CbmMvdSensorDataSheet
-{
-
- public:
-
+public:
   /** Default constructor **/
   CbmMvdMimosa34();
-    
-   /** Destructor **/
+
+  /** Destructor **/
   ~CbmMvdMimosa34();
 
- 
-  ClassDef(CbmMvdMimosa34,1);
 
+  ClassDef(CbmMvdMimosa34, 1);
 };
-
 
 
 #endif

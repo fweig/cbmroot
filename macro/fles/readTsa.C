@@ -9,15 +9,14 @@
  */
 
 
-void readTsa()
-{
+void readTsa() {
 
   // --- Specify input file name (this is just an example)
-//  TString inFile = "pattern.tsa";
-//  TString inFile = "spadic10_data.tsa";
-//   TString inFile = "/tmp/spadic_data/trigger_3x_source.tsa";
-   TString inFile = "spadic_dlm_trigger_2014-11-15_noepoch.tsa";
-//   TString inFile = "/Users/uhlig/Downloads/nxdata.tsa";  
+  //  TString inFile = "pattern.tsa";
+  //  TString inFile = "spadic10_data.tsa";
+  //   TString inFile = "/tmp/spadic_data/trigger_3x_source.tsa";
+  TString inFile = "spadic_dlm_trigger_2014-11-15_noepoch.tsa";
+  //   TString inFile = "/Users/uhlig/Downloads/nxdata.tsa";
 
   // --- Specify number of events to be produced.
   // --- -1 means run until the end of the input file.
@@ -32,9 +31,9 @@ void readTsa()
 
   // --- Set debug level
   gDebug = 0;
-  
+
   std::cout << std::endl;
-  std::cout << ">>> readTsa:  input file is " << inFile  << std::endl;
+  std::cout << ">>> readTsa:  input file is " << inFile << std::endl;
   std::cout << ">>> readTsa: output file is " << outFile << std::endl;
 
   // ========================================================================
@@ -46,39 +45,39 @@ void readTsa()
   // --- Source task
   CbmFlibFileSource* source = new CbmFlibFileSource();
   source->SetFileName(inFile);
-//  source->SetHostName("cbmflib01.gsi.de");
+  //  source->SetHostName("cbmflib01.gsi.de");
 
   // --- Event header
-//  FairEventHeader* event = new CbmTbEvent();
-//  event->SetRunId(260);
+  //  FairEventHeader* event = new CbmTbEvent();
+  //  event->SetRunId(260);
 
   // --- Run
-  FairRunOnline *run = new FairRunOnline(source);
+  FairRunOnline* run = new FairRunOnline(source);
   run->SetOutputFile(outFile);
-//  run->SetEventHeader(event);
+  //  run->SetEventHeader(event);
 
-//  gDebug=2;
+  //  gDebug=2;
   FairTask* spadicRawBeam = new CbmTrdRawBeamProfile();
   run->AddTask(spadicRawBeam);
 
   run->Init();
 
-  
+
   // --- Start run
   TStopwatch timer;
   timer.Start();
   std::cout << ">>> readTsa: Starting run..." << std::endl;
-  run->Run(nEvents, 0); // run until end of input file
+  run->Run(nEvents, 0);  // run until end of input file
   timer.Stop();
-  
+
   // --- End-of-run info
   Double_t rtime = timer.RealTime();
   Double_t ctime = timer.CpuTime();
   std::cout << std::endl << std::endl;
   std::cout << ">>> readTsa: Macro finished successfully." << std::endl;
   std::cout << ">>> readTsa: Output file is " << outFile << std::endl;
-  std::cout << ">>> readTsa: Real time " << rtime << " s, CPU time "
-  					<< ctime << " s" << std::endl;
+  std::cout << ">>> readTsa: Real time " << rtime << " s, CPU time " << ctime
+            << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

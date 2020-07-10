@@ -13,18 +13,18 @@ class CbmGlobalTrack;
 class CbmGlobalTrackFitter : public TObject {
 
 protected:
-    Int_t fVerbose; // Verbosity level
+  Int_t fVerbose;  // Verbosity level
 
 public:
- CbmGlobalTrackFitter() : TObject(), fVerbose(0) {};
-    virtual ~CbmGlobalTrackFitter() {};
+  CbmGlobalTrackFitter() : TObject(), fVerbose(0) {};
+  virtual ~CbmGlobalTrackFitter() {};
 
-    virtual void Init() {};
-    virtual void DoFit(CbmGlobalTrack* glbTrack) = 0;
+  virtual void Init() {};
+  virtual void DoFit(CbmGlobalTrack* glbTrack) = 0;
 
-    inline void SetVerbose(Int_t verbose) {  fVerbose = verbose; }
+  inline void SetVerbose(Int_t verbose) { fVerbose = verbose; }
 
-    ClassDef(CbmGlobalTrackFitter, 1);
+  ClassDef(CbmGlobalTrackFitter, 1);
 };
 
 

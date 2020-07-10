@@ -1,15 +1,16 @@
-void check_sts_digis( UInt_t uRunId, UInt_t   uTsJump, Double_t dFirstTsOffset,
-                       Double_t dDigiDistPlotStartTime = 0.0,
-                       Int_t nrEvents = 0, TString sDir="data" )
-{
-  if( uRunId < 353 )
-    return kFALSE;
+void check_sts_digis(UInt_t uRunId,
+                     UInt_t uTsJump,
+                     Double_t dFirstTsOffset,
+                     Double_t dDigiDistPlotStartTime = 0.0,
+                     Int_t nrEvents                  = 0,
+                     TString sDir                    = "data") {
+  if (uRunId < 353) return kFALSE;
 
   // --- Specify number of events to be produced.
   // --- -1 means run until the end of the input file.
-  Int_t nEvents=1e9;
+  Int_t nEvents = 1e9;
   // --- Specify output file name (this is just an example)
-  TString runId = TString::Format("%03u", uRunId);
+  TString runId    = TString::Format("%03u", uRunId);
   TString fileName = sDir + "/unp_mcbm_" + runId + ".root";
 
   // ========================================================================
@@ -28,50 +29,49 @@ void check_sts_digis( UInt_t uRunId, UInt_t   uTsJump, Double_t dFirstTsOffset,
   // ------------------------------------------------------------------------
 
   // -----  Analysis run   --------------------------------------------------
-  FairRunOnline *fRun= new FairRunOnline();
-  fRun->ActivateHttpServer( 100, 8080 ); // refresh each 100 events
+  FairRunOnline* fRun = new FairRunOnline();
+  fRun->ActivateHttpServer(100, 8080);  // refresh each 100 events
 
   FairFileSource* inputSource = new FairFileSource(fileName);
   fRun->SetSource(inputSource);
 
   // Define output file for FairMonitor histograms
-//  TString monitorFile{outFile};
-//  monitorFile.ReplaceAll("qa","qa.monitor");
+  //  TString monitorFile{outFile};
+  //  monitorFile.ReplaceAll("qa","qa.monitor");
   FairMonitor::GetMonitor()->EnableMonitor(kTRUE);
   // ------------------------------------------------------------------------
 
   CbmMcbm2019CheckDigisSts* stsChecker = new CbmMcbm2019CheckDigisSts();
-  stsChecker->SetTimeWindow( uTsJump, dFirstTsOffset, 2, 3, 10240000 );
-  stsChecker->SetDigiDistPlotStartTime( dDigiDistPlotStartTime );
+  stsChecker->SetTimeWindow(uTsJump, dFirstTsOffset, 2, 3, 10240000);
+  stsChecker->SetDigiDistPlotStartTime(dDigiDistPlotStartTime);
   /// Disable as no pulser for now in STS
-  stsChecker->SetStsPulseradcLimits(     31,    0 );
-  if( 0 < uRunId )
-    stsChecker->SetOutFilename( Form( "data/HistosStsCheck_%03u.root", uRunId ) );
-  fRun->AddTask( stsChecker );
+  stsChecker->SetStsPulseradcLimits(31, 0);
+  if (0 < uRunId)
+    stsChecker->SetOutFilename(Form("data/HistosStsCheck_%03u.root", uRunId));
+  fRun->AddTask(stsChecker);
 
   // -----  Parameter database   --------------------------------------------
-//  FairRuntimeDb* rtdb = fRun->GetRuntimeDb();
-//  FairParRootFileIo* parIo1 = new FairParRootFileIo();
-//  parIo1->open(parFile.Data(),"UPDATE");
-//  rtdb->setFirstInput(parIo1);
+  //  FairRuntimeDb* rtdb = fRun->GetRuntimeDb();
+  //  FairParRootFileIo* parIo1 = new FairParRootFileIo();
+  //  parIo1->open(parFile.Data(),"UPDATE");
+  //  rtdb->setFirstInput(parIo1);
   // ------------------------------------------------------------------------
 
 
   // -----   Intialise and run   --------------------------------------------
   fRun->Init();
 
-//  rtdb->setOutput(parIo1);
-//  rtdb->saveOutput();
-//  rtdb->print();
+  //  rtdb->setOutput(parIo1);
+  //  rtdb->saveOutput();
+  //  rtdb->print();
 
   cout << "Starting run" << endl;
-  if ( 0 == nrEvents) {
-    fRun->Run( 0, nEvents); // run until end of input file
+  if (0 == nrEvents) {
+    fRun->Run(0, nEvents);  // run until end of input file
   } else {
-    fRun->Run(0, nrEvents); // process  N Events
+    fRun->Run(0, nrEvents);  // process  N Events
   }
   // ------------------------------------------------------------------------
-
 
 
   // -----   Finish   -------------------------------------------------------
@@ -87,12 +87,12 @@ void check_sts_digis( UInt_t uRunId, UInt_t   uTsJump, Double_t dFirstTsOffset,
   // Extract the maximal used memory an add is as Dart measurement
   // This line is filtered by CTest and the value send to CDash
   FairSystemInfo sysInfo;
-  Float_t maxMemory=sysInfo.GetMaxMemory();
+  Float_t maxMemory = sysInfo.GetMaxMemory();
   cout << "<DartMeasurement name=\"MaxMemory\" type=\"numeric/double\">";
   cout << maxMemory;
   cout << "</DartMeasurement>" << endl;
 
-  Float_t cpuUsage=ctime/rtime;
+  Float_t cpuUsage = ctime / rtime;
   cout << "<DartMeasurement name=\"CpuLoad\" type=\"numeric/double\">";
   cout << cpuUsage;
   cout << "</DartMeasurement>" << endl;
@@ -102,5 +102,4 @@ void check_sts_digis( UInt_t uRunId, UInt_t   uTsJump, Double_t dFirstTsOffset,
 
   cout << " Test passed" << endl;
   cout << " All ok " << endl;
-
 }

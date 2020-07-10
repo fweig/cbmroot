@@ -4,47 +4,46 @@
  * @version 1.0
  **/
 
-void run_rich_event_display()
-{
-    
-    TString outDir = "/Users/slebedev/Development/cbm/data/sim/rich/urqmdtest/";
-    TString parFile =  outDir + "param.00000.root";
-    TString mcFile = outDir + "mc.00000.root";
-    TString recoFile = outDir + "reco.00000.root";
-    TString outFile = outDir + "ed.00000.root";
+void run_rich_event_display() {
 
-    FairRunAna *run = new FairRunAna();
-    FairFileSource* inputSource = new FairFileSource(mcFile);
-    inputSource->AddFriend(recoFile);
-    run->SetSource(inputSource);
-    run->SetOutputFile(outFile);
-    run->SetGenerateRunInfo(kTRUE);
+  TString outDir   = "/Users/slebedev/Development/cbm/data/sim/rich/urqmdtest/";
+  TString parFile  = outDir + "param.00000.root";
+  TString mcFile   = outDir + "mc.00000.root";
+  TString recoFile = outDir + "reco.00000.root";
+  TString outFile  = outDir + "ed.00000.root";
 
-    TList *parFileList = new TList();
+  FairRunAna* run             = new FairRunAna();
+  FairFileSource* inputSource = new FairFileSource(mcFile);
+  inputSource->AddFriend(recoFile);
+  run->SetSource(inputSource);
+  run->SetOutputFile(outFile);
+  run->SetGenerateRunInfo(kTRUE);
 
-    CbmMCDataManager* mcManager=new CbmMCDataManager("MCManager", 1);
-    mcManager->AddFile(mcFile);
-    run->AddTask(mcManager);
+  TList* parFileList = new TList();
+
+  CbmMCDataManager* mcManager = new CbmMCDataManager("MCManager", 1);
+  mcManager->AddFile(mcFile);
+  run->AddTask(mcManager);
 
 
-   CbmRichEventDisplay *ed = new CbmRichEventDisplay();
-   ed->SetDrawRings(true);
-   ed->SetDrawHits(true);
-   ed->SetDrawPoints(false);
-   ed->SetDrawProjections(true);
-   run->AddTask(ed);
+  CbmRichEventDisplay* ed = new CbmRichEventDisplay();
+  ed->SetDrawRings(true);
+  ed->SetDrawHits(true);
+  ed->SetDrawPoints(false);
+  ed->SetDrawProjections(true);
+  run->AddTask(ed);
 
-   FairRuntimeDb* rtdb = run->GetRuntimeDb();
-   FairParRootFileIo* parIo1 = new FairParRootFileIo();
-   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
-   parIo1->open(parFile.Data(),"UPDATE");
-   rtdb->setFirstInput(parIo1);
-   if ( ! parFileList->IsEmpty() ) {
-       parIo2->open(parFileList, "in");
-       rtdb->setSecondInput(parIo2);
-   }
+  FairRuntimeDb* rtdb        = run->GetRuntimeDb();
+  FairParRootFileIo* parIo1  = new FairParRootFileIo();
+  FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
+  parIo1->open(parFile.Data(), "UPDATE");
+  rtdb->setFirstInput(parIo1);
+  if (!parFileList->IsEmpty()) {
+    parIo2->open(parFileList, "in");
+    rtdb->setSecondInput(parIo2);
+  }
 
-   run->Init();
-   cout << "Starting run" << endl;
-   run->Run(0, 20);
+  run->Init();
+  cout << "Starting run" << endl;
+  run->Run(0, 20);
 }

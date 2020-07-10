@@ -12,17 +12,20 @@
 #include "CbmDefs.h"
 #include "NicaCbmEvent.h"
 
-class NicaCbmMatchedEvent : public NicaCbmEvent{
+class NicaCbmMatchedEvent : public NicaCbmEvent {
 protected:
-	virtual void CreateSource();
-	NicaCbmMatchedEvent(TString classname,NicaCbmSetup mode=kSis100Hadron);
+  virtual void CreateSource();
+  NicaCbmMatchedEvent(TString classname, NicaCbmSetup mode = kSis100Hadron);
+
 public:
-	NicaCbmMatchedEvent(NicaCbmSetup mode=kSis100Hadron);
-	virtual Bool_t ExistInTree() const;
-	virtual NicaEvent *GetNewEvent() const{return new NicaCbmMatchedEvent(fMode);};
-	virtual TString GetFormatName()const{return "CbmMatchedEvent";};
-	virtual ~NicaCbmMatchedEvent();
-	ClassDef(NicaCbmMatchedEvent,1)
+  NicaCbmMatchedEvent(NicaCbmSetup mode = kSis100Hadron);
+  virtual Bool_t ExistInTree() const;
+  virtual NicaEvent* GetNewEvent() const {
+    return new NicaCbmMatchedEvent(fMode);
+  };
+  virtual TString GetFormatName() const { return "CbmMatchedEvent"; };
+  virtual ~NicaCbmMatchedEvent();
+  ClassDef(NicaCbmMatchedEvent, 1)
 };
 
 #endif /* NICACBMMATCHEDEVENT_H_ */

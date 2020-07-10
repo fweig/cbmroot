@@ -4,10 +4,8 @@
 // ----------------------------------------------------------------------------
 
 
-
 #ifndef CBMMVDDIGITOHIT_H
 #define CBMMVDDIGITOHIT_H 1
-
 
 
 #include "FairTask.h"
@@ -19,12 +17,10 @@ class TClonesArray;
 class TString;
 
 
-class CbmMvdDigiToHit : public FairTask
-{
- 
- public:
+class CbmMvdDigiToHit : public FairTask {
 
-  /** Default constructor **/  
+public:
+  /** Default constructor **/
   CbmMvdDigiToHit();
 
 
@@ -32,8 +28,7 @@ class CbmMvdDigiToHit : public FairTask
   *@param name  Task name
   *@param mode  0 = MAPS, 1 = Ideal
   **/
-  CbmMvdDigiToHit(const char* name, 
-		    Int_t mode = 0, Int_t iVerbose = 1);
+  CbmMvdDigiToHit(const char* name, Int_t mode = 0, Int_t iVerbose = 1);
 
 
   /** Destructor **/
@@ -41,27 +36,27 @@ class CbmMvdDigiToHit : public FairTask
 
   void Exec(Option_t* opt);
 
-  void ShowDebugHistos(){fShowDebugHistos = kTRUE;}
+  void ShowDebugHistos() { fShowDebugHistos = kTRUE; }
 
 private:
-/** Hit producer mode (0 = MAPS, 1 = Ideal) **/
+  /** Hit producer mode (0 = MAPS, 1 = Ideal) **/
   Int_t fMode;
   Bool_t fShowDebugHistos;
- CbmMvdDetector* fDetector;
- 
- TClonesArray* fInputDigis;
- TClonesArray* fHit;
-  
- UInt_t fHitPluginNr;
+  CbmMvdDetector* fDetector;
 
-  TString	fBranchName;   // Name of input branch (MvdDigi)
-  
+  TClonesArray* fInputDigis;
+  TClonesArray* fHit;
 
-  TStopwatch     fTimer;        ///< ROOT timer
+  UInt_t fHitPluginNr;
+
+  TString fBranchName;  // Name of input branch (MvdDigi)
 
 
-// -----   Private methods   ---------------------------------------------
- /** Intialisation **/
+  TStopwatch fTimer;  ///< ROOT timer
+
+
+  // -----   Private methods   ---------------------------------------------
+  /** Intialisation **/
   virtual InitStatus Init();
 
 
@@ -80,7 +75,7 @@ private:
 
 
   /** Clear the hit arrays **/
-  void Reset();	 
+  void Reset();
 
 
   /** Print digitisation parameters **/
@@ -88,10 +83,10 @@ private:
 
 private:
   CbmMvdDigiToHit(const CbmMvdDigiToHit&);
-  CbmMvdDigiToHit operator=(const CbmMvdDigiToHit&);  
+  CbmMvdDigiToHit operator=(const CbmMvdDigiToHit&);
 
-ClassDef(CbmMvdDigiToHit,1);    
+  ClassDef(CbmMvdDigiToHit, 1);
 };
-    
-    
-#endif   		     
+
+
+#endif

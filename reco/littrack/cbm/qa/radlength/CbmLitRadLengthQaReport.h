@@ -20,43 +20,40 @@ class TH1;
  * \author Andrey Lebedev <andrey.lebedev@gsi.de>
  * \date 2013
  */
-class CbmLitRadLengthQaReport : public CbmSimulationReport
-{
+class CbmLitRadLengthQaReport : public CbmSimulationReport {
 public:
-   /**
+  /**
     * \brief Constructor.
     */
-   CbmLitRadLengthQaReport();
+  CbmLitRadLengthQaReport();
 
-   /**
+  /**
     * \brief Destructor.
     */
-   virtual ~CbmLitRadLengthQaReport();
+  virtual ~CbmLitRadLengthQaReport();
 
 protected:
-   /**
+  /**
     * \brief Inherited from CbmSimulationReport.
     */
-   virtual void Create();
+  virtual void Create();
 
-   /**
+  /**
     * \brief Inherited from CbmSimulationReport.
     */
-   virtual void Draw();
+  virtual void Draw();
 
-   /**
+  /**
     * \brief
     */
-   void DrawDetector(
-         const string& detName);
+  void DrawDetector(const string& detName);
 
-   /**
+  /**
     * \brief
     */
-   void DrawDetectorStation(
-         const string& detName);
+  void DrawDetectorStation(const string& detName);
 
-   ClassDef(CbmLitRadLengthQaReport, 1)
+  ClassDef(CbmLitRadLengthQaReport, 1)
 };
 
 #endif /* CBMLITTRACKINGQAREPORT_H_ */

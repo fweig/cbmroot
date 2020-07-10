@@ -30,36 +30,34 @@ class CbmVertex;
 class CbmStsTrack;
 
 
-class CbmMvdQa : public FairTask
-{
+class CbmMvdQa : public FairTask {
 public:
   CbmMvdQa();
-  
+
   CbmMvdQa(const char* name, Int_t iMode = 0, Int_t iVerbose = 0);
 
-  CbmMvdQa(const CbmMvdQa&) = delete; 
-  CbmMvdQa& operator=(const CbmMvdQa&) = delete; 
+  CbmMvdQa(const CbmMvdQa&) = delete;
+  CbmMvdQa& operator=(const CbmMvdQa&) = delete;
 
   ~CbmMvdQa();
 
-  void     SetMinHitReq(Int_t nrOfHits){fminHitReq = nrOfHits;};
-  void     SetMatches(Int_t MCtrackID, CbmStsTrack* stsTrack);
-  void     Exec(Option_t* opt); 
+  void SetMinHitReq(Int_t nrOfHits) { fminHitReq = nrOfHits; };
+  void SetMatches(Int_t MCtrackID, CbmStsTrack* stsTrack);
+  void Exec(Option_t* opt);
 
   InitStatus Init();
 
   void Finish();
-   
-  void SetUseMcQa(){useMcQa = kTRUE;};
-  void SetUseDigiQa(){useDigiQa = kTRUE;};
-  void SetUseHitQa(){useHitQa = kTRUE;};
-  void SetUseTrackQa(){useTrackQa = kTRUE;};
 
-  void SetOutFile(TFile* outFile){foutFile = outFile;};
-  void SetDrawOutput(){fdraw = kTRUE;};
+  void SetUseMcQa() { useMcQa = kTRUE; };
+  void SetUseDigiQa() { useDigiQa = kTRUE; };
+  void SetUseHitQa() { useHitQa = kTRUE; };
+  void SetUseTrackQa() { useTrackQa = kTRUE; };
+
+  void SetOutFile(TFile* outFile) { foutFile = outFile; };
+  void SetDrawOutput() { fdraw = kTRUE; };
 
 private:
-
   TFile* foutFile;
 
   Int_t fNHitsOfLongTracks;
@@ -73,7 +71,6 @@ private:
   Int_t fFirstMvdPos;
 
 
-
   Int_t fnrTrackslowP;
   Int_t fnrTracksHighP;
   Int_t flow;
@@ -85,7 +82,7 @@ private:
   TClonesArray* fStsTrackArrayN;
   TClonesArray* fStsTrackMatches;
   TClonesArray* fGlobalTrackArray;
- 
+
 
   TClonesArray* fListMCTracks;
   TClonesArray* fMCTrackArrayP;
@@ -96,7 +93,7 @@ private:
   TClonesArray* fMvdCluster;
   TClonesArray* fMvdHits;
   TClonesArray* fMvdHitMatchArray;
-    TClonesArray* fMvdDigiMatchArray;
+  TClonesArray* fMvdDigiMatchArray;
   TClonesArray* fBadTracks;
 
   TClonesArray* fInfoArray;
@@ -130,14 +127,14 @@ private:
 
   Bool_t fdraw;
 
- // Double_t GetImpactParameterRadius(CbmLitTrackParam etrack);
- // Double_t GetImpactParameterX(CbmLitTrackParam etrack);
- // Double_t GetImpactParameterY(CbmLitTrackParam etrack);
+  // Double_t GetImpactParameterRadius(CbmLitTrackParam etrack);
+  // Double_t GetImpactParameterX(CbmLitTrackParam etrack);
+  // Double_t GetImpactParameterY(CbmLitTrackParam etrack);
 
- // Double_t GetTransverseMomentum(CbmLitTrackParam etrack);
- // Double_t GetMomentum(CbmLitTrackParam etrack);
- // Double_t GetMomentumZ(CbmLitTrackParam etrack);
- // Double_t GetAngle(CbmLitTrackParam etrack);
+  // Double_t GetTransverseMomentum(CbmLitTrackParam etrack);
+  // Double_t GetMomentum(CbmLitTrackParam etrack);
+  // Double_t GetMomentumZ(CbmLitTrackParam etrack);
+  // Double_t GetAngle(CbmLitTrackParam etrack);
 
   void SetupHistograms();
   void SetupMCHistograms();
@@ -162,7 +159,7 @@ private:
   void GetFirstMvdHitPos(CbmStsTrack* stsTrack, Float_t* hitPos);
 
 
- ClassDef(CbmMvdQa,1);
+  ClassDef(CbmMvdQa, 1);
 };
 
 

@@ -15,20 +15,21 @@
 
 #include <vector>
 
-class CbmKFPixelMeasurement :public TObject{
- public:
-  CbmKFPixelMeasurement():z(0),x(0),y(0){}
-  ~CbmKFPixelMeasurement(){}
+class CbmKFPixelMeasurement : public TObject {
+public:
+  CbmKFPixelMeasurement() : z(0), x(0), y(0) {}
+  ~CbmKFPixelMeasurement() {}
 
   Double_t z;
   Double_t x;
   Double_t y;
   Double_t V[3];
-  Int_t Filter( CbmKFTrackInterface &track );
-  static void FilterPDAF(  CbmKFTrackInterface &track, 
-			   std::vector<CbmKFPixelMeasurement*> &vm,
-			   double gateX, double gateY, 
-			   std::vector<double> &vProb              );
+  Int_t Filter(CbmKFTrackInterface& track);
+  static void FilterPDAF(CbmKFTrackInterface& track,
+                         std::vector<CbmKFPixelMeasurement*>& vm,
+                         double gateX,
+                         double gateY,
+                         std::vector<double>& vProb);
 
   ClassDef(CbmKFPixelMeasurement, 1)
 };

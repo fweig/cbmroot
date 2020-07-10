@@ -8,8 +8,7 @@
 //
 // --------------------------------------------------------------------------
 
-void tof_sim100box(Int_t nEvents = 100)
-{
+void tof_sim100box(Int_t nEvents = 100) {
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -20,7 +19,7 @@ void tof_sim100box(Int_t nEvents = 100)
   TString outDir  = "data";
   TString outFile = outDir + "/prot.mc.root";
   TString parFile = outDir + "/prot.params.root";
-  
+
   // -----  Geometries  -----------------------------------------------------
   TString caveGeom   = "cave.geo";
   TString targetGeom = "target_au_250mu.geo";
@@ -28,22 +27,19 @@ void tof_sim100box(Int_t nEvents = 100)
   TString magnetGeom = "passive/magnet_v12a.geo";
   TString stsGeom    = "sts/sts_v12b.geo.root";
   TString tofGeom    = "tof/tof_V13a.geo";
-  
+
   // -----   Magnetic field   -----------------------------------------------
-  TString fieldMap    = "field_v12a";   // name of field map
-  Double_t fieldZ     = 50.;             // field centre z position
-  Double_t fieldScale = 0.8;             // field scaling factor
-  
+  TString fieldMap    = "field_v12a";  // name of field map
+  Double_t fieldZ     = 50.;           // field centre z position
+  Double_t fieldScale = 0.8;           // field scaling factor
+
   // In general, the following parts need not be touched
   // ========================================================================
-
-
 
 
   // ----    Debug option   -------------------------------------------------
   gDebug = 0;
   // ------------------------------------------------------------------------
-
 
 
   // -----   Timer   --------------------------------------------------------
@@ -70,62 +66,60 @@ void tof_sim100box(Int_t nEvents = 100)
   gSystem->Load("libLittrack");
   gSystem->Load("libTof");
   // -----------------------------------------------------------------------
-  
- 
- 
+
+
   // -----   Create simulation run   ----------------------------------------
   FairRunSim* fRun = new FairRunSim();
-  fRun->SetName("TGeant3");              // Transport engine
-  //fRun->SetTrackingDebugMode(kTRUE);   // Geant3 debug output can be set in ./gconfig/g3Config.C 
-  fRun->SetOutputFile(outFile);          // Output file
+  fRun->SetName("TGeant3");  // Transport engine
+  //fRun->SetTrackingDebugMode(kTRUE);   // Geant3 debug output can be set in ./gconfig/g3Config.C
+  fRun->SetOutputFile(outFile);  // Output file
   FairRuntimeDb* rtdb = fRun->GetRuntimeDb();
   // ------------------------------------------------------------------------
 
 
   // -----   Create media   -------------------------------------------------
-  fRun->SetMaterials("media.geo");       // Materials
+  fRun->SetMaterials("media.geo");  // Materials
   // ------------------------------------------------------------------------
 
 
   // -----   Create detectors and passive volumes   -------------------------
-  if ( caveGeom != "" ) {
+  if (caveGeom != "") {
     FairModule* cave = new CbmCave("CAVE");
     cave->SetGeometryFileName(caveGeom);
     fRun->AddModule(cave);
   }
 
-  if ( pipeGeom != "" ) {
+  if (pipeGeom != "") {
     FairModule* pipe = new CbmPipe("PIPE");
     pipe->SetGeometryFileName(pipeGeom);
     fRun->AddModule(pipe);
   }
-  
-  if ( targetGeom != "" ) {
+
+  if (targetGeom != "") {
     FairModule* target = new CbmTarget("Target");
     target->SetGeometryFileName(targetGeom);
     fRun->AddModule(target);
   }
 
-  if ( magnetGeom != "" ) {
+  if (magnetGeom != "") {
     FairModule* magnet = new CbmMagnet("MAGNET");
     magnet->SetGeometryFileName(magnetGeom);
     fRun->AddModule(magnet);
   }
-  
-  if ( stsGeom != "" ) {
+
+  if (stsGeom != "") {
     FairDetector* sts = new CbmSts("STS", kTRUE);
     sts->SetGeometryFileName(stsGeom);
     fRun->AddModule(sts);
   }
 
-  if ( tofGeom != "" ) {
+  if (tofGeom != "") {
     FairDetector* tof = new CbmTof("TOF", kTRUE);
     tof->SetGeometryFileName(tofGeom);
     fRun->AddModule(tof);
   }
-  
-  // ------------------------------------------------------------------------
 
+  // ------------------------------------------------------------------------
 
 
   // -----   Create magnetic field   ----------------------------------------
@@ -146,32 +140,32 @@ void tof_sim100box(Int_t nEvents = 100)
   // Ion Generator
   //  FairIonGenerator *fIongen= new FairIonGenerator(79, 197,79,1, 0.,0., 25, 0.,0.,-1.);
   // FairParticleGenerator *fPartGen= new FairParticleGenerator(2212, 1,0.,0.6, 2., 0.,0.,0.);
-  FairBoxGenerator *fPartGen= new FairBoxGenerator(2212, 20);
-  fPartGen->SetPtRange(0.,2.5);
-  fPartGen->SetYRange(0.,4.);
+  FairBoxGenerator* fPartGen = new FairBoxGenerator(2212, 20);
+  fPartGen->SetPtRange(0., 2.5);
+  fPartGen->SetYRange(0., 4.);
   primGen->AddGenerator(fPartGen);
   fRun->SetGenerator(primGen);
 
   // Use the CbmUrqmdGenrator which calculates a reaction plane and
   // rotate all particles accordingly
-  if (0){
-  CbmUrqmdGenerator*  urqmdGen = new CbmUrqmdGenerator(inFile);
-  //CbmUnigenGenerator*  urqmdGen = new CbmUnigenGenerator(inFile);
-  urqmdGen->SetEventPlane(-180. , 180.);
-  primGen->AddGenerator(urqmdGen);
-  fRun->SetGenerator(primGen);
+  if (0) {
+    CbmUrqmdGenerator* urqmdGen = new CbmUrqmdGenerator(inFile);
+    //CbmUnigenGenerator*  urqmdGen = new CbmUnigenGenerator(inFile);
+    urqmdGen->SetEventPlane(-180., 180.);
+    primGen->AddGenerator(urqmdGen);
+    fRun->SetGenerator(primGen);
   }
   // -Trajectories Visualization (TGeoManager only )
   // Switch this on if you want to visualize tracks in the
   // eventdisplay.
   // This is normally switch off, because of the huge files created
-  // when it is switched on. 
+  // when it is switched on.
   //fRun->SetStoreTraj(kTRUE);
 
   // -----   Run initialisation   -------------------------------------------
   fRun->Init();
   // ------------------------------------------------------------------------
-  
+
   // Set cuts for storing the trajectories.
   // Switch this on only if trajectories are stored.
   // Choose this cuts according to your needs, but be aware
@@ -189,8 +183,8 @@ void tof_sim100box(Int_t nEvents = 100)
   CbmFieldPar* fieldPar = (CbmFieldPar*) rtdb->getContainer("CbmFieldPar");
   fieldPar->SetParameters(magField);
   fieldPar->setChanged();
-  fieldPar->setInputVersion(fRun->GetRunId(),1);
-  Bool_t kParameterMerged = kTRUE;
+  fieldPar->setInputVersion(fRun->GetRunId(), 1);
+  Bool_t kParameterMerged   = kTRUE;
   FairParRootFileIo* parOut = new FairParRootFileIo(kParameterMerged);
   parOut->open(parFile.Data());
   rtdb->setOutput(parOut);
@@ -208,13 +202,12 @@ void tof_sim100box(Int_t nEvents = 100)
   Double_t ctime = timer.CpuTime();
   cout << endl << endl;
   cout << "Macro finished succesfully." << endl;
-  cout << "Output file is "    << outFile << endl;
+  cout << "Output file is " << outFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime 
-       << "s" << endl << endl;
+  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl
+       << endl;
   // ------------------------------------------------------------------------
 
   cout << " Test passed" << endl;
   cout << " All ok " << endl;
 }
-

@@ -7,9 +7,7 @@
 #include "CbmMvdDetectorId.h"
 
 
-CbmMvdDetectorId::CbmMvdDetectorId() {
-}
-
+CbmMvdDetectorId::CbmMvdDetectorId() {}
 
 
 ClassImp(CbmMvdDetectorId)

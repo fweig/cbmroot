@@ -6,8 +6,7 @@
 #include "TCanvas.h"
 #include "TGeoNode.h"
 
-class LxDraw
-{
+class LxDraw {
 public:
   LxDraw();
   void ClearView();
@@ -29,4 +28,4 @@ private:
   bool ask;
 };
 
-#endif//LXDRAW_INCLUDED
+#endif  //LXDRAW_INCLUDED

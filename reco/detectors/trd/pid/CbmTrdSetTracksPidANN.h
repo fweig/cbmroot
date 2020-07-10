@@ -29,11 +29,9 @@
 class TMultiLayerPerceptron;
 class TClonesArray;
 
-class CbmTrdSetTracksPidANN : public FairTask
-{
-	  
- public:
+class CbmTrdSetTracksPidANN : public FairTask {
 
+public:
   /** Default constructor **/
   CbmTrdSetTracksPidANN();
 
@@ -67,44 +65,43 @@ class CbmTrdSetTracksPidANN : public FairTask
 
 
   /** Accessors **/
-  Int_t GetNofTracks() const  { return fNofTracks; };
+  Int_t GetNofTracks() const { return fNofTracks; };
   Double_t GetANNPar1() const { return fANNPar1; };
   Double_t GetANNPar2() const { return fANNPar2; };
 
   /** Setters **/
-  void SetANNPar1(Double_t param) { fANNPar1=param; };
-  void SetANNPar2(Double_t param) { fANNPar2=param; };
-  
+  void SetANNPar1(Double_t param) { fANNPar1 = param; };
+  void SetANNPar2(Double_t param) { fANNPar2 = param; };
+
   ///deprecated method, will be deleted soon
   // use SetTRDGeometryName
-  void SetInputFile(TString) { };
-  
+  void SetInputFile(TString) {};
+
   //should be "mb" or "st"
   //set the geometry, you use "mb" for Munster-Buharest; "st" for standard
-  void SetTRDGeometryType(TString trdGeometryType) { fTRDGeometryType = trdGeometryType;}
+  void SetTRDGeometryType(TString trdGeometryType) {
+    fTRDGeometryType = trdGeometryType;
+  }
 
 
-
- private:
-
+private:
   CbmTrdSetTracksPidANN& operator=(const CbmTrdSetTracksPidANN&);
   CbmTrdSetTracksPidANN(const CbmTrdSetTracksPidANN&);
 
-  TClonesArray* fTrackArray;    // Input array of TRD tracks
-  TClonesArray* fTrdHitArray;   // Input array of TRD Hits
+  TClonesArray* fTrackArray;   // Input array of TRD tracks
+  TClonesArray* fTrdHitArray;  // Input array of TRD Hits
 
-  Int_t fNofTracks;             // Number of tracks successfully fitted
-  Double_t fANNPar1;             // Parameter1 for Wkn method
-  Double_t fANNPar2;             // Parameter2 for Wkn method
-  
-  std::vector<TMultiLayerPerceptron*> fNN;   // Neural Network  
+  Int_t fNofTracks;   // Number of tracks successfully fitted
+  Double_t fANNPar1;  // Parameter1 for Wkn method
+  Double_t fANNPar2;  // Parameter2 for Wkn method
 
-  TString fTRDGeometryType; // name of the TRD geometry
+  std::vector<TMultiLayerPerceptron*> fNN;  // Neural Network
 
-  Bool_t ReadData();            // Read the weights needed for ANN
+  TString fTRDGeometryType;  // name of the TRD geometry
 
-  ClassDef(CbmTrdSetTracksPidANN,2);
+  Bool_t ReadData();  // Read the weights needed for ANN
 
+  ClassDef(CbmTrdSetTracksPidANN, 2);
 };
 
 #endif

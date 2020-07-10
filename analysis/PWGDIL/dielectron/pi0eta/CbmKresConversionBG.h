@@ -1,14 +1,13 @@
 #ifndef CBM_KRES_CONVERSION_BG
 #define CBM_KRES_CONVERSION_BG
 
-#include <TClonesArray.h>
 #include "CbmMCTrack.h"
+#include <TClonesArray.h>
 #include <TH1.h>
 
 using namespace std;
 
-class CbmKresConversionBG
-{
+class CbmKresConversionBG {
 
 public:
   //***** brief Standard constructor.
@@ -19,12 +18,15 @@ public:
 
   void Init();
 
-  void Exec(CbmMCTrack* mctrack1, CbmMCTrack* mctrack2, CbmMCTrack* mctrack3, CbmMCTrack* mctrack4, Double_t invmassRecoPi0, vector<TH1*> BGCases);
-
+  void Exec(CbmMCTrack* mctrack1,
+            CbmMCTrack* mctrack2,
+            CbmMCTrack* mctrack3,
+            CbmMCTrack* mctrack4,
+            Double_t invmassRecoPi0,
+            vector<TH1*> BGCases);
 
 
 private:
- 
   TClonesArray* fMcTracks;
 
   //***** brief Copy constructor.
@@ -34,8 +36,7 @@ private:
   CbmKresConversionBG operator=(const CbmKresConversionBG&);
 
 
-	ClassDef(CbmKresConversionBG,1)
+  ClassDef(CbmKresConversionBG, 1)
 };
 
 #endif
-

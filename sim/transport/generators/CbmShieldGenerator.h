@@ -35,11 +35,9 @@ class TDatabasePDG;
 class FairPrimaryGenerator;
 class FairIon;
 
-class CbmShieldGenerator : public FairGenerator  
-{
+class CbmShieldGenerator : public FairGenerator {
 
- public: 
-
+public:
   /** Default constructor without arguments should not be used. **/
   CbmShieldGenerator();
 
@@ -53,7 +51,7 @@ class CbmShieldGenerator : public FairGenerator
   /** Destructor. **/
   virtual ~CbmShieldGenerator();
 
-	
+
   /** Reads on event from the input file and pushes the tracks onto
    ** the stack. Abstract method in base class.
    ** @param primGen  pointer to the FairPrimaryGenerator
@@ -61,16 +59,15 @@ class CbmShieldGenerator : public FairGenerator
   // virtual Bool_t ReadEvent(FairPrimaryGenerator* primGen);
   virtual Bool_t ReadEvent(FairPrimaryGenerator* primGen);
 
-  void SetPartType(int partType) {fpartType = partType;}
+  void SetPartType(int partType) { fpartType = partType; }
 
- private:
+private:
+  std::ifstream* fInputFile;  //! Input file stream
+  const Char_t* fFileName;    //! Input file Name
+  TDatabasePDG* fPDG;         //!  PDG database
 
-  std::ifstream*      fInputFile;          //! Input file stream
-  const Char_t*  fFileName;           //! Input file Name
-  TDatabasePDG*  fPDG;                //!  PDG database
+  int fpartType;  // SELIM
 
-  int fpartType; // SELIM
-	
   /** Private method CloseInput. Just for convenience. Closes the 
    ** input file properly. Called from destructor and from ReadEvent. **/
   void CloseInput();
@@ -81,16 +78,14 @@ class CbmShieldGenerator : public FairGenerator
   Int_t RegisterIons();
 
 
-
   /** STL map from ion name to FairIon **/
-  std::map<TString, FairIon*> fIonMap;       //!
-	
-	
+  std::map<TString, FairIon*> fIonMap;  //!
+
+
   CbmShieldGenerator(const CbmShieldGenerator&);
   CbmShieldGenerator& operator=(const CbmShieldGenerator&);
 
-  ClassDef(CbmShieldGenerator,2);
-
+  ClassDef(CbmShieldGenerator, 2);
 };
 
 #endif

@@ -12,78 +12,77 @@
 #include "NicaCbmTrack.h"
 #include "NicaTrackCut.h"
 
-class NicaCbmMCPointsCut: public NicaTrackCut{
+class NicaCbmMCPointsCut : public NicaTrackCut {
 public:
-	NicaCbmMCPointsCut(Int_t params);
-	virtual Bool_t Init(Int_t format_id);
-	virtual ~NicaCbmMCPointsCut(){};
-	ClassDef(NicaCbmMCPointsCut,1);
+  NicaCbmMCPointsCut(Int_t params);
+  virtual Bool_t Init(Int_t format_id);
+  virtual ~NicaCbmMCPointsCut() {};
+  ClassDef(NicaCbmMCPointsCut, 1);
 };
 
-class NicaCbmStsPointsCut: public NicaCbmMCPointsCut{
+class NicaCbmStsPointsCut : public NicaCbmMCPointsCut {
 public:
-	NicaCbmStsPointsCut();
-	Bool_t Pass(NicaTrack *track);
-	virtual ~NicaCbmStsPointsCut(){};
-	ClassDef(NicaCbmStsPointsCut,1);
+  NicaCbmStsPointsCut();
+  Bool_t Pass(NicaTrack* track);
+  virtual ~NicaCbmStsPointsCut() {};
+  ClassDef(NicaCbmStsPointsCut, 1);
 };
 
-class NicaCbmMvdPointsCut: public NicaCbmMCPointsCut{
+class NicaCbmMvdPointsCut : public NicaCbmMCPointsCut {
 public:
-	NicaCbmMvdPointsCut();
-	Bool_t Pass(NicaTrack *track);
-	virtual ~NicaCbmMvdPointsCut(){};
-	ClassDef(NicaCbmMvdPointsCut,1);
+  NicaCbmMvdPointsCut();
+  Bool_t Pass(NicaTrack* track);
+  virtual ~NicaCbmMvdPointsCut() {};
+  ClassDef(NicaCbmMvdPointsCut, 1);
 };
 
-class NicaCbmRichPointsCut: public NicaCbmMCPointsCut{
+class NicaCbmRichPointsCut : public NicaCbmMCPointsCut {
 public:
-	NicaCbmRichPointsCut();
-	Bool_t Pass(NicaTrack *track);
-	virtual ~NicaCbmRichPointsCut(){};
-	ClassDef(NicaCbmRichPointsCut,1);
+  NicaCbmRichPointsCut();
+  Bool_t Pass(NicaTrack* track);
+  virtual ~NicaCbmRichPointsCut() {};
+  ClassDef(NicaCbmRichPointsCut, 1);
 };
 
-class NicaCbmMuchPointsCut: public NicaCbmMCPointsCut{
+class NicaCbmMuchPointsCut : public NicaCbmMCPointsCut {
 public:
-	NicaCbmMuchPointsCut();
-	Bool_t Pass(NicaTrack *track);
-	virtual ~NicaCbmMuchPointsCut(){};
-	ClassDef(NicaCbmMuchPointsCut,1);
+  NicaCbmMuchPointsCut();
+  Bool_t Pass(NicaTrack* track);
+  virtual ~NicaCbmMuchPointsCut() {};
+  ClassDef(NicaCbmMuchPointsCut, 1);
 };
 
-class NicaCbmTrdPointsCut: public NicaCbmMCPointsCut{
+class NicaCbmTrdPointsCut : public NicaCbmMCPointsCut {
 public:
-	NicaCbmTrdPointsCut();
-	Bool_t Pass(NicaTrack *track);
-	virtual ~NicaCbmTrdPointsCut(){};
-	ClassDef(NicaCbmTrdPointsCut,1);
+  NicaCbmTrdPointsCut();
+  Bool_t Pass(NicaTrack* track);
+  virtual ~NicaCbmTrdPointsCut() {};
+  ClassDef(NicaCbmTrdPointsCut, 1);
 };
 
-class NicaCbmTofPointsCut: public NicaCbmMCPointsCut{
+class NicaCbmTofPointsCut : public NicaCbmMCPointsCut {
 public:
-	NicaCbmTofPointsCut();
-	Bool_t Pass(NicaTrack *track);
-	virtual ~NicaCbmTofPointsCut(){};
-	ClassDef(NicaCbmTofPointsCut,1);
+  NicaCbmTofPointsCut();
+  Bool_t Pass(NicaTrack* track);
+  virtual ~NicaCbmTofPointsCut() {};
+  ClassDef(NicaCbmTofPointsCut, 1);
 };
 
-class NicaCbmEcalPointsCut: public NicaCbmMCPointsCut{
+class NicaCbmEcalPointsCut : public NicaCbmMCPointsCut {
 public:
-	NicaCbmEcalPointsCut();
-	Bool_t Pass(NicaTrack *track);
-	virtual ~NicaCbmEcalPointsCut(){};
-	ClassDef(NicaCbmEcalPointsCut,1);
+  NicaCbmEcalPointsCut();
+  Bool_t Pass(NicaTrack* track);
+  virtual ~NicaCbmEcalPointsCut() {};
+  ClassDef(NicaCbmEcalPointsCut, 1);
 };
 
-class NicaCbmPsdPointsCut: public NicaCbmMCPointsCut{
+class NicaCbmPsdPointsCut : public NicaCbmMCPointsCut {
 public:
-	NicaCbmPsdPointsCut();
-	Bool_t Pass(NicaTrack *track);
-	virtual ~NicaCbmPsdPointsCut(){};
-	ClassDef(NicaCbmPsdPointsCut,1);
+  NicaCbmPsdPointsCut();
+  Bool_t Pass(NicaTrack* track);
+  virtual ~NicaCbmPsdPointsCut() {};
+  ClassDef(NicaCbmPsdPointsCut, 1);
 };
-
 
 
 #endif /* NICA_CBM_CUTS_TRACKCUTS_CBMMCPOINTSCUTS_H_ */

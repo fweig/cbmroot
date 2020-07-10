@@ -14,18 +14,17 @@
 // --------------------------------------------------------------------------
 
 
-void create_digipar(TString geomFile="full.root", Int_t nEvents = 0)
-{
+void create_digipar(TString geomFile = "full.root", Int_t nEvents = 0) {
 
-  //Extract Filename without extension and path 
+  //Extract Filename without extension and path
   //TODO: Do this in a better way.
   TString fileName = geomFile;
-  fileName.ReplaceAll(".root","");
-  if (fileName.Contains("/")){
-    fileName=fileName("/.*$"); //extract substring with filename
-    fileName.ReplaceAll("/","");
+  fileName.ReplaceAll(".root", "");
+  if (fileName.Contains("/")) {
+    fileName = fileName("/.*$");  //extract substring with filename
+    fileName.ReplaceAll("/", "");
   }
-  cout<<"fileName: "<<fileName<<endl;
+  cout << "fileName: " << fileName << endl;
 
 
   // ========================================================================
@@ -51,18 +50,15 @@ void create_digipar(TString geomFile="full.root", Int_t nEvents = 0)
   // ========================================================================
 
 
- 
   // ----    Debug option   -------------------------------------------------
   gDebug = 0;
   // ------------------------------------------------------------------------
-
 
 
   // -----   Timer   --------------------------------------------------------
   TStopwatch timer;
   timer.Start();
   // ------------------------------------------------------------------------
-
 
 
   // ----  Load libraries   -------------------------------------------------
@@ -82,7 +78,7 @@ void create_digipar(TString geomFile="full.root", Int_t nEvents = 0)
   // ------------------------------------------------------------------------
 
   // -----   Reconstruction run   -------------------------------------------
-  FairRunAna *run= new FairRunAna();
+  FairRunAna* run = new FairRunAna();
   run->SetInputFile(inFile);
   run->SetOutputFile(outFile);
   run->SetGeomFile(geoFile);
@@ -91,29 +87,28 @@ void create_digipar(TString geomFile="full.root", Int_t nEvents = 0)
   FairRuntimeDb* rtdb = run->GetRuntimeDb();
 
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
-  parIo2->open(digiFile,"out");
+  parIo2->open(digiFile, "out");
   rtdb->setOutput(parIo2);
 
-  CbmTofCreateDigiPar* tofDigiProducer = new CbmTofCreateDigiPar("TOF Digi Producer",
-                                                        "TOF task");
+  CbmTofCreateDigiPar* tofDigiProducer =
+    new CbmTofCreateDigiPar("TOF Digi Producer", "TOF task");
   run->AddTask(tofDigiProducer);
 
   // -------------------------------------------------------------------------
 
   rtdb->saveOutput();
- 
+
   // -----   Intialise and run   --------------------------------------------
   //  run->LoadGeometry();
   run->Init();
-   
-  rtdb->print();
-  
 
-  CbmTofDigiPar* DigiPar = (CbmTofDigiPar*)
-                           rtdb->getContainer("CbmTofDigiPar");
+  rtdb->print();
+
+
+  CbmTofDigiPar* DigiPar = (CbmTofDigiPar*) rtdb->getContainer("CbmTofDigiPar");
 
   DigiPar->setChanged();
-  DigiPar->setInputVersion(run->GetRunId(),1);
+  DigiPar->setInputVersion(run->GetRunId(), 1);
   rtdb->print();
   rtdb->saveOutput();
 
@@ -124,7 +119,7 @@ void create_digipar(TString geomFile="full.root", Int_t nEvents = 0)
   Double_t ctime = timer.CpuTime();
   cout << endl << endl;
   cout << "Macro finished succesfully." << endl;
-  cout << "Output file is "    << outFile << endl;
+  cout << "Output file is " << outFile << endl;
   cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << endl;
   cout << endl;
   // ------------------------------------------------------------------------

@@ -18,34 +18,36 @@
 // --------------------------------------------------------------------------
 
 
-void run_reco_pi0(Int_t nEvents = 1, Int_t urqmd = 0)
-{
+void run_reco_pi0(Int_t nEvents = 1, Int_t urqmd = 0) {
   if (nEvents > 500) nEvents = 500;
   Bool_t trdSmearing(1), trdClustering(0), qa(0);
   // ========================================================================
-  // geometry selection for sim + reco  by Cyrano                            
+  // geometry selection for sim + reco  by Cyrano
   // ========================================================================
   ifstream whichTrdGeo;
-  whichTrdGeo.open("whichTrdGeo",ios::in);
+  whichTrdGeo.open("whichTrdGeo", ios::in);
   TString digipar;
   if (whichTrdGeo) whichTrdGeo >> digipar;
-  cout << "selected geometry : >> " << digipar << " << (to select a different geometry, edit macro/trd/whichTrdGeo file)" << endl;
+  cout
+    << "selected geometry : >> " << digipar
+    << " << (to select a different geometry, edit macro/trd/whichTrdGeo file)"
+    << endl;
   whichTrdGeo.close();
   if (digipar.Length() == 0) digipar = "trd_standard";
 
   // ========================================================================
   //          Adjust this part according to your requirements
-  gROOT->Reset(); 
-  gStyle->SetPalette(1,0);
+  gROOT->Reset();
+  gStyle->SetPalette(1, 0);
   gROOT->SetStyle("Plain");
-  gStyle->SetPadTickX(1);                        
-  gStyle->SetPadTickY(1);  
+  gStyle->SetPadTickX(1);
+  gStyle->SetPadTickY(1);
   gStyle->SetOptStat(kFALSE);
   gStyle->SetOptTitle(kFALSE);
   TString trdOption;
-  if (trdSmearing) 
+  if (trdSmearing)
     trdOption = "smearing";
-  else if (trdClustering) 
+  else if (trdClustering)
     trdOption = "cluster";
   else
     trdOption = "no_trd";
@@ -53,13 +55,13 @@ void run_reco_pi0(Int_t nEvents = 1, Int_t urqmd = 0)
   Int_t iVerbose = 0;
 
   // Input file (MC events)
-  TString inFile;// = "data/test.mc.root";
-  inFile.Form("data/test.mc.%04i.root",urqmd);
+  TString inFile;  // = "data/test.mc.root";
+  inFile.Form("data/test.mc.%04i.root", urqmd);
   // Parameter file
-  TString parFile;// = "data/params.root";
-  parFile.Form("data/params.%04i.root",urqmd);
+  TString parFile;  // = "data/params.root";
+  parFile.Form("data/params.%04i.root", urqmd);
   //  Digitisation files
-  TList *parFileList = new TList();
+  TList* parFileList = new TList();
 
   TString paramDir = gSystem->Getenv("VMCWORKDIR");
   paramDir += "/parameters";
@@ -77,19 +79,21 @@ void run_reco_pi0(Int_t nEvents = 1, Int_t urqmd = 0)
 
   // Output file
   TString statistic;
-  statistic.Form(".%03ievents",nEvents);
-  TString outFile;// = "data/test.pa." + digipar + statistic + ".root";
-  outFile.Form("data/test.pa.%s.%s.%04i.%03ievents.root",digipar.Data(),trdOption.Data(),urqmd,nEvents);
+  statistic.Form(".%03ievents", nEvents);
+  TString outFile;  // = "data/test.pa." + digipar + statistic + ".root";
+  outFile.Form("data/test.pa.%s.%s.%04i.%03ievents.root",
+               digipar.Data(),
+               trdOption.Data(),
+               urqmd,
+               nEvents);
 
   // In general, the following parts need not be touched
   // ========================================================================
 
 
- 
   // ----    Debug option   -------------------------------------------------
   gDebug = 0;
   // ------------------------------------------------------------------------
-
 
 
   // -----   Timer   --------------------------------------------------------
@@ -98,13 +102,13 @@ void run_reco_pi0(Int_t nEvents = 1, Int_t urqmd = 0)
   // ------------------------------------------------------------------------
 
 
-
   // ----  Load libraries   -------------------------------------------------
   gROOT->LoadMacro("$VMCWORKDIR/gconfig/basiclibs.C");
   basiclibs();
-  /*dielectron*/gROOT->LoadMacro("$VMCWORKDIR/macro/rich/cbmlibs.C");
-  /*dielectron*/cbmlibs();
-  /*dielectron*/gROOT->LoadMacro("$VMCWORKDIR/macro/littrack/determine_setup.C");
+  /*dielectron*/ gROOT->LoadMacro("$VMCWORKDIR/macro/rich/cbmlibs.C");
+  /*dielectron*/ cbmlibs();
+  /*dielectron*/ gROOT->LoadMacro(
+    "$VMCWORKDIR/macro/littrack/determine_setup.C");
   gSystem->Load("libGeoBase");
   gSystem->Load("libParBase");
   gSystem->Load("libBase");
@@ -123,7 +127,7 @@ void run_reco_pi0(Int_t nEvents = 1, Int_t urqmd = 0)
   gSystem->Load("libTof");
   gSystem->Load("libGlobal");
   gSystem->Load("libL1");
-  gSystem->Load("libMinuit2"); // Nedded for rich ellipse fitter
+  gSystem->Load("libMinuit2");  // Nedded for rich ellipse fitter
   /*
     gSystem->Load("libGeoBase");
     gSystem->Load("libParBase");
@@ -148,81 +152,72 @@ void run_reco_pi0(Int_t nEvents = 1, Int_t urqmd = 0)
   // ------------------------------------------------------------------------
 
 
-
   // -----   Reconstruction run   -------------------------------------------
-  FairRunAna *run= new FairRunAna();
+  FairRunAna* run = new FairRunAna();
   run->SetInputFile(inFile);
   run->SetOutputFile(outFile);
   // ------------------------------------------------------------------------
-  
 
 
-  
   // =========================================================================
   // ===                     MVD local reconstruction                      ===
   // =========================================================================
-  
+
 
   // -----   MVD Digitiser   -------------------------------------------------
-  CbmMvdDigitizeL* mvdDigi = new CbmMvdDigitizeL("MVD Digitiser", 
-						 0, iVerbose);
-  /*dielectron*/mvdDigi->SetPixelSize(18.4); //should be 20x20
-  /*dielectron*/mvdDigi->SetEpiThickness(0.0014);
+  CbmMvdDigitizeL* mvdDigi = new CbmMvdDigitizeL("MVD Digitiser", 0, iVerbose);
+  /*dielectron*/ mvdDigi->SetPixelSize(18.4);  //should be 20x20
+  /*dielectron*/ mvdDigi->SetEpiThickness(0.0014);
   run->AddTask(mvdDigi);
   // -------------------------------------------------------------------------
- 
+
 
   // -----   MVD Hit Finder   ------------------------------------------------
-  CbmMvdFindHits* mvdHitFinder = new CbmMvdFindHits("MVD Hit Finder",
-						    0, iVerbose);
-  /*dielectron*/mvdHitFinder->SetSigmaNoise(11,kTRUE);
-  /*dielectron*///mvdHitFinder->ShowDebugHistograms();
-  /*dielectron*/mvdHitFinder->SetAdcDynamic(150);
-  /*dielectron*/mvdHitFinder->SetAdcOffset(0);
-  /*dielectron*/mvdHitFinder->SetAdcBits(1);
-  /*dielectron*/mvdHitFinder->SetSeedThreshold(1); //75 ele
-  /*dielectron*/mvdHitFinder->SetNeighbourThreshold(1); //75 el
+  CbmMvdFindHits* mvdHitFinder =
+    new CbmMvdFindHits("MVD Hit Finder", 0, iVerbose);
+  /*dielectron*/ mvdHitFinder->SetSigmaNoise(11, kTRUE);
+  /*dielectron*/  //mvdHitFinder->ShowDebugHistograms();
+  /*dielectron*/ mvdHitFinder->SetAdcDynamic(150);
+  /*dielectron*/ mvdHitFinder->SetAdcOffset(0);
+  /*dielectron*/ mvdHitFinder->SetAdcBits(1);
+  /*dielectron*/ mvdHitFinder->SetSeedThreshold(1);       //75 ele
+  /*dielectron*/ mvdHitFinder->SetNeighbourThreshold(1);  //75 el
   run->AddTask(mvdHitFinder);
   // -------------------------------------------------------------------------
 
-  
 
   // ===                 End of MVD local reconstruction                   ===
   // =========================================================================
-  
-
-
-
 
 
   // =========================================================================
   // ===                      STS local reconstruction                     ===
   // =========================================================================
-  /*dielectron*/Double_t threshold  =  4;
-  /*dielectron*/Double_t noiseWidth =  0.1;
-  /*dielectron*/Int_t    nofBits    = 20;
-  /*dielectron*/Double_t minStep    =  0.01;
-  /*dielectron*/Double_t StripDeadTime = 10.;
+  /*dielectron*/ Double_t threshold     = 4;
+  /*dielectron*/ Double_t noiseWidth    = 0.1;
+  /*dielectron*/ Int_t nofBits          = 20;
+  /*dielectron*/ Double_t minStep       = 0.01;
+  /*dielectron*/ Double_t StripDeadTime = 10.;
   // -----   STS digitizer   -------------------------------------------------
   CbmStsDigitize* stsDigitize = new CbmStsDigitize("STS Digitiser", iVerbose);
-  
-  /*dielectron*/stsDigitize->SetRealisticResponse();
-  /*dielectron*/stsDigitize->SetFrontThreshold (threshold);
-  /*dielectron*/stsDigitize->SetBackThreshold  (threshold);
-  /*dielectron*/stsDigitize->SetFrontNoiseWidth(noiseWidth);
-  /*dielectron*/stsDigitize->SetBackNoiseWidth (noiseWidth);
-  /*dielectron*/stsDigitize->SetFrontNofBits   (nofBits);
-  /*dielectron*/stsDigitize->SetBackNofBits    (nofBits);
-  /*dielectron*/stsDigitize->SetFrontMinStep   (minStep);
-  /*dielectron*/stsDigitize->SetBackMinStep    (minStep);
-  /*dielectron*/stsDigitize->SetStripDeadTime  (StripDeadTime);
+
+  /*dielectron*/ stsDigitize->SetRealisticResponse();
+  /*dielectron*/ stsDigitize->SetFrontThreshold(threshold);
+  /*dielectron*/ stsDigitize->SetBackThreshold(threshold);
+  /*dielectron*/ stsDigitize->SetFrontNoiseWidth(noiseWidth);
+  /*dielectron*/ stsDigitize->SetBackNoiseWidth(noiseWidth);
+  /*dielectron*/ stsDigitize->SetFrontNofBits(nofBits);
+  /*dielectron*/ stsDigitize->SetBackNofBits(nofBits);
+  /*dielectron*/ stsDigitize->SetFrontMinStep(minStep);
+  /*dielectron*/ stsDigitize->SetBackMinStep(minStep);
+  /*dielectron*/ stsDigitize->SetStripDeadTime(StripDeadTime);
   run->AddTask(stsDigitize);
   // -------------------------------------------------------------------------
 
 
   // -----   STS Cluster Finder   --------------------------------------------
-  FairTask* stsClusterFinder = new CbmStsClusterFinder("STS Cluster Finder",
-						       iVerbose);
+  FairTask* stsClusterFinder =
+    new CbmStsClusterFinder("STS Cluster Finder", iVerbose);
   run->AddTask(stsClusterFinder);
   // -------------------------------------------------------------------------
 
@@ -244,12 +239,13 @@ void run_reco_pi0(Int_t nEvents = 1, Int_t urqmd = 0)
   run->AddTask(kalman);
   CbmL1* l1 = new CbmL1();
   run->AddTask(l1);
-  CbmStsTrackFinder* stsTrackFinder    = new CbmL1StsTrackFinder();
-  FairTask* stsFindTracks = new CbmStsFindTracks(iVerbose, stsTrackFinder, /*dielectron Bool_t useMvdInTracking= */true);
+  CbmStsTrackFinder* stsTrackFinder = new CbmL1StsTrackFinder();
+  FairTask* stsFindTracks           = new CbmStsFindTracks(
+    iVerbose, stsTrackFinder, /*dielectron Bool_t useMvdInTracking= */ true);
   run->AddTask(stsFindTracks);
   // -------------------------------------------------------------------------
-  
-  
+
+
   // ---   STS track matching   ----------------------------------------------
   FairTask* stsMatchTracks = new CbmStsMatchTracks(iVerbose);
   run->AddTask(stsMatchTracks);
@@ -265,39 +261,40 @@ void run_reco_pi0(Int_t nEvents = 1, Int_t urqmd = 0)
   // ===                 End of STS local reconstruction                   ===
   // =========================================================================
 
-  
-
-
 
   // =========================================================================
   // ===                     TRD local reconstruction                      ===
   // =========================================================================
 
   // Update of the values for the radiator F.U. 17.08.07
-  Int_t trdNFoils    = 130;      // number of polyetylene foils
-  Float_t trdDFoils = 0.0013;    // thickness of 1 foil [cm]
-  Float_t trdDGap   = 0.02;      // thickness of gap between foils [cm]
-  Bool_t simpleTR = kTRUE;       // use fast and simple version for TR
+  Int_t trdNFoils   = 130;     // number of polyetylene foils
+  Float_t trdDFoils = 0.0013;  // thickness of 1 foil [cm]
+  Float_t trdDGap   = 0.02;    // thickness of gap between foils [cm]
+  Bool_t simpleTR   = kTRUE;   // use fast and simple version for TR
   // production
 
-  CbmTrdRadiator *radiator = new CbmTrdRadiator(simpleTR , trdNFoils,
-						trdDFoils, trdDGap);
+  CbmTrdRadiator* radiator =
+    new CbmTrdRadiator(simpleTR, trdNFoils, trdDFoils, trdDGap);
   if (trdSmearing) {
-    CbmTrdHitProducerSmearing* trdHitProd = new CbmTrdHitProducerSmearing(radiator);
+    CbmTrdHitProducerSmearing* trdHitProd =
+      new CbmTrdHitProducerSmearing(radiator);
     run->AddTask(trdHitProd);
   } else if (trdClustering) {
     // -----   TRD clusterizer     ----------------------------------------------
-  
-    CbmTrdClusterizerFast* trdCluster = new CbmTrdClusterizerFast("TRD Clusterizer", "TRD task",radiator,false,true);
+
+    CbmTrdClusterizerFast* trdCluster = new CbmTrdClusterizerFast(
+      "TRD Clusterizer", "TRD task", radiator, false, true);
     run->AddTask(trdCluster);
     printf("Init ClusterfinderFast\n");
-      
+
     //printf("HIER KOMMT DER CLUSTERFINDERFAST\n");
-    CbmTrdClusterFinderFast* trdClusterfindingfast = new CbmTrdClusterFinderFast(true, true, false, 5.0e-7);
+    CbmTrdClusterFinderFast* trdClusterfindingfast =
+      new CbmTrdClusterFinderFast(true, true, false, 5.0e-7);
     run->AddTask(trdClusterfindingfast);
     printf("Finished ClusterfinderFast\n");
-  
-    CbmTrdHitProducerCluster* trdClusterHitProducer = new CbmTrdHitProducerCluster();
+
+    CbmTrdHitProducerCluster* trdClusterHitProducer =
+      new CbmTrdHitProducerCluster();
     run->AddTask(trdClusterHitProducer);
     printf("Finished Hit Producer\n");
   }
@@ -311,32 +308,25 @@ void run_reco_pi0(Int_t nEvents = 1, Int_t urqmd = 0)
   */
 
 
-
-
-  
   // =========================================================================
   // ===                     TOF local reconstruction                      ===
   // =========================================================================
 
 
   // ------   TOF hit producer   ---------------------------------------------
-  CbmTofHitProducer* tofHitProd = new CbmTofHitProducer("TOF HitProducer",
-							iVerbose);
+  CbmTofHitProducer* tofHitProd =
+    new CbmTofHitProducer("TOF HitProducer", iVerbose);
   run->AddTask(tofHitProd);
   // -------------------------------------------------------------------------
- 
+
   // ===                   End of TOF local reconstruction                 ===
   // =========================================================================
 
-  
 
-
-  
-   
   // =========================================================================
   // ===                        Global tracking                            ===
-  // =========================================================================     
-  
+  // =========================================================================
+
   CbmLitFindGlobalTracks* finder = new CbmLitFindGlobalTracks();
   // Tracking method to be used
   // "branch" - branching tracking
@@ -349,37 +339,39 @@ void run_reco_pi0(Int_t nEvents = 1, Int_t urqmd = 0)
   finder->SetMergerType("nearest_hit");
 
   run->AddTask(finder);
- 
+
   // -----   Primary vertex finding   ---------------------------------------
   CbmPrimaryVertexFinder* pvFinder = new CbmPVFinderKF();
   CbmFindPrimaryVertex* findVertex = new CbmFindPrimaryVertex(pvFinder);
   run->AddTask(findVertex);
 
 
-
   // -----   TRD track matching   --------------------------------------------
   CbmTrdMatchTracks* trdMatchTracks = new CbmTrdMatchTracks(iVerbose);
   run->AddTask(trdMatchTracks);
-   
+
   // ----------- TRD track Pid Wkn ----------------------
-  CbmTrdSetTracksPidWkn* trdSetTracksPidTask = new  CbmTrdSetTracksPidWkn("CbmTrdSetTracksPidWkn","CbmTrdSetTracksPidWkn");
+  CbmTrdSetTracksPidWkn* trdSetTracksPidTask =
+    new CbmTrdSetTracksPidWkn("CbmTrdSetTracksPidWkn", "CbmTrdSetTracksPidWkn");
   run->AddTask(trdSetTracksPidTask);
   // ----------------------------------------------------
 
   // ----------- TRD track Pid Ann ----------------------
-  CbmTrdSetTracksPidANN* trdSetTracksPidAnnTask = new  CbmTrdSetTracksPidANN("CbmTrdSetTracksPidAnn","CbmTrdSetTracksPidAnn");
+  CbmTrdSetTracksPidANN* trdSetTracksPidAnnTask =
+    new CbmTrdSetTracksPidANN("CbmTrdSetTracksPidAnn", "CbmTrdSetTracksPidAnn");
   run->AddTask(trdSetTracksPidAnnTask);
   // ----------------------------------------------------
-  
-  CbmTrdSetTracksPidLike* trdSetTracksPidLikeTask =  new CbmTrdSetTracksPidLike("CbmTrdSetTracksPidLike","CbmTrdSetTracksPidLike");
+
+  CbmTrdSetTracksPidLike* trdSetTracksPidLikeTask = new CbmTrdSetTracksPidLike(
+    "CbmTrdSetTracksPidLike", "CbmTrdSetTracksPidLike");
   run->AddTask(trdSetTracksPidLikeTask);
   // -------------------------------------------------------------------------
-  
+
   // =========================================================================
   // ===                        RICH reconstruction                        ===
   // =========================================================================
-  
-  CbmRichHitProducer* richHitProd  = new CbmRichHitProducer();
+
+  CbmRichHitProducer* richHitProd = new CbmRichHitProducer();
   richHitProd->SetDetectorType(4);
   richHitProd->SetNofNoiseHits(220);
   richHitProd->SetCollectionEfficiency(1.0);
@@ -619,12 +611,14 @@ void run_reco_pi0(Int_t nEvents = 1, Int_t urqmd = 0)
 
   //
   if (qa) {
-    CbmTrdOccupancy* trdOccupancy = new CbmTrdOccupancy("TRD Occupancy", "TRD task", digipar, 5.0e-7);
+    CbmTrdOccupancy* trdOccupancy =
+      new CbmTrdOccupancy("TRD Occupancy", "TRD task", digipar, 5.0e-7);
     run->AddTask(trdOccupancy);
     CbmTrdQa* trdQa = new CbmTrdQa("TRD QA", "TRD task", digipar, 5.0e-7);
     run->AddTask(trdQa);
   }
-  CbmTrdPhotonAnalysis *trdphot = new CbmTrdPhotonAnalysis("PhotonAnalysis","PhotonAnalysis",iVerbose);
+  CbmTrdPhotonAnalysis* trdphot =
+    new CbmTrdPhotonAnalysis("PhotonAnalysis", "PhotonAnalysis", iVerbose);
   run->AddTask(trdphot);
 
 
@@ -634,11 +628,11 @@ void run_reco_pi0(Int_t nEvents = 1, Int_t urqmd = 0)
     stsDigi += "/parameters/sts/";
     stsDigi += (TString)stsDigiFile;
   */
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
-  FairParRootFileIo* parIo1 = new FairParRootFileIo();
+  FairRuntimeDb* rtdb        = run->GetRuntimeDb();
+  FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
   parIo1->open(parFile.Data());
-  parIo2->open(parFileList,"in");
+  parIo2->open(parFileList, "in");
   rtdb->setFirstInput(parIo1);
   rtdb->setSecondInput(parIo2);
   rtdb->setOutput(parIo1);
@@ -646,14 +640,12 @@ void run_reco_pi0(Int_t nEvents = 1, Int_t urqmd = 0)
   // ------------------------------------------------------------------------
 
 
-     
   // -----   Intialise and run   --------------------------------------------
   //  run->LoadGeometry();
   run->Init();
   cout << "Starting run" << endl;
-  run->Run(0,nEvents);
+  run->Run(0, nEvents);
   // ------------------------------------------------------------------------
-
 
 
   // -----   Finish   -------------------------------------------------------
@@ -662,7 +654,7 @@ void run_reco_pi0(Int_t nEvents = 1, Int_t urqmd = 0)
   Double_t ctime = timer.CpuTime();
   cout << endl << endl;
   cout << "Macro finished succesfully." << endl;
-  cout << "Output file is "    << outFile << endl;
+  cout << "Output file is " << outFile << endl;
   cout << "Parameter file is " << parFile << endl;
   cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << endl;
   cout << endl;

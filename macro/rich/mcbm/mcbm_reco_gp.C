@@ -18,15 +18,15 @@
 // --------------------------------------------------------------------------
 
 
-void mcbm_reco_gp(Int_t nEvents = 100, 
-               TString cSys="nini", 
-               TString cEbeam="1.93gev",
-               TString cCentr="mbias",
-               Int_t   iRun=1,
-//             const char* setupName = "sis18_mcbm_25deg")
-//             const char* setupName = "sis18_mcbm_20deg_short")
-               const char* setupName = "sis18_mcbm_20deg_long")
-{
+void mcbm_reco_gp(
+  Int_t nEvents  = 100,
+  TString cSys   = "nini",
+  TString cEbeam = "1.93gev",
+  TString cCentr = "mbias",
+  Int_t iRun     = 1,
+  //             const char* setupName = "sis18_mcbm_25deg")
+  //             const char* setupName = "sis18_mcbm_20deg_short")
+  const char* setupName = "sis18_mcbm_20deg_long") {
   // ========================================================================
   //          Adjust this part according to your requirements
 
@@ -43,35 +43,37 @@ void mcbm_reco_gp(Int_t nEvents = 100,
 
 
   // -----   In- and output file names   ------------------------------------
-//  TString outDir  = "data/";
+  //  TString outDir  = "data/";
 
-	cout << "directories set!" << endl;
-  TString outDir = "/home/aghoehne/Documents/CbmRoot/Gregor/";	
+  cout << "directories set!" << endl;
+  TString outDir = "/home/aghoehne/Documents/CbmRoot/Gregor/";
 
-  TString inFile  = outDir + setupName + "_test10.mc.root";       // Input file (MC events)
-  TString parFile = outDir + setupName + "_params10.root";        // Parameter file
-  TString outFile = outDir + setupName + "_test10.eds.root";      // Output file
+  TString inFile =
+    outDir + setupName + "_test10.mc.root";  // Input file (MC events)
+  TString parFile = outDir + setupName + "_params10.root";    // Parameter file
+  TString outFile = outDir + setupName + "_test10.eds.root";  // Output file
 
-  TString geoFile = outDir + setupName + "_geofile_full.root";		
+  TString geoFile = outDir + setupName + "_geofile_full.root";
 
-  TString resultDir ="/home/aghoehne/Documents/CbmRoot/Gregor/results_mcbm_rich";
+  TString resultDir =
+    "/home/aghoehne/Documents/CbmRoot/Gregor/results_mcbm_rich";
 
-//  TString inFile  = outDir + setupName + "_" + cSys + "." + cEbeam + "." + cCentr + ".mc." + Form("%05d",iRun) + ".root"; // Input file (MC events)
-//  TString parFile = outDir + setupName + "_" + cSys + "." + cEbeam + "." + cCentr + ".params." + Form("%05d",iRun) + ".root";  // Parameter file
-//  TString outFile = outDir + setupName + "_" + cSys + "." + cEbeam + "." + cCentr + ".eds." + Form("%05d",iRun) + ".root";     // Output file
+  //  TString inFile  = outDir + setupName + "_" + cSys + "." + cEbeam + "." + cCentr + ".mc." + Form("%05d",iRun) + ".root"; // Input file (MC events)
+  //  TString parFile = outDir + setupName + "_" + cSys + "." + cEbeam + "." + cCentr + ".params." + Form("%05d",iRun) + ".root";  // Parameter file
+  //  TString outFile = outDir + setupName + "_" + cSys + "." + cEbeam + "." + cCentr + ".eds." + Form("%05d",iRun) + ".root";     // Output file
   // ------------------------------------------------------------------------
 
 
   // -----   Remove old CTest runtime dependency file  ----------------------
-//  TString depFile = Remove_CTest_Dependency_File(outDir, "run_reco" , setupName);
+  //  TString depFile = Remove_CTest_Dependency_File(outDir, "run_reco" , setupName);
   // ------------------------------------------------------------------------
 
 
   // -----   Load the geometry setup   -------------------------------------
   std::cout << std::endl;
-  TString setupFile = srcDir + "/geometry/setup/setup_" + setupName + ".C";
+  TString setupFile  = srcDir + "/geometry/setup/setup_" + setupName + ".C";
   TString setupFunct = "setup_";
-  setupFunct = setupFunct + setupName + "()";
+  setupFunct         = setupFunct + setupName + "()";
   std::cout << "-I- " << myName << ": Loading macro " << setupFile << std::endl;
   gROOT->LoadMacro(setupFile);
   gROOT->ProcessLine(setupFunct);
@@ -82,53 +84,56 @@ void mcbm_reco_gp(Int_t nEvents = 100,
   // -----   Parameter files as input to the runtime database   -------------
   std::cout << std::endl;
   std::cout << "-I- " << myName << ": Defining parameter files " << std::endl;
-  TList *parFileList = new TList();
+  TList* parFileList = new TList();
   TString geoTag;
 
   // - TRD digitisation parameters
-  if ( setup->GetGeoTag(kTrd, geoTag) ) {
-  	TObjString* trdFile = new TObjString(srcDir + "/parameters/trd/trd_" + geoTag + ".digi.par");
-  	parFileList->Add(trdFile);
+  if (setup->GetGeoTag(kTrd, geoTag)) {
+    TObjString* trdFile =
+      new TObjString(srcDir + "/parameters/trd/trd_" + geoTag + ".digi.par");
+    parFileList->Add(trdFile);
     std::cout << "-I- " << myName << ": Using parameter file "
-    		      << trdFile->GetString() << std::endl;
+              << trdFile->GetString() << std::endl;
   }
 
   // - TOF digitisation parameters
-  if ( setup->GetGeoTag(kTof, geoTag) ) {
-  	TObjString* tofFile = new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digi.par");
-  	parFileList->Add(tofFile);
+  if (setup->GetGeoTag(kTof, geoTag)) {
+    TObjString* tofFile =
+      new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digi.par");
+    parFileList->Add(tofFile);
     std::cout << "-I- " << myName << ": Using parameter file "
-    		      << tofFile->GetString() << std::endl;
-  	TObjString* tofBdfFile = new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
-  	parFileList->Add(tofBdfFile);
+              << tofFile->GetString() << std::endl;
+    TObjString* tofBdfFile =
+      new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
+    parFileList->Add(tofBdfFile);
     std::cout << "-I- " << myName << ": Using parameter file "
-    		      << tofBdfFile->GetString() << std::endl;
+              << tofBdfFile->GetString() << std::endl;
   }
 
 
-      // -----   Reconstruction run   -------------------------------------------
-    FairRunAna *run= new FairRunAna();
-    if (inFile != "") run->SetInputFile(inFile);
-    if (outFile != "") run->SetOutputFile(outFile);
-    run->SetGenerateRunInfo(kTRUE);
-    run->SetGeomFile(geoFile);
-//    Bool_t hasFairMonitor = Has_Fair_Monitor();
-//    if (hasFairMonitor) FairMonitor::GetMonitor()->EnableMonitor(kTRUE);
-  
+  // -----   Reconstruction run   -------------------------------------------
+  FairRunAna* run = new FairRunAna();
+  if (inFile != "") run->SetInputFile(inFile);
+  if (outFile != "") run->SetOutputFile(outFile);
+  run->SetGenerateRunInfo(kTRUE);
+  run->SetGeomFile(geoFile);
+  //    Bool_t hasFairMonitor = Has_Fair_Monitor();
+  //    if (hasFairMonitor) FairMonitor::GetMonitor()->EnableMonitor(kTRUE);
+
   // ------------------------------------------------------------------------
 
 
-    // ----- MC Data Manager   ------------------------------------------------
-    CbmMCDataManager* mcManager=new CbmMCDataManager("MCManager",1);
-    mcManager->AddFile(inFile);
-    run->AddTask(mcManager);
-    // ------------------------------------------------------------------------
+  // ----- MC Data Manager   ------------------------------------------------
+  CbmMCDataManager* mcManager = new CbmMCDataManager("MCManager", 1);
+  mcManager->AddFile(inFile);
+  run->AddTask(mcManager);
+  // ------------------------------------------------------------------------
 
-    // =========================================================================
-    // ===                        RICH reconstruction                        ===
-    // =========================================================================
+  // =========================================================================
+  // ===                        RICH reconstruction                        ===
+  // =========================================================================
 
-/*    CbmRichDigitizer* richDigitizer = new CbmRichDigitizer();
+  /*    CbmRichDigitizer* richDigitizer = new CbmRichDigitizer();
     richDigitizer->SetNofNoiseHits(0);
     run->AddTask(richDigitizer);
     cout << "-I- digitize: Added task " << richDigitizer->GetName() << endl;
@@ -163,7 +168,7 @@ void mcbm_reco_gp(Int_t nEvents = 100,
     	run->AddTask(mRichQa);
 
 */
-	
+
 
   // ------------------------------------------------------------------------
 
@@ -188,7 +193,7 @@ void mcbm_reco_gp(Int_t nEvents = 100,
   // ------------------------------------------------------------------------
 
 
-/* // -----   FairRunAna   ---------------------------------------------------
+  /* // -----   FairRunAna   ---------------------------------------------------
   FairRunAna *run = new FairRunAna();
   run->SetInputFile(inFile);
   run->SetOutputFile(outFile);
@@ -204,7 +209,7 @@ void mcbm_reco_gp(Int_t nEvents = 100,
   FairLogger::GetLogger()->SetLogScreenLevel(logLevel.Data());
   FairLogger::GetLogger()->SetLogVerbosityLevel(logVerbosity.Data());
   // ------------------------------------------------------------------------
-/*
+  /*
   // ----- Mc Data Manager   ------------------------------------------------
   CbmMCDataManager* mcManager=new CbmMCDataManager("MCManager", 1);
   mcManager->AddFile(inFile);
@@ -227,21 +232,21 @@ void mcbm_reco_gp(Int_t nEvents = 100,
   std::cout << "Loading macro " << macroName << std::endl;
   gROOT->LoadMacro(macroName);
   Bool_t recoSuccess = gROOT->ProcessLine("reconstruct()");
-  if ( ! recoSuccess ) {
-  	std::cerr << "-E-" << myName << ": error in executing " << macroName
-  			<< std::endl;
-  	return;
+  if (!recoSuccess) {
+    std::cerr << "-E-" << myName << ": error in executing " << macroName
+              << std::endl;
+    return;
   }
   std::cout << "-I-" << myName << ": " << macroName << " excuted successfully"
-  		<< std::endl;
+            << std::endl;
   // ------------------------------------------------------------------------
 
 
   // -----  Parameter database   --------------------------------------------
   std::cout << std::endl << std::endl;
   std::cout << "-I- " << myName << ": Set runtime DB" << std::endl;
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
-  FairParRootFileIo* parIo1 = new FairParRootFileIo();
+  FairRuntimeDb* rtdb        = run->GetRuntimeDb();
+  FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
   parIo1->open(parFile.Data());
   parIo2->open(parFileList, "in");
@@ -277,13 +282,13 @@ void mcbm_reco_gp(Int_t nEvents = 100,
   std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
   std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
-  		      << std::endl;
+            << std::endl;
   std::cout << std::endl;
   std::cout << " Test passed" << std::endl;
   std::cout << " All ok " << std::endl;
   // ------------------------------------------------------------------------
 
-/*  // -----   Resource monitoring   ------------------------------------------
+  /*  // -----   Resource monitoring   ------------------------------------------
   if ( Has_Fair_Monitor() ) {      // FairRoot Version >= 15.11
     // Extract the maximal used memory an add is as Dart measurement
     // This line is filtered by CTest and the value send to CDash
@@ -303,6 +308,6 @@ void mcbm_reco_gp(Int_t nEvents = 100,
   }
 */
   // Function needed for CTest runtime dependency
-//  Generate_CTest_Dependency_File(depFile);
-//  RemoveGeoManager();
+  //  Generate_CTest_Dependency_File(depFile);
+  //  RemoveGeoManager();
 }

@@ -2,7 +2,7 @@
  ** \author Nikolay Karpushkin <karpushkin@inr.ru>
  ** \date 09.10.2019
  **/
-  
+
 /** \class CbmPsdAddress
  ** \brief CBM PSD interface class to the unique address
  ** \author Nikolay Karpushkin <karpushkin@inr.ru>
@@ -23,89 +23,88 @@
 #ifndef CBMPSDADDRESS_H
 #define CBMPSDADDRESS_H 1
 
+#include "CbmDefs.h"     // for ECbmModuleId::kPsd
 #include <RtypesCore.h>  // for UInt_t, Int_t
 #include <cassert>       // for assert
-#include "CbmDefs.h"     // for ECbmModuleId::kPsd
 
-class CbmPsdAddress
-{
+class CbmPsdAddress {
 public:
-
-   /**
+  /**
    * \brief Return address from system ID, module, Section.
    * \param[in] moduleId Module ID.
    * \param[in] SectionId Section ID.
    * \return Address from system ID, module, Section.
    **/
-   static UInt_t GetAddress(Int_t moduleId,
-                           Int_t sectionId) {
-      assert(!(moduleId < 0 || moduleId > fgkModuleIdLength || sectionId < 0 || sectionId > fgkSectionIdLength));
-      return (ToIntegralType(ECbmModuleId::kPsd) << fgkSystemIdShift) | (moduleId << fgkModuleIdShift) | (sectionId << fgkSectionIdShift) ;
-    }
+  static UInt_t GetAddress(Int_t moduleId, Int_t sectionId) {
+    assert(!(moduleId < 0 || moduleId > fgkModuleIdLength || sectionId < 0
+             || sectionId > fgkSectionIdLength));
+    return (ToIntegralType(ECbmModuleId::kPsd) << fgkSystemIdShift)
+           | (moduleId << fgkModuleIdShift) | (sectionId << fgkSectionIdShift);
+  }
 
-   /**
+  /**
    * \brief Return System identifier from address.
    * \param[in] address Unique channel address.
    * \return System identifier from address.
    **/
-   static UInt_t GetSystemId(UInt_t address) {
-      return (address & (fgkSystemIdLength << fgkSystemIdShift)) >> fgkSystemIdShift;
-   }
+  static UInt_t GetSystemId(UInt_t address) {
+    return (address & (fgkSystemIdLength << fgkSystemIdShift))
+           >> fgkSystemIdShift;
+  }
 
-   /**
+  /**
    * \brief Return module ID from address.
    * \param[in] address Unique channel address.
    * \return Module ID from address.
    **/
-   static UInt_t GetModuleId(UInt_t address) {
-      return (address & (fgkModuleIdLength << fgkModuleIdShift)) >> fgkModuleIdShift;
-   }
-   
-   /**
+  static UInt_t GetModuleId(UInt_t address) {
+    return (address & (fgkModuleIdLength << fgkModuleIdShift))
+           >> fgkModuleIdShift;
+  }
+
+  /**
    * \brief Return sector ID from address.
    * \param[in] address Unique channel address.
    * \return Sector ID from address.
    **/
-   static UInt_t GetSectionId(UInt_t address) {
-      return (address & (fgkSectionIdLength << fgkSectionIdShift)) >> fgkSectionIdShift;
-   }
+  static UInt_t GetSectionId(UInt_t address) {
+    return (address & (fgkSectionIdLength << fgkSectionIdShift))
+           >> fgkSectionIdShift;
+  }
 
-   /**
+  /**
     * \brief Set new module ID for address.
     * \param address Current address.
     * \param newModuleId New value for module ID.
     * \return New address with modified module ID.
     */
-   static UInt_t SetModuleId(UInt_t address, Int_t newModuleId) {
-      assert(!(newModuleId < 0 || newModuleId > fgkModuleIdLength));
-      return GetAddress(newModuleId, GetSectionId(address));
-   }
+  static UInt_t SetModuleId(UInt_t address, Int_t newModuleId) {
+    assert(!(newModuleId < 0 || newModuleId > fgkModuleIdLength));
+    return GetAddress(newModuleId, GetSectionId(address));
+  }
 
-   /**
+  /**
     * \brief Set new section ID for address.
     * \param address Current address.
     * \param newSectionId New value for section ID.
     * \return New address with modified section ID.
     */
-   static UInt_t SetSectionId(UInt_t address, Int_t newSectionId) {
-      assert(!(newSectionId < 0 || newSectionId > fgkSectionIdLength));
-      return GetAddress(GetModuleId(address), newSectionId);
-   }
+  static UInt_t SetSectionId(UInt_t address, Int_t newSectionId) {
+    assert(!(newSectionId < 0 || newSectionId > fgkSectionIdLength));
+    return GetAddress(GetModuleId(address), newSectionId);
+  }
 
 
 private:
+  // Length of the index of the corresponding volume
+  static const Int_t fgkSystemIdLength  = 15;  // 2^4 - 1
+  static const Int_t fgkModuleIdLength  = 63;  // 2^6 - 1
+  static const Int_t fgkSectionIdLength = 31;  // 2^5 - 1
 
-   // Length of the index of the corresponding volume
-   static const Int_t fgkSystemIdLength      =  15; // 2^4 - 1
-   static const Int_t fgkModuleIdLength      =  63; // 2^6 - 1
-   static const Int_t fgkSectionIdLength     =  31; // 2^5 - 1
-
-   // Number of a start bit for each volume
-   static const Int_t fgkSystemIdShift       =   0;
-   static const Int_t fgkModuleIdShift       =   4;
-   static const Int_t fgkSectionIdShift      =  10;
-
-
+  // Number of a start bit for each volume
+  static const Int_t fgkSystemIdShift  = 0;
+  static const Int_t fgkModuleIdShift  = 4;
+  static const Int_t fgkSectionIdShift = 10;
 };
 
 #endif

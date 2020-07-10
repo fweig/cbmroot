@@ -16,7 +16,7 @@ static TString mvdGeom;
 static TString stsGeom;
 static TString richGeom;
 static TString muchGeom;
-static TString shieldGeom;  
+static TString shieldGeom;
 static TString trdGeom;
 static TString tofGeom;
 static TString ecalGeom;
@@ -25,24 +25,23 @@ static TString psdGeom;
 static Double_t psdZpos;
 static Double_t psdXpos;
 
-static TString stsTag;  
+static TString stsTag;
 static TString trdTag;
 static TString tofTag;
 
-static TString stsDigi;  
+static TString stsDigi;
 static TString trdDigi;
 static TString tofDigi;
 
-static TString  fieldMap;
+static TString fieldMap;
 static Double_t fieldZ;
 static Double_t fieldScale;
-static Int_t    fieldSymType;
+static Int_t fieldSymType;
 
 static TString defaultInputFile;
 #endif
 
-void run_sim(Int_t nEvents = 5)
-{
+void run_sim(Int_t nEvents = 5) {
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -53,26 +52,25 @@ void run_sim(Int_t nEvents = 5)
   TString outDir  = "data/";
   TString outFile = outDir + "/test.mc.root";
   TString parFile = outDir + "/test.params.root";
-  
-//  TString setupFile = inDir + "/macro/run/" + setup + "_setup.C";
-  TString setupFile = inDir + "/geometry/setup/sis300_electron_setup.C";
+
+  //  TString setupFile = inDir + "/macro/run/" + setup + "_setup.C";
+  TString setupFile  = inDir + "/geometry/setup/sis300_electron_setup.C";
   TString setupFunct = "sis300_electron";
   setupFunct += "_setup()";
 
   gROOT->LoadMacro(setupFile);
   gInterpreter->ProcessLine(setupFunct);
 
-//  TString inFile  = inDir + defaultInputFile;
+  //  TString inFile  = inDir + defaultInputFile;
 
   CbmTarget* target = new CbmTarget("Gold", 0.025);
 
-  TString ecalGeom   = "ecal/ecal_v12a.geo";
-  
+  TString ecalGeom = "ecal/ecal_v12a.geo";
+
 
   // ----    Debug option   -------------------------------------------------
   gDebug = 0;
   // ------------------------------------------------------------------------
-
 
 
   // -----   Timer   --------------------------------------------------------
@@ -83,86 +81,85 @@ void run_sim(Int_t nEvents = 5)
 
   // -----   Create simulation run   ----------------------------------------
   FairRunSim* fRun = new FairRunSim();
-  fRun->SetName("TGeant3");              // Transport engine
-  fRun->SetOutputFile(outFile);          // Output file
+  fRun->SetName("TGeant3");      // Transport engine
+  fRun->SetOutputFile(outFile);  // Output file
   FairRuntimeDb* rtdb = fRun->GetRuntimeDb();
   // ------------------------------------------------------------------------
 
 
   // -----   Create media   -------------------------------------------------
-  fRun->SetMaterials("media.geo");       // Materials
+  fRun->SetMaterials("media.geo");  // Materials
   // ------------------------------------------------------------------------
 
 
   // -----   Create detectors and passive volumes   -------------------------
-  if ( caveGeom != "" ) {
+  if (caveGeom != "") {
     FairModule* cave = new CbmCave("CAVE");
     cave->SetGeometryFileName(caveGeom);
     fRun->AddModule(cave);
   }
 
-  if ( pipeGeom != "" ) {
+  if (pipeGeom != "") {
     FairModule* pipe = new CbmPipe("PIPE");
     pipe->SetGeometryFileName(pipeGeom);
     fRun->AddModule(pipe);
   }
-  
-  if ( target ) fRun->AddModule(target);
 
-  if ( magnetGeom != "" ) {
+  if (target) fRun->AddModule(target);
+
+  if (magnetGeom != "") {
     FairModule* magnet = new CbmMagnet("MAGNET");
     magnet->SetGeometryFileName(magnetGeom);
     fRun->AddModule(magnet);
   }
-  
-  if ( mvdGeom != "" ) {
+
+  if (mvdGeom != "") {
     FairDetector* mvd = new CbmMvd("MVD", kTRUE);
     mvd->SetGeometryFileName(mvdGeom);
     mvd->SetMotherVolume("pipevac1");
     fRun->AddModule(mvd);
   }
 
-  if ( stsGeom != "" ) {
+  if (stsGeom != "") {
     FairDetector* sts = new CbmStsMC(kTRUE);
     sts->SetGeometryFileName(stsGeom);
     fRun->AddModule(sts);
   }
 
-  if ( richGeom != "" ) {
+  if (richGeom != "") {
     FairDetector* rich = new CbmRich("RICH", kTRUE);
     rich->SetGeometryFileName(richGeom);
     fRun->AddModule(rich);
   }
-  
 
-  if ( trdGeom != "" ) {
-    FairDetector* trd = new CbmTrd("TRD",kTRUE );
+
+  if (trdGeom != "") {
+    FairDetector* trd = new CbmTrd("TRD", kTRUE);
     trd->SetGeometryFileName(trdGeom);
     fRun->AddModule(trd);
   }
 
-  if ( tofGeom != "" ) {
+  if (tofGeom != "") {
     FairDetector* tof = new CbmTof("TOF", kTRUE);
     tof->SetGeometryFileName(tofGeom);
     fRun->AddModule(tof);
   }
-  
 
-  if ( ecalGeom != "" ) {
-    FairDetector* ecal = new CbmEcalDetailed("ECAL", kTRUE, ecalGeom.Data()); 
+
+  if (ecalGeom != "") {
+    FairDetector* ecal = new CbmEcalDetailed("ECAL", kTRUE, ecalGeom.Data());
     fRun->AddModule(ecal);
   }
-  
+
   // ------------------------------------------------------------------------
 
 
-
   // -----   Create magnetic field   ----------------------------------------
-  cout <<"Field: " << fieldSymType <<endl;
+  cout << "Field: " << fieldSymType << endl;
   CbmFieldMap* magField = NULL;
-  if ( 2 == fieldSymType ) {
+  if (2 == fieldSymType) {
     magField = new CbmFieldMapSym2(fieldMap);
-  }  else if ( 3 == fieldSymType ) {
+  } else if (3 == fieldSymType) {
     magField = new CbmFieldMapSym3(fieldMap);
   }
   magField->SetPosition(0., 0., fieldZ);
@@ -180,24 +177,24 @@ void run_sim(Int_t nEvents = 5)
   FairPrimaryGenerator* primGen = new FairPrimaryGenerator();
   // Use the CbmUrqmdGenrator which calculates a reaction plane and
   // rotate all particles accordingly
-  CbmUrqmdGenerator*  urqmdGen = new CbmUrqmdGenerator(inFile);
-  urqmdGen->SetEventPlane(0. , 360.);
+  CbmUrqmdGenerator* urqmdGen = new CbmUrqmdGenerator(inFile);
+  urqmdGen->SetEventPlane(0., 360.);
   primGen->AddGenerator(urqmdGen);
-  fRun->SetGenerator(primGen);       
+  fRun->SetGenerator(primGen);
   // ------------------------------------------------------------------------
 
- 
+
   // -Trajectories Visualization (TGeoManager Only )
   // Switch this on if you want to visualize tracks in the
   // eventdisplay.
   // This is normally switch off, because of the huge files created
-  // when it is switched on. 
+  // when it is switched on.
   // fRun->SetStoreTraj(kTRUE);
 
   // -----   Run initialisation   -------------------------------------------
   fRun->Init();
   // ------------------------------------------------------------------------
-  
+
   // Set cuts for storing the trajectories.
   // Switch this on only if trajectories are stored.
   // Choose this cuts according to your needs, but be aware
@@ -216,14 +213,14 @@ void run_sim(Int_t nEvents = 5)
   CbmFieldPar* fieldPar = (CbmFieldPar*) rtdb->getContainer("CbmFieldPar");
   fieldPar->SetParameters(magField);
   fieldPar->setChanged();
-  fieldPar->setInputVersion(fRun->GetRunId(),1);
-  Bool_t kParameterMerged = kTRUE;
+  fieldPar->setInputVersion(fRun->GetRunId(), 1);
+  Bool_t kParameterMerged   = kTRUE;
   FairParRootFileIo* parOut = new FairParRootFileIo(kParameterMerged);
   parOut->open(parFile.Data());
   rtdb->setOutput(parOut);
-  rtdb->saveOutput();   
+  rtdb->saveOutput();
   rtdb->print();
- 
+
   // -----   Start run   ----------------------------------------------------
   fRun->Run(nEvents);
   // ------------------------------------------------------------------------
@@ -236,12 +233,11 @@ void run_sim(Int_t nEvents = 5)
   Double_t ctime = timer.CpuTime();
   cout << endl << endl;
   cout << "Macro finished succesfully." << endl;
-  cout << "Output file is "    << outFile << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime 
-       << "s" << endl << endl;
+  cout << "Output file is " << outFile << endl;
+  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl
+       << endl;
   // ------------------------------------------------------------------------
 
   cout << " Test passed" << endl;
   cout << " All ok " << endl;
 }
-

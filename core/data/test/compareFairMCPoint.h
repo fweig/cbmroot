@@ -6,11 +6,16 @@
 #include <TVector3.h>
 
 void compareFairMCPointDataMembers(FairMCPoint& test,
-              Int_t trackID, Int_t detID,  TVector3 pos, TVector3 mom, 
-	      Double_t tof, Double_t length, Double_t eloss, Int_t eventid)
-{
-  Int_t retValInt{-222};
-  Double_t retValDouble{-222.};
+                                   Int_t trackID,
+                                   Int_t detID,
+                                   TVector3 pos,
+                                   TVector3 mom,
+                                   Double_t tof,
+                                   Double_t length,
+                                   Double_t eloss,
+                                   Int_t eventid) {
+  Int_t retValInt {-222};
+  Double_t retValDouble {-222.};
 
   retValInt = test.GetDetectorID();
   EXPECT_EQ(detID, retValInt);
@@ -47,7 +52,6 @@ void compareFairMCPointDataMembers(FairMCPoint& test,
 
   retValDouble = test.GetEnergyLoss();
   EXPECT_FLOAT_EQ(eloss, retValDouble);
-
 }
 
-#endif // COMPAREPSDDIGI_H
+#endif  // COMPAREPSDDIGI_H

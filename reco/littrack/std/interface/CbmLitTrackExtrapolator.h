@@ -8,11 +8,11 @@
 #ifndef CBMLITTRACKEXTRAPOLATOR_H_
 #define CBMLITTRACKEXTRAPOLATOR_H_
 
-#include "base/CbmLitFloat.h"
 #include "base/CbmLitEnums.h"
+#include "base/CbmLitFloat.h"
 
-#include <vector>
 #include <cstddef>
+#include <vector>
 
 class CbmLitTrackParam;
 
@@ -24,20 +24,19 @@ class CbmLitTrackParam;
  *
  * Extrapolation algorithm do not have to take into account material effects.
  */
-class CbmLitTrackExtrapolator
-{
+class CbmLitTrackExtrapolator {
 public:
-   /**
+  /**
     * \brief Constructor.
     */
-   CbmLitTrackExtrapolator() {}
+  CbmLitTrackExtrapolator() {}
 
-   /**
+  /**
     * \brief Destructor.
     */
-   virtual ~CbmLitTrackExtrapolator() {}
+  virtual ~CbmLitTrackExtrapolator() {}
 
-   /**
+  /**
     * \brief Track parameters extrapolation with calculation of transport matrix.
     * \param[in] parIn Pointer to initial track parameters.
     * \param[out] parOut Pointer to output track parameters.
@@ -45,23 +44,21 @@ public:
     * \param[out] F Output transport matrix. If F == NULL than transport matrix is not calculated.
     * \return Extrapolation status.
     */
-   virtual LitStatus Extrapolate(
-      const CbmLitTrackParam* parIn,
-      CbmLitTrackParam* parOut,
-      litfloat zOut,
-      std::vector<litfloat>* F = NULL) = 0;
+  virtual LitStatus Extrapolate(const CbmLitTrackParam* parIn,
+                                CbmLitTrackParam* parOut,
+                                litfloat zOut,
+                                std::vector<litfloat>* F = NULL) = 0;
 
-   /**
+  /**
     * brief Track parameters extrapolation with calculation of transport matrix.
     * \param[in,out] par Pointer to initial and output track parameters.
     * \param[in] zOut Z position to extrapolate to [cm].
     * \param[out] F Output transport matrix. If F == NULL than transport matrix is not calculated.
     * \return Extrapolation status.
     */
-   virtual LitStatus Extrapolate(
-      CbmLitTrackParam* par,
-      litfloat zOut,
-      std::vector<litfloat>* F = NULL) = 0;
+  virtual LitStatus Extrapolate(CbmLitTrackParam* par,
+                                litfloat zOut,
+                                std::vector<litfloat>* F = NULL) = 0;
 };
 
 #endif

@@ -21,13 +21,14 @@ void run_digi(Int_t nEvents = 2) {
   Int_t iVerbose = 0;
 
   // Input file (MC events)
-//  TString inFile = "data/25agev.mc.root";
+  //  TString inFile = "data/25agev.mc.root";
   TString inFile = "/buffalo/ploizeau/cbmroot/2013_08_23/25agev_mbias.mc.root";
-//  TString inFile = "/buffalo/ploizeau/cbmroot/pal_2013_08_27/300/25agev_mbias.mc.root";
+  //  TString inFile = "/buffalo/ploizeau/cbmroot/pal_2013_08_27/300/25agev_mbias.mc.root";
   // Parameter file
-//  TString parFile = "data/25agev.params.root";
-  TString parFile = "/buffalo/ploizeau/cbmroot/2013_08_23/25agev_mbias.params.root";
-//  TString parFile = "/buffalo/ploizeau/cbmroot/pal_2013_08_27/300/25agev_mbias.params.root";
+  //  TString parFile = "data/25agev.params.root";
+  TString parFile =
+    "/buffalo/ploizeau/cbmroot/2013_08_23/25agev_mbias.params.root";
+  //  TString parFile = "/buffalo/ploizeau/cbmroot/pal_2013_08_27/300/25agev_mbias.params.root";
 
   // Output file
   TString outFile = "digitizerTest.eds.root";
@@ -38,15 +39,15 @@ void run_digi(Int_t nEvents = 2) {
   // The FairParAsciiFileIo will take care to create on the fly
   // a concatenated input parameter file which is then used during
   // the reconstruction.
-  TList *parFileList = new TList();
+  TList* parFileList = new TList();
 
-  TString workDir = gSystem->Getenv("VMCWORKDIR");
+  TString workDir  = gSystem->Getenv("VMCWORKDIR");
   TString paramDir = workDir + "/parameters";
 
-  TObjString tofDigiFile =  paramDir + "/tof/tof_v13b.digi.par";
+  TObjString tofDigiFile = paramDir + "/tof/tof_v13b.digi.par";
   parFileList->Add(&tofDigiFile);
 
-  TObjString tofDigiBdfFile =  "./tof.digibdf.par";
+  TObjString tofDigiBdfFile = "./tof.digibdf.par";
   parFileList->Add(&tofDigiBdfFile);
 
 
@@ -65,12 +66,10 @@ void run_digi(Int_t nEvents = 2) {
   // ------------------------------------------------------------------------
 
   // -----   Reconstruction run   -------------------------------------------
-  FairRunAna *run = new FairRunAna();
+  FairRunAna* run = new FairRunAna();
   run->SetInputFile(inFile);
   run->SetOutputFile(outFile);
   // ------------------------------------------------------------------------
-
-
 
 
   // =========================================================================
@@ -79,10 +78,13 @@ void run_digi(Int_t nEvents = 2) {
   // =========================================================================
 
   // -----   TOF digitizer   -------------------------------------------------
-  CbmTofDigitizerBDF* tofDigitizerBdf = new CbmTofDigitizerBDF("TOF Digitizer BDF",iVerbose);
-  tofDigitizerBdf->SetOutputBranchPersistent("TofDigi",            kFALSE);
+  CbmTofDigitizerBDF* tofDigitizerBdf =
+    new CbmTofDigitizerBDF("TOF Digitizer BDF", iVerbose);
+  tofDigitizerBdf->SetOutputBranchPersistent("TofDigi", kFALSE);
   tofDigitizerBdf->SetOutputBranchPersistent("TofDigiMatchPoints", kFALSE);
-  tofDigitizerBdf->SetInputFileName( paramDir + "tof/test_bdf_input.root"); // Required as input file name not read anymore by param class
+  tofDigitizerBdf->SetInputFileName(
+    paramDir
+    + "tof/test_bdf_input.root");  // Required as input file name not read anymore by param class
   run->AddTask(tofDigitizerBdf);
 
 
@@ -91,13 +93,14 @@ void run_digi(Int_t nEvents = 2) {
   // =========================================================================
 
   // Cluster/Hit builder
-  CbmTofSimpClusterizer* tofSimpClust = new CbmTofSimpClusterizer("TOF Simple Clusterizer",iVerbose);
-  tofSimpClust->SetOutputBranchPersistent("TofHit",          kFALSE);
-  tofSimpClust->SetOutputBranchPersistent("TofDigiMatch",    kFALSE);
+  CbmTofSimpClusterizer* tofSimpClust =
+    new CbmTofSimpClusterizer("TOF Simple Clusterizer", iVerbose);
+  tofSimpClust->SetOutputBranchPersistent("TofHit", kFALSE);
+  tofSimpClust->SetOutputBranchPersistent("TofDigiMatch", kFALSE);
   run->AddTask(tofSimpClust);
 
   // ------   TOF hit producer   ---------------------------------------------
-/*
+  /*
   CbmTofHitProducerNew* tofHitProd = new CbmTofHitProducerNew("TOF HitProducerNew",iVerbose);
   //  tofHitProd->SetParFileName(std::string(TofGeoPar));
   tofHitProd->SetInitFromAscii(kFALSE);
@@ -115,14 +118,14 @@ void run_digi(Int_t nEvents = 2) {
   // =========================================================================
 
   // Digitizer/custerizer testing
-  CbmTofTests* tofTests = new CbmTofTests("TOF Tests",iVerbose);
+  CbmTofTests* tofTests = new CbmTofTests("TOF Tests", iVerbose);
   run->AddTask(tofTests);
 
   // ===                   End of TOF evaluation                           ===
   // =========================================================================
   // -----  Parameter database   --------------------------------------------
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
-  FairParRootFileIo* parIo1 = new FairParRootFileIo();
+  FairRuntimeDb* rtdb        = run->GetRuntimeDb();
+  FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
   parIo1->open(parFile.Data());
   parIo2->open(parFileList, "in");
@@ -151,8 +154,8 @@ void run_digi(Int_t nEvents = 2) {
   cout << endl;
   // ------------------------------------------------------------------------
 
-//  delete run;
+  //  delete run;
 
-   cout << " Test passed" << endl;
-   cout << " All ok " << endl;
+  cout << " Test passed" << endl;
+  cout << " All ok " << endl;
 }

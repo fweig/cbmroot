@@ -16,47 +16,50 @@
 #ifndef CBMMVDSENSORFRAMEBUFFER_H
 #define CBMMVDSENSORFRAMEBUFFER_H 1
 
-#include <iostream>
-#include "TObject.h"
 #include "CbmMvdSensor.h"
 #include "CbmMvdSensorBuffer.h"
+#include "TObject.h"
+#include <iostream>
 
 #include "CbmMvdHit.h"
 
 class TClonesArray;
 class CbmMvdSensorDataSheet;
 
-class CbmMvdSensorFrameBuffer : public CbmMvdSensorBuffer
-{
+class CbmMvdSensorFrameBuffer : public CbmMvdSensorBuffer {
 
- public:
-
+public:
   /** Default constructor **/
   CbmMvdSensorFrameBuffer();
 
   /** Destructor **/
   virtual ~CbmMvdSensorFrameBuffer();
-  
+
   /** Input/Output **/
-  
+
   // Send a new event to the buffer. The event will be absorbed but not processed.
   // The input - array will be emptied
   void SendInputArray(TClonesArray* inputStream);
   void SetInput(CbmMvdPoint* point);
-  
+
   // Receives the current event from the buffer. The Event is defined by the functions
   // BuildTimeSlice or BuildMimosaFrame. The memory is not emtied, use Clear*-methods
   // to clear it explitly
-  TClonesArray* GetOutputArray() {SetPluginReady(false); return fOutputPoints; };
- 
-  
+  TClonesArray* GetOutputArray() {
+    SetPluginReady(false);
+    return fOutputPoints;
+  };
+
+
   /** Data Processing **/
- 
-  virtual void 		ExecChain();
-  virtual void 		InitBuffer     	(CbmMvdSensor* mySensor);
-  virtual void 		BuildTimeSlice	(Double_t /*tStart*/, Double_t /*tStop*/){
-			std::cout<<"Do not use " << GetName() << "::BuildTimeSlice()"<< std::endl;};
-  
+
+  virtual void ExecChain();
+  virtual void InitBuffer(CbmMvdSensor* mySensor);
+  virtual void BuildTimeSlice(Double_t /*tStart*/, Double_t /*tStop*/) {
+    std::cout << "Do not use " << GetName() << "::BuildTimeSlice()"
+              << std::endl;
+  };
+
   /**BuildMimosaFrame: Provides a TClonesArray containing all points related to a frame.
    * Important notes:
    * 
@@ -73,41 +76,38 @@ class CbmMvdSensorFrameBuffer : public CbmMvdSensorBuffer
    * To avoid memory leaks, clear them manually with the "ClearFrame" methode.
    *  
   **/
-  virtual void		BuildMimosaFrame(Int_t frameNumber);
-  
-  virtual void 		Finish		()				 {;};
-  
-  
+  virtual void BuildMimosaFrame(Int_t frameNumber);
+
+  virtual void Finish() { ; };
+
+
   /** Memory Management **/
-  //==============================================================  
-   /** ClearFrame()
+  //==============================================================
+  /** ClearFrame()
     * Clears the objects related to a dedicated MAPS-frame from the buffer
    **/
-  virtual void          ClearFrame      (Int_t frameNumber);              
-  
+  virtual void ClearFrame(Int_t frameNumber);
+
   /** ClearTimeSlice() 
    * Clears the objects related to a time periode from the buffer.
    * Use ClearTimeSlice(0,t) to clear all objects earlier than t
    **/
-  
-  virtual void          ClearTimeSlice  (Double_t tStart, Double_t tStop);
 
-  private:
-   
-  
+  virtual void ClearTimeSlice(Double_t tStart, Double_t tStop);
+
+private:
   TClonesArray* fCurrentEvent;
   TClonesArray* fOutputPoints;
 
-  Int_t lastFrame, thisFrame; 
+  Int_t lastFrame, thisFrame;
   CbmMvdSensorDataSheet* fSensorData;
-  Bool_t bOverflow ;
+  Bool_t bOverflow;
   Double_t currentTime;
 
   CbmMvdSensorFrameBuffer(const CbmMvdSensorFrameBuffer&);
   CbmMvdSensorFrameBuffer operator=(const CbmMvdSensorFrameBuffer&);
 
- ClassDef(CbmMvdSensorFrameBuffer,1);
-
+  ClassDef(CbmMvdSensorFrameBuffer, 1);
 };
 
 

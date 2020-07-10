@@ -23,38 +23,36 @@
 //class CbmMuchTrack;
 //class TClonesArray;
 
-class CbmVectorFinder : public FairTask
-{
+class CbmVectorFinder : public FairTask {
 public:
   /** Default constructor **/
   CbmVectorFinder();
-  
+
   /** Destructor **/
   virtual ~CbmVectorFinder();
-  
+
   /** Initialisation **/
   virtual InitStatus Init();
-  
+
   /** Task execution **/
-  virtual void Exec(
-		    Option_t* opt);
-  
+  virtual void Exec(Option_t* opt);
+
   /** Finish at the end **/
   virtual void Finish();
-  
+
   /** SetParContainers **/
   virtual void SetParContainers();
-  
+
   /** Accessors **/
   //Int_t GetNofTracks()           { return fNofTracks; };
   //Int_t GetNofStat() const       { return fgkStat; }
-  
- private:
+
+private:
   // Some constants
   //static const Int_t fgkStat = 4;               // Number of stations - 4 GEMs
   //static const Int_t fgkPlanes = 6;             // Number of GEM planes per station
 
- private:
+private:
   /*
   CbmMuchGeoScheme* fGeoScheme;                 // Geometry scheme
   TClonesArray* fTrackArray;                    // Output array of CbmMuchVectors
@@ -110,8 +108,8 @@ public:
 
   CbmVectorFinder(const CbmVectorFinder&);
   CbmVectorFinder& operator=(const CbmVectorFinder&);
-  
-  ClassDef(CbmVectorFinder,0)
+
+  ClassDef(CbmVectorFinder, 0)
 };
 
 #endif

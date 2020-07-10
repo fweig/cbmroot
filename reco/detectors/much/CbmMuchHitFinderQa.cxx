@@ -1,155 +1,152 @@
 // -------------------------------------------------------------------------
 // -----                   CbmMuchHitProducerQa source file             -----
-// -----                   Modified since 21/06/2019 by Ekata Nandy (ekata@vecc.gov.in) -Inclusion of RPC detector type 
+// -----                   Modified since 21/06/2019 by Ekata Nandy (ekata@vecc.gov.in) -Inclusion of RPC detector type
 // -----                   Modified 02/18 by Vikas Singhal             -----
 // -----                   Created 16/11/07 by E. Kryshen              -----
 // -------------------------------------------------------------------------
 //   AUG 18 RELEASE VERSION
 #include "CbmMuchHitFinderQa.h"
-#include "FairRootManager.h"
-#include "CbmMuchPoint.h"
-#include "CbmMuchDigi.h"
 #include "CbmMuchCluster.h"
+#include "CbmMuchDigi.h"
 #include "CbmMuchPixelHit.h"
+#include "CbmMuchPoint.h"
+#include "FairRootManager.h"
 
 #include "CbmDigiManager.h"
-#include "CbmMuchDigi.h"
 #include "CbmMuchAddress.h"
-#include "CbmMuchStation.h"
+#include "CbmMuchDigi.h"
 #include "CbmMuchModuleGem.h"
-#include "CbmMuchSector.h"
 #include "CbmMuchPad.h"
+#include "CbmMuchSector.h"
+#include "CbmMuchStation.h"
 
 #include "CbmMCTrack.h"
 #include "CbmMatch.h"
-#include "TParticlePDG.h"
-#include "TDatabasePDG.h"
 #include "FairLogger.h"
+#include "TDatabasePDG.h"
+#include "TParticlePDG.h"
 
+#include "CbmMuchPointInfo.h"
+#include "CbmMuchRecoDefs.h"
 #include "TCanvas.h"
 #include "TF1.h"
 #include "TFile.h"
-#include "CbmMuchPointInfo.h"
-#include "CbmMuchRecoDefs.h"
 
-#include "TStyle.h"
-#include "TArrayI.h"
 #include "CbmMuchGeoScheme.h"
+#include "TArrayI.h"
 #include "TObjArray.h"
+#include "TStyle.h"
 
 
-#include "FairRuntimeDb.h"
 #include "CbmGeoMuchPar.h"
+#include "FairRuntimeDb.h"
 #include "TGraph.h"
 
+#include <algorithm>
 #include <cassert>
 #include <map>
 #include <vector>
-#include <algorithm>
 
-using std::map;
-using std::vector;
 using std::cout;
 using std::endl;
+using std::map;
+using std::vector;
 // -------------------------------------------------------------------------
 CbmMuchHitFinderQa::CbmMuchHitFinderQa(const char* name, Int_t verbose)
-  :FairTask(name,verbose),
-   fGeoScheme( CbmMuchGeoScheme::Instance()),
-   fGeoFileName(),
-   fFileName(),
-   fSignalPoints(0),
-   fSignalHits(0),
-   fVerbose(verbose),
-   fEvent(0),
-   fFlag(0),
-   fPoints(NULL),
-   //fDigis(NULL),
-   //fDigiMatches(NULL),
-   fClusters(NULL),
-   fHits(NULL),
-   fMCTracks(NULL),
-   fPointInfos(new TClonesArray("CbmMuchPointInfo",10)),
-   fNstations(0),
-   fChargeHistos(NULL),
-   fhChargeEnergyLog(NULL),
-   fhChargeEnergyLogPi(NULL),
-   fhChargeEnergyLogPr(NULL),
-   fhChargeEnergyLogEl(NULL),
-  fhChargeTrackLength(NULL),
-  fhChargeTrackLengthPi(NULL),
-  fhChargeTrackLengthPr(NULL),
-  fhChargeTrackLengthEl(NULL),
-  fhChargeLog(NULL),
-  fhChargePr_1GeV_3mm(NULL),
-  fhNpadsVsS(NULL),
-  fhCharge(NULL),
-  fhOccupancyR(NULL),
-  fhPadsTotalR(NULL),
-  fhPadsFiredR(NULL),
-  fhPullXpads1(NULL),
-  fhPullYpads1(NULL),
-  fhPullXpads2(NULL),
-  fhPullYpads2(NULL),
-  fhPullXpads3(NULL),
-  fhPullYpads3(NULL),
-  fnPadSizesX(0),
-  fnPadSizesY(0),
-  fNTimingPulls(8),
-  fhPullX(NULL),
-  fhPullY(NULL),
-  fhPullT(NULL),
-  fhResidualX(NULL),
-  fhResidualY(NULL),
-  fhResidualT(NULL),
-  fhPointsInCluster(NULL),
-  fhDigisInCluster(NULL),
-  fhHitsInCluster(NULL),
-  fNall(NULL),
-  fNpr(NULL),
-  fNpi(NULL),
-  fNel(NULL),
-  fNmu(NULL),
-  fNka(NULL),
-  fNprimary(NULL),
-  fNsecondary(NULL),
-  fPointsTotal(0),
-  fPointsUnderCounted(0),
-  fPointsOverCounted(0),
-  fOccupancyQaOn(kTRUE),
-  fPullsQaOn(kTRUE),
-  fDigitizerQaOn(kTRUE),
-  fStatisticsQaOn(kTRUE),
-  fClusterDeconvQaOn(kTRUE),
-  fPrintToFileOn(kTRUE),
-  fPadMinLx(0.),
-  fPadMinLy(0.),
-  fPadMaxLx(0.),
-  fPadMaxLy(0.),
-  pointsFile(NULL),
-  padsFile(NULL)
+  : FairTask(name, verbose)
+  , fGeoScheme(CbmMuchGeoScheme::Instance())
+  , fGeoFileName()
+  , fFileName()
+  , fSignalPoints(0)
+  , fSignalHits(0)
+  , fVerbose(verbose)
+  , fEvent(0)
+  , fFlag(0)
+  , fPoints(NULL)
+  ,
+  //fDigis(NULL),
+  //fDigiMatches(NULL),
+  fClusters(NULL)
+  , fHits(NULL)
+  , fMCTracks(NULL)
+  , fPointInfos(new TClonesArray("CbmMuchPointInfo", 10))
+  , fNstations(0)
+  , fChargeHistos(NULL)
+  , fhChargeEnergyLog(NULL)
+  , fhChargeEnergyLogPi(NULL)
+  , fhChargeEnergyLogPr(NULL)
+  , fhChargeEnergyLogEl(NULL)
+  , fhChargeTrackLength(NULL)
+  , fhChargeTrackLengthPi(NULL)
+  , fhChargeTrackLengthPr(NULL)
+  , fhChargeTrackLengthEl(NULL)
+  , fhChargeLog(NULL)
+  , fhChargePr_1GeV_3mm(NULL)
+  , fhNpadsVsS(NULL)
+  , fhCharge(NULL)
+  , fhOccupancyR(NULL)
+  , fhPadsTotalR(NULL)
+  , fhPadsFiredR(NULL)
+  , fhPullXpads1(NULL)
+  , fhPullYpads1(NULL)
+  , fhPullXpads2(NULL)
+  , fhPullYpads2(NULL)
+  , fhPullXpads3(NULL)
+  , fhPullYpads3(NULL)
+  , fnPadSizesX(0)
+  , fnPadSizesY(0)
+  , fNTimingPulls(8)
+  , fhPullX(NULL)
+  , fhPullY(NULL)
+  , fhPullT(NULL)
+  , fhResidualX(NULL)
+  , fhResidualY(NULL)
+  , fhResidualT(NULL)
+  , fhPointsInCluster(NULL)
+  , fhDigisInCluster(NULL)
+  , fhHitsInCluster(NULL)
+  , fNall(NULL)
+  , fNpr(NULL)
+  , fNpi(NULL)
+  , fNel(NULL)
+  , fNmu(NULL)
+  , fNka(NULL)
+  , fNprimary(NULL)
+  , fNsecondary(NULL)
+  , fPointsTotal(0)
+  , fPointsUnderCounted(0)
+  , fPointsOverCounted(0)
+  , fOccupancyQaOn(kTRUE)
+  , fPullsQaOn(kTRUE)
+  , fDigitizerQaOn(kTRUE)
+  , fStatisticsQaOn(kTRUE)
+  , fClusterDeconvQaOn(kTRUE)
+  , fPrintToFileOn(kTRUE)
+  , fPadMinLx(0.)
+  , fPadMinLy(0.)
+  , fPadMaxLx(0.)
+  , fPadMaxLy(0.)
+  , pointsFile(NULL)
+  , padsFile(NULL)
 
-{
-}
+{}
 // -------------------------------------------------------------------------
 
 
 // -------------------------------------------------------------------------
-CbmMuchHitFinderQa::~CbmMuchHitFinderQa()
-{
-}
+CbmMuchHitFinderQa::~CbmMuchHitFinderQa() {}
 // -------------------------------------------------------------------------
 
 
 // -------------------------------------------------------------------------
-InitStatus CbmMuchHitFinderQa::Init()
-{
+InitStatus CbmMuchHitFinderQa::Init() {
   FairRootManager* fManager = FairRootManager::Instance();
-  fMCTracks    = (TClonesArray*) fManager->GetObject("MCTrack");
-  fPoints      = (TClonesArray*) fManager->GetObject("MuchPoint");
-  fHits        = (TClonesArray*) fManager->GetObject("MuchPixelHit");
+  fMCTracks                 = (TClonesArray*) fManager->GetObject("MCTrack");
+  fPoints                   = (TClonesArray*) fManager->GetObject("MuchPoint");
+  fHits = (TClonesArray*) fManager->GetObject("MuchPixelHit");
   //fDigis       = (TClonesArray*) fManager->GetObject("MuchDigi");
   //fDigiMatches = (TClonesArray*) fManager->GetObject("MuchDigiMatch");  ///added ekata
-  fClusters    = (TClonesArray*) fManager->GetObject("MuchCluster");
+  fClusters = (TClonesArray*) fManager->GetObject("MuchCluster");
   // Reading Much Digis from CbmMuchDigiManager which are stored as vector
   fDigiManager = CbmDigiManager::Instance();
   fDigiManager->Init();
@@ -161,8 +158,8 @@ InitStatus CbmMuchHitFinderQa::Init()
   //  printf(" %i",fDigiMatches);
   //  printf(" %i",fClusters);
   //  printf("\n");
-  
-  TFile* f = new TFile(fGeoFileName,"R");
+
+  TFile* f            = new TFile(fGeoFileName, "R");
   TObjArray* stations = (TObjArray*) f->Get("stations");
   fGeoScheme->Init(stations, fFlag);
   fNstations = fGeoScheme->GetNStations();
@@ -178,147 +175,191 @@ InitStatus CbmMuchHitFinderQa::Init()
   fNsecondary = new Int_t[fNstations];
 
   // Reset counters
-  for (Int_t i=0;i<fNstations;i++){
-    fNall[i] = 0;
-    fNpr[i] = 0;
-    fNpi[i] = 0;
-    fNel[i] = 0;
-    fNmu[i] = 0;
-    fNka[i] = 0;
-    fNprimary[i] = 0;
+  for (Int_t i = 0; i < fNstations; i++) {
+    fNall[i]       = 0;
+    fNpr[i]        = 0;
+    fNpi[i]        = 0;
+    fNel[i]        = 0;
+    fNmu[i]        = 0;
+    fNka[i]        = 0;
+    fNprimary[i]   = 0;
     fNsecondary[i] = 0;
   }
 
-  fPointsTotal=0;
-  fPointsUnderCounted=0;
-  fPointsOverCounted=0;
+  fPointsTotal        = 0;
+  fPointsUnderCounted = 0;
+  fPointsOverCounted  = 0;
 
-#define BINNING_CHARGE        100,    0,   3.0
-#define BINNING_LENGTH        100,    0,   2.5
-#define BINNING_CHARGE_LOG    100,    4,     8
-#define BINNING_ENERGY_LOG    100, -0.5,   4.5
-#define BINNING_ENERGY_LOG_EL 100, -0.5,   4.5
+#define BINNING_CHARGE 100, 0, 3.0
+#define BINNING_LENGTH 100, 0, 2.5
+#define BINNING_CHARGE_LOG 100, 4, 8
+#define BINNING_ENERGY_LOG 100, -0.5, 4.5
+#define BINNING_ENERGY_LOG_EL 100, -0.5, 4.5
 
- // fhCharge              = new TH1D("hCharge",
- //                                  "Charge distribution from tracks",
- //                                  BINNING_CHARGE);
+  // fhCharge              = new TH1D("hCharge",
+  //                                  "Charge distribution from tracks",
+  //                                  BINNING_CHARGE);
 
-  fhChargeLog           = new TH1D("hChargeLog",
-                                   "Charge (log.) distribution from tracks",
-                                   BINNING_CHARGE_LOG);
+  fhChargeLog = new TH1D(
+    "hChargeLog", "Charge (log.) distribution from tracks", BINNING_CHARGE_LOG);
 
-  fhChargeEnergyLog     = new TH2D("hChargeEnergyLog"    ,
-                                   "Charge vs energy (log.) for all tracks",
-                                   BINNING_ENERGY_LOG,BINNING_CHARGE);
+  fhChargeEnergyLog = new TH2D("hChargeEnergyLog",
+                               "Charge vs energy (log.) for all tracks",
+                               BINNING_ENERGY_LOG,
+                               BINNING_CHARGE);
 
-  fhChargeEnergyLogPi   = new TH2D("hChargeEnergyLogPi",
-                                   "Charge vs energy (log.) for pions",
-                                   BINNING_ENERGY_LOG,BINNING_CHARGE);
+  fhChargeEnergyLogPi = new TH2D("hChargeEnergyLogPi",
+                                 "Charge vs energy (log.) for pions",
+                                 BINNING_ENERGY_LOG,
+                                 BINNING_CHARGE);
 
-  fhChargeEnergyLogPr   = new TH2D("hChargeEnergyLogPr",
-                                   "Charge vs energy (log.) for protons",
-                                   BINNING_ENERGY_LOG,BINNING_CHARGE);
+  fhChargeEnergyLogPr = new TH2D("hChargeEnergyLogPr",
+                                 "Charge vs energy (log.) for protons",
+                                 BINNING_ENERGY_LOG,
+                                 BINNING_CHARGE);
 
-  fhChargeEnergyLogEl   = new TH2D("hChargeEnergyLogEl",
-                                   "Charge vs energy (log.) for electrons",
-                                   BINNING_ENERGY_LOG_EL,BINNING_CHARGE);
+  fhChargeEnergyLogEl = new TH2D("hChargeEnergyLogEl",
+                                 "Charge vs energy (log.) for electrons",
+                                 BINNING_ENERGY_LOG_EL,
+                                 BINNING_CHARGE);
 
-  fhChargeTrackLength   = new TH2D("hChargeTrackLength",
-                                   "Charge vs length for all tracks",
-                                   BINNING_LENGTH,BINNING_CHARGE);
+  fhChargeTrackLength = new TH2D("hChargeTrackLength",
+                                 "Charge vs length for all tracks",
+                                 BINNING_LENGTH,
+                                 BINNING_CHARGE);
 
   fhChargeTrackLengthPi = new TH2D("hChargeTrackLengthPi",
                                    "Charge vs length for pions",
-                                   BINNING_LENGTH,BINNING_CHARGE);
+                                   BINNING_LENGTH,
+                                   BINNING_CHARGE);
   fhChargeTrackLengthPr = new TH2D("hChargeTrackLengthPr",
                                    "Charge vs length for proton",
-                                   BINNING_LENGTH,BINNING_CHARGE);
+                                   BINNING_LENGTH,
+                                   BINNING_CHARGE);
 
   fhChargeTrackLengthEl = new TH2D("hChargeTrackLengthEl",
                                    "Charge vs length for electrons",
-                                   BINNING_LENGTH,BINNING_CHARGE);
+                                   BINNING_LENGTH,
+                                   BINNING_CHARGE);
 
-  fhChargePr_1GeV_3mm = new TH1D("hChargePr_1GeV_3mm",
-                                 "Charge for 1 GeV protons",
-                                 BINNING_CHARGE);
+  fhChargePr_1GeV_3mm =
+    new TH1D("hChargePr_1GeV_3mm", "Charge for 1 GeV protons", BINNING_CHARGE);
 
- // fhPointsInCluster = new TH1I("hPointsInCluster",
- //                              "Number of tracks in cluster",
-//			       10,0,10);
+  // fhPointsInCluster = new TH1I("hPointsInCluster",
+  //                              "Number of tracks in cluster",
+  //			       10,0,10);
 
-//  fhDigisInCluster  = new TH1I("hDigisInCluster",
+  //  fhDigisInCluster  = new TH1I("hDigisInCluster",
   //                             "Number of digis in cluster",
-    //                           10,0,10);
+  //                           10,0,10);
 
- // fhHitsInCluster   = new TH1I("hHitsInCluster",
-   //                            "Number of hits in cluster",
-     //                          10,0,10);
+  // fhHitsInCluster   = new TH1I("hHitsInCluster",
+  //                            "Number of hits in cluster",
+  //                          10,0,10);
 
-  
-//  fhCharge   ->GetXaxis()->SetTitle("Charge [10^{6} electrons]");
+
+  //  fhCharge   ->GetXaxis()->SetTitle("Charge [10^{6} electrons]");
   fhChargeLog->GetXaxis()->SetTitle("Lg (Charge) [Number of electrons]");
   fhChargePr_1GeV_3mm->GetXaxis()->SetTitle("Charge [10^{6} electrons]");
 
 
   fChargeHistos = new TObjArray();
-  fChargeHistos->Add(fhChargeEnergyLog    );
-  fChargeHistos->Add(fhChargeEnergyLogEl  );
-  fChargeHistos->Add(fhChargeEnergyLogPi  );
-  fChargeHistos->Add(fhChargeEnergyLogPr  );
-  fChargeHistos->Add(fhChargeTrackLength  );
+  fChargeHistos->Add(fhChargeEnergyLog);
+  fChargeHistos->Add(fhChargeEnergyLogEl);
+  fChargeHistos->Add(fhChargeEnergyLogPi);
+  fChargeHistos->Add(fhChargeEnergyLogPr);
+  fChargeHistos->Add(fhChargeTrackLength);
   fChargeHistos->Add(fhChargeTrackLengthEl);
   fChargeHistos->Add(fhChargeTrackLengthPi);
   fChargeHistos->Add(fhChargeTrackLengthPr);
-//  fChargeHistos->Add(fhCharge);
+  //  fChargeHistos->Add(fhCharge);
   fChargeHistos->Add(fhChargeLog);
 
-  for (Int_t i=0;i<8;i++){
+  for (Int_t i = 0; i < 8; i++) {
     TH2D* histo = (TH2D*) fChargeHistos->At(i);
     histo->SetStats(0);
     histo->GetYaxis()->SetDecimals(kTRUE);
     histo->GetYaxis()->SetTitleOffset(1.4);
     histo->GetYaxis()->CenterTitle();
     histo->GetYaxis()->SetTitle("Charge [10^{6} electrons]");
-    if (i<4) histo->GetXaxis()->SetTitle("Lg E_{kin} [MeV]");
-    else     histo->GetXaxis()->SetTitle("Track length [cm]");
+    if (i < 4)
+      histo->GetXaxis()->SetTitle("Lg E_{kin} [MeV]");
+    else
+      histo->GetXaxis()->SetTitle("Track length [cm]");
   }
 
   fhPointsInCluster = new TH1I*[fNstations];
-  fhDigisInCluster = new TH1I*[fNstations];
-  fhHitsInCluster =  new TH1I*[fNstations];
+  fhDigisInCluster  = new TH1I*[fNstations];
+  fhHitsInCluster   = new TH1I*[fNstations];
 
-  fhCharge = new TH1D*[fNstations];
+  fhCharge     = new TH1D*[fNstations];
   fhOccupancyR = new TH1D*[fNstations];
   fhPadsTotalR = new TH1D*[fNstations];
   fhPadsFiredR = new TH1D*[fNstations];
 
-  for (Int_t i=0; i<fNstations; i++){
+  for (Int_t i = 0; i < fNstations; i++) {
     CbmMuchStation* station = fGeoScheme->GetStation(i);
-    Double_t rMax = station->GetRmax();
-    Double_t rMin = station->GetRmin();
-    fhPadsTotalR[i] = new TH1D(Form("hPadsTotal%i",i+1),Form("Number of  pads vs radius: station %i;Radius [cm]",i+1),100,0.6*rMin,1.2*rMax);
-    fhPadsFiredR[i] = new TH1D(Form("hPadsFired%i",i+1),Form("Number of fired pads vs radius: station %i;Radius [cm]",i+1),100,0.6*rMin,1.2*rMax);
-    fhOccupancyR[i] = new TH1D(Form("hOccupancy%i",i+1),Form("Occupancy vs radius: station %i;Radius [cm];Occupancy, %%",i+1),100,0.6*rMin,1.2*rMax);
+    Double_t rMax           = station->GetRmax();
+    Double_t rMin           = station->GetRmin();
+    fhPadsTotalR[i] =
+      new TH1D(Form("hPadsTotal%i", i + 1),
+               Form("Number of  pads vs radius: station %i;Radius [cm]", i + 1),
+               100,
+               0.6 * rMin,
+               1.2 * rMax);
+    fhPadsFiredR[i] = new TH1D(
+      Form("hPadsFired%i", i + 1),
+      Form("Number of fired pads vs radius: station %i;Radius [cm]", i + 1),
+      100,
+      0.6 * rMin,
+      1.2 * rMax);
+    fhOccupancyR[i] = new TH1D(
+      Form("hOccupancy%i", i + 1),
+      Form("Occupancy vs radius: station %i;Radius [cm];Occupancy, %%", i + 1),
+      100,
+      0.6 * rMin,
+      1.2 * rMax);
 
-  fhCharge[i] = new TH1D(Form("hCharge%i",i+1),Form("Charge : station %i; Charge(1e4); Count",i+1),200,0,500);
-  fhPointsInCluster[i] = new TH1I(Form("hPointsInCluster%i",i+1),Form("Points in Cluster : Station %i ",i+1),10,0,10);
-  fhDigisInCluster[i] = new TH1I(Form("hDigisInCluster%i",i+1),Form("Digis in Cluster : Station %i ",i+1),10,0,10);
-  fhHitsInCluster[i] = new TH1I(Form("hHitsInCluster%i",i+1),Form("Hits in Cluster : Station %i ",i+1),10,0,10);
-
+    fhCharge[i] =
+      new TH1D(Form("hCharge%i", i + 1),
+               Form("Charge : station %i; Charge(1e4); Count", i + 1),
+               200,
+               0,
+               500);
+    fhPointsInCluster[i] =
+      new TH1I(Form("hPointsInCluster%i", i + 1),
+               Form("Points in Cluster : Station %i ", i + 1),
+               10,
+               0,
+               10);
+    fhDigisInCluster[i] =
+      new TH1I(Form("hDigisInCluster%i", i + 1),
+               Form("Digis in Cluster : Station %i ", i + 1),
+               10,
+               0,
+               10);
+    fhHitsInCluster[i] = new TH1I(Form("hHitsInCluster%i", i + 1),
+                                  Form("Hits in Cluster : Station %i ", i + 1),
+                                  10,
+                                  0,
+                                  10);
   }
 
   vector<CbmMuchModule*> modules = fGeoScheme->GetModules();
-  for(vector<CbmMuchModule*>::iterator im = modules.begin(); im!=modules.end(); im++){
+  for (vector<CbmMuchModule*>::iterator im = modules.begin();
+       im != modules.end();
+       im++) {
     CbmMuchModule* mod = (*im);
-    if(mod->GetDetectorType() == 4 || mod->GetDetectorType()==3) { // modified for rpc
+    if (mod->GetDetectorType() == 4
+        || mod->GetDetectorType() == 3) {  // modified for rpc
       CbmMuchModuleGem* module = (CbmMuchModuleGem*) mod;
       vector<CbmMuchPad*> pads = module->GetPads();
-      for (UInt_t ip=0; ip<pads.size(); ip++) {
+      for (UInt_t ip = 0; ip < pads.size(); ip++) {
         CbmMuchPad* pad = pads[ip];
         Int_t stationId = CbmMuchAddress::GetStationIndex(pad->GetAddress());
-        Double_t x0 = pad->GetX();
-        Double_t y0 = pad->GetY();
-        Double_t r0 = TMath::Sqrt(x0*x0+y0*y0);
+        Double_t x0     = pad->GetX();
+        Double_t y0     = pad->GetY();
+        Double_t r0     = TMath::Sqrt(x0 * x0 + y0 * y0);
         fhPadsTotalR[stationId]->Fill(r0);
       }
     }
@@ -336,14 +377,14 @@ InitStatus CbmMuchHitFinderQa::Init()
     printf("-----------------------------------------------------------------------------------------\n");
   */
   Int_t nTotChannels = 0;
-  for (Int_t iStation=0;iStation<fNstations;iStation++){
+  for (Int_t iStation = 0; iStation < fNstations; iStation++) {
     /*    
 	  Double_t padMinLx = GetMinPadSize(iStation).X();
 	  Double_t padMinLy = GetMinPadSize(iStation).Y();
 	  Double_t padMaxLx = GetMaxPadSize(iStation).X();
 	  Double_t padMaxLy = GetMaxPadSize(iStation).Y();
     */
-    Int_t nChannels  = GetNChannels(iStation);
+    Int_t nChannels = GetNChannels(iStation);
     /*
       Int_t nSectors   = GetNSectors(iStation);
       if (fPadMinLx>padMinLx) fPadMinLx = padMinLx;
@@ -353,12 +394,14 @@ InitStatus CbmMuchHitFinderQa::Init()
       printf("%i\t\t| %i\t\t| %i\t| %5.4fx%5.4f\t\t| %5.4fx%5.4f\n",iStation+1, nSectors, nChannels, padMinLx, padMinLy, padMaxLx, padMaxLy);
     */
     //    nTotSectors += nSectors;
-    printf("%i\t\t| %i\t\t\n",iStation+1, nChannels);
+    printf("%i\t\t| %i\t\t\n", iStation + 1, nChannels);
     nTotChannels += nChannels;
   }
-  printf("-----------------------------------------------------------------------------------------\n");
+  printf("---------------------------------------------------------------------"
+         "--------------------\n");
   printf(" Total:\t\t| %i\t\t\n", nTotChannels);
-  printf("=========================================================================================\n");
+  printf("====================================================================="
+         "====================\n");
   /*
     fnPadSizesX = TMath::CeilNint(TMath::Log2(fPadMaxLx/fPadMinLx)+1);
     fnPadSizesY = TMath::CeilNint(TMath::Log2(fPadMaxLy/fPadMinLy)+1);
@@ -390,18 +433,34 @@ InitStatus CbmMuchHitFinderQa::Init()
     }
   */
   //Pull Distribution
-  fhPullX = new TH1D("hPullX","Pull distribution X;(x_{RC} - x_{MC}) / dx_{RC}",500,-5,5);
-  fhPullY = new TH1D("hPullY","Pull distribution Y;(y_{RC} - y_{MC}) / dy_{RC}",500,-5,5);
-  fhPullT = new TH1D("hPullT","Pull distribution T;(t_{RC} - t_{MC}) / dt_{RC}",120,-10,50);
+  fhPullX = new TH1D(
+    "hPullX", "Pull distribution X;(x_{RC} - x_{MC}) / dx_{RC}", 500, -5, 5);
+  fhPullY = new TH1D(
+    "hPullY", "Pull distribution Y;(y_{RC} - y_{MC}) / dy_{RC}", 500, -5, 5);
+  fhPullT = new TH1D(
+    "hPullT", "Pull distribution T;(t_{RC} - t_{MC}) / dt_{RC}", 120, -10, 50);
 
   //Residual Distribution
-  fhResidualX = new TH1D("hResidualX","Residual distribution X;(x_{RC} - x_{MC})(cm)",500,-5,5);
-  fhResidualY = new TH1D("hResidualY","Residual distribution Y;(y_{RC} - y_{MC})(cm)",500,-5,5);
-  fhResidualT = new TH1D("hResidualT","Residual distribution T;(t_{RC} - t_{MC})(ns)",140,-20,50);
+  fhResidualX = new TH1D(
+    "hResidualX", "Residual distribution X;(x_{RC} - x_{MC})(cm)", 500, -5, 5);
+  fhResidualY = new TH1D(
+    "hResidualY", "Residual distribution Y;(y_{RC} - y_{MC})(cm)", 500, -5, 5);
+  fhResidualT = new TH1D("hResidualT",
+                         "Residual distribution T;(t_{RC} - t_{MC})(ns)",
+                         140,
+                         -20,
+                         50);
 
-  fhNpadsVsS = new TH2D("hNpadsVsS","Number of fired pads vs pad area:area:n pads",10,-5,0,10,0.5,10.5);
-  pointsFile = fopen ("points.txt","w");
-  padsFile = fopen ("pads.txt","w");
+  fhNpadsVsS = new TH2D("hNpadsVsS",
+                        "Number of fired pads vs pad area:area:n pads",
+                        10,
+                        -5,
+                        0,
+                        10,
+                        0.5,
+                        10.5);
+  pointsFile = fopen("points.txt", "w");
+  padsFile   = fopen("pads.txt", "w");
   return kSUCCESS;
 }
 // -------------------------------------------------------------------------
@@ -418,67 +477,77 @@ void CbmMuchHitFinderQa::SetParContainers() {
 // -------------------------------------------------------------------------
 
 
-
-
 // -------------------------------------------------------------------------x
-void CbmMuchHitFinderQa::Exec(Option_t*){
+void CbmMuchHitFinderQa::Exec(Option_t*) {
   fEvent++;
   LOG(info) << "Event: " << fEvent;
-  fprintf(pointsFile,"Event %i\n",fEvent);
-  fprintf(padsFile,"Event %i\n",fEvent);
-  
+  fprintf(pointsFile, "Event %i\n", fEvent);
+  fprintf(padsFile, "Event %i\n", fEvent);
+
   if (fPullsQaOn) PullsQa();
   if (fOccupancyQaOn) OccupancyQa();
   if (fDigitizerQaOn) DigitizerQa();
   if (fStatisticsQaOn) StatisticsQa();
   if (fClusterDeconvQaOn) ClusterDeconvQa();
-  
+
   return;
-  for (int i=0;i<fPoints->GetEntriesFast();i++){
+  for (int i = 0; i < fPoints->GetEntriesFast(); i++) {
     CbmMuchPoint* point = (CbmMuchPoint*) fPoints->At(i);
     Int_t stId = CbmMuchAddress::GetStationIndex(point->GetDetectorID());
-    if (stId!=0) continue;
+    if (stId != 0) continue;
     Int_t layerId = CbmMuchAddress::GetLayerIndex(point->GetDetectorID());
-    if (layerId!=0) continue;
-    printf("point %4i xin=%6.2f yin=%6.2f xout=%6.2f yout=%6.2f zin=%6.2f\n",i,point->GetXIn(),point->GetYIn(),point->GetXOut(),point->GetYOut(),point->GetZIn());
-    fprintf (pointsFile, "%7.3f %7.3f %7.3f %7.3f\n",point->GetXIn(),point->GetYIn(),point->GetXOut(),point->GetYOut());
+    if (layerId != 0) continue;
+    printf("point %4i xin=%6.2f yin=%6.2f xout=%6.2f yout=%6.2f zin=%6.2f\n",
+           i,
+           point->GetXIn(),
+           point->GetYIn(),
+           point->GetXOut(),
+           point->GetYOut(),
+           point->GetZIn());
+    fprintf(pointsFile,
+            "%7.3f %7.3f %7.3f %7.3f\n",
+            point->GetXIn(),
+            point->GetYIn(),
+            point->GetXOut(),
+            point->GetYOut());
   }
 
- // old code
- /* for (Int_t i=0;i<fDigis->GetEntriesFast();i++){
+  // old code
+  /* for (Int_t i=0;i<fDigis->GetEntriesFast();i++){
     CbmMuchDigi* digi = (CbmMuchDigi*) fDigis->At(i); */
-    for (Int_t i = 0; i < fDigiManager->GetNofDigis(ECbmModuleId::kMuch); i++) {
+  for (Int_t i = 0; i < fDigiManager->GetNofDigis(ECbmModuleId::kMuch); i++) {
     CbmMuchDigi* digi = (CbmMuchDigi*) fDigiManager->Get<CbmMuchDigi>(i);
-    UInt_t address = digi->GetAddress();
-    Int_t stId = CbmMuchAddress::GetStationIndex(address);
-    if (stId!=0) continue;
+    UInt_t address    = digi->GetAddress();
+    Int_t stId        = CbmMuchAddress::GetStationIndex(address);
+    if (stId != 0) continue;
     Int_t layerId = CbmMuchAddress::GetLayerIndex(address);
-    if (layerId!=0) continue;
-    CbmMuchModuleGem* module = (CbmMuchModuleGem*)fGeoScheme->GetModuleByDetId(address);
-    if(!module) continue;
+    if (layerId != 0) continue;
+    CbmMuchModuleGem* module =
+      (CbmMuchModuleGem*) fGeoScheme->GetModuleByDetId(address);
+    if (!module) continue;
     CbmMuchPad* pad = module->GetPad(address);
-    Double_t x0 = pad->GetX();
-    Double_t y0 = pad->GetY();
-    UInt_t charge = digi->GetAdc();
-    printf("digi %4i x0=%5.1f y0=%5.1f charge=%3i\n",i,x0,y0,charge);
-    fprintf(padsFile,"%5.1f %5.1f %3i\n",x0,y0,charge);
+    Double_t x0     = pad->GetX();
+    Double_t y0     = pad->GetY();
+    UInt_t charge   = digi->GetAdc();
+    printf("digi %4i x0=%5.1f y0=%5.1f charge=%3i\n", i, x0, y0, charge);
+    fprintf(padsFile, "%5.1f %5.1f %3i\n", x0, y0, charge);
   }
 }
 // -------------------------------------------------------------------------
 
 
 // -------------------------------------------------------------------------
-void CbmMuchHitFinderQa::FinishTask(){
+void CbmMuchHitFinderQa::FinishTask() {
   printf("FinishTask\n");
-  fclose (pointsFile);
-  fclose (padsFile);
+  fclose(pointsFile);
+  fclose(padsFile);
 
-  gStyle->SetPaperSize(20,20);
-//  Int_t NuOfColoums = 1;
-//  Int_t NuOfRows = 1;
+  gStyle->SetPaperSize(20, 20);
+  //  Int_t NuOfColoums = 1;
+  //  Int_t NuOfRows = 1;
 
   //Setting Canvas according to the Number of stations
-/*
+  /*
   if(fNstations>4){ NuOfColoums = 3; NuOfRows = 2;}
   else{
 	if(fNstations<=4 && fNstations >=3){ NuOfColoums = 2; NuOfRows = 2;}
@@ -487,23 +556,23 @@ void CbmMuchHitFinderQa::FinishTask(){
 */
 
   Double_t errors[100];
-  for (Int_t i=0;i<100;i++) errors[i]=0;
+  for (Int_t i = 0; i < 100; i++)
+    errors[i] = 0;
 
-  for (Int_t i=0;i<fNstations;i++) {
+  for (Int_t i = 0; i < fNstations; i++) {
     fhPadsTotalR[i]->Sumw2();
     fhPadsTotalR[i]->SetError(errors);
     fhPadsFiredR[i]->Sumw2();
-    fhPadsFiredR[i]->Scale(1./fEvent);
-    fhOccupancyR[i]->Divide(fhPadsFiredR[i],fhPadsTotalR[i]);
+    fhPadsFiredR[i]->Scale(1. / fEvent);
+    fhOccupancyR[i]->Divide(fhPadsFiredR[i], fhPadsTotalR[i]);
     fhOccupancyR[i]->Scale(100);
-    fhCharge[i]->Scale(1./fEvent);
-    fhPointsInCluster[i]->Scale(1./fEvent);
-    fhDigisInCluster[i]->Scale(1./fEvent);
-    fhHitsInCluster[i]->Scale(1./fEvent);
-
+    fhCharge[i]->Scale(1. / fEvent);
+    fhPointsInCluster[i]->Scale(1. / fEvent);
+    fhDigisInCluster[i]->Scale(1. / fEvent);
+    fhHitsInCluster[i]->Scale(1. / fEvent);
   }
 
-  if (fPullsQaOn && fVerbose>1){
+  if (fPullsQaOn && fVerbose > 1) {
     printf("===================================\n");
     printf("PullsQa:\n");
 
@@ -514,68 +583,68 @@ void CbmMuchHitFinderQa::FinishTask(){
     //      fhPullT[i]->Fit("gaus");
     //      fhPullT[i]->Draw("e");
     //    }
-    //    
-/*    TCanvas* c4 = new TCanvas("c4","Pulls",800,400);
+    //
+    /*    TCanvas* c4 = new TCanvas("c4","Pulls",800,400);
     c4->Divide(3,1);
     c4->cd(1);*/
     fhPullX->Sumw2();
-    fhPullX->Fit("gaus","Q");
+    fhPullX->Fit("gaus", "Q");
     fhPullX->GetFunction("gaus")->SetLineWidth(3);
-    fhPullX->GetFunction("gaus")->SetLineColor(kRed);  
- //   fhPullX->Draw();
+    fhPullX->GetFunction("gaus")->SetLineColor(kRed);
+    //   fhPullX->Draw();
     fhPullX->Write();
     if (fPrintToFileOn) gPad->Print(".gif");
     if (fPrintToFileOn) gPad->Print(".eps");
- //   c4->cd(2);
+    //   c4->cd(2);
     fhPullY->Sumw2();
-    fhPullY->Fit("gaus","Q");
+    fhPullY->Fit("gaus", "Q");
     fhPullY->GetFunction("gaus")->SetLineWidth(3);
     fhPullY->GetFunction("gaus")->SetLineColor(kRed);
-//    fhPullY->Draw();
+    //    fhPullY->Draw();
     fhPullY->Write();
     if (fPrintToFileOn) gPad->Print(".gif");
     if (fPrintToFileOn) gPad->Print(".eps");
- //   c4->cd(3);
+    //   c4->cd(3);
     fhPullT->Sumw2();
-    fhPullT->Fit("gaus","Q");
+    fhPullT->Fit("gaus", "Q");
     fhPullT->GetFunction("gaus")->SetLineWidth(3);
     fhPullT->GetFunction("gaus")->SetLineColor(kRed);
-//    fhPullT->Draw();
+    //    fhPullT->Draw();
     fhPullT->Write();
     if (fPrintToFileOn) gPad->Print(".gif");
     if (fPrintToFileOn) gPad->Print(".eps");
-//    c4->cd();
+    //    c4->cd();
 
-  //  TCanvas* cR5 = new TCanvas("cR5","Residuals",800,400);
- //   cR5->Divide(3,1);
- //   cR5->cd(1);
+    //  TCanvas* cR5 = new TCanvas("cR5","Residuals",800,400);
+    //   cR5->Divide(3,1);
+    //   cR5->cd(1);
     fhResidualX->Sumw2();
-    fhResidualX->Fit("gaus","Q");
+    fhResidualX->Fit("gaus", "Q");
     fhResidualX->GetFunction("gaus")->SetLineWidth(3);
     fhResidualX->GetFunction("gaus")->SetLineColor(kRed);
- //   fhResidualX->Draw();
+    //   fhResidualX->Draw();
     fhResidualX->Write();
- //   if (fPrintToFileOn) gPad->Print(".gif");
-  //  if (fPrintToFileOn) gPad->Print(".eps");
-   // cR5->cd(2);
+    //   if (fPrintToFileOn) gPad->Print(".gif");
+    //  if (fPrintToFileOn) gPad->Print(".eps");
+    // cR5->cd(2);
     fhResidualY->Sumw2();
-    fhResidualY->Fit("gaus","Q");
+    fhResidualY->Fit("gaus", "Q");
     fhResidualY->GetFunction("gaus")->SetLineWidth(3);
     fhResidualY->GetFunction("gaus")->SetLineColor(kRed);
- //   fhResidualY->Draw();
+    //   fhResidualY->Draw();
     fhResidualY->Write();
-   // if (fPrintToFileOn) gPad->Print(".gif");
-  //  if (fPrintToFileOn) gPad->Print(".eps");
- //   cR5->cd(3);
+    // if (fPrintToFileOn) gPad->Print(".gif");
+    //  if (fPrintToFileOn) gPad->Print(".eps");
+    //   cR5->cd(3);
     fhResidualT->Sumw2();
-    fhResidualT->Fit("gaus","Q");
+    fhResidualT->Fit("gaus", "Q");
     fhResidualT->GetFunction("gaus")->SetLineWidth(3);
     fhResidualT->GetFunction("gaus")->SetLineColor(kRed);
- ///  fhResidualT->Draw();
+    ///  fhResidualT->Draw();
     fhResidualT->Write();
-  //  if (fPrintToFileOn) gPad->Print(".gif");
-  //  if (fPrintToFileOn) gPad->Print(".eps");
-  //  cR5->cd();
+    //  if (fPrintToFileOn) gPad->Print(".gif");
+    //  if (fPrintToFileOn) gPad->Print(".eps");
+    //  cR5->cd();
 
     //    TCanvas* c_alone = new TCanvas("c_alone","Pulls",400,400);
     //    new TCanvas("c_alone","Pulls",400,400);
@@ -646,56 +715,54 @@ void CbmMuchHitFinderQa::FinishTask(){
   }
 
 
-  if (fOccupancyQaOn && fVerbose>1) {
+  if (fOccupancyQaOn && fVerbose > 1) {
     printf("===================================\n");
     printf("OccupancyQa:\n");
-  //  TCanvas* c1 = new TCanvas("c1","All pad distributions",1200,800);
-  //  c1->Divide(NuOfColoums,NuOfRows);
-    for (Int_t i=0;i<fNstations;i++) {
-  //    c1->cd(i+1);
-    //  fhPadsTotalR[i]->SetStats(0);
-   //   fhPadsTotalR[i]->Draw("hist");
-    //  if (fPrintToFileOn) gPad->Print(".gif");
-    //  if (fPrintToFileOn) gPad->Print(".eps");
+    //  TCanvas* c1 = new TCanvas("c1","All pad distributions",1200,800);
+    //  c1->Divide(NuOfColoums,NuOfRows);
+    for (Int_t i = 0; i < fNstations; i++) {
+      //    c1->cd(i+1);
+      //  fhPadsTotalR[i]->SetStats(0);
+      //   fhPadsTotalR[i]->Draw("hist");
+      //  if (fPrintToFileOn) gPad->Print(".gif");
+      //  if (fPrintToFileOn) gPad->Print(".eps");
     }
-   // c1->cd();
+    // c1->cd();
 
-   // TCanvas* c2 = new TCanvas("c2","Fired pad distributions",1200,800);
-   // c2->Divide(NuOfColoums,NuOfRows);
-    for (Int_t i=0;i<fNstations;i++) {
-     // c2->cd(i+1);
-    //  fhPadsFiredR[i]->SetStats(0);
-//      fhPadsFiredR[i]->Draw();
+    // TCanvas* c2 = new TCanvas("c2","Fired pad distributions",1200,800);
+    // c2->Divide(NuOfColoums,NuOfRows);
+    for (Int_t i = 0; i < fNstations; i++) {
+      // c2->cd(i+1);
+      //  fhPadsFiredR[i]->SetStats(0);
+      //      fhPadsFiredR[i]->Draw();
       fhPadsFiredR[i]->Write();
-   //   if (fPrintToFileOn) gPad->Print(".gif");
-   //   if (fPrintToFileOn) gPad->Print(".eps");
+      //   if (fPrintToFileOn) gPad->Print(".gif");
+      //   if (fPrintToFileOn) gPad->Print(".eps");
     }
-  //  c2->cd();
+    //  c2->cd();
 
- //   TCanvas* c3 = new TCanvas("c3","Occupancy plots",2400,1600);
- //   c3->Divide(NuOfColoums,NuOfRows);
-    for (Int_t i=0;i<fNstations;i++) {
-  //    c3->cd(i+1);
-   //   fhOccupancyR[i]->SetStats(0);
-//      fhOccupancyR[i]->Draw();
+    //   TCanvas* c3 = new TCanvas("c3","Occupancy plots",2400,1600);
+    //   c3->Divide(NuOfColoums,NuOfRows);
+    for (Int_t i = 0; i < fNstations; i++) {
+      //    c3->cd(i+1);
+      //   fhOccupancyR[i]->SetStats(0);
+      //      fhOccupancyR[i]->Draw();
       fhOccupancyR[i]->Write();
-   //   if (fPrintToFileOn) gPad->Print(".gif");
-   //   if (fPrintToFileOn) gPad->Print(".eps");
+      //   if (fPrintToFileOn) gPad->Print(".gif");
+      //   if (fPrintToFileOn) gPad->Print(".eps");
     }
-   // c3->cd();
+    // c3->cd();
 
- // TCanvas *c4 = new TCanvas("c4","Charge plot",2400,1600);   ////added for station charge
- //  c4->Divide(3,2);
-    for(Int_t i=0;i<fNstations;i++)
-    {
- //   c4->cd(i+1);
-//    fhCharge[i]->Draw();
-    fhCharge[i]->Write();
- //   fhPointsInCluster[i]->Draw();
-    fhPointsInCluster[i]->Write(); 
-    fhDigisInCluster[i]->Write();
-    fhHitsInCluster[i]->Write();
-
+    // TCanvas *c4 = new TCanvas("c4","Charge plot",2400,1600);   ////added for station charge
+    //  c4->Divide(3,2);
+    for (Int_t i = 0; i < fNstations; i++) {
+      //   c4->cd(i+1);
+      //    fhCharge[i]->Draw();
+      fhCharge[i]->Write();
+      //   fhPointsInCluster[i]->Draw();
+      fhPointsInCluster[i]->Write();
+      fhDigisInCluster[i]->Write();
+      fhHitsInCluster[i]->Write();
     }
 
 
@@ -717,30 +784,33 @@ void CbmMuchHitFinderQa::FinishTask(){
     if (fPrintToFileOn) gPad->Print(".gif");*/
   }
 
-  if (fDigitizerQaOn && fVerbose>1) {
+  if (fDigitizerQaOn && fVerbose > 1) {
     printf("===================================\n");
     printf("DigitizerQa:\n");
 
-    TF1* fit_el = new TF1("fit_el",LandauMPV,-0.5,4.5,1);
-    fit_el->SetParameter(0,0.511);
+    TF1* fit_el = new TF1("fit_el", LandauMPV, -0.5, 4.5, 1);
+    fit_el->SetParameter(0, 0.511);
     fit_el->SetLineWidth(2);
     fit_el->SetLineColor(kBlack);
 
-    TF1* fit_pi = new TF1("fit_pi",LandauMPV,-0.5,4.5,1);
-    fit_pi->SetParameter(0,139.57);
+    TF1* fit_pi = new TF1("fit_pi", LandauMPV, -0.5, 4.5, 1);
+    fit_pi->SetParameter(0, 139.57);
     fit_pi->SetLineWidth(2);
     fit_pi->SetLineColor(kBlack);
-    
-    TF1* fit_pr = new TF1("fit_pr",LandauMPV,-0.5,4.5,1);
-    fit_pr->SetParameter(0,938.27);
+
+    TF1* fit_pr = new TF1("fit_pr", LandauMPV, -0.5, 4.5, 1);
+    fit_pr->SetParameter(0, 938.27);
     fit_pr->SetLineWidth(2);
     fit_pr->SetLineColor(kBlack);
 
-    TH1D* hLength   = fhChargeTrackLength  ->ProjectionX();
-    TH1D* hLengthEl = fhChargeTrackLengthEl->ProjectionX();;
-    TH1D* hLengthPi = fhChargeTrackLengthPi->ProjectionX();;
-    TH1D* hLengthPr = fhChargeTrackLengthPr->ProjectionX();;
-    hLength  ->SetTitle("Track length for all tracks");
+    TH1D* hLength   = fhChargeTrackLength->ProjectionX();
+    TH1D* hLengthEl = fhChargeTrackLengthEl->ProjectionX();
+    ;
+    TH1D* hLengthPi = fhChargeTrackLengthPi->ProjectionX();
+    ;
+    TH1D* hLengthPr = fhChargeTrackLengthPr->ProjectionX();
+    ;
+    hLength->SetTitle("Track length for all tracks");
     hLengthEl->SetTitle("Track length for electrons");
     hLengthPi->SetTitle("Track length for pions");
     hLengthPr->SetTitle("Track length for protons");
@@ -750,82 +820,82 @@ void CbmMuchHitFinderQa::FinishTask(){
     fChargeHistos->Add(hLengthPi);
     fChargeHistos->Add(hLengthPr);
 
-  //  TCanvas* c5 = new TCanvas("c5","Charge vs energy and length",2100,1300);
-  //  c5->Divide(4,3);
-    for (Int_t i=0;i<8;i++){
-  //    c5->cd(i+1);
-   //   gPad->Range(0,0,200,200);
-     // gPad->SetBottomMargin(0.11);
-     // gPad->SetRightMargin(0.14);
+    //  TCanvas* c5 = new TCanvas("c5","Charge vs energy and length",2100,1300);
+    //  c5->Divide(4,3);
+    for (Int_t i = 0; i < 8; i++) {
+      //    c5->cd(i+1);
+      //   gPad->Range(0,0,200,200);
+      // gPad->SetBottomMargin(0.11);
+      // gPad->SetRightMargin(0.14);
       //gPad->SetLeftMargin(0.12);
       //gPad->SetLogz();
-//      TH2D* histo = (TH2D*) fChargeHistos->At(i);
-  //    histo->Draw("colz");
-   //   if (i==1) fit_el->Draw("same");
-   //   if (i==2) fit_pi->Draw("same");
-  //    if (i==3) fit_pr->Draw("same");
-  //    if (fPrintToFileOn) gPad->Print(".gif");
-  //    if (fPrintToFileOn) gPad->Print(".eps");
+      //      TH2D* histo = (TH2D*) fChargeHistos->At(i);
+      //    histo->Draw("colz");
+      //   if (i==1) fit_el->Draw("same");
+      //   if (i==2) fit_pi->Draw("same");
+      //    if (i==3) fit_pr->Draw("same");
+      //    if (fPrintToFileOn) gPad->Print(".gif");
+      //    if (fPrintToFileOn) gPad->Print(".eps");
     }
-    
+
     //    TCanvas* ch_1 = new TCanvas("ch_1","",1200,1000);
- //   new TCanvas("ch_1","",1200,1000);
-//    gPad->SetBottomMargin(0.11);
- //   gPad->SetRightMargin(0.14);
- //   gPad->SetLeftMargin(0.12);
- //   gPad->SetLogz();
-//    TH2D* histo1 = (TH2D*) fChargeHistos->At(1);
- //   histo1->Draw("colz");
- //   fit_el->Draw("same");
-  //  if (fPrintToFileOn) gPad->Print(".gif");
-    
+    //   new TCanvas("ch_1","",1200,1000);
+    //    gPad->SetBottomMargin(0.11);
+    //   gPad->SetRightMargin(0.14);
+    //   gPad->SetLeftMargin(0.12);
+    //   gPad->SetLogz();
+    //    TH2D* histo1 = (TH2D*) fChargeHistos->At(1);
+    //   histo1->Draw("colz");
+    //   fit_el->Draw("same");
+    //  if (fPrintToFileOn) gPad->Print(".gif");
+
     //    TCanvas* ch_2 = new TCanvas("ch_2","",1200,1000);
-/*    new TCanvas("ch_2","",1200,1000);
+    /*    new TCanvas("ch_2","",1200,1000);
     gPad->SetBottomMargin(0.11);
     gPad->SetRightMargin(0.14);
     gPad->SetLeftMargin(0.12);
     gPad->SetLogz();*/
-//    TH2D* histo2 = (TH2D*) fChargeHistos->At(2);
-  /*  histo2->Draw("colz");
+    //    TH2D* histo2 = (TH2D*) fChargeHistos->At(2);
+    /*  histo2->Draw("colz");
     fit_pi->Draw("same");
     if (fPrintToFileOn) gPad->Print(".gif");*/
 
     //    TCanvas* ch_3 = new TCanvas("ch_3","",1200,1000);
- /*   new TCanvas("ch_3","",1200,1000);
+    /*   new TCanvas("ch_3","",1200,1000);
     gPad->SetBottomMargin(0.11);
     gPad->SetRightMargin(0.14);
     gPad->SetLeftMargin(0.12);
     gPad->SetLogz(); */
-//    TH2D* histo3 = (TH2D*) fChargeHistos->At(3);
-  /*  histo3->Draw("colz");
+    //    TH2D* histo3 = (TH2D*) fChargeHistos->At(3);
+    /*  histo3->Draw("colz");
     fit_pr->Draw("same");
     if (fPrintToFileOn) gPad->Print(".gif"); */
 
-    
-   for (Int_t i=10;i<14;i++){
-   //   c5->cd(i-1);
-     // gPad->SetLogy();
-     // gStyle->SetOptStat(1110);
-//      TH1D* histo = (TH1D*) fChargeHistos->At(i);
- //     histo->Draw();
+
+    for (Int_t i = 10; i < 14; i++) {
+      //   c5->cd(i-1);
+      // gPad->SetLogy();
+      // gStyle->SetOptStat(1110);
+      //      TH1D* histo = (TH1D*) fChargeHistos->At(i);
+      //     histo->Draw();
       //if (fPrintToFileOn) gPad->Print(".gif");
       //if (fPrintToFileOn) gPad->Print(".eps");
     }
 
     // below for 31st CBM Collaboration Meeting
- //   TCanvas* c6 = new TCanvas("c6","Charge distribution",1200,400);
-   // c6->Divide(2,1);
-   // c6->cd(1);
-//    fhCharge->Draw();
-//    fhCharge->Write();
-   // if (fPrintToFileOn) gPad->Print(".gif");
-   // if (fPrintToFileOn) gPad->Print(".eps");
+    //   TCanvas* c6 = new TCanvas("c6","Charge distribution",1200,400);
+    // c6->Divide(2,1);
+    // c6->cd(1);
+    //    fhCharge->Draw();
+    //    fhCharge->Write();
+    // if (fPrintToFileOn) gPad->Print(".gif");
+    // if (fPrintToFileOn) gPad->Print(".eps");
 
     //c6->cd(2);
-//    fhChargeLog->Draw();
+    //    fhChargeLog->Draw();
     fhChargeLog->Write();
-   // if (fPrintToFileOn) gPad->Print(".gif");
-  //  if (fPrintToFileOn) gPad->Print(".eps");
+    // if (fPrintToFileOn) gPad->Print(".gif");
+    //  if (fPrintToFileOn) gPad->Print(".eps");
 
 
     /* Commented below for 31st CBM Collaboration Meeting
@@ -847,96 +917,105 @@ void CbmMuchHitFinderQa::FinishTask(){
     if (fPrintToFileOn) gPad->Print(".eps");
     */
 
- //   TCanvas* c8 = new TCanvas("c8","Square vs nPads",800,400);
-   // c8->Divide(2,1);
+    //   TCanvas* c8 = new TCanvas("c8","Square vs nPads",800,400);
+    // c8->Divide(2,1);
     //c8->cd(1);
- //   fhNpadsVsS->Draw("colz");
-fhNpadsVsS->Write();
+    //   fhNpadsVsS->Draw("colz");
+    fhNpadsVsS->Write();
     Double_t nMean[11];
-//    Double_t s[11];
-    for (Int_t iS=1;iS<=10;iS++){
-      nMean[iS]=0;
-//      s[iS]=-5.25+0.5*iS;
-      Double_t total=0;
-      for (Int_t iN=1;iN<=10;iN++){
-        nMean[iS]+=iN*fhNpadsVsS->GetBinContent(iS,iN);
-        total+=fhNpadsVsS->GetBinContent(iS,iN);
+    //    Double_t s[11];
+    for (Int_t iS = 1; iS <= 10; iS++) {
+      nMean[iS] = 0;
+      //      s[iS]=-5.25+0.5*iS;
+      Double_t total = 0;
+      for (Int_t iN = 1; iN <= 10; iN++) {
+        nMean[iS] += iN * fhNpadsVsS->GetBinContent(iS, iN);
+        total += fhNpadsVsS->GetBinContent(iS, iN);
       }
-      if (total>0) nMean[iS]/=total;
+      if (total > 0) nMean[iS] /= total;
       //printf("%f %f\n",s[iS],nMean[iS]);
     }
-   // c8->cd(2);
+    // c8->cd(2);
     //    TGraph* gNvsS = new TGraph(11,s,nMean);
     //gNvsS->DrawClone();
 
 
     printf("All tracks: ;");
-    for (Int_t i=0;i<fNstations;i++) printf("%8i;",fNall[i]);
+    for (Int_t i = 0; i < fNstations; i++)
+      printf("%8i;", fNall[i]);
     printf("\n");
     printf("------------;");
-    for (Int_t i=0;i<fNstations;i++) printf("---------");
+    for (Int_t i = 0; i < fNstations; i++)
+      printf("---------");
     printf("\n");
     printf("Primary:    ;");
-    for (Int_t i=0;i<fNstations;i++) printf("%8i;",fNprimary[i]);
+    for (Int_t i = 0; i < fNstations; i++)
+      printf("%8i;", fNprimary[i]);
     printf("\n");
     printf("Secondary:  ;");
-    for (Int_t i=0;i<fNstations;i++) printf("%8i;",fNsecondary[i]);
+    for (Int_t i = 0; i < fNstations; i++)
+      printf("%8i;", fNsecondary[i]);
     printf("\n");
     printf("-------------");
-    for (Int_t i=0;i<fNstations;i++) printf("---------");
+    for (Int_t i = 0; i < fNstations; i++)
+      printf("---------");
     printf("\n");
     printf("Protons:    ;");
-    for (Int_t i=0;i<fNstations;i++) printf("%8i;",fNpr[i]);
+    for (Int_t i = 0; i < fNstations; i++)
+      printf("%8i;", fNpr[i]);
     printf("\n");
     printf("Pions:      ;");
-    for (Int_t i=0;i<fNstations;i++) printf("%8i;",fNpi[i]);
+    for (Int_t i = 0; i < fNstations; i++)
+      printf("%8i;", fNpi[i]);
     printf("\n");
     printf("Electrons:  ;");
-    for (Int_t i=0;i<fNstations;i++) printf("%8i;",fNel[i]);
+    for (Int_t i = 0; i < fNstations; i++)
+      printf("%8i;", fNel[i]);
     printf("\n");
     printf("Muons:      ;");
-    for (Int_t i=0;i<fNstations;i++) printf("%8i;",fNmu[i]);
+    for (Int_t i = 0; i < fNstations; i++)
+      printf("%8i;", fNmu[i]);
     printf("\n");
     printf("Kaons:      ;");
-    for (Int_t i=0;i<fNstations;i++) printf("%8i;",fNka[i]);
+    for (Int_t i = 0; i < fNstations; i++)
+      printf("%8i;", fNka[i]);
     printf("\n");
-
   }
 
 
-  if (fStatisticsQaOn){
+  if (fStatisticsQaOn) {
     printf("===================================\n");
     printf("StatisticsQa:\n");
- //   TCanvas* c7 = new TCanvas("c7","Cluster statistics",1200,400);
- //   c7->Divide(3,1);
- //   c7->cd(1);
- //   gStyle->SetOptStat(1110);
- //   gPad->SetLogy();
-//    fhPointsInCluster->Draw();
-//    fhPointsInCluster->Write();
- //   if (fPrintToFileOn) gPad->Print(".gif");
-   // if (fPrintToFileOn) gPad->Print(".eps");
- //   c7->cd(2);
- //   gStyle->SetOptStat(1110);
- //   gPad->SetLogy();
-//    fhDigisInCluster->Draw();
- //   fhDigisInCluster->Write();
- //   if (fPrintToFileOn) gPad->Print(".gif");
- //   if (fPrintToFileOn) gPad->Print(".eps");
-  //  c7->cd(3);
-  //  gStyle->SetOptStat(1110);
-  //  gPad->SetLogy();
-  //  fhHitsInCluster->Draw();
-  //  fhHitsInCluster->Write();
- //   if (fPrintToFileOn) gPad->Print(".gif");
- //   if (fPrintToFileOn) gPad->Print(".eps");
+    //   TCanvas* c7 = new TCanvas("c7","Cluster statistics",1200,400);
+    //   c7->Divide(3,1);
+    //   c7->cd(1);
+    //   gStyle->SetOptStat(1110);
+    //   gPad->SetLogy();
+    //    fhPointsInCluster->Draw();
+    //    fhPointsInCluster->Write();
+    //   if (fPrintToFileOn) gPad->Print(".gif");
+    // if (fPrintToFileOn) gPad->Print(".eps");
+    //   c7->cd(2);
+    //   gStyle->SetOptStat(1110);
+    //   gPad->SetLogy();
+    //    fhDigisInCluster->Draw();
+    //   fhDigisInCluster->Write();
+    //   if (fPrintToFileOn) gPad->Print(".gif");
+    //   if (fPrintToFileOn) gPad->Print(".eps");
+    //  c7->cd(3);
+    //  gStyle->SetOptStat(1110);
+    //  gPad->SetLogy();
+    //  fhHitsInCluster->Draw();
+    //  fhHitsInCluster->Write();
+    //   if (fPrintToFileOn) gPad->Print(".gif");
+    //   if (fPrintToFileOn) gPad->Print(".eps");
 
-    printf("Total number of points: %i\n",fPointsTotal);
-    printf("Points overcounted: %i\n",fPointsOverCounted);
-    printf("Points undercounted: %i\n",fPointsUnderCounted);
+    printf("Total number of points: %i\n", fPointsTotal);
+    printf("Points overcounted: %i\n", fPointsOverCounted);
+    printf("Points undercounted: %i\n", fPointsUnderCounted);
   }
 
-  if (fClusterDeconvQaOn){
+  if (fClusterDeconvQaOn) {
     printf("Signal points: %i\n", fSignalPoints);
     printf("Signal hits: %i\n", fSignalHits);
   }
@@ -960,72 +1039,77 @@ fhNpadsVsS->Write();
   //
   //   fhNpadsVsS->Write();
   //   performanceFile->Close();
-
 }
 // -------------------------------------------------------------------------
 
 
 // -------------------------------------------------------------------------
-Double_t LandauMPV(Double_t *lg_x, Double_t *par) {
-  Double_t gaz_gain_mean=1.7e+4;
-  Double_t scale=1.e+6;
-  gaz_gain_mean/=scale;
-  Double_t mass = par[0]; // mass in MeV
-  Double_t x = TMath::Power(10,lg_x[0]);
-  return gaz_gain_mean*MPV_n_e(x,mass);
+Double_t LandauMPV(Double_t* lg_x, Double_t* par) {
+  Double_t gaz_gain_mean = 1.7e+4;
+  Double_t scale         = 1.e+6;
+  gaz_gain_mean /= scale;
+  Double_t mass = par[0];  // mass in MeV
+  Double_t x    = TMath::Power(10, lg_x[0]);
+  return gaz_gain_mean * MPV_n_e(x, mass);
 }
 // -------------------------------------------------------------------------
 
 
 // -------------------------------------------------------------------------
-void CbmMuchHitFinderQa::DigitizerQa(){
-  Bool_t verbose = (fVerbose>2);
+void CbmMuchHitFinderQa::DigitizerQa() {
+  Bool_t verbose = (fVerbose > 2);
   TVector3 vIn;   // in  position of the track
   TVector3 vOut;  // out position of the track
   TVector3 p;     // track momentum
 
   fPointInfos->Clear();
 
-  for (Int_t i=0;i<fPoints->GetEntriesFast();i++){
+  for (Int_t i = 0; i < fPoints->GetEntriesFast(); i++) {
     CbmMuchPoint* point = (CbmMuchPoint*) fPoints->At(i);
     Int_t stId = CbmMuchAddress::GetStationIndex(point->GetDetectorID());
 
     // Check if the point corresponds to a certain  MC Track
     Int_t trackId = point->GetTrackID();
     if (trackId < 0) {
-      new ((*fPointInfos)[i]) CbmMuchPointInfo(0,0,0,0,0);
+      new ((*fPointInfos)[i]) CbmMuchPointInfo(0, 0, 0, 0, 0);
       continue;
     }
-    CbmMCTrack* mcTrack = (CbmMCTrack*)fMCTracks->At(trackId);
+    CbmMCTrack* mcTrack = (CbmMCTrack*) fMCTracks->At(trackId);
     if (!mcTrack) {
-      new ((*fPointInfos)[i]) CbmMuchPointInfo(0,0,0,0,0);
+      new ((*fPointInfos)[i]) CbmMuchPointInfo(0, 0, 0, 0, 0);
       continue;
     }
 
     Int_t motherId = mcTrack->GetMotherId();
 
     // Get mass
-    Int_t pdgCode = mcTrack->GetPdgCode();
+    Int_t pdgCode          = mcTrack->GetPdgCode();
     TParticlePDG* particle = TDatabasePDG::Instance()->GetParticle(pdgCode);
-    if(!particle ||
-       pdgCode == 22 ||  // photons
-       pdgCode == 2112)  // neutrons
-      {
-	new ((*fPointInfos)[i]) CbmMuchPointInfo(0,0,0,0,0);
-	continue;
-      }
+    if (!particle || pdgCode == 22 ||  // photons
+        pdgCode == 2112)               // neutrons
+    {
+      new ((*fPointInfos)[i]) CbmMuchPointInfo(0, 0, 0, 0, 0);
+      continue;
+    }
 
-    if (CbmMuchAddress::GetLayerIndex(point->GetDetectorID())==0){
+    if (CbmMuchAddress::GetLayerIndex(point->GetDetectorID()) == 0) {
       fNall[stId]++;
 
-      if      (pdgCode==2212)                 fNpr[stId]++;
-      else if (pdgCode==-211 || pdgCode==211) fNpi[stId]++;
-      else if (pdgCode==-11  || pdgCode==11 ) fNel[stId]++;
-      else if (pdgCode==-13  || pdgCode==13 ) fNmu[stId]++;
-      else if (pdgCode==-321 || pdgCode==321) fNka[stId]++;
+      if (pdgCode == 2212)
+        fNpr[stId]++;
+      else if (pdgCode == -211 || pdgCode == 211)
+        fNpi[stId]++;
+      else if (pdgCode == -11 || pdgCode == 11)
+        fNel[stId]++;
+      else if (pdgCode == -13 || pdgCode == 13)
+        fNmu[stId]++;
+      else if (pdgCode == -321 || pdgCode == 321)
+        fNka[stId]++;
 
-      if (motherId==-1) fNprimary[stId]++;
-      else              fNsecondary[stId]++;
+      if (motherId == -1)
+        fNprimary[stId]++;
+      else
+        fNsecondary[stId]++;
     }
 
     Double_t mass = particle->Mass();
@@ -1033,114 +1117,130 @@ void CbmMuchHitFinderQa::DigitizerQa(){
     point->PositionIn(vIn);
     point->PositionOut(vOut);
     point->Momentum(p);
-    Double_t length = (vOut-vIn).Mag();              // Track length
-    Double_t kine = sqrt(p.Mag2()+mass*mass) - mass; // Kinetic energy
+    Double_t length = (vOut - vIn).Mag();                   // Track length
+    Double_t kine   = sqrt(p.Mag2() + mass * mass) - mass;  // Kinetic energy
     // Get mother pdg code
-    Int_t motherPdg = 0;
+    Int_t motherPdg         = 0;
     CbmMCTrack* motherTrack = NULL;
-    if(motherId != -1) motherTrack = (CbmMCTrack*)fMCTracks->At(motherId);
-    if(motherTrack) motherPdg = motherTrack->GetPdgCode();
-    new ((*fPointInfos)[i]) CbmMuchPointInfo(pdgCode,motherPdg,kine,length,stId);
+    if (motherId != -1) motherTrack = (CbmMCTrack*) fMCTracks->At(motherId);
+    if (motherTrack) motherPdg = motherTrack->GetPdgCode();
+    new ((*fPointInfos)[i])
+      CbmMuchPointInfo(pdgCode, motherPdg, kine, length, stId);
   }
 
 
   // Filling generated charge for each point
-  // Changing below loop from DigiMatches to Digis 
+  // Changing below loop from DigiMatches to Digis
 
   //for (Int_t i=0;i<fDigiMatches->GetEntriesFast();i++){
-  // old code 
- /*for (Int_t i=0;i<fDigis->GetEntriesFast();i++){
+  // old code
+  /*for (Int_t i=0;i<fDigis->GetEntriesFast();i++){
     // Get pad area
     CbmMuchDigi* digi = (CbmMuchDigi*) fDigis->At(i); */
-    for (Int_t i = 0; i < fDigiManager->GetNofDigis(ECbmModuleId::kMuch); i++) {
+  for (Int_t i = 0; i < fDigiManager->GetNofDigis(ECbmModuleId::kMuch); i++) {
     CbmMuchDigi* digi = (CbmMuchDigi*) fDigiManager->Get<CbmMuchDigi>(i);
     assert(digi);
     //CbmMatch* match = (CbmMatch*) fDigiMatches->At(i);
-    CbmMatch* match = (CbmMatch*) fDigiManager->GetMatch(ECbmModuleId::kMuch,i);
+    CbmMatch* match =
+      (CbmMatch*) fDigiManager->GetMatch(ECbmModuleId::kMuch, i);
     assert(match);
     CbmMuchModule* module = fGeoScheme->GetModuleByDetId(digi->GetAddress());
     assert(module);
-    if(!module) continue;
-    Double_t area=0;
-    if (module->GetDetectorType()!=4 && module->GetDetectorType()!=3) continue;   ///rpc
-    LOG(debug) << GetName() << " Processing MuchDigi " << i << " at address "<< digi->GetAddress()<<" Module number "<< module->GetDetectorType();
+    if (!module) continue;
+    Double_t area = 0;
+    if (module->GetDetectorType() != 4 && module->GetDetectorType() != 3)
+      continue;  ///rpc
+    LOG(debug) << GetName() << " Processing MuchDigi " << i << " at address "
+               << digi->GetAddress() << " Module number "
+               << module->GetDetectorType();
 
     CbmMuchModuleGem* module1 = (CbmMuchModuleGem*) module;
     assert(module1);
     CbmMuchPad* pad = module1->GetPad(digi->GetAddress());
     assert(pad);
-    area = pad->GetDx()*pad->GetDy();
+    area           = pad->GetDx() * pad->GetDy();
     Int_t nofLinks = match->GetNofLinks();
     for (Int_t pt = 0; pt < nofLinks; pt++) {
-      Int_t pointId = match->GetLink(pt).GetIndex();
-      Int_t charge  = match->GetLink(pt).GetWeight();
+      Int_t pointId          = match->GetLink(pt).GetIndex();
+      Int_t charge           = match->GetLink(pt).GetWeight();
       CbmMuchPointInfo* info = (CbmMuchPointInfo*) fPointInfos->At(pointId);
-      if (info->GetPdgCode()==0) continue;
+      if (info->GetPdgCode() == 0) continue;
       info->AddCharge(charge);
       info->AddArea(area);
     }
   }
 
   //Filling digitizer performance plots
-  for (Int_t i=0;i<fPointInfos->GetEntriesFast();i++){
+  for (Int_t i = 0; i < fPointInfos->GetEntriesFast(); i++) {
     CbmMuchPointInfo* info = (CbmMuchPointInfo*) fPointInfos->At(i);
-    if (verbose) {printf("%i",i); info->Print();}
-    Double_t length     = info->GetLength();
-    Double_t kine       = 1000*(info->GetKine());
-    Double_t charge     = info->GetCharge();
-    Int_t    pdg        = info->GetPdgCode();
-    if (pdg==0) continue;
-    if (charge<=0) continue;
+    if (verbose) {
+      printf("%i", i);
+      info->Print();
+    }
+    Double_t length = info->GetLength();
+    Double_t kine   = 1000 * (info->GetKine());
+    Double_t charge = info->GetCharge();
+    Int_t pdg       = info->GetPdgCode();
+    if (pdg == 0) continue;
+    if (charge <= 0) continue;
     Double_t log_kine   = TMath::Log10(kine);
     Double_t log_charge = TMath::Log10(charge);
-    charge = charge/1.e+4;  // measure charge in 10^4 electrons
+    charge              = charge / 1.e+4;  // measure charge in 10^4 electrons
 
-    Int_t    nPads = info->GetNPads();
-    Double_t area  = info->GetArea()/nPads;
+    Int_t nPads   = info->GetNPads();
+    Double_t area = info->GetArea() / nPads;
     //printf("%f %i\n",TMath::Log2(area),nPads);
-    fhNpadsVsS->Fill(TMath::Log2(area),nPads);
+    fhNpadsVsS->Fill(TMath::Log2(area), nPads);
     fhCharge[info->GetStationId()]->Fill(charge);
     fhChargeLog->Fill(log_charge);
-    fhChargeEnergyLog->Fill(log_kine,charge);
-    fhChargeTrackLength->Fill(length,charge);
+    fhChargeEnergyLog->Fill(log_kine, charge);
+    fhChargeTrackLength->Fill(length, charge);
 
-    if (pdg == 2212)                   fhChargeEnergyLogPr->Fill(log_kine,charge);
-    else if (pdg == 211 || pdg ==-211) fhChargeEnergyLogPi->Fill(log_kine,charge);
-    else if (pdg == 11  || pdg ==-11 ) fhChargeEnergyLogEl->Fill(log_kine,charge);
+    if (pdg == 2212)
+      fhChargeEnergyLogPr->Fill(log_kine, charge);
+    else if (pdg == 211 || pdg == -211)
+      fhChargeEnergyLogPi->Fill(log_kine, charge);
+    else if (pdg == 11 || pdg == -11)
+      fhChargeEnergyLogEl->Fill(log_kine, charge);
 
-    if (pdg == 2212)                   fhChargeTrackLengthPr->Fill(length,charge);
-    else if (pdg == 211 || pdg ==-211) fhChargeTrackLengthPi->Fill(length,charge);
-    else if (pdg == 11  || pdg ==-11 ) fhChargeTrackLengthEl->Fill(length,charge);
+    if (pdg == 2212)
+      fhChargeTrackLengthPr->Fill(length, charge);
+    else if (pdg == 211 || pdg == -211)
+      fhChargeTrackLengthPi->Fill(length, charge);
+    else if (pdg == 11 || pdg == -11)
+      fhChargeTrackLengthEl->Fill(length, charge);
 
-    if (pdg == 2212 && length>0.3 && length<0.32 && kine>1000 && kine < 1020)
+    if (pdg == 2212 && length > 0.3 && length < 0.32 && kine > 1000
+        && kine < 1020)
       fhChargePr_1GeV_3mm->Fill(charge);
   }
-
 }
 // -------------------------------------------------------------------------
 
 
 // -------------------------------------------------------------------------
-void CbmMuchHitFinderQa::OccupancyQa(){
+void CbmMuchHitFinderQa::OccupancyQa() {
   //  Bool_t verbose = (fVerbose>2);
   // Filling occupancy plots
-  // old code 
+  // old code
   /*for (Int_t i=0;i<fDigis->GetEntriesFast();i++){
     CbmMuchDigi* digi = (CbmMuchDigi*) fDigis->At(i); */
   for (Int_t i = 0; i < fDigiManager->GetNofDigis(ECbmModuleId::kMuch); i++) {
-  CbmMuchDigi* digi = (CbmMuchDigi*) fDigiManager->Get<CbmMuchDigi>(i);
-	assert(digi);
-    UInt_t address = digi->GetAddress();
+    CbmMuchDigi* digi = (CbmMuchDigi*) fDigiManager->Get<CbmMuchDigi>(i);
+    assert(digi);
+    UInt_t address        = digi->GetAddress();
     CbmMuchModule* module = fGeoScheme->GetModuleByDetId(address);
-    if(!module) continue;
-    Double_t r0=0;
-    if (module->GetDetectorType()!=4 && module->GetDetectorType()!=3)  continue;
-    CbmMuchModuleGem* module1 = (CbmMuchModuleGem*)module;
-    CbmMuchPad* pad = module1->GetPad(address);//fGeoScheme->GetPadByDetId(detectorId, channelId);
+    if (!module) continue;
+    Double_t r0 = 0;
+    if (module->GetDetectorType() != 4 && module->GetDetectorType() != 3)
+      continue;
+    CbmMuchModuleGem* module1 = (CbmMuchModuleGem*) module;
+    CbmMuchPad* pad           = module1->GetPad(
+      address);  //fGeoScheme->GetPadByDetId(detectorId, channelId);
     assert(pad);
     Double_t x0 = pad->GetX();
     Double_t y0 = pad->GetY();
-    r0 = TMath::Sqrt(x0*x0+y0*y0);
+    r0          = TMath::Sqrt(x0 * x0 + y0 * y0);
     fhPadsFiredR[CbmMuchAddress::GetStationIndex(address)]->Fill(r0);
   }
 }
@@ -1148,107 +1248,117 @@ void CbmMuchHitFinderQa::OccupancyQa(){
 
 
 // -------------------------------------------------------------------------
-void CbmMuchHitFinderQa::StatisticsQa(){
+void CbmMuchHitFinderQa::StatisticsQa() {
   //  Bool_t verbose = (fVerbose>2);
   Int_t nClusters = fClusters->GetEntriesFast();
   TArrayI hitsInCluster;
   TArrayI pointsInCluster;
   hitsInCluster.Set(nClusters);
   pointsInCluster.Set(nClusters);
-  cout<<" start Stat QA "<<endl;
-  for (Int_t i=0;i<nClusters;i++) hitsInCluster[i]=0;
-  for (Int_t i=0;i<nClusters;i++) pointsInCluster[i]=0;
+  cout << " start Stat QA " << endl;
+  for (Int_t i = 0; i < nClusters; i++)
+    hitsInCluster[i] = 0;
+  for (Int_t i = 0; i < nClusters; i++)
+    pointsInCluster[i] = 0;
 
-  for (Int_t i=0;i<fHits->GetEntriesFast();i++){
+  for (Int_t i = 0; i < fHits->GetEntriesFast(); i++) {
     CbmMuchPixelHit* hit = (CbmMuchPixelHit*) fHits->At(i);
     //cout<<" hit index "<<i<<" plane  id "<<hit->GetPlaneId()<<" x  "<<hit->GetX()<<"   y  "<<hit->GetY()<<"   z  "<<hit->GetZ()<<" cluster Id "<< hit->GetRefId()<<endl;
 
-//    cout<<" hit index "<<i<<" plane  id "<<hit->GetPlaneId()<<endl;
+    //    cout<<" hit index "<<i<<" plane  id "<<hit->GetPlaneId()<<endl;
     Int_t clusterId = hit->GetRefId();
     hitsInCluster[clusterId]++;
   }
 
-  for (Int_t i=0;i<nClusters;i++){
+  for (Int_t i = 0; i < nClusters; i++) {
     CbmMuchCluster* cluster = (CbmMuchCluster*) fClusters->At(i);
 
-    map<Int_t,Int_t> map_points;
+    map<Int_t, Int_t> map_points;
     Int_t nDigis = cluster->GetNofDigis();
 
-  auto address = cluster->GetAddress();
-  auto StationIndex = CbmMuchAddress::GetStationIndex(address);
-//cout<<" station index "<<StationIndex<<endl;
+    auto address      = cluster->GetAddress();
+    auto StationIndex = CbmMuchAddress::GetStationIndex(address);
+    //cout<<" station index "<<StationIndex<<endl;
 
     fhDigisInCluster[StationIndex]->Fill(nDigis);
 
-    for(Int_t digiId=0;digiId<nDigis;digiId++){
+    for (Int_t digiId = 0; digiId < nDigis; digiId++) {
       Int_t index = cluster->GetDigi(digiId);
       //Access Match from CbmDigi only
-//      CbmMuchDigi* digi= (CbmMuchDigi*) fDigis->At(index);
+      //      CbmMuchDigi* digi= (CbmMuchDigi*) fDigis->At(index);
       //CbmMatch* match = (CbmMatch*) fDigiMatches->At(index);
-      CbmMatch* match = (CbmMatch*) fDigiManager->GetMatch(ECbmModuleId::kMuch,index);
+      CbmMatch* match =
+        (CbmMatch*) fDigiManager->GetMatch(ECbmModuleId::kMuch, index);
       Int_t nPoints = match->GetNofLinks();
-      for (Int_t iRefPoint=0;iRefPoint<nPoints;iRefPoint++){
-        Int_t pointId = match->GetLink(iRefPoint).GetIndex();
-        map_points[pointId]=1;
+      for (Int_t iRefPoint = 0; iRefPoint < nPoints; iRefPoint++) {
+        Int_t pointId       = match->GetLink(iRefPoint).GetIndex();
+        map_points[pointId] = 1;
       }
     }
-    pointsInCluster[i]=map_points.size();
+    pointsInCluster[i] = map_points.size();
     map_points.clear();
   }
 
 
-  for (Int_t i=0;i<nClusters;i++){
-// added 
+  for (Int_t i = 0; i < nClusters; i++) {
+    // added
     CbmMuchCluster* cluster = (CbmMuchCluster*) fClusters->At(i);
-  auto address = cluster->GetAddress();
-  auto StationIndex = CbmMuchAddress::GetStationIndex(address);
-//cout<<" station index "<<StationIndex<<endl;
-/// end add
+    auto address            = cluster->GetAddress();
+    auto StationIndex       = CbmMuchAddress::GetStationIndex(address);
+    //cout<<" station index "<<StationIndex<<endl;
+    /// end add
 
     Int_t nPts  = pointsInCluster[i];
     Int_t nHits = hitsInCluster[i];
     fhPointsInCluster[StationIndex]->Fill(nPts);
-//    fhPointsInCluster->Fill(nPts);
+    //    fhPointsInCluster->Fill(nPts);
     fhHitsInCluster[StationIndex]->Fill(nHits);
-    if (nPts>nHits) fPointsUnderCounted+=(nPts-nHits);
-    if (nHits>nPts) fPointsOverCounted+=(nHits-nPts);
-    fPointsTotal+=nPts;
+    if (nPts > nHits) fPointsUnderCounted += (nPts - nHits);
+    if (nHits > nPts) fPointsOverCounted += (nHits - nPts);
+    fPointsTotal += nPts;
   }
 }
 // -------------------------------------------------------------------------
 
 
 // -------------------------------------------------------------------------
-void CbmMuchHitFinderQa::PullsQa(){
-  Bool_t verbose = (fVerbose>2);
+void CbmMuchHitFinderQa::PullsQa() {
+  Bool_t verbose = (fVerbose > 2);
   // Filling residuals and pools for hits at the first layer
-  for (Int_t i=0;i<fHits->GetEntriesFast();i++){
+  for (Int_t i = 0; i < fHits->GetEntriesFast(); i++) {
     CbmMuchPixelHit* hit = (CbmMuchPixelHit*) fHits->At(i);
     // Select hits from the first station only
     Int_t iStation = CbmMuchAddress::GetStationIndex(hit->GetAddress());
     Int_t iLayer   = CbmMuchAddress::GetLayerIndex(hit->GetAddress());
     //    if((iStation !=0 && iStation !=1))continue;
-    //    if((iStation !=0 && iStation !=1))continue; 
+    //    if((iStation !=0 && iStation !=1))continue;
     //         cout<<" PULLS QA STATION INDEX "<<iStation<<endl;
     //Earlier finding for only one station
     //if(!(iStation == 0)) continue;
     //    if(!(iStation == 3 && iLayer == 0)) continue;
-    if (verbose) printf("   Hit %i, station %i, layer %i ",i,iStation, iLayer);
+    if (verbose)
+      printf("   Hit %i, station %i, layer %i ", i, iStation, iLayer);
 
-    Int_t clusterId = hit->GetRefId();
-    Bool_t hit_unique=1;
-    for (Int_t j=i+1;j<fHits->GetEntriesFast();j++){
+    Int_t clusterId   = hit->GetRefId();
+    Bool_t hit_unique = 1;
+    for (Int_t j = i + 1; j < fHits->GetEntriesFast(); j++) {
       CbmMuchPixelHit* hit1 = (CbmMuchPixelHit*) fHits->At(j);
       //if (hit1->GetStationNr()>stationNr) break;
-      if (hit1->GetRefId()==clusterId) { hit_unique=0; break;}
+      if (hit1->GetRefId() == clusterId) {
+        hit_unique = 0;
+        break;
+      }
     }
-    if (verbose) printf("hit_unique=%i",hit_unique);
-    if (!hit_unique) {if (verbose) printf("\n"); continue;}
+    if (verbose) printf("hit_unique=%i", hit_unique);
+    if (!hit_unique) {
+      if (verbose) printf("\n");
+      continue;
+    }
 
     // Select hits with clusters formed by only one MC Point
     CbmMuchCluster* cluster = (CbmMuchCluster*) fClusters->At(clusterId);
-    Bool_t point_unique=1;
-    Int_t  pointId=-1;
+    Bool_t point_unique     = 1;
+    Int_t pointId           = -1;
 
     /* Double_t xmax = 0;
     Double_t xmin = 0;
@@ -1259,31 +1369,36 @@ void CbmMuchHitFinderQa::PullsQa(){
     */
     //    if (cluster->GetNDigis()>1) {if (verbose) printf("\n"); continue;}
     //    cout<<" digi number  per cluster "<<cluster->GetNofDigis()<<endl;
-    for(Int_t digiId=0;digiId<cluster->GetNofDigis();digiId++){
+    for (Int_t digiId = 0; digiId < cluster->GetNofDigis(); digiId++) {
       Int_t index = cluster->GetDigi(digiId);
       //      printf("%i\n",index);
       // CbmMuchDigi* digi= (CbmMuchDigi*) fDigis->At(index);
       CbmMuchDigi* digi = (CbmMuchDigi*) fDigiManager->Get<CbmMuchDigi>(index);
       //      cout<<" check 1"<<endl;
-      if(!digi)continue;
-      if(index<0)continue;
+      if (!digi) continue;
+      if (index < 0) continue;
       //CbmMatch* match = (CbmMatch*) fDigiMatches->At(index);
-      CbmMatch* match = (CbmMatch*) fDigiManager->GetMatch(ECbmModuleId::kMuch,index);
-      if(!match)continue; ///added ekata
+      CbmMatch* match =
+        (CbmMatch*) fDigiManager->GetMatch(ECbmModuleId::kMuch, index);
+      if (!match) continue;  ///added ekata
       //      cout<<" check 2 "<<endl;
       //CbmMuchDigiMatch* match = (CbmMuchDigiMatch*) fDigiMatches->At(index);
       // Not unique if the pad has several mcPoint references
-      if (verbose) printf(" n=%i",match->GetNofLinks());
-      if (match->GetNofLinks()==0) {
+      if (verbose) printf(" n=%i", match->GetNofLinks());
+      if (match->GetNofLinks() == 0) {
         printf(" noise hit");
-        point_unique=0;
+        point_unique = 0;
         break;
       }
-      if (match->GetNofLinks()>1) { point_unique=0; break; }
+      if (match->GetNofLinks() > 1) {
+        point_unique = 0;
+        break;
+      }
       Int_t currentPointId = match->GetLink(0).GetIndex();
-      CbmMuchModuleGem* module = (CbmMuchModuleGem*)fGeoScheme->GetModuleByDetId(digi->GetAddress());
-      if(!module) continue;
-//      CbmMuchPad* pad = module->GetPad(digi->GetAddress());//fGeoScheme->GetPadByDetId(digi->GetDetectorId(), digi->GetChannelId());
+      CbmMuchModuleGem* module =
+        (CbmMuchModuleGem*) fGeoScheme->GetModuleByDetId(digi->GetAddress());
+      if (!module) continue;
+      //      CbmMuchPad* pad = module->GetPad(digi->GetAddress());//fGeoScheme->GetPadByDetId(digi->GetDetectorId(), digi->GetChannelId());
       /*Double_t x = pad->GetX();
       Double_t y = pad->GetY();
       Double_t dx = pad->GetDx();
@@ -1294,46 +1409,61 @@ void CbmMuchHitFinderQa::PullsQa(){
       if (digiId==0 || xmax<x+dx/2) xmax=x+dx/2;
       if (digiId==0 || ymin>y-dy/2) ymin=y-dy/2;
       if (digiId==0 || ymax<y+dy/2) ymax=y+dy/2;*/
-      if (digiId==0) { pointId=currentPointId; continue; }
+      if (digiId == 0) {
+        pointId = currentPointId;
+        continue;
+      }
       // Not unique if mcPoint references differ for different digis
-      if (currentPointId!=pointId) {point_unique=0; break; }
+      if (currentPointId != pointId) {
+        point_unique = 0;
+        break;
+      }
     }
 
 
-    if (verbose) printf(" point_unique=%i",point_unique);
-    if (!point_unique) {if (verbose) printf("\n"); continue;}
+    if (verbose) printf(" point_unique=%i", point_unique);
+    if (!point_unique) {
+      if (verbose) printf("\n");
+      continue;
+    }
     //printf(" %f %f %f %f %f %f\n",xmin,xmax,ymin,ymax,dxmin,dymin);
     //    Int_t nPadsX=Int_t((xmax-xmin)/dxmin);
     //    Int_t nPadsY=Int_t((ymax-ymin)/dymin);
     //printf("nPadsX=%i nPadsY=%i\n",nPadsX,nPadsY);
 
-    if (verbose) printf(" pointId=%i",pointId);
+    if (verbose) printf(" pointId=%i", pointId);
     CbmMuchPoint* point = (CbmMuchPoint*) fPoints->At(pointId);
 
-    Double_t xMC  = 0.5*(point->GetXIn()+point->GetXOut());
-    Double_t yMC  = 0.5*(point->GetYIn()+point->GetYOut());
-    Double_t tMC  = point->GetTime();
+    Double_t xMC = 0.5 * (point->GetXIn() + point->GetXOut());
+    Double_t yMC = 0.5 * (point->GetYIn() + point->GetYOut());
+    Double_t tMC = point->GetTime();
     //    cout<<" MC point time "<<tMC<<" z "<<point->GetZ()<<endl;
-    Double_t xRC  = hit->GetX();
-    Double_t yRC  = hit->GetY();
-    Double_t dx   = hit->GetDx();
-    Double_t dy   = hit->GetDy();
-    
-    Double_t tRC  = hit->GetTime();
-    Double_t dt   = hit->GetTimeError();
+    Double_t xRC = hit->GetX();
+    Double_t yRC = hit->GetY();
+    Double_t dx  = hit->GetDx();
+    Double_t dy  = hit->GetDy();
+
+    Double_t tRC = hit->GetTime();
+    Double_t dt  = hit->GetTimeError();
     //    cout<<" Rec Hit time "<<tRC<<endl;
-        
-    if (dx<1.e-10) { printf("Anomalously small dx\n"); continue;}
-    if (dy<1.e-10) { printf("Anomalously small dy\n"); continue;}
-    fhPullX->Fill((xRC-xMC)/dx);
-    fhPullY->Fill((yRC-yMC)/dy);
-    fhPullT->Fill((tRC-tMC)/dt);
-    fhResidualX->Fill((xRC-xMC));
-    fhResidualY->Fill((yRC-yMC));
-    fhResidualT->Fill((tRC-tMC));
+
+    if (dx < 1.e-10) {
+      printf("Anomalously small dx\n");
+      continue;
+    }
+    if (dy < 1.e-10) {
+      printf("Anomalously small dy\n");
+      continue;
+    }
+    fhPullX->Fill((xRC - xMC) / dx);
+    fhPullY->Fill((yRC - yMC) / dy);
+    fhPullT->Fill((tRC - tMC) / dt);
+    fhResidualX->Fill((xRC - xMC));
+    fhResidualY->Fill((yRC - yMC));
+    fhResidualT->Fill((tRC - tMC));
     //    Int_t nDigis = cluster->GetNDigis();
     //   if (nDigis<=fNTimingPulls) fhPullT[nDigis]->Fill((tRC-tMC)/dt);
-    
+
     if (verbose) printf("\n");
 
     //    Int_t index = cluster->GetDigiIndex(0);
@@ -1353,62 +1483,65 @@ void CbmMuchHitFinderQa::PullsQa(){
     //    if (nPadsX==3 && nPadsY==1) fhPullXpads3[padSizeX]->Fill((xRC-xMC)/dx);
     //    if (nPadsY==3 && nPadsX==1) fhPullYpads3[padSizeY]->Fill((yRC-yMC)/dy);
   }
-
 }
 // -------------------------------------------------------------------------
 
 
-
-
 // -------------------------------------------------------------------------
-void CbmMuchHitFinderQa::ClusterDeconvQa(){
+void CbmMuchHitFinderQa::ClusterDeconvQa() {
   Int_t nPoints = fPoints->GetEntriesFast();
   //  Int_t nMatches = fDigiMatches->GetEntriesFast();
   Int_t nClusters = fClusters->GetEntriesFast();
   vector<Int_t> pIndices;
   vector<Int_t>::iterator it;
 
-  for(Int_t iPoint = 0; iPoint < nPoints; ++iPoint){
-    if(IsSignalPoint(iPoint)) fSignalPoints++;
+  for (Int_t iPoint = 0; iPoint < nPoints; ++iPoint) {
+    if (IsSignalPoint(iPoint)) fSignalPoints++;
   }
 
-  for(Int_t iCluster = 0; iCluster < nClusters; ++iCluster){
-    CbmMuchCluster* cluster = (CbmMuchCluster*)fClusters->At(iCluster);
-    if(!cluster) continue;
+  for (Int_t iCluster = 0; iCluster < nClusters; ++iCluster) {
+    CbmMuchCluster* cluster = (CbmMuchCluster*) fClusters->At(iCluster);
+    if (!cluster) continue;
     Int_t nDigis = cluster->GetNofDigis();
-    for(Int_t id=0; id < nDigis; ++id){
+    for (Int_t id = 0; id < nDigis; ++id) {
       Int_t iDigi = cluster->GetDigi(id);
-//      CbmMuchDigi* digi= (CbmMuchDigi*) fDigis->At(iDigi);
+      //      CbmMuchDigi* digi= (CbmMuchDigi*) fDigis->At(iDigi);
       //CbmMatch* match = (CbmMatch*) fDigiMatches->At(iDigi);
-      CbmMatch* match = (CbmMatch*) fDigiManager->GetMatch(ECbmModuleId::kMuch,iDigi);
- 
+      CbmMatch* match =
+        (CbmMatch*) fDigiManager->GetMatch(ECbmModuleId::kMuch, iDigi);
+
       //CbmMuchDigiMatch* match = (CbmMuchDigiMatch*) fDigiMatches->At(iDigi);
-      if(!match) continue;
-      for(Int_t ip=0; ip<match->GetNofLinks();++ip){
+      if (!match) continue;
+      for (Int_t ip = 0; ip < match->GetNofLinks(); ++ip) {
         Int_t iPoint = match->GetLink(ip).GetIndex();
-        it = find(pIndices.begin(), pIndices.end(), iPoint);
-        if(it != pIndices.end()) continue;
+        it           = find(pIndices.begin(), pIndices.end(), iPoint);
+        if (it != pIndices.end()) continue;
         pIndices.push_back(iPoint);
-        if(IsSignalPoint(iPoint)) fSignalHits++;
+        if (IsSignalPoint(iPoint)) fSignalHits++;
       }
     }
   }
 }
 // -------------------------------------------------------------------------
 
-Bool_t CbmMuchHitFinderQa::IsSignalPoint(Int_t iPoint){
-  Int_t nPoints = fPoints->GetEntriesFast();
-  Int_t nTracks = fMCTracks->GetEntriesFast();
-  CbmMuchPoint* point = (iPoint<0 || iPoint>nPoints-1) ? NULL : (CbmMuchPoint*) fPoints->At(iPoint);
-  if(!point) return kFALSE;
-  Int_t iTrack = point->GetTrackID();
-  CbmMCTrack* track = (iTrack<0 || iTrack>nTracks-1) ? NULL : (CbmMCTrack*)fMCTracks->At(iTrack);
-  if(!track) return kFALSE;
-  if(iTrack != 0 && iTrack != 1) return kFALSE; // Signal tracks must be fist ones
+Bool_t CbmMuchHitFinderQa::IsSignalPoint(Int_t iPoint) {
+  Int_t nPoints       = fPoints->GetEntriesFast();
+  Int_t nTracks       = fMCTracks->GetEntriesFast();
+  CbmMuchPoint* point = (iPoint < 0 || iPoint > nPoints - 1)
+                          ? NULL
+                          : (CbmMuchPoint*) fPoints->At(iPoint);
+  if (!point) return kFALSE;
+  Int_t iTrack      = point->GetTrackID();
+  CbmMCTrack* track = (iTrack < 0 || iTrack > nTracks - 1)
+                        ? NULL
+                        : (CbmMCTrack*) fMCTracks->At(iTrack);
+  if (!track) return kFALSE;
+  if (iTrack != 0 && iTrack != 1)
+    return kFALSE;  // Signal tracks must be fist ones
   // Verify if it is a signal muon
-  if(track->GetMotherId() < 0){                 // No mother for signal
+  if (track->GetMotherId() < 0) {  // No mother for signal
     Int_t pdgCode = track->GetPdgCode();
-    if(TMath::Abs(pdgCode) == 13){              // If it is a muon
+    if (TMath::Abs(pdgCode) == 13) {  // If it is a muon
       return kTRUE;
     }
   }
@@ -1416,47 +1549,47 @@ Bool_t CbmMuchHitFinderQa::IsSignalPoint(Int_t iPoint){
 }
 
 // -------------------------------------------------------------------------
-Int_t CbmMuchHitFinderQa::GetNChannels(Int_t iStation){
-  Int_t nChannels = 0;
+Int_t CbmMuchHitFinderQa::GetNChannels(Int_t iStation) {
+  Int_t nChannels                = 0;
   vector<CbmMuchModule*> modules = fGeoScheme->GetModules(iStation);
-  for(UInt_t im = 0; im<modules.size(); im++){
+  for (UInt_t im = 0; im < modules.size(); im++) {
     CbmMuchModule* mod = modules[im];
-    if(mod->GetDetectorType() != 4 && mod->GetDetectorType() != 3) continue;
+    if (mod->GetDetectorType() != 4 && mod->GetDetectorType() != 3) continue;
     CbmMuchModuleGem* module = (CbmMuchModuleGem*) mod;
-    if(!module) continue;
+    if (!module) continue;
     nChannels += module->GetNPads();
   }
   return nChannels;
 }
 
 // -------------------------------------------------------------------------
-Int_t CbmMuchHitFinderQa::GetNSectors(Int_t iStation){
-  Int_t nSectors = 0;
+Int_t CbmMuchHitFinderQa::GetNSectors(Int_t iStation) {
+  Int_t nSectors                 = 0;
   vector<CbmMuchModule*> modules = fGeoScheme->GetModules(iStation);
-  for(UInt_t im = 0; im<modules.size(); im++){
+  for (UInt_t im = 0; im < modules.size(); im++) {
     CbmMuchModule* mod = modules[im];
-    if(mod->GetDetectorType() != 4 && mod->GetDetectorType() != 3) continue;
+    if (mod->GetDetectorType() != 4 && mod->GetDetectorType() != 3) continue;
     CbmMuchModuleGem* module = (CbmMuchModuleGem*) mod;
-    if(!module) continue;
+    if (!module) continue;
     nSectors += module->GetNSectors();
   }
   return nSectors;
 }
 
 // -------------------------------------------------------------------------
-TVector2 CbmMuchHitFinderQa::GetMinPadSize(Int_t iStation){
-  Double_t padMinLx = std::numeric_limits<Double_t>::max();
-  Double_t padMinLy = std::numeric_limits<Double_t>::max();
+TVector2 CbmMuchHitFinderQa::GetMinPadSize(Int_t iStation) {
+  Double_t padMinLx              = std::numeric_limits<Double_t>::max();
+  Double_t padMinLy              = std::numeric_limits<Double_t>::max();
   vector<CbmMuchModule*> modules = fGeoScheme->GetModules(iStation);
-  for(UInt_t im = 0; im<modules.size(); im++){
+  for (UInt_t im = 0; im < modules.size(); im++) {
     CbmMuchModule* mod = modules[im];
-    if(mod->GetDetectorType() != 1) continue;
+    if (mod->GetDetectorType() != 1) continue;
     CbmMuchModuleGem* module = (CbmMuchModuleGem*) mod;
     vector<CbmMuchPad*> pads = module->GetPads();
-    for (UInt_t ip=0; ip<pads.size(); ip++) {
+    for (UInt_t ip = 0; ip < pads.size(); ip++) {
       CbmMuchPad* pad = pads[ip];
-      if(pad->GetDx() < padMinLx) padMinLx = pad->GetDx();
-      if(pad->GetDy() < padMinLy) padMinLy = pad->GetDy();
+      if (pad->GetDx() < padMinLx) padMinLx = pad->GetDx();
+      if (pad->GetDy() < padMinLy) padMinLy = pad->GetDy();
     }
   }
   return TVector2(padMinLx, padMinLy);
@@ -1464,19 +1597,19 @@ TVector2 CbmMuchHitFinderQa::GetMinPadSize(Int_t iStation){
 // -------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------
-TVector2 CbmMuchHitFinderQa::GetMaxPadSize(Int_t iStation){
-  Double_t padMaxLx = std::numeric_limits<Double_t>::min();
-  Double_t padMaxLy = std::numeric_limits<Double_t>::min();
+TVector2 CbmMuchHitFinderQa::GetMaxPadSize(Int_t iStation) {
+  Double_t padMaxLx              = std::numeric_limits<Double_t>::min();
+  Double_t padMaxLy              = std::numeric_limits<Double_t>::min();
   vector<CbmMuchModule*> modules = fGeoScheme->GetModules(iStation);
-  for(UInt_t im = 0; im<modules.size(); im++){
+  for (UInt_t im = 0; im < modules.size(); im++) {
     CbmMuchModule* mod = modules[im];
-    if(mod->GetDetectorType() != 1) continue;
+    if (mod->GetDetectorType() != 1) continue;
     CbmMuchModuleGem* module = (CbmMuchModuleGem*) mod;
     vector<CbmMuchPad*> pads = module->GetPads();
-    for (UInt_t ip=0; ip<pads.size(); ip++) {
+    for (UInt_t ip = 0; ip < pads.size(); ip++) {
       CbmMuchPad* pad = pads[ip];
-      if(pad->GetDx() > padMaxLx) padMaxLx = pad->GetDx();
-      if(pad->GetDy() > padMaxLy) padMaxLy = pad->GetDy();
+      if (pad->GetDx() > padMaxLx) padMaxLx = pad->GetDx();
+      if (pad->GetDy() > padMaxLy) padMaxLy = pad->GetDy();
     }
   }
   return TVector2(padMaxLx, padMaxLy);
@@ -1486,22 +1619,22 @@ TVector2 CbmMuchHitFinderQa::GetMaxPadSize(Int_t iStation){
 // -------------------------------------------------------------------------
 Double_t MPV_n_e(Double_t Tkin, Double_t mass) {
   Double_t logT;
-  TF1 fPol6("fPol6","pol6",-5,10);
+  TF1 fPol6("fPol6", "pol6", -5, 10);
   if (mass < 0.1) {
     logT = log(Tkin * 0.511 / mass);
-    if (logT > 9.21034)    logT = 9.21034;
+    if (logT > 9.21034) logT = 9.21034;
     if (logT < min_logT_e) logT = min_logT_e;
-    return fPol6.EvalPar(&logT,mpv_e);
+    return fPol6.EvalPar(&logT, mpv_e);
   } else if (mass >= 0.1 && mass < 0.2) {
     logT = log(Tkin * 105.658 / mass);
-    if (logT > 9.21034)    logT = 9.21034;
+    if (logT > 9.21034) logT = 9.21034;
     if (logT < min_logT_mu) logT = min_logT_mu;
-    return fPol6.EvalPar(&logT,mpv_mu);
+    return fPol6.EvalPar(&logT, mpv_mu);
   } else {
     logT = log(Tkin * 938.272 / mass);
-    if (logT > 9.21034)    logT = 9.21034;
+    if (logT > 9.21034) logT = 9.21034;
     if (logT < min_logT_p) logT = min_logT_p;
-    return fPol6.EvalPar(&logT,mpv_p);
+    return fPol6.EvalPar(&logT, mpv_p);
   }
 }
 // -------------------------------------------------------------------------

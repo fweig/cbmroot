@@ -12,21 +12,17 @@
 #include "NicaDetectorID.h"
 
 namespace NicaCbmDetectorID {
-	const UInt_t kTOF = NicaDetectorID::kTOF;
-	const UInt_t kSTS = NicaDetectorID::kSTS;
-	const UInt_t kMVD = 29641;
-	const UInt_t kRICH = 1283489;
-	const UInt_t kTRD = 38569;
-	const UInt_t kECAL = 669117;
-	const UInt_t kPSD = 33421;
-	const UInt_t kMUCH = 1065761;
-};
+  const UInt_t kTOF  = NicaDetectorID::kTOF;
+  const UInt_t kSTS  = NicaDetectorID::kSTS;
+  const UInt_t kMVD  = 29641;
+  const UInt_t kRICH = 1283489;
+  const UInt_t kTRD  = 38569;
+  const UInt_t kECAL = 669117;
+  const UInt_t kPSD  = 33421;
+  const UInt_t kMUCH = 1065761;
+};  // namespace NicaCbmDetectorID
 
-enum NicaCbmSetup{
-	kSis100Hadron=0,
-	kSis100Electron=1,
-	kSis100Muon=2
-};
+enum NicaCbmSetup { kSis100Hadron = 0, kSis100Electron = 1, kSis100Muon = 2 };
 
 
 #endif /* CBMROOT_NICA_CBM_HELPERS_CBMDETECTORID_H_ */

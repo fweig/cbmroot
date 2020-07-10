@@ -12,28 +12,23 @@
 
 class CbmLitTrackParam;
 
-class CbmLitLineTrackExtrapolator: public CbmLitTrackExtrapolator
-{
+class CbmLitLineTrackExtrapolator : public CbmLitTrackExtrapolator {
 public:
-   /* Constructor */
-   CbmLitLineTrackExtrapolator();
+  /* Constructor */
+  CbmLitLineTrackExtrapolator();
 
-   /* Destructor */
-   virtual ~CbmLitLineTrackExtrapolator();
+  /* Destructor */
+  virtual ~CbmLitLineTrackExtrapolator();
 
-   /* Inherited from CbmLitTrackExtrapolator */
-   virtual LitStatus Extrapolate(
-      const CbmLitTrackParam* parIn,
-      CbmLitTrackParam* parOut,
-      litfloat zOut,
-      std::vector<litfloat>* F);
+  /* Inherited from CbmLitTrackExtrapolator */
+  virtual LitStatus Extrapolate(const CbmLitTrackParam* parIn,
+                                CbmLitTrackParam* parOut,
+                                litfloat zOut,
+                                std::vector<litfloat>* F);
 
-   /* Inherited from CbmLitTrackExtrapolator */
-   virtual LitStatus Extrapolate(
-      CbmLitTrackParam* par,
-      litfloat zOut,
-      std::vector<litfloat>* F);
+  /* Inherited from CbmLitTrackExtrapolator */
+  virtual LitStatus
+  Extrapolate(CbmLitTrackParam* par, litfloat zOut, std::vector<litfloat>* F);
 };
 
-#endif //CbmLitLineTrackExtrapolator
-
+#endif  //CbmLitLineTrackExtrapolator

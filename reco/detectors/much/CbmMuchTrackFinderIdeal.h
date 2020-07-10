@@ -20,46 +20,42 @@ class CbmMCTrack;
 class FairMCPoint;
 class CbmMuchTrack;
 
-class CbmMuchTrackFinderIdeal : public CbmMuchTrackFinder
-{
+class CbmMuchTrackFinderIdeal : public CbmMuchTrackFinder {
 public:
-	CbmMuchTrackFinderIdeal();
-	virtual ~CbmMuchTrackFinderIdeal();
+  CbmMuchTrackFinderIdeal();
+  virtual ~CbmMuchTrackFinderIdeal();
 
-	virtual void Init();
+  virtual void Init();
 
-	Int_t DoFind(
-			TClonesArray* trackArray);
+  Int_t DoFind(TClonesArray* trackArray);
 
 private:
-	void ProcessDigiMatches(
-			const TClonesArray* digiMatches,
-			Int_t digiIndex,
-			Int_t hitIndex,
-			HitType hitType);
+  void ProcessDigiMatches(const TClonesArray* digiMatches,
+                          Int_t digiIndex,
+                          Int_t hitIndex,
+                          HitType hitType);
 
-	void SetTrackParam(
-			const CbmMCTrack* mcTrack,
-			const FairMCPoint* mcPoint,
-			CbmMuchTrack* track);
+  void SetTrackParam(const CbmMCTrack* mcTrack,
+                     const FairMCPoint* mcPoint,
+                     CbmMuchTrack* track);
 
-	TClonesArray* fMCTracks;
-	TClonesArray* fMCPoints;
-	TClonesArray* fPixelHits;
-	TClonesArray* fTracks;
-	TClonesArray* fPixelDigiMatches;
-	TClonesArray* fClusters;
+  TClonesArray* fMCTracks;
+  TClonesArray* fMCPoints;
+  TClonesArray* fPixelHits;
+  TClonesArray* fTracks;
+  TClonesArray* fPixelDigiMatches;
+  TClonesArray* fClusters;
 
-	// MCTrack index to MuchTrack index
-	std::map<Int_t, Int_t> fTrackMap;
+  // MCTrack index to MuchTrack index
+  std::map<Int_t, Int_t> fTrackMap;
 
-	Int_t fVerbose;
-	Int_t fEvents;
+  Int_t fVerbose;
+  Int_t fEvents;
 
-	CbmMuchTrackFinderIdeal(const CbmMuchTrackFinderIdeal&);
-	CbmMuchTrackFinderIdeal& operator=(const CbmMuchTrackFinderIdeal&);
+  CbmMuchTrackFinderIdeal(const CbmMuchTrackFinderIdeal&);
+  CbmMuchTrackFinderIdeal& operator=(const CbmMuchTrackFinderIdeal&);
 
-	ClassDef(CbmMuchTrackFinderIdeal, 1);
+  ClassDef(CbmMuchTrackFinderIdeal, 1);
 };
 
 #endif

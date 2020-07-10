@@ -8,19 +8,18 @@
  */
 
 // In order to call later Finish, we make this global
-FairRunOnline *run = NULL;
+FairRunOnline* run = NULL;
 
-void Cosy2018Monitor(TString inFile = "",
-                     Int_t iServerRefreshRate = 100, Int_t iServerHttpPort = 8080)
-{
+void Cosy2018Monitor(TString inFile           = "",
+                     Int_t iServerRefreshRate = 100,
+                     Int_t iServerHttpPort    = 8080) {
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
   TString inDir  = srcDir + "/input/";
-  if( "" != inFile )
-   inFile = inDir + inFile;
+  if ("" != inFile) inFile = inDir + inFile;
 
   // --- Specify number of events to be produced.
   // --- -1 means run until the end of the input file.
-//  Int_t nEvents = 10000;
+  //  Int_t nEvents = 10000;
   Int_t nEvents = -1;
 
   // --- Specify output file name (this is just an example)
@@ -30,18 +29,18 @@ void Cosy2018Monitor(TString inFile = "",
   // --- Set log output levels
   FairLogger::GetLogger();
   gLogger->SetLogScreenLevel("INFO");
-//  gLogger->SetLogScreenLevel("DEBUG");
+  //  gLogger->SetLogScreenLevel("DEBUG");
   gLogger->SetLogVerbosityLevel("LOW");
 
   // --- Define parameter files
-  TList *parFileList = new TList();
-  TString paramDir = "./";
+  TList* parFileList = new TList();
+  TString paramDir   = "./";
 
-  TString paramFileSts = paramDir + "StsUnpackPar.par";
+  TString paramFileSts          = paramDir + "StsUnpackPar.par";
   TObjString* tutDetDigiFileSts = new TObjString(paramFileSts);
   parFileList->Add(tutDetDigiFileSts);
 
-  TString paramFileHodo = paramDir + "HodoUnpackPar.par";
+  TString paramFileHodo          = paramDir + "HodoUnpackPar.par";
   TObjString* tutDetDigiFileHodo = new TObjString(paramFileHodo);
   parFileList->Add(tutDetDigiFileHodo);
 
@@ -58,33 +57,31 @@ void Cosy2018Monitor(TString inFile = "",
   std::cout << ">>> Cern2017Monitor: Initialising..." << std::endl;
 
   // Sts Monitor
-//  CbmCern2017MonitorRawSts* monitorSts = new CbmCern2017MonitorRawSts();
+  //  CbmCern2017MonitorRawSts* monitorSts = new CbmCern2017MonitorRawSts();
   CbmCosy2018MonitorSts* monitorSts = new CbmCosy2018MonitorSts();
-//  monitorSts->SetPrintMessage();
+  //  monitorSts->SetPrintMessage();
   monitorSts->SetMsOverlap();
   monitorSts->EnableChanHitDtPlot();
-  monitorSts->SetPulserChannels( 0,  91, 1, 27,
-                                 1,  91, 6, 27);
-  monitorSts->SetLongDurationLimits( 3600, 10 );
+  monitorSts->SetPulserChannels(0, 91, 1, 27, 1, 91, 6, 27);
+  monitorSts->SetLongDurationLimits(3600, 10);
 
   // Hodoscopes Monitor
   CbmCosy2018MonitorHodo* monitorHodo = new CbmCosy2018MonitorHodo();
-//  monitorHodo->SetPrintMessage();
+  //  monitorHodo->SetPrintMessage();
   monitorHodo->SetMsOverlap();
-  monitorHodo->SetLongDurationLimits( 3600, 10 );
+  monitorHodo->SetLongDurationLimits(3600, 10);
 
   // --- Source task
   CbmFlibCern2016Source* source = new CbmFlibCern2016Source();
-  if( "" != inFile )
-      source->SetFileName(inFile);
-      else
-      {
-         source->SetHostName( "cbmin002");
-         source->SetPortNumber( 5556 );
-      }
+  if ("" != inFile)
+    source->SetFileName(inFile);
+  else {
+    source->SetHostName("cbmin002");
+    source->SetPortNumber(5556);
+  }
 
-  source->AddUnpacker(monitorSts,  0x10, 6); // stsXyter DPBs
-  source->AddUnpacker(monitorHodo,  0x10, 6); // stsXyter DPBs
+  source->AddUnpacker(monitorSts, 0x10, 6);   // stsXyter DPBs
+  source->AddUnpacker(monitorHodo, 0x10, 6);  // stsXyter DPBs
 
   // --- Event header
   FairEventHeader* event = new CbmTbEvent();
@@ -94,12 +91,13 @@ void Cosy2018Monitor(TString inFile = "",
   run = new FairRunOnline(source);
   run->SetOutputFile(outFile);
   run->SetEventHeader(event);
-  run->ActivateHttpServer( iServerRefreshRate, iServerHttpPort ); // refresh each 100 events
+  run->ActivateHttpServer(iServerRefreshRate,
+                          iServerHttpPort);  // refresh each 100 events
   run->SetAutoFinish(kFALSE);
 
   // -----   Runtime database   ---------------------------------------------
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
-  Bool_t kParameterMerged = kTRUE;
+  FairRuntimeDb* rtdb       = run->GetRuntimeDb();
+  Bool_t kParameterMerged   = kTRUE;
   FairParRootFileIo* parOut = new FairParRootFileIo(kParameterMerged);
   FairParAsciiFileIo* parIn = new FairParAsciiFileIo();
   parOut->open(parFile.Data());
@@ -113,10 +111,11 @@ void Cosy2018Monitor(TString inFile = "",
   TStopwatch timer;
   timer.Start();
   std::cout << ">>> Cern2017Monitor: Starting run..." << std::endl;
-  run->Run(nEvents, 0); // run until end of input file
+  run->Run(nEvents, 0);  // run until end of input file
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
+            << std::endl;
 
   run->Finish();
 
@@ -127,7 +126,7 @@ void Cosy2018Monitor(TString inFile = "",
   std::cout << ">>> Cern2017Monitor: Macro finished successfully." << std::endl;
   std::cout << ">>> Cern2017Monitor: Output file is " << outFile << std::endl;
   std::cout << ">>> Cern2017Monitor: Real time " << rtime << " s, CPU time "
-	         << ctime << " s" << std::endl;
+            << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

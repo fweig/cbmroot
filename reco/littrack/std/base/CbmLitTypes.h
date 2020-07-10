@@ -10,8 +10,8 @@
 
 #include "data/CbmLitFitNode.h"
 #include <vector>
-using std::vector;
 using std::pair;
+using std::vector;
 class CbmLitHit;
 class CbmLitTrack;
 class CbmLitTofTrack;

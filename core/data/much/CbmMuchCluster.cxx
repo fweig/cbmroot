@@ -4,12 +4,8 @@
 
 #include "CbmMuchCluster.h"
 
-CbmMuchCluster::CbmMuchCluster()
-  : CbmCluster()
-{
-}
+CbmMuchCluster::CbmMuchCluster() : CbmCluster() {}
 
-CbmMuchCluster::~CbmMuchCluster(){
-}
+CbmMuchCluster::~CbmMuchCluster() {}
 
 ClassImp(CbmMuchCluster)

@@ -11,7 +11,6 @@
  **/
 
 
-
 #ifndef CBMTOF_H
 #define CBMTOF_H
 
@@ -21,23 +20,21 @@
 #include "TLorentzVector.h"
 
 #include <map>
-#include <tuple>
 #include <set>
+#include <tuple>
 
 
 class CbmTofPoint;
 class CbmTofGeoHandler;
-class FairVolume; 
+class FairVolume;
 class TClonesArray;
 class TVector3;
 class TGeoCombiTrans;
 class TGeoPhysicalNode;
 
-class CbmTof : public FairDetector
-{
+class CbmTof : public FairDetector {
 
- public:
-
+public:
   /** Default constructor **/
   CbmTof();
 
@@ -62,7 +59,7 @@ class CbmTof : public FairDetector
    ** collection.
    *@param vol  Pointer to the active volume
    **/
-  virtual Bool_t  ProcessHits(FairVolume* vol = 0);
+  virtual Bool_t ProcessHits(FairVolume* vol = 0);
 
 
   /** Virtual method EndOfEvent
@@ -88,7 +85,7 @@ class CbmTof : public FairDetector
    **
    ** Screen output of hit collection.
    **/
-  virtual void Print(Option_t* ="") const;
+  virtual void Print(Option_t* = "") const;
 
 
   /** Virtual method Reset
@@ -105,8 +102,7 @@ class CbmTof : public FairDetector
    *@param cl2     Target
    *@param offset  Index offset
    **/
-  virtual void CopyClones(TClonesArray* cl1, TClonesArray* cl2, 
-			  Int_t offset);
+  virtual void CopyClones(TClonesArray* cl1, TClonesArray* cl2, Int_t offset);
 
 
   /** Virtual method Construct geometry
@@ -118,13 +114,20 @@ class CbmTof : public FairDetector
   /** Do all initilization for the TOF detector **/
   virtual void Initialize();
 
-  void GenerateOnePointPerTrack( Bool_t bOnePointPerTrack = kTRUE ) { fbOnePointPerTrack = bOnePointPerTrack; }
-  void SetProcessAnyTrack(Bool_t bProcess = kTRUE ) { fbProcessAnyTrack = bProcess; }
-  void SetAllCountersInactive(Bool_t bInactive = kTRUE ) { fbAllCountersInactive = bInactive; }
+  void GenerateOnePointPerTrack(Bool_t bOnePointPerTrack = kTRUE) {
+    fbOnePointPerTrack = bOnePointPerTrack;
+  }
+  void SetProcessAnyTrack(Bool_t bProcess = kTRUE) {
+    fbProcessAnyTrack = bProcess;
+  }
+  void SetAllCountersInactive(Bool_t bInactive = kTRUE) {
+    fbAllCountersInactive = bInactive;
+  }
 
-  void SetCounterActive(Int_t iModuleType, Int_t iModuleIndex, Int_t iCounterIndex);
+  void
+  SetCounterActive(Int_t iModuleType, Int_t iModuleIndex, Int_t iCounterIndex);
 
-    /** Set a counter inactive
+  /** Set a counter inactive
      ** @param iModuleType    type of inactive module
      ** @param iModuleIndex   index of inactive module
      ** @param iCounterIndex  index of inactive counter
@@ -132,9 +135,11 @@ class CbmTof : public FairDetector
      ** If a counter is set inactive, no CbmTofPoint objects will be created for
      ** collision products traversing its Cell volumes.
      **/
-  void SetCounterInactive(Int_t iModuleType, Int_t iModuleIndex, Int_t iCounterIndex);
+  void SetCounterInactive(Int_t iModuleType,
+                          Int_t iModuleIndex,
+                          Int_t iCounterIndex);
 
-    /** Set a counter in beam
+  /** Set a counter in beam
      ** @param iModuleType    type of inactive module
      ** @param iModuleIndex   index of inactive module
      ** @param iCounterIndex  index of inactive counter
@@ -143,42 +148,47 @@ class CbmTof : public FairDetector
      ** counter coordinate system and create a CbmTofPoint object if it actually
      ** traverses the counter volume.
      **/
-  void SetCounterInBeam(Int_t iModuleType, Int_t iModuleIndex, Int_t iCounterIndex);
+  void
+  SetCounterInBeam(Int_t iModuleType, Int_t iModuleIndex, Int_t iCounterIndex);
 
- private:
-
+private:
   /** Track information to be stored until the track leaves the
       active volume. **/
-  Int_t          fTrackID;           //!  track index
-  Int_t          fVolumeID;          //!  volume id
-  TLorentzVector fPos;               //!  position
-  TLorentzVector fMom;               //!  momentum
-  Double32_t     fTime;              //!  time
-  Double32_t     fLength;            //!  length
-  Double32_t     fELoss;             //!  energy loss
+  Int_t fTrackID;       //!  track index
+  Int_t fVolumeID;      //!  volume id
+  TLorentzVector fPos;  //!  position
+  TLorentzVector fMom;  //!  momentum
+  Double32_t fTime;     //!  time
+  Double32_t fLength;   //!  length
+  Double32_t fELoss;    //!  energy loss
 
-  Int_t fPosIndex;                   //!
-  TClonesArray* fTofCollection;      //! Hit collection
-  CbmTofGeoHandler *fGeoHandler;      //! Interface to gMC and gGeoManager
+  Int_t fPosIndex;                //!
+  TClonesArray* fTofCollection;   //! Hit collection
+  CbmTofGeoHandler* fGeoHandler;  //! Interface to gMC and gGeoManager
 
-  TGeoCombiTrans*   fCombiTrans;  //! Transformation matrix for geometry positioning
+  TGeoCombiTrans*
+    fCombiTrans;  //! Transformation matrix for geometry positioning
 
-  std::string fVolumeName;    //! Name of Volume to be imported
+  std::string fVolumeName;  //! Name of Volume to be imported
 
   Bool_t fbOnePointPerTrack;
   Bool_t fbIsNewTrack;
 
-  TString        fTofNodePath;         //! Path to physical ToF node
-  TString        fCurrentNodePath;     //! Path to current physical node
-  Int_t          fCurrentModuleType;   //! Current module type
-  Int_t          fCurrentModuleIndex;  //! Current module index
-  Int_t          fCurrentCounterIndex; //! Current counter index
+  TString fTofNodePath;        //! Path to physical ToF node
+  TString fCurrentNodePath;    //! Path to current physical node
+  Int_t fCurrentModuleType;    //! Current module type
+  Int_t fCurrentModuleIndex;   //! Current module index
+  Int_t fCurrentCounterIndex;  //! Current counter index
 
-  std::set<std::tuple<Int_t, Int_t, Int_t>> fActiveCounters;   //! Set of   active counters
-  std::set<std::tuple<Int_t, Int_t, Int_t>> fInactiveCounters; //! Set of inactive counters
-  std::set<Int_t> fInactiveCounterIDs;                         //! Set of inactive counter IDs
+  std::set<std::tuple<Int_t, Int_t, Int_t>>
+    fActiveCounters;  //! Set of   active counters
+  std::set<std::tuple<Int_t, Int_t, Int_t>>
+    fInactiveCounters;                  //! Set of inactive counters
+  std::set<Int_t> fInactiveCounterIDs;  //! Set of inactive counter IDs
 
-  std::map<std::tuple<Int_t, Int_t, Int_t>, std::pair<TString, TGeoPhysicalNode*>> fCountersInBeam; //! Map of counters in beam
+  std::map<std::tuple<Int_t, Int_t, Int_t>,
+           std::pair<TString, TGeoPhysicalNode*>>
+    fCountersInBeam;  //! Map of counters in beam
 
   Int_t fOutputTreeEntry;
 
@@ -190,9 +200,13 @@ class CbmTof : public FairDetector
    **
    ** Adds a CbmTofPoint to the HitCollection
    **/
-  CbmTofPoint* AddHit(Int_t trackID, Int_t detID, TVector3 pos,
-		      TVector3 mom, Double_t time, Double_t length, 
-		      Double_t eLoss); 
+  CbmTofPoint* AddHit(Int_t trackID,
+                      Int_t detID,
+                      TVector3 pos,
+                      TVector3 mom,
+                      Double_t time,
+                      Double_t length,
+                      Double_t eLoss);
 
   /** Private method ResetParameters
    **
@@ -202,7 +216,7 @@ class CbmTof : public FairDetector
 
   Bool_t CheckIfSensitive(std::string name);
 
-  virtual void        ConstructRootGeometry(TGeoMatrix* shift = NULL);
+  virtual void ConstructRootGeometry(TGeoMatrix* shift = NULL);
 
   void CreateInBeamNodes();
 
@@ -210,8 +224,7 @@ class CbmTof : public FairDetector
   CbmTof& operator=(const CbmTof&);
 
 
-  ClassDef(CbmTof,6)
-
+  ClassDef(CbmTof, 6)
 };
 
 
@@ -220,9 +233,8 @@ inline void CbmTof::ResetParameters() {
   fPos.SetXYZM(0.0, 0.0, 0.0, 0.0);
   fMom.SetXYZM(0.0, 0.0, 0.0, 0.0);
   fTime = fLength = fELoss = 0;
-  fPosIndex = 0;
+  fPosIndex                = 0;
 };
 
 
 #endif
-

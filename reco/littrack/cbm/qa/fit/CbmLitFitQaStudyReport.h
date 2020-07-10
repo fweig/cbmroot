@@ -18,33 +18,32 @@ class TH1;
  * \author Andrey Lebedev <andrey.lebedev@gsi.de>
  * \date 2013
  */
-class CbmLitFitQaStudyReport : public CbmStudyReport
-{
+class CbmLitFitQaStudyReport : public CbmStudyReport {
 public:
-   /**
+  /**
     * \brief Constructor.
     */
-   CbmLitFitQaStudyReport();
+  CbmLitFitQaStudyReport();
 
-   /**
+  /**
     * \brief Destructor.
     */
-   virtual ~CbmLitFitQaStudyReport();
+  virtual ~CbmLitFitQaStudyReport();
 
 protected:
-    /**
+  /**
     * \brief Inherited from CbmLitStudyReport.
     */
-   void Create();
+  void Create();
 
-	/**
+  /**
 	* \brief Inherited from CbmLitStudyReport.
 	*/
-	void Draw();
+  void Draw();
 
-	void DrawTrackParamsAtVertex();
+  void DrawTrackParamsAtVertex();
 
-   ClassDef(CbmLitFitQaStudyReport, 1)
+  ClassDef(CbmLitFitQaStudyReport, 1)
 };
 
 #endif /* CBMLITFITQASTUDYREPORT_H_ */

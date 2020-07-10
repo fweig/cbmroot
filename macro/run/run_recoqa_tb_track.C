@@ -16,37 +16,32 @@
 using std::cout;
 using std::endl;
 
-void run_recoqa_tb_track(
-    TString dataSet = "test",
-    Int_t nSlices = -1,
-    TString setup = "sis100_electron"
-)
-{
+void run_recoqa_tb_track(TString dataSet = "test",
+                         Int_t nSlices   = -1,
+                         TString setup   = "sis100_electron") {
 
   // =========================================================================
   // ===                      Settings                                     ===
   // =========================================================================
-  
-  
+
+
   // --- File names
   TString outDir  = "data/";
   TString inFile  = dataSet + ".raw.root";     // Input file (digis)
   TString parFile = dataSet + ".par.root";     // Parameter file
-  TString recFile = dataSet + ".tb.rec.root";     // Output file
-  TString outFile = dataSet + ".tb.qa.root";     // Output file
+  TString recFile = dataSet + ".tb.rec.root";  // Output file
+  TString outFile = dataSet + ".tb.qa.root";   // Output file
   TString traFile = dataSet + ".tra.root";     // Output file
 
   // Log level
-  TString logLevel = "INFO";  // switch to DEBUG or DEBUG1,... for more info
-  TString logVerbosity = "LOW"; // switch to MEDIUM or HIGH for more info
-  
+  TString logLevel     = "INFO";  // switch to DEBUG or DEBUG1,... for more info
+  TString logVerbosity = "LOW";   // switch to MEDIUM or HIGH for more info
 
 
   // ----    Debug option   -------------------------------------------------
   gDebug = 0;
 
   // ========================================================================
-
 
 
   // -----   Timer   --------------------------------------------------------
@@ -56,7 +51,7 @@ void run_recoqa_tb_track(
 
 
   // -----   Reconstruction run   -------------------------------------------
-  FairRunAna *run = new FairRunAna();
+  FairRunAna* run             = new FairRunAna();
   FairFileSource* inputSource = new FairFileSource(inFile);
   inputSource->AddFriend(recFile);
   run->SetSource(inputSource);
@@ -65,8 +60,8 @@ void run_recoqa_tb_track(
   run->SetGenerateRunInfo(kTRUE);
 
 
-  TString monitorFile{outFile};
-  monitorFile.ReplaceAll("qa","qa.monitor");
+  TString monitorFile {outFile};
+  monitorFile.ReplaceAll("qa", "qa.monitor");
   FairMonitor::GetMonitor()->EnableMonitor(kTRUE, monitorFile);
 
   // ------------------------------------------------------------------------
@@ -78,13 +73,13 @@ void run_recoqa_tb_track(
   // ------------------------------------------------------------------------
 
   // -----  Parameter database   --------------------------------------------
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
-  FairParRootFileIo* parIo1 = new FairParRootFileIo();
+  FairRuntimeDb* rtdb        = run->GetRuntimeDb();
+  FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
-  parIo1->open(parFile.Data(),"UPDATE");
+  parIo1->open(parFile.Data(), "UPDATE");
   rtdb->setFirstInput(parIo1);
   // ------------------------------------------------------------------------
-  
+
   // --- QA
 
   CbmMCDataManager* mcManager = new CbmMCDataManager("MCDataManager", 0);
@@ -93,10 +88,13 @@ void run_recoqa_tb_track(
 
   // ----- Reco to MC Matching
   CbmMatchRecoToMC* match1 = new CbmMatchRecoToMC();
-  run -> AddTask(match1);
+  run->AddTask(match1);
 
   // -- CbmRecoQa
-  CbmRecoQa* recoqa = new CbmRecoQa({{"sts",{5,50,500,20}},{"mvd",{5,100,1000,40}},{"much",{10,50,50,50}}}, std::string(dataSet.Data()));
+  CbmRecoQa* recoqa = new CbmRecoQa({{"sts", {5, 50, 500, 20}},
+                                     {"mvd", {5, 100, 1000, 40}},
+                                     {"much", {10, 50, 50, 50}}},
+                                    std::string(dataSet.Data()));
   run->AddTask(recoqa);
 
   // -----   Initialise and run   --------------------------------------------
@@ -107,8 +105,10 @@ void run_recoqa_tb_track(
   rtdb->print();
 
   cout << "Starting run " << gGeoManager << endl;
-  if ( nSlices < 0 ) run->Run();
-  else run->Run(nSlices);
+  if (nSlices < 0)
+    run->Run();
+  else
+    run->Run(nSlices);
   // ------------------------------------------------------------------------
 
 
@@ -119,7 +119,7 @@ void run_recoqa_tb_track(
   Double_t ctime = timer.CpuTime();
   cout << endl << endl;
   cout << "Macro finished successfully." << endl;
-//  cout << "Output file is " << outFile << endl;
+  //  cout << "Output file is " << outFile << endl;
   cout << "Parameter file is " << parFile << endl;
   cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << endl;
   cout << endl;

@@ -13,17 +13,17 @@
 
 #include "FairDetector.h"
 
-#include "TVector3.h"
-#include "TString.h"
 #include "Rtypes.h"
 #include "TGeoMatrix.h"
-#include <TClonesArray.h>    // for ROOTCLING
+#include "TString.h"
+#include "TVector3.h"
+#include <TClonesArray.h>  // for ROOTCLING
 #include <map>
 
 class CbmRichRefPlanePoint;
 class CbmRichPoint;
 class CbmRichMirrorPoint;
-class FairVolume; 
+class FairVolume;
 class TGeoMatrix;
 class TGeoNode;
 class TGeoMedium;
@@ -35,17 +35,15 @@ class TGeoMedium;
 * \author Volker Friese
 * \date 2004
 **/
-class CbmRich : public FairDetector 
-{
+class CbmRich : public FairDetector {
 
 public:
-
-   /**
+  /**
    * \brief Default constructor.
    */
-   CbmRich();
+  CbmRich();
 
-   /**
+  /**
     * \brief Constructor for the GDML geometry.
     * \param[in] name Detector name.
     * \param[in] active Sensitivity flag.
@@ -56,196 +54,192 @@ public:
     * \param[in] ry Rotation around Y.
     * \param[in] rz Rotation around Z.
     */
-   CbmRich(
-         const char* name,
-         Bool_t active,
-         Double_t px=0.,
-         Double_t py=0.,
-         Double_t pz=258.75, // Z coordinate for v16a = 270, for v17a = 258.75, for v18a = 0
-         Double_t rx=0.,
-         Double_t ry=0.,
-         Double_t rz=0.);
+  CbmRich(
+    const char* name,
+    Bool_t active,
+    Double_t px = 0.,
+    Double_t py = 0.,
+    Double_t pz =
+      258.75,  // Z coordinate for v16a = 270, for v17a = 258.75, for v18a = 0
+    Double_t rx = 0.,
+    Double_t ry = 0.,
+    Double_t rz = 0.);
 
 
-   /**
+  /**
     * \brief Destructor.
     */
-   virtual ~CbmRich();
+  virtual ~CbmRich();
 
 
-   /**
+  /**
     * \brief Initialize detector. Stores volume IDs for RICH detector and mirror.
     */
-   virtual void Initialize();
+  virtual void Initialize();
 
 
-   /**
+  /**
     * \brief Defines the action to be taken when a step is inside the
     * active volume. Creates CbmRichPoints and CbmRichMirrorPoints and adds
     * them to the collections.
     * \param[in] vol Pointer to the active volume.
     */
-   virtual Bool_t ProcessHits(
-         FairVolume* vol = 0);
+  virtual Bool_t ProcessHits(FairVolume* vol = 0);
 
 
-    /**
+  /**
     * \brief Photon reflection efficiency. 
     *  Workaround implementation for GEANT4.
     */
-    Bool_t isPhotonReflected(Double_t photonEnergy);
+  Bool_t isPhotonReflected(Double_t photonEnergy);
 
-   /**
+  /**
     * \brief If verbosity level is set, print hit collection at the
     * end of the event and resets it afterwards.
     */
-   virtual void EndOfEvent();
+  virtual void EndOfEvent();
 
 
-   /**
+  /**
     * \brief Registers the hit collection in the ROOT manager.
     */
-   virtual void Register();
+  virtual void Register();
 
 
-   /**
+  /**
     * \brief Return hit collection.
     */
-   virtual TClonesArray* GetCollection(
-         Int_t iColl) const;
+  virtual TClonesArray* GetCollection(Int_t iColl) const;
 
 
-   /**
+  /**
     * \brief Screen output of hit collection.
     */
-   virtual void Print(Option_t*) const;
+  virtual void Print(Option_t*) const;
 
 
-   /**
+  /**
     * \brief Clears the hit collection.
     */
-   virtual void Reset();
+  virtual void Reset();
 
 
-   /**
+  /**
     * \brief Copies the hit collection with a given track index offset.
     * \param[in] cl1 Origin array.
     * \param[out] cl2 Target array.
     * \param[in] offset Index offset.
     */
-   virtual void CopyClones(
-         TClonesArray* cl1,
-         TClonesArray* cl2,
-         Int_t offset);
+  virtual void CopyClones(TClonesArray* cl1, TClonesArray* cl2, Int_t offset);
 
 
-   /**
+  /**
     * \brief Construct geometry. Currently ROOT and ASCII formats are supported.
     * The concrete method for geometry construction is called according to geometry file.
     */
-   virtual void ConstructGeometry();
+  virtual void ConstructGeometry();
 
 
-   /**
+  /**
     * \brief Construct geometry from GDML file.
     * \param[in] geoMatrix Position and rotation of the RICH detector.
     */
-   void ConstructGdmlGeometry(TGeoMatrix* geoMatrix);
+  void ConstructGdmlGeometry(TGeoMatrix* geoMatrix);
 
-   /**
+  /**
     * \brief Assign materials by taking description from medoa.geo and not from GDML for a certain node.
     * \param[in] node GeoNode.
     */
-   void ExpandNodeForGdml(TGeoNode* node);
+  void ExpandNodeForGdml(TGeoNode* node);
 
 
-   /**
+  /**
     * \brief Put some optical properties.
     */
-   void ConstructOpGeometry();
+  void ConstructOpGeometry();
 
 
-   /** Check whether a volume is sensitive.
+  /** Check whether a volume is sensitive.
     ** The decision is based on the volume name. Only used in case
     ** of ROOT geometry.
     ** @since 11.06.2012
     ** @param(name)  Volume name
     ** @value        kTRUE if volume is sensitive, else kFALSE
     **/
-   virtual Bool_t CheckIfSensitive(std::string name);
+  virtual Bool_t CheckIfSensitive(std::string name);
 
-   /*
+  /*
     * \brief set fRegisterPhotonsOnSensitivePlane parameter
     */
-   void SetRegisterPhotonsOnSensitivePlane(Bool_t b) {fRegisterPhotonsOnSensitivePlane = b;}
+  void SetRegisterPhotonsOnSensitivePlane(Bool_t b) {
+    fRegisterPhotonsOnSensitivePlane = b;
+  }
 
 private:
+  Int_t fPosIndex;
+  // set to true if you want to register photons onto the sensitive gas plane,
+  // if false then only charged particles are registered
+  Bool_t fRegisterPhotonsOnSensitivePlane;
 
-   Int_t fPosIndex;
-   // set to true if you want to register photons onto the sensitive gas plane,
-   // if false then only charged particles are registered
-   Bool_t fRegisterPhotonsOnSensitivePlane;
+  // true if GEANT4 simulation is running
+  Bool_t fIsGeant4;
 
-   // true if GEANT4 simulation is running 
-   Bool_t fIsGeant4;
-
-   TClonesArray* fRichPoints; // MC points onto the photodetector plane
-   TClonesArray* fRichRefPlanePoints; // points on the reference plane
-   TClonesArray* fRichMirrorPoints; // mirror points
+  TClonesArray* fRichPoints;          // MC points onto the photodetector plane
+  TClonesArray* fRichRefPlanePoints;  // points on the reference plane
+  TClonesArray* fRichMirrorPoints;    // mirror points
 
 
-   // GDML geometry
-   static std::map<TString, TGeoMedium*> fFixedMedia; // List of media "repaired" after importing GMDL
-   TGeoRotation* fRotation; // Rotation matrix of the RICH detector
-   TGeoCombiTrans* fPositionRotation;  // Full combined matrix for position and rotation of the RICH detector
+  // GDML geometry
+  static std::map<TString, TGeoMedium*>
+    fFixedMedia;            // List of media "repaired" after importing GMDL
+  TGeoRotation* fRotation;  // Rotation matrix of the RICH detector
+  TGeoCombiTrans*
+    fPositionRotation;  // Full combined matrix for position and rotation of the RICH detector
 
-   /**
+  /**
     * \brief Adds a RichPoint to the TClonesArray.
     */
-   CbmRichPoint* AddHit(
-         Int_t trackID,
-         Int_t detID,
-         TVector3 pos,
-         TVector3 mom,
-         Double_t time,
-         Double_t length,
-         Double_t eLoss);
+  CbmRichPoint* AddHit(Int_t trackID,
+                       Int_t detID,
+                       TVector3 pos,
+                       TVector3 mom,
+                       Double_t time,
+                       Double_t length,
+                       Double_t eLoss);
 
-   /**
+  /**
     * \brief Adds a RichRefPlanePoint to the TClonesArray.
     */
-   CbmRichPoint* AddRefPlaneHit(
-         Int_t trackID,
-         Int_t detID,
-         TVector3 pos,
-         TVector3 mom,
-         Double_t time,
-         Double_t length,
-         Double_t eLoss);
+  CbmRichPoint* AddRefPlaneHit(Int_t trackID,
+                               Int_t detID,
+                               TVector3 pos,
+                               TVector3 mom,
+                               Double_t time,
+                               Double_t length,
+                               Double_t eLoss);
 
-   /**
+  /**
     * \brief Adds a RichMirrorPoint to the TClonesArray.
     */
-   CbmRichPoint* AddMirrorHit(
-            Int_t trackID,
-            Int_t detID,
-            TVector3 pos,
-            TVector3 mom,
-            Double_t time,
-            Double_t length,
-            Double_t eLoss);
+  CbmRichPoint* AddMirrorHit(Int_t trackID,
+                             Int_t detID,
+                             TVector3 pos,
+                             TVector3 mom,
+                             Double_t time,
+                             Double_t length,
+                             Double_t eLoss);
 
-   /**
+  /**
     * \brief Copy constructor.
     */
-   CbmRich(const CbmRich&);
+  CbmRich(const CbmRich&);
 
-   /**
+  /**
     * \brief Assignment operator.
     */
-   CbmRich& operator=(const CbmRich&);
+  CbmRich& operator=(const CbmRich&);
 
-   ClassDef(CbmRich,2)
+  ClassDef(CbmRich, 2)
 };
 
 #endif

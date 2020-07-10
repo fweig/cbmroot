@@ -16,60 +16,54 @@
 
 #include "TMessage.h"
 
-#include <vector>
 #include <string>
+#include <vector>
 
 class CbmTrdParSetGas;
 
-class CbmDeviceStsHitProducerIdeal: public FairMQDevice
-{
-  public:
-    CbmDeviceStsHitProducerIdeal();
-    virtual ~CbmDeviceStsHitProducerIdeal();
+class CbmDeviceStsHitProducerIdeal : public FairMQDevice {
+public:
+  CbmDeviceStsHitProducerIdeal();
+  virtual ~CbmDeviceStsHitProducerIdeal();
 
-  protected:
-    virtual void InitTask();
-    bool HandleData(FairMQMessagePtr&, int);
+protected:
+  virtual void InitTask();
+  bool HandleData(FairMQMessagePtr&, int);
 
-  private:
- 
-   uint64_t fMaxEvents;
-   uint64_t fNumMessages;
-   std::string fRunId;
-   std::string fvmcworkdir;
-   
-   CbmTrdParSetGas* fTrdGasPar;
+private:
+  uint64_t fMaxEvents;
+  uint64_t fNumMessages;
+  std::string fRunId;
+  std::string fvmcworkdir;
 
-   std::vector<std::string> fAllowedChannels
-     = {"StsPoint","parameters"};
+  CbmTrdParSetGas* fTrdGasPar;
 
-   std::vector<std::vector<std::string>> fChannelsToSend = { {} };
-   std::vector<int> fComponentsToSend {};
+  std::vector<std::string> fAllowedChannels = {"StsPoint", "parameters"};
 
-   CbmMQChannels fChan{fAllowedChannels};
+  std::vector<std::vector<std::string>> fChannelsToSend = {{}};
+  std::vector<int> fComponentsToSend {};
 
-   CbmStsHitProducerIdealAlgo* fAlgo{new CbmStsHitProducerIdealAlgo()};
+  CbmMQChannels fChan {fAllowedChannels};
 
-   bool IsChannelNameAllowed(std::string channelName);
-   
-   bool InitContainers();
+  CbmStsHitProducerIdealAlgo* fAlgo {new CbmStsHitProducerIdealAlgo()};
 
-   bool DoWork();
+  bool IsChannelNameAllowed(std::string channelName);
 
-   bool SendData();
+  bool InitContainers();
 
-   void Finish();
+  bool DoWork();
+
+  bool SendData();
+
+  void Finish();
 };
 
 // special class to expose protected TMessage constructor
-class CbmMQTMessage : public TMessage
-{
-  public:
-    CbmMQTMessage(void* buf, Int_t len)
-        : TMessage(buf, len)
-    {
-        ResetBit(kIsOwner);
-    }
+class CbmMQTMessage : public TMessage {
+public:
+  CbmMQTMessage(void* buf, Int_t len) : TMessage(buf, len) {
+    ResetBit(kIsOwner);
+  }
 };
 
 #endif /* CBMDEVICESTSLOCALRECO_H_ */

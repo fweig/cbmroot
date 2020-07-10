@@ -19,39 +19,39 @@
 #ifndef CBMMUCHBEAMTIMEDIGI_H
 #define CBMMUCHBEAMTIMEDIGI_H 1
 
-#include <Rtypes.h>       // for ClassDef
-#include <RtypesCore.h>   // for Int_t, ULong64_t
+#include <Rtypes.h>      // for ClassDef
+#include <RtypesCore.h>  // for Int_t, ULong64_t
 
-#include <string>         // for string
+#include <string>  // for string
 
 #include "CbmMuchDigi.h"  // for CbmMuchDigi
 
-class CbmMuchBeamTimeDigi : public CbmMuchDigi{
- public:
+class CbmMuchBeamTimeDigi : public CbmMuchDigi {
+public:
   CbmMuchBeamTimeDigi();
-  CbmMuchBeamTimeDigi(Int_t address, Int_t charge=0, ULong64_t time=0);
+  CbmMuchBeamTimeDigi(Int_t address, Int_t charge = 0, ULong64_t time = 0);
   CbmMuchBeamTimeDigi(CbmMuchBeamTimeDigi* digi);
   CbmMuchBeamTimeDigi(const CbmMuchBeamTimeDigi&);
   CbmMuchBeamTimeDigi& operator=(const CbmMuchBeamTimeDigi&);
 
 
-  virtual ~CbmMuchBeamTimeDigi(){}
+  virtual ~CbmMuchBeamTimeDigi() {}
 
   void SetPadX(Int_t padX) { fPadX = padX; }
   void SetPadY(Int_t padY) { fPadY = padY; }
   void SetRocId(Int_t rocId) { fRocId = rocId; }
   void SetNxId(Int_t nxId) { fNxId = nxId; }
   void SetNxCh(Int_t nxCh) { fNxCh = nxCh; }
-  void SetElink(Int_t elink) {fElink = elink; }
+  void SetElink(Int_t elink) { fElink = elink; }
 
-  Int_t GetPadX() const {return fPadX; }
-  Int_t GetPadY() const {return fPadY; }
-  Int_t GetRocId() const {return fRocId; }
-  Int_t GetNxId() const {return fNxId; }
-  Int_t GetNxCh() const {return fNxCh; }
-  Int_t GetElink() const {return fElink; }
+  Int_t GetPadX() const { return fPadX; }
+  Int_t GetPadY() const { return fPadY; }
+  Int_t GetRocId() const { return fRocId; }
+  Int_t GetNxId() const { return fNxId; }
+  Int_t GetNxCh() const { return fNxCh; }
+  Int_t GetElink() const { return fElink; }
 
-  std::string ToString() const { return std::string{""}; }
+  std::string ToString() const { return std::string {""}; }
 
 
   /** @brief Class name (static)
@@ -60,7 +60,7 @@ class CbmMuchBeamTimeDigi : public CbmMuchDigi{
   static const char* GetClassName() { return "CbmMuchBeamTimeDigi"; }
 
 
- private:
+private:
   Int_t fPadX;
   Int_t fPadY;
   Int_t fRocId;
@@ -68,6 +68,6 @@ class CbmMuchBeamTimeDigi : public CbmMuchDigi{
   Int_t fNxCh;
   Int_t fElink;
 
-  ClassDef(CbmMuchBeamTimeDigi,3);
+  ClassDef(CbmMuchBeamTimeDigi, 3);
 };
 #endif

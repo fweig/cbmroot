@@ -14,9 +14,9 @@
 #include <RtypesCore.h>  // for Double_t, Int_t, Bool_t, Option_t
 #include <TString.h>     // for TString
 
-#include <vector>        // for vector
+#include <vector>  // for vector
 
-#include <FairTask.h>    // for FairTask, InitStatus
+#include <FairTask.h>  // for FairTask, InitStatus
 
 class CbmGeoMuchPar;
 class CbmMuchLayerSide;
@@ -26,9 +26,8 @@ class TClonesArray;
 class TH1D;
 class TObjArray;
 
-class CbmMuchSegmentAuto : public FairTask{
- public:
-
+class CbmMuchSegmentAuto : public FairTask {
+public:
   /** Default constructor **/
   CbmMuchSegmentAuto();
 
@@ -42,29 +41,31 @@ class CbmMuchSegmentAuto : public FairTask{
 
 
   virtual InitStatus Init();
-  virtual void Exec(Option_t * option);
+  virtual void Exec(Option_t* option);
   virtual void FinishTask();
 
   /** Destructor **/
   virtual ~CbmMuchSegmentAuto();
 
- private:
-  Int_t         fEvents;
+private:
+  Int_t fEvents;
   TClonesArray* fPoints;
-  TH1D**        fHistHitDensity;
-  Int_t         fNStations;
-  TObjArray*    fStations;
+  TH1D** fHistHitDensity;
+  Int_t fNStations;
+  TObjArray* fStations;
 
-  TString           fDigiFileName;          // Digitization file
-  CbmGeoMuchPar*    fGeoPar;                // Geometry parameters container
-  std::vector<Double_t>  fExp0;                  // Fit parameters for EXP distribution for each station
-  std::vector<Double_t>  fExp1;                  // Fit parameters for EXP distribution for each station
+  TString fDigiFileName;   // Digitization file
+  CbmGeoMuchPar* fGeoPar;  // Geometry parameters container
+  std::vector<Double_t>
+    fExp0;  // Fit parameters for EXP distribution for each station
+  std::vector<Double_t>
+    fExp1;  // Fit parameters for EXP distribution for each station
 
-  std::vector<Double_t>   fSigmaXmin;        // Minimum sigma in X [mm]
-  std::vector<Double_t>   fSigmaYmin;        // Minimum sigma in Y [mm]
-  std::vector<Double_t>   fSigmaXmax;        // Maximum sigma in X [mm]
-  std::vector<Double_t>   fSigmaYmax;        // Maximum sigma in Y [mm]
-  std::vector<Double_t>   fOccupancyMax;     // Maximum occupancy
+  std::vector<Double_t> fSigmaXmin;     // Minimum sigma in X [mm]
+  std::vector<Double_t> fSigmaYmin;     // Minimum sigma in Y [mm]
+  std::vector<Double_t> fSigmaXmax;     // Maximum sigma in X [mm]
+  std::vector<Double_t> fSigmaYmax;     // Maximum sigma in Y [mm]
+  std::vector<Double_t> fOccupancyMax;  // Maximum occupancy
 
   /** Get parameter containers **/
   virtual void SetParContainers();
@@ -72,17 +73,18 @@ class CbmMuchSegmentAuto : public FairTask{
   /** Initialization **/
   void InitLayerSide(CbmMuchLayerSide* layerSide);
   void SegmentModule(CbmMuchModuleGem* module);
-  void SegmentSector(CbmMuchModuleGem* module, CbmMuchSectorRectangular* sector);
+  void SegmentSector(CbmMuchModuleGem* module,
+                     CbmMuchSectorRectangular* sector);
   Bool_t ShouldSegmentByX(CbmMuchSectorRectangular* sector);
   Bool_t ShouldSegmentByY(CbmMuchSectorRectangular* sector);
   Int_t IntersectsRad(CbmMuchSectorRectangular* sector, Double_t radius);
   void DrawSegmentation();
-  void Print(Option_t* ="") const;
+  void Print(Option_t* = "") const;
 
   CbmMuchSegmentAuto(const CbmMuchSegmentAuto&);
   CbmMuchSegmentAuto& operator=(const CbmMuchSegmentAuto&);
 
-  ClassDef(CbmMuchSegmentAuto,2)
+  ClassDef(CbmMuchSegmentAuto, 2)
 };
 
 #endif

@@ -1,8 +1,8 @@
 #ifndef CBMTRDPARSETGAIN_H
 #define CBMTRDPARSETGAIN_H
 
-#include <Rtypes.h>        // for THashConsistencyHolder, ClassDef
-#include <RtypesCore.h>    // for Bool_t, kTRUE
+#include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
+#include <RtypesCore.h>  // for Bool_t, kTRUE
 
 #include "CbmTrdParSet.h"  // for CbmTrdParSet
 
@@ -13,26 +13,23 @@ class FairParamList;
   **/
 class FairParamList;
 class CbmTrdGainMod;
-class CbmTrdParSetGain : public CbmTrdParSet 
-{
+class CbmTrdParSetGain : public CbmTrdParSet {
 public:
-
   /** Standard constructor **/
   CbmTrdParSetGain(const char* name    = "CbmTrdParSetGain",
-    const char* title   = "TRD GAIN parameters",
-    const char* context = "Default");
+                   const char* title   = "TRD GAIN parameters",
+                   const char* context = "Default");
 
   /** \brief Destructor **/
-  virtual ~CbmTrdParSetGain() {;}
-  
+  virtual ~CbmTrdParSetGain() { ; }
+
   /** \brief Reset all parameters **/
-  virtual void  clear() {;}
+  virtual void clear() { ; }
 
-  void          putParams(FairParamList*);
-  Bool_t        getParams(FairParamList*) { return kTRUE;}
+  void putParams(FairParamList*);
+  Bool_t getParams(FairParamList*) { return kTRUE; }
 
-private:  
-
-  ClassDef(CbmTrdParSetGain,1);
+private:
+  ClassDef(CbmTrdParSetGain, 1);
 };
 #endif

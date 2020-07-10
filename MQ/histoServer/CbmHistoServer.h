@@ -13,54 +13,52 @@
 #include "THttpServer.h"
 #include "TObjArray.h"
 
-#include <thread>
-#include <string>
 #include <memory>
+#include <string>
+#include <thread>
 
 //class FairMQExHistoCanvasDrawer;
 
-class CbmHistoServer : public FairMQDevice
-{
-  public:
-    CbmHistoServer();
+class CbmHistoServer : public FairMQDevice {
+public:
+  CbmHistoServer();
 
 
-    virtual ~CbmHistoServer();
+  virtual ~CbmHistoServer();
 
-    void UpdateHttpServer();
+  void UpdateHttpServer();
 
-/*
+  /*
     void SetCanvasDrawer(std::unique_ptr<FairMQExHistoCanvasDrawer> canvasDrawer)
     {
         fCanvasDrawer = std::move(canvasDrawer);
     }
 */
 
-  protected:
-    virtual void InitTask();
+protected:
+  virtual void InitTask();
 
-    bool ReceiveData(FairMQMessagePtr& msg, int index);
+  bool ReceiveData(FairMQMessagePtr& msg, int index);
 
-    virtual void PreRun();
+  virtual void PreRun();
 
-    virtual void PostRun();
+  virtual void PostRun();
 
-  private:
-    std::string fInputChannelName;
+private:
+  std::string fInputChannelName;
 
-    TObjArray fArrayHisto;
+  TObjArray fArrayHisto;
 
-    int fNMessages;
+  int fNMessages;
 
-    THttpServer fServer;
+  THttpServer fServer;
 
-//    std::unique_ptr<FairMQExHistoCanvasDrawer> fCanvasDrawer;
+  //    std::unique_ptr<FairMQExHistoCanvasDrawer> fCanvasDrawer;
 
-    std::thread fThread;
-    bool fStopThread;
+  std::thread fThread;
+  bool fStopThread;
 
-    int FindHistogram(const std::string& name);
-
+  int FindHistogram(const std::string& name);
 };
 
 #endif

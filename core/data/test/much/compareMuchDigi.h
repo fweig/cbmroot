@@ -1,13 +1,14 @@
 #ifndef COMPAREMUCHDIGI_H
 #define COMPAREMUCHDIGI_H 1
 
-void compareMuchDigiDataMembers(CbmMuchDigi& test, 
-    Int_t address, ECbmModuleId systemid, ULong64_t time,
-    Int_t charge)
-{
-  Int_t retValInt{-222};
-  Double_t retValDouble{-222.};
-  ECbmModuleId retVal{ECbmModuleId::kNotExist};
+void compareMuchDigiDataMembers(CbmMuchDigi& test,
+                                Int_t address,
+                                ECbmModuleId systemid,
+                                ULong64_t time,
+                                Int_t charge) {
+  Int_t retValInt {-222};
+  Double_t retValDouble {-222.};
+  ECbmModuleId retVal {ECbmModuleId::kNotExist};
 
   retValInt = test.GetAddress();
   EXPECT_EQ(address, retValInt);
@@ -23,7 +24,6 @@ void compareMuchDigiDataMembers(CbmMuchDigi& test,
 
   retValInt = test.GetAdc();
   EXPECT_EQ(charge, retValInt);
-
 }
 
-#endif // COMPAREMUCHDIGI_H
+#endif  // COMPAREMUCHDIGI_H

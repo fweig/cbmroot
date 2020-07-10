@@ -21,10 +21,10 @@
  **
  **
  **/
-#include "CbmMuchDigi.h"
-#include "CbmMuchAddress.h"
-#include "CbmMuchDigiMatch.h"
 #include "CbmMuchSignal.h"
+#include "CbmMuchAddress.h"
+#include "CbmMuchDigi.h"
+#include "CbmMuchDigiMatch.h"
 #include "TMath.h"
 #include "TRandom.h"
 
@@ -43,18 +43,19 @@ CbmMuchSignal::CbmMuchSignal(CbmMuchSignal* signal)
 }
 */
 CbmMuchSignal::CbmMuchSignal(const CbmMuchSignal& rhs)
-	: TObject(),
-	fAddress(rhs.fAddress),
-	fTimeStart(rhs.fTimeStart),
-	fTimeStop(rhs.fTimeStop),
-	//fPileUpTime(rhs.fPileUpTime),
-	fCharge(rhs.fCharge),
-	//fModifiedCharge(rhs.fModifiedCharge),
-	fPileUpCount(rhs.fPileUpCount),
-	//fSignalShape(rhs.fSignalShape),
-	fMatch(rhs.fMatch)
-{
-}
+  : TObject()
+  , fAddress(rhs.fAddress)
+  , fTimeStart(rhs.fTimeStart)
+  , fTimeStop(rhs.fTimeStop)
+  ,
+  //fPileUpTime(rhs.fPileUpTime),
+  fCharge(rhs.fCharge)
+  ,
+  //fModifiedCharge(rhs.fModifiedCharge),
+  fPileUpCount(rhs.fPileUpCount)
+  ,
+  //fSignalShape(rhs.fSignalShape),
+  fMatch(rhs.fMatch) {}
 /*
 CbmMuchSignal& CbmMuchSignal::operator=(const CbmMuchSignal& rhs)
 {
@@ -85,32 +86,39 @@ CbmMuchSignal& CbmMuchSignal::operator=(const CbmMuchSignal& rhs)
 // -------------------------------------------------------------------------
 //Below function will add the Signal shapes of 2 signal
 
-void CbmMuchSignal::MergeSignal(CbmMuchSignal* signal){
-	fPileUpCount++;
-	fPileUpCount+=signal->GetPileUpCount();
-	Long_t StartDiff = signal->GetTimeStart()-fTimeStart;
-	Long_t StopDiff = signal->GetTimeStop()-fTimeStop;
-	Bool_t MeFirst = kTRUE;
-	Long_t PileUpTime = 0;
-	LOG(debug4) << " Start Difference " << StartDiff <<" Stop Difference "<< StopDiff;
-	if(StopDiff>0) fTimeStop = signal->GetTimeStop(); //Shows Second signal Stop time is larger than first signal stop time, therefore fStopTime modified.
-	if(StartDiff<0){
-		//Shows that New Signal is earlier than This signal.
-		//	std::cout<<"First Signal start time " <<fTimeStart<<" Second Signal start time is " <<signal->GetTimeStart() << endl;
-		MeFirst = kFALSE;
-		//StartDiff = (-1)*StartDiff; 
-		PileUpTime = fTimeStart;
-		fTimeStart = signal->GetTimeStart();
-	}else{ 
-		PileUpTime = signal->GetTimeStart();}
-	Long_t PileUpDiff = PileUpTime - fTimeStart;
-	if (PileUpDiff<0) {
-		LOG(info) << GetName() << " Problem: Check this particular pile up case."; }
-	if (PileUpDiff < SLOWSHAPERPEAK) {
-		fCharge +=signal->GetCharge();}
-	else if(!MeFirst) fCharge = signal->GetCharge();
-	
-	/*TArrayD SecondSignalShape = signal->GetSignalShape();
+void CbmMuchSignal::MergeSignal(CbmMuchSignal* signal) {
+  fPileUpCount++;
+  fPileUpCount += signal->GetPileUpCount();
+  Long_t StartDiff  = signal->GetTimeStart() - fTimeStart;
+  Long_t StopDiff   = signal->GetTimeStop() - fTimeStop;
+  Bool_t MeFirst    = kTRUE;
+  Long_t PileUpTime = 0;
+  LOG(debug4) << " Start Difference " << StartDiff << " Stop Difference "
+              << StopDiff;
+  if (StopDiff > 0)
+    fTimeStop =
+      signal
+        ->GetTimeStop();  //Shows Second signal Stop time is larger than first signal stop time, therefore fStopTime modified.
+  if (StartDiff < 0) {
+    //Shows that New Signal is earlier than This signal.
+    //	std::cout<<"First Signal start time " <<fTimeStart<<" Second Signal start time is " <<signal->GetTimeStart() << endl;
+    MeFirst = kFALSE;
+    //StartDiff = (-1)*StartDiff;
+    PileUpTime = fTimeStart;
+    fTimeStart = signal->GetTimeStart();
+  } else {
+    PileUpTime = signal->GetTimeStart();
+  }
+  Long_t PileUpDiff = PileUpTime - fTimeStart;
+  if (PileUpDiff < 0) {
+    LOG(info) << GetName() << " Problem: Check this particular pile up case.";
+  }
+  if (PileUpDiff < SLOWSHAPERPEAK) {
+    fCharge += signal->GetCharge();
+  } else if (!MeFirst)
+    fCharge = signal->GetCharge();
+
+  /*TArrayD SecondSignalShape = signal->GetSignalShape();
 	fSignalShape.Set(fSignalShape.GetSize()+StopDiff);
 	//std::cout<<"MergeSignal called and size of fSignalShape "<<fSignalShape.GetSize()<<endl;
 	for (Int_t j=0;j<fSignalShape.GetSize()&&j<SecondSignalShape.GetSize();j++)
@@ -118,15 +126,13 @@ void CbmMuchSignal::MergeSignal(CbmMuchSignal* signal){
 		fSignalShape[j+StartDiff]=fSignalShape[j+StartDiff]+SecondSignalShape[j];
 		//SignalShape will be added in the first signal at location from where second signal start.
 */
-
-
 }
 
-void CbmMuchSignal::AddNoise(UInt_t meanNoise){
-	fCharge+=TMath::Abs(meanNoise*gRandom->Gaus());
-//	for (Int_t i=0;i<fSignalShape.GetSize();i++){
-//		fSignalShape[i]+=TMath::Abs(meanNoise*gRandom->Gaus());
-//  	}
+void CbmMuchSignal::AddNoise(UInt_t meanNoise) {
+  fCharge += TMath::Abs(meanNoise * gRandom->Gaus());
+  //	for (Int_t i=0;i<fSignalShape.GetSize();i++){
+  //		fSignalShape[i]+=TMath::Abs(meanNoise*gRandom->Gaus());
+  //  	}
 }
 
 
@@ -152,7 +158,6 @@ void CbmMuchSignal::AddNoise(UInt_t meanNoise){
   return -1;
 }*/
 // -------------------------------------------------------------------------
-
 
 
 /* Below functions will not be used as ADC or Charge value will be calculated on the basis of fSignalShape of the Analog Signal.

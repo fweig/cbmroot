@@ -11,23 +11,23 @@
   //          Adjust this part according to your requirements
 
   // Generator
-  //TString generator = "pluto"; 
+  //TString generator = "pluto";
   TString generator = "urqmd";
-  
+
   // Primary
-  TString primary   = "rho0";
+  TString primary = "rho0";
 
   // Collision system
-  TString system  = "auau";
+  TString system = "auau";
 
   // Beam momentum
-  TString beam    = "25gev";
+  TString beam = "25gev";
 
   // Trigger (centrality)
   TString trigger = "centr";
 
   // Collision system
-  TString system  = "auau";
+  TString system = "auau";
 
   // Parameter file name
   TString parFile = "params.root";
@@ -49,14 +49,14 @@
   //Add number of events!!
 
   // Number of events
-  Int_t   nEvents = 10;  
+  Int_t nEvents = 10;
 
 
   // Magnet geometry and field map
   TString magnetGeom  = "magnet_active.geo";
   TString fieldMap    = "FieldActive";
-  Double_t fieldZ     = 50.;      // z position of field centre
-  Double_t fieldScale = 1.0;      // field scaling factor
+  Double_t fieldZ     = 50.;  // z position of field centre
+  Double_t fieldScale = 1.0;  // field scaling factor
 
   // STS geometry
   TString stsGeom = "sts_standard.geo";
@@ -71,8 +71,8 @@
   //TString tofGeom = "test.geo";
 
   //TString tofGeom = "tof_010906.geo";
-  
-  // ECAL geometry. 
+
+  // ECAL geometry.
   // Put here ecal_FullMC.geo for full Monte-Carlo (takes much more time!)
   TString ecalGeom = "ecal_FastMC.geo";
 
@@ -80,13 +80,11 @@
   // ========================================================================
 
 
-
-
   // -----   Input file name   ----------------------------------------------
-  TString inFile = "/d/cbm03/urqmd/" + system + "/" + beam + "/"
-                 + trigger + "/urqmd." + system + "." + beam + "."
-                 + trigger + ".0000.ftn14";
-  
+  TString inFile = "/d/cbm03/urqmd/" + system + "/" + beam + "/" + trigger
+                   + "/urqmd." + system + "." + beam + "." + trigger
+                   + ".0000.ftn14";
+
   //TString inFile_pluto = "/d/cbm02/galatyuk/" + generator + "/" + system + "/" + beam + "/" +
   //               primary + "/epem/" + generator + "." + system + "." + beam + "."
   //               + primary + ".epem.10k.root";
@@ -97,7 +95,6 @@
   // ----    Debug option   -------------------------------------------------
   gDebug = 0;
   // ------------------------------------------------------------------------
-
 
 
   // -----   Timer   --------------------------------------------------------
@@ -120,42 +117,40 @@
   gSystem->Load("libTrd");
   gSystem->Load("libTof");
   gSystem->Load("libEcal");
- // ------------------------------------------------------------------------
-
-
-
-  // -----   Create detectors and passive volumes   -------------------------
-  FairModule* cave= new CbmCave("CAVE");
-  cave->SetGeometryFileName(caveGeom);
-
-  FairModule* pipe= new CbmPipe("PIPE");
-  pipe->SetGeometryFileName(pipeGeom);
-  
-  FairModule* target= new CbmTarget("Target");
-  target->SetGeometryFileName(targetGeom);
-
-  FairModule* magnet= new CbmMagnet("MAGNET");
-  magnet->SetGeometryFileName(magnetGeom);
-  
-  FairDetector* sts= new CbmSts("STS", kTRUE);
-  sts->SetGeometryFileName(stsGeom);
-
-  FairDetector* trd= new CbmTrd("TRD",kTRUE );
-  trd->SetGeometryFileName(trdGeom);
-
-  FairDetector* tof= new CbmTof("TOF", kTRUE);
-  tof->SetGeometryFileName(tofGeom);
-  
-  FairDetector* ecal = new CbmEcal("ECAL", kTRUE, ecalGeom.Data());
-  
   // ------------------------------------------------------------------------
 
 
+  // -----   Create detectors and passive volumes   -------------------------
+  FairModule* cave = new CbmCave("CAVE");
+  cave->SetGeometryFileName(caveGeom);
+
+  FairModule* pipe = new CbmPipe("PIPE");
+  pipe->SetGeometryFileName(pipeGeom);
+
+  FairModule* target = new CbmTarget("Target");
+  target->SetGeometryFileName(targetGeom);
+
+  FairModule* magnet = new CbmMagnet("MAGNET");
+  magnet->SetGeometryFileName(magnetGeom);
+
+  FairDetector* sts = new CbmSts("STS", kTRUE);
+  sts->SetGeometryFileName(stsGeom);
+
+  FairDetector* trd = new CbmTrd("TRD", kTRUE);
+  trd->SetGeometryFileName(trdGeom);
+
+  FairDetector* tof = new CbmTof("TOF", kTRUE);
+  tof->SetGeometryFileName(tofGeom);
+
+  FairDetector* ecal = new CbmEcal("ECAL", kTRUE, ecalGeom.Data());
+
+  // ------------------------------------------------------------------------
+
 
   // -----   Create magnetic field   ----------------------------------------
-  if ( fieldMap == "FieldActive" || fieldMap == "FieldIron")
+  if (fieldMap == "FieldActive" || fieldMap == "FieldIron")
     magField = new CbmFieldMapSym3(fieldMap);
-  else if ( fieldMap == "FieldAlligator" )
+  else if (fieldMap == "FieldAlligator")
     magField = new CbmFieldMapSym2(fieldMap);
   else {
     cout << "===> ERROR: Field map " << fieldMap << " unknown! " << endl;
@@ -168,7 +163,7 @@
 
 
   // -----   Create PrimaryGenerator   --------------------------------------
-  FairPrimaryGenerator* primGen   = new FairPrimaryGenerator();
+  FairPrimaryGenerator* primGen = new FairPrimaryGenerator();
   FairUrqmdGenerator* urqmdGen  = new FairUrqmdGenerator(inFile);
   //FairPlutoGenerator*   plutoGen  = new FairPlutoGenerator(inFile_pluto);
 
@@ -178,13 +173,13 @@
 
   // -----   Create simulation run   ----------------------------------------
   FairRunSim* fRun = new FairRunSim();
-  fRun->SetName("TGeant3");              // Transport engine
-  fRun->SetOutputFile(outFile);          // Output file
-  fRun->SetGenerator(primGen);           // PrimaryGenerator
-  fRun->SetMaterials("media.geo");       // Materials
+  fRun->SetName("TGeant3");         // Transport engine
+  fRun->SetOutputFile(outFile);     // Output file
+  fRun->SetGenerator(primGen);      // PrimaryGenerator
+  fRun->SetMaterials("media.geo");  // Materials
   fRun->AddModule(cave);
   fRun->AddModule(pipe);
-  fRun->AddModule(target);		
+  fRun->AddModule(target);
   fRun->AddModule(magnet);
   fRun->AddModule(sts);
   fRun->AddModule(trd);
@@ -195,10 +190,9 @@
   // ------------------------------------------------------------------------
 
 
-
   // -----   Fill parameter containers   ------------------------------------
-  FairRuntimeDb* rtdb = fRun->GetRuntimeDb();
-  Bool_t kParameterMerged = kTRUE;
+  FairRuntimeDb* rtdb       = fRun->GetRuntimeDb();
+  Bool_t kParameterMerged   = kTRUE;
   FairParRootFileIo* parOut = new FairParRootFileIo(kParameterMerged);
   parOut->open(parFile.Data());
   rtdb->setOutput(parOut);
@@ -206,13 +200,13 @@
   rtdb->print();
 
   // ------------------------------------------------------------------------
-  
-  CbmFieldPar* fieldPar = (CbmFieldPar*) rtdb->getContainer("CbmFieldPar");
-  if ( magField ) {  fieldPar->SetParameters(magField); }
-  fieldPar->setChanged();
-  fieldPar->setInputVersion(fRun->GetRunId(),1);
 
- 
+  CbmFieldPar* fieldPar = (CbmFieldPar*) rtdb->getContainer("CbmFieldPar");
+  if (magField) { fieldPar->SetParameters(magField); }
+  fieldPar->setChanged();
+  fieldPar->setInputVersion(fRun->GetRunId(), 1);
+
+
   // -----   Start run   ----------------------------------------------------
   fRun->Run(nEvents);
   // ------------------------------------------------------------------------
@@ -224,11 +218,9 @@
   Double_t ctime = timer.CpuTime();
   cout << endl << endl;
   cout << "Macro finished succesfully." << endl;
-  cout << "Output file is "    << outFile << endl;
+  cout << "Output file is " << outFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime 
-       << "s" << endl << endl;
+  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl
+       << endl;
   // ------------------------------------------------------------------------
-
 }
-

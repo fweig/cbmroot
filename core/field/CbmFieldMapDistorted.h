@@ -7,9 +7,9 @@
 #ifndef CBMMAGFIELDMAPDISTORTED_H
 #define CBMMAGFIELDMAPDISTORTED_H 1
 
-#include <Rtypes.h>       // for THashConsistencyHolder, ClassDef
-#include <RtypesCore.h>   // for Double_t, Int_t, Bool_t, Option_t
-#include <TString.h>      // for TString
+#include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
+#include <RtypesCore.h>  // for Double_t, Int_t, Bool_t, Option_t
+#include <TString.h>     // for TString
 
 #include "CbmFieldMap.h"  // for CbmFieldMap
 
@@ -21,8 +21,6 @@ class CbmFieldMapDistorted : public CbmFieldMap {
 
 
 public:
-
-
   /** Default constructor **/
   CbmFieldMapDistorted();
 
@@ -33,8 +31,11 @@ public:
    ** @param fileTypeParent             R = ROOT file, A = ASCII for parent field map
    ** @param pfTypeOfParent             3 = parent is CbmFieldMapSym3, 2 = CbmFieldMapSym2, 1 = CbmFieldMap
    **/
-  CbmFieldMapDistorted(const char* mapName, const char* pfDistortionFilename, const char* parentName, 
-		       const char* fileTypeParent= "R", Int_t pfTypeOfParent=3);
+  CbmFieldMapDistorted(const char* mapName,
+                       const char* pfDistortionFilename,
+                       const char* parentName,
+                       const char* fileTypeParent = "R",
+                       Int_t pfTypeOfParent       = 3);
 
   /** Constructor (with Constant Parent Field )
    ** @param xMin..zMax                 the rectangular region boundaries (X,Y,Z)
@@ -43,9 +44,18 @@ public:
    ** @param pfDistortionFilename       root file with distortion information
    ** @param parentName                 Name of parent constant field
    **/
-  CbmFieldMapDistorted (Double_t xMin, Double_t xMax,Double_t yMin, Double_t yMax, 
-			Double_t zMin, Double_t zMax, Double_t bX, Double_t bY, Double_t bZ,
-		        const char* mapName, const char* pfDistortionFilename, const char* parentName="");
+  CbmFieldMapDistorted(Double_t xMin,
+                       Double_t xMax,
+                       Double_t yMin,
+                       Double_t yMax,
+                       Double_t zMin,
+                       Double_t zMax,
+                       Double_t bX,
+                       Double_t bY,
+                       Double_t bZ,
+                       const char* mapName,
+                       const char* pfDistortionFilename,
+                       const char* parentName = "");
 
   /** Constructor from CbmFieldPar  **/
   CbmFieldMapDistorted(CbmFieldPar* fieldPar);
@@ -58,8 +68,8 @@ public:
   /** Initialisation (read map from mapfile and distortion information from distortion file) **/
   virtual void Init();
 
-  void ReadDistortionInformation(const char *filename=0) ;
-  void WriteDistortionInformation(const char *filename=0) ;
+  void ReadDistortionInformation(const char* filename = 0);
+  void WriteDistortionInformation(const char* filename = 0);
 
   /** Get the field components at a certain point 
    ** @param x,y,z     Point coordinates (global) [cm]
@@ -71,21 +81,33 @@ public:
 
   //  virtual Double_t GetDistorted(Double_t b,Double_t *coords, TFormula *formula);
 
-  virtual void SetType(Int_t pfType=0) { fType = pfType; }
+  virtual void SetType(Int_t pfType = 0) { fType = pfType; }
 
-  virtual const char* GetDistortionFilename() {return fDistortionFilename.Data();}
-  virtual Bool_t SetDistortionFilename(const char *filename) {fDistortionFilename=filename; return (fDistortionFilename.Length()!=0);}
- 
-  virtual TFormula* GetDistortionFormula(const char *component_option="y", const char *action_option="m");  // component_opt:"x","y","z";action_opt:"m","a" 
-  virtual Bool_t SetDistortionFormula (TFormula* parDistortionFormula, const char *component_option="y", const char *action_option="m" ); 
-  virtual Bool_t SetDistortionFormula (const char* parDistortionFormulaText, const char *component_option="y", const char *action_option="m" ); 
+  virtual const char* GetDistortionFilename() {
+    return fDistortionFilename.Data();
+  }
+  virtual Bool_t SetDistortionFilename(const char* filename) {
+    fDistortionFilename = filename;
+    return (fDistortionFilename.Length() != 0);
+  }
+
+  virtual TFormula*
+  GetDistortionFormula(const char* component_option = "y",
+                       const char* action_option =
+                         "m");  // component_opt:"x","y","z";action_opt:"m","a"
+  virtual Bool_t SetDistortionFormula(TFormula* parDistortionFormula,
+                                      const char* component_option = "y",
+                                      const char* action_option    = "m");
+  virtual Bool_t SetDistortionFormula(const char* parDistortionFormulaText,
+                                      const char* component_option = "y",
+                                      const char* action_option    = "m");
 
 
   /** Fill main part of distorted field map from parent CbmField  **/
   virtual void SetFromParent(FairField* field);
 
   /** Get parent Field   **/
-  virtual FairField* GetParent() {return fParentField;}
+  virtual FairField* GetParent() { return fParentField; }
 
   /** Screen output **/
   virtual void Print(Option_t* = "") const;
@@ -95,32 +117,33 @@ public:
 
   /** Set a global field scaling factor of the distorted and the parent field**/
   virtual void SetScale(Double_t factor);
- 
-  /** Plot distorted and parend field (By component) **/
-  void PlotBy(Int_t n=250, Double_t zmin=-50, Double_t zmax=450);
-	
- protected:
 
+  /** Plot distorted and parend field (By component) **/
+  void PlotBy(Int_t n = 250, Double_t zmin = -50, Double_t zmax = 450);
+
+protected:
   /** Parent field (can be field map or constant field)  **/
-  FairField *fParentField;   //!
+  FairField* fParentField;  //!
 
   /** Field type of parent field.  **/
   Int_t fTypeOfParent;
 
   /** Filename for field map distortion information **/
-      TString  fDistortionFilename;
+  TString fDistortionFilename;
 
   /** Formulas for field map distortion **/
-      TFormula* fBxDistortionFormulaMult, *fBxDistortionFormulaAdd;     //! getter/setter options: ("x","m"), ("x","a")
-      TFormula* fByDistortionFormulaMult, *fByDistortionFormulaAdd;     //! getter/setter options: ("y","m"), ("y","a")
-      TFormula* fBzDistortionFormulaMult, *fBzDistortionFormulaAdd;     //! getter/setter options: ("z","m"), ("z","a")
+  TFormula *fBxDistortionFormulaMult,
+    *fBxDistortionFormulaAdd;  //! getter/setter options: ("x","m"), ("x","a")
+  TFormula *fByDistortionFormulaMult,
+    *fByDistortionFormulaAdd;  //! getter/setter options: ("y","m"), ("y","a")
+  TFormula *fBzDistortionFormulaMult,
+    *fBzDistortionFormulaAdd;  //! getter/setter options: ("z","m"), ("z","a")
 
- private:
+private:
   CbmFieldMapDistorted(const CbmFieldMapDistorted&);
   CbmFieldMapDistorted& operator=(const CbmFieldMapDistorted&);
 
-  ClassDef(CbmFieldMapDistorted,1) 
-
+  ClassDef(CbmFieldMapDistorted, 1)
 };
 
 

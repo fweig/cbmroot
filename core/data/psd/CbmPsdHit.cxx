@@ -7,40 +7,36 @@
  **/
 #include "CbmPsdHit.h"
 
-#include <FairLogger.h>         // for Logger, LOG
+#include <FairLogger.h>  // for Logger, LOG
 
-#include <TObject.h>            // for TObject
+#include <TObject.h>  // for TObject
 
 // -----   Default constructor   -------------------------------------------
-CbmPsdHit::CbmPsdHit() 
-  : TObject(),
-    fModuleID(-1),
-    fEdep(-1)                        // SELIM: simplification vector [49] -> simple double
+CbmPsdHit::CbmPsdHit()
+  : TObject()
+  , fModuleID(-1)
+  , fEdep(-1)  // SELIM: simplification vector [49] -> simple double
 {
-  
-    //for (Int_t j=0; j<49; j++)     // SELIM: simplification vector [49] -> simple double
-    //  fEdep[j]=0;
-  
+
+  //for (Int_t j=0; j<49; j++)     // SELIM: simplification vector [49] -> simple double
+  //  fEdep[j]=0;
 }
 CbmPsdHit::CbmPsdHit(Int_t module, Double_t edep)
-  : TObject(),
-    fModuleID(module),
-    fEdep(edep)                      // SELIM: simplification vector [49] -> simple double
-{ 
-    //for (Int_t j=0; j<49; j++)     // SELIM: simplification vector [49] -> simple double
-      //fEdep[j] = edep;
-  
+  : TObject()
+  , fModuleID(module)
+  , fEdep(edep)  // SELIM: simplification vector [49] -> simple double
+{
+  //for (Int_t j=0; j<49; j++)     // SELIM: simplification vector [49] -> simple double
+  //fEdep[j] = edep;
 }
-
 
 
 // -----   Destructor   ----------------------------------------------------
-CbmPsdHit::~CbmPsdHit() { }
+CbmPsdHit::~CbmPsdHit() {}
 // -------------------------------------------------------------------------
 
 void CbmPsdHit::Print(Option_t*) const {
-  LOG(info)<<"module : "<<fModuleID <<" ELoss "<<fEdep;
-
+  LOG(info) << "module : " << fModuleID << " ELoss " << fEdep;
 }
 
 ClassImp(CbmPsdHit)

@@ -3,40 +3,53 @@
 
 #pragma GCC diagnostic ignored "-Weffc++"
 
-#include <unistd.h>
-#include "FairTask.h"
 #include "CbmMuchPixelHit.h"
-#include "TClonesArray.h"
-#include "LxMC.h"
+#include "FairTask.h"
 #include "LxCA.h"
+#include "LxMC.h"
+#include "TClonesArray.h"
+#include <unistd.h>
 //#include "LxEff.h"
+#include "CbmStsKFTrackFitter.h"
 #include "CbmTrackMatch.h"
+#include "CbmVertex.h"
+#include "FairFileHeader.h"
+#include "FairRunAna.h"
 #include "TH1.h"
 #include "TProfile.h"
 #include "TProfile2D.h"
-#include "CbmStsKFTrackFitter.h"
-#include "CbmVertex.h"
 #include <fstream>
-#include "FairFileHeader.h"
-#include "FairRunAna.h"
 
 #ifdef FAST_CODE
 #define LX_DYNAMIC_CAST static_cast
-#else// FAST_CODE
+#else  // FAST_CODE
 #define LX_DYNAMIC_CAST dynamic_cast
-#endif// FAST_CODE
+#endif  // FAST_CODE
 
-class LxHitFile
-{
+class LxHitFile {
 public:
   LxHitFile();
   ~LxHitFile();
   bool Open(TString fileName, bool forWrite);
   bool StartEvent(Int_t nEnt);
   bool EndEvent();
-  bool WriteHit(Int_t stationNumber, Int_t layerNumber, Double_t x, Double_t y, Double_t z, Double_t xErr, Double_t yErr, Double_t zErr);
+  bool WriteHit(Int_t stationNumber,
+                Int_t layerNumber,
+                Double_t x,
+                Double_t y,
+                Double_t z,
+                Double_t xErr,
+                Double_t yErr,
+                Double_t zErr);
   bool ReadEvent(Int_t eventNumber);
-  bool ReadHit(Int_t& stationNumber, Int_t& layerNumber, Double_t& x, Double_t& y, Double_t& z, Double_t& xErr, Double_t& yErr, Double_t& zErr);
+  bool ReadHit(Int_t& stationNumber,
+               Int_t& layerNumber,
+               Double_t& x,
+               Double_t& y,
+               Double_t& z,
+               Double_t& xErr,
+               Double_t& yErr,
+               Double_t& zErr);
   bool Close();
 
 private:
@@ -51,15 +64,13 @@ private:
 
 extern TString lxFinderParticleType;
 
-struct LxStsMCPoint
-{
+struct LxStsMCPoint {
   scaltype p, q, x, y, z, px, py, pz;
   Int_t stationNumber;
   LxMCTrack* mcTrack;
 };
 
-class LxFinder : public FairTask
-{
+class LxFinder : public FairTask {
   //friend struct LxEff;
   friend class LxDraw;
   friend class LxParallFinder;
@@ -69,87 +80,51 @@ public:
   static LxFinder* Instance();
   explicit LxFinder();
   ~LxFinder();
-  InitStatus Init();// Inherited virtual.
-  void Exec(Option_t* opt);// Inherited virtual.
+  InitStatus Init();         // Inherited virtual.
+  void Exec(Option_t* opt);  // Inherited virtual.
 
-  void SetGenInvMass(bool value)
-  {
-    generateInvMass = value;
-  }
+  void SetGenInvMass(bool value) { generateInvMass = value; }
 
-  void SetGenBackground(bool value)
-  {
-    generateBackground = value;
-  }
+  void SetGenBackground(bool value) { generateBackground = value; }
 
-  void SetGenChi2(bool value)
-  {
-    generateChi2 = value;
-  }
+  void SetGenChi2(bool value) { generateChi2 = value; }
 
-  void SetLinkWithSts(bool value)
-  {
-    linkWithSts = value;
-  }
+  void SetLinkWithSts(bool value) { linkWithSts = value; }
 
-  void SetUseMCPInsteadOfHits(bool value)
-  {
-    useMCPInsteadOfHits = value;
-  }
+  void SetUseMCPInsteadOfHits(bool value) { useMCPInsteadOfHits = value; }
 
-  void SetCalcMiddlePoints(bool value)
-  {
-    calcMiddlePoints = value;
-  }
+  void SetCalcMiddlePoints(bool value) { calcMiddlePoints = value; }
 
-  void SetCutCoeff(scaltype value)
-  {
-    cutCoeff = value;
-  }
+  void SetCutCoeff(scaltype value) { cutCoeff = value; }
 
-  void SetSaveOnlyTriggeringTracks(bool value)
-  {
+  void SetSaveOnlyTriggeringTracks(bool value) {
     saveOnlyTriggeringTracks = value;
   }
 
-  void SetVerbosity(Int_t v)
-  {
-    verbosity = v;
-  }
+  void SetVerbosity(Int_t v) { verbosity = v; }
 
-  void SetParallMode(bool v)
-  {
-    parallMode = v;
-  }
+  void SetParallMode(bool v) { parallMode = v; }
 
-  void SetHitFileName(TString v)
-  {
-    hitFileName = v;
-  }
+  void SetHitFileName(TString v) { hitFileName = v; }
 
-  void SetFileSaveSuffix(TString v)
-  {
-    fileSaveSuffix = v;
-  }
+  void SetFileSaveSuffix(TString v) { fileSaveSuffix = v; }
 
-  void SetParticleType(TString v)
-  {
-    particleType = v;
+  void SetParticleType(TString v) {
+    particleType         = v;
     lxFinderParticleType = v;
 
-    if (v == "omega")
-    {
+    if (v == "omega") {
       caSpace.stationsInAlgo = 5;
 #ifdef MAKE_EFF_CALC
       pPtCut = false;
-#endif//MAKE_EFF_CALC
+#endif  //MAKE_EFF_CALC
     }
   }
 
 private:
   void SaveRecoTracks();
   void CalcInvMass();
-  void FinishTask();// Inherited virtual.
+  void FinishTask();  // Inherited virtual.
   void SaveEventTracks();
   void SaveInvMass();
   void SaveBackground();
@@ -165,13 +140,14 @@ private:
   TClonesArray* listMuchPixelDigiMatches;
   TClonesArray* listStsTracks;
   TClonesArray* listStsMatches;
-  TClonesArray* listStsPts;// STS MC-points array. Used for experiments with STS matching.
-  TClonesArray* listRecoTracks;// It is an output array.
+  TClonesArray*
+    listStsPts;  // STS MC-points array. Used for experiments with STS matching.
+  TClonesArray* listRecoTracks;  // It is an output array.
 #ifdef MAKE_EFF_CALC
   //LxEff effCounter;
   void MatchMCToReco();
   void MatchRecoToMC();
-#endif//MAKE_EFF_CALC
+#endif  //MAKE_EFF_CALC
   CbmStsTrack* superEventData;
 #ifdef MAKE_HISTOS
   static TH1F* massHisto;
@@ -202,7 +178,7 @@ private:
   static TH1F* bgrInterTracksDistanceOn1stSigns;
   static TH1F* muchMomErrSig;
   static TH1F* muchMomErrBgr;
-#endif//  static CbmStsTrack* superEventData;
+#endif  //  static CbmStsTrack* superEventData;
 
   CbmStsKFTrackFitter extFitter;
   CbmVertex* fPrimVtx;
@@ -222,35 +198,38 @@ private:
   TString fileSaveSuffix;
   TString particleType;
   bool pPtCut;
-  std::vector<LxMCPoint> MCPoints;// Points should lay here in the same order as in listMuchPts.
-  std::vector<LxMCTrack> MCTracks;// Tracks should lay here in the same order as in listMCTracks.
+  std::vector<LxMCPoint>
+    MCPoints;  // Points should lay here in the same order as in listMuchPts.
+  std::vector<LxMCTrack>
+    MCTracks;  // Tracks should lay here in the same order as in listMCTracks.
   std::list<LxStsMCPoint> MCStsPoints;
   std::list<LxStsMCPoint*> MCStsPointsByStations[8];
 #ifdef MAKE_DISPERSE_2D_HISTOS
   std::list<LxMCPoint*> MCPointsByStations[LXSTATIONS][LXLAYERS];
   scaltype zCoordsByStations[LXSTATIONS][LXLAYERS];
-#endif//MAKE_DISPERSE_2D_HISTOS
+#endif  //MAKE_DISPERSE_2D_HISTOS
   LxSpace caSpace;
   //std::map<Int_t, std::map<Int_t, int> > particleCounts;
 #ifdef MAKE_EFF_CALC
-  std::ofstream incomplete_events;// Events where not all tracks are reconstructed.
+  std::ofstream
+    incomplete_events;  // Events where not all tracks are reconstructed.
   Int_t falseSignalTriggerings;
   Int_t trueSignalTriggerings;
-  bool hasSignalInEvent;//hasJPsiInEvent;
-  Int_t signalCounter;//jpsiCounter;
-#endif//MAKE_EFF_CALC
+  bool hasSignalInEvent;  //hasJPsiInEvent;
+  Int_t signalCounter;    //jpsiCounter;
+#endif                    //MAKE_EFF_CALC
   Int_t eventNumber;
 #ifdef CALC_MUCH_DETECTORS_EFF
   Int_t mcPointsCount;
   Int_t mcPointsTriggered;
-#endif//CALC_MUCH_DETECTORS_EFF
+#endif  //CALC_MUCH_DETECTORS_EFF
   bool saveOnlyTriggeringTracks;
 #ifdef MAKE_TRIGGERING_HISTOS
   static TH1F* triggeringAllTracksVertices;
   static TH1F* triggeringDistTracksVertices;
   static TH1F* triggeringSignTracksVertices;
   static TH1F* triggeringTrigTracksVertices;
-#endif//MAKE_TRIGGERING_HISTOS
+#endif  //MAKE_TRIGGERING_HISTOS
   std::map<string, unsigned int> particlesCountAll;
   std::map<string, unsigned int> particlesCountSign;
   std::map<string, unsigned int> particlesCountDist;
@@ -262,4 +241,4 @@ private:
 
 #pragma GCC diagnostic warning "-Weffc++"
 
-#endif//LX_INCLUDED
+#endif  //LX_INCLUDED

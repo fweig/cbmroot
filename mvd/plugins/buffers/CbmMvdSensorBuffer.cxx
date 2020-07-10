@@ -8,15 +8,9 @@
 #include "TObjArray.h"
 
 
-
 // -----   Default constructor   -------------------------------------------
-CbmMvdSensorBuffer::CbmMvdSensorBuffer() 
-  : CbmMvdSensorPlugin(),
-    fBuffer(NULL),
-    fCurrentEvent(NULL),
-    fSensor(NULL)
-{
-}
+CbmMvdSensorBuffer::CbmMvdSensorBuffer()
+  : CbmMvdSensorPlugin(), fBuffer(NULL), fCurrentEvent(NULL), fSensor(NULL) {}
 // -------------------------------------------------------------------------
 
 // -----   Destructor   ----------------------------------------------------
@@ -26,9 +20,9 @@ CbmMvdSensorBuffer::~CbmMvdSensorBuffer() {
 }
 // -------------------------------------------------------------------------
 
-void CbmMvdSensorBuffer::Clear (Option_t* opt) {
-  if (fBuffer)		{fBuffer->Clear();}
-  if (fCurrentEvent)	{fCurrentEvent->Clear();}
+void CbmMvdSensorBuffer::Clear(Option_t* opt) {
+  if (fBuffer) { fBuffer->Clear(); }
+  if (fCurrentEvent) { fCurrentEvent->Clear(); }
 }
 
 ClassImp(CbmMvdSensorBuffer)

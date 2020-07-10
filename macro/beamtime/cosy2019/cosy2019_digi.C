@@ -29,13 +29,12 @@
 
 
 void cosy2019_digi(
-	Int_t nEvents = 1,                // Number of events to process
-	TString dataSet = "data/cosy2019",// Data set for file names
-	Double_t eventRate = 1.e7,        // Interaction rate [1/s]
-	Double_t timeSliceLength = 1.e4,  // Length of time-slice [ns]
-	Bool_t eventMode = kTRUE          // Event-by-event mode
-)
-{
+  Int_t nEvents            = 1,                // Number of events to process
+  TString dataSet          = "data/cosy2019",  // Data set for file names
+  Double_t eventRate       = 1.e7,             // Interaction rate [1/s]
+  Double_t timeSliceLength = 1.e4,             // Length of time-slice [ns]
+  Bool_t eventMode         = kTRUE             // Event-by-event mode
+) {
 
   // --- Logger settings ----------------------------------------------------
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
@@ -52,11 +51,11 @@ void cosy2019_digi(
   TString inFile  = dataSet + ".tra.root";
   TString parFile = dataSet + ".par.root";
   TString outFile = dataSet + ".raw.root";
-  if ( eventMode ) outFile = dataSet + ".event.raw.root";
+  if (eventMode) outFile = dataSet + ".event.raw.root";
   // ------------------------------------------------------------------------
 
 
-   // -----   Timer   --------------------------------------------------------
+  // -----   Timer   --------------------------------------------------------
   TStopwatch timer;
   timer.Start();
   // ------------------------------------------------------------------------
@@ -77,19 +76,18 @@ void cosy2019_digi(
   // ---    which is called (though 2-3 methods layers) by CbmDigitization::Run
 
   // -----  Geometry Tags  --------------------------------------------------
-  TString sStsHodoGeoPar      = "sts_hodo_v19a_cosy.par";
+  TString sStsHodoGeoPar = "sts_hodo_v19a_cosy.par";
   // ------------------------------------------------------------------------
 
   run.DefaultInit();
-  CbmStsDigitize* stsDigitizer = dynamic_cast< CbmStsDigitize * >( run.GetDigitizer( kSts ) );
-  if( nullptr == stsDigitizer )
-  {
-    std::cout << "No STS digitizer could be accessed: " << run.GetDigitizer( kSts )
-              << " -> " << stsDigitizer
-              << std::endl;
+  CbmStsDigitize* stsDigitizer =
+    dynamic_cast<CbmStsDigitize*>(run.GetDigitizer(kSts));
+  if (nullptr == stsDigitizer) {
+    std::cout << "No STS digitizer could be accessed: "
+              << run.GetDigitizer(kSts) << " -> " << stsDigitizer << std::endl;
     return;
-  } // if( nullptr == stsDigitizer )
-  stsDigitizer->SetSensorParameterFile( sStsHodoGeoPar );
+  }  // if( nullptr == stsDigitizer )
+  stsDigitizer->SetSensorParameterFile(sStsHodoGeoPar);
 
   run.Run(nEvents);
   // ------------------------------------------------------------------------
@@ -103,21 +101,22 @@ void cosy2019_digi(
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime
-            << " s" << std::endl << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
+            << std::endl
+            << std::endl;
   // ------------------------------------------------------------------------
 
 
   // -----   CTest resource monitoring   ------------------------------------
   FairSystemInfo sysInfo;
-  Float_t maxMemory=sysInfo.GetMaxMemory();
+  Float_t maxMemory = sysInfo.GetMaxMemory();
   std::cout << "<DartMeasurement name=\"MaxMemory\" type=\"numeric/double\">";
   std::cout << maxMemory;
   std::cout << "</DartMeasurement>" << std::endl;
   std::cout << "<DartMeasurement name=\"WallTime\" type=\"numeric/double\">";
   std::cout << rtime;
   std::cout << "</DartMeasurement>" << std::endl;
-  Float_t cpuUsage=ctime/rtime;
+  Float_t cpuUsage = ctime / rtime;
   std::cout << "<DartMeasurement name=\"CpuLoad\" type=\"numeric/double\">";
   std::cout << cpuUsage;
   std::cout << "</DartMeasurement>" << std::endl;
@@ -130,4 +129,4 @@ void cosy2019_digi(
   // ------------------------------------------------------------------------
 
 
-} // End of macro
+}  // End of macro

@@ -7,22 +7,21 @@
 #ifndef CBMMUCHPIXELHIT_H_
 #define CBMMUCHPIXELHIT_H_
 
-#include <Rtypes.h>       // for ClassDef
-#include <RtypesCore.h>   // for Int_t, Double_t
+#include <Rtypes.h>      // for ClassDef
+#include <RtypesCore.h>  // for Int_t, Double_t
 
 #include "CbmPixelHit.h"  // for CbmPixelHit
 
 class TVector3;
 
-class CbmMuchPixelHit :public CbmPixelHit
-{
+class CbmMuchPixelHit : public CbmPixelHit {
 public:
-   /**
+  /**
     * \brief Default constructor.
     */
-	CbmMuchPixelHit();
+  CbmMuchPixelHit();
 
-	/**
+  /**
 	 * Standard constructor.
 	 * \param address detector unique identifier
 	 * \param x X pposition of the hit [cm]
@@ -35,21 +34,20 @@ public:
 	 * \param refId some reference ID
 	 * \param planeId detector plane identifier
 	 **/
-	CbmMuchPixelHit(
-         Int_t address,
-         Double_t x,
-         Double_t y,
-         Double_t z,
-         Double_t dx,
-         Double_t dy,
-         Double_t dz,
-         Double_t dxy,
-         Int_t refId,
-         Int_t planeId,
-         Double_t time,
-         Double_t dtime);
+  CbmMuchPixelHit(Int_t address,
+                  Double_t x,
+                  Double_t y,
+                  Double_t z,
+                  Double_t dx,
+                  Double_t dy,
+                  Double_t dz,
+                  Double_t dxy,
+                  Int_t refId,
+                  Int_t planeId,
+                  Double_t time,
+                  Double_t dtime);
 
-	/**
+  /**
 	 * \brief Standard constructor
 	 * \param address  Unique detector ID (including module number)
 	 * \param pos Position in global c.s. [cm]
@@ -58,15 +56,14 @@ public:
 	 * \param refId Index of digi or cluster
 	 * \param planeId Detector plane identifier
 	 **/
-	CbmMuchPixelHit(
-         Int_t address,
-         const TVector3& pos,
-         const TVector3& err,
-         Double_t dxy,
-         Int_t refId,
-         Int_t planeId);
+  CbmMuchPixelHit(Int_t address,
+                  const TVector3& pos,
+                  const TVector3& err,
+                  Double_t dxy,
+                  Int_t refId,
+                  Int_t planeId);
 
-	/** Standard constructor
+  /** Standard constructor
 	  *\param address     Unique detector ID (including module number)
 	  *\param pos       Position in global c.s. [cm]
 	  *\param err       Errors of position in global c.s. [cm]
@@ -76,39 +73,37 @@ public:
 	  *\param time      Time since event start [ns]
 	  *\param dTime     Time resolution [ns]
 	**/
-	CbmMuchPixelHit(
-			Int_t address,
-			const TVector3& pos,
-			const TVector3& err,
-			Double_t dxy,
-			Int_t refId,
-			Int_t planeId,
-			Double_t time,
-			Double_t dtime);
+  CbmMuchPixelHit(Int_t address,
+                  const TVector3& pos,
+                  const TVector3& err,
+                  Double_t dxy,
+                  Int_t refId,
+                  Int_t planeId,
+                  Double_t time,
+                  Double_t dtime);
 
-	/**
+  /**
 	 * \brief Destructor.
 	 */
-	virtual ~CbmMuchPixelHit();
+  virtual ~CbmMuchPixelHit();
 
-	/**
+  /**
 	 * \brief Inherited from CbmBaseHit.
 	 */
-	virtual Int_t GetPlaneId() const { return fPlaneId; }
+  virtual Int_t GetPlaneId() const { return fPlaneId; }
 
-	/** Accessors **/
-	Int_t GetFlag() const { return fFlag; }
+  /** Accessors **/
+  Int_t GetFlag() const { return fFlag; }
 
 
-
-	/** Modifiers **/
-	void SetFlag(Int_t flag) { fFlag = flag; }
+  /** Modifiers **/
+  void SetFlag(Int_t flag) { fFlag = flag; }
 
 private:
-   Int_t fPlaneId; // Plane number
-   Int_t fFlag; // Flag
+  Int_t fPlaneId;  // Plane number
+  Int_t fFlag;     // Flag
 
-	ClassDef(CbmMuchPixelHit, 3);
+  ClassDef(CbmMuchPixelHit, 3);
 };
 
 #endif /* CBMMUCHPIXELHIT_H_ */

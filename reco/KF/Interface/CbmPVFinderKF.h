@@ -12,17 +12,15 @@
 #include "CbmPrimaryVertexFinder.h"
 
 
-class CbmPVFinderKF : public CbmPrimaryVertexFinder
-{
+class CbmPVFinderKF : public CbmPrimaryVertexFinder {
 
- public:
-
+public:
   /** Default constructor **/
-  CbmPVFinderKF() { };
+  CbmPVFinderKF() {};
 
 
   /** Destructor **/
-  ~CbmPVFinderKF() { };
+  ~CbmPVFinderKF() {};
 
 
   /** Execution of PV finding.
@@ -37,11 +35,10 @@ class CbmPVFinderKF : public CbmPrimaryVertexFinder
    ** @param event    Pointer to event object
    ** @param tracks   TClonesArray of CbmStsTracks
    **/
-   virtual Int_t FindEventVertex(CbmEvent* event, TClonesArray* tracks);
+  virtual Int_t FindEventVertex(CbmEvent* event, TClonesArray* tracks);
 
 
-  ClassDef(CbmPVFinderKF,1);
-
+  ClassDef(CbmPVFinderKF, 1);
 };
 
 #endif

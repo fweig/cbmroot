@@ -5,6 +5,6 @@
 
 const unsigned char LITCUDASTRIPHIT = 0;
 const unsigned char LITCUDAPIXELHIT = 1;
-const unsigned char LITCUDAMIXHIT = 2
+const unsigned char LITCUDAMIXHIT   = 2
 
 #endif /* LITCUDATYPES_H_ */

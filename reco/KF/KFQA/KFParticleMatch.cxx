@@ -17,15 +17,8 @@
 #include "KFParticleMatch.h"
 
 
-KFParticleMatch::KFParticleMatch()
- : TObject(),
-   fMatch(-1),
-   fMatchType(-1)
-{
-}
+KFParticleMatch::KFParticleMatch() : TObject(), fMatch(-1), fMatchType(-1) {}
 
-KFParticleMatch::~KFParticleMatch()
-{
-}
+KFParticleMatch::~KFParticleMatch() {}
 
 ClassImp(KFParticleMatch)

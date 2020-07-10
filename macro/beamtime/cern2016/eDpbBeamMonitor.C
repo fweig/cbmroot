@@ -8,16 +8,13 @@
  */
 
 // In order to call later Finish, we make this global
-FairRunOnline *run = NULL;
+FairRunOnline* run = NULL;
 
-void eDpbBeamMonitor(Bool_t highP = false, TString inFile =
-		     "")
-{
+void eDpbBeamMonitor(Bool_t highP = false, TString inFile = "") {
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
   TString inDir  = srcDir + "/input/";
-//  TString inDir  = "/lustre/nyx/cbm/prod/beamtime/2016/11/cern/";
-  if( "" != inFile )
-   inFile = inDir + inFile;
+  //  TString inDir  = "/lustre/nyx/cbm/prod/beamtime/2016/11/cern/";
+  if ("" != inFile) inFile = inDir + inFile;
 
   // --- Specify number of events to be produced.
   // --- -1 means run until the end of the input file.
@@ -45,12 +42,13 @@ void eDpbBeamMonitor(Bool_t highP = false, TString inFile =
 
   // Spadic 2.0 unpacker
   //CbmTSUnpackSpadic20OnlineMonitor* spadic20_unpacker = new CbmTSUnpackSpadic20OnlineMonitor(highP);
-  CbmTSUnpackSpadic20OnlineMonitor* spadic20_unpacker = new CbmTSUnpackSpadic20OnlineMonitor(false);
+  CbmTSUnpackSpadic20OnlineMonitor* spadic20_unpacker =
+    new CbmTSUnpackSpadic20OnlineMonitor(false);
 
   // --- Source task
   CbmFlibFileSourceNew* source = new CbmFlibFileSourceNew();
   source->SetHostName("localhost");
-  source->AddUnpacker(spadic20_unpacker, 0x10); // FIXME: set correct values
+  source->AddUnpacker(spadic20_unpacker, 0x10);  // FIXME: set correct values
 
   // --- Event header
   //FairEventHeader* event = new CbmTbEvent();
@@ -60,7 +58,7 @@ void eDpbBeamMonitor(Bool_t highP = false, TString inFile =
   run = new FairRunOnline(source);
   run->SetOutputFile(outFile);
   //run->SetEventHeader(event);
-  run->ActivateHttpServer(100); // refresh each 100 events
+  run->ActivateHttpServer(100);  // refresh each 100 events
   run->SetAutoFinish(kFALSE);
 
   //  gDebug=2;
@@ -73,7 +71,7 @@ void eDpbBeamMonitor(Bool_t highP = false, TString inFile =
   TStopwatch timer;
   timer.Start();
   std::cout << ">>> eDpbMonitor: Starting run..." << std::endl;
-  run->Run(nEvents, 0); // run until end of input file
+  run->Run(nEvents, 0);  // run until end of input file
   timer.Stop();
 
   //run->Finish();
@@ -85,7 +83,7 @@ void eDpbBeamMonitor(Bool_t highP = false, TString inFile =
   std::cout << ">>> eDpbMonitor: Macro finished successfully." << std::endl;
   std::cout << ">>> eDpbMonitor: Output file is " << outFile << std::endl;
   std::cout << ">>> eDpbMonitor: Real time " << rtime << " s, CPU time "
-	    << ctime << " s" << std::endl;
+            << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

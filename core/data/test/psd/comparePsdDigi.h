@@ -1,13 +1,14 @@
 #ifndef COMPAREPSDDIGI_H
 #define COMPAREPSDDIGI_H 1
 
-void comparePsdDigiDataMembers(CbmPsdDigi& test, 
-    Int_t address, ECbmModuleId systemid, Double_t time,
-    Double_t edep)
-{
-  Int_t retValInt{-222};
-  Double_t retValDouble{-222.};
-  ECbmModuleId retVal{ECbmModuleId::kNotExist};
+void comparePsdDigiDataMembers(CbmPsdDigi& test,
+                               Int_t address,
+                               ECbmModuleId systemid,
+                               Double_t time,
+                               Double_t edep) {
+  Int_t retValInt {-222};
+  Double_t retValDouble {-222.};
+  ECbmModuleId retVal {ECbmModuleId::kNotExist};
 
   retValInt = test.GetAddress();
   EXPECT_EQ(address, retValInt);
@@ -23,7 +24,6 @@ void comparePsdDigiDataMembers(CbmPsdDigi& test,
 
   retValDouble = test.GetEdep();
   EXPECT_FLOAT_EQ(edep, retValDouble);
-
 }
 
-#endif // COMPAREPSDDIGI_H
+#endif  // COMPAREPSDDIGI_H

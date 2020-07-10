@@ -14,40 +14,39 @@
 //
 ////////////////////////////////////////////////////////
 
+#include "PParticle.h"
 #include "TF1.h"
 #include "TMath.h"
-#include "PParticle.h"
 
 void PParticle::defaults(void) {
-  
-    SetVertex(0., 0., 0.,0.);
-    pParticle = nullptr;
-    qParticle1 = nullptr; 
-    qParticle2 = nullptr;
-    index = -1;
-    parentIndex = -2;
-    decayModeIndex = -1;
-    destroyDecayModeIndex= 0;
-    decayTime = 0.;
-    debug="";
-    values=nullptr;
-    make_new_qParticle=1;
-    SetSourceId(-1);
-    SetParentId(-1);
-    SetSiblingIndex(-1);
-    SetDaughterIndex(-1);
-    SetParentIndex(-1);
-    SetSibling(nullptr);
-    mult=1.;
-    spectator=0;
-    genwt=invgenwt=1.;
 
-    ResetDaughters();
+  SetVertex(0., 0., 0., 0.);
+  pParticle             = nullptr;
+  qParticle1            = nullptr;
+  qParticle2            = nullptr;
+  index                 = -1;
+  parentIndex           = -2;
+  decayModeIndex        = -1;
+  destroyDecayModeIndex = 0;
+  decayTime             = 0.;
+  debug                 = "";
+  values                = nullptr;
+  make_new_qParticle    = 1;
+  SetSourceId(-1);
+  SetParentId(-1);
+  SetSiblingIndex(-1);
+  SetDaughterIndex(-1);
+  SetParentIndex(-1);
+  SetSibling(nullptr);
+  mult      = 1.;
+  spectator = 0;
+  genwt = invgenwt = 1.;
+
+  ResetDaughters();
 }
 
-PParticle::PParticle(int /*id*/, Double_t /*T*/, Double_t /*w*/):
-    TLorentzVector()
-{		   
+PParticle::PParticle(int /*id*/, Double_t /*T*/, Double_t /*w*/)
+  : TLorentzVector() {
   defaults();
 }
 
@@ -193,7 +192,4 @@ PParticle::PParticle(const PParticle * p):
 */
 
 
-
 ClassImp(PParticle)
-
-

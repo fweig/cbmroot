@@ -7,22 +7,10 @@
 extern "C" void DeviceInfo(void);
 extern "C" void AddVec(void);
 
-LitCudaTest::LitCudaTest()
-{
+LitCudaTest::LitCudaTest() {}
 
-}
+LitCudaTest::~LitCudaTest() {}
 
-LitCudaTest::~LitCudaTest()
-{
+void LitCudaTest::MyDeviceInfo() const { DeviceInfo(); }
 
-}
-
-void LitCudaTest::MyDeviceInfo() const
-{
-   DeviceInfo();
-}
-
-void LitCudaTest::MyAddVec() const
-{
-   AddVec();
-}
+void LitCudaTest::MyAddVec() const { AddVec(); }

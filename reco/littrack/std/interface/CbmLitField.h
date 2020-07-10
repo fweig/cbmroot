@@ -17,20 +17,19 @@ using std::string;
  * \date 2009
  * \brief Interface for accessing the magnetic field.
  */
-class CbmLitField
-{
+class CbmLitField {
 public:
-   /**
+  /**
     * \brief Constructor.
     */
-   CbmLitField() {};
+  CbmLitField() {};
 
-   /**
+  /**
     * \brief Destructor.
     */
-   virtual ~CbmLitField() {};
+  virtual ~CbmLitField() {};
 
-   /**
+  /**
     * \brief Return field value at (x,y,z) position.
     * \param[in] x X coordinate [cm].
     * \param[in] y Y coordinate [cm].
@@ -39,21 +38,18 @@ public:
     * \param[out] By Output By field value [kGauss].
     * \param[out] Bz Output Bz field value [kGauss].
     */
-   virtual void GetFieldValue(
-         litfloat x,
-         litfloat y,
-         litfloat z,
-         litfloat& Bx,
-         litfloat& By,
-         litfloat& Bz) const = 0;
+  virtual void GetFieldValue(litfloat x,
+                             litfloat y,
+                             litfloat z,
+                             litfloat& Bx,
+                             litfloat& By,
+                             litfloat& Bz) const = 0;
 
-   /*
+  /*
     * \brief Return string representation of class.
     * \return String representation of this class.
     */
-   virtual string ToString() const {
-      return "CbmLitField::ToString";
-   }
+  virtual string ToString() const { return "CbmLitField::ToString"; }
 };
 
 #endif /* CBMLITFIELD_H_ */

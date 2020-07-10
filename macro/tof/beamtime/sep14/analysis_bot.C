@@ -10,144 +10,142 @@
 // -----------------------------------------------------------------------------
 
 // Max nEvents: 198999999999
-void analysis_bot(Int_t nEvents = 2) 
-{
-   //  Parameter files.
-   // Add TObjectString containing the different file names to
-   // a TList which is passed as input to the FairParAsciiFileIo.
-   // The FairParAsciiFileIo will take care to create on the fly 
-   // a concatenated input parameter file.
-   TList *parFileList = new TList();
-   
-   TString paramDir = gSystem->Getenv("PWD");
+void analysis_bot(Int_t nEvents = 2) {
+  //  Parameter files.
+  // Add TObjectString containing the different file names to
+  // a TList which is passed as input to the FairParAsciiFileIo.
+  // The FairParAsciiFileIo will take care to create on the fly
+  // a concatenated input parameter file.
+  TList* parFileList = new TList();
 
-   TObjString unpParFile = paramDir + "/parUnpackBot.txt";
-   parFileList->Add(&unpParFile);
+  TString paramDir = gSystem->Getenv("PWD");
 
-   TObjString calParFile = paramDir + "/parCalibBot.txt";
-   parFileList->Add(&calParFile);
+  TObjString unpParFile = paramDir + "/parUnpackBot.txt";
+  parFileList->Add(&unpParFile);
 
-   TObjString mapParFile = paramDir + "/parMapBot.txt";
-   parFileList->Add(&mapParFile);
+  TObjString calParFile = paramDir + "/parCalibBot.txt";
+  parFileList->Add(&calParFile);
 
-   // Parameter file output
-   TString parFile = paramDir + "/unpack.params.root";
-   
-   // Output file
-   TString outFile = paramDir + "/unpack.out.root";
-   
-   // ----    Debug option   -------------------------------------------------
-   gDebug = 0;
-   // ------------------------------------------------------------------------
+  TObjString mapParFile = paramDir + "/parMapBot.txt";
+  parFileList->Add(&mapParFile);
 
-   // -----   Timer   --------------------------------------------------------
-   TStopwatch timer;
-   timer.Start();
-   // ------------------------------------------------------------------------
-   
-   // =========================================================================
-   // ===                           Unpacker                                ===
-   // =========================================================================
-//  FairLmdSource* source = new FairLmdSource();
-//  source->AddFile("/local/beam/sep14/macro/tof/beamtime/sep14/data/MbsTrbSat1805_0003.lmd"); // V
+  // Parameter file output
+  TString parFile = paramDir + "/unpack.params.root";
 
-   FairMbsStreamSource* source = new FairMbsStreamSource("tofrepeater");
-//   FairMbsStreamSource* source = new FairMbsStreamSource("tofdaq");
-   TTriglogUnpackTof* tofTriglogUnpacker = new TTriglogUnpackTof();
-   source->AddUnpacker( tofTriglogUnpacker );
+  // Output file
+  TString outFile = paramDir + "/unpack.out.root";
 
-   TMbsUnpackTof* tofMbsDataUnpacker = new TMbsUnpackTof();
-   source->AddUnpacker( tofMbsDataUnpacker );
+  // ----    Debug option   -------------------------------------------------
+  gDebug = 0;
+  // ------------------------------------------------------------------------
 
-   // = 1 TRB3: TTrbUnpackTof(0,0,31,0,0)
-   // > 1 TRB3: TTrbUnpackTof(10,1,31,0,0)
+  // -----   Timer   --------------------------------------------------------
+  TStopwatch timer;
+  timer.Start();
+  // ------------------------------------------------------------------------
 
-   TTrbUnpackTof* tofTrbDataUnpacker = new TTrbUnpackTof(10,1,31,0,0);
-   source->AddUnpacker( tofTrbDataUnpacker );
+  // =========================================================================
+  // ===                           Unpacker                                ===
+  // =========================================================================
+  //  FairLmdSource* source = new FairLmdSource();
+  //  source->AddFile("/local/beam/sep14/macro/tof/beamtime/sep14/data/MbsTrbSat1805_0003.lmd"); // V
 
-      // -----   Online/Offline MBS run   -----------------------------------
-   FairRunOnline *run = FairRunOnline::Instance();
-   run->SetSource(source);
-   run->SetOutputFile(outFile);
-   run->SetAutoFinish(kFALSE);
+  FairMbsStreamSource* source = new FairMbsStreamSource("tofrepeater");
+  //   FairMbsStreamSource* source = new FairMbsStreamSource("tofdaq");
+  TTriglogUnpackTof* tofTriglogUnpacker = new TTriglogUnpackTof();
+  source->AddUnpacker(tofTriglogUnpacker);
 
-   gLogger->SetLogScreenLevel("INFO");
-//   gLogger->SetLogScreenLevel("DEBUG");
+  TMbsUnpackTof* tofMbsDataUnpacker = new TMbsUnpackTof();
+  source->AddUnpacker(tofMbsDataUnpacker);
 
-      // --------------------------------------------------------------------
-   // ===                        End of Unpacker                            ===
-   // =========================================================================
-   
-   // =========================================================================
-   // ===                     Unpacker monitoring                           ===
-   // =========================================================================
-   TMbsUnpTofMonitor* tofUnpMonitor = new TMbsUnpTofMonitor("Tof Unp Moni", 2);
-   run->AddTask(tofUnpMonitor);
-   // ===                 End of Unpacker monitoring                        ===
-   // =========================================================================
+  // = 1 TRB3: TTrbUnpackTof(0,0,31,0,0)
+  // > 1 TRB3: TTrbUnpackTof(10,1,31,0,0)
 
-   // =========================================================================
-   // ===                         Calibration                               ===
-   // =========================================================================
-   TMbsCalibTof* tofCalibration = new TMbsCalibTof("Tof Calibration", 2);
-   tofCalibration->SetSaveTdcs(kTRUE);
-   run->AddTask(tofCalibration);
-   // ===                      End of Calibration                           ===
-   // =========================================================================
+  TTrbUnpackTof* tofTrbDataUnpacker = new TTrbUnpackTof(10, 1, 31, 0, 0);
+  source->AddUnpacker(tofTrbDataUnpacker);
 
-   // =========================================================================
-   // ===                         Mapping                                   ===
-   // =========================================================================
-   TMbsMappingTof* tofMapping = new TMbsMappingTof("Tof Mapping", 2);
-   run->AddTask(tofMapping);
-   // ===                      End of Mapping                               ===
-   // =========================================================================
+  // -----   Online/Offline MBS run   -----------------------------------
+  FairRunOnline* run = FairRunOnline::Instance();
+  run->SetSource(source);
+  run->SetOutputFile(outFile);
+  run->SetAutoFinish(kFALSE);
 
-   CbmTofOnlineDisplay* display = new CbmTofOnlineDisplay();
-   display->SetUpdateInterval(2000);
-   display->SetNumberOfTDC(38);
-   run->AddTask(display);   
+  gLogger->SetLogScreenLevel("INFO");
+  //   gLogger->SetLogScreenLevel("DEBUG");
 
-   // -----  Parameter database   --------------------------------------------
-   FairRuntimeDb* rtdb = run->GetRuntimeDb();
-   
-   
-   Bool_t kParameterMerged = kTRUE;
-   FairParRootFileIo* parIo2 = new FairParRootFileIo(kParameterMerged);
-   parIo2->open(parFile.Data(), "UPDATE");
-   parIo2->print();
-   rtdb->setFirstInput(parIo2);
-   
-   FairParAsciiFileIo* parIo1 = new FairParAsciiFileIo();
-   parIo1->open(parFileList, "in");
-   parIo1->print();
-//   rtdb->setFirstInput(parIo1);
-   rtdb->setSecondInput(parIo1);
-   
-   rtdb->print();
-   rtdb->printParamContexts();
-   // ------------------------------------------------------------------------
+  // --------------------------------------------------------------------
+  // ===                        End of Unpacker                            ===
+  // =========================================================================
 
-   // -----   Intialise and run   --------------------------------------------
-   run->Init();
-//   cout << "Starting run" << endl;
-//   run->Run(nEvents, 0);
-   // ------------------------------------------------------------------------
+  // =========================================================================
+  // ===                     Unpacker monitoring                           ===
+  // =========================================================================
+  TMbsUnpTofMonitor* tofUnpMonitor = new TMbsUnpTofMonitor("Tof Unp Moni", 2);
+  run->AddTask(tofUnpMonitor);
+  // ===                 End of Unpacker monitoring                        ===
+  // =========================================================================
 
-//   gLogger->SetLogScreenLevel("FATAL");
+  // =========================================================================
+  // ===                         Calibration                               ===
+  // =========================================================================
+  TMbsCalibTof* tofCalibration = new TMbsCalibTof("Tof Calibration", 2);
+  tofCalibration->SetSaveTdcs(kTRUE);
+  run->AddTask(tofCalibration);
+  // ===                      End of Calibration                           ===
+  // =========================================================================
 
-   // -----   Finish   -------------------------------------------------------
-   timer.Stop();
-   Double_t rtime = timer.RealTime();
-   Double_t ctime = timer.CpuTime();
-   cout << endl << endl;
-   cout << "Macro finished successfully." << endl;
-   cout << "Output file is " << outFile << endl;
-   cout << "Parameter file is " << parFile << endl;
-   cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << endl;
-   cout << endl;
-   // ------------------------------------------------------------------------
+  // =========================================================================
+  // ===                         Mapping                                   ===
+  // =========================================================================
+  TMbsMappingTof* tofMapping = new TMbsMappingTof("Tof Mapping", 2);
+  run->AddTask(tofMapping);
+  // ===                      End of Mapping                               ===
+  // =========================================================================
 
-//   delete run;
+  CbmTofOnlineDisplay* display = new CbmTofOnlineDisplay();
+  display->SetUpdateInterval(2000);
+  display->SetNumberOfTDC(38);
+  run->AddTask(display);
+
+  // -----  Parameter database   --------------------------------------------
+  FairRuntimeDb* rtdb = run->GetRuntimeDb();
+
+
+  Bool_t kParameterMerged   = kTRUE;
+  FairParRootFileIo* parIo2 = new FairParRootFileIo(kParameterMerged);
+  parIo2->open(parFile.Data(), "UPDATE");
+  parIo2->print();
+  rtdb->setFirstInput(parIo2);
+
+  FairParAsciiFileIo* parIo1 = new FairParAsciiFileIo();
+  parIo1->open(parFileList, "in");
+  parIo1->print();
+  //   rtdb->setFirstInput(parIo1);
+  rtdb->setSecondInput(parIo1);
+
+  rtdb->print();
+  rtdb->printParamContexts();
+  // ------------------------------------------------------------------------
+
+  // -----   Intialise and run   --------------------------------------------
+  run->Init();
+  //   cout << "Starting run" << endl;
+  //   run->Run(nEvents, 0);
+  // ------------------------------------------------------------------------
+
+  //   gLogger->SetLogScreenLevel("FATAL");
+
+  // -----   Finish   -------------------------------------------------------
+  timer.Stop();
+  Double_t rtime = timer.RealTime();
+  Double_t ctime = timer.CpuTime();
+  cout << endl << endl;
+  cout << "Macro finished successfully." << endl;
+  cout << "Output file is " << outFile << endl;
+  cout << "Parameter file is " << parFile << endl;
+  cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << endl;
+  cout << endl;
+  // ------------------------------------------------------------------------
+
+  //   delete run;
 }
-

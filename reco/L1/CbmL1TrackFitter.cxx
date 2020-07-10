@@ -15,12 +15,12 @@
 
 #include "CbmL1.h"
 
+#include "L1Algo/L1AddMaterial.h"
 #include "L1Algo/L1Algo.h"
-#include "L1Algo/L1TrackPar.h"
 #include "L1Algo/L1Extrapolation.h"
 #include "L1Algo/L1Filtration.h"
-#include "L1Algo/L1AddMaterial.h"
 #include "L1Algo/L1StsHit.h"
+#include "L1Algo/L1TrackPar.h"
 
 #include "CbmKF.h"
 #include "CbmKFMath.h"
@@ -28,8 +28,7 @@
 
 #include "TStopwatch.h"
 
-void CbmL1::TrackFitter( vector<CbmL1Track> &Tracks, CbmL1Vtx *V )
-{
+void CbmL1::TrackFitter(vector<CbmL1Track>& Tracks, CbmL1Vtx* V) {
   TStopwatch timer;
   timer.Start();
   /*
@@ -171,7 +170,7 @@ void CbmL1::TrackFitter( vector<CbmL1Track> &Tracks, CbmL1Vtx *V )
       }
   }// prim. vtx 
   */
-  //c_time.Stop();    
+  //c_time.Stop();
   //stat_fit_time += double(c_time.Time());
   //timer.Stop();
   stat_fit_time += timer.CpuTime();

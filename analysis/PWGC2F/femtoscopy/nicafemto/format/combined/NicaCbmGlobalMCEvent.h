@@ -14,25 +14,25 @@
 #include <TString.h>
 
 #include "CbmDefs.h"
-#include "NicaComplexEvent.h"
+#include "CbmDetectorID.h"
 #include "NicaCbmEvent.h"
 #include "NicaCbmMatchedTrackInterface.h"
-#include "CbmDetectorID.h"
+#include "NicaComplexEvent.h"
 
-class NicaCbmGlobalMCEvent : public NicaComplexEvent{
-	const ECbmModuleId fMatching;
-	const NicaCbmSetup fSetup;
-	NicaCbmMatchedTrackInterface *fRealTrackInterface;
+class NicaCbmGlobalMCEvent : public NicaComplexEvent {
+  const ECbmModuleId fMatching;
+  const NicaCbmSetup fSetup;
+  NicaCbmMatchedTrackInterface* fRealTrackInterface;
+
 public:
-	NicaCbmGlobalMCEvent(
-			NicaCbmSetup mode = kSis100Hadron,
-			ECbmModuleId match=ECbmModuleId::kSts);
-	virtual void Update();
-	virtual Bool_t  ExistInTree()const;
-	virtual TString GetFormatName()const{return "NicaGlobalMCEvent";};
-	virtual NicaEvent *GetNewEvent() const;
-	virtual ~NicaCbmGlobalMCEvent();
-	ClassDef(NicaCbmGlobalMCEvent,1)
+  NicaCbmGlobalMCEvent(NicaCbmSetup mode  = kSis100Hadron,
+                       ECbmModuleId match = ECbmModuleId::kSts);
+  virtual void Update();
+  virtual Bool_t ExistInTree() const;
+  virtual TString GetFormatName() const { return "NicaGlobalMCEvent"; };
+  virtual NicaEvent* GetNewEvent() const;
+  virtual ~NicaCbmGlobalMCEvent();
+  ClassDef(NicaCbmGlobalMCEvent, 1)
 };
 
 #endif /* NICABMNGLOBALMCEVENT_H_ */

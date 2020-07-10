@@ -10,24 +10,24 @@
  */
 
 
-void readGet4_server_moni( Int_t nEvents = -1, TString inFile = "data/get4Test.tsa" )
-{
+void readGet4_server_moni(Int_t nEvents  = -1,
+                          TString inFile = "data/get4Test.tsa") {
 
   // --- Specify input file name (this is just an example)
   //TString inFile = "spadic_dlm_trigger_2014-11-15_noepoch.tsa";
-//   TString inFile = "nxdata.tsa";
+  //   TString inFile = "nxdata.tsa";
 
   // --- Specify number of events to be produced.
   // --- -1 means run until the end of the input file.
-//  Int_t nEvents = -1;
+  //  Int_t nEvents = -1;
 
   // --- Specify output file name (this is just an example)
   TString outFile = "data/get4_test.root";
 
   // --- Set log output levels
-//  FairLogger::GetLogger()->SetLogScreenLevel("WARNING");
+  //  FairLogger::GetLogger()->SetLogScreenLevel("WARNING");
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
-//  FairLogger::GetLogger()->SetLogScreenLevel("DEBUG");
+  //  FairLogger::GetLogger()->SetLogScreenLevel("DEBUG");
   FairLogger::GetLogger()->SetLogVerbosityLevel("LOW");
 
   // --- Set debug level
@@ -44,49 +44,49 @@ void readGet4_server_moni( Int_t nEvents = -1, TString inFile = "data/get4Test.t
   std::cout << ">>> readTsa: Initialising..." << std::endl;
 
   // NXyter Unpacker
-//  CbmTSUnpackNxyter* nxyter_unpacker = new CbmTSUnpackNxyter();
+  //  CbmTSUnpackNxyter* nxyter_unpacker = new CbmTSUnpackNxyter();
 
   // Spadic Unpacker
-//  CbmTSUnpackSpadic* spadic_unpacker = new CbmTSUnpackSpadic();
+  //  CbmTSUnpackSpadic* spadic_unpacker = new CbmTSUnpackSpadic();
 
   // GET4 Unpacker
   CbmGet4FastMonitor* get4_unpacker = new CbmGet4FastMonitor();
-  get4_unpacker->SetRocNb(      2); // Min 1
-  get4_unpacker->SetGet4Nb(    88); // Min 1
-  get4_unpacker->SetMsOverlapTs(0); // Min 1
-  get4_unpacker->SetMode(       1); // 0 = debug, 1 = moni
-     // Disable unconnected chips
-  for( UInt_t uChipIndex = 24; uChipIndex < 64; uChipIndex++)
-     get4_unpacker->SetActiveGet4( uChipIndex, kFALSE );
+  get4_unpacker->SetRocNb(2);        // Min 1
+  get4_unpacker->SetGet4Nb(88);      // Min 1
+  get4_unpacker->SetMsOverlapTs(0);  // Min 1
+  get4_unpacker->SetMode(1);         // 0 = debug, 1 = moni
+                                     // Disable unconnected chips
+  for (UInt_t uChipIndex = 24; uChipIndex < 64; uChipIndex++)
+    get4_unpacker->SetActiveGet4(uChipIndex, kFALSE);
   // Disable unread USTC RPC chips
-  for( UInt_t uChipIndex = 80; uChipIndex < 88; uChipIndex++)
-     get4_unpacker->SetActiveGet4( uChipIndex, kFALSE );
+  for (UInt_t uChipIndex = 80; uChipIndex < 88; uChipIndex++)
+    get4_unpacker->SetActiveGet4(uChipIndex, kFALSE);
   get4_unpacker->SetOldReadoutSupp();
   get4_unpacker->SetMaxCoincDist(500.0);
 
   // --- Source task
   CbmFlibFileSourceNew* source = new CbmFlibFileSourceNew();
-//  source->SetFileName(inFile);
-//  source->AddUnpacker(nxyter_unpacker, 0x10);
-//  source->AddUnpacker(spadic_unpacker, 0x40);
+  //  source->SetFileName(inFile);
+  //  source->AddUnpacker(nxyter_unpacker, 0x10);
+  //  source->AddUnpacker(spadic_unpacker, 0x40);
   source->AddUnpacker(get4_unpacker, 0x60);
   source->SetHostName("cbmflib03");
 
   // --- Event header
-//  FairEventHeader* event = new CbmTbEvent();
-//  event->SetRunId(260);
+  //  FairEventHeader* event = new CbmTbEvent();
+  //  event->SetRunId(260);
 
   // --- Run
-  FairRunOnline *run = FairRunOnline::Instance();
+  FairRunOnline* run = FairRunOnline::Instance();
   run->SetSource(source);
   run->SetOutputFile(outFile);
   run->SetAutoFinish(kFALSE);
 
-//  FairRunOnline *run = new FairRunOnline(source);
-//  run->SetOutputFile(outFile);
-//  run->SetEventHeader(event);
+  //  FairRunOnline *run = new FairRunOnline(source);
+  //  run->SetOutputFile(outFile);
+  //  run->SetEventHeader(event);
 
-/*
+  /*
   FairTask* spadicRawBeam = new CbmTrdRawBeamProfile();
   run->AddTask(spadicRawBeam);
 
@@ -100,8 +100,8 @@ void readGet4_server_moni( Int_t nEvents = -1, TString inFile = "data/get4Test.t
   // --- Start run
   TStopwatch timer;
   timer.Start();
-//  std::cout << ">>> Start run from the command line by calling Run(<events>)" << std::endl;
-  run->Run(nEvents, 0); // run until end of input file
+  //  std::cout << ">>> Start run from the command line by calling Run(<events>)" << std::endl;
+  run->Run(nEvents, 0);  // run until end of input file
 
   run->Finish();
   get4_unpacker->Finish();
@@ -113,8 +113,8 @@ void readGet4_server_moni( Int_t nEvents = -1, TString inFile = "data/get4Test.t
   std::cout << std::endl << std::endl;
   std::cout << ">>> readTsa: Macro finished successfully." << std::endl;
   std::cout << ">>> readTsa: Output file is " << outFile << std::endl;
-  std::cout << ">>> readTsa: Real time " << rtime << " s, CPU time "
-               << ctime << " s" << std::endl;
+  std::cout << ">>> readTsa: Real time " << rtime << " s, CPU time " << ctime
+            << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

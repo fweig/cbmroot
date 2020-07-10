@@ -11,13 +11,13 @@
 
 #include "NicaTrackCut.h"
 
-class CbmHasTofTrackCut: public NicaTrackCut {
+class CbmHasTofTrackCut : public NicaTrackCut {
 public:
-	CbmHasTofTrackCut();
-	virtual Bool_t  Init(Int_t format_id=0);
-	virtual Bool_t Pass(NicaTrack *track);
-	virtual ~CbmHasTofTrackCut();
-	ClassDef(CbmHasTofTrackCut,1)
+  CbmHasTofTrackCut();
+  virtual Bool_t Init(Int_t format_id = 0);
+  virtual Bool_t Pass(NicaTrack* track);
+  virtual ~CbmHasTofTrackCut();
+  ClassDef(CbmHasTofTrackCut, 1)
 };
 
 #endif /* CBMTOFTRACKCUT_H_ */

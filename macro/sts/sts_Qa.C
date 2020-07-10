@@ -1,6 +1,6 @@
 // --------------------------------------------------------------------------
 //
-// Macro for quality check in STS 
+// Macro for quality check in STS
 //
 // Tasks:  CbmStsFindHitsQa
 //         CbmStsReconstructionQa
@@ -12,13 +12,13 @@ void sts_Qa(Int_t nEvents = 1) {
 
   // ========================================================================
   //          Adjust this part according to your requirements
-  
+
   // Input file (MC events)
   TString inFile = "sts.mc.root";
-  
+
   // Parameter file
   TString parFile = "params.root";
-  
+
   // STS digitization parameter file
   TString digipar = "sts_standard.digi.par";
 
@@ -27,7 +27,7 @@ void sts_Qa(Int_t nEvents = 1) {
 
   // STS digitisation file
   TString digiFile = "sts.digi.root";
-  
+
   // Output file
   TString outFile = "sts.Qa.root";
 
@@ -36,9 +36,9 @@ void sts_Qa(Int_t nEvents = 1) {
   // ========================================================================
 
 
-//   
+  //
 
-  // ---   Screen output   --------------------------------------------------  
+  // ---   Screen output   --------------------------------------------------
   cout << "***************************************************" << endl;
   cout << "***   STS QA SCRIPT   *******" << endl;
   cout << "***************************************************" << endl;
@@ -50,25 +50,22 @@ void sts_Qa(Int_t nEvents = 1) {
   cout << "*** Number of events    : " << nEvents << endl;
   cout << "***************************************************" << endl;
   cout << endl;
- 
- // ------------------------------------------------------------------------
+
+  // ------------------------------------------------------------------------
 
 
-        
   // ---  ROOT settings   ---------------------------------------------------
-  gStyle->SetPalette(1);  
+  gStyle->SetPalette(1);
   gDebug = 0;
   // ------------------------------------------------------------------------
- 
 
-  
+
   // -----   Timer   --------------------------------------------------------
   TStopwatch timer;
   timer.Start();
   // ------------------------------------------------------------------------
 
-    
-  
+
   // ----  Load libraries   -------------------------------------------------
   gROOT->LoadMacro("$VMCWORKDIR/gconfig/basiclibs.C");
   basiclibs();
@@ -91,55 +88,51 @@ void sts_Qa(Int_t nEvents = 1) {
   gSystem->Load("libL1");
   // ------------------------------------------------------------------------
 
-  
 
   // -----   Reconstruction run   -------------------------------------------
-  FairRunAna* run= new FairRunAna();
+  FairRunAna* run = new FairRunAna();
   run->SetInputFile(inFile);
   run->AddFriend(recoFile);
   run->AddFriend(digiFile);
   run->SetOutputFile(outFile);
   // ------------------------------------------------------------------------
-// -----   STS simulation QA   ----------------------------------------
-  FairTask* stsSimQa = new CbmStsSimulationQa(kTRUE,iVerbose);
+  // -----   STS simulation QA   ----------------------------------------
+  FairTask* stsSimQa = new CbmStsSimulationQa(kTRUE, iVerbose);
   run->AddTask(stsSimQa);
   // ------------------------------------------------------------------------
-  
+
   // -----   STS hit finding QA   ----------------------------------------
-  FairTask* stsFHQa = new CbmStsFindHitsQa(kTRUE,iVerbose);
+  FairTask* stsFHQa = new CbmStsFindHitsQa(kTRUE, iVerbose);
   run->AddTask(stsFHQa);
   // ------------------------------------------------------------------------
   // -----   STS reconstruction QA   ----------------------------------------
-//   FairTask* stsRecoQa = new CbmStsReconstructionQa(kFALSE, 4, 0.7, 3);
-//   run->AddTask(stsRecoQa);
+  //   FairTask* stsRecoQa = new CbmStsReconstructionQa(kFALSE, 4, 0.7, 3);
+  //   run->AddTask(stsRecoQa);
   // ------------------------------------------------------------------------
 
-  
 
   // -----  Parameter database   --------------------------------------------
   TString stsDigiFile = gSystem->Getenv("VMCWORKDIR");
   stsDigiFile += "/parameters/sts/";
   stsDigiFile += digipar;
   cout << "digi file = " << stsDigiFile << endl;
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
-  FairParRootFileIo*  parIo1 = new FairParRootFileIo();
+  FairRuntimeDb* rtdb        = run->GetRuntimeDb();
+  FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
   parIo1->open(parFile.Data());
-  parIo2->open(stsDigiFile.Data(),"in");
+  parIo2->open(stsDigiFile.Data(), "in");
   rtdb->setFirstInput(parIo1);
   rtdb->setSecondInput(parIo2);
   rtdb->setOutput(parIo1);
   rtdb->saveOutput();
   // ------------------------------------------------------------------------
 
-  
-  
+
   // -----   Initialise and run   -------------------------------------------
   run->LoadGeometry();
   run->Init();
   run->Run(0, nEvents);
   // ------------------------------------------------------------------------
-
 
 
   // -----   Finish   -------------------------------------------------------
@@ -150,12 +143,8 @@ void sts_Qa(Int_t nEvents = 1) {
   Double_t ctime = timer.CpuTime();
   cout << endl << endl;
   cout << "Macro finished succesfully." << endl;
-  cout << "Output file is "         << outFile << endl;
+  cout << "Output file is " << outFile << endl;
   cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << endl;
   cout << endl;
   // ------------------------------------------------------------------------
-
-
 }
-
-

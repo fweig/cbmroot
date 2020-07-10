@@ -8,9 +8,9 @@
 #ifndef CbmFormatDecHexPrintout_H
 #define CbmFormatDecHexPrintout_H
 
+#include <iomanip>
 #include <iostream>
 #include <sstream>
-#include <iomanip>
 
 /**
  ** Replaces the following block of code which generate warnings depending on the OS
@@ -22,7 +22,7 @@
     Form( "%016lu", static_cast<uint64_t>(val) );
  **/
 
-std::string FormatDecPrintout( uint64_t ulVal, char cFill = 0, uint uWidth = 0 );
+std::string FormatDecPrintout(uint64_t ulVal, char cFill = 0, uint uWidth = 0);
 
 /**
  ** Replaces the following block of code which generate warnings depending on the OS
@@ -34,6 +34,9 @@ std::string FormatDecPrintout( uint64_t ulVal, char cFill = 0, uint uWidth = 0 )
     Form( "%016lx", static_cast<uint64_t>(val) );
  **/
 
-std::string FormatHexPrintout( uint64_t ulVal, char cFill = 0, uint uWidth = 0, bool bUppercase = false );
+std::string FormatHexPrintout(uint64_t ulVal,
+                              char cFill      = 0,
+                              uint uWidth     = 0,
+                              bool bUppercase = false);
 
 #endif

@@ -4,16 +4,11 @@
 
 //___________________________________________________________________
 CbmTrdParMod::CbmTrdParMod(const char* name, const char* title)
-  : TNamed(name, title)
-  ,fModuleId(0)
-{
-
-}
+  : TNamed(name, title), fModuleId(0) {}
 
 //___________________________________________________________________
-CbmTrdParMod::~CbmTrdParMod()
-{
-  LOG(debug) << GetName() << "::delete["<< GetTitle() <<"]";
+CbmTrdParMod::~CbmTrdParMod() {
+  LOG(debug) << GetName() << "::delete[" << GetTitle() << "]";
 }
 
 ClassImp(CbmTrdParMod)

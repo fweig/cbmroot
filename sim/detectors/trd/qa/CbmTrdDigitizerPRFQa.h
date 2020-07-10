@@ -7,43 +7,39 @@ class TClonesArray;
 class TH1F;
 class TH2F;
 
-class CbmTrdDigitizerPRFQa : public FairTask
-{
+class CbmTrdDigitizerPRFQa : public FairTask {
 public:
+  /* Defaul constructor */
+  CbmTrdDigitizerPRFQa();
 
-    /* Defaul constructor */
-    CbmTrdDigitizerPRFQa();
+  /* Standard constructor */
+  CbmTrdDigitizerPRFQa(const char* name, const char* title = "FairTask");
 
-    /* Standard constructor */
-    CbmTrdDigitizerPRFQa(const char* name,
-        		const char* title = "FairTask");
+  /* Destructor */
+  virtual ~CbmTrdDigitizerPRFQa();
 
-    /* Destructor */
-    virtual ~CbmTrdDigitizerPRFQa();
+  /* Initialisation */
+  InitStatus Init();
 
-    /* Initialisation */
-    InitStatus Init();
+  /* Execution */
+  virtual void Exec(Option_t* option);
 
-    /* Execution */
-    virtual void Exec(Option_t* option);
-
-    /* Finish at the end of each event */
-    virtual void Finish();
+  /* Finish at the end of each event */
+  virtual void Finish();
 
 
 private:
+  /* Prepare the QA histograms */
+  void PrepareHistograms();
 
-    /* Prepare the QA histograms */
-    void PrepareHistograms();
 
-
-    /* Write the QA histograms to file*/
+  /* Write the QA histograms to file*/
   void WriteHistograms();
-  
+
   CbmTrdDigitizerPRFQa(const CbmTrdDigitizerPRFQa&);
   CbmTrdDigitizerPRFQa& operator=(const CbmTrdDigitizerPRFQa&);
 
-    ClassDef(CbmTrdDigitizerPRFQa, 1)
+  ClassDef(CbmTrdDigitizerPRFQa, 1)
 };
 
 #endif

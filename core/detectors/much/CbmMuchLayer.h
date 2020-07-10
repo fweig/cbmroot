@@ -12,17 +12,15 @@
 #ifndef CBMMUCHLAYER_H
 #define CBMMUCHLAYER_H 1
 
-#include <Rtypes.h>            // for THashConsistencyHolder, ClassDef
-#include <RtypesCore.h>        // for Double_t, Int_t, Bool_t, Double32_t
-#include <TObject.h>           // for TObject
+#include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
+#include <RtypesCore.h>  // for Double_t, Int_t, Bool_t, Double32_t
+#include <TObject.h>     // for TObject
 
 #include "CbmMuchLayerSide.h"  // for CbmMuchLayerSide
 
-class CbmMuchLayer : public TObject
-{
+class CbmMuchLayer : public TObject {
 
- public:
-
+public:
   /** Default constructor **/
   CbmMuchLayer();
 
@@ -45,7 +43,7 @@ class CbmMuchLayer : public TObject
   virtual ~CbmMuchLayer();
 
   /** Accessors **/
-  Int_t GetDetectorId()  const { return fDetectorId; }
+  Int_t GetDetectorId() const { return fDetectorId; }
   CbmMuchLayerSide* GetSideF() { return &fSideF; }
   CbmMuchLayerSide* GetSideB() { return &fSideB; }
   CbmMuchLayerSide* GetSide(Bool_t side) { return (side ? &fSideB : &fSideF); }
@@ -64,17 +62,18 @@ class CbmMuchLayer : public TObject
    */
   Double_t GetDz();
 
- protected:
-  Int_t   fDetectorId;  // Unique detector ID
-  Double32_t fZ;           // z position of station center (midplane) [cm]
-  CbmMuchLayerSide fSideF; // Front side of the layer
-  CbmMuchLayerSide fSideB; // Back side of the layer
-  Double_t   fSupportDx;   // Support half-width
-  Double_t   fSupportDy;   // Support half-height
-  Double_t   fSupportDz;   // Support half-thickness
-  Double_t   fZtoStationCenter; // Relative position of the layer center with respect
-                                // to the station center
+protected:
+  Int_t fDetectorId;        // Unique detector ID
+  Double32_t fZ;            // z position of station center (midplane) [cm]
+  CbmMuchLayerSide fSideF;  // Front side of the layer
+  CbmMuchLayerSide fSideB;  // Back side of the layer
+  Double_t fSupportDx;      // Support half-width
+  Double_t fSupportDy;      // Support half-height
+  Double_t fSupportDz;      // Support half-thickness
+  Double_t
+    fZtoStationCenter;  // Relative position of the layer center with respect
+                        // to the station center
 
-  ClassDef(CbmMuchLayer,1);
+  ClassDef(CbmMuchLayer, 1);
 };
 #endif

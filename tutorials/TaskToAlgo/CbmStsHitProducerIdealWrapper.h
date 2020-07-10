@@ -8,24 +8,23 @@
 
 #include "FairTask.h"
 
-#include "CbmStsPoint.h"
 #include "CbmStsHitProducerIdealAlgo.h"
+#include "CbmStsPoint.h"
 
 #include <vector>
 
 class TClonesArray;
 class CbmTrdParSetGas;
 
-class CbmStsHitProducerIdealWrapper : public FairTask
-{
+class CbmStsHitProducerIdealWrapper : public FairTask {
 
- public:
-
-  /** Default constructor **/  
+public:
+  /** Default constructor **/
   CbmStsHitProducerIdealWrapper();
 
   CbmStsHitProducerIdealWrapper(const CbmStsHitProducerIdealWrapper&) = delete;
-  CbmStsHitProducerIdealWrapper& operator=(const CbmStsHitProducerIdealWrapper&) = delete;
+  CbmStsHitProducerIdealWrapper&
+  operator=(const CbmStsHitProducerIdealWrapper&) = delete;
 
   /** Destructor **/
   ~CbmStsHitProducerIdealWrapper();
@@ -41,24 +40,22 @@ class CbmStsHitProducerIdealWrapper : public FairTask
   /**
   * \brief Inherited from FairTask.
   */
-  virtual void    SetParContainers();
+  virtual void SetParContainers();
 
- private:
-
+private:
   /** Input array of CbmStsPoints **/
-  TClonesArray* fPointArray{nullptr};
+  TClonesArray* fPointArray {nullptr};
 
   /** Output array of CbmStsHits **/
-  TClonesArray* fHitArray{nullptr};  
+  TClonesArray* fHitArray {nullptr};
 
-  CbmStsHitProducerIdealAlgo* fAlgo{new CbmStsHitProducerIdealAlgo()};
+  CbmStsHitProducerIdealAlgo* fAlgo {new CbmStsHitProducerIdealAlgo()};
 
-  CbmTrdParSetGas* fTrdGasPar{nullptr};
+  CbmTrdParSetGas* fTrdGasPar {nullptr};
 
-  std::vector<CbmStsPoint> Convert(TClonesArray* arr) ;
+  std::vector<CbmStsPoint> Convert(TClonesArray* arr);
 
-  ClassDef(CbmStsHitProducerIdealWrapper,1);
-
+  ClassDef(CbmStsHitProducerIdealWrapper, 1);
 };
 
 #endif

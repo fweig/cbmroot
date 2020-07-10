@@ -14,12 +14,10 @@ class CbmMvdDetector;
 class CbmDigiManager;
 
 
-class CbmMvdHitfinder : public FairTask
-{
- 
- public:
+class CbmMvdHitfinder : public FairTask {
 
-  /** Default constructor **/  
+public:
+  /** Default constructor **/
   CbmMvdHitfinder();
 
 
@@ -27,37 +25,34 @@ class CbmMvdHitfinder : public FairTask
   *@param name  Task name
 
   **/
-  CbmMvdHitfinder(const char* name,Int_t iVerbose = 1);
-  CbmMvdHitfinder(const char* name,Int_t mode, Int_t iVerbose);
+  CbmMvdHitfinder(const char* name, Int_t iVerbose = 1);
+  CbmMvdHitfinder(const char* name, Int_t mode, Int_t iVerbose);
 
   /** Destructor **/
   virtual ~CbmMvdHitfinder();
 
   void Exec(Option_t* opt);
-  void UseClusterfinder(Bool_t clusterfinderFlag ){useClusterfinder = clusterfinderFlag;}; //* enable use of external clusterfinder
-  void ShowDebugHistos(){fShowDebugHistos = kTRUE;}
+  void UseClusterfinder(Bool_t clusterfinderFlag) {
+    useClusterfinder = clusterfinderFlag;
+  };  //* enable use of external clusterfinder
+  void ShowDebugHistos() { fShowDebugHistos = kTRUE; }
 
 protected:
- 
- 
-
-
 private:
+  CbmMvdDetector* fDetector;
+  CbmDigiManager* fDigiMan;  //!
 
- CbmMvdDetector* fDetector;
- CbmDigiManager* fDigiMan; //!
- 
- TClonesArray* fInputCluster;
- TClonesArray* fHits;
+  TClonesArray* fInputCluster;
+  TClonesArray* fHits;
 
- UInt_t fHitfinderPluginNr;
- Bool_t useClusterfinder;
- Bool_t fShowDebugHistos; 
- TStopwatch     fTimer;        ///< ROOT timer
- Int_t fmode;
+  UInt_t fHitfinderPluginNr;
+  Bool_t useClusterfinder;
+  Bool_t fShowDebugHistos;
+  TStopwatch fTimer;  ///< ROOT timer
+  Int_t fmode;
 
-// -----   Private methods   ---------------------------------------------
- /** Intialisation **/
+  // -----   Private methods   ---------------------------------------------
+  /** Intialisation **/
   virtual InitStatus Init();
 
 
@@ -74,7 +69,7 @@ private:
 
 
   /** Clear the hit arrays **/
-  void Reset();	 
+  void Reset();
 
   void GetMvdGeometry();
 
@@ -85,8 +80,8 @@ private:
   CbmMvdHitfinder(const CbmMvdHitfinder&);
   CbmMvdHitfinder operator=(const CbmMvdHitfinder&);
 
-ClassDef(CbmMvdHitfinder,1);    
+  ClassDef(CbmMvdHitfinder, 1);
 };
-    
-    
-#endif   		     
+
+
+#endif

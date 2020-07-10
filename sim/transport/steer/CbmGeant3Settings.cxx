@@ -2,18 +2,18 @@
 
 #include <FairLogger.h>
 
-#include <TVirtualMC.h>
 #include <TGeant3.h>
+#include <TVirtualMC.h>
 
 void CbmGeant3Settings::Init(TVirtualMC* vmc) {
 
   CbmVMCSettings::Init(vmc);
-  
+
   TGeant3* vmcg3 = dynamic_cast<TGeant3*>(vmc);
-  
+
   assert(vmcg3);
   LOG(info) << ": Configuring Geant3";
-  
+
   // Set Number of events to be processed
   // Can't be changed from the user code
   vmcg3->SetTRIG(1);
@@ -40,17 +40,18 @@ void CbmGeant3Settings::Init(TVirtualMC* vmc) {
   vmcg3->SetSTRA(fProcessEnergyLossStraggling);
 
   // Control the automatic calculation of tracking medium parameters
-  vmcg3->SetAUTO(fAutomaticTrackingMediumParameters);         
+  vmcg3->SetAUTO(fAutomaticTrackingMediumParameters);
 
   // Control if particles should be stopped
   vmcg3->SetABAN(fStoppingMethod);
-  
+
   //  This flag controls the tracking optimization performed via the
   //  GSORD routine:
   vmcg3->SetOPTI(fTrackingOptimizationMethod);
 
   //  Control the cross section tabulations
-  vmcg3->SetERAN(fCrossSectionMinEnergy, fCrossSectionMaxEnergy, fCrossSectionBins);
+  vmcg3->SetERAN(
+    fCrossSectionMinEnergy, fCrossSectionMaxEnergy, fCrossSectionBins);
 }
 
 ClassImp(CbmGeant3Settings);

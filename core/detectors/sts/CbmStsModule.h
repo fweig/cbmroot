@@ -6,11 +6,11 @@
 #ifndef CBMSTSMODULE_H
 #define CBMSTSMODULE_H 1
 
-#include <Rtypes.h>           // for THashConsistencyHolder, ClassDef
-#include <RtypesCore.h>       // for Double_t, UShort_t, Bool_t, Int_t, kTRUE
-#include <TString.h>          // for TString
+#include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
+#include <RtypesCore.h>  // for Double_t, UShort_t, Bool_t, Int_t, kTRUE
+#include <TString.h>     // for TString
 
-#include <string>             // for string
+#include <string>  // for string
 
 #include "CbmStsElement.h"    // for CbmStsElement
 #include "CbmStsParModule.h"  // for CbmStsParModule
@@ -28,64 +28,56 @@ class TGeoPhysicalNode;
  ** sensor or two or more daisy-chained sensors (CbmStsSensor), the analogue
  ** cable and the read-out electronics.
  **/
-class CbmStsModule : public CbmStsElement
-{
+class CbmStsModule : public CbmStsElement {
 
-  public:
-
-    /** @brief Standard constructor
+public:
+  /** @brief Standard constructor
      ** @param address  Unique element address
      ** @param node     Geometry node
      ** @param mother   Mother element
      **/
-    CbmStsModule(UInt_t address = 0, TGeoPhysicalNode* node = nullptr,
-                 CbmStsElement* mother = nullptr);
+  CbmStsModule(UInt_t address         = 0,
+               TGeoPhysicalNode* node = nullptr,
+               CbmStsElement* mother  = nullptr);
 
 
-    /** @brief Destructor **/
-    virtual ~CbmStsModule();
+  /** @brief Destructor **/
+  virtual ~CbmStsModule();
 
 
-    /** @brief Get the address from the module name (static)
+  /** @brief Get the address from the module name (static)
      ** @param name Name of module
      ** @value Unique element address
      **/
-    static Int_t GetAddressFromName(TString name);
+  static Int_t GetAddressFromName(TString name);
 
 
-    /** @brief Module parameters
+  /** @brief Module parameters
      ** @return Module parameter object
      **/
-    const CbmStsParModule* GetParameters() const {
-      return fParams;
-    }
+  const CbmStsParModule* GetParameters() const { return fParams; }
 
 
-    /** @brief Set module parameters
+  /** @brief Set module parameters
      ** @param par  Module parameter object
      **/
-    void SetParameters(const CbmStsParModule& par) {
-      fParams = &par;
-    }
+  void SetParameters(const CbmStsParModule& par) { fParams = &par; }
 
 
-    /** String output **/
-    std::string ToString() const;
+  /** String output **/
+  std::string ToString() const;
 
 
-  private:
-
-    /** @brief Initialise daughters from geometry **/
-    virtual void InitDaughters();
-
-
-  private:
-
-    const CbmStsParModule* fParams = nullptr;   //! Module parameters
+private:
+  /** @brief Initialise daughters from geometry **/
+  virtual void InitDaughters();
 
 
-    ClassDef(CbmStsModule, 3);
+private:
+  const CbmStsParModule* fParams = nullptr;  //! Module parameters
 
+
+  ClassDef(CbmStsModule, 3);
 };
 
 #endif /* CBMSTSMODULE_H */

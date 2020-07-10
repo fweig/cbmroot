@@ -15,65 +15,59 @@
 #include "CbmMuchBeamTimeDigi.h"
 
 // -------------------------------------------------------------------------
-CbmMuchBeamTimeDigi::CbmMuchBeamTimeDigi() 
-  : CbmMuchDigi(),
-    fPadX(-1), 
-    fPadY(-1), 
-    fRocId(-1), 
-    fNxId(-1), 
-    fNxCh(-1), 
-    fElink(-1)
-{
-}
+CbmMuchBeamTimeDigi::CbmMuchBeamTimeDigi()
+  : CbmMuchDigi()
+  , fPadX(-1)
+  , fPadY(-1)
+  , fRocId(-1)
+  , fNxId(-1)
+  , fNxCh(-1)
+  , fElink(-1) {}
 // -------------------------------------------------------------------------
 
 
 // -------------------------------------------------------------------------
-CbmMuchBeamTimeDigi::CbmMuchBeamTimeDigi(Int_t address, Int_t charge, ULong64_t time)
-  : CbmMuchDigi(address, charge, time),
-    fPadX(-1), 
-    fPadY(-1), 
-    fRocId(-1), 
-    fNxId(-1), 
-    fNxCh(-1),
-    fElink(-1)
-{
-}
+CbmMuchBeamTimeDigi::CbmMuchBeamTimeDigi(Int_t address,
+                                         Int_t charge,
+                                         ULong64_t time)
+  : CbmMuchDigi(address, charge, time)
+  , fPadX(-1)
+  , fPadY(-1)
+  , fRocId(-1)
+  , fNxId(-1)
+  , fNxCh(-1)
+  , fElink(-1) {}
 // -------------------------------------------------------------------------
 
 CbmMuchBeamTimeDigi::CbmMuchBeamTimeDigi(CbmMuchBeamTimeDigi* digi)
-  : CbmMuchDigi(*digi),
-    fPadX(digi->GetPadX()),
-    fPadY(digi->GetPadY()),
-    fRocId(digi->GetRocId()),
-    fNxId(digi->GetNxId()),
-    fNxCh(digi->GetNxCh()),
-    fElink(digi->GetElink())
-{ 
-}
+  : CbmMuchDigi(*digi)
+  , fPadX(digi->GetPadX())
+  , fPadY(digi->GetPadY())
+  , fRocId(digi->GetRocId())
+  , fNxId(digi->GetNxId())
+  , fNxCh(digi->GetNxCh())
+  , fElink(digi->GetElink()) {}
 
 CbmMuchBeamTimeDigi::CbmMuchBeamTimeDigi(const CbmMuchBeamTimeDigi& rhs)
- : CbmMuchDigi(rhs),
-   fPadX(rhs.fPadX),
-   fPadY(rhs.fPadY),
-   fRocId(rhs.fRocId),
-   fNxId(rhs.fNxId),
-   fNxCh(rhs.fNxCh),
-   fElink(rhs.fElink)
-{
-}
+  : CbmMuchDigi(rhs)
+  , fPadX(rhs.fPadX)
+  , fPadY(rhs.fPadY)
+  , fRocId(rhs.fRocId)
+  , fNxId(rhs.fNxId)
+  , fNxCh(rhs.fNxCh)
+  , fElink(rhs.fElink) {}
 
-CbmMuchBeamTimeDigi& CbmMuchBeamTimeDigi::operator=(const CbmMuchBeamTimeDigi& rhs)
-{
+CbmMuchBeamTimeDigi&
+CbmMuchBeamTimeDigi::operator=(const CbmMuchBeamTimeDigi& rhs) {
 
   if (this != &rhs) {
     CbmMuchDigi::operator=(rhs);
-    fPadX = rhs.fPadX;
-    fPadY = rhs.fPadY;
-    fRocId = rhs.fRocId;
-    fNxId = rhs.fNxId;
-    fNxCh = rhs.fNxCh;
-    fElink = rhs.fElink;
+    fPadX                = rhs.fPadX;
+    fPadY                = rhs.fPadY;
+    fRocId               = rhs.fRocId;
+    fNxId                = rhs.fNxId;
+    fNxCh                = rhs.fNxCh;
+    fElink               = rhs.fElink;
   }
   return *this;
 }

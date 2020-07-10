@@ -16,7 +16,7 @@
 
 
 {
- 
+
   // ========================================================================
   //          Adjust this part according to your requirements
 
@@ -47,59 +47,60 @@
   TString stsDigiVersion = "v05a";
 
   // Specify MAPS digitisation parameters
-  Int_t    iMapsF        = 1;           // First MAPS station
-  Int_t    iMapsL        = 2;           // Last MAPS station
-  Double_t mapsSigmaX    = 0.0005;      // resolution in x [cm]
-  Double_t mapsSigmaY    = 0.0005;      // resolution in y [cm]
-  Double_t mapsEff       = 0.99;        // single hit efficiency
-  Double_t mapsFakeRate  = 0.03;        // fake hit rate 
-  Double_t mapsMergeDist = 0.00;        // distance for hit merging [cm]
-  Int_t    mapsPileUp    = 1;           // number of pileup events
-  
+  Int_t iMapsF           = 1;       // First MAPS station
+  Int_t iMapsL           = 2;       // Last MAPS station
+  Double_t mapsSigmaX    = 0.0005;  // resolution in x [cm]
+  Double_t mapsSigmaY    = 0.0005;  // resolution in y [cm]
+  Double_t mapsEff       = 0.99;    // single hit efficiency
+  Double_t mapsFakeRate  = 0.03;    // fake hit rate
+  Double_t mapsMergeDist = 0.00;    // distance for hit merging [cm]
+  Int_t mapsPileUp       = 1;       // number of pileup events
+
   // Specify Hybrid digitisation parameters
-  Int_t    iHybF   = 3;           // First hybrid station
-  Int_t    iHybL   = 4;           // Last hybrid station
-  Double_t hybLx   = 0.0050;      // Pixel x size [cm]
-  Double_t hybLy   = 0.0050;      // Pixel y size [cm]
+  Int_t iHybF    = 3;       // First hybrid station
+  Int_t iHybL    = 4;       // Last hybrid station
+  Double_t hybLx = 0.0050;  // Pixel x size [cm]
+  Double_t hybLy = 0.0050;  // Pixel y size [cm]
 
   // Specify Strip digitisation parameters
-  Int_t iStripF = 5;           // First strip station
-  Int_t iStripL = 8;           // Last strip station
+  Int_t iStripF = 5;  // First strip station
+  Int_t iStripL = 8;  // Last strip station
 
   // Specify parameters for RICH track extrapolation
-  Int_t    richNSts = 6;     // minimum number of STS hits for extrapolation
+  Int_t richNSts    = 6;     // minimum number of STS hits for extrapolation
   Double_t richZPos = 300.;  // z position for extrapolation [cm]
 
   // Specify parameters for RICH projektion to PM plane
-  Int_t richZFlag = 1;       // Projetion from IM plane (default)
-  
- // Specify parameters for RICH hit producer
-  Double_t richPmtRad  = 0.4;     // PMT radius [cm]
-  Double_t richPmtDist = 0.;      // Distance between PMTs [cm]
-  Int_t    richDetType = 1;       // Detector type Protvino
-  Int_t    richNoise   = 220;     // Number of noise points per event
-    
+  Int_t richZFlag = 1;  // Projetion from IM plane (default)
+
+  // Specify parameters for RICH hit producer
+  Double_t richPmtRad  = 0.4;  // PMT radius [cm]
+  Double_t richPmtDist = 0.;   // Distance between PMTs [cm]
+  Int_t richDetType    = 1;    // Detector type Protvino
+  Int_t richNoise      = 220;  // Number of noise points per event
+
   // Specify TRD digitisation parameters
-  Double_t trdSigmaX[] = {300, 400, 500}; // Resolution in x [mum]
+  Double_t trdSigmaX[] = {300, 400, 500};  // Resolution in x [mum]
   // Resolutions in y - station and angle dependent [mum]
-  Double_t trdSigmaY1[] = {2700,   3700, 15000, 27600, 33000, 33000, 33000 };
-  Double_t trdSigmaY2[] = {6300,   8300, 33000, 33000, 33000, 33000, 33000 };
-  Double_t trdSigmaY3[] = {10300, 15000, 33000, 33000, 33000, 33000, 33000 };  
-  Int_t trdNFoils    = 100;   // number of polyetylene foils,  default = 100
-  Float_t trdDFoils = 0.001; // thickness of 1 foil [cm], default = 0.001
-  Float_t trdDGap   = 0.008; // thickness of gap between foils [cm], default = 0.008
- 
+  Double_t trdSigmaY1[] = {2700, 3700, 15000, 27600, 33000, 33000, 33000};
+  Double_t trdSigmaY2[] = {6300, 8300, 33000, 33000, 33000, 33000, 33000};
+  Double_t trdSigmaY3[] = {10300, 15000, 33000, 33000, 33000, 33000, 33000};
+  Int_t trdNFoils       = 100;    // number of polyetylene foils,  default = 100
+  Float_t trdDFoils     = 0.001;  // thickness of 1 foil [cm], default = 0.001
+  Float_t trdDGap =
+    0.008;  // thickness of gap between foils [cm], default = 0.008
+
   // Specify parameters for TOF digitisation
-  Double_t tofSigmaT  = 0.08; //80 ps
-  Double_t tofSigmaY  = 0.7;  //7 mm
-  Double_t tofSigmaXY = 0.5;  //5 mm (old hit producer)
+  Double_t tofSigmaT  = 0.08;  //80 ps
+  Double_t tofSigmaY  = 0.7;   //7 mm
+  Double_t tofSigmaXY = 0.5;   //5 mm (old hit producer)
 
   // Specify parameters for RICH ring-track assignment
-  Double_t richDistance = 1.; // Maximum distance between ring centre and track [cm]
-  Int_t    richNPoints  = 5;  // Minmum number of hits on ring
+  Double_t richDistance =
+    1.;                   // Maximum distance between ring centre and track [cm]
+  Int_t richNPoints = 5;  // Minmum number of hits on ring
 
-  
-  
+
   // ----  Load libraries   -------------------------------------------------
   gROOT->LoadMacro("$VMCWORKDIR/gconfig/basiclibs.C");
   basiclibs();
@@ -132,53 +133,49 @@
   // ------------------------------------------------------------------------
 
   // -----   Reconstruction run   -------------------------------------------
-  FairRunAna *fRun= new FairRunAna();
+  FairRunAna* fRun = new FairRunAna();
   fRun->SetInputFile(inFile);
   fRun->SetOutputFile(outFile);
   // ------------------------------------------------------------------------
 
-  
 
   // -----  Parameter database   --------------------------------------------
-  FairRuntimeDb* rtdb = fRun->GetRuntimeDb();
+  FairRuntimeDb* rtdb          = fRun->GetRuntimeDb();
   FairParRootFileIo* parInput1 = new FairParRootFileIo();
   parInput1->open(parFile.Data());
   FairParAsciiFileIo* parInput2 = new FairParAsciiFileIo();
-  TString stsDigiFile = gSystem->Getenv("VMCWORKDIR");
+  TString stsDigiFile           = gSystem->Getenv("VMCWORKDIR");
   stsDigiFile += "/parameters/sts/sts_digi_new_standard.par";
-  parInput2->open(stsDigiFile.Data(),"in");
+  parInput2->open(stsDigiFile.Data(), "in");
   rtdb->setFirstInput(parInput1);
   rtdb->setSecondInput(parInput2);
   fRun->LoadGeometry();
   // ------------------------------------------------------------------------
 
 
-
   // =========================================================================
   // ======                       Hit Producers                         ======
   // =========================================================================
-  
+
   // -----   TOF hit producer   ---------------------------------------------
-  CbmTofHitProducer* tofHitProd = new CbmTofHitProducer("TOF HitProducer",
-  						iVerbose);
+  CbmTofHitProducer* tofHitProd =
+    new CbmTofHitProducer("TOF HitProducer", iVerbose);
   tofHitProd->SetSigmaT(tofSigmaT);
   //tofHitProd->SetSigmaY(tofSigmaY);
   tofHitProd->SetSigmaXY(tofSigmaXY);
-  
+
   fRun->AddTask(tofHitProd);
   // ------------------------------------------------------------------------
-  
+
   // =====                 End of HitProducers                           =====
   // =========================================================================
- 
-  
-     
+
+
   // -----   Intialise and run   --------------------------------------------
   fRun->Init();
-  
-  fRun->Run(0,nEvents);
-  // ------------------------------------------------------------------------
 
+  fRun->Run(0, nEvents);
+  // ------------------------------------------------------------------------
 
 
   // -----   Finish   -------------------------------------------------------
@@ -187,11 +184,9 @@
   Double_t ctime = timer.CpuTime();
   cout << endl << endl;
   cout << "Macro finished succesfully." << endl;
-  cout << "Output file is "    << outFile << endl;
+  cout << "Output file is " << outFile << endl;
   cout << "Parameter file is " << parFile << endl;
   cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << endl;
   cout << endl;
   // ------------------------------------------------------------------------
-
-
 }

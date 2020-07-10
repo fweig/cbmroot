@@ -4,8 +4,8 @@
 
 using std::ifstream;
 
-int Acceptance::ReadAcceptanceFunction(Acceptance::AcceptanceFunction & func, TString filename)
-{
+int Acceptance::ReadAcceptanceFunction(Acceptance::AcceptanceFunction& func,
+                                       TString filename) {
   double ymin = 0., ymax = 6.;
   double ptmin = 0., ptmax = 2.5;
   func.ys.resize(0);
@@ -19,7 +19,7 @@ int Acceptance::ReadAcceptanceFunction(Acceptance::AcceptanceFunction & func, TS
   func.pts.resize(0);
   func.probs.resize(0);
   while (fin >> ty >> tpt >> prob) {
-    if (tpt<ptmin || tpt>ptmax || ty<ymin || ty>ymax) continue;
+    if (tpt < ptmin || tpt > ptmax || ty < ymin || ty > ymax) continue;
     func.ys.push_back(ty);
     func.pts.push_back(tpt);
     func.probs.push_back(prob);
@@ -29,9 +29,11 @@ int Acceptance::ReadAcceptanceFunction(Acceptance::AcceptanceFunction & func, TS
   return 1;
 }
 
-Double_t Acceptance::AcceptanceFunction::getAcceptance(const Double_t & y, const Double_t & pt) const {
-		double ret = sfunc.Eval(y, pt);
-		if (ret<0.) ret = 0.;
-		if (ret>1.) ret = 1.;
-		return ret;
-	}
+Double_t
+Acceptance::AcceptanceFunction::getAcceptance(const Double_t& y,
+                                              const Double_t& pt) const {
+  double ret = sfunc.Eval(y, pt);
+  if (ret < 0.) ret = 0.;
+  if (ret > 1.) ret = 1.;
+  return ret;
+}

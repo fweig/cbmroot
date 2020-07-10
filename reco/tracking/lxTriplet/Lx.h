@@ -3,30 +3,29 @@
 
 #pragma GCC diagnostic ignored "-Weffc++"
 
-#include "FairTask.h"
 #include "CbmMuchPixelHit.h"
-#include "TClonesArray.h"
-#include "LxMC.h"
+#include "CbmStsKFTrackFitter.h"
+#include "CbmTrackMatch.h"
+#include "CbmVertex.h"
+#include "FairTask.h"
 #include "LxCATriplets.h"
 #include "LxEff.h"
-#include "CbmTrackMatch.h"
+#include "LxMC.h"
+#include "TClonesArray.h"
 #include "TH1.h"
 #include "TProfile.h"
 #include "TProfile2D.h"
-#include "CbmStsKFTrackFitter.h"
-#include "CbmVertex.h"
 #include <fstream>
 
 #ifdef FAST_CODE
 #define LX_DYNAMIC_CAST static_cast
-#else// FAST_CODE
+#else  // FAST_CODE
 #define LX_DYNAMIC_CAST dynamic_cast
-#endif// FAST_CODE
+#endif  // FAST_CODE
 
 extern TString lxFinderParticleType;
 
-class LxFinderTriplet : public FairTask
-{
+class LxFinderTriplet : public FairTask {
   friend struct LxEff;
   friend class LxDraw;
 
@@ -34,62 +33,39 @@ public:
   static LxFinderTriplet* Instance();
   explicit LxFinderTriplet();
   ~LxFinderTriplet();
-  InitStatus Init();// Inherited virtual.
-  void Exec(Option_t* opt);// Inherited virtual.
+  InitStatus Init();         // Inherited virtual.
+  void Exec(Option_t* opt);  // Inherited virtual.
 
-  void SetGenInvMass(bool value)
-  {
-    generateInvMass = value;
-  }
+  void SetGenInvMass(bool value) { generateInvMass = value; }
 
-  void SetGenBackground(bool value)
-  {
-    generateBackground = value;
-  }
+  void SetGenBackground(bool value) { generateBackground = value; }
 
-  void SetGenChi2(bool value)
-  {
-    generateChi2 = value;
-  }
+  void SetGenChi2(bool value) { generateChi2 = value; }
 
-  void SetLinkWithSts(bool value)
-  {
-    linkWithSts = value;
-  }
+  void SetLinkWithSts(bool value) { linkWithSts = value; }
 
-  void SetUseMCPInsteadOfHits(bool value)
-  {
-    useMCPInsteadOfHits = value;
-  }
+  void SetUseMCPInsteadOfHits(bool value) { useMCPInsteadOfHits = value; }
 
-  void SetCalcMiddlePoints(bool value)
-  {
-    calcMiddlePoints = value;
-  }
+  void SetCalcMiddlePoints(bool value) { calcMiddlePoints = value; }
 
-  void SetCutCoeff(Double_t value)
-  {
-    cutCoeff = value;
-  }
+  void SetCutCoeff(Double_t value) { cutCoeff = value; }
 
-  void SetParticleType(TString v)
-  {
+  void SetParticleType(TString v) {
     //particleType = v;
     lxFinderParticleType = v;
 
-    if (v == "omega")
-    {
+    if (v == "omega") {
       caSpace.stationsInAlgo = 5;
 #ifdef MAKE_EFF_CALC
       pPtCut = false;
-#endif//MAKE_EFF_CALC
+#endif  //MAKE_EFF_CALC
     }
   }
 
 private:
   void SaveRecoTracks();
   void CalcInvMass();
-  void FinishTask();// Inherited virtual.
+  void FinishTask();  // Inherited virtual.
   void SaveEventTracks();
   void SaveInvMass();
   void SaveBackground();
@@ -102,8 +78,9 @@ private:
   TClonesArray* listMuchPixelDigiMatches;
   TClonesArray* listStsTracks;
   TClonesArray* listStsMatches;
-  TClonesArray* listStsPts;// STS MC-points array. Used for experiments with STS matching.
-  TClonesArray* listRecoTracks;// It is an output array.
+  TClonesArray*
+    listStsPts;  // STS MC-points array. Used for experiments with STS matching.
+  TClonesArray* listRecoTracks;  // It is an output array.
   LxEff effCounter;
   static TH1F* massHisto;
   //static TH1F* backgroundMassHisto;
@@ -134,26 +111,29 @@ private:
   bool calcMiddlePoints;
   Double_t cutCoeff;
   bool pPtCut;
-  std::vector<LxMCPoint> MCPoints;// Points should lay here in the same order as in listMuchPts.
-  std::vector<LxMCTrack> MCTracks;// Tracks should lay here in the same order as in listMCTracks.
+  std::vector<LxMCPoint>
+    MCPoints;  // Points should lay here in the same order as in listMuchPts.
+  std::vector<LxMCTrack>
+    MCTracks;  // Tracks should lay here in the same order as in listMCTracks.
   std::list<LxStsMCPoint> MCStsPoints;
   std::list<LxStsMCPoint*> MCStsPointsByStations[8];
 #ifdef MAKE_DISPERSE_2D_HISTOS
   std::list<LxMCPoint*> MCPointsByStations[LXSTATIONS][LXLAYERS];
   Double_t zCoordsByStations[LXSTATIONS][LXLAYERS];
-#endif//MAKE_DISPERSE_2D_HISTOS
+#endif  //MAKE_DISPERSE_2D_HISTOS
   LxSpace caSpace;
-  std::map<Int_t, std::map<Int_t, int> > particleCounts;
+  std::map<Int_t, std::map<Int_t, int>> particleCounts;
 #ifdef MAKE_EFF_CALC
-  std::ofstream incomplete_events;// Events where not all tracks are reconstructed.
-#endif//MAKE_EFF_CALC
+  std::ofstream
+    incomplete_events;  // Events where not all tracks are reconstructed.
+#endif                  //MAKE_EFF_CALC
   Int_t eventNumber;
 #ifdef CALC_MUCH_DETECTORS_EFF
   Int_t mcPointsCount;
   Int_t mcPointsTriggered;
-#endif//CALC_MUCH_DETECTORS_EFF
+#endif  //CALC_MUCH_DETECTORS_EFF
 
   ClassDef(LxFinderTriplet, 1);
 };
 
-#endif//LX_INCLUDED
+#endif  //LX_INCLUDED

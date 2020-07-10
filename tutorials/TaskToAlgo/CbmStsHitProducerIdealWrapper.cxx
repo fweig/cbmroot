@@ -6,11 +6,11 @@
 
 #include "TClonesArray.h"
 
+#include "FairLogger.h"
+#include "FairParGenericSet.h"
 #include "FairRootManager.h"
 #include "FairRun.h"
 #include "FairRuntimeDb.h"
-#include "FairParGenericSet.h"
-#include "FairLogger.h"
 
 #include "CbmStsHit.h"
 #include "CbmStsHitProducerIdealWrapper.h"
@@ -21,90 +21,84 @@ using std::cout;
 using std::endl;
 
 // -----   Default constructor   -------------------------------------------
-CbmStsHitProducerIdealWrapper::CbmStsHitProducerIdealWrapper() 
-  : FairTask("Ideal STS Hit Producer Task")
-{ 
-}
+CbmStsHitProducerIdealWrapper::CbmStsHitProducerIdealWrapper()
+  : FairTask("Ideal STS Hit Producer Task") {}
 // -------------------------------------------------------------------------
-
 
 
 // -----   Destructor   ----------------------------------------------------
-CbmStsHitProducerIdealWrapper::~CbmStsHitProducerIdealWrapper() 
-{
-}
+CbmStsHitProducerIdealWrapper::~CbmStsHitProducerIdealWrapper() {}
 // -------------------------------------------------------------------------
 
 // -----   Public method Init   --------------------------------------------
-InitStatus CbmStsHitProducerIdealWrapper::Init()
-{
+InitStatus CbmStsHitProducerIdealWrapper::Init() {
 
-// Get RootManager
-FairRootManager* ioman = FairRootManager::Instance();
-  if ( ! ioman ) {
+  // Get RootManager
+  FairRootManager* ioman = FairRootManager::Instance();
+  if (!ioman) {
     cout << "-E- CbmStsHitProducerIdealWrapper::Init: "
-	 << "RootManager not instantised!" << endl;
+         << "RootManager not instantised!" << endl;
     return kFATAL;
   }
 
   // Get input array
   fPointArray = (TClonesArray*) ioman->GetObject("StsPoint");
-  if ( ! fPointArray ) {
+  if (!fPointArray) {
     cout << "-W- CbmStsHitProducerIdealWrapper::Init: "
-	 << "No STSPoint array!" << endl;
+         << "No STSPoint array!" << endl;
     return kERROR;
   }
 
   // Create and register output array
   fHitArray = new TClonesArray("CbmStsHit");
-  ioman->Register("StsHit", "STS", fHitArray, IsOutputBranchPersistent("StsHit"));
+  ioman->Register(
+    "StsHit", "STS", fHitArray, IsOutputBranchPersistent("StsHit"));
 
 
   fAlgo->Init();
   fAlgo->InitContainers();
 
-  cout << "-I- CbmStsHitProducerIdealWrapper: Intialisation successfull" << endl;
+  cout << "-I- CbmStsHitProducerIdealWrapper: Intialisation successfull"
+       << endl;
   return kSUCCESS;
-
 }
 // -------------------------------------------------------------------------
 
-void CbmStsHitProducerIdealWrapper::SetParContainers()
-{
-   LOG(info) << "Setting parameter containers for " << GetName();
+void CbmStsHitProducerIdealWrapper::SetParContainers() {
+  LOG(info) << "Setting parameter containers for " << GetName();
 
-   TList* fParCList = fAlgo->GetParList();
+  TList* fParCList = fAlgo->GetParList();
 
-   for( Int_t iparC = 0; iparC < fParCList->GetEntries(); ++iparC )
-   {
-      FairParGenericSet* tempObj = (FairParGenericSet*)(fParCList->At(iparC));
-      fParCList->Remove(tempObj);
+  for (Int_t iparC = 0; iparC < fParCList->GetEntries(); ++iparC) {
+    FairParGenericSet* tempObj = (FairParGenericSet*) (fParCList->At(iparC));
+    fParCList->Remove(tempObj);
 
-      std::string sParamName{ tempObj->GetName() };
-      FairParGenericSet* newObj = dynamic_cast<FairParGenericSet*>( FairRun::Instance()->GetRuntimeDb()->getContainer( sParamName.data() ) );
+    std::string sParamName {tempObj->GetName()};
+    FairParGenericSet* newObj = dynamic_cast<FairParGenericSet*>(
+      FairRun::Instance()->GetRuntimeDb()->getContainer(sParamName.data()));
 
-      if( nullptr == newObj )
-      {
-         LOG(error) << "Failed to obtain parameter container " << sParamName
-                    << ", for parameter index " << iparC;
-         return;
-      } // if( nullptr == newObj )
+    if (nullptr == newObj) {
+      LOG(error) << "Failed to obtain parameter container " << sParamName
+                 << ", for parameter index " << iparC;
+      return;
+    }  // if( nullptr == newObj )
 
-      fParCList->AddAt(newObj, iparC);
-//      delete tempObj;
-   } // for( Int_t iparC = 0; iparC < fParCList->GetEntries(); ++iparC )
+    fParCList->AddAt(newObj, iparC);
+    //      delete tempObj;
+  }  // for( Int_t iparC = 0; iparC < fParCList->GetEntries(); ++iparC )
 }
 
-std::vector<CbmStsPoint> CbmStsHitProducerIdealWrapper::Convert(TClonesArray* arr) 
-{
-      
+std::vector<CbmStsPoint>
+CbmStsHitProducerIdealWrapper::Convert(TClonesArray* arr) {
+
   std::vector<CbmStsPoint> vec;
   Int_t entries = arr->GetEntriesFast();
   if (entries > 0) {
-     CbmStsPoint* point = static_cast<CbmStsPoint*>(arr->At(0));
-     LOG(info) << "Entries in TCA for data type " << point->GetName() << ": " << entries;
+    CbmStsPoint* point = static_cast<CbmStsPoint*>(arr->At(0));
+    LOG(info) << "Entries in TCA for data type " << point->GetName() << ": "
+              << entries;
   }
-  for(int i=0; i< entries; ++i) {
+  for (int i = 0; i < entries; ++i) {
     CbmStsPoint* point = static_cast<CbmStsPoint*>(arr->At(i));
     vec.emplace_back(*point);
   }
@@ -113,33 +107,31 @@ std::vector<CbmStsPoint> CbmStsHitProducerIdealWrapper::Convert(TClonesArray* ar
 
 
 // -----   Public method Exec   --------------------------------------------
-void CbmStsHitProducerIdealWrapper::Exec(Option_t* /*opt*/) 
-{
+void CbmStsHitProducerIdealWrapper::Exec(Option_t* /*opt*/) {
 
   // Reset output array
-  if ( ! fHitArray ) Fatal("Exec", "No StsHit array");
+  if (!fHitArray) Fatal("Exec", "No StsHit array");
 
   //  fHitArray->Clear();
   fHitArray->Delete();
-  
-  // ConvertToVector 
+
+  // ConvertToVector
   std::vector<CbmStsPoint> points = Convert(fPointArray);
-  
-  // Pass the vector to the algorithm  
+
+  // Pass the vector to the algorithm
   // Get the vector with the newly created data objects from the algorithm
   std::vector<CbmStsHit> hits = fAlgo->ProcessInputData(points);
 
   // Fill the content of vector into TCA
-  int iPoint=0;
-  for (auto const hit: hits) {
+  int iPoint = 0;
+  for (auto const hit : hits) {
     new ((*fHitArray)[iPoint]) CbmStsHit(hit);
     iPoint++;
   }
 
   // Event summary
-  cout << "-I- CbmStsHitProducerIdealWrapper: " << points.size() << " StsPoints, "
-       << hits.size() << " Hits created." << endl;
-
+  cout << "-I- CbmStsHitProducerIdealWrapper: " << points.size()
+       << " StsPoints, " << hits.size() << " Hits created." << endl;
 }
 // -------------------------------------------------------------------------
 

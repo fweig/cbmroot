@@ -9,18 +9,18 @@
 #include "CbmStsParSetSensorCond.h"  // for CbmStsParSetSensorCond
 #include "CbmStsParSim.h"            // for CbmStsParSim
 
-#include <FairLogger.h>              // for Logger, LOG
+#include <FairLogger.h>  // for Logger, LOG
 
-#include <FairParSet.h>              // for FairParSet
-#include <FairRuntimeDb.h>           // for FairRuntimeDb
-#include <TList.h>                   // for TList
-#include <TString.h>                 // for TString
+#include <FairParSet.h>     // for FairParSet
+#include <FairRuntimeDb.h>  // for FairRuntimeDb
+#include <TList.h>          // for TList
+#include <TString.h>        // for TString
 
-#include <string.h>                  // for strcmp
+#include <string.h>  // for strcmp
 
 ClassImp(CbmStsContFact)
 
-static CbmStsContFact gCbmStsContFact;
+  static CbmStsContFact gCbmStsContFact;
 
 
 // -----   Constructor   ----------------------------------------------------
@@ -33,31 +33,30 @@ CbmStsContFact::CbmStsContFact() {
 // --------------------------------------------------------------------------
 
 
-
 // -----   Create a parameter set   -----------------------------------------
 FairParSet* CbmStsContFact::createContainer(FairContainer* container) {
 
   const char* contName = container->GetName();
-  FairParSet* parSet = nullptr;
+  FairParSet* parSet   = nullptr;
 
   // --- Simulation settings
-  if ( strcmp(contName, "CbmStsParSim") == 0 ) {
+  if (strcmp(contName, "CbmStsParSim") == 0) {
     parSet = new CbmStsParSim(container->getConcatName().Data(),
                               container->GetTitle(),
                               container->getContext());
   }
 
   // --- Module parameters
-  else if ( strcmp(contName, "CbmStsParSetModule") == 0 ) {
+  else if (strcmp(contName, "CbmStsParSetModule") == 0) {
     parSet = new CbmStsParSetModule(container->getConcatName().Data(),
                                     container->GetTitle(),
                                     container->getContext());
   }
 
   // --- Sensor parameters
-  else if ( strcmp(contName, "CbmStsParSetSensor") == 0 ) {
-    LOG(info) << "createContainer " << container->getConcatName().Data()
-        << " " << container->GetTitle() << " " << container->getContext();
+  else if (strcmp(contName, "CbmStsParSetSensor") == 0) {
+    LOG(info) << "createContainer " << container->getConcatName().Data() << " "
+              << container->GetTitle() << " " << container->getContext();
     parSet = new CbmStsParSetSensor(container->getConcatName().Data(),
                                     container->GetTitle(),
                                     container->getContext());
@@ -66,53 +65,44 @@ FairParSet* CbmStsContFact::createContainer(FairContainer* container) {
 
 
   // --- Sensor conditions
-  else if ( strcmp(contName, "CbmStsParSetSensorCond") == 0 ) {
+  else if (strcmp(contName, "CbmStsParSetSensorCond") == 0) {
     parSet = new CbmStsParSetSensorCond(container->getConcatName().Data(),
-                                          container->GetTitle(),
-                                          container->getContext());
+                                        container->GetTitle(),
+                                        container->getContext());
   }
 
   LOG(info) << GetName() << ": Create container " << contName
             << " with parameter set " << parSet->GetName();
   return parSet;
-
 }
 // --------------------------------------------------------------------------
-
 
 
 // ----   Define containers and contexts   ----------------------------------
 void CbmStsContFact::setAllContainers() {
 
   // --- Simulation settings
-  FairContainer* simPars = new FairContainer("CbmStsParSim",
-                                             "STS simulation settings",
-                                             "Default");
+  FairContainer* simPars =
+    new FairContainer("CbmStsParSim", "STS simulation settings", "Default");
   simPars->addContext("Default");
   containers->Add(simPars);
 
   // --- Module parameters
-  FairContainer* modulePars= new FairContainer("CbmStsParSetModule",
-                                               "STS module parameters",
-                                               "Default");
+  FairContainer* modulePars =
+    new FairContainer("CbmStsParSetModule", "STS module parameters", "Default");
   modulePars->addContext("Default");
   containers->Add(modulePars);
 
   // --- Sensor parameters
-  FairContainer* sensorPars= new FairContainer("CbmStsParSetSensor",
-                                               "STS sensor parameters",
-                                               "Default");
+  FairContainer* sensorPars =
+    new FairContainer("CbmStsParSetSensor", "STS sensor parameters", "Default");
   sensorPars->addContext("Default");
   containers->Add(sensorPars);
 
   // --- Sensor conditions
-  FairContainer* sensorCond= new FairContainer("CbmStsParSetSensorCond",
-                                               "STS sensor conditions",
-                                               "Default");
+  FairContainer* sensorCond = new FairContainer(
+    "CbmStsParSetSensorCond", "STS sensor conditions", "Default");
   sensorCond->addContext("Default");
   containers->Add(sensorCond);
-
 }
 // --------------------------------------------------------------------------
-
-

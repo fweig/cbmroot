@@ -9,34 +9,36 @@
 #include <FairLogger.h>  // for Logger, LOG
 
 // -----   Default constructor   -------------------------------------------
-CbmMvdHit::CbmMvdHit() 
- : CbmPixelHit(),
-   fFlag(-1),
-   fClusterIndex(-1),
-   fIndexCentralX(-1),
-   fIndexCentralY(-1),
-   fDetectorID(-1)
-{
-	SetTime(0.);
-	SetTimeError(0.);
+CbmMvdHit::CbmMvdHit()
+  : CbmPixelHit()
+  , fFlag(-1)
+  , fClusterIndex(-1)
+  , fIndexCentralX(-1)
+  , fIndexCentralY(-1)
+  , fDetectorID(-1) {
+  SetTime(0.);
+  SetTimeError(0.);
 }
 // -------------------------------------------------------------------------
 
 
-
 // -----   Standard constructor   ------------------------------------------
-CbmMvdHit::CbmMvdHit(Int_t statNr, TVector3& pos, TVector3& dpos, Int_t indexCentralX, Int_t indexCentralY,
-		     Int_t clusterIndex, Int_t flag) 
-  : CbmPixelHit(0, pos, dpos, 0., -1),
-    fFlag(flag),
-    fClusterIndex(clusterIndex),
-    fIndexCentralX(indexCentralX),
-    fIndexCentralY(indexCentralY),
-    fDetectorID(-1)
-{
+CbmMvdHit::CbmMvdHit(Int_t statNr,
+                     TVector3& pos,
+                     TVector3& dpos,
+                     Int_t indexCentralX,
+                     Int_t indexCentralY,
+                     Int_t clusterIndex,
+                     Int_t flag)
+  : CbmPixelHit(0, pos, dpos, 0., -1)
+  , fFlag(flag)
+  , fClusterIndex(clusterIndex)
+  , fIndexCentralX(indexCentralX)
+  , fIndexCentralY(indexCentralY)
+  , fDetectorID(-1) {
   fDetectorID = DetectorId(statNr);
-	SetTime(0.);
-	SetTimeError(0.);
+  SetTime(0.);
+  SetTimeError(0.);
 }
 // -------------------------------------------------------------------------
 /*
@@ -81,16 +83,14 @@ void CbmMvdHit::GetDigiIndexVector(TClonesArray* cbmMvdClusterArray, std::vector
 };
 */
 // -----   Destructor   ----------------------------------------------------
-CbmMvdHit::~CbmMvdHit() {} 
+CbmMvdHit::~CbmMvdHit() {}
 // -------------------------------------------------------------------------
-
 
 
 // -----   Public method Print   -------------------------------------------
 void CbmMvdHit::Print(const Option_t* /*opt*/) const {
-  LOG(info) << "MvdHit in station " << GetStationNr() << " at (" 
-            << GetX() << ", "  << GetY() << ", " 
-            << GetZ() << ") cm";
+  LOG(info) << "MvdHit in station " << GetStationNr() << " at (" << GetX()
+            << ", " << GetY() << ", " << GetZ() << ") cm";
 }
 // -------------------------------------------------------------------------
 

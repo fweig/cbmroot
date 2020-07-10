@@ -6,13 +6,14 @@
  */
 
 // In order to call later Finish, we make this global
-FairRunOnline *run = NULL;
+FairRunOnline* run = NULL;
 
-void TofFeeThr(TString inFile = "", TString sHostname = "localhost",
-                 TString sHistoFile = "data/TofFeeThrHistos.root",
-                 Int_t iServerRefreshRate = 100, Int_t iServerHttpPort = 8080,
-                 TString sFileTag = ""   )
-{
+void TofFeeThr(TString inFile           = "",
+               TString sHostname        = "localhost",
+               TString sHistoFile       = "data/TofFeeThrHistos.root",
+               Int_t iServerRefreshRate = 100,
+               Int_t iServerHttpPort    = 8080,
+               TString sFileTag         = "") {
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
 
   // --- Specify number of events to be produced.
@@ -26,15 +27,15 @@ void TofFeeThr(TString inFile = "", TString sHostname = "localhost",
   // --- Set log output levels
   FairLogger::GetLogger();
   gLogger->SetLogScreenLevel("INFO");
-//  gLogger->SetLogScreenLevel("DEBUG");
-//  gLogger->SetLogScreenLevel("DEBUG2"); // Print raw messages
+  //  gLogger->SetLogScreenLevel("DEBUG");
+  //  gLogger->SetLogScreenLevel("DEBUG2"); // Print raw messages
   gLogger->SetLogVerbosityLevel("LOW");
 
   // --- Define parameter files
-  TList *parFileList = new TList();
-  TString paramDir = "./";
+  TList* parFileList = new TList();
+  TString paramDir   = "./";
 
-  TString paramFileTof = paramDir + "mTofPar.par";
+  TString paramFileTof          = paramDir + "mTofPar.par";
   TObjString* tutDetDigiFileTof = new TObjString(paramFileTof);
   parFileList->Add(tutDetDigiFileTof);
 
@@ -52,38 +53,37 @@ void TofFeeThr(TString inFile = "", TString sHostname = "localhost",
 
   // Get4 Unpacker
   CbmMcbm2018TofFeeThr* test_monitor_tof = new CbmMcbm2018TofFeeThr();
-/*
+  /*
   test_monitor_tof->SetMsOverlap();
 */
   test_monitor_tof->SetIgnoreMsOverlap();
-  test_monitor_tof->SetHistoFileName( sHistoFile );
+  test_monitor_tof->SetHistoFileName(sHistoFile);
 
   // --- Source task
   CbmMcbm2018Source* source = new CbmMcbm2018Source();
-  if( "" != inFile )
-  {
+  if ("" != inFile) {
     source->SetFileName(inFile);
-  } // if( "" != inFile )
-      else
-      {
-         source->SetHostName( sHostname );
-      }
+  }  // if( "" != inFile )
+  else {
+    source->SetHostName(sHostname);
+  }
 
-  source->AddUnpacker(test_monitor_tof,  0x60, 6); //gDPBs TOF
-  source->AddUnpacker(test_monitor_tof,  0x90, 6); //gDPBs T0
+  source->AddUnpacker(test_monitor_tof, 0x60, 6);  //gDPBs TOF
+  source->AddUnpacker(test_monitor_tof, 0x90, 6);  //gDPBs T0
 
-  source->SetSubscriberHwm( 1000 );
+  source->SetSubscriberHwm(1000);
 
   // --- Run
   run = new FairRunOnline(source);
-  run->ActivateHttpServer( iServerRefreshRate, iServerHttpPort ); // refresh each 100 events
+  run->ActivateHttpServer(iServerRefreshRate,
+                          iServerHttpPort);  // refresh each 100 events
   /// To avoid the server sucking all Histos from gROOT when no output file is used
   /// ===> Need to explicitely add the canvases to the server in the task!
   run->GetHttpServer()->GetSniffer()->SetScanGlobalDir(kFALSE);
   run->SetAutoFinish(kFALSE);
 
   // -----   Runtime database   ---------------------------------------------
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
+  FairRuntimeDb* rtdb       = run->GetRuntimeDb();
   FairParAsciiFileIo* parIn = new FairParAsciiFileIo();
   parIn->open(parFileList, "in");
   rtdb->setFirstInput(parIn);
@@ -94,10 +94,11 @@ void TofFeeThr(TString inFile = "", TString sHostname = "localhost",
   TStopwatch timer;
   timer.Start();
   std::cout << ">>> TofFeeThr: Starting run..." << std::endl;
-  run->Run(nEvents, 0); // run until end of input file
+  run->Run(nEvents, 0);  // run until end of input file
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
+            << std::endl;
 
   run->Finish();
 
@@ -107,7 +108,7 @@ void TofFeeThr(TString inFile = "", TString sHostname = "localhost",
   std::cout << std::endl << std::endl;
   std::cout << ">>> TofFeeThr: Macro finished successfully." << std::endl;
   std::cout << ">>> TofFeeThr: Output file is " << outFile << std::endl;
-  std::cout << ">>> TofFeeThr: Real time " << rtime << " s, CPU time "
-	    << ctime << " s" << std::endl;
+  std::cout << ">>> TofFeeThr: Real time " << rtime << " s, CPU time " << ctime
+            << " s" << std::endl;
   std::cout << std::endl;
 }

@@ -10,11 +10,11 @@
 #define BMN_NICA_BMN_FORMAT_MC_NICACBMMCTRACKINTERFACE_H_
 #include "NicaMCTrackInterface.h"
 
-class NicaCbmMCTrackInterface : public NicaMCTrackInterface{
+class NicaCbmMCTrackInterface : public NicaMCTrackInterface {
 public:
-	NicaCbmMCTrackInterface();
-	virtual ~NicaCbmMCTrackInterface();
-	ClassDef(NicaCbmMCTrackInterface,1)
+  NicaCbmMCTrackInterface();
+  virtual ~NicaCbmMCTrackInterface();
+  ClassDef(NicaCbmMCTrackInterface, 1)
 };
 
 #endif /* BMN_NICA_BMN_FORMAT_MC_NICACBMMCTRACKINTERFACE_H_ */

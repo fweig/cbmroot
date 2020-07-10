@@ -9,10 +9,10 @@
 #define CBMOFFSETDIGITIMETESTER_H
 
 /// CbmRoot (+externals) headers
+#include "CbmMuchBeamTimeDigi.h"
 #include "CbmOffsetDigiTime.h"
 #include "CbmStsDigi.h"
 #include "CbmTofDigi.h"
-#include "CbmMuchBeamTimeDigi.h"
 
 /// FairRoot headers
 
@@ -21,51 +21,52 @@
 /// C/C++ headers
 
 
-class CbmOffsetDigiTimeSts : public CbmOffsetDigiTime< CbmStsDigi >
-{
-   public:
-      CbmOffsetDigiTimeSts( TString sDigiBranchName, TString sDigiCalBranchName = "", TString sDigiCalBranchDescr = "" ) :
-         CbmOffsetDigiTime< CbmStsDigi >( sDigiBranchName, sDigiCalBranchName, sDigiCalBranchDescr )
-         {};
+class CbmOffsetDigiTimeSts : public CbmOffsetDigiTime<CbmStsDigi> {
+public:
+  CbmOffsetDigiTimeSts(TString sDigiBranchName,
+                       TString sDigiCalBranchName  = "",
+                       TString sDigiCalBranchDescr = "")
+    : CbmOffsetDigiTime<CbmStsDigi>(sDigiBranchName,
+                                    sDigiCalBranchName,
+                                    sDigiCalBranchDescr) {};
 
-      ~CbmOffsetDigiTimeSts(){};
+  ~CbmOffsetDigiTimeSts() {};
 
-   ClassDef( CbmOffsetDigiTimeSts, 0 );
+  ClassDef(CbmOffsetDigiTimeSts, 0);
 };
 
-class CbmOffsetDigiTimeTof : public CbmOffsetDigiTime< CbmTofDigi >
-{
-   public:
+class CbmOffsetDigiTimeTof : public CbmOffsetDigiTime<CbmTofDigi> {
+public:
+  CbmOffsetDigiTimeTof(TString sDigiBranchName,
+                       TString sDigiCalBranchName  = "",
+                       TString sDigiCalBranchDescr = "")
+    : CbmOffsetDigiTime<CbmTofDigi>(sDigiBranchName,
+                                    sDigiCalBranchName,
+                                    sDigiCalBranchDescr) {};
 
-      CbmOffsetDigiTimeTof( TString sDigiBranchName, TString sDigiCalBranchName = "", TString sDigiCalBranchDescr = "" ) :
-         CbmOffsetDigiTime< CbmTofDigi >( sDigiBranchName, sDigiCalBranchName, sDigiCalBranchDescr )
-         {};
+  ~CbmOffsetDigiTimeTof() {};
 
-      ~CbmOffsetDigiTimeTof(){};
-
-   ClassDef( CbmOffsetDigiTimeTof, 0 );
+  ClassDef(CbmOffsetDigiTimeTof, 0);
 };
 
-class CbmOffsetDigiTimeMuch : public CbmOffsetDigiTime< CbmMuchBeamTimeDigi >
-{
-   public:
+class CbmOffsetDigiTimeMuch : public CbmOffsetDigiTime<CbmMuchBeamTimeDigi> {
+public:
+  CbmOffsetDigiTimeMuch(TString sDigiBranchName,
+                        TString sDigiCalBranchName  = "",
+                        TString sDigiCalBranchDescr = "")
+    : CbmOffsetDigiTime<CbmMuchBeamTimeDigi>(sDigiBranchName,
+                                             sDigiCalBranchName,
+                                             sDigiCalBranchDescr) {};
 
-      CbmOffsetDigiTimeMuch( TString sDigiBranchName, TString sDigiCalBranchName = "", TString sDigiCalBranchDescr = "" ) :
-         CbmOffsetDigiTime< CbmMuchBeamTimeDigi >( sDigiBranchName, sDigiCalBranchName, sDigiCalBranchDescr )
-         {};
+  ~CbmOffsetDigiTimeMuch() {};
 
-      ~CbmOffsetDigiTimeMuch(){};
-
-   ClassDef( CbmOffsetDigiTimeMuch, 0 );
+  ClassDef(CbmOffsetDigiTimeMuch, 0);
 };
 
-class CbmOffsetDigiTimeTester
-{
-   public:
-
-      CbmOffsetDigiTimeTester();
-      ~CbmOffsetDigiTimeTester();
-
+class CbmOffsetDigiTimeTester {
+public:
+  CbmOffsetDigiTimeTester();
+  ~CbmOffsetDigiTimeTester();
 };
 
-#endif // CBMOFFSETDIGITIMETESTER_H
+#endif  // CBMOFFSETDIGITIMETESTER_H

@@ -29,16 +29,15 @@
 class TClonesArray;
 class CbmTrdParSetGas;
 
-class CbmStsHitProducerTaskIdeal : public FairTask
-{
+class CbmStsHitProducerTaskIdeal : public FairTask {
 
- public:
-
-  /** Default constructor **/  
+public:
+  /** Default constructor **/
   CbmStsHitProducerTaskIdeal();
 
   CbmStsHitProducerTaskIdeal(const CbmStsHitProducerTaskIdeal&) = delete;
-  CbmStsHitProducerTaskIdeal& operator=(const CbmStsHitProducerTaskIdeal&) = delete;
+  CbmStsHitProducerTaskIdeal&
+  operator=(const CbmStsHitProducerTaskIdeal&) = delete;
 
   /** Destructor **/
   ~CbmStsHitProducerTaskIdeal();
@@ -54,23 +53,21 @@ class CbmStsHitProducerTaskIdeal : public FairTask
   /**
   * \brief Inherited from FairTask.
   */
-  virtual void    SetParContainers();
+  virtual void SetParContainers();
 
- private:
-
+private:
   /** Input array of CbmStsPoints **/
   TClonesArray* fPointArray;
 
   /** Output array of CbmStsHits **/
-  TClonesArray* fHitArray;  
+  TClonesArray* fHitArray;
 
   CbmTrdParSetGas* fTrdGasPar;
-  
-  std::vector<CbmStsHit> Algo(const std::vector<CbmStsPoint>&); 
-  std::vector<CbmStsPoint> Convert(TClonesArray* arr) ;
 
-  ClassDef(CbmStsHitProducerTaskIdeal,1);
+  std::vector<CbmStsHit> Algo(const std::vector<CbmStsPoint>&);
+  std::vector<CbmStsPoint> Convert(TClonesArray* arr);
 
+  ClassDef(CbmStsHitProducerTaskIdeal, 1);
 };
 
 #endif

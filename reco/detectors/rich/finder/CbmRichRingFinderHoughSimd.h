@@ -16,12 +16,12 @@
 
 class CbmRichHoughHitVec {
 public:
-	fvec fX;
-	fvec fY;
-	fvec fX2plusY2;
-	//unsigned short int fId;
-	//Bool_t fIsUsed;
-}  _fvecalignment;
+  fvec fX;
+  fvec fY;
+  fvec fX2plusY2;
+  //unsigned short int fId;
+  //Bool_t fIsUsed;
+} _fvecalignment;
 
 /**
 * \class CbmRichRingFinderHoughSimd
@@ -31,22 +31,19 @@ public:
 * \author Semen Lebedev
 * \date 2009
 **/
-class CbmRichRingFinderHoughSimd : public CbmRichRingFinderHoughImpl
-{
+class CbmRichRingFinderHoughSimd : public CbmRichRingFinderHoughImpl {
 
 public:
-  	CbmRichRingFinderHoughSimd ();
+  CbmRichRingFinderHoughSimd();
 
-	~CbmRichRingFinderHoughSimd(){;}
+  ~CbmRichRingFinderHoughSimd() { ; }
 
-	virtual void HoughTransformReconstruction();
+  virtual void HoughTransformReconstruction();
 
-	virtual void HoughTransformGroup(
-	      unsigned short int indmin,
-			unsigned short int indmax,
-			Int_t iPart);
+  virtual void HoughTransformGroup(unsigned short int indmin,
+                                   unsigned short int indmax,
+                                   Int_t iPart);
 
-	std::vector<CbmRichHoughHitVec> fDataV;
-
+  std::vector<CbmRichHoughHitVec> fDataV;
 };
 #endif

@@ -19,23 +19,25 @@
 // --------------------------------------------------------------------------
 
 
-void run_reco_dpb(Int_t nEvents = 1, Int_t urqmd = 0000) 
-{
-  gStyle->SetNumberContours(99); 
-  gStyle->SetPalette(1,0);
+void run_reco_dpb(Int_t nEvents = 1, Int_t urqmd = 0000) {
+  gStyle->SetNumberContours(99);
+  gStyle->SetPalette(1, 0);
   gROOT->SetStyle("Plain");
   gStyle->SetPadTickX(1);
   gStyle->SetPadTickY(1);
   // ========================================================================
-  // geometry selection for sim + reco  by Cyrano                            
+  // geometry selection for sim + reco  by Cyrano
   // ========================================================================
   ifstream whichTrdGeo;
-  whichTrdGeo.open("whichTrdGeo",ios::in);
+  whichTrdGeo.open("whichTrdGeo", ios::in);
   TString selectGeo;
   if (whichTrdGeo) whichTrdGeo >> selectGeo;
-  TString digipar = selectGeo(0,11);
-  digipar.ReplaceAll(".ge","");     
-  cout << "selected geometry : >> " << selectGeo << " << (to select a different geometry, edit macro/trd/whichTrdGeo file)" << endl;
+  TString digipar = selectGeo(0, 11);
+  digipar.ReplaceAll(".ge", "");
+  cout
+    << "selected geometry : >> " << selectGeo
+    << " << (to select a different geometry, edit macro/trd/whichTrdGeo file)"
+    << endl;
   cout << "selected digipar  : >> " << digipar << " << " << endl;
   whichTrdGeo.close();
   if (digipar.Length() == 0) digipar = "trd_standard";
@@ -47,26 +49,26 @@ void run_reco_dpb(Int_t nEvents = 1, Int_t urqmd = 0000)
   Int_t iVerbose = 0;
   TString fileName;
   // Input file (MC events)
-  fileName.Form("test.mc.%04i.root",urqmd);
-  TString inFile = "data/sim/" + fileName;//test.mc.root";
+  fileName.Form("test.mc.%04i.root", urqmd);
+  TString inFile = "data/sim/" + fileName;  //test.mc.root";
 
   // Parameter file
-  fileName.Form("test.params.%04i.root",urqmd);
-  TString parFile = "data/sim/" + fileName;//params.root";
+  fileName.Form("test.params.%04i.root", urqmd);
+  TString parFile = "data/sim/" + fileName;  //params.root";
 
   // Output file
-  fileName.Form("test.eds.%04i.root",urqmd);
-  TString outFile = "data/reco/" + fileName;//test.eds.root";
+  fileName.Form("test.eds.%04i.root", urqmd);
+  TString outFile = "data/reco/" + fileName;  //test.eds.root";
 
   //  Digitisation files.
   // Add TObjectString containing the different file names to
   // a TList which is passed as input to the FairParAsciiFileIo.
-  // The FairParAsciiFileIo will take care to create on the fly 
+  // The FairParAsciiFileIo will take care to create on the fly
   // a concatenated input parameter file which is then used during
   // the reconstruction.
-  TList *parFileList = new TList();
+  TList* parFileList = new TList();
 
-  TString workDir = gSystem->Getenv("VMCWORKDIR");
+  TString workDir  = gSystem->Getenv("VMCWORKDIR");
   TString paramDir = workDir + "/parameters";
 
   TObjString stsDigiFile = paramDir + "/sts/sts_v13d_std.digi.par";
@@ -94,7 +96,7 @@ void run_reco_dpb(Int_t nEvents = 1, Int_t urqmd = 0000)
   // ------------------------------------------------------------------------
 
   // -----   Reconstruction run   -------------------------------------------
-  FairRunAna *run = new FairRunAna();
+  FairRunAna* run = new FairRunAna();
   run->SetInputFile(inFile);
   run->SetOutputFile(outFile);
   // ------------------------------------------------------------------------
@@ -178,13 +180,13 @@ void run_reco_dpb(Int_t nEvents = 1, Int_t urqmd = 0000)
   }
   */
 
-  Bool_t  simpleTR  = kTRUE; 
-  CbmTrdRadiator *radiator = new CbmTrdRadiator(simpleTR,"K++");
+  Bool_t simpleTR          = kTRUE;
+  CbmTrdRadiator* radiator = new CbmTrdRadiator(simpleTR, "K++");
   // -----   TRD hit producer   ----------------------------------------------
 
-  Bool_t triangularPads = false;// Bucharest triangular pad-plane layout
+  Bool_t triangularPads = false;  // Bucharest triangular pad-plane layout
   //Double_t triggerThreshold = 0.5e-6;//SIS100
-  Double_t triggerThreshold = 1.0e-6;//SIS300
+  Double_t triggerThreshold = 1.0e-6;  //SIS300
   //Double_t triggerThreshold = 3.0e-7;//0.5cm homogeniuse pad height
   Double_t trdNoiseSigma_keV = 0.1;
 
@@ -192,7 +194,7 @@ void run_reco_dpb(Int_t nEvents = 1, Int_t urqmd = 0000)
   trdDigiPrf->SetTriangularPads(triangularPads);
   trdDigiPrf->SetNoiseLevel(trdNoiseSigma_keV);
   run->AddTask(trdDigiPrf);
-  
+
   CbmTrdSPADIC* trdSPADIC = new CbmTrdSPADIC();
   run->AddTask(trdSPADIC);
 
@@ -218,9 +220,9 @@ void run_reco_dpb(Int_t nEvents = 1, Int_t urqmd = 0000)
     run->AddTask(hitrate);
     } else if (nEvents == 1){
   */
-  CbmTrdRecoQa* trdrecoqa = new CbmTrdRecoQa("CbmTrdRecoQa","CbmTrdRecoQa");
+  CbmTrdRecoQa* trdrecoqa = new CbmTrdRecoQa("CbmTrdRecoQa", "CbmTrdRecoQa");
   trdrecoqa->SetTriangularPads(triangularPads);
-  trdrecoqa->SetTriggerThreshold(triggerThreshold);//1e-6
+  trdrecoqa->SetTriggerThreshold(triggerThreshold);  //1e-6
   run->AddTask(trdrecoqa);
   /*} else
     {    
@@ -250,8 +252,8 @@ void run_reco_dpb(Int_t nEvents = 1, Int_t urqmd = 0000)
 
 
   // -----  Parameter database   --------------------------------------------
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
-  FairParRootFileIo* parIo1 = new FairParRootFileIo();
+  FairRuntimeDb* rtdb        = run->GetRuntimeDb();
+  FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
   parIo1->open(parFile.Data());
   parIo2->open(parFileList, "in");

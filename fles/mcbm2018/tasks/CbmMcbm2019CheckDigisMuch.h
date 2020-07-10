@@ -19,95 +19,94 @@ class TH1;
 class TH2;
 class CbmDigiManager;
 
-class CbmMcbm2019CheckDigisMuch : public FairTask
-{
-   public:
+class CbmMcbm2019CheckDigisMuch : public FairTask {
+public:
+  CbmMcbm2019CheckDigisMuch();
 
-      CbmMcbm2019CheckDigisMuch();
+  CbmMcbm2019CheckDigisMuch(const CbmMcbm2019CheckDigisMuch&) = delete;
+  CbmMcbm2019CheckDigisMuch
+  operator=(const CbmMcbm2019CheckDigisMuch&) = delete;
 
-      CbmMcbm2019CheckDigisMuch(const CbmMcbm2019CheckDigisMuch&) = delete;
-      CbmMcbm2019CheckDigisMuch operator=(const CbmMcbm2019CheckDigisMuch&) = delete;
-
-      /** Constructor with parameters (Optional) **/
-      //  CbmMcbm2019CheckDigisMuch(Int_t verbose);
-
-
-      /** Destructor **/
-      ~CbmMcbm2019CheckDigisMuch();
+  /** Constructor with parameters (Optional) **/
+  //  CbmMcbm2019CheckDigisMuch(Int_t verbose);
 
 
-      /** Initiliazation of task at the beginning of a run **/
-      virtual InitStatus Init();
-
-      /** ReInitiliazation of task when the runID changes **/
-      virtual InitStatus ReInit();
+  /** Destructor **/
+  ~CbmMcbm2019CheckDigisMuch();
 
 
-      /** Executed for each event. **/
-      virtual void Exec(Option_t*);
+  /** Initiliazation of task at the beginning of a run **/
+  virtual InitStatus Init();
 
-      /** Load the parameter container from the runtime database **/
-      virtual void SetParContainers();
+  /** ReInitiliazation of task when the runID changes **/
+  virtual InitStatus ReInit();
 
-      /** Finish task called at the end of the run **/
-      virtual void Finish();
 
-      inline void SetTimeWindow( UInt_t   uTsJump,
-                                 Double_t dFirstTsOffset,
-                                 UInt_t   uPrevTs = 2,
-                                 UInt_t   uPostTs = 2,
-                                 Double_t dTsLength = 10240000. )
-                                 {
-                                    fuTsJump      = uTsJump;
-                                    fdFirstTsOffs = dFirstTsOffset;
-                                    fuStartTs     = uTsJump - uPrevTs;
-                                    fuStopTs      = uTsJump + uPostTs;
-                                    fdTsLength    = dTsLength;
-                                    fdStartTime   = fuStartTs * dTsLength + dFirstTsOffset;
-                                 }
-      inline void SetDigiDistPlotStartTime( Double_t dStartTime )
-         {
-            fdDigiDistStart = dStartTime;
-            fdDigiDistStop  = dStartTime + 500000;
-         }
+  /** Executed for each event. **/
+  virtual void Exec(Option_t*);
 
-      inline void SetMuchPulseradcLimits( UInt_t uMin, UInt_t uMax )
-        { fuMinAdcPulserMuch = uMin; fuMaxAdcPulserMuch = uMax; }
+  /** Load the parameter container from the runtime database **/
+  virtual void SetParContainers();
 
-      inline void SetOutFilename( TString sNameIn ) { fOutFileName = sNameIn; }
+  /** Finish task called at the end of the run **/
+  virtual void Finish();
 
-   private:
-      void CreateHistos();
-      void WriteHistos();
+  inline void SetTimeWindow(UInt_t uTsJump,
+                            Double_t dFirstTsOffset,
+                            UInt_t uPrevTs     = 2,
+                            UInt_t uPostTs     = 2,
+                            Double_t dTsLength = 10240000.) {
+    fuTsJump      = uTsJump;
+    fdFirstTsOffs = dFirstTsOffset;
+    fuStartTs     = uTsJump - uPrevTs;
+    fuStopTs      = uTsJump + uPostTs;
+    fdTsLength    = dTsLength;
+    fdStartTime   = fuStartTs * dTsLength + dFirstTsOffset;
+  }
+  inline void SetDigiDistPlotStartTime(Double_t dStartTime) {
+    fdDigiDistStart = dStartTime;
+    fdDigiDistStop  = dStartTime + 500000;
+  }
 
-      static const UInt_t kuMaxNbAsics  = 36;
-      static const UInt_t kuNbChansAsic = 128;
+  inline void SetMuchPulseradcLimits(UInt_t uMin, UInt_t uMax) {
+    fuMinAdcPulserMuch = uMin;
+    fuMaxAdcPulserMuch = uMax;
+  }
 
-      CbmDigiManager* fDigiMan = nullptr; //!
-      UInt_t fNrTs = 0;
-      TH2* fSameChanDigisDistEvo = nullptr;
+  inline void SetOutFilename(TString sNameIn) { fOutFileName = sNameIn; }
 
-      UInt_t   fuTsJump      = 3;
-      Double_t fdFirstTsOffs = 0.0;
-      UInt_t   fuStartTs     = 0.0;
-      UInt_t   fuStopTs      = 0.0;
-      Double_t fdTsLength    = 0.0;
-      Double_t fdStartTime   = 0.0;
+private:
+  void CreateHistos();
+  void WriteHistos();
 
-      Double_t fdDigiDistStart = 0.0;
-      Double_t fdDigiDistStop  = 0.0;
+  static const UInt_t kuMaxNbAsics  = 36;
+  static const UInt_t kuNbChansAsic = 128;
 
-      UInt_t fuMinAdcPulserMuch =   5;
-      UInt_t fuMaxAdcPulserMuch =  15;
-      TH2* fDigisPerAsicEvo = nullptr;
-      Double_t fdLastMuchDigi[ kuMaxNbAsics ][ kuNbChansAsic ];
-      Double_t fdLastMuchDigiPulser[ kuMaxNbAsics ][ kuNbChansAsic ];
+  CbmDigiManager* fDigiMan   = nullptr;  //!
+  UInt_t fNrTs               = 0;
+  TH2* fSameChanDigisDistEvo = nullptr;
 
-      TH2* fDigisPerChanEvo = nullptr;
+  UInt_t fuTsJump        = 3;
+  Double_t fdFirstTsOffs = 0.0;
+  UInt_t fuStartTs       = 0.0;
+  UInt_t fuStopTs        = 0.0;
+  Double_t fdTsLength    = 0.0;
+  Double_t fdStartTime   = 0.0;
 
-      TString fOutFileName{"data/CheckDigisMuch.root"};
+  Double_t fdDigiDistStart = 0.0;
+  Double_t fdDigiDistStop  = 0.0;
 
-      ClassDef(CbmMcbm2019CheckDigisMuch,1);
+  UInt_t fuMinAdcPulserMuch = 5;
+  UInt_t fuMaxAdcPulserMuch = 15;
+  TH2* fDigisPerAsicEvo     = nullptr;
+  Double_t fdLastMuchDigi[kuMaxNbAsics][kuNbChansAsic];
+  Double_t fdLastMuchDigiPulser[kuMaxNbAsics][kuNbChansAsic];
+
+  TH2* fDigisPerChanEvo = nullptr;
+
+  TString fOutFileName {"data/CheckDigisMuch.root"};
+
+  ClassDef(CbmMcbm2019CheckDigisMuch, 1);
 };
 
-#endif // CBMMCBM2019CHECKDIGISMUCH_H
+#endif  // CBMMCBM2019CHECKDIGISMUCH_H

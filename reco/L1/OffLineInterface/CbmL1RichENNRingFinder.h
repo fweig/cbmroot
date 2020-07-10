@@ -19,8 +19,8 @@
 
 #include "CbmRichRingFinder.h"
 
-#include "TString.h"
 #include "TStopwatch.h"
+#include "TString.h"
 
 #include <vector>
 
@@ -28,18 +28,16 @@ class ENNHit;
 class ENNRing;
 
 class CbmL1RichENNRingFinderParallel;
-class CbmL1RichENNRingFinder :public CbmRichRingFinder
-{
-  private:
-    CbmL1RichENNRingFinder(const CbmL1RichENNRingFinder&);
-    CbmL1RichENNRingFinder operator=(const CbmL1RichENNRingFinder&);
+class CbmL1RichENNRingFinder : public CbmRichRingFinder {
+private:
+  CbmL1RichENNRingFinder(const CbmL1RichENNRingFinder&);
+  CbmL1RichENNRingFinder operator=(const CbmL1RichENNRingFinder&);
 
- public:
-  
+public:
   /** Standard constructor **/
-  CbmL1RichENNRingFinder( Int_t verbose = 0 );
+  CbmL1RichENNRingFinder(Int_t verbose = 0);
 
-   /** Destructor **/
+  /** Destructor **/
   ~CbmL1RichENNRingFinder();
 
   /** Initialisation **/
@@ -53,18 +51,17 @@ class CbmL1RichENNRingFinder :public CbmRichRingFinder
    **
    *@value Number of tracks created
    **/
-  Int_t DoFind(TClonesArray* hitArray, TClonesArray* projArray,
-	       TClonesArray* ringArray);
+  Int_t DoFind(TClonesArray* hitArray,
+               TClonesArray* projArray,
+               TClonesArray* ringArray);
 
- private:
-
+private:
   CbmL1RichENNRingFinderParallel* finder;
   Float_t fRecoTime;
   Int_t fNEvents;
 
- public:
-  
-  ClassDef(CbmL1RichENNRingFinder,1);
+public:
+  ClassDef(CbmL1RichENNRingFinder, 1);
 };
 
 #endif

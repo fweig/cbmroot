@@ -13,7 +13,7 @@
 #include "TVector3.h"
 #include <string>
 
-class CbmTrdPoint; 
+class CbmTrdPoint;
 class CbmTrdGeoHandler;
 class FairVolume;
 class TClonesArray;
@@ -25,111 +25,112 @@ class TGeoCombiTrans;
  * \date 27.07.2004
  * \brief Defines the active detector TRD. Constructs the geometry and registers MCPoints.
  **/
-class CbmTrd : public FairDetector 
-{
+class CbmTrd : public FairDetector {
 public:
-
-   /**
+  /**
     * \brief Default constructor.
     **/
-   CbmTrd();
+  CbmTrd();
 
-   /**
+  /**
     * \brief Standard constructor.
     * \param name Detector name.
     * \param active Sensitivity flag
    **/
-   CbmTrd(const char* name, Bool_t active);
+  CbmTrd(const char* name, Bool_t active);
 
-   CbmTrd(const CbmTrd&) = delete;
-   CbmTrd operator=(const CbmTrd&) = delete;
+  CbmTrd(const CbmTrd&) = delete;
+  CbmTrd operator=(const CbmTrd&) = delete;
 
-   /**
+  /**
     * \brief Destructor.
     **/
-   virtual ~CbmTrd();
+  virtual ~CbmTrd();
 
-   /**
+  /**
     * \brief Defines the action to be taken when a step is inside the active volume.
     * Creates CbmTrdPoints and adds them to the collection.
     * \param vol Pointer to the active volume.
     **/
-   virtual Bool_t ProcessHits(FairVolume* vol = NULL);
+  virtual Bool_t ProcessHits(FairVolume* vol = NULL);
 
-   /**
+  /**
     * \brief If verbosity level is set, print hit collection at the end of the event and resets it afterwards.
     **/
-   virtual void EndOfEvent();
+  virtual void EndOfEvent();
 
-   /**
+  /**
     * \brief Registers the hit collection in the ROOT manager.
     */
-   virtual void  Register();
+  virtual void Register();
 
-   /**
+  /**
     * \brief Accessor to the hit collection.
     **/
-   virtual TClonesArray* GetCollection(Int_t iColl) const;
+  virtual TClonesArray* GetCollection(Int_t iColl) const;
 
-   /**
+  /**
     * \brief Screen output of hit collection.
     **/
-   virtual void Print(Option_t* ="") const;
+  virtual void Print(Option_t* = "") const;
 
-   /**
+  /**
     * \brief Clears the hit collection.
     **/
-   virtual void Reset();
+  virtual void Reset();
 
-   /**
+  /**
     * \brief Copies the hit collection with a given track index offset.
     * \param cl1 Origin.
     * \param cl2 Target.
     * \param offset Index offset.
     **/
-   virtual void CopyClones(TClonesArray* cl1, TClonesArray* cl2, Int_t offset);
+  virtual void CopyClones(TClonesArray* cl1, TClonesArray* cl2, Int_t offset);
 
-   /**
+  /**
     * \brief Constructs the TRD geometry.
     **/
-   virtual void ConstructGeometry();
+  virtual void ConstructGeometry();
 
-   Bool_t CheckIfSensitive(std::string name);
+  Bool_t CheckIfSensitive(std::string name);
 
-   void   UseGlobalPhysicsProcesses(Bool_t use) { fUseGlobalPhysicsProcesses=use; }
+  void UseGlobalPhysicsProcesses(Bool_t use) {
+    fUseGlobalPhysicsProcesses = use;
+  }
 
-   void SetTransformationMatrix(TGeoMatrix* mat) { fCombiTrans = mat; }
+  void SetTransformationMatrix(TGeoMatrix* mat) { fCombiTrans = mat; }
+
 private:
-
-   /** Track information to be stored until the track leaves the
+  /** Track information to be stored until the track leaves the
    active volume. **/
-   TLorentzVector fPosIn;             //! position at entrance
-   TLorentzVector fMomIn;             //! momentum at entrance
-   TLorentzVector fPosOut;            //! position at exit
-   TLorentzVector fMomOut;            //! momentum at exit
-   Double32_t     fTime;              //! time
-   Double32_t     fLength;            //! length
-   Double32_t     fELoss;             //! energy loss
-   Int_t          fPosIndex;          //! position index
+  TLorentzVector fPosIn;   //! position at entrance
+  TLorentzVector fMomIn;   //! momentum at entrance
+  TLorentzVector fPosOut;  //! position at exit
+  TLorentzVector fMomOut;  //! momentum at exit
+  Double32_t fTime;        //! time
+  Double32_t fLength;      //! length
+  Double32_t fELoss;       //! energy loss
+  Int_t fPosIndex;         //! position index
 
-   TClonesArray* fTrdPoints; //! MC point collection
-   CbmTrdGeoHandler* fGeoHandler; //! Interface to gMC and gGeoManager
+  TClonesArray* fTrdPoints;       //! MC point collection
+  CbmTrdGeoHandler* fGeoHandler;  //! Interface to gMC and gGeoManager
 
-   Bool_t         fUseGlobalPhysicsProcesses; //! weather to follow the global switch for physics cuts for the TRDgas
+  Bool_t
+    fUseGlobalPhysicsProcesses;  //! weather to follow the global switch for physics cuts for the TRDgas
 
-   TGeoMatrix*   fCombiTrans;  //! Transformation matrix for geometry positioning
+  TGeoMatrix* fCombiTrans;  //! Transformation matrix for geometry positioning
 
-   /**
+  /**
     * \brief Resets the private members for the track parameters.
     **/
-   void ResetParameters();
-   virtual void Initialize();
-   virtual void SetSpecialPhysicsCuts();
+  void ResetParameters();
+  virtual void Initialize();
+  virtual void SetSpecialPhysicsCuts();
 
-   virtual void        ConstructRootGeometry(TGeoMatrix* shift = NULL);
-   
+  virtual void ConstructRootGeometry(TGeoMatrix* shift = NULL);
 
-   ClassDef(CbmTrd, 10);
+
+  ClassDef(CbmTrd, 10);
 };
 
 
@@ -139,7 +140,7 @@ inline void CbmTrd::ResetParameters() {
   fPosOut.SetXYZM(0.0, 0.0, 0.0, 0.0);
   fMomOut.SetXYZM(0.0, 0.0, 0.0, 0.0);
   fTime = fLength = fELoss = 0;
-  fPosIndex = 0;
+  fPosIndex                = 0;
 }
 
 #endif

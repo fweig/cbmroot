@@ -4,14 +4,13 @@
 
 #include "FairTask.h"
 
+#include "CbmMCTrack.h"
 #include <TClonesArray.h>
 #include <vector>
-#include "CbmMCTrack.h"
 
 class FairMCApplication;
 
-class CbmKresSelectGoodEvents : public FairTask
-{
+class CbmKresSelectGoodEvents : public FairTask {
 
 public:
   //***** brief Standard constructor.
@@ -26,7 +25,6 @@ public:
   virtual void Exec(Option_t*);
 
 private:
- 
   TClonesArray* fMcTracks;
   FairMCApplication* fApp;
   std::vector<CbmMCTrack*> Electrons;
@@ -38,8 +36,7 @@ private:
   CbmKresSelectGoodEvents operator=(const CbmKresSelectGoodEvents&);
 
 
-  ClassDef(CbmKresSelectGoodEvents,1)
+  ClassDef(CbmKresSelectGoodEvents, 1)
 };
 
 #endif
-

@@ -23,18 +23,23 @@ public:
    * @param sector   Sector which this pad belongs to
    * @param iChannel Channel index corresponding to this pad
    */
-//  CbmMuchPadRadial (CbmMuchSectorRadial* sector, Int_t iChannel);
-  
-  CbmMuchPadRadial(Int_t address, Double_t r1, Double_t r2, Double_t phi1, Double_t phi2);
-  
+  //  CbmMuchPadRadial (CbmMuchSectorRadial* sector, Int_t iChannel);
+
+  CbmMuchPadRadial(Int_t address,
+                   Double_t r1,
+                   Double_t r2,
+                   Double_t phi1,
+                   Double_t phi2);
+
   ~CbmMuchPadRadial() {}
   Double_t GetPhi1() const { return fPhi1; }
   Double_t GetPhi2() const { return fPhi2; }
   void DrawPad();
-  void SetFired(Int_t iDigi, Int_t ADCcharge, Int_t nADCChannels=256);
+  void SetFired(Int_t iDigi, Int_t ADCcharge, Int_t nADCChannels = 256);
+
 private:
   Double_t fPhi1;
   Double_t fPhi2;
-  ClassDef(CbmMuchPadRadial,1);
+  ClassDef(CbmMuchPadRadial, 1);
 };
 #endif

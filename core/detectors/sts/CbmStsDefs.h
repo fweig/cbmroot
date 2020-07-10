@@ -12,22 +12,21 @@
 
 
 // -----   Namespace CbmSts   ---------------------------------------------
-namespace CbmSts
-{
+namespace CbmSts {
 
   /** @brief Silicon charge [e] **/
-  const Double_t kSiCharge   = 14.;
+  const Double_t kSiCharge = 14.;
 
 
   /** @brief Silicon density [g/cm^3] **/
-  const Double_t kSiDensity  = 2.336;
+  const Double_t kSiDensity = 2.336;
 
 
   /** @brief Proton mass [GeV] **/
   const Double_t kProtonMass = 0.938272081;
 
 
-} // namespace CbmSts
+}  // namespace CbmSts
 
 // ------------------------------------------------------------------------
 
@@ -42,9 +41,9 @@ namespace CbmSts
  ** Urban: The charge fluctuates according the Urban model
  **/
 enum class CbmStsELoss {
-    kIdeal   = 0,
-    kUniform = 1,
-    kUrban   = 2,
+  kIdeal   = 0,
+  kUniform = 1,
+  kUrban   = 2,
 };
 
 
@@ -59,10 +58,6 @@ enum class CbmStsELoss {
  ** side and horizontal strips at the back side. The front side is read-out
  ** at the top edge, the back side at the left edge.
  **/
-enum class CbmStsSensorClass  {
-    kUnknown    = 0,
-    kDssdStereo = 1,
-    kDssdOrtho  = 2
-};
+enum class CbmStsSensorClass { kUnknown = 0, kDssdStereo = 1, kDssdOrtho = 2 };
 
 #endif

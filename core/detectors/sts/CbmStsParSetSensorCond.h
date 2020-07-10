@@ -7,13 +7,13 @@
 #ifndef CBMSTSPARSETSENSORCOND_H
 #define CBMSTSPARSETSENSORCOND_H 1
 
-#include <Rtypes.h>               // for THashConsistencyHolder, ClassDef
-#include <RtypesCore.h>           // for Double_t, UInt_t, Bool_t, kFALSE
+#include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
+#include <RtypesCore.h>  // for Double_t, UInt_t, Bool_t, kFALSE
 
-#include <FairParGenericSet.h>    // for FairParGenericSet
+#include <FairParGenericSet.h>  // for FairParGenericSet
 
-#include <string>                 // for string
-#include <map>                    // for map
+#include <map>     // for map
+#include <string>  // for string
 
 #include "CbmStsParSensorCond.h"  // for CbmStsParSensorCond
 
@@ -27,75 +27,71 @@ class FairParamList;
  ** A set of parameters for each STS sensor is administered through
  ** FairRuntimeDb.
  **/
-class CbmStsParSetSensorCond : public FairParGenericSet
-{
+class CbmStsParSetSensorCond : public FairParGenericSet {
 
-  public:
-
-    /** @brief Constructor
+public:
+  /** @brief Constructor
      ** @param name  Name of parameter set
      ** @param title Parameter container factory name
      ** @param context  No idea
      **/
-    CbmStsParSetSensorCond(const char* name = "CbmStsParSetSensorCond",
-                           const char* title = "STS parameters",
-                           const char* context = "Default");
+  CbmStsParSetSensorCond(const char* name    = "CbmStsParSetSensorCond",
+                         const char* title   = "STS parameters",
+                         const char* context = "Default");
 
 
-    /** @brief Copy constructor (disabled) **/
-    CbmStsParSetSensorCond(const CbmStsParSetSensorCond&) = delete;
+  /** @brief Copy constructor (disabled) **/
+  CbmStsParSetSensorCond(const CbmStsParSetSensorCond&) = delete;
 
 
-    /** @brief Move constructor (disabled) **/
-    CbmStsParSetSensorCond(CbmStsParSetSensorCond&&) = delete;
+  /** @brief Move constructor (disabled) **/
+  CbmStsParSetSensorCond(CbmStsParSetSensorCond&&) = delete;
 
 
-    /** @brief Destructor **/
-    virtual ~CbmStsParSetSensorCond();
+  /** @brief Destructor **/
+  virtual ~CbmStsParSetSensorCond();
 
 
-    /** @brief Reset all parameters **/
-    virtual void clear();
+  /** @brief Reset all parameters **/
+  virtual void clear();
 
 
-    /** @brief Reading parameters from ASCII. Abstract in base class.
+  /** @brief Reading parameters from ASCII. Abstract in base class.
      **
      ** An ASCII I/O is not implemented. The method throws an error.
      **/
-    virtual Bool_t getParams(FairParamList* parList);
+  virtual Bool_t getParams(FairParamList* parList);
 
 
-    /** @brief Get condition parameters of a sensor
+  /** @brief Get condition parameters of a sensor
      ** @param Sensor address
      ** @return Condition parameter object
      **/
-    const CbmStsParSensorCond& GetParSensor(UInt_t address);
+  const CbmStsParSensorCond& GetParSensor(UInt_t address);
 
 
-    /** @brief Check for parameter set being filled
+  /** @brief Check for parameter set being filled
      ** @return kTRUE if neither global parameters nor parameter map are set
      **/
-    Bool_t IsSet() const {
-      return ( fGlobal || ! fParams.empty() );
-    }
+  Bool_t IsSet() const { return (fGlobal || !fParams.empty()); }
 
 
-    /** @brief Copy assignment operator (disabled) **/
-    CbmStsParSetSensorCond& operator=(const CbmStsParSetSensorCond&)  = delete;
+  /** @brief Copy assignment operator (disabled) **/
+  CbmStsParSetSensorCond& operator=(const CbmStsParSetSensorCond&) = delete;
 
 
-    /** @brief Move assignment operator (disabled) **/
-    CbmStsParSetSensorCond& operator=(CbmStsParSetSensorCond&&) = delete;
+  /** @brief Move assignment operator (disabled) **/
+  CbmStsParSetSensorCond& operator=(CbmStsParSetSensorCond&&) = delete;
 
 
-    /** @brief Writing parameters to ASCII. Abstract in base class.
+  /** @brief Writing parameters to ASCII. Abstract in base class.
      **
      ** An ASCII I/O is not implemented. The method throws an error.
      **/
-    virtual void putParams(FairParamList* parList);
+  virtual void putParams(FairParamList* parList);
 
 
-    /** @brief Read sensor conditions from file
+  /** @brief Read sensor conditions from file
      ** @param fileName  Name of file with sensor conditions
      ** @value Number of sensors the conditions are set for
      **
@@ -110,54 +106,54 @@ class CbmStsParSetSensorCond : public FairParGenericSet
      **
      ** TODO: Is using the RuntimeDb ASCII interface an alternative?
      **/
-    UInt_t ReadParams(const char* fileName);
+  UInt_t ReadParams(const char* fileName);
 
 
-    /** @brief Set global conditions (for all sensors)
+  /** @brief Set global conditions (for all sensors)
      ** @param vDep        Full-depletion voltage [V]
      ** @param vBias       Bias voltage [V]
      ** @param temperature Temperature [K]
      ** @param cCoupling   Coupling capacitance [pF]
      ** @param cInterstrip Inter-strip capacitance [pF]
      **/
-    void SetGlobalPar(Double_t vDep, Double_t vBias, Double_t temperature,
-                      Double_t cCoupling, Double_t cInterstrip);
+  void SetGlobalPar(Double_t vDep,
+                    Double_t vBias,
+                    Double_t temperature,
+                    Double_t cCoupling,
+                    Double_t cInterstrip);
 
 
-    /** @brief Set global conditions (for all sensors)
+  /** @brief Set global conditions (for all sensors)
      ** @param conditions  Sensor condition object
      **/
-    void SetGlobalPar(const CbmStsParSensorCond& conditions);
+  void SetGlobalPar(const CbmStsParSensorCond& conditions);
 
 
-    /** @brief Info to string **/
-    std::string ToString();
+  /** @brief Info to string **/
+  std::string ToString();
 
 
-  private:
-
-    /** @brief Initialise all condition parameters
+private:
+  /** @brief Initialise all condition parameters
      **
      ** When the parameter set is streamed, the derived parameters of
      ** the conditions are not set, since the default constructor is
      ** called. So, the Init method of all conditions has to be called.
      **/
-    void Init();
+  void Init();
 
 
+private:
+  /** @brief Global parameters, used for all sensors **/
+  CbmStsParSensorCond fGlobalParams {};
 
-  private:
+  /** @brief Map of parameters. Key is sensor address. **/
+  std::map<UInt_t, CbmStsParSensorCond> fParams {};
 
-    /** @brief Global parameters, used for all sensors **/
-    CbmStsParSensorCond fGlobalParams { };
+  Bool_t fGlobal = kFALSE;  ///< Use global parameters for all sensors
+  Bool_t fIsInit = kFALSE;  //! Initialisation flag
 
-    /** @brief Map of parameters. Key is sensor address. **/
-    std::map<UInt_t, CbmStsParSensorCond> fParams { };
-
-    Bool_t fGlobal = kFALSE;    ///< Use global parameters for all sensors
-    Bool_t fIsInit = kFALSE;    //! Initialisation flag
-
-    ClassDef(CbmStsParSetSensorCond, 2);
+  ClassDef(CbmStsParSetSensorCond, 2);
 };
 
 #endif /* CBMSTSPARSETSENSORCOND */

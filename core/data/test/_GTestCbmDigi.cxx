@@ -2,66 +2,62 @@
 
 #include "CbmMatch.h"
 
-#include "gtest/gtest.h"
 #include "gtest/gtest-spi.h"
+#include "gtest/gtest.h"
 
-#include <utility> // std::forward
+#include <utility>  // std::forward
 
 // Since CbmDigi is an abstract base class which can't be instantiated directly we have
 // to create a derived class without any data members which simply forwards the function
 // calls to the abstract base class
 
-class CbmTestDigi : public CbmDigi
-{
+class CbmTestDigi : public CbmDigi {
 
-  public:
-    CbmTestDigi() : CbmDigi() {;}
+public:
+  CbmTestDigi() : CbmDigi() { ; }
 
-    /** Copy constructor  **/
-    CbmTestDigi(const CbmTestDigi& digi) : CbmDigi(digi) {;}
+  /** Copy constructor  **/
+  CbmTestDigi(const CbmTestDigi& digi) : CbmDigi(digi) { ; }
 
-    /** Move constructor  **/
-    CbmTestDigi(CbmTestDigi&& digi) : CbmDigi(std::forward<CbmTestDigi>(digi)) {;}
+  /** Move constructor  **/
+  CbmTestDigi(CbmTestDigi&& digi) : CbmDigi(std::forward<CbmTestDigi>(digi)) {
+    ;
+  }
 
-    /** Destructor  **/
-    virtual ~CbmTestDigi() {;}
+  /** Destructor  **/
+  virtual ~CbmTestDigi() { ; }
 
-    /** Assignment operator  **/
-    CbmTestDigi& operator=(const CbmTestDigi& other)
-    {
-      if (this != &other) {
-        CbmDigi::operator=(other);
-      }
-      return *this;
+  /** Assignment operator  **/
+  CbmTestDigi& operator=(const CbmTestDigi& other) {
+    if (this != &other) { CbmDigi::operator=(other); }
+    return *this;
+  }
+
+  /** Move Assignment operator  **/
+  CbmTestDigi& operator=(CbmTestDigi&& other) {
+    if (this != &other) {
+      CbmDigi::operator=(std::forward<CbmTestDigi>(other));
     }
+    return *this;
+  }
 
-    /** Move Assignment operator  **/
-    CbmTestDigi& operator=(CbmTestDigi&& other)
-    {
-      if (this != &other) {
-        CbmDigi::operator=(std::forward<CbmTestDigi>(other));
-      }
-      return *this;
-    }
-
-    /** Unique channel address  **/
-    Int_t GetAddress() const {return CbmDigi::GetAddress();}
+  /** Unique channel address  **/
+  Int_t GetAddress() const { return CbmDigi::GetAddress(); }
 
 
-    /** System (enum DetectorId) **/
-    Int_t  GetSystemId() const {return CbmDigi::GetSystemId();};
+  /** System (enum DetectorId) **/
+  Int_t GetSystemId() const { return CbmDigi::GetSystemId(); };
 
 
-    /** Absolute time [ns]  **/
-    Double_t GetTime() const {return CbmDigi::GetTime();}
+  /** Absolute time [ns]  **/
+  Double_t GetTime() const { return CbmDigi::GetTime(); }
 
-    std::string ToString() const { return CbmDigi::ToString(); }
+  std::string ToString() const { return CbmDigi::ToString(); }
 };
 
 #include "compareDigi.h"
 
-TEST(_GTestCbmDigi , CheckDefaultConstructor)
-{
+TEST(_GTestCbmDigi, CheckDefaultConstructor) {
   // Create abstract base class via derived class
   CbmTestDigi test;
 
@@ -70,11 +66,9 @@ TEST(_GTestCbmDigi , CheckDefaultConstructor)
   CbmTestDigi* test1 = new CbmTestDigi();
 
   compareDigiDataMembers(*test1, -111, 0., -111, -111.);
-  
 }
 
-TEST(_GTestCbmDigi , CheckCopyConstructor)
-{
+TEST(_GTestCbmDigi, CheckCopyConstructor) {
   // Create abstract base class via derived class
   CbmTestDigi test;
 
@@ -82,7 +76,7 @@ TEST(_GTestCbmDigi , CheckCopyConstructor)
 
   // Create object by copy constructing
   // test should be equal to test2 and test should be existing
-  CbmTestDigi test2{test};
+  CbmTestDigi test2 {test};
 
   compareDigiDataMembers(test2, -111, 0., -111, -111.);
 
@@ -90,8 +84,7 @@ TEST(_GTestCbmDigi , CheckCopyConstructor)
   compareDigiDataMembers(test, -111, 0., -111, -111.);
 }
 
-TEST(_GTestCbmDigi , CheckAssignmentOperator)
-{
+TEST(_GTestCbmDigi, CheckAssignmentOperator) {
   // Create abstract base class via derived class
   CbmTestDigi test;
 
@@ -119,8 +112,7 @@ TEST(_GTestCbmDigi , CheckAssignmentOperator)
   compareDigiDataMembers(test, -111, 0., -111, -111.);
 }
 
-TEST(_GTestCbmDigi , CheckMoveConstructor)
-{
+TEST(_GTestCbmDigi, CheckMoveConstructor) {
   // Create abstract base class via derived class
   // After creation there is no CbmMatch added such
   // that the pointer is a nullptr
@@ -131,16 +123,14 @@ TEST(_GTestCbmDigi , CheckMoveConstructor)
   // Create object by move constructing
   // test2 should now contain the pointer to the CbmMatch object and
   // test should contain a nullptr
-  CbmTestDigi test2{std::move(test)};
+  CbmTestDigi test2 {std::move(test)};
 
   compareDigiDataMembers(test2, -111, 0., -111, -111.);
 
   compareDigiDataMembers(test, -111, 0., -111, -111.);
-
 }
 
-TEST(_GTestCbmDigi , CheckAssignmentMoveConstructor)
-{
+TEST(_GTestCbmDigi, CheckAssignmentMoveConstructor) {
   // Create abstract base class via derived class
   // After creation there is no CbmMatch added such
   // that the pointer is a nullptr
@@ -151,7 +141,7 @@ TEST(_GTestCbmDigi , CheckAssignmentMoveConstructor)
   // Create object by move constructing
   // test2 should now contain the pointer to the CbmMatch object and
   // test should contain a nullptr
-  CbmTestDigi test2; // = std::move(test);
+  CbmTestDigi test2;  // = std::move(test);
   test2 = std::move(test);
 
 
@@ -160,11 +150,11 @@ TEST(_GTestCbmDigi , CheckAssignmentMoveConstructor)
   compareDigiDataMembers(test, -111, 0., -111, -111.);
 }
 
-TEST(_GTestCbmDigi, CheckToString)
-{
+TEST(_GTestCbmDigi, CheckToString) {
   CbmTestDigi test;
 
   compareDigiDataMembers(test, -111, 0., -111, -111.);
-  
-  EXPECT_STREQ("Digi: System -111 | address -111 | time -111 | charge 0", test.ToString().c_str());
+
+  EXPECT_STREQ("Digi: System -111 | address -111 | time -111 | charge 0",
+               test.ToString().c_str());
 }

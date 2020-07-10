@@ -17,28 +17,25 @@
 
 // Includes needed for IDE
 #if !defined(__CLING__)
-#include <TStopwatch.h>
-#include <FairFileSource.h>
-#include <FairMonitor.h>
-#include <FairRunAna.h>
-#include <FairParAsciiFileIo.h>
-#include <FairParRootFileIo.h>
-#include <FairRuntimeDb.h>
-#include "FairSystemInfo.h"
 #include "CbmDefs.h"
 #include "CbmMCDataManager.h"
 #include "CbmSetup.h"
+#include "FairSystemInfo.h"
+#include <FairFileSource.h>
+#include <FairMonitor.h>
+#include <FairParAsciiFileIo.h>
+#include <FairParRootFileIo.h>
+#include <FairRunAna.h>
+#include <FairRuntimeDb.h>
+#include <TStopwatch.h>
 #endif
 
 
-void run_reco_event(
-    Int_t nEvents = 2,
-    TString dataset = "test",
-    TString setup = "sis100_electron",
-    Bool_t useMC = kFALSE,
-    Bool_t findPV = kTRUE
-)
-{
+void run_reco_event(Int_t nEvents   = 2,
+                    TString dataset = "test",
+                    TString setup   = "sis100_electron",
+                    Bool_t useMC    = kFALSE,
+                    Bool_t findPV   = kTRUE) {
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -77,31 +74,34 @@ void run_reco_event(
   // -----   Parameter files as input to the runtime database   -------------
   std::cout << std::endl;
   std::cout << "-I- " << myName << ": Defining parameter files " << std::endl;
-  TList *parFileList = new TList();
+  TList* parFileList = new TList();
   TString geoTag;
 
   // - TRD digitisation parameters
-  if ( CbmSetup::Instance()->GetGeoTag(ECbmModuleId::kTrd, geoTag) ) {
-    const Char_t *npar[4]={"asic", "digi", "gas", "gain"};
+  if (CbmSetup::Instance()->GetGeoTag(ECbmModuleId::kTrd, geoTag)) {
+    const Char_t* npar[4] = {"asic", "digi", "gas", "gain"};
     TObjString* trdParFile(NULL);
-    for(Int_t i(0); i<4; i++){
-      trdParFile = new TObjString(srcDir + "/parameters/trd/trd_" + geoTag + "."+npar[i]+".par");
+    for (Int_t i(0); i < 4; i++) {
+      trdParFile = new TObjString(srcDir + "/parameters/trd/trd_" + geoTag + "."
+                                  + npar[i] + ".par");
       parFileList->Add(trdParFile);
       std::cout << "-I- " << myName << ": Using parameter file "
-              << trdParFile->GetString() << std::endl;
+                << trdParFile->GetString() << std::endl;
     }
   }
 
   // - TOF digitisation parameters
-  if ( CbmSetup::Instance()->GetGeoTag(ECbmModuleId::kTof, geoTag) ) {
-  	TObjString* tofFile = new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digi.par");
-  	parFileList->Add(tofFile);
+  if (CbmSetup::Instance()->GetGeoTag(ECbmModuleId::kTof, geoTag)) {
+    TObjString* tofFile =
+      new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digi.par");
+    parFileList->Add(tofFile);
     std::cout << "-I- " << myName << ": Using parameter file "
-    		      << tofFile->GetString() << std::endl;
-  	TObjString* tofBdfFile = new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
-  	parFileList->Add(tofBdfFile);
+              << tofFile->GetString() << std::endl;
+    TObjString* tofBdfFile =
+      new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
+    parFileList->Add(tofBdfFile);
     std::cout << "-I- " << myName << ": Using parameter file "
-    		      << tofBdfFile->GetString() << std::endl;
+              << tofBdfFile->GetString() << std::endl;
   }
   // ------------------------------------------------------------------------
 
@@ -120,23 +120,22 @@ void run_reco_event(
   // ------------------------------------------------------------------------
 
 
-
   // -----   FairRunAna   ---------------------------------------------------
-  FairRunAna *run = new FairRunAna();
+  FairRunAna* run             = new FairRunAna();
   FairFileSource* inputSource = new FairFileSource(rawFile);
-  if ( useMC ) inputSource->AddFriend(traFile);
+  if (useMC) inputSource->AddFriend(traFile);
   run->SetSource(inputSource);
   run->SetOutputFile(outFile);
   run->SetGenerateRunInfo(kTRUE);
-  
-  TString monitorFile{outFile};
-  monitorFile.ReplaceAll("rec","rec.monitor");
+
+  TString monitorFile {outFile};
+  monitorFile.ReplaceAll("rec", "rec.monitor");
   FairMonitor::GetMonitor()->EnableMonitor(kTRUE, monitorFile);
   // ------------------------------------------------------------------------
 
 
   // -----   MCDataManager (legacy mode)  -----------------------------------
-  if ( useMC ) {
+  if (useMC) {
     CbmMCDataManager* mcManager = new CbmMCDataManager("MCDataManager", 1);
     mcManager->AddFile(traFile);
     run->AddTask(mcManager);
@@ -156,29 +155,29 @@ void run_reco_event(
   std::cout << "Loading macro " << macroName << std::endl;
   gROOT->LoadMacro(macroName);
   TString command = "reconstruct(";
-  command += ( useMC ? "kTRUE," : "kFALSE," );
-  command += ( findPV ? "kTRUE)" : "kFALSE)" );
+  command += (useMC ? "kTRUE," : "kFALSE,");
+  command += (findPV ? "kTRUE)" : "kFALSE)");
   std::cout << "Calling " << command << std::endl;
   Bool_t recoSuccess = gROOT->ProcessLine(command.Data());
-  if ( ! recoSuccess ) {
-  	std::cerr << "-E- " << myName << ": error in executing " << macroName
-  			<< std::endl;
-  	return;
+  if (!recoSuccess) {
+    std::cerr << "-E- " << myName << ": error in executing " << macroName
+              << std::endl;
+    return;
   }
   std::cout << "-I- " << myName << ": " << macroName << " excuted successfully"
-  		<< std::endl;
+            << std::endl;
   // ------------------------------------------------------------------------
 
 
   // -----  Parameter database   --------------------------------------------
   std::cout << std::endl << std::endl;
   std::cout << "-I- " << myName << ": Set runtime DB" << std::endl;
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
-  FairParRootFileIo* parIo1 = new FairParRootFileIo();
+  FairRuntimeDb* rtdb        = run->GetRuntimeDb();
+  FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
-  parIo1->open(parFile.Data(),"UPDATE");
+  parIo1->open(parFile.Data(), "UPDATE");
   rtdb->setFirstInput(parIo1);
-  if ( ! parFileList->IsEmpty() ) {
+  if (!parFileList->IsEmpty()) {
     parIo2->open(parFileList, "in");
     rtdb->setSecondInput(parIo2);
   }
@@ -222,7 +221,7 @@ void run_reco_event(
   std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
   std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
-  		      << std::endl;
+            << std::endl;
   std::cout << std::endl;
   std::cout << " Test passed" << std::endl;
   std::cout << " All ok " << std::endl;
@@ -233,12 +232,12 @@ void run_reco_event(
   // Extract the maximal used memory an add is as Dart measurement
   // This line is filtered by CTest and the value send to CDash
   FairSystemInfo sysInfo;
-  Float_t maxMemory=sysInfo.GetMaxMemory();
+  Float_t maxMemory = sysInfo.GetMaxMemory();
   std::cout << "<DartMeasurement name=\"MaxMemory\" type=\"numeric/double\">";
   std::cout << maxMemory;
   std::cout << "</DartMeasurement>" << std::endl;
 
-  Float_t cpuUsage=ctime/rtime;
+  Float_t cpuUsage = ctime / rtime;
   std::cout << "<DartMeasurement name=\"CpuLoad\" type=\"numeric/double\">";
   std::cout << cpuUsage;
   std::cout << "</DartMeasurement>" << std::endl;
@@ -248,5 +247,4 @@ void run_reco_event(
   // -----   Function needed for CTest runtime dependency   -----------------
   RemoveGeoManager();
   // ------------------------------------------------------------------------
-
 }

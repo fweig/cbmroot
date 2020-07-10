@@ -12,51 +12,50 @@
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Int_t, Double_t
 
-#include <string>        // for string
+#include <string>  // for string
 
-#include "CbmMatch.h"    // for CbmMatch
+#include "CbmMatch.h"  // for CbmMatch
 
-class CbmTrackMatchNew : public CbmMatch
-{
+class CbmTrackMatchNew : public CbmMatch {
 public:
-   /**
+  /**
     * \brief Default constructor.
     */
-   CbmTrackMatchNew();
+  CbmTrackMatchNew();
 
-   /**
+  /**
     * \brief Destructor.
     */
-   virtual ~CbmTrackMatchNew();
+  virtual ~CbmTrackMatchNew();
 
-   /* Accessors */
-   Int_t GetNofTrueHits() const { return fNofTrueHits; }
-   Int_t GetNofWrongHits() const { return fNofWrongHits; }
-   Int_t GetNofHits() const { return fNofTrueHits + fNofWrongHits; }
-   Double_t GetTrueOverAllHitsRatio() const {
-      Double_t all = GetNofHits();
-      return (all == 0) ? 0. : (fNofTrueHits / all);
-   }
-   Double_t GetWrongOverAllHitsRatio() const {
-      Double_t all = GetNofHits();
-      return (all == 0) ? 0. : (fNofWrongHits / all);
-   }
+  /* Accessors */
+  Int_t GetNofTrueHits() const { return fNofTrueHits; }
+  Int_t GetNofWrongHits() const { return fNofWrongHits; }
+  Int_t GetNofHits() const { return fNofTrueHits + fNofWrongHits; }
+  Double_t GetTrueOverAllHitsRatio() const {
+    Double_t all = GetNofHits();
+    return (all == 0) ? 0. : (fNofTrueHits / all);
+  }
+  Double_t GetWrongOverAllHitsRatio() const {
+    Double_t all = GetNofHits();
+    return (all == 0) ? 0. : (fNofWrongHits / all);
+  }
 
-   /* Modifiers */
-   void SetNofTrueHits(Int_t nofTrueHits) { fNofTrueHits = nofTrueHits; }
-   void SetNofWrongHits(Int_t nofWrongHits) { fNofWrongHits = nofWrongHits; }
+  /* Modifiers */
+  void SetNofTrueHits(Int_t nofTrueHits) { fNofTrueHits = nofTrueHits; }
+  void SetNofWrongHits(Int_t nofWrongHits) { fNofWrongHits = nofWrongHits; }
 
-   /**
+  /**
     * \brief Return string representation of the object.
     * \return String representation of the object.
     **/
-   virtual std::string ToString() const;
+  virtual std::string ToString() const;
 
 private:
-   Int_t fNofTrueHits; // Number of true hits in reconstructed track
-   Int_t fNofWrongHits; // Number of wrong hits in reconstructed track
+  Int_t fNofTrueHits;   // Number of true hits in reconstructed track
+  Int_t fNofWrongHits;  // Number of wrong hits in reconstructed track
 
-   ClassDef(CbmTrackMatchNew, 1);
+  ClassDef(CbmTrackMatchNew, 1);
 };
 
 #endif /* CBMTRACKMATCHNEW_H_ */

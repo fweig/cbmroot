@@ -17,28 +17,25 @@ class CbmLitTrack;
  * \date 2008
  * \brief Interface for track fitter algorithm.
  */
-class CbmLitTrackFitter
-{
+class CbmLitTrackFitter {
 public:
-   /**
+  /**
     * \brief Constructor.
     */
-   CbmLitTrackFitter() {}
+  CbmLitTrackFitter() {}
 
-   /**
+  /**
     * \brief Destructor.
     */
-   virtual ~CbmLitTrackFitter() {}
+  virtual ~CbmLitTrackFitter() {}
 
-   /**
+  /**
     * \brief Main function to be implemented for concrete track fitter algorithm.
     * \param[in,out] track Pointer to track to be fitted.
     * \param[in] downstream Track fit direction.
     * \return Status code.
     */
-   virtual LitStatus Fit(
-      CbmLitTrack* track,
-      bool downstream = true) = 0;
+  virtual LitStatus Fit(CbmLitTrack* track, bool downstream = true) = 0;
 };
 
 #endif

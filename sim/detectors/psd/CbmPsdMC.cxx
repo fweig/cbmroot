@@ -10,59 +10,53 @@
 
 #include "CbmPsdMC.h"
 
-#include <cassert>
-#include <string>
 #include "TGeoManager.h"
 #include "TKey.h"
 #include "TVirtualMC.h"
+#include <cassert>
+#include <string>
 
-#include "CbmModuleList.h"
 #include "CbmGeometryUtils.h"
+#include "CbmModuleList.h"
 #include "CbmPsdPoint.h"
 #include "CbmStack.h"
 
 
-
 // -----   Default constructor   -------------------------------------------
 CbmPsdMC::CbmPsdMC(Bool_t active, const char* name)
-  : FairDetector(name, active, ToIntegralType(ECbmModuleId::kPsd)),
-    fPosX(0.),
-    fPosZ(0.),
-    fRotY(0.),
-    fUserPlacement(kFALSE),
-    fPsdPoints(new TClonesArray("CbmPsdPoint")),
-    fTrackID(-3),       
-    fAddress(-3),
-    fPos(),           
-    fMom(),        
-    fTime(-1.),         
-    fLength(-1.),        
-    fEloss(-1.),
-    fLayerID(-1),
-    fModuleID(-1)
-{
-}
+  : FairDetector(name, active, ToIntegralType(ECbmModuleId::kPsd))
+  , fPosX(0.)
+  , fPosZ(0.)
+  , fRotY(0.)
+  , fUserPlacement(kFALSE)
+  , fPsdPoints(new TClonesArray("CbmPsdPoint"))
+  , fTrackID(-3)
+  , fAddress(-3)
+  , fPos()
+  , fMom()
+  , fTime(-1.)
+  , fLength(-1.)
+  , fEloss(-1.)
+  , fLayerID(-1)
+  , fModuleID(-1) {}
 // -------------------------------------------------------------------------
-
 
 
 // -----   Destructor   ----------------------------------------------------
 CbmPsdMC::~CbmPsdMC() {
- if (fPsdPoints) {
-   fPsdPoints->Delete();
-   delete fPsdPoints;
- }
+  if (fPsdPoints) {
+    fPsdPoints->Delete();
+    delete fPsdPoints;
+  }
 }
 // -------------------------------------------------------------------------
-
 
 
 // -----   Construct the geometry from file   ------------------------------
 void CbmPsdMC::ConstructGeometry() {
 
 
-
-/*
+  /*
   LOG(info) << GetName() << ": Constructing geometry from file "
             << fgeoName;
 
@@ -132,22 +126,19 @@ void CbmPsdMC::ConstructGeometry() {
   LOG(debug) << GetName() << ": " << fNbOfSensitiveVol
              << " sensitive volumes";
 */
-		
-    LOG(info) << "Importing PSD geometry from ROOT file "
-              << fgeoName.Data();
-    Cbm::GeometryUtils::ImportRootGeometry(fgeoName, this);
+
+  LOG(info) << "Importing PSD geometry from ROOT file " << fgeoName.Data();
+  Cbm::GeometryUtils::ImportRootGeometry(fgeoName, this);
 }
 // -------------------------------------------------------------------------
-
 
 
 // -----   End of event action   -------------------------------------------
 void CbmPsdMC::EndOfEvent() {
-    Print();                 // Status output
-    fPsdPoints->Delete();
+  Print();  // Status output
+  fPsdPoints->Delete();
 }
 // -------------------------------------------------------------------------
-
 
 
 // -----   Print   ---------------------------------------------------------
@@ -158,7 +149,6 @@ void CbmPsdMC::Print(Option_t*) const {
 // -------------------------------------------------------------------------
 
 
-
 // -----   Public method ProcessHits  --------------------------------------
 Bool_t CbmPsdMC::ProcessHits(FairVolume*) {
 
@@ -167,7 +157,7 @@ Bool_t CbmPsdMC::ProcessHits(FairVolume*) {
 
   // --- If this is the first step for the track in the volume:
   //     Reset energy loss and store track parameters
-  if ( gMC->IsTrackEntering() ) {
+  if (gMC->IsTrackEntering()) {
     fTrackID = gMC->GetStack()->GetCurrentTrackNumber();
 
     gMC->CurrentVolOffID(1, fLayerID);
@@ -176,41 +166,34 @@ Bool_t CbmPsdMC::ProcessHits(FairVolume*) {
     fAddress = fLayerID;
     gMC->TrackPosition(fPos);
     gMC->TrackMomentum(fMom);
-    fTime    = gMC->TrackTime() * 1.0e09;
-    fLength  = gMC->TrackLength();
-    fEloss   = 0.;
-  } //? track entering
+    fTime   = gMC->TrackTime() * 1.0e09;
+    fLength = gMC->TrackLength();
+    fEloss  = 0.;
+  }  //? track entering
 
   // --- For all steps within active volume: sum up differential energy loss
   fEloss += gMC->Edep();
 
   // --- If track is leaving: get track parameters and create CbmstsPoint
-  if ( gMC->IsTrackExiting()    ||
-       gMC->IsTrackStop()       ||
-       gMC->IsTrackDisappeared()   ) {
+  if (gMC->IsTrackExiting() || gMC->IsTrackStop()
+      || gMC->IsTrackDisappeared()) {
 
     // Create CbmPsdPoint
-    Int_t size = fPsdPoints->GetEntriesFast();
-    CbmPsdPoint* psdPoint = new((*fPsdPoints)[size]) CbmPsdPoint(fTrackID,
-                                                              fAddress,
-                                                              fPos.Vect(),
-                                                              fMom.Vect(),
-                                                              fTime,
-                                                              fLength,
-                                                              fEloss);
+    Int_t size            = fPsdPoints->GetEntriesFast();
+    CbmPsdPoint* psdPoint = new ((*fPsdPoints)[size]) CbmPsdPoint(
+      fTrackID, fAddress, fPos.Vect(), fMom.Vect(), fTime, fLength, fEloss);
     psdPoint->SetModuleID(fModuleID + 1);
 
     // --- Increment number of PsdPoints for this track in the stack
     CbmStack* stack = dynamic_cast<CbmStack*>(gMC->GetStack());
     assert(stack);
     stack->AddPoint(ECbmModuleId::kPsd);
- 
+
   }  //? track is exiting or stopped
 
   return kTRUE;
 }
 // -------------------------------------------------------------------------
-
 
 
 // -----   Register the sensitive volumes   --------------------------------
@@ -221,13 +204,12 @@ void CbmPsdMC::RegisterSensitiveVolumes(TGeoNode* node) {
        iDaughter++) {
     TGeoNode* daughter = dynamic_cast<TGeoNode*>(daughters->At(iDaughter));
     assert(daughter);
-    if(daughter->GetNdaughters() > 0 ) RegisterSensitiveVolumes(daughter);
+    if (daughter->GetNdaughters() > 0) RegisterSensitiveVolumes(daughter);
     TGeoVolume* daughterVolume = daughter->GetVolume();
-    if ( CheckIfSensitive(daughterVolume->GetName()) ) {
+    if (CheckIfSensitive(daughterVolume->GetName())) {
       AddSensitiveVolume(daughterVolume);
-    } //? Sensitive volume
-  } //# Daughter nodes
-
+    }  //? Sensitive volume
+  }    //# Daughter nodes
 }
 // -------------------------------------------------------------------------
 

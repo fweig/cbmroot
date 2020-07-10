@@ -15,7 +15,7 @@
 // 2015-12-11 - DE - use STS v15c as new default
 // 2015-07-20 - FU - magnet v15a is v12b with correct keeping volume material
 // 2015-07-20 - FU - add material budget files
-// 2015-03-13 - DE - use STS v13y with correct ladder orientation as new default 
+// 2015-03-13 - DE - use STS v13y with correct ladder orientation as new default
 // 2015-01-28 - DE - use STS v13x fitting with with PIPE v14l
 // 2015-01-22 - DE - use MVD v14b with PIPE v14l as default
 // 2015-01-19 - DE - use TRD v15a as new default
@@ -33,42 +33,41 @@
 //
 
 
-void setup_sis100_electron()
-{
+void setup_sis100_electron() {
 
   // -----  Geometry Tags  --------------------------------------------------
-  TString magnetGeoTag    = "v15a";
-  TString pipeGeoTag      = "v16b_1e";
-  TString mvdGeoTag       = "v15a";
-  TString stsGeoTag       = "v16x";
-  TString richGeoTag      = "v16a_1e";
-  TString trdGeoTag       = "v15a_1e";
-  TString tofGeoTag       = "v16a_1e";
-  TString psdGeoTag       = "psd_geo_xy.txt";
-  TString platGeoTag      = "v13a";
+  TString magnetGeoTag = "v15a";
+  TString pipeGeoTag   = "v16b_1e";
+  TString mvdGeoTag    = "v15a";
+  TString stsGeoTag    = "v16x";
+  TString richGeoTag   = "v16a_1e";
+  TString trdGeoTag    = "v15a_1e";
+  TString tofGeoTag    = "v16a_1e";
+  TString psdGeoTag    = "psd_geo_xy.txt";
+  TString platGeoTag   = "v13a";
   // ------------------------------------------------------------------------
 
 
   // -----  Magnetic field  -------------------------------------------------
-  TString fieldTag      = "v12b";
-  Double_t fieldZ       = 40.;            // field centre z position
-  Double_t fieldScale   =  1.;            // field scaling factor
+  TString fieldTag    = "v12b";
+  Double_t fieldZ     = 40.;  // field centre z position
+  Double_t fieldScale = 1.;   // field scaling factor
   // ------------------------------------------------------------------------
 
 
   // -----  PSD  ------------------------------------------------------------
-  TString  psdGeoFile = "psd_geo_xy.txt";
-  Double_t psdZpos = 800.;
-  Double_t psdXpos = 11.;
+  TString psdGeoFile = "psd_geo_xy.txt";
+  Double_t psdZpos   = 800.;
+  Double_t psdXpos   = 11.;
   // ------------------------------------------------------------------------
 
 
   // -----  Create setup  ---------------------------------------------------
   CbmSetup* setup = CbmSetup::Instance();
-  if ( ! setup->IsEmpty() ) {
-  	std::cout << "-W- setup_sis100_electron: overwriting existing setup"
-  			      << setup->GetTitle() << std::endl;
-  	setup->Clear();
+  if (!setup->IsEmpty()) {
+    std::cout << "-W- setup_sis100_electron: overwriting existing setup"
+              << setup->GetTitle() << std::endl;
+    setup->Clear();
   }
   setup->SetTitle("SIS100 - Electron Setup");
   setup->SetModule(kMagnet, magnetGeoTag);
@@ -87,5 +86,4 @@ void setup_sis100_electron()
   // -----   Screen output   ------------------------------------------------
   setup->Print();
   // ------------------------------------------------------------------------
-
 }

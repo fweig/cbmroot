@@ -11,134 +11,120 @@ class CbmMCTrack;
 class CbmMCEventList;
 class CbmDigiManager;
 
-#include <vector>
 #include <map>
+#include <vector>
 
 using namespace std;
 
-class CbmRichRecoTbQa : public FairTask
-{
-    
+class CbmRichRecoTbQa : public FairTask {
+
 public:
-    /**
+  /**
      * \brief Standard constructor.
      */
-    CbmRichRecoTbQa();
-    
-    /**
+  CbmRichRecoTbQa();
+
+  /**
      * \brief Standard destructor.
      */
-    virtual ~CbmRichRecoTbQa() {}
-    
-    /**
-     * \brief Inherited from FairTask.
-     */
-    virtual InitStatus Init();
-    
-    /**
-     * \brief Inherited from FairTask.
-     */
-    virtual void Exec(
-                      Option_t* option);
-    
-    /**
-     * \brief Inherited from FairTask.
-     */
-    virtual void Finish();
+  virtual ~CbmRichRecoTbQa() {}
 
-    
-    /**
+  /**
+     * \brief Inherited from FairTask.
+     */
+  virtual InitStatus Init();
+
+  /**
+     * \brief Inherited from FairTask.
+     */
+  virtual void Exec(Option_t* option);
+
+  /**
+     * \brief Inherited from FairTask.
+     */
+  virtual void Finish();
+
+
+  /**
      * \brief Set output directory where you want to write results (figures and json).
      * \param[in] dir Path to the output directory.
      */
-    void SetOutputDir(const string& dir) {fOutputDir = dir;}
-    
-    /**
+  void SetOutputDir(const string& dir) { fOutputDir = dir; }
+
+  /**
          * \brief Draw histogram from file
          */
-    void DrawFromFile(
-          const string& fileName,
-		  const string& outputDir);
-    
+  void DrawFromFile(const string& fileName, const string& outputDir);
+
 private:
-    
-    /**
+  /**
      * \brief Initialize histograms.
      */
-    void InitHistograms();
+  void InitHistograms();
 
-    void DrawHist();
+  void DrawHist();
 
-    void Process();
+  void Process();
 
-    void ProcessMc();
+  void ProcessMc();
 
-    void RingRecoEfficiency();
+  void RingRecoEfficiency();
 
-    Int_t GetNofPrimaryMcTracks(Int_t iEv);
+  Int_t GetNofPrimaryMcTracks(Int_t iEv);
 
-    Bool_t IsCherenkovPhoton(
-            const CbmRichPoint* point,
-            Int_t fileId,
-            Int_t eventId);
+  Bool_t
+  IsCherenkovPhoton(const CbmRichPoint* point, Int_t fileId, Int_t eventId);
 
-    Bool_t IsCherenkovPhotonFromPrimaryElectron(
-            const CbmRichPoint* point,
-            Int_t fileId,
-            Int_t eventId);
+  Bool_t IsCherenkovPhotonFromPrimaryElectron(const CbmRichPoint* point,
+                                              Int_t fileId,
+                                              Int_t eventId);
 
-    Bool_t IsCherenkovPhotonFromSecondaryElectron(
-            const CbmRichPoint* point,
-            Int_t fileId,
-            Int_t eventId);
+  Bool_t IsCherenkovPhotonFromSecondaryElectron(const CbmRichPoint* point,
+                                                Int_t fileId,
+                                                Int_t eventId);
 
-    Bool_t IsMcPrimaryElectron(
-            const CbmMCTrack* mctrack);
+  Bool_t IsMcPrimaryElectron(const CbmMCTrack* mctrack);
 
-    Bool_t IsCherenkovPhotonFromPion(
-            const CbmRichPoint* point,
-            Int_t fileId,
-            Int_t eventId);
+  Bool_t IsCherenkovPhotonFromPion(const CbmRichPoint* point,
+                                   Int_t fileId,
+                                   Int_t eventId);
 
-    Bool_t IsMcPion(
-                const CbmMCTrack* mctrack);
+  Bool_t IsMcPion(const CbmMCTrack* mctrack);
 
-    void DrawTimeLog (
-            const string& hMainName,
-            Int_t nofLogEvents,
-            bool withNoise = false);
+  void DrawTimeLog(const string& hMainName,
+                   Int_t nofLogEvents,
+                   bool withNoise = false);
 
-    /**
+  /**
      * \brief Copy constructor.
      */
-    CbmRichRecoTbQa(const CbmRichRecoTbQa&);
-    
-    /**
+  CbmRichRecoTbQa(const CbmRichRecoTbQa&);
+
+  /**
      * \brief Assignment operator.
      */
-    CbmRichRecoTbQa& operator=(const CbmRichRecoTbQa&);
-    
-    
-    CbmHistManager* fHM;
-    
-    Int_t fTimeSliceNum;
-    
-    Int_t fNofLogEvents;
-    string fOutputDir; // output dir for results
-    
-    CbmMCDataArray* fMCTracks;
-    CbmMCDataArray* fRichPoints;
-    CbmMCDataArray* fStsPoints;
-    CbmDigiManager* fDigiMan;
-    TClonesArray* fRichHits;
-    TClonesArray* fRichRings;
-    TClonesArray* fRichRingMatches;
-    CbmMCEventList* fEventList;
-    
-    vector<pair<Int_t, Int_t> > fRecRings;
+  CbmRichRecoTbQa& operator=(const CbmRichRecoTbQa&);
 
-    ClassDef(CbmRichRecoTbQa,1)
+
+  CbmHistManager* fHM;
+
+  Int_t fTimeSliceNum;
+
+  Int_t fNofLogEvents;
+  string fOutputDir;  // output dir for results
+
+  CbmMCDataArray* fMCTracks;
+  CbmMCDataArray* fRichPoints;
+  CbmMCDataArray* fStsPoints;
+  CbmDigiManager* fDigiMan;
+  TClonesArray* fRichHits;
+  TClonesArray* fRichRings;
+  TClonesArray* fRichRingMatches;
+  CbmMCEventList* fEventList;
+
+  vector<pair<Int_t, Int_t>> fRecRings;
+
+  ClassDef(CbmRichRecoTbQa, 1)
 };
 
 #endif
-

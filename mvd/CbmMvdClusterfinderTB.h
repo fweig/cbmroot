@@ -4,10 +4,8 @@
 // ----------------------------------------------------------------------------
 
 
-
 #ifndef CBMMVDCLUSTERFINDERTB_H
 #define CBMMVDCLUSTERFINDERTB_H 1
-
 
 
 #include "FairTask.h"
@@ -20,12 +18,10 @@ class TString;
 class CbmDigiManager;
 
 
-class CbmMvdClusterfinderTB : public FairTask
-{
- 
- public:
+class CbmMvdClusterfinderTB : public FairTask {
 
-  /** Default constructor **/  
+public:
+  /** Default constructor **/
   CbmMvdClusterfinderTB();
 
 
@@ -33,8 +29,7 @@ class CbmMvdClusterfinderTB : public FairTask
   *@param name  Task name
   *@param mode  0 = MAPS, 1 = Ideal
   **/
-  CbmMvdClusterfinderTB(const char* name,
-		    Int_t mode = 0, Int_t iVerbose = 1);
+  CbmMvdClusterfinderTB(const char* name, Int_t mode = 0, Int_t iVerbose = 1);
 
 
   /** Destructor **/
@@ -42,30 +37,30 @@ class CbmMvdClusterfinderTB : public FairTask
 
   void Exec(Option_t* opt);
 
-  void ShowDebugHistos(){fShowDebugHistos = kTRUE;}
+  void ShowDebugHistos() { fShowDebugHistos = kTRUE; }
 
 private:
-/** Hit producer mode (0 = MAPS, 1 = Ideal) **/
+  /** Hit producer mode (0 = MAPS, 1 = Ideal) **/
   Int_t fMode;
   Bool_t fShowDebugHistos;
- CbmMvdDetector* fDetector;
+  CbmMvdDetector* fDetector;
 
- TClonesArray* fEvents;
- CbmDigiManager* fDigiMan;  //!
- TClonesArray* fEventDigis;
- TClonesArray* fCluster;
-
-  
- UInt_t fClusterPluginNr;
-
-  TString	fBranchName;   // Name of input branch (MvdDigi)
-  
-
-  TStopwatch     fTimer;        ///< ROOT timer
+  TClonesArray* fEvents;
+  CbmDigiManager* fDigiMan;  //!
+  TClonesArray* fEventDigis;
+  TClonesArray* fCluster;
 
 
-// -----   Private methods   ---------------------------------------------
- /** Intialisation **/
+  UInt_t fClusterPluginNr;
+
+  TString fBranchName;  // Name of input branch (MvdDigi)
+
+
+  TStopwatch fTimer;  ///< ROOT timer
+
+
+  // -----   Private methods   ---------------------------------------------
+  /** Intialisation **/
   virtual InitStatus Init();
 
 
@@ -84,7 +79,7 @@ private:
 
 
   /** Clear the hit arrays **/
-  void Reset();	 
+  void Reset();
 
 
   /** Print digitisation parameters **/
@@ -94,8 +89,8 @@ private:
   CbmMvdClusterfinderTB(const CbmMvdClusterfinderTB&);
   CbmMvdClusterfinderTB operator=(const CbmMvdClusterfinderTB&);
 
-ClassDef(CbmMvdClusterfinderTB,1);
+  ClassDef(CbmMvdClusterfinderTB, 1);
 };
-    
-    
-#endif   		     
+
+
+#endif

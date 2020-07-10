@@ -27,11 +27,9 @@
 
 class TClonesArray;
 
-class CbmTrdSetTracksPidLike : public FairTask
-{
+class CbmTrdSetTracksPidLike : public FairTask {
 
- public:
-
+public:
   /** Default constructor **/
   CbmTrdSetTracksPidLike();
 
@@ -67,43 +65,41 @@ class CbmTrdSetTracksPidLike : public FairTask
   Int_t GetNofTracks() const { return fNofTracks; };
 
   /** Setters **/
-  void SetInputFileName(const char *file) { fFileName=file; }
-  void SetUseMCInfo(       Bool_t use=kTRUE)     { fMCinput=use; }
-  void SetUseMomDependence(Bool_t use=kTRUE)     { fMomDep=use; }
+  void SetInputFileName(const char* file) { fFileName = file; }
+  void SetUseMCInfo(Bool_t use = kTRUE) { fMCinput = use; }
+  void SetUseMomDependence(Bool_t use = kTRUE) { fMomDep = use; }
 
 private:
-
   CbmTrdSetTracksPidLike& operator=(const CbmTrdSetTracksPidLike&);
   CbmTrdSetTracksPidLike(const CbmTrdSetTracksPidLike&);
 
-  TString fFileName               = "";      // input file
-  Bool_t fMCinput                 = kFALSE;  // use MC information for input histograms
-  Bool_t fMomDep                  = kTRUE;   // use momentum dependence for input histograms
-  TClonesArray* fTrackArray       = NULL;    /** Input array of TRD tracks */
-  TClonesArray* fTrdHitArray      = NULL;    /** Input array of TRD Hits */
-  TClonesArray* fglobalTrackArray = NULL;    /** Input array of global tracks */
+  TString fFileName = "";      // input file
+  Bool_t fMCinput   = kFALSE;  // use MC information for input histograms
+  Bool_t fMomDep    = kTRUE;   // use momentum dependence for input histograms
+  TClonesArray* fTrackArray       = NULL; /** Input array of TRD tracks */
+  TClonesArray* fTrdHitArray      = NULL; /** Input array of TRD Hits */
+  TClonesArray* fglobalTrackArray = NULL; /** Input array of global tracks */
 
-  TObjArray* fHistdEdx            = NULL;    // Prob. of dEdx for 5 particle species
-  Int_t fNofTracks                = 0;       // Number of tracks successfully fitted
+  TObjArray* fHistdEdx = NULL;  // Prob. of dEdx for 5 particle species
+  Int_t fNofTracks     = 0;     // Number of tracks successfully fitted
 
-  static const Int_t fgkNParts=5;  // numer of different particle species
+  static const Int_t fgkNParts = 5;  // numer of different particle species
   enum EParticleType {
     kElectron = 0,
-    kPion = 1,
-    kKaon = 2,
-    kProton = 3,
-    kMuon = 4,
+    kPion     = 1,
+    kKaon     = 2,
+    kProton   = 3,
+    kMuon     = 4,
   };
 
   /** Read the histograms from file **/
   Bool_t ReadData();
 
   /** Calculate probability for particle (with momentum) and dEdx **/
-  Double_t   GetProbability(Int_t iType, Double_t mom, Double_t dedx) const;
+  Double_t GetProbability(Int_t iType, Double_t mom, Double_t dedx) const;
 
 
-  ClassDef(CbmTrdSetTracksPidLike,1);
-
+  ClassDef(CbmTrdSetTracksPidLike, 1);
 };
 
 #endif

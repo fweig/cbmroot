@@ -21,58 +21,53 @@ class CbmMCDataArray;
 class CbmMCEventList;
 class CbmDigiManager;
 
-class CbmRichRingFinderIdeal : public CbmRichRingFinder
-{
+class CbmRichRingFinderIdeal : public CbmRichRingFinder {
 private:
-    CbmMCDataArray* fRichPoints;
-    CbmMCDataArray* fMcTracks;
-    CbmMCEventList* fEventList;
-    CbmDigiManager* fDigiMan;
-    
-    
+  CbmMCDataArray* fRichPoints;
+  CbmMCDataArray* fMcTracks;
+  CbmMCEventList* fEventList;
+  CbmDigiManager* fDigiMan;
+
+
 public:
-    /**
+  /**
      * \brief Default constructor.
      */
-    CbmRichRingFinderIdeal();
-    
-    /**
+  CbmRichRingFinderIdeal();
+
+  /**
      * \brief Destructor.
      */
-    virtual ~CbmRichRingFinderIdeal();
-    
-    /**
+  virtual ~CbmRichRingFinderIdeal();
+
+  /**
      * \brief Inherited from CbmRichRingFinder.
      */
-    virtual void Init();
-    
-    /**
+  virtual void Init();
+
+  /**
      * Inherited from CbmRichRingFinder.
      */
-    virtual int DoFind(
-                       TClonesArray* hitArray,
-                       TClonesArray* projArray,
-                       TClonesArray* ringArray);
-    
+  virtual int DoFind(TClonesArray* hitArray,
+                     TClonesArray* projArray,
+                     TClonesArray* ringArray);
+
 private:
-    
-    /**
+  /**
      * \ brief Return evnetId from digiMatch corresponding to rich hit.
      */
-    Int_t GetEventIdForRichHit(
-            const CbmRichHit* richHit);
+  Int_t GetEventIdForRichHit(const CbmRichHit* richHit);
 
 
-    /**
+  /**
      * \brief Copy constructor.
      */
-    CbmRichRingFinderIdeal(const CbmRichRingFinderIdeal&);
-    
-    /**
+  CbmRichRingFinderIdeal(const CbmRichRingFinderIdeal&);
+
+  /**
      * \brief Assignment operator.
      */
-    CbmRichRingFinderIdeal& operator=(const CbmRichRingFinderIdeal&);
-    
+  CbmRichRingFinderIdeal& operator=(const CbmRichRingFinderIdeal&);
 };
 
 #endif

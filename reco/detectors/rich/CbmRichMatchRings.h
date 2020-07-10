@@ -31,60 +31,57 @@ class TClonesArray;
 * \author Supriya Das
 * \date 2006
 **/
-class CbmRichMatchRings : public FairTask
-{
+class CbmRichMatchRings : public FairTask {
 
 public:
-
-   /**
+  /**
     * \brief Default constructor.
     */
-   CbmRichMatchRings();
+  CbmRichMatchRings();
 
-   /**
+  /**
     * \brief Destructor.
     */
-   virtual ~CbmRichMatchRings();
+  virtual ~CbmRichMatchRings();
 
-   /**
+  /**
     * \brief Inherited from FairTask.
     */
-   virtual InitStatus Init();
+  virtual InitStatus Init();
 
-   /**
+  /**
     * \brief Inherited from FairTask.
     */
-   virtual void Exec(
-         Option_t* opt);
+  virtual void Exec(Option_t* opt);
 
-   /**
+  /**
     * \brief Inherited from FairTask.
     */
-   virtual void Finish();
+  virtual void Finish();
 
 
 private:
+  TClonesArray* fRings;    // Array of CbmRichRings
+  TClonesArray* fPoints;   // Array of FairMCPoints
+  TClonesArray* fTracks;   // Array of CbmMCTracks
+  TClonesArray* fHits;     // Array of CbmRichHits
+  TClonesArray* fMatches;  // Array of CbmRichRingMatch
 
-   TClonesArray* fRings; // Array of CbmRichRings
-   TClonesArray* fPoints; // Array of FairMCPoints
-   TClonesArray* fTracks; // Array of CbmMCTracks
-   TClonesArray* fHits; // Array of CbmRichHits
-   TClonesArray* fMatches; // Array of CbmRichRingMatch
+  std::map<Int_t, Int_t>
+    fMatchMap;  // Map from MCTrackID to number of common hits
+  //   std::map<Int_t, Int_t> fMatchMCMap; // Map from MCTrackID to number of common hits for MC rings
 
-   std::map<Int_t, Int_t> fMatchMap; // Map from MCTrackID to number of common hits
-//   std::map<Int_t, Int_t> fMatchMCMap; // Map from MCTrackID to number of common hits for MC rings
-
-   /**
+  /**
     * \brief Copy constructor.
     */
-   CbmRichMatchRings(const CbmRichMatchRings&);
+  CbmRichMatchRings(const CbmRichMatchRings&);
 
-   /**
+  /**
     * \brief Assignment operator.
     */
-   CbmRichMatchRings& operator=(const CbmRichMatchRings&);
+  CbmRichMatchRings& operator=(const CbmRichMatchRings&);
 
-   ClassDef(CbmRichMatchRings,1);
+  ClassDef(CbmRichMatchRings, 1);
 };
 
 #endif

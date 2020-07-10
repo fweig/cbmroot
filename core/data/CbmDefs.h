@@ -8,10 +8,10 @@
 #ifndef CBMDEFS_H
 #define CBMDEFS_H 1
 
-#include <RtypesCore.h>      // for Double_t
+#include <RtypesCore.h>  // for Double_t
 
-#include <type_traits>       // for underlying_type
-#include <iostream>          // for ostream
+#include <iostream>     // for ostream
+#include <type_traits>  // for underlying_type
 
 // Convert an element of enum class to its underlying intergral type
 // since with C++11 the return type can't be deduced automatically it has
@@ -21,9 +21,9 @@
 // E.g. ToIntegralType(ECbmModuleId::KSts) should be evaluated at compile
 // time and should not affect the run time performance at all
 template<typename T>
-constexpr auto ToIntegralType(T enumerator) -> typename std::underlying_type<T>::type
-{
-   return static_cast<typename std::underlying_type<T>::type>(enumerator);
+constexpr auto ToIntegralType(T enumerator) ->
+  typename std::underlying_type<T>::type {
+  return static_cast<typename std::underlying_type<T>::type>(enumerator);
 }
 
 /** Enumerator for module Identifiers. Modules can be active (detector systems)
@@ -31,27 +31,27 @@ constexpr auto ToIntegralType(T enumerator) -> typename std::underlying_type<T>:
  ** In order to loop over all detectors, loop until kNofSystems.
  **/
 enum class ECbmModuleId {
- kRef=0,          ///< Reference plane
- kMvd=1,          ///< Micro-Vertex Detector
- kSts=2,          ///< Silicon Tracking System
- kRich=3,         ///< Ring-Imaging Cherenkov Detector
- kMuch=4,         ///< Muon detection system
- kTrd=5,          ///< Transition Radiation Detector
- kTof=6,          ///< Time-of-flight Detector
- kEcal=7,         ///< EM-Calorimeter
- kPsd=8,          ///< Projectile spectator detector
- kHodo=9,         ///< Hodoscope (for test beam times)
- kDummyDet=10,    ///< Dummy for tutorials or tests
- kT0=11,          ///< ToF start Detector
- kNofSystems=12,  ///< For loops over active systems
- kMagnet=17,      ///< Magnet
- kTarget=18,      ///< Target
- kPipe=19,        ///< Beam pipe
- kShield=20,      ///< Beam pipe shielding in MUCH section
- kPlatform=21,    ///< RICH rail platform
- kCave=22,        ///< Cave
- kLastModule=23,  ///< For loops over all modules
- kNotExist=-1     ///< If not found
+  kRef        = 0,   ///< Reference plane
+  kMvd        = 1,   ///< Micro-Vertex Detector
+  kSts        = 2,   ///< Silicon Tracking System
+  kRich       = 3,   ///< Ring-Imaging Cherenkov Detector
+  kMuch       = 4,   ///< Muon detection system
+  kTrd        = 5,   ///< Transition Radiation Detector
+  kTof        = 6,   ///< Time-of-flight Detector
+  kEcal       = 7,   ///< EM-Calorimeter
+  kPsd        = 8,   ///< Projectile spectator detector
+  kHodo       = 9,   ///< Hodoscope (for test beam times)
+  kDummyDet   = 10,  ///< Dummy for tutorials or tests
+  kT0         = 11,  ///< ToF start Detector
+  kNofSystems = 12,  ///< For loops over active systems
+  kMagnet     = 17,  ///< Magnet
+  kTarget     = 18,  ///< Target
+  kPipe       = 19,  ///< Beam pipe
+  kShield     = 20,  ///< Beam pipe shielding in MUCH section
+  kPlatform   = 21,  ///< RICH rail platform
+  kCave       = 22,  ///< Cave
+  kLastModule = 23,  ///< For loops over all modules
+  kNotExist   = -1   ///< If not found
 };
 
 // operator ++ for ECbmModuleId for convenient usage in loops
@@ -65,7 +65,7 @@ enum class ECbmModuleId {
 // The opeartor takes care about the non continuous values for the enum
 // When it reaches the last detector it automatically continuous with the
 // first passive module
-ECbmModuleId& operator ++ (ECbmModuleId&);
+ECbmModuleId& operator++(ECbmModuleId&);
 
 // operator << for convenient output to std::ostream.
 // Converts the enum value to a string which is put in the stream
@@ -74,17 +74,45 @@ std::ostream& operator<<(std::ostream&, const ECbmModuleId&);
 
 /** Enumerator for CBM data types **/
 enum class ECbmDataType {
-  kUnknown     = -1,
-  kMCTrack     = 0,
-  kMvdPoint    = ToIntegralType(ECbmModuleId::kMvd)*100,  kMvdDigi,                kMvdCluster,  kMvdHit,                                     // MVD
-  kStsPoint    = ToIntegralType(ECbmModuleId::kSts)*100,  kStsDigi,                kStsCluster,  kStsHit,                      kStsTrack,     // STS
-  kRichPoint   = ToIntegralType(ECbmModuleId::kRich)*100, kRichDigi,                             kRichHit,                     kRichRing,     // RICH
-  kMuchPoint   = ToIntegralType(ECbmModuleId::kMuch)*100, kMuchDigi,               kMuchCluster, kMuchPixelHit, kMuchStrawHit, kMuchTrack,    // MUCH
-  kTrdPoint    = ToIntegralType(ECbmModuleId::kTrd)*100,  kTrdDigi,                kTrdCluster,  kTrdHit,                      kTrdTrack,     // TRD
-  kTofPoint    = ToIntegralType(ECbmModuleId::kTof)*100,  kTofDigi,  kTofCalDigi,                kTofHit,                      kTofTrack,     // TOF
-  kPsdPoint    = ToIntegralType(ECbmModuleId::kPsd)*100,  kPsdDigi,                              kPsdHit,                                     // PSD
-  kT0Point     = ToIntegralType(ECbmModuleId::kT0)*100,   kT0Digi,   kT0CalDigi,                 kT0Hit,                                      // T0
-  kGlobalTrack = 2000                                                                                                                         // Global
+  kUnknown  = -1,
+  kMCTrack  = 0,
+  kMvdPoint = ToIntegralType(ECbmModuleId::kMvd) * 100,
+  kMvdDigi,
+  kMvdCluster,
+  kMvdHit,  // MVD
+  kStsPoint = ToIntegralType(ECbmModuleId::kSts) * 100,
+  kStsDigi,
+  kStsCluster,
+  kStsHit,
+  kStsTrack,  // STS
+  kRichPoint = ToIntegralType(ECbmModuleId::kRich) * 100,
+  kRichDigi,
+  kRichHit,
+  kRichRing,  // RICH
+  kMuchPoint = ToIntegralType(ECbmModuleId::kMuch) * 100,
+  kMuchDigi,
+  kMuchCluster,
+  kMuchPixelHit,
+  kMuchStrawHit,
+  kMuchTrack,  // MUCH
+  kTrdPoint = ToIntegralType(ECbmModuleId::kTrd) * 100,
+  kTrdDigi,
+  kTrdCluster,
+  kTrdHit,
+  kTrdTrack,  // TRD
+  kTofPoint = ToIntegralType(ECbmModuleId::kTof) * 100,
+  kTofDigi,
+  kTofCalDigi,
+  kTofHit,
+  kTofTrack,  // TOF
+  kPsdPoint = ToIntegralType(ECbmModuleId::kPsd) * 100,
+  kPsdDigi,
+  kPsdHit,  // PSD
+  kT0Point = ToIntegralType(ECbmModuleId::kT0) * 100,
+  kT0Digi,
+  kT0CalDigi,
+  kT0Hit,              // T0
+  kGlobalTrack = 2000  // Global
 };
 
 // operator << for convenient output to std::ostream.
@@ -99,14 +127,12 @@ std::ostream& operator<<(std::ostream&, const ECbmDataType&);
  **           to first entry
  ** kRandom:  Random choice of entries between first and last one.
  **/
-enum class ECbmTreeAccess {
-  kRegular, kRepeat, kRandom
-};
+enum class ECbmTreeAccess { kRegular, kRepeat, kRandom };
 
 
 /** Global functions for particle masses **/
-inline Double_t CbmProtonMass()   { return 0.938272046; }
-inline Double_t CbmNeutronMass()  { return 0.939565379; }
+inline Double_t CbmProtonMass() { return 0.938272046; }
+inline Double_t CbmNeutronMass() { return 0.939565379; }
 inline Double_t CbmElectronMass() { return 0.000510998928; }
 
 #endif

@@ -16,8 +16,7 @@
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/base_object.hpp>
 
-class CbmTofHit : public CbmPixelHit
-{
+class CbmTofHit : public CbmPixelHit {
 public:
   /**
    * \brief Default constructor.
@@ -27,22 +26,44 @@ public:
   /**
    * \brief Constructor with hit parameters (1b).
    **/
-  CbmTofHit(Int_t address, TVector3 pos, TVector3 dpos, Int_t refIndex, Double_t time, Double_t dtime, Int_t flag, Int_t channel);
+  CbmTofHit(Int_t address,
+            TVector3 pos,
+            TVector3 dpos,
+            Int_t refIndex,
+            Double_t time,
+            Double_t dtime,
+            Int_t flag,
+            Int_t channel);
 
   /**
    * \brief Constructor with hit parameters (1a).
    **/
-  CbmTofHit(Int_t address, TVector3 pos, TVector3 dpos, Int_t refIndex, Double_t tof, Int_t flag, Int_t channel);
+  CbmTofHit(Int_t address,
+            TVector3 pos,
+            TVector3 dpos,
+            Int_t refIndex,
+            Double_t tof,
+            Int_t flag,
+            Int_t channel);
 
   /**
    * \brief Constructor with hit parameters (1).
    **/
-  CbmTofHit(Int_t address, TVector3 pos, TVector3 dpos, Int_t refIndex, Double_t tof, Int_t flag);
+  CbmTofHit(Int_t address,
+            TVector3 pos,
+            TVector3 dpos,
+            Int_t refIndex,
+            Double_t tof,
+            Int_t flag);
 
   /**
    * \brief Constructor with hit parameters (2) [not the flag]
    **/
-  CbmTofHit(Int_t address, TVector3 pos, TVector3 dpos, Int_t refIndex, Double_t tof);
+  CbmTofHit(Int_t address,
+            TVector3 pos,
+            TVector3 dpos,
+            Int_t refIndex,
+            Double_t tof);
 
   /**
    * \brief Destructor.
@@ -63,34 +84,39 @@ public:
   Int_t GetFlag() const { return fFlag; }
   Int_t GetCh() const { return fChannel; }
 
-  Double_t GetR()      const {return TMath::Sqrt(GetX()*GetX()+GetY()*GetY()+GetZ()*GetZ());}
-  Double_t GetRt()     const {return TMath::Sqrt(GetX()*GetX()+GetY()*GetY());}
-  Double_t GetCosThe() const {return GetZ()/GetR();}
-  Double_t GetSinThe() const {return TMath::Sqrt(GetX()*GetX()+GetY()*GetY())/GetR();}
-  Double_t GetCosPhi() const {return GetX()/GetRt();}
-  Double_t GetSinPhi() const {return GetY()/GetRt();}
+  Double_t GetR() const {
+    return TMath::Sqrt(GetX() * GetX() + GetY() * GetY() + GetZ() * GetZ());
+  }
+  Double_t GetRt() const {
+    return TMath::Sqrt(GetX() * GetX() + GetY() * GetY());
+  }
+  Double_t GetCosThe() const { return GetZ() / GetR(); }
+  Double_t GetSinThe() const {
+    return TMath::Sqrt(GetX() * GetX() + GetY() * GetY()) / GetR();
+  }
+  Double_t GetCosPhi() const { return GetX() / GetRt(); }
+  Double_t GetSinPhi() const { return GetY() / GetRt(); }
 
   /** Modifiers **/
   void SetFlag(Int_t flag) { fFlag = flag; };
 
   // Make this method otherwise inherited from CbmHit through CbmPixelHit
   // private to prevent its usage
-  Int_t GetRefId() const __attribute__ ((deprecated)) { return -1; }
+  Int_t GetRefId() const __attribute__((deprecated)) { return -1; }
   // Field is instead used to store the number of strips used to generate the hit
   Int_t GetClusterSize() { return CbmHit::GetRefId(); }
 
 private:
-  Int_t fFlag;    ///< Flag for general purposes [TDC, event tagging...]
-  Int_t fChannel; ///< Channel identifier
+  Int_t fFlag;     ///< Flag for general purposes [TDC, event tagging...]
+  Int_t fChannel;  ///< Channel identifier
 
   friend class boost::serialization::access;
 
-  template <class Archive>
-   void serialize(Archive& ar, const unsigned int /*version*/)
-   {
-        ar& fFlag;
-        ar& fChannel;
-   }
+  template<class Archive>
+  void serialize(Archive& ar, const unsigned int /*version*/) {
+    ar& fFlag;
+    ar& fChannel;
+  }
 
   ClassDef(CbmTofHit, 4)
 };

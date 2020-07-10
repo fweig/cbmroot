@@ -15,56 +15,50 @@
 
 #include <vector>
 
-class CbmLitTGeoTrackPropagator: public CbmLitTrackPropagator
-{
+class CbmLitTGeoTrackPropagator : public CbmLitTrackPropagator {
 public:
-   /* Standard constructor with the pointer to track extrapolation tool.
+  /* Standard constructor with the pointer to track extrapolation tool.
     * @param extrapolator Pointer to the LIT track extrapolator class to be used during the propagation.
     */
-   CbmLitTGeoTrackPropagator(
-      TrackExtrapolatorPtr extrapolator);
+  CbmLitTGeoTrackPropagator(TrackExtrapolatorPtr extrapolator);
 
-   /* Destructor */
-   virtual ~CbmLitTGeoTrackPropagator();
+  /* Destructor */
+  virtual ~CbmLitTGeoTrackPropagator();
 
-   /* Inherited from CbmLitTrackPropagator */
-   virtual LitStatus Propagate(
-      const CbmLitTrackParam* parIn,
-      CbmLitTrackParam* parOut,
-      litfloat zOut,
-      int pdg,
-      std::vector<litfloat>* F,
-      litfloat* length);
+  /* Inherited from CbmLitTrackPropagator */
+  virtual LitStatus Propagate(const CbmLitTrackParam* parIn,
+                              CbmLitTrackParam* parOut,
+                              litfloat zOut,
+                              int pdg,
+                              std::vector<litfloat>* F,
+                              litfloat* length);
 
-   /* Inherited from CbmLitTrackPropagator */
-   virtual LitStatus Propagate(
-      CbmLitTrackParam* par,
-      litfloat zOut,
-      int pdg,
-      std::vector<litfloat>* F,
-      litfloat* length);
+  /* Inherited from CbmLitTrackPropagator */
+  virtual LitStatus Propagate(CbmLitTrackParam* par,
+                              litfloat zOut,
+                              int pdg,
+                              std::vector<litfloat>* F,
+                              litfloat* length);
 
-	static litfloat MAXIMUM_PROPAGATION_STEP_SIZE; // maximum step size in the TGeo track propagation
+  static litfloat
+    MAXIMUM_PROPAGATION_STEP_SIZE;  // maximum step size in the TGeo track propagation
 
 protected:
-   /* Updates the transport matrix F = newF * F.
+  /* Updates the transport matrix F = newF * F.
      * @param F Input/output Current transport matrix.
      * @param newF Transport matrix to be included in the current transport matrix.
      */
-   void UpdateF(
-      std::vector<litfloat>& F,
-      const std::vector<litfloat>& newF);
+  void UpdateF(std::vector<litfloat>& F, const std::vector<litfloat>& newF);
 
-   /* Checks if the track parameters are correct by checking their maximum acceptable values.
+  /* Checks if the track parameters are correct by checking their maximum acceptable values.
      * @param par Track parameters to be checked.
      */
-   bool IsParCorrect(
-      const CbmLitTrackParam* par);
+  bool IsParCorrect(const CbmLitTrackParam* par);
 
 private:
-   TrackExtrapolatorPtr fExtrapolator; // Track extrapolator tool
-   GeoNavigatorPtr fNavigator; // Geometry navigator tool
-   MaterialEffectsPtr fMaterial; // Material effects tool
+  TrackExtrapolatorPtr fExtrapolator;  // Track extrapolator tool
+  GeoNavigatorPtr fNavigator;          // Geometry navigator tool
+  MaterialEffectsPtr fMaterial;        // Material effects tool
 };
 
-#endif //CBMLITTGEOTRACKPROPAGATOR_H_
+#endif  //CBMLITTGEOTRACKPROPAGATOR_H_

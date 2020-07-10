@@ -29,23 +29,21 @@
 class TClonesArray;
 
 
-class CbmRichRingFinder : public TObject
-{
+class CbmRichRingFinder : public TObject {
 
- public:
-
+public:
   /** Default constructor **/
- CbmRichRingFinder() : TObject(), fVerbose(0) { };
+  CbmRichRingFinder() : TObject(), fVerbose(0) {};
 
 
   /** Destructor **/
-  virtual ~CbmRichRingFinder() { };
+  virtual ~CbmRichRingFinder() {};
 
 
   /** Virtual method Init. If needed, to be implemented in the
    ** concrete class. Else no action.
    **/
-  virtual void Init() { };
+  virtual void Init() {};
 
 
   /** Abstract method DoFind. To be implemented in the concrete class.
@@ -57,8 +55,9 @@ class CbmRichRingFinder : public TObject
    *@param rRingArray   Array of CbmRichRing
    *@value Number of rings created
    **/
-  virtual Int_t DoFind(TClonesArray* rHitArray, TClonesArray* rProjArray,
-		       TClonesArray* rRingArray) = 0;
+  virtual Int_t DoFind(TClonesArray* rHitArray,
+                       TClonesArray* rProjArray,
+                       TClonesArray* rRingArray) = 0;
 
 
   /** Set verbosity 
@@ -67,17 +66,14 @@ class CbmRichRingFinder : public TObject
   void SetVerbose(Int_t verbose) { fVerbose = verbose; };
 
 
- protected:
+protected:
+  Int_t fVerbose;  // Verbosity level
 
-  Int_t fVerbose;      // Verbosity level
-
- private:
-
+private:
   CbmRichRingFinder(const CbmRichRingFinder&);
   CbmRichRingFinder& operator=(const CbmRichRingFinder&);
 
-  ClassDef(CbmRichRingFinder,1);
-
+  ClassDef(CbmRichRingFinder, 1);
 };
 
 #endif

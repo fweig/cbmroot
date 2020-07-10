@@ -10,8 +10,7 @@
 // Version         13/03/2015 (P.-A. Loizeau)
 //
 // --------------------------------------------------------------------------
-void run_digi_test(Int_t nEvents = 2, const char* setup = "sis100_electron")
-{
+void run_digi_test(Int_t nEvents = 2, const char* setup = "sis100_electron") {
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -20,9 +19,9 @@ void run_digi_test(Int_t nEvents = 2, const char* setup = "sis100_electron")
   Int_t iVerbose = 0;
 
   // ----- Paths and file names  --------------------------------------------
-  TString inDir   = gSystem->Getenv("VMCWORKDIR");
+  TString inDir = gSystem->Getenv("VMCWORKDIR");
 
-  TString outDir  = "data/";
+  TString outDir = "data/";
 
   // Input file (MC events)
   TString inFile = outDir + setup + "_test.mc.root";
@@ -32,49 +31,55 @@ void run_digi_test(Int_t nEvents = 2, const char* setup = "sis100_electron")
   // Output file
   TString outFile = outDir + setup + "_digitizerTest.eds.root";
 
-  TString setupFile = inDir + "/geometry/setup/setup_"+ setup +".C";
+  TString setupFile  = inDir + "/geometry/setup/setup_" + setup + ".C";
   TString setupFunct = "setup_";
-  setupFunct = setupFunct + setup + "()";
+  setupFunct         = setupFunct + setup + "()";
   gROOT->LoadMacro(setupFile);
   gInterpreter->ProcessLine(setupFunct);
   CbmSetup* cbmsetup = CbmSetup::Instance();
 
-  TString workDir = gSystem->Getenv("VMCWORKDIR");
+  TString workDir  = gSystem->Getenv("VMCWORKDIR");
   TString paramDir = workDir + "/parameters/";
 
   //  Digitisation files.
   // Add TObjectString containing the different file names to
   // a TList which is passed as input to the FairParAsciiFileIo.
-  // The FairParAsciiFileIo will take care to create on the fly 
+  // The FairParAsciiFileIo will take care to create on the fly
   // a concatenated input parameter file which is then used during
   // the reconstruction.
-  TList *parFileList = new TList();
+  TList* parFileList = new TList();
   TString geoTag;
 
   // - TRD digitisation parameters
-  if ( cbmsetup->GetGeoTag(kTrd, geoTag) ) {
-    TObjString* trdFile = new TObjString(inDir + "/parameters/trd/trd_" + geoTag + ".asic.par");
+  if (cbmsetup->GetGeoTag(kTrd, geoTag)) {
+    TObjString* trdFile =
+      new TObjString(inDir + "/parameters/trd/trd_" + geoTag + ".asic.par");
     parFileList->Add(trdFile);
-    trdFile = new TObjString(inDir + "/parameters/trd/trd_" + geoTag + ".digi.par");
+    trdFile =
+      new TObjString(inDir + "/parameters/trd/trd_" + geoTag + ".digi.par");
     parFileList->Add(trdFile);
-    trdFile = new TObjString(inDir + "/parameters/trd/trd_" + geoTag + ".gain.par");
+    trdFile =
+      new TObjString(inDir + "/parameters/trd/trd_" + geoTag + ".gain.par");
     parFileList->Add(trdFile);
-    trdFile = new TObjString(inDir + "/parameters/trd/trd_" + geoTag + ".gas.par");
+    trdFile =
+      new TObjString(inDir + "/parameters/trd/trd_" + geoTag + ".gas.par");
     parFileList->Add(trdFile);
-    std::cout << "-I- Using parameter file "
-              << trdFile->GetString() << std::endl;
+    std::cout << "-I- Using parameter file " << trdFile->GetString()
+              << std::endl;
   }
 
   // - TOF digitisation parameters
-  if ( cbmsetup->GetGeoTag(kTof, geoTag) ) {
-    TObjString* tofFile = new TObjString(inDir + "/parameters/tof/tof_" + geoTag + ".digi.par");
+  if (cbmsetup->GetGeoTag(kTof, geoTag)) {
+    TObjString* tofFile =
+      new TObjString(inDir + "/parameters/tof/tof_" + geoTag + ".digi.par");
     parFileList->Add(tofFile);
-    std::cout << "-I- Using parameter file "
-              << tofFile->GetString() << std::endl;
-    TObjString* tofBdfFile = new TObjString(inDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
+    std::cout << "-I- Using parameter file " << tofFile->GetString()
+              << std::endl;
+    TObjString* tofBdfFile =
+      new TObjString(inDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
     parFileList->Add(tofBdfFile);
-    std::cout << "-I- Using parameter file "
-              << tofBdfFile->GetString() << std::endl;
+    std::cout << "-I- Using parameter file " << tofBdfFile->GetString()
+              << std::endl;
   }
 
   // In general, the following parts need not be touched
@@ -92,18 +97,16 @@ void run_digi_test(Int_t nEvents = 2, const char* setup = "sis100_electron")
   // ------------------------------------------------------------------------
 
   // -----   Reconstruction run   -------------------------------------------
-  FairRunAna *run = new FairRunAna();
+  FairRunAna* run = new FairRunAna();
   run->SetInputFile(inFile);
   run->SetOutputFile(outFile);
   Bool_t hasFairMonitor = Has_Fair_Monitor();
-  if (hasFairMonitor) {
-    FairMonitor::GetMonitor()->EnableMonitor(kTRUE);
-  }
+  if (hasFairMonitor) { FairMonitor::GetMonitor()->EnableMonitor(kTRUE); }
   // ------------------------------------------------------------------------
 
 
   // ----- Mc Data Manager   ------------------------------------------------
-  CbmMCDataManager* mcManager=new CbmMCDataManager("MCManager", 1);
+  CbmMCDataManager* mcManager = new CbmMCDataManager("MCManager", 1);
   mcManager->AddFile(inFile);
   run->AddTask(mcManager);
   // ------------------------------------------------------------------------
@@ -114,11 +117,14 @@ void run_digi_test(Int_t nEvents = 2, const char* setup = "sis100_electron")
   // =========================================================================
 
   // -----   TOF digitizer   -------------------------------------------------
-  CbmTofDigitize* tofDigitizer = new CbmTofDigitize("TOF Digitizer",iVerbose);
-  tofDigitizer->SetOutputBranchPersistent("TofDigi",            kFALSE);
+  CbmTofDigitize* tofDigitizer = new CbmTofDigitize("TOF Digitizer", iVerbose);
+  tofDigitizer->SetOutputBranchPersistent("TofDigi", kFALSE);
   tofDigitizer->SetOutputBranchPersistent("TofDigiMatchPoints", kFALSE);
-  tofDigitizer->SetInputFileName( paramDir + "tof/test_bdf_input.root"); // Required as input file name not read anymore by param class
-  tofDigitizer->UseMcTrackMonitoring(); // Enable the Mc Track Usage in the digitizer
+  tofDigitizer->SetInputFileName(
+    paramDir
+    + "tof/test_bdf_input.root");  // Required as input file name not read anymore by param class
+  tofDigitizer
+    ->UseMcTrackMonitoring();  // Enable the Mc Track Usage in the digitizer
   run->AddTask(tofDigitizer);
 
 
@@ -127,14 +133,16 @@ void run_digi_test(Int_t nEvents = 2, const char* setup = "sis100_electron")
   // =========================================================================
 
   // Cluster/Hit builder
-  CbmTofSimpClusterizer* tofSimpClust = new CbmTofSimpClusterizer("TOF Simple Clusterizer",iVerbose);
-  tofSimpClust->SetOutputBranchPersistent("TofHit",          kFALSE);
-  tofSimpClust->SetOutputBranchPersistent("TofDigiMatch",    kFALSE);
-  tofSimpClust->UseMcTrackMonitoring(); // Enable the Mc Track Usage in the clusterizer
+  CbmTofSimpClusterizer* tofSimpClust =
+    new CbmTofSimpClusterizer("TOF Simple Clusterizer", iVerbose);
+  tofSimpClust->SetOutputBranchPersistent("TofHit", kFALSE);
+  tofSimpClust->SetOutputBranchPersistent("TofDigiMatch", kFALSE);
+  tofSimpClust
+    ->UseMcTrackMonitoring();  // Enable the Mc Track Usage in the clusterizer
   run->AddTask(tofSimpClust);
 
   // ------   TOF hit producer   ---------------------------------------------
-/*
+  /*
   CbmTofHitProducerNew* tofHitProd = new CbmTofHitProducerNew("TOF HitProducerNew",iVerbose);
   //  tofHitProd->SetParFileName(std::string(TofGeoPar));
   tofHitProd->SetInitFromAscii(kFALSE);
@@ -146,7 +154,7 @@ void run_digi_test(Int_t nEvents = 2, const char* setup = "sis100_electron")
 
   // ===                   End of TOF local reconstruction                 ===
   // =========================================================================
-  
+
   // =========================================================================
   // ===                    Matching to Monte-carlo                        ===
   // =========================================================================
@@ -160,14 +168,14 @@ void run_digi_test(Int_t nEvents = 2, const char* setup = "sis100_electron")
   // =========================================================================
 
   // Digitizer/custerizer testing
-  CbmTofTests* tofTests = new CbmTofTests("TOF Tests",iVerbose);
+  CbmTofTests* tofTests = new CbmTofTests("TOF Tests", iVerbose);
   run->AddTask(tofTests);
 
   // ===                   End of TOF evaluation                           ===
   // =========================================================================
   // -----  Parameter database   --------------------------------------------
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
-  FairParRootFileIo* parIo1 = new FairParRootFileIo();
+  FairRuntimeDb* rtdb        = run->GetRuntimeDb();
+  FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
   parIo1->open(parFile.Data());
   parIo2->open(parFileList, "in");
@@ -200,12 +208,12 @@ void run_digi_test(Int_t nEvents = 2, const char* setup = "sis100_electron")
     // Extract the maximal used memory an add is as Dart measurement
     // This line is filtered by CTest and the value send to CDash
     FairSystemInfo sysInfo;
-    Float_t maxMemory=sysInfo.GetMaxMemory();
+    Float_t maxMemory = sysInfo.GetMaxMemory();
     cout << "<DartMeasurement name=\"MaxMemory\" type=\"numeric/double\">";
     cout << maxMemory;
     cout << "</DartMeasurement>" << endl;
 
-    Float_t cpuUsage=ctime/rtime;
+    Float_t cpuUsage = ctime / rtime;
     cout << "<DartMeasurement name=\"CpuLoad\" type=\"numeric/double\">";
     cout << cpuUsage;
     cout << "</DartMeasurement>" << endl;
@@ -215,8 +223,8 @@ void run_digi_test(Int_t nEvents = 2, const char* setup = "sis100_electron")
   }
   //  delete run;
 
-   cout << " Test passed" << endl;
-   cout << " All ok " << endl;
-  
+  cout << " Test passed" << endl;
+  cout << " All ok " << endl;
+
   RemoveGeoManager();
 }

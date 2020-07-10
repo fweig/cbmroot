@@ -12,21 +12,20 @@ class CbmEcalStructure;
 class CbmEcalInf;
 class CbmStsKFTrackFitter;
 
-class CbmEcalTrackingMuch : public FairTask
-{
+class CbmEcalTrackingMuch : public FairTask {
 public:
-  CbmEcalTrackingMuch(const char* name, const Int_t iVerbose=0);
+  CbmEcalTrackingMuch(const char* name, const Int_t iVerbose = 0);
+
 public:
   /** Default constructor **/
-  CbmEcalTrackingMuch() 
-    : FairTask(),
-    fStsTracks(NULL),
-    fStr(NULL),
-    fInf(NULL),
-    fCaloZ(0.),
-    fFitter(NULL),
-    fTrackPar(NULL)
-      {}
+  CbmEcalTrackingMuch()
+    : FairTask()
+    , fStsTracks(NULL)
+    , fStr(NULL)
+    , fInf(NULL)
+    , fCaloZ(0.)
+    , fFitter(NULL)
+    , fTrackPar(NULL) {}
 
   /** Initing routine **/
   virtual InitStatus Init();
@@ -39,25 +38,25 @@ public:
 
   /** Destructor **/
   virtual ~CbmEcalTrackingMuch() {};
+
 private:
   /** An array of STS tracks **/
-  TClonesArray* fStsTracks;			//!
+  TClonesArray* fStsTracks;  //!
   /** A calorimeter structure **/
-  CbmEcalStructure* fStr;			//!
+  CbmEcalStructure* fStr;  //!
   /** Calorimeter information **/
-  CbmEcalInf* fInf;				//!
+  CbmEcalInf* fInf;  //!
   /** Calorimeter Z **/
   Float_t fCaloZ;
   /** Track fitter **/
-  CbmStsKFTrackFitter* fFitter;			//!
+  CbmStsKFTrackFitter* fFitter;  //!
   /** Extrapolated tracks **/
-  TClonesArray* fTrackPar;			//!
+  TClonesArray* fTrackPar;  //!
 
   CbmEcalTrackingMuch(const CbmEcalTrackingMuch&);
   CbmEcalTrackingMuch& operator=(const CbmEcalTrackingMuch&);
 
-  ClassDef(CbmEcalTrackingMuch,1)
+  ClassDef(CbmEcalTrackingMuch, 1)
 };
 
-#endif 
-
+#endif

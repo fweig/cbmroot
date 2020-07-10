@@ -16,35 +16,32 @@
 #include <TObject.h>  // for TObject
 #include <TString.h>  // for TString
 
-#include <utility>    // for pair
-#include <vector>     // for vector
+#include <utility>  // for pair
+#include <vector>   // for vector
 
-class CbmMediaList : public TObject
-{
-  public:
-    /**  Constructor  **/
-    CbmMediaList() = default;
+class CbmMediaList : public TObject {
+public:
+  /**  Constructor  **/
+  CbmMediaList() = default;
 
-    
-    /** @brief add new pair of geometry path and media information 
+
+  /** @brief add new pair of geometry path and media information 
      ** @param Full geometry path for the TGeoNode
      ** @param Media information of the TGeoNode
      **/
-    void  AddEntry(TString, TString); 
+  void AddEntry(TString, TString);
 
-    /** @brief Get the stored information 
+  /** @brief Get the stored information 
      ** @return Reference to the vector of pairs
      **/
-    const std::vector<std::pair <TString, TString>>& GetVector()
-    {
-      return fMatList;
-    }
+  const std::vector<std::pair<TString, TString>>& GetVector() {
+    return fMatList;
+  }
 
-  private:
+private:
+  std::vector<std::pair<TString, TString>> fMatList;
 
-    std::vector<std::pair <TString, TString>> fMatList;
-
-  ClassDef(CbmMediaList,1)
+  ClassDef(CbmMediaList, 1)
 };
 
 #endif

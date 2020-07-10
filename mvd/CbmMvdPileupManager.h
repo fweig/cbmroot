@@ -18,18 +18,16 @@
 #define CBMMVDPILEUPMANAGER_H 1
 
 
-#include "TString.h"
-#include "TObject.h"
 #include "TObjArray.h"
+#include "TObject.h"
+#include "TString.h"
 
 class TClonesArray;
 
 
-class CbmMvdPileupManager : public TObject
-{
+class CbmMvdPileupManager : public TObject {
 
- public:
-
+public:
   /** Default constructor **/
   CbmMvdPileupManager();
 
@@ -39,8 +37,9 @@ class CbmMvdPileupManager : public TObject
    *@param branchName name of branch to be buffered
    *@param nEvents    Number of pile-up events
    **/
-  CbmMvdPileupManager(TString fileName, TString branchName = "MVDPoint",
-		      Int_t nEvents = 500);
+  CbmMvdPileupManager(TString fileName,
+                      TString branchName = "MVDPoint",
+                      Int_t nEvents      = 500);
 
 
   /** Destructor **/
@@ -57,9 +56,8 @@ class CbmMvdPileupManager : public TObject
    **/
   TClonesArray* GetEvent(Int_t iEvent);
 
- private:
-
-  TObjArray* fBuffer;     // Buffer of background events
+private:
+  TObjArray* fBuffer;  // Buffer of background events
 
 
   /** Fill the background buffer from the background file
@@ -68,14 +66,12 @@ class CbmMvdPileupManager : public TObject
    *@param nEvents    Number of events to be read from file
    *@return  Number of buffered events
    **/
-  Int_t FillBuffer(TString fileName, TString branchName, 
-		    Int_t nEvents);
+  Int_t FillBuffer(TString fileName, TString branchName, Int_t nEvents);
 
   CbmMvdPileupManager(const CbmMvdPileupManager&);
   CbmMvdPileupManager& operator=(const CbmMvdPileupManager&);
 
-  ClassDef(CbmMvdPileupManager,1);
-
+  ClassDef(CbmMvdPileupManager, 1);
 };
 
 

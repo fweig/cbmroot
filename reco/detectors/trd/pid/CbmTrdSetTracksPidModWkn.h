@@ -27,18 +27,16 @@
 #ifndef CBM_TRD_SET_TRACKS_PID_MOD_WKN_H
 #define CBM_TRD_SET_TRACKS_PID_MOD_WKN_H
 
-#include "TH1D.h"
-#include <vector>
 #include "FairTask.h"
+#include "TH1D.h"
 #include <string>
+#include <vector>
 
 class TClonesArray;
 
-class CbmTrdSetTracksPidModWkn : public FairTask
-{
+class CbmTrdSetTracksPidModWkn : public FairTask {
 
- public:
-
+public:
   /** Default constructor **/
   CbmTrdSetTracksPidModWkn();
 
@@ -67,39 +65,35 @@ class CbmTrdSetTracksPidModWkn : public FairTask
   virtual void Finish();
 
   /** Set Type **/
-  void SetType(const std::string& SISType) { fSISType = SISType;}
-  void SetSIS100() { fSISType="sis100"; }
-  void SetSIS300() { fSISType="sis300"; }
-  
+  void SetType(const std::string& SISType) { fSISType = SISType; }
+  void SetSIS100() { fSISType = "sis100"; }
+  void SetSIS300() { fSISType = "sis300"; }
+
   void SetParameters();
 
-  private:
+private:
   TClonesArray* fTrackArray;   // Input array of TRD tracks
   TClonesArray* fTrdHitArray;  // Input array of TRD Hits
 
-// Parametrs
-  int fnSet; //  number of the layers with TR
-  float  fdegWkn, //  statistics degree
-         fk1,
-         fwkn0,
-         fEmp, // energy loss transformation parameter
-         fXi,  // energy loss transformation parameter
-		 fWmin,
-		 fWmax,
-		 fDiff;
+  // Parametrs
+  int fnSet;      //  number of the layers with TR
+  float fdegWkn,  //  statistics degree
+    fk1, fwkn0,
+    fEmp,  // energy loss transformation parameter
+    fXi,   // energy loss transformation parameter
+    fWmin, fWmax, fDiff;
 
 
-   // Settings
-   // Set-up
-   // "sis100" - TRD with 10 layers
-   // "sis300" - TRD with 4 layers
-   std::string fSISType;
-   
+  // Settings
+  // Set-up
+  // "sis100" - TRD with 10 layers
+  // "sis300" - TRD with 4 layers
+  std::string fSISType;
+
   CbmTrdSetTracksPidModWkn(const CbmTrdSetTracksPidModWkn&);
   CbmTrdSetTracksPidModWkn& operator=(const CbmTrdSetTracksPidModWkn&);
 
-  ClassDef(CbmTrdSetTracksPidModWkn,1);
-
+  ClassDef(CbmTrdSetTracksPidModWkn, 1);
 };
 
 #endif

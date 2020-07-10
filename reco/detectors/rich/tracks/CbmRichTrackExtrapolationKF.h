@@ -26,46 +26,43 @@ class TClonesArray;
  * \author Claudia Hoehne
  * \date 206
  **/
-class CbmRichTrackExtrapolationKF : public CbmRichTrackExtrapolationBase
-{
+class CbmRichTrackExtrapolationKF : public CbmRichTrackExtrapolationBase {
 public:
-    
-    /**
+  /**
      * \brief Default constructor.
      */
-    CbmRichTrackExtrapolationKF();
-    
-    /**
+  CbmRichTrackExtrapolationKF();
+
+  /**
      * \brief Destructor.
      */
-    virtual ~CbmRichTrackExtrapolationKF();
-    
-    /**
+  virtual ~CbmRichTrackExtrapolationKF();
+
+  /**
      * \brief Inherited from CbmRichTrackExtrapolationBase.
      */
-    virtual void Init();
-    
-    /**
+  virtual void Init();
+
+  /**
      * \brief Inherited from CbmRichTrackExtrapolationBase.
      */
-    virtual void DoExtrapolation(
-                                 TClonesArray* globalTracks,
-                                 TClonesArray* extrapolatedTrackParams,
-                                 double z);
-    
+  virtual void DoExtrapolation(TClonesArray* globalTracks,
+                               TClonesArray* extrapolatedTrackParams,
+                               double z);
+
 private:
-    TClonesArray* fStsTracks;
-    
+  TClonesArray* fStsTracks;
+
 private:
-    /**
+  /**
      * \brief Copy constructor.
      */
-    CbmRichTrackExtrapolationKF(const CbmRichTrackExtrapolationKF&);
-    
-    /**
+  CbmRichTrackExtrapolationKF(const CbmRichTrackExtrapolationKF&);
+
+  /**
      * \brief Assignment operator.
      */
-    void operator=(const CbmRichTrackExtrapolationKF&);
+  void operator=(const CbmRichTrackExtrapolationKF&);
 };
 
 #endif

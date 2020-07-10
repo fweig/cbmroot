@@ -11,21 +11,20 @@
 
 #include "CbmGlobalTrack.h"
 
-CbmStsFarDetectorHit::CbmStsFarDetectorHit() :NicaTrackCut(1){
-	SetUnitName("FarHit [N]");
-	SetMinMax(0,10);
+CbmStsFarDetectorHit::CbmStsFarDetectorHit() : NicaTrackCut(1) {
+  SetUnitName("FarHit [N]");
+  SetMinMax(0, 10);
 }
 
-Bool_t CbmStsFarDetectorHit::Pass(NicaTrack *track) {
-	CbmGlobalTrack *tr = (CbmGlobalTrack*)track;
-	Int_t n = 0;
-	if(tr->GetTrdTrackIndex()>=0) n++;
-	if(tr->GetTofHitIndex()>=0) n++;
-	SetValue(n);
-	return Validate();
+Bool_t CbmStsFarDetectorHit::Pass(NicaTrack* track) {
+  CbmGlobalTrack* tr = (CbmGlobalTrack*) track;
+  Int_t n            = 0;
+  if (tr->GetTrdTrackIndex() >= 0) n++;
+  if (tr->GetTofHitIndex() >= 0) n++;
+  SetValue(n);
+  return Validate();
 }
 
 CbmStsFarDetectorHit::~CbmStsFarDetectorHit() {
-	// TODO Auto-generated destructor stub
+  // TODO Auto-generated destructor stub
 }
-

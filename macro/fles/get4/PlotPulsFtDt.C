@@ -1,5 +1,5 @@
 {
-/*
+  /*
    TCanvas *cFtDtTime= new TCanvas("cFtDtTime", "Time edge FT for big and small dt");
    cFtDtTime->Divide(2, 2);
 
@@ -60,54 +60,54 @@
    cFtDtPrevTot->cd( 4);
    hFtPrevTotBigDtFeeB->Draw("colz");
 */
-   TCanvas *cFtDt= new TCanvas("cFtDt", "FT for big and small dt");
-   cFtDt->Divide(4, 4);
+  TCanvas* cFtDt = new TCanvas("cFtDt", "FT for big and small dt");
+  cFtDt->Divide(4, 4);
 
-   cFtDt->cd( 1);
-   hFtPrevSmallDtFeeA->Draw("colz");
+  cFtDt->cd(1);
+  hFtPrevSmallDtFeeA->Draw("colz");
 
-   cFtDt->cd( 2);
-   hFtPrevSmallDtFeeB->Draw("colz");
+  cFtDt->cd(2);
+  hFtPrevSmallDtFeeB->Draw("colz");
 
-   cFtDt->cd( 3);
-   hFtPrevTotSmallDtFeeA->Draw("colz");
+  cFtDt->cd(3);
+  hFtPrevTotSmallDtFeeA->Draw("colz");
 
-   cFtDt->cd( 4);
-   hFtPrevTotSmallDtFeeB->Draw("colz");
+  cFtDt->cd(4);
+  hFtPrevTotSmallDtFeeB->Draw("colz");
 
-   cFtDt->cd( 5);
-   hFtPrevBigDtFeeA->Draw("colz");
+  cFtDt->cd(5);
+  hFtPrevBigDtFeeA->Draw("colz");
 
-   cFtDt->cd( 6);
-   hFtPrevBigDtFeeB->Draw("colz");
+  cFtDt->cd(6);
+  hFtPrevBigDtFeeB->Draw("colz");
 
-   cFtDt->cd( 7);
-   hFtPrevTotBigDtFeeA->Draw("colz");
+  cFtDt->cd(7);
+  hFtPrevTotBigDtFeeA->Draw("colz");
 
-   cFtDt->cd( 8);
-   hFtPrevTotBigDtFeeB->Draw("colz");
+  cFtDt->cd(8);
+  hFtPrevTotBigDtFeeB->Draw("colz");
 
-   cFtDt->cd( 9);
-   hFtSmallDtFeeA->Draw("colz");
+  cFtDt->cd(9);
+  hFtSmallDtFeeA->Draw("colz");
 
-   cFtDt->cd(10);
-   hFtSmallDtFeeB->Draw("colz");
+  cFtDt->cd(10);
+  hFtSmallDtFeeB->Draw("colz");
 
-   cFtDt->cd(11);
-   hFtTotSmallDtFeeA->Draw("colz");
+  cFtDt->cd(11);
+  hFtTotSmallDtFeeA->Draw("colz");
 
-   cFtDt->cd(12);
-   hFtTotSmallDtFeeB->Draw("colz");
+  cFtDt->cd(12);
+  hFtTotSmallDtFeeB->Draw("colz");
 
-   cFtDt->cd(13);
-   hFtBigDtFeeA->Draw("colz");
+  cFtDt->cd(13);
+  hFtBigDtFeeA->Draw("colz");
 
-   cFtDt->cd(14);
-   hFtBigDtFeeB->Draw("colz");
+  cFtDt->cd(14);
+  hFtBigDtFeeB->Draw("colz");
 
-   cFtDt->cd(15);
-   hFtTotBigDtFeeA->Draw("colz");
+  cFtDt->cd(15);
+  hFtTotBigDtFeeA->Draw("colz");
 
-   cFtDt->cd(16);
-   hFtTotBigDtFeeB->Draw("colz");
+  cFtDt->cd(16);
+  hFtTotBigDtFeeB->Draw("colz");
 }

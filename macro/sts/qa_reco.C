@@ -62,27 +62,26 @@
   gSystem->Load("libKF");
   gSystem->Load("libL1");
   // ------------------------------------------------------------------------
-  
+
   // -----  Analysis run   --------------------------------------------------
-  FairRunAna *fRun= new FairRunAna();
-  
+  FairRunAna* fRun = new FairRunAna();
+
   fRun->SetInputFile(simFile);
   fRun->AddFriend(recFile);
-  
-  
+
+
   fRun->SetOutputFile(outFile);
   // ------------------------------------------------------------------------
 
 
-
   // -----  Parameter database   --------------------------------------------
-  FairRuntimeDb* rtdb = fRun->GetRuntimeDb();
+  FairRuntimeDb* rtdb          = fRun->GetRuntimeDb();
   FairParRootFileIo* parInput1 = new FairParRootFileIo();
   parInput1->open(parFile.Data());
   FairParAsciiFileIo* parInput2 = new FairParAsciiFileIo();
-  TString stsDigiFile = gSystem->Getenv("VMCWORKDIR");
+  TString stsDigiFile           = gSystem->Getenv("VMCWORKDIR");
   stsDigiFile += "/parameters/sts/sts_digi.par";
-  parInput2->open(stsDigiFile.Data(),"in");
+  parInput2->open(stsDigiFile.Data(), "in");
   rtdb->setFirstInput(parInput1);
   rtdb->setSecondInput(parInput2);
   fRun->LoadGeometry();
@@ -90,18 +89,17 @@
 
 
   // -----   STS track finder QA   ------------------------------------------
-  CbmStsReconstructionQa* stsReconstructionQa = new CbmStsReconstructionQa(kTRUE,4, 0.7,iVerbose);
+  CbmStsReconstructionQa* stsReconstructionQa =
+    new CbmStsReconstructionQa(kTRUE, 4, 0.7, iVerbose);
   stsReconstructionQa->SetShowStation1(4);
   fRun->AddTask(stsReconstructionQa);
   // ------------------------------------------------------------------------
 
 
-
   // -----   Intialise and run   --------------------------------------------
   fRun->Init();
-  fRun->Run(0,nEvents);
+  fRun->Run(0, nEvents);
   // ------------------------------------------------------------------------
-
 
 
   // -----   Finish   -------------------------------------------------------
@@ -110,11 +108,9 @@
   Double_t ctime = timer.CpuTime();
   cout << endl << endl;
   cout << "Macro finished succesfully." << endl;
-  cout << "Output file is "    << outFile << endl;
+  cout << "Output file is " << outFile << endl;
   cout << "Parameter file is " << parFile << endl;
   cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << endl;
   cout << endl;
   // ------------------------------------------------------------------------
-
-
 }

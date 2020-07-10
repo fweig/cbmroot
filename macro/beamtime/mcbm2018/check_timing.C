@@ -1,5 +1,4 @@
-void check_timing(Int_t nEvents = 1, TString fileName="")
-{
+void check_timing(Int_t nEvents = 1, TString fileName = "") {
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -17,15 +16,15 @@ void check_timing(Int_t nEvents = 1, TString fileName="")
   // ------------------------------------------------------------------------
 
   // -----  Analysis run   --------------------------------------------------
-  FairRunOnline *fRun= new FairRunOnline();
-  fRun->ActivateHttpServer( 100, 8080 ); // refresh each 100 events
+  FairRunOnline* fRun = new FairRunOnline();
+  fRun->ActivateHttpServer(100, 8080);  // refresh each 100 events
 
   FairFileSource* inputSource = new FairFileSource(fileName);
   fRun->SetSource(inputSource);
 
   // Define output file for FairMonitor histograms
-//  TString monitorFile{outFile};
-//  monitorFile.ReplaceAll("qa","qa.monitor");
+  //  TString monitorFile{outFile};
+  //  monitorFile.ReplaceAll("qa","qa.monitor");
   FairMonitor::GetMonitor()->EnableMonitor(kFALSE);
   // ------------------------------------------------------------------------
 
@@ -38,24 +37,23 @@ void check_timing(Int_t nEvents = 1, TString fileName="")
   fRun->AddTask(timeChecker);
 
   // -----  Parameter database   --------------------------------------------
-//  FairRuntimeDb* rtdb = fRun->GetRuntimeDb();
-//  FairParRootFileIo* parIo1 = new FairParRootFileIo();
-//  parIo1->open(parFile.Data(),"UPDATE");
-//  rtdb->setFirstInput(parIo1);
+  //  FairRuntimeDb* rtdb = fRun->GetRuntimeDb();
+  //  FairParRootFileIo* parIo1 = new FairParRootFileIo();
+  //  parIo1->open(parFile.Data(),"UPDATE");
+  //  rtdb->setFirstInput(parIo1);
   // ------------------------------------------------------------------------
 
 
   // -----   Intialise and run   --------------------------------------------
   fRun->Init();
 
-//  rtdb->setOutput(parIo1);
-//  rtdb->saveOutput();
-//  rtdb->print();
+  //  rtdb->setOutput(parIo1);
+  //  rtdb->saveOutput();
+  //  rtdb->print();
 
   cout << "Starting run" << endl;
-  fRun->Run(0,nEvents);
+  fRun->Run(0, nEvents);
   // ------------------------------------------------------------------------
-
 
 
   // -----   Finish   -------------------------------------------------------
@@ -71,12 +69,12 @@ void check_timing(Int_t nEvents = 1, TString fileName="")
   // Extract the maximal used memory an add is as Dart measurement
   // This line is filtered by CTest and the value send to CDash
   FairSystemInfo sysInfo;
-  Float_t maxMemory=sysInfo.GetMaxMemory();
+  Float_t maxMemory = sysInfo.GetMaxMemory();
   cout << "<DartMeasurement name=\"MaxMemory\" type=\"numeric/double\">";
   cout << maxMemory;
   cout << "</DartMeasurement>" << endl;
 
-  Float_t cpuUsage=ctime/rtime;
+  Float_t cpuUsage = ctime / rtime;
   cout << "<DartMeasurement name=\"CpuLoad\" type=\"numeric/double\">";
   cout << cpuUsage;
   cout << "</DartMeasurement>" << endl;
@@ -84,7 +82,7 @@ void check_timing(Int_t nEvents = 1, TString fileName="")
   FairMonitor* tempMon = FairMonitor::GetMonitor();
   tempMon->Print();
 
-//  RemoveGeoManager();
+  //  RemoveGeoManager();
   cout << " Test passed" << endl;
   cout << " All ok " << endl;
 }

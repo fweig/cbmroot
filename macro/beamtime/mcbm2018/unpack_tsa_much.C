@@ -7,13 +7,12 @@
  ** Convert data into cbmroot format.
  ** Uses CbmMcbm2018Source as source task.
  */
-void unpack_tsa_much(TString inFile = "")
-{
+void unpack_tsa_much(TString inFile = "") {
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
 
   // --- Specify number of events to be produced.
   // --- -1 means run until the end of the input file.
-  Int_t nEvents=-1;
+  Int_t nEvents = -1;
   // --- Specify output file name (this is just an example)
   TString outFile = "data/unp_much.root";
   TString parFile = "data/unp_much_params.root";
@@ -25,14 +24,14 @@ void unpack_tsa_much(TString inFile = "")
   gLogger->SetLogVerbosityLevel("MEDIUM");
 
   // --- Define parameter files
-  TList *parFileList = new TList();
-  TString paramDir = "./";
+  TList* parFileList = new TList();
+  TString paramDir   = "./";
   /*
   TString paramFile = paramDir + "FHodoUnpackPar.par";
   TObjString* tutDetDigiFile = new TObjString(paramFile);
   parFileList->Add(tutDetDigiFile);
   */
-  TString paramFileMuch = paramDir + "mMuchPar.par";
+  TString paramFileMuch       = paramDir + "mMuchPar.par";
   TObjString* parMuchFileName = new TObjString(paramFileMuch);
   parFileList->Add(parMuchFileName);
 
@@ -52,7 +51,7 @@ void unpack_tsa_much(TString inFile = "")
   // --- Source task
   CbmMcbm2018Source* source = new CbmMcbm2018Source();
   source->SetFileName(inFile);
-  source->AddUnpacker(unpacker_much, 0x10, 4);//MUCH xyter
+  source->AddUnpacker(unpacker_much, 0x10, 4);  //MUCH xyter
   source->EnableDataOutput();
 
   // --- Event header
@@ -60,14 +59,14 @@ void unpack_tsa_much(TString inFile = "")
   event->SetRunId(1);
 
   // --- Run
-  FairRunOnline *run = new FairRunOnline(source);
+  FairRunOnline* run = new FairRunOnline(source);
   run->SetOutputFile(outFile);
   //  run->SetEventHeader(event);
 
 
   // -----   Runtime database   ---------------------------------------------
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
-  Bool_t kParameterMerged = kTRUE;
+  FairRuntimeDb* rtdb       = run->GetRuntimeDb();
+  Bool_t kParameterMerged   = kTRUE;
   FairParRootFileIo* parOut = new FairParRootFileIo(kParameterMerged);
   FairParAsciiFileIo* parIn = new FairParAsciiFileIo();
   parOut->open(parFile.Data());
@@ -81,12 +80,13 @@ void unpack_tsa_much(TString inFile = "")
   TStopwatch timer;
   timer.Start();
   std::cout << ">>> unpack_tsa: Starting run..." << std::endl;
-  run->Run(nEvents, 0); // run until end of input file
+  run->Run(nEvents, 0);  // run until end of input file
   //run->Run(0, nEvents); // process nEvents
 
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
+            << std::endl;
 
   // --- End-of-run info
   Double_t rtime = timer.RealTime();
@@ -94,8 +94,8 @@ void unpack_tsa_much(TString inFile = "")
   std::cout << std::endl << std::endl;
   std::cout << ">>> unpack_tsa: Macro finished successfully." << std::endl;
   std::cout << ">>> unpack_tsa: Output file is " << outFile << std::endl;
-  std::cout << ">>> unpack_tsa: Real time " << rtime << " s, CPU time "
-	    << ctime << " s" << std::endl;
+  std::cout << ">>> unpack_tsa: Real time " << rtime << " s, CPU time " << ctime
+            << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

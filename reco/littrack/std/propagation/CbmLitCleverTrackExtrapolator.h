@@ -18,39 +18,35 @@
 
 class CbmLitTrackParam;
 
-class CbmLitCleverTrackExtrapolator : public CbmLitTrackExtrapolator
-{
+class CbmLitCleverTrackExtrapolator : public CbmLitTrackExtrapolator {
 public:
-   /**
+  /**
     * \brief Constructor.
     */
-   CbmLitCleverTrackExtrapolator();
+  CbmLitCleverTrackExtrapolator();
 
-   /**
+  /**
     * \brief Destructor.
     */
-   virtual ~CbmLitCleverTrackExtrapolator();
+  virtual ~CbmLitCleverTrackExtrapolator();
 
-   /**
+  /**
     * \brief Inherited from CbmLitTrackExtrapolator.
     */
-   virtual LitStatus Extrapolate(
-      const CbmLitTrackParam* parIn,
-      CbmLitTrackParam* parOut,
-      litfloat zOut,
-      std::vector<litfloat>* F);
+  virtual LitStatus Extrapolate(const CbmLitTrackParam* parIn,
+                                CbmLitTrackParam* parOut,
+                                litfloat zOut,
+                                std::vector<litfloat>* F);
 
-   /**
+  /**
     * \brief Inherited from CbmLitTrackExtrapolator.
     */
-   virtual LitStatus Extrapolate(
-      CbmLitTrackParam* par,
-      litfloat zOut,
-      std::vector<litfloat>* F);
+  virtual LitStatus
+  Extrapolate(CbmLitTrackParam* par, litfloat zOut, std::vector<litfloat>* F);
 
 private:
-   TrackExtrapolatorPtr fLineExtrapolator; // Line track extrapolation tool.
-   TrackExtrapolatorPtr fRK4Extrapolator; // RK4 track extrapolation tool.
+  TrackExtrapolatorPtr fLineExtrapolator;  // Line track extrapolation tool.
+  TrackExtrapolatorPtr fRK4Extrapolator;   // RK4 track extrapolation tool.
 };
 
 #endif /* CBMLITCLEVERTRACKEXTRAPOLATOR_H_ */

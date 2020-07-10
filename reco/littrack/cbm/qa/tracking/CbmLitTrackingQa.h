@@ -8,8 +8,8 @@
 #ifndef CBMLITTRACKINGQA_H_
 #define CBMLITTRACKINGQA_H_
 
-#include "FairTask.h"
 #include "CbmDefs.h"
+#include "FairTask.h"
 #include "cbm/base/CbmLitDetectorSetup.h"
 
 class CbmHistManager;
@@ -17,10 +17,10 @@ class CbmTrackMatchNew;
 class CbmLitMCTrackCreator;
 class CbmMCDataArray;
 
-using std::string;
-using std::vector;
 using std::multimap;
 using std::pair;
+using std::string;
+using std::vector;
 
 
 /**
@@ -29,202 +29,205 @@ using std::pair;
  * \author Andrey Lebedev <andrey.lebedev@gsi.de>
  * \date 2007
  */
-class CbmLitTrackingQa : public FairTask
-{
+class CbmLitTrackingQa : public FairTask {
 public:
-
-   /**
+  /**
     * \brief Constructor.
     */
-   CbmLitTrackingQa();
+  CbmLitTrackingQa();
 
-   /**
+  /**
     * \brief Destructor.
     */
-   virtual ~CbmLitTrackingQa();
+  virtual ~CbmLitTrackingQa();
 
-   /**
+  /**
     * \brief Derived from FairTask.
     */
-   virtual InitStatus Init();
+  virtual InitStatus Init();
 
-   /**
+  /**
     * \brief Derived from FairTask.
     */
-   virtual void Exec(
-      Option_t* opt);
+  virtual void Exec(Option_t* opt);
 
-   /**
+  /**
     * \brief Derived from FairTask.
     */
-   virtual void Finish();
+  virtual void Finish();
 
-   /** Setters **/
-   void SetMinNofPointsSts(Int_t minNofPointsSts) { fMinNofPointsSts = minNofPointsSts; }
-   void SetMinNofPointsTrd(Int_t minNofPointsTrd) { fMinNofPointsTrd = minNofPointsTrd; }
-   void SetMinNofPointsMuch(Int_t minNofPointsMuch) { fMinNofPointsMuch = minNofPointsMuch; }
-   void SetMinNofPointsTof(Int_t minNofPointsTof) { fMinNofPointsTof = minNofPointsTof; }
-   void SetMinNofHitsRich(Int_t minNofHitsRich) { fMinNofHitsRich = minNofHitsRich; }
-   void SetQuota(Double_t quota) { fQuota = quota; }
-   void SetQuotaRich(Double_t quotaRich) { fQuotaRich = quotaRich; }
-   void SetMinNofHitsTrd(Int_t minNofHitsTrd) { fMinNofHitsTrd = minNofHitsTrd; }
-   void SetMinNofHitsMuch(Int_t minNofHitsMuch) { fMinNofHitsMuch = minNofHitsMuch; }
-   void SetUseConsecutivePointsInSts(Bool_t useConsecutivePointsInSts) { fUseConsecutivePointsInSts = useConsecutivePointsInSts; }
-   void SetOutputDir(const std::string& dir) { fOutputDir = dir; }
-   void SetPRange(Int_t bins, Int_t min, Int_t max) {
-      fPRangeBins = bins;
-      fPRangeMin = min;
-      fPRangeMax = max;
-   }
-   void SetYRange(Int_t bins, Int_t min, Int_t max) {
-      fYRangeBins = bins;
-      fYRangeMin = min;
-      fYRangeMax = max;
-   }
-   void SetPtRange(Int_t bins, Int_t min, Int_t max) {
-      fPtRangeBins = bins;
-      fPtRangeMin = min;
-      fPtRangeMax = max;
-   }
-   void SetAngleRange(
-         Double_t min,
-         Double_t max,
-         Int_t nofBins) {
-      fAngleRangeMin = min;
-      fAngleRangeMax = max;
-      fAngleRangeBins = nofBins;
-   }
-   void SetTrackCategories(const vector<string>& trackCategories) { fTrackCategories = trackCategories; }
-   void SetRingCategories(const vector<string>& ringCategories) { fRingCategories = ringCategories; }
+  /** Setters **/
+  void SetMinNofPointsSts(Int_t minNofPointsSts) {
+    fMinNofPointsSts = minNofPointsSts;
+  }
+  void SetMinNofPointsTrd(Int_t minNofPointsTrd) {
+    fMinNofPointsTrd = minNofPointsTrd;
+  }
+  void SetMinNofPointsMuch(Int_t minNofPointsMuch) {
+    fMinNofPointsMuch = minNofPointsMuch;
+  }
+  void SetMinNofPointsTof(Int_t minNofPointsTof) {
+    fMinNofPointsTof = minNofPointsTof;
+  }
+  void SetMinNofHitsRich(Int_t minNofHitsRich) {
+    fMinNofHitsRich = minNofHitsRich;
+  }
+  void SetQuota(Double_t quota) { fQuota = quota; }
+  void SetQuotaRich(Double_t quotaRich) { fQuotaRich = quotaRich; }
+  void SetMinNofHitsTrd(Int_t minNofHitsTrd) { fMinNofHitsTrd = minNofHitsTrd; }
+  void SetMinNofHitsMuch(Int_t minNofHitsMuch) {
+    fMinNofHitsMuch = minNofHitsMuch;
+  }
+  void SetUseConsecutivePointsInSts(Bool_t useConsecutivePointsInSts) {
+    fUseConsecutivePointsInSts = useConsecutivePointsInSts;
+  }
+  void SetOutputDir(const std::string& dir) { fOutputDir = dir; }
+  void SetPRange(Int_t bins, Int_t min, Int_t max) {
+    fPRangeBins = bins;
+    fPRangeMin  = min;
+    fPRangeMax  = max;
+  }
+  void SetYRange(Int_t bins, Int_t min, Int_t max) {
+    fYRangeBins = bins;
+    fYRangeMin  = min;
+    fYRangeMax  = max;
+  }
+  void SetPtRange(Int_t bins, Int_t min, Int_t max) {
+    fPtRangeBins = bins;
+    fPtRangeMin  = min;
+    fPtRangeMax  = max;
+  }
+  void SetAngleRange(Double_t min, Double_t max, Int_t nofBins) {
+    fAngleRangeMin  = min;
+    fAngleRangeMax  = max;
+    fAngleRangeBins = nofBins;
+  }
+  void SetTrackCategories(const vector<string>& trackCategories) {
+    fTrackCategories = trackCategories;
+  }
+  void SetRingCategories(const vector<string>& ringCategories) {
+    fRingCategories = ringCategories;
+  }
 
-   void SetRichAnnCut(Double_t par){fRichAnnCut = par;}
-   void SetTrdAnnCut(Double_t par){fTrdAnnCut = par;}
+  void SetRichAnnCut(Double_t par) { fRichAnnCut = par; }
+  void SetTrdAnnCut(Double_t par) { fTrdAnnCut = par; }
 
 private:
-   /**
+  /**
     * \brief Read data branches from input data files.
     */
-   void ReadDataBranches();
+  void ReadDataBranches();
 
-   /**
+  /**
     * \brief Fill array of track categories with default values.
     */
-   void FillDefaultTrackCategories();
+  void FillDefaultTrackCategories();
 
-   void FillDefaultRingCategories();
+  void FillDefaultRingCategories();
 
-   void FillDefaultTrackPIDCategories();
+  void FillDefaultTrackPIDCategories();
 
-   void FillDefaultPiSuppCategories();
+  void FillDefaultPiSuppCategories();
 
-   void FillDefaultRingPIDCategories();
+  void FillDefaultRingPIDCategories();
 
-   void FillTrackAndRingAcceptanceFunctions();
+  void FillTrackAndRingAcceptanceFunctions();
 
 
-   void CreateH1Efficiency(
-         const string& name,
-         const string& parameter,
-         const string& xTitle,
-         Int_t nofBins,
-         Double_t minBin,
-         Double_t maxBin,
-         const string& opt);
+  void CreateH1Efficiency(const string& name,
+                          const string& parameter,
+                          const string& xTitle,
+                          Int_t nofBins,
+                          Double_t minBin,
+                          Double_t maxBin,
+                          const string& opt);
 
-   void CreateH2Efficiency(
-         const string& name,
-         const string& parameter,
-         const string& xTitle,
-         const string& yTitle,
-         Int_t nofBinsX,
-         Double_t minBinX,
-         Double_t maxBinX,
-         Int_t nofBinsY,
-         Double_t minBinY,
-         Double_t maxBinY,
-         const string& opt);
+  void CreateH2Efficiency(const string& name,
+                          const string& parameter,
+                          const string& xTitle,
+                          const string& yTitle,
+                          Int_t nofBinsX,
+                          Double_t minBinX,
+                          Double_t maxBinX,
+                          Int_t nofBinsY,
+                          Double_t minBinY,
+                          Double_t maxBinY,
+                          const string& opt);
 
-   void CreateH1PionSuppression(
-         const string& name,
-         const string& parameter,
-         const string& xTitle,
-         Int_t nofBins,
-         Double_t minBin,
-         Double_t maxBin);
+  void CreateH1PionSuppression(const string& name,
+                               const string& parameter,
+                               const string& xTitle,
+                               Int_t nofBins,
+                               Double_t minBin,
+                               Double_t maxBin);
 
-   void CreateH1(
-         const string& name,
-         const string& xTitle,
-         const string& yTitle,
-         Int_t nofBins,
-         Double_t minBin,
-         Double_t maxBin);
+  void CreateH1(const string& name,
+                const string& xTitle,
+                const string& yTitle,
+                Int_t nofBins,
+                Double_t minBin,
+                Double_t maxBin);
 
-   void CreateH2(
-         const string& name,
-         const string& xTitle,
-         const string& yTitle,
-         const string& zTitle,
-         Int_t nofBinsX,
-         Double_t minBinX,
-         Double_t maxBinX,
-         Int_t nofBinsY,
-         Double_t minBinY,
-         Double_t maxBinY);
+  void CreateH2(const string& name,
+                const string& xTitle,
+                const string& yTitle,
+                const string& zTitle,
+                Int_t nofBinsX,
+                Double_t minBinX,
+                Double_t maxBinX,
+                Int_t nofBinsY,
+                Double_t minBinY,
+                Double_t maxBinY);
 
-   void CreateTrackHitsHistogram(
-         const string& detName);
+  void CreateTrackHitsHistogram(const string& detName);
 
-   vector<string> CreateGlobalTrackingHistogramNames(
-         const vector<string>& detectors);
+  vector<string>
+  CreateGlobalTrackingHistogramNames(const vector<string>& detectors);
 
-   vector<string> CreateGlobalTrackingHistogramNames();
+  vector<string> CreateGlobalTrackingHistogramNames();
 
-   string LocalEfficiencyNormalization(
-         const string& detName);
+  string LocalEfficiencyNormalization(const string& detName);
 
-   vector<string> GlobalTrackVariants();
+  vector<string> GlobalTrackVariants();
 
-   vector<string> PionSuppressionVariants();
+  vector<string> PionSuppressionVariants();
 
-   void CreateHistograms();
+  void CreateHistograms();
 
-   /**
+  /**
     * \brief Loop over the reconstructed global tracks.
     * Check if track is correct and fill
     * multimap <MC track index, reconstructed track index>.
     */
-   void ProcessGlobalTracks();
+  void ProcessGlobalTracks();
 
-   /**
+  /**
     * \brief Loop over the reconstructed RICH rings.
     * Check if ring is correct and fill
     * multimap <MC track index, reconstructed ring index>.
     */
-   void ProcessRichRings();
+  void ProcessRichRings();
 
-   /**
+  /**
     * \brief Check correctness attached MVD hits.
     */
-   void ProcessMvd(
-      Int_t stsId);
+  void ProcessMvd(Int_t stsId);
 
-   void FillTrackQualityHistograms(
-      const CbmTrackMatchNew* trackMatch,
-      ECbmModuleId detId);
+  void FillTrackQualityHistograms(const CbmTrackMatchNew* trackMatch,
+                                  ECbmModuleId detId);
 
-   /**
+  /**
     * \brief Loop over the MC tracks. Check track acceptance for different cases.
     * Fill histograms of accepted and reconstructed tracks.
     */
-   void ProcessMcTracks(Int_t iEvent);
+  void ProcessMcTracks(Int_t iEvent);
 
-//   /**
-//    * \brief Calculate efficiency histograms.
-//    */
-//   void CalculateEfficiencyHistos();
+  //   /**
+  //    * \brief Calculate efficiency histograms.
+  //    */
+  //   void CalculateEfficiencyHistos();
 
-   /**
+  /**
     * \brief Fill histograms of accepted and reconstructed tracks.
     * \param[in] mcTrack MC track pointer.
     * \param[in] mcId MC track index in array.
@@ -232,17 +235,17 @@ private:
     * \param[in] hist main name of the histograms to be filled.
     * \param[in] par Value that will be added in histogram (momentum or number of points).
     */
-   void FillGlobalReconstructionHistos(
-         Int_t mcEventId,
-         Int_t mcId,
-         const multimap<pair<Int_t, Int_t>, Int_t>& mcMap,
-         const string& histName,
-         const string& histTypeName,
-         const string& effName,
-         const string& catName,
-         const vector<Double_t>& par);
+  void FillGlobalReconstructionHistos(
+    Int_t mcEventId,
+    Int_t mcId,
+    const multimap<pair<Int_t, Int_t>, Int_t>& mcMap,
+    const string& histName,
+    const string& histTypeName,
+    const string& effName,
+    const string& catName,
+    const vector<Double_t>& par);
 
-    /**
+  /**
      * \brief Fill histograms of accepted and reconstructed rings tracks.
      * \param[in] mcTrack MC track pointer.
      * \param[in] mcId MC track index in the array.
@@ -250,110 +253,133 @@ private:
      * \param[in] hist main name of the histograms to be filled.
      * \param[in] par Value that will be added in histogram (momentum or number of points)
      */
-   void FillGlobalReconstructionHistosRich(
-         Int_t mcEventId,
-         Int_t mcId,
-         const multimap<pair<Int_t, Int_t>, Int_t>& mcMap,
-         const string& histName,
-         const string& histTypeName,
-         const string& effName,
-         const string& catName,
-         const vector<Double_t>& par);
+  void FillGlobalReconstructionHistosRich(
+    Int_t mcEventId,
+    Int_t mcId,
+    const multimap<pair<Int_t, Int_t>, Int_t>& mcMap,
+    const string& histName,
+    const string& histTypeName,
+    const string& effName,
+    const string& catName,
+    const vector<Double_t>& par);
 
-   Bool_t ElectronId(
-         Int_t mcEventId,
-         Int_t mcId,
-         const multimap<pair<Int_t, Int_t>, Int_t>& mcMap,
-         const string& effName);
+  Bool_t ElectronId(Int_t mcEventId,
+                    Int_t mcId,
+                    const multimap<pair<Int_t, Int_t>, Int_t>& mcMap,
+                    const string& effName);
 
-   void PionSuppression();
+  void PionSuppression();
 
-   /**
+  /**
     * \brief Increase number of objects counters.
     */
-   void IncreaseCounters();
+  void IncreaseCounters();
 
-   CbmHistManager* fHM; // Histogram manager
-   string fOutputDir; // Output directory for results
-   CbmLitDetectorSetup fDet; // Detector presence information
-   CbmLitMCTrackCreator* fMCTrackCreator; // MC track creator tool
+  CbmHistManager* fHM;                    // Histogram manager
+  string fOutputDir;                      // Output directory for results
+  CbmLitDetectorSetup fDet;               // Detector presence information
+  CbmLitMCTrackCreator* fMCTrackCreator;  // MC track creator tool
 
-   // Acceptance defined by MC points
-   Int_t fMinNofPointsSts; // Minimal number of MCPoints in STS
-   Int_t fMinNofPointsTrd; // Minimal number of MCPoints in TRD
-   Int_t fMinNofPointsMuch; // Minimal number of MCPoints in MUCH
-   Int_t fMinNofPointsTof; // Minimal number of MCPoints in TOF
-   Double_t fQuota;  // True/all hits for track to be considered correctly reconstructed
+  // Acceptance defined by MC points
+  Int_t fMinNofPointsSts;   // Minimal number of MCPoints in STS
+  Int_t fMinNofPointsTrd;   // Minimal number of MCPoints in TRD
+  Int_t fMinNofPointsMuch;  // Minimal number of MCPoints in MUCH
+  Int_t fMinNofPointsTof;   // Minimal number of MCPoints in TOF
+  Double_t
+    fQuota;  // True/all hits for track to be considered correctly reconstructed
 
-   Bool_t fUseConsecutivePointsInSts; // Use consecutive MC points for STS normalization
+  Bool_t
+    fUseConsecutivePointsInSts;  // Use consecutive MC points for STS normalization
 
-   // Acceptance in RICH
-   Int_t fMinNofHitsRich; // Minimal number of hits in MC RICH ring
-   Double_t fQuotaRich; // True/all hits for ring to be considered correctly reconstructed
+  // Acceptance in RICH
+  Int_t fMinNofHitsRich;  // Minimal number of hits in MC RICH ring
+  Double_t
+    fQuotaRich;  // True/all hits for ring to be considered correctly reconstructed
 
-   // Minimal number of hits in track to be considered as accepted.
-   // This is needed because the definition of the correctly reconstructed track
-   // is 70% of hits in the reconstructed track are from the same MC track.
-   // But this can lead to the situation when a reconstructed track has 4 hits,
-   // all of them from the same MC track, which means that the track is correctly
-   // reconstructed. BUT the real MC track has 12 points(hits). This is especially
-   // important for the MUCH detector. To avoid such situations one has to put
-   // such cut.
-   Int_t fMinNofHitsTrd; // for TRD track
-   Int_t fMinNofHitsMuch; // for MUCH track
+  // Minimal number of hits in track to be considered as accepted.
+  // This is needed because the definition of the correctly reconstructed track
+  // is 70% of hits in the reconstructed track are from the same MC track.
+  // But this can lead to the situation when a reconstructed track has 4 hits,
+  // all of them from the same MC track, which means that the track is correctly
+  // reconstructed. BUT the real MC track has 12 points(hits). This is especially
+  // important for the MUCH detector. To avoid such situations one has to put
+  // such cut.
+  Int_t fMinNofHitsTrd;   // for TRD track
+  Int_t fMinNofHitsMuch;  // for MUCH track
 
-   Double_t fPRangeMin; // Minimum momentum for tracks for efficiency calculation [GeV/c]
-   Double_t fPRangeMax; // Maximum momentum for tracks for efficiency calculation [GeV/c]
-   Int_t fPRangeBins; // Number of bins for efficiency vs. momentum histogram
-   Double_t fPtRangeMin; // Minimum Pt for tracks for efficiency calculation [GeV/c]
-   Double_t fPtRangeMax; // Maximum Pt for tracks for efficiency calculation [GeV/c]
-   Int_t fPtRangeBins; // Number of bins for efficiency vs. Pt histogram
-   Double_t fYRangeMin; // Minimum rapidity for tracks for efficiency calculation [GeV/c]
-   Double_t fYRangeMax; // Maximum rapidity for tracks for efficiency calculation [GeV/c]
-   Int_t fYRangeBins; // Number of bins for efficiency vs. rapidity histogram
-   Double_t fAngleRangeMin; // Minimum polar angle [grad]
-   Double_t fAngleRangeMax; // Maximum polar angle [grad]
-   Int_t fAngleRangeBins; // Number of bins for efficiency vs. polar angle histogram
+  Double_t
+    fPRangeMin;  // Minimum momentum for tracks for efficiency calculation [GeV/c]
+  Double_t
+    fPRangeMax;  // Maximum momentum for tracks for efficiency calculation [GeV/c]
+  Int_t fPRangeBins;  // Number of bins for efficiency vs. momentum histogram
+  Double_t
+    fPtRangeMin;  // Minimum Pt for tracks for efficiency calculation [GeV/c]
+  Double_t
+    fPtRangeMax;  // Maximum Pt for tracks for efficiency calculation [GeV/c]
+  Int_t fPtRangeBins;  // Number of bins for efficiency vs. Pt histogram
+  Double_t
+    fYRangeMin;  // Minimum rapidity for tracks for efficiency calculation [GeV/c]
+  Double_t
+    fYRangeMax;  // Maximum rapidity for tracks for efficiency calculation [GeV/c]
+  Int_t fYRangeBins;  // Number of bins for efficiency vs. rapidity histogram
+  Double_t fAngleRangeMin;  // Minimum polar angle [grad]
+  Double_t fAngleRangeMax;  // Maximum polar angle [grad]
+  Int_t
+    fAngleRangeBins;  // Number of bins for efficiency vs. polar angle histogram
 
-   // Pointers to data arrays
-   CbmMCDataArray* fMCTracks; // CbmMCTrack array
-   TClonesArray* fGlobalTracks; // CbmGlobalTrack array
-   CbmMCDataArray* fMvdPoints; // CbmMvdPoint array
-   TClonesArray* fMvdHitMatches; // CbmMatch array
-   TClonesArray* fStsTracks; // CbmStsTrack array
-   TClonesArray* fStsMatches; // CbmStsTrackMatch array
-   TClonesArray* fRichRings; // CbmRichRing array
-   TClonesArray* fRichProjections; // CbmRichProjection array
-   TClonesArray* fRichRingMatches; // CbmRichMatchesn array
-   TClonesArray* fMuchMatches; // CbmTrackMatchNew array
-   TClonesArray* fTrdMatches; // CbmTrackMatchNew array
-   CbmMCDataArray* fTofPoints; // CbmTofPoint array
-   TClonesArray* fTofMatches;// CbmMatch array
+  // Pointers to data arrays
+  CbmMCDataArray* fMCTracks;       // CbmMCTrack array
+  TClonesArray* fGlobalTracks;     // CbmGlobalTrack array
+  CbmMCDataArray* fMvdPoints;      // CbmMvdPoint array
+  TClonesArray* fMvdHitMatches;    // CbmMatch array
+  TClonesArray* fStsTracks;        // CbmStsTrack array
+  TClonesArray* fStsMatches;       // CbmStsTrackMatch array
+  TClonesArray* fRichRings;        // CbmRichRing array
+  TClonesArray* fRichProjections;  // CbmRichProjection array
+  TClonesArray* fRichRingMatches;  // CbmRichMatchesn array
+  TClonesArray* fMuchMatches;      // CbmTrackMatchNew array
+  TClonesArray* fTrdMatches;       // CbmTrackMatchNew array
+  CbmMCDataArray* fTofPoints;      // CbmTofPoint array
+  TClonesArray* fTofMatches;       // CbmMatch array
 
-   // Global track segment name maps to multimap <MC track index, reconstructed track index>
-   map<string, multimap<pair<Int_t, Int_t>, Int_t> > fMcToRecoMap;
+  // Global track segment name maps to multimap <MC track index, reconstructed track index>
+  map<string, multimap<pair<Int_t, Int_t>, Int_t>> fMcToRecoMap;
 
-   vector<string> fTrackCategories; // Vector of track category names
-   vector<string> fRingCategories; // Vector of ring category names
-   vector<string> fTrackCategoriesPID; // Vector of track category names
-   vector<string> fRingCategoriesPID; // Vector of ring category names for REC+PID
-   vector<string> fPiSuppCategories;; // Vector of categories for pion suppression
+  vector<string> fTrackCategories;     // Vector of track category names
+  vector<string> fRingCategories;      // Vector of ring category names
+  vector<string> fTrackCategoriesPID;  // Vector of track category names
+  vector<string>
+    fRingCategoriesPID;  // Vector of ring category names for REC+PID
+  vector<string> fPiSuppCategories;
+  ;  // Vector of categories for pion suppression
 
-//#ifndef  __ROOTCLING__
-   typedef Bool_t (*LitTrackAcceptanceFunction)(CbmMCDataArray* mcTracks, Int_t eventNo, Int_t index);
-   typedef Bool_t (*LitRingAcceptanceFunction)(CbmMCDataArray* mcTracks, Int_t eventNo, Int_t index, Int_t nofHitsInRing);
-   typedef Bool_t (*LitPiSuppAcceptanceFunction)(const TClonesArray* globalTracks, const TClonesArray* stsMatches, const TClonesArray* richMatches, Int_t index);
-   map<string, LitTrackAcceptanceFunction> fTrackAcceptanceFunctions; // maps track category name to track acceptance function
-   map<string, LitRingAcceptanceFunction> fRingAcceptanceFunctions; // maps ring category name to ring acceptance function
-   map<string, LitPiSuppAcceptanceFunction> fPiSuppAcceptanceFunctions; // maps pion supp. category name to piSupp acceptance function
-//#endif
-   Double_t fTrdAnnCut;
-   Double_t fRichAnnCut;
+  //#ifndef  __ROOTCLING__
+  typedef Bool_t (*LitTrackAcceptanceFunction)(CbmMCDataArray* mcTracks,
+                                               Int_t eventNo,
+                                               Int_t index);
+  typedef Bool_t (*LitRingAcceptanceFunction)(CbmMCDataArray* mcTracks,
+                                              Int_t eventNo,
+                                              Int_t index,
+                                              Int_t nofHitsInRing);
+  typedef Bool_t (*LitPiSuppAcceptanceFunction)(
+    const TClonesArray* globalTracks,
+    const TClonesArray* stsMatches,
+    const TClonesArray* richMatches,
+    Int_t index);
+  map<string, LitTrackAcceptanceFunction>
+    fTrackAcceptanceFunctions;  // maps track category name to track acceptance function
+  map<string, LitRingAcceptanceFunction>
+    fRingAcceptanceFunctions;  // maps ring category name to ring acceptance function
+  map<string, LitPiSuppAcceptanceFunction>
+    fPiSuppAcceptanceFunctions;  // maps pion supp. category name to piSupp acceptance function
+                                 //#endif
+  Double_t fTrdAnnCut;
+  Double_t fRichAnnCut;
 
-   CbmLitTrackingQa(const CbmLitTrackingQa&);
-   CbmLitTrackingQa& operator=(const CbmLitTrackingQa&);
-   
-   ClassDef(CbmLitTrackingQa, 1);
+  CbmLitTrackingQa(const CbmLitTrackingQa&);
+  CbmLitTrackingQa& operator=(const CbmLitTrackingQa&);
+
+  ClassDef(CbmLitTrackingQa, 1);
 };
 
 #endif /* CBMLITTRACKINGQA_H_ */

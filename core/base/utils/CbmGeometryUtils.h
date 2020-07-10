@@ -12,16 +12,16 @@ namespace Cbm {
     void RemoveDuplicateMaterials();
     void RemoveDuplicateMedia();
 
-    void ImportRootGeometry(TString& filename, 
-                            FairModule* mod, 
+    void ImportRootGeometry(TString& filename,
+                            FairModule* mod,
                             TGeoMatrix* mat = nullptr);
 
-    bool IsNewGeometryFile(TString& filename);    
-    bool IsNewGeometryFile(TString& filename, 
+    bool IsNewGeometryFile(TString& filename);
+    bool IsNewGeometryFile(TString& filename,
                            TString& volumeName,
                            TGeoMatrix** matrix);
 
     void AssignMediumAtImport(TGeoVolume* v);
     void ExpandNodes(TGeoVolume* volume, FairModule* mod);
-  }
-}
+  }  // namespace GeometryUtils
+}  // namespace Cbm

@@ -1,4 +1,4 @@
 
 #include "CbmKFVertex.h"
 
-ClassImp( CbmKFVertex );
+ClassImp(CbmKFVertex);

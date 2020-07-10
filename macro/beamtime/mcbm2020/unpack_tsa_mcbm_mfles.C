@@ -8,20 +8,21 @@
  ** Uses CbmMcbm2018Source as source task.
  */
 // In order to call later Finish, we make this global
-FairRunOnline *run = NULL;
+FairRunOnline* run = NULL;
 
-void unpack_tsa_mcbm_mfles( UInt_t uRunId = 0, UInt_t nrEvents=0, TString outDir="data", TString inDir="")
-{
-  if( uRunId < 353 )
-    return kFALSE;
+void unpack_tsa_mcbm_mfles(UInt_t uRunId   = 0,
+                           UInt_t nrEvents = 0,
+                           TString outDir  = "data",
+                           TString inDir   = "") {
+  if (uRunId < 353) return kFALSE;
 
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
 
   // --- Specify number of events to be produced.
   // --- -1 means run until the end of the input file.
-  Int_t nEvents=-1;
+  Int_t nEvents = -1;
   // --- Specify output file name (this is just an example)
-  TString runId = TString::Format("%03u", uRunId);
+  TString runId   = TString::Format("%03u", uRunId);
   TString outFile = outDir + "/unp_mcbm_" + runId + ".root";
   TString parFile = outDir + "/unp_mcbm_params_" + runId + ".root";
 
@@ -33,21 +34,21 @@ void unpack_tsa_mcbm_mfles( UInt_t uRunId = 0, UInt_t nrEvents=0, TString outDir
   //gLogger->SetLogVerbosityLevel("LOW");
 
   // --- Define parameter files
-  TList *parFileList = new TList();
-  TString paramDir = srcDir + "/macro/beamtime/mcbm2020/";
+  TList* parFileList = new TList();
+  TString paramDir   = srcDir + "/macro/beamtime/mcbm2020/";
 
-  TString paramFileSts = paramDir + "mStsPar.par";
+  TString paramFileSts       = paramDir + "mStsPar.par";
   TObjString* parStsFileName = new TObjString(paramFileSts);
   parFileList->Add(parStsFileName);
 
-  TString paramFileMuch = paramDir + "mMuchPar.par";
+  TString paramFileMuch       = paramDir + "mMuchPar.par";
   TObjString* parMuchFileName = new TObjString(paramFileMuch);
   parFileList->Add(parMuchFileName);
 
   TString paramDirTrd = srcDir + "/parameters/trd/trd_v18q_mcbm";
   parFileList->Add(new TObjString(Form("%s.asic.par", paramDirTrd.Data())));
 
-  TString paramFileTof = paramDir + "mTofPar.par";
+  TString paramFileTof       = paramDir + "mTofPar.par";
   TObjString* parTofFileName = new TObjString(paramFileTof);
   parFileList->Add(parTofFileName);
 
@@ -56,7 +57,7 @@ void unpack_tsa_mcbm_mfles( UInt_t uRunId = 0, UInt_t nrEvents=0, TString outDir
   TObjString* parRichFileName = new TObjString(paramFileRich);
   parFileList->Add(parRichFileName);
 
-  TString paramFilePsd = paramDir + "mPsdPar.par";
+  TString paramFilePsd       = paramDir + "mPsdPar.par";
   TObjString* parPsdFileName = new TObjString(paramFilePsd);
   parFileList->Add(parPsdFileName);
 
@@ -71,36 +72,38 @@ void unpack_tsa_mcbm_mfles( UInt_t uRunId = 0, UInt_t nrEvents=0, TString outDir
   std::cout << std::endl;
   std::cout << ">>> unpack_tsa: Initialising..." << std::endl;
 
-  CbmMcbm2018UnpackerTaskSts  * unpacker_sts  = new CbmMcbm2018UnpackerTaskSts();
-  CbmMcbm2018UnpackerTaskMuch * unpacker_much = new CbmMcbm2018UnpackerTaskMuch();
-  CbmMcbm2018UnpackerTaskTrdR * unpacker_trdR = new CbmMcbm2018UnpackerTaskTrdR();
-  CbmMcbm2018UnpackerTaskTof  * unpacker_tof  = new CbmMcbm2018UnpackerTaskTof();
-  CbmMcbm2018UnpackerTaskRich * unpacker_rich = new CbmMcbm2018UnpackerTaskRich();
-  CbmMcbm2018UnpackerTaskPsd * unpacker_psd = new CbmMcbm2018UnpackerTaskPsd();
+  CbmMcbm2018UnpackerTaskSts* unpacker_sts = new CbmMcbm2018UnpackerTaskSts();
+  CbmMcbm2018UnpackerTaskMuch* unpacker_much =
+    new CbmMcbm2018UnpackerTaskMuch();
+  CbmMcbm2018UnpackerTaskTrdR* unpacker_trdR =
+    new CbmMcbm2018UnpackerTaskTrdR();
+  CbmMcbm2018UnpackerTaskTof* unpacker_tof = new CbmMcbm2018UnpackerTaskTof();
+  CbmMcbm2018UnpackerTaskRich* unpacker_rich =
+    new CbmMcbm2018UnpackerTaskRich();
+  CbmMcbm2018UnpackerTaskPsd* unpacker_psd = new CbmMcbm2018UnpackerTaskPsd();
 
-  unpacker_sts ->SetMonitorMode();
+  unpacker_sts->SetMonitorMode();
   unpacker_much->SetMonitorMode();
   unpacker_trdR->SetMonitorMode();
-  unpacker_tof ->SetMonitorMode();
+  unpacker_tof->SetMonitorMode();
   unpacker_rich->SetMonitorMode();
   unpacker_psd->SetMonitorMode();
 
-  unpacker_sts ->SetIgnoreOverlapMs();
+  unpacker_sts->SetIgnoreOverlapMs();
   unpacker_much->SetIgnoreOverlapMs();
-//  unpacker_trdR ->SetIgnoreOverlapMs(); /// Default is kTRUE
-  unpacker_tof ->SetIgnoreOverlapMs();
+  //  unpacker_trdR ->SetIgnoreOverlapMs(); /// Default is kTRUE
+  unpacker_tof->SetIgnoreOverlapMs();
   unpacker_rich->SetIgnoreOverlapMs();
-  unpacker_psd ->SetIgnoreOverlapMs();
+  unpacker_psd->SetIgnoreOverlapMs();
 
-//  unpacker_sts ->SetAdcCut( 3 );
-  unpacker_tof ->SetSeparateArrayT0();
+  //  unpacker_sts ->SetAdcCut( 3 );
+  unpacker_tof->SetSeparateArrayT0();
 
-  switch( uRunId )
-  {
-     case 368:
-        unpacker_sts ->SetTimeOffsetNs(  2519880 ); // Run 368
-        break;
-/*
+  switch (uRunId) {
+    case 368:
+      unpacker_sts->SetTimeOffsetNs(2519880);  // Run 368
+      break;
+      /*
      case 159:
      {
         /// General System offsets (= offsets between sub-systems)
@@ -179,13 +182,12 @@ void unpack_tsa_mcbm_mfles( UInt_t uRunId = 0, UInt_t nrEvents=0, TString outDir
         break;
      } // 159
 */
-     default:
-        break;
-  } // switch( uRunId )
+    default: break;
+  }  // switch( uRunId )
 
   // --- Source task
   CbmMcbm2018Source* source = new CbmMcbm2018Source();
-/*
+  /*
   TString inFile = Form( "/scratch/mcbm_data/mcbm_all/data/%3u_pn02_0000.tsa;", uRunId );
   inFile += Form( "/scratch/mcbm_data/mcbm_all/data/%3u_pn04_0000.tsa;", uRunId );
   inFile += Form( "/scratch/mcbm_data/mcbm_all/data/%3u_pn05_0000.tsa;", uRunId );
@@ -198,31 +200,33 @@ void unpack_tsa_mcbm_mfles( UInt_t uRunId = 0, UInt_t nrEvents=0, TString outDir
   inFile += Form( "/scratch/mcbm_data/mcbm_all/data/%3u_pn15_0000.tsa", uRunId );
 */
 
-  TString inFile = Form( "/scratch/mcbm_data/mcbm_all/data/%3u_pn02_*.tsa;", uRunId );
-  inFile += Form( "/scratch/mcbm_data/mcbm_all/data/%3u_pn04_*.tsa;", uRunId );
-  inFile += Form( "/scratch/mcbm_data/mcbm_all/data/%3u_pn05_*.tsa;", uRunId );
-  inFile += Form( "/scratch/mcbm_data/mcbm_all/data/%3u_pn06_*.tsa;", uRunId );
-  inFile += Form( "/scratch/mcbm_data/mcbm_all/data/%3u_pn08_*.tsa;", uRunId );
-  inFile += Form( "/scratch/mcbm_data/mcbm_all/data/%3u_pn10_*.tsa;", uRunId );
-  inFile += Form( "/scratch/mcbm_data/mcbm_all/data/%3u_pn11_*.tsa;", uRunId );
-  inFile += Form( "/scratch/mcbm_data/mcbm_all/data/%3u_pn12_*.tsa;", uRunId );
-  inFile += Form( "/scratch/mcbm_data/mcbm_all/data/%3u_pn13_*.tsa;", uRunId );
-  inFile += Form( "/scratch/mcbm_data/mcbm_all/data/%3u_pn15_*.tsa", uRunId );
+  TString inFile =
+    Form("/scratch/mcbm_data/mcbm_all/data/%3u_pn02_*.tsa;", uRunId);
+  inFile += Form("/scratch/mcbm_data/mcbm_all/data/%3u_pn04_*.tsa;", uRunId);
+  inFile += Form("/scratch/mcbm_data/mcbm_all/data/%3u_pn05_*.tsa;", uRunId);
+  inFile += Form("/scratch/mcbm_data/mcbm_all/data/%3u_pn06_*.tsa;", uRunId);
+  inFile += Form("/scratch/mcbm_data/mcbm_all/data/%3u_pn08_*.tsa;", uRunId);
+  inFile += Form("/scratch/mcbm_data/mcbm_all/data/%3u_pn10_*.tsa;", uRunId);
+  inFile += Form("/scratch/mcbm_data/mcbm_all/data/%3u_pn11_*.tsa;", uRunId);
+  inFile += Form("/scratch/mcbm_data/mcbm_all/data/%3u_pn12_*.tsa;", uRunId);
+  inFile += Form("/scratch/mcbm_data/mcbm_all/data/%3u_pn13_*.tsa;", uRunId);
+  inFile += Form("/scratch/mcbm_data/mcbm_all/data/%3u_pn15_*.tsa", uRunId);
 
   source->SetFileName(inFile);
-//  source->SetInputDir(inDir);
-  source->AddUnpacker(unpacker_sts,  0x10, ECbmModuleId::kSts  );//STS xyter
-  source->AddUnpacker(unpacker_much, 0x50, ECbmModuleId::kMuch );//MUCH xyter
-  source->AddUnpacker(unpacker_trdR, 0x40, ECbmModuleId::kTrd);// Trd flibId (0x40) as at desy2019. kTrd defined in CbmDefs.h
-  source->AddUnpacker(unpacker_tof,  0x60, ECbmModuleId::kTof  );//gDPB A & B & C
-  source->AddUnpacker(unpacker_tof,  0x90, ECbmModuleId::kTof  );//gDPB T0 A & B
+  //  source->SetInputDir(inDir);
+  source->AddUnpacker(unpacker_sts, 0x10, ECbmModuleId::kSts);    //STS xyter
+  source->AddUnpacker(unpacker_much, 0x50, ECbmModuleId::kMuch);  //MUCH xyter
+  source->AddUnpacker(
+    unpacker_trdR,
+    0x40,
+    ECbmModuleId::
+      kTrd);  // Trd flibId (0x40) as at desy2019. kTrd defined in CbmDefs.h
+  source->AddUnpacker(unpacker_tof, 0x60, ECbmModuleId::kTof);  //gDPB A & B & C
+  source->AddUnpacker(unpacker_tof, 0x90, ECbmModuleId::kTof);  //gDPB T0 A & B
   /// Avoid unpacking runs with RICH calibration triggers in first file until unpacker fixed
-  if( 358 != uRunId &&
-      361 != uRunId &&
-      367 != uRunId &&
-      369 != uRunId )
-    source->AddUnpacker(unpacker_rich, 0x30, ECbmModuleId::kRich );//RICH trb
-  source->AddUnpacker(unpacker_psd,  0x80, ECbmModuleId::kPsd  );//PSD
+  if (358 != uRunId && 361 != uRunId && 367 != uRunId && 369 != uRunId)
+    source->AddUnpacker(unpacker_rich, 0x30, ECbmModuleId::kRich);  //RICH trb
+  source->AddUnpacker(unpacker_psd, 0x80, ECbmModuleId::kPsd);      //PSD
 
   // --- Event header
   FairEventHeader* event = new CbmTbEvent();
@@ -231,7 +235,7 @@ void unpack_tsa_mcbm_mfles( UInt_t uRunId = 0, UInt_t nrEvents=0, TString outDir
   // --- RootFileSink
   // --- Open next outputfile after 4GB
   FairRootFileSink* sink = new FairRootFileSink(outFile);
-//  sink->GetOutTree()->SetMaxTreeSize(4294967295LL);
+  //  sink->GetOutTree()->SetMaxTreeSize(4294967295LL);
 
   // --- Run
   run = new FairRunOnline(source);
@@ -241,8 +245,8 @@ void unpack_tsa_mcbm_mfles( UInt_t uRunId = 0, UInt_t nrEvents=0, TString outDir
 
 
   // -----   Runtime database   ---------------------------------------------
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
-  Bool_t kParameterMerged = kTRUE;
+  FairRuntimeDb* rtdb       = run->GetRuntimeDb();
+  Bool_t kParameterMerged   = kTRUE;
   FairParRootFileIo* parOut = new FairParRootFileIo(kParameterMerged);
   FairParAsciiFileIo* parIn = new FairParAsciiFileIo();
   parOut->open(parFile.Data());
@@ -256,16 +260,17 @@ void unpack_tsa_mcbm_mfles( UInt_t uRunId = 0, UInt_t nrEvents=0, TString outDir
   TStopwatch timer;
   timer.Start();
   std::cout << ">>> unpack_tsa_mcbm: Starting run..." << std::endl;
-  if ( 0 == nrEvents) {
-    run->Run(nEvents, 0); // run until end of input file
+  if (0 == nrEvents) {
+    run->Run(nEvents, 0);  // run until end of input file
   } else {
-    run->Run(0, nrEvents); // process  N Events
+    run->Run(0, nrEvents);  // process  N Events
   }
   run->Finish();
 
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
+            << std::endl;
 
   // --- End-of-run info
   Double_t rtime = timer.RealTime();
@@ -274,7 +279,7 @@ void unpack_tsa_mcbm_mfles( UInt_t uRunId = 0, UInt_t nrEvents=0, TString outDir
   std::cout << ">>> unpack_tsa_mcbm: Macro finished successfully." << std::endl;
   std::cout << ">>> unpack_tsa_mcbm: Output file is " << outFile << std::endl;
   std::cout << ">>> unpack_tsa_mcbm: Real time " << rtime << " s, CPU time "
-	    << ctime << " s" << std::endl;
+            << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

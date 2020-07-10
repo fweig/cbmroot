@@ -12,16 +12,16 @@
 
 #include <iostream>
 
-#include "UParticle.h"
 #include "NicaMCTrack.h"
+#include "UParticle.h"
 /**
  * class for representation of track from unigen in "fake" format
  */
-class NicaUnigenTrack: public NicaMCTrack {
+class NicaUnigenTrack : public NicaMCTrack {
 public:
-	NicaUnigenTrack();
-	virtual ~NicaUnigenTrack();
-	ClassDef(NicaUnigenTrack,1)
+  NicaUnigenTrack();
+  virtual ~NicaUnigenTrack();
+  ClassDef(NicaUnigenTrack, 1)
 };
 
 #endif /* NICAUNIGENTRACK_H_ */

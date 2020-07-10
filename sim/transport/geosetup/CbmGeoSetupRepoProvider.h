@@ -18,21 +18,22 @@
  ** Setup definition is parsed from setup files like setup_sis100_electron.C
  ** with regular expressions and follows the established scheme of setup loading.
  **/
-class CbmGeoSetupRepoProvider: public CbmGeoSetupProvider
-{
-  public:
-    virtual std::vector<std::string> GetSetupTags();
-    virtual std::vector<std::string> GetFieldTags();
-    virtual std::vector<std::string> GetMediaTags();
+class CbmGeoSetupRepoProvider : public CbmGeoSetupProvider {
+public:
+  virtual std::vector<std::string> GetSetupTags();
+  virtual std::vector<std::string> GetFieldTags();
+  virtual std::vector<std::string> GetMediaTags();
 
-    virtual CbmGeoSetup GetSetupByTag(std::string setupTag, std::string revision);
-    virtual CbmGeoSetupModule GetModuleByTag(ECbmModuleId moduleId, std::string tag);
-    virtual CbmGeoSetupField GetFieldByTag(std::string tag);
-    virtual CbmGeoSetupMedia GetMediaByTag(std::string tag);
+  virtual CbmGeoSetup GetSetupByTag(std::string setupTag, std::string revision);
+  virtual CbmGeoSetupModule GetModuleByTag(ECbmModuleId moduleId,
+                                           std::string tag);
+  virtual CbmGeoSetupField GetFieldByTag(std::string tag);
+  virtual CbmGeoSetupMedia GetMediaByTag(std::string tag);
 
-    virtual void LoadSetup(std::string setupTag, std::string revision = "");
-  private:
-    ClassDef(CbmGeoSetupRepoProvider, 1);
+  virtual void LoadSetup(std::string setupTag, std::string revision = "");
+
+private:
+  ClassDef(CbmGeoSetupRepoProvider, 1);
 };
 
 #endif /* CBMSETUPREPOPROVIDER_H */

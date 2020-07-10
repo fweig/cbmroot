@@ -32,8 +32,7 @@
 class TClonesArray;
 class CbmGlobalTrack;
 
-class CbmEcalTrackExtrapolationKF : public CbmEcalTrackExtrapolation
-{
+class CbmEcalTrackExtrapolationKF : public CbmEcalTrackExtrapolation {
 public:
   /** Default constructor **/
   CbmEcalTrackExtrapolationKF();
@@ -53,16 +52,18 @@ public:
    *@param rTrackParamArray  Array of FairTrackParam
    *@value Number of tracks extrapolated
    **/
-  virtual Int_t DoExtrapolate(TClonesArray* gTrackArray, TClonesArray* fTrackParamArray);
+  virtual Int_t DoExtrapolate(TClonesArray* gTrackArray,
+                              TClonesArray* fTrackParamArray);
+
 private:
   /** Arrays **/
   TClonesArray* fTrackParamArray;
   TClonesArray* fSTSArray;
 
-  Int_t    iEx;            /** number of extrapolated tracks */
-  ClassDef(CbmEcalTrackExtrapolationKF,1);
+  Int_t iEx; /** number of extrapolated tracks */
+  ClassDef(CbmEcalTrackExtrapolationKF, 1);
 
- private:
+private:
   CbmEcalTrackExtrapolationKF(const CbmEcalTrackExtrapolationKF&);
   void operator=(const CbmEcalTrackExtrapolationKF&);
 };

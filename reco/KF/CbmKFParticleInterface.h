@@ -12,21 +12,25 @@ class FairTrackParam;
 class CbmVertex;
 
 class CbmKFParticleInterface : public TObject {
- public:
-
+public:
   // Constructors/Destructors ---------
   CbmKFParticleInterface() {};
   ~CbmKFParticleInterface() {};
-  
-  static void SetKFParticleFromStsTrack(CbmStsTrack *track, KFParticle* particle, Int_t pdg = 211, Bool_t firstPoint = kTRUE);
-  static void ExtrapolateTrackToPV(const CbmStsTrack *track, CbmVertex* pv, FairTrackParam* paramAtPV, float& chiPrim);
-  
- private:  
-   
-  const CbmKFParticleInterface& operator = (const CbmKFParticleInterface&);
+
+  static void SetKFParticleFromStsTrack(CbmStsTrack* track,
+                                        KFParticle* particle,
+                                        Int_t pdg         = 211,
+                                        Bool_t firstPoint = kTRUE);
+  static void ExtrapolateTrackToPV(const CbmStsTrack* track,
+                                   CbmVertex* pv,
+                                   FairTrackParam* paramAtPV,
+                                   float& chiPrim);
+
+private:
+  const CbmKFParticleInterface& operator=(const CbmKFParticleInterface&);
   CbmKFParticleInterface(const CbmKFParticleInterface&);
-  
-  ClassDef(CbmKFParticleInterface,1);
+
+  ClassDef(CbmKFParticleInterface, 1);
 };
 
 #endif

@@ -26,44 +26,41 @@
 class CbmRichRingTrackAssignIdeal : public CbmRichRingTrackAssignBase {
 
 public:
-
-   /**
+  /**
    * \brief Default constructor.
    */
-   CbmRichRingTrackAssignIdeal();
+  CbmRichRingTrackAssignIdeal();
 
-   /**
+  /**
    * \brief Destructor.
    */
-   virtual ~CbmRichRingTrackAssignIdeal();
+  virtual ~CbmRichRingTrackAssignIdeal();
 
-   /**
+  /**
     * \brief Inherited from CbmRichRingTrackAssignBase.
     */
-   void Init();
+  void Init();
 
   /**
    * \brief Inherited from CbmRichRingTrackAssignBase.
    */
-   virtual void DoAssign(
-         TClonesArray* rings,
-         TClonesArray* richProj);
+  virtual void DoAssign(TClonesArray* rings, TClonesArray* richProj);
 
 private:
-   TClonesArray* fMcTracks;
-   TClonesArray* fGlobalTracks;
-   TClonesArray* fRingMatches;
-   TClonesArray* fStsTrackMatches;
+  TClonesArray* fMcTracks;
+  TClonesArray* fGlobalTracks;
+  TClonesArray* fRingMatches;
+  TClonesArray* fStsTrackMatches;
 
-   /**
+  /**
     * \brief Copy constructor.
     */
-   CbmRichRingTrackAssignIdeal(const CbmRichRingTrackAssignIdeal&);
+  CbmRichRingTrackAssignIdeal(const CbmRichRingTrackAssignIdeal&);
 
-   /**
+  /**
     * \brief Assignment operator.
     */
-   CbmRichRingTrackAssignIdeal& operator=(const CbmRichRingTrackAssignIdeal&);
+  CbmRichRingTrackAssignIdeal& operator=(const CbmRichRingTrackAssignIdeal&);
 };
 
 #endif

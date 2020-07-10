@@ -6,7 +6,7 @@
 #ifndef CBMSTSCONTFACT_H
 #define CBMSTSCONTFACT_H 1
 
-#include <Rtypes.h>        // for THashConsistencyHolder, ClassDef
+#include <Rtypes.h>  // for THashConsistencyHolder, ClassDef
 
 #include <FairContFact.h>  // for FairContFact, FairContainer (ptr only)
 
@@ -26,17 +26,16 @@ class FairParSet;
  **/
 class CbmStsContFact : public FairContFact {
 
-  public:
-
-    /** @brief Constructor **/
-    CbmStsContFact();
-
-
-    /** @brief Destructor **/
-    ~CbmStsContFact() {}
+public:
+  /** @brief Constructor **/
+  CbmStsContFact();
 
 
-    /** @brief Create a parameter set
+  /** @brief Destructor **/
+  ~CbmStsContFact() {}
+
+
+  /** @brief Create a parameter set
      **
      ** Calls the constructor of the corresponding parameter set.
      ** For an actual context, which is not an empty string and not the
@@ -47,16 +46,14 @@ class CbmStsContFact : public FairContFact {
      ** created is not a FairContainer, but a FairParSet. Only God
      ** and Ilse König can tell the difference, though. Doxygen surely cannot.
      **/
-    FairParSet* createContainer(FairContainer*);
+  FairParSet* createContainer(FairContainer*);
 
 
-  private:
+private:
+  /** @brief Define parameter containers and their contexts **/
+  void setAllContainers();
 
-    /** @brief Define parameter containers and their contexts **/
-    void setAllContainers();
-
-    ClassDef(CbmStsContFact, 0);
-
+  ClassDef(CbmStsContFact, 0);
 };
 
-#endif  /* CBMSTSCONTFACT_H */
+#endif /* CBMSTSCONTFACT_H */

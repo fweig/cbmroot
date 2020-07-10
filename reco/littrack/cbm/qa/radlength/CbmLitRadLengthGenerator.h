@@ -8,28 +8,24 @@ class FairPrimaryGenerator;
 
 using std::vector;
 
-class CbmLitRadLengthGenerator : public FairGenerator
-{
+class CbmLitRadLengthGenerator : public FairGenerator {
 public:
+  CbmLitRadLengthGenerator();
 
-   CbmLitRadLengthGenerator();
+  void SetXY(const vector<Double_t>& x, const vector<Double_t>& y) {
+    fX = x;
+    fY = y;
+  }
 
-   void SetXY(
-         const vector<Double_t>& x,
-         const vector<Double_t>& y) {
-      fX = x;
-      fY = y;
-   }
+  Bool_t Init();
 
-   Bool_t Init();
-
-   virtual Bool_t ReadEvent(FairPrimaryGenerator* primGen);
+  virtual Bool_t ReadEvent(FairPrimaryGenerator* primGen);
 
 private:
-   vector<Double_t> fX; // Vector with X, Y start coordinates for each event
-   vector<Double_t> fY;
+  vector<Double_t> fX;  // Vector with X, Y start coordinates for each event
+  vector<Double_t> fY;
 
-   ClassDef(CbmLitRadLengthGenerator, 1);
+  ClassDef(CbmLitRadLengthGenerator, 1);
 };
 
 #endif

@@ -14,9 +14,9 @@
 #ifndef CBMGEOMUCHPAR_H
 #define CBMGEOMUCHPAR_H
 
-#include <Rtypes.h>             // for THashConsistencyHolder, ClassDef
-#include <RtypesCore.h>         // for Bool_t, Int_t
-#include <TObjArray.h>          // for TObjArray
+#include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
+#include <RtypesCore.h>  // for Bool_t, Int_t
+#include <TObjArray.h>   // for TObjArray
 
 #include <FairParGenericSet.h>  // for FairParGenericSet
 
@@ -24,27 +24,27 @@ class FairParamList;
 
 class CbmGeoMuchPar : public FairParGenericSet {
 public:
-  TObjArray            *fGeoSensNodes; // List of FairGeoNodes for sensitive volumes
-  TObjArray            *fGeoPassNodes; // List of FairGeoNodes for passive volumes
-  TObjArray            *fStations;
-  
-  CbmGeoMuchPar(const char* name="CbmGeoMuchPar",
-		const char* title="Much Geometry Parameters",
-		const char* context="TestDefaultContext");
+  TObjArray* fGeoSensNodes;  // List of FairGeoNodes for sensitive volumes
+  TObjArray* fGeoPassNodes;  // List of FairGeoNodes for passive volumes
+  TObjArray* fStations;
+
+  CbmGeoMuchPar(const char* name    = "CbmGeoMuchPar",
+                const char* title   = "Much Geometry Parameters",
+                const char* context = "TestDefaultContext");
   ~CbmGeoMuchPar(void);
   void clear(void);
   void putParams(FairParamList*);
   Bool_t getParams(FairParamList*);
-  TObjArray             *GetGeoSensitiveNodes(){return fGeoSensNodes;}
-  TObjArray             *GetGeoPassiveNodes(){return fGeoPassNodes;}
-  TObjArray             *GetStations(){return fStations;}
-  Int_t                  GetNStations() const {return fStations->GetEntriesFast();}
+  TObjArray* GetGeoSensitiveNodes() { return fGeoSensNodes; }
+  TObjArray* GetGeoPassiveNodes() { return fGeoPassNodes; }
+  TObjArray* GetStations() { return fStations; }
+  Int_t GetNStations() const { return fStations->GetEntriesFast(); }
 
- private:
+private:
   CbmGeoMuchPar(const CbmGeoMuchPar&);
   CbmGeoMuchPar& operator=(const CbmGeoMuchPar&);
 
-  ClassDef(CbmGeoMuchPar,1)
+  ClassDef(CbmGeoMuchPar, 1)
 };
 
 #endif /* !CBMGEOMUCHPAR_H */

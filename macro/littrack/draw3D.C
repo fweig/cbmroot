@@ -5,24 +5,24 @@
  * \date 2008
  **/
 
-void draw3D()
-{
-   TString dir = "/Users/andrey/Development/cbm/d/events/sts_tof/";;
-	TString parFile = dir + "param.0000.root";
+void draw3D() {
+  TString dir = "/Users/andrey/Development/cbm/d/events/sts_tof/";
+  ;
+  TString parFile = dir + "param.0000.root";
 
-	gROOT->LoadMacro("$VMCWORKDIR/gconfig/basiclibs.C");
-	basiclibs();
-	gROOT->LoadMacro("$VMCWORKDIR/macro/littrack/cbmrootlibs.C");
-	cbmrootlibs();
+  gROOT->LoadMacro("$VMCWORKDIR/gconfig/basiclibs.C");
+  basiclibs();
+  gROOT->LoadMacro("$VMCWORKDIR/macro/littrack/cbmrootlibs.C");
+  cbmrootlibs();
 
-	TFile* f = new TFile(parFile);
-	f->Get("FairBaseParSet");
-	gGeoManager->SetVisLevel(4);
+  TFile* f = new TFile(parFile);
+  f->Get("FairBaseParSet");
+  gGeoManager->SetVisLevel(4);
 
-	// Check overlaps
-//	gGeoManager->CheckOverlaps(0.0001);
-//	gGeoManager->PrintOverlaps();
+  // Check overlaps
+  //	gGeoManager->CheckOverlaps(0.0001);
+  //	gGeoManager->PrintOverlaps();
 
-	TGeoVolume* master = gGeoManager->GetMasterVolume();
-	master->Draw();//"ogl");
+  TGeoVolume* master = gGeoManager->GetMasterVolume();
+  master->Draw();  //"ogl");
 }

@@ -28,13 +28,14 @@ void run_reco(Int_t nEvents = 2) {
   Int_t iVerbose = 0;
 
   // Input file (MC events)
-//  TString inFile = "data/25agev.mc.root";
+  //  TString inFile = "data/25agev.mc.root";
   TString inFile = "/buffalo/ploizeau/cbmroot/2013_08_23/25agev_mbias.mc.root";
-//  TString inFile = "/buffalo/ploizeau/cbmroot/v13cd_20130914/25agev_mbias.mc.root";
+  //  TString inFile = "/buffalo/ploizeau/cbmroot/v13cd_20130914/25agev_mbias.mc.root";
   // Parameter file
-//  TString parFile = "data/25agev.params.root";
-  TString parFile = "/buffalo/ploizeau/cbmroot/2013_08_23/25agev_mbias.params.root";
-//  TString parFile = "/buffalo/ploizeau/cbmroot/v13cd_20130914/25agev_mbias.params.root";
+  //  TString parFile = "data/25agev.params.root";
+  TString parFile =
+    "/buffalo/ploizeau/cbmroot/2013_08_23/25agev_mbias.params.root";
+  //  TString parFile = "/buffalo/ploizeau/cbmroot/v13cd_20130914/25agev_mbias.params.root";
 
   // Output file
   TString outFile = "digitizerTest.eds.root";
@@ -42,26 +43,26 @@ void run_reco(Int_t nEvents = 2) {
   //  Digitisation files.
   // Add TObjectString containing the different file names to
   // a TList which is passed as input to the FairParAsciiFileIo.
-  // The FairParAsciiFileIo will take care to create on the fly 
+  // The FairParAsciiFileIo will take care to create on the fly
   // a concatenated input parameter file which is then used during
   // the reconstruction.
-  TList *parFileList = new TList();
+  TList* parFileList = new TList();
 
-  TString workDir = gSystem->Getenv("VMCWORKDIR");
+  TString workDir  = gSystem->Getenv("VMCWORKDIR");
   TString paramDir = workDir + "/parameters";
 
   TObjString stsDigiFile = paramDir + "/sts/sts_v12b_std.digi.par";
-//  TObjString stsDigiFile = paramDir + "/sts/sts_v13c_std.digi.par";
+  //  TObjString stsDigiFile = paramDir + "/sts/sts_v13c_std.digi.par";
   parFileList->Add(&stsDigiFile);
 
-  TObjString trdDigiFile =  paramDir + "/trd/trd_v13g.digi.par";
+  TObjString trdDigiFile = paramDir + "/trd/trd_v13g.digi.par";
   parFileList->Add(&trdDigiFile);
 
-  TObjString tofDigiFile =  paramDir + "/tof/tof_v13b.digi.par";
-//  TObjString tofDigiFile =  paramDir + "/tof/tof_v13d.digi.par";
+  TObjString tofDigiFile = paramDir + "/tof/tof_v13b.digi.par";
+  //  TObjString tofDigiFile =  paramDir + "/tof/tof_v13d.digi.par";
   parFileList->Add(&tofDigiFile);
 
-  TObjString tofDigiBdfFile =  "./tof.digibdf.par";
+  TObjString tofDigiBdfFile = "./tof.digibdf.par";
   parFileList->Add(&tofDigiBdfFile);
 
 
@@ -80,12 +81,10 @@ void run_reco(Int_t nEvents = 2) {
   // ------------------------------------------------------------------------
 
   // -----   Reconstruction run   -------------------------------------------
-  FairRunAna *run = new FairRunAna();
+  FairRunAna* run = new FairRunAna();
   run->SetInputFile(inFile);
   run->SetOutputFile(outFile);
   // ------------------------------------------------------------------------
-
-
 
 
   // =========================================================================
@@ -93,38 +92,38 @@ void run_reco(Int_t nEvents = 2) {
   // ===                          (where available)                        ===
   // =========================================================================
 
-/**/
+  /**/
   // -----   MVD Digitiser   -------------------------------------------------
-  CbmMvdDigitizeL* mvdDigi =
-  		new CbmMvdDigitizeL("MVD Digitiser", 0, iVerbose);
+  CbmMvdDigitizeL* mvdDigi = new CbmMvdDigitizeL("MVD Digitiser", 0, iVerbose);
   run->AddTask(mvdDigi);
   // -------------------------------------------------------------------------
- 
+
 
   // -----   STS digitizer   -------------------------------------------------
-  Double_t threshold  =  4;
-  Double_t noiseWidth =  0.01;
-  Int_t    nofBits    = 12;
-  Double_t electronsPerAdc    =  10;
-  Double_t StripDeadTime = 0.1;
+  Double_t threshold          = 4;
+  Double_t noiseWidth         = 0.01;
+  Int_t nofBits               = 12;
+  Double_t electronsPerAdc    = 10;
+  Double_t StripDeadTime      = 0.1;
   CbmStsDigitize* stsDigitize = new CbmStsDigitize("STS Digitiser", iVerbose);
   stsDigitize->SetRealisticResponse();
-  stsDigitize->SetFrontThreshold (threshold);
-  stsDigitize->SetBackThreshold  (threshold);
+  stsDigitize->SetFrontThreshold(threshold);
+  stsDigitize->SetBackThreshold(threshold);
   stsDigitize->SetFrontNoiseWidth(noiseWidth);
-  stsDigitize->SetBackNoiseWidth (noiseWidth);
-  stsDigitize->SetFrontNofBits   (nofBits);
-  stsDigitize->SetBackNofBits    (nofBits);
+  stsDigitize->SetBackNoiseWidth(noiseWidth);
+  stsDigitize->SetFrontNofBits(nofBits);
+  stsDigitize->SetBackNofBits(nofBits);
   stsDigitize->SetFrontNofElPerAdc(electronsPerAdc);
   stsDigitize->SetBackNofElPerAdc(electronsPerAdc);
-  stsDigitize->SetStripDeadTime  (StripDeadTime);
+  stsDigitize->SetStripDeadTime(StripDeadTime);
   run->AddTask(stsDigitize);
   // -------------------------------------------------------------------------
 
-/**/
+  /**/
   // -----   TOF digitizer   -------------------------------------------------
-  CbmTofDigitizerBDF* tofDigitizerBdf = new CbmTofDigitizerBDF("TOF Digitizer BDF",iVerbose);
-  tofDigitizerBdf->SetOutputBranchPersistent("TofDigi",            kFALSE);
+  CbmTofDigitizerBDF* tofDigitizerBdf =
+    new CbmTofDigitizerBDF("TOF Digitizer BDF", iVerbose);
+  tofDigitizerBdf->SetOutputBranchPersistent("TofDigi", kFALSE);
   tofDigitizerBdf->SetOutputBranchPersistent("TofDigiMatchPoints", kFALSE);
   run->AddTask(tofDigitizerBdf);
 
@@ -132,27 +131,26 @@ void run_reco(Int_t nEvents = 2) {
   // ===                     MVD local reconstruction                      ===
   // =========================================================================
 
-/**/
+  /**/
   // -----   MVD Hit Finder   ------------------------------------------------
-  CbmMvdFindHits* mvdHitFinder = new CbmMvdFindHits("MVD Hit Finder", 0,
-  		iVerbose);
+  CbmMvdFindHits* mvdHitFinder =
+    new CbmMvdFindHits("MVD Hit Finder", 0, iVerbose);
   run->AddTask(mvdHitFinder);
   // -------------------------------------------------------------------------
-/**/
+  /**/
 
   // ===                 End of MVD local reconstruction                   ===
   // =========================================================================
-
-
 
 
   // =========================================================================
   // ===                      STS local reconstruction                     ===
   // =========================================================================
 
-/**/
+  /**/
   // -----   STS Cluster Finder   --------------------------------------------
-  FairTask* stsClusterFinder = new CbmStsClusterFinder("STS Cluster Finder",iVerbose);
+  FairTask* stsClusterFinder =
+    new CbmStsClusterFinder("STS Cluster Finder", iVerbose);
   run->AddTask(stsClusterFinder);
   // -------------------------------------------------------------------------
 
@@ -191,30 +189,29 @@ void run_reco(Int_t nEvents = 2) {
   FairTask* stsFitTracks = new CbmStsFitTracks(stsTrackFitter, iVerbose);
   run->AddTask(stsFitTracks);
   // -------------------------------------------------------------------------
-/**/
+  /**/
   // ===                 End of STS local reconstruction                   ===
   // =========================================================================
-
-
 
 
   // =========================================================================
   // ===                     TRD local reconstruction                      ===
   // =========================================================================
-/**/
+  /**/
   // Update of the values for the radiator F.U. 17.08.07
-  Int_t trdNFoils = 130; // number of polyetylene foils
-  Float_t trdDFoils = 0.0013; // thickness of 1 foil [cm]
-  Float_t trdDGap = 0.02; // thickness of gap between foils [cm]
-  Bool_t simpleTR = kTRUE; // use fast and simple version for TR
+  Int_t trdNFoils   = 130;     // number of polyetylene foils
+  Float_t trdDFoils = 0.0013;  // thickness of 1 foil [cm]
+  Float_t trdDGap   = 0.02;    // thickness of gap between foils [cm]
+  Bool_t simpleTR   = kTRUE;   // use fast and simple version for TR
   // production
 
-  CbmTrdRadiator *radiator = new CbmTrdRadiator(simpleTR, trdNFoils,
-  		trdDFoils, trdDGap);
+  CbmTrdRadiator* radiator =
+    new CbmTrdRadiator(simpleTR, trdNFoils, trdDFoils, trdDGap);
 
-  CbmTrdHitProducerSmearing* trdHitProd = new CbmTrdHitProducerSmearing(radiator);
+  CbmTrdHitProducerSmearing* trdHitProd =
+    new CbmTrdHitProducerSmearing(radiator);
   run->AddTask(trdHitProd);
-/**/
+  /**/
   // -------------------------------------------------------------------------
   // ===                 End of TRD local reconstruction                   ===
   // =========================================================================
@@ -225,13 +222,14 @@ void run_reco(Int_t nEvents = 2) {
   // =========================================================================
 
   // Cluster/Hit builder
-  CbmTofSimpClusterizer* tofSimpClust = new CbmTofSimpClusterizer("TOF Simple Clusterizer",iVerbose);
-  tofSimpClust->SetOutputBranchPersistent("TofHit",          kTRUE);
-  tofSimpClust->SetOutputBranchPersistent("TofDigiMatch",    kTRUE);
+  CbmTofSimpClusterizer* tofSimpClust =
+    new CbmTofSimpClusterizer("TOF Simple Clusterizer", iVerbose);
+  tofSimpClust->SetOutputBranchPersistent("TofHit", kTRUE);
+  tofSimpClust->SetOutputBranchPersistent("TofDigiMatch", kTRUE);
   run->AddTask(tofSimpClust);
 
   // ------   TOF hit producer   ---------------------------------------------
-/*
+  /*
   CbmTofHitProducerNew* tofHitProd = new CbmTofHitProducerNew("TOF HitProducerNew",iVerbose);
   //  tofHitProd->SetParFileName(std::string(TofGeoPar));
   tofHitProd->SetInitFromAscii(kFALSE);
@@ -243,8 +241,6 @@ void run_reco(Int_t nEvents = 2) {
 
   // ===                   End of TOF local reconstruction                 ===
   // =========================================================================
-
-
 
 
   // =========================================================================
@@ -280,24 +276,24 @@ void run_reco(Int_t nEvents = 2) {
   // ----------------------------------------------------
 
   // ----------- TRD track Pid Wkn ----------------------
-  CbmTrdSetTracksPidWkn* trdSetTracksPidTask = new CbmTrdSetTracksPidWkn(
-  		"trdFindTracks", "trdFindTracks");
+  CbmTrdSetTracksPidWkn* trdSetTracksPidTask =
+    new CbmTrdSetTracksPidWkn("trdFindTracks", "trdFindTracks");
   run->AddTask(trdSetTracksPidTask);
   // ----------------------------------------------------
 
   // ----------- TRD track Pid Ann ----------------------
-  CbmTrdSetTracksPidANN* trdSetTracksPidAnnTask = new CbmTrdSetTracksPidANN(
-  		"Ann", "Ann");
+  CbmTrdSetTracksPidANN* trdSetTracksPidAnnTask =
+    new CbmTrdSetTracksPidANN("Ann", "Ann");
   run->AddTask(trdSetTracksPidAnnTask);
   // ----------------------------------------------------
 
   // ----------- TRD track Pid Like ----------------------
   // Since in the newest version of this method depends on the global
   // track the task has to move after the global tracking
-// FU 08.02.12 Switch the task off since the input file needed for the new geometry has to be generated first.
-//  CbmTrdSetTracksPidLike* trdSetTracksPidLikeTask =
-//  		new CbmTrdSetTracksPidLike("Likelihood", "Likelihood");
-//  run->AddTask(trdSetTracksPidLikeTask);
+  // FU 08.02.12 Switch the task off since the input file needed for the new geometry has to be generated first.
+  //  CbmTrdSetTracksPidLike* trdSetTracksPidLikeTask =
+  //  		new CbmTrdSetTracksPidLike("Likelihood", "Likelihood");
+  //  run->AddTask(trdSetTracksPidLikeTask);
   // ----------------------------------------------------
 
 
@@ -306,7 +302,7 @@ void run_reco(Int_t nEvents = 2) {
   // =========================================================================
 
   // ---------------------RICH Hit Producer ----------------------------------
-  CbmRichHitProducer* richHitProd  = new CbmRichHitProducer();
+  CbmRichHitProducer* richHitProd = new CbmRichHitProducer();
   richHitProd->SetDetectorType(4);
   richHitProd->SetNofNoiseHits(220);
   richHitProd->SetCollectionEfficiency(1.0);
@@ -324,36 +320,37 @@ void run_reco(Int_t nEvents = 2) {
   // -------------------------------------------------------------------------
   // ===                 End of RICH local reconstruction                  ===
   // =========================================================================
-/**/
+  /**/
 
   // =========================================================================
   // ===                     TOF evaluation                                ===
   // =========================================================================
 
   // Digitizer/clusterizer testing
-  CbmTofTests* tofTests = new CbmTofTests("TOF Tests",iVerbose);
+  CbmTofTests* tofTests = new CbmTofTests("TOF Tests", iVerbose);
   run->AddTask(tofTests);
 
   // Global track fitting, global tof performances
   // (taken from hadron/produceDST.C)
-/**/
-  CbmGlobalTrackFitterKF *globalTrackFitter = new CbmGlobalTrackFitterKF();
-  CbmFitGlobalTracks *fitGlobal = new CbmFitGlobalTracks("FitGlobalTracks", iVerbose,
-                                                          globalTrackFitter);
+  /**/
+  CbmGlobalTrackFitterKF* globalTrackFitter = new CbmGlobalTrackFitterKF();
+  CbmFitGlobalTracks* fitGlobal =
+    new CbmFitGlobalTracks("FitGlobalTracks", iVerbose, globalTrackFitter);
   run->AddTask(fitGlobal);
 
-/**/
-  CbmProduceDst *produceDst = new CbmProduceDst(iVerbose); // in hadron
+  /**/
+  CbmProduceDst* produceDst = new CbmProduceDst(iVerbose);  // in hadron
   run->AddTask(produceDst);
 
-  CbmHadronAnalysis *HadronAna = new CbmHadronAnalysis("HadronAnalysis", iVerbose); // in hadron
+  CbmHadronAnalysis* HadronAna =
+    new CbmHadronAnalysis("HadronAnalysis", iVerbose);  // in hadron
   run->AddTask(HadronAna);
-/**/
+  /**/
   // ===                   End of TOF evaluation                           ===
   // =========================================================================
   // -----  Parameter database   --------------------------------------------
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
-  FairParRootFileIo* parIo1 = new FairParRootFileIo();
+  FairRuntimeDb* rtdb        = run->GetRuntimeDb();
+  FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
   parIo1->open(parFile.Data());
   parIo2->open(parFileList, "in");
@@ -385,8 +382,8 @@ void run_reco(Int_t nEvents = 2) {
   cout << endl;
   // ------------------------------------------------------------------------
 
-//  delete run;
+  //  delete run;
 
-   cout << " Test passed" << endl;
-   cout << " All ok " << endl;
+  cout << " Test passed" << endl;
+  cout << " All ok " << endl;
 }

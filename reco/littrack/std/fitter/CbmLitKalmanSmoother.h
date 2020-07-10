@@ -17,35 +17,30 @@ class CbmLitFitNode;
  * \date 2007
  * \brief Implementation of Kalman smoother algorithm.
  **/
-class CbmLitKalmanSmoother : public CbmLitTrackFitter
-{
+class CbmLitKalmanSmoother : public CbmLitTrackFitter {
 public:
-   /**
+  /**
     * \brief Constructor.
     */
-   CbmLitKalmanSmoother();
+  CbmLitKalmanSmoother();
 
-   /**
+  /**
     * \brief Destructor.
     */
-   virtual ~CbmLitKalmanSmoother();
+  virtual ~CbmLitKalmanSmoother();
 
-   /**
+  /**
     * \brief Inherited from CbmLitTrackFitter.
     */
-   virtual LitStatus Fit(
-      CbmLitTrack* track,
-      bool downstream = false);
+  virtual LitStatus Fit(CbmLitTrack* track, bool downstream = false);
 
 private:
-   /**
+  /**
     * \brief Smooth one fit node.
     * \param[out] thisNode Current fit node to be smoothed.
     * \param[in] prevNode Previous fit node.
     */
-   void Smooth(
-      CbmLitFitNode* thisNode,
-      const CbmLitFitNode* prevNode);
+  void Smooth(CbmLitFitNode* thisNode, const CbmLitFitNode* prevNode);
 };
 
 #endif /*CBMLITKALMANSMOOTHER_H_*/

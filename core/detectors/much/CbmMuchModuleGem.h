@@ -10,19 +10,19 @@
 #ifndef CBMMUCHMODULEGEM_H
 #define CBMMUCHMODULEGEM_H 1
 
-#include <Rtypes.h>         // for THashConsistencyHolder, ClassDef
-#include <RtypesCore.h>     // for Int_t, Bool_t, Color_t, Double_t, kTRUE
-#include <TVector3.h>       // for TVector3
+#include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
+#include <RtypesCore.h>  // for Int_t, Bool_t, Color_t, Double_t, kTRUE
+#include <TVector3.h>    // for TVector3
 
-#include <vector>           // for vector
+#include <vector>  // for vector
 
 #include "CbmMuchModule.h"  // for CbmMuchModule
 
 class CbmMuchPad;
 class CbmMuchSector;
 
-class CbmMuchModuleGem : public CbmMuchModule{
- public:
+class CbmMuchModuleGem : public CbmMuchModule {
+public:
   /** Default constructor **/
   CbmMuchModuleGem();
 
@@ -34,46 +34,50 @@ class CbmMuchModuleGem : public CbmMuchModule{
    *@param position  Location of the module center in global c.s. (all dimensions in [cm])
    *@param cutRadius Radius of the cut (if any, otherwise = -1.) [cm]
    **/
-  CbmMuchModuleGem(Int_t iStation, Int_t iLayer, Bool_t iSide, Int_t iModule, TVector3 position, TVector3 size, Double_t cutRadius);
+  CbmMuchModuleGem(Int_t iStation,
+                   Int_t iLayer,
+                   Bool_t iSide,
+                   Int_t iModule,
+                   TVector3 position,
+                   TVector3 size,
+                   Double_t cutRadius);
 
   /** Destructor */
-  virtual ~CbmMuchModuleGem(){}
+  virtual ~CbmMuchModuleGem() {}
 
   /** Gets sector by the given address */
   CbmMuchSector* GetSector(Int_t address);
 
   /** Gets pad by the given address */
   CbmMuchPad* GetPad(Int_t address);
-  
+
   CbmMuchSector* GetSectorByIndex(Int_t iSector) { return fSectors[iSector]; }
-  
+
   /** */
   Int_t GetNSectors() const { return fSectors.size(); }
-  
+
   /** Gets array of pads for this module. */
   std::vector<CbmMuchPad*> GetPads();
-  
+
   /** */
   Int_t GetNPads();
-  
+
   /** Adds a given sector to the array.
    *@param  sector CbmMuchSector which should be added to the array.**/
   void AddSector(CbmMuchSector* sector) { fSectors.push_back(sector); }
-  
+
   /** */
-  virtual Bool_t InitModule(){return kTRUE;}
-  
+  virtual Bool_t InitModule() { return kTRUE; }
+
   /** */
   void DrawModule(Color_t color);
-  
-  void DrawPads();
-  void SetPadFired(Int_t address,Int_t digiIndex,Int_t adcCharge);
-  
- protected:
-  std::vector<CbmMuchSector*> fSectors; // Array of sectors within this module
 
-  ClassDef(CbmMuchModuleGem,2);
+  void DrawPads();
+  void SetPadFired(Int_t address, Int_t digiIndex, Int_t adcCharge);
+
+protected:
+  std::vector<CbmMuchSector*> fSectors;  // Array of sectors within this module
+
+  ClassDef(CbmMuchModuleGem, 2);
 };
 #endif
-
-

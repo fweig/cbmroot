@@ -3,7 +3,7 @@
 // This macro allows to create a field map out of an arbitrary number
 // of instances of CbmField. The field values of all fields are added
 // at each space point on the grid.
-// 
+//
 // Typical applications are:
 // -- adding two field maps,
 // -- manipulating the grid of an existing field map.
@@ -25,16 +25,15 @@
   // ------------------------------------------------------------------------
 
 
-
   // ==========   Define the parameters of the map to be created   ==========
 
   // Extension of the map in coordinate space [cm]
   Double_t xmin = -100.;
-  Double_t xmax =  100.;
+  Double_t xmax = 100.;
   Double_t ymin = -100.;
-  Double_t ymax =  100.;
+  Double_t ymax = 100.;
   Double_t zmin = -100.;
-  Double_t zmax =  450.;
+  Double_t zmax = 450.;
 
   // Number of grid points
   Int_t nx = 101;
@@ -47,13 +46,10 @@
   // ========================================================================
 
 
-
-
   // -----------   Instantiate CbmFieldMapCreator   -------------------------
   CbmFieldMapCreator* creator = new CbmFieldMapCreator(mapName.Data());
   creator->SetGridParameters(nx, xmin, xmax, ny, ymin, ymax, nz, zmin, zmax);
   // ------------------------------------------------------------------------
-
 
 
   // ==========   Now instantiate the input fields and add them   ===========
@@ -69,18 +65,13 @@
   field1->Init();
   creator->AddField(field1);
 
-  CbmField* field2 = new CbmFieldConst("field2", 
-				       -20., 20., 
-				       -20., 20.,
-				       -20., 20., 
-				       0., 10., 0.);
+  CbmField* field2 =
+    new CbmFieldConst("field2", -20., 20., -20., 20., -20., 20., 0., 10., 0.);
   creator->AddField(field2);
   // ========================================================================
-
 
 
   // -----------   Create the new field map   -------------------------------
   creator->CreateMap();
   // ------------------------------------------------------------------------
-
 }

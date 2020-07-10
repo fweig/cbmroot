@@ -10,22 +10,22 @@
 #ifndef LITMATH_H_
 #define LITMATH_H_
 
-#include "LitTypes.h"
 #include "LitScalTrack.h"
+#include "LitTypes.h"
 
 namespace lit {
-namespace parallel {
+  namespace parallel {
 
-/**
+    /**
  * \fn inline fscal rcp(const fscal& a)
  * \brief Returns reciprocal
  *
  * \param[in] a Input number.
  * \return Reciprocal of a.
  */
-inline fscal rcp(const fscal& a) {return 1./a;}
+    inline fscal rcp(const fscal& a) { return 1. / a; }
 
-/**
+    /**
  * \fn inline fscal sgn(const fscal& a) {return a<0 ?-1 :(a>0 ?1 :0);}
  * \brief Returns sign of the input number.
  *
@@ -35,9 +35,9 @@ inline fscal rcp(const fscal& a) {return 1./a;}
  * \param[in] a Input number.
  * \return Sign of the input number.
  */
-inline fscal sgn(const fscal& a) {return a<0 ?-1 :(a>0 ?1 :0);}
+    inline fscal sgn(const fscal& a) { return a < 0 ? -1 : (a > 0 ? 1 : 0); }
 
-/**
+    /**
  * \fn inline unsigned short NDF(const LitScalTrack& track)
  * \brief Returns number of degrees of freedom for the track.
  *
@@ -47,22 +47,23 @@ inline fscal sgn(const fscal& a) {return a<0 ?-1 :(a>0 ?1 :0);}
  * \param[in] track Reference to track.
  * \return Number of degrees of freedom for track.
  */
-inline unsigned short NDF(
-   const LitScalTrack& track)
-{
-   short ndf =  2 * track.GetNofHits() - 5;
-   if (ndf > 0) { return ndf; }
-   else { return 1; }
+    inline unsigned short NDF(const LitScalTrack& track) {
+      short ndf = 2 * track.GetNofHits() - 5;
+      if (ndf > 0) {
+        return ndf;
+      } else {
+        return 1;
+      }
 
-// int ndf = 0;
-// for (int i = 0; i < track->GetNofHits(); i++){
-//    if (track->GetHit(i)->GetType() == kLITPIXELHIT) ndf += 2;
-//    else if (track->GetHit(i)->GetType() == kLITSTRIPHIT) ndf++;
-// }
-// ndf -= 5;
-// if (ndf > 0) return ndf; else return 1;
-}
+      // int ndf = 0;
+      // for (int i = 0; i < track->GetNofHits(); i++){
+      //    if (track->GetHit(i)->GetType() == kLITPIXELHIT) ndf += 2;
+      //    else if (track->GetHit(i)->GetType() == kLITSTRIPHIT) ndf++;
+      // }
+      // ndf -= 5;
+      // if (ndf > 0) return ndf; else return 1;
+    }
 
-} // namespace parallel
-} // namespace lit
+  }  // namespace parallel
+}  // namespace lit
 #endif /* LITMATH_H_ */

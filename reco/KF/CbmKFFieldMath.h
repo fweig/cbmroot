@@ -16,20 +16,24 @@
 class FairField;
 class FairTrackParam;
 
-class CbmKFFieldMath :public TObject
-{
- public:
-  CbmKFFieldMath(){}
-  ~CbmKFFieldMath(){}
-  
-  static void ExtrapolateLine( const Double_t T_in[], const Double_t C_in[], 
-			       Double_t T_out[], Double_t C_out[],
-			       Double_t z_out
-			       );
-  
-  static Int_t ExtrapolateRK4( const Double_t T_in[], const Double_t C_in[],
-			       Double_t T_out[], Double_t C_out[],
-			       Double_t z_out , Double_t qp0, FairField *MF );
+class CbmKFFieldMath : public TObject {
+public:
+  CbmKFFieldMath() {}
+  ~CbmKFFieldMath() {}
+
+  static void ExtrapolateLine(const Double_t T_in[],
+                              const Double_t C_in[],
+                              Double_t T_out[],
+                              Double_t C_out[],
+                              Double_t z_out);
+
+  static Int_t ExtrapolateRK4(const Double_t T_in[],
+                              const Double_t C_in[],
+                              Double_t T_out[],
+                              Double_t C_out[],
+                              Double_t z_out,
+                              Double_t qp0,
+                              FairField* MF);
   /*
   static void ExtrapolateAnalytic( const Double_t T_in[], const Double_t C_in[],
 				   Double_t T_out[], Double_t C_out[],
@@ -40,9 +44,13 @@ class CbmKFFieldMath :public TObject
 				   Double_t T_out[], Double_t C_out[],
 				   Double_t z_out, Double_t qp0, CbmMagField *MF);
   */
-  static Int_t ExtrapolateALight( const Double_t T_in[], const Double_t C_in[],
-				 Double_t T_out[], Double_t C_out[],
-				 Double_t z_out, Double_t qp0, FairField *MF);
+  static Int_t ExtrapolateALight(const Double_t T_in[],
+                                 const Double_t C_in[],
+                                 Double_t T_out[],
+                                 Double_t C_out[],
+                                 Double_t z_out,
+                                 Double_t qp0,
+                                 FairField* MF);
   /*
   static void IntegrateField( 
 			     CbmMagField *MF,      
@@ -58,7 +66,7 @@ class CbmKFFieldMath :public TObject
 			      Double_t Xii [3][3][3]   =0, Double_t Yii [3][3][3]   =0,
 			      Double_t Xiii[3][3][3][3]=0, Double_t Yiii[3][3][3][3]=0
 			      );
-  */ 
+  */
   ClassDef(CbmKFFieldMath, 1)
 };
 

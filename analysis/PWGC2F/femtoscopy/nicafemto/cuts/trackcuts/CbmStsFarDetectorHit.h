@@ -11,12 +11,12 @@
 
 #include "NicaTrackCut.h"
 
-class CbmStsFarDetectorHit : public NicaTrackCut{
+class CbmStsFarDetectorHit : public NicaTrackCut {
 public:
-	CbmStsFarDetectorHit();
-	Bool_t Pass(NicaTrack *track);
-	virtual ~CbmStsFarDetectorHit();
-	ClassDef(CbmStsFarDetectorHit,1)
+  CbmStsFarDetectorHit();
+  Bool_t Pass(NicaTrack* track);
+  virtual ~CbmStsFarDetectorHit();
+  ClassDef(CbmStsFarDetectorHit, 1)
 };
 
 #endif /* CBMSTSFARDETECTORHIT_H_ */

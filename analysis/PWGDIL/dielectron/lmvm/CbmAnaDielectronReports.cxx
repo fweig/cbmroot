@@ -14,25 +14,20 @@
 
 using namespace std;
 
-CbmAnaDielectronReports::CbmAnaDielectronReports()
-{
-}
+CbmAnaDielectronReports::CbmAnaDielectronReports() {}
 
-CbmAnaDielectronReports::~CbmAnaDielectronReports()
-{
-}
+CbmAnaDielectronReports::~CbmAnaDielectronReports() {}
 
 void CbmAnaDielectronReports::CreateStudyReport(
-      const string&,
-      const vector<string>& fileNames,
-      const vector<string>& studyNames,
-      const string& outputDir)
-{
-   if (outputDir != "") gSystem->mkdir(outputDir.c_str(), true);
+  const string&,
+  const vector<string>& fileNames,
+  const vector<string>& studyNames,
+  const string& outputDir) {
+  if (outputDir != "") gSystem->mkdir(outputDir.c_str(), true);
 
-   CbmStudyReport* report = new CbmAnaDielectronStudyReportAll();
-   report->Create(fileNames, studyNames, outputDir);
-   delete report;
+  CbmStudyReport* report = new CbmAnaDielectronStudyReportAll();
+  report->Create(fileNames, studyNames, outputDir);
+  delete report;
 }
 
 ClassImp(CbmAnaDielectronReports);

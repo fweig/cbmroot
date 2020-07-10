@@ -15,16 +15,15 @@
 #include "CbmVMCSettings.h"
 
 #include <array>
-#include <vector>
 #include <string>
+#include <vector>
 
 class TVirtualMC;
 
-class CbmGeant4Settings : public CbmVMCSettings 
-{
- public:
-  CbmGeant4Settings() = default;
-  ~CbmGeant4Settings() = default;
+class CbmGeant4Settings : public CbmVMCSettings {
+public:
+  CbmGeant4Settings()                         = default;
+  ~CbmGeant4Settings()                        = default;
   CbmGeant4Settings(const CbmGeant4Settings&) = delete;
   CbmGeant4Settings& operator=(const CbmGeant4Settings&) = delete;
 
@@ -39,9 +38,9 @@ class CbmGeant4Settings : public CbmVMCSettings
    ** @param[in] physicsLists Define the physiscs lists (default QGSP_BERT_EMV+optical)
    ** @Param[in] specialProcesses Define special processes (default stepLimiter)
    **/
-  void SetG4RunConfig(std::string navigationEngine, std::string physicsLists,
-		      std::string specialProcesses)
-  {
+  void SetG4RunConfig(std::string navigationEngine,
+                      std::string physicsLists,
+                      std::string specialProcesses) {
     fG4RunConfig[0] = navigationEngine;
     fG4RunConfig[1] = physicsLists;
     fG4RunConfig[2] = specialProcesses;
@@ -51,14 +50,13 @@ class CbmGeant4Settings : public CbmVMCSettings
    ** @return Array with the 3 strings for the Geant4 run configuration
    **
    **/
-  std::array<std::string, 3> GetG4RunConfig() {return fG4RunConfig;}
+  std::array<std::string, 3> GetG4RunConfig() { return fG4RunConfig; }
 
   /** @brief Set a new command which should be passsed to Geant4. The call will
    ** remove the current list of commands
    ** @param[in] Geant4 command string
    **/
-  void SetG4Command(std::string command)
-  {
+  void SetG4Command(std::string command) {
     fG4Commands.clear();
     fG4Commands.push_back(command);
   }
@@ -67,10 +65,7 @@ class CbmGeant4Settings : public CbmVMCSettings
    ** list of commands
    ** @param[in] Geant4 command string
    **/
-  void AddG4Command(std::string command)
-  {
-    fG4Commands.push_back(command);
-  }
+  void AddG4Command(std::string command) { fG4Commands.push_back(command); }
 
   /** @brief Set the maximum number of steps after which the transport is stopped
    ** list of commands
@@ -78,18 +73,18 @@ class CbmGeant4Settings : public CbmVMCSettings
    **/
   void SetMaximumNumberOfSteps(Int_t numSteps) { fMaxNumSteps = numSteps; }
 
- private: 
+private:
+  std::array<std::string, 3> fG4RunConfig {
+    {"geomRoot", "QGSP_BERT_EMV+optical", "stepLimiter"}};
 
-  std::array<std::string, 3> fG4RunConfig{ {"geomRoot","QGSP_BERT_EMV+optical","stepLimiter"} };
+  std::vector<std::string> fG4Commands {
+    "/process/optical/verbose 0",
+    "/process/optical/defaults/cerenkov/setMaxPhotons 20",
+    "/process/optical/defaults/cerenkov/setMaxBetaChange 0.1",
+    "/process/optical/setTrackSecondariesFirst Cerenkov false"};
 
-  std::vector<std::string> fG4Commands{
-      "/process/optical/verbose 0",
-      "/process/optical/defaults/cerenkov/setMaxPhotons 20",
-      "/process/optical/defaults/cerenkov/setMaxBetaChange 0.1",
-      "/process/optical/setTrackSecondariesFirst Cerenkov false"};
-  
-  Int_t fMaxNumSteps{10000000};
-  
+  Int_t fMaxNumSteps {10000000};
+
   ClassDef(CbmGeant4Settings, 3);
 };
 

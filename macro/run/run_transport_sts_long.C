@@ -5,11 +5,10 @@
 
 // Includes needed for IDE
 #if !defined(__CLING__)
-#include "TStopwatch.h"
-#include "FairSystemInfo.h"
 #include "CbmTransport.h"
+#include "FairSystemInfo.h"
+#include "TStopwatch.h"
 #endif
-
 
 
 /** @brief run_transport_sts_long.C
@@ -38,13 +37,13 @@
  ** For the options for the transport simulation, see the documentation of
  ** CbmTransport.
  **/
-void run_transport_sts_long(Int_t nEvents = 2,
-                   const char* setupName = "sis100_hadron_sts_long",
-		   //                   const char* setupName = "sis100_electron",
-		   //                   const char* setupName = "sis100_hadron",
-                   const char* output = "test",
-                   const char* inputFile = "")
-{
+void run_transport_sts_long(
+  Int_t nEvents         = 2,
+  const char* setupName = "sis100_hadron_sts_long",
+  //                   const char* setupName = "sis100_electron",
+  //                   const char* setupName = "sis100_hadron",
+  const char* output    = "test",
+  const char* inputFile = "") {
 
   // --- Logger settings ----------------------------------------------------
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
@@ -66,10 +65,11 @@ void run_transport_sts_long(Int_t nEvents = 2,
   std::cout << std::endl;
   TString defaultInputFile = srcDir + "/input/urqmd.auau.10gev.centr.root";
   TString inFile;
-  if ( strcmp(inputFile, "") == 0 ) inFile = defaultInputFile;
-  else inFile = inputFile;
-  std::cout << "-I- " << myName << ": Using input file " << inFile
-      << std::endl;
+  if (strcmp(inputFile, "") == 0)
+    inFile = defaultInputFile;
+  else
+    inFile = inputFile;
+  std::cout << "-I- " << myName << ": Using input file " << inFile << std::endl;
   // ------------------------------------------------------------------------
 
 
@@ -99,21 +99,22 @@ void run_transport_sts_long(Int_t nEvents = 2,
   Double_t ctime = timer.CpuTime();
   std::cout << std::endl << std::endl;
   std::cout << "Macro finished successfully." << std::endl;
-  std::cout << "Output file is "    << outFile << std::endl;
+  std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime
-      << "s" << std::endl << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s"
+            << std::endl
+            << std::endl;
   // ------------------------------------------------------------------------
 
 
   // -----   Resource monitoring   ------------------------------------------
   FairSystemInfo sysInfo;
-  Float_t maxMemory=sysInfo.GetMaxMemory();
+  Float_t maxMemory = sysInfo.GetMaxMemory();
   std::cout << "<DartMeasurement name=\"MaxMemory\" type=\"numeric/double\">";
   std::cout << maxMemory;
   std::cout << "</DartMeasurement>" << std::endl;
 
-  Float_t cpuUsage=ctime/rtime;
+  Float_t cpuUsage = ctime / rtime;
   std::cout << "<DartMeasurement name=\"CpuLoad\" type=\"numeric/double\">";
   std::cout << cpuUsage;
   std::cout << "</DartMeasurement>" << std::endl;
@@ -123,5 +124,4 @@ void run_transport_sts_long(Int_t nEvents = 2,
   std::cout << " All ok " << std::endl;
   // ------------------------------------------------------------------------
 
-} // End of macro
-
+}  // End of macro

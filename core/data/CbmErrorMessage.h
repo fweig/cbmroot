@@ -19,8 +19,8 @@
 #include <boost/serialization/base_object.hpp>
 
 /// C/C++ headers
-#include <string>        // for string
-#include <memory>        // for unique_ptr
+#include <memory>  // for unique_ptr
+#include <string>  // for string
 
 /** @class CbmErrorMessage
  ** @brief Base class for persistent representation of error messages information.
@@ -36,15 +36,13 @@
  ** The base class only provides bulk setters/getters, with the idea that
  ** derived class will provide direct accessors to specific flags/payloads.
  **/
-class CbmErrorMessage
-{
+class CbmErrorMessage {
 
-   public:
+public:
+  /** Default constructor  **/
+  CbmErrorMessage() {};
 
-      /** Default constructor  **/
-      CbmErrorMessage(){};
-
-      /**
+  /**
        * \brief Standard constructor.
        * \param[in] sysId    System ID from ECbmModuleId enum.
        * \param[in] dTime    Error time [ns].
@@ -52,66 +50,67 @@ class CbmErrorMessage
        * \param[in] uFlags   Flags/error pattern, 32b available.
        * \param[in] uPayload Optional error payload, 32b available.
        **/
-      CbmErrorMessage( ECbmModuleId sysId, Double_t dTime, UInt_t uAddress,
-                       UInt_t uFlags, UInt_t uPayload = 0 );
+  CbmErrorMessage(ECbmModuleId sysId,
+                  Double_t dTime,
+                  UInt_t uAddress,
+                  UInt_t uFlags,
+                  UInt_t uPayload = 0);
 
 
-      /** Destructor  **/
-      ~CbmErrorMessage();
+  /** Destructor  **/
+  ~CbmErrorMessage();
 
 
-      /** @brief Class name (static)
+  /** @brief Class name (static)
       ** @return CbmErrorMessage
       **/
-      static const char* GetClassName() { return "CbmErrorMessage"; }
+  static const char* GetClassName() { return "CbmErrorMessage"; }
 
 
-      /** @brief System (enum DetectorId) **/
-      ECbmModuleId GetSystemId() const { return fModuleId; }
+  /** @brief System (enum DetectorId) **/
+  ECbmModuleId GetSystemId() const { return fModuleId; }
 
 
-      /** @brief Absolute time [ns]  **/
-      Double_t GetTime() const { return fdTime; }
+  /** @brief Absolute time [ns]  **/
+  Double_t GetTime() const { return fdTime; }
 
 
-      /** @brief Origin address  **/
-      UInt_t GetAddress() const { return fuAddress; }
+  /** @brief Origin address  **/
+  UInt_t GetAddress() const { return fuAddress; }
 
 
-      /** @brief Flags (bitfield)  **/
-      UInt_t GetFlags() const { return fuFlags; }
+  /** @brief Flags (bitfield)  **/
+  UInt_t GetFlags() const { return fuFlags; }
 
 
-      /** @brief Payload (optional)  **/
-      UInt_t GetPayload() const { return fuPayload; }
+  /** @brief Payload (optional)  **/
+  UInt_t GetPayload() const { return fuPayload; }
 
 
-      /** @brief Output information **/
-      std::string ToString() const;
+  /** @brief Output information **/
+  std::string ToString() const;
 
 
-      template <class Archive>
-      void serialize(Archive& ar, const unsigned int /*version*/)
-      {
-         ar& fModuleId;
-         ar& fdTime;
-         ar& fuAddress;
-         ar& fuFlags;
-         ar& fuPayload;
-      }
+  template<class Archive>
+  void serialize(Archive& ar, const unsigned int /*version*/) {
+    ar& fModuleId;
+    ar& fdTime;
+    ar& fuAddress;
+    ar& fuFlags;
+    ar& fuPayload;
+  }
 
-   private:
-      friend class boost::serialization::access;
+private:
+  friend class boost::serialization::access;
 
-      ECbmModuleId fModuleId  = ECbmModuleId::kLastModule;
-      Double_t     fdTime     = -1.0;
-      UInt_t       fuAddress  =  0;
-      UInt_t       fuFlags    =  0;
-      UInt_t       fuPayload  =  0;
+  ECbmModuleId fModuleId = ECbmModuleId::kLastModule;
+  Double_t fdTime        = -1.0;
+  UInt_t fuAddress       = 0;
+  UInt_t fuFlags         = 0;
+  UInt_t fuPayload       = 0;
 
 
-   ClassDefNV(CbmErrorMessage,1);
-
+  ClassDefNV(CbmErrorMessage, 1);
 };
 
 #endif

@@ -10,15 +10,13 @@
 #ifndef CBMMUCHDIGIMATCH_H
 #define CBMMUCHDIGIMATCH_H 1
 
-#include <Rtypes.h>    // for ClassDef
+#include <Rtypes.h>  // for ClassDef
 
 #include "CbmMatch.h"  // for CbmMatch
 
-class CbmMuchDigiMatch : public CbmMatch
-{
+class CbmMuchDigiMatch : public CbmMatch {
 
- public:
-
+public:
   /** Default constructor **/
   CbmMuchDigiMatch() : CbmMatch() {}
 
@@ -28,8 +26,7 @@ class CbmMuchDigiMatch : public CbmMatch
   /** Destructor **/
   virtual ~CbmMuchDigiMatch() {}
 
-  ClassDef(CbmMuchDigiMatch,2);
-
+  ClassDef(CbmMuchDigiMatch, 2);
 };
 
 

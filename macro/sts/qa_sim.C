@@ -54,19 +54,18 @@
   gSystem->Load("libMvd");
   gSystem->Load("libSts");
   // ------------------------------------------------------------------------
-  
+
   // -----  Analysis run   --------------------------------------------------
-  FairRunAna *fRun= new FairRunAna();
-  
+  FairRunAna* fRun = new FairRunAna();
+
   fRun->SetInputFile(simFile);
-  
+
   fRun->SetOutputFile(outFile);
   // ------------------------------------------------------------------------
 
 
-
   // -----  Parameter database   --------------------------------------------
-  FairRuntimeDb* rtdb = fRun->GetRuntimeDb();
+  FairRuntimeDb* rtdb          = fRun->GetRuntimeDb();
   FairParRootFileIo* parInput1 = new FairParRootFileIo();
   parInput1->open(parFile.Data());
   rtdb->setFirstInput(parInput1);
@@ -80,12 +79,10 @@
   // ------------------------------------------------------------------------
 
 
-
   // -----   Intialise and run   --------------------------------------------
   fRun->Init();
-  fRun->Run(0,nEvents);
+  fRun->Run(0, nEvents);
   // ------------------------------------------------------------------------
-
 
 
   // -----   Finish   -------------------------------------------------------
@@ -94,11 +91,9 @@
   Double_t ctime = timer.CpuTime();
   cout << endl << endl;
   cout << "Macro finished succesfully." << endl;
-  cout << "Output file is "    << outFile << endl;
+  cout << "Output file is " << outFile << endl;
   cout << "Parameter file is " << parFile << endl;
   cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << endl;
   cout << endl;
   // ------------------------------------------------------------------------
-
-
 }

@@ -6,13 +6,13 @@
 #ifndef CBMSTSELEMENT_H
 #define CBMSTSELEMENT_H 1
 
-#include <Rtypes.h>         // for THashConsistencyHolder, ClassDef
-#include <RtypesCore.h>     // for Int_t, Option_t
+#include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
+#include <RtypesCore.h>  // for Int_t, Option_t
 
-#include <TString.h>        // for TString
-#include <TNamed.h>         // for TNamed
+#include <TNamed.h>   // for TNamed
+#include <TString.h>  // for TString
 
-#include <vector>           // for vector
+#include <vector>  // for vector
 
 #include "CbmStsAddress.h"  // for EStsElementLevel, GetElementId
 
@@ -29,127 +29,123 @@ class TGeoPhysicalNode;
  ** a pointer to a TGeoPhysicalNode and an array of daughter
  ** elements. It is thus an alignable object.
  **/
-class CbmStsElement : public TNamed
-{
+class CbmStsElement : public TNamed {
 
-  public:
-
-    /** Default constructor **/
-    CbmStsElement();
+public:
+  /** Default constructor **/
+  CbmStsElement();
 
 
-    /** Standard constructor
+  /** Standard constructor
      ** @param address  Unique element address
      ** @param level    Element level
      ** @param node     Pointer to geometry node
      ** @param mother   Pointer to mother element
      **/
-    CbmStsElement(Int_t address, Int_t level,
-                  TGeoPhysicalNode* node = nullptr,
-                  CbmStsElement* mother = nullptr);
+  CbmStsElement(Int_t address,
+                Int_t level,
+                TGeoPhysicalNode* node = nullptr,
+                CbmStsElement* mother  = nullptr);
 
 
-    /** Destructor **/
-    virtual ~CbmStsElement() { };
+  /** Destructor **/
+  virtual ~CbmStsElement() {};
 
 
-    /** Construct the element name from the address (static)
+  /** Construct the element name from the address (static)
      ** @param address Unique element address
      ** @param level   Element level (unit, ladder, etc.)
      **/
-    static TString ConstructName(Int_t address, EStsElementLevel level);
+  static TString ConstructName(Int_t address, EStsElementLevel level);
 
 
-    /** Get unique address
+  /** Get unique address
      ** @return Element address
      **/
-    Int_t GetAddress() const { return fAddress; }
+  Int_t GetAddress() const { return fAddress; }
 
 
-    /** Get a daughter element
+  /** Get a daughter element
      ** @param index  Index of daughter element
      **/
-    CbmStsElement* GetDaughter(Int_t index) const;
+  CbmStsElement* GetDaughter(Int_t index) const;
 
 
-    /** Get the index within the mother element
+  /** Get the index within the mother element
      ** @return Index of element in mother
      **/
-    Int_t GetIndex() const {
-      return CbmStsAddress::GetElementId(fAddress, fLevel);
-    }
+  Int_t GetIndex() const {
+    return CbmStsAddress::GetElementId(fAddress, fLevel);
+  }
 
 
-    /** Get the element level
+  /** Get the element level
      ** @return Element level (type enum EStsElementLevel)
      **/
-    EStsElementLevel GetLevel() const { return fLevel; }
+  EStsElementLevel GetLevel() const { return fLevel; }
 
 
-    /** Get the mother element **/
-    CbmStsElement* GetMother() const { return fMother; }
+  /** Get the mother element **/
+  CbmStsElement* GetMother() const { return fMother; }
 
 
-    /** Get number of daughter elements
+  /** Get number of daughter elements
      ** @return Number of daughters
      **/
-    Int_t GetNofDaughters() const { return fDaughters.size(); }
+  Int_t GetNofDaughters() const { return fDaughters.size(); }
 
 
-    /** Get number of elements at given level
+  /** Get number of elements at given level
      ** @param level  Element level (see enum EStsElementLevel)
      ** @return Number of elements at given level with this
      **         element as ancestor
      */
-    Int_t GetNofElements(Int_t level) const;
+  Int_t GetNofElements(Int_t level) const;
 
 
-    TGeoPhysicalNode* GetPnode() const { return fNode; }
+  TGeoPhysicalNode* GetPnode() const { return fNode; }
 
 
-    /** Initialise daughters from geometry **/
-    virtual void InitDaughters();
+  /** Initialise daughters from geometry **/
+  virtual void InitDaughters();
 
 
-    /** Set the mother element
+  /** Set the mother element
      ** @param Pointer to mother element
      **/
-    void SetMother(CbmStsElement* mother) { fMother = mother; }
+  void SetMother(CbmStsElement* mother) { fMother = mother; }
 
 
-    /** Print **/
-    virtual void Print(Option_t* opt = "") const;
+  /** Print **/
+  virtual void Print(Option_t* opt = "") const;
 
 
-  protected:
-
-    Int_t fAddress;                        ///< Unique element address
-    EStsElementLevel fLevel;               ///< Level in hierarchy
-    TGeoPhysicalNode* fNode;               ///< Pointer to geometry
-    std::vector<CbmStsElement*> fDaughters;     ///< Array of daughters
-    CbmStsElement* fMother;                ///< Mother element
-
-
-    /** Construct the name of the element **/
-    void ConstructName();
+protected:
+  Int_t fAddress;                          ///< Unique element address
+  EStsElementLevel fLevel;                 ///< Level in hierarchy
+  TGeoPhysicalNode* fNode;                 ///< Pointer to geometry
+  std::vector<CbmStsElement*> fDaughters;  ///< Array of daughters
+  CbmStsElement* fMother;                  ///< Mother element
 
 
-    /** Set the element level from integer
+  /** Construct the name of the element **/
+  void ConstructName();
+
+
+  /** Set the element level from integer
      ** Protection against being out of range.
      ** @param  level  Element level
      **/
-    void SetLevel(Int_t level);
+  void SetLevel(Int_t level);
 
 
 private:
+  // --- Disable copy constructor and assignment operator
+  CbmStsElement(const CbmStsElement&) = delete;
+  CbmStsElement& operator=(const CbmStsElement&) = delete;
 
-    // --- Disable copy constructor and assignment operator
-    CbmStsElement(const CbmStsElement&) = delete;
-    CbmStsElement& operator=(const CbmStsElement&) = delete;
 
-
-    ClassDef(CbmStsElement, 2);
-
+  ClassDef(CbmStsElement, 2);
 };
 
 #endif /* CBMSTSELEMENT_H */

@@ -9,12 +9,11 @@
  */
 
 
-void readTsa_PulseMonitor(TString inFile = 
-			  //"data/98_ba2015.tsa"
-			  "data/129_ba2015.tsa"
-			  //"data/1070_cern2014.tsa"
-			  )
-{
+void readTsa_PulseMonitor(TString inFile =
+                            //"data/98_ba2015.tsa"
+                          "data/129_ba2015.tsa"
+                          //"data/1070_cern2014.tsa"
+) {
 
   // --- Specify input file name (this is just an example)
   //TString inFile = "spadic_dlm_trigger_2014-11-15_noepoch.tsa";
@@ -25,15 +24,15 @@ void readTsa_PulseMonitor(TString inFile =
   Int_t nEvents = -1;
 
   // --- Specify output file name (this is just an example)
-  TString outFile = inFile;//"data/test_online.root";
-  outFile.ReplaceAll(".tsa","_pulse.root");
+  TString outFile = inFile;  //"data/test_online.root";
+  outFile.ReplaceAll(".tsa", "_pulse.root");
   // --- Set log output levels
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
   FairLogger::GetLogger()->SetLogVerbosityLevel("LOW");
 
   // --- Set debug level
   gDebug = 0;
-  
+
   std::cout << std::endl;
   //std::cout << ">>> readTsa:  input file is " << inFile  << std::endl;
   std::cout << ">>> readTsa: output file is " << outFile << std::endl;
@@ -63,7 +62,7 @@ void readTsa_PulseMonitor(TString inFile =
   //  event->SetRunId(260);
 
   // --- Run
-  FairRunOnline *run = new FairRunOnline(source);
+  FairRunOnline* run = new FairRunOnline(source);
   run->SetOutputFile(outFile);
   //  run->SetEventHeader(event);
 
@@ -84,22 +83,22 @@ void readTsa_PulseMonitor(TString inFile =
 
   run->Init();
 
-  
+
   // --- Start run
   TStopwatch timer;
   timer.Start();
   std::cout << ">>> readTsa: Starting run..." << std::endl;
-  run->Run(nEvents, 0); // run until end of input file
+  run->Run(nEvents, 0);  // run until end of input file
   timer.Stop();
-  
+
   // --- End-of-run info
   Double_t rtime = timer.RealTime();
   Double_t ctime = timer.CpuTime();
   std::cout << std::endl << std::endl;
   std::cout << ">>> readTsa: Macro finished successfully." << std::endl;
   std::cout << ">>> readTsa: Output file is " << outFile << std::endl;
-  std::cout << ">>> readTsa: Real time " << rtime << " s, CPU time "
-	    << ctime << " s" << std::endl;
+  std::cout << ">>> readTsa: Real time " << rtime << " s, CPU time " << ctime
+            << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

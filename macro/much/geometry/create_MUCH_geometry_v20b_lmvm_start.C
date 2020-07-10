@@ -1,4 +1,4 @@
-//                                             
+//
 // \file create_MUCH_geometry_v20b
 // @Author: Omveer Singh , Partha Pratim Bhaduri & Ekata Nandy
 
@@ -7,7 +7,7 @@
 //#########################################################################################################################################
 // 2 stations and 3 Absorber configuration for muon measurements at low energies.
 // The first absorber is 28 cm low density carbon (density 1.78 g/cm^3) + 30 cm concrete.
-// The shield inside the first absorber is composed of 28 cm of Al + 30 cm of lead. Rest are made of Iron.                                         
+// The shield inside the first absorber is composed of 28 cm of Al + 30 cm of lead. Rest are made of Iron.
 // For first absorber, the opening angle of the hole in the shield is decreased from 2.9 to 2.5 degrees for first absorber.
 // The Al shields in the absorbers 2-3 have same thickness as the absorbers. The beam pipe passes through the cylindrical hole inside the shields.
 // Both stations are made up of GEM.
@@ -18,127 +18,129 @@
 // in root all sizes are given in cm
 
 
-
-
-#include "TSystem.h"
+#include "TClonesArray.h"
+#include "TDatime.h"
+#include "TFile.h"
+#include "TGeoBBox.h"
+#include "TGeoCompositeShape.h"
+#include "TGeoCone.h"
 #include "TGeoManager.h"
-#include "TGeoVolume.h"
 #include "TGeoMaterial.h"
+#include "TGeoMatrix.h"
 #include "TGeoMedium.h"
 #include "TGeoPgon.h"
-#include "TGeoMatrix.h"
-#include "TGeoCompositeShape.h"
-#include "TGeoXtru.h"
-#include "TGeoCone.h"
-#include "TGeoBBox.h"
 #include "TGeoTube.h"
-#include "TFile.h"
-#include "TString.h"
+#include "TGeoVolume.h"
+#include "TGeoXtru.h"
 #include "TList.h"
 #include "TRandom3.h"
-#include "TDatime.h"
-#include "TClonesArray.h"
+#include "TString.h"
+#include "TSystem.h"
 
-#include "TObjArray.h"
 #include "TFile.h"
 #include "TMath.h"
+#include "TObjArray.h"
 
-#include <iostream>
-#include <fstream>
 #include <cassert>
+#include <fstream>
+#include <iostream>
 #include <stdexcept>
 
 
-
 // Name of output file with geometry
-const TString tagVersion   = "_v20b";
-const TString subVersion   = "_sis100_1m_lmvm_start";
-const TString geoVersion   = "much";// + tagVersion + subVersion;
-const TString FileNameSim  = geoVersion +  tagVersion + subVersion+".geo.root";
-const TString FileNameGeo  = geoVersion +  tagVersion + subVersion+"_geo.root";
+const TString tagVersion  = "_v20b";
+const TString subVersion  = "_sis100_1m_lmvm_start";
+const TString geoVersion  = "much";  // + tagVersion + subVersion;
+const TString FileNameSim = geoVersion + tagVersion + subVersion + ".geo.root";
+const TString FileNameGeo = geoVersion + tagVersion + subVersion + "_geo.root";
 //const TString FileNameInfo = geoVersion +  tagVersion + subVersion+".geo.info";
 
 // Names of the different used materials which are used to build the modules
-// The materials are defined in the global media.geo file 
-const TString KeepingVolumeMedium     = "air";
-const TString L= "MUCHlead";
-const TString I= "MUCHiron";
-const TString activemedium="MUCHargon";
-const TString spacermedium="MUCHnoryl";
-const TString LDcarbon = "MUCHcarbonLD"; //Low density Carbon for Ist Abs
-const TString Concrete = "MUCHconcrete"; //Concrete for Ist Abs
-const TString Al = "MUCHaluminium"; //Al for cooling & support purpose
-const TString copper = "MUCHcopper"; 
-const TString g10= "MUCHG10";  
-const TString RPCm= "MUCHRPCgas";
-const TString RPCg= "MUCHRPCglass";
+// The materials are defined in the global media.geo file
+const TString KeepingVolumeMedium = "air";
+const TString L                   = "MUCHlead";
+const TString I                   = "MUCHiron";
+const TString activemedium        = "MUCHargon";
+const TString spacermedium        = "MUCHnoryl";
+const TString LDcarbon = "MUCHcarbonLD";   //Low density Carbon for Ist Abs
+const TString Concrete = "MUCHconcrete";   //Concrete for Ist Abs
+const TString Al       = "MUCHaluminium";  //Al for cooling & support purpose
+const TString copper   = "MUCHcopper";
+const TString g10      = "MUCHG10";
+const TString RPCm     = "MUCHRPCgas";
+const TString RPCg     = "MUCHRPCglass";
 
 // Universal input parameters
 
-Double_t fMuchZ1 =125.0; // MuchCave Zin position [cm]
-Double_t fAcceptanceTanMin = 0.1; // Acceptance tangent min
-Double_t fAcceptanceTanMax = 0.466; // Acceptance tangent max
+Double_t fMuchZ1           = 125.0;  // MuchCave Zin position [cm]
+Double_t fAcceptanceTanMin = 0.1;    // Acceptance tangent min
+Double_t fAcceptanceTanMax = 0.466;  // Acceptance tangent max
 
 //************************************************************
 
 
-    // Input parameters for absorbers 
+// Input parameters for absorbers
 //***********************************************************
-const Int_t fAbs = 3;
-const Int_t fNabs = 5; // Number of absorber pieces
-TString AbsMaterial[6]={"LD Graphite","LD Graphite","Concrete","Iron","Iron","Iron"};
+const Int_t fAbs  = 3;
+const Int_t fNabs = 5;  // Number of absorber pieces
+TString AbsMaterial[6] =
+  {"LD Graphite", "LD Graphite", "Concrete", "Iron", "Iron", "Iron"};
 // Absorber Zin position [cm] in the cave reference frame
-Double_t fAbsorberZ1[6]={0, 16, 28, 90, 140, 190}; 
+Double_t fAbsorberZ1[6] = {0, 16, 28, 90, 140, 190};
 // Absorber thickness [cm]
-Double_t fAbsorberLz[6]= {16, 12, 30, 20, 20, 30}; 
-Double_t safetyrad[6]={0.0, 0.0, 0.0,30.0,30.0,30.0};
-
+Double_t fAbsorberLz[6] = {16, 12, 30, 20, 20, 30};
+Double_t safetyrad[6]   = {0.0, 0.0, 0.0, 30.0, 30.0, 30.0};
 
 
 // Input parameters for MUCH stations
 //********************************************
 
-const Int_t fNst = 2; // Number of stations
+const Int_t fNst = 2;  // Number of stations
 // Sector-type module parameters
 // Number of sectors per layer (should be even for symmetry)
 // Needs to be fixed with actual numbers
-Int_t fNSectorsPerLayer[4] = {16, 20, 18, 20}; 
-Double_t fActiveLzSector[4] ={0.3, 0.3, 0.2, 0.2};  // Active volume thickness [cm]
-Double_t fFrameLzSector[4] ={.3, .3, 1., 1.};  // Frame thickness [cm]
-Double_t fRpcGlassDz[4] = {0.0,0.0,0.2,0.2}; //Rpc Glass thickness [cm]
-Double_t fSpacerR = 2.0;         // Spacer width in R [cm]
-Double_t fSpacerPhi = 2.0;       // Spacer width in Phi [cm]
-Double_t fOverlapR = 2.0;        // Overlap in R direction [cm]
+Int_t fNSectorsPerLayer[4]  = {16, 20, 18, 20};
+Double_t fActiveLzSector[4] = {0.3,
+                               0.3,
+                               0.2,
+                               0.2};             // Active volume thickness [cm]
+Double_t fFrameLzSector[4]  = {.3, .3, 1., 1.};  // Frame thickness [cm]
+Double_t fRpcGlassDz[4]     = {0.0, 0.0, 0.2, 0.2};  //Rpc Glass thickness [cm]
+Double_t fSpacerR           = 2.0;                   // Spacer width in R [cm]
+Double_t fSpacerPhi         = 2.0;                   // Spacer width in Phi [cm]
+Double_t fOverlapR          = 2.0;  // Overlap in R direction [cm]
 
 // Station Zceneter [cm] in  the cave reference frame
 
-Double_t fStationZ0[4]={75,125,175,235}; 
-Int_t fNlayers[4]={3,3,3,3}; // Number of layers
-Int_t fDetType[4]={3,3,4,4}; // Detector type
-Double_t fLayersDz[4]={10,10,10,10}; 
-Double_t fSupportLz[4]={1.,1.,.2,.2}; //1 cm Al (cooling + support)
-Double_t fDriftDz=0.0035; //35 micron copper Drift  
-Double_t fG10Dz = 0.3; // 3 mm G10
+Double_t fStationZ0[4] = {75, 125, 175, 235};
+Int_t fNlayers[4]      = {3, 3, 3, 3};  // Number of layers
+Int_t fDetType[4]      = {3, 3, 4, 4};  // Detector type
+Double_t fLayersDz[4]  = {10, 10, 10, 10};
+Double_t fSupportLz[4] = {1., 1., .2, .2};  //1 cm Al (cooling + support)
+Double_t fDriftDz      = 0.0035;            //35 micron copper Drift
+Double_t fG10Dz        = 0.3;               // 3 mm G10
 
 // Input parameters for beam pipe shielding
 // spans from 2.9 degree to 5.1 degree
 //Inner radius is tan(2.9) + 2 cm, extra 20 mm for clamp connection
 
-const Int_t fNshs=4;
-TString ShMaterial[5]={"Al","Pb","Al","Al","Al"};
-Double_t fShieldZin[5]={125,153.0, 215.0, 265.0, 315.0};
-Double_t fShieldLz[5]={28, 30, 20, 20, 30};
-Double_t fShield_AcceptanceTanMin[5] = {0.043,0.043, 0.051,0.051,0.051}; // Acceptance tangent min for shield
-Double_t fShield_AcceptanceTanMax[5] = {0.1,0.1,0.1,0.1,0.1}; // Acceptance tangent max for shield
+const Int_t fNshs      = 4;
+TString ShMaterial[5]  = {"Al", "Pb", "Al", "Al", "Al"};
+Double_t fShieldZin[5] = {125, 153.0, 215.0, 265.0, 315.0};
+Double_t fShieldLz[5]  = {28, 30, 20, 20, 30};
+Double_t fShield_AcceptanceTanMin[5] =
+  {0.043, 0.043, 0.051, 0.051, 0.051};  // Acceptance tangent min for shield
+Double_t fShield_AcceptanceTanMax[5] =
+  {0.1, 0.1, 0.1, 0.1, 0.1};  // Acceptance tangent max for shield
 
 
 //***********************************************************
 
 // some global variables
-TGeoManager* gGeoMan = NULL;  // Pointer to TGeoManager instance
-TGeoVolume*  gModules[fNabs]; // Global storage for module types
-TGeoVolume*  gModules_shield[fNshs]; // Global storage for module types
-TGeoVolume*  gModules_station[fNst]; // Global storage for module types
+TGeoManager* gGeoMan = NULL;         // Pointer to TGeoManager instance
+TGeoVolume* gModules[fNabs];         // Global storage for module types
+TGeoVolume* gModules_shield[fNshs];  // Global storage for module types
+TGeoVolume* gModules_station[fNst];  // Global storage for module types
 
 // Forward declarations
 void create_materials_from_media_file();
@@ -150,133 +152,144 @@ TGeoVolume* CreateLayers(int istn, int ily);
 
 fstream infoFile;
 void create_MUCH_geometry_v20b_lmvm_start() {
-  
 
- // -------   Open info file   -----------------------------------------------
+
+  // -------   Open info file   -----------------------------------------------
   TString infoFileName = FileNameSim;
   infoFileName.ReplaceAll("root", "info");
   infoFile.open(infoFileName.Data(), fstream::out);
-  infoFile << "MUCH geometry created with create_MUCH_geometry_v20b_lmvm_start.C" << endl << endl;
-  infoFile<<"Global Variables: "<<endl;
-  infoFile<<"MuchCave Zin position = "<<fMuchZ1<<" cm "<<endl; 
-  infoFile<<"Acceptance tangent min = "<<fAcceptanceTanMin<<endl;
-  infoFile<<"Acceptance tangent max = "<<fAcceptanceTanMax<<endl;
+  infoFile
+    << "MUCH geometry created with create_MUCH_geometry_v20b_lmvm_start.C"
+    << endl
+    << endl;
+  infoFile << "Global Variables: " << endl;
+  infoFile << "MuchCave Zin position = " << fMuchZ1 << " cm " << endl;
+  infoFile << "Acceptance tangent min = " << fAcceptanceTanMin << endl;
+  infoFile << "Acceptance tangent max = " << fAcceptanceTanMax << endl;
 
   // Load needed material definition from media.geo file
   create_materials_from_media_file();
-  
+
   // Get the GeoManager for later usage
   gGeoMan = (TGeoManager*) gROOT->FindObject("FAIRGeom");
-  gGeoMan->SetVisLevel(10);  
-  
-  // Create the top volume 
-  TGeoBBox* topbox= new TGeoBBox("", 1000., 1000., 2000.);
-  TGeoVolume* top = new TGeoVolume("top", topbox, gGeoMan->GetMedium("air"));
+  gGeoMan->SetVisLevel(10);
+
+  // Create the top volume
+  TGeoBBox* topbox = new TGeoBBox("", 1000., 1000., 2000.);
+  TGeoVolume* top  = new TGeoVolume("top", topbox, gGeoMan->GetMedium("air"));
   gGeoMan->SetTopVolume(top);
-  
-  TString topName=geoVersion+tagVersion+subVersion;
+
+  TString topName = geoVersion + tagVersion + subVersion;
 
   TGeoVolume* much = new TGeoVolumeAssembly(topName);
   top->AddNode(much, 1);
-  
-  TGeoVolume *absr = new TGeoVolumeAssembly("absorber");
-  much->AddNode(absr,1);
 
-  TGeoVolume *shld = new TGeoVolumeAssembly("shield");
-  much->AddNode(shld,1);
-  
-  TGeoVolume *sttn = new TGeoVolumeAssembly("station");
-  much->AddNode(sttn,1);
+  TGeoVolume* absr = new TGeoVolumeAssembly("absorber");
+  much->AddNode(absr, 1);
 
-  infoFile<<endl;
-  infoFile<<"                     Absorbers "<<endl;
-  infoFile<<"                    -----------"<<endl;
-  infoFile<<"Total No. of Absorbers: "<<fAbs<<endl;
-  infoFile<<"First abosrber is divided into two halves."<<endl; 
-  infoFile<<"First half inserted inside the Dipole Magnet."<<endl;
-  infoFile<<"Second half is made of Low Density Graphite + Concrete."<<endl;
-  infoFile<<"Total No. of Pieces: "<<fNabs<<endl;
-  infoFile<<endl;
-  infoFile<<"AbsPieces   Position[cm]   Thickness[cm]        Material"<<endl;
-infoFile<<"--------------------------------------------------------------"<<endl;
+  TGeoVolume* shld = new TGeoVolumeAssembly("shield");
+  much->AddNode(shld, 1);
 
-  for (Int_t iabs = 0; iabs <fNabs ; iabs++) { 
-    
+  TGeoVolume* sttn = new TGeoVolumeAssembly("station");
+  much->AddNode(sttn, 1);
+
+  infoFile << endl;
+  infoFile << "                     Absorbers " << endl;
+  infoFile << "                    -----------" << endl;
+  infoFile << "Total No. of Absorbers: " << fAbs << endl;
+  infoFile << "First abosrber is divided into two halves." << endl;
+  infoFile << "First half inserted inside the Dipole Magnet." << endl;
+  infoFile << "Second half is made of Low Density Graphite + Concrete." << endl;
+  infoFile << "Total No. of Pieces: " << fNabs << endl;
+  infoFile << endl;
+  infoFile << "AbsPieces   Position[cm]   Thickness[cm]        Material"
+           << endl;
+  infoFile << "--------------------------------------------------------------"
+           << endl;
+
+  for (Int_t iabs = 0; iabs < fNabs; iabs++) {
+
     gModules[iabs] = CreateAbsorbers(iabs);
-    
-    absr->AddNode(gModules[iabs],iabs); 
-  }
-  
-  
-  infoFile<<endl;
-  infoFile<<"                     Shielding "<<endl;
-  infoFile<<"                    -----------"<<endl;
-  infoFile<<"No. of Shields: "<<fNshs<<endl;
-  infoFile<<"Inside the Abs I, Shielding divided into two parts."<<endl;
-infoFile<<endl;
-  infoFile<<"Shield No.   Z_In[cm]  Z_Out[cm]  R_In[cm]  R_Out[cm]   Material"<<endl;
-infoFile<<"--------------------------------------------------------------"<<endl;
-  for (Int_t ishi = 0; ishi <fNshs ; ishi++) {
-    
-    gModules_shield[ishi] = CreateShields(ishi);
-    
-    shld->AddNode(gModules_shield[ishi],ishi);
 
+    absr->AddNode(gModules[iabs], iabs);
   }
-  
-  infoFile<<endl;
-  infoFile<<"                     Stations "<<endl;
-  infoFile<<"                    ----------"<<endl;
-  infoFile<<"No. of Stations: "<<fNst<<endl;
-  infoFile<<"Two stations (1,2) are made up of GEM."<<endl;
-  infoFile<<"10 mm thick Al plates are used for support and cooling in the GEM modules."<<endl;
+
+
+  infoFile << endl;
+  infoFile << "                     Shielding " << endl;
+  infoFile << "                    -----------" << endl;
+  infoFile << "No. of Shields: " << fNshs << endl;
+  infoFile << "Inside the Abs I, Shielding divided into two parts." << endl;
+  infoFile << endl;
+  infoFile << "Shield No.   Z_In[cm]  Z_Out[cm]  R_In[cm]  R_Out[cm]   Material"
+           << endl;
+  infoFile << "--------------------------------------------------------------"
+           << endl;
+  for (Int_t ishi = 0; ishi < fNshs; ishi++) {
+
+    gModules_shield[ishi] = CreateShields(ishi);
+
+    shld->AddNode(gModules_shield[ishi], ishi);
+  }
+
+  infoFile << endl;
+  infoFile << "                     Stations " << endl;
+  infoFile << "                    ----------" << endl;
+  infoFile << "No. of Stations: " << fNst << endl;
+  infoFile << "Two stations (1,2) are made up of GEM." << endl;
+  infoFile << "10 mm thick Al plates are used for support and cooling in the "
+              "GEM modules."
+           << endl;
   //infoFile<<"2 mm thick Aluminum plates are used for support in the RPC modules behind the active area. 10 mm thick Aluminium at the boundaries as the frame."<<endl;
-  infoFile<<"Drift and read-out PCBs (copper coated G10 plates) inserted for realistic material budget for GEM modules."<<endl;
-  infoFile<<"#Station   #Layers     Z[cm] #Sectors ActiveLz[cm]"<<endl;
-  infoFile<<"--------------------------------------------------------------"<<endl;
-  for (Int_t istn = 0; istn < fNst; istn++) { // 4 Stations
-    
-    
+  infoFile << "Drift and read-out PCBs (copper coated G10 plates) inserted for "
+              "realistic material budget for GEM modules."
+           << endl;
+  infoFile << "#Station   #Layers     Z[cm] #Sectors ActiveLz[cm]" << endl;
+  infoFile << "--------------------------------------------------------------"
+           << endl;
+  for (Int_t istn = 0; istn < fNst; istn++) {  // 4 Stations
+
+
     gModules_station[istn] = CreateStations(istn);
-    
-    sttn->AddNode(gModules_station[istn],istn);
+
+    sttn->AddNode(gModules_station[istn], istn);
   }
-  
+
   gGeoMan->CloseGeometry();
   gGeoMan->CheckOverlaps(0.0000001);
   gGeoMan->PrintOverlaps();
 
   gGeoMan->CheckOverlaps(0.0001, "s");
   gGeoMan->PrintOverlaps();
-  
-  
-  much->Export(FileNameSim);   // an alternative way of writing the much
-  
+
+
+  much->Export(FileNameSim);  // an alternative way of writing the much
+
   TFile* outfile = new TFile(FileNameSim, "UPDATE");
-  TGeoTranslation* much_placement = new TGeoTranslation("much_trans", 0., 0., 0.);
+  TGeoTranslation* much_placement =
+    new TGeoTranslation("much_trans", 0., 0., 0.);
   much_placement->Write();
   outfile->Close();
-  
-  outfile = new TFile(FileNameGeo,"RECREATE");
+
+  outfile = new TFile(FileNameGeo, "RECREATE");
   gGeoMan->Write();  // use this if you want GeoManager format in the output
   outfile->Close();
-  
+
   //  top->Draw("ogl");
   infoFile.close();
 }
 
-void create_materials_from_media_file()
-{
+void create_materials_from_media_file() {
   // Use the FairRoot geometry interface to load the media which are already defined
-  FairGeoLoader* geoLoad = new FairGeoLoader("TGeo", "FairGeoLoader");
+  FairGeoLoader* geoLoad    = new FairGeoLoader("TGeo", "FairGeoLoader");
   FairGeoInterface* geoFace = geoLoad->getGeoInterface();
-  TString geoPath = gSystem->Getenv("VMCWORKDIR");
-  TString geoFile = geoPath + "/geometry/media.geo";
+  TString geoPath           = gSystem->Getenv("VMCWORKDIR");
+  TString geoFile           = geoPath + "/geometry/media.geo";
   geoFace->setMediaFile(geoFile);
   geoFace->readMedia();
-  
+
   // Read the required media and create them in the GeoManager
-  FairGeoMedia* geoMedia = geoFace->getMedia();
+  FairGeoMedia* geoMedia   = geoFace->getMedia();
   FairGeoBuilder* geoBuild = geoLoad->getGeoBuilder();
 
   FairGeoMedium* air = geoMedia->getMedium(KeepingVolumeMedium);
@@ -303,10 +316,10 @@ void create_materials_from_media_file()
   FairGeoMedium* MUCHconcrete = geoMedia->getMedium(Concrete);
   geoBuild->createMedium(MUCHconcrete);
 
-  FairGeoMedium* copperplate  = geoMedia->getMedium(copper); 
+  FairGeoMedium* copperplate = geoMedia->getMedium(copper);
   geoBuild->createMedium(copperplate);
 
-  FairGeoMedium* g10plate  = geoMedia->getMedium(g10); //G10
+  FairGeoMedium* g10plate = geoMedia->getMedium(g10);  //G10
   geoBuild->createMedium(g10plate);
 
   FairGeoMedium* RPCmedium = geoMedia->getMedium(RPCm);
@@ -314,436 +327,532 @@ void create_materials_from_media_file()
 
   FairGeoMedium* RPCmaterial = geoMedia->getMedium(RPCg);
   geoBuild->createMedium(RPCmaterial);
- 
 }
-
 
 
 TGeoVolume* CreateShields(int ish) {
 
-  
-  TGeoMedium* iron = gGeoMan->GetMedium(I);
-  TGeoMedium* lead = gGeoMan->GetMedium(L);
-  TGeoMedium* Aluminium= gGeoMan->GetMedium(Al);
 
-  TString name = Form("shieldblock%d", ish);
+  TGeoMedium* iron      = gGeoMan->GetMedium(I);
+  TGeoMedium* lead      = gGeoMan->GetMedium(L);
+  TGeoMedium* Aluminium = gGeoMan->GetMedium(Al);
+
+  TString name                    = Form("shieldblock%d", ish);
   TGeoVolumeAssembly* shieldblock = new TGeoVolumeAssembly(name);
-  
-  TString conename_sh =  Form("conesh_%d",ish);
-  
-  
-  Double_t dz = fShieldLz[ish]/2.0 ;
-  Double_t globalZ1 = fShieldZin[ish] ;
-  Double_t globalZ2 = fShieldZin[ish] + 2 * dz ;
-  
-  
- 
-  Double_t rmin1 = globalZ1 * fShield_AcceptanceTanMin[ish]+2.0;
-  Double_t rmax1 = globalZ1 * fShield_AcceptanceTanMax[ish]-0.0001;
-  Double_t rmin2 = globalZ2 * fShield_AcceptanceTanMin[ish]+2.0;
-  Double_t rmax2 = globalZ2 * fShield_AcceptanceTanMax[ish]-0.0001;
-  
-  infoFile<<"   "<<ish<<"\t\t"<<globalZ1<<"\t  "<<globalZ2<<"\t"<<rmin1<<"\t   "<<rmax1<<"\t  "<<ShMaterial[ish]<<endl;
-  
-  if(ish==0){
 
-    TGeoCone * sh =new TGeoCone(conename_sh,dz, rmin1, rmax1, rmin2, rmax2);
+  TString conename_sh = Form("conesh_%d", ish);
+
+
+  Double_t dz       = fShieldLz[ish] / 2.0;
+  Double_t globalZ1 = fShieldZin[ish];
+  Double_t globalZ2 = fShieldZin[ish] + 2 * dz;
+
+
+  Double_t rmin1 = globalZ1 * fShield_AcceptanceTanMin[ish] + 2.0;
+  Double_t rmax1 = globalZ1 * fShield_AcceptanceTanMax[ish] - 0.0001;
+  Double_t rmin2 = globalZ2 * fShield_AcceptanceTanMin[ish] + 2.0;
+  Double_t rmax2 = globalZ2 * fShield_AcceptanceTanMax[ish] - 0.0001;
+
+  infoFile << "   " << ish << "\t\t" << globalZ1 << "\t  " << globalZ2 << "\t"
+           << rmin1 << "\t   " << rmax1 << "\t  " << ShMaterial[ish] << endl;
+
+  if (ish == 0) {
+
+    TGeoCone* sh = new TGeoCone(conename_sh, dz, rmin1, rmax1, rmin2, rmax2);
     TGeoVolume* shield = new TGeoVolume("shield", sh, Aluminium);
-    
+
     shield->SetLineColor(7);
     shield->SetTransparency(2);
-    TGeoTranslation *sh_trans = new TGeoTranslation("", 0., 0., globalZ1+dz);
-    shieldblock->AddNode(shield,ish, sh_trans); 
-    
-    
-  } 
-  
-  if(ish==1){
-    TGeoCone * sh =new TGeoCone(conename_sh,dz, rmin1, rmax1, rmin2, rmax2);
+    TGeoTranslation* sh_trans = new TGeoTranslation("", 0., 0., globalZ1 + dz);
+    shieldblock->AddNode(shield, ish, sh_trans);
+  }
+
+  if (ish == 1) {
+    TGeoCone* sh = new TGeoCone(conename_sh, dz, rmin1, rmax1, rmin2, rmax2);
     TGeoVolume* shield = new TGeoVolume("shield", sh, lead);
-    
+
     shield->SetLineColor(kMagenta);
     shield->SetTransparency(2);
-    TGeoTranslation *sh_trans = new TGeoTranslation("", 0., 0., globalZ1+dz);
-    shieldblock->AddNode(shield,ish, sh_trans); 
+    TGeoTranslation* sh_trans = new TGeoTranslation("", 0., 0., globalZ1 + dz);
+    shieldblock->AddNode(shield, ish, sh_trans);
   }
-  
-  if(ish>1)
-    {
-      
-      
-      TGeoCone * sh =new TGeoCone(conename_sh,dz, rmin1, rmax1, rmin2, rmax2);
-      TGeoVolume* shield = new TGeoVolume("shield", sh, Aluminium);
-      
-      shield->SetLineColor(kBlack);
-      shield->SetTransparency(2);
-      TGeoTranslation *sh_trans = new TGeoTranslation("", 0., 0., globalZ1+dz);
-      shieldblock->AddNode(shield,ish, sh_trans); 
-    }
-  
-  
-  return shieldblock; 
-  
+
+  if (ish > 1) {
+
+
+    TGeoCone* sh = new TGeoCone(conename_sh, dz, rmin1, rmax1, rmin2, rmax2);
+    TGeoVolume* shield = new TGeoVolume("shield", sh, Aluminium);
+
+    shield->SetLineColor(kBlack);
+    shield->SetTransparency(2);
+    TGeoTranslation* sh_trans = new TGeoTranslation("", 0., 0., globalZ1 + dz);
+    shieldblock->AddNode(shield, ish, sh_trans);
+  }
+
+
+  return shieldblock;
 }
 
 
 TGeoVolume* CreateAbsorbers(int i) {
-  
-  TGeoMedium* graphite = gGeoMan->GetMedium(LDcarbon);
-  TGeoMedium* iron = gGeoMan->GetMedium(I);
-  TGeoMedium* concrete = gGeoMan->GetMedium(Concrete);
-  TGeoMedium* Aluminium= gGeoMan->GetMedium(Al);
 
-  TString name = Form("absblock%d", i);
+  TGeoMedium* graphite  = gGeoMan->GetMedium(LDcarbon);
+  TGeoMedium* iron      = gGeoMan->GetMedium(I);
+  TGeoMedium* concrete  = gGeoMan->GetMedium(Concrete);
+  TGeoMedium* Aluminium = gGeoMan->GetMedium(Al);
+
+  TString name                 = Form("absblock%d", i);
   TGeoVolumeAssembly* absblock = new TGeoVolumeAssembly(name);
-  
-  TString pipename =  Form("beampipe_%d",i);
-  TString conename =  Form("cone_%d",i);
-  TString BoxName   = Form("Box_%d",i);
-  TString supportShapeName = Form("Support_%d",i);
-  TString TrapName =  Form("Trap_%d",i);
 
-  Double_t dz = fAbsorberLz[i]/2.0 ;
-  Double_t globalZ1 = fAbsorberZ1[i] + fMuchZ1;
+  TString pipename         = Form("beampipe_%d", i);
+  TString conename         = Form("cone_%d", i);
+  TString BoxName          = Form("Box_%d", i);
+  TString supportShapeName = Form("Support_%d", i);
+  TString TrapName         = Form("Trap_%d", i);
+
+  Double_t dz        = fAbsorberLz[i] / 2.0;
+  Double_t globalZ1  = fAbsorberZ1[i] + fMuchZ1;
   Double_t globalPos = globalZ1 + dz;
-  Double_t globalZ2 = fAbsorberZ1[i] + 2 * dz + fMuchZ1;
-  
+  Double_t globalZ2  = fAbsorberZ1[i] + 2 * dz + fMuchZ1;
+
   Double_t rmin1 = globalZ1 * fAcceptanceTanMin;
   Double_t rmin2 = globalZ2 * fAcceptanceTanMin;
   Double_t rmax1 = globalZ1 * fAcceptanceTanMax + safetyrad[i];
-  Double_t rmax2 = globalZ2 * fAcceptanceTanMax + safetyrad[i];//
-  
-  infoFile<<"   "<<i+1<<"\t\t"<<globalPos<<"\t\t"<<2*dz<<"\t\t"<<AbsMaterial[i]<<endl;
-  
+  Double_t rmax2 = globalZ2 * fAcceptanceTanMax + safetyrad[i];  //
+
+  infoFile << "   " << i + 1 << "\t\t" << globalPos << "\t\t" << 2 * dz
+           << "\t\t" << AbsMaterial[i] << endl;
+
   // 1st part of 1st absorber LD Carbon
   //dimensions are hardcoded
-  if(i==0)
-    {
-      printf("absorber %d \n",i);
-      
-      TGeoTrd2 * trap = new TGeoTrd2(TrapName,70.0,70.0,46.0,71.0,dz);
-      TGeoCone * tube = new TGeoCone(pipename,dz+0.001,0.,rmin1,0.,rmin2);
-      TString expression = TrapName +"-"+pipename;
-      TGeoCompositeShape* shSupport = new TGeoCompositeShape(supportShapeName,expression);
-      TGeoVolume* abs0 = new TGeoVolume("absorber", shSupport, graphite);
-      abs0->SetLineColor(kRed);
-      abs0->SetTransparency(0);
-      TGeoTranslation *abs0_trans = new TGeoTranslation("", 0., 0., globalZ1+dz);
-      absblock->AddNode(abs0, i, abs0_trans);
-    }
+  if (i == 0) {
+    printf("absorber %d \n", i);
+
+    TGeoTrd2* trap = new TGeoTrd2(TrapName, 70.0, 70.0, 46.0, 71.0, dz);
+    TGeoCone* tube = new TGeoCone(pipename, dz + 0.001, 0., rmin1, 0., rmin2);
+    TString expression = TrapName + "-" + pipename;
+    TGeoCompositeShape* shSupport =
+      new TGeoCompositeShape(supportShapeName, expression);
+    TGeoVolume* abs0 = new TGeoVolume("absorber", shSupport, graphite);
+    abs0->SetLineColor(kRed);
+    abs0->SetTransparency(0);
+    TGeoTranslation* abs0_trans =
+      new TGeoTranslation("", 0., 0., globalZ1 + dz);
+    absblock->AddNode(abs0, i, abs0_trans);
+  }
 
 
-  
   // 2rd part of 1st absorber box (LD Carbon)
-  if(i==1)
-    {
-      printf("absorber %d \n",i);
-      TGeoBBox * box = new TGeoBBox(BoxName,130.0,125.0,dz);
-      TGeoCone * tube = new TGeoCone(pipename,dz+0.001,0.,rmin1,0.,rmin2);
-      TString expression = BoxName +"-"+pipename;
-      TGeoCompositeShape* shSupport = new TGeoCompositeShape(supportShapeName,expression);
-      
-      TGeoVolume* abs1 = new TGeoVolume("absorber", shSupport, graphite);
-      abs1->SetLineColor(kRed);
-      abs1->SetTransparency(0);
-      TGeoTranslation *abs1_trans = new TGeoTranslation("", 0., 0., globalZ1+dz);
-      absblock->AddNode(abs1, i, abs1_trans);
-      
-      
-    }
-  
-  // 3th part of 1st absorber box (Conc)
-  if(i==2)
-    {
-      printf("absorber %d \n",i);
-      TGeoBBox * box = new TGeoBBox(BoxName,130.0,125.0,dz);
-      TGeoCone * tube = new TGeoCone(pipename,dz+0.001,0.,rmin1,0.,rmin2);
-      TString expression = BoxName +"-"+pipename;
-      TGeoCompositeShape* shSupport = new TGeoCompositeShape(supportShapeName,expression);
-      
-      TGeoVolume* abs1 = new TGeoVolume("absorber", shSupport, concrete);
-      abs1->SetLineColor(kViolet);
-      abs1->SetTransparency(0);
-      TGeoTranslation *abs1_trans = new TGeoTranslation("", 0., 0., globalZ1+dz);
-      absblock->AddNode(abs1, i, abs1_trans);
-    }
+  if (i == 1) {
+    printf("absorber %d \n", i);
+    TGeoBBox* box  = new TGeoBBox(BoxName, 130.0, 125.0, dz);
+    TGeoCone* tube = new TGeoCone(pipename, dz + 0.001, 0., rmin1, 0., rmin2);
+    TString expression = BoxName + "-" + pipename;
+    TGeoCompositeShape* shSupport =
+      new TGeoCompositeShape(supportShapeName, expression);
 
-  
+    TGeoVolume* abs1 = new TGeoVolume("absorber", shSupport, graphite);
+    abs1->SetLineColor(kRed);
+    abs1->SetTransparency(0);
+    TGeoTranslation* abs1_trans =
+      new TGeoTranslation("", 0., 0., globalZ1 + dz);
+    absblock->AddNode(abs1, i, abs1_trans);
+  }
+
+  // 3th part of 1st absorber box (Conc)
+  if (i == 2) {
+    printf("absorber %d \n", i);
+    TGeoBBox* box  = new TGeoBBox(BoxName, 130.0, 125.0, dz);
+    TGeoCone* tube = new TGeoCone(pipename, dz + 0.001, 0., rmin1, 0., rmin2);
+    TString expression = BoxName + "-" + pipename;
+    TGeoCompositeShape* shSupport =
+      new TGeoCompositeShape(supportShapeName, expression);
+
+    TGeoVolume* abs1 = new TGeoVolume("absorber", shSupport, concrete);
+    abs1->SetLineColor(kViolet);
+    abs1->SetTransparency(0);
+    TGeoTranslation* abs1_trans =
+      new TGeoTranslation("", 0., 0., globalZ1 + dz);
+    absblock->AddNode(abs1, i, abs1_trans);
+  }
+
 
   //rest of the absorbers
-  if (i>2)
-    {
-      TGeoBBox * box = new TGeoBBox(BoxName,rmax2,rmax2,dz);
-      TGeoCone * tube = new TGeoCone(pipename,dz+0.001,0.,rmin1,0.,rmin2);   
-      TString expression = BoxName +"-"+pipename;
-      TGeoCompositeShape* shSupport = new TGeoCompositeShape(supportShapeName,expression);
-      
-      TGeoVolume* abs2 = new TGeoVolume("absorber", shSupport, iron);
+  if (i > 2) {
+    TGeoBBox* box  = new TGeoBBox(BoxName, rmax2, rmax2, dz);
+    TGeoCone* tube = new TGeoCone(pipename, dz + 0.001, 0., rmin1, 0., rmin2);
+    TString expression = BoxName + "-" + pipename;
+    TGeoCompositeShape* shSupport =
+      new TGeoCompositeShape(supportShapeName, expression);
 
-      abs2->SetLineColor(kBlue);
-      abs2->SetTransparency(2);
- 
-      
-      TGeoTranslation *abs_trans = new TGeoTranslation("", 0., 0., globalZ1+dz);
-      absblock->AddNode(abs2,i, abs_trans); 
-      
-      
-    }
-  
-  return absblock; 
-  
+    TGeoVolume* abs2 = new TGeoVolume("absorber", shSupport, iron);
+
+    abs2->SetLineColor(kBlue);
+    abs2->SetTransparency(2);
+
+
+    TGeoTranslation* abs_trans = new TGeoTranslation("", 0., 0., globalZ1 + dz);
+    absblock->AddNode(abs2, i, abs_trans);
+  }
+
+  return absblock;
 }
 
-TGeoVolume * CreateStations(int ist){
-  
-  TString stationName = Form("muchstation%02i",ist+1);
-  
-  TGeoVolumeAssembly* station = new TGeoVolumeAssembly(stationName);//, shStation, air);
-  
-  TGeoVolume*  gLayer[4];
-  
-  for (int ii=0;ii<3;ii++){  // 3 Layers
-  
-     gLayer[ii] = CreateLayers(ist, ii);
-     station->AddNode(gLayer[ii],ii);
+TGeoVolume* CreateStations(int ist) {
 
+  TString stationName = Form("muchstation%02i", ist + 1);
+
+  TGeoVolumeAssembly* station =
+    new TGeoVolumeAssembly(stationName);  //, shStation, air);
+
+  TGeoVolume* gLayer[4];
+
+  for (int ii = 0; ii < 3; ii++) {  // 3 Layers
+
+    gLayer[ii] = CreateLayers(ist, ii);
+    station->AddNode(gLayer[ii], ii);
   }
 
   return station;
 }
 
 
-TGeoVolume * CreateLayers(int istn, int ily){
-  
-  TString layerName = Form("muchstation%02ilayer%i",istn+1,ily+1);
+TGeoVolume* CreateLayers(int istn, int ily) {
+
+  TString layerName = Form("muchstation%02ilayer%i", istn + 1, ily + 1);
   TGeoVolumeAssembly* volayer = new TGeoVolumeAssembly(layerName);
 
-  
-  Double_t stGlobalZ0 = fStationZ0[istn] + fMuchZ1; //z position of station center (midplane) [cm]
-  Double_t stDz = ((fNlayers[istn] - 1) * fLayersDz[istn] + fSupportLz[istn]+2*fActiveLzSector[istn])/2.;
+
+  Double_t stGlobalZ0 =
+    fStationZ0[istn] + fMuchZ1;  //z position of station center (midplane) [cm]
+  Double_t stDz = ((fNlayers[istn] - 1) * fLayersDz[istn] + fSupportLz[istn]
+                   + 2 * fActiveLzSector[istn])
+                  / 2.;
   Double_t stGlobalZ2 = stGlobalZ0 + stDz;
   Double_t stGlobalZ1 = stGlobalZ0 - stDz;
 
   Double_t rmin = stGlobalZ1 * fAcceptanceTanMin;
   Double_t rmax = stGlobalZ2 * fAcceptanceTanMax;
-   
-  
-  Double_t layerZ0 = (ily - (fNlayers[istn] - 1) / 2.) * fLayersDz[istn];
+
+
+  Double_t layerZ0       = (ily - (fNlayers[istn] - 1) / 2.) * fLayersDz[istn];
   Double_t layerGlobalZ0 = layerZ0 + stGlobalZ0;
-  Double_t SupportDz = fSupportLz[istn]/2.;
-  Double_t RpcGlassDz = fActiveLzSector[istn]/2. + fRpcGlassDz[istn]/2.;
-  Double_t driftDz = RpcGlassDz + fRpcGlassDz[istn]/2 + fDriftDz/2.;
-  Double_t g10Dz = driftDz + fDriftDz/2. + fG10Dz/2.;
-  Double_t moduleZ = fSupportLz[istn]/2. + fActiveLzSector[istn]/2. + fRpcGlassDz[istn] + fDriftDz + fG10Dz ; 
-  Double_t RpcGlassZIn = moduleZ - RpcGlassDz;
+  Double_t SupportDz     = fSupportLz[istn] / 2.;
+  Double_t RpcGlassDz    = fActiveLzSector[istn] / 2. + fRpcGlassDz[istn] / 2.;
+  Double_t driftDz       = RpcGlassDz + fRpcGlassDz[istn] / 2 + fDriftDz / 2.;
+  Double_t g10Dz         = driftDz + fDriftDz / 2. + fG10Dz / 2.;
+  Double_t moduleZ       = fSupportLz[istn] / 2. + fActiveLzSector[istn] / 2.
+                     + fRpcGlassDz[istn] + fDriftDz + fG10Dz;
+  Double_t RpcGlassZIn  = moduleZ - RpcGlassDz;
   Double_t RpcGlassZOut = moduleZ + RpcGlassDz;
-  Double_t driftZIn = moduleZ - driftDz; 
-  Double_t driftZOut = moduleZ + driftDz; 
-  Double_t g10ZIn = moduleZ - g10Dz;
-  Double_t g10ZOut = moduleZ + g10Dz;
- 
+  Double_t driftZIn     = moduleZ - driftDz;
+  Double_t driftZOut    = moduleZ + driftDz;
+  Double_t g10ZIn       = moduleZ - g10Dz;
+  Double_t g10ZOut      = moduleZ + g10Dz;
 
-  Double_t phi0 = TMath::Pi()/fNSectorsPerLayer[istn]; // azimuthal half widh of each module
-  Double_t ymin = rmin+fSpacerR;
-  Double_t ymax = rmax;    
-  
+
+  Double_t phi0 =
+    TMath::Pi()
+    / fNSectorsPerLayer[istn];  // azimuthal half widh of each module
+  Double_t ymin = rmin + fSpacerR;
+  Double_t ymax = rmax;
+
   //define the dimensions of the trapezoidal module
-  Double_t dy  = (ymax-ymin)/2.; //y (length)
-  Double_t dx1 = ymin*TMath::Tan(phi0)+fOverlapR/TMath::Cos(phi0);  // large x
-  Double_t dx2 = ymax*TMath::Tan(phi0)+fOverlapR/TMath::Cos(phi0); // small x
-  Double_t dz  = fActiveLzSector[istn]/2.; // thickness
-  
-//define the spacer dimensions      
-  Double_t tg = (dx2-dx1)/2/dy;
-  Double_t dd1 = fSpacerPhi*tg;
-  Double_t dd2 = fSpacerPhi*sqrt(1+tg*tg);
-  Double_t sdx1 = dx1+dd2-dd1-0.1; // 0.1 cm to avoid overlaps
-  Double_t sdx2 = dx2+dd2+dd1; 
-  Double_t sdy  = dy+fSpacerR;
- // Double_t sdz  = dz-0.1;
-  Double_t sdz = fFrameLzSector[istn]/2.;
-  
+  Double_t dy = (ymax - ymin) / 2.;  //y (length)
+  Double_t dx1 =
+    ymin * TMath::Tan(phi0) + fOverlapR / TMath::Cos(phi0);  // large x
+  Double_t dx2 =
+    ymax * TMath::Tan(phi0) + fOverlapR / TMath::Cos(phi0);  // small x
+  Double_t dz = fActiveLzSector[istn] / 2.;                  // thickness
+
+  //define the spacer dimensions
+  Double_t tg   = (dx2 - dx1) / 2 / dy;
+  Double_t dd1  = fSpacerPhi * tg;
+  Double_t dd2  = fSpacerPhi * sqrt(1 + tg * tg);
+  Double_t sdx1 = dx1 + dd2 - dd1 - 0.1;  // 0.1 cm to avoid overlaps
+  Double_t sdx2 = dx2 + dd2 + dd1;
+  Double_t sdy  = dy + fSpacerR;
+  // Double_t sdz  = dz-0.1;
+  Double_t sdz = fFrameLzSector[istn] / 2.;
+
   //define Additional material as realistic GEM module
-  Double_t dz_sD =fDriftDz/2.; //35 micron copper Drift 
-  Double_t dz_sG=fG10Dz/2.; // 3mm G10
+  Double_t dz_sD = fDriftDz / 2.;  //35 micron copper Drift
+  Double_t dz_sG = fG10Dz / 2.;    // 3mm G10
 
 
-
-  infoFile<<"   "<<istn+1<<"\t      "<<ily+1<<"\t\t"<<layerGlobalZ0<<"\t"<<fNSectorsPerLayer[istn]<<"\t"<<fActiveLzSector[istn]<<endl;
+  infoFile << "   " << istn + 1 << "\t      " << ily + 1 << "\t\t"
+           << layerGlobalZ0 << "\t" << fNSectorsPerLayer[istn] << "\t"
+           << fActiveLzSector[istn] << endl;
 
 
   // Aluminum Plate (Cooling + Support)
-  TString supportAlName  = Form("shStation%02iSupportAl",istn+1);
-  TGeoTube* shSupportAl = new TGeoTube(supportAlName,rmin,rmax,SupportDz);
-  
-  TString  supportName1  = Form("muchstation%02ilayer%isupportAl",istn+1,ily+1);
+  TString supportAlName = Form("shStation%02iSupportAl", istn + 1);
+  TGeoTube* shSupportAl = new TGeoTube(supportAlName, rmin, rmax, SupportDz);
+
+  TString supportName1 =
+    Form("muchstation%02ilayer%isupportAl", istn + 1, ily + 1);
   TGeoMedium* coolMat = gGeoMan->GetMedium(Al);
-  
-  TGeoVolume* voSupport1 = new TGeoVolume(supportName1,shSupportAl,coolMat);
+
+  TGeoVolume* voSupport1 = new TGeoVolume(supportName1, shSupportAl, coolMat);
   voSupport1->SetLineColor(kCyan);
-  
-  TGeoTranslation *support_trans1 = new TGeoTranslation("supportName1", 0,0,layerGlobalZ0);
-  volayer->AddNode(voSupport1,0,support_trans1);
-  
+
+  TGeoTranslation* support_trans1 =
+    new TGeoTranslation("supportName1", 0, 0, layerGlobalZ0);
+  volayer->AddNode(voSupport1, 0, support_trans1);
+
   Double_t pos[9];
 
-  Int_t iMod =0;
-  for (Int_t iSide=0;iSide<2;iSide++){
-    
-    // Now start adding the GEM modules  
-    for (Int_t iModule=0; iModule<fNSectorsPerLayer[istn]; iModule++){ 
-      
-      Double_t phi  = 2 * phi0 * (iModule + 0.5);  // add 0.5 to not overlap with y-axis for left-right layer separation
-      Bool_t isBack = iModule%2; 
-      Char_t cside  = (isBack==1) ? 'b' : 'f'; 
-      
-      // correct the x, y positions
-      pos[0] = -(ymin+dy)*sin(phi);
-      pos[1] =  (ymin+dy)*cos(phi);
-      
-      // different z positions for odd/even modules
-      pos[2] = (isBack ? 1 : -1)*moduleZ + layerGlobalZ0;
-      pos[3] = (isBack ? 1 : -1)*RpcGlassZIn +layerGlobalZ0;
-      pos[4] = (isBack ? 1 : -1)*RpcGlassZOut +layerGlobalZ0;
-      pos[5] = (isBack ? 1 : -1)*driftZIn + layerGlobalZ0;
-      pos[6] = (isBack ? 1 : -1)*driftZOut + layerGlobalZ0;
-      pos[7] = (isBack ? 1 : -1)*g10ZIn + layerGlobalZ0;
-      pos[8] = (isBack ? 1 : -1)*g10ZOut + layerGlobalZ0;
-      
-      //cout<<pos[2]<<"  "<<pos[3]<<"  "<<pos[4]<<"  "<<pos[5]<<"   "<<pos[6]<<"   "<<pos[7]<<"     "<<pos[8]<<endl;
-      if(iSide!=isBack)continue;
-      if(iModule!=0)iMod =iModule/2;
-      
-      
-      TGeoMedium* argon = gGeoMan->GetMedium(activemedium); // active medium
-      TGeoMedium* noryl = gGeoMan->GetMedium(spacermedium); // spacer medium
-      TGeoMedium* SpacerRpc = gGeoMan->GetMedium(Al); // spacer medium
-      TGeoMedium* copperplate = gGeoMan->GetMedium(copper); // copper Drift medium
-      TGeoMedium* g10plate = gGeoMan->GetMedium(g10); // G10 medium
-      TGeoMedium*  RPCglassmat = gGeoMan->GetMedium(RPCg); // RPC Glass
-      TGeoMedium*  RPCgasmedium = gGeoMan->GetMedium(RPCm); // RPC Gas
+  Int_t iMod = 0;
+  for (Int_t iSide = 0; iSide < 2; iSide++) {
 
-      
-      
+    // Now start adding the GEM modules
+    for (Int_t iModule = 0; iModule < fNSectorsPerLayer[istn]; iModule++) {
+
+      Double_t phi =
+        2 * phi0
+        * (iModule
+           + 0.5);  // add 0.5 to not overlap with y-axis for left-right layer separation
+      Bool_t isBack = iModule % 2;
+      Char_t cside  = (isBack == 1) ? 'b' : 'f';
+
+      // correct the x, y positions
+      pos[0] = -(ymin + dy) * sin(phi);
+      pos[1] = (ymin + dy) * cos(phi);
+
+      // different z positions for odd/even modules
+      pos[2] = (isBack ? 1 : -1) * moduleZ + layerGlobalZ0;
+      pos[3] = (isBack ? 1 : -1) * RpcGlassZIn + layerGlobalZ0;
+      pos[4] = (isBack ? 1 : -1) * RpcGlassZOut + layerGlobalZ0;
+      pos[5] = (isBack ? 1 : -1) * driftZIn + layerGlobalZ0;
+      pos[6] = (isBack ? 1 : -1) * driftZOut + layerGlobalZ0;
+      pos[7] = (isBack ? 1 : -1) * g10ZIn + layerGlobalZ0;
+      pos[8] = (isBack ? 1 : -1) * g10ZOut + layerGlobalZ0;
+
+      //cout<<pos[2]<<"  "<<pos[3]<<"  "<<pos[4]<<"  "<<pos[5]<<"   "<<pos[6]<<"   "<<pos[7]<<"     "<<pos[8]<<endl;
+      if (iSide != isBack) continue;
+      if (iModule != 0) iMod = iModule / 2;
+
+
+      TGeoMedium* argon = gGeoMan->GetMedium(activemedium);  // active medium
+      TGeoMedium* noryl = gGeoMan->GetMedium(spacermedium);  // spacer medium
+      TGeoMedium* SpacerRpc = gGeoMan->GetMedium(Al);        // spacer medium
+      TGeoMedium* copperplate =
+        gGeoMan->GetMedium(copper);  // copper Drift medium
+      TGeoMedium* g10plate     = gGeoMan->GetMedium(g10);   // G10 medium
+      TGeoMedium* RPCglassmat  = gGeoMan->GetMedium(RPCg);  // RPC Glass
+      TGeoMedium* RPCgasmedium = gGeoMan->GetMedium(RPCm);  // RPC Gas
+
+
       // Define and place the trapezoidal GEM module in X-Y plane
-      TGeoVolume* voActive, *voRPCback, *voRPCFront;
-      TGeoTrap* shape = new TGeoTrap(sdz,0,0,dy,dx1,dx2,0,dy,dx1,dx2,0);
-      shape->SetName(Form("shStation%02iLayer%i%cModule%03iFrameNoHole", istn, ily, cside, iModule));
-      
-      TGeoTrap* shapeActive = new TGeoTrap(dz,0,0,dy,dx1,dx2,0,dy,dx1,dx2,0);
-      shapeActive->SetName(Form("shStation%02iLayer%i%cModule%03iActiveNoHole", istn, ily, cside, iModule));
-      
-      if(istn<2){   //GEM
-	TString activeName = Form("muchstation%02ilayer%i%cactive%03igasArgon",istn+1,ily+1,cside,iMod+1);
-	voActive = new TGeoVolume(activeName,shapeActive,argon);
-	voActive->SetLineColor(kGreen);
+      TGeoVolume *voActive, *voRPCback, *voRPCFront;
+      TGeoTrap* shape =
+        new TGeoTrap(sdz, 0, 0, dy, dx1, dx2, 0, dy, dx1, dx2, 0);
+      shape->SetName(Form("shStation%02iLayer%i%cModule%03iFrameNoHole",
+                          istn,
+                          ily,
+                          cside,
+                          iModule));
+
+      TGeoTrap* shapeActive =
+        new TGeoTrap(dz, 0, 0, dy, dx1, dx2, 0, dy, dx1, dx2, 0);
+      shapeActive->SetName(Form("shStation%02iLayer%i%cModule%03iActiveNoHole",
+                                istn,
+                                ily,
+                                cside,
+                                iModule));
+
+      if (istn < 2) {  //GEM
+        TString activeName = Form("muchstation%02ilayer%i%cactive%03igasArgon",
+                                  istn + 1,
+                                  ily + 1,
+                                  cside,
+                                  iMod + 1);
+        voActive           = new TGeoVolume(activeName, shapeActive, argon);
+        voActive->SetLineColor(kGreen);
+      } else {  //RPC Active
+        TString activeName = Form("muchstation%02ilayer%i%cactive%03irpcgas",
+                                  istn + 1,
+                                  ily + 1,
+                                  cside,
+                                  iMod + 1);
+        voActive = new TGeoVolume(activeName, shapeActive, RPCgasmedium);
+        voActive->SetLineColor(kRed);
+
+        //RPC Glass Front
+        TGeoTrap* shapeRPCfront =
+          new TGeoTrap(dz, 0, 0, dy, dx1, dx2, 0, dy, dx1, dx2, 0);
+        shapeRPCfront->SetName(
+          Form("shStation%02iLayer%i%cModule%03iNoHoleFront",
+               istn,
+               ily,
+               cside,
+               iModule));
+        TString NameFront = Form("muchstation%02ilayer%i%c%03irpcglassFront",
+                                 istn + 1,
+                                 ily + 1,
+                                 cside,
+                                 iMod + 1);
+        voRPCFront = new TGeoVolume(NameFront, shapeRPCfront, RPCglassmat);
+        voRPCFront->SetLineColor(kRed);
+
+        //RPC Glass Back
+        TGeoTrap* shapeRPCback =
+          new TGeoTrap(dz, 0, 0, dy, dx1, dx2, 0, dy, dx1, dx2, 0);
+        shapeRPCback->SetName(Form("shStation%02iLayer%i%cModule%03iNoHoleback",
+                                   istn,
+                                   ily,
+                                   cside,
+                                   iModule));
+        TString Nameback = Form("muchstation%02ilayer%i%c%03irpcglassback",
+                                istn + 1,
+                                ily + 1,
+                                cside,
+                                iMod + 1);
+        voRPCback        = new TGeoVolume(Nameback, shapeRPCback, RPCglassmat);
+        voRPCback->SetLineColor(kRed);
       }
-      else
-	{//RPC Active 
-	  TString activeName = Form("muchstation%02ilayer%i%cactive%03irpcgas",istn+1,ily+1,cside,iMod+1);
-	  voActive = new TGeoVolume(activeName,shapeActive,RPCgasmedium);
-	  voActive->SetLineColor(kRed);
-	  
-	  //RPC Glass Front
-	  TGeoTrap* shapeRPCfront = new TGeoTrap(dz,0,0,dy,dx1,dx2,0,dy,dx1,dx2,0);
-	  shapeRPCfront->SetName(Form("shStation%02iLayer%i%cModule%03iNoHoleFront", istn, ily, cside, iModule));
-	  TString NameFront = Form("muchstation%02ilayer%i%c%03irpcglassFront",istn+1,ily+1,cside,iMod+1);
-	  voRPCFront = new TGeoVolume(NameFront,shapeRPCfront,RPCglassmat);
-	  voRPCFront->SetLineColor(kRed);
-	  
-	  //RPC Glass Back
-	  TGeoTrap* shapeRPCback = new TGeoTrap(dz,0,0,dy,dx1,dx2,0,dy,dx1,dx2,0);
-	  shapeRPCback->SetName(Form("shStation%02iLayer%i%cModule%03iNoHoleback", istn, ily, cside, iModule));
-	  TString Nameback = Form("muchstation%02ilayer%i%c%03irpcglassback",istn+1,ily+1,cside,iMod+1);
-	  voRPCback = new TGeoVolume(Nameback,shapeRPCback,RPCglassmat);
-	  voRPCback->SetLineColor(kRed);
-	}
-      
-      
+
+
       TGeoTrap *Drift[2], *G10[2], *Al;
       TString DriftName[2], G10Name[2], AlName;
       TGeoVolume *voDrift[2], *voG10[2];
-      
-      for(int iPos =0; iPos<2; iPos++){
-	Char_t cpos  = (iPos==0) ? 'i' : 'o'; 
-	// Define and place copper drift & G10
-	if(istn<2){//GEM
-	  Drift[iPos] = new TGeoTrap(dz_sD,0,phi,sdy,sdx1,sdx2,0,sdy,sdx1,sdx2,0);
-	  G10[iPos] = new TGeoTrap(dz_sG,0,phi,sdy,sdx1,sdx2,0,sdy,sdx1,sdx2,0);
-	}else
-	  {//RPC
-	    Drift[iPos] = new TGeoTrap(dz_sD,0,phi,dy,dx1,dx2,0,dy,dx1,dx2,0);
-	    G10[iPos] = new TGeoTrap(dz_sG,0,phi,dy,dx1,dx2,0,dy,dx1,dx2,0);
-	  }
-	Drift[iPos]->SetName(Form("shStation%02iLayer%i%cModule%03i%cDrift", istn, ily, cside, iModule,cpos));
-	DriftName[iPos] = Form("muchstation%02ilayer%i%cside%03i%ccopperDrift",istn+1,ily+1,cside,iMod+1,cpos);
-	voDrift[iPos] = new TGeoVolume(DriftName[iPos],Drift[iPos],copperplate);
-	voDrift[iPos]->SetLineColor(kRed);
-	
-	G10[iPos]->SetName(Form("shStation%02iLayer%i%cModule%03i%cG10", istn, ily, cside, iModule,cpos));
-	G10Name[iPos] = Form("muchstation%02ilayer%i%cside%03i%cG10",istn+1,ily+1,cside,iMod+1,cpos);
-	voG10[iPos] = new TGeoVolume(G10Name[iPos],G10[iPos],g10plate);
-	voG10[iPos]->SetLineColor(28);
-      }
-      
-      
-      
-      // Define the trapezoidal spacers 
-      TGeoTrap* shapeFrame = new TGeoTrap(sdz,0,0,sdy,sdx1,sdx2,0,sdy,sdx1,sdx2,0);
-      shapeFrame->SetName(Form("shStation%02iLayer%i%cModule%03iFullFrameNoHole", istn, ily, cside, iModule));
-      TString expression;
-      if(istn<2){//GEM 
-        expression = Form("shStation%02iLayer%i%cModule%03iFullFrameNoHole-shStation%02iLayer%i%cModule%03iActiveNoHole", istn, ily, cside, iModule, istn, ily, cside, iModule);
-      }else
-        {//RPC
-	  expression = Form("shStation%02iLayer%i%cModule%03iFullFrameNoHole-shStation%02iLayer%i%cModule%03iFrameNoHole", istn, ily, cside, iModule, istn, ily, cside, iModule);
+
+      for (int iPos = 0; iPos < 2; iPos++) {
+        Char_t cpos = (iPos == 0) ? 'i' : 'o';
+        // Define and place copper drift & G10
+        if (istn < 2) {  //GEM
+          Drift[iPos] =
+            new TGeoTrap(dz_sD, 0, phi, sdy, sdx1, sdx2, 0, sdy, sdx1, sdx2, 0);
+          G10[iPos] =
+            new TGeoTrap(dz_sG, 0, phi, sdy, sdx1, sdx2, 0, sdy, sdx1, sdx2, 0);
+        } else {  //RPC
+          Drift[iPos] =
+            new TGeoTrap(dz_sD, 0, phi, dy, dx1, dx2, 0, dy, dx1, dx2, 0);
+          G10[iPos] =
+            new TGeoTrap(dz_sG, 0, phi, dy, dx1, dx2, 0, dy, dx1, dx2, 0);
         }
-      TGeoCompositeShape* shFrame = new TGeoCompositeShape(Form("shStation%02iLayer%i%cModule%03iFinalFrameNoHole", istn, ily, cside, iModule), expression);
-      TString frameName = Form("muchstation%02ilayer%i%cframe%03i",istn+1,ily+1,cside,iMod+1);
+        Drift[iPos]->SetName(Form("shStation%02iLayer%i%cModule%03i%cDrift",
+                                  istn,
+                                  ily,
+                                  cside,
+                                  iModule,
+                                  cpos));
+        DriftName[iPos] = Form("muchstation%02ilayer%i%cside%03i%ccopperDrift",
+                               istn + 1,
+                               ily + 1,
+                               cside,
+                               iMod + 1,
+                               cpos);
+        voDrift[iPos] =
+          new TGeoVolume(DriftName[iPos], Drift[iPos], copperplate);
+        voDrift[iPos]->SetLineColor(kRed);
+
+        G10[iPos]->SetName(Form("shStation%02iLayer%i%cModule%03i%cG10",
+                                istn,
+                                ily,
+                                cside,
+                                iModule,
+                                cpos));
+        G10Name[iPos] = Form("muchstation%02ilayer%i%cside%03i%cG10",
+                             istn + 1,
+                             ily + 1,
+                             cside,
+                             iMod + 1,
+                             cpos);
+        voG10[iPos]   = new TGeoVolume(G10Name[iPos], G10[iPos], g10plate);
+        voG10[iPos]->SetLineColor(28);
+      }
+
+
+      // Define the trapezoidal spacers
+      TGeoTrap* shapeFrame =
+        new TGeoTrap(sdz, 0, 0, sdy, sdx1, sdx2, 0, sdy, sdx1, sdx2, 0);
+      shapeFrame->SetName(
+        Form("shStation%02iLayer%i%cModule%03iFullFrameNoHole",
+             istn,
+             ily,
+             cside,
+             iModule));
+      TString expression;
+      if (istn < 2) {  //GEM
+        expression = Form("shStation%02iLayer%i%cModule%03iFullFrameNoHole-"
+                          "shStation%02iLayer%i%cModule%03iActiveNoHole",
+                          istn,
+                          ily,
+                          cside,
+                          iModule,
+                          istn,
+                          ily,
+                          cside,
+                          iModule);
+      } else {  //RPC
+        expression = Form("shStation%02iLayer%i%cModule%03iFullFrameNoHole-"
+                          "shStation%02iLayer%i%cModule%03iFrameNoHole",
+                          istn,
+                          ily,
+                          cside,
+                          iModule,
+                          istn,
+                          ily,
+                          cside,
+                          iModule);
+      }
+      TGeoCompositeShape* shFrame = new TGeoCompositeShape(
+        Form("shStation%02iLayer%i%cModule%03iFinalFrameNoHole",
+             istn,
+             ily,
+             cside,
+             iModule),
+        expression);
+      TString frameName = Form("muchstation%02ilayer%i%cframe%03i",
+                               istn + 1,
+                               ily + 1,
+                               cside,
+                               iMod + 1);
       TGeoVolume* voFrame;
-      if(istn<2){
-	voFrame = new TGeoVolume(frameName,shFrame,noryl);  // add a name to the frame
-      }else
-	{
-	  voFrame = new TGeoVolume(frameName,shFrame,SpacerRpc);  // add a name to the frame
-	}
+      if (istn < 2) {
+        voFrame =
+          new TGeoVolume(frameName, shFrame, noryl);  // add a name to the frame
+      } else {
+        voFrame = new TGeoVolume(
+          frameName, shFrame, SpacerRpc);  // add a name to the frame
+      }
       voFrame->SetLineColor(kMagenta);
-      
-      
-      // Calculate the phi angle of the sector where it has to be placed 
-      Double_t angle = 180. / TMath::Pi() * phi;  // convert angle phi from rad to deg
-      
-      
-      TGeoRotation *r2 = new TGeoRotation("r2");
-      //rotate in the vertical plane (per to z axis) with angle 
+
+
+      // Calculate the phi angle of the sector where it has to be placed
+      Double_t angle =
+        180. / TMath::Pi() * phi;  // convert angle phi from rad to deg
+
+
+      TGeoRotation* r2 = new TGeoRotation("r2");
+      //rotate in the vertical plane (per to z axis) with angle
       r2->RotateZ(angle);
 
-      
-      TGeoTranslation *trans[10];
-      TGeoHMatrix *incline_mod[10]; 
-      
-      for(int i=0; i<8; i++){
-	trans[i] = new TGeoTranslation("",pos[0],pos[1],pos[i+2]);
-	
-	incline_mod[i] = new TGeoHMatrix("");
-	(*incline_mod[i]) =  (*trans[i]) * (*r2);  
+
+      TGeoTranslation* trans[10];
+      TGeoHMatrix* incline_mod[10];
+
+      for (int i = 0; i < 8; i++) {
+        trans[i] = new TGeoTranslation("", pos[0], pos[1], pos[i + 2]);
+
+        incline_mod[i]    = new TGeoHMatrix("");
+        (*incline_mod[i]) = (*trans[i]) * (*r2);
       }
-      
-      volayer->AddNode(voActive, iMod, incline_mod[0]); // add active volume 
-      volayer->AddNode(voFrame, iMod, incline_mod[0]);  // add spacer
-      if(istn>1){
-	volayer->AddNode(voRPCFront, iMod, incline_mod[1]); //Rpc Glass In
-	volayer->AddNode(voRPCback, iMod, incline_mod[2]); //Rpc Glass Out 
+
+      volayer->AddNode(voActive, iMod, incline_mod[0]);  // add active volume
+      volayer->AddNode(voFrame, iMod, incline_mod[0]);   // add spacer
+      if (istn > 1) {
+        volayer->AddNode(voRPCFront, iMod, incline_mod[1]);  //Rpc Glass In
+        volayer->AddNode(voRPCback, iMod, incline_mod[2]);   //Rpc Glass Out
       }
-      
-      volayer->AddNode(voDrift[0], iMod, incline_mod[3]); //Drift In
-      volayer->AddNode(voDrift[1], iMod, incline_mod[4]); //Drift Out
-      volayer->AddNode(voG10[0], iMod, incline_mod[5]); //G10 In
-      volayer->AddNode(voG10[1], iMod, incline_mod[6]); //G10 Out
-      
-      
+
+      volayer->AddNode(voDrift[0], iMod, incline_mod[3]);  //Drift In
+      volayer->AddNode(voDrift[1], iMod, incline_mod[4]);  //Drift Out
+      volayer->AddNode(voG10[0], iMod, incline_mod[5]);    //G10 In
+      volayer->AddNode(voG10[1], iMod, incline_mod[6]);    //G10 Out
     }
-  }	     
-  
+  }
+
   return volayer;
 }

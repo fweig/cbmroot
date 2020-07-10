@@ -1,12 +1,11 @@
 #include "CbmPsdHit.h"
 
-#include "gtest/gtest.h"
 #include "gtest/gtest-spi.h"
+#include "gtest/gtest.h"
 
 #include "comparePsdHit.h"
 
-TEST(_GTestCbmPsdHit , CheckDefaultConstructor)
-{
+TEST(_GTestCbmPsdHit, CheckDefaultConstructor) {
   // Create object
   CbmPsdHit test;
 
@@ -15,11 +14,9 @@ TEST(_GTestCbmPsdHit , CheckDefaultConstructor)
   CbmPsdHit* test1 = new CbmPsdHit();
 
   comparePsdHitDataMembers(*test1, -1, -1.);
-
 }
 
-TEST(_GTestCbmPsdHit , CheckStandardConstructor)
-{
+TEST(_GTestCbmPsdHit, CheckStandardConstructor) {
   // Create object
   CbmPsdHit test(5, 6.7);
 
@@ -30,17 +27,16 @@ TEST(_GTestCbmPsdHit , CheckStandardConstructor)
   comparePsdHitDataMembers(*test1, 2, 8.9);
 }
 
-TEST(_GTestCbmPsdHit , CheckCopyConstructor)
-{
+TEST(_GTestCbmPsdHit, CheckCopyConstructor) {
   // Create object
   CbmPsdHit test(5, 6.7);
 
   comparePsdHitDataMembers(test, 5, 6.7);
 
   // Create object by copy constructing
-  // test should be equal to test2 and 
+  // test should be equal to test2 and
   // test should not be changed
-  CbmPsdHit test2{test};
+  CbmPsdHit test2 {test};
 
   comparePsdHitDataMembers(test2, 5, 6.7);
 
@@ -48,17 +44,16 @@ TEST(_GTestCbmPsdHit , CheckCopyConstructor)
   comparePsdHitDataMembers(test, 5, 6.7);
 }
 
-TEST(_GTestCbmPsdHit , CheckAssignmentOperator)
-{
+TEST(_GTestCbmPsdHit, CheckAssignmentOperator) {
   // Create object
   CbmPsdHit test(5, 6.7);
 
   comparePsdHitDataMembers(test, 5, 6.7);
 
   // Create object by copy constructing
-  // test should be equal to test2 and 
+  // test should be equal to test2 and
   // test should not be changed
-  CbmPsdHit test2{};
+  CbmPsdHit test2 {};
   test2 = test;
 
   comparePsdHitDataMembers(test2, 5, 6.7);
@@ -67,17 +62,16 @@ TEST(_GTestCbmPsdHit , CheckAssignmentOperator)
   comparePsdHitDataMembers(test, 5, 6.7);
 }
 
-TEST(_GTestCbmPsdHit , CheckMoveConstructor)
-{
+TEST(_GTestCbmPsdHit, CheckMoveConstructor) {
   // Create object
   CbmPsdHit test(5, 6.7);
 
   comparePsdHitDataMembers(test, 5, 6.7);
 
   // Create object by copy constructing
-  // test should be equal to test2 and 
+  // test should be equal to test2 and
   // test should not be changed
-  CbmPsdHit test2{std::move(test)};
+  CbmPsdHit test2 {std::move(test)};
 
   comparePsdHitDataMembers(test2, 5, 6.7);
 
@@ -86,17 +80,16 @@ TEST(_GTestCbmPsdHit , CheckMoveConstructor)
   comparePsdHitDataMembers(test, 5, 6.7);
 }
 
-TEST(_GTestCbmPsdHit , CheckAssignmentMoveConstructor)
-{
+TEST(_GTestCbmPsdHit, CheckAssignmentMoveConstructor) {
   // Create object
   CbmPsdHit test(5, 6.7);
 
   comparePsdHitDataMembers(test, 5, 6.7);
 
   // Create object by copy constructing
-  // test should be equal to test2 and 
+  // test should be equal to test2 and
   // test should not be changed
-  CbmPsdHit test2{};
+  CbmPsdHit test2 {};
   test2 = std::move(test);
 
   comparePsdHitDataMembers(test2, 5, 6.7);
@@ -107,8 +100,7 @@ TEST(_GTestCbmPsdHit , CheckAssignmentMoveConstructor)
 }
 
 
-TEST(_GTestCbmPsdHit , CheckPrint)
-{
+TEST(_GTestCbmPsdHit, CheckPrint) {
   // Create object
   CbmPsdHit test(5, 6.7);
 

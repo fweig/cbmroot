@@ -5,33 +5,29 @@
 
 #include "CbmMvdDigi.h"
 
-#include <FairLogger.h>   // for LOG, Logger
+#include <FairLogger.h>  // for LOG, Logger
 
-#include <TMath.h>        // for Power
-#include <TObject.h>      // for TObject
+#include <TMath.h>    // for Power
+#include <TObject.h>  // for TObject
 
 // -----   Default constructor   -------------------------------------------
 CbmMvdDigi::CbmMvdDigi()
-  : TObject(),
-    CbmMvdDetectorId(), 	
-    fCharge(0.),
-    fChannelNrX(0),
-    fChannelNrY(0),
-    fTrackID(-1),
-    fPointID(0),
-    fPixelSizeX(0.),
-    fPixelSizeY(0.),
-    fDetectorId(0),
-    fChannelNr(0),
-    fDigiTime(0.),
-    fFrameNumber(0),
-    fRefId(-1),
-    fDigiFlag(-1)
-{  
- 
-}
+  : TObject()
+  , CbmMvdDetectorId()
+  , fCharge(0.)
+  , fChannelNrX(0)
+  , fChannelNrY(0)
+  , fTrackID(-1)
+  , fPointID(0)
+  , fPixelSizeX(0.)
+  , fPixelSizeY(0.)
+  , fDetectorId(0)
+  , fChannelNr(0)
+  , fDigiTime(0.)
+  , fFrameNumber(0)
+  , fRefId(-1)
+  , fDigiFlag(-1) {}
 // -------------------------------------------------------------------------
-
 
 
 /*
@@ -74,35 +70,40 @@ CbmMvdDigi::CbmMvdDigi(Int_t iStation, Int_t iChannelNrX, Int_t iChannelNrY, Flo
 */
 
 // -----   Constructor with parameters  --> used only due to error TODO include correct version -----------------------------------
-CbmMvdDigi::CbmMvdDigi(Int_t iStation, Int_t iChannelNrX, Int_t iChannelNrY, Float_t charge,
-                       Float_t pixelSizeX, Float_t pixelSizeY, Float_t time, Int_t frame)
- : TObject(),
-   CbmMvdDetectorId(), 	
-   fCharge(charge),
-   fChannelNrX(iChannelNrX),
-   fChannelNrY(iChannelNrY),
-   fTrackID(0),
-   fPointID(0),
-   fPixelSizeX(pixelSizeX),
-   fPixelSizeY(pixelSizeY),
-   fDetectorId(DetectorId(iStation)),
-   fChannelNr(0),
-   fDigiTime(time),
-   fFrameNumber(frame),
-   fRefId(-1),
-   fDigiFlag(-1)
-{
-    // Check range for station
-    if ( ! ( iStation >= 0 && iStation <= 600 ) ) {
-	LOG(fatal) << "Illegal station number " << iStation;
-    }
-    
+CbmMvdDigi::CbmMvdDigi(Int_t iStation,
+                       Int_t iChannelNrX,
+                       Int_t iChannelNrY,
+                       Float_t charge,
+                       Float_t pixelSizeX,
+                       Float_t pixelSizeY,
+                       Float_t time,
+                       Int_t frame)
+  : TObject()
+  , CbmMvdDetectorId()
+  , fCharge(charge)
+  , fChannelNrX(iChannelNrX)
+  , fChannelNrY(iChannelNrY)
+  , fTrackID(0)
+  , fPointID(0)
+  , fPixelSizeX(pixelSizeX)
+  , fPixelSizeY(pixelSizeY)
+  , fDetectorId(DetectorId(iStation))
+  , fChannelNr(0)
+  , fDigiTime(time)
+  , fFrameNumber(frame)
+  , fRefId(-1)
+  , fDigiFlag(-1) {
+  // Check range for station
+  if (!(iStation >= 0 && iStation <= 600)) {
+    LOG(fatal) << "Illegal station number " << iStation;
+  }
 }
 // -------------------------------------------------------------------------
 
-Int_t CbmMvdDigi::GetAdcCharge(Int_t adcDynamic, Int_t adcOffset, Int_t adcBits)
-{
-    /**
+Int_t CbmMvdDigi::GetAdcCharge(Int_t adcDynamic,
+                               Int_t adcOffset,
+                               Int_t adcBits) {
+  /**
      adcOffset  is the minimum value of the analogue signal
      adcDynamic is the difference between the max and min values of the full scale measurement range
      adcBits    is the number of bits used to encode the analogue signal
@@ -114,66 +115,48 @@ Int_t CbmMvdDigi::GetAdcCharge(Int_t adcDynamic, Int_t adcOffset, Int_t adcBits)
 
      */
 
-     Int_t adcCharge;
+  Int_t adcCharge;
 
-    if(fCharge<adcOffset){return 0;};
-
-   
-    Double_t stepSize;
-//    Int_t adcMax = adcOffset + adcDynamic;
-
-    stepSize  = adcDynamic/TMath::Power(2,adcBits);
-    adcCharge = int( (fCharge-adcOffset)/stepSize );
+  if (fCharge < adcOffset) { return 0; };
 
 
-    if ( adcCharge>int( TMath::Power(2,adcBits)-1 ) )
-    {
-	adcCharge = (int)TMath::Power(2,adcBits)-1;
+  Double_t stepSize;
+  //    Int_t adcMax = adcOffset + adcDynamic;
 
-    }
+  stepSize  = adcDynamic / TMath::Power(2, adcBits);
+  adcCharge = int((fCharge - adcOffset) / stepSize);
 
-    if(gDebug>0){
-	LOG(debug) << "CbmMvdDigi::GetAdcCharge() "<< adcCharge;
-    }
 
-    return adcCharge;
+  if (adcCharge > int(TMath::Power(2, adcBits) - 1)) {
+    adcCharge = (int) TMath::Power(2, adcBits) - 1;
+  }
 
+  if (gDebug > 0) { LOG(debug) << "CbmMvdDigi::GetAdcCharge() " << adcCharge; }
+
+  return adcCharge;
 }
 
 
 // -------------------------------------------------------------------------
-Int_t CbmMvdDigi::GetPixelX(){
- return  fChannelNrX;
-
-}
+Int_t CbmMvdDigi::GetPixelX() { return fChannelNrX; }
 // -------------------------------------------------------------------------
-Int_t CbmMvdDigi::GetPixelY(){
-  return  fChannelNrY;
-
-}
+Int_t CbmMvdDigi::GetPixelY() { return fChannelNrY; }
 // -------------------------------------------------------------------------
 
-     /** Unique channel address  **/
-  Int_t    CbmMvdDigi::GetAddress() const{
- return  0;
-
-}
+/** Unique channel address  **/
+Int_t CbmMvdDigi::GetAddress() const { return 0; }
 
 // -------------------------------------------------------------------------
 
-  /** Absolute time [ns]  **/
-  Double_t CbmMvdDigi::GetTime() const{
- return  fDigiTime;
+/** Absolute time [ns]  **/
+Double_t CbmMvdDigi::GetTime() const { return fDigiTime; }
 
-}
- 
-  
+
 // -------------------------------------------------------------------------
-
 
 
 // -----   Destructor   ----------------------------------------------------
-CbmMvdDigi::~CbmMvdDigi(){}
+CbmMvdDigi::~CbmMvdDigi() {}
 // -------------------------------------------------------------------------
 
 ClassImp(CbmMvdDigi)

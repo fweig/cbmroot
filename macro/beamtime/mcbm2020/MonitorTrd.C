@@ -15,9 +15,9 @@
 
 #include <vector>
 
-#include <TString.h>
 #include <TList.h>
 #include <TObjString.h>
+#include <TString.h>
 
 #include "FairLogger.h"
 #include "FairRootFileSink.h"
@@ -28,21 +28,24 @@
 // #include "CbmMcbm2018UnpackerTaskTrdR.h"
 // #include "CbmTbEvent.h"
 
-FairRunOnline *run = nullptr;
+FairRunOnline* run = nullptr;
 
-void MonitorTrd(TString inFile = "", TString sHostname = "localhost",
-                Int_t iServerHttpPort = 8080, Int_t iServerRefreshRate = 100,
-                UInt_t uRunId = 0, UInt_t nrEvents=0,
-                TString outDir="data", TString inDir="")
-{
+void MonitorTrd(TString inFile           = "",
+                TString sHostname        = "localhost",
+                Int_t iServerHttpPort    = 8080,
+                Int_t iServerRefreshRate = 100,
+                UInt_t uRunId            = 0,
+                UInt_t nrEvents          = 0,
+                TString outDir           = "data",
+                TString inDir            = "") {
   // --- Specify number of events to be produced.
   // --- -1 means run until the end of the input file.
-  Int_t nEvents=-1;
+  Int_t nEvents = -1;
 
   // inFile = "/home/praisig/CBM/software/testEnv/data/desy2019/r0070_20190831_0159_0000.tsa"; // FIXME: This is just for testing smarter solution needed! One can probably iterate over files via SetInputDir and the code behind it.
   // inFile = "/home/dspicker/desy2019/r0004_20200220_1951_0000.tsa";
-  if( "" == inFile && "" == sHostname )
-    inFile = "/local/dschmidt/tsa/pulser07.tsa";    // long pulser file
+  if ("" == inFile && "" == sHostname)
+    inFile = "/local/dschmidt/tsa/pulser07.tsa";  // long pulser file
   // outDir = "/home/praisig/CBM/software/testEnv/data/desy2019/data/";
   //outDir = "output";
 
@@ -63,7 +66,7 @@ void MonitorTrd(TString inFile = "", TString sHostname = "localhost",
   //gLogger->SetLogVerbosityLevel("low");
 
   // --- Define parameter files
-  TList *parFileList = new TList();
+  TList* parFileList = new TList();
 
   //  adjust to required parameter files
   // TString paramDirTrd = srcDir + "/parameters/trd/trd_ikfLabOneSpadic";
@@ -74,9 +77,9 @@ void MonitorTrd(TString inFile = "", TString sHostname = "localhost",
   // parFileList->Add(new TObjString(Form("%s.gas.par", paramDirTrd.Data())));
   // parFileList->Add(new TObjString(Form("%s.gain.par", paramDirTrd.Data())));
 
-  for (auto parFileVecIt : *parFileList)
-  {
-    LOG(debug) << Form("TrdParams - %s - added to parameter file list\n", parFileVecIt->GetName());
+  for (auto parFileVecIt : *parFileList) {
+    LOG(debug) << Form("TrdParams - %s - added to parameter file list\n",
+                       parFileVecIt->GetName());
   }
 
 
@@ -90,67 +93,71 @@ void MonitorTrd(TString inFile = "", TString sHostname = "localhost",
   std::cout << std::endl;
   std::cout << ">>> MonitorTrd: Initialising..." << std::endl;
 
-  CbmMcbm2018UnpackerTaskTrdR * unpacker_trdR = new CbmMcbm2018UnpackerTaskTrdR();
+  CbmMcbm2018UnpackerTaskTrdR* unpacker_trdR =
+    new CbmMcbm2018UnpackerTaskTrdR();
 
   unpacker_trdR->SetMonitorMode();
   unpacker_trdR->SetDebugMonitorMode();
 
-//  unpacker_trdR ->SetIgnoreOverlapMs(); /// Default is kTRUE
+  //  unpacker_trdR ->SetIgnoreOverlapMs(); /// Default is kTRUE
 
-  unpacker_trdR ->SetWriteOutput( kFALSE );
-/*
+  unpacker_trdR->SetWriteOutput(kFALSE);
+  /*
   unpacker_trdR->SetDebugWriteOutput(); // write rawMessage vector to file
 */
-//     // TODO: check trdR task for further needed settings
+  //     // TODO: check trdR task for further needed settings
 
-//     // Use this switch to pass run specific settings to the unpacker task
-//   switch( uRunId )
-//   {
-//     /*
-//      case 159:
-//      {
+  //     // Use this switch to pass run specific settings to the unpacker task
+  //   switch( uRunId )
+  //   {
+  //     /*
+  //      case 159:
+  //      {
 
-//         break;
-//      } // 159
-//     */
+  //         break;
+  //      } // 159
+  //     */
 
-//      default:
-//         break;
-//   } // switch( uRunId )
+  //      default:
+  //         break;
+  //   } // switch( uRunId )
 
-//   // --- Source task
+  //   // --- Source task
   CbmMcbm2018Source* source = new CbmMcbm2018Source();
 
-  if( 0 < uRunId || "" != inFile )
-  {
+  if (0 < uRunId || "" != inFile) {
     source->SetFileName(inFile);
-  } // if( "" != inFile )
-      else
-      {
-         source->SetHostName( sHostname );
-         source->SetSubscriberHwm( 10 );
-      } // else of if( "" != inFile )
+  }  // if( "" != inFile )
+  else {
+    source->SetHostName(sHostname);
+    source->SetSubscriberHwm(10);
+  }  // else of if( "" != inFile )
 
   // source->SetInputDir(inDir);
-  source->AddUnpacker(unpacker_trdR,  0x40, ECbmModuleId::kTrd);// Trd flibId (0x40) as at desy2019. kTrd defined in CbmDefs.h
+  source->AddUnpacker(
+    unpacker_trdR,
+    0x40,
+    ECbmModuleId::
+      kTrd);  // Trd flibId (0x40) as at desy2019. kTrd defined in CbmDefs.h
 
-  source->SetSubscriberHwm( 1000 );
+  source->SetSubscriberHwm(1000);
 
   // --- Event header
-/*
+  /*
   FairEventHeader* event = new CbmTbEvent();
   event->SetRunId(uRunId);
 */
   // --- RootFileSink
   // --- Open next outputfile after 4GB
-//  FairRootFileSink* sink = new FairRootFileSink(outFile);
+  //  FairRootFileSink* sink = new FairRootFileSink(outFile);
   // sink->GetOutTree()->SetMaxTreeSize(4294967295LL);
 
   // --- Run
   run = new FairRunOnline(source);
-//  run->SetSink(sink);
-//  run->SetEventHeader(event);
-  run->ActivateHttpServer( iServerRefreshRate, iServerHttpPort ); // refresh each 100 events
+  //  run->SetSink(sink);
+  //  run->SetEventHeader(event);
+  run->ActivateHttpServer(iServerRefreshRate,
+                          iServerHttpPort);  // refresh each 100 events
   /// To avoid the server sucking all Histos from gROOT when no output file is used
   /// ===> Need to explicitely add the canvases to the server in the task!
   run->GetHttpServer()->GetSniffer()->SetScanGlobalDir(kFALSE);
@@ -158,7 +165,7 @@ void MonitorTrd(TString inFile = "", TString sHostname = "localhost",
 
 
   // -----   Runtime database   ---------------------------------------------
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
+  FairRuntimeDb* rtdb       = run->GetRuntimeDb();
   FairParAsciiFileIo* parIn = new FairParAsciiFileIo();
   parIn->open(parFileList, "in");
   rtdb->setFirstInput(parIn);
@@ -169,29 +176,29 @@ void MonitorTrd(TString inFile = "", TString sHostname = "localhost",
   TStopwatch timer;
   timer.Start();
   std::cout << ">>> MonitorTrd: Starting run..." << std::endl;
-  if ( 0 == nrEvents) {
-    run->Run(nEvents, 0); // run until end of input file
+  if (0 == nrEvents) {
+    run->Run(nEvents, 0);  // run until end of input file
   } else {
-    run->Run(0, nrEvents); // process  N Events
+    run->Run(0, nrEvents);  // process  N Events
   }
 
   run->Finish();
 
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
+            << std::endl;
 
   // --- End-of-run info
   Double_t rtime = timer.RealTime();
   Double_t ctime = timer.CpuTime();
   std::cout << std::endl << std::endl;
   std::cout << ">>> MonitorTrd: Macro finished successfully." << std::endl;
-  std::cout << ">>> MonitorTrd: Real time " << rtime << " s, CPU time "
-	    << ctime << " s" << std::endl;
+  std::cout << ">>> MonitorTrd: Real time " << rtime << " s, CPU time " << ctime
+            << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests
   std::cout << " Test passed" << std::endl;
   std::cout << " All ok " << std::endl;
-
 }

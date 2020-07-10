@@ -22,23 +22,21 @@
 class TClonesArray;
 
 
-class CbmRichMerger : public TObject
-{
+class CbmRichMerger : public TObject {
 
- public:
-
+public:
   /** Default constructor **/
- CbmRichMerger() : TObject(), fVerbose(0) { };
+  CbmRichMerger() : TObject(), fVerbose(0) {};
 
 
   /** Destructor **/
-  virtual ~CbmRichMerger() { };
+  virtual ~CbmRichMerger() {};
 
 
   /** Virtual method Init. If needed, to be implemented in the
    ** concrete class. Else no action.
    **/
-  virtual void Init() { };
+  virtual void Init() {};
 
 
   /** Abstract method DoMerge. To be implemented in the derived classes.
@@ -50,8 +48,7 @@ class CbmRichMerger : public TObject
    **
    *@value Number of rings attached to the global tracks
    **/
-  virtual Int_t DoMerge(TClonesArray* glbTracks,
-			TClonesArray* richRings) = 0;
+  virtual Int_t DoMerge(TClonesArray* glbTracks, TClonesArray* richRings) = 0;
 
 
   /** Set verbosity 
@@ -60,14 +57,11 @@ class CbmRichMerger : public TObject
   void SetVerbose(Int_t verbose) { fVerbose = verbose; };
 
 
-
- private:
-
-  Int_t fVerbose;         // Verbosity level
+private:
+  Int_t fVerbose;  // Verbosity level
 
 
-  ClassDef(CbmRichMerger,1);
-
+  ClassDef(CbmRichMerger, 1);
 };
 
 #endif

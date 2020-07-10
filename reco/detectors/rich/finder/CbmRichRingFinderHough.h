@@ -31,71 +31,66 @@ using std::vector;
 * \author Semen Lebedev
 * \date 2008
 **/
-class CbmRichRingFinderHough : public CbmRichRingFinder
-{
+class CbmRichRingFinderHough : public CbmRichRingFinder {
 protected:
-	Int_t fNEvent; // event number
-	Int_t fRingCount; // number of found rings
+  Int_t fNEvent;     // event number
+  Int_t fRingCount;  // number of found rings
 
 // choose between serial and SIMD implementation of the ring finder
 #ifdef HOUGH_SERIAL
-	CbmRichRingFinderHoughImpl *fHTImpl;
+  CbmRichRingFinderHoughImpl* fHTImpl;
 #endif
 
 #ifdef HOUGH_SIMD
-	CbmRichRingFinderHoughSimd *fHTImpl;
+  CbmRichRingFinderHoughSimd* fHTImpl;
 #endif
 
 public:
-
-	/**
+  /**
     * \brief Standard constructor.
     */
-  	CbmRichRingFinderHough ();
+  CbmRichRingFinderHough();
 
-   /**
+  /**
     * \brief Destructor.
     */
-	virtual ~CbmRichRingFinderHough();
+  virtual ~CbmRichRingFinderHough();
 
-	/**
+  /**
 	 * \brief Inherited from CbmRichRingFinder.
 	 */
-	virtual void Init();
+  virtual void Init();
 
-	/**
+  /**
 	 * \brief Inherited from CbmRichRingFinder.
 	 */
-	virtual Int_t DoFind(
-	      TClonesArray* rHitArray,
-	 		TClonesArray* rProjArray,
-		   TClonesArray* rRingArray);
+  virtual Int_t DoFind(TClonesArray* rHitArray,
+                       TClonesArray* rProjArray,
+                       TClonesArray* rRingArray);
 
-	void SetUseAnnSelect(bool use) {fUseAnnSelect = use;}
+  void SetUseAnnSelect(bool use) { fUseAnnSelect = use; }
 
 private:
-
-	bool fUseAnnSelect;
-	/**
+  bool fUseAnnSelect;
+  /**
 	 * \brief Add found rings to the output TClonesArray.
 	 * \param[out] rRingArray Output array of CbmRichRing.
 	 * \param[in] rHitArray  Array of CbmRichHit.
 	 * \param[in] rings Found rings.
 	 */
-	void AddRingsToOutputArray(
-	      TClonesArray *rRingArray,
-	      TClonesArray *rHitArray,
-	      const vector<CbmRichRingLight*>& rings);
+  void AddRingsToOutputArray(TClonesArray* rRingArray,
+                             TClonesArray* rHitArray,
+                             const vector<CbmRichRingLight*>& rings);
 
-	/**
+  /**
 	 * \brief Copy constructor.
 	 */
-	CbmRichRingFinderHough(const CbmRichRingFinderHough&);
+  CbmRichRingFinderHough(const CbmRichRingFinderHough&);
 
-   /**
+  /**
     * \brief Assignment operator.
     */
-	CbmRichRingFinderHough& operator=(const CbmRichRingFinderHough&);
+  CbmRichRingFinderHough& operator=(const CbmRichRingFinderHough&);
 };
 
 #endif

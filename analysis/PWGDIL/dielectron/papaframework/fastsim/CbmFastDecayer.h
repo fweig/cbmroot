@@ -2,10 +2,10 @@
 #define CBMFASTDECAYER_H
 
 
-#include "TVirtualMCDecayer.h"
 #include "FairGenerator.h"
+#include "TVirtualMCDecayer.h"
 
-#include <vector>       // std::vector
+#include <vector>  // std::vector
 
 class FairPrimaryGenerator;
 class TParticle;
@@ -13,8 +13,7 @@ class CbmStack;
 
 class CbmFastDecayer : public FairGenerator {
 
-  public:
-
+public:
   /** Default constructor without arguments should not be used. **/
   CbmFastDecayer();
 
@@ -34,25 +33,24 @@ class CbmFastDecayer : public FairGenerator {
   Bool_t ReadEvent(FairPrimaryGenerator* primGen);
 
   virtual Bool_t Init();
-  TVirtualMCDecayer* GetDecayer()                      { return fDecayer; }
-  void  SetExternalDecayer(TVirtualMCDecayer *decayer) { fDecayer=decayer;}
+  TVirtualMCDecayer* GetDecayer() { return fDecayer; }
+  void SetExternalDecayer(TVirtualMCDecayer* decayer) { fDecayer = decayer; }
 
-  void SetParticlesForDecay(char const *pdgs="");
-  void SetParticlesForGeant(char const *pdgs="");
+  void SetParticlesForDecay(char const* pdgs = "");
+  void SetParticlesForGeant(char const* pdgs = "");
 
- protected:
-
-  private:
-  CbmStack    *fStack   = NULL;	              //!pointer to CbmStack
-  TVirtualMCDecayer  *fDecayer = NULL;        //!pointer to decayer
+protected:
+private:
+  CbmStack* fStack            = NULL;  //!pointer to CbmStack
+  TVirtualMCDecayer* fDecayer = NULL;  //!pointer to decayer
 
   std::vector<int> fDecayPdgCodes;
   std::vector<int> fGeantPdgCodes;
 
-  CbmFastDecayer(const CbmFastDecayer &EvtGen);
-  CbmFastDecayer & operator=(const CbmFastDecayer & rhs);
+  CbmFastDecayer(const CbmFastDecayer& EvtGen);
+  CbmFastDecayer& operator=(const CbmFastDecayer& rhs);
 
-  ClassDef(CbmFastDecayer,0) //CbmGenerator interface to EvtGen
+  ClassDef(CbmFastDecayer, 0)  //CbmGenerator interface to EvtGen
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////

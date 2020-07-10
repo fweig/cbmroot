@@ -5,8 +5,8 @@ void GetParticleName(int iParticle = 0) {
   TStopwatch timer;
   timer.Start();
 
- 
-    // ----  Load libraries   -------------------------------------------------
+
+  // ----  Load libraries   -------------------------------------------------
   gROOT->LoadMacro("$VMCWORKDIR/gconfig/basiclibs.C");
   basiclibs();
   gSystem->Load("libGeoBase");
@@ -25,7 +25,7 @@ void GetParticleName(int iParticle = 0) {
   gSystem->Load("libGlobal");
   gSystem->Load("libKF");
   gSystem->Load("libL1");
-  gSystem->Load("libMinuit2"); // Needs for rich ellipse fitter
+  gSystem->Load("libMinuit2");  // Needs for rich ellipse fitter
   // ------------------------------------------------------------------------
 
 

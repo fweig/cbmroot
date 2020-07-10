@@ -8,26 +8,25 @@
  * \brief Creates study report for LMVM analysis.
  *
  */
-class CbmAnaDielectronStudyReportAll : public CbmStudyReport
-{
+class CbmAnaDielectronStudyReportAll : public CbmStudyReport {
 public:
-   /**
+  /**
     * \brief Constructor.
     */
-   CbmAnaDielectronStudyReportAll();
+  CbmAnaDielectronStudyReportAll();
 
-   /**
+  /**
     * \brief Destructor.
     */
-   virtual ~CbmAnaDielectronStudyReportAll();
+  virtual ~CbmAnaDielectronStudyReportAll();
 
 protected:
-    /**
+  /**
     * \brief Inherited from CbmLitStudyReport.
     */
-   void Create();
+  void Create();
 
-   /**
+  /**
    * \brief Inherited from CbmLitStudyReport.
    */
   void Draw();

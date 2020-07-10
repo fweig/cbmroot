@@ -20,20 +20,17 @@
 #define CBMFINDPRIMARYVERTEX_H 1
 
 
-#include "TStopwatch.h"
-#include "FairTask.h"
 #include "CbmVertex.h"
+#include "FairTask.h"
+#include "TStopwatch.h"
 
 class TClonesArray;
 class CbmPrimaryVertexFinder;
 
 
+class CbmFindPrimaryVertex : public FairTask {
 
-class CbmFindPrimaryVertex : public FairTask
-{
-
- public:
-
+public:
   /** Default constructor **/
   CbmFindPrimaryVertex();
 
@@ -42,7 +39,7 @@ class CbmFindPrimaryVertex : public FairTask
    *@param pvFinder  Pointer to concrete vertex finder
    **/
   CbmFindPrimaryVertex(CbmPrimaryVertexFinder* pvFinder);
-  
+
 
   /** Constructor with name and title
    **
@@ -50,8 +47,9 @@ class CbmFindPrimaryVertex : public FairTask
    *@param title     Title of task
    *@param pvFinder  Pointer to vertex finder concrete object
    **/
-  CbmFindPrimaryVertex(const char* name, const char* title,
-		       CbmPrimaryVertexFinder* pvFinder);
+  CbmFindPrimaryVertex(const char* name,
+                       const char* title,
+                       CbmPrimaryVertexFinder* pvFinder);
 
 
   /** Destructor **/
@@ -70,23 +68,19 @@ class CbmFindPrimaryVertex : public FairTask
   virtual void Finish();
 
 
- private:
-
-  TStopwatch              fTimer;
+private:
+  TStopwatch fTimer;
   CbmPrimaryVertexFinder* fFinder;
-  TClonesArray*           fTracks;
-  CbmVertex*              fPrimVert;
+  TClonesArray* fTracks;
+  CbmVertex* fPrimVert;
 
-  Int_t     fNofEvents;       ///< Total number of events processed
-  Double_t  fTimeTot;         ///< Total execution time [s]
+  Int_t fNofEvents;   ///< Total number of events processed
+  Double_t fTimeTot;  ///< Total execution time [s]
 
   CbmFindPrimaryVertex(const CbmFindPrimaryVertex&);
   CbmFindPrimaryVertex& operator=(const CbmFindPrimaryVertex&);
 
-  ClassDef(CbmFindPrimaryVertex,1);
-
+  ClassDef(CbmFindPrimaryVertex, 1);
 };
 
 #endif
-
-

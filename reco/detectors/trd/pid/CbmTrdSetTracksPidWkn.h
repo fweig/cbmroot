@@ -33,11 +33,9 @@
 
 class TClonesArray;
 
-class CbmTrdSetTracksPidWkn : public FairTask
-{
+class CbmTrdSetTracksPidWkn : public FairTask {
 
- public:
-
+public:
   /** Default constructor **/
   CbmTrdSetTracksPidWkn();
 
@@ -66,45 +64,38 @@ class CbmTrdSetTracksPidWkn : public FairTask
   virtual void Finish();
 
 
-  
-  void SetType(const std::string& SISType) { fSISType = SISType;}
-  void SetSIS100() { fSISType="sis100"; }
-  void SetSIS300() { fSISType="sis300"; }
-  
+  void SetType(const std::string& SISType) { fSISType = SISType; }
+  void SetSIS100() { fSISType = "sis100"; }
+  void SetSIS300() { fSISType = "sis300"; }
+
   void SetParameters();
   /** SetParContainers **/
   virtual void SetParContainers();
 
- private:
- 
- // Parametrs
-  int fnSet, //  number of the layers with TR
-      fdegWkn, //  statistics degree
-	  fNofTracks;
-  float  
-         fk1,
-         fwkn0,
-         fEmp, // energy loss transformation parameter
-         fXi,  // energy loss transformation parameter
-		 fWmin,
-		 fWmax,
-		 fDiff;
+private:
+  // Parametrs
+  int fnSet,  //  number of the layers with TR
+    fdegWkn,  //  statistics degree
+    fNofTracks;
+  float fk1, fwkn0,
+    fEmp,  // energy loss transformation parameter
+    fXi,   // energy loss transformation parameter
+    fWmin, fWmax, fDiff;
 
 
-   // Settings
-   // Set-up
-   // "sis100" - TRD with 10 layers
-   // "sis300" - TRD with 4 layers
+  // Settings
+  // Set-up
+  // "sis100" - TRD with 10 layers
+  // "sis300" - TRD with 4 layers
   std::string fSISType;
- 
+
   TClonesArray* fTrackArray;   // Input array of TRD tracks
   TClonesArray* fTrdHitArray;  // Input array of TRD Hits
 
   CbmTrdSetTracksPidWkn(const CbmTrdSetTracksPidWkn&);
   CbmTrdSetTracksPidWkn& operator=(const CbmTrdSetTracksPidWkn&);
 
-  ClassDef(CbmTrdSetTracksPidWkn,1);
-
+  ClassDef(CbmTrdSetTracksPidWkn, 1);
 };
 
 #endif

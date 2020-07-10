@@ -22,23 +22,21 @@
 class CbmTrdTrack;
 
 
-class CbmTrdTrackFitter : public TObject
-{
+class CbmTrdTrackFitter : public TObject {
 
- public:
-
+public:
   /** Default constructor **/
-  CbmTrdTrackFitter() { };
+  CbmTrdTrackFitter() {};
 
 
   /** Destructor **/
-  virtual ~CbmTrdTrackFitter() { };
+  virtual ~CbmTrdTrackFitter() {};
 
 
   /** Virtual method Init. If needed, to be implemented in the
    ** concrete class. Else no action.
    **/
-  virtual void Init() { };
+  virtual void Init() {};
 
 
   /** Abstract method DoFit. To be implemented in the concrete class.
@@ -50,8 +48,7 @@ class CbmTrdTrackFitter : public TObject
   virtual Int_t DoFit(CbmTrdTrack* pTrack) = 0;
 
 
-  ClassDef(CbmTrdTrackFitter,1);
-
+  ClassDef(CbmTrdTrackFitter, 1);
 };
 
 #endif

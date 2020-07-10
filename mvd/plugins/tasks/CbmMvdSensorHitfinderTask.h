@@ -4,82 +4,83 @@
 // -------------------------------------------------------------------------
 
 
-
 #ifndef CBMMVDSENSORHITFINDERTASK_H
 #define CBMMVDSENSORHITFINDERTASK_H 1
 
-#include "FairTask.h"
-#include "CbmMvdPoint.h"
-#include "CbmMvdDigi.h"
 #include "CbmMvdCluster.h"
+#include "CbmMvdDigi.h"
+#include "CbmMvdPoint.h"
+#include "FairTask.h"
 
 #include "TArrayS.h"
+#include "TCanvas.h"
 #include "TObjArray.h"
 #include "TRefArray.h"
-#include "TCanvas.h"
 
 
+#include "TH1.h"
+#include "TH1F.h"
+#include "TH2.h"
+#include "TMath.h"
 #include "TRandom3.h"
 #include "TStopwatch.h"
 #include "TString.h"
-#include "TMath.h"
-#include "TH1.h"
-#include "TH2.h"
-#include "TH1F.h"
-#include <vector>
 #include <list>
 #include <map>
 #include <utility>
+#include <vector>
 
-#include "CbmMvdSensorTask.h"
 #include "CbmMvdSensor.h"
+#include "CbmMvdSensorTask.h"
 
 class TClonesArray;
 class TRandom3;
 class CbmMvdPileupManager;
 
-class CbmMvdSensorHitfinderTask : public CbmMvdSensorTask
-{
+class CbmMvdSensorHitfinderTask : public CbmMvdSensorTask {
 
 public:
+  /** Default constructor **/
+  CbmMvdSensorHitfinderTask();
 
-    /** Default constructor **/
-    CbmMvdSensorHitfinderTask();
 
-
-    /** Standard constructor
+  /** Standard constructor
      *@param name  Task name
      *@param mode  0 = no fake digis generation, 1 = generate fake digis
      **/
-    CbmMvdSensorHitfinderTask(Int_t mode);
+  CbmMvdSensorHitfinderTask(Int_t mode);
 
 
+  /** Destructor **/
+  virtual ~CbmMvdSensorHitfinderTask();
 
-    /** Destructor **/
-    virtual ~CbmMvdSensorHitfinderTask();
 
+  /** Task execution **/
+  void ExecChain();
+  void Exec();
 
-    /** Task execution **/
-    void ExecChain();
-    void Exec();
-    
-    /** Intialisation **/
-    void InitTask(CbmMvdSensor* mySensor);
+  /** Intialisation **/
+  void InitTask(CbmMvdSensor* mySensor);
 
-    void SetInputCluster(CbmMvdCluster* cluster)
-	{
-		new((*fInputBuffer)[fInputBuffer->GetEntriesFast()]) CbmMvdCluster(*((CbmMvdCluster*)cluster)); 
-		inputSet = kTRUE;
-	};
+  void SetInputCluster(CbmMvdCluster* cluster) {
+    new ((*fInputBuffer)[fInputBuffer->GetEntriesFast()])
+      CbmMvdCluster(*((CbmMvdCluster*) cluster));
+    inputSet = kTRUE;
+  };
 
-    /** Accessors **/
-    //Double_t GetSigmaX()        const { return fSigmaX;     };
+  /** Accessors **/
+  //Double_t GetSigmaX()        const { return fSigmaX;     };
 
-    /** Modifiers **/
-    void SetSigmaNoise(Double_t sigmaNoise, Bool_t addNoise)  { fSigmaNoise = sigmaNoise; fAddNoise=addNoise; }
-    void SetSeedThreshold(Double_t seedCharge)       { fSeedThreshold  = seedCharge; }
-    void SetNeighbourThreshold(Double_t neighCharge) { fNeighThreshold = neighCharge;}
-    /**
+  /** Modifiers **/
+  void SetSigmaNoise(Double_t sigmaNoise, Bool_t addNoise) {
+    fSigmaNoise = sigmaNoise;
+    fAddNoise   = addNoise;
+  }
+  void SetSeedThreshold(Double_t seedCharge) { fSeedThreshold = seedCharge; }
+  void SetNeighbourThreshold(Double_t neighCharge) {
+    fNeighThreshold = neighCharge;
+  }
+  /**
 
         proba(%) to have 1 fake hit  | Number of sigmas (of noise distr)
        ------------------------------|-----------------------------------
@@ -93,135 +94,130 @@ public:
     */
 
 
-    void SetAdcDynamic( Int_t adcDynamic ) { fAdcDynamic = adcDynamic; };
-    void SetAdcOffset(Int_t adcOffset )    { fAdcOffset  = adcOffset;  };
-    void SetAdcBits(Int_t adcBits)         { fAdcBits    = adcBits;    };
-    Int_t GetAdcCharge(Float_t charge);
+  void SetAdcDynamic(Int_t adcDynamic) { fAdcDynamic = adcDynamic; };
+  void SetAdcOffset(Int_t adcOffset) { fAdcOffset = adcOffset; };
+  void SetAdcBits(Int_t adcBits) { fAdcBits = adcBits; };
+  Int_t GetAdcCharge(Float_t charge);
 
-    /**Detector Spatial resolution.
+  /**Detector Spatial resolution.
     Correlated with number of adc bits*/
-    void SetHitPosErrX( Double_t errorX ) { fHitPosErrX = errorX; }
-    void SetHitPosErrY( Double_t errorY ) { fHitPosErrY = errorY; }
-    void SetHitPosErrZ( Double_t errorZ ) { fHitPosErrZ = errorZ; }
-    void ShowDebugHistograms(){fShowDebugHistos=kTRUE;}
+  void SetHitPosErrX(Double_t errorX) { fHitPosErrX = errorX; }
+  void SetHitPosErrY(Double_t errorY) { fHitPosErrY = errorY; }
+  void SetHitPosErrZ(Double_t errorZ) { fHitPosErrZ = errorZ; }
+  void ShowDebugHistograms() { fShowDebugHistos = kTRUE; }
 
 
-    //protected:
+  //protected:
 protected:
+  // ----------   Protected data members  ------------------------------------
 
-    // ----------   Protected data members  ------------------------------------
+  Int_t fAdcDynamic;
+  Int_t fAdcOffset;
+  Int_t fAdcBits;
+  Int_t fAdcSteps;
+  Float_t fAdcStepSize;
 
-    Int_t fAdcDynamic;
-    Int_t fAdcOffset;
-    Int_t fAdcBits;
-    Int_t fAdcSteps;
-    Float_t fAdcStepSize;
+  TClonesArray* fClusters;
 
-    TClonesArray* fClusters;
-   
 
-    TObjArray* fPixelChargeHistos;
-    TObjArray* fTotalChargeInNpixelsArray;
-    
-    // Debug Histograms
-    TH1F* fResolutionHistoX;
-    TH1F* fResolutionHistoY;
-    TH1F* fResolutionHistoCleanX;
-    TH1F* fResolutionHistoCleanY;
-    TH1F* fResolutionHistoMergedX;
-    TH1F* fResolutionHistoMergedY;
-    TH2F* fBadHitHisto;
-    Float_t* fGausArray;
-    Int_t fGausArrayIt;
-    Int_t fGausArrayLimit;
+  TObjArray* fPixelChargeHistos;
+  TObjArray* fTotalChargeInNpixelsArray;
 
-    std::map<std::pair<Int_t, Int_t>, Int_t> fDigiMap;
-    std::map<std::pair<Int_t, Int_t>, Int_t>::iterator fDigiMapIt;
-    
-    
-    TH2F* h;
-    TH2F* h3;
-    TH1F* h1;
-    TH1F* h2;
-    TH1F* Qseed;
-    TH1F* fFullClusterHisto;
+  // Debug Histograms
+  TH1F* fResolutionHistoX;
+  TH1F* fResolutionHistoY;
+  TH1F* fResolutionHistoCleanX;
+  TH1F* fResolutionHistoCleanY;
+  TH1F* fResolutionHistoMergedX;
+  TH1F* fResolutionHistoMergedY;
+  TH2F* fBadHitHisto;
+  Float_t* fGausArray;
+  Int_t fGausArrayIt;
+  Int_t fGausArrayLimit;
 
-    TCanvas* c1;
+  std::map<std::pair<Int_t, Int_t>, Int_t> fDigiMap;
+  std::map<std::pair<Int_t, Int_t>, Int_t>::iterator fDigiMapIt;
+
+
+  TH2F* h;
+  TH2F* h3;
+  TH1F* h1;
+  TH1F* h2;
+  TH1F* Qseed;
+  TH1F* fFullClusterHisto;
+
+  TCanvas* c1;
 
 private:
-
-    Int_t fNEvent;
-    Int_t fMode;
-    Int_t fCounter;
-    Double_t fSigmaNoise;
-    Double_t fSeedThreshold;
-    Double_t fNeighThreshold;
-    Bool_t fShowDebugHistos;
-    Bool_t fUseMCInfo;
-    Bool_t inputSet;
-
-
-    Double_t fLayerRadius;
-    Double_t fLayerRadiusInner;
-    Double_t fLayerPosZ;
-    Double_t fHitPosX;
-    Double_t fHitPosY;
-    Double_t fHitPosZ;
-    Double_t fHitPosErrX;
-    Double_t fHitPosErrY;
-    Double_t fHitPosErrZ;
-
-    TString  fBranchName;
-    
-    Int_t fDigisInCluster;
-    static const Short_t fChargeArraySize=7; //must be an odd number >3, recommended numbers= 5 or 7
-
-    Bool_t fAddNoise;
-
-    /** Map of MC Volume Id to MvdStation **/
-            //!
+  Int_t fNEvent;
+  Int_t fMode;
+  Int_t fCounter;
+  Double_t fSigmaNoise;
+  Double_t fSeedThreshold;
+  Double_t fNeighThreshold;
+  Bool_t fShowDebugHistos;
+  Bool_t fUseMCInfo;
+  Bool_t inputSet;
 
 
+  Double_t fLayerRadius;
+  Double_t fLayerRadiusInner;
+  Double_t fLayerPosZ;
+  Double_t fHitPosX;
+  Double_t fHitPosY;
+  Double_t fHitPosZ;
+  Double_t fHitPosErrX;
+  Double_t fHitPosErrY;
+  Double_t fHitPosErrZ;
+
+  TString fBranchName;
+
+  Int_t fDigisInCluster;
+  static const Short_t fChargeArraySize =
+    7;  //must be an odd number >3, recommended numbers= 5 or 7
+
+  Bool_t fAddNoise;
+
+  /** Map of MC Volume Id to MvdStation **/
+  //!
 
 
-    // -----   Private methods   ---------------------------------------------
+  // -----   Private methods   ---------------------------------------------
 
 
-    /** Clear the arrays **/
-    void Reset();
+  /** Clear the arrays **/
+  void Reset();
 
-    /** Virtual method Finish **/
-    void Finish();
-
-   
+  /** Virtual method Finish **/
+  void Finish();
 
 
-    /** Reinitialisation **/
-    InitStatus ReInit();
+  /** Reinitialisation **/
+  InitStatus ReInit();
 
 
-    /** Get MVD geometry parameters from database
+  /** Get MVD geometry parameters from database
      **@value Number of MVD stations
      **/
-    Int_t GetMvdGeometry();
+  Int_t GetMvdGeometry();
 
 
+  void SetMvdGeometry(Int_t detId);
 
-    void SetMvdGeometry(Int_t detId);
-  
-   // void GenerateFakeDigis(Double_t pixelSizeX, Double_t pixelSizeY);
-   // void CheckForNeighbours(vector<Int_t>* clusterArray, Int_t clusterDigi, TArrayS* pixelUsed);
-    
-    void CreateHit(CbmMvdCluster* clusterArray,  TVector3& pos, TVector3 &dpos);
-    void ComputeCenterOfGravity(CbmMvdCluster* clusterArray, TVector3& pos, TVector3& dpos);
-   // void UpdateDebugHistos(vector<Int_t>* clusterArray, Int_t seedIndexX, Int_t seedIndexY);
-    
+  // void GenerateFakeDigis(Double_t pixelSizeX, Double_t pixelSizeY);
+  // void CheckForNeighbours(vector<Int_t>* clusterArray, Int_t clusterDigi, TArrayS* pixelUsed);
+
+  void CreateHit(CbmMvdCluster* clusterArray, TVector3& pos, TVector3& dpos);
+  void ComputeCenterOfGravity(CbmMvdCluster* clusterArray,
+                              TVector3& pos,
+                              TVector3& dpos);
+  // void UpdateDebugHistos(vector<Int_t>* clusterArray, Int_t seedIndexX, Int_t seedIndexY);
+
 private:
-    CbmMvdSensorHitfinderTask(const CbmMvdSensorHitfinderTask&);
-    CbmMvdSensorHitfinderTask operator=(const CbmMvdSensorHitfinderTask&);
+  CbmMvdSensorHitfinderTask(const CbmMvdSensorHitfinderTask&);
+  CbmMvdSensorHitfinderTask operator=(const CbmMvdSensorHitfinderTask&);
 
-    ClassDef(CbmMvdSensorHitfinderTask,1);
-
+  ClassDef(CbmMvdSensorHitfinderTask, 1);
 };
 
 

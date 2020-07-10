@@ -6,9 +6,9 @@
 #define CBMBUILDEVENTSIDEAL_H 1
 
 
-#include <vector>
-#include <FairTask.h>
 #include "CbmDefs.h"
+#include <FairTask.h>
+#include <vector>
 
 class TClonesArray;
 class CbmDigiManager;
@@ -23,35 +23,32 @@ class CbmDigiManager;
  ** It operates within one time slice; splitting of events between
  ** time slice is not treated.
  **/
-class CbmBuildEventsIdeal: public FairTask {
+class CbmBuildEventsIdeal : public FairTask {
 
-	public:
+public:
+  /** Constructor **/
+  CbmBuildEventsIdeal();
 
-		/** Constructor **/
-		CbmBuildEventsIdeal();
+  /** Destructor **/
+  virtual ~CbmBuildEventsIdeal();
 
-		/** Destructor **/
-		virtual ~CbmBuildEventsIdeal();
-
-		/** Task execution **/
-		virtual void Exec(Option_t* opt);
+  /** Task execution **/
+  virtual void Exec(Option_t* opt);
 
 
-	private:
+private:
+  CbmDigiManager* fDigiMan = nullptr;  //!
+  std::vector<ECbmModuleId> fSystems {};
+  TClonesArray* fEvents = nullptr;  //! Output array (class CbmEvent)
+  Int_t fNofEntries     = 0;        //  Number of processed time slices
 
-		CbmDigiManager* fDigiMan = nullptr;  //!
-		std::vector<ECbmModuleId> fSystems { };
-		TClonesArray* fEvents = nullptr;     //! Output array (class CbmEvent)
-		Int_t fNofEntries = 0;               //  Number of processed time slices
+  /** Task initialisation **/
+  virtual InitStatus Init();
 
-		/** Task initialisation **/
-		virtual InitStatus Init();
+  CbmBuildEventsIdeal(const CbmBuildEventsIdeal&) = delete;
+  CbmBuildEventsIdeal& operator=(const CbmBuildEventsIdeal&) = delete;
 
-		CbmBuildEventsIdeal(const CbmBuildEventsIdeal&) = delete;
-		CbmBuildEventsIdeal& operator=(const CbmBuildEventsIdeal&) = delete;
-
-		ClassDef(CbmBuildEventsIdeal, 3);
-
+  ClassDef(CbmBuildEventsIdeal, 3);
 };
 
 #endif /* CBMBUILDEVENTSIDEAL_H */

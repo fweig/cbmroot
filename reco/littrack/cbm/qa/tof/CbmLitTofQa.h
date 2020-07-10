@@ -8,23 +8,23 @@
 #ifndef CBMLITTOFQA_H_
 #define CBMLITTOFQA_H_
 
-#include "FairTask.h"
 #include "CbmStsKFTrackFitter.h"
-#include <string>
+#include "FairTask.h"
 #include <map>
-#include <vector>
 #include <set>
+#include <string>
+#include <vector>
 
 class CbmHistManager;
 class CbmVertex;
 class FairTrackParam;
 class CbmMCDataArray;
 
-using std::string;
 using std::map;
-using std::vector;
-using std::set;
 using std::pair;
+using std::set;
+using std::string;
+using std::vector;
 
 /**
  * \class CbmLitTofQa
@@ -32,112 +32,115 @@ using std::pair;
  * \author Andrey Lebedev <andrey.lebedev@gsi.de>
  * \date 2013
  */
-class CbmLitTofQa : public FairTask
-{
+class CbmLitTofQa : public FairTask {
 public:
-   /**
+  /**
     * \brief Constructor.
     */
-   CbmLitTofQa();
+  CbmLitTofQa();
 
-   /**
+  /**
     * \brief Destructor.
     */
-   virtual ~CbmLitTofQa();
+  virtual ~CbmLitTofQa();
 
-   /**
+  /**
     * \brief Inherited from FairTask.
     */
-   virtual InitStatus Init();
+  virtual InitStatus Init();
 
-   /**
+  /**
     * \brief Inherited from FairTask.
     */
-   virtual void Exec(
-      Option_t* opt);
+  virtual void Exec(Option_t* opt);
 
-   /**
+  /**
     * \brief Inherited from FairTask.
     */
-   virtual void Finish();
+  virtual void Finish();
 
-   /* Setters */
-   void SetOutputDir(const string& dir) { fOutputDir = dir; }
+  /* Setters */
+  void SetOutputDir(const string& dir) { fOutputDir = dir; }
 
-   /**
+  /**
     * \brief Set momentum range and number of bins for histograms.
     */
-   void SetPRange(Int_t bins, Int_t min, Int_t max) {
-      fPRangeBins = bins;
-      fPRangeMin = min;
-      fPRangeMax = max;
-   }
+  void SetPRange(Int_t bins, Int_t min, Int_t max) {
+    fPRangeBins = bins;
+    fPRangeMin  = min;
+    fPRangeMax  = max;
+  }
 
 private:
-   /**
+  /**
    * \brief Reads data branches.
    */
-   void ReadDataBranches();
+  void ReadDataBranches();
 
-   /**
+  /**
     * \brief Assign default track categories and track acceptance functions.
     */
-   void FillTrackCategoriesAndAcceptanceFunctions();
+  void FillTrackCategoriesAndAcceptanceFunctions();
 
-   /**
+  /**
     * \brief Creates histograms.
     */
-   void CreateHistograms();
+  void CreateHistograms();
 
-   void ProcessMC(Int_t iEvent);
+  void ProcessMC(Int_t iEvent);
 
-   void ProcessGlobalTracks();
+  void ProcessGlobalTracks();
 
-   void ProcessTofHits();
+  void ProcessTofHits();
 
-   void ProcessTofTracks();
+  void ProcessTofTracks();
 
-   void FitHistograms();
+  void FitHistograms();
 
-   CbmLitTofQa(const CbmLitTofQa&);
-   CbmLitTofQa& operator=(const CbmLitTofQa&);
+  CbmLitTofQa(const CbmLitTofQa&);
+  CbmLitTofQa& operator=(const CbmLitTofQa&);
 
-   Bool_t fIsFixedBounds; // if true than fixed bounds are used for histograms
+  Bool_t fIsFixedBounds;  // if true than fixed bounds are used for histograms
 
-   string fOutputDir; // Output directory for images
+  string fOutputDir;  // Output directory for images
 
-   Double_t fPRangeMin; // Min momentum
-   Double_t fPRangeMax; // Max momentum
-   Int_t fPRangeBins; // Number of bins
+  Double_t fPRangeMin;  // Min momentum
+  Double_t fPRangeMax;  // Max momentum
+  Int_t fPRangeBins;    // Number of bins
 
-   CbmHistManager* fHM; // Histogram manager
+  CbmHistManager* fHM;  // Histogram manager
 
-   // Data branches
-   TClonesArray* fGlobalTracks; // CbmGlobalTrack array
-   TClonesArray* fStsTracks; // CbmStsTrack array
-   TClonesArray* fStsTrackMatches; // CbmTrackMatchNew array
-   TClonesArray* fTofHits; // CbmTofHit array
-   CbmMCDataArray* fTofPoints; // CbmTofPoint array
-   TClonesArray* fTofHitsMatches;
-   TClonesArray* fTofTracks; // CbmTofTrack array
-   CbmMCDataArray* fMCTracks; // CbmMCTrack array
+  // Data branches
+  TClonesArray* fGlobalTracks;     // CbmGlobalTrack array
+  TClonesArray* fStsTracks;        // CbmStsTrack array
+  TClonesArray* fStsTrackMatches;  // CbmTrackMatchNew array
+  TClonesArray* fTofHits;          // CbmTofHit array
+  CbmMCDataArray* fTofPoints;      // CbmTofPoint array
+  TClonesArray* fTofHitsMatches;
+  TClonesArray* fTofTracks;   // CbmTofTrack array
+  CbmMCDataArray* fMCTracks;  // CbmMCTrack array
 
-   CbmVertex* fPrimVertex; // Pointer to the primary vertex
-   CbmStsKFTrackFitter fKFFitter; // Pointer to the Kalman Filter Fitter algorithm
+  CbmVertex* fPrimVertex;  // Pointer to the primary vertex
+  CbmStsKFTrackFitter
+    fKFFitter;  // Pointer to the Kalman Filter Fitter algorithm
 
-   vector<string> fTrackCategories; // Vector of track category names
+  vector<string> fTrackCategories;  // Vector of track category names
 
 
-//#ifndef  __ROOTCLING__
-   typedef Bool_t (*LitTrackAcceptanceFunction)(CbmMCDataArray* mcTracks, Int_t eventNo, Int_t index);
-   map<string, LitTrackAcceptanceFunction> fTrackAcceptanceFunctions; // maps track category name to track acceptance function
-//#endif
+  //#ifndef  __ROOTCLING__
+  typedef Bool_t (*LitTrackAcceptanceFunction)(CbmMCDataArray* mcTracks,
+                                               Int_t eventNo,
+                                               Int_t index);
+  map<string, LitTrackAcceptanceFunction>
+    fTrackAcceptanceFunctions;  // maps track category name to track acceptance function
+                                //#endif
 
-   set<pair<Int_t, Int_t> > fMCTrackIdForTofHits; // Set of MC track IDs for all existing TOF hits
-   set<pair<Int_t, Int_t> > fMCTrackIdForTofPoints; // Set of MC track IDs for all existing TOF points
+  set<pair<Int_t, Int_t>>
+    fMCTrackIdForTofHits;  // Set of MC track IDs for all existing TOF hits
+  set<pair<Int_t, Int_t>>
+    fMCTrackIdForTofPoints;  // Set of MC track IDs for all existing TOF points
 
-   ClassDef(CbmLitTofQa, 1)
+  ClassDef(CbmLitTofQa, 1)
 };
 
 #endif /* CBMLITTOFQA_H_ */
-

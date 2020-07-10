@@ -8,9 +8,9 @@
 
 #include <RtypesCore.h>  // for Int_t, UInt_t
 
-#include <sstream>       // for string
+#include <sstream>  // for string
 
-#include "CbmDefs.h"     // for ECbmModuleId
+#include "CbmDefs.h"  // for ECbmModuleId
 
 /** Enumerator for the hierarchy levels of the STS setup **/
 enum EStsElementLevel {
@@ -23,7 +23,6 @@ enum EStsElementLevel {
   kStsSide,
   kStsNofLevels
 };
-
 
 
 /** Namespace CbmStsAddress
@@ -49,9 +48,9 @@ namespace CbmStsAddress {
 
   // --- These values are not to be changed if backward compatibility
   // --- shall be maintained.
-  const Int_t kVersionSize    = 4;   // Bits for version number
-  const Int_t kVersionShift   = 28;  // First bit for version number
-  const Int_t kVersionMask    = (1 << kVersionSize) -1;
+  const Int_t kVersionSize  = 4;   // Bits for version number
+  const Int_t kVersionShift = 28;  // First bit for version number
+  const Int_t kVersionMask  = (1 << kVersionSize) - 1;
 
 
   /** @brief Construct address
@@ -64,13 +63,13 @@ namespace CbmStsAddress {
    ** @param channel      Channel number
    ** @return Unique element address
    **/
-  Int_t GetAddress(UInt_t unit = 0,
-                   UInt_t ladder = 0,
+  Int_t GetAddress(UInt_t unit       = 0,
+                   UInt_t ladder     = 0,
                    UInt_t halfladder = 0,
-                   UInt_t module = 0,
-                   UInt_t sensor = 0,
-                   UInt_t side = 0,
-                   UInt_t version = kCurrentVersion);
+                   UInt_t module     = 0,
+                   UInt_t sensor     = 0,
+                   UInt_t side       = 0,
+                   UInt_t version    = kCurrentVersion);
 
 
   /** @brief Construct address
@@ -131,9 +130,7 @@ namespace CbmStsAddress {
    **/
   std::string ToString(Int_t address);
 
-} // Namespace CbmStsAddress
+}  // Namespace CbmStsAddress
 
 
-#endif // CBMSTSADDRESS_H
-
-
+#endif  // CBMSTSADDRESS_H

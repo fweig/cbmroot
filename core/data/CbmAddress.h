@@ -6,7 +6,7 @@
 #ifndef CBMADDRESS_H
 #define CBMADDRESS_H 1
 
-#include <RtypesCore.h> // for ROOT data classes
+#include <RtypesCore.h>  // for ROOT data classes
 
 /** @class CbmAddress
  ** @brief Base class for interfaces to the unique address
@@ -20,39 +20,34 @@
  ** reserved for the system identifier.
  **
  **/
-class CbmAddress
-{
-  public:
+class CbmAddress {
+public:
+  /** Constructor  **/
+  CbmAddress() {};
 
 
-    /** Constructor  **/
-    CbmAddress() { };
+  /** Destructor  **/
+  virtual ~CbmAddress() {};
 
 
-    /** Destructor  **/
-    virtual ~CbmAddress() { };
-
-
-    /** Number of bits for system Id in the address field
+  /** Number of bits for system Id in the address field
      ** @return Number of bits
      **/
-    static Int_t GetNofSystemBits() { return fgkSystemBits; }
+  static Int_t GetNofSystemBits() { return fgkSystemBits; }
 
 
-    /** Get the system Id from the address
+  /** Get the system Id from the address
      ** @param address  Unique address
      ** @return  systemId
      **/
-    static Int_t GetSystemId(UInt_t address) {
-      return address & ( ( 1 << fgkSystemBits ) - 1 );
-    }
+  static Int_t GetSystemId(UInt_t address) {
+    return address & ((1 << fgkSystemBits) - 1);
+  }
 
 
-  protected:
-
-    /** Number of bits for system Id in the address field  **/
-    static const Int_t fgkSystemBits = 4;
-
+protected:
+  /** Number of bits for system Id in the address field  **/
+  static const Int_t fgkSystemBits = 4;
 };
 
 #endif /* CBMADDRESS_H */

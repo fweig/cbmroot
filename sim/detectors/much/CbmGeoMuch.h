@@ -13,7 +13,7 @@
 
 #include "FairGeoSet.h"
 
-class  CbmGeoMuch : public FairGeoSet {
+class CbmGeoMuch : public FairGeoSet {
 protected:
   char modName[20];  // name of module
   char eleName[20];  // substring for elements in module
@@ -23,12 +23,12 @@ public:
   const char* getModuleName(Int_t);
   const char* getEleName(Int_t);
   inline Int_t getModNumInMod(const TString&);
-  ClassDef(CbmGeoMuch,0) // Class for MUID
+  ClassDef(CbmGeoMuch, 0)  // Class for MUID
 };
 
 inline Int_t CbmGeoMuch::getModNumInMod(const TString& name) {
   // returns the module index from module name
-  return (Int_t)(name[4]-'0')-1;
+  return (Int_t)(name[4] - '0') - 1;
 }
 
-#endif  /* !CBMGEOMUCH_H */
+#endif /* !CBMGEOMUCH_H */

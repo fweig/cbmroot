@@ -29,13 +29,11 @@
  ** @param inputFile  Name of input file
  ** @param iDecay     Decay mode from KFPartEfficiencies
  **/
-void run_transport(Int_t nEvents = 2,
+void run_transport(Int_t nEvents         = 2,
                    const char* setupName = "sis100_electron",
-                   const char* index = "00001",
-                   TString dataset = "data/test",
-                   const char* inputFile = ""
-                   )
-{
+                   const char* index     = "00001",
+                   TString dataset       = "data/test",
+                   const char* inputFile = "") {
 
   // --- Logger settings ----------------------------------------------------
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
@@ -56,11 +54,12 @@ void run_transport(Int_t nEvents = 2,
   std::cout << std::endl;
   TString defaultInputFile = srcDir + "/input/urqmd.auau.10gev.centr.root";
   TString inFile;
-  if ( strcmp(inputFile, "") == 0 ) inFile = defaultInputFile;
-  else inFile = inputFile;
+  if (strcmp(inputFile, "") == 0)
+    inFile = defaultInputFile;
+  else
+    inFile = inputFile;
   // std::cout << "-I- " << myName << ": Using input file " << inFile << std::endl;
   // ------------------------------------------------------------------------
-
 
 
   // -----   Timer   --------------------------------------------------------
@@ -93,21 +92,22 @@ void run_transport(Int_t nEvents = 2,
   Double_t ctime = timer.CpuTime();
   std::cout << std::endl << std::endl;
   std::cout << "Macro finished successfully." << std::endl;
-  std::cout << "Output file is "    << outFile << std::endl;
+  std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime
-      << "s" << std::endl << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s"
+            << std::endl
+            << std::endl;
   // ------------------------------------------------------------------------
 
 
   // -----   Resource monitoring   ------------------------------------------
   FairSystemInfo sysInfo;
-  Float_t maxMemory=sysInfo.GetMaxMemory();
+  Float_t maxMemory = sysInfo.GetMaxMemory();
   std::cout << "<DartMeasurement name=\"MaxMemory\" type=\"numeric/double\">";
   std::cout << maxMemory;
   std::cout << "</DartMeasurement>" << std::endl;
 
-  Float_t cpuUsage=ctime/rtime;
+  Float_t cpuUsage = ctime / rtime;
   std::cout << "<DartMeasurement name=\"CpuLoad\" type=\"numeric/double\">";
   std::cout << cpuUsage;
   std::cout << "</DartMeasurement>" << std::endl;
@@ -117,5 +117,4 @@ void run_transport(Int_t nEvents = 2,
   std::cout << " All ok " << std::endl;
   // ------------------------------------------------------------------------
 
-} // End of macro
-
+}  // End of macro

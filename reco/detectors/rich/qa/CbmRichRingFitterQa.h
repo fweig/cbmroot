@@ -10,9 +10,9 @@
 #ifndef CBM_RICH_RING_FITTER_QA
 #define CBM_RICH_RING_FITTER_QA
 
+#include "TMatrixD.h"
 #include "TObject.h"
 #include <vector>
-#include "TMatrixD.h"
 class TH1D;
 class CbmRichRingLight;
 //class TMatrixD;
@@ -27,74 +27,70 @@ using std::vector;
 * \author Semen Lebedev <s.lebedev@gsi.de>
 * \date 2009
 **/
-class CbmRichRingFitterQa: public TObject
-{
+class CbmRichRingFitterQa : public TObject {
 public:
-
-   /**
+  /**
     * \brief Standard constructor.
     */
- 	CbmRichRingFitterQa();
+  CbmRichRingFitterQa();
 
-   /**
+  /**
     * \brief Destructor.
     */
-   virtual ~CbmRichRingFitterQa();
+  virtual ~CbmRichRingFitterQa();
 
- 	/**
+  /**
  	 * \brief Generate ellipse.
  	 */
-	void GenerateEllipse();
+  void GenerateEllipse();
 
-	/**
+  /**
 	 * \brief Draw generated and fitted circle/ellipse.
 	 */
-	void Draw(Option_t* = "");
+  void Draw(Option_t* = "");
 
 private:
-	// ellipse fitting algorithm, errors
-   TH1D* fhErrorA;
-   TH1D* fhErrorB;
-   TH1D* fhErrorX;
-   TH1D* fhErrorY;
-   TH1D* fhErrorPhi;
-   // ellipse fitting algorithm, parameters
-   TH1D* fhA;
-   TH1D* fhB;
-   TH1D* fhX;
-   TH1D* fhY;
-   TH1D* fhPhi;
-   // circle fitting algorithm, errors
-   TH1D* fhRadiusErr;
-   TH1D* fhCircleXcErr;
-   TH1D* fhCircleYcErr;
-   // circle fitting algorithm, parameters
-   TH1D* fhRadius;
-   TH1D* fhCircleXc;
-   TH1D* fhCircleYc;
-   // circle fitting algorithm, pools
-   TH1D* fhRadiusPool;
-   TH1D* fhCircleXcPool;
-   TH1D* fhCircleYcPool;
+  // ellipse fitting algorithm, errors
+  TH1D* fhErrorA;
+  TH1D* fhErrorB;
+  TH1D* fhErrorX;
+  TH1D* fhErrorY;
+  TH1D* fhErrorPhi;
+  // ellipse fitting algorithm, parameters
+  TH1D* fhA;
+  TH1D* fhB;
+  TH1D* fhX;
+  TH1D* fhY;
+  TH1D* fhPhi;
+  // circle fitting algorithm, errors
+  TH1D* fhRadiusErr;
+  TH1D* fhCircleXcErr;
+  TH1D* fhCircleYcErr;
+  // circle fitting algorithm, parameters
+  TH1D* fhRadius;
+  TH1D* fhCircleXc;
+  TH1D* fhCircleYc;
+  // circle fitting algorithm, pools
+  TH1D* fhRadiusPool;
+  TH1D* fhCircleXcPool;
+  TH1D* fhCircleYcPool;
 
-	/**
+  /**
 	 * \Calculate errors of the fit.
 	 */
-	void CalculateFitErrors(
-	      CbmRichRingLight* ring,
-	      Double_t sigma,
-	      TMatrixD& cov);
+  void
+  CalculateFitErrors(CbmRichRingLight* ring, Double_t sigma, TMatrixD& cov);
 
-   /**
+  /**
     * \brief Copy constructor.
     */
-   CbmRichRingFitterQa(const CbmRichRingFitterQa&);
+  CbmRichRingFitterQa(const CbmRichRingFitterQa&);
 
-   /**
+  /**
     * \brief Assignment operator.
     */
-   CbmRichRingFitterQa& operator=(const CbmRichRingFitterQa&);
+  CbmRichRingFitterQa& operator=(const CbmRichRingFitterQa&);
 
-	ClassDef(CbmRichRingFitterQa, 1);
+  ClassDef(CbmRichRingFitterQa, 1);
 };
 #endif

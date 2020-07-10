@@ -8,13 +8,12 @@
 #define CBMEVENTGENERATOR_H 1
 
 
-#include <memory>
-#include "FairPrimaryGenerator.h"
 #include "CbmBeamProfile.h"
 #include "CbmTarget.h"
+#include "FairPrimaryGenerator.h"
+#include <memory>
 
 class FairGenericStack;
-
 
 
 /** @brief CbmEventGenerator
@@ -32,34 +31,32 @@ class FairGenericStack;
  ** the methods MakeBeam and MakeVertex such as to ensure that the generated
  ** vertex falls into the target volume.
  **/
-class CbmEventGenerator : public FairPrimaryGenerator
-{
+class CbmEventGenerator : public FairPrimaryGenerator {
 
-	public:
-
-		/** @brief Default constructor  **/
-		CbmEventGenerator();
+public:
+  /** @brief Default constructor  **/
+  CbmEventGenerator();
 
 
-		/** @brief Destructor  **/
-		virtual ~CbmEventGenerator();
+  /** @brief Destructor  **/
+  virtual ~CbmEventGenerator();
 
 
-		/** @brief Enable or disable forcing the vertex to be in the target
+  /** @brief Enable or disable forcing the vertex to be in the target
 		 ** @param choice If true, the vertex will be generated in the target
 		 **/
-		void ForceVertexInTarget(Bool_t choice = kTRUE) {
-		  fForceVertexInTarget = choice;
-		}
+  void ForceVertexInTarget(Bool_t choice = kTRUE) {
+    fForceVertexInTarget = choice;
+  }
 
 
-		/** @brief Beam profile
+  /** @brief Beam profile
 		 ** @return Reference to beam profile object
 		 **/
-		const CbmBeamProfile& GetBeamProfile() { return fBeamProfile; }
+  const CbmBeamProfile& GetBeamProfile() { return fBeamProfile; }
 
 
-		/** @brief Generate the input event
+  /** @brief Generate the input event
 		 ** @param stack  Pointer to stack object
 		 **
 		 ** This is the main functionality, invoked from FairRunSim.
@@ -70,14 +67,14 @@ class CbmEventGenerator : public FairPrimaryGenerator
 		 **
 		 ** Re-implemented from base-class FairPrimaryGenerator.
 		 **/
-	  virtual Bool_t GenerateEvent(FairGenericStack* stack);
+  virtual Bool_t GenerateEvent(FairGenericStack* stack);
 
 
-		/** @brief Log output **/
-		virtual void Print(Option_t* opt = "") const;
+  /** @brief Log output **/
+  virtual void Print(Option_t* opt = "") const;
 
 
-		/** @brief Set the beam angle in the focal plane
+  /** @brief Set the beam angle in the focal plane
 		 ** @param meanThetaX   Mean angle in x-z [rad]
 		 ** @param meanThetaY   Mean angle in y-z [rad]
 		 ** @param sigmaThetaX  RMS of beam angle in x-z [rad]
@@ -91,11 +88,13 @@ class CbmEventGenerator : public FairPrimaryGenerator
 		 **
 		 ** Note: Re-implements the non-virtual method in FairPrimaryGenerator.
 		 */
-		void SetBeamAngle(Double_t meanThetaX, Double_t meanThetaY,
-											Double_t sigmaThetaX = -1., Double_t sigmaThetaY = -1.);
+  void SetBeamAngle(Double_t meanThetaX,
+                    Double_t meanThetaY,
+                    Double_t sigmaThetaX = -1.,
+                    Double_t sigmaThetaY = -1.);
 
 
-		/** @brief Set the beam position in the focal plane
+  /** @brief Set the beam position in the focal plane
 		 ** @param meanX    Mean x position [cm]
 		 ** @param meanY    Mean y position [cm|
 		 ** @param sigmaX   RMS of x position [cm]
@@ -108,12 +107,14 @@ class CbmEventGenerator : public FairPrimaryGenerator
 		 **
 		 ** Default is (0.,0.,0.) for the position, no sampling.
 		 */
-		void SetBeamPosition(Double_t meanX, Double_t meanY,
-												 Double_t sigmaX = -1., Double_t sigmaY = -1.,
-												 Double_t zF = 0.);
+  void SetBeamPosition(Double_t meanX,
+                       Double_t meanY,
+                       Double_t sigmaX = -1.,
+                       Double_t sigmaY = -1.,
+                       Double_t zF     = 0.);
 
 
-		/** @brief Set target properties
+  /** @brief Set target properties
 		 ** @param target  Pointer to CbmTarget instance
 		 **
 		 ** When a target is specified, the event vertex will be sampled
@@ -122,29 +123,26 @@ class CbmEventGenerator : public FairPrimaryGenerator
 		 ** set afterwards, the vertex will always be in the target
 		 ** centre plane.
 		 **/
-		void SetTarget(std::shared_ptr<const CbmTarget> target) {
-			fTarget = target;
-		}
+  void SetTarget(std::shared_ptr<const CbmTarget> target) { fTarget = target; }
 
 
-	private:
+private:
+  CbmBeamProfile fBeamProfile;               ///< Beam properties
+  std::shared_ptr<const CbmTarget> fTarget;  //! Target properties
+  Bool_t fForceVertexInTarget;  ///< If set, vertex must be in target
 
-		CbmBeamProfile fBeamProfile;  ///< Beam properties
-		std::shared_ptr<const CbmTarget> fTarget;   //! Target properties
-		Bool_t fForceVertexInTarget;   ///< If set, vertex must be in target
 
-
-		/** @brief Generate beam angle
+  /** @brief Generate beam angle
 		 **
 		 ** Will be called from FairPrimaryGenerator::GenerateEvent().
 		 ** The method is re-implemented here as empty. The beam angle
 		 ** will be generated along with the beam position in the method
 		 ** MakeVertex().
 		 **/
-		virtual void MakeBeamAngle() { };
+  virtual void MakeBeamAngle() {};
 
 
-		/** @brief Generate event vertex position
+  /** @brief Generate event vertex position
 		 **
 		 ** Will be called from FairPrimaryGenerator::GenerateEvent().
 		 ** Beam position and angles in the focal plane are sampled
@@ -155,29 +153,25 @@ class CbmEventGenerator : public FairPrimaryGenerator
 		 ** with SetSmearVertexZ(). If no target is specified, the event vertex
 		 ** is the beam position in the focal plane.
 		 **/
-		virtual void MakeVertex();
+  virtual void MakeVertex();
 
 
-		/** @brief Generate event vertex position in the beam focal plane
+  /** @brief Generate event vertex position in the beam focal plane
 		 **
 		 ** Will be called if no target was specified.
 		 **/
-		virtual void MakeVertexInFocalPlane();
+  virtual void MakeVertexInFocalPlane();
 
 
-		/** @brief Generate event vertex position in the target
+  /** @brief Generate event vertex position in the target
 		 **
 		 ** Will be called if a target was specified.
 		 **/
-		virtual void MakeVertexInTarget();
+  virtual void MakeVertexInTarget();
 
 
-
-		ClassDef(CbmEventGenerator,1);
-
+  ClassDef(CbmEventGenerator, 1);
 };
 
 
 #endif /* CBMEVENTGENERATOR_H */
-
-

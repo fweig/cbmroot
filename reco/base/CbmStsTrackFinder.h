@@ -17,8 +17,8 @@
 #define CBMSTSTRACKFINDER 1
 
 
-#include "TObject.h"
 #include "TNamed.h"
+#include "TObject.h"
 
 class TClonesArray;
 class CbmStsDigiScheme;
@@ -26,23 +26,21 @@ class FairField;
 class CbmEvent;
 
 
-class CbmStsTrackFinder : public TNamed
-{
+class CbmStsTrackFinder : public TNamed {
 
- public:
-
+public:
   /** Default constructor **/
-  CbmStsTrackFinder(); 
+  CbmStsTrackFinder();
 
 
   /** Destructor **/
-  virtual ~CbmStsTrackFinder() { };
+  virtual ~CbmStsTrackFinder() {};
 
 
   /** Virtual method Init. If needed, to be implemented in the
    ** concrete class. Else no action.
    **/
-  virtual void Init() { };
+  virtual void Init() {};
 
 
   /** Abstract method DoFind. To be implemented in the concrete class.
@@ -53,11 +51,11 @@ class CbmStsTrackFinder : public TNamed
    **/
   virtual Int_t DoFind() = 0;
 
-  
+
   /** Virtual method Finish. If needed, to be implemented in the concrete
    ** class. Executed at the end of the run.
    **/
-  virtual void Finish() { };
+  virtual void Finish() {};
 
 
   /** Track finding in one event (abstract)
@@ -69,29 +67,26 @@ class CbmStsTrackFinder : public TNamed
 
   /** Modifiers **/
   void SetDigiScheme(CbmStsDigiScheme* scheme) { fDigiScheme = scheme; }
-  void SetField(FairField* field)               { fField = field; }
-  void SetMvdHitArray(TClonesArray* hits)      { fMvdHits = hits; }
-  void SetStsHitArray(TClonesArray* hits)      { fStsHits = hits; }
-  void SetTrackArray(TClonesArray* tracks)     { fTracks = tracks; }
-  void SetVerbose(Int_t verbose)               { fVerbose = verbose; };
+  void SetField(FairField* field) { fField = field; }
+  void SetMvdHitArray(TClonesArray* hits) { fMvdHits = hits; }
+  void SetStsHitArray(TClonesArray* hits) { fStsHits = hits; }
+  void SetTrackArray(TClonesArray* tracks) { fTracks = tracks; }
+  void SetVerbose(Int_t verbose) { fVerbose = verbose; };
 
 
- protected:
-
+protected:
   CbmStsDigiScheme* fDigiScheme;  // STS digitisation scheme
-  FairField*         fField;       // Magnetic field
-  TClonesArray*     fMvdHits;     // MvdHit array
-  TClonesArray*     fStsHits;     // StsHit array
-  TClonesArray*     fTracks;      // StsTrack array
-  Int_t             fVerbose;     // Verbosity level
+  FairField* fField;              // Magnetic field
+  TClonesArray* fMvdHits;         // MvdHit array
+  TClonesArray* fStsHits;         // StsHit array
+  TClonesArray* fTracks;          // StsTrack array
+  Int_t fVerbose;                 // Verbosity level
 
- private:
-
+private:
   CbmStsTrackFinder(const CbmStsTrackFinder&);
   CbmStsTrackFinder& operator=(const CbmStsTrackFinder&);
 
-  ClassDef(CbmStsTrackFinder,1);
-
+  ClassDef(CbmStsTrackFinder, 1);
 };
 
 #endif

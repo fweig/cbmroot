@@ -17,54 +17,51 @@
 class CbmMuchTrackFinder;
 class TClonesArray;
 
-class CbmMuchFindTracks : public FairTask
-{
+class CbmMuchFindTracks : public FairTask {
 public:
-	/** Default constructor **/
-	CbmMuchFindTracks();
+  /** Default constructor **/
+  CbmMuchFindTracks();
 
-	/** Standard constructor
+  /** Standard constructor
 	*@param name   Name of class
 	*@param title  Task title
 	*@param finder Pointer to STS track finder concrete class
 	**/
-	CbmMuchFindTracks(
-			const char* name,
-			const char* title = "FairTask",
-			CbmMuchTrackFinder* finder = NULL);
+  CbmMuchFindTracks(const char* name,
+                    const char* title          = "FairTask",
+                    CbmMuchTrackFinder* finder = NULL);
 
-	/** Destructor **/
-	virtual ~CbmMuchFindTracks();
+  /** Destructor **/
+  virtual ~CbmMuchFindTracks();
 
-	/** Initialisation **/
-	virtual InitStatus Init();
+  /** Initialisation **/
+  virtual InitStatus Init();
 
-	/** Task execution **/
-	virtual void Exec(
-			Option_t* opt);
+  /** Task execution **/
+  virtual void Exec(Option_t* opt);
 
-	/** Finish at the end **/
-	virtual void Finish();
+  /** Finish at the end **/
+  virtual void Finish();
 
-	/** SetParContainers **/
-	virtual void SetParContainers();
+  /** SetParContainers **/
+  virtual void SetParContainers();
 
-	/** Accessors **/
-	CbmMuchTrackFinder* GetFinder() { return fFinder; };
-	Int_t GetNofTracks()           { return fNofTracks; };
+  /** Accessors **/
+  CbmMuchTrackFinder* GetFinder() { return fFinder; };
+  Int_t GetNofTracks() { return fNofTracks; };
 
-	/** Set concrete track finder **/
-	void UseFinder(CbmMuchTrackFinder* finder) { fFinder = finder; };
+  /** Set concrete track finder **/
+  void UseFinder(CbmMuchTrackFinder* finder) { fFinder = finder; };
 
 private:
-	CbmMuchTrackFinder* fFinder;       // Pointer to TrackFinder concrete class
-	TClonesArray* fTrackArray;         // Output array of CbmTrdTracks
-	Int_t fNofTracks;                  // Number of tracks created
+  CbmMuchTrackFinder* fFinder;  // Pointer to TrackFinder concrete class
+  TClonesArray* fTrackArray;    // Output array of CbmTrdTracks
+  Int_t fNofTracks;             // Number of tracks created
 
-	CbmMuchFindTracks(const CbmMuchFindTracks&);
-	CbmMuchFindTracks& operator=(const CbmMuchFindTracks&);
+  CbmMuchFindTracks(const CbmMuchFindTracks&);
+  CbmMuchFindTracks& operator=(const CbmMuchFindTracks&);
 
-	ClassDef(CbmMuchFindTracks,1);
+  ClassDef(CbmMuchFindTracks, 1);
 };
 
 #endif

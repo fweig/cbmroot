@@ -7,29 +7,27 @@
 #ifndef CBMFIELDCREATOR_H
 #define CBMFIELDCREATOR_H
 
-#include <Rtypes.h>            // for THashConsistencyHolder, ClassDef
+#include <Rtypes.h>  // for THashConsistencyHolder, ClassDef
 
 #include <FairFieldFactory.h>  // for FairFieldFactory
 
 class CbmFieldPar;
 class FairField;
 
-class CbmFieldCreator : public FairFieldFactory 
-{
+class CbmFieldCreator : public FairFieldFactory {
 
- public:
+public:
   CbmFieldCreator();
   virtual ~CbmFieldCreator();
   virtual FairField* createFairField();
   virtual void SetParm();
-  ClassDef(CbmFieldCreator,1);
-  
- protected:
+  ClassDef(CbmFieldCreator, 1);
+
+protected:
   CbmFieldPar* fFieldPar;
-  
- private:
+
+private:
   CbmFieldCreator(const CbmFieldCreator&);
   CbmFieldCreator& operator=(const CbmFieldCreator&);
-
 };
-#endif //CBMFIELDCREATOR_H
+#endif  //CBMFIELDCREATOR_H

@@ -8,17 +8,17 @@
  */
 #ifndef NICACBMFIRSTTASK_H_
 #define NICACBMFIRSTTASK_H_
-#include "FairTask.h"
 #include "CbmHelix.h"
+#include "FairTask.h"
 
 
-class NicaCbmFirstTask :public  FairTask{
+class NicaCbmFirstTask : public FairTask {
 public:
-	NicaCbmFirstTask();
-	InitStatus Init();
-	void Exec(Option_t */*opt*/){};
-	virtual ~NicaCbmFirstTask();
-	ClassDef(NicaCbmFirstTask,1)
+  NicaCbmFirstTask();
+  InitStatus Init();
+  void Exec(Option_t* /*opt*/) {};
+  virtual ~NicaCbmFirstTask();
+  ClassDef(NicaCbmFirstTask, 1)
 };
 
 #endif /* CBM_ANALYSIS_NICA_CBM_HELPERS_NICACBMFIRSTTASK_H_ */

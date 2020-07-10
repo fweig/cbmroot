@@ -18,8 +18,8 @@
 //#include "Rtypes.h"
 //#include "TObjArray.h"
 
-#include <vector>
 #include <string>
+#include <vector>
 
 //class TList;
 class CbmStsDigitizeParameters;
@@ -28,60 +28,54 @@ class CbmFieldPar;
 class FairGeoParSet;
 class FairField;
 
-class CbmDeviceStsLocalReco: public FairMQDevice
-{
-  public:
-    CbmDeviceStsLocalReco();
-    virtual ~CbmDeviceStsLocalReco();
+class CbmDeviceStsLocalReco : public FairMQDevice {
+public:
+  CbmDeviceStsLocalReco();
+  virtual ~CbmDeviceStsLocalReco();
 
-  protected:
-    virtual void InitTask();
-    bool HandleData(FairMQMessagePtr&, int);
+protected:
+  virtual void InitTask();
+  bool HandleData(FairMQMessagePtr&, int);
 
-  private:
- 
-   uint64_t fMaxTimeslices;
-   uint64_t fNumMessages;
-   std::string fRunId;
-   std::string fvmcworkdir;
-   
-   CbmStsDigitizeParameters* fDigiPar;
+private:
+  uint64_t fMaxTimeslices;
+  uint64_t fNumMessages;
+  std::string fRunId;
+  std::string fvmcworkdir;
 
-   FairGeoParSet* fGeoPar;
+  CbmStsDigitizeParameters* fDigiPar;
 
-   CbmFieldPar*   fFieldPar;
-         
-   std::vector<std::string> fAllowedChannels
-     = {"stsdigi","parameters"};
-   std::vector<std::vector<std::string>> fChannelsToSend = { {},{} };
+  FairGeoParSet* fGeoPar;
 
-   bool IsChannelNameAllowed(std::string channelName);
-   
-   bool InitContainers();
+  CbmFieldPar* fFieldPar;
 
-   bool DoWork();
+  std::vector<std::string> fAllowedChannels = {"stsdigi", "parameters"};
+  std::vector<std::vector<std::string>> fChannelsToSend = {{}, {}};
 
-   bool SendData();
+  bool IsChannelNameAllowed(std::string channelName);
 
-   void Finish();
+  bool InitContainers();
+
+  bool DoWork();
+
+  bool SendData();
+
+  void Finish();
 
 
-   FairField* createField();
-   
-//    TList* fParCList;
+  FairField* createField();
 
-//    TObjArray fArrayHisto;    
+  //    TList* fParCList;
+
+  //    TObjArray fArrayHisto;
 };
 
 // special class to expose protected TMessage constructor
-class CbmMQTMessage : public TMessage
-{
-  public:
-    CbmMQTMessage(void* buf, Int_t len)
-        : TMessage(buf, len)
-    {
-        ResetBit(kIsOwner);
-    }
+class CbmMQTMessage : public TMessage {
+public:
+  CbmMQTMessage(void* buf, Int_t len) : TMessage(buf, len) {
+    ResetBit(kIsOwner);
+  }
 };
 
 #endif /* CBMDEVICESTSLOCALRECO_H_ */

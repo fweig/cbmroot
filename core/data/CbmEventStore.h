@@ -7,21 +7,21 @@
 #ifndef CBMEVENTSTORE_H
 #define CBMEVENTSTORE_H 1
 
-#include <Rtypes.h>             // for THashConsistencyHolder, ClassDef
-#include <RtypesCore.h>         // for UInt_t, Bool_t, kFALSE, kTRUE
-#include <TObjArray.h>          // for TObjArray
-#include <TObject.h>            // for TObject
+#include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
+#include <RtypesCore.h>  // for UInt_t, Bool_t, kFALSE, kTRUE
+#include <TObjArray.h>   // for TObjArray
+#include <TObject.h>     // for TObject
 
-#include <FairLogger.h>         // for LOG
+#include <FairLogger.h>  // for LOG
 
-#include <boost/any.hpp>        // for any_cast
+#include <boost/any.hpp>  // for any_cast
 
-#include <assert.h>             // for assert
-#include <string>               // for string
+#include <assert.h>  // for assert
+#include <string>    // for string
 
-#include "CbmDefs.h"            // for kNofSystems
-#include "CbmDigiContainer.h"   // for CbmDigiContainer
-#include "CbmDigiVector.h"      // for CbmDigiVector
+#include "CbmDefs.h"           // for kNofSystems
+#include "CbmDigiContainer.h"  // for CbmDigiContainer
+#include "CbmDigiVector.h"     // for CbmDigiVector
 
 class CbmMatch;
 
@@ -38,28 +38,27 @@ class CbmMatch;
  **/
 class CbmEventStore : public TObject {
 
-	public:
-
-		/** @brief Default constructor
+public:
+  /** @brief Default constructor
 		 ** @param eventId  Unique event identifier
 		 ** @param has Matches  True if matches to MC are stored
 		 **/
-		CbmEventStore(UInt_t eventId = 0, Bool_t hasMatches = kFALSE);
+  CbmEventStore(UInt_t eventId = 0, Bool_t hasMatches = kFALSE);
 
 
-		/** @brief Copy constructor **/
-		CbmEventStore(const CbmEventStore&);
+  /** @brief Copy constructor **/
+  CbmEventStore(const CbmEventStore&);
 
 
-		/** @brief Move constructor **/
-    CbmEventStore(CbmEventStore&&) = default;
-                
-
-		/** @brief Destructor **/
-		virtual ~CbmEventStore();
+  /** @brief Move constructor **/
+  CbmEventStore(CbmEventStore&&) = default;
 
 
-		/** @brief Add a digi object to the event
+  /** @brief Destructor **/
+  virtual ~CbmEventStore();
+
+
+  /** @brief Add a digi object to the event
 		 ** @param digi Pointer to digi object
 		 **
 		 ** The data referenced by the argument will be copied into
@@ -67,23 +66,23 @@ class CbmEventStore : public TObject {
 		 **
 		 ** This method cannot be used if the event is set to contain matches.
 		 **/
-		template <class Digi> void AddDigi(const Digi* digi) {
-		    if ( fHasMatches ) {
-		      LOG(fatal) << "CbmEventStore: Trying to add digi without match!";
-		      return;
-		    }
-		    assert(digi);
-		    ECbmModuleId system = Digi::GetSystem();
-		    assert ( system < ECbmModuleId::kNofSystems );
-		    if ( ! fDigis[system] )
-		      fDigis[system] = new CbmDigiVector<Digi>(kFALSE);
-		    auto digis = static_cast<CbmDigiContainer*>(fDigis.at(system));
-		    assert(digis);
-		    digis->AddDigi(digi, nullptr);
-		}
+  template<class Digi>
+  void AddDigi(const Digi* digi) {
+    if (fHasMatches) {
+      LOG(fatal) << "CbmEventStore: Trying to add digi without match!";
+      return;
+    }
+    assert(digi);
+    ECbmModuleId system = Digi::GetSystem();
+    assert(system < ECbmModuleId::kNofSystems);
+    if (!fDigis[system]) fDigis[system] = new CbmDigiVector<Digi>(kFALSE);
+    auto digis = static_cast<CbmDigiContainer*>(fDigis.at(system));
+    assert(digis);
+    digis->AddDigi(digi, nullptr);
+  }
 
 
-    /** @brief Add a digi and its match object to the event
+  /** @brief Add a digi and its match object to the event
      ** @param digi Pointer to digi object
      ** @param match Pointer to match object
      **
@@ -92,92 +91,89 @@ class CbmEventStore : public TObject {
      **
      ** This method cannot be used if the event is not set to contain matches.
      **/
-    template <class Digi> void AddDigi(const Digi* digi,
-                                       const CbmMatch* match) {
-        if ( ! fHasMatches ) {
-          LOG(fatal) << "CbmEventStore: Trying to add digi without match!";
-          return;
-        }
-        assert(digi);
-        assert(match);
-        ECbmModuleId system = Digi::GetSystem();
-        assert ( system < ECbmModuleId::kNofSystems );
-        if ( ! fDigis[system] )
-          fDigis[system] = new CbmDigiVector<Digi>(kTRUE);
-        auto digis = static_cast<CbmDigiContainer*>(fDigis.at(system));
-        assert(digis);
-        digis->AddDigi(digi, match);
+  template<class Digi>
+  void AddDigi(const Digi* digi, const CbmMatch* match) {
+    if (!fHasMatches) {
+      LOG(fatal) << "CbmEventStore: Trying to add digi without match!";
+      return;
     }
+    assert(digi);
+    assert(match);
+    ECbmModuleId system = Digi::GetSystem();
+    assert(system < ECbmModuleId::kNofSystems);
+    if (!fDigis[system]) fDigis[system] = new CbmDigiVector<Digi>(kTRUE);
+    auto digis = static_cast<CbmDigiContainer*>(fDigis.at(system));
+    assert(digis);
+    digis->AddDigi(digi, match);
+  }
 
 
-		/** @brief Get a digi object
+  /** @brief Get a digi object
 		 ** @param Index  Index of digi object for the given system in the event
 		 ** @return Pointer to digi object.
 		 **
 		 ** The method will return a null pointer if the detector system is not
 		 ** present or the index is out of range.
 		 **/
-		template <class Digi> const Digi* GetDigi(UInt_t index) const {
-        ECbmModuleId system = Digi::GetSystem();
-        assert ( system < ECbmModuleId::kNofSystems );
-        auto digis = static_cast<CbmDigiContainer*>(fDigis.at(system));
-        assert( digis );
-        return boost::any_cast<const Digi*>(digis->GetDigi(index));
-		}
+  template<class Digi>
+  const Digi* GetDigi(UInt_t index) const {
+    ECbmModuleId system = Digi::GetSystem();
+    assert(system < ECbmModuleId::kNofSystems);
+    auto digis = static_cast<CbmDigiContainer*>(fDigis.at(system));
+    assert(digis);
+    return boost::any_cast<const Digi*>(digis->GetDigi(index));
+  }
 
 
-    /** @brief Get event ID
+  /** @brief Get event ID
      ** @return Event identifier
      **/
-    UInt_t GetEventId() const { return fEventId; }
+  UInt_t GetEventId() const { return fEventId; }
 
 
-    /** @brief Number of digis for a given system
+  /** @brief Number of digis for a given system
      ** @param system System identifier [ECbmModuleId]
      ** @return Number of digis for system in event
      **/
-		UInt_t GetNofDigis(ECbmModuleId system) const;
+  UInt_t GetNofDigis(ECbmModuleId system) const;
 
 
-		/** @brief Presence of match objects
+  /** @brief Presence of match objects
 		 ** @param If true, match objects are stored
 		 **/
-		Bool_t HasMatches() const { return fHasMatches; }
+  Bool_t HasMatches() const { return fHasMatches; }
 
 
-		/** @brief Indicate whether event contains no digis
+  /** @brief Indicate whether event contains no digis
 		 ** @return True is event is empty
 		 **/
-		Bool_t IsEmpty() const;
+  Bool_t IsEmpty() const;
 
 
-		/** @brief Match to MC event
+  /** @brief Match to MC event
 		 ** @param[out] Reference to event match object
 		 **
 		 ** The method evaluates all digi matches and combines them
 		 ** into an event match object.
 		 **/
-		void MatchToMC(CbmMatch& result) const;
+  void MatchToMC(CbmMatch& result) const;
 
 
-		/** @brief Assignment operator **/
-    CbmEventStore& operator=(const CbmEventStore&) = delete;
+  /** @brief Assignment operator **/
+  CbmEventStore& operator=(const CbmEventStore&) = delete;
 
 
-		/** String output **/
-		std::string ToString() const;
+  /** String output **/
+  std::string ToString() const;
 
 
+private:
+  UInt_t fEventId    = -1;      ///< Event identifier
+  Bool_t fHasMatches = kFALSE;  ///< Presence of matches to MC
+  //		TObjArray* fDigis = nullptr;   ///< Array of CbmDigiVector
+  std::map<ECbmModuleId, TObject*> fDigis;  ///< Map of CbmDigiVector
 
-	private:
-
-		UInt_t fEventId = -1;          ///< Event identifier
-		Bool_t fHasMatches = kFALSE;   ///< Presence of matches to MC
-//		TObjArray* fDigis = nullptr;   ///< Array of CbmDigiVector
-                std::map<ECbmModuleId, TObject*> fDigis; ///< Map of CbmDigiVector
-
-		ClassDef(CbmEventStore, 2);
-
+  ClassDef(CbmEventStore, 2);
 };
 
 #endif /* CBMEVENTSTORE_H */

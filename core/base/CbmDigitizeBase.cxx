@@ -4,52 +4,44 @@
  **/
 #include "CbmDigitizeBase.h"
 
-#include <FairRootManager.h>    // for FairRootManager
-#include <FairTask.h>           // for FairTask
-#include <FairEventHeader.h>    // for FairEventHeader
-#include <FairRunAna.h>         // for FairRunAna
+#include <FairEventHeader.h>  // for FairEventHeader
+#include <FairRootManager.h>  // for FairRootManager
+#include <FairRunAna.h>       // for FairRunAna
+#include <FairTask.h>         // for FairTask
 
 #include <TGenericClassInfo.h>  // for TGenericClassInfo
 
-#include <cassert>              // for assert
+#include <cassert>  // for assert
 
 // -----   Default constructor   --------------------------------------------
-CbmDigitizeBase::CbmDigitizeBase() :
-    FairTask("Digitizer"),
-    fEventMode(kFALSE),
-    fProduceNoise(kTRUE),
-    fCreateMatches(kTRUE),
-    fCurrentInput(-1),
-    fCurrentEvent(-1),
-    fCurrentMCEntry(-1),
-    fCurrentEventTime(0.)
-{
-}
+CbmDigitizeBase::CbmDigitizeBase()
+  : FairTask("Digitizer")
+  , fEventMode(kFALSE)
+  , fProduceNoise(kTRUE)
+  , fCreateMatches(kTRUE)
+  , fCurrentInput(-1)
+  , fCurrentEvent(-1)
+  , fCurrentMCEntry(-1)
+  , fCurrentEventTime(0.) {}
 // --------------------------------------------------------------------------
 
 
-
 // -----   Default constructor   --------------------------------------------
-CbmDigitizeBase::CbmDigitizeBase(const char* name) :
-    FairTask(name),
-    fEventMode(kFALSE),
-    fProduceNoise(kTRUE),
-    fCreateMatches(kTRUE),
-    fCurrentInput(-1),
-    fCurrentEvent(-1),
-    fCurrentMCEntry(-1),
-    fCurrentEventTime(0.)
-{
-}
+CbmDigitizeBase::CbmDigitizeBase(const char* name)
+  : FairTask(name)
+  , fEventMode(kFALSE)
+  , fProduceNoise(kTRUE)
+  , fCreateMatches(kTRUE)
+  , fCurrentInput(-1)
+  , fCurrentEvent(-1)
+  , fCurrentMCEntry(-1)
+  , fCurrentEventTime(0.) {}
 // --------------------------------------------------------------------------
-
 
 
 // -----   Destructor   -----------------------------------------------------
-CbmDigitizeBase::~CbmDigitizeBase() {
-}
+CbmDigitizeBase::~CbmDigitizeBase() {}
 // --------------------------------------------------------------------------
-
 
 
 // -----   Get event information   ------------------------------------------
@@ -58,23 +50,20 @@ void CbmDigitizeBase::GetEventInfo() {
   // --- The event number is taken from the FairRootManager
   fCurrentEvent = FairRootManager::Instance()->GetEntryNr();
 
-  if ( FairRunAna::Instance() ) {
+  if (FairRunAna::Instance()) {
     FairEventHeader* event = FairRunAna::Instance()->GetEventHeader();
-    assert ( event );
-    fCurrentInput   = event->GetInputFileId();
-    fCurrentMCEntry = event->GetMCEntryNumber();
+    assert(event);
+    fCurrentInput     = event->GetInputFileId();
+    fCurrentMCEntry   = event->GetMCEntryNumber();
     fCurrentEventTime = event->GetEventTime();
-  } //? FairRunAna
+  }       //? FairRunAna
   else {  // no FairRunAna
-    fCurrentInput = -1;
-    fCurrentMCEntry = -1;
+    fCurrentInput     = -1;
+    fCurrentMCEntry   = -1;
     fCurrentEventTime = 0.;
-  } //? not FairRunAna
-
+  }  //? not FairRunAna
 }
 // --------------------------------------------------------------------------
-
-
 
 
 ClassImp(CbmDigitizeBase)

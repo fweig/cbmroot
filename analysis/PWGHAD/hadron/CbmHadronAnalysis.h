@@ -5,8 +5,8 @@
 #ifndef _CBMHADRONANALYSIS_H_
 #define _CBMHADRONANALYSIS_H_
 
-#include "FairTask.h"
 #include "CbmStsKFTrackFitter.h"
+#include "FairTask.h"
 
 class FairMCEventHeader;
 class CbmTofGeoHandler;
@@ -24,472 +24,480 @@ class CbmMCDataArray;
 class CbmHadronAnalysis : public FairTask {
 
 private:
-    Int_t         fEvents;            // Number of processed events
+  Int_t fEvents;  // Number of processed events
 
-    Float_t       fBeamMomentum;      // Beam momentum
-    Float_t       fMidY;              // Midrapidity 
-    Float_t       fDY;                // reaction plane exclusion interval  
-    Float_t       fFlowMinPtm;        // min pt/m for RP calculation   
-    Float_t       fBSelMin;           // impact parameter selection  
-    Float_t       fBSelMax;           // impact parameter selection  
-    Float_t       fwxy2;              // normalisation increment  
-    Double_t      fWMax;              // track matching weight
-    Double_t      fVtxBMax;           // impact parameter cutfor primaries 
+  Float_t fBeamMomentum;  // Beam momentum
+  Float_t fMidY;          // Midrapidity
+  Float_t fDY;            // reaction plane exclusion interval
+  Float_t fFlowMinPtm;    // min pt/m for RP calculation
+  Float_t fBSelMin;       // impact parameter selection
+  Float_t fBSelMax;       // impact parameter selection
+  Float_t fwxy2;          // normalisation increment
+  Double_t fWMax;         // track matching weight
+  Double_t fVtxBMax;      // impact parameter cutfor primaries
 
-    TString       fPdfFileName;       // name of the file name with hadron PDF
-    TString       fFlowFileName;      // name of the file name with Fourier corrections
-    TFile*        fflowFile;          // pointer to RP corrections 
+  TString fPdfFileName;   // name of the file name with hadron PDF
+  TString fFlowFileName;  // name of the file name with Fourier corrections
+  TFile* fflowFile;       // pointer to RP corrections
 
-    FairMCEventHeader *fMCEventHeader;
-    CbmTofGeoHandler *fGeoHandler;
-    CbmTofCell       *fCellInfo;
+  FairMCEventHeader* fMCEventHeader;
+  CbmTofGeoHandler* fGeoHandler;
+  CbmTofCell* fCellInfo;
 
-    CbmMCDataArray *fMCTracks;      // MC tracks
-    CbmMCDataArray *fStsPoints;     // STS points
-    TClonesArray *fMCTracksColl;    // MC tracks
-    TClonesArray *fStsPointsColl;   // STS points
-    TClonesArray *fStsHits;         // STS hits
-    TClonesArray *fStsClusters;     // STS clusters
-    TClonesArray *fStsTracks;       // STS tracks
-    TClonesArray *fStsDigis;        // STS digis
-    TClonesArray *fStsDigiMatchColl;  // TOF Matched Digis
-    TClonesArray *fTrdPoints;       // TRD points
-    TClonesArray *fTrdHits;         // TRD hits
-    TClonesArray *fTofPoints;       // TOF points
-    TClonesArray *fTofHits;         // TOF hits
-    TClonesArray *fTofDigis;        // TOF Digis
-    TClonesArray *fTofDigiMatchColl;  // TOF Matched Digis
-    TClonesArray *fTofDigiMatchPointsColl;  // TOF Matched Digi Points    
-    TClonesArray *fGlobalTracks;  // Global tracks
-    TClonesArray *fHadrons;       // Hadrons
-    CbmVertex    *fPrimVertex;        // Pointer to the primary vertex
-    CbmStsKFTrackFitter fTrackFitter;// Pointer to the Kalman Filter Fitter algorithm
+  CbmMCDataArray* fMCTracks;              // MC tracks
+  CbmMCDataArray* fStsPoints;             // STS points
+  TClonesArray* fMCTracksColl;            // MC tracks
+  TClonesArray* fStsPointsColl;           // STS points
+  TClonesArray* fStsHits;                 // STS hits
+  TClonesArray* fStsClusters;             // STS clusters
+  TClonesArray* fStsTracks;               // STS tracks
+  TClonesArray* fStsDigis;                // STS digis
+  TClonesArray* fStsDigiMatchColl;        // TOF Matched Digis
+  TClonesArray* fTrdPoints;               // TRD points
+  TClonesArray* fTrdHits;                 // TRD hits
+  TClonesArray* fTofPoints;               // TOF points
+  TClonesArray* fTofHits;                 // TOF hits
+  TClonesArray* fTofDigis;                // TOF Digis
+  TClonesArray* fTofDigiMatchColl;        // TOF Matched Digis
+  TClonesArray* fTofDigiMatchPointsColl;  // TOF Matched Digi Points
+  TClonesArray* fGlobalTracks;            // Global tracks
+  TClonesArray* fHadrons;                 // Hadrons
+  CbmVertex* fPrimVertex;                 // Pointer to the primary vertex
+  CbmStsKFTrackFitter
+    fTrackFitter;  // Pointer to the Kalman Filter Fitter algorithm
 
-    TH2F *fa_ptm_rap_gen_pip;
-    TH2F *fa_ptm_rap_gen_pim;
-    TH2F *fa_ptm_rap_gen_kp;
-    TH2F *fa_ptm_rap_gen_km;
-    TH2F *fa_ptm_rap_gen_p;
-    TH2F *fa_ptm_rap_gen_pbar;
-    TH2F *fa_ptm_rap_gen_d;
-    TH2F *fa_ptm_rap_gen_t;
-    TH2F *fa_ptm_rap_gen_h;
-    TH2F *fa_ptm_rap_gen_a;
-    TH2F *fa_ptm_rap_gen_imf;
+  TH2F* fa_ptm_rap_gen_pip;
+  TH2F* fa_ptm_rap_gen_pim;
+  TH2F* fa_ptm_rap_gen_kp;
+  TH2F* fa_ptm_rap_gen_km;
+  TH2F* fa_ptm_rap_gen_p;
+  TH2F* fa_ptm_rap_gen_pbar;
+  TH2F* fa_ptm_rap_gen_d;
+  TH2F* fa_ptm_rap_gen_t;
+  TH2F* fa_ptm_rap_gen_h;
+  TH2F* fa_ptm_rap_gen_a;
+  TH2F* fa_ptm_rap_gen_imf;
 
-    TH1F *fa_plab_sts_pip;
-    TH1F *fa_plab_sts_pim;
-    TH1F *fa_plab_sts_kp;
-    TH1F *fa_plab_sts_km;
-    TH1F *fa_plab_sts_p;
-    TH1F *fa_plab_sts_pbar;
+  TH1F* fa_plab_sts_pip;
+  TH1F* fa_plab_sts_pim;
+  TH1F* fa_plab_sts_kp;
+  TH1F* fa_plab_sts_km;
+  TH1F* fa_plab_sts_p;
+  TH1F* fa_plab_sts_pbar;
 
-    TH2F *fa_ptm_rap_sts_pip;
-    TH2F *fa_ptm_rap_sts_pim;
-    TH2F *fa_ptm_rap_sts_kp;
-    TH2F *fa_ptm_rap_sts_km;
-    TH2F *fa_ptm_rap_sts_p;
-    TH2F *fa_ptm_rap_sts_pbar;
-    TH2F *fa_ptm_rap_sts_d;
-    TH2F *fa_ptm_rap_sts_t;
-    TH2F *fa_ptm_rap_sts_h;
-    TH2F *fa_ptm_rap_sts_a;
-    TH2F *fa_ptm_rap_sts_imf;
+  TH2F* fa_ptm_rap_sts_pip;
+  TH2F* fa_ptm_rap_sts_pim;
+  TH2F* fa_ptm_rap_sts_kp;
+  TH2F* fa_ptm_rap_sts_km;
+  TH2F* fa_ptm_rap_sts_p;
+  TH2F* fa_ptm_rap_sts_pbar;
+  TH2F* fa_ptm_rap_sts_d;
+  TH2F* fa_ptm_rap_sts_t;
+  TH2F* fa_ptm_rap_sts_h;
+  TH2F* fa_ptm_rap_sts_a;
+  TH2F* fa_ptm_rap_sts_imf;
 
-    TH2F *fa_ptm_rap_poi_pip;
-    TH2F *fa_ptm_rap_poi_pim;
-    TH2F *fa_ptm_rap_poi_kp;
-    TH2F *fa_ptm_rap_poi_km;
-    TH2F *fa_ptm_rap_poi_p;
-    TH2F *fa_ptm_rap_poi_pbar;
-    TH2F *fa_ptm_rap_poi_d;
-    TH2F *fa_ptm_rap_poi_t;
-    TH2F *fa_ptm_rap_poi_h;
-    TH2F *fa_ptm_rap_poi_a;
-    TH2F *fa_ptm_rap_poi_imf;
+  TH2F* fa_ptm_rap_poi_pip;
+  TH2F* fa_ptm_rap_poi_pim;
+  TH2F* fa_ptm_rap_poi_kp;
+  TH2F* fa_ptm_rap_poi_km;
+  TH2F* fa_ptm_rap_poi_p;
+  TH2F* fa_ptm_rap_poi_pbar;
+  TH2F* fa_ptm_rap_poi_d;
+  TH2F* fa_ptm_rap_poi_t;
+  TH2F* fa_ptm_rap_poi_h;
+  TH2F* fa_ptm_rap_poi_a;
+  TH2F* fa_ptm_rap_poi_imf;
 
-    TH2F *fa_ptm_rap_hit_pip;
-    TH2F *fa_ptm_rap_hit_pim;
-    TH2F *fa_ptm_rap_hit_kp;
-    TH2F *fa_ptm_rap_hit_km;
-    TH2F *fa_ptm_rap_hit_p;
-    TH2F *fa_ptm_rap_hit_pbar;
-    TH2F *fa_ptm_rap_hit_d;
-    TH2F *fa_ptm_rap_hit_t;
-    TH2F *fa_ptm_rap_hit_h;
-    TH2F *fa_ptm_rap_hit_a;
-    TH2F *fa_ptm_rap_hit_imf;
+  TH2F* fa_ptm_rap_hit_pip;
+  TH2F* fa_ptm_rap_hit_pim;
+  TH2F* fa_ptm_rap_hit_kp;
+  TH2F* fa_ptm_rap_hit_km;
+  TH2F* fa_ptm_rap_hit_p;
+  TH2F* fa_ptm_rap_hit_pbar;
+  TH2F* fa_ptm_rap_hit_d;
+  TH2F* fa_ptm_rap_hit_t;
+  TH2F* fa_ptm_rap_hit_h;
+  TH2F* fa_ptm_rap_hit_a;
+  TH2F* fa_ptm_rap_hit_imf;
 
-    TH2F *fa_ptm_rap_glo_pip;
-    TH2F *fa_ptm_rap_glo_pim;
-    TH2F *fa_ptm_rap_glo_kp;
-    TH2F *fa_ptm_rap_glo_km;
-    TH2F *fa_ptm_rap_glo_p;
-    TH2F *fa_ptm_rap_glo_pbar;
-    TH2F *fa_ptm_rap_glo_d;
-    TH2F *fa_ptm_rap_glo_t;
-    TH2F *fa_ptm_rap_glo_h;
-    TH2F *fa_ptm_rap_glo_a;
-    TH2F *fa_ptm_rap_glo_imf;
+  TH2F* fa_ptm_rap_glo_pip;
+  TH2F* fa_ptm_rap_glo_pim;
+  TH2F* fa_ptm_rap_glo_kp;
+  TH2F* fa_ptm_rap_glo_km;
+  TH2F* fa_ptm_rap_glo_p;
+  TH2F* fa_ptm_rap_glo_pbar;
+  TH2F* fa_ptm_rap_glo_d;
+  TH2F* fa_ptm_rap_glo_t;
+  TH2F* fa_ptm_rap_glo_h;
+  TH2F* fa_ptm_rap_glo_a;
+  TH2F* fa_ptm_rap_glo_imf;
 
-    TH2F *fa_mul_b_gen;
-    TH2F *fa_mul_b_poi;
-    TH2F *fa_mul_b_hit;
-    TH2F *fa_mul_b_glo;
-    TH2F *fa_mul_b_had;
+  TH2F* fa_mul_b_gen;
+  TH2F* fa_mul_b_poi;
+  TH2F* fa_mul_b_hit;
+  TH2F* fa_mul_b_glo;
+  TH2F* fa_mul_b_had;
 
-    TH2F *fa_phirp_b_gen;
-    TH2F *fa_phgrp_b_gen;
-    TH2F *fa_phphrp_gen;
-    TH2F *fa_delrp_b_gen;
-    TH2F *fa_delrp_b_poi;
-    TH2F *fa_delrp_b_hit;
-    TH2F *fa_delrp_b_glo;
+  TH2F* fa_phirp_b_gen;
+  TH2F* fa_phgrp_b_gen;
+  TH2F* fa_phphrp_gen;
+  TH2F* fa_delrp_b_gen;
+  TH2F* fa_delrp_b_poi;
+  TH2F* fa_delrp_b_hit;
+  TH2F* fa_delrp_b_glo;
 
-    TH2F *fa_drp_b_gen;
-    TH2F *fa_cdrp_b_gen;
-    TH2F *fa_drp_b_poi;
-    TH2F *fa_cdrp_b_poi;
-    TH2F *fa_drp_b_hit;
-    TH2F *fa_cdrp_b_hit;
-    TH2F *fa_drp_b_glo;
-    TH2F *fa_cdrp_b_glo;
-    TH2F *fa_drp_b_had;
-    TH2F *fa_cdrp_b_had;
+  TH2F* fa_drp_b_gen;
+  TH2F* fa_cdrp_b_gen;
+  TH2F* fa_drp_b_poi;
+  TH2F* fa_cdrp_b_poi;
+  TH2F* fa_drp_b_hit;
+  TH2F* fa_cdrp_b_hit;
+  TH2F* fa_drp_b_glo;
+  TH2F* fa_cdrp_b_glo;
+  TH2F* fa_drp_b_had;
+  TH2F* fa_cdrp_b_had;
 
-    TH2F *fa_cdelrp_b_gen;
-    TH2F *fa_cdelrp_b_poi;
-    TH2F *fa_cdelrp_b_hit;
-    TH2F *fa_cdelrp_b_glo;
-    TH2F *fa_cdelrp_b_had;
+  TH2F* fa_cdelrp_b_gen;
+  TH2F* fa_cdelrp_b_poi;
+  TH2F* fa_cdelrp_b_hit;
+  TH2F* fa_cdelrp_b_glo;
+  TH2F* fa_cdelrp_b_had;
 
-    TH1F *fa_phirp_gen;
-    TH1F *fa_phirp_poi;
-    TH1F *fa_phirp_hit;
-    TH1F *fa_phirp_glo;
-    TH1F *fa_phirp_had;
+  TH1F* fa_phirp_gen;
+  TH1F* fa_phirp_poi;
+  TH1F* fa_phirp_hit;
+  TH1F* fa_phirp_glo;
+  TH1F* fa_phirp_had;
 
-    TH1F *fa_phirps_gen;
-    TH1F *fa_phirps_poi;
-    TH1F *fa_phirps_hit;
-    TH1F *fa_phirps_glo;
-    TH1F *fa_phirps_had;
+  TH1F* fa_phirps_gen;
+  TH1F* fa_phirps_poi;
+  TH1F* fa_phirps_hit;
+  TH1F* fa_phirps_glo;
+  TH1F* fa_phirps_had;
 
-    TH2F *fa_v1_rap_gen_pip;
-    TH2F *fa_v1_rap_gen_pim;
-    TH2F *fa_v1_rap_gen_kp;
-    TH2F *fa_v1_rap_gen_km;
-    TH2F *fa_v1_rap_gen_p;
-    TH2F *fa_v1_rap_gen_pbar;
-    TH2F *fa_v1_rap_gen_d;
-    TH2F *fa_v1_rap_gen_t;
-    TH2F *fa_v1_rap_gen_h;
-    TH2F *fa_v1_rap_gen_a;
-    TH2F *fa_v1_rap_gen_imf;
+  TH2F* fa_v1_rap_gen_pip;
+  TH2F* fa_v1_rap_gen_pim;
+  TH2F* fa_v1_rap_gen_kp;
+  TH2F* fa_v1_rap_gen_km;
+  TH2F* fa_v1_rap_gen_p;
+  TH2F* fa_v1_rap_gen_pbar;
+  TH2F* fa_v1_rap_gen_d;
+  TH2F* fa_v1_rap_gen_t;
+  TH2F* fa_v1_rap_gen_h;
+  TH2F* fa_v1_rap_gen_a;
+  TH2F* fa_v1_rap_gen_imf;
 
-    TH2F *fa_v2_rap_gen_pip;
-    TH2F *fa_v2_rap_gen_pim;
-    TH2F *fa_v2_rap_gen_kp;
-    TH2F *fa_v2_rap_gen_km;
-    TH2F *fa_v2_rap_gen_p;
-    TH2F *fa_v2_rap_gen_pbar;
-    TH2F *fa_v2_rap_gen_d;
-    TH2F *fa_v2_rap_gen_t;
-    TH2F *fa_v2_rap_gen_h;
-    TH2F *fa_v2_rap_gen_a;
-    TH2F *fa_v2_rap_gen_imf;
+  TH2F* fa_v2_rap_gen_pip;
+  TH2F* fa_v2_rap_gen_pim;
+  TH2F* fa_v2_rap_gen_kp;
+  TH2F* fa_v2_rap_gen_km;
+  TH2F* fa_v2_rap_gen_p;
+  TH2F* fa_v2_rap_gen_pbar;
+  TH2F* fa_v2_rap_gen_d;
+  TH2F* fa_v2_rap_gen_t;
+  TH2F* fa_v2_rap_gen_h;
+  TH2F* fa_v2_rap_gen_a;
+  TH2F* fa_v2_rap_gen_imf;
 
-    TH2F *fa_v1_rap_poi_pip;
-    TH2F *fa_v1_rap_poi_pim;
-    TH2F *fa_v1_rap_poi_kp;
-    TH2F *fa_v1_rap_poi_km;
-    TH2F *fa_v1_rap_poi_p;
-    TH2F *fa_v1_rap_poi_pbar;
-    TH2F *fa_v1_rap_poi_d;
-    TH2F *fa_v1_rap_poi_t;
-    TH2F *fa_v1_rap_poi_h;
-    TH2F *fa_v1_rap_poi_a;
-    TH2F *fa_v1_rap_poi_imf;
+  TH2F* fa_v1_rap_poi_pip;
+  TH2F* fa_v1_rap_poi_pim;
+  TH2F* fa_v1_rap_poi_kp;
+  TH2F* fa_v1_rap_poi_km;
+  TH2F* fa_v1_rap_poi_p;
+  TH2F* fa_v1_rap_poi_pbar;
+  TH2F* fa_v1_rap_poi_d;
+  TH2F* fa_v1_rap_poi_t;
+  TH2F* fa_v1_rap_poi_h;
+  TH2F* fa_v1_rap_poi_a;
+  TH2F* fa_v1_rap_poi_imf;
 
-    TH2F *fa_v2_rap_poi_pip;
-    TH2F *fa_v2_rap_poi_pim;
-    TH2F *fa_v2_rap_poi_kp;
-    TH2F *fa_v2_rap_poi_km;
-    TH2F *fa_v2_rap_poi_p;
-    TH2F *fa_v2_rap_poi_pbar;
-    TH2F *fa_v2_rap_poi_d;
-    TH2F *fa_v2_rap_poi_t;
-    TH2F *fa_v2_rap_poi_h;
-    TH2F *fa_v2_rap_poi_a;
-    TH2F *fa_v2_rap_poi_imf;
+  TH2F* fa_v2_rap_poi_pip;
+  TH2F* fa_v2_rap_poi_pim;
+  TH2F* fa_v2_rap_poi_kp;
+  TH2F* fa_v2_rap_poi_km;
+  TH2F* fa_v2_rap_poi_p;
+  TH2F* fa_v2_rap_poi_pbar;
+  TH2F* fa_v2_rap_poi_d;
+  TH2F* fa_v2_rap_poi_t;
+  TH2F* fa_v2_rap_poi_h;
+  TH2F* fa_v2_rap_poi_a;
+  TH2F* fa_v2_rap_poi_imf;
 
-    TH2F *fa_v1_rap_hit_pip;
-    TH2F *fa_v1_rap_hit_pim;
-    TH2F *fa_v1_rap_hit_kp;
-    TH2F *fa_v1_rap_hit_km;
-    TH2F *fa_v1_rap_hit_p;
-    TH2F *fa_v1_rap_hit_pbar;
-    TH2F *fa_v1_rap_hit_d;
-    TH2F *fa_v1_rap_hit_t;
-    TH2F *fa_v1_rap_hit_h;
-    TH2F *fa_v1_rap_hit_a;
-    TH2F *fa_v1_rap_hit_imf;
+  TH2F* fa_v1_rap_hit_pip;
+  TH2F* fa_v1_rap_hit_pim;
+  TH2F* fa_v1_rap_hit_kp;
+  TH2F* fa_v1_rap_hit_km;
+  TH2F* fa_v1_rap_hit_p;
+  TH2F* fa_v1_rap_hit_pbar;
+  TH2F* fa_v1_rap_hit_d;
+  TH2F* fa_v1_rap_hit_t;
+  TH2F* fa_v1_rap_hit_h;
+  TH2F* fa_v1_rap_hit_a;
+  TH2F* fa_v1_rap_hit_imf;
 
-    TH2F *fa_v2_rap_hit_pip;
-    TH2F *fa_v2_rap_hit_pim;
-    TH2F *fa_v2_rap_hit_kp;
-    TH2F *fa_v2_rap_hit_km;
-    TH2F *fa_v2_rap_hit_p;
-    TH2F *fa_v2_rap_hit_pbar;
-    TH2F *fa_v2_rap_hit_d;
-    TH2F *fa_v2_rap_hit_t;
-    TH2F *fa_v2_rap_hit_h;
-    TH2F *fa_v2_rap_hit_a;
-    TH2F *fa_v2_rap_hit_imf;
+  TH2F* fa_v2_rap_hit_pip;
+  TH2F* fa_v2_rap_hit_pim;
+  TH2F* fa_v2_rap_hit_kp;
+  TH2F* fa_v2_rap_hit_km;
+  TH2F* fa_v2_rap_hit_p;
+  TH2F* fa_v2_rap_hit_pbar;
+  TH2F* fa_v2_rap_hit_d;
+  TH2F* fa_v2_rap_hit_t;
+  TH2F* fa_v2_rap_hit_h;
+  TH2F* fa_v2_rap_hit_a;
+  TH2F* fa_v2_rap_hit_imf;
 
-    TH2F *fa_v1_rap_glo_pip;
-    TH2F *fa_v1_rap_glo_pim;
-    TH2F *fa_v1_rap_glo_kp;
-    TH2F *fa_v1_rap_glo_km;
-    TH2F *fa_v1_rap_glo_p;
-    TH2F *fa_v1_rap_glo_pbar;
-    TH2F *fa_v1_rap_glo_d;
-    TH2F *fa_v1_rap_glo_t;
-    TH2F *fa_v1_rap_glo_h;
-    TH2F *fa_v1_rap_glo_a;
-    TH2F *fa_v1_rap_glo_imf;
+  TH2F* fa_v1_rap_glo_pip;
+  TH2F* fa_v1_rap_glo_pim;
+  TH2F* fa_v1_rap_glo_kp;
+  TH2F* fa_v1_rap_glo_km;
+  TH2F* fa_v1_rap_glo_p;
+  TH2F* fa_v1_rap_glo_pbar;
+  TH2F* fa_v1_rap_glo_d;
+  TH2F* fa_v1_rap_glo_t;
+  TH2F* fa_v1_rap_glo_h;
+  TH2F* fa_v1_rap_glo_a;
+  TH2F* fa_v1_rap_glo_imf;
 
-    TH2F *fa_v2_rap_glo_pip;
-    TH2F *fa_v2_rap_glo_pim;
-    TH2F *fa_v2_rap_glo_kp;
-    TH2F *fa_v2_rap_glo_km;
-    TH2F *fa_v2_rap_glo_p;
-    TH2F *fa_v2_rap_glo_pbar;
-    TH2F *fa_v2_rap_glo_d;
-    TH2F *fa_v2_rap_glo_t;
-    TH2F *fa_v2_rap_glo_h;
-    TH2F *fa_v2_rap_glo_a;
-    TH2F *fa_v2_rap_glo_imf;
+  TH2F* fa_v2_rap_glo_pip;
+  TH2F* fa_v2_rap_glo_pim;
+  TH2F* fa_v2_rap_glo_kp;
+  TH2F* fa_v2_rap_glo_km;
+  TH2F* fa_v2_rap_glo_p;
+  TH2F* fa_v2_rap_glo_pbar;
+  TH2F* fa_v2_rap_glo_d;
+  TH2F* fa_v2_rap_glo_t;
+  TH2F* fa_v2_rap_glo_h;
+  TH2F* fa_v2_rap_glo_a;
+  TH2F* fa_v2_rap_glo_imf;
 
-    // xy hit density
-    TH2F* fa_xy_poi1;
-    TH2F* fa_xy_poi2;
-    TH2F* fa_xy_poi3;
+  // xy hit density
+  TH2F* fa_xy_poi1;
+  TH2F* fa_xy_poi2;
+  TH2F* fa_xy_poi3;
 
-    TH2F* fa_xy_hit1;
-    TH2F* fa_xy_hit2;
-    TH2F* fa_xy_hit3;
+  TH2F* fa_xy_hit1;
+  TH2F* fa_xy_hit2;
+  TH2F* fa_xy_hit3;
 
-    TH2F* fa_xy_glo1;
-    TH2F* fa_xy_glo_pip;
-    TH2F* fa_xy_glo_pim;
-    TH2F* fa_xy_glo_kp;
-    TH2F* fa_xy_glo_km;
-    TH2F* fa_xy_glo_p;
-    TH2F* fa_xy_glo_pbar;
-    TH2F* fa_xy_glo_d;
-    TH2F* fa_xy_glo_t;
-    TH2F* fa_xy_glo_h;
-    TH2F* fa_xy_glo_a;
+  TH2F* fa_xy_glo1;
+  TH2F* fa_xy_glo_pip;
+  TH2F* fa_xy_glo_pim;
+  TH2F* fa_xy_glo_kp;
+  TH2F* fa_xy_glo_km;
+  TH2F* fa_xy_glo_p;
+  TH2F* fa_xy_glo_pbar;
+  TH2F* fa_xy_glo_d;
+  TH2F* fa_xy_glo_t;
+  TH2F* fa_xy_glo_h;
+  TH2F* fa_xy_glo_a;
 
-    // point debugging 
-    TH2F* fa_pv_poi;
-    TH2F* fa_tm_poi;
-    TH2F* fa_tm_poiprim;
+  // point debugging
+  TH2F* fa_pv_poi;
+  TH2F* fa_tm_poi;
+  TH2F* fa_tm_poiprim;
 
-    // hit debugging 
-    TH2F* fa_dxx;
-    TH2F* fa_dxy;
-    TH2F* fa_dxz;
-    TH2F* fa_dyx;
-    TH2F* fa_dyy;
-    TH2F* fa_dyz;
-    TH2F* fa_dzx;
-    TH2F* fa_dzy;
-    TH2F* fa_dzz;
+  // hit debugging
+  TH2F* fa_dxx;
+  TH2F* fa_dxy;
+  TH2F* fa_dxz;
+  TH2F* fa_dyx;
+  TH2F* fa_dyy;
+  TH2F* fa_dyz;
+  TH2F* fa_dzx;
+  TH2F* fa_dzy;
+  TH2F* fa_dzz;
 
-    TH1F* fa_hit_ch;
-    TH2F* fa_dhit_ch;
+  TH1F* fa_hit_ch;
+  TH2F* fa_dhit_ch;
 
-    TH1F* fa_tof_hit;
-    TH1F* fa_dtof_hit;
-    TH1F* fa_tof_hitprim;
-    TH2F* fa_pv_hit;
-    TH2F* fa_tm_hit;
-    TH2F* fa_tm_hitprim;
-    TH1F* fa_tn_hit;
-    TH1F* fa_t0_hit;
-    TH1F* fa_t0m_hit;
-    TH1F* fa_t0mn_hit;
-    TH2F* fa_t0m_b_hit;
-    TH2F* fa_t0mn_b_hit;
+  TH1F* fa_tof_hit;
+  TH1F* fa_dtof_hit;
+  TH1F* fa_tof_hitprim;
+  TH2F* fa_pv_hit;
+  TH2F* fa_tm_hit;
+  TH2F* fa_tm_hitprim;
+  TH1F* fa_tn_hit;
+  TH1F* fa_t0_hit;
+  TH1F* fa_t0m_hit;
+  TH1F* fa_t0mn_hit;
+  TH2F* fa_t0m_b_hit;
+  TH2F* fa_t0mn_b_hit;
 
-    TH1F* fa_t0m_f_hit;
-    TH1F* fa_t0mn_f_hit;
-    TH2F* fa_t0m_f_b_hit;
-    TH2F* fa_t0mn_f_b_hit;
+  TH1F* fa_t0m_f_hit;
+  TH1F* fa_t0mn_f_hit;
+  TH2F* fa_t0m_f_b_hit;
+  TH2F* fa_t0mn_f_b_hit;
 
-    TH1F* fa_t0m_nf_hit;
-    TH1F* fa_t0mn_nf_hit;
-    TH2F* fa_t0m_nf_b_hit;
-    TH2F* fa_t0mn_nf_b_hit;
+  TH1F* fa_t0m_nf_hit;
+  TH1F* fa_t0mn_nf_hit;
+  TH2F* fa_t0m_nf_b_hit;
+  TH2F* fa_t0mn_nf_b_hit;
 
-    //GlobalTrack performance 
-    TH1F* fa_TofTrackMul;
-    TH1F* fa_VtxB;
-    TH2F* fa_chi2_mom_glo;
-    TH2F* fa_chi2_mom_gloprim;
-    TH2F* fa_len_mom_glo;
-    TH2F* fa_pv_glo;
-    TH2F* fa_tm_glo;       
-    TH2F* fa_tm_glo_pip;       
-    TH2F* fa_tm_glo_pim;       
-    TH2F* fa_tm_glo_kp;       
-    TH2F* fa_tm_glo_km;       
-    TH2F* fa_tm_glo_p;       
-    TH2F* fa_tm_glo_pbar;       
-    TH2F* fa_tm_glo_d;       
-    TH2F* fa_tm_glo_t;       
-    TH2F* fa_tm_glo_h;       
-    TH2F* fa_tm_glo_a;  
+  //GlobalTrack performance
+  TH1F* fa_TofTrackMul;
+  TH1F* fa_VtxB;
+  TH2F* fa_chi2_mom_glo;
+  TH2F* fa_chi2_mom_gloprim;
+  TH2F* fa_len_mom_glo;
+  TH2F* fa_pv_glo;
+  TH2F* fa_tm_glo;
+  TH2F* fa_tm_glo_pip;
+  TH2F* fa_tm_glo_pim;
+  TH2F* fa_tm_glo_kp;
+  TH2F* fa_tm_glo_km;
+  TH2F* fa_tm_glo_p;
+  TH2F* fa_tm_glo_pbar;
+  TH2F* fa_tm_glo_d;
+  TH2F* fa_tm_glo_t;
+  TH2F* fa_tm_glo_h;
+  TH2F* fa_tm_glo_a;
 
-    TH2F* fa_tm_gloprim;
-    TH2F* fa_tm_glomis;
-    TH2F* fa_tm_glovtxb;
-    TH2F* fa_tm_gloprimvtxb;
+  TH2F* fa_tm_gloprim;
+  TH2F* fa_tm_glomis;
+  TH2F* fa_tm_glovtxb;
+  TH2F* fa_tm_gloprimvtxb;
 
-    TH2F* fa_m2mom_glo;       
-    TH2F* fa_m2mom_glovtxb; 
-    TH2F* fa_m2mom_gloprim;       
-    TH2F* fa_m2mom_gloprimvtxb;             
-    TH2F* fa_m2mom_glo_pip;       
-    TH2F* fa_m2mom_glo_pim;       
-    TH2F* fa_m2mom_glo_kp;       
-    TH2F* fa_m2mom_glo_km;       
-    TH2F* fa_m2mom_glo_p;       
-    TH2F* fa_m2mom_glo_pbar;       
-    TH2F* fa_m2mom_glo_d;       
-    TH2F* fa_m2mom_glo_t;       
-    TH2F* fa_m2mom_glo_h;       
-    TH2F* fa_m2mom_glo_a;  
+  TH2F* fa_m2mom_glo;
+  TH2F* fa_m2mom_glovtxb;
+  TH2F* fa_m2mom_gloprim;
+  TH2F* fa_m2mom_gloprimvtxb;
+  TH2F* fa_m2mom_glo_pip;
+  TH2F* fa_m2mom_glo_pim;
+  TH2F* fa_m2mom_glo_kp;
+  TH2F* fa_m2mom_glo_km;
+  TH2F* fa_m2mom_glo_p;
+  TH2F* fa_m2mom_glo_pbar;
+  TH2F* fa_m2mom_glo_d;
+  TH2F* fa_m2mom_glo_t;
+  TH2F* fa_m2mom_glo_h;
+  TH2F* fa_m2mom_glo_a;
 
-    TH2F* fa_pMCmom_glo;       
-    TH2F* fa_pMCmom_glo_pip;       
-    TH2F* fa_pMCmom_glo_pim;       
-    TH2F* fa_pMCmom_glo_kp;       
-    TH2F* fa_pMCmom_glo_km;       
-    TH2F* fa_pMCmom_glo_p;       
-    TH2F* fa_pMCmom_glo_pbar;       
-    TH2F* fa_pMCmom_glo_d;       
-    TH2F* fa_pMCmom_glo_t;       
-    TH2F* fa_pMCmom_glo_h;       
-    TH2F* fa_pMCmom_glo_a;  
-     
-    TH2F* fa_w_mom_glo;       
-    TH2F* fa_w_mom_glo_pip;       
-    TH2F* fa_w_mom_glo_pim;       
-    TH2F* fa_w_mom_glo_kp;       
-    TH2F* fa_w_mom_glo_km;       
-    TH2F* fa_w_mom_glo_p;       
-    TH2F* fa_w_mom_glo_pbar;       
-    TH2F* fa_w_mom_glo_d;       
-    TH2F* fa_w_mom_glo_t;       
-    TH2F* fa_w_mom_glo_h;       
-    TH2F* fa_w_mom_glo_a;       
-    TH2F* fa_w_mom_gloprim;
-    TH2F* fa_w_mom_glomis;
+  TH2F* fa_pMCmom_glo;
+  TH2F* fa_pMCmom_glo_pip;
+  TH2F* fa_pMCmom_glo_pim;
+  TH2F* fa_pMCmom_glo_kp;
+  TH2F* fa_pMCmom_glo_km;
+  TH2F* fa_pMCmom_glo_p;
+  TH2F* fa_pMCmom_glo_pbar;
+  TH2F* fa_pMCmom_glo_d;
+  TH2F* fa_pMCmom_glo_t;
+  TH2F* fa_pMCmom_glo_h;
+  TH2F* fa_pMCmom_glo_a;
 
-    TH2F* fa_LenDismom_glo;       
-    TH2F* fa_LenDismom_glo_pip;       
-    TH2F* fa_LenDismom_glo_pim;       
-    TH2F* fa_LenDismom_glo_kp;       
-    TH2F* fa_LenDismom_glo_km;       
-    TH2F* fa_LenDismom_glo_p;       
-    TH2F* fa_LenDismom_glo_pbar;       
-    TH2F* fa_LenDismom_glo_d;       
-    TH2F* fa_LenDismom_glo_t;       
-    TH2F* fa_LenDismom_glo_h;       
-    TH2F* fa_LenDismom_glo_a; 
-    TH2F* fa_LenMcLenGlomom_glo;
-    TH2F* fa_LenMcDismom_glo;       
+  TH2F* fa_w_mom_glo;
+  TH2F* fa_w_mom_glo_pip;
+  TH2F* fa_w_mom_glo_pim;
+  TH2F* fa_w_mom_glo_kp;
+  TH2F* fa_w_mom_glo_km;
+  TH2F* fa_w_mom_glo_p;
+  TH2F* fa_w_mom_glo_pbar;
+  TH2F* fa_w_mom_glo_d;
+  TH2F* fa_w_mom_glo_t;
+  TH2F* fa_w_mom_glo_h;
+  TH2F* fa_w_mom_glo_a;
+  TH2F* fa_w_mom_gloprim;
+  TH2F* fa_w_mom_glomis;
 
-    TH2F* fhwdist;
-    TH2F* fhwmindelmass;
-    TH2F* fhwminlen;
-    TH2F* fhwdelp;
+  TH2F* fa_LenDismom_glo;
+  TH2F* fa_LenDismom_glo_pip;
+  TH2F* fa_LenDismom_glo_pim;
+  TH2F* fa_LenDismom_glo_kp;
+  TH2F* fa_LenDismom_glo_km;
+  TH2F* fa_LenDismom_glo_p;
+  TH2F* fa_LenDismom_glo_pbar;
+  TH2F* fa_LenDismom_glo_d;
+  TH2F* fa_LenDismom_glo_t;
+  TH2F* fa_LenDismom_glo_h;
+  TH2F* fa_LenDismom_glo_a;
+  TH2F* fa_LenMcLenGlomom_glo;
+  TH2F* fa_LenMcDismom_glo;
 
-    TH1F* fhTofTrkDx;
-    TH1F* fhTofTrkDy;
-    TH1F* fhTofTrkDxsel;
-    TH1F* fhTofTrkDysel;
+  TH2F* fhwdist;
+  TH2F* fhwmindelmass;
+  TH2F* fhwminlen;
+  TH2F* fhwdelp;
 
-    Bool_t   bRecSec;
-    Double_t fdDistPrimLim;// =1.5;  // Ext Parameter: Max Tof-Sts trans distance for primaries 
-    Double_t fdDistPrimLim2;//=0.3;  // Ext Parameter: Max Sts-Sts trans distance for primaries 
-    Double_t fdDistSecLim2;//=0.5;   // Ext Parameter: Max Sts-Sts trans distance from TOF direction for secondaries  
-    Double_t fdD0ProtLim;//=0.4;     // Ext Parameter: Min impact parameter for secondary proton 
-    Double_t fdOpAngMin;//=0.01;     // Ext Parameter: Min opening angle for accepting pair
-    Double_t fdDCALim;//=0.2;        // Ext Parameter: Max DCA for accepting pair
-    Double_t fdVLenMin;//=25.;       // Ext Parameter: Min Lambda flight path length for accepting pair
-    Double_t fdVLenMax;//=25.;       // Ext Parameter: Max Lambda flight path length for accepting pair
-    Double_t fdDistTRD;  // max accepted distance of Trd Hit from STS-TOF line 
-    Double_t fdTRDHmulMin;  // min associated Trd Hits to Track candidates 
-    UInt_t   fNMixedEvents;//=10;    // Number of events to be mixed with 
+  TH1F* fhTofTrkDx;
+  TH1F* fhTofTrkDy;
+  TH1F* fhTofTrkDxsel;
+  TH1F* fhTofTrkDysel;
 
-    void CreateHistogramms();
-    InitStatus ReadPdfFile();
-    InitStatus ReadFlowFile();
-    void ReconstructSecondaries();
+  Bool_t bRecSec;
+  Double_t
+    fdDistPrimLim;  // =1.5;  // Ext Parameter: Max Tof-Sts trans distance for primaries
+  Double_t
+    fdDistPrimLim2;  //=0.3;  // Ext Parameter: Max Sts-Sts trans distance for primaries
+  Double_t
+    fdDistSecLim2;  //=0.5;   // Ext Parameter: Max Sts-Sts trans distance from TOF direction for secondaries
+  Double_t
+    fdD0ProtLim;  //=0.4;     // Ext Parameter: Min impact parameter for secondary proton
+  Double_t
+    fdOpAngMin;  //=0.01;     // Ext Parameter: Min opening angle for accepting pair
+  Double_t
+    fdDCALim;  //=0.2;        // Ext Parameter: Max DCA for accepting pair
+  Double_t
+    fdVLenMin;  //=25.;       // Ext Parameter: Min Lambda flight path length for accepting pair
+  Double_t
+    fdVLenMax;  //=25.;       // Ext Parameter: Max Lambda flight path length for accepting pair
+  Double_t fdDistTRD;     // max accepted distance of Trd Hit from STS-TOF line
+  Double_t fdTRDHmulMin;  // min associated Trd Hits to Track candidates
+  UInt_t fNMixedEvents;   //=10;    // Number of events to be mixed with
 
-    CbmHadronAnalysis(const CbmHadronAnalysis&);
-    CbmHadronAnalysis operator=(const CbmHadronAnalysis&);
+  void CreateHistogramms();
+  InitStatus ReadPdfFile();
+  InitStatus ReadFlowFile();
+  void ReconstructSecondaries();
+
+  CbmHadronAnalysis(const CbmHadronAnalysis&);
+  CbmHadronAnalysis operator=(const CbmHadronAnalysis&);
 
 public:
-    CbmHadronAnalysis();
-    CbmHadronAnalysis(const char* name, Int_t verbose = 1);
-    virtual ~CbmHadronAnalysis();
+  CbmHadronAnalysis();
+  CbmHadronAnalysis(const char* name, Int_t verbose = 1);
+  virtual ~CbmHadronAnalysis();
 
-    virtual InitStatus Init();
-    virtual void Exec(Option_t* option);
-    virtual void ExecEvent(Option_t* option);
-    virtual void Finish();
+  virtual InitStatus Init();
+  virtual void Exec(Option_t* option);
+  virtual void ExecEvent(Option_t* option);
+  virtual void Finish();
 
-    void WriteHistogramms();
+  void WriteHistogramms();
 
-    inline void SetBeamMomentum(Float_t bm)  { fBeamMomentum = bm;          }
-    inline void SetMidY(Float_t midY)        { fMidY = midY;          }
-    inline void SetDY(Float_t DY)            { fDY = DY;          }
-    inline void SetFlowMinPtm(Float_t mptm)  { fFlowMinPtm = mptm;}
-    inline void SetBSelMin(Float_t b)        { fBSelMin=b; }
-    inline void SetBSelMax(Float_t b)        { fBSelMax=b; }
-    inline void SetVtxBMax(Float_t b)        { fVtxBMax=b; }
-    inline void SetWMax(Float_t w)           { fWMax=w; }
+  inline void SetBeamMomentum(Float_t bm) { fBeamMomentum = bm; }
+  inline void SetMidY(Float_t midY) { fMidY = midY; }
+  inline void SetDY(Float_t DY) { fDY = DY; }
+  inline void SetFlowMinPtm(Float_t mptm) { fFlowMinPtm = mptm; }
+  inline void SetBSelMin(Float_t b) { fBSelMin = b; }
+  inline void SetBSelMax(Float_t b) { fBSelMax = b; }
+  inline void SetVtxBMax(Float_t b) { fVtxBMax = b; }
+  inline void SetWMax(Float_t w) { fWMax = w; }
 
-    void SetPdfFileName(TString pdfFileName) { fPdfFileName = pdfFileName; }
-    void SetFlowFileName(TString flowFileName) { fFlowFileName = flowFileName; }
+  void SetPdfFileName(TString pdfFileName) { fPdfFileName = pdfFileName; }
+  void SetFlowFileName(TString flowFileName) { fFlowFileName = flowFileName; }
 
-    inline Float_t GetBeamMomentum() const { return fBeamMomentum; }
-    inline Float_t GetMidY() const      { return fMidY; } 
-    inline Float_t GetDY() const        { return fDY; }
-    inline Float_t GetFlowMinPtm() const{ return fFlowMinPtm; }
-    inline Float_t GetBSelMin() const   { return fBSelMin; }
-    inline Float_t GetBSelMax() const   { return fBSelMax; }
+  inline Float_t GetBeamMomentum() const { return fBeamMomentum; }
+  inline Float_t GetMidY() const { return fMidY; }
+  inline Float_t GetDY() const { return fDY; }
+  inline Float_t GetFlowMinPtm() const { return fFlowMinPtm; }
+  inline Float_t GetBSelMin() const { return fBSelMin; }
+  inline Float_t GetBSelMax() const { return fBSelMax; }
 
-    inline void SetRecSec(Bool_t val)           { bRecSec=val; }
-    inline void SetDistPrimLim(Double_t val)    { fdDistPrimLim =val; }
-    inline void SetDistPrimLim2(Double_t val)   { fdDistPrimLim2=val; }
-    inline void SetDistSecLim2(Double_t val)    { fdDistSecLim2=val; }
-    inline void SetD0ProtLim(Double_t val)      { fdD0ProtLim=val; }
-    inline void SetOpAngMin(Double_t val)       { fdOpAngMin=val; }
-    inline void SetDCALim(Double_t val)         { fdDCALim=val; }
-    inline void SetVLenMin(Double_t val)        { fdVLenMin=val; }
-    inline void SetVLenMax(Double_t val)        { fdVLenMax=val; }
-    inline void SetDistTRD(Double_t val)        { fdDistTRD=val; }
-    inline void SetTRDHmulMin(Double_t val)     { fdTRDHmulMin=val; }
-    inline void SetNMixedEvents(UInt_t val)     { fNMixedEvents=val; }
+  inline void SetRecSec(Bool_t val) { bRecSec = val; }
+  inline void SetDistPrimLim(Double_t val) { fdDistPrimLim = val; }
+  inline void SetDistPrimLim2(Double_t val) { fdDistPrimLim2 = val; }
+  inline void SetDistSecLim2(Double_t val) { fdDistSecLim2 = val; }
+  inline void SetD0ProtLim(Double_t val) { fdD0ProtLim = val; }
+  inline void SetOpAngMin(Double_t val) { fdOpAngMin = val; }
+  inline void SetDCALim(Double_t val) { fdDCALim = val; }
+  inline void SetVLenMin(Double_t val) { fdVLenMin = val; }
+  inline void SetVLenMax(Double_t val) { fdVLenMax = val; }
+  inline void SetDistTRD(Double_t val) { fdDistTRD = val; }
+  inline void SetTRDHmulMin(Double_t val) { fdTRDHmulMin = val; }
+  inline void SetNMixedEvents(UInt_t val) { fNMixedEvents = val; }
 
-    ClassDef(CbmHadronAnalysis, 1);
+  ClassDef(CbmHadronAnalysis, 1);
 };
 
 #endif
-

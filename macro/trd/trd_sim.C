@@ -7,8 +7,7 @@
 //
 // --------------------------------------------------------------------------
 
-void trd_sim(Int_t nEvents = 1, 
-             const char* setupName = "sis100_electron")
+void trd_sim(Int_t nEvents = 1, const char* setupName = "sis100_electron")
 //             const char* setupName = "sis100_hadron")
 //               const char* setupName = "sis100_debug")
 {
@@ -19,7 +18,7 @@ void trd_sim(Int_t nEvents = 1,
 
   // ----- Paths and file names  --------------------------------------------
   TString inDir   = gSystem->Getenv("VMCWORKDIR");
-  TString inFile = ""; // give here or as argument; otherwise default is taken
+  TString inFile  = "";  // give here or as argument; otherwise default is taken
   TString outDir  = "data";
   TString outFile = outDir + "/test.mc.root";
   TString parFile = outDir + "/params.root";
@@ -35,13 +34,13 @@ void trd_sim(Int_t nEvents = 1,
   // in the responsibility of the user that no overlaps or extrusions are
   // created by the placement of the target.
   //
-  TString  targetElement   = "Gold";
+  TString targetElement    = "Gold";
   Double_t targetThickness = 0.025;  // full thickness in cm
   Double_t targetDiameter  = 2.5;    // diameter in cm
   Double_t targetPosX      = 0.;     // target x position in global c.s. [cm]
   Double_t targetPosY      = 0.;     // target y position in global c.s. [cm]
   Double_t targetPosZ      = 0.;     // target z position in global c.s. [cm]
-  Double_t targetRotY      = 0.;     // target rotation angle around the y axis [deg]
+  Double_t targetRotY = 0.;  // target rotation angle around the y axis [deg]
   // ------------------------------------------------------------------------
 
 
@@ -55,36 +54,33 @@ void trd_sim(Int_t nEvents = 1,
   //
   Bool_t smearVertexXY = kTRUE;
   Bool_t smearVertexZ  = kTRUE;
-  Double_t beamWidthX   = 1.;  // Gaussian sigma of the beam profile in x [cm]
-  Double_t beamWidthY   = 1.;  // Gaussian sigma of the beam profile in y [cm]
+  Double_t beamWidthX  = 1.;  // Gaussian sigma of the beam profile in x [cm]
+  Double_t beamWidthY  = 1.;  // Gaussian sigma of the beam profile in y [cm]
   // ------------------------------------------------------------------------
 
-  
+
   // Function needed for CTest runtime dependency
   TString depFile = Remove_CTest_Dependency_File(outDir, "trd_sim");
 
-  TString setupFile = inDir + "/geometry/setup/setup_" + setupName + ".C";
+  TString setupFile  = inDir + "/geometry/setup/setup_" + setupName + ".C";
   TString setupFunct = "setup_";
-  setupFunct = setupFunct + setupName + "()";
+  setupFunct         = setupFunct + setupName + "()";
 
   gROOT->LoadMacro(setupFile);
   gInterpreter->ProcessLine(setupFunct);
 
-//  if (CbmSetup <= 3)
-//    CbmSetup::Instance()->SetModule(kPlatform, "v13a");
-//  else
-//    CbmSetup::Instance()->SetModule(kPlatform, "v13b");
+  //  if (CbmSetup <= 3)
+  //    CbmSetup::Instance()->SetModule(kPlatform, "v13a");
+  //  else
+  //    CbmSetup::Instance()->SetModule(kPlatform, "v13b");
 
   // In general, the following parts need not be touched
   // ========================================================================
 
 
-
-
   // ----    Debug option   -------------------------------------------------
   gDebug = 0;
   // ------------------------------------------------------------------------
-
 
 
   // -----   Timer   --------------------------------------------------------
@@ -94,14 +90,14 @@ void trd_sim(Int_t nEvents = 1,
 
   // -----   Create simulation run   ----------------------------------------
   FairRunSim* fRun = new FairRunSim();
-  fRun->SetName("TGeant3");              // Transport engine
-  fRun->SetOutputFile(outFile);          // Output file
+  fRun->SetName("TGeant3");      // Transport engine
+  fRun->SetOutputFile(outFile);  // Output file
   FairRuntimeDb* rtdb = fRun->GetRuntimeDb();
   // ------------------------------------------------------------------------
 
 
   // -----   Create media   -------------------------------------------------
-  fRun->SetMaterials("media.geo");       // Materials
+  fRun->SetMaterials("media.geo");  // Materials
   // ------------------------------------------------------------------------
 
 
@@ -115,9 +111,8 @@ void trd_sim(Int_t nEvents = 1,
 
 
   // -----   Create and register the target   -------------------------------
-  CbmTarget* target = new CbmTarget(targetElement.Data(),
-                                              targetThickness,
-                                              targetDiameter);
+  CbmTarget* target =
+    new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
   target->SetPosition(targetPosX, targetPosY, targetPosZ);
   target->SetRotation(targetRotY);
   target->Print();
@@ -126,9 +121,9 @@ void trd_sim(Int_t nEvents = 1,
 
   // -----   Create magnetic field   ----------------------------------------
   CbmFieldMap* magField = CbmSetup::Instance()->CreateFieldMap();
-  if ( ! magField ) {
-        std::cout << "-E- run_sim_new: No valid field!";
-        return;
+  if (!magField) {
+    std::cout << "-E- run_sim_new: No valid field!";
+    return;
   }
   fRun->SetField(magField);
   // ------------------------------------------------------------------------
@@ -136,11 +131,11 @@ void trd_sim(Int_t nEvents = 1,
   // -----   Input file   ---------------------------------------------------
   std::cout << std::endl;
   TString defaultInputFile = inDir + "/input/urqmd.auau.10gev.centr.root";
-  if ( inFile.IsNull() ) {  // Not defined in the macro explicitly
-//        if ( strcmp(inFile, "") == 0 ) {  // not given as argument to the macro
-                inFile = defaultInputFile;
-//        }
-//        else inFile = inputFile;
+  if (inFile.IsNull()) {  // Not defined in the macro explicitly
+    //        if ( strcmp(inFile, "") == 0 ) {  // not given as argument to the macro
+    inFile = defaultInputFile;
+    //        }
+    //        else inFile = inputFile;
   }
   // ------------------------------------------------------------------------
 
@@ -149,13 +144,13 @@ void trd_sim(Int_t nEvents = 1,
   // --- Uniform distribution of event plane angle
   primGen->SetEventPlane(0., 2. * TMath::Pi());
   // --- Get target parameters
-  Double_t tX = 0.;
-  Double_t tY = 0.;
-  Double_t tZ = 0.;
+  Double_t tX  = 0.;
+  Double_t tY  = 0.;
+  Double_t tZ  = 0.;
   Double_t tDz = 0.;
-  if ( target ) {
-        target->GetPosition(tX, tY, tZ);
-        tDz = target->GetThickness();
+  if (target) {
+    target->GetPosition(tX, tY, tZ);
+    tDz = target->GetThickness();
   }
   primGen->SetTarget(tZ, tDz);
   primGen->SetBeam(0., 0., beamWidthX, beamWidthY);
@@ -169,41 +164,41 @@ void trd_sim(Int_t nEvents = 1,
   // ------------------------------------------------------------------------
 
   // Use the CbmUnigenGenrator for the input
-  CbmUnigenGenerator*  uniGen = new CbmUnigenGenerator(inFile);
+  CbmUnigenGenerator* uniGen = new CbmUnigenGenerator(inFile);
   primGen->AddGenerator(uniGen);
   fRun->SetGenerator(primGen);
   // ------------------------------------------------------------------------
- 
+
   // -Trajectories Visualization (TGeoManager Only )
   // Switch this on if you want to visualize tracks in the
   // eventdisplay.
   // This is normally switch off, because of the huge files created
-  // when it is switched on. 
+  // when it is switched on.
   fRun->SetStoreTraj(kTRUE);
 
   // -----   Run initialisation   -------------------------------------------
   fRun->Init();
   // ------------------------------------------------------------------------
-  
+
   // Set cuts for storing the trajectories.
   // Switch this on only if trajectories are stored.
   // Choose this cuts according to your needs, but be aware
   // that the file size of the output file depends on these cuts
 
-   FairTrajFilter* trajFilter = FairTrajFilter::Instance();
-   trajFilter->SetStepSizeCut(0.01); // 1 cm
-   trajFilter->SetVertexCut(-2000., -2000., 4., 2000., 2000., 100.);
-   trajFilter->SetMomentumCutP(10e-3); // p_lab > 10 MeV
-   trajFilter->SetEnergyCut(0., 1.02); // 0 < Etot < 1.04 GeV
-   trajFilter->SetStorePrimaries(kTRUE);
-   trajFilter->SetStoreSecondaries(kTRUE);
+  FairTrajFilter* trajFilter = FairTrajFilter::Instance();
+  trajFilter->SetStepSizeCut(0.01);  // 1 cm
+  trajFilter->SetVertexCut(-2000., -2000., 4., 2000., 2000., 100.);
+  trajFilter->SetMomentumCutP(10e-3);  // p_lab > 10 MeV
+  trajFilter->SetEnergyCut(0., 1.02);  // 0 < Etot < 1.04 GeV
+  trajFilter->SetStorePrimaries(kTRUE);
+  trajFilter->SetStoreSecondaries(kTRUE);
 
   // -----   Runtime database   ---------------------------------------------
   CbmFieldPar* fieldPar = (CbmFieldPar*) rtdb->getContainer("CbmFieldPar");
   fieldPar->SetParameters(magField);
   fieldPar->setChanged();
-  fieldPar->setInputVersion(fRun->GetRunId(),1);
-  Bool_t kParameterMerged = kTRUE;
+  fieldPar->setInputVersion(fRun->GetRunId(), 1);
+  Bool_t kParameterMerged   = kTRUE;
   FairParRootFileIo* parOut = new FairParRootFileIo(kParameterMerged);
   parOut->open(parFile.Data());
   rtdb->setOutput(parOut);
@@ -211,7 +206,7 @@ void trd_sim(Int_t nEvents = 1,
   rtdb->print();
   // ------------------------------------------------------------------------
 
- 
+
   // -----   Start run   ----------------------------------------------------
   fRun->Run(nEvents);
   // ------------------------------------------------------------------------
@@ -224,10 +219,10 @@ void trd_sim(Int_t nEvents = 1,
   Double_t ctime = timer.CpuTime();
   cout << endl << endl;
   cout << "Macro finished succesfully." << endl;
-  cout << "Output file is "    << outFile << endl;
+  cout << "Output file is " << outFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime 
-       << "s" << endl << endl;
+  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl
+       << endl;
   // ------------------------------------------------------------------------
 
   cout << " Test passed" << endl;
@@ -237,4 +232,3 @@ void trd_sim(Int_t nEvents = 1,
   Generate_CTest_Dependency_File(depFile);
   RemoveGeoManager();
 }
-

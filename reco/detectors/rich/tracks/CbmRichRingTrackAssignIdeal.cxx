@@ -11,84 +11,87 @@
 
 #include "CbmRichRing.h"
 
+#include "CbmGlobalTrack.h"
 #include "CbmMCTrack.h"
+#include "CbmTrackMatchNew.h"
 #include "FairRootManager.h"
 #include "FairTrackParam.h"
-#include "CbmGlobalTrack.h"
-#include "CbmTrackMatchNew.h"
 
 #include <iostream>
 
 using std::cout;
 using std::endl;
 
-CbmRichRingTrackAssignIdeal::CbmRichRingTrackAssignIdeal():
-   fMcTracks(NULL),
-   fGlobalTracks(NULL),
-   fRingMatches(NULL),
-   fStsTrackMatches(NULL)
-{
+CbmRichRingTrackAssignIdeal::CbmRichRingTrackAssignIdeal()
+  : fMcTracks(NULL)
+  , fGlobalTracks(NULL)
+  , fRingMatches(NULL)
+  , fStsTrackMatches(NULL) {}
 
+CbmRichRingTrackAssignIdeal::~CbmRichRingTrackAssignIdeal() {}
+
+void CbmRichRingTrackAssignIdeal::Init() {
+  FairRootManager* ioman = FairRootManager::Instance();
+  if (NULL == ioman) {
+    Fatal("CbmRichRingTrackAssignIdeal::Init", "RootManager not instantised!");
+  }
+
+  fMcTracks = (TClonesArray*) ioman->GetObject("MCTrack");
+  if (NULL == fMcTracks) {
+    Fatal("CbmRichRingTrackAssignIdeal::Init", "No MCTrack array!");
+  }
+
+  fGlobalTracks = (TClonesArray*) ioman->GetObject("GlobalTrack");
+  if (NULL == fGlobalTracks) {
+    Fatal("CbmRichRingTrackAssignIdeal::Init", "No GlobalTrack array!");
+  }
+
+  fRingMatches = (TClonesArray*) ioman->GetObject("RichRingMatch");
+  if (NULL == fRingMatches) {
+    Fatal("CbmRichRingTrackAssignIdeal::Init", "No RichRingMatch array!");
+  }
+
+  fStsTrackMatches = (TClonesArray*) ioman->GetObject("StsTrackMatch");
+  if (NULL == fStsTrackMatches) {
+    Fatal("CbmRichRingTrackAssignIdeal::Init", "No StsTrackMatch array!");
+  }
 }
 
-CbmRichRingTrackAssignIdeal::~CbmRichRingTrackAssignIdeal()
-{
-}
+void CbmRichRingTrackAssignIdeal::DoAssign(TClonesArray* rings,
+                                           TClonesArray* richProj) {
+  Int_t nofTracks = richProj->GetEntriesFast();
+  Int_t nofRings  = rings->GetEntriesFast();
 
-void CbmRichRingTrackAssignIdeal::Init()
-{
-   FairRootManager* ioman = FairRootManager::Instance();
-   if (NULL == ioman) { Fatal("CbmRichRingTrackAssignIdeal::Init", "RootManager not instantised!");}
+  for (Int_t iRing = 0; iRing < nofRings; iRing++) {
+    CbmRichRing* pRing = (CbmRichRing*) rings->At(iRing);
+    if (NULL == pRing) continue;
+    if (pRing->GetNofHits() < fMinNofHitsInRing) continue;
 
-   fMcTracks  = (TClonesArray*) ioman->GetObject("MCTrack");
-   if ( NULL == fMcTracks) {Fatal("CbmRichRingTrackAssignIdeal::Init", "No MCTrack array!");}
+    CbmTrackMatchNew* pRingMatch = (CbmTrackMatchNew*) fRingMatches->At(iRing);
+    if (NULL == pRingMatch) continue;
+    Int_t ringID = pRingMatch->GetMatchedLink().GetIndex();
+    //      Double_t xRing = pRing->GetCenterX();
+    //      Double_t yRing = pRing->GetCenterY();
 
-   fGlobalTracks = (TClonesArray*) ioman->GetObject("GlobalTrack");
-   if ( NULL == fGlobalTracks) {Fatal("CbmRichRingTrackAssignIdeal::Init", "No GlobalTrack array!");}
+    for (Int_t iTrack = 0; iTrack < nofTracks; iTrack++) {
+      FairTrackParam* pTrack = (FairTrackParam*) richProj->At(iTrack);
+      if (NULL == pTrack) continue;
+      Double_t xTrack = pTrack->GetX();
+      Double_t yTrack = pTrack->GetY();
 
-   fRingMatches = (TClonesArray*) ioman->GetObject("RichRingMatch");
-   if ( NULL == fRingMatches) {Fatal("CbmRichRingTrackAssignIdeal::Init", "No RichRingMatch array!");}
+      // no projection to photodetector plane
+      if (xTrack == 0 && yTrack == 0) continue;
 
-   fStsTrackMatches = (TClonesArray*) ioman->GetObject("StsTrackMatch");
-   if ( NULL == fStsTrackMatches) {Fatal("CbmRichRingTrackAssignIdeal::Init", "No StsTrackMatch array!");}
-}
+      CbmGlobalTrack* gTrack = (CbmGlobalTrack*) fGlobalTracks->At(iTrack);
+      if (NULL == gTrack) continue;
+      if (gTrack->GetStsTrackIndex() == -1) continue;
+      CbmTrackMatchNew* pTrackMatch =
+        (CbmTrackMatchNew*) fStsTrackMatches->At(gTrack->GetStsTrackIndex());
+      if (NULL == pTrackMatch) continue;
 
-void CbmRichRingTrackAssignIdeal::DoAssign(
-      TClonesArray *rings,
-      TClonesArray* richProj)
-{
-   Int_t nofTracks = richProj->GetEntriesFast();
-   Int_t nofRings = rings->GetEntriesFast();
-
-   for (Int_t iRing=0; iRing < nofRings; iRing++){
-      CbmRichRing* pRing = (CbmRichRing*) rings->At(iRing);
-      if (NULL == pRing) continue;
-      if (pRing->GetNofHits() < fMinNofHitsInRing) continue;
-
-      CbmTrackMatchNew* pRingMatch = (CbmTrackMatchNew*) fRingMatches->At(iRing);
-      if (NULL == pRingMatch) continue;
-      Int_t ringID = pRingMatch->GetMatchedLink().GetIndex();
-//      Double_t xRing = pRing->GetCenterX();
-//      Double_t yRing = pRing->GetCenterY();
-
-      for (Int_t iTrack=0; iTrack < nofTracks; iTrack++){
-         FairTrackParam* pTrack = (FairTrackParam*) richProj->At(iTrack);
-         if (NULL == pTrack) continue;
-         Double_t xTrack = pTrack->GetX();
-         Double_t yTrack = pTrack->GetY();
-
-         // no projection to photodetector plane
-         if (xTrack == 0 && yTrack == 0) continue;
-
-         CbmGlobalTrack* gTrack = (CbmGlobalTrack*) fGlobalTracks->At(iTrack);
-         if (NULL == gTrack) continue;
-         if (gTrack->GetStsTrackIndex() == -1) continue;
-         CbmTrackMatchNew* pTrackMatch = (CbmTrackMatchNew*) fStsTrackMatches->At(gTrack->GetStsTrackIndex());
-         if (NULL == pTrackMatch) continue;
-
-         if (pTrackMatch->GetMatchedLink().GetIndex() == ringID){
-            gTrack -> SetRichRingIndex(iRing);
-         } // ideal assignement
-      } // loop tracks
-   } // loop rings
+      if (pTrackMatch->GetMatchedLink().GetIndex() == ringID) {
+        gTrack->SetRichRingIndex(iRing);
+      }  // ideal assignement
+    }    // loop tracks
+  }      // loop rings
 }

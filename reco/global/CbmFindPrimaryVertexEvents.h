@@ -8,8 +8,8 @@
 #define CBMFINDPRIMARYVERTEXEVENTS_H 1
 
 
-#include "TStopwatch.h"
 #include "FairTask.h"
+#include "TStopwatch.h"
 
 class TClonesArray;
 class CbmPrimaryVertexFinder;
@@ -26,11 +26,9 @@ class CbmVertex;
  ** Uses as vertex finding algorithm classes derived from
  ** CbmPrimaryVertexFinder.
  **/
-class CbmFindPrimaryVertexEvents : public FairTask
-{
+class CbmFindPrimaryVertexEvents : public FairTask {
 
- public:
-
+public:
   /** Default constructor **/
   CbmFindPrimaryVertexEvents();
 
@@ -39,10 +37,11 @@ class CbmFindPrimaryVertexEvents : public FairTask
    *@param pvFinder  Pointer to concrete vertex finder
    **/
   CbmFindPrimaryVertexEvents(CbmPrimaryVertexFinder* pvFinder);
-  
+
   // Prevent auto copy constructor and assignment operator
   CbmFindPrimaryVertexEvents(const CbmFindPrimaryVertexEvents&) = delete;
-  CbmFindPrimaryVertexEvents& operator=(const CbmFindPrimaryVertexEvents&) = delete;
+  CbmFindPrimaryVertexEvents&
+  operator=(const CbmFindPrimaryVertexEvents&) = delete;
 
   /** Constructor with name and title
    **
@@ -50,8 +49,9 @@ class CbmFindPrimaryVertexEvents : public FairTask
    *@param title     Title of task
    *@param pvFinder  Pointer to vertex finder concrete object
    **/
-  CbmFindPrimaryVertexEvents(const char* name, const char* title,
-		       CbmPrimaryVertexFinder* pvFinder);
+  CbmFindPrimaryVertexEvents(const char* name,
+                             const char* title,
+                             CbmPrimaryVertexFinder* pvFinder);
 
 
   /** Destructor **/
@@ -70,23 +70,18 @@ class CbmFindPrimaryVertexEvents : public FairTask
   virtual void Finish();
 
 
- private:
+private:
+  TStopwatch fTimer;                ///< ROOT stopwatch
+  CbmPrimaryVertexFinder* fFinder;  ///< Concrete finder instance
+  TClonesArray* fEvents;            //! event array
+  TClonesArray* fTracks;            //! track array
+  CbmVertex* fPrimVert;
 
-  TStopwatch              fTimer;    ///< ROOT stopwatch
-  CbmPrimaryVertexFinder* fFinder;   ///< Concrete finder instance
-  TClonesArray*           fEvents;   //! event array
-  TClonesArray*           fTracks;   //! track array
-  CbmVertex*              fPrimVert;
-
-  Int_t     fNofEvents;       ///< Total number of events processed
-  Double_t  fTimeTot;         ///< Total execution time [s]
-
+  Int_t fNofEvents;   ///< Total number of events processed
+  Double_t fTimeTot;  ///< Total execution time [s]
 
 
-  ClassDef(CbmFindPrimaryVertexEvents,1);
-
+  ClassDef(CbmFindPrimaryVertexEvents, 1);
 };
 
 #endif
-
-

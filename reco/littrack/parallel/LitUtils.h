@@ -11,13 +11,13 @@
 #ifndef LITUTILS_H_
 #define LITUTILS_H_
 
-#include <string>
 #include <sstream>
+#include <string>
 
 namespace lit {
-namespace parallel {
+  namespace parallel {
 
-/**
+    /**
  * \fn template <class T>std::string ToString(const T& value)
  * \brief Function converts object into a std::string.
  *
@@ -27,19 +27,16 @@ namespace parallel {
  * \param[in,out] par Reference to track parameters.
  * \param[in] mat Reference to material
  */
-template <class T>
-std::string ToString(
-   const T& value)
-{
-   std::stringstream ss;
-   ss.precision(5);
-   ss << value;
-   return ss.str();
-}
+    template<class T>
+    std::string ToString(const T& value) {
+      std::stringstream ss;
+      ss.precision(5);
+      ss << value;
+      return ss.str();
+    }
 
 
-
-/**
+    /**
  * \class DeleteObject
  * \brief Functor class for convenient memory release.
  *
@@ -51,15 +48,14 @@ std::string ToString(
  * \param[in,out] par Reference to track parameters.
  * \param[in] mat Reference to material
  */
-class DeleteObject
-{
-public:
-   template<typename T>
-   void operator()(const T* ptr) const {
-      delete ptr;
-   }
-};
+    class DeleteObject {
+    public:
+      template<typename T>
+      void operator()(const T* ptr) const {
+        delete ptr;
+      }
+    };
 
-} // namespace parallel
-} // namespace lit
+  }  // namespace parallel
+}  // namespace lit
 #endif /* LITUTILS_H_ */

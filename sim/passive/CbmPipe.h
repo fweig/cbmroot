@@ -7,21 +7,21 @@
 class TGeoCombiTrans;
 
 class CbmPipe : public FairModule {
-  public:
-    CbmPipe();
-    CbmPipe(const char * name, const char *Title="CBM Pipe");
-    CbmPipe(const CbmPipe&) = delete;
-    CbmPipe& operator=(const CbmPipe&) = delete;
-    virtual ~CbmPipe();
-    
-    virtual void ConstructGeometry();
+public:
+  CbmPipe();
+  CbmPipe(const char* name, const char* Title = "CBM Pipe");
+  CbmPipe(const CbmPipe&) = delete;
+  CbmPipe& operator=(const CbmPipe&) = delete;
+  virtual ~CbmPipe();
 
-  private:
-    TGeoCombiTrans*   fCombiTrans;  //! Transformation matrix for geometry positioning
-    std::string fVolumeName;
+  virtual void ConstructGeometry();
 
-  ClassDef(CbmPipe,1) //CBMPIPE
+private:
+  TGeoCombiTrans*
+    fCombiTrans;  //! Transformation matrix for geometry positioning
+  std::string fVolumeName;
+
+  ClassDef(CbmPipe, 1)  //CBMPIPE
 };
 
-#endif //CBMPIPE_H
-
+#endif  //CBMPIPE_H

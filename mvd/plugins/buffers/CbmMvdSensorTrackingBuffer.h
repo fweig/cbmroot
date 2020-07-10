@@ -13,59 +13,55 @@
 #define CBMMVDSENSORTRACKINGBUFFER_H 1
 
 
-#include "TObject.h"
 #include "CbmMvdSensor.h"
 #include "CbmMvdSensorBuffer.h"
+#include "TObject.h"
 
 #include "CbmMvdHit.h"
 
 class TClonesArray;
 class CbmMvdSensor;
 
-class CbmMvdSensorTrackingBuffer : public CbmMvdSensorBuffer
-{
+class CbmMvdSensorTrackingBuffer : public CbmMvdSensorBuffer {
 
- public:
-
+public:
   /** Default constructor **/
   CbmMvdSensorTrackingBuffer();
 
   /** Destructor **/
   virtual ~CbmMvdSensorTrackingBuffer();
-  
+
   /** Input/Output **/
   //=======================================================
-  
+
   /** Send a new event to the buffer. The event will be absorbed but not processed.
    *The input - array will be emptied
    **/
-  virtual void 		SetInputArray	(TClonesArray* inputStream);
-  
-  virtual TClonesArray* GetOutputArray() {SetPluginReady(false); return fCurrentEvent; };
+  virtual void SetInputArray(TClonesArray* inputStream);
 
-  
+  virtual TClonesArray* GetOutputArray() {
+    SetPluginReady(false);
+    return fCurrentEvent;
+  };
+
 
   /** Data Processing **/
   //=======================================================
-  
-  virtual void 		InitBuffer     	(CbmMvdSensor* mySensor);
-  virtual void 		ExecChain		();
-  virtual void 		BuildTimeSlice	(Double_t tStart, Double_t tStop);
-  virtual void 		Finish		()				 {;};
-  
- 
-  
-  virtual void          ClearTimeSlice  (Double_t tStart, Double_t tStop);
+
+  virtual void InitBuffer(CbmMvdSensor* mySensor);
+  virtual void ExecChain();
+  virtual void BuildTimeSlice(Double_t tStart, Double_t tStop);
+  virtual void Finish() { ; };
 
 
+  virtual void ClearTimeSlice(Double_t tStart, Double_t tStop);
 
-  private: 
 
+private:
   Int_t ftimeStart;
   Int_t ftimeStop;
   Int_t ftimestep;
-  ClassDef(CbmMvdSensorTrackingBuffer,1);
-
+  ClassDef(CbmMvdSensorTrackingBuffer, 1);
 };
 
 

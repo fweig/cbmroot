@@ -22,24 +22,29 @@
 // --------------------------------------------------------------------------
 
 
-
-
-void AddUrqmdGenerator(   FairPrimaryGenerator *primGen, Int_t idx, TString inputFile);
-void AddLMVMCocktail(     FairPrimaryGenerator *primGen, Int_t idx, TString inputFile);
-void AddRadiationCocktail(FairPrimaryGenerator *primGen, Int_t idx, TString inputFile);
-void AddCharmoniaCocktail(FairPrimaryGenerator *primGen, Int_t idx, TString inputFile);
-void AddFragmentsCocktail(FairPrimaryGenerator *primGen, Int_t idx);
-void AddBoxGenerator(     FairPrimaryGenerator *primGen, Int_t mult);
+void AddUrqmdGenerator(FairPrimaryGenerator* primGen,
+                       Int_t idx,
+                       TString inputFile);
+void AddLMVMCocktail(FairPrimaryGenerator* primGen,
+                     Int_t idx,
+                     TString inputFile);
+void AddRadiationCocktail(FairPrimaryGenerator* primGen,
+                          Int_t idx,
+                          TString inputFile);
+void AddCharmoniaCocktail(FairPrimaryGenerator* primGen,
+                          Int_t idx,
+                          TString inputFile);
+void AddFragmentsCocktail(FairPrimaryGenerator* primGen, Int_t idx);
+void AddBoxGenerator(FairPrimaryGenerator* primGen, Int_t mult);
 
 void ConfigureGeant();
 void SetParticleDecays();
 void ConfigureMCStack();
 
 
-void run_sim_fast(Int_t nEvents = 2,
-		  const char* setupName = "sis100_electron",
-		  const char* inputFile = "")
-{
+void run_sim_fast(Int_t nEvents         = 2,
+                  const char* setupName = "sis100_electron",
+                  const char* inputFile = "") {
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -58,8 +63,8 @@ void run_sim_fast(Int_t nEvents = 2,
 
 
   // -----   In- and output file names   ------------------------------------
-  TString outDir  = gSystem->Getenv("OUTDIR");
-  if(outDir.IsNull())  outDir = "data/";
+  TString outDir = gSystem->Getenv("OUTDIR");
+  if (outDir.IsNull()) outDir = "data/";
   TString geoFile = outDir + setupName + "_geofile_full.root";
   TString outFile = outDir + setupName + "_mc.root";
   TString parFile = outDir + setupName + "_params.root";
@@ -67,7 +72,7 @@ void run_sim_fast(Int_t nEvents = 2,
 
 
   // -----   Remove old CTest runtime dependency file   ---------------------
-  TString depFile = Remove_CTest_Dependency_File(outDir, "run_sim" , setupName);
+  TString depFile = Remove_CTest_Dependency_File(outDir, "run_sim", setupName);
   // ------------------------------------------------------------------------
 
 
@@ -76,7 +81,7 @@ void run_sim_fast(Int_t nEvents = 2,
   TString setupFile = outDir + "/../setup_" + setupName + ".C";
   //  TString setupFile = srcDir + "/geometry/setup/setup_" + setupName + ".C";
   TString setupFunct = "setup_";
-  setupFunct = setupFunct + setupName + "()";
+  setupFunct         = setupFunct + setupName + "()";
   std::cout << "-I- " << myName << ": Loading macro " << setupFile << std::endl;
   gROOT->LoadMacro(setupFile);
   gROOT->ProcessLine(setupFunct);
@@ -86,15 +91,15 @@ void run_sim_fast(Int_t nEvents = 2,
 
   // -----   Modify Cbm setup   ---------------------------------------------
   std::cout << std::endl;
-  setup->SetActive(kMvd, kFALSE); // dont write psd points
-  setup->SetActive(kSts, kFALSE); // dont write psd points
-  setup->SetActive(kRich, kFALSE); // dont write psd points
-  setup->SetActive(kTrd, kFALSE); // dont write psd points
-  setup->SetActive(kTof, kFALSE); // dont write psd points
-  setup->SetActive(kPsd, kFALSE); // dont write psd points
+  setup->SetActive(kMvd, kFALSE);   // dont write psd points
+  setup->SetActive(kSts, kFALSE);   // dont write psd points
+  setup->SetActive(kRich, kFALSE);  // dont write psd points
+  setup->SetActive(kTrd, kFALSE);   // dont write psd points
+  setup->SetActive(kTof, kFALSE);   // dont write psd points
+  setup->SetActive(kPsd, kFALSE);   // dont write psd points
   // --- remove detector geometries
-  setup->RemoveModule(kPsd);      // remove psd from setup to reduce size of mcstack
-  setup->RemoveModule(kMvd);      // reduce material budget
+  setup->RemoveModule(kPsd);  // remove psd from setup to reduce size of mcstack
+  setup->RemoveModule(kMvd);  // reduce material budget
   // setup->RemoveModule(kTrd);   // sts-tof-matching study
   // --- change default geomerties
   //  setup->SetModule(kTrd, "v15d_1e", kTRUE); // 5layers
@@ -112,13 +117,13 @@ void run_sim_fast(Int_t nEvents = 2,
   // in the responsibility of the user that no overlaps or extrusions are
   // created by the placement of the target.
   //
-  TString  targetElement   = "Gold";
+  TString targetElement    = "Gold";
   Double_t targetThickness = 0.0025;  // full thickness in cm
-  Double_t targetDiameter  = 2.5;    // diameter in cm
-  Double_t targetPosX      = 0.;     // target x position in global c.s. [cm]
-  Double_t targetPosY      = 0.;     // target y position in global c.s. [cm]
-  Double_t targetPosZ      = 0.;     // target z position in global c.s. [cm]
-  Double_t targetRotY      = 0.;     // target rotation angle around the y axis [deg]
+  Double_t targetDiameter  = 2.5;     // diameter in cm
+  Double_t targetPosX      = 0.;      // target x position in global c.s. [cm]
+  Double_t targetPosY      = 0.;      // target y position in global c.s. [cm]
+  Double_t targetPosZ      = 0.;      // target z position in global c.s. [cm]
+  Double_t targetRotY = 0.;  // target rotation angle around the y axis [deg]
   // ------------------------------------------------------------------------
 
 
@@ -132,8 +137,8 @@ void run_sim_fast(Int_t nEvents = 2,
   //
   Bool_t smearVertexXY = kTRUE;
   Bool_t smearVertexZ  = kTRUE;
-  Double_t beamWidthX   = 1.;  // Gaussian sigma of the beam profile in x [cm]
-  Double_t beamWidthY   = 1.;  // Gaussian sigma of the beam profile in y [cm]
+  Double_t beamWidthX  = 1.;  // Gaussian sigma of the beam profile in x [cm]
+  Double_t beamWidthY  = 1.;  // Gaussian sigma of the beam profile in y [cm]
   // ------------------------------------------------------------------------
 
 
@@ -154,13 +159,13 @@ void run_sim_fast(Int_t nEvents = 2,
 
   // -----   Input file   ---------------------------------------------------
   std::cout << std::endl;
-  TString inFile = ""; // give here or as argument; otherwise default is taken
+  TString inFile = "";  // give here or as argument; otherwise default is taken
   TString defaultInputFile = srcDir + "/input/urqmd.auau.10gev.centr.root";
-  if ( inFile.IsNull() ) {  // Not defined in the macro explicitly
-  	if ( strcmp(inputFile, "") == 0 ) {  // not given as argument to the macro
-  		inFile = defaultInputFile;
-  	}
-  	else inFile = inputFile;
+  if (inFile.IsNull()) {               // Not defined in the macro explicitly
+    if (strcmp(inputFile, "") == 0) {  // not given as argument to the macro
+      inFile = defaultInputFile;
+    } else
+      inFile = inputFile;
   }
   //  std::cout << "-I- " << myName << ": Using input file " << inFile << std::endl;
   // ------------------------------------------------------------------------
@@ -168,9 +173,9 @@ void run_sim_fast(Int_t nEvents = 2,
 
   // -----   Create simulation run   ----------------------------------------
   FairRunSim* run = new FairRunSim();
-  run->SetName("TGeant3");              // Transport engine
-  run->SetOutputFile(outFile);          // Output file
-  run->SetGenerateRunInfo(kTRUE);       // Create FairRunInfo file
+  run->SetName("TGeant3");         // Transport engine
+  run->SetOutputFile(outFile);     // Output file
+  run->SetGenerateRunInfo(kTRUE);  // Create FairRunInfo file
   // ------------------------------------------------------------------------
 
 
@@ -184,7 +189,7 @@ void run_sim_fast(Int_t nEvents = 2,
   // -----   Create media   -------------------------------------------------
   std::cout << std::endl;
   std::cout << "-I- " << myName << ": Setting media file" << std::endl;
-  run->SetMaterials("media.geo");       // Materials
+  run->SetMaterials("media.geo");  // Materials
   // ------------------------------------------------------------------------
 
 
@@ -201,9 +206,8 @@ void run_sim_fast(Int_t nEvents = 2,
   // -----   Create and register the target   -------------------------------
   std::cout << std::endl;
   std::cout << "-I- " << myName << ": Registering target" << std::endl;
-  CbmTarget* target = new CbmTarget(targetElement.Data(),
-  		                              targetThickness,
-  		                              targetDiameter);
+  CbmTarget* target =
+    new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
   target->SetPosition(targetPosX, targetPosY, targetPosZ);
   target->SetRotation(targetRotY);
   target->Print();
@@ -214,27 +218,28 @@ void run_sim_fast(Int_t nEvents = 2,
   std::cout << std::endl;
   std::cout << "-I- " << myName << ": Registering magnetic field" << std::endl;
   CbmFieldMap* magField = CbmSetup::Instance()->CreateFieldMap();
-  if ( ! magField ) {
-  	std::cout << "-E- " << myName << ": No valid field!";
-  	return;
+  if (!magField) {
+    std::cout << "-E- " << myName << ": No valid field!";
+    return;
   }
   run->SetField(magField);
   // ------------------------------------------------------------------------
 
   // -----   Create PrimaryGenerator   --------------------------------------
   std::cout << std::endl;
-  std::cout << "-I- " << myName << ": Registering event generators" << std::endl;
+  std::cout << "-I- " << myName << ": Registering event generators"
+            << std::endl;
   FairPrimaryGenerator* primGen = new FairPrimaryGenerator();
   // --- Uniform distribution of event plane angle
   primGen->SetEventPlane(0., 2. * TMath::Pi());
   // --- Get target parameters
-  Double_t tX = 0.;
-  Double_t tY = 0.;
-  Double_t tZ = 0.;
+  Double_t tX  = 0.;
+  Double_t tY  = 0.;
+  Double_t tZ  = 0.;
   Double_t tDz = 0.;
-  if ( target ) {
-  	target->GetPosition(tX, tY, tZ);
-  	tDz = target->GetThickness();
+  if (target) {
+    target->GetPosition(tX, tY, tZ);
+    tDz = target->GetThickness();
   }
   primGen->SetTarget(tZ, tDz);
   primGen->SetBeam(0., 0., beamWidthX, beamWidthY);
@@ -248,21 +253,21 @@ void run_sim_fast(Int_t nEvents = 2,
   // ------------------------------------------------------------------------
 
   // ---   Create particle cocktail
-  TObjArray *arr = outDir.Tokenize("/");
-  Int_t idx = 1;
-  if(arr->GetEntriesFast()>3) {
-    TString tmp=(static_cast<TObjString*>(arr->Last()))->GetString();
-    idx=tmp.Atoi();
+  TObjArray* arr = outDir.Tokenize("/");
+  Int_t idx      = 1;
+  if (arr->GetEntriesFast() > 3) {
+    TString tmp = (static_cast<TObjString*>(arr->Last()))->GetString();
+    idx         = tmp.Atoi();
   }
   delete arr;
 
   // NOTE: for random file selection set idx to -1,
   //       this is important if you want to run larger statistics/jobs
   //       than e.g. pluto/urqmd files you have
-  idx=-1;
+  idx = -1;
   gRandom->SetSeed(0);
 
-  TString location="/lustre/nyx"; //"/hera"; //"/scratch"
+  TString location = "/lustre/nyx";  //"/hera"; //"/scratch"
 
   TString charmoniaFile = location + "/cbm/users/jbook/pluto/train/";
   //TString charmoniaFile = "/scratch/aliceexp/jbook/pluto/train/";
@@ -271,21 +276,23 @@ void run_sim_fast(Int_t nEvents = 2,
 
   /// AA urqmd
   //TString urqmdFile = location + "/cbm/prod/gen/urqmd/auau/8gev/centr/urqmd.auau.8gev.centr.";
-  TString urqmdFile = location + "/cbm/users/jbook/urqmd/auau/8gev/centr010/";     //selfmade UrQMD
+  TString urqmdFile =
+    location + "/cbm/users/jbook/urqmd/auau/8gev/centr010/";  //selfmade UrQMD
   //  TString urqmdFile = location + "/cbm/prod/gen/urqmd/auau/8gev/mbias/urqmd.auau.8gev.mbias.";
   /// pA urqmd
   // TString urqmdFile = "/scratch/aliceexp/jbook/urqmd-3.4/pau/30gev/centr/"; //selfmade UrQMD
   //TString urqmdFile = location + "/cbm/users/jbook/urqmd/pau/30gev/centr/";       //selfmade UrQMD
-  AddUrqmdGenerator(    primGen, idx, urqmdFile );
+  AddUrqmdGenerator(primGen, idx, urqmdFile);
 
   //  TString plutoFile = "/scratch/aliceexp/jbook/pluto/train/";
   TString plutoFile = location + "/cbm/users/jbook/pluto/train/";
   //TString plutoFile = location + "/cbm/users/ekrebs/pluto/jun15/auau/cktA/8gev/"; //mumu
-  AddLMVMCocktail(      primGen, idx, plutoFile );
+  AddLMVMCocktail(primGen, idx, plutoFile);
 
-  TString radiationFile = location + "/cbm/users/jbook/pluto/inmed/out_rapp_pluto_ee_inmed_";
+  TString radiationFile =
+    location + "/cbm/users/jbook/pluto/inmed/out_rapp_pluto_ee_inmed_";
   //TString radiationFile = location + "/cbm/users/ekrebs/pluto/jun15/auau/cktRapp/8gev/"; // for mumu
-  AddRadiationCocktail( primGen, idx, radiationFile );
+  AddRadiationCocktail(primGen, idx, radiationFile);
 
   //  AddFragmentsCocktail( primGen, 1 );
 
@@ -305,58 +312,74 @@ void run_sim_fast(Int_t nEvents = 2,
 
   // --- smearing
   std::cout << "-I- " << myName << ": Add momentum smearing" << std::endl;
-  PairAnalysisHistos *histos = new PairAnalysisHistos();
+  PairAnalysisHistos* histos = new PairAnalysisHistos();
   histos->ReadFromFile(
-		       "/lustre/nyx/cbm/users/jbook/sim/sim_AA_UrQMD_eeCocktail_centr010_JUN16_25mum_4lay_noMVD/train0032/sis100_electron_analysis.root",
-		       //"/lustre/nyx/cbm/users/jbook/sim/sim_AA_UrQMD_eeCocktail_centr010_JUN16_25mum_4lay_wMVD/train0371/sis100_electron_analysis.root",
-		       "RF",
-		       "SMEAR");
-  TH2F *eMom = (TH2F*)histos->GetHist("SMEAR","Track.SE+-_PrimElectron",         "P_PMC");
-  fastSim->SetLookupResolutionP( eMom, CbmFastSim::kEle);
+    "/lustre/nyx/cbm/users/jbook/sim/"
+    "sim_AA_UrQMD_eeCocktail_centr010_JUN16_25mum_4lay_noMVD/train0032/"
+    "sis100_electron_analysis.root",
+    //"/lustre/nyx/cbm/users/jbook/sim/sim_AA_UrQMD_eeCocktail_centr010_JUN16_25mum_4lay_wMVD/train0371/sis100_electron_analysis.root",
+    "RF",
+    "SMEAR");
+  TH2F* eMom =
+    (TH2F*) histos->GetHist("SMEAR", "Track.SE+-_PrimElectron", "P_PMC");
+  fastSim->SetLookupResolutionP(eMom, CbmFastSim::kEle);
 
-  TH2F *piMom = (TH2F*)histos->GetHist("SMEAR","Track.SE+-_PrimPion",            "P_PMC");
-  fastSim->SetLookupResolutionP( piMom, CbmFastSim::kPio);
+  TH2F* piMom =
+    (TH2F*) histos->GetHist("SMEAR", "Track.SE+-_PrimPion", "P_PMC");
+  fastSim->SetLookupResolutionP(piMom, CbmFastSim::kPio);
 
-  TH2F *kMom = (TH2F*)histos->GetHist("SMEAR","Track.SE+-_PrimKaon",             "P_PMC");
-  fastSim->SetLookupResolutionP( kMom, CbmFastSim::kKao);
+  TH2F* kMom = (TH2F*) histos->GetHist("SMEAR", "Track.SE+-_PrimKaon", "P_PMC");
+  fastSim->SetLookupResolutionP(kMom, CbmFastSim::kKao);
 
-  TH2F *pMom = (TH2F*)histos->GetHist("SMEAR","Track.SE+-_PrimProton",           "P_PMC");
-  fastSim->SetLookupResolutionP( pMom, CbmFastSim::kPro);
+  TH2F* pMom =
+    (TH2F*) histos->GetHist("SMEAR", "Track.SE+-_PrimProton", "P_PMC");
+  fastSim->SetLookupResolutionP(pMom, CbmFastSim::kPro);
 
   // --- efficiency
   std::cout << "-I- " << myName << ": Add efficiency filter" << std::endl;
-  PairAnalysisHistos *histos2 = new PairAnalysisHistos();
+  PairAnalysisHistos* histos2 = new PairAnalysisHistos();
   histos2->ReadFromFile(
-			"/lustre/nyx/cbm/users/jbook/sim/sim_AA_UrQMD_eeCocktail_centr010_JUN16_25mum_4lay_noMVD/train0032/sis100_electron_analysis.root",
-			//"/lustre/nyx/cbm/users/jbook/sim/sim_AA_UrQMD_eeCocktail_centr010_JUN16_25mum_4lay_wMVD/train0371/sis100_electron_analysis.root",
-			"RF",
-			"EFF");
-  THnBase *eRec = (THnBase*)histos2->GetHist("EFF","Track.SE+-_PrimElectron",         "PtMC_ThetaMC_PhiMC_ZvMC");
-  THnBase *eGen = (THnBase*)histos2->GetHist("EFF","Track.SE+-_PrimElectron_MCtruth", "PtMC_ThetaMC_PhiMC_ZvMC");
-  fastSim->SetLookupEfficiency( eRec, eGen, CbmFastSim::kEle);
+    "/lustre/nyx/cbm/users/jbook/sim/"
+    "sim_AA_UrQMD_eeCocktail_centr010_JUN16_25mum_4lay_noMVD/train0032/"
+    "sis100_electron_analysis.root",
+    //"/lustre/nyx/cbm/users/jbook/sim/sim_AA_UrQMD_eeCocktail_centr010_JUN16_25mum_4lay_wMVD/train0371/sis100_electron_analysis.root",
+    "RF",
+    "EFF");
+  THnBase* eRec = (THnBase*) histos2->GetHist(
+    "EFF", "Track.SE+-_PrimElectron", "PtMC_ThetaMC_PhiMC_ZvMC");
+  THnBase* eGen = (THnBase*) histos2->GetHist(
+    "EFF", "Track.SE+-_PrimElectron_MCtruth", "PtMC_ThetaMC_PhiMC_ZvMC");
+  fastSim->SetLookupEfficiency(eRec, eGen, CbmFastSim::kEle);
 
-  THnBase *piRec = (THnBase*)histos2->GetHist("EFF","Track.SE+-_PrimPion",         "PtMC_ThetaMC_PhiMC_ZvMC");
-  THnBase *piGen = (THnBase*)histos2->GetHist("EFF","Track.SE+-_PrimPion_MCtruth", "PtMC_ThetaMC_PhiMC_ZvMC");
-  fastSim->SetLookupEfficiency( piRec, piGen, CbmFastSim::kPio);
+  THnBase* piRec = (THnBase*) histos2->GetHist(
+    "EFF", "Track.SE+-_PrimPion", "PtMC_ThetaMC_PhiMC_ZvMC");
+  THnBase* piGen = (THnBase*) histos2->GetHist(
+    "EFF", "Track.SE+-_PrimPion_MCtruth", "PtMC_ThetaMC_PhiMC_ZvMC");
+  fastSim->SetLookupEfficiency(piRec, piGen, CbmFastSim::kPio);
 
-  THnBase *kRec = (THnBase*)histos2->GetHist("EFF","Track.SE+-_PrimKaon",         "PtMC_ThetaMC_PhiMC_ZvMC");
-  THnBase *kGen = (THnBase*)histos2->GetHist("EFF","Track.SE+-_PrimKaon_MCtruth", "PtMC_ThetaMC_PhiMC_ZvMC");
-  fastSim->SetLookupEfficiency( kRec, kGen, CbmFastSim::kKao);
+  THnBase* kRec = (THnBase*) histos2->GetHist(
+    "EFF", "Track.SE+-_PrimKaon", "PtMC_ThetaMC_PhiMC_ZvMC");
+  THnBase* kGen = (THnBase*) histos2->GetHist(
+    "EFF", "Track.SE+-_PrimKaon_MCtruth", "PtMC_ThetaMC_PhiMC_ZvMC");
+  fastSim->SetLookupEfficiency(kRec, kGen, CbmFastSim::kKao);
 
-  THnBase *pRec = (THnBase*)histos2->GetHist("EFF","Track.SE+-_PrimProton",         "PtMC_ThetaMC_PhiMC_ZvMC");
-  THnBase *pGen = (THnBase*)histos2->GetHist("EFF","Track.SE+-_PrimProton_MCtruth", "PtMC_ThetaMC_PhiMC_ZvMC");
-  fastSim->SetLookupEfficiency( pRec, pGen, CbmFastSim::kPro);
+  THnBase* pRec = (THnBase*) histos2->GetHist(
+    "EFF", "Track.SE+-_PrimProton", "PtMC_ThetaMC_PhiMC_ZvMC");
+  THnBase* pGen = (THnBase*) histos2->GetHist(
+    "EFF", "Track.SE+-_PrimProton_MCtruth", "PtMC_ThetaMC_PhiMC_ZvMC");
+  fastSim->SetLookupEfficiency(pRec, pGen, CbmFastSim::kPro);
 
-  THnBase *gRec = (THnBase*)histos2->GetHist("EFF","Track.SE+-_Conversion",         "PtMC_ThetaMC_PhiMC_ZvMC");
-  THnBase *gGen = (THnBase*)histos2->GetHist("EFF","Track.SE+-_Conversion_MCtruth", "PtMC_ThetaMC_PhiMC_ZvMC");
-  fastSim->SetLookupEfficiency( gRec, gGen, CbmFastSim::kGam);
+  THnBase* gRec = (THnBase*) histos2->GetHist(
+    "EFF", "Track.SE+-_Conversion", "PtMC_ThetaMC_PhiMC_ZvMC");
+  THnBase* gGen = (THnBase*) histos2->GetHist(
+    "EFF", "Track.SE+-_Conversion_MCtruth", "PtMC_ThetaMC_PhiMC_ZvMC");
+  fastSim->SetLookupEfficiency(gRec, gGen, CbmFastSim::kGam);
 
   fastSim->SetEfficiencyMethod(
-			       //                              CbmFastSim::kInterpolate
-			       //			       CbmFastSim::kFactorize
-			       //			       CbmFastSim::kAverage
-			       CbmFastSim::kLastDim
-			       );
+    //                              CbmFastSim::kInterpolate
+    //			       CbmFastSim::kFactorize
+    //			       CbmFastSim::kAverage
+    CbmFastSim::kLastDim);
   run->AddTask(fastSim);
 
   /// switch off the tracking
@@ -370,12 +393,13 @@ void run_sim_fast(Int_t nEvents = 2,
   decayer->SetForceDecay(TPythia6Decayer::kAll);
   decayer->Init();
 
-  std::cout << "-I- " << myName << ": Add external decayer interface" << std::endl;
+  std::cout << "-I- " << myName << ": Add external decayer interface"
+            << std::endl;
   // Tell the decayer interface to use the external decayer.  The
   // external decayer will be used for:
   // - particle decays defined therein
   // - particle tracking in geant defined therein
-  CbmFastDecayer *fastDecayer = new CbmFastDecayer();
+  CbmFastDecayer* fastDecayer = new CbmFastDecayer();
   fastDecayer->SetExternalDecayer(decayer);
   fastDecayer->SetParticlesForDecay("111,221");
   fastDecayer->SetParticlesForGeant("22");
@@ -386,17 +410,18 @@ void run_sim_fast(Int_t nEvents = 2,
 
   // -----   Configure geant3   ------------------------------------
   std::cout << std::endl;
-  std::cout << "-I- " << myName << ": Change GEANT3 configuration & cuts" << std::endl;
+  std::cout << "-I- " << myName << ": Change GEANT3 configuration & cuts"
+            << std::endl;
   TString geantFile = outDir + "/../";
-  run->SetUserConfig(geantFile+"g3Config.C");
-  run->SetUserCuts(geantFile+"SetCuts.C");
+  run->SetUserConfig(geantFile + "g3Config.C");
+  run->SetUserCuts(geantFile + "SetCuts.C");
   // ------------------------------------------------------------------------
 
 
   // -----   Run initialisation   -------------------------------------------
   std::cout << std::endl;
   std::cout << "-I- " << myName << ": Initialise run" << std::endl;
-  run->Init(); // this inits gMC and the stack
+  run->Init();  // this inits gMC and the stack
   // ------------------------------------------------------------------------
 
 
@@ -413,12 +438,12 @@ void run_sim_fast(Int_t nEvents = 2,
   // -----   Parameter database   ---------------------------------------------
   std::cout << std::endl << std::endl;
   std::cout << "-I- " << myName << ": Set runtime DB" << std::endl;
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
+  FairRuntimeDb* rtdb   = run->GetRuntimeDb();
   CbmFieldPar* fieldPar = (CbmFieldPar*) rtdb->getContainer("CbmFieldPar");
   fieldPar->SetParameters(magField);
   fieldPar->setChanged();
-  fieldPar->setInputVersion(run->GetRunId(),1);
-  Bool_t kParameterMerged = kTRUE;
+  fieldPar->setInputVersion(run->GetRunId(), 1);
+  Bool_t kParameterMerged   = kTRUE;
   FairParRootFileIo* rootIo = new FairParRootFileIo(kParameterMerged);
   rootIo->open(parFile.Data());
   rtdb->setOutput(rootIo);
@@ -441,25 +466,26 @@ void run_sim_fast(Int_t nEvents = 2,
   Double_t ctime = timer.CpuTime();
   std::cout << std::endl << std::endl;
   std::cout << "Macro finished successfully." << std::endl;
-  std::cout << "Output file is "    << outFile << std::endl;
+  std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Geometry file is "  << geoFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime
-       << "s" << std::endl << std::endl;
+  std::cout << "Geometry file is " << geoFile << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s"
+            << std::endl
+            << std::endl;
   // ------------------------------------------------------------------------
 
 
   // -----   Resource monitoring   ------------------------------------------
-  if ( Has_Fair_Monitor() ) {      // FairRoot Version >= 15.11
+  if (Has_Fair_Monitor()) {  // FairRoot Version >= 15.11
     // Extract the maximal used memory an add is as Dart measurement
     // This line is filtered by CTest and the value send to CDash
     FairSystemInfo sysInfo;
-    Float_t maxMemory=sysInfo.GetMaxMemory();
+    Float_t maxMemory = sysInfo.GetMaxMemory();
     std::cout << "<DartMeasurement name=\"MaxMemory\" type=\"numeric/double\">";
     std::cout << maxMemory;
     std::cout << "</DartMeasurement>" << std::endl;
 
-    Float_t cpuUsage=ctime/rtime;
+    Float_t cpuUsage = ctime / rtime;
     std::cout << "<DartMeasurement name=\"CpuLoad\" type=\"numeric/double\">";
     std::cout << cpuUsage;
     std::cout << "</DartMeasurement>" << std::endl;
@@ -470,43 +496,46 @@ void run_sim_fast(Int_t nEvents = 2,
 
   // Function needed for CTest runtime dependency
   Generate_CTest_Dependency_File(depFile);
-// ------------------------------------------------------------------------
-
+  // ------------------------------------------------------------------------
 }
 
 // ------------------------------------------------------------------------
-void AddUrqmdGenerator(FairPrimaryGenerator* primGen, Int_t idx, TString inputFile)
-{
+void AddUrqmdGenerator(FairPrimaryGenerator* primGen,
+                       Int_t idx,
+                       TString inputFile) {
   /// UrQMD version 3.3 - 5k files with 1k events each
   /// checkout https://lxcbmredmine01.gsi.de/projects/cbmroot/wiki/Mass_Production_at_GSI
   ///
-  Bool_t isAA   = inputFile.Contains("auau");
-  Bool_t isOWN  = inputFile.Contains("jbook");
+  Bool_t isAA  = inputFile.Contains("auau");
+  Bool_t isOWN = inputFile.Contains("jbook");
 
-  Int_t module = (isAA ? (isOWN ? 10000: 5000) : 10000);
-	Int_t idy = (idx >= 0 ? idx%module : gRandom->Integer(module) );
+  Int_t module = (isAA ? (isOWN ? 10000 : 5000) : 10000);
+  Int_t idy    = (idx >= 0 ? idx % module : gRandom->Integer(module));
 
-  TString file="";
-  if(isOWN)     file = inputFile + Form("/%05d",idy+1) + "/urqmd.root";
-  else if(isAA) file = inputFile + Form("%05d",idy+1)  + ".root";        /// AA
-  else          file = inputFile + Form("%05d",idy+1)  + ".urqmd.f14";   /// pA
-  printf("urqmd file: %s \n",file.Data());
+  TString file = "";
+  if (isOWN)
+    file = inputFile + Form("/%05d", idy + 1) + "/urqmd.root";
+  else if (isAA)
+    file = inputFile + Form("%05d", idy + 1) + ".root";  /// AA
+  else
+    file = inputFile + Form("%05d", idy + 1) + ".urqmd.f14";  /// pA
+  printf("urqmd file: %s \n", file.Data());
 
-  if(isAA || isOWN) {
-    CbmUnigenGenerator*  uniGen = new CbmUnigenGenerator(file);
-    primGen->AddGenerator( uniGen );
-  }
-  else {
-    FairUrqmdGenerator*  urqmdGen = new FairUrqmdGenerator(file);
-    urqmdGen->SetEventPlane(0. , 360.);
-    primGen->AddGenerator( urqmdGen );
+  if (isAA || isOWN) {
+    CbmUnigenGenerator* uniGen = new CbmUnigenGenerator(file);
+    primGen->AddGenerator(uniGen);
+  } else {
+    FairUrqmdGenerator* urqmdGen = new FairUrqmdGenerator(file);
+    urqmdGen->SetEventPlane(0., 360.);
+    primGen->AddGenerator(urqmdGen);
   }
   return;
 }
 
 // ------------------------------------------------------------------------
-void AddLMVMCocktail(     FairPrimaryGenerator *primGen, Int_t idx, TString inputFile)
-{
+void AddLMVMCocktail(FairPrimaryGenerator* primGen,
+                     Int_t idx,
+                     TString inputFile) {
   ///
   ///  DIELECTRON-COCKTAIL: add particles via pluto generator
   ///
@@ -526,33 +555,34 @@ void AddLMVMCocktail(     FairPrimaryGenerator *primGen, Int_t idx, TString inpu
   printf("pluto vec.meson: %s \n",inputFile.Data());
   */
 
-  Int_t idy = (idx >= 0 ? idx%module : gRandom->Integer(module) );
-  TString file = inputFile + Form("%05d",idy+1) + "/pluto.auau.8gev.rho0.epem.root";
-  printf("pluto vec.meson: %s \n",file.Data());
-  CbmPlutoGenerator *plutoRho= new CbmPlutoGenerator(file);
+  Int_t idy = (idx >= 0 ? idx % module : gRandom->Integer(module));
+  TString file =
+    inputFile + Form("%05d", idy + 1) + "/pluto.auau.8gev.rho0.epem.root";
+  printf("pluto vec.meson: %s \n", file.Data());
+  CbmPlutoGenerator* plutoRho = new CbmPlutoGenerator(file);
   //  primGen->AddGenerator(plutoRho); // not added, included in inmed spectral func
 
-  idy = (idx >= 0 ? idx%module : gRandom->Integer(module) );
-  file = inputFile + Form("%05d",idy+1) + "/pluto.auau.8gev.rho0.epem.root";
-  file.ReplaceAll("rho0","omega");
-  printf("pluto vec.meson: %s \n",file.Data());
-  CbmPlutoGenerator *plutoOmega= new CbmPlutoGenerator(file);
+  idy  = (idx >= 0 ? idx % module : gRandom->Integer(module));
+  file = inputFile + Form("%05d", idy + 1) + "/pluto.auau.8gev.rho0.epem.root";
+  file.ReplaceAll("rho0", "omega");
+  printf("pluto vec.meson: %s \n", file.Data());
+  CbmPlutoGenerator* plutoOmega = new CbmPlutoGenerator(file);
   primGen->AddGenerator(plutoOmega);
 
-  idy = (idx >= 0 ? idx%module : gRandom->Integer(module) );
-  file = inputFile + Form("%05d",idy+1) + "/pluto.auau.8gev.rho0.epem.root";
-  file.ReplaceAll("rho0","phi");
-  printf("pluto vec.meson: %s \n",file.Data());
-  CbmPlutoGenerator *plutoPhi= new CbmPlutoGenerator(file);
+  idy  = (idx >= 0 ? idx % module : gRandom->Integer(module));
+  file = inputFile + Form("%05d", idy + 1) + "/pluto.auau.8gev.rho0.epem.root";
+  file.ReplaceAll("rho0", "phi");
+  printf("pluto vec.meson: %s \n", file.Data());
+  CbmPlutoGenerator* plutoPhi = new CbmPlutoGenerator(file);
   primGen->AddGenerator(plutoPhi);
 
-  idy = (idx >= 0 ? idx%module : gRandom->Integer(module) );
-  file = inputFile + Form("%05d",idy+1) + "/pluto.auau.8gev.rho0.epem.root";
-  file.ReplaceAll("rho0","omega");
-  file.ReplaceAll("epem","pi0epem");
-  file.ReplaceAll("mpmm","pi0mpmm");
-  printf("pluto vec.meson: %s \n",file.Data());
-  CbmPlutoGenerator *plutoOmegaDalitz= new CbmPlutoGenerator(file);
+  idy  = (idx >= 0 ? idx % module : gRandom->Integer(module));
+  file = inputFile + Form("%05d", idy + 1) + "/pluto.auau.8gev.rho0.epem.root";
+  file.ReplaceAll("rho0", "omega");
+  file.ReplaceAll("epem", "pi0epem");
+  file.ReplaceAll("mpmm", "pi0mpmm");
+  printf("pluto vec.meson: %s \n", file.Data());
+  CbmPlutoGenerator* plutoOmegaDalitz = new CbmPlutoGenerator(file);
   primGen->AddGenerator(plutoOmegaDalitz);
 
   // idy = (idx >= 0 ? idx%module : gRandom->Integer(module) );
@@ -568,8 +598,9 @@ void AddLMVMCocktail(     FairPrimaryGenerator *primGen, Int_t idx, TString inpu
 }
 
 // ------------------------------------------------------------------------
-void AddRadiationCocktail(FairPrimaryGenerator *primGen, Int_t idx, TString inputFile)
-{
+void AddRadiationCocktail(FairPrimaryGenerator* primGen,
+                          Int_t idx,
+                          TString inputFile) {
   ///
   /// in-medium and qgp radiation
   ///
@@ -587,21 +618,21 @@ void AddRadiationCocktail(FairPrimaryGenerator *primGen, Int_t idx, TString inpu
     inputFile += idy + ".root";
   }
   */
-  printf("pluto radiation: %s \n",inputFile.Data());
+  printf("pluto radiation: %s \n", inputFile.Data());
 
-  Int_t idy = (idx >= 0 ? idx%module : gRandom->Integer(module) );
-  TString file = inputFile + Form("%04d",idy+1) + ".root";
-  printf("pluto radiation: %s \n",file.Data());
-  CbmPlutoGenerator *plutoRadInMed= new CbmPlutoGenerator(file);
+  Int_t idy    = (idx >= 0 ? idx % module : gRandom->Integer(module));
+  TString file = inputFile + Form("%04d", idy + 1) + ".root";
+  printf("pluto radiation: %s \n", file.Data());
+  CbmPlutoGenerator* plutoRadInMed = new CbmPlutoGenerator(file);
   plutoRadInMed->SetManualPDG(99009011);
   primGen->AddGenerator(plutoRadInMed);
 
-  if(!inputFile.Contains("ekrebs")) {
-    idy = (idx >= 0 ? idx%module : gRandom->Integer(module) );
-    file = inputFile + Form("%04d",idy+1) + ".root";
-    file.ReplaceAll("inmed","qgp");
-    printf("pluto radiation: %s \n",file.Data());
-    CbmPlutoGenerator *plutoRadQGP= new CbmPlutoGenerator(file);
+  if (!inputFile.Contains("ekrebs")) {
+    idy  = (idx >= 0 ? idx % module : gRandom->Integer(module));
+    file = inputFile + Form("%04d", idy + 1) + ".root";
+    file.ReplaceAll("inmed", "qgp");
+    printf("pluto radiation: %s \n", file.Data());
+    CbmPlutoGenerator* plutoRadQGP = new CbmPlutoGenerator(file);
     plutoRadQGP->SetManualPDG(99009111);
     primGen->AddGenerator(plutoRadQGP);
   }
@@ -609,73 +640,91 @@ void AddRadiationCocktail(FairPrimaryGenerator *primGen, Int_t idx, TString inpu
 }
 
 // ------------------------------------------------------------------------
-void AddFragmentsCocktail(FairPrimaryGenerator *primGen, Int_t mult)
-{
+void AddFragmentsCocktail(FairPrimaryGenerator* primGen, Int_t mult) {
   ///
   ///  HeavyFragments-COCKTAIL: add particles via fair box generator
   ///
 
   ///NOTE: the heavy fragements are not in the pdg table by default, so we have to add them:
-  TDatabasePDG *pdgDB = TDatabasePDG::Instance();
+  TDatabasePDG* pdgDB = TDatabasePDG::Instance();
   // PDG nuclear states are 10-digit numbers
   // 10LZZZAAAI e.g. deuteron is 1000010020
   // add IONS
-  const Int_t kion=1000000000;
-  const Double_t khSlash = 1.0545726663e-27;
-  const Double_t kErg2Gev = 1/1.6021773349e-3;
-  const Double_t khShGev = khSlash*kErg2Gev;
-  const Double_t kYear2Sec = 3600*24*365.25;
+  const Int_t kion         = 1000000000;
+  const Double_t khSlash   = 1.0545726663e-27;
+  const Double_t kErg2Gev  = 1 / 1.6021773349e-3;
+  const Double_t khShGev   = khSlash * kErg2Gev;
+  const Double_t kYear2Sec = 3600 * 24 * 365.25;
   // Done by default now from Pythia6 table
   // check if already defined
 
-  Int_t ionCode = kion+10020;
-  if(!pdgDB->GetParticle(ionCode))  pdgDB->AddParticle("Deuteron","Deuteron", 1.875613, kTRUE, 0,3,"Ion",ionCode);
-  pdgDB->AddAntiParticle("AntiDeuteron", - ionCode);
+  Int_t ionCode = kion + 10020;
+  if (!pdgDB->GetParticle(ionCode))
+    pdgDB->AddParticle(
+      "Deuteron", "Deuteron", 1.875613, kTRUE, 0, 3, "Ion", ionCode);
+  pdgDB->AddAntiParticle("AntiDeuteron", -ionCode);
 
-  ionCode = kion+10030;
-  if(!pdgDB->GetParticle(ionCode))  pdgDB->AddParticle("Triton","Triton", 2.80925, kFALSE, khShGev/(12.33*kYear2Sec),3,"Ion",ionCode);
-  pdgDB->AddAntiParticle("AntiTriton", - ionCode);
+  ionCode = kion + 10030;
+  if (!pdgDB->GetParticle(ionCode))
+    pdgDB->AddParticle("Triton",
+                       "Triton",
+                       2.80925,
+                       kFALSE,
+                       khShGev / (12.33 * kYear2Sec),
+                       3,
+                       "Ion",
+                       ionCode);
+  pdgDB->AddAntiParticle("AntiTriton", -ionCode);
 
-  ionCode = kion+20030;
-  if(!pdgDB->GetParticle(ionCode))  pdgDB->AddParticle("HE3","HE3", 2.80923,kFALSE, 0,6,"Ion",ionCode);
-  pdgDB->AddAntiParticle("AntiHE3", - ionCode);
+  ionCode = kion + 20030;
+  if (!pdgDB->GetParticle(ionCode))
+    pdgDB->AddParticle("HE3", "HE3", 2.80923, kFALSE, 0, 6, "Ion", ionCode);
+  pdgDB->AddAntiParticle("AntiHE3", -ionCode);
 
-  ionCode = kion+20040;
-  if(!pdgDB->GetParticle(ionCode))  pdgDB->AddParticle("Alpha","Alpha", 3.727379, kTRUE, khShGev/(12.33*kYear2Sec), 6, "Ion", ionCode);
-  pdgDB->AddAntiParticle("AntiAlpha", - ionCode);
+  ionCode = kion + 20040;
+  if (!pdgDB->GetParticle(ionCode))
+    pdgDB->AddParticle("Alpha",
+                       "Alpha",
+                       3.727379,
+                       kTRUE,
+                       khShGev / (12.33 * kYear2Sec),
+                       6,
+                       "Ion",
+                       ionCode);
+  pdgDB->AddAntiParticle("AntiAlpha", -ionCode);
 
   // Use box generators for defined particles and per event multiplcities (pdg,mult)
   FairBoxGenerator* boxGenDeu = new FairBoxGenerator(1000010020, mult);
-  boxGenDeu->SetPtRange(0.,3.);
-  boxGenDeu->SetPhiRange(0.,360.);
-  boxGenDeu->SetThetaRange(2.5,25.);
+  boxGenDeu->SetPtRange(0., 3.);
+  boxGenDeu->SetPhiRange(0., 360.);
+  boxGenDeu->SetThetaRange(2.5, 25.);
   boxGenDeu->SetCosTheta();
   boxGenDeu->SetDebug(kTRUE);
   boxGenDeu->Init();
   primGen->AddGenerator(boxGenDeu);
 
   FairBoxGenerator* boxGenTri = new FairBoxGenerator(1000010030, mult);
-  boxGenTri->SetPtRange(0.,3.);
-  boxGenTri->SetPhiRange(0.,360.);
-  boxGenTri->SetThetaRange(2.5,25.);
+  boxGenTri->SetPtRange(0., 3.);
+  boxGenTri->SetPhiRange(0., 360.);
+  boxGenTri->SetThetaRange(2.5, 25.);
   boxGenTri->SetCosTheta();
   boxGenTri->SetDebug(kTRUE);
   boxGenTri->Init();
   primGen->AddGenerator(boxGenTri);
 
   FairBoxGenerator* boxGenHe3 = new FairBoxGenerator(1000020030, mult);
-  boxGenHe3->SetPtRange(0.,3.);
-  boxGenHe3->SetPhiRange(0.,360.);
-  boxGenHe3->SetThetaRange(2.5,25.);
+  boxGenHe3->SetPtRange(0., 3.);
+  boxGenHe3->SetPhiRange(0., 360.);
+  boxGenHe3->SetThetaRange(2.5, 25.);
   boxGenHe3->SetCosTheta();
   boxGenHe3->SetDebug(kTRUE);
   boxGenHe3->Init();
   primGen->AddGenerator(boxGenHe3);
 
   FairBoxGenerator* boxGenAlp = new FairBoxGenerator(1000020040, mult);
-  boxGenAlp->SetPtRange(0.,3.);
-  boxGenAlp->SetPhiRange(0.,360.);
-  boxGenAlp->SetThetaRange(2.5,25.);
+  boxGenAlp->SetPtRange(0., 3.);
+  boxGenAlp->SetPhiRange(0., 360.);
+  boxGenAlp->SetThetaRange(2.5, 25.);
   boxGenAlp->SetCosTheta();
   boxGenAlp->SetDebug(kTRUE);
   boxGenAlp->Init();
@@ -685,8 +734,9 @@ void AddFragmentsCocktail(FairPrimaryGenerator *primGen, Int_t mult)
 }
 
 // ------------------------------------------------------------------------
-void AddCharmoniaCocktail(FairPrimaryGenerator *primGen, Int_t idx, TString inputFile)
-{
+void AddCharmoniaCocktail(FairPrimaryGenerator* primGen,
+                          Int_t idx,
+                          TString inputFile) {
   ///
   ///  CHARMONIA: add particles via pluto generator, decay them via TEvtGen
   ///
@@ -697,69 +747,69 @@ void AddCharmoniaCocktail(FairPrimaryGenerator *primGen, Int_t idx, TString inpu
   // TString idu=Form("%05d",idx+1);
   // inputFile += idu + "/pluto.pau.30gev.jpsi.epem.root";   // OR "/pluto.pau.30gev.jpsi.root"
 
-  Int_t idy = (idx >= 0 ? idx%module : gRandom->Integer(module) );
-  TString file = inputFile + Form("%05d",idy+1) + "/pluto.pau.30gev.jpsi.epem.root";
-  printf("pluto vec.meson: %s \n",file.Data());
-  CbmPlutoGenerator *plutoJpsi= new CbmPlutoGenerator(file);
-  if(idy%2) primGen->AddGenerator(plutoJpsi);
+  Int_t idy = (idx >= 0 ? idx % module : gRandom->Integer(module));
+  TString file =
+    inputFile + Form("%05d", idy + 1) + "/pluto.pau.30gev.jpsi.epem.root";
+  printf("pluto vec.meson: %s \n", file.Data());
+  CbmPlutoGenerator* plutoJpsi = new CbmPlutoGenerator(file);
+  if (idy % 2) primGen->AddGenerator(plutoJpsi);
 
   /// for radiative decay
-  CbmGenEvtGen *evtgen = new CbmGenEvtGen();
+  CbmGenEvtGen* evtgen = new CbmGenEvtGen();
   evtgen->SetForceDecay(kBJpsiDiElectron);
   evtgen->SetParticleSwitchedOff(CbmGenEvtGen::kJPsiPart);
-  if(idy%2) primGen->AddGenerator(evtgen);
+  if (idy % 2) primGen->AddGenerator(evtgen);
 
   /// NOTE: do NOT decay with evtgen
   //  idy = (idx >= 0 ? idx%module : gRandom->Integer(module) );
-  file = inputFile + Form("%05d",idy+1) + "/pluto.pau.30gev.jpsi.epem.root";
-  file.ReplaceAll("jpsi","psi2s");
+  file = inputFile + Form("%05d", idy + 1) + "/pluto.pau.30gev.jpsi.epem.root";
+  file.ReplaceAll("jpsi", "psi2s");
   //inputFile.ReplaceAll("jpsi","psi2s.epem");
-  printf("pluto vec.meson: %s \n",file.Data());
-  CbmPlutoGenerator *plutoPsi2S= new CbmPlutoGenerator(file);
+  printf("pluto vec.meson: %s \n", file.Data());
+  CbmPlutoGenerator* plutoPsi2S = new CbmPlutoGenerator(file);
   plutoPsi2S->SetManualPDG(100443);
-  if(!(idy%2)) primGen->AddGenerator(plutoPsi2S);
+  if (!(idy % 2)) primGen->AddGenerator(plutoPsi2S);
 
   return;
 }
 
 // ------------------------------------------------------------------------
-void AddBoxGenerator(     FairPrimaryGenerator *primGen, Int_t mult)
-{
+void AddBoxGenerator(FairPrimaryGenerator* primGen, Int_t mult) {
   ///
   /// Use box generators for defined particles and per event multiplcities (pdg,mult)
   ///
 
   FairBoxGenerator* boxGenEle = new FairBoxGenerator(11, mult);
-  boxGenEle->SetPtRange(0.,3.);
-  boxGenEle->SetPhiRange(0.,360.);
-  boxGenEle->SetThetaRange(2.5,25.);
+  boxGenEle->SetPtRange(0., 3.);
+  boxGenEle->SetPhiRange(0., 360.);
+  boxGenEle->SetThetaRange(2.5, 25.);
   boxGenEle->SetCosTheta();
   boxGenEle->SetDebug(kTRUE);
   boxGenEle->Init();
   primGen->AddGenerator(boxGenEle);
 
   FairBoxGenerator* boxGenPiM = new FairBoxGenerator(-211, mult);
-  boxGenPiM->SetPtRange(0.,3.);
-  boxGenPiM->SetPhiRange(0.,360.);
-  boxGenPiM->SetThetaRange(2.5,25.);
+  boxGenPiM->SetPtRange(0., 3.);
+  boxGenPiM->SetPhiRange(0., 360.);
+  boxGenPiM->SetThetaRange(2.5, 25.);
   boxGenPiM->SetCosTheta();
   boxGenPiM->SetDebug(kTRUE);
   boxGenPiM->Init();
   primGen->AddGenerator(boxGenPiM);
 
   FairBoxGenerator* boxGenPosi = new FairBoxGenerator(-11, mult);
-  boxGenPosi->SetPtRange(0.,3.);
-  boxGenPosi->SetPhiRange(0.,360.);
-  boxGenPosi->SetThetaRange(2.5,25.);
+  boxGenPosi->SetPtRange(0., 3.);
+  boxGenPosi->SetPhiRange(0., 360.);
+  boxGenPosi->SetThetaRange(2.5, 25.);
   boxGenPosi->SetCosTheta();
   boxGenPosi->SetDebug(kTRUE);
   boxGenPosi->Init();
   primGen->AddGenerator(boxGenPosi);
 
   FairBoxGenerator* boxGenPiP = new FairBoxGenerator(+211, mult);
-  boxGenPiP->SetPtRange(0.,3.);
-  boxGenPiP->SetPhiRange(0.,360.);
-  boxGenPiP->SetThetaRange(2.5,25.);
+  boxGenPiP->SetPtRange(0., 3.);
+  boxGenPiP->SetPhiRange(0., 360.);
+  boxGenPiP->SetThetaRange(2.5, 25.);
   boxGenPiP->SetCosTheta();
   boxGenPiP->SetDebug(kTRUE);
   boxGenPiP->Init();
@@ -769,8 +819,7 @@ void AddBoxGenerator(     FairPrimaryGenerator *primGen, Int_t mult)
 }
 
 // ------------------------------------------------------------------------
-void SetParticleDecays()
-{
+void SetParticleDecays() {
   ///
   /// set and unset particle decays for geant3
   ///
@@ -781,58 +830,62 @@ void SetParticleDecays()
   TGeant3* gMC3 = (TGeant3*) gMC;
 
   /// switch off certain decays
-  gMC3->SetUserDecay(443);   // Force the decay to be done w/external decayer
-  gMC3->SetUserDecay(100443);// Force the decay to be done w/external decayer
-  std::cout << "----------------- switch OFF: jpsi & psi(2s) decay by geant3 -----------------" << std::endl;
+  gMC3->SetUserDecay(443);     // Force the decay to be done w/external decayer
+  gMC3->SetUserDecay(100443);  // Force the decay to be done w/external decayer
+  std::cout << "----------------- switch OFF: jpsi & psi(2s) decay by geant3 "
+               "-----------------"
+            << std::endl;
 
-  if(0) {
-  gMC3->SetUserDecay(111);   // Force the decay to be done w/external decayer
-  gMC3->SetUserDecay(221);// Force the decay to be done w/external decayer
-  std::cout << "----------------- switch OFF: pi0 & eta decay by geant3 -----------------" << std::endl;
+  if (0) {
+    gMC3->SetUserDecay(111);  // Force the decay to be done w/external decayer
+    gMC3->SetUserDecay(221);  // Force the decay to be done w/external decayer
+    std::cout << "----------------- switch OFF: pi0 & eta decay by geant3 "
+                 "-----------------"
+              << std::endl;
 
-  // Access the external decayer singleton and initialize it
-  TPythia6Decayer* decayer = TPythia6Decayer::Instance();
-  decayer->SetForceDecay(TPythia6Decayer::kAll);
+    // Access the external decayer singleton and initialize it
+    TPythia6Decayer* decayer = TPythia6Decayer::Instance();
+    decayer->SetForceDecay(TPythia6Decayer::kAll);
 
-  //example:  Force the pi0 dalitz decay channel
-  Int_t products[3];
-  Int_t mult[3];
-  Int_t npart=3;
+    //example:  Force the pi0 dalitz decay channel
+    Int_t products[3];
+    Int_t mult[3];
+    Int_t npart = 3;
 
-  //decay products
-  products[0]=11;
-  products[1]=-11;
-  products[2]=22;
-  //multiplicity
-  mult[0]=1;
-  mult[1]=1;
-  mult[2]=1;
-  // force the decay channel
-  decayer->ForceParticleDecay(111,products,mult,npart);
+    //decay products
+    products[0] = 11;
+    products[1] = -11;
+    products[2] = 22;
+    //multiplicity
+    mult[0] = 1;
+    mult[1] = 1;
+    mult[2] = 1;
+    // force the decay channel
+    decayer->ForceParticleDecay(111, products, mult, npart);
 
-  decayer->Init();
+    decayer->Init();
 
-  // Tell the concrete monte carlo to use the external decayer.  The
-  // external decayer will be used for:
-  // i)particle decays not defined in concrete monte carlo, or
-  //ii)particles for which the concrete monte carlo is told
-  //   to use the external decayer for its type via:
-  //     gMC->SetUserDecay(pdgId);
-  //   If this is invoked, the external decayer will be used for particles
-  //   of type pdgId even if the concrete monte carlo has a decay mode
-  //   already defined for that particle type.
-  gMC->SetExternalDecayer(decayer);
+    // Tell the concrete monte carlo to use the external decayer.  The
+    // external decayer will be used for:
+    // i)particle decays not defined in concrete monte carlo, or
+    //ii)particles for which the concrete monte carlo is told
+    //   to use the external decayer for its type via:
+    //     gMC->SetUserDecay(pdgId);
+    //   If this is invoked, the external decayer will be used for particles
+    //   of type pdgId even if the concrete monte carlo has a decay mode
+    //   already defined for that particle type.
+    gMC->SetExternalDecayer(decayer);
 
-  TPythia6& pythia6 = *(TPythia6::Instance());
-  pythia6.SetMDCY(pythia6.Pycomp(111),1,1); // Activate decay in pythia
-  pythia6.SetMDCY(pythia6.Pycomp(221),1,1); // Activate decay in pythia
+    TPythia6& pythia6 = *(TPythia6::Instance());
+    pythia6.SetMDCY(pythia6.Pycomp(111), 1, 1);  // Activate decay in pythia
+    pythia6.SetMDCY(pythia6.Pycomp(221), 1, 1);  // Activate decay in pythia
 
-  // The following will print the decay modes
-  pythia6.Pyupda(1,6);
-}
-  
+    // The following will print the decay modes
+    pythia6.Pyupda(1, 6);
+  }
+
   /// pi0 and eta decays in geant3
-else {
+  else {
     /// set branching ratios by hand
     Float_t bratioEta[6];
     Int_t modeEta[6];
@@ -843,12 +896,12 @@ else {
     }
 
     Int_t ipa    = 17;
-    bratioEta[0] = 39.38;  //2gamma
-    bratioEta[1] = 32.20;  //3pi0
-    bratioEta[2] = 22.70;  //pi+pi-pi0
-    bratioEta[3] = 4.69;   //pi+pi-gamma
-    bratioEta[4] = 0.60;   //e+e-gamma
-    bratioEta[5] = 4.4e-2; //pi02gamma
+    bratioEta[0] = 39.38;   //2gamma
+    bratioEta[1] = 32.20;   //3pi0
+    bratioEta[2] = 22.70;   //pi+pi-pi0
+    bratioEta[3] = 4.69;    //pi+pi-gamma
+    bratioEta[4] = 0.60;    //e+e-gamma
+    bratioEta[5] = 4.4e-2;  //pi02gamma
 
     modeEta[0] = 101;    //2gamma
     modeEta[1] = 70707;  //3pi0
@@ -863,12 +916,12 @@ else {
 
     for (Int_t kz = 0; kz < 6; ++kz) {
       bratioPi0[kz] = 0.;
-      modePi0[kz] = 0;
+      modePi0[kz]   = 0;
     }
 
-  ipa = 7;
-  bratioPi0[0] = 98.798;
-  bratioPi0[1] = 1.198;
+    ipa          = 7;
+    bratioPi0[0] = 98.798;
+    bratioPi0[1] = 1.198;
 
     modePi0[0] = 101;
     modePi0[1] = 30201;
@@ -925,15 +978,13 @@ else {
       gMC3->Gsdk(pdg->ConvertPdgToGeant3(mother), br, mode);
     */
   }
-  
-  // set randomizer to gMC
-  TRandom3 *rnd = new TRandom3(0); // computed via a TUUID object (unique!)
-  gMC->SetRandom(rnd);
 
+  // set randomizer to gMC
+  TRandom3* rnd = new TRandom3(0);  // computed via a TUUID object (unique!)
+  gMC->SetRandom(rnd);
 }
 
-void ConfigureMCStack()
-{
+void ConfigureMCStack() {
   ///
   /// configure the cbm stack, apply/release cuts
   ///
@@ -942,15 +993,13 @@ void ConfigureMCStack()
   std::cout << std::endl;
   std::cout << "-I- " << myName << ": Configure MC stack" << std::endl;
 
-  CbmStack *stack = dynamic_cast<CbmStack*>(gMC->GetStack());
-  if(stack) {
+  CbmStack* stack = dynamic_cast<CbmStack*>(gMC->GetStack());
+  if (stack) {
     //    printf("[USER MODIFICATION]: set MC stack cuts by hand! \n");
     //    stack->StoreSecondaries(kTRUE); // default: kTRUE
-    stack->SetMinPoints(0);         // default: 1
+    stack->SetMinPoints(0);  // default: 1
     //    stack->SetEnergyCut(0.00001);   // default: 0.
     //    stack->StoreMothers(kTRUE);     // default: kTRUE
     stack->DoTracking(kFALSE);
   }
-
 }
-

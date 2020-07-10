@@ -7,10 +7,10 @@
 #ifndef CBMSTACKFILTER_H
 #define CBMSTACKFILTER_H 1
 
+#include "CbmDefs.h"
+#include "Rtypes.h"
 #include <map>
 #include <vector>
-#include "Rtypes.h"
-#include "CbmDefs.h"
 
 class TClonesArray;
 class TParticle;
@@ -58,28 +58,26 @@ class TParticle;
  ** The user stack filter class has to be registered by
  ** CbmRunTransport::SetStackFilter.
  **/
-class CbmStackFilter
-{
+class CbmStackFilter {
 
-  public:
-
-    /** @brief Map holding the number of points for each detector.
+public:
+  /** @brief Map holding the number of points for each detector.
      ** The key is a pair of (track index, detector ID),
      ** the value is the number of points of the track in the
      ** detector.
      **/
-    typedef std::map<std::pair<Int_t, ECbmModuleId>, Int_t> PointMap;
+  typedef std::map<std::pair<Int_t, ECbmModuleId>, Int_t> PointMap;
 
 
-    /** @brief Constructor **/
-    CbmStackFilter();
+  /** @brief Constructor **/
+  CbmStackFilter();
 
 
-    /** @brief Destructor **/
-    virtual ~CbmStackFilter();
+  /** @brief Destructor **/
+  virtual ~CbmStackFilter();
 
 
-    /** @brief Check the stack particles for fulfilling the storage criteria
+  /** @brief Check the stack particles for fulfilling the storage criteria
      ** @param particles TClonesArray of TParticles
      ** @param points    Map holding the number of points in each detector
      ** @return Storage decision for each index in the TClonesArray
@@ -91,11 +89,11 @@ class CbmStackFilter
      ** in its array and the detector identifier (EcbmModuleId).
      ** The return vector must have the same size as the TClonesArray.
      **/
-    virtual const std::vector<Bool_t>& Select(const TClonesArray& particles,
-                                              const PointMap& points);
+  virtual const std::vector<Bool_t>& Select(const TClonesArray& particles,
+                                            const PointMap& points);
 
 
-    /** @brief Set the minimum kinetic energy
+  /** @brief Set the minimum kinetic energy
      ** @param minimum  Minimum kinetic energy [GeV]
      **
      ** Tracks with kinetic energy less than the minimum will not be stored,
@@ -103,12 +101,10 @@ class CbmStackFilter
      **
      ** The default value is 0., meaning no energy cut.
      **/
-    void SetMinEkin(Double_t minimum) {
-      fMinEkin = minimum;
-    }
+  void SetMinEkin(Double_t minimum) { fMinEkin = minimum; }
 
 
-    /** @brief Set the minimum number of MCPoints for a given detector
+  /** @brief Set the minimum number of MCPoints for a given detector
      ** @param detector Detector ID
      ** @param minimum  Minimum number of points in detector
      **
@@ -127,13 +123,13 @@ class CbmStackFilter
      ** By default, the cut values are 1 for all detectors except for
      ** the PSD, where the cut value is 5.
      **/
-    void SetMinNofPoints(ECbmModuleId detector, UInt_t minimum) {
-      if ( detector >= ECbmModuleId::kNofSystems ) return;
-      fMinNofPoints[detector] = minimum;
-    }
+  void SetMinNofPoints(ECbmModuleId detector, UInt_t minimum) {
+    if (detector >= ECbmModuleId::kNofSystems) return;
+    fMinNofPoints[detector] = minimum;
+  }
 
 
-    /** @brief Set the storage of all mothers of selected tracks
+  /** @brief Set the storage of all mothers of selected tracks
      ** @param choice  If kTRUE, all mothers will be stored.
      **
      ** If activated, all mother tracks of selected tracks will be stored,
@@ -142,12 +138,10 @@ class CbmStackFilter
      **
      ** By default, storage of mother tracks is activated.
      **/
-    void SetStoreAllMothers(Bool_t choice) {
-      fStoreAllMothers = choice;
-    }
+  void SetStoreAllMothers(Bool_t choice) { fStoreAllMothers = choice; }
 
 
-    /** @brief Set the storage of primary tracks
+  /** @brief Set the storage of primary tracks
      ** @param choice  If kTRUE, all primaries will be stored.
      **
      ** If activated, all primary tracks will be stored, irrespective of
@@ -155,12 +149,10 @@ class CbmStackFilter
      **
      ** By default, storage of all primary tracks is activated.
      **/
-    void SetStoreAllPrimaries(Bool_t choice) {
-      fStoreAllPrimaries = choice;
-    }
+  void SetStoreAllPrimaries(Bool_t choice) { fStoreAllPrimaries = choice; }
 
 
-    /** @brief Set the storage of all decay daughters of primaries
+  /** @brief Set the storage of all decay daughters of primaries
      ** @param choice  If kTRUE, all daughters will be stored.
      **
      ** If activated, all particles in the decay chain of a primary
@@ -169,22 +161,21 @@ class CbmStackFilter
      **
      ** By default, storage of decay daughters is deactivated.
      **/
-    void SetStoreAllPrimaryDecays(Bool_t choice = kTRUE) {
-      fStoreAllDecays = choice;
-    }
+  void SetStoreAllPrimaryDecays(Bool_t choice = kTRUE) {
+    fStoreAllDecays = choice;
+  }
 
 
-  private:
+private:
+  Bool_t fStoreAllPrimaries;  ///< Flag for storage of primaries
+  Bool_t fStoreAllMothers;    ///< Flag for storage of mothers
+  Bool_t fStoreAllDecays;  ///< Flag for storage of all primary decay daughters
+  std::map<ECbmModuleId, UInt_t>
+    fMinNofPoints;             ///< Cut values for the number of points
+  Double_t fMinEkin;           ///< Cut value for kinetic energy
+  std::vector<Bool_t> fStore;  ///< Vector with storage decision
 
-    Bool_t fStoreAllPrimaries;   ///< Flag for storage of primaries
-    Bool_t fStoreAllMothers;     ///< Flag for storage of mothers
-    Bool_t fStoreAllDecays;      ///< Flag for storage of all primary decay daughters
-    std::map<ECbmModuleId, UInt_t> fMinNofPoints;  ///< Cut values for the number of points
-    Double_t fMinEkin;           ///< Cut value for kinetic energy
-    std::vector<Bool_t> fStore;  ///< Vector with storage decision
-
-    ClassDef(CbmStackFilter,2);
-
+  ClassDef(CbmStackFilter, 2);
 };
 
 #endif /* CBMSTACKFILTER_H */

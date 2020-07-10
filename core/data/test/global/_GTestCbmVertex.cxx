@@ -5,15 +5,14 @@
 #include <TMatrixTSym.h>
 #include <TVector3.h>
 
-#include <gtest/gtest.h>
 #include <gtest/gtest-spi.h>
+#include <gtest/gtest.h>
 
 #include <regex>
 
 #include "../compareVertex.h"
 
-TEST(_GTestCbmVertex, CheckDefaultConstructor)
-{
+TEST(_GTestCbmVertex, CheckDefaultConstructor) {
   CbmVertex test;
   Double_t val[6] = {0., 0., 0., 0., 0., 0.};
   {
@@ -22,9 +21,8 @@ TEST(_GTestCbmVertex, CheckDefaultConstructor)
   }
 }
 
-TEST(_GTestCbmVertex, CheckStandardConstructor)
-{
-  CbmVertex test{"Vertex","Vertex"};
+TEST(_GTestCbmVertex, CheckStandardConstructor) {
+  CbmVertex test {"Vertex", "Vertex"};
   Double_t val[6] = {0., 0., 0., 0., 0., 0.};
   {
     SCOPED_TRACE("CheckStandardConstructor");
@@ -32,12 +30,11 @@ TEST(_GTestCbmVertex, CheckStandardConstructor)
   }
 }
 
-TEST(_GTestCbmVertex, CheckConstructorAllArguments)
-{
+TEST(_GTestCbmVertex, CheckConstructorAllArguments) {
   TMatrixFSym Cov(3);
-  Cov(0, 0) = 0.;      // 0 1 2
-  Cov(0, 1) = 1.;      // 1 3 4
-  Cov(0, 2) = 2.;      // 2 4 5
+  Cov(0, 0) = 0.;  // 0 1 2
+  Cov(0, 1) = 1.;  // 1 3 4
+  Cov(0, 2) = 2.;  // 2 4 5
   Cov(1, 0) = 1.;
   Cov(1, 1) = 3.;
   Cov(1, 2) = 4.;
@@ -46,7 +43,7 @@ TEST(_GTestCbmVertex, CheckConstructorAllArguments)
   Cov(2, 2) = 5.;
 
   Double_t val[6] = {0., 1., 2., 3., 4., 5.};
-  CbmVertex test{"Vertex","Vertex", 1., 2., 3., 4., 5, 6, Cov};
+  CbmVertex test {"Vertex", "Vertex", 1., 2., 3., 4., 5, 6, Cov};
   {
     SCOPED_TRACE("CheckConstructorAllArguments");
     compareVertexDataMembers(test, 1., 2., 3., 4., 5, 6, val);
@@ -56,22 +53,26 @@ TEST(_GTestCbmVertex, CheckConstructorAllArguments)
   // where all elements are set to 0.
   // Additionally an error message is printed
   TMatrixFSym CovWrong(2);
-  CovWrong(0, 0) = 0.;      // 0 1
-  CovWrong(0, 1) = 1.;      // 1 2
+  CovWrong(0, 0) = 0.;  // 0 1
+  CovWrong(0, 1) = 1.;  // 1 2
   CovWrong(1, 0) = 1.;
   CovWrong(1, 1) = 2.;
 
   Double_t val1[6] = {0., 0., 0., 0., 0., 0.};
 
   testing::internal::CaptureStdout();
-  CbmVertex test1{"Vertex","Vertex", 1., 2., 3., 4., 5, 6, CovWrong};
+  CbmVertex test1 {"Vertex", "Vertex", 1., 2., 3., 4., 5, 6, CovWrong};
   std::string output = testing::internal::GetCapturedStdout();
 
-  std::regex f ("\\[ERROR(.*)\\](.*)(Wrong dimension of passed covariance matrix\\. Clear the covariance matrix)(.*)\\n");
-  bool retval = std::regex_match (output,f);
+  std::regex f("\\[ERROR(.*)\\](.*)(Wrong dimension of passed covariance "
+               "matrix\\. Clear the covariance matrix)(.*)\\n");
+  bool retval = std::regex_match(output, f);
   if (!retval) {
     std::cout << "  Actual: " << output << std::endl;
-    std::cout << "Expected: " << "\\[ERROR\\](.*)(Wrong dimension of passed covariance matrix\\. Clear the covariance matrix)(.*)\\n" << std::endl;
+    std::cout << "Expected: "
+              << "\\[ERROR\\](.*)(Wrong dimension of passed covariance "
+                 "matrix\\. Clear the covariance matrix)(.*)\\n"
+              << std::endl;
   }
   EXPECT_TRUE(retval);
 
@@ -81,8 +82,7 @@ TEST(_GTestCbmVertex, CheckConstructorAllArguments)
   }
 }
 
-TEST(_GTestCbmVertex, CheckReset)
-{
+TEST(_GTestCbmVertex, CheckReset) {
   TMatrixFSym Cov(3);
   Cov(0, 0) = 0.;
   Cov(0, 1) = 1.;
@@ -95,7 +95,7 @@ TEST(_GTestCbmVertex, CheckReset)
   Cov(2, 2) = 5.;
 
   Double_t val[6] = {0., 1., 2., 3., 4., 5.};
-  CbmVertex test{"Vertex","Vertex", 1., 2., 3., 4., 5, 6, Cov};
+  CbmVertex test {"Vertex", "Vertex", 1., 2., 3., 4., 5, 6, Cov};
   {
     SCOPED_TRACE("CheckReset: Initial Test");
     compareVertexDataMembers(test, 1., 2., 3., 4., 5, 6, val);
@@ -109,8 +109,7 @@ TEST(_GTestCbmVertex, CheckReset)
   }
 }
 
-TEST(_GTestCbmVertex, CheckGetPosition)
-{
+TEST(_GTestCbmVertex, CheckGetPosition) {
   TMatrixFSym Cov(3);
   Cov(0, 0) = 0.;
   Cov(0, 1) = 1.;
@@ -123,7 +122,7 @@ TEST(_GTestCbmVertex, CheckGetPosition)
   Cov(2, 2) = 5.;
 
   Double_t val[6] = {0., 1., 2., 3., 4., 5.};
-  CbmVertex test{"Vertex","Vertex", 1., 2., 3., 4., 5, 6, Cov};
+  CbmVertex test {"Vertex", "Vertex", 1., 2., 3., 4., 5, 6, Cov};
   {
     SCOPED_TRACE("CheckGetPosition: Initial Test");
     compareVertexDataMembers(test, 1., 2., 3., 4., 5, 6, val);
@@ -142,8 +141,7 @@ TEST(_GTestCbmVertex, CheckGetPosition)
 }
 
 
-TEST(_GTestCbmVertex, CheckGetCovMatrix)
-{
+TEST(_GTestCbmVertex, CheckGetCovMatrix) {
   TMatrixFSym Cov(3);
   Cov(0, 0) = 0.;
   Cov(0, 1) = 1.;
@@ -156,7 +154,7 @@ TEST(_GTestCbmVertex, CheckGetCovMatrix)
   Cov(2, 2) = 5.;
 
   Double_t val[6] = {0., 1., 2., 3., 4., 5.};
-  CbmVertex test{"Vertex","Vertex", 1., 2., 3., 4., 5, 6, Cov};
+  CbmVertex test {"Vertex", "Vertex", 1., 2., 3., 4., 5, 6, Cov};
   {
     SCOPED_TRACE("CheckGetCovMatrix: Initial Test");
     compareVertexDataMembers(test, 1., 2., 3., 4., 5, 6, val);
@@ -169,8 +167,8 @@ TEST(_GTestCbmVertex, CheckGetCovMatrix)
     SCOPED_TRACE("CheckGetCovMatrix: Check after Position");
     compareVertexDataMembers(test, 1., 2., 3., 4., 5, 6, val);
   }
-  for(Int_t i=0; i<3; ++i) {
-    for(Int_t j=0; j<3; ++j) {
+  for (Int_t i = 0; i < 3; ++i) {
+    for (Int_t j = 0; j < 3; ++j) {
       Double_t origVal = Cov[i][j];
       Double_t testVal = testCov[i][j];
       EXPECT_FLOAT_EQ(testVal, origVal);
@@ -179,8 +177,7 @@ TEST(_GTestCbmVertex, CheckGetCovMatrix)
 }
 
 
-TEST(_GTestCbmVertex, CheckSetVertex)
-{
+TEST(_GTestCbmVertex, CheckSetVertex) {
 
   CbmVertex test;
   Double_t val[6] = {0., 0., 0., 0., 0., 0.};
@@ -211,8 +208,8 @@ TEST(_GTestCbmVertex, CheckSetVertex)
   // where all elements are set to 0.
   // Additionally an error message is printed
   TMatrixFSym CovWrong(2);
-  CovWrong(0, 0) = 0.;      // 0 1
-  CovWrong(0, 1) = 1.;      // 1 2
+  CovWrong(0, 0) = 0.;  // 0 1
+  CovWrong(0, 1) = 1.;  // 1 2
   CovWrong(1, 0) = 1.;
   CovWrong(1, 1) = 2.;
 
@@ -222,11 +219,15 @@ TEST(_GTestCbmVertex, CheckSetVertex)
   test.SetVertex(-1., -2., -3., -4., -5, -6, CovWrong);
   std::string output = testing::internal::GetCapturedStdout();
 
-  std::regex f ("\\[ERROR(.*)\\](.*)(Wrong dimension of passed covariance matrix\\. Clear the covariance matrix)(.*)\\n");
-  bool retval = std::regex_match (output,f);
+  std::regex f("\\[ERROR(.*)\\](.*)(Wrong dimension of passed covariance "
+               "matrix\\. Clear the covariance matrix)(.*)\\n");
+  bool retval = std::regex_match(output, f);
   if (!retval) {
     std::cout << "  Actual: " << output << std::endl;
-    std::cout << "Expected: " << "\\[ERROR\\](.*)(Wrong dimension of passed covariance matrix\\. Clear the covariance matrix)(.*)\\n" << std::endl;
+    std::cout << "Expected: "
+              << "\\[ERROR\\](.*)(Wrong dimension of passed covariance "
+                 "matrix\\. Clear the covariance matrix)(.*)\\n"
+              << std::endl;
   }
   EXPECT_TRUE(retval);
 
@@ -236,8 +237,7 @@ TEST(_GTestCbmVertex, CheckSetVertex)
   }
 }
 
-TEST(_GTestCbmVertex, CheckPrint)
-{
+TEST(_GTestCbmVertex, CheckPrint) {
   TMatrixFSym Cov(3);
   Cov(0, 0) = 0.;
   Cov(0, 1) = 1.;
@@ -250,20 +250,24 @@ TEST(_GTestCbmVertex, CheckPrint)
   Cov(2, 2) = 5.;
 
   Double_t val[6] = {0., 1., 2., 3., 4., 5.};
-  CbmVertex test{"Vertex","Vertex", 1., 2., 3., 4., 5, 6, Cov};
+  CbmVertex test {"Vertex", "Vertex", 1., 2., 3., 4., 5, 6, Cov};
   {
     SCOPED_TRACE("CheckSetVertex: Initial Test");
     compareVertexDataMembers(test, 1., 2., 3., 4., 5, 6, val);
   }
 
-  EXPECT_STREQ("Vertex: position (1.0000, 2.0000, 3.0000) cm, chi2/ndf = 0.8000, tracks used: 6", test.ToString().c_str());
+  EXPECT_STREQ("Vertex: position (1.0000, 2.0000, 3.0000) cm, chi2/ndf = "
+               "0.8000, tracks used: 6",
+               test.ToString().c_str());
 
 
-  CbmVertex test1{"Vertex","Vertex", 1., 2., 3., 4., 0, 6, Cov};
+  CbmVertex test1 {"Vertex", "Vertex", 1., 2., 3., 4., 0, 6, Cov};
   {
     SCOPED_TRACE("CheckSetVertex: Initial Test");
     compareVertexDataMembers(test1, 1., 2., 3., 4., 0, 6, val);
   }
 
-  EXPECT_STREQ("Vertex: position (1.0000, 2.0000, 3.0000) cm, chi2/ndf = 0.0000, tracks used: 6", test1.ToString().c_str());
+  EXPECT_STREQ("Vertex: position (1.0000, 2.0000, 3.0000) cm, chi2/ndf = "
+               "0.0000, tracks used: 6",
+               test1.ToString().c_str());
 }

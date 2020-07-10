@@ -18,70 +18,59 @@ using std::string;
  * \author Andrey Lebedev <andrey.lebedev@gsi.de>
  * \date 2011
  */
-class CbmLitClusteringQaReport : public CbmSimulationReport
-{
+class CbmLitClusteringQaReport : public CbmSimulationReport {
 public:
-   /**
+  /**
     * \brief Constructor.
     */
-   CbmLitClusteringQaReport();
+  CbmLitClusteringQaReport();
 
-   /**
+  /**
     * \brief Destructor.
     */
-   virtual ~CbmLitClusteringQaReport();
+  virtual ~CbmLitClusteringQaReport();
 
-   static Double_t CalcEfficiency(
-      const TH1* histRec,
-      const TH1* histAcc,
-      Double_t scale);
+  static Double_t
+  CalcEfficiency(const TH1* histRec, const TH1* histAcc, Double_t scale);
 
 private:
-   /**
+  /**
     * \brief Inherited from CbmSimulationReport.
     */
-   virtual void Create();
+  virtual void Create();
 
-   /**
+  /**
     * \brief Inherited from CbmSimulationReport.
     */
-   virtual void Draw();
+  virtual void Draw();
 
-   /**
+  /**
     * \brief Print number of objects table.
     */
-   string PrintNofObjects() const;
+  string PrintNofObjects() const;
 
-   void DrawNofObjectsHistograms(
-      const string& detName,
-      const string& parameter);
+  void DrawNofObjectsHistograms(const string& detName, const string& parameter);
 
-   void DrawResidualsAndPulls(
-      const string& detName);
+  void DrawResidualsAndPulls(const string& detName);
 
-//   void DrawAccAndRec(
-//         const string& canvasName,
-//         const string& histNamePattern);
+  //   void DrawAccAndRec(
+  //         const string& canvasName,
+  //         const string& histNamePattern);
 
-//   void DrawEfficiency(
-//         const string& canvasName,
-//         const string& histNamePattern,
-//         string (*labelFormatter)(const string&, const CbmHistManager*));
+  //   void DrawEfficiency(
+  //         const string& canvasName,
+  //         const string& histNamePattern,
+  //         string (*labelFormatter)(const string&, const CbmHistManager*));
 
-   void ScaleAndShrinkHistograms();
+  void ScaleAndShrinkHistograms();
 
-   void DivideHistos(
-      TH1* histo1,
-      TH1* histo2,
-      TH1* histo3,
-      Double_t scale);
+  void DivideHistos(TH1* histo1, TH1* histo2, TH1* histo3, Double_t scale);
 
-   void CalculateEfficiencyHistos(
-         const string& acc,
-         const string& rec,
-         const string& eff);
+  void CalculateEfficiencyHistos(const string& acc,
+                                 const string& rec,
+                                 const string& eff);
 
-   ClassDef(CbmLitClusteringQaReport, 1)
+  ClassDef(CbmLitClusteringQaReport, 1)
 };
 
 #endif /* CBMLITCLUSTERINGQAREPORT_H_ */

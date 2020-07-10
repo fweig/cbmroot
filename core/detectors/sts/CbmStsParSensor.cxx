@@ -5,30 +5,26 @@
 
 #include "CbmStsParSensor.h"
 
-#include <TMath.h>              // for Nint
+#include <TMath.h>  // for Nint
 
-#include <sstream>              // for operator<<, basic_ostream, stringstream
-#include <string>               // for char_traits
+#include <sstream>  // for operator<<, basic_ostream, stringstream
+#include <string>   // for char_traits
 
 ClassImp(CbmStsParSensor)
 
-// -----   Constructor   ---------------------------------------------------
-CbmStsParSensor::CbmStsParSensor(CbmStsSensorClass sClass)
-: fClass(sClass)
-{
-}
+  // -----   Constructor   ---------------------------------------------------
+  CbmStsParSensor::CbmStsParSensor(CbmStsSensorClass sClass)
+  : fClass(sClass) {}
 // -------------------------------------------------------------------------
-
 
 
 // -----   Get a parameter   -----------------------------------------------
 Float_t CbmStsParSensor::GetPar(UInt_t index) const {
   Float_t value = 0.;
-  if ( index < fPar.size() ) value = fPar[index];
+  if (index < fPar.size()) value = fPar[index];
   return value;
 }
 // -------------------------------------------------------------------------
-
 
 
 // -----   Get the integer value of a parameter   --------------------------
@@ -36,7 +32,6 @@ Int_t CbmStsParSensor::GetParInt(UInt_t index) const {
   return TMath::Nint(GetPar(index));
 }
 // -------------------------------------------------------------------------
-
 
 
 // -----   String output   -------------------------------------------------
@@ -47,14 +42,13 @@ std::string CbmStsParSensor::ToString() const {
     case CbmStsSensorClass::kDssdStereo: ss << "Class DssdStereo | "; break;
     case CbmStsSensorClass::kDssdOrtho: ss << "Class DssdStereo | "; break;
     default: ss << "Class unknown"; break;
-  } //? sensor class
+  }  //? sensor class
 
   ss << "size (" << fPar[0] << " x " << fPar[1] << " x " << fPar[2]
-      << ") | active " << fPar[3] << " | strips " << fPar[4] << " / "
-      << fPar[5] << " | pitch " << fPar[6] << " / " << fPar[7]
-      << " | stereo " << fPar[8] << " / " << fPar[9];
+     << ") | active " << fPar[3] << " | strips " << fPar[4] << " / " << fPar[5]
+     << " | pitch " << fPar[6] << " / " << fPar[7] << " | stereo " << fPar[8]
+     << " / " << fPar[9];
 
   return ss.str();
 }
 // -------------------------------------------------------------------------
-

@@ -11,20 +11,21 @@
 
 #include "NicaExpEvent.h"
 
-class NicaCbmGlobalEvent : public NicaExpEvent{
+class NicaCbmGlobalEvent : public NicaExpEvent {
 protected:
-	virtual void ShallowCopyTracks(NicaEvent *event);
-	virtual void ShallowCopyEvent(NicaEvent *event);
-	virtual void CreateSource();
-	NicaCbmGlobalEvent(TString classname);
+  virtual void ShallowCopyTracks(NicaEvent* event);
+  virtual void ShallowCopyEvent(NicaEvent* event);
+  virtual void CreateSource();
+  NicaCbmGlobalEvent(TString classname);
+
 public:
-	NicaCbmGlobalEvent();
-	NicaCbmGlobalEvent(const 	NicaCbmGlobalEvent &other);
-	virtual void Update();
-	virtual Bool_t ExistInTree() const;
-	virtual TString GetFormatName()const{return "CbmGlobalEvent";};
-	virtual ~NicaCbmGlobalEvent();
-	ClassDef(NicaCbmGlobalEvent,1)
+  NicaCbmGlobalEvent();
+  NicaCbmGlobalEvent(const NicaCbmGlobalEvent& other);
+  virtual void Update();
+  virtual Bool_t ExistInTree() const;
+  virtual TString GetFormatName() const { return "CbmGlobalEvent"; };
+  virtual ~NicaCbmGlobalEvent();
+  ClassDef(NicaCbmGlobalEvent, 1)
 };
 
 #endif /* NICACBMGLOBEVENT_H_ */

@@ -5,101 +5,91 @@
 // -------------------------------------------------------------------------
 #include "CbmTrack.h"
 
-#include "CbmMatch.h"           // for CbmMatch
+#include "CbmMatch.h"  // for CbmMatch
 
-#include <FairTrackParam.h>     // for FairTrackParam
+#include <FairTrackParam.h>  // for FairTrackParam
 
-#include <TObject.h>            // for TObject
+#include <TObject.h>  // for TObject
 
-#include <sstream>              // for operator<<, basic_ostream, stringstream
+#include <sstream>  // for operator<<, basic_ostream, stringstream
 
-using std::stringstream;
 using std::endl;
+using std::stringstream;
 
-CbmTrack::CbmTrack() :
-    TObject(),
-    fHitIndex(),
-    fHitType(),
-    fPidHypo(0),
-    fParamFirst(),
-    fParamLast(),
-    fTime(0.),
-    fTimeError(0.),
-    fFlag(0),
-    fChiSq(0.),
-    fNDF(0),
-    fPreviousTrackId(-1),
-    fMatch(nullptr)
-{
-}
+CbmTrack::CbmTrack()
+  : TObject()
+  , fHitIndex()
+  , fHitType()
+  , fPidHypo(0)
+  , fParamFirst()
+  , fParamLast()
+  , fTime(0.)
+  , fTimeError(0.)
+  , fFlag(0)
+  , fChiSq(0.)
+  , fNDF(0)
+  , fPreviousTrackId(-1)
+  , fMatch(nullptr) {}
 
 // Only shallow copy needed
 CbmTrack::CbmTrack(const CbmTrack& rhs)
- : TObject(rhs),
-   fHitIndex(rhs.fHitIndex),
-   fHitType(rhs.fHitType),
-   fPidHypo(rhs.fPidHypo),
-   fParamFirst(rhs.fParamFirst),
-   fParamLast(rhs.fParamLast),
-   fTime(rhs.fTime),
-   fTimeError(rhs.fTimeError),
-   fFlag(rhs.fFlag),
-   fChiSq(rhs.fChiSq),
-   fNDF(rhs.fNDF),
-   fPreviousTrackId(rhs.fPreviousTrackId),
-   fMatch(nullptr)
-{
-}
+  : TObject(rhs)
+  , fHitIndex(rhs.fHitIndex)
+  , fHitType(rhs.fHitType)
+  , fPidHypo(rhs.fPidHypo)
+  , fParamFirst(rhs.fParamFirst)
+  , fParamLast(rhs.fParamLast)
+  , fTime(rhs.fTime)
+  , fTimeError(rhs.fTimeError)
+  , fFlag(rhs.fFlag)
+  , fChiSq(rhs.fChiSq)
+  , fNDF(rhs.fNDF)
+  , fPreviousTrackId(rhs.fPreviousTrackId)
+  , fMatch(nullptr) {}
 
 // Only shallow copy needed
-CbmTrack& CbmTrack::operator=(const CbmTrack& rhs)
-{
+CbmTrack& CbmTrack::operator=(const CbmTrack& rhs) {
 
   if (this != &rhs) {
     TObject::operator=(rhs);
-    fHitIndex = rhs.fHitIndex;
-    fHitType = rhs.fHitType;
-    fPidHypo = rhs.fPidHypo;
-    fParamFirst = rhs.fParamFirst;
-    fParamLast = rhs.fParamLast;
-    fTime = rhs.fTime;
-    fTimeError = rhs.fTimeError;
-    fFlag = rhs.fFlag;
-    fChiSq = rhs.fChiSq;
-    fNDF = rhs.fNDF;
+    fHitIndex        = rhs.fHitIndex;
+    fHitType         = rhs.fHitType;
+    fPidHypo         = rhs.fPidHypo;
+    fParamFirst      = rhs.fParamFirst;
+    fParamLast       = rhs.fParamLast;
+    fTime            = rhs.fTime;
+    fTimeError       = rhs.fTimeError;
+    fFlag            = rhs.fFlag;
+    fChiSq           = rhs.fChiSq;
+    fNDF             = rhs.fNDF;
     fPreviousTrackId = rhs.fPreviousTrackId;
-    fMatch = nullptr;
+    fMatch           = nullptr;
   }
   return *this;
 }
 
-CbmTrack::~CbmTrack()
-{
-  if ( fMatch ) delete fMatch;
+CbmTrack::~CbmTrack() {
+  if (fMatch) delete fMatch;
 }
 
-void CbmTrack::AddHit(
-		Int_t index,
-		HitType type)
-{
-	fHitIndex.push_back(index);
-	fHitType.push_back(type);
+void CbmTrack::AddHit(Int_t index, HitType type) {
+  fHitIndex.push_back(index);
+  fHitType.push_back(type);
 }
 
 void CbmTrack::SetMatch(CbmMatch* match) {
-  if ( fMatch ) delete fMatch;
+  if (fMatch) delete fMatch;
   fMatch = match;
 }
 
-std::string CbmTrack::ToString() const
-{
-   stringstream ss;
-	ss << "CbmTrack: nof hits=" << fHitIndex.size() << ", chiSq=" << fChiSq
-		<< ", NDF=" << fNDF << ", pidHypo=" << fPidHypo
-		<< ", previousTrackId=" << fPreviousTrackId << ", flag=" << fFlag << "\n";
-//	fParamFirst.Print();
-//	fParamLast.Print();
-	return ss.str();
+std::string CbmTrack::ToString() const {
+  stringstream ss;
+  ss << "CbmTrack: nof hits=" << fHitIndex.size() << ", chiSq=" << fChiSq
+     << ", NDF=" << fNDF << ", pidHypo=" << fPidHypo
+     << ", previousTrackId=" << fPreviousTrackId << ", flag=" << fFlag << "\n";
+  //	fParamFirst.Print();
+  //	fParamLast.Print();
+  return ss.str();
 }
 
 ClassImp(CbmTrack);

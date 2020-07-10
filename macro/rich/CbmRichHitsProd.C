@@ -4,14 +4,14 @@
 {
 
 
-// this macro read an input Tree structure
-// from simulation and generate an output
-// tree containing collections of RichHits
+  // this macro read an input Tree structure
+  // from simulation and generate an output
+  // tree containing collections of RichHits
 
-// ========================================================================
+  // ========================================================================
   //          Adjust this part according to your requirements
-  
-  
+
+
   // Verbosity level (0=quiet, 1=event level, 2=track level, 3=debug)
   Int_t iVerbose = 1;
 
@@ -23,7 +23,7 @@
 
   // Parameter file
   TString parFile = "../run/params.root";
-  
+
   // Output file
   TString outFile = "test.richhits.root";
 
@@ -38,7 +38,7 @@
   basiclibs();
   gSystem->Load("libGeoBase");
   gSystem->Load("libParBase");
-  gSystem->Load("libBase");  
+  gSystem->Load("libBase");
   gSystem->Load("libCbmBase");
   gSystem->Load("libCbmData");
   gSystem->Load("libField");
@@ -55,35 +55,34 @@
   gSystem->Load("libL1");
   // ------------------------------------------------------------------------
 
-  FairRunAna *fRun = new FairRunAna();
+  FairRunAna* fRun = new FairRunAna();
   fRun->SetInputFile(inFile);
   fRun->SetOutputFile(outFile);
 
-  FairRuntimeDb *rtdb = fRun->GetRuntimeDb();
-  FairParRootFileIo *io1 = new FairParRootFileIo();
+  FairRuntimeDb* rtdb    = fRun->GetRuntimeDb();
+  FairParRootFileIo* io1 = new FairParRootFileIo();
   io1->open(parFile.Data());
   rtdb->setFirstInput(io1);
 
   // ------- Parameters for photodetector -------------------------
-  Double_t pmt_rad = 0.4;            // PMT radius (cm)
-  Double_t pmt_dist = 0.;            // distance between PMTs (cm)
-  Int_t  det_type = 4;    // detector type (choose: 1=Protvino, 2=Hamamatsu, 3=CsI)
-  Int_t  noise = 220;    // number of noise points to be added
-                          //  (note: excluding geom. eff. (~0.9))
+  Double_t pmt_rad  = 0.4;  // PMT radius (cm)
+  Double_t pmt_dist = 0.;   // distance between PMTs (cm)
+  Int_t det_type = 4;  // detector type (choose: 1=Protvino, 2=Hamamatsu, 3=CsI)
+  Int_t noise    = 220;  // number of noise points to be added
+                         //  (note: excluding geom. eff. (~0.9))
 
   // define RichHitProducer to run
-  CbmRichHitProducer *hp= new CbmRichHitProducer(pmt_rad,pmt_dist,det_type,noise,iVerbose);
+  CbmRichHitProducer* hp =
+    new CbmRichHitProducer(pmt_rad, pmt_dist, det_type, noise, iVerbose);
   fRun->AddTask(hp);
-  
-  
+
+
   // -----   Intialise and run   --------------------------------------------
   fRun->Init();
-  fRun->Run(0,nEvents);
+  fRun->Run(0, nEvents);
 
   timer.Stop();
   Double_t rtime = timer.RealTime();
   Double_t ctime = timer.CpuTime();
-  printf("RealTime=%f seconds, CpuTime=%f seconds\n",rtime,ctime);
-
-
+  printf("RealTime=%f seconds, CpuTime=%f seconds\n", rtime, ctime);
 }

@@ -17,78 +17,78 @@
 /// FAIRSOFT headers (geant, boost, ...)
 
 /// C/C++ headers
+#include "CbmTofDigi.h"
 #include <array>
 #include <map>
 #include <set>
 #include <tuple>
 #include <vector>
-#include "CbmTofDigi.h"
 
 class TClonesArray;
 
-class CbmMcbm2019TimeWinEventBuilderTask : public FairTask
-{
-  public:
+class CbmMcbm2019TimeWinEventBuilderTask : public FairTask {
+public:
+  /** Default constructor **/
+  CbmMcbm2019TimeWinEventBuilderTask();
 
-    /** Default constructor **/
-    CbmMcbm2019TimeWinEventBuilderTask();
+  CbmMcbm2019TimeWinEventBuilderTask(
+    const CbmMcbm2019TimeWinEventBuilderTask&) = delete;
+  CbmMcbm2019TimeWinEventBuilderTask
+  operator=(const CbmMcbm2019TimeWinEventBuilderTask&) = delete;
 
-    CbmMcbm2019TimeWinEventBuilderTask(const CbmMcbm2019TimeWinEventBuilderTask&) = delete;
-    CbmMcbm2019TimeWinEventBuilderTask operator=(const CbmMcbm2019TimeWinEventBuilderTask&) = delete;
-
-    /** Constructor with parameters (Optional) **/
-    //  CbmMcbm2019TimeWinEventBuilderTask(Int_t verbose);
-
-
-    /** Destructor **/
-    ~CbmMcbm2019TimeWinEventBuilderTask();
+  /** Constructor with parameters (Optional) **/
+  //  CbmMcbm2019TimeWinEventBuilderTask(Int_t verbose);
 
 
-    /** Initiliazation of task at the beginning of a run **/
-    virtual InitStatus Init();
-
-    /** ReInitiliazation of task when the runID changes **/
-    virtual InitStatus ReInit();
+  /** Destructor **/
+  ~CbmMcbm2019TimeWinEventBuilderTask();
 
 
-    /** Executed for each event. **/
-    virtual void Exec(Option_t*);
+  /** Initiliazation of task at the beginning of a run **/
+  virtual InitStatus Init();
 
-    /** Load the parameter container from the runtime database **/
-    virtual void SetParContainers();
+  /** ReInitiliazation of task when the runID changes **/
+  virtual InitStatus ReInit();
 
-    /** Finish task called at the end of the run **/
-    virtual void Finish();
 
-    void SetFillHistos( Bool_t bFlag = kTRUE );
-    void SetOutFilename( TString sNameIn );
+  /** Executed for each event. **/
+  virtual void Exec(Option_t*);
 
-    void SetReferenceDetector( ECbmModuleId refDet );
-    void AddDetector( ECbmModuleId selDet );
-    void RemoveDetector( ECbmModuleId selDet );
+  /** Load the parameter container from the runtime database **/
+  virtual void SetParContainers();
 
-    void SetTriggerMinNumber( ECbmModuleId selDet, UInt_t uVal );
-    void SetTriggerMaxNumber( ECbmModuleId selDet, Int_t iVal );
+  /** Finish task called at the end of the run **/
+  virtual void Finish();
 
-    void SetTriggerWindow( ECbmModuleId det, Double_t dWinBeg, Double_t dWinEnd );
+  void SetFillHistos(Bool_t bFlag = kTRUE);
+  void SetOutFilename(TString sNameIn);
 
-    void SetEventOverlapMode( EOverlapMode mode );
-    void SetIgnoreTsOverlap( Bool_t bFlagIn );
+  void SetReferenceDetector(ECbmModuleId refDet);
+  void AddDetector(ECbmModuleId selDet);
+  void RemoveDetector(ECbmModuleId selDet);
 
-  private:
-    void FillOutput();
-    void SaveHistos();
+  void SetTriggerMinNumber(ECbmModuleId selDet, UInt_t uVal);
+  void SetTriggerMaxNumber(ECbmModuleId selDet, Int_t iVal);
 
-    CbmMcbm2019TimeWinEventBuilderAlgo * fpAlgo = nullptr;
+  void SetTriggerWindow(ECbmModuleId det, Double_t dWinBeg, Double_t dWinEnd);
 
-    TClonesArray* fEvents = nullptr;    //! output container of CbmEvents
+  void SetEventOverlapMode(EOverlapMode mode);
+  void SetIgnoreTsOverlap(Bool_t bFlagIn);
 
-    Bool_t fbFillHistos{kTRUE};              //! Switch ON/OFF filling of histograms
+private:
+  void FillOutput();
+  void SaveHistos();
 
-    /** Name of the histogram output file **/
-    TString fsOutFileName{"data/HistosEvtWin.root"};
+  CbmMcbm2019TimeWinEventBuilderAlgo* fpAlgo = nullptr;
 
-    ClassDef(CbmMcbm2019TimeWinEventBuilderTask,1);
+  TClonesArray* fEvents = nullptr;  //! output container of CbmEvents
+
+  Bool_t fbFillHistos {kTRUE};  //! Switch ON/OFF filling of histograms
+
+  /** Name of the histogram output file **/
+  TString fsOutFileName {"data/HistosEvtWin.root"};
+
+  ClassDef(CbmMcbm2019TimeWinEventBuilderTask, 1);
 };
 
-#endif // CBMMCBM2019TIMEWINEVENTBUILDERTASK_H
+#endif  // CBMMCBM2019TIMEWINEVENTBUILDERTASK_H

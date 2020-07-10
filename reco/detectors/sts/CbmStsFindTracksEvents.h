@@ -8,9 +8,9 @@
 #define CBMSTSFINDTRACKSEVENTS 1
 
 
-#include "TStopwatch.h"
-#include "FairTask.h"
 #include "CbmStsTrackFinder.h"
+#include "FairTask.h"
+#include "TStopwatch.h"
 
 
 class TClonesArray;
@@ -28,17 +28,15 @@ class CbmStsTrackFinderIdeal;
  ** This task creates StsTrack objects from a collection of StsHits.
  ** It uses as finding engine a class derived from CVbmStsTrackFinder.
  **/
-class CbmStsFindTracksEvents : public FairTask
-{
+class CbmStsFindTracksEvents : public FairTask {
 
- public:
-
+public:
   /** Constructor
    ** @param finder  Track finder engine. Default: Ideal track finder.
    ** @param useMvd  Include MVD hits in track finding. Default kFALSE.
    **/
   CbmStsFindTracksEvents(CbmStsTrackFinder* finder = NULL,
-  		                   Bool_t useMvd = kFALSE);
+                         Bool_t useMvd             = kFALSE);
 
 
   /** Destructor **/
@@ -64,26 +62,25 @@ class CbmStsFindTracksEvents : public FairTask
   /** Set track finding engine
    ** @param finder  Pointer to track finding engine
    **/
-  void UseFinder(CbmStsTrackFinder* finder) { 
-    if ( fFinder ) delete fFinder;
-    fFinder = finder; 
+  void UseFinder(CbmStsTrackFinder* finder) {
+    if (fFinder) delete fFinder;
+    fFinder = finder;
   };
 
 
- private:
+private:
+  Bool_t fUseMvd;              //  Inclusion of MVD hits
+  CbmStsTrackFinder* fFinder;  //  TrackFinder concrete class
+  TClonesArray* fEvents;       //! Array of CbmEvent objects
+  TClonesArray* fMvdHits;      //! Input array of MVD hits
+  TClonesArray* fStsHits;      //! Input array of STS hits
+  TClonesArray* fTracks;       //! Output array of CbmStsTracks
+  TStopwatch fTimer;           //! Timer
+  Int_t fNofEvents;            ///< Number of events with success
+  Double_t fNofHits;           ///< Number of hits
+  Double_t fNofTracks;         ///< Number of tracks created
+  Double_t fTime;              ///< Total real time used for good events
 
-  Bool_t             fUseMvd;      //  Inclusion of MVD hits
-  CbmStsTrackFinder* fFinder;      //  TrackFinder concrete class
-  TClonesArray*      fEvents;      //! Array of CbmEvent objects
-  TClonesArray*      fMvdHits ;    //! Input array of MVD hits
-  TClonesArray*      fStsHits ;    //! Input array of STS hits
-  TClonesArray*      fTracks    ;  //! Output array of CbmStsTracks
-  TStopwatch         fTimer;       //! Timer
-  Int_t    fNofEvents;        ///< Number of events with success
-  Double_t fNofHits;          ///< Number of hits
-  Double_t fNofTracks;        ///< Number of tracks created
-  Double_t fTime;             ///< Total real time used for good events
-  
 
   /** Initialisation at beginning of each event **/
   virtual InitStatus Init();
@@ -102,8 +99,7 @@ class CbmStsFindTracksEvents : public FairTask
   CbmStsFindTracksEvents operator=(const CbmStsFindTracksEvents&);
 
 
-  ClassDef(CbmStsFindTracksEvents,1);
-
+  ClassDef(CbmStsFindTracksEvents, 1);
 };
 
 #endif

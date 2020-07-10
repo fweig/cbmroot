@@ -10,8 +10,8 @@
 #include <RtypesCore.h>  // for Double_t, Int_t, Bool_t
 #include <TNamed.h>      // for TNamed
 
-#include <string>        // for string
-#include <vector>        // for vector
+#include <string>  // for string
+#include <vector>  // for vector
 
 class CbmStsElement;
 class CbmStsSensor;
@@ -28,39 +28,39 @@ class TGeoPhysicalNode;
  **/
 class CbmStsStation : public TNamed {
 
-	public:
+public:
+  /** Default constructor **/
+  CbmStsStation();
 
-		/** Default constructor **/
-		CbmStsStation();
 
-
-		/** Standard constructor
+  /** Standard constructor
 		 ** @param name   Station name
 		 ** @param title  Station type
 		 ** @param node   Pointer to corresponding TGeoPhysicalNode
 		 */
-		CbmStsStation(const char* name, const char* title,
-						TGeoPhysicalNode* node = nullptr);
+  CbmStsStation(const char* name,
+                const char* title,
+                TGeoPhysicalNode* node = nullptr);
 
 
-		/** Destructor **/
-		virtual ~CbmStsStation();
+  /** Destructor **/
+  virtual ~CbmStsStation();
 
 
-		/** Add a ladder to the station **/
-		void AddLadder(CbmStsElement* ladder);
+  /** Add a ladder to the station **/
+  void AddLadder(CbmStsElement* ladder);
 
 
-		/** Radiation length of the main material of the station (silicon)
+  /** Radiation length of the main material of the station (silicon)
 		 ** @value  Radiation length of silicon [cm]
 		 **
 		 ** Required from L1/KF. The value for silicon is hard-coded here,
 		 ** since it is not likely that the material will change.
 		 **/
-		Double_t GetRadLength() const { return 9.34953; }
+  Double_t GetRadLength() const { return 9.34953; }
 
 
-		/** Sensor thickness
+  /** Sensor thickness
    	 ** @value Thickness (extension in z) of first sensor [cm]
    	 **
      ** This return the thickness of the first sensor in the station.
@@ -69,10 +69,10 @@ class CbmStsStation : public TNamed {
 		 ** in the station. In this case, a warning message is issued when
 		 ** the station properties are initialised.
 	   **/
-		Double_t GetSensorD() const { return fSensorD; }
+  Double_t GetSensorD() const { return fSensorD; }
 
 
-		/** Get sensor strip pitch
+  /** Get sensor strip pitch
 		 ** @param iSide  Sensor side (0 = front, 1 = back)
 		 ** @value Strip pitch [cm]
    	 **
@@ -84,10 +84,10 @@ class CbmStsStation : public TNamed {
 		 ** Returns -1 if there are no sensors in the station or the first
 		 ** sensor is not of type DSSD.
 		 **/
-		Double_t GetSensorPitch(Int_t iSide) const;
+  Double_t GetSensorPitch(Int_t iSide) const;
 
 
-		/** Sensor rotation
+  /** Sensor rotation
 		 ** @value Rotation of first sensor in station in global C.S. [rad]
 		 **
      ** This return the rotation angle in the x-y plane of the first sensor
@@ -96,10 +96,10 @@ class CbmStsStation : public TNamed {
 		 ** Note that in general, the rotation angle will be different for each
 		 ** sensor. In particular, half of them are upside down.
 		 **/
-		Double_t GetSensorRotation() const { return fSensorRot; }
+  Double_t GetSensorRotation() const { return fSensorRot; }
 
 
-		/** Get sensor stereo angle
+  /** Get sensor stereo angle
 		 ** @param iSide  Sensor side (0 = front, 1 = back)
 		 ** @value Stereo angle [degrees]
    	 **
@@ -109,68 +109,64 @@ class CbmStsStation : public TNamed {
 		 ** Note that in general, sensors of different stereo angles can be
 		 ** in the station.
 		 **/
-		Double_t GetSensorStereoAngle(Int_t iSide) const;
+  Double_t GetSensorStereoAngle(Int_t iSide) const;
 
 
-		/** Minimal and maximal x and y coordinates **/
-		Double_t GetXmin() const { return fXmin; }
-		Double_t GetXmax() const { return fXmax; }
-		Double_t GetYmin() const { return fYmin; }
-		Double_t GetYmax() const { return fYmax; }
+  /** Minimal and maximal x and y coordinates **/
+  Double_t GetXmin() const { return fXmin; }
+  Double_t GetXmax() const { return fXmax; }
+  Double_t GetYmin() const { return fYmin; }
+  Double_t GetYmax() const { return fYmax; }
 
 
-		/** Station z position in global c.s.
+  /** Station z position in global c.s.
 		 ** @value  z Position of station in global C.S. [cm]
 		 **
 		 ** Calculated from the sensor positions (mean between min z and max z)
 		 **/
-		Double_t GetZ() const { return fZ; }
+  Double_t GetZ() const { return fZ; }
 
 
-	 /** @brief Initialise the station parameters **/
-		void Init();
+  /** @brief Initialise the station parameters **/
+  void Init();
 
 
-		/** Info  **/
-		virtual std::string ToString() const;
+  /** Info  **/
+  virtual std::string ToString() const;
 
 
+private:
+  Double_t fZ;          ///< z position of station [cm]
+  Double_t fXmin;       ///< minimal x coordinate [cm]
+  Double_t fXmax;       ///< maximal x coordinate [cm]
+  Double_t fYmin;       ///< minimal y coordinate [cm]
+  Double_t fYmax;       ///< maximal y coordinate [cm]
+  Double_t fSensorD;    ///< thickness of sensors [cm]
+  Double_t fSensorRot;  ///< Rotation of first sensor in global c.s. [rad]
+  Int_t fNofSensors;    ///< Number of sensors in station
+  Bool_t fDiffSensorD;  ///< Flag for different sensor thicknesses
+  CbmStsSensor* fFirstSensor;  ///< Pointer to first sensor
+
+  TGeoPhysicalNode* fNode;               ///< Pointer to geometry
+  std::vector<CbmStsElement*> fLadders;  ///< Array of ladders
 
 
-	private:
-
-		Double_t fZ;            ///< z position of station [cm]
-		Double_t fXmin;         ///< minimal x coordinate [cm]
-		Double_t fXmax;         ///< maximal x coordinate [cm]
-		Double_t fYmin;         ///< minimal y coordinate [cm]
-		Double_t fYmax;         ///< maximal y coordinate [cm]
-		Double_t fSensorD;      ///< thickness of sensors [cm]
-		Double_t fSensorRot;    ///< Rotation of first sensor in global c.s. [rad]
-		Int_t    fNofSensors;   ///< Number of sensors in station
-		Bool_t   fDiffSensorD;  ///< Flag for different sensor thicknesses
-		CbmStsSensor* fFirstSensor; ///< Pointer to first sensor
-
-	    TGeoPhysicalNode* fNode;               ///< Pointer to geometry
-	    std::vector<CbmStsElement*> fLadders;  ///< Array of ladders
-
-
-
-		/** @brief Check properties of sensors (position, thickness)
+  /** @brief Check properties of sensors (position, thickness)
 		 ** The z position of the station is determined as the mean of the minimum
 		 ** and maximum z positions of all sensors within the station.
 		 ** The active thickness of the first sensor is defined as thickness of the
 		 ** entire station. A warning is given out if there are different thicknesses
 		 ** among the sensors in the stations.
 		 **/
-		void CheckSensorProperties();
+  void CheckSensorProperties();
 
 
-    // --- Prevent usage of copy constructor and assignment operator
-    CbmStsStation(const CbmStsStation&);
-    CbmStsStation& operator=(const CbmStsStation&);
+  // --- Prevent usage of copy constructor and assignment operator
+  CbmStsStation(const CbmStsStation&);
+  CbmStsStation& operator=(const CbmStsStation&);
 
 
-		ClassDef(CbmStsStation, 1);
+  ClassDef(CbmStsStation, 1);
 };
 
 #endif /* CBMSTSSTATION_H */

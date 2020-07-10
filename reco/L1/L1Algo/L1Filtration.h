@@ -2,16 +2,15 @@
 #define L1Filtration_h
 
 #include "CbmL1Def.h"
+#include "L1TrackPar.h"
 #include "L1UMeasurementInfo.h"
 #include "L1XYMeasurementInfo.h"
-#include "L1TrackPar.h"
 
 //#define cnst static const fvec
 #define cnst const fvec
 
 
-inline void FilterTime(L1TrackPar &T, fvec t0, fvec dt0, fvec w = 1.)
-{
+inline void FilterTime(L1TrackPar& T, fvec t0, fvec dt0, fvec w = 1.) {
   fvec wi, zeta, zetawi, HCH;
   fvec F0, F1, F2, F3, F4, F5;
   fvec K1, K2, K3, K4, K5;
@@ -29,246 +28,259 @@ inline void FilterTime(L1TrackPar &T, fvec t0, fvec dt0, fvec w = 1.)
   F4 = T.C54;
   F5 = T.C55;
 
-#if 0 // use mask
+#if 0  // use mask
   const fvec mask = (HCH < info.sigma2 * 16.);
   wi = w/( (mask & info.sigma2) +HCH );
   zetawi = zeta *wi;
   T.chi2 +=  mask & (zeta * zetawi);
 #else
-  wi = w/( dt0*dt0 + HCH );
-  zetawi = zeta *wi;
-  T.chi2 +=  zeta * zetawi;
-#endif // 0
+  wi     = w / (dt0 * dt0 + HCH);
+  zetawi = zeta * wi;
+  T.chi2 += zeta * zetawi;
+#endif  // 0
   T.NDF += w;
 
-  K1 = F1*wi;
-  K2 = F2*wi;
-  K3 = F3*wi;
-  K4 = F4*wi;
-  K5 = F5*wi;
+  K1 = F1 * wi;
+  K2 = F2 * wi;
+  K3 = F3 * wi;
+  K4 = F4 * wi;
+  K5 = F5 * wi;
 
-  T.x  -= F0*zetawi;
-  T.y  -= F1*zetawi;
-  T.tx -= F2*zetawi;
-  T.ty -= F3*zetawi;
-  T.qp -= F4*zetawi;
-  T.t  -= F5*zetawi;
+  T.x -= F0 * zetawi;
+  T.y -= F1 * zetawi;
+  T.tx -= F2 * zetawi;
+  T.ty -= F3 * zetawi;
+  T.qp -= F4 * zetawi;
+  T.t -= F5 * zetawi;
 
-  T.C00-= F0*F0*wi;
-  T.C10-= K1*F0;
-  T.C11-= K1*F1;
-  T.C20-= K2*F0;
-  T.C21-= K2*F1;
-  T.C22-= K2*F2;
-  T.C30-= K3*F0;
-  T.C31-= K3*F1;
-  T.C32-= K3*F2;
-  T.C33-= K3*F3;
-  T.C40-= K4*F0;
-  T.C41-= K4*F1;
-  T.C42-= K4*F2;
-  T.C43-= K4*F3;
-  T.C44-= K4*F4;
-  T.C50-= K5*F0;
-  T.C51-= K5*F1;
-  T.C52-= K5*F2;
-  T.C53-= K5*F3;
-  T.C54-= K5*F4;
-  T.C55-= K5*F5;
+  T.C00 -= F0 * F0 * wi;
+  T.C10 -= K1 * F0;
+  T.C11 -= K1 * F1;
+  T.C20 -= K2 * F0;
+  T.C21 -= K2 * F1;
+  T.C22 -= K2 * F2;
+  T.C30 -= K3 * F0;
+  T.C31 -= K3 * F1;
+  T.C32 -= K3 * F2;
+  T.C33 -= K3 * F3;
+  T.C40 -= K4 * F0;
+  T.C41 -= K4 * F1;
+  T.C42 -= K4 * F2;
+  T.C43 -= K4 * F3;
+  T.C44 -= K4 * F4;
+  T.C50 -= K5 * F0;
+  T.C51 -= K5 * F1;
+  T.C52 -= K5 * F2;
+  T.C53 -= K5 * F3;
+  T.C54 -= K5 * F4;
+  T.C55 -= K5 * F5;
 }
 
-inline void L1Filter( L1TrackPar &T, L1UMeasurementInfo &info, fvec u, fvec w = 1.)
-{
+inline void
+L1Filter(L1TrackPar& T, L1UMeasurementInfo& info, fvec u, fvec w = 1.) {
   fvec wi, zeta, zetawi, HCH;
   fvec F0, F1, F2, F3, F4, F5;
   fvec K1, K2, K3, K4, K5;
 
-  zeta = info.cos_phi*T.x + info.sin_phi*T.y - u;
+  zeta = info.cos_phi * T.x + info.sin_phi * T.y - u;
 
   // F = CH'
-  F0 = info.cos_phi*T.C00 + info.sin_phi*T.C10;
-  F1 = info.cos_phi*T.C10 + info.sin_phi*T.C11;
+  F0 = info.cos_phi * T.C00 + info.sin_phi * T.C10;
+  F1 = info.cos_phi * T.C10 + info.sin_phi * T.C11;
 
-  HCH = ( F0*info.cos_phi + F1*info.sin_phi );
+  HCH = (F0 * info.cos_phi + F1 * info.sin_phi);
 
-  F2 = info.cos_phi*T.C20 + info.sin_phi*T.C21;
-  F3 = info.cos_phi*T.C30 + info.sin_phi*T.C31;
-  F4 = info.cos_phi*T.C40 + info.sin_phi*T.C41;
-  F5 = info.cos_phi*T.C50 + info.sin_phi*T.C51;
+  F2 = info.cos_phi * T.C20 + info.sin_phi * T.C21;
+  F3 = info.cos_phi * T.C30 + info.sin_phi * T.C31;
+  F4 = info.cos_phi * T.C40 + info.sin_phi * T.C41;
+  F5 = info.cos_phi * T.C50 + info.sin_phi * T.C51;
 
-#if 0 // use mask
+#if 0  // use mask
   const fvec mask = (HCH < info.sigma2 * 16.);
   wi = w/( (mask & info.sigma2) +HCH );
   zetawi = zeta *wi;
   T.chi2 +=  mask & (zeta * zetawi);
 #else
-  wi = w/( info.sigma2 + HCH );
-  zetawi = zeta *wi;
-  T.chi2 +=  zeta * zetawi;
-#endif // 0
+  wi     = w / (info.sigma2 + HCH);
+  zetawi = zeta * wi;
+  T.chi2 += zeta * zetawi;
+#endif  // 0
   T.NDF += w;
 
-  K1 = F1*wi;
-  K2 = F2*wi;
-  K3 = F3*wi;
-  K4 = F4*wi;
-  K5 = F5*wi;
+  K1 = F1 * wi;
+  K2 = F2 * wi;
+  K3 = F3 * wi;
+  K4 = F4 * wi;
+  K5 = F5 * wi;
 
-  T.x  -= F0*zetawi;
-  T.y  -= F1*zetawi;
-  T.tx -= F2*zetawi;
-  T.ty -= F3*zetawi;
-  T.qp -= F4*zetawi;
-  T.t  -= F5*zetawi;
-  
-  T.C00-= F0*F0*wi;
-  T.C10-= K1*F0;
-  T.C11-= K1*F1;
-  T.C20-= K2*F0;
-  T.C21-= K2*F1;
-  T.C22-= K2*F2;
-  T.C30-= K3*F0;
-  T.C31-= K3*F1;
-  T.C32-= K3*F2;
-  T.C33-= K3*F3;
-  T.C40-= K4*F0;
-  T.C41-= K4*F1;
-  T.C42-= K4*F2;
-  T.C43-= K4*F3;
-  T.C44-= K4*F4;
-  T.C50-= K5*F0;
-  T.C51-= K5*F1;
-  T.C52-= K5*F2;
-  T.C53-= K5*F3;
-  T.C54-= K5*F4;
-  T.C55-= K5*F5;
+  T.x -= F0 * zetawi;
+  T.y -= F1 * zetawi;
+  T.tx -= F2 * zetawi;
+  T.ty -= F3 * zetawi;
+  T.qp -= F4 * zetawi;
+  T.t -= F5 * zetawi;
 
+  T.C00 -= F0 * F0 * wi;
+  T.C10 -= K1 * F0;
+  T.C11 -= K1 * F1;
+  T.C20 -= K2 * F0;
+  T.C21 -= K2 * F1;
+  T.C22 -= K2 * F2;
+  T.C30 -= K3 * F0;
+  T.C31 -= K3 * F1;
+  T.C32 -= K3 * F2;
+  T.C33 -= K3 * F3;
+  T.C40 -= K4 * F0;
+  T.C41 -= K4 * F1;
+  T.C42 -= K4 * F2;
+  T.C43 -= K4 * F3;
+  T.C44 -= K4 * F4;
+  T.C50 -= K5 * F0;
+  T.C51 -= K5 * F1;
+  T.C52 -= K5 * F2;
+  T.C53 -= K5 * F3;
+  T.C54 -= K5 * F4;
+  T.C55 -= K5 * F5;
 }
 
-inline void L1FilterNoField( L1TrackPar &T, L1UMeasurementInfo &info, fvec u, fvec w = 1.)
-{
+inline void
+L1FilterNoField(L1TrackPar& T, L1UMeasurementInfo& info, fvec u, fvec w = 1.) {
   fvec wi, zeta, zetawi, HCH;
   fvec F0, F1, F2, F3, F4, F5;
   fvec K1, K2, K3, K4, K5;
 
-  zeta = info.cos_phi*T.x + info.sin_phi*T.y - u;
+  zeta = info.cos_phi * T.x + info.sin_phi * T.y - u;
 
   // F = CH'
-  F0 = info.cos_phi*T.C00 + info.sin_phi*T.C10;
-  F1 = info.cos_phi*T.C10 + info.sin_phi*T.C11;
+  F0 = info.cos_phi * T.C00 + info.sin_phi * T.C10;
+  F1 = info.cos_phi * T.C10 + info.sin_phi * T.C11;
 
-  HCH = ( F0*info.cos_phi + F1*info.sin_phi );
+  HCH = (F0 * info.cos_phi + F1 * info.sin_phi);
 
-  F2 = info.cos_phi*T.C20 + info.sin_phi*T.C21;
-  F3 = info.cos_phi*T.C30 + info.sin_phi*T.C31;
-  F4 = info.cos_phi*T.C40 + info.sin_phi*T.C41;
-  F5 = info.cos_phi*T.C50 + info.sin_phi*T.C51;
+  F2 = info.cos_phi * T.C20 + info.sin_phi * T.C21;
+  F3 = info.cos_phi * T.C30 + info.sin_phi * T.C31;
+  F4 = info.cos_phi * T.C40 + info.sin_phi * T.C41;
+  F5 = info.cos_phi * T.C50 + info.sin_phi * T.C51;
 
-#if 0 // use mask
+#if 0  // use mask
   const fvec mask = (HCH < info.sigma2 * 16.);
   wi = w/( (mask & info.sigma2) +HCH );
   zetawi = zeta *wi;
   T.chi2 +=  mask & (zeta * zetawi);
 #else
-  wi = w/( info.sigma2 + HCH );
-  zetawi = zeta *wi;
-  
-  T.chi2 +=  zeta * zetawi;
+  wi     = w / (info.sigma2 + HCH);
+  zetawi = zeta * wi;
 
-  
-  
-#endif // 0
+  T.chi2 += zeta * zetawi;
+
+
+#endif  // 0
   T.NDF += w;
 
-  K1 = F1*wi;
-  K2 = F2*wi;
-  K3 = F3*wi;
-  K4 = F4*wi;
-  K5 = F5*wi;
+  K1 = F1 * wi;
+  K2 = F2 * wi;
+  K3 = F3 * wi;
+  K4 = F4 * wi;
+  K5 = F5 * wi;
 
-  T.x  -= F0*zetawi;
-  T.y  -= F1*zetawi;
-  T.tx -= F2*zetawi;
-  T.ty -= F3*zetawi;
- // T.qp -= F4*zetawi;
-  T.t  -= F5*zetawi;
-  
-  T.C00-= F0*F0*wi;
-  T.C10-= K1*F0;
-  T.C11-= K1*F1;
-  
-  T.C20-= K2*F0;
-  T.C21-= K2*F1;
-  T.C22-= K2*F2;
-  T.C30-= K3*F0;
-  T.C31-= K3*F1;
-  T.C32-= K3*F2;
-  T.C33-= K3*F3;
-//   T.C40-= K4*F0;
-//   T.C41-= K4*F1;
-//   T.C42-= K4*F2;
-//   T.C43-= K4*F3;
-//   T.C44-= K4*F4;
-  T.C50-= K5*F0;
-  T.C51-= K5*F1;
-  T.C52-= K5*F2;
-  T.C53-= K5*F3;
-  T.C54-= K5*F4;
-  T.C55-= K5*F5;
+  T.x -= F0 * zetawi;
+  T.y -= F1 * zetawi;
+  T.tx -= F2 * zetawi;
+  T.ty -= F3 * zetawi;
+  // T.qp -= F4*zetawi;
+  T.t -= F5 * zetawi;
 
+  T.C00 -= F0 * F0 * wi;
+  T.C10 -= K1 * F0;
+  T.C11 -= K1 * F1;
+
+  T.C20 -= K2 * F0;
+  T.C21 -= K2 * F1;
+  T.C22 -= K2 * F2;
+  T.C30 -= K3 * F0;
+  T.C31 -= K3 * F1;
+  T.C32 -= K3 * F2;
+  T.C33 -= K3 * F3;
+  //   T.C40-= K4*F0;
+  //   T.C41-= K4*F1;
+  //   T.C42-= K4*F2;
+  //   T.C43-= K4*F3;
+  //   T.C44-= K4*F4;
+  T.C50 -= K5 * F0;
+  T.C51 -= K5 * F1;
+  T.C52 -= K5 * F2;
+  T.C53 -= K5 * F3;
+  T.C54 -= K5 * F4;
+  T.C55 -= K5 * F5;
 }
 
-inline void L1FilterChi2( const L1UMeasurementInfo &info, const fvec& x, const fvec& y, const fvec& C00, const fvec& C10, const fvec& C11, fvec& chi2, const fvec& u )
-{
+inline void L1FilterChi2(const L1UMeasurementInfo& info,
+                         const fvec& x,
+                         const fvec& y,
+                         const fvec& C00,
+                         const fvec& C10,
+                         const fvec& C11,
+                         fvec& chi2,
+                         const fvec& u) {
   fvec zeta, HCH;
   fvec F0, F1;
 
-  zeta = info.cos_phi*x + info.sin_phi*y - u;
+  zeta = info.cos_phi * x + info.sin_phi * y - u;
 
   // F = CH'
-  F0 = info.cos_phi*C00 + info.sin_phi*C10;
-  F1 = info.cos_phi*C10 + info.sin_phi*C11;
+  F0 = info.cos_phi * C00 + info.sin_phi * C10;
+  F1 = info.cos_phi * C10 + info.sin_phi * C11;
 
-  HCH = ( F0*info.cos_phi + F1*info.sin_phi );
+  HCH = (F0 * info.cos_phi + F1 * info.sin_phi);
 
-  chi2 +=  zeta * zeta / (info.sigma2 + HCH) ;
+  chi2 += zeta * zeta / (info.sigma2 + HCH);
 }
 
-inline void L1FilterChi2XYC00C10C11( const L1UMeasurementInfo &info, fvec& x, fvec& y, fvec& C00, fvec& C10, fvec& C11, fvec& chi2, const fvec& u )
-{
+inline void L1FilterChi2XYC00C10C11(const L1UMeasurementInfo& info,
+                                    fvec& x,
+                                    fvec& y,
+                                    fvec& C00,
+                                    fvec& C10,
+                                    fvec& C11,
+                                    fvec& chi2,
+                                    const fvec& u) {
   fvec wi, zeta, zetawi, HCH;
   fvec F0, F1;
   fvec K1;
 
-  zeta = info.cos_phi*x + info.sin_phi*y - u;
+  zeta = info.cos_phi * x + info.sin_phi * y - u;
 
   // F = CH'
-  F0 = info.cos_phi*C00 + info.sin_phi*C10;
-  F1 = info.cos_phi*C10 + info.sin_phi*C11;
+  F0 = info.cos_phi * C00 + info.sin_phi * C10;
+  F1 = info.cos_phi * C10 + info.sin_phi * C11;
 
-  HCH = ( F0*info.cos_phi + F1*info.sin_phi );
+  HCH = (F0 * info.cos_phi + F1 * info.sin_phi);
 
-  wi = 1./(info.sigma2 + HCH);
-  zetawi = zeta *wi;
-  chi2 +=  zeta * zetawi ;
+  wi     = 1. / (info.sigma2 + HCH);
+  zetawi = zeta * wi;
+  chi2 += zeta * zetawi;
 
-  K1 = F1*wi;
+  K1 = F1 * wi;
 
-  x  -= F0*zetawi;
-  y  -= F1*zetawi;
+  x -= F0 * zetawi;
+  y -= F1 * zetawi;
 
-  C00-= F0*F0*wi;
-  C10-= K1*F0;
-  C11-= K1*F1;
+  C00 -= F0 * F0 * wi;
+  C10 -= K1 * F0;
+  C11 -= K1 * F1;
 }
 
-inline void L1FilterVtx( L1TrackPar &T, fvec x, fvec y, L1XYMeasurementInfo &info, 
-       fvec extrDx, fvec extrDy, fvec J[] )
-{
+inline void L1FilterVtx(L1TrackPar& T,
+                        fvec x,
+                        fvec y,
+                        L1XYMeasurementInfo& info,
+                        fvec extrDx,
+                        fvec extrDy,
+                        fvec J[]) {
   cnst TWO = 2.;
 
   fvec zeta0, zeta1, S00, S10, S11, si;
-  fvec F00, F10, F20, F30, F40,  F01, F11, F21, F31, F41 ;
+  fvec F00, F10, F20, F30, F40, F01, F11, F21, F31, F41;
   fvec K00, K10, K20, K30, K40, K01, K11, K21, K31, K41;
 
   //zeta0 = T.x + J[0]*T.tx + J[1]*T.ty + J[2]*T.qp - x;
@@ -277,66 +289,77 @@ inline void L1FilterVtx( L1TrackPar &T, fvec x, fvec y, L1XYMeasurementInfo &inf
   zeta0 = T.x + extrDx - x;
   zeta1 = T.y + extrDy - y;
 
-    // H = 1 0 J[0] J[1] J[2]
-    //     0 1 J[3] J[4] J[5]
-  
+  // H = 1 0 J[0] J[1] J[2]
+  //     0 1 J[3] J[4] J[5]
+
   // F = CH'
-  F00 = T.C00;       F01 = T.C10;    
-  F10 = T.C10;       F11 = T.C11;
-  F20 = J[0]*T.C22;  F21 = J[3]*T.C22;
-  F30 = J[1]*T.C33;  F31 = J[4]*T.C33;
-  F40 = J[2]*T.C44;  F41 = J[5]*T.C44;
+  F00 = T.C00;
+  F01 = T.C10;
+  F10 = T.C10;
+  F11 = T.C11;
+  F20 = J[0] * T.C22;
+  F21 = J[3] * T.C22;
+  F30 = J[1] * T.C33;
+  F31 = J[4] * T.C33;
+  F40 = J[2] * T.C44;
+  F41 = J[5] * T.C44;
 
-  S00 = info.C00 + F00 + J[0]*F20 + J[1]*F30 + J[2]*F40;
-  S10 = info.C10 + F10 + J[3]*F20 + J[4]*F30 + J[5]*F40;
-  S11 = info.C11 + F11 + J[3]*F21 + J[4]*F31 + J[5]*F41;
+  S00 = info.C00 + F00 + J[0] * F20 + J[1] * F30 + J[2] * F40;
+  S10 = info.C10 + F10 + J[3] * F20 + J[4] * F30 + J[5] * F40;
+  S11 = info.C11 + F11 + J[3] * F21 + J[4] * F31 + J[5] * F41;
 
-  si = 1./(S00*S11 - S10*S10);
+  si = 1. / (S00 * S11 - S10 * S10);
   //si = fvec(rcp(fvec((S00*S11 - S10*S10)[0])));
   fvec S00tmp = S00;
-  S00 =  si*S11;
-  S10 = -si*S10;
-  S11 =  si*S00tmp;
+  S00         = si * S11;
+  S10         = -si * S10;
+  S11         = si * S00tmp;
 
-  T.chi2+=  zeta0*zeta0*S00 + 2.*zeta0*zeta1*S10 + zeta1*zeta1*S11;
+  T.chi2 +=
+    zeta0 * zeta0 * S00 + 2. * zeta0 * zeta1 * S10 + zeta1 * zeta1 * S11;
   T.NDF += TWO;
 
-  K00 = F00*S00 + F01*S10;  K01 = F00*S10 + F01*S11;
-  K10 = F10*S00 + F11*S10;  K11 = F10*S10 + F11*S11;
-  K20 = F20*S00 + F21*S10;  K21 = F20*S10 + F21*S11;
-  K30 = F30*S00 + F31*S10;  K31 = F30*S10 + F31*S11;
-  K40 = F40*S00 + F41*S10;  K41 = F40*S10 + F41*S11;
+  K00 = F00 * S00 + F01 * S10;
+  K01 = F00 * S10 + F01 * S11;
+  K10 = F10 * S00 + F11 * S10;
+  K11 = F10 * S10 + F11 * S11;
+  K20 = F20 * S00 + F21 * S10;
+  K21 = F20 * S10 + F21 * S11;
+  K30 = F30 * S00 + F31 * S10;
+  K31 = F30 * S10 + F31 * S11;
+  K40 = F40 * S00 + F41 * S10;
+  K41 = F40 * S10 + F41 * S11;
 
-  T.x  -= K00*zeta0 + K01*zeta1;
-  T.y  -= K10*zeta0 + K11*zeta1;
-  T.tx -= K20*zeta0 + K21*zeta1;
-  T.ty -= K30*zeta0 + K31*zeta1;
-  T.qp -= K40*zeta0 + K41*zeta1;
+  T.x -= K00 * zeta0 + K01 * zeta1;
+  T.y -= K10 * zeta0 + K11 * zeta1;
+  T.tx -= K20 * zeta0 + K21 * zeta1;
+  T.ty -= K30 * zeta0 + K31 * zeta1;
+  T.qp -= K40 * zeta0 + K41 * zeta1;
 
-  T.C00-=  ( K00*F00 + K01*F01 );
-  T.C10-=  ( K10*F00 + K11*F01 );
-  T.C11-=  ( K10*F10 + K11*F11 );
-  T.C20 = -( K20*F00 + K21*F01 );
-  T.C21 = -( K20*F10 + K21*F11 );
-  T.C22-=  ( K20*F20 + K21*F21 );
-  T.C30 = -( K30*F00 + K31*F01 );
-  T.C31 = -( K30*F10 + K31*F11 );
-  T.C32 = -( K30*F20 + K31*F21 );
-  T.C33-=  ( K30*F30 + K31*F31 );
-  T.C40 = -( K40*F00 + K41*F01 );
-  T.C41 = -( K40*F10 + K41*F11 );
-  T.C42 = -( K40*F20 + K41*F21 );
-  T.C43 = -( K40*F30 + K41*F31 );
-  T.C44-=  ( K40*F40 + K41*F41 );
+  T.C00 -= (K00 * F00 + K01 * F01);
+  T.C10 -= (K10 * F00 + K11 * F01);
+  T.C11 -= (K10 * F10 + K11 * F11);
+  T.C20 = -(K20 * F00 + K21 * F01);
+  T.C21 = -(K20 * F10 + K21 * F11);
+  T.C22 -= (K20 * F20 + K21 * F21);
+  T.C30 = -(K30 * F00 + K31 * F01);
+  T.C31 = -(K30 * F10 + K31 * F11);
+  T.C32 = -(K30 * F20 + K31 * F21);
+  T.C33 -= (K30 * F30 + K31 * F31);
+  T.C40 = -(K40 * F00 + K41 * F01);
+  T.C41 = -(K40 * F10 + K41 * F11);
+  T.C42 = -(K40 * F20 + K41 * F21);
+  T.C43 = -(K40 * F30 + K41 * F31);
+  T.C44 -= (K40 * F40 + K41 * F41);
 }
 
 
-inline void L1FilterXY( L1TrackPar &T, fvec x, fvec y, L1XYMeasurementInfo &info )
-{
+inline void
+L1FilterXY(L1TrackPar& T, fvec x, fvec y, L1XYMeasurementInfo& info) {
   cnst TWO = 2.;
 
   fvec zeta0, zeta1, S00, S10, S11, si;
-  fvec F00, F10, F20, F30, F40,  F01, F11, F21, F31, F41 ;
+  fvec F00, F10, F20, F30, F40, F01, F11, F21, F31, F41;
   fvec K00, K10, K20, K30, K40, K01, K11, K21, K31, K41;
 
   zeta0 = T.x - x;
@@ -358,44 +381,49 @@ inline void L1FilterXY( L1TrackPar &T, fvec x, fvec y, L1XYMeasurementInfo &info
   S10 = F10 + info.C10;
   S11 = F11 + info.C11;
 
-  si = 1./(S00*S11 - S10*S10);
+  si          = 1. / (S00 * S11 - S10 * S10);
   fvec S00tmp = S00;
-  S00 =  si*S11;
-  S10 = -si*S10;
-  S11 =  si*S00tmp;
+  S00         = si * S11;
+  S10         = -si * S10;
+  S11         = si * S00tmp;
 
-  T.chi2+=  zeta0*zeta0*S00 + 2.*zeta0*zeta1*S10 + zeta1*zeta1*S11;
-  T.NDF  += TWO;
+  T.chi2 +=
+    zeta0 * zeta0 * S00 + 2. * zeta0 * zeta1 * S10 + zeta1 * zeta1 * S11;
+  T.NDF += TWO;
 
-  K00 = F00*S00 + F01*S10;  K01 = F00*S10 + F01*S11;
-  K10 = F10*S00 + F11*S10;  K11 = F10*S10 + F11*S11;
-  K20 = F20*S00 + F21*S10;  K21 = F20*S10 + F21*S11;
-  K30 = F30*S00 + F31*S10;  K31 = F30*S10 + F31*S11;
-  K40 = F40*S00 + F41*S10;  K41 = F40*S10 + F41*S11;
+  K00 = F00 * S00 + F01 * S10;
+  K01 = F00 * S10 + F01 * S11;
+  K10 = F10 * S00 + F11 * S10;
+  K11 = F10 * S10 + F11 * S11;
+  K20 = F20 * S00 + F21 * S10;
+  K21 = F20 * S10 + F21 * S11;
+  K30 = F30 * S00 + F31 * S10;
+  K31 = F30 * S10 + F31 * S11;
+  K40 = F40 * S00 + F41 * S10;
+  K41 = F40 * S10 + F41 * S11;
 
-  T.x  -= K00*zeta0 + K01*zeta1;
-  T.y  -= K10*zeta0 + K11*zeta1;
-  T.tx -= K20*zeta0 + K21*zeta1;
-  T.ty -= K30*zeta0 + K31*zeta1;
-  T.qp -= K40*zeta0 + K41*zeta1;
+  T.x -= K00 * zeta0 + K01 * zeta1;
+  T.y -= K10 * zeta0 + K11 * zeta1;
+  T.tx -= K20 * zeta0 + K21 * zeta1;
+  T.ty -= K30 * zeta0 + K31 * zeta1;
+  T.qp -= K40 * zeta0 + K41 * zeta1;
 
-  T.C00-= K00*F00 + K01*F01;
-  T.C10-= K10*F00 + K11*F01;
-  T.C11-= K10*F10 + K11*F11;
-  T.C20-= K20*F00 + K21*F01;
-  T.C21-= K20*F10 + K21*F11;
-  T.C22-= K20*F20 + K21*F21;
-  T.C30-= K30*F00 + K31*F01;
-  T.C31-= K30*F10 + K31*F11;
-  T.C32-= K30*F20 + K31*F21;
-  T.C33-= K30*F30 + K31*F31;
-  T.C40-= K40*F00 + K41*F01;
-  T.C41-= K40*F10 + K41*F11;
-  T.C42-= K40*F20 + K41*F21;
-  T.C43-= K40*F30 + K41*F31;
-  T.C44-= K40*F40 + K41*F41;
+  T.C00 -= K00 * F00 + K01 * F01;
+  T.C10 -= K10 * F00 + K11 * F01;
+  T.C11 -= K10 * F10 + K11 * F11;
+  T.C20 -= K20 * F00 + K21 * F01;
+  T.C21 -= K20 * F10 + K21 * F11;
+  T.C22 -= K20 * F20 + K21 * F21;
+  T.C30 -= K30 * F00 + K31 * F01;
+  T.C31 -= K30 * F10 + K31 * F11;
+  T.C32 -= K30 * F20 + K31 * F21;
+  T.C33 -= K30 * F30 + K31 * F31;
+  T.C40 -= K40 * F00 + K41 * F01;
+  T.C41 -= K40 * F10 + K41 * F11;
+  T.C42 -= K40 * F20 + K41 * F21;
+  T.C43 -= K40 * F30 + K41 * F31;
+  T.C44 -= K40 * F40 + K41 * F41;
 }
-
 
 
 /*

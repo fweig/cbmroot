@@ -7,10 +7,8 @@
 #define CBMSTSSIMSENSORDSSD_H 1
 
 
-
-#include <TArrayD.h>
 #include "CbmStsSimSensor.h"
-
+#include <TArrayD.h>
 
 
 /** @class CbmStsSimSensorDssd
@@ -44,67 +42,62 @@
  ** at the same edge, and for sensor with orthogonal strips, where the back
  ** plane is read out at the left or right edge.
  **/
-class CbmStsSimSensorDssd : public CbmStsSimSensor
-{
+class CbmStsSimSensorDssd : public CbmStsSimSensor {
 
-  public:
-
-    /** @brief Standard constructor
+public:
+  /** @brief Standard constructor
      ** @param element Pointer to element of geometry setup
      **/
-    CbmStsSimSensorDssd(CbmStsElement* element = nullptr);
+  CbmStsSimSensorDssd(CbmStsElement* element = nullptr);
 
 
-    /** @brief Copy constructor (disabled) **/
-    CbmStsSimSensorDssd(CbmStsSimSensorDssd& rhs) = delete;
+  /** @brief Copy constructor (disabled) **/
+  CbmStsSimSensorDssd(CbmStsSimSensorDssd& rhs) = delete;
 
 
-    /** @brief Assignment operator (disabled) **/
-    CbmStsSimSensorDssd& operator = (const CbmStsSimSensorDssd& rhs) = delete;
+  /** @brief Assignment operator (disabled) **/
+  CbmStsSimSensorDssd& operator=(const CbmStsSimSensorDssd& rhs) = delete;
 
 
-    /** @brief Destructor  **/
-    virtual ~CbmStsSimSensorDssd() { };
+  /** @brief Destructor  **/
+  virtual ~CbmStsSimSensorDssd() {};
 
 
-    /** @brief Number of strips on front and back side
+  /** @brief Number of strips on front and back side
      ** @param side  0 = front side, 1 = back side
      ** @value Number of strips on the specified sensor side
      **/
-    virtual Int_t GetNofStrips(Int_t side) const = 0;
+  virtual Int_t GetNofStrips(Int_t side) const = 0;
 
 
-    /** @brief Modify the strip pitch
+  /** @brief Modify the strip pitch
      ** @param New strip pitch [cm]
      **
      ** The number of strips is re-calculated accordingly.
      **/
-    virtual void ModifyStripPitch(Double_t pitch) = 0;
+  virtual void ModifyStripPitch(Double_t pitch) = 0;
 
 
-    /** @brief Print charge status **/
-    std::string ChargeStatus() const;
+  /** @brief Print charge status **/
+  std::string ChargeStatus() const;
 
 
-    /** @brief String output **/
-    virtual std::string ToString() const = 0;
+  /** @brief String output **/
+  virtual std::string ToString() const = 0;
 
 
+protected:
+  Double_t fDx  = 0.;      ///< Dimension of active area in x [cm]
+  Double_t fDy  = 0.;      ///< Dimension of active area in y [cm]
+  Double_t fDz  = 0.;      ///< Thickness in z [cm]
+  Bool_t fIsSet = kFALSE;  ///< Flag whether sensor is properly initialised
 
-  protected:
-
-
-    Double_t fDx = 0.;            ///< Dimension of active area in x [cm]
-    Double_t fDy = 0.;            ///< Dimension of active area in y [cm]
-    Double_t fDz = 0.;            ///< Thickness in z [cm]
-    Bool_t   fIsSet = kFALSE;     ///< Flag whether sensor is properly initialised
-
-    /** Analog charge in strips (for front and back side).
+  /** Analog charge in strips (for front and back side).
      ** Used during analog response simulation. **/
-    TArrayD fStripCharge[2] { };   //!
+  TArrayD fStripCharge[2] {};  //!
 
 
-    /** @brief Analogue response to a track in the sensor
+  /** @brief Analogue response to a track in the sensor
      ** @param point  Pointer to CbmStsSensorPoint object
      ** @value Number of analogue signals created in the strips
      **
@@ -114,19 +107,19 @@ class CbmStsSimSensorDssd : public CbmStsSimSensor
      ** track with the sensor in the sensor internal coordinate system.
      ** The method shall create charges in the internal arrays fStripCharge.
      **/
-    virtual Int_t CalculateResponse(CbmStsSensorPoint* point);
+  virtual Int_t CalculateResponse(CbmStsSensorPoint* point);
 
 
-    /** Cross talk
+  /** Cross talk
      ** @param ctCoeff  Cross-talk coefficient
      **
      ** Operates on the strip charge arrays and re-distributes charges
      ** between adjacent strips according to the cross-talk coefficient.
      **/
-    void CrossTalk(Double_t ctCoeff);
+  void CrossTalk(Double_t ctCoeff);
 
 
-    /** @brief Get the readout channel in the module for a given strip
+  /** @brief Get the readout channel in the module for a given strip
      ** @param strip     Strip number
      ** @param side      Side (0 = front, 1 = back)
      ** @param sensorId  Index of sensor within module
@@ -135,11 +128,11 @@ class CbmStsSimSensorDssd : public CbmStsSimSensor
      ** This method defines the mapping of the sensor strips to the
      ** readout channels in the module.
      **/
-    virtual Int_t GetModuleChannel(Int_t strip, Int_t side,
-                                   Int_t sensorId) const = 0;
+  virtual Int_t
+  GetModuleChannel(Int_t strip, Int_t side, Int_t sensorId) const = 0;
 
 
-    /** Check whether a point (x,y) is inside the active area.
+  /** Check whether a point (x,y) is inside the active area.
      **
      ** @param x  x coordinate in the local c.s. [cm]
      ** @param y  y coordinate in the local c.s. [cm]
@@ -148,10 +141,10 @@ class CbmStsSimSensorDssd : public CbmStsSimSensor
      ** The coordinates have to be given in the local
      ** coordinate system (origin in the sensor centre).
      **/
-    Bool_t IsInside(Double_t x, Double_t y);
+  Bool_t IsInside(Double_t x, Double_t y);
 
 
-    /** @brief Lorentz shift in the x coordinate
+  /** @brief Lorentz shift in the x coordinate
      ** @param z           Coordinate of charge origin in local c.s. [cm]
      ** @param chargeType  Type of charge carrier (0 = electron, 1 = hole)
      ** @param bY          Magnetic field (y component) [T]
@@ -164,19 +157,19 @@ class CbmStsSimSensorDssd : public CbmStsSimSensor
      ** to be implemented correctly for arbitrary orientations of the local
      ** x-y plane.
      **/
-    Double_t LorentzShift(Double_t z, Int_t chargeType, Double_t bY) const;
+  Double_t LorentzShift(Double_t z, Int_t chargeType, Double_t bY) const;
 
 
-    /** @brief Generate charge as response to a sensor point
+  /** @brief Generate charge as response to a sensor point
      ** @param point  Pointer to sensor point object
      **
      ** Charge is created in the sensor volume as response to the particle
      ** trajectory and is propagated to the read-out edges.
      **/
-    void ProduceCharge(CbmStsSensorPoint* point);
+  void ProduceCharge(CbmStsSensorPoint* point);
 
 
-    /** Propagate a charge created in the sensor to the readout strips
+  /** Propagate a charge created in the sensor to the readout strips
      ** @param x       x origin of charge in local c.s. [cm]
      ** @param y       y origin of charge in local c.s. [cm]
      ** @param z       z origin of charge in local c.s. [cm]
@@ -185,12 +178,15 @@ class CbmStsSimSensorDssd : public CbmStsSimSensor
      ** @param side    0 = front (n) side; 1 = back (p) side
      ** @param sensor  Pointer to sensor object
      **/
-    virtual void PropagateCharge(Double_t x, Double_t y, Double_t z,
-                                 Double_t charge, Double_t bY,
-                                 Int_t side) = 0;
+  virtual void PropagateCharge(Double_t x,
+                               Double_t y,
+                               Double_t z,
+                               Double_t charge,
+                               Double_t bY,
+                               Int_t side) = 0;
 
 
-    /** @brief Register the produced charge in one strip to the module
+  /** @brief Register the produced charge in one strip to the module
      ** @param side  0 = front, 1 = back
      ** @param strip strip number
      ** @param charge  charge in strip [e]
@@ -199,13 +195,11 @@ class CbmStsSimSensorDssd : public CbmStsSimSensor
      ** The charge in one strip resulting from the analogue response
      ** simulation is registered to the read-out chip (module).
      **/
-    void RegisterCharge(Int_t side, Int_t strip,
-                        Double_t charge, Double_t time) const;
+  void
+  RegisterCharge(Int_t side, Int_t strip, Double_t charge, Double_t time) const;
 
 
-
-    ClassDef(CbmStsSimSensorDssd,1);
-
+  ClassDef(CbmStsSimSensorDssd, 1);
 };
 
 

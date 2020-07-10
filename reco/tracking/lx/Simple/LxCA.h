@@ -3,18 +3,18 @@
 
 #pragma GCC diagnostic ignored "-Weffc++"
 
+#include "LxMC.h"
+#include "LxSettings.h"
 #include "Rtypes.h"
 #include <list>
 #include <math.h>
-#include "LxSettings.h"
-#include "LxMC.h"
 
 struct LxPoint;
 
 #define errorTxCoeff 4.0
-#define errorTxCoeffSq errorTxCoeff * errorTxCoeff
+#define errorTxCoeffSq errorTxCoeff* errorTxCoeff
 #define errorTyCoeff 4.0
-#define errorTyCoeffSq errorTyCoeff * errorTyCoeff
+#define errorTyCoeffSq errorTyCoeff* errorTyCoeff
 
 extern scaltype tx_limits[LXSTATIONS];
 extern scaltype tx_limits_sq[LXSTATIONS];
@@ -49,8 +49,7 @@ struct LxStation;
 struct LxSpace;
 struct LxTrackCandidate;
 
-struct LxPoint
-{
+struct LxPoint {
   scaltype x, y, z;
   scaltype dx, dy, dz;
   bool used;
@@ -62,34 +61,58 @@ struct LxPoint
   Int_t hitId;
 #ifdef MAKE_EFF_CALC
   std::list<LxMCPoint*> mcPoints;
-#endif//MAKE_EFF_CALC
+#endif  //MAKE_EFF_CALC
 
 #ifdef REMEMBER_CLUSTERED_RAYS_IN_POINTS
   LxRay* leftClusteredRay;
   LxRay* rightClusteredRay;
-#endif//REMEMBER_CLUSTERED_RAYS_IN_POINTS
+#endif  //REMEMBER_CLUSTERED_RAYS_IN_POINTS
 
-  LxPoint(scaltype X, scaltype Y, scaltype Z, scaltype Dx, scaltype Dy, scaltype Dz, LxLayer* lay, int hId, bool isArtificial = false) :
-      x(X), y(Y), z(Z), dx(Dx), dy(Dy), dz(Dz), used(false), valid(true), artificial(isArtificial), track(NULL), rays(), layer(lay), hitId(hId)
+  LxPoint(scaltype X,
+          scaltype Y,
+          scaltype Z,
+          scaltype Dx,
+          scaltype Dy,
+          scaltype Dz,
+          LxLayer* lay,
+          int hId,
+          bool isArtificial = false)
+    : x(X)
+    , y(Y)
+    , z(Z)
+    , dx(Dx)
+    , dy(Dy)
+    , dz(Dz)
+    , used(false)
+    , valid(true)
+    , artificial(isArtificial)
+    , track(NULL)
+    , rays()
+    , layer(lay)
+    , hitId(hId)
 #ifdef REMEMBER_CLUSTERED_RAYS_IN_POINTS
-      , leftClusteredRay(0), rightClusteredRay(0)
-#endif//REMEMBER_CLUSTERED_RAYS_IN_POINTS
-        {}
+    , leftClusteredRay(0)
+    , rightClusteredRay(0)
+#endif  //REMEMBER_CLUSTERED_RAYS_IN_POINTS
+  {
+  }
   ~LxPoint();
-  void CreateRay(LxPoint* lPoint, scaltype tx, scaltype ty, scaltype dtx, scaltype dty);
+  void CreateRay(LxPoint* lPoint,
+                 scaltype tx,
+                 scaltype ty,
+                 scaltype dtx,
+                 scaltype dty);
 };
 
 #ifdef USE_KALMAN
-struct LxKalmanParams
-{
+struct LxKalmanParams {
   scaltype tx, ty;
   scaltype C11, C22;
   scaltype chi2;
 };
-#endif//USE_KALMAN
+#endif  //USE_KALMAN
 
-struct LxRay
-{
+struct LxRay {
   scaltype tx, ty;
   scaltype dtx, dty;
   LxPoint* source;
@@ -101,25 +124,32 @@ struct LxRay
   bool used;
   std::list<LxRay*> neighbourhood;
   std::list<LxPoint*> clusterPoints;
-#endif//CLUSTER_MODE
+#endif  //CLUSTER_MODE
 
 #ifdef USE_KALMAN
   LxKalmanParams kalman;
-#endif//USE_KALMAN
-  LxRay(LxPoint* s, LxPoint* e
+#endif  //USE_KALMAN
+  LxRay(LxPoint* s,
+        LxPoint* e
 #ifdef CLUSTER_MODE
-      , Int_t
-#endif//CLUSTER_MODE
-      );
-  LxRay(LxPoint* s, LxPoint* e, scaltype Tx, scaltype Ty, scaltype Dtx, scaltype Dty
+        ,
+        Int_t
+#endif  //CLUSTER_MODE
+  );
+  LxRay(LxPoint* s,
+        LxPoint* e,
+        scaltype Tx,
+        scaltype Ty,
+        scaltype Dtx,
+        scaltype Dty
 #ifdef CLUSTER_MODE
-      , Int_t
-#endif//CLUSTER_MODE
-      );
+        ,
+        Int_t
+#endif  //CLUSTER_MODE
+  );
 };
 
-struct LxLayer
-{
+struct LxLayer {
   std::list<LxPoint*> points;
   LxStation* station;
   int layerNumber;
@@ -128,25 +158,35 @@ struct LxLayer
   ~LxLayer();
   void Clear();
 
-  LxPoint* AddPoint(int hitId, scaltype x, scaltype y, scaltype z, scaltype dx, scaltype dy, scaltype dz, bool isArtificial = false)
-  {
-    LxPoint* result = new LxPoint(x, y, z, dx, dy, dz, this, hitId, isArtificial);
+  LxPoint* AddPoint(int hitId,
+                    scaltype x,
+                    scaltype y,
+                    scaltype z,
+                    scaltype dx,
+                    scaltype dy,
+                    scaltype dz,
+                    bool isArtificial = false) {
+    LxPoint* result =
+      new LxPoint(x, y, z, dx, dy, dz, this, hitId, isArtificial);
     points.push_back(result);
     return result;
   }
 
-  LxPoint* PickNearestPoint(scaltype x, scaltype y);// Used in track building.
-  LxPoint* PickNearestPoint(LxRay* ray);// Used in track building.
-  LxPoint* PickNearestPoint(scaltype x, scaltype y, scaltype deltaX, scaltype deltaY);// Used in middle point building.
-  bool HasPointInRange(scaltype x, scaltype y, scaltype deltaX, scaltype deltaY);
+  LxPoint* PickNearestPoint(scaltype x, scaltype y);  // Used in track building.
+  LxPoint* PickNearestPoint(LxRay* ray);              // Used in track building.
+  LxPoint* PickNearestPoint(scaltype x,
+                            scaltype y,
+                            scaltype deltaX,
+                            scaltype deltaY);  // Used in middle point building.
+  bool
+  HasPointInRange(scaltype x, scaltype y, scaltype deltaX, scaltype deltaY);
 };
 
 #ifdef CLUSTER_MODE
 typedef void* kdt_rays_handle;
-#endif//CLUSTER_MODE
+#endif  //CLUSTER_MODE
 
-struct LxStation
-{
+struct LxStation {
   std::vector<LxLayer*> layers;
 #ifdef CLUSTER_MODE
   kdt_rays_handle raysHandle;
@@ -161,7 +201,7 @@ struct LxStation
   scaltype clusterTxLimit2;
   scaltype clusterTyLimit;
   scaltype clusterTyLimit2;
-#endif//CLUSTER_MODE
+#endif  //CLUSTER_MODE
   LxSpace* space;
   int stationNumber;
   scaltype zCoord;
@@ -171,7 +211,7 @@ struct LxStation
   scaltype tyBreakLimit;
   scaltype txBreakSigma;
   scaltype tyBreakSigma;
-  scaltype disp01XSmall;// 'disp' -- means: dispersion.
+  scaltype disp01XSmall;  // 'disp' -- means: dispersion.
   scaltype disp01XBig;
   scaltype disp01YSmall;
   scaltype disp01YBig;
@@ -181,13 +221,19 @@ struct LxStation
   scaltype disp02YBig;
 #ifdef USE_KALMAN_FIT
   scaltype MSNoise[2][2][2];
-#endif//USE_KALMAN_FIT
+#endif  //USE_KALMAN_FIT
   LxStation(LxSpace* sp, int stNum);
   ~LxStation();
   void Clear();
 
-  LxPoint* AddPoint(int layerNumber, int hitId, scaltype x, scaltype y, scaltype z, scaltype dx, scaltype dy, scaltype dz)
-  {
+  LxPoint* AddPoint(int layerNumber,
+                    int hitId,
+                    scaltype x,
+                    scaltype y,
+                    scaltype z,
+                    scaltype dx,
+                    scaltype dy,
+                    scaltype dz) {
     return layers[layerNumber]->AddPoint(hitId, x, y, z, dx, dy, dz);
   }
 
@@ -196,41 +242,43 @@ struct LxStation
 #ifdef CLUSTER_MODE
   void BuildRays2();
   void InsertClusterRay(Int_t levels, Int_t cardinality, LxRay* clusterRay);
-#endif//CLUSTER_MODE
+#endif  //CLUSTER_MODE
   void ConnectNeighbours();
 };
 
-struct LxExtTrack
-{
+struct LxExtTrack {
   CbmStsTrack* track;
   Int_t extId;
   LxMCTrack* mcTrack;
 #ifdef LX_EXT_LINK_SOPH
   std::pair<LxTrack*, scaltype> recoTrack;
-#endif//LX_EXT_LINK_SOPH
+#endif  //LX_EXT_LINK_SOPH
 
-  LxExtTrack() : track(0), extId(-1), mcTrack(0)
+  LxExtTrack()
+    : track(0)
+    , extId(-1)
+    , mcTrack(0)
 #ifdef LX_EXT_LINK_SOPH
-      , recoTrack(0, 0)
-#endif//LX_EXT_LINK_SOPH
-  {}
+    , recoTrack(0, 0)
+#endif  //LX_EXT_LINK_SOPH
+  {
+  }
 };
 
-struct LxTrack
-{
+struct LxTrack {
   LxExtTrack* externalTrack;
 #ifdef LX_EXT_LINK_SOPH
-  std::list<std::pair<LxExtTrack*, scaltype> > extTrackCandidates;
-#else//LX_EXT_LINK_SOPH
+  std::list<std::pair<LxExtTrack*, scaltype>> extTrackCandidates;
+#else   //LX_EXT_LINK_SOPH
   scaltype extLinkChi2;
-#endif//LX_EXT_LINK_SOPH
+#endif  //LX_EXT_LINK_SOPH
   bool matched;
   LxMCTrack* mcTrack;
 #ifdef CALC_LINK_WITH_STS_EFF
   std::list<LxMCTrack*> mcTracks;
-#endif//CALC_LINK_WITH_STS_EFF
+#endif  //CALC_LINK_WITH_STS_EFF
   int length;
-  LxRay* rays[LXSTATIONS - 1];// Rays are stored left to right.
+  LxRay* rays[LXSTATIONS - 1];  // Rays are stored left to right.
   LxPoint* points[LXSTATIONS * LXLAYERS];
   scaltype chi2;
   scaltype aX;
@@ -240,7 +288,7 @@ struct LxTrack
   int restoredPoints;
 #ifdef USE_KALMAN_FIT
   scaltype x, y, z, dx, dy, tx, ty, dtx, dty;
-#endif//USE_KALMAN_FIT
+#endif  //USE_KALMAN_FIT
   bool clone;
   // The following variables used in triggering:
   bool distanceOk;
@@ -252,14 +300,13 @@ struct LxTrack
   void Fit();
 #ifdef LX_EXT_LINK_SOPH
   void Rebind();
-#endif//LX_EXT_LINK_SOPH
+#endif  //LX_EXT_LINK_SOPH
 };
 
 typedef scaltype scal_coords[LXLAYERS][LXMAXPOINTSONSTATION];
 typedef scaltype scal_tans[LXMAXPOINTSONSTATION];
 
-struct LxSpace
-{
+struct LxSpace {
   scal_coords* x_coords;
   scal_tans* tx_vals;
   scal_coords* x_errs;
@@ -289,9 +336,17 @@ struct LxSpace
   ~LxSpace();
   void Clear();
 
-  LxPoint* AddPoint(int stationNumber, int layerNumber, int hitId, scaltype x, scaltype y, scaltype z, scaltype dx, scaltype dy, scaltype dz)
-  {
-    return stations[stationNumber]->AddPoint(layerNumber, hitId, x, y, z, dx, dy, dz);
+  LxPoint* AddPoint(int stationNumber,
+                    int layerNumber,
+                    int hitId,
+                    scaltype x,
+                    scaltype y,
+                    scaltype z,
+                    scaltype dx,
+                    scaltype dy,
+                    scaltype dz) {
+    return stations[stationNumber]->AddPoint(
+      layerNumber, hitId, x, y, z, dx, dy, dz);
   }
 
   void RestoreMiddlePoints();
@@ -299,24 +354,43 @@ struct LxSpace
 #ifdef CLUSTER_MODE
   void BuildRays2();
   void ConnectNeighbours2();
-  void BuildCandidates2(LxRay* ray, LxRay** rays, std::list<LxTrackCandidate*>& candidates, scaltype chi2);
+  void BuildCandidates2(LxRay* ray,
+                        LxRay** rays,
+                        std::list<LxTrackCandidate*>& candidates,
+                        scaltype chi2);
   void Reconstruct2();
-#endif//CLUSTER_MODE
+#endif  //CLUSTER_MODE
   void ConnectNeighbours();
-  void BuildCandidates(int endStNum, LxRay* ray, LxRay** rays, std::list<LxTrackCandidate*>& candidates, scaltype chi2);
+  void BuildCandidates(int endStNum,
+                       LxRay* ray,
+                       LxRay** rays,
+                       std::list<LxTrackCandidate*>& candidates,
+                       scaltype chi2);
   void Reconstruct();
   void RemoveClones();
   void FitTracks();
   void JoinExtTracks();
-  void CheckArray(scaltype xs[LXSTATIONS][LXLAYERS], scaltype ys[LXSTATIONS][LXLAYERS],
-      scaltype zs[LXSTATIONS][LXLAYERS],
-      scaltype xDisp2Limits[LXSTATIONS], scaltype yDisp2Limits[LXSTATIONS], scaltype tx2Limits[LXSTATIONS],
-        scaltype ty2Limits[LXSTATIONS], scaltype txBreak2Limits[LXSTATIONS], scaltype tyBreak2Limits[LXSTATIONS]);
-  void CheckArray(scaltype xs[LXSTATIONS][LXLAYERS], scaltype ys[LXSTATIONS][LXLAYERS],
-      scaltype zs[LXSTATIONS][LXLAYERS], std::list<LxPoint*> pts[LXSTATIONS][LXLAYERS], int level,
-      scaltype xDisp2Limits[LXSTATIONS], scaltype yDisp2Limits[LXSTATIONS], scaltype tx2Limits[LXSTATIONS],
-        scaltype ty2Limits[LXSTATIONS], scaltype txBreak2Limits[LXSTATIONS], scaltype tyBreak2Limits[LXSTATIONS]);
+  void CheckArray(scaltype xs[LXSTATIONS][LXLAYERS],
+                  scaltype ys[LXSTATIONS][LXLAYERS],
+                  scaltype zs[LXSTATIONS][LXLAYERS],
+                  scaltype xDisp2Limits[LXSTATIONS],
+                  scaltype yDisp2Limits[LXSTATIONS],
+                  scaltype tx2Limits[LXSTATIONS],
+                  scaltype ty2Limits[LXSTATIONS],
+                  scaltype txBreak2Limits[LXSTATIONS],
+                  scaltype tyBreak2Limits[LXSTATIONS]);
+  void CheckArray(scaltype xs[LXSTATIONS][LXLAYERS],
+                  scaltype ys[LXSTATIONS][LXLAYERS],
+                  scaltype zs[LXSTATIONS][LXLAYERS],
+                  std::list<LxPoint*> pts[LXSTATIONS][LXLAYERS],
+                  int level,
+                  scaltype xDisp2Limits[LXSTATIONS],
+                  scaltype yDisp2Limits[LXSTATIONS],
+                  scaltype tx2Limits[LXSTATIONS],
+                  scaltype ty2Limits[LXSTATIONS],
+                  scaltype txBreak2Limits[LXSTATIONS],
+                  scaltype tyBreak2Limits[LXSTATIONS]);
   void CheckArray(std::ostream& out, LxMCTrack& track);
 };
 
-#endif//LXCA_INCLUDED
+#endif  //LXCA_INCLUDED

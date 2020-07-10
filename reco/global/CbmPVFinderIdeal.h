@@ -23,11 +23,9 @@
 #include "CbmPrimaryVertexFinder.h"
 
 
-class CbmPVFinderIdeal : public CbmPrimaryVertexFinder
-{
+class CbmPVFinderIdeal : public CbmPrimaryVertexFinder {
 
- public:
-
+public:
   /** Default constructor  **/
   CbmPVFinderIdeal();
 
@@ -50,17 +48,14 @@ class CbmPVFinderIdeal : public CbmPrimaryVertexFinder
   virtual Int_t FindEventVertex(CbmEvent* event, TClonesArray* tracks);
 
 
-
- private:
-
+private:
   /** Array of MCTracks **/
   TClonesArray* fMCTracks;
 
   CbmPVFinderIdeal(const CbmPVFinderIdeal&);
   CbmPVFinderIdeal& operator=(const CbmPVFinderIdeal&);
 
-  ClassDef(CbmPVFinderIdeal,1);
-
+  ClassDef(CbmPVFinderIdeal, 1);
 };
 
 #endif

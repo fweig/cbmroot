@@ -20,15 +20,13 @@
 
 class TClonesArray;
 
-const Int_t NB_PSD_MODS = 44; //with 4 central mods
+const Int_t NB_PSD_MODS = 44;  //with 4 central mods
 const Int_t NB_PSD_SECT = 10;
 
-class CbmPsdIdealDigitizer : public FairTask
-{
+class CbmPsdIdealDigitizer : public FairTask {
 
- public:
-
-  /** Default constructor **/  
+public:
+  /** Default constructor **/
   CbmPsdIdealDigitizer();
 
 
@@ -44,22 +42,21 @@ class CbmPsdIdealDigitizer : public FairTask
   virtual void Exec(Option_t* opt);
 
 
- private:
-  Int_t             fNDigis;
-   
+private:
+  Int_t fNDigis;
+
   /** Input array of CbmPsdPoints **/
   TClonesArray* fPointArray;
 
   /** Output array of CbmPsdDigits **/
-  TClonesArray* fDigiArray; 
+  TClonesArray* fDigiArray;
 
   CbmPsdIdealDigitizer(const CbmPsdIdealDigitizer&);
   CbmPsdIdealDigitizer operator=(const CbmPsdIdealDigitizer&);
   /** Reset eventwise counters **/
   void Reset();
 
-  ClassDef(CbmPsdIdealDigitizer,1);
-
+  ClassDef(CbmPsdIdealDigitizer, 1);
 };
 
 #endif

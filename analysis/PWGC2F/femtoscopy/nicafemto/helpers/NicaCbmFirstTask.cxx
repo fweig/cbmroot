@@ -10,16 +10,14 @@
 #include "FairRunAna.h"
 
 NicaCbmFirstTask::NicaCbmFirstTask() {
-	// TODO Auto-generated constructor stub
-
+  // TODO Auto-generated constructor stub
 }
 
 InitStatus NicaCbmFirstTask::Init() {
-	CbmHelix::SetField(FairRunAna::Instance()->GetField());
-	return kSUCCESS;
+  CbmHelix::SetField(FairRunAna::Instance()->GetField());
+  return kSUCCESS;
 }
 
 NicaCbmFirstTask::~NicaCbmFirstTask() {
-	// TODO Auto-generated destructor stub
+  // TODO Auto-generated destructor stub
 }
-

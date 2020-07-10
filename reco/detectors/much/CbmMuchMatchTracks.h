@@ -17,39 +17,36 @@
 
 class TClonesArray;
 
-class CbmMuchMatchTracks : public FairTask
-{
+class CbmMuchMatchTracks : public FairTask {
 public:
-	CbmMuchMatchTracks();
-	virtual ~CbmMuchMatchTracks();
+  CbmMuchMatchTracks();
+  virtual ~CbmMuchMatchTracks();
 
-	virtual InitStatus Init();
-	virtual void Exec(
-		  Option_t* opt);
-	virtual void Finish();
+  virtual InitStatus Init();
+  virtual void Exec(Option_t* opt);
+  virtual void Finish();
+
 private:
-	void ExecPixel(
-			std::map<Int_t, Int_t> &matchMap,
-			Int_t index);
+  void ExecPixel(std::map<Int_t, Int_t>& matchMap, Int_t index);
 
-	TClonesArray* fTracks;
-	TClonesArray* fPoints;
-	TClonesArray* fPixelHits;
-	TClonesArray* fMatches;
-	TClonesArray* fPixelDigiMatches;
-	TClonesArray* fClusters;
-	
-	Int_t fNofHits;
-	Int_t fNofTrueHits;
-	Int_t fNofWrongHits;
-	Int_t fNofFakeHits;
+  TClonesArray* fTracks;
+  TClonesArray* fPoints;
+  TClonesArray* fPixelHits;
+  TClonesArray* fMatches;
+  TClonesArray* fPixelDigiMatches;
+  TClonesArray* fClusters;
 
-	Int_t fNEvents;
+  Int_t fNofHits;
+  Int_t fNofTrueHits;
+  Int_t fNofWrongHits;
+  Int_t fNofFakeHits;
 
-	CbmMuchMatchTracks(const CbmMuchMatchTracks&);
-	CbmMuchMatchTracks& operator=(const CbmMuchMatchTracks&);
+  Int_t fNEvents;
 
-	ClassDef(CbmMuchMatchTracks,1);
+  CbmMuchMatchTracks(const CbmMuchMatchTracks&);
+  CbmMuchMatchTracks& operator=(const CbmMuchMatchTracks&);
+
+  ClassDef(CbmMuchMatchTracks, 1);
 };
 
 #endif

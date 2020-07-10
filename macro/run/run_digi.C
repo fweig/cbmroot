@@ -6,8 +6,8 @@
 
 // Includes needed for IDE
 #if !defined(__CLING__)
-#include "FairSystemInfo.h"
 #include "CbmDigitization.h"
+#include "FairSystemInfo.h"
 #endif
 
 
@@ -44,14 +44,12 @@
  ** For further options to modify the run settings, consult
  ** the documentation of the CbmDigitization class.
  **/
-void run_digi(
-	Int_t nEvents = 2,                // Number of events to process
-	TString dataSet = "test",         // Dataset for file names
-	Double_t eventRate = 1.e7,        // Interaction rate [1/s]
-	Double_t timeSliceLength = 1.e4,  // Length of time-slice [ns]
-	Bool_t eventMode = kFALSE         // Event-by-event mode
-)
-{
+void run_digi(Int_t nEvents            = 2,       // Number of events to process
+              TString dataSet          = "test",  // Dataset for file names
+              Double_t eventRate       = 1.e7,    // Interaction rate [1/s]
+              Double_t timeSliceLength = 1.e4,    // Length of time-slice [ns]
+              Bool_t eventMode         = kFALSE   // Event-by-event mode
+) {
 
   // --- Logger settings ----------------------------------------------------
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
@@ -62,27 +60,27 @@ void run_digi(
   // -----   Allow overwriting of output file   -----------------------------
   Bool_t overwrite = kTRUE;
   // ------------------------------------------------------------------------
- 
+
 
   // -----   File names   ---------------------------------------------------
   TString inFile  = dataSet + ".tra.root";
   TString parFile = dataSet + ".par.root";
   TString outFile = dataSet + ".raw.root";
   TString monFile = dataSet + ".raw.moni.root";
-  if ( eventMode ) {
+  if (eventMode) {
     outFile = dataSet + ".event.raw.root";
     monFile = dataSet + ".event.raw.moni.root";
   }
 
-   // -----   Timer   --------------------------------------------------------
+  // -----   Timer   --------------------------------------------------------
   TStopwatch timer;
   timer.Start();
   // ------------------------------------------------------------------------
- 
- 
+
+
   // -----   Digitization run   ---------------------------------------------
   CbmDigitization run;
-  
+
   run.AddInput(inFile, eventRate);
   run.SetOutputFile(outFile, overwrite);
   run.SetMonitorFile(monFile);
@@ -90,7 +88,7 @@ void run_digi(
   run.SetTimeSliceLength(timeSliceLength);
   run.SetEventMode(eventMode);
   run.SetProduceNoise(kFALSE);
-  
+
   run.Run(nEvents);
   // ------------------------------------------------------------------------
 
@@ -103,21 +101,22 @@ void run_digi(
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime
-            << " s" << std::endl << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
+            << std::endl
+            << std::endl;
   // ------------------------------------------------------------------------
 
 
   // -----   CTest resource monitoring   ------------------------------------
   FairSystemInfo sysInfo;
-  Float_t maxMemory=sysInfo.GetMaxMemory();
+  Float_t maxMemory = sysInfo.GetMaxMemory();
   std::cout << "<DartMeasurement name=\"MaxMemory\" type=\"numeric/double\">";
   std::cout << maxMemory;
   std::cout << "</DartMeasurement>" << std::endl;
   std::cout << "<DartMeasurement name=\"WallTime\" type=\"numeric/double\">";
   std::cout << rtime;
   std::cout << "</DartMeasurement>" << std::endl;
-  Float_t cpuUsage=ctime/rtime;
+  Float_t cpuUsage = ctime / rtime;
   std::cout << "<DartMeasurement name=\"CpuLoad\" type=\"numeric/double\">";
   std::cout << cpuUsage;
   std::cout << "</DartMeasurement>" << std::endl;
@@ -130,4 +129,4 @@ void run_digi(
   // ------------------------------------------------------------------------
 
 
-} // End of macro
+}  // End of macro

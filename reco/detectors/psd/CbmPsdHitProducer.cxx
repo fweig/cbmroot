@@ -2,8 +2,8 @@
 // -----                CbmPsdHitProducer source file             -----
 // -----                  Created 15/05/12  by     Alla & SELIM               -----
 // -------------------------------------------------------------------------
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include <map>
 
 #include "TClonesArray.h"
@@ -14,8 +14,8 @@
 
 #include "CbmDigiManager.h"
 #include "CbmPsdDigi.h"
-#include "CbmPsdHitProducer.h"
 #include "CbmPsdHit.h"
+#include "CbmPsdHitProducer.h"
 
 #include "FairLogger.h"
 
@@ -24,31 +24,27 @@ using std::endl;
 
 
 // -----   Default constructor   -------------------------------------------
-CbmPsdHitProducer::CbmPsdHitProducer() :
-  FairTask("Ideal Psd Hit Producer",1),
-  fNHits(0),
-  fHitArray(NULL),
-  fDigiMan(nullptr),
-  fXi(),
-  fYi(),
-  fhModXNewEn(NULL)
-{ 
+CbmPsdHitProducer::CbmPsdHitProducer()
+  : FairTask("Ideal Psd Hit Producer", 1)
+  , fNHits(0)
+  , fHitArray(NULL)
+  , fDigiMan(nullptr)
+  , fXi()
+  , fYi()
+  , fhModXNewEn(NULL) {
   //  Reset();
 }
 // -------------------------------------------------------------------------
 
 
-
 // -----   Destructor   ----------------------------------------------------
-CbmPsdHitProducer::~CbmPsdHitProducer() 
-{
-  if ( fHitArray ) {
+CbmPsdHitProducer::~CbmPsdHitProducer() {
+  if (fHitArray) {
     fHitArray->Delete();
     delete fHitArray;
   }
 }
 // -------------------------------------------------------------------------
-
 
 
 // -----   Public method Init   --------------------------------------------
@@ -61,14 +57,14 @@ InitStatus CbmPsdHitProducer::Init() {
   //}
   //fxypos.close();
 
-  fhModXNewEn = new TH1F("hModXNewEn","X distr, En",300,-150.,150.);
+  fhModXNewEn = new TH1F("hModXNewEn", "X distr, En", 300, -150., 150.);
   fhModXNewEn->Print();
 
   // Get RootManager
   FairRootManager* ioman = FairRootManager::Instance();
-  if ( ! ioman )
-  {
-    LOG(fatal) << "-W- CbmPsdHitProducer::Init: RootManager not instantised!";    //FLORIAN & SELIM
+  if (!ioman) {
+    LOG(fatal)
+      << "-W- CbmPsdHitProducer::Init: RootManager not instantised!";  //FLORIAN & SELIM
     return kFATAL;
   }
 
@@ -76,19 +72,21 @@ InitStatus CbmPsdHitProducer::Init() {
   CbmDigiManager* digiMan = CbmDigiManager::Instance();
   digiMan->Init();
   // --- Check input branch (PsdDigi). If not present, set task inactive.
-  if ( ! digiMan->IsPresent(ECbmModuleId::kPsd) ) {
+  if (!digiMan->IsPresent(ECbmModuleId::kPsd)) {
     LOG(error) << GetName() << ": No PsdDigi input array present; "
-        << "task will be inactive.";
+               << "task will be inactive.";
     return kERROR;
   }
 
 
   // Create and register output array
   fHitArray = new TClonesArray("CbmPsdHit", 1000);
-  ioman->Register("PsdHit", "PSD", fHitArray, IsOutputBranchPersistent("PsdHit"));
+  ioman->Register(
+    "PsdHit", "PSD", fHitArray, IsOutputBranchPersistent("PsdHit"));
 
   fHitArray->Dump();
-  cout << "-I- CbmPsdHitProducer: Intialisation successfull " << kSUCCESS<< endl;
+  cout << "-I- CbmPsdHitProducer: Intialisation successfull " << kSUCCESS
+       << endl;
   return kSUCCESS;
 }
 
@@ -96,11 +94,10 @@ InitStatus CbmPsdHitProducer::Init() {
 // -------------------------------------------------------------------------
 
 
-
 // -----   Public method Exec   --------------------------------------------
 void CbmPsdHitProducer::Exec(Option_t* /*opt*/) {
 
-  cout<<" CbmPsdHitProducer::Exec(Option_t* /*opt*/) "<<endl;
+  cout << " CbmPsdHitProducer::Exec(Option_t* /*opt*/) " << endl;
   fhModXNewEn->Print();
 
   // Reset output array
@@ -109,7 +106,7 @@ void CbmPsdHitProducer::Exec(Option_t* /*opt*/) {
   // Declare some variables
   const CbmPsdDigi* dig = NULL;
 
-/*
+  /*
   Double_t edep[NPsdMod];//marina
   for (Int_t imod=0; imod<NPsdMod; imod++)  { edep[imod]=0.; }//marina
 */
@@ -118,27 +115,26 @@ void CbmPsdHitProducer::Exec(Option_t* /*opt*/) {
 
   // Loop over PsdDigits
   Int_t nDigi = fDigiMan->GetNofDigis(ECbmModuleId::kPsd);
-  cout<<" nDigits "<<nDigi<<endl;
+  cout << " nDigits " << nDigi << endl;
 
-  for (Int_t idig=0; idig<nDigi; idig++)
-  {
+  for (Int_t idig = 0; idig < nDigi; idig++) {
     dig = fDigiMan->Get<CbmPsdDigi>(idig);
-    if ( ! dig) continue;
+    if (!dig) continue;
     Int_t mod = dig->GetModuleID();
-//    Int_t sec = dig->GetSectionID();
+    //    Int_t sec = dig->GetSectionID();
     Double_t eDep = (Double_t) dig->GetEdep();
     //edep[mod-1] += (Double_t) dig->GetEdep();                     //DEBUG: SELIM
 
     auto insert_result = edepmap.insert(std::make_pair(mod, eDep));
-    if (!insert_result.second) { // entry was here before
+    if (!insert_result.second) {  // entry was here before
       (*insert_result.first).second += eDep;
     }
 
-  }// Loop over MCPoints
+  }  // Loop over MCPoints
 
   fNHits = 0;
   for (auto edep_entry : edepmap) {
-    int modID = edep_entry.first;
+    int modID     = edep_entry.first;
     Double_t eDep = edep_entry.second;
     new ((*fHitArray)[fNHits]) CbmPsdHit(modID, eDep);
     fNHits++;
@@ -159,14 +155,12 @@ void CbmPsdHitProducer::Exec(Option_t* /*opt*/) {
   */
 
   // Event summary
-  cout << "-I- CbmPsdHitProducer: " <<fNHits<< " CbmPsdHits created." << endl;
-
+  cout << "-I- CbmPsdHitProducer: " << fNHits << " CbmPsdHits created." << endl;
 }
 // -------------------------------------------------------------------------
-void CbmPsdHitProducer::Finish()
-{
-  cout<<" CbmPsdHitProducer::Finish() "<<endl;
-  TFile * outfile = new TFile("EdepHistos.root","RECREATE");
+void CbmPsdHitProducer::Finish() {
+  cout << " CbmPsdHitProducer::Finish() " << endl;
+  TFile* outfile = new TFile("EdepHistos.root", "RECREATE");
   outfile->cd();
   fhModXNewEn->Write();
   //outfile->Close();                     //SELIM
@@ -175,8 +169,7 @@ void CbmPsdHitProducer::Finish()
 // -----   Private method Reset   ------------------------------------------
 void CbmPsdHitProducer::Reset() {
   fNHits = 0;
-  if ( fHitArray ) fHitArray->Delete();
-
+  if (fHitArray) fHitArray->Delete();
 }
 
 

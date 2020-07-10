@@ -10,17 +10,15 @@ class LxTrackAnaTriplet;
 
 extern bool saveHistos;
 
-class LxTrackAnaSegments
-{
+class LxTrackAnaSegments {
 public:
   explicit LxTrackAnaSegments(LxTrackAnaTriplet& o);
   void Init();
   void Finish();
   void BuildStatistics();
   void SetParticleType(TString v);
-  void SetUseBgr(bool v)
-  {
-    useBgr = v;
+  void SetUseBgr(bool v) {
+    useBgr     = v;
     saveHistos = !v;
   }
 
@@ -31,4 +29,4 @@ private:
   bool useBgr;
 };
 
-#endif//LXTRACKANASEGMENTS_INCLUDED
+#endif  //LXTRACKANASEGMENTS_INCLUDED

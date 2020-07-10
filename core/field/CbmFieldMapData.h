@@ -29,8 +29,6 @@ class CbmFieldMap;
 class CbmFieldMapData : public TNamed {
 
 public:
-
-
   /** Default constructor **/
   CbmFieldMapData();
 
@@ -41,23 +39,23 @@ public:
 
   /** Constructor from an existing CbmFieldMap **/
   CbmFieldMapData(const char* name, const CbmFieldMap& map);
-  
+
 
   /** Destructor **/
   virtual ~CbmFieldMapData();
 
 
   /** Accessors to field parameters in local coordinate system **/
-  Int_t    GetType()  const { return fType; }
-  Double_t GetXmin()  const { return fXmin; } 
-  Double_t GetYmin()  const { return fYmin; }
-  Double_t GetZmin()  const { return fZmin; }
-  Double_t GetXmax()  const { return fXmax; }  
-  Double_t GetYmax()  const { return fYmax; }
-  Double_t GetZmax()  const { return fZmax; }
-  Int_t    GetNx()    const { return fNx; }
-  Int_t    GetNy()    const { return fNy; }
-  Int_t    GetNz()    const { return fNz; }
+  Int_t GetType() const { return fType; }
+  Double_t GetXmin() const { return fXmin; }
+  Double_t GetYmin() const { return fYmin; }
+  Double_t GetZmin() const { return fZmin; }
+  Double_t GetXmax() const { return fXmax; }
+  Double_t GetYmax() const { return fYmax; }
+  Double_t GetZmax() const { return fZmax; }
+  Int_t GetNx() const { return fNx; }
+  Int_t GetNy() const { return fNy; }
+  Int_t GetNz() const { return fNz; }
 
 
   /** Accessors to the field value arrays **/
@@ -65,10 +63,8 @@ public:
   TArrayF* GetBy() const { return fBy; }
   TArrayF* GetBz() const { return fBz; }
 
-	
-	
- private:
 
+private:
   /** Type of map. 1 = CbmFieldMap, 2 = Sym2, 3 = Sym3 **/
   Int_t fType;
 
@@ -90,8 +86,7 @@ public:
   CbmFieldMapData(const CbmFieldMapData&);
   CbmFieldMapData& operator=(const CbmFieldMapData&);
 
-  ClassDef(CbmFieldMapData,1) 
-
+  ClassDef(CbmFieldMapData, 1)
 };
 
 

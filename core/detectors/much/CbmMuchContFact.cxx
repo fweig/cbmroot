@@ -9,25 +9,25 @@
  */
 #include "CbmMuchContFact.h"
 
-#include "CbmGeoMuchPar.h"      // for CbmGeoMuchPar
+#include "CbmGeoMuchPar.h"  // for CbmGeoMuchPar
 
-#include <FairRuntimeDb.h>      // for FairRuntimeDb
-#include <FairContFact.h>       // for FairContainer
-#include <FairLogger.h>         // for LOG
+#include <FairContFact.h>   // for FairContainer
+#include <FairLogger.h>     // for LOG
+#include <FairRuntimeDb.h>  // for FairRuntimeDb
 
-#include <TList.h>              // for TList
-#include <TString.h>            // for TString
+#include <TList.h>    // for TList
+#include <TString.h>  // for TString
 
-#include <string.h>             // for strcmp
+#include <string.h>  // for strcmp
 
 ClassImp(CbmMuchContFact)
 
-static CbmMuchContFact gCbmMuchContFact;
+  static CbmMuchContFact gCbmMuchContFact;
 
 CbmMuchContFact::CbmMuchContFact() {
   // Constructor (called when the library is loaded)
-  fName="CbmMuchContFact";
-  fTitle="Factory for parameter containers in libMuch";
+  fName  = "CbmMuchContFact";
+  fTitle = "Factory for parameter containers in libMuch";
   setAllContainers();
   FairRuntimeDb::instance()->addContFactory(this);
 }
@@ -35,45 +35,42 @@ CbmMuchContFact::CbmMuchContFact() {
 void CbmMuchContFact::setAllContainers() {
   /** Creates the Container objects with all accepted contexts and adds them to
    *  the list of containers for the MuCh library.*/
-//   FairContainer* p1= new FairContainer("CbmMuchDigiPar",
-// 				     "Much Digitization Parameters",
-// 				     "TestDefaultContext");
-//   p1->addContext("TestNonDefaultContext");
-  
-  FairContainer* p2= new FairContainer("CbmGeoMuchPar",
-				     "Much Geometry Parameters",
-				     "TestDefaultContext");
+  //   FairContainer* p1= new FairContainer("CbmMuchDigiPar",
+  // 				     "Much Digitization Parameters",
+  // 				     "TestDefaultContext");
+  //   p1->addContext("TestNonDefaultContext");
+
+  FairContainer* p2 = new FairContainer(
+    "CbmGeoMuchPar", "Much Geometry Parameters", "TestDefaultContext");
   p2->addContext("TestNonDefaultContext");
-  
+
   //  containers->Add(p1);
   containers->Add(p2);
-
 }
 
 FairParSet* CbmMuchContFact::createContainer(FairContainer* c) {
   /** Calls the constructor of the corresponding parameter container.
    * For an actual context, which is not an empty string and not the default context
    * of this container, the name is concatinated with the context. */
-  const char* name=c->GetName();
+  const char* name = c->GetName();
   LOG(info) << " -I container name " << name;
-  FairParSet* p=0;
-  if (strcmp(name,"CbmGeoMuchPar")==0) {
-    p=new CbmGeoMuchPar(c->getConcatName().Data(),c->GetTitle(),c->getContext());
+  FairParSet* p = 0;
+  if (strcmp(name, "CbmGeoMuchPar") == 0) {
+    p = new CbmGeoMuchPar(
+      c->getConcatName().Data(), c->GetTitle(), c->getContext());
   }
   return p;
-
 }
 
-void  CbmMuchContFact::activateParIo(FairParIo*) {
+void CbmMuchContFact::activateParIo(FairParIo*) {
   // activates the input/output class for the parameters
   // needed by the MuCh
-//   if (strcmp(io->IsA()->GetName(),"FairParRootFileIo")==0) {
-//     CbmMuchParRootFileIo* p=new CbmMuchParRootFileIo(((FairParRootFileIo*)io)->getParRootFile());
-//     io->setDetParIo(p);
-//   }
-//   else if (strcmp(io->IsA()->GetName(),"FairParAsciiFileIo")==0) {
-//     CbmMuchParAsciiFileIo* p=new CbmMuchParAsciiFileIo(((FairParAsciiFileIo*)io)->getFile());
-//     io->setDetParIo(p);
-//   }
+  //   if (strcmp(io->IsA()->GetName(),"FairParRootFileIo")==0) {
+  //     CbmMuchParRootFileIo* p=new CbmMuchParRootFileIo(((FairParRootFileIo*)io)->getParRootFile());
+  //     io->setDetParIo(p);
+  //   }
+  //   else if (strcmp(io->IsA()->GetName(),"FairParAsciiFileIo")==0) {
+  //     CbmMuchParAsciiFileIo* p=new CbmMuchParAsciiFileIo(((FairParAsciiFileIo*)io)->getFile());
+  //     io->setDetParIo(p);
+  //   }
 }
-

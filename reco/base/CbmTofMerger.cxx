@@ -6,4 +6,3 @@
 #include "CbmTofMerger.h"
 
 ClassImp(CbmTofMerger);
-

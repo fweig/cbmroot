@@ -19,7 +19,6 @@ class CbmStsSensorPoint;
 class CbmStsSimModule;
 
 
-
 /** @class CbmStsSimSensor
  ** @brief Class for the simulation of a sensor in the CBM-STS.
  ** @author V.Friese <v.friese@gsi.de>
@@ -30,75 +29,73 @@ class CbmStsSimModule;
  ** sensor system, having the sensor midpoint as origin. The analog response
  ** has to be  implemented in the pure virtual method CalulateResponse().
  **/
-class CbmStsSimSensor : public TObject
-{
+class CbmStsSimSensor : public TObject {
 
-  public:
-
-    /** @brief Standard constructor
+public:
+  /** @brief Standard constructor
      ** @param setupSensor Pointer to sensor element in CbmStsSetup
      **/
-    CbmStsSimSensor(CbmStsElement* element = nullptr);
+  CbmStsSimSensor(CbmStsElement* element = nullptr);
 
 
-    /** @brief Copy constructor (disabled) **/
-    CbmStsSimSensor(const CbmStsSimSensor&) = delete;
+  /** @brief Copy constructor (disabled) **/
+  CbmStsSimSensor(const CbmStsSimSensor&) = delete;
 
 
-    /** @brief Assignment operator (disabled) **/
-    CbmStsSimSensor& operator=(const CbmStsSimSensor&) = delete;
+  /** @brief Assignment operator (disabled) **/
+  CbmStsSimSensor& operator=(const CbmStsSimSensor&) = delete;
 
 
-    /** @brief Destructor  **/
-    virtual ~CbmStsSimSensor() { };
+  /** @brief Destructor  **/
+  virtual ~CbmStsSimSensor() {};
 
 
-    /** @brief Get the address from the sensor name (static)
+  /** @brief Get the address from the sensor name (static)
      ** @param name Name of sensor
      ** @value Unique element address
      **/
-    static UInt_t GetAddressFromName(TString name);
+  static UInt_t GetAddressFromName(TString name);
 
 
-    /** @brief Sensor conditions
+  /** @brief Sensor conditions
      ** @return Sensor condition object
      **/
-    const CbmStsParSensorCond* GetConditions() const { return fConditions; }
+  const CbmStsParSensorCond* GetConditions() const { return fConditions; }
 
 
-    /** @brief Current link object
+  /** @brief Current link object
      ** @return Current link object (to CbmStsPoint)
      **/
-    CbmLink* GetCurrentLink() const { return fCurrentLink; }
+  CbmLink* GetCurrentLink() const { return fCurrentLink; }
 
 
-    /** @brief Corresponding element in STS setup
+  /** @brief Corresponding element in STS setup
      ** @return Sensor element
      **/
-    CbmStsElement* GetElement() const { return fElement; }
+  CbmStsElement* GetElement() const { return fElement; }
 
 
-    /** @brief Simulation module
+  /** @brief Simulation module
      ** @return Corresponding simulation module
      **/
-    CbmStsSimModule* GetModule() const { return fModule; }
+  CbmStsSimModule* GetModule() const { return fModule; }
 
 
-    /** @brief Initialise the sensor, if needed
+  /** @brief Initialise the sensor, if needed
      ** @return kTRUE is successfully initialised
      **
      ** The implementation depends on the concrete sensor class.
      **/
-    virtual Bool_t Init() { return kTRUE; }
+  virtual Bool_t Init() { return kTRUE; }
 
 
-    /** @brief Sensor ID
+  /** @brief Sensor ID
      ** @return Sensor number with module
     **/
-    Int_t GetSensorId() const;
+  Int_t GetSensorId() const;
 
 
-    /** @brief Process one MC Point
+  /** @brief Process one MC Point
      ** @param point  Pointer to CbmStsPoint object
      ** @return  Status variable, depends on sensor type
      **
@@ -106,25 +103,26 @@ class CbmStsSimSensor : public TObject
      ** system. The appropriate analogue response is then calculated
      ** with the pure virtual method CalculateResponse.
      **/
-    Int_t ProcessPoint(const CbmStsPoint* point,
-                       Double_t eventTime = 0., CbmLink* link = NULL);
+  Int_t ProcessPoint(const CbmStsPoint* point,
+                     Double_t eventTime = 0.,
+                     CbmLink* link      = NULL);
 
 
-    /** Set the sensor conditions
+  /** Set the sensor conditions
      ** @param conditions    Pointer to conditions parameters
      **/
-    void SetConditions(const CbmStsParSensorCond* conditions) {
-      fConditions = conditions;
-    }
+  void SetConditions(const CbmStsParSensorCond* conditions) {
+    fConditions = conditions;
+  }
 
 
-    /** @brief Set the corresponding STS setup element
+  /** @brief Set the corresponding STS setup element
      ** @param Pointer to setup element
      **/
-    void SetElement(CbmStsElement* element) { fElement = element; }
+  void SetElement(CbmStsElement* element) { fElement = element; }
 
 
-    /** @brief Set the magnetic field in the sensor centre
+  /** @brief Set the magnetic field in the sensor centre
      ** @param bX  x component of magnetic field [T]
      ** @param bY  y component of magnetic field [T]
      ** @param bZ  z component of magnetic field [T]
@@ -133,53 +131,50 @@ class CbmStsSimSensor : public TObject
      ** Lorentz shift of charge carries in the sensor. The field is
      ** approximated to be constant.
      **/
-    void SetField(Double_t bX, Double_t bY, Double_t bZ) {
-      fBx = bX;
-      fBy = bY;
-      fBz = bZ;
-    }
+  void SetField(Double_t bX, Double_t bY, Double_t bZ) {
+    fBx = bX;
+    fBy = bY;
+    fBz = bZ;
+  }
 
 
-    /** @brief Set the corresponding simulation module
+  /** @brief Set the corresponding simulation module
      ** @param module Pointer to module
      **/
-    void SetModule(CbmStsSimModule* module) { fModule = module; }
+  void SetModule(CbmStsSimModule* module) { fModule = module; }
 
 
-    /** @brief Set the simulation settings
+  /** @brief Set the simulation settings
      ** @param Simulation setting parameteres
      **/
-    void SetSimSettings(const CbmStsParSim* settings) {
-      fSettings = settings;
-    }
+  void SetSimSettings(const CbmStsParSim* settings) { fSettings = settings; }
 
 
-    /** @brief Set the sensor parameters
+  /** @brief Set the sensor parameters
      ** @param par  Sensor parameter object
      **/
-   // void SetParameters(const CbmStsParSensor* par) {
-   //   fParameters = par;
-   // }
+  // void SetParameters(const CbmStsParSensor* par) {
+  //   fParameters = par;
+  // }
 
 
-    /** @brief String output **/
-    virtual std::string ToString() const = 0;
+  /** @brief String output **/
+  virtual std::string ToString() const = 0;
 
 
-  protected:
+protected:
+  CbmStsElement* fElement       = nullptr;  //! Setup element
+  CbmStsSimModule* fModule      = nullptr;  //! Simulation module
+  const CbmStsParSim* fSettings = nullptr;  //! Simulation settings
+  //const CbmStsParSensor* fParameters = nullptr;     //! Sensor parameters
+  const CbmStsParSensorCond* fConditions = nullptr;  //! Operating conditions
+  Double_t fBx = 0.;  ///< x component of magnetic field in sensor centre
+  Double_t fBy = 0.;  ///< y component of magnetic field in sensor centre
+  Double_t fBz = 0.;  ///< z component of magnetic field in sensor centre
+  CbmLink* fCurrentLink = nullptr;  //! Link to currently processed MCPoint
 
-    CbmStsElement* fElement = nullptr;                //! Setup element
-    CbmStsSimModule* fModule = nullptr;               //! Simulation module
-    const CbmStsParSim* fSettings = nullptr;          //! Simulation settings
-    //const CbmStsParSensor* fParameters = nullptr;     //! Sensor parameters
-    const CbmStsParSensorCond* fConditions = nullptr; //! Operating conditions
-    Double_t fBx = 0.;   ///< x component of magnetic field in sensor centre
-    Double_t fBy = 0.;   ///< y component of magnetic field in sensor centre
-    Double_t fBz = 0.;   ///< z component of magnetic field in sensor centre
-    CbmLink* fCurrentLink = nullptr;      //! Link to currently processed MCPoint
 
-
-    /** Perform response simulation for one MC Point
+  /** Perform response simulation for one MC Point
      ** @param point   Pointer to CbmStsSensorPoint with relevant parameters
      ** @return  Status variable, depends on concrete type
      **
@@ -187,11 +182,10 @@ class CbmStsSimSensor : public TObject
      ** sensor characterised by the CbmStsSensorPoint object. This is specific
      ** to the sensor type and has to be implemented in the derived class.
      **/
-    virtual Int_t CalculateResponse(CbmStsSensorPoint* point) = 0;
+  virtual Int_t CalculateResponse(CbmStsSensorPoint* point) = 0;
 
 
-    ClassDef(CbmStsSimSensor, 1);
-
+  ClassDef(CbmStsSimSensor, 1);
 };
 
 #endif

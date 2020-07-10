@@ -9,23 +9,24 @@
 #ifndef _NICAGENERATORWRITEUNIGEN_H_
 #define _NICAGENERATORWRITEUNIGEN_H_
 
+#include "NicaGeneratorWrite.h"
 #include "UEvent.h"
 #include "UParticle.h"
-#include "NicaGeneratorWrite.h"
 /**
  * default class for saving data in unigen format
  */
-class NicaGeneratorWriteUnigen : public NicaGeneratorWrite{
-	UEvent *fEvent;
+class NicaGeneratorWriteUnigen : public NicaGeneratorWrite {
+  UEvent* fEvent;
+
 public:
-	NicaGeneratorWriteUnigen();
-	virtual InitStatus Init();
-	virtual void Exec(Option_t* /*opt*/){};
-	virtual void ClearEvent();
-	void AddEvent();
-	void AddParticle();
-	virtual ~NicaGeneratorWriteUnigen();
-	ClassDef(NicaGeneratorWriteUnigen,1)
+  NicaGeneratorWriteUnigen();
+  virtual InitStatus Init();
+  virtual void Exec(Option_t* /*opt*/) {};
+  virtual void ClearEvent();
+  void AddEvent();
+  void AddParticle();
+  virtual ~NicaGeneratorWriteUnigen();
+  ClassDef(NicaGeneratorWriteUnigen, 1)
 };
 
 #endif /* _NICAGENERATORWRITEUNIGEN_H_ */

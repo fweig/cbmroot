@@ -8,14 +8,12 @@
  */
 
 // In order to call later Finish, we make this global
-FairRunOnline *run = NULL;
+FairRunOnline* run = NULL;
 
-void ngDpbMonitorCosy17(TString inFile = "")
-{
+void ngDpbMonitorCosy17(TString inFile = "") {
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
   TString inDir  = srcDir + "/input/";
-  if( "" != inFile )
-   inFile = inDir + inFile;
+  if ("" != inFile) inFile = inDir + inFile;
 
   // --- Specify number of events to be produced.
   // --- -1 means run until the end of the input file.
@@ -28,30 +26,30 @@ void ngDpbMonitorCosy17(TString inFile = "")
   // --- Set log output levels
   FairLogger::GetLogger();
   gLogger->SetLogScreenLevel("INFO");
-//  gLogger->SetLogScreenLevel("DEBUG");
+  //  gLogger->SetLogScreenLevel("DEBUG");
   gLogger->SetLogVerbosityLevel("LOW");
 
   // --- Define parameter files
-  TList *parFileList = new TList();
-  TString paramDir = "./";
+  TList* parFileList = new TList();
+  TString paramDir   = "./";
 
-  TString paramFileSts = paramDir + "StsUnpackPar.par";
+  TString paramFileSts          = paramDir + "StsUnpackPar.par";
   TObjString* tutDetDigiFileSts = new TObjString(paramFileSts);
   parFileList->Add(tutDetDigiFileSts);
 
-/*
+  /*
   TString paramFileMuch = paramDir + "MuchUnpackPar.par";
   TObjString* tutDetDigiFileMuch = new TObjString(paramFileMuch);
   parFileList->Add(tutDetDigiFileMuch);
 */
-/*
+  /*
   TString paramFileTof = paramDir + "MapTofLab2017.par";
   TObjString* tutDetDigiFileTof = new TObjString(paramFileTof);
   parFileList->Add(tutDetDigiFileTof);
 */
   // --- Set debug level
   gDebug = 0;
-  
+
   std::cout << std::endl;
   std::cout << ">>> ngDpbMonitorLab: output file is " << outFile << std::endl;
 
@@ -62,37 +60,36 @@ void ngDpbMonitorCosy17(TString inFile = "")
   std::cout << ">>> ngDpbMonitorLab: Initialising..." << std::endl;
 
   // Dummy Unpacker
-//  CbmTSUnpackDummy*    dummy_unpacker     = new CbmTSUnpackDummy();
+  //  CbmTSUnpackDummy*    dummy_unpacker     = new CbmTSUnpackDummy();
 
   // Much Monitor
   CbmTsMonitorSts* test_monitor_sts = new CbmTsMonitorSts();
-//  test_monitor_sts->SetRunStart( 20160206, 1610);
+  //  test_monitor_sts->SetRunStart( 20160206, 1610);
 
   // Much Monitor
-//  CbmTSMonitorMuch* test_monitor_much = new CbmTSMonitorMuch();
-//  test_monitor_much->SetRunStart( 20160206, 1610);
+  //  CbmTSMonitorMuch* test_monitor_much = new CbmTSMonitorMuch();
+  //  test_monitor_much->SetRunStart( 20160206, 1610);
 
   // Get4 Unpacker
-//  CbmTSMonitorTofStar* test_monitor_tof = new CbmTSMonitorTofStar();
-//  test_monitor_tof->SetPulserMode();
-//  test_monitor_tof->SetPulserFee(0, 1);
-//  test_monitor_tof->SetPulserChans(   0,   8,  16,  24,  32,  40,  48,  56, 
-//                                     64,  72,  80,  88,  96, 104, 112, 120 );
+  //  CbmTSMonitorTofStar* test_monitor_tof = new CbmTSMonitorTofStar();
+  //  test_monitor_tof->SetPulserMode();
+  //  test_monitor_tof->SetPulserFee(0, 1);
+  //  test_monitor_tof->SetPulserChans(   0,   8,  16,  24,  32,  40,  48,  56,
+  //                                     64,  72,  80,  88,  96, 104, 112, 120 );
 
   // --- Source task
   CbmFlibCern2016Source* source = new CbmFlibCern2016Source();
-  if( "" != inFile )
-      source->SetFileName(inFile);
-      else
-      {
-//         source->SetHostName( "localhost");
-         source->SetHostName( "cbmflib20");
-         source->SetPortNumber( 5556 );
-      }
+  if ("" != inFile)
+    source->SetFileName(inFile);
+  else {
+    //         source->SetHostName( "localhost");
+    source->SetHostName("cbmflib20");
+    source->SetPortNumber(5556);
+  }
 
-  source->AddUnpacker(test_monitor_sts, 0x10, 4); //nDPBs
-//  source->AddUnpacker(test_monitor_tof,  0x60, 6); //gDPBs
-//  source->AddUnpacker(test_monitor_much, 0x10, 4); //nDPBs
+  source->AddUnpacker(test_monitor_sts, 0x10, 4);  //nDPBs
+  //  source->AddUnpacker(test_monitor_tof,  0x60, 6); //gDPBs
+  //  source->AddUnpacker(test_monitor_much, 0x10, 4); //nDPBs
 
   // --- Event header
   FairEventHeader* event = new CbmTbEvent();
@@ -102,12 +99,12 @@ void ngDpbMonitorCosy17(TString inFile = "")
   run = new FairRunOnline(source);
   run->SetOutputFile(outFile);
   run->SetEventHeader(event);
-  run->ActivateHttpServer(100); // refresh each 100 events
+  run->ActivateHttpServer(100);  // refresh each 100 events
   run->SetAutoFinish(kFALSE);
 
   // -----   Runtime database   ---------------------------------------------
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
-  Bool_t kParameterMerged = kTRUE;
+  FairRuntimeDb* rtdb       = run->GetRuntimeDb();
+  Bool_t kParameterMerged   = kTRUE;
   FairParRootFileIo* parOut = new FairParRootFileIo(kParameterMerged);
   FairParAsciiFileIo* parIn = new FairParAsciiFileIo();
   parOut->open(parFile.Data());
@@ -121,10 +118,11 @@ void ngDpbMonitorCosy17(TString inFile = "")
   TStopwatch timer;
   timer.Start();
   std::cout << ">>> ngDpbMonitorLab: Starting run..." << std::endl;
-  run->Run(nEvents, 0); // run until end of input file
+  run->Run(nEvents, 0);  // run until end of input file
   timer.Stop();
-  
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
+
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
+            << std::endl;
 
   run->Finish();
 
@@ -135,7 +133,7 @@ void ngDpbMonitorCosy17(TString inFile = "")
   std::cout << ">>> ngDpbMonitorLab: Macro finished successfully." << std::endl;
   std::cout << ">>> ngDpbMonitorLab: Output file is " << outFile << std::endl;
   std::cout << ">>> ngDpbMonitorLab: Real time " << rtime << " s, CPU time "
-	    << ctime << " s" << std::endl;
+            << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

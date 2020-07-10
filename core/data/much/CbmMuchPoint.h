@@ -12,17 +12,15 @@
 #ifndef CBMMUCHPOINT_H
 #define CBMMUCHPOINT_H
 
-#include <Rtypes.h>       // for ClassDef
-#include <RtypesCore.h>   // for Double_t, Double32_t, Int_t, Bool_t, Option_t
-#include <TVector3.h>     // for TVector3
+#include <Rtypes.h>      // for ClassDef
+#include <RtypesCore.h>  // for Double_t, Double32_t, Int_t, Bool_t, Option_t
+#include <TVector3.h>    // for TVector3
 
 #include <FairMCPoint.h>  // for FairMCPoint
 
-class CbmMuchPoint : public FairMCPoint
-{
+class CbmMuchPoint : public FairMCPoint {
 
- public:
-
+public:
   /** Default constructor **/
   CbmMuchPoint();
 
@@ -39,10 +37,16 @@ class CbmMuchPoint : public FairMCPoint
    *@param eLoss    Energy deposit [GeV]
    *@param eventId  MC event identifier
    **/
-  CbmMuchPoint(Int_t trackID, Int_t detID, TVector3 posIn,
-	       TVector3 posOut, TVector3 momIn, TVector3 momOut,
-	       Double_t tof, Double_t length, Double_t eLoss,
-	       Int_t eventId = 0);
+  CbmMuchPoint(Int_t trackID,
+               Int_t detID,
+               TVector3 posIn,
+               TVector3 posOut,
+               TVector3 momIn,
+               TVector3 momOut,
+               Double_t tof,
+               Double_t length,
+               Double_t eLoss,
+               Int_t eventId = 0);
 
 
   /** Copy constructor with event and epoch time 
@@ -52,9 +56,9 @@ class CbmMuchPoint : public FairMCPoint
    *@param epochTime   epoch start time [ns]
    **/
   CbmMuchPoint(const CbmMuchPoint& point,
-	      Int_t    eventId   = -1,
-	      Double_t eventTime = 0., 
-	      Double_t epochTime = 0.);
+               Int_t eventId      = -1,
+               Double_t eventTime = 0.,
+               Double_t epochTime = 0.);
 
 
   /** Destructor **/
@@ -62,19 +66,21 @@ class CbmMuchPoint : public FairMCPoint
 
 
   /** Accessors **/
-  Int_t GetDetectorId()  const { return fDetectorID; }
-  Double_t GetXIn()         const { return fX; }
-  Double_t GetYIn()         const { return fY; }
-  Double_t GetZIn()         const { return fZ; }
-  Double_t GetXOut()        const { return fX_out; }
-  Double_t GetYOut()        const { return fY_out; }
-  Double_t GetZOut()        const { return fZ_out; }
-  Double_t GetPxOut()       const { return fPx_out; }
-  Double_t GetPyOut()       const { return fPy_out; }
-  Double_t GetPzOut()       const { return fPz_out; }
-  void PositionIn(TVector3& pos)  const { pos.SetXYZ(fX, fY, fZ); }
-  void PositionOut(TVector3& pos) const { pos.SetXYZ(fX_out,fY_out,fZ_out); }
-  void MomentumOut(TVector3& mom) const { mom.SetXYZ(fPx_out,fPy_out,fPz_out); }
+  Int_t GetDetectorId() const { return fDetectorID; }
+  Double_t GetXIn() const { return fX; }
+  Double_t GetYIn() const { return fY; }
+  Double_t GetZIn() const { return fZ; }
+  Double_t GetXOut() const { return fX_out; }
+  Double_t GetYOut() const { return fY_out; }
+  Double_t GetZOut() const { return fZ_out; }
+  Double_t GetPxOut() const { return fPx_out; }
+  Double_t GetPyOut() const { return fPy_out; }
+  Double_t GetPzOut() const { return fPz_out; }
+  void PositionIn(TVector3& pos) const { pos.SetXYZ(fX, fY, fZ); }
+  void PositionOut(TVector3& pos) const { pos.SetXYZ(fX_out, fY_out, fZ_out); }
+  void MomentumOut(TVector3& mom) const {
+    mom.SetXYZ(fPx_out, fPy_out, fPz_out);
+  }
 
   /** Point coordinates at given z from linear extrapolation **/
   Double_t GetX(Double_t z) const;
@@ -90,12 +96,11 @@ class CbmMuchPoint : public FairMCPoint
   /** Output to screen **/
   virtual void Print(const Option_t* opt) const;
 
- protected:
-
-  Double32_t fX_out,  fY_out,  fZ_out;
+protected:
+  Double32_t fX_out, fY_out, fZ_out;
   Double32_t fPx_out, fPy_out, fPz_out;
 
-  ClassDef(CbmMuchPoint,1)
+  ClassDef(CbmMuchPoint, 1)
 };
 
 

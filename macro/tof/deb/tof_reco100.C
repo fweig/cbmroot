@@ -37,19 +37,20 @@ void tof_reco100(Int_t nEvents = 1000) {
   //  Digitisation files.
   // Add TObjectString containing the different file names to
   // a TList which is passed as input to the FairParAsciiFileIo.
-  // The FairParAsciiFileIo will take care to create on the fly 
+  // The FairParAsciiFileIo will take care to create on the fly
   // a concatenated input parameter file which is then used during
   // the reconstruction.
-  TList *parFileList = new TList();
+  TList* parFileList = new TList();
 
   TString paramDir = gSystem->Getenv("VMCWORKDIR");
   paramDir += "/parameters";
 
   //TObjString stsDigiFile = paramDir + "/sts/sts_v11a.digi.par";
-  TObjString stsDigiFile = paramDir + "/sts/sts_v12b_std.digi.par"; // STS digi file
+  TObjString stsDigiFile =
+    paramDir + "/sts/sts_v12b_std.digi.par";  // STS digi file
   TString stsMatBudgetFileName = paramDir + "/sts/sts_matbudget_v12b.root";
 
-  TString TofGeoPar = "/parameters/tof/par_tof_V13a.txt";  // 6 m version 
+  TString TofGeoPar = "/parameters/tof/par_tof_V13a.txt";  // 6 m version
 
   parFileList->Add(&stsDigiFile);
 
@@ -88,17 +89,15 @@ void tof_reco100(Int_t nEvents = 1000) {
   gSystem->Load("libGlobal");
   gSystem->Load("libL1");
   gSystem->Load("libHadron");
-  gSystem->Load("libMinuit2"); // Needed for rich ellipse fitter
+  gSystem->Load("libMinuit2");  // Needed for rich ellipse fitter
   // ------------------------------------------------------------------------
 
 
   // -----   Reconstruction run   -------------------------------------------
-  FairRunAna *run = new FairRunAna();
+  FairRunAna* run = new FairRunAna();
   run->SetInputFile(inFile);
   run->SetOutputFile(outFile);
   // ------------------------------------------------------------------------
-
-
 
 
   // =========================================================================
@@ -107,22 +106,22 @@ void tof_reco100(Int_t nEvents = 1000) {
   // =========================================================================
 
   // -----   STS digitizer   -------------------------------------------------
-  Double_t threshold  =  4;
-  Double_t noiseWidth =  0.01;
-  Int_t    nofBits    = 12;
-  Double_t electronsPerAdc    =  10;
-  Double_t StripDeadTime = 0.1;
+  Double_t threshold          = 4;
+  Double_t noiseWidth         = 0.01;
+  Int_t nofBits               = 12;
+  Double_t electronsPerAdc    = 10;
+  Double_t StripDeadTime      = 0.1;
   CbmStsDigitize* stsDigitize = new CbmStsDigitize("STS Digitiser", iVerbose);
   stsDigitize->SetRealisticResponse();
-  stsDigitize->SetFrontThreshold (threshold);
-  stsDigitize->SetBackThreshold  (threshold);
+  stsDigitize->SetFrontThreshold(threshold);
+  stsDigitize->SetBackThreshold(threshold);
   stsDigitize->SetFrontNoiseWidth(noiseWidth);
-  stsDigitize->SetBackNoiseWidth (noiseWidth);
-  stsDigitize->SetFrontNofBits   (nofBits);
-  stsDigitize->SetBackNofBits    (nofBits);
+  stsDigitize->SetBackNoiseWidth(noiseWidth);
+  stsDigitize->SetFrontNofBits(nofBits);
+  stsDigitize->SetBackNofBits(nofBits);
   stsDigitize->SetFrontNofElPerAdc(electronsPerAdc);
   stsDigitize->SetBackNofElPerAdc(electronsPerAdc);
-  stsDigitize->SetStripDeadTime  (StripDeadTime);
+  stsDigitize->SetStripDeadTime(StripDeadTime);
   run->AddTask(stsDigitize);
   // -------------------------------------------------------------------------
 
@@ -132,7 +131,8 @@ void tof_reco100(Int_t nEvents = 1000) {
 
 
   // -----   STS Cluster Finder   --------------------------------------------
-  FairTask* stsClusterFinder = new CbmStsClusterFinder("STS Cluster Finder",iVerbose);
+  FairTask* stsClusterFinder =
+    new CbmStsClusterFinder("STS Cluster Finder", iVerbose);
   run->AddTask(stsClusterFinder);
   // -------------------------------------------------------------------------
 
@@ -182,7 +182,8 @@ void tof_reco100(Int_t nEvents = 1000) {
 
 
   // ------   TOF hit producer   ---------------------------------------------
-  CbmTofHitProducer* tofHitProd = new CbmTofHitProducer("TOF HitProducer",iVerbose);
+  CbmTofHitProducer* tofHitProd =
+    new CbmTofHitProducer("TOF HitProducer", iVerbose);
   tofHitProd->SetParFileName(std::string(TofGeoPar));
   run->AddTask(tofHitProd);
   // -------------------------------------------------------------------------
@@ -212,18 +213,18 @@ void tof_reco100(Int_t nEvents = 1000) {
   CbmFindPrimaryVertex* findVertex = new CbmFindPrimaryVertex(pvFinder);
   run->AddTask(findVertex);
   // ------------------------------------------------------------------------
-  // Global track fitting 
+  // Global track fitting
   // (taken from hadron/produceDST.C
   //
-  CbmGlobalTrackFitterKF *globalTrackFitter = new CbmGlobalTrackFitterKF();
-  CbmFitGlobalTracks *fitGlobal = new CbmFitGlobalTracks("FitGlobalTracks", 1,
-                                                          globalTrackFitter);
+  CbmGlobalTrackFitterKF* globalTrackFitter = new CbmGlobalTrackFitterKF();
+  CbmFitGlobalTracks* fitGlobal =
+    new CbmFitGlobalTracks("FitGlobalTracks", 1, globalTrackFitter);
   run->AddTask(fitGlobal);
-  
-  CbmProduceDst *produceDst = new CbmProduceDst(); // in hadron
+
+  CbmProduceDst* produceDst = new CbmProduceDst();  // in hadron
   run->AddTask(produceDst);
 
-  CbmHadronAnalysis *HadronAna = new CbmHadronAnalysis(); // in hadron
+  CbmHadronAnalysis* HadronAna = new CbmHadronAnalysis();  // in hadron
   run->AddTask(HadronAna);
 
   // ===                      End of global tracking                       ===
@@ -232,8 +233,8 @@ void tof_reco100(Int_t nEvents = 1000) {
 
 
   // -----  Parameter database   --------------------------------------------
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
-  FairParRootFileIo* parIo1 = new FairParRootFileIo();
+  FairRuntimeDb* rtdb        = run->GetRuntimeDb();
+  FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
   parIo1->open(parFile.Data());
   parIo2->open(parFileList, "in");
@@ -263,8 +264,8 @@ void tof_reco100(Int_t nEvents = 1000) {
   cout << endl;
   // ------------------------------------------------------------------------
 
-//  delete run;
+  //  delete run;
 
   cout << " Test passed" << endl;
-	cout << " All ok " << endl;
+  cout << " All ok " << endl;
 }

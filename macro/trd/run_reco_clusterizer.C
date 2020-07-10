@@ -18,27 +18,29 @@
 // --------------------------------------------------------------------------
 
 
-void run_reco_clusterizer(Int_t nEvents = 1)
-{
+void run_reco_clusterizer(Int_t nEvents = 1) {
 
-  gStyle->SetPalette(1,0);
+  gStyle->SetPalette(1, 0);
   gROOT->SetStyle("Plain");
-  gStyle->SetPadTickX(1);                        
-  gStyle->SetPadTickY(1); 
+  gStyle->SetPadTickX(1);
+  gStyle->SetPadTickY(1);
   // ========================================================================
-  // geometry selection for sim + reco  by Cyrano                            
+  // geometry selection for sim + reco  by Cyrano
   // ========================================================================
   ifstream whichTrdGeo;
-  whichTrdGeo.open("whichTrdGeo",ios::in);
+  whichTrdGeo.open("whichTrdGeo", ios::in);
   TString digipar;
   if (whichTrdGeo) whichTrdGeo >> digipar;
-  cout << "selected geometry : >> " << digipar << " << (to select a different geometry, edit macro/trd/whichTrdGeo file)" << endl;
+  cout
+    << "selected geometry : >> " << digipar
+    << " << (to select a different geometry, edit macro/trd/whichTrdGeo file)"
+    << endl;
   whichTrdGeo.close();
   if (digipar.Length() == 0) digipar = "trd_standard";
 
   // ========================================================================
   //          Adjust this part according to your requirements
- 
+
 
   // Verbosity level (0=quiet, 1=event level, 2=track level, 3=debug)
   Int_t iVerbose = 0;
@@ -50,7 +52,7 @@ void run_reco_clusterizer(Int_t nEvents = 1)
   TString parFile = "data/params.root";
 
   //  Digitisation files
-  TList *parFileList = new TList();
+  TList* parFileList = new TList();
 
   TString paramDir = gSystem->Getenv("VMCWORKDIR");
   paramDir += "/parameters";
@@ -68,7 +70,7 @@ void run_reco_clusterizer(Int_t nEvents = 1)
 
   // Output file
   TString statistic;
-  statistic.Form(".%03ievents",nEvents);
+  statistic.Form(".%03ievents", nEvents);
   TString outFile = "data/test.esd." + digipar + statistic + ".root";
 
 
@@ -76,18 +78,15 @@ void run_reco_clusterizer(Int_t nEvents = 1)
   // ========================================================================
 
 
- 
   // ----    Debug option   -------------------------------------------------
   gDebug = 0;
   // ------------------------------------------------------------------------
-
 
 
   // -----   Timer   --------------------------------------------------------
   TStopwatch timer;
   timer.Start();
   // ------------------------------------------------------------------------
-
 
 
   // ----  Load libraries   -------------------------------------------------
@@ -110,15 +109,14 @@ void run_reco_clusterizer(Int_t nEvents = 1)
   gSystem->Load("libTrd");
   gSystem->Load("libTof");
   gSystem->Load("libGlobal");
-  gSystem->Load("libL1"); 
-  gSystem->Load("libMinuit2"); // Nedded for rich ellipse fitter
+  gSystem->Load("libL1");
+  gSystem->Load("libMinuit2");  // Nedded for rich ellipse fitter
 
   // ------------------------------------------------------------------------
 
 
-
   // -----   Reconstruction run   -------------------------------------------
-  FairRunAna *run= new FairRunAna();
+  FairRunAna* run = new FairRunAna();
   run->SetInputFile(inFile);
   run->SetOutputFile(outFile);
   // ------------------------------------------------------------------------
@@ -211,36 +209,38 @@ void run_reco_clusterizer(Int_t nEvents = 1)
   */
 
 
-
   // =========================================================================
   // ===                     TRD local reconstruction                      ===
   // =========================================================================
 
   // Update of the values for the radiator F.U. 17.08.07
-  Int_t trdNFoils    = 130;      // number of polyetylene foils
-  Float_t trdDFoils = 0.0013;    // thickness of 1 foil [cm]
-  Float_t trdDGap   = 0.02;      // thickness of gap between foils [cm]
-  Bool_t simpleTR = kTRUE;       // use fast and simple version for TR
-                                 // production
+  Int_t trdNFoils   = 130;     // number of polyetylene foils
+  Float_t trdDFoils = 0.0013;  // thickness of 1 foil [cm]
+  Float_t trdDGap   = 0.02;    // thickness of gap between foils [cm]
+  Bool_t simpleTR   = kTRUE;   // use fast and simple version for TR
+                               // production
 
-  CbmTrdRadiator *radiator = new CbmTrdRadiator(simpleTR , trdNFoils,
-						trdDFoils, trdDGap);
+  CbmTrdRadiator* radiator =
+    new CbmTrdRadiator(simpleTR, trdNFoils, trdDFoils, trdDGap);
   /*
   CbmTrdHitProducerSmearing* trdHitProd = new CbmTrdHitProducerSmearing(radiator);
   run->AddTask(trdHitProd);
   */
- 
+
   // -----   TRD clusterizer     ----------------------------------------------
-  
-  CbmTrdClusterizer* trdClustering = new CbmTrdClusterizer("TRD Clusterizer", "TRD task",radiator);
+
+  CbmTrdClusterizer* trdClustering =
+    new CbmTrdClusterizer("TRD Clusterizer", "TRD task", radiator);
   run->AddTask(trdClustering);
 
-  CbmTrdClusterFinderFast* trdClusterfindingfast = new CbmTrdClusterFinderFast();
+  CbmTrdClusterFinderFast* trdClusterfindingfast =
+    new CbmTrdClusterFinderFast();
   run->AddTask(trdClusterfindingfast);
-  
-  CbmTrdHitProducerCluster* trdClusterHitProducer = new CbmTrdHitProducerCluster();
+
+  CbmTrdHitProducerCluster* trdClusterHitProducer =
+    new CbmTrdHitProducerCluster();
   run->AddTask(trdClusterHitProducer);
-  
+
   // -------------------------------------------------------------------------
 
   /*
@@ -460,18 +460,17 @@ void run_reco_clusterizer(Int_t nEvents = 1)
   // =========================================================================
   
   */
-  
 
 
   // -----  Parameter database   --------------------------------------------
   //  TString stsDigi = gSystem->Getenv("VMCWORKDIR");
   //  stsDigi += "/parameters/sts/";
   //  stsDigi += stsDigiFile;
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
-  FairParRootFileIo* parIo1 = new FairParRootFileIo();
+  FairRuntimeDb* rtdb        = run->GetRuntimeDb();
+  FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
   parIo1->open(parFile.Data());
-  parIo2->open(parFileList,"in");
+  parIo2->open(parFileList, "in");
   rtdb->setFirstInput(parIo1);
   rtdb->setSecondInput(parIo2);
   rtdb->setOutput(parIo1);
@@ -479,14 +478,12 @@ void run_reco_clusterizer(Int_t nEvents = 1)
   // ------------------------------------------------------------------------
 
 
-     
   // -----   Intialise and run   --------------------------------------------
   //  run->LoadGeometry();
   run->Init();
   cout << "Starting run" << endl;
-  run->Run(0,nEvents);
+  run->Run(0, nEvents);
   // ------------------------------------------------------------------------
-
 
 
   // -----   Finish   -------------------------------------------------------
@@ -495,7 +492,7 @@ void run_reco_clusterizer(Int_t nEvents = 1)
   Double_t ctime = timer.CpuTime();
   cout << endl << endl;
   cout << "Macro finished succesfully." << endl;
-  cout << "Output file is "    << outFile << endl;
+  cout << "Output file is " << outFile << endl;
   cout << "Parameter file is " << parFile << endl;
   cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << endl;
   cout << endl;

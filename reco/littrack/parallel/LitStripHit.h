@@ -8,12 +8,12 @@
 #ifndef LITSTRIPHIT_H_
 #define LITSTRIPHIT_H_
 
-#include <string>
 #include <sstream>
+#include <string>
 
+using std::ostream;
 using std::string;
 using std::stringstream;
-using std::ostream;
 
 /**
  * \class LitStripHit
@@ -25,50 +25,44 @@ using std::ostream;
  * and sine and cosine of strip rotation angle phi.
  */
 template<class T>
-class LitStripHit
-{
+class LitStripHit {
 public:
-   /**
+  /**
     * \brief Constructor.
     */
-   LitStripHit():
-      phiCos(0.),
-      phiSin(0.),
-      U(0.),
-      Du(0.),
-      Z(0.) {}
+  LitStripHit() : phiCos(0.), phiSin(0.), U(0.), Du(0.), Z(0.) {}
 
-   /**
+  /**
     * \brief Destructor.
     */
-   virtual ~LitStripHit() {}
+  virtual ~LitStripHit() {}
 
-   /**
+  /**
     * \brief Returns string representation of the class.
     * \return String representation of the class.
     */
-   string ToString() const {
-      stringstream ss;
-      ss << "LitStripHit: phiCos=" << phiCos << " phiSin=" << phiSin
-         << " U=" << U << " Du=" << Du << " Z=" << Z << "\n";
-      return ss.str();
-   }
+  string ToString() const {
+    stringstream ss;
+    ss << "LitStripHit: phiCos=" << phiCos << " phiSin=" << phiSin << " U=" << U
+       << " Du=" << Du << " Z=" << Z << "\n";
+    return ss.str();
+  }
 
-   /**
+  /**
     * \brief Operator << for convenient output to ostream.
     * \return Insertion stream in order to be able to call a succession of insertion operations.
     */
-   friend ostream& operator<<(ostream& strm, const LitStripHit& hit) {
-      strm << hit.ToString();
-      return strm;
-   }
+  friend ostream& operator<<(ostream& strm, const LitStripHit& hit) {
+    strm << hit.ToString();
+    return strm;
+  }
 
 public:
-   T phiCos; // Cosine of strip rotation angle
-   T phiSin; // Sine of strip rotation angle
-   T U; // U measurement [cm]
-   T Du; // U measurement error [cm]
-   T Z; // Z position of the hit
+  T phiCos;  // Cosine of strip rotation angle
+  T phiSin;  // Sine of strip rotation angle
+  T U;       // U measurement [cm]
+  T Du;      // U measurement error [cm]
+  T Z;       // Z position of the hit
 } _fvecalignment;
 
 /**

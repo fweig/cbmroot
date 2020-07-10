@@ -17,47 +17,46 @@
  * \author Andrey Lebedev <andrey.lebedev@gsi.de>
  * \date 2011
  */
-class CbmLitFieldQaReport : public CbmSimulationReport
-{
+class CbmLitFieldQaReport : public CbmSimulationReport {
 public:
-    /**
+  /**
      * \brief Constructor.
      */
-    CbmLitFieldQaReport();
-    
-    /**
+  CbmLitFieldQaReport();
+
+  /**
      * \brief Destructor.
      */
-    virtual ~CbmLitFieldQaReport();
-    
+  virtual ~CbmLitFieldQaReport();
+
 private:
-    /**
+  /**
      * \brief Inherited from CbmSimulationReport.
      */
-    virtual void Create();
-    
-    /**
+  virtual void Create();
+
+  /**
      * \brief Inherited from CbmSimulationReport.
      */
-    virtual void Draw();
-    
-    /**
+  virtual void Draw();
+
+  /**
      * \brief Draw field map components for each slice.
      */
-    void DrawFieldSlices();
-    
-    /**
+  void DrawFieldSlices();
+
+  /**
      * \brief Draw field map components for RICH PMT plane.
      */
-    void DrawFieldRichPmtPlane();
+  void DrawFieldRichPmtPlane();
 
 
-    /**
+  /**
      * \brief Draw field map components along Z coordinate.
      */
-    void DrawFieldAlongZ();
-    
-    ClassDef(CbmLitFieldQaReport, 1)
+  void DrawFieldAlongZ();
+
+  ClassDef(CbmLitFieldQaReport, 1)
 };
 
 #endif /* CBMLITFIELDQAREPORT_H_ */

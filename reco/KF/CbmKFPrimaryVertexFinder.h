@@ -15,20 +15,19 @@
 
 #include <vector>
 
-class CbmKFPrimaryVertexFinder:public TObject {
-  
+class CbmKFPrimaryVertexFinder : public TObject {
+
   std::vector<CbmKFTrackInterface*> Tracks;
 
- public:
-
-  CbmKFPrimaryVertexFinder():Tracks() { Clear(); };
-  ~CbmKFPrimaryVertexFinder(){};
+public:
+  CbmKFPrimaryVertexFinder() : Tracks() { Clear(); };
+  ~CbmKFPrimaryVertexFinder() {};
 
   virtual void Clear(Option_t* opt = "");
-  void AddTrack( CbmKFTrackInterface* Track );
-  void SetTracks( std::vector<CbmKFTrackInterface*> &vTracks );
-  void Fit(CbmKFVertexInterface &vtx );
+  void AddTrack(CbmKFTrackInterface* Track);
+  void SetTracks(std::vector<CbmKFTrackInterface*>& vTracks);
+  void Fit(CbmKFVertexInterface& vtx);
 
-  ClassDef( CbmKFPrimaryVertexFinder, 1 );
+  ClassDef(CbmKFPrimaryVertexFinder, 1);
 };
 #endif /* !CBMKFPRIMARYVERTEXFINDER_H */

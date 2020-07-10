@@ -8,11 +8,11 @@
 
 #ifndef CBMSTSSENSOR_H
 #define CBMSTSSENSOR_H 1
-#include <Rtypes.h>               // for THashConsistencyHolder, ClassDef
-#include <RtypesCore.h>           // for Double_t, Int_t, UInt_t, Bool_t, kTRUE
-#include <TString.h>              // for TString
+#include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
+#include <RtypesCore.h>  // for Double_t, Int_t, UInt_t, Bool_t, kTRUE
+#include <TString.h>     // for TString
 
-#include <string>                 // for string
+#include <string>  // for string
 
 #include "CbmStsAddress.h"        // for GetElementId, kStsSensor
 #include "CbmStsElement.h"        // for CbmStsElement
@@ -35,124 +35,121 @@ class TGeoPhysicalNode;
  ** or several daisy-chained ones. The sensor class represents
  ** the physical node through its member fNode,
  **/
-class CbmStsSensor : public CbmStsElement
-{
+class CbmStsSensor : public CbmStsElement {
 
-  public:
-
-    /** Constructor
+public:
+  /** Constructor
      ** @param address Unique element address
      ** @param node    Pointer to geometry node
      ** @param mother  Pointer to mother element (module)
      **/
-    CbmStsSensor(UInt_t address = 0, TGeoPhysicalNode* node = nullptr,
-                 CbmStsElement* mother = nullptr);
+  CbmStsSensor(UInt_t address         = 0,
+               TGeoPhysicalNode* node = nullptr,
+               CbmStsElement* mother  = nullptr);
 
 
-    /** Destructor  **/
-    virtual ~CbmStsSensor() { };
+  /** Destructor  **/
+  virtual ~CbmStsSensor() {};
 
 
-    /** @brief Get the address from the sensor name (static)
+  /** @brief Get the address from the sensor name (static)
      ** @param name Name of sensor
      ** @value Unique element address
      **/
-    static UInt_t GetAddressFromName(TString name);
+  static UInt_t GetAddressFromName(TString name);
 
 
-    /** @brief Sensor conditions
+  /** @brief Sensor conditions
      ** @return Sensor condition object
      **/
-    const CbmStsParSensorCond* GetConditions() const { return fConditions; }
+  const CbmStsParSensorCond* GetConditions() const { return fConditions; }
 
 
-    /** @brief Get mother module
+  /** @brief Get mother module
      ** @return  Module the sensor is connected to
      **/
-    CbmStsModule* GetModule() const;
+  CbmStsModule* GetModule() const;
 
 
-  	/** Get physical node
+  /** Get physical node
   	 ** @return Pointer to TGeoPhysicalNode of sensor
      **/
-  	TGeoPhysicalNode* GetNode() const {return fNode;}
+  TGeoPhysicalNode* GetNode() const { return fNode; }
 
 
-  	/** @brief Sensor parameters
+  /** @brief Sensor parameters
   	 ** @return Sensor parameters object
   	 **/
-  	const CbmStsParSensor* GetParams() const { return fParams; }
+  const CbmStsParSensor* GetParams() const { return fParams; }
 
 
-    /** @brief Sensor Id within the module
+  /** @brief Sensor Id within the module
      ** @return Sensor ID
      **
      ** Several sensor can be connected to a module. This is the
      ** running number, starting wth 0. The sensor with ID 0
      ** is the topmost one.
      **/
-    Int_t GetSensorId() const {
-      return CbmStsAddress::GetElementId(fAddress, kStsSensor); }
+  Int_t GetSensorId() const {
+    return CbmStsAddress::GetElementId(fAddress, kStsSensor);
+  }
 
 
-    /** @brief Set sensor address
+  /** @brief Set sensor address
      ** @param address STS element address
      **/
-    void SetAddress(Int_t address) {
-      fAddress = address;
-      fName = CbmStsElement::ConstructName(address, kStsSensor);
-    }
+  void SetAddress(Int_t address) {
+    fAddress = address;
+    fName    = CbmStsElement::ConstructName(address, kStsSensor);
+  }
 
 
-    /** @brief Set the sensor conditions
+  /** @brief Set the sensor conditions
      ** @param conditions    Sensor condition object
      **
      ** The operating conditions are e.g. temperature, voltages
      ** and capacitances.
      **/
-    void SetConditions(const CbmStsParSensorCond* conditions) {
-       if ( ! fConditions )
-         fConditions = new CbmStsParSensorCond(*conditions);
-       else *fConditions = *conditions;
-     }
+  void SetConditions(const CbmStsParSensorCond* conditions) {
+    if (!fConditions)
+      fConditions = new CbmStsParSensorCond(*conditions);
+    else
+      *fConditions = *conditions;
+  }
 
 
-    /** @brief Set the sensor parameters
+  /** @brief Set the sensor parameters
      ** @param conditions    Sensor parameter object
      **
      ** The internal sensor parameters are e.g. strip pitch,
      ** stereo angle, and other constructional quantities, which
      ** are not described on the geometry level.
      **/
-     void SetParameters(const CbmStsParSensor* par) {
-       fParams = par;
-     }
+  void SetParameters(const CbmStsParSensor* par) { fParams = par; }
 
 
-    /** @brief Set the physical node
+  /** @brief Set the physical node
      ** @param node  Pointer to associated TGeoPhysicalNode object
      **/
-    void SetNode(TGeoPhysicalNode* node) { fNode = node; }
+  void SetNode(TGeoPhysicalNode* node) { fNode = node; }
 
 
-    /** @brief String output **/
-    virtual std::string ToString() const;
+  /** @brief String output **/
+  virtual std::string ToString() const;
 
 
-  protected:
+protected:
+  const CbmStsParSensor* fParams   = nullptr;  ///< Sensor parameters
+  CbmStsParSensorCond* fConditions = nullptr;  ///< Operating conditions
 
-    const CbmStsParSensor* fParams   = nullptr;  ///< Sensor parameters
-    CbmStsParSensorCond* fConditions = nullptr;  ///< Operating conditions
+  /** @brief Copy constructor (disabled) **/
+  CbmStsSensor(const CbmStsSensor&) = delete;
 
-    /** @brief Copy constructor (disabled) **/
-    CbmStsSensor(const CbmStsSensor&) = delete;
-
-    /** @brief Copy assignment constructor (disabled) **/
-    CbmStsSensor& operator=(const CbmStsSensor&) = delete;
+  /** @brief Copy assignment constructor (disabled) **/
+  CbmStsSensor& operator=(const CbmStsSensor&) = delete;
 
 
-    ClassDef(CbmStsSensor,2);
-
+  ClassDef(CbmStsSensor, 2);
 };
 
 

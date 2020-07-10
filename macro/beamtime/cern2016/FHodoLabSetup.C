@@ -8,12 +8,11 @@
  */
 
 
-void FHodoLabSetup(TString inFile = "hodoTop_source_1000ts_20160422.tsa")
-{
+void FHodoLabSetup(TString inFile = "hodoTop_source_1000ts_20160422.tsa") {
 
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
   TString inDir  = srcDir + "/input/";
-  inFile = inDir + inFile;
+  inFile         = inDir + inFile;
 
   // --- Specify number of events to be produced.
   // --- -1 means run until the end of the input file.
@@ -29,19 +28,19 @@ void FHodoLabSetup(TString inFile = "hodoTop_source_1000ts_20160422.tsa")
   gLogger->SetLogVerbosityLevel("LOW");
 
   // --- Define parameter files
-  TList *parFileList = new TList();
-  TString paramDir = srcDir + "/macro/beamtime/cern2016/";
-  TString paramFile = paramDir + "FHodoUnpackPar.par";
+  TList* parFileList         = new TList();
+  TString paramDir           = srcDir + "/macro/beamtime/cern2016/";
+  TString paramFile          = paramDir + "FHodoUnpackPar.par";
   TObjString* tutDetDigiFile = new TObjString(paramFile);
   parFileList->Add(tutDetDigiFile);
-  
-  TString paramFileTof = paramDir + "TofUnpackPar.par";
+
+  TString paramFileTof          = paramDir + "TofUnpackPar.par";
   TObjString* tutDetDigiFileTof = new TObjString(paramFileTof);
   parFileList->Add(tutDetDigiFileTof);
 
   // --- Set debug level
   gDebug = 0;
-  
+
   std::cout << std::endl;
   std::cout << ">>> FHodoLabSetup: output file is " << outFile << std::endl;
 
@@ -52,30 +51,30 @@ void FHodoLabSetup(TString inFile = "hodoTop_source_1000ts_20160422.tsa")
   std::cout << ">>> FHodoLabSetup: Initialising..." << std::endl;
 
   // NXyter Unpacker
-  CbmTSUnpackFHodo*    test_unpacker     = new CbmTSUnpackFHodo();
+  CbmTSUnpackFHodo* test_unpacker = new CbmTSUnpackFHodo();
   //  test_unpacker->CreateRawMessageOutput(kTRUE);
-  
+
   // Get4 Unpacker
   CbmTSUnpackTof* test_unpacker_tof = new CbmTSUnpackTof();
 
   // --- Source task
   CbmFlibTestSource* source = new CbmFlibTestSource();
   source->SetFileName(inFile);
-  source->AddUnpacker(test_unpacker_tof, 0x60, 20);//gDPB A & B
-  source->AddUnpacker(test_unpacker,     0x10, 10);//nDPB A & B = HODO 1 + 2
+  source->AddUnpacker(test_unpacker_tof, 0x60, 20);  //gDPB A & B
+  source->AddUnpacker(test_unpacker, 0x10, 10);      //nDPB A & B = HODO 1 + 2
 
   // --- Event header
   FairEventHeader* event = new CbmTbEvent();
   event->SetRunId(1);
 
   // --- Run
-  FairRunOnline *run = new FairRunOnline(source);
+  FairRunOnline* run = new FairRunOnline(source);
   run->SetOutputFile(outFile);
   run->SetEventHeader(event);
   FairRuntimeDb* rtdb = run->GetRuntimeDb();
 
   // -----   Runtime database   ---------------------------------------------
-  Bool_t kParameterMerged = kTRUE;
+  Bool_t kParameterMerged   = kTRUE;
   FairParRootFileIo* parOut = new FairParRootFileIo(kParameterMerged);
   FairParAsciiFileIo* parIn = new FairParAsciiFileIo();
   parOut->open(parFile.Data());
@@ -89,11 +88,12 @@ void FHodoLabSetup(TString inFile = "hodoTop_source_1000ts_20160422.tsa")
   TStopwatch timer;
   timer.Start();
   std::cout << ">>> FHodoLabSetup: Starting run..." << std::endl;
-  run->Run(nEvents, 0); // run until end of input file
+  run->Run(nEvents, 0);  // run until end of input file
   timer.Stop();
-  
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
-    
+
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
+            << std::endl;
+
   // --- End-of-run info
   Double_t rtime = timer.RealTime();
   Double_t ctime = timer.CpuTime();
@@ -101,7 +101,7 @@ void FHodoLabSetup(TString inFile = "hodoTop_source_1000ts_20160422.tsa")
   std::cout << ">>> FHodoLabSetup: Macro finished successfully." << std::endl;
   std::cout << ">>> FHodoLabSetup: Output file is " << outFile << std::endl;
   std::cout << ">>> FHodoLabSetup: Real time " << rtime << " s, CPU time "
-	    << ctime << " s" << std::endl;
+            << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

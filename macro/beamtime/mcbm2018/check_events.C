@@ -1,7 +1,10 @@
-void check_events(Int_t nEvents = 10, UInt_t uRunId=0, TString inDir="data/", TString friendFile="", TString inFile="") 
-{
+void check_events(Int_t nEvents      = 10,
+                  UInt_t uRunId      = 0,
+                  TString inDir      = "data/",
+                  TString friendFile = "",
+                  TString inFile     = "") {
   Int_t iVerbose = 1;
-  Int_t iBugCor=0;
+  Int_t iBugCor  = 0;
   //Specify log level (INFO, DEBUG, DEBUG1, ...)
   //TString logLevel = "FATAL";
   //TString logLevel = "ERROR";
@@ -13,29 +16,25 @@ void check_events(Int_t nEvents = 10, UInt_t uRunId=0, TString inDir="data/", TS
   FairLogger::GetLogger();
   gLogger->SetLogScreenLevel(logLevel);
   gLogger->SetLogVerbosityLevel("VERYHIGH");
-  
-  TString workDir    = gSystem->Getenv("VMCWORKDIR");
+
+  TString workDir = gSystem->Getenv("VMCWORKDIR");
 
   TString runId = TString::Format("%u", uRunId);
 
-  TString ParFile    = inDir + "/unp_mcbm_params_" + runId + ".root";
+  TString ParFile = inDir + "/unp_mcbm_params_" + runId + ".root";
 
-  TString InputFile  = inDir + "/unp_mcbm_" + runId + ".root";
-  TString InputFileEvent="";
-  if (friendFile.Length() > 0) {
-    InputFileEvent  = inDir + friendFile;
-  }
-   TString OutputFile = inDir + "/test_" + runId + ".out.root";
+  TString InputFile      = inDir + "/unp_mcbm_" + runId + ".root";
+  TString InputFileEvent = "";
+  if (friendFile.Length() > 0) { InputFileEvent = inDir + friendFile; }
+  TString OutputFile = inDir + "/test_" + runId + ".out.root";
 
-   TList *parFileList = new TList();
+  TList* parFileList = new TList();
 
   // -----   Reconstruction run   -------------------------------------------
-  FairRunAna *run= new FairRunAna();
+  FairRunAna* run = new FairRunAna();
 
   FairFileSource* inputSource = new FairFileSource(InputFile);
-  if (friendFile.Length() > 0) { 
-    inputSource->AddFriend(InputFileEvent);
-  }
+  if (friendFile.Length() > 0) { inputSource->AddFriend(InputFileEvent); }
   run->SetSource(inputSource);
   run->SetOutputFile(OutputFile);
 
@@ -45,24 +44,24 @@ void check_events(Int_t nEvents = 10, UInt_t uRunId=0, TString inDir="data/", TS
   run->AddTask(checker);
 
   // -----  Parameter database   --------------------------------------------
- 
-   FairRuntimeDb* rtdb = run->GetRuntimeDb();
-   Bool_t kParameterMerged = kTRUE;
-   FairParRootFileIo* parIo2 = new FairParRootFileIo(kParameterMerged);
-   parIo2->open(ParFile.Data(), "UPDATE");
-   parIo2->print();
-   rtdb->setFirstInput(parIo2);
-  
-   FairParAsciiFileIo* parIo1 = new FairParAsciiFileIo();
-   parIo1->open(parFileList, "in");
-   parIo1->print();
-   rtdb->setSecondInput(parIo1);
-   rtdb->print();
-   rtdb->printParamContexts();
 
-   //  FairParRootFileIo* parInput1 = new FairParRootFileIo();
-   //  parInput1->open(ParFile.Data());
-   //  rtdb->setFirstInput(parInput1);
+  FairRuntimeDb* rtdb       = run->GetRuntimeDb();
+  Bool_t kParameterMerged   = kTRUE;
+  FairParRootFileIo* parIo2 = new FairParRootFileIo(kParameterMerged);
+  parIo2->open(ParFile.Data(), "UPDATE");
+  parIo2->print();
+  rtdb->setFirstInput(parIo2);
+
+  FairParAsciiFileIo* parIo1 = new FairParAsciiFileIo();
+  parIo1->open(parFileList, "in");
+  parIo1->print();
+  rtdb->setSecondInput(parIo1);
+  rtdb->print();
+  rtdb->printParamContexts();
+
+  //  FairParRootFileIo* parInput1 = new FairParRootFileIo();
+  //  parInput1->open(ParFile.Data());
+  //  rtdb->setFirstInput(parInput1);
 
   // -----   Intialise and run   --------------------------------------------
   run->Init();
@@ -70,5 +69,5 @@ void check_events(Int_t nEvents = 10, UInt_t uRunId=0, TString inDir="data/", TS
   run->Run(0, nEvents);
   //tofClust->Finish();
   // ------------------------------------------------------------------------
-  // default display 
+  // default display
 }

@@ -6,11 +6,11 @@
 #pragma link off all classes;
 #pragma link off all functions;
 
-#pragma link C++ class  LxTBFinder+;
-#pragma link C++ class  LxTBTrdFinder+;
+#pragma link C++ class LxTBFinder + ;
+#pragma link C++ class LxTBTrdFinder + ;
 //#pragma link C++ class  LxTBMLFinder+;
 //#pragma link C++ class  LxTBMPFinder+;
-#pragma link C++ class LxGenNoiseElectrons+;
-#pragma link C++ class LxCalcStats+;
+#pragma link C++ class LxGenNoiseElectrons + ;
+#pragma link C++ class LxCalcStats + ;
 
 #endif

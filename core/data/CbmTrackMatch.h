@@ -15,11 +15,9 @@
 #include <RtypesCore.h>  // for Int_t
 #include <TObject.h>     // for TObject
 
-class CbmTrackMatch : public TObject
-{
+class CbmTrackMatch : public TObject {
 
- public:
-
+public:
   /** Default constructor **/
   CbmTrackMatch();
 
@@ -31,11 +29,11 @@ class CbmTrackMatch : public TObject
   *@param nFake       Number of fake hits (not belonging to any MCTrack)
   *@param nTracks     Number of MCTracks with common hits
   **/
-  CbmTrackMatch(Int_t mcTrackID, 
-		Int_t nTrue, 
-		Int_t nWrong, 
-		Int_t nFake, 
-		Int_t nTracks);
+  CbmTrackMatch(Int_t mcTrackID,
+                Int_t nTrue,
+                Int_t nWrong,
+                Int_t nFake,
+                Int_t nTracks);
 
 
   /** Destructor **/
@@ -43,23 +41,22 @@ class CbmTrackMatch : public TObject
 
 
   /** Index of matched MC track **/
-  Int_t GetMCTrackId() const { return fMCTrackId;    };
+  Int_t GetMCTrackId() const { return fMCTrackId; };
 
   /** Number of true hits on track (from matched MC track) **/
-  Int_t GetNofTrueHits() const { return fNofTrueHits;  };
+  Int_t GetNofTrueHits() const { return fNofTrueHits; };
 
   /** Number of wrong hits on track (from other MC tracks) **/
   Int_t GetNofWrongHits() const { return fNofWrongHits; };
 
   /** Number of fake hits on track (from no MC track) **/
-  Int_t GetNofFakeHits() const { return fNofFakeHits;  };
+  Int_t GetNofFakeHits() const { return fNofFakeHits; };
 
   /** Number of MCTracks with common hits **/
-  Int_t GetNofMCTracks() const { return fNofMCTracks;  };
+  Int_t GetNofMCTracks() const { return fNofMCTracks; };
 
 
- private:
-
+private:
   /** Index of matched CbmMCTrack  **/
   Int_t fMCTrackId;
 
@@ -76,10 +73,8 @@ class CbmTrackMatch : public TObject
   Int_t fNofMCTracks;
 
 
-  ClassDef(CbmTrackMatch,1);
-
+  ClassDef(CbmTrackMatch, 1);
 };
 
 
 #endif
-				 

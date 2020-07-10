@@ -14,16 +14,16 @@ void sts_digi(Int_t nEvents = 1000) {
 
   // ========================================================================
   //          Adjust this part according to your requirements
-  
+
   // Input file (MC events)
   TString inFile = "sts.mc.root";
-  
+
   // Parameter file
   TString parFile = "params.root";
-  
+
   // STS digitisation file
   TString digiFile = "sts_v11a.digi.par";
-  
+
   // Output file
   TString outFile = "sts.digi.root";
 
@@ -31,15 +31,15 @@ void sts_digi(Int_t nEvents = 1000) {
   Int_t iVerbose = 0;
   // ========================================================================
 
-  
-  Double_t threshold  =  4;
-  Double_t noiseWidth =  0.01;
-  Int_t    nofBits    = 20;
-  Double_t minStep    =  0.01,;
-  Double_t StripDeadTime = 0.1;
-//   
 
-  // ---   Screen output   --------------------------------------------------  
+  Double_t threshold     = 4;
+  Double_t noiseWidth    = 0.01;
+  Int_t nofBits          = 20;
+  Double_t minStep       = 0.01, ;
+  Double_t StripDeadTime = 0.1;
+  //
+
+  // ---   Screen output   --------------------------------------------------
   cout << "***************************************************" << endl;
   cout << "***   STS DIGITIZATION SCRIPT   *******" << endl;
   cout << "***************************************************" << endl;
@@ -53,31 +53,29 @@ void sts_digi(Int_t nEvents = 1000) {
   cout << "=============================================" << endl;
   cout << "===     Realistic response settings  ========" << endl;
   cout << "=============================================" << endl;
-  cout << "===    threshold  = " << threshold  << endl;
+  cout << "===    threshold  = " << threshold << endl;
   cout << "===    noiseWidth = " << noiseWidth << endl;
-  cout << "===    nofBits    = " << nofBits    << endl;
-  cout << "===    minStep    = " << minStep    << endl;
-  cout << "===    StripDeadTime    = " << StripDeadTime*100. << "[ns] " << endl;
+  cout << "===    nofBits    = " << nofBits << endl;
+  cout << "===    minStep    = " << minStep << endl;
+  cout << "===    StripDeadTime    = " << StripDeadTime * 100. << "[ns] "
+       << endl;
   cout << "=============================================" << endl;
   cout << endl << endl;
- // ------------------------------------------------------------------------
+  // ------------------------------------------------------------------------
 
 
-        
   // ---  ROOT settings   ---------------------------------------------------
-  gStyle->SetPalette(1);  
+  gStyle->SetPalette(1);
   gDebug = 0;
   // ------------------------------------------------------------------------
- 
 
-  
+
   // -----   Timer   --------------------------------------------------------
   TStopwatch timer;
   timer.Start();
   // ------------------------------------------------------------------------
 
-    
-  
+
   // ----  Load libraries   -------------------------------------------------
   gROOT->LoadMacro("$VMCWORKDIR/gconfig/basiclibs.C");
   basiclibs();
@@ -100,48 +98,47 @@ void sts_digi(Int_t nEvents = 1000) {
   gSystem->Load("libL1");
   // ------------------------------------------------------------------------
 
-  
 
   // -----   Reconstruction run   -------------------------------------------
-  FairRunAna* run= new FairRunAna();
+  FairRunAna* run = new FairRunAna();
   run->SetInputFile(inFile);
   run->SetOutputFile(outFile);
   // ------------------------------------------------------------------------
 
   // -----   OLD MVD Hitproducer   ----------------------------------------------
-//   CbmMvdHitProducer* hitProd = new CbmMvdHitProducer("MVDHitProducer", 0, iVerbose);
-//   run->AddTask(hitProd);
+  //   CbmMvdHitProducer* hitProd = new CbmMvdHitProducer("MVDHitProducer", 0, iVerbose);
+  //   run->AddTask(hitProd);
   // ------------------------------------------------------------------------
 
   // -----   STS digitiser   ------------------------------------------------
-  //  CbmTask* 
+  //  CbmTask*
   CbmStsDigitize* stsDigitize = new CbmStsDigitize("STSDigitize", iVerbose);
   stsDigitize->SetRealisticResponse();
-  stsDigitize->SetFrontThreshold (threshold);
-  stsDigitize->SetBackThreshold  (threshold);
+  stsDigitize->SetFrontThreshold(threshold);
+  stsDigitize->SetBackThreshold(threshold);
   stsDigitize->SetFrontNoiseWidth(noiseWidth);
-  stsDigitize->SetBackNoiseWidth (noiseWidth);
+  stsDigitize->SetBackNoiseWidth(noiseWidth);
 
-  stsDigitize->SetFrontNofBits   (nofBits);
-  stsDigitize->SetBackNofBits    (nofBits);
-  stsDigitize->SetFrontMinStep   (minStep);
-  stsDigitize->SetBackMinStep    (minStep);
+  stsDigitize->SetFrontNofBits(nofBits);
+  stsDigitize->SetBackNofBits(nofBits);
+  stsDigitize->SetFrontMinStep(minStep);
+  stsDigitize->SetBackMinStep(minStep);
 
-  stsDigitize->SetStripDeadTime  (StripDeadTime);
+  stsDigitize->SetStripDeadTime(StripDeadTime);
 
   run->AddTask(stsDigitize);
   // ------------------------------------------------------------------------
- 
+
   // -----  Parameter database   --------------------------------------------
   TString stsDigiFile = gSystem->Getenv("VMCWORKDIR");
   stsDigiFile += "/parameters/sts/";
   stsDigiFile += digiFile;
   cout << "digi file = " << stsDigiFile << endl;
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
-  FairParRootFileIo*  parIo1 = new FairParRootFileIo();
+  FairRuntimeDb* rtdb        = run->GetRuntimeDb();
+  FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
   parIo1->open(parFile.Data());
-  parIo2->open(stsDigiFile.Data(),"in");
+  parIo2->open(stsDigiFile.Data(), "in");
   rtdb->setFirstInput(parIo1);
   rtdb->setSecondInput(parIo2);
   rtdb->setOutput(parIo1);
@@ -155,7 +152,6 @@ void sts_digi(Int_t nEvents = 1000) {
   // ------------------------------------------------------------------------
 
 
-
   // -----   Finish   -------------------------------------------------------
   timer.Stop();
   Double_t rtime = timer.RealTime();
@@ -164,13 +160,9 @@ void sts_digi(Int_t nEvents = 1000) {
   Double_t ctime = timer.CpuTime();
   cout << endl << endl;
   cout << "Macro finished succesfully." << endl;
-  cout << "Output file is "         << outFile << endl;
-  cout << "Parameter file is "      << parFile << endl;
+  cout << "Output file is " << outFile << endl;
+  cout << "Parameter file is " << parFile << endl;
   cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << endl;
   cout << endl;
   // ------------------------------------------------------------------------
-
-
 }
-
-

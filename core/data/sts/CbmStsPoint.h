@@ -16,19 +16,17 @@
 #ifndef CBMSTSPOINT_H
 #define CBMSTSPOINT_H
 
-#include <Rtypes.h>       // for THashConsistencyHolder, ClassDef
-#include <RtypesCore.h>   // for Double_t, Int_t, Double32_t, Bool_t, Short_t
-#include <TVector3.h>     // for TVector3
+#include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
+#include <RtypesCore.h>  // for Double_t, Int_t, Double32_t, Bool_t, Short_t
+#include <TVector3.h>    // for TVector3
 
 #include <FairMCPoint.h>  // for FairMCPoint
 
-#include <string>         // for string
+#include <string>  // for string
 
-class CbmStsPoint : public FairMCPoint 
-{
+class CbmStsPoint : public FairMCPoint {
 
- public:
-
+public:
   /** Default constructor **/
   CbmStsPoint();
 
@@ -48,11 +46,19 @@ class CbmStsPoint : public FairMCPoint
    *@param index    Index of point in TClonesArray
    *@param flag     +1 if entering, +2 if leaving the sensor
    **/
-  CbmStsPoint(Int_t trackID, Int_t detID, TVector3 posIn, 
-		  	  TVector3 posOut, TVector3 momIn, TVector3 momOut,
-		  	  Double_t tof, Double_t length, Double_t eLoss,
-		  	  Int_t pid = 0, Int_t eventId = 0, Int_t index = 0,
-		  	  Short_t flag = 3);
+  CbmStsPoint(Int_t trackID,
+              Int_t detID,
+              TVector3 posIn,
+              TVector3 posOut,
+              TVector3 momIn,
+              TVector3 momOut,
+              Double_t tof,
+              Double_t length,
+              Double_t eLoss,
+              Int_t pid     = 0,
+              Int_t eventId = 0,
+              Int_t index   = 0,
+              Short_t flag  = 3);
 
 
   /** Copy constructor with event and epoch time 
@@ -62,9 +68,9 @@ class CbmStsPoint : public FairMCPoint
    *@param epochTime   epoch start time [ns]
    **/
   CbmStsPoint(const CbmStsPoint& point,
-	      Int_t    eventId   = -1,
-	      Double_t eventTime = 0., 
-	      Double_t epochTime = 0.);
+              Int_t eventId      = -1,
+              Double_t eventTime = 0.,
+              Double_t epochTime = 0.);
 
 
   /** Destructor **/
@@ -72,23 +78,23 @@ class CbmStsPoint : public FairMCPoint
 
 
   /** Accessors **/
-  Double_t GetXIn()   const { return fX; }
-  Double_t GetYIn()   const { return fY; }
-  Double_t GetZIn()   const { return fZ; }
-  Double_t GetXOut()  const { return fX_out; }
-  Double_t GetYOut()  const { return fY_out; }
-  Double_t GetZOut()  const { return fZ_out; }
+  Double_t GetXIn() const { return fX; }
+  Double_t GetYIn() const { return fY; }
+  Double_t GetZIn() const { return fZ; }
+  Double_t GetXOut() const { return fX_out; }
+  Double_t GetYOut() const { return fY_out; }
+  Double_t GetZOut() const { return fZ_out; }
   Double_t GetPxOut() const { return fPx_out; }
   Double_t GetPyOut() const { return fPy_out; }
   Double_t GetPzOut() const { return fPz_out; }
-  Int_t    GetPid()   const { return fPid; }
-  Int_t    GetIndex() const { return fIndex; }
-  Bool_t   IsEntry()  const { return ( fFlag == 1 || fFlag == 3 ); }
-  Bool_t   IsExit()   const { return ( fFlag == 2 || fFlag == 3 ); }
+  Int_t GetPid() const { return fPid; }
+  Int_t GetIndex() const { return fIndex; }
+  Bool_t IsEntry() const { return (fFlag == 1 || fFlag == 3); }
+  Bool_t IsExit() const { return (fFlag == 2 || fFlag == 3); }
 
-  void PositionIn(TVector3& pos)  { pos.SetXYZ(fX, fY, fZ); }
-  void PositionOut(TVector3& pos) { pos.SetXYZ(fX_out,fY_out,fZ_out); }
-  void MomentumOut(TVector3& mom) { mom.SetXYZ(fPx_out,fPy_out,fPz_out); }
+  void PositionIn(TVector3& pos) { pos.SetXYZ(fX, fY, fZ); }
+  void PositionOut(TVector3& pos) { pos.SetXYZ(fX_out, fY_out, fZ_out); }
+  void MomentumOut(TVector3& mom) { mom.SetXYZ(fPx_out, fPy_out, fPz_out); }
 
 
   /** Point coordinates at given z from linear extrapolation **/
@@ -103,9 +109,9 @@ class CbmStsPoint : public FairMCPoint
   /** Modifiers **/
   void SetPositionOut(TVector3 pos);
   void SetMomentumOut(TVector3 mom);
-  virtual void SetTrackID(Int_t id){
-	  //SetLink(kMCTrack, id);
-	  FairMCPoint::SetTrackID(id);
+  virtual void SetTrackID(Int_t id) {
+    //SetLink(kMCTrack, id);
+    FairMCPoint::SetTrackID(id);
   };
 
 
@@ -113,22 +119,16 @@ class CbmStsPoint : public FairMCPoint
   std::string ToString() const;
 
 
-
-
- protected:
-
-  Double32_t fX_out,  fY_out,  fZ_out;
+protected:
+  Double32_t fX_out, fY_out, fZ_out;
   Double32_t fPx_out, fPy_out, fPz_out;
-  Int_t fPid;         ///> Particle ID [PDG code]
-  Int_t fIndex;       ///> Index of point in its TClonesArray
-  Short_t fFlag;    ///> 1 or 3: track entry step; 2 or 3: track exit step
+  Int_t fPid;     ///> Particle ID [PDG code]
+  Int_t fIndex;   ///> Index of point in its TClonesArray
+  Short_t fFlag;  ///> 1 or 3: track entry step; 2 or 3: track exit step
 
 
-
-  ClassDef(CbmStsPoint,3)
-
+  ClassDef(CbmStsPoint, 3)
 };
-
 
 
 inline void CbmStsPoint::SetPositionOut(TVector3 pos) {
@@ -143,7 +143,6 @@ inline void CbmStsPoint::SetMomentumOut(TVector3 mom) {
   fPy_out = mom.Py();
   fPz_out = mom.Pz();
 }
-
 
 
 #endif

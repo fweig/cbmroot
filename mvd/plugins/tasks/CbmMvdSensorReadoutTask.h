@@ -13,59 +13,55 @@
 #ifndef CBMMVDSENSORREADOUTTASK_H
 #define CBMMVDSENSORREADOUTTASK_H 1
 
-#include "TObject.h"
-#include "CbmMvdSensorTask.h"
 #include "CbmMvdDigi.h"
+#include "CbmMvdSensorTask.h"
+#include "TObject.h"
 #include <iostream>
 
 
 class TClonesArray;
 class CbmMvdSensor;
 
-class CbmMvdSensorReadoutTask : public CbmMvdSensorTask
-{
+class CbmMvdSensorReadoutTask : public CbmMvdSensorTask {
 
- public:
-
+public:
   /** Default constructor **/
-     CbmMvdSensorReadoutTask();
-     CbmMvdSensorReadoutTask(const char* name);
+  CbmMvdSensorReadoutTask();
+  CbmMvdSensorReadoutTask(const char* name);
 
   /** Destructor **/
   virtual ~CbmMvdSensorReadoutTask();
 
-    /** fill buffer **/
-  void SetInputArray (TClonesArray* inputStream);
-  void SetInputDigi (CbmMvdDigi* digi);
+  /** fill buffer **/
+  void SetInputArray(TClonesArray* inputStream);
+  void SetInputDigi(CbmMvdDigi* digi);
 
-  virtual TClonesArray* GetOutputArray() {return fOutputBuffer;};
+  virtual TClonesArray* GetOutputArray() { return fOutputBuffer; };
 
-  void		InitTask(CbmMvdSensor* mySensor);
+  void InitTask(CbmMvdSensor* mySensor);
 
-  void 		Exec();
-  void 		Finish();
-  void          ExecChain();
+  void Exec();
+  void Finish();
+  void ExecChain();
 
-  void          Reset();
+  void Reset();
 
-  private:
-
+private:
   static const Int_t maxBanks = 64;
 
-  TClonesArray* fInputBuffer;     // Buffer of background events
+  TClonesArray* fInputBuffer;  // Buffer of background events
   TClonesArray* fOutputBuffer;
   CbmMvdSensor* fSensor;
 
   Int_t fSensorBanks[maxBanks];
   const Int_t fPixelsPerBank = 22;
 
-  Int_t GetBankNumber(const Int_t &yPixelNr) const;
+  Int_t GetBankNumber(const Int_t& yPixelNr) const;
 
   CbmMvdSensorReadoutTask(const CbmMvdSensorReadoutTask&);
   CbmMvdSensorReadoutTask operator=(const CbmMvdSensorReadoutTask&);
-    
-  ClassDef(CbmMvdSensorReadoutTask,1);
 
+  ClassDef(CbmMvdSensorReadoutTask, 1);
 };
 
 

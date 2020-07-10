@@ -24,7 +24,7 @@
 #include <RtypesCore.h>  // for Double_t, Int_t, Bool_t, Option_t
 #include <TString.h>     // for TString
 
-#include <FairField.h>   // for FairField
+#include <FairField.h>  // for FairField
 
 class CbmFieldMapCreator;
 class CbmFieldMapData;
@@ -35,8 +35,6 @@ class CbmFieldMap : public FairField {
 
 
 public:
-
-
   /** Default constructor **/
   CbmFieldMap();
 
@@ -75,10 +73,18 @@ public:
    ** @param by    Pointer to array with By values [T]
    ** @param bz    Pointer to array with Bz values [T]
    **/
-  virtual void Init(Int_t nX, Double_t xMin, Double_t xMax,
-                    Int_t nY, Double_t yMin, Double_t yMax,
-                    Int_t nZ, Double_t zMin, Double_t zMax,
-                    TArrayF* bx, TArrayF* by, TArrayF* bz);
+  virtual void Init(Int_t nX,
+                    Double_t xMin,
+                    Double_t xMax,
+                    Int_t nY,
+                    Double_t yMin,
+                    Double_t yMax,
+                    Int_t nZ,
+                    Double_t zMin,
+                    Double_t zMax,
+                    TArrayF* bx,
+                    TArrayF* by,
+                    TArrayF* bz);
 
 
   /** Get the field components at a certain point 
@@ -96,15 +102,21 @@ public:
    ** @param dx,dy,dz (return)  Distance from grid point [cm] if inside
    ** @value kTRUE if inside map, else kFALSE
    **/
-  virtual Bool_t IsInside(Double_t x, Double_t y, Double_t z,
-			  Int_t& ix, Int_t& iy, Int_t& iz,
-			  Double_t& dx, Double_t& dy, Double_t& dz);
+  virtual Bool_t IsInside(Double_t x,
+                          Double_t y,
+                          Double_t z,
+                          Int_t& ix,
+                          Int_t& iy,
+                          Int_t& iz,
+                          Double_t& dx,
+                          Double_t& dy,
+                          Double_t& dz);
 
- 
+
   /** Write the field map to an ASCII file **/
   void WriteAsciiFile(const char* fileName);
 
-								
+
   /** Write field map data to a ROOT file **/
   void WriteRootFile(const char* fileName, const char* mapName);
 
@@ -118,18 +130,18 @@ public:
 
 
   /** Accessors to field parameters in local coordinate system **/
-  Double_t GetXmin()  const { return fXmin; } 
-  Double_t GetYmin()  const { return fYmin; }
-  Double_t GetZmin()  const { return fZmin; }
-  Double_t GetXmax()  const { return fXmax; }  
-  Double_t GetYmax()  const { return fYmax; }
-  Double_t GetZmax()  const { return fZmax; }
-  Double_t GetXstep() const { return fXstep; }  
+  Double_t GetXmin() const { return fXmin; }
+  Double_t GetYmin() const { return fYmin; }
+  Double_t GetZmin() const { return fZmin; }
+  Double_t GetXmax() const { return fXmax; }
+  Double_t GetYmax() const { return fYmax; }
+  Double_t GetZmax() const { return fZmax; }
+  Double_t GetXstep() const { return fXstep; }
   Double_t GetYstep() const { return fYstep; }
   Double_t GetZstep() const { return fZstep; }
-  Int_t    GetNx()    const { return fNx; }
-  Int_t    GetNy()    const { return fNy; }
-  Int_t    GetNz()    const { return fNz; }
+  Int_t GetNx() const { return fNx; }
+  Int_t GetNy() const { return fNy; }
+  Int_t GetNz() const { return fNz; }
 
 
   /** Accessor to field centre position in global system **/
@@ -154,11 +166,9 @@ public:
 
   /** Screen output **/
   virtual void Print(Option_t* = "") const;
-	
-	
- protected:
 
 
+protected:
   /** Reset the field parameters and data **/
   void Reset();
 
@@ -169,7 +179,7 @@ public:
   /** Read the field map from an ASCII file. Updated version. **/
   void ReadAsciiFile2018(const char* fileName);
 
-  /** Read field map from a ROOT file **/	
+  /** Read field map from a ROOT file **/
   void ReadRootFile(const char* fileName, const char* mapName);
 
 
@@ -180,7 +190,7 @@ public:
   /** Get field values by interpolation of the grid.
    ** @param dx,dy,dz  Relative distance from grid point [cell units]
    **/
-  Double_t Interpolate(Double_t dx, Double_t dy, Double_t dz); 
+  Double_t Interpolate(Double_t dx, Double_t dy, Double_t dz);
 
 
   /** Map file name **/
@@ -188,11 +198,11 @@ public:
 
 
   /** Global scaling factor (w.r.t. map on file) **/
-  Double_t fScale;             
+  Double_t fScale;
 
 
   /** Field centre position in global coordinates  **/
-  Double_t fPosX, fPosY, fPosZ; 
+  Double_t fPosX, fPosY, fPosZ;
 
 
   /** Field limits in local coordinate system **/
@@ -213,22 +223,19 @@ public:
 
   /** Variables for temporary storage 
    ** Used in the very frequently called method GetFieldValue  **/
-  Double_t fHa[2][2][2];            //! Field at corners of a grid cell
-  Double_t fHb[2][2];               //! Interpolated field (2-dim)
-  Double_t fHc[2];                  //! Interpolated field (1-dim)
+  Double_t fHa[2][2][2];  //! Field at corners of a grid cell
+  Double_t fHb[2][2];     //! Interpolated field (2-dim)
+  Double_t fHc[2];        //! Interpolated field (1-dim)
 
-  Double_t fBxOrigin;               //! x-component of the field at the origin
-  Double_t fByOrigin;               //! y-component of the field at the origin
-  Double_t fBzOrigin;               //! z-component of the field at the origin
+  Double_t fBxOrigin;  //! x-component of the field at the origin
+  Double_t fByOrigin;  //! y-component of the field at the origin
+  Double_t fBzOrigin;  //! z-component of the field at the origin
 
- private:
-
-
+private:
   CbmFieldMap(const CbmFieldMap&);
   CbmFieldMap& operator=(const CbmFieldMap&);
 
-  ClassDef(CbmFieldMap,2) 
-
+  ClassDef(CbmFieldMap, 2)
 };
 
 

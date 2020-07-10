@@ -4,7 +4,6 @@
 // ----------------------------------------------------------------------------
 
 
-
 #ifndef CBMMVDREADOUT_H
 #define CBMMVDREADOUT_H 1
 
@@ -14,12 +13,10 @@ class CbmMvdDetector;
 class TClonesArray;
 class CbmDigiManager;
 
-class CbmMvdReadout : public FairTask
-{
- 
- public:
+class CbmMvdReadout : public FairTask {
 
-  /** Default constructor **/  
+public:
+  /** Default constructor **/
   CbmMvdReadout();
 
 
@@ -35,20 +32,19 @@ class CbmMvdReadout : public FairTask
 
   void Exec(Option_t* opt);
 
-  void ShowDebugHistos(){fShowDebugHistos = kTRUE;}
+  void ShowDebugHistos() { fShowDebugHistos = kTRUE; }
 
 private:
-/** Hit producer mode (0 = MAPS, 1 = Ideal) **/
-    Int_t fMode;
-    Int_t fPluginNr;
+  /** Hit producer mode (0 = MAPS, 1 = Ideal) **/
+  Int_t fMode;
+  Int_t fPluginNr;
   Bool_t fShowDebugHistos;
- CbmMvdDetector* fDetector;
- CbmDigiManager* fDigiMan;
- 
+  CbmMvdDetector* fDetector;
+  CbmDigiManager* fDigiMan;
 
 
-// -----   Private methods   ---------------------------------------------
- /** Intialisation **/
+  // -----   Private methods   ---------------------------------------------
+  /** Intialisation **/
   virtual InitStatus Init();
 
 
@@ -67,17 +63,17 @@ private:
 
 
   /** Clear the hit arrays **/
-  void Reset();	 
+  void Reset();
 
 
   /** Print digitisation parameters **/
   void PrintParameters() const;
 
   CbmMvdReadout(const CbmMvdReadout&);
-  CbmMvdReadout operator=(const CbmMvdReadout&);  
+  CbmMvdReadout operator=(const CbmMvdReadout&);
 
-ClassDef(CbmMvdReadout,1);    
+  ClassDef(CbmMvdReadout, 1);
 };
-    
-    
-#endif   		     
+
+
+#endif

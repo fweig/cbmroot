@@ -10,36 +10,43 @@
 
 using std::vector;
 
-class CbmEbMCEvent
-{
- public:
-  CbmEbMCEvent ():fMCEventId(-1),fRecoEvents(),fMCTrackId(0),fIsReconstructable(0),fRecoTrackId(0) {};
-    
-  int IsReconstructed()
-  {
-    if(fRecoEvents.size()>0) return 1;
-    if(fRecoEvents.size()==0) return 0;
+class CbmEbMCEvent {
+public:
+  CbmEbMCEvent()
+    : fMCEventId(-1)
+    , fRecoEvents()
+    , fMCTrackId(0)
+    , fIsReconstructable(0)
+    , fRecoTrackId(0) {};
+
+  int IsReconstructed() {
+    if (fRecoEvents.size() > 0) return 1;
+    if (fRecoEvents.size() == 0) return 0;
     return 0;
   }
-  int NClones()
-  {
-    if(fRecoEvents.size()>1) {return fRecoEvents.size()-1;}
-    else {return 0;}
+  int NClones() {
+    if (fRecoEvents.size() > 1) {
+      return fRecoEvents.size() - 1;
+    } else {
+      return 0;
+    }
   }
-  void SetReconstructable(bool isReconstructable) {fIsReconstructable = isReconstructable;}
-  void SetId(int mcEvId){fMCEventId=mcEvId;}
+  void SetReconstructable(bool isReconstructable) {
+    fIsReconstructable = isReconstructable;
+  }
+  void SetId(int mcEvId) { fMCEventId = mcEvId; }
 
-  vector<int> & GetMCTrackIds() { return fMCTrackId; }
+  vector<int>& GetMCTrackIds() { return fMCTrackId; }
   int NMCTracks() const { return fMCTrackId.size(); }
-  int & GetId(){return fMCEventId;}
-  bool  IsReconstructable() const {return fIsReconstructable;}
-  vector<int> & GetRecoTrackIds() { return fRecoTrackId; }
-    
+  int& GetId() { return fMCEventId; }
+  bool IsReconstructable() const { return fIsReconstructable; }
+  vector<int>& GetRecoTrackIds() { return fRecoTrackId; }
+
   void AddRecoEvent(int iEvent) { fRecoEvents.push_back(iEvent); }
-    
+
   const vector<int>& GetRecoEvents() const { return fRecoEvents; }
-    
- private:
+
+private:
   int fMCEventId;
   vector<int> fRecoEvents;
   vector<int> fMCTrackId;

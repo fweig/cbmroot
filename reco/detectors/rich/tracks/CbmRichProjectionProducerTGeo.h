@@ -10,9 +10,9 @@
 
 #ifndef CBM_RICH_PROJECTION_PRODUCER_TGEO
 #define CBM_RICH_PROJECTION_PRODUCER_TGEO
+#include "CbmRichProjectionProducerBase.h"
 #include "TObject.h"
 #include "TVector3.h"
-#include "CbmRichProjectionProducerBase.h"
 
 #include <string>
 
@@ -31,48 +31,46 @@ class FairTrackParam;
  * \author S.Lebedev
  * \date 2016
  **/
-class CbmRichProjectionProducerTGeo: public CbmRichProjectionProducerBase
-{
+class CbmRichProjectionProducerTGeo : public CbmRichProjectionProducerBase {
 public:
-    
-    /**
+  /**
      * \brief Standard constructor.
      */
-    CbmRichProjectionProducerTGeo();
-    
-    /**
+  CbmRichProjectionProducerTGeo();
+
+  /**
      * \brief Destructor.
      */
-    virtual ~CbmRichProjectionProducerTGeo();
-    
-    /**
+  virtual ~CbmRichProjectionProducerTGeo();
+
+  /**
      * \brief Initialization of the task.
      */
-    virtual void Init();
-    
-    /**
+  virtual void Init();
+
+  /**
      * \brief Execute task.
      * \param[out] richProj Output array of created projections.
      */
-    virtual void DoProjection(
-                              TClonesArray* richProj);
-    
-    
+  virtual void DoProjection(TClonesArray* richProj);
+
+
 private:
-    TClonesArray* fTrackParams; // Starting points&directions
-    
-    int fNHits; // Number of hits
-    int fEventNum; // number of events
-    
-    /**
+  TClonesArray* fTrackParams;  // Starting points&directions
+
+  int fNHits;     // Number of hits
+  int fEventNum;  // number of events
+
+  /**
      * \brief Copy constructor.
      */
-    CbmRichProjectionProducerTGeo(const CbmRichProjectionProducerTGeo&);
-    
-    /**
+  CbmRichProjectionProducerTGeo(const CbmRichProjectionProducerTGeo&);
+
+  /**
      * \brief Assignment operator.
      */
-    CbmRichProjectionProducerTGeo& operator=(const CbmRichProjectionProducerTGeo&);
+  CbmRichProjectionProducerTGeo&
+  operator=(const CbmRichProjectionProducerTGeo&);
 };
 
 #endif

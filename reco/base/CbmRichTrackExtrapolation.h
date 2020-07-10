@@ -31,28 +31,26 @@ class CbmGlobalTrack;
 class FairTrackParam;
 
 
-class CbmRichTrackExtrapolation : public TObject
-{
+class CbmRichTrackExtrapolation : public TObject {
 
- public:
-
+public:
   /** Default constructor **/
- CbmRichTrackExtrapolation() : TObject(), fVerbose(0) { };
+  CbmRichTrackExtrapolation() : TObject(), fVerbose(0) {};
 
 
   /** Destructor **/
-  virtual ~CbmRichTrackExtrapolation() { };
+  virtual ~CbmRichTrackExtrapolation() {};
 
 
   /** Virtual method Init. If needed, to be implemented in the
    ** concrete class. Else no action.
    **/
-  virtual void Init() { };
+  virtual void Init() {};
 
   /** Virtual method Init. If needed, to be implemented in the
    ** concrete class. Else no action.
    **/
-  virtual void Finish() { };
+  virtual void Finish() {};
 
 
   /** Abstract method DoExtrapolateTrack. To be implemented in the concrete class.
@@ -62,8 +60,9 @@ class CbmRichTrackExtrapolation : public TObject
    *@param rTrack  pointer to global track
    *@param fZ      z-position for extrapolation [cm]
    **/
-   virtual Int_t DoExtrapolate(TClonesArray* gTrackArray,
-		               Double_t fZ, TClonesArray *fTrackParamArray) = 0;
+  virtual Int_t DoExtrapolate(TClonesArray* gTrackArray,
+                              Double_t fZ,
+                              TClonesArray* fTrackParamArray) = 0;
 
 
   /** Set verbosity 
@@ -72,13 +71,11 @@ class CbmRichTrackExtrapolation : public TObject
   void SetVerbose(Int_t verbose) { fVerbose = verbose; };
 
 
- private:
+private:
+  Int_t fVerbose;  // Verbosity level
 
-  Int_t fVerbose;      // Verbosity level
 
-
-  ClassDef(CbmRichTrackExtrapolation,1);
-
+  ClassDef(CbmRichTrackExtrapolation, 1);
 };
 
 #endif

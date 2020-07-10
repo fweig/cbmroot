@@ -6,17 +6,17 @@
 #ifndef CBMSTSDIGITIZE_H
 #define CBMSTSDIGITIZE_H 1
 
-#include <map>
 #include "TStopwatch.h"
+#include <map>
 
-#include "CbmStsDefs.h"
+#include "CbmDefs.h"
 #include "CbmDigitize.h"
 #include "CbmMatch.h"
+#include "CbmStsDefs.h"
 #include "CbmStsDigi.h"
 #include "CbmStsPhysics.h"
 #include "CbmStsSimModule.h"
 #include "CbmStsSimSensor.h"
-#include "CbmDefs.h"
 
 class TClonesArray;
 class CbmStsPoint;
@@ -47,11 +47,9 @@ class CbmStsSimSensorFactory;
  ** buffered data prior to the MC time of the current event are read out
  ** and stored in the output.
  **/
-class CbmStsDigitize : public CbmDigitize<CbmStsDigi>
-{
+class CbmStsDigitize : public CbmDigitize<CbmStsDigi> {
 
- public:
-
+public:
   /** Constructor **/
   CbmStsDigitize();
 
@@ -66,8 +64,11 @@ class CbmStsDigitize : public CbmDigitize<CbmStsDigi>
    ** @param adc       Digitised charge [ADC channels]
    ** @param match    MC Match object
    **/
-  void CreateDigi(Int_t address, UShort_t channel, Long64_t time,
-                  UShort_t adc, const CbmMatch& match);
+  void CreateDigi(Int_t address,
+                  UShort_t channel,
+                  Long64_t time,
+                  UShort_t adc,
+                  const CbmMatch& match);
 
 
   /** @brief Detector system ID
@@ -75,10 +76,10 @@ class CbmStsDigitize : public CbmDigitize<CbmStsDigi>
    **/
   ECbmModuleId GetSystemId() const { return ECbmModuleId::kSts; }
 
-   /**
+  /**
     * \brief Inherited from FairTask.
     */
-   virtual void SetParContainers();
+  virtual void SetParContainers();
 
 
   /** Execution **/
@@ -86,11 +87,11 @@ class CbmStsDigitize : public CbmDigitize<CbmStsDigi>
 
 
   /** Get number of signals front side **/
-  Int_t GetNofSignalsF() const {return fNofSignalsF;}
+  Int_t GetNofSignalsF() const { return fNofSignalsF; }
 
 
   /** Get number of signals back side **/
-  Int_t GetNofSignalsB() const {return fNofSignalsB;}
+  Int_t GetNofSignalsB() const { return fNofSignalsB; }
 
 
   /** Initialise the STS setup and the parameters **/
@@ -125,9 +126,13 @@ class CbmStsDigitize : public CbmDigitize<CbmStsDigi>
    **
    ** These parameters will be applied to all ASICS in all modules.
    **/
-  void SetGlobalAsicParams(UInt_t nAdc, Double_t dynRange, Double_t threshold,
-                           Double_t timeResolution, Double_t deadTime,
-                           Double_t noise, Double_t zeroNoiseRate);
+  void SetGlobalAsicParams(UInt_t nAdc,
+                           Double_t dynRange,
+                           Double_t threshold,
+                           Double_t timeResolution,
+                           Double_t deadTime,
+                           Double_t noise,
+                           Double_t zeroNoiseRate);
 
 
   /** @brief Set the global module parameters
@@ -149,8 +154,10 @@ class CbmStsDigitize : public CbmDigitize<CbmStsDigi>
    ** These parameters will be applied to all sensors when no
    ** condition file is specified.
    **/
-  void SetGlobalSensorConditions(Double_t vDep, Double_t vBias,
-                                 Double_t temperature, Double_t cCoupling,
+  void SetGlobalSensorConditions(Double_t vDep,
+                                 Double_t vBias,
+                                 Double_t temperature,
+                                 Double_t cCoupling,
                                  Double_t cInterstrip);
 
 
@@ -172,9 +179,9 @@ class CbmStsDigitize : public CbmDigitize<CbmStsDigi>
    ** Changing the physics flags is only allowed before Init() is called.
    **/
   void SetProcesses(CbmStsELoss eLossModel,
-  		            Bool_t useLorentzShift = kTRUE,
-  		            Bool_t useDiffusion = kTRUE,
-  		            Bool_t useCrossTalk = kTRUE);
+                    Bool_t useLorentzShift = kTRUE,
+                    Bool_t useDiffusion    = kTRUE,
+                    Bool_t useCrossTalk    = kTRUE);
 
 
   /** @brief Set the file name with sensor conditions
@@ -223,54 +230,53 @@ class CbmStsDigitize : public CbmDigitize<CbmStsDigi>
   void UseOnlyPrimaries(Bool_t flag = kTRUE);
 
 
- private:
-
-  Bool_t fIsInitialised;   ///< kTRUE if Init() was called
+private:
+  Bool_t fIsInitialised;  ///< kTRUE if Init() was called
 
   //std::map<Int_t, CbmStsDigitizeParameters*> fModuleParameterMap; ///< Individual module parameter map
-  CbmStsSetup*   fSetup;          //! STS setup interface
-  CbmStsSimSensorFactory* fSensorFactory = nullptr; //! Sensor factory
-  TClonesArray*  fPoints;         ///< Input array of CbmStsPoint
-  TClonesArray*  fTracks;         ///< Input array of CbmMCTrack
-  TStopwatch     fTimer;          ///< ROOT timer
+  CbmStsSetup* fSetup;                               //! STS setup interface
+  CbmStsSimSensorFactory* fSensorFactory = nullptr;  //! Sensor factory
+  TClonesArray* fPoints;  ///< Input array of CbmStsPoint
+  TClonesArray* fTracks;  ///< Input array of CbmMCTrack
+  TStopwatch fTimer;      ///< ROOT timer
 
   /** Map of modules. Key is the address. **/
-  std::map<UInt_t, CbmStsSimModule*> fModules { };
+  std::map<UInt_t, CbmStsSimModule*> fModules {};
 
   /** Map of sensors. Key is the address. **/
-  std::map<UInt_t, std::unique_ptr<CbmStsSimSensor>> fSensors { };
+  std::map<UInt_t, std::unique_ptr<CbmStsSimSensor>> fSensors {};
 
   // --- Global user-defined parameter settings
-  CbmStsParSim* fUserParSim         = nullptr; ///< Settings for simulation
-  CbmStsParAsic* fUserParAsic       = nullptr; ///< User defined, global
-  CbmStsParModule* fUserParModule   = nullptr; ///< User defined, global
-  CbmStsParSensor* fUserParSensor   = nullptr; ///< User defined, global
-  CbmStsParSensorCond* fUserParCond = nullptr; ///< User defined, global
+  CbmStsParSim* fUserParSim         = nullptr;  ///< Settings for simulation
+  CbmStsParAsic* fUserParAsic       = nullptr;  ///< User defined, global
+  CbmStsParModule* fUserParModule   = nullptr;  ///< User defined, global
+  CbmStsParSensor* fUserParSensor   = nullptr;  ///< User defined, global
+  CbmStsParSensorCond* fUserParCond = nullptr;  ///< User defined, global
   Double_t fUserDinactive = 0.;  ///< Size of inactive sensor border [cm]
 
   // --- Module and sensor parameters for runtime DB output
-  CbmStsParSim* fParSim               = nullptr; ///< Simulation settings
-  CbmStsParSetModule* fParSetModule   = nullptr; ///< Module parameter
-  CbmStsParSetSensor* fParSetSensor   = nullptr; ///< Sensor parameters
-  CbmStsParSetSensorCond* fParSetCond = nullptr; ///< Sensor conditions
+  CbmStsParSim* fParSim               = nullptr;  ///< Simulation settings
+  CbmStsParSetModule* fParSetModule   = nullptr;  ///< Module parameter
+  CbmStsParSetSensor* fParSetSensor   = nullptr;  ///< Sensor parameters
+  CbmStsParSetSensorCond* fParSetCond = nullptr;  ///< Sensor conditions
 
   // --- Default sensor parameters (apply to SensorDssdStereo)
-  Double_t fSensorDinact;     ///< Size of inactive border [cm]
-  Double_t fSensorPitch;      ///< Strip pitch [cm]
-  Double_t fSensorStereoF;    ///< Stereo angle front side [degrees]
-  Double_t fSensorStereoB;    ///< Stereo angle back side [degrees]
+  Double_t fSensorDinact;   ///< Size of inactive border [cm]
+  Double_t fSensorPitch;    ///< Strip pitch [cm]
+  Double_t fSensorStereoF;  ///< Stereo angle front side [degrees]
+  Double_t fSensorStereoB;  ///< Stereo angle back side [degrees]
 
   // --- Input parameter files
   TString fSensorParameterFile;  ///< File with sensor parameters
-  TString fSensorConditionFile; ///< File with sensor conditions
+  TString fSensorConditionFile;  ///< File with sensor conditions
   TString fModuleParameterFile;  ///< File with module parameters
 
   // --- Time of last processed StsPoint (for stream mode)
   Double_t fTimePointLast;
 
   // --- Digi times (for stream mode, in each step)
-  Double_t fTimeDigiFirst;      ///< Time of first digi sent to DAQ
-  Double_t fTimeDigiLast;       ///< Time of last digi sent to DAQ
+  Double_t fTimeDigiFirst;  ///< Time of first digi sent to DAQ
+  Double_t fTimeDigiLast;   ///< Time of last digi sent to DAQ
 
   // --- Event counters
   Int_t fNofPointsProc = 0;  ///< Number of processed points
@@ -280,14 +286,14 @@ class CbmStsDigitize : public CbmDigitize<CbmStsDigi>
   Int_t fNofDigis      = 0;  ///< Number of created digis in Exec
 
   // --- Run counters
-  Int_t    fNofEvents        = 0;  ///< Total number of procesed events
-  Double_t fNofPointsProcTot = 0;  ///< Total number of processed points
-  Double_t fNofPointsIgnoTot = 0;  ///< Total number of ignored points
-  Double_t fNofSignalsFTot   = 0;  ///< Number of signals on front side
-  Double_t fNofSignalsBTot   = 0;  ///< Number of signals on back side
-  Double_t fNofDigisTot      = 0;  ///< Total number of digis created
-  Double_t fNofNoiseTot      = 0;  ///< Total number of noise digis
-  Double_t fTimeTot          = 0.; ///< Total execution time
+  Int_t fNofEvents           = 0;   ///< Total number of procesed events
+  Double_t fNofPointsProcTot = 0;   ///< Total number of processed points
+  Double_t fNofPointsIgnoTot = 0;   ///< Total number of ignored points
+  Double_t fNofSignalsFTot   = 0;   ///< Number of signals on front side
+  Double_t fNofSignalsBTot   = 0;   ///< Number of signals on back side
+  Double_t fNofDigisTot      = 0;   ///< Total number of digis created
+  Double_t fNofNoiseTot      = 0;   ///< Total number of noise digis
+  Double_t fTimeTot          = 0.;  ///< Total execution time
 
 
   /** @brief Number of signals in the analogue buffers
@@ -341,8 +347,9 @@ class CbmStsDigitize : public CbmDigitize<CbmStsDigi>
    ** @param point  Pointer to CbmStsPoint to be processed
    ** @param link   Link to MCPoint
    **/
-  void ProcessPoint(const CbmStsPoint* point, Double_t eventTime = 0.,
-  		              CbmLink* link = NULL);
+  void ProcessPoint(const CbmStsPoint* point,
+                    Double_t eventTime = 0.,
+                    CbmLink* link      = NULL);
 
 
   /** @brief Reset event counters **/
@@ -365,11 +372,7 @@ class CbmStsDigitize : public CbmDigitize<CbmStsDigi>
   CbmStsDigitize operator=(const CbmStsDigitize&);
 
 
-
   ClassDef(CbmStsDigitize, 5);
-
 };
 
 #endif
-
-

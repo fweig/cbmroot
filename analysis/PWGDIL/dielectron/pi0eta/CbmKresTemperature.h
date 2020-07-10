@@ -10,8 +10,7 @@ class TH1D;
 
 using namespace std;
 
-class CbmKresTemperature
-{
+class CbmKresTemperature {
 
 public:
   //***** brief Standard constructor.
@@ -28,23 +27,21 @@ public:
 
 
 private:
- 
   TClonesArray* fMcTracks;
   TClonesArray* fGlobalTracks;
   TClonesArray* fStsTracks;
 
 
-
   // Histograms
   vector<TH1*> fHistoList_MC;
-  TH1D * MC_pi_minus_Tempr;
-  TH1D * MC_pi_plus_Tempr;
-  TH1D * MC_pi_zero_Tempr;
-  TH1D * MC_proton_Tempr;
-  TH1D * MC_kaon_zero_Tempr;
-  TH1D * MC_kaon_plus_Tempr;
-  TH1D * MC_kaon_minus_Tempr;
-  TH1D * MC_direct_photons_Tempr;
+  TH1D* MC_pi_minus_Tempr;
+  TH1D* MC_pi_plus_Tempr;
+  TH1D* MC_pi_zero_Tempr;
+  TH1D* MC_proton_Tempr;
+  TH1D* MC_kaon_zero_Tempr;
+  TH1D* MC_kaon_plus_Tempr;
+  TH1D* MC_kaon_minus_Tempr;
+  TH1D* MC_direct_photons_Tempr;
 
 
   //***** brief Copy constructor.
@@ -54,8 +51,7 @@ private:
   CbmKresTemperature operator=(const CbmKresTemperature&);
 
 
-	ClassDef(CbmKresTemperature,1)
+  ClassDef(CbmKresTemperature, 1)
 };
 
 #endif
-

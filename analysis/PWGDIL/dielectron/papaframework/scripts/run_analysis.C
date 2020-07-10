@@ -1,21 +1,19 @@
-FairTask * addpapa(TString configPath, TString configFunct, TString configName) {
+FairTask* addpapa(TString configPath, TString configFunct, TString configName) {
 
   TString myName = "run_analysis";
-  std::cout << "-I- " << myName << ": Loading task " << (configFunct + configName) << std::endl;
+  std::cout << "-I- " << myName << ": Loading task "
+            << (configFunct + configName) << std::endl;
 
-  TString cfgFile  = configPath + configFunct + configName + ".C";
+  TString cfgFile = configPath + configFunct + configName + ".C";
   //  std::cout << "-I- " << myName << ": Loading macro " << cfgFile << std::endl;
-  gROOT->LoadMacro( (configPath + configFunct + configName + ".C") );
+  gROOT->LoadMacro((configPath + configFunct + configName + ".C"));
 
-  TString cfgFunct = configFunct + configName + "(\""+ configName +"\")";
+  TString cfgFunct = configFunct + configName + "(\"" + configName + "\")";
   //  std::cout << "-I- " << myName << ": process line " << cfgFunct << std::endl;
-  return ( dynamic_cast<FairTask*>(gROOT->ProcessLine( cfgFunct )) );
-
-
+  return (dynamic_cast<FairTask*>(gROOT->ProcessLine(cfgFunct)));
 }
 
-void run_analysis(Int_t nEvents = 0)
-{
+void run_analysis(Int_t nEvents = 0) {
 
   // -----   Environment   --------------------------------------------------
   TString myName = "run_analysis";  // this macro's name for screen output
@@ -23,26 +21,27 @@ void run_analysis(Int_t nEvents = 0)
   // ------------------------------------------------------------------------
 
   // -----   In- and output directory names   -------------------------------
-  TString inDir   = gSystem->Getenv("INDIR");
-  TString inFile  = gSystem->Getenv("INFILE"); // input file list
-  TString outDir  = gSystem->Getenv("OUTDIR");
-  if(outDir.IsNull()) outFile = ".";
+  TString inDir  = gSystem->Getenv("INDIR");
+  TString inFile = gSystem->Getenv("INFILE");  // input file list
+  TString outDir = gSystem->Getenv("OUTDIR");
+  if (outDir.IsNull()) outFile = ".";
   // ------------------------------------------------------------------------
 
   // --- Logger settings ----------------------------------------------------
-  gErrorIgnoreLevel = kFatal; //kInfo, kWarning, kError, kFatal;
+  gErrorIgnoreLevel = kFatal;  //kInfo, kWarning, kError, kFatal;
   // ------------------------------------------------------------------------
 
   // -----   Load the geometry setup   -------------------------------------
   /// load local copy of setup file (same as used for simulation and reconstruction)
   std::cout << std::endl;
-  TString setupName = gSystem->GetFromPipe( Form("echo $(basename $(ls %s/setup_*.C))",inDir.Data()) );
-  setupName.ReplaceAll("setup_","");
-  setupName.ReplaceAll(".C","");
+  TString setupName = gSystem->GetFromPipe(
+    Form("echo $(basename $(ls %s/setup_*.C))", inDir.Data()));
+  setupName.ReplaceAll("setup_", "");
+  setupName.ReplaceAll(".C", "");
 
-  TString setupFile = inDir + "/setup_" + setupName + ".C";
+  TString setupFile  = inDir + "/setup_" + setupName + ".C";
   TString setupFunct = "setup_";
-  setupFunct = setupFunct + setupName + "()";
+  setupFunct         = setupFunct + setupName + "()";
   std::cout << "-I- " << myName << ": Loading macro " << setupFile << std::endl;
   gROOT->LoadMacro(setupFile);
   gROOT->ProcessLine(setupFunct);
@@ -55,7 +54,7 @@ void run_analysis(Int_t nEvents = 0)
   // --- remove detector geometries
   // setup->RemoveModule(kMvd);   // remove mvd and its material budget
   // setup->RemoveModule(kTrd);   // e.g. for sts-tof-matching study
-  setup->RemoveModule(kPsd);      // remove psd from setup
+  setup->RemoveModule(kPsd);  // remove psd from setup
   // --- change default geomerties
   //  setup->SetModule(kTrd, "v15d_1e", kTRUE); // 5 TRD layer
   std::cout << "-I- " << myName << ": CbmSetup updated " << std::endl;
@@ -65,33 +64,35 @@ void run_analysis(Int_t nEvents = 0)
   // -----   Run manager + I/O   --------------------------------------------
   std::cout << std::endl;
   FairRunAna* run = new FairRunAna();
-  run->SetOutputFile( outDir + "/" + setupName + "_analysis.root");
-  FairFileSource *src = NULL;
+  run->SetOutputFile(outDir + "/" + setupName + "_analysis.root");
+  FairFileSource* src = NULL;
 
   /// stopwatch
   TStopwatch timer;
   timer.Start();
 
-  Int_t i=0;
+  Int_t i = 0;
   TString file;
   //  char filename[300];
   ifstream in(inFile);
-  TList *parList = new TList();
+  TList* parList = new TList();
   /// loop over all file in list
-  while ( in >> file ) {
+  while (in >> file) {
     //    TString file(filename);// + "/" + setupName;
     file += "/";
     file += setupName;
 
     // mc sim file
-    if(!i) src = new FairFileSource(file + "_mc.root");
-    else   src->AddFile(     file + "_mc.root");
+    if (!i)
+      src = new FairFileSource(file + "_mc.root");
+    else
+      src->AddFile(file + "_mc.root");
 
     // (skimmed) reco file
     src->AddFriend(file + "_reco.root");
 
     // parameter files
-    TObjString *parFile = new TObjString((file + "_params.root").Data());
+    TObjString* parFile = new TObjString((file + "_params.root").Data());
     parList->Add(parFile);
     //  parIo1->open(parFile.GetString().Data());
 
@@ -119,7 +120,7 @@ void run_analysis(Int_t nEvents = 0)
 
   CbmL1* l1 = new CbmL1();
   // --- Material budget file names
-  if ( setup->IsActive(kMvd) ) {
+  if (setup->IsActive(kMvd)) {
     TString geoTag;
     setup->GetGeoTag(kMvd, geoTag);
     TString matFile = gSystem->Getenv("VMCWORKDIR");
@@ -127,7 +128,7 @@ void run_analysis(Int_t nEvents = 0)
     std::cout << "Using material budget file " << matFile << std::endl;
     l1->SetMvdMaterialBudgetFileName(matFile.Data());
   }
-  if ( setup->IsActive(kSts) ) {
+  if (setup->IsActive(kSts)) {
     TString geoTag;
     setup->GetGeoTag(kSts, geoTag);
     TString matFile = gSystem->Getenv("VMCWORKDIR");
@@ -139,16 +140,19 @@ void run_analysis(Int_t nEvents = 0)
   std::cout << "-I- : Added task " << l1->GetName() << std::endl;
 
   // --- TRD pid tasks
-  if ( setup->IsActive(kTrd) ) {
+  if (setup->IsActive(kTrd)) {
     // ----------- TRD track Pid Ann ----------------------
-    CbmTrdSetTracksPidANN* trdSetTracksPidAnnTask = new CbmTrdSetTracksPidANN("Ann", "Ann");
+    CbmTrdSetTracksPidANN* trdSetTracksPidAnnTask =
+      new CbmTrdSetTracksPidANN("Ann", "Ann");
     run->AddTask(trdSetTracksPidAnnTask);
-    std::cout << "-I- : Added task " << trdSetTracksPidAnnTask->GetName() << std::endl;
+    std::cout << "-I- : Added task " << trdSetTracksPidAnnTask->GetName()
+              << std::endl;
     // ----------------------------------------------------
 
     // ----------- TRD track Pid Like ----------------------
-    FairTask *getTRDli = dynamic_cast<FairTask*>( gROOT->Macro( "$VMCWORKDIR/macro/papa/Config_trd_PidLI.C" ));
-    run->AddTask( getTRDli );
+    FairTask* getTRDli = dynamic_cast<FairTask*>(
+      gROOT->Macro("$VMCWORKDIR/macro/papa/Config_trd_PidLI.C"));
+    run->AddTask(getTRDli);
     std::cout << "-I- : Added task " << getTRDli->GetName() << std::endl;
 
     // CbmTrdSetTracksPidLike* trdLI = new CbmTrdSetTracksPidLike("TRDLikelihood", "TRDLikelihood");
@@ -202,9 +206,11 @@ void run_analysis(Int_t nEvents = 0)
 
   timer.Stop();
   std::cout << "Macro finished succesfully." << std::endl;
-  std::cout << " Output file is " << (outDir + setupName + "_analysis.root") << std::endl;
+  std::cout << " Output file is " << (outDir + setupName + "_analysis.root")
+            << std::endl;
   //  std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime() << " s" << std::endl;
+  std::cout << "Real time " << timer.RealTime() << " s, CPU time "
+            << timer.CpuTime() << " s" << std::endl;
   std::cout << " Test passed" << std::endl;
   std::cout << " All ok " << std::endl;
 }

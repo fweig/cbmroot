@@ -7,22 +7,21 @@
 //
 // --------------------------------------------------------------------------
 
-void run_sim(Int_t nEvents = 2)
-{
+void run_sim(Int_t nEvents = 2) {
 
   // ========================================================================
   //          Adjust this part according to your requirements
 
   // ----- Paths and file names  --------------------------------------------
-  TString inDir   = gSystem->Getenv("VMCWORKDIR");
-  TString inFile  = inDir + "/input/urqmd.ftn14";
+  TString inDir  = gSystem->Getenv("VMCWORKDIR");
+  TString inFile = inDir + "/input/urqmd.ftn14";
 
   TString outDir  = "data";
   TString outFile = outDir + "/test.mc.root";
   TString parFile = outDir + "/params.root";
- 
+
   TString HsdFile = "./jpsiHsd.auau25gev.000";
-  
+
   // -----  Geometries  -----------------------------------------------------
   TString caveGeom   = "cave.geo";
   TString targetGeom = "target_au_250mu.geo";
@@ -33,23 +32,20 @@ void run_sim(Int_t nEvents = 2)
   TString richGeom   = "rich/rich_v08a.geo";
   TString trdGeom    = "trd/trd_v11c.geo";
   TString tofGeom    = "tof/tof_v07a.geo";
-//  TString ecalGeom   = "ecal/ecal_v08a.geo";
-  
+  //  TString ecalGeom   = "ecal/ecal_v08a.geo";
+
   // -----   Magnetic field   -----------------------------------------------
-  TString fieldMap    = "field_v10e";   // name of field map
-  Double_t fieldZ     = 50.;             // field centre z position
-  Double_t fieldScale =  1.;             // field scaling factor
-  
+  TString fieldMap    = "field_v10e";  // name of field map
+  Double_t fieldZ     = 50.;           // field centre z position
+  Double_t fieldScale = 1.;            // field scaling factor
+
   // In general, the following parts need not be touched
   // ========================================================================
-
-
 
 
   // ----    Debug option   -------------------------------------------------
   gDebug = 0;
   // ------------------------------------------------------------------------
-
 
 
   // -----   Timer   --------------------------------------------------------
@@ -79,85 +75,83 @@ void run_sim(Int_t nEvents = 2)
   gSystem->Load("libTof");
   // -----------------------------------------------------------------------
 
- 
- 
+
   // -----   Create simulation run   ----------------------------------------
   FairRunSim* fRun = new FairRunSim();
-  fRun->SetName("TGeant3");              // Transport engine
-  fRun->SetOutputFile(outFile);          // Output file
+  fRun->SetName("TGeant3");      // Transport engine
+  fRun->SetOutputFile(outFile);  // Output file
   FairRuntimeDb* rtdb = fRun->GetRuntimeDb();
   // ------------------------------------------------------------------------
 
 
   // -----   Create media   -------------------------------------------------
-  fRun->SetMaterials("media.geo");       // Materials
+  fRun->SetMaterials("media.geo");  // Materials
   // ------------------------------------------------------------------------
 
 
   // -----   Create detectors and passive volumes   -------------------------
-  if ( caveGeom != "" ) {
+  if (caveGeom != "") {
     FairModule* cave = new CbmCave("CAVE");
     cave->SetGeometryFileName(caveGeom);
     fRun->AddModule(cave);
   }
 
-  if ( pipeGeom != "" ) {
+  if (pipeGeom != "") {
     FairModule* pipe = new CbmPipe("PIPE");
     pipe->SetGeometryFileName(pipeGeom);
     fRun->AddModule(pipe);
   }
-  
-  if ( targetGeom != "" ) {
+
+  if (targetGeom != "") {
     FairModule* target = new CbmTarget("Target");
     target->SetGeometryFileName(targetGeom);
     fRun->AddModule(target);
   }
 
-  if ( magnetGeom != "" ) {
+  if (magnetGeom != "") {
     FairModule* magnet = new CbmMagnet("MAGNET");
     magnet->SetGeometryFileName(magnetGeom);
     fRun->AddModule(magnet);
   }
-  
-  if ( mvdGeom != "" ) {
+
+  if (mvdGeom != "") {
     FairDetector* mvd = new CbmMvd("MVD", kTRUE);
     mvd->SetGeometryFileName(mvdGeom);
     fRun->AddModule(mvd);
   }
 
-  if ( stsGeom != "" ) {
+  if (stsGeom != "") {
     FairDetector* sts = new CbmSts("STS", kTRUE);
     sts->SetGeometryFileName(stsGeom);
     fRun->AddModule(sts);
   }
 
-  if ( richGeom != "" ) {
+  if (richGeom != "") {
     FairDetector* rich = new CbmRich("RICH", kTRUE);
     rich->SetGeometryFileName(richGeom);
     fRun->AddModule(rich);
   }
-  
 
-  if ( trdGeom != "" ) {
-    FairDetector* trd = new CbmTrd("TRD",kTRUE );
+
+  if (trdGeom != "") {
+    FairDetector* trd = new CbmTrd("TRD", kTRUE);
     trd->SetGeometryFileName(trdGeom);
     fRun->AddModule(trd);
   }
 
-  if ( tofGeom != "" ) {
+  if (tofGeom != "") {
     FairDetector* tof = new CbmTof("TOF", kTRUE);
     tof->SetGeometryFileName(tofGeom);
     fRun->AddModule(tof);
   }
-  
-/*
+
+  /*
   if ( ecalGeom != "" ) {
     FairDetector* ecal = new CbmEcal("ECAL", kTRUE, ecalGeom.Data()); 
     fRun->AddModule(ecal);
   }
-*/  
+*/
   // ------------------------------------------------------------------------
-
 
 
   // -----   Create magnetic field   ----------------------------------------
@@ -168,34 +162,33 @@ void run_sim(Int_t nEvents = 2)
   // ------------------------------------------------------------------------
 
 
-
   // -----   Create PrimaryGenerator   --------------------------------------
   FairPrimaryGenerator* primGen = new FairPrimaryGenerator();
 
-  FairUrqmdGenerator*  urqmdGen = new FairUrqmdGenerator(inFile);
+  FairUrqmdGenerator* urqmdGen = new FairUrqmdGenerator(inFile);
   primGen->AddGenerator(urqmdGen);
 
-  CbmHsdGenerator*  hsdGen = new CbmHsdGenerator(HsdFile,"Jpsi");
+  CbmHsdGenerator* hsdGen = new CbmHsdGenerator(HsdFile, "Jpsi");
   primGen->AddGenerator(hsdGen);
 
 
-  fRun->SetGenerator(primGen);       
+  fRun->SetGenerator(primGen);
   // ------------------------------------------------------------------------
   // Decay J/Psi using Pythia
   fRun->SetPythiaDecayer("./DecayConfig.C");
 
- 
+
   // -Trajectories Visualization (TGeoManager Only )
   // Switch this on if you want to visualize tracks in the
   // eventdisplay.
   // This is normally switch off, because of the huge files created
-  // when it is switched on. 
+  // when it is switched on.
   // fRun->SetStoreTraj(kTRUE);
 
   // -----   Run initialisation   -------------------------------------------
   fRun->Init();
   // ------------------------------------------------------------------------
-  
+
   // Set cuts for storing the trajectories.
   // Switch this on only if trajectories are stored.
   // Choose this cuts according to your needs, but be aware
@@ -213,8 +206,8 @@ void run_sim(Int_t nEvents = 2)
   CbmFieldPar* fieldPar = (CbmFieldPar*) rtdb->getContainer("CbmFieldPar");
   fieldPar->SetParameters(magField);
   fieldPar->setChanged();
-  fieldPar->setInputVersion(fRun->GetRunId(),1);
-  Bool_t kParameterMerged = kTRUE;
+  fieldPar->setInputVersion(fRun->GetRunId(), 1);
+  Bool_t kParameterMerged   = kTRUE;
   FairParRootFileIo* parOut = new FairParRootFileIo(kParameterMerged);
   parOut->open(parFile.Data());
   rtdb->setOutput(parOut);
@@ -222,7 +215,7 @@ void run_sim(Int_t nEvents = 2)
   rtdb->print();
   // ------------------------------------------------------------------------
 
- 
+
   // -----   Start run   ----------------------------------------------------
   fRun->Run(nEvents);
   // ------------------------------------------------------------------------
@@ -235,13 +228,12 @@ void run_sim(Int_t nEvents = 2)
   Double_t ctime = timer.CpuTime();
   cout << endl << endl;
   cout << "Macro finished succesfully." << endl;
-  cout << "Output file is "    << outFile << endl;
+  cout << "Output file is " << outFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime 
-       << "s" << endl << endl;
+  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl
+       << endl;
   // ------------------------------------------------------------------------
 
   cout << " Test passed" << endl;
   cout << " All ok " << endl;
 }
-

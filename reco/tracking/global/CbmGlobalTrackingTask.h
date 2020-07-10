@@ -15,61 +15,47 @@
 #define CBMGLOBALTRACKINGTASK_H
 
 #include "CbmGlobalTrackingTof.h"
-#include "FairTask.h"
-#include "TClonesArray.h"
+#include "CbmKFTrack.h"
 #include "CbmTimeSlice.h"
 #include "CbmTofHit.h"
-#include "CbmKFTrack.h"
 #include "CbmVertex.h"
+#include "FairTask.h"
+#include "TClonesArray.h"
 
-class CbmGlobalTrackingTask : public FairTask
-{
+class CbmGlobalTrackingTask : public FairTask {
 public:
-    CbmGlobalTrackingTask();
+  CbmGlobalTrackingTask();
 
-    CbmGlobalTrackingTask(const CbmGlobalTrackingTask&) = delete;
-    CbmGlobalTrackingTask& operator=(const CbmGlobalTrackingTask&) = delete;
+  CbmGlobalTrackingTask(const CbmGlobalTrackingTask&) = delete;
+  CbmGlobalTrackingTask& operator=(const CbmGlobalTrackingTask&) = delete;
 
-    InitStatus Init();// Overridden from FairTask
-    void Exec(Option_t* opt);// Overridden from FairTask
-    void Finish();// Overridden from FairTask
-    
-    void SetNofTBins(int v)
-    {
-        fTofGeometry.SetNofTBins(v);
-    }
-    
-    void SetTBinSize(scaltype v)
-    {
-        fTofGeometry.SetTBinSize(v);
-    }
-    
-    void SetPropagatePdg(Int_t v)
-    {
-        fTofGeometry.SetPdg(v);
-    }
-    
-    void SetChi2Cut(Double_t v)
-    {
-        fTofGeometry.SetChi2Cut(v);
-    }
-    
+  InitStatus Init();         // Overridden from FairTask
+  void Exec(Option_t* opt);  // Overridden from FairTask
+  void Finish();             // Overridden from FairTask
+
+  void SetNofTBins(int v) { fTofGeometry.SetNofTBins(v); }
+
+  void SetTBinSize(scaltype v) { fTofGeometry.SetTBinSize(v); }
+
+  void SetPropagatePdg(Int_t v) { fTofGeometry.SetPdg(v); }
+
+  void SetChi2Cut(Double_t v) { fTofGeometry.SetChi2Cut(v); }
+
 private:
-    Double_t CalcStsTrackLength(const CbmStsTrack* track);
-    
+  Double_t CalcStsTrackLength(const CbmStsTrack* track);
+
 private:
-    CbmGlobalTrackingTofGeometry fTofGeometry;
-    CbmTimeSlice* fTimeSlice;
-    TClonesArray* fTofHits;
-    TClonesArray* fStsTracks;
-    TClonesArray* fStsHits;
-    TClonesArray* fMvdHits;
-    TClonesArray* fGlobalTracks;
-    CbmKFTrack fKFTrack;
-    CbmVertex* fPrimVertex;
-    
-ClassDef(CbmGlobalTrackingTask, 1)        
+  CbmGlobalTrackingTofGeometry fTofGeometry;
+  CbmTimeSlice* fTimeSlice;
+  TClonesArray* fTofHits;
+  TClonesArray* fStsTracks;
+  TClonesArray* fStsHits;
+  TClonesArray* fMvdHits;
+  TClonesArray* fGlobalTracks;
+  CbmKFTrack fKFTrack;
+  CbmVertex* fPrimVertex;
+
+  ClassDef(CbmGlobalTrackingTask, 1)
 };
 
 #endif /* CBMGLOBALTRACKINGTASK_H */
-

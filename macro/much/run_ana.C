@@ -4,29 +4,32 @@
 //
 //---------------------------------------------------
 
-void run_ana(Int_t nEvents=3, TString dataSet = "muons",
-             TString setup = "sis100_muon_lmvm", Bool_t useMC = kTRUE, TString pluto = "")
-{
+void run_ana(Int_t nEvents   = 3,
+             TString dataSet = "muons",
+             TString setup   = "sis100_muon_lmvm",
+             Bool_t useMC    = kTRUE,
+             TString pluto   = "") {
   TString traFile  = dataSet + ".tra.root";
   TString parFile  = dataSet + ".par.root";
   TString recoFile = dataSet + ".rec.root";
-  TString outFile  = dataSet + ".ana.root"; 
+  TString outFile  = dataSet + ".ana.root";
 
-	FairRunAna* run = new FairRunAna();
-	run->SetInputFile(recoFile);
-	run->AddFriend(traFile);
-	run->SetOutputFile(outFile);
-       // run->SetGenerateRunInfo(kTRUE);
-	
- // -----   Load the geometry setup   -------------------------------------
+  FairRunAna* run = new FairRunAna();
+  run->SetInputFile(recoFile);
+  run->AddFriend(traFile);
+  run->SetOutputFile(outFile);
+  // run->SetGenerateRunInfo(kTRUE);
+
+  // -----   Load the geometry setup   -------------------------------------
   // -----   Environment   --------------------------------------------------
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
   // ------------------------------------------------------------------------
   std::cout << std::endl;
-  TString setupFile = srcDir + "/geometry/setup/setup_" + setup + ".C";
+  TString setupFile  = srcDir + "/geometry/setup/setup_" + setup + ".C";
   TString setupFunct = "setup_";
-  setupFunct = setupFunct + setup + "()";
-  std::cout << "-I- " << ": Loading macro " << setupFile << std::endl;
+  setupFunct         = setupFunct + setup + "()";
+  std::cout << "-I- "
+            << ": Loading macro " << setupFile << std::endl;
   gROOT->LoadMacro(setupFile);
   gROOT->ProcessLine(setupFunct);
   // You can modify the pre-defined setup by using
@@ -40,7 +43,7 @@ void run_ana(Int_t nEvents=3, TString dataSet = "muons",
   // ------------------------------------------------------------------------
   CbmKF* kf = new CbmKF();
   run->AddTask(kf);
-  
+
   /* (VF) Not much sense in running L1 witout STS local reconstruction
   CbmL1* L1 = new CbmL1();
   TString stsGeoTag;
@@ -53,8 +56,8 @@ void run_ana(Int_t nEvents=3, TString dataSet = "muons",
   }
   run->AddTask(L1);
   */
-  
-  CbmAnaDimuonAnalysis* ana = new CbmAnaDimuonAnalysis(pluto,setup);
+
+  CbmAnaDimuonAnalysis* ana = new CbmAnaDimuonAnalysis(pluto, setup);
   /*
   ana->SetChi2MuChCut(2.); 
   ana->SetChi2StsCut(2.);  
@@ -69,8 +72,8 @@ void run_ana(Int_t nEvents=3, TString dataSet = "muons",
   ana->UseMC(useMC);
   run->AddTask(ana);
 
-   // -----  Parameter database   --------------------------------------------
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
+  // -----  Parameter database   --------------------------------------------
+  FairRuntimeDb* rtdb       = run->GetRuntimeDb();
   FairParRootFileIo* parIo1 = new FairParRootFileIo();
   //FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
   parIo1->open(parFile.Data());
@@ -81,13 +84,13 @@ void run_ana(Int_t nEvents=3, TString dataSet = "muons",
   rtdb->saveOutput();
   // ------------------------------------------------------------------------
 
-   // -----   Initialize and run   --------------------------------------------
-   run->Init();
-   run->Run(0, nEvents);
-   // ------------------------------------------------------------------------
+  // -----   Initialize and run   --------------------------------------------
+  run->Init();
+  run->Run(0, nEvents);
+  // ------------------------------------------------------------------------
 
-   cout << " Test passed" << endl;
-   cout << " All ok " << endl;
+  cout << " Test passed" << endl;
+  cout << " All ok " << endl;
 
-   //   RemoveGeoManager();
+  //   RemoveGeoManager();
 }

@@ -18,8 +18,9 @@
 // --------------------------------------------------------------------------
 
 
-void run_reco_flow(Int_t nEvents = 2, Int_t En=10, const char* setup = "sis300_electron")
-{
+void run_reco_flow(Int_t nEvents     = 2,
+                   Int_t En          = 10,
+                   const char* setup = "sis300_electron") {
   Int_t gen = 0;
 
   TString numEvt = "";
@@ -34,16 +35,16 @@ void run_reco_flow(Int_t nEvents = 2, Int_t En=10, const char* setup = "sis300_e
   // Verbosity level (0=quiet, 1=event level, 2=track level, 3=debug)
   Int_t iVerbose = 0;
 
-  TString dir = "./data/";
-  TString inFile = dir + "mc_" + numEvt +  "evt.root";
-  TString parFile = dir + "params_" + numEvt +  "evt.root";    
-  TString outFile = dir + "reco_" + numEvt +  "evt.root";
+  TString dir     = "./data/";
+  TString inFile  = dir + "mc_" + numEvt + "evt.root";
+  TString parFile = dir + "params_" + numEvt + "evt.root";
+  TString outFile = dir + "reco_" + numEvt + "evt.root";
 
 
-  TString inDir = gSystem->Getenv("VMCWORKDIR");
+  TString inDir    = gSystem->Getenv("VMCWORKDIR");
   TString paramDir = inDir + "/parameters/";
 
-  TString setupFile = inDir + "/geometry/setup/" + setup + "_setup.C";
+  TString setupFile  = inDir + "/geometry/setup/" + setup + "_setup.C";
   TString setupFunct = setup;
   setupFunct += "_setup()";
 
@@ -53,10 +54,10 @@ void run_reco_flow(Int_t nEvents = 2, Int_t En=10, const char* setup = "sis300_e
   //  Digitisation files.
   // Add TObjectString containing the different file names to
   // a TList which is passed as input to the FairParAsciiFileIo.
-  // The FairParAsciiFileIo will take care to create on the fly 
+  // The FairParAsciiFileIo will take care to create on the fly
   // a concatenated input parameter file which is then used during
   // the reconstruction.
-  TList *parFileList = new TList();
+  TList* parFileList = new TList();
 
   TObjString stsDigiFile = paramDir + stsDigi;
   parFileList->Add(&stsDigiFile);
@@ -74,7 +75,7 @@ void run_reco_flow(Int_t nEvents = 2, Int_t En=10, const char* setup = "sis300_e
   //      in the setup files
   TString stsMatBudgetFileName = paramDir + "/sts/sts_matbudget_v13d.root";
   cout << "STS MB : " << stsMatBudgetFileName << endl;
-  
+
   // In general, the following parts need not be touched
   // ========================================================================
 
@@ -93,7 +94,7 @@ void run_reco_flow(Int_t nEvents = 2, Int_t En=10, const char* setup = "sis300_e
   // ------------------------------------------------------------------------
 
   // -----   Reconstruction run   -------------------------------------------
-  FairRunAna *run = new FairRunAna();
+  FairRunAna* run             = new FairRunAna();
   FairFileSource* inputSource = new FairFileSource(inFile);
   run->SetSource(inputSource);
   run->SetOutputFile(outFile);
@@ -106,22 +107,22 @@ void run_reco_flow(Int_t nEvents = 2, Int_t En=10, const char* setup = "sis300_e
   // =========================================================================
 
   // -----   STS digitizer   -------------------------------------------------
-  Double_t threshold  =  4;
-  Double_t noiseWidth =  0.01;
-  Int_t    nofBits    = 12;
-  Double_t electronsPerAdc    =  10;
-  Double_t StripDeadTime = 0.1;
+  Double_t threshold              = 4;
+  Double_t noiseWidth             = 0.01;
+  Int_t nofBits                   = 12;
+  Double_t electronsPerAdc        = 10;
+  Double_t StripDeadTime          = 0.1;
   CbmStsDigitize_old* stsDigitize = new CbmStsDigitize_old();
   stsDigitize->SetRealisticResponse();
-  stsDigitize->SetFrontThreshold (threshold);
-  stsDigitize->SetBackThreshold  (threshold);
+  stsDigitize->SetFrontThreshold(threshold);
+  stsDigitize->SetBackThreshold(threshold);
   stsDigitize->SetFrontNoiseWidth(noiseWidth);
-  stsDigitize->SetBackNoiseWidth (noiseWidth);
-  stsDigitize->SetFrontNofBits   (nofBits);
-  stsDigitize->SetBackNofBits    (nofBits);
+  stsDigitize->SetBackNoiseWidth(noiseWidth);
+  stsDigitize->SetFrontNofBits(nofBits);
+  stsDigitize->SetBackNofBits(nofBits);
   stsDigitize->SetFrontNofElPerAdc(electronsPerAdc);
   stsDigitize->SetBackNofElPerAdc(electronsPerAdc);
-  stsDigitize->SetStripDeadTime  (StripDeadTime);
+  stsDigitize->SetStripDeadTime(StripDeadTime);
   run->AddTask(stsDigitize);
   // -------------------------------------------------------------------------
 
@@ -200,8 +201,8 @@ void run_reco_flow(Int_t nEvents = 2, Int_t En=10, const char* setup = "sis300_e
   run->AddTask(psdHit);
 
   // -----  Parameter database   --------------------------------------------
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
-  FairParRootFileIo* parIo1 = new FairParRootFileIo();
+  FairRuntimeDb* rtdb        = run->GetRuntimeDb();
+  FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
   parIo1->open(parFile.Data());
   parIo2->open(parFileList, "in");
@@ -230,8 +231,8 @@ void run_reco_flow(Int_t nEvents = 2, Int_t En=10, const char* setup = "sis300_e
   cout << endl;
   // ------------------------------------------------------------------------
 
-//  delete run;
+  //  delete run;
 
   cout << " Test passed" << endl;
-	cout << " All ok " << endl;
+  cout << " All ok " << endl;
 }

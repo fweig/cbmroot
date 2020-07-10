@@ -4,10 +4,8 @@
 // ----------------------------------------------------------------------------
 
 
-
 #ifndef CBMMVDDIGITOHITTB_H
 #define CBMMVDDIGITOHITTB_H 1
-
 
 
 #include "FairTask.h"
@@ -19,12 +17,10 @@ class TClonesArray;
 class TString;
 
 
-class CbmMvdDigiToHitTB : public FairTask
-{
- 
- public:
+class CbmMvdDigiToHitTB : public FairTask {
 
-  /** Default constructor **/  
+public:
+  /** Default constructor **/
   CbmMvdDigiToHitTB();
 
 
@@ -32,8 +28,7 @@ class CbmMvdDigiToHitTB : public FairTask
   *@param name  Task name
   *@param mode  0 = MAPS, 1 = Ideal
   **/
-  CbmMvdDigiToHitTB(const char* name,
-		    Int_t mode = 0, Int_t iVerbose = 1);
+  CbmMvdDigiToHitTB(const char* name, Int_t mode = 0, Int_t iVerbose = 1);
 
 
   /** Destructor **/
@@ -41,30 +36,30 @@ class CbmMvdDigiToHitTB : public FairTask
 
   void Exec(Option_t* opt);
 
-  void ShowDebugHistos(){fShowDebugHistos = kTRUE;}
+  void ShowDebugHistos() { fShowDebugHistos = kTRUE; }
 
 private:
-/** Hit producer mode (0 = MAPS, 1 = Ideal) **/
+  /** Hit producer mode (0 = MAPS, 1 = Ideal) **/
   Int_t fMode;
   Bool_t fShowDebugHistos;
- CbmMvdDetector* fDetector;
+  CbmMvdDetector* fDetector;
 
- TClonesArray* fEvents;
- TClonesArray* fInputDigis;
- TClonesArray* fEventDigis;
- TClonesArray* fCluster;
-
-  
- UInt_t fClusterPluginNr;
-
-  TString	fBranchName;   // Name of input branch (MvdDigi)
-  
-
-  TStopwatch     fTimer;        ///< ROOT timer
+  TClonesArray* fEvents;
+  TClonesArray* fInputDigis;
+  TClonesArray* fEventDigis;
+  TClonesArray* fCluster;
 
 
-// -----   Private methods   ---------------------------------------------
- /** Intialisation **/
+  UInt_t fClusterPluginNr;
+
+  TString fBranchName;  // Name of input branch (MvdDigi)
+
+
+  TStopwatch fTimer;  ///< ROOT timer
+
+
+  // -----   Private methods   ---------------------------------------------
+  /** Intialisation **/
   virtual InitStatus Init();
 
 
@@ -83,7 +78,7 @@ private:
 
 
   /** Clear the hit arrays **/
-  void Reset();	 
+  void Reset();
 
 
   /** Print digitisation parameters **/
@@ -93,8 +88,8 @@ private:
   CbmMvdDigiToHitTB(const CbmMvdDigiToHitTB&);
   CbmMvdDigiToHitTB operator=(const CbmMvdDigiToHitTB&);
 
-ClassDef(CbmMvdDigiToHitTB,1);
+  ClassDef(CbmMvdDigiToHitTB, 1);
 };
-    
-    
-#endif   		     
+
+
+#endif

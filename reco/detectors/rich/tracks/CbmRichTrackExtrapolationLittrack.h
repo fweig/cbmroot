@@ -12,8 +12,8 @@
 #ifndef CBM_RICH_TRACK_EXTRAPOLATION_LITTRACK
 #define CBM_RICH_TRACK_EXTRAPOLATION_LITTRACK
 
-#include "CbmRichTrackExtrapolationBase.h"
 #include "CbmLitPtrTypes.h"
+#include "CbmRichTrackExtrapolationBase.h"
 
 class TClonesArray;
 class CbmLitTGeoTrackPropagator;
@@ -30,47 +30,44 @@ class CbmLitTGeoTrackPropagator;
 udia Hoehne
  * \date 206
  **/
-class CbmRichTrackExtrapolationLittrack : public CbmRichTrackExtrapolationBase
-{
+class CbmRichTrackExtrapolationLittrack : public CbmRichTrackExtrapolationBase {
 public:
-    
-    /**
+  /**
      * \brief Default constructor.
      */
-    CbmRichTrackExtrapolationLittrack();
-    
-    /**
+  CbmRichTrackExtrapolationLittrack();
+
+  /**
      * \brief Destructor.
      */
-    virtual ~CbmRichTrackExtrapolationLittrack();
-    
-    /**
+  virtual ~CbmRichTrackExtrapolationLittrack();
+
+  /**
      * \brief Inherited from CbmRichTrackExtrapolationBase.
      */
-    virtual void Init();
-    
-    /**
+  virtual void Init();
+
+  /**
      * \brief Inherited from CbmRichTrackExtrapolationBase.
      */
-    virtual void DoExtrapolation(
-                                 TClonesArray* globalTracks,
-                                 TClonesArray* extrapolatedTrackParams,
-                                 double z);
-    
+  virtual void DoExtrapolation(TClonesArray* globalTracks,
+                               TClonesArray* extrapolatedTrackParams,
+                               double z);
+
 private:
-    TClonesArray* fStsTracks;
-    TrackPropagatorPtr fLitPropagator;
-    
+  TClonesArray* fStsTracks;
+  TrackPropagatorPtr fLitPropagator;
+
 private:
-    /**
+  /**
      * \brief Copy constructor.
      */
-    CbmRichTrackExtrapolationLittrack(const CbmRichTrackExtrapolationLittrack&);
-    
-    /**
+  CbmRichTrackExtrapolationLittrack(const CbmRichTrackExtrapolationLittrack&);
+
+  /**
      * \brief Assignment operator.
      */
-    void operator=(const CbmRichTrackExtrapolationLittrack&);
+  void operator=(const CbmRichTrackExtrapolationLittrack&);
 };
 
 #endif

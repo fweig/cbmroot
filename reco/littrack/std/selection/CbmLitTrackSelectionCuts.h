@@ -10,64 +10,61 @@
 
 #include "interface/CbmLitTrackSelection.h"
 
-class CbmLitTrackSelectionCuts : public CbmLitTrackSelection
-{
+class CbmLitTrackSelectionCuts : public CbmLitTrackSelection {
 public:
-   /* Constructor */
-   CbmLitTrackSelectionCuts();
+  /* Constructor */
+  CbmLitTrackSelectionCuts();
 
-   /* Constructor */
-   CbmLitTrackSelectionCuts(
-      litfloat maxChiSq,
-      int minLastPlaneId,
-      int minNofHits,
-      litfloat minMomentum);
+  /* Constructor */
+  CbmLitTrackSelectionCuts(litfloat maxChiSq,
+                           int minLastPlaneId,
+                           int minNofHits,
+                           litfloat minMomentum);
 
-   /* Destructor */
-   virtual ~CbmLitTrackSelectionCuts();
+  /* Destructor */
+  virtual ~CbmLitTrackSelectionCuts();
 
-   /* Derived from CbmLitTrackSelection */
-   virtual LitStatus DoSelect(
-      TrackPtrIterator itBegin,
-      TrackPtrIterator itEnd);
+  /* Derived from CbmLitTrackSelection */
+  virtual LitStatus DoSelect(TrackPtrIterator itBegin, TrackPtrIterator itEnd);
 
-   /* Derived from CbmLitTrackSelection */
-   virtual LitStatus DoSelect(
-      TrackPtrVector& tracks);
+  /* Derived from CbmLitTrackSelection */
+  virtual LitStatus DoSelect(TrackPtrVector& tracks);
 
-   /* Return chi square cut */
-   litfloat GetMaxChiSq() const {return fMaxChiSq;}
+  /* Return chi square cut */
+  litfloat GetMaxChiSq() const { return fMaxChiSq; }
 
-   /* Returns last plane index cut */
-   int GetMinLastPlaneId() const {return fMinLastPlaneId;}
+  /* Returns last plane index cut */
+  int GetMinLastPlaneId() const { return fMinLastPlaneId; }
 
-   /* Returns number of hits cut */
-   int GetMinNofHits() const {return fMinNofHits;}
+  /* Returns number of hits cut */
+  int GetMinNofHits() const { return fMinNofHits; }
 
-   /* Returns momentum cut */
-   litfloat GetMinMomentum() const {return fMinMomentum;}
+  /* Returns momentum cut */
+  litfloat GetMinMomentum() const { return fMinMomentum; }
 
-   /* Sets chi square cut */
-   void SetMaxChiSq(litfloat maxChiSq) {fMaxChiSq = maxChiSq;}
+  /* Sets chi square cut */
+  void SetMaxChiSq(litfloat maxChiSq) { fMaxChiSq = maxChiSq; }
 
-   /* Sets last plane index cut */
-   void SetMinLastPlaneId(int minLastPlaneId) {fMinLastPlaneId = minLastPlaneId;}
+  /* Sets last plane index cut */
+  void SetMinLastPlaneId(int minLastPlaneId) {
+    fMinLastPlaneId = minLastPlaneId;
+  }
 
-   /* Sets number of hits cut */
-   void SetMinNofHits(int minNofHits) {fMinNofHits = minNofHits;}
+  /* Sets number of hits cut */
+  void SetMinNofHits(int minNofHits) { fMinNofHits = minNofHits; }
 
-   /* Sets momentum cut */
-   void SetMinMomentum(litfloat minMomentum) {fMinMomentum = minMomentum;}
+  /* Sets momentum cut */
+  void SetMinMomentum(litfloat minMomentum) { fMinMomentum = minMomentum; }
 
 private:
-   /* Chi square cut */
-   litfloat fMaxChiSq;
-   /* Last plane index cut */
-   int fMinLastPlaneId;
-   /* Number of hits cut */
-   int fMinNofHits;
-   /* Momentum cut in [GeV/c] */
-   litfloat fMinMomentum;
+  /* Chi square cut */
+  litfloat fMaxChiSq;
+  /* Last plane index cut */
+  int fMinLastPlaneId;
+  /* Number of hits cut */
+  int fMinNofHits;
+  /* Momentum cut in [GeV/c] */
+  litfloat fMinMomentum;
 };
 
 #endif /* CBMLITTRACKSELECTIONCUTS_H_ */

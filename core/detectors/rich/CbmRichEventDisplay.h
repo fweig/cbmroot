@@ -10,13 +10,13 @@
 #ifndef CBM_RICH_EVENT_DISPLAY
 #define CBM_RICH_EVENT_DISPLAY
 
-#include <Rtypes.h>          // for THashConsistencyHolder, ClassDef
-#include <RtypesCore.h>      // for Option_t
-#include <TClonesArray.h>    // IWYU pragma: keep needed by RootCling
+#include <Rtypes.h>        // for THashConsistencyHolder, ClassDef
+#include <RtypesCore.h>    // for Option_t
+#include <TClonesArray.h>  // IWYU pragma: keep needed by RootCling
 
-#include <string>            // for string
+#include <string>  // for string
 
-#include "FairTask.h"        // for FairTask, InitStatus
+#include "FairTask.h"  // for FairTask, InitStatus
 
 #include "CbmHistManager.h"  // IWYU pragma: keep needed by RootCling
 
@@ -32,87 +32,81 @@ class TMemberInspector;
 * \author Semen Lebedev
 * \date 2012
 **/
-class CbmRichEventDisplay : public FairTask
-{
+class CbmRichEventDisplay : public FairTask {
 public:
-
-   /**
+  /**
     * \brief Default constructor.
     */
-   CbmRichEventDisplay();
+  CbmRichEventDisplay();
 
-   /**
+  /**
     * \brief Destructor.
     */
-   virtual ~CbmRichEventDisplay();
+  virtual ~CbmRichEventDisplay();
 
-   /**
+  /**
     * \brief Inherited from FairTask.
     */
-   virtual InitStatus Init();
+  virtual InitStatus Init();
 
-   /**
+  /**
     * \brief Inherited from FairTask.
     */
-   virtual void Exec(
-         Option_t* opt);
+  virtual void Exec(Option_t* opt);
 
-   /**
+  /**
     * \brief Inherited from FairTask.
     */
-   virtual void Finish();
+  virtual void Finish();
 
-   void SetDrawRings(bool b){fDrawRings = b;}
-   void SetDrawHits(bool b){fDrawHits = b;}
-   void SetDrawPoints(bool b){fDrawPoints = b;}
-   void SetDrawProjections(bool b){fDrawProjections = b;}
+  void SetDrawRings(bool b) { fDrawRings = b; }
+  void SetDrawHits(bool b) { fDrawHits = b; }
+  void SetDrawPoints(bool b) { fDrawPoints = b; }
+  void SetDrawProjections(bool b) { fDrawProjections = b; }
 
-   /**
+  /**
     * \brief Set output directory where you want to write results (figures and json).
     * \param[in] dir Path to the output directory.
     */
-   void SetOutputDir(const std::string& dir) {fOutputDir = dir;}
+  void SetOutputDir(const std::string& dir) { fOutputDir = dir; }
 
 private:
+  TClonesArray* fRichRings;
+  TClonesArray* fRichHits;
+  TClonesArray* fRichPoints;
+  TClonesArray* fRichMatches;
+  TClonesArray* fRichProjections;
 
-   TClonesArray* fRichRings;
-   TClonesArray* fRichHits;
-   TClonesArray* fRichPoints;
-   TClonesArray* fRichMatches;
-   TClonesArray* fRichProjections;
+  TClonesArray* fMcTracks;
 
-   TClonesArray* fMcTracks;
+  std::string fOutputDir;  // output dir for results
+  CbmHistManager* fHM;
 
-   std::string fOutputDir; // output dir for results
-   CbmHistManager* fHM;
+  int fEventNum;
 
-   int fEventNum;
+  bool fDrawRings;
+  bool fDrawHits;
+  bool fDrawPoints;
+  bool fDrawProjections;
 
-   bool fDrawRings;
-   bool fDrawHits;
-   bool fDrawPoints;
-   bool fDrawProjections;
+  void DrawOneEvent();
 
-   void DrawOneEvent();
+  void DrawOnePmtPlane(const std::string& plane);
 
-   void DrawOnePmtPlane(
-         const std::string& plane);
-
-   void DrawCircle(
-         CbmRichRing* ring);
+  void DrawCircle(CbmRichRing* ring);
 
 
-   /**
+  /**
     * \brief Copy constructor.
     */
-   CbmRichEventDisplay(const CbmRichEventDisplay&);
+  CbmRichEventDisplay(const CbmRichEventDisplay&);
 
-   /**
+  /**
     * \brief Assignment operator.
     */
-   CbmRichEventDisplay& operator=(const CbmRichEventDisplay&);
+  CbmRichEventDisplay& operator=(const CbmRichEventDisplay&);
 
-   ClassDef(CbmRichEventDisplay,1);
+  ClassDef(CbmRichEventDisplay, 1);
 };
 
 #endif

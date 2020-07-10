@@ -11,11 +11,12 @@ private:
   void setAllContainers();
   CbmStar2019ContFact(const CbmStar2019ContFact&);
   CbmStar2019ContFact& operator=(const CbmStar2019ContFact&);
+
 public:
   CbmStar2019ContFact();
   ~CbmStar2019ContFact() {}
   FairParSet* createContainer(FairContainer*);
-  ClassDef(CbmStar2019ContFact,0) // Factory for all TRD parameter containers
+  ClassDef(CbmStar2019ContFact, 0)  // Factory for all TRD parameter containers
 };
 
-#endif  /* !CBMSTAR2019CONTFACT_H */
+#endif /* !CBMSTAR2019CONTFACT_H */

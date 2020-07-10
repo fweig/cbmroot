@@ -18,10 +18,8 @@
 
 /// C/C++ headers
 
-class CbmUnpackTaskBase : public TObject
-{
- public:
-
+class CbmUnpackTaskBase : public TObject {
+public:
   CbmUnpackTaskBase();
   virtual ~CbmUnpackTaskBase();
 
@@ -35,13 +33,13 @@ class CbmUnpackTaskBase : public TObject
 
   virtual void SetParContainers() = 0;
 
-  virtual Bool_t InitContainers() {return kTRUE;}
+  virtual Bool_t InitContainers() { return kTRUE; }
 
-  virtual Bool_t ReInitContainers() {return kTRUE;}
+  virtual Bool_t ReInitContainers() { return kTRUE; }
 
-  virtual void AddMsComponentToList( size_t component, UShort_t usDetectorId ) = 0;
-  virtual void SetNbMsInTs( size_t uCoreMsNb, size_t uOverlapMsNb ) = 0;
-
+  virtual void AddMsComponentToList(size_t component,
+                                    UShort_t usDetectorId)        = 0;
+  virtual void SetNbMsInTs(size_t uCoreMsNb, size_t uOverlapMsNb) = 0;
 };
 
-#endif // CBMUNPACKTASKBASE_H
+#endif  // CBMUNPACKTASKBASE_H

@@ -7,11 +7,11 @@
 #ifndef CBMLITDETECTORSETUP_H_
 #define CBMLITDETECTORSETUP_H_
 
-#include <string>
-#include <map>
 #include "CbmDefs.h"
-using std::string;
+#include <map>
+#include <string>
 using std::map;
+using std::string;
 
 /**
  * \class CbmLitDetectorSetup
@@ -19,84 +19,80 @@ using std::map;
  * \author Andrey Lebedev <andrey.lebedev@gsi.de>
  * \date 2012
  */
-class CbmLitDetectorSetup
-{
+class CbmLitDetectorSetup {
 public:
-
-   /**
+  /**
     * \brief Constructor.
     */
-   CbmLitDetectorSetup();
+  CbmLitDetectorSetup();
 
-   /**
+  /**
     * \brief Destructor.
     */
-   virtual ~CbmLitDetectorSetup();
+  virtual ~CbmLitDetectorSetup();
 
-   /**
+  /**
     * \brief Set detector presence manually.
     * \param[in] detId Detector identificator.
     * \param[in] isDet True if detector is in the setup.
     */
-   void SetDet(
-            ECbmModuleId detId,
-            bool isDet);
+  void SetDet(ECbmModuleId detId, bool isDet);
 
-   /**
+  /**
     * \brief Return detector presence in setup.
     * \param[in] detId Detector identificator.
     * \return Detector presence in setup.
     */
-   bool GetDet(
-       ECbmModuleId detId) const;
+  bool GetDet(ECbmModuleId detId) const;
 
-   /**
+  /**
     * \brief Set electron setup of detector.
     * \param[in] isElectronSetup True if electron setup.
     */
-   void SetElectronSetup(bool isElectronSetup) { fIsElectronSetup = isElectronSetup; }
+  void SetElectronSetup(bool isElectronSetup) {
+    fIsElectronSetup = isElectronSetup;
+  }
 
-   /**
+  /**
     * \brief Return true if electron setup is detected.
     * \return True if electron setup is detected.
     */
-   bool GetElectronSetup() const { return fIsElectronSetup; }
+  bool GetElectronSetup() const { return fIsElectronSetup; }
 
-   /**
+  /**
     * \brief Set muon setup of detector.
     * \param[in] isMuonSetup True if muon setup.
     */
-   void SetMuonSetup(bool isMuonSetup) { fIsMuonSetup = isMuonSetup; }
+  void SetMuonSetup(bool isMuonSetup) { fIsMuonSetup = isMuonSetup; }
 
-   /**
+  /**
     * \brief Return true if muon setup is detected.
     * \return True if muon setup is detected.
     */
-   bool GetMuonSetup() const { return fIsMuonSetup; }
+  bool GetMuonSetup() const { return fIsMuonSetup; }
 
-   /**
+  /**
     * \brief Determines detector presence using TGeoManager.
     */
-   void DetermineSetup();
+  void DetermineSetup();
 
-   /**
+  /**
     * \brief Return string representation of class.
     * \return String representation of class.
     */
-   string ToString() const;
+  string ToString() const;
 
 private:
-   /**
+  /**
     * \brief Check detector presence using TGeoManager.
     * \param[in] name Name of the detector to be checked.
     * \return True if detector was found in TGeoManager.
     */
-   bool CheckDetectorPresence(
-      const std::string& name) const;
+  bool CheckDetectorPresence(const std::string& name) const;
 
-   bool fIsElectronSetup; // If "electron" setup detected than true
-   bool fIsMuonSetup; // If "muon" setup detected than true
-   map<ECbmModuleId, bool> fDet; // Map DetectorId to detector presence
+  bool fIsElectronSetup;         // If "electron" setup detected than true
+  bool fIsMuonSetup;             // If "muon" setup detected than true
+  map<ECbmModuleId, bool> fDet;  // Map DetectorId to detector presence
 };
 
 #endif /* CBMLITDETECTORSETUP_H_ */

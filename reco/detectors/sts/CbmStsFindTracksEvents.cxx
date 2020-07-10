@@ -8,8 +8,8 @@
 // Includes from STS
 #include "CbmStsFindTracksEvents.h"
 
-#include <cassert>
 #include "CbmEvent.h"
+#include <cassert>
 
 #include "CbmStsHit.h"
 #include "CbmStsTrack.h"
@@ -25,78 +25,73 @@
 #include "TClonesArray.h"
 
 // Includes from C++
-#include <iostream>
 #include <iomanip>
+#include <iostream>
 
 using std::cout;
 using std::endl;
-using std::right;
-using std::left;
 using std::fixed;
-using std::setw;
+using std::left;
+using std::right;
 using std::setprecision;
+using std::setw;
 
 // -----   Standard constructor   ------------------------------------------
 CbmStsFindTracksEvents::CbmStsFindTracksEvents(CbmStsTrackFinder* finder,
-				                                       Bool_t useMvd)
-  : FairTask("StsFindTracksEvents"),
-    fUseMvd(useMvd),
-    fFinder(finder),
-    fEvents(NULL),
-    fMvdHits(NULL),
-    fStsHits(NULL),
-    fTracks(NULL),
-    fTimer(),
-    fNofEvents(0),
-    fNofHits(0.),
-    fNofTracks(0.),
-    fTime(0.)
-{
-  if ( ! finder )  fFinder = new CbmStsTrackFinderIdeal();
+                                               Bool_t useMvd)
+  : FairTask("StsFindTracksEvents")
+  , fUseMvd(useMvd)
+  , fFinder(finder)
+  , fEvents(NULL)
+  , fMvdHits(NULL)
+  , fStsHits(NULL)
+  , fTracks(NULL)
+  , fTimer()
+  , fNofEvents(0)
+  , fNofHits(0.)
+  , fNofTracks(0.)
+  , fTime(0.) {
+  if (!finder) fFinder = new CbmStsTrackFinderIdeal();
 }
 // -------------------------------------------------------------------------
-
 
 
 // -----   Destructor   ----------------------------------------------------
 CbmStsFindTracksEvents::~CbmStsFindTracksEvents() {
   fTracks->Delete();
-  if ( fFinder) delete fFinder;
+  if (fFinder) delete fFinder;
 }
 // -------------------------------------------------------------------------
-
 
 
 // -----   Task execution   ------------------------------------------------
 void CbmStsFindTracksEvents::Exec(Option_t* /*opt*/) {
 
-	// --- Clear output array
-	fTracks->Delete();
+  // --- Clear output array
+  fTracks->Delete();
 
-    // --- Event loop (from event objects)
-    if ( fEvents ) {
-      Int_t nEvents = fEvents->GetEntriesFast();
-      LOG(debug) << GetName() << ": reading time slice with " << nEvents
-          << " events ";
-      for (Int_t iEvent = 0; iEvent < nEvents; iEvent++) {
-        CbmEvent* event = static_cast<CbmEvent*> (fEvents->At(iEvent));
-        ProcessEvent(event);
-      } //# events
-    } //? event branch present
+  // --- Event loop (from event objects)
+  if (fEvents) {
+    Int_t nEvents = fEvents->GetEntriesFast();
+    LOG(debug) << GetName() << ": reading time slice with " << nEvents
+               << " events ";
+    for (Int_t iEvent = 0; iEvent < nEvents; iEvent++) {
+      CbmEvent* event = static_cast<CbmEvent*>(fEvents->At(iEvent));
+      ProcessEvent(event);
+    }  //# events
+  }    //? event branch present
 
-    else // Old event-by-event simulation without event branch
-      ProcessEvent(NULL);
-
+  else  // Old event-by-event simulation without event branch
+    ProcessEvent(NULL);
 }
 // -------------------------------------------------------------------------
-
 
 
 // -----   Initialisation   ------------------------------------------------
 InitStatus CbmStsFindTracksEvents::Init() {
 
-	LOG(info) << "=====================================";
-	LOG(info) << GetName() << ": initialising";
+  LOG(info) << "=====================================";
+  LOG(info) << GetName() << ": initialising";
 
   // I/O manager
   FairRootManager* ioman = FairRootManager::Instance();
@@ -104,9 +99,8 @@ InitStatus CbmStsFindTracksEvents::Init() {
 
   // --- Get input array (Events)
   fEvents = dynamic_cast<TClonesArray*>(ioman->GetObject("Event"));
-  if ( ! fEvents ) {
-    LOG(warn) << GetName()
-        << ": No event array! Will process entire tree.";
+  if (!fEvents) {
+    LOG(warn) << GetName() << ": No event array! Will process entire tree.";
   }
 
   // --- Get input array (StsHits)
@@ -114,20 +108,20 @@ InitStatus CbmStsFindTracksEvents::Init() {
   assert(fStsHits);
 
   // Array of MvdHits
-  if ( fUseMvd ) {
-  	LOG(info) << GetName() << ": including MVD hits in tracking";
+  if (fUseMvd) {
+    LOG(info) << GetName() << ": including MVD hits in tracking";
     fMvdHits = (TClonesArray*) ioman->GetObject("MvdHit");
     assert(fMvdHits);
   }
 
   // Create and register output array for StsTracks
-  fTracks = new TClonesArray("CbmStsTrack",100);
-  ioman->Register("StsTrack", "STS", fTracks,
-  		            IsOutputBranchPersistent("StsTrack"));
+  fTracks = new TClonesArray("CbmStsTrack", 100);
+  ioman->Register(
+    "StsTrack", "STS", fTracks, IsOutputBranchPersistent("StsTrack"));
 
   // Check for Track finder
-  if (! fFinder) {
-  	LOG(fatal) << GetName() << ": no track finding engine selected!";
+  if (!fFinder) {
+    LOG(fatal) << GetName() << ": no track finding engine selected!";
     return kERROR;
   }
   LOG(info) << GetName() << ": Use track finder " << fFinder->GetName();
@@ -140,30 +134,26 @@ InitStatus CbmStsFindTracksEvents::Init() {
 
   // Screen output
   LOG(info) << GetName() << ": successfully initialised.";
-	LOG(info) << "=====================================\n";
+  LOG(info) << "=====================================\n";
 
-	return kSUCCESS;
+  return kSUCCESS;
 }
 // -------------------------------------------------------------------------
-
 
 
 // -----   End-of-run action   ---------------------------------------------
 void CbmStsFindTracksEvents::Finish() {
-	std::cout << std::endl;
-	LOG(info) << "=====================================";
-	LOG(info) << GetName() << ": Run summary";
-	LOG(info) << "Events processed   : " << fNofEvents;
-	LOG(info) << "Hits / event       : " << fNofHits / Double_t(fNofEvents);
-	LOG(info) << "Tracks / event     : "
-			      << fNofTracks / Double_t(fNofEvents);
-	LOG(info) << "Hits per track     : " << fNofHits / fNofTracks;
-	LOG(info) << "Time per event     : " << fTime / Double_t(fNofEvents)
-			      << " s ";
-	LOG(info) << "=====================================";
+  std::cout << std::endl;
+  LOG(info) << "=====================================";
+  LOG(info) << GetName() << ": Run summary";
+  LOG(info) << "Events processed   : " << fNofEvents;
+  LOG(info) << "Hits / event       : " << fNofHits / Double_t(fNofEvents);
+  LOG(info) << "Tracks / event     : " << fNofTracks / Double_t(fNofEvents);
+  LOG(info) << "Hits per track     : " << fNofHits / fNofTracks;
+  LOG(info) << "Time per event     : " << fTime / Double_t(fNofEvents) << " s ";
+  LOG(info) << "=====================================";
 }
 // -------------------------------------------------------------------------
-
 
 
 // ------   Process one event   --------------------------------------------
@@ -176,23 +166,20 @@ void CbmStsFindTracksEvents::ProcessEvent(CbmEvent* event) {
 
   // --- Event log
   Int_t eventNumber = (event ? event->GetNumber() : fNofEvents);
-  Int_t nHits = (event ? event->GetNofData(ECbmDataType::kStsHit) : fStsHits->GetEntriesFast());
-  LOG(info) << "+ " << setw(20) << GetName() << ": Event " << setw(6)
-            << right << eventNumber
-            << ", real time " << fixed << setprecision(6)
-            << fTimer.RealTime() << " s, hits: "
-            << nHits << ", tracks: " << nTracks;
+  Int_t nHits       = (event ? event->GetNofData(ECbmDataType::kStsHit)
+                       : fStsHits->GetEntriesFast());
+  LOG(info) << "+ " << setw(20) << GetName() << ": Event " << setw(6) << right
+            << eventNumber << ", real time " << fixed << setprecision(6)
+            << fTimer.RealTime() << " s, hits: " << nHits
+            << ", tracks: " << nTracks;
 
   // --- Counters
   fNofEvents++;
-  fNofHits   += Double_t(nHits);
+  fNofHits += Double_t(nHits);
   fNofTracks += Double_t(nTracks);
-  fTime      += fTimer.RealTime();
-
+  fTime += fTimer.RealTime();
 }
 // -------------------------------------------------------------------------
-
-
 
 
 ClassImp(CbmStsFindTracksEvents)

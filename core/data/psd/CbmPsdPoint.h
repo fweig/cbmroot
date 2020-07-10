@@ -13,19 +13,17 @@
 #ifndef CBMPSDPOINT_H
 #define CBMPSDPOINT_H 1
 
-#include <Rtypes.h>       // for ClassDef
-#include <RtypesCore.h>   // for Int_t, Double_t, Option_t
-#include <TVector3.h>     // for TVector3
+#include <Rtypes.h>      // for ClassDef
+#include <RtypesCore.h>  // for Int_t, Double_t, Option_t
+#include <TVector3.h>    // for TVector3
 
 #include <FairMCPoint.h>  // for FairMCPoint
 
-#include <string>        // for string
+#include <string>  // for string
 
-class CbmPsdPoint : public FairMCPoint
-{
+class CbmPsdPoint : public FairMCPoint {
 
- public:
-
+public:
   /** Default constructor **/
   CbmPsdPoint();
 
@@ -39,8 +37,13 @@ class CbmPsdPoint : public FairMCPoint
    *@param length   Track length since creation [cm]
    *@param eLoss    Energy deposit [GeV]
    **/
-  CbmPsdPoint(Int_t trackID, Int_t detID,  TVector3 pos, TVector3 mom, 
-	       Double_t tof, Double_t length, Double_t eLoss);
+  CbmPsdPoint(Int_t trackID,
+              Int_t detID,
+              TVector3 pos,
+              TVector3 mom,
+              Double_t tof,
+              Double_t length,
+              Double_t eLoss);
 
 
   /** Copy constructor **/
@@ -54,19 +57,18 @@ class CbmPsdPoint : public FairMCPoint
   /** Output to screen **/
   virtual void Print(const Option_t* opt) const;
 
-   /** Modifiers **/
+  /** Modifiers **/
   void SetModuleID(Int_t mod) { fModuleID = mod; }
-   /** Accessors **/
-  Int_t GetModuleID() const {return fModuleID;}
+  /** Accessors **/
+  Int_t GetModuleID() const { return fModuleID; }
 
   std::string ToString() const;
-  
- private:
-  Int_t fModuleID; //number of module
 
-  
-  ClassDef(CbmPsdPoint,2)
+private:
+  Int_t fModuleID;  //number of module
 
+
+  ClassDef(CbmPsdPoint, 2)
 };
 
 

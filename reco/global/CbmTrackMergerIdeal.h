@@ -22,11 +22,9 @@
 class TClonesArray;
 
 
-class CbmTrackMergerIdeal : public CbmTrackMerger
-{
+class CbmTrackMergerIdeal : public CbmTrackMerger {
 
- public:
-
+public:
   /** Default constructor **/
   CbmTrackMergerIdeal();
 
@@ -41,12 +39,11 @@ class CbmTrackMergerIdeal : public CbmTrackMerger
 
   /** Do the track merging **/
   virtual Int_t DoMerge(TClonesArray* stsTracks,
-			TClonesArray* trdTracks,
-			TClonesArray* glbTracks);
+                        TClonesArray* trdTracks,
+                        TClonesArray* glbTracks);
 
 
- private:
-
+private:
   /** Arrays of StsTrackMatch and TrdTrackMatch **/
   TClonesArray* fStsMatch;
   TClonesArray* fTrdMatch;
@@ -54,10 +51,7 @@ class CbmTrackMergerIdeal : public CbmTrackMerger
   CbmTrackMergerIdeal(const CbmTrackMergerIdeal&);
   CbmTrackMergerIdeal& operator=(const CbmTrackMergerIdeal&);
 
-  ClassDef(CbmTrackMergerIdeal,1);
-
+  ClassDef(CbmTrackMergerIdeal, 1);
 };
 
 #endif
-
-

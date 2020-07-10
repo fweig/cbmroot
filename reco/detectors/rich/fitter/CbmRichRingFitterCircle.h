@@ -22,25 +22,22 @@
 * \author Supriya Das
 * \date 2006
 **/
-class CbmRichRingFitterCircle : public CbmRichRingFitterBase
-{
+class CbmRichRingFitterCircle : public CbmRichRingFitterBase {
 public:
-
-   /**
+  /**
     * \brief Default constructor.
     */
-   CbmRichRingFitterCircle();
+  CbmRichRingFitterCircle();
 
-   /**
+  /**
     * \brief Destructor.
     */
-   virtual ~CbmRichRingFitterCircle();
+  virtual ~CbmRichRingFitterCircle();
 
-   /**
+  /**
     * \brief Inherited from CbmRichRingFitterBase.
     */
-   void DoFit(
-         CbmRichRingLight* ring);
+  void DoFit(CbmRichRingLight* ring);
 };
 
 #endif

@@ -15,14 +15,12 @@
 //#include "TClonesArray.h"
 
 CbmStsTrackFinder::CbmStsTrackFinder()
-  : TNamed(),
-    fDigiScheme(nullptr), 
-    fField(nullptr),     
-    fMvdHits(nullptr),  
-    fStsHits(nullptr),    
-    fTracks(nullptr), 
-    fVerbose(0)
-{
-}
+  : TNamed()
+  , fDigiScheme(nullptr)
+  , fField(nullptr)
+  , fMvdHits(nullptr)
+  , fStsHits(nullptr)
+  , fTracks(nullptr)
+  , fVerbose(0) {}
 
 ClassImp(CbmStsTrackFinder)

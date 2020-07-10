@@ -9,20 +9,21 @@
 #ifndef CBMSTSTRACKMAPPRODUCER_H_
 #define CBMSTSTRACKMAPPRODUCER_H_
 
+#include "CbmStsHit.h"
 #include "FairTask.h"
 #include "NicaTrackClones.h"
-#include "CbmStsHit.h"
 
-class CbmStsTrackMapProducer : public FairTask{
-	NicaTrackClones *fStsHits;
-	NicaTrackClones *fStsTracks;
-	Int_t GetStation(CbmStsHit *hit)const;
+class CbmStsTrackMapProducer : public FairTask {
+  NicaTrackClones* fStsHits;
+  NicaTrackClones* fStsTracks;
+  Int_t GetStation(CbmStsHit* hit) const;
+
 public:
-	CbmStsTrackMapProducer();
-	InitStatus Init();
-	void Exec(Option_t* /*opt*/ );
-	virtual ~CbmStsTrackMapProducer();
-	ClassDef(CbmStsTrackMapProducer,1)
+  CbmStsTrackMapProducer();
+  InitStatus Init();
+  void Exec(Option_t* /*opt*/);
+  virtual ~CbmStsTrackMapProducer();
+  ClassDef(CbmStsTrackMapProducer, 1)
 };
 
 #endif /* CBMSTSTRACKMAPPRODUCER_H_ */

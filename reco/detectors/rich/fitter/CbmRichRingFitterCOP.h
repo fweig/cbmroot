@@ -11,8 +11,8 @@
 
 #include "CbmRichRingFitterBase.h"
 
-#include <iostream>
 #include <cmath>
+#include <iostream>
 
 using std::cout;
 using std::endl;
@@ -25,32 +25,29 @@ using std::endl;
 * \author Alexander Ayriyan, Gennadi Ososkov, Semen Lebedev <s.lebedev@gsi.de>
 * \date 2005
 **/
-class CbmRichRingFitterCOP: public CbmRichRingFitterBase
-{
+class CbmRichRingFitterCOP : public CbmRichRingFitterBase {
 public:
-   /**
+  /**
     * \brief Standard constructor.
     */
-   CbmRichRingFitterCOP();
+  CbmRichRingFitterCOP();
 
-   /**
+  /**
     * \brief Destructor.
     */
-   ~CbmRichRingFitterCOP();
+  ~CbmRichRingFitterCOP();
 
-   /**
+  /**
     * \brief Inherited from CbmRichRingFitterBase.
     */
-   virtual void DoFit(
-         CbmRichRingLight* ring);
+  virtual void DoFit(CbmRichRingLight* ring);
 
 private:
-   /**
+  /**
     * \brief Execute ring fitting algorithm.
     * \param[in,out] ring RICH ring to be fitted.
     */
-   void FitRing(
-         CbmRichRingLight* ring);
+  void FitRing(CbmRichRingLight* ring);
 };
 
 #endif

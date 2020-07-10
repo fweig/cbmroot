@@ -23,23 +23,21 @@
 class CbmStsTrack;
 
 
-class CbmStsTrackFitter : public TObject
-{
+class CbmStsTrackFitter : public TObject {
 
- public:
-
+public:
   /** Default constructor **/
-  CbmStsTrackFitter() { };
+  CbmStsTrackFitter() {};
 
 
   /** Destructor **/
-  virtual ~CbmStsTrackFitter() { };
+  virtual ~CbmStsTrackFitter() {};
 
 
   /** Virtual method Init. If needed, to be implemented in the
    ** concrete class. Else no action.
    **/
-  virtual void Init() { };
+  virtual void Init() {};
 
 
   /** Abstract method DoFit. To be implemented in the concrete class.
@@ -59,16 +57,14 @@ class CbmStsTrackFitter : public TObject
    *@param z      z position
    *@param param  (return value) StsTrackParam at z
    **/
-  virtual void Extrapolate( CbmStsTrack* track, Double_t z, 
-			    FairTrackParam *param ) = 0;
+  virtual void
+  Extrapolate(CbmStsTrack* track, Double_t z, FairTrackParam* param) = 0;
 
- private:
- 
+private:
   CbmStsTrackFitter(const CbmStsTrackFitter&);
-      
 
-  ClassDef(CbmStsTrackFitter,1);
 
+  ClassDef(CbmStsTrackFitter, 1);
 };
 
 #endif

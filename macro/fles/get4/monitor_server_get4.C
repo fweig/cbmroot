@@ -12,17 +12,16 @@
  */
 
 
-void monitor_server_get4( Int_t nEvents = -1, 
-      Int_t iUnpackMode = 1, 
-      TString hostname = "localhost")
-{
-   CbmRunOnline* run = new CbmRunOnline();
+void monitor_server_get4(Int_t nEvents     = -1,
+                         Int_t iUnpackMode = 1,
+                         TString hostname  = "localhost") {
+  CbmRunOnline* run = new CbmRunOnline();
 
-   // Create pattern for histo output file name
-   TString sHistoFile = Form("./server_%1u", iUnpackMode);
+  // Create pattern for histo output file name
+  TString sHistoFile = Form("./server_%1u", iUnpackMode);
 
-   // Create pattern for calib output file name
-   TString sCalibFile = Form("server_%1u", iUnpackMode);
+  // Create pattern for calib output file name
+  TString sCalibFile = Form("server_%1u", iUnpackMode);
 
 
   // --- Specify output file name (this is just an example)
@@ -30,10 +29,10 @@ void monitor_server_get4( Int_t nEvents = -1,
 
 
   // --- Set log output levels
-//  FairLogger::GetLogger()->SetLogScreenLevel("WARNING");
+  //  FairLogger::GetLogger()->SetLogScreenLevel("WARNING");
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
-//  FairLogger::GetLogger()->SetLogScreenLevel("DEBUG");
-//  FairLogger::GetLogger()->SetLogScreenLevel("DEBUG2");
+  //  FairLogger::GetLogger()->SetLogScreenLevel("DEBUG");
+  //  FairLogger::GetLogger()->SetLogScreenLevel("DEBUG2");
   FairLogger::GetLogger()->SetLogVerbosityLevel("LOW");
 
   // --- Set debug level
@@ -53,45 +52,58 @@ void monitor_server_get4( Int_t nEvents = -1,
 
   // GET4 Monitor
   CbmGet4FastMonitor* get4_monitor = new CbmGet4FastMonitor();
-  get4_monitor->SetRocNb(      2); // Min 1
-  get4_monitor->SetGet4Nb(    88); // Min 1 64 + 24
-  get4_monitor->SetMsOverlapTs(0); // Min 1
-  get4_monitor->SetMode( iUnpackMode ); // 0 = debug, 1 = moni
-//  get4_monitor->SetVerbose( kTRUE );
-     // Disable unconnected chips
-  for( UInt_t uChipIndex =  0; uChipIndex < 16; uChipIndex++)
-     get4_monitor->SetActiveGet4( uChipIndex, kFALSE );
-  for( UInt_t uChipIndex = 24; uChipIndex < 72; uChipIndex++)
-     get4_monitor->SetActiveGet4( uChipIndex, kFALSE );
-  for( UInt_t uChipIndex = 80; uChipIndex < 88; uChipIndex++)
-     get4_monitor->SetActiveGet4( uChipIndex, kFALSE );
+  get4_monitor->SetRocNb(2);           // Min 1
+  get4_monitor->SetGet4Nb(88);         // Min 1 64 + 24
+  get4_monitor->SetMsOverlapTs(0);     // Min 1
+  get4_monitor->SetMode(iUnpackMode);  // 0 = debug, 1 = moni
+                                       //  get4_monitor->SetVerbose( kTRUE );
+                                       // Disable unconnected chips
+  for (UInt_t uChipIndex = 0; uChipIndex < 16; uChipIndex++)
+    get4_monitor->SetActiveGet4(uChipIndex, kFALSE);
+  for (UInt_t uChipIndex = 24; uChipIndex < 72; uChipIndex++)
+    get4_monitor->SetActiveGet4(uChipIndex, kFALSE);
+  for (UInt_t uChipIndex = 80; uChipIndex < 88; uChipIndex++)
+    get4_monitor->SetActiveGet4(uChipIndex, kFALSE);
 
-//  get4_monitor->SetBinSizeEvoHistos(  10.0 );
-  get4_monitor->SetBinSizeEvoHistos(   1.0 );
-//  get4_monitor->SetBinSizeEvoHistos(   0.1 );
-  get4_monitor->SetLengthEvoHistos( 1200.0 );
-  get4_monitor->SetMicroSliceLength( 16384*8*(1e-9) ); // s, From to 01/03 15:00
+  //  get4_monitor->SetBinSizeEvoHistos(  10.0 );
+  get4_monitor->SetBinSizeEvoHistos(1.0);
+  //  get4_monitor->SetBinSizeEvoHistos(   0.1 );
+  get4_monitor->SetLengthEvoHistos(1200.0);
+  get4_monitor->SetMicroSliceLength(16384 * 8
+                                    * (1e-9));  // s, From to 01/03 15:00
 
-//  get4_monitor->SetPulserMode( kFALSE ); // kTRUE = ON, kFALSE = OFF (default is ON)
-  get4_monitor->SetPulserMode( ); // kTRUE = ON, kFALSE = OFF (default is ON)
-  get4_monitor->SetPulserFee( 2 ); // 1 value (default is 0)
-  get4_monitor->SetPulserChans(  64, 68, 72, 76,
-                                 80, 84, 88, 92,
-                                288,292,296,300,
-                                304,308,312,316); // 1-16 values (default is 0-15)
+  //  get4_monitor->SetPulserMode( kFALSE ); // kTRUE = ON, kFALSE = OFF (default is ON)
+  get4_monitor->SetPulserMode();  // kTRUE = ON, kFALSE = OFF (default is ON)
+  get4_monitor->SetPulserFee(2);  // 1 value (default is 0)
+  get4_monitor->SetPulserChans(64,
+                               68,
+                               72,
+                               76,
+                               80,
+                               84,
+                               88,
+                               92,
+                               288,
+                               292,
+                               296,
+                               300,
+                               304,
+                               308,
+                               312,
+                               316);  // 1-16 values (default is 0-15)
   get4_monitor->SetOldReadoutSupp();
-  get4_monitor->SetMaxCoincDist(200000.0); // ps
-  get4_monitor->SetHistoFilename( sHistoFile + "_unpack.hst.root");
+  get4_monitor->SetMaxCoincDist(200000.0);  // ps
+  get4_monitor->SetHistoFilename(sHistoFile + "_unpack.hst.root");
   /*
   get4_monitor->SetCalibOutOn();
   get4_monitor->SetCalibOutFolder( "./data/");
   get4_monitor->SetCalibFilename( sCalibFile);
   */
-  get4_monitor->SetMaxDtMultiHit( 12800.0 ); // ps
+  get4_monitor->SetMaxDtMultiHit(12800.0);  // ps
 
   // --- Source task
   CbmFlibFileSourceNew* source = new CbmFlibFileSourceNew();
-//  source->SetFileName(inFile);
+  //  source->SetFileName(inFile);
   source->AddUnpacker(get4_monitor, 0x60);
   source->SetHostName(hostname);
 
@@ -106,10 +118,11 @@ void monitor_server_get4( Int_t nEvents = -1,
   // --- Start run
   TStopwatch timer;
   timer.Start();
-//  std::cout << ">>> Start run from the command line by calling Run(<events>)" << std::endl;
-  run->Run(nEvents, 0); // run until end of input file
+  //  std::cout << ">>> Start run from the command line by calling Run(<events>)" << std::endl;
+  run->Run(nEvents, 0);  // run until end of input file
 
-  get4_monitor->Finish(); // Should be called first as histo owned by analysis file :-(
+  get4_monitor
+    ->Finish();  // Should be called first as histo owned by analysis file :-(
   run->Finish();
   timer.Stop();
 
@@ -119,8 +132,8 @@ void monitor_server_get4( Int_t nEvents = -1,
   std::cout << std::endl << std::endl;
   std::cout << ">>> readTsa: Macro finished successfully." << std::endl;
   std::cout << ">>> readTsa: Output file is " << outFile << std::endl;
-  std::cout << ">>> readTsa: Real time " << rtime << " s, CPU time "
-               << ctime << " s" << std::endl;
+  std::cout << ">>> readTsa: Real time " << rtime << " s, CPU time " << ctime
+            << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

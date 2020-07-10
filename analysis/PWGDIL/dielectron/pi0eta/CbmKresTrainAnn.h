@@ -1,16 +1,15 @@
 #ifndef CBM_KRES_TRAIN_ANN
 #define CBM_KRES_TRAIN_ANN
 
+#include "TCanvas.h"
+#include "TH2D.h"
+#include "TVector3.h"
 #include <TClonesArray.h>
 #include <vector>
-#include "TVector3.h"
-#include "TH2D.h"
-#include "TCanvas.h"
 
 using namespace std;
 
-class CbmKresTrainAnn
-{
+class CbmKresTrainAnn {
 
 public:
   //***** brief Standard constructor.
@@ -22,7 +21,14 @@ public:
   void Init();
   void InitHistograms();
 
-  void Exec(int event, int IdForANN, double InvariantMass, double OpeningAngle, double PlaneAngle_last, double ZPos, TVector3 Momentum1, TVector3 Momentum2);
+  void Exec(int event,
+            int IdForANN,
+            double InvariantMass,
+            double OpeningAngle,
+            double PlaneAngle_last,
+            double ZPos,
+            TVector3 Momentum1,
+            TVector3 Momentum2);
   void TrainAndTestAnn();
   void Draw();
 
@@ -47,10 +53,10 @@ private:
   vector<double> Mom2_wrong;
 
   vector<TH1*> fHists;
-  TH1D * fhAnnOutput_correct;
-  TH1D * fhAnnOutput_wrong;
-  TH1D * fhCumProb_correct;
-  TH1D * fhCumProb_wrong;
+  TH1D* fhAnnOutput_correct;
+  TH1D* fhAnnOutput_wrong;
+  TH1D* fhCumProb_correct;
+  TH1D* fhCumProb_wrong;
 
 
   //***** brief Copy constructor.
@@ -60,8 +66,7 @@ private:
   CbmKresTrainAnn operator=(const CbmKresTrainAnn&);
 
 
-	ClassDef(CbmKresTrainAnn,1)
+  ClassDef(CbmKresTrainAnn, 1)
 };
 
 #endif
-

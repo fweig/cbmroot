@@ -9,8 +9,7 @@
 
 /// extra Doxygen comment 10/11/2011 by DE
 
-void run_trd_reco(Int_t nEvents = 5)
-{
+void run_trd_reco(Int_t nEvents = 5) {
   // ========================================================================
   //          Adjust this part according to your requirements
 
@@ -29,7 +28,7 @@ void run_trd_reco(Int_t nEvents = 5)
   //  Digitisation files.
   // The sts digi file is not needed. The code is only here to
   // show how one can load more than one digi file.
-  TList *parFileList = new TList();
+  TList* parFileList = new TList();
 
   TString paramDir = gSystem->Getenv("VMCWORKDIR");
   paramDir += "/parameters";
@@ -37,18 +36,16 @@ void run_trd_reco(Int_t nEvents = 5)
   TObjString stsDigiFile = paramDir + "/sts/sts_v09a.digi.par";
   parFileList->Add(&stsDigiFile);
 
-  TObjString trdDigiFile =  paramDir + "/trd/trd_v11c.digi.par";
+  TObjString trdDigiFile = paramDir + "/trd/trd_v11c.digi.par";
   parFileList->Add(&trdDigiFile);
 
   // In general, the following parts need not be touched
   // ========================================================================
 
 
- 
   // ----    Debug option   -------------------------------------------------
   gDebug = 0;
   // ------------------------------------------------------------------------
-
 
 
   // -----   Timer   --------------------------------------------------------
@@ -57,9 +54,8 @@ void run_trd_reco(Int_t nEvents = 5)
   // ------------------------------------------------------------------------
 
 
-
   // ----  Load libraries   -------------------------------------------------
- gROOT->LoadMacro("$VMCWORKDIR/gconfig/basiclibs.C");
+  gROOT->LoadMacro("$VMCWORKDIR/gconfig/basiclibs.C");
   basiclibs();
   gSystem->Load("libGeoBase");
   gSystem->Load("libParBase");
@@ -79,13 +75,12 @@ void run_trd_reco(Int_t nEvents = 5)
   gSystem->Load("libGlobal");
   gSystem->Load("libL1");
   gSystem->Load("libLittrack");
-  gSystem->Load("libMinuit2"); // Nedded for rich ellipse fitter
+  gSystem->Load("libMinuit2");  // Nedded for rich ellipse fitter
   // ------------------------------------------------------------------------
 
 
-
   // -----   Reconstruction run   -------------------------------------------
-  FairRunAna *run= new FairRunAna();
+  FairRunAna* run = new FairRunAna();
   run->SetInputFile(inFile);
   run->SetOutputFile(outFile);
   run->SetEventMeanTime(100);
@@ -96,33 +91,34 @@ void run_trd_reco(Int_t nEvents = 5)
   logger->SetLogToScreen(kTRUE);
   logger->SetLogToFile(kTRUE);
   logger->SetLogVerbosityLevel("MEDIUM");
-  logger->SetLogFileLevel("DEBUG"); // FATAL, ERROR, WARNING and INFO
-  logger->SetLogScreenLevel("INFO"); //Only FATAL and ERROR to screen
+  logger->SetLogFileLevel("DEBUG");   // FATAL, ERROR, WARNING and INFO
+  logger->SetLogScreenLevel("INFO");  //Only FATAL and ERROR to screen
 
   // =========================================================================
   // ===                     TRD local reconstruction                      ===
   // =========================================================================
 
   // Update of the values for the radiator F.U. 17.08.07
-  Int_t   trdNFoils = 130;       // number of polyetylene foils
-  Float_t trdDFoils = 0.0013;    // thickness of 1 foil [cm]
-  Float_t trdDGap   = 0.02;      // thickness of gap between foils [cm]
-  Bool_t  simpleTR  = kTRUE;     // use fast and simple version for TR
-                                 // production
+  Int_t trdNFoils   = 130;     // number of polyetylene foils
+  Float_t trdDFoils = 0.0013;  // thickness of 1 foil [cm]
+  Float_t trdDGap   = 0.02;    // thickness of gap between foils [cm]
+  Bool_t simpleTR   = kTRUE;   // use fast and simple version for TR
+                               // production
 
-  CbmTrdRadiator *radiator = new CbmTrdRadiator(simpleTR, trdNFoils, trdDFoils, trdDGap);
+  CbmTrdRadiator* radiator =
+    new CbmTrdRadiator(simpleTR, trdNFoils, trdDFoils, trdDGap);
 
-  CbmTrdDigitizer* trdDigitizer = new CbmTrdDigitizer("TRD Digitizer",
-                                                  "TRD task", radiator);
+  CbmTrdDigitizer* trdDigitizer =
+    new CbmTrdDigitizer("TRD Digitizer", "TRD task", radiator);
   trdDigitizer->RunTimeBased();
   run->AddTask(trdDigitizer);
 
   // -----  Parameter database   --------------------------------------------
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
-  FairParRootFileIo* parIo1 = new FairParRootFileIo();
+  FairRuntimeDb* rtdb        = run->GetRuntimeDb();
+  FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
   parIo1->open(parFile.Data());
-  parIo2->open(parFileList,"in");
+  parIo2->open(parFileList, "in");
   rtdb->setFirstInput(parIo1);
   rtdb->setSecondInput(parIo2);
   //  rtdb->setOutput(parIo1);
@@ -130,13 +126,11 @@ void run_trd_reco(Int_t nEvents = 5)
   // ------------------------------------------------------------------------
 
 
-     
   // -----   Intialise and run   --------------------------------------------
   run->Init();
   cout << "Starting run" << endl;
-  run->Run(0,nEvents);
+  run->Run(0, nEvents);
   // ------------------------------------------------------------------------
-
 
 
   // -----   Finish   -------------------------------------------------------
@@ -145,7 +139,7 @@ void run_trd_reco(Int_t nEvents = 5)
   Double_t ctime = timer.CpuTime();
   cout << endl << endl;
   cout << "Macro finished succesfully." << endl;
-  cout << "Output file is "    << outFile << endl;
+  cout << "Output file is " << outFile << endl;
   cout << "Parameter file is " << parFile << endl;
   cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << endl;
   cout << endl;

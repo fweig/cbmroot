@@ -1,90 +1,90 @@
 enum enu_calibMode {
-   etn_IMPORT,  // import calibration tables from the file and use them
-   etn_ONLINE,  // use first data to calibrate; the channel has to get at least fCalibrationPeriod messages to get calibrated
-   etn_NOCALIB, // use linear function going from origin to (512, n) which means that the fine time is not calibrated
-   etn_IDEAL,   // use almost linear function - close to real calibration but idealized
-   etn_NOFINE   // ignore fine time counter at all
+  etn_IMPORT,  // import calibration tables from the file and use them
+  etn_ONLINE,  // use first data to calibrate; the channel has to get at least fCalibrationPeriod messages to get calibrated
+  etn_NOCALIB,  // use linear function going from origin to (512, n) which means that the fine time is not calibrated
+  etn_IDEAL,  // use almost linear function - close to real calibration but idealized
+  etn_NOFINE  // ignore fine time counter at all
 };
 
-void run_analysis2()
-{
-   TStopwatch timer;
-   timer.Start();
-   gROOT->LoadMacro("$VMCWORKDIR/macro/littrack/loadlibs.C");
-   loadlibs();
+void run_analysis2() {
+  TStopwatch timer;
+  timer.Start();
+  gROOT->LoadMacro("$VMCWORKDIR/macro/littrack/loadlibs.C");
+  loadlibs();
 
-   TString outputDir = "output/";
-   TString outRootFileName = outputDir + "testtest.root";
-   TString runTitle;
-   TString outHistoFile;
+  TString outputDir       = "output/";
+  TString outRootFileName = outputDir + "testtest.root";
+  TString runTitle;
+  TString outHistoFile;
 
-   TString script = TString(gSystem->Getenv("SCRIPT"));
+  TString script = TString(gSystem->Getenv("SCRIPT"));
 
-   // --- Specify number of events to be produced.
-   // --- -1 means run until the end of the input file.
-   Int_t nEvents = 10;
+  // --- Specify number of events to be produced.
+  // --- -1 means run until the end of the input file.
+  Int_t nEvents = 10;
 
-   // --- Set log output levels
-   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
-   FairLogger::GetLogger()->SetLogVerbosityLevel("LOW");
+  // --- Set log output levels
+  FairLogger::GetLogger()->SetLogScreenLevel("INFO");
+  FairLogger::GetLogger()->SetLogVerbosityLevel("LOW");
 
-   // --- Set debug level
-   gDebug = 0;
+  // --- Set debug level
+  gDebug = 0;
 
-   CbmRichTrbUnpack2* source = new CbmRichTrbUnpack2();
+  CbmRichTrbUnpack2* source = new CbmRichTrbUnpack2();
 
-   if (script == "yes") {
-      TString hldFullFileName = TString(gSystem->Getenv("INPUT_HLD_FILE"));
+  if (script == "yes") {
+    TString hldFullFileName = TString(gSystem->Getenv("INPUT_HLD_FILE"));
 
-      source->AddInputFile(hldFullFileName);
+    source->AddInputFile(hldFullFileName);
 
-      outRootFileName = TString(gSystem->Getenv("OUTPUT_ROOT_FILE"));
-      outputDir = TString(gSystem->Getenv("OUTPUT_DIR"));
-      runTitle = TString(gSystem->Getenv("RUN_TITLE"));
-      outHistoFile = TString(gSystem->Getenv("OUTPUT_HISTO_FILE"));
-   } else {
+    outRootFileName = TString(gSystem->Getenv("OUTPUT_ROOT_FILE"));
+    outputDir       = TString(gSystem->Getenv("OUTPUT_DIR"));
+    runTitle        = TString(gSystem->Getenv("RUN_TITLE"));
+    outHistoFile    = TString(gSystem->Getenv("OUTPUT_HISTO_FILE"));
+  } else {
 
-      // --- Set the input files
+    // --- Set the input files
 
-      TString hldFileDir = "/store/cbm_rich_data_2014/flib/";
-      source->AddInputFile(hldFileDir + "1040_cern2014.hld");
-      runTitle = "flib_data";
-      outHistoFile = runTitle + ".histo.root";
-   }
+    TString hldFileDir = "/store/cbm_rich_data_2014/flib/";
+    source->AddInputFile(hldFileDir + "1040_cern2014.hld");
+    runTitle     = "flib_data";
+    outHistoFile = runTitle + ".histo.root";
+  }
 
-   CbmTrbCalibrator* fgCalibrator = CbmTrbCalibrator::Instance();
-   fgCalibrator->SetCalibrationPeriod(100000);
-   fgCalibrator->SetInputFilename("calibration.root");            // does not actually import data - only defines
-                                                                  // the file that will be used if you specify mode etn_IMPORT
-   fgCalibrator->SetMode(etn_ONLINE);
-                                                                  // Also note the (un)commented line in the end of the macro with export func
+  CbmTrbCalibrator* fgCalibrator = CbmTrbCalibrator::Instance();
+  fgCalibrator->SetCalibrationPeriod(100000);
+  fgCalibrator->SetInputFilename(
+    "calibration.root");  // does not actually import data - only defines
+    // the file that will be used if you specify mode etn_IMPORT
+  fgCalibrator->SetMode(etn_ONLINE);
+  // Also note the (un)commented line in the end of the macro with export func
 
-   // --- Event header
-   //FairEventHeader* event = new CbmTbEvent();
-   //event->SetRunId(260);
+  // --- Event header
+  //FairEventHeader* event = new CbmTbEvent();
+  //event->SetRunId(260);
 
-   // --- Run
-   FairRunOnline *run = new FairRunOnline(source);
-   run->SetOutputFile(outRootFileName);
-   //run->SetEventHeader(event);
+  // --- Run
+  FairRunOnline* run = new FairRunOnline(source);
+  run->SetOutputFile(outRootFileName);
+  //run->SetEventHeader(event);
 
-   CbmTrbEdgeMatcher* matcher = new CbmTrbEdgeMatcher();
-   matcher->SetDrawHits(kFALSE);
-   run->AddTask(matcher);
+  CbmTrbEdgeMatcher* matcher = new CbmTrbEdgeMatcher();
+  matcher->SetDrawHits(kFALSE);
+  run->AddTask(matcher);
 
-   CbmRichTrbEventBuilder* unpack_qa = new CbmRichTrbEventBuilder();
-   unpack_qa->SetDrawHist(kTRUE);
-   unpack_qa->SetRunTitle(runTitle);
-   unpack_qa->SetOutputDir(outputDir);
-   unpack_qa->SetOutHistoFile(outputDir + outHistoFile);
-   run->AddTask(unpack_qa);
+  CbmRichTrbEventBuilder* unpack_qa = new CbmRichTrbEventBuilder();
+  unpack_qa->SetDrawHist(kTRUE);
+  unpack_qa->SetRunTitle(runTitle);
+  unpack_qa->SetOutputDir(outputDir);
+  unpack_qa->SetOutHistoFile(outputDir + outHistoFile);
+  run->AddTask(unpack_qa);
 
-/*
+  /*
    CbmRichEventDebug* eventDebug = new CbmRichEventDebug();
    eventDebug->SetOutHistoFile(outputDir + runTitle + ".histo2.root");
    run->AddTask(eventDebug);
 */
-/*
+  /*
    CbmRichReconstruction* richReco = new CbmRichReconstruction();
    richReco->SetFinderName("hough_prototype");
    richReco->SetRunTrackAssign(false);
@@ -97,7 +97,7 @@ void run_analysis2()
    richRingHitsAna->SetOutHistoFile(outputDir + runTitle + ".histo2.root");
    run->AddTask(richRingHitsAna);
 */
-/*
+  /*
    CbmRichTrbRecoQa* qaReco = new CbmRichTrbRecoQa();
    qaReco->SetMaxNofEventsToDraw(6);
    qaReco->SetOutputDir(outputDir);
@@ -106,29 +106,29 @@ void run_analysis2()
    run->AddTask(qaReco);
 */
 
-   run->Init();
+  run->Init();
 
-   // --- Start run
-   TStopwatch timer;
-   timer.Start();
-   run->Run(nEvents, 0); // run until end of input file
-   timer.Stop();
+  // --- Start run
+  TStopwatch timer;
+  timer.Start();
+  run->Run(nEvents, 0);  // run until end of input file
+  timer.Stop();
 
-   // --- export calibration tables
-   //fgCalibrator->ForceCalibration();
-   //fgCalibrator->Export("calibration.root");
+  // --- export calibration tables
+  //fgCalibrator->ForceCalibration();
+  //fgCalibrator->Export("calibration.root");
 
-   // You may try to draw the histograms showing which channels are calibrated
-   //fgCalibrator->Draw();
+  // You may try to draw the histograms showing which channels are calibrated
+  //fgCalibrator->Draw();
 
-   // --- End-of-run info
-   Double_t rtime = timer.RealTime();
-   Double_t ctime = timer.CpuTime();
-   std::cout << std::endl << std::endl;
-   std::cout << "Macro finished successfully." << std::endl;
-   std::cout << "Output file is " << outRootFileName << std::endl;
-   std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
-   std::cout << " Test passed" << std::endl;
-   std::cout << " All ok " << std::endl;
+  // --- End-of-run info
+  Double_t rtime = timer.RealTime();
+  Double_t ctime = timer.CpuTime();
+  std::cout << std::endl << std::endl;
+  std::cout << "Macro finished successfully." << std::endl;
+  std::cout << "Output file is " << outRootFileName << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
+            << std::endl;
+  std::cout << " Test passed" << std::endl;
+  std::cout << " All ok " << std::endl;
 }
-

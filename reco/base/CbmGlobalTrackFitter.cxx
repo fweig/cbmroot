@@ -6,4 +6,3 @@
 #include "CbmGlobalTrackFitter.h"
 
 ClassImp(CbmGlobalTrackFitter);
-

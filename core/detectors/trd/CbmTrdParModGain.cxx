@@ -3,9 +3,6 @@
 
 //___________________________________________________________________
 CbmTrdParModGain::CbmTrdParModGain(const char* name, const char* title)
-  : CbmTrdParMod(name, title)
-{
-
-}
+  : CbmTrdParMod(name, title) {}
 
 ClassImp(CbmTrdParModGain)

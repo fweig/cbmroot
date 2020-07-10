@@ -18,4 +18,3 @@
 #define timetype double
 
 #endif /* CBMGLOBALTRACKINGDEFS_H */
-

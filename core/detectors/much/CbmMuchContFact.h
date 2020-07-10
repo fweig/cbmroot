@@ -11,7 +11,7 @@
 #ifndef CBMMUCHCONTFACT_H
 #define CBMMUCHCONTFACT_H
 
-#include <Rtypes.h>        // for THashConsistencyHolder, ClassDef
+#include <Rtypes.h>  // for THashConsistencyHolder, ClassDef
 
 #include <FairContFact.h>  // for FairContFact
 
@@ -22,12 +22,13 @@ class FairContainer;
 class CbmMuchContFact : public FairContFact {
 private:
   void setAllContainers();
+
 public:
   CbmMuchContFact();
   ~CbmMuchContFact() {}
   FairParSet* createContainer(FairContainer*);
-  void  activateParIo(FairParIo* io);
-  ClassDef( CbmMuchContFact,0) // Factory for all Much parameter containers
+  void activateParIo(FairParIo* io);
+  ClassDef(CbmMuchContFact, 0)  // Factory for all Much parameter containers
 };
 
-#endif  /* !CBMMUCHCONTFACT_H */
+#endif /* !CBMMUCHCONTFACT_H */

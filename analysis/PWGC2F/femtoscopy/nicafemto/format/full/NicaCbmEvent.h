@@ -9,36 +9,37 @@
 #ifndef NICACBMMATCHEEVENT_H_
 #define NICACBMMATCHEEVENT_H_
 
+#include "CbmDetectorID.h"
 #include "NicaCbmGlobalEvent.h"
 #include "NicaTrackClones.h"
-#include "CbmDetectorID.h"
-class NicaCbmEvent : public NicaCbmGlobalEvent{
+class NicaCbmEvent : public NicaCbmGlobalEvent {
 public:
 protected:
-	NicaCbmSetup fMode;
-	NicaTrackClones *fStsTracks;
-	NicaTrackClones *fTrdTracks;
-	NicaTrackClones *fTofHits;
-	NicaTrackClones *fRichRings;
-	NicaTrackClones *fMuchTracks;
-	virtual void ShallowCopyTracks(NicaEvent *event);
-	virtual void ShallowCopyEvent(NicaEvent *event);
-	virtual void CreateSource();
-	NicaCbmEvent(TString classname, NicaCbmSetup mode);
+  NicaCbmSetup fMode;
+  NicaTrackClones* fStsTracks;
+  NicaTrackClones* fTrdTracks;
+  NicaTrackClones* fTofHits;
+  NicaTrackClones* fRichRings;
+  NicaTrackClones* fMuchTracks;
+  virtual void ShallowCopyTracks(NicaEvent* event);
+  virtual void ShallowCopyEvent(NicaEvent* event);
+  virtual void CreateSource();
+  NicaCbmEvent(TString classname, NicaCbmSetup mode);
+
 public:
-	NicaCbmEvent(NicaCbmSetup mode=kSis100Hadron);
-	NicaCbmSetup GetMode()const{return fMode;}
-	virtual Bool_t ExistInTree() const;
-	NicaTrackClones* GetStsTracks() const {return fStsTracks;}
-	NicaTrackClones* GetTofHits() const {return fTofHits;}
-	NicaTrackClones* GetTrdTracks() const {return fTrdTracks;}
-	NicaTrackClones *GetRichRings()const{return fRichRings;};
-	NicaTrackClones *GetMuchTracks()const{return fMuchTracks;};
-	virtual void Update();
-	virtual TString GetFormatName()const;
-	virtual NicaEvent *GetNewEvent() const{return new NicaCbmEvent(fMode);};
-	virtual ~NicaCbmEvent();
-	ClassDef(NicaCbmEvent,1)
+  NicaCbmEvent(NicaCbmSetup mode = kSis100Hadron);
+  NicaCbmSetup GetMode() const { return fMode; }
+  virtual Bool_t ExistInTree() const;
+  NicaTrackClones* GetStsTracks() const { return fStsTracks; }
+  NicaTrackClones* GetTofHits() const { return fTofHits; }
+  NicaTrackClones* GetTrdTracks() const { return fTrdTracks; }
+  NicaTrackClones* GetRichRings() const { return fRichRings; };
+  NicaTrackClones* GetMuchTracks() const { return fMuchTracks; };
+  virtual void Update();
+  virtual TString GetFormatName() const;
+  virtual NicaEvent* GetNewEvent() const { return new NicaCbmEvent(fMode); };
+  virtual ~NicaCbmEvent();
+  ClassDef(NicaCbmEvent, 1)
 };
 
 #endif /* NICACBMMATCHEEVENT_H_ */

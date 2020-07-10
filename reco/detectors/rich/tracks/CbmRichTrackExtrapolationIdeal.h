@@ -25,49 +25,47 @@
 * \author Claudia Hoehne
 * \date 2006
 **/
-class CbmRichTrackExtrapolationIdeal : public CbmRichTrackExtrapolationBase
-{
+class CbmRichTrackExtrapolationIdeal : public CbmRichTrackExtrapolationBase {
 public:
-
-   /**
+  /**
     * \brief Default constructor.
     */
-   CbmRichTrackExtrapolationIdeal();
+  CbmRichTrackExtrapolationIdeal();
 
-   /**
+  /**
     * \brief Destructor.
     */
-   virtual ~CbmRichTrackExtrapolationIdeal();
+  virtual ~CbmRichTrackExtrapolationIdeal();
 
-   /**
+  /**
     * \brief Inherited from CbmRichTrackExtrapolationBase.
     */
-   virtual void Init();
+  virtual void Init();
 
 
-   /**
+  /**
     * \brief Inherited from CbmRichTrackExtrapolationBase.
     */
-   virtual void DoExtrapolation(
-         TClonesArray* globalTracks,
-         TClonesArray* extrapolatedTrackParams,
-         double z);
+  virtual void DoExtrapolation(TClonesArray* globalTracks,
+                               TClonesArray* extrapolatedTrackParams,
+                               double z);
 
 private:
-   TClonesArray* fRefPlanePoints;
-   TClonesArray* fMcTracks;
-   TClonesArray* fStsTracks;
-   TClonesArray* fStsTrackMatches;
+  TClonesArray* fRefPlanePoints;
+  TClonesArray* fMcTracks;
+  TClonesArray* fStsTracks;
+  TClonesArray* fStsTrackMatches;
 
-   /**
+  /**
     * \brief Copy constructor.
     */
-   CbmRichTrackExtrapolationIdeal(const CbmRichTrackExtrapolationIdeal&);
+  CbmRichTrackExtrapolationIdeal(const CbmRichTrackExtrapolationIdeal&);
 
-   /**
+  /**
     * \brief Assignment operator.
     */
-   CbmRichTrackExtrapolationIdeal& operator=(const CbmRichTrackExtrapolationIdeal&);
+  CbmRichTrackExtrapolationIdeal&
+  operator=(const CbmRichTrackExtrapolationIdeal&);
 };
 
 #endif

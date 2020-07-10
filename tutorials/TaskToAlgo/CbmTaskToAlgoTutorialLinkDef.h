@@ -4,8 +4,7 @@
 #pragma link off all classes;
 #pragma link off all functions;
 
-#pragma link C++ class CbmStsHitProducerTaskIdeal+;
-#pragma link C++ class CbmStsHitProducerIdealWrapper+;
+#pragma link C++ class CbmStsHitProducerTaskIdeal + ;
+#pragma link C++ class CbmStsHitProducerIdealWrapper + ;
 
 #endif /* __CINT__ */
-

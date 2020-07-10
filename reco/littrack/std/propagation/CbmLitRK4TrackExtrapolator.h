@@ -21,33 +21,29 @@
 
 class CbmLitField;
 
-class CbmLitRK4TrackExtrapolator: public CbmLitTrackExtrapolator
-{
+class CbmLitRK4TrackExtrapolator : public CbmLitTrackExtrapolator {
 public:
-   /* Constructor with field
+  /* Constructor with field
     *@param field Magnetic field.
     */
-   CbmLitRK4TrackExtrapolator(std::shared_ptr<CbmLitField> field);
-      //CbmLitField* field);
+  CbmLitRK4TrackExtrapolator(std::shared_ptr<CbmLitField> field);
+  //CbmLitField* field);
 
-   /* Destructor */
-   virtual ~CbmLitRK4TrackExtrapolator();
+  /* Destructor */
+  virtual ~CbmLitRK4TrackExtrapolator();
 
-   /* Inherited from CbmLitTrackExtrapolation */
-   virtual LitStatus Extrapolate(
-      const CbmLitTrackParam* parIn,
-      CbmLitTrackParam* parOut,
-      litfloat zOut,
-      std::vector<litfloat>* F);
+  /* Inherited from CbmLitTrackExtrapolation */
+  virtual LitStatus Extrapolate(const CbmLitTrackParam* parIn,
+                                CbmLitTrackParam* parOut,
+                                litfloat zOut,
+                                std::vector<litfloat>* F);
 
-   /* Inherited from CbmLitTrackExtrapolation */
-   virtual LitStatus Extrapolate(
-      CbmLitTrackParam* par,
-      litfloat zOut,
-      std::vector<litfloat>* F);
+  /* Inherited from CbmLitTrackExtrapolation */
+  virtual LitStatus
+  Extrapolate(CbmLitTrackParam* par, litfloat zOut, std::vector<litfloat>* F);
 
 protected:
-   /* Calculates output track parameters and derivatives with the 4th order Runge-Kutta method.
+  /* Calculates output track parameters and derivatives with the 4th order Runge-Kutta method.
     * @param xIn Input track parameters vector (x, y, tx, ty, q/p).
     * @param zIn Input Z position [cm].
     * @param xOut Output track parameters vector (x, y, tx, ty, q/p)
@@ -55,32 +51,27 @@ protected:
     * @param derivs Vector with integrated derivatives.
     */
 
-   void RK4Order(
-      const std::vector<litfloat>& xIn,
-      litfloat zIn,
-      std::vector<litfloat>& xOut,
-      litfloat zOut,
-      std::vector<litfloat>& derivs) const;
+  void RK4Order(const std::vector<litfloat>& xIn,
+                litfloat zIn,
+                std::vector<litfloat>& xOut,
+                litfloat zOut,
+                std::vector<litfloat>& derivs) const;
 
-   /* TODO: add comment */
-   litfloat CalcOut(
-      litfloat in,
-      const litfloat k[4]) const;
+  /* TODO: add comment */
+  litfloat CalcOut(litfloat in, const litfloat k[4]) const;
 
-   /* Transport the covariance matrix, using formula cOut = F*cIn*Ft.
+  /* Transport the covariance matrix, using formula cOut = F*cIn*Ft.
     * @param cIn Input covariance matrix.
     * @param F Input transport matrix.
     * @param cOut Output covariance matrix.
     */
-   void TransportC(
-      const std::vector<litfloat>& cIn,
-      const std::vector<litfloat>& F,
-      std::vector<litfloat>& cOut) const;
+  void TransportC(const std::vector<litfloat>& cIn,
+                  const std::vector<litfloat>& F,
+                  std::vector<litfloat>& cOut) const;
 
 private:
-   std::shared_ptr<CbmLitField> fField;
-   //CbmLitField* fField; // magnetic field
+  std::shared_ptr<CbmLitField> fField;
+  //CbmLitField* fField; // magnetic field
 };
 
-#endif //CBMLITRK4TRACKEXTRAPOLATOR_H_
-
+#endif  //CBMLITRK4TRACKEXTRAPOLATOR_H_

@@ -13,65 +13,64 @@
 
 class CbmLitFitTracksParallel : public FairTask {
 public:
-   /**
+  /**
     * \brief Constructor.
     */
-   CbmLitFitTracksParallel();
+  CbmLitFitTracksParallel();
 
-   /**
+  /**
     * \brief Destructor.
     */
-   virtual ~CbmLitFitTracksParallel();
+  virtual ~CbmLitFitTracksParallel();
 
-   /**
+  /**
      * \brief Derived from FairTask.
      */
-    virtual InitStatus Init();
+  virtual InitStatus Init();
 
-    /**
+  /**
      * \brief Derived from FairTask.
      */
-    virtual void Exec(
-       Option_t* opt);
+  virtual void Exec(Option_t* opt);
 
-    /**
+  /**
      * \brief Derived from FairTask.
      */
-    virtual void Finish();
+  virtual void Finish();
 
 private:
-    /**
+  /**
      * \brief Read data branches.
      */
-    void ReadDataBranches();
+  void ReadDataBranches();
 
-    /**
+  /**
      * \brief Performs track fit.
      */
-    void DoFit();
+  void DoFit();
 
-    /**
+  /**
      * \brief Print stopwatch statistics.
      */
-    void PrintStopwatchStatistics();
+  void PrintStopwatchStatistics();
 
-    // Data branches
-    TClonesArray* fGlobalTracks;
-    TClonesArray* fStsTracks;
-    TClonesArray* fTrdTracks;
-    TClonesArray* fMuchTracks;
-    TClonesArray* fTrdHits;
-    TClonesArray* fMuchPixelHits;
-    TClonesArray* fMuchStrawHits;
+  // Data branches
+  TClonesArray* fGlobalTracks;
+  TClonesArray* fStsTracks;
+  TClonesArray* fTrdTracks;
+  TClonesArray* fMuchTracks;
+  TClonesArray* fTrdHits;
+  TClonesArray* fMuchPixelHits;
+  TClonesArray* fMuchStrawHits;
 
-    // stopwatches
-    TStopwatch fFitWatch; // stopwatch for track fit without IO
-    TStopwatch fFitWithIOWatch; // stopwatch for track fit including IO
+  // stopwatches
+  TStopwatch fFitWatch;        // stopwatch for track fit without IO
+  TStopwatch fFitWithIOWatch;  // stopwatch for track fit including IO
 
-    CbmLitFitTracksParallel(const CbmLitFitTracksParallel&);
-    CbmLitFitTracksParallel& operator=(const CbmLitFitTracksParallel&);
-    
-    ClassDef(CbmLitFitTracksParallel, 1);
+  CbmLitFitTracksParallel(const CbmLitFitTracksParallel&);
+  CbmLitFitTracksParallel& operator=(const CbmLitFitTracksParallel&);
+
+  ClassDef(CbmLitFitTracksParallel, 1);
 };
 
 #endif /* CBMLITFITTRACKSPARALLEL_H_ */

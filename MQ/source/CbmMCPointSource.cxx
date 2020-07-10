@@ -8,21 +8,21 @@
 #include "CbmMCPointSource.h"
 #include "CbmMQDefs.h"
 
-#include "CbmMvdPoint.h"
-#include "CbmStsPoint.h"
-#include "CbmRichPoint.h"
 #include "CbmMuchPoint.h"
-#include "CbmTrdPoint.h"
+#include "CbmMvdPoint.h"
+#include "CbmRichPoint.h"
+#include "CbmStsPoint.h"
 #include "CbmTofPoint.h"
+#include "CbmTrdPoint.h"
 //#include "CbmEcalPoint.h"
 #include "CbmPsdPoint.h"
 
 #include "FairMQLogger.h"
-#include "FairMQProgOptions.h" // device->fConfig
+#include "FairMQProgOptions.h"  // device->fConfig
 
+#include "FairFileSource.h"
 #include "FairRootManager.h"
 #include "FairRunAna.h"
-#include "FairFileSource.h"
 
 #include "TClonesArray.h"
 
@@ -30,37 +30,38 @@
 // include this header to serialize vectors
 //#include <boost/serialization/vector.hpp>
 
-#include <stdio.h>
-#include <ctime>
-#include <thread> // this_thread::sleep_for
 #include <chrono>
+#include <ctime>
 #include <stdexcept>
+#include <stdio.h>
+#include <thread>  // this_thread::sleep_for
 
 using namespace std;
 
-struct InitTaskError : std::runtime_error { using std::runtime_error::runtime_error; };
+struct InitTaskError : std::runtime_error {
+  using std::runtime_error::runtime_error;
+};
 
 
-void CbmMCPointSource::InitTask()
-try
-{
+void CbmMCPointSource::InitTask() try {
   // Get the values from the command line options (via fConfig)
-  fFileName = fConfig->GetValue<string>("filename");
+  fFileName  = fConfig->GetValue<string>("filename");
   fMaxEvents = fConfig->GetValue<uint64_t>("max-events");
-  
-  
+
+
   LOG(info) << "Filename: " << fFileName;
   LOG(info) << "MaxEvents: " << fMaxEvents;
-  
+
   // Check if the defined channels from the topology (by name)
   // are in the list of channels which are allowed
-  fChan.CheckChannels(this);    
+  fChan.CheckChannels(this);
   fComponentsToSend = fChan.GetComponentsToSend();
-  fChannelsToSend = fChan.GetChannelsToSend();
-  
-  for(auto const& value: fComponentsToSend) {  
+  fChannelsToSend   = fChan.GetChannelsToSend();
+
+  for (auto const& value : fComponentsToSend) {
     if (value > 1) {
-      throw InitTaskError("Sending same data to more than one output channel not implemented yet.");
+      throw InitTaskError("Sending same data to more than one output channel "
+                          "not implemented yet.");
     }
   }
 
@@ -71,26 +72,25 @@ try
   FairRunAna* ana = new FairRunAna();
   ana->SetContainerStatic();
   FairRootManager* rootman = FairRootManager::Instance();
-    
-  if ( 0 != fFileName.size() ) {
+
+  if (0 != fFileName.size()) {
     LOG(info) << "Open the ROOT input file " << fFileName;
     // Check if the input file exist
     FILE* inputFile = fopen(fFileName.c_str(), "r");
-    if ( ! inputFile )  {
-      throw InitTaskError("Input file doesn't exist.");
-    }
+    if (!inputFile) { throw InitTaskError("Input file doesn't exist."); }
     fclose(inputFile);
-    FairFileSource* source = new FairFileSource(fFileName); 
-    if ( !source) {
-      throw InitTaskError("Could not open input file.");
-    }
+    FairFileSource* source = new FairFileSource(fFileName);
+    if (!source) { throw InitTaskError("Could not open input file."); }
     rootman->SetSource(source);
     rootman->InitSource();
 
 
-    for (unsigned i=0; i < fComponentsToSend.size(); i++) {
-      if (1 == fComponentsToSend.at(i)) { // there is a device connected which consumes data of this type
-	std::vector<std::string> channel_name = fChannelsToSend.at(i);
+    for (unsigned i = 0; i < fComponentsToSend.size(); i++) {
+      if (
+        1
+        == fComponentsToSend.at(
+          i)) {  // there is a device connected which consumes data of this type
+        std::vector<std::string> channel_name = fChannelsToSend.at(i);
         LOG(info) << channel_name.at(0);
         ConnectChannelIfNeeded(i, channel_name.at(0), "MvdPoint", rootman);
         ConnectChannelIfNeeded(i, channel_name.at(0), "StsPoint", rootman);
@@ -98,34 +98,37 @@ try
         ConnectChannelIfNeeded(i, channel_name.at(0), "MuchPoint", rootman);
         ConnectChannelIfNeeded(i, channel_name.at(0), "TrdPoint", rootman);
         ConnectChannelIfNeeded(i, channel_name.at(0), "TofPoint", rootman);
-//        ConnectChannelIfNeeded(i, channel_name.at(0), "EcalPoint", rootman);
+        //        ConnectChannelIfNeeded(i, channel_name.at(0), "EcalPoint", rootman);
         ConnectChannelIfNeeded(i, channel_name.at(0), "PsdPoint", rootman);
       } else {
         fArrays.at(i) = nullptr;
       }
     }
   } else {
-      throw InitTaskError("No input file specified");
+    throw InitTaskError("No input file specified");
   }
 
-  Int_t MaxAllowed=FairRootManager::Instance()->CheckMaxEventNo(fMaxEvents);
-  if ( MaxAllowed != -1 ) {	
+  Int_t MaxAllowed = FairRootManager::Instance()->CheckMaxEventNo(fMaxEvents);
+  if (MaxAllowed != -1) {
     if (fMaxEvents == 0) {
-       fMaxEvents = MaxAllowed;
+      fMaxEvents = MaxAllowed;
     } else {
       if (static_cast<Int_t>(fMaxEvents) > MaxAllowed) {
         LOG(warn) << "-------------------Warning---------------------------";
         LOG(warn) << " File has less events than requested!!";
-        LOG(warn) << " File contains : " << MaxAllowed  << " Events";
-        LOG(warn) << " Requested number of events = " <<  fMaxEvents <<  " Events";
-        LOG(warn) << " The number of events is set to " << MaxAllowed << " Events";
+        LOG(warn) << " File contains : " << MaxAllowed << " Events";
+        LOG(warn) << " Requested number of events = " << fMaxEvents
+                  << " Events";
+        LOG(warn) << " The number of events is set to " << MaxAllowed
+                  << " Events";
         LOG(warn) << "-----------------------------------------------------";
         fMaxEvents = MaxAllowed;
       }
     }
-    LOG(info) << "After checking, the run will run from event 0 " << " to " << fMaxEvents << ".";
+    LOG(info) << "After checking, the run will run from event 0 "
+              << " to " << fMaxEvents << ".";
   } else {
-   LOG(info) << "continue running without stop";
+    LOG(info) << "continue running without stop";
   }
 
 
@@ -137,77 +140,83 @@ try
 }
 
 void CbmMCPointSource::ConnectChannelIfNeeded(int chan_number,
-                                              std::string channel_name, std::string branchname,
-                                              FairRootManager* rootman) 
-{
-  if ( 0 == channel_name.compare(branchname) ) { 
+                                              std::string channel_name,
+                                              std::string branchname,
+                                              FairRootManager* rootman) {
+  if (0 == channel_name.compare(branchname)) {
     LOG(info) << "Found expected data type " << branchname;
-    TClonesArray* arr = static_cast<TClonesArray*>(rootman->GetObject(branchname.c_str()));
+    TClonesArray* arr =
+      static_cast<TClonesArray*>(rootman->GetObject(branchname.c_str()));
     if (!arr) {
-      LOG(info) << "Consuming device connected but no " << branchname << " array in input file!";
-      fComponentsToSend.at(chan_number) = 0; // Don't send to connected device since needed data is not in input
+      LOG(info) << "Consuming device connected but no " << branchname
+                << " array in input file!";
+      fComponentsToSend.at(chan_number) =
+        0;  // Don't send to connected device since needed data is not in input
     }
     fArrays.at(chan_number) = arr;
   }
 }
 
 
-bool CbmMCPointSource::ConditionalRun()
-{
+bool CbmMCPointSource::ConditionalRun() {
 
   Int_t readEventReturn = FairRootManager::Instance()->ReadEvent(fEventCounter);
   //  LOG(info) <<"Return value: " << readEventReturn;
-  
-  if ( readEventReturn != 0 ) {
-    LOG(warn) << "FairRootManager::Instance()->ReadEvent(" << fEventCounter << ") returned "
-	      << readEventReturn << ". Breaking the event loop";
+
+  if (readEventReturn != 0) {
+    LOG(warn) << "FairRootManager::Instance()->ReadEvent(" << fEventCounter
+              << ") returned " << readEventReturn
+              << ". Breaking the event loop";
     CalcRuntime();
     return false;
   }
-  
-  for (unsigned i=0; i < fComponentsToSend.size(); i++) {
+
+  for (unsigned i = 0; i < fComponentsToSend.size(); i++) {
     bool result = true;
-    if (1 == fComponentsToSend.at(i)) { // there is a device connected which consumes data of this type
+    if (1
+        == fComponentsToSend.at(
+          i)) {  // there is a device connected which consumes data of this type
 
       if (0 == fChannelsToSend.at(i).at(0).compare("MvdPoint")) {
-	result = ConvertAndSend<CbmMvdPoint>(fArrays.at(i), i);
+        result = ConvertAndSend<CbmMvdPoint>(fArrays.at(i), i);
       }
       if (0 == fChannelsToSend.at(i).at(0).compare("StsPoint")) {
-	result = ConvertAndSend<CbmStsPoint>(fArrays.at(i), i);
+        result = ConvertAndSend<CbmStsPoint>(fArrays.at(i), i);
       }
       if (0 == fChannelsToSend.at(i).at(0).compare("RichPoint")) {
-	result = ConvertAndSend<CbmRichPoint>(fArrays.at(i), i);
+        result = ConvertAndSend<CbmRichPoint>(fArrays.at(i), i);
       }
       if (0 == fChannelsToSend.at(i).at(0).compare("MuchPoint")) {
-	result = ConvertAndSend<CbmMuchPoint>(fArrays.at(i), i);
+        result = ConvertAndSend<CbmMuchPoint>(fArrays.at(i), i);
       }
       if (0 == fChannelsToSend.at(i).at(0).compare("TrdPoint")) {
-	result = ConvertAndSend<CbmTrdPoint>(fArrays.at(i), i);
+        result = ConvertAndSend<CbmTrdPoint>(fArrays.at(i), i);
       }
       if (0 == fChannelsToSend.at(i).at(0).compare("TofPoint")) {
-	result = ConvertAndSend<CbmTofPoint>(fArrays.at(i),i );
+        result = ConvertAndSend<CbmTofPoint>(fArrays.at(i), i);
       }
-/*
+      /*
       if (0 == fChannelsToSend.at(i).at(0).compare("EcalPoint")) {
 	result = ConvertAndSend<CbmEcalPoint>(fArrays.at(i),i );
       }
 */
       if (0 == fChannelsToSend.at(i).at(0).compare("PsdPoint")) {
-	result = ConvertAndSend<CbmPsdPoint>(fArrays.at(i), i);
+        result = ConvertAndSend<CbmPsdPoint>(fArrays.at(i), i);
       }
 
       if (!result) {
-	LOG(error) << "Problem sending data";
-	return false;
+        LOG(error) << "Problem sending data";
+        return false;
       }
     }
   }
 
-  if (fEventCounter % 10000 == 0)  LOG(info) << "Analyse Event " << fEventCounter;
+  if (fEventCounter % 10000 == 0)
+    LOG(info) << "Analyse Event " << fEventCounter;
   fEventCounter++;
-  
-  
-  //  LOG(info) << "Counter: " << fEventCounter << " Events: " << fMaxEvents;    
+
+
+  //  LOG(info) << "Counter: " << fEventCounter << " Events: " << fMaxEvents;
   if (fEventCounter < fMaxEvents) {
     return true;
   } else {
@@ -216,16 +225,12 @@ bool CbmMCPointSource::ConditionalRun()
   }
 }
 
-CbmMCPointSource::~ CbmMCPointSource()
-{
-}
+CbmMCPointSource::~CbmMCPointSource() {}
 
-void CbmMCPointSource::CalcRuntime()
-{
-  std::chrono::duration<double> run_time =  
+void CbmMCPointSource::CalcRuntime() {
+  std::chrono::duration<double> run_time =
     std::chrono::steady_clock::now() - fTime;
-  
+
   LOG(info) << "Runtime: " << run_time.count();
   LOG(info) << "No more input data";
 }
-

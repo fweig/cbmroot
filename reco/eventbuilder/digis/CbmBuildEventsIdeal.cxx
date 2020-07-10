@@ -5,36 +5,31 @@
 
 #include "CbmBuildEventsIdeal.h"
 
+#include <FairLogger.h>
+#include <FairRootManager.h>
+#include <TClonesArray.h>
+#include <TStopwatch.h>
 #include <cassert>
 #include <iomanip>
 #include <iostream>
-#include <TClonesArray.h>
-#include <TStopwatch.h>
-#include <FairLogger.h>
-#include <FairRootManager.h>
 
 #include "CbmDigiManager.h"
 #include "CbmEvent.h"
 #include "CbmLink.h"
 #include "CbmMatch.h"
 #include "CbmModuleList.h"
-#include "CbmDigiManager.h"
 
 using namespace std;
 
 
 // =====   Constructor   =====================================================
-CbmBuildEventsIdeal::CbmBuildEventsIdeal() : FairTask("BuildEventsIdeal") {
-}
+CbmBuildEventsIdeal::CbmBuildEventsIdeal() : FairTask("BuildEventsIdeal") {}
 // ===========================================================================
-
 
 
 // =====   Destructor   ======================================================
-CbmBuildEventsIdeal::~CbmBuildEventsIdeal() {
-}
+CbmBuildEventsIdeal::~CbmBuildEventsIdeal() {}
 // ===========================================================================
-
 
 
 // =====   Task execution   ==================================================
@@ -43,22 +38,23 @@ void CbmBuildEventsIdeal::Exec(Option_t*) {
   TStopwatch timer;
   timer.Start();
   std::map<Int_t, CbmEvent*> eventMap;
-  Int_t nEvents = 0;
-  UInt_t nDigisTot = 0;
+  Int_t nEvents      = 0;
+  UInt_t nDigisTot   = 0;
   UInt_t nDigisNoise = 0;
 
   // Clear output array
   fEvents->Delete();
 
   for (ECbmModuleId& system : fSystems) {
-    if ( ! fDigiMan->IsPresent(system) ) continue;
-    if ( ! fDigiMan->IsMatchPresent(system) ) continue;
-    Int_t nDigis = fDigiMan->GetNofDigis(system);
+    if (!fDigiMan->IsPresent(system)) continue;
+    if (!fDigiMan->IsMatchPresent(system)) continue;
+    Int_t nDigis  = fDigiMan->GetNofDigis(system);
     UInt_t nNoise = 0;
-    LOG(info) << GetName() << ": System " << CbmModuleList::GetModuleNameCaps(system)
-    << ", digis " << nDigis;
+    LOG(info) << GetName() << ": System "
+              << CbmModuleList::GetModuleNameCaps(system) << ", digis "
+              << nDigis;
 
-    for (Int_t iDigi= 0; iDigi < nDigis; iDigi++) {
+    for (Int_t iDigi = 0; iDigi < nDigis; iDigi++) {
       const CbmMatch* match = fDigiMan->GetMatch(system, iDigi);
       assert(match);
 
@@ -68,44 +64,58 @@ void CbmBuildEventsIdeal::Exec(Option_t*) {
       Int_t mcEventNr = match->GetMatchedLink().GetEntry();
 
       // Ignore digis with missing event number (noise)
-      if ( mcEventNr < 0 ) {
+      if (mcEventNr < 0) {
         nNoise++;
         continue;
       }
 
       // Get event pointer. If event is not yet present, create it.
       CbmEvent* event = NULL;
-      if ( eventMap.find(mcEventNr) == eventMap.end() ) {
-        event = new ( (*fEvents)[nEvents] ) CbmEvent(nEvents);
+      if (eventMap.find(mcEventNr) == eventMap.end()) {
+        event               = new ((*fEvents)[nEvents]) CbmEvent(nEvents);
         eventMap[mcEventNr] = event;
         nEvents++;
-      }
-      else event = eventMap.at(mcEventNr);
+      } else
+        event = eventMap.at(mcEventNr);
 
       // Fill digi index into event
       switch (system) {
-        case ECbmModuleId::kMvd:  event->AddData(ECbmDataType::kMvdDigi,  iDigi); break;
-        case ECbmModuleId::kSts:  event->AddData(ECbmDataType::kStsDigi,  iDigi); break;
-        case ECbmModuleId::kRich: event->AddData(ECbmDataType::kRichDigi, iDigi); break;
-        case ECbmModuleId::kMuch: event->AddData(ECbmDataType::kMuchDigi, iDigi); break;
-        case ECbmModuleId::kTrd:  event->AddData(ECbmDataType::kTrdDigi,  iDigi); break;
-        case ECbmModuleId::kTof:  event->AddData(ECbmDataType::kTofDigi,  iDigi); break;
-        case ECbmModuleId::kPsd:  event->AddData(ECbmDataType::kPsdDigi,  iDigi); break;
+        case ECbmModuleId::kMvd:
+          event->AddData(ECbmDataType::kMvdDigi, iDigi);
+          break;
+        case ECbmModuleId::kSts:
+          event->AddData(ECbmDataType::kStsDigi, iDigi);
+          break;
+        case ECbmModuleId::kRich:
+          event->AddData(ECbmDataType::kRichDigi, iDigi);
+          break;
+        case ECbmModuleId::kMuch:
+          event->AddData(ECbmDataType::kMuchDigi, iDigi);
+          break;
+        case ECbmModuleId::kTrd:
+          event->AddData(ECbmDataType::kTrdDigi, iDigi);
+          break;
+        case ECbmModuleId::kTof:
+          event->AddData(ECbmDataType::kTofDigi, iDigi);
+          break;
+        case ECbmModuleId::kPsd:
+          event->AddData(ECbmDataType::kPsdDigi, iDigi);
+          break;
         default: break;
-      } //? detector
+      }  //? detector
 
-    } //# digis
-    LOG(debug) << GetName() <<": Detector "
-               << CbmModuleList::GetModuleNameCaps(system) << ", digis " << nDigis
-               << ", noise " << nNoise;
+    }  //# digis
+    LOG(debug) << GetName() << ": Detector "
+               << CbmModuleList::GetModuleNameCaps(system) << ", digis "
+               << nDigis << ", noise " << nNoise;
     nDigisTot += nDigis;
     nDigisNoise += nNoise;
 
-  } //# detectors
+  }  //# detectors
 
 
   timer.Stop();
-  assert( nEvents == fEvents->GetEntriesFast() );
+  assert(nEvents == fEvents->GetEntriesFast());
 
   // --- Execution log
   std::cout << std::endl;
@@ -117,7 +127,7 @@ void CbmBuildEventsIdeal::Exec(Option_t*) {
 
   // --- For debug: event info
   if (gLogger->IsLogNeeded(fair::Severity::debug)) {
-    for (Int_t iEvent = 0; iEvent < fEvents->GetEntriesFast(); iEvent++ ) {
+    for (Int_t iEvent = 0; iEvent < fEvents->GetEntriesFast(); iEvent++) {
       CbmEvent* event = (CbmEvent*) fEvents->At(iEvent);
       LOG(info) << event->ToString();
     }
@@ -128,13 +138,12 @@ void CbmBuildEventsIdeal::Exec(Option_t*) {
 // ===========================================================================
 
 
-
 // =====   Task initialisation   =============================================
 InitStatus CbmBuildEventsIdeal::Init() {
 
-	// --- Get FairRootManager instance
+  // --- Get FairRootManager instance
   FairRootManager* ioman = FairRootManager::Instance();
-  assert ( ioman );
+  assert(ioman);
 
   // --- DigiManager instance
   fDigiMan = CbmDigiManager::Instance();
@@ -146,27 +155,29 @@ InitStatus CbmBuildEventsIdeal::Init() {
 
 
   // --- Check input data
-  for (ECbmModuleId system = ECbmModuleId::kMvd; system < ECbmModuleId::kNofSystems; ++system) {
-    if ( fDigiMan->IsMatchPresent(system) ) {
+  for (ECbmModuleId system = ECbmModuleId::kMvd;
+       system < ECbmModuleId::kNofSystems;
+       ++system) {
+    if (fDigiMan->IsMatchPresent(system)) {
       LOG(info) << GetName() << ": Found match branch for "
-          << CbmModuleList::GetModuleNameCaps(system);
+                << CbmModuleList::GetModuleNameCaps(system);
       fSystems.push_back(system);
     }
   }
-  if ( fSystems.empty() ) {
+  if (fSystems.empty()) {
     LOG(fatal) << GetName() << ": No match branch found!";
     return kFATAL;
   }
 
   // Register output array (CbmEvent)
-  if ( ioman->GetObject("Event") ) {
+  if (ioman->GetObject("Event")) {
     LOG(fatal) << GetName() << ": Branch Event already exists!";
     return kFATAL;
   }
-  fEvents = new TClonesArray("CbmEvent",100);
-  ioman->Register("Event", "CbmEvent", fEvents,
-  			 	        IsOutputBranchPersistent("Event"));
-  if ( ! fEvents ) {
+  fEvents = new TClonesArray("CbmEvent", 100);
+  ioman->Register(
+    "Event", "CbmEvent", fEvents, IsOutputBranchPersistent("Event"));
+  if (!fEvents) {
     LOG(fatal) << GetName() << ": Output branch could not be created!";
     return kFATAL;
   }
@@ -180,4 +191,3 @@ InitStatus CbmBuildEventsIdeal::Init() {
 
 
 ClassImp(CbmBuildEventsIdeal)
-

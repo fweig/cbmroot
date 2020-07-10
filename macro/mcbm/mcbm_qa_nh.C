@@ -17,13 +17,12 @@
 //
 // --------------------------------------------------------------------------
 
-void mcbm_qa_nh(Int_t nEvents = 1000, 
-	       TString cSys="nini", 
-	       TString cEbeam="1.93gev",
-	       TString cCentr="mbias",
-	       Int_t   iRun=986,
-	       const char* setup = "sis18_mcbm_20deg_long")
-{
+void mcbm_qa_nh(Int_t nEvents     = 1000,
+                TString cSys      = "nini",
+                TString cEbeam    = "1.93gev",
+                TString cCentr    = "mbias",
+                Int_t iRun        = 986,
+                const char* setup = "sis18_mcbm_20deg_long") {
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -31,10 +30,15 @@ void mcbm_qa_nh(Int_t nEvents = 1000,
   // Verbosity level (0=quiet, 1=event level, 2=track level, 3=debug)
   Int_t iVerbose = 0;
 
-  TString outDir  = "data/";
-  TString inFile  = outDir + setup + "_" + cSys + "." + cEbeam + "." + cCentr + ".mc." + Form("%05d",iRun) + ".root"; // Input file (MC events)
-  TString parFile = outDir + setup + "_" + cSys + "." + cEbeam + "." + cCentr + ".params." + Form("%05d",iRun) + ".root";  // Parameter file
-  TString outFile = outDir + setup + "_" + cSys + "." + cEbeam + "." + cCentr + ".eds." + Form("%05d",iRun) + ".root";     // Output file
+  TString outDir = "data/";
+  TString inFile = outDir + setup + "_" + cSys + "." + cEbeam + "." + cCentr
+                   + ".mc." + Form("%05d", iRun)
+                   + ".root";  // Input file (MC events)
+  TString parFile = outDir + setup + "_" + cSys + "." + cEbeam + "." + cCentr
+                    + ".params." + Form("%05d", iRun)
+                    + ".root";  // Parameter file
+  TString outFile = outDir + setup + "_" + cSys + "." + cEbeam + "." + cCentr
+                    + ".eds." + Form("%05d", iRun) + ".root";  // Output file
 
   //FairLogger::GetLogger()->SetLogScreenLevel("WARNING");
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
@@ -57,33 +61,33 @@ void mcbm_qa_nh(Int_t nEvents = 1000,
   // ------------------------------------------------------------------------
 
   // -----   Reconstruction run   -------------------------------------------
-  FairRunAna *run = new FairRunAna();
+  FairRunAna* run = new FairRunAna();
   run->SetInputFile(inFile);
   run->SetOutputFile(outFile);
   // ------------------------------------------------------------------------
 
   // ----- MC Data Manager   ------------------------------------------------
-  CbmMCDataManager* mcManager=new CbmMCDataManager("MCManager", 1);
+  CbmMCDataManager* mcManager = new CbmMCDataManager("MCManager", 1);
   mcManager->AddFile(inFile);
   run->AddTask(mcManager);
   // ------------------------------------------------------------------------
-	
+
   CbmStsMCQa* stsQa = new CbmStsMCQa();
   run->AddTask(stsQa);
   // ------------------------------------------------------------------------
-	
+
   CbmTrdMCQa* trdQa = new CbmTrdMCQa();
   run->AddTask(trdQa);
   // -------------------------------------------------------------------------
 
   // -----  Parameter database   --------------------------------------------
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
-  FairParRootFileIo* parIo1 = new FairParRootFileIo();
+  FairRuntimeDb* rtdb        = run->GetRuntimeDb();
+  FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
   parIo1->open(parFile.Data());
-//  parIo2->open(parFileList, "in");
+  //  parIo2->open(parFileList, "in");
   rtdb->setFirstInput(parIo1);
-//  rtdb->setSecondInput(parIo2);
+  //  rtdb->setSecondInput(parIo2);
   rtdb->setOutput(parIo1);
   rtdb->saveOutput();
   // ------------------------------------------------------------------------

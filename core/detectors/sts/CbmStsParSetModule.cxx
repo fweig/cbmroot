@@ -4,45 +4,37 @@
  **/
 #include "CbmStsParSetModule.h"
 
-#include "CbmStsParModule.h"    // for CbmStsParModule
+#include "CbmStsParModule.h"  // for CbmStsParModule
 
-#include <FairLogger.h>         // for LOG, Logger
+#include <FairLogger.h>  // for LOG, Logger
 
-#include <cassert>              // for assert
-#include <sstream>              // for operator<<, basic_ostream, stringstream
-#include <string>               // for char_traits
+#include <cassert>  // for assert
+#include <sstream>  // for operator<<, basic_ostream, stringstream
+#include <string>   // for char_traits
 
 ClassImp(CbmStsParSetModule)
 
-// -----   Constructor   ----------------------------------------------------
-CbmStsParSetModule::CbmStsParSetModule(const char* name,
-                                       const char* title,
-                                       const char* context)
-: FairParGenericSet(name, title, context)
-{
-}
+  // -----   Constructor   ----------------------------------------------------
+  CbmStsParSetModule::CbmStsParSetModule(const char* name,
+                                         const char* title,
+                                         const char* context)
+  : FairParGenericSet(name, title, context) {}
 // --------------------------------------------------------------------------
-
 
 
 // -----   Destructor   -----------------------------------------------------
-CbmStsParSetModule::~CbmStsParSetModule()
-{
-}
+CbmStsParSetModule::~CbmStsParSetModule() {}
 // --------------------------------------------------------------------------
 
 
-
 // -----   Reset   ----------------------------------------------------------
-void CbmStsParSetModule::clear()
-{
+void CbmStsParSetModule::clear() {
   fUseGlobal = kFALSE;
   fParams.clear();
   status = kFALSE;
   resetInputVersions();
 }
 // --------------------------------------------------------------------------
-
 
 
 // -----   Read parameters from ASCII file   --------------------------------
@@ -53,15 +45,13 @@ Bool_t CbmStsParSetModule::getParams(FairParamList*) {
 // --------------------------------------------------------------------------
 
 
-
 // -----   Get condition parameters of a sensor   ---------------------------
 const CbmStsParModule& CbmStsParSetModule::GetParModule(UInt_t address) {
-  if ( fUseGlobal ) return fGlobalParams;
+  if (fUseGlobal) return fGlobalParams;
   assert(fParams.count(address));
   return fParams[address];
 }
 // --------------------------------------------------------------------------
-
 
 
 // -----   Write parameters from ASCII file   -------------------------------
@@ -71,16 +61,17 @@ void CbmStsParSetModule::putParams(FairParamList*) {
 // --------------------------------------------------------------------------
 
 
-
 // -----   Info to string   ------------------------------------------------
 std::string CbmStsParSetModule::ToString() const {
   std::stringstream ss;
-  if ( fUseGlobal ) ss << "(Global) " << fGlobalParams.ToString();
+  if (fUseGlobal)
+    ss << "(Global) " << fGlobalParams.ToString();
   else {
-    if ( fParams.empty() ) ss << "Empty";
-    else ss << "Parameters for " << fParams.size() << " sensors";
+    if (fParams.empty())
+      ss << "Empty";
+    else
+      ss << "Parameters for " << fParams.size() << " sensors";
   }
   return ss.str();
 }
 // -------------------------------------------------------------------------
-

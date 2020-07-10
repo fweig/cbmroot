@@ -1,30 +1,32 @@
 #include "CbmTrdParSpadic.h"
 
-#include "CbmTrdDefs.h"         // for eCbmTrdModuleTypes, eCbmTrdModuleType...
+#include "CbmTrdDefs.h"  // for eCbmTrdModuleTypes, eCbmTrdModuleType...
 
-#include <FairParamList.h>      // for FairParamList
-#include <FairLogger.h>         // for Logger, LOG
+#include <FairLogger.h>     // for Logger, LOG
+#include <FairParamList.h>  // for FairParamList
 
-#include <TArrayI.h>            // for TArrayI
-#include <TString.h>            // for Form
+#include <TArrayI.h>  // for TArrayI
+#include <TString.h>  // for Form
 
-#include <vector>               // for vector
+#include <vector>  // for vector
 
 Double_t CbmTrdParSpadic::fgSizeX = 6.0;
 Double_t CbmTrdParSpadic::fgSizeY = 3.0;
 Double_t CbmTrdParSpadic::fgSizeZ = 0.5;
 
 //___________________________________________________________________
-CbmTrdParSpadic::CbmTrdParSpadic(Int_t address, Int_t FebGrouping, 
-           Double_t x, Double_t y, Double_t z, std::uint64_t compId)
-  : CbmTrdParAsic(address, FebGrouping, x, y, z, compId)
-{
+CbmTrdParSpadic::CbmTrdParSpadic(Int_t address,
+                                 Int_t FebGrouping,
+                                 Double_t x,
+                                 Double_t y,
+                                 Double_t z,
+                                 std::uint64_t compId)
+  : CbmTrdParAsic(address, FebGrouping, x, y, z, compId) {
   fChannelAddresses.resize(NSPADICCH);
 }
 
 // ---- LoadParams ----------------------------------------------------
-void CbmTrdParSpadic::LoadParams(FairParamList *inList)
-{
+void CbmTrdParSpadic::LoadParams(FairParamList* inList) {
 
   // inList->print();
 
@@ -36,175 +38,157 @@ void CbmTrdParSpadic::LoadParams(FairParamList *inList)
 
   Bool_t loadOk = kTRUE;
 
-  loadOk &= inList->fill(Form("%d-criId",   fAddress), &criId);
-  loadOk &= inList->fill(Form("%d-crobId",  fAddress), &crobId);
-  loadOk &= inList->fill(Form("%d-crobNr",  fAddress), &crobNr);
+  loadOk &= inList->fill(Form("%d-criId", fAddress), &criId);
+  loadOk &= inList->fill(Form("%d-crobId", fAddress), &crobId);
+  loadOk &= inList->fill(Form("%d-crobNr", fAddress), &crobNr);
   loadOk &= inList->fill(Form("%d-eLinkId", fAddress), &eLinkId);
   loadOk &= inList->fill(Form("%d-eLinkId", fAddress), &eLinkId);
-  loadOk &= inList->fill(Form("%d-channelAddresses", fAddress), &channelAddresses);
+  loadOk &=
+    inList->fill(Form("%d-channelAddresses", fAddress), &channelAddresses);
   Int_t iAsicChannel(0);
-  for (auto &channelIt : fChannelAddresses)
-  {
+  for (auto& channelIt : fChannelAddresses) {
     channelIt = channelAddresses[iAsicChannel];
     iAsicChannel++;
   }
   loadOk &= !fChannelAddresses.empty();
 
-  if(!loadOk)
-  {
-    LOG(error) << GetName() << Form("Params could not be correctly loaded for asic %d", fAddress);
+  if (!loadOk) {
+    LOG(error) << GetName()
+               << Form("Params could not be correctly loaded for asic %d",
+                       fAddress);
     fComponentId = 100098;
-  }
-  else
-  {
+  } else {
     fComponentId = CreateComponentId(criId, crobId, crobNr, eLinkId);
-    LOG(debug4) << GetName() << "Params correctly loaded for asic " << fAddress 
+    LOG(debug4) << GetName() << "Params correctly loaded for asic " << fAddress
                 << " with componentId " << fComponentId;
   }
-  
 }
 
 // ---- CreateComponentId ---------------------------------------------
-std::uint64_t CbmTrdParSpadic::CreateComponentId(Int_t criId, Int_t crobId, Int_t nThCrobOnModule, Int_t eLinkId)
-{
-  std::uint64_t compId = criId * ECbmTrdComponentIdDecoding::kCriIdPosition
-                 + crobId * ECbmTrdComponentIdDecoding::kCrobIdPosition
-                 + nThCrobOnModule * ECbmTrdComponentIdDecoding::kCrobNrPosition
-                 + eLinkId;
+std::uint64_t CbmTrdParSpadic::CreateComponentId(Int_t criId,
+                                                 Int_t crobId,
+                                                 Int_t nThCrobOnModule,
+                                                 Int_t eLinkId) {
+  std::uint64_t compId =
+    criId * ECbmTrdComponentIdDecoding::kCriIdPosition
+    + crobId * ECbmTrdComponentIdDecoding::kCrobIdPosition
+    + nThCrobOnModule * ECbmTrdComponentIdDecoding::kCrobNrPosition + eLinkId;
   return compId;
 }
 
 // ---- GetCriId ----------------------------------------------------
-std::uint16_t CbmTrdParSpadic::GetCriId()
-{
-  return GetCriId(fComponentId);
-}
+std::uint16_t CbmTrdParSpadic::GetCriId() { return GetCriId(fComponentId); }
 
 // ---- GetCriId ----------------------------------------------------
-std::uint16_t CbmTrdParSpadic::GetCriId(std::uint64_t componentId)
-{
-  uint16_t returnId = (componentId / ( ECbmTrdComponentIdDecoding::kCriIdPosition ));
+std::uint16_t CbmTrdParSpadic::GetCriId(std::uint64_t componentId) {
+  uint16_t returnId =
+    (componentId / (ECbmTrdComponentIdDecoding::kCriIdPosition));
   return returnId;
 }
 
 // ---- GetCrobId ----------------------------------------------------
-std::uint8_t CbmTrdParSpadic::GetCrobId() 
-{
-   return GetCrobId(fComponentId);
-}
+std::uint8_t CbmTrdParSpadic::GetCrobId() { return GetCrobId(fComponentId); }
 
 // ---- GetCrobId ----------------------------------------------------
-std::uint8_t CbmTrdParSpadic::GetCrobId(std::uint64_t componentId)
-{
+std::uint8_t CbmTrdParSpadic::GetCrobId(std::uint64_t componentId) {
   std::uint8_t returnId(-1);
   returnId = ((componentId % ECbmTrdComponentIdDecoding::kCriIdPosition)
-                                 / ECbmTrdComponentIdDecoding::kCrobIdPosition);
+              / ECbmTrdComponentIdDecoding::kCrobIdPosition);
   return returnId;
 }
 
 // ---- GetCrobNumber ----------------------------------------------------
-std::uint8_t CbmTrdParSpadic::GetCrobNumber()
-{
+std::uint8_t CbmTrdParSpadic::GetCrobNumber() {
   return GetCrobNumber(fComponentId);
 }
 
 // ---- GetCrobNumber ----------------------------------------------------
-std::uint8_t CbmTrdParSpadic::GetCrobNumber(std::uint64_t componentId)
-{
+std::uint8_t CbmTrdParSpadic::GetCrobNumber(std::uint64_t componentId) {
   std::uint8_t returnId(-1);
   returnId = (componentId % ECbmTrdComponentIdDecoding::kCrobIdPosition
-                                / ECbmTrdComponentIdDecoding::kCrobNrPosition);
+              / ECbmTrdComponentIdDecoding::kCrobNrPosition);
   return returnId;
 }
 
 // ---- GetElinkId ----------------------------------------------------
-std::uint8_t CbmTrdParSpadic::GetElinkId(Int_t channelId)
-{
+std::uint8_t CbmTrdParSpadic::GetElinkId(Int_t channelId) {
   return GetElinkId(fComponentId, channelId);
 }
 
 // ---- GetElinkId ----------------------------------------------------
-std::uint8_t CbmTrdParSpadic::GetElinkId(std::uint64_t componentId, Int_t channelId)
-{
+std::uint8_t CbmTrdParSpadic::GetElinkId(std::uint64_t componentId,
+                                         Int_t channelId) {
   std::uint8_t eLinkId(-1);
 
-  if( channelId > (NSPADICCH-1) ) // check for maximum number of spadic channels
+  if (channelId
+      > (NSPADICCH - 1))  // check for maximum number of spadic channels
   {
-    LOG(error) << Form("CbmTrdParSpadic::GetElinkId(%d) - Incorrect channelId (out of range %d > %d", channelId, channelId, (NSPADICCH));
+    LOG(error) << Form("CbmTrdParSpadic::GetElinkId(%d) - Incorrect channelId "
+                       "(out of range %d > %d",
+                       channelId,
+                       channelId,
+                       (NSPADICCH));
     return eLinkId;
   }
 
   // eLinkId = channelId < 15 ? ((((componentId % ECbmTrdComponentIdDecoding::kCriIdPosition)
-  //                                            % ECbmTrdComponentIdDecoding::kCrobIdPosition)) 
-  //                                            % ECbmTrdComponentIdDecoding::kCrobNrPosition) 
+  //                                            % ECbmTrdComponentIdDecoding::kCrobIdPosition))
+  //                                            % ECbmTrdComponentIdDecoding::kCrobNrPosition)
   //                                            :
-  //                                            ((((componentId % ECbmTrdComponentIdDecoding::kCriIdPosition) 
-  //                                            % ECbmTrdComponentIdDecoding::kCrobIdPosition)) 
+  //                                            ((((componentId % ECbmTrdComponentIdDecoding::kCriIdPosition)
+  //                                            % ECbmTrdComponentIdDecoding::kCrobIdPosition))
   //                                            % ECbmTrdComponentIdDecoding::kCrobNrPosition) + 1;
-  eLinkId = channelId < 15 ? ( componentId % ECbmTrdComponentIdDecoding::kCrobNrPosition) 
-                           : ( componentId % ECbmTrdComponentIdDecoding::kCrobNrPosition) + 1;
+  eLinkId = channelId < 15
+              ? (componentId % ECbmTrdComponentIdDecoding::kCrobNrPosition)
+              : (componentId % ECbmTrdComponentIdDecoding::kCrobNrPosition) + 1;
   return eLinkId;
 }
 
 // ---- GetNasicsOnModule ----------------------------------------------------
-Int_t CbmTrdParSpadic::GetNasicsOnModule(Int_t moduleType)
-{
-  switch (moduleType)
-  {
-  case (Int_t) eCbmTrdModuleTypes::kHighChDensitySmallR:
-    return 80;
-    break;
-  case (Int_t) eCbmTrdModuleTypes::kLowChDensitySmallR:
-    return 20;
-    break;
-  case (Int_t) eCbmTrdModuleTypes::kHighChDensityLargeR:
-    return 108;
-    break;
-  case (Int_t) eCbmTrdModuleTypes::kLowChDensityLargeR:
-    return 36;
-    break;
-  case (Int_t) eCbmTrdModuleTypes::kMcbmModule:
-    return 24;  // 24 is the maximum on a kMcbmModule it can also be less
-    break;
-  default:
-    return 1;
-    break;
+Int_t CbmTrdParSpadic::GetNasicsOnModule(Int_t moduleType) {
+  switch (moduleType) {
+    case (Int_t) eCbmTrdModuleTypes::kHighChDensitySmallR: return 80; break;
+    case (Int_t) eCbmTrdModuleTypes::kLowChDensitySmallR: return 20; break;
+    case (Int_t) eCbmTrdModuleTypes::kHighChDensityLargeR: return 108; break;
+    case (Int_t) eCbmTrdModuleTypes::kLowChDensityLargeR: return 36; break;
+    case (Int_t) eCbmTrdModuleTypes::kMcbmModule:
+      return 24;  // 24 is the maximum on a kMcbmModule it can also be less
+      break;
+    default: return 1; break;
   }
 }
 
 // ---- GetNasicsPerCrob ----------------------------------------------------
-Int_t CbmTrdParSpadic::GetNasicsPerCrob(Int_t moduleType)
-{
+Int_t CbmTrdParSpadic::GetNasicsPerCrob(Int_t moduleType) {
   Int_t nAsicsPerCrob = GetNasicsOnModule(moduleType);
-  switch (moduleType)
-  {
-  case (Int_t) eCbmTrdModuleTypes::kHighChDensitySmallR:
-    nAsicsPerCrob /= 4;
-    break;
-  case (Int_t) eCbmTrdModuleTypes::kLowChDensitySmallR:
-    nAsicsPerCrob /= 1;
-    break;
-  case (Int_t) eCbmTrdModuleTypes::kHighChDensityLargeR:
-    nAsicsPerCrob /= 6;
-    break;
-  case (Int_t) eCbmTrdModuleTypes::kLowChDensityLargeR:
-    nAsicsPerCrob /= 2;
-    break;
-  case (Int_t) eCbmTrdModuleTypes::kMcbmModule:
-    nAsicsPerCrob /= 1;  // 24 is the maximum on a kMcbmModule it can also be less
-    break;
-  default:
-    nAsicsPerCrob /= -1;
-    break;
+  switch (moduleType) {
+    case (Int_t) eCbmTrdModuleTypes::kHighChDensitySmallR:
+      nAsicsPerCrob /= 4;
+      break;
+    case (Int_t) eCbmTrdModuleTypes::kLowChDensitySmallR:
+      nAsicsPerCrob /= 1;
+      break;
+    case (Int_t) eCbmTrdModuleTypes::kHighChDensityLargeR:
+      nAsicsPerCrob /= 6;
+      break;
+    case (Int_t) eCbmTrdModuleTypes::kLowChDensityLargeR:
+      nAsicsPerCrob /= 2;
+      break;
+    case (Int_t) eCbmTrdModuleTypes::kMcbmModule:
+      nAsicsPerCrob /=
+        1;  // 24 is the maximum on a kMcbmModule it can also be less
+      break;
+    default: nAsicsPerCrob /= -1; break;
   }
   return nAsicsPerCrob;
 }
 
 // ---- GetElinkChannel ----------------------------------------------------
-Int_t CbmTrdParSpadic::GetElinkChannel(Int_t channelNumber)
-{
+Int_t CbmTrdParSpadic::GetElinkChannel(Int_t channelNumber) {
   ///< Returns the asic channel number from 00..15 (2 eLinks) in asic coordinates. Spadic channels are not mapped from 00 to 31 in padplane coordinates, this function returns the asic channel in padplane coordinates in the system of one asic (not in the channel map of a full module!)
-  std::vector<Int_t> spadicChannelMap = {15, 15, 14, 14, 13, 13, 12, 12, 11, 11, 10, 10, 9, 9, 8, 8, 7, 7, 6, 6, 5, 5, 4, 4, 3, 3, 2, 2, 1, 1, 0, 0};
+  std::vector<Int_t> spadicChannelMap = {
+    15, 15, 14, 14, 13, 13, 12, 12, 11, 11, 10, 10, 9, 9, 8, 8,
+    7,  7,  6,  6,  5,  5,  4,  4,  3,  3,  2,  2,  1, 1, 0, 0};
   return spadicChannelMap.at(channelNumber);
 }
 

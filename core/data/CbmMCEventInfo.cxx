@@ -4,27 +4,21 @@
  **/
 #include "CbmMCEventInfo.h"
 
-#include <sstream>              // for operator<<, basic_ostream, stringstream
-#include <string>               // for char_traits
+#include <sstream>  // for operator<<, basic_ostream, stringstream
+#include <string>   // for char_traits
 
 using std::string;
 using std::stringstream;
 
 // -----   Constructor   ------------------------------------------------------
-CbmMCEventInfo::CbmMCEventInfo(Int_t fileId, Int_t eventId, Double_t time) :
-  fFileId(fileId),
-  fEventId(eventId),
-  fTime(time) {
-}
+CbmMCEventInfo::CbmMCEventInfo(Int_t fileId, Int_t eventId, Double_t time)
+  : fFileId(fileId), fEventId(eventId), fTime(time) {}
 // ----------------------------------------------------------------------------
-
 
 
 // -----   Destructor   -------------------------------------------------------
-CbmMCEventInfo::~CbmMCEventInfo() {
-}
+CbmMCEventInfo::~CbmMCEventInfo() {}
 // ----------------------------------------------------------------------------
-
 
 
 // -----   Status info   ------------------------------------------------------

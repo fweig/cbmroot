@@ -20,37 +20,43 @@
 
 #include "TMatrixTSym.h"
 
-ClassImp( CbmKFVertexInterface )
+ClassImp(CbmKFVertexInterface)
 
-static Double_t gTempD[11];
+  static Double_t gTempD[11];
 static Int_t gTempI[2];
 
-Double_t &CbmKFVertexInterface::GetRefX()         { return gTempD[ 0]; }
-Double_t &CbmKFVertexInterface::GetRefY()         { return gTempD[ 1]; }
-Double_t &CbmKFVertexInterface::GetRefZ()         { return gTempD[ 2]; }
-Double_t *CbmKFVertexInterface::GetCovMatrix()    { return gTempD +3 ; }  
-Double_t &CbmKFVertexInterface::GetRefChi2()      { return gTempD[ 9]; }
-Int_t    &CbmKFVertexInterface::GetRefNDF()       { return gTempI[ 0]; }
-Int_t    &CbmKFVertexInterface::GetRefNTracks()   { return gTempI[ 1]; }
+Double_t& CbmKFVertexInterface::GetRefX() { return gTempD[0]; }
+Double_t& CbmKFVertexInterface::GetRefY() { return gTempD[1]; }
+Double_t& CbmKFVertexInterface::GetRefZ() { return gTempD[2]; }
+Double_t* CbmKFVertexInterface::GetCovMatrix() { return gTempD + 3; }
+Double_t& CbmKFVertexInterface::GetRefChi2() { return gTempD[9]; }
+Int_t& CbmKFVertexInterface::GetRefNDF() { return gTempI[0]; }
+Int_t& CbmKFVertexInterface::GetRefNTracks() { return gTempI[1]; }
 
-void CbmKFVertexInterface::SetVertex( CbmVertex &v )
-{
-  GetRefX() = v.GetX();
-  GetRefY() = v.GetY();
-  GetRefZ() = v.GetZ();
-  GetRefChi2() = v.GetChi2();
-  GetRefNDF()  = v.GetNDF();
-  GetRefNTracks()  = v.GetNTracks();
+void CbmKFVertexInterface::SetVertex(CbmVertex& v) {
+  GetRefX()       = v.GetX();
+  GetRefY()       = v.GetY();
+  GetRefZ()       = v.GetZ();
+  GetRefChi2()    = v.GetChi2();
+  GetRefNDF()     = v.GetNDF();
+  GetRefNTracks() = v.GetNTracks();
   TMatrixFSym tmp(3);
-  v.CovMatrix( tmp );
-  for( int i=0, k=0; i<3; i++) 
-    for( int j=0; j<=i; j++, k++ ) GetCovMatrix()[k] = tmp(i,j);
+  v.CovMatrix(tmp);
+  for (int i = 0, k = 0; i < 3; i++)
+    for (int j = 0; j <= i; j++, k++)
+      GetCovMatrix()[k] = tmp(i, j);
 }
 
-void CbmKFVertexInterface::GetVertex( CbmVertex &v )
-{
+void CbmKFVertexInterface::GetVertex(CbmVertex& v) {
   TMatrixFSym covMat(3);
-  for(int i=0, k=0;i<3;i++) for(int j=0; j<=i; j++,k++) covMat(i,j) = GetCovMatrix()[k];
-  v.SetVertex( GetRefX(), GetRefY(), GetRefZ(), 
-	       GetRefChi2(), GetRefNDF(), GetRefNTracks(), covMat );
+  for (int i = 0, k = 0; i < 3; i++)
+    for (int j = 0; j <= i; j++, k++)
+      covMat(i, j) = GetCovMatrix()[k];
+  v.SetVertex(GetRefX(),
+              GetRefY(),
+              GetRefZ(),
+              GetRefChi2(),
+              GetRefNDF(),
+              GetRefNTracks(),
+              covMat);
 }

@@ -1,7 +1,7 @@
 #include "L1AlgoInputData.h"
 
-#include <iostream>
 #include <cstring>
+#include <iostream>
 using namespace std;
 using std::ios;
 /*
@@ -52,11 +52,11 @@ void L1AlgoInputData::SetData( const vector< L1StsHit >      & StsHits_,
 
 */
 
-istream& L1AlgoInputData::eatwhite(istream& is) // skip spaces
+istream& L1AlgoInputData::eatwhite(istream& is)  // skip spaces
 {
   char c;
   while (is.get(c)) {
-    if (isspace(c)==0) {
+    if (isspace(c) == 0) {
       is.putback(c);
       break;
     }
@@ -64,20 +64,21 @@ istream& L1AlgoInputData::eatwhite(istream& is) // skip spaces
   return is;
 }
 
-bool L1AlgoInputData::ReadHitsFromFile(const char work_dir[100], const int maxNEvent, const int iVerbose)
-{
+bool L1AlgoInputData::ReadHitsFromFile(const char work_dir[100],
+                                       const int maxNEvent,
+                                       const int iVerbose) {
   static int nEvent = 1;
   static ifstream fadata;
   static char fname[100];
 
-  if ( nEvent == 1 ){
-     strcpy(fname, work_dir);
-     strcat(fname, "data_algo.txt");
-     fadata.open(fname);
+  if (nEvent == 1) {
+    strcpy(fname, work_dir);
+    strcat(fname, "data_algo.txt");
+    fadata.open(fname);
   }
-  if ( !fadata.is_open() ) return 0;
+  if (!fadata.is_open()) return 0;
 
-  if (nEvent <= maxNEvent){
+  if (nEvent <= maxNEvent) {
 
     vStsHits.clear();
     vStsStrips.clear();
@@ -85,114 +86,131 @@ bool L1AlgoInputData::ReadHitsFromFile(const char work_dir[100], const int maxNE
     vStsZPos.clear();
     vSFlag.clear();
     vSFlagB.clear();
-    
-      // check correct position in file
+
+    // check correct position in file
     char s[] = "Event:  ";
     int nEv;
     fadata >> s;
- //    cout << s<<  " s"<<endl;
+    //    cout << s<<  " s"<<endl;
     fadata >> nEv;
-  //  cout << nEv<<  " nEv"<<endl;
+    //  cout << nEv<<  " nEv"<<endl;
 
-    if (nEv != nEvent)  cout << "-E- CbmL1: Can't read event number " << nEvent << " from file " << fname << endl;
-    
+    if (nEv != nEvent)
+      cout << "-E- CbmL1: Can't read event number " << nEvent << " from file "
+           << fname << endl;
+
     int n;  // number of elements
       // read algo->vStsStrips
     fadata >> n;
- //     cout << n<<  " vStsStrips"<<endl;
-    for (int i = 0; i < n; i++){
+    //     cout << n<<  " vStsStrips"<<endl;
+    for (int i = 0; i < n; i++) {
       fscal element;
-      unsigned short int element2=0;
-     fadata >> element;
-      vStsStrips.push_back(L1Strip(element,element2));
-   // fadata >> element;
-    //  vStsStrips.push_back(L1Strip(element));
+      unsigned short int element2 = 0;
+      fadata >> element;
+      vStsStrips.push_back(L1Strip(element, element2));
+      // fadata >> element;
+      //  vStsStrips.push_back(L1Strip(element));
     }
-    if (iVerbose >= 4) cout << "vStsStrips[" << n << "]" << " have been read." << endl;
-      // read algo->vStsStripsB
+    if (iVerbose >= 4)
+      cout << "vStsStrips[" << n << "]"
+           << " have been read." << endl;
+    // read algo->vStsStripsB
     fadata >> n;
-  //  cout << n<<  " vStsStripsB"<<endl;
-    for (int i = 0; i < n; i++){
+    //  cout << n<<  " vStsStripsB"<<endl;
+    for (int i = 0; i < n; i++) {
       fscal element;
-       unsigned short int element2 = 0;
-       fadata >> element;
-       vStsStripsB.push_back(L1Strip(element,element2));
-     // fadata >> element;
-  // vStsStripsB.push_back(L1Strip(element));
+      unsigned short int element2 = 0;
+      fadata >> element;
+      vStsStripsB.push_back(L1Strip(element, element2));
+      // fadata >> element;
+      // vStsStripsB.push_back(L1Strip(element));
     }
-    if (iVerbose >= 4) cout << "vStsStripsB[" << n << "]" << " have been read." << endl;
-      // read algo->vStsZPos
+    if (iVerbose >= 4)
+      cout << "vStsStripsB[" << n << "]"
+           << " have been read." << endl;
+    // read algo->vStsZPos
     fadata >> n;
-  //   cout << n<<  " vStsZPos"<<endl;
-    for (int i = 0; i < n; i++){
+    //   cout << n<<  " vStsZPos"<<endl;
+    for (int i = 0; i < n; i++) {
       fscal element;
       fadata >> element;
       vStsZPos.push_back(element);
     }
-    if (iVerbose >= 4) cout << "vStsZPos[" << n << "]" << " have been read." << endl;
-      // read algo->vSFlag
+    if (iVerbose >= 4)
+      cout << "vStsZPos[" << n << "]"
+           << " have been read." << endl;
+    // read algo->vSFlag
     fadata >> n;
-  //  cout << n<<  " vSFlagB"<<endl;
-    for (int i = 0; i < n; i++){
+    //  cout << n<<  " vSFlagB"<<endl;
+    for (int i = 0; i < n; i++) {
       int element;
       fadata >> element;
       vSFlag.push_back(static_cast<unsigned char>(element));
     }
-    if (iVerbose >= 4) cout << "vSFlag[" << n << "]" << " have been read." << endl;
-      // read algo->vSFlagB
+    if (iVerbose >= 4)
+      cout << "vSFlag[" << n << "]"
+           << " have been read." << endl;
+    // read algo->vSFlagB
     fadata >> n;
-   // cout << n<<  " vSFlagB"<<endl;
-    for (int i = 0; i < n; i++){
+    // cout << n<<  " vSFlagB"<<endl;
+    for (int i = 0; i < n; i++) {
       int element;
       fadata >> element;
       vSFlagB.push_back(static_cast<unsigned char>(element));
     }
-    if (iVerbose >= 4) cout << "vSFlagB[" << n << "]" << " have been read." << endl;
-      // read algo->vStsHits
+    if (iVerbose >= 4)
+      cout << "vSFlagB[" << n << "]"
+           << " have been read." << endl;
+    // read algo->vStsHits
     fadata >> n;
-   //   cout << n<<  " vStsHits"<<endl;
+    //   cout << n<<  " vStsHits"<<endl;
     int element_f;  // for convert
     int element_b;
     int element_n;
     int element_iz;
     float element_time;
-    for (int i = 0; i < n; i++){
+    for (int i = 0; i < n; i++) {
       L1StsHit element;
-      fadata >> element_f >> element_b >>element_n>> element_iz >> element_time;
+      fadata >> element_f >> element_b >> element_n >> element_iz
+        >> element_time;
       element.f = static_cast<THitI>(element_f);
       element.b = static_cast<THitI>(element_b);
-#ifdef USE_EVENT_NUMBER          
-      element.n = static_cast< unsigned short int>(element_n);
-#endif       
-      element.iz = static_cast<TZPosI>(element_iz);
+#ifdef USE_EVENT_NUMBER
+      element.n = static_cast<unsigned short int>(element_n);
+#endif
+      element.iz     = static_cast<TZPosI>(element_iz);
       element.t_reco = element_time;
       vStsHits.push_back(element);
     }
-    if (iVerbose >= 4) cout << "vStsHits[" << n << "]" << " have been read." << endl;
-      // read StsHitsStartIndex and StsHitsStopIndex
+    if (iVerbose >= 4)
+      cout << "vStsHits[" << n << "]"
+           << " have been read." << endl;
+    // read StsHitsStartIndex and StsHitsStopIndex
     n = 20;
-    for (int i = 0; i < n; i++){
+    for (int i = 0; i < n; i++) {
       int tmp;
       fadata >> tmp;
-      if (MaxNStations+1 > i) StsHitsStartIndex[i] = tmp;
-   //   cout << " StsHitsStartIndex[i]"<< StsHitsStartIndex[i] << endl;
-   
-  //    cout << tmp<<  " tmp"<<endl;
+      if (MaxNStations + 1 > i) StsHitsStartIndex[i] = tmp;
+      //   cout << " StsHitsStartIndex[i]"<< StsHitsStartIndex[i] << endl;
+
+      //    cout << tmp<<  " tmp"<<endl;
     }
-    for (int i = 0; i < n; i++){
+    for (int i = 0; i < n; i++) {
       int tmp;
       fadata >> tmp;
-      if (MaxNStations+1 > i) StsHitsStopIndex[i] = tmp;
-    //   cout << " StsHitsStopIndex[i]"<< StsHitsStopIndex[i] << endl;
-   //   cout << tmp<<  " tmp"<<endl;
+      if (MaxNStations + 1 > i) StsHitsStopIndex[i] = tmp;
+      //   cout << " StsHitsStopIndex[i]"<< StsHitsStopIndex[i] << endl;
+      //   cout << tmp<<  " tmp"<<endl;
     }
 
-    if ( iVerbose >= 2 ) cout << "-I- CbmL1: CATrackFinder data for event " << nEvent << " has been read from file " << fname << " successfully." << endl;
-//    if (nEvent == maxNEvent) fadata.close();  
+    if (iVerbose >= 2)
+      cout << "-I- CbmL1: CATrackFinder data for event " << nEvent
+           << " has been read from file " << fname << " successfully." << endl;
+    //    if (nEvent == maxNEvent) fadata.close();
   }
   nEvent++;
   return 1;
-} // void L1AlgoInputData::ReadStAPAlgoData()
+}  // void L1AlgoInputData::ReadStAPAlgoData()
 
 /*
 void L1AlgoInputData::PrintHits()

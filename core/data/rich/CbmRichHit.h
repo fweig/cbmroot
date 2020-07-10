@@ -9,17 +9,16 @@
 #ifndef CBMRICHHIT_H_
 #define CBMRICHHIT_H_
 
-#include <Rtypes.h>       // for ClassDef
-#include <RtypesCore.h>   // for Double_t, Int_t
+#include <Rtypes.h>      // for ClassDef
+#include <RtypesCore.h>  // for Double_t, Int_t
 
-#include <string>         // for string
+#include <string>  // for string
 
 #include "CbmPixelHit.h"  // for CbmPixelHit
 
 class CbmRichHit : public CbmPixelHit {
 
 public:
-
   /**
    * \brief Default constructor.
    **/
@@ -51,10 +50,10 @@ public:
   virtual Int_t GetPlaneId() const { return 0; }
 
   /** Modifiers **/
-  virtual void SetPmtId (Int_t det) { fPmtId = det; }
+  virtual void SetPmtId(Int_t det) { fPmtId = det; }
   //virtual void SetNPhotons (Int_t n) { fNPhotons = n; }
   //virtual void SetAmplitude(Double_t amp) { fAmplitude = amp; }
-   void SetToT(Double_t tot) { fToT = tot; }
+  void SetToT(Double_t tot) { fToT = tot; }
 
   /** Accessors **/
   virtual Int_t GetPmtId() const { return fPmtId; }
@@ -63,18 +62,17 @@ public:
   Double_t GetToT() const { return fToT; }
 
   /** Outdated. Use CbmHit::GetTime() and SetTime() instead. **/
- // Double_t GetTimestamp() const { return GetTime(); }
- // void SetTimestamp(Double_t ts) { SetTime(ts); }
+  // Double_t GetTimestamp() const { return GetTime(); }
+  // void SetTimestamp(Double_t ts) { SetTime(ts); }
 
 private:
-
-  Int_t fPmtId; // photomultiplier number
+  Int_t fPmtId;  // photomultiplier number
   //Int_t fNPhotons; // number of photons in this hit
   //Double32_t fAmplitude; // hit amplitude
 
-  Double_t fToT;       // hit time-over-threshold
+  Double_t fToT;  // hit time-over-threshold
 
   ClassDef(CbmRichHit, 3)
 };
 
-#endif // CBMRICHHIT_H_
+#endif  // CBMRICHHIT_H_

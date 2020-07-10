@@ -23,42 +23,35 @@ class CbmTofHit;
 class CbmKFTofHit : public CbmKFHit {
 
 public:
+  /** Default constructor **/
+  CbmKFTofHit() : FitPoint(), wall(0) {};
 
-    /** Default constructor **/
-    CbmKFTofHit(): FitPoint(), wall(0) {};
+  /** Destructor **/
+  ~CbmKFTofHit() {};
 
-    /** Destructor **/
-    ~CbmKFTofHit() {};
+  /** Measurement point **/
+  //    CbmKFPixelMeasurement FitPoint;
+  CbmKFUMeasurement FitPoint;
 
-    /** Measurement point **/
-//    CbmKFPixelMeasurement FitPoint;
-    CbmKFUMeasurement FitPoint;
+  /** Material **/
+  CbmKFWall* wall;
 
-    /** Material **/
-    CbmKFWall* wall;
+  /** Copy data from CbmTofHit **/
+  void Create(CbmTofHit* hit);
 
-    /** Copy data from CbmTofHit **/
-    void Create(CbmTofHit* hit);
-
-    /** Filter **/
-    Int_t Filter(CbmKFTrackInterface& track, Bool_t downstream, Double_t& QP0);
+  /** Filter **/
+  Int_t Filter(CbmKFTrackInterface& track, Bool_t downstream, Double_t& QP0);
 
   const CbmKFTofHit& operator=(const CbmKFTofHit& a) {
-    wall = a.wall;
+    wall     = a.wall;
     FitPoint = a.FitPoint;
     return *this;
   };
 
-  CbmKFTofHit(const CbmKFTofHit& a):
-    FitPoint(a.FitPoint),
-    wall(a.wall)    
-  {};
-  
-  ClassDef(CbmKFTofHit, 1);
+  CbmKFTofHit(const CbmKFTofHit& a) : FitPoint(a.FitPoint), wall(a.wall) {};
 
+  ClassDef(CbmKFTofHit, 1);
 };
 
 
 #endif
-
-

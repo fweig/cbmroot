@@ -4,13 +4,7 @@
 #pragma link off all classes;
 #pragma link off all functions;
 
-#pragma link C++ class CbmAnaMuonCandidate+;
-#pragma link C++ class CbmAnaDimuonAnalysis+;
+#pragma link C++ class CbmAnaMuonCandidate + ;
+#pragma link C++ class CbmAnaDimuonAnalysis + ;
 
 #endif
-
-
-
-
-
-

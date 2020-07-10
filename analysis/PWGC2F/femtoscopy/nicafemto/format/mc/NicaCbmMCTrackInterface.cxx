@@ -9,11 +9,9 @@
 #include "NicaCbmMCTrackInterface.h"
 
 NicaCbmMCTrackInterface::NicaCbmMCTrackInterface() {
-	// TODO Auto-generated constructor stub
-
+  // TODO Auto-generated constructor stub
 }
 
 NicaCbmMCTrackInterface::~NicaCbmMCTrackInterface() {
-	// TODO Auto-generated destructor stub
+  // TODO Auto-generated destructor stub
 }
-

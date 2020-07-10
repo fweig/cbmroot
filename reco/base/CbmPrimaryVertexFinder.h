@@ -26,23 +26,21 @@ class CbmEvent;
 class CbmVertex;
 
 
-class CbmPrimaryVertexFinder : public TObject
-{
+class CbmPrimaryVertexFinder : public TObject {
 
- public:
-
+public:
   /** Default constructor **/
-  CbmPrimaryVertexFinder() { };
+  CbmPrimaryVertexFinder() {};
 
 
   /** Destructor **/
-  virtual ~CbmPrimaryVertexFinder() { };
+  virtual ~CbmPrimaryVertexFinder() {};
 
 
   /** Initialisation (virtual). If needed, to be implemented in the
    ** derived class. Else no action.
    **/
-  virtual void Init() { };
+  virtual void Init() {};
 
 
   /** Execution of PV finding (abstract). To be implemented in 
@@ -53,8 +51,7 @@ class CbmPrimaryVertexFinder : public TObject
    *@param vertex   Primary vertex (output)
    *@param event    Pointer to event object
    **/
-  virtual Int_t FindPrimaryVertex(TClonesArray* tracks,
-		                          CbmVertex* vertex) = 0;
+  virtual Int_t FindPrimaryVertex(TClonesArray* tracks, CbmVertex* vertex) = 0;
 
 
   /** Execution of PV finding (abstract). To be implemented in
@@ -66,8 +63,7 @@ class CbmPrimaryVertexFinder : public TObject
   virtual Int_t FindEventVertex(CbmEvent* event, TClonesArray* tracks) = 0;
 
 
-  ClassDef(CbmPrimaryVertexFinder,1);
-
+  ClassDef(CbmPrimaryVertexFinder, 1);
 };
 
 #endif

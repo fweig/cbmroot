@@ -30,38 +30,46 @@ class CbmKFVertexInterface;
 class FairGeoNode;
 class TObjArray;
 
-class CbmKF :public FairTask {
+class CbmKF : public FairTask {
 
- public:
-
-  CbmKF(const char *name="KF", Int_t iVerbose = 1 );
+public:
+  CbmKF(const char* name = "KF", Int_t iVerbose = 1);
   ~CbmKF();
 
-  static CbmKF *Instance(){ return fInstance; }
+  static CbmKF* Instance() { return fInstance; }
 
   /// * FairTask methods
-  
+
   void SetParContainers();
   InitStatus ReInit();
   InitStatus Init();
- 
-  /// * Utilites  
-  
-  Int_t GetMaterialIndex( Int_t uid );  
-  
+
+  /// * Utilites
+
+  Int_t GetMaterialIndex(Int_t uid);
+
   /**  Propagation of (T, C) to z_out without material, using linearisation at qp0
    */
-  
-  Int_t Propagate( Double_t *T, Double_t *C, Double_t z_out, Double_t QP0 );
 
-  Int_t PassMaterial( CbmKFTrackInterface &track, Double_t &QP0, Int_t ifst, Int_t ilst );
-  Int_t PassMaterialBetween( CbmKFTrackInterface &track, Double_t &QP0, Int_t ifst, Int_t ilst );
-  Int_t PassMaterialBetween( CbmKFTrackInterface &track, Double_t &QP0, CbmKFHit *fst, CbmKFHit *lst );
-  
+  Int_t Propagate(Double_t* T, Double_t* C, Double_t z_out, Double_t QP0);
+
+  Int_t PassMaterial(CbmKFTrackInterface& track,
+                     Double_t& QP0,
+                     Int_t ifst,
+                     Int_t ilst);
+  Int_t PassMaterialBetween(CbmKFTrackInterface& track,
+                            Double_t& QP0,
+                            Int_t ifst,
+                            Int_t ilst);
+  Int_t PassMaterialBetween(CbmKFTrackInterface& track,
+                            Double_t& QP0,
+                            CbmKFHit* fst,
+                            CbmKFHit* lst);
+
   /// * Stored materials
-  
-  std::vector<CbmKFMaterial*> vMaterial; 
-  
+
+  std::vector<CbmKFMaterial*> vMaterial;
+
   std::vector<CbmKFTube> vMvdMaterial;
   std::vector<CbmKFTube> vStsMaterial;
   std::vector<CbmKFTube> vMuchMaterial;
@@ -74,49 +82,47 @@ class CbmKF :public FairTask {
   std::vector<CbmKFTube> vPassiveTube;
   std::vector<CbmKFWall> vPassiveWall;
   std::vector<CbmKFBox> vPassiveBox;
- 
-  /// * Usefull information 
-  
-  FairField *GetMagneticField(){ return fMagneticField; }
 
-  std::map<Int_t,Int_t> MvdStationIDMap;
-  std::map<Int_t,Int_t> StsStationIDMap;
-  std::map<Int_t,Int_t> TrdStationIDMap;
-  std::map<Int_t,Int_t> MuchMCID2StationMap;
-  std::map<Int_t,Int_t> MuchStation2MCIDMap;
+  /// * Usefull information
 
-  Int_t GetMethod(){ return fMethod; }
+  FairField* GetMagneticField() { return fMagneticField; }
+
+  std::map<Int_t, Int_t> MvdStationIDMap;
+  std::map<Int_t, Int_t> StsStationIDMap;
+  std::map<Int_t, Int_t> TrdStationIDMap;
+  std::map<Int_t, Int_t> MuchMCID2StationMap;
+  std::map<Int_t, Int_t> MuchStation2MCIDMap;
+
+  Int_t GetMethod() { return fMethod; }
 
   int GetNMvdStations() const { return CbmKF::Instance()->vMvdMaterial.size(); }
 
- private:
-  
-  static CbmKF *fInstance;
-  
-  FairField *fMagneticField;
+private:
+  static CbmKF* fInstance;
 
-  
+  FairField* fMagneticField;
+
+
   Int_t fMethod; /* 0 = straight line,
 		    1 = AnalyticLight
 		    2 = Runge-Kutta 4 order, 
 		 */
- 
-  std::map<Int_t,Int_t> fMaterialID2IndexMap;
 
-  Int_t ReadTube( CbmKFTube &tube, FairGeoNode *node);
-  CbmKFMaterial *ReadPassive( FairGeoNode *node);
+  std::map<Int_t, Int_t> fMaterialID2IndexMap;
+
+  Int_t ReadTube(CbmKFTube& tube, FairGeoNode* node);
+  CbmKFMaterial* ReadPassive(FairGeoNode* node);
   void GetTargetInfo();
   void loop_over_nodes(TObjArray* nodes);
 
-  TGeoNode* fTarget{nullptr};
-  
- private:
+  TGeoNode* fTarget {nullptr};
+
+private:
   CbmKF(const CbmKF&);
   void operator=(const CbmKF&);
- public: 
-  
-  ClassDef( CbmKF, 1 );
 
+public:
+  ClassDef(CbmKF, 1);
 };
 
 #endif /* !CBMKF_H */

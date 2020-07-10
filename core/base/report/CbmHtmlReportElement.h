@@ -7,10 +7,10 @@
 #ifndef CBMHTMLREPORTELEMENT_H_
 #define CBMHTMLREPORTELEMENT_H_
 
-#include <Rtypes.h>            // for THashConsistencyHolder, ClassDef
+#include <Rtypes.h>  // for THashConsistencyHolder, ClassDef
 
-#include <string>              // for string
-#include <vector>              // for vector
+#include <string>  // for string
+#include <vector>  // for vector
 
 #include "CbmReportElement.h"  // for CbmReportElement
 
@@ -20,69 +20,62 @@
  * \author Semen Lebedev <s.lebedev@gsi.de>
  * \date 2011
  */
-class CbmHtmlReportElement: public CbmReportElement
-{
+class CbmHtmlReportElement : public CbmReportElement {
 public:
-   /**
+  /**
     * \brief Constructor.
     */
-   CbmHtmlReportElement();
+  CbmHtmlReportElement();
 
-   /**
+  /**
     * \brief Destructor.
     */
-   virtual ~CbmHtmlReportElement();
+  virtual ~CbmHtmlReportElement();
 
-   /**
+  /**
     * \brief Inherited from CbmReportElement.
     */
-   virtual std::string TableBegin(
-         const std::string& caption,
-         const std::vector<std::string>& colNames) const;
+  virtual std::string
+  TableBegin(const std::string& caption,
+             const std::vector<std::string>& colNames) const;
 
-   /**
+  /**
     * \brief Inherited from CbmReportElement.
     */
-   virtual std::string TableEnd() const;
+  virtual std::string TableEnd() const;
 
-   /**
+  /**
     * \brief Inherited from CbmReportElement.
     */
-   virtual std::string TableEmptyRow(
-         int nofCols,
-         const std::string& name) const;
+  virtual std::string TableEmptyRow(int nofCols, const std::string& name) const;
 
-   /**
+  /**
     * \brief Inherited from CbmReportElement.
     */
-   virtual std::string TableRow(
-         const std::vector<std::string>& row) const;
+  virtual std::string TableRow(const std::vector<std::string>& row) const;
 
-   /**
+  /**
     * \brief Inherited from CbmReportElement.
     */
-   virtual std::string Image(
-         const std::string& title,
-         const std::string& file) const;
+  virtual std::string Image(const std::string& title,
+                            const std::string& file) const;
 
-   /**
+  /**
     * \brief Inherited from CbmReportElement.
     */
-   virtual std::string DocumentBegin() const;
+  virtual std::string DocumentBegin() const;
 
-   /**
+  /**
     * \brief Inherited from CbmReportElement.
     */
-   virtual std::string DocumentEnd() const;
+  virtual std::string DocumentEnd() const;
 
-   /**
+  /**
     * \brief Inherited from CbmReportElement.
     */
-   virtual std::string Title(
-         int size,
-         const std::string& title) const;
+  virtual std::string Title(int size, const std::string& title) const;
 
-   ClassDef(CbmHtmlReportElement, 1)
+  ClassDef(CbmHtmlReportElement, 1)
 };
 
 #endif /* CBMHTMLREPORTELEMENT_H_ */

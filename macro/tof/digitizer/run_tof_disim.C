@@ -13,21 +13,20 @@
 // 2014-06-30 - DE - sis300_muon
 //
 // --------------------------------------------------------------------------
-void run_tof_disim(Int_t nEvents = 2, const char* setup = "sis100_electron")
-{
+void run_tof_disim(Int_t nEvents = 2, const char* setup = "sis100_electron") {
 
   // ========================================================================
   //          Adjust this part according to your requirements
 
   // ----- Paths and file names  --------------------------------------------
-  TString inDir   = gSystem->Getenv("VMCWORKDIR");
+  TString inDir = gSystem->Getenv("VMCWORKDIR");
 
   // Set the path to the directory with macros for Geant3 and Geant4
   // configuration
   TString tut_configdir = inDir + "/sim/transport/gconfig";
-  gSystem->Setenv("CONFIG_DIR",tut_configdir.Data());
+  gSystem->Setenv("CONFIG_DIR", tut_configdir.Data());
 
-  TString inFile = ""; // give here or as argument; otherwise default is taken
+  TString inFile = "";  // give here or as argument; otherwise default is taken
 
   TString outDir  = "data/";
   TString outFile = outDir + setup + "_test.mc.root";
@@ -44,13 +43,13 @@ void run_tof_disim(Int_t nEvents = 2, const char* setup = "sis100_electron")
   // in the responsibility of the user that no overlaps or extrusions are
   // created by the placement of the target.
   //
-  TString  targetElement   = "Gold";
+  TString targetElement    = "Gold";
   Double_t targetThickness = 0.025;  // full thickness in cm
   Double_t targetDiameter  = 2.5;    // diameter in cm
   Double_t targetPosX      = 0.;     // target x position in global c.s. [cm]
   Double_t targetPosY      = 0.;     // target y position in global c.s. [cm]
   Double_t targetPosZ      = 0.;     // target z position in global c.s. [cm]
-  Double_t targetRotY      = 0.;     // target rotation angle around the y axis [deg]
+  Double_t targetRotY = 0.;  // target rotation angle around the y axis [deg]
   // ------------------------------------------------------------------------
 
 
@@ -64,13 +63,13 @@ void run_tof_disim(Int_t nEvents = 2, const char* setup = "sis100_electron")
   //
   Bool_t smearVertexXY = kTRUE;
   Bool_t smearVertexZ  = kTRUE;
-  Double_t beamWidthX   = 1.;  // Gaussian sigma of the beam profile in x [cm]
-  Double_t beamWidthY   = 1.;  // Gaussian sigma of the beam profile in y [cm]
+  Double_t beamWidthX  = 1.;  // Gaussian sigma of the beam profile in x [cm]
+  Double_t beamWidthY  = 1.;  // Gaussian sigma of the beam profile in y [cm]
   // ------------------------------------------------------------------------
 
-  TString setupFile = inDir + "/geometry/setup/setup_"+ setup +".C";
+  TString setupFile  = inDir + "/geometry/setup/setup_" + setup + ".C";
   TString setupFunct = "setup_";
-  setupFunct = setupFunct + setup + "()";
+  setupFunct         = setupFunct + setup + "()";
   gROOT->LoadMacro(setupFile);
   gInterpreter->ProcessLine(setupFunct);
 
@@ -84,7 +83,6 @@ void run_tof_disim(Int_t nEvents = 2, const char* setup = "sis100_electron")
   // ------------------------------------------------------------------------
 
 
-
   // -----   Timer   --------------------------------------------------------
   TStopwatch timer;
   timer.Start();
@@ -92,15 +90,15 @@ void run_tof_disim(Int_t nEvents = 2, const char* setup = "sis100_electron")
 
   // -----   Create simulation run   ----------------------------------------
   FairRunSim* fRun = new FairRunSim();
-  fRun->SetName("TGeant3");              // Transport engine
-  fRun->SetOutputFile(outFile);          // Output file
-  fRun->SetGenerateRunInfo(kTRUE);       // Create FairRunInfo file
+  fRun->SetName("TGeant3");         // Transport engine
+  fRun->SetOutputFile(outFile);     // Output file
+  fRun->SetGenerateRunInfo(kTRUE);  // Create FairRunInfo file
   FairRuntimeDb* rtdb = fRun->GetRuntimeDb();
   // ------------------------------------------------------------------------
 
 
   // -----   Create media   -------------------------------------------------
-  fRun->SetMaterials("media.geo");       // Materials
+  fRun->SetMaterials("media.geo");  // Materials
   // ------------------------------------------------------------------------
 
   // -----   Create and register modules   ----------------------------------
@@ -113,9 +111,8 @@ void run_tof_disim(Int_t nEvents = 2, const char* setup = "sis100_electron")
 
 
   // -----   Create and register the target   -------------------------------
-  CbmTarget* target = new CbmTarget(targetElement.Data(),
-                                              targetThickness,
-                                              targetDiameter);
+  CbmTarget* target =
+    new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
   target->SetPosition(targetPosX, targetPosY, targetPosZ);
   target->SetRotation(targetRotY);
   std::cout << target->ToString();
@@ -124,9 +121,9 @@ void run_tof_disim(Int_t nEvents = 2, const char* setup = "sis100_electron")
 
   // -----   Create magnetic field   ----------------------------------------
   CbmFieldMap* magField = CbmSetup::Instance()->CreateFieldMap();
-  if ( ! magField ) {
-        std::cout << "-E- run_sim_new: No valid field!";
-        return;
+  if (!magField) {
+    std::cout << "-E- run_sim_new: No valid field!";
+    return;
   }
   fRun->SetField(magField);
   // ------------------------------------------------------------------------
@@ -134,11 +131,11 @@ void run_tof_disim(Int_t nEvents = 2, const char* setup = "sis100_electron")
   // -----   Input file   ---------------------------------------------------
   std::cout << std::endl;
   TString defaultInputFile = inDir + "/input/urqmd.auau.10gev.centr.root";
-  if ( inFile.IsNull() ) {  // Not defined in the macro explicitly
-//        if ( strcmp(inFile, "") == 0 ) {  // not given as argument to the macro
-                inFile = defaultInputFile;
-//        }
-//        else inFile = inputFile;
+  if (inFile.IsNull()) {  // Not defined in the macro explicitly
+    //        if ( strcmp(inFile, "") == 0 ) {  // not given as argument to the macro
+    inFile = defaultInputFile;
+    //        }
+    //        else inFile = inputFile;
   }
   // ------------------------------------------------------------------------
 
@@ -149,9 +146,9 @@ void run_tof_disim(Int_t nEvents = 2, const char* setup = "sis100_electron")
   // --- Get target parameters
   TVector3 targetPos(0., 0., 0.);
   Double_t tDz = 0.;
-  if ( target ) {
-        targetPos = target->GetPosition();
-        tDz = target->GetThickness();
+  if (target) {
+    targetPos = target->GetPosition();
+    tDz       = target->GetThickness();
   }
   primGen->SetTarget(targetPos.Z(), tDz);
   primGen->SetBeam(0., 0., beamWidthX, beamWidthY);
@@ -165,7 +162,7 @@ void run_tof_disim(Int_t nEvents = 2, const char* setup = "sis100_electron")
   // ------------------------------------------------------------------------
 
   // Use the CbmUnigenGenrator for the input
-  CbmUnigenGenerator*  uniGen = new CbmUnigenGenerator(inFile);
+  CbmUnigenGenerator* uniGen = new CbmUnigenGenerator(inFile);
   primGen->AddGenerator(uniGen);
   fRun->SetGenerator(primGen);
   // ------------------------------------------------------------------------
@@ -174,32 +171,32 @@ void run_tof_disim(Int_t nEvents = 2, const char* setup = "sis100_electron")
   // Switch this on if you want to visualize tracks in the
   // eventdisplay.
   // This is normally switch off, because of the huge files created
-  // when it is switched on. 
+  // when it is switched on.
   fRun->SetStoreTraj(kTRUE);
 
   // -----   Run initialisation   -------------------------------------------
   fRun->Init();
   // ------------------------------------------------------------------------
-  
+
   // Set cuts for storing the trajectories.
   // Switch this on only if trajectories are stored.
   // Choose this cuts according to your needs, but be aware
   // that the file size of the output file depends on these cuts
 
-   FairTrajFilter* trajFilter = FairTrajFilter::Instance();
-   trajFilter->SetStepSizeCut(0.01); // 1 cm
-   trajFilter->SetVertexCut(-2000., -2000., 4., 2000., 2000., 100.);
-   trajFilter->SetMomentumCutP(10e-3); // p_lab > 10 MeV
-   trajFilter->SetEnergyCut(0., 1.02); // 0 < Etot < 1.04 GeV
-   trajFilter->SetStorePrimaries(kTRUE);
-   trajFilter->SetStoreSecondaries(kTRUE);
+  FairTrajFilter* trajFilter = FairTrajFilter::Instance();
+  trajFilter->SetStepSizeCut(0.01);  // 1 cm
+  trajFilter->SetVertexCut(-2000., -2000., 4., 2000., 2000., 100.);
+  trajFilter->SetMomentumCutP(10e-3);  // p_lab > 10 MeV
+  trajFilter->SetEnergyCut(0., 1.02);  // 0 < Etot < 1.04 GeV
+  trajFilter->SetStorePrimaries(kTRUE);
+  trajFilter->SetStoreSecondaries(kTRUE);
 
   // -----   Runtime database   ---------------------------------------------
   CbmFieldPar* fieldPar = (CbmFieldPar*) rtdb->getContainer("CbmFieldPar");
   fieldPar->SetParameters(magField);
   fieldPar->setChanged();
-  fieldPar->setInputVersion(fRun->GetRunId(),1);
-  Bool_t kParameterMerged = kTRUE;
+  fieldPar->setInputVersion(fRun->GetRunId(), 1);
+  Bool_t kParameterMerged   = kTRUE;
   FairParRootFileIo* parOut = new FairParRootFileIo(kParameterMerged);
   parOut->open(parFile.Data());
   rtdb->setOutput(parOut);
@@ -207,7 +204,7 @@ void run_tof_disim(Int_t nEvents = 2, const char* setup = "sis100_electron")
   rtdb->print();
   // ------------------------------------------------------------------------
 
- 
+
   // -----   Start run   ----------------------------------------------------
   fRun->Run(nEvents);
   // ------------------------------------------------------------------------
@@ -219,14 +216,12 @@ void run_tof_disim(Int_t nEvents = 2, const char* setup = "sis100_electron")
   Double_t ctime = timer.CpuTime();
   cout << endl << endl;
   cout << "Macro finished succesfully." << endl;
-  cout << "Output file is "    << outFile << endl;
+  cout << "Output file is " << outFile << endl;
   cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime 
-       << "s" << endl << endl;
+  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl
+       << endl;
   // ------------------------------------------------------------------------
 
   cout << " Test passed" << endl;
   cout << " All ok " << endl;
-  
 }
-

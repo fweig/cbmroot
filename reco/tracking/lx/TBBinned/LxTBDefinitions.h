@@ -20,10 +20,9 @@
 #ifdef LXTB_QA
 #define LXTB_EMU_TS
 //#define LXTB_DEBUG
-#endif//LXTB_QA
+#endif  //LXTB_QA
 
 #define scaltype float
 #define timetype double
 
 #endif /* LXTBDEFINITIONS_H */
-

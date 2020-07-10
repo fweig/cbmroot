@@ -1,54 +1,57 @@
-static TString  fieldMap;
+static TString fieldMap;
 static Double_t fieldZ;
 static Double_t fieldScale;
 
 #include <iostream>
 using namespace std;
 
-void run_sim(Int_t nEvents = 100000)
-{
-    TTree::SetMaxTreeSize(90000000000);
-    Int_t iVerbose = 0;
+void run_sim(Int_t nEvents = 100000) {
+  TTree::SetMaxTreeSize(90000000000);
+  Int_t iVerbose = 0;
 
-    TString script = TString(gSystem->Getenv("SCRIPT"));
-    cout << "script: " << script << endl;
+  TString script = TString(gSystem->Getenv("SCRIPT"));
+  cout << "script: " << script << endl;
 
-    // -----   In- and output file names   ------------------------------------
+  // -----   In- and output file names   ------------------------------------
 
-    TString setupName = "", outDir = "";
-    setupName = "aerogel radiator";
+  TString setupName = "", outDir = "";
+  setupName = "aerogel radiator";
 
-    if (script == "yes") {
-	setupName = TString(gSystem->Getenv("SETUP_NAME"));
-	outDir = TString(gSystem->Getenv("OUT_DIR"));
-    }
-    else {
-	outDir = "/home/aghoehne/Documents/CbmRoot/Gregor/";
-    }
+  if (script == "yes") {
+    setupName = TString(gSystem->Getenv("SETUP_NAME"));
+    outDir    = TString(gSystem->Getenv("OUT_DIR"));
+  } else {
+    outDir = "/home/aghoehne/Documents/CbmRoot/Gregor/";
+  }
 
-	TString asciiInput = "/home/aghoehne/Documents/CbmRoot/trunkNew/macro/rich/prototype/smallprototype/beamdistribution.ascii.dat";
-    	TString parFile = outDir + "param.00001.root";
-    	TString mcFile = outDir  + "mc.00001.root";
-    	TString geoFile = outDir  + "geofilefull.00001.root";
-    
-
-    	TString geoSetupFile = "";
-    	geoSetupFile = "/home/aghoehne/Documents/CbmRoot/trunkNew/macro/rich/prototype/smallprototype/geo.C";
+  TString asciiInput = "/home/aghoehne/Documents/CbmRoot/trunkNew/macro/rich/"
+                       "prototype/smallprototype/beamdistribution.ascii.dat";
+  TString parFile = outDir + "param.00001.root";
+  TString mcFile  = outDir + "mc.00001.root";
+  TString geoFile = outDir + "geofilefull.00001.root";
 
 
-    // -----   Script initialization   ----------------------------------------
+  TString geoSetupFile = "";
+  geoSetupFile         = "/home/aghoehne/Documents/CbmRoot/trunkNew/macro/rich/"
+                 "prototype/smallprototype/geo.C";
 
-	if (script == "yes") {
-      asciiInput = TString(gSystem->Getenv("IN_ASCII_FILE"));
-      mcFile = TString(gSystem->Getenv("MC_FILE"));
-      parFile = TString(gSystem->Getenv("PAR_FILE"));
-      caveGeom = TString(gSystem->Getenv("CAVE_GEOM"));
-      richGeom = TString(gSystem->Getenv("RICH_GEOM"));
-	setupName = TString(gSystem->Getenv("SETUP_NAME"));
-	cout << "mcFile: " << TString(gSystem->Getenv("MC_FILE")) << endl << "parFile: " << TString(gSystem->Getenv("PAR_FILE")) << endl << "ascii_Input: " << TString(gSystem->Getenv("IN_ASCII_FILE")) << endl;
-   }
-    
-/*    if (script == "yes") {
+
+  // -----   Script initialization   ----------------------------------------
+
+  if (script == "yes") {
+    asciiInput = TString(gSystem->Getenv("IN_ASCII_FILE"));
+    mcFile     = TString(gSystem->Getenv("MC_FILE"));
+    parFile    = TString(gSystem->Getenv("PAR_FILE"));
+    caveGeom   = TString(gSystem->Getenv("CAVE_GEOM"));
+    richGeom   = TString(gSystem->Getenv("RICH_GEOM"));
+    setupName  = TString(gSystem->Getenv("SETUP_NAME"));
+    cout << "mcFile: " << TString(gSystem->Getenv("MC_FILE")) << endl
+         << "parFile: " << TString(gSystem->Getenv("PAR_FILE")) << endl
+         << "ascii_Input: " << TString(gSystem->Getenv("IN_ASCII_FILE"))
+         << endl;
+  }
+
+  /*    if (script == "yes") {
         urqmdFile = TString(gSystem->Getenv("URQMD_FILE"));
         mcFile = TString(gSystem->Getenv("MC_FILE"));
         parFile = TString(gSystem->Getenv("PAR_FILE"));
@@ -59,44 +62,44 @@ void run_sim(Int_t nEvents = 100000)
 
     }
 */
-    std::cout << "-I- using geoSetupFile: " << geoSetupFile << " and setupName: "
-	<< setupName << std::endl;
+  std::cout << "-I- using geoSetupFile: " << geoSetupFile
+            << " and setupName: " << setupName << std::endl;
 
-    remove(parFile.Data());
-    remove(mcFile.Data());
+  remove(parFile.Data());
+  remove(mcFile.Data());
 
-    gDebug = 0;
-    TStopwatch timer;
-    timer.Start();
-
-
-    // -----   Create simulation run   ----------------------------------------
-    FairRunSim* fRun = new FairRunSim();
-    fRun->SetName("TGeant3");                     // Transport engine
-    fRun->SetOutputFile(mcFile);                  // Output file
-    fRun->SetGenerateRunInfo(kTRUE);              // Create FairRunInfo file
-    FairRuntimeDb* rtdb = fRun->GetRuntimeDb();
-    // ------------------------------------------------------------------------
+  gDebug = 0;
+  TStopwatch timer;
+  timer.Start();
 
 
-    // -----   Logger settings   ----------------------------------------------
-    //Logger settings
-//    TString logLevel = "INFO";   // "DEBUG";
-//    TString logVerbosity = "LOW";
-    // ------------------------------------------------------------------------
+  // -----   Create simulation run   ----------------------------------------
+  FairRunSim* fRun = new FairRunSim();
+  fRun->SetName("TGeant3");         // Transport engine
+  fRun->SetOutputFile(mcFile);      // Output file
+  fRun->SetGenerateRunInfo(kTRUE);  // Create FairRunInfo file
+  FairRuntimeDb* rtdb = fRun->GetRuntimeDb();
+  // ------------------------------------------------------------------------
 
 
-    // -----   Load the geometry setup   --------------------------------------
-    TString setupFunct = "geo()";
-    std::cout << "-I- geoSetupName: " << geoSetupFile << std::endl
-	<< "-I- setupFunct: " << setupFunct << std::endl;
-    gROOT->LoadMacro(geoSetupFile);
-    gROOT->ProcessLine(setupFunct);
-    std::cout << "Geometry initialized!" << std::endl;
-    // ------------------------------------------------------------------------
+  // -----   Logger settings   ----------------------------------------------
+  //Logger settings
+  //    TString logLevel = "INFO";   // "DEBUG";
+  //    TString logVerbosity = "LOW";
+  // ------------------------------------------------------------------------
 
 
-/*    // creation of the primary vertex
+  // -----   Load the geometry setup   --------------------------------------
+  TString setupFunct = "geo()";
+  std::cout << "-I- geoSetupName: " << geoSetupFile << std::endl
+            << "-I- setupFunct: " << setupFunct << std::endl;
+  gROOT->LoadMacro(geoSetupFile);
+  gROOT->ProcessLine(setupFunct);
+  std::cout << "Geometry initialized!" << std::endl;
+  // ------------------------------------------------------------------------
+
+
+  /*    // creation of the primary vertex
     Bool_t smearVertexXY = kTRUE;
     Bool_t smearVertexZ  = kTRUE;
     Double_t beamWidthX   = 1.;  // Gaussian sigma of the beam profile in x [cm]
@@ -104,33 +107,34 @@ void run_sim(Int_t nEvents = 100000)
     // ------------------------------------------------------------------------
 */
 
-    // -----   Create media   -------------------------------------------------
-    TString pathMedia = "media.geo";
-    fRun->SetMaterials(pathMedia); // Materials
-    // ------------------------------------------------------------------------
+  // -----   Create media   -------------------------------------------------
+  TString pathMedia = "media.geo";
+  fRun->SetMaterials(pathMedia);  // Materials
+  // ------------------------------------------------------------------------
 
-    // -----   Create and register modules   ----------------------------------
-    cout << endl;
-    //TString macroName = gSystem->Getenv("VMCWORKDIR");
-    //macroName += "/macro/run/modules/registerSetup.C";
-    TString macroName = "/home/aghoehne/Documents/CbmRoot/trunkNew/macro/run/modules/registerSetup.C";
-    std::cout << "Loading macro " << macroName << std::endl;
-    gROOT->LoadMacro(macroName);
-    gROOT->ProcessLine("registerSetup()");
-    // ------------------------------------------------------------------------
+  // -----   Create and register modules   ----------------------------------
+  cout << endl;
+  //TString macroName = gSystem->Getenv("VMCWORKDIR");
+  //macroName += "/macro/run/modules/registerSetup.C";
+  TString macroName = "/home/aghoehne/Documents/CbmRoot/trunkNew/macro/run/"
+                      "modules/registerSetup.C";
+  std::cout << "Loading macro " << macroName << std::endl;
+  gROOT->LoadMacro(macroName);
+  gROOT->ProcessLine("registerSetup()");
+  // ------------------------------------------------------------------------
 
 
-    // --- Define the target geometry -----------------------------------------
-    //
-    // The target is not part of the setup, since one and the same setup can
-    // and will be used with different targets.
-    // The target is constructed as a tube in z direction with the specified
-    // diameter (in x and y) and thickness (in z). It will be placed at the
-    // specified position as daughter volume of the volume present there. It is
-    // in the responsibility of the user that no overlaps or extrusions are
-    // created by the placement of the target.
-    //
-/*    TString  targetElement   = "Gold";
+  // --- Define the target geometry -----------------------------------------
+  //
+  // The target is not part of the setup, since one and the same setup can
+  // and will be used with different targets.
+  // The target is constructed as a tube in z direction with the specified
+  // diameter (in x and y) and thickness (in z). It will be placed at the
+  // specified position as daughter volume of the volume present there. It is
+  // in the responsibility of the user that no overlaps or extrusions are
+  // created by the placement of the target.
+  //
+  /*    TString  targetElement   = "Gold";
     Double_t targetThickness = 0.025; // 250 mum, full thickness in cm
     Double_t targetDiameter  = 2.5;    // diameter in cm
     Double_t targetPosX      = 0.;     // target x position in global c.s. [cm]
@@ -138,8 +142,8 @@ void run_sim(Int_t nEvents = 100000)
     Double_t targetPosZ      = 0.;     // target z position in global c.s. [cm]
     Double_t targetRotY      = 0.;     // target rotation angle around the y axis [deg]
 */
-    // -----   Create and register the target   -------------------------------
-/*    CbmTarget* target = new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
+  // -----   Create and register the target   -------------------------------
+  /*    CbmTarget* target = new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
     target->SetPosition(targetPosX, targetPosY, targetPosZ);
     target->SetRotation(targetRotY);
     target->Print();
@@ -147,8 +151,8 @@ void run_sim(Int_t nEvents = 100000)
   */  // ------------------------------------------------------------------------
 
 
-    // -----   Create magnetic field   ----------------------------------------
-/*    Double_t fieldZ       = 40.;            // field centre z position
+  // -----   Create magnetic field   ----------------------------------------
+  /*    Double_t fieldZ       = 40.;            // field centre z position
     Double_t fieldScale   =  1.;            // field scaling factor
     CbmFieldMap* magField = CbmSetup::Instance()->CreateFieldMap();
     if ( ! magField ) {
@@ -158,13 +162,13 @@ void run_sim(Int_t nEvents = 100000)
     magField->SetPosition(0., 0., fieldZ);
     magField->SetScale(fieldScale);
     fRun->SetField(magField);
-*/  
+*/
   // ------------------------------------------------------------------------
 
 
-    // -----   Create PrimaryGenerator   --------------------------------------
-    FairPrimaryGenerator* primGen = new FairPrimaryGenerator();
-/*    Double_t tX = 0.;
+  // -----   Create PrimaryGenerator   --------------------------------------
+  FairPrimaryGenerator* primGen = new FairPrimaryGenerator();
+  /*    Double_t tX = 0.;
     Double_t tY = 0.;
     Double_t tZ = 0.;
     Double_t tDz = 0.;
@@ -173,21 +177,21 @@ void run_sim(Int_t nEvents = 100000)
         tDz = target->GetThickness();
     }
 */
-/*    primGen->SetTarget(tZ, tDz);
+  /*    primGen->SetTarget(tZ, tDz);
     primGen->SetBeam(0., 0., beamWidthX, beamWidthY);
     primGen->SmearGausVertexXY(smearVertexXY);
     primGen->SmearVertexZ(smearVertexZ);
 */
-	FairAsciiGenerator* asciiGen = new FairAsciiGenerator(asciiInput);
-   	primGen->AddGenerator(asciiGen);
+  FairAsciiGenerator* asciiGen = new FairAsciiGenerator(asciiInput);
+  primGen->AddGenerator(asciiGen);
 
-/*    if (urqmd == "yes") {
+  /*    if (urqmd == "yes") {
         CbmUnigenGenerator*  uniGen = new CbmUnigenGenerator(urqmdFile);
         uniGen->SetEventPlane(0. , 360.);
         primGen->AddGenerator(uniGen);
     }
 */
-/*    if (boxGen == "yes") {
+  /*    if (boxGen == "yes") {
 
         FairBoxGenerator* boxGen1 = new FairBoxGenerator(11, NELECTRONS);
         boxGen1->SetPRange(1., 9.5);
@@ -209,61 +213,62 @@ void run_sim(Int_t nEvents = 100000)
 
     }
 */
-        //      CbmLitPolarizedGenerator *polGen;
-        //      polGen = new CbmLitPolarizedGenerator(443, NELECTRONS);
-        //      polGen->SetDistributionPt(0.176);        // 25 GeV
-        //      polGen->SetDistributionY(1.9875,0.228);  // 25 GeV
-        //      polGen->SetRangePt(0.,3.);
-        //      polGen->SetRangeY(1.,3.);
-        //      polGen->SetBox(0);
-        //      polGen->SetRefFrame(CbmLitPolarizedGenerator::kHelicity);
-        //      polGen->SetDecayMode(CbmLitPolarizedGenerator::kDiElectron);
-        //      polGen->SetAlpha(0);
-        //      polGen->Init();
-        //      primGen->AddGenerator(polGen);
+  //      CbmLitPolarizedGenerator *polGen;
+  //      polGen = new CbmLitPolarizedGenerator(443, NELECTRONS);
+  //      polGen->SetDistributionPt(0.176);        // 25 GeV
+  //      polGen->SetDistributionY(1.9875,0.228);  // 25 GeV
+  //      polGen->SetRangePt(0.,3.);
+  //      polGen->SetRangeY(1.,3.);
+  //      polGen->SetBox(0);
+  //      polGen->SetRefFrame(CbmLitPolarizedGenerator::kHelicity);
+  //      polGen->SetDecayMode(CbmLitPolarizedGenerator::kDiElectron);
+  //      polGen->SetAlpha(0);
+  //      polGen->Init();
+  //      primGen->AddGenerator(polGen);
 
-    // ------------------------------------------------------------------------
-
-
-    // -----   Run initialisation   -------------------------------------------
-    fRun->SetGenerator(primGen);
-    fRun->SetStoreTraj(true);
-    fRun->Init();
-    // ------------------------------------------------------------------------
+  // ------------------------------------------------------------------------
 
 
-    // -----   Runtime database   ---------------------------------------------
-    CbmFieldPar* fieldPar = (CbmFieldPar*) rtdb->getContainer("CbmFieldPar");
-//    fieldPar->SetParameters(magField);
-    fieldPar->setChanged();
-    fieldPar->setInputVersion(fRun->GetRunId(),1);
-    Bool_t kParameterMerged = kTRUE;
-    FairParRootFileIo* parOut = new FairParRootFileIo(kParameterMerged);
-    parOut->open(parFile.Data());
-    rtdb->setOutput(parOut);
-    rtdb->saveOutput();
-    rtdb->print();
-
-	
-    // ------------------------------------------------------------------------
+  // -----   Run initialisation   -------------------------------------------
+  fRun->SetGenerator(primGen);
+  fRun->SetStoreTraj(true);
+  fRun->Init();
+  // ------------------------------------------------------------------------
 
 
-    // -----   Start run   ----------------------------------------------------
-    fRun->Run(nEvents);
-    // ------------------------------------------------------------------------
+  // -----   Runtime database   ---------------------------------------------
+  CbmFieldPar* fieldPar = (CbmFieldPar*) rtdb->getContainer("CbmFieldPar");
+  //    fieldPar->SetParameters(magField);
+  fieldPar->setChanged();
+  fieldPar->setInputVersion(fRun->GetRunId(), 1);
+  Bool_t kParameterMerged   = kTRUE;
+  FairParRootFileIo* parOut = new FairParRootFileIo(kParameterMerged);
+  parOut->open(parFile.Data());
+  rtdb->setOutput(parOut);
+  rtdb->saveOutput();
+  rtdb->print();
 
 
-    // -----   Finish   -------------------------------------------------------
-    fRun->CreateGeometryFile(geoFile);
-    timer.Stop();
-    Double_t rtime = timer.RealTime();
-    Double_t ctime = timer.CpuTime();
-    cout << endl << endl;
-    cout << "Macro finished succesfully." << endl;
-    cout << "Output file is "    << mcFile << endl;
-    cout << "Parameter file is " << parFile << endl;
-    cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl << endl;
+  // ------------------------------------------------------------------------
 
-    cout << " Test passed" << endl;
-    cout << " All ok " << endl;
+
+  // -----   Start run   ----------------------------------------------------
+  fRun->Run(nEvents);
+  // ------------------------------------------------------------------------
+
+
+  // -----   Finish   -------------------------------------------------------
+  fRun->CreateGeometryFile(geoFile);
+  timer.Stop();
+  Double_t rtime = timer.RealTime();
+  Double_t ctime = timer.CpuTime();
+  cout << endl << endl;
+  cout << "Macro finished succesfully." << endl;
+  cout << "Output file is " << mcFile << endl;
+  cout << "Parameter file is " << parFile << endl;
+  cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl
+       << endl;
+
+  cout << " Test passed" << endl;
+  cout << " All ok " << endl;
 }

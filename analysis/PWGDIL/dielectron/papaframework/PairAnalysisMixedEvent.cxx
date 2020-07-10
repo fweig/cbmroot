@@ -12,8 +12,8 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-#include <TObjArray.h>
 #include <TExMap.h>
+#include <TObjArray.h>
 #include <TProcessID.h>
 
 #include "PairAnalysisTrack.h"
@@ -22,29 +22,26 @@
 
 ClassImp(PairAnalysisMixedEvent)
 
-PairAnalysisMixedEvent::PairAnalysisMixedEvent() :
-  PairAnalysisMixedEvent("mixedevent","mixed event")
-{
+  PairAnalysisMixedEvent::PairAnalysisMixedEvent()
+  : PairAnalysisMixedEvent("mixedevent", "mixed event") {
   //
   // Default Constructor
   //
 }
 
 //______________________________________________
-PairAnalysisMixedEvent::PairAnalysisMixedEvent(const char* name, const char* title) :
-  TNamed(name, title),
-  fArrTrackP(),
-  fArrTrackN()
-{
+PairAnalysisMixedEvent::PairAnalysisMixedEvent(const char* name,
+                                               const char* title)
+  : TNamed(name, title), fArrTrackP(), fArrTrackN() {
   //
   // Named Constructor
   //
-  for (Int_t i=0; i<PairAnalysisVarManager::kNMaxValuesMC;++i) fEventData[i]=0.;
+  for (Int_t i = 0; i < PairAnalysisVarManager::kNMaxValuesMC; ++i)
+    fEventData[i] = 0.;
 }
 
 //______________________________________________
-PairAnalysisMixedEvent::~PairAnalysisMixedEvent()
-{
+PairAnalysisMixedEvent::~PairAnalysisMixedEvent() {
   //
   // Default Destructor
   //
@@ -53,62 +50,62 @@ PairAnalysisMixedEvent::~PairAnalysisMixedEvent()
 }
 
 //______________________________________________
-void PairAnalysisMixedEvent::SetTracks(const TObjArray &arrP, const TObjArray &arrN)
-{
+void PairAnalysisMixedEvent::SetTracks(const TObjArray& arrP,
+                                       const TObjArray& arrN) {
   //
   // Setup PairAnalysisPairs
   // assumes that the objects in arrP and arrN are
   //
 
   //Clear out old entries before filling new ones
-  Clear(); // check if this can be improved, by calling clear instead of removeat
+  Clear();  // check if this can be improved, by calling clear instead of removeat
 
   // we keep the tracks buffered to minimise new / delete operations
-  fNTracksN=0;
-  fNTracksP=0;
+  fNTracksN = 0;
+  fNTracksP = 0;
 
   //check size of the arrays
-  if (fArrTrackP.GetSize()<arrP.GetSize()) {
+  if (fArrTrackP.GetSize() < arrP.GetSize()) {
     fArrTrackP.Expand(arrP.GetSize());
   }
-  if (fArrTrackN.GetSize()<arrN.GetSize()) {
+  if (fArrTrackN.GetSize() < arrN.GetSize()) {
     fArrTrackN.Expand(arrN.GetSize());
   }
 
   TExMap mapStoredVertices;
-  fPIDIndex=TProcessID::GetPIDs()->IndexOf(fPID);
+  fPIDIndex = TProcessID::GetPIDs()->IndexOf(fPID);
   // fill particles
-  Int_t tracks=0;
-  for (Int_t itrack=0; itrack<arrP.GetEntriesFast(); ++itrack){
-    PairAnalysisTrack *track=dynamic_cast<PairAnalysisTrack*>(arrP.At(itrack));
+  Int_t tracks = 0;
+  for (Int_t itrack = 0; itrack < arrP.GetEntriesFast(); ++itrack) {
+    PairAnalysisTrack* track =
+      dynamic_cast<PairAnalysisTrack*>(arrP.At(itrack));
     if (!track) continue;
 
     // buffer track
-//    PairAnalysisTrack   *ctrack = new (fArrTrackP[tracks]) PairAnalysisTrack(*track);
+    //    PairAnalysisTrack   *ctrack = new (fArrTrackP[tracks]) PairAnalysisTrack(*track);
     new (fArrTrackP[tracks]) PairAnalysisTrack(*track);
 
     ++tracks;
   }
-  fNTracksP=tracks;
+  fNTracksP = tracks;
 
-  tracks=0;
-  for (Int_t itrack=0; itrack<arrN.GetEntriesFast(); ++itrack){
-    PairAnalysisTrack *track=dynamic_cast<PairAnalysisTrack*>(arrN.At(itrack));
+  tracks = 0;
+  for (Int_t itrack = 0; itrack < arrN.GetEntriesFast(); ++itrack) {
+    PairAnalysisTrack* track =
+      dynamic_cast<PairAnalysisTrack*>(arrN.At(itrack));
     if (!track) continue;
 
     //buffer track
-//    PairAnalysisTrack   *ctrack = new (fArrTrackN[tracks]) PairAnalysisTrack(*track);
+    //    PairAnalysisTrack   *ctrack = new (fArrTrackN[tracks]) PairAnalysisTrack(*track);
     new (fArrTrackN[tracks]) PairAnalysisTrack(*track);
 
     ++tracks;
   }
-  fNTracksN=tracks;
-
+  fNTracksN = tracks;
 }
 
 //______________________________________________
-void PairAnalysisMixedEvent::Clear(Option_t *opt)
-{
+void PairAnalysisMixedEvent::Clear(Option_t* opt) {
   //
   // clear arrays
   //
@@ -117,34 +114,35 @@ void PairAnalysisMixedEvent::Clear(Option_t *opt)
 }
 
 //______________________________________________
-void PairAnalysisMixedEvent::Set(Int_t size)
-{
+void PairAnalysisMixedEvent::Set(Int_t size) {
   //
   // set size of array
   //
-  fArrTrackP.SetClass("PairAnalysisTrack",size);
-  fArrTrackN.SetClass("PairAnalysisTrack",size);
+  fArrTrackP.SetClass("PairAnalysisTrack", size);
+  fArrTrackN.SetClass("PairAnalysisTrack", size);
 }
 
 //______________________________________________
-void PairAnalysisMixedEvent::SetEventData(const Double_t data[PairAnalysisVarManager::kNMaxValuesMC])
-{
+void PairAnalysisMixedEvent::SetEventData(
+  const Double_t data[PairAnalysisVarManager::kNMaxValuesMC]) {
   //
   // copy only evnet variables
   //
-  for (Int_t i=PairAnalysisVarManager::kPairMax; i<PairAnalysisVarManager::kNMaxValuesMC;++i) fEventData[i]=data[i];
+  for (Int_t i = PairAnalysisVarManager::kPairMax;
+       i < PairAnalysisVarManager::kNMaxValuesMC;
+       ++i)
+    fEventData[i] = data[i];
 }
 
 //______________________________________________
-void PairAnalysisMixedEvent::AssignID(TObject *obj)
-{
+void PairAnalysisMixedEvent::AssignID(TObject* obj) {
   //
   // Custom function to assign a uid to an object with an own process id
   // to avoid problems buffering the vertices
   //
-  UInt_t uid=1;
-  if (fPID->GetObjects()) uid=fPID->GetObjects()->GetEntriesFast();
-  uid+=(fPIDIndex<<24);
+  UInt_t uid = 1;
+  if (fPID->GetObjects()) uid = fPID->GetObjects()->GetEntriesFast();
+  uid += (fPIDIndex << 24);
   obj->SetBit(kIsReferenced);
   obj->SetUniqueID(uid);
   fPID->PutObjectWithID(obj);

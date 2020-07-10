@@ -21,23 +21,21 @@
 
 class TClonesArray;
 
-class CbmTrdTrackFinder : public TObject
-{
+class CbmTrdTrackFinder : public TObject {
 
- public:
-
+public:
   /** Default constructor **/
-  CbmTrdTrackFinder() { }; 
+  CbmTrdTrackFinder() {};
 
 
   /** Destructor **/
-  virtual ~CbmTrdTrackFinder() { };
+  virtual ~CbmTrdTrackFinder() {};
 
 
   /** Virtual method Init. If needed, to be implemented in the
    ** concrete class. Else no action.
    **/
-  virtual void Init() { };
+  virtual void Init() {};
 
 
   /** Abstract method DoFind. To be implemented in the concrete class.
@@ -49,12 +47,10 @@ class CbmTrdTrackFinder : public TObject
    **
    *@value Number of tracks created
    **/
-  virtual Int_t DoFind(TClonesArray* hitArray,
-		       TClonesArray* trackArray) = 0;
+  virtual Int_t DoFind(TClonesArray* hitArray, TClonesArray* trackArray) = 0;
 
 
-  ClassDef(CbmTrdTrackFinder,1);
-
+  ClassDef(CbmTrdTrackFinder, 1);
 };
 
 #endif

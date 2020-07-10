@@ -6,8 +6,9 @@
 #ifndef CBM_RICH_RING_FINDER_DATA_H_
 #define CBM_RICH_RING_FINDER_DATA_H_
 
-#include <functional>
+#include "CbmRichRingLight.h"
 
+#include <functional>
 
 /**
 * \class CbmRichHoughHit
@@ -19,22 +20,17 @@
 **/
 class CbmRichHoughHit {
 public:
-   /**
+  /**
     * \brief Standard constructor.
     */
-   CbmRichHoughHit():
-      fHit(),
-      fX2plusY2(0.f),
-      fTime(0.),
-      fIsUsed(false)
-   { }
+  CbmRichHoughHit() : fHit(), fX2plusY2(0.f), fTime(0.), fIsUsed(false) {}
 
-   virtual ~CbmRichHoughHit(){}
+  virtual ~CbmRichHoughHit() {}
 
-   CbmRichHitLight fHit;
-   float fX2plusY2;
-   double fTime;
-   bool fIsUsed;
+  CbmRichHitLight fHit;
+  float fX2plusY2;
+  double fTime;
+  bool fIsUsed;
 };
 
 /**
@@ -45,22 +41,15 @@ public:
 * \author Semen Lebedev
 * \date 2008
 **/
-class CbmRichHoughHitCmpUp:
-       public std::binary_function<
-             const CbmRichHoughHit,
-             const CbmRichHoughHit,
-             bool>
-{
+class CbmRichHoughHitCmpUp :
+  public std::
+    binary_function<const CbmRichHoughHit, const CbmRichHoughHit, bool> {
 public:
+  virtual ~CbmRichHoughHitCmpUp() {}
 
-   virtual ~CbmRichHoughHitCmpUp(){}
-
-   bool operator()(
-         const CbmRichHoughHit &m1,
-         const CbmRichHoughHit &m2) const
-   {
-      return m1.fHit.fX < m2.fHit.fX;
-   }
+  bool operator()(const CbmRichHoughHit& m1, const CbmRichHoughHit& m2) const {
+    return m1.fHit.fX < m2.fHit.fX;
+  }
 };
 
 
@@ -72,22 +61,16 @@ public:
 * \author Semen Lebedev
 * \date 2008
 **/
-class CbmRichRingComparatorMore:
-       public std::binary_function<
-             const CbmRichRingLight*,
-             const CbmRichRingLight*,
-             bool>
-{
+class CbmRichRingComparatorMore :
+  public std::
+    binary_function<const CbmRichRingLight*, const CbmRichRingLight*, bool> {
 public:
+  virtual ~CbmRichRingComparatorMore() {}
 
-   virtual ~CbmRichRingComparatorMore(){}
-
-   bool operator()(
-         const CbmRichRingLight* ring1,
-         const CbmRichRingLight* ring2) const
-   {
-      return ring1->GetSelectionNN() > ring2->GetSelectionNN();
-   }
+  bool operator()(const CbmRichRingLight* ring1,
+                  const CbmRichRingLight* ring2) const {
+    return ring1->GetSelectionNN() > ring2->GetSelectionNN();
+  }
 };
 
 

@@ -14,40 +14,37 @@
 class TClonesArray;
 class CbmMuchGeoScheme;
 
-class CbmMuchHitProducerIdeal : public FairTask
-{
+class CbmMuchHitProducerIdeal : public FairTask {
 public:
-
   CbmMuchHitProducerIdeal(const char* digiFileName, Int_t Id);
 
-   virtual ~CbmMuchHitProducerIdeal();
+  virtual ~CbmMuchHitProducerIdeal();
 
-   InitStatus Init();
-   void Exec(Option_t * option);
-   void Finish();
+  InitStatus Init();
+  void Exec(Option_t* option);
+  void Finish();
 
-   void SetSigmaX(Double_t sigma) { fSigmaX = sigma; }
-   void SetSigmaY(Double_t sigma) { fSigmaY = sigma; }
-   void SetSigmaZ(Double_t sigma) { fSigmaZ = sigma; }
+  void SetSigmaX(Double_t sigma) { fSigmaX = sigma; }
+  void SetSigmaY(Double_t sigma) { fSigmaY = sigma; }
+  void SetSigmaZ(Double_t sigma) { fSigmaZ = sigma; }
 
 private:
-   TClonesArray* fMuchPoints; // Much MC points
-   TClonesArray* fMuchPixelHits; // Much hits
+  TClonesArray* fMuchPoints;     // Much MC points
+  TClonesArray* fMuchPixelHits;  // Much hits
 
-   Double_t fSigmaX;
-   Double_t fSigmaY;
-   Double_t fSigmaZ;
+  Double_t fSigmaX;
+  Double_t fSigmaY;
+  Double_t fSigmaZ;
 
-   Int_t fId;
+  Int_t fId;
 
-   TString fDigiFile; // Digitization file
-   CbmMuchGeoScheme* fGeoScheme; // Geometry scheme
+  TString fDigiFile;             // Digitization file
+  CbmMuchGeoScheme* fGeoScheme;  // Geometry scheme
 
-   CbmMuchHitProducerIdeal(const CbmMuchHitProducerIdeal&);
-   CbmMuchHitProducerIdeal& operator=(const CbmMuchHitProducerIdeal&);
+  CbmMuchHitProducerIdeal(const CbmMuchHitProducerIdeal&);
+  CbmMuchHitProducerIdeal& operator=(const CbmMuchHitProducerIdeal&);
 
-   ClassDef(CbmMuchHitProducerIdeal, 1);
+  ClassDef(CbmMuchHitProducerIdeal, 1);
 };
 
 #endif
-

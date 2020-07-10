@@ -14,7 +14,7 @@
 #ifndef CBMTRDDIGIDRAW_H
 #define CBMTRDDIGIDRAW_H
 
-#include <FairTask.h>    // for FairTask, InitStatus
+#include <FairTask.h>  // for FairTask, InitStatus
 
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for kFALSE, Bool_t, Int_t, Color_t, Style_t, kTRUE
@@ -27,8 +27,7 @@ class TEveBoxSet;
 
 class CbmTrdDigiDraw : public FairTask {
 
- public:
-
+public:
   /** Default constructor **/
   CbmTrdDigiDraw();
 
@@ -37,49 +36,57 @@ class CbmTrdDigiDraw : public FairTask {
   *@param name        Name of task
   *@param iVerbose    Verbosity level
   **/
-  CbmTrdDigiDraw(const char* name, Color_t color ,Style_t mstyle, Int_t iVerbose = 1);
+  CbmTrdDigiDraw(const char* name,
+                 Color_t color,
+                 Style_t mstyle,
+                 Int_t iVerbose = 1);
 
   /** Destructor **/
   virtual ~CbmTrdDigiDraw();
 
   /** Set verbosity level. For this task and all of the subtasks. **/
-  void SetVerbose(Int_t iVerbose) { fVerbose=iVerbose; }
-   /** Executed task **/ 
+  void SetVerbose(Int_t iVerbose) { fVerbose = iVerbose; }
+  /** Executed task **/
   virtual void Exec(Option_t* option);
   void Reset();
 
-void SetActiveLayer(Bool_t Layer1=kTRUE, Bool_t Layer2=kFALSE,
-		    Bool_t Layer3=kFALSE, Bool_t Layer4=kFALSE,
-		    Bool_t Layer5=kFALSE, Bool_t Layer6=kFALSE,
-		    Bool_t Layer7=kFALSE, Bool_t Layer8=kFALSE,
-		    Bool_t Layer9=kFALSE, Bool_t Layer10=kFALSE,
-		    Bool_t Layer11=kFALSE, Bool_t Layer12=kFALSE,
-		    Bool_t Layer13=kFALSE, Bool_t Layer14=kFALSE,
-		    Bool_t Layer15=kFALSE);
+  void SetActiveLayer(Bool_t Layer1  = kTRUE,
+                      Bool_t Layer2  = kFALSE,
+                      Bool_t Layer3  = kFALSE,
+                      Bool_t Layer4  = kFALSE,
+                      Bool_t Layer5  = kFALSE,
+                      Bool_t Layer6  = kFALSE,
+                      Bool_t Layer7  = kFALSE,
+                      Bool_t Layer8  = kFALSE,
+                      Bool_t Layer9  = kFALSE,
+                      Bool_t Layer10 = kFALSE,
+                      Bool_t Layer11 = kFALSE,
+                      Bool_t Layer12 = kFALSE,
+                      Bool_t Layer13 = kFALSE,
+                      Bool_t Layer14 = kFALSE,
+                      Bool_t Layer15 = kFALSE);
 
 protected:
-
-  Int_t   fVerbose;       //  Verbosity level
-  virtual void SetParContainers() ;
+  Int_t fVerbose;  //  Verbosity level
+  virtual void SetParContainers();
   virtual InitStatus Init();
   /** Action after each event**/
-  virtual void Finish() ;
-  TClonesArray *fPointList; //!
-  CbmTrdParSetDigi *fDigiPar; //!
-  CbmTrdParModDigi *fModuleInfo; //!
-  FairEventManager *fEventManager;   //!
-  TEveBoxSet* fq;    //!
-  Color_t fColor; //!
-  Style_t fStyle; //!
+  virtual void Finish();
+  TClonesArray* fPointList;         //!
+  CbmTrdParSetDigi* fDigiPar;       //!
+  CbmTrdParModDigi* fModuleInfo;    //!
+  FairEventManager* fEventManager;  //!
+  TEveBoxSet* fq;                   //!
+  Color_t fColor;                   //!
+  Style_t fStyle;                   //!
 
   Bool_t fActiveLayers[15];
 
   CbmTrdDigiDraw(const CbmTrdDigiDraw&);
   CbmTrdDigiDraw& operator=(const CbmTrdDigiDraw&);
 
-  ClassDef(CbmTrdDigiDraw,2);
-    
+  ClassDef(CbmTrdDigiDraw, 2);
 };
 
-                            
+
 #endif

@@ -16,37 +16,34 @@
  * \author Andrey Lebedev <andrey.lebedev@gsi.de>
  * \date 2013
  */
-class CbmLitTofQaReport : public CbmSimulationReport
-{
+class CbmLitTofQaReport : public CbmSimulationReport {
 public:
-   /**
+  /**
     * \brief Constructor.
     */
-   CbmLitTofQaReport();
+  CbmLitTofQaReport();
 
-   /**
+  /**
     * \brief Destructor.
     */
-   virtual ~CbmLitTofQaReport();
+  virtual ~CbmLitTofQaReport();
 
 protected:
-   /**
+  /**
     * \brief Inherited from CbmSimulationReport.
     */
-   virtual void Create();
+  virtual void Create();
 
-   /**
+  /**
     * \brief Inherited from CbmSimulationReport.
     */
-   virtual void Draw();
+  virtual void Draw();
 
-   void FitHistograms();
+  void FitHistograms();
 
-   void FitFunction(
-   		TGraph* graph);
+  void FitFunction(TGraph* graph);
 
-	ClassDef(CbmLitTofQaReport, 1);
+  ClassDef(CbmLitTofQaReport, 1);
 };
 
 #endif /* CBMLITTOFQAREPORT_H_ */
-

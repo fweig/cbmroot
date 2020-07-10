@@ -8,17 +8,20 @@
  ** Uses CbmMcbm2018Source as source task.
  */
 // In order to call later Finish, we make this global
-FairRunOnline *run = NULL;
+FairRunOnline* run = NULL;
 
-void unpack_tsa_mcbm_stsbinning(TString inFile = "", UInt_t uRunId = 0, UInt_t nrEvents=0, TString outDir="data", TString inDir="")
-{
+void unpack_tsa_mcbm_stsbinning(TString inFile  = "",
+                                UInt_t uRunId   = 0,
+                                UInt_t nrEvents = 0,
+                                TString outDir  = "data",
+                                TString inDir   = "") {
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
 
   // --- Specify number of events to be produced.
   // --- -1 means run until the end of the input file.
-  Int_t nEvents=-1;
+  Int_t nEvents = -1;
   // --- Specify output file name (this is just an example)
-  TString runId = TString::Format("%u", uRunId);
+  TString runId   = TString::Format("%u", uRunId);
   TString outFile = outDir + "/unp_mcbm_" + runId + ".root";
   TString parFile = outDir + "/unp_mcbm_params_" + runId + ".root";
 
@@ -30,23 +33,23 @@ void unpack_tsa_mcbm_stsbinning(TString inFile = "", UInt_t uRunId = 0, UInt_t n
   //gLogger->SetLogVerbosityLevel("LOW");
 
   // --- Define parameter files
-  TList *parFileList = new TList();
-  TString paramDir = srcDir + "/macro/beamtime/mcbm2020/";
+  TList* parFileList = new TList();
+  TString paramDir   = srcDir + "/macro/beamtime/mcbm2020/";
 
-  TString paramFileSts = paramDir + "mStsPar.par";
+  TString paramFileSts       = paramDir + "mStsPar.par";
   TObjString* parStsFileName = new TObjString(paramFileSts);
   parFileList->Add(parStsFileName);
 
   TString paramFileMuch = paramDir + "mMuchPar.par";
   /// Special parameter files for runs 353-374 (November19) and 380-408 (December19)
-   if( uRunId >= 353 && uRunId <= 374 )
-      paramFileMuch = paramDir + "mMuchPar_Nov19.par";
-   else if( 374 < uRunId )
-      paramFileMuch = paramDir + "mMuchPar_Dec19.par";
+  if (uRunId >= 353 && uRunId <= 374)
+    paramFileMuch = paramDir + "mMuchPar_Nov19.par";
+  else if (374 < uRunId)
+    paramFileMuch = paramDir + "mMuchPar_Dec19.par";
   TObjString* parMuchFileName = new TObjString(paramFileMuch);
   parFileList->Add(parMuchFileName);
 
-  TString paramFileTof = paramDir + "mTofPar.par";
+  TString paramFileTof       = paramDir + "mTofPar.par";
   TObjString* parTofFileName = new TObjString(paramFileTof);
   parFileList->Add(parTofFileName);
 
@@ -55,7 +58,7 @@ void unpack_tsa_mcbm_stsbinning(TString inFile = "", UInt_t uRunId = 0, UInt_t n
   TObjString* parRichFileName = new TObjString(paramFileRich);
   parFileList->Add(parRichFileName);
 
-  TString paramFilePsd = paramDir + "mPsdPar.par";
+  TString paramFilePsd       = paramDir + "mPsdPar.par";
   TObjString* parPsdFileName = new TObjString(paramFilePsd);
   parFileList->Add(parPsdFileName);
 
@@ -70,27 +73,29 @@ void unpack_tsa_mcbm_stsbinning(TString inFile = "", UInt_t uRunId = 0, UInt_t n
   std::cout << std::endl;
   std::cout << ">>> unpack_tsa: Initialising..." << std::endl;
 
-  CbmMcbm2018UnpackerTaskSts  * unpacker_sts  = new CbmMcbm2018UnpackerTaskSts();
-  CbmMcbm2018UnpackerTaskMuch * unpacker_much = new CbmMcbm2018UnpackerTaskMuch();
-  CbmMcbm2018UnpackerTaskTof  * unpacker_tof  = new CbmMcbm2018UnpackerTaskTof();
-  CbmMcbm2018UnpackerTaskRich * unpacker_rich = new CbmMcbm2018UnpackerTaskRich();
-  CbmMcbm2018UnpackerTaskPsd * unpacker_psd = new CbmMcbm2018UnpackerTaskPsd();
+  CbmMcbm2018UnpackerTaskSts* unpacker_sts = new CbmMcbm2018UnpackerTaskSts();
+  CbmMcbm2018UnpackerTaskMuch* unpacker_much =
+    new CbmMcbm2018UnpackerTaskMuch();
+  CbmMcbm2018UnpackerTaskTof* unpacker_tof = new CbmMcbm2018UnpackerTaskTof();
+  CbmMcbm2018UnpackerTaskRich* unpacker_rich =
+    new CbmMcbm2018UnpackerTaskRich();
+  CbmMcbm2018UnpackerTaskPsd* unpacker_psd = new CbmMcbm2018UnpackerTaskPsd();
 
-  unpacker_sts ->SetMonitorMode();
+  unpacker_sts->SetMonitorMode();
   unpacker_much->SetMonitorMode();
-  unpacker_tof ->SetMonitorMode();
+  unpacker_tof->SetMonitorMode();
   unpacker_rich->SetMonitorMode();
   unpacker_psd->SetMonitorMode();
 
-  unpacker_sts ->SetIgnoreOverlapMs();
+  unpacker_sts->SetIgnoreOverlapMs();
   unpacker_much->SetIgnoreOverlapMs();
-  unpacker_tof ->SetIgnoreOverlapMs();
+  unpacker_tof->SetIgnoreOverlapMs();
   unpacker_rich->SetIgnoreOverlapMs();
   unpacker_psd->SetIgnoreOverlapMs();
 
-  unpacker_sts ->SetBinningFwFlag( kTRUE );
+  unpacker_sts->SetBinningFwFlag(kTRUE);
 
-  unpacker_tof ->SetSeparateArrayT0();
+  unpacker_tof->SetSeparateArrayT0();
 
   // ------------------------------ //
   // Enable Asic type for MUCH data.
@@ -101,9 +106,8 @@ void unpack_tsa_mcbm_stsbinning(TString inFile = "", UInt_t uRunId = 0, UInt_t n
   unpacker_much->EnableAsicType(fFlag);
   // ------------------------------ //
 
-  switch( uRunId )
-  {
-/*
+  switch (uRunId) {
+      /*
      case 159:
      {
         /// General System offsets (= offsets between sub-systems)
@@ -182,70 +186,68 @@ void unpack_tsa_mcbm_stsbinning(TString inFile = "", UInt_t uRunId = 0, UInt_t n
         break;
      } // 159
 */
-     case 384:
-     {
-        /// General System offsets (= offsets between sub-systems)
-        //unpacker_sts ->SetTimeOffsetNs( -1750 ); // Run 384
-        //unpacker_much->SetTimeOffsetNs( -1750 ); // Run 384
-        //unpacker_tof ->SetTimeOffsetNs(    40 ); // Run 384
-        //unpacker_rich->SetTimeOffsetNs(  -273 ); // Run 384
+    case 384: {
+      /// General System offsets (= offsets between sub-systems)
+      //unpacker_sts ->SetTimeOffsetNs( -1750 ); // Run 384
+      //unpacker_much->SetTimeOffsetNs( -1750 ); // Run 384
+      //unpacker_tof ->SetTimeOffsetNs(    40 ); // Run 384
+      //unpacker_rich->SetTimeOffsetNs(  -273 ); // Run 384
 
-        /// ASIC specific offsets (= offsets inside sub-system)
-        unpacker_much->SetTimeOffsetNsAsic(  0,    2429.0 ); // Run 384, DPB 0 ASIC 0
-        unpacker_much->SetTimeOffsetNsAsic(  1,    2417.0 ); // Run 384, DPB 0 ASIC 1
-        unpacker_much->SetTimeOffsetNsAsic(  2,    2418.0 ); // Run 384, DPB 0 ASIC 2
-        unpacker_much->SetTimeOffsetNsAsic(  3,       0.0 ); // Run 384, DPB 0 ASIC 3
-        unpacker_much->SetTimeOffsetNsAsic(  4,    2404.0 ); // Run 384, DPB 0 ASIC 4
-        unpacker_much->SetTimeOffsetNsAsic(  5,    2415.0 ); // Run 384, DPB 0 ASIC 5
-        unpacker_much->SetTimeOffsetNsAsic(  6,    -772.7 ); // Run 384, DPB 1 ASIC 0
-        unpacker_much->SetTimeOffsetNsAsic(  7,    -779.3 ); // Run 384, DPB 1 ASIC 1
-        unpacker_much->SetTimeOffsetNsAsic(  8,       0.0 ); // Run 384, DPB 1 ASIC 2
-        unpacker_much->SetTimeOffsetNsAsic(  9,    -806.6 ); // Run 384, DPB 1 ASIC 3
-        unpacker_much->SetTimeOffsetNsAsic( 10,    -784.2 ); // Run 384, DPB 1 ASIC 4
-        unpacker_much->SetTimeOffsetNsAsic( 11,    -786.4 ); // Run 384, DPB 1 ASIC 5
-        unpacker_much->SetTimeOffsetNsAsic( 12,    -788.9 ); // Run 384, DPB 2 ASIC 0
-        unpacker_much->SetTimeOffsetNsAsic( 13,       0.0 ); // Run 384, DPB 2 ASIC 1
-        unpacker_much->SetTimeOffsetNsAsic( 14,       0.0 ); // Run 384, DPB 2 ASIC 2
-        unpacker_much->SetTimeOffsetNsAsic( 15,    -785.9 ); // Run 384, DPB 2 ASIC 3
-        unpacker_much->SetTimeOffsetNsAsic( 16,    -784.5 ); // Run 384, DPB 2 ASIC 4
-        unpacker_much->SetTimeOffsetNsAsic( 17,    -775.6 ); // Run 384, DPB 2 ASIC 5
-        unpacker_much->SetTimeOffsetNsAsic( 18,    2404.0 ); // Run 384, DPB 3 ASIC 0
-        unpacker_much->SetTimeOffsetNsAsic( 19,    2400.0 ); // Run 384, DPB 3 ASIC 1
-        unpacker_much->SetTimeOffsetNsAsic( 20,    2413.0 ); // Run 384, DPB 3 ASIC 2
-        unpacker_much->SetTimeOffsetNsAsic( 21,    2407.0 ); // Run 384, DPB 3 ASIC 3
-        unpacker_much->SetTimeOffsetNsAsic( 22,       0.0 ); // Run 384, DPB 3 ASIC 4
-        unpacker_much->SetTimeOffsetNsAsic( 23,       0.0 ); // Run 384, DPB 3 ASIC 5
-        unpacker_much->SetTimeOffsetNsAsic( 24,    2377.0 ); // Run 384, DPB 4 ASIC 0
-        unpacker_much->SetTimeOffsetNsAsic( 25,    2375.0 ); // Run 384, DPB 4 ASIC 1
-        unpacker_much->SetTimeOffsetNsAsic( 26,    2378.0 ); // Run 384, DPB 4 ASIC 2
-        unpacker_much->SetTimeOffsetNsAsic( 27,    2394.0 ); // Run 384, DPB 4 ASIC 3
-        unpacker_much->SetTimeOffsetNsAsic( 28,    2401.0 ); // Run 384, DPB 4 ASIC 4
-        unpacker_much->SetTimeOffsetNsAsic( 29,    2405.0 ); // Run 384, DPB 4 ASIC 5
-        unpacker_much->SetTimeOffsetNsAsic( 30,    5575.0 ); // Run 384, DPB 5 ASIC 0
-        unpacker_much->SetTimeOffsetNsAsic( 31,    5599.0 ); // Run 384, DPB 5 ASIC 1
-        unpacker_much->SetTimeOffsetNsAsic( 32,    5597.0 ); // Run 384, DPB 5 ASIC 2
-        unpacker_much->SetTimeOffsetNsAsic( 33,    5583.0 ); // Run 384, DPB 5 ASIC 3
-        unpacker_much->SetTimeOffsetNsAsic( 34,       0.0 ); // Run 384, DPB 5 ASIC 4
-        unpacker_much->SetTimeOffsetNsAsic( 35,       0.0 ); // Run 384, DPB 5 ASIC 5
+      /// ASIC specific offsets (= offsets inside sub-system)
+      unpacker_much->SetTimeOffsetNsAsic(0, 2429.0);   // Run 384, DPB 0 ASIC 0
+      unpacker_much->SetTimeOffsetNsAsic(1, 2417.0);   // Run 384, DPB 0 ASIC 1
+      unpacker_much->SetTimeOffsetNsAsic(2, 2418.0);   // Run 384, DPB 0 ASIC 2
+      unpacker_much->SetTimeOffsetNsAsic(3, 0.0);      // Run 384, DPB 0 ASIC 3
+      unpacker_much->SetTimeOffsetNsAsic(4, 2404.0);   // Run 384, DPB 0 ASIC 4
+      unpacker_much->SetTimeOffsetNsAsic(5, 2415.0);   // Run 384, DPB 0 ASIC 5
+      unpacker_much->SetTimeOffsetNsAsic(6, -772.7);   // Run 384, DPB 1 ASIC 0
+      unpacker_much->SetTimeOffsetNsAsic(7, -779.3);   // Run 384, DPB 1 ASIC 1
+      unpacker_much->SetTimeOffsetNsAsic(8, 0.0);      // Run 384, DPB 1 ASIC 2
+      unpacker_much->SetTimeOffsetNsAsic(9, -806.6);   // Run 384, DPB 1 ASIC 3
+      unpacker_much->SetTimeOffsetNsAsic(10, -784.2);  // Run 384, DPB 1 ASIC 4
+      unpacker_much->SetTimeOffsetNsAsic(11, -786.4);  // Run 384, DPB 1 ASIC 5
+      unpacker_much->SetTimeOffsetNsAsic(12, -788.9);  // Run 384, DPB 2 ASIC 0
+      unpacker_much->SetTimeOffsetNsAsic(13, 0.0);     // Run 384, DPB 2 ASIC 1
+      unpacker_much->SetTimeOffsetNsAsic(14, 0.0);     // Run 384, DPB 2 ASIC 2
+      unpacker_much->SetTimeOffsetNsAsic(15, -785.9);  // Run 384, DPB 2 ASIC 3
+      unpacker_much->SetTimeOffsetNsAsic(16, -784.5);  // Run 384, DPB 2 ASIC 4
+      unpacker_much->SetTimeOffsetNsAsic(17, -775.6);  // Run 384, DPB 2 ASIC 5
+      unpacker_much->SetTimeOffsetNsAsic(18, 2404.0);  // Run 384, DPB 3 ASIC 0
+      unpacker_much->SetTimeOffsetNsAsic(19, 2400.0);  // Run 384, DPB 3 ASIC 1
+      unpacker_much->SetTimeOffsetNsAsic(20, 2413.0);  // Run 384, DPB 3 ASIC 2
+      unpacker_much->SetTimeOffsetNsAsic(21, 2407.0);  // Run 384, DPB 3 ASIC 3
+      unpacker_much->SetTimeOffsetNsAsic(22, 0.0);     // Run 384, DPB 3 ASIC 4
+      unpacker_much->SetTimeOffsetNsAsic(23, 0.0);     // Run 384, DPB 3 ASIC 5
+      unpacker_much->SetTimeOffsetNsAsic(24, 2377.0);  // Run 384, DPB 4 ASIC 0
+      unpacker_much->SetTimeOffsetNsAsic(25, 2375.0);  // Run 384, DPB 4 ASIC 1
+      unpacker_much->SetTimeOffsetNsAsic(26, 2378.0);  // Run 384, DPB 4 ASIC 2
+      unpacker_much->SetTimeOffsetNsAsic(27, 2394.0);  // Run 384, DPB 4 ASIC 3
+      unpacker_much->SetTimeOffsetNsAsic(28, 2401.0);  // Run 384, DPB 4 ASIC 4
+      unpacker_much->SetTimeOffsetNsAsic(29, 2405.0);  // Run 384, DPB 4 ASIC 5
+      unpacker_much->SetTimeOffsetNsAsic(30, 5575.0);  // Run 384, DPB 5 ASIC 0
+      unpacker_much->SetTimeOffsetNsAsic(31, 5599.0);  // Run 384, DPB 5 ASIC 1
+      unpacker_much->SetTimeOffsetNsAsic(32, 5597.0);  // Run 384, DPB 5 ASIC 2
+      unpacker_much->SetTimeOffsetNsAsic(33, 5583.0);  // Run 384, DPB 5 ASIC 3
+      unpacker_much->SetTimeOffsetNsAsic(34, 0.0);     // Run 384, DPB 5 ASIC 4
+      unpacker_much->SetTimeOffsetNsAsic(35, 0.0);     // Run 384, DPB 5 ASIC 5
 
-        break;
-     } // 384
+      break;
+    }  // 384
 
-     default:
-        break;
-  } // switch( uRunId )
+    default: break;
+  }  // switch( uRunId )
 
   // --- Source task
   CbmMcbm2018Source* source = new CbmMcbm2018Source();
 
   source->SetFileName(inFile);
-//  source->SetInputDir(inDir);
-  source->AddUnpacker(unpacker_sts,  0x10, ECbmModuleId::kSts  );//STS xyter
-  source->AddUnpacker(unpacker_much, 0x40, ECbmModuleId::kMuch );//MUCH xyter
-  source->AddUnpacker(unpacker_tof,  0x60, ECbmModuleId::kTof  );//gDPB A & B & C
-  source->AddUnpacker(unpacker_tof,  0x90, ECbmModuleId::kTof  );//gDPB T0 A & B
-  source->AddUnpacker(unpacker_rich, 0x30, ECbmModuleId::kRich );//RICH trb
-  source->AddUnpacker(unpacker_psd,  0x80, ECbmModuleId::kPsd  );//PSD
+  //  source->SetInputDir(inDir);
+  source->AddUnpacker(unpacker_sts, 0x10, ECbmModuleId::kSts);    //STS xyter
+  source->AddUnpacker(unpacker_much, 0x40, ECbmModuleId::kMuch);  //MUCH xyter
+  source->AddUnpacker(unpacker_tof, 0x60, ECbmModuleId::kTof);  //gDPB A & B & C
+  source->AddUnpacker(unpacker_tof, 0x90, ECbmModuleId::kTof);  //gDPB T0 A & B
+  source->AddUnpacker(unpacker_rich, 0x30, ECbmModuleId::kRich);  //RICH trb
+  source->AddUnpacker(unpacker_psd, 0x80, ECbmModuleId::kPsd);    //PSD
 
   // --- Event header
   FairEventHeader* event = new CbmTbEvent();
@@ -254,7 +256,7 @@ void unpack_tsa_mcbm_stsbinning(TString inFile = "", UInt_t uRunId = 0, UInt_t n
   // --- RootFileSink
   // --- Open next outputfile after 4GB
   FairRootFileSink* sink = new FairRootFileSink(outFile);
-//  sink->GetOutTree()->SetMaxTreeSize(4294967295LL);
+  //  sink->GetOutTree()->SetMaxTreeSize(4294967295LL);
 
   // --- Run
   run = new FairRunOnline(source);
@@ -264,8 +266,8 @@ void unpack_tsa_mcbm_stsbinning(TString inFile = "", UInt_t uRunId = 0, UInt_t n
 
 
   // -----   Runtime database   ---------------------------------------------
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
-  Bool_t kParameterMerged = kTRUE;
+  FairRuntimeDb* rtdb       = run->GetRuntimeDb();
+  Bool_t kParameterMerged   = kTRUE;
   FairParRootFileIo* parOut = new FairParRootFileIo(kParameterMerged);
   FairParAsciiFileIo* parIn = new FairParAsciiFileIo();
   parOut->open(parFile.Data());
@@ -279,16 +281,17 @@ void unpack_tsa_mcbm_stsbinning(TString inFile = "", UInt_t uRunId = 0, UInt_t n
   TStopwatch timer;
   timer.Start();
   std::cout << ">>> unpack_tsa_mcbm: Starting run..." << std::endl;
-  if ( 0 == nrEvents) {
-    run->Run(nEvents, 0); // run until end of input file
+  if (0 == nrEvents) {
+    run->Run(nEvents, 0);  // run until end of input file
   } else {
-    run->Run(0, nrEvents); // process  N Events
+    run->Run(0, nrEvents);  // process  N Events
   }
   run->Finish();
 
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
+            << std::endl;
 
   // --- End-of-run info
   Double_t rtime = timer.RealTime();
@@ -297,7 +300,7 @@ void unpack_tsa_mcbm_stsbinning(TString inFile = "", UInt_t uRunId = 0, UInt_t n
   std::cout << ">>> unpack_tsa_mcbm: Macro finished successfully." << std::endl;
   std::cout << ">>> unpack_tsa_mcbm: Output file is " << outFile << std::endl;
   std::cout << ">>> unpack_tsa_mcbm: Real time " << rtime << " s, CPU time "
-	    << ctime << " s" << std::endl;
+            << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

@@ -11,23 +11,19 @@
 
 #include "interface/CbmLitTrackSelection.h"
 
-class CbmLitTrackSelectionEmpty : public CbmLitTrackSelection
-{
+class CbmLitTrackSelectionEmpty : public CbmLitTrackSelection {
 public:
-   /* Constructor */
-   CbmLitTrackSelectionEmpty();
+  /* Constructor */
+  CbmLitTrackSelectionEmpty();
 
-   /* Destructor */
-   virtual ~CbmLitTrackSelectionEmpty();
+  /* Destructor */
+  virtual ~CbmLitTrackSelectionEmpty();
 
-   /* Derived from CbmLitTrackSelection */
-   virtual LitStatus DoSelect(
-      TrackPtrIterator itBegin,
-      TrackPtrIterator itEnd);
+  /* Derived from CbmLitTrackSelection */
+  virtual LitStatus DoSelect(TrackPtrIterator itBegin, TrackPtrIterator itEnd);
 
-   /* Derived from CbmLitTrackSelection */
-   virtual LitStatus DoSelect(
-      TrackPtrVector& tracks);
+  /* Derived from CbmLitTrackSelection */
+  virtual LitStatus DoSelect(TrackPtrVector& tracks);
 };
 
 #endif /*CBMLITTRACKSELECTIONEMPTY_H_*/

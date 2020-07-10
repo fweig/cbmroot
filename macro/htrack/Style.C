@@ -1,9 +1,9 @@
 
-  //////////////////////////////////////////////////////////////////////
-  //
-  // ROOT style macro for the TDR
-  //
-  //////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+//
+// ROOT style macro for the TDR
+//
+//////////////////////////////////////////////////////////////////////
 
 
 void Style() {
@@ -26,14 +26,13 @@ void Style() {
   gStyle->SetStatColor(10);
   gStyle->SetTitleColor(10);
   gStyle->SetTitleFont(22);
-  gStyle->SetLabelFont(22,"X");
-  gStyle->SetLabelFont(22,"Y");
+  gStyle->SetLabelFont(22, "X");
+  gStyle->SetLabelFont(22, "Y");
   gStyle->SetStatFont(22);
-  gStyle->SetTitleOffset(1.2,"X");
-  gStyle->SetTitleOffset(1.2,"Y");
+  gStyle->SetTitleOffset(1.2, "X");
+  gStyle->SetTitleOffset(1.2, "Y");
   gStyle->SetOptDate(0);
   gStyle->SetOptTitle(1);
   gStyle->SetOptStat(1);
   gStyle->SetOptFit(1);
-
 }

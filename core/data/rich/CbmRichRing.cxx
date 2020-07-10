@@ -38,191 +38,175 @@
 
 #include <FairLogger.h>  // for Logger, LOG
 
-#include <TObject.h>     // for TObject
-#include <TMath.h>       // for Pi
+#include <TMath.h>    // for Pi
+#include <TObject.h>  // for TObject
 
-#include <cmath>         // for fabs, sqrt, atan, cos, sin
+#include <cmath>  // for fabs, sqrt, atan, cos, sin
 
-using std::sqrt;
-using std::fabs;
 using std::atan;
+using std::fabs;
+using std::sqrt;
 
 // -----   Default constructor   -------------------------------------------
 CbmRichRing::CbmRichRing()
-  : TObject(),
-    fHitCollection(),
-    fAPar(0.),
-    fBPar(0.),
-    fCPar(0.),
-    fDPar(0.),
-    fEPar(0.),
-    fFPar(0.),
-    fCenterX(0.), 
-    fCenterY(0.), 
-    fRadius(0.),
-    fAaxis(0.),
-    fBaxis(0.),
-    fAaxisCor(0.),
-    fBaxisCor(0.),
-    fPhi(0.),
-    fChi2(0.),
-    fAngle(0.),
-    fNofHitsOnRing(-1),
-    fSelectionNN(-1.),
-    fRecFlag(0),
-    fTime(0.)
-{
-    fHitCollection.reserve(40);
+  : TObject()
+  , fHitCollection()
+  , fAPar(0.)
+  , fBPar(0.)
+  , fCPar(0.)
+  , fDPar(0.)
+  , fEPar(0.)
+  , fFPar(0.)
+  , fCenterX(0.)
+  , fCenterY(0.)
+  , fRadius(0.)
+  , fAaxis(0.)
+  , fBaxis(0.)
+  , fAaxisCor(0.)
+  , fBaxisCor(0.)
+  , fPhi(0.)
+  , fChi2(0.)
+  , fAngle(0.)
+  , fNofHitsOnRing(-1)
+  , fSelectionNN(-1.)
+  , fRecFlag(0)
+  , fTime(0.) {
+  fHitCollection.reserve(40);
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Standard constructor   ------------------------------------------
-CbmRichRing::CbmRichRing ( Float_t x,
-			   Float_t y,
-			   Float_t r )
-  : TObject(),
-    fHitCollection(),
-    fAPar(0.),
-    fBPar(0.),
-    fCPar(0.),
-    fDPar(0.),
-    fEPar(0.),
-    fFPar(0.),
-    fCenterX(x), 
-    fCenterY(y), 
-    fRadius(r),
-    fAaxis(0.),
-    fBaxis(0.),
-    fAaxisCor(0.),
-    fBaxisCor(0.),
-    fPhi(0.),
-    fChi2(0.),
-    fAngle(0.),
-    fNofHitsOnRing(-1),
-    fSelectionNN(-1.),
-    fRecFlag(0),
-    fTime(0.)
-{
-    fHitCollection.reserve(40);
+CbmRichRing::CbmRichRing(Float_t x, Float_t y, Float_t r)
+  : TObject()
+  , fHitCollection()
+  , fAPar(0.)
+  , fBPar(0.)
+  , fCPar(0.)
+  , fDPar(0.)
+  , fEPar(0.)
+  , fFPar(0.)
+  , fCenterX(x)
+  , fCenterY(y)
+  , fRadius(r)
+  , fAaxis(0.)
+  , fBaxis(0.)
+  , fAaxisCor(0.)
+  , fBaxisCor(0.)
+  , fPhi(0.)
+  , fChi2(0.)
+  , fAngle(0.)
+  , fNofHitsOnRing(-1)
+  , fSelectionNN(-1.)
+  , fRecFlag(0)
+  , fTime(0.) {
+  fHitCollection.reserve(40);
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Destructor   ----------------------------------------------------
-CbmRichRing::~CbmRichRing()
-{
-	fHitCollection.clear();
-}
+CbmRichRing::~CbmRichRing() { fHitCollection.clear(); }
 // -------------------------------------------------------------------------
 
-void CbmRichRing::SetXYABPhi(Double_t x, Double_t y,
-                Double_t a, Double_t b,
-                Double_t phi)
-{
-    fCenterX = x;
-    fCenterY = y;
-    fAaxis = a;
-    fBaxis = b;
-    fPhi = phi;
+void CbmRichRing::SetXYABPhi(Double_t x,
+                             Double_t y,
+                             Double_t a,
+                             Double_t b,
+                             Double_t phi) {
+  fCenterX = x;
+  fCenterY = y;
+  fAaxis   = a;
+  fBaxis   = b;
+  fPhi     = phi;
 }
 
-Bool_t CbmRichRing::RemoveHit(UInt_t hitId)
-{
-	//Int_t nofHits = fHitCollection.size();
-	std::vector<UInt_t>::iterator it;
-	for (it = fHitCollection.begin(); it!=fHitCollection.end(); it++){
-		if (hitId == *it){
-			fHitCollection.erase(it);
-			return true;
-		}
-	}
-	return false;
+Bool_t CbmRichRing::RemoveHit(UInt_t hitId) {
+  //Int_t nofHits = fHitCollection.size();
+  std::vector<UInt_t>::iterator it;
+  for (it = fHitCollection.begin(); it != fHitCollection.end(); it++) {
+    if (hitId == *it) {
+      fHitCollection.erase(it);
+      return true;
+    }
+  }
+  return false;
 }
 
-Double_t CbmRichRing::GetXF1() const
-{
-	Double_t c = sqrt(fAaxis*fAaxis - fBaxis*fBaxis);
-	Double_t xc = c*cos(fabs(fPhi));
+Double_t CbmRichRing::GetXF1() const {
+  Double_t c  = sqrt(fAaxis * fAaxis - fBaxis * fBaxis);
+  Double_t xc = c * cos(fabs(fPhi));
 
-	return fCenterX+xc;
+  return fCenterX + xc;
 }
 
-Double_t CbmRichRing::GetYF1() const
-{
-	Double_t c = sqrt(fAaxis*fAaxis - fBaxis*fBaxis);
-	Double_t yc = c*sin(fabs(fPhi));
-	if (fPhi >=0){
-		return fCenterY+yc;
-	}else{
-		return fCenterY-yc;
-	}
+Double_t CbmRichRing::GetYF1() const {
+  Double_t c  = sqrt(fAaxis * fAaxis - fBaxis * fBaxis);
+  Double_t yc = c * sin(fabs(fPhi));
+  if (fPhi >= 0) {
+    return fCenterY + yc;
+  } else {
+    return fCenterY - yc;
+  }
 }
 
-Double_t CbmRichRing::GetXF2() const
-{
-	Double_t c = sqrt(fAaxis*fAaxis - fBaxis*fBaxis);
-	Double_t xc = c*cos(fabs(fPhi));
+Double_t CbmRichRing::GetXF2() const {
+  Double_t c  = sqrt(fAaxis * fAaxis - fBaxis * fBaxis);
+  Double_t xc = c * cos(fabs(fPhi));
 
-	return fCenterX-xc;
+  return fCenterX - xc;
 }
 
-Double_t CbmRichRing::GetYF2() const
-{
-	Double_t c = sqrt(fAaxis*fAaxis - fBaxis*fBaxis);
-	Double_t yc = c*sin(fabs(fPhi));
-	if (fPhi >=0){
-		return fCenterY-yc;
-	}else{
-		return fCenterY+yc;
-	}
+Double_t CbmRichRing::GetYF2() const {
+  Double_t c  = sqrt(fAaxis * fAaxis - fBaxis * fBaxis);
+  Double_t yc = c * sin(fabs(fPhi));
+  if (fPhi >= 0) {
+    return fCenterY - yc;
+  } else {
+    return fCenterY + yc;
+  }
 }
 
 void CbmRichRing::Print(Option_t*) const {
-	LOG(info) << " Ring parameters: " <<
-			" Aaxis = " << GetAaxis() <<
-			", Baxis = " << GetBaxis() <<
-			", Phi = " << GetPhi() <<
-			", CenterX = " << GetCenterX() <<
-			", CenterY = " << GetCenterY() <<
-			", Radius = " << GetRadius() <<
-			", NofHits = " << GetNofHits() <<
-			", RadialPosition = " << GetRadialPosition() <<
-			", Chi2 = " << GetChi2() <<
-			", Angle() = " << GetAngle() <<
-			", NofHitsOnRing = " << GetNofHitsOnRing();
+  LOG(info) << " Ring parameters: "
+            << " Aaxis = " << GetAaxis() << ", Baxis = " << GetBaxis()
+            << ", Phi = " << GetPhi() << ", CenterX = " << GetCenterX()
+            << ", CenterY = " << GetCenterY() << ", Radius = " << GetRadius()
+            << ", NofHits = " << GetNofHits()
+            << ", RadialPosition = " << GetRadialPosition()
+            << ", Chi2 = " << GetChi2() << ", Angle() = " << GetAngle()
+            << ", NofHitsOnRing = " << GetNofHitsOnRing();
 }
 
-Float_t CbmRichRing::GetRadialPosition() const
-{
-	if (fCenterY > 0.f) {
-		return sqrt(fCenterX*fCenterX + (fCenterY-110.f)*(fCenterY-110.f));
-	} else {
-		return sqrt(fCenterX*fCenterX + (fCenterY+110.f)*(fCenterY+110.f));
-	}
+Float_t CbmRichRing::GetRadialPosition() const {
+  if (fCenterY > 0.f) {
+    return sqrt(fCenterX * fCenterX + (fCenterY - 110.f) * (fCenterY - 110.f));
+  } else {
+    return sqrt(fCenterX * fCenterX + (fCenterY + 110.f) * (fCenterY + 110.f));
+  }
 }
 
-Double_t CbmRichRing::GetRadialAngle() const{
+Double_t CbmRichRing::GetRadialAngle() const {
   /*  if (fCenterY > 0){
             return  atan((100 - fCenterY) / (0 - fCenterX));
     } else {
             return atan((-100 - fCenterY) / (0 - fCenterX));
     }*/
 
-    if( fCenterX > 0 && fCenterY > 0 ){
-        return atan(fabs((100 - fCenterY) / (0 - fCenterX)));
-    }
-    if( fCenterX < 0 && fCenterY > 0 ){
-        return TMath::Pi() - atan(fabs((100 - fCenterY) / (0 - fCenterX)));
-    }
-    if( fCenterX < 0 && fCenterY < 0 ){
-        return TMath::Pi() + atan(fabs((-100 - fCenterY) / (0 - fCenterX)));
-    }
-    if( fCenterX > 0 && fCenterY < 0 ){
-        return 2*TMath::Pi() - atan(fabs((-100 - fCenterY) / (0 - fCenterX)));
-    }
+  if (fCenterX > 0 && fCenterY > 0) {
+    return atan(fabs((100 - fCenterY) / (0 - fCenterX)));
+  }
+  if (fCenterX < 0 && fCenterY > 0) {
+    return TMath::Pi() - atan(fabs((100 - fCenterY) / (0 - fCenterX)));
+  }
+  if (fCenterX < 0 && fCenterY < 0) {
+    return TMath::Pi() + atan(fabs((-100 - fCenterY) / (0 - fCenterX)));
+  }
+  if (fCenterX > 0 && fCenterY < 0) {
+    return 2 * TMath::Pi() - atan(fabs((-100 - fCenterY) / (0 - fCenterX)));
+  }
 
-    return 999.;
+  return 999.;
 }
 //
 //CbmRichRingLight* CbmRichRing::toLightRing()
@@ -245,4 +229,3 @@ Double_t CbmRichRing::GetRadialAngle() const{
 //}
 
 ClassImp(CbmRichRing)
-

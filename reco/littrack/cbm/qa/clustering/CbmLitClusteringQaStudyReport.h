@@ -18,36 +18,35 @@ using std::string;
  * \author Andrey Lebedev <andrey.lebedev@gsi.de>
  * \date 2011
  */
-class CbmLitClusteringQaStudyReport : public CbmStudyReport
-{
+class CbmLitClusteringQaStudyReport : public CbmStudyReport {
 public:
-   /**
+  /**
     * \brief Constructor.
     */
-   CbmLitClusteringQaStudyReport();
+  CbmLitClusteringQaStudyReport();
 
-   /**
+  /**
     * \brief Destructor.
     */
-   virtual ~CbmLitClusteringQaStudyReport();
+  virtual ~CbmLitClusteringQaStudyReport();
 
 private:
-   /**
+  /**
     * \brief Inherited from CbmStudyReport.
     */
-   void Create();
+  void Create();
 
-   /**
+  /**
     * \brief Inherited from CbmStudyReport.
     */
-   void Draw();
+  void Draw();
 
-   /**
+  /**
     * \brief Print number of objects table.
     */
-   string PrintNofObjects() const;
+  string PrintNofObjects() const;
 
-   ClassDef(CbmLitClusteringQaStudyReport, 1)
+  ClassDef(CbmLitClusteringQaStudyReport, 1)
 };
 
 #endif /* CBMLITCLUSTERINGQASTUDYREPORT_H_ */

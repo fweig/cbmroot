@@ -16,15 +16,14 @@
 //
 // --------------------------------------------------------------------------
 
-void tof_reco_Testbeam (Int_t nEvents = 100, Int_t iSys=0) 
-{
+void tof_reco_Testbeam(Int_t nEvents = 100, Int_t iSys = 0) {
   // is v15c
 
   // ========================================================================
   //          Adjust this part according to your requirements
-  Int_t sel=0;
+  Int_t sel = 0;
   // Verbosity level (0=quiet, 1=event level, 2=track level, 3=debug)
-  Int_t iVerbose = 0;
+  Int_t iVerbose   = 0;
   TString logLevel = "FATAL";
   //TString logLevel = "ERROR";
   TString logLevel = "INFO";
@@ -32,51 +31,51 @@ void tof_reco_Testbeam (Int_t nEvents = 100, Int_t iSys=0)
   //TString logLevel = "DEBUG1";
   //TString logLevel = "DEBUG2";
   //TString logLevel = "DEBUG3";
-  FairLogger* log; 
+  FairLogger* log;
 
-  TString TofGeo="v15c";
-  cout << "run global_digi with Tof Geometry "<<TofGeo<<endl;
+  TString TofGeo = "v15c";
+  cout << "run global_digi with Tof Geometry " << TofGeo << endl;
 
   TString numEvt = "";
-  if(nEvents<10) numEvt="000";
-  if(nEvents>=10 && nEvents<100) numEvt="00";
-  if(nEvents>=100 && nEvents<1000) numEvt="0";
+  if (nEvents < 10) numEvt = "000";
+  if (nEvents >= 10 && nEvents < 100) numEvt = "00";
+  if (nEvents >= 100 && nEvents < 1000) numEvt = "0";
   numEvt += nEvents;
 
-  TString numEvti="10000"; //for running
-  //TString numEvti=numEvt;  // for debugging reco script 
+  TString numEvti = "10000";  //for running
+  //TString numEvti=numEvt;  // for debugging reco script
 
-  switch(iSys){
-  case 0:  // Input file (MC events)
-    TString inFile =  "data/1p.mc.root";
-    // Parameter file
-    TString parFile = "data/1p.params.root";
-    // Output filex
-    TString outFile ="data/1p.reco.root"; 
-    break;
-  case 25:
-    TString inFile =  "data/U25cen_1p.mc.root";
-    TString parFile = "data/U25cen_1p.params.root";
-    TString outFile ="data/U25cen_1p.reco.root"; 
-    break;
-  default:
-    ;
+  switch (iSys) {
+    case 0:  // Input file (MC events)
+      TString inFile = "data/1p.mc.root";
+      // Parameter file
+      TString parFile = "data/1p.params.root";
+      // Output filex
+      TString outFile = "data/1p.reco.root";
+      break;
+    case 25:
+      TString inFile  = "data/U25cen_1p.mc.root";
+      TString parFile = "data/U25cen_1p.params.root";
+      TString outFile = "data/U25cen_1p.reco.root";
+      break;
+    default:;
   }
   //  Digitisation files.
   // Add TObjectString containing the different file names to
   // a TList which is passed as input to the FairParAsciiFileIo.
-  // The FairParAsciiFileIo will take care to create on the fly 
+  // The FairParAsciiFileIo will take care to create on the fly
   // a concatenated input parameter file which is then used during
   // the reconstruction.
-  TList *parFileList = new TList();
+  TList* parFileList = new TList();
 
   TString paramDir = gSystem->Getenv("VMCWORKDIR");
   paramDir += "/parameters";
 
-  TObjString tofDigiFile = paramDir + "/tof/tof_" + TofGeo + ".digi.par"; // TOF digi file
+  TObjString tofDigiFile =
+    paramDir + "/tof/tof_" + TofGeo + ".digi.par";  // TOF digi file
   parFileList->Add(&tofDigiFile);
 
-  TObjString tofDigiBdfFile =  paramDir + "/tof/tof_" + TofGeo + ".digibdf.par";
+  TObjString tofDigiBdfFile = paramDir + "/tof/tof_" + TofGeo + ".digibdf.par";
   parFileList->Add(&tofDigiBdfFile);
 
   TString TofDigitizerBDFInputFile = paramDir + "/tof/test_bdf_input.root";
@@ -97,12 +96,12 @@ void tof_reco_Testbeam (Int_t nEvents = 100, Int_t iSys=0)
   // ------------------------------------------------------------------------
 
   // -----   Reconstruction run   -------------------------------------------
-  FairRunAna *run = new FairRunAna();
+  FairRunAna* run = new FairRunAna();
   run->SetInputFile(inFile);
   //  run->SetGeomFile(geoFile);
   run->SetOutputFile(outFile);
   gLogger->SetLogScreenLevel(logLevel.Data());
-  TFile *fHist = run->GetOutputFile(); //nh - addition 
+  TFile* fHist = run->GetOutputFile();  //nh - addition
   // ------------------------------------------------------------------------
 
   // =========================================================================
@@ -114,20 +113,22 @@ void tof_reco_Testbeam (Int_t nEvents = 100, Int_t iSys=0)
   // ===                     TOF local reconstruction                      ===
   // =========================================================================
   // -----   TOF digitizer   -------------------------------------------------
-   
-  CbmTofDigitizerBDF* tofDigitizerBdf = new CbmTofDigitizerBDF("TOF Digitizer BDF",iVerbose);
-  tofDigitizerBdf->SetOutputBranchPersistent("TofDigi",            kTRUE);
+
+  CbmTofDigitizerBDF* tofDigitizerBdf =
+    new CbmTofDigitizerBDF("TOF Digitizer BDF", iVerbose);
+  tofDigitizerBdf->SetOutputBranchPersistent("TofDigi", kTRUE);
   tofDigitizerBdf->SetOutputBranchPersistent("TofDigiMatchPoints", kTRUE);
   tofDigitizerBdf->SetInputFileName(TofDigitizerBDFInputFile);
   tofDigitizerBdf->SetHistoFileName("DigitizerBDF_Control.root");
   run->AddTask(tofDigitizerBdf);
 
   // Cluster/Hit builder
-  CbmTofSimpClusterizer* tofSimpClust = new CbmTofSimpClusterizer("TOF Simple Clusterizer",iVerbose);
-  tofSimpClust->SetOutputBranchPersistent("TofHit",          kTRUE);
-  tofSimpClust->SetOutputBranchPersistent("TofDigiMatch",    kTRUE);
+  CbmTofSimpClusterizer* tofSimpClust =
+    new CbmTofSimpClusterizer("TOF Simple Clusterizer", iVerbose);
+  tofSimpClust->SetOutputBranchPersistent("TofHit", kTRUE);
+  tofSimpClust->SetOutputBranchPersistent("TofDigiMatch", kTRUE);
   tofSimpClust->SetHistoFileName("SimpClusterizer_Control.root");
-  tofSimpClust->SetOutTimeFactor(1000.);  /* convert ns -> ps */
+  tofSimpClust->SetOutTimeFactor(1000.); /* convert ns -> ps */
   run->AddTask(tofSimpClust);
   // ------   TOF hit producer   ---------------------------------------------
   //    CbmTofHitProducerNew* tofHitProd = new CbmTofHitProducerNew("TOF HitProducer",0);
@@ -149,51 +150,51 @@ void tof_reco_Testbeam (Int_t nEvents = 100, Int_t iSys=0)
   // =========================================================================
   // ===                        Global tracking                            ===
   // =========================================================================
-  if(0) { // enable / disable global tracking 
-  CbmLitFindGlobalTracks* finder = new CbmLitFindGlobalTracks();
-  // Tracking method to be used
-  // "branch" - branching tracking
-  // "nn" - nearest neighbor tracking
-  // "weight" - weighting tracking
-  finder->SetTrackingType("branch");
+  if (0) {  // enable / disable global tracking
+    CbmLitFindGlobalTracks* finder = new CbmLitFindGlobalTracks();
+    // Tracking method to be used
+    // "branch" - branching tracking
+    // "nn" - nearest neighbor tracking
+    // "weight" - weighting tracking
+    finder->SetTrackingType("branch");
 
-  // Hit-to-track merger method to be used
-  // "nearest_hit" - assigns nearest hit to the track
-  //finder->SetMergerType("nearest_hit");
-  finder->SetMergerType("all_hits");
+    // Hit-to-track merger method to be used
+    // "nearest_hit" - assigns nearest hit to the track
+    //finder->SetMergerType("nearest_hit");
+    finder->SetMergerType("all_hits");
 
-  run->AddTask(finder);
+    run->AddTask(finder);
 
-  // -----   Primary vertex finding   ---------------------------------------
-  CbmPrimaryVertexFinder* pvFinder = new CbmPVFinderKF();
-  CbmFindPrimaryVertex* findVertex = new CbmFindPrimaryVertex(pvFinder);
-  run->AddTask(findVertex);
-  // ------------------------------------------------------------------------
-  // Global track fitting 
-  // (taken from hadron/produceDST.C
-  //
-  CbmGlobalTrackFitterKF *globalTrackFitter = new CbmGlobalTrackFitterKF();
-  CbmFitGlobalTracks *fitGlobal = new CbmFitGlobalTracks("FitGlobalTracks", 1,
-                                                          globalTrackFitter);
-  run->AddTask(fitGlobal);
-  
-  //  CbmProduceDst *produceDst = new CbmProduceDst(); // in hadron
-  // run->AddTask(produceDst);
+    // -----   Primary vertex finding   ---------------------------------------
+    CbmPrimaryVertexFinder* pvFinder = new CbmPVFinderKF();
+    CbmFindPrimaryVertex* findVertex = new CbmFindPrimaryVertex(pvFinder);
+    run->AddTask(findVertex);
+    // ------------------------------------------------------------------------
+    // Global track fitting
+    // (taken from hadron/produceDST.C
+    //
+    CbmGlobalTrackFitterKF* globalTrackFitter = new CbmGlobalTrackFitterKF();
+    CbmFitGlobalTracks* fitGlobal =
+      new CbmFitGlobalTracks("FitGlobalTracks", 1, globalTrackFitter);
+    run->AddTask(fitGlobal);
 
-  // ===                      End of global tracking                       ===
-  // =========================================================================
-  // Analysis
-  if(1){
-   CbmHadronAnalysis *HadronAna = new CbmHadronAnalysis(); // in hadron
-   HadronAna->SetBeamMomentum(10.);  // beam momentum
-   HadronAna->SetBSelMax(11.);      // maximum impact parameter to be analyzed  
-   HadronAna->SetDY(0.5);           // flow analysis exclusion window  
+    //  CbmProduceDst *produceDst = new CbmProduceDst(); // in hadron
+    // run->AddTask(produceDst);
 
-   run->AddTask(HadronAna);
-   }
-  } 
+    // ===                      End of global tracking                       ===
+    // =========================================================================
+    // Analysis
+    if (1) {
+      CbmHadronAnalysis* HadronAna = new CbmHadronAnalysis();  // in hadron
+      HadronAna->SetBeamMomentum(10.);                         // beam momentum
+      HadronAna->SetBSelMax(11.);  // maximum impact parameter to be analyzed
+      HadronAna->SetDY(0.5);       // flow analysis exclusion window
+
+      run->AddTask(HadronAna);
+    }
+  }
   // -----  Parameter database   --------------------------------------------
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
+  FairRuntimeDb* rtdb        = run->GetRuntimeDb();
   FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
   parIo1->open(parFile.Data());
@@ -205,7 +206,7 @@ void tof_reco_Testbeam (Int_t nEvents = 100, Int_t iSys=0)
   // ------------------------------------------------------------------------
 
   // -----   Intialise and run   --------------------------------------------
-  cout << "Initialize run" << endl;  
+  cout << "Initialize run" << endl;
   run->Init();
   cout << "Starting run" << endl;
   run->Run(0, nEvents);
@@ -225,8 +226,8 @@ void tof_reco_Testbeam (Int_t nEvents = 100, Int_t iSys=0)
   cout << endl;
   // ------------------------------------------------------------------------
 
-//  delete run;
+  //  delete run;
 
   cout << " Test passed" << endl;
-	cout << " All ok " << endl;
+  cout << " All ok " << endl;
 }

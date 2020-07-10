@@ -19,48 +19,57 @@
 #include <TNamed.h>      // for TNamed
 #include <TString.h>     // for TString
 
-#include <stdint.h>      // for uint64_t
-#include <map>           // for map
-#include <vector>        // for vector
+#include <map>       // for map
+#include <stdint.h>  // for uint64_t
+#include <vector>    // for vector
 
-enum class ECbmTrdHardwareSetupVersion : Int_t
-{
-    kUndefined = 0
-    , kMcbm2020  = 1
-    , kLabIkfOneSpadic
-    , kDesy2019
-    , kCbm2025
-}; ///< Enum for hardware setup versions, they are for example correlated to the componentId setup.
+enum class ECbmTrdHardwareSetupVersion : Int_t {
+  kUndefined = 0,
+  kMcbm2020  = 1,
+  kLabIkfOneSpadic,
+  kDesy2019,
+  kCbm2025
+};  ///< Enum for hardware setup versions, they are for example correlated to the componentId setup.
 
 
-class CbmTrdHardwareSetupR : public TNamed
-{
+class CbmTrdHardwareSetupR : public TNamed {
 public:
-    CbmTrdHardwareSetupR(/* args */);
-    CbmTrdHardwareSetupR(const CbmTrdHardwareSetupR&);
-    CbmTrdHardwareSetupR operator=(const CbmTrdHardwareSetupR&);
-    ~CbmTrdHardwareSetupR();
+  CbmTrdHardwareSetupR(/* args */);
+  CbmTrdHardwareSetupR(const CbmTrdHardwareSetupR&);
+  CbmTrdHardwareSetupR operator=(const CbmTrdHardwareSetupR&);
+  ~CbmTrdHardwareSetupR();
 
-    std::uint64_t GetComponentId(Int_t asicAddress, ECbmTrdHardwareSetupVersion hwSetup); ///< Retrieve componentId of the asic add the passed address for the passed hwSetup 
-    std::uint64_t GetComponentId(Int_t asicAddress); ///< Retrieve componentId of the asic add the passed address for the currently selected ComponentIdMap
-    std::map<Int_t, std::uint64_t> GetComponentIdMap()              {return fComponentIdMap;}
+  std::uint64_t GetComponentId(
+    Int_t asicAddress,
+    ECbmTrdHardwareSetupVersion
+      hwSetup);  ///< Retrieve componentId of the asic add the passed address for the passed hwSetup
+  std::uint64_t GetComponentId(
+    Int_t
+      asicAddress);  ///< Retrieve componentId of the asic add the passed address for the currently selected ComponentIdMap
+  std::map<Int_t, std::uint64_t> GetComponentIdMap() { return fComponentIdMap; }
 
-    void SetParameterFile(TString fileName)                 {fParameterFileName = fileName;}
-    void SetComponentIdMap(std::map<Int_t, std::uint64_t> compMap)  {fComponentIdMap = compMap;}
-    
-    std::map<std::uint64_t, Int_t> CreateHwToSwAsicAddressTranslatorMap(bool isLoadedParameters);
-    std::map<Int_t, std::vector<Int_t>> CreateAsicChannelMap(bool isLoadedParameters);
-    void SelectComponentIdMap(ECbmTrdHardwareSetupVersion hwSetup);
-    void SelectComponentIdMap(TString geoTag);
-    bool WriteComponentIdsToParams();
+  void SetParameterFile(TString fileName) { fParameterFileName = fileName; }
+  void SetComponentIdMap(std::map<Int_t, std::uint64_t> compMap) {
+    fComponentIdMap = compMap;
+  }
+
+  std::map<std::uint64_t, Int_t>
+  CreateHwToSwAsicAddressTranslatorMap(bool isLoadedParameters);
+  std::map<Int_t, std::vector<Int_t>>
+  CreateAsicChannelMap(bool isLoadedParameters);
+  void SelectComponentIdMap(ECbmTrdHardwareSetupVersion hwSetup);
+  void SelectComponentIdMap(TString geoTag);
+  bool WriteComponentIdsToParams();
 
 private:
-    /* data */
-    std::map<Int_t, uint64_t> fComponentIdMap; ///< Container for the translation betweem software asicAddress and hardware asicAddress. First: CbmTrdParAsic::fAddress, Second CbmTrdParAsic::fComponentId
-    
-    TString fParameterFileName;                   ///< Name of the parameter file correlated to the hardware setup
+  /* data */
+  std::map<Int_t, uint64_t>
+    fComponentIdMap;  ///< Container for the translation betweem software asicAddress and hardware asicAddress. First: CbmTrdParAsic::fAddress, Second CbmTrdParAsic::fComponentId
 
-    ClassDef(CbmTrdHardwareSetupR, 1) // Definition of actual hardware setup
+  TString
+    fParameterFileName;  ///< Name of the parameter file correlated to the hardware setup
+
+  ClassDef(CbmTrdHardwareSetupR, 1)  // Definition of actual hardware setup
 };
 
 #endif

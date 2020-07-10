@@ -7,8 +7,8 @@
 #define CBMSTSSIMSENSORFACTORY_H 1
 
 
-#include <memory>
 #include <Rtypes.h>
+#include <memory>
 
 #include "CbmStsSimSensor.h"
 
@@ -29,26 +29,24 @@ class CbmStsParSensor;
  */
 class CbmStsSimSensorFactory {
 
-  public:
+public:
+  typedef std::unique_ptr<CbmStsSimSensor> UP_sensor;
 
-    typedef std::unique_ptr<CbmStsSimSensor> UP_sensor;
-
-    /** @brief Constructor **/
-    CbmStsSimSensorFactory();
-
-
-    /** @Destructor **/
-    virtual ~CbmStsSimSensorFactory();
+  /** @brief Constructor **/
+  CbmStsSimSensorFactory();
 
 
-    /** @brief Create a sensor
+  /** @Destructor **/
+  virtual ~CbmStsSimSensorFactory();
+
+
+  /** @brief Create a sensor
      ** @param par Sensor parameter object
      ** @return unique_ptr to sensor object
      **/
-    UP_sensor CreateSensor(const CbmStsParSensor& par);
+  UP_sensor CreateSensor(const CbmStsParSensor& par);
 
-    ClassDef(CbmStsSimSensorFactory, 2)
-
+  ClassDef(CbmStsSimSensorFactory, 2)
 };
 
 

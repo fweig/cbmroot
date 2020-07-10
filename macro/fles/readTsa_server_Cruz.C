@@ -9,12 +9,11 @@
  */
 
 
-void readTsa_server_Cruz()
-{
+void readTsa_server_Cruz() {
 
   // --- Specify input file name (this is just an example)
   //TString inFile = "spadic_dlm_trigger_2014-11-15_noepoch.tsa";
-//   TString inFile = "nxdata.tsa";
+  //   TString inFile = "nxdata.tsa";
 
   // --- Specify number of events to be produced.
   // --- -1 means run until the end of the input file.
@@ -29,7 +28,7 @@ void readTsa_server_Cruz()
 
   // --- Set debug level
   gDebug = 0;
-  
+
   std::cout << std::endl;
   //std::cout << ">>> readTsa:  input file is " << inFile  << std::endl;
   std::cout << ">>> readTsa: output file is " << outFile << std::endl;
@@ -44,28 +43,28 @@ void readTsa_server_Cruz()
   CbmTSUnpackSpadic* spadic_unpacker = new CbmTSUnpackSpadic();
 
   // NXyter Unpacker
-//  CbmTSUnpackNxyter* nxyter_unpacker = new CbmTSUnpackNxyter();
+  //  CbmTSUnpackNxyter* nxyter_unpacker = new CbmTSUnpackNxyter();
 
   // --- Source task
   CbmFlibFileSourceNew* source = new CbmFlibFileSourceNew();
   //source->SetFileName(inFile);
-//  source->AddUnpacker(nxyter_unpacker, 0x10);
+  //  source->AddUnpacker(nxyter_unpacker, 0x10);
   source->AddUnpacker(spadic_unpacker, 0x40);
   //source->SetHostName("cbmflib01");
   source->SetHostName("cbmflib05");
   // --- Event header
-//  FairEventHeader* event = new CbmTbEvent();
-//  event->SetRunId(260);
+  //  FairEventHeader* event = new CbmTbEvent();
+  //  event->SetRunId(260);
 
   // --- Run
-  FairRunOnline *run = FairRunOnline::Instance();
+  FairRunOnline* run = FairRunOnline::Instance();
   run->SetSource(source);
   run->SetOutputFile(outFile);
   run->SetAutoFinish(kFALSE);
 
-//  FairRunOnline *run = new FairRunOnline(source);
-//  run->SetOutputFile(outFile);
-//  run->SetEventHeader(event);
+  //  FairRunOnline *run = new FairRunOnline(source);
+  //  run->SetOutputFile(outFile);
+  //  run->SetEventHeader(event);
 
   FairTask* spadicRawBeam = new CbmTrdRawBeamProfile();
   run->AddTask(spadicRawBeam);
@@ -75,26 +74,26 @@ void readTsa_server_Cruz()
   run->AddTask(onlineDisplay);
 
   run->Init();
-  
+
   // --- Start run
   TStopwatch timer;
   timer.Start();
-  std::cout << ">>> Start run from the command line by calling Run(<events>)" << std::endl;
-//  run->Run(nEvents, 0); // run until end of input file
-//  timer.Stop();
-  
+  std::cout << ">>> Start run from the command line by calling Run(<events>)"
+            << std::endl;
+  //  run->Run(nEvents, 0); // run until end of input file
+  //  timer.Stop();
+
   // --- End-of-run info
   Double_t rtime = timer.RealTime();
   Double_t ctime = timer.CpuTime();
   std::cout << std::endl << std::endl;
   std::cout << ">>> readTsa: Macro finished successfully." << std::endl;
   std::cout << ">>> readTsa: Output file is " << outFile << std::endl;
-  std::cout << ">>> readTsa: Real time " << rtime << " s, CPU time "
-  					<< ctime << " s" << std::endl;
+  std::cout << ">>> readTsa: Real time " << rtime << " s, CPU time " << ctime
+            << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests
   std::cout << " Test passed" << std::endl;
   std::cout << " All ok " << std::endl;
 }
-  

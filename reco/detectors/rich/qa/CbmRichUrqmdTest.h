@@ -19,8 +19,8 @@ class CbmMCDataArray;
 class CbmMCEventList;
 class CbmDigiManager;
 
-#include <vector>
 #include <map>
+#include <vector>
 
 using namespace std;
 
@@ -32,115 +32,112 @@ using namespace std;
  * \author Semen Lebedev <s.lebedev@gsi.de>
  * \date 2012
  **/
-class CbmRichUrqmdTest : public FairTask
-{
-    
+class CbmRichUrqmdTest : public FairTask {
+
 public:
-    /**
+  /**
      * \brief Standard constructor.
      */
-    CbmRichUrqmdTest();
-    
-    /**
+  CbmRichUrqmdTest();
+
+  /**
      * \brief Standard destructor.
      */
-    virtual ~CbmRichUrqmdTest();
-    
-    /**
+  virtual ~CbmRichUrqmdTest();
+
+  /**
      * \brief Inherited from FairTask.
      */
-    virtual InitStatus Init();
-    
-    /**
+  virtual InitStatus Init();
+
+  /**
      * \brief Inherited from FairTask.
      */
-    virtual void Exec(
-                      Option_t* option);
-    
-    /**
+  virtual void Exec(Option_t* option);
+
+  /**
      * \brief Inherited from FairTask.
      */
-    virtual void Finish();
-    
-    
-    /**
+  virtual void Finish();
+
+
+  /**
      * \brief Set output directory where you want to write results (figures and json).
      * \param[in] dir Path to the output directory.
      */
-    void SetOutputDir(const string& dir) {fOutputDir = dir;}
-    
-    
+  void SetOutputDir(const string& dir) { fOutputDir = dir; }
+
+
 private:
-    
-    /**
+  /**
      * \brief Initialize histograms.
      */
-    void InitHistograms();
-    
-    /**
+  void InitHistograms();
+
+  /**
      * \brief
      */
-    void FillRichRingNofHits();
-    
-    /**
+  void FillRichRingNofHits();
+
+  /**
      * \brief
      */
-    void NofRings();
-    
-    /**
+  void NofRings();
+
+  /**
      * \brief
      */
-    void NofHitsAndPoints();
-    
-    /**
+  void NofHitsAndPoints();
+
+  /**
      * \brief
      */
-    void NofProjections();
-    
-    /**
+  void NofProjections();
+
+  /**
      * \brief
      */
-    void Vertex();
-    
-    
-    /**
+  void Vertex();
+
+
+  /**
      *  \brief Draw histograms.
      */
-    void DrawHist();
-    
-    void PmtXYSource();
-    
-    /**
+  void DrawHist();
+
+  void PmtXYSource();
+
+  /**
      * \brief Copy constructor.
      */
-    CbmRichUrqmdTest(const CbmRichUrqmdTest&);
-    
-    /**
+  CbmRichUrqmdTest(const CbmRichUrqmdTest&);
+
+  /**
      * \brief Assignment operator.
      */
-    CbmRichUrqmdTest& operator=(const CbmRichUrqmdTest&);
-    
-    CbmHistManager* fHM;
-    
-    string fOutputDir; // output dir for results
-    
-    TClonesArray* fRichHits;
-    TClonesArray* fRichRings;
-    CbmMCDataArray* fRichPoints;
-    CbmMCDataArray* fMcTracks;
-    TClonesArray* fRichRingMatches;
-    TClonesArray* fRichProjections;
-    CbmDigiManager* fDigiMan;
-    CbmMCEventList* fEventList;
-    
-    Int_t fEventNum;
-    Int_t fMinNofHits; // Min number of hits in ring for detector acceptance calculation.
-    
-    // Number of hits in the MC RICH ring
-    std::map<pair<Int_t,Int_t>, Int_t> fNofHitsInRingMap;
-    
-    ClassDef(CbmRichUrqmdTest,1)
+  CbmRichUrqmdTest& operator=(const CbmRichUrqmdTest&);
+
+  CbmHistManager* fHM;
+
+  string fOutputDir;  // output dir for results
+
+  TClonesArray* fRichHits;
+  TClonesArray* fRichRings;
+  CbmMCDataArray* fRichPoints;
+  CbmMCDataArray* fMcTracks;
+  TClonesArray* fRichRingMatches;
+  TClonesArray* fRichProjections;
+  CbmDigiManager* fDigiMan;
+  CbmMCEventList* fEventList;
+
+  Int_t fEventNum;
+  Int_t
+    fMinNofHits;  // Min number of hits in ring for detector acceptance calculation.
+
+  // Number of hits in the MC RICH ring
+  std::map<pair<Int_t, Int_t>, Int_t> fNofHitsInRingMap;
+
+  ClassDef(CbmRichUrqmdTest, 1)
 };
 
 #endif
-

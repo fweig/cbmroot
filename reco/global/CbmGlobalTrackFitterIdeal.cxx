@@ -6,9 +6,9 @@
 
 #include "CbmGlobalTrack.h"
 
-#include "FairRootManager.h"
 #include "CbmStsTrack.h"
 #include "CbmTrdTrack.h"
+#include "FairRootManager.h"
 
 #include "TClonesArray.h"
 
@@ -28,90 +28,77 @@ using std::endl;
 
 // ------------------------------------------------------------------
 CbmGlobalTrackFitterIdeal::CbmGlobalTrackFitterIdeal()
-  : CbmGlobalTrackFitter(),
-    fArrayStsTrack(NULL),
-    fArrayTrdTrack(NULL)
-{
+  : CbmGlobalTrackFitter(), fArrayStsTrack(NULL), fArrayTrdTrack(NULL) {}
+// ------------------------------------------------------------------
+
+
+// ------------------------------------------------------------------
+CbmGlobalTrackFitterIdeal::~CbmGlobalTrackFitterIdeal() {
+  // Destructor
 }
 // ------------------------------------------------------------------
 
 
 // ------------------------------------------------------------------
-CbmGlobalTrackFitterIdeal::~CbmGlobalTrackFitterIdeal()
-{
-    // Destructor
+void CbmGlobalTrackFitterIdeal::Init() {
+  // Initialisation
+
+  // Get pointer to the ROOT I/O manager
+  FairRootManager* rootMgr = FairRootManager::Instance();
+  if (NULL == rootMgr) {
+    cout << "-E- CbmGlobalTrackFitterIdeal::Init :"
+         << " ROOT manager is not instantiated" << endl;
+    return;
+  }
+  // Get track arrays
+  fArrayStsTrack = (TClonesArray*) rootMgr->GetObject("StsTrack");
+  if (NULL == fArrayStsTrack) {
+    cout << "-W- CbmGlobalTrackFitterIdeal::Init : "
+         << "no STS track array!" << endl;
+  }
+  fArrayTrdTrack = (TClonesArray*) rootMgr->GetObject("TrdTrack");
+  if (NULL == fArrayTrdTrack) {
+    cout << "-W- CbmGlobalTrackFitterIdeal::Init : "
+         << "no TRD track array!" << endl;
+  }
 }
 // ------------------------------------------------------------------
 
 
 // ------------------------------------------------------------------
-void CbmGlobalTrackFitterIdeal::Init()
-{
-    // Initialisation
+void CbmGlobalTrackFitterIdeal::DoFit(CbmGlobalTrack* glbTrack) {
+  // Implementation of the algorithm
+  if (NULL == glbTrack) return;
+  if (NULL == fArrayStsTrack || NULL == fArrayTrdTrack) return;
 
-    // Get pointer to the ROOT I/O manager
-    FairRootManager* rootMgr = FairRootManager::Instance();
-    if(NULL == rootMgr) {
-	cout << "-E- CbmGlobalTrackFitterIdeal::Init :"
-	    << " ROOT manager is not instantiated" << endl;
-        return;
-    }
-    // Get track arrays
-    fArrayStsTrack = (TClonesArray*) rootMgr->GetObject("StsTrack");
-    if(NULL == fArrayStsTrack) {
-	cout << "-W- CbmGlobalTrackFitterIdeal::Init : "
-            << "no STS track array!" << endl;
-    }
-    fArrayTrdTrack = (TClonesArray*) rootMgr->GetObject("TrdTrack");
-    if(NULL == fArrayTrdTrack) {
-	cout << "-W- CbmGlobalTrackFitterIdeal::Init : "
-            << "no TRD track array!" << endl;
-    }
-}
-// ------------------------------------------------------------------
-
-
-// ------------------------------------------------------------------
-void CbmGlobalTrackFitterIdeal::DoFit(CbmGlobalTrack* glbTrack)
-{
-    // Implementation of the algorithm
-    if(NULL == glbTrack) return;
-    if(NULL == fArrayStsTrack || NULL == fArrayTrdTrack) return;
-
-    if(glbTrack->GetStsTrackIndex() < 0 &&
-       glbTrack->GetTrdTrackIndex() < 0) {
-        return;
-    } else if(glbTrack->GetStsTrackIndex() >= 0 &&
-	      glbTrack->GetTrdTrackIndex() < 0) {
-	CbmStsTrack* stsTrack = (CbmStsTrack*) fArrayStsTrack->At(glbTrack->GetStsTrackIndex());
-	if(NULL == stsTrack) {
-            return;
-	}
-        glbTrack->SetParamFirst(stsTrack->GetParamFirst());
-        glbTrack->SetParamLast(stsTrack->GetParamLast());
-    } else if(glbTrack->GetStsTrackIndex() < 0 &&
-	      glbTrack->GetTrdTrackIndex() >= 0) {
-	CbmTrdTrack* trdTrack = (CbmTrdTrack*) fArrayTrdTrack->At(glbTrack->GetTrdTrackIndex());
-	if(NULL == trdTrack) {
-            return;
-	}
-        glbTrack->SetParamFirst(trdTrack->GetParamFirst());
-        glbTrack->SetParamLast(trdTrack->GetParamLast());
-    } else {
-	CbmStsTrack* stsTrack = (CbmStsTrack*) fArrayStsTrack->At(glbTrack->GetStsTrackIndex());
-	if(NULL == stsTrack) {
-            return;
-	}
-	CbmTrdTrack* trdTrack = (CbmTrdTrack*) fArrayTrdTrack->At(glbTrack->GetTrdTrackIndex());
-	if(NULL == trdTrack) {
-            return;
-	}
-        glbTrack->SetParamFirst(stsTrack->GetParamFirst());
-        glbTrack->SetParamLast(trdTrack->GetParamLast());
-    }
+  if (glbTrack->GetStsTrackIndex() < 0 && glbTrack->GetTrdTrackIndex() < 0) {
+    return;
+  } else if (glbTrack->GetStsTrackIndex() >= 0
+             && glbTrack->GetTrdTrackIndex() < 0) {
+    CbmStsTrack* stsTrack =
+      (CbmStsTrack*) fArrayStsTrack->At(glbTrack->GetStsTrackIndex());
+    if (NULL == stsTrack) { return; }
+    glbTrack->SetParamFirst(stsTrack->GetParamFirst());
+    glbTrack->SetParamLast(stsTrack->GetParamLast());
+  } else if (glbTrack->GetStsTrackIndex() < 0
+             && glbTrack->GetTrdTrackIndex() >= 0) {
+    CbmTrdTrack* trdTrack =
+      (CbmTrdTrack*) fArrayTrdTrack->At(glbTrack->GetTrdTrackIndex());
+    if (NULL == trdTrack) { return; }
+    glbTrack->SetParamFirst(trdTrack->GetParamFirst());
+    glbTrack->SetParamLast(trdTrack->GetParamLast());
+  } else {
+    CbmStsTrack* stsTrack =
+      (CbmStsTrack*) fArrayStsTrack->At(glbTrack->GetStsTrackIndex());
+    if (NULL == stsTrack) { return; }
+    CbmTrdTrack* trdTrack =
+      (CbmTrdTrack*) fArrayTrdTrack->At(glbTrack->GetTrdTrackIndex());
+    if (NULL == trdTrack) { return; }
+    glbTrack->SetParamFirst(stsTrack->GetParamFirst());
+    glbTrack->SetParamLast(trdTrack->GetParamLast());
+  }
 }
 // ------------------------------------------------------------------
 
 
 ClassImp(CbmGlobalTrackFitterIdeal);
-

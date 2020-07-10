@@ -14,52 +14,51 @@ Detailed description
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-#include <TVectorD.h>
+#include <TAxis.h>
+#include <TFile.h>
 #include <TH1.h>
 #include <TH1F.h>
 #include <TH2.h>
 #include <TH3.h>
+#include <THnSparse.h>
+#include <TKey.h>
+#include <TObjArray.h>
+#include <TObjString.h>
 #include <TProfile.h>
 #include <TProfile2D.h>
 #include <TProfile3D.h>
-#include <THnSparse.h>
-#include <TAxis.h>
 #include <TString.h>
-#include <TObjString.h>
-#include <TObjArray.h>
-#include <TKey.h>
-#include <TFile.h>
+#include <TVectorD.h>
 
 #include "CbmMCTrack.h"
 
 #include "PairAnalysis.h"
 #include "PairAnalysisHelper.h"
-#include "PairAnalysisStyler.h"
 #include "PairAnalysisMC.h"
 #include "PairAnalysisPair.h"
 #include "PairAnalysisSignalMC.h"
+#include "PairAnalysisStyler.h"
 
-#include "PairAnalysisHistos.h"
 #include "PairAnalysisHF.h"
+#include "PairAnalysisHistos.h"
 
 #include "PairAnalysisTrack.h"
 
 ClassImp(PairAnalysisHF)
 
-PairAnalysisHF::PairAnalysisHF() :
-//TNamed(),
-  PairAnalysisHistos(),
-  fUsedVars(new TBits(PairAnalysisVarManager::kNMaxValuesMC)),
-  fArrDielHistos(),
-  fSignalsMC(0x0),
-  fVarCutType(new TBits(kMaxCuts)),
-  fAxes(kMaxCuts)
-{
+  PairAnalysisHF::PairAnalysisHF()
+  :  //TNamed(),
+  PairAnalysisHistos()
+  , fUsedVars(new TBits(PairAnalysisVarManager::kNMaxValuesMC))
+  , fArrDielHistos()
+  , fSignalsMC(0x0)
+  , fVarCutType(new TBits(kMaxCuts))
+  , fAxes(kMaxCuts) {
   //
   // Default Constructor
   //
-  for (Int_t i=0; i<kMaxCuts; ++i){
-    fVarCuts[i]=0;
+  for (Int_t i = 0; i < kMaxCuts; ++i) {
+    fVarCuts[i] = 0;
     //    fVarCutType[i]=0;
   }
   fAxes.SetOwner(kTRUE);
@@ -67,20 +66,19 @@ PairAnalysisHF::PairAnalysisHF() :
 }
 
 //______________________________________________
-PairAnalysisHF::PairAnalysisHF(const char* name, const char* title) :
-  //  TNamed(name, title),
-  PairAnalysisHistos(name, title),
-  fUsedVars(new TBits(PairAnalysisVarManager::kNMaxValuesMC)),
-  fArrDielHistos(),
-  fSignalsMC(0x0),
-  fVarCutType(new TBits(kMaxCuts)),
-  fAxes(kMaxCuts)
-{
+PairAnalysisHF::PairAnalysisHF(const char* name, const char* title)
+  :  //  TNamed(name, title),
+  PairAnalysisHistos(name, title)
+  , fUsedVars(new TBits(PairAnalysisVarManager::kNMaxValuesMC))
+  , fArrDielHistos()
+  , fSignalsMC(0x0)
+  , fVarCutType(new TBits(kMaxCuts))
+  , fAxes(kMaxCuts) {
   //
   // Named Constructor
   //
-  for (Int_t i=0; i<kMaxCuts; ++i){
-    fVarCuts[i]=0;
+  for (Int_t i = 0; i < kMaxCuts; ++i) {
+    fVarCuts[i] = 0;
     //    fVarCutType[i]=0;
   }
   fAxes.SetOwner(kTRUE);
@@ -88,42 +86,40 @@ PairAnalysisHF::PairAnalysisHF(const char* name, const char* title) :
 }
 
 //______________________________________________
-PairAnalysisHF::~PairAnalysisHF()
-{
+PairAnalysisHF::~PairAnalysisHF() {
   //
   // Default Destructor
   //
-  if(fUsedVars)   delete fUsedVars;
-  if(fVarCutType) delete fVarCutType;
+  if (fUsedVars) delete fUsedVars;
+  if (fVarCutType) delete fVarCutType;
   fAxes.Delete();
-  fArrDielHistos.Delete(); //TODO: better Clear?
+  fArrDielHistos.Delete();  //TODO: better Clear?
 }
 
 //________________________________________________________________
 void PairAnalysisHF::AddCutVariable(PairAnalysisVarManager::ValueTypes type,
-				    TVectorD * binLimits, Bool_t leg)
-{
+                                    TVectorD* binLimits,
+                                    Bool_t leg) {
   //
   // Add a variable to the histogram array with a vector
   // the TVectorD is assumed to be surplus after the creation and will be deleted!!!
   //
 
   // limit number of variables to kMaxCuts
-  if (fAxes.GetEntriesFast()>=kMaxCuts) return;
+  if (fAxes.GetEntriesFast() >= kMaxCuts) return;
 
   if (!binLimits) return;
 
-  Int_t size=fAxes.GetEntriesFast();
-  fVarCuts[size]=(UShort_t)type;
+  Int_t size     = fAxes.GetEntriesFast();
+  fVarCuts[size] = (UShort_t) type;
   //  fVarCutType[size]=leg;
-  fVarCutType->SetBitNumber(size,leg);
+  fVarCutType->SetBitNumber(size, leg);
   fAxes.Add(binLimits);
-  fUsedVars->SetBitNumber(type,kTRUE);
+  fUsedVars->SetBitNumber(type, kTRUE);
 }
 
 //_____________________________________________________________________________
-void PairAnalysisHF::FillClass(const char* histClass, const Double_t *values)
-{
+void PairAnalysisHF::FillClass(const char* histClass, const Double_t* values) {
   //
   // Fill the histograms if cuts are passed
   //
@@ -131,34 +127,36 @@ void PairAnalysisHF::FillClass(const char* histClass, const Double_t *values)
   // find cell described by values
   Int_t cell = FindCell(values);
   //  printf("cell: %d \n",cell);
-  if (cell<0) return;
+  if (cell < 0) return;
   //  printf("  --> %s \n",fArrDielHistos.UncheckedAt(cell)->GetName());
 
   // do NOT set the ownership otherwise you will delete all histos!!
-  SetHistogramList(*static_cast<THashList*>(fArrDielHistos.UncheckedAt(cell)), kFALSE);
-  PairAnalysisHistos::FillClass(histClass,values);
-
+  SetHistogramList(*static_cast<THashList*>(fArrDielHistos.UncheckedAt(cell)),
+                   kFALSE);
+  PairAnalysisHistos::FillClass(histClass, values);
 }
 
 //______________________________________________
-void PairAnalysisHF::ReadFromFile(const char* file, const char *task, const char *config)
-{
+void PairAnalysisHF::ReadFromFile(const char* file,
+                                  const char* task,
+                                  const char* config) {
   //
   // Read histos from file
   //
   // TODO: to be tested!
   TFile f(file);
   TIter nextKey(f.GetListOfKeys());
-  TKey *key=0;
-  while ( (key=(TKey*)nextKey()) ){
-    TString name=key->GetName();
-    if(!name.Contains("PairAnalysisHistos"))    continue;
-    if(!strlen(task) && !name.Contains(task)) continue;
-    TObject *o=f.Get(key->GetName());
-    TList *list=dynamic_cast<TList*>(o);
+  TKey* key = 0;
+  while ((key = (TKey*) nextKey())) {
+    TString name = key->GetName();
+    if (!name.Contains("PairAnalysisHistos")) continue;
+    if (!strlen(task) && !name.Contains(task)) continue;
+    TObject* o  = f.Get(key->GetName());
+    TList* list = dynamic_cast<TList*>(o);
     if (!list) continue;
     //////NEEDED?    else fList=list;
-    TObjArray *listCfg=dynamic_cast<TObjArray*>(list->FindObject(Form("%s_HF",config)));
+    TObjArray* listCfg =
+      dynamic_cast<TObjArray*>(list->FindObject(Form("%s_HF", config)));
     if (!listCfg) continue;
     ////    SetHistogramList(*listCfg);
     break;
@@ -169,9 +167,10 @@ void PairAnalysisHF::ReadFromFile(const char* file, const char *task, const char
 }
 
 //______________________________________________
-void PairAnalysisHF::Fill(Int_t /*label1*/, Int_t /*label2*/, Int_t /*nSignal*/)
-{
-  return; //TODO: OBSOLETE?
+void PairAnalysisHF::Fill(Int_t /*label1*/,
+                          Int_t /*label2*/,
+                          Int_t /*nSignal*/) {
+  return;  //TODO: OBSOLETE?
   /*
   //
   // fill the pure MC part of the container starting from a pair of 2 particles (part1 and part2 are legs)
@@ -218,12 +217,12 @@ void PairAnalysisHF::Fill(Int_t /*label1*/, Int_t /*label2*/, Int_t /*nSignal*/)
   */
 }
 //______________________________________________
-void PairAnalysisHF::Fill(Int_t /*pairIndex*/, const PairAnalysisPair* /*particle*/)
-{
+void PairAnalysisHF::Fill(Int_t /*pairIndex*/,
+                          const PairAnalysisPair* /*particle*/) {
   //
   // fill histograms for event, pair and daughter cuts and pair types
   //
-  return; //TODO: OBSOLETE?
+  return;  //TODO: OBSOLETE?
   /*
   // only OS pairs in case of MC
   //////////////////////////////  if(fHasMC && pairIndex!=PairAnalysis::kSEPM) return;
@@ -269,13 +268,14 @@ void PairAnalysisHF::Fill(Int_t /*pairIndex*/, const PairAnalysisPair* /*particl
 }
 
 //______________________________________________
-void PairAnalysisHF::Fill(Int_t /*index*/, Double_t* const /*valuesPair*/, 
-                          Double_t* const /*valuesLeg1*/, Double_t* const /*valuesLeg2*/)
-{
+void PairAnalysisHF::Fill(Int_t /*index*/,
+                          Double_t* const /*valuesPair*/,
+                          Double_t* const /*valuesLeg1*/,
+                          Double_t* const /*valuesLeg2*/) {
   //
   // main fill function using index and values as input
   //
-  return; //TODO: OBSOLETE?
+  return;  //TODO: OBSOLETE?
   /*
   TObjArray *histArr = static_cast<TObjArray*>(fArrDielHistos.At(index));
   if(!histArr) return;
@@ -342,105 +342,103 @@ void PairAnalysisHF::Fill(Int_t /*index*/, Double_t* const /*valuesPair*/,
 }
 
 //______________________________________________
-void PairAnalysisHF::Init()
-{
+void PairAnalysisHF::Init() {
   //
   // initialise the HF array
   //
 
   // create an TObjArray of 'size' with PairAnalysisHistos objects
-  Int_t size  = GetNumberOfBins();
+  Int_t size = GetNumberOfBins();
 
-  fArrDielHistos.SetName(Form("%s_HF",GetName()));
+  fArrDielHistos.SetName(Form("%s_HF", GetName()));
   fArrDielHistos.Expand(size);
   ////  Debug(10,Form("Creating a histo array with size %d \n",size));
 
   // add 'PairAnalysisHistos'-list to each cell
-  for(Int_t icell=0; icell<size; icell++) {
+  for (Int_t icell = 0; icell < size; icell++) {
     fArrDielHistos.AddAt(fHistoList.Clone(""), icell);
   }
 
   // loop over all cut variables and do the naming according to its bin cell
-  Int_t sizeAdd  = 1; // counter for processed cells
-  Int_t nvars    = fAxes.GetEntriesFast();
-  for(Int_t ivar=0; ivar<nvars; ivar++) {
+  Int_t sizeAdd = 1;  // counter for processed cells
+  Int_t nvars   = fAxes.GetEntriesFast();
+  for (Int_t ivar = 0; ivar < nvars; ivar++) {
 
     // get bin limits for variabvle ivar
-    TVectorD *bins = static_cast<TVectorD*>(fAxes.At(ivar));
-    Int_t nbins    = bins->GetNrows()-1;
+    TVectorD* bins = static_cast<TVectorD*>(fAxes.At(ivar));
+    Int_t nbins    = bins->GetNrows() - 1;
 
     // loop over all cells
     // Add 'variable' name and current 'bin limits' to
     // the title of the 'PairAnalysisHistos'-list title
     // which is unique
-    for(Int_t icell=0; icell<size; icell++) {
+    for (Int_t icell = 0; icell < size; icell++) {
 
       // get the lower limit for current ivar bin
-      Int_t ibin       = (icell/sizeAdd)%nbins;
+      Int_t ibin       = (icell / sizeAdd) % nbins;
       Double_t lowEdge = (*bins)[ibin];
-      Double_t upEdge  = (*bins)[ibin+1];
+      Double_t upEdge  = (*bins)[ibin + 1];
 
       // modify title of hashlist
       TString title = fArrDielHistos.UncheckedAt(icell)->GetName();
-      if(!ivar)       title ="";
-      else            title+=":";                        // delimiter for new variable
-      if(fVarCutType->TestBitNumber(ivar)) title+="Leg"; // for leg variable Identification
+      if (!ivar)
+        title = "";
+      else
+        title += ":";  // delimiter for new variable
+      if (fVarCutType->TestBitNumber(ivar))
+        title += "Leg";  // for leg variable Identification
       title += PairAnalysisVarManager::GetValueName(fVarCuts[ivar]);
-      title += Form("#%.2f#%.2f",lowEdge,upEdge);        // TODO: precision enough?
-      static_cast<THashList*>(fArrDielHistos.UncheckedAt(icell))->SetName(title.Data());
+      title += Form("#%.2f#%.2f", lowEdge, upEdge);  // TODO: precision enough?
+      static_cast<THashList*>(fArrDielHistos.UncheckedAt(icell))
+        ->SetName(title.Data());
       ///      Debug(10,title.Data());
 
-    } // end: array of cells
+    }  // end: array of cells
 
-    sizeAdd*=nbins;
+    sizeAdd *= nbins;
 
-  } //end: loop variables
+  }  //end: loop variables
 
   // clean up
   // if(fArrDielHistos) {
   //   fArrDielHistos.Delete();
   //   fArrDielHistos=0;
   // }
-
 }
 
 //______________________________________________
-Int_t PairAnalysisHF::GetNumberOfBins() const
-{
+Int_t PairAnalysisHF::GetNumberOfBins() const {
   //
   // return the number of bins this histogram grid has
   //
-  Int_t size=1;
-  for (Int_t i=0; i<fAxes.GetEntriesFast(); ++i)
-    size*=((static_cast<TVectorD*>(fAxes.At(i)))->GetNrows()-1);
+  Int_t size = 1;
+  for (Int_t i = 0; i < fAxes.GetEntriesFast(); ++i)
+    size *= ((static_cast<TVectorD*>(fAxes.At(i)))->GetNrows() - 1);
   return size;
 }
 
 //______________________________________________
-Int_t PairAnalysisHF::FindCell(const Double_t *values)
-{
+Int_t PairAnalysisHF::FindCell(const Double_t* values) {
   //
   // cell described by 'values'
   // if the values are outside the binning range -1 is returned
   //
 
-  if (fAxes.GetEntriesFast()==0) return 0;
+  if (fAxes.GetEntriesFast() == 0) return 0;
 
-  Int_t sizeAdd=1;
-  Int_t cell=0;
-  for (Int_t i=0; i<fAxes.GetEntriesFast(); ++i){
-    Double_t val=values[fVarCuts[i]];
-    TVectorD *bins=static_cast<TVectorD*>(fAxes.At(i));
-    Int_t nRows=bins->GetNrows();
-    if ( (val<(*bins)[0]) || (val>(*bins)[nRows-1]) ) {
-      return -1;
-    }
+  Int_t sizeAdd = 1;
+  Int_t cell    = 0;
+  for (Int_t i = 0; i < fAxes.GetEntriesFast(); ++i) {
+    Double_t val   = values[fVarCuts[i]];
+    TVectorD* bins = static_cast<TVectorD*>(fAxes.At(i));
+    Int_t nRows    = bins->GetNrows();
+    if ((val < (*bins)[0]) || (val > (*bins)[nRows - 1])) { return -1; }
 
-    Int_t pos=TMath::BinarySearch(nRows,bins->GetMatrixArray(),val);
-    cell+=sizeAdd*pos;
+    Int_t pos = TMath::BinarySearch(nRows, bins->GetMatrixArray(), val);
+    cell += sizeAdd * pos;
     // printf(" \t %s: %.2f-%.2f %d \n",
     // 	   PairAnalysisVarManager::GetValueName(fVarCuts[i]), (*bins)[pos], (*bins)[pos+1], pos);
-    sizeAdd*=(nRows-1);
+    sizeAdd *= (nRows - 1);
   }
 
   return cell;

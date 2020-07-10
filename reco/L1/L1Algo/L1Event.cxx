@@ -3,17 +3,13 @@
 // #include "L1Track.h"
 //#include "L1StsHit.h"
 
-void L1Event::Clear(){
+void L1Event::Clear() { fStsHit.clear(); }
 
-  fStsHit.clear();
-}
+void L1Event::TopoReconstructor() {
 
-void L1Event::TopoReconstructor(){
-   
-  fTopoReconstructor.Init(fKFPTrack,fKFPTrack);
+  fTopoReconstructor.Init(fKFPTrack, fKFPTrack);
   fTopoReconstructor.ReconstructPrimVertex();
   fTopoReconstructor.SortTracks();
   fTopoReconstructor.ReconstructParticles();
   //cout<<"fTopoReconstructor "<<fTopoReconstructor.GetParticles().size();
 }
-

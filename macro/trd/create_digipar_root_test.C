@@ -10,42 +10,40 @@
 //
 // --------------------------------------------------------------------------
 
-void create_digipar_root_test(TString geoName = "trd_v15a_1e")
-{
-   TString inDir   = gSystem->Getenv("VMCWORKDIR");
+void create_digipar_root_test(TString geoName = "trd_v15a_1e") {
+  TString inDir = gSystem->Getenv("VMCWORKDIR");
 
-   TString inFile   = "data/test.mc." + geoName + ".root";
-   TString geoFile  = "data/geofile_" + geoName + ".root";
-   TString outFile  = "data/test.esd." + geoName + ".root";
-   TString digiFile = geoName + ".digi.par.long";  // Digi Parameter Output File
+  TString inFile   = "data/test.mc." + geoName + ".root";
+  TString geoFile  = "data/geofile_" + geoName + ".root";
+  TString outFile  = "data/test.esd." + geoName + ".root";
+  TString digiFile = geoName + ".digi.par.long";  // Digi Parameter Output File
 
-   FairRunAna* run = new FairRunAna();
-   run->SetInputFile(inFile);
-   run->SetOutputFile(outFile);
-   run->SetGeomFile(geoFile);
+  FairRunAna* run = new FairRunAna();
+  run->SetInputFile(inFile);
+  run->SetOutputFile(outFile);
+  run->SetGeomFile(geoFile);
 
-   FairRuntimeDb* rtdb = run->GetRuntimeDb();
+  FairRuntimeDb* rtdb = run->GetRuntimeDb();
 
-   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
-   parIo2->open(digiFile, "out");
-   rtdb->setOutput(parIo2);
+  FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
+  parIo2->open(digiFile, "out");
+  rtdb->setOutput(parIo2);
 
-   CbmTrdCreateDigiPar* trdDigitizer = new CbmTrdCreateDigiPar();
-   run->AddTask(trdDigitizer);
+  CbmTrdCreateDigiPar* trdDigitizer = new CbmTrdCreateDigiPar();
+  run->AddTask(trdDigitizer);
 
-   rtdb->saveOutput();
-   run->Init();
-   rtdb->print();
-   CbmTrdDigiPar* digiPar = (CbmTrdDigiPar*) rtdb->getContainer("CbmTrdDigiPar");
-   digiPar->setChanged();
-   digiPar->setInputVersion(run->GetRunId(), 1);
-   rtdb->print();
-   rtdb->saveOutput();
+  rtdb->saveOutput();
+  run->Init();
+  rtdb->print();
+  CbmTrdDigiPar* digiPar = (CbmTrdDigiPar*) rtdb->getContainer("CbmTrdDigiPar");
+  digiPar->setChanged();
+  digiPar->setInputVersion(run->GetRunId(), 1);
+  rtdb->print();
+  rtdb->saveOutput();
 
-   // ------------------------------------------------------------------------
+  // ------------------------------------------------------------------------
 
-   cout << " Test passed" << endl;
-   cout << " All ok " << endl;
-   RemoveGeoManager(); 
+  cout << " Test passed" << endl;
+  cout << " All ok " << endl;
+  RemoveGeoManager();
 }
-

@@ -18,68 +18,76 @@ class CbmStar2019MonitorAlgo;
 class CbmTbDaqBuffer;
 class TClonesArray;
 
-class CbmStar2019MonitorTask : public CbmMcbmUnpack
-{
-   public:
+class CbmStar2019MonitorTask : public CbmMcbmUnpack {
+public:
+  CbmStar2019MonitorTask();
+  virtual ~CbmStar2019MonitorTask();
 
-      CbmStar2019MonitorTask();
-      virtual ~CbmStar2019MonitorTask();
+  virtual Bool_t Init();
+  virtual Bool_t DoUnpack(const fles::Timeslice& ts, size_t component);
+  virtual void Reset();
 
-      virtual Bool_t Init();
-      virtual Bool_t DoUnpack(const fles::Timeslice& ts, size_t component);
-      virtual void Reset();
+  virtual void Finish();
 
-      virtual void Finish();
+  void SetParContainers();
 
-      void SetParContainers();
+  Bool_t InitContainers();
 
-      Bool_t InitContainers();
+  Bool_t ReInitContainers();
 
-      Bool_t ReInitContainers();
+  /// Temp until we change from CbmMcbmUnpack to something else
+  void AddMsComponentToList(size_t component, UShort_t usDetectorId);
+  void SetNbMsInTs(size_t /*uCoreMsNb*/, size_t /*uOverlapMsNb*/) {};
 
-      /// Temp until we change from CbmMcbmUnpack to something else
-      void AddMsComponentToList( size_t component, UShort_t usDetectorId );
-      void SetNbMsInTs( size_t /*uCoreMsNb*/, size_t /*uOverlapMsNb*/){};
+  /// Algo settings setters
+  inline void SetDebugMonitorMode(Bool_t bFlagIn = kTRUE) {
+    fbDebugMonitorMode = bFlagIn;
+  }
+  inline void SetIgnoreCriticalErrors(Bool_t bFlagIn = kTRUE) {
+    fbIgnoreCriticalErrors = bFlagIn;
+  }
+  void SetIgnoreOverlapMs(Bool_t bFlagIn = kTRUE);
+  inline void SetHistoryHistoSize(UInt_t inHistorySizeSec = 1800) {
+    fuHistoryHistoSize = inHistorySizeSec;
+  }
+  inline void SetHistoFilename(TString sNameIn) { fsHistoFileName = sNameIn; }
+  inline void SetPulserTotLimits(UInt_t uMin, UInt_t uMax) {
+    fuMinTotPulser = uMin;
+    fuMaxTotPulser = uMax;
+  }
+  inline void SetSectorIndex(Int_t iSector = -1) { fiSectorIndex = iSector; }
 
-      /// Algo settings setters
-      inline void SetDebugMonitorMode( Bool_t bFlagIn = kTRUE ) { fbDebugMonitorMode = bFlagIn; }
-      inline void SetIgnoreCriticalErrors( Bool_t bFlagIn = kTRUE ) { fbIgnoreCriticalErrors = bFlagIn; }
-      void SetIgnoreOverlapMs( Bool_t bFlagIn = kTRUE );
-      inline void SetHistoryHistoSize( UInt_t inHistorySizeSec = 1800 ) { fuHistoryHistoSize = inHistorySizeSec; }
-      inline void SetHistoFilename( TString sNameIn ) { fsHistoFileName = sNameIn; }
-      inline void SetPulserTotLimits( UInt_t uMin, UInt_t uMax ) { fuMinTotPulser = uMin; fuMaxTotPulser = uMax; }
-      inline void SetSectorIndex( Int_t iSector = -1 ) { fiSectorIndex = iSector; }
+  Bool_t SaveLatencyHistograms(TString sFilename);
 
-      Bool_t SaveLatencyHistograms( TString sFilename );
+private:
+  Bool_t SaveHistograms();
 
-   private:
+  /// Control flags
+  Bool_t
+    fbDebugMonitorMode;  //! Switch ON the filling of a additional set of histograms
+  Bool_t
+    fbIgnoreCriticalErrors;  //! If ON not printout at all for critical errors
 
-      Bool_t SaveHistograms();
+  /// User settings parameters
+  UInt_t fuHistoryHistoSize;
+  TString fsHistoFileName;
+  UInt_t fuMinTotPulser;
+  UInt_t fuMaxTotPulser;
+  Int_t fiSectorIndex;
 
-      /// Control flags
-      Bool_t fbDebugMonitorMode; //! Switch ON the filling of a additional set of histograms
-      Bool_t fbIgnoreCriticalErrors; //! If ON not printout at all for critical errors
+  /// Parameters management
+  TList* fParCList;
 
-      /// User settings parameters
-      UInt_t  fuHistoryHistoSize;
-      TString fsHistoFileName;
-      UInt_t fuMinTotPulser;
-      UInt_t fuMaxTotPulser;
-      Int_t  fiSectorIndex;
+  /// Statistics & first TS rejection
+  uint64_t fulTsCounter;
 
-      /// Parameters management
-      TList* fParCList;
+  /// Processing algo
+  CbmStar2019MonitorAlgo* fMonitorAlgo;
 
-      /// Statistics & first TS rejection
-      uint64_t fulTsCounter;
+  CbmStar2019MonitorTask(const CbmStar2019MonitorTask&);
+  CbmStar2019MonitorTask operator=(const CbmStar2019MonitorTask&);
 
-      /// Processing algo
-      CbmStar2019MonitorAlgo * fMonitorAlgo;
-
-      CbmStar2019MonitorTask(const CbmStar2019MonitorTask&);
-      CbmStar2019MonitorTask operator=(const CbmStar2019MonitorTask&);
-
-      ClassDef(CbmStar2019MonitorTask, 1)
+  ClassDef(CbmStar2019MonitorTask, 1)
 };
 
-#endif // CbmStar2019MonitorTask_H
+#endif  // CbmStar2019MonitorTask_H

@@ -15,19 +15,17 @@
 #ifndef CBMGLOBALTRACK_H_
 #define CBMGLOBALTRACK_H_ 1
 
-#include <Rtypes.h>          // for THashConsistencyHolder, ClassDef
-#include <RtypesCore.h>      // for Int_t, Double_t, Double32_t, Option_t
-#include <TObject.h>         // for TObject
+#include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
+#include <RtypesCore.h>  // for Int_t, Double_t, Double32_t, Option_t
+#include <TObject.h>     // for TObject
 
 #include <FairTrackParam.h>  // for FairTrackParam
 
-#include "CbmTrackParam.h"   // for CbmTrackParam
+#include "CbmTrackParam.h"  // for CbmTrackParam
 
-class CbmGlobalTrack : public TObject
-{
+class CbmGlobalTrack : public TObject {
 
- public:
-
+public:
   /** Default constructor **/
   CbmGlobalTrack();
 
@@ -37,43 +35,46 @@ class CbmGlobalTrack : public TObject
 
 
   /** Accessors **/
-  Int_t GetStsTrackIndex()  const { return fStsTrack; }
-  Int_t GetTrdTrackIndex()  const { return fTrdTrack; }
-  Int_t GetMuchTrackIndex()  const { return fMuchTrack; }
-  Int_t GetRichRingIndex()  const { return fRichRing; }
-  Int_t GetTofHitIndex()    const { return fTofHit;   }
-  const FairTrackParam* GetParamFirst() const { return &fParamFirst;   }
-  const FairTrackParam* GetParamLast() const { return &fParamLast;   }
+  Int_t GetStsTrackIndex() const { return fStsTrack; }
+  Int_t GetTrdTrackIndex() const { return fTrdTrack; }
+  Int_t GetMuchTrackIndex() const { return fMuchTrack; }
+  Int_t GetRichRingIndex() const { return fRichRing; }
+  Int_t GetTofHitIndex() const { return fTofHit; }
+  const FairTrackParam* GetParamFirst() const { return &fParamFirst; }
+  const FairTrackParam* GetParamLast() const { return &fParamLast; }
   const CbmTrackParam* GetParamVertex() const { return &fParamPrimaryVertex; }
-  Int_t GetPidHypo()        const { return fPidHypo;  }
-  Double_t GetChi2()        const { return fChi2;     }
-  Int_t GetNDF()            const { return fNDF;      }
-  Int_t GetFlag()           const { return fFlag;     }
-  Double_t GetLength()      const { return fLength;   }
+  Int_t GetPidHypo() const { return fPidHypo; }
+  Double_t GetChi2() const { return fChi2; }
+  Int_t GetNDF() const { return fNDF; }
+  Int_t GetFlag() const { return fFlag; }
+  Double_t GetLength() const { return fLength; }
 
 
   /** Modifiers **/
-  void SetStsTrackIndex(Int_t iSts)  { fStsTrack = iSts;  }
-  void SetTrdTrackIndex(Int_t iTrd)  { fTrdTrack = iTrd;  }
-  void SetMuchTrackIndex(Int_t iMuch)  { fMuchTrack = iMuch;  }
+  void SetStsTrackIndex(Int_t iSts) { fStsTrack = iSts; }
+  void SetTrdTrackIndex(Int_t iTrd) { fTrdTrack = iTrd; }
+  void SetMuchTrackIndex(Int_t iMuch) { fMuchTrack = iMuch; }
   void SetRichRingIndex(Int_t iRing) { fRichRing = iRing; }
   void SetTofHitIndex(Int_t iTofHit) { fTofHit = iTofHit; }
-  void SetParamFirst(const FairTrackParam* parFirst) { fParamFirst = *parFirst;}
-  void SetParamLast(const FairTrackParam* parLast) { fParamLast = *parLast;}
-  void SetParamPrimaryVertex(const FairTrackParam* parPV) { fParamPrimaryVertex.Set(*parPV);}
-  void SetPidHypo(Int_t iPid)        { fPidHypo  = iPid;  }
-  void SetChi2(Double_t chi2)        { fChi2     = chi2;  }
-  void SetNDF(Int_t ndf)             { fNDF      = ndf;   }
-  void SetFlag(Int_t iFlag)          { fFlag     = iFlag; }
-  void SetLength(Double_t length)    { fLength   = length;}
+  void SetParamFirst(const FairTrackParam* parFirst) {
+    fParamFirst = *parFirst;
+  }
+  void SetParamLast(const FairTrackParam* parLast) { fParamLast = *parLast; }
+  void SetParamPrimaryVertex(const FairTrackParam* parPV) {
+    fParamPrimaryVertex.Set(*parPV);
+  }
+  void SetPidHypo(Int_t iPid) { fPidHypo = iPid; }
+  void SetChi2(Double_t chi2) { fChi2 = chi2; }
+  void SetNDF(Int_t ndf) { fNDF = ndf; }
+  void SetFlag(Int_t iFlag) { fFlag = iFlag; }
+  void SetLength(Double_t length) { fLength = length; }
 
 
   /** Output to screen **/
   virtual void Print(Option_t* opt = "") const;
 
 
- private:
-
+private:
   /** Indices of local StsTrack, TrdTrack, MuchTrack, RichRing and TofHit **/
   Int_t fStsTrack;
   Int_t fTrdTrack;
@@ -103,7 +104,6 @@ class CbmGlobalTrack : public TObject
 
 
   ClassDef(CbmGlobalTrack, 3);
-
 };
 
 

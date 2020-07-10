@@ -22,7 +22,7 @@
 //#define MAKE_FIT_COEFFS_HISTOS
 //#define MAKE_LAST_STS_NEAREST_Y
 
-#endif//MAKE_HISTOS
+#endif  //MAKE_HISTOS
 
 #define MAKE_STS_MC_RESEARCHES
 #define MAKE_EFF_CALC
@@ -41,11 +41,11 @@
 #define REMOVE_SUBCLUSTER
 #define BEST_SIX_POINTS
 
-#endif//BEST_RAYS_ONLY
+#endif  //BEST_RAYS_ONLY
 
 #define REMEMBER_CLUSTERED_RAYS_IN_POINTS
 
-#endif//CLUSTER_MODE
+#endif  //CLUSTER_MODE
 
 //#define USE_KALMAN
 //#define USE_KALMAN_FIT
@@ -55,4 +55,4 @@
 
 #define LX_DEBUG
 
-#endif//LXSETTINGS_INCLUDED
+#endif  //LXSETTINGS_INCLUDED

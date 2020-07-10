@@ -9,43 +9,36 @@
  **/
 #include "CbmStsCluster.h"
 
-#include <sstream>      // for operator<<, basic_ostream, char_traits
+#include <sstream>  // for operator<<, basic_ostream, char_traits
 
 using namespace std;
 
 
 // --- Constructor
 CbmStsCluster::CbmStsCluster()
-    : CbmCluster()
-    , fCharge(0.)
-    , fSize(0)
-    , fPosition(0.)
-    , fPositionError(0.)
-    , fTime(0.)
-    , fTimeError(0.)
-    , fIndex(-1)
-{
-}
+  : CbmCluster()
+  , fCharge(0.)
+  , fSize(0)
+  , fPosition(0.)
+  , fPositionError(0.)
+  , fTime(0.)
+  , fTimeError(0.)
+  , fIndex(-1) {}
 
 
 // --- Destructor
-CbmStsCluster::~CbmStsCluster()
-{
-}
+CbmStsCluster::~CbmStsCluster() {}
 
 
 // --- String output
 string CbmStsCluster::ToString() const {
-   stringstream ss;
-   ss << "StsCluster: address " << GetAddress() << " | digis "
-  		<< GetNofDigis() << " | charge " << fCharge << " | time "
-  		<< fTime << " +- " << fTimeError
-		<< " | position " << GetPosition() << " | error "
-  		<< GetPositionError() << " | Index " << fIndex
-  		<< "\n  " << CbmCluster::ToString();
-   return ss.str();
+  stringstream ss;
+  ss << "StsCluster: address " << GetAddress() << " | digis " << GetNofDigis()
+     << " | charge " << fCharge << " | time " << fTime << " +- " << fTimeError
+     << " | position " << GetPosition() << " | error " << GetPositionError()
+     << " | Index " << fIndex << "\n  " << CbmCluster::ToString();
+  return ss.str();
 }
-
 
 
 ClassImp(CbmStsCluster)

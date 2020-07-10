@@ -34,71 +34,67 @@
 
 ClassImp(PairAnalysisCutCombi)
 
-PairAnalysisCutCombi::PairAnalysisCutCombi() :
-  AnalysisCuts(),
-  fNActiveCuts(0),
-  fActiveCutsMask(0),
-  fSelectedCutsMask(0),
-  fCutType(kAll)
-{
+  PairAnalysisCutCombi::PairAnalysisCutCombi()
+  : AnalysisCuts()
+  , fNActiveCuts(0)
+  , fActiveCutsMask(0)
+  , fSelectedCutsMask(0)
+  , fCutType(kAll) {
   //
   // Default Constructor
   //
-  for (Int_t i=0; i<kNmaxCuts; ++i){
-    fRangeCuts[i]=0x0;
-    fCuts[i]  =0x0;
+  for (Int_t i = 0; i < kNmaxCuts; ++i) {
+    fRangeCuts[i] = 0x0;
+    fCuts[i]      = 0x0;
   }
-
 }
 
 //______________________________________________
-PairAnalysisCutCombi::PairAnalysisCutCombi(const char* name, const char* title) :
-  AnalysisCuts(name, title),
-  fNActiveCuts(0),
-  fActiveCutsMask(0),
-  fSelectedCutsMask(0),
-  fCutType(kAll)
-{
+PairAnalysisCutCombi::PairAnalysisCutCombi(const char* name, const char* title)
+  : AnalysisCuts(name, title)
+  , fNActiveCuts(0)
+  , fActiveCutsMask(0)
+  , fSelectedCutsMask(0)
+  , fCutType(kAll) {
   //
   // Named Constructor
   //
-  for (Int_t i=0; i<kNmaxCuts; ++i){
-    fRangeCuts[i]=0x0;
-    fCuts[i]  =0x0;
+  for (Int_t i = 0; i < kNmaxCuts; ++i) {
+    fRangeCuts[i] = 0x0;
+    fCuts[i]      = 0x0;
   }
 }
 
 //______________________________________________
-PairAnalysisCutCombi::~PairAnalysisCutCombi()
-{
+PairAnalysisCutCombi::~PairAnalysisCutCombi() {
   //
   // Default Destructor
   //
-  for (Int_t i=0; i<kNmaxCuts; ++i){
-    if(fRangeCuts[i]) delete fRangeCuts[i];
-    if(fCuts[i])   delete fCuts[i];
+  for (Int_t i = 0; i < kNmaxCuts; ++i) {
+    if (fRangeCuts[i]) delete fRangeCuts[i];
+    if (fCuts[i]) delete fCuts[i];
   }
 }
 
 //______________________________________________
-void PairAnalysisCutCombi::AddCut(AnalysisCuts *cuts, AnalysisCuts *range)
-{
+void PairAnalysisCutCombi::AddCut(AnalysisCuts* cuts, AnalysisCuts* range) {
   //
   // add CutCombi cuts
   //
-  if(fNActiveCuts==kNmaxCuts) { Warning("AddCut","Too many cuts added!"); return; }
+  if (fNActiveCuts == kNmaxCuts) {
+    Warning("AddCut", "Too many cuts added!");
+    return;
+  }
 
-  SETBIT(fActiveCutsMask,fNActiveCuts);
+  SETBIT(fActiveCutsMask, fNActiveCuts);
   fRangeCuts[fNActiveCuts] = range;
-  fCuts[fNActiveCuts]   = cuts;
+  fCuts[fNActiveCuts]      = cuts;
   ++fNActiveCuts;
-
 }
 
 
 //______________________________________________
-Bool_t PairAnalysisCutCombi::IsSelected(TObject* track)
-{
+Bool_t PairAnalysisCutCombi::IsSelected(TObject* track) {
   //
   // make cut decision
   //
@@ -106,73 +102,63 @@ Bool_t PairAnalysisCutCombi::IsSelected(TObject* track)
   if (!track) return kFALSE;
 
   //Fill values
-  Double_t *values=PairAnalysisVarManager::GetData();
-  PairAnalysisVarManager::Fill(track,values);
+  Double_t* values = PairAnalysisVarManager::GetData();
+  PairAnalysisVarManager::Fill(track, values);
 
   /// selection
   return (IsSelected(values));
-
 }
 
 //________________________________________________________________________
-Bool_t PairAnalysisCutCombi::IsSelected(Double_t * const values)
-{
+Bool_t PairAnalysisCutCombi::IsSelected(Double_t* const values) {
   //
   // Make cut decision
   //
 
   //reset
-  fSelectedCutsMask=0;
+  fSelectedCutsMask = 0;
   SetSelected(kFALSE);
 
   // loop overe all cuts
-  for (Int_t iCut=0; iCut<fNActiveCuts; ++iCut){
-    SETBIT(fSelectedCutsMask,iCut);
+  for (Int_t iCut = 0; iCut < fNActiveCuts; ++iCut) {
+    SETBIT(fSelectedCutsMask, iCut);
 
-    if( !fRangeCuts[iCut] || !fCuts[iCut] ) continue;
+    if (!fRangeCuts[iCut] || !fCuts[iCut]) continue;
 
     // check the range(s) where cuts should be applied
-    if ( !fRangeCuts[iCut]->IsSelected(values) ) continue;
+    if (!fRangeCuts[iCut]->IsSelected(values)) continue;
 
     // check decision
-    if ( !fCuts[iCut]->IsSelected(values) )
-      CLRBIT(fSelectedCutsMask,iCut);
+    if (!fCuts[iCut]->IsSelected(values)) CLRBIT(fSelectedCutsMask, iCut);
 
     // cut type and intermediate decision
-    if ( fCutType==kAll && !TESTBIT(fSelectedCutsMask,iCut) ) return kFALSE;
-
+    if (fCutType == kAll && !TESTBIT(fSelectedCutsMask, iCut)) return kFALSE;
   }
 
   // cut type and final decision
-  Bool_t isSelected=(fSelectedCutsMask==fActiveCutsMask);
-  if ( fCutType==kAny ) isSelected=(fSelectedCutsMask>0);
+  Bool_t isSelected = (fSelectedCutsMask == fActiveCutsMask);
+  if (fCutType == kAny) isSelected = (fSelectedCutsMask > 0);
   SetSelected(isSelected);
   return isSelected;
-
 }
 
 //________________________________________________________________________
-void PairAnalysisCutCombi::Print(const Option_t* /*option*/) const
-{
+void PairAnalysisCutCombi::Print(const Option_t* /*option*/) const {
   //
   // Print cuts and the range
   //
   printf("-----------------------------------------------------------------\n");
-  printf("cut ranges for '%s'\n",GetTitle());
-  if (fCutType==kAll){
+  printf("cut ranges for '%s'\n", GetTitle());
+  if (fCutType == kAll) {
     printf("All Cuts have to be fulfilled\n");
   } else {
     printf("Any Cut has to be fulfilled\n");
   }
 
-  for (Int_t iCut=0; iCut<fNActiveCuts; ++iCut){
+  for (Int_t iCut = 0; iCut < fNActiveCuts; ++iCut) {
     fCuts[iCut]->Print();
     printf("For the following conditions:\n");
     fRangeCuts[iCut]->Print();
   }
   printf("-----------------------------------------------------------------\n");
-
 }
-
-
-

@@ -36,52 +36,50 @@ using namespace std;
 * \author Semen Lebedev
 * \date 2008
 **/
-class CbmRichRingSelectAnn
-{
+class CbmRichRingSelectAnn {
 private:
-	std::string fAnnWeights;
-	TMultiLayerPerceptron* fNN;
-	CbmRichRingSelectImpl* fSelectImpl;
+  std::string fAnnWeights;
+  TMultiLayerPerceptron* fNN;
+  CbmRichRingSelectImpl* fSelectImpl;
 
 public:
-	/**
+  /**
 	 * \brief Standard constructor.
 	 */
-  	CbmRichRingSelectAnn();
+  CbmRichRingSelectAnn();
 
-   /**
+  /**
     * \brief Destructor.
     */
-	virtual ~CbmRichRingSelectAnn();
+  virtual ~CbmRichRingSelectAnn();
 
-	/**
+  /**
 	 * \brief Initialize ANN.
 	 */
-	virtual void Init();
+  virtual void Init();
 
-	/**
+  /**
 	 * \Perform selection.
 	 * \param[in,out] ring Found and fitted ring.
 	 */
-	void DoSelect(
-	      CbmRichRingLight* ring);
+  void DoSelect(CbmRichRingLight* ring);
 
-	/**
+  /**
 	 * \brief Set path to the file with ANN weights.
 	 * \param[in] fileName Path to the file name with ANN weights.
 	 */
-	void SetAnnWeights(const string& fileName){fAnnWeights = fileName;}
+  void SetAnnWeights(const string& fileName) { fAnnWeights = fileName; }
 
 private:
-   /**
+  /**
     * \brief Copy constructor.
     */
-   CbmRichRingSelectAnn(const CbmRichRingSelectAnn&);
+  CbmRichRingSelectAnn(const CbmRichRingSelectAnn&);
 
-   /**
+  /**
     * \brief Assignment operator.
     */
-   CbmRichRingSelectAnn& operator=(const CbmRichRingSelectAnn&);
+  CbmRichRingSelectAnn& operator=(const CbmRichRingSelectAnn&);
 };
 
 #endif

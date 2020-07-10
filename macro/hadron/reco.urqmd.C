@@ -1,13 +1,11 @@
 
-void reco_urqmd(Int_t index)
-{
+void reco_urqmd(Int_t index) {
   TStopwatch timer;
   timer.Start();
-  gDebug=0;
+  gDebug        = 0;
   Int_t nEvents = 1000;
-  
-  
-  
+
+
   // Load libraries -----------------------------------------------
   gROOT->LoadMacro("$VMCWORKDIR/gconfig/basiclibs.C");
   basiclibs();
@@ -30,93 +28,93 @@ void reco_urqmd(Int_t index)
   gSystem->Load("libL1");
   gSystem->Load("libLittrack");
   // --------------------------------------------------------------
-  
-  
 
-  Int_t iVerbose = 0;
-  TList *parFileList = new TList();
-  
+
+  Int_t iVerbose     = 0;
+  TList* parFileList = new TList();
+
   TString paramDir = gSystem->Getenv("VMCWORKDIR");
   paramDir += "/parameters";
-  
+
   TObjString stsDigiFile = paramDir + "/sts/sts_v11a.digi.par";
   parFileList->Add(&stsDigiFile);
-  
-  TObjString trdDigiFile =  paramDir + "/trd/trd_v11c.digi.par";
-  parFileList->Add(&trdDigiFile);
-  
 
-  
+  TObjString trdDigiFile = paramDir + "/trd/trd_v11c.digi.par";
+  parFileList->Add(&trdDigiFile);
+
+
   // File names ---------------------------------------------------
   char strInputFile[1000];
   char strParamFile[1000];
   char strOutputFile[1000];
-  
-  char *ver = getenv("CBMVER");
-  
+
+  char* ver = getenv("CBMVER");
+
   sprintf(strInputFile, "/home/kresan/data/mc/%s/urqmd/auau/25gev/centr", ver);
-  sprintf(strOutputFile, "/home/kresan/data/reco/%s/urqmd/auau/25gev/centr", ver);
-  
-  sprintf(strParamFile, "%s/urqmd.auau.25gev.centr.%4d.mc.param.root",
-	  strInputFile, index);
-  sprintf(strInputFile, "%s/urqmd.auau.25gev.centr.%4d.mc.root",
-	  strInputFile, index);
-  sprintf(strOutputFile, "%s/urqmd.auau.25gev.centr.%4d.reco.root",
-	  strOutputFile, index);
-  
-  for(Int_t i = 0; i < 1000; i++) {
-    if(' ' == strInputFile[i]) strInputFile[i] = '0';
-    if(' ' == strParamFile[i]) strParamFile[i] = '0';
-    if(' ' == strOutputFile[i]) strOutputFile[i] = '0';
+  sprintf(
+    strOutputFile, "/home/kresan/data/reco/%s/urqmd/auau/25gev/centr", ver);
+
+  sprintf(strParamFile,
+          "%s/urqmd.auau.25gev.centr.%4d.mc.param.root",
+          strInputFile,
+          index);
+  sprintf(
+    strInputFile, "%s/urqmd.auau.25gev.centr.%4d.mc.root", strInputFile, index);
+  sprintf(strOutputFile,
+          "%s/urqmd.auau.25gev.centr.%4d.reco.root",
+          strOutputFile,
+          index);
+
+  for (Int_t i = 0; i < 1000; i++) {
+    if (' ' == strInputFile[i]) strInputFile[i] = '0';
+    if (' ' == strParamFile[i]) strParamFile[i] = '0';
+    if (' ' == strOutputFile[i]) strOutputFile[i] = '0';
   }
   // --------------------------------------------------------------
-  
-  
-  
-  FairRunAna *run= new FairRunAna();
+
+
+  FairRunAna* run = new FairRunAna();
   run->SetInputFile(strInputFile);
   run->SetOutputFile(strOutputFile);
-  
 
-  
+
   // =========================================================================
   // ===             Detector Response Simulation (Digitiser)              ===
   // ===                          (where available)                        ===
   // =========================================================================
-  
+
   // -----   MVD Digitiser   -------------------------------------------------
-  CbmMvdDigitizeL* mvdDigi =
-    new CbmMvdDigitizeL("MVD Digitiser", 0, iVerbose);
+  CbmMvdDigitizeL* mvdDigi = new CbmMvdDigitizeL("MVD Digitiser", 0, iVerbose);
   run->AddTask(mvdDigi);
   // -------------------------------------------------------------------------
-  
+
   // -----   STS digitizer   -------------------------------------------------
-  Double_t threshold  =  4;
-  Double_t noiseWidth =  0.01;
-  Int_t    nofBits    = 20;
-  Double_t minStep    =  0.01,;
-  Double_t StripDeadTime = 0.1;
+  Double_t threshold          = 4;
+  Double_t noiseWidth         = 0.01;
+  Int_t nofBits               = 20;
+  Double_t minStep            = 0.01, ;
+  Double_t StripDeadTime      = 0.1;
   CbmStsDigitize* stsDigitize = new CbmStsDigitize("STS Digitiser", iVerbose);
   stsDigitize->SetRealisticResponse();
-  stsDigitize->SetFrontThreshold (threshold);
-  stsDigitize->SetBackThreshold  (threshold);
+  stsDigitize->SetFrontThreshold(threshold);
+  stsDigitize->SetBackThreshold(threshold);
   stsDigitize->SetFrontNoiseWidth(noiseWidth);
-  stsDigitize->SetBackNoiseWidth (noiseWidth);
-  stsDigitize->SetFrontNofBits   (nofBits);
-  stsDigitize->SetBackNofBits    (nofBits);
-  stsDigitize->SetFrontMinStep   (minStep);
-  stsDigitize->SetBackMinStep    (minStep);
-  stsDigitize->SetStripDeadTime  (StripDeadTime);
+  stsDigitize->SetBackNoiseWidth(noiseWidth);
+  stsDigitize->SetFrontNofBits(nofBits);
+  stsDigitize->SetBackNofBits(nofBits);
+  stsDigitize->SetFrontMinStep(minStep);
+  stsDigitize->SetBackMinStep(minStep);
+  stsDigitize->SetStripDeadTime(StripDeadTime);
   run->AddTask(stsDigitize);
   // -------------------------------------------------------------------------
-  
+
 
   // =========================================================================
   // ===                     MVD local reconstruction                      ===
   // =========================================================================
   // -----   MVD Hit Finder   ------------------------------------------------
-  CbmMvdFindHits* mvdHitFinder = new CbmMvdFindHits("MVD Hit Finder", 0,
-                iVerbose);
+  CbmMvdFindHits* mvdHitFinder =
+    new CbmMvdFindHits("MVD Hit Finder", 0, iVerbose);
   run->AddTask(mvdHitFinder);
   // -------------------------------------------------------------------------
   // ===                 End of MVD local reconstruction                   ===
@@ -128,7 +126,8 @@ void reco_urqmd(Int_t index)
   // =========================================================================
 
   // -----   STS Cluster Finder   --------------------------------------------
-  FairTask* stsClusterFinder = new CbmStsClusterFinder("STS Cluster Finder",iVerbose);
+  FairTask* stsClusterFinder =
+    new CbmStsClusterFinder("STS Cluster Finder", iVerbose);
   run->AddTask(stsClusterFinder);
   // -------------------------------------------------------------------------
 
@@ -171,16 +170,17 @@ void reco_urqmd(Int_t index)
   // =========================================================================
 
   // Update of the values for the radiator F.U. 17.08.07
-  Int_t trdNFoils = 130; // number of polyetylene foils
-  Float_t trdDFoils = 0.0013; // thickness of 1 foil [cm]
-  Float_t trdDGap = 0.02; // thickness of gap between foils [cm]
-  Bool_t simpleTR = kTRUE; // use fast and simple version for TR
+  Int_t trdNFoils   = 130;     // number of polyetylene foils
+  Float_t trdDFoils = 0.0013;  // thickness of 1 foil [cm]
+  Float_t trdDGap   = 0.02;    // thickness of gap between foils [cm]
+  Bool_t simpleTR   = kTRUE;   // use fast and simple version for TR
   // production
 
-  CbmTrdRadiator *radiator = new CbmTrdRadiator(simpleTR, trdNFoils,
-                trdDFoils, trdDGap);
+  CbmTrdRadiator* radiator =
+    new CbmTrdRadiator(simpleTR, trdNFoils, trdDFoils, trdDGap);
 
-  CbmTrdHitProducerSmearing* trdHitProd = new CbmTrdHitProducerSmearing(radiator);
+  CbmTrdHitProducerSmearing* trdHitProd =
+    new CbmTrdHitProducerSmearing(radiator);
   run->AddTask(trdHitProd);
 
   // -------------------------------------------------------------------------
@@ -192,14 +192,14 @@ void reco_urqmd(Int_t index)
   // ===                     TOF local reconstruction                      ===
   // =========================================================================
   // ------   TOF hit producer   ---------------------------------------------
-  CbmTofHitProducer* tofHitProd = new CbmTofHitProducer("TOF HitProducer",
-                iVerbose);
+  CbmTofHitProducer* tofHitProd =
+    new CbmTofHitProducer("TOF HitProducer", iVerbose);
   run->AddTask(tofHitProd);
   // -------------------------------------------------------------------------
   // ===                   End of TOF local reconstruction                 ===
   // =========================================================================
 
-  
+
   // =========================================================================
   // ===                        Global tracking                            ===
   // =========================================================================
@@ -232,22 +232,21 @@ void reco_urqmd(Int_t index)
   // ----------------------------------------------------
 
   // ----------- TRD track Pid Wkn ----------------------
-  CbmTrdSetTracksPidWkn* trdSetTracksPidTask = new CbmTrdSetTracksPidWkn(
-                "trdFindTracks", "trdFindTracks");
+  CbmTrdSetTracksPidWkn* trdSetTracksPidTask =
+    new CbmTrdSetTracksPidWkn("trdFindTracks", "trdFindTracks");
   run->AddTask(trdSetTracksPidTask);
   // ----------------------------------------------------
 
   // ----------- TRD track Pid Ann ----------------------
-  CbmTrdSetTracksPidANN* trdSetTracksPidAnnTask = new CbmTrdSetTracksPidANN(
-                "Ann", "Ann");
+  CbmTrdSetTracksPidANN* trdSetTracksPidAnnTask =
+    new CbmTrdSetTracksPidANN("Ann", "Ann");
   run->AddTask(trdSetTracksPidAnnTask);
   // ----------------------------------------------------
 
 
-
   // -----  Parameter database   --------------------------------------------
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
-  FairParRootFileIo* parIo1 = new FairParRootFileIo();
+  FairRuntimeDb* rtdb        = run->GetRuntimeDb();
+  FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
   parIo1->open(strParamFile);
   parIo2->open(parFileList, "in");
@@ -258,18 +257,14 @@ void reco_urqmd(Int_t index)
   // ------------------------------------------------------------------------
 
 
-
   run->Init();
-
 
 
   run->Run(0, nEvents);
 
 
-
   timer.Stop();
   Double_t rtime = timer.RealTime();
   Double_t ctime = timer.CpuTime();
-  printf("RealTime=%f seconds, CpuTime=%f seconds\n",rtime,ctime);
+  printf("RealTime=%f seconds, CpuTime=%f seconds\n", rtime, ctime);
 }
-

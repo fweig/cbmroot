@@ -12,8 +12,8 @@
 
 #include "CbmDefs.h"
 
-#include "TString.h"
 #include "TStopwatch.h"
+#include "TString.h"
 
 #include <utility>
 #include <vector>
@@ -23,12 +23,10 @@ class CbmMvdPileupManager;
 class CbmMvdDigi;
 class CbmMatch;
 
-class CbmMvdDigitizer : public CbmDigitize<CbmMvdDigi>
-{
- 
- public:
+class CbmMvdDigitizer : public CbmDigitize<CbmMvdDigi> {
 
-  /** Default constructor **/  
+public:
+  /** Default constructor **/
   CbmMvdDigitizer();
 
 
@@ -36,8 +34,7 @@ class CbmMvdDigitizer : public CbmDigitize<CbmMvdDigi>
   *@param name  Task name
   *@param mode  0 = MAPS, 1 = Ideal
   **/
-  CbmMvdDigitizer(const char* name, 
-		    Int_t mode = 0, Int_t iVerbose = 1);
+  CbmMvdDigitizer(const char* name, Int_t mode = 0, Int_t iVerbose = 1);
 
 
   /** Destructor **/
@@ -50,69 +47,71 @@ class CbmMvdDigitizer : public CbmDigitize<CbmMvdDigi>
    **/
   ECbmModuleId GetSystemId() const { return ECbmModuleId::kMvd; }
 
-  void SetPileUp(Int_t pileUp)           { fNPileup         = pileUp;      }
-  void SetDeltaEvents(Int_t deltaEvents) { fNDeltaElect     = deltaEvents; }
-  void SetBgFileName(TString fileName)   { fBgFileName      = fileName;    }
-  void SetDeltaName(TString fileName)    { fDeltaFileName   = fileName;    }
-  void SetBgBufferSize(Int_t nBuffer)    { fBgBufferSize    = nBuffer;     }
-  void SetDeltaBufferSize(Int_t nBuffer) { fDeltaBufferSize = nBuffer;     }
-  void SetMisalignment(Float_t misalignment[3]){for(Int_t i = 0; i<3; i++) epsilon[i]=misalignment[i];} // set the misalignment in cm
+  void SetPileUp(Int_t pileUp) { fNPileup = pileUp; }
+  void SetDeltaEvents(Int_t deltaEvents) { fNDeltaElect = deltaEvents; }
+  void SetBgFileName(TString fileName) { fBgFileName = fileName; }
+  void SetDeltaName(TString fileName) { fDeltaFileName = fileName; }
+  void SetBgBufferSize(Int_t nBuffer) { fBgBufferSize = nBuffer; }
+  void SetDeltaBufferSize(Int_t nBuffer) { fDeltaBufferSize = nBuffer; }
+  void SetMisalignment(Float_t misalignment[3]) {
+    for (Int_t i = 0; i < 3; i++)
+      epsilon[i] = misalignment[i];
+  }  // set the misalignment in cm
 
   void BuildEvent();
-  void ShowDebugHistograms() {fShowDebugHistos = kTRUE;}
+  void ShowDebugHistograms() { fShowDebugHistos = kTRUE; }
 
-  void SetProduceNoise(){fNoiseSensors = kTRUE;};
+  void SetProduceNoise() { fNoiseSensors = kTRUE; };
 
 
   /** @brief Clear data arrays **/
   virtual void ResetArrays();
 
 
-
 private:
-/** Hit producer mode (0 = MAPS, 1 = Ideal) **/
+  /** Hit producer mode (0 = MAPS, 1 = Ideal) **/
   Int_t fMode;
 
   Bool_t fShowDebugHistos;
   Bool_t fNoiseSensors;
 
   CbmMvdDetector* fDetector;
- 
- TClonesArray* fInputPoints;
- TClonesArray* fMcPileUp;
 
- TClonesArray* fTmpMatch; //! Temporary TClonesArray to absorb from MvdDetector
- TClonesArray* fTmpDigi; //! Temporary TClonesArray to absorb from MvdDetector 
+  TClonesArray* fInputPoints;
+  TClonesArray* fMcPileUp;
 
- std::vector<CbmMvdDigi*> fDigiVect; //! Temporary storage for CbmDaq
- std::vector<CbmMatch*> fMatchVect; //! Temporary storage for CbmDaq
- 
- std::pair<Float_t, Int_t> fPerformanceDigi;
+  TClonesArray*
+    fTmpMatch;             //! Temporary TClonesArray to absorb from MvdDetector
+  TClonesArray* fTmpDigi;  //! Temporary TClonesArray to absorb from MvdDetector
 
- UInt_t fDigiPluginNr;
+  std::vector<CbmMvdDigi*> fDigiVect;  //! Temporary storage for CbmDaq
+  std::vector<CbmMatch*> fMatchVect;   //! Temporary storage for CbmDaq
 
- Double_t fFakeRate;          // Fake hit rate
-  Int_t    fNPileup;           // Number of pile-up background events
-  Int_t    fNDeltaElect;       // Number of delta electron events
-  Int_t    fDeltaBufferSize;
-  Int_t    fBgBufferSize;
+  std::pair<Float_t, Int_t> fPerformanceDigi;
+
+  UInt_t fDigiPluginNr;
+
+  Double_t fFakeRate;  // Fake hit rate
+  Int_t fNPileup;      // Number of pile-up background events
+  Int_t fNDeltaElect;  // Number of delta electron events
+  Int_t fDeltaBufferSize;
+  Int_t fBgBufferSize;
   Float_t epsilon[3];
 
-  TString	fInputBranchName;   // Name of input branch (MvdPoint)
-  TString       fBgFileName;     // Name of background (pileup) file 
-  TString       fDeltaFileName;  // Name of the file containing delta electrons
-  
+  TString fInputBranchName;  // Name of input branch (MvdPoint)
+  TString fBgFileName;       // Name of background (pileup) file
+  TString fDeltaFileName;    // Name of the file containing delta electrons
 
-  TStopwatch     fTimer;        ///< ROOT timer
+
+  TStopwatch fTimer;  ///< ROOT timer
 
   /** Pileup manager **/
   CbmMvdPileupManager* fPileupManager;
   CbmMvdPileupManager* fDeltaManager;
 
 
-
-// -----   Private methods   ---------------------------------------------
- /** Intialisation **/
+  // -----   Private methods   ---------------------------------------------
+  /** Intialisation **/
   virtual InitStatus Init();
 
 
@@ -131,7 +130,7 @@ private:
 
 
   /** Clear the hit arrays **/
-  void Reset();	 
+  void Reset();
 
 
   /** Print digitisation parameters **/
@@ -139,10 +138,10 @@ private:
 
 private:
   CbmMvdDigitizer(const CbmMvdDigitizer&);
-  CbmMvdDigitizer operator=(const CbmMvdDigitizer&);  
+  CbmMvdDigitizer operator=(const CbmMvdDigitizer&);
 
-ClassDef(CbmMvdDigitizer,1);    
+  ClassDef(CbmMvdDigitizer, 1);
 };
-    
-    
-#endif   		     
+
+
+#endif

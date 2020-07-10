@@ -8,17 +8,19 @@
  ** Uses CbmMcbm2018Source as source task.
  */
 // In order to call later Finish, we make this global
-FairRunOnline *run = NULL;
+FairRunOnline* run = NULL;
 
-void unpack_tsa_cosy2019_sts(TString inFile = "", UInt_t uRunId = 0, UInt_t nrEvents=0, TString outDir="data" )
-{
+void unpack_tsa_cosy2019_sts(TString inFile  = "",
+                             UInt_t uRunId   = 0,
+                             UInt_t nrEvents = 0,
+                             TString outDir  = "data") {
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
 
   // --- Specify number of events to be produced.
   // --- -1 means run until the end of the input file.
-  Int_t nEvents=-1;
+  Int_t nEvents = -1;
   // --- Specify output file name (this is just an example)
-  TString runId = TString::Format("%04u", uRunId);
+  TString runId   = TString::Format("%04u", uRunId);
   TString outFile = outDir + "/unp_cosy_" + runId + "_sts.root";
   TString parFile = outDir + "/unp_cosy_params_" + runId + "_sts.root";
 
@@ -30,18 +32,18 @@ void unpack_tsa_cosy2019_sts(TString inFile = "", UInt_t uRunId = 0, UInt_t nrEv
   //gLogger->SetLogVerbosityLevel("LOW");
 
   // --- Define parameter files
-  TList *parFileList = new TList();
-  TString paramDir = srcDir + "/macro/beamtime/cosy2019/";
+  TList* parFileList = new TList();
+  TString paramDir   = srcDir + "/macro/beamtime/cosy2019/";
 
-  TString paramFileSts = paramDir + "mStsPar.par";
+  TString paramFileSts       = paramDir + "mStsPar.par";
   TObjString* parStsFileName = new TObjString(paramFileSts);
   parFileList->Add(parStsFileName);
-/*
+  /*
   TString paramFileTof = paramDir + "mTofPar.par";
   TObjString* parTofFileName = new TObjString(paramFileTof);
   parFileList->Add(parTofFileName);
 */
-/*
+  /*
   TString paramFileHodo = paramDir + "mHodoPar.par";
   TObjString* parHodoFileName = new TObjString(paramFileHodo);
   parFileList->Add(parHodoFileName);
@@ -57,23 +59,22 @@ void unpack_tsa_cosy2019_sts(TString inFile = "", UInt_t uRunId = 0, UInt_t nrEv
   std::cout << std::endl;
   std::cout << ">>> unpack_tsa: Initialising..." << std::endl;
 
-  CbmMcbm2018UnpackerTaskSts  * unpacker_sts  = new CbmMcbm2018UnpackerTaskSts();
-//  CbmMcbm2018UnpackerTaskTof  * unpacker_tof  = new CbmMcbm2018UnpackerTaskTof();
-//  CbmMcbm2018UnpackerTaskHodo * unpacker_hodo = new CbmMcbm2018UnpackerTaskHodo();
+  CbmMcbm2018UnpackerTaskSts* unpacker_sts = new CbmMcbm2018UnpackerTaskSts();
+  //  CbmMcbm2018UnpackerTaskTof  * unpacker_tof  = new CbmMcbm2018UnpackerTaskTof();
+  //  CbmMcbm2018UnpackerTaskHodo * unpacker_hodo = new CbmMcbm2018UnpackerTaskHodo();
 
-  unpacker_sts ->SetMonitorMode();
-//  unpacker_tof ->SetMonitorMode();
-//  unpacker_hodo->SetMonitorMode();
+  unpacker_sts->SetMonitorMode();
+  //  unpacker_tof ->SetMonitorMode();
+  //  unpacker_hodo->SetMonitorMode();
 
-  unpacker_sts ->SetIgnoreOverlapMs();
-//  unpacker_tof ->SetIgnoreOverlapMs();
-//  unpacker_hodo->SetIgnoreOverlapMs();
+  unpacker_sts->SetIgnoreOverlapMs();
+  //  unpacker_tof ->SetIgnoreOverlapMs();
+  //  unpacker_hodo->SetIgnoreOverlapMs();
 
-//  unpacker_tof ->SetSeparateArrayT0();
+  //  unpacker_tof ->SetSeparateArrayT0();
 
-  switch( uRunId )
-  {
-/*
+  switch (uRunId) {
+      /*
      case 159:
      {
         /// General System offsets (= offsets between sub-systems)
@@ -125,17 +126,16 @@ void unpack_tsa_cosy2019_sts(TString inFile = "", UInt_t uRunId = 0, UInt_t nrEv
         break;
      } // 159
 */
-     default:
-        break;
-  } // switch( uRunId )
+    default: break;
+  }  // switch( uRunId )
 
   // --- Source task
   CbmMcbm2018Source* source = new CbmMcbm2018Source();
 
   source->SetFileName(inFile);
-  source->AddUnpacker(unpacker_sts,  0x10, kSts  );//STS xyter
-//  source->AddUnpacker(unpacker_tof,  0x90, kTof  );//gDPB T0
-//  source->AddUnpacker(unpacker_hodo, 0x10, kHodo );//HODO xyter
+  source->AddUnpacker(unpacker_sts, 0x10, kSts);  //STS xyter
+  //  source->AddUnpacker(unpacker_tof,  0x90, kTof  );//gDPB T0
+  //  source->AddUnpacker(unpacker_hodo, 0x10, kHodo );//HODO xyter
 
   // --- Event header
   FairEventHeader* event = new CbmTbEvent();
@@ -144,7 +144,7 @@ void unpack_tsa_cosy2019_sts(TString inFile = "", UInt_t uRunId = 0, UInt_t nrEv
   // --- RootFileSink
   // --- Open next outputfile after 4GB
   FairRootFileSink* sink = new FairRootFileSink(outFile);
-//  sink->GetOutTree()->SetMaxTreeSize(4294967295LL);
+  //  sink->GetOutTree()->SetMaxTreeSize(4294967295LL);
 
   // --- Run
   run = new FairRunOnline(source);
@@ -154,8 +154,8 @@ void unpack_tsa_cosy2019_sts(TString inFile = "", UInt_t uRunId = 0, UInt_t nrEv
 
 
   // -----   Runtime database   ---------------------------------------------
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
-  Bool_t kParameterMerged = kTRUE;
+  FairRuntimeDb* rtdb       = run->GetRuntimeDb();
+  Bool_t kParameterMerged   = kTRUE;
   FairParRootFileIo* parOut = new FairParRootFileIo(kParameterMerged);
   FairParAsciiFileIo* parIn = new FairParAsciiFileIo();
   parOut->open(parFile.Data());
@@ -169,16 +169,17 @@ void unpack_tsa_cosy2019_sts(TString inFile = "", UInt_t uRunId = 0, UInt_t nrEv
   TStopwatch timer;
   timer.Start();
   std::cout << ">>> unpack_tsa_mcbm: Starting run..." << std::endl;
-  if ( 0 == nrEvents) {
-    run->Run(nEvents, 0); // run until end of input file
+  if (0 == nrEvents) {
+    run->Run(nEvents, 0);  // run until end of input file
   } else {
-    run->Run(0, nrEvents); // process  N Events
+    run->Run(0, nrEvents);  // process  N Events
   }
   run->Finish();
 
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
+            << std::endl;
 
   // --- End-of-run info
   Double_t rtime = timer.RealTime();
@@ -187,7 +188,7 @@ void unpack_tsa_cosy2019_sts(TString inFile = "", UInt_t uRunId = 0, UInt_t nrEv
   std::cout << ">>> unpack_tsa_mcbm: Macro finished successfully." << std::endl;
   std::cout << ">>> unpack_tsa_mcbm: Output file is " << outFile << std::endl;
   std::cout << ">>> unpack_tsa_mcbm: Real time " << rtime << " s, CPU time "
-	    << ctime << " s" << std::endl;
+            << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

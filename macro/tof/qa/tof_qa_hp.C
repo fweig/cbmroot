@@ -11,46 +11,45 @@
 //
 // --------------------------------------------------------------------------
 
-TString caveGeom="";
+TString caveGeom = "";
 
-TString pipeGeom="";
-TString magnetGeom="";
-TString mvdGeom="";
-TString stsGeom="";
-TString richGeom="";
-TString muchGeom="";
-TString shieldGeom="";
-TString trdGeom="";
-TString tofGeom="";
-TString ecalGeom="";
-TString platformGeom="";
-TString psdGeom="";
+TString pipeGeom     = "";
+TString magnetGeom   = "";
+TString mvdGeom      = "";
+TString stsGeom      = "";
+TString richGeom     = "";
+TString muchGeom     = "";
+TString shieldGeom   = "";
+TString trdGeom      = "";
+TString tofGeom      = "";
+TString ecalGeom     = "";
+TString platformGeom = "";
+TString psdGeom      = "";
 
-Double_t psdZpos=0.;
-Double_t psdXpos=0.;
+Double_t psdZpos = 0.;
+Double_t psdXpos = 0.;
 
-TString mvdTag="";
-TString stsTag="";
-TString trdTag="";
-TString tofTag="";
+TString mvdTag = "";
+TString stsTag = "";
+TString trdTag = "";
+TString tofTag = "";
 
-TString stsDigi="";
-TString trdDigi="";
-TString tofDigi="";
+TString stsDigi = "";
+TString trdDigi = "";
+TString tofDigi = "";
 
-TString mvdMatBudget="";
-TString stsMatBudget="";
+TString mvdMatBudget = "";
+TString stsMatBudget = "";
 
-TString  fieldMap="";
-Double_t fieldZ=0.;
-Double_t fieldScale=0.;
-Int_t    fieldSymType=0;
+TString fieldMap    = "";
+Double_t fieldZ     = 0.;
+Double_t fieldScale = 0.;
+Int_t fieldSymType  = 0;
 
-TString defaultInputFile="";
+TString defaultInputFile = "";
 
 
-void tof_qa_hp(Int_t nEvents = 2, const char* setup = "sis100_electron")
-{
+void tof_qa_hp(Int_t nEvents = 2, const char* setup = "sis100_electron") {
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -58,9 +57,9 @@ void tof_qa_hp(Int_t nEvents = 2, const char* setup = "sis100_electron")
   // Verbosity level (0=quiet, 1=event level, 2=track level, 3=debug)
   Int_t iVerbose = 0;
 
-//  TString logLevel = "FATAL";
+  //  TString logLevel = "FATAL";
   //TString logLevel = "ERROR";
-//  TString logLevel = "WARNING";
+  //  TString logLevel = "WARNING";
   TString logLevel = "INFO";
   //TString logLevel = "DEBUG";
   //TString logLevel = "DEBUG1";
@@ -68,9 +67,9 @@ void tof_qa_hp(Int_t nEvents = 2, const char* setup = "sis100_electron")
   //TString logLevel = "DEBUG3";
 
   // ----- Paths and file names  --------------------------------------------
-  TString inDir   = gSystem->Getenv("VMCWORKDIR");
+  TString inDir = gSystem->Getenv("VMCWORKDIR");
 
-  TString outDir  = "data/";
+  TString outDir = "data/";
 
   // Input file (MC events)
   TString inFile = outDir + setup + "_test.mc.root";
@@ -78,34 +77,37 @@ void tof_qa_hp(Int_t nEvents = 2, const char* setup = "sis100_electron")
   TString parFile = outDir + setup + "_params.root";
 
   // -----  Geometries  -----------------------------------------------------
-  TString setupFile = inDir + "/geometry/setup/" + setup + "_setup.C";
+  TString setupFile  = inDir + "/geometry/setup/" + setup + "_setup.C";
   TString setupFunct = setup;
   setupFunct += "_setup()";
-  
+
   gROOT->LoadMacro(setupFile);
   gInterpreter->ProcessLine(setupFunct);
 
   // TOF maps normalization
-  TString normCartInFile = inDir + "/macro/tof/qa/data/norm." + tofTag + "_xyz_geantino_qa.hst.root"; 
-  TString normAngInFile  = inDir + "/macro/tof/qa/data/norm." + tofTag + "_ang_geantino_qa.hst.root"; 
-  TString normSphInFile  = inDir + "/macro/tof/qa/data/norm." + tofTag + "_sph_geantino_qa.hst.root"; 
+  TString normCartInFile =
+    inDir + "/macro/tof/qa/data/norm." + tofTag + "_xyz_geantino_qa.hst.root";
+  TString normAngInFile =
+    inDir + "/macro/tof/qa/data/norm." + tofTag + "_ang_geantino_qa.hst.root";
+  TString normSphInFile =
+    inDir + "/macro/tof/qa/data/norm." + tofTag + "_sph_geantino_qa.hst.root";
 
   // Output file
-  TString outFile = outDir + "/tofqa." + setup + "_qa.eds.root";
+  TString outFile      = outDir + "/tofqa." + setup + "_qa.eds.root";
   TString hprodOutFile = outDir + "/tofqa." + setup + "_HitProd.hst.root";
   TString digiOutFile  = outDir + "/tofqa." + setup + "_DigiBdf.hst.root";
-  TString clustOutFile = outDir + "/tofqa." + setup + "_SimpClust.hst.root"; 
-  TString qaOutFile    = outDir + "/tofqa." + setup + "_qa.hst.root"; 
-  
+  TString clustOutFile = outDir + "/tofqa." + setup + "_SimpClust.hst.root";
+  TString qaOutFile    = outDir + "/tofqa." + setup + "_qa.hst.root";
+
   //  Digitisation files.
   // Add TObjectString containing the different file names to
   // a TList which is passed as input to the FairParAsciiFileIo.
   // The FairParAsciiFileIo will take care to create on the fly
   // a concatenated input parameter file which is then used during
   // the reconstruction.
-  TList *parFileList = new TList();
+  TList* parFileList = new TList();
 
-  TString workDir = gSystem->Getenv("VMCWORKDIR");
+  TString workDir  = gSystem->Getenv("VMCWORKDIR");
   TString paramDir = workDir + "/parameters/";
 
   TObjString tofDigiFile = paramDir + tofDigi;
@@ -114,18 +116,17 @@ void tof_qa_hp(Int_t nEvents = 2, const char* setup = "sis100_electron")
   TObjString tofDigiBdfFile = paramDir + "/tof/tof_" + tofTag + ".digibdf.par";
   parFileList->Add(&tofDigiBdfFile);
 
-   // If SCRIPT environment variable is set to "yes", i.e. macro is run via script
-   TString script = TString(gSystem->Getenv("LIT_SCRIPT"));
-   if (script == "yes") 
-   {
-      inFile       = TString(gSystem->Getenv("LIT_MC_FILE"));
-      parFile      = TString(gSystem->Getenv("LIT_PAR_FILE"));
-      outFile      = TString(gSystem->Getenv("LIT_RECO_FILE"));
-      hprodOutFile = TString(gSystem->Getenv("LIT_HSTHPROD_FILE"));
-      digiOutFile  = TString(gSystem->Getenv("LIT_HSTDIGI_FILE" ));
-      clustOutFile = TString(gSystem->Getenv("LIT_HSTCLUST_FILE"));
-      qaOutFile    = TString(gSystem->Getenv("LIT_HSTTOFQA_FILE"));
-   } // if (script == "yes")
+  // If SCRIPT environment variable is set to "yes", i.e. macro is run via script
+  TString script = TString(gSystem->Getenv("LIT_SCRIPT"));
+  if (script == "yes") {
+    inFile       = TString(gSystem->Getenv("LIT_MC_FILE"));
+    parFile      = TString(gSystem->Getenv("LIT_PAR_FILE"));
+    outFile      = TString(gSystem->Getenv("LIT_RECO_FILE"));
+    hprodOutFile = TString(gSystem->Getenv("LIT_HSTHPROD_FILE"));
+    digiOutFile  = TString(gSystem->Getenv("LIT_HSTDIGI_FILE"));
+    clustOutFile = TString(gSystem->Getenv("LIT_HSTCLUST_FILE"));
+    qaOutFile    = TString(gSystem->Getenv("LIT_HSTTOFQA_FILE"));
+  }  // if (script == "yes")
 
   // In general, the following parts need not be touched
   // ========================================================================
@@ -142,7 +143,7 @@ void tof_qa_hp(Int_t nEvents = 2, const char* setup = "sis100_electron")
   // ------------------------------------------------------------------------
 
   // -----   Reconstruction run   -------------------------------------------
-  FairRunAna *run = new FairRunAna();
+  FairRunAna* run = new FairRunAna();
   run->SetInputFile(inFile);
   run->SetOutputFile(outFile);
   gLogger->SetLogScreenLevel(logLevel.Data());
@@ -154,9 +155,10 @@ void tof_qa_hp(Int_t nEvents = 2, const char* setup = "sis100_electron")
   // =========================================================================
 
   // ------   TOF hit producer   ---------------------------------------------
-  CbmTofHitProducerNew* tofHitProd = new CbmTofHitProducerNew("TOF HitProducerNew",iVerbose); 
+  CbmTofHitProducerNew* tofHitProd =
+    new CbmTofHitProducerNew("TOF HitProducerNew", iVerbose);
   tofHitProd->SetInitFromAscii(kFALSE);
-  tofHitProd->SetHistosFileName( hprodOutFile );
+  tofHitProd->SetHistosFileName(hprodOutFile);
   run->AddTask(tofHitProd);
   // -------------------------------------------------------------------------
 
@@ -165,61 +167,61 @@ void tof_qa_hp(Int_t nEvents = 2, const char* setup = "sis100_electron")
   // =========================================================================
 
   // Digitizer/custerizer testing
-  CbmTofHitFinderQa* tofQa = new CbmTofHitFinderQa("TOF QA",iVerbose);
-  tofQa->SetHistoFileNameCartCoordNorm( normCartInFile );
-  tofQa->SetHistoFileNameAngCoordNorm(  normAngInFile );
-  tofQa->SetHistoFileNameSphCoordNorm(  normSphInFile );
-  tofQa->SetHistoFileName( qaOutFile );
+  CbmTofHitFinderQa* tofQa = new CbmTofHitFinderQa("TOF QA", iVerbose);
+  tofQa->SetHistoFileNameCartCoordNorm(normCartInFile);
+  tofQa->SetHistoFileNameAngCoordNorm(normAngInFile);
+  tofQa->SetHistoFileNameSphCoordNorm(normSphInFile);
+  tofQa->SetHistoFileName(qaOutFile);
   // TODO: add the position for the other versions
   //       or recover it from the geometry?
-   if( "v16a_1h" == tofTag )
-   {
-      tofQa->SetWallPosZ(  500 );
-      cout << "Setting TOF QA histograms for a TOF wall Z position of  500 cm (v16a_1h)." << endl;
-   }
-   else if( "v16a_1e" == tofTag )
-   {
-      tofQa->SetWallPosZ(  650 );
-      cout << "Setting TOF QA histograms for a TOF wall Z position of  650 cm (v16a_1e)." << endl;
-   }
-   else if( "v16a_1m" == tofTag )
-   {
-      tofQa->SetWallPosZ(  730 );
-      cout << "Setting TOF QA histograms for a TOF wall Z position of  730 cm (v16a_1m)." << endl;
-   }
-   else if( "v16a_3e" == tofTag )
-   {
-      tofQa->SetWallPosZ(  930 );
-      cout << "Setting TOF QA histograms for a TOF wall Z position of  930 cm (v16a_3e)." << endl;
-   }
-   else if( "v16a_3m" == tofTag )
-   {
-      tofQa->SetWallPosZ(  1070 );
-      cout << "Setting TOF QA histograms for a TOF wall Z position of 1070 cm (v16a_3m)." << endl;
-   }
-   else if( "v13-5a" == tofTag || "v14-0a" == tofTag )
-   {
-      tofQa->SetWallPosZ(  550 );
-      cout << "Setting TOF QA histograms for a TOF wall Z position of  550 cm (v14-0a)." << endl;
-   }
-   else if( "v13-5d" == tofTag  || "v14-0b" == tofTag )
-   {
-      tofQa->SetWallPosZ(  900 );
-      cout << "Setting TOF QA histograms for a TOF wall Z position of  900 cm (v14-0b)." << endl;
-   }
-   else 
-   {
-      tofQa->SetWallPosZ( 1000 ); // default position of the wall
-      cout << "Setting TOF QA histograms for a TOF wall Z position of 1000 cm (default). tofTag = "
-           <<  tofTag << endl;
-   }
+  if ("v16a_1h" == tofTag) {
+    tofQa->SetWallPosZ(500);
+    cout << "Setting TOF QA histograms for a TOF wall Z position of  500 cm "
+            "(v16a_1h)."
+         << endl;
+  } else if ("v16a_1e" == tofTag) {
+    tofQa->SetWallPosZ(650);
+    cout << "Setting TOF QA histograms for a TOF wall Z position of  650 cm "
+            "(v16a_1e)."
+         << endl;
+  } else if ("v16a_1m" == tofTag) {
+    tofQa->SetWallPosZ(730);
+    cout << "Setting TOF QA histograms for a TOF wall Z position of  730 cm "
+            "(v16a_1m)."
+         << endl;
+  } else if ("v16a_3e" == tofTag) {
+    tofQa->SetWallPosZ(930);
+    cout << "Setting TOF QA histograms for a TOF wall Z position of  930 cm "
+            "(v16a_3e)."
+         << endl;
+  } else if ("v16a_3m" == tofTag) {
+    tofQa->SetWallPosZ(1070);
+    cout << "Setting TOF QA histograms for a TOF wall Z position of 1070 cm "
+            "(v16a_3m)."
+         << endl;
+  } else if ("v13-5a" == tofTag || "v14-0a" == tofTag) {
+    tofQa->SetWallPosZ(550);
+    cout << "Setting TOF QA histograms for a TOF wall Z position of  550 cm "
+            "(v14-0a)."
+         << endl;
+  } else if ("v13-5d" == tofTag || "v14-0b" == tofTag) {
+    tofQa->SetWallPosZ(900);
+    cout << "Setting TOF QA histograms for a TOF wall Z position of  900 cm "
+            "(v14-0b)."
+         << endl;
+  } else {
+    tofQa->SetWallPosZ(1000);  // default position of the wall
+    cout << "Setting TOF QA histograms for a TOF wall Z position of 1000 cm "
+            "(default). tofTag = "
+         << tofTag << endl;
+  }
   run->AddTask(tofQa);
 
   // ===                   End of TOF evaluation                           ===
   // =========================================================================
   // -----  Parameter database   --------------------------------------------
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
-  FairParRootFileIo* parIo1 = new FairParRootFileIo();
+  FairRuntimeDb* rtdb        = run->GetRuntimeDb();
+  FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
   parIo1->open(parFile.Data());
   parIo2->open(parFileList, "in");
@@ -248,8 +250,8 @@ void tof_qa_hp(Int_t nEvents = 2, const char* setup = "sis100_electron")
   cout << endl;
   // ------------------------------------------------------------------------
 
-//  delete run;
+  //  delete run;
 
-   cout << " Test passed" << endl;
-   cout << " All ok " << endl;
+  cout << " Test passed" << endl;
+  cout << " All ok " << endl;
 }

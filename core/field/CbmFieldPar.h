@@ -16,30 +16,27 @@
 #ifndef CBMFIELDPAR_H
 #define CBMFIELDPAR_H 1
 
-#include <Rtypes.h>             // for THashConsistencyHolder, ClassDef
-#include <RtypesCore.h>         // for Double_t, Int_t, Bool_t
-#include <TString.h>            // for TString
+#include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
+#include <RtypesCore.h>  // for Double_t, Int_t, Bool_t
+#include <TString.h>     // for TString
 
 #include <FairParGenericSet.h>  // for FairParGenericSet
 
 class FairField;
 class FairParamList;
 
-const int kMaxFieldMapType = 5;        
-const int kTypeDistorted = 4;        
+const int kMaxFieldMapType = 5;
+const int kTypeDistorted   = 4;
 
-class CbmFieldPar : public FairParGenericSet
-{
+class CbmFieldPar : public FairParGenericSet {
 
- public:
-
-  
+public:
   /** Standard constructor  **/
   CbmFieldPar(const char* name, const char* title, const char* context);
 
-/** default constructor  **/
+  /** default constructor  **/
   CbmFieldPar();
-  
+
   /** Destructor **/
   ~CbmFieldPar();
 
@@ -57,28 +54,29 @@ class CbmFieldPar : public FairParGenericSet
 
 
   /** Accessors **/
-  Int_t    GetType()      const { return fType; }
-  Double_t GetXmin()      const { return fXmin; }
-  Double_t GetXmax()      const { return fXmax; }
-  Double_t GetYmin()      const { return fYmin; }
-  Double_t GetYmax()      const { return fYmax; }
-  Double_t GetZmin()      const { return fZmin; }
-  Double_t GetZmax()      const { return fZmax; }
-  Double_t GetBx()        const { return fBx; }
-  Double_t GetBy()        const { return fBy; }
-  Double_t GetBz()        const { return fBz; }
+  Int_t GetType() const { return fType; }
+  Double_t GetXmin() const { return fXmin; }
+  Double_t GetXmax() const { return fXmax; }
+  Double_t GetYmin() const { return fYmin; }
+  Double_t GetYmax() const { return fYmax; }
+  Double_t GetZmin() const { return fZmin; }
+  Double_t GetZmax() const { return fZmax; }
+  Double_t GetBx() const { return fBx; }
+  Double_t GetBy() const { return fBy; }
+  Double_t GetBz() const { return fBz; }
   void MapName(TString& name) { name = fMapName; }
   Double_t GetPositionX() const { return fPosX; }
   Double_t GetPositionY() const { return fPosY; }
   Double_t GetPositionZ() const { return fPosZ; }
-  Double_t GetScale()     const { return fScale; }
+  Double_t GetScale() const { return fScale; }
 
-  void     GetDistortionFilename(TString& filename) { filename = fDistortionFilename; }
-  void     GetParentName(TString& parentname) { parentname = fParentName; }
-  Int_t    GetTypeOfParent()      const { return fTypeOfParent; }
+  void GetDistortionFilename(TString& filename) {
+    filename = fDistortionFilename;
+  }
+  void GetParentName(TString& parentname) { parentname = fParentName; }
+  Int_t GetTypeOfParent() const { return fTypeOfParent; }
 
- private:
-
+private:
   /** Field type
    ** 0 = constant field
    ** 1 = field map
@@ -123,8 +121,7 @@ class CbmFieldPar : public FairParGenericSet
   CbmFieldPar(const CbmFieldPar&);
   CbmFieldPar& operator=(const CbmFieldPar&);
 
-  ClassDef(CbmFieldPar,1);
-
+  ClassDef(CbmFieldPar, 1);
 };
 
 

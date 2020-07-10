@@ -13,20 +13,20 @@ class TClonesArray;
 class CbmGlobalTrackFitterIdeal : public CbmGlobalTrackFitter {
 
 private:
-    TClonesArray *fArrayStsTrack;  // STS tracks
-    TClonesArray *fArrayTrdTrack;  // TRD tracks
+  TClonesArray* fArrayStsTrack;  // STS tracks
+  TClonesArray* fArrayTrdTrack;  // TRD tracks
 
-    CbmGlobalTrackFitterIdeal(const CbmGlobalTrackFitterIdeal&);
-    CbmGlobalTrackFitterIdeal& operator=(const CbmGlobalTrackFitterIdeal&);
+  CbmGlobalTrackFitterIdeal(const CbmGlobalTrackFitterIdeal&);
+  CbmGlobalTrackFitterIdeal& operator=(const CbmGlobalTrackFitterIdeal&);
 
 public:
-    CbmGlobalTrackFitterIdeal();
-    virtual ~CbmGlobalTrackFitterIdeal();
+  CbmGlobalTrackFitterIdeal();
+  virtual ~CbmGlobalTrackFitterIdeal();
 
-    void Init();
-    void DoFit(CbmGlobalTrack* glbTrack);
+  void Init();
+  void DoFit(CbmGlobalTrack* glbTrack);
 
-    ClassDef(CbmGlobalTrackFitterIdeal, 1);
+  ClassDef(CbmGlobalTrackFitterIdeal, 1);
 };
 
 

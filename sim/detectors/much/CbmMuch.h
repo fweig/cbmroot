@@ -12,8 +12,8 @@
 #define CBMMUCH_H
 
 
-#include "TLorentzVector.h"
 #include "FairDetector.h"
+#include "TLorentzVector.h"
 #include "TVector3.h"
 #include <string>
 
@@ -24,11 +24,9 @@ class CbmGeoMuchPar;
 class TGeoMedium;
 class TGeoCombiTrans;
 
-class CbmMuch : public FairDetector
-{
+class CbmMuch : public FairDetector {
 
- public:
-
+public:
   /** Default constructor **/
   CbmMuch();
 
@@ -70,7 +68,6 @@ class CbmMuch : public FairDetector
   virtual void EndOfEvent();
 
 
-
   /** Virtual method Register
    **
    ** Registers the hit collection in the ROOT manager.
@@ -103,38 +100,42 @@ class CbmMuch : public FairDetector
    *@param cl2     Target
    *@param offset  Index offset
    **/
-  virtual void CopyClones(TClonesArray* cl1, TClonesArray* cl2,
-			  Int_t offset);
+  virtual void CopyClones(TClonesArray* cl1, TClonesArray* cl2, Int_t offset);
 
 
   virtual void ConstructGeometry();
   virtual void ConstructRootGeometry(TGeoMatrix* shift = NULL);
   Bool_t CheckIfSensitive(std::string name);
 
- private:
+private:
   /** Track information to be stored until the track leaves the
       active volume. **/
-  Int_t          fTrackID;           //!  track index
-  Int_t          fVolumeID;          //!  volume id
-  Int_t          fFlagID;           // ! Flag to distinguish geometries
-  TLorentzVector fPosIn, fPosOut;    //!  position
-  TLorentzVector fMomIn, fMomOut;    //!  momentum
-  Double32_t     fTime;              //!  time
-  Double32_t     fLength;            //!  length
-  Double32_t     fELoss;             //!  energy loss
+  Int_t fTrackID;                  //!  track index
+  Int_t fVolumeID;                 //!  volume id
+  Int_t fFlagID;                   // ! Flag to distinguish geometries
+  TLorentzVector fPosIn, fPosOut;  //!  position
+  TLorentzVector fMomIn, fMomOut;  //!  momentum
+  Double32_t fTime;                //!  time
+  Double32_t fLength;              //!  length
+  Double32_t fELoss;               //!  energy loss
 
-  Int_t          fPosIndex;          //!
-  TClonesArray*  fMuchCollection;    //!  The hit collection
-  Bool_t         kGeoSaved;          //!
-  TList *flGeoPar; //!
-  CbmGeoMuchPar* fPar;               //!  parameter container
+  Int_t fPosIndex;                //!
+  TClonesArray* fMuchCollection;  //!  The hit collection
+  Bool_t kGeoSaved;               //!
+  TList* flGeoPar;                //!
+  CbmGeoMuchPar* fPar;            //!  parameter container
   TString fVolumeName;
-  TGeoCombiTrans*   fCombiTrans;
+  TGeoCombiTrans* fCombiTrans;
 
-  CbmMuchPoint* AddHit(Int_t trackID, Int_t detID,
-		       TVector3 posIn, TVector3 posOut,
-		       TVector3 momIn, TVector3 momOut,
-		       Double_t time, Double_t length, Double_t eLoss);
+  CbmMuchPoint* AddHit(Int_t trackID,
+                       Int_t detID,
+                       TVector3 posIn,
+                       TVector3 posOut,
+                       TVector3 momIn,
+                       TVector3 momOut,
+                       Double_t time,
+                       Double_t length,
+                       Double_t eLoss);
 
 
   /** Private method ResetParameters
@@ -150,19 +151,18 @@ class CbmMuch : public FairDetector
   CbmMuch(const CbmMuch&);
   CbmMuch& operator=(const CbmMuch&);
 
-  ClassDef(CbmMuch,1);
-
+  ClassDef(CbmMuch, 1);
 };
 
 
 inline void CbmMuch::ResetParameters() {
   fTrackID = fVolumeID = 0;
-  fPosIn .SetXYZM(0.0, 0.0, 0.0, 0.0);
+  fPosIn.SetXYZM(0.0, 0.0, 0.0, 0.0);
   fPosOut.SetXYZM(0.0, 0.0, 0.0, 0.0);
-  fMomIn .SetXYZM(0.0, 0.0, 0.0, 0.0);
+  fMomIn.SetXYZM(0.0, 0.0, 0.0, 0.0);
   fMomOut.SetXYZM(0.0, 0.0, 0.0, 0.0);
   fTime = fLength = fELoss = 0;
-  fPosIndex = 0;
+  fPosIndex                = 0;
 };
 
 

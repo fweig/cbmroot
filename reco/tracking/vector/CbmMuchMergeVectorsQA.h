@@ -19,66 +19,64 @@ class TClonesArray;
 class TH1D;
 class TH2D;
 
-class CbmMuchMergeVectorsQA : public FairTask
-{
+class CbmMuchMergeVectorsQA : public FairTask {
 public:
   /** Default (standard) constructor **/
   CbmMuchMergeVectorsQA();
-  
+
   /** Destructor **/
   virtual ~CbmMuchMergeVectorsQA();
-  
+
   /** Initialisation **/
   virtual InitStatus Init();
-  
+
   /** Task execution **/
-  virtual void Exec(
-		    Option_t* opt);
-  
+  virtual void Exec(Option_t* opt);
+
   /** Finish at the end **/
   virtual void Finish();
-  
+
   /** SetParContainers **/
   virtual void SetParContainers();
-  
+
   /** Accessors **/
   //Int_t GetNofTracks()           { return fNofTracks; };
-  
- private:
-  CbmMuchGeoScheme* fGeoScheme;                 // Geometry scheme
-  Int_t fStatFirst;                             // First straw station No.
-  Int_t fNstat;                                 // Number of straw stations
-  Int_t fNdoubl[10];                            // Number of double layers in stations
-  Double_t fZpos[5][10];                        // Z-pos. of double layers in stations
 
-  TClonesArray *fTracks;
-  TClonesArray *fVectors;
-  TClonesArray *fMCTracks;
-  TClonesArray *fPoints;
-  TClonesArray *fHits;
-  TClonesArray *fHitsGem;
-  TClonesArray *fDigis;
-  TClonesArray *fDigisGem;
-  TClonesArray *fDigiMatches;
-  TClonesArray *fDigiMatchesGem;
-  TClonesArray *fClusters;
+private:
+  CbmMuchGeoScheme* fGeoScheme;  // Geometry scheme
+  Int_t fStatFirst;              // First straw station No.
+  Int_t fNstat;                  // Number of straw stations
+  Int_t fNdoubl[10];             // Number of double layers in stations
+  Double_t fZpos[5][10];         // Z-pos. of double layers in stations
 
-  TH1D *fhSim;
-  TH1D *fhRec;
-  TH1D *fhMatchMult;
-  TH1D *fhMatchOver;
-  TH1D *fhOverlap;
-  TH1D **fhChi2mat;
-  TH2D *fhSimRec;
+  TClonesArray* fTracks;
+  TClonesArray* fVectors;
+  TClonesArray* fMCTracks;
+  TClonesArray* fPoints;
+  TClonesArray* fHits;
+  TClonesArray* fHitsGem;
+  TClonesArray* fDigis;
+  TClonesArray* fDigisGem;
+  TClonesArray* fDigiMatches;
+  TClonesArray* fDigiMatchesGem;
+  TClonesArray* fClusters;
+
+  TH1D* fhSim;
+  TH1D* fhRec;
+  TH1D* fhMatchMult;
+  TH1D* fhMatchOver;
+  TH1D* fhOverlap;
+  TH1D** fhChi2mat;
+  TH2D* fhSimRec;
 
   void BookHistos();
-  Bool_t CheckMatch(CbmMuchTrack *vec);
+  Bool_t CheckMatch(CbmMuchTrack* vec);
   void CheckEffic();
 
   CbmMuchMergeVectorsQA(const CbmMuchMergeVectorsQA&);
   CbmMuchMergeVectorsQA& operator=(const CbmMuchMergeVectorsQA&);
-  
-  ClassDef(CbmMuchMergeVectorsQA,1)
+
+  ClassDef(CbmMuchMergeVectorsQA, 1)
 };
 
 #endif

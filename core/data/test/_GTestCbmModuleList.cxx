@@ -1,14 +1,13 @@
 #include "CbmModuleList.h"
 
-#include "gtest/gtest.h"
 #include "gtest/gtest-spi.h"
+#include "gtest/gtest.h"
 
-TEST(_GTestCbmModuleList, CheckDefaultConstructor)
-{
+TEST(_GTestCbmModuleList, CheckDefaultConstructor) {
   {
     SCOPED_TRACE("CheckDefaultConstructor");
     CbmModuleList test;
-//    EXPECT_STREQ("magnet", CbmModuleList::GetModuleName(kMagnet));
+    //    EXPECT_STREQ("magnet", CbmModuleList::GetModuleName(kMagnet));
   }
 }
 

@@ -1,12 +1,11 @@
 
 
-void readTsaFexOffline(TString inFile =
-  //"data/43_sps2016.tsa"
+void readTsaFexOffline(
+  TString inFile =
+    //"data/43_sps2016.tsa"
   //"/Users/fairbanks/fairbanks/dev/data/tsa/14_debug_spadic1p1.tsa"
-        "/Volumes/fairbanksNAS-1/iri/data/testbeams/2016/sps/118_sps2016.tsa"
-        ,Bool_t highP = false
-)
-{
+  "/Volumes/fairbanksNAS-1/iri/data/testbeams/2016/sps/118_sps2016.tsa",
+  Bool_t highP = false) {
 
   // --- Specify input file name (this is just an example)
   //TString inFile = "spadic_dlm_trigger_2014-11-15_noepoch.tsa";
@@ -17,8 +16,8 @@ void readTsaFexOffline(TString inFile =
   Int_t nEvents = -1;
 
   // --- Specify output file name (this is just an example)
-  TString outFile = inFile;//"data/test_online.root";
-  outFile.ReplaceAll(".tsa",".root");
+  TString outFile = inFile;  //"data/test_online.root";
+  outFile.ReplaceAll(".tsa", ".root");
 
   // --- Set log output levels
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
@@ -28,7 +27,7 @@ void readTsaFexOffline(TString inFile =
   gDebug = 0;
 
   std::cout << std::endl;
-  std::cout << ">>> readTsa:  input file is " << inFile  << std::endl;
+  std::cout << ">>> readTsa:  input file is " << inFile << std::endl;
   std::cout << ">>> readTsa: output file is " << outFile << std::endl;
 
   // ========================================================================
@@ -39,7 +38,8 @@ void readTsaFexOffline(TString inFile =
 
   // Spadic Unpacker
   //CbmTSUnpackSpadic11OnlineMonitor* spadic_unpacker = new CbmTSUnpackSpadic11OnlineMonitor(highP);
-  CbmTSUnpackSpadicOnlineFex* spadic_unpacker = new CbmTSUnpackSpadicOnlineFex(highP);
+  CbmTSUnpackSpadicOnlineFex* spadic_unpacker =
+    new CbmTSUnpackSpadicOnlineFex(highP);
 
   // NXyter Unpacker
   CbmTSUnpackNxyter* nxyter_unpacker = new CbmTSUnpackNxyter();
@@ -51,10 +51,10 @@ void readTsaFexOffline(TString inFile =
   //source->SetHostName("cbmflib01");
   source->SetFileName(inFile);
   //source->AddFile(inFile1);
-  source->AddUnpacker(trb_unpacker, 0xE0);// RICH + REF
+  source->AddUnpacker(trb_unpacker, 0xE0);  // RICH + REF
   //source->AddUnpacker(nxyter_unpacker, 0x10);//fhodo or cherenkov or pb glass???
-  source->AddUnpacker(nxyter_unpacker, 0xE1);//HODO 1 + 2
-  source->AddUnpacker(spadic_unpacker, 0x40);// test beam 2014
+  source->AddUnpacker(nxyter_unpacker, 0xE1);  //HODO 1 + 2
+  source->AddUnpacker(spadic_unpacker, 0x40);  // test beam 2014
   //source->AddUnpacker(spadic_unpacker, 0xE0);  // Lab münster
 
   // --- Event header
@@ -62,7 +62,7 @@ void readTsaFexOffline(TString inFile =
   //  event->SetRunId(260);
 
   // --- Run
-  FairRunOnline *run = new FairRunOnline(source);
+  FairRunOnline* run = new FairRunOnline(source);
   run->SetOutputFile(outFile);
   run->ActivateHttpServer(100);
   run->SetAutoFinish(kFALSE);
@@ -79,7 +79,7 @@ void readTsaFexOffline(TString inFile =
   TStopwatch timer;
   timer.Start();
   std::cout << ">>> readTsa: Starting run..." << std::endl;
-  run->Run(nEvents, 0); // run until end of input file
+  run->Run(nEvents, 0);  // run until end of input file
   timer.Stop();
 
   // --- End-of-run info
@@ -88,8 +88,8 @@ void readTsaFexOffline(TString inFile =
   std::cout << std::endl << std::endl;
   std::cout << ">>> readTsa: Macro finished successfully." << std::endl;
   std::cout << ">>> readTsa: Output file is " << outFile << std::endl;
-  std::cout << ">>> readTsa: Real time " << rtime << " s, CPU time "
-            << ctime << " s" << std::endl;
+  std::cout << ">>> readTsa: Real time " << rtime << " s, CPU time " << ctime
+            << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

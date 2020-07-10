@@ -26,11 +26,9 @@ class TClonesArray;
 class CbmEvent;
 
 
-class CbmL1StsTrackFinder : public CbmStsTrackFinder
-{
+class CbmL1StsTrackFinder : public CbmStsTrackFinder {
 
- public:
-
+public:
   /** Default constructor **/
   CbmL1StsTrackFinder();
 
@@ -54,8 +52,7 @@ class CbmL1StsTrackFinder : public CbmStsTrackFinder
   virtual Int_t FindTracks(CbmEvent* event);
 
 
- private:
-
+private:
   /** Copy the tracks from the L1-internal format and array
    ** to the output TClonesArray.
    ** @value  Number of created tracks
@@ -63,8 +60,7 @@ class CbmL1StsTrackFinder : public CbmStsTrackFinder
   Int_t CopyL1Tracks(CbmEvent* event = NULL);
 
 
-  ClassDef(CbmL1StsTrackFinder,1);
-
+  ClassDef(CbmL1StsTrackFinder, 1);
 };
 
 

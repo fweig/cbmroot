@@ -6,8 +6,7 @@
 
 #pragma link C++ class CbmRich;
 
-#pragma link C++ class CbmDigitize<CbmRichDigi>+;
-#pragma link C++ class CbmRichDigitizer+;
+#pragma link C++ class CbmDigitize < CbmRichDigi> + ;
+#pragma link C++ class CbmRichDigitizer + ;
 
 #endif
-

@@ -8,39 +8,38 @@
 class TClonesArray;
 class CbmHistManager;
 
-class CbmTrdMCQa : public FairTask
-{
-    public:
-	CbmTrdMCQa();
+class CbmTrdMCQa : public FairTask {
+public:
+  CbmTrdMCQa();
 
-	virtual ~CbmTrdMCQa();
+  virtual ~CbmTrdMCQa();
 
-	virtual InitStatus Init();
+  virtual InitStatus Init();
 
-	virtual void Exec(Option_t*);
+  virtual void Exec(Option_t*);
 
-	virtual void Finish();
+  virtual void Finish();
 
-	void CreateHistograms();
+  void CreateHistograms();
 
-	void CreateNofObjectsHistograms();
+  void CreateNofObjectsHistograms();
 
-	void CreatePointHistograms();
+  void CreatePointHistograms();
 
-	void ProcessPoints(const TClonesArray*);
+  void ProcessPoints(const TClonesArray*);
 
-    private:
-	void ReadDataBranches();
+private:
+  void ReadDataBranches();
 
-	CbmHistManager* fHM;
-	TClonesArray* fTrdPoints;
-	TClonesArray* fMCTracks;
-	Int_t fNofStation;
+  CbmHistManager* fHM;
+  TClonesArray* fTrdPoints;
+  TClonesArray* fMCTracks;
+  Int_t fNofStation;
 
-	CbmTrdMCQa(const CbmTrdMCQa&);
-	CbmTrdMCQa& operator=(const CbmTrdMCQa&);
+  CbmTrdMCQa(const CbmTrdMCQa&);
+  CbmTrdMCQa& operator=(const CbmTrdMCQa&);
 
-	ClassDef(CbmTrdMCQa, 1);
+  ClassDef(CbmTrdMCQa, 1);
 };
 
 #endif

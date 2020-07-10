@@ -19,20 +19,19 @@ class CbmLitMaterialInfo;
  * \date 2008
  * \brief Interface for material effects calculation algorithm.
  */
-class CbmLitMaterialEffects
-{
+class CbmLitMaterialEffects {
 public:
-   /**
+  /**
     * \brief Constructor.
     */
-   CbmLitMaterialEffects() {}
+  CbmLitMaterialEffects() {}
 
-   /**
+  /**
     * \brief Destructor.
     */
-   virtual ~CbmLitMaterialEffects() {}
+  virtual ~CbmLitMaterialEffects() {}
 
-   /**
+  /**
     * \brief Main function to be implemented for concrete material effects calculation algorithm.
     * \param[in,out] par Input/Output track parameters.
     * \param[in] mat Material information.
@@ -40,11 +39,10 @@ public:
     * \param[in] downstream Propagation direction (true for downstream, false for upstream).
     * \return Status code.
     */
-   virtual LitStatus Update(
-      CbmLitTrackParam* par,
-      const CbmLitMaterialInfo* mat,
-      int pdg,
-      bool downstream) = 0;
+  virtual LitStatus Update(CbmLitTrackParam* par,
+                           const CbmLitMaterialInfo* mat,
+                           int pdg,
+                           bool downstream) = 0;
 };
 
 #endif /*CBMLITMATERIALEFFECTS_H_*/

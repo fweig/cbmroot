@@ -1,71 +1,76 @@
-TString caveGeom="";
-TString pipeGeom="";
-TString magnetGeom="";
-TString stsGeom="";
-TString richGeom="";
-TString shieldGeom="";
-TString platformGeom="";
+TString caveGeom     = "";
+TString pipeGeom     = "";
+TString magnetGeom   = "";
+TString stsGeom      = "";
+TString richGeom     = "";
+TString shieldGeom   = "";
+TString platformGeom = "";
 
-TString stsTag="";
-TString richTag="";
+TString stsTag  = "";
+TString richTag = "";
 
-TString stsDigi="";
-TString richDigi="";
-TString trdDigi="";
-TString tofDigi="";
-TString tofDigiBdf="";
+TString stsDigi    = "";
+TString richDigi   = "";
+TString trdDigi    = "";
+TString tofDigi    = "";
+TString tofDigiBdf = "";
 
-TString mvdMatBudget="";
-TString stsMatBudget="";
+TString mvdMatBudget = "";
+TString stsMatBudget = "";
 
-TString  fieldMap="";
-Double_t fieldZ=0.;
-Double_t fieldScale=0.;
-Int_t    fieldSymType=0;
+TString fieldMap    = "";
+Double_t fieldZ     = 0.;
+Double_t fieldScale = 0.;
+Int_t fieldSymType  = 0;
 
-TString defaultInputFile="";
+TString defaultInputFile = "";
 
 
-void run_reco_matching_correction(Int_t nEvents = 100)
-{
-    TTree::SetMaxTreeSize(90000000000);
+void run_reco_matching_correction(Int_t nEvents = 100) {
+  TTree::SetMaxTreeSize(90000000000);
 
-    Int_t iVerbose = 0;     // Verbosity level (0=quiet, 1=event level, 2=track level, 3=debug)
-    FairLogger* logger = FairLogger::GetLogger();
-    logger->SetLogScreenLevel("INFO");
-    logger->SetLogVerbosityLevel("LOW");
-    gRandom->SetSeed(10);
+  Int_t iVerbose =
+    0;  // Verbosity level (0=quiet, 1=event level, 2=track level, 3=debug)
+  FairLogger* logger = FairLogger::GetLogger();
+  logger->SetLogScreenLevel("INFO");
+  logger->SetLogVerbosityLevel("LOW");
+  gRandom->SetSeed(10);
 
-    TString script = TString(gSystem->Getenv("SCRIPT"));
-    TString parDir = TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters/");
+  TString script = TString(gSystem->Getenv("SCRIPT"));
+  TString parDir =
+    TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters/");
 
-    // -----   In- and output file names   ------------------------------------
-    TString setupName = "";
-    setupName = "setup_align";
+  // -----   In- and output file names   ------------------------------------
+  TString setupName = "";
+  setupName         = "setup_align";
 
-    TString outDir = "";
-    if (script == "yes") {
-	outDir = TString(gSystem->Getenv("OUT_DIR"));
-	TString outDir = "/data/cbm/cbmroot_new/macro/rich/alignment/misalignment_correction/matching/5mrad_correction_study/";
-	TString runTitle = "Matching_Efficiency";
-	TString parFile = outDir + "param.root";
-	TString mcFile = outDir + "mc.root";
-	TString recoFile = outDir + "reco.root";
+  TString outDir = "";
+  if (script == "yes") {
+    outDir         = TString(gSystem->Getenv("OUT_DIR"));
+    TString outDir = "/data/cbm/cbmroot_new/macro/rich/alignment/"
+                     "misalignment_correction/matching/5mrad_correction_study/";
+    TString runTitle = "Matching_Efficiency";
+    TString parFile  = outDir + "param.root";
+    TString mcFile   = outDir + "mc.root";
+    TString recoFile = outDir + "reco.root";
 
     TString geoSetupFile = "";
-    geoSetupFile = "/lustre/nyx/cbm/users/jbendar/CBMINSTALL/share/cbmroot/macro/rich/matching/geosetup/setup_align.C";
+    geoSetupFile = "/lustre/nyx/cbm/users/jbendar/CBMINSTALL/share/cbmroot/"
+                   "macro/rich/matching/geosetup/setup_align.C";
     // ------------------------------------------------------------------------
 
 
     // -----   Script initialization   ----------------------------------------
     if (script == "yes") {
-	mcFile = TString(gSystem->Getenv("MC_FILE"));
-	recoFile = TString(gSystem->Getenv("RECO_FILE"));
-	parFile = TString(gSystem->Getenv("PAR_FILE"));
-	resultDir = TString(gSystem->Getenv("LIT_RESULT_DIR"));
+      mcFile    = TString(gSystem->Getenv("MC_FILE"));
+      recoFile  = TString(gSystem->Getenv("RECO_FILE"));
+      parFile   = TString(gSystem->Getenv("PAR_FILE"));
+      resultDir = TString(gSystem->Getenv("LIT_RESULT_DIR"));
 
-	geoSetupFile = TString(gSystem->Getenv("VMCWORKDIR")) + "/macro/rich/matching/geosetup/" + TString(gSystem->Getenv("GEO_SETUP_FILE"));
-	setupName = TString(gSystem->Getenv("SETUP_NAME"));
+      geoSetupFile = TString(gSystem->Getenv("VMCWORKDIR"))
+                     + "/macro/rich/matching/geosetup/"
+                     + TString(gSystem->Getenv("GEO_SETUP_FILE"));
+      setupName = TString(gSystem->Getenv("SETUP_NAME"));
     }
     // ------------------------------------------------------------------------
 
@@ -75,16 +80,17 @@ void run_reco_matching_correction(Int_t nEvents = 100)
 
     // -----   Load the geometry setup   --------------------------------------
     const char* setupName2 = setupName;
-    TString setupFunct = "";
-    setupFunct = setupFunct + setupName2 + "()";
-    std::cout << "setupFile: " << geoSetupFile << " and setupFunct: " << setupFunct << std::endl;
+    TString setupFunct     = "";
+    setupFunct             = setupFunct + setupName2 + "()";
+    std::cout << "setupFile: " << geoSetupFile
+              << " and setupFunct: " << setupFunct << std::endl;
     gROOT->LoadMacro(geoSetupFile);
     gInterpreter->ProcessLine(setupFunct);
     // ------------------------------------------------------------------------
 
 
     // -----   Digi parameters   ----------------------------------------------
-    TList *parFileList = new TList();
+    TList* parFileList = new TList();
 
     TObjString trdDigiFile(parDir + trdDigi);
     parFileList->Add(&trdDigiFile);
@@ -107,7 +113,7 @@ void run_reco_matching_correction(Int_t nEvents = 100)
 
 
     // -----   Reconstruction run   -------------------------------------------
-    FairRunAna *run= new FairRunAna();
+    FairRunAna* run = new FairRunAna();
     if (mcFile != "") run->SetInputFile(mcFile);
     if (recoFile != "") run->SetOutputFile(recoFile);
     run->SetGenerateRunInfo(kTRUE);
@@ -115,7 +121,7 @@ void run_reco_matching_correction(Int_t nEvents = 100)
 
 
     // ----- MC Data Manager   ------------------------------------------------
-    CbmMCDataManager* mcManager=new CbmMCDataManager("MCManager", 1);
+    CbmMCDataManager* mcManager = new CbmMCDataManager("MCManager", 1);
     mcManager->AddFile(mcFile);
     run->AddTask(mcManager);
     // ------------------------------------------------------------------------
@@ -130,24 +136,27 @@ void run_reco_matching_correction(Int_t nEvents = 100)
     // -----   The parameters of the STS digitizer are set such as to match
     // -----   those in the old digitizer. Change them only if you know what you
     // -----   are doing.
-    Double_t dynRange       =   40960.;  // Dynamic range [e]
-    Double_t threshold      =    4000.;  // Digitisation threshold [e]
-    Int_t nAdc              =    4096;   // Number of ADC channels (12 bit)
-    Double_t timeResolution =       5.;  // time resolution [ns]
-    Double_t deadTime       = 9999999.;  // infinite dead time (integrate entire event)
-    Double_t noise          =       0.;  // ENC [e]
-    Int_t digiModel         =       1;   // User sensor type DSSD
+    Double_t dynRange       = 40960.;  // Dynamic range [e]
+    Double_t threshold      = 4000.;   // Digitisation threshold [e]
+    Int_t nAdc              = 4096;    // Number of ADC channels (12 bit)
+    Double_t timeResolution = 5.;      // time resolution [ns]
+    Double_t deadTime =
+      9999999.;            // infinite dead time (integrate entire event)
+    Double_t noise  = 0.;  // ENC [e]
+    Int_t digiModel = 1;   // User sensor type DSSD
 
     // The following settings correspond to a validated implementation.
     // Changing them is on your own risk.
-    Int_t  eLossModel       = 1;         // Energy loss model: uniform
-    Bool_t useLorentzShift  = kFALSE;    // Deactivate Lorentz shift
-    Bool_t useDiffusion     = kFALSE;    // Deactivate diffusion
-    Bool_t useCrossTalk     = kFALSE;    // Deactivate cross talk
+    Int_t eLossModel       = 1;       // Energy loss model: uniform
+    Bool_t useLorentzShift = kFALSE;  // Deactivate Lorentz shift
+    Bool_t useDiffusion    = kFALSE;  // Deactivate diffusion
+    Bool_t useCrossTalk    = kFALSE;  // Deactivate cross talk
 
     CbmStsDigitize* stsDigi = new CbmStsDigitize(digiModel);
-    stsDigi->SetProcesses(eLossModel, useLorentzShift, useDiffusion, useCrossTalk);
-    stsDigi->SetParameters(dynRange, threshold, nAdc, timeResolution, deadTime, noise);
+    stsDigi->SetProcesses(
+      eLossModel, useLorentzShift, useDiffusion, useCrossTalk);
+    stsDigi->SetParameters(
+      dynRange, threshold, nAdc, timeResolution, deadTime, noise);
     run->AddTask(stsDigi);
     // -------------------------------------------------------------------------
 
@@ -169,9 +178,9 @@ void run_reco_matching_correction(Int_t nEvents = 100)
     // ---  STS track finding   ------------------------------------------------
     CbmKF* kalman = new CbmKF();
     run->AddTask(kalman);
-    CbmL1* l1 = new CbmL1();
-    mvdMatBudget = "mvd_matbudget_v15a.root";
-    stsMatBudget = "sts_matbudget_v17a.root";
+    CbmL1* l1                    = new CbmL1();
+    mvdMatBudget                 = "mvd_matbudget_v15a.root";
+    stsMatBudget                 = "sts_matbudget_v17a.root";
     TString mvdMatBudgetFileName = parDir + "sts/" + mvdMatBudget;
     TString stsMatBudgetFileName = parDir + "sts/" + stsMatBudget;
     l1->SetStsMaterialBudgetFileName(stsMatBudgetFileName.Data());
@@ -214,7 +223,7 @@ void run_reco_matching_correction(Int_t nEvents = 100)
     //richDigitizer->SetNofNoiseHits(0);
     run->AddTask(richDigitizer);
 
-    CbmRichHitProducer* richHitProd	= new CbmRichHitProducer();
+    CbmRichHitProducer* richHitProd = new CbmRichHitProducer();
     run->AddTask(richHitProd);
 
     CbmRichReconstruction* richReco = new CbmRichReconstruction();
@@ -230,8 +239,8 @@ void run_reco_matching_correction(Int_t nEvents = 100)
     run->AddTask(matchRecoToMc);
 
     // Reconstruction Qa
-    Int_t minNofPointsTrd = 6;
-    trdAnnCut = 0.85;
+    Int_t minNofPointsTrd        = 6;
+    trdAnnCut                    = 0.85;
     CbmLitTrackingQa* trackingQa = new CbmLitTrackingQa();
     trackingQa->SetMinNofPointsSts(4);
     trackingQa->SetUseConsecutivePointsInSts(true);
@@ -261,7 +270,8 @@ void run_reco_matching_correction(Int_t nEvents = 100)
     richRecoQa->SetOutputDir(std::string(resultDir));
     //run->AddTask(richRecoQa);
 
-    CbmRichMirrorSortingCorrection* mirror = new CbmRichMirrorSortingCorrection();
+    CbmRichMirrorSortingCorrection* mirror =
+      new CbmRichMirrorSortingCorrection();
     mirror->setOutputDir(outDir + "/corr_params");
     TString studyName = "Matching_Efficiency";
     mirror->setStudyName(studyName);
@@ -288,8 +298,8 @@ void run_reco_matching_correction(Int_t nEvents = 100)
 
 
     // -----  Parameter database   --------------------------------------------
-    FairRuntimeDb* rtdb = run->GetRuntimeDb();
-    FairParRootFileIo* parIo1 = new FairParRootFileIo();
+    FairRuntimeDb* rtdb        = run->GetRuntimeDb();
+    FairParRootFileIo* parIo1  = new FairParRootFileIo();
     FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
     parIo1->open(parFile.Data());
     parIo2->open(parFileList, "in");
@@ -303,7 +313,7 @@ void run_reco_matching_correction(Int_t nEvents = 100)
     // -----   Intialize and run   --------------------------------------------
     run->Init();
     cout << "Starting run" << endl;
-    run->Run(0,nEvents);
+    run->Run(0, nEvents);
     // ------------------------------------------------------------------------
 
 
@@ -313,7 +323,7 @@ void run_reco_matching_correction(Int_t nEvents = 100)
     Double_t ctime = timer.CpuTime();
     cout << endl << endl;
     cout << "Macro finished successfully." << endl;
-    cout << "Output file is "    << recoFile << endl;
+    cout << "Output file is " << recoFile << endl;
     cout << "Parameter file is " << parFile << endl;
     cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << endl;
     cout << endl;
@@ -322,4 +332,4 @@ void run_reco_matching_correction(Int_t nEvents = 100)
 
     cout << " Test passed" << endl;
     cout << " All ok " << endl;
-}
+  }

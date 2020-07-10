@@ -82,7 +82,7 @@
 
 // Remark: With the proper steering variables, this should exactly reproduce
 // the geometry version v11b of A. Kotynia's described in the ASCII format.
-// The only exception is a minimal difference in the z position of the 
+// The only exception is a minimal difference in the z position of the
 // sectors/sensors. This is because of ladder types 2 and 4 containing the half
 // sensors around the beam hole (stations 1,2 and 3). In v11b, the two ladders
 // covering the beam hole cannot be transformed into each other by rotations,
@@ -91,12 +91,9 @@
 // was accepted.
 
 
-
-
-
+#include "TGeoManager.h"
 #include <iomanip>
 #include <iostream>
-#include "TGeoManager.h"
 
 
 // -------------   Steering variables       -----------------------------------
@@ -105,79 +102,78 @@
 const Double_t gkSensorThickness = 0.03;
 
 // ---> Vertical gap between chained sensors [cm]
-const Double_t gkChainGapY       = 0.00;
+const Double_t gkChainGapY = 0.00;
 
 // ---> Thickness of cables [cm]
-const Double_t gkCableThickness  = 0.02;
+const Double_t gkCableThickness = 0.02;
 
 // ---> Vertical overlap of neighbouring sectors in a ladder [cm]
-const Double_t gkSectorOverlapY  = 0.27;
+const Double_t gkSectorOverlapY = 0.27;
 
 // ---> Gap in z between neighbouring sectors in a ladder [cm]
-const Double_t gkSectorGapZ      = 0.02;
+const Double_t gkSectorGapZ = 0.02;
 
 // ---> Horizontal overlap of neighbouring ladders [cm]
-const Double_t gkLadderOverlapX  = 0.30;
+const Double_t gkLadderOverlapX = 0.30;
 
 // ---> Gap in z between neighbouring ladders [cm]
-const Double_t gkLadderGapZ      = 1.00;  // 0.00;
+const Double_t gkLadderGapZ = 1.00;  // 0.00;
 
 // ---> Gap in z between lowest sector to carbon support structure [cm]
 const Double_t gkSectorGapZFrame = 0.10;
 
 // ---> Switch to construct / not to construct readout cables
-const Bool_t   gkConstructCables = kTRUE;
+const Bool_t gkConstructCables = kTRUE;
 
 // ---> Switch to construct / not to construct frames
-const Bool_t   gkConstructCones       = kTRUE;  // kFALSE;  // switch this false for v15a
-const Bool_t   gkConstructFrames      = kTRUE;  // kFALSE;  // switch this false for v15a
-const Bool_t   gkConstructSmallFrames = kTRUE;  // kFALSE;
-const Bool_t   gkCylindricalFrames    = kTRUE;  // kFALSE;
+const Bool_t gkConstructCones =
+  kTRUE;  // kFALSE;  // switch this false for v15a
+const Bool_t gkConstructFrames =
+  kTRUE;  // kFALSE;  // switch this false for v15a
+const Bool_t gkConstructSmallFrames = kTRUE;  // kFALSE;
+const Bool_t gkCylindricalFrames    = kTRUE;  // kFALSE;
 
 // ---> Size of the frame
 const Double_t gkFrameThickness     = 0.2;
 const Double_t gkThinFrameThickness = 0.05;
-const Double_t gkFrameStep          = 4.0;  // size of frame cell along y direction
+const Double_t gkFrameStep = 4.0;  // size of frame cell along y direction
 
-const Double_t gkCylinderDiaInner   = 0.07; // properties of cylindrical carbon supports, see CBM-STS Integration Meeting (10 Jul 2015)
-const Double_t gkCylinderDiaOuter   = 0.15; // properties of cylindrical carbon supports, see CBM-STS Integration Meeting (10 Jul 2015)
+const Double_t gkCylinderDiaInner =
+  0.07;  // properties of cylindrical carbon supports, see CBM-STS Integration Meeting (10 Jul 2015)
+const Double_t gkCylinderDiaOuter =
+  0.15;  // properties of cylindrical carbon supports, see CBM-STS Integration Meeting (10 Jul 2015)
 
 // ----------------------------------------------------------------------------
-
 
 
 // --------------   Parameters of beam pipe in the STS region    --------------
 // ---> Needed to compute stations and STS such as to avoid overlaps
-const Double_t gkPipeZ1 =  22.0;
-const Double_t gkPipeR1 =   1.8;
-const Double_t gkPipeZ2 =  50.0;
-const Double_t gkPipeR2 =   1.8;
+const Double_t gkPipeZ1 = 22.0;
+const Double_t gkPipeR1 = 1.8;
+const Double_t gkPipeZ2 = 50.0;
+const Double_t gkPipeR2 = 1.8;
 const Double_t gkPipeZ3 = 125.0;
-const Double_t gkPipeR3 =   5.5;
+const Double_t gkPipeR3 = 5.5;
 // ----------------------------------------------------------------------------
-
 
 
 // -------------   Other global variables   -----------------------------------
 // ---> STS medium (for every volume except silicon)
-TGeoMedium*    gStsMedium        = NULL;  // will be set later
+TGeoMedium* gStsMedium = NULL;  // will be set later
 // ---> TGeoManager (too lazy to write out 'Manager' all the time
-TGeoManager*   gGeoMan           = NULL;  // will be set later
+TGeoManager* gGeoMan = NULL;  // will be set later
 // ----------------------------------------------------------------------------
-
-
 
 
 // ============================================================================
 // ======                         Main function                           =====
 // ============================================================================
 
-void create_stsgeo_cosy14(const char* geoTag="v15a")
-{
+void create_stsgeo_cosy14(const char* geoTag = "v15a") {
 
   // -------   Geometry file name (output)   ----------------------------------
   TString geoFileName = "sts_cosy14_";
-  geoFileName = geoFileName + geoTag + ".geo.root";
+  geoFileName         = geoFileName + geoTag + ".geo.root";
   // --------------------------------------------------------------------------
 
 
@@ -186,38 +182,38 @@ void create_stsgeo_cosy14(const char* geoTag="v15a")
   infoFileName.ReplaceAll("root", "info");
   fstream infoFile;
   infoFile.open(infoFileName.Data(), fstream::out);
-  infoFile << "STS geometry created with create_stsgeo_cosy14.C" << endl << endl;
+  infoFile << "STS geometry created with create_stsgeo_cosy14.C" << endl
+           << endl;
   infoFile << "Global variables: " << endl;
   infoFile << "Sensor thickness = " << gkSensorThickness << " cm" << endl;
-  infoFile << "Vertical gap in sensor chain = " 
-	   << gkChainGapY << " cm" << endl;
-  infoFile << "Vertical overlap of sensors = " 
-	   << gkSectorOverlapY << " cm" << endl;
-  infoFile << "Gap in z between neighbour sensors = " 
-	   << gkSectorGapZ << " cm" << endl;
-  infoFile << "Horizontal overlap of sensors = " 
-	   << gkLadderOverlapX << " cm" << endl;
-  infoFile << "Gap in z between neighbour ladders = " 
-	   << gkLadderGapZ << " cm" << endl;
-  if ( gkConstructCables ) 
+  infoFile << "Vertical gap in sensor chain = " << gkChainGapY << " cm" << endl;
+  infoFile << "Vertical overlap of sensors = " << gkSectorOverlapY << " cm"
+           << endl;
+  infoFile << "Gap in z between neighbour sensors = " << gkSectorGapZ << " cm"
+           << endl;
+  infoFile << "Horizontal overlap of sensors = " << gkLadderOverlapX << " cm"
+           << endl;
+  infoFile << "Gap in z between neighbour ladders = " << gkLadderGapZ << " cm"
+           << endl;
+  if (gkConstructCables)
     infoFile << "Cable thickness = " << gkCableThickness << " cm" << endl;
   else
     infoFile << "No cables" << endl;
   infoFile << endl;
-  infoFile << "Beam pipe: R1 = " << gkPipeR1 << " cm at z = " 
-	   << gkPipeZ1 << " cm" << endl;
-  infoFile << "Beam pipe: R2 = " << gkPipeR2 << " cm at z = " 
-	   << gkPipeZ2 << " cm" << endl;
-  infoFile << "Beam pipe: R3 = " << gkPipeR3 << " cm at z = " 
-	   << gkPipeZ3 << " cm" << endl;
+  infoFile << "Beam pipe: R1 = " << gkPipeR1 << " cm at z = " << gkPipeZ1
+           << " cm" << endl;
+  infoFile << "Beam pipe: R2 = " << gkPipeR2 << " cm at z = " << gkPipeZ2
+           << " cm" << endl;
+  infoFile << "Beam pipe: R3 = " << gkPipeR3 << " cm at z = " << gkPipeZ3
+           << " cm" << endl;
   // --------------------------------------------------------------------------
 
 
   // -------   Load media from media file   -----------------------------------
-  FairGeoLoader*    geoLoad = new FairGeoLoader("TGeo","FairGeoLoader");
+  FairGeoLoader* geoLoad    = new FairGeoLoader("TGeo", "FairGeoLoader");
   FairGeoInterface* geoFace = geoLoad->getGeoInterface();
-  TString geoPath = gSystem->Getenv("VMCWORKDIR");
-  TString medFile = geoPath + "/geometry/media.geo";
+  TString geoPath           = gSystem->Getenv("VMCWORKDIR");
+  TString medFile           = geoPath + "/geometry/media.geo";
   geoFace->setMediaFile(medFile);
   geoFace->readMedia();
   gGeoMan = gGeoManager;
@@ -225,51 +221,48 @@ void create_stsgeo_cosy14(const char* geoTag="v15a")
 
 
   // -----------------   Get and create the required media    -----------------
-  FairGeoMedia*   geoMedia = geoFace->getMedia();
+  FairGeoMedia* geoMedia   = geoFace->getMedia();
   FairGeoBuilder* geoBuild = geoLoad->getGeoBuilder();
 
   // ---> air
-  FairGeoMedium* mAir      = geoMedia->getMedium("air");
-  if ( ! mAir ) Fatal("Main", "FairMedium air not found");
+  FairGeoMedium* mAir = geoMedia->getMedium("air");
+  if (!mAir) Fatal("Main", "FairMedium air not found");
   geoBuild->createMedium(mAir);
   TGeoMedium* air = gGeoMan->GetMedium("air");
-  if ( ! air ) Fatal("Main", "Medium air not found");
+  if (!air) Fatal("Main", "Medium air not found");
 
   // ---> silicon
-  FairGeoMedium* mSilicon  = geoMedia->getMedium("silicon");
-  if ( ! mSilicon ) Fatal("Main", "FairMedium silicon not found");
+  FairGeoMedium* mSilicon = geoMedia->getMedium("silicon");
+  if (!mSilicon) Fatal("Main", "FairMedium silicon not found");
   geoBuild->createMedium(mSilicon);
   TGeoMedium* silicon = gGeoMan->GetMedium("silicon");
-  if ( ! silicon ) Fatal("Main", "Medium silicon not found");
+  if (!silicon) Fatal("Main", "Medium silicon not found");
 
   // ---> carbon
-  FairGeoMedium* mCarbon  = geoMedia->getMedium("carbon");
-  if ( ! mCarbon ) Fatal("Main", "FairMedium carbon not found");
+  FairGeoMedium* mCarbon = geoMedia->getMedium("carbon");
+  if (!mCarbon) Fatal("Main", "FairMedium carbon not found");
   geoBuild->createMedium(mCarbon);
   TGeoMedium* carbon = gGeoMan->GetMedium("carbon");
-  if ( ! carbon ) Fatal("Main", "Medium carbon not found");
+  if (!carbon) Fatal("Main", "Medium carbon not found");
 
   // ---> STScable
-  FairGeoMedium* mSTScable  = geoMedia->getMedium("STScable");
-  if ( ! mSTScable ) Fatal("Main", "FairMedium STScable not found");
+  FairGeoMedium* mSTScable = geoMedia->getMedium("STScable");
+  if (!mSTScable) Fatal("Main", "FairMedium STScable not found");
   geoBuild->createMedium(mSTScable);
   TGeoMedium* STScable = gGeoMan->GetMedium("STScable");
-  if ( ! STScable ) Fatal("Main", "Medium STScable not found");
+  if (!STScable) Fatal("Main", "Medium STScable not found");
 
   // ---
   gStsMedium = air;
   // --------------------------------------------------------------------------
 
 
-
   // --------------   Create geometry and top volume  -------------------------
-  gGeoMan = (TGeoManager*)gROOT->FindObject("FAIRGeom");
+  gGeoMan = (TGeoManager*) gROOT->FindObject("FAIRGeom");
   gGeoMan->SetName("STSgeom");
   TGeoVolume* top = new TGeoVolumeAssembly("TOP");
   gGeoMan->SetTopVolume(top);
   // --------------------------------------------------------------------------
-
-
 
 
   // ---------------   Create sensors   ---------------------------------------
@@ -277,19 +270,17 @@ void create_stsgeo_cosy14(const char* geoTag="v15a")
   cout << "===> Creating sensors...." << endl << endl;
   infoFile << endl << "Sensors: " << endl;
   Int_t nSensors = CreateSensors();
-  
+
   TGeoVolume* sensorBaby = gGeoMan->GetVolume("SensorBaby");
   sensorBaby->SetLineColor(kBlue);
   CheckVolume(sensorBaby);
   CheckVolume(sensorBaby, infoFile);
- 
+
   TGeoVolume* sensorOut = gGeoMan->GetVolume("SensorOut");
   sensorOut->SetLineColor(kBlue);
   CheckVolume(sensorOut);
   CheckVolume(sensorOut, infoFile);
   // --------------------------------------------------------------------------
-
-
 
 
   // ----------------   Create sectors   --------------------------------------
@@ -299,81 +290,78 @@ void create_stsgeo_cosy14(const char* geoTag="v15a")
   Int_t nSectors = CreateSectors();
   for (Int_t iSector = 1; iSector <= nSectors; iSector++) {
     cout << endl;
-    TString name = Form("Sector%02d", iSector);
+    TString name       = Form("Sector%02d", iSector);
     TGeoVolume* sector = gGeoMan->GetVolume(name);
     CheckVolume(sector);
     CheckVolume(sector, infoFile);
   }
   // --------------------------------------------------------------------------
-  
-  
-  
+
+
   // -----------------    Create modules   ------------------------------------
   cout << endl << endl;
   cout << "===> Creating modules...." << endl;
-  
-  TGeoVolume* sector01 = gGeoMan->GetVolume("Sector01");  
+
+  TGeoVolume* sector01 = gGeoMan->GetVolume("Sector01");
   TGeoVolume* module01 = ConstructModule("Module01", sector01, 0.);
   CheckVolume(module01);
   CheckVolume(module01, infoFile);
-  
-  TGeoVolume* sector02 = gGeoMan->GetVolume("Sector02");  
+
+  TGeoVolume* sector02 = gGeoMan->GetVolume("Sector02");
   TGeoVolume* module02 = ConstructModule("Module02", sector02, 0.);
   CheckVolume(module02);
   CheckVolume(module02, infoFile);
   // --------------------------------------------------------------------------
- 
- 
- 
+
+
   // ------------------    Create half ladders   ------------------------------
   cout << endl << endl;
   cout << "===> Creating halfladders...." << endl;
-  
+
   TGeoVolumeAssembly* halfLadder01 = new TGeoVolumeAssembly("HalfLadder01");
   halfLadder01->AddNode(module01, 1);
   halfLadder01->GetShape()->ComputeBBox();
   CheckVolume(halfLadder01);
   CheckVolume(halfLadder01, infoFile);
-  
+
   TGeoVolumeAssembly* halfLadder02 = new TGeoVolumeAssembly("HalfLadder02");
   halfLadder02->AddNode(module02, 1);
   halfLadder02->GetShape()->ComputeBBox();
   CheckVolume(halfLadder02);
   CheckVolume(halfLadder02, infoFile);
   // --------------------------------------------------------------------------
-  
-  
+
+
   // ------------------    Create ladders   -----------------------------------
   cout << endl << endl;
   cout << "===> Creating ladders...." << endl;
-  
+
   TGeoVolumeAssembly* ladder01 = new TGeoVolumeAssembly("Ladder01");
   ladder01->AddNode(halfLadder01, 1);
   ladder01->GetShape()->ComputeBBox();
   CheckVolume(ladder01);
   CheckVolume(ladder01, infoFile);
-  
+
   TGeoVolumeAssembly* ladder02 = new TGeoVolumeAssembly("Ladder02");
   ladder02->AddNode(halfLadder02, 1);
   ladder02->GetShape()->ComputeBBox();
   CheckVolume(ladder02);
   CheckVolume(ladder02, infoFile);
   // --------------------------------------------------------------------------
- 
- 
- 
+
+
   // ------------------    Create stations   ----------------------------------
   cout << endl << endl;
   cout << "===> Creating stations...." << endl;
   Double_t statPos[3];
-  
+
   TGeoVolumeAssembly* station01 = new TGeoVolumeAssembly("Station01");
   station01->AddNode(ladder01, 1);
   station01->GetShape()->ComputeBBox();
   CheckVolume(station01);
   CheckVolume(station01, infoFile);
   statPos[0] = 25.3;
- 
+
   TGeoVolumeAssembly* station02 = new TGeoVolumeAssembly("Station02");
   station02->AddNode(ladder02, 1);
   station02->GetShape()->ComputeBBox();
@@ -390,47 +378,47 @@ void create_stsgeo_cosy14(const char* geoTag="v15a")
   // --------------------------------------------------------------------------
 
 
-
   // ---------------   Create STS volume   ------------------------------------
   cout << endl << endl;
   cout << "===> Creating STS...." << endl;
 
   // --- Determine size of STS box
-  Double_t stsX = 0.;
-  Double_t stsY = 0.;
-  Double_t stsZ = 0.;
-  Double_t stsBorder = 2*5.;  // 5 cm space for carbon ladders on each side
-  for (Int_t iStation = 1; iStation<=3; iStation++) {
-    TString statName = Form("Station%02d", iStation);
+  Double_t stsX      = 0.;
+  Double_t stsY      = 0.;
+  Double_t stsZ      = 0.;
+  Double_t stsBorder = 2 * 5.;  // 5 cm space for carbon ladders on each side
+  for (Int_t iStation = 1; iStation <= 3; iStation++) {
+    TString statName    = Form("Station%02d", iStation);
     TGeoVolume* station = gGeoMan->GetVolume(statName);
-    TGeoBBox* shape = (TGeoBBox*) station->GetShape();
-    stsX = TMath::Max(stsX, 2.* shape->GetDX() );
-    stsY = TMath::Max(stsY, 2.* shape->GetDY() );
-    cout << "Station " << iStation << ":  dX = " << stsX << ", dY " << stsY 
-         << ", posZ = " << statPos[iStation-1] << endl;
-    infoFile << "Station " << iStation << ":  dX = " << stsX << ", dY " << stsY 
-             << ", posZ = " << statPos[iStation-1] << endl;
+    TGeoBBox* shape     = (TGeoBBox*) station->GetShape();
+    stsX                = TMath::Max(stsX, 2. * shape->GetDX());
+    stsY                = TMath::Max(stsY, 2. * shape->GetDY());
+    cout << "Station " << iStation << ":  dX = " << stsX << ", dY " << stsY
+         << ", posZ = " << statPos[iStation - 1] << endl;
+    infoFile << "Station " << iStation << ":  dX = " << stsX << ", dY " << stsY
+             << ", posZ = " << statPos[iStation - 1] << endl;
   }
   // --- Some border around the stations
-  stsX += stsBorder;  
-  stsY += stsBorder; 
-  stsZ = ( statPos[2] - statPos[0] ) + stsBorder;
-  Double_t stsPosZ = 0.5 * ( statPos[2] + statPos[0] );
+  stsX += stsBorder;
+  stsY += stsBorder;
+  stsZ             = (statPos[2] - statPos[0]) + stsBorder;
+  Double_t stsPosZ = 0.5 * (statPos[2] + statPos[0]);
 
   // --- Create box  around the stations
-  TGeoShape* stsShape = new TGeoBBox("stsBox", stsX/2., stsY/2., stsZ/2.);
-  cout << "size of STS box: x " <<  stsX << " - y " << stsY << " - z " << stsZ << endl;
+  TGeoShape* stsShape = new TGeoBBox("stsBox", stsX / 2., stsY / 2., stsZ / 2.);
+  cout << "size of STS box: x " << stsX << " - y " << stsY << " - z " << stsZ
+       << endl;
 
   // --- Create STS volume
-  TString stsName = "sts_cosy14_";  
+  TString stsName = "sts_cosy14_";
   stsName += geoTag;
   TGeoVolume* sts = new TGeoVolume(stsName.Data(), stsShape, gStsMedium);
 
   // --- Place stations in the STS
-  for (Int_t iStation = 1; iStation <=3; iStation++) {
-    TString statName = Form("Station%02d", iStation);
-    TGeoVolume* station = gGeoMan->GetVolume(statName);
-    Double_t posZ = statPos[iStation-1] - stsPosZ;
+  for (Int_t iStation = 1; iStation <= 3; iStation++) {
+    TString statName       = Form("Station%02d", iStation);
+    TGeoVolume* station    = gGeoMan->GetVolume(statName);
+    Double_t posZ          = statPos[iStation - 1] - stsPosZ;
     TGeoTranslation* trans = new TGeoTranslation(0., 0., posZ);
     sts->AddNode(station, iStation, trans);
     sts->GetShape()->ComputeBBox();
@@ -439,8 +427,6 @@ void create_stsgeo_cosy14(const char* geoTag="v15a")
   CheckVolume(sts);
   CheckVolume(sts, infoFile);
   // --------------------------------------------------------------------------
-
-
 
 
   // ---------------   Finish   -----------------------------------------------
@@ -459,12 +445,12 @@ void create_stsgeo_cosy14(const char* geoTag="v15a")
   TFile* geoFile = new TFile(geoFileName, "RECREATE");
   top->Write();
   cout << endl;
-  cout << "Geometry " << top->GetName() << " written to " 
-       << geoFileName << endl;
+  cout << "Geometry " << top->GetName() << " written to " << geoFileName
+       << endl;
   geoFile->Close();
 
   TString geoFileName__ = "sts_cosy14_";
-  geoFileName_ = geoFileName__ + geoTag + "-geo.root";
+  geoFileName_          = geoFileName__ + geoTag + "-geo.root";
   sts->Export(geoFileName_);
 
   geoFile = new TFile(geoFileName_, "UPDATE");
@@ -473,16 +459,12 @@ void create_stsgeo_cosy14(const char* geoTag="v15a")
 
   top->Draw("ogl");
   gGeoManager->SetVisLevel(6);
-  
-  infoFile.close();
 
+  infoFile.close();
 }
 // ============================================================================
 // ======                   End of main function                          =====
 // ============================================================================
-
-
-
 
 
 // ****************************************************************************
@@ -505,37 +487,35 @@ Int_t CreateMedia() {
   Double_t density = 0.;
 
   // --- Material air
-  density = 1.205e-3.;  // [g/cm^3]
+  density             = 1.205e-3.;  // [g/cm^3]
   TGeoMixture* matAir = new TGeoMixture("sts_air", 3, density);
-  matAir->AddElement(14.0067, 7, 0.755);      // Nitrogen
-  matAir->AddElement(15.999,  8, 0.231);      // Oxygen
-  matAir->AddElement(39.948, 18, 0.014);      // Argon
+  matAir->AddElement(14.0067, 7, 0.755);  // Nitrogen
+  matAir->AddElement(15.999, 8, 0.231);   // Oxygen
+  matAir->AddElement(39.948, 18, 0.014);  // Argon
 
   // --- Material silicon
-  density    = 2.33;     // [g/cm^3]
+  density             = 2.33;  // [g/cm^3]
   TGeoElement* elSi   = gGeoMan->GetElementTable()->GetElement(14);
   TGeoMaterial* matSi = new TGeoMaterial("matSi", elSi, density);
 
 
   // --- Air (passive)
   TGeoMedium* medAir = new TGeoMedium("air", nMedia++, matAir);
-  medAir->SetParam(0, 0.);       // is passive
-  medAir->SetParam(1, 1.);       // is in magnetic field
-  medAir->SetParam(2, 20.);      // max. field [kG]
-  medAir->SetParam(6, 0.001);    // boundary crossing precision [cm]
-  
-  
+  medAir->SetParam(0, 0.);     // is passive
+  medAir->SetParam(1, 1.);     // is in magnetic field
+  medAir->SetParam(2, 20.);    // max. field [kG]
+  medAir->SetParam(6, 0.001);  // boundary crossing precision [cm]
+
+
   // --- Active silicon for sensors
-  TGeoMedium* medSiAct = new TGeoMedium("silicon", 
-					nMedia++, matSi);
+  TGeoMedium* medSiAct = new TGeoMedium("silicon", nMedia++, matSi);
   medSiAct->SetParam(0, 1.);     // is active
   medSiAct->SetParam(1, 1.);     // is in magnetic field
   medSiAct->SetParam(2, 20.);    // max. field [kG]
   medSiAct->SetParam(6, 0.001);  // boundary crossing precisison [cm]
 
   // --- Passive silicon for cables
-  TGeoMedium* medSiPas = new TGeoMedium("carbon", 
-					nMedia++, matSi);
+  TGeoMedium* medSiPas = new TGeoMedium("carbon", nMedia++, matSi);
   medSiPas->SetParam(0, 0.);     // is passive
   medSiPas->SetParam(1, 1.);     // is in magnetic field
   medSiPas->SetParam(2, 20.);    // max. field [kG]
@@ -544,8 +524,6 @@ Int_t CreateMedia() {
   return nMedia;
 }
 /** ======================================================================= **/
-
-
 
 
 /** ===========================================================================
@@ -567,24 +545,22 @@ Int_t CreateSensors() {
   // --- Sensor Type Baby: baby sensor (1.62 cm x 1.62 cm)
   xSize = 1.62;
   ySize = 1.62;
-  TGeoBBox* shape_sensorBaby = new TGeoBBox("sensorBaby", 
-					  xSize/2., ySize/2., zSize/2.);
+  TGeoBBox* shape_sensorBaby =
+    new TGeoBBox("sensorBaby", xSize / 2., ySize / 2., zSize / 2.);
   new TGeoVolume("SensorBaby", shape_sensorBaby, silicon);
   nSensors++;
-  
+
   // ---  Sensor type Out: Big sensor (6.2 cm x 6.2 cm)
   xSize = 6.2092;
   ySize = 6.2;
-  TGeoBBox* shape_sensorOut = new TGeoBBox("sensorOut", 
-					  xSize/2., ySize/2., zSize/2.);
+  TGeoBBox* shape_sensorOut =
+    new TGeoBBox("sensorOut", xSize / 2., ySize / 2., zSize / 2.);
   new TGeoVolume("SensorOut", shape_sensorOut, silicon);
   nSensors++;
-  
+
   return nSensors;
 }
 /** ======================================================================= **/
-
-
 
 
 /** ===========================================================================
@@ -620,9 +596,6 @@ Int_t CreateSectors() {
 /** ======================================================================= **/
 
 
-  
- 
-
 // ****************************************************************************
 // *****                                                                  *****
 // *****    Generic functions  for the construction of STS elements       *****
@@ -635,7 +608,6 @@ Int_t CreateSectors() {
 // ****************************************************************************
 
 
-    
 /** ===========================================================================
  ** Construct a module
  **
@@ -652,32 +624,29 @@ Int_t CreateSectors() {
  **            sector           pointer to sector volume
  **            cableLength      length of cable
  **/
-TGeoVolume* ConstructModule(const char* name, 
-			    TGeoVolume* sector,
-			    Double_t cableLength) {
+TGeoVolume*
+ConstructModule(const char* name, TGeoVolume* sector, Double_t cableLength) {
 
   // --- Check sector volume
-  if ( ! sector ) Fatal("CreateModule", "Sector volume not found!");
+  if (!sector) Fatal("CreateModule", "Sector volume not found!");
 
   // --- Get size of sector
-  TGeoBBox* box = (TGeoBBox*) sector->GetShape(); 
+  TGeoBBox* box    = (TGeoBBox*) sector->GetShape();
   Double_t sectorX = 2. * box->GetDX();
   Double_t sectorY = 2. * box->GetDY();
   Double_t sectorZ = 2. * box->GetDZ();
 
   // --- Get size of cable
-  Double_t cableX   = sectorX;
-  Double_t cableY   = cableLength;
-  Double_t cableZ   = gkCableThickness;
+  Double_t cableX = sectorX;
+  Double_t cableY = cableLength;
+  Double_t cableZ = gkCableThickness;
 
   // --- Create module volume
-  Double_t moduleX = TMath::Max(sectorX, cableX);
-  Double_t moduleY = sectorY + cableLength;
-  Double_t moduleZ = TMath::Max(sectorZ, cableZ);
-  TGeoVolume* module = gGeoManager->MakeBox(name, gStsMedium,
-					    moduleX/2.,
-					    moduleY/2.,
-					    moduleZ/2.);
+  Double_t moduleX   = TMath::Max(sectorX, cableX);
+  Double_t moduleY   = sectorY + cableLength;
+  Double_t moduleZ   = TMath::Max(sectorZ, cableZ);
+  TGeoVolume* module = gGeoManager->MakeBox(
+    name, gStsMedium, moduleX / 2., moduleY / 2., moduleZ / 2.);
 
   // --- Position of sector in module
   // --- Sector is centred in x and z and aligned to the bottom
@@ -693,42 +662,35 @@ TGeoVolume* ConstructModule(const char* name,
 
     // --- Calculate position of sensor in module
     Double_t* xSensTrans = sensor->GetMatrix()->GetTranslation();
-    Double_t sensorXpos = 0.;
-    Double_t sensorYpos = sectorYpos + xSensTrans[1];
-    Double_t sensorZpos = 0.;
-    TGeoTranslation* sensTrans = new TGeoTranslation("sensTrans",
-						     sensorXpos,
-						     sensorYpos,
-						     sensorZpos);
+    Double_t sensorXpos  = 0.;
+    Double_t sensorYpos  = sectorYpos + xSensTrans[1];
+    Double_t sensorZpos  = 0.;
+    TGeoTranslation* sensTrans =
+      new TGeoTranslation("sensTrans", sensorXpos, sensorYpos, sensorZpos);
 
     // --- Add sensor volume to module
     TGeoVolume* sensVol = sensor->GetVolume();
-    module->AddNode(sensor->GetVolume(), iSensor+1, sensTrans);
+    module->AddNode(sensor->GetVolume(), iSensor + 1, sensTrans);
     module->GetShape()->ComputeBBox();
   }
 
 
   // --- Create cable volume, if necessary, and place it in module
   // --- Cable is centred in x and z and aligned to the top
-  if ( gkConstructCables && cableLength > 0.0001 ) {
-    TString cableName = TString(name) + "_cable";
+  if (gkConstructCables && cableLength > 0.0001) {
+    TString cableName       = TString(name) + "_cable";
     TGeoMedium* cableMedium = gGeoMan->GetMedium("STScable");
-    if ( ! cableMedium ) Fatal("CreateModule", "Medium STScable not found!");
-    TGeoVolume* cable = gGeoManager->MakeBox(cableName.Data(),
-					     cableMedium,
-					     cableX / 2.,
-					     cableY / 2.,
-					     cableZ / 2.);
+    if (!cableMedium) Fatal("CreateModule", "Medium STScable not found!");
+    TGeoVolume* cable = gGeoManager->MakeBox(
+      cableName.Data(), cableMedium, cableX / 2., cableY / 2., cableZ / 2.);
     // add color to cables
     cable->SetLineColor(kOrange);
     cable->SetTransparency(60);
     Double_t cableXpos = 0.;
     Double_t cableYpos = sectorY + 0.5 * cableY - 0.5 * moduleY;
     Double_t cableZpos = 0.;
-    TGeoTranslation* cableTrans = new TGeoTranslation("cableTrans",
-						      cableXpos,
-						      cableYpos,
-						      cableZpos);
+    TGeoTranslation* cableTrans =
+      new TGeoTranslation("cableTrans", cableXpos, cableYpos, cableZpos);
     module->AddNode(cable, 1, cableTrans);
     module->GetShape()->ComputeBBox();
   }
@@ -736,8 +698,6 @@ TGeoVolume* ConstructModule(const char* name,
   return module;
 }
 /** ======================================================================= **/
- 
-
 
 
 /** ===========================================================================
@@ -746,70 +706,69 @@ TGeoVolume* ConstructModule(const char* name,
 void CheckVolume(TGeoVolume* volume) {
 
   TGeoBBox* shape = (TGeoBBox*) volume->GetShape();
-  cout << volume->GetName() << ": size " << fixed << setprecision(4)
-       << setw(7) << 2. * shape->GetDX() << " x " << setw(7)
-       << 2. * shape->GetDY() << " x " << setw(7)
-       << 2. * shape->GetDZ();
-  if ( volume->IsAssembly() ) cout << ", assembly";
+  cout << volume->GetName() << ": size " << fixed << setprecision(4) << setw(7)
+       << 2. * shape->GetDX() << " x " << setw(7) << 2. * shape->GetDY()
+       << " x " << setw(7) << 2. * shape->GetDZ();
+  if (volume->IsAssembly())
+    cout << ", assembly";
   else {
-    if ( volume->GetMedium() ) 
+    if (volume->GetMedium())
       cout << ", medium " << volume->GetMedium()->GetName();
-    else cout << ", " << "\033[31m" << " no medium" << "\033[0m";
+    else
+      cout << ", "
+           << "\033[31m"
+           << " no medium"
+           << "\033[0m";
   }
   cout << endl;
-  if ( volume->GetNdaughters() ) {
+  if (volume->GetNdaughters()) {
     cout << "Daughters: " << endl;
     for (Int_t iNode = 0; iNode < volume->GetNdaughters(); iNode++) {
-      TGeoNode* node = volume->GetNode(iNode);
+      TGeoNode* node  = volume->GetNode(iNode);
       TGeoBBox* shape = (TGeoBBox*) node->GetVolume()->GetShape();
-      cout << setw(15) << node->GetName() << ", size " 
-	   << fixed << setprecision(3)
-	   << setw(6) << 2. * shape->GetDX() << " x " 
-	   << setw(6) << 2. * shape->GetDY() << " x " 
-	   << setw(6) << 2. * shape->GetDZ() << ", position ( ";
+      cout << setw(15) << node->GetName() << ", size " << fixed
+           << setprecision(3) << setw(6) << 2. * shape->GetDX() << " x "
+           << setw(6) << 2. * shape->GetDY() << " x " << setw(6)
+           << 2. * shape->GetDZ() << ", position ( ";
       TGeoMatrix* matrix = node->GetMatrix();
-      Double_t* pos = matrix->GetTranslation();
+      Double_t* pos      = matrix->GetTranslation();
       cout << setfill(' ');
-      cout << fixed << setw(8) << pos[0] << ", " 
-	   << setw(8) << pos[1] << ", "
-	   << setw(8) << pos[2] << " )" << endl;
+      cout << fixed << setw(8) << pos[0] << ", " << setw(8) << pos[1] << ", "
+           << setw(8) << pos[2] << " )" << endl;
     }
   }
-
 }
 /** ======================================================================= **/
 
- 
+
 /** ===========================================================================
  ** Volume information for output to file
  **/
 void CheckVolume(TGeoVolume* volume, fstream& file) {
 
-  if ( ! file ) return;
+  if (!file) return;
 
   TGeoBBox* shape = (TGeoBBox*) volume->GetShape();
-  file << volume->GetName() << ": size " << fixed << setprecision(4)
-       << setw(7) << 2. * shape->GetDX() << " x " << setw(7)
-       << 2. * shape->GetDY() << " x " << setw(7)
-       << 2. * shape->GetDZ();
-  if ( volume->IsAssembly() ) file << ", assembly";
+  file << volume->GetName() << ": size " << fixed << setprecision(4) << setw(7)
+       << 2. * shape->GetDX() << " x " << setw(7) << 2. * shape->GetDY()
+       << " x " << setw(7) << 2. * shape->GetDZ();
+  if (volume->IsAssembly())
+    file << ", assembly";
   else {
-    if ( volume->GetMedium() ) 
+    if (volume->GetMedium())
       file << ", medium " << volume->GetMedium()->GetName();
-    else file << ", " << "\033[31m" << " no medium" << "\033[0m";
+    else
+      file << ", "
+           << "\033[31m"
+           << " no medium"
+           << "\033[0m";
   }
   file << endl;
-  if ( volume->GetNdaughters() ) {
+  if (volume->GetNdaughters()) {
     file << "Contains: ";
-    for (Int_t iNode = 0; iNode < volume->GetNdaughters(); iNode++) 
+    for (Int_t iNode = 0; iNode < volume->GetNdaughters(); iNode++)
       file << volume->GetNode(iNode)->GetVolume()->GetName() << " ";
     file << endl;
   }
-
 }
 /** ======================================================================= **/
-
-
-
-
-

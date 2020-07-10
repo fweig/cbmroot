@@ -11,8 +11,8 @@
 #include <RtypesCore.h>  // for Int_t, Double_t, Bool_t
 #include <TAttMarker.h>  // for kFullCircle, kFullSquare, kFullTriangleUp
 
-#include <string>        // for string
-#include <vector>        // for vector
+#include <string>  // for string
+#include <vector>  // for vector
 
 class TGraph2D;
 class TGraph;
@@ -27,39 +27,47 @@ class TH3;
  * \author Andrey Lebedev <andrey.lebedev@gsi.de>
  * \date 2012
  */
-class CbmDrawingOptions
-{
+class CbmDrawingOptions {
 public:
+  static Int_t Color(Int_t colorIndex) {
+    static const Int_t nofColors   = 15;
+    static Int_t colors[nofColors] = {kRed,
+                                      kBlue + 1,
+                                      kGreen + 3,
+                                      kMagenta + 4,
+                                      kYellow + 2,
+                                      kViolet,
+                                      kOrange - 5,
+                                      kOrange + 3,
+                                      kRed - 8,
+                                      kPink + 9,
+                                      kBlue - 6,
+                                      kCyan + 1,
+                                      kGreen - 6,
+                                      kYellow - 1,
+                                      kGray + 1};
+    return (colorIndex < nofColors) ? colors[colorIndex] : colorIndex;
+  }
 
-   static Int_t Color(Int_t colorIndex) {
-      static const Int_t nofColors = 15;
-      static Int_t colors[nofColors] = {kRed, kBlue + 1, kGreen + 3, kMagenta + 4, kYellow + 2, kViolet, kOrange - 5, kOrange + 3, kRed - 8, kPink + 9,
-      kBlue - 6, kCyan + 1, kGreen - 6, kYellow -1, kGray + 1 };
-      return (colorIndex < nofColors) ? colors[colorIndex] : colorIndex;
-   }
+  static Int_t LineWidth() { return 2; }
 
-   static Int_t LineWidth() {
-      return 2;
-   }
+  static Int_t LineStyle(Int_t lineStyleIndex) { return lineStyleIndex + 1; }
 
-   static Int_t LineStyle(Int_t lineStyleIndex) {
-      return lineStyleIndex + 1;
-   }
+  static Int_t MarkerSize() { return 1; }
 
-   static Int_t MarkerSize() {
-      return 1;
-   }
+  static Int_t MarkerStyle(Int_t markerIndex) {
+    static const Int_t nofMarkers    = 8;
+    static Int_t markers[nofMarkers] = {kOpenCircle,
+                                        kOpenSquare,
+                                        kOpenTriangleUp,
+                                        kOpenDiamond,
+                                        kFullCircle,
+                                        kFullSquare,
+                                        kFullTriangleUp};
+    return (markerIndex < nofMarkers) ? markers[markerIndex] : markerIndex;
+  }
 
-   static Int_t MarkerStyle(Int_t markerIndex) {
-      static const Int_t nofMarkers = 8;
-      static Int_t markers[nofMarkers] = {kOpenCircle, kOpenSquare, kOpenTriangleUp, kOpenDiamond,
-                                          kFullCircle, kFullSquare, kFullTriangleUp};
-      return (markerIndex < nofMarkers) ? markers[markerIndex] : markerIndex;
-   }
-
-   static Double_t TextSize() {
-      return 0.06;
-   }
+  static Double_t TextSize() { return 0.06; }
 };
 
 /**
@@ -67,8 +75,8 @@ public:
  * \brief Define linear or logarithmic scale for drawing.
  */
 enum HistScale {
-   kLog = 0, /**> Linear scale. */
-   kLinear = 1 /**> Logarithmic scale */
+  kLog    = 0, /**> Linear scale. */
+  kLinear = 1  /**> Logarithmic scale */
 };
 
 
@@ -91,16 +99,15 @@ void SetDefaultDrawStyle();
  * \param[in] markerSize Marker size.
  * \param[in] markerStyle Marker style (see ROOT documentation for details).
  */
-void DrawH1(
-   TH1* hist,
-   HistScale logx = kLinear,
-   HistScale logy = kLinear,
-   const std::string& drawOpt = "",
-   Int_t color = CbmDrawingOptions::Color(0),
-   Int_t lineWidth = CbmDrawingOptions::LineWidth(),
-   Int_t lineStyle = CbmDrawingOptions::LineStyle(0),
-   Int_t markerSize = CbmDrawingOptions::MarkerSize(),
-   Int_t markerStyle = CbmDrawingOptions::MarkerStyle(0));
+void DrawH1(TH1* hist,
+            HistScale logx             = kLinear,
+            HistScale logy             = kLinear,
+            const std::string& drawOpt = "",
+            Int_t color                = CbmDrawingOptions::Color(0),
+            Int_t lineWidth            = CbmDrawingOptions::LineWidth(),
+            Int_t lineStyle            = CbmDrawingOptions::LineStyle(0),
+            Int_t markerSize           = CbmDrawingOptions::MarkerSize(),
+            Int_t markerStyle          = CbmDrawingOptions::MarkerStyle(0));
 
 
 /**
@@ -111,12 +118,11 @@ void DrawH1(
  * \param[in] logz Specify logarithmic or linear scale for Z axis.
  * \param[in] drawOpt Other drawing options (see ROOT documentation for details).
  */
-void DrawH2(
-   TH2* hist,
-   HistScale logx = kLinear,
-   HistScale logy = kLinear,
-   HistScale logz = kLinear,
-   const std::string& drawOpt = "COLZ");
+void DrawH2(TH2* hist,
+            HistScale logx             = kLinear,
+            HistScale logy             = kLinear,
+            HistScale logz             = kLinear,
+            const std::string& drawOpt = "COLZ");
 
 
 /**
@@ -133,17 +139,16 @@ void DrawH2(
  * \param[in] y2 Y coordinate of legend in current pad.
  * \param[in] drawOpt Draw options for TH1->Draw method.
  */
-void DrawH1(
-   const std::vector<TH1*>& histos,
-   const std::vector<std::string>& histLabels,
-   HistScale logx = kLinear,
-   HistScale logy = kLinear,
-   Bool_t drawLegend = true,
-   Double_t x1 = 0.25,
-   Double_t y1 = 0.99,
-   Double_t x2 = 0.55,
-   Double_t y2 = 0.75,
-   const std::string& drawOpt = "");
+void DrawH1(const std::vector<TH1*>& histos,
+            const std::vector<std::string>& histLabels,
+            HistScale logx             = kLinear,
+            HistScale logy             = kLinear,
+            Bool_t drawLegend          = true,
+            Double_t x1                = 0.25,
+            Double_t y1                = 0.99,
+            Double_t x2                = 0.55,
+            Double_t y2                = 0.75,
+            const std::string& drawOpt = "");
 
 /**
  * \fn DrawGraph
@@ -158,16 +163,15 @@ void DrawH1(
  * \param[in] markerSize Marker size.
  * \param[in] markerStyle Marker style (see ROOT documentation for details).
  */
-void DrawGraph(
-   TGraph* graph,
-   HistScale logx = kLinear,
-   HistScale logy = kLinear,
-   const std::string& drawOpt = "AC",
-   Int_t color = CbmDrawingOptions::Color(0),
-   Int_t lineWidth = CbmDrawingOptions::LineWidth(),
-   Int_t lineStyle = CbmDrawingOptions::LineStyle(0),
-   Int_t markerSize = CbmDrawingOptions::MarkerSize(),
-   Int_t markerStyle = CbmDrawingOptions::MarkerStyle(0));
+void DrawGraph(TGraph* graph,
+               HistScale logx             = kLinear,
+               HistScale logy             = kLinear,
+               const std::string& drawOpt = "AC",
+               Int_t color                = CbmDrawingOptions::Color(0),
+               Int_t lineWidth            = CbmDrawingOptions::LineWidth(),
+               Int_t lineStyle            = CbmDrawingOptions::LineStyle(0),
+               Int_t markerSize           = CbmDrawingOptions::MarkerSize(),
+               Int_t markerStyle          = CbmDrawingOptions::MarkerStyle(0));
 
 /**
  * \fn DrawGraph.
@@ -182,16 +186,15 @@ void DrawGraph(
  * \param[in] x2 X coordinate of legend in current pad.
  * \param[in] y2 Y coordinate of legend in current pad.
  */
-void DrawGraph(
-   const std::vector<TGraph*>& graphs,
-   const std::vector<std::string>& graphLabels,
-   HistScale logx = kLinear,
-   HistScale logy = kLinear,
-   Bool_t drawLegend = true,
-   Double_t x1 = 0.50,
-   Double_t y1 = 0.78,
-   Double_t x2 = 0.99,
-   Double_t y2 = 0.99);
+void DrawGraph(const std::vector<TGraph*>& graphs,
+               const std::vector<std::string>& graphLabels,
+               HistScale logx    = kLinear,
+               HistScale logy    = kLinear,
+               Bool_t drawLegend = true,
+               Double_t x1       = 0.50,
+               Double_t y1       = 0.78,
+               Double_t x2       = 0.99,
+               Double_t y2       = 0.99);
 
 /**
  * \fn DrawGraph2D
@@ -202,12 +205,11 @@ void DrawGraph(
  * \param[in] logz Specify logarithmic or linear scale for Z axis.
  * \param[in] drawOpt Other drawing options (see ROOT documentation for details).
  */
-void DrawGraph2D(
-   TGraph2D* graph,
-   HistScale logx = kLinear,
-   HistScale logy = kLinear,
-   HistScale logz = kLinear,
-   const std::string& drawOpt = "colz");
+void DrawGraph2D(TGraph2D* graph,
+                 HistScale logx             = kLinear,
+                 HistScale logy             = kLinear,
+                 HistScale logz             = kLinear,
+                 const std::string& drawOpt = "colz");
 
 /**
  * \fn DrawTextOnPad
@@ -218,12 +220,11 @@ void DrawGraph2D(
  * \param[in] x2 X2 coordinate of legend in current pad.
  * \param[in] y2 Y2 coordinate of legend in current pad.
  */
-void DrawTextOnPad(
-    const std::string& text,
-	Double_t x1,
-	Double_t y1,
-	Double_t x2,
-	Double_t y2);
+void DrawTextOnPad(const std::string& text,
+                   Double_t x1,
+                   Double_t y1,
+                   Double_t x2,
+                   Double_t y2);
 
 
 /**
@@ -235,12 +236,11 @@ void DrawTextOnPad(
  * \param[in] userRangeMin SetRangeUser minimum.
  * \param[in] userRangeMax SetRangeUser maximum.
  */
-void DrawH1andFitGauss(
-    TH1* hist,
-    Bool_t drawResults = true,
-    Bool_t doScale = true,
-    Double_t userRangeMin = 0.,
-    Double_t userRangeMax = 0.);
+void DrawH1andFitGauss(TH1* hist,
+                       Bool_t drawResults    = true,
+                       Bool_t doScale        = true,
+                       Double_t userRangeMin = 0.,
+                       Double_t userRangeMax = 0.);
 
 /**
  * \fn DrawH2WithProfile
@@ -252,13 +252,12 @@ void DrawH1andFitGauss(
  * \param[in] color Color of the H1 Profile histogram.
  * \param[in] lineWidth Line width of the H1 Profile histogram.
  */
-void DrawH2WithProfile(
-    TH2* hist,
-	Bool_t doGaussFit = false,
-    Bool_t drawOnlyMean = false,
-    const std::string& drawOpt = "COLZ",
-    Int_t profileColor = kBlack,
-    Int_t profileLineWidth = 4);
+void DrawH2WithProfile(TH2* hist,
+                       Bool_t doGaussFit          = false,
+                       Bool_t drawOnlyMean        = false,
+                       const std::string& drawOpt = "COLZ",
+                       Int_t profileColor         = kBlack,
+                       Int_t profileLineWidth     = 4);
 
 /**
  * \fn DrawH3Profile
@@ -269,11 +268,10 @@ void DrawH2WithProfile(
  * \param[in] zMin SetRangeUser minimum for Z axis.
  * \param[in] zMax SetRangeUser minimum for Z axis.
  */
-TH2D* DrawH3Profile(
-	TH3* h,
-	Bool_t drawMean = true,
-	Bool_t doGaussFit = false,
-	Double_t zUserRangeMin = 0.,
-	Double_t zUserRangeMax = 0.);
+TH2D* DrawH3Profile(TH3* h,
+                    Bool_t drawMean        = true,
+                    Bool_t doGaussFit      = false,
+                    Double_t zUserRangeMin = 0.,
+                    Double_t zUserRangeMax = 0.);
 
 #endif

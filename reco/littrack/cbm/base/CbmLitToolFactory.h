@@ -10,93 +10,84 @@
 
 #include "base/CbmLitPtrTypes.h"
 
-#include <string>
 #include <iostream>
+#include <string>
 
 using std::string;
 
-class CbmLitToolFactory
-{
+class CbmLitToolFactory {
 public:
-
-   /**
+  /**
     * \brief Create track extrapolation tool by name.
     * \param[in] name Tool name.
     * \return Created track extrapolation tool.
     */
-   static TrackExtrapolatorPtr CreateTrackExtrapolator(
-      const string& name);
+  static TrackExtrapolatorPtr CreateTrackExtrapolator(const string& name);
 
-   /**
+  /**
     * \brief Create track propagation tool by name.
     * \param[in] name Tool name.
     * \return Created track propagation tool.
     */
-   static TrackPropagatorPtr CreateTrackPropagator(
-      const string& name);
+  static TrackPropagatorPtr CreateTrackPropagator(const string& name);
 
-   /**
+  /**
     * \brief Create track update tool by name.
     * \param[in] name Tool name.
     * \return Created track update tool.
     */
-   static TrackUpdatePtr CreateTrackUpdate(
-      const string& name);
+  static TrackUpdatePtr CreateTrackUpdate(const string& name);
 
-   /**
+  /**
     * \brief Create track fit tool by name.
     * \param[in] name Tool name.
     * \return Created track fit tool.
     */
-   static TrackFitterPtr CreateTrackFitter(
-      const string& name);
+  static TrackFitterPtr CreateTrackFitter(const string& name);
 
-   /**
+  /**
     * \brief Create track selection tool by name.
     * \param[in] name Tool name.
     * \return Created track selection tool.
     */
-   static TrackSelectionPtr CreateTrackSelection(
-      const string& name);
+  static TrackSelectionPtr CreateTrackSelection(const string& name);
 
-   /**
+  /**
     * \brief Create track selection tool by name.
     * \param[in] name Tool name.
     * \return Created track selection tool.
     */
-   static TrackFinderPtr CreateTrackFinder(
-      const string& name);
+  static TrackFinderPtr CreateTrackFinder(const string& name);
 
-   /**
+  /**
     * \brief Create hot to track merge tool by name.
     * \param[in] name Tool name.
     * \return Created hit to track merge tool.
     */
-   static HitToTrackMergerPtr CreateHitToTrackMerger(
-      const string& name);
+  static HitToTrackMergerPtr CreateHitToTrackMerger(const string& name);
 
 private:
-   /**
+  /**
     * \brief Constructor.
     * Constructor is protected since singleton pattern is used.
     * Pointer to the object is returned by static Instance() method.
     */
-   CbmLitToolFactory();
+  CbmLitToolFactory();
 
-   /**
+  /**
     * \brief Destructor.
     */
-   virtual ~CbmLitToolFactory();
+  virtual ~CbmLitToolFactory();
 
-   /**
+  /**
     * \brief Copy constructor.
     */
-   CbmLitToolFactory(const CbmLitToolFactory&);
+  CbmLitToolFactory(const CbmLitToolFactory&);
 
-   /**
+  /**
     * \brief Assignment operator.
     */
-   const CbmLitToolFactory& operator=(const CbmLitToolFactory&);
+  const CbmLitToolFactory& operator=(const CbmLitToolFactory&);
 };
 
 #endif /*CBMLITTOOLFACTORY_H_*/

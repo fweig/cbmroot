@@ -8,16 +8,14 @@
 class CbmSttHit;
 class CbmKFTrackInterface;
 
-class CbmL1SttHit : public CbmKFHit
-{
- public:
+class CbmL1SttHit : public CbmKFHit {
+public:
+  CbmL1SttHit() {}
+  CbmL1SttHit(CbmSttHit* h, int index) : CbmKFHit() { Create(h, index); }
+  ~CbmL1SttHit() {}
 
-  CbmL1SttHit(){}
-  CbmL1SttHit( CbmSttHit *h, int index ) : CbmKFHit() { Create(h, index); }
-  ~CbmL1SttHit(){}
-
-  void Create( CbmSttHit *h, int index );  
-  Int_t Filter( CbmKFTrackInterface &track, Bool_t downstream, Double_t &QP0 );
+  void Create(CbmSttHit* h, int index);
+  Int_t Filter(CbmKFTrackInterface& track, Bool_t downstream, Double_t& QP0);
 
   //CbmKFPixelMeasurement FitPoint;
   CbmKFUMeasurement FitPoint;
@@ -27,7 +25,7 @@ class CbmL1SttHit : public CbmKFHit
   Double_t time;
   bool busy;
 
- public:
+public:
   ClassDef(CbmL1SttHit, 1);
 };
 

@@ -9,7 +9,7 @@
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Int_t, Double_t
 
-#include <string>        // for string
+#include <string>  // for string
 
 /** @class CbmMCEventInfo
  ** @brief Allows to access an MC event in the source file
@@ -24,63 +24,57 @@
  ** for QA of reconstructed data, i.e., comparing the time of the
  ** reconstructed event with the MC truth time.
  **/
-class CbmMCEventInfo
-{
+class CbmMCEventInfo {
 
-  public:
-
-    /** @brief Constructor
+public:
+  /** @brief Constructor
      ** @param fileId   Input file index
      ** @param eventId  MC event index (entry in ROOT tree)
      ** @param time     Event start time [ns]
      **/
-    CbmMCEventInfo(Int_t fileId = -1,
-                   Int_t eventId = -1,
-                   Double_t time = 0.);
+  CbmMCEventInfo(Int_t fileId = -1, Int_t eventId = -1, Double_t time = 0.);
 
 
-    /** @brief Destructor **/
-    virtual ~CbmMCEventInfo();
+  /** @brief Destructor **/
+  virtual ~CbmMCEventInfo();
 
 
-    /** @brief File index
+  /** @brief File index
      ** @value File index
      **/
-    Int_t GetFileId() const { return fFileId; }
+  Int_t GetFileId() const { return fFileId; }
 
 
-    /** @brief Event index
+  /** @brief Event index
      ** @value Event index
      **/
-    Int_t GetEventId() const { return fEventId; }
+  Int_t GetEventId() const { return fEventId; }
 
 
-    /** @brief Event time
+  /** @brief Event time
      ** @value Event time [ns]
      **/
-    Double_t GetTime() const { return fTime; }
+  Double_t GetTime() const { return fTime; }
 
 
-    /** Status to string **/
-    std::string ToString() const;
+  /** Status to string **/
+  std::string ToString() const;
 
 
-    /** @brief Comparison operator **/
-    bool operator<(const CbmMCEventInfo& other) const {
-      if ( fFileId == other.fFileId ) return ( fEventId < other.fEventId );
-      return ( fFileId < other.fFileId );
-    }
+  /** @brief Comparison operator **/
+  bool operator<(const CbmMCEventInfo& other) const {
+    if (fFileId == other.fFileId) return (fEventId < other.fEventId);
+    return (fFileId < other.fFileId);
+  }
 
 
-  private:
+private:
+  Int_t fFileId;
+  Int_t fEventId;
+  Double_t fTime;
 
-    Int_t fFileId;
-    Int_t fEventId;
-    Double_t fTime;
-
-    ClassDef(CbmMCEventInfo, 1);
+  ClassDef(CbmMCEventInfo, 1);
 };
-
 
 
 #endif /* CBMMCEVENTINFO_H_ */

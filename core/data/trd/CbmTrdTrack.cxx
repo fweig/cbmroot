@@ -7,23 +7,19 @@
 
 // -----   Default constructor   -------------------------------------------
 CbmTrdTrack::CbmTrdTrack()
-  : CbmTrack(),
-    fPidWkn(-1.),
-    fPidANN(-1.),
-    fPidLikeEL(-1.),
-    fPidLikePI(-1.),
-    fPidLikeKA(-1.),
-    fPidLikePR(-1.),
-    fPidLikeMU(-1.),
-    fELoss(-1.)
-{
-}
+  : CbmTrack()
+  , fPidWkn(-1.)
+  , fPidANN(-1.)
+  , fPidLikeEL(-1.)
+  , fPidLikePI(-1.)
+  , fPidLikeKA(-1.)
+  , fPidLikePR(-1.)
+  , fPidLikeMU(-1.)
+  , fELoss(-1.) {}
 // -------------------------------------------------------------------------
 
 // -----   Destructor   ----------------------------------------------------
-CbmTrdTrack::~CbmTrdTrack()
-{
-}
+CbmTrdTrack::~CbmTrdTrack() {}
 // -------------------------------------------------------------------------
 
 ClassImp(CbmTrdTrack);

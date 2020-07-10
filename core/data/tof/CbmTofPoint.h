@@ -9,10 +9,10 @@
 #ifndef CBMTOFPOINT_H
 #define CBMTOFPOINT_H 1
 
-#include <Rtypes.h>       // for ClassDef
-#include <RtypesCore.h>   // for Int_t, Double_t, UShort_t
+#include <Rtypes.h>      // for ClassDef
+#include <RtypesCore.h>  // for Int_t, Double_t, UShort_t
 
-#include <string>         // for string
+#include <string>  // for string
 
 #include <FairMCPoint.h>  // for FairMCPoint
 
@@ -37,11 +37,9 @@ class TVector3;
  ** gives the number of transversal segments the track has touched, and
  ** fGapMask gives the pattern of traversed gaps.
  **/
-class CbmTofPoint : public FairMCPoint 
-{
+class CbmTofPoint : public FairMCPoint {
 
- public:
-
+public:
   /** @brief Default constructor **/
   CbmTofPoint();
 
@@ -55,8 +53,13 @@ class CbmTofPoint : public FairMCPoint
    ** @param length   Track length since creation [cm]
    ** @param eLoss    Energy deposit [GeV]
    **/
-  CbmTofPoint(Int_t trackID, Int_t detID, TVector3 pos, TVector3 mom, 
-	       Double_t tof, Double_t length, Double_t eLoss);
+  CbmTofPoint(Int_t trackID,
+              Int_t detID,
+              TVector3 pos,
+              TVector3 mom,
+              Double_t tof,
+              Double_t length,
+              Double_t eLoss);
 
 
   /** @brief Destructor **/
@@ -123,21 +126,13 @@ class CbmTofPoint : public FairMCPoint
   virtual std::string ToString() const;
 
 
-
- private:
-
-  Int_t fNofCells;      /// Number of cells traversed
-  UShort_t fGapMask;    /// Set of gaps traversed
+private:
+  Int_t fNofCells;    /// Number of cells traversed
+  UShort_t fGapMask;  /// Set of gaps traversed
 
 
-  ClassDef(CbmTofPoint,3)
-
+  ClassDef(CbmTofPoint, 3)
 };
 
 
 #endif
-
-
-
-
-

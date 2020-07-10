@@ -1,6 +1,6 @@
 // Author: I. Froehlich
 // Written: 9.7.2007
-// Revised: 
+// Revised:
 // PValues Class Header
 
 #ifndef _PVALUES_H_
@@ -18,29 +18,27 @@
 #define IS_BREAKUP 10
 #define P_SCATTER 11
 
-class PValues: public TObject {
+class PValues : public TObject {
 
- public:
-    PValues();
-    
-    PValues(const PValues  & p);
+public:
+  PValues();
 
-
-    void Print(const Option_t*) const;
-    bool SetValue(int id , double val);
-    bool GetValue(int id , double * val);
-    int  StringToValueID(char * st);
+  PValues(const PValues& p);
 
 
- protected:
+  void Print(const Option_t*) const;
+  bool SetValue(int id, double val);
+  bool GetValue(int id, double* val);
+  int StringToValueID(char* st);
 
-    int array_id[MAX_VALUES];
-    double array_val[MAX_VALUES];
 
-    int pointer;
+protected:
+  int array_id[MAX_VALUES];
+  double array_val[MAX_VALUES];
 
-    ClassDef(PValues,0)  // User value container
+  int pointer;
 
+  ClassDef(PValues, 0)  // User value container
 };
 
 #endif

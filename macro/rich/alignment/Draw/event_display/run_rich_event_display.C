@@ -4,33 +4,32 @@
  * @version 1.0
  **/
 
-void run_rich_event_display()
-{
-//  TString outDir = "/data/Sim_Outputs/Event_Display/plusY/";
+void run_rich_event_display() {
+  //  TString outDir = "/data/Sim_Outputs/Event_Display/plusY/";
   TString outDir = "/data/Sim_Outputs/Position/plusY/";
-  TString name = "setup_v17a_1e_3mrad_plusY_";
+  TString name   = "setup_v17a_1e_3mrad_plusY_";
 
-  TString paramFile =  outDir + name + "param.root";
-  TString mcFile = outDir + name + "mc.root";
-  TString recoFile = outDir + name + "reco.root";
-  TString outFile = outDir + "ed.root";
+  TString paramFile = outDir + name + "param.root";
+  TString mcFile    = outDir + name + "mc.root";
+  TString recoFile  = outDir + name + "reco.root";
+  TString outFile   = outDir + "ed.root";
 
-  FairRunAna *run= new FairRunAna();
+  FairRunAna* run = new FairRunAna();
   run->SetInputFile(mcFile);
   run->AddFriend(recoFile);
   run->SetOutputFile(outFile);
 
-  CbmRichEventDisplay *ed = new CbmRichEventDisplay();
+  CbmRichEventDisplay* ed = new CbmRichEventDisplay();
   ed->SetDrawRings(true);
   ed->SetDrawHits(true);
-  ed->SetDrawPoints(false); //
+  ed->SetDrawPoints(false);  //
   ed->SetDrawProjections(true);
   string dirout = string(outDir.Data()) + "events/";
   ed->SetOutputDir(dirout);
   run->AddTask(ed);
 
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
-  FairParRootFileIo* parIo1 = new FairParRootFileIo();
+  FairRuntimeDb* rtdb        = run->GetRuntimeDb();
+  FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
   parIo1->open(paramFile.Data());
   rtdb->setFirstInput(parIo1);

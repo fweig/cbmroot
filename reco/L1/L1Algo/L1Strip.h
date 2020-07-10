@@ -9,53 +9,52 @@
 
 struct L1Branch;
 
-struct L1Strip{
-//  L1Strip():f(0),n(0){}
-//  L1Strip(fscal _f, unsigned short int _n = 0):f(_f),n(_n){}
-  
-   L1Strip():f(0){
-   }
-  L1Strip(fscal _f, unsigned short int /*_n*/ = 0):f(_f){ };
+struct L1Strip {
+  //  L1Strip():f(0),n(0){}
+  //  L1Strip(fscal _f, unsigned short int _n = 0):f(_f),n(_n){}
 
-  operator fscal() const { return f;}
-//   operator fvec() { return fscal(f);}
+  L1Strip() : f(0) {}
+  L1Strip(fscal _f, unsigned short int /*_n*/ = 0) : f(_f) {};
 
-// private:
+  operator fscal() const { return f; }
+  //   operator fvec() { return fscal(f);}
+
+  // private:
   fscal f;
- 
- // unsigned short int n; // number of event
+
+  // unsigned short int n; // number of event
 };
 
-struct L1StripSelectTracks{
-  
-  L1StripSelectTracks() : Cand(-1)
+struct L1StripSelectTracks {
+
+  L1StripSelectTracks()
+    : Cand(-1)
 #ifdef _OPENMP
-  , Occupied()
+    , Occupied()
 #endif
-  {   
+  {
 #ifdef _OPENMP
     omp_init_lock(&Occupied);
 #endif
-  //  Candidates.resize(70);
-   // Candidates2.resize(70);
-  //  Cand = -1;
+    //  Candidates.resize(70);
+    // Candidates2.resize(70);
+    //  Cand = -1;
   }
-  
-  ~L1StripSelectTracks()
-  {
+
+  ~L1StripSelectTracks() {
 #ifdef _OPENMP
     omp_destroy_lock(&Occupied);
 #endif
   }
-  
-//  L1Vector <L1Branch*> Candidates;
-//  L1Vector <int> Candidates2;
+
+  //  L1Vector <L1Branch*> Candidates;
+  //  L1Vector <int> Candidates2;
   int Cand;
 #ifdef _OPENMP
   omp_lock_t Occupied;
 #endif
 };
 
-typedef unsigned /*short*/ int TStripI; // strip index type
+typedef unsigned /*short*/ int TStripI;  // strip index type
 
 #endif

@@ -1,13 +1,14 @@
 #ifndef COMPARETRDDIGI_H
 #define COMPARETRDDIGI_H 1
 
-void compareTrdDigiDataMembers(CbmTrdDigi& test, 
-    Int_t padChNr, ECbmModuleId systemid, ULong64_t time,
-    Double_t charge)
-{
-  Int_t retValInt{-222};
-  Double_t retValDouble{-222.};
-  ECbmModuleId retVal{ECbmModuleId::kNotExist};
+void compareTrdDigiDataMembers(CbmTrdDigi& test,
+                               Int_t padChNr,
+                               ECbmModuleId systemid,
+                               ULong64_t time,
+                               Double_t charge) {
+  Int_t retValInt {-222};
+  Double_t retValDouble {-222.};
+  ECbmModuleId retVal {ECbmModuleId::kNotExist};
 
   retValInt = test.GetAddressChannel();
   EXPECT_EQ(padChNr, retValInt);
@@ -29,4 +30,4 @@ void compareTrdDigiDataMembers(CbmTrdDigi& test,
   EXPECT_FLOAT_EQ(static_cast<Double_t>(charge), retValDouble);
 }
 
-#endif // COMPARETRDDIGI_H
+#endif  // COMPARETRDDIGI_H

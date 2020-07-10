@@ -21,28 +21,25 @@
 * \author Alexander Ayriyan, Gennadi Ososkov, Claudia Hoehne, Semen Lebedev <s.lebedev@gsi.de>
 * \date 2012
 **/
-class CbmRichRingFitterTAU : public CbmRichRingFitterBase
-{
+class CbmRichRingFitterTAU : public CbmRichRingFitterBase {
 public:
-
-   /**
+  /**
     * \brief Default constructor.
     */
-   CbmRichRingFitterTAU();
+  CbmRichRingFitterTAU();
 
-   /**
+  /**
     * \brief Destructor.
     */
-   virtual ~CbmRichRingFitterTAU();
+  virtual ~CbmRichRingFitterTAU();
 
-   /**
+  /**
     * \brief Inherited from CbmRichRingFitterBase.
     */
-   virtual void DoFit(
-         CbmRichRingLight* ring);
+  virtual void DoFit(CbmRichRingLight* ring);
 
 private:
-   int fRobust;
+  int fRobust;
 };
 
 #endif

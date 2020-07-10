@@ -8,18 +8,16 @@
  */
 
 // In order to call later Finish, we make this global
-FairRunOnline *run = NULL;
+FairRunOnline* run = NULL;
 
-void Cern2017Monitor(TString inFile = "")
-{
+void Cern2017Monitor(TString inFile = "") {
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
   TString inDir  = srcDir + "/input/";
-  if( "" != inFile )
-   inFile = inDir + inFile;
+  if ("" != inFile) inFile = inDir + inFile;
 
   // --- Specify number of events to be produced.
   // --- -1 means run until the end of the input file.
-//  Int_t nEvents = 10000;
+  //  Int_t nEvents = 10000;
   Int_t nEvents = -1;
 
   // --- Specify output file name (this is just an example)
@@ -29,14 +27,14 @@ void Cern2017Monitor(TString inFile = "")
   // --- Set log output levels
   FairLogger::GetLogger();
   gLogger->SetLogScreenLevel("INFO");
-//  gLogger->SetLogScreenLevel("DEBUG");
+  //  gLogger->SetLogScreenLevel("DEBUG");
   gLogger->SetLogVerbosityLevel("LOW");
 
   // --- Define parameter files
-  TList *parFileList = new TList();
-  TString paramDir = "./";
+  TList* parFileList = new TList();
+  TString paramDir   = "./";
 
-  TString paramFileSts = paramDir + "StsUnpackPar.par";
+  TString paramFileSts          = paramDir + "StsUnpackPar.par";
   TObjString* tutDetDigiFileSts = new TObjString(paramFileSts);
   parFileList->Add(tutDetDigiFileSts);
 
@@ -53,27 +51,25 @@ void Cern2017Monitor(TString inFile = "")
   std::cout << ">>> Cern2017Monitor: Initialising..." << std::endl;
 
   // Sts Monitor
-//  CbmCern2017MonitorRawSts* monitorSts = new CbmCern2017MonitorRawSts();
+  //  CbmCern2017MonitorRawSts* monitorSts = new CbmCern2017MonitorRawSts();
   CbmCern2017MonitorSts* monitorSts = new CbmCern2017MonitorSts();
-//  monitorSts->SetPrintMessage();
+  //  monitorSts->SetPrintMessage();
   monitorSts->SetMsOverlap();
   monitorSts->EnableChanHitDtPlot();
-  monitorSts->SetPulserChannels( 0,  27, 0, 91,
-                                 4,  27, 4, 91);
-  monitorSts->SetLongDurationLimits( 3600, 10 );
-//  monitorSts->SetBetaFormatMode();
+  monitorSts->SetPulserChannels(0, 27, 0, 91, 4, 27, 4, 91);
+  monitorSts->SetLongDurationLimits(3600, 10);
+  //  monitorSts->SetBetaFormatMode();
 
   // --- Source task
   CbmFlibCern2016Source* source = new CbmFlibCern2016Source();
-  if( "" != inFile )
-      source->SetFileName(inFile);
-      else
-      {
-         source->SetHostName( "localhost");
-         source->SetPortNumber( 5556 );
-      }
+  if ("" != inFile)
+    source->SetFileName(inFile);
+  else {
+    source->SetHostName("localhost");
+    source->SetPortNumber(5556);
+  }
 
-  source->AddUnpacker(monitorSts,  0x10, 6); // stsXyter DPBs
+  source->AddUnpacker(monitorSts, 0x10, 6);  // stsXyter DPBs
 
   // --- Event header
   FairEventHeader* event = new CbmTbEvent();
@@ -83,12 +79,12 @@ void Cern2017Monitor(TString inFile = "")
   run = new FairRunOnline(source);
   run->SetOutputFile(outFile);
   run->SetEventHeader(event);
-  run->ActivateHttpServer(100); // refresh each 100 events
+  run->ActivateHttpServer(100);  // refresh each 100 events
   run->SetAutoFinish(kFALSE);
 
   // -----   Runtime database   ---------------------------------------------
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
-  Bool_t kParameterMerged = kTRUE;
+  FairRuntimeDb* rtdb       = run->GetRuntimeDb();
+  Bool_t kParameterMerged   = kTRUE;
   FairParRootFileIo* parOut = new FairParRootFileIo(kParameterMerged);
   FairParAsciiFileIo* parIn = new FairParAsciiFileIo();
   parOut->open(parFile.Data());
@@ -102,10 +98,11 @@ void Cern2017Monitor(TString inFile = "")
   TStopwatch timer;
   timer.Start();
   std::cout << ">>> Cern2017Monitor: Starting run..." << std::endl;
-  run->Run(nEvents, 0); // run until end of input file
+  run->Run(nEvents, 0);  // run until end of input file
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
+            << std::endl;
 
   run->Finish();
 
@@ -116,7 +113,7 @@ void Cern2017Monitor(TString inFile = "")
   std::cout << ">>> Cern2017Monitor: Macro finished successfully." << std::endl;
   std::cout << ">>> Cern2017Monitor: Output file is " << outFile << std::endl;
   std::cout << ">>> Cern2017Monitor: Real time " << rtime << " s, CPU time "
-	         << ctime << " s" << std::endl;
+            << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

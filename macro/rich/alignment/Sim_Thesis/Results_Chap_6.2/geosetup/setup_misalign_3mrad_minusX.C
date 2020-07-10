@@ -33,53 +33,52 @@
 //
 
 
-void setup_misalign_3mrad_minusX()
-{
+void setup_misalign_3mrad_minusX() {
 
   // -----  Geometry Tags  --------------------------------------------------
-  TString magnetGeoTag    = "v15a";
-  TString pipeGeoTag      = "v16c_1e";
-  TString mvdGeoTag       = "v15a";
-  TString stsGeoTag       = "v16x";
-  TString richGeoTag	  = "v17a_1e_3mrad_minusX";
-  TString trdGeoTag       = "v15a_3e";
-  TString tofGeoTag       = "v16a_3e";
-  TString psdGeoTag       = "psd_geo_xy.txt";
-  TString platGeoTag      = "v13a";
+  TString magnetGeoTag = "v15a";
+  TString pipeGeoTag   = "v16c_1e";
+  TString mvdGeoTag    = "v15a";
+  TString stsGeoTag    = "v16x";
+  TString richGeoTag   = "v17a_1e_3mrad_minusX";
+  TString trdGeoTag    = "v15a_3e";
+  TString tofGeoTag    = "v16a_3e";
+  TString psdGeoTag    = "psd_geo_xy.txt";
+  TString platGeoTag   = "v13a";
   // ------------------------------------------------------------------------
 
 
   // -----  Magnetic field  -------------------------------------------------
-  TString fieldTag      = "v12b";
-  Double_t fieldZ       = 40.;            // field centre z position
-  Double_t fieldScale   =  1.;            // field scaling factor
+  TString fieldTag    = "v12b";
+  Double_t fieldZ     = 40.;  // field centre z position
+  Double_t fieldScale = 1.;   // field scaling factor
   // ------------------------------------------------------------------------
 
 
   // -----  PSD  ------------------------------------------------------------
-  TString  psdGeoFile = "psd_geo_xy.txt";
-  Double_t psdZpos = 800.;
-  Double_t psdXpos = 11.;
+  TString psdGeoFile = "psd_geo_xy.txt";
+  Double_t psdZpos   = 800.;
+  Double_t psdXpos   = 11.;
   // ------------------------------------------------------------------------
 
 
   // -----  Create setup  ---------------------------------------------------
   CbmSetup* setup = CbmSetup::Instance();
-  if ( ! setup->IsEmpty() ) {
-  	std::cout << "-W- setup_align: overwriting existing setup"
-  			      << setup->GetTitle() << std::endl;
-  	setup->Clear();
+  if (!setup->IsEmpty()) {
+    std::cout << "-W- setup_align: overwriting existing setup"
+              << setup->GetTitle() << std::endl;
+    setup->Clear();
   }
   setup->SetTitle("SIS100 - Electron Setup");
   setup->SetModule(kMagnet, magnetGeoTag);
   setup->SetModule(kPipe, pipeGeoTag);
-//  setup->SetModule(kMvd, mvdGeoTag);
+  //  setup->SetModule(kMvd, mvdGeoTag);
   setup->SetModule(kSts, stsGeoTag);
   setup->SetModule(kRich, richGeoTag);
-//  setup->SetModule(kTrd, trdGeoTag);
-//  setup->SetModule(kTof, tofGeoTag);
+  //  setup->SetModule(kTrd, trdGeoTag);
+  //  setup->SetModule(kTof, tofGeoTag);
   setup->SetModule(kPlatform, platGeoTag);
-//  setup->SetPsd(psdGeoFile, psdZpos, psdXpos);
+  //  setup->SetPsd(psdGeoFile, psdZpos, psdXpos);
   setup->SetField(fieldTag, fieldScale, 0., 0., fieldZ);
   // ------------------------------------------------------------------------
 
@@ -87,5 +86,4 @@ void setup_misalign_3mrad_minusX()
   // -----   Screen output   ------------------------------------------------
   setup->Print();
   // ------------------------------------------------------------------------
-
 }

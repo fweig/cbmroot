@@ -28,15 +28,14 @@
  **/
 
 
-void run_digi(Int_t nEvents = 2,
-              const char* setupName = "sis100_electron",
-              const char* index = "00001",
-              TString dataSet = "data/test",
-            	Bool_t eventMode = kTRUE,          // Event-by-event mode
-              Double_t eventRate = 1.e7,        // Interaction rate [1/s]
-              Double_t timeSliceLength = 1.e4  // Length of time-slice [ns]
-              )
-{
+void run_digi(Int_t nEvents            = 2,
+              const char* setupName    = "sis100_electron",
+              const char* index        = "00001",
+              TString dataSet          = "data/test",
+              Bool_t eventMode         = kTRUE,  // Event-by-event mode
+              Double_t eventRate       = 1.e7,   // Interaction rate [1/s]
+              Double_t timeSliceLength = 1.e4    // Length of time-slice [ns]
+) {
 
   // --- Logger settings ----------------------------------------------------
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
@@ -47,27 +46,27 @@ void run_digi(Int_t nEvents = 2,
   // -----   Allow overwriting of output file   -----------------------------
   Bool_t overwrite = kTRUE;
   // ------------------------------------------------------------------------
- 
+
 
   // -----   File names   ---------------------------------------------------
   TString inFile  = dataSet + "_" + setupName + ".tra." + index + ".root";
   TString parFile = dataSet + "_" + setupName + ".par." + index + ".root";
   TString outFile = dataSet + "_" + setupName + ".raw." + index + ".root";
   TString monFile = dataSet + "_" + setupName + ".raw.moni." + index + ".root";
-  if ( eventMode ) {
+  if (eventMode) {
     outFile = dataSet + "_" + setupName + ".event.raw." + index + ".root";
     monFile = dataSet + "_" + setupName + ".event.raw.moni." + index + ".root";
   }
 
-   // -----   Timer   --------------------------------------------------------
+  // -----   Timer   --------------------------------------------------------
   TStopwatch timer;
   timer.Start();
   // ------------------------------------------------------------------------
- 
- 
+
+
   // -----   Digitization run   ---------------------------------------------
   CbmDigitization run;
-  
+
   run.AddInput(inFile, eventRate);
   run.SetOutputFile(outFile, overwrite);
   // run.SetMonitorFile(monFile);
@@ -75,7 +74,7 @@ void run_digi(Int_t nEvents = 2,
   run.SetTimeSliceLength(timeSliceLength);
   run.SetEventMode(eventMode);
   run.GenerateRunInfo(kFALSE);
-  
+
   // test with collection efficiency
   // CbmRichDigitizer* richDigitizer = new CbmRichDigitizer();
   // richDigitizer->SetCollectionEfficiency(0.0);
@@ -93,21 +92,22 @@ void run_digi(Int_t nEvents = 2,
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime
-            << " s" << std::endl << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
+            << std::endl
+            << std::endl;
   // ------------------------------------------------------------------------
 
 
   // -----   CTest resource monitoring   ------------------------------------
   FairSystemInfo sysInfo;
-  Float_t maxMemory=sysInfo.GetMaxMemory();
+  Float_t maxMemory = sysInfo.GetMaxMemory();
   std::cout << "<DartMeasurement name=\"MaxMemory\" type=\"numeric/double\">";
   std::cout << maxMemory;
   std::cout << "</DartMeasurement>" << std::endl;
   std::cout << "<DartMeasurement name=\"WallTime\" type=\"numeric/double\">";
   std::cout << rtime;
   std::cout << "</DartMeasurement>" << std::endl;
-  Float_t cpuUsage=ctime/rtime;
+  Float_t cpuUsage = ctime / rtime;
   std::cout << "<DartMeasurement name=\"CpuLoad\" type=\"numeric/double\">";
   std::cout << cpuUsage;
   std::cout << "</DartMeasurement>" << std::endl;
@@ -120,4 +120,4 @@ void run_digi(Int_t nEvents = 2,
   // ------------------------------------------------------------------------
 
 
-} // End of macro
+}  // End of macro

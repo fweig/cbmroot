@@ -9,11 +9,11 @@
 #define CBMSTSMC_H
 
 
-#include <map>
-#include "TClonesArray.h"
+#include "CbmStsTrackStatus.h"
 #include "FairDetector.h"
 #include "FairRootManager.h"
-#include "CbmStsTrackStatus.h"
+#include "TClonesArray.h"
+#include <map>
 
 class FairVolume;
 class CbmStsPoint;
@@ -30,23 +30,21 @@ class TGeoCombiTrans;
  ** transport simulation. It constructs the STS transport geometry
  ** and creates objects of type CbmStsPoints.
  **/
-class CbmStsMC : public FairDetector
-{
-	public:
-
-		/** Constructor
+class CbmStsMC : public FairDetector {
+public:
+  /** Constructor
 		 ** @param active   If set true, ProcessHits will be called and
 		 **                 CbmStsPoints will be created.
 		 ** @param name     Name of detector object
    	     **/
-		CbmStsMC(Bool_t active = kTRUE, const char* name = "STSMC");
+  CbmStsMC(Bool_t active = kTRUE, const char* name = "STSMC");
 
 
-		/** Destructor **/
-		virtual ~CbmStsMC();
+  /** Destructor **/
+  virtual ~CbmStsMC();
 
 
-		/** @brief Check whether a volume is sensitive.
+  /** @brief Check whether a volume is sensitive.
 		 **
 		 ** @param(name)  Volume name
 		 ** @value        kTRUE if volume is sensitive, else kFALSE
@@ -54,57 +52,57 @@ class CbmStsMC : public FairDetector
 		 ** The decision is based on the volume name (has to contain "Sensor").
 		 ** Virtual from FairModule.
 		 **/
-		virtual Bool_t CheckIfSensitive(std::string name) {
-			return ( TString(name).Contains("Sensor") ? kTRUE : kFALSE );
-		}
+  virtual Bool_t CheckIfSensitive(std::string name) {
+    return (TString(name).Contains("Sensor") ? kTRUE : kFALSE);
+  }
 
 
-		/** @brief Construct the STS geometry in the TGeoManager.
+  /** @brief Construct the STS geometry in the TGeoManager.
 		 **
 		 ** Only ROOT geometries are supported. The method
 		 ** FairModule::ConstructRootGeometry() is called.
 		 ** Virtual from FairModule.
 		 **/
-		virtual void ConstructGeometry();
+  virtual void ConstructGeometry();
 
 
-		/** @brief Action at end of event
+  /** @brief Action at end of event
 		 **
 		 ** Short status log and Reset().
 		 ** Virtual from FairDetector.
 		 **/
-		virtual void EndOfEvent();
+  virtual void EndOfEvent();
 
 
-		/**  @brief Initialisation
+  /**  @brief Initialisation
 		 **
 		 ** The output array is created and the map from full node path
 		 ** to unique address is filled from CbmStsSetup. Then, the base
 		 ** class method FairDetector::Initialize() is called.
 		 ** Virtual from FairDetector.
 		 **/
-		virtual void Initialize();
+  virtual void Initialize();
 
 
-		/** @brief Get array of CbmStsPoints
+  /** @brief Get array of CbmStsPoints
 		 ** @param iColl  number of point collection
 		 ** @return Pointer to StsPoint array. NULL if iColl > 0.
 		 **
 		 ** Abstract from FairDetector.
 		 **/
-		virtual TClonesArray* GetCollection(Int_t iColl) const {
-			return ( iColl ? NULL : fStsPoints );
-		}
+  virtual TClonesArray* GetCollection(Int_t iColl) const {
+    return (iColl ? NULL : fStsPoints);
+  }
 
 
-		/** @brief Screen log
+  /** @brief Screen log
 		 ** Prints current number of StsPoints in array.
 		 ** Virtual from TObject.
 		 **/
-		virtual void Print(Option_t* opt = "") const;
+  virtual void Print(Option_t* opt = "") const;
 
 
-		/** @brief Action for a track step in a sensitive node of the STS
+  /** @brief Action for a track step in a sensitive node of the STS
 		 **
 		 ** @param vol  Pointer to the active volume
 		 ** @return kTRUE
@@ -116,20 +114,20 @@ class CbmStsMC : public FairDetector
 		 ** neutral tracks are registered).
 		 ** Abstract from FairDetector.
 		 **/
-		virtual Bool_t ProcessHits(FairVolume* vol = 0);
+  virtual Bool_t ProcessHits(FairVolume* vol = 0);
 
 
-		/** @brief Register output array (StsPoint) to the I/O manager
+  /** @brief Register output array (StsPoint) to the I/O manager
 		 **
 		 ** Abstract from FairDetector.
 		 **/
-		virtual void Register() {
-			FairRootManager::Instance()->Register("StsPoint", GetName(),
-							      fStsPoints, kTRUE);
-		}
+  virtual void Register() {
+    FairRootManager::Instance()->Register(
+      "StsPoint", GetName(), fStsPoints, kTRUE);
+  }
 
 
-		/** @brief Create StsPoints also for neutral particles
+  /** @brief Create StsPoints also for neutral particles
 		 ** @param choice  If kTRUE, StsPoints are created also for neutrals
 		 **
 		 ** By default, StsPoints are only created if there is non-vanishing
@@ -140,52 +138,52 @@ class CbmStsMC : public FairDetector
 		 ** cases, the creation of StsPoints for neutrals can be activated
 		 ** by this method.
 		 **/
-		void ProcessNeutrals(Bool_t choice = kTRUE) {
-		  fProcessNeutrals = choice;
-		}
+  void ProcessNeutrals(Bool_t choice = kTRUE) { fProcessNeutrals = choice; }
 
 
-		/** @brief Clear output array and reset current track status
+  /** @brief Clear output array and reset current track status
 		 **
 		 ** Abstract from FairDetector.
 		 **/
-		virtual void Reset();
+  virtual void Reset();
 
-    virtual void        ConstructRootGeometry(TGeoMatrix* shift = NULL);
-  private:
+  virtual void ConstructRootGeometry(TGeoMatrix* shift = NULL);
 
-    CbmStsTrackStatus fStatusIn;   //! Track status at entry of sensor
-    CbmStsTrackStatus fStatusOut;  //! Track status at exit of sensor
-    Double_t          fEloss;      //! Accumulated energy loss for current track
-    std::map<TString, Int_t> fAddressMap;  ///< Map from full path to unique address
-    TClonesArray*     fStsPoints;  //!  Output array (CbmStsPoint)
-    CbmStsSetup*      fSetup;      //! Pointer to static instance of CbmStsSetup
-    TGeoCombiTrans*   fCombiTrans; //! Transformation matrix for geometry positioning
-    Bool_t fProcessNeutrals;      ///< Create points also for neutral particles
+private:
+  CbmStsTrackStatus fStatusIn;   //! Track status at entry of sensor
+  CbmStsTrackStatus fStatusOut;  //! Track status at exit of sensor
+  Double_t fEloss;               //! Accumulated energy loss for current track
+  std::map<TString, Int_t>
+    fAddressMap;             ///< Map from full path to unique address
+  TClonesArray* fStsPoints;  //!  Output array (CbmStsPoint)
+  CbmStsSetup* fSetup;       //! Pointer to static instance of CbmStsSetup
+  TGeoCombiTrans*
+    fCombiTrans;            //! Transformation matrix for geometry positioning
+  Bool_t fProcessNeutrals;  ///< Create points also for neutral particles
 
-    /** @brief Create a new StsPoint
+  /** @brief Create a new StsPoint
      ** Creates a new CbmStsPoint using the current track status information
      ** and adds it to the output TClonesArray.
      **/
-    CbmStsPoint* CreatePoint();
+  CbmStsPoint* CreatePoint();
 
-    
-    /** @brief Set the current track status
+
+  /** @brief Set the current track status
      *  Set the current track status (in or out) with parameters obtained
      ** from TVirtualMC (track ID, address, position, momentum, time, length).
      */
-    void SetStatus(CbmStsTrackStatus& status);
+  void SetStatus(CbmStsTrackStatus& status);
 
 
-    /** Copy constructor: usage prevented **/
-    CbmStsMC(const CbmStsMC&);
+  /** Copy constructor: usage prevented **/
+  CbmStsMC(const CbmStsMC&);
 
 
-    /** Assignment operator: usage prevented **/
-    CbmStsMC operator=(const CbmStsMC&);
+  /** Assignment operator: usage prevented **/
+  CbmStsMC operator=(const CbmStsMC&);
 
 
-    ClassDef(CbmStsMC,1);
+  ClassDef(CbmStsMC, 1);
 };
 
 #endif /* CBMSTSMC_H */

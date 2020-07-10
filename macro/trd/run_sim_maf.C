@@ -27,10 +27,9 @@
 #include "../include/rootalias.C"
 
 
-void run_sim_maf(Int_t nEvents = 10,
-		         const char* setupName = "sis100_electron",
-		         const char* inputFile = "")
-{
+void run_sim_maf(Int_t nEvents         = 10,
+                 const char* setupName = "sis100_electron",
+                 const char* inputFile = "") {
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -42,15 +41,19 @@ void run_sim_maf(Int_t nEvents = 10,
 
 
   // -----   In- and output file names   ------------------------------------
-  TString inFile = inputFile; // give here or as argument; otherwise default is taken
+  TString inFile =
+    inputFile;  // give here or as argument; otherwise default is taken
   //TString outDir  = "/gluster2/cbm/sim/data/";
-  TString outDir  = inFile;//"/opt/CBM/Daten/";
+  TString outDir = inFile;  //"/opt/CBM/Daten/";
   outDir.Resize(outDir.Last('/'));
-  TRegexp Nr ("[.][0-9][0-9][0-9][0-9][0-9][.]");
-  TString outFile = outDir + setupName + TString(inputFile)(Nr) + "_test.raw.root";
-  TString parFile = outDir + setupName + TString(inputFile)(Nr) + "_params.root";
-  TString geoFile = outDir + setupName + TString(inputFile)(Nr) + "_geofile_full.root";
- 
+  TRegexp Nr("[.][0-9][0-9][0-9][0-9][0-9][.]");
+  TString outFile =
+    outDir + setupName + TString(inputFile)(Nr) + "_test.raw.root";
+  TString parFile =
+    outDir + setupName + TString(inputFile)(Nr) + "_params.root";
+  TString geoFile =
+    outDir + setupName + TString(inputFile)(Nr) + "_geofile_full.root";
+
   // ------------------------------------------------------------------------
 
 
@@ -62,9 +65,9 @@ void run_sim_maf(Int_t nEvents = 10,
 
   // -----   Load the geometry setup   -------------------------------------
   std::cout << std::endl;
-  TString setupFile = srcDir + "/geometry/setup/setup_" + setupName + ".C";
+  TString setupFile  = srcDir + "/geometry/setup/setup_" + setupName + ".C";
   TString setupFunct = "setup_";
-  setupFunct = setupFunct + setupName + "()";
+  setupFunct         = setupFunct + setupName + "()";
   std::cout << "-I- " << myName << ": Loading macro " << setupFile << std::endl;
   gROOT->LoadMacro(setupFile);
   gROOT->ProcessLine(setupFunct);
@@ -74,30 +77,33 @@ void run_sim_maf(Int_t nEvents = 10,
   // -----   Parameter files as input to the runtime database   -------------
   std::cout << std::endl;
   std::cout << "-I- " << myName << ": Defining parameter files " << std::endl;
-  TList *parFileList = new TList();
+  TList* parFileList = new TList();
   TString geoTag;
   CbmSetup* setup = CbmSetup::Instance();
 
   setupFunct = setupFunct + setupName + "()";
   // - TRD digitisation parameters
-  if ( setup->GetGeoTag(kTrd, geoTag) ) {
-  	TObjString* trdFile = new TObjString(srcDir + "/parameters/trd/trd_" + geoTag + ".digi.par");
-  	parFileList->Add(trdFile);
+  if (setup->GetGeoTag(kTrd, geoTag)) {
+    TObjString* trdFile =
+      new TObjString(srcDir + "/parameters/trd/trd_" + geoTag + ".digi.par");
+    parFileList->Add(trdFile);
     std::cout << "-I- " << myName << ": Using parameter file "
-    		      << trdFile->GetString() << std::endl;
+              << trdFile->GetString() << std::endl;
   }
 
   // - TOF digitisation parameters
-  if ( setup->GetGeoTag(kTof, geoTag) ) {
-  	TObjString* tofFile = new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digi.par");
-        parFileList->Add(tofFile);
+  if (setup->GetGeoTag(kTof, geoTag)) {
+    TObjString* tofFile =
+      new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digi.par");
+    parFileList->Add(tofFile);
     std::cout << "-I- " << myName << ": Using parameter file "
-    		      << tofFile->GetString() << std::endl;
+              << tofFile->GetString() << std::endl;
 
-        TObjString* tofBdfFile = new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
-	parFileList->Add(tofBdfFile);
+    TObjString* tofBdfFile =
+      new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
+    parFileList->Add(tofBdfFile);
     std::cout << "-I- " << myName << ": Using parameter file "
-	      << tofBdfFile->GetString() << std::endl;
+              << tofBdfFile->GetString() << std::endl;
   }
   // ------------------------------------------------------------------------
 
@@ -112,13 +118,13 @@ void run_sim_maf(Int_t nEvents = 10,
   // in the responsibility of the user that no overlaps or extrusions are
   // created by the placement of the target.
   //
-  TString  targetElement   = "Gold";
+  TString targetElement    = "Gold";
   Double_t targetThickness = 0.025;  // full thickness in cm
   Double_t targetDiameter  = 2.5;    // diameter in cm
   Double_t targetPosX      = 0.;     // target x position in global c.s. [cm]
   Double_t targetPosY      = 0.;     // target y position in global c.s. [cm]
   Double_t targetPosZ      = 0.;     // target z position in global c.s. [cm]
-  Double_t targetRotY      = 0.;     // target rotation angle around the y axis [deg]
+  Double_t targetRotY = 0.;  // target rotation angle around the y axis [deg]
   // ------------------------------------------------------------------------
 
 
@@ -132,8 +138,8 @@ void run_sim_maf(Int_t nEvents = 10,
   //
   Bool_t smearVertexXY = kTRUE;
   Bool_t smearVertexZ  = kTRUE;
-  Double_t beamWidthX   = 1.;  // Gaussian sigma of the beam profile in x [cm]
-  Double_t beamWidthY   = 1.;  // Gaussian sigma of the beam profile in y [cm]
+  Double_t beamWidthX  = 1.;  // Gaussian sigma of the beam profile in x [cm]
+  Double_t beamWidthY  = 1.;  // Gaussian sigma of the beam profile in y [cm]
   // ------------------------------------------------------------------------
 
 
@@ -153,18 +159,16 @@ void run_sim_maf(Int_t nEvents = 10,
 
 
   // -----   Remove old CTest runtime dependency file   ---------------------
-  TString depFile = Remove_CTest_Dependency_File(outDir, "run_sim" , setupName);
+  TString depFile = Remove_CTest_Dependency_File(outDir, "run_sim", setupName);
   // ------------------------------------------------------------------------
-
 
 
   // -----   Create simulation run   ----------------------------------------
   FairRunSim* run = new FairRunSim();
-  run->SetName("TGeant3");              // Transport engine
-  run->SetOutputFile(outFile);          // Output file
-  run->SetGenerateRunInfo(kTRUE);       // Create FairRunInfo file
+  run->SetName("TGeant3");         // Transport engine
+  run->SetOutputFile(outFile);     // Output file
+  run->SetGenerateRunInfo(kTRUE);  // Create FairRunInfo file
   // ------------------------------------------------------------------------
-
 
 
   // -----   Logger settings   ----------------------------------------------
@@ -177,11 +181,11 @@ void run_sim_maf(Int_t nEvents = 10,
   // -----   Input file   ---------------------------------------------------
   std::cout << std::endl;
   TString defaultInputFile = srcDir + "/input/urqmd.auau.10gev.centr.root";
-  if ( inFile.IsNull() ) {  // Not defined in the macro explicitly
-  	if ( strcmp(inputFile, "") == 0 ) {  // not given as argument to the macro
-  		inFile = defaultInputFile;
-  	}
-  	else inFile = inputFile;
+  if (inFile.IsNull()) {               // Not defined in the macro explicitly
+    if (strcmp(inputFile, "") == 0) {  // not given as argument to the macro
+      inFile = defaultInputFile;
+    } else
+      inFile = inputFile;
   }
   std::cout << "-I- " << myName << ": Using input file " << inFile << std::endl;
   // ------------------------------------------------------------------------
@@ -190,7 +194,7 @@ void run_sim_maf(Int_t nEvents = 10,
   // -----   Create media   -------------------------------------------------
   std::cout << std::endl;
   std::cout << "-I- " << myName << ": Setting media file" << std::endl;
-  run->SetMaterials("media.geo");       // Materials
+  run->SetMaterials("media.geo");  // Materials
   // ------------------------------------------------------------------------
 
 
@@ -207,9 +211,8 @@ void run_sim_maf(Int_t nEvents = 10,
   // -----   Create and register the target   -------------------------------
   std::cout << std::endl;
   std::cout << "-I- " << myName << ": Registering target" << std::endl;
-  CbmTarget* target = new CbmTarget(targetElement.Data(),
-  		                              targetThickness,
-  		                              targetDiameter);
+  CbmTarget* target =
+    new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
   target->SetPosition(targetPosX, targetPosY, targetPosZ);
   target->SetRotation(targetRotY);
   target->Print();
@@ -221,9 +224,9 @@ void run_sim_maf(Int_t nEvents = 10,
   std::cout << std::endl;
   std::cout << "-I- " << myName << ": Registering magnetic field" << std::endl;
   CbmFieldMap* magField = CbmSetup::Instance()->CreateFieldMap();
-  if ( ! magField ) {
-  	std::cout << "-E- " << myName << ": No valid field!";
-  	return;
+  if (!magField) {
+    std::cout << "-E- " << myName << ": No valid field!";
+    return;
   }
   run->SetField(magField);
   // ------------------------------------------------------------------------
@@ -231,18 +234,19 @@ void run_sim_maf(Int_t nEvents = 10,
 
   // -----   Create PrimaryGenerator   --------------------------------------
   std::cout << std::endl;
-  std::cout << "-I- " << myName << ": Registering event generators" << std::endl;
+  std::cout << "-I- " << myName << ": Registering event generators"
+            << std::endl;
   FairPrimaryGenerator* primGen = new FairPrimaryGenerator();
   // --- Uniform distribution of event plane angle
   primGen->SetEventPlane(0., 2. * TMath::Pi());
   // --- Get target parameters
-  Double_t tX = 0.;
-  Double_t tY = 0.;
-  Double_t tZ = 0.;
+  Double_t tX  = 0.;
+  Double_t tY  = 0.;
+  Double_t tZ  = 0.;
   Double_t tDz = 0.;
-  if ( target ) {
-  	target->GetPosition(tX, tY, tZ);
-  	tDz = target->GetThickness();
+  if (target) {
+    target->GetPosition(tX, tY, tZ);
+    tDz = target->GetThickness();
   }
   primGen->SetTarget(tZ, tDz);
   primGen->SetBeam(0., 0., beamWidthX, beamWidthY);
@@ -256,7 +260,7 @@ void run_sim_maf(Int_t nEvents = 10,
   // ------------------------------------------------------------------------
 
   // Use the CbmUnigenGenrator for the input
-  CbmUnigenGenerator*  uniGen = new CbmUnigenGenerator(inFile);
+  CbmUnigenGenerator* uniGen = new CbmUnigenGenerator(inFile);
   primGen->AddGenerator(uniGen);
   run->SetGenerator(primGen);
   // ------------------------------------------------------------------------
@@ -275,17 +279,17 @@ void run_sim_maf(Int_t nEvents = 10,
   // -----   Runtime database   ---------------------------------------------
   std::cout << std::endl << std::endl;
   std::cout << "-I- " << myName << ": Set runtime DB" << std::endl;
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
+  FairRuntimeDb* rtdb   = run->GetRuntimeDb();
   CbmFieldPar* fieldPar = (CbmFieldPar*) rtdb->getContainer("CbmFieldPar");
   fieldPar->SetParameters(magField);
   fieldPar->setChanged();
-  fieldPar->setInputVersion(run->GetRunId(),1);
+  fieldPar->setInputVersion(run->GetRunId(), 1);
   // ASCII I/O
   FairParAsciiFileIo* asciiIo = new FairParAsciiFileIo();
   asciiIo->open(parFileList, "in");
   rtdb->setFirstInput(asciiIo);
   // ROOT parameter I/O
-  Bool_t kParameterMerged = kTRUE;
+  Bool_t kParameterMerged   = kTRUE;
   FairParRootFileIo* rootIo = new FairParRootFileIo(kParameterMerged);
   rootIo->open(parFile.Data());
   rtdb->setOutput(rootIo);
@@ -315,25 +319,26 @@ void run_sim_maf(Int_t nEvents = 10,
   Double_t ctime = timer.CpuTime();
   std::cout << std::endl << std::endl;
   std::cout << "Macro finished successfully." << std::endl;
-  std::cout << "Output file is "    << outFile << std::endl;
+  std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Geometry file is "  << geoFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime
-            << "s" << std::endl << std::endl;
+  std::cout << "Geometry file is " << geoFile << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s"
+            << std::endl
+            << std::endl;
   // ------------------------------------------------------------------------
 
 
   // -----   Resource monitoring   ------------------------------------------
-  if ( Has_Fair_Monitor() ) {      // FairRoot Version >= 15.11
+  if (Has_Fair_Monitor()) {  // FairRoot Version >= 15.11
     // Extract the maximal used memory an add is as Dart measurement
     // This line is filtered by CTest and the value send to CDash
     FairSystemInfo sysInfo;
-    Float_t maxMemory=sysInfo.GetMaxMemory();
+    Float_t maxMemory = sysInfo.GetMaxMemory();
     std::cout << "<DartMeasurement name=\"MaxMemory\" type=\"numeric/double\">";
     std::cout << maxMemory;
     std::cout << "</DartMeasurement>" << std::endl;
 
-    Float_t cpuUsage=ctime/rtime;
+    Float_t cpuUsage = ctime / rtime;
     std::cout << "<DartMeasurement name=\"CpuLoad\" type=\"numeric/double\">";
     std::cout << cpuUsage;
     std::cout << "</DartMeasurement>" << std::endl;
@@ -345,6 +350,4 @@ void run_sim_maf(Int_t nEvents = 10,
   // Function needed for CTest runtime dependency
   Generate_CTest_Dependency_File(depFile);
   // ------------------------------------------------------------------------
-
 }
-

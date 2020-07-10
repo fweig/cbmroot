@@ -27,12 +27,11 @@
  ** @param inputFile  Name of input file
  ** @param iDecay     Decay mode from KFPartEfficiencies
  **/
-void kf_transport_new(Int_t nEvents = 2,
-                   const char* setupName = "sis100_electron",
-                   const char* output = "test",
-                   const char* inputFile = "",
-                   Int_t iDecay = -1)
-{
+void kf_transport_new(Int_t nEvents         = 2,
+                      const char* setupName = "sis100_electron",
+                      const char* output    = "test",
+                      const char* inputFile = "",
+                      Int_t iDecay          = -1) {
 
   // --- Logger settings ----------------------------------------------------
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
@@ -54,10 +53,11 @@ void kf_transport_new(Int_t nEvents = 2,
   std::cout << std::endl;
   TString defaultInputFile = srcDir + "/input/urqmd.auau.10gev.centr.root";
   TString inFile;
-  if ( strcmp(inputFile, "") == 0 ) inFile = defaultInputFile;
-  else inFile = inputFile;
-  std::cout << "-I- " << myName << ": Using input file " << inFile
-      << std::endl;
+  if (strcmp(inputFile, "") == 0)
+    inFile = defaultInputFile;
+  else
+    inFile = inputFile;
+  std::cout << "-I- " << myName << ": Using input file " << inFile << std::endl;
   // ------------------------------------------------------------------------
 
 
@@ -80,33 +80,39 @@ void kf_transport_new(Int_t nEvents = 2,
 
 
   // --- Force the desired decay for the chosen particle   ------------------
-  if ( iDecay > -1 ) {
+  if (iDecay > -1) {
 
     KFPartEfficiencies eff;
     Int_t pdgid = eff.partPDG[iDecay];
-    std::cout << "-I- " << myName << ": Setting decay " << iDecay
-        << " ( " << eff.partTitle[iDecay] << ", pdg " << pdgid
-        << " )" << std::endl;
+    std::cout << "-I- " << myName << ": Setting decay " << iDecay << " ( "
+              << eff.partTitle[iDecay] << ", pdg " << pdgid << " )"
+              << std::endl;
 
     // Check if particle is in TDatabasePDG. If yes, it is probably known to the VMC.
     // Unfortunately, there is no better check available
-    if ( ! TDatabasePDG::Instance()->GetParticle(pdgid) ) {
-      auto particle = new FairParticle(pdgid,   // PDG code
+    if (!TDatabasePDG::Instance()->GetParticle(pdgid)) {
+      auto particle = new FairParticle(pdgid,  // PDG code
                                        eff.partTitle[iDecay].data(),  // name
                                        kPTHadron,                     // type
                                        eff.partMass[iDecay],          // mass
                                        eff.partCharge[iDecay],        // charge
-                                       eff.partLifeTime[iDecay],      // life time
-                                       "hadron",                      // type string
-                                       0.,                            // width
-                                       1, 1, 0,        // spin, parity, conjugation
-                                       1, 1, 0,        // isospin, isospin-z, g-Parity
-                                       0, 1,           // lepton number, baryon number
-                                       kFALSE);        // stable
+                                       eff.partLifeTime[iDecay],  // life time
+                                       "hadron",                  // type string
+                                       0.,                        // width
+                                       1,
+                                       1,
+                                       0,  // spin, parity, conjugation
+                                       1,
+                                       1,
+                                       0,  // isospin, isospin-z, g-Parity
+                                       0,
+                                       1,        // lepton number, baryon number
+                                       kFALSE);  // stable
       FairRunSim::Instance()->AddNewParticle(particle);
-      std::cout << "-I- " << myName << ": Registering particle " << eff.partTitle[iDecay]
-          << " with PDG code " << pdgid << " for transport." << std::endl;
-     } //? Not in PDG database
+      std::cout << "-I- " << myName << ": Registering particle "
+                << eff.partTitle[iDecay] << " with PDG code " << pdgid
+                << " for transport." << std::endl;
+    }  //? Not in PDG database
 
     // TODO: I am not particularly fond of the above code. KFPartEfficiencies uses
     // a different, privately defined PDG for different decay modes of the same particles.
@@ -126,10 +132,10 @@ void kf_transport_new(Int_t nEvents = 2,
     Int_t daughterPdg[nDaughters];
     for (Int_t iDaughter = 0; iDaughter < nDaughters; iDaughter++) {
       daughterPdg[iDaughter] = eff.GetDaughterPDG(iDecay, iDaughter);
-    } //# daughters
+    }  //# daughters
     run.SetDecayMode(pdgid, nDaughters, daughterPdg);
 
-  } //? iDecay > -1
+  }  //? iDecay > -1
   // ------------------------------------------------------------------------
 
 
@@ -144,21 +150,22 @@ void kf_transport_new(Int_t nEvents = 2,
   Double_t ctime = timer.CpuTime();
   std::cout << std::endl << std::endl;
   std::cout << "Macro finished successfully." << std::endl;
-  std::cout << "Output file is "    << outFile << std::endl;
+  std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime
-      << "s" << std::endl << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s"
+            << std::endl
+            << std::endl;
   // ------------------------------------------------------------------------
 
 
   // -----   Resource monitoring   ------------------------------------------
   FairSystemInfo sysInfo;
-  Float_t maxMemory=sysInfo.GetMaxMemory();
+  Float_t maxMemory = sysInfo.GetMaxMemory();
   std::cout << "<DartMeasurement name=\"MaxMemory\" type=\"numeric/double\">";
   std::cout << maxMemory;
   std::cout << "</DartMeasurement>" << std::endl;
 
-  Float_t cpuUsage=ctime/rtime;
+  Float_t cpuUsage = ctime / rtime;
   std::cout << "<DartMeasurement name=\"CpuLoad\" type=\"numeric/double\">";
   std::cout << cpuUsage;
   std::cout << "</DartMeasurement>" << std::endl;
@@ -168,5 +175,4 @@ void kf_transport_new(Int_t nEvents = 2,
   std::cout << " All ok " << std::endl;
   // ------------------------------------------------------------------------
 
-} // End of macro
-
+}  // End of macro

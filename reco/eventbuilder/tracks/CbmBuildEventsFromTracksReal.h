@@ -5,31 +5,28 @@
 #ifndef CBMBUILDEVENTSFROMTRACKSREAL_H_
 #define CBMBUILDEVENTSFROMTRACKSREAL_H 1
 
-#include <FairTask.h>
 #include "CbmStsTrack.h"
+#include <FairTask.h>
 
 class TClonesArray;
 class CbmMCEventList;
 
-class CbmBuildEventsFromTracksReal: public FairTask 
-{
- public:
-
+class CbmBuildEventsFromTracksReal : public FairTask {
+public:
   /** Constructor **/
   CbmBuildEventsFromTracksReal();
 
   CbmBuildEventsFromTracksReal(const CbmBuildEventsFromTracksReal&) = delete;
-  CbmBuildEventsFromTracksReal& operator=(const CbmBuildEventsFromTracksReal&) = delete;
+  CbmBuildEventsFromTracksReal&
+  operator=(const CbmBuildEventsFromTracksReal&) = delete;
   /** Destructor **/
   virtual ~CbmBuildEventsFromTracksReal();
 
   /** Task execution **/
   virtual void Exec(Option_t* opt);
 
- private:
-   
-  struct SortTracks 
-  {
+private:
+  struct SortTracks {
     CbmStsTrack Track;
     int index;
     bool used;
@@ -37,15 +34,17 @@ class CbmBuildEventsFromTracksReal: public FairTask
     SortTracks() : Track(), index(-1), used(false) {}
   };
 
-  static bool CompareTrackTime(const SortTracks& a, const SortTracks& b) { return (a.Track.GetTime() < b.Track.GetTime()); }
+  static bool CompareTrackTime(const SortTracks& a, const SortTracks& b) {
+    return (a.Track.GetTime() < b.Track.GetTime());
+  }
 
-  TClonesArray* fStsTracks;   ///< Input array (class CbmStsDigi)
+  TClonesArray* fStsTracks;  ///< Input array (class CbmStsDigi)
   TClonesArray* fEvents;     ///< Output array (class CbmEvent)
 
   /** Task initialisation **/
   virtual InitStatus Init();
 
- 
+
   ClassDef(CbmBuildEventsFromTracksReal, 1);
 };
 

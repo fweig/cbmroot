@@ -3,35 +3,36 @@
 
 #pragma GCC diagnostic ignored "-Weffc++"
 
-#include "Rtypes.h"
 #include "LxSettings.h"
-#include <map>
-#include <list>
+#include "Rtypes.h"
 #include <iostream>
+#include <list>
+#include <map>
 
 class LxFinderTriplet;
 class LxPoint;
 
-struct LxEff
-{
+struct LxEff {
   explicit LxEff(LxFinderTriplet& owner);
   void CalcRecoEff(bool joinExt);
-  void AnalyzeNotMatchedMC(std::ofstream& out, std::list<LxPoint*> hits[LXSTATIONS][LXLAYERS]);
+  void AnalyzeNotMatchedMC(std::ofstream& out,
+                           std::list<LxPoint*> hits[LXSTATIONS][LXLAYERS]);
 #ifdef CLUSTER_MODE
-  void AnalyzeNotMatched(std::ofstream& out, std::list<LxPoint*> hits[LXSTATIONS][LXLAYERS]);
-  void AnalyzeNotMatched2(std::ofstream& out, std::list<LxPoint*> hits[LXSTATIONS][LXLAYERS]);
+  void AnalyzeNotMatched(std::ofstream& out,
+                         std::list<LxPoint*> hits[LXSTATIONS][LXLAYERS]);
+  void AnalyzeNotMatched2(std::ofstream& out,
+                          std::list<LxPoint*> hits[LXSTATIONS][LXLAYERS]);
   void DumpNotMatchedMC(std::list<LxPoint*> hits[LXSTATIONS][LXLAYERS]);
-#endif//CLUSTER_MODE
+#endif  //CLUSTER_MODE
   LxFinderTriplet& finder;
 };
 
 struct LxMCTrack;
 
-struct LxStsMCPoint
-{
+struct LxStsMCPoint {
   Double_t p, q, x, y, z, px, py, pz;
   Int_t stationNumber;
   LxMCTrack* mcTrack;
 };
 
-#endif//LXEFF_INCLUDED
+#endif  //LXEFF_INCLUDED

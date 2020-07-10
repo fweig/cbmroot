@@ -22,23 +22,21 @@
 class TClonesArray;
 
 
-class CbmTrackMerger : public TObject 
-{
+class CbmTrackMerger : public TObject {
 
- public:
-
+public:
   /** Default constructor **/
- CbmTrackMerger() : TObject(), fVerbose(0) { };
+  CbmTrackMerger() : TObject(), fVerbose(0) {};
 
 
   /** Destructor **/
-  virtual ~CbmTrackMerger() { };
+  virtual ~CbmTrackMerger() {};
 
 
   /** Virtual method Init. If needed, to be implemented in the
    ** concrete class. Else no action.
    **/
-  virtual void Init() { };
+  virtual void Init() {};
 
 
   /** Abstract method DoMerge. To be implemented in the derived classes.
@@ -52,8 +50,8 @@ class CbmTrackMerger : public TObject
    *@value Number of merged STS+TRD tracks
    **/
   virtual Int_t DoMerge(TClonesArray* stsTracks,
-			TClonesArray* trdTracks,
-			TClonesArray* glbTracks) = 0;
+                        TClonesArray* trdTracks,
+                        TClonesArray* glbTracks) = 0;
 
 
   /** Set verbosity 
@@ -62,15 +60,11 @@ class CbmTrackMerger : public TObject
   void SetVerbose(Int_t verbose) { fVerbose = verbose; };
 
 
-
- protected:
-
-  Int_t fVerbose;         // Verbosity level
+protected:
+  Int_t fVerbose;  // Verbosity level
 
 
-  ClassDef(CbmTrackMerger,1);
-
+  ClassDef(CbmTrackMerger, 1);
 };
 
 #endif
-

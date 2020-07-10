@@ -7,16 +7,14 @@
 class CbmMuchHit;
 class CbmKFTrackInterface;
 
-class CbmL1MuchHit : public CbmKFHit
-{
- public:
+class CbmL1MuchHit : public CbmKFHit {
+public:
+  CbmL1MuchHit() {}
+  CbmL1MuchHit(CbmMuchHit* h, int index) { Create(h, index); }
+  ~CbmL1MuchHit() {}
 
-  CbmL1MuchHit(){}
-  CbmL1MuchHit( CbmMuchHit *h, int index ){ Create(h, index); }
-  ~CbmL1MuchHit(){}
-
-  void Create( CbmMuchHit *h, int index );  
-  Int_t Filter( CbmKFTrackInterface &track, Bool_t downstream, Double_t &QP0 );
+  void Create(CbmMuchHit* h, int index);
+  Int_t Filter(CbmKFTrackInterface& track, Bool_t downstream, Double_t& QP0);
 
   CbmKFPixelMeasurement FitPoint;
 
@@ -25,7 +23,7 @@ class CbmL1MuchHit : public CbmKFHit
   Double_t time;
   bool busy;
 
- public:
+public:
   ClassDef(CbmL1MuchHit, 1);
 };
 

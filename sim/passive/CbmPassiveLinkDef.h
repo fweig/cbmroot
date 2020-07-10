@@ -5,12 +5,12 @@
 #pragma link off all globals;
 #pragma link off all classes;
 #pragma link off all functions;
- 
-#pragma link C++ class  CbmMagnet+;
-#pragma link C++ class  CbmPipe+;
-#pragma link C++ class  CbmPlatform+;
+
+#pragma link C++ class CbmMagnet + ;
+#pragma link C++ class CbmPipe + ;
+#pragma link C++ class CbmPlatform + ;
 //#pragma link C++ class  CbmShield+;
-#pragma link C++ class  CbmCave+;
+#pragma link C++ class CbmCave + ;
 
 #pragma link C++ class CbmGeoCave;
 //#pragma link C++ class CbmGeoPipe;
@@ -21,4 +21,3 @@
 #pragma link C++ class CbmPassiveContFact;
 
 #endif
-

@@ -1,5 +1,7 @@
-void build_events( TString fileName, UInt_t uRunId = 0, Int_t nEvents = 0, TString outDir="data/")
-{
+void build_events(TString fileName,
+                  UInt_t uRunId  = 0,
+                  Int_t nEvents  = 0,
+                  TString outDir = "data/") {
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -10,7 +12,7 @@ void build_events( TString fileName, UInt_t uRunId = 0, Int_t nEvents = 0, TStri
   // --- Set log output levels
   FairLogger::GetLogger();
   gLogger->SetLogScreenLevel("INFO");
-//  gLogger->SetLogScreenLevel("DEBUG");
+  //  gLogger->SetLogScreenLevel("DEBUG");
   gLogger->SetLogVerbosityLevel("MEDIUM");
 
   // MC file
@@ -23,60 +25,60 @@ void build_events( TString fileName, UInt_t uRunId = 0, Int_t nEvents = 0, TStri
   // ------------------------------------------------------------------------
 
   // -----  Analysis run   --------------------------------------------------
-  FairRunAna *fRun= new FairRunAna();
+  FairRunAna* fRun = new FairRunAna();
   fRun->SetEventHeaderPersistence(kFALSE);
 
   FairFileSource* inputSource = new FairFileSource(fileName);
   fRun->SetSource(inputSource);
 
-  TString runId = TString::Format("%03u", uRunId);
-  TString outFile = outDir + "/events_" + runId + ".root";
+  TString runId                = TString::Format("%03u", uRunId);
+  TString outFile              = outDir + "/events_" + runId + ".root";
   FairRootFileSink* outputSink = new FairRootFileSink(outFile);
   fRun->SetSink(outputSink);
 
   // Define output file for FairMonitor histograms
-//  TString monitorFile{outFile};
-//  monitorFile.ReplaceAll("qa","qa.monitor");
+  //  TString monitorFile{outFile};
+  //  monitorFile.ReplaceAll("qa","qa.monitor");
   FairMonitor::GetMonitor()->EnableMonitor(kFALSE);
   // ------------------------------------------------------------------------
 
   CbmMcbm2018EventBuilder* eventBuilder = new CbmMcbm2018EventBuilder();
-//  eventBuilder->SetEventBuilderAlgo(EventBuilderAlgo::MaximumTimeGap);
-//  eventBuilder->SetMaximumTimeGap(100.);
+  //  eventBuilder->SetEventBuilderAlgo(EventBuilderAlgo::MaximumTimeGap);
+  //  eventBuilder->SetMaximumTimeGap(100.);
   eventBuilder->SetEventBuilderAlgo(EventBuilderAlgo::FixedTimeWindow);
   eventBuilder->SetFixedTimeWindow(50.);
   eventBuilder->SetTriggerMinNumberT0(1);
   eventBuilder->SetTriggerMinNumberSts(0);
   eventBuilder->SetTriggerMinNumberMuch(0);
   eventBuilder->SetTriggerMinNumberTof(1);
-  eventBuilder->SetFillHistos( kTRUE );
-  if( 0 < uRunId )
-    eventBuilder->SetOutFilename( Form( "%sHistosEventBuilder_%03u.root", outDir.Data(), uRunId ) );
+  eventBuilder->SetFillHistos(kTRUE);
+  if (0 < uRunId)
+    eventBuilder->SetOutFilename(
+      Form("%sHistosEventBuilder_%03u.root", outDir.Data(), uRunId));
   fRun->AddTask(eventBuilder);
 
   // -----  Parameter database   --------------------------------------------
-//  FairRuntimeDb* rtdb = fRun->GetRuntimeDb();
-//  FairParRootFileIo* parIo1 = new FairParRootFileIo();
-//  parIo1->open(parFile.Data(),"UPDATE");
-//  rtdb->setFirstInput(parIo1);
+  //  FairRuntimeDb* rtdb = fRun->GetRuntimeDb();
+  //  FairParRootFileIo* parIo1 = new FairParRootFileIo();
+  //  parIo1->open(parFile.Data(),"UPDATE");
+  //  rtdb->setFirstInput(parIo1);
   // ------------------------------------------------------------------------
 
 
   // -----   Intialise and run   --------------------------------------------
   fRun->Init();
 
-//  rtdb->setOutput(parIo1);
-//  rtdb->saveOutput();
-//  rtdb->print();
+  //  rtdb->setOutput(parIo1);
+  //  rtdb->saveOutput();
+  //  rtdb->print();
 
   cout << "Starting run" << endl;
-  if ( 0 == nEvents) {
-    fRun->Run(0, 0); // run until end of input file
+  if (0 == nEvents) {
+    fRun->Run(0, 0);  // run until end of input file
   } else {
-    fRun->Run(0, nEvents); // process  2000 Events
+    fRun->Run(0, nEvents);  // process  2000 Events
   }
   // ------------------------------------------------------------------------
-
 
 
   // -----   Finish   -------------------------------------------------------
@@ -92,12 +94,12 @@ void build_events( TString fileName, UInt_t uRunId = 0, Int_t nEvents = 0, TStri
   // Extract the maximal used memory an add is as Dart measurement
   // This line is filtered by CTest and the value send to CDash
   FairSystemInfo sysInfo;
-  Float_t maxMemory=sysInfo.GetMaxMemory();
+  Float_t maxMemory = sysInfo.GetMaxMemory();
   cout << "<DartMeasurement name=\"MaxMemory\" type=\"numeric/double\">";
   cout << maxMemory;
   cout << "</DartMeasurement>" << endl;
 
-  Float_t cpuUsage=ctime/rtime;
+  Float_t cpuUsage = ctime / rtime;
   cout << "<DartMeasurement name=\"CpuLoad\" type=\"numeric/double\">";
   cout << cpuUsage;
   cout << "</DartMeasurement>" << endl;
@@ -105,7 +107,7 @@ void build_events( TString fileName, UInt_t uRunId = 0, Int_t nEvents = 0, TStri
   FairMonitor* tempMon = FairMonitor::GetMonitor();
   tempMon->Print();
 
-//  RemoveGeoManager();
+  //  RemoveGeoManager();
   cout << " Test passed" << endl;
   cout << " All ok " << endl;
 }
