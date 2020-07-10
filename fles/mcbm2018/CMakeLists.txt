@@ -126,6 +126,9 @@ Set(SRCS
    tasks/CbmMcbm2019CheckTimingPairs.cxx
    tasks/CbmMcbm2019TimeWinEventBuilderAlgo.cxx
    tasks/CbmMcbm2019TimeWinEventBuilderTask.cxx
+
+   tasks/CbmMcbmCheckTimingAlgo.cxx
+   tasks/CbmMcbmCheckTimingTask.cxx
 )
 
 If(_UINT8_T_EXIST)

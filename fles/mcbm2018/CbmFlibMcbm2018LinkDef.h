@@ -73,4 +73,7 @@
 #pragma link C++ class CbmMcbm2019TimeWinEventBuilderAlgo + ;
 #pragma link C++ class CbmMcbm2019TimeWinEventBuilderTask + ;
 
+#pragma link C++ class CbmMcbmCheckTimingAlgo+;
+#pragma link C++ class CbmMcbmCheckTimingTask+;
+
 #endif
