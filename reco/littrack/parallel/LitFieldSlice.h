@@ -10,6 +10,8 @@
 
 #include "LitFieldValue.h"
 
+#include <vector>
+
 namespace lit {
   namespace parallel {
 
