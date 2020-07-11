@@ -5,6 +5,8 @@
 # usage:
 # $ ./autoinstall_framework.sh
 # for installation of all three or
+# $ ./autoinstall_framework.sh 0 0 1
+# for installation of CbmRoot or
 # $ ./autoinstall_framework.sh --help
 # to see a help file with possible user flags.
 #
@@ -45,6 +47,33 @@ SETUP_FAIRSOFT=0 && SETUP_FAIRROOT=0 && SETUP_CBMROOT=0;
 
 while test $# -gt 0; do
 	case "$1" in
+	-s|-fs|-fairsoft|--fairsoft)
+		echo "*** FairSoft to be installed"
+		SETUP_FAIRSOFT="1";
+		shift;;
+	-r|-fr|-fairroot|--fairroot)
+		echo "*** FairRoot to be installed"
+		SETUP_FAIRROOT="1";
+		shift;;
+	-c|-cr|-cbmroot|--cbmroot)
+		echo "*** CbmRoot to be installed"
+		SETUP_CBMROOT="1";
+		shift;;
+	-d|dev|-dev|--dev)
+		echo "*** DEV VERSION specified"
+		export FSOFTVER=$FSOFTDEV
+		export FROOTVER=$FROOTDEV
+		shift;;
+	-p|pro|-pro|--pro)
+		echo "*** PRO VERSION specified"
+		export FSOFTVER=$FSOFTPRO
+		export FROOTVER=$FROOTPRO
+		shift;;
+	-o|old|-old|--old)
+		echo "*** OLD VERSION specified"
+		export FSOFTVER=$FSOFTOLD
+		export FROOTVER=$FROOTOLD
+		shift;;
 	-y|-yes|--yes)
 		echo "Will update environment to new build after installation"
 		ANSWER="YES";
@@ -53,43 +82,23 @@ while test $# -gt 0; do
 		echo "In case someone wants to put in script."
 		ANSWER="NO";
 		shift;;
-	-fs|-s|-fairsof|--fairsoft)
-		echo "*** FAIRSOFT to be installed"
-		SETUP_FAIRSOFT="1";
-		shift;;
-	-fr|-r|-fairroot|--fairroot)
-		echo "*** FAIRROOT to be installed"
-		SETUP_FAIRROOT="1";
-		shift;;
-	-cr|-c|-cbmroot|--cbmroot)
-		echo "*** CBMROOT to be installed"
-		SETUP_CBMROOT="1";
-		shift;;
-	-d|--dev|-dev|dev)
-		echo "*** DEV VERSION specified"
-		export FSOFTVER=$FSOFTDEV
-		export FROOTVER=$FROOTDEV
-		shift;;
-	-o|--old|-old|old)
-		echo "*** OLD VERSION specified"
-		export FSOFTVER=$FSOFTOLD
-		export FROOTVER=$FROOTOLD
-		shift;;
 	0|1)
-		# This unusual addition is to continue to provide back compatiability with previous versions of autoinstall_framework.
-		# It is important to keep this in case someone has hardcoded installation instructions somewhere and thus this should avoid breaking his program.
-		# In particular the old behaviour except 1, 2, or 3 numerical arguments whereby
-		# argument 1 greater or equal to 1 would install FAIR SOFT
-		# argument 2 greater or equal to 1 would install FAIR ROOT
-		# argument 3 greater or equal to 1 would install CBM ROOT
+	        # This unusual addition is to continue to provide back compatiability
+	        # with previous versions of autoinstall_framework.
+	        # It is important to keep this in case someone has hardcoded installation
+	        # instructions somewhere and thus this should avoid breaking his program.
+		# In particular the old behaviour accepts 1, 2 or 3 numerical arguments whereby
+		# argument 1 greater or equal to 1 would install FairSoft
+		# argument 2 greater or equal to 1 would install FairRoot
+		# argument 3 greater or equal to 1 would install CbmRoot
 		# ergo
 		# ./autobuild_framework dev 1 0 0
-		# would install FAIR SOFT but not FAIR ROOT nor CBM ROOT.
+		# would install FairSoft but not FairRoot nor CbmRoot.
 
 		if [ $1 -gt 0 ];
 		then
 		SETUP_FAIRSOFT="1";
-		echo "FAIR SOFT flaged for install"
+		echo "FairSoft flaged for install"
 		fi
 
 		if [ ! -z $2 ];   # This combersome and longform if statement exist due to known issues regarding ampersands within bash cases.
@@ -97,7 +106,7 @@ while test $# -gt 0; do
 		if [ $2 -gt 0 ];
 		then
 		SETUP_FAIRROOT="1";
-		echo "FAIR ROOT flaged for install"
+		echo "FairRoot flaged for install"
 		fi
 		fi
 
@@ -106,7 +115,7 @@ while test $# -gt 0; do
 		if [ $3 -gt 0 ];
 		then
 		SETUP_CBMROOT="1";
-		echo "CBMROOT flaged for install"
+		echo "CbmRoot flaged for install"
 		fi
 		fi
 
@@ -115,17 +124,18 @@ while test $# -gt 0; do
 
 		break;;
 	-h|-help|--help|*)
-		echo "Autoinstall_framework will install FairSoft, FairSoft, and CbmRoot packages"
+		echo "Autoinstall_framework will install FairSoft, FairRoot and CbmRoot packages"
 		echo "If no flags are specified, the program will install all three"
 		echo "otherwise the user may specify one or more to by calling the corresponding flags"
-		echo "-h, --help	shows this brief help"
-		echo "-d, --dev		Runs with dev"
-		echo "-o, --old		Runs a old version"
+		echo "-h, --help	Shows this brief help"
 		echo "-fs, --fairsoft	Installation of FairSoft"
 		echo "-fr, --fairroot	Installation of FairRoot"
 		echo "-cr, --cbmroot	Installation of CbmRoot"
+		echo "-d, --dev		Runs with dev version"
+		echo "-p, --pro		Runs with pro version"
+		echo "-o, --old		Runs with old version"
 		echo "-y, --yes		Automatically uses new envirnoment configuration post installation"
-		echo "-n, --no		Answers No to automatic environment update"
+		echo "-n, --no		Answers no to automatic environment update"
 		echo ""
 		echo "Example case to install only FairRoot and CbmRoot (and not FairSoft)"
 		echo "./autoinstall_framework.sh -fr -cr"
@@ -137,18 +147,18 @@ done
 export NUMOFCPU=`[ -f /proc/cpuinfo ] && grep -i processor /proc/cpuinfo | wc -l || echo 1`
 export CBMSRCDIR=`pwd`
 
-#-------------------------------------
+#-----------------------------------------------------------------------------------------------------
 
 echo FSOFTVER: $FSOFTVER
 echo FROOTVER: $FROOTVER
 
-#-----------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------
 #
 ##   FairSoft
 #
 
 if [ $SETUP_FAIRSOFT -ge 1 ]; then
-  echo "Setting up Fairsoft ..."
+  echo "Setting up FairSoft ..."
 
   # check if sqlite3 is available
   if [ -f /usr/include/sqlite3.h ] ; then
@@ -182,23 +192,26 @@ if [ $SETUP_FAIRSOFT -ge 1 ]; then
   else 
     cp automatic.conf automatic1_root.conf
   fi
+
   FSOFTINSTALLPATH=`pwd | sed s/fairsoft_src_/fairsoft_/`
   sed /SIMPATH_INSTALL/d automatic1_root.conf > automatic2_path.conf
   echo "  SIMPATH_INSTALL=$FSOFTINSTALLPATH/installation" >> automatic2_path.conf
+
   sed s/compiler=/compiler=gcc/ automatic2_path.conf > automatic3_gcc.conf
+
   ./configure.sh automatic3_gcc.conf
 
   cd $CBMSRCDIR
-  echo done installing FairSoft
+  echo "done installing FairSoft"
 fi
 
-#-----------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------
 #
 ##   FairRoot
 #
 
 if [ $SETUP_FAIRROOT -ge 1 ]; then
-  echo "Setting up Fairroot ..."
+  echo "Setting up FairRoot ..."
 
   # set SIMPATH
   cd ..
@@ -226,17 +239,17 @@ if [ $SETUP_FAIRROOT -ge 1 ]; then
   nice make install -j$NUMOFCPU
 
   cd $CBMSRCDIR
-  echo done installing FairRoot
+  echo "done installing FairRoot"
 fi
 
-#-----------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------
 #
 ##   CbmRoot
 #
 
 if [ ${SETUP_CBMROOT} -eq "1" ]; 
 then
-  echo "Setting up Cbmroot ..."
+  echo "Setting up CbmRoot ..."
 
   # set SIMPATH
   cd ..
@@ -281,17 +294,11 @@ EOT
 if (echo "$ANSWER" | sed -n '/^\(Y\|y\)/!{q10}')
 then
   echo "A yes detected."
-  echo "Environmental variables and paths updated"
   source build/config.sh;
-#  export SIMPATH=$SIMPATH;
-#  export FAIRROOTPATH=$FAIRROOTPATH;
+  echo "Environmental variables and paths updated"
 fi
 
-
 fi
-
-
-echo "Installation Complete"
 
 #####################################################################################
 
