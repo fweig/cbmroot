@@ -14,4 +14,3 @@ else
     echo "$RESULT"
     exit 1
 fi
-
