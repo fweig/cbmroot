@@ -9,7 +9,7 @@
  ** the information about TOF modules from a unique detetcor ID
  ** @author F. Uhlig <f.uhlig@gsi.de>
  **/
-
+ 
 #ifndef CBMTOFDETECTORID_H
 #define CBMTOFDETECTORID_H 1
 
@@ -17,62 +17,51 @@
 
 #include "CbmDefs.h"
 
-class CbmTofDetectorInfo {
+class CbmTofDetectorInfo
+{
+ 
+ public:
 
-public:
-  CbmTofDetectorInfo()
-    : fDetectorSystem(0)
-    , fSMtype(0)
-    , fSModule(0)
-    , fCounter(0)
-    , fGap(0)
-    , fCell(0) {};
+ CbmTofDetectorInfo() : fDetectorSystem(0), fSMtype(0), fSModule(0), 
+    fCounter(0), fCounterType(0), fGap(0), fCell(0) {};
+  
+ CbmTofDetectorInfo(Int_t detsystem, Int_t smtype, Int_t smodule, 
+		    Int_t counter, Int_t gap, Int_t cell)
+   : fDetectorSystem(detsystem), fSMtype(smtype), fSModule(smodule),
+    fCounter(counter), fGap(gap), fCell(cell) {};
 
-  CbmTofDetectorInfo(Int_t detsystem,
-                     Int_t smtype,
-                     Int_t smodule,
-                     Int_t counter,
-                     Int_t gap,
-                     Int_t cell)
-    : fDetectorSystem(detsystem)
-    , fSMtype(smtype)
-    , fSModule(smodule)
-    , fCounter(counter)
-    , fGap(gap)
-    , fCell(cell) {};
-
-  CbmTofDetectorInfo(ECbmModuleId detsystem,
-                     Int_t smtype,
-                     Int_t smodule,
-                     Int_t counter,
-                     Int_t gap,
-                     Int_t cell)
-    : fDetectorSystem(ToIntegralType(detsystem))
-    , fSMtype(smtype)
-    , fSModule(smodule)
-    , fCounter(counter)
-    , fGap(gap)
-    , fCell(cell) {};
-
+ CbmTofDetectorInfo(ECbmModuleId detsystem, Int_t smtype, Int_t smodule, 
+		    Int_t counter, Int_t gap, Int_t cell)
+   : fDetectorSystem(ToIntegralType(detsystem)), fSMtype(smtype), fSModule(smodule),
+    fCounter(counter), fGap(gap), fCell(cell) {};
+    
+CbmTofDetectorInfo(ECbmModuleId detsystem, Int_t smtype, Int_t smodule, 
+            Int_t counter, Int_t counterType, Int_t gap, Int_t cell)
+   : fDetectorSystem(ToIntegralType(detsystem)), fSMtype(smtype), fSModule(smodule),
+     fCounter(counter), fCounterType(counterType), fGap(gap), fCell(cell) {};
+  
   Int_t fDetectorSystem;
   Int_t fSMtype;
   Int_t fSModule;
   Int_t fCounter;
+  Int_t fCounterType;
   Int_t fGap;
   Int_t fCell;
 };
 
 
-class CbmTofDetectorId {
+class CbmTofDetectorId
+{
 
-public:
+  public:
+    
   /** Constructor **/
-  CbmTofDetectorId() { ; }
-
-
+  CbmTofDetectorId() {;}
+  
+  
   /** Destructor **/
-  virtual ~CbmTofDetectorId() { ; }
-
+  virtual ~CbmTofDetectorId()  {;}
+  
   /** Get System identifier from detector ID **/
   //  Int_t GetSystemId(const Int_t detectorId);
 
@@ -114,7 +103,8 @@ public:
 
   //  char* itoa(int value, char* result, int base);
 
-private:
+ private:
+ 
 };
 
 #endif

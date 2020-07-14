@@ -97,6 +97,7 @@ set(SRCS
   tof/CbmTofDetectorId_v07a.cxx
   tof/CbmTofDetectorId_v12b.cxx
   tof/CbmTofDetectorId_v14a.cxx
+  tof/CbmTofDetectorId_v20a.cxx
   tof/CbmTofAddress.cxx
   tof/CbmTofDigi.cxx
   tof/CbmTofTracklet.cxx
