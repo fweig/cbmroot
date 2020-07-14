@@ -516,12 +516,13 @@ void unpack_check_timing_any_mcbm(TString inFile  = "",
     /// With Pulser rejection
   timeChecker->SetReferenceDetector( ECbmModuleId::kT0, "T0",
                                      -1000., 1000., 320.,
-                                     190, 182 );
-    /// Witch pulser selection
+                                     182, 190 );
+
+    /// With pulser selection
 /*
   timeChecker->SetReferenceDetector( ECbmModuleId::kT0, "T0",
                                      -1000., 1000., 320.,
-                                     182, 190 );
+                                     190, 182 );
 */
   /// Here swapping with MUCH
 /*
