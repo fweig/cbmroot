@@ -1,7 +1,7 @@
 void check_timing_any(TString fileName,
-                  UInt_t uRunId  = 0,
-                  Int_t nEvents  = 0,
-                  TString outDir = "data/") {
+                      UInt_t uRunId  = 0,
+                      Int_t nEvents  = 0,
+                      TString outDir = "data/") {
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -33,23 +33,23 @@ void check_timing_any(TString fileName,
 
   CbmMcbmCheckTimingTask* timeChecker = new CbmMcbmCheckTimingTask();
   /// Default is using T0 as reference
-    /// With Pulser rejection
-/*
+  /// With Pulser rejection
+  /*
   timeChecker->SetReferenceDetector( ECbmModuleId::kT0, "T0",
                                      -1000., 1000., 320.,
                                      182, 190 );
 */
-    /// With pulser selection
-/*
+  /// With pulser selection
+  /*
   timeChecker->SetReferenceDetector( ECbmModuleId::kT0, "T0",
                                      -1000., 1000., 320.,
                                      190, 182 );
 */
   /// Here swapping with MUCH
 
-  timeChecker->SetReferenceDetector( ECbmModuleId::kMuch, "Much" );
-  timeChecker->RemoveCheckDetector( ECbmModuleId::kMuch );
-  timeChecker->AddCheckDetector( ECbmModuleId::kT0, "T0" );
+  timeChecker->SetReferenceDetector(ECbmModuleId::kMuch, "Much");
+  timeChecker->RemoveCheckDetector(ECbmModuleId::kMuch);
+  timeChecker->AddCheckDetector(ECbmModuleId::kT0, "T0");
 
   if (0 < uRunId)
     timeChecker->SetOutFilename(

@@ -11,9 +11,9 @@
 FairRunOnline* run = NULL;
 
 void unpack_check_timing_any_mcbm(TString inFile  = "",
-                                   UInt_t uRunId  = 0,
-                                   UInt_t nrEvents = 0,
-                                   TString outDir  = "data") {
+                                  UInt_t uRunId   = 0,
+                                  UInt_t nrEvents = 0,
+                                  TString outDir  = "data") {
   if (uRunId < 692 && 0 != uRunId) return kFALSE;
 
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
@@ -58,7 +58,7 @@ void unpack_check_timing_any_mcbm(TString inFile  = "",
   }
   // }
 
-  TString paramFileTof       = paramDir + "mTofPar.par";
+  TString paramFileTof = paramDir + "mTofPar.par";
   if (uRunId >= 708 && uRunId < 754)
     paramFileTof = paramDir + "mTofPar_2Stack.par";
   else if (uRunId >= 754)
@@ -121,8 +121,8 @@ void unpack_check_timing_any_mcbm(TString inFile  = "",
   if (811 <= uRunId) unpacker_much->SetBinningFwFlag(kTRUE);
 
   /// Try to cut Noise and reduce walk effect in STS and MUCH
-//  unpacker_sts->SetAdcCut(20);
-//  unpacker_much->SetAdcCut(20);
+  //  unpacker_sts->SetAdcCut(20);
+  //  unpacker_much->SetAdcCut(20);
 
   unpacker_tof->SetSeparateArrayT0();
 
@@ -513,19 +513,18 @@ void unpack_check_timing_any_mcbm(TString inFile  = "",
 
   CbmMcbmCheckTimingTask* timeChecker = new CbmMcbmCheckTimingTask();
   /// Default is using T0 as reference
-    /// With Pulser rejection
-  timeChecker->SetReferenceDetector( ECbmModuleId::kT0, "T0",
-                                     -1000., 1000., 320.,
-                                     182, 190 );
+  /// With Pulser rejection
+  timeChecker->SetReferenceDetector(
+    ECbmModuleId::kT0, "T0", -1000., 1000., 320., 182, 190);
 
-    /// With pulser selection
-/*
+  /// With pulser selection
+  /*
   timeChecker->SetReferenceDetector( ECbmModuleId::kT0, "T0",
                                      -1000., 1000., 320.,
                                      190, 182 );
 */
   /// Here swapping with MUCH
-/*
+  /*
   timeChecker->SetReferenceDetector( ECbmModuleId::kMuch, "Much" );
   timeChecker->RemoveCheckDetector( ECbmModuleId::kMuch );
   timeChecker->AddCheckDetector( ECbmModuleId::kT0, "T0" );
@@ -550,8 +549,7 @@ void unpack_check_timing_any_mcbm(TString inFile  = "",
   // --- Start run
   TStopwatch timer;
   timer.Start();
-  std::cout << ">>> unpack_check_timing_any_mcbm: Starting run..."
-            << std::endl;
+  std::cout << ">>> unpack_check_timing_any_mcbm: Starting run..." << std::endl;
   if (0 == nrEvents) {
     run->Run(nEvents, 0);  // run until end of input file
   } else {

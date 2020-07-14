@@ -20,61 +20,65 @@
 
 class TClonesArray;
 
-class CbmMcbmCheckTimingTask : public FairTask
-{
-  public:
+class CbmMcbmCheckTimingTask : public FairTask {
+public:
+  /** Default constructor **/
+  CbmMcbmCheckTimingTask();
 
-    /** Default constructor **/
-    CbmMcbmCheckTimingTask();
+  CbmMcbmCheckTimingTask(const CbmMcbmCheckTimingTask&) = delete;
+  CbmMcbmCheckTimingTask operator=(const CbmMcbmCheckTimingTask&) = delete;
 
-    CbmMcbmCheckTimingTask(const CbmMcbmCheckTimingTask&) = delete;
-    CbmMcbmCheckTimingTask operator=(const CbmMcbmCheckTimingTask&) = delete;
-
-    /** Constructor with parameters (Optional) **/
-    //  CbmMcbmCheckTimingTask(Int_t verbose);
+  /** Constructor with parameters (Optional) **/
+  //  CbmMcbmCheckTimingTask(Int_t verbose);
 
 
-    /** Destructor **/
-    ~CbmMcbmCheckTimingTask();
+  /** Destructor **/
+  ~CbmMcbmCheckTimingTask();
 
 
-    /** Initiliazation of task at the beginning of a run **/
-    virtual InitStatus Init();
+  /** Initiliazation of task at the beginning of a run **/
+  virtual InitStatus Init();
 
-    /** ReInitiliazation of task when the runID changes **/
-    virtual InitStatus ReInit();
+  /** ReInitiliazation of task when the runID changes **/
+  virtual InitStatus ReInit();
 
 
-    /** Executed for each event. **/
-    virtual void Exec(Option_t*);
+  /** Executed for each event. **/
+  virtual void Exec(Option_t*);
 
-    /** Load the parameter container from the runtime database **/
-    virtual void SetParContainers();
+  /** Load the parameter container from the runtime database **/
+  virtual void SetParContainers();
 
-    /** Finish task called at the end of the run **/
-    virtual void Finish();
+  /** Finish task called at the end of the run **/
+  virtual void Finish();
 
-    void SetOutFilename( TString sNameIn );
+  void SetOutFilename(TString sNameIn);
 
-    void SetReferenceDetector( ECbmModuleId refDetIn, std::string sNameIn,
-                               Double_t dTimeRangeBegIn = -1000.0, Double_t dTimeRangeEndIn = 1000.0,
-                               UInt_t uRangeNbBinsIn = 320,
-                               UInt_t uChargeCutMinIn = 0, UInt_t uChargeCutMaxIn = 0 );
-    void AddCheckDetector( ECbmModuleId detIn, std::string sNameIn,
-                           Double_t dTimeRangeBegIn = -1000.0, Double_t dTimeRangeEndIn = 1000.0,
-                           UInt_t uRangeNbBinsIn = 320,
-                           UInt_t uChargeCutMinIn = 0, UInt_t uChargeCutMaxIn = 0 );
-    void RemoveCheckDetector( ECbmModuleId detIn );
+  void SetReferenceDetector(ECbmModuleId refDetIn,
+                            std::string sNameIn,
+                            Double_t dTimeRangeBegIn = -1000.0,
+                            Double_t dTimeRangeEndIn = 1000.0,
+                            UInt_t uRangeNbBinsIn    = 320,
+                            UInt_t uChargeCutMinIn   = 0,
+                            UInt_t uChargeCutMaxIn   = 0);
+  void AddCheckDetector(ECbmModuleId detIn,
+                        std::string sNameIn,
+                        Double_t dTimeRangeBegIn = -1000.0,
+                        Double_t dTimeRangeEndIn = 1000.0,
+                        UInt_t uRangeNbBinsIn    = 320,
+                        UInt_t uChargeCutMinIn   = 0,
+                        UInt_t uChargeCutMaxIn   = 0);
+  void RemoveCheckDetector(ECbmModuleId detIn);
 
-  private:
-    void SaveHistos();
+private:
+  void SaveHistos();
 
-    CbmMcbmCheckTimingAlgo * fpAlgo = nullptr;
+  CbmMcbmCheckTimingAlgo* fpAlgo = nullptr;
 
-    /** Name of the histogram output file **/
-    TString fsOutFileName = "data/HistosCheckTiming.root";
+  /** Name of the histogram output file **/
+  TString fsOutFileName = "data/HistosCheckTiming.root";
 
-    ClassDef(CbmMcbmCheckTimingTask,1);
+  ClassDef(CbmMcbmCheckTimingTask, 1);
 };
 
-#endif // CBMMCBM2019TIMEWINEVENTBUILDERTASK_H
+#endif  // CBMMCBM2019TIMEWINEVENTBUILDERTASK_H
