@@ -140,6 +140,7 @@ void CbmMcbmCheckTimingAlgo::CreateHistos()
                                                 1800, 0, 18000,
                                                 (*det).uRangeNbBins, (*det).dTimeRangeBeg, (*det).dTimeRangeEnd )
                                     );
+    LOG( info ) << "Created histos for " << (*det).sName;
   } // for( std::vector< CheckTimingDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
 
   /// Add reference detector digi to digi time difference histo at end of vector
@@ -275,7 +276,7 @@ void CbmMcbmCheckTimingAlgo::CheckInterSystemOffset()
     } // if( ECbmModuleId::kT0 == fRefDet.detId )
       else
       {
-        dRefTime   = fDigiMan->Get< DigiRef >( uDigi )->GetTime() ;
+        dRefTime   = fDigiMan->Get< DigiRef >( uDigi )->GetTime();
         dRefCharge = fDigiMan->Get< DigiRef >( uDigi )->GetCharge();
       } // else of if( ECbmModuleId::kT0 == fRefDet.detId )
 
@@ -361,7 +362,27 @@ void CbmMcbmCheckTimingAlgo::FillTimeOffsetHistos( const Double_t dRefTime,
                                                    const Double_t dRefCharge,
                                                    UInt_t uDetIdx )
 {
-  UInt_t uNbDigis = fDigiMan->GetNofDigis( fvDets[ uDetIdx ].detId );
+  UInt_t uNbDigis = 0;
+  switch( fvDets[ uDetIdx ].detId )
+  {
+    case ECbmModuleId::kNotExist:
+    {
+      LOG( fatal ) << "CbmMcbmCheckTimingAlgo::FillTimeOffsetHistos => Unknow detector enum! "
+                   << fRefDet.sName;
+      break;
+    } // Digi containers controlled by DigiManager
+    case ECbmModuleId::kT0:
+    {
+      uNbDigis = fpT0DigiVec->size();
+      break;
+    } // case ECbmModuleId::kT0
+    default:
+    {
+      uNbDigis = fDigiMan->GetNofDigis( fvDets[ uDetIdx ].detId );
+      break;
+    } // default:
+  } // switch( fRefDet.detId )
+
   UInt_t uFirstDigiInWin = fvDets[ uDetIdx ].iPrevRefFirstDigi;
 
   for( UInt_t uDigiIdx = fvDets[ uDetIdx ].iPrevRefFirstDigi; uDigiIdx < uNbDigis; ++uDigiIdx )
@@ -446,12 +467,14 @@ void CbmMcbmCheckTimingAlgo::WriteHistos()
 
   for( UInt_t uDetIdx = 0; uDetIdx < fvDets.size(); ++uDetIdx )
   {
+    LOG( info ) << "Saving histos for " << fvDets[ uDetIdx ].sName;
     fvhDetSelfDiff[ uDetIdx ]->Write();
     fvhDetToRefDiff[ uDetIdx ]->Write();
     fvhDetToRefDiffRefCharge[ uDetIdx ]->Write();
     fvhDetToRefDiffDetCharge[ uDetIdx ]->Write();
     fvhDetToRefDiffEvo[ uDetIdx ]->Write();
     fvhDetToRefDiffEvoLong[ uDetIdx ]->Write();
+    LOG( info ) << "Saved histos for " << fvDets[ uDetIdx ].sName;
   } // for( std::vector< CheckTimingDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
 
   /// Register the histo for reference detector digi to digi time difference

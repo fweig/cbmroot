@@ -69,7 +69,7 @@ void CbmMcbmCheckTimingTask::Exec(Option_t* /*option*/)
 // ---- Finish --------------------------------------------------------
 void CbmMcbmCheckTimingTask::Finish()
 {
-//  SaveHistos();
+  SaveHistos();
 
   /// Call Algo finish method
   fpAlgo->Finish();
