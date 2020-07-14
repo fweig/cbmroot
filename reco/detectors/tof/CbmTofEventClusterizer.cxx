@@ -19,6 +19,7 @@
 #include "CbmTofCreateDigiPar.h"    // in tof/TofTools
 #include "CbmTofDetectorId_v12b.h"  // in cbmdata/tof
 #include "CbmTofDetectorId_v14a.h"  // in cbmdata/tof
+#include "CbmTofDetectorId_v20a.h"  // in cbmdata/tof
 #include "CbmTofDigi.h"             // in cbmdata/tof
 #include "CbmTofDigiBdfPar.h"       // in tof/TofParam
 #include "CbmTofDigiPar.h"          // in tof/TofParam
@@ -86,7 +87,7 @@ CbmTofEventClusterizer* CbmTofEventClusterizer::fInstance = 0;
 /************************************************************************************/
 CbmTofEventClusterizer::CbmTofEventClusterizer()
   : CbmTofEventClusterizer("TestbeamClusterizer", 0, 0) {
-  if (!fInstance) fInstance = this;
+  // if ( !fInstance ) fInstance = this;
 }
 
 CbmTofEventClusterizer::CbmTofEventClusterizer(const char* name,
@@ -247,16 +248,15 @@ CbmTofEventClusterizer::CbmTofEventClusterizer(const char* name,
   , fTotMax(0.)
   , fTotMin(0.)
   , fTotOff(0.)
-  , fTotMean(0.)
+  , fTotMean(0.) 
   , fdDelTofMax(60.)
   , fTotPreRange(0.)
   , fMaxTimeDist(0.)
   , fdChannelDeadtime(0.)
   , fdMemoryTime(0.)
   , fdYFitMin(1.E6)
-  , fdToDAv(0.033)
-  ,  // in ns/cm
-  fEnableMatchPosScaling(kTRUE)
+  , fdToDAv(0.033)  // in ns/cm
+  , fEnableMatchPosScaling(kTRUE)
   , fEnableAvWalk(kFALSE)
   , fbPs2Ns(kFALSE)
   , fCalParFileName("")
@@ -393,10 +393,10 @@ void CbmTofEventClusterizer::Exec(Option_t* option) {
         // update content of match object, not necessary if event definition  is kept !
         /*
         for (Int_t iLink=0; iLink<pDigiMatch->GetNofLinks(); iLink++) {  // loop over digis
-	  CbmLink Link = pDigiMatch->GetLink(iLink);   
-	  Link.SetIndex(Link.GetIndex()+iDigi0);
-	}
-	*/
+          CbmLink Link = pDigiMatch->GetLink(iLink);   
+          Link.SetIndex(Link.GetIndex()+iDigi0);
+        }
+        */
         new ((*fTofDigiMatchCollOut)[iNbHits]) CbmMatch(*pDigiMatch);
 
         iNbHits++;
@@ -600,7 +600,10 @@ Bool_t CbmTofEventClusterizer::InitParameters() {
                   "with geometries after v14a !!!";
     return kFALSE;
   }
-  fTofId = new CbmTofDetectorId_v14a();
+  if (iGeoVersion == k14a)
+    fTofId = new CbmTofDetectorId_v14a();
+  else
+    fTofId = new CbmTofDetectorId_v20a();
 
   // create digitization parameters from geometry file
   CbmTofCreateDigiPar* tofDigiPar =
@@ -2732,8 +2735,9 @@ Bool_t CbmTofEventClusterizer::FillHistos() {
                       || (TMath::Sqrt(
                             TMath::Power(
                               pHit->GetX() - dzscal * pTrig[iSel]->GetX(), 2.)
-                            + TMath::Power(
-                              pHit->GetY() - dzscal * pTrig[iSel]->GetY(), 2.))
+                            + TMath::Power(pHit->GetY()
+                                             - dzscal * pTrig[iSel]->GetY(),
+                                           2.))
                           < fdCaldXdYMax)) {
                     BSel[iSel]     = kTRUE;
                     Double_t dX2Y2 = TMath::Sqrt(dSEl2dXdz * dSEl2dXdz
@@ -3017,12 +3021,12 @@ Bool_t CbmTofEventClusterizer::FillHistos() {
           Int_t iS0  = pDig0->GetSide();
           Int_t iS1  = pDig1->GetSide();
           if (iCh0 != iCh1 || iS0 == iS1) {
-            LOG(fatal) << Form(
-              " MT2 for Tofhit %d in iDetIndx %d, Ch %d from %3.0f strips: ",
-              iHitInd,
-              iDetIndx,
-              iCh,
-              dNstrips)
+            LOG(fatal) << Form(" MT2 for Tofhit %d in iDetIndx %d, Ch %d from "
+                               "%3.0f strips: ",
+                               iHitInd,
+                               iDetIndx,
+                               iCh,
+                               dNstrips)
                        << Form(" Dig0: Ind %d, Ch %d, Side %d, T: %6.1f ",
                                iDigInd0,
                                iCh0,
@@ -3176,11 +3180,11 @@ Bool_t CbmTofEventClusterizer::FillHistos() {
                                    * (pHit->GetZ() - (pTrig[iSel]->GetZ()))),
                           2.)
                         + TMath::Power(
-                          pHit->GetY()
-                            - (pTrig[iSel]->GetY()
-                               + ddYdZ[iSel]
-                                   * (pHit->GetZ() - (pTrig[iSel]->GetZ()))),
-                          2.))
+                            pHit->GetY()
+                              - (pTrig[iSel]->GetY()
+                                 + ddYdZ[iSel]
+                                     * (pHit->GetZ() - (pTrig[iSel]->GetZ()))),
+                            2.))
                       > 0.5 * fdCaldXdYMax)
                     continue;  // refine position selection cut in cosmic measurement
                 dTcor[iSel] = 0.;  // precaution
@@ -6180,23 +6184,26 @@ Bool_t CbmTofEventClusterizer::AddNextChan(Int_t iSmType,
   iDetId = CbmTofAddress::GetUniqueAddress(iSm, iRpc, iChm, 0, iSmType);
 
   Int_t iNbChanInHit = vDigiIndRef.size() / 2;
+
+  TString cstr = "Save A-Hit ";
+  cstr += Form(" %3d %3d 0x%08x %3d 0x%08x %8.2f %6.2f",  // %3d %3d
+               fiNbHits,
+               iNbChanInHit,
+               iDetId,
+               iLastChan,
+               0,  //vPtsRef.size(),vPtsRef[0])
+               dLastTime,
+               dLastPosY);
+  cstr += Form(", DigiSize: %lu ", vDigiIndRef.size());
+  cstr += ", DigiInds: ";
+
   fviClusterMul[iSmType][iSm][iRpc]++;
 
-  LOG(debug1) << "Save A-Hit "
-              << Form("%2d %2d 0x%08x %3d t %f, y %f ",
-                      fiNbHits,
-                      iNbChanInHit,
-                      iDetId,
-                      iLastChan,
-                      dLastTime,
-                      dLastPosY)
-              << ", DigiSize: " << vDigiIndRef.size();
-  LOG(debug1) << ", DigiInds: ";
   for (UInt_t i = 0; i < vDigiIndRef.size(); i++) {
-    LOG(debug1) << " " << vDigiIndRef.at(i) << "(M"
-                << fviClusterMul[iSmType][iSm][iRpc] << ")";
+    cstr +=
+      Form(" %d (M,%d)", vDigiIndRef.at(i), fviClusterMul[iSmType][iSm][iRpc]);
   }
-  LOG(debug1);
+  LOG(debug) << cstr;
 
   CbmTofHit* pHit = new CbmTofHit(
     iDetId,
@@ -6545,14 +6552,15 @@ Bool_t CbmTofEventClusterizer::BuildHits() {
                   iChId = fTofId->SetDetectorInfo(xDetInfo);
                   Int_t iUCellId =
                     CbmTofAddress::GetUniqueAddress(iSm, iRpc, iCh, 0, iSmType);
-                  LOG(debug1) << Form(
-                    " TSRC %d%d%d%d size %3lu ",
-                    iSmType,
-                    iSm,
-                    iRpc,
-                    iCh,
-                    fStorDigiExp[iSmType][iSm * iNbRpc + iRpc][iCh].size())
-                              << Form(" ChId: 0x%08x 0x%08x ", iChId, iUCellId);
+                  LOG(debug1)
+                    << Form(
+                         " TSRC %d%d%d%d size %3lu ",
+                         iSmType,
+                         iSm,
+                         iRpc,
+                         iCh,
+                         fStorDigiExp[iSmType][iSm * iNbRpc + iRpc][iCh].size())
+                    << Form(" ChId: 0x%08x 0x%08x ", iChId, iUCellId);
                   fChannelInfo = fDigiPar->GetCell(iChId);
 
                   if (NULL == fChannelInfo) {
@@ -7147,13 +7155,15 @@ Bool_t CbmTofEventClusterizer::BuildHits() {
               Int_t iRefId = 0;  // Index of the correspondng TofPoint
               //if(NULL != fTofPointsColl) iRefId = fTofPointsColl->IndexOf( vPtsRef[0] );
               TString cstr = "Save V-Hit  ";
-              cstr += Form(" %3d %3d 0x%08x %3d 0x%08x",  // %3d %3d
+              cstr += Form(" %3d %3d 0x%08x %3d 0x%08x %8.2f %6.2f",  // %3d %3d
                            fiNbHits,
                            iNbChanInHit,
                            iDetId,
                            iLastChan,
-                           iRefId);  //vPtsRef.size(),vPtsRef[0])
-              //   dWeightedTime,dWeightedPosY)
+                           iRefId,  //vPtsRef.size(),vPtsRef[0])
+                           dWeightedTime,
+                           dWeightedPosY);
+
               cstr += Form(", DigiSize: %lu ", vDigiIndRef.size());
               cstr += ", DigiInds: ";
 

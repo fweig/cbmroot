@@ -456,12 +456,15 @@ Bool_t CbmTofDigitize::LoadBeamtimeValues() {
 
     for (Int_t iSm = 0; iSm < iNbSm; iSm++) {
       fvdSignalVelocityRpc[iSmType][iSm].resize(iNbRpc);
-      for (Int_t iRpc = 0; iRpc < iNbRpc; iRpc++)
+      for (Int_t iRpc = 0; iRpc < iNbRpc; iRpc++) {
         if (0.0 < fDigiBdfPar->GetSigVel(iSmType, iSm, iRpc))
           fvdSignalVelocityRpc[iSmType][iSm][iRpc] = fDigiBdfPar->GetSigVel(
             iSmType, iSm, iRpc);  // convert into cm/ns if necessary (FIXME)
         else
           fvdSignalVelocityRpc[iSmType][iSm][iRpc] = fdSignalPropSpeed;
+        LOG(debug) << "Init signal velocity of TSR " << iSmType << iSm << iRpc
+                   << " to " << fvdSignalVelocityRpc[iSmType][iSm][iRpc];
+      }
     }
 
     for (Int_t iSm = 0; iSm < iNbSm; iSm++) {
@@ -1217,9 +1220,7 @@ Bool_t CbmTofDigitize::MergeSameChanDigis() {
                 fhNbDigiEvtElCh->Fill(fvRpcChOffs[iSmType][iSm][iRpc]
                                         + iNbSides * iCh + iSide,
                                       iNbDigis);
-
                 fhDigiNbElecCh->Fill(iNbDigis);
-
                 fhFiredEvtElCh->Fill(fvRpcChOffs[iSmType][iSm][iRpc]
                                      + iNbSides * iCh + iSide);
                 if (1 < iNbDigis)
@@ -2358,7 +2359,7 @@ Bool_t CbmTofDigitize::DigitizeFlatDisc() {
     Double_t dChargeCentral =
       dClustCharge
       * ComputeClusterAreaOnChannel(
-        iChanId, dClusterSize, poipos_local[0], poipos_local[1]);
+          iChanId, dClusterSize, poipos_local[0], poipos_local[1]);
     LOG(debug2) << "CbmTofDigitize::DigitizeFlatDisc: ChargeCentral "
                 << dChargeCentral << ", " << dClustCharge
                 << Form(", 0x%08x", iChanId) << ", " << dClusterSize << ", "
@@ -2717,7 +2718,7 @@ Bool_t CbmTofDigitize::DigitizeFlatDisc() {
         Double_t dChargeSideCh =
           dClustCharge
           * ComputeClusterAreaOnChannel(
-            iSideChId, dClusterSize, poipos_local[0], poipos_local[1]);
+              iSideChId, dClusterSize, poipos_local[0], poipos_local[1]);
         dChargeSideCh /= dClustArea;
         if (dClustCharge + 0.0000001 < dChargeSideCh) {
           LOG(error) << "CbmTofDigitize::DigitizeFlatDisc => Side Charge "
@@ -2966,7 +2967,7 @@ Bool_t CbmTofDigitize::DigitizeFlatDisc() {
         Double_t dChargeSideCh =
           dClustCharge
           * ComputeClusterAreaOnChannel(
-            iSideChId, dClusterSize, poipos_local[0], poipos_local[1]);
+              iSideChId, dClusterSize, poipos_local[0], poipos_local[1]);
         dChargeSideCh /= dClustArea;
 
         // Fee Threshold on charge
@@ -3043,7 +3044,7 @@ Bool_t CbmTofDigitize::DigitizeFlatDisc() {
           Double_t dChargeSideCh =
             dClustCharge
             * ComputeClusterAreaOnChannel(
-              iSideChId, dClusterSize, poipos_local[0], poipos_local[1]);
+                iSideChId, dClusterSize, poipos_local[0], poipos_local[1]);
 
           // Fee Threshold on charge
           if (dChargeSideCh
@@ -4130,16 +4131,16 @@ Bool_t CbmTofDigitize::DigitizeGaussCharge() {
               dClustToReadout = TMath::Sqrt(
                 TMath::Power(poipos_local[1], 2)
                 + TMath::Power(
-                  poipos_local[0]
-                    - (+(1 - 2 * iRow) * fChannelInfo->GetSizex() / 2.0),
-                  2));
+                    poipos_local[0]
+                      - (+(1 - 2 * iRow) * fChannelInfo->GetSizex() / 2.0),
+                    2));
             else  // Horizontal => base = bottom/upper edge
               dClustToReadout = TMath::Sqrt(
                 TMath::Power(poipos_local[0], 2)
                 + TMath::Power(
-                  poipos_local[1]
-                    - (-(1 - 2 * iRow) * fChannelInfo->GetSizey() / 2.0),
-                  2));
+                    poipos_local[1]
+                      - (-(1 - 2 * iRow) * fChannelInfo->GetSizey() / 2.0),
+                    2));
 
             dPadTime +=
               gRandom->Gaus(0.0, fdTimeResElec)

@@ -1710,7 +1710,9 @@ void CbmTofFindTracks::FindVertex() {
       w,
       fMinNofHits);
 
-    if (w > (Double_t)
+    if (
+      w
+      > (Double_t)
           fMinNofHits) {  // for further analysis request minimum number of hits
       fVTXNorm += w;
       fVTX_T += w * pTrk->GetFitT(0.);
@@ -1844,24 +1846,23 @@ void CbmTofFindTracks::FillHistograms() {
           if (pTrk->GetNofHits() < GetNReqStations())
             continue;  // fill Pull histos only for complete tracks
           CbmTofHit* pHit = (CbmTofHit*) fTofHitArray->At(iH);
-
           //if (0 == fMapStationRpcId[iSt]) pHit->SetTime(pTrk->GetT0());  // set time of fake hit, abandoned
           /*
-	cout << " -D- CbmTofFindTracks::FillHistograms: "<< iSt <<", "
-	     <<fMapStationRpcId[iSt]<<", "<< iH <<", "<< iH0 <<", "<<pHit->ToString() << endl; 
-	*/
+          cout << " -D- CbmTofFindTracks::FillHistograms: "<< iSt <<", "
+            <<fMapStationRpcId[iSt]<<", "<< iH <<", "<< iH0 <<", "<<pHit->ToString() << endl; 
+          */
           Double_t dDZ =
             pHit->GetZ() - tPar->GetZ();  // z- Distance to reference point
           Double_t dDX =
             pHit->GetX()
             - pTrk->GetFitX(
-              pHit->GetZ());  // - tPar->GetX() - tPar->GetTx()*dDZ;
+                pHit->GetZ());  // - tPar->GetX() - tPar->GetTx()*dDZ;
           Double_t dDY =
             pHit->GetY() - pTrk->GetFitY(pHit->GetZ());  // - tPar->GetTy()*dDZ;
           Double_t dDT =
             pHit->GetTime()
             - pTrk->GetFitT(
-              pHit->GetZ());  // pTrk->GetTdif(fMapStationRpcId[iSt]);
+                pHit->GetZ());  // pTrk->GetTdif(fMapStationRpcId[iSt]);
           Double_t dDTB =
             fTrackletTools->GetTdif(pTrk,
                                     fMapStationRpcId[iSt],
@@ -1869,20 +1870,21 @@ void CbmTofFindTracks::FillHistograms() {
           Double_t dTOT = pHit->GetCh() / 10.;  // misuse of channel field
 
           Double_t dZZ = pHit->GetZ() - tPar->GetZy(pHit->GetY());
-          LOG(debug) << Form(
-            "  St %d Id 0x%08x Hit %2d, Z %6.2f - DX %6.2f, DY %6.2f, Z %6.2f, "
-            "DT %6.2f, %6.2f, ZZ %6.2f, Tt %6.4f ",
-            iSt,
-            fMapStationRpcId[iSt],
-            iH,
-            pHit->GetZ(),
-            dDX,
-            dDY,
-            dDZ,
-            dDT,
-            dDTB,
-            dZZ,
-            dTt) << tPar->ToString();
+          LOG(debug)
+            << Form("  St %d Id 0x%08x Hit %2d, Z %6.2f - DX %6.2f, DY %6.2f, "
+                    "Z %6.2f, DT %6.2f, %6.2f, ZZ %6.2f, Tt %6.4f ",
+                    iSt,
+                    fMapStationRpcId[iSt],
+                    iH,
+                    pHit->GetZ(),
+                    dDX,
+                    dDY,
+                    dDZ,
+                    dDT,
+                    dDTB,
+                    dZZ,
+                    dTt)
+            << tPar->ToString();
 
           vhPullX[iSt]->Fill(dDX);
           vhPullY[iSt]->Fill(dDY);
@@ -1899,10 +1901,10 @@ void CbmTofFindTracks::FillHistograms() {
           fhPullY_Smt->Fill((Double_t) fMapRpcIdParInd[fMapStationRpcId[iSt]],
                             dDY);
           /*
-	fhPullT_Smt->Fill((Double_t)fMapRpcIdParInd[fMapStationRpcId[iSt]], fTrackletTools->GetTdif(pTrk,fMapStationRpcId[iSt], pHit) );  
-	fhPullX_Smt->Fill((Double_t)fMapRpcIdParInd[fMapStationRpcId[iSt]], fTrackletTools->GetXdif(pTrk,fMapStationRpcId[iSt], pHit) );  
-	fhPullY_Smt->Fill((Double_t)fMapRpcIdParInd[fMapStationRpcId[iSt]], fTrackletTools->GetYdif(pTrk,fMapStationRpcId[iSt], pHit) );
-	*/
+          fhPullT_Smt->Fill((Double_t)fMapRpcIdParInd[fMapStationRpcId[iSt]], fTrackletTools->GetTdif(pTrk,fMapStationRpcId[iSt], pHit) );  
+          fhPullX_Smt->Fill((Double_t)fMapRpcIdParInd[fMapStationRpcId[iSt]], fTrackletTools->GetXdif(pTrk,fMapStationRpcId[iSt], pHit) );  
+          fhPullY_Smt->Fill((Double_t)fMapRpcIdParInd[fMapStationRpcId[iSt]], fTrackletTools->GetYdif(pTrk,fMapStationRpcId[iSt], pHit) );
+          */
           fhPullZ_Smt->Fill((Double_t) fMapRpcIdParInd[fMapStationRpcId[iSt]],
                             dZZ);
 
@@ -1991,7 +1993,7 @@ void CbmTofFindTracks::FillHistograms() {
           Double_t dDX =
             pHit->GetX()
             - pTrk->GetFitX(
-              pHit->GetZ());  // - tPar->GetX() - tPar->GetTx()*dDZ;
+                pHit->GetZ());  // - tPar->GetX() - tPar->GetTx()*dDZ;
           Double_t dDY =
             pHit->GetY() - pTrk->GetFitY(pHit->GetZ());  // - tPar->GetTy()*dDZ;
           //Double_t dDT = pHit->GetTime() - pTrk->GetFitT(pHit->GetR()); //pTrk->GetTdif(fMapStationRpcId[iSt]);
@@ -2136,7 +2138,6 @@ void CbmTofFindTracks::FillHistograms() {
                 hitpos[2] = fChannelInfo->GetZ();
                 /*	   TGeoNode* cNode=*/gGeoManager->GetCurrentNode();
                 gGeoManager->MasterToLocal(hitpos, hitpos_local);
-
                 // Check for consistency of geometry
                 Int_t iChTrafo = CbmTofAddress::GetChannelId(iAddr);
                 Int_t iChMiss =
@@ -2152,6 +2153,21 @@ void CbmTofFindTracks::FillHistograms() {
                     0,
                     CbmTofAddress::GetSmType(iAddr));
                   CbmTofCell* fChannelInfoMiss = fDigiPar->GetCell(iAddrMiss);
+                  if (NULL == fChannelInfoMiss) {
+                    LOG(fatal)
+                      << Form("Geo consistency check 0x%08x, 0x%08x failed at "
+                              "St%d, z=%7.2f,%7.2f: iChTrafo %d, Miss %d , "
+                              "xloc %6.2f, dx %4.2f",
+                              iAddr,
+                              iAddrMiss,
+                              iSt,
+                              zPos,
+                              zPosMiss,
+                              iChTrafo,
+                              iChMiss,
+                              hitpos_local[0],
+                              fChannelInfo->GetSizex());
+                  }
                   zPosMiss =
                     fChannelInfoMiss->GetZ()
                     + (Double_t) fhPullZ_Smt_Off->GetBinContent(iRpcInd + 1);
@@ -2201,7 +2217,7 @@ void CbmTofFindTracks::FillHistograms() {
                       if (
                         iH1
                         < 0) {  // find geo element for the missing Station iSt
-                        //			Int_t iSmType1 = fMapStationRpcId[iSt1]; (FU) not used
+                        //Int_t iSmType1 = fMapStationRpcId[iSt1]; (FU) not used
                         //if (iSmType1 < 1) continue;
                         fhTrklDT0StMis2->Fill(Double_t(iSt * 10 + iSt1),
                                               pTrk->GetFitT(0.)

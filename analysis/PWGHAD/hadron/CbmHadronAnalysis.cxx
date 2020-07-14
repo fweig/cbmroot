@@ -11,6 +11,7 @@ using namespace std;
 #include "TH1F.h"
 #include "TH2F.h"
 #include "TMath.h"
+#include "TROOT.h"
 #include "TRandom.h"
 #include "TString.h"
 
@@ -75,384 +76,8 @@ Float_t refMass[3] = {0.139, 0.494, 0.938};
 //
 // ------------------------------------------------------------------
 CbmHadronAnalysis::CbmHadronAnalysis()
-  : FairTask("HadronAnalysis")
-  , fEvents(0)
-  , fBeamMomentum(10)
-  , fMidY(0.)
-  , fDY(0.)
-  , fFlowMinPtm(0.)
-  , fBSelMin(0.)
-  , fBSelMax(0.)
-  , fwxy2(0.)
-  , fWMax(0.)
-  , fVtxBMax(0.)
-  , fPdfFileName("")
-  , fFlowFileName("")
-  , fflowFile(NULL)
-  , fMCEventHeader(NULL)
-  , fGeoHandler(NULL)
-  , fCellInfo(NULL)
-  , fMCTracks(NULL)
-  , fStsPoints(NULL)
-  , fMCTracksColl(NULL)
-  , fStsPointsColl(NULL)
-  , fStsHits(NULL)
-  , fStsClusters(NULL)
-  , fStsTracks(NULL)
-  , fStsDigis(NULL)
-  , fStsDigiMatchColl(NULL)
-  , fTrdPoints(NULL)
-  , fTrdHits(NULL)
-  , fTofPoints(NULL)
-  , fTofHits(NULL)
-  , fTofDigis(NULL)
-  , fTofDigiMatchColl(NULL)
-  , fTofDigiMatchPointsColl(NULL)
-  , fGlobalTracks(NULL)
-  , fHadrons(NULL)
-  , fPrimVertex(NULL)
-  , fTrackFitter()
-  , fa_ptm_rap_gen_pip(NULL)
-  , fa_ptm_rap_gen_pim(NULL)
-  , fa_ptm_rap_gen_kp(NULL)
-  , fa_ptm_rap_gen_km(NULL)
-  , fa_ptm_rap_gen_p(NULL)
-  , fa_ptm_rap_gen_pbar(NULL)
-  , fa_ptm_rap_gen_d(NULL)
-  , fa_ptm_rap_gen_t(NULL)
-  , fa_ptm_rap_gen_h(NULL)
-  , fa_ptm_rap_gen_a(NULL)
-  , fa_ptm_rap_gen_imf(NULL)
-  , fa_plab_sts_pip(NULL)
-  , fa_plab_sts_pim(NULL)
-  , fa_plab_sts_kp(NULL)
-  , fa_plab_sts_km(NULL)
-  , fa_plab_sts_p(NULL)
-  , fa_plab_sts_pbar(NULL)
-  , fa_ptm_rap_sts_pip(NULL)
-  , fa_ptm_rap_sts_pim(NULL)
-  , fa_ptm_rap_sts_kp(NULL)
-  , fa_ptm_rap_sts_km(NULL)
-  , fa_ptm_rap_sts_p(NULL)
-  , fa_ptm_rap_sts_pbar(NULL)
-  , fa_ptm_rap_sts_d(NULL)
-  , fa_ptm_rap_sts_t(NULL)
-  , fa_ptm_rap_sts_h(NULL)
-  , fa_ptm_rap_sts_a(NULL)
-  , fa_ptm_rap_sts_imf(NULL)
-  , fa_ptm_rap_poi_pip(NULL)
-  , fa_ptm_rap_poi_pim(NULL)
-  , fa_ptm_rap_poi_kp(NULL)
-  , fa_ptm_rap_poi_km(NULL)
-  , fa_ptm_rap_poi_p(NULL)
-  , fa_ptm_rap_poi_pbar(NULL)
-  , fa_ptm_rap_poi_d(NULL)
-  , fa_ptm_rap_poi_t(NULL)
-  , fa_ptm_rap_poi_h(NULL)
-  , fa_ptm_rap_poi_a(NULL)
-  , fa_ptm_rap_poi_imf(NULL)
-  , fa_ptm_rap_hit_pip(NULL)
-  , fa_ptm_rap_hit_pim(NULL)
-  , fa_ptm_rap_hit_kp(NULL)
-  , fa_ptm_rap_hit_km(NULL)
-  , fa_ptm_rap_hit_p(NULL)
-  , fa_ptm_rap_hit_pbar(NULL)
-  , fa_ptm_rap_hit_d(NULL)
-  , fa_ptm_rap_hit_t(NULL)
-  , fa_ptm_rap_hit_h(NULL)
-  , fa_ptm_rap_hit_a(NULL)
-  , fa_ptm_rap_hit_imf(NULL)
-  , fa_ptm_rap_glo_pip(NULL)
-  , fa_ptm_rap_glo_pim(NULL)
-  , fa_ptm_rap_glo_kp(NULL)
-  , fa_ptm_rap_glo_km(NULL)
-  , fa_ptm_rap_glo_p(NULL)
-  , fa_ptm_rap_glo_pbar(NULL)
-  , fa_ptm_rap_glo_d(NULL)
-  , fa_ptm_rap_glo_t(NULL)
-  , fa_ptm_rap_glo_h(NULL)
-  , fa_ptm_rap_glo_a(NULL)
-  , fa_ptm_rap_glo_imf(NULL)
-  , fa_mul_b_gen(NULL)
-  , fa_mul_b_poi(NULL)
-  , fa_mul_b_hit(NULL)
-  , fa_mul_b_glo(NULL)
-  , fa_mul_b_had(NULL)
-  , fa_phirp_b_gen(NULL)
-  , fa_phgrp_b_gen(NULL)
-  , fa_phphrp_gen(NULL)
-  , fa_delrp_b_gen(NULL)
-  , fa_delrp_b_poi(NULL)
-  , fa_delrp_b_hit(NULL)
-  , fa_delrp_b_glo(NULL)
-  , fa_drp_b_gen(NULL)
-  , fa_cdrp_b_gen(NULL)
-  , fa_drp_b_poi(NULL)
-  , fa_cdrp_b_poi(NULL)
-  , fa_drp_b_hit(NULL)
-  , fa_cdrp_b_hit(NULL)
-  , fa_drp_b_glo(NULL)
-  , fa_cdrp_b_glo(NULL)
-  , fa_drp_b_had(NULL)
-  , fa_cdrp_b_had(NULL)
-  , fa_cdelrp_b_gen(NULL)
-  , fa_cdelrp_b_poi(NULL)
-  , fa_cdelrp_b_hit(NULL)
-  , fa_cdelrp_b_glo(NULL)
-  , fa_cdelrp_b_had(NULL)
-  , fa_phirp_gen(NULL)
-  , fa_phirp_poi(NULL)
-  , fa_phirp_hit(NULL)
-  , fa_phirp_glo(NULL)
-  , fa_phirp_had(NULL)
-  , fa_phirps_gen(NULL)
-  , fa_phirps_poi(NULL)
-  , fa_phirps_hit(NULL)
-  , fa_phirps_glo(NULL)
-  , fa_phirps_had(NULL)
-  , fa_v1_rap_gen_pip(NULL)
-  , fa_v1_rap_gen_pim(NULL)
-  , fa_v1_rap_gen_kp(NULL)
-  , fa_v1_rap_gen_km(NULL)
-  , fa_v1_rap_gen_p(NULL)
-  , fa_v1_rap_gen_pbar(NULL)
-  , fa_v1_rap_gen_d(NULL)
-  , fa_v1_rap_gen_t(NULL)
-  , fa_v1_rap_gen_h(NULL)
-  , fa_v1_rap_gen_a(NULL)
-  , fa_v1_rap_gen_imf(NULL)
-  , fa_v2_rap_gen_pip(NULL)
-  , fa_v2_rap_gen_pim(NULL)
-  , fa_v2_rap_gen_kp(NULL)
-  , fa_v2_rap_gen_km(NULL)
-  , fa_v2_rap_gen_p(NULL)
-  , fa_v2_rap_gen_pbar(NULL)
-  , fa_v2_rap_gen_d(NULL)
-  , fa_v2_rap_gen_t(NULL)
-  , fa_v2_rap_gen_h(NULL)
-  , fa_v2_rap_gen_a(NULL)
-  , fa_v2_rap_gen_imf(NULL)
-  , fa_v1_rap_poi_pip(NULL)
-  , fa_v1_rap_poi_pim(NULL)
-  , fa_v1_rap_poi_kp(NULL)
-  , fa_v1_rap_poi_km(NULL)
-  , fa_v1_rap_poi_p(NULL)
-  , fa_v1_rap_poi_pbar(NULL)
-  , fa_v1_rap_poi_d(NULL)
-  , fa_v1_rap_poi_t(NULL)
-  , fa_v1_rap_poi_h(NULL)
-  , fa_v1_rap_poi_a(NULL)
-  , fa_v1_rap_poi_imf(NULL)
-  , fa_v2_rap_poi_pip(NULL)
-  , fa_v2_rap_poi_pim(NULL)
-  , fa_v2_rap_poi_kp(NULL)
-  , fa_v2_rap_poi_km(NULL)
-  , fa_v2_rap_poi_p(NULL)
-  , fa_v2_rap_poi_pbar(NULL)
-  , fa_v2_rap_poi_d(NULL)
-  , fa_v2_rap_poi_t(NULL)
-  , fa_v2_rap_poi_h(NULL)
-  , fa_v2_rap_poi_a(NULL)
-  , fa_v2_rap_poi_imf(NULL)
-  , fa_v1_rap_hit_pip(NULL)
-  , fa_v1_rap_hit_pim(NULL)
-  , fa_v1_rap_hit_kp(NULL)
-  , fa_v1_rap_hit_km(NULL)
-  , fa_v1_rap_hit_p(NULL)
-  , fa_v1_rap_hit_pbar(NULL)
-  , fa_v1_rap_hit_d(NULL)
-  , fa_v1_rap_hit_t(NULL)
-  , fa_v1_rap_hit_h(NULL)
-  , fa_v1_rap_hit_a(NULL)
-  , fa_v1_rap_hit_imf(NULL)
-  , fa_v2_rap_hit_pip(NULL)
-  , fa_v2_rap_hit_pim(NULL)
-  , fa_v2_rap_hit_kp(NULL)
-  , fa_v2_rap_hit_km(NULL)
-  , fa_v2_rap_hit_p(NULL)
-  , fa_v2_rap_hit_pbar(NULL)
-  , fa_v2_rap_hit_d(NULL)
-  , fa_v2_rap_hit_t(NULL)
-  , fa_v2_rap_hit_h(NULL)
-  , fa_v2_rap_hit_a(NULL)
-  , fa_v2_rap_hit_imf(NULL)
-  , fa_v1_rap_glo_pip(NULL)
-  , fa_v1_rap_glo_pim(NULL)
-  , fa_v1_rap_glo_kp(NULL)
-  , fa_v1_rap_glo_km(NULL)
-  , fa_v1_rap_glo_p(NULL)
-  , fa_v1_rap_glo_pbar(NULL)
-  , fa_v1_rap_glo_d(NULL)
-  , fa_v1_rap_glo_t(NULL)
-  , fa_v1_rap_glo_h(NULL)
-  , fa_v1_rap_glo_a(NULL)
-  , fa_v1_rap_glo_imf(NULL)
-  , fa_v2_rap_glo_pip(NULL)
-  , fa_v2_rap_glo_pim(NULL)
-  , fa_v2_rap_glo_kp(NULL)
-  , fa_v2_rap_glo_km(NULL)
-  , fa_v2_rap_glo_p(NULL)
-  , fa_v2_rap_glo_pbar(NULL)
-  , fa_v2_rap_glo_d(NULL)
-  , fa_v2_rap_glo_t(NULL)
-  , fa_v2_rap_glo_h(NULL)
-  , fa_v2_rap_glo_a(NULL)
-  , fa_v2_rap_glo_imf(NULL)
-  , fa_xy_poi1(NULL)
-  , fa_xy_poi2(NULL)
-  , fa_xy_poi3(NULL)
-  , fa_xy_hit1(NULL)
-  , fa_xy_hit2(NULL)
-  , fa_xy_hit3(NULL)
-  , fa_xy_glo1(NULL)
-  , fa_xy_glo_pip(NULL)
-  , fa_xy_glo_pim(NULL)
-  , fa_xy_glo_kp(NULL)
-  , fa_xy_glo_km(NULL)
-  , fa_xy_glo_p(NULL)
-  , fa_xy_glo_pbar(NULL)
-  , fa_xy_glo_d(NULL)
-  , fa_xy_glo_t(NULL)
-  , fa_xy_glo_h(NULL)
-  , fa_xy_glo_a(NULL)
-  , fa_pv_poi(NULL)
-  , fa_tm_poi(NULL)
-  , fa_tm_poiprim(NULL)
-  , fa_dxx(NULL)
-  , fa_dxy(NULL)
-  , fa_dxz(NULL)
-  , fa_dyx(NULL)
-  , fa_dyy(NULL)
-  , fa_dyz(NULL)
-  , fa_dzx(NULL)
-  , fa_dzy(NULL)
-  , fa_dzz(NULL)
-  , fa_hit_ch(NULL)
-  , fa_dhit_ch(NULL)
-  , fa_tof_hit(NULL)
-  , fa_dtof_hit(NULL)
-  , fa_tof_hitprim(NULL)
-  , fa_pv_hit(NULL)
-  , fa_tm_hit(NULL)
-  , fa_tm_hitprim(NULL)
-  , fa_tn_hit(NULL)
-  , fa_t0_hit(NULL)
-  , fa_t0m_hit(NULL)
-  , fa_t0mn_hit(NULL)
-  , fa_t0m_b_hit(NULL)
-  , fa_t0mn_b_hit(NULL)
-  , fa_t0m_f_hit(NULL)
-  , fa_t0mn_f_hit(NULL)
-  , fa_t0m_f_b_hit(NULL)
-  , fa_t0mn_f_b_hit(NULL)
-  , fa_t0m_nf_hit(NULL)
-  , fa_t0mn_nf_hit(NULL)
-  , fa_t0m_nf_b_hit(NULL)
-  , fa_t0mn_nf_b_hit(NULL)
-  , fa_TofTrackMul(NULL)
-  , fa_VtxB(NULL)
-  , fa_chi2_mom_glo(NULL)
-  , fa_chi2_mom_gloprim(NULL)
-  , fa_len_mom_glo(NULL)
-  , fa_pv_glo(NULL)
-  , fa_tm_glo(NULL)
-  , fa_tm_glo_pip(NULL)
-  , fa_tm_glo_pim(NULL)
-  , fa_tm_glo_kp(NULL)
-  , fa_tm_glo_km(NULL)
-  , fa_tm_glo_p(NULL)
-  , fa_tm_glo_pbar(NULL)
-  , fa_tm_glo_d(NULL)
-  , fa_tm_glo_t(NULL)
-  , fa_tm_glo_h(NULL)
-  , fa_tm_glo_a(NULL)
-  , fa_tm_gloprim(NULL)
-  , fa_tm_glomis(NULL)
-  , fa_tm_glovtxb(NULL)
-  , fa_tm_gloprimvtxb(NULL)
-  , fa_m2mom_glo(NULL)
-  , fa_m2mom_glovtxb(NULL)
-  , fa_m2mom_gloprim(NULL)
-  , fa_m2mom_gloprimvtxb(NULL)
-  , fa_m2mom_glo_pip(NULL)
-  , fa_m2mom_glo_pim(NULL)
-  , fa_m2mom_glo_kp(NULL)
-  , fa_m2mom_glo_km(NULL)
-  , fa_m2mom_glo_p(NULL)
-  , fa_m2mom_glo_pbar(NULL)
-  , fa_m2mom_glo_d(NULL)
-  , fa_m2mom_glo_t(NULL)
-  , fa_m2mom_glo_h(NULL)
-  , fa_m2mom_glo_a(NULL)
-  , fa_pMCmom_glo(NULL)
-  , fa_pMCmom_glo_pip(NULL)
-  , fa_pMCmom_glo_pim(NULL)
-  , fa_pMCmom_glo_kp(NULL)
-  , fa_pMCmom_glo_km(NULL)
-  , fa_pMCmom_glo_p(NULL)
-  , fa_pMCmom_glo_pbar(NULL)
-  , fa_pMCmom_glo_d(NULL)
-  , fa_pMCmom_glo_t(NULL)
-  , fa_pMCmom_glo_h(NULL)
-  , fa_pMCmom_glo_a(NULL)
-  , fa_w_mom_glo(NULL)
-  , fa_w_mom_glo_pip(NULL)
-  , fa_w_mom_glo_pim(NULL)
-  , fa_w_mom_glo_kp(NULL)
-  , fa_w_mom_glo_km(NULL)
-  , fa_w_mom_glo_p(NULL)
-  , fa_w_mom_glo_pbar(NULL)
-  , fa_w_mom_glo_d(NULL)
-  , fa_w_mom_glo_t(NULL)
-  , fa_w_mom_glo_h(NULL)
-  , fa_w_mom_glo_a(NULL)
-  , fa_w_mom_gloprim(NULL)
-  , fa_w_mom_glomis(NULL)
-  , fa_LenDismom_glo(NULL)
-  , fa_LenDismom_glo_pip(NULL)
-  , fa_LenDismom_glo_pim(NULL)
-  , fa_LenDismom_glo_kp(NULL)
-  , fa_LenDismom_glo_km(NULL)
-  , fa_LenDismom_glo_p(NULL)
-  , fa_LenDismom_glo_pbar(NULL)
-  , fa_LenDismom_glo_d(NULL)
-  , fa_LenDismom_glo_t(NULL)
-  , fa_LenDismom_glo_h(NULL)
-  , fa_LenDismom_glo_a(NULL)
-  , fa_LenMcLenGlomom_glo(NULL)
-  , fa_LenMcDismom_glo(NULL)
-  , fhwdist(NULL)
-  , fhwmindelmass(NULL)
-  , fhwminlen(NULL)
-  , fhwdelp(NULL)
-  , fhTofTrkDx(NULL)
-  , fhTofTrkDy(NULL)
-  , fhTofTrkDxsel(NULL)
-  , fhTofTrkDysel(NULL)
-  , bRecSec(kFALSE)
-  , fdDistPrimLim(1.5)
-  ,  // Ext Parameter: Max Tof-Sts trans distance for primaries
-  fdDistPrimLim2(0.3)
-  ,  // Ext Parameter: Max Sts-Sts trans distance for primaries
-  fdDistSecLim2(0.5)
-  ,  // Ext Parameter: Max Sts-Sts trans distance from TOF direction for secondaries
-  fdD0ProtLim(0.4)
-  ,  // Ext Parameter: Min impact parameter for secondary proton
-  fdOpAngMin(0.01)
-  ,  // Ext Parameter: Min opening angle for accepting pair
-  fdDCALim(0.2)
-  ,  // Ext Parameter: Max DCA for accepting pair
-  fdVLenMin(5.)
-  ,  // Ext Parameter: Min Lambda flight path length for accepting pair
-  fdVLenMax(25.)
-  ,  // Ext Parameter: Max Lambda flight path length for accepting pair
-  fdDistTRD(10.)
-  ,  // max accepted distance of Trd Hit from STS-TOF line
-  fdTRDHmulMin(0.)
-  ,  // min associated Trd Hits to Track candidates
-  fNMixedEvents(1) {
-  CreateHistogramms();
-  cout << "CbmHadronAnalysis: Task started " << endl;
+  : CbmHadronAnalysis::CbmHadronAnalysis("Hadron Analysis", 0) {
+  cout << "CbmHadronAnalysis: Task started with defaults" << endl;
 }
 // ------------------------------------------------------------------
 
@@ -833,11 +458,7 @@ CbmHadronAnalysis::CbmHadronAnalysis(const char* name, Int_t verbose)
   ,  // max accepted distance of Trd Hit from STS-TOF line
   fdTRDHmulMin(0.)
   ,  // min associated Trd Hits to Track candidates
-  fNMixedEvents(1)
-
-{
-  CreateHistogramms();
-}
+  fNMixedEvents(1) {}
 // ------------------------------------------------------------------
 
 
@@ -852,6 +473,8 @@ CbmHadronAnalysis::~CbmHadronAnalysis() {
 // ------------------------------------------------------------------
 void CbmHadronAnalysis::CreateHistogramms() {
   // Create histogramms
+  gROOT->cd();
+  LOG(info) << "CreateHistograms in " << gDirectory->GetName();
 
   Float_t ymin   = -1.;
   Float_t ymax   = 4.;
@@ -3449,6 +3072,8 @@ InitStatus CbmHadronAnalysis::Init() {
          << " rap:" << GetMidY() << endl;
   }
 
+  CreateHistogramms();
+
   cout << "-I- CbmHadronAnalysis::Init : "
        << "initialisation completed." << endl;
 
@@ -3473,6 +3098,9 @@ void CbmHadronAnalysis::Exec(Option_t* option) {
 
     for (Int_t iEvent = 0; iEvent < fEventsColl->GetEntriesFast(); iEvent++) {
       CbmEvent* tEvent = dynamic_cast<CbmEvent*>(fEventsColl->At(iEvent));
+      // Inspect CbmEvent
+      LOG(debug) << "CbmEvent with " << tEvent->GetNofData() << " total data";
+      LOG(debug) << "        " << tEvent->ToString();
       // copy TOF hits
       fTofHits->Clear();
       Int_t iNbHits = 0;
@@ -3491,7 +3119,8 @@ void CbmHadronAnalysis::Exec(Option_t* option) {
       iNbHits = 0;
       fStsHits->Clear();
       LOG(debug) << "Fill Sts array with mul "
-                 << tEvent->GetNofData(ECbmDataType::kStsHit);
+                 << tEvent->GetNofData(ECbmDataType::kStsHit) << " out of "
+                 << fStsHitsColl->GetEntriesFast();
       for (Int_t iHit = 0; iHit < tEvent->GetNofData(ECbmDataType::kStsHit);
            iHit++) {
         Int_t iHitIndex =
@@ -3589,6 +3218,7 @@ void CbmHadronAnalysis::ExecEvent(Option_t*) {
     if (NULL == TofHit) continue;
     if (TofHit->GetZ() == 0.) dT0 = TofHit->GetTime();
   }
+
   if (dT0 != 0.) {
     for (Int_t j = 0; j < nTofHits; j++) {
       TofHit = (CbmTofHit*) fTofHits->At(j);
@@ -4446,7 +4076,7 @@ void CbmHadronAnalysis::ExecEvent(Option_t*) {
        */
     } else {
       lp = -1;
-      LOG(WARNING) << "No Link to MCTofPoint found for hit " << j;
+      LOG(debug) << "No Link to MCTofPoint found for hit " << j;
       continue;
     }
     TofPoint = (CbmTofPoint*) fTofPoints->At(lp);
@@ -4959,11 +4589,11 @@ void CbmHadronAnalysis::ExecEvent(Option_t*) {
       Double_t vtxb = fTrackFitter.GetChiToVertex(
         StsTrack, fPrimVertex);  //impact paramter ???
       if (verbose > 10) {        // nh-debug
-        cout << Form(
-          "<D> Extrapolate Glob Track %d to prim. vertex %6.2f with chi2 %6.2f",
-          i,
-          fPrimVertex->GetZ(),
-          vtxb)
+        cout << Form("<D> Extrapolate Glob Track %d to prim. vertex %6.2f with "
+                     "chi2 %6.2f",
+                     i,
+                     fPrimVertex->GetZ(),
+                     vtxb)
              << endl;
         //GlobTrack->GetParamFirst()->Print();
       }
@@ -5117,8 +4747,11 @@ void CbmHadronAnalysis::ExecEvent(Option_t*) {
                   Bthi         = thi;  // best TofHit index
                   Btt          = tt;   // best TofTrack index
                   if (verbose > 5) {
-                    cout << Form(
-                      "<DMin> gt %d, hit %d, tt %d, w: %6.2f", i, Bthi, Btt, w)
+                    cout << Form("<DMin> gt %d, hit %d, tt %d, w: %6.2f",
+                                 i,
+                                 Bthi,
+                                 Btt,
+                                 w)
                          << endl;
                   }
                 }
@@ -5248,8 +4881,10 @@ void CbmHadronAnalysis::ExecEvent(Option_t*) {
               }
 
               // decide now!
-              if (Weight_THMUL[i][0] < Weight_THMUL
-                    [io][0]) {  // new assignment better than old one -> change
+              if (Weight_THMUL[i][0]
+                  < Weight_THMUL
+                      [io]
+                      [0]) {  // new assignment better than old one -> change
                 if (verbose > 1) {  //nh-debug
                   cout << "<D> New cand. is better, invalidate entry for gt "
                        << io << endl;
@@ -5262,12 +4897,13 @@ void CbmHadronAnalysis::ExecEvent(Option_t*) {
                 GlobTrack2->SetLength(0.);  // signal entry invalid
               } else {  // old assignment better than current candidate
                 if (verbose > 0) {  //nh-debug
-                  cout << Form(
-                    "<D> Stick to old assignment, Bthi %d, TM %d, THM %d",
-                    Bthi,
-                    NTofHitTMul[Bthi],
-                    NTHMUL[i])
-                       << endl;
+                  cout
+                    << Form(
+                         "<D> Stick to old assignment, Bthi %d, TM %d, THM %d",
+                         Bthi,
+                         NTofHitTMul[Bthi],
+                         NTHMUL[i])
+                    << endl;
                 }
                 NTofHitTMul[Bthi]--;  // deregister toftrack
                 if (NTHMUL[i] > 1) {  // take next one from list
@@ -6147,6 +5783,7 @@ void CbmHadronAnalysis::ReconstructSecondaries() {
 #include "TVector3.h"
 
   static TH1F* fhTofHitMul;
+  static TH1F* fhStsHitMul;
   static TH1F* fhTofChi;
   static TH1F* fhDperp;
   static TH2F* fhdEdxMul;
@@ -6225,6 +5862,11 @@ void CbmHadronAnalysis::ReconstructSecondaries() {
     Double_t MinvMin = secMass[0] + secMass[1];
     fhTofHitMul      = new TH1F(Form("hTofHitMul"),
                            Form("TofHit Multiplicity; M_{TofHit} "),
+                           fiTofHitMulMax,
+                           0.,
+                           (Double_t) fiTofHitMulMax);
+    fhStsHitMul      = new TH1F(Form("hStsHitMul"),
+                           Form("StsHit Multiplicity; M_{StsHit} "),
                            fiTofHitMulMax,
                            0.,
                            (Double_t) fiTofHitMulMax);
@@ -6378,6 +6020,7 @@ void CbmHadronAnalysis::ReconstructSecondaries() {
   }
 
   fhTofHitMul->Fill((Double_t) nTofHits);
+  fhStsHitMul->Fill((Double_t) nStsHits);
 
   fvP.resize(fiNMixClasses);
   fvX.resize(fiNMixClasses);
@@ -6421,11 +6064,13 @@ void CbmHadronAnalysis::ReconstructSecondaries() {
   for (Int_t i = 0; i < nTofHits; i++) {
     CbmTofHit* pTofHit = (CbmTofHit*) fTofHits->At(i);
     if (NULL == pTofHit) continue;
-    if (pTofHit->GetZ() == 0) continue;  // don't merge with fake beam counter
+    if (pTofHit->GetZ() == 0.) continue;  // don't merge with fake beam counter
     for (Int_t i2 = 0; i2 < nTofHits; i2++) {
       if (i2 != i) {
         CbmTofHit* pTofHit2 = (CbmTofHit*) fTofHits->At(i2);
         if (NULL == pTofHit2) continue;
+        if (pTofHit2->GetZ() == 0.)
+          continue;  // don't merge with fake beam counter
         // Project to plane with smallest z coordinate
         if (pTofHit2->GetZ() < pTofHit->GetZ()) {  //invert order
           CbmTofHit* pTofHittmp = pTofHit;
@@ -6447,7 +6092,7 @@ void CbmHadronAnalysis::ReconstructSecondaries() {
                            * 0.5);  // update time
           fTofHits->Remove(pTofHit2);
           //pTofHit2->Delete();                                  // remove from TClonesArray
-          LOG(DEBUG) << "Tof Hits " << i << " and " << i2 << " merged ";
+          LOG(debug) << "Tof Hits " << i << " and " << i2 << " merged ";
           LOG(debug) << "Tof " << i << ", xyz " << pTofHit->GetX() << ", "
                      << pTofHit->GetY() << ", " << pTofHit->GetZ();
         }
@@ -6459,7 +6104,7 @@ void CbmHadronAnalysis::ReconstructSecondaries() {
   for (Int_t i = 0; i < nTofHits; i++) {
     CbmTofHit* pTofHit = (CbmTofHit*) fTofHits->At(i);
     if (NULL == pTofHit) continue;
-    if (pTofHit->GetZ() == 0) continue;  // skip fake beam counter
+    if (pTofHit->GetZ() == 0.) continue;  // skip fake beam counter
     dStsDistMin[i]  = 1.E3;
     dSts2DistMin[i] = 1.E3;
     for (Int_t l = 0; l < NTrdStations; l++)
@@ -6595,15 +6240,17 @@ void CbmHadronAnalysis::ReconstructSecondaries() {
                    << " < " << fdDistTRD;
         fhDTRDprim->Fill(dDtrans);
         if (dDtrans < fdDistTRD
-            && dDtrans < dTrdDistMin
-                   [i][iTrdLayer]) {  // check if acceptable and take best match
+            && dDtrans
+                 < dTrdDistMin
+                     [i]
+                     [iTrdLayer]) {  // check if acceptable and take best match
           Int_t iMul = iTRD[i].size();
           if (dTrdDistMin[i][iTrdLayer] < 1.E3) {  // modify previous entry
             //find old entry in vector
             Int_t ll = 0;
             for (; ll < iMul; ll++)
-              if (static_cast<UInt_t>(CbmTrdAddress::GetLayerId(
-                    ((CbmTrdHit*) fTrdHits->At(iTRD[i][ll]))->GetAddress()))
+              if (CbmTrdAddress::GetLayerId(
+                    ((CbmTrdHit*) fTrdHits->At(iTRD[i][ll]))->GetAddress())
                   == iTrdLayer)
                 break;
             iTRD[i][ll] = l;
@@ -6667,8 +6314,10 @@ void CbmHadronAnalysis::ReconstructSecondaries() {
                    << " < " << fdDistTRD;
         fhDTRDprim->Fill(dDtrans);
         if (dDtrans < fdDistTRD
-            && dDtrans < dTrdDistMin
-                   [i][iTrdLayer]) {  // check if acceptable and take best match
+            && dDtrans
+                 < dTrdDistMin
+                     [i]
+                     [iTrdLayer]) {  // check if acceptable and take best match
           Int_t iMul = iTRD[i].size();
           if (dTrdDistMin[i][iTrdLayer] < 1.E3) {  // modify previous entry
             //find old entry in vector
@@ -6710,7 +6359,7 @@ void CbmHadronAnalysis::ReconstructSecondaries() {
   for (Int_t i = 0; i < nTofHits; i++) {
     CbmTofHit* pTofHit = (CbmTofHit*) fTofHits->At(i);
     if (NULL == pTofHit) continue;
-    if (pTofHit->GetZ() == 0) continue;  // skip fake beam counter
+    if (pTofHit->GetZ() == 0.) continue;  // skip fake beam counter
     if (iStsMin[i][0] > -1 && iStsMin[i][1] > -1) {
       CbmStsHit* pStsHit  = (CbmStsHit*) fStsHits->At(iStsMin[i][0]);
       CbmStsHit* pSts2Hit = (CbmStsHit*) fStsHits->At(iStsMin[i][1]);
@@ -6766,7 +6415,7 @@ void CbmHadronAnalysis::ReconstructSecondaries() {
       Int_t kbest        = -1;
       CbmTofHit* pTofHit = (CbmTofHit*) fTofHits->At(i);
       if (NULL == pTofHit) continue;
-      if (pTofHit->GetZ() == 0) continue;  // skip fake beam counter
+      if (pTofHit->GetZ() == 0.) continue;  // skip fake beam counter
       for (Int_t j = 0; j < nStsHits; j++) {
         LOG(debug) << "Tof " << i << ", Sts " << j
                    << Form(" ? sec cand %6.3f Min %6.3f ",
@@ -6792,7 +6441,7 @@ void CbmHadronAnalysis::ReconstructSecondaries() {
                               + TMath::Power(pSts2Hit->GetY() - sPos2Yext, 2);
             Double_t dDist = TMath::Sqrt(dDist2);
             fhDperpS->Fill(dDist);
-            LOG(DEBUG) << "Sec Tof " << i << ", Sts " << j
+            LOG(debug) << "Sec Tof " << i << ", Sts " << j
                        << Form(" Sts2 %d -> dist %6.3f < %6.3f ? at z = %4.1f",
                                k,
                                dDist,
@@ -6803,13 +6452,12 @@ void CbmHadronAnalysis::ReconstructSecondaries() {
               dDistMin = dDist;
               jbest    = j;
               kbest    = k;
-              ;
             }
           }  // for (Int_t k=0; k<nStsHits; k++) {
         }  //if( dTofDistMin[j] > dDistPrimLim) {  // Sts hit not in the primary class
       }  // for (Int_t j=0; j<nStsHits; j++) {
 
-      LOG(DEBUG) << "Sec Dist for TofHit " << i << ": " << dDistMin << ", j "
+      LOG(debug) << "Sec Dist for TofHit " << i << ": " << dDistMin << ", j "
                  << jbest << ", k " << kbest;
 
       if (dDistMin < 100.) {  // secondary candidate found, store vectors
@@ -6836,7 +6484,7 @@ void CbmHadronAnalysis::ReconstructSecondaries() {
                           + TMath::Power(dYexp - pTrdHit->GetY(), 2));
             UInt_t iTrdLayer = CbmTrdAddress::GetLayerId(pTrdHit->GetAddress());
             fhDTRDsec->Fill(dDtrans);
-            LOG(DEBUG) << "Inspect sec. TRD hit " << l << " in "
+            LOG(debug) << "Inspect sec. TRD hit " << l << " in "
                        << Form("Module 0x%08x, layer %d",
                                pTrdHit->GetAddress(),
                                CbmTrdAddress::GetLayerId(pTrdHit->GetAddress()))
@@ -6844,16 +6492,17 @@ void CbmHadronAnalysis::ReconstructSecondaries() {
                        << " < " << fdDistTRD;
             if (
               dDtrans < fdDistTRD
-              && dDtrans < dTrdDistMin
-                     [i]
-                     [iTrdLayer]) {  // check if acceptable and take best match
+              && dDtrans
+                   < dTrdDistMin
+                       [i]
+                       [iTrdLayer]) {  // check if acceptable and take best match
               Int_t iMul = iTRD[i].size();
               if (dTrdDistMin[i][iTrdLayer] < 1.E3) {  // modify previous entry
                 //find old entry in vector
                 Int_t ll = 0;
                 for (; ll < iMul; ll++)
-                  if (static_cast<UInt_t>(CbmTrdAddress::GetLayerId(
-                        ((CbmTrdHit*) fTrdHits->At(iTRD[i][ll]))->GetAddress()))
+                  if (CbmTrdAddress::GetLayerId(
+                        ((CbmTrdHit*) fTrdHits->At(iTRD[i][ll]))->GetAddress())
                       == iTrdLayer)
                     break;
                 iTRD[i][ll] = l;
@@ -6934,9 +6583,10 @@ void CbmHadronAnalysis::ReconstructSecondaries() {
                        << " < " << fdDistTRD;
             if (
               dDtrans < fdDistTRD
-              && dDtrans < dTrdDistMin
-                     [i]
-                     [iTrdLayer]) {  // check if acceptable and take best match
+              && dDtrans
+                   < dTrdDistMin
+                       [i]
+                       [iTrdLayer]) {  // check if acceptable and take best match
               Int_t iMul = iTRD[i].size();
               if (dTrdDistMin[i][iTrdLayer] < 1.E3) {  // modify previous entry
                 //find old entry in vector
