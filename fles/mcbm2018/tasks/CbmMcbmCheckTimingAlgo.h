@@ -132,7 +132,7 @@ private:
   /** Name of the histogram output file **/
   TString fOutFileName = "data/HistosCheckTiming.root";
 
-  ClassDef(CbmMcbmCheckTimingAlgo, 1);
+  ClassDefNV(CbmMcbmCheckTimingAlgo, 1);
 };
 
 #endif
