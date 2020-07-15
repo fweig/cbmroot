@@ -106,7 +106,14 @@ Bool_t CbmMcbm2019TimeWinEventBuilderAlgo::InitAlgo() {
   /// Access the TS metadata to know TS start tim
   fTimeSliceMetaDataArray =
     dynamic_cast<TClonesArray*>(ioman->GetObject("TimesliceMetaData"));
-  if (!fTimeSliceMetaDataArray) LOG(fatal) << "No TS metadata input found";
+  if (!fTimeSliceMetaDataArray)
+  {
+    LOG(fatal) << "No TS metadata input found"
+               << " => Please check in the unpacking macro if the following line"
+                  " was present!"
+               << std::endl
+               <<"source->SetWriteOutputFlag(kTRUE);  // For writing TS metadata";
+  } // if (!fTimeSliceMetaDataArray)
 
   /// Store the time window for the reference detector
   switch (fRefDet) {
@@ -856,116 +863,83 @@ Bool_t CbmMcbm2019TimeWinEventBuilderAlgo::CheckTriggerConditions(
 
 //----------------------------------------------------------------------
 void CbmMcbm2019TimeWinEventBuilderAlgo::CreateHistograms() {
+  /// FIXME: Disable clang formatting for histograms declaration for now
+  /* clang-format off */
   fhEventTime = new TH1F("hEventTime",
                          "seed time of the events; Seed time [s]; Events",
-                         60000,
-                         0,
-                         600);
+                         60000, 0, 600);
   fhEventDt   = new TH1F(
     "fhEventDt",
     "interval in seed time of consecutive events; Seed time [s]; Events",
-    2100,
-    -100.5,
-    1999.5);
+    2100, -100.5, 1999.5);
   fhEventSize =
     new TH1F("hEventSize",
              "nb of all  digis in the event; Nb Digis []; Events []",
-             10000,
-             0,
-             10000);
+             10000, 0, 10000);
   fhNbDigiPerEvtTime =
     new TH2I("hNbDigiPerEvtTime",
              "nb of all  digis per event vs seed time of the events; Seed time "
              "[s]; Nb Digis []; Events []",
-             600,
-             0,
-             600,
-             1000,
-             0,
-             10000);
+              600, 0,   600,
+             1000, 0, 10000);
 
   fhNbDigiPerEvtTimeT0 =
     new TH2I("hNbDigiPerEvtTimeT0",
              "nb of T0   digis per event vs seed time of the events; Seed time "
              "[s]; Nb Digis []; Events []",
-             600,
-             0,
-             600,
-             4000,
-             0,
-             4000);
+              600, 0,  600,
+             4000, 0, 4000);
   fhNbDigiPerEvtTimeSts =
     new TH2I("hNbDigiPerEvtTimeSts",
              "nb of STS  digis per event vs seed time of the events; Seed time "
              "[s]; Nb Digis []; Events []",
-             600,
-             0,
-             600,
-             4000,
-             0,
-             4000);
+              600, 0,  600,
+             4000, 0, 4000);
   fhNbDigiPerEvtTimeMuch =
     new TH2I("hNbDigiPerEvtTimeMuch",
              "nb of MUCH digis per event vs seed time of the events; Seed time "
              "[s]; Nb Digis []; Events []",
-             600,
-             0,
-             600,
-             4000,
-             0,
-             4000);
+              600, 0,  600,
+             4000, 0, 4000);
   fhNbDigiPerEvtTimeTrd =
     new TH2I("hNbDigiPerEvtTimeTrd",
              "nb of TRD  digis per event vs seed time of the events; Seed time "
              "[s]; Nb Digis []; Events []",
-             600,
-             0,
-             600,
-             4000,
-             0,
-             4000);
+              600, 0,  600,
+             4000, 0, 4000);
   fhNbDigiPerEvtTimeTof =
     new TH2I("hNbDigiPerEvtTimeTof",
              "nb of TOF  digis per event vs seed time of the events; Seed time "
              "[s]; Nb Digis []; Events []",
-             600,
-             0,
-             600,
-             4000,
-             0,
-             4000);
+              600, 0,  600,
+             4000, 0, 4000);
   fhNbDigiPerEvtTimeRich =
     new TH2I("hNbDigiPerEvtTimeRich",
              "nb of RICH digis per event vs seed time of the events; Seed time "
              "[s]; Nb Digis []; Events []",
-             600,
-             0,
-             600,
-             4000,
-             0,
-             4000);
+              600, 0,  600,
+             4000, 0, 4000);
   fhNbDigiPerEvtTimePsd =
     new TH2I("hNbDigiPerEvtTimePsd",
              "nb of PSD  digis per event vs seed time of the events; Seed time "
              "[s]; Nb Digis []; Events []",
-             600,
-             0,
-             600,
-             4000,
-             0,
-             4000);
+              600, 0,  600,
+             4000, 0, 4000);
 
-  AddHistoToVector(fhEventTime, "evtbuild");
-  AddHistoToVector(fhEventDt, "evtbuild");
-  AddHistoToVector(fhEventSize, "evtbuild");
-  AddHistoToVector(fhNbDigiPerEvtTime, "evtbuild");
-  AddHistoToVector(fhNbDigiPerEvtTimeT0, "evtbuild");
-  AddHistoToVector(fhNbDigiPerEvtTimeSts, "evtbuild");
+  AddHistoToVector(fhEventTime,            "evtbuild");
+  AddHistoToVector(fhEventDt,              "evtbuild");
+  AddHistoToVector(fhEventSize,            "evtbuild");
+  AddHistoToVector(fhNbDigiPerEvtTime,     "evtbuild");
+  AddHistoToVector(fhNbDigiPerEvtTimeT0,   "evtbuild");
+  AddHistoToVector(fhNbDigiPerEvtTimeSts,  "evtbuild");
   AddHistoToVector(fhNbDigiPerEvtTimeMuch, "evtbuild");
-  AddHistoToVector(fhNbDigiPerEvtTimeTrd, "evtbuild");
-  AddHistoToVector(fhNbDigiPerEvtTimeTof, "evtbuild");
+  AddHistoToVector(fhNbDigiPerEvtTimeTrd,  "evtbuild");
+  AddHistoToVector(fhNbDigiPerEvtTimeTof,  "evtbuild");
   AddHistoToVector(fhNbDigiPerEvtTimeRich, "evtbuild");
-  AddHistoToVector(fhNbDigiPerEvtTimePsd, "evtbuild");
+  AddHistoToVector(fhNbDigiPerEvtTimePsd,  "evtbuild");
+
+  /// FIXME: Re-enable clang formatting after histograms declaration
+  /* clang-format on */
 }
 void CbmMcbm2019TimeWinEventBuilderAlgo::FillHistos() {
   Double_t dPreEvtTime = -1.0;
@@ -1025,13 +999,16 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::SetReferenceDetector(
        ++det) {
     if (*det == refDet) {
       LOG(warning)
-        << "CbmMcbm2019TimeWinEventBuilderAlgo::SetReferenceDetector => Doing "
-           "nothing, reference detector already in selection detector list!"
+        << "CbmMcbm2019TimeWinEventBuilderAlgo::SetReferenceDetector => "
+           "Reference detector already in selection detector list!"
         << refDet;
       LOG(warning)
-        << "                                                         => You "
-           "may want to use RemoveDetector before this command to remove it?";
-      return;
+        << "                                                         => It will "
+          "be automatically removed from selection detector list!";
+      LOG(warning) << "                                                         "
+                      "=> Please also remember to update the selection windows "
+                      "to store clusters!";
+      RemoveDetector( refDet );
     }  // if( *det  == selDet )
   }  // for( std::vector< ECbmModuleId >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
 
@@ -1050,8 +1027,8 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::SetReferenceDetector(
       << fRefDet;
     LOG(warning) << "                                                         "
                     "=> Please also remember to update the selection windows!";
-    fRefDet = refDet;
   }  // else of if( fRefDet == refDet )
+  fRefDet = refDet;
 }
 void CbmMcbm2019TimeWinEventBuilderAlgo::AddDetector(ECbmModuleId selDet) {
   /// FIXME: This is not true in case TOF is used as reference !!!!!
