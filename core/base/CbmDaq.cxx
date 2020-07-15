@@ -242,6 +242,9 @@ ULong64_t CbmDaq::FillTimeSlice(Bool_t timeLimit, Double_t tMax) {
       nData = digitizer.second->FillTimeSlice(fTimeSlice, tMax);
     else
       nData = digitizer.second->FillTimeSlice(fTimeSlice);
+    LOG(debug) << GetName() << ": "
+               << CbmModuleList::GetModuleNameCaps(digitizer.first) << " "
+               << fTimeSlice->ToString();
     ss << " " << CbmModuleList::GetModuleNameCaps(digitizer.first) << " "
        << nData;
     nDataAll += nData;
