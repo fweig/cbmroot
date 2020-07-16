@@ -2055,6 +2055,21 @@ void CbmTofFindTracks::FillHistograms() {
                     0,
                     CbmTofAddress::GetSmType(iAddr));
                   CbmTofCell* fChannelInfoMiss = fDigiPar->GetCell(iAddrMiss);
+                  if (NULL == fChannelInfoMiss) {
+                    LOG(fatal)
+                      << Form("Geo consistency check 0x%08x, 0x%08x failed at "
+                              "St%d, z=%7.2f,%7.2f: iChTrafo %d, Miss %d , "
+                              "xloc %6.2f, dx %4.2f",
+                              iAddr,
+                              iAddrMiss,
+                              iSt,
+                              zPos,
+                              zPosMiss,
+                              iChTrafo,
+                              iChMiss,
+                              hitpos_local[0],
+                              fChannelInfo->GetSizex());
+                  }
                   zPosMiss =
                     fChannelInfoMiss->GetZ()
                     + (Double_t) fhPullZ_Smt_Off->GetBinContent(iRpcInd + 1);
