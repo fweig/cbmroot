@@ -6,8 +6,8 @@
 
 #include "CbmTofDetectorId_v20a.h"
 
-const Int_t CbmTofDetectorId_v20a::shiftarray[] = {0,4,11,15,21,25,26};
-const Int_t CbmTofDetectorId_v20a::bitarray[]   = {4,7, 4, 6, 4, 1, 6};
+const Int_t CbmTofDetectorId_v20a::shiftarray[] = {0,4,11,15,21,22,28	};
+const Int_t CbmTofDetectorId_v20a::bitarray[]   = {4,7, 4, 6, 1, 6, 4};
 
 
 CbmTofDetectorId_v20a::CbmTofDetectorId_v20a()
@@ -24,7 +24,7 @@ CbmTofDetectorId_v20a::CbmTofDetectorId_v20a()
 		  (maskarray[1] << shiftarray[1]) |
 		  (maskarray[2] << shiftarray[2]) |
 		  (maskarray[3] << shiftarray[3]) |
-		  (maskarray[4] << shiftarray[4]) |
+		  (0<< shiftarray[4]) |
 		  (maskarray[5] << shiftarray[5]) |
 		  (maskarray[6] << shiftarray[6])
   );
@@ -36,8 +36,8 @@ CbmTofDetectorInfo CbmTofDetectorId_v20a::GetDetectorInfo(const Int_t detectorId
    result_array[i] = (( detectorId >> shiftarray[i] ) & maskarray[i] );
   }
 
-  return CbmTofDetectorInfo(result_array[0], result_array[2], result_array[1], 
-			    result_array[3], result_array[4], result_array[5]);
+  return CbmTofDetectorInfo( (ECbmModuleId)result_array[0], result_array[2], result_array[1],
+			    result_array[3], result_array[4], result_array[5], result_array[6]);
 
 }
 
@@ -122,9 +122,9 @@ Int_t CbmTofDetectorId_v20a ::SetDetectorInfo(const CbmTofDetectorInfo detInfo)
            (((detInfo.fSMtype)         & maskarray[2]) << shiftarray[2]) | 
            (((detInfo.fSModule)        & maskarray[1]) << shiftarray[1]) | 
            (((detInfo.fCounter)        & maskarray[3]) << shiftarray[3])  | 
-           (((detInfo.fCounterType)    & maskarray[4]) << shiftarray[4])  |
-           (((detInfo.fGap)            & maskarray[5]) << shiftarray[5])  |
-           (((detInfo.fCell)           & maskarray[6]) << shiftarray[6])  
+           (((detInfo.fGap)            & maskarray[4]) << shiftarray[4])  |
+           (((detInfo.fCell)           & maskarray[5]) << shiftarray[5])  |
+           (((detInfo.fCounterType)    & maskarray[6]) << shiftarray[6])  
          ); 
 }
 

@@ -307,7 +307,7 @@ InitStatus CbmTofEventClusterizer::Init() {
       if (fSel2Id > -1)
         fSel2Addr =
           CbmTofAddress::GetUniqueAddress(fSel2Sm, fSel2Rpc, 0, 0, fSel2Id);
-      fiBeamRefAddr = CbmTofAddress::GetUniqueAddress(
+		fiBeamRefAddr = CbmTofAddress::GetUniqueAddress(
         fiBeamRefSm, fiBeamRefDet, 0, 0, fiBeamRefType);
       break;
     case 1:

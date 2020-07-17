@@ -23,7 +23,7 @@ class CbmTofDetectorInfo
  public:
 
  CbmTofDetectorInfo() : fDetectorSystem(0), fSMtype(0), fSModule(0), 
-    fCounter(0), fCounterType(0), fGap(0), fCell(0) {};
+    fCounter(0), fGap(0), fCell(0), fCounterType(0) {};
   
  CbmTofDetectorInfo(Int_t detsystem, Int_t smtype, Int_t smodule, 
 		    Int_t counter, Int_t gap, Int_t cell)
@@ -38,15 +38,15 @@ class CbmTofDetectorInfo
 CbmTofDetectorInfo(ECbmModuleId detsystem, Int_t smtype, Int_t smodule, 
             Int_t counter, Int_t counterType, Int_t gap, Int_t cell)
    : fDetectorSystem(ToIntegralType(detsystem)), fSMtype(smtype), fSModule(smodule),
-     fCounter(counter), fCounterType(counterType), fGap(gap), fCell(cell) {};
+     fCounter(counter), fGap(gap), fCell(cell), fCounterType(counterType) {};
   
   Int_t fDetectorSystem;
   Int_t fSMtype;
   Int_t fSModule;
   Int_t fCounter;
-  Int_t fCounterType;
   Int_t fGap;
   Int_t fCell;
+  Int_t fCounterType;
 };
 
 
