@@ -34,6 +34,45 @@ class TCanvas;
 
 enum class EOverlapMode { NoOverlap, MergeOverlap, AllowOverlap };
 
+class EventBuilderDetector {
+public:
+  EventBuilderDetector() { ; }
+  EventBuilderDetector(ECbmModuleId detIdIn, ECbmDataType dataTypeIn, std::string sNameIn)
+  {
+    detId = detIdIn;
+    dataType = dataTypeIn;
+    sName = sNameIn;
+  }
+  EventBuilderDetector(ECbmModuleId detIdIn, ECbmDataType dataTypeIn,
+                       std::string sNameIn,
+                       UInt_t uTriggerMinDigisIn, Int_t iTriggerMaxDigisIn,
+                       Double_t fdTimeWinBegIn, Double_t fdTimeWinEndIn) :
+    EventBuilderDetector( detIdIn, dataTypeIn, sNameIn )
+  {
+    fuTriggerMinDigis = uTriggerMinDigisIn;
+    fiTriggerMaxDigis = iTriggerMaxDigisIn;
+
+    fdTimeWinBeg = fdTimeWinBegIn;
+    fdTimeWinEnd = fdTimeWinEndIn;
+  }
+
+  /// Settings
+  ECbmModuleId detId       = ECbmModuleId::kNotExist;
+  ECbmDataType dataType    = ECbmDataType::kUnknown;
+  std::string sName        = "Invalid";
+  /// Minimum number of T0 digis needed to generate a trigger, 0 means don't use for trigger generation
+  UInt_t fuTriggerMinDigis =    0;
+  /// Maximum number of digis per detector to generate an event, -1 means no cut, 0 means anti-coinc trigger
+  Int_t fiTriggerMaxDigis  =   -1;
+  /// Selection Window
+  Double_t fdTimeWinBeg    = -100;
+  Double_t fdTimeWinEnd    =  100;
+
+  /// Book-keeping variables
+  UInt_t fuStartIndex = 0;
+  UInt_t fuEndIndex   = 0;
+};
+
 class CbmMcbm2019TimeWinEventBuilderAlgo {
 public:
   /** Default constructor **/
@@ -59,6 +98,19 @@ public:
   void SetFillHistos(Bool_t var) { fbFillHistos = var; }
   void ResetHistograms(Bool_t bResetTime = kTRUE);
 
+  void SetReferenceDetector(ECbmModuleId refDet, ECbmDataType dataTypeIn,
+                            std::string sNameIn,
+                            UInt_t uTriggerMinDigisIn =    0,
+                            Int_t iTriggerMaxDigisIn  =   -1,
+                            Double_t fdTimeWinBegIn   = -100,
+                            Double_t fdTimeWinEndIn   =  100 );
+  void AddDetector(ECbmModuleId selDet, ECbmDataType dataTypeIn,
+                   std::string sNameIn,
+                   UInt_t uTriggerMinDigisIn =    0,
+                   Int_t iTriggerMaxDigisIn  =   -1,
+                   Double_t fdTimeWinBegIn   = -100,
+                   Double_t fdTimeWinEndIn   =  100 );
+
   void SetReferenceDetector(ECbmModuleId refDet);
   void AddDetector(ECbmModuleId selDet);
   void RemoveDetector(ECbmModuleId selDet);
@@ -66,7 +118,8 @@ public:
   void SetTriggerMinNumber(ECbmModuleId selDet, UInt_t uVal);
   void SetTriggerMaxNumber(ECbmModuleId selDet, Int_t iVal);
 
-  void SetTriggerWindow(ECbmModuleId det, Double_t dWinBeg, Double_t dWinEnd);
+  void SetTriggerWindow(ECbmModuleId selDet,
+                        Double_t dWinBeg, Double_t dWinEnd);
 
   /// Control flags
   void SetEventOverlapMode(EOverlapMode mode) { fOverMode = mode; }
@@ -76,15 +129,13 @@ public:
 
   /// For monitor algos
   void AddHistoToVector(TNamed* pointer, std::string sFolder = "") {
-    fvpAllHistoPointers.push_back(
-      std::pair<TNamed*, std::string>(pointer, sFolder));
+    fvpAllHistoPointers.push_back( std::pair<TNamed*, std::string>(pointer, sFolder));
   }
   std::vector<std::pair<TNamed*, std::string>> GetHistoVector() {
     return fvpAllHistoPointers;
   }
   void AddCanvasToVector(TCanvas* pointer, std::string sFolder = "") {
-    fvpAllCanvasPointers.push_back(
-      std::pair<TCanvas*, std::string>(pointer, sFolder));
+    fvpAllCanvasPointers.push_back( std::pair<TCanvas*, std::string>(pointer, sFolder));
   }
   std::vector<std::pair<TCanvas*, std::string>> GetCanvasVector() {
     return fvpAllCanvasPointers;
@@ -96,23 +147,20 @@ public:
 
 private:
   /// Internal methods
+  Bool_t CheckDataAvailable( EventBuilderDetector & det );
   void InitTs();
   void BuildEvents();
 
   void CreateHistograms();
   void FillHistos();
 
-  template<class DigiSeed>
-  void LoopOnSeeds();
+  template<class DigiSeed> void LoopOnSeeds();
   void CheckSeed(Double_t dSeedTime, UInt_t uSeedDigiIdx);
-  template<class DigiCheck>
-  void
-  SearchMatches(Double_t dSeedTime, ECbmModuleId detMatch, UInt_t& uStartIndex);
-  void AddDigiToEvent(ECbmModuleId det, Int_t uIdx);
+  template<class DigiCheck> void SearchMatches(Double_t dSeedTime, EventBuilderDetector & detMatch);
+  void AddDigiToEvent(EventBuilderDetector & det, Int_t uIdx);
   Bool_t HasTrigger(CbmEvent*);
   Bool_t CheckTriggerConditions(CbmEvent* event,
-                                ECbmModuleId det,
-                                ECbmDataType dataType);
+                                EventBuilderDetector & det );
 
   void UpdateTimeWinBoundariesExtrema();
   void UpdateWidestTimeWinRange();
@@ -127,54 +175,16 @@ private:
   Bool_t fbFillHistos {kTRUE};        //! Switch ON/OFF filling of histograms
     /// Event building mode and detectors selection
   EOverlapMode fOverMode {EOverlapMode::AllowOverlap};
-  ECbmModuleId fRefDet {ECbmModuleId::kT0};
-  std::vector<ECbmModuleId> fvDets {ECbmModuleId::kSts,
-                                    ECbmModuleId::kMuch,
-                                    ECbmModuleId::kTrd,
-                                    ECbmModuleId::kTof,
-                                    ECbmModuleId::kRich,
-                                    ECbmModuleId::kPsd};
-  /// Event building trigger parameters
-  /** Minimum number of T0 digis needed to generate a trigger, 0 means don't use T0 for trigger generation **/
-  UInt_t fuTriggerMinT0Digis {0};
-  /** Minimum number of Sts digis needed to generate a trigger, 0 means don't use Sts for trigger generation **/
-  UInt_t fuTriggerMinStsDigis {0};
-  /** Minimum number of Much digis needed to generate a trigger, 0 means don't use Much for trigger generation **/
-  UInt_t fuTriggerMinMuchDigis {0};
-  /** Minimum number of Trd digis needed to generate a trigger, 0 means don't use Trd for trigger generation **/
-  UInt_t fuTriggerMinTrdDigis {0};
-  /** Minimum number of Tof digis needed to generate a trigger, 0 means don't use Tof for trigger generation **/
-  UInt_t fuTriggerMinTofDigis {0};
-  /** Minimum number of Rich digis needed to generate a trigger, 0 means don't use Rich for trigger generation **/
-  UInt_t fuTriggerMinRichDigis {0};
-  /** Minimum number of Psd digis needed to generate a trigger, 0 means don't use Psd for trigger generation **/
-  UInt_t fuTriggerMinPsdDigis {0};
-  /// Maximum number of digis per detector to generate an event, -1 means no cut, 0 means anti-coinc trigger
-  Int_t fiTriggerMaxT0Digis   = -1;
-  Int_t fiTriggerMaxStsDigis  = -1;
-  Int_t fiTriggerMaxMuchDigis = -1;
-  Int_t fiTriggerMaxTrdDigis  = -1;
-  Int_t fiTriggerMaxTofDigis  = -1;
-  Int_t fiTriggerMaxRichDigis = -1;
-  Int_t fiTriggerMaxPsdDigis  = -1;
-  /// Trigger Window
-  Double_t fdRefTimeWinBeg  = 0.0;
-  Double_t fdT0TimeWinBeg   = 0.0;
-  Double_t fdStsTimeWinBeg  = kdDefaultTimeWinBeg;
-  Double_t fdMuchTimeWinBeg = kdDefaultTimeWinBeg;
-  Double_t fdTrdTimeWinBeg  = kdDefaultTimeWinBeg;
-  Double_t fdTofTimeWinBeg  = kdDefaultTimeWinBeg;
-  Double_t fdRichTimeWinBeg = kdDefaultTimeWinBeg;
-  Double_t fdPsdTimeWinBeg  = kdDefaultTimeWinBeg;
 
-  Double_t fdRefTimeWinEnd  = 0.0;
-  Double_t fdT0TimeWinEnd   = 0.0;
-  Double_t fdStsTimeWinEnd  = kdDefaultTimeWinEnd;
-  Double_t fdMuchTimeWinEnd = kdDefaultTimeWinEnd;
-  Double_t fdTrdTimeWinEnd  = kdDefaultTimeWinEnd;
-  Double_t fdTofTimeWinEnd  = kdDefaultTimeWinEnd;
-  Double_t fdRichTimeWinEnd = kdDefaultTimeWinEnd;
-  Double_t fdPsdTimeWinEnd  = kdDefaultTimeWinEnd;
+  EventBuilderDetector fRefDet = EventBuilderDetector( ECbmModuleId::kT0, ECbmDataType::kT0Digi, "T0" );
+  std::vector< EventBuilderDetector > fvDets = {
+        EventBuilderDetector( ECbmModuleId::kSts,  ECbmDataType::kStsDigi,  "kSts" ),
+        EventBuilderDetector( ECbmModuleId::kMuch, ECbmDataType::kMuchDigi, "kMuch" ),
+        EventBuilderDetector( ECbmModuleId::kTrd,  ECbmDataType::kTrdDigi,  "kTrd" ),
+        EventBuilderDetector( ECbmModuleId::kTof,  ECbmDataType::kTofDigi,  "kTof" ),
+        EventBuilderDetector( ECbmModuleId::kRich, ECbmDataType::kRichDigi, "kRich" ),
+        EventBuilderDetector( ECbmModuleId::kPsd,  ECbmDataType::kPsdDigi,  "kPsd" )
+    };
 
   Double_t fdEarliestTimeWinBeg = kdDefaultTimeWinBeg;
   Double_t fdLatestTimeWinEnd   = kdDefaultTimeWinEnd;
@@ -189,9 +199,8 @@ private:
   const TimesliceMetaData* pTsMetaData      = nullptr;
 
   /// Data ouptut
-  CbmEvent* fCurrentEvent {
-    nullptr};  //! pointer to the event which is currently build
-  std::vector<CbmEvent*> fEventVector;  //! vector with all created events
+  CbmEvent* fCurrentEvent = nullptr;  //! pointer to the event which is currently build
+  std::vector<CbmEvent*> fEventVector = {};  //! vector with all created events
 
   /// Monitoring histograms
   /// => Pointers should be filled with TH1*, TH2*, TProfile*, ...
@@ -204,68 +213,21 @@ private:
   /// ===>    server->Register( vHistos[ uHisto ].second.data(), dynamic_cast< TH1 * >(vHistos[ uHisto ].first) );
   /// ===> else if( !strncmp( sClassName, "TH2", 3 ) )
   /// ===>    server->Register( vHistos[ uHisto ].second.data(), dynamic_cast< TH2 * >(vHistos[ uHisto ].first) );
-  std::vector<std::pair<TNamed*, std::string>>
-    fvpAllHistoPointers;  //! Vector of pointers to histograms + optional folder name
-  std::vector<std::pair<TCanvas*, std::string>>
-    fvpAllCanvasPointers;  //! Vector of pointers to canvases + optional folder name
+  std::vector<std::pair<TNamed*, std::string>> fvpAllHistoPointers;  //! Vector of pointers to histograms + optional folder name
+  std::vector<std::pair<TCanvas*, std::string>> fvpAllCanvasPointers;  //! Vector of pointers to canvases + optional folder name
 
-  TH1* fhEventTime {nullptr};  //! histogram with the seed time of the events
-  TH1* fhEventDt {
-    nullptr};  //! histogram with the interval in seed time of consecutive events
-  TH1* fhEventSize {
-    nullptr};  //! histogram with the nb of all  digis in the event
-  TH2* fhNbDigiPerEvtTime {
-    nullptr};  //! histogram with the nb of all  digis per event vs seed time of the events
-  TH2* fhNbDigiPerEvtTimeT0 {
-    nullptr};  //! histogram with the nb of T0   digis per event vs seed time of the events
-  TH2* fhNbDigiPerEvtTimeSts {
-    nullptr};  //! histogram with the nb of STS  digis per event vs seed time of the events
-  TH2* fhNbDigiPerEvtTimeMuch {
-    nullptr};  //! histogram with the nb of MUCH digis per event vs seed time of the events
-  TH2* fhNbDigiPerEvtTimeTrd {
-    nullptr};  //! histogram with the nb of TRD  digis per event vs seed time of the events
-  TH2* fhNbDigiPerEvtTimeTof {
-    nullptr};  //! histogram with the nb of TOF  digis per event vs seed time of the events
-  TH2* fhNbDigiPerEvtTimeRich {
-    nullptr};  //! histogram with the nb of RICH digis per event vs seed time of the events
-  TH2* fhNbDigiPerEvtTimePsd {
-    nullptr};  //! histogram with the nb of PSD  digis per event vs seed time of the events
+  TH1* fhEventTime = nullptr;  //! histogram with the seed time of the events
+  TH1* fhEventDt   = nullptr;  //! histogram with the interval in seed time of consecutive events
+  TH1* fhEventSize = nullptr;  //! histogram with the nb of all  digis in the event
+  TH2* fhNbDigiPerEvtTime     = nullptr;  //! histogram with the nb of all  digis per event vs seed time of the events
+  std::vector< TH2* > fvhNbDigiPerEvtTimeDet = {}; //! histograms with the nb of digis in each detector per event vs seed time of the events
 
   /// Internal state variables
-  UInt_t fuCurEv {0};           //! Event Counter
-  UInt_t fuErrors {0};          //! Error Counter
-  UInt_t fuNrTs {0};            //! Timeslice Counter
-  Double_t fdPrevEvtTime {0.};  //! Save previous time information
-  Double_t fdPrevEvtEndTime {
-    0.};  //! Save previous event last digi time information
-  UInt_t fuStartIndexT0 {
-    0};  //! Start index for first Digi matching previous seed
-  UInt_t fuStartIndexSts {
-    0};  //! Start index for first Digi matching previous seed
-  UInt_t fuStartIndexMuch {
-    0};  //! Start index for first Digi matching previous seed
-  UInt_t fuStartIndexTrd {
-    0};  //! Start index for first Digi matching previous seed
-  UInt_t fuStartIndexTof {
-    0};  //! Start index for first Digi matching previous seed
-  UInt_t fuStartIndexRich {
-    0};  //! Start index for first Digi matching previous seed
-  UInt_t fuStartIndexPsd {
-    0};  //! Start index for first Digi matching previous seed
-  UInt_t fuEndIndexT0 {
-    0};  //! End index for first Digi not matching previous seed
-  UInt_t fuEndIndexSts {
-    0};  //! End index for first Digi not matching previous seed
-  UInt_t fuEndIndexMuch {
-    0};  //! End index for first Digi not matching previous seed
-  UInt_t fuEndIndexTrd {
-    0};  //! End index for first Digi not matching previous seed
-  UInt_t fuEndIndexTof {
-    0};  //! End index for first Digi not matching previous seed
-  UInt_t fuEndIndexRich {
-    0};  //! End index for first Digi not matching previous seed
-  UInt_t fuEndIndexPsd {
-    0};  //! End index for first Digi not matching previous seed
+  UInt_t fuCurEv  = 0;          //! Event Counter
+  UInt_t fuErrors = 0;          //! Error Counter
+  UInt_t fuNrTs   = 0;          //! Timeslice Counter
+  Double_t fdPrevEvtTime    = 0.;  //! Save previous time information
+  Double_t fdPrevEvtEndTime = 0.;  //! Save previous event last digi time information
 
   ClassDefNV(CbmMcbm2019TimeWinEventBuilderAlgo, 1);
 };
