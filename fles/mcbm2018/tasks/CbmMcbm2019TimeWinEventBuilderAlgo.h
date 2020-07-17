@@ -37,18 +37,21 @@ enum class EOverlapMode { NoOverlap, MergeOverlap, AllowOverlap };
 class EventBuilderDetector {
 public:
   EventBuilderDetector() { ; }
-  EventBuilderDetector(ECbmModuleId detIdIn, ECbmDataType dataTypeIn, std::string sNameIn)
-  {
-    detId = detIdIn;
+  EventBuilderDetector(ECbmModuleId detIdIn,
+                       ECbmDataType dataTypeIn,
+                       std::string sNameIn) {
+    detId    = detIdIn;
     dataType = dataTypeIn;
-    sName = sNameIn;
+    sName    = sNameIn;
   }
-  EventBuilderDetector(ECbmModuleId detIdIn, ECbmDataType dataTypeIn,
+  EventBuilderDetector(ECbmModuleId detIdIn,
+                       ECbmDataType dataTypeIn,
                        std::string sNameIn,
-                       UInt_t uTriggerMinDigisIn, Int_t iTriggerMaxDigisIn,
-                       Double_t fdTimeWinBegIn, Double_t fdTimeWinEndIn) :
-    EventBuilderDetector( detIdIn, dataTypeIn, sNameIn )
-  {
+                       UInt_t uTriggerMinDigisIn,
+                       Int_t iTriggerMaxDigisIn,
+                       Double_t fdTimeWinBegIn,
+                       Double_t fdTimeWinEndIn)
+    : EventBuilderDetector(detIdIn, dataTypeIn, sNameIn) {
     fuTriggerMinDigis = uTriggerMinDigisIn;
     fiTriggerMaxDigis = iTriggerMaxDigisIn;
 
@@ -57,16 +60,16 @@ public:
   }
 
   /// Settings
-  ECbmModuleId detId       = ECbmModuleId::kNotExist;
-  ECbmDataType dataType    = ECbmDataType::kUnknown;
-  std::string sName        = "Invalid";
+  ECbmModuleId detId    = ECbmModuleId::kNotExist;
+  ECbmDataType dataType = ECbmDataType::kUnknown;
+  std::string sName     = "Invalid";
   /// Minimum number of T0 digis needed to generate a trigger, 0 means don't use for trigger generation
-  UInt_t fuTriggerMinDigis =    0;
+  UInt_t fuTriggerMinDigis = 0;
   /// Maximum number of digis per detector to generate an event, -1 means no cut, 0 means anti-coinc trigger
-  Int_t fiTriggerMaxDigis  =   -1;
+  Int_t fiTriggerMaxDigis = -1;
   /// Selection Window
-  Double_t fdTimeWinBeg    = -100;
-  Double_t fdTimeWinEnd    =  100;
+  Double_t fdTimeWinBeg = -100;
+  Double_t fdTimeWinEnd = 100;
 
   /// Book-keeping variables
   UInt_t fuStartIndex = 0;
@@ -98,18 +101,20 @@ public:
   void SetFillHistos(Bool_t var) { fbFillHistos = var; }
   void ResetHistograms(Bool_t bResetTime = kTRUE);
 
-  void SetReferenceDetector(ECbmModuleId refDet, ECbmDataType dataTypeIn,
+  void SetReferenceDetector(ECbmModuleId refDet,
+                            ECbmDataType dataTypeIn,
                             std::string sNameIn,
-                            UInt_t uTriggerMinDigisIn =    0,
-                            Int_t iTriggerMaxDigisIn  =   -1,
+                            UInt_t uTriggerMinDigisIn = 0,
+                            Int_t iTriggerMaxDigisIn  = -1,
                             Double_t fdTimeWinBegIn   = -100,
-                            Double_t fdTimeWinEndIn   =  100 );
-  void AddDetector(ECbmModuleId selDet, ECbmDataType dataTypeIn,
+                            Double_t fdTimeWinEndIn   = 100);
+  void AddDetector(ECbmModuleId selDet,
+                   ECbmDataType dataTypeIn,
                    std::string sNameIn,
-                   UInt_t uTriggerMinDigisIn =    0,
-                   Int_t iTriggerMaxDigisIn  =   -1,
+                   UInt_t uTriggerMinDigisIn = 0,
+                   Int_t iTriggerMaxDigisIn  = -1,
                    Double_t fdTimeWinBegIn   = -100,
-                   Double_t fdTimeWinEndIn   =  100 );
+                   Double_t fdTimeWinEndIn   = 100);
 
   void SetReferenceDetector(ECbmModuleId refDet);
   void AddDetector(ECbmModuleId selDet);
@@ -118,8 +123,8 @@ public:
   void SetTriggerMinNumber(ECbmModuleId selDet, UInt_t uVal);
   void SetTriggerMaxNumber(ECbmModuleId selDet, Int_t iVal);
 
-  void SetTriggerWindow(ECbmModuleId selDet,
-                        Double_t dWinBeg, Double_t dWinEnd);
+  void
+  SetTriggerWindow(ECbmModuleId selDet, Double_t dWinBeg, Double_t dWinEnd);
 
   /// Control flags
   void SetEventOverlapMode(EOverlapMode mode) { fOverMode = mode; }
@@ -129,13 +134,15 @@ public:
 
   /// For monitor algos
   void AddHistoToVector(TNamed* pointer, std::string sFolder = "") {
-    fvpAllHistoPointers.push_back( std::pair<TNamed*, std::string>(pointer, sFolder));
+    fvpAllHistoPointers.push_back(
+      std::pair<TNamed*, std::string>(pointer, sFolder));
   }
   std::vector<std::pair<TNamed*, std::string>> GetHistoVector() {
     return fvpAllHistoPointers;
   }
   void AddCanvasToVector(TCanvas* pointer, std::string sFolder = "") {
-    fvpAllCanvasPointers.push_back( std::pair<TCanvas*, std::string>(pointer, sFolder));
+    fvpAllCanvasPointers.push_back(
+      std::pair<TCanvas*, std::string>(pointer, sFolder));
   }
   std::vector<std::pair<TCanvas*, std::string>> GetCanvasVector() {
     return fvpAllCanvasPointers;
@@ -147,20 +154,21 @@ public:
 
 private:
   /// Internal methods
-  Bool_t CheckDataAvailable( EventBuilderDetector & det );
+  Bool_t CheckDataAvailable(EventBuilderDetector& det);
   void InitTs();
   void BuildEvents();
 
   void CreateHistograms();
   void FillHistos();
 
-  template<class DigiSeed> void LoopOnSeeds();
+  template<class DigiSeed>
+  void LoopOnSeeds();
   void CheckSeed(Double_t dSeedTime, UInt_t uSeedDigiIdx);
-  template<class DigiCheck> void SearchMatches(Double_t dSeedTime, EventBuilderDetector & detMatch);
-  void AddDigiToEvent(EventBuilderDetector & det, Int_t uIdx);
+  template<class DigiCheck>
+  void SearchMatches(Double_t dSeedTime, EventBuilderDetector& detMatch);
+  void AddDigiToEvent(EventBuilderDetector& det, Int_t uIdx);
   Bool_t HasTrigger(CbmEvent*);
-  Bool_t CheckTriggerConditions(CbmEvent* event,
-                                EventBuilderDetector & det );
+  Bool_t CheckTriggerConditions(CbmEvent* event, EventBuilderDetector& det);
 
   void UpdateTimeWinBoundariesExtrema();
   void UpdateWidestTimeWinRange();
@@ -176,15 +184,15 @@ private:
     /// Event building mode and detectors selection
   EOverlapMode fOverMode {EOverlapMode::AllowOverlap};
 
-  EventBuilderDetector fRefDet = EventBuilderDetector( ECbmModuleId::kT0, ECbmDataType::kT0Digi, "T0" );
-  std::vector< EventBuilderDetector > fvDets = {
-        EventBuilderDetector( ECbmModuleId::kSts,  ECbmDataType::kStsDigi,  "kSts" ),
-        EventBuilderDetector( ECbmModuleId::kMuch, ECbmDataType::kMuchDigi, "kMuch" ),
-        EventBuilderDetector( ECbmModuleId::kTrd,  ECbmDataType::kTrdDigi,  "kTrd" ),
-        EventBuilderDetector( ECbmModuleId::kTof,  ECbmDataType::kTofDigi,  "kTof" ),
-        EventBuilderDetector( ECbmModuleId::kRich, ECbmDataType::kRichDigi, "kRich" ),
-        EventBuilderDetector( ECbmModuleId::kPsd,  ECbmDataType::kPsdDigi,  "kPsd" )
-    };
+  EventBuilderDetector fRefDet =
+    EventBuilderDetector(ECbmModuleId::kT0, ECbmDataType::kT0Digi, "T0");
+  std::vector<EventBuilderDetector> fvDets = {
+    EventBuilderDetector(ECbmModuleId::kSts, ECbmDataType::kStsDigi, "kSts"),
+    EventBuilderDetector(ECbmModuleId::kMuch, ECbmDataType::kMuchDigi, "kMuch"),
+    EventBuilderDetector(ECbmModuleId::kTrd, ECbmDataType::kTrdDigi, "kTrd"),
+    EventBuilderDetector(ECbmModuleId::kTof, ECbmDataType::kTofDigi, "kTof"),
+    EventBuilderDetector(ECbmModuleId::kRich, ECbmDataType::kRichDigi, "kRich"),
+    EventBuilderDetector(ECbmModuleId::kPsd, ECbmDataType::kPsdDigi, "kPsd")};
 
   Double_t fdEarliestTimeWinBeg = kdDefaultTimeWinBeg;
   Double_t fdLatestTimeWinEnd   = kdDefaultTimeWinEnd;
@@ -199,7 +207,8 @@ private:
   const TimesliceMetaData* pTsMetaData      = nullptr;
 
   /// Data ouptut
-  CbmEvent* fCurrentEvent = nullptr;  //! pointer to the event which is currently build
+  CbmEvent* fCurrentEvent =
+    nullptr;  //! pointer to the event which is currently build
   std::vector<CbmEvent*> fEventVector = {};  //! vector with all created events
 
   /// Monitoring histograms
@@ -213,21 +222,28 @@ private:
   /// ===>    server->Register( vHistos[ uHisto ].second.data(), dynamic_cast< TH1 * >(vHistos[ uHisto ].first) );
   /// ===> else if( !strncmp( sClassName, "TH2", 3 ) )
   /// ===>    server->Register( vHistos[ uHisto ].second.data(), dynamic_cast< TH2 * >(vHistos[ uHisto ].first) );
-  std::vector<std::pair<TNamed*, std::string>> fvpAllHistoPointers;  //! Vector of pointers to histograms + optional folder name
-  std::vector<std::pair<TCanvas*, std::string>> fvpAllCanvasPointers;  //! Vector of pointers to canvases + optional folder name
+  std::vector<std::pair<TNamed*, std::string>>
+    fvpAllHistoPointers;  //! Vector of pointers to histograms + optional folder name
+  std::vector<std::pair<TCanvas*, std::string>>
+    fvpAllCanvasPointers;  //! Vector of pointers to canvases + optional folder name
 
   TH1* fhEventTime = nullptr;  //! histogram with the seed time of the events
-  TH1* fhEventDt   = nullptr;  //! histogram with the interval in seed time of consecutive events
-  TH1* fhEventSize = nullptr;  //! histogram with the nb of all  digis in the event
-  TH2* fhNbDigiPerEvtTime     = nullptr;  //! histogram with the nb of all  digis per event vs seed time of the events
-  std::vector< TH2* > fvhNbDigiPerEvtTimeDet = {}; //! histograms with the nb of digis in each detector per event vs seed time of the events
+  TH1* fhEventDt =
+    nullptr;  //! histogram with the interval in seed time of consecutive events
+  TH1* fhEventSize =
+    nullptr;  //! histogram with the nb of all  digis in the event
+  TH2* fhNbDigiPerEvtTime =
+    nullptr;  //! histogram with the nb of all  digis per event vs seed time of the events
+  std::vector<TH2*> fvhNbDigiPerEvtTimeDet =
+    {};  //! histograms with the nb of digis in each detector per event vs seed time of the events
 
   /// Internal state variables
-  UInt_t fuCurEv  = 0;          //! Event Counter
-  UInt_t fuErrors = 0;          //! Error Counter
-  UInt_t fuNrTs   = 0;          //! Timeslice Counter
-  Double_t fdPrevEvtTime    = 0.;  //! Save previous time information
-  Double_t fdPrevEvtEndTime = 0.;  //! Save previous event last digi time information
+  UInt_t fuCurEv         = 0;   //! Event Counter
+  UInt_t fuErrors        = 0;   //! Error Counter
+  UInt_t fuNrTs          = 0;   //! Timeslice Counter
+  Double_t fdPrevEvtTime = 0.;  //! Save previous time information
+  Double_t fdPrevEvtEndTime =
+    0.;  //! Save previous event last digi time information
 
   ClassDefNV(CbmMcbm2019TimeWinEventBuilderAlgo, 1);
 };
