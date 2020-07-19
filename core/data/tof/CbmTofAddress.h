@@ -171,17 +171,36 @@ private:
        **/
 
   /** Sub-fields sizes in bits   **/
-  /** Number of bits for Super Module Id in the address field  **/
-  static const Int_t fgkSmIdBits = 8;
-  /** Number of bits for Super Module Type in the address field  **/
-  static const Int_t fgkSmTypeBits = 4;
-  /** Number of bits for Rpc Id in the address field  **/
-  static const Int_t fgkRpcIdBits = 7;
-  /** Number of bits for Channel Side in the address field  **/
-  static const Int_t fgkChannelSideBits = 1;
-  /** Number of bits for Channel Id in the address field  **/
-  static const Int_t fgkChannelIdBits = 8;
 
+  // v14a
+
+  // Number of bits for Super Module Id in the address field
+  static const Int_t fgkSmIdBits = 8;
+  // Number of bits for Super Module Type in the address field
+  static const Int_t fgkSmTypeBits = 4;
+  // Number of bits for Rpc Id in the address field
+  static const Int_t fgkRpcIdBits = 7;
+  // Number of bits for Channel Side in the address field
+  static const Int_t fgkChannelSideBits = 1;
+  // Number of bits for Channel Id in the address field
+  static const Int_t fgkChannelIdBits = 8;
+  // Number of bits for Rpc Type in the address field
+  static const Int_t fgkRpcTypeBits = 0;
+  /*
+  // v20a
+  // Number of bits for Super Module Id in the address field
+  static const Int_t fgkSmIdBits = 7;
+  // Number of bits for Super Module Type in the address field
+  static const Int_t fgkSmTypeBits = 4;
+  // Number of bits for Rpc Id in the address field
+  static const Int_t fgkRpcIdBits = 6;
+  // Number of bits for Channel Side in the address field
+  static const Int_t fgkChannelSideBits = 1;
+  // Number of bits for Channel Id in the address field
+  static const Int_t fgkChannelIdBits = 4;
+  // Number of bits for Rpc Type in the address field
+  static const Int_t fgkRpcTypeBits = 4;
+*/
   /**
        ** To adapt the address sub-fields repartition in order,
        ** you just need to change the way the offset are calculated.
@@ -198,6 +217,8 @@ private:
   static const Int_t fgkRpcIdOffset;
   /** Offset in bits for Channel Id in the address field  **/
   static const Int_t fgkChannelIdOffset;
+  /** Offset in bits for Channel Id in the address field  **/
+  static const Int_t fgkRpcTypeOffset;
 
   /**
        ** For the module Full Id determination
