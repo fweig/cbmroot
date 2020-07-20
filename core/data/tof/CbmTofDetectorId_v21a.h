@@ -6,7 +6,7 @@
 
 /** CbmTofDetectorId.h
  ** Defines unique detector identifier for all TOF modules.
- ** This class is the implementation for tof geometry version v20a 
+ ** This class is the implementation for tof geometry version v21a 
  ** nh, 11.03.2014
  ** PAL, 23.09.2015: make the class common to both v14 and v15 geometries
  **                  Field 4 used as Side index (or fake Gap index in digitizer)
@@ -28,21 +28,21 @@
  **/
 
 
-#ifndef CBMTOFDETECTORID_V20A_H
-#define CBMTOFDETECTORID_V20A_H 1
+#ifndef CBMTOFDETECTORID_V21A_H
+#define CBMTOFDETECTORID_V21A_H 1
 
 #include"CbmTofDetectorId.h"
 
-class CbmTofDetectorId_v20a : public CbmTofDetectorId
+class CbmTofDetectorId_v21a : public CbmTofDetectorId
 {
 
   public:
   
   /** Constructor **/
-  CbmTofDetectorId_v20a();
+  CbmTofDetectorId_v21a();
 
   /** Destructor **/
-  ~CbmTofDetectorId_v20a() {};
+  ~CbmTofDetectorId_v21a() {};
   
   /** Get complete system info from detector ID
    ** This will return a pointer to an integer

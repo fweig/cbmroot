@@ -8,6 +8,7 @@
 #include "CbmTofDetectorId_v07a.h"  // for CbmTofDetectorId_v07a
 #include "CbmTofDetectorId_v12b.h"  // for CbmTofDetectorId_v12b
 #include "CbmTofDetectorId_v14a.h"  // for CbmTofDetectorId_v14a
+#include "CbmTofDetectorId_v21a.h"  // for CbmTofDetectorId_v21a
 
 #include <FairLogger.h>  // for Logger, LOG
 
@@ -71,6 +72,9 @@ Int_t CbmTofGeoHandler::CheckGeometryVersion() {
   //     including also a support structure
   // v14a:
   //     test beam tof geometrie developed by Norbert Herrmann
+  // v20a:
+  //     tof geometrie with MRPC and Module types developed by Norbert Herrmann
+
   if (nullptr == gGeoManager) LOG(fatal) << "No GeoManager";
 
   TObjArray* nodes = gGeoManager->GetTopNode()->GetNodes();
@@ -110,24 +114,31 @@ Int_t CbmTofGeoHandler::CheckGeometryVersion() {
                  || (TString(node->GetName()).Contains("v18"))
                  || (TString(node->GetName()).Contains("v19"))
                  || (TString(node->GetName()).Contains("v20"))) {
-        LOG(info)
-          << "CbmTofGeoHandler::CheckGeometryVersion: Found TOF geometry "
-          << TString(node->GetName()) << ", treat as Id 14a   ";
-        //	if(nullptr!=fTofId) fTofId->Delete();
-        fTofId      = new CbmTofDetectorId_v14a();
-        fGeoVersion = k14a;
+          LOG(info)
+            << "CbmTofGeoHandler::CheckGeometryVersion: Found TOF geometry "
+            << TString(node->GetName()) << ", treat as Id 14a   ";
+          //	if(nullptr!=fTofId) fTofId->Delete();
+          fTofId      = new CbmTofDetectorId_v14a();
+          fGeoVersion = k14a;
 
-        if (TString(node->GetName()).Contains("v14a_n")) {
-          if (fIsSimulation && 0 != fMCVersion) {
-            LOG(fatal) << "Using node names instead of volume names to extract "
-                          "the module type "
-                       << "in a MC simulation only works with GEANT3 VMC!";
+          if (TString(node->GetName()).Contains("v14a_n")) {
+            if (fIsSimulation && 0 != fMCVersion) {
+              LOG(fatal) << "Using node names instead of volume names to extract "
+                            "the module type "
+                         << "in a MC simulation only works with GEANT3 VMC!";
+            }
+
+            fUseNodeName = kTRUE;
           }
-
-          fUseNodeName = kTRUE;
-        }
-
-        return fGeoVersion;
+          return fGeoVersion;
+      } else if ((TString(node->GetName()).Contains("v21"))) {
+          LOG(info)
+            << "CbmTofGeoHandler::CheckGeometryVersion: Found TOF geometry "
+            << TString(node->GetName()) << ", treat as Id 21a   ";
+          //	if(nullptr!=fTofId) fTofId->Delete();
+          fTofId      = new CbmTofDetectorId_v21a();
+          fGeoVersion = k21a;
+          return fGeoVersion;
       } else {
         LOG(fatal) << "Found an unknown TOF geometry.";
         fGeoVersion = -1;

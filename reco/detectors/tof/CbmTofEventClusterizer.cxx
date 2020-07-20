@@ -19,7 +19,7 @@
 #include "CbmTofCreateDigiPar.h"    // in tof/TofTools
 #include "CbmTofDetectorId_v12b.h"  // in cbmdata/tof
 #include "CbmTofDetectorId_v14a.h"  // in cbmdata/tof
-#include "CbmTofDetectorId_v20a.h"  // in cbmdata/tof
+#include "CbmTofDetectorId_v21a.h"  // in cbmdata/tof
 #include "CbmTofDigi.h"             // in cbmdata/tof
 #include "CbmTofDigiBdfPar.h"       // in tof/TofParam
 #include "CbmTofDigiPar.h"          // in tof/TofParam
@@ -603,7 +603,7 @@ Bool_t CbmTofEventClusterizer::InitParameters() {
   if (iGeoVersion == k14a)
     fTofId = new CbmTofDetectorId_v14a();
   else
-    fTofId = new CbmTofDetectorId_v20a();
+    fTofId = new CbmTofDetectorId_v21a();
 
   // create digitization parameters from geometry file
   CbmTofCreateDigiPar* tofDigiPar =
