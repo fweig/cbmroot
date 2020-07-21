@@ -707,56 +707,15 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::SetReferenceDetector(
   Int_t iTriggerMaxDigisIn,
   Double_t fdTimeWinBegIn,
   Double_t fdTimeWinEndIn) {
-  /// Loop on selection detectors
-  for (std::vector<EventBuilderDetector>::iterator det = fvDets.begin();
-       det != fvDets.end();
-       ++det) {
-    if ((*det).detId == refDet) {
-      LOG(warning)
-        << "CbmMcbm2019TimeWinEventBuilderAlgo::SetReferenceDetector => "
-           "Reference detector already in selection detector list!"
-        << sNameIn;
-      LOG(warning)
-        << "                                                         => "
-           "It will be automatically removed from selection detector list!";
-      LOG(warning)
-        << "                                                         => "
-           "Please also remember to update the selection windows to store "
-           "clusters!";
-      RemoveDetector(refDet);
-    }  // if( (*det).detId  == selDet )
-  }  // for( std::vector< EventBuilderDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
 
-  if (fRefDet.detId == refDet) {
-    LOG(warning)
-      << "CbmMcbm2019TimeWinEventBuilderAlgo::SetReferenceDetector => "
-         "Doing nothing, identical reference detector already in use";
-  }  // if( fRefDet.detId == refDet )
-  else {
-    LOG(info) << "CbmMcbm2019TimeWinEventBuilderAlgo::SetReferenceDetector => "
-              << "Replacing " << fRefDet.sName << " with " << sNameIn
-              << " as reference detector";
-    LOG(warning)
-      << "                                                         => "
-         "You may want to use AddDetector after this command to add in "
-         "selection "
-      << fRefDet.sName;
-    LOG(warning)
-      << "                                                         => "
-         "Please also remember to update the selection windows!";
-  }  // else of if( fRefDet == refDet )
-  fRefDet = EventBuilderDetector(refDet,
-                                 dataTypeIn,
-                                 sNameIn,
-                                 uTriggerMinDigisIn,
-                                 iTriggerMaxDigisIn,
-                                 fdTimeWinBegIn,
-                                 fdTimeWinEndIn);
-
-  /// Update the variables storing the earliest and latest time window boundaries
-  UpdateTimeWinBoundariesExtrema();
-  /// Update the variable storing the size if widest time window for overlap detection
-  UpdateWidestTimeWinRange();
+  /// FIXME: Deprecated method to be removed later. For now create temp object.
+  SetReferenceDetector(EventBuilderDetector(refDet,
+                                            dataTypeIn,
+                                            sNameIn,
+                                            uTriggerMinDigisIn,
+                                            iTriggerMaxDigisIn,
+                                            fdTimeWinBegIn,
+                                            fdTimeWinEndIn) );
 }
 void CbmMcbm2019TimeWinEventBuilderAlgo::AddDetector(ECbmModuleId selDet,
                                                      ECbmDataType dataTypeIn,
@@ -765,68 +724,46 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::AddDetector(ECbmModuleId selDet,
                                                      Int_t iTriggerMaxDigisIn,
                                                      Double_t fdTimeWinBegIn,
                                                      Double_t fdTimeWinEndIn) {
-  if (fRefDet.detId == selDet) {
-    LOG(fatal) << "CbmMcbm2019TimeWinEventBuilderAlgo::AddDetector => Cannot "
-                  "add the reference detector as selection detector!"
-               << std::endl
-               << "=> Maybe first change the reference detector with "
-                  "SetReferenceDetector?";
-  }  // if( fRefDet == selDet )
 
-  /// Loop on selection detectors
-  for (std::vector<EventBuilderDetector>::iterator det = fvDets.begin();
-       det != fvDets.end();
-       ++det) {
-    if ((*det).detId == selDet) {
-      LOG(warning) << "CbmMcbm2019TimeWinEventBuilderAlgo::AddDetector => "
-                      "Doing nothing, selection detector already in list!"
-                   << sNameIn;
-      return;
-    }  // if( (*det).detId  == selDet )
-  }  // for( std::vector< EventBuilderDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
-  fvDets.push_back(EventBuilderDetector(selDet,
-                                        dataTypeIn,
-                                        sNameIn,
-                                        uTriggerMinDigisIn,
-                                        iTriggerMaxDigisIn,
-                                        fdTimeWinBegIn,
-                                        fdTimeWinEndIn));
-
-  /// Update the variables storing the earliest and latest time window boundaries
-  UpdateTimeWinBoundariesExtrema();
-  /// Update the variable storing the size if widest time window for overlap detection
-  UpdateWidestTimeWinRange();
+  /// FIXME: Deprecated method to be removed later. For now create temp object.
+  AddDetector(EventBuilderDetector(selDet,
+                                   dataTypeIn,
+                                   sNameIn,
+                                   uTriggerMinDigisIn,
+                                   iTriggerMaxDigisIn,
+                                   fdTimeWinBegIn,
+                                   fdTimeWinEndIn));
 }
 //----------------------------------------------------------------------
 void CbmMcbm2019TimeWinEventBuilderAlgo::SetReferenceDetector(
   ECbmModuleId refDet) {
   switch (refDet) {
     case ECbmModuleId::kSts: {
-      SetReferenceDetector(refDet, ECbmDataType::kStsDigi, "Sts");
+      SetReferenceDetector(kEventBuilderDetSts);
       break;
     }  // case ECbmModuleId::kSts:
     case ECbmModuleId::kMuch: {
-      SetReferenceDetector(refDet, ECbmDataType::kMuchDigi, "Mush");
+      SetReferenceDetector(kEventBuilderDetMuch);
       break;
     }  // case ECbmModuleId::kMuch:
     case ECbmModuleId::kTrd: {
-      SetReferenceDetector(refDet, ECbmDataType::kTrdDigi, "Trd");
+      SetReferenceDetector(kEventBuilderDetTrd);
       break;
     }  // case ECbmModuleId::kTrd:
     case ECbmModuleId::kTof: {
-      SetReferenceDetector(refDet, ECbmDataType::kTofDigi, "Tof");
+      SetReferenceDetector(kEventBuilderDetTof);
       break;
     }  // case ECbmModuleId::kTof:
     case ECbmModuleId::kRich: {
-      SetReferenceDetector(refDet, ECbmDataType::kRichDigi, "Rich");
+      SetReferenceDetector(kEventBuilderDetRich);
       break;
     }  // case ECbmModuleId::kRich:
     case ECbmModuleId::kPsd: {
-      SetReferenceDetector(refDet, ECbmDataType::kPsdDigi, "Psd");
+      SetReferenceDetector(kEventBuilderDetPsd);
       break;
     }  // case ECbmModuleId::kPsd:
     case ECbmModuleId::kT0: {
-      SetReferenceDetector(refDet, ECbmDataType::kT0Digi, "T0");
+      SetReferenceDetector(kEventBuilderDetT0);
       break;
     }  // case ECbmModuleId::kT0:
     default: {
@@ -850,31 +787,31 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::SetReferenceDetector(
 void CbmMcbm2019TimeWinEventBuilderAlgo::AddDetector(ECbmModuleId selDet) {
   switch (selDet) {
     case ECbmModuleId::kSts: {
-      AddDetector(selDet, ECbmDataType::kStsDigi, "Sts");
+      AddDetector(kEventBuilderDetSts);
       break;
     }  // case ECbmModuleId::kSts:
     case ECbmModuleId::kMuch: {
-      AddDetector(selDet, ECbmDataType::kMuchDigi, "Mush");
+      AddDetector(kEventBuilderDetMuch);
       break;
     }  // case ECbmModuleId::kMuch:
     case ECbmModuleId::kTrd: {
-      AddDetector(selDet, ECbmDataType::kTrdDigi, "Trd");
+      AddDetector(kEventBuilderDetTrd);
       break;
     }  // case ECbmModuleId::kTrd:
     case ECbmModuleId::kTof: {
-      AddDetector(selDet, ECbmDataType::kTofDigi, "Tof");
+      AddDetector(kEventBuilderDetTof);
       break;
     }  // case ECbmModuleId::kTof:
     case ECbmModuleId::kRich: {
-      AddDetector(selDet, ECbmDataType::kRichDigi, "Rich");
+      AddDetector(kEventBuilderDetRich);
       break;
     }  // case ECbmModuleId::kRich:
     case ECbmModuleId::kPsd: {
-      AddDetector(selDet, ECbmDataType::kPsdDigi, "Psd");
+      AddDetector(kEventBuilderDetPsd);
       break;
     }  // case ECbmModuleId::kPsd:
     case ECbmModuleId::kT0: {
-      AddDetector(selDet, ECbmDataType::kT0Digi, "T0");
+      AddDetector(kEventBuilderDetT0);
       break;
     }  // case ECbmModuleId::kT0:
     default: {
@@ -908,6 +845,97 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::RemoveDetector(ECbmModuleId selDet) {
   LOG(warning) << "CbmMcbm2019TimeWinEventBuilderAlgo::RemoveDetector => Doing "
                   "nothing, selection detector not in list!"
                << selDet;
+}
+//----------------------------------------------------------------------
+void CbmMcbm2019TimeWinEventBuilderAlgo::SetReferenceDetector(EventBuilderDetector refDetIn)
+{
+  /// Loop on selection detectors
+  for (std::vector<EventBuilderDetector>::iterator det = fvDets.begin();
+       det != fvDets.end();
+       ++det) {
+    if ((*det) == refDetIn) {
+      LOG(warning)
+        << "CbmMcbm2019TimeWinEventBuilderAlgo::SetReferenceDetector => "
+           "Reference detector already in selection detector list!"
+        << refDetIn.sName;
+      LOG(warning)
+        << "                                                         => "
+           "It will be automatically removed from selection detector list!";
+      LOG(warning)
+        << "                                                         => "
+           "Please also remember to update the selection windows to store "
+           "clusters!";
+      RemoveDetector(refDetIn);
+    }  // if( (*det)  == refDetIn )
+  }  // for( std::vector< EventBuilderDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
+
+  if (fRefDet == refDetIn) {
+    LOG(warning)
+      << "CbmMcbm2019TimeWinEventBuilderAlgo::SetReferenceDetector => "
+         "Doing nothing, identical reference detector already in use";
+  }  // if( fRefDet == refDetIn )
+  else {
+    LOG(info) << "CbmMcbm2019TimeWinEventBuilderAlgo::SetReferenceDetector => "
+              << "Replacing " << fRefDet.sName << " with " << refDetIn.sName
+              << " as reference detector";
+    LOG(warning)
+      << "                                                         => "
+         "You may want to use AddDetector after this command to add in "
+         "selection "
+      << refDetIn.sName;
+    LOG(warning)
+      << "                                                         => "
+         "Please also remember to update the selection windows!";
+  }  // else of if( fRefDet == refDetIn )
+  fRefDet = refDetIn;
+
+  /// Update the variables storing the earliest and latest time window boundaries
+  UpdateTimeWinBoundariesExtrema();
+  /// Update the variable storing the size if widest time window for overlap detection
+  UpdateWidestTimeWinRange();
+}
+void CbmMcbm2019TimeWinEventBuilderAlgo::AddDetector(EventBuilderDetector selDet)
+{
+  if (fRefDet == selDet) {
+    LOG(fatal) << "CbmMcbm2019TimeWinEventBuilderAlgo::AddDetector => Cannot "
+                  "add the reference detector as selection detector!"
+               << std::endl
+               << "=> Maybe first change the reference detector with "
+                  "SetReferenceDetector?";
+  }  // if( fRefDet == selDet )
+
+  /// Loop on selection detectors
+  for (std::vector<EventBuilderDetector>::iterator det = fvDets.begin();
+       det != fvDets.end();
+       ++det) {
+    if ((*det) == selDet) {
+      LOG(warning) << "CbmMcbm2019TimeWinEventBuilderAlgo::AddDetector => "
+                      "Doing nothing, selection detector already in list!"
+                   << selDet.sName;
+      return;
+    }  // if( (*det)  == selDet )
+  }  // for( std::vector< EventBuilderDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
+  fvDets.push_back(selDet);
+
+  /// Update the variables storing the earliest and latest time window boundaries
+  UpdateTimeWinBoundariesExtrema();
+  /// Update the variable storing the size if widest time window for overlap detection
+  UpdateWidestTimeWinRange();
+}
+void CbmMcbm2019TimeWinEventBuilderAlgo::RemoveDetector(EventBuilderDetector selDet)
+{
+  /// Loop on selection detectors
+  for (std::vector<EventBuilderDetector>::iterator det = fvDets.begin();
+       det != fvDets.end();
+       ++det) {
+    if ((*det) == selDet) {
+      fvDets.erase(det);
+      return;
+    }  // if( (*det)  == selDet )
+  }  // for( std::vector< EventBuilderDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
+  LOG(warning) << "CbmMcbm2019TimeWinEventBuilderAlgo::RemoveDetector => Doing "
+                  "nothing, selection detector not in list!"
+               << selDet.sName;
 }
 //----------------------------------------------------------------------
 void CbmMcbm2019TimeWinEventBuilderAlgo::SetTriggerMinNumber(

@@ -98,96 +98,81 @@ void CbmDeviceMcbmEventBuilderWin::InitTask() try {
 
   //   InitContainers();
 
+  /// FIXME: Disable clang formatting for now as it corrupts all alignment
+  /* clang-format off */
+
   /// Initialize the Algorithm parameters
   fpAlgo->SetFillHistos(fbFillHistos);
   fpAlgo->SetIgnoreTsOverlap(fbIgnoreTsOverlap);
   /// Extract Event Overlap Mode
   EOverlapMode mode =
-    ("NoOverlap" == fsEvtOverMode
-       ? EOverlapMode::NoOverlap
-       : ("MergeOverlap" == fsEvtOverMode
-            ? EOverlapMode::MergeOverlap
-            : ("AllowOverlap" == fsEvtOverMode ? EOverlapMode::AllowOverlap
-                                               : EOverlapMode::NoOverlap)));
+     ("NoOverlap"    == fsEvtOverMode ? EOverlapMode::NoOverlap
+   : ("MergeOverlap" == fsEvtOverMode ? EOverlapMode::MergeOverlap
+   : ("AllowOverlap" == fsEvtOverMode ? EOverlapMode::AllowOverlap
+                                      : EOverlapMode::NoOverlap)));
   fpAlgo->SetEventOverlapMode(mode);
   /// Extract refdet
-  ECbmModuleId refDet =
-    ("kT0" == fsRefDet
-       ? ECbmModuleId::kT0
-       : ("kSts" == fsRefDet
-            ? ECbmModuleId::kSts
-            : ("kMuch" == fsRefDet
-                 ? ECbmModuleId::kMuch
-                 : ("kTrd" == fsRefDet
-                      ? ECbmModuleId::kTrd
-                      : ("kTof" == fsRefDet
-                           ? ECbmModuleId::kTof
-                           : ("kRich" == fsRefDet
-                                ? ECbmModuleId::kRich
-                                : ("kPsd" == fsRefDet
-                                     ? ECbmModuleId::kPsd
-                                     : ECbmModuleId::kNotExist)))))));
+  EventBuilderDetector refDet = ("kT0"   == fsRefDet ? kEventBuilderDetT0
+                              : ("kSts"  == fsRefDet ? kEventBuilderDetMuch
+                              : ("kMuch" == fsRefDet ? kEventBuilderDetTrd
+                              : ("kTrd"  == fsRefDet ? kEventBuilderDetTrd
+                              : ("kTof"  == fsRefDet ? kEventBuilderDetTof
+                              : ("kRich" == fsRefDet ? kEventBuilderDetRich
+                              : ("kPsd"  == fsRefDet ? kEventBuilderDetPsd
+                                                     : kEventBuilderDetUndef)))))));
+  if (kEventBuilderDetUndef != refDet) {
+    fpAlgo->SetReferenceDetector(refDet);
+  }  // if( kEventBuilderDetUndef != refDet )
+  else {
+    LOG(info) << "CbmDeviceMcbmEventBuilderWin::InitTask => Trying to change "
+                 "reference to unsupported detector, ignored! "
+              << fsRefDet;
+  }  // else of if( kEventBuilderDetUndef != refDet
 
-  fpAlgo->SetReferenceDetector(refDet);
   /// Extract detector to add if any
   for (std::vector<std::string>::iterator itStrAdd = fvsAddDet.begin();
        itStrAdd != fvsAddDet.end();
        ++itStrAdd) {
-    ECbmModuleId addDet =
-      ("kT0" == *itStrAdd
-         ? ECbmModuleId::kT0
-         : ("kSts" == *itStrAdd
-              ? ECbmModuleId::kSts
-              : ("kMuch" == *itStrAdd
-                   ? ECbmModuleId::kMuch
-                   : ("kTrd" == *itStrAdd
-                        ? ECbmModuleId::kTrd
-                        : ("kTof" == *itStrAdd
-                             ? ECbmModuleId::kTof
-                             : ("kRich" == *itStrAdd
-                                  ? ECbmModuleId::kRich
-                                  : ("kPsd" == *itStrAdd
-                                       ? ECbmModuleId::kPsd
-                                       : ECbmModuleId::kNotExist)))))));
-    if (ECbmModuleId::kNotExist != addDet) {
+    EventBuilderDetector addDet = ("kT0"   == *itStrAdd ? kEventBuilderDetT0
+                                : ("kSts"  == *itStrAdd ? kEventBuilderDetSts
+                                : ("kMuch" == *itStrAdd ? kEventBuilderDetMuch
+                                : ("kTrd"  == *itStrAdd ? kEventBuilderDetTrd
+                                : ("kTof"  == *itStrAdd ? kEventBuilderDetTof
+                                : ("kRich" == *itStrAdd ? kEventBuilderDetRich
+                                : ("kPsd"  == *itStrAdd ? kEventBuilderDetPsd
+                                                        : kEventBuilderDetUndef)))))));
+    if (kEventBuilderDetUndef != addDet) {
       fpAlgo->AddDetector(addDet);
-    }  // if(  ECbmModuleId::kNotExist != addDet )
+    }  // if( kEventBuilderDetUndef != addDet )
     else {
       LOG(info) << "CbmDeviceMcbmEventBuilderWin::InitTask => Trying to add "
                    "unsupported detector, ignored! "
                 << (*itStrAdd);
       continue;
-    }  // else of if(  ECbmModuleId::kNotExist != addDet
+    }  // else of if( kEventBuilderDetUndef != addDet )
   }  // for( std::vector< std::string >::iterator itStrAdd = fvsAddDet.begin(); itStrAdd != fvsAddDet.end(); ++itStrAdd )
-     /// Extract detector to add if any
+
+     /// Extract detector to remove if any
   for (std::vector<std::string>::iterator itStrRem = fvsDelDet.begin();
        itStrRem != fvsDelDet.end();
        ++itStrRem) {
-    ECbmModuleId remDet =
-      ("kT0" == *itStrRem
-         ? ECbmModuleId::kT0
-         : ("kSts" == *itStrRem
-              ? ECbmModuleId::kSts
-              : ("kMuch" == *itStrRem
-                   ? ECbmModuleId::kMuch
-                   : ("kTrd" == *itStrRem
-                        ? ECbmModuleId::kTrd
-                        : ("kTof" == *itStrRem
-                             ? ECbmModuleId::kTof
-                             : ("kRich" == *itStrRem
-                                  ? ECbmModuleId::kRich
-                                  : ("kPsd" == *itStrRem
-                                       ? ECbmModuleId::kPsd
-                                       : ECbmModuleId::kNotExist)))))));
-    if (ECbmModuleId::kNotExist != remDet) {
+    EventBuilderDetector remDet = ("kT0"   == *itStrRem ? kEventBuilderDetT0
+                                : ("kSts"  == *itStrRem ? kEventBuilderDetSts
+                                : ("kMuch" == *itStrRem ? kEventBuilderDetMuch
+                                : ("kTrd"  == *itStrRem ? kEventBuilderDetTrd
+                                : ("kTof"  == *itStrRem ? kEventBuilderDetTof
+                                : ("kRich" == *itStrRem ? kEventBuilderDetRich
+                                : ("kPsd"  == *itStrRem ? kEventBuilderDetPsd
+                                                        : kEventBuilderDetUndef)))))));
+    if (kEventBuilderDetUndef != remDet) {
       fpAlgo->RemoveDetector(remDet);
-    }  // if(  ECbmModuleId::kNotExist != remDet )
+    }  // if( kEventBuilderDetUndef != remDet )
     else {
       LOG(info) << "CbmDeviceMcbmEventBuilderWin::InitTask => Trying to remove "
                    "unsupported detector, ignored! "
                 << (*itStrRem);
       continue;
-    }  // else of if(  ECbmModuleId::kNotExist != remDet )
+    }  // else of if( kEventBuilderDetUndef != remDet )
   }  // for( std::vector< std::string >::iterator itStrAdd = fvsAddDet.begin(); itStrAdd != fvsAddDet.end(); ++itStrAdd )
      /// Extract Trigger window to add if any
   for (std::vector<std::string>::iterator itStrTrigWin = fvsSetTrigWin.begin();
@@ -205,22 +190,14 @@ void CbmDeviceMcbmEventBuilderWin::InitTask() try {
 
     /// Detector Enum Tag
     std::string sSelDet = (*itStrTrigWin).substr(0, charPosDel);
-    ECbmModuleId selDet =
-      ("kT0" == sSelDet
-         ? ECbmModuleId::kT0
-         : ("kSts" == sSelDet
-              ? ECbmModuleId::kSts
-              : ("kMuch" == sSelDet
-                   ? ECbmModuleId::kMuch
-                   : ("kTrd" == sSelDet
-                        ? ECbmModuleId::kTrd
-                        : ("kTof" == sSelDet
-                             ? ECbmModuleId::kTof
-                             : ("kRich" == sSelDet
-                                  ? ECbmModuleId::kRich
-                                  : ("kPsd" == sSelDet
-                                       ? ECbmModuleId::kPsd
-                                       : ECbmModuleId::kNotExist)))))));
+    ECbmModuleId selDet = ("kT0"   == sSelDet ? ECbmModuleId::kT0
+                        : ("kSts"  == sSelDet ? ECbmModuleId::kSts
+                        : ("kMuch" == sSelDet ? ECbmModuleId::kMuch
+                        : ("kTrd"  == sSelDet ? ECbmModuleId::kTrd
+                        : ("kTof"  == sSelDet ? ECbmModuleId::kTof
+                        : ("kRich" == sSelDet ? ECbmModuleId::kRich
+                        : ("kPsd"  == sSelDet ? ECbmModuleId::kPsd
+                                              : ECbmModuleId::kNotExist)))))));
     if (ECbmModuleId::kNotExist == selDet) {
       LOG(info)
         << "CbmDeviceMcbmEventBuilderWin::InitTask => "
@@ -265,22 +242,14 @@ void CbmDeviceMcbmEventBuilderWin::InitTask() try {
 
     /// Detector Enum Tag
     std::string sSelDet = (*itStrMinNb).substr(0, charPosDel);
-    ECbmModuleId selDet =
-      ("kT0" == sSelDet
-         ? ECbmModuleId::kT0
-         : ("kSts" == sSelDet
-              ? ECbmModuleId::kSts
-              : ("kMuch" == sSelDet
-                   ? ECbmModuleId::kMuch
-                   : ("kTrd" == sSelDet
-                        ? ECbmModuleId::kTrd
-                        : ("kTof" == sSelDet
-                             ? ECbmModuleId::kTof
-                             : ("kRich" == sSelDet
-                                  ? ECbmModuleId::kRich
-                                  : ("kPsd" == sSelDet
-                                       ? ECbmModuleId::kPsd
-                                       : ECbmModuleId::kNotExist)))))));
+    ECbmModuleId selDet = ("kT0"   == sSelDet ? ECbmModuleId::kT0
+                        : ("kSts"  == sSelDet ? ECbmModuleId::kSts
+                        : ("kMuch" == sSelDet ? ECbmModuleId::kMuch
+                        : ("kTrd"  == sSelDet ? ECbmModuleId::kTrd
+                        : ("kTof"  == sSelDet ? ECbmModuleId::kTof
+                        : ("kRich" == sSelDet ? ECbmModuleId::kRich
+                        : ("kPsd"  == sSelDet ? ECbmModuleId::kPsd
+                                              : ECbmModuleId::kNotExist)))))));
     if (ECbmModuleId::kNotExist == selDet) {
       LOG(info)
         << "CbmDeviceMcbmEventBuilderWin::InitTask => "
@@ -295,6 +264,9 @@ void CbmDeviceMcbmEventBuilderWin::InitTask() try {
 
     fpAlgo->SetTriggerMinNumber(selDet, uMinNb);
   }  //    for( std::vector< std::string >::iterator itStrMinNb = fvsSetTrigMinNb.begin(); itStrMinNb != fvsSetTrigMinNb.end(); ++itStrMinNb )
+
+  /// FIXME: Re-enable clang formatting after formatted lines
+  /* clang-format on */
 
   /// Create input vectors
   fvDigiT0   = new std::vector<CbmTofDigi>();
