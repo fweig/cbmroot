@@ -154,10 +154,12 @@ void CbmMcbm2019TimeWinEventBuilderTask::SetReferenceDetector(
   EventBuilderDetector refDet) {
   if (nullptr != fpAlgo) fpAlgo->SetReferenceDetector(refDet);
 }
-void CbmMcbm2019TimeWinEventBuilderTask::AddDetector(EventBuilderDetector selDet) {
+void CbmMcbm2019TimeWinEventBuilderTask::AddDetector(
+  EventBuilderDetector selDet) {
   if (nullptr != fpAlgo) fpAlgo->AddDetector(selDet);
 }
-void CbmMcbm2019TimeWinEventBuilderTask::RemoveDetector(EventBuilderDetector selDet) {
+void CbmMcbm2019TimeWinEventBuilderTask::RemoveDetector(
+  EventBuilderDetector selDet) {
   if (nullptr != fpAlgo) fpAlgo->RemoveDetector(selDet);
 }
 

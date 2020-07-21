@@ -715,7 +715,7 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::SetReferenceDetector(
                                             uTriggerMinDigisIn,
                                             iTriggerMaxDigisIn,
                                             fdTimeWinBegIn,
-                                            fdTimeWinEndIn) );
+                                            fdTimeWinEndIn));
 }
 void CbmMcbm2019TimeWinEventBuilderAlgo::AddDetector(ECbmModuleId selDet,
                                                      ECbmDataType dataTypeIn,
@@ -847,8 +847,8 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::RemoveDetector(ECbmModuleId selDet) {
                << selDet;
 }
 //----------------------------------------------------------------------
-void CbmMcbm2019TimeWinEventBuilderAlgo::SetReferenceDetector(EventBuilderDetector refDetIn)
-{
+void CbmMcbm2019TimeWinEventBuilderAlgo::SetReferenceDetector(
+  EventBuilderDetector refDetIn) {
   /// Loop on selection detectors
   for (std::vector<EventBuilderDetector>::iterator det = fvDets.begin();
        det != fvDets.end();
@@ -894,8 +894,8 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::SetReferenceDetector(EventBuilderDetect
   /// Update the variable storing the size if widest time window for overlap detection
   UpdateWidestTimeWinRange();
 }
-void CbmMcbm2019TimeWinEventBuilderAlgo::AddDetector(EventBuilderDetector selDet)
-{
+void CbmMcbm2019TimeWinEventBuilderAlgo::AddDetector(
+  EventBuilderDetector selDet) {
   if (fRefDet == selDet) {
     LOG(fatal) << "CbmMcbm2019TimeWinEventBuilderAlgo::AddDetector => Cannot "
                   "add the reference detector as selection detector!"
@@ -922,8 +922,8 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::AddDetector(EventBuilderDetector selDet
   /// Update the variable storing the size if widest time window for overlap detection
   UpdateWidestTimeWinRange();
 }
-void CbmMcbm2019TimeWinEventBuilderAlgo::RemoveDetector(EventBuilderDetector selDet)
-{
+void CbmMcbm2019TimeWinEventBuilderAlgo::RemoveDetector(
+  EventBuilderDetector selDet) {
   /// Loop on selection detectors
   for (std::vector<EventBuilderDetector>::iterator det = fvDets.begin();
        det != fvDets.end();

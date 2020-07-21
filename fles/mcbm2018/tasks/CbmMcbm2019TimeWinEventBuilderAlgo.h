@@ -59,10 +59,10 @@ public:
     fdTimeWinEnd = fdTimeWinEndIn;
   }
 
-  bool operator ==(const EventBuilderDetector &other) const {
+  bool operator==(const EventBuilderDetector& other) const {
     return (other.detId == this->detId);
   }
-  bool operator !=(const EventBuilderDetector &other) const {
+  bool operator!=(const EventBuilderDetector& other) const {
     return (other.detId != this->detId);
   }
 
@@ -84,35 +84,22 @@ public:
 };
 
 /// Pre-defined detector types
-static const EventBuilderDetector kEventBuilderDetSts  = EventBuilderDetector(
-                                            ECbmModuleId::kSts,
-                                            ECbmDataType::kStsDigi,
-                                            "Sts");
-static const EventBuilderDetector kEventBuilderDetMuch = EventBuilderDetector(
-                                            ECbmModuleId::kMuch,
-                                            ECbmDataType::kMuchDigi,
-                                             "Much");
-static const EventBuilderDetector kEventBuilderDetTrd  = EventBuilderDetector(
-                                            ECbmModuleId::kTrd,
-                                            ECbmDataType::kTrdDigi,
-                                            "Trd");
-static const EventBuilderDetector kEventBuilderDetTof  = EventBuilderDetector(
-                                            ECbmModuleId::kTof,
-                                            ECbmDataType::kTofDigi,
-                                            "Tof");
-static const EventBuilderDetector kEventBuilderDetRich = EventBuilderDetector(
-                                            ECbmModuleId::kRich,
-                                            ECbmDataType::kRichDigi,
-                                            "Rich");
-static const EventBuilderDetector kEventBuilderDetPsd  = EventBuilderDetector(
-                                            ECbmModuleId::kPsd,
-                                            ECbmDataType::kPsdDigi,
-                                            "Psd");
-static const EventBuilderDetector kEventBuilderDetT0   = EventBuilderDetector(
-                                            ECbmModuleId::kT0,
-                                            ECbmDataType::kT0Digi,
-                                            "T0");
-static const EventBuilderDetector kEventBuilderDetUndef = EventBuilderDetector();
+static const EventBuilderDetector kEventBuilderDetSts =
+  EventBuilderDetector(ECbmModuleId::kSts, ECbmDataType::kStsDigi, "Sts");
+static const EventBuilderDetector kEventBuilderDetMuch =
+  EventBuilderDetector(ECbmModuleId::kMuch, ECbmDataType::kMuchDigi, "Much");
+static const EventBuilderDetector kEventBuilderDetTrd =
+  EventBuilderDetector(ECbmModuleId::kTrd, ECbmDataType::kTrdDigi, "Trd");
+static const EventBuilderDetector kEventBuilderDetTof =
+  EventBuilderDetector(ECbmModuleId::kTof, ECbmDataType::kTofDigi, "Tof");
+static const EventBuilderDetector kEventBuilderDetRich =
+  EventBuilderDetector(ECbmModuleId::kRich, ECbmDataType::kRichDigi, "Rich");
+static const EventBuilderDetector kEventBuilderDetPsd =
+  EventBuilderDetector(ECbmModuleId::kPsd, ECbmDataType::kPsdDigi, "Psd");
+static const EventBuilderDetector kEventBuilderDetT0 =
+  EventBuilderDetector(ECbmModuleId::kT0, ECbmDataType::kT0Digi, "T0");
+static const EventBuilderDetector kEventBuilderDetUndef =
+  EventBuilderDetector();
 
 class CbmMcbm2019TimeWinEventBuilderAlgo {
 public:
@@ -154,9 +141,9 @@ public:
                    Double_t fdTimeWinBegIn   = -100,
                    Double_t fdTimeWinEndIn   = 100);
 
-  void SetReferenceDetector(ECbmModuleId refDet) __attribute__ ((deprecated));
-  void AddDetector(ECbmModuleId selDet) __attribute__ ((deprecated));
-  void RemoveDetector(ECbmModuleId selDet) __attribute__ ((deprecated));
+  void SetReferenceDetector(ECbmModuleId refDet) __attribute__((deprecated));
+  void AddDetector(ECbmModuleId selDet) __attribute__((deprecated));
+  void RemoveDetector(ECbmModuleId selDet) __attribute__((deprecated));
 
   void SetReferenceDetector(EventBuilderDetector refDetIn);
   void AddDetector(EventBuilderDetector selDet);
