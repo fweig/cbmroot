@@ -399,8 +399,8 @@ void CbmMcbmCheckTimingAlgo::FillTimeOffsetHistos(const Double_t dRefTime,
 
     /// Fill histos
     fvhDetToRefDiff[uDetIdx]->Fill(dDiffTime);
-    fvhDetToRefDiffRefCharge[uDetIdx]->Fill(dRefCharge, dDiffTime);
-    fvhDetToRefDiffDetCharge[uDetIdx]->Fill(dCharge, dDiffTime);
+    fvhDetToRefDiffRefCharge[uDetIdx]->Fill(dDiffTime, dRefCharge);
+    fvhDetToRefDiffDetCharge[uDetIdx]->Fill(dDiffTime, dCharge);
     fvhDetToRefDiffEvo[uDetIdx]->Fill(fuNbTs, dDiffTime);
     fvhDetToRefDiffEvoLong[uDetIdx]->Fill(fuNbTs, dDiffTime);
   }  // for( UInt_t uDigiIdx = fvDets[ uDetIdx ].iPrevRefFirstDigi; uDigiIdx < uNbDigis; ++uDigiIdx )
