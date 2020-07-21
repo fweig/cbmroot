@@ -114,7 +114,7 @@ void mcbm_transport_beam(UInt_t nEvents     = 1,
     targetElement, targetDz, targetR, targetX, targetY, targetZ, targetRotY);
   run.SetVertexSmearZ(kFALSE);
 
-  run.SetBeamPosition(0., 0., beamWidthX, beamWidthY, beamStartZ);
+  run.SetBeamPosition(beamStartZ*sin(beamAngle), 0., beamWidthX, beamWidthY, beamStartZ*cos(beamAngle));
   run.SetBeamAngle(beamAngle, 0., 0., 0.);
   run.ForceVertexInTarget(kFALSE);
 
