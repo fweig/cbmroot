@@ -648,8 +648,10 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::CreateHistograms() {
   for (std::vector<TH2*>::iterator itHist = fvhNbDigiPerEvtTimeDet.begin();
        itHist != fvhNbDigiPerEvtTimeDet.end();
        ++itHist) {
-    if( nullptr == (*itHist) )
+    if( nullptr != (*itHist) )
+    {
       AddHistoToVector((*itHist),   "evtbuild");
+    } // if( nullptr != (*itHist) )
   }  // for( std::vector<TH2*>::iterator itHist = fvhNbDigiPerEvtTimeDet.begin(); itHist != fvhNbDigiPerEvtTimeDet.end(); ++itHist )
 
   /// FIXME: Re-enable clang formatting after histograms declaration
