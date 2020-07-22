@@ -55,7 +55,7 @@ void build_event_win(UInt_t uRunId  = 0,
 
   eventBuilder->SetEventOverlapMode(EOverlapMode::NoOverlap);
 
-/*
+  /*
  * Available Pre-defined detectors:
  * kEventBuilderDetSts
  * kEventBuilderDetMuch
@@ -76,7 +76,7 @@ void build_event_win(UInt_t uRunId  = 0,
   /// To get T0 Digis (seed + close digis) in the event
   eventBuilder->SetTriggerWindow(ECbmModuleId::kT0, -1, 10);
 
-/*
+  /*
   /// Use TOF as reference
   eventBuilder->SetReferenceDetector( kEventBuilderDetTof );
   eventBuilder->AddDetector( kEventBuilderDetT0 );
@@ -110,7 +110,6 @@ void build_event_win(UInt_t uRunId  = 0,
   eventBuilder->SetTriggerMaxNumber(ECbmModuleId::kTof, -1);
   eventBuilder->SetTriggerMaxNumber(ECbmModuleId::kRich, -1);
   eventBuilder->SetTriggerMaxNumber(ECbmModuleId::kPsd, -1);
-
 
 
   if (0 < uRunId)

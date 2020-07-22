@@ -34,7 +34,7 @@ void check_timing_any(TString fileName,
   CbmMcbmCheckTimingTask* timeChecker = new CbmMcbmCheckTimingTask();
   /// Default is using T0 as reference
   /// With Pulser rejection
-/*
+  /*
   timeChecker->SetReferenceDetector( ECbmModuleId::kT0, "T0",
                                      -1000., 1000., 320.,
                                      182, 190 );
@@ -52,7 +52,7 @@ void check_timing_any(TString fileName,
   timeChecker->AddCheckDetector(ECbmModuleId::kT0, "T0");
 
   /// Here swapping with MUCH
-/*
+  /*
   timeChecker->SetReferenceDetector(ECbmModuleId::kMuch, "Much");
   timeChecker->RemoveCheckDetector(ECbmModuleId::kMuch);
   timeChecker->AddCheckDetector(ECbmModuleId::kT0, "T0");
