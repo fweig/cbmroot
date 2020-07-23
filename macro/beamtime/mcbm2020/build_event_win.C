@@ -54,8 +54,8 @@ void build_event_win(UInt_t uRunId  = 0,
   eventBuilder->SetFillHistos(kTRUE);
 
   eventBuilder->SetEventOverlapMode(EOverlapMode::NoOverlap);
-//  eventBuilder->SetEventOverlapMode(EOverlapMode::MergeOverlap);
-//  eventBuilder->SetEventOverlapMode(EOverlapMode::AllowOverlap);
+  //  eventBuilder->SetEventOverlapMode(EOverlapMode::MergeOverlap);
+  //  eventBuilder->SetEventOverlapMode(EOverlapMode::AllowOverlap);
 
   /*
  * Available Pre-defined detectors:
