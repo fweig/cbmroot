@@ -66,6 +66,8 @@ public:
     return (other.detId != this->detId);
   }
 
+  Double_t GetTimeWinRange() { return fdTimeWinEnd - fdTimeWinBeg; }
+
   /// Settings
   ECbmModuleId detId    = ECbmModuleId::kNotExist;
   ECbmDataType dataType = ECbmDataType::kUnknown;

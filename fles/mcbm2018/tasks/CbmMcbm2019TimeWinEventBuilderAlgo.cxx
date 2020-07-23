@@ -291,7 +291,9 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::CheckSeed(Double_t dSeedTime,
                                                    UInt_t uSeedDigiIdx) {
   /// If previous event valid and event overlap not allowed, check if we are in overlap
   /// and react accordingly
-  if (nullptr != fCurrentEvent && EOverlapMode::AllowOverlap != fOverMode
+  if (nullptr != fCurrentEvent
+      && (EOverlapMode::AllowOverlap != fOverMode
+          || dSeedTime - fdPrevEvtTime < fRefDet.GetTimeWinRange())
       && dSeedTime - fdPrevEvtTime < fdWidestTimeWinRange) {
     /// Within overlap range
     switch (fOverMode) {
@@ -306,11 +308,14 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::CheckSeed(Double_t dSeedTime,
         break;
       }  // case EOverlapMode::MergeOverlap:
       case EOverlapMode::AllowOverlap: {
-        /// Not in Merge overlap mode => should have been catched before, nothing to do
+        /// In allow overlap mode => reject only if reference det is in overlap
+        /// to avoid cloning events due to single seed cluster
+        LOG(debug1) << "Reject seed because part of cluster of previous one";
+        return;
         break;
       }  // case EOverlapMode::AllowOverlap:
     }    // switch( fOverMode )
-  }      // if( prev Event exists and overlap not allowed and overlap present )
+  }      // if( prev Event exists and mode forbiden overlap present )
   else {
     /// Out of overlap range or in overlap allowed mode
     /// => store previous event if not empty and create new one
@@ -322,7 +327,7 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::CheckSeed(Double_t dSeedTime,
       fuCurEv++;
     }  // if( nullptr != fCurrentEvent )
     fCurrentEvent = new CbmEvent(fuCurEv, dSeedTime, 0.);
-  }  // else of if( prev Event exists and overlap not allowed and overlap present )
+  }  // else of if( prev Event exists and mode forbiden overlap present )
 
   /// If window open for reference detector, search for other reference Digis matching it
   /// Otherwise only add the current seed
