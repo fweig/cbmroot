@@ -329,26 +329,26 @@ void Create_TOF_Geometry_v20e_mcbm() {
   //  TGeoTranslation*  stand_trans   = new TGeoTranslation("", 0., 0., TOF_Z_Front_Stand);
   TGeoRotation* stand_rot = new TGeoRotation();
   //  stand_rot->RotateY(-2.7);
-//
-// correct for pointing to target position as reported by Ekata Nandy on 28.07.2020
-// tan(45*acos(-1)/180)
-// (double) 1.0000000
-//
-// atan(tan(45*acos(-1)/180))/acos(-1)*180
-// (double) 45.000000
-//
-// atan(-16.24/247.2)/acos(-1)*180
-// (double) -3.7586904
-//
-// tan(-3.76*acos(-1)/180) * 247.2
-// (double) -16.245674
-//
+  //
+  // correct for pointing to target position as reported by Ekata Nandy on 28.07.2020
+  // tan(45*acos(-1)/180)
+  // (double) 1.0000000
+  //
+  // atan(tan(45*acos(-1)/180))/acos(-1)*180
+  // (double) 45.000000
+  //
+  // atan(-16.24/247.2)/acos(-1)*180
+  // (double) -3.7586904
+  //
+  // tan(-3.76*acos(-1)/180) * 247.2
+  // (double) -16.245674
+  //
   stand_rot->RotateY(-3.76);
-//  stand_rot->RotateY(0);
+  //  stand_rot->RotateY(0);
   TGeoCombiTrans* stand_combi_trans =
     new TGeoCombiTrans(*stand_trans, *stand_rot);
   tof->AddNode(tofstand, 1, stand_combi_trans);
-//  tof->AddNode(tofstand, 1);
+  //  tof->AddNode(tofstand, 1);
 
   for (Int_t counterType = 0; counterType < NumberOfDifferentCounterTypes;
        counterType++) {
