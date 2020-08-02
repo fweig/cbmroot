@@ -54,7 +54,7 @@ void ana_digi_cal(Int_t nEvents      = 10000000,
 
   //   TObjString tofDigiBdfFile = new TObjString( paramDir + "/tof." + FPar + "digibdf.par");
   TObjString* tofDigiBdfFile =
-    new TObjString(workDir + "/parameters/tof/" + TofGeo + ".digibdf.par");
+    new TObjString(workDir + "/parameters/tof/tof_" + TofGeo + ".digibdf.par");
   parFileList->Add(tofDigiBdfFile);
 
   TString geoDir  = gSystem->Getenv("VMCWORKDIR");
