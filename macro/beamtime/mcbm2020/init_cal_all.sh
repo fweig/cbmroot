@@ -41,10 +41,10 @@ nEvi1=50000  # increment
 if [ -e /lustre ]; then
 source /lustre/cbm/users/nh/CBM/cbmroot/trunk/build/config.sh 
 wdir=/lustre/cbm/users/nh/CBM/cbmroot/trunk/macro/beamtime/mcbm2020
-outdir=/lustre/cbm/users/nh/CBM/cbmroot/trunk/macro/beamtime/mcbm2020/${RunId}
+outdir=/lustre/cbm/users/nh/CBM/cbmroot/trunk/macro/beamtime/mcbm2020/${cRun}
 else 
 wdir=`pwd`
-outdir=${wdir}/${RunId}
+outdir=${wdir}/${cRun}
 fi
 mkdir ${outdir}
 
