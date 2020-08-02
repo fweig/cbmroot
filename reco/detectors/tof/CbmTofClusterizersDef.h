@@ -34,8 +34,12 @@ const Int_t iNTrg = 1;
  * From CbmTofTestBeamClusterizer.cxx
  */
 const Double_t dDoubleMax = 1.E300;
-const Int_t DetMask       = 0x003FFFFF;
-const Int_t ModMask       = 0x0000FFFF;
+/*
+const Int_t DetMask       = 0x003FFFFF; // geo v14a
+const Int_t ModMask       = 0x0000FFFF; // geo v14a
+*/
+const Int_t DetMask       = 0x001FFFFF; // geo v21a
+const Int_t ModMask       = 0x0000FFFF; // geo v21a
 
 /*
 Int_t iNevtBuild=0; // Should be class member!
