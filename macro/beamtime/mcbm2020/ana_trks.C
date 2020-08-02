@@ -77,7 +77,7 @@ void ana_trks(Int_t nEvents        = 10000,
     cout << "Geometry version " << TofGeo << endl;
 
     TObjString* tofDigiBdfFile =
-      new TObjString(workDir + "/parameters/tof/" + TofGeo + ".digibdf.par");
+      new TObjString(workDir + "/parameters/tof/tof_" + TofGeo + ".digibdf.par");
     parFileList->Add(tofDigiBdfFile);
 
     TString geoDir  = gSystem->Getenv("VMCWORKDIR");
