@@ -45,7 +45,8 @@ using std::cout;
 using std::endl;
 using std::map;
 
-const Int_t DetMask = 0x3FFFFF;  // check for consistency with geometry
+//const Int_t DetMask = 0x3FFFFF;  // check for consistency with v14a geometry
+const Int_t DetMask = 0x3FFFFF;  // check for consistency with v21a geometry
 LKFMinuit CbmTofTrackFinderNN::fMinuit;
 
 CbmTofTrackFinderNN::CbmTofTrackFinderNN()

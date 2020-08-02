@@ -877,16 +877,8 @@ Int_t CbmTofDigiBdfPar::GetNbDet() const { return fiDetUId.GetSize(); }
 
 Int_t CbmTofDigiBdfPar::GetDetInd(Int_t iAddr) {
 
-  const Int_t DetMask = 4194303;
-  /*
-  Int_t iInd=0;
-  while (fiDetUId[iInd] != (iAddr & DetMask) && iInd<fiDetUId.GetSize()) iInd++; //FIXME, inefficient and using a numerical constant!
-  if(iInd == fiDetUId.GetSize()){
-    LOG(error)<<Form(" detector id 0x%08x unknown ",iAddr) ;
-    iInd=0;
-  }
-  return iInd;
-  */
+  //const Int_t DetMask = 0x3fffff; // v14a
+  const Int_t DetMask = 0x1fffff; // v21a
   return fMapDetInd[(iAddr & DetMask)];
 }
 

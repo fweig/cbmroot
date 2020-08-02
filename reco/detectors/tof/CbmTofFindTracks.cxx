@@ -52,7 +52,8 @@ using std::cout;
 using std::endl;
 using std::vector;
 
-const Int_t DetMask = 0x3FFFFF;  // check for consistency with geometry
+//const Int_t DetMask = 0x3FFFFF;  // check for consistency with v14a geometry
+const Int_t DetMask = 0x1FFFFF;  // check for consistency with v21a geometry
 
 ClassImp(CbmTofFindTracks);
 
@@ -429,11 +430,9 @@ Bool_t CbmTofFindTracks::LoadCalParameter() {
         Int_t iUniqueId          = it->first;
         CbmTofCell* fChannelInfo = fDigiPar->GetCell(iUniqueId);
         if (NULL != fChannelInfo) {
-          Double_t dVal =
-            0.;  // FIXME numeric constant in code, default for cosmic
+          Double_t dVal = 0.;  // FIXME numeric constant in code, default for cosmic
           if (fiBeamCounter != iUniqueId)
-            dVal =
-              fChannelInfo->GetZ() * fTtTarg;  //  use calibration target value
+            dVal = fChannelInfo->GetZ() * fTtTarg;  //  use calibration target value
           fhPullT_Smt_Off->SetBinContent(iDet + 1, dVal);
           LOG(info) << Form("Initialize det 0x%08x at %d, z=%f with TOff %6.2f",
                             iUniqueId,

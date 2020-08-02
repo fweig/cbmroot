@@ -72,7 +72,7 @@ using std::cout;
 using std::endl;
 using std::vector;
 
-const Int_t DetMask   = 0x007FFFFF;
+const Int_t DetMask   = 0x001FFFFF;  // for v21a geometries
 const Double_t DTDMAX = 6.;  // diamond inspection range in ns
 
 Double_t dTDia;

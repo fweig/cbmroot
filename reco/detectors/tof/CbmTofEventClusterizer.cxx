@@ -561,7 +561,7 @@ Bool_t CbmTofEventClusterizer::RegisterOutputs() {
   if (NULL == fEventsColl) {
     // Flag check to control whether digis are written in output root file
     //rootMgr->Register( "TofCalDigi","Tof", fTofCalDigisColl, fbWriteDigisInOut);
-    rootMgr->RegisterAny("TofCalDigi", fTofCalDigiVec, fbWriteDigisInOut);
+	rootMgr->RegisterAny("TofCalDigi", fTofCalDigiVec, fbWriteDigisInOut);
 
     // Flag check to control whether digis are written in output root file
     rootMgr->Register(tHitBranchName, "Tof", fTofHitsColl, fbWriteHitsInOut);
@@ -5342,8 +5342,10 @@ Bool_t CbmTofEventClusterizer::BuildClusters() {
       CbmTofDigi* pDigi = &(fTofDigiVec.at(iDigInd));
       //CbmTofDigi *pDigi = (CbmTofDigi*) fTofDigisColl->At( iDigInd );
       if (pDigi->GetType() == 5) {
-        if (pDigi->GetSide() == 1)
+        if (pDigi->GetSide() == 1) {
           bAddBeamCounterSideDigi = kFALSE;  // disable for current data set
+          LOG(info) << "Start counter digi duplication disabled";
+        }
         fTofDigiVec.push_back(CbmTofDigi(*pDigi));
         CbmTofDigi* pDigiN = &(fTofDigiVec.back());
         //	 CbmTofDigi *pDigiN  = new((*fTofDigisColl)[iNbDigi++]) CbmTofDigi( *pDigi );
@@ -5352,6 +5354,7 @@ Bool_t CbmTofEventClusterizer::BuildClusters() {
                            pDigi->GetChannel(),
                            (0 == pDigi->GetSide()) ? 1 : 0,
                            pDigi->GetType());
+        LOG(debug) << "Duplicated digi at address 0x" << std::hex << pDigiN->GetAddress();
       }
     }
     iNbTofDigi = fTofDigiVec.size();
@@ -5362,20 +5365,23 @@ Bool_t CbmTofEventClusterizer::BuildClusters() {
     for (Int_t iDigInd = 0; iDigInd < iNbTofDigi; iDigInd++) {
       //CbmTofDigi *pDigi = (CbmTofDigi*) fTofDigisColl->At( iDigInd );
       CbmTofDigi* pDigi = &(fTofDigiVec.at(iDigInd));
+      Int_t iDetIndx = fDigiBdfPar->GetDetInd(pDigi->GetAddress());
+
       LOG(debug) << iDigInd << " " << pDigi
                  << Form(" Address : 0x%08x ", pDigi->GetAddress()) << " SmT "
                  << pDigi->GetType() << " Sm " << pDigi->GetSm() << " Rpc "
                  << pDigi->GetRpc() << " Ch " << pDigi->GetChannel() << " S "
-                 << pDigi->GetSide() << " : " << pDigi->ToString()
+                 << pDigi->GetSide()
+				 << ", DetIndx " << iDetIndx
+				 << " : " << pDigi->ToString()
         //         <<" Time "<<pDigi->GetTime()
         //         <<" Tot " <<pDigi->GetTot()
         ;
 
-      Int_t iDetIndx = fDigiBdfPar->GetDetInd(pDigi->GetAddress());
 
       if (fDigiBdfPar->GetNbDet() - 1 < iDetIndx || iDetIndx < 0) {
         LOG(debug) << Form(
-          " Wrong DetIndx %d >< %d,0 ", iDetIndx, fDigiBdfPar->GetNbDet());
+          " Wrong DetIndx %d >< %d ", iDetIndx, fDigiBdfPar->GetNbDet());
         break;
       }
 
@@ -5409,6 +5415,7 @@ Bool_t CbmTofEventClusterizer::BuildClusters() {
       for (Int_t iDigI2 = 0; iDigI2 < iNbTofDigi; iDigI2++) {
         CbmTofDigi* pDigi2 = &(fTofDigiVec.at(iDigI2));
         //         CbmTofDigi *pDigi2 = (CbmTofDigi*) fTofDigisColl->At( iDigI2 );
+        // Fill digi correlation histogram per counter
         if (iDetIndx == fDigiBdfPar->GetDetInd(pDigi2->GetAddress())) {
           if (0. == pDigi->GetSide() && 1. == pDigi2->GetSide()) {
             fhRpcDigiCor[iDetIndx]->Fill(pDigi->GetChannel(),
@@ -5538,7 +5545,7 @@ Bool_t CbmTofEventClusterizer::BuildClusters() {
               if (fiMsgCnt-- > 0) {
                 LOG(warning)
                   << " BuildClusters: Inconsistent duplicated digis in event "
-                  << fiNevtBuild << ", Ind: " << iDigInd;
+                  << fiNevtBuild << ", Ind: " << iDigInd; // << "CTyp: " << pDigi->GetCounterType;
                 LOG(warning) << "   " << pDigi->ToString();
                 LOG(warning) << "   " << pDigi2Min->ToString();
               }
@@ -6564,8 +6571,7 @@ Bool_t CbmTofEventClusterizer::BuildHits() {
                   fChannelInfo = fDigiPar->GetCell(iChId);
 
                   if (NULL == fChannelInfo) {
-                    LOG(error) << "CbmTofEventClusterizer::BuildClusters: no "
-                                  "geometry info! "
+                    LOG(error) << "CbmTofEventClusterizer::BuildClusters: no geometry info! "
                                << Form(" %3d %3d %3d %3d 0x%08x 0x%08x ",
                                        iSmType,
                                        iSm,
@@ -7296,9 +7302,9 @@ Bool_t CbmTofEventClusterizer::CalibRawDigis() {
                      > mChannelDeadTime[iAddr] + fdChannelDeadtime))) {
 
         //       pCalDigi = new((*fTofCalDigisColl)[++iDigIndCal]) CbmTofDigi( *pDigi );
-        fTofCalDigiVec->push_back(CbmTofDigi(*pDigi));
-        pCalDigi = &(fTofCalDigiVec->back());
-        iDigIndCal++;
+          fTofCalDigiVec->push_back(CbmTofDigi(*pDigi));
+          pCalDigi = &(fTofCalDigiVec->back());
+          iDigIndCal++;
       }
     } else {
       fTofCalDigiVec->push_back(CbmTofDigi(*pDigi));
