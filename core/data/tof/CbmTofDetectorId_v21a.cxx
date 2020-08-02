@@ -59,7 +59,7 @@ Int_t CbmTofDetectorId_v21a::GetModuleType(const Int_t detectorId)
 }
 Int_t CbmTofDetectorId_v21a::GetCounterType(const Int_t detectorId)
 {
-  return GetCounterType(detectorId);
+  return (( detectorId >> shiftarray[6] ) & maskarray[6] );
 }
 
 //-----------------------------------------------------------
