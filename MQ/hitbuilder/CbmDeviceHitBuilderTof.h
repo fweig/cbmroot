@@ -29,7 +29,6 @@ class CbmMQTMessage;
 class CbmHistManager;
 // Relevant TOF classes
 class CbmTofDigi;
-class CbmTofDigiExp;
 class CbmTofHit;
 class CbmMatch;
 class CbmEvent;
@@ -114,7 +113,7 @@ private:
                                                "tofdigis",
                                                "tofhits",
                                                "syscmd"};
-  CbmTofDigiExp* fDigi;
+  CbmTofDigi* fDigi;
 
   TGeoManager* fGeoMan;
   // ToF geometry variables
@@ -125,14 +124,16 @@ private:
   CbmTofDigiBdfPar* fDigiBdfPar;
   // Input variables
   TClonesArray* fTofDigisColl;  // TOF Digis
-  CbmTofDigiExp* pDigiIn;
+  CbmTofDigi* pDigiIn;
   Int_t fiNDigiIn;
-  std::vector<CbmTofDigiExp> fvDigiIn;
+  std::vector<CbmTofDigi> fvDigiIn;
   std::vector<int> fEventHeader;
   FairEventHeader* fEvtHeader;
 
   // Output variables
-  TClonesArray* fTofCalDigisColl;      // Calibrated TOF Digis
+  // TClonesArray* fTofCalDigisColl;      // Calibrated TOF Digis
+  std::vector<CbmTofDigi>* fTofCalDigiVec = nullptr;    // Calibrated TOF Digis
+  std::vector<CbmTofDigi>* fTofCalDigiVecOut = nullptr; // Calibrated TOF Digis
   TClonesArray* fTofHitsColl;          // TOF hits
   TClonesArray* fTofDigiMatchColl;     // TOF Digi Links
   TClonesArray* fTofCalDigisCollOut;   // Calibrated TOF Digis
@@ -164,8 +165,6 @@ private:
   // Intermediate storage variables
   std::vector<std::vector<std::vector<std::vector<CbmTofDigi*>>>>
     fStorDigi;  //[nbType][nbSm*nbRpc][nbCh][nDigis]
-  std::vector<std::vector<std::vector<std::vector<CbmTofDigiExp*>>>>
-    fStorDigiExp;  //[nbType][nbSm*nbRpc][nbCh][nDigis]
   std::vector<std::vector<std::vector<std::vector<Int_t>>>>
     fStorDigiInd;  //[nbType][nbSm*nbRpc][nbCh][nDigis]
   std::vector<Int_t> vDigiIndRef;
