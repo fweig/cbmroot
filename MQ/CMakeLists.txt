@@ -5,7 +5,7 @@ EndIf()
 add_subdirectory(base)
 add_subdirectory(source)
 add_subdirectory(sink)
-#add_subdirectory(unpacker)
+add_subdirectory(unpacker)
 
 add_subdirectory(monitor)
 add_subdirectory(histoServer)
@@ -20,4 +20,4 @@ add_subdirectory(mcbm)
 # Don't compile it for the time being
 # TODO: Fix the compilation problems
   add_subdirectory(parmq)
-#  add_subdirectory(hitbuilder)
+  add_subdirectory(hitbuilder)

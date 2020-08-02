@@ -3,14 +3,12 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startMQSamplerUnpackerParserver.sh.in
 set(INCLUDE_DIRECTORIES
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CBMROOT_SOURCE_DIR}/MQ/base
-    ${CBMROOT_SOURCE_DIR}/fles/cern2016/param
-    ${CBMROOT_SOURCE_DIR}/fles/cern2016/unpacker
     ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/parameter
     ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/dataformat
     ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/unpacker
     ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/commonMQ
-    ${CBMROOT_SOURCE_DIR}/beamtime/base
     ${CBMDATA_DIR}
+    ${CBMDATA_DIR}/raw
     ${CBMDATA_DIR}/tof
     ${CBMBASE_DIR}
 )
@@ -64,16 +62,16 @@ If(FAIRLOGGER_FOUND)
 EndIf()
 
 set(EXE_NAME UnpackTofMcbm2018)
-set(SRCS CbmDeviceUnpackTofMcbm2018.cxx runUnpackTofMcbm2018.cxx)
+set(SRCS CbmTbDaqBuffer.cxx CbmDeviceUnpackTofMcbm2018.cxx runUnpackTofMcbm2018.cxx)
 
 set(DEPENDENCIES
   ${DEPENDENCIES}
   ${FAIR_LIBS}
   ${BOOST_LIBS}
   fles_ipc
-  CbmFlibCern2016
   CbmFlibMcbm2018
   CbmBase
+#  CbmBeamtimeBase
   CbmData
   Core
   RIO

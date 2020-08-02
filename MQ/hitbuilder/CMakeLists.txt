@@ -4,14 +4,11 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startMQ_Mcbm.sh.in ${CMAKE_BINARY_DIR
 
 set(INCLUDE_DIRECTORIES
     ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CBMROOT_SOURCE_DIR}/fles/cern2016/param
-    ${CBMROOT_SOURCE_DIR}/fles/cern2016/unpacker
-    ${CBMROOT_SOURCE_DIR}/beamtime/base
     ${CBMDATA_DIR}
+    ${CBMDATA_DIR}/base
     ${CBMDATA_DIR}/tof
     ${CBMBASE_DIR}
-    ${CBMROOT_SOURCE_DIR}/tof/TofParam
-    ${CBMROOT_SOURCE_DIR}/tof/TofTools
+    ${CBMDETECTORBASE_DIR}/tof
 )
 
 Set(SYSTEM_INCLUDE_DIRECTORIES
@@ -23,8 +20,8 @@ Set(SYSTEM_INCLUDE_DIRECTORIES
     ${FAIRMQ_INCLUDE_DIR}/options
 
     ${IPC_INCLUDE_DIRECTORY}
-    ${CBMROOT_SOURCE_DIR}/external/cppzmq    
-    ${CBMROOT_SOURCE_DIR}/tof/TofReco
+    ${CBMROOT_SOURCE_DIR}/external/cppzmq        
+    ${CBMROOT_SOURCE_DIR}/reco/detectors/tof
 )
 
 include_directories(${INCLUDE_DIRECTORIES})
@@ -72,10 +69,9 @@ set(DEPENDENCIES
   ${FAIR_LIBS}
   ${BOOST_LIBS}
 #    fles_ipc
-  CbmFlibCern2016
   CbmBase
   CbmData
-  CbmTof	
+  CbmTofBase
   Geom		
   Core
   MathCore
