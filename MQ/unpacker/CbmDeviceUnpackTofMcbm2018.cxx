@@ -6,9 +6,8 @@
  */
 
 #include "CbmDeviceUnpackTofMcbm2018.h"
+#include "CbmDefs.h"
 #include "CbmMQDefs.h"
-
-#include "CbmDigi.h"
 
 #include "CbmMcbm2018TofPar.h"
 #include "CbmMcbm2018UnpackerAlgoTof.h"
@@ -55,21 +54,18 @@ CbmDeviceUnpackTofMcbm2018::CbmDeviceUnpackTofMcbm2018()
   , fEventHeader()
   , fiReqMode(0)
   , fiReqTint(0)
+  , fiReqBeam(-1)
   , fiReqDigiAddr()
   , fiPulserMode(0)
   , fiPulMulMin(0)
   , fiPulTotMin(0)
   , fiPulTotMax(1000)
-  //  , fAllowedChannels()
-  //  , fChannelsToSend()
-  //, fuMsAcceptsPercent(100)
   , fuTotalMsNb(0)
   , fuOverlapMsNb(0)
   , fuCoreMs(0)
   , fdMsSizeInNs(0)
   , fdTsCoreSizeInNs(0)
   , fuMinNbGdpb(0)
-  //, fuCurrNbGdpb( 0 )
   , fuNrOfGdpbs(0)
   , fuNrOfFeePerGdpb(0)
   , fuNrOfGet4PerFee(0)
@@ -82,32 +78,21 @@ CbmDeviceUnpackTofMcbm2018::CbmDeviceUnpackTofMcbm2018()
   , fuGdpbNr(0)
   , fuGet4Id(0)
   , fuGet4Nr(0)
-  //, fiEquipmentId(0)
   , fMsgCounter(11, 0)  // length of enum MessageTypes initialized with 0
   , fGdpbIdIndexMap()
-  , fvulGdpbTsMsb()
-  , fvulGdpbTsLsb()
-  , fvulStarTsMsb()
-  , fvulStarTsMid()
-  , fvulGdpbTsFullLast()
-  , fvulStarTsFullLast()
-  , fvuStarTokenLast()
-  , fvuStarDaqCmdLast()
-  , fvuStarTrigCmdLast()
   , fvulCurrentEpoch()
   , fvbFirstEpochSeen()
   , fNofEpochs(0)
   , fulCurrentEpochTime(0.)
   //, fdMsIndex(0.)
-  , fdTShiftRef(0.)
+  , fdToffTof(0.)
+  , fiAddrRef(0)
   //, fuDiamondDpbIdx(3)
   //, fbEpochSuppModeOn( kTRUE )
   //, fbGet4M24b( kFALSE )
   //, fbGet4v20( kTRUE )
   //, fbMergedEpochsOn( kTRUE )
-  , fDigi(nullptr)
   , fUnpackPar(nullptr)
-  //, fdRefTime(0.)
   , fdLastDigiTime(0.)
   , fdFirstDigiTimeDif(0.)
   //, fdEvTime0(0.)
@@ -131,17 +116,7 @@ CbmDeviceUnpackTofMcbm2018::CbmDeviceUnpackTofMcbm2018()
   , fviNrOfRpc()
   , fviRpcSide()
   , fviRpcChUId()
-  , fvmEpSupprBuffer()
   , fBuffer(CbmTbDaqBuffer::Instance())
-  , fulGdpbTsMsb(0.)
-  , fulGdpbTsLsb(0.)
-  , fulStarTsMsb(0.)
-  , fulStarTsMid(0.)
-  , fulGdpbTsFullLast(0.)
-  , fulStarTsFullLast(0.)
-  , fuStarTokenLast(0)
-  , fuStarDaqCmdLast(0)
-  , fuStarTrigCmdLast(0)
   , fUnpackerAlgo(nullptr) {
   fUnpackerAlgo = new CbmMcbm2018UnpackerAlgoTof();
 }
@@ -184,19 +159,30 @@ void CbmDeviceUnpackTofMcbm2018::InitTask() try {
   fEventHeader.resize(iHeaderSize);  // define size of eventheader int[]
   for (int i = 0; i < iHeaderSize; i++)
     fEventHeader[i] = 0;
+  LOG(info) << "Read config";
   fiSelectComponents = fConfig->GetValue<uint64_t>("SelectComponents");
   fiReqMode          = fConfig->GetValue<uint64_t>("ReqMode");
   fiReqTint          = fConfig->GetValue<uint64_t>("ReqTint");
+  fiReqBeam          = fConfig->GetValue<uint64_t>("ReqBeam");
   fiPulserMode       = fConfig->GetValue<int64_t>("PulserMode");
   fiPulMulMin        = fConfig->GetValue<uint64_t>("PulMulMin");
   fiPulTotMin        = fConfig->GetValue<uint64_t>("PulTotMin");
   fiPulTotMax        = fConfig->GetValue<uint64_t>("PulTotMax");
-  fdTShiftRef        = fConfig->GetValue<double_t>("TShiftRef");
+  fdToffTof          = fConfig->GetValue<double_t>("ToffTof");
+  Int_t iRefModType  = fConfig->GetValue<int64_t>("RefModType");
+  Int_t iRefModId    = fConfig->GetValue<int64_t>("RefModId");
+  Int_t iRefCtrType  = fConfig->GetValue<int64_t>("RefCtrType");
+  Int_t iRefCtrId    = fConfig->GetValue<int64_t>("RefCtrId");
+  if (iRefModType > -1)
+    fiAddrRef = CbmTofAddress::GetUniqueAddress(
+      iRefModId, iRefCtrId, 0, 0, iRefModType, iRefCtrType);
+  LOG(info) << " Using Reference counter address 0x" << std::hex << fiAddrRef;
+
   //    Int_t iMaxAsicInactive = fConfig->GetValue<uint64_t>("MaxAsicInactive");
   //    fUnpackerAlgo->SetMaxAsicInactive( iMaxAsicInactive );
   Int_t iReqDet       = 1;
   Int_t iNReq         = 0;
-  const Int_t iMaxReq = 36;
+  const Int_t iMaxReq = 50;
 
   while (iNReq < iMaxReq) {  // FIXME, setup parameter hardwired!
     iReqDet = fConfig->GetValue<uint64_t>(Form("ReqDet%d", iNReq));
@@ -204,7 +190,7 @@ void CbmDeviceUnpackTofMcbm2018::InitTask() try {
     AddReqDigiAddr(iReqDet);
     iNReq++;
   }
-
+  LOG(info) << "Setup request";
   if (fiReqMode > 0)
     if (iNReq == 0) {  // take all defined detectors
       for (UInt_t iGbtx = 0; iGbtx < fviNrOfRpc.size(); iGbtx++) {
@@ -261,6 +247,7 @@ void CbmDeviceUnpackTofMcbm2018::InitTask() try {
             << " with " << fiReqDigiAddr.size() << " detectors out of "
             << fviNrOfRpc.size() << " GBTx, PulserMode " << fiPulserMode
             << " with Mul " << fiPulMulMin << ", TotMin " << fiPulTotMin;
+  LOG(info) << Form("ReqBeam 0x%08x", (uint) fiReqBeam);
 
 } catch (InitTaskError& e) {
   LOG(error) << e.what();
@@ -403,50 +390,6 @@ Bool_t CbmDeviceUnpackTofMcbm2018::ReInitContainers() {
 
   fuNrOfGet4PerGdpb = fuNrOfFeePerGdpb * fuNrOfGet4PerFee;
   LOG(info) << "Nr. of GET4s per GDPB: " << fuNrOfGet4PerGdpb;
-
-  fuNrOfChannelsPerGdpb = fuNrOfGet4PerGdpb * fuNrOfChannelsPerGet4;
-  LOG(info) << "Nr. of channels per GDPB: " << fuNrOfChannelsPerGdpb;
-
-  fGdpbIdIndexMap.clear();
-  for (UInt_t i = 0; i < fuNrOfGdpbs; ++i) {
-    fGdpbIdIndexMap[fUnpackPar->GetGdpbId(i)] = i;
-    LOG(info) << "GDPB Id of TOF  " << i << " : " << std::hex
-              << fUnpackPar->GetGdpbId(i);
-  }  // for( UInt_t i = 0; i < fuNrOfGdpbs; ++i )
-
-  fuTotalMsNb      = fUnpackPar->GetNbMsTot();
-  fuOverlapMsNb    = fUnpackPar->GetNbMsOverlap();
-  fuCoreMs         = fuTotalMsNb - fuOverlapMsNb;
-  fdMsSizeInNs     = fUnpackPar->GetSizeMsInNs();
-  fdTsCoreSizeInNs = fdMsSizeInNs * fuCoreMs;
-  LOG(info) << "Timeslice parameters: " << fuTotalMsNb
-            << " MS per link, of which " << fuOverlapMsNb
-            << " overlap MS, each MS is " << fdMsSizeInNs << " ns";
-
-  /// STAR Trigger decoding and monitoring
-  fvulGdpbTsMsb.resize(fuNrOfGdpbs);
-  fvulGdpbTsLsb.resize(fuNrOfGdpbs);
-  fvulStarTsMsb.resize(fuNrOfGdpbs);
-  fvulStarTsMid.resize(fuNrOfGdpbs);
-  fvulGdpbTsFullLast.resize(fuNrOfGdpbs);
-  fvulStarTsFullLast.resize(fuNrOfGdpbs);
-  fvuStarTokenLast.resize(fuNrOfGdpbs);
-  fvuStarDaqCmdLast.resize(fuNrOfGdpbs);
-  fvuStarTrigCmdLast.resize(fuNrOfGdpbs);
-  for (UInt_t uGdpb = 0; uGdpb < fuNrOfGdpbs; ++uGdpb) {
-    fvulGdpbTsMsb[uGdpb]      = 0;
-    fvulGdpbTsLsb[uGdpb]      = 0;
-    fvulStarTsMsb[uGdpb]      = 0;
-    fvulStarTsMid[uGdpb]      = 0;
-    fvulGdpbTsFullLast[uGdpb] = 0;
-    fvulStarTsFullLast[uGdpb] = 0;
-    fvuStarTokenLast[uGdpb]   = 0;
-    fvuStarDaqCmdLast[uGdpb]  = 0;
-    fvuStarTrigCmdLast[uGdpb] = 0;
-  }  // for (Int_t iGdpb = 0; iGdpb < fuNrOfGdpbs; ++iGdpb)
-
-  fvmEpSupprBuffer.resize(fuNrOfGet4);
-
 
   /// TODO: move these constants somewhere shared, e.g the parameter file
   fvuPadiToGet4.resize(fuNrOfChannelsPerFee);
@@ -861,7 +804,7 @@ bool CbmDeviceUnpackTofMcbm2018::HandleData(FairMQMessagePtr& msg,
   fles::StorableTimeslice component {0};
   inputArchive >> component;
 
-  CheckTimeslice(component);
+  //  CheckTimeslice(component);
 
   DoUnpack(component, 0);
 
@@ -891,7 +834,7 @@ bool CbmDeviceUnpackTofMcbm2018::HandleParts(FairMQParts& parts,
       std::istringstream iss(msgStr);
       boost::archive::binary_iarchive inputArchive(iss);
       inputArchive >> ts;
-      CheckTimeslice(ts);
+      //CheckTimeslice(ts);
       if (1 == fNumMessages) {
         LOG(info) << "Initialize TS components list to " << ts.num_components();
         for (size_t c {0}; c < ts.num_components(); c++) {
@@ -914,7 +857,7 @@ bool CbmDeviceUnpackTofMcbm2018::HandleParts(FairMQParts& parts,
         //fles::StorableTimeslice component{i};
         inputArchive >> component;
 
-        CheckTimeslice(component);
+        //      CheckTimeslice(component);
         fUnpackerAlgo->AddMsComponentToList(0, 0x60);  // TOF data
         LOG(debug) << "HandleParts message " << fNumMessages << " with indx "
                    << component.index();
@@ -943,6 +886,7 @@ bool CbmDeviceUnpackTofMcbm2018::HandleMessage(FairMQMessagePtr& msg,
 
   if (strcmp(cmda, "STOP")) {
     LOG(info) << "STOP";
+    fUnpackerAlgo->Finish();
     cbm::mq::ChangeState(this, cbm::mq::Transition::Ready);
     cbm::mq::LogState(this);
     cbm::mq::ChangeState(this, cbm::mq::Transition::DeviceReady);
@@ -984,7 +928,12 @@ Bool_t CbmDeviceUnpackTofMcbm2018::DoUnpack(const fles::Timeslice& ts,
 
   for (auto digi : vDigi) {
     // copy Digi for insertion into DAQ buffer
-    fDigi = new CbmTofDigi(digi);
+    CbmTofDigi* fDigi = new CbmTofDigi(digi);
+
+    //if( (fDigi->GetAddress() & 0x000F00F ) != fiAddrRef )  fDigi->SetTime(fDigi->GetTime()+fdToffTof); // shift all Tof Times for v14a geometries
+    if ((fDigi->GetAddress() & 0x000780F) != fiAddrRef)
+      fDigi->SetTime(fDigi->GetTime()
+                     + fdToffTof);  // shift all Tof Times for V21a
 
     LOG(debug) << "BufferInsert digi "
                << Form(
@@ -1002,371 +951,6 @@ Bool_t CbmDeviceUnpackTofMcbm2018::DoUnpack(const fles::Timeslice& ts,
   return kTRUE;
 }
 
-static Int_t iErrorMess = 0;
-static Int_t iWarnMess  = 0;
-
-
-void CbmDeviceUnpackTofMcbm2018::FillHitInfo(gdpbv100::Message mess) {
-  UInt_t uChannel = mess.getGdpbHitChanId();  // Get4 channel nr
-  UInt_t uTot     = mess.getGdpbHit32Tot();
-  //   UInt_t uFts     = mess.getGdpbHitFineTs();
-
-  ULong_t ulCurEpochGdpbGet4 = fvulCurrentEpoch[fuGet4Nr];
-
-  // In Ep. Suppr. Mode, receive following epoch instead of previous
-  if (0 < ulCurEpochGdpbGet4)
-    ulCurEpochGdpbGet4--;
-  else
-    ulCurEpochGdpbGet4 = gdpbv100::kuEpochCounterSz;  // Catch epoch cycle!
-
-  UInt_t uChannelNr = fuGet4Id * fuNrOfChannelsPerGet4 + uChannel;
-  UInt_t uChannelNrInFee =
-    (fuGet4Id % fuNrOfGet4PerFee) * fuNrOfChannelsPerGet4 + uChannel;
-  UInt_t uFeeNr      = (fuGet4Id / fuNrOfGet4PerFee);
-  UInt_t uFeeNrInSys = fuGdpbNr * fuNrOfFeePerGdpb + uFeeNr;
-  UInt_t uGbtxNr     = (uFeeNr / kuNbFeePerGbtx);
-  //   UInt_t uFeeInGbtx      = (uFeeNr % kuNbFeePerGbtx);
-  UInt_t uGbtxNrInSys       = fuGdpbNr * kuNbGbtxPerGdpb + uGbtxNr;
-  UInt_t uRemappedChannelNr = fuGdpbNr * fuNrOfChannelsPerGdpb
-                              + uFeeNr * fuNrOfChannelsPerFee
-                              + fvuGet4ToPadi[uChannelNrInFee];
-  /// Diamond FEE have straight connection from Get4 to eLink and from PADI to GET4
-  if (fviRpcType[uGbtxNrInSys] == 5) {
-    uRemappedChannelNr = fuGdpbNr * fuNrOfChannelsPerGdpb + uChannelNr;
-  }
-  /*
-   UInt_t uRemappedChannelNr = fuGdpbNr * fuNrOfChannelsPerGdpb +
-                                                       + ( fviRpcType[uGbtxNrInSys]==5 ? uChannelNr // Diamond
-	                                                :  uFeeNr * fuNrOfChannelsPerFee +fvuGet4ToPadi[ uChannelNrInFee ] );
-   */
-  //     + ( fviRpcType[uGbtxNrInSys]==5 ? uChannelNrInFee : fvuGet4ToPadi[ uChannelNrInFee ] );
-  //   UInt_t uRemappedChannelNr = uFeeNr * fuNrOfChannelsPerFee + uChannelNrInFee;
-  /*
-   if( fuGdpbNr==2)
-      LOG(info)<<" Fill Hit GdpbNr" << fuGdpbNr
-	       <<", ChNr "<<uChannelNr<<", CIF "<< uChannelNrInFee
-	       <<", FNr "<<uFeeNr<<", FIS "<<uFeeNrInSys
-	       <<", GbtxNr "<<uGbtxNr
-	       <<", Remap "<<uRemappedChannelNr;
-   */
-  //   ULong_t  ulHitTime = mess.getMsgFullTime(ulCurEpochGdpbGet4);
-  Double_t dHitTime = mess.getMsgFullTimeD(ulCurEpochGdpbGet4);
-
-  //   uFts = mess.getGdpbHitFullTs() % 112;
-
-  if (kTRUE == fvbFirstEpochSeen[fuGet4Nr]) {
-    Double_t dHitTot = uTot;  // in bins
-
-    //if( fUnpackPar->GetNumberOfChannels() < uRemappedChannelNr )
-    if (fviRpcChUId.size() < uRemappedChannelNr) {
-      if (iErrorMess++ < 10000) {
-        LOG(error) << "Invalid mapping index " << uRemappedChannelNr << " vs "
-                   << fviRpcChUId.size() << ", from GdpbNr " << fuGdpbNr
-                   << ", Get4 " << fuGet4Id << ", Ch " << uChannel << ", ChNr "
-                   << uChannelNr << ", ChNrIF " << uChannelNrInFee << ", FiS "
-                   << uFeeNrInSys;
-        return;
-      } else
-        LOG(error) << "Max number of error messages reached ";
-
-    }  // if( fUnpackPar->GetNumberOfChannels() < uChanUId )
-
-    fvbChanThere[uRemappedChannelNr] = kTRUE;
-
-    // UInt_t uChanUId = fUnpackPar->GetChannelToDetUIdMap( uRemappedChannelNr );
-    UInt_t uChanUId = fviRpcChUId[uRemappedChannelNr];
-    if (0 == uChanUId) {
-      if (iWarnMess++ < 1000) {
-        LOG(warn) << "Invalid ChanUId for " << uRemappedChannelNr << ", ChOff "
-                  << fuGdpbNr * fuNrOfChannelsPerGdpb
-                       + uFeeNr * fuNrOfChannelsPerFee
-                  << ", ChIF "
-                  << (fviRpcType[uGbtxNrInSys] == 5
-                        ? uChannelNrInFee
-                        : fvuGet4ToPadi[uChannelNrInFee])
-                  << ", GdpbNr " << fuGdpbNr << ", GbtxNr " << uGbtxNrInSys
-                  << ", Get4 " << fuGet4Id << ", Ch " << uChannel << ", ChNr "
-                  << uChannelNr << ", ChNrIF " << uChannelNrInFee << ", FiS "
-                  << uFeeNrInSys;
-      } else {
-        if (iWarnMess == 1000)
-          LOG(warn) << "No more messages. Fix your mapping problem!";
-        //FairMQStateMachine::ChangeState(PAUSE);
-      }
-      return;  // Hit not mapped to digi
-    }
-    if ((uChanUId & DetMask) == 0x00005006) dHitTime += fdTShiftRef;
-    fdLastDigiTime = dHitTime;
-
-    LOG(debug) << Form("Insert 0x%08x digi with time ", uChanUId) << dHitTime
-               << Form(", Tot %4.0f", dHitTot) << " into buffer with "
-               << fBuffer->GetSize() << " data from "
-               << Form("%11.1f to %11.1f ",
-                       fBuffer->GetTimeFirst(),
-                       fBuffer->GetTimeLast())
-               << " at epoch " << ulCurEpochGdpbGet4;
-
-    fDigi = new CbmTofDigi(uChanUId, dHitTime, dHitTot);
-
-    fBuffer->InsertData<CbmTofDigi>(fDigi);
-
-    // Histograms filling
-    // fhRawTotCh[ fuGdpbNr ]->Fill( uRemappedChannelNr, dHitTot);
-    // fhChCount[ fuGdpbNr ] ->Fill( uRemappedChannelNr );
-    // for debugging
-    if (0) {
-      if (fuGdpbNr == 2) {
-        LOG(info) << Form(
-          "Insert 0x%08x digi at %d with time ", uChanUId, uRemappedChannelNr)
-                  << dHitTime << Form(",  Tot %4.0f", dHitTot);
-      }
-    }
-
-  }  // if( kTRUE == fvbFirstEpochSeen[ fuGet4Nr ] )
-}
-
-
-void CbmDeviceUnpackTofMcbm2018::FillEpochInfo(gdpbv100::Message mess) {
-  ULong64_t ulEpochNr = mess.getGdpbEpEpochNb();
-
-  //LOG(debug) << "Get4Nr "<<fuGet4Nr<< " in epoch "<<ulEpochNr;
-
-  fvulCurrentEpoch[fuGet4Nr] = ulEpochNr;
-
-  if (kFALSE == fvbFirstEpochSeen[fuGet4Nr])
-    fvbFirstEpochSeen[fuGet4Nr] = kTRUE;
-
-  fulCurrentEpochTime = mess.getMsgFullTime(ulEpochNr);
-  fNofEpochs++;
-
-  /// In Ep. Suppr. Mode, receive following epoch instead of previous
-  /// Re-align the epoch number of the message in case it will be used later:
-  /// We received the epoch after the data instead of the one before!
-  if (0 < ulEpochNr)
-    mess.setGdpbEpEpochNb(ulEpochNr - 1);
-  else
-    mess.setGdpbEpEpochNb(gdpbv100::kuEpochCounterSz);
-
-  Int_t iBufferSize = fvmEpSupprBuffer[fuGet4Nr].size();
-  if (0 < iBufferSize) {
-    LOG(debug) << "Now processing " << iBufferSize
-               << " stored messages for get4 " << fuGet4Nr
-               << " with epoch number " << (fvulCurrentEpoch[fuGet4Nr] - 1);
-    const Int_t MaxBufferSize = 1000;  // FIXME: hardwired setup parameter
-    if (iBufferSize < MaxBufferSize) {
-      /// Data are sorted between epochs, not inside => Epoch level ordering
-      /// Sorting at lower bin precision level
-      std::stable_sort(fvmEpSupprBuffer[fuGet4Nr].begin(),
-                       fvmEpSupprBuffer[fuGet4Nr].begin());
-
-      for (Int_t iMsgIdx = 0; iMsgIdx < iBufferSize; iMsgIdx++) {
-        FillHitInfo(fvmEpSupprBuffer[fuGet4Nr][iMsgIdx]);
-      }  // for( Int_t iMsgIdx = 0; iMsgIdx < iBufferSize; iMsgIdx++ )
-    }
-    fvmEpSupprBuffer[fuGet4Nr].clear();
-  }  // if( 0 < fvmEpSupprBuffer[fGet4Nr] )
-}
-
-void CbmDeviceUnpackTofMcbm2018::PrintSlcInfo(gdpbv100::Message /*mess*/) {
-  /// Nothing to do, maybe later use it to trakc parameter changes like treshold?
-  /*
-  if( fGdpbIdIndexMap.end() != fGdpbIdIndexMap.find( rocId ) )
-     LOG(info) << "GET4 Slow Control message, epoch " << static_cast<Int_t>(fCurrentEpoch[rocId][get4Id])
-                << ", time " << std::setprecision(9) << std::fixed
-                << Double_t(fulCurrentEpochTime) * 1.e-9 << " s "
-                << " for board ID " << std::hex << std::setw(4) << rocId << std::dec
-                << " +++++++ > Chip = " << std::setw(2) << mess.getGdpbGenChipId()
-                << ", Chan = " << std::setw(1) << mess.getGdpbSlcChan()
-                << ", Edge = " << std::setw(1) << mess.getGdpbSlcEdge()
-                << ", Type = " << std::setw(1) << mess.getGdpbSlcType()
-                << ", Data = " << std::hex << std::setw(6) << mess.getGdpbSlcData() << std::dec
-                << ", Type = " << mess.getGdpbSlcCrc();
-*/
-}
-
-void CbmDeviceUnpackTofMcbm2018::PrintGenInfo(gdpbv100::Message mess) {
-  Int_t mType    = mess.getMessageType();
-  Int_t channel  = mess.getGdpbHitChanId();
-  uint64_t uData = mess.getData();
-
-  LOG(debug) << "Get4 MSG type " << mType << " from gdpbId " << fuGdpbId
-             << ", getId " << fuGet4Id << ", (hit channel) " << channel
-             << " data " << std::hex << uData;
-}
-
-void CbmDeviceUnpackTofMcbm2018::PrintSysInfo(gdpbv100::Message mess) {
-  if (fGdpbIdIndexMap.end() != fGdpbIdIndexMap.find(fuGdpbId))
-    LOG(debug) << "GET4 System message,       epoch "
-               << static_cast<Int_t>(fvulCurrentEpoch[fuGet4Nr]) << ", time "
-               << std::setprecision(9) << std::fixed
-               << Double_t(fulCurrentEpochTime) * 1.e-9 << " s "
-               << " for board ID " << std::hex << std::setw(4) << fuGdpbId
-               << std::dec;
-
-  switch (mess.getGdpbSysSubType()) {
-    case gdpbv100::SYS_GET4_ERROR: {
-      uint32_t uData = mess.getGdpbSysErrData();
-      if (gdpbv100::GET4_V2X_ERR_TOT_OVERWRT == uData
-          || gdpbv100::GET4_V2X_ERR_TOT_RANGE == uData
-          || gdpbv100::GET4_V2X_ERR_EVT_DISCARD == uData
-          || gdpbv100::GET4_V2X_ERR_ADD_RIS_EDG == uData
-          || gdpbv100::GET4_V2X_ERR_UNPAIR_FALL == uData
-          || gdpbv100::GET4_V2X_ERR_SEQUENCE_ER == uData)
-        LOG(debug) << " +++++++ > gDPB: " << std::hex << std::setw(4)
-                   << fuGdpbId << std::dec << ", Chip = " << std::setw(2)
-                   << mess.getGdpbGenChipId() << ", Chan = " << std::setw(1)
-                   << mess.getGdpbSysErrChanId() << ", Edge = " << std::setw(1)
-                   << mess.getGdpbSysErrEdge() << ", Empt = " << std::setw(1)
-                   << mess.getGdpbSysErrUnused() << ", Data = " << std::hex
-                   << std::setw(2) << uData << std::dec
-                   << " -- GET4 V1 Error Event";
-      else
-        LOG(debug) << " +++++++ >gDPB: " << std::hex << std::setw(4) << fuGdpbId
-                   << std::dec << ", Chip = " << std::setw(2)
-                   << mess.getGdpbGenChipId() << ", Chan = " << std::setw(1)
-                   << mess.getGdpbSysErrChanId() << ", Edge = " << std::setw(1)
-                   << mess.getGdpbSysErrEdge() << ", Empt = " << std::setw(1)
-                   << mess.getGdpbSysErrUnused() << ", Data = " << std::hex
-                   << std::setw(2) << uData << std::dec
-                   << " -- GET4 V1 Error Event ";
-      break;
-    }  // case gdpbv100::SYSMSG_GET4_EVENT
-    case gdpbv100::SYS_GDPB_UNKWN: {
-      LOG(debug) << "Unknown GET4 message, data: " << std::hex << std::setw(8)
-                 << mess.getGdpbSysUnkwData() << std::dec
-                 << " Full message: " << std::hex << std::setw(16)
-                 << mess.getData() << std::dec;
-      break;
-    }  // case gdpbv100::SYS_GDPB_UNKWN:
-    case gdpbv100::SYS_PATTERN: {
-      LOG(debug) << "ASIC pattern for missmatch, disable or resync";
-      break;
-    }  // case gdpbv100::SYS_PATTERN:
-
-  }  // switch( getGdpbSysSubType() )
-}
-
-void CbmDeviceUnpackTofMcbm2018::FillStarTrigInfo(gdpbv100::Message mess) {
-  Int_t iMsgIndex = mess.getStarTrigMsgIndex();
-
-  //mess.printDataCout();
-
-  switch (iMsgIndex) {
-    case 0: fulGdpbTsMsb = mess.getGdpbTsMsbStarA(); break;
-    case 1:
-      fulGdpbTsLsb = mess.getGdpbTsLsbStarB();
-      fulStarTsMsb = mess.getStarTsMsbStarB();
-      break;
-    case 2: fulStarTsMid = mess.getStarTsMidStarC(); break;
-    case 3: {
-      ULong64_t ulNewGdpbTsFull = (fulGdpbTsMsb << 24) + (fulGdpbTsLsb);
-      ULong64_t ulNewStarTsFull =
-        (fulStarTsMsb << 48) + (fulStarTsMid << 8) + mess.getStarTsLsbStarD();
-      UInt_t uNewToken   = mess.getStarTokenStarD();
-      UInt_t uNewDaqCmd  = mess.getStarDaqCmdStarD();
-      UInt_t uNewTrigCmd = mess.getStarTrigCmdStarD();
-      if ((uNewToken == fuStarTokenLast)
-          && (ulNewGdpbTsFull == fulGdpbTsFullLast)
-          && (ulNewStarTsFull == fulStarTsFullLast)
-          && (uNewDaqCmd == fuStarDaqCmdLast)
-          && (uNewTrigCmd == fuStarTrigCmdLast))
-
-      {
-        LOG(debug) << "Possible error: identical STAR tokens found twice in a "
-                      "row => ignore 2nd! "
-                   << Form("token = %5u ", fuStarTokenLast)
-                   << Form("gDPB ts  = %12llu ", fulGdpbTsFullLast)
-                   << Form("STAR ts = %12llu ", fulStarTsFullLast)
-                   << Form("DAQ cmd = %2u ", fuStarDaqCmdLast)
-                   << Form("TRG cmd = %2u ", fuStarTrigCmdLast);
-        return;
-      }  // if exactly same message repeated
-         /*
-         if( (uNewToken != fuStarTokenLast + 1) &&
-             0 < fulGdpbTsFullLast && 0 < fulStarTsFullLast &&
-             ( 4095 != fuStarTokenLast || 1 != uNewToken)  )
-            LOG(warn) << "Possible error: STAR token did not increase by exactly 1! "
-                         << Form("old = %5u vs new = %5u ", fuStarTokenLast,   uNewToken)
-                         << Form("old = %12llu vs new = %12llu ", fulGdpbTsFullLast, ulNewGdpbTsFull)
-                         << Form("old = %12llu vs new = %12llu ", fulStarTsFullLast, ulNewStarTsFull)
-                         << Form("old = %2u vs new = %2u ", fuStarDaqCmdLast,  uNewDaqCmd)
-                         << Form("old = %2u vs new = %2u ", fuStarTrigCmdLast, uNewTrigCmd);
-*/
-      fulGdpbTsFullLast = ulNewGdpbTsFull;
-      fulStarTsFullLast = ulNewStarTsFull;
-      fuStarTokenLast   = uNewToken;
-      fuStarDaqCmdLast  = uNewDaqCmd;
-      fuStarTrigCmdLast = uNewTrigCmd;
-
-      Double_t dTot  = 1.;
-      Double_t dTime = fulGdpbTsFullLast * 6.25;
-      if (0. == fdFirstDigiTimeDif && 0. != fdLastDigiTime) {
-        fdFirstDigiTimeDif = dTime - fdLastDigiTime;
-        LOG(info) << "Reference fake digi time shift initialized to "
-                  << fdFirstDigiTimeDif << ", default: " << fdTShiftRef;
-      }  // if( 0. == fdFirstDigiTimeDif && 0. != fdLastDigiTime )
-
-      //         dTime -= fdFirstDigiTimeDif;
-      // dTime += fdTShiftRef;
-
-      LOG(debug) << "Insert fake digi with time " << dTime << ", Tot " << dTot;
-      fhRawTRefDig0->Fill(dTime - fdLastDigiTime);
-      fhRawTRefDig1->Fill(dTime - fdLastDigiTime);
-
-      fDigi =
-        new CbmTofDigi(0x00005006, dTime, dTot);  // fake start counter signal
-      fBuffer->InsertData<CbmTofDigi>(fDigi);
-      break;
-    }  // case 3
-    default: LOG(error) << "Unknown Star Trigger messageindex: " << iMsgIndex;
-  }  // switch( iMsgIndex )
-}
-
-void CbmDeviceUnpackTofMcbm2018::PrintMicroSliceDescriptor(
-  const fles::MicrosliceDescriptor& mdsc) {
-  LOG(info) << "Header ID: Ox" << std::hex << static_cast<int>(mdsc.hdr_id)
-            << std::dec;
-  LOG(info) << "Header version: Ox" << std::hex
-            << static_cast<int>(mdsc.hdr_ver) << std::dec;
-  LOG(info) << "Equipement ID: " << mdsc.eq_id;
-  LOG(info) << "Flags: " << mdsc.flags;
-  LOG(info) << "Sys ID: Ox" << std::hex << static_cast<int>(mdsc.sys_id)
-            << std::dec;
-  LOG(info) << "Sys version: Ox" << std::hex << static_cast<int>(mdsc.sys_ver)
-            << std::dec;
-  LOG(info) << "Microslice Idx: " << mdsc.idx;
-  LOG(info) << "Checksum: " << mdsc.crc;
-  LOG(info) << "Size: " << mdsc.size;
-  LOG(info) << "Offset: " << mdsc.offset;
-}
-
-bool CbmDeviceUnpackTofMcbm2018::CheckTimeslice(const fles::Timeslice& ts) {
-  if (0 == ts.num_components()) {
-    LOG(error) << "No Component in TS " << ts.index();
-    return 1;
-  }
-  auto tsIndex = ts.index();
-
-  LOG(debug) << "Found " << ts.num_components()
-             << " different components in timeslice " << tsIndex;
-
-  /*
-  for (size_t c = 0; c < ts.num_components(); ++c) {
-    LOG(debug) << "Found " << ts.num_microslices(c)
-              << " microslices in component " << c;
-    LOG(debug) << "Component " << c << " has a size of "
-              << ts.size_component(c) << " bytes";
-    LOG(debug) << "Sys ID: Ox" << std::hex << static_cast<int>(ts.descriptor(0,0).sys_id)
-            << std::dec;
-
-    for (size_t m = 0; m < ts.num_microslices(c); ++m) {
-      PrintMicroSliceDescriptor(ts.descriptor(c,m));
-    }
-  }
-*/
-  return true;
-}
-
 void CbmDeviceUnpackTofMcbm2018::BuildTint(int iMode = 0) {
   // iMode - sending condition
   // 0 (default)- build time interval only if last buffer entry is older the start + TSLength
@@ -1375,9 +959,11 @@ void CbmDeviceUnpackTofMcbm2018::BuildTint(int iMode = 0) {
   double TSLENGTH    = 1.E6;
   double fdMaxDeltaT = (double) fiReqTint;  // in ns
 
-  LOG(debug) << " Buffer size " << fBuffer->GetSize() << ", DeltaT "
+  LOG(debug) << "BuildTint: Buffer size " << fBuffer->GetSize() << ", DeltaT "
              << (fBuffer->GetTimeLast() - fBuffer->GetTimeFirst()) / 1.E9
              << " s";
+  CbmTbDaqBuffer::Data data;
+  CbmTofDigi* digi;
 
   while (fBuffer->GetSize() > 0) {
     Double_t fTimeBufferLast = fBuffer->GetTimeLast();
@@ -1389,9 +975,15 @@ void CbmDeviceUnpackTofMcbm2018::BuildTint(int iMode = 0) {
       case 1:; break;
     }
 
-    CbmTofDigi* digi  = (CbmTofDigi*) fBuffer->GetNextData(fTimeBufferLast);
+    data = fBuffer->GetNextData(fTimeBufferLast);
+    digi = boost::any_cast<CbmTofDigi*>(data.first);
+    assert(digi);
+
     Double_t dTEnd    = digi->GetTime() + fdMaxDeltaT;
     Double_t dTEndMax = digi->GetTime() + 2 * fdMaxDeltaT;
+    LOG(debug) << Form(
+      "Next event at %f until %f, max %f ", digi->GetTime(), dTEnd, dTEndMax);
+
     if (dTEnd > fTimeBufferLast) {
       LOG(warn) << Form("Remaining buffer < %f with %d entries is not "
                         "sufficient for digi ending at %f -> skipped ",
@@ -1401,6 +993,10 @@ void CbmDeviceUnpackTofMcbm2018::BuildTint(int iMode = 0) {
       return;
     }
 
+    LOG(debug) << "BuildTint0 with digi "
+               << Form(
+                    "0x%08x at %012.2f", digi->GetAddress(), digi->GetTime());
+
     Bool_t bDet[fiReqDigiAddr.size()][2];
     for (UInt_t i = 0; i < fiReqDigiAddr.size(); i++)
       for (Int_t j = 0; j < 2; j++)
@@ -1409,23 +1005,34 @@ void CbmDeviceUnpackTofMcbm2018::BuildTint(int iMode = 0) {
     for (UInt_t i = 0; i < fiReqDigiAddr.size(); i++)
       for (Int_t j = 0; j < 2; j++)
         bPul[i][j] = kFALSE;  //initialize
+    Bool_t bBeam = kFALSE;
 
     std::vector<CbmTofDigi*> vdigi;
-    UInt_t nDigi         = 0;
-    const Int_t AddrMask = 0x003FFFFF;
+    UInt_t nDigi = 0;
+    //const Int_t AddrMask=0x003FFFFF;
+    const Int_t AddrMask = 0x001FFFFF;
     Bool_t bOut          = kFALSE;
 
-    while (digi) {  // build digi array
+    while (data.second != ECbmModuleId::kNotExist) {  // build digi array
+      digi = boost::any_cast<CbmTofDigi*>(data.first);
+      LOG(debug) << "GetNextData " << digi << ", " << data.second << ",  "
+                 << Form("%f %f", digi->GetTime(), dTEnd) << ", Mul " << nDigi;
+      assert(digi);
+
       if (nDigi == vdigi.size()) vdigi.resize(nDigi + 100);
       vdigi[nDigi++] = digi;
       for (UInt_t i = 0; i < fiReqDigiAddr.size(); i++)
         if ((digi->GetAddress() & AddrMask) == fiReqDigiAddr[i]) {
           Int_t j    = ((CbmTofDigi*) digi)->GetSide();
           bDet[i][j] = kTRUE;
-          if (fiReqDigiAddr[i] == 0x00005006)
+          if (fiReqDigiAddr[i] == (Int_t) fiReqBeam) {
+            bBeam = kTRUE;
+            LOG(debug) << "Found ReqBeam at index " << nDigi - 1 << ", req "
+                       << i;
+          }
+          if ((UInt_t) fiReqDigiAddr[i] == fiAddrRef)
             bDet[i][1] = kTRUE;  // diamond with pad readout
-          if ((fiReqDigiAddr[i] & 0x0000F00F) == 0x00008006)
-            bDet[i][1] = kTRUE;  // ceramic with pad readout
+          // if ( (fiReqDigiAddr[i] & 0x0000F00F ) == 0x00008006) bDet[i][1]=kTRUE; // ceramic with pad readout
           Int_t str = ((CbmTofDigi*) digi)->GetChannel();
 
           switch (j) {  // treat both strip ends separately
@@ -1439,8 +1046,8 @@ void CbmDeviceUnpackTofMcbm2018::BuildTint(int iMode = 0) {
                       bPul[i][0] = kTRUE;
                   if (str == 0) bPul[i][1] = kFALSE;
                   if (
-                    fiReqDigiAddr[i]
-                    == 0x00005006) {  //special mapping for MAr2019 diamond (T0)
+                    (UInt_t) fiReqDigiAddr[i]
+                    == fiAddrRef) {  //special mapping for MAr2019 diamond (T0)
                     if (str == 0) bPul[i][0] = kTRUE;
                     if (str == 40) bPul[i][1] = kTRUE;
                   }
@@ -1490,7 +1097,8 @@ void CbmDeviceUnpackTofMcbm2018::BuildTint(int iMode = 0) {
         else
           dTEnd = dTEndMax;
       };
-      digi = (CbmTofDigi*) fBuffer->GetNextData(dTEnd);
+      data = fBuffer->GetNextData(dTEnd);
+
     }  // end while
 
     LOG(debug) << nDigi << " digis associated to dTEnd = " << dTEnd << ":";
@@ -1537,6 +1145,15 @@ void CbmDeviceUnpackTofMcbm2018::BuildTint(int iMode = 0) {
 
     fEventHeader[0]++;
 
+    if ((Int_t) fiReqBeam > -1) {
+      if (bBeam) {
+        LOG(debug) << "Beam counter is present ";
+      } else {
+        LOG(debug) << "Beam counter is not present";
+        bOut = kFALSE;  // request beam counter for event
+      }
+    }
+
     if (bOut) {
       fEventHeader[1] = iDetMul;
       fEventHeader[2] = fiReqMode;
@@ -1546,20 +1163,20 @@ void CbmDeviceUnpackTofMcbm2018::BuildTint(int iMode = 0) {
       if (nDigi > NDigiMax) {
         LOG(warn) << "Oversized event, truncated! ";
         for (UInt_t iDigi = NDigiMax; iDigi < nDigi; iDigi++)
-          vdigi[iDigi]->Delete();
+          delete vdigi[iDigi];
         nDigi = 1;  //NDigiMax;
         vdigi.resize(nDigi);
       }
       SendDigis(vdigi, 0);
 
       for (UInt_t iDigi = 0; iDigi < nDigi; iDigi++)
-        vdigi[iDigi]->Delete();
+        delete vdigi[iDigi];
     } else {
+      LOG(debug) << " BuildTint cleanup of " << nDigi << " digis";
       for (UInt_t iDigi = 0; iDigi < nDigi; iDigi++) {
-        digi = vdigi[iDigi];
-        digi->Delete();
+        //	vdigi[iDigi]->Delete();
       }
-      //LOG(debug) << " Digis deleted ";
+      LOG(debug) << " Digis deleted ";
       //vdigi.clear();
       //delete &vdigi;  // crashes, since local variable, will be done at return (?)
     }

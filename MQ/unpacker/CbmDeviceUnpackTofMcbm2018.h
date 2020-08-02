@@ -21,7 +21,6 @@
 #include "Rtypes.h"
 #include "TMessage.h"
 
-#include "CbmDigi.h"
 #include "CbmMcbm2018TofPar.h"
 
 #include <map>
@@ -55,6 +54,7 @@ private:
   std::vector<int> fEventHeader;
   uint64_t fiReqMode;
   uint64_t fiReqTint;
+  uint64_t fiReqBeam;
   std::vector<Int_t> fiReqDigiAddr;
   Int_t fiPulserMode;
   uint64_t fiPulMulMin;
@@ -67,7 +67,6 @@ private:
                                                "syscmd"};
   std::vector<std::vector<std::string>> fChannelsToSend = {{}, {}, {}};
 
-  //size_t   fuMsAcceptsPercent; /** Reject Ms with index inside TS above this, assumes 100 MS per TS **/
   size_t fuTotalMsNb; /** Total nb of MS per link in timeslice **/
   size_t
     fuOverlapMsNb; /** Overlap Ms: all fuOverlapMsNb MS at the end of timeslice **/
@@ -75,8 +74,6 @@ private:
   Double_t fdMsSizeInNs;
   Double_t fdTsCoreSizeInNs;
   UInt_t fuMinNbGdpb;
-  //UInt_t   fuCurrNbGdpb;
-
   UInt_t fuNrOfGdpbs;            // Total number of GDPBs in the system
   UInt_t fuNrOfFeePerGdpb;       // Number of FEEs per GDPB
   UInt_t fuNrOfGet4PerFee;       // Number of GET4s per FEE
@@ -97,21 +94,9 @@ private:
     fuGet4Id;  // running number (0 to fNrOfGet4PerGdpb) of the Get4 chip of a unique GDPB for current message
   UInt_t
     fuGet4Nr;  // running number (0 to fNrOfGet4) of the Get4 chip in the system for current message
-  //Int_t  fiEquipmentId;
 
   std::vector<int> fMsgCounter;
   std::map<UInt_t, UInt_t> fGdpbIdIndexMap;
-
-  ///* STAR TRIGGER detection *///
-  std::vector<ULong64_t> fvulGdpbTsMsb;
-  std::vector<ULong64_t> fvulGdpbTsLsb;
-  std::vector<ULong64_t> fvulStarTsMsb;
-  std::vector<ULong64_t> fvulStarTsMid;
-  std::vector<ULong64_t> fvulGdpbTsFullLast;
-  std::vector<ULong64_t> fvulStarTsFullLast;
-  std::vector<UInt_t> fvuStarTokenLast;
-  std::vector<UInt_t> fvuStarDaqCmdLast;
-  std::vector<UInt_t> fvuStarTrigCmdLast;
 
   //   CbmHistManager* fHM;  ///< Histogram manager
 
@@ -128,19 +113,18 @@ private:
   ULong64_t fulCurrentEpochTime; /** Time stamp of current epoch **/
 
   //Double_t fdMsIndex;
-  Double_t fdTShiftRef;
+  Double_t fdToffTof;
+  UInt_t fiAddrRef;
+
   //UInt_t     fuDiamondDpbIdx;
   //Bool_t fbEpochSuppModeOn;
   //Bool_t fbGet4M24b;
   //Bool_t fbGet4v20;
   //Bool_t fbMergedEpochsOn;
 
-  CbmTofDigi* fDigi;
-
   CbmMcbm2018TofPar* fUnpackPar;  //!
 
   // Variables used for histo filling
-  //Double_t fdRefTime;
   Double_t fdLastDigiTime;
   Double_t fdFirstDigiTimeDif;
   //Double_t fdEvTime0;
@@ -183,19 +167,7 @@ private:
   std::vector<Int_t> fviRpcSide;
   std::vector<Int_t> fviRpcChUId;
 
-  std::vector<std::vector<gdpbv100::Message>> fvmEpSupprBuffer;
-
   CbmTbDaqBuffer* fBuffer;
-
-  ULong64_t fulGdpbTsMsb;
-  ULong64_t fulGdpbTsLsb;
-  ULong64_t fulStarTsMsb;
-  ULong64_t fulStarTsMid;
-  ULong64_t fulGdpbTsFullLast;
-  ULong64_t fulStarTsFullLast;
-  UInt_t fuStarTokenLast;
-  UInt_t fuStarDaqCmdLast;
-  UInt_t fuStarTrigCmdLast;
 
   bool CheckTimeslice(const fles::Timeslice& ts);
   void PrintMicroSliceDescriptor(const fles::MicrosliceDescriptor& mdsc);
@@ -207,13 +179,6 @@ private:
   void CreateHistograms();
   void AddReqDigiAddr(int);
 
-  void FillHitInfo(gdpbv100::Message);
-  void FillStarTrigInfo(gdpbv100::Message);
-  void FillEpochInfo(gdpbv100::Message);
-  void PrintSlcInfo(gdpbv100::Message);
-  void PrintSysInfo(gdpbv100::Message);
-  void PrintGenInfo(gdpbv100::Message);
-
   Bool_t DoUnpack(const fles::Timeslice& ts, size_t component);
 
   /// Temp until we change from CbmMcbmUnpack to something else
@@ -221,9 +186,6 @@ private:
   void SetNbMsInTs(size_t /*uCoreMsNb*/, size_t /*uOverlapMsNb*/) {};
 
   /// Algo settings setters
-  inline void SetMonitorMode(Bool_t bFlagIn = kTRUE) {
-    fbMonitorMode = bFlagIn;
-  }
   void SetIgnoreOverlapMs(Bool_t bFlagIn = kTRUE);
   void SetTimeOffsetNs(Double_t dOffsetIn = 0.0);
   void SetDiamondDpbIdx(UInt_t uIdx = 2);
@@ -231,11 +193,14 @@ private:
   /// Processing algo
   CbmMcbm2018UnpackerAlgoTof* fUnpackerAlgo;
   /// Control flags
-  Bool_t
-    fbMonitorMode;  //! Switch ON the filling of a minimal set of histograms
+  // Bool_t fbMonitorMode;  //! Switch ON the filling of a minimal set of histograms
   // Bool_t fbDebugMonitorMode; //! Switch ON the filling of a additional set of histograms
-  //Bool_t fbSeparateArrayT0; //! If ON, T0 digis are saved in separate TClonesArray
-  //Bool_t fbWriteOutput; //! If ON the output TClonesArray of digi is written to disk
+  // Bool_t fbSeparateArrayT0; //! If ON, T0 digis are saved in separate TClonesArray
+  // Bool_t fbWriteOutput; //! If ON the output TClonesArray of digi is written to disk
+
+  CbmDeviceUnpackTofMcbm2018(const CbmDeviceUnpackTofMcbm2018&) = delete;
+  CbmDeviceUnpackTofMcbm2018
+  operator=(const CbmDeviceUnpackTofMcbm2018&) = delete;
 };
 
 // special class to expose protected TMessage constructor
