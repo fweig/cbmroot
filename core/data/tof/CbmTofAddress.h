@@ -124,15 +124,17 @@ public:
   static UInt_t GetUniqueAddress(UInt_t Sm,
                                  UInt_t Rpc,
                                  UInt_t Channel,
-                                 UInt_t Side   = 0,
-                                 UInt_t SmType = 0) {
+                                 UInt_t Side    = 0,
+                                 UInt_t SmType  = 0,
+								 UInt_t RpcType = 0) {
     return (UInt_t)(
       ((ToIntegralType(ECbmModuleId::kTof) & ((1 << fgkSystemBits) - 1)))
       + ((Sm & ((1 << fgkSmIdBits) - 1)) << fgkSmIdOffset)
       + ((SmType & ((1 << fgkSmTypeBits) - 1)) << fgkSmTypeOffset)
       + ((Side & ((1 << fgkChannelSideBits) - 1)) << fgkChannelSideOffset)
-      + ((Rpc & ((1 << fgkRpcIdBits) - 1)) << fgkRpcIdOffset)
-      + ((Channel & ((1 << fgkChannelIdBits) - 1)) << fgkChannelIdOffset));
+	  + ((Rpc & ((1 << fgkRpcIdBits) - 1)) << fgkRpcIdOffset)
+      + ((Channel & ((1 << fgkChannelIdBits) - 1)) << fgkChannelIdOffset)
+	  + ((RpcType & ((1 << fgkRpcTypeBits) - 1)) << fgkRpcTypeOffset));
   };
 
   static Bool_t SameModule(UInt_t addressA, UInt_t addressB) {
@@ -149,7 +151,8 @@ public:
                             infoInput.fCounter,
                             infoInput.fCell,
                             0,
-                            infoInput.fSMtype);
+                            infoInput.fSMtype,
+							infoInput.fCounterType);
   };
   static UInt_t ConvertCbmTofDetectorId(Int_t detIdInput) {
     // For now assume that the system ID will always be correct
@@ -173,7 +176,7 @@ private:
   /** Sub-fields sizes in bits   **/
 
   // v14a
-
+  /*
   // Number of bits for Super Module Id in the address field
   static const Int_t fgkSmIdBits = 8;
   // Number of bits for Super Module Type in the address field
@@ -186,8 +189,8 @@ private:
   static const Int_t fgkChannelIdBits = 8;
   // Number of bits for Rpc Type in the address field
   static const Int_t fgkRpcTypeBits = 0;
-  /*
-  // v20a
+  */
+  // v21a
   // Number of bits for Super Module Id in the address field
   static const Int_t fgkSmIdBits = 7;
   // Number of bits for Super Module Type in the address field
@@ -197,10 +200,9 @@ private:
   // Number of bits for Channel Side in the address field
   static const Int_t fgkChannelSideBits = 1;
   // Number of bits for Channel Id in the address field
-  static const Int_t fgkChannelIdBits = 4;
+  static const Int_t fgkChannelIdBits = 6;
   // Number of bits for Rpc Type in the address field
   static const Int_t fgkRpcTypeBits = 4;
-*/
   /**
        ** To adapt the address sub-fields repartition in order,
        ** you just need to change the way the offset are calculated.

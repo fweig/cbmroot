@@ -119,15 +119,16 @@ Int_t CbmTofDetectorId_v21a::GetCellId(const Int_t detectorId)
 
 Int_t CbmTofDetectorId_v21a ::SetDetectorInfo(const CbmTofDetectorInfo detInfo)
 {
+/*
   std::cout << "SetDetectorInfo for "
-		  << detInfo.fSMtype
-		  << detInfo.fSModule << " "
-		  << detInfo.fCounter
-		  << detInfo.fCounterType <<" "
-		  << detInfo.fGap
-		  << detInfo.fCell
+		  << "Mtype "   << detInfo.fSMtype
+		  << ", MId "   << detInfo.fSModule << " "
+		  << ", CType " << detInfo.fCounterType <<" "
+		  << ", CId "   << detInfo.fCounter
+		  << ", Side "  << detInfo.fGap
+		  << ", Strip " << detInfo.fCell
 		  << std::endl;
-
+*/
   return ( (((detInfo.fDetectorSystem) & maskarray[0]) << shiftarray[0]) | 
            (((detInfo.fSMtype)         & maskarray[2]) << shiftarray[2]) | 
            (((detInfo.fSModule)        & maskarray[1]) << shiftarray[1]) | 

@@ -33,7 +33,7 @@ class CbmTofDetectorInfo
  CbmTofDetectorInfo(ECbmModuleId detsystem, Int_t smtype, Int_t smodule, 
 		    Int_t counter, Int_t gap, Int_t cell)
    : fDetectorSystem(ToIntegralType(detsystem)), fSMtype(smtype), fSModule(smodule),
-    fCounter(counter), fGap(gap), fCell(cell) {};
+    fCounter(counter), fGap(gap), fCell(cell) {fCounterType=0;};
     
  CbmTofDetectorInfo(ECbmModuleId detsystem, Int_t smtype, Int_t smodule,
             Int_t counter, Int_t gap, Int_t cell, Int_t counterType)
