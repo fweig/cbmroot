@@ -228,7 +228,7 @@ Bool_t CbmTofCalibrator::CreateCalHist() {
 void CbmTofCalibrator::FillCalHist(CbmTofTracklet* pTrk) {
   // fill deviation histograms on walk level
   if (pTrk->GetTt() < 0) return;  // take tracks with positive velocity only
-  if (!pTrk->ContainsAddr(0x00005006))
+  if (!pTrk->ContainsAddr(CbmTofAddress::GetUniqueAddress(0, 0, 0, 0, 5)))
     return;  // request beam counter hit for calibration
   if (fdR0Lim
       > 0.)  // consider only tracks originating from nominal interaction point
