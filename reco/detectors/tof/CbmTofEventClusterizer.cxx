@@ -156,6 +156,8 @@ CbmTofEventClusterizer::CbmTofEventClusterizer(const char* name,
   , fhRpcDigiMul()
   , fhRpcDigiStatus()
   , fhRpcDigiDTLD()
+  , fhRpcDigiDTFD()
+  , fhRpcDigiDTMul()
   , fhRpcCluMul()
   , fhRpcCluRate()
   , fhRpcCluRate10s()
@@ -1012,6 +1014,8 @@ Bool_t CbmTofEventClusterizer::LoadGeometry() {
   Int_t iNbDet = fDigiBdfPar->GetNbDet();
   fvDeadStrips.resize(iNbDet);
   fvTimeLastDigi.resize(iNbDet);
+  fvTimeFirstDigi.resize(iNbDet);
+  fvMulDigi.resize(iNbDet);
 
   for (Int_t iDetIndx = 0; iDetIndx < iNbDet; iDetIndx++) {
     Int_t iUniqueId = fDigiBdfPar->GetDetUId(iDetIndx);
@@ -1028,6 +1032,12 @@ Bool_t CbmTofEventClusterizer::LoadGeometry() {
     fvTimeLastDigi[iDetIndx].resize(iNbChan * 2);
     for (Int_t iCh = 0; iCh < iNbChan * 2; iCh++)
       fvTimeLastDigi[iDetIndx][iCh] = 0.;
+    fvTimeFirstDigi[iDetIndx].resize(iNbChan * 2);
+    fvMulDigi[iDetIndx].resize(iNbChan * 2);
+    for (Int_t iCh = 0; iCh < iNbChan * 2; iCh++) {
+        fvTimeFirstDigi[iDetIndx][iCh] = 0.;
+        fvMulDigi[iDetIndx][iCh] = 0.;
+    }
 
     Int_t iCell = -1;
     while (kTRUE) {
@@ -1286,6 +1296,8 @@ Bool_t CbmTofEventClusterizer::CreateHistos() {
   fhRpcDigiMul.resize(iNbDet);
   fhRpcDigiStatus.resize(iNbDet);
   fhRpcDigiDTLD.resize(iNbDet);
+  fhRpcDigiDTFD.resize(iNbDet);
+  fhRpcDigiDTMul.resize(iNbDet);
   fhRpcCluMul.resize(iNbDet);
   fhRpcCluRate.resize(iNbDet);
   fhRpcCluRate10s.resize(iNbDet);
@@ -1393,15 +1405,37 @@ Bool_t CbmTofEventClusterizer::CreateHistos() {
       Form("cl_SmT%01d_sm%03d_rpc%03d_DigiDTLD", iSmType, iSmId, iRpcId),
       Form("Time distance to last digi of Rpc #%03d in Sm %03d of type %d; "
            "channel; t_{digi} - t_{previous digi} (s)",
-           iRpcId,
-           iSmId,
-           iSmType),
+           iRpcId,iSmId,iSmType),
       fDigiBdfPar->GetNbChan(iSmType, iRpcId) * 2,
       0,
       fDigiBdfPar->GetNbChan(iSmType, iRpcId) * 2,
       1000.,
       0.,
       5.);
+
+    fhRpcDigiDTFD[iDetIndx] = new TH2F(
+      Form("cl_SmT%01d_sm%03d_rpc%03d_DigiDTFD", iSmType, iSmId, iRpcId),
+      Form("Time distance to first digi of Rpc #%03d in Sm %03d of type %d; "
+           "channel; t_{digi} - t_{first digi} (ns)",
+           iRpcId,iSmId,iSmType),
+      fDigiBdfPar->GetNbChan(iSmType, iRpcId) * 2,
+      0,
+      fDigiBdfPar->GetNbChan(iSmType, iRpcId) * 2,
+      500.,
+      0.,
+      50.);
+
+    fhRpcDigiDTMul[iDetIndx] = new TH2F(
+      Form("cl_SmT%01d_sm%03d_rpc%03d_DigiDTMul", iSmType, iSmId, iRpcId),
+      Form("Multiplicity of digi of Rpc #%03d in Sm %03d of type %d; "
+           "channel; Multiplicity",
+           iRpcId,iSmId,iSmType),
+      fDigiBdfPar->GetNbChan(iSmType, iRpcId) * 2,
+      0,
+      fDigiBdfPar->GetNbChan(iSmType, iRpcId) * 2,
+      20.,
+      0.,
+      20.);
 
     fhRpcCluMul[iDetIndx] = new TH1F(
       Form("cl_SmT%01d_sm%03d_rpc%03d_Mul", iSmType, iSmId, iRpcId),
@@ -2986,8 +3020,8 @@ Bool_t CbmTofEventClusterizer::FillHistos() {
         //LOG(debug1)<<" " << iDigInd0<<", "<<iDigInd1;
 
         //       if (iDigInd0 < fTofCalDigisColl->GetEntries() && iDigInd1 < fTofCalDigisColl->GetEntries()){
-        if (iDigInd0 < fTofCalDigiVec->size()
-            && iDigInd1 < fTofCalDigiVec->size()) {
+        if  (iDigInd0 < fTofCalDigiVec->size()
+          && iDigInd1 < fTofCalDigiVec->size()) {
           //         CbmTofDigi *pDig0 = (CbmTofDigi*) (fTofCalDigisColl->At(iDigInd0));
           //         CbmTofDigi *pDig1 = (CbmTofDigi*) (fTofCalDigisColl->At(iDigInd1));
           CbmTofDigi* pDig0 = &(fTofCalDigiVec->at(iDigInd0));
@@ -3021,12 +3055,12 @@ Bool_t CbmTofEventClusterizer::FillHistos() {
           Int_t iS0  = pDig0->GetSide();
           Int_t iS1  = pDig1->GetSide();
           if (iCh0 != iCh1 || iS0 == iS1) {
-            LOG(fatal) << Form(" MT2 for Tofhit %d in iDetIndx %d, Ch %d from "
-                               "%3.0f strips: ",
+            LOG(error) << Form(" MT2 for Tofhit %d in iDetIndx %d, Ch %d from "
+                               "in event %f, ",
                                iHitInd,
                                iDetIndx,
                                iCh,
-                               dNstrips)
+							   fdEvent)
                        << Form(" Dig0: Ind %d, Ch %d, Side %d, T: %6.1f ",
                                iDigInd0,
                                iCh0,
@@ -5362,6 +5396,12 @@ Bool_t CbmTofEventClusterizer::BuildClusters() {
   }
 
   if (kTRUE) {
+	for(UInt_t iDetIndx=0; iDetIndx<fvTimeFirstDigi.size(); iDetIndx++)
+	  for (UInt_t iCh = 0; iCh < fvTimeFirstDigi[iDetIndx].size(); iCh++) {
+		  fvTimeFirstDigi[iDetIndx][iCh] = 0.;
+		        fvMulDigi[iDetIndx][iCh] = 0.;
+		}
+
     for (Int_t iDigInd = 0; iDigInd < iNbTofDigi; iDigInd++) {
       //CbmTofDigi *pDigi = (CbmTofDigi*) fTofDigisColl->At( iDigInd );
       CbmTofDigi* pDigi = &(fTofDigiVec.at(iDigInd));
@@ -5397,16 +5437,26 @@ Bool_t CbmTofEventClusterizer::BuildClusters() {
 
       size_t iDigiCh = pDigi->GetChannel() * 2 + pDigi->GetSide();
       if (iDigiCh < fvTimeLastDigi[iDetIndx].size()) {
+
         if (fvTimeLastDigi[iDetIndx][iDigiCh] > 0) {
           if (fdStartAna10s > 0.) {
             Double_t dTimeAna10s = (pDigi->GetTime() - fdStartAna10s) / 1.E9;
             if (dTimeAna10s < fdSpillDuration)
-              fhRpcDigiDTLD[iDetIndx]->Fill(
-                iDigiCh,
+              fhRpcDigiDTLD[iDetIndx]->Fill(iDigiCh,
                 (pDigi->GetTime() - fvTimeLastDigi[iDetIndx][iDigiCh]) / 1.E9);
           }
         }
         fvTimeLastDigi[iDetIndx][iDigiCh] = pDigi->GetTime();
+
+        if (fvTimeFirstDigi[iDetIndx][iDigiCh] != 0.) {
+          fhRpcDigiDTFD[iDetIndx]->Fill(iDigiCh,
+              (pDigi->GetTime() - fvTimeFirstDigi[iDetIndx][iDigiCh]) );
+          fvMulDigi[iDetIndx][iDigiCh]++;
+        } else {
+          fvTimeFirstDigi[iDetIndx][iDigiCh] = pDigi->GetTime();
+          fvMulDigi[iDetIndx][iDigiCh]++;
+        }
+
       }
 
       Double_t dTDifMin     = dDoubleMax;
@@ -5566,7 +5616,12 @@ Bool_t CbmTofEventClusterizer::BuildClusters() {
         }
       }
     }
-  }
+	for(UInt_t iDetIndx=0; iDetIndx<fvTimeFirstDigi.size(); iDetIndx++)
+	  for (UInt_t iCh = 0; iCh < fvTimeFirstDigi[iDetIndx].size(); iCh++) {
+		if(fvTimeFirstDigi[iDetIndx][iCh] !=0.)
+	      fhRpcDigiDTMul[iDetIndx]->Fill(iCh,fvMulDigi[iDetIndx][iCh]);
+	  }
+  } // kTRUE end
 
 
   // Calibrate RawDigis
