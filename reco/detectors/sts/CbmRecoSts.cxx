@@ -383,7 +383,7 @@ void CbmRecoSts::ProcessData(CbmEvent* event) {
     assert(it != fModules.end());
     CbmStsRecoModule* module = it->second;
     assert(module);
-    module->AddDigiToQueue(digi, iDigi);
+    module->AddDigiToQueue(digi, digiIndex);
   }
   fTimer.Stop();
   Double_t time2 = fTimer.RealTime();  // Time for digi distribution
@@ -407,8 +407,6 @@ void CbmRecoSts::ProcessData(CbmEvent* event) {
   // The output shall eventually be tailored to provide the proper
   // input for further reconstruction (track finding).
   fTimer.Start();
-  fClusters->Delete();
-  fHits->Delete();
   ULong64_t offsetClustersF = 0;
   ULong64_t offsetClustersB = 0;
   for (UInt_t it = 0; it < fModuleIndex.size(); it++) {
