@@ -656,9 +656,6 @@ void ana_trks(Int_t nEvents        = 10000,
   run->Run(0, nEvents);
   //run->Run(nEvents-1, nEvents); //debugging single events for memory leak
   // ------------------------------------------------------------------------
-  TString SaveToHstFile = "save_hst(\"" + cHstFile + "\")";
-  gROOT->LoadMacro("save_hst.C");
-  gInterpreter->ProcessLine(SaveToHstFile);
 
   // default displays, plot results
   /*
@@ -674,6 +671,7 @@ void ana_trks(Int_t nEvents        = 10000,
   cout << "Exec "<< Display_Funct.Data()<< endl;
   gInterpreter->ProcessLine(Display_Funct);
   */
+  gROOT->LoadMacro("save_hst.C");
   gROOT->LoadMacro("pl_over_MatD4sel.C");
   gROOT->LoadMacro("pl_eff_XY.C");
   gROOT->LoadMacro("pl_over_trk.C");
@@ -688,6 +686,9 @@ void ana_trks(Int_t nEvents        = 10000,
   gROOT->LoadMacro("pl_Eff_DTLH.C");
   gROOT->LoadMacro("pl_Eff_TIS.C");
   gROOT->LoadMacro("pl_Dut_Res.C");
+
+  TString SaveToHstFile = "save_hst(\"" + cHstFile + "\")";
+  gInterpreter->ProcessLine(SaveToHstFile);
 
   //gInterpreter->ProcessLine("pl_over_MatD4sel()");
   //gInterpreter->ProcessLine("pl_TIS()");
