@@ -217,6 +217,7 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::InitParameters() {
   fviRpcChUId.resize(uNrOfChannels);
   UInt_t iCh = 0;
   for (UInt_t iGbtx = 0; iGbtx < fuNrOfGbtx; ++iGbtx) {
+    Int_t iModuleIdMap = fviModuleId[iGbtx];
     switch (fviRpcType[iGbtx]) {
 
       case 0:                         // CBM modules
@@ -315,12 +316,10 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::InitParameters() {
                                     iCh,
                                     fviRpcChUId[iCh]);
                   break;
-                }  // Valid T0 channel
-                default: {
-                  fviRpcChUId[iCh] = 0;
-                }  // Invalid T0 channel
-              }    // switch( uCh % 4 )
-            }      // if( 0 == uFee )
+                }                                   // Valid T0 channel
+                default: { fviRpcChUId[iCh] = 0; }  // Invalid T0 channel
+              }                                     // switch( uCh % 4 )
+            }                                       // if( 0 == uFee )
 
             iCh++;
           }  // for( UInt_t uCh = 0; uCh < fUnpackPar->GetNrOfChannelsPerFee(); ++uCh )
@@ -352,8 +351,8 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::InitParameters() {
 
         LOG(info) << " Map end CERN 20 gap  at GBTX  -  iCh = " << iCh;
       }
-        // fall through is intended
-      case 8:  // ceramics
+        [[fallthrough]];  // fall through is intended
+      case 8:             // ceramics
       {
         Int_t iModuleId   = 0;
         Int_t iModuleType = 8;
@@ -379,6 +378,23 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::InitParameters() {
             Int_t iRpcMap  = iRpc[iFeet];
             Int_t iSideMap = iSide[iFeet];
             if (iSideMap == 0) iStrMap = 31 - iStr;
+            switch (fviRpcSide[iGbtx]) {
+              case 0:; break;
+              case 1:; break;
+              case 2:
+                switch (iFeet) {
+                  case 1:
+                    iRpcMap  = iRpc[4];
+                    iSideMap = iSide[4];
+                    break;
+                  case 4:
+                    iRpcMap  = iRpc[1];
+                    iSideMap = iSide[1];
+                    break;
+                  default:;
+                }
+                break;
+            }
             if (iSideMap > -1)
               fviRpcChUId[iCh] =
                 CbmTofAddress::GetUniqueAddress(fviModuleId[iGbtx],
@@ -424,15 +440,18 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::InitParameters() {
               case 5:  // HD cosmic 2020, Buc2018, v20a
                 iStrMap = 31 - iStr;
                 break;
-              default:;
+              case 6:  //BUC special
+              {
+                switch (fviModuleId[iGbtx]) {
+                  case 0: iRpcMap = 0; break;
+                  case 1: iRpcMap = 1; break;
+                }
+                if (iFeet > 2) iModuleIdMap = 1;
+              } break;
             }
             if (iSideMap > -1)
-              fviRpcChUId[iCh] =
-                CbmTofAddress::GetUniqueAddress(fviModuleId[iGbtx],
-                                                iRpcMap,
-                                                iStrMap,
-                                                iSideMap,
-                                                fviRpcType[iGbtx]);
+              fviRpcChUId[iCh] = CbmTofAddress::GetUniqueAddress(
+                      iModuleIdMap, iRpcMap, iStrMap, iSideMap, fviRpcType[iGbtx]);
             else
               fviRpcChUId[iCh] = 0;
 
@@ -1272,7 +1291,7 @@ void CbmMcbm2018UnpackerAlgoTof::ProcessPattern(
 	break;
 */
     }  // case gdpbv100::PATT_MISSMATCH:
-
+    break;
     case gdpbv100::PATT_ENABLE: {
       LOG(debug2) << Form(
         "Enable pattern message => Type %d, Index %2d, Pattern 0x%08X",
