@@ -2,7 +2,7 @@
 # shell script to apply clusterizer calibrations
 #SBATCH -J gen_digi
 #SBATCH -D /lustre/cbm/users/nh/CBM/cbmroot/trunk/macro/beamtime/mcbm2020
-#SBATCH --time=4:00:00
+#SBATCH --time=8:00:00
 #SBATCH --mem=2000
 ##SBATCH --partition=long
 cRun=$1
