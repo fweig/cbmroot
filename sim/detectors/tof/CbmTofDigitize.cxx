@@ -44,6 +44,7 @@
 #include "CbmTofCreateDigiPar.h"    // in tof/TofTools
 #include "CbmTofDetectorId_v12b.h"  // in cbmdata/tof
 #include "CbmTofDetectorId_v14a.h"  // in cbmdata/tof
+#include "CbmTofDetectorId_v21a.h"  // in cbmdata/tof
 #include "CbmTofDigiBdfPar.h"       // in tof/TofParam
 #include "CbmTofDigiPar.h"          // in tof/TofParam
 #include "CbmTofGeoHandler.h"       // in tof/TofTools
@@ -382,6 +383,7 @@ Bool_t CbmTofDigitize::InitParameters() {
   switch (iGeoVersion) {
     case k12b: fTofId = new CbmTofDetectorId_v12b(); break;
     case k14a: fTofId = new CbmTofDetectorId_v14a(); break;
+    case k21a: fTofId = new CbmTofDetectorId_v21a(); break;
     default:
       LOG(error) << "CbmTofDigitize::InitParameters: Invalid Detector ID "
                  << iGeoVersion;
