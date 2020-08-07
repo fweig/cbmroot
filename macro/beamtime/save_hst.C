@@ -1,4 +1,4 @@
-void save_hst(TString cstr = "status.hst.root", Bool_t bROOT = kFALSE) {
+void save_hst(TString cstr = "status.hst.root", Bool_t bROOT = kTRUE) {
   cout << "save all histograms to file " << cstr.Data() << endl;
   TList* tList(NULL);
   if (bROOT) {
