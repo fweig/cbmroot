@@ -35,7 +35,7 @@ fi
 echo cCalSet = $cCalSet
 #iSet=0
 #lastOpt=''
-nEvi0=100000 # start value
+nEvi0=150000 # start value
 nEvi1=50000  # increment 
 
 if [ -e /lustre ]; then
@@ -68,7 +68,7 @@ iCalSel1=1
 optList=""
 optList=`echo " $nEvi,93,1,$iMRef,0 "`$optList 
 icalmod=3
-for icallev in 8 8 7 7 6 5 4 3  1
+for icallev in 8 8 7 7 6 5 4 4 3 3 1
 do
     (( nEvi = nEvi0 + (icallev-1)*nEvi1 ))
     optList=`echo " $nEvi,$icallev$icalmod,$iCalSel0,$iDut,0 "`$optList
