@@ -1423,7 +1423,7 @@ Bool_t CbmTofEventClusterizer::CreateHistos() {
       fDigiBdfPar->GetNbChan(iSmType, iRpcId) * 2,
       500.,
       0.,
-      50.);
+      55.8);
 
     fhRpcDigiDTMul[iDetIndx] = new TH2F(
       Form("cl_SmT%01d_sm%03d_rpc%03d_DigiDTMul", iSmType, iSmId, iRpcId),
@@ -2082,7 +2082,7 @@ Bool_t CbmTofEventClusterizer::CreateHistos() {
                         iSmId,
                         iRpcId,
                         iSel),
-                   Form("Walk in SmT%01d_sm%03d_rpc%03d_Sel%02d_Walk2",
+                   Form("SmT%01d_sm%03d_rpc%03d_Sel%02d_Walk2; Tot_1; Tot_2; #Delta t[ns]",
                         iSmType,
                         iSmId,
                         iRpcId,
