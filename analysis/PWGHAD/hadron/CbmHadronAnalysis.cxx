@@ -6337,7 +6337,7 @@ void CbmHadronAnalysis::ReconstructSecondaries() {
     }
   }
 
-  //4. find tof silicon match for secondaries
+  //4. secondary pion candidate
   for (Int_t i = 0; i < nTofHits; i++) {
     LOG(DEBUG) << "Tof " << i
                << Form(" sec cand Min %6.3f > %6.3f ?",
