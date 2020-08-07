@@ -256,26 +256,26 @@ public:
   CbmTofTracklet(const CbmTofTracklet&); /**   Copy Constructor   **/
 
 private:
-  Double_t fTrackLength;  //! Track length from primary vertex to TOF [cm]
-  Int_t fPidHypo;         //! PID hypothesis used for track extrapolation
-  Double_t fDistance;     //! Normalized distance from hit to track
-  Double_t fTime;         //! Reference time of reference hit
-  Double_t fTt;           //! slope dT/dr
-  Double_t fT0;           //! Time at origin
-  Double_t fT0Err;        //! Error on Time at origin
-  Double_t fTtErr;        //! Error on slope dT/dr
-  Double_t fT0TtCov;      //! Covariance od fT0 and fTt
-  Double_t fChiSq;        //! Chi2 of fit
-  Int_t fNDF;             //! # of degrees of freedom
-  CbmTofTrackletParam fTrackPar;  //!  Track parameters at z of TofHit
+  Double_t fTrackLength;  // Track length from primary vertex to TOF [cm]
+  Int_t fPidHypo;         // PID hypothesis used for track extrapolation
+  Double_t fDistance;     // Normalized distance from hit to track
+  Double_t fTime;         // Reference time of reference hit
+  Double_t fTt;           // slope dT/dr
+  Double_t fT0;           // Time at origin
+  Double_t fT0Err;        // Error on Time at origin
+  Double_t fTtErr;        // Error on slope dT/dr
+  Double_t fT0TtCov;      // Covariance od fT0 and fTt
+  Double_t fChiSq;        // Chi2 of fit
+  Int_t fNDF;             // # of degrees of freedom
+  CbmTofTrackletParam fTrackPar;  //  Track parameters at z of TofHit
   FairTrackParam
-    fParamFirst;              //!  Track parameters at first and last fitted hit
-  FairTrackParam fParamLast;  //!
-  std::vector<Int_t> fTofHit;     //! Index of TofHit
-  std::vector<Int_t> fTofDet;     //! DetLayer of TofHit
-  std::vector<Double_t> fMatChi;  //! Matching Chi2 of TofHit
-  std::vector<CbmTofHit> fhit;    //! vector of TofHit objects
-  Double_t fP[4];                 //! transient (transfer) space point to Eve
+    fParamFirst;              //  Track parameters at first and last fitted hit
+  FairTrackParam fParamLast;  //
+  std::vector<Int_t> fTofHit;     // Index of TofHit
+  std::vector<Int_t> fTofDet;     // DetLayer of TofHit
+  std::vector<Double_t> fMatChi;  // Matching Chi2 of TofHit
+  std::vector<CbmTofHit> fhit;    // vector of TofHit objects
+  Double_t fP[4];                 // transient (transfer) space point to Eve
 
   CbmTofTracklet&
   operator=(const CbmTofTracklet&); /**   Assignment operator   **/
