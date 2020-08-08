@@ -280,17 +280,11 @@ private:
 
   // Intermediate storage variables
   std::vector<std::vector<std::vector<std::vector<CbmTofDigi*>>>>
-    fStorDigiExp;  //[nbType][nbSm*nbRpc][nbCh][nDigis]
+    fStorDigi;  //[nbType][nbSm*nbRpc][nbCh][nDigis]
   std::vector<std::vector<std::vector<std::vector<Int_t>>>>
     fStorDigiInd;  //[nbType][nbSm*nbRpc][nbCh][nDigis]
   std::vector<Int_t> vDigiIndRef;
 
-  /*
-      std::vector< std::vector< std::vector< std::vector< std::vector< CbmTofDigi* > > > > >
-               fStorDigi; //[nbType][nbSm][nbRpc][nbCh][nDigis]
-      std::vector< std::vector< std::vector< std::vector< std::vector< CbmTofDigiExp* > > > > >
-               fStorDigiExp; //[nbType][nbSm][nbRpc][nbCh][nDigis]
-      */
   std::vector<std::vector<std::vector<Int_t>>>
     fviClusterMul;  //[nbType][nbSm][nbRpc]
   std::vector<std::vector<std::vector<Int_t>>>
