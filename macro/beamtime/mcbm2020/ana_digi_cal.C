@@ -108,8 +108,8 @@ void ana_digi_cal(Int_t nEvents      = 10000000,
   tofClust->SetToDAv(0.04);
   // tofClust->SetTimePeriod(25600.);       // ignore coarse time
   // tofClust->SetCorMode(iBugCor);         // correct missing hits
-  tofClust->SetIdMode(0);  // calibrate on counter level
-  //tofClust->SetIdMode(1);                  // calibrate on module level
+  //tofClust->SetIdMode(0);  // calibrate on counter level
+  tofClust->SetIdMode(1);                  // calibrate on module level
   //   tofClust->SetDeadStrips(15,23);   // declare dead strip for T0M3,Rpc0,Strip 23
   //tofClust->SetDeadStrips(25,16);   // declare non-existant diamond strip (#5) dead
 
