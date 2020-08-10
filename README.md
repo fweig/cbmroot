@@ -1,15 +1,15 @@
-Installation Instructionsfor for CbmRoot 
-*****************************************
+Installation Instructions for for CbmRoot 
+=========================================
 
-1. Dependencies
+# 1. Dependencies
 
-1.1 Compiler
+## 1.1 Compiler
 
 To be able to compile CbmRoot a compiler with full C++11 support is needed. 
 GCC since version 4.8 and clang since version 3.4 are known to work without
 problems. 
 
-1.2 FairSoft
+## 1.2 FairSoft
 
 To install, compile, and run CbmRoot several external programs are required. 
 This are for example Root, Geant3 or Geant4. The complete list can be found 
@@ -49,7 +49,7 @@ wiki page
 
   https://redmine.cbm.gsi.de/projects/cbmroot/wiki/RunCbmGSI
 
-1.3 FairRoot
+## 1.3 FairRoot
 
 CbmRoot is based on FairRoot, a package which meanwhile serves several
 experiments as base for their developments. Beside FairSoft you need also
@@ -60,7 +60,7 @@ following webpage
 
   https://redmine.cbm.gsi.de/projects/cbmroot/wiki/InstallFairRoot
 
-2. Recommended versions
+# 2. Recommended versions
 
 GCC  : >= 4.8
   or
@@ -70,8 +70,7 @@ FairSoft: may16p1
 
 FairRoot: v-16.06b
 
-
-3. Automatic installation
+# 3. Automatic installation
 
 To make the installation more easy we provide a script which automatically
 gets and installs FairSoft, FairRoot, and CbmRoot in one go. The script
@@ -85,7 +84,7 @@ directory is
 
   ./autoinstall_framework.sh 1 1 1
 
-4. Further remarks
+# 4. Further remarks
 
 Compiling CbmRoot with multicore support using "make -j", without 
 specifying the number of threads is known to cause MacOS and Ubuntu 
