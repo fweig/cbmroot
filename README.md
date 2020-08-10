@@ -24,8 +24,28 @@ can be found at the following webpage
 
   https://redmine.cbm.gsi.de/projects/cbmroot/wiki/Install_External_Packages
 
-If you are working at GSI there are always ready-to-use versions available. 
-For detailed information please check the following wiki page
+Please make sure SQLite is installed on your system before compiling 
+FairSoft, as this is required by CbmRoot. Failing compile FairSoft
+with SQLite support will lead to a crash during the CbmRoot compilation. 
+To install SQLite on Debian/Ubuntu and OpenSuse use
+
+Debian/Ubuntu:
+
+    sudo apt install sqlite3 libsqlite3-dev
+
+OpenSuse:
+
+    sudo zypper install sqlite3 sqlite3-devel
+
+It is currently not recommended to install FairSoft (and likewise FairRoot and
+CbmRoot) with administrator privileges, as this may create conflicts with
+existing software. For an installation which is to be shared between users
+on a MacOS or linux system it is recommended to use the opt/ folder.
+Consider also using the auto installer (see section 3). 
+
+If you are working at GSI there are always ready-to-use versions of 
+FairSoft available. For detailed information please check the following 
+wiki page
 
   https://redmine.cbm.gsi.de/projects/cbmroot/wiki/RunCbmGSI
 
@@ -65,3 +85,9 @@ directory is
 
   ./autoinstall_framework.sh 1 1 1
 
+4. Further remarks
+
+Compiling CbmRoot with multicore support using "make -j", without 
+specifying the number of threads is known to cause MacOS and Ubuntu 
+20.04 LTS systems to freeze. Please explicitly choose a number of cores 
+which is suitable for your system. 
