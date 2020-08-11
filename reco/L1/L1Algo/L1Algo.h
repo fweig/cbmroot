@@ -878,7 +878,7 @@ private:
 #else
 
   enum {
-    fNFindIterations = 1
+    fNFindIterations = 4
   };  // TODO investigate kAllPrimJumpIter & kAllSecJumpIter
 
 
