@@ -1,11 +1,11 @@
 /*
  *====================================================================
  *
- *  CBM Level 1 Reconstruction 
- *  
+ *  CBM Level 1 Reconstruction
+ *
  *  Authors: I.Kisel,  S.Gorbunov
  *
- *  e-mail : ikisel@kip.uni-heidelberg.de 
+ *  e-mail : ikisel@kip.uni-heidelberg.de
  *
  *====================================================================
  *
@@ -92,6 +92,9 @@ CbmL1::CbmL1()
   , algo(0)
   ,  // for access to L1 Algorithm from L1::Instance
   fDigiFile()
+  , fUseHitErrors(0)
+  , fmCBMmode(0)
+  , fGlobalMode(0)
   , vRTracks()
   ,  // reconstructed tracks
   vFileEvent()
@@ -198,6 +201,9 @@ CbmL1::CbmL1(const char* name,
   , algo(0)
   ,  // for access to L1 Algorithm from L1::Instance
   fDigiFile()
+  , fUseHitErrors(0)
+  , fmCBMmode(0)
+  , fGlobalMode(0)
   , vRTracks()
   ,  // reconstructed tracks
   vFileEvent()
@@ -390,17 +396,18 @@ InitStatus CbmL1::Init() {
   fUseTRD  = 0;
   fUseTOF  = 0;
 
-#ifdef mCBM
-  fUseMUCH = 1;
-  fUseTRD  = 0;
-  fUseTOF  = 1;
-#endif
+  if (fmCBMmode) {
+    fUseMUCH = 1;
+    fUseTRD  = 1;
+    fUseTOF  = 1;
+  }
 
-#ifdef GLOBAL
-  fUseMUCH = 1;
-  fUseTRD  = 0;
-  fUseTOF  = 1;
-#endif
+
+  if (fGlobalMode) {
+    fUseMUCH = 1;
+    fUseTRD  = 1;
+    fUseTOF  = 1;
+  }
 
 
   fStsPoints  = 0;
@@ -543,7 +550,7 @@ InitStatus CbmL1::Init() {
 
       fTofPoints = mcManager->InitBranch("TofPoint");
       fTofHitDigiMatches =
-        static_cast<TClonesArray*>(fManger->GetObject("TofHitMatch"));
+        static_cast<TClonesArray*>(fManger->GetObject("TofCalDigiMatch"));
     }
 
   } else {
@@ -595,7 +602,11 @@ InitStatus CbmL1::Init() {
     TFile* file         = new TFile(fDigiFile);
     TObjArray* stations = (TObjArray*) file->Get("stations");
     fGeoScheme->Init(stations, 0);
-    NMuchStations = fGeoScheme->GetNStations() * 3;
+    for (int iStation = 0; iStation < fGeoScheme->GetNStations(); iStation++) {
+      const CbmMuchStation* station = fGeoScheme->GetStation(iStation);
+      int nLayers                   = station->GetNLayers();
+      NMuchStations += nLayers;
+    }
   }
 
   // count TRD stations
@@ -977,7 +988,7 @@ InitStatus CbmL1::Init() {
                  << fSTAPDataDir + "geo_algo.txt was NOT successful.";
   }
 
-  algo->Init(geo);
+  algo->Init(geo, fUseHitErrors, fmCBMmode);
   geo.clear();
 
 
@@ -1415,9 +1426,9 @@ void CbmL1::Reconstruct(CbmEvent* event) {
                          / (sta.xInfo.sin_phi * sta.yInfo.sin_phi
                             - sta.xInfo.cos_phi * sta.yInfo.cos_phi)[0];
 
-#if 1  // GAUSS
-      //      (*algo->vStsStrips)[h.f]  = idet * ( + sta.yInfo.sin_phi[0]*mcp.x - sta.xInfo.cos_phi[0]*mcp.y ) + random.Gaus(0,sqrt(sta.frontInfo.sigma2)[0]);
-      //      (*algo->vStsStripsB)[h.b] = idet * ( - sta.yInfo.cos_phi[0]*mcp.x + sta.xInfo.sin_phi[0]*mcp.y ) + random.Gaus(0,sqrt(sta.backInfo.sigma2)[0]);
+#if 1  // GAUSS                                                                                                                                            \
+  //      (*algo->vStsStrips)[h.f]  = idet * ( + sta.yInfo.sin_phi[0]*mcp.x - sta.xInfo.cos_phi[0]*mcp.y ) + random.Gaus(0,sqrt(sta.frontInfo.sigma2)[0]); \
+  //      (*algo->vStsStripsB)[h.b] = idet * ( - sta.yInfo.cos_phi[0]*mcp.x + sta.xInfo.sin_phi[0]*mcp.y ) + random.Gaus(0,sqrt(sta.backInfo.sigma2)[0]);
 
       //const_cast<L1Strip &>((*algo->vStsStrips)[h.f])  = idet * ( + sta.yInfo.sin_phi[0]*mcp.x - sta.xInfo.cos_phi[0]*mcp.y )+ random.Gaus(0,sqrt(sta.frontInfo.sigma2)[0]);
       //(*(const_cast<std::vector<L1Strip> *>(algo->vStsStrips)))[h.f]  = idet * ( + sta.yInfo.sin_phi[0]*mcp.x - sta.xInfo.cos_phi[0]*mcp.y )+ random.Gaus(0,sqrt(sta.frontInfo.sigma2)[0]);
@@ -1509,32 +1520,31 @@ void CbmL1::Reconstruct(CbmEvent* event) {
 
 
   if (fVerbose > 1) cout << "L1 Track finder ok" << endl;
-    //  algo->L1KFTrackFitter( fExtrapolateToTheEndOfSTS );
+  //  algo->L1KFTrackFitter( fExtrapolateToTheEndOfSTS );
 
 
-#if defined(mCBM) || defined(GLOBAL)
+  if (fmCBMmode || fGlobalMode) {
 
-  L1FieldValue fB0 = algo->GetVtxFieldValue();
+    L1FieldValue fB0 = algo->GetVtxFieldValue();
 
-  if ((fabs(fB0.x[0]) < 0.0000001) && (fabs(fB0.y[0]) < 0.0000001)
-      && (fabs(fB0.z[0]) < 0.0000001))
-    algo->KFTrackFitter_simple();
+    if ((fabs(fB0.x[0]) < 0.0000001) && (fabs(fB0.y[0]) < 0.0000001)
+        && (fabs(fB0.z[0]) < 0.0000001))
+      algo->KFTrackFitter_simple();
 
-  else
-    algo->L1KFTrackFitterMuch();
+    else
+      algo->L1KFTrackFitterMuch();
+  } else {
 
-#else
+    L1FieldValue fB0 = algo->GetVtxFieldValue();
 
-  L1FieldValue fB0 = algo->GetVtxFieldValue();
+    if ((fabs(fB0.x[0]) < 0.0000001) && (fabs(fB0.y[0]) < 0.0000001)
+        && (fabs(fB0.z[0]) < 0.0000001))
+      algo->KFTrackFitter_simple();
 
-  if ((fabs(fB0.x[0]) < 0.0000001) && (fabs(fB0.y[0]) < 0.0000001)
-      && (fabs(fB0.z[0]) < 0.0000001))
-    algo->KFTrackFitter_simple();
+    else
+      algo->L1KFTrackFitter();
+  }
 
-  else
-    algo->L1KFTrackFitter();
-
-#endif
 
   if (fVerbose > 1) cout << "L1 Track fitter  ok" << endl;
 
@@ -2059,7 +2069,7 @@ void CbmL1::ReadSTAPAlgoData() {
            << fadata_name << endl;
 
     int n;  // number of elements
-      // read algo->vStsStrips
+    // read algo->vStsStrips
     fadata >> n;
     cout << " n " << n << endl;
     for (int i = 0; i < n; i++) {

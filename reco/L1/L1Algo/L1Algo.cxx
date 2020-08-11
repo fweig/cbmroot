@@ -2,7 +2,9 @@
 #include "L1Grid.h"
 #include "L1HitPoint.h"
 
-void L1Algo::Init(const vector<fscal>& geo) {
+void L1Algo::Init(const vector<fscal>& geo,
+                  const bool UseHitErrors,
+                  const bool mCBMmode) {
 
   for (int iProc = 0; iProc < 4; iProc++) {
     for (int i = 0; i < 8; i++) {
@@ -15,6 +17,9 @@ void L1Algo::Init(const vector<fscal>& geo) {
         4 * i + 8 + iProc + 64;
     }
   }
+
+  fUseHitErrors = UseHitErrors;
+  fmCBMmode     = mCBMmode;
 
   //lxir039
   //  for (int i=0; i<8; i++){
@@ -47,9 +52,8 @@ void L1Algo::Init(const vector<fscal>& geo) {
 
   NFStations = NStsStations + NMvdStations;
 
-#ifdef mCBM
-  NFStations = -1;
-#endif
+  if (fmCBMmode) { NFStations = -1; }
+
 
   // cout << "N MVD & STS stations: " << NMvdStations << " " << NStations-NMvdStations << endl;
 #ifndef TBB2

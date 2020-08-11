@@ -700,23 +700,24 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, CbmEvent* event) {
               //     int iMCPoint = -1;
               //   CbmLink link;
 
-              //    CbmMuchPoint* pt = (CbmMuchPoint*) fMuchPoints->Get(matchHitMatch->GetLink(0).GetFile(),matchHitMatch->GetLink(0).GetEntry(),matchHitMatch->GetLink(0).GetIndex());
+              //              CbmMuchPoint* pt = (CbmMuchPoint*) fMuchPoints->Get(
+              //                matchHitMatch->GetLink(0).GetFile(),
+              //                matchHitMatch->GetLink(0).GetEntry(),
+              //                matchHitMatch->GetLink(0).GetIndex());
               // double mom = sqrt(pt->GetPxOut()*pt->GetPxOut()+pt->GetPyOut()*pt->GetPyOut()+pt->GetPzOut()*pt->GetPzOut());
               //     th.p = mom;
               //     th.q = pt->GetTrackID();//(L1_DYNAMIC_CAST<CbmMCTrack*>(fMCTracks->Get(link.GetFile(),link.GetEntry(),  pt->GetTrackID()) ))->GetCharge();
-              /*    
-    static float dx_= th.dx;
-     static float dy_= th.dy;
-      static float dt_= th.t_er;
-            
-        th.x = pt->GetX( th.z ) + gRandom->Gaus(0,th.dx);
 
-        th.y = pt->GetY(th.z)+ gRandom->Gaus(0,th.dy);
-        th.time =  pt->GetTime()+ gRandom->Gaus(0,th.t_er);
-        
-                L1Station &st = algo->vStations[th.iStation];
-        th.u_front = th.x*st.frontInfo.cos_phi[0] + th.y*st.frontInfo.sin_phi[0];
-        th.u_back  = th.x* st.backInfo.cos_phi[0] + th.y*st.backInfo.sin_phi[0];*/
+              //                th.x = pt->GetX( th.z ) + gRandom->Gaus(0,th.dx);
+              //
+              //                th.y = pt->GetY(th.z) + gRandom->Gaus(0,th.dy);
+              //     th.time = pt->GetTime();  //+ gRandom->Gaus(0,th.t_er);
+
+              //              L1Station& st = algo->vStations[th.iStation];
+              //              th.u_front =
+              //                th.x * st.frontInfo.cos_phi[0] + th.y * st.frontInfo.sin_phi[0];
+              //              th.u_back =
+              //                th.x * st.backInfo.cos_phi[0] + th.y * st.backInfo.sin_phi[0];
             }
           }
         }
@@ -739,14 +740,11 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, CbmEvent* event) {
       /*  num variable not used
         int num =mh->GetPlaneId();
         
-#ifdef mCBM        
-        
         if ((mh->GetPlaneId())==0) num = 0;
         if ((mh->GetPlaneId())==1) num = 1;
         if ((mh->GetPlaneId())==2) num = 2;
         if ((mh->GetPlaneId())==3) num = 3;
-        if ((mh->GetPlaneId())==4) num = 4;        
-#endif   
+        if ((mh->GetPlaneId())==4) num = 4;
 //        if (num == 1) continue;
 //        if (num == 3) continue;
         */
@@ -758,7 +756,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, CbmEvent* event) {
 
 
       th.time = mh->GetTime();
-      th.t_er = 5;  // mh->GetTimeError();
+      th.t_er = mh->GetTimeError();
 
       //   th.iSector  = 0;
       th.isStrip = 0;
@@ -834,62 +832,42 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, CbmEvent* event) {
               th.iMC = iMC + nMvdPoints + nStsPoints + nMuchPoints;
               //      th.track = vMCPoints[th.iMC].ID;
 
-              CbmTrdPoint* pt = (CbmTrdPoint*) fTrdPoints->Get(
-                trdHitMatch->GetLink(0).GetFile(),
-                trdHitMatch->GetLink(0).GetEntry(),
-                trdHitMatch->GetLink(0).GetIndex());
+              //              CbmTrdPoint* pt = (CbmTrdPoint*) fTrdPoints->Get(
+              //                trdHitMatch->GetLink(0).GetFile(),
+              //                trdHitMatch->GetLink(0).GetEntry(),
+              //                trdHitMatch->GetLink(0).GetIndex());
 
-              //            float min = 0.1;
+              //  float min = 0.1;
 
-              //             if (min>th.dx) min = th.dx;
-              //             if (min>th.dy) min = th.dy;
 
-              // if (num==3)
-              {
-
-                //         th.x = pt->GetXIn();//+ gRandom->Gaus(0,min);
-                //         th.y = pt->GetYIn();//+ gRandom->Gaus(0,min);
-                th.time = pt->GetTime();  //+ gRandom->Gaus(0,th.t_er);
-                                          //
-                                          //         th.dx = min;
-                                          //         th.dy = min;
-                                          //
-                                          //         th.du = min;
-                                          //         th.dv = min;
-                                          //
-                //         L1Station &st = algo->vStations[th.iStation];
-                //         th.u_front = th.x*st.frontInfo.cos_phi[0] + th.y*st.frontInfo.sin_phi[0];
-                //         th.u_back  = th.x* st.backInfo.cos_phi[0] + th.y*st.backInfo.sin_phi[0];
-              }
+              //          if( trdHitMatch1->GetNofLinks() > 0 )
+              //           if( trdHitMatch1->GetLink(0).GetIndex() < nTrdPoints )
+              //           {
+              //
+              //             CbmTrdPoint* pt1 = (CbmTrdPoint*) fTrdPoints->Get(trdHitMatch1->GetLink(0).GetFile(),trdHitMatch1->GetLink(0).GetEntry(),trdHitMatch1->GetLink(0).GetIndex());
+              //
+              //            if (mh->GetDx()>mh->GetDy()){
+              //
+              //             th.dx = mh1.GetDx();
+              //             th.du = mh1.GetDx();
+              //             th.x = pt1->GetXOut()+ gRandom->Gaus(0,th.dx);
+              //             }
+              //
+              //            if (mh->GetDy()>mh->GetDx()){
+              //
+              //             th.dy = mh1.GetDy();
+              //             th.dv = mh1.GetDy();
+              //             th.y = pt1->GetYOut()+ gRandom->Gaus(0,th.dy);
+              //            }
+              //
+              //
+              //          L1Station& st = algo->vStations[th.iStation];
+              //          th.u_front =
+              //            th.x * st.frontInfo.cos_phi[0] + th.y * st.frontInfo.sin_phi[0];
+              //          th.u_back =
+              //            th.x * st.backInfo.cos_phi[0] + th.y * st.backInfo.sin_phi[0];
+              //
             }
-
-
-          //          if( trdHitMatch1->GetNofLinks() > 0 )
-          //           if( trdHitMatch1->GetLink(0).GetIndex() < nTrdPoints )
-          //           {
-          //
-          //             CbmTrdPoint* pt1 = (CbmTrdPoint*) fTrdPoints->Get(trdHitMatch1->GetLink(0).GetFile(),trdHitMatch1->GetLink(0).GetEntry(),trdHitMatch1->GetLink(0).GetIndex());
-          //
-          //            if (mh->GetDx()>mh->GetDy()){
-          //
-          //             th.dx = mh1.GetDx();
-          //             th.du = mh1.GetDx();
-          //             th.x = pt1->GetXOut()+ gRandom->Gaus(0,th.dx);
-          //             }
-          //
-          //            if (mh->GetDy()>mh->GetDx()){
-          //
-          //             th.dy = mh1.GetDy();
-          //             th.dv = mh1.GetDy();
-          //             th.y = pt1->GetYOut()+ gRandom->Gaus(0,th.dy);
-          //            }
-          //
-          //
-          //          L1Station &st = algo->vStations[th.iStation];
-          //         th.u_front = th.x*st.frontInfo.cos_phi[0] + th.y*st.frontInfo.sin_phi[0];
-          //         th.u_back  = th.x* st.backInfo.cos_phi[0] + th.y*st.backInfo.sin_phi[0];
-          //
-          //           }
         }
       }
       tmpHits.push_back(th);

@@ -138,6 +138,9 @@ public:
     ,
     //sh (),
     fNThreads(nThreads)
+    , fUseHitErrors(0)
+    , fmCBMmode(0)
+    , fGlobal(0)
     , isec(0)
     , vStsHitsUnused()
     , RealIHitP()
@@ -286,7 +289,8 @@ public:
 #endif
 
 
-  void Init(const vector<fscal>& geo);
+  void
+  Init(const vector<fscal>& geo, const bool UseHitErrors, const bool mCBMmode);
 
   //   void SetData( const vector< L1StsHit >      & StsHits_,
   //                 const vector< L1Strip >       & StsStrips_,
@@ -383,6 +387,9 @@ public:
   L1Vector<int> vStripToTrackB;
 
   int fNThreads;
+  bool fUseHitErrors;
+  bool fmCBMmode;
+  bool fGlobal;
 
   fvec EventTime[nTh][nTh];
   fvec Err[nTh][nTh];
@@ -870,13 +877,10 @@ private:
   };  // TODO investigate kAllPrimJumpIter & kAllSecJumpIter
 #else
 
-#if defined(mCBM)
-  enum { fNFindIterations = 2 };
-#else
   enum {
-    fNFindIterations = 4
+    fNFindIterations = 1
   };  // TODO investigate kAllPrimJumpIter & kAllSecJumpIter
-#endif
+
 
 #endif
 #else

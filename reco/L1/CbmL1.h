@@ -118,7 +118,10 @@ private:
 public:
   L1Algo* algo;  // for access to L1 Algorithm from L1::Instance
 
-  TString fDigiFile;            // Digitization file
+  TString fDigiFile;  // Digitization file
+  bool fUseHitErrors;
+  bool fmCBMmode;
+  bool fGlobalMode;
   vector<CbmL1Track> vRTracks;  // reconstructed tracks
   typedef std::set<std::pair<int, int>> DFSET;
   DFSET vFileEvent;
@@ -164,6 +167,9 @@ public:
   void SetExtrapolateToTheEndOfSTS(bool b) { fExtrapolateToTheEndOfSTS = b; }
   void SetDataMode(int TimesliceMode) { fTimesliceMode = TimesliceMode; }
   void SetMuchPar(TString fileName) { fDigiFile = fileName; }
+  void SetUseHitErrors(bool value) { fUseHitErrors = value; }
+  void SetmCBMmode(bool value) { fmCBMmode = value; }
+
   void Finish();
 
   //   void SetTrackingLevel( Int_t iLevel ){ fTrackingLevel = iLevel; }

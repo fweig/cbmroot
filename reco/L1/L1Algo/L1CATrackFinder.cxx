@@ -81,13 +81,12 @@ inline void L1Algo::f10(  // input
   THitI* hitsl,
   fvec* HitTime_l,
   fvec* HitTimeEr,
-  fvec* /*Event_l*/,
-  fvec* /*d_x*/,
-  fvec* /*d_y*/,
-  fvec* /*d_xy*/,
-  fvec* /*d_u*/,
-  fvec* /*d_v*/
-) {
+  fvec* Event_l,
+  fvec* d_x,
+  fvec* d_y,
+  fvec* d_xy,
+  fvec* d_u,
+  fvec* d_v) {
   const Tindex& end_lh = start_lh + n1_l;
 
 
@@ -108,13 +107,14 @@ inline void L1Algo::f10(  // input
     u_front_l[i1_V][i1_4] = hitl.U();
     u_back_l[i1_V][i1_4]  = hitl.V();
 
-#ifdef HitErrors
-    d_x[i1_V][i1_4]  = hitl.dX();
-    d_y[i1_V][i1_4]  = hitl.dY();
-    d_xy[i1_V][i1_4] = hitl.dXY();
-    d_u[i1_V][i1_4]  = hitl.dU();
-    d_v[i1_V][i1_4]  = hitl.dV();
-#endif
+    if (fUseHitErrors) {
+      d_x[i1_V][i1_4]  = hitl.dX();
+      d_y[i1_V][i1_4]  = hitl.dY();
+      d_xy[i1_V][i1_4] = hitl.dXY();
+      d_u[i1_V][i1_4]  = hitl.dU();
+      d_v[i1_V][i1_4]  = hitl.dV();
+    }
+
     zPos_l[i1_V][i1_4] = hitl.Z();
   }
 }
@@ -135,12 +135,11 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
   //                 L1TrackPar *T_1,
   L1TrackPar* T_1,
   L1FieldRegion* fld_1,
-  fvec* /*d_x*/,
-  fvec* /*d_y*/,
-  fvec* /*d_xy*/,
-  fvec* /*d_u*/,
-  fvec* /*d_v*/
-) {
+  fvec* d_x,
+  fvec* d_y,
+  fvec* d_xy,
+  fvec* d_u,
+  fvec* d_v) {
   L1Station& stal = vStations[istal];
   L1Station& stam = vStations[istam];
   fvec zstal      = stal.z;
@@ -175,13 +174,12 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
     fvec& timeEr     = HitTimeEr[i1_V];
     const fvec& dzli = 1. / (zl - targZ);
 
-#ifdef HitErrors
-    fvec& du1  = d_u[i1_V];
-    fvec& dv1  = d_v[i1_V];
+
+    //    fvec& du1  = d_u[i1_V];
+    //    fvec& dv1  = d_v[i1_V];
     fvec& dx1  = d_x[i1_V];
     fvec& dy1  = d_y[i1_V];
     fvec& dxy1 = d_xy[i1_V];
-#endif
 
     StripsToCoor(u, v, xl, yl, stal);
 
@@ -273,34 +271,37 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
     T.C10 = stal.XYInfo.C10;
     T.C11 = stal.XYInfo.C11;
 
-#ifdef HitErrors
-    T.C00 = dx1 * dx1;
-    T.C10 = dxy1;
-    T.C11 = dy1 * dy1;
-#endif
-
-#if defined(mCBM) || defined(GLOBAL)
-    //  add the target
-
-    if (istal < NFStations) {
-      fvec eX, eY, J04, J14;
-      fvec dz;
-      dz = targZ - zl;
-      L1ExtrapolateJXY0(T.tx, T.ty, dz, fld0, eX, eY, J04, J14);
-      fvec J[6];
-      J[0] = dz;
-      J[1] = 0;
-      J[2] = J04;
-      J[3] = 0;
-      J[4] = dz;
-      J[5] = J14;
-      L1FilterVtx(T, targX, targY, TargetXYInfo, eX, eY, J);
-    } else {
-      L1ExtrapolateLine(T, targZ);
-      L1FilterXY(T, targX, targY, TargetXYInfo);
+    if (fUseHitErrors) {
+      T.C00 = dx1 * dx1;
+      T.C10 = dxy1;
+      T.C11 = dy1 * dy1;
     }
 
-#else
+
+    if (fGlobal || fmCBMmode)
+    //  add the target
+    {
+
+      if (istal < NFStations) {
+        fvec eX, eY, J04, J14;
+        fvec dz;
+        dz = targZ - zl;
+        L1ExtrapolateJXY0(T.tx, T.ty, dz, fld0, eX, eY, J04, J14);
+        fvec J[6];
+        J[0] = dz;
+        J[1] = 0;
+        J[2] = J04;
+        J[3] = 0;
+        J[4] = dz;
+        J[5] = J14;
+        L1FilterVtx(T, targX, targY, TargetXYInfo, eX, eY, J);
+      } else {
+        L1ExtrapolateLine(T, targZ);
+        L1FilterXY(T, targX, targY, TargetXYInfo);
+      }
+    }
+
+    else
 
     //add the target
     {
@@ -317,7 +318,7 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
       J[5] = J14;
       L1FilterVtx(T, targX, targY, TargetXYInfo, eX, eY, J);
     }
-#endif
+
 
 #else  // TODO: doesn't work. Why?
 
@@ -329,15 +330,15 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
     T.C10 = TargetXYInfo.C10;
     T.C11 = TargetXYInfo.C11;
 
-#if defined(mCBM) || defined(GLOBAL)
-    // extrapolate to left hit
-    if (istal <= NFStations)
+    if (fGlobal || fmCBMmode)  // extrapolate to left hit
+    {
+      if (istal <= NFStations)
+        L1Extrapolate0(T, zl, fld0);
+      else
+        L1ExtrapolateLine(T, zl);
+    } else
       L1Extrapolate0(T, zl, fld0);
-    else
-      L1ExtrapolateLine(T, zl);
-#else
-    L1Extrapolate0(T, zl, fld0);
-#endif
+
 
     for (int ista = 0; ista <= istal - 1; ista++) {
       if ((isec != kAllPrimEIter) && (isec != kAllSecEIter)) {
@@ -367,34 +368,27 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
     // add left hit
     L1UMeasurementInfo info = stal.frontInfo;
 
-#ifdef HitErrors
-    info.sigma2             = du1 * du1;
-#endif
+    if (fUseHitErrors) info.sigma2 = du1 * du1;
 
-#if defined(mCBM) || defined(GLOBAL)
-    if (istal < NFStations)
+    if (fGlobal || fmCBMmode) {
+      if (istal < NFStations)
+        L1Filter(T, info, u);
+      else
+        L1FilterNoField(T, info, u);
+    } else
       L1Filter(T, info, u);
-    else
-      L1FilterNoField(T, info, u);
-#else
-    L1Filter(T, info, u);
-#endif
 
-    info        = stal.backInfo;
+    info = stal.backInfo;
 
-#ifdef HitErrors
-    info.sigma2 = dv1 * dv1;
-#endif
+    if (fUseHitErrors) info.sigma2 = dv1 * dv1;
 
-
-#if defined(mCBM) || defined(GLOBAL)
-    if (istal < NFStations)
+    if (fGlobal || fmCBMmode) {
+      if (istal < NFStations)
+        L1Filter(T, info, v);
+      else
+        L1FilterNoField(T, info, v);
+    } else
       L1Filter(T, info, v);
-    else
-      L1FilterNoField(T, info, v);
-#else
-    L1Filter(T, info, v);
-#endif
 
 #endif
 
@@ -424,15 +418,15 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
     fvec dz = zstam - T.z;
     L1ExtrapolateTime(T, dz);
 
-#if defined(mCBM) || defined(GLOBAL)
+    if (fGlobal || fmCBMmode)
     // extrapolate to left hit
-    if (istam < NFStations)
-      L1Extrapolate0(T, zstam, fld0);
-    else
-      L1ExtrapolateLine(T, zstam);  // TODO: fld1 doesn't work!
-#else
-    L1Extrapolate0(T, zstam, fld0);  // TODO: fld1 doesn't work!
-#endif
+    {
+      if (istam < NFStations)
+        L1Extrapolate0(T, zstam, fld0);
+      else
+        L1ExtrapolateLine(T, zstam);  // TODO: fld1 doesn't work!
+    } else
+      L1Extrapolate0(T, zstam, fld0);  // TODO: fld1 doesn't work!
 
   }  // i1_V
 }
@@ -454,7 +448,7 @@ inline void L1Algo::f20(  // input
   vector<THitI>& hitsl_2,
 #endif  // DOUB_PERFORMANCE
   vector<THitI>& hitsm_2,
-  fvec* /*Event*/,
+  fvec* Event,
   vector<bool>& lmDuplets) {
   n2 = 0;                             // number of doublet
   for (Tindex i1 = 0; i1 < n1; ++i1)  // for each singlet
@@ -488,13 +482,9 @@ inline void L1Algo::f20(  // input
 
     THitI imh = 0;
 
-#if defined(mCBM) || defined(GLOBAL)
-    for (int imh = 0; imh < (StsHitsUnusedStopIndex[&stam - vStations]
-                             - StsHitsUnusedStartIndex[&stam - vStations]);
-         imh++)
-#else
+
     while (areaTime.GetNext(imh))
-#endif
+
     {
       const L1HitPoint& hitm = vStsHits_m[imh];
 
@@ -525,13 +515,11 @@ inline void L1Algo::f20(  // input
       fvec y, C11;
       L1ExtrapolateYC11Line(T1, zm, y, C11);
 
-#ifndef HitErrors
-      const fscal& dy_est2 =
-        Pick_m22[i1_4] * fabs(C11[i1_4] + stam.XYInfo.C11[i1_4]);
-#else
-      const fscal& dy_est2 =
-        Pick_m22[i1_4] * fabs(C11[i1_4] + hitm.dY() * hitm.dY());
-#endif
+      fscal dy_est2 = Pick_m22[i1_4] * fabs(C11[i1_4] + stam.XYInfo.C11[i1_4]);
+
+      if (fUseHitErrors)
+        dy_est2 = Pick_m22[i1_4] * fabs(C11[i1_4] + hitm.dY() * hitm.dY());
+
       const fscal& dY = hitm.Y() - y[i1_4];
 
       if (dY * dY > dy_est2 && dY < 0) continue;
@@ -540,13 +528,10 @@ inline void L1Algo::f20(  // input
       fvec x, C00;
       L1ExtrapolateXC00Line(T1, zm, x, C00);
 
-#ifndef HitErrors
-      const fscal& dx_est2 =
-        Pick_m22[i1_4] * fabs(C00[i1_4] + stam.XYInfo.C00[i1_4]);
-#else
-      const fscal& dx_est2 =
-        Pick_m22[i1_4] * fabs(C00[i1_4] + hitm.dX() * hitm.dX());
-#endif
+      fscal dx_est2 = Pick_m22[i1_4] * fabs(C00[i1_4] + stam.XYInfo.C00[i1_4]);
+
+      if (fUseHitErrors)
+        dx_est2 = Pick_m22[i1_4] * fabs(C00[i1_4] + hitm.dX() * hitm.dX());
 
       const fscal& dX = hitm.X() - x[i1_4];
       if (dX * dX > dx_est2) continue;
@@ -558,10 +543,7 @@ inline void L1Algo::f20(  // input
 
       L1UMeasurementInfo info = stam.frontInfo;
 
-#ifdef HitErrors  //HitErrors
-                  // if ((&stam - vStations)>=NStsStations)
-      info.sigma2 = hitm.dU() * hitm.dU();
-#endif
+      if (fUseHitErrors) info.sigma2 = hitm.dU() * hitm.dU();
 
       L1FilterChi2XYC00C10C11(info, x, y, C00, C10, C11, chi2, hitm.U());
 #ifdef DO_NOT_SELECT_TRIPLETS
@@ -576,10 +558,7 @@ inline void L1Algo::f20(  // input
 
       info = stam.backInfo;
 
-#ifdef HitErrors  //HitErrors
-                  // if ((&stam - vStations)>=NStsStations)
-      info.sigma2 = hitm.dV() * hitm.dV();
-#endif
+      if (fUseHitErrors) info.sigma2 = hitm.dV() * hitm.dV();
 
       L1FilterChi2(info, x, y, C00, C10, C11, chi2, hitm.V());
 
@@ -724,32 +703,26 @@ inline void L1Algo::f30(  // input
 
       L1UMeasurementInfo info = stam.frontInfo;
 
-#ifdef HitErrors  //HitErrors
-      info.sigma2 = du2 * du2;
-#endif
+      if (fUseHitErrors) info.sigma2 = du2 * du2;
 
-#if defined(mCBM) || defined(GLOBAL)
-      if (istam < NFStations)
+      if (fGlobal || fmCBMmode) {
+        if (istam < NFStations)
+          L1Filter(T2, info, u_front_2);
+        else
+          L1FilterNoField(T2, info, u_front_2);
+      } else
         L1Filter(T2, info, u_front_2);
-      else
-        L1FilterNoField(T2, info, u_front_2);
-#else
-      L1Filter(T2, info, u_front_2);
-#endif
 
       info = stam.backInfo;
-#ifdef HitErrors  //HitErrors
-      info.sigma2 = dv2 * dv2;
-#endif
+      if (fUseHitErrors) info.sigma2 = dv2 * dv2;
 
-#if defined(mCBM) || defined(GLOBAL)
-      if (istam < NFStations)
+      if (fGlobal || fmCBMmode) {
+        if (istam < NFStations)
+          L1Filter(T2, info, u_back_2);
+        else
+          L1FilterNoField(T2, info, u_back_2);
+      } else
         L1Filter(T2, info, u_back_2);
-      else
-        L1FilterNoField(T2, info, u_back_2);
-#else
-      L1Filter(T2, info, u_back_2);
-#endif
 
       FilterTime(T2, timeM, timeMEr);
 
@@ -779,22 +752,24 @@ inline void L1Algo::f30(  // input
       L1ExtrapolateTime(T2, dz2);
       // extrapolate to the right hit station
 
-#if defined(mCBM) || defined(GLOBAL)
+      if (fGlobal || fmCBMmode)
       // extrapolate to the right hit station
-      if (istar <= NFStations)
+      {
+        if (istar <= NFStations)
+          L1Extrapolate(T2, star.z, T2.qp, f2);
+        else
+          L1ExtrapolateLine(T2, star.z);
+      } else
         L1Extrapolate(T2, star.z, T2.qp, f2);
-      else
-        L1ExtrapolateLine(T2, star.z);
-#else
-      L1Extrapolate(T2, star.z, T2.qp, f2);
-#endif
 
       // ---- Find the triplets(right hit). Reformat data in the portion of triplets. ----
       for (Tindex i2_4 = 0; i2_4 < n2_4; ++i2_4) {
+        // if (T2.C00[i2_4] < 0 || T2.C11[i2_4] < 0 || T2.C22[i2_4] < 0
+        //            || T2.C33[i2_4] < 0 || T2.C44[i2_4] < 0 || T2.C55[i2_4] < 0)
+        //          continue;
         if (T2.C00[i2_4] < 0 || T2.C11[i2_4] < 0 || T2.C22[i2_4] < 0
-            || T2.C33[i2_4] < 0 || T2.C44[i2_4] < 0 || T2.C55[i2_4] < 0)
+            || T2.C33[i2_4] < 0)
           continue;
-        //   if ( T2.C00[i2_4] < 0 ||  T2.C11[i2_4] < 0 ||  T2.C22[i2_4] < 0 ||  T2.C33[i2_4] < 0 ||  T2.C44[i2_4] < 0  ) continue;
 
         const fvec& Pick_r22   = (TRIPLET_CHI2_CUT - T2.chi2);
         const float& timeError = T2.C55[i2_4];
@@ -820,14 +795,7 @@ inline void L1Algo::f30(  // input
 
         THitI irh = 0;
 
-#if defined(mCBM) || defined(GLOBAL)
-        for (int irh = 0; irh < (StsHitsUnusedStopIndex[istar]
-                                 - StsHitsUnusedStartIndex[istar]);
-             irh++)
-#else
-        while (area.GetNext(irh))
-#endif
-        {
+        while (area.GetNext(irh)) {
           const L1HitPoint& hitr = vStsHits_r[irh];
 
 #ifdef USE_EVENT_NUMBER
@@ -851,17 +819,18 @@ inline void L1Algo::f30(  // input
           // check lower boundary
           fvec y, C11;
           L1ExtrapolateYC11Line(T2, zr, y, C11);
-#ifndef HitErrors
-          const fscal& dy_est2 =
+
+          fscal dy_est2 =
             (Pick_r22[i2_4]
              * (fabs(
                C11[i2_4]
                + star.XYInfo.C11
                    [i2_4])));  // TODO for FastPrim dx < dy - other sort is optimal. But not for doublets
-#else  //HitErrors
-          const fscal& dy_est2 =
-            (Pick_r22[i2_4] * (fabs(C11[i2_4] + hitr.dY() * hitr.dY())));
-#endif
+
+          if (fUseHitErrors)
+            dy_est2 =
+              (Pick_r22[i2_4] * (fabs(C11[i2_4] + hitr.dY() * hitr.dY())));
+
           const fscal& dY  = yr - y[i2_4];
           const fscal& dY2 = dY * dY;
           if (dY2 > dy_est2 && dY2 < 0)
@@ -874,13 +843,13 @@ inline void L1Algo::f30(  // input
           fvec x, C00;
           L1ExtrapolateXC00Line(T2, zr, x, C00);
 
-#ifndef HitErrors
-          const fscal& dx_est2 =
+          fscal dx_est2 =
             (Pick_r22[i2_4] * (fabs(C00[i2_4] + star.XYInfo.C00[i2_4])));
-#else  //HitErrors
-          const fscal& dx_est2 =
-            (Pick_r22[i2_4] * (fabs(C00[i2_4] + hitr.dX() * hitr.dX())));
-#endif
+
+          if (fUseHitErrors)
+            dx_est2 =
+              (Pick_r22[i2_4] * (fabs(C00[i2_4] + hitr.dX() * hitr.dX())));
+
           const fscal& dX = hitr.X() - x[i2_4];
           if (dX * dX > dx_est2) continue;
           // check chi2  // not effective
@@ -890,14 +859,13 @@ inline void L1Algo::f30(  // input
 
           info = star.frontInfo;
 
-#ifdef HitErrors
-          info.sigma2 = hitr.dU() * hitr.dU();
-#endif
+          if (fUseHitErrors) info.sigma2 = hitr.dU() * hitr.dU();
+
           L1FilterChi2XYC00C10C11(info, x, y, C00, C10, C11, chi2, hitr.U());
           info = star.backInfo;
-#ifdef HitErrors
-          info.sigma2 = hitr.dV() * hitr.dV();
-#endif
+
+          if (fUseHitErrors) info.sigma2 = hitr.dV() * hitr.dV();
+
           L1FilterChi2(info, x, y, C00, C10, C11, chi2, hitr.V());
 
           L1TrackPar T = T2;
@@ -907,10 +875,14 @@ inline void L1Algo::f30(  // input
           if (isec != TRACKS_FROM_TRIPLETS_ITERATION)
 #endif
 
-            if (chi2[i2_4] > TRIPLET_CHI2_CUT || C00[i2_4] < 0 || C11[i2_4] < 0
-                || T.C55[i2_4] < 0)
-              continue;  // chi2_triplet < CHI2_CUT
-          //                if ( chi2[i2_4] > TRIPLET_CHI2_CUT || C00[i2_4] < 0 || C11[i2_4] < 0) continue; // chi2_triplet < CHI2_CUT
+            if (fGlobal || fmCBMmode)
+              if (chi2[i2_4] > TRIPLET_CHI2_CUT || C00[i2_4] < 0
+                  || C11[i2_4] < 0)
+                continue;
+              else if (chi2[i2_4] > TRIPLET_CHI2_CUT || C00[i2_4] < 0
+                       || C11[i2_4] < 0 || T.C55[i2_4] < 0)
+                continue;  // chi2_triplet < CHI2_CUT
+
 
           // pack triplet
           L1TrackPar& T3 = T_3[n3_V];
@@ -962,10 +934,10 @@ inline void L1Algo::f31(  // input
   nsL1::vector<fvec>::TSimd& u_front_,
   nsL1::vector<fvec>::TSimd& u_back_,
   nsL1::vector<fvec>::TSimd& z_Pos,
-  nsL1::vector<fvec>::TSimd& /*dx_*/,
-  nsL1::vector<fvec>::TSimd& /*dy_*/,
-  nsL1::vector<fvec>::TSimd& /*dv_*/,
-  nsL1::vector<fvec>::TSimd& /*du_*/,
+  nsL1::vector<fvec>::TSimd& dx_,
+  nsL1::vector<fvec>::TSimd& dy_,
+  nsL1::vector<fvec>::TSimd& dv_,
+  nsL1::vector<fvec>::TSimd& du_,
   nsL1::vector<fvec>::TSimd& timeR,
   nsL1::vector<fvec>::TSimd& timeER,
   // output
@@ -980,36 +952,29 @@ inline void L1Algo::f31(  // input
 
     L1UMeasurementInfo info = star.frontInfo;
 
+    if (fUseHitErrors) info.sigma2 = du_[i3_V] * du_[i3_V];
 
-#ifdef HitErrors
-    info.sigma2 = du_[i3_V] * du_[i3_V];
-#endif
-
-
-#if defined(mCBM) || defined(GLOBAL)
-    if ((&star - vStations) < NFStations)
+    if (fGlobal || fmCBMmode) {
+      if ((&star - vStations) < NFStations)
+        L1Filter(T_3[i3_V], info, u_front_[i3_V]);
+      else {
+        L1FilterNoField(T_3[i3_V], info, u_front_[i3_V]);
+      }
+    } else
       L1Filter(T_3[i3_V], info, u_front_[i3_V]);
-    else {
-      L1FilterNoField(T_3[i3_V], info, u_front_[i3_V]);
-    }
-#else
-    L1Filter(T_3[i3_V], info, u_front_[i3_V]);
-#endif
 
 
     info = star.backInfo;
-#ifdef HitErrors
-    info.sigma2 = dv_[i3_V] * dv_[i3_V];
-#endif
 
-#if defined(mCBM) || defined(GLOBAL)
-    if ((&star - vStations) < NFStations)
+    if (fUseHitErrors) info.sigma2 = dv_[i3_V] * dv_[i3_V];
+
+    if (fGlobal || fmCBMmode) {
+      if ((&star - vStations) < NFStations)
+        L1Filter(T_3[i3_V], info, u_back_[i3_V]);
+      else
+        L1FilterNoField(T_3[i3_V], info, u_back_[i3_V]);
+    } else
       L1Filter(T_3[i3_V], info, u_back_[i3_V]);
-    else
-      L1FilterNoField(T_3[i3_V], info, u_back_[i3_V]);
-#else
-    L1Filter(T_3[i3_V], info, u_back_[i3_V]);
-#endif
 
     FilterTime(T_3[i3_V], timeR[i3_V], timeER[i3_V]);
   }
@@ -1299,6 +1264,11 @@ inline void L1Algo::f4(  // input
 
     tr1.Set(
       ihitl, ihitm, ihitr, istal, istam, istar, 0, qp, chi2, time, Cqp, 0);
+
+    tr1.tx  = sqrt(fabs(T3.tx[i3_4]));
+    tr1.ty  = sqrt(fabs(T3.ty[i3_4]));
+    tr1.Ctx = sqrt(fabs(T3.C22[i3_4]));
+    tr1.Cty = sqrt(fabs(T3.C33[i3_4]));
 
 
     ++nstaltriplets;
@@ -2452,11 +2422,12 @@ void L1Algo::CATrackFinder() {
                   if (first_trip.GetLevel() == 0)
                     continue;  // ghost suppression // find track with 3 hits only if it was created from a chain of triplets, but not from only one triplet
 
-                if ((ilev == 0)
-                    && (GetFStation(
-                          (*vSFlag)[(*vStsHitsUnused)[first_trip.GetLHit()].f])
-                        != 0))
-                  continue;  // ghost supression // collect only MAPS tracks-triplets  CHECK!!!
+                if (!fmCBMmode)
+                  if ((ilev == 0)
+                      && (GetFStation((
+                            *vSFlag)[(*vStsHitsUnused)[first_trip.GetLHit()].f])
+                          != 0))
+                    continue;  // ghost supression // collect only MAPS tracks-triplets  CHECK!!!
               }
               if (first_trip.GetLevel() < ilev)
                 continue;  // try only triplets, which can start track with ilev+3 length. w\o it have more ghosts, but efficiency either
@@ -2629,7 +2600,8 @@ void L1Algo::CATrackFinder() {
 
             if (check) {
 #ifdef EXTEND_TRACKS
-              if (tr.NHits != NStations) BranchExtender(tr);
+              if (!fmCBMmode)
+                if (tr.NHits != NStations) BranchExtender(tr);
 #endif
               float sumTime = 0;
 
@@ -2951,6 +2923,9 @@ inline void L1Algo::CAFindTrack(int ista,
     //if( curr_L < min_best_l - 1 ) return; // suppouse that only one hit can be added by extender
     if (curr_chi2 > TRACK_CHI2_CUT * (curr_L * 2 - 5)) return;
 
+    if (fmCBMmode)
+      if (curr_chi2 > TRACK_CHI2_CUT * (curr_L * 2 - 5.0)) return;
+
     //       // try to find more hits
     // #ifdef EXTEND_TRACKS
     //     // if( curr_L < min_best_l )
@@ -2973,7 +2948,6 @@ inline void L1Algo::CAFindTrack(int ista,
     return;
   } else  //MEANS level ! = 0
   {
-    //  cout<<"1"<<endl;
     unsigned int Station  = 0;
     unsigned int Thread   = 0;
     unsigned int Triplet  = 0;
@@ -3002,10 +2976,29 @@ inline void L1Algo::CAFindTrack(int ista,
       fscal Cqp        = curr_trip->Cqp;
       Cqp += new_trip.Cqp;
 
+      const fscal& tx1 = curr_trip->tx;
+      const fscal& tx2 = new_trip.tx;
+      fscal dtx        = fabs(tx1 - tx2);
+      fscal Ctx        = curr_trip->Ctx;
+      Ctx += new_trip.Ctx;
+
+      const fscal& ty1 = curr_trip->ty;
+      const fscal& ty2 = new_trip.ty;
+      fscal dty        = fabs(ty1 - ty2);
+      fscal Cty        = curr_trip->Cty;
+      Cty += new_trip.Cty;
+
+      if (fGlobal || fmCBMmode) {
+        if (dty > PickNeighbour * Cty) continue;
+        if (dtx > PickNeighbour * Ctx) continue;
+      }
+
       if ((new_trip.GetMHit() != curr_trip->GetRHit())) continue;
       if ((new_trip.GetLHit() != curr_trip->GetMHit())) continue;
-      if (dqp > PickNeighbour * Cqp)
-        continue;  // bad neighbour // CHECKME why do we need recheck it?? (it really change result)
+
+      if (!fmCBMmode)
+        if (dqp > PickNeighbour * Cqp)
+          continue;  // bad neighbour // CHECKME why do we need recheck it?? (it really change result)
 
       if (GetFUsed((*vSFlag)[(*vStsHitsUnused)[new_trip.GetLHit()].f]
                    | (*vSFlagB)[(*vStsHitsUnused)[new_trip.GetLHit()]
@@ -3033,7 +3026,15 @@ inline void L1Algo::CAFindTrack(int ista,
         new_tr[ista].NHits++;
         new_L += 1;
         dqp = dqp / Cqp * 5.;  // CHECKME: understand 5, why no sqrt(5)?
-        new_chi2 += dqp * dqp;
+
+        dtx = dtx / Ctx;
+        dty = dty / Cty;
+
+        if (fGlobal || fmCBMmode) {
+          new_chi2 += dtx * dtx;
+          new_chi2 += dty * dty;
+        } else
+          new_chi2 += dqp * dqp;
 
         if (new_chi2 > TRACK_CHI2_CUT * new_L) continue;
 

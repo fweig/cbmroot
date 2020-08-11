@@ -60,6 +60,7 @@ public:
 
 
   fscal Cqp;
+  fscal tx, ty, Ctx, Cty;
   //   fscal time;
   //   fscal n;
   unsigned int first_neighbour;
@@ -75,6 +76,10 @@ public:
     , st()
     , chi2double(0)
     , Cqp(0)
+    , tx(0)
+    , ty(0)
+    , Ctx(0)
+    , Cty(0)
     , first_neighbour(0)
     , last_neighbour(0) {};
 
