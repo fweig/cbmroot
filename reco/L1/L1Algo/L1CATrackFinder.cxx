@@ -1952,8 +1952,9 @@ void L1Algo::CATrackFinder() {
 
   for (isec = 0; isec < fNFindIterations; ++isec)  // all finder
   {
-    if (fmCBMmode) if (isec!=0) continue;
-      
+    if (fmCBMmode)
+      if (isec != 0) continue;
+
     n_g1.assign(n_g1.size(), Portion);
 
     for (int n = 0; n < nTh; n++)
