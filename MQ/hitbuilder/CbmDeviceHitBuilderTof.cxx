@@ -15,6 +15,7 @@
 #include "CbmTofAddress.h"  // in cbmdata/tof
 #include "CbmTofCell.h"     // in tof/TofData
 #include "CbmTofClusterizersDef.h"
+#include "CbmTofCreateDigiPar.h"    // in tof/TofTools
 #include "CbmTofDetectorId_v12b.h"  // in cbmdata/tof
 #include "CbmTofDetectorId_v14a.h"  // in cbmdata/tof
 #include "CbmTofDetectorId_v21a.h"  // in cbmdata/tof
@@ -420,6 +421,7 @@ Bool_t CbmDeviceHitBuilderTof::InitContainers() {
     FairMQMessagePtr req(NewSimpleMessage(message));
     //FairMQMessagePtr req(NewSimpleMessage( "CbmTofDigiBdfPar,111" )); //original format
     FairMQMessagePtr rep(NewMessage());
+    CbmTofCreateDigiPar* tofDigiPar=NULL;
 
     if (Send(req, Channel) > 0) {
       if (Receive(rep, Channel) >= 0) {
@@ -458,14 +460,39 @@ Bool_t CbmDeviceHitBuilderTof::InitContainers() {
                             ->GetGeometry();  //crashes
               LOG(info) << "GeoMan: " << fGeoMan << " " << gGeoManager;
               iGeoVersion = fGeoHandler->Init(isSimulation);
-              if (k14a > iGeoVersion) {
-                LOG(error) << "Incompatible geometry !!!";
-                //ChangeState(STOP);
-                ChangeState(fair::mq::Transition(STOP));
+              if (k21a > iGeoVersion) {
+                  LOG(error) << "Incompatible geometry !!!";
+                  //ChangeState(STOP);
+                  ChangeState(fair::mq::Transition(STOP));
               }
-              fTofId = new CbmTofDetectorId_v14a();
+              switch(iGeoVersion) {
+              case k14a:
+                  fTofId = new CbmTofDetectorId_v14a();
+                  break;
+              case k21a:
+                  fTofId = new CbmTofDetectorId_v21a();
+                  break;
+              }
+              if (NULL == fDigiPar){
+                if (NULL == fRtdb) {
+            	  LOG(info)<<"Instantiate FairRunDb";
+            	  fRtdb = FairRuntimeDb::instance();
+            	  assert(fRtdb);
+                }
+                // create digitization parameters from geometry file
+                tofDigiPar = new CbmTofCreateDigiPar("TOF Digi Producer", "TOF task");
+                LOG(info) << "Create DigiPar ";
+                tofDigiPar->Init();
+                fDigiPar = (CbmTofDigiPar*) (fRtdb->getContainer("CbmTofDigiPar"));
+                if (NULL == fDigiPar) {
+                  LOG(error) << "CbmTofEventClusterizer::InitParameters => Could not obtain "
+                                "the CbmTofDigiPar ";
+                  return kFALSE;
+                }
+              }
               gGeoManager->Export("HitBuilder.geo.root");
               break;
+
             case 3:  // Calib
               break;
             default:
