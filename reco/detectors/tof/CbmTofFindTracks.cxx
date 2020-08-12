@@ -312,8 +312,8 @@ InitStatus CbmTofFindTracks::Init() {
     fTofCalibrator = new CbmTofCalibrator();
     if (fTofCalibrator->Init() != kSUCCESS) return kFATAL;
     if (bBeamCounter) {
-      fTofCalibrator->SetR0Lim(2.);  // FIXME, hardwired parameter for debugging
-      LOG(info) << "Set CbmTofCalibrator::R0Lim to 2.";
+      fTofCalibrator->SetR0Lim(10.);  // FIXME, hardwired parameter for debugging
+      LOG(info) << "Set CbmTofCalibrator::R0Lim to 10.";
     }
   }
 
