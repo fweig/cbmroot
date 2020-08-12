@@ -3632,9 +3632,8 @@ Bool_t CbmTofEventClusterizer::WriteHistos() {
         "_pfx", 1, fhRpcCluPosition[iDetIndx]->GetNbinsY());
       //htempPos      = fhTRpcCluPosition[iDetIndx][fCalSel];
       //htempPos_pfx  = fhTRpcCluPosition[iDetIndx][fCalSel]->ProfileX("_pfx",1,fhTRpcCluPosition[iDetIndx][fCalSel]->GetNbinsY());
-      htempTOff = fhTRpcCluTOff
-        [iDetIndx]
-        [fCalSel];  // -> Comment to remove warning because set but never used
+      htempTOff = fhTRpcCluTOff[iDetIndx][fCalSel];
+      if (fIdMode==1) htempTOff = fhTRpcCluTofOff[iDetIndx][fCalSel]; //DEV! for init_calib_all
       htempTOff_pfx = htempTOff->ProfileX(
         "_pfx", 1, fhTRpcCluTOff[iDetIndx][fCalSel]->GetNbinsY());
       htempTOff_px = htempTOff->ProjectionX(
@@ -4352,7 +4351,7 @@ Bool_t CbmTofEventClusterizer::WriteHistos() {
         if ((fCalSmAddr < 0)
             || (fCalSmAddr
                 != iSmAddr)) {  // select detectors for updating offsets
-          LOG(debug) << "WriteHistos (calMode==3): update Offsets and Gains, "
+          LOG(info) << "WriteHistos (calMode==3): update Offsets and Gains, "
                         "keep Walk and DelTof for "
                      << "Smtype" << iSmType << ", Sm " << iSm << ", Rpc "
                      << iRpc << " with " << iNbCh << " channels "
@@ -4566,7 +4565,7 @@ Bool_t CbmTofEventClusterizer::WriteHistos() {
                   TWMean = 0.;
               }
               if (htempTOff_px->GetBinContent(iCh + 1) > 0.)
-                LOG(debug) << Form(
+                LOG(info) << Form(
                   "CalibA %d,%2d,%2d: TSRC %d%d%d%d, hits %6.0f, TM %8.3f , "
                   "TAV  %8.3f, TWM %8.3f, TOff %8.3f,  TOffnew  %8.3f, ",
                   fCalMode,
@@ -4591,7 +4590,7 @@ Bool_t CbmTofEventClusterizer::WriteHistos() {
             if (htempTOff_px->GetBinContent(iCh + 1) > WalkNHmin) {
               fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0] += -dTYOff + TMean;
               fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1] += +dTYOff + TMean;
-              LOG(debug) << Form(
+              LOG(info) << Form(
                 "CalibB %d,%2d,%2d: TSRC %d%d%d%d, hits %6.0f, dTY  %8.3f, TM "
                 "%8.3f -> new Off %8.3f,%8.3f ",
                 fCalMode,
