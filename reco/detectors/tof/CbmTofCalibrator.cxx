@@ -230,10 +230,11 @@ void CbmTofCalibrator::FillCalHist(CbmTofTracklet* pTrk) {
   if (pTrk->GetTt() < 0) return;  // take tracks with positive velocity only
   if (!pTrk->ContainsAddr(CbmTofAddress::GetUniqueAddress(0, 0, 0, 0, 5)))
     return;  // request beam counter hit for calibration
+  /*
   if (fdR0Lim
       > 0.)  // consider only tracks originating from nominal interaction point
     if (pTrk->GetR0() > fdR0Lim) return;
-
+  */
   for (Int_t iHit = 0; iHit < pTrk->GetNofHits(); iHit++) {
     CbmTofHit* pHit = pTrk->GetTofHitPointer(iHit);
     Int_t iDetId    = (pHit->GetAddress() & DetMask);
@@ -377,14 +378,19 @@ Bool_t CbmTofCalibrator::UpdateCalHist(Int_t iOpt) {
     Int_t iUniqueId = fDigiBdfPar->GetDetUId(iDetIndx);
     // Int_t iSmAddr   = iUniqueId & DetMask;
     Int_t iSmType = CbmTofAddress::GetSmType(iUniqueId);
-    //  Int_t iSm           = CbmTofAddress::GetSmId( iUniqueId );
+    Int_t iSm           = CbmTofAddress::GetSmId( iUniqueId );
     Int_t iRpc = CbmTofAddress::GetRpcId(iUniqueId);
     switch (iOpt) {
       case 0:  // none
         break;
       case 1:  // update channel mean
       {
-        //LOG(info) << "Update Offsets for TSR "<<iSmType<<iSm<<iRpc;
+        LOG(info) << "Update Offsets for TSR "<<iSmType<<iSm<<iRpc;
+        if(NULL == fhCorTOff[iDetIndx]) {
+          LOG(warn) << "hCorTOff for TSR "<<iSmType<<iSm<<iRpc<<" not available";
+          continue;
+        }
+
         TProfile* hpP = fhCalPos[iDetIndx]->ProfileX();
         TProfile* hpT = fhCalTOff[iDetIndx]->ProfileX();
         TH1* hCalT    = fhCalTOff[iDetIndx]->ProjectionX();
@@ -495,8 +501,8 @@ void CbmTofCalibrator::ReadHist(TFile* fHist) {
     fhCorPos[iDetIndx] = (TH1*) gDirectory->FindObjectAny(
       Form("cl_CorSmT%01d_sm%03d_rpc%03d_Pos_pfx", iSmType, iSm, iRpc));
     if (NULL == fhCorPos[iDetIndx]) {
-      LOG(error) << "hCorPos not found";
-      return;
+      LOG(error) << "hCorPos not found for TSR "<<iSmType<<iSm<<iRpc;
+      continue;
     }
     fhCorTOff[iDetIndx] = (TH1*) gDirectory->FindObjectAny(
       Form("cl_CorSmT%01d_sm%03d_rpc%03d_TOff_pfx", iSmType, iSm, iRpc));
@@ -528,6 +534,7 @@ void CbmTofCalibrator::WriteHist(TFile* fHist) {
   TDirectory* oldir = gDirectory;
   fHist->cd();
   for (Int_t iDetIndx = 0; iDetIndx < fDigiBdfPar->GetNbDet(); iDetIndx++) {
+	if(NULL == fhCorPos[iDetIndx]) continue;
     fhCorPos[iDetIndx]->Write();
     fhCorTOff[iDetIndx]->Write();
     fhCorTot[iDetIndx]->Write();
