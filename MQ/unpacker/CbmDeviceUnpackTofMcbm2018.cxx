@@ -45,7 +45,7 @@ struct InitTaskError : std::runtime_error {
 using namespace std;
 
 //static Int_t iMess=0;
-const Int_t DetMask = 0x003FFFFF;
+const Int_t DetMask = 0x001FFFFF;
 
 CbmDeviceUnpackTofMcbm2018::CbmDeviceUnpackTofMcbm2018()
   : fNumMessages(0)
@@ -457,6 +457,7 @@ Bool_t CbmDeviceUnpackTofMcbm2018::ReInitContainers() {
   fviRpcChUId.resize(uNrOfChannels);
   UInt_t iCh = 0;
   for (UInt_t iGbtx = 0; iGbtx < uNrOfGbtx; iGbtx++) {
+	Int_t iModuleIdMap = fviModuleId[iGbtx];
     switch (fviRpcType[iGbtx]) {
 
       case 0:                         // CBM modules
@@ -567,7 +568,7 @@ Bool_t CbmDeviceUnpackTofMcbm2018::ReInitContainers() {
           }
         }
       }
-        // fall through is intended
+      [[fallthrough]];  // fall through is intended
       case 8:  // ceramics
       {
         Int_t iModuleId   = 0;
@@ -594,6 +595,23 @@ Bool_t CbmDeviceUnpackTofMcbm2018::ReInitContainers() {
             Int_t iRpcMap  = iRpc[iFeet];
             Int_t iSideMap = iSide[iFeet];
             if (iSideMap == 0) iStrMap = 31 - iStr;
+            switch (fviRpcSide[iGbtx]) {
+              case 0:; break;
+              case 1:; break;
+              case 2:
+                switch (iFeet) {
+                  case 1:
+                    iRpcMap  = iRpc[4];
+                    iSideMap = iSide[4];
+                    break;
+                  case 4:
+                    iRpcMap  = iRpc[1];
+                    iSideMap = iSide[1];
+                    break;
+                  default:;
+                }
+                break;
+            }
             if (iSideMap > -1)
               fviRpcChUId[iCh] =
                 CbmTofAddress::GetUniqueAddress(fviModuleId[iGbtx],
@@ -638,15 +656,23 @@ Bool_t CbmDeviceUnpackTofMcbm2018::ReInitContainers() {
               case 4:  // HD cosmic 2019, Buc2018, v18o
                 iRpcMap = 1 - iRpcMap;
                 break;
+              case 5:  // HD cosmic 2020, Buc2018, v20a
+                iStrMap = 31 - iStr;
+                break;
+              case 6:  //BUC special
+              {
+                switch (fviModuleId[iGbtx]) {
+                  case 0: iRpcMap = 0; break;
+                  case 1: iRpcMap = 1; break;
+                }
+                if (iFeet > 2) iModuleIdMap = 1;
+              }
+              break;
               default:;
             }
             if (iSideMap > -1)
-              fviRpcChUId[iCh] =
-                CbmTofAddress::GetUniqueAddress(fviModuleId[iGbtx],
-                                                iRpcMap,
-                                                iStrMap,
-                                                iSideMap,
-                                                fviRpcType[iGbtx]);
+              fviRpcChUId[iCh] = CbmTofAddress::GetUniqueAddress(
+                      iModuleIdMap, iRpcMap, iStrMap, iSideMap, fviRpcType[iGbtx]);
             else
               fviRpcChUId[iCh] = 0;
 
