@@ -29,8 +29,9 @@
 #include <stdint.h>
 #include <vector>
 
-/*
+
 static Int_t  NMappingWarnings=100;
+/*
 static uint32_t pat_mess[8]={8*0};
 std::vector< std::vector <uint32_t> > Pat_Request;
 std::vector<Bool_t> bGdpbOK;
@@ -386,7 +387,8 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::InitParameters() {
                   case 1:
                     iRpcMap  = iRpc[4];
                     iSideMap = iSide[4];
-                    break;
+                    iStrMap  = 31-iStrMap;
+                  break;
                   case 4:
                     iRpcMap  = iRpc[1];
                     iSideMap = iSide[1];
@@ -447,6 +449,7 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::InitParameters() {
                   case 1: iRpcMap = 1; break;
                 }
                 if (iFeet > 2) iModuleIdMap = 1;
+                else           iModuleIdMap = 0;
               } break;
             }
             if (iSideMap > -1)
@@ -1156,8 +1159,8 @@ void CbmMcbm2018UnpackerAlgoTof::ProcessHit(const gdpbv100::FullMessage& mess) {
                  << ", FiS " << uFeeNrInSys
                  << ", GBTx " << uGbtxNrInSys;
 */
-  /*
-   if( 0 == uChanUId ) {
+
+  if( 0 == uChanUId ) {
      if( 0 < NMappingWarnings-- )
      LOG(warning) << "Unused data item at " << uRemappedChannelNrInSys
 		  << ", from GdpbNr " << fuCurrDpbIdx
@@ -1168,8 +1171,8 @@ void CbmMcbm2018UnpackerAlgoTof::ProcessHit(const gdpbv100::FullMessage& mess) {
 		  << ", FiS " << uFeeNrInSys
 		  ;
       return;   // Hit not mapped to digi
-   }
-*/
+  }
+
   /// Apply offset to T0 only to TOF digis
   if (0x90 != fuCurrentMsSysId) dHitTime -= fdTimeOffsetNs;
 
