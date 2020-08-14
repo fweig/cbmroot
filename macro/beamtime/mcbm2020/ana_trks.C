@@ -269,7 +269,7 @@ void ana_trks(Int_t nEvents        = 10000,
     case 2:
       iMinNofHits   = 3;
       iNStations    = 28;
-      iNReqStations = 4;
+      iNReqStations = 3;
       tofFindTracks->SetStation(0, 0, 2, 2);
       tofFindTracks->SetStation(1, 0, 0, 2);
       tofFindTracks->SetStation(2, 0, 1, 2);
@@ -677,7 +677,7 @@ void ana_trks(Int_t nEvents        = 10000,
   gROOT->LoadMacro("pl_over_trk.C");
   gROOT->LoadMacro("pl_calib_trk.C");
   gROOT->LoadMacro("pl_XY_trk.C");
-  //gROOT->LoadMacro("pl_vert_trk.C");
+  gROOT->LoadMacro("pl_vert_trk.C");
   gROOT->LoadMacro("pl_pull_trk.C");
   gROOT->LoadMacro("pl_all_Track2D.C");
   gROOT->LoadMacro("pl_TIS.C");
@@ -695,6 +695,7 @@ void ana_trks(Int_t nEvents        = 10000,
   //gInterpreter->ProcessLine("pl_TIR()");
   //gInterpreter->ProcessLine("pl_eff_XY()");
   gInterpreter->ProcessLine("pl_calib_trk()");
+  gInterpreter->ProcessLine("pl_vert_trk()");
 
   gInterpreter->ProcessLine("pl_all_Track2D(1)");
   gInterpreter->ProcessLine("pl_all_Track2D(2)");

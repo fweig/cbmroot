@@ -104,7 +104,6 @@ rm -v TCalib.res
 nEvtMax=0
 (( nEvtMax = nEvt*10 ))
 iTraSetup=1
-
 #frange1 limits DT spectrum range 
 fRange1=3.
 # frange2 limits chi2
@@ -189,4 +188,4 @@ root -b -q '../ana_digi_cal.C(-1,93,1,'$iRef',1,"'$cRun'",'$iCalSet',1,'$iSel2',
 
 cd ..
 
-mv -v slurm-${SLURM_JOB_ID}.out ${outdir}/TrkCalDigi_${cRun}_${iCalSet}_${iSel2}_${CalIdMode}.out
+mv -v slurm-${SLURM_JOB_ID}.out ${outdir}/TrkCalDigi_${cRun}_${iCalSet}_${iSel2}_${iCalIdMode}.out
