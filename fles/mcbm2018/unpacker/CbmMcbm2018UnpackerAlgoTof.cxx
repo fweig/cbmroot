@@ -381,7 +381,9 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::InitParameters() {
             if (iSideMap == 0) iStrMap = 31 - iStr;
             switch (fviRpcSide[iGbtx]) {
               case 0:; break;
-              case 1:; break;
+              case 1:;
+                iRpcMap = 1 - iRpcMap; // swap counters
+              	break;
               case 2:
                 switch (iFeet) {
                   case 1:
