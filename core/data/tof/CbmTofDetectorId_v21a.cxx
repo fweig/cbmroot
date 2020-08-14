@@ -6,6 +6,12 @@
 
 #include "CbmTofDetectorId_v21a.h"
 
+
+#include  <iostream>
+#include  <iomanip>
+
+using namespace std;
+
 const Int_t CbmTofDetectorId_v21a::shiftarray[] = {0,4,11,15,21,22,28};
 const Int_t CbmTofDetectorId_v21a::bitarray[]   = {4,7, 4, 6, 1, 6, 4};
 
@@ -20,15 +26,12 @@ CbmTofDetectorId_v21a::CbmTofDetectorId_v21a()
 	maskarray[i]=(1 << bitarray[i]) - 1;
   }
 
-  modulemask =( (maskarray[0] << shiftarray[0]) |
-		  (maskarray[1] << shiftarray[1]) |
-		  (maskarray[2] << shiftarray[2]) |
-		  (maskarray[3] << shiftarray[3]) |
-		  (0<< shiftarray[4]) |
-		  (maskarray[5] << shiftarray[5]) |
-		  (maskarray[6] << shiftarray[6])
-  );
-  std::cout << "<I> V21a module mask 0x" << std::hex << modulemask << std::endl;
+  for (Int_t i=0; i < array_length -1; i++) {
+	if(i==4) continue; // ignore side bit
+    modulemask |= (maskarray[i] << shiftarray[i]);
+  }
+  cout << "<I> V21a module mask 0x" << setfill('0')
+       << setw(8) << right << hex << modulemask << endl;
 }
 
 CbmTofDetectorInfo CbmTofDetectorId_v21a::GetDetectorInfo(const Int_t detectorId)
