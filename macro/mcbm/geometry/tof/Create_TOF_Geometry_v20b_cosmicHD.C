@@ -30,8 +30,8 @@ const TString geoVersionStand = geoVersion + "Stand";
 
 //
 const TString fileTag    = "tof_v20b";
-const TString FileNameSim  = fileTag + "_cosmicHD.root";
-const TString FileNameGeo  = fileTag + "_cosmicHD.geo.root";
+const TString FileNameSim  = fileTag + "_cosmicHD.geo.root";
+const TString FileNameGeo  = fileTag + "_cosmicHD_geo.root";
 const TString FileNameInfo = fileTag + "_cosmicHD.info";
 
 // TOF_Z_Front corresponds to front cover of outer super module towers
@@ -345,11 +345,17 @@ void Create_TOF_Geometry_v20b_cosmicHD() {
   gGeoMan->PrintOverlaps();
   gGeoMan->Test();
 
+  
+  tof->Export(FileNameSim);
+  TFile* geoFile = new TFile(FileNameSim, "UPDATE");
+  stand_combi_trans->Write();
+  geoFile->Close();
+  /*
   TFile* outfile1 = new TFile(FileNameSim,"RECREATE");
   top->Write();
   //gGeoMan->Write();
   outfile1->Close();
-
+  */
   TFile* outfile2 = new TFile(FileNameGeo,"RECREATE");
   gGeoMan->Write();
   outfile2->Close();
