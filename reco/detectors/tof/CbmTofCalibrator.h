@@ -59,6 +59,7 @@ public:
   void WriteHist(TFile* fhFile);
 
   inline void SetR0Lim(Double_t dVal) { fdR0Lim = dVal; }
+  inline void SetBeam(Bool_t bVal) { fbBeam = bVal; }
 
 private:
   CbmDigiManager* fDigiMan;
@@ -87,6 +88,7 @@ private:
   std::map<UInt_t, UInt_t> fDetIdIndexMap;
 
   Double_t fdR0Lim = 0.;
+  Bool_t   fbBeam  = kFALSE;
 
   CbmTofCalibrator(const CbmTofCalibrator&) = delete;
   CbmTofCalibrator operator=(const CbmTofCalibrator&) = delete;

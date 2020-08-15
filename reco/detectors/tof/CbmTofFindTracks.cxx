@@ -294,7 +294,10 @@ InitStatus CbmTofFindTracks::Init() {
         fTofId->GetSMType(iCellId),
         fTofId->GetSModule(iCellId),
         fTofId->GetCounter(iCellId));
-      if (fTofId->GetSMType(iCellId) == 5) bBeamCounter = kTRUE;
+      if (fTofId->GetSMType(iCellId) == 5) {
+    	  bBeamCounter = kTRUE;
+    	  LOG(info) << "Found beam counter in setup!";
+      }
       fMapRpcIdParInd[iCellId] = iRpc;
       fRpcAddr.resize(fRpcAddr.size() + 1);
       fRpcAddr.push_back(iCellId);
@@ -312,6 +315,7 @@ InitStatus CbmTofFindTracks::Init() {
     fTofCalibrator = new CbmTofCalibrator();
     if (fTofCalibrator->Init() != kSUCCESS) return kFATAL;
     if (bBeamCounter) {
+      fTofCalibrator->SetBeam(bBeamCounter);
       fTofCalibrator->SetR0Lim(10.);  // FIXME, hardwired parameter for debugging
       LOG(info) << "Set CbmTofCalibrator::R0Lim to 10.";
     }

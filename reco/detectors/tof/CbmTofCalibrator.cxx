@@ -228,13 +228,13 @@ Bool_t CbmTofCalibrator::CreateCalHist() {
 void CbmTofCalibrator::FillCalHist(CbmTofTracklet* pTrk) {
   // fill deviation histograms on walk level
   if (pTrk->GetTt() < 0) return;  // take tracks with positive velocity only
-  if (!pTrk->ContainsAddr(CbmTofAddress::GetUniqueAddress(0, 0, 0, 0, 5)))
+  if (fbBeam && !pTrk->ContainsAddr(CbmTofAddress::GetUniqueAddress(0, 0, 0, 0, 5)))
     return;  // request beam counter hit for calibration
-  /*
-  if (fdR0Lim
+
+  if (fbBeam && fdR0Lim
       > 0.)  // consider only tracks originating from nominal interaction point
     if (pTrk->GetR0() > fdR0Lim) return;
-  */
+
   for (Int_t iHit = 0; iHit < pTrk->GetNofHits(); iHit++) {
     CbmTofHit* pHit = pTrk->GetTofHitPointer(iHit);
     Int_t iDetId    = (pHit->GetAddress() & DetMask);
