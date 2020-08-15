@@ -188,7 +188,7 @@ const Float_t Star2_X_Offset[Star2_NTypes]={0.}; //{62.};
 
 const Float_t Buc_First_Z_Position=TOF_Z_Front + 48.4;
 const Float_t Buc_Delta_Z_Position=0.;
-const Float_t Buc_First_Y_Position=-6.;  // 
+const Float_t Buc_First_Y_Position=-9.;  // 
 const Float_t Buc_Delta_Y_Position=12.;   // 
 const Float_t Buc_rotate_Z=180.;
 const Float_t Buc_rotate_X=180.;
