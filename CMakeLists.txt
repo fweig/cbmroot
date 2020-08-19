@@ -326,7 +326,7 @@ EndIf(BUILD_UNITTESTS)
 
 ### Subdirectories to be compiled #####
 
-### Externals included as svn externals
+### Externals included and build from sveral sources
 add_subdirectory (external)
 
 ### Base directories
@@ -359,10 +359,50 @@ add_custom_target(cleantest
 
 find_package2(PRIVATE ClangFormat)
 if(ClangFormat_FOUND)
+  if (FAIRROOT_FORMAT_BASE)
+    set(BASE_COMMIT ${FAIRROOT_FORMAT_BASE})
+  else()
+    set(BASE_COMMIT upstream/master)
+  endif()
+
+  if (FAIRROOT_GIT_CLANG_FORMAT_BIN)
+    set(GIT_CLANG_FORMAT_BIN ${FAIRROOT_GIT_CLANG_FORMAT_BIN})
+  else()
+    set(GIT_CLANG_FORMAT_BIN git-clang-format)
+  endif()
+
+  # Create a list C, C++ and header files which have been changed in the
+  # current commit
+  execute_process(COMMAND ${CMAKE_SOURCE_DIR}/cmake/scripts/find_files.sh
+                  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+                  OUTPUT_VARIABLE FileList
+                  OUTPUT_STRIP_TRAILING_WHITESPACE
+                 )
+  string(REGEX REPLACE " " ";" FileList "${FileList}")
+
+  # Loop over the files and create the code whch is executed when running
+  # "make FormatCheck".
+  # The produced code will run clang-format on one of the files. If
+  # clang-format finds code which are not satisfying our code rules a
+  # detailed error message is created. This error message can be checked on
+  # our CDash web page.
+  foreach(file ${FileList})
+    set(file1 ${CMAKE_BINARY_DIR}/${file}.cf_out)
+
+    list(APPEND myfilelist ${file1})
+    add_custom_command(OUTPUT ${file1}
+                       COMMAND ${CMAKE_SOURCE_DIR}/cmake/scripts/check-format-1.sh ${file} ${file1}
+                       WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+                      )
+  endforeach()
+
+  # Create the target FormatCheck which only depends on the files creted in
+  # previous step. When running "make FormatCheck" clang-format is executed
+  # for all C, C++ and header files which have changed in the commit.
   add_custom_target(FormatCheck
-    ${CMAKE_COMMAND} -E env FAIRROOT_GIT_CLANG_FORMAT_BIN=${GIT_CLANG_FORMAT_BIN} ${CMAKE_SOURCE_DIR}/cmake/scripts/check-format.sh
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-  )
+                     DEPENDS ${myfilelist}
+                    )
+
 endif()
 
 Option(BUILD_DOXYGEN "Build Doxygen" OFF)

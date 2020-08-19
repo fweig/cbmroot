@@ -2,7 +2,7 @@
 # the array .
 # The extension is already found.  Any number of sources could be listed here.
 
-If(NOT EXISTS geodb.tar.gz)
+If(NOT EXISTS geodb.tar.gz AND DOWNLOAD_EXTERNALS)
   Message(STATUS "Download geometry database")
   FILE(DOWNLOAD http://cbmdb.jinr.ru/geometry/download_file.php?type=all&tag=all ${CMAKE_BINARY_DIR}/geodb.tar.gz SHOW_PROGRESS)
 
