@@ -1426,7 +1426,7 @@ void CbmL1::Reconstruct(CbmEvent* event) {
                          / (sta.xInfo.sin_phi * sta.yInfo.sin_phi
                             - sta.xInfo.cos_phi * sta.yInfo.cos_phi)[0];
 
-#if 1  // GAUSS                                                                                                                                            
+#if 1  // GAUSS
       const_cast<std::vector<L1Strip>*>(algo->vStsStrips)->at(h.f) =
         idet * (+sta.yInfo.sin_phi[0] * mcp.x - sta.xInfo.cos_phi[0] * mcp.y)
         + random.Gaus(0, sqrt(sta.frontInfo.sigma2)[0]);
