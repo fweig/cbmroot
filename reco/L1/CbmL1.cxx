@@ -1426,13 +1426,7 @@ void CbmL1::Reconstruct(CbmEvent* event) {
                          / (sta.xInfo.sin_phi * sta.yInfo.sin_phi
                             - sta.xInfo.cos_phi * sta.yInfo.cos_phi)[0];
 
-#if 1  // GAUSS                                                                                                                                            \
-  //      (*algo->vStsStrips)[h.f]  = idet * ( + sta.yInfo.sin_phi[0]*mcp.x - sta.xInfo.cos_phi[0]*mcp.y ) + random.Gaus(0,sqrt(sta.frontInfo.sigma2)[0]); \
-  //      (*algo->vStsStripsB)[h.b] = idet * ( - sta.yInfo.cos_phi[0]*mcp.x + sta.xInfo.sin_phi[0]*mcp.y ) + random.Gaus(0,sqrt(sta.backInfo.sigma2)[0]);
-
-      //const_cast<L1Strip &>((*algo->vStsStrips)[h.f])  = idet * ( + sta.yInfo.sin_phi[0]*mcp.x - sta.xInfo.cos_phi[0]*mcp.y )+ random.Gaus(0,sqrt(sta.frontInfo.sigma2)[0]);
-      //(*(const_cast<std::vector<L1Strip> *>(algo->vStsStrips)))[h.f]  = idet * ( + sta.yInfo.sin_phi[0]*mcp.x - sta.xInfo.cos_phi[0]*mcp.y )+ random.Gaus(0,sqrt(sta.frontInfo.sigma2)[0]);
-      //const_cast<std::vector<L1Strip> *>(algo->vStsStrips)->operator [](h.f)  = idet * ( + sta.yInfo.sin_phi[0]*mcp.x - sta.xInfo.cos_phi[0]*mcp.y )+ random.Gaus(0,sqrt(sta.frontInfo.sigma2)[0]);
+#if 1  // GAUSS                                                                                                                                            
       const_cast<std::vector<L1Strip>*>(algo->vStsStrips)->at(h.f) =
         idet * (+sta.yInfo.sin_phi[0] * mcp.x - sta.xInfo.cos_phi[0] * mcp.y)
         + random.Gaus(0, sqrt(sta.frontInfo.sigma2)[0]);
