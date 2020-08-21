@@ -1,10 +1,8 @@
 
-void run_treemaker(
-  TString inputDir =
-    "/home/vklochkov/Data/cbm/apr20_fr_18.2.1_fs_jun19p1/cbmroot_new/data/",
-  TString dataSet   = "test",
-  TString setupName = "sis100_electron") {
-  const std::string system = "Au+Au";
+void run_analysis_tree_maker(Int_t nEvents     = 2,
+                             TString dataSet   = "test",
+                             TString setupName = "sis100_electron") {
+  const std::string system = "Au+Au";  // TODO can we read it automatically?
   const float beam_mom     = 12.;
 
   // --- Logger settings ----------------------------------------------------
@@ -13,17 +11,16 @@ void run_treemaker(
   // ------------------------------------------------------------------------
 
   // -----   Environment   --------------------------------------------------
-  const TString myName =
-    "run_treemaker";  // this macro's name for screen output
+  const TString myName = "run_analysis_tree_maker";
   const TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
   // ------------------------------------------------------------------------
 
   // -----   In- and output file names   ------------------------------------
-  TString traFile = inputDir + dataSet + ".tra.root";
-  TString rawFile = inputDir + dataSet + ".event.raw.root";
-  TString recFile = inputDir + dataSet + ".rec.root";
-  TString geoFile = inputDir + dataSet + ".geo.root";
-  TString parFile = inputDir + dataSet + ".par.root";
+  TString traFile = dataSet + ".tra.root";
+  TString rawFile = dataSet + ".event.raw.root";
+  TString recFile = dataSet + ".rec.root";
+  TString geoFile = dataSet + ".geo.root";
+  TString parFile = dataSet + ".par.root";
   const std::string outFile =
     dataSet.Data() + std::string(".analysistree.root");
   // ------------------------------------------------------------------------
@@ -137,7 +134,7 @@ void run_treemaker(
   run->Init();
 
   std::cout << "Starting run" << std::endl;
-  run->Run();
+  run->Run(0, nEvents);
   // ------------------------------------------------------------------------
 
   timer.Stop();

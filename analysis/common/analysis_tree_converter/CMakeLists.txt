@@ -88,7 +88,7 @@ ADD_DEFINITIONS(${DEFINITIONS})
 
 GENERATE_LIBRARY()
 
-Install(FILES ../../../macro/analysis/common/analysis_tree_converter/run_treemaker.C
+Install(FILES ../../../macro/analysis/common/analysis_tree_converter/run_analysis_tree_maker.C
         DESTINATION share/cbmroot/macro/analysis_tree
        )
 
