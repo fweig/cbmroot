@@ -115,6 +115,39 @@ CbmRoot_Merge:
     - cat Dart.cfg
     - $PWD/Dart.sh MergeRequest Dart.cfg
 
+CbmRoot_Merge_macosx:
+  stage: build
+  tags:
+    - CbmRoot_macosx
+  only:
+    refs:
+      - merge_requests
+    variables:
+      - $CI_MERGE_REQUEST_PROJECT_PATH == "computing/cbmroot" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"
+  script:
+    - echo $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH
+    - echo $CI_MERGE_REQUEST_PROJECT_PATH
+    - if [ "$CI_MERGE_REQUEST_PROJECT_PATH" != "computing/cbmroot" ]; then
+    -   echo "Should not come here"
+    -   exit 1
+    - fi
+    - echo $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
+    - echo $CI_MERGE_REQUEST_ID
+    - echo $CI_MERGE_REQUEST_IID
+    - echo "export LINUX_FLAVOUR=macOS_10.13" >> Dart.cfg
+    - echo "export FAIRSOFT_VERSION=jun19p1" >> Dart.cfg
+    - echo "export FAIRROOT_VERSION=v18.2.0" >> Dart.cfg
+    - echo "export SIMPATH=/opt/fairsoft/\${FAIRSOFT_VERSION}" >> Dart.cfg
+    - echo "export FAIRROOTPATH=/opt/fairroot/\${FAIRROOT_VERSION}_fairsoft-\${FAIRSOFT_VERSION}" >> Dart.cfg
+    - echo "export BUILDDIR=$PWD/build" >> Dart.cfg
+    - echo "export SOURCEDIR=$PWD" >> Dart.cfg
+    - echo "export NCPU=4" >> Dart.cfg
+    - echo "export PATH=\$SIMPATH/bin:$PATH" >> Dart.cfg
+    - ls
+    - pwd
+    - cat Dart.cfg
+    - $PWD/Dart.sh MergeRequest Dart.cfg
+
 pages:
   stage: documentation
   image: alpine
