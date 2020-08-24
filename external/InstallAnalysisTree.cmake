@@ -1,4 +1,4 @@
-set(ANALYSISTREE_VERSION v1.0)
+set(ANALYSISTREE_VERSION v1.0.1)
 
 set(ANALYSISTREE_SRC_URL "https://github.com/HeavyIonAnalysis/AnalysisTree.git")
 set(ANALYSISTREE_DESTDIR "${CMAKE_BINARY_DIR}/external/ANALYSISTREE-prefix")
@@ -33,6 +33,8 @@ ExternalProject_Add(ANALYSISTREE
         -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}
         -DCMAKE_CXX_STANDARD=11
         -DROOTSYS=${SIMPATH}
+        -DBOOST_ROOT=${SIMPATH}
+        -DBoost_NO_BOOST_CMAKE=ON
         -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
         INSTALL_COMMAND  ${CMAKE_COMMAND} --build . --target install
         )

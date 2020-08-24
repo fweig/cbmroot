@@ -1,4 +1,4 @@
-set(ANALYSISTREEQA_VERSION v1.0)
+set(ANALYSISTREEQA_VERSION v1.0.1)
 
 set(ANALYSISTREEQA_SRC_URL "https://github.com/HeavyIonAnalysis/AnalysisTreeQA.git")
 set(ANALYSISTREEQA_DESTDIR "${CMAKE_BINARY_DIR}/external/ANALYSISTREEQA-prefix")
@@ -30,7 +30,9 @@ ExternalProject_Add(ANALYSISTREEQA
         -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}
         -DCMAKE_CXX_STANDARD=11
         -DROOTSYS=${SIMPATH}
-	    -DUSEBOOST=TRUE
+        -DUSEBOOST=TRUE
+        -DBOOST_ROOT=${SIMPATH}
+        -DBoost_NO_BOOST_CMAKE=ON
         -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
         INSTALL_COMMAND  ${CMAKE_COMMAND} --build . --target install
         )
