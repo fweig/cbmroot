@@ -41,11 +41,11 @@ ExternalProject_Add(ANALYSISTREE
 
 add_library(AnalysisTreeBase SHARED IMPORTED)
 set_target_properties(AnalysisTreeBase PROPERTIES IMPORTED_LOCATION ${CMAKE_BINARY_DIR}/lib)
-#add_dependencies(AnalysisTreeBase ANALYSISTREE)
+add_dependencies(AnalysisTreeBase ANALYSISTREE)
 
 add_library(AnalysisTreeInfra SHARED IMPORTED)
 set_target_properties(AnalysisTreeInfra PROPERTIES IMPORTED_LOCATION ${CMAKE_BINARY_DIR}/lib)
-#add_dependencies(AnalysisTreeInfra ANALYSISTREE)
+add_dependencies(AnalysisTreeInfra ANALYSISTREE)
 
 set(AnalysisTree_LIB_DIR ${CMAKE_BINARY_DIR}/lib)
 set(AnalysisTree_LIBRARIES AnalysisTreeBase AnalysisTreeInfra)

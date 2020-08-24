@@ -17,6 +17,7 @@ If(ProjectUpdated)
 EndIf()
 
 ExternalProject_Add(ANALYSISTREEQA
+        DEPENDS AnalysisTreeBase
         BUILD_IN_SOURCE 0
         SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/AnalysisTreeQA
         BUILD_BYPRODUCTS ${ANALYSISTREEQA_LIBRARY}
