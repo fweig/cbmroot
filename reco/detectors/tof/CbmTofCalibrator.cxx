@@ -193,31 +193,19 @@ Bool_t CbmTofCalibrator::CreateCalHist() {
       0.,
       TotMax);
 
-    TSumMax = 1.;
+    TSumMax = 0.6;
     fhCalWalk[iDetIndx].resize(fDigiBdfPar->GetNbChan(iSmType, iRpcId));
     for (Int_t iCh = 0; iCh < fDigiBdfPar->GetNbChan(iSmType, iRpcId); iCh++) {
       fhCalWalk[iDetIndx][iCh].resize(2);
       for (Int_t iSide = 0; iSide < 2; iSide++) {
         fhCalWalk[iDetIndx][iCh][iSide] =
           new TH2D(Form("cal_SmT%01d_sm%03d_rpc%03d_Ch%03d_S%01d_Walk",
-                        iSmType,
-                        iSmId,
-                        iRpcId,
-                        iCh,
-                        iSide),
+                        iSmType, iSmId, iRpcId, iCh, iSide),
                    Form("Walk in SmT%01d_sm%03d_rpc%03d_Ch%03d_S%01d_Walk; Tot "
                         "[a.u.];  #DeltaT [ns]",
-                        iSmType,
-                        iSmId,
-                        iRpcId,
-                        iCh,
-                        iSide),
-                   nbClWalkBinX,
-                   0.,
-                   TotMax,
-                   nbClWalkBinY,
-                   -TSumMax,
-                   TSumMax);
+                        iSmType, iSmId, iRpcId, iCh, iSide),
+                   nbClWalkBinX, 0., TotMax,
+                   nbClWalkBinY, -TSumMax, TSumMax);
       }
     }
   }
@@ -285,6 +273,7 @@ void CbmTofCalibrator::FillCalHist(CbmTofTracklet* pTrk) {
     }
     CbmMatch* digiMatch = (CbmMatch*) fTofDigiMatchColl->At(iMA);
 
+    Double_t hlocal_d[3];
     for (Int_t iLink = 0; iLink < digiMatch->GetNofLinks();
          iLink += 2) {  // loop over digis
       CbmLink L0     = digiMatch->GetLink(iLink);
@@ -309,26 +298,6 @@ void CbmTofCalibrator::FillCalHist(CbmTofTracklet* pTrk) {
         continue;
       }
 
-      fhCalWalk[iDetIndx][iCh0][iSide0]->Fill(
-        tDigi0->GetTot(),
-        tDigi0->GetTime()
-          + (1. - 2. * tDigi0->GetSide()) * hlocal_p[1]
-              / fDigiBdfPar->GetSigVel(iSmType, iSm, iRpc)
-          - pTrk->GetFitT(
-            pHit->GetZ())  //-fTrackletTools->GetTexpected(pTrk, iDetId, pHit)
-          + fTofFindTracks->GetTOff(iDetId)
-          + 2. * (1. - 2. * tDigi0->GetSide()) * (hlocal_p[1] - hlocal_f[1])
-              / fDigiBdfPar->GetSigVel(iSmType, iSm, iRpc));
-      /*      
-      LOG(info)<<"TSRCS "<<iSmType<<iSm<<iRpc<<iCh<<iSide0<<Form(": digi0 %f, ex %f, prop %f, Off %f, res %f",
-                            tDigi0->GetTime(),
-                            fTrackletTools->GetTexpected(pTrk, iDetId, pHit) ,
-                            fTofFindTracks->GetTOff(iDetId),
-                            (1.-2.*tDigi0->GetSide())*hlocal_f[1]/fDigiBdfPar->GetSigVel(iSmType,iSm,iRpc),
-                            tDigi0->GetTime()-fTrackletTools->GetTexpected(pTrk, iDetId, pHit) 
-                            -(1.-2.*tDigi0->GetSide())*hlocal_f[1]/fDigiBdfPar->GetSigVel(iSmType,iSm,iRpc));
-      */
-
       const CbmTofDigi* tDigi1 = fDigiMan->Get<CbmTofDigi>(iDigInd1);
       Int_t iCh1               = tDigi1->GetChannel();
       Int_t iSide1             = tDigi1->GetSide();
@@ -342,15 +311,51 @@ void CbmTofCalibrator::FillCalHist(CbmTofTracklet* pTrk) {
         LOG(error) << "Invalid Side1 " << iSide1;
         continue;
       }
-      fhCalWalk[iDetIndx][iCh1][iSide1]->Fill(
-        tDigi1->GetTot(),
-        tDigi1->GetTime()
-          + (1. - 2. * tDigi1->GetSide()) * hlocal_p[1]
+
+      if (iCh0 != iCh1 || iSide0 == iSide1) {
+    	  LOG(fatal) <<"Invalid digi pair for TSR "<< iSmType << iSm << iRpc
+    			  << " Ch " << iCh0 << " " << iCh1 << ", Side " << iSide0 << " " << iSide1;
+      }
+
+      hlocal_d[1]=-0.5*((1.-2.*tDigi0->GetSide())*tDigi0->GetTime() + (1.-2.*tDigi1->GetSide())*tDigi1->GetTime())
+    		     * fDigiBdfPar->GetSigVel(iSmType, iSm, iRpc);
+
+      if ( TMath::Abs(hlocal_d[1]-hlocal_p[1])>10.) {
+         LOG(warn)<<"CMPY for TSRC "<< iSmType << iSm << iRpc << iCh0
+        		  <<": "<<hlocal_f[1]<<", "<<hlocal_p[1]<<", "<<hlocal_d[1]
+				  <<", TOT: " << tDigi0->GetTot() << " " << tDigi1->GetTot();
+      }
+
+      fhCalWalk[iDetIndx][iCh0][iSide0]->Fill(
+        tDigi0->GetTot(),
+        tDigi0->GetTime()
+          + (1. - 2. * tDigi0->GetSide()) * hlocal_d[1]
               / fDigiBdfPar->GetSigVel(iSmType, iSm, iRpc)
           - pTrk->GetFitT(
             pHit->GetZ())  //-fTrackletTools->GetTexpected(pTrk, iDetId, pHit)
           + fTofFindTracks->GetTOff(iDetId)
-          + 2. * (1. - 2. * tDigi1->GetSide()) * (hlocal_p[1] - hlocal_f[1])
+          + 2. * (1. - 2. * tDigi0->GetSide()) * (hlocal_d[1] - hlocal_f[1])
+              / fDigiBdfPar->GetSigVel(iSmType, iSm, iRpc));
+      /*      
+      LOG(info)<<"TSRCS "<<iSmType<<iSm<<iRpc<<iCh<<iSide0<<Form(": digi0 %f, ex %f, prop %f, Off %f, res %f",
+                            tDigi0->GetTime(),
+                            fTrackletTools->GetTexpected(pTrk, iDetId, pHit) ,
+                            fTofFindTracks->GetTOff(iDetId),
+                            (1.-2.*tDigi0->GetSide())*hlocal_f[1]/fDigiBdfPar->GetSigVel(iSmType,iSm,iRpc),
+                            tDigi0->GetTime()-fTrackletTools->GetTexpected(pTrk, iDetId, pHit) 
+                            -(1.-2.*tDigi0->GetSide())*hlocal_f[1]/fDigiBdfPar->GetSigVel(iSmType,iSm,iRpc));
+      */
+
+
+      fhCalWalk[iDetIndx][iCh1][iSide1]->Fill(
+        tDigi1->GetTot(),
+        tDigi1->GetTime()
+          + (1. - 2. * tDigi1->GetSide()) * hlocal_d[1]
+              / fDigiBdfPar->GetSigVel(iSmType, iSm, iRpc)
+          - pTrk->GetFitT(
+            pHit->GetZ())  //-fTrackletTools->GetTexpected(pTrk, iDetId, pHit)
+          + fTofFindTracks->GetTOff(iDetId)
+          + 2. * (1. - 2. * tDigi1->GetSide()) * (hlocal_d[1] - hlocal_f[1])
               / fDigiBdfPar->GetSigVel(iSmType, iSm, iRpc));
     }
   }
@@ -419,7 +424,8 @@ Bool_t CbmTofCalibrator::UpdateCalHist(Int_t iOpt) {
             fhCorPos[iDetIndx]->SetBinContent(iBin + 1, dCorP + dDp);
           }
         }
-      } break;
+      }
+      break;
       case 2:  // update individual channel walks
         const Double_t MinCounts = 10.;
         Int_t iNbCh              = fDigiBdfPar->GetNbChan(iSmType, iRpc);
@@ -432,11 +438,13 @@ Bool_t CbmTofCalibrator::UpdateCalHist(Int_t iOpt) {
                          ->ProjectionX();  // contributing counts
 
             Double_t dCorT = 0;
-            for (Int_t iBin = 0; iBin < fhCorTOff[iDetIndx]->GetNbinsX();
-                 iBin++) {
+            for (Int_t iBin = 0; iBin < fhCorWalk[iDetIndx][iCh][iSide]->GetNbinsX(); iBin++) {
               Double_t dCts  = hCW->GetBinContent(iBin + 1);
               Double_t dWOff = fhCorWalk[iDetIndx][iCh][iSide]->GetBinContent(
                 iBin + 1);  // current value
+              if (iBin>0 && dCts==0)
+                fhCorWalk[iDetIndx][iCh][iSide]->SetBinContent(iBin + 1,
+                  fhCorWalk[iDetIndx][iCh][iSide]->GetBinContent(iBin) );
               if (dCts > MinCounts) { dCorT = hpW->GetBinContent(iBin + 1); }
               fhCorWalk[iDetIndx][iCh][iSide]->SetBinContent(
                 iBin + 1, dWOff + dCorT);  //set new value
@@ -444,24 +452,28 @@ Bool_t CbmTofCalibrator::UpdateCalHist(Int_t iOpt) {
             // determine effective/count rate weighted mean
             Double_t dMean   = 0;
             Double_t dCtsAll = 0.;
-            for (Int_t iBin = 0; iBin < fhCorTOff[iDetIndx]->GetNbinsX();
-                 iBin++) {
+            for (Int_t iBin = 0; iBin < fhCorWalk[iDetIndx][iCh][iSide]->GetNbinsX(); iBin++) {
               Double_t dCts  = hCW->GetBinContent(iBin + 1);
-              Double_t dWOff = fhCorWalk[iDetIndx][iCh][iSide]->GetBinContent(
-                iBin + 1);  // current value
+              Double_t dWOff = fhCorWalk[iDetIndx][iCh][iSide]->GetBinContent(iBin + 1);
               if (dCts > MinCounts) {
                 dCtsAll += dCts;
-                dMean += dCts * dWOff;
+                dMean   += dCts * dWOff;
               }
             }
             if (dCtsAll > 0.) dMean /= dCtsAll;
+            /*
+            LOG(info)<<"Mean shift for TSRCS "<<iSmType<<iSm<<iRpc<<iCh<<iSide
+            		<<": "<<dMean;
+            */
             // keep mean value at 0
-            for (Int_t iBin = 0; iBin < fhCorTOff[iDetIndx]->GetNbinsX();
-                 iBin++) {
-              Double_t dWOff = fhCorWalk[iDetIndx][iCh][iSide]->GetBinContent(
-                iBin + 1);  // current value
-              fhCorWalk[iDetIndx][iCh][iSide]->SetBinContent(
-                iBin + 1, dWOff - dMean);  //set new value
+            for (Int_t iBin = 0; iBin < fhCorWalk[iDetIndx][iCh][iSide]->GetNbinsX(); iBin++) {
+              Double_t dWOff = fhCorWalk[iDetIndx][iCh][iSide]->GetBinContent(iBin + 1);  // current value
+              fhCorWalk[iDetIndx][iCh][iSide]->SetBinContent(iBin + 1, dWOff - dMean);  //set new value
+              if(iCh==5 && iBin==10) // debugging
+            	LOG(info) << "New Walk for "<<fhCorWalk[iDetIndx][iCh][iSide]->GetName()
+				          << " bin " << iBin
+				          << ": "<<fhCorWalk[iDetIndx][iCh][iSide]->GetBinContent(iBin+1)
+						  << ", Mean " << dMean<<", WOff "<<dWOff;
             }
           }
         }
@@ -517,13 +529,11 @@ void CbmTofCalibrator::ReadHist(TFile* fHist) {
       fhCorWalk[iDetIndx][iCh].resize(2);
       for (Int_t iSide = 0; iSide < 2; iSide++) {
         //LOG(info) << "Get walk histo pointer for TSRCS " << iSmType<<iSm<<iRpc<<iCh<<iSide;
-        fhCorWalk[iDetIndx][iCh][iSide] = (TH1*) gDirectory->FindObjectAny(
+    	  fhCorWalk[iDetIndx][iCh][iSide] = (TH1*) gDirectory->FindObjectAny(
           Form("Cor_SmT%01d_sm%03d_rpc%03d_Ch%03d_S%d_Walk_px",
-               iSmType,
-               iSm,
-               iRpc,
-               iCh,
-               iSide));
+               iSmType, iSm, iRpc, iCh, iSide));
+        if( NULL == fhCorWalk[iDetIndx][iCh][iSide] )
+        	LOG(warn)<<"No Walk histo for TSRCS "<<iSmType<<iSm<<iRpc<<iCh<<iSide;
       }
     }
   }
