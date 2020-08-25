@@ -11,6 +11,7 @@ root -l -q Create_TOF_Geometry_${VGEO}.C
 cp -v tof_${VGEO}.geo.root ../../../../geometry/tof/
 
 cp -v tof_${VGEO}_geo.root ../../../../geometry/tof/geofile_tof_${VGEO}.root
+cp -v tof_${VGEO}_geo.root  ./geofile_tof_${VGEO}.root
 
 CURDIR=`pwd`
 cd ../..
@@ -19,7 +20,6 @@ rm -v ${Setup}*.root
 root -l -q './mcbm_transport.C(0,"'$Setup'")'
 #cp -v ./${Setup}.geo.root     ./geometry/tof/geofile_tof_${VGEO}.root
 #cp -v ./${Setup}.geo.root ../../geometry/tof/geofile_tof_${VGEO}.root
-cp -v ./test.geo.root    ./geometry/tof/geofile_tof_${VGEO}.root
 cp -v ./test.par.root    ./geometry/tof/tof_${Setup}.par.root
 cd $CURDIR
 
