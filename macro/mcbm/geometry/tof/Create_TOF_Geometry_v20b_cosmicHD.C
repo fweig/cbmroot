@@ -117,9 +117,9 @@ const Int_t NCounterInModule[NofModuleTypes]       = {5, 3, 3, 5, 5, 1, 2, 1, 8,
 const Float_t CounterXStartPosition[NofModuleTypes] = {-60., -27.74, -56.0,-60.0,-60.0, 0.0, 0., 0., -7.,   0.};
 const Float_t CounterXDistance[NofModuleTypes]         = {   30.,  30.5,   51.0,  30.0,  30.0, 0.0, 0., 0.,  2.,   0.};
 const Float_t CounterYStartPosition[NofModuleTypes] = { 0.0,     0.0,     0.0,     0.0,   0.0,  0.,    0., -4.,  -1.3, 0.};
-const Float_t CounterYDistance[NofModuleTypes]         = {  0.0,     0.0,     0.0,     0.0,   0.0,  0.,   0.,  8.,  0.,  0.};
-const Float_t CounterZDistance[NofModuleTypes]         = { -2.5,    0.0,   0.0,    2.5,     2.5,    0.,  6.,  0., 0.1, 4.};
-const Float_t CounterZStartPosition[NofModuleTypes] = { 0.0,    0.0,   0.0,    0.0,     0.0,    0.,   -3.,  0., 0.0, -2.};
+const Float_t CounterYDistance[NofModuleTypes]      = {  0.0,     0.0,     0.0,     0.0,   0.0,  0.,   0.,  8.,  0.,  0.};
+const Float_t CounterZDistance[NofModuleTypes]      = { -2.5,    0.0,   0.0,    2.5,     2.5,    0.,  4.,  0., 0.1, 4.};
+const Float_t CounterZStartPosition[NofModuleTypes] = { 0.0,    0.0,   0.0,    0.0,     0.0,    0.,  -3.,  0., 0.0, -1.5};
 const Float_t CounterRotationAngle[NofModuleTypes]  = { 0.,      10.0,    7.0,    0.,       0.,       0.,  0.,   0.,  0.,   0.};
 
 // Pole (support structure)
@@ -177,7 +177,7 @@ const Float_t Outer_Module_Number[Outer_Module_NTypes][Outer_Module_Col] = {9.,9
 //const Float_t Outer_Module_Number[Outer_Module_NTypes][Outer_Module_Col] = {1.,1.,0.,0.,  0.,0.,0.,0.};//debug
 
 const Float_t Star2_First_Z_Position=TOF_Z_Front + 0.;
-const Float_t Star2_Delta_Z_Position[3]={0.,25.,35.};
+const Float_t Star2_Delta_Z_Position[3]={0.,22.3,37.8};
 const Float_t Star2_First_Y_Position=0.;  // 
 const Float_t Star2_Delta_Y_Position=0.;   // 
 const Float_t Star2_rotate_Z=0.;
@@ -186,7 +186,7 @@ const Float_t Star2_Types[Star2_NTypes]  = {9.};
 const Float_t Star2_Number[Star2_NTypes] = {3.}; //debugging, V16b
 const Float_t Star2_X_Offset[Star2_NTypes]={0.}; //{62.};
 
-const Float_t Buc_First_Z_Position=TOF_Z_Front + 48.4;
+const Float_t Buc_First_Z_Position=TOF_Z_Front + 46.3;
 const Float_t Buc_Delta_Z_Position=0.;
 const Float_t Buc_First_Y_Position=-9.;  // 
 const Float_t Buc_Delta_Y_Position=12.;   // 
