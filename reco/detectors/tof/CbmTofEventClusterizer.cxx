@@ -79,6 +79,7 @@ const Double_t fdSpillDuration = 4.;   // in seconds
 const Double_t fdSpillBreak    = 0.9;  // in seconds
 
 static Bool_t bAddBeamCounterSideDigi = kTRUE;
+static TRandom3 *fRndm = new TRandom3();
 
 //   std::vector< CbmTofPoint* > vPtsRef;
 
@@ -861,24 +862,15 @@ Bool_t CbmTofEventClusterizer::InitCalibParameter() {
 
               TH1D* htempWalk0 = (TH1D*) gDirectory->FindObjectAny(
                 Form("Cor_SmT%01d_sm%03d_rpc%03d_Ch%03d_S0_Walk_px",
-                     iSmType,
-                     iSm,
-                     iRpc,
-                     iCh));
+                     iSmType,iSm,iRpc,iCh));
               TH1D* htempWalk1 = (TH1D*) gDirectory->FindObjectAny(
                 Form("Cor_SmT%01d_sm%03d_rpc%03d_Ch%03d_S1_Walk_px",
-                     iSmType,
-                     iSm,
-                     iRpc,
-                     iCh));
+                     iSmType,iSm,iRpc,iCh));
               if (NULL != htempWalk0
                   && NULL != htempWalk1) {  // reinitialize Walk array
                 LOG(debug) << "Initialize Walk correction for "
                            << Form(" SmT%01d_sm%03d_rpc%03d_Ch%03d",
-                                   iSmType,
-                                   iSm,
-                                   iRpc,
-                                   iCh);
+                                   iSmType,iSm,iRpc,iCh);
                 if (htempWalk0->GetNbinsX() != nbClWalkBinX)
                   LOG(error) << "CbmTofEventClusterizer::InitCalibParameter: "
                                 "Inconsistent Walk histograms";
@@ -887,19 +879,18 @@ Bool_t CbmTofEventClusterizer::InitCalibParameter() {
                     htempWalk0->GetBinContent(iBin + 1);
                   fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][1][iBin] =
                     htempWalk1->GetBinContent(iBin + 1);
-                  LOG(debug1) << Form(
-                    " SmT%01d_sm%03d_rpc%03d_Ch%03d bin %d walk %f ",
-                    iSmType,
-                    iSm,
-                    iRpc,
-                    iCh,
-                    iBin,
+                  if(iCh==5 && iBin==10) // debugging
+                  LOG(info) << Form(
+                    "Read New SmT%01d_sm%03d_rpc%03d_Ch%03d bin %d walk %f ",
+                    iSmType,iSm,iRpc,iCh,iBin,
                     fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][0][iBin]);
                   if (5 == iSmType || 8 == iSmType) {  // Pad structure
                     fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][1][iBin] =
                       fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][0][iBin];
                   }
                 }
+              } else {
+            	LOG(info) << "No Walk histograms for TSRC " <<iSmType<<iSm<<iRpc<<iCh;
               }
             }
           } else {
@@ -4613,6 +4604,7 @@ Bool_t CbmTofEventClusterizer::WriteHistos() {
             fvCPTotGain[iSmType][iSm*iNbRpc+iRpc][iCh][1] *= fdTTotMean / TotMean;
           }
           */
+            if(fCalMode < 90)  // keep digi TOT calibration in last step
             for (Int_t iSide = 0; iSide < 2; iSide++) {
               Int_t ib  = iCh * 2 + 1 + iSide;
               TH1* hbin = htempTot->ProjectionY(Form("bin%d", ib), ib, ib);
@@ -7400,7 +7392,7 @@ Bool_t CbmTofEventClusterizer::CalibRawDigis() {
       LOG(debug2) << " CluCal-TOff: " << pCalDigi->ToString();
 
       Double_t dTot =
-        pCalDigi->GetTot() -  // subtract Offset
+        pCalDigi->GetTot()+fRndm->Uniform(0,1) -  // subtract Offset
         fvCPTotOff[pDigi->GetType()]
                   [pDigi->GetSm() * fDigiBdfPar->GetNbRpc(pDigi->GetType())
                    + pDigi->GetRpc()][pDigi->GetChannel()][pDigi->GetSide()];
