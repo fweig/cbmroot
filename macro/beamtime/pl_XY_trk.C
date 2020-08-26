@@ -1,4 +1,4 @@
-void pl_XY_trk(Int_t NSt = 4, Double_t MinEff = 0.5, Double_t dThr = 0.01) {
+void pl_XY_trk(Int_t NSt = 4, Double_t MinEff = 0.5, Double_t dThr = 0.1) {
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   TCanvas* can = new TCanvas("can", "can", 50, 0, 800, 800);
