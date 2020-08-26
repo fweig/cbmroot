@@ -278,15 +278,24 @@ void CbmTrdParManager::CreateModuleParameters(const TString& path) {
       chAddressesVec.clear();
       chAddressesVec.resize(nAsicChannels);
 
-      Int_t iAsicChannel(0);
+      Int_t iAsicChannel =
+        0;  // This is the nth asic channel as it is written to the raw messages
       for (auto channelAddress : chAddressesVec) {
-        // Each row of asic channels for one spadic has its own eLink. The numbering of the channels is stored in the GetElinkChannel() function
-        channelAddress = asic->GetElinkChannel(iAsicChannel);
-        if ((iAsicChannel % 2 != 0))
-          channelAddress +=
-            nModuleColumns;  // one asic is split over two rows with odd channels in the top row, thus there address is placed in the next column
+        // Now apply the asic specific mapping
+        channelAddress = asic->GetAsicChAddress(
+          iAsicChannel);  // returns the channeladdress in the scope of one asic
+
+        // Get the channel addressed to the top or bottom row of the single asic
+        if ((channelAddress / (nAsicChannels / 2)) > 0) {
+          // if the address corresponds to the second 16 channels 16..31 it goes into the next row
+          channelAddress -= (nAsicChannels / 2);
+          // since we have only 16 channels per row we have to subtract 16 from channels 16..31
+          channelAddress += nModuleColumns;
+        }
+        // move channel address to the correct column according to the asic column position
         channelAddress +=
           nThAsicColumn * nAsicChannels / 2;  // one asic is split over two rows
+        // move channel address to the correct row according to the asic row position
         channelAddress +=
           nThAsicRow * nModuleColumns * 2;  // one asic is split over two rows
 

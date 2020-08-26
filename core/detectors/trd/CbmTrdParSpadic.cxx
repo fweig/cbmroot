@@ -183,13 +183,21 @@ Int_t CbmTrdParSpadic::GetNasicsPerCrob(Int_t moduleType) {
   return nAsicsPerCrob;
 }
 
-// ---- GetElinkChannel ----------------------------------------------------
-Int_t CbmTrdParSpadic::GetElinkChannel(Int_t channelNumber) {
-  ///< Returns the asic channel number from 00..15 (2 eLinks) in asic coordinates. Spadic channels are not mapped from 00 to 31 in padplane coordinates, this function returns the asic channel in padplane coordinates in the system of one asic (not in the channel map of a full module!)
-  std::vector<Int_t> spadicChannelMap = {
-    15, 15, 14, 14, 13, 13, 12, 12, 11, 11, 10, 10, 9, 9, 8, 8,
-    7,  7,  6,  6,  5,  5,  4,  4,  3,  3,  2,  2,  1, 1, 0, 0};
-  return spadicChannelMap.at(channelNumber);
+// ---- GetAsicChAddress ----
+Int_t CbmTrdParSpadic::GetAsicChAddress(const Int_t asicChannel) {
+  Int_t address = -1;
+  ///< Returns the nth asic Channel in asic coordinates in single asic padplane coordinates. Spadic channels are not mapped from 00 to 31 in padplane coordinates, this function returns the padplane channelnumber in the system of one asic(not in the channel map of a full module !)
+  auto elinkCh = asicChannel;
+  if (asicChannel > 15)
+    elinkCh -= NSPADICCH / 2;  // The mapping is symmetric for the elinks
+  std::vector<Int_t> chvec = {
+    15, 7, 14, 6, 13, 11, 5, 12, 10, 4, 3, 9, 8, 2, 1, 0};
+  address = chvec.at(elinkCh);
+  if (asicChannel > 15)
+    address +=
+      NSPADICCH
+      / 2;  // Get the correct value for the channels in the second elink
+  return address;
 }
 
 ClassImp(CbmTrdParSpadic)

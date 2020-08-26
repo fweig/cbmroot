@@ -884,10 +884,11 @@ CbmMcbm2018UnpackerAlgoTrdR::MakeDigi(CbmTrdRawMessageSpadic raw) {
   Int_t uniqueModuleId = asicAddress / 1000;
   // Int_t layerId(CbmTrdAddress::GetLayerId(uniqueModuleId));
   // Int_t moduleId(CbmTrdAddress::GetModuleId(uniqueModuleId));
-  Int_t asicChannelId(0);
-  asicChannelId = (raw.GetElinkId() % 2) == fIsFirstChannelsElinkEven
-                    ? raw.GetChannelId()
-                    : raw.GetChannelId() + NSPADICCH / 2;
+
+  auto asicChannelId = (raw.GetElinkId() % 2) == fIsFirstChannelsElinkEven
+                         ? raw.GetChannelId()
+                         : raw.GetChannelId() + NSPADICCH / 2;
+
   digiAddress = (fAsicChannelMap.find(asicAddress))->second.at(asicChannelId);
 
   std::shared_ptr<CbmTrdDigi> digi =

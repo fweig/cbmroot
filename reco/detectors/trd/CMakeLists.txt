@@ -73,8 +73,8 @@ ELSE (SSE_FOUND)
   "-O3")
 ENDIF (SSE_FOUND)
 
-set(LINKDEF CbmTrdRecLinkDef.h)
-Set(LIBRARY_NAME CbmTrdRec)
+set(LINKDEF CbmTrdRecoLinkDef.h)
+Set(LIBRARY_NAME CbmTrdReco)
 Set(DEPENDENCIES
     CbmRecoBase CbmBase CbmData Base CbmTrdBase TMVA
 )

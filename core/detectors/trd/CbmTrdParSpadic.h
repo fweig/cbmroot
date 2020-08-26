@@ -69,9 +69,8 @@ public:
   UInt_t GetAddressOnModule() const {
     return fAddress % 1000;
   }  ///< Returns the number of the asic on the module counted from top left
-  Int_t GetElinkChannel(
-    Int_t
-      channelNumber);  ///< Returns the asic channel number from 00..15 (2 eLinks) in asic coordinates. Spadic channels are not mapped from 00 to 31 in padplane coordinates, this function returns the asic channel in padplane coordinates in the system of one asic (not in the channel map of a full module!)
+  Int_t GetAsicChAddress(const Int_t asicChannel);
+  ///< Returns the nth asic Channel in asic coordinates in single asic padplane coordinates. Spadic channels are not mapped from 00 to 31 in padplane coordinates, this function returns the padplane channelnumber in the system of one asic(not in the channel map of a full module !)
 
 
 private:
