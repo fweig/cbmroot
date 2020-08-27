@@ -885,9 +885,10 @@ CbmMcbm2018UnpackerAlgoTrdR::MakeDigi(CbmTrdRawMessageSpadic raw) {
   // Int_t layerId(CbmTrdAddress::GetLayerId(uniqueModuleId));
   // Int_t moduleId(CbmTrdAddress::GetModuleId(uniqueModuleId));
 
+  // GetChannelId per eLink add NSPADICCH / 2 to the second(first) eLink in the case we start with odd(even) eLinks, since, our mapping is based on odd eLinks
   auto asicChannelId = (raw.GetElinkId() % 2) == fIsFirstChannelsElinkEven
                          ? raw.GetChannelId()
-                         : raw.GetChannelId() + NSPADICCH / 2;
+                         : raw.GetChannelId() + (NSPADICCH / 2);
 
   digiAddress = (fAsicChannelMap.find(asicAddress))->second.at(asicChannelId);
 
@@ -898,11 +899,6 @@ CbmMcbm2018UnpackerAlgoTrdR::MakeDigi(CbmTrdRawMessageSpadic raw) {
                                             digiTime,
                                             digiTriggerType,
                                             digiErrClass));
-  // digi->SetAddress(CbmTrdAddress::GetAddress(layerId, moduleId, 0, 0, 0));
-
-  // Int_t channelAddress = digi->GetAddressChannel();
-  // Int_t address = digi->GetAddress();
-  // printf("HelloWorld -- We have a digi with spadicHwAddress %lu - criId %d - eLinkId %d - asicAddress %d - layerId %d - moduleId %d - channelId %d -\n digiAddress %d -- channelAddress %d - fullAddress %d\n", spadicHwAddress, raw.GetCriId(), raw.GetElinkId(), asicAddress, layerId, moduleId, asicChannelId, digiAddress, channelAddress, address);
 
   return digi;
 }

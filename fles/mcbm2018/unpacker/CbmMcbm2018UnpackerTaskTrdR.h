@@ -92,6 +92,10 @@ public:
     fdMsSizeInNs = msSizeInNs;
   }  // TODO handle this with asic parameter files
 
+  void SetFirstChannelsElinkEven(bool isEven) {
+    fIsFirstChannelsElinkEven = isEven;
+  }  /// < Set wether channels 00..15 are on the even (true) or the odd (false and default) elink
+
 private:
   // Control flags
   Bool_t
@@ -108,6 +112,8 @@ private:
     fSystemIdentifier;  ///< by default set to: fles::SubsystemIdentifier::TRD, changable via setter
   Double_t
     fdMsSizeInNs;  ///< microslice size in ns to be passed to the unpacker // TODO handle this with asic parameter files
+  bool fIsFirstChannelsElinkEven =
+    false;  ///< define if the first 16 channels (00..15) are found on the even (set true) or odd (false) eLinkId, default for mCbm2020 is false thus, initialized as false
 
   TString fMonitorHistoFileName;
   std::vector<bool> fIsActiveHistoVec;  // Define active histos in algo

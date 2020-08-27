@@ -71,6 +71,7 @@ Bool_t CbmMcbm2018UnpackerTaskTrdR::Init() {
 
   fUnpackerAlgo->SetMsSizeInNs(
     fdMsSizeInNs);  // TODO handle this with asic parameter files
+  fUnpackerAlgo->SetFirstChannelsElinkEven(fIsFirstChannelsElinkEven);
   initOK &= fUnpackerAlgo->Init();
 
   if (initOK) {
