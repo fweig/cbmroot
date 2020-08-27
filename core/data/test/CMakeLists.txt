@@ -4,7 +4,7 @@ Macro(CreateGTestExeAndAddTest _testname _includeDirs _linkDirs _sources _depend
   Link_Directories(${_linkDirs})
 
   Add_Executable(${_testname} ${_sources})
-  Target_Link_Libraries(${_testname} "${_dependencies}")
+  Target_Link_Libraries(${_testname} ${_dependencies})
   Gen_Exe_Script(${_testname})
   string(REPLACE ${PROJECT_SOURCE_DIR}
          ${PROJECT_BINARY_DIR} new_path ${CMAKE_CURRENT_SOURCE_DIR}
