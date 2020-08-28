@@ -17,14 +17,12 @@
 //
 // --------------------------------------------------------------------------
 
-void eventDisplay_reco(
-	       TString cSys="lam", 
-	       TString cEbeam="2.5gev",
-	       TString cCentr="-",
-	       Int_t   iRun=0,
-	       Int_t parSet=0,
-	       const char* setupName = "sis18_mcbm")
-{
+void eventDisplay_reco(TString cSys          = "lam",
+                       TString cEbeam        = "2.5gev",
+                       TString cCentr        = "-",
+                       Int_t iRun            = 0,
+                       Int_t parSet          = 0,
+                       const char* setupName = "sis18_mcbm") {
   // -----   Environment   --------------------------------------------------
   TString myName = "run_reco_nh";  // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
@@ -34,10 +32,16 @@ void eventDisplay_reco(
   // Verbosity level (0=quiet, 1=event level, 2=track level, 3=debug)
   Int_t iVerbose = 0;
 
-  TString outDir  = "data/";
-  TString inFile  = outDir + setupName + "_" + cSys + "." + cEbeam + "." + cCentr + ".mc." + Form("%05d",iRun) + ".root"; // Input file (MC events)
-  TString parFile = outDir + setupName + "_" + cSys + "." + cEbeam + "." + cCentr + ".params." + Form("%05d",iRun) + ".root";  // Parameter file
-  TString outFile = outDir + setupName + "_" + cSys + "." + cEbeam + "." + cCentr + ".evt." + Form("%05d",iRun) + ".root";     // Output file
+  TString outDir = "data/";
+  TString inFile = outDir + setupName + "_" + cSys + "." + cEbeam + "." + cCentr
+                   + ".mc." + Form("%05d", iRun)
+                   + ".root";  // Input file (MC events)
+  TString parFile = outDir + setupName + "_" + cSys + "." + cEbeam + "."
+                    + cCentr + ".params." + Form("%05d", iRun)
+                    + ".root";  // Parameter file
+  TString outFile = outDir + setupName + "_" + cSys + "." + cEbeam + "."
+                    + cCentr + ".evt." + Form("%05d", iRun)
+                    + ".root";  // Output file
 
   //FairLogger::GetLogger()->SetLogScreenLevel("WARNING");
   //FairLogger::GetLogger()->SetLogScreenLevel("INFO");
@@ -48,9 +52,9 @@ void eventDisplay_reco(
   // -----   Load the geometry setup   -------------------------------------
   std::cout << std::endl;
 
-  TString setupFile = srcDir + "/geometry/setup/setup_" + setupName + ".C";
+  TString setupFile  = srcDir + "/geometry/setup/setup_" + setupName + ".C";
   TString setupFunct = "setup_";
-  setupFunct = setupFunct + setupName + "()";
+  setupFunct         = setupFunct + setupName + "()";
   std::cout << "-I- mcbm_reco: Loading macro " << setupFile << std::endl;
   gROOT->LoadMacro(setupFile);
   gROOT->ProcessLine(setupFunct);
@@ -61,27 +65,30 @@ void eventDisplay_reco(
   // -----   Parameter files as input to the runtime database   -------------
   std::cout << std::endl;
   std::cout << "-I- " << myName << ": Defining parameter files " << std::endl;
-  TList *parFileList = new TList();
+  TList* parFileList = new TList();
   TString geoTag;
 
   // - TRD digitisation parameters
-  if ( setup->GetGeoTag(kTrd, geoTag) ) {
-  	TObjString* trdFile = new TObjString(srcDir + "/parameters/trd/trd_" + geoTag + ".digi.par");
-  	parFileList->Add(trdFile);
+  if (setup->GetGeoTag(kTrd, geoTag)) {
+    TObjString* trdFile =
+      new TObjString(srcDir + "/parameters/trd/trd_" + geoTag + ".digi.par");
+    parFileList->Add(trdFile);
     std::cout << "-I- " << myName << ": Using parameter file "
-    		      << trdFile->GetString() << std::endl;
+              << trdFile->GetString() << std::endl;
   }
 
   // - TOF digitisation parameters
-  if ( setup->GetGeoTag(kTof, geoTag) ) {
-  	TObjString* tofFile = new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digi.par");
-  	parFileList->Add(tofFile);
+  if (setup->GetGeoTag(kTof, geoTag)) {
+    TObjString* tofFile =
+      new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digi.par");
+    parFileList->Add(tofFile);
     std::cout << "-I- " << myName << ": Using parameter file "
-    		      << tofFile->GetString() << std::endl;
-  	TObjString* tofBdfFile = new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
-  	parFileList->Add(tofBdfFile);
+              << tofFile->GetString() << std::endl;
+    TObjString* tofBdfFile =
+      new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
+    parFileList->Add(tofBdfFile);
     std::cout << "-I- " << myName << ": Using parameter file "
-    		      << tofBdfFile->GetString() << std::endl;
+              << tofBdfFile->GetString() << std::endl;
   }
   // ------------------------------------------------------------------------
 
@@ -107,7 +114,7 @@ void eventDisplay_reco(
 
 
   // -----   FairRunAna   ---------------------------------------------------
-  FairRunAna *run = new FairRunAna();
+  FairRunAna* run = new FairRunAna();
   run->SetInputFile(inFile);
   run->SetOutputFile(outFile);
   run->SetGenerateRunInfo(kTRUE);
@@ -117,11 +124,11 @@ void eventDisplay_reco(
   // ------------------------------------------------------------------------
 
   // ----- MC Data Manager   ------------------------------------------------
-  CbmMCDataManager* mcManager=new CbmMCDataManager("MCManager", 1);
+  CbmMCDataManager* mcManager = new CbmMCDataManager("MCManager", 1);
   mcManager->AddFile(inFile);
   run->AddTask(mcManager);
   // ------------------------------------------------------------------------
-	
+
 
   // -----   Digitisers   ---------------------------------------------------
   std::cout << std::endl;
@@ -139,10 +146,10 @@ void eventDisplay_reco(
   std::cout << "Loading macro " << macroName << std::endl;
   gROOT->LoadMacro(macroName);
   Bool_t recoSuccess = gROOT->ProcessLine("reconstruct()");
-  if ( ! recoSuccess ) {
-  	std::cerr << "-E-" << myName << ": error in executing " << macroName
-  			<< std::endl;
-  	return;
+  if (!recoSuccess) {
+    std::cerr << "-E-" << myName << ": error in executing " << macroName
+              << std::endl;
+    return;
   }
 
   // =========================================================================
@@ -156,76 +163,117 @@ void eventDisplay_reco(
   run->AddTask(tofQa);
 
 
-  CbmHadronAnalysis *HadronAna = new CbmHadronAnalysis(); // interpret event
-  HadronAna->SetRecSec(kTRUE);     // enable lambda reconstruction
-  switch(parSet){
-    case 0: // with background  
-      HadronAna->SetDistPrimLim(1.2);  // Max Tof-Sts trans distance for primaries
-      HadronAna->SetDistPrimLim2(0.3); // Max Sts-Sts trans distance for primaries 
-      HadronAna->SetDistSecLim2(0.3);  // Max Sts-Sts trans distance from TOF direction for secondaries  
-      HadronAna->SetD0ProtLim(0.5);    // Min impact parameter for secondary proton 
-      HadronAna->SetOpAngMin(0.1);     // Min opening angle for accepting pair
-      HadronAna->SetDCALim(0.1);       // Max DCA for accepting pair
-      HadronAna->SetVLenMin(5.);       // Min Lambda flight path length for accepting pair  
-      HadronAna->SetVLenMax(25.);      // Max Lambda flight path length for accepting pair  
-      HadronAna->SetDistTRD(10.);      // max accepted distance of Trd Hit from STS-TOF line 
-      HadronAna->SetTRDHmulMin(0.);    // min associated Trd Hits to Track candidates
-      HadronAna->SetNMixedEvents(10);  // Number of events to be mixed with 
+  CbmHadronAnalysis* HadronAna = new CbmHadronAnalysis();  // interpret event
+  HadronAna->SetRecSec(kTRUE);  // enable lambda reconstruction
+  switch (parSet) {
+    case 0:  // with background
+      HadronAna->SetDistPrimLim(
+        1.2);  // Max Tof-Sts trans distance for primaries
+      HadronAna->SetDistPrimLim2(
+        0.3);  // Max Sts-Sts trans distance for primaries
+      HadronAna->SetDistSecLim2(
+        0.3);  // Max Sts-Sts trans distance from TOF direction for secondaries
+      HadronAna->SetD0ProtLim(
+        0.5);                       // Min impact parameter for secondary proton
+      HadronAna->SetOpAngMin(0.1);  // Min opening angle for accepting pair
+      HadronAna->SetDCALim(0.1);    // Max DCA for accepting pair
+      HadronAna->SetVLenMin(
+        5.);  // Min Lambda flight path length for accepting pair
+      HadronAna->SetVLenMax(
+        25.);  // Max Lambda flight path length for accepting pair
+      HadronAna->SetDistTRD(
+        10.);  // max accepted distance of Trd Hit from STS-TOF line
+      HadronAna->SetTRDHmulMin(
+        0.);  // min associated Trd Hits to Track candidates
+      HadronAna->SetNMixedEvents(10);  // Number of events to be mixed with
       break;
-    case 1:  // signal with background Ni+Ni 
-      HadronAna->SetDistPrimLim(1.);  // Max Tof-Sts trans distance for primaries
-      HadronAna->SetDistPrimLim2(0.3); // Max Sts-Sts trans distance for primaries 
-      HadronAna->SetDistSecLim2(0.3);  // Max Sts-Sts trans distance from TOF direction for secondaries  
-      HadronAna->SetD0ProtLim(0.4);    // Min impact parameter for secondary proton 
-      HadronAna->SetOpAngMin(0.1);     // Min opening angle for accepting pair
-      HadronAna->SetDCALim(0.1);       // Max DCA for accepting pair
-      HadronAna->SetVLenMin(5.);       // Min Lambda flight path length for accepting pair  
-      HadronAna->SetVLenMax(25.);      // Max Lambda flight path length for accepting pair  
-      HadronAna->SetDistTRD(10.);      // max accepted distance of Trd Hit from STS-TOF line 
-      HadronAna->SetTRDHmulMin(0.);    // min associated Trd Hits to Track candidates
-      HadronAna->SetNMixedEvents(10);  // Number of events to be mixed with 
+    case 1:  // signal with background Ni+Ni
+      HadronAna->SetDistPrimLim(
+        1.);  // Max Tof-Sts trans distance for primaries
+      HadronAna->SetDistPrimLim2(
+        0.3);  // Max Sts-Sts trans distance for primaries
+      HadronAna->SetDistSecLim2(
+        0.3);  // Max Sts-Sts trans distance from TOF direction for secondaries
+      HadronAna->SetD0ProtLim(
+        0.4);                       // Min impact parameter for secondary proton
+      HadronAna->SetOpAngMin(0.1);  // Min opening angle for accepting pair
+      HadronAna->SetDCALim(0.1);    // Max DCA for accepting pair
+      HadronAna->SetVLenMin(
+        5.);  // Min Lambda flight path length for accepting pair
+      HadronAna->SetVLenMax(
+        25.);  // Max Lambda flight path length for accepting pair
+      HadronAna->SetDistTRD(
+        10.);  // max accepted distance of Trd Hit from STS-TOF line
+      HadronAna->SetTRDHmulMin(
+        0.);  // min associated Trd Hits to Track candidates
+      HadronAna->SetNMixedEvents(10);  // Number of events to be mixed with
       break;
-    case 2:  // signal with background Au+Au 
-      HadronAna->SetDistPrimLim(1.);  // Max Tof-Sts trans distance for primaries
-      HadronAna->SetDistPrimLim2(0.3); // Max Sts-Sts trans distance for primaries 
-      HadronAna->SetDistSecLim2(0.3);  // Max Sts-Sts trans distance from TOF direction for secondaries  
-      HadronAna->SetD0ProtLim(0.4);    // Min impact parameter for secondary proton 
-      HadronAna->SetOpAngMin(0.1);     // Min opening angle for accepting pair
-      HadronAna->SetDCALim(0.1);       // Max DCA for accepting pair
-      HadronAna->SetVLenMin(8.);       // Min Lambda flight path length for accepting pair  
-      HadronAna->SetVLenMax(25.);      // Max Lambda flight path length for accepting pair  
-      HadronAna->SetDistTRD(10.);      // max accepted distance of Trd Hit from STS-TOF line 
-      HadronAna->SetTRDHmulMin(0.);    // min associated Trd Hits to Track candidates
-      HadronAna->SetNMixedEvents(10);  // Number of events to be mixed with 
+    case 2:  // signal with background Au+Au
+      HadronAna->SetDistPrimLim(
+        1.);  // Max Tof-Sts trans distance for primaries
+      HadronAna->SetDistPrimLim2(
+        0.3);  // Max Sts-Sts trans distance for primaries
+      HadronAna->SetDistSecLim2(
+        0.3);  // Max Sts-Sts trans distance from TOF direction for secondaries
+      HadronAna->SetD0ProtLim(
+        0.4);                       // Min impact parameter for secondary proton
+      HadronAna->SetOpAngMin(0.1);  // Min opening angle for accepting pair
+      HadronAna->SetDCALim(0.1);    // Max DCA for accepting pair
+      HadronAna->SetVLenMin(
+        8.);  // Min Lambda flight path length for accepting pair
+      HadronAna->SetVLenMax(
+        25.);  // Max Lambda flight path length for accepting pair
+      HadronAna->SetDistTRD(
+        10.);  // max accepted distance of Trd Hit from STS-TOF line
+      HadronAna->SetTRDHmulMin(
+        0.);  // min associated Trd Hits to Track candidates
+      HadronAna->SetNMixedEvents(10);  // Number of events to be mixed with
       break;
-    case 10:                           // "0" with TRD Mul 1  
-      HadronAna->SetDistPrimLim(1.2);  // Max Tof-Sts trans distance for primaries
-      HadronAna->SetDistPrimLim2(0.3); // Max Sts-Sts trans distance for primaries 
-      HadronAna->SetDistSecLim2(0.3);  // Max Sts-Sts trans distance from TOF direction for secondaries  
-      HadronAna->SetD0ProtLim(0.5);    // Min impact parameter for secondary proton 
-      HadronAna->SetOpAngMin(0.1);     // Min opening angle for accepting pair
-      HadronAna->SetDCALim(0.1);       // Max DCA for accepting pair
-      HadronAna->SetVLenMin(5.);       // Min Lambda flight path length for accepting pair  
-      HadronAna->SetVLenMax(25.);      // Max Lambda flight path length for accepting pair  
-      HadronAna->SetDistTRD(10.);      // max accepted distance of Trd Hit from STS-TOF line 
-      HadronAna->SetTRDHmulMin(1.);    // min associated Trd Hits to Track candidates
-      HadronAna->SetNMixedEvents(10);  // Number of events to be mixed with 
+    case 10:  // "0" with TRD Mul 1
+      HadronAna->SetDistPrimLim(
+        1.2);  // Max Tof-Sts trans distance for primaries
+      HadronAna->SetDistPrimLim2(
+        0.3);  // Max Sts-Sts trans distance for primaries
+      HadronAna->SetDistSecLim2(
+        0.3);  // Max Sts-Sts trans distance from TOF direction for secondaries
+      HadronAna->SetD0ProtLim(
+        0.5);                       // Min impact parameter for secondary proton
+      HadronAna->SetOpAngMin(0.1);  // Min opening angle for accepting pair
+      HadronAna->SetDCALim(0.1);    // Max DCA for accepting pair
+      HadronAna->SetVLenMin(
+        5.);  // Min Lambda flight path length for accepting pair
+      HadronAna->SetVLenMax(
+        25.);  // Max Lambda flight path length for accepting pair
+      HadronAna->SetDistTRD(
+        10.);  // max accepted distance of Trd Hit from STS-TOF line
+      HadronAna->SetTRDHmulMin(
+        1.);  // min associated Trd Hits to Track candidates
+      HadronAna->SetNMixedEvents(10);  // Number of events to be mixed with
       break;
-    case 20:                           // "0" with TRD Mul 2  
-      HadronAna->SetDistPrimLim(1.2);  // Max Tof-Sts trans distance for primaries
-      HadronAna->SetDistPrimLim2(0.3); // Max Sts-Sts trans distance for primaries 
-      HadronAna->SetDistSecLim2(0.3);  // Max Sts-Sts trans distance from TOF direction for secondaries  
-      HadronAna->SetD0ProtLim(0.5);    // Min impact parameter for secondary proton 
-      HadronAna->SetOpAngMin(0.1);     // Min opening angle for accepting pair
-      HadronAna->SetDCALim(0.1);       // Max DCA for accepting pair
-      HadronAna->SetVLenMin(5.);       // Min Lambda flight path length for accepting pair  
-      HadronAna->SetVLenMax(25.);      // Max Lambda flight path length for accepting pair  
-      HadronAna->SetDistTRD(10.);      // max accepted distance of Trd Hit from STS-TOF line 
-      HadronAna->SetTRDHmulMin(2.);    // min associated Trd Hits to Track candidates
-      HadronAna->SetNMixedEvents(10);  // Number of events to be mixed with 
+    case 20:  // "0" with TRD Mul 2
+      HadronAna->SetDistPrimLim(
+        1.2);  // Max Tof-Sts trans distance for primaries
+      HadronAna->SetDistPrimLim2(
+        0.3);  // Max Sts-Sts trans distance for primaries
+      HadronAna->SetDistSecLim2(
+        0.3);  // Max Sts-Sts trans distance from TOF direction for secondaries
+      HadronAna->SetD0ProtLim(
+        0.5);                       // Min impact parameter for secondary proton
+      HadronAna->SetOpAngMin(0.1);  // Min opening angle for accepting pair
+      HadronAna->SetDCALim(0.1);    // Max DCA for accepting pair
+      HadronAna->SetVLenMin(
+        5.);  // Min Lambda flight path length for accepting pair
+      HadronAna->SetVLenMax(
+        25.);  // Max Lambda flight path length for accepting pair
+      HadronAna->SetDistTRD(
+        10.);  // max accepted distance of Trd Hit from STS-TOF line
+      HadronAna->SetTRDHmulMin(
+        2.);  // min associated Trd Hits to Track candidates
+      HadronAna->SetNMixedEvents(10);  // Number of events to be mixed with
       break;
     default:
-      cout << "Cut value set " <<parSet<<" not existing, stop macro "<< endl;
+      cout << "Cut value set " << parSet << " not existing, stop macro "
+           << endl;
       return;
   }
   run->AddTask(HadronAna);
@@ -233,8 +281,8 @@ void eventDisplay_reco(
   // -----  Parameter database   --------------------------------------------
   std::cout << std::endl << std::endl;
   std::cout << "-I- " << myName << ": Set runtime DB" << std::endl;
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
-  FairParRootFileIo* parIo1 = new FairParRootFileIo();
+  FairRuntimeDb* rtdb        = run->GetRuntimeDb();
+  FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
   parIo1->open(parFile.Data());
   parIo2->open(parFileList, "in");
@@ -242,71 +290,82 @@ void eventDisplay_reco(
   rtdb->setSecondInput(parIo2);
   rtdb->setOutput(parIo1);
   rtdb->saveOutput();
- // ------------------------------------------------------------------------
+  // ------------------------------------------------------------------------
 
-  FairEventManager *fMan  = new FairEventManager();
-  FairMCTracks     *Track = new FairMCTracks ("Monte-Carlo Tracks");
+  FairEventManager* fMan = new FairEventManager();
+  FairMCTracks* Track    = new FairMCTracks("Monte-Carlo Tracks");
 
-  FairMCPointDraw  *MvdPoint      = new FairMCPointDraw ("MvdPoint",      kBlack,  kFullSquare);
-  FairMCPointDraw  *StsPoint      = new FairMCPointDraw ("StsPoint",      kGreen,  kFullSquare);
-  FairMCPointDraw  *MuchPoint     = new FairMCPointDraw ("MuchPoint",     kOrange, kFullSquare);
-  FairMCPointDraw  *RichPoint     = new FairMCPointDraw ("RichPoint",     kRed,    kFullSquare);
-  FairMCPointDraw  *TrdPoint      = new FairMCPointDraw ("TrdPoint",      kBlue,   kFullSquare);
-  FairMCPointDraw  *TofPoint      = new FairMCPointDraw ("TofPoint",      kGreen,  kFullSquare);
-  FairMCPointDraw  *EcalPoint     = new FairMCPointDraw ("EcalPoint",     kYellow, kFullSquare);
-  FairMCPointDraw  *RefPlanePoint = new FairMCPointDraw ("RefPlanePoint", kPink,   kFullSquare);
-                                                               
+  FairMCPointDraw* MvdPoint =
+    new FairMCPointDraw("MvdPoint", kBlack, kFullSquare);
+  FairMCPointDraw* StsPoint =
+    new FairMCPointDraw("StsPoint", kGreen, kFullSquare);
+  FairMCPointDraw* MuchPoint =
+    new FairMCPointDraw("MuchPoint", kOrange, kFullSquare);
+  FairMCPointDraw* RichPoint =
+    new FairMCPointDraw("RichPoint", kRed, kFullSquare);
+  FairMCPointDraw* TrdPoint =
+    new FairMCPointDraw("TrdPoint", kBlue, kFullSquare);
+  FairMCPointDraw* TofPoint =
+    new FairMCPointDraw("TofPoint", kGreen, kFullSquare);
+  FairMCPointDraw* EcalPoint =
+    new FairMCPointDraw("EcalPoint", kYellow, kFullSquare);
+  FairMCPointDraw* RefPlanePoint =
+    new FairMCPointDraw("RefPlanePoint", kPink, kFullSquare);
+
   fMan->AddTask(Track);
- 
+
   fMan->AddTask(MvdPoint);
   fMan->AddTask(StsPoint);
   fMan->AddTask(MuchPoint);
   fMan->AddTask(RichPoint);
   fMan->AddTask(TrdPoint);
-  fMan->AddTask(TofPoint);   
-  fMan->AddTask(EcalPoint);   
+  fMan->AddTask(TofPoint);
+  fMan->AddTask(EcalPoint);
   fMan->AddTask(RefPlanePoint);
-  CbmPixelHitSetDraw *StsHits = new CbmPixelHitSetDraw ("StsHit", kRed, kOpenCircle );// kFullSquare);
-  fMan->AddTask(StsHits);   
-  CbmPixelHitSetDraw *TrdHits = new CbmPixelHitSetDraw ("TrdHit", kRed, kOpenCircle );// kFullSquare);
-  fMan->AddTask(TrdHits);   
-  CbmPixelHitSetDraw *TofHits = new CbmPixelHitSetDraw ("TofHit", kRed, kOpenCircle );// kFullSquare);
-  fMan->AddTask(TofHits);   
-  CbmPixelHitSetDraw *TofUHits = new CbmPixelHitSetDraw ("TofUHit", kRed, kOpenCross );
-  fMan->AddTask(TofUHits); 
-  CbmEvDisTracks *Tracks =  new CbmEvDisTracks ("Tof Tracks",1);
+  CbmPixelHitSetDraw* StsHits =
+    new CbmPixelHitSetDraw("StsHit", kRed, kOpenCircle);  // kFullSquare);
+  fMan->AddTask(StsHits);
+  CbmPixelHitSetDraw* TrdHits =
+    new CbmPixelHitSetDraw("TrdHit", kRed, kOpenCircle);  // kFullSquare);
+  fMan->AddTask(TrdHits);
+  CbmPixelHitSetDraw* TofHits =
+    new CbmPixelHitSetDraw("TofHit", kRed, kOpenCircle);  // kFullSquare);
+  fMan->AddTask(TofHits);
+  CbmPixelHitSetDraw* TofUHits =
+    new CbmPixelHitSetDraw("TofUHit", kRed, kOpenCross);
+  fMan->AddTask(TofUHits);
+  CbmEvDisTracks* Tracks = new CbmEvDisTracks("Tof Tracks", 1);
   Tracks->SetVerbose(4);
   fMan->AddTask(Tracks);
-    
+
   //  fMan->Init(1,4,10000);
   //  fMan->Init(1,5,10000);  // make STS visible by default
-  fMan->Init(1,6,10000);  // make MVD visible by default
+  fMan->Init(1, 6, 10000);  // make MVD visible by default
 
   //TGeoVolume* top = gGeoManager->GetTopVolume();
   //gGeoManager->SetVisOption(1);
   //gGeoManager->SetVisLevel(5);
   TObjArray* allvolumes = gGeoManager->GetListOfVolumes();
   //cout<<"GeoVolumes  "  << gGeoManager->GetListOfVolumes()->GetEntries()<<endl;
-  for(Int_t i=0; i<allvolumes->GetEntries(); i++){
-    TGeoVolume* vol     = (TGeoVolume*)allvolumes->At(i);
-    TString name = vol->GetName();
-    cout << " GeoVolume "<<i<<" Name: "<< name << endl;
+  for (Int_t i = 0; i < allvolumes->GetEntries(); i++) {
+    TGeoVolume* vol = (TGeoVolume*) allvolumes->At(i);
+    TString name    = vol->GetName();
+    cout << " GeoVolume " << i << " Name: " << name << endl;
     vol->SetTransparency(99);
   }
 
-  cout << "gEve "<< gEve << endl;
-  gEve->GetDefaultGLViewer()->SetClearColor(kYellow-10);
-  {   // from readCurrentCamera(const char* fname)
-  TGLCamera& c = gEve->GetDefaultGLViewer()->CurrentCamera();
-  const char* fname="Cam.sav";
-  TFile* f = TFile::Open(fname, "READ");
-  if (!f) 
-    return;
-  if (f->GetKey(c.ClassName())) {
-    f->GetKey(c.ClassName())->Read(&c);
-    c.IncTimeStamp();
-    gEve->GetDefaultGLViewer()->RequestDraw();
-  }
+  cout << "gEve " << gEve << endl;
+  gEve->GetDefaultGLViewer()->SetClearColor(kYellow - 10);
+  {  // from readCurrentCamera(const char* fname)
+    TGLCamera& c      = gEve->GetDefaultGLViewer()->CurrentCamera();
+    const char* fname = "Cam.sav";
+    TFile* f          = TFile::Open(fname, "READ");
+    if (!f) return;
+    if (f->GetKey(c.ClassName())) {
+      f->GetKey(c.ClassName())->Read(&c);
+      c.IncTimeStamp();
+      gEve->GetDefaultGLViewer()->RequestDraw();
+    }
   }
 
   // -----   Finish   -------------------------------------------------------

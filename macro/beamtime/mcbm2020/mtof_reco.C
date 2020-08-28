@@ -241,7 +241,9 @@ void mtof_reco(Int_t nEvents      = 100,  // number of Timeslices
         std::cout << "-I- " << myName << ": Added task "
                   << tofCluster->GetName() << std::endl;
       } break;
-      default: { ; }
+      default: {
+        ;
+      }
     }
   }
   // -------------------------------------------------------------------------

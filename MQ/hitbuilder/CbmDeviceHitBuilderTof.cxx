@@ -421,7 +421,7 @@ Bool_t CbmDeviceHitBuilderTof::InitContainers() {
     FairMQMessagePtr req(NewSimpleMessage(message));
     //FairMQMessagePtr req(NewSimpleMessage( "CbmTofDigiBdfPar,111" )); //original format
     FairMQMessagePtr rep(NewMessage());
-    CbmTofCreateDigiPar* tofDigiPar=NULL;
+    CbmTofCreateDigiPar* tofDigiPar = NULL;
 
     if (Send(req, Channel) > 0) {
       if (Receive(rep, Channel) >= 0) {
@@ -461,31 +461,30 @@ Bool_t CbmDeviceHitBuilderTof::InitContainers() {
               LOG(info) << "GeoMan: " << fGeoMan << " " << gGeoManager;
               iGeoVersion = fGeoHandler->Init(isSimulation);
               if (k21a > iGeoVersion) {
-                  LOG(error) << "Incompatible geometry !!!";
-                  //ChangeState(STOP);
-                  ChangeState(fair::mq::Transition(STOP));
+                LOG(error) << "Incompatible geometry !!!";
+                //ChangeState(STOP);
+                ChangeState(fair::mq::Transition(STOP));
               }
-              switch(iGeoVersion) {
-              case k14a:
-                  fTofId = new CbmTofDetectorId_v14a();
-                  break;
-              case k21a:
-                  fTofId = new CbmTofDetectorId_v21a();
-                  break;
+              switch (iGeoVersion) {
+                case k14a: fTofId = new CbmTofDetectorId_v14a(); break;
+                case k21a: fTofId = new CbmTofDetectorId_v21a(); break;
               }
-              if (NULL == fDigiPar){
+              if (NULL == fDigiPar) {
                 if (NULL == fRtdb) {
-            	  LOG(info)<<"Instantiate FairRunDb";
-            	  fRtdb = FairRuntimeDb::instance();
-            	  assert(fRtdb);
+                  LOG(info) << "Instantiate FairRunDb";
+                  fRtdb = FairRuntimeDb::instance();
+                  assert(fRtdb);
                 }
                 // create digitization parameters from geometry file
-                tofDigiPar = new CbmTofCreateDigiPar("TOF Digi Producer", "TOF task");
+                tofDigiPar =
+                  new CbmTofCreateDigiPar("TOF Digi Producer", "TOF task");
                 LOG(info) << "Create DigiPar ";
                 tofDigiPar->Init();
-                fDigiPar = (CbmTofDigiPar*) (fRtdb->getContainer("CbmTofDigiPar"));
+                fDigiPar =
+                  (CbmTofDigiPar*) (fRtdb->getContainer("CbmTofDigiPar"));
                 if (NULL == fDigiPar) {
-                  LOG(error) << "CbmTofEventClusterizer::InitParameters => Could not obtain "
+                  LOG(error) << "CbmTofEventClusterizer::InitParameters => "
+                                "Could not obtain "
                                 "the CbmTofDigiPar ";
                   return kFALSE;
                 }
@@ -1962,7 +1961,7 @@ Bool_t CbmDeviceHitBuilderTof::InspectRawDigis() {
       continue;
     }
 
-    Double_t dTDifMin        = dDoubleMax;
+    Double_t dTDifMin     = dDoubleMax;
     CbmTofDigi* pDigi2Min = NULL;
     //       for (Int_t iDigI2 =iDigInd+1; iDigI2<iNbTofDigi;iDigI2++){
     for (Int_t iDigI2 = 0; iDigI2 < iNbTofDigi; iDigI2++) {
@@ -2108,9 +2107,9 @@ Bool_t CbmDeviceHitBuilderTof::InspectRawDigis() {
 
     for (Int_t iDigInd = 0; iDigInd < fiNDigiIn; iDigInd++) {
       CbmTofDigi* pDigi = &fvDigiIn[iDigInd];
-      Int_t iAddr          = pDigi->GetAddress() & DetMask;
-      Int_t iDet           = fDetIdIndexMap[iAddr];  // Detector Index
-      Int_t iSide          = pDigi->GetSide();
+      Int_t iAddr       = pDigi->GetAddress() & DetMask;
+      Int_t iDet        = fDetIdIndexMap[iAddr];  // Detector Index
+      Int_t iSide       = pDigi->GetSide();
       fhDigiTimesRaw->Fill(iDet * 2 + iSide,
                            pDigi->GetTime() - pRef->GetTime());
     }
@@ -2122,7 +2121,7 @@ Bool_t CbmDeviceHitBuilderTof::InspectRawDigis() {
 Bool_t CbmDeviceHitBuilderTof::CalibRawDigis() {
   CbmTofDigi* pDigi;
   CbmTofDigi* pCalDigi = NULL;
-  Int_t iDigIndCal        = -1;
+  Int_t iDigIndCal     = -1;
   // channel deadtime map
   std::map<Int_t, Double_t> mChannelDeadTime;
   fTofCalDigiVec->clear();
@@ -2156,20 +2155,19 @@ Bool_t CbmDeviceHitBuilderTof::CalibRawDigis() {
       LOG(debug)<<"CCT found valid ChannelDeadtime entry "<<mChannelDeadTime[iAddr]
 		<<", DeltaT "<<pDigi->GetTime()-mChannelDeadTime[iAddr];
       */
-      if ((bValid =
-             (pDigi->GetTime() > mChannelDeadTime[iAddr] + fdChannelDeadtime)))
-      {
-    	//  pCalDigi =
+      if ((bValid = (pDigi->GetTime()
+                     > mChannelDeadTime[iAddr] + fdChannelDeadtime))) {
+        //  pCalDigi =
         //	new ((*fTofCalDigisColl)[++iDigIndCal]) CbmTofDigi(*pDigi);
-      	fTofCalDigiVec->push_back(CbmTofDigi(*pDigi));
-      	pCalDigi = &(fTofCalDigiVec->back());
-      	iDigIndCal++;
-      }
-    } else {
-      // pCalDigi = new ((*fTofCalDigisColl)[++iDigIndCal]) CbmTofDigi(*pDigi);
         fTofCalDigiVec->push_back(CbmTofDigi(*pDigi));
         pCalDigi = &(fTofCalDigiVec->back());
         iDigIndCal++;
+      }
+    } else {
+      // pCalDigi = new ((*fTofCalDigisColl)[++iDigIndCal]) CbmTofDigi(*pDigi);
+      fTofCalDigiVec->push_back(CbmTofDigi(*pDigi));
+      pCalDigi = &(fTofCalDigiVec->back());
+      iDigIndCal++;
     }
     mChannelDeadTime[iAddr] = pDigi->GetTime();
     if (!bValid) continue;
@@ -2299,8 +2297,8 @@ Bool_t CbmDeviceHitBuilderTof::CalibRawDigis() {
 
   iNbTofDigi = fTofCalDigiVec->size();
   //  fTofCalDigisColl->GetEntries();  // update because of added duplicted digis
-  LOG(debug) << "CbmTofHitBuilder: Sort "
-             << fTofCalDigiVec->size() << " calibrated digis ";
+  LOG(debug) << "CbmTofHitBuilder: Sort " << fTofCalDigiVec->size()
+             << " calibrated digis ";
   if (iNbTofDigi > 1) {
     //    fTofCalDigisColl->Sort(iNbTofDigi); // Time order again, in case modified by the calibration
     /// Sort the buffers of hits due to the time offsets applied
@@ -2317,8 +2315,7 @@ Bool_t CbmDeviceHitBuilderTof::CalibRawDigis() {
                         [](const CbmTofDigi& a, const CbmTofDigi& b) -> bool {
                           return a.GetTime() < b.GetTime();
                         }))
-      LOG(warning)
-        << "CbmTofHitBuilder: Digi sorting not successful ";
+      LOG(warning) << "CbmTofHitBuilder: Digi sorting not successful ";
   }
 
   if (NULL != pRef) {
@@ -2326,7 +2323,7 @@ Bool_t CbmDeviceHitBuilderTof::CalibRawDigis() {
 
     for (Int_t iDigInd = 0; iDigInd < iNbTofDigi; iDigInd++) {
       // pDigi       = (CbmTofDigi*) fTofCalDigisColl->At(iDigInd);
-        pDigi       = &(fTofCalDigiVec->at(iDigInd));
+      pDigi       = &(fTofCalDigiVec->at(iDigInd));
       Int_t iAddr = pDigi->GetAddress() & DetMask;
       Int_t iDet  = fDetIdIndexMap[iAddr];  // Detector Index
       Int_t iSide = pDigi->GetSide();
@@ -2420,13 +2417,13 @@ Bool_t CbmDeviceHitBuilderTof::BuildHits() {
                 //if( 0 < fStorDigi[iSmType][iSm*iNbRpc+iRpc][iCh].size() )
                 //  fhNbDigiPerChan->Fill( fStorDigi[iSmType][iSm*iNbRpc+iRpc][iCh].size() );
 
-                while (
-                  1 < fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].size()) {
+                while (1
+                       < fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].size()) {
 
-                  while ((fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh][0])
-                           ->GetSide()
-                         == (fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh][1])
-                              ->GetSide()) {
+                  while (
+                    (fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh][0])->GetSide()
+                    == (fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh][1])
+                         ->GetSide()) {
                     // Not one Digi of each end!
                     fiNbSameSide++;
                     if (fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].size()
@@ -2434,24 +2431,22 @@ Bool_t CbmDeviceHitBuilderTof::BuildHits() {
                       LOG(debug)
                         << "SameSide Digis! on TSRC " << iSmType << iSm << iRpc
                         << iCh << ", Times: "
-                        << Form("%f",
-                                (fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh]
-                                             [0])
-                                  ->GetTime())
+                        << Form(
+                             "%f",
+                             (fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh][0])
+                               ->GetTime())
                         << ", "
-                        << Form("%f",
-                                (fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh]
-                                             [1])
-                                  ->GetTime())
+                        << Form(
+                             "%f",
+                             (fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh][1])
+                               ->GetTime())
                         << ", DeltaT "
                         << (fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh][1])
                                ->GetTime()
-                             - (fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh]
-                                            [0])
+                             - (fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh][0])
                                  ->GetTime()
                         << ", array size: "
-                        << fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh]
-                             .size();
+                        << fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].size();
                       if (fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh][2]
                             ->GetSide()
                           == fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh][0]
@@ -2459,40 +2454,35 @@ Bool_t CbmDeviceHitBuilderTof::BuildHits() {
                         LOG(debug)
                           << "3 consecutive SameSide Digis! on TSRC " << iSmType
                           << iSm << iRpc << iCh << ", Times: "
-                          << (fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh]
-                                          [0])
+                          << (fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh][0])
                                ->GetTime()
                           << ", "
-                          << (fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh]
-                                          [1])
+                          << (fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh][1])
                                ->GetTime()
                           << ", DeltaT "
-                          << (fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh]
-                                          [1])
+                          << (fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh][1])
                                  ->GetTime()
-                               - (fStorDigi[iSmType][iSm * iNbRpc + iRpc]
-                                              [iCh][0])
+                               - (fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh]
+                                           [0])
                                    ->GetTime()
                           << ", array size: "
                           << fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh]
                                .size();
                         fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].erase(
-                          fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh]
-                            .begin());
+                          fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].begin());
                         fStorDigiInd[iSmType][iSm * iNbRpc + iRpc][iCh].erase(
                           fStorDigiInd[iSmType][iSm * iNbRpc + iRpc][iCh]
                             .begin());
                       } else {
                         if (fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh][2]
                                 ->GetTime()
-                              - fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh]
-                                            [0]
-                                              ->GetTime()
+                              - fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh][0]
+                                  ->GetTime()
                             > fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh][2]
                                   ->GetTime()
-                                - fStorDigi[iSmType][iSm * iNbRpc + iRpc]
-                                              [iCh][1]
-                                                ->GetTime()) {
+                                - fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh]
+                                           [1]
+                                             ->GetTime()) {
                           fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].erase(
                             fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh]
                               .begin());
@@ -2512,8 +2502,7 @@ Bool_t CbmDeviceHitBuilderTof::BuildHits() {
                               fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh][0]
                                 ->GetSide());
                           fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].erase(
-                            fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh]
-                              .begin()
+                            fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].begin()
                             + 1);
                           fStorDigiInd[iSmType][iSm * iNbRpc + iRpc][iCh].erase(
                             fStorDigiInd[iSmType][iSm * iNbRpc + iRpc][iCh]
@@ -2526,28 +2515,25 @@ Bool_t CbmDeviceHitBuilderTof::BuildHits() {
                         << "SameSide Erase fStor entries(d) " << iSmType
                         << ", SR " << iSm * iNbRpc + iRpc << ", Ch" << iCh;
                       fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].erase(
-                        fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh]
-                          .begin());
+                        fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].begin());
                       fStorDigiInd[iSmType][iSm * iNbRpc + iRpc][iCh].erase(
                         fStorDigiInd[iSmType][iSm * iNbRpc + iRpc][iCh]
                           .begin());
                     }
-                    if (2 > fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh]
-                              .size())
+                    if (2 > fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].size())
                       break;
                     continue;
                   }  // same condition side end
                   LOG(debug)
                     << "digis processing for "
-                    << Form(" SmT %3d Sm %3d Rpc %3d Ch %3d # %3lu ",
-                            iSmType,
-                            iSm,
-                            iRpc,
-                            iCh,
-                            fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh]
-                              .size());
-                  if (2 > fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh]
-                            .size()) {
+                    << Form(
+                         " SmT %3d Sm %3d Rpc %3d Ch %3d # %3lu ",
+                         iSmType,
+                         iSm,
+                         iRpc,
+                         iCh,
+                         fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].size());
+                  if (2 > fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].size()) {
                     LOG(debug) << Form(
                       "Leaving digi processing for TSRC %d%d%d%d, size  %3lu",
                       iSmType,
@@ -2560,18 +2546,19 @@ Bool_t CbmDeviceHitBuilderTof::BuildHits() {
                   /* Int_t iLastChId = iChId; // Save Last hit channel*/
 
                   // 2 Digis = both sides present
-                  CbmTofDetectorInfo xDetInfo(ECbmModuleId::kTof, iSmType, iSm, iRpc, 0, iCh);
+                  CbmTofDetectorInfo xDetInfo(
+                    ECbmModuleId::kTof, iSmType, iSm, iRpc, 0, iCh);
                   iChId = fTofId->SetDetectorInfo(xDetInfo);
                   Int_t iUCellId =
                     CbmTofAddress::GetUniqueAddress(iSm, iRpc, iCh, 0, iSmType);
-                  LOG(debug) << Form(
-                    "TSRC %d%d%d%d size %3lu ",
-                    iSmType,
-                    iSm,
-                    iRpc,
-                    iCh,
-                    fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].size())
-                             << Form(" ChId: 0x%08x 0x%08x ", iChId, iUCellId);
+                  LOG(debug)
+                    << Form("TSRC %d%d%d%d size %3lu ",
+                            iSmType,
+                            iSm,
+                            iRpc,
+                            iCh,
+                            fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].size())
+                    << Form(" ChId: 0x%08x 0x%08x ", iChId, iUCellId);
                   fChannelInfo = fDigiPar->GetCell(iChId);
 
                   if (NULL == fChannelInfo) {
@@ -2663,17 +2650,15 @@ Bool_t CbmDeviceHitBuilderTof::BuildHits() {
                       if (xDigiC->GetSide() == xDigiA->GetSide()) {
                         xDigiA = xDigiC;
                         fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].erase(
-                          fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh]
-                            .begin());
+                          fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].begin());
                         fStorDigiInd[iSmType][iSm * iNbRpc + iRpc][iCh].erase(
                           fStorDigiInd[iSmType][iSm * iNbRpc + iRpc][iCh]
                             .begin());
                       } else {
                         xDigiB = xDigiC;
-                        fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].erase(
-                          ++(fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh]
-                               .begin()
-                             + 1));
+                        fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].erase(++(
+                          fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].begin()
+                          + 1));
                         fStorDigiInd[iSmType][iSm * iNbRpc + iRpc][iCh].erase(
                           ++(fStorDigiInd[iSmType][iSm * iNbRpc + iRpc][iCh]
                                .begin()
@@ -2745,11 +2730,9 @@ Bool_t CbmDeviceHitBuilderTof::BuildHits() {
                         << iSm * iNbRpc + iRpc << ", Ch" << iCh;
 
                       fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].erase(
-                        fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh]
-                          .begin());
+                        fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].begin());
                       fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].erase(
-                        fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh]
-                          .begin());
+                        fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].begin());
                       fStorDigiInd[iSmType][iSm * iNbRpc + iRpc][iCh].erase(
                         fStorDigiInd[iSmType][iSm * iNbRpc + iRpc][iCh]
                           .begin());
@@ -2869,7 +2852,7 @@ Bool_t CbmDeviceHitBuilderTof::BuildHits() {
                       CbmMatch* digiMatch =
                         new ((*fTofDigiMatchColl)[fiNbHits]) CbmMatch();
                       for (UInt_t i = 0; i < vDigiIndRef.size(); i++) {
-                        Double_t dTot = ((CbmTofDigi*) ( &(fTofCalDigiVec->at(
+                        Double_t dTot = ((CbmTofDigi*) (&(fTofCalDigiVec->at(
                                            vDigiIndRef.at(i)))))
                                           ->GetTot();
                         digiMatch->AddLink(CbmLink(dTot,
@@ -2910,11 +2893,9 @@ Bool_t CbmDeviceHitBuilderTof::BuildHits() {
                       //LOG(debug2)<<"Erase fStor entries(b) "<<iSmType<<", SR "<<iSm*iNbRpc+iRpc<<", Ch"<<iCh;
 
                       fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].erase(
-                        fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh]
-                          .begin());
+                        fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].begin());
                       fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].erase(
-                        fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh]
-                          .begin());
+                        fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].begin());
                       fStorDigiInd[iSmType][iSm * iNbRpc + iRpc][iCh].erase(
                         fStorDigiInd[iSmType][iSm * iNbRpc + iRpc][iCh]
                           .begin());
@@ -3229,7 +3210,8 @@ void CbmDeviceHitBuilderTof::CheckLHMemory() {
             iRpc);
         for (Int_t iCh = 0; iCh < fDigiBdfPar->GetNbChan(iSmType, iRpc); iCh++)
           if (fvLastHits[iSmType][iSm][iRpc][iCh].size() > 0) {
-            CbmTofDetectorInfo xDetInfo(ECbmModuleId::kTof, iSmType, iSm, iRpc, 0, iCh);
+            CbmTofDetectorInfo xDetInfo(
+              ECbmModuleId::kTof, iSmType, iSm, iRpc, 0, iCh);
             Int_t iAddr = fTofId->SetDetectorInfo(xDetInfo);
             if (fvLastHits[iSmType][iSm][iRpc][iCh].front()->GetAddress()
                 != iAddr)
@@ -3282,7 +3264,8 @@ void CbmDeviceHitBuilderTof::CleanLHMemory() {
             iRpc);
         for (Int_t iCh = 0; iCh < fDigiBdfPar->GetNbChan(iSmType, iRpc); iCh++)
           while (fvLastHits[iSmType][iSm][iRpc][iCh].size() > 0) {
-            CbmTofDetectorInfo xDetInfo(ECbmModuleId::kTof, iSmType, iSm, iRpc, 0, iCh);
+            CbmTofDetectorInfo xDetInfo(
+              ECbmModuleId::kTof, iSmType, iSm, iRpc, 0, iCh);
             Int_t iAddr = fTofId->SetDetectorInfo(xDetInfo);
             if (fvLastHits[iSmType][iSm][iRpc][iCh].front()->GetAddress()
                 != iAddr)
@@ -3329,38 +3312,33 @@ Bool_t CbmDeviceHitBuilderTof::AddNextChan(Int_t iSmType,
                      dLastPosY)
              << fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].size();
   if (iCh == iNbCh) return kFALSE;
-  if (0 == fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].size())
-    return kFALSE;
+  if (0 == fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].size()) return kFALSE;
   //if( 0 < fStorDigi[iSmType][iSm*iNbRpc+iRpc][iCh].size() )
   //   fhNbDigiPerChan->Fill( fStorDigi[iSmType][iSm*iNbRpc+iRpc][iCh].size() );
   if (1 < fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].size()) {
     Bool_t AddedHit = kFALSE;
     for (Int_t i1 = 0;
-         i1
-         < (Int_t) fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].size() - 1;
+         i1 < (Int_t) fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].size() - 1;
          i1++) {
       if (AddedHit) break;
       Int_t i2 = i1 + 1;
       while (
         !AddedHit
-        && i2
-             < (Int_t) fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].size()) {
+        && i2 < (Int_t) fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].size()) {
         // LOG(debug)<<"check digi pair "<<i1<<","<<i2<<" with size "<<fStorDigi[iSmType][iSm*iNbRpc+iRpc][iCh].size();
 
         if ((fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh][i1])->GetSide()
-            == (fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh][i2])
-                 ->GetSide()) {
+            == (fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh][i2])->GetSide()) {
           i2++;
           continue;
         }  // endif same side
            // 2 Digis, both sides present
-        CbmTofDigi* xDigiA =
-          fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh][i1];
-        CbmTofDigi* xDigiB =
-          fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh][i2];
-        Double_t dTime = 0.5 * (xDigiA->GetTime() + xDigiB->GetTime());
+        CbmTofDigi* xDigiA = fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh][i1];
+        CbmTofDigi* xDigiB = fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh][i2];
+        Double_t dTime     = 0.5 * (xDigiA->GetTime() + xDigiB->GetTime());
         if (TMath::Abs(dTime - dLastTime) < fdMaxTimeDist) {
-          CbmTofDetectorInfo xDetInfo(ECbmModuleId::kTof, iSmType, iSm, iRpc, 0, iCh);
+          CbmTofDetectorInfo xDetInfo(
+            ECbmModuleId::kTof, iSmType, iSm, iRpc, 0, iCh);
           Int_t iChId  = fTofId->SetDetectorInfo(xDetInfo);
           fChannelInfo = fDigiPar->GetCell(iChId);
           gGeoManager->FindNode(
@@ -3746,7 +3724,7 @@ Bool_t CbmDeviceHitBuilderTof::FillDigiStor() {
   //fTofCalDigisColl->GetEntriesFast();
   for (Int_t iDigInd = 0; iDigInd < iNbTofDigi; iDigInd++) {
     //pDigi = (CbmTofDigi*) fTofCalDigisColl->At(iDigInd);
-	    pDigi       = &(fTofCalDigiVec->at(iDigInd));
+    pDigi = &(fTofCalDigiVec->at(iDigInd));
 
     /*
     LOG(info)<<"AC " // After Calibration
@@ -3766,9 +3744,9 @@ Bool_t CbmDeviceHitBuilderTof::FillDigiStor() {
         && fDigiBdfPar->GetNbChan(pDigi->GetType(), pDigi->GetRpc())
              > pDigi->GetChannel()) {
       fStorDigi[pDigi->GetType()]
-                  [pDigi->GetSm() * fDigiBdfPar->GetNbRpc(pDigi->GetType())
-                   + pDigi->GetRpc()][pDigi->GetChannel()]
-                    .push_back(pDigi);
+               [pDigi->GetSm() * fDigiBdfPar->GetNbRpc(pDigi->GetType())
+                + pDigi->GetRpc()][pDigi->GetChannel()]
+                 .push_back(pDigi);
       fStorDigiInd[pDigi->GetType()]
                   [pDigi->GetSm() * fDigiBdfPar->GetNbRpc(pDigi->GetType())
                    + pDigi->GetRpc()][pDigi->GetChannel()]
@@ -3982,13 +3960,11 @@ Bool_t CbmDeviceHitBuilderTof::FillHistos() {
           Double_t dTotSum    = 0.;
           for (Int_t iLink = 0; iLink < digiMatch->GetNofLinks();
                iLink += 2) {  // loop over digis
-            CbmLink L0     = digiMatch->GetLink(iLink);
-            Int_t iDigInd0 = L0.GetIndex();
-            Int_t iDigInd1 = (digiMatch->GetLink(iLink + 1)).GetIndex();
-            CbmTofDigi* pDig0 =
-                    (CbmTofDigi*) ( &(fTofCalDigiVec->at(iDigInd0)));
-            CbmTofDigi* pDig1 =
-                    (CbmTofDigi*) ( &(fTofCalDigiVec->at(iDigInd1)));
+            CbmLink L0        = digiMatch->GetLink(iLink);
+            Int_t iDigInd0    = L0.GetIndex();
+            Int_t iDigInd1    = (digiMatch->GetLink(iLink + 1)).GetIndex();
+            CbmTofDigi* pDig0 = (CbmTofDigi*) (&(fTofCalDigiVec->at(iDigInd0)));
+            CbmTofDigi* pDig1 = (CbmTofDigi*) (&(fTofCalDigiVec->at(iDigInd1)));
             dTotSum += pDig0->GetTot() + pDig1->GetTot();
           }
 

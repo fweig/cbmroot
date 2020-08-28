@@ -332,7 +332,7 @@ private:
   std::vector<TH2*> fhRpcDigiStatus;            //[nbDet]
   std::vector<TH2*> fhRpcDigiDTLD;              //[nbDet]
   std::vector<TH2*> fhRpcDigiDTFD;              //[nbDet]
-  std::vector<TH2*> fhRpcDigiDTMul;              //[nbDet]
+  std::vector<TH2*> fhRpcDigiDTMul;             //[nbDet]
   std::vector<TH1*> fhRpcCluMul;                //[nbDet]
   std::vector<TH1*> fhRpcCluRate;               //[nbDet]
   std::vector<TH1*> fhRpcCluRate10s;            //[nbDet]
@@ -396,9 +396,9 @@ private:
   std::vector<std::vector<std::vector<std::vector<std::list<CbmTofHit*>>>>>
     fvLastHits;                     //[nSMT[nSm][nRpc][nCh][NHits]
   std::vector<Int_t> fvDeadStrips;  //[nbDet]
-  std::vector<std::vector<Double_t>> fvTimeLastDigi;  //[nbDet][nChannel*2]
-  std::vector<std::vector<Double_t>> fvTimeFirstDigi; //[nbDet][nChannel*2]
-  std::vector<std::vector<Double_t>> fvMulDigi;       //[nbDet][nChannel*2]
+  std::vector<std::vector<Double_t>> fvTimeLastDigi;   //[nbDet][nChannel*2]
+  std::vector<std::vector<Double_t>> fvTimeFirstDigi;  //[nbDet][nChannel*2]
+  std::vector<std::vector<Double_t>> fvMulDigi;        //[nbDet][nChannel*2]
 
   // Digis quality
   Int_t fiNbSameSide;

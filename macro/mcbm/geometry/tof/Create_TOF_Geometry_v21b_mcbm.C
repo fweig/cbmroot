@@ -136,19 +136,12 @@ const Float_t MeanTheta       = 0.;
 //Type of Counter for module
 
 const Int_t NCounterInModule[NofModuleTypes] = {5, 5, 3, 5, 5, 1, 2, 1, 8, 2};
-const Int_t NCounterMax=8;
-const Int_t CounterTypeInModule[NofModuleTypes][NCounterMax] =
-  {0, 0, 0, 0, 0, 0, 0, 0, 
-   0, 0, 0, 0, 0, 0, 0, 0, 
-   1, 1, 1, 1, 1, 1, 1, 1, 
-   2, 2, 2, 2, 2, 2, 2, 2, 
-   3, 3, 3, 3, 3, 3, 3, 3, 
-   4, 4, 4, 4, 4, 4, 4, 4, 
-   6, 6, 6, 6, 6, 6, 6, 6, 
-   7, 7, 7, 7, 7, 7, 7, 7, 
-   8, 8, 8, 8, 8, 8, 8, 8, 
-   0, 7, 0, 0, 0, 0, 0, 0 
-  };
+const Int_t NCounterMax                      = 8;
+const Int_t CounterTypeInModule[NofModuleTypes][NCounterMax] = {
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,
+  1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3,
+  4, 4, 4, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7,
+  7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8, 0, 7, 0, 0, 0, 0, 0, 0};
 
 // Placement of the counter inside the module
 const Float_t CounterXStartPosition[NofModuleTypes] =
@@ -616,7 +609,7 @@ TGeoVolume* create_new_counter(Int_t modType) {
   // define counter volume
   TGeoBBox* counter_box = new TGeoBBox("", cdx / 2., cdy / 2., cdz / 2.);
   TGeoVolume* counter =
-    new TGeoVolume(Form("counter_%d",modType), counter_box, noActiveGasVolMed);
+    new TGeoVolume(Form("counter_%d", modType), counter_box, noActiveGasVolMed);
   counter->SetLineColor(kRed);   // set line color for the counter
   counter->SetTransparency(70);  // set transparency for the TOF
 
@@ -732,7 +725,7 @@ TGeoVolume* create_tof_module(Int_t modType) {
 }
 
 TGeoVolume* create_new_tof_module(Int_t modType) {
-  Int_t cType         = CounterTypeInModule[modType][0]; //TBC
+  Int_t cType         = CounterTypeInModule[modType][0];  //TBC
   Float_t dx          = Module_Size_X[modType];
   Float_t dy          = Module_Size_Y[modType];
   Float_t dz          = Module_Size_Z[modType];
@@ -782,8 +775,9 @@ TGeoVolume* create_new_tof_module(Int_t modType) {
     } else {
       zpos = CounterZStartPosition[modType] + j * dzoff;
     }
-    cout << "place counter " << j << " of type " << CounterTypeInModule[modType][j]																		
-		 << " in module of type "<<modType << " at z position " << zpos << endl;
+    cout << "place counter " << j << " of type "
+         << CounterTypeInModule[modType][j] << " in module of type " << modType
+         << " at z position " << zpos << endl;
     xpos = startxpos + j * dxpos;
     ypos = startypos + j * dypos;
 
@@ -794,7 +788,8 @@ TGeoVolume* create_new_tof_module(Int_t modType) {
     TGeoCombiTrans* counter_combi_trans =
       new TGeoCombiTrans(*counter_trans, *counter_rot);
     //gas_box_vol->AddNode(gCounter[cType], j, counter_combi_trans);
-    gas_box_vol->AddNode(gCounter[CounterTypeInModule[modType][j]], j, counter_combi_trans);
+    gas_box_vol->AddNode(
+      gCounter[CounterTypeInModule[modType][j]], j, counter_combi_trans);
   }
 
   return module;

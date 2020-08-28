@@ -132,14 +132,14 @@ private:
 
   // Output variables
   // TClonesArray* fTofCalDigisColl;      // Calibrated TOF Digis
-  std::vector<CbmTofDigi>* fTofCalDigiVec = nullptr;    // Calibrated TOF Digis
-  std::vector<CbmTofDigi>* fTofCalDigiVecOut = nullptr; // Calibrated TOF Digis
-  TClonesArray* fTofHitsColl;          // TOF hits
-  TClonesArray* fTofDigiMatchColl;     // TOF Digi Links
-  TClonesArray* fTofCalDigisCollOut;   // Calibrated TOF Digis
-  TClonesArray* fTofHitsCollOut;       // TOF hits
-  TClonesArray* fTofDigiMatchCollOut;  // TOF Digi Links
-  Int_t fiNbHits;                      // Index of the CbmTofHit TClonesArray
+  std::vector<CbmTofDigi>* fTofCalDigiVec    = nullptr;  // Calibrated TOF Digis
+  std::vector<CbmTofDigi>* fTofCalDigiVecOut = nullptr;  // Calibrated TOF Digis
+  TClonesArray* fTofHitsColl;                            // TOF hits
+  TClonesArray* fTofDigiMatchColl;                       // TOF Digi Links
+  TClonesArray* fTofCalDigisCollOut;                     // Calibrated TOF Digis
+  TClonesArray* fTofHitsCollOut;                         // TOF hits
+  TClonesArray* fTofDigiMatchCollOut;                    // TOF Digi Links
+  Int_t fiNbHits;  // Index of the CbmTofHit TClonesArray
 
   // Constants or setting parameters
   Int_t fiNevtBuild;

@@ -6,11 +6,11 @@
 #ifndef CBMTBDAQBUFFER_H
 #define CBMTBDAQBUFFER_H 1
 
-#include <RtypesCore.h>  // for Double_t, Int_t
-#include <map>           // for multimap, __map_const_iterator, multimap<>::...
-#include <utility>       // for pair
-#include <boost/any.hpp>
 #include "CbmDefs.h"
+#include <RtypesCore.h>  // for Double_t, Int_t
+#include <boost/any.hpp>
+#include <map>      // for multimap, __map_const_iterator, multimap<>::...
+#include <utility>  // for pair
 
 /** @class CbmTbDaqBuffer
  ** @author Volker Friese <v.friese@gsi.de>
@@ -29,15 +29,13 @@
  ** to be instantiated by the sending task (digitiser) and
  ** deleted by the receiving class (CbmDaq).
  **/
-class CbmTbDaqBuffer
-{
-  public:
-  
+class CbmTbDaqBuffer {
+public:
   typedef std::pair<boost::any, ECbmModuleId> Data;
-  
+
   /**   Destructor  **/
   ~CbmTbDaqBuffer();
-  
+
   /** Pointer to next raw data object
    ** up to given time
    ** @param time  maximal time [ns]
@@ -48,70 +46,66 @@ class CbmTbDaqBuffer
    **/
   //  boost::any GetNextData(Double_t time);
   Data GetNextData(Double_t time);
-  
-  
+
+
   /** Current buffer size
    ** @return number of objects in buffer
    */
   Int_t GetSize() const { return fData.size(); }
-  
-  
+
+
   /**  Get first digi time  **/
   Double_t GetTimeFirst() const;
-  
+
   /**  Get last digi time  **/
   Double_t GetTimeLast() const;
-  
+
   /**   Access to singleton instance
    ** @return pointer to instance
    **/
   static CbmTbDaqBuffer* Instance();
-  
+
   /**   Print buffer status  **/
   void PrintStatus() const;
 
   /** Insert digi of any type into the buffer */
-  template <class Digi>
-    void InsertData(Digi* digi)
-    {
-      Double_t digi_time = digi->GetTime();
-      ECbmModuleId systemID  = Digi::GetSystem();
-      InsertData(digi, digi_time, systemID);
-    }
-  
- private:
-  
+  template<class Digi>
+  void InsertData(Digi* digi) {
+    Double_t digi_time    = digi->GetTime();
+    ECbmModuleId systemID = Digi::GetSystem();
+    InsertData(digi, digi_time, systemID);
+  }
 
+private:
   /** Buffer management **/
   std::multimap<Double_t, Data> fData;
 
-  
+
   /** Pointer to singleton instance **/
   static CbmTbDaqBuffer* fgInstance;
 
-  
+
   /**  Default constructor
    **  Declared private to prevent instantiation.
    **/
   CbmTbDaqBuffer();
-  
-  
+
+
   /**  Copy constructor. Defined private to prevent usage. **/
   CbmTbDaqBuffer(const CbmTbDaqBuffer&);
-  
-  
+
+
   /**  Assignment operator. Defined private to prevent usage. **/
   CbmTbDaqBuffer& operator=(const CbmTbDaqBuffer&);
-  
+
   /** Insert data into the buffer
    ** @param digi  pointer to data object to be inserted
    **/
   //  void InsertData(boost::any digi);
-  void InsertData(boost::any digi, Double_t time, ECbmModuleId systemID)
-  {
-    fData.insert(std::make_pair(time, std::make_pair(std::move(digi), systemID)));
+  void InsertData(boost::any digi, Double_t time, ECbmModuleId systemID) {
+    fData.insert(
+      std::make_pair(time, std::make_pair(std::move(digi), systemID)));
   }
-  
 };
 
 

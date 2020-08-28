@@ -268,11 +268,10 @@ private:
   Double_t fChiSq;        // Chi2 of fit
   Int_t fNDF;             // # of degrees of freedom
   CbmTofTrackletParam fTrackPar;  //  Track parameters at z of TofHit
-  FairTrackParam
-    fParamFirst;              //  Track parameters at first and last fitted hit
-  FairTrackParam fParamLast;  //
-  std::vector<Int_t> fTofHit;     // Index of TofHit
-  std::vector<Int_t> fTofDet;     // DetLayer of TofHit
+  FairTrackParam fParamFirst;  //  Track parameters at first and last fitted hit
+  FairTrackParam fParamLast;   //
+  std::vector<Int_t> fTofHit;  // Index of TofHit
+  std::vector<Int_t> fTofDet;  // DetLayer of TofHit
   std::vector<Double_t> fMatChi;  // Matching Chi2 of TofHit
   std::vector<CbmTofHit> fhit;    // vector of TofHit objects
   Double_t fP[4];                 // transient (transfer) space point to Eve

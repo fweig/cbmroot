@@ -113,32 +113,32 @@ Int_t CbmTofGeoHandler::CheckGeometryVersion() {
                  || (TString(node->GetName()).Contains("v17c"))
                  || (TString(node->GetName()).Contains("v18"))
                  || (TString(node->GetName()).Contains("v19"))) {
-          LOG(info)
-            << "CbmTofGeoHandler::CheckGeometryVersion: Found TOF geometry "
-            << TString(node->GetName()) << ", treat as Id 14a   ";
-          //	if(nullptr!=fTofId) fTofId->Delete();
-          fTofId      = new CbmTofDetectorId_v14a();
-          fGeoVersion = k14a;
+        LOG(info)
+          << "CbmTofGeoHandler::CheckGeometryVersion: Found TOF geometry "
+          << TString(node->GetName()) << ", treat as Id 14a   ";
+        //	if(nullptr!=fTofId) fTofId->Delete();
+        fTofId      = new CbmTofDetectorId_v14a();
+        fGeoVersion = k14a;
 
-          if (TString(node->GetName()).Contains("v14a_n")) {
-            if (fIsSimulation && 0 != fMCVersion) {
-              LOG(fatal) << "Using node names instead of volume names to extract "
-                            "the module type "
-                         << "in a MC simulation only works with GEANT3 VMC!";
-            }
-
-            fUseNodeName = kTRUE;
+        if (TString(node->GetName()).Contains("v14a_n")) {
+          if (fIsSimulation && 0 != fMCVersion) {
+            LOG(fatal) << "Using node names instead of volume names to extract "
+                          "the module type "
+                       << "in a MC simulation only works with GEANT3 VMC!";
           }
-          return fGeoVersion;
+
+          fUseNodeName = kTRUE;
+        }
+        return fGeoVersion;
       } else if ((TString(node->GetName()).Contains("v21"))
-    	      || (TString(node->GetName()).Contains("v20"))) {
-          LOG(info)
-            << "CbmTofGeoHandler::CheckGeometryVersion: Found TOF geometry "
-            << TString(node->GetName()) << ", treat as Id 21a   ";
-          //	if(nullptr!=fTofId) fTofId->Delete();
-          fTofId      = new CbmTofDetectorId_v21a();
-          fGeoVersion = k21a;
-          return fGeoVersion;
+                 || (TString(node->GetName()).Contains("v20"))) {
+        LOG(info)
+          << "CbmTofGeoHandler::CheckGeometryVersion: Found TOF geometry "
+          << TString(node->GetName()) << ", treat as Id 21a   ";
+        //	if(nullptr!=fTofId) fTofId->Delete();
+        fTofId      = new CbmTofDetectorId_v21a();
+        fGeoVersion = k21a;
+        return fGeoVersion;
       } else {
         LOG(fatal) << "Found an unknown TOF geometry.";
         fGeoVersion = -1;
@@ -159,12 +159,12 @@ Int_t CbmTofGeoHandler::GetUniqueDetectorId(TString volName) {
 
 Int_t CbmTofGeoHandler::GetUniqueDetectorId() {
 
-  Int_t smtype  = 0;
-  Int_t smodule = 0;
-  Int_t counter = 0;
+  Int_t smtype      = 0;
+  Int_t smodule     = 0;
+  Int_t counter     = 0;
   Int_t countertype = 0;
-  Int_t gap     = 0;
-  Int_t cell    = 0;
+  Int_t gap         = 0;
+  Int_t cell        = 0;
   TString Volname;
 
 
@@ -217,16 +217,13 @@ Int_t CbmTofGeoHandler::GetUniqueDetectorId() {
               << CurrentVolOffName(2) << ", " << CurrentVolOffName(1) << ", "
               << CurrentVolOffName(0);
 
-  TString cTemp=CurrentVolOffName(2);
-  TString cType=cTemp(8,2);  // 1 character only
-  countertype=cType.Atoi();
+  TString cTemp = CurrentVolOffName(2);
+  TString cType = cTemp(8, 2);  // 1 character only
+  countertype   = cType.Atoi();
 
-  LOG(debug1) << " SMtype: " << smtype
-		  	  << " SModule: " << smodule
-			  << " CounterType: " << countertype
-			  << " Counter: " << counter
-			  << " Gap: " << gap
-			  << " Strip: " << cell;
+  LOG(debug1) << " SMtype: " << smtype << " SModule: " << smodule
+              << " CounterType: " << countertype << " Counter: " << counter
+              << " Gap: " << gap << " Strip: " << cell;
 
   CbmTofDetectorInfo detInfo(
     ECbmModuleId::kTof, smtype, smodule, counter, gap, cell, countertype);
@@ -240,12 +237,12 @@ Int_t CbmTofGeoHandler::GetUniqueDetectorId() {
 
 Int_t CbmTofGeoHandler::GetUniqueCounterId() {
 
-  Int_t smtype  = 0;
-  Int_t smodule = 0;
+  Int_t smtype      = 0;
+  Int_t smodule     = 0;
   Int_t countertype = 0;
-  Int_t counter = 0;
-  Int_t gap     = 0;
-  Int_t cell    = 0;
+  Int_t counter     = 0;
+  Int_t gap         = 0;
+  Int_t cell        = 0;
   TString Volname;
 
 
@@ -263,38 +260,38 @@ Int_t CbmTofGeoHandler::GetUniqueCounterId() {
     CurrentVolOffID(1, gap);
     CurrentVolID(cell);
   } else if (fGeoVersion == k14a) {  // test beam
-	    if (fUseNodeName) {
-	      Volname = CurrentNodeOffName(4);
-	    } else {
-	      Volname = CurrentVolOffName(4);
-	    }
-	    smtype = Volname[7] - '0';
-	    CurrentVolOffID(4, smodule);
-	    CurrentVolOffID(2, counter);
-	    CurrentVolOffID(1, gap);
-	    CurrentVolID(cell);
-	    //    counter=smodule;  // necessary for plastics
-	    //    smodule=smtype;   // for test beam setup
-  }	else if (fGeoVersion == k21a) {  // test beam
-		if (fUseNodeName) {
-		  Volname = CurrentNodeOffName(4);
-		} else {
-		  Volname = CurrentVolOffName(4);
-		}
-		smtype = Volname[7] - '0';
-		CurrentVolOffID(4, smodule);
-		TString cTemp=CurrentVolOffName(2);
-		TString cType=cTemp(8,2);  // 1 character only
-		countertype=cType.Atoi();
-		CurrentVolOffID(2, counter);
-		CurrentVolOffID(1, gap);
-		CurrentVolID(cell);
+    if (fUseNodeName) {
+      Volname = CurrentNodeOffName(4);
+    } else {
+      Volname = CurrentVolOffName(4);
+    }
+    smtype = Volname[7] - '0';
+    CurrentVolOffID(4, smodule);
+    CurrentVolOffID(2, counter);
+    CurrentVolOffID(1, gap);
+    CurrentVolID(cell);
+    //    counter=smodule;  // necessary for plastics
+    //    smodule=smtype;   // for test beam setup
+  } else if (fGeoVersion == k21a) {  // test beam
+    if (fUseNodeName) {
+      Volname = CurrentNodeOffName(4);
+    } else {
+      Volname = CurrentVolOffName(4);
+    }
+    smtype = Volname[7] - '0';
+    CurrentVolOffID(4, smodule);
+    TString cTemp = CurrentVolOffName(2);
+    TString cType = cTemp(8, 2);  // 1 character only
+    countertype   = cType.Atoi();
+    CurrentVolOffID(2, counter);
+    CurrentVolOffID(1, gap);
+    CurrentVolID(cell);
   }
 
   cell = 0;
 
-  fDetectorInfoArray =
-    CbmTofDetectorInfo(ECbmModuleId::kTof, smtype, smodule, counter, gap, cell, countertype);
+  fDetectorInfoArray = CbmTofDetectorInfo(
+    ECbmModuleId::kTof, smtype, smodule, counter, gap, cell, countertype);
 
   gap = 0;
 
@@ -302,12 +299,9 @@ Int_t CbmTofGeoHandler::GetUniqueCounterId() {
   LOG(debug1) << " Volname: " << Volname << ", " << CurrentVolOffName(3) << ", "
               << CurrentVolOffName(2) << ", " << CurrentVolOffName(1) << ", "
               << CurrentVolOffName(0);
-  LOG(debug1) << " SMtype: " << smtype
-		  	  << " SModule: " << smodule
-			  << " CounterType: " << countertype
-			  << " Counter: " << counter
-			  << " Gap: " << gap
-			  << " Cell: " << cell;
+  LOG(debug1) << " SMtype: " << smtype << " SModule: " << smodule
+              << " CounterType: " << countertype << " Counter: " << counter
+              << " Gap: " << gap << " Cell: " << cell;
 
   CbmTofDetectorInfo detInfo(
     ECbmModuleId::kTof, smtype, smodule, counter, gap, cell, countertype);

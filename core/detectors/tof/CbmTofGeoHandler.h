@@ -14,7 +14,7 @@
 #ifndef CBMTOFGEOHANDLER_H
 #define CBMTOFGEOHANDLER_H 1
 
-enum TofGeometryVersions { k07a, k12a, k12b, k14a, k21a};
+enum TofGeometryVersions { k07a, k12a, k12b, k14a, k21a };
 
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Int_t, Float_t, Bool_t, kFALSE, Double_t

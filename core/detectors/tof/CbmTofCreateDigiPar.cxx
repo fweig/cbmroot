@@ -441,16 +441,11 @@ void CbmTofCreateDigiPar::FillCellInfoFromGeoHandler(TString FullPath) {
   fZ = fGeoHandler->GetZ(FullPath);
 
   LOG(debug2) << "FCI: " << FullPath.Data();
-  LOG(debug2) << "FCI: X: " << fX
-  	  	  	  << " Y: " << fY
-  	  	  	  << " Z: " << fZ
-  	  	  	  << " SizeX: " << fSizex
-  	  	  	  << " SizeY: " << fSizey;
-  LOG(debug2) << Form(" DetID: 0x%08x", fDetID)
-  	  	  	  << " Region: " << fRegion
-			  << " Counter: " << fCounter
-			  << " Gap: " << fGap
-			  << " Cell: " << fCell;
+  LOG(debug2) << "FCI: X: " << fX << " Y: " << fY << " Z: " << fZ
+              << " SizeX: " << fSizex << " SizeY: " << fSizey;
+  LOG(debug2) << Form(" DetID: 0x%08x", fDetID) << " Region: " << fRegion
+              << " Counter: " << fCounter << " Gap: " << fGap
+              << " Cell: " << fCell;
 
   fCellID = fGeoHandler->GetCellId(fDetID);
 
@@ -464,11 +459,11 @@ void CbmTofCreateDigiPar::FillCellInfoFromGeoHandler(TString FullPath) {
   LOG(debug2) << "FCI: Cell ID: " << Form("0x%08x", fCellID) << " detId "
               << Form("0x%08x", fDetID);
   LOG(debug2) << " Region:  " << fGeoHandler->GetRegion(fCellID)
-			  << " SMTYP:   " << fGeoHandler->GetSMType(fCellID)
-			  << " SModule: " << fGeoHandler->GetSModule(fCellID)
-			  << " Module:  " << fGeoHandler->GetCounter(fCellID)
-			  << " Gap:     " << fGeoHandler->GetGap(fCellID)
-			  << " Cell: " << fGeoHandler->GetCell(fCellID);
+              << " SMTYP:   " << fGeoHandler->GetSMType(fCellID)
+              << " SModule: " << fGeoHandler->GetSModule(fCellID)
+              << " Module:  " << fGeoHandler->GetCounter(fCellID)
+              << " Gap:     " << fGeoHandler->GetGap(fCellID)
+              << " Cell: " << fGeoHandler->GetCell(fCellID);
 }
 
 

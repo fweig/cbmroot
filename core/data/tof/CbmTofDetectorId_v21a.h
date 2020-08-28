@@ -16,7 +16,7 @@
  ** of this class 
  ** @author F. Uhlig <f.uhlig@gsi.de>
  **/
- 
+
 //                                  3         2         1          shift length
 /** Current definition:            10987654321098765432109876543210
  ** System ID (kTOF=6) on bits 0-3 00000000000000000000000000001111       15
@@ -32,19 +32,17 @@
 #ifndef CBMTOFDETECTORID_V21A_H
 #define CBMTOFDETECTORID_V21A_H 1
 
-#include"CbmTofDetectorId.h"
+#include "CbmTofDetectorId.h"
 
-class CbmTofDetectorId_v21a : public CbmTofDetectorId
-{
+class CbmTofDetectorId_v21a : public CbmTofDetectorId {
 
-  public:
-  
+public:
   /** Constructor **/
   CbmTofDetectorId_v21a();
 
   /** Destructor **/
   ~CbmTofDetectorId_v21a() {};
-  
+
   /** Get complete system info from detector ID
    ** This will return a pointer to an integer
    ** array of length array_length
@@ -58,25 +56,25 @@ class CbmTofDetectorId_v21a : public CbmTofDetectorId
   Int_t GetSMType(const Int_t detectorId);
   Int_t GetModuleType(const Int_t detectorId);
   Int_t GetCounterType(const Int_t detectorId);
-  
-   /** Get Module ID from detector ID **/
+
+  /** Get Module ID from detector ID **/
   Int_t GetSModule(const Int_t detectorId);
   Int_t GetModuleId(const Int_t detectorId);
-  
+
   /** Get counter ID from detector ID **/
   Int_t GetCounter(const Int_t detectorId);
-  
+
   /** Get sector number from detector ID **/
   Int_t GetGap(const Int_t detectorId);
 
   /** Get sector number from detector ID **/
   Int_t GetSide(const Int_t detectorId);
-  
+
   /** Get cell number from detector ID **/
   Int_t GetCell(const Int_t detectorId);
   /** Get Strip ID from detector ID **/
   Int_t GetStrip(const Int_t detectorId);
-  
+
   /** Get region number from detector ID **/
   Int_t GetRegion(const Int_t detectorId);
 
@@ -91,9 +89,8 @@ class CbmTofDetectorId_v21a : public CbmTofDetectorId
    ** array of length array_length
    **/
   Int_t SetDetectorInfo(const CbmTofDetectorInfo detectorInfo);
-  
- private:
- 
+
+private:
   static const Int_t array_length = 7;
   static const Int_t shiftarray[];
   static const Int_t bitarray[];

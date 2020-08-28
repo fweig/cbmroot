@@ -480,18 +480,18 @@ CbmHadronAnalysis::~CbmHadronAnalysis() {
 void CbmHadronAnalysis::CreateHistogramms() {
   // Create histogramms
   // gROOT->cd();
-  FairRunAna *fRun= FairRunAna::Instance();
-  fHist = fRun->GetOutputFile();
+  FairRunAna* fRun = FairRunAna::Instance();
+  fHist            = fRun->GetOutputFile();
   LOG(info) << "CreateHistograms in " << fHist->GetName();
   // gSystem->cd(fHist->GetName());
   fHist->ReOpen("Update");
 
-  fhTofHitMul      = new TH1F(Form("hTofHitMul"),
+  fhTofHitMul = new TH1F(Form("hTofHitMul"),
                          Form("TofHit Multiplicity; M_{TofHit} "),
                          fiTofHitMulMax,
                          0.,
                          (Double_t) fiTofHitMulMax);
-  fhStsHitMul      = new TH1F(Form("hStsHitMul"),
+  fhStsHitMul = new TH1F(Form("hStsHitMul"),
                          Form("StsHit Multiplicity; M_{StsHit} "),
                          fiTofHitMulMax,
                          0.,
@@ -3310,7 +3310,7 @@ void CbmHadronAnalysis::ExecEvent(Option_t*) {
     } else {
       mfrag =
         (pdgCode % 1000) / 10 * .931494028;  // ignoring binding energies ...
-        // where is the proper mass stored ?
+      // where is the proper mass stored ?
     }
 
     Float_t Phip = RADDEG * atan2(MCTrack->GetPy(), MCTrack->GetPx());
@@ -3502,8 +3502,9 @@ void CbmHadronAnalysis::ExecEvent(Option_t*) {
         break;
       };
 
-      default: {  // intermediate mass fragments
-                  //cout << " Track k="<<k<<", pdgCode = "<<pdgCode<<
+      default:
+      {  // intermediate mass fragments
+         //cout << " Track k="<<k<<", pdgCode = "<<pdgCode<<
         //" Mass " << MCTrack->GetMass()<<","<<mfrag<<" Y " << MCTrack->GetRapidity() <<
         //" Pt " << MCTrack->GetPt() <<endl;
         fa_ptm_rap_gen_imf->Fill(MCTrack->GetRapidity(),
@@ -3838,8 +3839,9 @@ void CbmHadronAnalysis::ExecEvent(Option_t*) {
           }
           break;
         };
-        default: {  // intermediate mass fragments
-                    //cout << " Track k="<<k<<", pdgCode = "<<pdgCode<<
+        default:
+        {  // intermediate mass fragments
+           //cout << " Track k="<<k<<", pdgCode = "<<pdgCode<<
           //" Mass " << MCTrack->GetMass()<<","<<mfrag<<" Y " << MCTrack->GetRapidity() <<
           //" Pt " << MCTrack->GetPt() <<endl;
           fa_ptm_rap_poi_imf->Fill(MCTrack->GetRapidity(),
@@ -4378,8 +4380,9 @@ void CbmHadronAnalysis::ExecEvent(Option_t*) {
           break;
         };
 
-        default: {  // intermediate mass fragments
-                    //cout << " Track k="<<k<<", pdgCode = "<<pdgCode<<
+        default:
+        {  // intermediate mass fragments
+           //cout << " Track k="<<k<<", pdgCode = "<<pdgCode<<
           //" Mass " << MCTrack->GetMass()<<","<<MCTrack->GetMass()<<" Y " << MCTrack->GetRapidity() <<
           //" Pt " << MCTrack->GetPt() <<endl;
           fa_ptm_rap_hit_imf->Fill(MCTrack->GetRapidity(),
@@ -4770,11 +4773,8 @@ void CbmHadronAnalysis::ExecEvent(Option_t*) {
                   Bthi         = thi;  // best TofHit index
                   Btt          = tt;   // best TofTrack index
                   if (verbose > 5) {
-                    cout << Form("<DMin> gt %d, hit %d, tt %d, w: %6.2f",
-                                 i,
-                                 Bthi,
-                                 Btt,
-                                 w)
+                    cout << Form(
+                      "<DMin> gt %d, hit %d, tt %d, w: %6.2f", i, Bthi, Btt, w)
                          << endl;
                   }
                 }
@@ -4904,10 +4904,8 @@ void CbmHadronAnalysis::ExecEvent(Option_t*) {
               }
 
               // decide now!
-              if (Weight_THMUL[i][0]
-                  < Weight_THMUL
-                      [io]
-                      [0]) {  // new assignment better than old one -> change
+              if (Weight_THMUL[i][0] < Weight_THMUL
+                    [io][0]) {  // new assignment better than old one -> change
                 if (verbose > 1) {  //nh-debug
                   cout << "<D> New cand. is better, invalidate entry for gt "
                        << io << endl;
@@ -4920,13 +4918,12 @@ void CbmHadronAnalysis::ExecEvent(Option_t*) {
                 GlobTrack2->SetLength(0.);  // signal entry invalid
               } else {  // old assignment better than current candidate
                 if (verbose > 0) {  //nh-debug
-                  cout
-                    << Form(
-                         "<D> Stick to old assignment, Bthi %d, TM %d, THM %d",
-                         Bthi,
-                         NTofHitTMul[Bthi],
-                         NTHMUL[i])
-                    << endl;
+                  cout << Form(
+                    "<D> Stick to old assignment, Bthi %d, TM %d, THM %d",
+                    Bthi,
+                    NTofHitTMul[Bthi],
+                    NTHMUL[i])
+                       << endl;
                 }
                 NTofHitTMul[Bthi]--;  // deregister toftrack
                 if (NTHMUL[i] > 1) {  // take next one from list
@@ -5218,8 +5215,9 @@ void CbmHadronAnalysis::ExecEvent(Option_t*) {
                                      MCTrack->GetPt() / MCTrack->GetMass());
               break;
             };
-            default: {  // intermediate mass fragments
-                        //cout << " Track k="<<k<<", pdgCode = "<<pdgCode<<
+            default:
+            {  // intermediate mass fragments
+               //cout << " Track k="<<k<<", pdgCode = "<<pdgCode<<
               //" Mass " << MCTrack->GetMass()<<","<<MCTrack->GetMass()<<" Y " << MCTrack->GetRapidity() <<
               //" Pt " << MCTrack->GetPt() <<endl;
               fa_ptm_rap_sts_imf->Fill(MCTrack->GetRapidity(),
@@ -5617,8 +5615,9 @@ void CbmHadronAnalysis::ExecEvent(Option_t*) {
             }
             break;
           };
-          default: {  // intermediate mass fragments
-                      //cout << " Track k="<<k<<", pdgCode = "<<pdgCode<<
+          default:
+          {  // intermediate mass fragments
+             //cout << " Track k="<<k<<", pdgCode = "<<pdgCode<<
             //" Mass " << MCTrack->GetMass()<<","<<MCTrack->GetMass()<<" Y " << MCTrack->GetRapidity() <<
             //" Pt " << MCTrack->GetPt() <<endl;
             fa_ptm_rap_glo_imf->Fill(MCTrack->GetRapidity(),
@@ -5783,8 +5782,7 @@ void CbmHadronAnalysis::Finish() {
 // ------------------------------------------------------------------
 void CbmHadronAnalysis::WriteHistogramms() {
   // Write histogramms to the file
-  if (NULL != fHist)
-  {
+  if (NULL != fHist) {
     TIter next(gDirectory->GetList());
     TH1* h;
     TObject* obj;
@@ -5850,13 +5848,13 @@ void CbmHadronAnalysis::ReconstructSecondaries() {
   */
 
 
-  const Int_t fiNMixClasses  = 10;
-  const Double_t beamRotY    = -25.;
-  const Double_t MLAM        = 1.1156;
-  const Double_t DMLAM       = 0.015;
-  const Int_t NSECMASS       = 2;  // pi-minus, proton, he3, alpha
-  const Int_t iMode          = 0;
-  Float_t secMass[NSECMASS]  = {0.139, 0.938};
+  const Int_t fiNMixClasses = 10;
+  const Double_t beamRotY   = -25.;
+  const Double_t MLAM       = 1.1156;
+  const Double_t DMLAM      = 0.015;
+  const Int_t NSECMASS      = 2;  // pi-minus, proton, he3, alpha
+  const Int_t iMode         = 0;
+  Float_t secMass[NSECMASS] = {0.139, 0.938};
   switch (iMode) {
     case 0:  // Lambda
       break;
@@ -5881,7 +5879,7 @@ void CbmHadronAnalysis::ReconstructSecondaries() {
     // define some histograms
     Double_t MinvMin = secMass[0] + secMass[1];
     cout << "Add secondary histos to " << fHist->GetName() << endl;
-    fhTofChi         = new TH1F(
+    fhTofChi = new TH1F(
       Form("hTofChi"), Form("TofHit Merger; #chi "), 100, 0., dChiTofLim * 2.);
     fhDperp = new TH1F(Form("hDperp"),
                        Form("transverse matching distance; d [cm]"),
@@ -6248,10 +6246,8 @@ void CbmHadronAnalysis::ReconstructSecondaries() {
                    << " < " << fdDistTRD;
         fhDTRDprim->Fill(dDtrans);
         if (dDtrans < fdDistTRD
-            && dDtrans
-                 < dTrdDistMin
-                     [i]
-                     [iTrdLayer]) {  // check if acceptable and take best match
+            && dDtrans < dTrdDistMin
+                   [i][iTrdLayer]) {  // check if acceptable and take best match
           Int_t iMul = iTRD[i].size();
           if (dTrdDistMin[i][iTrdLayer] < 1.E3) {  // modify previous entry
             //find old entry in vector
@@ -6426,10 +6422,9 @@ void CbmHadronAnalysis::ReconstructSecondaries() {
                        << " < " << fdDistTRD;
             if (
               dDtrans < fdDistTRD
-              && dDtrans
-                   < dTrdDistMin
-                       [i]
-                       [iTrdLayer]) {  // check if acceptable and take best match
+              && dDtrans < dTrdDistMin
+                     [i]
+                     [iTrdLayer]) {  // check if acceptable and take best match
               Int_t iMul = iTRD[i].size();
               if (dTrdDistMin[i][iTrdLayer] < 1.E3) {  // modify previous entry
                 //find old entry in vector

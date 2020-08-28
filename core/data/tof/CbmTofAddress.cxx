@@ -28,8 +28,7 @@ const Int_t CbmTofAddress::fgkRpcTypeOffset =
   CbmTofAddress::fgkChannelIdBits + CbmTofAddress::fgkChannelIdOffset;
 
 const Int_t CbmTofAddress::fgkiModFullIdMask =
-    (((1 << fgkSystemBits) - 1))
-  + (((1 << fgkSmIdBits) - 1) << fgkSmIdOffset)
+  (((1 << fgkSystemBits) - 1)) + (((1 << fgkSmIdBits) - 1) << fgkSmIdOffset)
   + (((1 << fgkSmTypeBits) - 1) << fgkSmTypeOffset)
   + (((1 << fgkRpcIdBits) - 1) << fgkRpcIdOffset)
   + (((1 << fgkRpcTypeBits) - 1) << fgkRpcTypeOffset);

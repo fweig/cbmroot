@@ -88,7 +88,7 @@ private:
   std::map<UInt_t, UInt_t> fDetIdIndexMap;
 
   Double_t fdR0Lim = 0.;
-  Bool_t   fbBeam  = kFALSE;
+  Bool_t fbBeam    = kFALSE;
 
   CbmTofCalibrator(const CbmTofCalibrator&) = delete;
   CbmTofCalibrator operator=(const CbmTofCalibrator&) = delete;

@@ -158,13 +158,13 @@ void pl_pull_trk(Int_t NSt = 8, Int_t iVar = 0, Int_t iFit = 0) {
 
   for (Int_t i = 0; i < NSt; i++)
     cout << Form(
-              "GMean %6.3f +/- %6.5f, GSig: %6.3f +/- %6.5f => ResC %d: %6.3f ",
-              vMean[i],
-              vMeanErr[i],
-              vSig[i],
-              vSigErr[i],
-              i,
-              vRes[i])
+      "GMean %6.3f +/- %6.5f, GSig: %6.3f +/- %6.5f => ResC %d: %6.3f ",
+      vMean[i],
+      vMeanErr[i],
+      vSig[i],
+      vSigErr[i],
+      i,
+      vRes[i])
          << endl;
 
   cout << "Res-summary " << iVar << ": Nall, sigs = " << Nall;

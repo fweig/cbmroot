@@ -457,7 +457,7 @@ Bool_t CbmDeviceUnpackTofMcbm2018::ReInitContainers() {
   fviRpcChUId.resize(uNrOfChannels);
   UInt_t iCh = 0;
   for (UInt_t iGbtx = 0; iGbtx < uNrOfGbtx; iGbtx++) {
-	Int_t iModuleIdMap = fviModuleId[iGbtx];
+    Int_t iModuleIdMap = fviModuleId[iGbtx];
     switch (fviRpcType[iGbtx]) {
 
       case 0:                         // CBM modules
@@ -568,8 +568,8 @@ Bool_t CbmDeviceUnpackTofMcbm2018::ReInitContainers() {
           }
         }
       }
-      [[fallthrough]];  // fall through is intended
-      case 8:  // ceramics
+        [[fallthrough]];  // fall through is intended
+      case 8:             // ceramics
       {
         Int_t iModuleId   = 0;
         Int_t iModuleType = 8;
@@ -666,13 +666,12 @@ Bool_t CbmDeviceUnpackTofMcbm2018::ReInitContainers() {
                   case 1: iRpcMap = 1; break;
                 }
                 if (iFeet > 2) iModuleIdMap = 1;
-              }
-              break;
+              } break;
               default:;
             }
             if (iSideMap > -1)
               fviRpcChUId[iCh] = CbmTofAddress::GetUniqueAddress(
-                      iModuleIdMap, iRpcMap, iStrMap, iSideMap, fviRpcType[iGbtx]);
+                iModuleIdMap, iRpcMap, iStrMap, iSideMap, fviRpcType[iGbtx]);
             else
               fviRpcChUId[iCh] = 0;
 

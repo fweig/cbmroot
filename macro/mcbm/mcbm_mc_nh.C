@@ -14,20 +14,20 @@
 // 2014-06-30 - DE - sis300_muon
 //
 // --------------------------------------------------------------------------
-void mcbm_mc_nh(Int_t nEvents = 2,  Int_t iMode=3, 
-	     TString cSys="lam", 
-	     TString cEbeam="2.5gev",
-	     TString cCentr="-",
-	     Int_t iRun=0, 
-	     const char* setupName = "mcbm_beam_2021_04",
-	     //const char* setupName = "sis18_mcbm_20deg_long",
-         const char* inputFile = "")
-{
+void mcbm_mc_nh(Int_t nEvents         = 2,
+                Int_t iMode           = 3,
+                TString cSys          = "lam",
+                TString cEbeam        = "2.5gev",
+                TString cCentr        = "-",
+                Int_t iRun            = 0,
+                const char* setupName = "mcbm_beam_2021_04",
+                //const char* setupName = "sis18_mcbm_20deg_long",
+                const char* inputFile = "") {
 
   // ========================================================================
   //          Adjust this part according to your requirements
 
-// available input files
+  // available input files
   TString defaultInputFile = "/input/urqmd.agag.1.65gev.centr.00001.root";
   //  TString defaultInputFile = "/input/urqmd.agag.1.65gev.mbias.00001.root";
   //  TString defaultInputFile = "/input/urqmd.auau.1.24gev.mbias.00001.root";
@@ -44,18 +44,22 @@ void mcbm_mc_nh(Int_t nEvents = 2,  Int_t iMode=3,
 
   // -----   In- and output file names   ------------------------------------
   //TString inFile  = srcDir + "/input/urqmd." + cSys + "." + cEbeam + "." + cCentr + "." + Form("%05d",iRun) + ".root";
-  TString outDir  = "data/";
+  TString outDir = "data/";
   //TString outFile = outDir + setupName + "_" + cSys + "." + cEbeam + "." + cCentr + ".mc." + Form("%05d",iRun) + ".root";
   //TString parFile = outDir + setupName + "_" + cSys + "." + cEbeam + "." + cCentr + ".params." + Form("%05d",iRun) + ".root";
-  TString outFile = outDir + setupName + "_" + cSys + "." + cEbeam + "." + cCentr + Form("%05d",iRun) + ".tra.root";
-  TString parFile = outDir + setupName + "_" + cSys + "." + cEbeam + "." + cCentr + Form("%05d",iRun) + ".par.root";
+  TString outFile = outDir + setupName + "_" + cSys + "." + cEbeam + "."
+                    + cCentr + Form("%05d", iRun) + ".tra.root";
+  TString parFile = outDir + setupName + "_" + cSys + "." + cEbeam + "."
+                    + cCentr + Form("%05d", iRun) + ".par.root";
   TString geoFile = outDir + setupName + "_geofile_full.root";
-  if(iRun==0) iRun=1;  // for event displays
-  TString inFile  = "/lustre/nyx/cbm/prod/gen/urqmd/" + cSys + "/" + cEbeam + "/" + cCentr + "/urqmd." + cSys + "." + cEbeam + "." + cCentr + "." + Form("%05d",iRun) + ".root";  
+  if (iRun == 0) iRun = 1;  // for event displays
+  TString inFile = "/lustre/nyx/cbm/prod/gen/urqmd/" + cSys + "/" + cEbeam + "/"
+                   + cCentr + "/urqmd." + cSys + "." + cEbeam + "." + cCentr
+                   + "." + Form("%05d", iRun) + ".root";
   // ------------------------------------------------------------------------
 
   // --- Logger settings ----------------------------------------------------
-  TString logLevel     = "WARNING";
+  TString logLevel = "WARNING";
   //TString logLevel     = "INFO";
   //TString logLevel     = "DEBUG";
   TString logVerbosity = "MEDIUM";
@@ -71,14 +75,15 @@ void mcbm_mc_nh(Int_t nEvents = 2,  Int_t iMode=3,
   // in the responsibility of the user that no overlaps or extrusions are
   // created by the placement of the target.
   //
-  TString  targetElement   = "Gold";
-  Double_t targetThickness = 0.1;    // full thickness in cm
-  Double_t targetDiameter  = 0.5;    // diameter in cm
-  Double_t targetPosX      = 0.;     // target x position in global c.s. [cm]
-  Double_t targetPosY      = 0.;     // target y position in global c.s. [cm]
-  Double_t targetPosZ      = 0.;     // target z position in global c.s. [cm]
-  Double_t targetRotY      = 0.;     // target rotation angle around the y axis [deg]
-  Double_t beamRotY        = 20.;    // the primary beam is at 25 degrees to the left of the mCBM setup
+  TString targetElement    = "Gold";
+  Double_t targetThickness = 0.1;  // full thickness in cm
+  Double_t targetDiameter  = 0.5;  // diameter in cm
+  Double_t targetPosX      = 0.;   // target x position in global c.s. [cm]
+  Double_t targetPosY      = 0.;   // target y position in global c.s. [cm]
+  Double_t targetPosZ      = 0.;   // target z position in global c.s. [cm]
+  Double_t targetRotY = 0.;  // target rotation angle around the y axis [deg]
+  Double_t beamRotY =
+    20.;  // the primary beam is at 25 degrees to the left of the mCBM setup
   //  Double_t beamRotY        = 25.;    // the primary beam is at 25 degrees to the left of the mCBM setup
   // ------------------------------------------------------------------------
 
@@ -95,7 +100,6 @@ void mcbm_mc_nh(Int_t nEvents = 2,  Int_t iMode=3,
   Double_t beamWidthX  = 0.1;  // Gaussian sigma of the beam profile in x [cm]
   Double_t beamWidthY  = 0.1;  // Gaussian sigma of the beam profile in y [cm]
   // ------------------------------------------------------------------------
-  
 
 
   // In general, the following parts need not be touched
@@ -119,9 +123,9 @@ void mcbm_mc_nh(Int_t nEvents = 2,  Int_t iMode=3,
 
   // -----   Create simulation run   ----------------------------------------
   FairRunSim* run = new FairRunSim();
-  run->SetName("TGeant3");              // Transport engine
-  run->SetOutputFile(outFile);          // Output file
-  run->SetGenerateRunInfo(kTRUE);       // Create FairRunInfo file
+  run->SetName("TGeant3");         // Transport engine
+  run->SetOutputFile(outFile);     // Output file
+  run->SetGenerateRunInfo(kTRUE);  // Create FairRunInfo file
   // ------------------------------------------------------------------------
 
 
@@ -133,23 +137,23 @@ void mcbm_mc_nh(Int_t nEvents = 2,  Int_t iMode=3,
 
   // -----   Load the geometry setup   -------------------------------------
   std::cout << std::endl;
-  TString setupFile = srcDir + "/geometry/setup/setup_" + setupName + ".C";
+  TString setupFile  = srcDir + "/geometry/setup/setup_" + setupName + ".C";
   TString setupFunct = "setup_";
-  setupFunct = setupFunct + setupName + "()";
+  setupFunct         = setupFunct + setupName + "()";
   std::cout << "-I- " << myName << ": Loading macro " << setupFile << std::endl;
   gROOT->LoadMacro(setupFile);
   gROOT->ProcessLine(setupFunct);
   // ------------------------------------------------------------------------
 
-  
+
   // -----   Input file   ---------------------------------------------------
   std::cout << std::endl;
   TString defaultInput = srcDir + defaultInputFile;
-  if ( inFile.IsNull() ) {  // Not defined in the macro explicitly
-    if ( strcmp(inputFile, "") == 0 ) {  // not given as argument to the macro
-        inFile = defaultInput;
-    }
-    else inFile = inputFile;
+  if (inFile.IsNull()) {               // Not defined in the macro explicitly
+    if (strcmp(inputFile, "") == 0) {  // not given as argument to the macro
+      inFile = defaultInput;
+    } else
+      inFile = inputFile;
   }
   std::cout << "-I- " << myName << ": Using input file " << inFile << std::endl;
   // ------------------------------------------------------------------------
@@ -158,7 +162,7 @@ void mcbm_mc_nh(Int_t nEvents = 2,  Int_t iMode=3,
   // -----   Create media   -------------------------------------------------
   std::cout << std::endl;
   std::cout << "-I- " << myName << ": Setting media file" << std::endl;
-  run->SetMaterials("media.geo");       // Materials
+  run->SetMaterials("media.geo");  // Materials
   // ------------------------------------------------------------------------
 
 
@@ -176,21 +180,20 @@ void mcbm_mc_nh(Int_t nEvents = 2,  Int_t iMode=3,
   // -----   Create and register the target   -------------------------------
   std::cout << std::endl;
   std::cout << "-I- " << myName << ": Registering target" << std::endl;
-  CbmTarget* target = new CbmTarget(targetElement.Data(),
-                                      targetThickness,
-                                      targetDiameter);
+  CbmTarget* target =
+    new CbmTarget(targetElement.Data(), targetThickness, targetDiameter);
   target->SetPosition(targetPosX, targetPosY, targetPosZ);
   target->SetRotation(targetRotY);
   //target->Print();
   run->AddModule(target);
   // ------------------------------------------------------------------------
 
-  
+
   // -----   Create magnetic field   ----------------------------------------
   std::cout << std::endl;
   std::cout << "-I- " << myName << ": Registering magnetic field" << std::endl;
   CbmFieldMap* magField = CbmSetup::Instance()->CreateFieldMap();
-  if ( ! magField ) {
+  if (!magField) {
     std::cout << "-E- run_sim_new: No valid field!";
     return;
   }
@@ -224,85 +227,81 @@ void mcbm_mc_nh(Int_t nEvents = 2,  Int_t iMode=3,
   // in the FairPrimaryGenerator class.
   // ------------------------------------------------------------------------
 
-     // choose generator / source 
-  if(iMode>0)
-  {
+  // choose generator / source
+  if (iMode > 0) {
     switch (iMode) {
-        case 1:                  
-	  {                                 //                          (pdg, mul,px,     py, pz, vx,vy,vz)
-            FairParticleGenerator *fPartGen = new FairParticleGenerator  (13,   1,0.0,-0.228, 1.5, 0.,0.,0.); //mu-
-	    primGen->AddGenerator(fPartGen);
-	  }
-            break;
+      case 1: {  //                          (pdg, mul,px,     py, pz, vx,vy,vz)
+        FairParticleGenerator* fPartGen =
+          new FairParticleGenerator(13, 1, 0.0, -0.228, 1.5, 0., 0., 0.);  //mu-
+        primGen->AddGenerator(fPartGen);
+      } break;
 
-        case 2:                  
-	  {                                 //(pdg,mul,px, py, pz, vx,vy,vz)
-            FairParticleGenerator *fPartGen= new FairParticleGenerator(2212, 1,0.0,-0.228, 1.5, 0.,0.,0.); //proton
-	    primGen->AddGenerator(fPartGen);
-	  }
-            break;
+      case 2: {  //(pdg,mul,px, py, pz, vx,vy,vz)
+        FairParticleGenerator* fPartGen = new FairParticleGenerator(
+          2212, 1, 0.0, -0.228, 1.5, 0., 0., 0.);  //proton
+        primGen->AddGenerator(fPartGen);
+      } break;
 
-        case 3:                  
-	  {                                 //(pdg,mul,px, py, pz, vx,vy,vz)
-	    Double_t pz;
-	    sscanf(cEbeam,"%lfgev",&pz);
-	    cout<<"simulate single lambda with pz = "<<pz<<endl;
-            FairParticleGenerator *fPartGen= new FairParticleGenerator(3122, 1,0.0,0., pz, 0.,0.,0.); //lambda
-	    primGen->AddGenerator(fPartGen);
-	  }
-            break;
-        case 4:
-	  {
-	    FairBoxGenerator *fPartGen= new FairBoxGenerator(3122, 1);
-	    fPartGen->SetPtRange(0.,0.);
-            fPartGen->SetYRange(0.9,2.);
-	    primGen->AddGenerator(fPartGen);
-	  }	  
-            break;
+      case 3: {  //(pdg,mul,px, py, pz, vx,vy,vz)
+        Double_t pz;
+        sscanf(cEbeam, "%lfgev", &pz);
+        cout << "simulate single lambda with pz = " << pz << endl;
+        FairParticleGenerator* fPartGen =
+          new FairParticleGenerator(3122, 1, 0.0, 0., pz, 0., 0., 0.);  //lambda
+        primGen->AddGenerator(fPartGen);
+      } break;
+      case 4: {
+        FairBoxGenerator* fPartGen = new FairBoxGenerator(3122, 1);
+        fPartGen->SetPtRange(0., 0.);
+        fPartGen->SetYRange(0.9, 2.);
+        primGen->AddGenerator(fPartGen);
+      } break;
 
-        default:
-	  ;
+      default:;
     }
   }
   // Use the CbmUrqmdGenrator which calculates a reaction plane and
   // rotate all particles accordingly
-  else { //if (iMode>0){
-  // Use the CbmUnigenGenrator for the input
-  CbmUnigenGenerator*  uniGen = new CbmUnigenGenerator(inFile);
-  //uniGen->SetEventPlane(0. , 360.);
-  primGen->AddGenerator(uniGen);
-  primGen->SetBeamAngle(beamRotY * TMath::Pi()/180.,0,0,0);  // set direction of beam to 30 degrees
+  else {  //if (iMode>0){
+    // Use the CbmUnigenGenrator for the input
+    CbmUnigenGenerator* uniGen = new CbmUnigenGenerator(inFile);
+    //uniGen->SetEventPlane(0. , 360.);
+    primGen->AddGenerator(uniGen);
+    primGen->SetBeamAngle(beamRotY * TMath::Pi() / 180.,
+                          0,
+                          0,
+                          0);  // set direction of beam to 30 degrees
   }
   run->SetGenerator(primGen);
   // ------------------------------------------------------------------------
 
-  //  // -----   Create Electron gun as alternative -----------------------------                  
-  //  FairPrimaryGenerator* primGen = new FairPrimaryGenerator();                                  
-  //  // Use the FairBoxGenerator which generates a soingle electron                               
-  //  FairBoxGenerator *eminus = new FairBoxGenerator();                                           
-  //  eminus->SetPDGType(11);                                                                      
-  //  eminus->SetMultiplicity(1000);                                                               
-  //  //  eminus->SetBoxXYZ(32.,-32.,32.,-32.,0.);  // shoot at corner of diagonal modules         
-  //  //  eminus->SetBoxXYZ(0., 0., 0., 0., 0.);  // shoot at corner of diagonal modules           
-  //  //  eminus->SetBoxXYZ(57.,-57., 0., 0.,0.);  // shoot at corner of diagonal modules          
-  //  //  eminus->SetBoxXYZ(-57.,-57., 57., 57.,0.);  // shoot at corner of diagonal modules       
-  //  eminus->SetBoxXYZ(-180.,-15.,-150.,15.,0.);  // shoot at corner of diagonal modules          
-  //  eminus->SetPRange(2.,2.);                                                                    
-  //  eminus->SetPhiRange(0.,360.);                                                                
-  //  eminus->SetThetaRange(0.,0.);                                                                
-  //  primGen->AddGenerator(eminus);                                                               
-  //                                                                                               
+  //  // -----   Create Electron gun as alternative -----------------------------
+  //  FairPrimaryGenerator* primGen = new FairPrimaryGenerator();
+  //  // Use the FairBoxGenerator which generates a soingle electron
+  //  FairBoxGenerator *eminus = new FairBoxGenerator();
+  //  eminus->SetPDGType(11);
+  //  eminus->SetMultiplicity(1000);
+  //  //  eminus->SetBoxXYZ(32.,-32.,32.,-32.,0.);  // shoot at corner of diagonal modules
+  //  //  eminus->SetBoxXYZ(0., 0., 0., 0., 0.);  // shoot at corner of diagonal modules
+  //  //  eminus->SetBoxXYZ(57.,-57., 0., 0.,0.);  // shoot at corner of diagonal modules
+  //  //  eminus->SetBoxXYZ(-57.,-57., 57., 57.,0.);  // shoot at corner of diagonal modules
+  //  eminus->SetBoxXYZ(-180.,-15.,-150.,15.,0.);  // shoot at corner of diagonal modules
+  //  eminus->SetPRange(2.,2.);
+  //  eminus->SetPhiRange(0.,360.);
+  //  eminus->SetThetaRange(0.,0.);
+  //  primGen->AddGenerator(eminus);
+  //
   //  //  primGen->SetBeamAngle(30*TMath::Pi()/180.,0,0,0);  // set direction of beam to 30 degrees
-  //                                                                                               
-  //  fRun->SetGenerator(primGen);                                                                 
-  //  // ------------------------------------------------------------------------                  
+  //
+  //  fRun->SetGenerator(primGen);
+  //  // ------------------------------------------------------------------------
 
 
   // Visualisation of trajectories (TGeoManager Only)
   // Switch this on if you want to visualise tracks in the event display.
   // This is normally switch off, because of the huge files created
   // when it is switched on.
- 
+
   //run->SetStoreTraj(kTRUE);
 
   // -----   Run initialisation   -------------------------------------------
@@ -311,32 +310,32 @@ void mcbm_mc_nh(Int_t nEvents = 2,  Int_t iMode=3,
   run->Init();
   // ------------------------------------------------------------------------
 
-  
-//  // Set cuts for storing the trajectories.
-//  // Switch this on only if trajectories are stored.
-//  // Choose this cuts according to your needs, but be aware
-//  // that the file size of the output file depends on these cuts
-//
-//   FairTrajFilter* trajFilter = FairTrajFilter::Instance();
-//   if ( trajFilter ) {
-//  	 trajFilter->SetStepSizeCut(0.01); // 1 cm
-//  	 trajFilter->SetVertexCut(-2000., -2000., 4., 2000., 2000., 100.);
-//  	 trajFilter->SetMomentumCutP(10e-3); // p_lab > 10 MeV
-//  	 trajFilter->SetEnergyCut(0., 1.02); // 0 < Etot < 1.04 GeV
-//  	 trajFilter->SetStorePrimaries(kTRUE);
-//  	 trajFilter->SetStoreSecondaries(kTRUE);
-//   }
+
+  //  // Set cuts for storing the trajectories.
+  //  // Switch this on only if trajectories are stored.
+  //  // Choose this cuts according to your needs, but be aware
+  //  // that the file size of the output file depends on these cuts
+  //
+  //   FairTrajFilter* trajFilter = FairTrajFilter::Instance();
+  //   if ( trajFilter ) {
+  //  	 trajFilter->SetStepSizeCut(0.01); // 1 cm
+  //  	 trajFilter->SetVertexCut(-2000., -2000., 4., 2000., 2000., 100.);
+  //  	 trajFilter->SetMomentumCutP(10e-3); // p_lab > 10 MeV
+  //  	 trajFilter->SetEnergyCut(0., 1.02); // 0 < Etot < 1.04 GeV
+  //  	 trajFilter->SetStorePrimaries(kTRUE);
+  //  	 trajFilter->SetStoreSecondaries(kTRUE);
+  //   }
 
 
   // -----   Runtime database   ---------------------------------------------
   std::cout << std::endl << std::endl;
   std::cout << "-I- " << myName << ": Set runtime DB" << std::endl;
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
+  FairRuntimeDb* rtdb   = run->GetRuntimeDb();
   CbmFieldPar* fieldPar = (CbmFieldPar*) rtdb->getContainer("CbmFieldPar");
   fieldPar->SetParameters(magField);
   fieldPar->setChanged();
-  fieldPar->setInputVersion(run->GetRunId(),1);
-  Bool_t kParameterMerged = kTRUE;
+  fieldPar->setInputVersion(run->GetRunId(), 1);
+  Bool_t kParameterMerged   = kTRUE;
   FairParRootFileIo* parOut = new FairParRootFileIo(kParameterMerged);
   parOut->open(parFile.Data());
   rtdb->setOutput(parOut);
@@ -344,7 +343,7 @@ void mcbm_mc_nh(Int_t nEvents = 2,  Int_t iMode=3,
   rtdb->print();
   // ------------------------------------------------------------------------
 
- 
+
   // -----   Start run   ----------------------------------------------------
   std::cout << std::endl << std::endl;
   std::cout << "-I- " << myName << ": Starting run" << std::endl;
@@ -358,25 +357,26 @@ void mcbm_mc_nh(Int_t nEvents = 2,  Int_t iMode=3,
   Double_t ctime = timer.CpuTime();
   std::cout << std::endl << std::endl;
   std::cout << "Macro finished successfully." << std::endl;
-  std::cout << "Output file is "    << outFile << std::endl;
+  std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Geometry file is "  << geoFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime
-            << "s" << std::endl << std::endl;
+  std::cout << "Geometry file is " << geoFile << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s"
+            << std::endl
+            << std::endl;
   // ------------------------------------------------------------------------
 
 
   // -----   Resource monitoring   ------------------------------------------
-  if ( 0 ) { //Has_Fair_Monitor() ) {      // FairRoot Version >= 15.11
+  if (0) {  //Has_Fair_Monitor() ) {      // FairRoot Version >= 15.11
     // Extract the maximal used memory an add is as Dart measurement
     // This line is filtered by CTest and the value send to CDash
     FairSystemInfo sysInfo;
-    Float_t maxMemory=sysInfo.GetMaxMemory();
+    Float_t maxMemory = sysInfo.GetMaxMemory();
     std::cout << "<DartMeasurement name=\"MaxMemory\" type=\"numeric/double\">";
     std::cout << maxMemory;
     std::cout << "</DartMeasurement>" << std::endl;
 
-    Float_t cpuUsage=ctime/rtime;
+    Float_t cpuUsage = ctime / rtime;
     std::cout << "<DartMeasurement name=\"CpuLoad\" type=\"numeric/double\">";
     std::cout << cpuUsage;
     std::cout << "</DartMeasurement>" << std::endl;
@@ -390,4 +390,3 @@ void mcbm_mc_nh(Int_t nEvents = 2,  Int_t iMode=3,
   // RemoveGeoManager();
   // ------------------------------------------------------------------------
 }
-

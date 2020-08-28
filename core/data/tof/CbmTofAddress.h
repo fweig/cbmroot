@@ -126,15 +126,15 @@ public:
                                  UInt_t Channel,
                                  UInt_t Side    = 0,
                                  UInt_t SmType  = 0,
-								 UInt_t RpcType = 0) {
+                                 UInt_t RpcType = 0) {
     return (UInt_t)(
       ((ToIntegralType(ECbmModuleId::kTof) & ((1 << fgkSystemBits) - 1)))
       + ((Sm & ((1 << fgkSmIdBits) - 1)) << fgkSmIdOffset)
       + ((SmType & ((1 << fgkSmTypeBits) - 1)) << fgkSmTypeOffset)
       + ((Side & ((1 << fgkChannelSideBits) - 1)) << fgkChannelSideOffset)
-	  + ((Rpc & ((1 << fgkRpcIdBits) - 1)) << fgkRpcIdOffset)
+      + ((Rpc & ((1 << fgkRpcIdBits) - 1)) << fgkRpcIdOffset)
       + ((Channel & ((1 << fgkChannelIdBits) - 1)) << fgkChannelIdOffset)
-	  + ((RpcType & ((1 << fgkRpcTypeBits) - 1)) << fgkRpcTypeOffset));
+      + ((RpcType & ((1 << fgkRpcTypeBits) - 1)) << fgkRpcTypeOffset));
   };
 
   static Bool_t SameModule(UInt_t addressA, UInt_t addressB) {
@@ -152,7 +152,7 @@ public:
                             infoInput.fCell,
                             0,
                             infoInput.fSMtype,
-							infoInput.fCounterType);
+                            infoInput.fCounterType);
   };
   static UInt_t ConvertCbmTofDetectorId(Int_t detIdInput) {
     // For now assume that the system ID will always be correct

@@ -5,40 +5,35 @@
 
 #include "CbmTbDaqBuffer.h"
 
-#include <FairLogger.h>         // for Logger, LOG
-#include <stddef.h>             // for NULL
-#include <iomanip>              // for setprecision, __iom_t5
-#include <sstream>              // for basic_stringstream<>::string_type
+#include <FairLogger.h>  // for Logger, LOG
 #include <boost/any.hpp>
+#include <iomanip>   // for setprecision, __iom_t5
+#include <sstream>   // for basic_stringstream<>::string_type
+#include <stddef.h>  // for NULL
 
 // -----   Initialisation of static variables   ------------------------------
 CbmTbDaqBuffer* CbmTbDaqBuffer::fgInstance = nullptr;
 // ---------------------------------------------------------------------------
 
 
-
 // -----   Constructor   -----------------------------------------------------
-CbmTbDaqBuffer::CbmTbDaqBuffer() : fData() {
-}
+CbmTbDaqBuffer::CbmTbDaqBuffer() : fData() {}
 // ---------------------------------------------------------------------------
 
 
 // -----   Destructor   ------------------------------------------------------
-CbmTbDaqBuffer::~CbmTbDaqBuffer() {
-}
+CbmTbDaqBuffer::~CbmTbDaqBuffer() {}
 // ---------------------------------------------------------------------------
 
-Double_t CbmTbDaqBuffer::GetTimeFirst() const
-{
-  if ( ! GetSize() ) return -1.;
+Double_t CbmTbDaqBuffer::GetTimeFirst() const {
+  if (!GetSize()) return -1.;
   // Return the key from the first element in the map
   // The key of the map is the time of digi
   return fData.begin()->first;
 }
 
-Double_t CbmTbDaqBuffer::GetTimeLast() const
-{
-  if ( ! GetSize() ) return -1.;
+Double_t CbmTbDaqBuffer::GetTimeLast() const {
+  if (!GetSize()) return -1.;
   // Return the key from the last element in the map
   // The key of the map is the time of digi
   return (--fData.end())->first;
@@ -48,14 +43,16 @@ Double_t CbmTbDaqBuffer::GetTimeLast() const
 CbmTbDaqBuffer::Data CbmTbDaqBuffer::GetNextData(Double_t time) {
 
   // --- Check for empty buffer
-  if ( ! fData.size() ) return std::make_pair(boost::any(), ECbmModuleId::kNotExist);
+  if (!fData.size())
+    return std::make_pair(boost::any(), ECbmModuleId::kNotExist);
 
   // --- Get data from buffer
-  std::multimap<Double_t, std::pair<boost::any, ECbmModuleId>>::iterator it = fData.begin();
+  std::multimap<Double_t, std::pair<boost::any, ECbmModuleId>>::iterator it =
+    fData.begin();
   Double_t digi_time = it->first;
 
-  if ( digi_time < time ) {
-    boost::any digi = it->second.first;
+  if (digi_time < time) {
+    boost::any digi    = it->second.first;
     ECbmModuleId sysID = it->second.second;
     fData.erase(it);
     return std::make_pair(digi, sysID);
@@ -66,7 +63,7 @@ CbmTbDaqBuffer::Data CbmTbDaqBuffer::GetNextData(Double_t time) {
 
 // -----   Instance   --------------------------------------------------------
 CbmTbDaqBuffer* CbmTbDaqBuffer::Instance() {
-  if ( ! fgInstance ) fgInstance = new CbmTbDaqBuffer();
+  if (!fgInstance) fgInstance = new CbmTbDaqBuffer();
   return fgInstance;
 }
 // ---------------------------------------------------------------------------
@@ -76,12 +73,12 @@ void CbmTbDaqBuffer::PrintStatus() const {
   Int_t size = GetSize();
   std::stringstream ss;
   ss << "CbmTbDaqBuffer: Status ";
-  if ( ! size ) {
+  if (!size) {
     LOG(info) << ss.str() << "empty";
     return;
   }
-  LOG(info) << ss.str() << GetSize() << " digis from "
-            << std::fixed << std::setprecision(9) << GetTimeFirst() * 1.e-9 << " s to "
-            << GetTimeLast() *1.e-9 << " s";
+  LOG(info) << ss.str() << GetSize() << " digis from " << std::fixed
+            << std::setprecision(9) << GetTimeFirst() * 1.e-9 << " s to "
+            << GetTimeLast() * 1.e-9 << " s";
 }
 // ---------------------------------------------------------------------------

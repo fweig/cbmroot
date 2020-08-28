@@ -200,12 +200,24 @@ Bool_t CbmTofCalibrator::CreateCalHist() {
       for (Int_t iSide = 0; iSide < 2; iSide++) {
         fhCalWalk[iDetIndx][iCh][iSide] =
           new TH2D(Form("cal_SmT%01d_sm%03d_rpc%03d_Ch%03d_S%01d_Walk",
-                        iSmType, iSmId, iRpcId, iCh, iSide),
+                        iSmType,
+                        iSmId,
+                        iRpcId,
+                        iCh,
+                        iSide),
                    Form("Walk in SmT%01d_sm%03d_rpc%03d_Ch%03d_S%01d_Walk; Tot "
                         "[a.u.];  #DeltaT [ns]",
-                        iSmType, iSmId, iRpcId, iCh, iSide),
-                   nbClWalkBinX, 0., TotMax,
-                   nbClWalkBinY, -TSumMax, TSumMax);
+                        iSmType,
+                        iSmId,
+                        iRpcId,
+                        iCh,
+                        iSide),
+                   nbClWalkBinX,
+                   0.,
+                   TotMax,
+                   nbClWalkBinY,
+                   -TSumMax,
+                   TSumMax);
       }
     }
   }
@@ -216,11 +228,14 @@ Bool_t CbmTofCalibrator::CreateCalHist() {
 void CbmTofCalibrator::FillCalHist(CbmTofTracklet* pTrk) {
   // fill deviation histograms on walk level
   if (pTrk->GetTt() < 0) return;  // take tracks with positive velocity only
-  if (fbBeam && !pTrk->ContainsAddr(CbmTofAddress::GetUniqueAddress(0, 0, 0, 0, 5)))
+  if (fbBeam
+      && !pTrk->ContainsAddr(CbmTofAddress::GetUniqueAddress(0, 0, 0, 0, 5)))
     return;  // request beam counter hit for calibration
 
-  if (fbBeam && fdR0Lim
-      > 0.)  // consider only tracks originating from nominal interaction point
+  if (
+    fbBeam
+    && fdR0Lim
+         > 0.)  // consider only tracks originating from nominal interaction point
     if (pTrk->GetR0() > fdR0Lim) return;
 
   for (Int_t iHit = 0; iHit < pTrk->GetNofHits(); iHit++) {
@@ -313,17 +328,20 @@ void CbmTofCalibrator::FillCalHist(CbmTofTracklet* pTrk) {
       }
 
       if (iCh0 != iCh1 || iSide0 == iSide1) {
-    	  LOG(fatal) <<"Invalid digi pair for TSR "<< iSmType << iSm << iRpc
-    			  << " Ch " << iCh0 << " " << iCh1 << ", Side " << iSide0 << " " << iSide1;
+        LOG(fatal) << "Invalid digi pair for TSR " << iSmType << iSm << iRpc
+                   << " Ch " << iCh0 << " " << iCh1 << ", Side " << iSide0
+                   << " " << iSide1;
       }
 
-      hlocal_d[1]=-0.5*((1.-2.*tDigi0->GetSide())*tDigi0->GetTime() + (1.-2.*tDigi1->GetSide())*tDigi1->GetTime())
-    		     * fDigiBdfPar->GetSigVel(iSmType, iSm, iRpc);
+      hlocal_d[1] = -0.5
+                    * ((1. - 2. * tDigi0->GetSide()) * tDigi0->GetTime()
+                       + (1. - 2. * tDigi1->GetSide()) * tDigi1->GetTime())
+                    * fDigiBdfPar->GetSigVel(iSmType, iSm, iRpc);
 
-      if ( TMath::Abs(hlocal_d[1]-hlocal_p[1])>10.) {
-         LOG(warn)<<"CMPY for TSRC "<< iSmType << iSm << iRpc << iCh0
-        		  <<": "<<hlocal_f[1]<<", "<<hlocal_p[1]<<", "<<hlocal_d[1]
-				  <<", TOT: " << tDigi0->GetTot() << " " << tDigi1->GetTot();
+      if (TMath::Abs(hlocal_d[1] - hlocal_p[1]) > 10.) {
+        LOG(warn) << "CMPY for TSRC " << iSmType << iSm << iRpc << iCh0 << ": "
+                  << hlocal_f[1] << ", " << hlocal_p[1] << ", " << hlocal_d[1]
+                  << ", TOT: " << tDigi0->GetTot() << " " << tDigi1->GetTot();
       }
 
       fhCalWalk[iDetIndx][iCh0][iSide0]->Fill(
@@ -383,16 +401,17 @@ Bool_t CbmTofCalibrator::UpdateCalHist(Int_t iOpt) {
     Int_t iUniqueId = fDigiBdfPar->GetDetUId(iDetIndx);
     // Int_t iSmAddr   = iUniqueId & DetMask;
     Int_t iSmType = CbmTofAddress::GetSmType(iUniqueId);
-    Int_t iSm           = CbmTofAddress::GetSmId( iUniqueId );
-    Int_t iRpc = CbmTofAddress::GetRpcId(iUniqueId);
+    Int_t iSm     = CbmTofAddress::GetSmId(iUniqueId);
+    Int_t iRpc    = CbmTofAddress::GetRpcId(iUniqueId);
     switch (iOpt) {
       case 0:  // none
         break;
       case 1:  // update channel mean
       {
-        LOG(info) << "Update Offsets for TSR "<<iSmType<<iSm<<iRpc;
-        if(NULL == fhCorTOff[iDetIndx]) {
-          LOG(warn) << "hCorTOff for TSR "<<iSmType<<iSm<<iRpc<<" not available";
+        LOG(info) << "Update Offsets for TSR " << iSmType << iSm << iRpc;
+        if (NULL == fhCorTOff[iDetIndx]) {
+          LOG(warn) << "hCorTOff for TSR " << iSmType << iSm << iRpc
+                    << " not available";
           continue;
         }
 
@@ -424,8 +443,7 @@ Bool_t CbmTofCalibrator::UpdateCalHist(Int_t iOpt) {
             fhCorPos[iDetIndx]->SetBinContent(iBin + 1, dCorP + dDp);
           }
         }
-      }
-      break;
+      } break;
       case 2:  // update individual channel walks
         const Double_t MinCounts = 10.;
         Int_t iNbCh              = fDigiBdfPar->GetNbChan(iSmType, iRpc);
@@ -438,13 +456,16 @@ Bool_t CbmTofCalibrator::UpdateCalHist(Int_t iOpt) {
                          ->ProjectionX();  // contributing counts
 
             Double_t dCorT = 0;
-            for (Int_t iBin = 0; iBin < fhCorWalk[iDetIndx][iCh][iSide]->GetNbinsX(); iBin++) {
+            for (Int_t iBin = 0;
+                 iBin < fhCorWalk[iDetIndx][iCh][iSide]->GetNbinsX();
+                 iBin++) {
               Double_t dCts  = hCW->GetBinContent(iBin + 1);
               Double_t dWOff = fhCorWalk[iDetIndx][iCh][iSide]->GetBinContent(
                 iBin + 1);  // current value
-              if (iBin>0 && dCts==0)
-                fhCorWalk[iDetIndx][iCh][iSide]->SetBinContent(iBin + 1,
-                  fhCorWalk[iDetIndx][iCh][iSide]->GetBinContent(iBin) );
+              if (iBin > 0 && dCts == 0)
+                fhCorWalk[iDetIndx][iCh][iSide]->SetBinContent(
+                  iBin + 1,
+                  fhCorWalk[iDetIndx][iCh][iSide]->GetBinContent(iBin));
               if (dCts > MinCounts) { dCorT = hpW->GetBinContent(iBin + 1); }
               fhCorWalk[iDetIndx][iCh][iSide]->SetBinContent(
                 iBin + 1, dWOff + dCorT);  //set new value
@@ -452,12 +473,15 @@ Bool_t CbmTofCalibrator::UpdateCalHist(Int_t iOpt) {
             // determine effective/count rate weighted mean
             Double_t dMean   = 0;
             Double_t dCtsAll = 0.;
-            for (Int_t iBin = 0; iBin < fhCorWalk[iDetIndx][iCh][iSide]->GetNbinsX(); iBin++) {
-              Double_t dCts  = hCW->GetBinContent(iBin + 1);
-              Double_t dWOff = fhCorWalk[iDetIndx][iCh][iSide]->GetBinContent(iBin + 1);
+            for (Int_t iBin = 0;
+                 iBin < fhCorWalk[iDetIndx][iCh][iSide]->GetNbinsX();
+                 iBin++) {
+              Double_t dCts = hCW->GetBinContent(iBin + 1);
+              Double_t dWOff =
+                fhCorWalk[iDetIndx][iCh][iSide]->GetBinContent(iBin + 1);
               if (dCts > MinCounts) {
                 dCtsAll += dCts;
-                dMean   += dCts * dWOff;
+                dMean += dCts * dWOff;
               }
             }
             if (dCtsAll > 0.) dMean /= dCtsAll;
@@ -466,14 +490,20 @@ Bool_t CbmTofCalibrator::UpdateCalHist(Int_t iOpt) {
             		<<": "<<dMean;
             */
             // keep mean value at 0
-            for (Int_t iBin = 0; iBin < fhCorWalk[iDetIndx][iCh][iSide]->GetNbinsX(); iBin++) {
-              Double_t dWOff = fhCorWalk[iDetIndx][iCh][iSide]->GetBinContent(iBin + 1);  // current value
-              fhCorWalk[iDetIndx][iCh][iSide]->SetBinContent(iBin + 1, dWOff - dMean);  //set new value
-              if(iCh==5 && iBin==10) // debugging
-            	LOG(info) << "New Walk for "<<fhCorWalk[iDetIndx][iCh][iSide]->GetName()
-				          << " bin " << iBin
-				          << ": "<<fhCorWalk[iDetIndx][iCh][iSide]->GetBinContent(iBin+1)
-						  << ", Mean " << dMean<<", WOff "<<dWOff;
+            for (Int_t iBin = 0;
+                 iBin < fhCorWalk[iDetIndx][iCh][iSide]->GetNbinsX();
+                 iBin++) {
+              Double_t dWOff = fhCorWalk[iDetIndx][iCh][iSide]->GetBinContent(
+                iBin + 1);  // current value
+              fhCorWalk[iDetIndx][iCh][iSide]->SetBinContent(
+                iBin + 1, dWOff - dMean);  //set new value
+              if (iCh == 5 && iBin == 10)  // debugging
+                LOG(info) << "New Walk for "
+                          << fhCorWalk[iDetIndx][iCh][iSide]->GetName()
+                          << " bin " << iBin << ": "
+                          << fhCorWalk[iDetIndx][iCh][iSide]->GetBinContent(iBin
+                                                                            + 1)
+                          << ", Mean " << dMean << ", WOff " << dWOff;
             }
           }
         }
@@ -513,7 +543,7 @@ void CbmTofCalibrator::ReadHist(TFile* fHist) {
     fhCorPos[iDetIndx] = (TH1*) gDirectory->FindObjectAny(
       Form("cl_CorSmT%01d_sm%03d_rpc%03d_Pos_pfx", iSmType, iSm, iRpc));
     if (NULL == fhCorPos[iDetIndx]) {
-      LOG(error) << "hCorPos not found for TSR "<<iSmType<<iSm<<iRpc;
+      LOG(error) << "hCorPos not found for TSR " << iSmType << iSm << iRpc;
       continue;
     }
     fhCorTOff[iDetIndx] = (TH1*) gDirectory->FindObjectAny(
@@ -529,11 +559,16 @@ void CbmTofCalibrator::ReadHist(TFile* fHist) {
       fhCorWalk[iDetIndx][iCh].resize(2);
       for (Int_t iSide = 0; iSide < 2; iSide++) {
         //LOG(info) << "Get walk histo pointer for TSRCS " << iSmType<<iSm<<iRpc<<iCh<<iSide;
-    	  fhCorWalk[iDetIndx][iCh][iSide] = (TH1*) gDirectory->FindObjectAny(
+        fhCorWalk[iDetIndx][iCh][iSide] = (TH1*) gDirectory->FindObjectAny(
           Form("Cor_SmT%01d_sm%03d_rpc%03d_Ch%03d_S%d_Walk_px",
-               iSmType, iSm, iRpc, iCh, iSide));
-        if( NULL == fhCorWalk[iDetIndx][iCh][iSide] )
-        	LOG(warn)<<"No Walk histo for TSRCS "<<iSmType<<iSm<<iRpc<<iCh<<iSide;
+               iSmType,
+               iSm,
+               iRpc,
+               iCh,
+               iSide));
+        if (NULL == fhCorWalk[iDetIndx][iCh][iSide])
+          LOG(warn) << "No Walk histo for TSRCS " << iSmType << iSm << iRpc
+                    << iCh << iSide;
       }
     }
   }
@@ -544,7 +579,7 @@ void CbmTofCalibrator::WriteHist(TFile* fHist) {
   TDirectory* oldir = gDirectory;
   fHist->cd();
   for (Int_t iDetIndx = 0; iDetIndx < fDigiBdfPar->GetNbDet(); iDetIndx++) {
-	if(NULL == fhCorPos[iDetIndx]) continue;
+    if (NULL == fhCorPos[iDetIndx]) continue;
     fhCorPos[iDetIndx]->Write();
     fhCorTOff[iDetIndx]->Write();
     fhCorTot[iDetIndx]->Write();

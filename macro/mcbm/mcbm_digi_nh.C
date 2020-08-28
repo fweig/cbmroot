@@ -28,17 +28,15 @@
  **/
 
 
-void mcbm_digi_nh(
-	Int_t nEvents = 100,                     // Number of events to process
-    TString RunId  = "test",
-    TString InDir  = "./data/",
-    TString OutDir = "./data/",
-    TString setup  = "mcbm_beam_2021_03",	
-	Bool_t eventMode = kFALSE,        // Event-by-event mode
-	Double_t eventRate = 1.e5,        // Interaction rate [1/s]
-	Double_t timeSliceLength = 1.e4   // Length of time-slice [ns]
-)
-{
+void mcbm_digi_nh(Int_t nEvents      = 100,  // Number of events to process
+                  TString RunId      = "test",
+                  TString InDir      = "./data/",
+                  TString OutDir     = "./data/",
+                  TString setup      = "mcbm_beam_2021_03",
+                  Bool_t eventMode   = kFALSE,     // Event-by-event mode
+                  Double_t eventRate = 1.e5,       // Interaction rate [1/s]
+                  Double_t timeSliceLength = 1.e4  // Length of time-slice [ns]
+) {
 
   // --- Logger settings ----------------------------------------------------
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
@@ -49,28 +47,29 @@ void mcbm_digi_nh(
   // -----   Allow overwriting of output file   -----------------------------
   Bool_t overwrite = kTRUE;
   // ------------------------------------------------------------------------
- 
+
 
   // -----   File names   ---------------------------------------------------
-  TString inFile  = InDir  + "/" + RunId + ".tra.root";
+  TString inFile  = InDir + "/" + RunId + ".tra.root";
   TString parFile = OutDir + "/" + RunId + ".par.root";
-  TString outFile = OutDir + "/" + RunId + Form(".%2.1e",eventRate) + ".raw.root";
+  TString outFile =
+    OutDir + "/" + RunId + Form(".%2.1e", eventRate) + ".raw.root";
   TString monFile = OutDir + "/" + RunId + ".raw.moni.root";
-  if ( eventMode ) {
+  if (eventMode) {
     outFile = OutDir + "/" + RunId + ".event.raw.root";
     monFile = OutDir + "/" + RunId + ".event.raw.moni.root";
   }
-   
-  
-   // -----   Timer   --------------------------------------------------------
+
+
+  // -----   Timer   --------------------------------------------------------
   TStopwatch timer;
   timer.Start();
   // ------------------------------------------------------------------------
- 
- 
+
+
   // -----   Digitization run   ---------------------------------------------
   CbmDigitization run;
-  
+
   run.AddInput(inFile, eventRate);
   run.SetOutputFile(outFile, overwrite);
   run.SetMonitorFile(monFile);
@@ -82,7 +81,7 @@ void mcbm_digi_nh(
 
   //run.Deactivate(ECbmModuleId::kSts);
   run.Deactivate(ECbmModuleId::kRich);
-  run.Deactivate(ECbmModuleId::kTrd); // deactivate for time based mode !
+  run.Deactivate(ECbmModuleId::kTrd);  // deactivate for time based mode !
   run.Deactivate(ECbmModuleId::kMuch);
   run.Deactivate(ECbmModuleId::kPsd);
 
@@ -98,21 +97,22 @@ void mcbm_digi_nh(
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime
-            << " s" << std::endl << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
+            << std::endl
+            << std::endl;
   // ------------------------------------------------------------------------
 
 
   // -----   CTest resource monitoring   ------------------------------------
   FairSystemInfo sysInfo;
-  Float_t maxMemory=sysInfo.GetMaxMemory();
+  Float_t maxMemory = sysInfo.GetMaxMemory();
   std::cout << "<DartMeasurement name=\"MaxMemory\" type=\"numeric/double\">";
   std::cout << maxMemory;
   std::cout << "</DartMeasurement>" << std::endl;
   std::cout << "<DartMeasurement name=\"WallTime\" type=\"numeric/double\">";
   std::cout << rtime;
   std::cout << "</DartMeasurement>" << std::endl;
-  Float_t cpuUsage=ctime/rtime;
+  Float_t cpuUsage = ctime / rtime;
   std::cout << "<DartMeasurement name=\"CpuLoad\" type=\"numeric/double\">";
   std::cout << cpuUsage;
   std::cout << "</DartMeasurement>" << std::endl;
@@ -125,4 +125,4 @@ void mcbm_digi_nh(
   // ------------------------------------------------------------------------
 
 
-} // End of macro
+}  // End of macro

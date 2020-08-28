@@ -878,7 +878,7 @@ Int_t CbmTofDigiBdfPar::GetNbDet() const { return fiDetUId.GetSize(); }
 Int_t CbmTofDigiBdfPar::GetDetInd(Int_t iAddr) {
 
   //const Int_t DetMask = 0x3fffff; // v14a
-  const Int_t DetMask = 0x1fffff; // v21a
+  const Int_t DetMask = 0x1fffff;  // v21a
   return fMapDetInd[(iAddr & DetMask)];
 }
 

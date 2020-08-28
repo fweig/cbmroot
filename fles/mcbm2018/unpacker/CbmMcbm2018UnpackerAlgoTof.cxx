@@ -30,7 +30,7 @@
 #include <vector>
 
 
-static Int_t  NMappingWarnings=100;
+static Int_t NMappingWarnings = 100;
 /*
 static uint32_t pat_mess[8]={8*0};
 std::vector< std::vector <uint32_t> > Pat_Request;
@@ -317,10 +317,12 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::InitParameters() {
                                     iCh,
                                     fviRpcChUId[iCh]);
                   break;
-                }                                   // Valid T0 channel
-                default: { fviRpcChUId[iCh] = 0; }  // Invalid T0 channel
-              }                                     // switch( uCh % 4 )
-            }                                       // if( 0 == uFee )
+                }  // Valid T0 channel
+                default: {
+                  fviRpcChUId[iCh] = 0;
+                }  // Invalid T0 channel
+              }    // switch( uCh % 4 )
+            }      // if( 0 == uFee )
 
             iCh++;
           }  // for( UInt_t uCh = 0; uCh < fUnpackPar->GetNrOfChannelsPerFee(); ++uCh )
@@ -382,15 +384,15 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::InitParameters() {
             switch (fviRpcSide[iGbtx]) {
               case 0:; break;
               case 1:;
-                iRpcMap = 1 - iRpcMap; // swap counters
-              	break;
+                iRpcMap = 1 - iRpcMap;  // swap counters
+                break;
               case 2:
                 switch (iFeet) {
                   case 1:
                     iRpcMap  = iRpc[4];
                     iSideMap = iSide[4];
-                    iStrMap  = 31-iStrMap;
-                  break;
+                    iStrMap  = 31 - iStrMap;
+                    break;
                   case 4:
                     iRpcMap  = iRpc[1];
                     iSideMap = iSide[1];
@@ -450,13 +452,15 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::InitParameters() {
                   case 0: iRpcMap = 0; break;
                   case 1: iRpcMap = 1; break;
                 }
-                if (iFeet > 2) iModuleIdMap = 1;
-                else           iModuleIdMap = 0;
+                if (iFeet > 2)
+                  iModuleIdMap = 1;
+                else
+                  iModuleIdMap = 0;
               } break;
             }
             if (iSideMap > -1)
               fviRpcChUId[iCh] = CbmTofAddress::GetUniqueAddress(
-                      iModuleIdMap, iRpcMap, iStrMap, iSideMap, fviRpcType[iGbtx]);
+                iModuleIdMap, iRpcMap, iStrMap, iSideMap, fviRpcType[iGbtx]);
             else
               fviRpcChUId[iCh] = 0;
 
@@ -1162,17 +1166,13 @@ void CbmMcbm2018UnpackerAlgoTof::ProcessHit(const gdpbv100::FullMessage& mess) {
                  << ", GBTx " << uGbtxNrInSys;
 */
 
-  if( 0 == uChanUId ) {
-     if( 0 < NMappingWarnings-- )
-     LOG(warning) << "Unused data item at " << uRemappedChannelNrInSys
-		  << ", from GdpbNr " << fuCurrDpbIdx
-		  << ", Get4 " << fuGet4Id
-		  << ", Ch " << uChannel
-		  << ", ChNr " << uChannelNr
-		  << ", ChNrIF " << uChannelNrInFee
-		  << ", FiS " << uFeeNrInSys
-		  ;
-      return;   // Hit not mapped to digi
+  if (0 == uChanUId) {
+    if (0 < NMappingWarnings--)
+      LOG(warning) << "Unused data item at " << uRemappedChannelNrInSys
+                   << ", from GdpbNr " << fuCurrDpbIdx << ", Get4 " << fuGet4Id
+                   << ", Ch " << uChannel << ", ChNr " << uChannelNr
+                   << ", ChNrIF " << uChannelNrInFee << ", FiS " << uFeeNrInSys;
+    return;  // Hit not mapped to digi
   }
 
   /// Apply offset to T0 only to TOF digis
