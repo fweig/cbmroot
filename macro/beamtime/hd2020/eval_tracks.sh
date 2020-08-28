@@ -76,7 +76,9 @@ mv -v tofAnaTestBeam.hst.root ${cRun}_TrkAnaTestBeam.hst.root
 rm all_*
 
 if (! (test -f Test.res)); then
-echo no resolution file available: return
+echo no resolution file available: scan full statistics and exit
+iCal=1
+root -b -q '../../ana_trks.C(-1,'$iSel',-1,"'$cRun'","'$cSet'",'$iSel2','$iTraSetup','$fRange1','$fRange2','$dDeadtime',"'$cCalId'",'$iCal')'
 exit 1
 fi
 done

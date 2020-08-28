@@ -114,4 +114,6 @@ void pl_vert_trk() {
   } else {
     cout << hname << " not found" << endl;
   }
+  can->SaveAs(Form("pl_vtx.pdf"));
+
 }

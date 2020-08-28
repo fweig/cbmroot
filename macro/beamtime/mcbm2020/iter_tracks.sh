@@ -2,9 +2,10 @@
 # shell script to iterate tracklet calibration histograms
 #SBATCH -J track
 #SBATCH -D /lustre/nyx/cbm/users/nh/CBM/cbmroot/trunk/macro/beamtime/mcbm2020
-#SBATCH --time=6-00:00:00
+#SBATCH --time=8:00:00
+##SBATCH --time=6-00:00:00
 #SBATCH --mem=4000
-#SBATCH --partition=long
+##SBATCH --partition=long
 
 X=$((${SLURM_ARRAY_TASK_ID} - 0))
 XXX=$(printf "%03d" "$X")

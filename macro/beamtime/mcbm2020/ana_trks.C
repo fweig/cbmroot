@@ -269,7 +269,7 @@ void ana_trks(Int_t nEvents        = 10000,
     case 2:
       iMinNofHits   = 3;
       iNStations    = 28;
-      iNReqStations = 3;
+      iNReqStations = 4;
       tofFindTracks->SetStation(0, 0, 2, 2);
       tofFindTracks->SetStation(1, 0, 0, 2);
       tofFindTracks->SetStation(2, 0, 1, 2);
@@ -699,6 +699,7 @@ void ana_trks(Int_t nEvents        = 10000,
 
   gInterpreter->ProcessLine("pl_all_Track2D(1)");
   gInterpreter->ProcessLine("pl_all_Track2D(2)");
+  gInterpreter->ProcessLine("pl_all_Track2D(4)");
 
   TString over_trk = "pl_over_trk(" + (TString)(Form("%d", iNStations)) + ")";
   gInterpreter->ProcessLine(over_trk);
