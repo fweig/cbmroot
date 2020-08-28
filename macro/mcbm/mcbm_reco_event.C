@@ -320,7 +320,8 @@ void mcbm_reco_event(Int_t nEvents         = 3,
           break;
         case 1:  // for calibration mode of full setup
           iMinNofHits   = 3;
-          iNStations    = 39;
+          //          iNStations    = 39;
+          iNStations    = 26;
           iNReqStations = 3;
           tofFindTracks->SetStation(0, 5, 0, 0);
           tofFindTracks->SetStation(1, 0, 2, 2);
@@ -348,6 +349,8 @@ void mcbm_reco_event(Int_t nEvents         = 3,
           tofFindTracks->SetStation(23, 0, 3, 3);
           tofFindTracks->SetStation(24, 0, 4, 4);
           tofFindTracks->SetStation(25, 0, 3, 4);
+
+          /*
           tofFindTracks->SetStation(26, 9, 0, 0);
           tofFindTracks->SetStation(27, 9, 0, 1);
           tofFindTracks->SetStation(28, 7, 0, 0);
@@ -361,6 +364,7 @@ void mcbm_reco_event(Int_t nEvents         = 3,
           tofFindTracks->SetStation(36, 8, 0, 5);
           tofFindTracks->SetStation(37, 8, 0, 6);
           tofFindTracks->SetStation(38, 8, 0, 7);
+          */
 
           break;
       }
@@ -429,12 +433,14 @@ void mcbm_reco_event(Int_t nEvents         = 3,
   std::cout << " All ok " << std::endl;
   // ------------------------------------------------------------------------
   // save all historgrams
+  /*
   gROOT->LoadMacro("save_hst.C");
   TString FSave = Form("save_hst(\"CluStatus%d_%d_Cal_%s.hst.root\")",
                        iCalSet,
                        iSel2in,
                        cCalId.Data());
   gInterpreter->ProcessLine(FSave.Data());
+  */
   // -----   Resource monitoring   ------------------------------------------
   if (hasFairMonitor) {  // FairRoot Version >= 15.11
     // Extract the maximal used memory an add is as Dart measurement
@@ -454,5 +460,5 @@ void mcbm_reco_event(Int_t nEvents         = 3,
     tempMon->Print();
   }
 
-  //  RemoveGeoManager();
+  RemoveGeoManager();
 }

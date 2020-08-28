@@ -22,9 +22,9 @@ Set(BeamAngle 25)
 
 # Define the different setups to be tested
 If( ($ENV{ctest_model} MATCHES Nightly) OR ($ENV{ctest_model} MATCHES Weekly) )
-  List(APPEND cbm_setup mcbm_beam_2019_03 mcbm_beam_2019_11)
+  List(APPEND cbm_setup mcbm_beam_2020_03 mcbm_beam_2021_03)
 Else()
-  List(APPEND cbm_setup mcbm_beam_2019_03 mcbm_beam_2019_11)
+  List(APPEND cbm_setup mcbm_beam_2020_03 mcbm_beam_2021_03)
 EndIf()
 
 ForEach(setup IN LISTS cbm_setup)
