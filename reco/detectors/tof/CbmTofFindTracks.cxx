@@ -179,6 +179,7 @@ CbmTofFindTracks::CbmTofFindTracks(const char* name,
   , fbUseSigCalib(kTRUE)
   , fdRefVelMean(0.)
   , fdRefDVel(1.E7)
+  , fdR0Lim(0.)
   , fStart()
   , fStop()
   , fdTrackingTime(0.)
@@ -316,9 +317,8 @@ InitStatus CbmTofFindTracks::Init() {
     if (fTofCalibrator->Init() != kSUCCESS) return kFATAL;
     if (bBeamCounter) {
       fTofCalibrator->SetBeam(bBeamCounter);
-      fTofCalibrator->SetR0Lim(
-        10.);  // FIXME, hardwired parameter for debugging
-      LOG(info) << "Set CbmTofCalibrator::R0Lim to 10.";
+      fTofCalibrator->SetR0Lim(fdR0Lim);  // FIXME, hardwired parameter for debugging
+      LOG(info) << "Set CbmTofCalibrator::R0Lim to "<<fdR0Lim;
     }
   }
 

@@ -113,6 +113,7 @@ public:
   void SetBeamCounter(Int_t iModType, Int_t iModId, Int_t iRpcId);
   void PrintSetup();
 
+  inline void SetR0Lim(Double_t dVal) { fdR0Lim=dVal; }
   inline Int_t GetAddrOfStation(Int_t iVal) { return fMapStationRpcId[iVal]; }
   inline Int_t GetDetIndSize() { return fMapRpcIdParInd.size(); }
   Int_t GetStationOfAddr(Int_t iAddr);
@@ -302,6 +303,7 @@ private:
   Bool_t fbUseSigCalib;
   Double_t fdRefVelMean;
   Double_t fdRefDVel;
+  Double_t fdR0Lim;
 
   TTimeStamp fStart;
   TTimeStamp fStop;
