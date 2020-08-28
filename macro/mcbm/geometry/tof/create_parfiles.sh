@@ -18,9 +18,9 @@ cd ../..
 rm -v test*.root
 rm -v ${Setup}*.root
 root -l -q './mcbm_transport.C(0,"'$Setup'")'
-#cp -v ./${Setup}.geo.root     ./geometry/tof/geofile_tof_${VGEO}.root
-#cp -v ./${Setup}.geo.root ../../geometry/tof/geofile_tof_${VGEO}.root
-cp -v ./test.par.root    ./geometry/tof/tof_${Setup}.par.root
+#cp -v ./test.geo.root     ./geometry/tof/geofile_tof_${VGEO}.root
+cp -v ./test.geo.root ../../geometry/tof/geofile_tof_${VGEO}.root
+cp -v ./test.par.root     ./geometry/tof/tof_${Setup}.par.root
 cd $CURDIR
 
 root -l 'create_digipar.C("tof_'${VGEO}'")'
