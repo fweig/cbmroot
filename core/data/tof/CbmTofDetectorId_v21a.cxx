@@ -6,7 +6,7 @@
 
 #include "CbmTofDetectorId_v21a.h"
 
-const Int_t CbmTofDetectorId_v21a::shiftarray[] = {0,4,11,15,21,22,28	};
+const Int_t CbmTofDetectorId_v21a::shiftarray[] = {0,4,11,15,21,22,28};
 const Int_t CbmTofDetectorId_v21a::bitarray[]   = {4,7, 4, 6, 1, 6, 4};
 
 
@@ -28,6 +28,7 @@ CbmTofDetectorId_v21a::CbmTofDetectorId_v21a()
 		  (maskarray[5] << shiftarray[5]) |
 		  (maskarray[6] << shiftarray[6])
   );
+  std::cout << "<I> V21a module mask 0x" << std::hex << modulemask << std::endl;
 }
 
 CbmTofDetectorInfo CbmTofDetectorId_v21a::GetDetectorInfo(const Int_t detectorId)
@@ -118,6 +119,15 @@ Int_t CbmTofDetectorId_v21a::GetCellId(const Int_t detectorId)
 
 Int_t CbmTofDetectorId_v21a ::SetDetectorInfo(const CbmTofDetectorInfo detInfo)
 {
+  std::cout << "SetDetectorInfo for "
+		  << detInfo.fSMtype
+		  << detInfo.fSModule << " "
+		  << detInfo.fCounter
+		  << detInfo.fCounterType <<" "
+		  << detInfo.fGap
+		  << detInfo.fCell
+		  << std::endl;
+
   return ( (((detInfo.fDetectorSystem) & maskarray[0]) << shiftarray[0]) | 
            (((detInfo.fSMtype)         & maskarray[2]) << shiftarray[2]) | 
            (((detInfo.fSModule)        & maskarray[1]) << shiftarray[1]) | 

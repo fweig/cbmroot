@@ -7,6 +7,7 @@
 /** CbmTofDetectorId.h
  ** Defines unique detector identifier for all TOF modules.
  ** This class is the implementation for tof geometry version v21a 
+ ** nh, 28.07.2021 add counter type
  ** nh, 11.03.2014
  ** PAL, 23.09.2015: make the class common to both v14 and v15 geometries
  **                  Field 4 used as Side index (or fake Gap index in digitizer)

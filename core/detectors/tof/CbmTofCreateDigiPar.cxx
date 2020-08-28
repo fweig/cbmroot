@@ -110,7 +110,10 @@ InitStatus CbmTofCreateDigiPar::Init() {
   FairRootManager* ioman = FairRootManager::Instance();
   if (!ioman) LOG(fatal) << "No FairRootManager found";
 
-
+  if (k21a == geoVersion) {
+    LOG(info) << "Will now create digitization parameters for root geometry.";
+    FillCellMapRootGeometry();
+  }
   if (k14a == geoVersion) {
     LOG(info) << "Will now create digitization parameters for root geometry.";
     FillCellMapRootGeometry();
@@ -294,6 +297,7 @@ void CbmTofCreateDigiPar::FillCellMapRootGeometry() {
   // Example for full path to gap
   //   /cave_0/tof_v12b_0/module_0_0/gas_box_0/counter_0/Gap_0/Cell_1
 
+  //   /TOP_1/tof_v21b_mcbm_1/tof_v21b_mcbmStand_1/module_9_0/gas_box_0/counter_1/Gap_17/Cell_18
 
   /*  Int_t nrCells = 0;*/
   std::vector<CbmTofCell*> cellVector;
@@ -437,16 +441,16 @@ void CbmTofCreateDigiPar::FillCellInfoFromGeoHandler(TString FullPath) {
   fZ = fGeoHandler->GetZ(FullPath);
 
   LOG(debug2) << "FCI: " << FullPath.Data();
-  LOG(debug2) << "FCI: X: " << fX;
-  LOG(debug2) << " Y: " << fY;
-  LOG(debug2) << " Z: " << fZ;
-  LOG(debug2) << " SizeX: " << fSizex;
-  LOG(debug2) << " SizeY: " << fSizey;
-  LOG(debug2) << Form(" DetID: 0x%08x", fDetID);
-  LOG(debug2) << " Region: " << fRegion;
-  LOG(debug2) << " Module: " << fCounter;
-  LOG(debug2) << " Gap: " << fGap;
-  LOG(debug2) << " Cell: " << fCell;
+  LOG(debug2) << "FCI: X: " << fX
+  	  	  	  << " Y: " << fY
+  	  	  	  << " Z: " << fZ
+  	  	  	  << " SizeX: " << fSizex
+  	  	  	  << " SizeY: " << fSizey;
+  LOG(debug2) << Form(" DetID: 0x%08x", fDetID)
+  	  	  	  << " Region: " << fRegion
+			  << " Counter: " << fCounter
+			  << " Gap: " << fGap
+			  << " Cell: " << fCell;
 
   fCellID = fGeoHandler->GetCellId(fDetID);
 
@@ -459,12 +463,12 @@ void CbmTofCreateDigiPar::FillCellInfoFromGeoHandler(TString FullPath) {
 
   LOG(debug2) << "FCI: Cell ID: " << Form("0x%08x", fCellID) << " detId "
               << Form("0x%08x", fDetID);
-  LOG(debug2) << " Region:  " << fGeoHandler->GetRegion(fCellID);
-  LOG(debug2) << " SMTYP:   " << fGeoHandler->GetSMType(fCellID);
-  LOG(debug2) << " SModule: " << fGeoHandler->GetSModule(fCellID);
-  LOG(debug2) << " Module:  " << fGeoHandler->GetCounter(fCellID);
-  LOG(debug2) << " Gap:     " << fGeoHandler->GetGap(fCellID);
-  LOG(debug2) << " Cell: " << fGeoHandler->GetCell(fCellID);
+  LOG(debug2) << " Region:  " << fGeoHandler->GetRegion(fCellID)
+			  << " SMTYP:   " << fGeoHandler->GetSMType(fCellID)
+			  << " SModule: " << fGeoHandler->GetSModule(fCellID)
+			  << " Module:  " << fGeoHandler->GetCounter(fCellID)
+			  << " Gap:     " << fGeoHandler->GetGap(fCellID)
+			  << " Cell: " << fGeoHandler->GetCell(fCellID);
 }
 
 

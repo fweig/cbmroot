@@ -162,6 +162,7 @@ Int_t CbmTofGeoHandler::GetUniqueDetectorId() {
   Int_t smtype  = 0;
   Int_t smodule = 0;
   Int_t counter = 0;
+  Int_t countertype = 0;
   Int_t gap     = 0;
   Int_t cell    = 0;
   TString Volname;
@@ -195,20 +196,40 @@ Int_t CbmTofGeoHandler::GetUniqueDetectorId() {
     //    smodule=smtype;   // for test beam setup
     gap = 0;
     cell--;
+  } else if (fGeoVersion == k21a) {  // test beam
+    if (fUseNodeName) {
+      Volname = CurrentNodeOffName(4);
+    } else {
+      Volname = CurrentVolOffName(4);
+    }
+    smtype = Volname[7] - '0';
+    CurrentVolOffID(4, smodule);
+    CurrentVolOffID(2, counter);
+    CurrentVolOffID(1, gap);
+    CurrentVolID(cell);
+    //    counter=smodule;  // necessary for plastics
+    //    smodule=smtype;   // for test beam setup
+    gap = 0;
+    cell--;
   }
 
-  LOG(debug1) << "GeoHand: ";
   LOG(debug1) << " Volname: " << Volname << ", " << CurrentVolOffName(3) << ", "
               << CurrentVolOffName(2) << ", " << CurrentVolOffName(1) << ", "
               << CurrentVolOffName(0);
-  LOG(debug1) << " SMtype: " << smtype;
-  LOG(debug1) << " SModule: " << smodule;
-  LOG(debug1) << " Counter: " << counter;
-  LOG(debug1) << " Gap: " << gap;
-  LOG(debug1) << " Cell: " << cell;
+
+  TString cTemp=CurrentVolOffName(2);
+  TString cType=cTemp(8,2);  // 1 character only
+  countertype=cType.Atoi();
+
+  LOG(debug1) << " SMtype: " << smtype
+		  	  << " SModule: " << smodule
+			  << " CounterType: " << countertype
+			  << " Counter: " << counter
+			  << " Gap: " << gap
+			  << " Strip: " << cell;
 
   CbmTofDetectorInfo detInfo(
-    ECbmModuleId::kTof, smtype, smodule, counter, gap, cell);
+    ECbmModuleId::kTof, smtype, smodule, counter, gap, cell, countertype);
 
   Int_t result = fTofId->SetDetectorInfo(detInfo);
   LOG(debug1) << " Unique ID: " << Form("0x%08x", result);
@@ -221,6 +242,7 @@ Int_t CbmTofGeoHandler::GetUniqueCounterId() {
 
   Int_t smtype  = 0;
   Int_t smodule = 0;
+  Int_t countertype = 0;
   Int_t counter = 0;
   Int_t gap     = 0;
   Int_t cell    = 0;
@@ -241,39 +263,54 @@ Int_t CbmTofGeoHandler::GetUniqueCounterId() {
     CurrentVolOffID(1, gap);
     CurrentVolID(cell);
   } else if (fGeoVersion == k14a) {  // test beam
-    if (fUseNodeName) {
-      Volname = CurrentNodeOffName(4);
-    } else {
-      Volname = CurrentVolOffName(4);
-    }
-    smtype = Volname[7] - '0';
-    CurrentVolOffID(4, smodule);
-    CurrentVolOffID(2, counter);
-    CurrentVolOffID(1, gap);
-    CurrentVolID(cell);
-    //    counter=smodule;  // necessary for plastics
-    //    smodule=smtype;   // for test beam setup
+	    if (fUseNodeName) {
+	      Volname = CurrentNodeOffName(4);
+	    } else {
+	      Volname = CurrentVolOffName(4);
+	    }
+	    smtype = Volname[7] - '0';
+	    CurrentVolOffID(4, smodule);
+	    CurrentVolOffID(2, counter);
+	    CurrentVolOffID(1, gap);
+	    CurrentVolID(cell);
+	    //    counter=smodule;  // necessary for plastics
+	    //    smodule=smtype;   // for test beam setup
+  }	else if (fGeoVersion == k21a) {  // test beam
+		if (fUseNodeName) {
+		  Volname = CurrentNodeOffName(4);
+		} else {
+		  Volname = CurrentVolOffName(4);
+		}
+		smtype = Volname[7] - '0';
+		CurrentVolOffID(4, smodule);
+		TString cTemp=CurrentVolOffName(2);
+		TString cType=cTemp(8,2);  // 1 character only
+		countertype=cType.Atoi();
+		CurrentVolOffID(2, counter);
+		CurrentVolOffID(1, gap);
+		CurrentVolID(cell);
   }
 
   cell = 0;
 
   fDetectorInfoArray =
-    CbmTofDetectorInfo(ECbmModuleId::kTof, smtype, smodule, counter, gap, cell);
+    CbmTofDetectorInfo(ECbmModuleId::kTof, smtype, smodule, counter, gap, cell, countertype);
 
   gap = 0;
 
-  LOG(debug1) << "GeoHand: ";
+  LOG(debug1) << "GetUniqueCounterId: ";
   LOG(debug1) << " Volname: " << Volname << ", " << CurrentVolOffName(3) << ", "
               << CurrentVolOffName(2) << ", " << CurrentVolOffName(1) << ", "
               << CurrentVolOffName(0);
-  LOG(debug1) << " SMtype: " << smtype;
-  LOG(debug1) << " SModule: " << smodule;
-  LOG(debug1) << " Counter: " << counter;
-  LOG(debug1) << " Gap: " << gap;
-  LOG(debug1) << " Cell: " << cell;
+  LOG(debug1) << " SMtype: " << smtype
+		  	  << " SModule: " << smodule
+			  << " CounterType: " << countertype
+			  << " Counter: " << counter
+			  << " Gap: " << gap
+			  << " Cell: " << cell;
 
   CbmTofDetectorInfo detInfo(
-    ECbmModuleId::kTof, smtype, smodule, counter, gap, cell);
+    ECbmModuleId::kTof, smtype, smodule, counter, gap, cell, countertype);
 
   Int_t result        = fTofId->SetDetectorInfo(detInfo);
   fLastUsedDetectorID = result;

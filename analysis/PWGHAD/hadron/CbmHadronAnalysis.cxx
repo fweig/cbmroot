@@ -46,6 +46,7 @@ using namespace std;
 #include "FairMCEventHeader.h"
 #include "FairMCPoint.h"
 #include "FairRootManager.h"
+#include "FairRunAna.h"
 
 CbmDigiManager* fDigiMan;   // TOF Input Digis
 TClonesArray* fEventsColl;  // CBMEvents (time based)
@@ -67,6 +68,11 @@ Int_t nStsHits     = 0;
 Int_t nGlobTracks  = 0;
 Int_t NMASS        = 3;
 Float_t refMass[3] = {0.139, 0.494, 0.938};
+
+static TH1F* fhTofHitMul;
+static TH1F* fhStsHitMul;
+const Int_t fiTofHitMulMax = 200;
+static TFile* fHist;
 
 //___________________________________________________________________
 //
@@ -473,8 +479,23 @@ CbmHadronAnalysis::~CbmHadronAnalysis() {
 // ------------------------------------------------------------------
 void CbmHadronAnalysis::CreateHistogramms() {
   // Create histogramms
-  gROOT->cd();
-  LOG(info) << "CreateHistograms in " << gDirectory->GetName();
+  // gROOT->cd();
+  FairRunAna *fRun= FairRunAna::Instance();
+  fHist = fRun->GetOutputFile();
+  LOG(info) << "CreateHistograms in " << fHist->GetName();
+  // gSystem->cd(fHist->GetName());
+  fHist->ReOpen("Update");
+
+  fhTofHitMul      = new TH1F(Form("hTofHitMul"),
+                         Form("TofHit Multiplicity; M_{TofHit} "),
+                         fiTofHitMulMax,
+                         0.,
+                         (Double_t) fiTofHitMulMax);
+  fhStsHitMul      = new TH1F(Form("hStsHitMul"),
+                         Form("StsHit Multiplicity; M_{StsHit} "),
+                         fiTofHitMulMax,
+                         0.,
+                         (Double_t) fiTofHitMulMax);
 
   Float_t ymin   = -1.;
   Float_t ymax   = 4.;
@@ -3187,6 +3208,8 @@ void CbmHadronAnalysis::ExecEvent(Option_t*) {
   if (fGlobalTracks != NULL) nGlobTracks = fGlobalTracks->GetEntriesFast();
   if (fStsHits != NULL) nStsHits = fStsHits->GetEntriesFast();
 
+  fhTofHitMul->Fill((Double_t) nTofHits);
+  fhStsHitMul->Fill((Double_t) nStsHits);
 
   if (verbose > 0) {  //nh-debug
     LOG(debug) << "<D> HadronAnalysis::Exec starting with MCtrks " << nMCTracks
@@ -5752,7 +5775,7 @@ void CbmHadronAnalysis::Finish() {
 
   // Finish of the task execution
 
-  // WriteHistogramms();
+  WriteHistogramms();
 }
 // ------------------------------------------------------------------
 
@@ -5760,7 +5783,7 @@ void CbmHadronAnalysis::Finish() {
 // ------------------------------------------------------------------
 void CbmHadronAnalysis::WriteHistogramms() {
   // Write histogramms to the file
-  TFile* fHist = new TFile("data/auaumbias.hst.root", "RECREATE");
+  if (NULL != fHist)
   {
     TIter next(gDirectory->GetList());
     TH1* h;
@@ -5773,8 +5796,8 @@ void CbmHadronAnalysis::WriteHistogramms() {
       }
     }
   }
-  //fHist->ls();
-  fHist->Close();
+  fHist->ls();
+  //fHist->Close();
 }
 // ------------------------------------------------------------------
 static Int_t iCandEv = 0;
@@ -5782,8 +5805,6 @@ void CbmHadronAnalysis::ReconstructSecondaries() {
 #include "TLorentzVector.h"
 #include "TVector3.h"
 
-  static TH1F* fhTofHitMul;
-  static TH1F* fhStsHitMul;
   static TH1F* fhTofChi;
   static TH1F* fhDperp;
   static TH2F* fhdEdxMul;
@@ -5829,7 +5850,6 @@ void CbmHadronAnalysis::ReconstructSecondaries() {
   */
 
 
-  const Int_t fiTofHitMulMax = 200;
   const Int_t fiNMixClasses  = 10;
   const Double_t beamRotY    = -25.;
   const Double_t MLAM        = 1.1156;
@@ -5860,16 +5880,7 @@ void CbmHadronAnalysis::ReconstructSecondaries() {
   if (iCandEv == 0) {  //initialize
     // define some histograms
     Double_t MinvMin = secMass[0] + secMass[1];
-    fhTofHitMul      = new TH1F(Form("hTofHitMul"),
-                           Form("TofHit Multiplicity; M_{TofHit} "),
-                           fiTofHitMulMax,
-                           0.,
-                           (Double_t) fiTofHitMulMax);
-    fhStsHitMul      = new TH1F(Form("hStsHitMul"),
-                           Form("StsHit Multiplicity; M_{StsHit} "),
-                           fiTofHitMulMax,
-                           0.,
-                           (Double_t) fiTofHitMulMax);
+    cout << "Add secondary histos to " << fHist->GetName() << endl;
     fhTofChi         = new TH1F(
       Form("hTofChi"), Form("TofHit Merger; #chi "), 100, 0., dChiTofLim * 2.);
     fhDperp = new TH1F(Form("hDperp"),
@@ -6018,9 +6029,6 @@ void CbmHadronAnalysis::ReconstructSecondaries() {
       }
     }
   }
-
-  fhTofHitMul->Fill((Double_t) nTofHits);
-  fhStsHitMul->Fill((Double_t) nStsHits);
 
   fvP.resize(fiNMixClasses);
   fvX.resize(fiNMixClasses);
