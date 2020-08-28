@@ -1,19 +1,19 @@
 void ana_trksi(Int_t nEvents        = 10000,
-              Int_t iSel           = 1,
-              Int_t iGenCor        = 1,
-              TString cFileId      = "48.50.7.1",
-              TString cSet         = "000010020",
-              Int_t iSel2          = 20,
-              Int_t iTrackingSetup = 2,
-              Double_t dScalFac    = 1.,
-              Double_t dChi2Lim2   = 500.,
-              Double_t dDeadtime   = 50,
-              TString cCalId       = "",
-              Int_t iAnaCor        = 1,
-              Bool_t bUseSigCalib  = kFALSE,
-              Int_t iCalSet        = 30040500,
-              Int_t iCalOpt        = 1,
-              Int_t iMc            = 0) {
+               Int_t iSel           = 1,
+               Int_t iGenCor        = 1,
+               TString cFileId      = "48.50.7.1",
+               TString cSet         = "000010020",
+               Int_t iSel2          = 20,
+               Int_t iTrackingSetup = 2,
+               Double_t dScalFac    = 1.,
+               Double_t dChi2Lim2   = 500.,
+               Double_t dDeadtime   = 50,
+               TString cCalId       = "",
+               Int_t iAnaCor        = 1,
+               Bool_t bUseSigCalib  = kFALSE,
+               Int_t iCalSet        = 30040500,
+               Int_t iCalOpt        = 1,
+               Int_t iMc            = 0) {
   Int_t iVerbose = 1;
   if (cCalId == "") cCalId = cFileId;
   TString FId = cFileId;
@@ -75,8 +75,8 @@ void ana_trksi(Int_t nEvents        = 10000,
       TofGeo = "v20b_mcbm";
     cout << "Geometry version " << TofGeo << endl;
 
-    TObjString* tofDigiBdfFile =
-      new TObjString(workDir + "/parameters/tof/tof_" + TofGeo + ".digibdf.par");
+    TObjString* tofDigiBdfFile = new TObjString(workDir + "/parameters/tof/tof_"
+                                                + TofGeo + ".digibdf.par");
     parFileList->Add(tofDigiBdfFile);
 
     TString geoDir  = gSystem->Getenv("VMCWORKDIR");

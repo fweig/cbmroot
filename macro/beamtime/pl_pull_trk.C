@@ -3,7 +3,7 @@ void pl_pull_trk(Int_t NSt = 8, Int_t iVar = 0, Int_t iFit = 0) {
   //  can->Divide(2,2);
   TCanvas* can = new TCanvas("can", "can", 50, 0, 800, 800);
   switch (NSt) {
-	case 7: can->Divide(3, 4); break;
+    case 7: can->Divide(3, 4); break;
     case 6:
     case 5:
     case 4: can->Divide(3, 3); break;

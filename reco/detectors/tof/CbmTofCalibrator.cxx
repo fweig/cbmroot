@@ -403,8 +403,9 @@ Bool_t CbmTofCalibrator::UpdateCalHist(Int_t iOpt) {
     Int_t iSmType = CbmTofAddress::GetSmType(iUniqueId);
     Int_t iSm     = CbmTofAddress::GetSmId(iUniqueId);
     Int_t iRpc    = CbmTofAddress::GetRpcId(iUniqueId);
-    if(NULL == fhCorTOff[iDetIndx]) {
-      LOG(warn) << "hCorTOff for TSR "<<iSmType<<iSm<<iRpc<<" not available";
+    if (NULL == fhCorTOff[iDetIndx]) {
+      LOG(warn) << "hCorTOff for TSR " << iSmType << iSm << iRpc
+                << " not available";
       continue;
     }
 
@@ -413,7 +414,7 @@ Bool_t CbmTofCalibrator::UpdateCalHist(Int_t iOpt) {
         break;
       case 1:  // update channel mean
       {
-        LOG(info) << "Update Offsets for TSR "<<iSmType<<iSm<<iRpc;
+        LOG(info) << "Update Offsets for TSR " << iSmType << iSm << iRpc;
 
         TProfile* hpP = fhCalPos[iDetIndx]->ProfileX();
         TProfile* hpT = fhCalTOff[iDetIndx]->ProfileX();

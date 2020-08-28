@@ -101,8 +101,8 @@ void dis_trks(Int_t nEvents        = 10,
     //TObjString *tofDigiFile = new TObjString(workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par"); // TOF digi file
     //parFileList->Add(tofDigiFile);
 
-    TObjString* tofDigiBdfFile =
-      new TObjString(workDir + "/parameters/tof/tof_" + TofGeo + ".digibdf.par");
+    TObjString* tofDigiBdfFile = new TObjString(workDir + "/parameters/tof/tof_"
+                                                + TofGeo + ".digibdf.par");
     parFileList->Add(tofDigiBdfFile);
 
     // -----   Reconstruction run   -------------------------------------------
