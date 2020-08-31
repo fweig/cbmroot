@@ -1,4 +1,4 @@
-#include <CbmMCTrack.h>
+
 #include <cassert>
 
 #include "TClonesArray.h"
@@ -183,7 +183,7 @@ bool CbmStsTracksConverter::IsGoodCovMatrix(
   return ok;
 }
 
-int CbmStsTracksConverter::GetMcPid(const CbmStsTrack* sts_track,
+int CbmStsTracksConverter::GetMcPid(const CbmStsTrack* /*sts_track*/,
                                     const CbmTrackMatchNew* match,
                                     AnalysisTree::Track* track) const {
 

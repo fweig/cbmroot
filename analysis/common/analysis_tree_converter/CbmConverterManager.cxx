@@ -35,7 +35,7 @@ ClassImp(CbmConverterManager)
   return kSUCCESS;
 }
 
-void CbmConverterManager::Exec(Option_t* opt) {
+void CbmConverterManager::Exec(Option_t* /*opt*/) {
   index_map_.clear();
   for (auto* task : tasks_) {
     task->SetIndexesMap(&index_map_);

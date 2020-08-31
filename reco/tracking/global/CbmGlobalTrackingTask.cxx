@@ -136,9 +136,9 @@ void CbmGlobalTrackingTask::Exec(Option_t* /*opt*/) {
     timespec ts;
     clock_gettime(CLOCK_REALTIME, &ts);
     long beginTime = ts.tv_sec * 1000000000 + ts.tv_nsec;
-#endif  //CBM_GLOBALTB_PRINT_PERF                                                                                          \
-  //fTofGeometry.Find(param->GetX(), param->GetCovariance(0, 0), param->GetY(), param->GetCovariance(1, 1), param->GetZ(), \
-  //track->GetTime(), track->GetTimeError(), param->GetTx(), TMath::Sqrt(param->GetCovariance(2, 2)), param->GetTy(), TMath::Sqrt(param->GetCovariance(3, 3)), tofHitInd);
+#endif  //CBM_GLOBALTB_PRINT_PERF
+    //fTofGeometry.Find(param->GetX(), param->GetCovariance(0, 0), param->GetY(), param->GetCovariance(1, 1), param->GetZ(),
+    //track->GetTime(), track->GetTimeError(), param->GetTx(), TMath::Sqrt(param->GetCovariance(2, 2)), param->GetTy(), TMath::Sqrt(param->GetCovariance(3, 3)), tofHitInd);
     fTofGeometry.Find(
       param, track->GetTime(), track->GetTimeError(), tofHitInd, trackLength);
     globalTrack->SetTofHitIndex(tofHitInd);
