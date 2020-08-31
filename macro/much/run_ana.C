@@ -92,5 +92,5 @@ void run_ana(Int_t nEvents   = 3,
   cout << " Test passed" << endl;
   cout << " All ok " << endl;
 
-  //   RemoveGeoManager();
+  RemoveGeoManager();
 }

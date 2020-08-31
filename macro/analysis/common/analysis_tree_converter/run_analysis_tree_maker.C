@@ -165,4 +165,6 @@ void run_analysis_tree_maker(Int_t nEvents     = 2,
   std::cout << " All ok " << std::endl;
   //   Generate_CTest_Dependency_File(depFile);
   // ------------------------------------------------------------------------
+
+  RemoveGeoManager();
 }
