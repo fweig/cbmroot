@@ -44,6 +44,7 @@ set(CTEST_CUSTOM_WARNING_EXCEPTION
         "external/flib_dpb"
 #        "external/flib_dpb_20"
         "external/ipc" 
+        "include/AnalysisTree"
 
         # -- remove intended fall through warnings
         "CbmMcbm2018UnpackerAlgoTof.cxx.*warning: this statement may fall through"
@@ -67,6 +68,9 @@ set(CTEST_CUSTOM_WARNING_EXCEPTION
 
         # -- don't show pragma message warnings
         "Compiling CBM Configuration"
+
+        # -- filter warnings about unused attributes
+        "attribute directive ignored"
   )
 
 # -----------------------------------------------------------
