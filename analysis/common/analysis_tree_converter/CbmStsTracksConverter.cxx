@@ -1,5 +1,6 @@
 
 #include <cassert>
+#include <cmath>
 
 #include "TClonesArray.h"
 
@@ -7,6 +8,7 @@
 
 #include "AnalysisTree/Matching.hpp"
 
+#include "CbmMCTrack.h"
 #include "CbmStsTrack.h"
 #include "CbmTrackMatchNew.h"
 #include "CbmVertex.h"
@@ -162,15 +164,15 @@ bool CbmStsTracksConverter::IsGoodCovMatrix(
   }
   // Cuts, coded in MZ's CbmKFParticleFinder.cxx
   bool ok = true;
-  ok      = ok && finite(sts_track->GetParamFirst()->GetX());
-  ok      = ok && finite(sts_track->GetParamFirst()->GetY());
-  ok      = ok && finite(sts_track->GetParamFirst()->GetZ());
-  ok      = ok && finite(sts_track->GetParamFirst()->GetTx());
-  ok      = ok && finite(sts_track->GetParamFirst()->GetTy());
-  ok      = ok && finite(sts_track->GetParamFirst()->GetQp());
+  ok      = ok && isfinite(sts_track->GetParamFirst()->GetX());
+  ok      = ok && isfinite(sts_track->GetParamFirst()->GetY());
+  ok      = ok && isfinite(sts_track->GetParamFirst()->GetZ());
+  ok      = ok && isfinite(sts_track->GetParamFirst()->GetTx());
+  ok      = ok && isfinite(sts_track->GetParamFirst()->GetTy());
+  ok      = ok && isfinite(sts_track->GetParamFirst()->GetQp());
 
   for (auto element : cov_matrix) {
-    ok = ok && finite(element);
+    ok = ok && isfinite(element);
   }
   ok = ok && (cov_matrix[0] < 1. && cov_matrix[0] > 0.)
        && (cov_matrix[2] < 1. && cov_matrix[2] > 0.)
@@ -208,7 +210,7 @@ int CbmStsTracksConverter::GetMcPid(const CbmStsTrack* /*sts_track*/,
 
     if (!((bestWeight / totalWeight < 0.7)
           || (mcTrackId >= nMCTracks || mcTrackId < 0))) {
-      auto* mctrack = (CbmMCTrack*) cbm_mc_tracks_->At(mcTrackId);
+      auto* mctrack = static_cast<CbmMCTrack*>(cbm_mc_tracks_->At(mcTrackId));
 
       if (!(TMath::Abs(mctrack->GetPdgCode()) == 11
             || TMath::Abs(mctrack->GetPdgCode()) == 13
