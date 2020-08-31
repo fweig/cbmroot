@@ -12,33 +12,33 @@ CbmRoot_Continuous:
       - master
     variables:
       - $CI_PROJECT_PATH == "computing/cbmroot"
-  cache:
-    paths:
-      - build/
-      - external/AnalysisTree/
-      - external/AnaylysisTreeQA/
-      - external/DataTree/
-      - external/DataTreeQA/
-      - external/KFParticle/
-      - external/NicaFemto/
-      - external/Vc/
-      - external/cppzmq/
-      - external/flib_dpb/flib_dpb/
-      - external/flib_dpb_20/
-      - external/ipc/ipc/
-      - external/ipc_legacy/ipc/
-      - external/jsroot/
-      - external/spadic/spadic/
-      - input
-      - geometry
-      - parameters
+#  cache:
+#    paths:
+#      - build/
+#      - external/AnalysisTree/
+#      - external/AnaylysisTreeQA/
+#      - external/DataTree/
+#      - external/DataTreeQA/
+#      - external/KFParticle/
+#      - external/NicaFemto/
+#      - external/Vc/
+#      - external/cppzmq/
+#      - external/flib_dpb/flib_dpb/
+#      - external/flib_dpb_20/
+#      - external/ipc/ipc/
+#      - external/ipc_legacy/ipc/
+#      - external/jsroot/
+#      - external/spadic/spadic/
+#      - input
+#      - geometry
+#      - parameters
   script:
     - set -xv
     - mkdir -p build 
     - cd build
-    - find . -name "*.root" -delete
-    - find . -name "*_ok" -delete
-    - find . -name "all_*.par" -delete
+#    - find . -name "*.root" -delete
+#    - find . -name "*_ok" -delete
+#    - find . -name "all_*.par" -delete
     - cd ..
     - echo "export LINUX_FLAVOUR=Debian8.11" >> Dart.cfg
     - echo "export FAIRSOFT_VERSION=jun19p1" >> Dart.cfg
@@ -53,11 +53,11 @@ CbmRoot_Continuous:
     - pwd
     - cat Dart.cfg
     - $PWD/Dart.sh Continuous Dart.cfg
-    - cd build
-    - find . -name "*.root" -delete
-    - find . -name "*_ok" -delete
-    - find . -name "all_*.par" -delete
-    - cd ..
+#    - cd build
+#    - find . -name "*.root" -delete
+#    - find . -name "*_ok" -delete
+#    - find . -name "all_*.par" -delete
+#    - cd ..
 
 FormatCheck:
   stage: check
