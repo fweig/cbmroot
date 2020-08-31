@@ -1313,8 +1313,8 @@ CbmTrdModuleSimR::MakeDigi(CbmTrdPoint* point, Double_t time, Bool_t TR) {
   for (Int_t i = 0; i < 3; i++)
     fQAPos_out[i] = point_out[i];
 
-  fCurrentTime -= 1e9 * (point_in[2] / 100)
-                  / 2.99e8;  // subtract time of flight to the detector layer
+  //fCurrentTime -= 1e9 * (point_in[2] / 100)
+  //               / 2.99e8;  // subtract time of flight to the detector layer
 
   // General processing on the MC point
   Double_t ELoss(0.), ELossTR(0.), ELossdEdX(point->GetEnergyLoss());
