@@ -139,9 +139,9 @@ const Int_t NCounterInModule[NofModuleTypes] = {5, 5, 3, 5, 5, 1, 2, 1, 8, 2};
 
 // Placement of the counter inside the module
 const Float_t CounterXStartPosition[NofModuleTypes] =
-  {-59.0, -66.0, -56.0, -60.0, -60.0, 0.0, 0., 0., -7., 0.};
+  {-58.5, -66.0, -56.0, -60.0, -60.0, 0.0, 0., 0., -7., 0.};
 const Float_t CounterXDistance[NofModuleTypes] =
-  {29.5, 32.0, 51.0, 30.0, 30.0, 0.0, 0., 0., 2., 0.};
+  {29.0, 32.0, 51.0, 30.0, 30.0, 0.0, 0., 0., 2., 0.};
 const Float_t CounterYStartPosition[NofModuleTypes] =
   {0.0, 0.0, 0.0, 0.0, 0.0, 0., 0., -4., -1.3, 0.};
 const Float_t CounterYDistance[NofModuleTypes] =
@@ -327,7 +327,7 @@ void Create_TOF_Geometry_v20b_mcbm() {
   // TGeoTranslation*  stand_trans   = new TGeoTranslation("", 12., 0., TOF_Z_Front_Stand);
   //  TGeoTranslation*  stand_trans   = new TGeoTranslation("", 0., 0., TOF_Z_Front_Stand);
   TGeoRotation* stand_rot = new TGeoRotation();
-  stand_rot->RotateY(-4.5);  //-2.7);
+  stand_rot->RotateY(-3.0); //-2.7);
   TGeoCombiTrans* stand_combi_trans =
     new TGeoCombiTrans(*stand_trans, *stand_rot);
   //tof->AddNode(tofstand, 1, stand_combi_trans);

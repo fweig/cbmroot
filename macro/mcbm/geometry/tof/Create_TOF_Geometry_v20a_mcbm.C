@@ -43,8 +43,8 @@ const TString FileNameGeo  = fileTag + "_mcbm_geo.root";
 const TString FileNameInfo = fileTag + "_mcbm.geo.info";
 
 // TOF_Z_Front corresponds to front cover of outer super module towers
-const Float_t TOF_Z_Front_Stand = 240;  // = z=298 mCBM@SIS18
-const Float_t TOF_Z_Front       = 0;    // = z=298 mCBM@SIS18
+const Float_t TOF_Z_Front_Stand = 247.2;  // = z=298 mCBM@SIS18
+const Float_t TOF_Z_Front       = 0;      // = z=298 mCBM@SIS18
 //const Float_t TOF_Z_Front =  130;  // = z=225 mCBM@SIS18
 //const Float_t TOF_Z_Front =  250;  // SIS 100 hadron
 //const Float_t TOF_Z_Front =  450;  // SIS 100 hadron
@@ -138,9 +138,9 @@ const Int_t NCounterInModule[NofModuleTypes] = {5, 5, 3, 5, 5, 1, 2, 1, 8, 2};
 
 // Placement of the counter inside the module
 const Float_t CounterXStartPosition[NofModuleTypes] =
-  {-60.0, -66.0, -56.0, -60.0, -60.0, 0.0, 0., 0., -7., 0.};
+  {-58.5, -66.0, -56.0, -60.0, -60.0, 0.0, 0., 0., -7., 0.};
 const Float_t CounterXDistance[NofModuleTypes] =
-  {30.0, 32.0, 51.0, 30.0, 30.0, 0.0, 0., 0., 2., 0.};
+  {29.0, 32.0, 51.0, 30.0, 30.0, 0.0, 0., 0., 2., 0.};
 const Float_t CounterYStartPosition[NofModuleTypes] =
   {0.0, 0.0, 0.0, 0.0, 0.0, 0., 0., -4., -1.3, 0.};
 const Float_t CounterYDistance[NofModuleTypes] =
@@ -220,8 +220,8 @@ const Float_t Star2_X_Offset[Star2_NTypes] = {51.};  //{62.};
 
 const Float_t Buc_First_Z_Position     = TOF_Z_Front + 50.;
 const Float_t Buc_Delta_Z_Position     = 0.;
-const Float_t Buc_First_Y_Position     = 32.5;  //
-const Float_t Buc_Delta_Y_Position     = 0.;    //
+const Float_t Buc_First_Y_Position     = -32.5;  //
+const Float_t Buc_Delta_Y_Position     = 0.;     //
 const Float_t Buc_rotate_Z             = 180.;
 const Int_t Buc_NTypes                 = 1;
 const Float_t Buc_Types[Buc_NTypes]    = {6.};
@@ -254,9 +254,9 @@ TGeoVolume* gCounter[NumberOfDifferentCounterTypes];
 TGeoVolume* gPole;
 TGeoVolume* gBar[MaxNumberOfBars];
 
-const Float_t Dia_Z_Position         = -0.5 - TOF_Z_Front_Stand;
+const Float_t Dia_Z_Position         = -0.2 - TOF_Z_Front_Stand;
 const Float_t Dia_First_Y_Position   = 0.;
-const Float_t Dia_X_Offset           = 3.;
+const Float_t Dia_X_Offset           = 0.;
 const Float_t Dia_rotate_Z           = 0.;
 const Int_t Dia_NTypes               = 1;
 const Float_t Dia_Types[Dia_NTypes]  = {5.};
@@ -316,7 +316,7 @@ void Create_TOF_Geometry_v20a_mcbm() {
   TGeoTranslation* stand_trans =
     new TGeoTranslation("", 0., 0., TOF_Z_Front_Stand);
   TGeoRotation* stand_rot = new TGeoRotation();
-  stand_rot->RotateY(1.);
+  stand_rot->RotateY(-3.0); //-2.7);
   TGeoCombiTrans* stand_combi_trans =
     new TGeoCombiTrans(*stand_trans, *stand_rot);
   //tof->AddNode(tofstand, 1, stand_combi_trans);
