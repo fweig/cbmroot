@@ -203,16 +203,16 @@ void ana_trks(Int_t nEvents        = 10000,
 
     case 1:  // for calibration mode of full setup
       iMinNofHits   = 3;
-      iNStations    = 8;
-      iNReqStations = 4;
+      iNStations    = 6;
+      iNReqStations = 6;
       tofFindTracks->SetStation(0, 9, 0, 0);
       tofFindTracks->SetStation(1, 9, 2, 1);
       tofFindTracks->SetStation(2, 9, 0, 1);
       tofFindTracks->SetStation(3, 9, 2, 0);
       tofFindTracks->SetStation(4, 9, 1, 0);
       tofFindTracks->SetStation(5, 9, 1, 1);
-      tofFindTracks->SetStation(6, 6, 0, 0);
-      tofFindTracks->SetStation(7, 6, 0, 1);
+      //tofFindTracks->SetStation(6, 6, 0, 0);
+      //tofFindTracks->SetStation(7, 6, 0, 1);
       //tofFindTracks->SetStation(8, 6, 1, 0);
       //tofFindTracks->SetStation(9, 6, 1, 1);
       break;
