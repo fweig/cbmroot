@@ -22,7 +22,7 @@ void ana_digi_cal_all(Int_t nEvents      = 10000000,
   //TString logLevel = "DEBUG3";
   FairLogger::GetLogger();
   gLogger->SetLogScreenLevel(logLevel);
-  gLogger->SetLogVerbosityLevel("MEDIUM");
+  gLogger->SetLogVerbosityLevel("VERYHIGH");
 
   TString workDir = gSystem->Getenv("VMCWORKDIR");
   /*
@@ -46,12 +46,11 @@ void ana_digi_cal_all(Int_t nEvents      = 10000000,
   TList* parFileList = new TList();
 
   TString FId    = cFileId;
-  TString TofGeo = "v20a_mcbm";
+  TString TofGeo = "v20b_mcbm";
   cout << "Geometry version " << TofGeo << endl;
 
-  TObjString* tofDigiFile = new TObjString(
-    workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par");  // TOF digi file
-  parFileList->Add(tofDigiFile);
+  //   TObjString *tofDigiFile = new TObjString(workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par"); // TOF digi file
+  //   parFileList->Add(tofDigiFile);
 
   //   TObjString tofDigiBdfFile = new TObjString( paramDir + "/tof." + FPar + "digibdf.par");
   TObjString* tofDigiBdfFile =

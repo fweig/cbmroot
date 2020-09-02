@@ -2,9 +2,9 @@
 # shell script to apply clusterizer calibrations
 #SBATCH -J trk_cal_digi
 #SBATCH -D /lustre/cbm/users/nh/CBM/cbmroot/trunk/macro/beamtime/mcbm2020
-#SBATCH --time=4:00:00
-#SBATCH --mem=2000
-##SBATCH --partition=long
+#SBATCH --time=5-24:00:00
+#SBATCH --mem=4000
+#SBATCH --partition=long
 cRun=$1
 
 iCalSet=$2
@@ -59,13 +59,20 @@ else
  echo use calibrations from  ${CalFile}
 fi
 
-CalIdSet=$6
+iCalOpt=$6
+if [[ ${iCalOpt} = "" ]]; then
+  iCalOpt=1	
+fi
+
+CalIdSet=$7
 if [[ ${CalIdSet} = "" ]]; then
     echo use native calibration file
     CalIdSet=$cCalSet
 else
     CalFile=${CalIdMode}_set${CalIdSet}_93_1tofClust.hst.root    
 fi
+
+
 
 echo trk_cal_digi for $cRun with iDut=$iDut, iRef=$iRef, iSet=$iCalSet, iSel2=$iSel2, iBRef=$iBRef, Deadtime=$Deadtime, CalFile=$CalFile
 
@@ -101,18 +108,18 @@ iTraSetup=1
 fRange1=3.
 # frange2 limits chi2
 fRange2=5.0
-TRange2Limit=2. 
+TRange2Limit=2.5 
 
 iSel=10
 iGenCor=3
 cCalSet2=${cCalSet}_$cSel2
-iCalOpt=1 
 
 case $iCalOpt in
   1)   # TOff
   ;;
   2)   # Walk
   (( nEvt *= 10 ))
+  (( nEvtMax *= 10 ))
   ;;
 esac
 
@@ -123,7 +130,7 @@ while [[ $dDTres > 0 ]]; do
     nEvt=$nEvtMax
   fi
 
-  fRange2=`echo "$fRange2 * 0.8" | bc`
+  fRange2=`echo "$fRange2 * 0.9" | bc`
   compare_TRange2=`echo "$fRange2 < $TRange2Limit" | bc`
   if  [[ $compare_TRange2 > 0 ]]; then
    fRange2=$TRange2Limit
@@ -167,12 +174,17 @@ while [[ $dDTres > 0 ]]; do
     fi
     dDTres=$Tres
     dDTRMSres=$TRMSres
+    (( dDTRMSres -= 10 ))  # next attempt should be at least 10ps better for continuation
     cp -v New_${CalFile} ${CalFile}  
+    cp -v New_${CalFile} ${CalFile}_$iter  
   else
     dDTres=0
   fi
   (( iter += 1 ))
 done
+
+# generate full statistics digi file 
+root -b -q '../ana_digi_cal.C(-1,93,1,'$iRef',1,"'$cRun'",'$iCalSet',1,'$iSel2','$Deadtime',"'$CalIdMode'") '
 
 cd ..
 

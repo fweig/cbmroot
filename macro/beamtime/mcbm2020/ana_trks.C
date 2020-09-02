@@ -12,9 +12,13 @@ void ana_trks(Int_t nEvents        = 10000,
               Int_t iAnaCor        = 1,
               Bool_t bUseSigCalib  = kFALSE,
               Int_t iCalSet        = 30040500,
-              Int_t iCalOpt        = 1) {
+              Int_t iCalOpt        = 1,
+              Int_t iMc            = 0) {
   Int_t iVerbose = 1;
   if (cCalId == "") cCalId = cFileId;
+  TString FId = cFileId;
+  TString cRun(FId(0, 3));
+  Int_t iRun = cRun.Atoi();
   // Specify log level (INFO, DEBUG, DEBUG1, ...)
   //TString logLevel = "FATAL";
   //TString logLevel = "ERROR";
@@ -26,27 +30,33 @@ void ana_trks(Int_t nEvents        = 10000,
   TString workDir  = gSystem->Getenv("VMCWORKDIR");
   TString paramDir = workDir + "/macro/beamtime/mcbm2020";
   //TString paramDir       = ".";
+
   TString ParFile       = paramDir + "/data/" + cFileId.Data() + ".params.root";
   TString InputFile     = paramDir + "/data/" + cFileId.Data() + ".root";
   TString InputDigiFile = paramDir + "/data/digidev_" + cFileId.Data()
                           + Form("_%s_%02.0f_Cal", cSet.Data(), dDeadtime)
                           + cCalId + ".out.root";
+  if (iMc == 1) {
+    InputFile     = paramDir + "/data/" + cFileId.Data() + ".raw.root";
+    InputDigiFile = paramDir + "/data/" + cFileId.Data() + ".rec.root";
+    iRun          = 700;
+  }
   TString OutputFile = paramDir + "/data/hits_" + cFileId.Data()
                        + Form("_%s_%06d_%03d", cSet.Data(), iSel, iSel2)
                        + ".out.root";
   TString cHstFile =
     paramDir
     + Form(
-      "/hst/%s_%03.0f_%s_%06d_%03d_%03.1f_%03.1f_trk%03d_Cal%s_Ana.hst.root",
-      cFileId.Data(),
-      dDeadtime,
-      cSet.Data(),
-      iSel,
-      iSel2,
-      dScalFac,
-      dChi2Lim2,
-      iTrackingSetup,
-      cCalId.Data());
+        "/hst/%s_%03.0f_%s_%06d_%03d_%03.1f_%03.1f_trk%03d_Cal%s_Ana.hst.root",
+        cFileId.Data(),
+        dDeadtime,
+        cSet.Data(),
+        iSel,
+        iSel2,
+        dScalFac,
+        dChi2Lim2,
+        iTrackingSetup,
+        cCalId.Data());
   TString cTrkFile = Form("%s_tofFindTracks.hst.root", cCalId.Data());
   TString cAnaFile = Form("%s_TrkAnaTestBeam.hst.root", cFileId.Data());
 
@@ -57,27 +67,38 @@ void ana_trks(Int_t nEvents        = 10000,
 
   TList* parFileList = new TList();
 
-  TString TofGeo = "v19b_mcbm";  //default
+  Int_t iGeo = 0;  //iMc;
+  if (iGeo == 0) {
+    TString TofGeo = "";
+    if (iRun < 690)
+      TofGeo = "v20a_mcbm";
+    else
+      TofGeo = "v20b_mcbm";
+    cout << "Geometry version " << TofGeo << endl;
 
-  cout << "Geometry version " << TofGeo << endl;
+    TObjString* tofDigiBdfFile =
+      new TObjString(workDir + "/parameters/tof/" + TofGeo + ".digibdf.par");
+    parFileList->Add(tofDigiBdfFile);
 
-  TObjString* tofDigiFile = new TObjString(
-    workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par");  // TOF digi file
-  parFileList->Add(tofDigiFile);
-
-  // TObjString tofDigiBdfFile =  paramDir + "/tof.digibdf.par";
-  // TObjString tofDigiBdfFile =  paramDir + "/tof." + FPar + "digibdf.par";
-  TObjString* tofDigiBdfFile =
-    new TObjString(workDir + "/parameters/tof/" + TofGeo + ".digibdf.par");
-  parFileList->Add(tofDigiBdfFile);
-
-  TString geoDir  = gSystem->Getenv("VMCWORKDIR");
-  TString geoFile = geoDir + "/geometry/tof/geofile_tof_" + TofGeo + ".root";
-  TFile* fgeo     = new TFile(geoFile);
-  TGeoManager* geoMan = (TGeoManager*) fgeo->Get("FAIRGeom");
-  if (NULL == geoMan) {
-    cout << "<E> FAIRGeom not found in geoFile" << endl;
-    return;
+    TString geoDir  = gSystem->Getenv("VMCWORKDIR");
+    TString geoFile = geoDir + "/geometry/tof/geofile_tof_" + TofGeo + ".root";
+    TFile* fgeo     = new TFile(geoFile);
+    TGeoManager* geoMan = (TGeoManager*) fgeo->Get("FAIRGeom");
+    if (NULL == geoMan) {
+      cout << "<E> FAIRGeom not found in geoFile" << endl;
+      return;
+    }
+  } else {
+    TString setupName = "mcbm_beam_2020_03";
+    // -----   Load the geometry setup   -------------------------------------
+    TString setupFile =
+      workDir + "/geometry/setup/setup_" + setupName.Data() + ".C";
+    TString setupFunct = "setup_";
+    setupFunct         = setupFunct + setupName + "()";
+    std::cout << "-I- Loading macro " << setupFile << std::endl;
+    gROOT->LoadMacro(setupFile);
+    gROOT->ProcessLine(setupFunct);
+    CbmSetup* setup = CbmSetup::Instance();
   }
 
   // -----   Reconstruction run   -------------------------------------------
@@ -89,10 +110,12 @@ void ana_trks(Int_t nEvents        = 10000,
   //run->AddFriend(InputDigiFile.Data());
   run->SetInputFile(InputDigiFile.Data());
   //run->AddFriend(InputFile.Data());
-  run->SetOutputFile(OutputFile);
+  //run->SetOutputFile(OutputFile);
+  run->SetUserOutputFileName(OutputFile.Data());
+  run->SetSink(new FairRootFileSink(run->GetUserOutputFileName()));
 
   FairLogger::GetLogger()->SetLogScreenLevel(logLevel.Data());
-  FairLogger::GetLogger()->SetLogVerbosityLevel("MEDIUM");
+  FairLogger::GetLogger()->SetLogVerbosityLevel("VERYHIGH");
 
   // -----   Local selection variables  -------------------------------------------
 
@@ -141,8 +164,6 @@ void ana_trks(Int_t nEvents        = 10000,
   // =========================================================================
   // ===                       Tracking                                    ===
   // =========================================================================
-  CbmStsDigitize* stsDigitize = new CbmStsDigitize();  //necessary for kalman !!
-  CbmKF* kalman               = new CbmKF();
 
   CbmTofTrackFinder* tofTrackFinder = new CbmTofTrackFinderNN();
   tofTrackFinder->SetMaxTofTimeDifference(0.2);  // in ns/cm
@@ -168,11 +189,15 @@ void ana_trks(Int_t nEvents        = 10000,
   CbmTofFindTracks* tofFindTracks = new CbmTofFindTracks("TOF Track Finder");
   tofFindTracks->UseFinder(tofTrackFinder);
   tofFindTracks->UseFitter(tofTrackFitter);
-  tofFindTracks->SetCalOpt(iCalOpt);   // 1 - update offsets
+  tofFindTracks->SetCalOpt(
+    iCalOpt);  // 1 - update offsets, 2 - update walk, 0 - bypass
   tofFindTracks->SetCorMode(iGenCor);  // valid options: 0,1,2,3,4,5,6, 10 - 19
-  tofFindTracks->SetTtTarg(0.055);     // target value for Dec2019
-  //tofFindTracks->SetTtTarg(0.051);                // target value Nov2019
-  //tofFindTracks->SetTtTarg(0.035);                // target value for inverse velocity, > 0.033 ns/cm!
+  tofFindTracks->SetTtTarg(
+    0.0605);  // target value for Mar2020 triple stack -> betapeak ~ 0.95
+  //tofFindTracks->SetTtTarg(0.062);              // target value for Mar2020 triple stack -> betapeak ~ 0.95
+  //tofFindTracks->SetTtTarg(0.058);            // target value for Mar2020 double stack
+  //tofFindTracks->SetTtTarg(0.051);            // target value Nov2019
+  //tofFindTracks->SetTtTarg(0.035);            // target value for inverse velocity, > 0.033 ns/cm!
   tofFindTracks->SetCalParFileName(
     cTrkFile);                             // Tracker parameter value file name
   tofFindTracks->SetBeamCounter(5, 0, 0);  // default beam counter
@@ -189,7 +214,6 @@ void ana_trks(Int_t nEvents        = 10000,
   tofTrackFinder->SetSIGLIM(dChi2Lim2
                             * 2.);  // matching window in multiples of chi2
   tofTrackFinder->SetChiMaxAccept(dChi2Lim2);  // max tracklet chi2
-
 
   Int_t iMinNofHits   = -1;
   Int_t iNStations    = 0;
@@ -244,37 +268,36 @@ void ana_trks(Int_t nEvents        = 10000,
 
     case 2:
       iMinNofHits   = 3;
-      iNStations    = 29;
-      iNReqStations = 3;
-      tofFindTracks->SetStation(1, 0, 2, 2);
+      iNStations    = 28;
+      iNReqStations = 4;
+      tofFindTracks->SetStation(0, 0, 2, 2);
+      tofFindTracks->SetStation(1, 0, 0, 2);
       tofFindTracks->SetStation(2, 0, 1, 2);
-      tofFindTracks->SetStation(3, 0, 0, 2);
-      tofFindTracks->SetStation(4, 0, 2, 1);
+      tofFindTracks->SetStation(3, 0, 2, 1);
+      tofFindTracks->SetStation(4, 0, 0, 1);
       tofFindTracks->SetStation(5, 0, 1, 1);
-      tofFindTracks->SetStation(6, 0, 0, 1);
-      tofFindTracks->SetStation(7, 0, 2, 3);
+      tofFindTracks->SetStation(6, 0, 2, 3);
+      tofFindTracks->SetStation(7, 0, 0, 3);
       tofFindTracks->SetStation(8, 0, 1, 3);
-      tofFindTracks->SetStation(9, 0, 0, 3);
-      tofFindTracks->SetStation(10, 0, 2, 0);
+      tofFindTracks->SetStation(9, 0, 2, 0);
+      tofFindTracks->SetStation(10, 0, 0, 0);
       tofFindTracks->SetStation(11, 0, 1, 0);
-      tofFindTracks->SetStation(12, 0, 0, 0);
-      tofFindTracks->SetStation(13, 0, 2, 4);
+      tofFindTracks->SetStation(12, 0, 2, 4);
+      tofFindTracks->SetStation(13, 0, 0, 4);
       tofFindTracks->SetStation(14, 0, 1, 4);
-      tofFindTracks->SetStation(15, 0, 0, 4);
-      tofFindTracks->SetStation(16, 0, 4, 0);
-      tofFindTracks->SetStation(17, 0, 3, 0);
-      tofFindTracks->SetStation(18, 0, 4, 1);
-      tofFindTracks->SetStation(19, 0, 3, 1);
-      tofFindTracks->SetStation(20, 0, 4, 2);
-      tofFindTracks->SetStation(21, 0, 3, 2);
-      tofFindTracks->SetStation(22, 0, 4, 3);
-      tofFindTracks->SetStation(23, 0, 3, 3);
-      tofFindTracks->SetStation(24, 0, 4, 4);
-      tofFindTracks->SetStation(25, 0, 3, 4);
-      tofFindTracks->SetStation(26, 9, 0, 0);
-      tofFindTracks->SetStation(27, 9, 0, 1);
-      tofFindTracks->SetStation(28, 6, 0, 0);
-      tofFindTracks->SetStation(0, 6, 0, 1);
+      tofFindTracks->SetStation(15, 0, 4, 0);
+      tofFindTracks->SetStation(16, 0, 3, 0);
+      tofFindTracks->SetStation(17, 0, 4, 1);
+      tofFindTracks->SetStation(18, 0, 3, 1);
+      tofFindTracks->SetStation(19, 0, 4, 2);
+      tofFindTracks->SetStation(20, 0, 3, 2);
+      tofFindTracks->SetStation(21, 0, 4, 3);
+      tofFindTracks->SetStation(22, 0, 3, 3);
+      tofFindTracks->SetStation(23, 0, 4, 4);
+      tofFindTracks->SetStation(24, 0, 3, 4);
+      tofFindTracks->SetStation(25, 9, 0, 0);
+      tofFindTracks->SetStation(26, 9, 0, 1);
+      tofFindTracks->SetStation(27, 5, 0, 0);
       break;
 
     case 3:
@@ -402,6 +425,7 @@ void ana_trks(Int_t nEvents        = 10000,
       tofFindTracks->SetStation(1, 0, 1, 2);
       tofFindTracks->SetStation(2, 0, 0, 2);
       tofFindTracks->SetStation(3, 0, 2, 2);
+      break;
 
     default:
       cout << "Tracking setup " << iTrackingSetup << " not implemented "
@@ -424,6 +448,10 @@ void ana_trks(Int_t nEvents        = 10000,
   tofAnaTestbeam->SetHitDistMin(30.);   // initialization
   tofAnaTestbeam->SetEnableMatchPosScaling(kTRUE);
   tofAnaTestbeam->SetSpillDuration(3.);
+  if (iMc == 1) {
+    tofAnaTestbeam->SetSpillDuration(0.);
+    tofAnaTestbeam->SetSpillBreak(0.);
+  }
   //CbmTofAnaTestbeam defaults
   tofAnaTestbeam->SetR0LimFit(
     20.);  // limit distance of fitted track to nominal vertex
@@ -481,7 +509,7 @@ void ana_trks(Int_t nEvents        = 10000,
   tofAnaTestbeam->SetBeamRefSmId(iRSelSm);
   tofAnaTestbeam->SetBeamRefRpc(iRSelRpc);
 
-  if (iSel2 >= 0) {
+  if (iSel2 >= -1) {
     tofAnaTestbeam->SetMrpcSel2(
       iSel2);  // initialization of second selector Mrpc Type
     tofAnaTestbeam->SetMrpcSel2Sm(
@@ -489,6 +517,9 @@ void ana_trks(Int_t nEvents        = 10000,
     tofAnaTestbeam->SetMrpcSel2Rpc(
       iSel2Rpc);  // initialization of second selector Mrpc RpcId
   }
+
+  cout << "AnaTestbeam init for Dut " << iDut << iDutSm << iDutRpc << ", Ref "
+       << iRef << iRefSm << iRefRpc << endl;
 
   tofAnaTestbeam->SetDut(iDut);            // Device under test
   tofAnaTestbeam->SetDutSm(iDutSm);        // Device under test
@@ -499,6 +530,7 @@ void ana_trks(Int_t nEvents        = 10000,
 
   cout << "dispatch iSel = " << iSel << ", iSel2in = " << iSel2in
        << ", iRSelin = " << iRSelin << ", iRSel = " << iRSel << endl;
+
   if (1) {
     switch (iSel) {
 

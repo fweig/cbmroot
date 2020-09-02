@@ -20,13 +20,33 @@ if [[ $cSet = "" ]]; then
     #cSet="900041500_500"
 fi
 
+# extract iCalSet from cSet
+i1=0
+while [ "${cSet:$i1:1}" = "0" ]; do
+(( i1 += 1 ))
+done
+i2=0
+while [ "${cSet:$i2:1}" != "_" ] && [ $i2 -lt  ${#cSet} ]; do
+(( i2 += 1 ))
+done
+(( i2 -= i1 ))
+iCalSet=${cSet:$i1:$i2}
+echo got i1=$i1, i2=$i2, iCalSet=$iCalSet from $cSet
+
 cCalId=$4;
 if [[ $cCalId = "" ]]; then 
     cCalId=$cRun;
 fi
 
+iMc=0
+McId=${cRun:0:4}
+if [ "$McId" = "mcbm" ]; then 
+  echo processing MC simulation
+  iMc=1
+fi
+
 # what should be done ?
-iDut=900; iRef=41; iSel2=600
+iDut=900; iRef=41; iSel2=31
 ((iSel=$iDut*1000+$iRef))
 
 nEvt=100000
@@ -52,7 +72,9 @@ fRange1=4.
 TRange1Limit=2.
 dDeadtime=50
 
-mkdir ${cRun}
+if [ ! -e ${cRun} ]; then 
+  mkdir $cRun
+fi
 cd ${cRun}
 cp ../.rootrc .
 cp ../rootlogon.C .
@@ -105,9 +127,13 @@ for iCal in 3 4 5; do
 #for iCal in 3 2 ; do
 #for iCal in 2 ; do
     nIt=1
+    if [ $iter -eq 0 ] && [ $iMc -eq 1 ]; then
+      echo skip iCal $iCal for MC calibration
+      iCal=5
+    fi
     while [[ $nIt > 0 ]]; do
 	((iter += 1))
-	root -b -q '../ana_trks.C('$nEvt','$iSel','$iCal',"'$cRun'","'$cSet'",'$iSel2','$iTraSetup','$fRange1','$fRange2','$dDeadtime',"'$cCalId'",1,1)'
+	root -b -q '../ana_trks.C('$nEvt','$iSel','$iCal',"'$cRun'","'$cSet'",'$iSel2','$iTraSetup','$fRange1','$fRange2','$dDeadtime',"'$cCalId'",1,1,'$iCalSet',0,'$iMc')'
 	cp -v tofFindTracks.hst.root ${cRun}_tofFindTracks.hst.root
 	cp -v tofFindTracks.hst.root ${cRun}_tofFindTracks.hst${iter}.root
 	cp -v tofAnaTestBeam.hst.root ${cRun}_TrkAnaTestBeam.hst.root

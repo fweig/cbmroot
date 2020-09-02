@@ -2,25 +2,38 @@
 # shell script to iterate tracklet calibration histograms
 #SBATCH -J eval_tracks
 #SBATCH -D /lustre/cbm/users/nh/CBM/cbmroot/trunk/macro/beamtime/mcbm2020
-#SBATCH --time=1-00:00:00
-#SBATCH --mem=2000
+#SBATCH --time=6-00:00:00
+#SBATCH --mem=4000
 #SBATCH --partition=long
 
 X=$((${SLURM_ARRAY_TASK_ID} - 0))
 XXX=$(printf "%03d" "$X")
 
 cRun=$1
-iDut=$2; 
-iRef=$3; 
+iDut=$2 
+iRef=$3 
 iSel2=$4
 ((iSel=$iDut*1000+$iRef))
 iTraSetup=$5
 
 cSet=$6
 if [[ ${cSet} = "" ]]; then
-    cSet="900041901_901"
+    cSet="030040500_500"
 fi
-    
+   
+# extract iCalSet from cSet
+i1=0
+while [ "${cSet:$i1:1}" = "0" ]; do
+(( i1 += 1 ))
+done
+i2=0
+while [ "${cSet:$i2:1}" != "_" ] && [ $i2 -lt  ${#cSet} ]; do
+(( i2 += 1 ))
+done
+(( i2 -= i1 ))
+iCalSet=${cSet:$i1:$i2}
+echo got i1=$i1, i2=$i2, iCalSet=$iCalSet from $cSet
+
 CalIdMode=$7
 if [[ ${CalIdMode} = "" ]]; then
     echo use native calibration file
@@ -30,7 +43,7 @@ else
 fi
 
 dDTres=10000000
-nEvt=100000
+nEvt=100000000
 
 cSel2=$iSel2;
 if [[ $iSel2 < 100 ]]; then
@@ -40,6 +53,13 @@ if [[ $iSel2 < 100 ]]; then
     fi
 fi
 
+iMc=0
+McId=${cRun:0:4}
+if [ "$McId" = "mcbm" ]; then 
+  echo processing MC simulation
+  iMc=1
+fi
+  
 if [ -e /lustre/cbm ]; then
 source /lustre/cbm/users/nh/CBM/cbmroot/trunk/build/config.sh 
 wdir=/lustre/cbm/users/nh/CBM/cbmroot/trunk/macro/beamtime/mcbm2020
@@ -50,32 +70,42 @@ outdir=${wdir}/${cRun}
 fi
 
 # frange2 limits chi2
-fRange2=3.5
+fRange2=2.5
 
 #frange1 limits DT spectrum range 
-fRange1=1.1
+fRange1=0.9
 dDeadtime=50
+#./gen_digi.sh 600.100.5.0 30040500 500 50    600.100.5.0  30040500
+#./gen_digi.sh $cRun $iCalSet $iSel2 $Deadtime $CalIdMode CalIdSet
 
+cd $wdir 
+if [ ! -e ${cRun} ]; then 
+  mkdir $cRun
+fi
 cd ${cRun}
-mkdir          Ana_${cSet}_${iSel}_${cSel2}_${iTraSetup}
+mkdir             Ana_${cSet}_${iSel}_${cSel2}_${iTraSetup}
 cp ../rootlogon.C Ana_${cSet}_${iSel}_${cSel2}_${iTraSetup}/
 cp ../.rootrc     Ana_${cSet}_${iSel}_${cSel2}_${iTraSetup}/
+digiCalFile=`ls -1 ${cCalId}*93_1*.root`
+
 cd Ana_${cSet}_${iSel}_${cSel2}_${iTraSetup}
 rm -v  *AnaTestBeam.hst.root
 cp -v ../../${cCalId}_tofFindTracks.hst.root .
+echo create symbolic link to digiCalFile $digiCalFile in `pwd`
+ln -s ../$digiCalFile ./$digiCalFile
 
 while [[ $dDTres > 0 ]]; do
 
 for iCal in 1 2 3 5 6 7 8 1
 do
 
-root -b -q '../../ana_trks_eval.C('$nEvt','$iSel',-1,"'$cRun'","'$cSet'",'$iSel2','$iTraSetup','$fRange1','$fRange2','$dDeadtime',"'$cCalId'",'$iCal')'
+root -b -q '../../ana_trks_eval.C('$nEvt','$iSel',-1,"'$cRun'","'$cSet'",'$iSel2','$iTraSetup','$fRange1','$fRange2','$dDeadtime',"'$cCalId'",'$iCal',0,'$iCalSet',0,'$iMc')'
 mv -v tofAnaTestBeam.hst.root ${cRun}_TrkAnaTestBeam.hst.root
 rm all_*
 
 if (! (test -f Test.res)); then
-echo no resolution file available: return
-return
+  echo no resolution file available: exit
+  exit 1
 fi
 done
 
@@ -96,7 +126,7 @@ done
 
 # final action -> scan full statistics 
 iCal=1
-root -b -q '../../ana_trks.C(-1,'$iSel',-1,"'$cRun'","'$cSet'",'$iSel2','$iTraSetup','$fRange1','$fRange2','$dDeadtime',"'$cCalId'",'$iCal')'
+root -b -q '../../ana_trks_eval.C(-1,'$iSel',-1,"'$cRun'","'$cSet'",'$iSel2','$iTraSetup','$fRange1','$fRange2','$dDeadtime',"'$cCalId'",'$iCal',0,'$iCalSet',0,'$iMc')'
 rm all_*
 cd ../..
 

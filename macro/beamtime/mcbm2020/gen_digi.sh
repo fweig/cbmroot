@@ -19,10 +19,6 @@ iCalSet=$2
 
 iSel2=$3
 
-if((${iSel2}<0));then
- ((iBRef=-$iSel2))
-fi
-
 cCalSet=$iCalSet
 if (( iCalSet<100000000 )); then 
 cCalSet="0"$iCalSet
@@ -88,4 +84,4 @@ root -b -q '../ana_digi_cal.C(-1,93,1,'$iRef',1,"'$cRun'",'$iCalSet',1,'$iSel2',
 
 cd ..
 
-mv -v slurm-${SLURM_JOB_ID}.out ${outdir}/GenDigi_${cRun}_${iCalSet}_${iSel2}_${iCalIdMode}.out
+mv -v slurm-${SLURM_JOB_ID}.out ${outdir}/GenDigi_${cRun}_${iCalSet}_${iSel2}_${CalIdMode}.out

@@ -17,13 +17,14 @@ void dis_trks(Int_t nEvents        = 10,
   //TString logLevel = "FATAL";
   //TString logLevel = "ERROR";
   //TString logLevel = "INFO";
-  //TString logLevel = "DEBUG";
+  TString logLevel = "DEBUG";
   //TString logLevel = "DEBUG1";
   //TString logLevel = "DEBUG2";
-  TString logLevel = "DEBUG3";
-  //TString workDir       = gSystem->Getenv("VMCWORKDIR");
-  TString workDir       = "../../..";
-  TString paramDir      = workDir + "/macro/beamtime/mcbm2020";
+  //TString logLevel = "DEBUG3";
+  TString workDir = gSystem->Getenv("VMCWORKDIR");
+  //TString workDir          = "../../..";
+  //TString paramDir       = workDir  + "/macro/beamtime/mcbm2020";
+  TString paramDir      = "./";
   TString ParFile       = paramDir + "/data/" + cFileId.Data() + ".params.root";
   TString InputFile     = paramDir + "/data/" + cFileId.Data() + ".root";
   TString InputDigiFile = paramDir + "/data/digidev_" + cFileId.Data()
@@ -35,16 +36,16 @@ void dis_trks(Int_t nEvents        = 10,
   TString cHstFile =
     paramDir
     + Form(
-      "/hst/%s_%03.0f_%s_%06d_%03d_%03.1f_%03.1f_trk%03d_Cal%s_Dis.hst.root",
-      cFileId.Data(),
-      dDeadtime,
-      cSet.Data(),
-      iSel,
-      iSel2,
-      dScalFac,
-      dChi2Lim2,
-      iTrackingSetup,
-      cCalId.Data());
+        "/hst/%s_%03.0f_%s_%06d_%03d_%03.1f_%03.1f_trk%03d_Cal%s_Dis.hst.root",
+        cFileId.Data(),
+        dDeadtime,
+        cSet.Data(),
+        iSel,
+        iSel2,
+        dScalFac,
+        dChi2Lim2,
+        iTrackingSetup,
+        cCalId.Data());
   TString cTrkFile = Form("%s_tofFindTracks.hst.root", cCalId.Data());
   TString cAnaFile = Form("%s_TrkAnaTestBeam.hst.root", cCalId.Data());
 
@@ -55,19 +56,20 @@ void dis_trks(Int_t nEvents        = 10,
 
   TList* parFileList = new TList();
 
-  TString TofGeo = "v20a_mcbm";  //default
-
+  TString TofGeo = "v20b_mcbm";  //default
   cout << "Geometry version " << TofGeo << endl;
 
-  TObjString* tofDigiFile = new TObjString(
-    workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par");  // TOF digi file
-  parFileList->Add(tofDigiFile);
-
-  // TObjString tofDigiBdfFile =  paramDir + "/tof.digibdf.par";
-  // TObjString tofDigiBdfFile =  paramDir + "/tof." + FPar + "digibdf.par";
-  TObjString* tofDigiBdfFile =
-    new TObjString(workDir + "/parameters/tof/" + TofGeo + ".digibdf.par");
-  parFileList->Add(tofDigiBdfFile);
+  // -----   Load the geometry setup   -------------------------------------
+  /*
+  const char* setupName = "mcbm_beam_2020_03";
+  TString setupFile = workDir + "/geometry/setup/setup_" + setupName + ".C";
+  TString setupFunct = "setup_";
+  setupFunct = setupFunct + setupName + "()";
+  std::cout << "-I- mcbm_reco: Loading macro " << setupFile << std::endl;
+  gROOT->LoadMacro(setupFile);
+  gROOT->ProcessLine(setupFunct);
+  CbmSetup* setup = CbmSetup::Instance();
+*/
 
   TString geoDir  = gSystem->Getenv("VMCWORKDIR");
   TString geoFile = geoDir + "/geometry/tof/geofile_tof_" + TofGeo + ".root";
@@ -77,6 +79,13 @@ void dis_trks(Int_t nEvents        = 10,
     cout << "<E> FAIRGeom not found in geoFile" << endl;
     return;
   }
+
+  //TObjString *tofDigiFile = new TObjString(workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par"); // TOF digi file
+  //parFileList->Add(tofDigiFile);
+
+  TObjString* tofDigiBdfFile =
+    new TObjString(workDir + "/parameters/tof/" + TofGeo + ".digibdf.par");
+  parFileList->Add(tofDigiBdfFile);
 
   // -----   Reconstruction run   -------------------------------------------
   FairRunAna* run = new FairRunAna();
@@ -91,7 +100,7 @@ void dis_trks(Int_t nEvents        = 10,
 
   FairLogger::GetLogger()->SetLogScreenLevel(logLevel.Data());
   //  FairLogger::GetLogger()->SetLogVerbosityLevel("MEDIUM");
-  FairLogger::GetLogger()->SetLogVerbosityLevel("HIGH");
+  FairLogger::GetLogger()->SetLogVerbosityLevel("VERYHIGH");
 
   // -----   Local selection variables  -------------------------------------------
 
@@ -139,9 +148,6 @@ void dis_trks(Int_t nEvents        = 10,
   // =========================================================================
   // ===                       Tracking                                    ===
   // =========================================================================
-  CbmStsDigitize* stsDigitize = new CbmStsDigitize();  //necessary for kalman !!
-  CbmKF* kalman               = new CbmKF();
-
   /* 
    CbmTofEventClusterizer* tofClust = new CbmTofEventClusterizer("TOF Event Clusterizer",iVerbose, bOut);
    tofClust->SetMemoryTime(1000000.);    // internal storage time of hits in ns

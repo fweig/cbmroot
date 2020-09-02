@@ -140,7 +140,6 @@ void mtof_reco(Int_t nEvents      = 100,  // number of Timeslices
 
   // ------------------------------------------------------------------------
   // TOF defaults
-
   Int_t calMode      = 93;
   Int_t calSel       = 1;
   Int_t calSm        = 0;
@@ -154,7 +153,6 @@ void mtof_reco(Int_t nEvents      = 100,  // number of Timeslices
       case 1: {
         CbmTofEventClusterizer* tofCluster =
           new CbmTofEventClusterizer("TOF Event Clusterizer", 0, 1);
-
         TString cFname = Form("%s_set%09d_%02d_%01dtofClust.hst.root",
                               cCalId.Data(),
                               iCalSet,
@@ -243,9 +241,7 @@ void mtof_reco(Int_t nEvents      = 100,  // number of Timeslices
         std::cout << "-I- " << myName << ": Added task "
                   << tofCluster->GetName() << std::endl;
       } break;
-      default: {
-        ;
-      }
+      default: { ; }
     }
   }
   // -------------------------------------------------------------------------

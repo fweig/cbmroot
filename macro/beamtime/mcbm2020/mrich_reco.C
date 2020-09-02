@@ -1,9 +1,9 @@
-void mrich_reco(
-  const string srcfolder = "/lustre/cbm/users/adrian/mcbmbeamtime/cbmsource/"
-                           "macro/beamtime/mcbm2020/data",
-  const unsigned int runId = 759,  // used for the output folder
-  int nEvents              = 1000,
-  const int taskId         = -1) {
+void mrich_reco(const string srcfolder =
+                  "/lustre/cbm/users/adrian/mcbmbeamtime/cbmsource/"
+                  "macro/beamtime/mcbm2020/data",
+                const unsigned int runId = 759,  // used for the output folder
+                int nEvents              = 1000,
+                const int taskId         = -1) {
   const string& parFile =
     Form("%s/unp_mcbm_params_%d.root", srcfolder.c_str(), runId);
   const string& digiFile =

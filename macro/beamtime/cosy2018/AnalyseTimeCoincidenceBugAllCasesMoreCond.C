@@ -18,7 +18,7 @@ void save_plot_to_pdf(TH1* plot,
       + TString(Form("_%uch_%uch", uNbChanFixed[uFile], uNbChanScan[uFile])),
     canv->GetTitle()
       + TString(
-        Form(", %u ch, %u ch", uNbChanFixed[uFile], uNbChanScan[uFile])));
+          Form(", %u ch, %u ch", uNbChanFixed[uFile], uNbChanScan[uFile])));
   gStyle->SetOptStat(0);
   gStyle->SetPalette(105);
   plot->GetXaxis()->SetRangeUser(-1000, 996);
@@ -44,7 +44,7 @@ void save_plotstack_to_pdf(THStack* plot,
       + TString(Form("_%uch_%uch", uNbChanFixed[uFile], uNbChanScan[uFile])),
     canv->GetTitle()
       + TString(
-        Form(", %u ch, %u ch", uNbChanFixed[uFile], uNbChanScan[uFile])));
+          Form(", %u ch, %u ch", uNbChanFixed[uFile], uNbChanScan[uFile])));
   gStyle->SetOptStat(0);
   gStyle->SetPalette(105);
   //plot->GetXaxis()->SetRangeUser(-1000, 996);
