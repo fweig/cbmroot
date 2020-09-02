@@ -1283,7 +1283,7 @@ void CbmMcbm2018UnpackerAlgoTof::ProcessPattern(
         usType,
         usIndex,
         uPattern);
-      /*
+        /*
 	if(usIndex==7) {
 	  TString Tok;
 	  if (bEnableOut) Tok="Ena";
@@ -1293,24 +1293,24 @@ void CbmMcbm2018UnpackerAlgoTof::ProcessPattern(
 			     pat_mess[0],  pat_mess[1],  pat_mess[2],  pat_mess[3],  pat_mess[4],  pat_mess[5],  pat_mess[6],  pat_mess[7]  )
 		    << Tok;
 	}
-	break;
-*/
+        */
+      break;
     }  // case gdpbv100::PATT_MISSMATCH:
-    break;
+
     case gdpbv100::PATT_ENABLE: {
       LOG(debug2) << Form(
         "Enable pattern message => Type %d, Index %2d, Pattern 0x%08X",
         usType,
         usIndex,
         uPattern);
-      /*
+        /*
          for( UInt_t uBit = 0; uBit < 32; ++uBit )
             if( ( uPattern >> uBit ) & 0x1 )
             {
                fhPatternEnable->Fill( 32 * usIndex + uBit, fuCurrDpbIdx );
                fvhGdpbPatternEnableEvo[ fuCurrDpbIdx ]->Fill( fulCurrentTsIndex, 32 * usIndex + uBit );
             } // if( ( uPattern >> uBit ) & 0x1 )
-*/
+        */
       break;
     }  // case gdpbv100::PATT_ENABLE:
 
@@ -1323,6 +1323,7 @@ void CbmMcbm2018UnpackerAlgoTof::ProcessPattern(
 
       break;
     }  // case gdpbv100::PATT_RESYNC:
+
     default: {
       LOG(debug) << "Crazy pattern message, subtype " << usType;
       break;
