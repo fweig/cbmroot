@@ -164,7 +164,7 @@ void mcbm_transport(
                 targetRotY * TMath::DegToRad());
   run.SetBeamPosition(0., 0., 0.1, 0.1);  // Beam width 1 mm is assumed
   run.SetBeamAngle(beamRotY * TMath::DegToRad(), 0.);
-  run.StoreTrajectories();
+  //run.StoreTrajectories();
   run.Run(nEvents);
   // ------------------------------------------------------------------------
 
