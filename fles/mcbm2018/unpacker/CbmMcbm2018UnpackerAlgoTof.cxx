@@ -1283,7 +1283,7 @@ void CbmMcbm2018UnpackerAlgoTof::ProcessPattern(
         usType,
         usIndex,
         uPattern);
-        /*
+      /*
 	if(usIndex==7) {
 	  TString Tok;
 	  if (bEnableOut) Tok="Ena";
@@ -1303,7 +1303,7 @@ void CbmMcbm2018UnpackerAlgoTof::ProcessPattern(
         usType,
         usIndex,
         uPattern);
-        /*
+      /*
          for( UInt_t uBit = 0; uBit < 32; ++uBit )
             if( ( uPattern >> uBit ) & 0x1 )
             {

@@ -223,13 +223,12 @@ Int_t CbmTofGeoHandler::GetUniqueDetectorId() {
 
   if (fGeoVersion == k21a) {
     LOG(debug1) << " SMtype: " << smtype << " SModule: " << smodule
-                << " CounterType: " << countertype  
-                << " Counter: " << counter
+                << " CounterType: " << countertype << " Counter: " << counter
                 << " Gap: " << gap << " Cell: " << cell;
   } else {
     LOG(debug1) << " SMtype: " << smtype << " SModule: " << smodule
-                << " Counter: " << counter
-                << " Gap: " << gap << " Cell: " << cell;
+                << " Counter: " << counter << " Gap: " << gap
+                << " Cell: " << cell;
   }
 
   CbmTofDetectorInfo detInfo(
@@ -308,15 +307,14 @@ Int_t CbmTofGeoHandler::GetUniqueCounterId() {
               << CurrentVolOffName(0);
   if (fGeoVersion == k21a) {
     LOG(debug1) << " SMtype: " << smtype << " SModule: " << smodule
-                << " CounterType: " << countertype  
-                << " Counter: " << counter
+                << " CounterType: " << countertype << " Counter: " << counter
                 << " Gap: " << gap << " Cell: " << cell;
   } else {
     LOG(debug1) << " SMtype: " << smtype << " SModule: " << smodule
-                << " Counter: " << counter
-                << " Gap: " << gap << " Cell: " << cell;
+                << " Counter: " << counter << " Gap: " << gap
+                << " Cell: " << cell;
   }
- 
+
   CbmTofDetectorInfo detInfo(
     ECbmModuleId::kTof, smtype, smodule, counter, gap, cell, countertype);
 
