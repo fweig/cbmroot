@@ -221,9 +221,16 @@ Int_t CbmTofGeoHandler::GetUniqueDetectorId() {
   TString cType = cTemp(8, 2);  // 1 character only
   countertype   = cType.Atoi();
 
-  LOG(debug1) << " SMtype: " << smtype << " SModule: " << smodule
-              << " CounterType: " << countertype << " Counter: " << counter
-              << " Gap: " << gap << " Strip: " << cell;
+  if (fGeoVersion == k21a) {
+    LOG(debug1) << " SMtype: " << smtype << " SModule: " << smodule
+                << " CounterType: " << countertype  
+                << " Counter: " << counter
+                << " Gap: " << gap << " Cell: " << cell;
+  } else {
+    LOG(debug1) << " SMtype: " << smtype << " SModule: " << smodule
+                << " Counter: " << counter
+                << " Gap: " << gap << " Cell: " << cell;
+  }
 
   CbmTofDetectorInfo detInfo(
     ECbmModuleId::kTof, smtype, smodule, counter, gap, cell, countertype);
@@ -299,10 +306,17 @@ Int_t CbmTofGeoHandler::GetUniqueCounterId() {
   LOG(debug1) << " Volname: " << Volname << ", " << CurrentVolOffName(3) << ", "
               << CurrentVolOffName(2) << ", " << CurrentVolOffName(1) << ", "
               << CurrentVolOffName(0);
-  LOG(debug1) << " SMtype: " << smtype << " SModule: " << smodule
-              << " CounterType: " << countertype << " Counter: " << counter
-              << " Gap: " << gap << " Cell: " << cell;
-
+  if (fGeoVersion == k21a) {
+    LOG(debug1) << " SMtype: " << smtype << " SModule: " << smodule
+                << " CounterType: " << countertype  
+                << " Counter: " << counter
+                << " Gap: " << gap << " Cell: " << cell;
+  } else {
+    LOG(debug1) << " SMtype: " << smtype << " SModule: " << smodule
+                << " Counter: " << counter
+                << " Gap: " << gap << " Cell: " << cell;
+  }
+ 
   CbmTofDetectorInfo detInfo(
     ECbmModuleId::kTof, smtype, smodule, counter, gap, cell, countertype);
 
