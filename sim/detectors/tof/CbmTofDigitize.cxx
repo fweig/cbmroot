@@ -387,6 +387,7 @@ Bool_t CbmTofDigitize::InitParameters() {
     default:
       LOG(error) << "CbmTofDigitize::InitParameters: Invalid Detector ID "
                  << iGeoVersion;
+      break;
   }
 
   // create digitization parameters from geometry file
