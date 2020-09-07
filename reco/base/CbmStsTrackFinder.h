@@ -24,6 +24,7 @@ class TClonesArray;
 class CbmStsDigiScheme;
 class FairField;
 class CbmEvent;
+class CbmStsTrack;
 
 
 class CbmStsTrackFinder : public TNamed {
@@ -80,9 +81,26 @@ protected:
   TClonesArray* fMvdHits;         // MvdHit array
   TClonesArray* fStsHits;         // StsHit array
   TClonesArray* fTracks;          // StsTrack array
+  TClonesArray* fStsClusters;     // StsCluster array
   Int_t fVerbose;                 // Verbosity level
 
+
+  /** Median energy loss calculation for the tracks in event/timeslice
+   ** Ported from CbmKFParticleFinderPID
+   ** Description of the method given at 30th CBM CM
+   ** https://indico.gsi.de/event/4760/session/4/contribution/80/material/slides/0.pdf
+   **/
+  double CalculateEloss(CbmStsTrack* cbmStsTrack);
+  void FillEloss();
+
 private:
+  constexpr static int MaxAdcVal() { return 31; }
+
+  /** Calculate median value of a vector
+   **/
+  double VecMedian(std::vector<double>& vec);
+
+
   CbmStsTrackFinder(const CbmStsTrackFinder&);
   CbmStsTrackFinder& operator=(const CbmStsTrackFinder&);
 

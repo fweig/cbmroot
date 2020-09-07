@@ -111,6 +111,18 @@ public:
   virtual std::string ToString() const;
 
 
+  /** Get energy loss
+   ** @return  median energy loss
+   **/
+  Float_t GetELoss() const { return fELoss; }
+
+  /** Set energy loss
+   ** @param  median energy loss
+   **/
+  void SetELoss(Float_t ELoss) { fELoss = ELoss; }
+
+  constexpr static Float_t ELossOverflow() { return 1.e6; }
+
 private:
   /** Array with indices of the MVD hits attached to the track **/
   std::vector<Int_t> fMvdHitIndex;
@@ -119,8 +131,10 @@ private:
   /** Impact parameter of track at target z, in units of its error **/
   Double32_t fB;
 
+  /** median dE/dx [e/300µm] **/
+  Float_t fELoss {-1.f};
 
-  ClassDef(CbmStsTrack, 2);
+  ClassDef(CbmStsTrack, 3);
 };
 
 #endif
