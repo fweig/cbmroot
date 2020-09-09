@@ -3,7 +3,7 @@
 #include "CbmTrdGeoHandler.h"  // for CbmTrdGeoHandler
 #include "CbmTrdParModGeo.h"   // for CbmTrdParModGeo
 
-#include <FairLogger.h>  // for LOG, Logger
+#include <Logger.h>  // for LOG, Logger
 
 #include <TGenericClassInfo.h>  // for TGenericClassInfo
 #include <TGeoManager.h>        // for TGeoManager, gGeoManager

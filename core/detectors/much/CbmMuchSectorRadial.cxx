@@ -13,7 +13,7 @@
 
 #include <TMath.h>  // for Ceil, Floor, Pi, TwoPi
 
-#include <FairLogger.h>  // for Logger, LOG
+#include <Logger.h>  // for Logger, LOG
 
 #include <vector>  // for vector
 

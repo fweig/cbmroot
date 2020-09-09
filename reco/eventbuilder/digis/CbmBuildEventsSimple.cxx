@@ -8,7 +8,7 @@
 #include "TClonesArray.h"
 #include "TStopwatch.h"
 
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairRootManager.h"
 
 #include "CbmEvent.h"

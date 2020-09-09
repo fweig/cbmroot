@@ -1,6 +1,6 @@
 #include "CbmVMCSettings.h"
 
-#include <FairLogger.h>
+#include <Logger.h>
 
 #include <TVirtualMC.h>
 

@@ -10,7 +10,7 @@
 #include <string>
 
 //Fair class headers
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairRootManager.h"
 //#include "FairRunAna.h"
 #include "FairRun.h"

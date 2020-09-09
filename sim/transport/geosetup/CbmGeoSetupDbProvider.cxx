@@ -11,7 +11,7 @@
 #include "TSQLRow.h"
 #include "TSQLiteServer.h"
 
-#include "FairLogger.h"
+#include <Logger.h>
 #include "TSystem.h"
 
 #include "CbmDefs.h"

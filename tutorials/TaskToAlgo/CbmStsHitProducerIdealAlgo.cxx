@@ -8,7 +8,7 @@
 
 #include "CbmTrdParSetGas.h"
 
-#include "FairLogger.h"
+#include <Logger.h>
 
 #include <TList.h>
 

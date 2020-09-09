@@ -10,7 +10,7 @@
 #include "CbmTrdParSetDigi.h"  // for CbmTrdParSetDigi
 
 #include <FairEventManager.h>  // for FairEventManager
-#include <FairLogger.h>        // for Logger, LOG
+#include <Logger.h>        // for Logger, LOG
 #include <FairRootManager.h>   // for FairRootManager
 #include <FairRunAna.h>        // for FairRunAna
 #include <FairRuntimeDb.h>     // for FairRuntimeDb

@@ -5,8 +5,7 @@
 
 #include "CbmBuildEventsIdeal.h"
 
-#include <FairLogger.h>
-#include <FairRootManager.h>
+#include <Logger.h>
 #include <TClonesArray.h>
 #include <TStopwatch.h>
 #include <cassert>
@@ -162,7 +161,7 @@ void CbmBuildEventsIdeal::Exec(Option_t*) {
             << nDigisAmbig << " ambiguous), noise: " << nDigisNoise;
 
   // --- For debug: event info
-  if (gLogger->IsLogNeeded(fair::Severity::debug)) {
+  if (fair::Logger::Logging(fair::Severity::debug)) {
     for (Int_t iEvent = 0; iEvent < fEvents->GetEntriesFast(); iEvent++) {
       CbmEvent* event = (CbmEvent*) fEvents->At(iEvent);
       LOG(info) << event->ToString();

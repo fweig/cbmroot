@@ -24,7 +24,7 @@
 #include "TVector3.h"
 #include "utils/CbmRichNavigationUtil.h"
 
-#include "FairLogger.h"
+#include <Logger.h>
 
 #include <cmath>
 #include <iostream>

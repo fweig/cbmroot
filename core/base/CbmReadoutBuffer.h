@@ -8,7 +8,7 @@
 #ifndef CBMREADOUTBUFFER_H
 #define CBMREADOUTBUFFER_H 1
 
-#include <FairLogger.h>
+#include <Logger.h>
 #include <FairRootManager.h>
 #include <FairWriteoutBuffer.h>
 #include <TClonesArray.h>

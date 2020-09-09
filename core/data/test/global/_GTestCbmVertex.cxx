@@ -1,6 +1,6 @@
 #include "CbmVertex.h"
 
-#include <FairLogger.h>
+#include <Logger.h>
 
 #include <TMatrixTSym.h>
 #include <TVector3.h>

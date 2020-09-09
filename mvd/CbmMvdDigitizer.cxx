@@ -15,7 +15,7 @@
 #include "CbmMvdPoint.h"
 
 // Includes from FAIR
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairModule.h"
 #include "FairRootManager.h"
 

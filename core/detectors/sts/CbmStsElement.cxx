@@ -4,7 +4,7 @@
  **/
 #include "CbmStsElement.h"
 
-#include <FairLogger.h>  // for Logger, LOG
+#include <Logger.h>  // for Logger, LOG
 
 #include "CbmStsModule.h"  // for CbmStsModule
 #include "CbmStsSetup.h"   // for CbmStsSetup

@@ -12,7 +12,7 @@
 #include "CbmStsCluster.h"
 #include "CbmStsHit.h"
 #include "CbmStsTrack.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "TH1F.h"
 
 #include <iostream>

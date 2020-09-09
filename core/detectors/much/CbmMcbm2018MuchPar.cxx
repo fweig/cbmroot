@@ -7,7 +7,7 @@
 #include "CbmMcbm2018MuchPar.h"
 
 #include "FairDetParIo.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairParIo.h"
 #include "FairParamList.h"
 

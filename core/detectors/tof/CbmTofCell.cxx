@@ -1,6 +1,6 @@
 #include "CbmTofCell.h"
 
-#include <FairLogger.h>  // for Logger, LOG
+#include <Logger.h>  // for Logger, LOG
 
 #include <TGeoManager.h>  // for gGeoManager
 #include <TNamed.h>       // for TNamed

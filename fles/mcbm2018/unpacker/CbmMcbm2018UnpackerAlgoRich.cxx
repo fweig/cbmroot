@@ -62,7 +62,7 @@ fullTimeCorr = (T - AZ0R) - (AC2R-AC0R) + MSidx
 // ROOT
 #include <TCanvas.h>
 #include <TList.h>
-// FairLogger
+
 #include <Logger.h>
 
 // CbmRoot

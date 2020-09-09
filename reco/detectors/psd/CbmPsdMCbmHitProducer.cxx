@@ -4,7 +4,7 @@
 #include "CbmEvent.h"
 #include "CbmPsdDigi.h"
 #include "CbmPsdMCbmHit.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "TClonesArray.h"
 
 

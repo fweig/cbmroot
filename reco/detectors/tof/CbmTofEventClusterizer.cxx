@@ -35,7 +35,7 @@
 
 // FAIR classes and includes
 #include "FairEventHeader.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairRootFileSink.h"
 #include "FairRootManager.h"
 #include "FairRunAna.h"

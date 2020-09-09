@@ -1,6 +1,6 @@
 #include "CbmGeant4Settings.h"
 
-#include <FairLogger.h>
+#include <Logger.h>
 #include <FairRunSim.h>
 
 #include <TGeant4.h>

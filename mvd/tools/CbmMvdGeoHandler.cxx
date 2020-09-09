@@ -7,7 +7,7 @@
 #include "CbmMvdGeoHandler.h"
 
 
-#include "FairLogger.h"
+#include <Logger.h>
 
 #include "TGeoBBox.h"
 #include "TGeoManager.h"

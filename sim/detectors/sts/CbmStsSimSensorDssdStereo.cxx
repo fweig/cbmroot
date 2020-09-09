@@ -9,7 +9,7 @@
 #include <TGeoPhysicalNode.h>
 #include <TMath.h>
 
-#include <FairLogger.h>
+#include <Logger.h>
 
 #include "CbmStsElement.h"
 #include "CbmStsParSensorCond.h"

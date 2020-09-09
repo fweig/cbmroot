@@ -17,7 +17,7 @@
 
 // Includes from FairRoot
 #include "FairEventHeader.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairRun.h"
 
 // Includes from CbmRoot
@@ -246,7 +246,7 @@ void CbmStsFindTracksQa::Exec(Option_t* /*opt*/) {
             << fTimer.RealTime() << " s, MC tracks: all " << nMcTracks
             << ", acc. " << nAcc << ", rec. " << nRecAll << ", eff. "
             << setprecision(2) << 100. * effAll << " %";
-  if (FairLogger::GetLogger()->IsLogNeeded(fair::Severity::debug)) {
+  if (fair::Logger::Logging(fair::Severity::debug)) {
     LOG(debug) << "----------   StsFindTracksQa : Event summary   ------------";
     LOG(debug) << "MCTracks   : " << nAll << ", reconstructible: " << nAcc
                << ", reconstructed: " << nRecAll;

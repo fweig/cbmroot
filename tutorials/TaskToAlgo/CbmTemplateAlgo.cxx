@@ -6,7 +6,7 @@
 
 #include "CbmTemplateAlgo.h"
 
-#include "FairLogger.h"
+#include <Logger.h>
 
 // -------------------------------------------------------------------------
 CbmTemplateAlgo::CbmTemplateAlgo() : CbmAlgo() {}

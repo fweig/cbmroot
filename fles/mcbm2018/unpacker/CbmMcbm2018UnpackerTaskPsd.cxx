@@ -11,7 +11,7 @@
 #include "CbmMcbm2018PsdPar.h"
 #include "CbmMcbm2018UnpackerAlgoPsd.h"
 
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairParGenericSet.h"
 #include "FairRootManager.h"
 #include "FairRun.h"

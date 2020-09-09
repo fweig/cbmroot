@@ -1,6 +1,6 @@
 // ---------- Original Headers ---------- //
 #include "CbmRichPMTMapping.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairRootManager.h"
 
 #include "TClonesArray.h"

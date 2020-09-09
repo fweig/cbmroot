@@ -6,7 +6,7 @@
 
 #include "CbmFileUtils.h"
 
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairPrimaryGenerator.h"  // for FairPrimaryGenerator
 
 #include "TArchiveFile.h"    // for TArchiveFile

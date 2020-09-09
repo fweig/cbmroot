@@ -2,7 +2,7 @@
 #ifndef RICH_CbmRichNavigationUtil
 #define RICH_CbmRichNavigationUtil
 
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairTrackParam.h"
 #include "TObject.h"
 #include "TVector3.h"

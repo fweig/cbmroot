@@ -11,8 +11,7 @@
 #include "CbmTimeSlice.h"     // for CbmTimeSlice, CbmTimeSlice::kEvent
 
 #include <FairEventHeader.h>  // for FairEventHeader
-#include <FairLogger.h>       // for Logger, LOG, Severity, Severity::debug
-#include <FairLogger.h>       // for FairLogger, gLogger
+#include <Logger.h>           // for Logger, LOG, Severity, Severity::debug
 #include <FairRootManager.h>  // for FairRootManager
 #include <FairRunAna.h>       // for FairRunAna
 #include <FairTask.h>         // for FairTask, InitStatus, kSUCCESS
@@ -142,7 +141,7 @@ void CbmDaq::CloseTimeSlice() {
     fTimeDigiFirst = fTimeSlice->GetTimeDataFirst();
   if (fNofTimeSlices == 1 || fTimeSlice->GetTimeDataLast() > fTimeDigiLast)
     fTimeDigiLast = fTimeSlice->GetTimeDataLast();
-  if (gLogger->IsLogNeeded(fair::Severity::debug)) PrintCurrentEventRange();
+  if (fair::Logger::Logging(fair::Severity::debug)) PrintCurrentEventRange();
   LOG(info) << GetName() << " " << GetBufferStatus();
 }
 // ===========================================================================

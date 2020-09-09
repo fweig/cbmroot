@@ -7,7 +7,7 @@
 
 #include "TClonesArray.h"
 
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairRootManager.h"
 
 #include "CbmPsdDigi.h"

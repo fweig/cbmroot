@@ -4,7 +4,7 @@
 #include "CbmMuchPoint.h"
 #include "CbmTrdAddress.h"
 #include "CbmTrdPoint.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "TClonesArray.h"
 #include <TFile.h>
 #include <list>

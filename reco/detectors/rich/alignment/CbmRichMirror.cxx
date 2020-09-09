@@ -1,6 +1,6 @@
 // ---------- Original Headers ---------- //
 #include "CbmRichMirror.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairRootManager.h"
 
 

@@ -9,7 +9,7 @@
 
 #include "CbmHistoServer.h"
 //#include "CbmHistoCanvasDrawer.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "RootSerializer.h"
 
 #include "TH1.h"

@@ -17,7 +17,7 @@
 #include "CbmStsParSetModule.h"
 #include "CbmStsParSim.h"
 
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairMCPoint.h"
 #include "FairRootManager.h"
 #include "FairRun.h"

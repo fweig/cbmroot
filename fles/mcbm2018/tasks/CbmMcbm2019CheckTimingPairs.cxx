@@ -10,7 +10,7 @@
 #include "CbmDigiManager.h"
 #include "CbmFlesHistosTools.h"
 
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairRootManager.h"
 #include "FairRunOnline.h"
 

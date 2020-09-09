@@ -6,7 +6,7 @@
 #include "CbmTrdParModDigi.h"  // for CbmTrdParModDigi
 #include "CbmTrdParSetDigi.h"  // for CbmTrdParSetDigi
 
-#include <FairLogger.h>       // for LOG, Logger
+#include <Logger.h>       // for LOG, Logger
 #include <FairRootManager.h>  // for FairRootManager
 #include <FairRunAna.h>       // for FairRunAna
 #include <FairRuntimeDb.h>    // for FairRuntimeDb

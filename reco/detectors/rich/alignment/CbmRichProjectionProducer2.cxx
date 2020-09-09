@@ -1,6 +1,6 @@
 // ---------- Original Headers ---------- //
 #include "CbmRichProjectionProducer2.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairRootManager.h"
 
 #include "CbmRichHit.h"

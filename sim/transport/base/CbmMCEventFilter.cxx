@@ -5,7 +5,7 @@
 
 #include "CbmMCEventFilter.h"
 
-#include "FairLogger.h"
+#include <Logger.h>
 #include <cassert>
 #include <iostream>
 #include <sstream>

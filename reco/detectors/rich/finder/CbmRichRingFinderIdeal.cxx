@@ -21,7 +21,7 @@
 #include "CbmRichHit.h"
 #include "CbmRichPoint.h"
 #include "CbmRichRing.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairRootManager.h"
 
 #include "TClonesArray.h"

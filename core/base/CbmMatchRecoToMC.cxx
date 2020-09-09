@@ -27,7 +27,7 @@
 #include "CbmTrack.h"          // for CbmTrack
 #include "CbmTrackMatchNew.h"  // for CbmTrackMatchNew
 
-#include <FairLogger.h>       // for LOG, Logger
+#include <Logger.h>       // for LOG, Logger
 #include <FairMCPoint.h>      // for FairMCPoint
 #include <FairRootManager.h>  // for FairRootManager
 #include <FairTask.h>         // for FairTask, InitStatus

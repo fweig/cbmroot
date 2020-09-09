@@ -14,7 +14,7 @@
 #include "CbmMatch.h"
 
 // Includes from FairRoot
-#include <FairLogger.h>
+#include <Logger.h>
 
 // Includes from Root
 #include <TClonesArray.h>

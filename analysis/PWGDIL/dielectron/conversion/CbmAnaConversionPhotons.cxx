@@ -15,7 +15,7 @@
 #include "CbmRichRing.h"
 #include "CbmStsTrack.h"
 #include "CbmTrackMatchNew.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairRootManager.h"
 #include "L1Field.h"
 //#include "CbmStsKFTrackFitter.h"

@@ -6,7 +6,7 @@
 
 #include "CbmMvdHit.h"
 
-#include <FairLogger.h>  // for Logger, LOG
+#include <Logger.h>  // for Logger, LOG
 
 // -----   Default constructor   -------------------------------------------
 CbmMvdHit::CbmMvdHit()

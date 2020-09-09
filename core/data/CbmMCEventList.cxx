@@ -4,7 +4,7 @@
  **/
 #include "CbmMCEventList.h"
 
-#include <FairLogger.h>  // for Logger, LOG
+#include <Logger.h>  // for Logger, LOG
 
 #include <TNamed.h>   // for TNamed
 #include <TString.h>  // for operator<<, TString

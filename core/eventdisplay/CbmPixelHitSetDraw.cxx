@@ -2,7 +2,7 @@
 
 #include "CbmPixelHit.h"  // for CbmPixelHit
 
-#include <FairLogger.h>  // for LOG, Logger
+#include <Logger.h>  // for LOG, Logger
 
 #include <Rtypes.h>    // for ClassImp
 #include <TVector3.h>  // for TVector3

@@ -1,5 +1,5 @@
 #include "LKFMinuit.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include <Math/Vector3D.h>
 #include <TFitter.h>
 #include <TGraph2D.h>

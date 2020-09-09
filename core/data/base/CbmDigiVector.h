@@ -8,7 +8,7 @@
 #define CBMDIGIVECTOR_H 1
 
 
-#include <FairLogger.h>
+#include <Logger.h>
 #include <vector>
 
 #include "CbmDigiContainer.h"

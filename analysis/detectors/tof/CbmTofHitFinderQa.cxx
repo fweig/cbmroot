@@ -22,7 +22,7 @@
 #include "CbmMatch.h"
 
 // FAIR classes and includes
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairMCEventHeader.h"
 #include "FairRootManager.h"
 #include "FairRunAna.h"

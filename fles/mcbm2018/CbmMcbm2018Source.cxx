@@ -17,7 +17,7 @@
 #include "TimesliceMultiSubscriber.hpp"
 #include "TimesliceSubscriber.hpp"
 
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairRunOnline.h"
 
 #include "TClonesArray.h"

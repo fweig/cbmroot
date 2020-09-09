@@ -5,7 +5,7 @@
 
 #include "CbmMvdStationPar.h"
 
-#include "FairLogger.h"
+#include <Logger.h>
 
 #include <iostream>
 #include <math.h>

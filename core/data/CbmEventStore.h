@@ -12,7 +12,7 @@
 #include <TObjArray.h>   // for TObjArray
 #include <TObject.h>     // for TObject
 
-#include <FairLogger.h>  // for LOG
+#include <Logger.h>  // for LOG
 
 #include <boost/any.hpp>  // for any_cast
 

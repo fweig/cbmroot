@@ -30,7 +30,7 @@
 */
 
 // FAIR classes and includes
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairRootManager.h"
 #include "FairRunAna.h"
 #include "FairRuntimeDb.h"

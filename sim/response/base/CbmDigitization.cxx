@@ -16,7 +16,7 @@
 #include "CbmTofDigitize.h"
 #include "CbmTrdDigitizer.h"
 #include "FairFileSource.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairMCEventHeader.h"
 #include "FairMonitor.h"
 #include "FairParAsciiFileIo.h"

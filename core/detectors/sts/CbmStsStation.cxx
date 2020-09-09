@@ -10,7 +10,7 @@
 #include "CbmStsParSensor.h"  // for CbmStsParSensor
 #include "CbmStsSensor.h"     // for CbmStsSensor
 
-#include <FairLogger.h>  // for LOG, Logger
+#include <Logger.h>  // for LOG, Logger
 
 #include <TGeoBBox.h>          // for TGeoBBox
 #include <TGeoMatrix.h>        // for TGeoHMatrix

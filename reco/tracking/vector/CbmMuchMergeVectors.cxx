@@ -16,7 +16,7 @@
 
 #include "FairEventHeader.h"
 #include "FairField.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairRootManager.h"
 
 #include <TClonesArray.h>

@@ -5,7 +5,7 @@
 
 #include <vector>
 
-#include <FairLogger.h>
+#include <Logger.h>
 #include <FairRootManager.h>
 #include <TClonesArray.h>
 

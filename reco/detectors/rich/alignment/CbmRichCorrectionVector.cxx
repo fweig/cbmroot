@@ -1,6 +1,6 @@
 // ---------- Original Headers ---------- //
 #include "CbmRichCorrectionVector.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairRootManager.h"
 
 #include "TClonesArray.h"

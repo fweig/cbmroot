@@ -8,7 +8,7 @@
 
 #include "CbmRichRecGeoPar.h"  // for CbmRichRecGeoParPmt, CbmRichRecGeoPar
 
-#include <FairLogger.h>  // for LOG
+#include <Logger.h>  // for LOG
 
 #include <TGeoBBox.h>     // for TGeoBBox
 #include <TGeoManager.h>  // for TGeoManager, gGeoManager

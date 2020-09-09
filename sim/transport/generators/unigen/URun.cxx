@@ -5,7 +5,7 @@ using namespace std;
 
 #include "URun.h"
 
-#include "FairLogger.h"
+#include <Logger.h>
 //____________________________________________________________________
 //
 // URun

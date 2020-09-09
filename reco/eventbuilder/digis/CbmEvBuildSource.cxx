@@ -4,7 +4,7 @@
 #include "TClonesArray.h"
 
 #include "FairEventHeader.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairRootManager.h"
 
 #include "CbmDigi.h"

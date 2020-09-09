@@ -1,5 +1,5 @@
 #include "CbmRichMirrorSortingAlignment.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairRootManager.h"
 
 // ----- PART 1 ----- //

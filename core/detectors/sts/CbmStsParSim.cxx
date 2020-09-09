@@ -5,7 +5,7 @@
 
 #include "CbmStsParSim.h"
 
-#include <FairLogger.h>  // for LOG, Logger
+#include <Logger.h>  // for LOG, Logger
 
 #include <sstream>  // for operator<<, basic_ostream, stringstream
 #include <string>   // for char_traits

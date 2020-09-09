@@ -2,7 +2,7 @@
 
 #include "CbmTofCell.h"  // for CbmTofCell
 
-#include <FairLogger.h>         // for LOG, Logger
+#include <Logger.h>         // for LOG, Logger
 #include <FairParGenericSet.h>  // for FairParGenericSet
 #include <FairParamList.h>      // for FairParamList
 

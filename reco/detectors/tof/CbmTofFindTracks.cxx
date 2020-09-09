@@ -26,7 +26,7 @@
 #include "CbmTofTrackletTools.h"
 #include "CbmVertex.h"
 
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairRootManager.h"
 #include "FairRunAna.h"
 #include "FairRuntimeDb.h"
@@ -2128,7 +2128,7 @@ void CbmTofFindTracks::FillHistograms(CbmEvent* tEvent) {
           vhXY_CSZ[iSt]->Fill(hitpos_local[0], hitpos_local[1], dCSZ);
 
           // debugging consistency of geometry transformations ....
-          if (FairLogger::GetLogger()->IsLogNeeded(fair::Severity::debug)) {
+          if (fair::Logger::Logging(fair::Severity::debug)) {
             if (iSt == fNReqStations - 1) {  // treat as if not found
               Int_t iAddr               = fMapStationRpcId[iSt];
               CbmTofCell* fChannelInfoD = fDigiPar->GetCell(iAddr);

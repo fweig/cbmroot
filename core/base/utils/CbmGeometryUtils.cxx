@@ -4,8 +4,7 @@
 #include <FairGeoInterface.h>  // for FairGeoInterface
 #include <FairGeoLoader.h>     // for FairGeoLoader
 #include <FairGeoMedia.h>      // for FairGeoMedia
-#include <FairLogger.h>        // for LOG, Logger, Severity, Severity::debug
-#include <FairLogger.h>        // for FairLogger, gLogger
+#include <Logger.h>            // for LOG, Logger, Severity, Severity::debug
 #include <FairModule.h>        // for FairModule
 #include <TFile.h>             // for TFile, gFile
 

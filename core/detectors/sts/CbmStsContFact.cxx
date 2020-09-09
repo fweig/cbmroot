@@ -10,7 +10,7 @@
 #include "CbmStsParSetSensorCond.h"  // for CbmStsParSetSensorCond
 #include "CbmStsParSim.h"            // for CbmStsParSim
 
-#include <FairLogger.h>     // for Logger, LOG
+#include <Logger.h>  // for Logger, LOG
 #include <FairParSet.h>     // for FairParSet
 #include <FairRuntimeDb.h>  // for FairRuntimeDb
 

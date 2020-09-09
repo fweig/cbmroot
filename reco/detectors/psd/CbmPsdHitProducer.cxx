@@ -17,7 +17,7 @@
 #include "CbmPsdHit.h"
 #include "CbmPsdHitProducer.h"
 
-#include "FairLogger.h"
+#include <Logger.h>
 
 using std::cout;
 using std::endl;

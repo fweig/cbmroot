@@ -3,7 +3,7 @@
 #define RICH_CbmRichUtil
 
 #include "CbmGlobalTrack.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairRootManager.h"
 #include "FairTrackParam.h"
 #include "TCanvas.h"

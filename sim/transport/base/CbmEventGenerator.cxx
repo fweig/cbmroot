@@ -6,14 +6,16 @@
 #include "CbmEventGenerator.h"
 
 #include "CbmBeam.h"
+
 #include <FairGenericStack.h>
-#include <FairLogger.h>
+#include <Logger.h>
 #include <FairMCEventHeader.h>
+
 #include <TMath.h>
 #include <TRandom.h>
 #include <TVector3.h>
-#include <cassert>
 
+#include <cassert>
 
 // -----   Constructor   ---------------------------------------------------
 CbmEventGenerator::CbmEventGenerator()

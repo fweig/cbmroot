@@ -4,7 +4,7 @@
 #include <Rtypes.h>      // for ClassDef
 #include <RtypesCore.h>  // for Int_t, UInt_t
 
-#include <FairLogger.h>  // for Logger, LOG
+#include <Logger.h>  // for Logger, LOG
 
 #include "CbmAddress.h"  // for CbmAddress
 

@@ -12,7 +12,7 @@
 #include "CbmMuchGeoScheme.h"
 #include "CbmMuchPixelHit.h"
 #include "CbmMuchPoint.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "LxTBMatEffs.h"
 #include "Simple/LxCA.h"
 #include "Simple/LxSettings.h"

@@ -8,13 +8,13 @@
 #include "CbmMcbm2018RichPar.h"
 
 // FairRoot
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairParamList.h"
 
 // C/C++
 #include <iomanip>
 
-//#include "FairLogger.h" //TODO delete
+//#include <Logger.h> //TODO delete
 
 CbmMcbm2018RichPar::CbmMcbm2018RichPar(const char* name, const char* title, const char* context)
   : FairParGenericSet(name, title, context)

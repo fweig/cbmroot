@@ -15,7 +15,7 @@
 #include "CbmRichGeoManager.h"
 #include "CbmRichPoint.h"
 #include "FairEventHeader.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairRunAna.h"
 #include "FairRunSim.h"
 #include "TClonesArray.h"

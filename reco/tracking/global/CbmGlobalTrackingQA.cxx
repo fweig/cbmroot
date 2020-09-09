@@ -6,7 +6,7 @@
 
 #include "CbmGlobalTrackingQA.h"
 
-#include <FairLogger.h>
+#include <Logger.h>
 #include <map>
 
 #include "CbmDigiManager.h"

@@ -21,7 +21,7 @@
 #include <TProfile.h>    // for TProfile
 #include <TProfile2D.h>  // for TProfile2D
 
-#include <FairLogger.h>  // for Logger, LOG
+#include <Logger.h>  // for Logger, LOG
 
 #include <cassert>  // for assert
 #include <map>      // for map, __map_const_iterator, operator!=

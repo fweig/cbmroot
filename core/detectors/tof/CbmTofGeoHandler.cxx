@@ -10,7 +10,7 @@
 #include "CbmTofDetectorId_v14a.h"  // for CbmTofDetectorId_v14a
 #include "CbmTofDetectorId_v21a.h"  // for CbmTofDetectorId_v21a
 
-#include <FairLogger.h>  // for Logger, LOG
+#include <Logger.h>  // for Logger, LOG
 
 #include <TGeoBBox.h>     // for TGeoBBox
 #include <TGeoManager.h>  // for gGeoManager, TGeoManager

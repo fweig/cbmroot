@@ -6,7 +6,7 @@
 #include "CbmCosy2019HodoPar.h"
 
 #include "FairDetParIo.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairParIo.h"
 #include "FairParamList.h"
 

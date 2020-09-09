@@ -26,7 +26,7 @@
 #include "FairEventHeader.h"
 #include "FairField.h"
 #include "FairLink.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairMCEventHeader.h"
 #include "FairMCPoint.h"
 #include "FairRunAna.h"

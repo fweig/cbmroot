@@ -3,7 +3,7 @@
 
 using namespace std;
 using std::string;
-#include "FairLogger.h"
+#include <Logger.h>
 #include <fstream>
 #include <iostream>
 #include <map>

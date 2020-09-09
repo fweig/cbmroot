@@ -15,7 +15,7 @@
 #include <TMath.h>       // for Pi, Abs, IsNaN, Min, Max
 #include <TVector3.h>    // for TVector3
 
-#include <FairLogger.h>  // for LOG
+#include <Logger.h>  // for LOG
 #include <map>           // for map
 #include <string>        // for string
 

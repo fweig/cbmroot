@@ -3,7 +3,7 @@
 #include "CbmMatch.h"    // for CbmMatch
 #include "CbmTrdDigi.h"  // for CbmTrdDigi, CbmTrdDigi::kFASP
 
-#include <FairLogger.h>  // for Logger, LOG
+#include <Logger.h>  // for Logger, LOG
 
 #include <TAxis.h>        // for TAxis
 #include <TCanvas.h>      // for TCanvas

@@ -1,7 +1,7 @@
 #include "CbmMcbm2018UnpackerTaskTrdR.h"
 #include "CbmMcbm2018UnpackerAlgoTrdR.h"
 
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairRootManager.h"
 #include "FairRun.h"
 #include "FairRunOnline.h"

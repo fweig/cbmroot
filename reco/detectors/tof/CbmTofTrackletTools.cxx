@@ -9,7 +9,7 @@
 #include "CbmTofTracklet.h"
 #include "LKFMinuit.h"
 
-#include "FairLogger.h"
+#include <Logger.h>
 
 #include "Rtypes.h"  // for Double_t, Double32_t, Int_t, etc
 #include "TDecompSVD.h"

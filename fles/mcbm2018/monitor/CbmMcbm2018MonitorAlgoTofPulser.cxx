@@ -10,7 +10,7 @@
 #include "CbmFormatMsHeaderPrintout.h"
 #include "CbmMcbm2018TofPar.h"
 
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairRootManager.h"
 #include "FairRun.h"
 #include "FairRunOnline.h"

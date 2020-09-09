@@ -13,7 +13,7 @@
 
 #include "CbmHistManager.h"
 
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairRootManager.h"
 #include "FairRun.h"
 #include "FairRunOnline.h"
@@ -2207,10 +2207,10 @@ Bool_t CbmMcbm2018MonitorTof::DoUnpack(const fles::Timeslice& ts,
         gdpbv100::Message mess(ulData);
 
         if (fuRawDataPrintMsgIdx < fuRawDataPrintMsgNb
-            || gLogger->IsLogNeeded(fair::Severity::debug2)) {
+            || fair::Logger::Logging(fair::Severity::debug2)) {
           mess.printDataCout();
           fuRawDataPrintMsgIdx++;
-        }  // if( fuRawDataPrintMsgIdx < fuRawDataPrintMsgNb || gLogger->IsLogNeeded( fair::Severity::debug2 ) )
+        }  // if( fuRawDataPrintMsgIdx < fuRawDataPrintMsgNb || fair::Logger::Logging( fair::Severity::debug2 ) )
 
         // Increment counter for different message types
         // and fill the corresponding histogram
@@ -2650,7 +2650,7 @@ void CbmMcbm2018MonitorTof::ProcessEpochCycle(uint64_t ulCycleData) {
   uint64_t ulEpochCycleVal = ulCycleData & gdpbv100::kulEpochCycleFieldSz;
 
   if (fuRawDataPrintMsgIdx < fuRawDataPrintMsgNb
-      || gLogger->IsLogNeeded(fair::Severity::debug2)) {
+      || fair::Logger::Logging(fair::Severity::debug2)) {
     LOG(info)
       << "CbmMcbm2018MonitorTof::ProcessEpochCyle => "
       //                 << Form( " TS %5llu MS %3lu In data 0x%016llX Cycle 0x%016llX",
@@ -2660,7 +2660,7 @@ void CbmMcbm2018MonitorTof::ProcessEpochCycle(uint64_t ulCycleData) {
       << FormatHexPrintout(ulCycleData, 16, '0', true) << " Cycle 0x"
       << FormatHexPrintout(ulEpochCycleVal, 16, '0', true);
     fuRawDataPrintMsgIdx++;
-  }  // if( fuRawDataPrintMsgIdx < fuRawDataPrintMsgNb || gLogger->IsLogNeeded( fair::Severity::debug2 ) )
+  }  // if( fuRawDataPrintMsgIdx < fuRawDataPrintMsgNb || fair::Logger::Logging( fair::Severity::debug2 ) )
 
   for (uint32_t uGet4Index = 0; uGet4Index < fuNrOfGet4PerGdpb; uGet4Index++) {
     fuGet4Id = uGet4Index;

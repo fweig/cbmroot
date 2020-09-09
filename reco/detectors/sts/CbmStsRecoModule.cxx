@@ -15,8 +15,8 @@
 #include "CbmStsSensor.h"
 
 #include <FairField.h>
-#include <FairLogger.h>
 #include <FairRun.h>
+#include <Logger.h>
 
 #include <TGeoBBox.h>
 #include <TGeoPhysicalNode.h>

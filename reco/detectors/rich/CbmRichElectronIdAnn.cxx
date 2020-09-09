@@ -10,7 +10,7 @@
 #include "CbmRichGeoManager.h"
 #include "CbmRichRing.h"
 #include "CbmRichUtil.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairRootManager.h"
 #include "TClonesArray.h"
 #include "TMath.h"

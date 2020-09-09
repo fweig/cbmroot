@@ -14,7 +14,7 @@
 #include "TimesliceInputArchive.hpp"
 #include "TimesliceSubscriber.hpp"
 
-#include "FairLogger.h"
+#include <Logger.h>
 
 #include <fstream>
 #include <iomanip>

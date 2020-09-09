@@ -14,7 +14,7 @@
 #include "CbmMcbm2018TofPar.h"
 
 // FairRoot
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairRootManager.h"
 #include "FairRun.h"
 #include "FairRunOnline.h"
@@ -1262,9 +1262,9 @@ Bool_t CbmMcbm2018MonitorMcbmPulser::ProcessTofMs(const fles::Timeslice& ts,
       continue;
     }  // if( 0 == uIdx )
 
-    if (gLogger->IsLogNeeded(fair::Severity::debug2)) {
+    if (fair::Logger::Logging(fair::Severity::debug2)) {
       mess.printDataCout();
-    }  // if (gLogger->IsLogNeeded( fair::Severity::debug2 ))
+    }  // if (fair::Logger::Logging( fair::Severity::debug2 ))
 
     // Increment counter for different message types
     // and fill the corresponding histogram

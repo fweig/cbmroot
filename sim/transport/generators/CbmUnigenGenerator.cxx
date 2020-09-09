@@ -8,7 +8,7 @@
 
 #include "CbmUnigenGenerator.h"
 
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairMCEventHeader.h"
 #include "FairPrimaryGenerator.h"
 #include "FairRunSim.h"

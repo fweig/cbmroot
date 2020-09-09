@@ -14,7 +14,7 @@
 #include "CbmMuchModuleGemRadial.h"  // for CbmMuchModuleGemRadial
 #include "CbmMuchStation.h"          // for CbmMuchStation
 
-#include <FairLogger.h>  // for LOG
+#include <Logger.h>  // for LOG
 
 #include <TArrayD.h>       // for TArrayD
 #include <TArrayI.h>       // for TArrayI

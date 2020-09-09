@@ -12,7 +12,7 @@
 #include "CbmRichHit.h"
 #include "CbmRichRing.h"
 
-#include "FairLogger.h"
+#include <Logger.h>
 #include "TClonesArray.h"
 #include "TStopwatch.h"
 

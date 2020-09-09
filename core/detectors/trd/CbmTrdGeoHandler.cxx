@@ -6,7 +6,7 @@
 
 #include "CbmTrdAddress.h"  // for CbmTrdAddress
 
-#include <FairLogger.h>  // for LOG, Logger
+#include <Logger.h>  // for LOG, Logger
 
 #include <TGenericClassInfo.h>  // for TGenericClassInfo
 #include <TGeoBBox.h>           // for TGeoBBox

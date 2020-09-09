@@ -5,7 +5,7 @@
 #include "CbmTrdParMod.h"     // for CbmTrdParMod
 #include "CbmTrdParSpadic.h"  // for CbmTrdParSpadic, NSPADICCH
 
-#include <FairLogger.h>     // for Logger, LOG
+#include <Logger.h>     // for Logger, LOG
 #include <FairParamList.h>  // for FairParamList
 
 #include <TArrayI.h>            // for TArrayI

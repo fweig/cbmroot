@@ -26,7 +26,7 @@
 
 // FAIR classes and includes
 #include "FairEventHeader.h"  // from CbmStsDigitize, for GetEventInfo
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairMCEventHeader.h"  // from CbmStsDigitize, for GetEventInfo
 #include "FairRootManager.h"
 #include "FairRunAna.h"

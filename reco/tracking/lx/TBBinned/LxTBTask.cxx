@@ -12,7 +12,7 @@
 #include "CbmMuchGeoScheme.h"
 #include "CbmMuchPixelHit.h"
 #include "CbmTrdHit.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "LxTBTieTracks.h"
 #include "TClonesArray.h"
 #include "TDatabasePDG.h"

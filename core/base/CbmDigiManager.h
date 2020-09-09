@@ -10,7 +10,7 @@
 #include <Rtypes.h>      // for THashConsistencyHolder, Cla...
 #include <RtypesCore.h>  // for UInt_t, Bool_t, Int_t, kTRUE
 
-#include <FairLogger.h>  // for LOG
+#include <Logger.h>  // for LOG
 #include <FairTask.h>    // for InitStatus
 
 #include <boost/any.hpp>                  // for any_cast, bad_any_cast (ptr...

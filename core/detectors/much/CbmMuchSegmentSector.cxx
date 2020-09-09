@@ -17,7 +17,7 @@
 #include "CbmMuchSectorRadial.h"     // for CbmMuchSectorRadial
 #include "CbmMuchStation.h"          // for CbmMuchStation
 
-#include <FairLogger.h>     // for LOG
+#include <Logger.h>     // for LOG
 #include <FairRuntimeDb.h>  // for FairRuntimeDb
 #include <FairTask.h>       // for FairTask, InitStatus, kSUCCESS
 

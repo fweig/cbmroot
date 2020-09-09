@@ -16,7 +16,7 @@
 #include "TVirtualMC.h"
 #include <TFile.h>
 
-#include "FairLogger.h"
+#include <Logger.h>
 
 #include "CbmGeometryUtils.h"
 #include "CbmStack.h"

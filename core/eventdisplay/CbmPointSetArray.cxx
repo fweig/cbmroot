@@ -5,7 +5,7 @@
 // -------------------------------------------------------------------------
 #include "CbmPointSetArray.h"
 
-#include <FairLogger.h>  // for LOG, Logger
+#include <Logger.h>  // for LOG, Logger
 
 #include <Rtypes.h>             // for ClassImp
 #include <TColor.h>             // for TColor

@@ -8,7 +8,7 @@
 
 #include "CbmRichDetectorData.h"  // for CbmRichPmtData, CbmRichPixelData
 
-#include <FairLogger.h>  // for LOG, Logger
+#include <Logger.h>  // for LOG, Logger
 
 #include <TGeoBBox.h>     // for TGeoBBox
 #include <TGeoManager.h>  // for TGeoManager, gGeoManager

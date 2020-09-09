@@ -28,7 +28,7 @@
 
 // Includes from FairRoot
 #include "FairEventHeader.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairMCEventHeader.h"
 #include "FairRunAna.h"
 #include "FairRunSim.h"

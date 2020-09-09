@@ -11,7 +11,7 @@
 #include "CbmMuchPadRadial.h"     // for CbmMuchPadRadial
 #include "CbmMuchSectorRadial.h"  // for CbmMuchSectorRadial
 
-#include <FairLogger.h>  // for LOG
+#include <Logger.h>  // for LOG
 
 #include <TVector3.h>  // for TVector3
 

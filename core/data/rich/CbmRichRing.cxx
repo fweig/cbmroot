@@ -36,7 +36,7 @@
 
 #include "CbmRichRing.h"
 
-#include <FairLogger.h>  // for Logger, LOG
+#include <Logger.h>  // for Logger, LOG
 
 #include <TMath.h>    // for Pi
 #include <TObject.h>  // for TObject

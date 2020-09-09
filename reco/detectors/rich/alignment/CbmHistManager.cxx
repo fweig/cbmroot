@@ -8,7 +8,7 @@
 #include "CbmHistManager.h"
 #include "utils/CbmUtils.h"
 
-#include "FairLogger.h"
+#include <Logger.h>
 
 #include "TClass.h"
 #include "TDirectory.h"

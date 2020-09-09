@@ -24,7 +24,7 @@
 #include <Rtypes.h>      // for ClassDef
 #include <RtypesCore.h>  // for Int_t
 
-#include <FairLogger.h>  // for LOG
+#include <Logger.h>  // for LOG
 
 #include "CbmDefs.h"  // for ECbmModuleId::kMvd
 

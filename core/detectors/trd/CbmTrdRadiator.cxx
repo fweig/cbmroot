@@ -7,7 +7,7 @@
 #include "CbmTrdGas.h"    // for CbmTrdGas
 #include "CbmTrdPoint.h"  // for CbmTrdPoint
 
-#include <FairLogger.h>  // for Logger, LOG
+#include <Logger.h>  // for Logger, LOG
 
 #include <TDirectory.h>  // for TDirectory
 #include <TFile.h>        // for TFile, gFile

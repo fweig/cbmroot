@@ -9,7 +9,7 @@
 
 #include "CbmTofHit.h"
 #include "CbmTofTracklet.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairRootManager.h"
 
 #include "TClonesArray.h"

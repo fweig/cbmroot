@@ -32,7 +32,7 @@
 #include "elid/CbmLitGlobalElectronId.h"
 
 #include "FairEventHeader.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairRunAna.h"
 #include "FairRunSim.h"
 

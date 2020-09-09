@@ -6,7 +6,7 @@
 #include "CbmMvdDigitizerTB.h"
 #include "CbmMvdDetector.h"
 #include "CbmMvdPoint.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairModule.h"
 #include "FairRootManager.h"
 #include "plugins/tasks/CbmMvdSensorDigitizerTBTask.h"

@@ -10,7 +10,7 @@
 /// CBM headers
 
 /// FAIRROOT headers
-#include "FairLogger.h"
+#include <Logger.h>
 
 /// FAIRSOFT headers (geant, boost, ...)
 #include "TH1.h"

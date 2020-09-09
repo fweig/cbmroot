@@ -18,7 +18,7 @@
 
 #include "CbmStsTrack.h"
 #include "FairHit.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairRunAna.h"
 #include "FairRuntimeDb.h"
 

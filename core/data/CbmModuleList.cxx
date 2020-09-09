@@ -6,7 +6,7 @@
 
 #include "CbmDefs.h"  // for ECbmModuleId enumerator
 
-#include <FairLogger.h>  // for LOG macro
+#include <Logger.h>  // for LOG macro
 
 #include <utility>  // for pair
 

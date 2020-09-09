@@ -3,7 +3,7 @@
  **/
 #include "CbmMCDataObject.h"
 
-#include <FairLogger.h>       // for Logger, LOG
+#include <Logger.h>       // for Logger, LOG
 #include <FairRootManager.h>  // for FairRootManager
 #include <TChain.h>           // for TChain
 #include <TObject.h>          // for TObject

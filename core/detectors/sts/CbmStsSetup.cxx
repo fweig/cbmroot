@@ -15,7 +15,7 @@
 #include "CbmStsStation.h"           // for CbmStsStation
 
 #include <FairField.h>   // for FairField
-#include <FairLogger.h>  // for FairLogger
+#include <Logger.h>  // for FairLogger
 #include <FairRun.h>     // for FairRun
 
 #include <TCollection.h>       // for TIter

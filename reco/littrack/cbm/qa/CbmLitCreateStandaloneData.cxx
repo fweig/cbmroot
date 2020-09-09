@@ -2,7 +2,7 @@
 
 #include "CbmMuchPixelHit.h"
 #include "CbmStsTrack.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairRootManager.h"
 #include "FairTrackParam.h"
 

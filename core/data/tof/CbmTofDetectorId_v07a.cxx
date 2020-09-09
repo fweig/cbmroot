@@ -6,7 +6,7 @@
 
 #include "CbmTofDetectorId_v07a.h"
 
-#include <FairLogger.h>  // for LOG, Logger
+#include <Logger.h>  // for LOG, Logger
 
 const Int_t CbmTofDetectorId_v07a::shiftarray[] = {0, 5, 9, 19, 23};
 const Int_t CbmTofDetectorId_v07a::bitarray[]   = {5, 4, 10, 4, 9};

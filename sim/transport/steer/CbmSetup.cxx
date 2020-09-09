@@ -9,7 +9,7 @@
 #include "CbmFieldMap.h"
 #include "CbmFieldMapSym2.h"
 #include "CbmFieldMapSym3.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairModule.h"
 #include "FairRunSim.h"
 #include "TFile.h"

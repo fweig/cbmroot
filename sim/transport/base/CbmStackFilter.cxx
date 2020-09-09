@@ -8,7 +8,7 @@
 
 #include "CbmStackFilter.h"
 
-#include "FairLogger.h"
+#include <Logger.h>
 #include "TClonesArray.h"
 #include "TMCProcess.h"
 #include "TParticle.h"

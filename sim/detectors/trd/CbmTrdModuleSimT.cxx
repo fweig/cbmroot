@@ -17,7 +17,7 @@
 #include "CbmMatch.h"
 #include "CbmTimeSlice.h"
 
-#include <FairLogger.h>
+#include <Logger.h>
 #include <FairRootManager.h>
 
 #include <TGeoManager.h>

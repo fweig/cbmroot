@@ -25,7 +25,7 @@
 #include "CbmRichGeoManager.h"
 
 
-#include "FairLogger.h"
+#include <Logger.h>
 
 #include <cmath>
 #include <iostream>

@@ -10,7 +10,7 @@
 #include "CbmStar2019EventBuilderEtofAlgo.h"
 #include "CbmStar2019TofPar.h"
 
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairParGenericSet.h"
 #include "FairRootManager.h"
 #include "FairRun.h"

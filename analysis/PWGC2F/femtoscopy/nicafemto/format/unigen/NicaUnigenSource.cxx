@@ -7,7 +7,7 @@
  *		Warsaw University of Technology, Faculty of Physics
  */
 #include "NicaUnigenSource.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairRootManager.h"
 #include "UEvent.h"
 #include "UParticle.h"

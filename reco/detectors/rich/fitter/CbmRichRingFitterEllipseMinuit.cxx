@@ -9,7 +9,7 @@
 
 #include "Minuit2/Minuit2Minimizer.h"
 
-#include "FairLogger.h"
+#include <Logger.h>
 
 using std::cout;
 using std::endl;

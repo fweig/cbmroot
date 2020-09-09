@@ -18,7 +18,7 @@
 #include "CbmTarget.h"
 #include "CbmUnigenGenerator.h"
 
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairMonitor.h"
 #include "FairParRootFileIo.h"
 #include "FairRunSim.h"

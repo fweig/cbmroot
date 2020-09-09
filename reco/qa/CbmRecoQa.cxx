@@ -27,7 +27,7 @@
 #include "CbmTofPoint.h"
 
 #include "FairDetector.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairMCPoint.h"
 #include "FairTask.h"
 

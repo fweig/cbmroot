@@ -2,7 +2,7 @@
 
 #include "CbmTrdAddress.h"  // for CbmTrdAddress
 
-#include <FairLogger.h>  // for LOG
+#include <Logger.h>  // for LOG
 
 #include <TMath.h>  // for Ceil
 

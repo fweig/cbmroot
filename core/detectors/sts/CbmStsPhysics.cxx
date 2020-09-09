@@ -7,7 +7,7 @@
 
 #include "CbmStsDefs.h"  // for CbmSts, kProtonMass, kSiCharge, kSiDe...
 
-#include <FairLogger.h>  // for Logger, LOG
+#include <Logger.h>  // for Logger, LOG
 
 #include <TDatabasePDG.h>  // for TDatabasePDG
 #include <TMath.h>         // for Log, Power

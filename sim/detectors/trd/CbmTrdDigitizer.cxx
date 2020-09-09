@@ -24,7 +24,7 @@
 
 #include <FairBaseParSet.h>
 #include <FairEventHeader.h>
-#include <FairLogger.h>
+#include <Logger.h>
 #include <FairRootManager.h>
 #include <FairRunAna.h>
 #include <FairRunSim.h>

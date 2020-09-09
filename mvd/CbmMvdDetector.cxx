@@ -24,7 +24,7 @@
 #include "CbmDigiManager.h"
 
 /// includes from FairRoot
-#include "FairLogger.h"
+#include <Logger.h>
 
 /// includes from Root
 #include "TGeoBBox.h"

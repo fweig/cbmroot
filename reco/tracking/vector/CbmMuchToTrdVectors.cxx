@@ -7,7 +7,7 @@
 //#include "CbmSetup.h"
 #include "CbmMuchTrack.h"
 
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairRootManager.h"
 #include "FairTrackParam.h"
 

@@ -4,7 +4,7 @@
 #include "CbmTrdParModGain.h"
 #include "CbmTrdParModGas.h"
 #include "CbmTrdParSetAsic.h"
-#include <FairLogger.h>
+#include <Logger.h>
 #include <vector>
 
 //_______________________________________________________________________________

@@ -36,7 +36,7 @@
 #include "CbmGlobalTrack.h"
 #include "CbmRichConverter.h"
 #include "FairHit.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairRootManager.h"
 #include "TClonesArray.h"
 

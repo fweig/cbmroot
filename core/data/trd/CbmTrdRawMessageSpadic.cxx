@@ -1,6 +1,6 @@
 #include "CbmTrdRawMessageSpadic.h"
 
-#include <FairLogger.h>  // for LOG
+#include <Logger.h>  // for LOG
 
 #include <algorithm>  // for max_element
 #include <stdexcept>  // for range_error

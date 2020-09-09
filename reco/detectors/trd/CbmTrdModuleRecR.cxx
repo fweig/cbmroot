@@ -17,7 +17,7 @@
 #include <iostream>
 
 #include "CbmDigiManager.h"
-#include <FairLogger.h>
+#include <Logger.h>
 
 constexpr Double_t CbmTrdModuleRecR::kxVar_Value[2][5];
 constexpr Double_t CbmTrdModuleRecR::kyVar_Value[2][5];

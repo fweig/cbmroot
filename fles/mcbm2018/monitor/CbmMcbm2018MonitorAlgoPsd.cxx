@@ -12,7 +12,7 @@
 #include "CbmFormatMsHeaderPrintout.h"
 #include "CbmMcbm2018PsdPar.h"
 
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairRootManager.h"
 #include "FairRun.h"
 #include "FairRunOnline.h"
@@ -348,7 +348,7 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts,
   // Prepare variables for the loop on contents
   const uint64_t* pInBuff = reinterpret_cast<const uint64_t*>(msContent);
 
-  if (gLogger->IsLogNeeded(fair::Severity::debug)) {
+  if (fair::Logger::Logging(fair::Severity::debug)) {
     if (uNbMessages != 0) printf("\n\n");
     for (uint32_t uIdx = 0; uIdx < uNbMessages; uIdx++) {
       // Fill message
@@ -358,7 +358,7 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts,
   }
 
   PsdData::PsdGbtReader PsdReader(pInBuff);
-  if (gLogger->IsLogNeeded(fair::Severity::debug))
+  if (fair::Logger::Logging(fair::Severity::debug))
     PsdReader.SetPrintOutMode(true);
   if (uSize > 0) {
     while (PsdReader.GetTotalGbtWordsRead() < uNbMessages) {

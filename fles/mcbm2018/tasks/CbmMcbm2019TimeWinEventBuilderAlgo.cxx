@@ -21,7 +21,7 @@
 #include "CbmDigiManager.h"
 
 /// FAIRROOT headers
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairRootManager.h"
 #include "FairRunOnline.h"
 

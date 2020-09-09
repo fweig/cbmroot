@@ -8,7 +8,7 @@
 #include "gDpbMessv100.h"
 
 #include "FairDetParIo.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairParIo.h"
 #include "FairParamList.h"
 

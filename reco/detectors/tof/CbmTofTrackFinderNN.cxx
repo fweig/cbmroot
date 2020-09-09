@@ -14,7 +14,7 @@
 
 // FAIR classes and includes
 #include "FairEventManager.h"  // for FairEventManager
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairRootManager.h"
 #include "FairRunAna.h"
 #include "FairRuntimeDb.h"
@@ -743,7 +743,7 @@ Int_t CbmTofTrackFinderNN::DoFind(TClonesArray* fTofHits,
                       << iDet;
 
           /* live display insert 
-	if(gLogger->IsLogNeeded(debug3))  // update event display, if initialized 
+	if(fair::Logger::Logging(fair::Severity::debug3))  // update event display, if initialized 
 	  {
 	     Int_t ii;
 	     CbmEvDisTracks* fDis = CbmEvDisTracks::Instance();
@@ -781,7 +781,7 @@ Int_t CbmTofTrackFinderNN::DoFind(TClonesArray* fTofHits,
     CbmTofTracklet* pTrk =
       new ((*fTofTracks)[fiNtrks++]) CbmTofTracklet(*fTracks[iTr]);
 
-    if (gLogger->IsLogNeeded(fair::Severity::debug)) {
+    if (fair::Logger::Logging(fair::Severity::debug)) {
       LOG(info) << "Found Trkl " << iTr << ", ";
       pTrk->PrintInfo();
     }

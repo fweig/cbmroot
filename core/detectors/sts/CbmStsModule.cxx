@@ -9,7 +9,7 @@
 #include "CbmStsParModule.h"  // for CbmStsParModule
 #include "CbmStsSensor.h"     // for CbmStsSensor
 
-#include <FairLogger.h>  // for LOG, Logger
+#include <Logger.h>  // for LOG, Logger
 
 #include <TGeoManager.h>       // for gGeoManager
 #include <TGeoNode.h>          // for TGeoNode

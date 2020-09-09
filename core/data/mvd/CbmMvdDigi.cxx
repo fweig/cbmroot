@@ -5,7 +5,7 @@
 
 #include "CbmMvdDigi.h"
 
-#include <FairLogger.h>  // for LOG, Logger
+#include <Logger.h>  // for LOG, Logger
 
 #include <TMath.h>    // for Power
 #include <TObject.h>  // for TObject

@@ -5,7 +5,7 @@
 
 #include "CbmMCInput.h"
 
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairMCEventHeader.h"
 #include "TFile.h"
 #include "TList.h"

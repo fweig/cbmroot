@@ -39,7 +39,7 @@
 // CBMroot classes and includes
 
 // FAIR classes and includes
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairMCEventHeader.h"
 #include "FairRootManager.h"
 #include "FairRunAna.h"
@@ -5249,7 +5249,7 @@ Bool_t CbmTofAnaTestbeam::FillHistos() {
           LOG(debug) << Form("no valid match in %d hits for Addr 0x%08x found ",
                              iNbMatchedHits,
                              pHitRef->GetAddress());
-          if (gLogger->IsLogNeeded(fair::Severity::debug1))
+          if (fair::Logger::Logging(fair::Severity::debug1))
             LOG(fatal) << "Check for consistency!";
           return 0;
         }

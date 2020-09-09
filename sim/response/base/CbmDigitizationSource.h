@@ -9,7 +9,7 @@
 #include "CbmDefs.h"
 #include "CbmMCInputSet.h"
 #include "FairEventHeader.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairMCEventHeader.h"
 #include "FairSource.h"
 #include "TObject.h"

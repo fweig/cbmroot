@@ -10,7 +10,7 @@
 #include "CbmFieldPar.h"         // for CbmFieldPar
 
 #include <FairField.h>   // for FairField
-#include <FairLogger.h>  // for LOG, Logger
+#include <Logger.h>  // for LOG, Logger
 
 #include <TArrayF.h>  // for TArrayF
 #include <TFile.h>    // for TFile, gFile

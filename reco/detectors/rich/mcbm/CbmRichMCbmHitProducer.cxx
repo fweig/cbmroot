@@ -9,7 +9,7 @@
 #include "CbmRichGeoManager.h"
 #include "CbmRichHit.h"
 #include "CbmRichPoint.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "TClonesArray.h"
 
 

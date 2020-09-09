@@ -10,7 +10,7 @@
 #include "CbmDefs.h"
 #include "CbmDigitizationSource.h"
 #include "CbmDigitizeInfo.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "TList.h"
 #include "TNamed.h"
 #include "TString.h"

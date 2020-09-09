@@ -1,6 +1,6 @@
 #include "CbmTrdParModGas.h"
 
-#include <FairLogger.h>  // for Logger, LOG
+#include <Logger.h>  // for Logger, LOG
 
 #include <TAxis.h>              // for TAxis
 #include <TGenericClassInfo.h>  // for TGenericClassInfo

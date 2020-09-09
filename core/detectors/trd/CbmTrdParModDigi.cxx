@@ -3,7 +3,7 @@
 #include "CbmTrdAddress.h"  // for CbmTrdAddress
 #include "CbmTrdPoint.h"    // for CbmTrdPoint
 
-#include <FairLogger.h>  // for FairLogger, gLogger, Logger, LOG, Severity, Severity::debug2
+#include <Logger.h>  // for LOG, Severity, Severity::debug2
 
 #include <TGeoManager.h>  // for TGeoManager, gGeoManager
 #include <TString.h>      // for TString
@@ -507,7 +507,7 @@ void CbmTrdParModDigi::GetPadInfo(const CbmTrdPoint* trdPoint,
   gGeoManager->MasterToLocal(global_point, local_point);
 
   // 20131009 - DE - debuging output to check module orientation 0,1,2,3 with box generator
-  if (gLogger->IsLogNeeded(fair::Severity::debug2)) {
+  if (fair::Logger::Logging(fair::Severity::debug2)) {
     // print module orientation
     LOG(debug2) << "module orientation: " << std::setprecision(5)
                 << fOrientation;

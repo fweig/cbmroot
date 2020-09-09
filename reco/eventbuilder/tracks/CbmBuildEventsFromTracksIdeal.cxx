@@ -9,7 +9,7 @@
 #include "CbmStsDigi.h"
 #include "CbmStsHit.h"
 #include "CbmStsTrack.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairRootManager.h"
 #include "TClonesArray.h"
 #include "TStopwatch.h"

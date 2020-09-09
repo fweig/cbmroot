@@ -26,7 +26,7 @@
 #include "CbmRichNavigationUtil.h"
 #include "CbmRichPoint.h"
 
-#include "FairLogger.h"
+#include <Logger.h>
 
 #include <cmath>
 #include <iostream>

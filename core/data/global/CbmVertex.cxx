@@ -4,7 +4,7 @@
 // -------------------------------------------------------------------------
 #include "CbmVertex.h"
 
-#include <FairLogger.h>  // for Logger, LOG
+#include <Logger.h>  // for Logger, LOG
 
 #include <TMatrixTSym.h>    // for TMatrixTSym
 #include <TMatrixTUtils.h>  // for TMatrixTRow, TMatrixTRow_const

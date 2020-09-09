@@ -8,6 +8,8 @@
  */
 #include "NicaCbmMCTrack.h"
 
+#include <Logger.h>
+
 NicaCbmMCTrack::NicaCbmMCTrack() : fNPoints(0) {}
 
 void NicaCbmMCTrack::Update(CbmMCTrack* mc, Double_t charge) {

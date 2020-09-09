@@ -4,7 +4,7 @@
 // -------------------------------------------------------------------------
 #include "CbmMCTrack.h"
 
-#include <FairLogger.h>  // for LOG, Logger
+#include <Logger.h>  // for LOG, Logger
 
 #include <TDatabasePDG.h>  // for TDatabasePDG
 #include <TMCProcess.h>    // for kPNoProcess, TMCProcessName

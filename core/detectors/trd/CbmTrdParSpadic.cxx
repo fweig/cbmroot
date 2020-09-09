@@ -2,7 +2,7 @@
 
 #include "CbmTrdDefs.h"  // for eCbmTrdModuleTypes, eCbmTrdModuleType...
 
-#include <FairLogger.h>     // for Logger, LOG
+#include <Logger.h>     // for Logger, LOG
 #include <FairParamList.h>  // for FairParamList
 
 #include <TArrayI.h>  // for TArrayI

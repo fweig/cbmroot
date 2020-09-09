@@ -4,7 +4,7 @@
 // -------------------------------------------------------------------------
 #include "CbmMvdPoint.h"
 
-#include <FairLogger.h>            // for Logger, LOG
+#include <Logger.h>            // for Logger, LOG
 #include <FairMCEventHeader.h>     // for FairMCEventHeader
 #include <FairMCPoint.h>           // for FairMCPoint
 #include <FairPrimaryGenerator.h>  // for FairPrimaryGenerator

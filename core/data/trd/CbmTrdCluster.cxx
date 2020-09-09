@@ -5,7 +5,7 @@
  */
 #include "CbmTrdCluster.h"
 
-#include <FairLogger.h>  // for LOG, Logger
+#include <Logger.h>  // for LOG, Logger
 
 #include <TMathBase.h>  // for Min, Abs
 #

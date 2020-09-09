@@ -10,7 +10,7 @@
 #include <RtypesCore.h>  // for Double_t, Bool_t, ULong64_t, kFALSE, kTRUE
 
 
-#include <FairLogger.h>  // for LOG
+#include <Logger.h>  // for LOG
 #include <FairTask.h>
 
 #include <map>

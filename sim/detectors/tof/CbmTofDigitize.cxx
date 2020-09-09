@@ -24,7 +24,7 @@
 
 // FAIR classes and includes
 #include "FairEventHeader.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairMCEventHeader.h"
 #include "FairRootManager.h"
 #include "FairRunAna.h"
@@ -407,7 +407,7 @@ Bool_t CbmTofDigitize::LoadBeamtimeValues() {
   fDigiBdfPar->SetInputFile(fsBeamInputFile);
 
   // Add Param printout only if DEBUG level ON
-  if (gLogger->IsLogNeeded(fair::Severity::debug)) fDigiBdfPar->printParams();
+  if (fair::Logger::Logging(fair::Severity::debug)) fDigiBdfPar->printParams();
 
   if (kFALSE == fDigiBdfPar->LoadBeamtimeHistos()) {
     LOG(fatal) << "CbmTofDigitize::LoadBeamtimeValues: Cluster properties from "

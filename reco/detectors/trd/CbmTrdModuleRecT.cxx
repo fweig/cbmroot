@@ -5,7 +5,7 @@
 #include "CbmTrdHit.h"
 #include "CbmTrdParModDigi.h"
 
-#include <FairLogger.h>
+#include <Logger.h>
 
 #include <TGeoPhysicalNode.h>
 

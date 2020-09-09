@@ -13,7 +13,7 @@
 #include "TSystem.h"
 #include "TSystemDirectory.h"
 
-#include "FairLogger.h"
+#include <Logger.h>
 
 #include "CbmDefs.h"
 

@@ -7,7 +7,7 @@
 
 #include "CbmDefs.h"  // for kSts
 
-#include <FairLogger.h>  // for Logger, LOG
+#include <Logger.h>  // for Logger, LOG
 
 #include <cassert>  // for assert
 #include <sstream>  // for operator<<, basic_ostream, stringstream

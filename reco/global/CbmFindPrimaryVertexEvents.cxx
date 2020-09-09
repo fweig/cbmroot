@@ -10,7 +10,7 @@
 #include "CbmEvent.h"
 #include "CbmPrimaryVertexFinder.h"
 #include "CbmVertex.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairRootManager.h"
 #include "TClonesArray.h"
 #include <cassert>

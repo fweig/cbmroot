@@ -5,7 +5,7 @@
 
 #include "CbmBuildEventsIdealNew.h"
 
-#include <FairLogger.h>
+#include <Logger.h>
 #include <FairRootManager.h>
 #include <TClonesArray.h>
 #include <TStopwatch.h>

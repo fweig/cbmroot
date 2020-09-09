@@ -11,7 +11,7 @@
 
 //#include "CbmCosy2019HodoPar.h"
 
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairRootManager.h"
 #include "FairRun.h"
 #include "FairRunOnline.h"

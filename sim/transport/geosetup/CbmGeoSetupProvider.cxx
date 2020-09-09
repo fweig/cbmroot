@@ -5,7 +5,7 @@
 
 #include "geosetup/CbmGeoSetupProvider.h"
 
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairModule.h"
 #include "FairRunSim.h"
 

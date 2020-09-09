@@ -6,7 +6,7 @@
 
 #include "CbmStsParSensorCond.h"  // for CbmStsParSensorCond
 
-#include <FairLogger.h>  // for Logger, LOG
+#include <Logger.h>  // for Logger, LOG
 
 #include <TString.h>  // for TString, operator<<, operator+, ope...
 #include <TSystem.h>  // for TSystem, gSystem

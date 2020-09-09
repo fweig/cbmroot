@@ -40,7 +40,7 @@
 
 // Includes from base
 #include "FairEventHeader.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairMCEventHeader.h"
 #include "FairMCPoint.h"
 #include "FairRootManager.h"

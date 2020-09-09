@@ -15,7 +15,7 @@
 #include "CbmTrdParSetAsic.h"  // for CbmTrdParSetAsic
 #include "CbmTrdParSpadic.h"   // for CbmTrdParSpadic
 
-#include <FairLogger.h>          // for Logger, LOG
+#include <Logger.h>          // for Logger, LOG
 #include <FairParAsciiFileIo.h>  // for FairParAsciiFileIo
 #include <FairParamList.h>       // for FairParamList
 #include <FairRuntimeDb.h>       // for FairRuntimeDb

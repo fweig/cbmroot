@@ -18,7 +18,7 @@
 #include "KFPTrackVector.h"
 #include "KFParticleTopoReconstructor.h"
 
-#include "FairLogger.h"
+#include <Logger.h>
 
 //ROOT headers
 #include "TClonesArray.h"  //to get arrays from the FairRootManager

@@ -9,7 +9,7 @@
 #include "CbmTrdParModDigi.h"  // for CbmTrdParModDigi
 #include "CbmTrdParSetDigi.h"  // for CbmTrdParSetDigi
 
-#include <FairLogger.h>  // for LOG, Logger
+#include <Logger.h>  // for LOG, Logger
 
 #include <Rtypes.h>     // for kWhite
 #include <TAxis.h>      // for TAxis

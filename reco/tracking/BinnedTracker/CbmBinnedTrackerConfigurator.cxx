@@ -7,7 +7,7 @@
 #include "CbmBinnedTrackerConfigurator.h"
 #include "CbmMCDataManager.h"
 #include "CbmStsSetup.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairRunAna.h"
 #include "FairRuntimeDb.h"
 #include "GeoReader.h"

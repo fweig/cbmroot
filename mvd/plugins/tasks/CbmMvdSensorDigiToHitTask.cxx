@@ -7,7 +7,7 @@
 #include "CbmMvdSensorDigiToHitTask.h"
 #include "TClonesArray.h"
 
-#include "FairLogger.h"
+#include <Logger.h>
 #include "TObjArray.h"
 #include <cstring>
 

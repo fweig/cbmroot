@@ -15,7 +15,7 @@
 
 #include "CbmMCTrack.h"
 
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairRootManager.h"
 #include "FairRunSim.h"
 

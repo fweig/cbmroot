@@ -42,7 +42,7 @@ using namespace std;
 #include "CbmTrdHit.h"
 #include "CbmTrdPoint.h"
 #include "CbmVertex.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairMCEventHeader.h"
 #include "FairMCPoint.h"
 #include "FairRootManager.h"
@@ -3240,7 +3240,7 @@ void CbmHadronAnalysis::ExecEvent(Option_t*) {
       LOG(debug) << "-D- b = " << fMCEventHeader->GetB()
                  << ", phi = " << fMCEventHeader->GetRotZ();
   }
-  if (FairLogger::GetLogger()->IsLogNeeded(fair::Severity::debug)) {
+  if (fair::Logger::Logging(fair::Severity::debug)) {
     for (Int_t j = 0; j < nTofHits; j++) {
       TofHit = (CbmTofHit*) fTofHits->At(j);
       if (NULL == TofHit) continue;
@@ -3270,7 +3270,7 @@ void CbmHadronAnalysis::ExecEvent(Option_t*) {
     }
   }
 
-  if (FairLogger::GetLogger()->IsLogNeeded(fair::Severity::debug)) {
+  if (fair::Logger::Logging(fair::Severity::debug)) {
     for (Int_t j = 0; j < nTofHits; j++) {
       TofHit = (CbmTofHit*) fTofHits->At(j);
       if (NULL == TofHit) continue;

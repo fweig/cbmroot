@@ -9,7 +9,7 @@
 #include "CbmLink.h"        // for CbmLink
 #include "CbmModuleList.h"  // for CbmModuleList
 
-#include <FairLogger.h>  // for Logger, LOG
+#include <Logger.h>  // for Logger, LOG
 
 #include <TNamed.h>   // for TNamed
 #include <TString.h>  // for operator<<

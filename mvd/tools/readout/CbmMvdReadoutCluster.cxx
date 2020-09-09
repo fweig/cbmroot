@@ -8,7 +8,7 @@
 #include "CbmMvdCluster.h"
 
 //-- Include from Fair --//
-#include "FairLogger.h"
+#include <Logger.h>
 
 //-- Include from Root --//
 #include "TCanvas.h"

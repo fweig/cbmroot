@@ -7,7 +7,7 @@
 
 #include "CbmTofHit.h"  // for CbmTofHit
 
-#include <FairLogger.h>      // for Logger, LOG
+#include <Logger.h>      // for Logger, LOG
 #include <FairTrackParam.h>  // for FairTrackParam
 
 #include <TMath.h>    // for Power, Sqrt

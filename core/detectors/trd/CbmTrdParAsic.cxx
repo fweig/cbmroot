@@ -1,6 +1,6 @@
 #include "CbmTrdParAsic.h"
 
-#include <FairLogger.h>  // for Logger, LOG
+#include <Logger.h>  // for Logger, LOG
 
 #include <stdio.h>  // for printf
 

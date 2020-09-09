@@ -10,7 +10,7 @@
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Int_t, Double_t, Bool_t, UInt_t, UChar_t
 
-#include <FairLogger.h>  // for LOG
+#include <Logger.h>  // for LOG
 
 #include <map>      // for map, __map_const_iterator, operator!=
 #include <set>      // for set

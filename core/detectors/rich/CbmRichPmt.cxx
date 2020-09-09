@@ -11,7 +11,7 @@
 #include "CbmRichPmtType.h"     // for CbmRichPmtTypeEnum, CbmRichPmtTypeCer...
 #include "CbmRichRecGeoPar.h"   // for CbmRichRecGeoPar
 
-#include <FairLogger.h>  // for LOG, Logger
+#include <Logger.h>  // for LOG, Logger
 #include <TAxis.h>       // for TAxis
 #include <TRandom.h>     // for TRandom, gRandom
 

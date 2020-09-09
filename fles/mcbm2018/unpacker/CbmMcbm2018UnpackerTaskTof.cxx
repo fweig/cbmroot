@@ -10,7 +10,7 @@
 #include "CbmMcbm2018TofPar.h"
 #include "CbmMcbm2018UnpackerAlgoTof.h"
 
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairParGenericSet.h"
 #include "FairRootManager.h"
 #include "FairRun.h"

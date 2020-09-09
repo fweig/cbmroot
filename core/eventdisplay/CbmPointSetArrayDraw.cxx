@@ -10,7 +10,7 @@
 #include "CbmTofHit.h"         // for CbmTofHit
 
 #include <FairEventManager.h>  // for FairEventManager
-#include <FairLogger.h>        // for LOG, Logger
+#include <Logger.h>        // for LOG, Logger
 #include <FairRootManager.h>   // for FairRootManager
 #include <FairTask.h>          // for FairTask, InitStatus, kSUCCESS
 

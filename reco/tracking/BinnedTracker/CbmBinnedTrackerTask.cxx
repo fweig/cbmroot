@@ -8,7 +8,7 @@
 #include "CbmMuchTrack.h"
 #include "CbmStsTrack.h"
 #include "CbmTrdTrack.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairRunAna.h"
 #include "FairRuntimeDb.h"
 #include "GeoReader.h"

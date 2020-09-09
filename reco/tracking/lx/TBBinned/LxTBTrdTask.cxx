@@ -13,7 +13,7 @@
 #include "CbmTrdHit.h"
 #include "CbmTrdPoint.h"
 #include "CbmTrdTrack.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "LxTBTask.h"
 #include "TClonesArray.h"
 #include "TGeoBBox.h"

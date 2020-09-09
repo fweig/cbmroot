@@ -14,7 +14,7 @@
 //#include "CbmTofDef.h" TODO
 
 #include "FairFileSource.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairRootManager.h"
 
 #include "TClonesArray.h"

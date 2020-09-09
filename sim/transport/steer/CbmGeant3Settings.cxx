@@ -1,6 +1,6 @@
 #include "CbmGeant3Settings.h"
 
-#include <FairLogger.h>
+#include <Logger.h>
 
 #include <TGeant3.h>
 #include <TVirtualMC.h>

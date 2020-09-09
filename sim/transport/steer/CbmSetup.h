@@ -12,7 +12,7 @@
 #include "CbmGeoSetupProvider.h"
 #include "CbmGeoSetupRepoProvider.h"
 #include "CbmModuleList.h"
-#include "FairLogger.h"
+#include <Logger.h>
 #include "TNamed.h"
 #include "TString.h"
 #include "TVector3.h"

@@ -3,7 +3,7 @@
 #include "CbmTrdParMod.h"      // for CbmTrdParMod
 #include "CbmTrdParModDigi.h"  // for CbmTrdParModDigi
 
-#include <FairLogger.h>  // for FairLogger, Logger, LOG, Severity, Severity::debug
+#include <Logger.h>         // for LOG, Severity, Severity::debug
 #include <FairParamList.h>  // for FairParamList
 
 #include <TArrayD.h>  // for TArrayD
@@ -102,7 +102,7 @@ Bool_t CbmTrdParSetDigi::getParams(FairParamList* l) {
       ->SetAnodeWireOffset(awOff);  //>0?awOff:0.375);
     ((CbmTrdParModDigi*) fModuleMap[moduleId[i]])
       ->SetAnodeWireSpacing(awPitch);  //>0?awPitch:0.25);
-    if (FairLogger::GetLogger()->IsLogNeeded(fair::Severity::debug))
+    if (fair::Logger::Logging(fair::Severity::debug))
       fModuleMap[moduleId[i]]->Print();
   }
   return kTRUE;

@@ -20,10 +20,10 @@
 #include "CbmTrdParSetGas.h"
 #include "CbmTrdParSetGeo.h"
 
-#include <FairLogger.h>
 #include <FairRootManager.h>
 #include <FairRunAna.h>
 #include <FairRuntimeDb.h>
+#include <Logger.h>
 
 #include <TGeoManager.h>
 #include <TGeoPhysicalNode.h>

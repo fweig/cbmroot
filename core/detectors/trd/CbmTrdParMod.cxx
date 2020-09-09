@@ -1,6 +1,6 @@
 #include "CbmTrdParMod.h"
 
-#include <FairLogger.h>  // for LOG
+#include <Logger.h>  // for LOG
 
 //___________________________________________________________________
 CbmTrdParMod::CbmTrdParMod(const char* name, const char* title)

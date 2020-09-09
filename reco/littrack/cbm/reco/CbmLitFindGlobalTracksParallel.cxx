@@ -3,7 +3,7 @@
  * \author Andrey Lebedev <andrey.lebedev@gsi.de>
  * \date 2013
  **/
-#include "FairLogger.h"
+#include <Logger.h>
 
 #include "CbmGlobalTrack.h"
 #include "CbmLitFindGlobalTracksParallel.h"

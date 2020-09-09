@@ -14,7 +14,7 @@
 #include "CbmHistManager.h"
 
 // FairRoot
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairRootManager.h"
 #include "FairRun.h"
 #include "FairRunOnline.h"

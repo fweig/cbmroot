@@ -4,7 +4,7 @@
  **/
 #include "CbmStsParSetSensor.h"
 
-#include <FairLogger.h>  // for LOG, Logger
+#include <Logger.h>  // for LOG, Logger
 
 #include <cassert>  // for assert
 #include <sstream>  // for operator<<, basic_ostream, stringstream

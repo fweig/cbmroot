@@ -13,7 +13,7 @@
 #include "CbmTofAddress.h"
 #include "CbmTofDetectorId_v14a.h"  // in cbmdata/tof
 
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairRootManager.h"
 #include "FairRun.h"
 #include "FairRunOnline.h"

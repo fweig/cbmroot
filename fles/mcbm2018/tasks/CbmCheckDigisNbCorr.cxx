@@ -11,7 +11,7 @@
 #include "CbmMuchBeamTimeDigi.h"
 #include "TimesliceMetaData.h"
 
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairRootManager.h"
 #include "FairRunOnline.h"
 

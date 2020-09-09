@@ -4,7 +4,7 @@
 #include "CbmTofDigiPar.h"     // for CbmTofDigiPar
 #include "CbmTofGeoHandler.h"  // for CbmTofGeoHandler, k07a, k12b, k14a
 
-#include <FairLogger.h>       // for LOG, Logger
+#include <Logger.h>       // for LOG, Logger
 #include <FairRootManager.h>  // for FairRootManager
 #include <FairRunAna.h>       // for FairRunAna
 #include <FairRuntimeDb.h>    // for FairRuntimeDb

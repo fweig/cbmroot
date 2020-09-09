@@ -15,7 +15,7 @@
 #include "CbmTofDigiPar.h"      // for CbmTofDigiPar
 
 #include <FairContFact.h>   // for FairContainer
-#include <FairLogger.h>     // for LOG
+#include <Logger.h>     // for LOG
 #include <FairRuntimeDb.h>  // for FairRuntimeDb
 
 #include <TList.h>    // for TList

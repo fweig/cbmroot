@@ -5,7 +5,7 @@
 
 #include "CbmTofTrackletParam.h"
 
-#include <FairLogger.h>  // for Logger, LOG
+#include <Logger.h>  // for Logger, LOG
 
 Double_t CbmTofTrackletParam::GetZr(Double_t R) const {
   Double_t P   = (fTx + fTy);

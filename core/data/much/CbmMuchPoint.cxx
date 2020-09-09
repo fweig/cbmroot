@@ -10,7 +10,7 @@
 
 #include "CbmMuchPoint.h"
 
-#include <FairLogger.h>   // for Logger, LOG
+#include <Logger.h>   // for Logger, LOG
 #include <FairMCPoint.h>  // for FairMCPoint
 
 #include <TMathBase.h>  // for Abs

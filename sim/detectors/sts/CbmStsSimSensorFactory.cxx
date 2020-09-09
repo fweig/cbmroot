@@ -9,7 +9,7 @@
 #include "CbmStsParSensor.h"
 #include "CbmStsSimSensorDssdOrtho.h"
 #include "CbmStsSimSensorDssdStereo.h"
-#include <FairLogger.h>
+#include <Logger.h>
 #include <cassert>
 
 using UP_sensor = CbmStsSimSensorFactory::UP_sensor;

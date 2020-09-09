@@ -4,7 +4,7 @@
  **/
 #include "CbmRadDamage.h"
 
-#include <FairLogger.h>  // for LOG
+#include <Logger.h>  // for LOG
 #include <TMath.h>       // for Exp, Qe, K
 #include <TMathBase.h>   // for Abs
 #include <TString.h>     // for TString, operator+, operator<<

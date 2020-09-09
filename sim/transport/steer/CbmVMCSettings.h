@@ -15,7 +15,7 @@
 
 #include <TObject.h>
 
-#include "FairLogger.h"
+#include <Logger.h>
 
 template<typename T>
 void CheckValueInRange(const T& value,

@@ -15,7 +15,7 @@
 #include "CbmMcbm2018MuchPar.h"
 
 // FairRoot
-#include "FairLogger.h"
+#include <Logger.h>
 #include "FairRootManager.h"
 #include "FairRun.h"
 #include "FairRunOnline.h"
