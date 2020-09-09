@@ -550,7 +550,7 @@ CbmTrdHit* CbmTrdModuleRecR::MakeHit(Int_t clusterId,
   } else {
     if (EBP)
       time -=
-        46;  //due to the event time of 0 in the EB
+      46;  //due to the event time of 0 in the EB
     //mode and the ULong in the the digi time
     //TODO: move variables to parameter file
     if (errorclass == 0)
