@@ -14,6 +14,7 @@
 #include "TMath.h"
 #include "TStyle.h"
 #include "TSystem.h"
+#include "TFile.h"
 
 #include <TBox.h>
 #include <TLegend.h>
