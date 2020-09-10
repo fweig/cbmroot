@@ -8,6 +8,7 @@ Set(LIBRARY_NAME CbmSimGenerators)
 
 # -----  Compilation sources   ----------------------------
 set(SRCS
+CbmBeamGenerator.cxx
 CbmPhsdGenerator.cxx
 CbmPlutoGenerator.cxx
 CbmShieldGenerator.cxx
@@ -58,6 +59,7 @@ ${Boost_LIBRARY_DIRS}
 Set(DEPENDENCIES
 CbmBase
 CbmData
+CbmSimBase
 )
 # ---------------------------------------------------------
 

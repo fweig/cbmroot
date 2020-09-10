@@ -89,6 +89,7 @@ CbmTransport::CbmTransport()
 
   // By default, vertex smearing along the beam is activated
   fEventGen->SmearVertexZ(kTRUE);
+  fRun->SetGenerator(fEventGen);  // has to be available for some generators
 }
 // --------------------------------------------------------------------------
 
@@ -167,6 +168,14 @@ void CbmTransport::ConfigureVMC() {
   std::unique_ptr<CbmStack> stack(new CbmStack());
   stack->SetFilter(fStackFilter);
   if (vmc) vmc->SetStack(stack.release());
+}
+// --------------------------------------------------------------------------
+
+
+// -----   Force creation of event vertex at a given z position   -----------
+void CbmTransport::ForceVertexAtZ(Double_t zVertex) {
+  assert(fEventGen);
+  fEventGen->ForceVertexAtZ(zVertex);
 }
 // --------------------------------------------------------------------------
 
@@ -276,10 +285,6 @@ void CbmTransport::InitEventGenerator() {
                  << ": Beam profile is not consistent with target!";
     }  //? Target not consistent with beam
   }    //? Target specified
-
-
-  // --- Register event generator to run
-  fRun->SetGenerator(fEventGen);
 }
 // --------------------------------------------------------------------------
 

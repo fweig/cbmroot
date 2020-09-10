@@ -6,12 +6,12 @@
 #include "CbmEventGenerator.h"
 
 #include "CbmBeam.h"
-#include "FairGenericStack.h"
-#include "FairLogger.h"
-#include "FairMCEventHeader.h"
-#include "TMath.h"
-#include "TRandom.h"
-#include "TVector3.h"
+#include <FairGenericStack.h>
+#include <FairLogger.h>
+#include <FairMCEventHeader.h>
+#include <TMath.h>
+#include <TRandom.h>
+#include <TVector3.h>
 #include <cassert>
 
 
@@ -20,7 +20,9 @@ CbmEventGenerator::CbmEventGenerator()
   : FairPrimaryGenerator()
   , fBeamProfile()
   , fTarget()
-  , fForceVertexInTarget(kTRUE) {
+  , fForceVertexInTarget(kTRUE)
+  , fForceVertexAtZ(kFALSE)
+  , fVertexZ(0.) {
   // Mother class members
   fName      = "EventGenerator";
   fBeamAngle = kTRUE;
@@ -30,6 +32,15 @@ CbmEventGenerator::CbmEventGenerator()
 
 // -----   Destructor   ----------------------------------------------------
 CbmEventGenerator::~CbmEventGenerator() {}
+// -------------------------------------------------------------------------
+
+
+// -----   Force vertex at a given z position   ----------------------------
+void CbmEventGenerator::ForceVertexAtZ(Double_t zVertex) {
+  fForceVertexAtZ      = kTRUE;
+  fForceVertexInTarget = kFALSE;
+  fVertexZ             = zVertex;
+}
 // -------------------------------------------------------------------------
 
 
@@ -101,10 +112,27 @@ Bool_t CbmEventGenerator::GenerateEvent(FairGenericStack* stack) {
 // -----   Generate event vertex   -----------------------------------------
 void CbmEventGenerator::MakeVertex() {
 
-  if (fForceVertexInTarget && fTarget)
+  if (fForceVertexAtZ)
+    MakeVertexAtZ();
+  else if (fForceVertexInTarget && fTarget)
     MakeVertexInTarget();
   else
     MakeVertexInFocalPlane();
+}
+// -------------------------------------------------------------------------
+
+
+// -----   Generate event vertex in the beam focal plane   -----------------
+void CbmEventGenerator::MakeVertexAtZ() {
+
+  std::unique_ptr<CbmBeam> beam;
+  beam = fBeamProfile.GenerateBeam();
+  TVector3 point(0., 0., fVertexZ);  /// A point in the plane z = zVertex
+  TVector3 norm(0, 0., 1.);          /// Normal on the plane z = const.
+  fVertex        = beam->ExtrapolateToPlane(point, norm);
+  fBeamAngleX    = beam->GetThetaX();
+  fBeamAngleY    = beam->GetThetaY();
+  fBeamDirection = beam->GetDirection();
 }
 // -------------------------------------------------------------------------
 
@@ -191,7 +219,10 @@ void CbmEventGenerator::Print(Option_t*) const {
               << fPhiMax << " rad";
   else
     LOG(info) << "Fixed event plane angle = 0";
-  LOG(info) << "Number of generators = " << fGenList->GetEntries();
+  LOG(info) << "Number of generators " << fGenList->GetEntries();
+  for (Int_t iGen = 0; iGen < fGenList->GetEntries(); iGen++) {
+    fGenList->At(iGen)->Print();
+  }
 }
 // -------------------------------------------------------------------------
 

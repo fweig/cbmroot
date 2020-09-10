@@ -65,6 +65,16 @@ public:
   void ConfigureVMC();
 
 
+  /** @brief Force the event vertex to be at a given z position
+   ** @param zVertex  z position of event vertex
+   **
+   ** The event vertex will be determined by the beam intersection with
+   ** the specified z plane. The beam properties (position in focal plane
+   ** and direction) are sampled from the specified beam profile.
+   **/
+  void ForceVertexAtZ(Double_t zVertex);
+
+
   /** @brief Enable or disable forcing the vertex to be in the target
      ** @param choice If true, the vertex will be generated in the target
      **/

@@ -10,7 +10,7 @@
 
 #include "CbmBeamProfile.h"
 #include "CbmTarget.h"
-#include "FairPrimaryGenerator.h"
+#include <FairPrimaryGenerator.h>
 #include <memory>
 
 class FairGenericStack;
@@ -40,6 +40,15 @@ public:
 
   /** @brief Destructor  **/
   virtual ~CbmEventGenerator();
+
+
+  /** @brief Force event vertex to be at a given z
+   ** @param zVertex  z coordinate of event vertex
+   **
+   ** The event vertex will be sampled in x and y from the specified
+   ** beam properties (profile in focal plane and angular distribution),
+   **/
+  void ForceVertexAtZ(Double_t zVertex);
 
 
   /** @brief Enable or disable forcing the vertex to be in the target
@@ -130,6 +139,8 @@ private:
   CbmBeamProfile fBeamProfile;               ///< Beam properties
   std::shared_ptr<const CbmTarget> fTarget;  //! Target properties
   Bool_t fForceVertexInTarget;  ///< If set, vertex must be in target
+  Bool_t fForceVertexAtZ;       ///< If set, vertex must be at given z
+  Double_t fVertexZ;            ///< forced z coordinate of event vertex
 
 
   /** @brief Generate beam angle
@@ -146,19 +157,29 @@ private:
 		 **
 		 ** Will be called from FairPrimaryGenerator::GenerateEvent().
 		 ** Beam position and angles in the focal plane are sampled
-		 ** from the specified distributions. If a target is specified,
-		 ** the event vertex is sampled from the beam trajectory within the
-		 ** target - flat distributions between entry and exit point, or
-		 ** always in the target centre plane, depending on the choice set
-		 ** with SetSmearVertexZ(). If no target is specified, the event vertex
-		 ** is the beam position in the focal plane.
+		 ** from the specified distributions. There are three options to generate
+		 ** the event vertex:
+		 ** 1. If a vertex z position is specified by a call to ForceVertexAtZ,
+     ** the event vertex is the beam extrapolation to the specified z.
+		 ** 2. Else, if a target is specified, the event vertex is sampled from
+		 ** the beam trajectory within the target - flat distributions between
+		 ** entry and exit point, or always in the target centre plane, depending
+		 ** on the choice set with SetSmearVertexZ().
+		 ** 3. Else, the event vertex is the beam position in the focal plane.
 		 **/
   virtual void MakeVertex();
 
 
+  /** @brief Generate event vertex position at a given z
+     **
+     ** Will be used if ForceVertexAtZ was called.
+     **/
+  void MakeVertexAtZ();
+
+
   /** @brief Generate event vertex position in the beam focal plane
 		 **
-		 ** Will be called if no target was specified.
+		 ** Will be used if no target was specified.
 		 **/
   virtual void MakeVertexInFocalPlane();
 

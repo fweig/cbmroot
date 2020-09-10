@@ -5,6 +5,7 @@
 #pragma link off all functions;
 
 // --- transport/base
+#pragma link C++ class CbmBeamGenerator + ;
 #pragma link C++ class CbmPhsdGenerator + ;
 #pragma link C++ class CbmPlutoGenerator + ;
 #pragma link C++ class CbmShieldGenerator + ;
