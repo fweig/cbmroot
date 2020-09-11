@@ -562,54 +562,17 @@ CbmTrdHit* CbmTrdModuleRecR::MakeHit(Int_t clusterId,
     hit_pos[iDim] = hit_posV[iDim];
   }
 
-  if (EB) {
-    if (errorclass == 0)
-      xVar = 0.0258725;
-    else if (errorclass == 1)
-      xVar = 0.0267693;
-    else if (errorclass == 2)
-      xVar = 0.0344325;
-    else if (errorclass == 3)
-      xVar = 0.0260322;
-    else if (errorclass == 4)
-      xVar = 0.040115;
-
-    if (errorclass == 0)
-      yVar = 0.024549;
-    else if (errorclass == 1)
-      yVar = 0.025957;
-    else if (errorclass == 2)
-      yVar = 0.0250713;
-    else if (errorclass == 3)
-      yVar = 0.0302682;
-    else if (errorclass == 4)
-      yVar = 0.0291146;
-  } else {
-    if (EBP) time -= 46;  // due to the event time of 0 in the EB
-    // mode and the ULong in the the digi time
-    // TODO: move variables to parameter file
-    if (errorclass == 0)
-      xVar = 0.0426313;
-    else if (errorclass == 1)
-      xVar = 0.0426206;
-    else if (errorclass == 2)
-      xVar = 0.0636962;
-    else if (errorclass == 3)
-      xVar = 0.038981;
-    else if (errorclass == 4)
-      xVar = 0.0723851;
-
-    if (errorclass == 0)
-      yVar = 0.0401438;
-    else if (errorclass == 1)
-      yVar = 0.0407502;
-    else if (errorclass == 2)
-      yVar = 0.0397242;
-    else if (errorclass == 3)
-      yVar = 0.0519485;
-    else if (errorclass == 4)
-      yVar = 0.0504586;
-  }
+   if (EB) {
+     xVar = kxVar_Value[0][errorclass];
+     yVar = kyVar_Value[0][errorclass];
+   } else {
+     if (EBP)
+       time -=
+         46;  //due to the event time of 0 in the EB mode and the ULong in the the digi time
+         //TODO: move to parameter file
+     xVar = kxVar_Value[1][errorclass];
+     yVar = kyVar_Value[1][errorclass];
+   }
 
   TVector3 cluster_pad_dposV(xVar, yVar, 0);
 
