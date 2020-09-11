@@ -62,15 +62,13 @@ private:
 
   // different error classes for the position resolution based on the simulation results
   // the error classes are defined for the different module types
-  // TODO: move to parameter file 
-  static constexpr Double_t kxVar_Value[2][5] = { 
-               {0.0258725, 0.0267693, 0.0344325, 0.0260322, 0.040115}, 
-               {0.0426313, 0.0426206, 0.0636962, 0.038981, 0.0723851} 
-                             };
-  static constexpr Double_t kyVar_Value[2][5] = { 
-               {0.024549, 0.025957, 0.0250713, 0.0302682, 0.0291146},
-               {0.0401438, 0.0407502, 0.0397242, 0.0519485, 0.0504586}
-                              };
+  // TODO: move to parameter file
+  static constexpr Double_t kxVar_Value[2][5] = {
+    {0.0258725, 0.0267693, 0.0344325, 0.0260322, 0.040115},
+    {0.0426313, 0.0426206, 0.0636962, 0.038981, 0.0723851}};
+  static constexpr Double_t kyVar_Value[2][5] = {
+    {0.024549, 0.025957, 0.0250713, 0.0302682, 0.0291146},
+    {0.0401438, 0.0407502, 0.0397242, 0.0519485, 0.0504586}};
 
   std::deque<std::tuple<Int_t, Bool_t, const CbmTrdDigi*>>
     fDigiMap;  //map to sort all digis from the Array into a deque; different module are separated; the tuple contains the digi indice, a bool to flag processed digis and the digi itself

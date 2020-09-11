@@ -562,17 +562,17 @@ CbmTrdHit* CbmTrdModuleRecR::MakeHit(Int_t clusterId,
     hit_pos[iDim] = hit_posV[iDim];
   }
 
-   if (EB) {
-     xVar = kxVar_Value[0][errorclass];
-     yVar = kyVar_Value[0][errorclass];
-   } else {
-     if (EBP)
-       time -=
-         46;  //due to the event time of 0 in the EB mode and the ULong in the the digi time
-         //TODO: move to parameter file
-     xVar = kxVar_Value[1][errorclass];
-     yVar = kyVar_Value[1][errorclass];
-   }
+  if (EB) {
+    xVar = kxVar_Value[0][errorclass];
+    yVar = kyVar_Value[0][errorclass];
+  } else {
+    if (EBP)
+      time -=
+        46;  //due to the event time of 0 in the EB mode and the ULong in the the digi time
+    //TODO: move to parameter file
+    xVar = kxVar_Value[1][errorclass];
+    yVar = kyVar_Value[1][errorclass];
+  }
 
   TVector3 cluster_pad_dposV(xVar, yVar, 0);
 
