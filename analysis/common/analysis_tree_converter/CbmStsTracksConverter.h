@@ -50,10 +50,10 @@ private:
                             AnalysisTree::Track* track,
                             int pdg);
   void WriteKFInfo(AnalysisTree::Track* track,
-                   const CbmStsTrack* sts_track) const;
+                   const CbmStsTrack* sts_track,
+                   bool is_good_track) const;
   bool IsGoodCovMatrix(const CbmStsTrack* sts_track) const;
-  int GetMcPid(const CbmStsTrack* sts_track,
-               const CbmTrackMatchNew* match,
+  int GetMcPid(const CbmTrackMatchNew* match,
                AnalysisTree::Track* track) const;
 
   AnalysisTree::TrackDetector* vtx_tracks_ {
@@ -67,7 +67,7 @@ private:
   TClonesArray* cbm_sts_match_ {nullptr};   ///< non-owning pointer
 
   bool is_write_kfinfo_ {true};
-  bool is_reproduce_cbmkfpf_ {false};
+  bool is_reproduce_cbmkfpf_ {true};
 
   int ipar_ {-1};
   int imf_ {-1};

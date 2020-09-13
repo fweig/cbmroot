@@ -99,7 +99,9 @@ void CbmStsTracksConverter::ReadVertexTracks() {
     track->Init(out_config_->GetBranchConfig(vtx_tracks_->GetId()));
 
     int pdg = GetMcPid(
-      sts_track, (CbmTrackMatchNew*) cbm_sts_match_->At(i_track), track);
+      (CbmTrackMatchNew*) cbm_sts_match_->At(i_track), track);
+    
+    bool is_good_track = IsGoodCovMatrix(sts_track);
 
     float chi2_vertex = ExtrapolateToVertex(sts_track, track, pdg);
     const FairTrackParam* trackParamFirst = sts_track->GetParamFirst();
@@ -123,12 +125,13 @@ void CbmStsTracksConverter::ReadVertexTracks() {
 
     out_indexes_map_.insert(std::make_pair(i_track, track->GetId()));
 
-    if (is_write_kfinfo_) { WriteKFInfo(track, sts_track); }
+    if (is_write_kfinfo_) { WriteKFInfo(track, sts_track, is_good_track); }
   }
 }
 
 void CbmStsTracksConverter::WriteKFInfo(AnalysisTree::Track* track,
-                                        const CbmStsTrack* sts_track) const {
+                                        const CbmStsTrack* sts_track,
+                                        bool is_good_track) const {
   assert(track && sts_track);
   const FairTrackParam* trackParamFirst = sts_track->GetParamFirst();
 
@@ -145,7 +148,7 @@ void CbmStsTracksConverter::WriteKFInfo(AnalysisTree::Track* track,
                       icov_ + iCov);
     }
   }
-  track->SetField(IsGoodCovMatrix(sts_track), ipasscuts_);
+  track->SetField(is_good_track, ipasscuts_);
 }
 
 bool CbmStsTracksConverter::IsGoodCovMatrix(
@@ -185,8 +188,7 @@ bool CbmStsTracksConverter::IsGoodCovMatrix(
   return ok;
 }
 
-int CbmStsTracksConverter::GetMcPid(const CbmStsTrack* /*sts_track*/,
-                                    const CbmTrackMatchNew* match,
+int CbmStsTracksConverter::GetMcPid(const CbmTrackMatchNew* match,
                                     AnalysisTree::Track* track) const {
 
   if (!is_write_kfinfo_) { return -2; }
@@ -319,7 +321,7 @@ void CbmStsTracksConverter::MapTracks() {
   }
   auto sim_tracks_map = it->second;
 
-  assert(!out_indexes_map_.empty() || !sim_tracks_map.empty());
+  if (out_indexes_map_.empty() || sim_tracks_map.empty()) return;
   CbmTrackMatchNew* match {nullptr};
 
   for (const auto& track_id : out_indexes_map_) {
