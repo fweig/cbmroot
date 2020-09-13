@@ -17,6 +17,7 @@ class KFParticleFinder;
 class KFPTrackVector;
 class CbmMCEventList;
 class CbmMCDataArray;
+class CbmVertex;
 
 struct KFFieldVector {
   float fField[10];
@@ -32,6 +33,7 @@ public:
   void UseMCPV() { fPVFindMode = 0; }
   void ReconstructSinglePV() { fPVFindMode = 1; }
   void RconstructMultiplePV() { fPVFindMode = 2; }
+  void UseReconstructedPV()   { fPVFindMode = 3; }
 
   void SetStsTrackBranchName(const TString& name) {
     fStsTrackBranchName = name;
@@ -104,6 +106,7 @@ private:
   CbmMCDataArray* fMCTrackArray;     //mc tracks in timeslices
   TClonesArray* fMCTrackArrayEvent;  //mc tracks in event-by-event mode
   CbmMCEventList* fEventList;        //mc event list in timeslice
+  CbmVertex* fCbmPrimVertex;         //mc primary vertex
 
   //topology reconstructor
   KFParticleTopoReconstructor* fTopoReconstructor;

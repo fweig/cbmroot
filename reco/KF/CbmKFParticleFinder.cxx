@@ -37,7 +37,7 @@ CbmKFParticleFinder::CbmKFParticleFinder(const char* name, Int_t iVerbose)
   , fTrackArray(0)
   , fEvents(0)
   , fTopoReconstructor(0)
-  , fPVFindMode(2)
+  , fPVFindMode(3)
   , fPID(0)
   , fSuperEventAnalysis(0)
   , fSETracks(0)
@@ -116,6 +116,8 @@ InitStatus CbmKFParticleFinder::Init() {
       }
     }
   }
+  
+  fCbmPrimVertex = (CbmVertex*) ioman->GetObject("PrimaryVertex.");
 
   return kSUCCESS;
 }
@@ -255,6 +257,12 @@ void CbmKFParticleFinder::Exec(Option_t* /*opt*/) {
       kfVertex.GetRefY() = mcpv[1];
       kfVertex.GetRefZ() = mcpv[2];
     }
+    
+    if(fPVFindMode==3) {
+      kfVertex.GetRefX() = fCbmPrimVertex->GetX();
+      kfVertex.GetRefY() = fCbmPrimVertex->GetY();
+      kfVertex.GetRefZ() = fCbmPrimVertex->GetZ();
+    }
 
     vector<L1FieldRegion> vField, vFieldAtLastPoint;
     fitter.Fit(vRTracks, pdg);
@@ -319,7 +327,7 @@ void CbmKFParticleFinder::Exec(Option_t* /*opt*/) {
 
       eventTopoReconstructor[iEvent].Init(tracks, tracksAtLastPoint);
 
-      if (fPVFindMode == 0) {
+      if (fPVFindMode == 0 || fPVFindMode == 3) {
         KFPVertex primVtx_tmp;
         primVtx_tmp.SetXYZ(
           kfVertex.GetRefX(), kfVertex.GetRefY(), kfVertex.GetRefZ());
