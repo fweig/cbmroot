@@ -13,6 +13,7 @@ add_subdirectory (PWGCHA/jpsi)
 add_subdirectory (PWGHAD/hadron)
 
 add_subdirectory (common/analysis_tree_converter)
+add_subdirectory (common/at_kfpf_interface)
 
 add_subdirectory (detectors)
 
