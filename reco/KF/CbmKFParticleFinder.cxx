@@ -553,7 +553,7 @@ void CbmKFParticleFinder::FillKFPTrackVector(
     tracks->SetQ(q, iTr);
     tracks->SetNPixelHits(vRTracks[iTr].GetNofMvdHits(), iTr);
 
-    if (fPVFindMode == 0) {
+    if (fPVFindMode == 0 || fPVFindMode == 3) {
       if (vChiToPrimVtx[iTr] < 3)
         tracks->SetPVIndex(0, iTr);
       else
