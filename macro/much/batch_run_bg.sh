@@ -68,7 +68,7 @@ cp -rf ${work_dir_run}/run_reco_event.C .
 root -l -b -q "run_reco_event.C($NEVENTS,\"$DATASET\",\"$SETUP\",\"$USEMC\",kTRUE)"
 
 cp -rf ${work_dir_much}/run_ana.C .
-root -l -b -q "run_ana.C($NEVENTS,\"$DATASET\",\"$SETUP\",\"$USEMC\",\"\")"
+root -l -b -q "run_ana.C($NEVENTS,\"$DATASET\",\"$SETUP\",\"$USEMC\",\"\",-1)"
 
 rm all_*
 rm *C
