@@ -44,7 +44,7 @@ CbmAnaDimuonAnalysis.cxx
 
 Set(LINKDEF CbmMuchAnalysisLinkDef.h)
 Set(LIBRARY_NAME CbmMuchAnalysis)
-Set(DEPENDENCIES CbmRecoBase CbmData CbmMuchBase KF)
+Set(DEPENDENCIES CbmRecoBase CbmData CbmMuchBase KF MLP)
 
 GENERATE_LIBRARY()
 
