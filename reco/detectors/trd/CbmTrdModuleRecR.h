@@ -8,9 +8,6 @@
 #include <map>
 #include <vector>
 
-using std::pair;
-using std::tuple;
-
 /**
   * \brief Rectangular pad module; Cluster finding and hit reconstruction algorithms
   **/
