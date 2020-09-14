@@ -63,39 +63,42 @@ Int_t CbmTrdModuleRecR::FindClusters() {
   std::deque<std::tuple<Int_t, Bool_t, const CbmTrdDigi*>>::iterator
     mainit;  // subiterator for the deques in each module; searches for
              // main-trigger to then add the neighbors
-  std::deque<std::tuple<Int_t, Bool_t, const CbmTrdDigi*>>::iterator FNit;  // last
-                                                                  // iterator to
-                                                                  // find the FN
-                                                                  // digis which
-                                                                  // correspond
-                                                                  // to the main
-                                                                  // trigger or
-                                                                  // the
-                                                                  // adjacent
-                                                                  // main
-                                                                  // triggers
-  std::deque<std::tuple<Int_t, Bool_t, const CbmTrdDigi*>>::iterator start;  // marker to
-                                                                   // erase
-                                                                   // already
-                                                                   // processed
-                                                                   // entries
-                                                                   // from the
-                                                                   // map to
-                                                                   // reduce the
-                                                                   // complexity
-                                                                   // of the
-                                                                   // algorithm
-  std::deque<std::tuple<Int_t, Bool_t, const CbmTrdDigi*>>::iterator stop;   // marker to
-                                                                   // erase
-                                                                   // already
-                                                                   // processed
-                                                                   // entries
-                                                                   // from the
-                                                                   // map to
-                                                                   // reduce the
-                                                                   // complexity
-                                                                   // of the
-                                                                   // algorithm
+  std::deque<std::tuple<Int_t, Bool_t, const CbmTrdDigi*>>::iterator
+    FNit;  // last
+           // iterator to
+           // find the FN
+           // digis which
+           // correspond
+           // to the main
+           // trigger or
+           // the
+           // adjacent
+           // main
+           // triggers
+  std::deque<std::tuple<Int_t, Bool_t, const CbmTrdDigi*>>::iterator
+    start;  // marker to
+            // erase
+            // already
+            // processed
+            // entries
+            // from the
+            // map to
+            // reduce the
+            // complexity
+            // of the
+            // algorithm
+  std::deque<std::tuple<Int_t, Bool_t, const CbmTrdDigi*>>::iterator
+    stop;  // marker to
+           // erase
+           // already
+           // processed
+           // entries
+           // from the
+           // map to
+           // reduce the
+           // complexity
+           // of the
+           // algorithm
 
   // reset time information; used to erase processed digis from the map
   Double_t time     = 0;
