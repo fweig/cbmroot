@@ -33,7 +33,7 @@ public:
   void UseMCPV() { fPVFindMode = 0; }
   void ReconstructSinglePV() { fPVFindMode = 1; }
   void RconstructMultiplePV() { fPVFindMode = 2; }
-  void UseReconstructedPV()   { fPVFindMode = 3; }
+  void UseReconstructedPV() { fPVFindMode = 3; }
 
   void SetStsTrackBranchName(const TString& name) {
     fStsTrackBranchName = name;

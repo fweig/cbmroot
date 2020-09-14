@@ -1,67 +1,60 @@
 Set(LIBRARY_NAME AnalysisTreeKfpfInterface)
 
-set(SRCS
-        ATKFParticleFinder.cxx
-        CutsContainer.cxx
-    )
+  set(SRCS ATKFParticleFinder.cxx CutsContainer.cxx)
 
-Set(INCLUDE_DIRECTORIES
-  ${CMAKE_CURRENT_SOURCE_DIR}
+    Set(INCLUDE_DIRECTORIES $ {CMAKE_CURRENT_SOURCE_DIR}
 
-  ${KFParticle_INCLUDE_DIR}
-  ${AnalysisTree_INCLUDE_DIR}
-)
+        $ {KFParticle_INCLUDE_DIR} $ {AnalysisTree_INCLUDE_DIR})
 
-Include_Directories (${INCLUDE_DIRECTORIES})
+      Include_Directories($ {INCLUDE_DIRECTORIES})
 
-Set(SYSTEM_INCLUDE_DIRECTORIES
-  ${VC_INCLUDE_DIRS}
-  ${BASE_INCLUDE_DIRECTORIES}
-  ${Boost_INCLUDE_DIR} 
-)
+        Set(SYSTEM_INCLUDE_DIRECTORIES $ {VC_INCLUDE_DIRS} $ {
+          BASE_INCLUDE_DIRECTORIES} $ {Boost_INCLUDE_DIR})
 
-Include_Directories (SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
+          Include_Directories(SYSTEM $ {SYSTEM_INCLUDE_DIRECTORIES})
 
-set (LINK_DIRECTORIES
-  ${ROOT_LIBRARY_DIR}
-  ${FAIRROOT_LIBRARY_DIR}
-  ${Boost_LIBRARY_DIRS}
-  ${Vc_LIB_DIR}
-  ${KFParticle_LIB_DIR}
-  ${AnalysisTree_LIBRARY_DIR}
-)
- 
-link_directories(${LINK_DIRECTORIES})
+            set(LINK_DIRECTORIES $ {ROOT_LIBRARY_DIR} $ {
+              FAIRROOT_LIBRARY_DIR} $ {Boost_LIBRARY_DIRS} $ {Vc_LIB_DIR} $ {
+              KFParticle_LIB_DIR} $ {AnalysisTree_LIBRARY_DIR})
 
-IF (SSE_FOUND)
-  Message(STATUS "${LIBRARY_NAME} will be compiled with SSE support")
-  ADD_DEFINITIONS(-DHAVE_SSE)
-  SET_SOURCE_FILES_PROPERTIES(${SRCS} PROPERTIES COMPILE_FLAGS "-msse -O3")
-ELSE (SSE_FOUND)
-  MESSAGE(STATUS "${LIBRARY_NAME} will be compiled without SSE support")
-  SET_SOURCE_FILES_PROPERTIES(${SRCS} PROPERTIES COMPILE_FLAGS "-msse -O3")
-ENDIF (SSE_FOUND)
+              link_directories($ {LINK_DIRECTORIES})
 
-Set(LINKDEF AnalysisTreeKfpfInterfaceLinkDef.h)
+                IF(SSE_FOUND)
+                  Message(STATUS
+                          "${LIBRARY_NAME} will be compiled with SSE support")
+                    ADD_DEFINITIONS(-DHAVE_SSE) SET_SOURCE_FILES_PROPERTIES($ {
+                      SRCS} PROPERTIES COMPILE_FLAGS "-msse -O3")
+                      ELSE(SSE_FOUND) MESSAGE(
+                        STATUS
+                        "${LIBRARY_NAME} will be compiled without SSE support")
+                        SET_SOURCE_FILES_PROPERTIES($ {
+                          SRCS} PROPERTIES COMPILE_FLAGS "-msse -O3")
+                          ENDIF(SSE_FOUND)
 
-If(UNIX AND NOT APPLE)
-  Set(_AnalysisTree_LIB  AnalysisTreeBase.so AnalysisTreeInfra.so)
-  Else()
-  Set(_AnalysisTree_LIB  AnalysisTreeBase.dylib AnalysisTreeInfra.dylib)
-EndIf()
+                            Set(LINKDEF AnalysisTreeKfpfInterfaceLinkDef.h)
 
-Set(DEPENDENCIES 
-	${_AnalysisTree_LIB} 
-	KFParticle
-	Vc.a)
-Set(DEFINITIONS -DDO_TPCCATRACKER_EFF_PERFORMANCE -DNonhomogeneousField -DCBM -DUSE_TIMERS)
+                              If(UNIX AND NOT APPLE)
+                                Set(_AnalysisTree_LIB AnalysisTreeBase
+                                      .so AnalysisTreeInfra.so) Else()
+                                  Set(_AnalysisTree_LIB AnalysisTreeBase
+                                        .dylib AnalysisTreeInfra.dylib) EndIf()
 
-ADD_DEFINITIONS(${DEFINITIONS})
+                                    Set(DEPENDENCIES $ {
+                                      _AnalysisTree_LIB} KFParticle Vc.a)
+                                      Set(DEFINITIONS
+                                          - DDO_TPCCATRACKER_EFF_PERFORMANCE
+                                          - DNonhomogeneousField - DCBM
+                                          - DUSE_TIMERS)
 
-GENERATE_LIBRARY()
+                                        ADD_DEFINITIONS($ {DEFINITIONS})
 
-# Install(FILES ../../../macro/analysis/common/analysis_tree_converter/run_treemaker.C
-#         DESTINATION share/cbmroot/macro/analysis_tree
-#        )
+                                          GENERATE_LIBRARY()
 
-Add_Dependencies(AnalysisTreeKfpfInterface ANALYSISTREE KFPARTICLE)
+#Install(FILES../../../ macro / analysis / common / analysis_tree_converter    \
+         / run_treemaker.C
+#DESTINATION share / cbmroot / macro / analysis_tree
+#)
+
+                                            Add_Dependencies(
+                                              AnalysisTreeKfpfInterface
+                                                ANALYSISTREE KFPARTICLE)

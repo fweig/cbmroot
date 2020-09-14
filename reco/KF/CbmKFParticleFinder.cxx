@@ -116,7 +116,7 @@ InitStatus CbmKFParticleFinder::Init() {
       }
     }
   }
-  
+
   fCbmPrimVertex = (CbmVertex*) ioman->GetObject("PrimaryVertex.");
 
   return kSUCCESS;
@@ -257,8 +257,8 @@ void CbmKFParticleFinder::Exec(Option_t* /*opt*/) {
       kfVertex.GetRefY() = mcpv[1];
       kfVertex.GetRefZ() = mcpv[2];
     }
-    
-    if(fPVFindMode==3) {
+
+    if (fPVFindMode == 3) {
       kfVertex.GetRefX() = fCbmPrimVertex->GetX();
       kfVertex.GetRefY() = fCbmPrimVertex->GetY();
       kfVertex.GetRefZ() = fCbmPrimVertex->GetZ();

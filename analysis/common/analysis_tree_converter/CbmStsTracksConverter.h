@@ -53,8 +53,7 @@ private:
                    const CbmStsTrack* sts_track,
                    bool is_good_track) const;
   bool IsGoodCovMatrix(const CbmStsTrack* sts_track) const;
-  int GetMcPid(const CbmTrackMatchNew* match,
-               AnalysisTree::Track* track) const;
+  int GetMcPid(const CbmTrackMatchNew* match, AnalysisTree::Track* track) const;
 
   AnalysisTree::TrackDetector* vtx_tracks_ {
     nullptr};  ///< raw pointers are needed for TTree::Branch

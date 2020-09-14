@@ -98,9 +98,8 @@ void CbmStsTracksConverter::ReadVertexTracks() {
     auto* track = vtx_tracks_->AddChannel();
     track->Init(out_config_->GetBranchConfig(vtx_tracks_->GetId()));
 
-    int pdg = GetMcPid(
-      (CbmTrackMatchNew*) cbm_sts_match_->At(i_track), track);
-    
+    int pdg = GetMcPid((CbmTrackMatchNew*) cbm_sts_match_->At(i_track), track);
+
     bool is_good_track = IsGoodCovMatrix(sts_track);
 
     float chi2_vertex = ExtrapolateToVertex(sts_track, track, pdg);
