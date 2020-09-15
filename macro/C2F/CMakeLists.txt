@@ -5,6 +5,7 @@ GENERATE_CBM_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_digi.C ${MACRO_DIR}
 GENERATE_CBM_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_reco_event.C ${MACRO_DIR})
 GENERATE_CBM_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/analysis/PWGC2F/flow/DataTreeCbmInterface/macro/run_treemaker.C ${MACRO_DIR})
 GENERATE_CBM_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/analysis/common/analysis_tree_converter/run_analysis_tree_maker.C ${MACRO_DIR})
+GENERATE_CBM_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/analysis/common/at_kfpf_interface/run_at_kfpf.C ${MACRO_DIR})
 GENERATE_CBM_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/external/DataTreeQA/macro/PopulateQAConfigurations.C ${MACRO_DIR})
 GENERATE_CBM_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/external/DataTreeQA/macro/RunDataTreeQA.C ${MACRO_DIR})
 
@@ -71,6 +72,15 @@ If( ($ENV{ctest_model} MATCHES Nightly) OR ($ENV{ctest_model} MATCHES Weekly) )
     set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_c2f_ana})
     Set(fixture_c2f_analysistree fixture_c2f_analysistree_${testname})
     set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_c2f_analysistree})
+    
+    # --- AnalysisTree to KFPF interface
+    Set(testname at_kfpf_${setup})
+    Add_Test(${testname} ${MACRO_DIR}/run_at_kfpf.sh ${NumEvents} \"data/${setup}_test\")
+    Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "300")
+    Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
+    set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_c2f_ana})
+    Set(fixture_c2f_at_kfpf_interface fixture_c2f_at_kfpf_interface_${testname})
+    set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_c2f_at_kfpf_interface})
 
     # --- DataTreeQA input
     Set(testname c2f_datatreeqa_input_${setup})

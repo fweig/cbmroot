@@ -1,9 +1,10 @@
-void run_at_kfpf(const std::string& ATFile,
-                 int nEntries              = -1,
-                 const std::string& ATTree = "aTree") {
+void run_at_kfpf(int nEntries               = -1,
+                 const std::string& dataset = "test",
+                 const std::string& ATTree  = "aTree") {
   ATKFParticleFinder man;
+  const std::string ATFile = dataset + ".analysistree.root";
   man.InitInput(ATFile.c_str(), ATTree.c_str());
-  man.InitOutput("KFPF.pwgc2f.root");
+  man.InitOutput(std::string(dataset + "kfpftree.root"));
   man.SetPIDMode(1);
 
   CutsContainer cuts;
