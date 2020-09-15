@@ -76,8 +76,25 @@ public:
   Double_t GetStartY() const { return fStartY; }
   Double_t GetStartZ() const { return fStartZ; }
   Double_t GetStartT() const { return fStartT; }
+
+  /** @brief Mass of the associated particle
+   ** @return Particle mass [GeV]
+   **
+   ** The mass is taken from TDatabasePDG if the particle exists there.
+   ** For ions, the mass is calculated from the PDG code. The method
+   ** throws an error for unknown PDG codes.
+   **/
   Double_t GetMass() const;
+
+  /** @brief Charge of the associated particle
+   ** @return Particle charge [e]
+   **
+   ** The charge is taken from TDatabasePDG if the particle exists there.
+   ** For ions, the charge is calculated from the PDG code. The method
+   ** throws an error for unknown PDG codes.
+   **/
   Double_t GetCharge() const;
+
   Double_t GetEnergy() const;
   Double_t GetPt() const { return TMath::Sqrt(fPx * fPx + fPy * fPy); }
   Double_t GetP() const {

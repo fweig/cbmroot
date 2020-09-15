@@ -112,30 +112,66 @@ CbmMCTrack::~CbmMCTrack() {}
 
 // -----   Public method GetMass   -----------------------------------------
 Double_t CbmMCTrack::GetMass() const {
+
   if (TDatabasePDG::Instance()) {
     TParticlePDG* particle = TDatabasePDG::Instance()->GetParticle(fPdgCode);
-    if (particle)
-      return particle->Mass();
-    else
+
+    // Particle found in TDatabasePDG
+    if (particle) return particle->Mass();
+
+    // Ions may not be in the TDatabasePDG, but their mass number is encoded
+    // in the PDG code like 10LZZZAAAI, where L is strangeness, Z is charge,
+    // A is number of nucleons, and I is isomer level.
+    else if (fPdgCode > 1000000000) {
+      Int_t a = (fPdgCode % 10000) / 10;
+      return Double_t(a) * CbmProtonMass();
+    }
+
+    // Cherenkov photons
+    else if (fPdgCode == 50000050)
       return 0.;
-  }
-  return 0.;
+
+    // Unknown particle type
+    else
+      LOG(fatal) << "CbmMCTrack: Unknown PDG code " << fPdgCode;
+  }  //? Instance of TDatabasePDG
+
+  LOG(fatal) << "CbmMCTrack: No TDatabasePDG";
+  return -1.;
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Public method GetCharge   ---------------------------------------
 Double_t CbmMCTrack::GetCharge() const {
+
   if (TDatabasePDG::Instance()) {
     TParticlePDG* particle = TDatabasePDG::Instance()->GetParticle(fPdgCode);
-    if (particle)
-      return particle->Charge();
-    else
+
+    // Particle found in TDatabasePDG
+    if (particle) return particle->Charge();
+
+    // Ions may not be in the TDatabasePDG, but their charge number is encoded
+    // in the PDG code like 10LZZZAAAI, where L is strangeness, Z is charge,
+    // A is number of nucleons, and I is isomer level.
+    else if (fPdgCode > 1000000000) {
+      return Double_t((fPdgCode % 10000000) / 10000);
+    }
+
+    // Cherenkov photons
+    else if (fPdgCode == 50000050)
       return 0.;
-  }
+
+    // Unknown particle type
+    else
+      LOG(fatal) << "CbmMCTrack: Unknown PDG code " << fPdgCode;
+  }  //? Instance of TDatabasePDG
+
+  LOG(fatal) << "CbmMCTrack: No TDatabasePDG";
   return 0.;
 }
 // -------------------------------------------------------------------------
+
 
 // -----   Public method GetRapidity   -------------------------------------
 Double_t CbmMCTrack::GetRapidity() const {
