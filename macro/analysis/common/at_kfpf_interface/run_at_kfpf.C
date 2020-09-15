@@ -4,7 +4,7 @@ void run_at_kfpf(int nEntries               = -1,
   ATKFParticleFinder man;
   const std::string ATFile = dataset + ".analysistree.root";
   man.InitInput(ATFile.c_str(), ATTree.c_str());
-  man.InitOutput(std::string(dataset + "kfpftree.root"));
+  man.InitOutput(std::string(dataset + ".kfpftree.root"));
   man.SetPIDMode(1);
 
   CutsContainer cuts;
