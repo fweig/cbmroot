@@ -78,8 +78,12 @@ private:
   static Double_t fgSizeY;  ///< SPADIC half size in y [cm]
   static Double_t fgSizeZ;  ///< SPADIC half size in z [cm]
 
+  const std::vector<Int_t> fVecSpadicChannels = {
+    23, 7,  22, 6,  21, 19, 5,  20, 18, 4,  3,  17, 16, 2, 1,  0,
+    31, 30, 29, 15, 14, 28, 27, 13, 11, 26, 12, 10, 25, 9, 24, 8};
 
-  ClassDef(CbmTrdParSpadic, 1)  // Definition of SPADIC ASIC parameters
+
+  ClassDef(CbmTrdParSpadic, 2)  // Definition of SPADIC ASIC parameters
 };
 
 #endif

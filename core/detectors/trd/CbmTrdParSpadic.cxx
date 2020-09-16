@@ -189,10 +189,8 @@ Int_t CbmTrdParSpadic::GetAsicChAddress(const Int_t asicChannel) {
 
   Int_t address = -1;
   // Channel mapping based on channels 0-15 on the odd eLink and 16-31 on the even eLink, check setting in the unpacker for your dataset
-  std::vector<Int_t> chvec = {23, 7,  22, 6,  21, 19, 5,  20, 18, 4,  3,
-                              17, 16, 2,  1,  0,  31, 30, 29, 15, 14, 28,
-                              27, 13, 11, 26, 12, 10, 25, 9,  24, 8};
-  address                  = chvec.at(asicChannel);
+
+  address = fVecSpadicChannels.at(asicChannel);
   return address;
 }
 
