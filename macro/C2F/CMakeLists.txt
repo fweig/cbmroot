@@ -78,7 +78,7 @@ If( ($ENV{ctest_model} MATCHES Nightly) OR ($ENV{ctest_model} MATCHES Weekly) )
     Add_Test(${testname} ${MACRO_DIR}/run_at_kfpf.sh ${NumEvents} \"data/${setup}_test\")
     Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "300")
     Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
-    set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_c2f_ana})
+    set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_c2f_analysistree})
     Set(fixture_c2f_at_kfpf_interface fixture_c2f_at_kfpf_interface_${testname})
     set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_c2f_at_kfpf_interface})
 

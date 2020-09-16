@@ -15,4 +15,9 @@ void run_at_kfpf(int nEntries               = -1,
   man.SetCuts(cuts);
 
   man.Run(nEntries);
+  
+  // -----   Finish   -------------------------------------------------------
+  std::cout << " Test passed" << std::endl;
+  std::cout << " All ok " << std::endl;
+  
 }
