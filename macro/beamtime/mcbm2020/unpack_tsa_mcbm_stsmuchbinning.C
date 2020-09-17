@@ -36,6 +36,12 @@ void unpack_tsa_mcbm_stsmuchbinning(TString inFile  = "",
   TList* parFileList = new TList();
   TString paramDir   = srcDir + "/macro/beamtime/mcbm2020/";
 
+  // --- Load the geometry setup ----
+  // This is currently only required by the TRD
+  std::string geoSetupTag = "mcbm_beam_2020_03";
+  CbmSetup* geoSetup      = CbmSetup::Instance();
+  geoSetup->LoadSetup(geoSetupTag.data());
+
   TString paramFileSts       = paramDir + "mStsPar.par";
   TObjString* parStsFileName = new TObjString(paramFileSts);
   parFileList->Add(parStsFileName);
@@ -44,8 +50,18 @@ void unpack_tsa_mcbm_stsmuchbinning(TString inFile  = "",
   TObjString* parMuchFileName = new TObjString(paramFileMuch);
   parFileList->Add(parMuchFileName);
 
-  TString paramDirTrd = srcDir + "/parameters/trd/trd_v18q_mcbm";
-  parFileList->Add(new TObjString(Form("%s.asic.par", paramDirTrd.Data())));
+  // ---- Trd ----
+  TString geoTagTrd = "";
+  if (geoSetup->GetGeoTag(ECbmModuleId::kTrd, geoTagTrd)) {
+    TString paramFilesTrd(
+      Form("%s/parameters/trd/trd_%s", srcDir.Data(), geoTagTrd.Data()));
+    std::vector<std::string> paramFilesVecTrd;
+    CbmTrdParManager::GetParFileExtensions(&paramFilesVecTrd);
+    for (auto parIt : paramFilesVecTrd) {
+      parFileList->Add(
+        new TObjString(Form("%s.%s.par", paramFilesTrd.Data(), parIt.data())));
+    }
+  }
 
   TString paramFileTof       = paramDir + "mTofPar.par";
   TObjString* parTofFileName = new TObjString(paramFileTof);

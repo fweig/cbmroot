@@ -3,7 +3,7 @@
  * Created Date: Wednesday March 25th 2020
  * Author: Pascal Raisig -- praisig@ikf.uni-frankfurt.de
  * -----
- * Last Modified: Wednesday March 25th 2020 15:00:38
+ * Last Modified: Thursday September 17th 2020 17:20:43
  * Modified By: Pascal Raisig
  * -----
  * Purpose: macro to test and run mCbm2020 trd unpacking
@@ -18,15 +18,25 @@
 #include <TList.h>
 #include <TObjString.h>
 #include <TString.h>
+#include <TSystem.h>
 
+// Includes needed for IDE
+#if !defined(__CLING__)
+
+#include "FairEventHeader.h"
 #include "FairLogger.h"
+#include "FairParAsciiFileIo.h"
 #include "FairRootFileSink.h"
 #include "FairRunOnline.h"
 #include "FairRuntimeDb.h"
 
-// #include "CbmMcbm2018Source.h"
-// #include "CbmMcbm2018UnpackerTaskTrdR.h"
-// #include "CbmTbEvent.h"
+#include "CbmDefs.h"
+#include "CbmMcbm2018Source.h"
+#include "CbmMcbm2018UnpackerTaskTrdR.h"
+#include "CbmMcbmUnpack.h"
+#include "CbmSetup.h"
+
+#endif
 
 FairRunOnline* run = nullptr;
 
@@ -36,18 +46,17 @@ void MonitorTrd(TString inFile           = "",
                 Int_t iServerRefreshRate = 100,
                 UInt_t uRunId            = 0,
                 UInt_t nrEvents          = 0,
-                TString outDir           = "data",
-                TString inDir            = "") {
+                std::string geoSetupTag  = "mcbm_beam_2020_03") {
+
+  std::string myName = "MonitorTrd";
+
   // --- Specify number of events to be produced.
   // --- -1 means run until the end of the input file.
   Int_t nEvents = -1;
 
-  // inFile = "/home/praisig/CBM/software/testEnv/data/desy2019/r0070_20190831_0159_0000.tsa"; // FIXME: This is just for testing smarter solution needed! One can probably iterate over files via SetInputDir and the code behind it.
-  // inFile = "/home/dspicker/desy2019/r0004_20200220_1951_0000.tsa";
+
   if ("" == inFile && "" == sHostname)
     inFile = "/local/dschmidt/tsa/pulser07.tsa";  // long pulser file
-  // outDir = "/home/praisig/CBM/software/testEnv/data/desy2019/data/";
-  //outDir = "output";
 
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
 
@@ -65,23 +74,28 @@ void MonitorTrd(TString inFile           = "",
   gLogger->SetLogVerbosityLevel("medium");
   //gLogger->SetLogVerbosityLevel("low");
 
+  // -----   Load the geometry setup   -------------------------------------
+  std::cout << std::endl;
+  std::cout << "-I- " << myName.data() << ": Loading setup " << geoSetupTag
+            << std::endl;
+  CbmSetup* geoSetup = CbmSetup::Instance();
+  geoSetup->LoadSetup(geoSetupTag.data());
+  // geoSetup->Print();
+
   // --- Define parameter files
+  // ---- Trd ----
   TList* parFileList = new TList();
-
-  //  adjust to required parameter files
-  // TString paramDirTrd = srcDir + "/parameters/trd/trd_ikfLabOneSpadic";
-  TString paramDirTrd = srcDir + "/parameters/trd/trd_v18q_mcbm";
-
-  parFileList->Add(new TObjString(Form("%s.asic.par", paramDirTrd.Data())));
-  // parFileList->Add(new TObjString(Form("%s.digi.par", paramDirTrd.Data())));
-  // parFileList->Add(new TObjString(Form("%s.gas.par", paramDirTrd.Data())));
-  // parFileList->Add(new TObjString(Form("%s.gain.par", paramDirTrd.Data())));
-
-  for (auto parFileVecIt : *parFileList) {
-    LOG(debug) << Form("TrdParams - %s - added to parameter file list\n",
-                       parFileVecIt->GetName());
+  TString geoTagTrd  = "";
+  if (geoSetup->GetGeoTag(ECbmModuleId::kTrd, geoTagTrd)) {
+    TString paramFilesTrd(
+      Form("%s/parameters/trd/trd_%s", srcDir.Data(), geoTagTrd.Data()));
+    std::vector<std::string> paramFilesVecTrd;
+    CbmTrdParManager::GetParFileExtensions(&paramFilesVecTrd);
+    for (auto parIt : paramFilesVecTrd) {
+      parFileList->Add(
+        new TObjString(Form("%s.%s.par", paramFilesTrd.Data(), parIt.data())));
+    }
   }
-
 
   // --- Set debug level
   gDebug = 0;
@@ -102,25 +116,6 @@ void MonitorTrd(TString inFile           = "",
   //  unpacker_trdR ->SetIgnoreOverlapMs(); /// Default is kTRUE
 
   unpacker_trdR->SetWriteOutput(kFALSE);
-  /*
-  unpacker_trdR->SetDebugWriteOutput(); // write rawMessage vector to file
-*/
-  //     // TODO: check trdR task for further needed settings
-
-  //     // Use this switch to pass run specific settings to the unpacker task
-  //   switch( uRunId )
-  //   {
-  //     /*
-  //      case 159:
-  //      {
-
-  //         break;
-  //      } // 159
-  //     */
-
-  //      default:
-  //         break;
-  //   } // switch( uRunId )
 
   //   // --- Source task
   CbmMcbm2018Source* source = new CbmMcbm2018Source();
@@ -133,12 +128,8 @@ void MonitorTrd(TString inFile           = "",
     source->SetSubscriberHwm(10);
   }  // else of if( "" != inFile )
 
-  // source->SetInputDir(inDir);
-  source->AddUnpacker(
-    unpacker_trdR,
-    0x40,
-    ECbmModuleId::
-      kTrd);  // Trd flibId (0x40) as at desy2019. kTrd defined in CbmDefs.h
+  source->AddUnpacker(unpacker_trdR, 0x40, ECbmModuleId::kTrd);
+  // Trd flibId (0x40) as at desy2019. kTrd defined in CbmDefs.h
 
   source->SetSubscriberHwm(1000);
 
