@@ -1,7 +1,63 @@
 stages:
-  - check
+  - checkRebase
+  - checkFormat
   - build
   - documentation
+
+RebaseCheck:
+  stage: checkRebase
+  tags:
+    - CbmRoot
+  only:
+    refs:
+      - merge_requests
+    variables:
+      - $CI_MERGE_REQUEST_PROJECT_PATH == "computing/cbmroot" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"
+  script:
+    # Get the upstream repository manually. I did not find any other way to have it for
+    # comparisson
+    # Check if a rebase is needed
+    # If a rebase is needed stop immediately
+    - scripts/connect_upstream_repo.sh $CI_MERGE_REQUEST_PROJECT_URL
+    - git fetch upstream
+    - hash1=$(git show-ref upstream/master | cut -f1 -d' ')
+    - hash2=$(git merge-base upstream/master origin/$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME)
+    - echo "${hash1}"
+    - echo "${hash2}"
+    - if [ "${hash1}" = "${hash2}" ]; then
+    -   echo "No rebase required"
+    -   exit 0
+    - else
+    -   echo "The Merge Request is not up-to-date"
+    -   echo "Rebase is required"
+    -   exit 1
+    - fi
+
+FormatCheck:
+  stage: checkFormat
+  tags:
+    - CbmRoot
+  only:
+    refs:
+      - merge_requests
+    variables:
+      - $CI_MERGE_REQUEST_PROJECT_PATH == "computing/cbmroot" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"
+  script:
+    # Get the upstream repository manually. I did not find any other way to have it for
+    # comparisson
+    - scripts/connect_upstream_repo.sh $CI_MERGE_REQUEST_PROJECT_URL
+    - git fetch upstream
+    - echo "export FAIRSOFT_VERSION=jun19p1" > env.sh
+    - echo "export FAIRROOT_VERSION=v18.2.0" >> env.sh
+    - echo "export SIMPATH=/cvmfs/fairroot.gsi.de/fairsoft/\${FAIRSOFT_VERSION}" >> env.sh
+    - echo "export FAIRROOTPATH=/cvmfs/fairroot.gsi.de/fairroot/\${FAIRROOT_VERSION}_fairsoft-\${FAIRSOFT_VERSION}" >> env.sh
+    - echo "export BUILDDIR=$PWD/build" >> env.sh
+    - echo "export SOURCEDIR=$PWD" >> env.sh
+    - echo "export PATH=/cvmfs/fairroot.gsi.de/clang-format-8.0.1:\$SIMPATH/bin:$PATH:/cvmfs/it.gsi.de/compiler/llvm/6.0.1/bin/" >> env.sh
+    - echo "export LABEL=format-check_MR-\${CI_MERGE_REQUEST_IID}" >> env.sh
+    - echo "export FAIRROOT_FORMAT_BASE=upstream/\${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}" >> env.sh
+    - . ./env.sh && ctest -S cmake/scripts/checkformat.cmake -VV
+
   
 CbmRoot_Continuous:
   stage: build
@@ -59,30 +115,6 @@ CbmRoot_Continuous:
 #    - find . -name "all_*.par" -delete
 #    - cd ..
 
-FormatCheck:
-  stage: check
-  tags:
-    - CbmRoot
-  only:
-    refs:
-      - merge_requests
-    variables:
-      - $CI_MERGE_REQUEST_PROJECT_PATH == "computing/cbmroot" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"
-  script:
-    # Get the upstream repository manually. I did not find any other way to have it for
-    # comparisson
-    - scripts/connect_upstream_repo.sh $CI_MERGE_REQUEST_PROJECT_URL
-    - git fetch upstream
-    - echo "export FAIRSOFT_VERSION=jun19p1" > env.sh
-    - echo "export FAIRROOT_VERSION=v18.2.0" >> env.sh
-    - echo "export SIMPATH=/cvmfs/fairroot.gsi.de/fairsoft/\${FAIRSOFT_VERSION}" >> env.sh
-    - echo "export FAIRROOTPATH=/cvmfs/fairroot.gsi.de/fairroot/\${FAIRROOT_VERSION}_fairsoft-\${FAIRSOFT_VERSION}" >> env.sh
-    - echo "export BUILDDIR=$PWD/build" >> env.sh
-    - echo "export SOURCEDIR=$PWD" >> env.sh
-    - echo "export PATH=/cvmfs/fairroot.gsi.de/clang-format-8.0.1:\$SIMPATH/bin:$PATH:/cvmfs/it.gsi.de/compiler/llvm/6.0.1/bin/" >> env.sh
-    - echo "export LABEL=format-check_MR-\${CI_MERGE_REQUEST_IID}" >> env.sh
-    - echo "export FAIRROOT_FORMAT_BASE=upstream/\${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}" >> env.sh
-    - . ./env.sh && ctest -S cmake/scripts/checkformat.cmake -VV
 
 CbmRoot_Merge:
   stage: build
