@@ -102,7 +102,8 @@ public:
   virtual ~CbmTrdRawMessageSpadic();
 
   /** Assignment Operator **/
-  CbmTrdRawMessageSpadic operator=(const CbmTrdRawMessageSpadic&);
+  // CbmTrdRawMessageSpadic operator=(const CbmTrdRawMessageSpadic&);
+  CbmTrdRawMessageSpadic& operator=(const CbmTrdRawMessageSpadic&) = default;
 
   // -----------------  Getters   -----------------------------
 
@@ -117,7 +118,7 @@ public:
   const std::vector<std::int16_t> GetSamples() const { return fSamples; }
 
   /** Returns the full time in nanoseconds */
-  Double_t GetFullTime_ns() { return fFullTime * 62.5; }
+  Double_t GetTime() const { return fFullTime * 62.5; }
 
   /** Returns the value of the sample with the highest value. */
   int16_t GetMaxAdc();
