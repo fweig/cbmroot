@@ -67,11 +67,7 @@ ENDIF (SSE_FOUND)
 Set(LINKDEF DataTreeCbmInterfaceLinkDef.h)
 Set(LIBRARY_NAME DataTreeCbmInterface)
 
-If(UNIX AND NOT APPLE)
-  Set(_DataTree_LIB  DataTree.so)
-  Else()
-  Set(_DataTree_LIB  DataTree.dylib)
-EndIf()
+Set(_DataTree_LIB  DataTree)
 
 Set(DEPENDENCIES 
 	${_DataTree_LIB} 

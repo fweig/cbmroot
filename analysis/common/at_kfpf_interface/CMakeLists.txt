@@ -44,11 +44,7 @@ ENDIF (SSE_FOUND)
 
 Set(LINKDEF AnalysisTreeKfpfInterfaceLinkDef.h)
 
-If(UNIX AND NOT APPLE)
-  Set(_AnalysisTree_LIB  AnalysisTreeBase.so AnalysisTreeInfra.so)
-  Else()
-  Set(_AnalysisTree_LIB  AnalysisTreeBase.dylib AnalysisTreeInfra.dylib)
-EndIf()
+Set(_AnalysisTree_LIB AnalysisTreeBase AnalysisTreeInfra)
 
 Set(DEPENDENCIES 
 	${_AnalysisTree_LIB} 
