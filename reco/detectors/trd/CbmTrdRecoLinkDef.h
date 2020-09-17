@@ -1,4 +1,4 @@
-// $Id: TrdRecLinkDef.h $
+// $Id: TrdRecoLinkDef.h $
 
 #ifdef __CINT__
 
