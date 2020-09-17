@@ -75,6 +75,9 @@ public:
   void SetDebugWriteOutput(Bool_t bFlagIn = kTRUE) {
     fbDebugWriteOutput = bFlagIn;
   }
+  void SetDebugSortOutput(Bool_t bFlagIn = kTRUE) {
+    fbDebugSortOutput = bFlagIn;
+  }
   void SetSystemIdentifier(std::uint8_t id) { fSystemIdentifier = id; }
   void SetTimeOffsetNs(Double_t dOffsetIn = 0.0);
 
@@ -92,6 +95,8 @@ public:
     fdMsSizeInNs = msSizeInNs;
   }  // TODO handle this with asic parameter files
 
+  void SetIgnoreOverlapMs(Bool_t bFlagIn = kTRUE);
+
   void SetFirstChannelsElinkEven(bool isEven) {
     fIsFirstChannelsElinkEven = isEven;
   }  /// < Set wether channels 00..15 are on the even (true) or the odd (false and default) elink
@@ -106,14 +111,18 @@ private:
     fbWriteOutput;  ///< If ON the output Vector of digis is written to disk.
   Bool_t
     fbDebugWriteOutput;  ///< If ON the output vector of raw messages is filled and written to disk.
+  Bool_t fbDebugSortOutput =
+    kTRUE;  ///< If ON the output vector of raw messages is sorted in time.
   Bool_t
     fbBaselineAvg;  ///< Set to true if Baseline Averaging is activated in Spadic.
   std::uint8_t
     fSystemIdentifier;  ///< by default set to: fles::SubsystemIdentifier::TRD, changable via setter
   Double_t
     fdMsSizeInNs;  ///< microslice size in ns to be passed to the unpacker // TODO handle this with asic parameter files
+
   bool fIsFirstChannelsElinkEven =
     false;  ///< define if the first 16 channels (00..15) are found on the even (set true) or odd (false) eLinkId, default for mCbm2020 is false thus, initialized as false
+
 
   TString fMonitorHistoFileName;
   std::vector<bool> fIsActiveHistoVec;  // Define active histos in algo

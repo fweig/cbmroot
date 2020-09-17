@@ -179,6 +179,7 @@ Bool_t CbmMcbm2018UnpackerTaskTrdR::InitContainers() {
   fUnpackerAlgo->SetDebugMonitorMode(fbDebugMonitorMode);
   fUnpackerAlgo->SetWriteOutput(fbWriteOutput);
   fUnpackerAlgo->SetDebugWriteOutput(fbDebugWriteOutput);
+  fUnpackerAlgo->SetDebugSortOutput(fbDebugSortOutput);
   fUnpackerAlgo->SetBaselineAvg(fbBaselineAvg);
   // Activate histograms in unpacker
   fUnpackerAlgo->SetActiveHistograms(fIsActiveHistoVec);
@@ -252,4 +253,7 @@ void CbmMcbm2018UnpackerTaskTrdR::SetTimeOffsetNs(Double_t dOffsetIn) {
   if (fUnpackerAlgo != nullptr) fUnpackerAlgo->SetTimeOffsetNs(dOffsetIn);
 }
 
+void CbmMcbm2018UnpackerTaskTrdR::SetIgnoreOverlapMs(Bool_t bFlagIn) {
+  fUnpackerAlgo->SetIgnoreOverlapMs(bFlagIn);
+}
 ClassImp(CbmMcbm2018UnpackerTaskTrdR)
