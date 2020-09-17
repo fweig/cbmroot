@@ -48,7 +48,7 @@ CbmMcbm2018UnpackerAlgoTrdR::CbmMcbm2018UnpackerAlgoTrdR()
   , fNbUnkownWord(0)
   , fNbSpadicEpochMsg(0)
   , fParContList(nullptr)
-  , fRefGeoTag("trd_v18q_mcbm")
+  , fRefGeoTag("trd_v20a_mcbm")
   , fAsicPar(nullptr)
   , fDigiPar(nullptr)
   , fGasPar(nullptr)
@@ -211,6 +211,14 @@ Bool_t CbmMcbm2018UnpackerAlgoTrdR::ProcessTs(const fles::Timeslice& ts) {
                   [](const CbmTrdDigi& a, const CbmTrdDigi& b) -> bool {
                     return a.GetTime() < b.GetTime();
                   });
+        if (fbDebugWriteOutput && fbDebugSortOutput) {
+          std::sort(fTrdRawMessageVector->begin(),
+                    fTrdRawMessageVector->end(),
+                    [](const CbmTrdRawMessageSpadic& a,
+                       const CbmTrdRawMessageSpadic& b) -> bool {
+                      return a.GetTime() < b.GetTime();
+                    });
+        }
 
         LOG(error) << "Failed to process ts " << fCurrTsIdx << " MS " << MsIndex
                    << " for component " << uMsComp;
@@ -857,7 +865,7 @@ CbmMcbm2018UnpackerAlgoTrdR::MakeDigi(CbmTrdRawMessageSpadic raw) {
   Float_t digiCharge =
     (Float_t) raw.GetMaxAdc()
     + 256;  // REMARK raw.GetMaxADC returns a the value in the range of -256 til 255. However, the digiCharge is stored as unsigned.  // TODO make Settable
-  ULong64_t digiTime = raw.GetFullTime_ns() - fdTimeOffsetNs;
+  ULong64_t digiTime = raw.GetTime() - fdTimeOffsetNs;
   // Int_t digiTriggerType = raw.GetHitType() ; // Spadic::TriggerType this does not work 03/27/2020 - PR digiTriggerType is not Spadic::TriggerType!
   Int_t digiTriggerType = raw.GetHitType();
   if (digiTriggerType == 1)

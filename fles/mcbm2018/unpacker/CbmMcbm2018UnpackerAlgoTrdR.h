@@ -126,6 +126,9 @@ public:
   void SetDebugWriteOutput(Bool_t bFlagIn = kTRUE) {
     fbDebugWriteOutput = bFlagIn;
   }
+  void SetDebugSortOutput(Bool_t bFlagIn = kTRUE) {
+    fbDebugWriteOutput = bFlagIn;
+  }
   inline void SetTimeOffsetNs(Double_t dOffsetIn = 0.0) {
     fdTimeOffsetNs = dOffsetIn;
   }
@@ -194,6 +197,8 @@ private:
     fbWriteOutput;  ///< If ON the output Vector of digis is written to disk.
   Bool_t
     fbDebugWriteOutput;  ///< If ON the raw messages output vector is filled and written to disk.
+  Bool_t fbDebugSortOutput =
+    kTRUE;  ///< If ON the raw messages output vector is sorted within time.
   Bool_t
     fbBaselineAvg;  ///< Set to true if Baseline Averaging is activated in Spadic.
 
