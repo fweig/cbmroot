@@ -435,6 +435,54 @@ bool CbmTrdParManager::CreateParFilesFromGeometry(TString outDir) {
   return true;  // check if rtdb->writeContainers() could be used to run a bool check and return that bool instead of saveOutput void
 }
 
+// ---- GetParSetList ----
+void CbmTrdParManager::GetParSetList(std::vector<CbmTrdParSet*>* parSetList) {
+  // std::vector<CbmTrdParSet*> parSetList;
+  CbmTrdParSet* parSet = nullptr;
+  for (Int_t iParSetType = (Int_t) ECbmTrdParSets::kBegin;
+       iParSetType <= (Int_t) ECbmTrdParSets::kEnd;
+       iParSetType++) {
+    switch (iParSetType) {
+      case (Int_t) ECbmTrdParSets::kCbmTrdParSetAsic:
+        parSet = new CbmTrdParSetAsic();
+        break;
+      case (Int_t) ECbmTrdParSets::kCbmTrdParSetDigi:
+        parSet = new CbmTrdParSetDigi();
+        break;
+      case (Int_t) ECbmTrdParSets::kCbmTrdParSetGain:
+        parSet = new CbmTrdParSetGain();
+        break;
+      case (Int_t) ECbmTrdParSets::kCbmTrdParSetGas:
+        parSet = new CbmTrdParSetGas();
+        break;
+    }
+    parSetList->emplace_back(parSet);
+  }
+}
+
+// ---- GetParFileExtensions ----
+void CbmTrdParManager::GetParFileExtensions(std::vector<std::string>* vec) {
+  for (Int_t iParSetType = (Int_t) ECbmTrdParSets::kBegin;
+       iParSetType <= (Int_t) ECbmTrdParSets::kEnd;
+       iParSetType++) {
+    switch (iParSetType) {
+      case (Int_t) ECbmTrdParSets::kCbmTrdParSetAsic:
+        vec->emplace_back("asic");
+        break;
+      case (Int_t) ECbmTrdParSets::kCbmTrdParSetDigi:
+        vec->emplace_back("digi");
+        break;
+      case (Int_t) ECbmTrdParSets::kCbmTrdParSetGain:
+        vec->emplace_back("gas");
+        break;
+      case (Int_t) ECbmTrdParSets::kCbmTrdParSetGas:
+        vec->emplace_back("gain");
+        break;
+    }
+  }
+}
+
+
 // void CbmTrdParManager::FillDigiPar()
 // {
 //   printf("CbmTrdParManager::FillDigiPar()\n");

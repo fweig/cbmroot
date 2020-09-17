@@ -21,6 +21,7 @@
 #include "FairTask.h"  // for FairTask, InitStatus
 
 #include "CbmTrdHardwareSetupR.h"  //for CbmTrdHardwareSetupR
+#include "CbmTrdParSet.h"          // for GetParSetList
 
 class CbmTrdGeoHandler;
 class CbmTrdParSetAsic;
@@ -34,49 +35,65 @@ class CbmTrdParSetGas;
  */
 class CbmTrdParManager : public FairTask {
 public:
+  enum class ECbmTrdParSets : Int_t {
+    kBegin            = 0,
+    kCbmTrdParSetAsic = kBegin,
+    kCbmTrdParSetDigi,
+    kCbmTrdParSetGain,
+    kCbmTrdParSetGas,
+    kEnd = kCbmTrdParSetGas
+  };
   /**
-    * \brief Default constructor.
-    * \param[in] fasp switch between ASICs. Default SPADIC (fasp == kFALSE)
-    * \sa SetFASP(Bool_t) 
-    **/
+   * @brief enumerator for organising the existing parameter sets of the trd
+   *
+   */
+
+  /**
+   * \brief Default constructor.
+   * \param[in] fasp switch between ASICs. Default SPADIC (fasp == kFALSE)
+   * \sa SetFASP(Bool_t)
+   **/
   CbmTrdParManager(Bool_t fasp = kFALSE);
 
   /**
-    * \brief Destructor.
-    **/
+   * \brief Destructor.
+   **/
   virtual ~CbmTrdParManager();
 
   /**
-    * \breif Inherited from FairTask.
-    **/
+   * \brief Inherited from FairTask.
+   **/
   virtual InitStatus Init();
 
   /**
-    * \brief Inherited from FairTask.
-    **/
+   * \brief Inherited from FairTask.
+   **/
   virtual void SetParContainers();
 
   /**
-    * \brief Change the default ASIC to FASP
-    **/
+   * \brief Change the default ASIC to FASP
+   **/
   virtual void SetFASP(Bool_t set = kTRUE) { fFASP = set; }
 
   /**
-    * \brief Inherited from FairTask.
-    **/
+   * \brief Inherited from FairTask.
+   **/
   virtual void Exec(Option_t* option);
 
   /**
-    * \brief Inherited from FairTask.
-    **/
+   * \brief Inherited from FairTask.
+   **/
   virtual void Finish();
 
   /**
-    * \brief Create parameter files from geometry in gGeoManager
-    * A run macro can be found in the trd cbm.gsi git repository
-    **/
+   * \brief Create parameter files from geometry in gGeoManager
+   * A run macro can be found in the trd cbm.gsi git repository
+   **/
   bool CreateParFilesFromGeometry(bool createRootFileOutput,
                                   TString outDir = "");
+
+  static void GetParSetList(std::vector<CbmTrdParSet*>* parSetList);
+  static void GetParFileExtensions(std::vector<std::string>* vec);
 
 private:
   void CreateModuleParameters(const TString& path);
@@ -103,4 +120,4 @@ private:
 
   ClassDef(CbmTrdParManager, 2)
 };
-#endif  //CBMTRDPARMANAGER_H
+#endif  // CBMTRDPARMANAGER_H
