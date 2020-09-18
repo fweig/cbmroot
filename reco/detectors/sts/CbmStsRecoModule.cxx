@@ -115,12 +115,12 @@ void CbmStsRecoModule::Reconstruct() {
   // --- Sort clusters by time
   std::sort(fClustersF.begin(),
             fClustersF.end(),
-            [](CbmStsCluster& cluster1, CbmStsCluster& cluster2) {
+            [](const CbmStsCluster& cluster1, const CbmStsCluster& cluster2) {
               return (cluster1.GetTime() < cluster2.GetTime());
             });
   std::sort(fClustersB.begin(),
             fClustersB.end(),
-            [](CbmStsCluster& cluster1, CbmStsCluster& cluster2) {
+            [](const CbmStsCluster& cluster1, const CbmStsCluster& cluster2) {
               return (cluster1.GetTime() < cluster2.GetTime());
             });
 
