@@ -3,7 +3,7 @@
  * Created Date: Wednesday March 25th 2020
  * Author: Pascal Raisig -- praisig@ikf.uni-frankfurt.de
  * -----
- * Last Modified: Thursday September 17th 2020 17:20:43
+ * Last Modified: Friday September 18th 2020 10:26:30
  * Modified By: Pascal Raisig
  * -----
  * Purpose: macro to test and run mCbm2020 trd unpacking
@@ -86,7 +86,14 @@ void MonitorTrd(TString inFile           = "",
   // ---- Trd ----
   TList* parFileList = new TList();
   TString geoTagTrd  = "";
-  if (geoSetup->GetGeoTag(ECbmModuleId::kTrd, geoTagTrd)) {
+  bool isActiveTrd =
+    (geoSetup->GetGeoTag(ECbmModuleId::kTrd, geoTagTrd)) ? true : false;
+  if (!isActiveTrd) {
+    LOG(warning) << Form(
+      "TRD - parameter loading - Trd not found in CbmSetup(%s) -> parameters "
+      "can not be loaded correctly!",
+      geoSetupTag.data());
+  } else {
     TString paramFilesTrd(
       Form("%s/parameters/trd/trd_%s", srcDir.Data(), geoTagTrd.Data()));
     std::vector<std::string> paramFilesVecTrd;
@@ -128,7 +135,7 @@ void MonitorTrd(TString inFile           = "",
     source->SetSubscriberHwm(10);
   }  // else of if( "" != inFile )
 
-  source->AddUnpacker(unpacker_trdR, 0x40, ECbmModuleId::kTrd);
+  if (isActiveTrd) source->AddUnpacker(unpacker_trdR, 0x40, ECbmModuleId::kTrd);
   // Trd flibId (0x40) as at desy2019. kTrd defined in CbmDefs.h
 
   source->SetSubscriberHwm(1000);

@@ -52,7 +52,14 @@ void unpack_tsa_mcbm_stsmuchbinning(TString inFile  = "",
 
   // ---- Trd ----
   TString geoTagTrd = "";
-  if (geoSetup->GetGeoTag(ECbmModuleId::kTrd, geoTagTrd)) {
+  bool isActiveTrd =
+    (geoSetup->GetGeoTag(ECbmModuleId::kTrd, geoTagTrd)) ? true : false;
+  if (!isActiveTrd) {
+    LOG(warning) << Form(
+      "TRD - parameter loading - Trd not found in CbmSetup(%s) -> parameters "
+      "can not be loaded correctly!",
+      geoSetupTag.data());
+  } else {
     TString paramFilesTrd(
       Form("%s/parameters/trd/trd_%s", srcDir.Data(), geoTagTrd.Data()));
     std::vector<std::string> paramFilesVecTrd;
@@ -263,11 +270,8 @@ void unpack_tsa_mcbm_stsmuchbinning(TString inFile  = "",
   //  source->SetInputDir(inDir);
   source->AddUnpacker(unpacker_sts, 0x10, ECbmModuleId::kSts);    //STS xyter
   source->AddUnpacker(unpacker_much, 0x50, ECbmModuleId::kMuch);  //MUCH xyter
-  source->AddUnpacker(
-    unpacker_trdR,
-    0x40,
-    ECbmModuleId::
-      kTrd);  // Trd flibId (0x40) as at desy2019. kTrd defined in CbmDefs.h
+  if (isActiveTrd)
+    source->AddUnpacker(unpacker_trdR, 0x40, ECbmModuleId::kTrd);  // Trd
   source->AddUnpacker(unpacker_tof, 0x60, ECbmModuleId::kTof);  //gDPB A & B & C
   source->AddUnpacker(unpacker_tof, 0x90, ECbmModuleId::kTof);  //gDPB T0 A & B
   source->AddUnpacker(unpacker_rich, 0x30, ECbmModuleId::kRich);  //RICH trb
