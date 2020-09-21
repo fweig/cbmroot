@@ -5,6 +5,7 @@ set(CBMBASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/base)
 add_subdirectory(data)
 add_subdirectory(field)
 add_subdirectory(base)
+add_subdirectory(qa)
 
 add_subdirectory(detectors/trd)
 add_subdirectory(detectors/rich)
