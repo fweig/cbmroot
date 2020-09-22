@@ -8,7 +8,7 @@ void run_sim_urqmdtest(
   const string& geoFile =
     "/Users/slebedev/Development/cbm/data/sim/rich/urqmdtest/geosim.00000.root",
   const string& geoSetup = "sis100_electron",
-  int nEvents            = 5) {
+  int nEvents            = 1000) {
   TTree::SetMaxTreeSize(90000000000);
 
   remove(parFile.c_str());
@@ -26,6 +26,7 @@ void run_sim_urqmdtest(
   run.LoadSetup(geoSetup.c_str());
   run.SetTarget("Gold", 0.025, 2.5);
   run.SetBeamPosition(0., 0., 0.1, 0.1);
+  run.SetEngine(kGeant4);
   run.Run(nEvents);
 
   timer.Stop();

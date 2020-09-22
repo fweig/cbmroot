@@ -33,7 +33,6 @@ public:
   }
 
   static uint16_t GetDirichId(Int_t Address) {
-
     return ((Address >> 16) & 0xFFFF);
   }
 

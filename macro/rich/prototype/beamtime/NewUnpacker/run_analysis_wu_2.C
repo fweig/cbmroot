@@ -165,8 +165,8 @@ void run_analysis_wu_2(Bool_t generateCalib = kFALSE,
   fgCalibrator->SetCalibrationPeriod(50000000);
   fgCalibrator->SetInputFilename(
     "calibration_wu.root");  // does not actually import data - only defines
-    // the file that will be used if you specify mode etn_IMPORT
-    // Also note the (un)commented line in the end of the macro with export func
+  // the file that will be used if you specify mode etn_IMPORT
+  // Also note the (un)commented line in the end of the macro with export func
   if (generateCalib) {
     fgCalibrator->SetMode(etn_ONLINE);
   } else {

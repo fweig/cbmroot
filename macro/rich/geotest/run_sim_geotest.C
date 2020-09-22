@@ -7,7 +7,7 @@ void run_sim_geotest(
   const string& geoFile =
     "/Users/slebedev/Development/cbm/data/sim/rich/geotest/geosim.00000.root",
   const string& geoSetup = "sis100_electron",  //"mirror12_42",
-  int nEvents            = 1000) {
+  int nEvents            = 10) {
   TTree::SetMaxTreeSize(90000000000);
 
   remove(parFile.c_str());
@@ -46,7 +46,7 @@ void run_sim_geotest(
   run.SetTarget("Gold", 0.025, 2.5);
   run.SetBeamPosition(0., 0., 0.1, 0.1);
   //run.SetEngine(kGeant4);
-  run.StoreTrajectories(true);
+  //run.StoreTrajectories(true);
   run.Run(nEvents);
 
   timer.Stop();

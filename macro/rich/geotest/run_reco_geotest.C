@@ -10,7 +10,7 @@ void run_reco_geotest(
     "/Users/slebedev/Development/cbm/data/sim/rich/geotest/reco.00000.root",
   const string& geoSetup  = "sis100_electron",
   const string& resultDir = "rich_pipe_v1",  // "results_geotest_test/",
-  int nEvents             = 1000) {
+  int nEvents             = 10000) {
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
   FairLogger::GetLogger()->SetLogVerbosityLevel("LOW");
   TTree::SetMaxTreeSize(90000000000);

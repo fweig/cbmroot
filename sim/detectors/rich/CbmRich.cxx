@@ -44,19 +44,12 @@ std::map<TString, TGeoMedium*> CbmRich::fFixedMedia;
 CbmRich::CbmRich()
   : FairDetector("RICH", kTRUE, ToIntegralType(ECbmModuleId::kRich))
   , fPosIndex(0)
-  , fRegisterPhotonsOnSensitivePlane(false)
+  , fRegisterPhotonsOnSensitivePlane(true)
   , fRichPoints(new TClonesArray("CbmRichPoint"))
   , fRichRefPlanePoints(new TClonesArray("CbmRichPoint"))
   , fRichMirrorPoints(new TClonesArray("CbmRichPoint"))
   , fRotation(NULL)
   , fPositionRotation(NULL) {
-  /*
-     fRichPoints = ;
-     fRichRefPlanePoints = ;
-     fRichMirrorPoints = ;
-     fPosIndex = 0;
-     */
-
   fVerboseLevel = 1;
 }
 
@@ -70,7 +63,7 @@ CbmRich::CbmRich(const char* name,
                  Double_t rz)
   : FairDetector(name, active, ToIntegralType(ECbmModuleId::kRich))
   , fPosIndex(0)
-  , fRegisterPhotonsOnSensitivePlane(false)
+  , fRegisterPhotonsOnSensitivePlane(true)
   , fRichPoints(new TClonesArray("CbmRichPoint"))
   , fRichRefPlanePoints(new TClonesArray("CbmRichPoint"))
   , fRichMirrorPoints(new TClonesArray("CbmRichPoint"))
@@ -95,16 +88,7 @@ CbmRich::~CbmRich() {
   }
 }
 
-void CbmRich::Initialize() {
-  FairDetector::Initialize();
-  FairRun* fRun = FairRun::Instance();
-
-  fIsGeant4 = std::string(fRun->GetName()) == "TGeant4";
-  LOG(info) << "CbmRich::Initialize() Transport engine:"
-            << std::string(fRun->GetName());
-  LOG(info) << "CbmRich::Initialize() fIsGeant4:"
-            << (fIsGeant4 ? "true" : "false");
-}
+void CbmRich::Initialize() { FairDetector::Initialize(); }
 
 Bool_t CbmRich::CheckIfSensitive(std::string name) {
   //return true;
@@ -136,8 +120,7 @@ Bool_t CbmRich::ProcessHits(FairVolume* vol) {
       gMC->TrackPosition(tPos);
       gMC->TrackMomentum(tMom);
 
-      if (pdgCode == 50000050
-          && isPhotonReflected(tMom.P())) {  // Cherenkovs only
+      if (pdgCode == 50000050) {  // Cherenkovs only
 
         AddHit(trackID,
                iVol,
@@ -244,65 +227,6 @@ Bool_t CbmRich::ProcessHits(FairVolume* vol) {
   return kFALSE;
 }
 
-Bool_t CbmRich::isPhotonReflected(Double_t photonEnergy) {
-  // for GEANT3 simulation no need to implement reflectivity
-  if (!fIsGeant4) return true;
-
-  static std::vector<Double_t> enrg = {
-    6.1997, 5.9045, 5.6361, 5.391,  5.1664, 4.9598, 4.769,  4.5924, 4.4284,
-    4.2757, 4.1331, 3.9998, 3.8748, 3.7574, 3.6469, 3.5427, 3.4443, 3.3512,
-    3.263,  3.1793, 3.0998, 3.0242, 2.9522, 2.8836, 2.818,  2.7554, 2.6955,
-    2.6382, 2.5832, 2.5305, 2.4799, 2.4313, 2.3845, 2.3395, 2.2962, 2.2544,
-    2.2142, 2.1753, 2.1378, 2.1016, 2.0666, 2.0327, 1.9999, 1.9682, 1.9374,
-    1.9076, 1.8787, 1.8507, 1.8234, 1.797,  1.7713, 1.7464, 1.7221, 1.6985,
-    1.6756, 1.6533, 1.6315, 1.6103, 1.5897, 1.5695, 1.5499};
-
-
-  static std::vector<Double_t> eff = {
-    0.22529, 0.1862,  0.15901, 0.14713, 0.13963, 0.13898,  0.13762, 0.13622,
-    0.13868, 0.13951, 0.14031, 0.14073, 0.1409,  0.13977,  0.14205, 0.14072,
-    0.1396,  0.13826, 0.13665, 0.13513, 0.13463, 0.13287,  0.13182, 0.13084,
-    0.12824, 0.12601, 0.12622, 0.12681, 0.12193, 20.12011, 0.12109, 0.11908,
-    0.11526, 0.11364, 0.11385, 0.12015, 0.11935, 0.11712,  0.1208,  0.12021,
-    0.11909, 0.11783, 0.12257, 0.1215,  0.12199, 0.12494,  0.13101, 0.12089,
-    0.12284, 0.12569, 0.13136, 0.13307, 0.13705, 0.13844,  0.13753, 0.14416,
-    0.14761, 0.14953, 0.15218, 0.15315, 0.15719};
-
-
-  // this interpolation causes run time crash
-  ///static ROOT::Math::Interpolator* interpolator = new ROOT::Math::Interpolator(reflEnergy, reflEff, ROOT::Math::Interpolation::kLINEAR);
-  // Double_t eff = interpolator->Eval(1.e9 * photonEnergy);
-
-  Double_t phEnrgEv = 1.e9 * photonEnergy;
-  Double_t effCalc  = 0.;
-
-  if (phEnrgEv >= enrg[0]) {
-    effCalc = eff[0];
-  } else if (phEnrgEv <= enrg[enrg.size() - 1]) {
-    effCalc = eff[eff.size() - 1];
-  } else {
-    Int_t i0 = 0, i1 = 0;
-    for (size_t i = 0; i < enrg.size(); i++) {
-      if (phEnrgEv >= enrg[i]) {
-        i0 = i;
-        i1 = i0 - 1;
-        break;
-      }
-    }
-    if (i1 < 0) i1 = 0;
-
-    effCalc =
-      eff[i0]
-      + (phEnrgEv - enrg[i0]) * (eff[i1] - eff[i0]) / (enrg[i1] - enrg[i0]);
-    // LOG(info) << "photonEn:" << phEnrgEv << " i0:" << i0 << ", " << enrg[i0] << ", " << eff[i0] << " i1:" << i1 << ", " << enrg[i1] << ", " << eff[i1] <<
-    //      " effCalc:" << effCalc << endl;
-  }
-
-  Double_t rand = gRandom->Rndm();
-
-  return (rand > effCalc);
-}
-
 void CbmRich::EndOfEvent() {
   if (fVerboseLevel) Print("");
   Reset();
@@ -357,6 +281,7 @@ void CbmRich::CopyClones(TClonesArray* cl1, TClonesArray* cl2, Int_t offset) {
 
 void CbmRich::ConstructOpGeometry() {
   LOG(info) << "CbmRich::ConstructOpGeometry()";
+  SetRichGlassPropertiesForGeant4();
 }
 
 void CbmRich::ConstructGeometry() {
@@ -379,6 +304,68 @@ void CbmRich::ConstructGeometry() {
   } else {
     LOG(fatal) << "Geometry format of RICH file " << fileName.Data()
                << " not supported. Only ROOT and GDML formats are supported.";
+  }
+}
+
+void CbmRich::SetRichGlassPropertiesForGeant4() {
+  FairRun* run    = FairRun::Instance();
+  Bool_t isGeant4 = std::string(run->GetName()) == "TGeant4";
+  LOG(info) << "CbmRich::SetRichGlassPropertiesForGeant4() Transport engine:"
+            << std::string(run->GetName());
+
+  // for GEANT3 simulation no need to implement reflectivity
+  if (!isGeant4) {
+    LOG(info) << "CbmRich::SetRichGlassPropertiesForGeant4() fIsGeant4 is "
+                 "false. No need to set RICH glass properties. Return.";
+    return;
+  } else {
+    LOG(info) << "CbmRich::SetRichGlassPropertiesForGeant4() fIsGeant4 is "
+                 "true. RICH glass properties will be set.";
+  }
+
+  std::vector<Double_t> energyAr = {
+    6.1997, 5.9045, 5.6361, 5.391,  5.1664, 4.9598, 4.769,  4.5924, 4.4284,
+    4.2757, 4.1331, 3.9998, 3.8748, 3.7574, 3.6469, 3.5427, 3.4443, 3.3512,
+    3.263,  3.1793, 3.0998, 3.0242, 2.9522, 2.8836, 2.818,  2.7554, 2.6955,
+    2.6382, 2.5832, 2.5305, 2.4799, 2.4313, 2.3845, 2.3395, 2.2962, 2.2544,
+    2.2142, 2.1753, 2.1378, 2.1016, 2.0666, 2.0327, 1.9999, 1.9682, 1.9374,
+    1.9076, 1.8787, 1.8507, 1.8234, 1.797,  1.7713, 1.7464, 1.7221, 1.6985,
+    1.6756, 1.6533, 1.6315, 1.6103, 1.5897, 1.5695, 1.5499};
+  // transform to GeV
+  for (size_t i = 0; i < energyAr.size(); i++) {
+    energyAr[i] = 1.e-9 * energyAr[i];
+  }
+
+  std::vector<Double_t> reflectivityAr = {
+    0.22529, 0.1862,  0.15901, 0.14713, 0.13963, 0.13898, 0.13762, 0.13622,
+    0.13868, 0.13951, 0.14031, 0.14073, 0.1409,  0.13977, 0.14205, 0.14072,
+    0.1396,  0.13826, 0.13665, 0.13513, 0.13463, 0.13287, 0.13182, 0.13084,
+    0.12824, 0.12601, 0.12622, 0.12681, 0.12193, 0.12011, 0.12109, 0.11908,
+    0.11526, 0.11364, 0.11385, 0.12015, 0.11935, 0.11712, 0.1208,  0.12021,
+    0.11909, 0.11783, 0.12257, 0.1215,  0.12199, 0.12494, 0.13101, 0.12089,
+    0.12284, 0.12569, 0.13136, 0.13307, 0.13705, 0.13844, 0.13753, 0.14416,
+    0.14761, 0.14953, 0.15218, 0.15315, 0.15719};
+
+  for (size_t i = 0; i < reflectivityAr.size(); i++) {
+    reflectivityAr[i] = 1. - reflectivityAr[i];
+  }
+
+  gMC->DefineOpSurface(
+    "RICHglassSurf", kGlisur, kDielectric_metal, kPolished, 0.0);
+  gMC->SetMaterialProperty("RICHglassSurf",
+                           "REFLECTIVITY",
+                           energyAr.size(),
+                           energyAr.data(),
+                           reflectivityAr.data());
+
+  for (int i = 0; i < 10; i++) {
+    if (gGeoManager->FindVolumeFast(
+          ("mirror_tile_type" + std::to_string(i)).c_str())
+        == nullptr)
+      continue;
+    gMC->SetSkinSurface(("RICHglassSkin" + std::to_string(i)).c_str(),
+                        ("mirror_tile_type" + std::to_string(i)).c_str(),
+                        "RICHglassSurf");
   }
 }
 

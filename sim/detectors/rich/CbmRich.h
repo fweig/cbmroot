@@ -86,13 +86,6 @@ public:
     */
   virtual Bool_t ProcessHits(FairVolume* vol = 0);
 
-
-  /**
-    * \brief Photon reflection efficiency. 
-    *  Workaround implementation for GEANT4.
-    */
-  Bool_t isPhotonReflected(Double_t photonEnergy);
-
   /**
     * \brief If verbosity level is set, print hit collection at the
     * end of the event and resets it afterwards.
@@ -158,6 +151,11 @@ public:
     */
   void ConstructOpGeometry();
 
+  /**
+     * \brief Set Cherenkov propeties for RICH mirror.
+     */
+  void SetRichGlassPropertiesForGeant4();
+
 
   /** Check whether a volume is sensitive.
     ** The decision is based on the volume name. Only used in case
@@ -180,9 +178,6 @@ private:
   // set to true if you want to register photons onto the sensitive gas plane,
   // if false then only charged particles are registered
   Bool_t fRegisterPhotonsOnSensitivePlane;
-
-  // true if GEANT4 simulation is running
-  Bool_t fIsGeant4;
 
   TClonesArray* fRichPoints;          // MC points onto the photodetector plane
   TClonesArray* fRichRefPlanePoints;  // points on the reference plane

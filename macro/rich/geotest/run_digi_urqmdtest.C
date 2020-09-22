@@ -5,7 +5,7 @@ void run_digi_urqmdtest(
     "/Users/slebedev/Development/cbm/data/sim/rich/urqmdtest/param.00000.root",
   const string& digiFile =
     "/Users/slebedev/Development/cbm/data/sim/rich/urqmdtest/digi.00000.root",
-  int nEvents = 5) {
+  int nEvents = 1000) {
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
   FairLogger::GetLogger()->SetLogVerbosityLevel("LOW");
 

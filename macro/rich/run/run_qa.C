@@ -19,11 +19,7 @@ void run_qa(
 
   remove(qaFile.c_str());
 
-  TString setupFile  = srcDir + "/geometry/setup/setup_" + geoSetup + ".C";
-  TString setupFunct = "setup_" + geoSetup + "()";
-  gROOT->LoadMacro(setupFile);
-  gROOT->ProcessLine(setupFunct);
-
+  CbmSetup::Instance()->LoadSetup(geoSetup.c_str());
 
   std::cout << std::endl
             << "-I- " << myName << ": Defining parameter files " << std::endl;
@@ -31,7 +27,7 @@ void run_qa(
   TString geoTag;
 
   // - TRD digitisation parameters
-  if (CbmSetup::Instance()->GetGeoTag(kTrd, geoTag)) {
+  if (CbmSetup::Instance()->GetGeoTag(ECbmModuleId::kTrd, geoTag)) {
     const Char_t* npar[4] = {"asic", "digi", "gas", "gain"};
     TObjString* trdParFile(NULL);
     for (Int_t i(0); i < 4; i++) {
@@ -44,7 +40,7 @@ void run_qa(
   }
 
   // - TOF digitisation parameters
-  if (CbmSetup::Instance()->GetGeoTag(kTof, geoTag)) {
+  if (CbmSetup::Instance()->GetGeoTag(ECbmModuleId::kTof, geoTag)) {
     TObjString* tofFile =
       new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digi.par");
     parFileList->Add(tofFile);
@@ -107,7 +103,7 @@ void run_qa(
   richCat.push_back("ElectronReference");
   trackingQa->SetTrackCategories(trackCat);
   trackingQa->SetRingCategories(richCat);
-  // run->AddTask(trackingQa);
+  run->AddTask(trackingQa);
 
   CbmLitFitQa* fitQa = new CbmLitFitQa();
   fitQa->SetMvdMinNofHits(0);
@@ -115,15 +111,15 @@ void run_qa(
   fitQa->SetMuchMinNofHits(10);
   fitQa->SetTrdMinNofHits(2);
   fitQa->SetOutputDir(resultDir);
-  // run->AddTask(fitQa);
+  //run->AddTask(fitQa);
 
   CbmLitClusteringQa* clusteringQa = new CbmLitClusteringQa();
   clusteringQa->SetOutputDir(resultDir);
-  // run->AddTask(clusteringQa);
+  run->AddTask(clusteringQa);
 
   CbmLitTofQa* tofQa = new CbmLitTofQa();
   tofQa->SetOutputDir(std::string(resultDir));
-  // run->AddTask(tofQa);
+  //run->AddTask(tofQa);
 
   std::cout << std::endl
             << std::endl
@@ -151,7 +147,7 @@ void run_qa(
   timer.Stop();
   std::cout << std::endl << std::endl;
   std::cout << "Macro finished succesfully." << std::endl;
-  std::cout << "Output file is " << recoFile << std::endl;
+  std::cout << "Output file is " << qaFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
   std::cout << "Real time " << timer.RealTime() << " s, CPU time "
             << timer.CpuTime() << " s" << std::endl;

@@ -8,11 +8,11 @@ void run_qa_geotest(
     "/Users/slebedev/Development/cbm/data/sim/rich/geotest/digi.00000.root",
   const string& recoFile =
     "/Users/slebedev/Development/cbm/data/sim/rich/geotest/reco.00000.root",
-  const string& qaFile =
-    "/Users/slebedev/Development/cbm/data/sim/rich/geotest/qa.00000.root",
+  const string& qaFile = "/Users/slebedev/Development/cbm/data/sim/rich/"
+                         "geotest/qa.g3new_media0.00000.root",
   const string& geoSetup  = "sis100_electron",
-  const string& resultDir = "results_geotest_geant3_10/",
-  int nEvents             = 1000) {
+  const string& resultDir = "results_geotest_geant3_new_media0/",
+  int nEvents             = 10000) {
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
   FairLogger::GetLogger()->SetLogVerbosityLevel("LOW");
   TTree::SetMaxTreeSize(90000000000);

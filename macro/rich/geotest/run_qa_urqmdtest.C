@@ -10,8 +10,8 @@ void run_qa_urqmdtest(
   const string& qaFile =
     "/Users/slebedev/Development/cbm/data/sim/rich/urqmdtest/qa.00000.root",
   const string& geoSetup  = "sis100_electron",
-  const string& resultDir = "results_urqmdtest/",
-  int nEvents             = 5) {
+  const string& resultDir = "results_urqmdtest_geant4/",
+  int nEvents             = 1000) {
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
   FairLogger::GetLogger()->SetLogVerbosityLevel("LOW");
 

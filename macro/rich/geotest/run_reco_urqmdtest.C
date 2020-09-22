@@ -9,7 +9,7 @@ void run_reco_urqmdtest(
     "/Users/slebedev/Development/cbm/data/sim/rich/urqmdtest/reco.00000.root",
   const string& geoSetup  = "sis100_electron",
   const string& resultDir = "results_urqmdtest/",
-  int nEvents             = 5) {
+  int nEvents             = 1000) {
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
   FairLogger::GetLogger()->SetLogVerbosityLevel("LOW");
 

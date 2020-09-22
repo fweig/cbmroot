@@ -1,21 +1,19 @@
 void draw_litqa() {
-  gROOT->LoadMacro("$VMCWORKDIR/macro/littrack/loadlibs.C");
-  loadlibs();
+  //gROOT->LoadMacro("$VMCWORKDIR/macro/littrack/loadlibs.C");
+  //loadlibs();
 
-
-  //std::string dir = "/Users/slebedev/Development/cbm/data/lmvm/nov13/25gev/trd/1.0field/nomvd/rho0/";
-  std::string outputDir = "results_litqa/";
-  std::string fileName  = "/Users/slebedev/Development/cbm/data/simulations/"
-                         "rich/richreco/25gev.reco.0005.root";
+  std::string outputDir = "rich_carb/results_litqa_ac/";
+  //std::string fileName = "/Users/slebedev/Development/cbm/data/simulations/rich/richreco/25gev.reco.0005.root";
+  std::string fileName = "qa.all.ac.root";
 
   CbmSimulationReport* trackingQaReport = new CbmLitTrackingQaReport();
-  trackingQaReport->Create(fileName, "");  //outputDir + "/tracking/");
+  trackingQaReport->Create(fileName, outputDir + "/tracking/");
 
   // CbmSimulationReport* fitQaReport = new CbmLitFitQaReport();
   // fitQaReport->Create(fileName, outputDir + "/fit/");
 
-  //   CbmSimulationReport* clusteringQaReport = new CbmLitClusteringQaReport();
-  //   clusteringQaReport->Create(fileName, outputDir);
+  CbmSimulationReport* clusteringQaReport = new CbmLitClusteringQaReport();
+  clusteringQaReport->Create(fileName, outputDir + "clustering/");
 
   //   CbmLitRadLengthQaReport* radLengthQaReport = new CbmLitRadLengthQaReport();
   //   radLengthQaReport->Create(fileName, outputDir);

@@ -115,6 +115,11 @@ public:
     fMaxNofHitsPerPmtCut = nofHits;
   }
 
+  /**
+   * \brief Set if you want to shift z MC point value (workaround for GEANT4).
+  */
+  void SetDoZShift(Bool_t doZShift) { fDoZShift = doZShift; }
+
 
 private:
   Int_t fEventNum;
@@ -133,7 +138,7 @@ private:
     fCrossTalkProbability;  // probability of the crosstalk for direct neighbor for one pixel
   Double_t
     fNoiseDigiRate;  // noise rate per McRichPoint / per  pixel / per second :
-    // hofNoiseDigis = nofRichPoints * nofPixels * dT(50 ns) * (fNoiseDigiRate / 1.e9);
+  // hofNoiseDigis = nofRichPoints * nofPixels * dT(50 ns) * (fNoiseDigiRate / 1.e9);
   CbmRichPmtTypeEnum fDetectorType;
   Int_t
     fMaxNofHitsPerPmtCut;  // maximum number of hits which can be registered per PMT per event.
@@ -146,6 +151,8 @@ private:
   Double_t fPixelDeadTime;     // in ns, during this time pixel can not be fired
   map<Int_t, Double_t>
     fFiredPixelsMap;  // first: pixel address, second: last fired time.
+  Bool_t
+    fDoZShift;  // Set if you want to shift z MC point value (workaround for GEANT4). Must be set to true if one runs full RICH geoemtry with GEANT4, fot mCBM set to false
 
   /*
     * \brief Add crasstalk digis to the output array for the digi assuming fCrossTalkProbability

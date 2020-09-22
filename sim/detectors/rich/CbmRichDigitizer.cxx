@@ -47,7 +47,8 @@ CbmRichDigitizer::CbmRichDigitizer()
   , fTimeResolution(1.)
   , fDarkRatePerPixel(1000)
   , fPixelDeadTime(30.)
-  , fFiredPixelsMap() {}
+  , fFiredPixelsMap()
+  , fDoZShift(true) {}
 
 CbmRichDigitizer::~CbmRichDigitizer() {}
 
@@ -181,7 +182,8 @@ void CbmRichDigitizer::ProcessPoint(CbmRichPoint* point,
   // LOG(info) << "ProcessPoint " << pointId;
   //	TGeoNode* node = gGeoManager->FindNode(point->GetX(), point->GetY(), point->GetZ());
   // workaround for GEANT4, probably boundary problem
-  Double_t zNew = point->GetZ() - 0.001;
+  Double_t zNew = point->GetZ();
+  if (fDoZShift) zNew = zNew - 0.001;
   gGeoManager->FindNode(point->GetX(), point->GetY(), zNew);
   string path(gGeoManager->GetPath());
   Int_t address =

@@ -17,11 +17,7 @@ void run_reco(
 
   remove(recoFile.c_str());
 
-  TString setupFile  = srcDir + "/geometry/setup/setup_" + geoSetup + ".C";
-  TString setupFunct = "setup_" + geoSetup + "()";
-  gROOT->LoadMacro(setupFile);
-  gROOT->ProcessLine(setupFunct);
-
+  CbmSetup::Instance()->LoadSetup(geoSetup.c_str());
 
   std::cout << std::endl
             << "-I- " << myName << ": Defining parameter files " << std::endl;
@@ -29,7 +25,7 @@ void run_reco(
   TString geoTag;
 
   // - TRD digitisation parameters
-  if (CbmSetup::Instance()->GetGeoTag(kTrd, geoTag)) {
+  if (CbmSetup::Instance()->GetGeoTag(ECbmModuleId::kTrd, geoTag)) {
     const Char_t* npar[4] = {"asic", "digi", "gas", "gain"};
     TObjString* trdParFile(NULL);
     for (Int_t i(0); i < 4; i++) {
@@ -42,7 +38,7 @@ void run_reco(
   }
 
   // - TOF digitisation parameters
-  if (CbmSetup::Instance()->GetGeoTag(kTof, geoTag)) {
+  if (CbmSetup::Instance()->GetGeoTag(ECbmModuleId::kTof, geoTag)) {
     TObjString* tofFile =
       new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digi.par");
     parFileList->Add(tofFile);

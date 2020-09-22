@@ -63,7 +63,7 @@ void run_analysis() {
   CbmTrbCalibrator* fgCalibrator = CbmTrbCalibrator::Instance();
   fgCalibrator->SetInputFilename(
     "calibration.root");  // does not actually import data - only defines
-    // the file that will be used if you specidy mode etn_IMPORT
+  // the file that will be used if you specidy mode etn_IMPORT
   fgCalibrator->SetMode(etn_NOCALIB);
   // Also note the (un)commented line in the end of the macro with export func
 

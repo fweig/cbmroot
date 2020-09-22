@@ -14,7 +14,7 @@ void run_sim(
     5,  // number of e- to be generated, if <=0 no positrons are embedded into event
   const string& plutoFile =
     "",  // if "", no pluto particles are embedded into event
-  const string& geoSetup = "sis100_electron",
+  const string& geoSetup = "sis100_electron_rich_pal_bcarb",
   int nEvents            = 10) {
 
   TTree::SetMaxTreeSize(90000000000);

@@ -49,7 +49,7 @@ void run_analysis2() {
   //fgCalibrator->SetCalibrationPeriod(20000);
   fgCalibrator->SetInputFilename(
     "calibration2.root");  // does not actually import data - only defines
-    // the file that will be used if you specidy mode etn_IMPORT
+  // the file that will be used if you specidy mode etn_IMPORT
   fgCalibrator->SetMode(etn_IMPORT);
   // Also note the (un)commented line in the end of the macro with export func
 

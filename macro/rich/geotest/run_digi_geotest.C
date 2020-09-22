@@ -5,7 +5,7 @@ void run_digi_geotest(
     "/Users/slebedev/Development/cbm/data/sim/rich/geotest/param.00000.root",
   const string& digiFile =
     "/Users/slebedev/Development/cbm/data/sim/rich/geotest/digi.00000.root",
-  int nEvents = 1000) {
+  int nEvents = 10000) {
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
   FairLogger::GetLogger()->SetLogVerbosityLevel("LOW");
 
@@ -31,7 +31,7 @@ void run_digi_geotest(
 
   CbmRichDigitizer* richDigitizer = new CbmRichDigitizer();
   richDigitizer->SetMaxNofHitsPerPmtCut(65);
-  run.SetDigitizer(kRich, richDigitizer, "RichPoint", true);
+  run.SetDigitizer(ECbmModuleId::kRich, richDigitizer, "RichPoint", true);
 
   run.Run(nEvents);
 

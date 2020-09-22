@@ -5,7 +5,7 @@ void run_digi(
     "/Users/slebedev/Development/cbm/data/sim/rich/reco/param.00000.root",
   const string& digiFile =
     "/Users/slebedev/Development/cbm/data/sim/rich/reco/digi.00000.root",
-  int nEvents = 100) {
+  int nEvents = 10) {
   TTree::SetMaxTreeSize(90000000000);
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
   FairLogger::GetLogger()->SetLogVerbosityLevel("LOW");
@@ -30,7 +30,7 @@ void run_digi(
 
   CbmRichDigitizer* richDigitizer = new CbmRichDigitizer();
   richDigitizer->SetMaxNofHitsPerPmtCut(65);
-  run.SetDigitizer(kRich, richDigitizer, "RichPoint", true);
+  run.SetDigitizer(ECbmModuleId::kRich, richDigitizer, "RichPoint", true);
 
   run.Run(nEvents);
 
