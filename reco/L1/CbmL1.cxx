@@ -502,7 +502,6 @@ InitStatus CbmL1::Init() {
         LOG(fatal) << GetName() << ": No MCEventList data!";
     }
 
-
     if (!fUseMVD) {
       listMvdPts        = 0;
       listMvdHitMatches = 0;
@@ -1240,8 +1239,8 @@ InitStatus CbmL1::Init() {
       for (int j = 1,
                iSta =
                  (NStsStations + NMvdStations + NMuchStations + NTrdStations);
-           iSta
-           < (NStsStations + NMvdStations + NMuchStations + NTrdStations + 1);
+           iSta < (NStsStations + NMvdStations + NMuchStations + NTrdStations
+                   + NTOFStation);
            iSta++, j++) {
         TString stationNameSts = stationName;
         stationNameSts += j;
@@ -1290,8 +1289,8 @@ InitStatus CbmL1::Init() {
                    "will be used";
       for (int iSta =
              (NStsStations + NMvdStations + NMuchStations + NTrdStations);
-           iSta
-           < (NStsStations + NMvdStations + NMuchStations + NTrdStations + 1);
+           iSta < (NStsStations + NMvdStations + NMuchStations + NTrdStations
+                   + NTOFStation);
            iSta++) {
         algo->fRadThick[iSta].SetBins(1, 100);
         algo->fRadThick[iSta].table.resize(1);
@@ -1310,41 +1309,16 @@ void CbmL1::Reconstruct(CbmEvent* event) {
   static int nevent = 0;
   vFileEvent.clear();
 
-
   if (fTimesliceMode) {
-    listStsDigi.clear();
-    // The following line was commented out (V.F.) since it uses
-    // obsolete functionality of CbmTimeSlice.
-    //listStsDigi = fTimeSlice->GetStsData();
-    TClonesArray* fDigis;
-    TClonesArray* fDigiMatches;
 
-    FairRootManager* ioman = FairRootManager::Instance();
+    int nofEvents = fEventList->GetNofEvents();
+    for (int iE = 0; iE < nofEvents; iE++) {
 
-    fDigis       = (TClonesArray*) ioman->GetObject("StsDigi");
-    fDigiMatches = (TClonesArray*) ioman->GetObject("StsDigiMatch");
-
-    UInt_t nDigis = fDigis->GetEntriesFast();
-
-    for (UInt_t iDigi = 0; iDigi < nDigis; iDigi++) {
-      //CbmStsDigi* digi = (CbmStsDigi*) fDigis->At(iDigi); //unused
-      CbmMatch* match = (CbmMatch*) fDigiMatches->At(iDigi);
-
-      for (Int_t iLink = 0; iLink < match->GetNofLinks(); iLink++) {
-        Int_t iFile  = match->GetLink(iLink).GetFile();
-        Int_t iEvent = match->GetLink(iLink).GetEntry();
-
-        vFileEvent.insert(DFSET::value_type(iFile, iEvent));
-      }  //? Compare with existing input
-    }    //# links
-
-    Int_t nLinks = fTimeSlice->GetMatch().GetNofLinks();
-    for (Int_t iLink = 0; iLink < nLinks; iLink++) {
-      Int_t iFile  = fTimeSlice->GetMatch().GetLink(iLink).GetFile();
-      Int_t iEvent = fTimeSlice->GetMatch().GetLink(iLink).GetEntry();
-
-      vFileEvent.insert(DFSET::value_type(iFile, iEvent));
+      int fileId  = fEventList->GetFileIdByIndex(iE);
+      int eventId = fEventList->GetEventIdByIndex(iE);
+      vFileEvent.insert(DFSET::value_type(fileId, eventId));
     }
+
   } else {
     Int_t iFile  = FairRunAna::Instance()->GetEventHeader()->GetInputFileId();
     Int_t iEvent = FairRunAna::Instance()->GetEventHeader()->GetMCEntryNumber();

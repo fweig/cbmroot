@@ -296,6 +296,7 @@ void CbmL1::EfficienciesPerformance() {
   static int L1_NEVENTS   = 0;
   static double L1_CATIME = 0.0;
 
+
   TL1PerfEfficiencies ntra;  // efficiencies for current event
 
   for (vector<CbmL1Track>::iterator rtraIt = vRTracks.begin();
@@ -322,6 +323,7 @@ void CbmL1::EfficienciesPerformance() {
        mtraIt != vMCTracks.end();
        mtraIt++) {
     CbmL1MCTrack& mtra = *(mtraIt);
+
 
     //    if( !( mtra.pdg == -11 && mtra.mother_ID == -1 ) ) continue; // electrons only
     if (!mtra.IsReconstructable() && !mtra.IsAdditional()) continue;
@@ -2422,7 +2424,6 @@ void CbmL1::InputPerformance() {
   Int_t nMC = -1;
   if (listStsPts) { nMC = listStsPts->GetEntries(); }
 
-
   if (listStsHits && listStsHitMatch) {
     for (unsigned int iH = 0; iH < vStsHits.size(); iH++) {
       const CbmL1StsHit& h = vStsHits[iH];
@@ -2458,6 +2459,7 @@ void CbmL1::InputPerformance() {
           }
         }
 
+
         if (stsHitMatch.GetNofLinks() > 0) {
           Float_t bestWeight = 0.f;
           for (Int_t iLink = 0; iLink < stsHitMatch.GetNofLinks(); iLink++) {
@@ -2468,6 +2470,7 @@ void CbmL1::InputPerformance() {
 
               link = stsHitMatch.GetLink(iLink);
 
+
               pt = (CbmStsPoint*) fStsPoints->Get(
                 iFile, iEvent, stsHitMatch.GetLink(iLink).GetIndex());
             }
@@ -2475,7 +2478,6 @@ void CbmL1::InputPerformance() {
         }
 
         if (pt == 0) continue;
-
 
         double mcTime = pt->GetTime();
 
@@ -2692,9 +2694,9 @@ void CbmL1::InputPerformance() {
         mcTime += fEventList->GetEventTime(link.GetEntry(), link.GetFile());
 
       // hit pulls and residuals
-      if ((sh->GetPlaneId()) == 0) continue;
-      if ((sh->GetPlaneId()) == 2) continue;
-      if ((sh->GetPlaneId()) == 4) continue;
+      //      if ((sh->GetPlaneId()) == 0) continue;
+      //      if ((sh->GetPlaneId()) == 2) continue;
+      //      if ((sh->GetPlaneId()) == 4) continue;
 
       TVector3 hitPos, mcPos, hitErr;
       sh->Position(hitPos);
@@ -2755,7 +2757,9 @@ void CbmL1::InputPerformance() {
           link       = hm->GetLink(iLink);
         }
       }
-      if (bestWeight / totalWeight < 0.7 || iMCPoint < 0) continue;
+      // if (bestWeight / totalWeight < 0.7 || iMCPoint < 0) continue;
+
+      if (iMCPoint < 0) continue;
 
       CbmTofPoint* pt = (CbmTofPoint*) fTofPoints->Get(
         link.GetFile(), link.GetEntry(), link.GetIndex());

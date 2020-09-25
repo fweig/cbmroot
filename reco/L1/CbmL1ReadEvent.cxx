@@ -985,7 +985,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, CbmEvent* event) {
       TmpStrip& s = tmpStrips[is];
       if (s.iStation != th.iStation) continue;
       if (s.iStrip != th.iStripF) continue;
-      if (fabs(s.time - th.time) > 20) continue;
+      if (fabs(s.time - th.time) > 30) continue;
       if (fabs(s.u - th.u_front) > 1.e-4) continue;
       th.indStripF = is;
     }
@@ -993,7 +993,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, CbmEvent* event) {
       TmpStrip& s = tmpStripsB[is];
       if (s.iStation != th.iStation) continue;
       if (s.iStrip != th.iStripB) continue;
-      if (fabs(s.time - th.time) > 20) continue;
+      if (fabs(s.time - th.time) > 30) continue;
       if (fabs(s.u - th.u_back) > 1.e-4) continue;
       th.indStripB = is;
     }
@@ -1575,7 +1575,9 @@ void CbmL1::HitMatch() {
             iEvent = vFileEvent.begin()->second;
           }
           int nMvdPoints_ = 0;
-          if (listMvdPts) nMvdPoints_ = listMvdPts->GetEntriesFast();
+          if (!fTimesliceMode)
+            if (listMvdPts) nMvdPoints_ = listMvdPts->GetEntriesFast();
+
           Double_t dtrck          = dFEI(iFile, iEvent, iIndex + nMvdPoints_);
           DFEI2I::iterator trk_it = dFEI2vMCPoints.find(dtrck);
 
