@@ -191,7 +191,7 @@ private:
   virtual void MakeVertexInTarget();
 
 
-  ClassDef(CbmEventGenerator, 1);
+  ClassDef(CbmEventGenerator, 2);
 };
 
 
