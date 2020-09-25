@@ -104,6 +104,7 @@ Int_t CbmTofGeoHandler::CheckGeometryVersion() {
                  || (TString(node->GetName()).Contains("v16a"))
                  || (TString(node->GetName()).Contains("v16c"))
                  || (TString(node->GetName()).Contains("v16d"))
+                 || (TString(node->GetName()).Contains("v16e"))
                  || (TString(node->GetName()).Contains("v17a"))
                  || (TString(node->GetName()).Contains("v17c"))
                  || (TString(node->GetName()).Contains("v18"))
