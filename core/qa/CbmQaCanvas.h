@@ -48,6 +48,10 @@ private:
   /// Constructor which calls TCanvas constructor and restores the bach mode
   template<typename... Types>
   CbmQaCanvas(MyBoolean oldBatchMode, Types... args) : TCanvas(args...) {
+    // prevent automatic deletion of this canvas
+    // when another canvas with the same name is created somewhere else
+    gROOT->GetListOfCanvases()->Remove(this);
+    // reset the batch mode to its original value
     gROOT->SetBatch((Bool_t) oldBatchMode);
   }
 
