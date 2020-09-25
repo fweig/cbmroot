@@ -4,7 +4,7 @@ VGEO=$1
 if [[ '' == ${VGEO} ]]; then
   echo "This script needs the geometry version as parameter. E.g.:"
   echo "source create_geopar_allsetups.sh v16c"
-  return
+  exit 1
 fi
 
 # Generate the 1h geo file
