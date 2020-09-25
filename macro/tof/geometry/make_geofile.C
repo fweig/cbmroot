@@ -20,6 +20,11 @@ void make_geofile(TString stofGeom = "tof_v16a_1e") {
   TString outFile = outDir + "/auaumbias." + stofGeom + ".mc.root";
   TString parFile = outDir + "/auaumbias." + stofGeom + ".params.root";
 
+  // configuration
+  TString tut_configdir = inDir + "/sim/transport/gconfig";
+  gSystem->Setenv("CONFIG_DIR", tut_configdir.Data());
+
+
   // -----  Geometries  -----------------------------------------------------
   TString caveGeom = "cave.geo";
   //TString targetGeom = "target_au_250mu.geo";
