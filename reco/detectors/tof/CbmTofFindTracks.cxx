@@ -44,6 +44,7 @@
 #include "TProfile.h"
 #include "TROOT.h"
 #include "TRandom.h"
+#include "TSpectrum.h"
 #include "TString.h"
 
 #include <iostream>
@@ -768,26 +769,47 @@ Bool_t CbmTofFindTracks::WriteHistos() {
       if (fhPullX_Smt_Off != NULL) {
         Double_t nx = htmp1D->GetNbinsX();
         for (Int_t ix = 0; ix < nx; ix++) {
-          Double_t dVal = fhPullX_Smt_Off->GetBinContent(ix + 1);
-          dVal -= htmp1D->GetBinContent(ix + 1);
-          if (dVal < -3.)
-            dVal =
-              -3.;  // limit maximal shift in X, for larger values, change geometry file
-          if (dVal > 3.) dVal = 3.;
-          //if( fRpcAddr[ix] != fiBeamCounter )  // don't correct beam counter position
-          fhPullX_Smt_Off->SetBinContent(ix + 1, dVal);
-
           TH1D* hpy = fhPullX_Smt->ProjectionY("_py", ix + 1, ix + 1);
+          Double_t dVal = fhPullX_Smt_Off->GetBinContent(ix + 1);
+          //dVal -= htmp1D->GetBinContent(ix + 1);
           if (hpy->GetEntries() > 100.) {
             Double_t dRMS = TMath::Abs(hpy->GetRMS());
+            /* not found by linker
+            Int_t maxPeaks=1;
+            auto *s=new TSpectrum(maxPeaks);
+            Int_t nPeaks=s->Search(hpy,dRMS,"new");
+            if (nPeaks==1) {
+            */
+            if(kTRUE) {
+              //Double_t *xPeaks=s->GetPositionX();
+              //LOG(info) << "Found peak at" << xPeaks[0];
+              // Fit gaussian
+              //Double_t dFMean = xPeaks[0];
+              Double_t dFMean=hpy->GetBinCenter( hpy-> GetMaximumBin() );
+              Double_t dFLim  = 0.5;  // CAUTION, fixed numeric value
+              Double_t dBinSize = hpy->GetBinWidth(1);
+              dFLim=TMath::Max(dFLim,5.*dBinSize);
+              TFitResultPtr fRes =
+                hpy->Fit("gaus", "S", "", dFMean - dFLim, dFMean + dFLim);
+              dVal -= fRes->Parameter(1);
+              dRMS  = fRes->Parameter(2);
+              LOG(info)<<"PeakFit at " << dFMean << ", lim " << dFLim
+            		   <<" : mean " << fRes->Parameter(1) << ", width " << dRMS;
+            }
+
             if (dRMS < fSIGX * 0.5) dRMS = fSIGX * 0.5;
             if (dRMS > fSIGX * 3.0) dRMS = fSIGX * 3.;
-            fhPullX_Smt_Width->SetBinContent(ix + 1, dRMS);
 
+            // limit maximal shift in X, for larger values, change geometry file
+            if (dVal < -3.) dVal = -3.;
+            if (dVal > 3.)  dVal =  3.;
+            //if( fRpcAddr[ix] != fiBeamCounter )  // don't correct beam counter position
             LOG(info) << "Update hPullX_Smt_Off " << ix << ": "
                       << fhPullX_Smt_Off->GetBinContent(ix + 1) << " + "
                       << htmp1D->GetBinContent(ix + 1) << " -> " << dVal
                       << ", Width " << dRMS;
+            fhPullX_Smt_Off->SetBinContent(ix + 1, dVal);
+            fhPullX_Smt_Width->SetBinContent(ix + 1, dRMS);
           }
         }
       } else {
@@ -1841,6 +1863,11 @@ void CbmTofFindTracks::FillHistograms() {
         case 1: fhTrklXY0_1->Fill(pTrk->GetFitX(0.), pTrk->GetFitY(0.)); break;
         case 2: fhTrklXY0_2->Fill(pTrk->GetFitX(0.), pTrk->GetFitY(0.)); break;
         default:;
+      }
+
+      if (fiBeamCounter > -1 && fdR0Lim > 0.)  // consider only tracks originating from nominal interaction point
+      {
+        if (pTrk->GetR0() > fdR0Lim) continue;
       }
 
       if (dTt > 0.)
