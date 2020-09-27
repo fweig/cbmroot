@@ -974,7 +974,7 @@ Bool_t CbmTofEventClusterizer::InitCalibParameter() {
 Bool_t CbmTofEventClusterizer::LoadGeometry() {
   LOG(info) << "CbmTofEventClusterizer::LoadGeometry starting for  "
             << fDigiBdfPar->GetNbDet() << " described detectors, "
-            << fDigiPar->GetNrOfModules() << " geometrically known modules ";
+            << fDigiPar->GetNrOfModules() << " geometrically known cells ";
 
   Int_t iNrOfCells = fDigiPar->GetNrOfModules();
   LOG(info) << "Digi Parameter container contains " << iNrOfCells << " cells.";
@@ -4473,7 +4473,7 @@ Bool_t CbmTofEventClusterizer::WriteHistos() {
             htempPos_py = htempPos->ProjectionY(
               Form("%s_py%02d", htempPos->GetName(), iCh), iCh + 1, iCh + 1);
             if (htempPos_py->GetEntries() > fdYFitMin
-                && fPosYMaxScal < -1.1) {  //disabled
+                && fPosYMaxScal < -1.1) {  //disable by adding "-" sign
               LOG(debug1) << Form(
                 "Determine YMean in %s of channel %d by fit to %d entries",
                 htempPos->GetName(),
@@ -5959,7 +5959,7 @@ void CbmTofEventClusterizer::fit_ybox(TH1* h1,
                << Form(" %6.3f %6.3f %6.3f %6.3f ", fp[0], fp[1], fp[2], fp[3]);
   }
 
-  h1->Fit("YBox", "Q");
+  h1->Fit("YBox", "QM");
 
   double res[10];
   double err[10];
