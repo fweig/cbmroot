@@ -41,6 +41,7 @@ CbmTofCalibrator::CbmTofCalibrator()
   , fDigiPar(NULL)
   , fDigiBdfPar(NULL)
   , fTofDigiMatchColl(NULL)
+  , fhCalR0(NULL)
   , fhCalPos()
   , fhCalTOff()
   , fhCalTot()
@@ -126,6 +127,9 @@ Bool_t CbmTofCalibrator::CreateCalHist() {
   // detector related distributions
   Int_t iNbDet = fDigiBdfPar->GetNbDet();
   LOG(info) << "Define Calibrator histos for " << iNbDet << " detectors ";
+
+  fhCalR0 = new TH1D("hCalR0","Tracklet distance to nominal vertex; R_0 [cm]",100,0.,0.5);
+
   fhCalPos.resize(iNbDet);
   fhCalTOff.resize(iNbDet);
   fhCalTot.resize(iNbDet);
@@ -236,8 +240,10 @@ void CbmTofCalibrator::FillCalHist(CbmTofTracklet* pTrk) {
     fbBeam
     && fdR0Lim
          > 0.)  // consider only tracks originating from nominal interaction point
+  {
+	fhCalR0->Fill(pTrk->GetR0());
     if (pTrk->GetR0() > fdR0Lim) return;
-
+  }
   for (Int_t iHit = 0; iHit < pTrk->GetNofHits(); iHit++) {
     CbmTofHit* pHit = pTrk->GetTofHitPointer(iHit);
     Int_t iDetId    = (pHit->GetAddress() & DetMask);
