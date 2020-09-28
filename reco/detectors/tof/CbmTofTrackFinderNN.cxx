@@ -62,6 +62,7 @@ CbmTofTrackFinderNN::CbmTofTrackFinderNN()
   , fTxMean(0.)
   , fTyMean(0.)
   , fSIGLIM(4.)
+  , fSIGLIMMOD(1.)
   , fChiMaxAccept(3.)
   , fPosYMaxScal(0.55)
   , fTracks()
@@ -83,6 +84,7 @@ CbmTofTrackFinderNN::CbmTofTrackFinderNN(const CbmTofTrackFinderNN& finder)
   , fTxMean(0.)
   , fTyMean(0.)
   , fSIGLIM(4.)
+  , fSIGLIMMOD(1.)
   , fChiMaxAccept(3.)
   , fPosYMaxScal(0.55)
   , fTracks()
@@ -93,7 +95,7 @@ CbmTofTrackFinderNN::CbmTofTrackFinderNN(const CbmTofTrackFinderNN& finder)
   fiNtrks = finder.fiNtrks;
 }
 
-// assignement operator
+// assignment operator
 CbmTofTrackFinderNN&
 CbmTofTrackFinderNN::operator=(const CbmTofTrackFinderNN& /*fSource*/) {
   // do copy
@@ -510,9 +512,8 @@ Int_t CbmTofTrackFinderNN::DoFind(TClonesArray* fTofHits,
                 (dYex - pHit->GetY()) / fFindTracks->GetSigY(iAddr),
                 dChi);
 
-              if (
-                dChi
-                < fSIGLIM)  // FIXME: should scale limit with material budget between hit and track reference
+              if ( dChi < fSIGLIM // FIXME: should scale limit with material budget between hit and track reference
+            		  * (pTrk->GetNofHits() < fFindTracks->GetNReqStations() - 1 ? 1. : fSIGLIMMOD ) )
               {             // extend and update tracklet
                 LOG(debug) << Form("<IP> TofTracklet %lu, HMul %d, Hits %d, %d "
                                    "mark for extension by %d, add = 0x%08x, DT "
