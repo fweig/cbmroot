@@ -27,6 +27,7 @@
 #include <TClonesArray.h>
 #include <TDirectory.h>
 #include <TFile.h>
+#include <TFitResult.h>
 #include <TGeoManager.h>
 #include <TH1.h>
 #include <TH2.h>
@@ -446,6 +447,16 @@ Bool_t CbmTofCalibrator::UpdateCalHist(Int_t iOpt) {
           Double_t dDp   = hpP->GetBinContent(iBin + 1);
           Double_t dCorP = fhCorPos[iDetIndx]->GetBinContent(iBin + 1);
           if (dCts > MINCTS) {
+        	// Fit Gaussian around peak
+        	TH1* hpPy=(TH1*) fhCalPos[iDetIndx]->ProjectionY(Form("PosPy_%d_%d",iDetIndx,iBin),iBin+1,iBin+1);
+            Double_t dFMean=hpPy->GetBinCenter( hpPy->GetMaximumBin() );
+            Double_t dFLim  = 0.5;  // CAUTION, fixed numeric value
+            Double_t dBinSize = hpPy->GetBinWidth(1);
+            dFLim=TMath::Max(dFLim,5.*dBinSize);
+            TFitResultPtr fRes = hpPy->Fit("gaus", "S", "", dFMean - dFLim, dFMean + dFLim);
+            dDp = fRes->Parameter(1); //overwrite mean
+            // Double_t dDpRes = fRes->Parameter(2);
+
             fhCorTOff[iDetIndx]->SetBinContent(iBin + 1, dCorT + dDt + dAvOff);
             fhCorPos[iDetIndx]->SetBinContent(iBin + 1, dCorP + dDp);
           }
