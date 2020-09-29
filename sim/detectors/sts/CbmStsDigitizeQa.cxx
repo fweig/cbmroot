@@ -99,13 +99,14 @@ InitStatus CbmStsDigitizeQa::Init() {
     }
   }
 
-  ReadDataBranches();
-  CreateHistograms();
-
   // Get parameters of the first ASIC in the first module. This, of course,
   // assumes that all ASIC parameters in the setup are the same.
   UInt_t address = fSetup->GetModule(0)->GetAddress();
   fAsicPar       = &(fModuleParSet->GetParModule(address).GetParAsic(0));
+
+  ReadDataBranches();
+  CreateHistograms();
+
   return kSUCCESS;
 }
 
@@ -327,10 +328,10 @@ void CbmStsDigitizeQa::ProcessDigisAndPoints(const TClonesArray* points) {
     const CbmMatch* digiMatch =
       fDigiManager->GetMatch(ECbmModuleId::kSts, index);
     Int_t stationId = fSetup->GetStationNumber(stsDigi->GetAddress());
-    Int_t iLad = CbmStsAddress::GetElementId(stsDigi->GetAddress(), kStsLadder);
-    Int_t iHla =
-      CbmStsAddress::GetElementId(stsDigi->GetAddress(), kStsHalfLadder);
-    Int_t iMod = CbmStsAddress::GetElementId(stsDigi->GetAddress(), kStsModule);
+    //Int_t iLad = CbmStsAddress::GetElementId(stsDigi->GetAddress(), kStsLadder);
+    //Int_t iHla =
+    //CbmStsAddress::GetElementId(stsDigi->GetAddress(), kStsHalfLadder);
+    //Int_t iMod = CbmStsAddress::GetElementId(stsDigi->GetAddress(), kStsModule);
     CbmStsModule* modu = static_cast<CbmStsModule*>(
       fSetup->GetElement(stsDigi->GetAddress(), kStsModule));
     Int_t nOfChannelsM = modu->GetParameters()->GetNofChannels();
@@ -343,7 +344,13 @@ void CbmStsDigitizeQa::ProcessDigisAndPoints(const TClonesArray* points) {
 
     Int_t iChan = stsDigi->GetChannel();
     Int_t iChip = iChan / 128;
-    fnOfDigisChip[stationId][iLad][iHla][iMod][iChip]++;
+
+    // TODO
+    // Sergey Gorbunov: the code crashes at this line,
+    // because iLad is sometimes out of the range,
+    // it needs to be fixed
+    //fnOfDigisChip[stationId][iLad][iHla][iMod][iChip]++;
+
     fHM->H2(Form("h_DigisPerChip_Station%i", stationId))
       ->Fill(global[0] + 50. / 400. * ((iChip - 8.) * 2. - 1.), global[1]);
 
