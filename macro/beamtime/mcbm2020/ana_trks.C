@@ -47,16 +47,16 @@ void ana_trks(Int_t nEvents        = 10000,
   TString cHstFile =
     paramDir
     + Form(
-      "/hst/%s_%03.0f_%s_%06d_%03d_%03.1f_%03.1f_trk%03d_Cal%s_Ana.hst.root",
-      cFileId.Data(),
-      dDeadtime,
-      cSet.Data(),
-      iSel,
-      iSel2,
-      dScalFac,
-      dChi2Lim2,
-      iTrackingSetup,
-      cCalId.Data());
+        "/hst/%s_%03.0f_%s_%06d_%03d_%03.1f_%03.1f_trk%03d_Cal%s_Ana.hst.root",
+        cFileId.Data(),
+        dDeadtime,
+        cSet.Data(),
+        iSel,
+        iSel2,
+        dScalFac,
+        dChi2Lim2,
+        iTrackingSetup,
+        cCalId.Data());
   TString cTrkFile = Form("%s_tofFindTracks.hst.root", cCalId.Data());
   TString cAnaFile = Form("%s_TrkAnaTestBeam.hst.root", cFileId.Data());
 
@@ -76,8 +76,8 @@ void ana_trks(Int_t nEvents        = 10000,
       TofGeo = "v20b_mcbm";
     cout << "Geometry version " << TofGeo << endl;
 
-    TObjString* tofDigiBdfFile = new TObjString(workDir + "/parameters/tof/tof_"
-                                                + TofGeo + ".digibdf.par");
+    TObjString* tofDigiBdfFile =
+      new TObjString(workDir + "/parameters/tof/tof_" + TofGeo + ".digibdf.par");
     parFileList->Add(tofDigiBdfFile);
 
     TString geoDir  = gSystem->Getenv("VMCWORKDIR");
@@ -201,6 +201,7 @@ void ana_trks(Int_t nEvents        = 10000,
   tofFindTracks->SetCalParFileName(
     cTrkFile);                             // Tracker parameter value file name
   tofFindTracks->SetBeamCounter(5, 0, 0);  // default beam counter
+  tofFindTracks->SetR0Lim(20.);
   tofFindTracks->SetStationMaxHMul(
     30);  // Max Hit Multiplicity in any used station
 
@@ -232,8 +233,8 @@ void ana_trks(Int_t nEvents        = 10000,
       tofFindTracks->SetSIGT(dTsig);  // allow for variable deviations in ns
     }
       iMinNofHits   = 3;
-      iNStations    = 30;
-      iNReqStations = 3;
+      iNStations    = 28;
+      iNReqStations = 4;
       tofFindTracks->SetStation(0, 5, 0, 0);
       tofFindTracks->SetStation(1, 0, 2, 2);
       tofFindTracks->SetStation(2, 0, 1, 2);
@@ -262,8 +263,8 @@ void ana_trks(Int_t nEvents        = 10000,
       tofFindTracks->SetStation(25, 0, 3, 4);
       tofFindTracks->SetStation(26, 9, 0, 0);
       tofFindTracks->SetStation(27, 9, 0, 1);
-      tofFindTracks->SetStation(28, 6, 0, 0);
-      tofFindTracks->SetStation(29, 6, 0, 1);
+      //tofFindTracks->SetStation(28, 6, 0, 0);
+      //tofFindTracks->SetStation(29, 6, 0, 1);
       break;
 
     case 2:

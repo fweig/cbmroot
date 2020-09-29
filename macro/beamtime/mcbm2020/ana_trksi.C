@@ -1,19 +1,19 @@
 void ana_trksi(Int_t nEvents        = 10000,
-               Int_t iSel           = 1,
-               Int_t iGenCor        = 1,
-               TString cFileId      = "48.50.7.1",
-               TString cSet         = "000010020",
-               Int_t iSel2          = 20,
-               Int_t iTrackingSetup = 2,
-               Double_t dScalFac    = 1.,
-               Double_t dChi2Lim2   = 500.,
-               Double_t dDeadtime   = 50,
-               TString cCalId       = "",
-               Int_t iAnaCor        = 1,
-               Bool_t bUseSigCalib  = kFALSE,
-               Int_t iCalSet        = 30040500,
-               Int_t iCalOpt        = 1,
-               Int_t iMc            = 0) {
+              Int_t iSel           = 1,
+              Int_t iGenCor        = 1,
+              TString cFileId      = "48.50.7.1",
+              TString cSet         = "000010020",
+              Int_t iSel2          = 20,
+              Int_t iTrackingSetup = 2,
+              Double_t dScalFac    = 1.,
+              Double_t dChi2Lim2   = 500.,
+              Double_t dDeadtime   = 50,
+              TString cCalId       = "",
+              Int_t iAnaCor        = 1,
+              Bool_t bUseSigCalib  = kFALSE,
+              Int_t iCalSet        = 30040500,
+              Int_t iCalOpt        = 1,
+              Int_t iMc            = 0) {
   Int_t iVerbose = 1;
   if (cCalId == "") cCalId = cFileId;
   TString FId = cFileId;
@@ -46,16 +46,16 @@ void ana_trksi(Int_t nEvents        = 10000,
   TString cHstFile =
     paramDir
     + Form(
-      "/hst/%s_%03.0f_%s_%06d_%03d_%03.1f_%03.1f_trk%03d_Cal%s_Ana.hst.root",
-      cFileId.Data(),
-      dDeadtime,
-      cSet.Data(),
-      iSel,
-      iSel2,
-      dScalFac,
-      dChi2Lim2,
-      iTrackingSetup,
-      cCalId.Data());
+        "/hst/%s_%03.0f_%s_%06d_%03d_%03.1f_%03.1f_trk%03d_Cal%s_Ana.hst.root",
+        cFileId.Data(),
+        dDeadtime,
+        cSet.Data(),
+        iSel,
+        iSel2,
+        dScalFac,
+        dChi2Lim2,
+        iTrackingSetup,
+        cCalId.Data());
   TString cTrkFile = Form("%s_tofFindTracks.hst.root", cCalId.Data());
   TString cAnaFile = Form("%s_TrkAnaTestBeam.hst.root", cFileId.Data());
 
@@ -75,8 +75,8 @@ void ana_trksi(Int_t nEvents        = 10000,
       TofGeo = "v20b_mcbm";
     cout << "Geometry version " << TofGeo << endl;
 
-    TObjString* tofDigiBdfFile = new TObjString(workDir + "/parameters/tof/tof_"
-                                                + TofGeo + ".digibdf.par");
+    TObjString* tofDigiBdfFile =
+      new TObjString(workDir + "/parameters/tof/tof_" + TofGeo + ".digibdf.par");
     parFileList->Add(tofDigiBdfFile);
 
     TString geoDir  = gSystem->Getenv("VMCWORKDIR");
@@ -200,6 +200,7 @@ void ana_trksi(Int_t nEvents        = 10000,
   tofFindTracks->SetCalParFileName(
     cTrkFile);                             // Tracker parameter value file name
   tofFindTracks->SetBeamCounter(5, 0, 0);  // default beam counter
+  tofFindTracks->SetR0Lim(100.);
   tofFindTracks->SetStationMaxHMul(
     30);  // Max Hit Multiplicity in any used station
 
@@ -231,8 +232,8 @@ void ana_trksi(Int_t nEvents        = 10000,
       tofFindTracks->SetSIGT(dTsig);  // allow for variable deviations in ns
     }
       iMinNofHits   = 3;
-      iNStations    = 30;
-      iNReqStations = 3;
+      iNStations    = 28;
+      iNReqStations = 4;
       tofFindTracks->SetStation(0, 5, 0, 0);
       tofFindTracks->SetStation(1, 0, 2, 2);
       tofFindTracks->SetStation(2, 0, 1, 2);
@@ -261,14 +262,14 @@ void ana_trksi(Int_t nEvents        = 10000,
       tofFindTracks->SetStation(25, 0, 3, 4);
       tofFindTracks->SetStation(26, 9, 0, 0);
       tofFindTracks->SetStation(27, 9, 0, 1);
-      tofFindTracks->SetStation(28, 6, 0, 0);
-      tofFindTracks->SetStation(29, 6, 0, 1);
+      //tofFindTracks->SetStation(28, 6, 0, 0);
+      //tofFindTracks->SetStation(29, 6, 0, 1);
       break;
 
     case 2:
       iMinNofHits   = 3;
       iNStations    = 28;
-      iNReqStations = 3;
+      iNReqStations = 4;
       tofFindTracks->SetStation(0, 0, 2, 2);
       tofFindTracks->SetStation(1, 0, 0, 2);
       tofFindTracks->SetStation(2, 0, 1, 2);
@@ -303,26 +304,27 @@ void ana_trksi(Int_t nEvents        = 10000,
       iMinNofHits   = 3;
       iNStations    = 16;
       iNReqStations = 4;
-      tofFindTracks->SetStation(0, 5, 0, 0);
-      tofFindTracks->SetStation(1, 0, 2, 2);
-      tofFindTracks->SetStation(2, 0, 1, 2);
-      tofFindTracks->SetStation(3, 0, 0, 2);
+      tofFindTracks->SetStation(0, 0, 2, 2);
+      tofFindTracks->SetStation(1, 0, 1, 2);
+      tofFindTracks->SetStation(2, 0, 0, 2);
 
-      tofFindTracks->SetStation(4, 0, 2, 1);
-      tofFindTracks->SetStation(5, 0, 1, 1);
-      tofFindTracks->SetStation(6, 0, 0, 1);
+      tofFindTracks->SetStation(3, 0, 2, 1);
+      tofFindTracks->SetStation(4, 0, 1, 1);
+      tofFindTracks->SetStation(5, 0, 0, 1);
 
-      tofFindTracks->SetStation(7, 0, 2, 3);
-      tofFindTracks->SetStation(8, 0, 1, 3);
-      tofFindTracks->SetStation(9, 0, 0, 3);
+      tofFindTracks->SetStation(6, 0, 2, 3);
+      tofFindTracks->SetStation(7, 0, 1, 3);
+      tofFindTracks->SetStation(8, 0, 0, 3);
 
-      tofFindTracks->SetStation(10, 0, 2, 0);
-      tofFindTracks->SetStation(11, 0, 1, 0);
-      tofFindTracks->SetStation(12, 0, 0, 0);
+      tofFindTracks->SetStation(9,  0, 2, 0);
+      tofFindTracks->SetStation(10, 0, 1, 0);
+      tofFindTracks->SetStation(11, 0, 0, 0);
 
-      tofFindTracks->SetStation(13, 0, 2, 4);
-      tofFindTracks->SetStation(14, 0, 1, 4);
-      tofFindTracks->SetStation(15, 0, 0, 4);
+      tofFindTracks->SetStation(12, 0, 2, 4);
+      tofFindTracks->SetStation(13, 0, 1, 4);
+      tofFindTracks->SetStation(14, 0, 0, 4);
+
+      tofFindTracks->SetStation(15, 5, 0, 0);
 
       /*
      tofFindTracks->SetStation(16, 0, 3, 2);         
@@ -688,6 +690,8 @@ void ana_trksi(Int_t nEvents        = 10000,
 
   TString SaveToHstFile = "save_hst(\"" + cHstFile + "\")";
   gInterpreter->ProcessLine(SaveToHstFile);
+
+  return;
 
   //gInterpreter->ProcessLine("pl_over_MatD4sel()");
   //gInterpreter->ProcessLine("pl_TIS()");

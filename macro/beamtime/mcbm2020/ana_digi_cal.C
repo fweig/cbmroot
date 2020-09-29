@@ -46,7 +46,13 @@ void ana_digi_cal(Int_t nEvents      = 10000000,
   TList* parFileList = new TList();
 
   TString FId    = cFileId;
-  TString TofGeo = "v20b_mcbm";
+  TString cRun(FId(0, 3));
+  Int_t iRun = cRun.Atoi();
+  TString TofGeo = "";
+  if (iRun < 690)
+    TofGeo = "v20a_mcbm";
+  else
+    TofGeo = "v20b_mcbm";
   cout << "Geometry version " << TofGeo << endl;
 
   //   TObjString *tofDigiFile = new TObjString(workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par"); // TOF digi file

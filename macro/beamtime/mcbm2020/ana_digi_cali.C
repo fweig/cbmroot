@@ -1,15 +1,15 @@
-void ana_digi_cal_all(Int_t nEvents      = 10000000,
-                      Int_t calMode      = 53,
-                      Int_t calSel       = 0,
-                      Int_t calSm        = 900,
-                      Int_t RefSel       = 1,
-                      TString cFileId    = "Test",
-                      Int_t iCalSet      = 910601600,
-                      Bool_t bOut        = 0,
-                      Int_t iSel2        = 0,
-                      Double_t dDeadtime = 50,
-                      TString cCalId     = "XXX",
-                      Int_t iPlot        = 1) {
+void ana_digi_cali(Int_t nEvents      = 10000000,
+                   Int_t calMode      = 53,
+                   Int_t calSel       = 0,
+                   Int_t calSm        = 900,
+                   Int_t RefSel       = 1,
+                   TString cFileId    = "Test",
+                   Int_t iCalSet      = 910601600,
+                   Bool_t bOut        = 0,
+                   Int_t iSel2        = 0,
+                   Double_t dDeadtime = 50,
+                   TString cCalId     = "XXX",
+                   Int_t iPlot        = 0) {
   Int_t iVerbose = 1;
   Int_t iBugCor  = 0;
   //Specify log level (INFO, DEBUG, DEBUG1, ...)
@@ -22,7 +22,7 @@ void ana_digi_cal_all(Int_t nEvents      = 10000000,
   //TString logLevel = "DEBUG3";
   FairLogger::GetLogger();
   gLogger->SetLogScreenLevel(logLevel);
-  gLogger->SetLogVerbosityLevel("VERYHIGH");
+  gLogger->SetLogVerbosityLevel("MEDIUM");
 
   TString workDir = gSystem->Getenv("VMCWORKDIR");
   /*
@@ -30,8 +30,8 @@ void ana_digi_cal_all(Int_t nEvents      = 10000000,
    cout << "workdir = "<< workDir.Data() << endl;
    return;
   */
-  TString paramDir = workDir + "/macro/beamtime/mcbm2020/";
-  //TString paramDir   = "./";
+  //TString paramDir = workDir + "/macro/beamtime/mcbm2020/";
+  TString paramDir  = "./";
   TString ParFile   = paramDir + "data/" + cFileId + ".params.root";
   TString InputFile = paramDir + "data/" + cFileId + ".root";
   // TString InputFile  =  "./data/" + cFileId + ".root";
@@ -46,13 +46,7 @@ void ana_digi_cal_all(Int_t nEvents      = 10000000,
   TList* parFileList = new TList();
 
   TString FId    = cFileId;
-  TString cRun(FId(0, 3));
-  Int_t iRun = cRun.Atoi();
-  TString TofGeo = "";
-  if (iRun < 690)
-    TofGeo = "v20a_mcbm";
-  else
-    TofGeo = "v20b_mcbm";
+  TString TofGeo = "v20b_mcbm";
   cout << "Geometry version " << TofGeo << endl;
 
   //   TObjString *tofDigiFile = new TObjString(workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par"); // TOF digi file
@@ -114,7 +108,7 @@ void ana_digi_cal_all(Int_t nEvents      = 10000000,
   tofClust->SetToDAv(0.04);
   // tofClust->SetTimePeriod(25600.);       // ignore coarse time
   // tofClust->SetCorMode(iBugCor);         // correct missing hits
-  //tofClust->SetIdMode(0);                  // calibrate on counter level
+  //tofClust->SetIdMode(0);  // calibrate on counter level
   tofClust->SetIdMode(1);  // calibrate on module level
   //   tofClust->SetDeadStrips(15,23);   // declare dead strip for T0M3,Rpc0,Strip 23
   //tofClust->SetDeadStrips(25,16);   // declare non-existant diamond strip (#5) dead
@@ -226,27 +220,27 @@ void ana_digi_cal_all(Int_t nEvents      = 10000000,
       break;
     case 52:
     case 53:
-      tofClust->SetTRefDifMax(10.);  // in ns
-      tofClust->PosYMaxScal(1.5);    //in % of length
+      tofClust->SetTRefDifMax(5.);  // in ns
+      tofClust->PosYMaxScal(1.5);   //in % of length
       break;
     case 62:
     case 63:
-      tofClust->SetTRefDifMax(10.);  // in ns
-      tofClust->PosYMaxScal(1.);     //in % of length
+      tofClust->SetTRefDifMax(3.);  // in ns
+      tofClust->PosYMaxScal(1.);    //in % of length
       break;
     case 72:
     case 73:
-      tofClust->SetTRefDifMax(10.);  // in ns
+      tofClust->SetTRefDifMax(2.5);  // in ns
       tofClust->PosYMaxScal(0.9);    //in % of length
       break;
     case 82:
     case 83:
-      tofClust->SetTRefDifMax(10.);  // in ns
+      tofClust->SetTRefDifMax(2.0);  // in ns
       tofClust->PosYMaxScal(0.8);    //in % of length
       break;
     case 92:
     case 93:
-      tofClust->SetTRefDifMax(10.);  // in ns
+      tofClust->SetTRefDifMax(2.0);  // in ns
       tofClust->PosYMaxScal(0.75);   //in % of length
       break;
 
@@ -363,7 +357,9 @@ void ana_digi_cal_all(Int_t nEvents      = 10000000,
   // -----   Intialise and run   --------------------------------------------
   run->Init();
   cout << "Starting run" << endl;
-  run->Run(0, nEvents);
+  //Int_t i1=1453545;
+  Int_t i1 = 0;
+  run->Run(i1, nEvents);
   //tofClust->Finish();
   // ------------------------------------------------------------------------
   // default display
