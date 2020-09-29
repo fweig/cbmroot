@@ -57,7 +57,7 @@ cd ${cRun}
 
 # Global variables, for for-loops
 iRestart=0
-#iRestart=13
+#iRestart=25
 iStep=0
 iStepLast=0
 iCalSel0=0
@@ -87,7 +87,8 @@ do
       optList=`echo " $nEvi,$icallev$icalmod,$iCalSel0,$iBRef,50 "`$optList 
       optList=`echo " $nEvi,$icallev$icalmod,$iCalSel1,$iBRef,50 "`$optList
     else
-      optList=`echo " $nEvi,$icallev$icalmod,-2,2,0 "`$optList
+#      optList=`echo " $nEvi,$icallev$icalmod,-2,2,0 "`$optList
+      echo skip add options
     fi 
 done
  optList=`echo " $nEvi,0,0,$iBRef,50 "`$optList      # start Init1

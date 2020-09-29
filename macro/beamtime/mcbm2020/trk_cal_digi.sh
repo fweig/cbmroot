@@ -2,10 +2,12 @@
 # shell script to apply clusterizer calibrations
 #SBATCH -J trk_cal_digi
 #SBATCH -D /lustre/cbm/users/nh/CBM/cbmroot/trunk/macro/beamtime/mcbm2020
-#SBATCH --time=8:00:00
-##SBATCH --time=5-24:00:00
+##SBATCH --time=8:00:00
+#SBATCH --time=5-24:00:00
 #SBATCH --mem=4000
-##SBATCH --partition=long
+#SBATCH --partition=long
+
+trk_cal_digi() {
 cRun=$1
 
 iCalSet=$2
@@ -83,7 +85,11 @@ echo trk_cal_digi for $cRun with iDut=$iDut, iRef=$iRef, iSet=$iCalSet, iSel2=$i
 
 if [[ $iShLev = "" ]]; then 
   iShLev=0
+  nEvt=200000
+  dDTres=100000
+  dDTRMSres=100000
 fi 
+
 echo execute trk_cal_digi at shell level $iShLev
 
 if [ -e /lustre/cbm ]; then
@@ -95,9 +101,6 @@ wdir=`pwd`
 outdir=${wdir}/${cRun}
 fi
 
-nEvt=200000
-dDTres=100000
-dDTRMSres=100000
 iter=0;
 
 cd $wdir
@@ -106,7 +109,7 @@ cd    $cRun
 cp    ../.rootrc .
 cp    ../rootlogon.C .
 
-echo Execute in `pwd`: ./trk_cal_digi.sh $1 $2 $3 $4 $5 $6 $7 $8
+echo Execute in `pwd` at $iShLev: ./trk_cal_digi.sh $1 $2 $3 $4 $5 $6 $7 $8
 
 # get initial digi calibration 
 #cp -v  ./I*/${CalFile}  .
@@ -121,10 +124,10 @@ nEvtMax=0
 #frange1 limits DT spectrum range 
 fRange1=2.
 # frange2 limits chi2
-fRange2=5.0
+fRange2=4.0
 TRange2Limit=3. 
 
-iSel=911921
+iSel=901041
 iGenCor=3
 cCalSet2=${cCalSet}_$cSel2
 
@@ -150,37 +153,46 @@ while [[ $dDTres > 0 ]]; do
    fRange2=$TRange2Limit
   fi
   
-  cd $wdir/$cRun
   iCalAct=$iCalOpt
-  echo Enter while loop with $iCalAct in dir `pwd`
-  while [[ $iCalAct > 0 ]]; do  
+  iIter=0
+  echo Enter while loop with CalAct $iCalAct in dir `pwd`
+  while [[ $iCalAct -gt 0 ]]; do  
+    cd $wdir/$cRun
+    echo Current loop with CalAct $iCalAct and CalOpt $iCalOpt
     if [[ $iCalOpt = 1 ]] || [[ $iCalAct > 1 ]]; then 
       root -b -q '../ana_digi_cal.C('$nEvt',93,1,'$iRef',1,"'$cRun'",'$iCalSet',1,'$iSel2','$Deadtime',"'$CalIdMode'") '
       # update calibration parameter file, will only be active in next iteration 
-      # cp -v tofClust_${cRun}_set${cCalSet}.hst.root ../${cRun}_set${cCalSet}_93_1tofClust.hst.root
-
-      root -b -q '../ana_trks.C('$nEvt','$iSel','$iGenCor',"'$cRun'","'$cCalSet2'",'$iSel2','$iTraSetup','$fRange1','$fRange2','$Deadtime',"'$CalIdMode'",1,1,'$iCalSet','$iCalAct')'
+      if [[ $iIter = -10 ]] && [[ $iCalOpt = 1 ]]; then  # exploratory option when iIter set to 0 
+        echo Update Calibration file from ana_digi_cal
+        cp -v tofClust_${cRun}_set${cCalSet}.hst.root ../${cRun}_set${cCalSet}_93_1tofClust.hst.root
+        echo 20000 > TOffAvOff.res
+        echo 20000 > TOffAvRMS.res
+      else
+        root -b -q '../ana_trks.C('$nEvt','$iSel','$iGenCor',"'$cRun'","'$cCalSet2'",'$iSel2','$iTraSetup','$fRange1','$fRange2','$Deadtime',"'$CalIdMode'",1,1,'$iCalSet','$iCalAct')'
       #root -l 'ana_trksi.C(-1,10,1,"385.50.5.0","000014500_020",20,1,1.90,7.60,50,"385.50.5.0",1,1)'
   
-      cp -v New_${CalFile} ${CalFile}  
-
+        cp -v New_${CalFile} ${CalFile}  
+      fi
     else 
       cd $wdir
       # store current status 
       dLDTres=$dDTres
       dLDTRMSres=$dDTRMSres
+      iLCalOpt=$iCalOpt
       echo Store limits $dLDTres, $dLDTRMSres
-      echo exec in `pwd`: trk_cal_digi.sh $1 $2 $3 $4 $5 1 $7
       (( iShLev += 1 ))
-      ./trk_cal_digi.sh $1 $2 $3 $4 $5 1 $7
+      echo exec in `pwd` at level $iShLev: trk_cal_digi $1 $2 $3 $4 $5 1 $7
+      trk_cal_digi $1 $2 $3 $4 $5 1 $7
       (( iShLev -= 1 ))
       # restore old status
       dDTres=$dLDTres
       dDTRMSres=$dLDTRMSres
-      echo exec1done, resume with old status $dDTres, $dDTRMSres
+      iCalOpt=$iLCalOpt
+      echo exec1done, resume old CalOpt $iCalOpt with status $dDTres, $dDTRMSres
     fi
     (( iCalAct -= 1 ))
-    echo Continue while loop with $iCalAct
+    (( iIter   += 1 ))
+    echo Continue while loop with CalAct $iCalAct and CalOpt $iCalOpt
   done
   
   cd $wdir/$cRun
@@ -211,6 +223,7 @@ while [[ $dDTres > 0 ]]; do
     fi
     dDTres=$Tres
     dDTRMSres=$TRMSres
+    echo Store new res values $dDTres, $dDTRMSres
     (( dDTRMSres -= 1 ))  # next attempt should be at least 1ps better for continuation
     cp -v New_${CalFile} ${CalFile}  
     cp -v New_${CalFile} ${CalFile}_$iter  
@@ -222,10 +235,16 @@ done
 
 cd $wdir/$cRun
 # generate full statistics digi file 
-root -b -q '../ana_digi_cal.C(-1,93,1,'$iRef',1,"'$cRun'",'$iCalSet',1,'$iSel2','$Deadtime',"'$CalIdMode'") '
+if [[ $iShLev = 0 ]]; then 
+  root -b -q '../ana_digi_cal.C(-1,93,1,'$iRef',1,"'$cRun'",'$iCalSet',1,'$iSel2','$Deadtime',"'$CalIdMode'") '
+fi
 
 cd $wdir
 
 if [[ $iShLev = 0 ]]; then 
-  mv -v slurm-${SLURM_JOB_ID}.out ${outdir}/TrkCalDigi_${cRun}_${iCalSet}_${iSel2}_${iCalIdMode}.out
+  mv -v slurm-${SLURM_JOB_ID}.out ${outdir}/TrkCalDigi_${cRun}_${iCalSet}_${iSel2}_${CalIdMode}.out
 fi
+
+} #end of function body
+
+trk_cal_digi $1 $2 $3 $4 $5 $6 $7 $8

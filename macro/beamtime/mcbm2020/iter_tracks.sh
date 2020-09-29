@@ -134,7 +134,7 @@ for iCal in 3 4 5; do
     fi
     while [[ $nIt > 0 ]]; do
 	((iter += 1))
-	root -b -q '../ana_trks.C('$nEvt','$iSel','$iCal',"'$cRun'","'$cSet'",'$iSel2','$iTraSetup','$fRange1','$fRange2','$dDeadtime',"'$cCalId'",1,1,'$iCalSet',0,'$iMc')'
+	root -b -q '../ana_trks.C('$nEvt','$iSel','$iCal',"'$cRun'","'$cSet'",'$iSel2','$iTraSetup','$fRange1','$fRange2','$dDeadtime',"'$cCalId'",1,1,'$iCalSet',1,'$iMc')'
 	cp -v tofFindTracks.hst.root ${cRun}_tofFindTracks.hst.root
 	cp -v tofFindTracks.hst.root ${cRun}_tofFindTracks.hst${iter}.root
 	cp -v tofAnaTestBeam.hst.root ${cRun}_TrkAnaTestBeam.hst.root
