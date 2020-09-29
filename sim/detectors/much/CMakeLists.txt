@@ -1,6 +1,7 @@
 
 Set(INCLUDE_DIRECTORIES
 ${CMAKE_CURRENT_SOURCE_DIR}
+${CMAKE_CURRENT_SOURCE_DIR}/qa
 
 ${CBMDETECTORBASE_DIR}/much
 
@@ -8,6 +9,7 @@ ${CBMBASE_DIR}
 ${CBMBASE_DIR}/utils
 
 ${CBMROOT_SOURCE_DIR}/sim/transport/base
+${CBMROOT_SOURCE_DIR}/core/qa
 
 ${CBMDATA_DIR} 
 ${CBMDATA_DIR}/much 
@@ -36,12 +38,14 @@ CbmMuch.cxx
 CbmMuchDigitizeGem.cxx
 CbmMuchReadoutBuffer.cxx
 CbmMuchSignal.cxx
+
+qa/CbmMuchTransportQa.cxx
 )
 
 set(LINKDEF CbmMuchSimLinkDef.h)
 Set(LIBRARY_NAME CbmMuchSim)
 Set(DEPENDENCIES
-    CbmMuchBase CbmBase CbmData Base 
+    CbmMuchBase CbmBase CbmData Base CbmQaBase
 )
 
 GENERATE_LIBRARY()

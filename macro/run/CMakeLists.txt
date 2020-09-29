@@ -4,6 +4,7 @@ GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_digi.C)
 GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_reco_event.C)
 GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/check_overlaps.C)
 GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_transport_qa.C)
+GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_qa.C)
 GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_reco_tb_track.C)
 GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_recoqa_tb_track.C)
 GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_reco_analysis.C)
@@ -76,7 +77,16 @@ ForEach(setup IN LISTS cbm_setup)
   set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_reco_event_mc})
   Set(fixture_digi_tb fixture_digi_tb_${testname})
   set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_digi_tb})
-  
+
+  # --- Quality Assurance
+  Set(testname run_qa_event_mc_${setup})
+  Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/run/run_qa.sh ${NumEvents} \"data/${setup}_test\" \"${setup}\")
+  Set_Tests_Properties(${testname} PROPERTIES TIMEOUT ${timeOutTime})
+  Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
+  Set_Tests_Properties(${testname} PROPERTIES FAIL_REGULAR_EXPRESSION "ERROR")
+  Set_Tests_Properties(${testname} PROPERTIES FAIL_REGULAR_EXPRESSION "FATAL")
+  Set_Tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_reco_event_mc})
+
 #  # --- Reconstruction Quality Assurance
 #  Set(testname run_reco_event_qa_${setup})
 #  Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/run/run_reco_analysis.sh \"data/${setup}_test\" {{\"MvdCluster\",\"CbmMvdCluster\",\"MVD_Cluster_Finder\"},{\"MvdHit\",\"CbmMvdHit\",\"MVD_Hit_Finder\"},{\"StsCluster\",\"CbmStsCluster\",\"StsFindCluster\"},{\"StsHit\",\"CbmStsHit\",\"StsFindHit\"},{\"StsTrack\",\"CbmStsTrack\",\"StsFindTracksEvents\"}} {{\"sts\",{${pullDevAllowed},1,1,1}},{\"mvd\",{${pullDevAllowed},1,1,1}}} 2500 ${uploadHistJPG})
