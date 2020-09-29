@@ -76,7 +76,7 @@
 #pragma link C++ class CbmTofTracklet + ;
 #pragma link C++ class CbmTofTrackletParam + ;
 
-#pragma link C++ class CbmPsdDigi;
+#pragma link C++ class CbmPsdDigi-;
 #pragma link C++ class CbmPsdHit;
 #pragma link C++ class CbmPsdPoint + ;
 #pragma link C++ class CbmPsdAddress;
