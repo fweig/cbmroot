@@ -78,7 +78,7 @@ private:
   void CloseInput();
 
   /** Check if file exists. Break fatal when it doesn't exist **/
-  void CheckFileExist(std::string filename);
+  Bool_t CheckFileExist(std::string filename);
 
   ClassDef(CbmPlutoGenerator, 4);
 };
