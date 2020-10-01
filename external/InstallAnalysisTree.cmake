@@ -65,6 +65,6 @@ endforeach(LIB_NAME)
 #        ${CMAKE_BINARY_DIR}/lib/${CMAKE_SHARED_LIBRARY_PREFIX}AnalysisTree_rdict.pcm
 #        DESTINATION lib
 #        )
-Install(FILES ${CMAKE_BINARY_DIR}/include/AnalysisTree
+Install(DIRECTORY  ${CMAKE_BINARY_DIR}/include/AnalysisTree
         DESTINATION include
        )
