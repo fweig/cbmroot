@@ -53,7 +53,7 @@ If( ($ENV{ctest_model} MATCHES Nightly) OR ($ENV{ctest_model} MATCHES Weekly) )
 
     # --- Much analysis
     Set(testname dimuon_analysis_${setup})
-    Add_Test(${testname} ${MACRO_DIR}/run_ana.sh ${NumEvents} \"data/${setup}_test\" \"${setup}\" 1 \"\")
+    Add_Test(${testname} ${MACRO_DIR}/run_ana.sh ${NumEvents} \"data/${setup}_test\" \"${setup}\" 1 \"\" -1)
     Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "300")
     Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
     set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_dimuon_ana})
