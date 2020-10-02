@@ -58,6 +58,7 @@ public:
   inline void SetTxMean(Double_t val) { fTxMean = val; }
   inline void SetTyMean(Double_t val) { fTyMean = val; }
   inline void SetSIGLIM(Double_t val) { fSIGLIM = val; }
+  inline void SetSIGLIMMOD(Double_t val) { fSIGLIMMOD = val; }
   inline void SetChiMaxAccept(Double_t val) { fChiMaxAccept = val; }
   inline void SetPosYMaxScal(Double_t val) { fPosYMaxScal = val; }
 
@@ -66,6 +67,7 @@ public:
   inline Double_t GetTxMean() { return fTxMean; }
   inline Double_t GetTyMean() { return fTyMean; }
   inline Double_t GetSIGLIM() { return fSIGLIM; }
+  inline Double_t GetSIGLIMMOD() { return fSIGLIMMOD; }
   inline Double_t GetChiMaxAccept() { return fChiMaxAccept; }
 
   static void Line3Dfit(CbmTofTracklet* pTrk);
@@ -91,6 +93,7 @@ private:
   Double_t fTxMean;
   Double_t fTyMean;
   Double_t fSIGLIM;
+  Double_t fSIGLIMMOD;
   Double_t fChiMaxAccept;
   Double_t fPosYMaxScal;
   static LKFMinuit fMinuit;

@@ -70,7 +70,7 @@ private:
   CbmTofDigiPar* fDigiPar;
   CbmTofDigiBdfPar* fDigiBdfPar;
   TClonesArray* fTofDigiMatchColl;  // TOF Digi Links
-
+  TH1* fhCalR0;
   std::vector<TH2*> fhCalPos;   // [nbDet]
   std::vector<TH2*> fhCalTOff;  // [nbDet]
   std::vector<TH2*> fhCalTot;   // [nbDet]

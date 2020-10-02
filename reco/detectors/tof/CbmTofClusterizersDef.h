@@ -39,7 +39,7 @@ const Int_t DetMask       = 0x003FFFFF; // geo v14a
 const Int_t ModMask       = 0x0000FFFF; // geo v14a
 */
 const Int_t DetMask = 0x001FFFFF;  // geo v21a
-const Int_t ModMask = 0x0000FFFF;  // geo v21a
+const Int_t ModMask = 0x00007FFF;  // geo v21a
 
 /*
 Int_t iNevtBuild=0; // Should be class member!

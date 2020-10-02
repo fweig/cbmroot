@@ -47,6 +47,7 @@ public:
   virtual inline void SetTxMean(Double_t /*val*/) {};
   virtual inline void SetTyMean(Double_t /*val*/) {};
   virtual inline void SetSIGLIM(Double_t /*val*/) {};
+  virtual inline void SetSIGLIMMOD(Double_t /*val*/) {};
   virtual inline void SetChiMaxAccept(Double_t /*val*/) {};
   virtual inline void SetSIGT(Double_t /*val*/) {};
   virtual inline void SetSIGX(Double_t /*val*/) {};
