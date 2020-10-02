@@ -4,10 +4,7 @@
 #include "CbmTrdParModDigi.h"
 #include "CbmTrdParSpadic.h"
 
-#include "FairLogger.h"
-#include "FairParAsciiFileIo.h"
-#include "FairRun.h"
-#include "FairRuntimeDb.h"
+#include <Logger.h>
 
 #include "TH2I.h"
 #include "TObjString.h"

@@ -10,13 +10,8 @@
 #include "CbmFormatMsHeaderPrintout.h"
 #include "CbmMcbm2018StsPar.h"
 
-#include "FairLogger.h"
-#include "FairRootManager.h"
-#include "FairRun.h"
-#include "FairRunOnline.h"
-#include "FairRuntimeDb.h"
+#include <Logger.h>
 
-//#include "TProfile2D.h"
 #include "TCanvas.h"
 #include "TH1.h"
 #include "TH2.h"
