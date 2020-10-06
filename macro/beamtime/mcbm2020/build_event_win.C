@@ -73,7 +73,7 @@ void build_event_win(UInt_t uRunId  = 0,
   eventBuilder->SetTriggerWindow(ECbmModuleId::kMuch, -150, 50);
   eventBuilder->SetTriggerWindow(ECbmModuleId::kTrd, -250, 100);
   eventBuilder->SetTriggerWindow(ECbmModuleId::kTof, -150, 10);
-  eventBuilder->SetTriggerWindow(ECbmModuleId::kRich, -150, 20);
+  eventBuilder->SetTriggerWindow(ECbmModuleId::kRich, -50, 50);
   eventBuilder->SetTriggerWindow(ECbmModuleId::kPsd, -50, 10);
   /// To get T0 Digis (seed + close digis) in the event
   eventBuilder->SetTriggerWindow(ECbmModuleId::kT0, -1, 10);
