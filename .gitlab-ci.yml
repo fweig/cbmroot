@@ -1,11 +1,11 @@
 stages:
-  - checkRebase
+  - checkRepository
   - checkFormat
   - build
   - documentation
 
 RebaseCheck:
-  stage: checkRebase
+  stage: checkRepository
   tags:
     - CbmRoot
   only:
@@ -15,7 +15,7 @@ RebaseCheck:
       - $CI_MERGE_REQUEST_PROJECT_PATH == "computing/cbmroot" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"
   script:
     # Get the upstream repository manually. I did not find any other way to have it for
-    # comparisson
+    # comparison
     # Check if a rebase is needed
     # If a rebase is needed stop immediately
     - scripts/connect_upstream_repo.sh $CI_MERGE_REQUEST_PROJECT_URL
@@ -33,6 +33,33 @@ RebaseCheck:
     -   exit 1
     - fi
 
+LinearHistCheck:
+  stage: checkRepository
+  tags:
+    - CbmRoot
+  only:
+    refs:
+      - merge_requests
+    variables:
+      - $CI_MERGE_REQUEST_PROJECT_PATH == "computing/cbmroot" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"
+  script:
+    # Get the upstream repository manually. I did not find any other way to have it for
+    # comparison
+    # Check if the history introduced by the MR is linear (no branch loop in fork)
+    # If not linear stop immediately
+    - scripts/connect_upstream_repo.sh $CI_MERGE_REQUEST_PROJECT_URL
+    - git fetch upstream
+    - count=$(git rev-list --min-parents=2 --count upstream/master..HEAD)
+    - echo "${count}"
+    - if [ 0 = "${count}" ]; then
+    -   echo "History introduced in fork is linear"
+    -   exit 0
+    - else
+    -   echo "History introduced in fork is not linear"
+    -   echo "${count} merge commits must be removed or the other new commits have to be replayed in a new branch"
+    -   exit 1
+    - fi
+
 FormatCheck:
   stage: checkFormat
   tags:
@@ -44,7 +71,7 @@ FormatCheck:
       - $CI_MERGE_REQUEST_PROJECT_PATH == "computing/cbmroot" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"
   script:
     # Get the upstream repository manually. I did not find any other way to have it for
-    # comparisson
+    # comparison
     - scripts/connect_upstream_repo.sh $CI_MERGE_REQUEST_PROJECT_URL
     - git fetch upstream
     - echo "export FAIRSOFT_VERSION=jun19p1" > env.sh
@@ -58,7 +85,7 @@ FormatCheck:
     - echo "export FAIRROOT_FORMAT_BASE=upstream/\${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}" >> env.sh
     - . ./env.sh && ctest -S cmake/scripts/checkformat.cmake -VV
 
-  
+
 CbmRoot_Continuous:
   stage: build
   tags:
@@ -90,7 +117,7 @@ CbmRoot_Continuous:
 #      - parameters
   script:
     - set -xv
-    - mkdir -p build 
+    - mkdir -p build
     - cd build
 #    - find . -name "*.root" -delete
 #    - find . -name "*_ok" -delete
@@ -139,7 +166,7 @@ CbmRoot_Merge:
     - echo "export FAIRSOFT_VERSION=jun19p1" >> Dart.cfg
     - echo "export FAIRROOT_VERSION=v18.2.0" >> Dart.cfg
     - echo "export SIMPATH=/cvmfs/fairroot.gsi.de/fairsoft/\${FAIRSOFT_VERSION}" >> Dart.cfg
-    - echo "export FAIRROOTPATH=/cvmfs/fairroot.gsi.de/fairroot/\${FAIRROOT_VERSION}_fairsoft-\${FAIRSOFT_VERSION}" >> Dart.cfg 
+    - echo "export FAIRROOTPATH=/cvmfs/fairroot.gsi.de/fairroot/\${FAIRROOT_VERSION}_fairsoft-\${FAIRSOFT_VERSION}" >> Dart.cfg
     - echo "export BUILDDIR=$PWD/build" >> Dart.cfg
     - echo "export SOURCEDIR=$PWD" >> Dart.cfg
     - echo "export NCPU=5" >> Dart.cfg
