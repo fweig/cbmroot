@@ -1,4 +1,4 @@
-void pl_pull_trk(Int_t NSt = 8, Int_t iVar = 0, Int_t iFit = 0) {
+void pl_pull_trk(Int_t NSt = 8, Int_t iVar = 0, Int_t iFit = 0, Int_t iDrop=-1) {
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   TCanvas* can = new TCanvas("can", "can", 50, 0, 800, 800);
@@ -32,6 +32,7 @@ void pl_pull_trk(Int_t NSt = 8, Int_t iVar = 0, Int_t iFit = 0) {
   Double_t vResErr[MSt];
   // if (h!=NULL) h->Delete();
   Int_t iCan = 1;
+  Int_t iIndSt=0;
   TString var;
   Double_t Nall;
 
@@ -42,7 +43,6 @@ void pl_pull_trk(Int_t NSt = 8, Int_t iVar = 0, Int_t iFit = 0) {
     case 3: var = "T"; break;
     case 4: var = "TB"; break;
   }
-
   for (Int_t iSt = 0; iSt < NSt; iSt++) {
     can->cd(iCan++);
     gROOT->cd();
@@ -56,28 +56,36 @@ void pl_pull_trk(Int_t NSt = 8, Int_t iVar = 0, Int_t iFit = 0) {
       if (iFit > 0) {
         Double_t dFMean = h1->GetMean();
         Double_t dFLim  = 3.0 * h1->GetRMS();
+        Double_t dBinSize = h1->GetBinWidth(1);
+        dFLim=TMath::Max(dFLim,5.*dBinSize);
         TFitResultPtr fRes =
           h1->Fit("gaus", "S", "", dFMean - dFLim, dFMean + dFLim);
         //cout << " fRes = "<< fRes <<endl;
         if (-1 == fRes) return;
-        vSt[iSt]      = iSt;
-        vMean[iSt]    = fRes->Parameter(1);
-        vSig[iSt]     = fRes->Parameter(2);
-        vStErr[iSt]   = 0.;
-        vMeanErr[iSt] = fRes->ParError(1);
-        vSigErr[iSt]  = fRes->ParError(2);
-        //vSig[iSt]=TMath::Max(20.,vSig[iSt]);
+        if ( iDrop == iSt ) { // drop station from deconvolution
+		  continue;
+		}
+		cout << "Add " << iSt << " as station index " << iIndSt << endl;
+        vSt[iIndSt]      = iSt;
+        vMean[iIndSt]    = fRes->Parameter(1);
+        vSig[iIndSt]     = fRes->Parameter(2);
+        vStErr[iIndSt]   = 0.;
+        vMeanErr[iIndSt] = fRes->ParError(1);
+        vSigErr[iIndSt]  = fRes->ParError(2);
+        //vSig[iIndSt]=TMath::Max(20.,vSig[iSt]);
+        iIndSt++;
       }
     } else {
       cout << hname << " not found" << endl;
     }
   }
   if (0 == iFit) return;
+  cout << "Process " << iIndSt << " fit values " << endl;
   can->cd(iCan++);
   Double_t dLMargin   = 0.35;
   Double_t dTitOffset = 1.8;
   gPad->SetLeftMargin(dLMargin);
-  TGraphErrors* grm = new TGraphErrors(NSt, vSt, vMean, vStErr, vMeanErr);
+  TGraphErrors* grm = new TGraphErrors(iIndSt, vSt, vMean, vStErr, vMeanErr);
   grm->SetTitle("Mean");
   grm->GetXaxis()->SetTitle("Station number");
   switch (iVar) {
@@ -93,7 +101,7 @@ void pl_pull_trk(Int_t NSt = 8, Int_t iVar = 0, Int_t iFit = 0) {
 
   can->cd(iCan++);
   gPad->SetLeftMargin(dLMargin);
-  TGraphErrors* grs = new TGraphErrors(NSt, vSt, vSig, vStErr, vSigErr);
+  TGraphErrors* grs = new TGraphErrors(iIndSt, vSt, vSig, vStErr, vSigErr);
   grs->SetTitle("Gaussian width");
   grs->GetXaxis()->SetTitle("Station number");
   switch (iVar) {
@@ -109,10 +117,10 @@ void pl_pull_trk(Int_t NSt = 8, Int_t iVar = 0, Int_t iFit = 0) {
 
   can->cd(iCan++);
   gPad->SetLeftMargin(dLMargin);
-  Double_t val = (NSt - 1) * (NSt - 1);
-  TMatrixD a(NSt, NSt);
-  for (Int_t i = 0; i < NSt; i++)
-    for (Int_t j = 0; j < NSt; j++) {
+  Double_t val = (iIndSt - 1) * (iIndSt - 1);
+  TMatrixD a(iIndSt, iIndSt);
+  for (Int_t i = 0; i < iIndSt; i++)
+    for (Int_t j = 0; j < iIndSt; j++) {
       if (i == j) {
         a[i][j] = 1;
       } else {
@@ -127,8 +135,8 @@ void pl_pull_trk(Int_t NSt = 8, Int_t iVar = 0, Int_t iFit = 0) {
   ainv.Invert();
   ainv.Draw("colz");
   ainv.Print();
-  TMatrixD aSig(NSt, 1);
-  for (Int_t i = 0; i < NSt; i++)
+  TMatrixD aSig(iIndSt, 1);
+  for (Int_t i = 0; i < iIndSt; i++)
     aSig[i][0] = vSig[i] * vSig[i];
 
   cout << "Measured gaussian widths: " << endl;
@@ -138,11 +146,11 @@ void pl_pull_trk(Int_t NSt = 8, Int_t iVar = 0, Int_t iFit = 0) {
   xRes.Print();
 
   //can->cd(iCan++);
-  for (Int_t i = 0; i < NSt; i++) {
+  for (Int_t i = 0; i < iIndSt; i++) {
     vRes[i]    = TMath::Sqrt(TMath::Abs(xRes[i][0]));
     vResErr[i] = vSigErr[i];
   }
-  TGraphErrors* grr = new TGraphErrors(NSt, vSt, vRes, vStErr, vResErr);
+  TGraphErrors* grr = new TGraphErrors(iIndSt, vSt, vRes, vStErr, vResErr);
   grr->SetTitle("Final resolution");
   grr->GetXaxis()->SetTitle("Station number");
   switch (iVar) {
@@ -157,7 +165,7 @@ void pl_pull_trk(Int_t NSt = 8, Int_t iVar = 0, Int_t iFit = 0) {
   grr->SetMarkerStyle(24);
   grr->Draw("APLE");
 
-  for (Int_t i = 0; i < NSt; i++)
+  for (Int_t i = 0; i < iIndSt; i++)
     cout << Form(
       "GMean %6.3f +/- %6.5f, GSig: %6.3f +/- %6.5f => ResC %d: %6.3f ",
       vMean[i],
@@ -169,7 +177,7 @@ void pl_pull_trk(Int_t NSt = 8, Int_t iVar = 0, Int_t iFit = 0) {
          << endl;
 
   cout << "Res-summary " << iVar << ": Nall, sigs = " << Nall;
-  for (Int_t i = 0; i < NSt; i++)
+  for (Int_t i = 0; i < iIndSt; i++)
     cout << Form(", %7.4f", vRes[i]);
   cout << endl;
 

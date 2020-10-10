@@ -37,9 +37,13 @@ void pl_XY_trk(Int_t NSt = 4, Double_t MinEff = 0.5, Double_t dThr = 0.1) {
       h2acc->Reset();
       Int_t Nbins   = h2->GetNbinsX() * h2->GetNbinsY();
       Double_t dMax = dThr * h2->GetMaximum();
-      for (Int_t i = 0; i < Nbins; i++)
-        h2->GetBinContent(i + 1) < dMax ? h2acc->SetBinContent(i + 1, 0.)
-                                        : h2acc->SetBinContent(i + 1, 1.);
+      for (Int_t i = 0; i < (Int_t)h2->GetNbinsX(); i++) 
+      for (Int_t j = 0; j < (Int_t)h2->GetNbinsY(); j++) 
+      {
+        h2->GetBinContent(i+1, j+1) < dMax ? h2acc->SetBinContent(i+1, j+1, 0.)
+                                           : h2acc->SetBinContent(i+1, j+1, 1.);
+        //cout << "Bin "<<i<<","<<j<<": "<< h2->GetBinContent(i+1,j+1) <<" filled with "<<h2acc->GetBinContent(i+1,j+1)<<endl;
+	  }
       TH2D* h2aall = (TH2D*) h2->Clone(Form("ALL_acc%d", iSt));
       h2aall->Multiply(h2aall, h2acc, 1., 1., "B");
       Nall = h2aall->Integral();

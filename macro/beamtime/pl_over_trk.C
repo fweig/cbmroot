@@ -193,6 +193,7 @@ void pl_over_trk(Int_t NSt = 4) {
 
   can->cd(13);
   gROOT->cd();
+  /*************
   hname = Form("hTrklTtHMul");
   h2    = (TH2*) gROOT->FindObjectAny(hname);
   if (h2 != NULL) {
@@ -201,6 +202,15 @@ void pl_over_trk(Int_t NSt = 4) {
   } else {
     cout << hname << " not found" << endl;
   }
+  */
+  hname = Form("hCalR0");
+  h1    = (TH1*) gROOT->FindObjectAny(hname);
+  if (h1 != NULL) {
+    h1->Draw("");
+    gPad->SetLogy();
+  } else {
+    cout << hname << " not found" << endl;
+  }  
 
   can->cd(14);
   gROOT->cd();

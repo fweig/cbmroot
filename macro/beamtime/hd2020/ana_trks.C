@@ -11,7 +11,7 @@ void ana_trks(Int_t nEvents        = 10000,
               TString cCalId       = "",
               Int_t iAnaCor        = 1,
               Bool_t bUseSigCalib  = kFALSE,
-              Int_t iCalSet        = 900920910,
+	          Int_t iCalSet        = 900920910,
               Int_t iCalOpt        = 1,
               Int_t iMc            = 0) {
   Int_t iVerbose = 1;
@@ -42,16 +42,16 @@ void ana_trks(Int_t nEvents        = 10000,
   TString cHstFile =
     paramDir
     + Form(
-      "/hst/%s_%03.0f_%s_%06d_%03d_%03.1f_%03.1f_trk%03d_Cal%s_Ana.hst.root",
-      cFileId.Data(),
-      dDeadtime,
-      cSet.Data(),
-      iSel,
-      iSel2,
-      dScalFac,
-      dChi2Lim2,
-      iTrackingSetup,
-      cCalId.Data());
+        "/hst/%s_%03.0f_%s_%06d_%03d_%03.1f_%03.1f_trk%03d_Cal%s_Ana.hst.root",
+        cFileId.Data(),
+        dDeadtime,
+        cSet.Data(),
+        iSel,
+        iSel2,
+        dScalFac,
+        dChi2Lim2,
+        iTrackingSetup,
+        cCalId.Data());
   TString cTrkFile = Form("%s_tofFindTracks.hst.root", cCalId.Data());
   TString cAnaFile = Form("%s_TrkAnaTestBeam.hst.root", cFileId.Data());
 
@@ -216,7 +216,7 @@ void ana_trks(Int_t nEvents        = 10000,
       //tofFindTracks->SetStation(8, 6, 1, 0);
       //tofFindTracks->SetStation(9, 6, 1, 1);
       break;
-
+      
     case 11:  // for calibration mode of full setup
       iMinNofHits   = 3;
       iNStations    = 6;
@@ -227,7 +227,7 @@ void ana_trks(Int_t nEvents        = 10000,
       tofFindTracks->SetStation(3, 9, 0, 1);
       tofFindTracks->SetStation(4, 6, 0, 0);
       tofFindTracks->SetStation(5, 6, 0, 1);
-      break;
+      break;      
 
     case 2:
       iMinNofHits   = 6;
@@ -618,7 +618,7 @@ void ana_trks(Int_t nEvents        = 10000,
   gInterpreter->ProcessLine("pl_all_Track2D(1)");
   gInterpreter->ProcessLine("pl_all_Track2D(2)");
   gInterpreter->ProcessLine("pl_all_Track2D(4)");
-
+  
   TString over_trk = "pl_over_trk(" + (TString)(Form("%d", iNStations)) + ")";
   gInterpreter->ProcessLine(over_trk);
 

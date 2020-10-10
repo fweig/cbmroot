@@ -44,16 +44,16 @@ void ana_digi_cal(Int_t nEvents      = 10000000,
   TList* parFileList = new TList();
 
   TString FId    = cFileId;
-  TString TofGeo = "v18m_mCbm";
+  TString TofGeo = "v18m_mcbm";
   cout << "Geometry version " << TofGeo << endl;
-
+/*
   TObjString* tofDigiFile = new TObjString(
     workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par");  // TOF digi file
   parFileList->Add(tofDigiFile);
-
+*/
   //   TObjString tofDigiBdfFile = new TObjString( paramDir + "/tof." + FPar + "digibdf.par");
   TObjString* tofDigiBdfFile =
-    new TObjString(workDir + "/parameters/tof/" + TofGeo + ".digibdf.par");
+    new TObjString(workDir + "/parameters/tof/tof_" + TofGeo + ".digibdf.par");
   parFileList->Add(tofDigiBdfFile);
 
   TString geoDir  = gSystem->Getenv("VMCWORKDIR");

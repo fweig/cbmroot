@@ -210,7 +210,7 @@ const Float_t Outer_Module_Number[Outer_Module_NTypes][Outer_Module_Col] =
 
 const Float_t Star2_First_Z_Position       = TOF_Z_Front + 34.;
 const Float_t Star2_Delta_Z_Position       = 0.;
-const Float_t Star2_First_Y_Position       = 32.;  //
+const Float_t Star2_First_Y_Position       = 30.;  //32.
 const Float_t Star2_Delta_Y_Position       = 0.;   //
 const Float_t Star2_rotate_Z               = -90.;
 const Int_t Star2_NTypes                   = 1;
@@ -316,7 +316,7 @@ void Create_TOF_Geometry_v20a_mcbm() {
   TGeoTranslation* stand_trans =
     new TGeoTranslation("", 0., 0., TOF_Z_Front_Stand);
   TGeoRotation* stand_rot = new TGeoRotation();
-  stand_rot->RotateY(-3.0); //-2.7);
+  stand_rot->RotateY(-3.0);
   TGeoCombiTrans* stand_combi_trans =
     new TGeoCombiTrans(*stand_trans, *stand_rot);
   //tof->AddNode(tofstand, 1, stand_combi_trans);
