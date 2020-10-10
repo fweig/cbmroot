@@ -131,7 +131,19 @@ void unpack_tsa_mcbm(TString inFile  = "",
   /// Starting from first run on Monday 04/05/2020, MUCH uses bin sorter FW
   if (811 <= uRunId) unpacker_much->SetBinningFwFlag(kTRUE);
 
+  /// FIXME: Disable clang formatting for parameters tuning for now
+  /* clang-format off */
   //  unpacker_sts ->SetAdcCut( 3 );
+  unpacker_sts ->MaskNoisyChannel(1,768 ,  true );
+  unpacker_sts ->MaskNoisyChannel(1,894 ,  true );
+  unpacker_sts ->MaskNoisyChannel(1,896 ,  true );
+  
+  unpacker_sts ->MaskNoisyChannel(2,930 ,  true );
+  unpacker_sts ->MaskNoisyChannel(2,926 ,  true );
+  unpacker_sts ->MaskNoisyChannel(2,892 ,  true );
+  
+  unpacker_sts ->MaskNoisyChannel(3,770 ,  true );
+
   unpacker_tof->SetSeparateArrayT0();
 
   // ------------------------------ //
@@ -143,12 +155,59 @@ void unpack_tsa_mcbm(TString inFile  = "",
   unpacker_much->EnableAsicType(fFlag);
   // ------------------------------ //
   /// General System offsets (= offsets between sub-systems)
-  unpacker_sts->SetTimeOffsetNs(-985);   // Run 811-866
+  unpacker_sts->SetTimeOffsetNs(-936);   // Run 811-866
   unpacker_much->SetTimeOffsetNs(-885);  // Run 811-866
   unpacker_trdR->SetTimeOffsetNs(0);     // Run 811-866
   unpacker_tof->SetTimeOffsetNs(25);     // Run 811-866
   unpacker_rich->SetTimeOffsetNs(-310);  // Run 811-866
   unpacker_psd->SetTimeOffsetNs(-240);   // Run 811-866
+
+  // ----------- ASIC by ASIC STS ----------------
+  // the first 8 Unused
+  unpacker_sts ->SetTimeOffsetNsAsic(  0,       0.0  ); // Unused
+  unpacker_sts ->SetTimeOffsetNsAsic(  1,       0.0  ); // Unused
+  unpacker_sts ->SetTimeOffsetNsAsic(  2,       0.0  ); // Unused
+  unpacker_sts ->SetTimeOffsetNsAsic(  3,       0.0  ); // Unused
+  unpacker_sts ->SetTimeOffsetNsAsic(  4,       0.0  ); // Unused
+  unpacker_sts ->SetTimeOffsetNsAsic(  5,       0.0  ); // Unused
+  unpacker_sts ->SetTimeOffsetNsAsic(  6,       0.0  ); // Unused
+  unpacker_sts ->SetTimeOffsetNsAsic(  7,       0.0  ); // Unused
+  // 
+  unpacker_sts ->SetTimeOffsetNsAsic(8,  -0.360078  );
+  unpacker_sts ->SetTimeOffsetNsAsic(9,  2.73976    );
+  unpacker_sts ->SetTimeOffsetNsAsic(10,  -0.507079  );
+  unpacker_sts ->SetTimeOffsetNsAsic(11,  1.74695    );
+  unpacker_sts ->SetTimeOffsetNsAsic(12,  -0.909864  );
+  unpacker_sts ->SetTimeOffsetNsAsic(13,  -0.255514  );
+  unpacker_sts ->SetTimeOffsetNsAsic(14,  1.44034    );
+  unpacker_sts ->SetTimeOffsetNsAsic(15,  2.64009    );
+  // this side: revert order 23->16 
+  unpacker_sts ->SetTimeOffsetNsAsic(23,  -0.442762  );
+  unpacker_sts ->SetTimeOffsetNsAsic(22,  1.76543    );
+  unpacker_sts ->SetTimeOffsetNsAsic(21, -0.94728   );
+  unpacker_sts ->SetTimeOffsetNsAsic(20, -2.18516   );
+  unpacker_sts ->SetTimeOffsetNsAsic(19, -0.68254   );
+  unpacker_sts ->SetTimeOffsetNsAsic(18, -2.32241   );
+  unpacker_sts ->SetTimeOffsetNsAsic(17, -1.53483   );
+  unpacker_sts ->SetTimeOffsetNsAsic(16, -2.12455   );
+  //
+  unpacker_sts ->SetTimeOffsetNsAsic(24, -0.41084   );
+  unpacker_sts ->SetTimeOffsetNsAsic(25, 0.230455   );
+  unpacker_sts ->SetTimeOffsetNsAsic(26, -0.206921  );
+  unpacker_sts ->SetTimeOffsetNsAsic(27, 0.0913657  );
+  unpacker_sts ->SetTimeOffsetNsAsic(28, -0.17252   );
+  unpacker_sts ->SetTimeOffsetNsAsic(29, -0.32990   );
+  unpacker_sts ->SetTimeOffsetNsAsic(30, 1.43535    );
+  unpacker_sts ->SetTimeOffsetNsAsic(31, -0.155741  );
+  // this side: revert order 39->32 
+  unpacker_sts ->SetTimeOffsetNsAsic(39, 1.53865    );
+  unpacker_sts ->SetTimeOffsetNsAsic(38, 3.6318     );
+  unpacker_sts ->SetTimeOffsetNsAsic(37, 1.3153     );
+  unpacker_sts ->SetTimeOffsetNsAsic(36, -1.90278   );
+  unpacker_sts ->SetTimeOffsetNsAsic(35, 2.00051    );
+  unpacker_sts ->SetTimeOffsetNsAsic(34, -2.85656   );
+  unpacker_sts ->SetTimeOffsetNsAsic(33, 1.28834    );
+  unpacker_sts ->SetTimeOffsetNsAsic(32, 0.657113   );
 
   switch (uRunId) {
     case 707: {
@@ -478,7 +537,8 @@ void unpack_tsa_mcbm(TString inFile  = "",
     }  // 836
     default: break;
   }  // switch( uRunId )
-
+  /// FIXME: Re-enable clang formatting after parameters tuning
+  /* clang-format on */
   // --- Source task
   CbmMcbm2018Source* source = new CbmMcbm2018Source();
   source->SetWriteOutputFlag(kTRUE);  // For writing TS metadata
