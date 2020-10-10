@@ -159,7 +159,7 @@ while [[ $dDTres > 0 ]]; do
   while [[ $iCalAct -gt 0 ]]; do  
     cd $wdir/$cRun
     echo Current loop with CalAct $iCalAct and CalOpt $iCalOpt
-    if [[ $iCalOpt = 1 ]] || [[ $iCalAct > 1 ]]; then 
+    if [[ $iCalOpt = 1 ]] || [[ $iCalAct -gt 1 ]]; then 
       root -b -q '../ana_digi_cal.C('$nEvt',93,1,'$iRef',1,"'$cRun'",'$iCalSet',1,'$iSel2','$Deadtime',"'$CalIdMode'") '
       # update calibration parameter file, will only be active in next iteration 
       if [[ $iIter = -10 ]] && [[ $iCalOpt = 1 ]]; then  # exploratory option when iIter set to 0 

@@ -10,21 +10,47 @@ X=$((${SLURM_ARRAY_TASK_ID} - 0))
 XXX=$(printf "%03d" "$X")
 
 cRun=$1
-#cRun='r0047_20170915_1636_DT50_Req3'
-#cRun='r0002_20171215_1810_DT50_Req-2'
-iDut=0; iRef=10; iSel2=20
-#iDut=911; iRef=900; iSel2=-910
+
+iTraSetup=$2
+
+#which file should be analyzed ?  
+cSet=$3
+if [[ $cSet = "" ]]; then 
+    cSet="010020500_500"
+    #cSet="900041500_901"
+    #cSet="900041500_500"
+fi
+
+# extract iCalSet from cSet
+i1=0
+while [ "${cSet:$i1:1}" = "0" ]; do
+(( i1 += 1 ))
+done
+i2=0
+while [ "${cSet:$i2:1}" != "_" ] && [ $i2 -lt  ${#cSet} ]; do
+(( i2 += 1 ))
+done
+(( i2 -= i1 ))
+iCalSet=${cSet:$i1:$i2}
+echo got i1=$i1, i2=$i2, iCalSet=$iCalSet from $cSet
+
+cCalId=$4;
+if [[ $cCalId = "" ]]; then 
+    cCalId=$cRun;
+fi
+
+iMc=0
+McId=${cRun:0:4}
+if [ "$McId" = "mcbm" ]; then 
+  echo processing MC simulation
+  iMc=1
+fi
 
 # what should be done ?
+iDut=12; iRef=22; iSel2=2
 ((iSel=$iDut*1000+$iRef))
-#which file should be analyzed ?  
-#cSet="010020000_020"
-cSet="000010500_020"
-#cSet="020040030_030"
 
-cCalId=$cRun;
-iTraSetup=3
-nEvt=1000000
+nEvt=100000
 dDTres=2000
 dDTRMSres=2000
 iter=0;
@@ -39,15 +65,17 @@ outdir=${wdir}/${cRun}
 fi
 
 # frange2 limits chi2
-fRange2=5.5
-TRange2Limit=3.5
+fRange2=7.
+TRange2Limit=2.5 
 
 #frange1 limits DT spectrum range 
-fRange1=1.5
-TRange1Limit=0.8
+fRange1=3.
+TRange1Limit=1.5
 dDeadtime=50
 
-mkdir ${cRun}
+if [ ! -e ${cRun} ]; then 
+  mkdir $cRun
+fi
 cd ${cRun}
 cp ../.rootrc .
 cp ../rootlogon.C .
@@ -56,19 +84,27 @@ cp ../rootlogon.C .
 rm -v ${cRun}_tofFindTracks.hst.root
 rm -v TCalib.res
 
-if [[ $iter > 0 ]]; then
+if [[ $iter -gt 0 ]]; then
  cp -v  ${cRun}_tofFindTracks.hst${iter}.root  ${cRun}_tofFindTracks.hst.root
 fi
- 
+
+nEvtMax=0
+(( nEvtMax = nEvt*10 ))
+
 while [[ $dDTres > 0 ]]; do
 
-nEvt=`echo "$nEvt * 1.3" | bc`
+nEvt=`echo "scale=0;$nEvt * 1./1." | bc`
+#nEvt=`echo "scale=0;$nEvt * 1.1/1." | bc`
+
+if [ $nEvt -gt $nEvtMax ]; then
+    nEvt=$nEvtMax
+fi
 
 #((fRange2 /= 2))
 #if((${fRange2}<$Range2Limit));then
 # ((fRange2=$Range2Limit))
 #fi
-fRange2=`echo "$fRange2 * 0.95" | bc`
+fRange2=`echo "$fRange2 * 0.8" | bc`
 compare_TRange2=`echo "$fRange2 < $TRange2Limit" | bc`
 if  [[ $compare_TRange2 > 0 ]]; then
 fRange2=$TRange2Limit
@@ -79,7 +115,7 @@ fi
 #if((${fRange1}<1));then
 # ((fRange1=1))
 #fi
-fRange1=`echo "$fRange1 * 0.95" | bc`
+fRange1=`echo "$fRange1 * 0.8" | bc`
 compare_TRange=`echo "$fRange1 < $TRange1Limit" | bc`
 if  [[ $compare_TRange > 0 ]]; then
 fRange1=$TRange1Limit
@@ -87,14 +123,19 @@ fi
 
 # correction modes: 2 - TOff from Tt, 3 - Pull t, 4 - x, 5 - y, 6 - z, >10 - Pull t of individual stations 
 #for iCal in 3 2 10 11 12 13 14 15 4 5; do
+#for iCal in 3 ; do
 for iCal in 3 4 5; do
 #for iCal in 3 2 4; do
 #for iCal in 3 2 ; do
 #for iCal in 2 ; do
     nIt=1
+    if [ $iter -eq 0 ] && [ $iMc -eq 1 ]; then
+      echo skip iCal $iCal for MC calibration
+      iCal=5
+    fi
     while [[ $nIt > 0 ]]; do
 	((iter += 1))
-	root -b -q '../ana_trks.C('$nEvt','$iSel','$iCal',"'$cRun'","'$cSet'",'$iSel2','$iTraSetup','$fRange1','$fRange2','$dDeadtime',"'$cCalId'")'
+	root -b -q '../ana_trks.C('$nEvt','$iSel','$iCal',"'$cRun'","'$cSet'",'$iSel2','$iTraSetup','$fRange1','$fRange2','$dDeadtime',"'$cCalId'",1,1,'$iCalSet',1,'$iMc')'
 	cp -v tofFindTracks.hst.root ${cRun}_tofFindTracks.hst.root
 	cp -v tofFindTracks.hst.root ${cRun}_tofFindTracks.hst${iter}.root
 	cp -v tofAnaTestBeam.hst.root ${cRun}_TrkAnaTestBeam.hst.root
@@ -111,6 +152,10 @@ fi
 ((TRMSres=$iTres%1000))
 ((iTres -= TRMSres ))
 ((Tres   = iTres / 1000)) 
+
+if [[ $Tres = 0 ]]; then
+    Tres=1
+fi
 dTdif=`echo "$dDTres - $Tres" | bc`
 compare_result=`echo "$Tres < $dDTres" | bc`
 
@@ -130,12 +175,16 @@ if [[ $compare_result > 0 ]]; then
   dDTRMSres=$TRMSres
 else
   dDTres=0
+  rm ../${cRun}_tofFindTracks.hst.root
   cp -v  tofFindTracks.hst.root  ../${cRun}_tofFindTracks.hst.root
+  cp -v  tofFindTracks.hst.root  ./${cRun}_${cSet}._${iTraSetup}_tofFindTracks.hst.root  # keep a copy 
+  rm ../${cRun}_TrkAnaTestBeam.hst.root
   cp -v  tofAnaTestBeam.hst.root ../${cRun}_TrkAnaTestBeam.hst.root
 fi
 
 done
 
-
-mv -v slurm-${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.out ${outdir}/Calib_${cRun}_${cSet}.out
+cd ..
+#mv -v slurm-${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.out ${outdir}/IterTrack_${cRun}_${cSet}.out
+mv -v slurm-${SLURM_JOB_ID}.out ${outdir}/IterTrack_${cRun}_${cSet}.out
 

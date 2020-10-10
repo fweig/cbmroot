@@ -74,14 +74,14 @@ do
     (( nEvi = nEvi0 + (icallev-1)*nEvi1 ))
     optList=`echo " $nEvi,$icallev$icalmod,$iCalSel0,$iDut,0 "`$optList
     if [ $iMRef -ne 14 ]; then 
-	optList=`echo " $nEvi,$icallev$icalmod,$iCalSel1,$iMRef,0 "`$optList
+	  optList=`echo " $nEvi,$icallev$icalmod,$iCalSel1,$iMRef,0 "`$optList
     else 
-	for iMod in 40  10 
-	do
+	  for iMod in 40  10 
+	  do
 	    if [ $iMod -ne $iDut ]; then
-		optList=`echo " $nEvi,$icallev$icalmod,$iCalSel1,$iMod,0 "`$optList
+		  optList=`echo " $nEvi,$icallev$icalmod,$iCalSel1,$iMod,0 "`$optList
 	    fi
-	done
+	  done
     fi
     if [ $icallev -lt 7 ]; then
       optList=`echo " $nEvi,$icallev$icalmod,$iCalSel0,$iBRef,50 "`$optList 
