@@ -141,6 +141,7 @@ void run_qa(Int_t nEvents   = 0,
   run->SetSink(sink);
 
   TString monitorFile {sinkFile};
+
   monitorFile.ReplaceAll("qa", "qa.monitor");
   FairMonitor::GetMonitor()->EnableMonitor(kTRUE, monitorFile);
   // ------------------------------------------------------------------------

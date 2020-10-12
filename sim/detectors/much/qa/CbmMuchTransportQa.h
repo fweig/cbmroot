@@ -17,6 +17,9 @@ class CbmMuchGeoScheme;
 class TClonesArray;
 class TH1F;
 class TH2F;
+class TPie;
+class TPieSlice;
+class TLegend;
 class CbmQaCanvas;
 
 /// QA for the MUCH detector after a "transport" step of the simulation.
@@ -94,11 +97,23 @@ private:
 
   std::vector<TH1F*> fvFraction;  /// pointers to the above histos
 
+  /// output pie charts
+
+  std::vector<TPie*>
+    fvMcPointPRatio;  /// MC point particle ratio pie charts [N stations]
+  std::vector<TPie*>
+    fvMcPointPrimRatio;  /// MC point particle ratio pie charts [N stations]
+
   // output canvaces with histogramm collections
 
   CbmQaCanvas* fCanvStationXY   = nullptr;
   CbmQaCanvas* fCanvStationPhiZ = nullptr;
   CbmQaCanvas* fCanvStationRZ   = nullptr;
+
+  // output canvaces with pie chart collections
+
+  CbmQaCanvas* fCanvStationPRatio    = nullptr;
+  CbmQaCanvas* fCanvStationPrimRatio = nullptr;
 
   ClassDef(CbmMuchTransportQa, 0)
 };

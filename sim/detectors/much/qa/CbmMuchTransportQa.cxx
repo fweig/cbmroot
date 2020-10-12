@@ -24,7 +24,6 @@
 #include "TDatabasePDG.h"
 #include "TParticlePDG.h"
 
-
 #include "TString.h"
 
 #include "TClonesArray.h"
@@ -32,6 +31,9 @@
 #include "CbmQaCanvas.h"
 #include "TH1.h"
 #include "TH2.h"
+#include "TLegend.h"
+#include "TPie.h"
+#include "TPieSlice.h"
 #include "TStyle.h"
 
 #include <cassert>
@@ -48,7 +50,9 @@ CbmMuchTransportQa::CbmMuchTransportQa(const char* name, Int_t verbose)
   , fvMcPointXY()
   , fvMcPointPhiZ()
   , fvMcPointRZ()
-  , fvFraction() {}
+  , fvFraction()
+  , fvMcPointPRatio()
+  , fvMcPointPrimRatio() {}
 // -------------------------------------------------------------------------
 
 
@@ -88,6 +92,13 @@ void CbmMuchTransportQa::DeInit() {
   }
   fvMcPointRZ.clear();
 
+  for (uint i = 0; i < fvMcPointPRatio.size(); i++) {
+    SafeDelete(fvMcPointPRatio[i]);
+  }
+  for (uint i = 0; i < fvMcPointPrimRatio.size(); i++) {
+    SafeDelete(fvMcPointPrimRatio[i]);
+  }
+
   SafeDelete(fhNtracks);
   SafeDelete(fhFractionPrim);
   SafeDelete(fhFractionSec);
@@ -100,9 +111,15 @@ void CbmMuchTransportQa::DeInit() {
   fvUsNtra.clear();
   fvFraction.clear();
 
+  fvMcPointPRatio.clear();
+  fvMcPointPrimRatio.clear();
+
   SafeDelete(fCanvStationXY);
   SafeDelete(fCanvStationPhiZ);
   SafeDelete(fCanvStationRZ);
+
+  SafeDelete(fCanvStationPRatio);
+  SafeDelete(fCanvStationPrimRatio);
 
   fNstations = 0;
   fOutFolder.Clear();
@@ -206,6 +223,9 @@ InitStatus CbmMuchTransportQa::Init() {
   fvMcPointPhiZ.resize(fNstations);
   fvMcPointRZ.resize(fNstations);
 
+  fvMcPointPRatio.resize(fNstations);
+  fvMcPointPrimRatio.resize(fNstations);
+
   for (Int_t i = 0; i < fNstations; i++) {
     CbmMuchStation* station = CbmMuchGeoScheme::Instance()->GetStation(i);
     if (!station) {
@@ -246,6 +266,20 @@ InitStatus CbmMuchTransportQa::Init() {
                               rMin - 0.1 * dR,
                               rMax + 0.1 * dR);
     histFolder->Add(fvMcPointRZ[i]);
+
+    fvMcPointPRatio[i] =
+      new TPie(Form("fvMcPointPRatio%i", i + 1),
+               Form("McPoint Particle Ratios: Station %i", i + 1),
+               5);
+
+    //histFolder->Add(fvMcPointPRatio[i]);
+
+    fvMcPointPrimRatio[i] =
+      new TPie(Form("fvMcPointPrimRatio%i", i + 1),
+               Form("McPoint Primary/Secondary Track: Station %i", i + 1),
+               2);
+
+    //histFolder->Add(fvMcPointPrimRatio[i]);
   }
 
   fCanvStationXY =
@@ -262,6 +296,19 @@ InitStatus CbmMuchTransportQa::Init() {
     new CbmQaCanvas("cMcPointRZ", "Much: MC point R vs Z", 2 * 800, 2 * 400);
   fCanvStationRZ->Divide2D(fNstations);
   fOutFolder.Add(fCanvStationRZ);
+
+  fCanvStationPRatio = new CbmQaCanvas(
+    "cMcPointPRatios", "Much: MC particle ratios", 2 * 400, 2 * 400);
+  fCanvStationPRatio->Divide2D(fNstations);
+  fOutFolder.Add(fCanvStationPRatio);
+
+  fCanvStationPrimRatio =
+    new CbmQaCanvas("cMcPointPrimRatios",
+                    "Much: MC primary/secondary track ratios",
+                    2 * 400,
+                    2 * 400);
+  fCanvStationPrimRatio->Divide2D(fNstations);
+  fOutFolder.Add(fCanvStationPrimRatio);
 
   gDirectory = oldDirectory;
 
@@ -422,6 +469,54 @@ TFolder& CbmMuchTransportQa::GetQa() {
   }
 
   for (Int_t i = 0; i < fNstations; i++) {
+    Double_t PRatios[] = {fhFractionEl->GetBinContent(i + 1),
+                          fhFractionPr->GetBinContent(i + 1),
+                          fhFractionPi->GetBinContent(i + 1),
+                          fhFractionMu->GetBinContent(i + 1),
+                          fhFractionKa->GetBinContent(i + 1)};
+
+    Int_t PRatiosColors[] = {4, 3, 2, 5, 6};
+
+    fvMcPointPRatio[i]->SetEntryVal(0, PRatios[0]);
+    fvMcPointPRatio[i]->SetEntryVal(1, PRatios[1]);
+    fvMcPointPRatio[i]->SetEntryVal(2, PRatios[2]);
+    fvMcPointPRatio[i]->SetEntryVal(3, PRatios[3]);
+    fvMcPointPRatio[i]->SetEntryVal(4, PRatios[4]);
+    fvMcPointPRatio[i]->SetEntryFillColor(0, PRatiosColors[0]);
+    fvMcPointPRatio[i]->SetEntryFillColor(1, PRatiosColors[1]);
+    fvMcPointPRatio[i]->SetEntryFillColor(2, PRatiosColors[2]);
+    fvMcPointPRatio[i]->SetEntryFillColor(3, PRatiosColors[3]);
+    fvMcPointPRatio[i]->SetEntryFillColor(4, PRatiosColors[4]);
+    fvMcPointPRatio[i]->GetSlice(0)->SetTitle(Form("e:   %.1f %%", PRatios[0]));
+    fvMcPointPRatio[i]->GetSlice(1)->SetTitle(Form("p:   %.1f %%", PRatios[1]));
+    fvMcPointPRatio[i]->GetSlice(2)->SetTitle(
+      Form("#pi:   %.1f %%", PRatios[2]));
+    fvMcPointPRatio[i]->GetSlice(3)->SetTitle(
+      Form("#mu:   %.1f %%", PRatios[3]));
+    fvMcPointPRatio[i]->GetSlice(4)->SetTitle(Form("K:   %.1f %%", PRatios[4]));
+    fvMcPointPRatio[i]->SetRadius(.33);
+    fvMcPointPRatio[i]->SetLabelsOffset(-.1);
+    fvMcPointPRatio[i]->SetLabelFormat("");
+
+    Double_t PrimRatios[] = {fhFractionPrim->GetBinContent(i + 1),
+                             fhFractionSec->GetBinContent(i + 1)};
+
+    Int_t PrimRatiosColors[] = {6, 4};
+
+    fvMcPointPrimRatio[i]->SetEntryVal(0, PrimRatios[0]);
+    fvMcPointPrimRatio[i]->SetEntryVal(1, PrimRatios[1]);
+    fvMcPointPrimRatio[i]->SetEntryFillColor(0, PrimRatiosColors[0]);
+    fvMcPointPrimRatio[i]->SetEntryFillColor(1, PrimRatiosColors[1]);
+    fvMcPointPrimRatio[i]->GetSlice(0)->SetTitle(
+      Form("Primary:   %.1f %%", PrimRatios[0]));
+    fvMcPointPrimRatio[i]->GetSlice(1)->SetTitle(
+      Form("Secondary: %.1f %%", PrimRatios[1]));
+    fvMcPointPrimRatio[i]->SetRadius(.33);
+    fvMcPointPrimRatio[i]->SetLabelsOffset(-.1);
+    fvMcPointPrimRatio[i]->SetLabelFormat("");
+  }
+
+  for (Int_t i = 0; i < fNstations; i++) {
 
     fCanvStationXY->cd(i + 1);
     gStyle->SetOptStat(0);
@@ -434,6 +529,24 @@ TFolder& CbmMuchTransportQa::GetQa() {
     fCanvStationRZ->cd(i + 1);
     gStyle->SetOptStat(0);
     fvMcPointRZ[i]->DrawCopy("colz", "");
+
+    fCanvStationPRatio->cd(i + 1);
+    gStyle->SetOptStat(0);
+    fvMcPointPRatio[i]->DrawClone("nol <");
+
+    TLegend* PRatioPieLeg = fvMcPointPRatio[i]->MakeLegend();
+    PRatioPieLeg->SetY1(.56);
+    PRatioPieLeg->SetY2(.86);
+
+    fCanvStationPrimRatio->cd(i + 1);
+    gStyle->SetOptStat(0);
+    fvMcPointPrimRatio[i]->DrawClone("nol <");
+
+    TLegend* PrimRatioPieLeg = fvMcPointPrimRatio[i]->MakeLegend();
+    PrimRatioPieLeg->SetY1(.71);
+    PrimRatioPieLeg->SetY2(.86);
+    PrimRatioPieLeg->SetX1(.40);
+    PrimRatioPieLeg->SetX2(.90);
 
     gStyle->SetOptStat(1110);
   }
