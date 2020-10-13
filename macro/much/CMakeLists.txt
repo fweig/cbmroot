@@ -36,7 +36,7 @@ set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP fixture_much_ana)
 
 # --- Analysis, event-by-event
 Set(testname much_analysis)
-add_test(${testname} ${MACRO_DIR}/run_ana.sh ${NumEvents} \"muons\" \"sis100_muon_lmvm\" 1 \"\")
+add_test(${testname} ${MACRO_DIR}/run_ana.sh ${NumEvents} \"muons\" \"sis100_muon_lmvm\" 1 \"\" -1)
 SET_TESTS_PROPERTIES(${testname} PROPERTIES TIMEOUT "1200")
 SET_TESTS_PROPERTIES(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "TestPassed;All ok")
 set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED fixture_much_ana)
