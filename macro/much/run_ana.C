@@ -4,32 +4,38 @@
 //
 //---------------------------------------------------
 
-void run_ana(Int_t nEvents=1000, TString dataSet = "muons",
-             TString setup = "sis100_muon_lmvm", Bool_t useMC = kTRUE, TString pluto = "", Double_t ANN=-1)
-{
-  TString dir = "";
+void run_ana(Int_t nEvents   = 1000,
+             TString dataSet = "muons",
+             TString setup   = "sis100_muon_lmvm",
+             Bool_t useMC    = kTRUE,
+             TString pluto   = "",
+             Double_t ANN    = -1) {
+  TString dir      = "";
   TString traFile  = dir + dataSet + ".tra.root";
   TString parFile  = dir + dataSet + ".par.root";
   TString recoFile = dir + dataSet + ".rec.root";
   TString outFile;
-  if(ANN<0)outFile = dataSet + ".ana.root";
-  else outFile = Form("%s.ana.ANN_%1.2f.root",dataSet.Data(), ANN);
+  if (ANN < 0)
+    outFile = dataSet + ".ana.root";
+  else
+    outFile = Form("%s.ana.ANN_%1.2f.root", dataSet.Data(), ANN);
 
-	FairRunAna* run = new FairRunAna();
-	run->SetInputFile(recoFile);
-	run->AddFriend(traFile);
-	run->SetOutputFile(outFile);
-       // run->SetGenerateRunInfo(kTRUE);
-	
- // -----   Load the geometry setup   -------------------------------------
+  FairRunAna* run = new FairRunAna();
+  run->SetInputFile(recoFile);
+  run->AddFriend(traFile);
+  run->SetOutputFile(outFile);
+  // run->SetGenerateRunInfo(kTRUE);
+
+  // -----   Load the geometry setup   -------------------------------------
   // -----   Environment   --------------------------------------------------
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
   // ------------------------------------------------------------------------
   std::cout << std::endl;
-  TString setupFile = srcDir + "/geometry/setup/setup_" + setup + ".C";
+  TString setupFile  = srcDir + "/geometry/setup/setup_" + setup + ".C";
   TString setupFunct = "setup_";
-  setupFunct = setupFunct + setup + "()";
-  std::cout << "-I- " << ": Loading macro " << setupFile << std::endl;
+  setupFunct         = setupFunct + setup + "()";
+  std::cout << "-I- "
+            << ": Loading macro " << setupFile << std::endl;
   gROOT->LoadMacro(setupFile);
   gROOT->ProcessLine(setupFunct);
   // You can modify the pre-defined setup by using
@@ -43,7 +49,7 @@ void run_ana(Int_t nEvents=1000, TString dataSet = "muons",
   // ------------------------------------------------------------------------
   CbmKF* kf = new CbmKF();
   run->AddTask(kf);
-  
+
   /* (VF) Not much sense in running L1 witout STS local reconstruction
   CbmL1* L1 = new CbmL1();
   TString stsGeoTag;
@@ -56,8 +62,8 @@ void run_ana(Int_t nEvents=1000, TString dataSet = "muons",
   }
   run->AddTask(L1);
   */
-  
-  CbmAnaDimuonAnalysis* ana = new CbmAnaDimuonAnalysis(pluto,setup);
+
+  CbmAnaDimuonAnalysis* ana = new CbmAnaDimuonAnalysis(pluto, setup);
   /*
   ana->SetChi2MuchCut(3.); 
   ana->SetChi2StsCut(2.);  
@@ -73,8 +79,8 @@ void run_ana(Int_t nEvents=1000, TString dataSet = "muons",
   ana->UseMC(useMC);
   run->AddTask(ana);
 
-   // -----  Parameter database   --------------------------------------------
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
+  // -----  Parameter database   --------------------------------------------
+  FairRuntimeDb* rtdb       = run->GetRuntimeDb();
   FairParRootFileIo* parIo1 = new FairParRootFileIo();
   //FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
   parIo1->open(parFile.Data());
@@ -85,13 +91,13 @@ void run_ana(Int_t nEvents=1000, TString dataSet = "muons",
   rtdb->saveOutput();
   // ------------------------------------------------------------------------
 
-   // -----   Initialize and run   --------------------------------------------
-   run->Init();
-   run->Run(0, nEvents);
-   // ------------------------------------------------------------------------
+  // -----   Initialize and run   --------------------------------------------
+  run->Init();
+  run->Run(0, nEvents);
+  // ------------------------------------------------------------------------
 
-   cout << " Test passed" << endl;
-   cout << " All ok " << endl;
+  cout << " Test passed" << endl;
+  cout << " All ok " << endl;
 
-   //   RemoveGeoManager();
+  //   RemoveGeoManager();
 }
