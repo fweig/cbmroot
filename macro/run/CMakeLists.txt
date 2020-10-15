@@ -75,8 +75,8 @@ ForEach(setup IN LISTS cbm_setup)
   Set_Tests_Properties(${testname} PROPERTIES TIMEOUT ${timeOutTime})
   Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
   set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_reco_event_mc})
-  Set(fixture_digi_tb fixture_digi_tb_${testname})
-  set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_digi_tb})
+  Set(fixture_qa_event_mc fixture_qa_event_mc_${testname})
+  set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_qa_event_mc})
 
   # --- Quality Assurance
   Set(testname run_qa_event_mc_${setup})
@@ -85,7 +85,9 @@ ForEach(setup IN LISTS cbm_setup)
   Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
   Set_Tests_Properties(${testname} PROPERTIES FAIL_REGULAR_EXPRESSION "ERROR")
   Set_Tests_Properties(${testname} PROPERTIES FAIL_REGULAR_EXPRESSION "FATAL")
-  Set_Tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_reco_event_mc})
+  Set_Tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_qa_event_mc})
+  Set(fixture_digi_tb fixture_digi_tb_${testname})
+  set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_digi_tb})
 
 #  # --- Reconstruction Quality Assurance
 #  Set(testname run_reco_event_qa_${setup})
