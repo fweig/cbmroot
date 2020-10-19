@@ -95,33 +95,10 @@ CbmRoot_Continuous:
       - master
     variables:
       - $CI_PROJECT_PATH == "computing/cbmroot"
-#  cache:
-#    paths:
-#      - build/
-#      - external/AnalysisTree/
-#      - external/AnaylysisTreeQA/
-#      - external/DataTree/
-#      - external/DataTreeQA/
-#      - external/KFParticle/
-#      - external/NicaFemto/
-#      - external/Vc/
-#      - external/cppzmq/
-#      - external/flib_dpb/flib_dpb/
-#      - external/flib_dpb_20/
-#      - external/ipc/ipc/
-#      - external/ipc_legacy/ipc/
-#      - external/jsroot/
-#      - external/spadic/spadic/
-#      - input
-#      - geometry
-#      - parameters
   script:
     - set -xv
     - mkdir -p build
     - cd build
-#    - find . -name "*.root" -delete
-#    - find . -name "*_ok" -delete
-#    - find . -name "all_*.par" -delete
     - cd ..
     - echo "export LINUX_FLAVOUR=Debian8.11" >> Dart.cfg
     - echo "export FAIRSOFT_VERSION=jun19p1" >> Dart.cfg
@@ -136,12 +113,6 @@ CbmRoot_Continuous:
     - pwd
     - cat Dart.cfg
     - $PWD/Dart.sh Continuous Dart.cfg
-#    - cd build
-#    - find . -name "*.root" -delete
-#    - find . -name "*_ok" -delete
-#    - find . -name "all_*.par" -delete
-#    - cd ..
-
 
 CbmRoot_Merge:
   stage: build
@@ -215,10 +186,11 @@ pages:
   tags:
     - docker
   script:
-    - apk update && apk add doxygen
+    - apk update && apk add doxygen graphviz
     - doxygen doxygen/cbmDoxyfile.conf
     - mv html-doc/html public/
   artifacts:
+    expire_in: 1 day
     paths:
       - public
   only:
