@@ -29,14 +29,16 @@ L1HitsSortHelper::L1HitsSortHelper(vector<L1StsHit>& hits,
   L1_ASSERT(hits.size() == points.size(), hits.size() << " " << points.size());
   const int NHits = fnDontUsedHits;
   fD.resize(NHits);
+  //float x,y=0;
   for (int iS = 0; iS < fNStations; ++iS)
     for (THitI i = fStsHitsUnusedStartIndex[iS];
          i < fStsHitsUnusedStopIndex[iS];
          i++) {
-      fD[i].h   = &(hits[i]);
-      fD[i].p   = &(points[i]);
-      fD[i].i   = indices[i];
-      fD[i].bin = fGrid[iS].GetBinBounded(fD[i].p->Xs(), fD[i].p->Ys());
+      fD[i].h = &(hits[i]);
+      fD[i].p = &(points[i]);
+      fD[i].i = indices[i];
+      //      StripsToCoor(fD[i].p->U(),fD[i].p->V(), x, y, vStations[iS]);
+      //      fD[i].bin = fGrid[iS].GetBinBounded(x[0], y[0]);
     }
 }
 

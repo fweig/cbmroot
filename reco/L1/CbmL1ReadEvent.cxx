@@ -1075,14 +1075,14 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, CbmEvent* event) {
     h.t_reco = th.time;
     h.t_er   = th.t_er;
     //  h.track = th.track;
-    h.dx  = th.dx;
-    h.dy  = th.dy;
-    h.du  = th.du;
-    h.dv  = th.dv;
-    h.dxy = th.dxy;
+    //    h.dx  = th.dx;
+    //    h.dy  = th.dy;
+    h.du = th.du;
+    h.dv = th.dv;
+    //    h.dxy = th.dxy;
     //     h.p = th.p;
     //     h.q = th.q;
-    h.ista = th.iStation;
+    // h.ista = th.iStation;
 
     // find and save z positions
     float z_tmp = -111.;
@@ -1575,6 +1575,7 @@ void CbmL1::HitMatch() {
             iEvent = vFileEvent.begin()->second;
           }
           int nMvdPoints_ = 0;
+
           if (!fTimesliceMode)
             if (listMvdPts) nMvdPoints_ = listMvdPts->GetEntriesFast();
 

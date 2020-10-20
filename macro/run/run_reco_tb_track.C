@@ -170,14 +170,14 @@ void run_reco_tb_track(TString dataSet = "test",
   //    run->AddTask(ECbmModuleId::psdHit);
   //    std::cout << "-I- : Added task CbmPsdHitProducer" << std::endl;
 
-  //  // --- STS track finder
-  //  run->AddTask(new CbmKF());
-  //  CbmL1* l1 = new CbmL1();
-  //  l1->SetDataMode(1);
-  //  run->AddTask(l1);
-  //  CbmStsTrackFinder* stsTrackFinder = new CbmL1StsTrackFinder();
-  //  FairTask* stsFindTracks = new CbmStsFindTracks(0, stsTrackFinder);
-  //  run->AddTask(stsFindTracks);
+  // --- STS track finder
+  run->AddTask(new CbmKF());
+  CbmL1* l1 = new CbmL1();
+  l1->SetDataMode(1);
+  run->AddTask(l1);
+  CbmStsTrackFinder* stsTrackFinder = new CbmL1StsTrackFinder();
+  FairTask* stsFindTracks           = new CbmStsFindTracks(0, stsTrackFinder);
+  run->AddTask(stsFindTracks);
   //
   //  // --- Event builder (track-based)
   //  run->AddTask(new CbmBuildEventsFromTracksReal());

@@ -7,9 +7,7 @@ class L1TrackPar {
 
 public:
   fvec x, y, tx, ty, qp, z, t, C00, C10, C11, C20, C21, C22, C30, C31, C32, C33,
-    C40, C41, C42, C43, C44, C50, C51, C52, C53, C54, C55, chi2, NDF, time,
-    time1, t_er;
-  fvec n;
+    C40, C41, C42, C43, C44, C50, C51, C52, C53, C54, C55, chi2, NDF;
 
 
   L1TrackPar()
@@ -42,11 +40,7 @@ public:
     , C54(0)
     , C55(0)
     , chi2(0)
-    , NDF(0)
-    , time(0)
-    , time1(0)
-    , t_er(0)
-    , n(0) {};
+    , NDF(0) {};
   L1TrackPar(double* T, double* C)
     : x(T[0])
     , y(T[1])
@@ -79,11 +73,7 @@ public:
     , C54(C[19])
     , C55(C[20])
     , chi2(0)
-    , NDF(0)
-    , time(0)
-    , time1(0)
-    , t_er(0)
-    , n(0) {};
+    , NDF(0) {};
 
   void SetOneEntry(const int i0, const L1TrackPar& T1, const int i1);
 
@@ -159,12 +149,8 @@ L1TrackPar::SetOneEntry(const int i0, const L1TrackPar& T1, const int i1) {
   C54[i0] = T1.C54[i1];
   C55[i0] = T1.C55[i1];
 
-  chi2[i0]  = T1.chi2[i1];
-  NDF[i0]   = T1.NDF[i1];
-  time[i0]  = T1.time[i1];
-  n[i0]     = T1.n[i1];
-  time1[i0] = T1.time1[i1];
-  t_er[i0]  = T1.t_er[i1];
+  chi2[i0] = T1.chi2[i1];
+  NDF[i0]  = T1.NDF[i1];
 }  // SetOneEntry
 
 #endif

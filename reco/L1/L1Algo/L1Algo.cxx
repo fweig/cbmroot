@@ -276,6 +276,30 @@ void L1Algo::StripsToCoor(const fscal& u,
   _y = sta.yInfo.cos_phi * u + sta.yInfo.sin_phi * v;
 }
 
+void L1Algo::dUdV_to_dY(const fvec& u,
+                        const fvec& v,
+                        fvec& _y,
+                        const L1Station& sta) {
+  _y = sqrt((sta.yInfo.cos_phi * u) * (sta.yInfo.cos_phi * u)
+            + (sta.yInfo.sin_phi * v) * (sta.yInfo.sin_phi * v));
+}
+
+void L1Algo::dUdV_to_dX(const fvec& u,
+                        const fvec& v,
+                        fvec& _x,
+                        const L1Station& sta) {
+  _x = sqrt((sta.xInfo.sin_phi * u) * (sta.xInfo.sin_phi * u)
+            + (sta.xInfo.cos_phi * v) * (sta.xInfo.cos_phi * v));
+}
+
+void L1Algo::dUdV_to_dXdY(const fvec& u,
+                          const fvec& v,
+                          fvec& _xy,
+                          const L1Station& sta) {
+  _xy = ((sta.xInfo.sin_phi * u) * (sta.yInfo.cos_phi * u)
+         + (sta.xInfo.cos_phi * v) * (sta.yInfo.sin_phi * v));
+}
+
 void L1Algo::StripsToCoor(const fvec& u,
                           const fvec& v,
                           fvec& x,
@@ -294,34 +318,26 @@ void L1Algo::StripsToCoor(const fvec& u,
 L1HitPoint L1Algo::CreateHitPoint(const L1StsHit& hit, char ista)
 /// hit and station number
 {
-  L1Station& sta   = vStations[int(ista)];
-  const L1Strip& u = (*vStsStrips)[hit.f];
-  const L1Strip& v = (*vStsStripsB)[hit.b];
-  fscal x, y;
-  StripsToCoor(u, v, x, y, sta);
+  // L1Station& sta   = vStations[int(ista)];
+  const L1Strip& u  = (*vStsStrips)[hit.f];
+  const L1Strip& v  = (*vStsStripsB)[hit.b];
   const float& z    = (*vStsZPos)[hit.iz];
   const float& time = hit.t_reco;
-  return L1HitPoint(
-    x, y, hit.dx, hit.dy, hit.dxy, z, u, v, hit.du, hit.dv, time, hit.t_er);
+  return L1HitPoint(z, u, v, hit.du, hit.dv, time, hit.t_er);
 }
 
 void L1Algo::CreateHitPoint(const L1StsHit& hit, char ista, L1HitPoint& point)
 /// hit and station number
 {
-  L1Station& sta   = vStations[int(ista)];
-  const L1Strip& u = (*vStsStrips)[hit.f];
-  const L1Strip& v = (*vStsStripsB)[hit.b];
-  fscal x, y;
-  StripsToCoor(u, v, x, y, sta);
+  // L1Station& sta   = vStations[int(ista)];
+  const L1Strip& u  = (*vStsStrips)[hit.f];
+  const L1Strip& v  = (*vStsStripsB)[hit.b];
   const float& z    = (*vStsZPos)[hit.iz];
   const float& time = hit.t_reco;
-  const float& dx_  = hit.dx;
-  const float& dy_  = hit.dy;
   const float& du_  = hit.du;
   const float& dv_  = hit.dv;
-  const float& dxy_ = hit.dxy;
 
-  point.Set(x, y, dx_, dy_, dxy_, z, u.f, v.f, du_, dv_, time, hit.t_er);
+  point.Set(z, u.f, v.f, du_, dv_, time, hit.t_er);
   //   point.Set(x,y,z,v.f,u.f, time, n1, hit.time1, 2.9 ); // TODO put correct time error from the hit
 }
 

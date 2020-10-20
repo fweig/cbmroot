@@ -180,7 +180,7 @@ inline L1HitAreaTime::L1HitAreaTime(const L1Grid& grid,
 
   fIndYmin = (bTmin * fNy * fNz + bZmin * fNy + bYmin);
 
-  fGrid.GetBinBounds(fIndYmin, y, dy, z, dz, t, dt);
+  //fGrid.GetBinBounds(fIndYmin, y, dy, z, dz, t, dt);
 
   fIz = bZmin;
 

@@ -12,14 +12,18 @@ public:
   //  int loc;
 
 private:
-  THitI w0;          // left hit (16b)  index in vStsHits array
-  THitI w1;          // middle hit(16b)
-  THitI w2;          // right hit(16b)
-                     // unsigned char      b0; // chi2(5b) + level(3b)
+  unsigned int first_neighbour;
+  char last_neighbour;
   unsigned char bl;  // level
-  fscal b1;          // qp (8b)
+
   unsigned char st;  // staL (4b), staM-1-staL (2b), staR-2-staL (2b)
+  fscal b1;          // qp (8b)
   fscal chi2double;
+
+  THitI w0;  // left hit (16b)  index in vStsHits array
+  THitI w1;  // middle hit(16b)
+  THitI w2;  // right hit(16b)
+             // unsigned char      b0; // chi2(5b) + level(3b)
 
 
 public:
@@ -61,27 +65,24 @@ public:
 
   fscal Cqp;
   fscal tx, ty, Ctx, Cty;
-  //   fscal time;
-  //   fscal n;
-  unsigned int first_neighbour;
-  unsigned int last_neighbour;
 
 
   L1Triplet()
-    : w0()
+    : first_neighbour(0)
+    , last_neighbour(0)
+    , bl()
+    , st()
+    , b1(0)
+    , chi2double(0)
+    , w0()
     , w1()
     , w2()
-    , bl()
-    , b1(0)
-    , st()
-    , chi2double(0)
+
     , Cqp(0)
     , tx(0)
     , ty(0)
     , Ctx(0)
-    , Cty(0)
-    , first_neighbour(0)
-    , last_neighbour(0) {};
+    , Cty(0) {};
 
   void Set(unsigned int iHitL,
            unsigned int iHitM,
@@ -114,9 +115,14 @@ public:
 
   void SetLevel(unsigned char Level) { bl = Level; }
 
+
   THitI GetLHit() const { return w0; }
   THitI GetMHit() const { return w1; }
   THitI GetRHit() const { return w2; }
+  char GetNNeighbours() const { return last_neighbour; }
+  void SetNNeighbours(unsigned char n) { last_neighbour = n; }
+  unsigned int GetFNeighbour() const { return first_neighbour; }
+  void SetFNeighbour(unsigned int n) { first_neighbour = n; }
 
   // unsigned int GetFirstNeighbour() const {
   //   return w1;

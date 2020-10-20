@@ -387,6 +387,8 @@ InitStatus CbmL1::Init() {
     if (FindTask) fUseMVD = FindTask->MvdUsage();
   }
 
+  fUseMVD = 0;
+
   histodir = gROOT->mkdir("L1");
 
 
@@ -1309,7 +1311,7 @@ void CbmL1::Reconstruct(CbmEvent* event) {
   static int nevent = 0;
   vFileEvent.clear();
 
-  if (fTimesliceMode) {
+  if (fTimesliceMode && fPerformance) {
 
     int nofEvents = fEventList->GetNofEvents();
     for (int iE = 0; iE < nofEvents; iE++) {
@@ -1324,6 +1326,7 @@ void CbmL1::Reconstruct(CbmEvent* event) {
     Int_t iEvent = FairRunAna::Instance()->GetEventHeader()->GetMCEntryNumber();
     vFileEvent.insert(DFSET::value_type(iFile, iEvent));
   }
+
 
   if (fVerbose > 1)
     cout << endl << "CbmL1::Exec event " << ++nevent << " ..." << endl << endl;

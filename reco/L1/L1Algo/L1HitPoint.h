@@ -5,37 +5,36 @@
 #if 1
 struct L1HitPoint {
   L1HitPoint()
-    : x(0.f)
-    , y(0.f)
-    , dx(0.f)
-    , dy(0.f)
-    , dxy(0.f)
-    , u(0.f)
+    :  //    x(0.f)
+       //    , y(0.f)
+       //    , dx(0.f)
+       //    , dy(0.f)
+       //    , dxy(0.f)
+    u(0.f)
     , v(0.f)
     , du(0.f)
     , dv(0.f)
     , z(0.f)
     , time(0.f)
     , timeEr(2.9f) {};
-  L1HitPoint(fscal x_,
-             fscal y_,
-             fscal dx_,
-             fscal dy_,
-             fscal dxy_,
-             fscal du_,
-             fscal dv_,
-             fscal z_,
-             fscal v_,
-             fscal u_,
-             float time_,
-             float /*timeEv1_*/ = 0,
-             float timeEr_      = 2.9f)
-    : x(x_)
-    , y(y_)
-    , dx(dx_)
-    , dy(dy_)
-    , dxy(dxy_)
-    , u(u_)
+  L1HitPoint(
+    //             fscal dx_,
+    //             fscal dy_,
+    //             fscal dxy_,
+    fscal du_,
+    fscal dv_,
+    fscal z_,
+    fscal v_,
+    fscal u_,
+    float time_,
+    float /*timeEv1_*/ = 0,
+    float timeEr_      = 2.9f)
+    :  //    : x(x_)
+       //    , y(y_)
+       //    , dx(dx_)
+       //    , dy(dy_)
+       //    , dxy(dxy_)
+    u(u_)
     , v(v_)
     , du(du_)
     , dv(dv_)
@@ -46,14 +45,14 @@ struct L1HitPoint {
   //  L1HitPoint(fscal x_, fscal y_, fscal z_, fscal v_, fscal u_, fscal time_, unsigned short int n_ = 0):
   //  x(x_), y(y_), z(z_), u(u_), v(v_), time(time_){};
 
-  fscal Xs() const { return X() / Z(); }
-  fscal Ys() const { return Y() / Z(); }  // value to sort hits by
+  //  fscal Xs() const { return X() / Z(); }
+  //  fscal Ys() const { return Y() / Z(); }  // value to sort hits by
 
-  fscal X() const { return x; }
-  fscal Y() const { return y; }
-  fscal dX() const { return dx; }
-  fscal dY() const { return dy; }
-  fscal dXY() const { return dxy; }
+  //  fscal X() const { return x; }
+  //  fscal Y() const { return y; }
+  //  fscal dX() const { return dx; }
+  //  fscal dY() const { return dy; }
+  //  fscal dXY() const { return dxy; }
   fscal dU() const { return du; }
   fscal dV() const { return dv; }
   fscal Z() const { return z; }
@@ -61,30 +60,29 @@ struct L1HitPoint {
   fscal V() const { return v; }
   // unsigned short int N() const { return n; }
   // int GetSortIndex() const { return SortIndex; }
-  void SetX(fscal X1) { x = X1; }
-  void SetY(fscal Y1) { y = Y1; }
+  //  void SetX(fscal X1) { x = X1; }
+  //  void SetY(fscal Y1) { y = Y1; }
   void SetZ(fscal Z1) { z = Z1; }
   void SetU(fscal U1) { u = U1; }
   void SetV(fscal V1) { v = V1; }
 
-  void Set(fscal& x1,
-           const float& y1,
-           const float& dx1,
-           const float& dy1,
-           const float& xy1,
-           const float& z1,
-           const fscal& u1,
-           const fscal& v1,
-           const fscal& du1,
-           const fscal& dv1,
-           const float& time1,
-           float timeEr1) {
-    x      = x1;
-    y      = y1;
-    dx     = dx1;
-    dy     = dy1;
-    du     = du1;
-    dxy    = xy1;
+  void Set(
+    //           const float& dx1,
+    //           const float& dy1,
+    //           const float& xy1,
+    const float& z1,
+    const fscal& u1,
+    const fscal& v1,
+    const fscal& du1,
+    const fscal& dv1,
+    const float& time1,
+    float timeEr1) {
+    //    x      = x1;
+    //    y      = y1;
+    //    dx     = dx1;
+    //    dy     = dy1;
+    du = du1;
+    //    dxy    = xy1;
     dv     = dv1;
     z      = z1;
     u      = u1;
@@ -94,7 +92,8 @@ struct L1HitPoint {
   }
 
 private:
-  float x, y, dx, dy, dxy, u, v, du, dv;
+  //    x, y,
+  float u, v, du, dv;
   float z;  // TODO: may be we should use iz
   // x\u, v - front and back strips; x, y, z - coordinates of hits
 
@@ -149,8 +148,6 @@ private:
   unsigned short int z;  // TODO: may be we should use iz
   unsigned short int u,
     v;  // x\u, v - front and back strips; x, y, z - coordinates of hits
-
-  unsigned short int n;  // number of event
 };
 
 #endif

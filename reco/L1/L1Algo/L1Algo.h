@@ -30,7 +30,7 @@ class L1AlgoDraw;
 #endif
 //#define USE_EVENT_NUMBER
 //#endif
-#define MERGE_CLONES
+//#define MERGE_CLONES
 
 
 #include "L1Branch.h"
@@ -459,6 +459,14 @@ public:
                   fscal& _y,
                   fscal& _z,
                   const L1Station& sta);
+
+  void dUdV_to_dY(const fvec& u, const fvec& v, fvec& _y, const L1Station& sta);
+
+  void dUdV_to_dX(const fvec& u, const fvec& v, fvec& _x, const L1Station& sta);
+
+  void
+  dUdV_to_dXdY(const fvec& u, const fvec& v, fvec& _xy, const L1Station& sta);
+
   void GetHitCoor(const L1StsHit& _h, fscal& _x, fscal& _y, char iS);
   void StripsToCoor(
     const fscal& u,
@@ -683,8 +691,8 @@ private:
     nsL1::vector<fvec>::TSimd& u_front_3,
     nsL1::vector<fvec>::TSimd& u_back_3,
     nsL1::vector<fvec>::TSimd& z_Pos_3,
-    nsL1::vector<fvec>::TSimd& dx_,
-    nsL1::vector<fvec>::TSimd& dy_,
+    //    nsL1::vector<fvec>::TSimd& dx_,
+    //    nsL1::vector<fvec>::TSimd& dy_,
     nsL1::vector<fvec>::TSimd& du_,
     nsL1::vector<fvec>::TSimd& dv_,
     nsL1::vector<fvec>::TSimd& timeR,
@@ -697,8 +705,8 @@ private:
     nsL1::vector<fvec>::TSimd& u_front_3,
     nsL1::vector<fvec>::TSimd& u_back_3,
     nsL1::vector<fvec>::TSimd& z_Pos_3,
-    nsL1::vector<fvec>::TSimd& dx_,
-    nsL1::vector<fvec>::TSimd& dy_,
+    //    nsL1::vector<fvec>::TSimd& dx_,
+    //    nsL1::vector<fvec>::TSimd& dy_,
     nsL1::vector<fvec>::TSimd& du_,
     nsL1::vector<fvec>::TSimd& dv_,
     nsL1::vector<fvec>::TSimd& timeR,

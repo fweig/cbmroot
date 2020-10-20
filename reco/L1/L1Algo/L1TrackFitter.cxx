@@ -400,13 +400,10 @@ void L1Algo::L1KFTrackFitter() {
         w[ista][iVec]       = 1.;
         if (ista > NMvdStations) w_time[ista][iVec] = 1.;
 
-        u[ista][iVec]    = (*vStsStrips)[hit.f];
-        v[ista][iVec]    = (*vStsStripsB)[hit.b];
-        d_x[ista][iVec]  = hit.dx;
-        d_y[ista][iVec]  = hit.dy;
-        d_u[ista][iVec]  = hit.du;
-        d_v[ista][iVec]  = hit.dv;
-        d_xy[ista][iVec] = hit.dxy;
+        u[ista][iVec]   = (*vStsStrips)[hit.f];
+        v[ista][iVec]   = (*vStsStripsB)[hit.b];
+        d_u[ista][iVec] = hit.du;
+        d_v[ista][iVec] = hit.dv;
         StripsToCoor(u[ista], v[ista], x_temp, y_temp, sta[ista]);
         x[ista][iVec]      = x_temp[iVec];
         y[ista][iVec]      = y_temp[iVec];
@@ -414,6 +411,9 @@ void L1Algo::L1KFTrackFitter() {
         timeEr[ista][iVec] = hit.t_er;
         z[ista][iVec]      = (*vStsZPos)[hit.iz];
         sta[ista].fieldSlice.GetFieldValue(x[ista], y[ista], fB_temp);
+        dUdV_to_dX(d_u[ista], d_v[ista], d_x[ista], sta[ista]);
+        dUdV_to_dY(d_u[ista], d_v[ista], d_y[ista], sta[ista]);
+        dUdV_to_dXdY(d_u[ista], d_v[ista], d_xy[ista], sta[ista]);
         fB[ista].x[iVec] = fB_temp.x[iVec];
         fB[ista].y[iVec] = fB_temp.y[iVec];
         fB[ista].z[iVec] = fB_temp.z[iVec];
@@ -857,11 +857,11 @@ void L1Algo::L1KFTrackFitterMuch() {
         y[ista][iVec]      = y_temp[iVec];
         time[ista][iVec]   = hit.t_reco;
         timeEr[ista][iVec] = hit.t_er;
-        d_x[ista][iVec]    = hit.dx;
-        d_y[ista][iVec]    = hit.dy;
         d_u[ista][iVec]    = hit.du;
         d_v[ista][iVec]    = hit.dv;
-        d_xy[ista][iVec]   = hit.dxy;
+        dUdV_to_dX(d_u[ista], d_v[ista], d_x[ista], sta[ista]);
+        dUdV_to_dY(d_u[ista], d_v[ista], d_y[ista], sta[ista]);
+        dUdV_to_dXdY(d_u[ista], d_v[ista], d_xy[ista], sta[ista]);
         //  mom[ista][iVec] = hit.p;
         z[ista][iVec] = (*vStsZPos)[hit.iz];
         sta[ista].fieldSlice.GetFieldValue(x[ista], y[ista], fB_temp);

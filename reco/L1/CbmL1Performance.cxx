@@ -2757,6 +2757,7 @@ void CbmL1::InputPerformance() {
           link       = hm->GetLink(iLink);
         }
       }
+
       // if (bestWeight / totalWeight < 0.7 || iMCPoint < 0) continue;
 
       if (iMCPoint < 0) continue;

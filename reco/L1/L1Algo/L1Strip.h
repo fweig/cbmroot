@@ -25,36 +25,6 @@ struct L1Strip {
   // unsigned short int n; // number of event
 };
 
-struct L1StripSelectTracks {
-
-  L1StripSelectTracks()
-    : Cand(-1)
-#ifdef _OPENMP
-    , Occupied()
-#endif
-  {
-#ifdef _OPENMP
-    omp_init_lock(&Occupied);
-#endif
-    //  Candidates.resize(70);
-    // Candidates2.resize(70);
-    //  Cand = -1;
-  }
-
-  ~L1StripSelectTracks() {
-#ifdef _OPENMP
-    omp_destroy_lock(&Occupied);
-#endif
-  }
-
-  //  L1Vector <L1Branch*> Candidates;
-  //  L1Vector <int> Candidates2;
-  int Cand;
-#ifdef _OPENMP
-  omp_lock_t Occupied;
-#endif
-};
-
 typedef unsigned /*short*/ int TStripI;  // strip index type
 
 #endif

@@ -26,43 +26,26 @@ class L1Triplet;
 
 struct L1Branch {
   L1Branch()
-    : n(0)
-    , Quality(0)
-    , CandIndex(0)
+    :  //Quality(0),
+    ista(0)
     , Momentum(0)
-    , chi2(0)
     , NHits(0)
-    , Lengtha(0)
-    , ista(0)
-    , location(0)
+    , chi2(0)
+    , CandIndex(0)
     , StsHits() {
     //  L1Branch():Momentum(0),chi2(0),NHits(0),Lengtha(0),ista(0) , StsHits(){
     StsHits.resize(12);
-    // CandToCand.resize(200);
-    //   CandToCand2.resize(200);
-    //  StsHits.reserve(8);
   }
 
-
-  int n;
-  unsigned short int Quality;
+  // unsigned short int Quality;
+  unsigned char ista;
   //   fscal Quality;
+  // unsigned char      iN; // iStation(3b) + nHits(5b)
+  char Momentum, NHits;
+  // char Lengtha;
+  fscal chi2;
   int CandIndex;
 
-  //   bool SecondBest;
-  //   bool ThirdBest;
-  fscal Momentum, chi2;
-  char NHits;
-  char Lengtha;
-  unsigned char ista;
-  int location;
-  // int check;
-
-  //  float time_dif;
-
-
-  //   L1Branch* BestCandidateP;
-  //   L1Branch* SecondBestCandidateP;
 
   L1Vector<THitI> StsHits;
 
@@ -103,7 +86,7 @@ struct L1Branch {
 
   inline static bool compareCand(const L1Branch& a, const L1Branch& b) {
 
-    if (a.Lengtha != b.Lengtha) return (a.Lengtha > b.Lengtha);
+    if (a.NHits != b.NHits) return (a.NHits > b.NHits);
 
     if (a.ista != b.ista)
       return (a.ista < b.ista);
@@ -113,9 +96,9 @@ struct L1Branch {
   }
 
 
-  static bool compareChi2(const L1Branch& a, const L1Branch& b) {
-    return (a.Quality > b.Quality);
-  }
+  //    static bool compareChi2(const L1Branch &a, const L1Branch &b){
+  //    return (a.Quality > b.Quality );
+  //  }
 
   //      static bool compareChi2(const L1Branch &a, const L1Branch &b){
   //          if (a.Lengtha != b.Lengtha) return (a.Lengtha > b.Lengtha);
@@ -132,14 +115,15 @@ struct L1Branch {
   //}
 
   void Set(unsigned char iStation, unsigned char Length, float Chi2, float Qp) {
-    Lengtha                   = Length;
-    ista                      = iStation;
-    unsigned short int ista_l = 16 - iStation;
-    float tmp                 = sqrt(Chi2) / 3.5 * 255;
+    NHits = Length;
+    ista  = iStation;
+    //  iN = ( (static_cast<unsigned char>( Chi2 ))<<3 ) + (Level%8);
+    //unsigned short int ista_l = 16-iStation;
+    float tmp = sqrt(Chi2) / 3.5 * 255;
     if (tmp > 255) tmp = 255;
-    unsigned short int chi_2 = 255 - static_cast<unsigned char>(tmp);
-    Quality                  = (Length << 12) + (ista_l << 8) + chi_2;
-    Momentum                 = 1.0 / fabs(Qp);
+    // unsigned short int chi_2 = 255 - static_cast<unsigned char>( tmp );
+    // Quality = (Length<<12) + (ista_l<<8) + chi_2;
+    Momentum = 1.0 / fabs(Qp);
     //    chi2 = chi_2;
     chi2 = Chi2;
   }
@@ -148,18 +132,18 @@ struct L1Branch {
   //     Quality += - (Quality*(4096)) + (Length/(4096));
   //   }
 
-  static bool compareChi2Q(const L1Branch& a, const L1Branch& b) {
-    //      return (a.Quality > b.Quality);
-    //
-    if (a.Lengtha != b.Lengtha) return (a.Lengtha > b.Lengtha);
-
-    if (a.ista != b.ista) return (a.ista < b.ista);
-
-    return (a.chi2 < b.chi2);
-  }
-  static bool comparePChi2(const L1Branch* a, const L1Branch* b) {
-    return compareChi2(*a, *b);
-  }
+  //  static bool compareChi2Q(const L1Branch &a, const L1Branch &b){
+  ////      return (a.Quality > b.Quality);
+  ////
+  //     if (a.Lengtha != b.Lengtha) return (a.Lengtha > b.Lengtha);
+  //
+  //    if (a.ista != b.ista ) return (a.ista  < b.ista );
+  //
+  //    return (a.chi2 < b.chi2 );
+  //  }
+  //  static bool comparePChi2(const L1Branch *a, const L1Branch *b){
+  //    return compareChi2(*a,*b);
+  //  }
   static bool compareMomentum(const L1Branch& a, const L1Branch& b) {
     return (a.Momentum > b.Momentum);
   }
