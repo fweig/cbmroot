@@ -157,6 +157,7 @@ void run_qa(Int_t nEvents   = 0,
 
   if (CbmSetup::Instance()->IsActive(ECbmModuleId::kMuch)) {
     run->AddTask(new CbmMuchTransportQa());
+    run->AddTask(new CbmMuchDigitizerQa());
   }
 
   // ------------------------------------------------------------------------

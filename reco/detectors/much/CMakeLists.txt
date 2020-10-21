@@ -4,6 +4,7 @@ ${CMAKE_CURRENT_SOURCE_DIR}
 ${CBMDETECTORBASE_DIR}/much
 
 ${CBMROOT_SOURCE_DIR}/reco/base
+${CBMROOT_SOURCE_DIR}/sim/detectors/much/qa
 
 ${CBMBASE_DIR} 
 
@@ -33,7 +34,6 @@ set(SRCS
 CbmMuchFindHitsGem.cxx
 CbmMuchHitFinderQa.cxx
 CbmMuchHitProducerIdeal.cxx
-CbmMuchPointInfo.cxx
 
 CbmMuchFindTracks.cxx
 CbmMuchMatchTracks.cxx 
@@ -43,7 +43,7 @@ CbmMuchTrackFinderIdeal.cxx
 set(LINKDEF CbmMuchRecoLinkDef.h)
 Set(LIBRARY_NAME CbmMuchReco)
 Set(DEPENDENCIES
-    CbmMuchBase CbmRecoBase CbmBase CbmData Base 
+    CbmMuchBase CbmMuchSim CbmRecoBase CbmBase CbmData Base 
 )
 
 GENERATE_LIBRARY()

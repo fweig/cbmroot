@@ -9,6 +9,7 @@ ${CBMBASE_DIR}
 ${CBMBASE_DIR}/utils
 
 ${CBMROOT_SOURCE_DIR}/sim/transport/base
+${CBMROOT_SOURCE_DIR}/core/data/base
 ${CBMROOT_SOURCE_DIR}/core/qa
 
 ${CBMDATA_DIR} 
@@ -40,6 +41,8 @@ CbmMuchReadoutBuffer.cxx
 CbmMuchSignal.cxx
 
 qa/CbmMuchTransportQa.cxx
+qa/CbmMuchPointInfo.cxx
+qa/CbmMuchDigitizerQa.cxx
 )
 
 set(LINKDEF CbmMuchSimLinkDef.h)

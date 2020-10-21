@@ -9,7 +9,6 @@
 #pragma link C++ class CbmMuchHitFinderQa + ;
 #pragma link C++ class CbmMuchHitProducerIdeal + ;
 #pragma link C++ class CbmMuchMatchTracks + ;
-#pragma link C++ class CbmMuchPointInfo + ;
 #pragma link C++ class CbmMuchTrackFinderIdeal + ;
 
 #endif

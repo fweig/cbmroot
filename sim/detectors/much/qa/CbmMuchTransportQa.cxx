@@ -4,41 +4,10 @@
 /// \author Eugeny Kryshen
 /// \author Vikas Singhal
 /// \author Ekata Nandy
-/// \date   25.09.2020
+/// \author Dominik Smith
+/// \date   21.10.2020
 
 #include "CbmMuchTransportQa.h"
-
-#include "FairLogger.h"
-#include "FairRootFileSink.h"
-#include "FairRootManager.h"
-#include "FairRun.h"
-#include "FairRuntimeDb.h"
-
-#include "CbmGeoMuchPar.h"
-#include "CbmMuchGeoScheme.h"
-#include "CbmMuchStation.h"
-
-#include "CbmMuchPoint.h"
-
-#include "CbmMCTrack.h"
-#include "TDatabasePDG.h"
-#include "TParticlePDG.h"
-
-#include "TString.h"
-
-#include "TClonesArray.h"
-
-#include "CbmQaCanvas.h"
-#include "TH1.h"
-#include "TH2.h"
-#include "TLegend.h"
-#include "TPie.h"
-#include "TPieSlice.h"
-#include "TStyle.h"
-
-#include <cassert>
-#include <vector>
-
 ClassImp(CbmMuchTransportQa);
 
 // -------------------------------------------------------------------------
@@ -55,18 +24,15 @@ CbmMuchTransportQa::CbmMuchTransportQa(const char* name, Int_t verbose)
   , fvMcPointPrimRatio() {}
 // -------------------------------------------------------------------------
 
-
 // -------------------------------------------------------------------------
 CbmMuchTransportQa::~CbmMuchTransportQa() { DeInit(); }
 // -------------------------------------------------------------------------
-
 
 // -------------------------------------------------------------------------
 void CbmMuchTransportQa::DeInit() {
 
   fPoints   = nullptr;
   fMcTracks = nullptr;
-
   fOutFolder.Clear();
   fhNevents.SetVal(0);
 
@@ -82,14 +48,14 @@ void CbmMuchTransportQa::DeInit() {
   for (uint i = 0; i < fvMcPointXY.size(); i++) {
     SafeDelete(fvMcPointXY[i]);
   }
-  fvMcPointXY.clear();
   for (uint i = 0; i < fvMcPointPhiZ.size(); i++) {
     SafeDelete(fvMcPointPhiZ[i]);
   }
-  fvMcPointPhiZ.clear();
   for (uint i = 0; i < fvMcPointRZ.size(); i++) {
     SafeDelete(fvMcPointRZ[i]);
   }
+  fvMcPointXY.clear();
+  fvMcPointPhiZ.clear();
   fvMcPointRZ.clear();
 
   for (uint i = 0; i < fvMcPointPRatio.size(); i++) {
@@ -98,7 +64,6 @@ void CbmMuchTransportQa::DeInit() {
   for (uint i = 0; i < fvMcPointPrimRatio.size(); i++) {
     SafeDelete(fvMcPointPrimRatio[i]);
   }
-
   SafeDelete(fhNtracks);
   SafeDelete(fhFractionPrim);
   SafeDelete(fhFractionSec);
@@ -110,14 +75,13 @@ void CbmMuchTransportQa::DeInit() {
 
   fvUsNtra.clear();
   fvFraction.clear();
-
   fvMcPointPRatio.clear();
   fvMcPointPrimRatio.clear();
 
   SafeDelete(fCanvStationXY);
   SafeDelete(fCanvStationPhiZ);
   SafeDelete(fCanvStationRZ);
-
+  SafeDelete(fCanvUsNtra);
   SafeDelete(fCanvStationPRatio);
   SafeDelete(fCanvStationPrimRatio);
 
@@ -131,109 +95,118 @@ void CbmMuchTransportQa::DeInit() {
 InitStatus CbmMuchTransportQa::Init() {
 
   TDirectory* oldDirectory = gDirectory;
-
   FairRootManager* manager = FairRootManager::Instance();
+  fMcTracks                = (TClonesArray*) manager->GetObject("MCTrack");
+  fPoints                  = (TClonesArray*) manager->GetObject("MuchPoint");
+  fNstations               = CbmMuchGeoScheme::Instance()->GetNStations();
+  histFolder               = fOutFolder.AddFolder("hist", "Histogramms");
+
   if (!manager) {
     LOG(error) << "No FairRootManager found";
     return kERROR;
   }
-
-  fMcTracks = (TClonesArray*) manager->GetObject("MCTrack");
   if (!fMcTracks) {
     LOG(error) << "No MC tracks found";
     return kERROR;
   }
-
-  fPoints = (TClonesArray*) manager->GetObject("MuchPoint");
   if (!fPoints) {
     LOG(error) << "No MC points found";
     return kERROR;
   }
-
   if (!CbmMuchGeoScheme::Instance()) {
     LOG(fatal) << "No CbmMuchGeoScheme found";
     return kFATAL;
   }
-
-  fNstations = CbmMuchGeoScheme::Instance()->GetNStations();
-
   if (fNstations == 0) {
     LOG(error) << "CbmMuchGeoScheme is not initialized";
     return kERROR;
   }
-
-  TFolder* histFolder = fOutFolder.AddFolder("hist", "Histogramms");
-
-  fhNevents.SetVal(0);
-  histFolder->Add(&fhNevents);
-
-#define BINS_STA fNstations, 0, fNstations
-
-  {
-    fvUsNtra.clear();
-    std::vector<TH1F*>& v = fvUsNtra;
-    v.push_back(fhUsNtraAll = new TH1F("hUsNtraAll", "N tracks", BINS_STA));
-    v.push_back(fhUsNtraPrim =
-                  new TH1F("hUsNtraPrim", "N primary tracks", BINS_STA));
-    v.push_back(fhUsNtraSec =
-                  new TH1F("hUsNtraSec", "N secondary tracks", BINS_STA));
-    v.push_back(fhUsNtraPr = new TH1F("hUsNtraPr", "N protons", BINS_STA));
-    v.push_back(fhUsNtraPi = new TH1F("hUsNtraPi", "N pions", BINS_STA));
-    v.push_back(fhUsNtraEl = new TH1F("hUsNtraEl", "N electrons", BINS_STA));
-    v.push_back(fhUsNtraMu = new TH1F("hUsNtraMu", "N muons", BINS_STA));
-    v.push_back(fhUsNtraKa = new TH1F("hUsNtraKa", "N kaons", BINS_STA));
-    for (uint i = 0; i < fvUsNtra.size(); i++) {
-      TH1F* h = fvUsNtra[i];
-      h->SetStats(0);
-      h->GetXaxis()->SetTitle("Station");
-      histFolder->Add(h);
-    }
-  }
-
-  {
-    fvFraction.clear();
-    std::vector<TH1F*>& v = fvFraction;
-    v.push_back(fhNtracks =
-                  new TH1F("hNtracks", "N tracks per event", BINS_STA));
-    v.push_back(fhFractionPrim = new TH1F(
-                  "hFractionPrim", "Fraction of primary tracks", BINS_STA));
-    v.push_back(fhFractionSec = new TH1F(
-                  "hFractionSec", "Fraction of secondary tracks", BINS_STA));
-    v.push_back(fhFractionPr =
-                  new TH1F("hFractionPr", "Fraction of protons", BINS_STA));
-    v.push_back(fhFractionPi =
-                  new TH1F("hFractionPi", "Fraction of pions", BINS_STA));
-    v.push_back(fhFractionEl =
-                  new TH1F("hFractionEl", "Fraction of electrons", BINS_STA));
-    v.push_back(fhFractionMu =
-                  new TH1F("hFractionMu", "Fraction of muons", BINS_STA));
-    v.push_back(fhFractionKa =
-                  new TH1F("hFractionKa", "Fraction of kaons", BINS_STA));
-
-    for (uint i = 0; i < fvFraction.size(); i++) {
-      TH1F* h = fvFraction[i];
-      h->SetStats(0);
-      h->GetXaxis()->SetTitle("Station");
-      h->GetYaxis()->SetTitle("%");
-      histFolder->Add(h);
-    }
-  }
-
-  fvMcPointXY.resize(fNstations);
-  fvMcPointPhiZ.resize(fNstations);
-  fvMcPointRZ.resize(fNstations);
-
-  fvMcPointPRatio.resize(fNstations);
-  fvMcPointPrimRatio.resize(fNstations);
-
   for (Int_t i = 0; i < fNstations; i++) {
     CbmMuchStation* station = CbmMuchGeoScheme::Instance()->GetStation(i);
     if (!station) {
       LOG(fatal) << "Much station " << i << " doesn't exist";
       return kFATAL;
     }
-    Double_t rMax = station->GetRmax();
-    Double_t rMin = station->GetRmin();
+  }
+  fhNevents.SetVal(0);
+  histFolder->Add(&fhNevents);
+
+  InitCountingHistos();
+  InitFractionHistos();
+  Init2dSpatialDistributionHistos();
+  InitRatioPieCharts();
+  InitCanvases();
+
+  gDirectory = oldDirectory;
+  return kSUCCESS;
+}
+// -------------------------------------------------------------------------
+
+void CbmMuchTransportQa::InitCountingHistos() {
+
+  fvUsNtra.clear();
+  std::vector<TH1F*>& v = fvUsNtra;
+  v.push_back(fhUsNtraAll = new TH1F("hUsNtraAll", "N tracks", BINS_STA));
+  v.push_back(fhUsNtraPrim =
+                new TH1F("hUsNtraPrim", "N primary tracks", BINS_STA));
+  v.push_back(fhUsNtraSec =
+                new TH1F("hUsNtraSec", "N secondary tracks", BINS_STA));
+  v.push_back(fhUsNtraPr = new TH1F("hUsNtraPr", "N protons", BINS_STA));
+  v.push_back(fhUsNtraPi = new TH1F("hUsNtraPi", "N pions", BINS_STA));
+  v.push_back(fhUsNtraEl = new TH1F("hUsNtraEl", "N electrons", BINS_STA));
+  v.push_back(fhUsNtraMu = new TH1F("hUsNtraMu", "N muons", BINS_STA));
+  v.push_back(fhUsNtraKa = new TH1F("hUsNtraKa", "N kaons", BINS_STA));
+  for (uint i = 0; i < fvUsNtra.size(); i++) {
+    TH1F* h = fvUsNtra[i];
+    h->SetStats(0);
+    h->GetXaxis()->SetTitle("Station");
+    histFolder->Add(h);
+  }
+}
+
+void CbmMuchTransportQa::InitFractionHistos() {
+
+  fvFraction.clear();
+  std::vector<TH1F*>& v = fvFraction;
+  v.push_back(fhNtracks = new TH1F("hNtracks", "N tracks per event", BINS_STA));
+  v.push_back(fhFractionPrim = new TH1F(
+                "hFractionPrim", "Fraction of primary tracks", BINS_STA));
+  v.push_back(fhFractionSec = new TH1F(
+                "hFractionSec", "Fraction of secondary tracks", BINS_STA));
+  v.push_back(fhFractionPr =
+                new TH1F("hFractionPr", "Fraction of protons", BINS_STA));
+  v.push_back(fhFractionPi =
+                new TH1F("hFractionPi", "Fraction of pions", BINS_STA));
+  v.push_back(fhFractionEl =
+                new TH1F("hFractionEl", "Fraction of electrons", BINS_STA));
+  v.push_back(fhFractionMu =
+                new TH1F("hFractionMu", "Fraction of muons", BINS_STA));
+  v.push_back(fhFractionKa =
+                new TH1F("hFractionKa", "Fraction of kaons", BINS_STA));
+
+  for (uint i = 0; i < fvFraction.size(); i++) {
+    TH1F* h = fvFraction[i];
+    h->SetStats(0);
+    h->GetXaxis()->SetTitle("Station");
+    if (i == 0) {
+      h->GetYaxis()->SetTitle("N tracks");
+    } else {
+      h->GetYaxis()->SetTitle("%");
+    }
+    histFolder->Add(h);
+  }
+}
+
+void CbmMuchTransportQa::Init2dSpatialDistributionHistos() {
+
+  fvMcPointXY.resize(fNstations);
+  fvMcPointPhiZ.resize(fNstations);
+  fvMcPointRZ.resize(fNstations);
+
+  for (Int_t i = 0; i < fNstations; i++) {
+    CbmMuchStation* station = CbmMuchGeoScheme::Instance()->GetStation(i);
+    Double_t rMax           = station->GetRmax();
+    Double_t rMin           = station->GetRmin();
 
     fvMcPointXY[i] = new TH2F(Form("hMcPointXY%i", i + 1),
                               Form("MC point XY : Station %i; X; Y", i + 1),
@@ -243,8 +216,6 @@ InitStatus CbmMuchTransportQa::Init() {
                               100,
                               -1.2 * rMax,
                               1.2 * rMax);
-    histFolder->Add(fvMcPointXY[i]);
-
     fvMcPointPhiZ[i] =
       new TH2F(Form("hMcPointPhiZ%i", i + 1),
                Form("MC point Phi vs Z : Station %i; Z; Phi", i + 1),
@@ -254,7 +225,6 @@ InitStatus CbmMuchTransportQa::Init() {
                100,
                -200.,
                200.);
-    histFolder->Add(fvMcPointPhiZ[i]);
 
     float dR       = rMax - rMin;
     fvMcPointRZ[i] = new TH2F(Form("hMcPointRZ%i", i + 1),
@@ -265,42 +235,53 @@ InitStatus CbmMuchTransportQa::Init() {
                               100,
                               rMin - 0.1 * dR,
                               rMax + 0.1 * dR);
+    histFolder->Add(fvMcPointXY[i]);
+    histFolder->Add(fvMcPointPhiZ[i]);
     histFolder->Add(fvMcPointRZ[i]);
+  }
+}
 
+void CbmMuchTransportQa::InitRatioPieCharts() {
+
+  fvMcPointPRatio.resize(fNstations);
+  fvMcPointPrimRatio.resize(fNstations);
+  for (Int_t i = 0; i < fNstations; i++) {
     fvMcPointPRatio[i] =
       new TPie(Form("fvMcPointPRatio%i", i + 1),
                Form("McPoint Particle Ratios: Station %i", i + 1),
                5);
-
-    //histFolder->Add(fvMcPointPRatio[i]);
 
     fvMcPointPrimRatio[i] =
       new TPie(Form("fvMcPointPrimRatio%i", i + 1),
                Form("McPoint Primary/Secondary Track: Station %i", i + 1),
                2);
 
-    //histFolder->Add(fvMcPointPrimRatio[i]);
+    histFolder->Add(fvMcPointPRatio[i]);
+    histFolder->Add(fvMcPointPrimRatio[i]);
   }
+}
+
+void CbmMuchTransportQa::InitCanvases() {
 
   fCanvStationXY =
     new CbmQaCanvas("cMcPointXY", "Much: MC point XY", 2 * 400, 2 * 400);
   fCanvStationXY->Divide2D(fNstations);
-  fOutFolder.Add(fCanvStationXY);
 
   fCanvStationPhiZ = new CbmQaCanvas(
     "cMcPointPhiZ", "Much: MC point Phi vs Z", 2 * 800, 2 * 400);
   fCanvStationPhiZ->Divide2D(fNstations);
-  fOutFolder.Add(fCanvStationPhiZ);
 
   fCanvStationRZ =
     new CbmQaCanvas("cMcPointRZ", "Much: MC point R vs Z", 2 * 800, 2 * 400);
   fCanvStationRZ->Divide2D(fNstations);
-  fOutFolder.Add(fCanvStationRZ);
+
+  fCanvUsNtra =
+    new CbmQaCanvas("cUsNtra", "Much: MC unscaled counts", 3 * 400, 3 * 400);
+  fCanvUsNtra->Divide2D(9);
 
   fCanvStationPRatio = new CbmQaCanvas(
     "cMcPointPRatios", "Much: MC particle ratios", 2 * 400, 2 * 400);
   fCanvStationPRatio->Divide2D(fNstations);
-  fOutFolder.Add(fCanvStationPRatio);
 
   fCanvStationPrimRatio =
     new CbmQaCanvas("cMcPointPrimRatios",
@@ -308,14 +289,14 @@ InitStatus CbmMuchTransportQa::Init() {
                     2 * 400,
                     2 * 400);
   fCanvStationPrimRatio->Divide2D(fNstations);
+
+  fOutFolder.Add(fCanvStationXY);
+  fOutFolder.Add(fCanvStationPhiZ);
+  fOutFolder.Add(fCanvStationRZ);
+  fOutFolder.Add(fCanvUsNtra);
+  fOutFolder.Add(fCanvStationPRatio);
   fOutFolder.Add(fCanvStationPrimRatio);
-
-  gDirectory = oldDirectory;
-
-  return kSUCCESS;
 }
-// -------------------------------------------------------------------------
-
 
 // -------------------------------------------------------------------------
 InitStatus CbmMuchTransportQa::ReInit() {
@@ -323,7 +304,6 @@ InitStatus CbmMuchTransportQa::ReInit() {
   return Init();
 }
 // -------------------------------------------------------------------------
-
 
 // -------------------------------------------------------------------------
 void CbmMuchTransportQa::SetParContainers() {
@@ -350,26 +330,20 @@ void CbmMuchTransportQa::SetParContainers() {
 void CbmMuchTransportQa::Exec(Option_t*) {
 
   LOG(info) << "Event: " << fhNevents.GetVal();
-
   fhNevents.SetVal(fhNevents.GetVal() + 1);
-
   // bitmask tells which stations were crossed by mc track
   std::vector<UInt_t> trackStaCross(fMcTracks->GetEntriesFast(), 0);
 
   for (Int_t i = 0; i < fPoints->GetEntriesFast(); i++) {
 
     CbmMuchPoint* point = (CbmMuchPoint*) fPoints->At(i);
-
+    Int_t stId    = CbmMuchAddress::GetStationIndex(point->GetDetectorID());
+    UInt_t stMask = (1 << stId);
+    Int_t trackId = point->GetTrackID();
     if (!point) {
       LOG(fatal) << "Much point " << i << " doesn't exist";
       break;
-    }
-
-    Int_t stId    = CbmMuchAddress::GetStationIndex(point->GetDetectorID());
-    UInt_t stMask = (1 << stId);
-
-    // Check if the point corresponds to a certain  MC Track
-    Int_t trackId = point->GetTrackID();
+    }  // Check if the point corresponds to a certain  MC Track
     if (trackId < 0 || trackId >= fMcTracks->GetEntriesFast()) {
       LOG(fatal) << "Much point " << i << ": trackId " << trackId
                  << " doesn't belong to [0," << fMcTracks->GetEntriesFast() - 1
@@ -384,12 +358,8 @@ void CbmMuchTransportQa::Exec(Option_t*) {
     }
 
     Int_t motherId = mcTrack->GetMotherId();
-
-    // Get mass
-    Int_t pdgCode = mcTrack->GetPdgCode();
-
+    Int_t pdgCode  = mcTrack->GetPdgCode();
     //if (pdgCode == 0) continue;
-
     TParticlePDG* particle = TDatabasePDG::Instance()->GetParticle(pdgCode);
     if (!particle) {
       LOG(warning) << "Particle with pdg code " << pdgCode << " doesn't exist";
@@ -404,120 +374,84 @@ void CbmMuchTransportQa::Exec(Option_t*) {
     }
 
     if (!(trackStaCross[trackId] & stMask)) {
-      fhUsNtraAll->Fill(stId);
-      if (motherId == -1) {
-        fhUsNtraPrim->Fill(stId);
-      } else {
-        fhUsNtraSec->Fill(stId);
-      }
-      switch (abs(pdgCode)) {
-        case 2212:  // proton
-          fhUsNtraPr->Fill(stId);
-          break;
-        case 211:  // pion
-          fhUsNtraPi->Fill(stId);
-          break;
-        case 11:  // electron
-          fhUsNtraEl->Fill(stId);
-          break;
-        case 13:  // muon
-          fhUsNtraMu->Fill(stId);
-          break;
-        case 321:  // kaon
-          fhUsNtraKa->Fill(stId);
-          break;
-      }
+      FillCountingHistos(stId, motherId, pdgCode);
     }
-
     trackStaCross[trackId] |= stMask;
+    Fill2dSpatialDistributionHistos(point, stId);
+  }
+}
 
-    TVector3 v1;  // in  position of the track
-    TVector3 v2;  // out position of the track
-
-    point->PositionIn(v1);
-    point->PositionOut(v2);
-
-    fvMcPointXY[stId]->Fill(v1.X(), v1.Y());
-    fvMcPointXY[stId]->Fill(v2.X(), v2.Y());
-
-    fvMcPointPhiZ[stId]->Fill(v1.Z(), v1.Phi() * TMath::RadToDeg());
-    fvMcPointPhiZ[stId]->Fill(v2.Z(), v2.Phi() * TMath::RadToDeg());
-
-    fvMcPointRZ[stId]->Fill(v1.Z(), v1.Perp());
-    fvMcPointRZ[stId]->Fill(v2.Z(), v2.Perp());
+void CbmMuchTransportQa::FillCountingHistos(Int_t stId,
+                                            Int_t motherId,
+                                            Int_t pdgCode) {
+  fhUsNtraAll->Fill(stId);
+  if (motherId == -1) {
+    fhUsNtraPrim->Fill(stId);
+  } else {
+    fhUsNtraSec->Fill(stId);
+  }
+  switch (abs(pdgCode)) {
+    case 2212:  // proton
+      fhUsNtraPr->Fill(stId);
+      break;
+    case 211:  // pion
+      fhUsNtraPi->Fill(stId);
+      break;
+    case 11:  // electron
+      fhUsNtraEl->Fill(stId);
+      break;
+    case 13:  // muon
+      fhUsNtraMu->Fill(stId);
+      break;
+    case 321:  // kaon
+      fhUsNtraKa->Fill(stId);
+      break;
   }
 }
 // -------------------------------------------------------------------------
 
+void CbmMuchTransportQa::Fill2dSpatialDistributionHistos(CbmMuchPoint* point,
+                                                         Int_t stId) {
+
+  TVector3 v1;  // in  position of the track
+  TVector3 v2;  // out position of the track
+  point->PositionIn(v1);
+  point->PositionOut(v2);
+
+  fvMcPointXY[stId]->Fill(v1.X(), v1.Y());
+  fvMcPointXY[stId]->Fill(v2.X(), v2.Y());
+  fvMcPointPhiZ[stId]->Fill(v1.Z(), v1.Phi() * TMath::RadToDeg());
+  fvMcPointPhiZ[stId]->Fill(v2.Z(), v2.Phi() * TMath::RadToDeg());
+  fvMcPointRZ[stId]->Fill(v1.Z(), v1.Perp());
+  fvMcPointRZ[stId]->Fill(v2.Z(), v2.Perp());
+}
 
 // -------------------------------------------------------------------------
 TFolder& CbmMuchTransportQa::GetQa() {
 
   TDirectory* oldDirectory = gDirectory;
-
   fhNtracks->Reset();
   fhNtracks->Add(fhUsNtraAll, 1. / fhNevents.GetVal());
 
-  {
-    std::vector<Double_t> errors(fNstations, 0.);
-    fhUsNtraAll->SetError(errors.data());
-  }
+  std::vector<Double_t> errors(fNstations, 0.);
+  fhUsNtraAll->SetError(errors.data());
 
   for (uint i = 1; i < fvFraction.size(); i++) {
     fvFraction[i]->Divide(fvUsNtra[i], fhUsNtraAll);
     fvFraction[i]->Scale(100.);
   }
+  MakePRatioPieCharts();
+  MakePrimRatioPieCharts();
+  DrawCanvases();
+
+  gDirectory = oldDirectory;
+  return fOutFolder;
+}
+// -------------------------------------------------------------------------
+
+void CbmMuchTransportQa::DrawCanvases() {
 
   for (Int_t i = 0; i < fNstations; i++) {
-    Double_t PRatios[] = {fhFractionEl->GetBinContent(i + 1),
-                          fhFractionPr->GetBinContent(i + 1),
-                          fhFractionPi->GetBinContent(i + 1),
-                          fhFractionMu->GetBinContent(i + 1),
-                          fhFractionKa->GetBinContent(i + 1)};
-
-    Int_t PRatiosColors[] = {4, 3, 2, 5, 6};
-
-    fvMcPointPRatio[i]->SetEntryVal(0, PRatios[0]);
-    fvMcPointPRatio[i]->SetEntryVal(1, PRatios[1]);
-    fvMcPointPRatio[i]->SetEntryVal(2, PRatios[2]);
-    fvMcPointPRatio[i]->SetEntryVal(3, PRatios[3]);
-    fvMcPointPRatio[i]->SetEntryVal(4, PRatios[4]);
-    fvMcPointPRatio[i]->SetEntryFillColor(0, PRatiosColors[0]);
-    fvMcPointPRatio[i]->SetEntryFillColor(1, PRatiosColors[1]);
-    fvMcPointPRatio[i]->SetEntryFillColor(2, PRatiosColors[2]);
-    fvMcPointPRatio[i]->SetEntryFillColor(3, PRatiosColors[3]);
-    fvMcPointPRatio[i]->SetEntryFillColor(4, PRatiosColors[4]);
-    fvMcPointPRatio[i]->GetSlice(0)->SetTitle(Form("e:   %.1f %%", PRatios[0]));
-    fvMcPointPRatio[i]->GetSlice(1)->SetTitle(Form("p:   %.1f %%", PRatios[1]));
-    fvMcPointPRatio[i]->GetSlice(2)->SetTitle(
-      Form("#pi:   %.1f %%", PRatios[2]));
-    fvMcPointPRatio[i]->GetSlice(3)->SetTitle(
-      Form("#mu:   %.1f %%", PRatios[3]));
-    fvMcPointPRatio[i]->GetSlice(4)->SetTitle(Form("K:   %.1f %%", PRatios[4]));
-    fvMcPointPRatio[i]->SetRadius(.33);
-    fvMcPointPRatio[i]->SetLabelsOffset(-.1);
-    fvMcPointPRatio[i]->SetLabelFormat("");
-
-    Double_t PrimRatios[] = {fhFractionPrim->GetBinContent(i + 1),
-                             fhFractionSec->GetBinContent(i + 1)};
-
-    Int_t PrimRatiosColors[] = {6, 4};
-
-    fvMcPointPrimRatio[i]->SetEntryVal(0, PrimRatios[0]);
-    fvMcPointPrimRatio[i]->SetEntryVal(1, PrimRatios[1]);
-    fvMcPointPrimRatio[i]->SetEntryFillColor(0, PrimRatiosColors[0]);
-    fvMcPointPrimRatio[i]->SetEntryFillColor(1, PrimRatiosColors[1]);
-    fvMcPointPrimRatio[i]->GetSlice(0)->SetTitle(
-      Form("Primary:   %.1f %%", PrimRatios[0]));
-    fvMcPointPrimRatio[i]->GetSlice(1)->SetTitle(
-      Form("Secondary: %.1f %%", PrimRatios[1]));
-    fvMcPointPrimRatio[i]->SetRadius(.33);
-    fvMcPointPrimRatio[i]->SetLabelsOffset(-.1);
-    fvMcPointPrimRatio[i]->SetLabelFormat("");
-  }
-
-  for (Int_t i = 0; i < fNstations; i++) {
-
     fCanvStationXY->cd(i + 1);
     gStyle->SetOptStat(0);
     fvMcPointXY[i]->DrawCopy("colz", "");
@@ -551,11 +485,96 @@ TFolder& CbmMuchTransportQa::GetQa() {
     gStyle->SetOptStat(1110);
   }
 
-  gDirectory = oldDirectory;
-  return fOutFolder;
-}
-// -------------------------------------------------------------------------
+  fCanvUsNtra->cd(1);
+  gStyle->SetOptStat(0);
+  fhUsNtraAll->DrawCopy("colz", "");
 
+  fCanvUsNtra->cd(2);
+  gStyle->SetOptStat(0);
+  fhNtracks->DrawCopy("colz", "");
+
+  fCanvUsNtra->cd(3);
+  gStyle->SetOptStat(0);
+  fhUsNtraPrim->DrawCopy("colz", "");
+
+  fCanvUsNtra->cd(4);
+  gStyle->SetOptStat(0);
+  fhUsNtraSec->DrawCopy("colz", "");
+
+  fCanvUsNtra->cd(5);
+  gStyle->SetOptStat(0);
+  fhUsNtraPr->DrawCopy("colz", "");
+
+  fCanvUsNtra->cd(6);
+  gStyle->SetOptStat(0);
+  fhUsNtraPi->DrawCopy("colz", "");
+
+  fCanvUsNtra->cd(7);
+  gStyle->SetOptStat(0);
+  fhUsNtraEl->DrawCopy("colz", "");
+
+  fCanvUsNtra->cd(8);
+  gStyle->SetOptStat(0);
+  fhUsNtraMu->DrawCopy("colz", "");
+
+  fCanvUsNtra->cd(9);
+  gStyle->SetOptStat(0);
+  fhUsNtraKa->DrawCopy("colz", "");
+}
+
+void CbmMuchTransportQa::MakePRatioPieCharts() {
+
+  for (Int_t i = 0; i < fNstations; i++) {
+    Double_t PRatios[]    = {fhFractionEl->GetBinContent(i + 1),
+                          fhFractionPr->GetBinContent(i + 1),
+                          fhFractionPi->GetBinContent(i + 1),
+                          fhFractionMu->GetBinContent(i + 1),
+                          fhFractionKa->GetBinContent(i + 1)};
+    Int_t PRatiosColors[] = {4, 3, 2, 5, 6};
+
+    fvMcPointPRatio[i]->SetEntryVal(0, PRatios[0]);
+    fvMcPointPRatio[i]->SetEntryVal(1, PRatios[1]);
+    fvMcPointPRatio[i]->SetEntryVal(2, PRatios[2]);
+    fvMcPointPRatio[i]->SetEntryVal(3, PRatios[3]);
+    fvMcPointPRatio[i]->SetEntryVal(4, PRatios[4]);
+    fvMcPointPRatio[i]->SetEntryFillColor(0, PRatiosColors[0]);
+    fvMcPointPRatio[i]->SetEntryFillColor(1, PRatiosColors[1]);
+    fvMcPointPRatio[i]->SetEntryFillColor(2, PRatiosColors[2]);
+    fvMcPointPRatio[i]->SetEntryFillColor(3, PRatiosColors[3]);
+    fvMcPointPRatio[i]->SetEntryFillColor(4, PRatiosColors[4]);
+    fvMcPointPRatio[i]->GetSlice(0)->SetTitle(Form("e:   %.1f %%", PRatios[0]));
+    fvMcPointPRatio[i]->GetSlice(1)->SetTitle(Form("p:   %.1f %%", PRatios[1]));
+    fvMcPointPRatio[i]->GetSlice(2)->SetTitle(
+      Form("#pi:   %.1f %%", PRatios[2]));
+    fvMcPointPRatio[i]->GetSlice(3)->SetTitle(
+      Form("#mu:   %.1f %%", PRatios[3]));
+    fvMcPointPRatio[i]->GetSlice(4)->SetTitle(Form("K:   %.1f %%", PRatios[4]));
+    fvMcPointPRatio[i]->SetRadius(.33);
+    fvMcPointPRatio[i]->SetLabelsOffset(-.1);
+    fvMcPointPRatio[i]->SetLabelFormat("");
+  }
+}
+
+void CbmMuchTransportQa::MakePrimRatioPieCharts() {
+
+  for (Int_t i = 0; i < fNstations; i++) {
+    Double_t PrimRatios[]    = {fhFractionPrim->GetBinContent(i + 1),
+                             fhFractionSec->GetBinContent(i + 1)};
+    Int_t PrimRatiosColors[] = {6, 4};
+
+    fvMcPointPrimRatio[i]->SetEntryVal(0, PrimRatios[0]);
+    fvMcPointPrimRatio[i]->SetEntryVal(1, PrimRatios[1]);
+    fvMcPointPrimRatio[i]->SetEntryFillColor(0, PrimRatiosColors[0]);
+    fvMcPointPrimRatio[i]->SetEntryFillColor(1, PrimRatiosColors[1]);
+    fvMcPointPrimRatio[i]->GetSlice(0)->SetTitle(
+      Form("Primary:   %.1f %%", PrimRatios[0]));
+    fvMcPointPrimRatio[i]->GetSlice(1)->SetTitle(
+      Form("Secondary: %.1f %%", PrimRatios[1]));
+    fvMcPointPrimRatio[i]->SetRadius(.33);
+    fvMcPointPrimRatio[i]->SetLabelsOffset(-.1);
+    fvMcPointPrimRatio[i]->SetLabelFormat("");
+  }
+}
 
 // -------------------------------------------------------------------------
 void CbmMuchTransportQa::Finish() {

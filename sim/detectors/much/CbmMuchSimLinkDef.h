@@ -13,5 +13,7 @@
 #pragma link C++ class CbmMuchReadoutBuffer + ;
 #pragma link C++ class CbmMuchSignal + ;
 #pragma link C++ class CbmMuchTransportQa + ;
+#pragma link C++ class CbmMuchPointInfo + ;
+#pragma link C++ class CbmMuchDigitizerQa + ;
 
 #endif
