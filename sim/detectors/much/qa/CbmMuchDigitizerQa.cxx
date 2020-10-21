@@ -8,6 +8,28 @@
 /// \date   21.10.2020
 
 #include "CbmMuchDigitizerQa.h"
+#include "CbmDigiManager.h"
+#include "CbmMCTrack.h"
+#include "CbmMatch.h"
+#include "CbmMuchDigi.h"
+#include "CbmMuchGeoScheme.h"
+#include "CbmMuchModuleGem.h"
+#include "CbmMuchPad.h"
+#include "CbmMuchPoint.h"
+#include "CbmMuchPointInfo.h"
+#include "CbmMuchRecoDefs.h"
+#include "CbmMuchStation.h"
+#include "CbmQaCanvas.h"
+#include "TClonesArray.h"
+#include "TDatabasePDG.h"
+#include "TF1.h"
+#include "TGraph.h"
+#include "TH1.h"
+#include "TH2.h"
+#include "TString.h"
+#include "TStyle.h"
+#include <vector>
+
 using std::cout;
 using std::endl;
 using std::vector;

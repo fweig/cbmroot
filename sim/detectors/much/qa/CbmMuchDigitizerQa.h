@@ -9,47 +9,14 @@
 #ifndef CbmMuchDigitizerQa_H
 #define CbmMuchDigitizerQa_H
 
-#include "CbmDigiManager.h"
-#include "CbmGeoMuchPar.h"
-#include "CbmMCTrack.h"
-#include "CbmMatch.h"
-#include "CbmMuchAddress.h"
-#include "CbmMuchDigi.h"
-#include "CbmMuchGeoScheme.h"
-#include "CbmMuchModuleGem.h"
-#include "CbmMuchPad.h"
-#include "CbmMuchPoint.h"
-#include "CbmMuchPointInfo.h"
-#include "CbmMuchRecoDefs.h"
-#include "CbmMuchSector.h"
-#include "CbmMuchStation.h"
-#include "CbmQaCanvas.h"
-#include "FairLogger.h"
-#include "FairRootFileSink.h"
-#include "FairRootManager.h"
-#include "FairRun.h"
-#include "FairRuntimeDb.h"
 #include "FairTask.h"
-#include "Riostream.h"
-#include "TArrayI.h"
-#include "TCanvas.h"
-#include "TClonesArray.h"
-#include "TDatabasePDG.h"
-#include "TF1.h"
-#include "TFile.h"
-#include "TGraph.h"
-#include "TH1.h"
-#include "TH2.h"
-#include "TObjArray.h"
-#include "TParticlePDG.h"
-#include "TString.h"
-#include "TStyle.h"
-#include <algorithm>
-#include <cassert>
-#include <map>
-#include <vector>
-
 class CbmMuchGeoScheme;
+class CbmDigiManager;
+class CbmQaCanvas;
+class TCanvas;
+class TH1F;
+class TH2F;
+class TVector2;
 
 /// QA for the MUCH detector after a "digitization" step of the simulation.
 /// The class reimplements corresponding QA checks from old CbmMuchHitFinderQa class

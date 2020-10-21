@@ -8,6 +8,23 @@
 /// \date   21.10.2020
 
 #include "CbmMuchTransportQa.h"
+#include "CbmMCTrack.h"
+#include "CbmMuchGeoScheme.h"
+#include "CbmMuchPoint.h"
+#include "CbmMuchStation.h"
+#include "CbmQaCanvas.h"
+#include "TClonesArray.h"
+#include "TDatabasePDG.h"
+#include "TH1.h"
+#include "TH2.h"
+#include "TLegend.h"
+#include "TPie.h"
+#include "TPieSlice.h"
+#include "TStyle.h"
+#include <vector>
+
+#define BINS_STA fNstations, 0, fNstations
+
 ClassImp(CbmMuchTransportQa);
 
 // -------------------------------------------------------------------------
