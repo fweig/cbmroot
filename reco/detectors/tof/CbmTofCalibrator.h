@@ -53,7 +53,7 @@ public:
   InitStatus Init();
   Bool_t InitParameters();
   Bool_t CreateCalHist();
-  void FillCalHist(CbmTofTracklet* pTrk);
+  void FillCalHist(CbmTofTracklet* pTrk, Int_t iOpt);
   Bool_t UpdateCalHist(Int_t iOpt);
   void ReadHist(TFile* fhFile);
   void WriteHist(TFile* fhFile);
