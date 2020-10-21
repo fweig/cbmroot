@@ -1806,6 +1806,8 @@ void CbmTofFindTracks::FillHistograms() {
       continue;
     }
 
+    //if (pTrk->GetTrackTy()>0.) continue;  // TEMPORARY!!!!
+
     HMul[pTrk->GetNofHits()]++;
 
     if (pTrk->GetNofHits() >= 2) {  // initial offset calibration
@@ -1838,7 +1840,7 @@ void CbmTofFindTracks::FillHistograms() {
       iTMul++;
       fhTrklChi2->Fill(pTrk->GetNofHits(), pTrk->GetChiSq());
 
-      if (fiCalOpt > 0) fTofCalibrator->FillCalHist(pTrk);
+      if (fiCalOpt > 0) fTofCalibrator->FillCalHist(pTrk, fiCalOpt);
 
       CbmTofTrackletParam* tPar = pTrk->GetTrackParameter();
       Double_t dTt              = pTrk->GetTt();
