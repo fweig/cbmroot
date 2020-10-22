@@ -41,7 +41,6 @@ CbmMuchReadoutBuffer.cxx
 CbmMuchSignal.cxx
 
 qa/CbmMuchTransportQa.cxx
-qa/CbmMuchPointInfo.cxx
 qa/CbmMuchDigitizerQa.cxx
 )
 

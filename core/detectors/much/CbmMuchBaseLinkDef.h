@@ -14,6 +14,7 @@
 #pragma link C++ class CbmMuchModuleGem + ;
 #pragma link C++ class CbmMuchModuleGemRectangular + ;
 #pragma link C++ class CbmMuchModuleGemRadial + ;
+#pragma link C++ class CbmMuchPointInfo + ;
 #pragma link C++ class CbmMuchSector + ;
 #pragma link C++ class CbmMuchSectorRadial + ;
 #pragma link C++ class CbmMuchSectorRectangular + ;

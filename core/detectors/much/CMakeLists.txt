@@ -39,6 +39,7 @@ CbmMuchModuleGemRectangular.cxx
 CbmMuchPad.cxx
 CbmMuchPadRadial.cxx
 CbmMuchPadRectangular.cxx
+CbmMuchPointInfo.cxx
 CbmMuchSector.cxx
 CbmMuchSectorRadial.cxx
 CbmMuchSectorRectangular.cxx

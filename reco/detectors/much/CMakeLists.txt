@@ -43,7 +43,7 @@ CbmMuchTrackFinderIdeal.cxx
 set(LINKDEF CbmMuchRecoLinkDef.h)
 Set(LIBRARY_NAME CbmMuchReco)
 Set(DEPENDENCIES
-    CbmMuchBase CbmMuchSim CbmRecoBase CbmBase CbmData Base 
+    CbmMuchBase CbmRecoBase CbmBase CbmData Base 
 )
 
 GENERATE_LIBRARY()
