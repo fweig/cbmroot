@@ -554,6 +554,25 @@ void unpack_tsa_mcbm_kronos(UInt_t uRunIdx  = 99999,
     case 831: {
       //         unpacker_trdR->SetTimeOffsetNs(   70.00 );
       unpacker_trdR->SetTimeOffsetNs(-25.00);
+      std::cout<<"MUCH: Feb by feb time offset correction......"<<std::endl;
+      UInt_t uRun,uNx; 
+      Double_t offset;
+      ifstream infile("../mcbm2020/Parameters/time_offset_much.txt");
+      if (!infile) std::cout << "can not open time offset MUCH parameter List" << std::endl;
+      while (!infile.eof())  {
+	infile>>uRun>>uNx>>offset;
+	if(uRun !=831)continue;
+	unpacker_much->SetTimeOffsetNsAsic(uNx,offset);
+      }
+      std::cout<<"masking noisy channels......"<<std::endl;
+      UInt_t uChan = 0;
+      ifstream infile("../mcbm2020/Parameters/much_noisy_channel_list.txt");
+      if (!infile) std::cout << "can not open MUCH noisy channel List" << std::endl;
+      while (!infile.eof())  {
+	infile>>uRun>>uNx>>uChan;
+	if(uRun!=831)continue;
+	unpacker_much->MaskNoisyChannel(uNx,uChan,kTRUE );
+      }
       break;
     }  // 831
     case 836: {
