@@ -10,6 +10,15 @@
 #define CbmMuchDigitizerQa_H
 
 #include "FairTask.h"
+#include <Rtypes.h>
+#include <RtypesCore.h>
+#include <TFolder.h>
+#include <vector>
+class TBuffer;
+class TClass;
+class TClonesArray;
+class TF1;
+class TMemberInspector;
 class CbmMuchGeoScheme;
 class CbmDigiManager;
 class CbmQaCanvas;

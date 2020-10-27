@@ -8,11 +8,15 @@
 /// \date   21.10.2020
 
 #include "CbmMuchDigitizerQa.h"
+#include "CbmDefs.h"
 #include "CbmDigiManager.h"
+#include "CbmLink.h"
 #include "CbmMCTrack.h"
 #include "CbmMatch.h"
+#include "CbmMuchAddress.h"
 #include "CbmMuchDigi.h"
 #include "CbmMuchGeoScheme.h"
+#include "CbmMuchModule.h"
 #include "CbmMuchModuleGem.h"
 #include "CbmMuchPad.h"
 #include "CbmMuchPoint.h"
@@ -28,6 +32,27 @@
 #include "TH2.h"
 #include "TString.h"
 #include "TStyle.h"
+#include <FairRootManager.h>
+#include <FairSink.h>
+#include <FairTask.h>
+#include <Logger.h>
+#include <TAxis.h>
+#include <TCanvas.h>
+#include <TDirectory.h>
+#include <TGenericClassInfo.h>
+#include <TMath.h>
+#include <TParticlePDG.h>
+#include <TROOT.h>
+#include <TVector2.h>
+#include <TVector3.h>
+#include <TVirtualPad.h>
+#include <assert.h>
+#include <boost/exception/exception.hpp>
+#include <boost/type_index/type_index_facade.hpp>
+#include <iostream>
+#include <limits>
+#include <math.h>
+#include <stdio.h>
 #include <vector>
 
 using std::cout;

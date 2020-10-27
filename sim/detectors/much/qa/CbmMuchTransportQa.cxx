@@ -9,6 +9,7 @@
 
 #include "CbmMuchTransportQa.h"
 #include "CbmMCTrack.h"
+#include "CbmMuchAddress.h"
 #include "CbmMuchGeoScheme.h"
 #include "CbmMuchPoint.h"
 #include "CbmMuchStation.h"
@@ -21,7 +22,22 @@
 #include "TPie.h"
 #include "TPieSlice.h"
 #include "TStyle.h"
+#include <FairRootManager.h>
+#include <FairSink.h>
+#include <FairTask.h>
+#include <Logger.h>
+#include <ROOT/RConfig.h>
+#include <TAxis.h>
+#include <TDirectory.h>
+#include <TGenericClassInfo.h>
+#include <TMath.h>
+#include <TParameter.h>
+#include <TString.h>
+#include <TVector3.h>
+#include <stdlib.h>
+#include <sys/types.h>
 #include <vector>
+class TParticlePDG;
 
 #define BINS_STA fNstations, 0, fNstations
 

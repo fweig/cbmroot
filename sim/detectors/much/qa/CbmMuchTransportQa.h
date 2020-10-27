@@ -12,11 +12,19 @@
 
 #include "FairTask.h"
 #include "TParameter.h"
+#include <Rtypes.h>
+#include <RtypesCore.h>
+#include <TFolder.h>
+#include <vector>
+class CbmMuchPoint;
+class CbmQaCanvas;
+class TBuffer;
+class TClass;
+class TClonesArray;
 class TH1F;
 class TH2F;
+class TMemberInspector;
 class TPie;
-class CbmQaCanvas;
-class CbmMuchPoint;
 
 /// QA for the MUCH detector after a "transport" step of the simulation.
 /// The class reimplements corresponding QA checks from old CbmMuchHitFinderQa class
