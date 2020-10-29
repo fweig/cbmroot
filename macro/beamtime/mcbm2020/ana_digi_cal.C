@@ -45,9 +45,9 @@ void ana_digi_cal(Int_t nEvents      = 10000000,
 
   TList* parFileList = new TList();
 
-  TString FId    = cFileId;
+  TString FId = cFileId;
   TString cRun(FId(0, 3));
-  Int_t iRun = cRun.Atoi();
+  Int_t iRun     = cRun.Atoi();
   TString TofGeo = "";
   if (iRun < 690)
     TofGeo = "v20a_mcbm";

@@ -769,7 +769,7 @@ Bool_t CbmTofFindTracks::WriteHistos() {
       if (fhPullX_Smt_Off != NULL) {
         Double_t nx = htmp1D->GetNbinsX();
         for (Int_t ix = 0; ix < nx; ix++) {
-          TH1D* hpy = fhPullX_Smt->ProjectionY("_py", ix + 1, ix + 1);
+          TH1D* hpy     = fhPullX_Smt->ProjectionY("_py", ix + 1, ix + 1);
           Double_t dVal = fhPullX_Smt_Off->GetBinContent(ix + 1);
           //dVal -= htmp1D->GetBinContent(ix + 1);
           if (hpy->GetEntries() > 100.) {
@@ -780,21 +780,22 @@ Bool_t CbmTofFindTracks::WriteHistos() {
             Int_t nPeaks=s->Search(hpy,dRMS,"new");
             if (nPeaks==1) {
             */
-            if(kTRUE) {
+            if (kTRUE) {
               //Double_t *xPeaks=s->GetPositionX();
               //LOG(info) << "Found peak at" << xPeaks[0];
               // Fit gaussian
               //Double_t dFMean = xPeaks[0];
-              Double_t dFMean=hpy->GetBinCenter( hpy-> GetMaximumBin() );
-              Double_t dFLim  = 0.5;  // CAUTION, fixed numeric value
+              Double_t dFMean   = hpy->GetBinCenter(hpy->GetMaximumBin());
+              Double_t dFLim    = 0.5;  // CAUTION, fixed numeric value
               Double_t dBinSize = hpy->GetBinWidth(1);
-              dFLim=TMath::Max(dFLim,5.*dBinSize);
+              dFLim             = TMath::Max(dFLim, 5. * dBinSize);
               TFitResultPtr fRes =
                 hpy->Fit("gaus", "S", "", dFMean - dFLim, dFMean + dFLim);
               dVal -= fRes->Parameter(1);
-              dRMS  = fRes->Parameter(2);
-              LOG(info)<<"PeakFit at " << dFMean << ", lim " << dFLim
-            		   <<" : mean " << fRes->Parameter(1) << ", width " << dRMS;
+              dRMS = fRes->Parameter(2);
+              LOG(info) << "PeakFit at " << dFMean << ", lim " << dFLim
+                        << " : mean " << fRes->Parameter(1) << ", width "
+                        << dRMS;
             }
 
             if (dRMS < fSIGX * 0.5) dRMS = fSIGX * 0.5;
@@ -802,7 +803,7 @@ Bool_t CbmTofFindTracks::WriteHistos() {
 
             // limit maximal shift in X, for larger values, change geometry file
             if (dVal < -3.) dVal = -3.;
-            if (dVal > 3.)  dVal =  3.;
+            if (dVal > 3.) dVal = 3.;
             //if( fRpcAddr[ix] != fiBeamCounter )  // don't correct beam counter position
             LOG(info) << "Update hPullX_Smt_Off " << ix << ": "
                       << fhPullX_Smt_Off->GetBinContent(ix + 1) << " + "
@@ -1867,7 +1868,10 @@ void CbmTofFindTracks::FillHistograms() {
         default:;
       }
 
-      if (fiBeamCounter > -1 && fdR0Lim > 0.)  // consider only tracks originating from nominal interaction point
+      if (
+        fiBeamCounter > -1
+        && fdR0Lim
+             > 0.)  // consider only tracks originating from nominal interaction point
       {
         if (pTrk->GetR0() > fdR0Lim) continue;
       }

@@ -129,7 +129,8 @@ Bool_t CbmTofCalibrator::CreateCalHist() {
   Int_t iNbDet = fDigiBdfPar->GetNbDet();
   LOG(info) << "Define Calibrator histos for " << iNbDet << " detectors ";
 
-  fhCalR0 = new TH1D("hCalR0","Tracklet distance to nominal vertex; R_0 [cm]",100,0.,0.5);
+  fhCalR0 = new TH1D(
+    "hCalR0", "Tracklet distance to nominal vertex; R_0 [cm]", 100, 0., 0.5);
 
   fhCalPos.resize(iNbDet);
   fhCalTOff.resize(iNbDet);
@@ -183,7 +184,7 @@ Bool_t CbmTofCalibrator::CreateCalHist() {
       -TSumMax,
       TSumMax);
 
-    Double_t TotMax    = 20.; //FIXME: has to be consistent with Clusterizer!
+    Double_t TotMax    = 20.;  //FIXME: has to be consistent with Clusterizer!
     fhCalTot[iDetIndx] = new TH2F(
       Form("cal_SmT%01d_sm%03d_rpc%03d_Tot", iSmType, iSmId, iRpcId),
       Form(
@@ -242,7 +243,7 @@ void CbmTofCalibrator::FillCalHist(CbmTofTracklet* pTrk, Int_t iOpt) {
     && fdR0Lim
          > 0.)  // consider only tracks originating from nominal interaction point
   {
-	fhCalR0->Fill(pTrk->GetR0());
+    fhCalR0->Fill(pTrk->GetR0());
     if (pTrk->GetR0() > fdR0Lim) return;
   }
   for (Int_t iHit = 0; iHit < pTrk->GetNofHits(); iHit++) {
@@ -350,20 +351,21 @@ void CbmTofCalibrator::FillCalHist(CbmTofTracklet* pTrk, Int_t iOpt) {
                   << hlocal_f[1] << ", " << hlocal_p[1] << ", " << hlocal_d[1]
                   << ", TOT: " << tDigi0->GetTot() << " " << tDigi1->GetTot();
       }
-      Int_t iWalkMode=(iOpt - iOpt%10)/10;
-      switch(iWalkMode) {
+      Int_t iWalkMode = (iOpt - iOpt % 10) / 10;
+      switch (iWalkMode) {
         case 0:
           fhCalWalk[iDetIndx][iCh0][iSide0]->Fill(
-          tDigi0->GetTot(),
-          tDigi0->GetTime()
-            + (1. - 2. * tDigi0->GetSide()) * hlocal_d[1]
-              / fDigiBdfPar->GetSigVel(iSmType, iSm, iRpc)
-            - pTrk->GetFitT(
-              pHit->GetZ())  //-fTrackletTools->GetTexpected(pTrk, iDetId, pHit)
-            + fTofFindTracks->GetTOff(iDetId)
-            + 2. * (1. - 2. * tDigi0->GetSide()) * (hlocal_d[1] - hlocal_f[1])
-                / fDigiBdfPar->GetSigVel(iSmType, iSm, iRpc));
-        /*
+            tDigi0->GetTot(),
+            tDigi0->GetTime()
+              + (1. - 2. * tDigi0->GetSide()) * hlocal_d[1]
+                  / fDigiBdfPar->GetSigVel(iSmType, iSm, iRpc)
+              - pTrk->GetFitT(
+                pHit
+                  ->GetZ())  //-fTrackletTools->GetTexpected(pTrk, iDetId, pHit)
+              + fTofFindTracks->GetTOff(iDetId)
+              + 2. * (1. - 2. * tDigi0->GetSide()) * (hlocal_d[1] - hlocal_f[1])
+                  / fDigiBdfPar->GetSigVel(iSmType, iSm, iRpc));
+          /*
         LOG(info)<<"TSRCS "<<iSmType<<iSm<<iRpc<<iCh<<iSide0<<Form(": digi0 %f, ex %f, prop %f, Off %f, res %f",
                             tDigi0->GetTime(),
                             fTrackletTools->GetTexpected(pTrk, iDetId, pHit) ,
@@ -374,24 +376,24 @@ void CbmTofCalibrator::FillCalHist(CbmTofTracklet* pTrk, Int_t iOpt) {
         */
 
           fhCalWalk[iDetIndx][iCh1][iSide1]->Fill(
-        	  	tDigi1->GetTot(),
-		  tDigi1->GetTime()
-            + (1. - 2. * tDigi1->GetSide()) * hlocal_d[1]
-              / fDigiBdfPar->GetSigVel(iSmType, iSm, iRpc)
-			  - pTrk->GetFitT(
-			              pHit->GetZ())  //-fTrackletTools->GetTexpected(pTrk, iDetId, pHit)
-            + fTofFindTracks->GetTOff(iDetId)
-            + 2. * (1. - 2. * tDigi1->GetSide()) * (hlocal_d[1] - hlocal_f[1])
-              / fDigiBdfPar->GetSigVel(iSmType, iSm, iRpc));
+            tDigi1->GetTot(),
+            tDigi1->GetTime()
+              + (1. - 2. * tDigi1->GetSide()) * hlocal_d[1]
+                  / fDigiBdfPar->GetSigVel(iSmType, iSm, iRpc)
+              - pTrk->GetFitT(
+                pHit
+                  ->GetZ())  //-fTrackletTools->GetTexpected(pTrk, iDetId, pHit)
+              + fTofFindTracks->GetTOff(iDetId)
+              + 2. * (1. - 2. * tDigi1->GetSide()) * (hlocal_d[1] - hlocal_f[1])
+                  / fDigiBdfPar->GetSigVel(iSmType, iSm, iRpc));
           break;
 
-        case  1: {
-    	  Double_t dDeltaT = 0.5*(tDigi0->GetTime()+tDigi1->GetTime())
-		                   - pTrk->GetFitT(pHit->GetZ());
-          fhCalWalk[iDetIndx][iCh1][iSide0]->Fill(tDigi0->GetTot(),dDeltaT);
-          fhCalWalk[iDetIndx][iCh1][iSide1]->Fill(tDigi1->GetTot(),dDeltaT);
-        }
-        break;
+        case 1: {
+          Double_t dDeltaT = 0.5 * (tDigi0->GetTime() + tDigi1->GetTime())
+                             - pTrk->GetFitT(pHit->GetZ());
+          fhCalWalk[iDetIndx][iCh1][iSide0]->Fill(tDigi0->GetTot(), dDeltaT);
+          fhCalWalk[iDetIndx][iCh1][iSide1]->Fill(tDigi1->GetTot(), dDeltaT);
+        } break;
       }
     }
   }
@@ -427,7 +429,7 @@ Bool_t CbmTofCalibrator::UpdateCalHist(Int_t iOpt) {
       continue;
     }
 
-    switch (iOpt%10) {
+    switch (iOpt % 10) {
       case 0:  // none
         break;
       case 1:  // update channel mean
@@ -458,14 +460,16 @@ Bool_t CbmTofCalibrator::UpdateCalHist(Int_t iOpt) {
           Double_t dDp   = hpP->GetBinContent(iBin + 1);
           Double_t dCorP = fhCorPos[iDetIndx]->GetBinContent(iBin + 1);
           if (dCts > MINCTS) {
-        	// Fit Gaussian around peak
-        	TH1* hpPy=(TH1*) fhCalPos[iDetIndx]->ProjectionY(Form("PosPy_%d_%d",iDetIndx,iBin),iBin+1,iBin+1);
-            Double_t dFMean=hpPy->GetBinCenter( hpPy->GetMaximumBin() );
-            Double_t dFLim  = 0.5;  // CAUTION, fixed numeric value
+            // Fit Gaussian around peak
+            TH1* hpPy = (TH1*) fhCalPos[iDetIndx]->ProjectionY(
+              Form("PosPy_%d_%d", iDetIndx, iBin), iBin + 1, iBin + 1);
+            Double_t dFMean   = hpPy->GetBinCenter(hpPy->GetMaximumBin());
+            Double_t dFLim    = 0.5;  // CAUTION, fixed numeric value
             Double_t dBinSize = hpPy->GetBinWidth(1);
-            dFLim=TMath::Max(dFLim,5.*dBinSize);
-            TFitResultPtr fRes = hpPy->Fit("gaus", "S", "", dFMean - dFLim, dFMean + dFLim);
-            dDp = fRes->Parameter(1); //overwrite mean
+            dFLim             = TMath::Max(dFLim, 5. * dBinSize);
+            TFitResultPtr fRes =
+              hpPy->Fit("gaus", "S", "", dFMean - dFLim, dFMean + dFLim);
+            dDp = fRes->Parameter(1);  //overwrite mean
             // Double_t dDpRes = fRes->Parameter(2);
 
             fhCorTOff[iDetIndx]->SetBinContent(iBin + 1, dCorT + dDt + dAvOff);

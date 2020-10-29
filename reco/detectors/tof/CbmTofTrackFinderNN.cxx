@@ -512,9 +512,12 @@ Int_t CbmTofTrackFinderNN::DoFind(TClonesArray* fTofHits,
                 (dYex - pHit->GetY()) / fFindTracks->GetSigY(iAddr),
                 dChi);
 
-              if ( dChi < fSIGLIM // FIXME: should scale limit with material budget between hit and track reference
-            		  * (pTrk->GetNofHits() < fFindTracks->GetNReqStations() - 1 ? 1. : fSIGLIMMOD ) )
-              {             // extend and update tracklet
+              if (
+                dChi
+                < fSIGLIM  // FIXME: should scale limit with material budget between hit and track reference
+                    * (pTrk->GetNofHits() < fFindTracks->GetNReqStations() - 1
+                         ? 1.
+                         : fSIGLIMMOD)) {  // extend and update tracklet
                 LOG(debug) << Form("<IP> TofTracklet %lu, HMul %d, Hits %d, %d "
                                    "mark for extension by %d, add = 0x%08x, DT "
                                    "%6.2f, DX %6.2f, DY=%6.2f ",

@@ -210,7 +210,7 @@ void pl_over_trk(Int_t NSt = 4) {
     gPad->SetLogy();
   } else {
     cout << hname << " not found" << endl;
-  }  
+  }
 
   can->cd(14);
   gROOT->cd();

@@ -327,7 +327,7 @@ void Create_TOF_Geometry_v20b_mcbm() {
   // TGeoTranslation*  stand_trans   = new TGeoTranslation("", 12., 0., TOF_Z_Front_Stand);
   // TGeoTranslation*  stand_trans   = new TGeoTranslation("",  0., 0., TOF_Z_Front_Stand);
   TGeoRotation* stand_rot = new TGeoRotation();
-  stand_rot->RotateY(-1.5); //-2.7);
+  stand_rot->RotateY(-1.5);  //-2.7);
   TGeoCombiTrans* stand_combi_trans =
     new TGeoCombiTrans(*stand_trans, *stand_rot);
   //tof->AddNode(tofstand, 1, stand_combi_trans);

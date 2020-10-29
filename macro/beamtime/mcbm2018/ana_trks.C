@@ -66,7 +66,7 @@ void ana_trks(Int_t nEvents        = 10000,
   gSystem->Exec(shcmd.Data());
 
   TList* parFileList = new TList();
-  Int_t iGeo = 0;  //iMc;
+  Int_t iGeo         = 0;  //iMc;
   if (iGeo == 0) {
     TString TofGeo = "v18m_mcbm";  //default
 
@@ -178,12 +178,12 @@ void ana_trks(Int_t nEvents        = 10000,
       tofTrackFinder->SetTxLIM(0.15);   // max slope dx/dz
       tofTrackFinder->SetTyLIM(0.18);   // max dev from mean slope dy/dz
       break;
-    case 2:                             // for triple stack 012 counter evaluation
-      tofTrackFinder->SetTxMean(0.0);  // mean slope dx/dz
-      tofTrackFinder->SetTyMean(-0.03);   // mean slope dy/dz
-      tofTrackFinder->SetTxLIM(0.06);  // max slope dx/dz
-      tofTrackFinder->SetTyLIM(0.03);  // max dev from mean slope dy/dz
-      break;      
+    case 2:  // for triple stack 012 counter evaluation
+      tofTrackFinder->SetTxMean(0.0);    // mean slope dx/dz
+      tofTrackFinder->SetTyMean(-0.03);  // mean slope dy/dz
+      tofTrackFinder->SetTxLIM(0.06);    // max slope dx/dz
+      tofTrackFinder->SetTyLIM(0.03);    // max dev from mean slope dy/dz
+      break;
   }
 
   CbmTofTrackFitter* tofTrackFitter = new CbmTofTrackFitterKF(0, 211);
@@ -197,14 +197,15 @@ void ana_trks(Int_t nEvents        = 10000,
   tofFindTracks->SetCorMode(iGenCor);  // valid options: 0,1,2,3,4,5,6, 10 - 19
   //tofFindTracks->SetTtTarg(0.041);     // Mar19, Run 159
   //tofFindTracks->SetTtTarg(0.0605);  // target value for Mar2020 triple stack -> betapeak ~ 0.95
-  tofFindTracks->SetTtTarg(0.062);   // target value for Mar2020 triple stack -> betapeak ~ 0.95
+  tofFindTracks->SetTtTarg(
+    0.062);  // target value for Mar2020 triple stack -> betapeak ~ 0.95
   //tofFindTracks->SetTtTarg(0.058);   // target value for Mar2020 double stack
   //tofFindTracks->SetTtTarg(0.051);   // target value Nov2019
   //tofFindTracks->SetTtTarg(0.035);   // target value for inverse velocity, > 0.033 ns/cm!
   tofFindTracks->SetCalParFileName(
     cTrkFile);                             // Tracker parameter value file name
   tofFindTracks->SetBeamCounter(5, 0, 0);  // default beam counter
-  tofFindTracks->SetR0Lim(0.); // for calibration
+  tofFindTracks->SetR0Lim(0.);             // for calibration
   tofFindTracks->SetStationMaxHMul(
     30);  // Max Hit Multiplicity in any used station
 
@@ -212,12 +213,13 @@ void ana_trks(Int_t nEvents        = 10000,
   tofFindTracks->SetSIGT(0.08);       // default in ns
   tofFindTracks->SetSIGX(0.45);       // local-y default in cm
   tofFindTracks->SetSIGY(0.3);        // local-x default in cm
-  tofFindTracks->SetSIGZ(10.05);       // default in cm
+  tofFindTracks->SetSIGZ(10.05);      // default in cm
   tofFindTracks->SetUseSigCalib(
     bUseSigCalib);  // ignore resolutions in CalPar file
   tofTrackFinder->SetSIGLIM(dChi2Lim2
                             * 2.);  // matching window in multiples of chi2
-  tofTrackFinder->SetSIGLIMMOD(1.5);   // search window modifier for last hit (DUT)
+  tofTrackFinder->SetSIGLIMMOD(
+    1.5);  // search window modifier for last hit (DUT)
   tofTrackFinder->SetChiMaxAccept(dChi2Lim2);  // max tracklet chi2
 
   Int_t iMinNofHits   = -1;
@@ -348,8 +350,8 @@ void ana_trks(Int_t nEvents        = 10000,
       tofFindTracks->SetStation(2, 0, 0, 2);
       tofFindTracks->SetStation(3, 0, 1, 2);
       break;
-      
-    case 14:    // for eval 012
+
+    case 14:  // for eval 012
       iMinNofHits   = 3;
       iNStations    = 4;
       iNReqStations = 4;
@@ -358,8 +360,8 @@ void ana_trks(Int_t nEvents        = 10000,
       tofFindTracks->SetStation(1, 0, 0, 2);
       tofFindTracks->SetStation(2, 0, 1, 2);
       break;
-      
-    case 24:    // for geometry tuning 012
+
+    case 24:  // for geometry tuning 012
       iMinNofHits   = 3;
       iNStations    = 3;
       iNReqStations = 3;

@@ -4138,9 +4138,8 @@ Bool_t CbmTofEventClusterizer::WriteHistos() {
                 != iSmAddr)) {  // select detectors for updating offsets
           LOG(debug) << "WriteHistos: (case 2) update Offsets and keep Gains, "
                         "Walk and DELTOF for "
-        		     << Form(" 0x%08x ", TMath::Abs(fCalSmAddr))
-                     << "Smtype" << iSmType << ", Sm " << iSm << ", Rpc "
-                     << iRpc;
+                     << Form(" 0x%08x ", TMath::Abs(fCalSmAddr)) << "Smtype"
+                     << iSmType << ", Sm " << iSm << ", Rpc " << iRpc;
           Int_t iB        = iSm * iNbRpc + iRpc;
           Double_t dVscal = 1.;
           if (0)  //NULL != fhSmCluSvel[iSmType])
@@ -4368,9 +4367,9 @@ Bool_t CbmTofEventClusterizer::WriteHistos() {
                 != iSmAddr)) {  // select detectors for updating offsets
           LOG(info) << "WriteHistos (calMode==3): update Offsets and Gains, "
                        "keep Walk and DelTof for "
-     		        << Form("Addr 0x%08x ", TMath::Abs(fCalSmAddr))
-                    << "Smtype" << iSmType << ", Sm " << iSm << ", Rpc " << iRpc
-                    << " with " << iNbCh << " channels "
+                    << Form("Addr 0x%08x ", TMath::Abs(fCalSmAddr)) << "Smtype"
+                    << iSmType << ", Sm " << iSm << ", Rpc " << iRpc << " with "
+                    << iNbCh << " channels "
                     << " using selector " << fCalSel;
           /*
            Double_t dTRefMean=0.;
@@ -7332,7 +7331,7 @@ Bool_t CbmTofEventClusterizer::CalibRawDigis() {
                 << Form("%2d", (Int_t) pDigi->GetChannel()) << " "
                 << pDigi->GetSide() << " " << Form("%f", pDigi->GetTime())
                 << " " << pDigi->GetTot();
-/*
+    /*
     if (pDigi->GetType() == 5
         || pDigi->GetType()
              == 8)  // for Pad counters generate fake digi to mockup a strip
@@ -7511,26 +7510,26 @@ Bool_t CbmTofEventClusterizer::CalibRawDigis() {
     }
 
     if (bAddBeamCounterSideDigi)
-    if (pCalDigi->GetType() == 5
-        || pCalDigi->GetType()
-             == 8) {  // for Pad counters generate fake digi to mockup a strip
-      fTofCalDigiVec->push_back(CbmTofDigi(*pCalDigi));
-      CbmTofDigi* pCalDigi2 = &(fTofCalDigiVec->back());
-      iDigIndCal++;
-      //      CbmTofDigi *pCalDigi2 = new((*fTofCalDigisColl)[++iDigIndCal]) CbmTofDigi( *pCalDigi );
-      if (pCalDigi->GetSide() == 0)
-        pCalDigi2->SetAddress(pCalDigi->GetSm(),
-                              pCalDigi->GetRpc(),
-                              pCalDigi->GetChannel(),
-                              1,
-                              pCalDigi->GetType());
-      else
-        pCalDigi2->SetAddress(pCalDigi->GetSm(),
-                              pCalDigi->GetRpc(),
-                              pCalDigi->GetChannel(),
-                              0,
-                              pCalDigi->GetType());
-    }
+      if (pCalDigi->GetType() == 5
+          || pCalDigi->GetType()
+               == 8) {  // for Pad counters generate fake digi to mockup a strip
+        fTofCalDigiVec->push_back(CbmTofDigi(*pCalDigi));
+        CbmTofDigi* pCalDigi2 = &(fTofCalDigiVec->back());
+        iDigIndCal++;
+        //      CbmTofDigi *pCalDigi2 = new((*fTofCalDigisColl)[++iDigIndCal]) CbmTofDigi( *pCalDigi );
+        if (pCalDigi->GetSide() == 0)
+          pCalDigi2->SetAddress(pCalDigi->GetSm(),
+                                pCalDigi->GetRpc(),
+                                pCalDigi->GetChannel(),
+                                1,
+                                pCalDigi->GetType());
+        else
+          pCalDigi2->SetAddress(pCalDigi->GetSm(),
+                                pCalDigi->GetRpc(),
+                                pCalDigi->GetChannel(),
+                                0,
+                                pCalDigi->GetType());
+      }
 
   }  // for( Int_t iDigInd = 0; iDigInd < nTofDigi; iDigInd++ )
 
