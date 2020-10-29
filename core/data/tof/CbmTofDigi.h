@@ -170,6 +170,6 @@ private:
     ar& fdTot;
   }
 
-  ClassDefNV(CbmTofDigi, 2);
+  ClassDefNV(CbmTofDigi, 3);
 };
 #endif  // CBMTOFDIGI_H

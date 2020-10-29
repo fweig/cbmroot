@@ -125,7 +125,7 @@ private:
     ar& fChannel;
   }
 
-  ClassDef(CbmTofHit, 4)
+  ClassDef(CbmTofHit, 5)
 };
 
 #endif

@@ -119,4 +119,52 @@
 #pragma link C++ class CbmDigiVector < CbmPsdDigi> + ;
 #pragma link C++ class vector < CbmEventStore> + ;
 
+#pragma read sourceClass="CbmTofDigi" version="[1-2]" targetClass="CbmTofDigi" \
+   source="UInt_t fuAddress" target="fuAddress" \
+   include="Logger.h" \
+   code="{ UInt_t system = (onfile.fuAddress >> 0) & ((1 << 4) - 1); \
+           UInt_t smId = (onfile.fuAddress >> 4) & ((1 << 8) - 1); \
+           UInt_t smType = (onfile.fuAddress >> 12) & ((1 << 4) - 1); \
+           UInt_t rpcId = (onfile.fuAddress >> 16) & ((1 << 7) - 1); \
+           UInt_t chSide = (onfile.fuAddress >> 23) & ((1 << 1) - 1); \
+           UInt_t chId = (onfile.fuAddress >> 24) & ((1 << 8) - 1); \
+           if ( smId > 127 || rpcId > 63 || chId > 63 ) { \
+             LOG(error) << \"You are trying to read an outdated version of CbmTofDigi\"; \
+             LOG(error) << \"where the unique tof address can't be converted\"; \
+             LOG(error) << \"automatically to the new tof addressing scheme.\"; \
+             LOG(fatal) << \"Stop execution.\"; \
+           } \
+           UInt_t rpcType = 0; \
+           fuAddress = (system & ((1 << 4) - 1)) \
+                     + ((smId & ((1 << 7) - 1)) << 4) \
+                     + ((smType & ((1 << 4) - 1)) << 11) \
+                     + ((chSide & ((1 << 1) - 1)) << 21) \
+                     + ((rpcId & ((1 << 6) - 1)) << 15) \
+                     + ((chId & ((1 << 6) - 1)) << 22) \
+                     + ((rpcType & ((1 << 4) - 1)) << 28); \
+         }"
+
+#pragma read sourceClass="CbmTofHit" version="[1-4]" targetClass="CbmTofHit" \
+   source="" target="" \
+   include="Logger.h" \
+   code="{ \
+           LOG(error); \
+           LOG(error) << \"You are trying to read an outdated version of CbmTofHit\"; \
+           LOG(error) << \"where the unique tof address can't be converted\"; \
+           LOG(error) << \"automatically to the new tof addressing scheme.\"; \
+           LOG(error); \
+           LOG(fatal) << \"Stop execution.\"; \
+         }"
+
+#pragma read sourceClass="CbmTofPoint" version="[1-3]" targetClass="CbmTofPoint" \
+   source="" target="" \
+   include="Logger.h" \
+   code="{ \
+           LOG(error); \
+           LOG(error) << \"You are trying to read an outdated version of CbmTofPoint\"; \
+           LOG(error) << \"where the unique tof address can't be converted\"; \
+           LOG(error) << \"automatically to the new tof addressing scheme.\"; \
+           LOG(error); \
+           LOG(fatal) << \"Stop execution.\"; \
+         }"
 #endif

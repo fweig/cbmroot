@@ -131,7 +131,7 @@ private:
   UShort_t fGapMask;  /// Set of gaps traversed
 
 
-  ClassDef(CbmTofPoint, 3)
+  ClassDef(CbmTofPoint, 4)
 };
 
 
