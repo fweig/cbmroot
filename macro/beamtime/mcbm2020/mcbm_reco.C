@@ -62,6 +62,12 @@ void mcbm_reco(Int_t runId = 812, Int_t nTimeslices = 0) {
   // -----   Reconstruction tasks   -----------------------------------------
 
 
+  // -----  Psd hit producer   ----------------------------------------------
+  CbmPsdMCbmHitProducer* hitProd = new CbmPsdMCbmHitProducer();
+  run->AddTask(hitProd);
+  // ------------------------------------------------------------------------
+
+
   // -----   Local reconstruction in STS   ----------------------------------
   CbmRecoSts* recoSts = new CbmRecoSts();
   //recoSts->SetTimeCutDigisAbs( 100 );// cluster finder: time cut in ns

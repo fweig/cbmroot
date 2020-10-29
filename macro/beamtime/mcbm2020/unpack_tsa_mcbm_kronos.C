@@ -186,7 +186,7 @@ void unpack_tsa_mcbm_kronos(UInt_t uRunIdx  = 99999,
   unpacker_trdR->SetTimeOffsetNs(0);     // Run 811-866
   unpacker_tof->SetTimeOffsetNs(25);     // Run 811-866
   unpacker_rich->SetTimeOffsetNs(-310);  // Run 811-866
-  unpacker_psd->SetTimeOffsetNs(-240);   // Run 811-866
+  unpacker_psd->SetTimeOffsetNs(-225);   // Run 811-866
 // ----------- ASIC by ASIC STS ----------------
   // the first 8 Unused
   unpacker_sts ->SetTimeOffsetNsAsic(  0,       0.0  ); // Unused

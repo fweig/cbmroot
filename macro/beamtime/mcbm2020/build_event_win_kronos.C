@@ -85,7 +85,7 @@ void build_event_win_kronos(UInt_t uRunIdx = 0,
   eventBuilder->SetTriggerWindow(ECbmModuleId::kTrd, -250, 100);
   eventBuilder->SetTriggerWindow(ECbmModuleId::kTof, -150, 10);
   eventBuilder->SetTriggerWindow(ECbmModuleId::kRich, -50, 50);
-  eventBuilder->SetTriggerWindow(ECbmModuleId::kPsd, -50, 10);
+  eventBuilder->SetTriggerWindow(ECbmModuleId::kPsd, -50, 50);
   //  eventBuilder->SetT0PulserTotLimits(   185, 191 );
   eventBuilder->SetTriggerMinNumber(ECbmModuleId::kT0, 1);
   eventBuilder->SetTriggerMinNumber(ECbmModuleId::kSts, 0);
