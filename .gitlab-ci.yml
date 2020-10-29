@@ -6,6 +6,8 @@ stages:
 
 RebaseCheck:
   stage: checkRepository
+  variables:
+    GIT_DEPTH: 100
   tags:
     - CbmRoot
   only:
@@ -35,6 +37,8 @@ RebaseCheck:
 
 LinearHistCheck:
   stage: checkRepository
+  variables:
+    GIT_DEPTH: 100
   tags:
     - CbmRoot
   only:
