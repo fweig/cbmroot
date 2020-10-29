@@ -564,6 +564,7 @@ void unpack_tsa_mcbm_kronos(UInt_t uRunIdx  = 99999,
 	if(uRun !=831)continue;
 	unpacker_much->SetTimeOffsetNsAsic(uNx,offset);
       }
+      infile.close();
       std::cout<<"masking noisy channels......"<<std::endl;
       UInt_t uChan = 0;
       ifstream infile("../mcbm2020/Parameters/much_noisy_channel_list.txt");
@@ -573,6 +574,7 @@ void unpack_tsa_mcbm_kronos(UInt_t uRunIdx  = 99999,
 	if(uRun!=831)continue;
 	unpacker_much->MaskNoisyChannel(uNx,uChan,kTRUE );
       }
+      infile.close();
       break;
     }  // 831
     case 836: {
