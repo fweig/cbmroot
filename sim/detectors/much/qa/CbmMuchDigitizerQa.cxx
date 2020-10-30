@@ -120,7 +120,6 @@ InitStatus CbmMuchDigitizerQa::Init() {
   printf("Init: fNstations = %i\n", fNstations);
 
   //fVerbose = 3;
-  InitCounters();
   InitCanvases();
   InitChargeHistos();
   InitLengthHistos();
@@ -131,32 +130,6 @@ InitStatus CbmMuchDigitizerQa::Init() {
 
   gDirectory = oldDirectory;
   return kSUCCESS;
-}
-
-void CbmMuchDigitizerQa::InitCounters() {
-
-  fNall       = new Int_t[fNstations];
-  fNpr        = new Int_t[fNstations];
-  fNpi        = new Int_t[fNstations];
-  fNel        = new Int_t[fNstations];
-  fNmu        = new Int_t[fNstations];
-  fNka        = new Int_t[fNstations];
-  fNprimary   = new Int_t[fNstations];
-  fNsecondary = new Int_t[fNstations];
-
-  for (Int_t i = 0; i < fNstations; i++) {
-    fNall[i]       = 0;
-    fNpr[i]        = 0;
-    fNpi[i]        = 0;
-    fNel[i]        = 0;
-    fNmu[i]        = 0;
-    fNka[i]        = 0;
-    fNprimary[i]   = 0;
-    fNsecondary[i] = 0;
-  }
-  fPointsTotal        = 0;
-  fPointsUnderCounted = 0;
-  fPointsOverCounted  = 0;
 }
 
 void CbmMuchDigitizerQa::InitChannelPadInfo() {
@@ -672,7 +645,6 @@ void CbmMuchDigitizerQa::FinishTask() {
 
   if (fVerbose > 1) {
     OutputNvsS();
-    PrintCounters();
   }
   FairSink* sink = FairRootManager::Instance()->GetSink();
   sink->WriteObject(&fOutFolder, nullptr);
@@ -713,50 +685,6 @@ void CbmMuchDigitizerQa::OutputNvsS() {
   //gNvsS->DrawClone("ALP");
   gNvsS->DrawClone("AP");
   fOutFolder.Add(c);
-}
-
-void CbmMuchDigitizerQa::PrintCounters() {
-
-  printf("All tracks: ;");
-  for (Int_t i = 0; i < fNstations; i++)
-    printf("%8i;", fNall[i]);
-  printf("\n");
-  printf("------------;");
-  for (Int_t i = 0; i < fNstations; i++)
-    printf("---------");
-  printf("\n");
-  printf("Primary:    ;");
-  for (Int_t i = 0; i < fNstations; i++)
-    printf("%8i;", fNprimary[i]);
-  printf("\n");
-  printf("Secondary:  ;");
-  for (Int_t i = 0; i < fNstations; i++)
-    printf("%8i;", fNsecondary[i]);
-  printf("\n");
-  printf("-------------");
-  for (Int_t i = 0; i < fNstations; i++)
-    printf("---------");
-  printf("\n");
-  printf("Protons:    ;");
-  for (Int_t i = 0; i < fNstations; i++)
-    printf("%8i;", fNpr[i]);
-  printf("\n");
-  printf("Pions:      ;");
-  for (Int_t i = 0; i < fNstations; i++)
-    printf("%8i;", fNpi[i]);
-  printf("\n");
-  printf("Electrons:  ;");
-  for (Int_t i = 0; i < fNstations; i++)
-    printf("%8i;", fNel[i]);
-  printf("\n");
-  printf("Muons:      ;");
-  for (Int_t i = 0; i < fNstations; i++)
-    printf("%8i;", fNmu[i]);
-  printf("\n");
-  printf("Kaons:      ;");
-  for (Int_t i = 0; i < fNstations; i++)
-    printf("%8i;", fNka[i]);
-  printf("\n");
 }
 
 // -------------------------------------------------------------------------
@@ -803,10 +731,6 @@ void CbmMuchDigitizerQa::DigitizerQa() {
       continue;
     }
 
-    if (CbmMuchAddress::GetLayerIndex(point->GetDetectorID()) == 0) {
-      UpdateParticleCounters(stId, pdgCode, motherId);
-    }
-
     Double_t mass = particle->Mass();
     point->PositionIn(vIn);
     point->PositionOut(vOut);
@@ -825,28 +749,6 @@ void CbmMuchDigitizerQa::DigitizerQa() {
   FillDigitizerPerformancePlots();
 }
 // -------------------------------------------------------------------------
-
-void CbmMuchDigitizerQa::UpdateParticleCounters(Int_t stId,
-                                                Int_t pdgCode,
-                                                Int_t motherId) {
-
-  fNall[stId]++;
-  if (pdgCode == 2212)
-    fNpr[stId]++;
-  else if (pdgCode == -211 || pdgCode == 211)
-    fNpi[stId]++;
-  else if (pdgCode == -11 || pdgCode == 11)
-    fNel[stId]++;
-  else if (pdgCode == -13 || pdgCode == 13)
-    fNmu[stId]++;
-  else if (pdgCode == -321 || pdgCode == 321)
-    fNka[stId]++;
-
-  if (motherId == -1)
-    fNprimary[stId]++;
-  else
-    fNsecondary[stId]++;
-}
 
 void CbmMuchDigitizerQa::FillChargePerPoint() {
   for (Int_t i = 0; i < fDigiManager->GetNofDigis(ECbmModuleId::kMuch); i++) {

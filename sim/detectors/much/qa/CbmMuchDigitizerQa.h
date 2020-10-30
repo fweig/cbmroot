@@ -65,7 +65,6 @@ private:
   CbmMuchDigitizerQa& operator=(const CbmMuchDigitizerQa&);
 
   TFolder* histFolder;
-  void InitCounters();
   void InitCanvases();
   void InitChargeHistos();
   void InitLengthHistos();
@@ -76,10 +75,8 @@ private:
 
   void FillTotalPadsHistos();
   void DrawCanvases();
-  void PrintCounters();
   void OutputNvsS();
 
-  void UpdateParticleCounters(Int_t stId, Int_t pdgCode, Int_t motherId);
   void FillChargePerPoint();
   void FillDigitizerPerformancePlots();
 
@@ -149,20 +146,6 @@ private:
   Int_t fSignalPoints = 0;  // Number of signal MC points
   Int_t fnPadSizesX   = 0;
   Int_t fnPadSizesY   = 0;
-
-  Int_t* fNall     = nullptr;  // number of all tracks at the first station
-  Int_t* fNpr      = nullptr;  // number of protons at the first station
-  Int_t* fNpi      = nullptr;  // number of pions at the first station
-  Int_t* fNel      = nullptr;  // number of electrons at the first station
-  Int_t* fNmu      = nullptr;  // number of muons at the first station
-  Int_t* fNka      = nullptr;  // number of kaons at the first station
-  Int_t* fNprimary = nullptr;  // number of primary tracks at the first station
-  Int_t* fNsecondary =
-    nullptr;  // number of secondary tracks at the first station
-
-  Int_t fPointsTotal        = 0;
-  Int_t fPointsUnderCounted = 0;
-  Int_t fPointsOverCounted  = 0;
 
   Double_t fPadMinLx = 0.;
   Double_t fPadMinLy = 0.;
