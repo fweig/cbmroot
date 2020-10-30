@@ -137,11 +137,11 @@ void unpack_tsa_mcbm(TString inFile  = "",
   unpacker_sts ->MaskNoisyChannel(1,768 ,  true );
   unpacker_sts ->MaskNoisyChannel(1,894 ,  true );
   unpacker_sts ->MaskNoisyChannel(1,896 ,  true );
-  
+
   unpacker_sts ->MaskNoisyChannel(2,930 ,  true );
   unpacker_sts ->MaskNoisyChannel(2,926 ,  true );
   unpacker_sts ->MaskNoisyChannel(2,892 ,  true );
-  
+
   unpacker_sts ->MaskNoisyChannel(3,770 ,  true );
 
   unpacker_tof->SetSeparateArrayT0();
@@ -172,7 +172,7 @@ void unpack_tsa_mcbm(TString inFile  = "",
   unpacker_sts ->SetTimeOffsetNsAsic(  5,       0.0  ); // Unused
   unpacker_sts ->SetTimeOffsetNsAsic(  6,       0.0  ); // Unused
   unpacker_sts ->SetTimeOffsetNsAsic(  7,       0.0  ); // Unused
-  // 
+  //
   unpacker_sts ->SetTimeOffsetNsAsic(8,  -0.360078  );
   unpacker_sts ->SetTimeOffsetNsAsic(9,  2.73976    );
   unpacker_sts ->SetTimeOffsetNsAsic(10,  -0.507079  );
@@ -181,7 +181,7 @@ void unpack_tsa_mcbm(TString inFile  = "",
   unpacker_sts ->SetTimeOffsetNsAsic(13,  -0.255514  );
   unpacker_sts ->SetTimeOffsetNsAsic(14,  1.44034    );
   unpacker_sts ->SetTimeOffsetNsAsic(15,  2.64009    );
-  // this side: revert order 23->16 
+  // this side: revert order 23->16
   unpacker_sts ->SetTimeOffsetNsAsic(23,  -0.442762  );
   unpacker_sts ->SetTimeOffsetNsAsic(22,  1.76543    );
   unpacker_sts ->SetTimeOffsetNsAsic(21, -0.94728   );
@@ -199,7 +199,7 @@ void unpack_tsa_mcbm(TString inFile  = "",
   unpacker_sts ->SetTimeOffsetNsAsic(29, -0.32990   );
   unpacker_sts ->SetTimeOffsetNsAsic(30, 1.43535    );
   unpacker_sts ->SetTimeOffsetNsAsic(31, -0.155741  );
-  // this side: revert order 39->32 
+  // this side: revert order 39->32
   unpacker_sts ->SetTimeOffsetNsAsic(39, 1.53865    );
   unpacker_sts ->SetTimeOffsetNsAsic(38, 3.6318     );
   unpacker_sts ->SetTimeOffsetNsAsic(37, 1.3153     );
@@ -529,27 +529,34 @@ void unpack_tsa_mcbm(TString inFile  = "",
     case 831: {
       //         unpacker_trdR->SetTimeOffsetNs(   70.00 );
       unpacker_trdR->SetTimeOffsetNs(-25.00);
-      std::cout<<"MUCH: Feb by feb time offset correction......"<<std::endl;
-      UInt_t uRun,uNx; 
+
+      std::cout << "MUCH: Feb by feb time offset correction......" << std::endl;
+      UInt_t uRun, uNx;
       Double_t offset;
-      ifstream infile("../mcbm2020/Parameters/time_offset_much.txt");
-      if (!infile) std::cout << "can not open time offset MUCH parameter List" << std::endl;
-      while (!infile.eof())  {
-	infile>>uRun>>uNx>>offset;
-	if(uRun !=831)continue;
-	unpacker_much->SetTimeOffsetNsAsic(uNx,offset);
-      }
-      infile.close();
-      std::cout<<"masking noisy channels......"<<std::endl;
+      ifstream infile_off("../mcbm2020/parameters/time_offset_much.txt");
+      if (!infile_off) {
+        std::cout << "can not open time offset MUCH parameter List" << std::endl;
+        return kFALSE;
+      } // if (!infile_off)
+      while (!infile_off.eof())  {
+        infile_off >> uRun >> uNx >> offset;
+        if(uRun != 831) continue;
+        unpacker_much->SetTimeOffsetNsAsic(uNx, offset);
+      } // while (!infile_off.eof())
+      infile_off.close();
+      std::cout << "masking noisy channels......" << std::endl;
       UInt_t uChan = 0;
-      ifstream infile("../mcbm2020/Parameters/much_noisy_channel_list.txt");
-      if (!infile) std::cout << "can not open MUCH noisy channel List" << std::endl;
-      while (!infile.eof())  {
-	infile>>uRun>>uNx>>uChan;
-	if(uRun!=831)continue;
-	unpacker_much->MaskNoisyChannel(uNx,uChan,kTRUE );
-      }
-      infile.close();
+      ifstream infile_noise("../mcbm2020/parameters/much_noisy_channel_list.txt");
+      if (!infile_noise) {
+        std::cout << "can not open MUCH noisy channel List" << std::endl;
+        return kFALSE;
+      } // if (!infile_noise)
+      while (!infile_noise.eof())  {
+        infile_noise >> uRun >> uNx >> uChan;
+        if(uRun != 831) continue;
+        unpacker_much->MaskNoisyChannel(uNx, uChan, kTRUE );
+      } // while (!infile_noise.eof())
+      infile_noise.close();
       break;
     }  // 831
     case 836: {
