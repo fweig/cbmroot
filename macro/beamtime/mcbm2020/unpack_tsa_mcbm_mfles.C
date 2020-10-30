@@ -602,8 +602,8 @@ void unpack_tsa_mcbm_mfles(UInt_t uRunId   = 0,
   source->AddUnpacker(unpacker_much, 0x50, ECbmModuleId::kMuch);  // MUCH xyter
   if (isActiveTrd)
     source->AddUnpacker(unpacker_trdR, 0x40, ECbmModuleId::kTrd); // Trd
-  source->AddUnpacker(unpacker_tof, 0x60, ECbmModuleId::kTof);    // gDPB A & B & C
-  source->AddUnpacker(unpacker_tof, 0x90, ECbmModuleId::kTof);    // gDPB T0 A & B
+  source->AddUnpacker(unpacker_tof, 0x60, ECbmModuleId::kTof);    // gDPB TOF
+  source->AddUnpacker(unpacker_tof, 0x90, ECbmModuleId::kTof);    // gDPB T0
   source->AddUnpacker(unpacker_rich, 0x30, ECbmModuleId::kRich);  // RICH trb
   source->AddUnpacker(unpacker_psd, 0x80, ECbmModuleId::kPsd);    // PSD
 
