@@ -32,8 +32,8 @@
 #endif
 
 void mcbm_qa(Int_t nEvents   = 0,
-            TString dataset = "data/mcbm_beam_2020_03_test",
-            TString setup   = "mcbm_beam_2020_03") {
+             TString dataset = "data/mcbm_beam_2020_03_test",
+             TString setup   = "mcbm_beam_2020_03") {
 
   // ========================================================================
   //          Adjust this part according to your requirements

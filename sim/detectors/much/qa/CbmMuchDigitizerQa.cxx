@@ -111,6 +111,12 @@ InitStatus CbmMuchDigitizerQa::Init() {
   FairRootManager* fManager = FairRootManager::Instance();
   fMCTracks                 = (TClonesArray*) fManager->GetObject("MCTrack");
   fPoints                   = (TClonesArray*) fManager->GetObject("MuchPoint");
+  if (fMCTracks && fPoints) {
+    LOG(info) << " CbmMuchDigitizerQa: MC data read.";
+  } else {
+    LOG(info) << " CbmMuchDigitizerQa: No MC data found.";
+  }
+
   // Reading Much Digis from CbmMuchDigiManager which are stored as vector
   fDigiManager = CbmDigiManager::Instance();
   fDigiManager->Init();
@@ -466,8 +472,6 @@ void CbmMuchDigitizerQa::InitFits() {
 }
 
 // -------------------------------------------------------------------------
-
-// -------------------------------------------------------------------------
 void CbmMuchDigitizerQa::SetParContainers() {
   // Get run and runtime database
 
@@ -487,7 +491,6 @@ void CbmMuchDigitizerQa::SetParContainers() {
   // bool mcbmFlag = geoTag.Contains("mcbm", TString::kIgnoreCase);
   // CbmMuchGeoScheme::Instance()->Init(stations, mcbmFlag);
 }
-// -------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------x
 void CbmMuchDigitizerQa::Exec(Option_t*) {
@@ -506,46 +509,187 @@ void CbmMuchDigitizerQa::Exec(Option_t*) {
   gDirectory = oldDirectory;
   return;
 }
-// -------------------------------------------------------------------------
 
-void CbmMuchDigitizerQa::PrintFrontLayerPoints() {
-  for (int i = 0; i < fPoints->GetEntriesFast(); i++) {
-    CbmMuchPoint* point = (CbmMuchPoint*) fPoints->At(i);
-    Int_t stId = CbmMuchAddress::GetStationIndex(point->GetDetectorID());
-    if (stId != 0) continue;
-    Int_t layerId = CbmMuchAddress::GetLayerIndex(point->GetDetectorID());
-    if (layerId != 0) continue;
-    printf("point %4i xin=%6.2f yin=%6.2f xout=%6.2f yout=%6.2f zin=%6.2f\n",
-           i,
-           point->GetXIn(),
-           point->GetYIn(),
-           point->GetXOut(),
-           point->GetYOut(),
-           point->GetZIn());
-  }
-}
 // -------------------------------------------------------------------------
-
-void CbmMuchDigitizerQa::PrintFrontLayerDigis() {
+void CbmMuchDigitizerQa::OccupancyQa() {
+  // Filling occupancy plots
   for (Int_t i = 0; i < fDigiManager->GetNofDigis(ECbmModuleId::kMuch); i++) {
     CbmMuchDigi* digi = (CbmMuchDigi*) fDigiManager->Get<CbmMuchDigi>(i);
-    UInt_t address    = digi->GetAddress();
-    Int_t stId        = CbmMuchAddress::GetStationIndex(address);
-    if (stId != 0) continue;
-    Int_t layerId = CbmMuchAddress::GetLayerIndex(address);
-    if (layerId != 0) continue;
-    CbmMuchModuleGem* module =
-      (CbmMuchModuleGem*) fGeoScheme->GetModuleByDetId(address);
+    assert(digi);
+    UInt_t address        = digi->GetAddress();
+    CbmMuchModule* module = fGeoScheme->GetModuleByDetId(address);
     if (!module) continue;
-    CbmMuchPad* pad = module->GetPad(address);
-    Double_t x0     = pad->GetX();
-    Double_t y0     = pad->GetY();
-    UInt_t charge   = digi->GetAdc();
-    printf("digi %4i x0=%5.1f y0=%5.1f charge=%3i\n", i, x0, y0, charge);
+    Double_t r0 = 0;
+    if (module->GetDetectorType() != 4 && module->GetDetectorType() != 3)
+      continue;
+    CbmMuchModuleGem* module1 = (CbmMuchModuleGem*) module;
+    CbmMuchPad* pad           = module1->GetPad(
+      address);  // fGeoScheme->GetPadByDetId(detectorId, channelId);
+    assert(pad);
+    Double_t x0 = pad->GetX();
+    Double_t y0 = pad->GetY();
+    r0          = TMath::Sqrt(x0 * x0 + y0 * y0);
+    fvUsPadsFiredR[CbmMuchAddress::GetStationIndex(address)]->Fill(r0);
+    fvUsPadsFiredXY[CbmMuchAddress::GetStationIndex(address)]->Fill(x0, y0);
   }
 }
-// -------------------------------------------------------------------------
 
+// -------------------------------------------------------------------------
+void CbmMuchDigitizerQa::DigitizerQa() {
+
+  if (!fMCTracks || !fPoints) {
+    LOG(debug)
+      << " CbmMuchDigitizerQa::DigitizerQa(): Found no MC data. Skipping.";
+    return;
+  }
+  TVector3 vIn;   // in  position of the track
+  TVector3 vOut;  // out position of the track
+  TVector3 p;     // track momentum
+  fPointInfos->Clear();
+
+  for (Int_t i = 0; i < fPoints->GetEntriesFast(); i++) {
+    CbmMuchPoint* point = (CbmMuchPoint*) fPoints->At(i);
+    Int_t stId = CbmMuchAddress::GetStationIndex(point->GetDetectorID());
+
+    // Check if the point corresponds to a certain  MC Track
+    Int_t trackId = point->GetTrackID();
+    if (trackId < 0) {
+      new ((*fPointInfos)[i]) CbmMuchPointInfo(0, 0, 0, 0, 0);
+      continue;
+    }
+    CbmMCTrack* mcTrack = (CbmMCTrack*) fMCTracks->At(trackId);
+    if (!mcTrack) {
+      new ((*fPointInfos)[i]) CbmMuchPointInfo(0, 0, 0, 0, 0);
+      continue;
+    }
+
+    Int_t motherId         = mcTrack->GetMotherId();
+    Int_t pdgCode          = mcTrack->GetPdgCode();
+    TParticlePDG* particle = TDatabasePDG::Instance()->GetParticle(pdgCode);
+    if (!particle || pdgCode == 22 ||  // photons
+        pdgCode == 2112)               // neutrons
+    {
+      new ((*fPointInfos)[i]) CbmMuchPointInfo(0, 0, 0, 0, 0);
+      continue;
+    }
+
+    Double_t mass = particle->Mass();
+    point->PositionIn(vIn);
+    point->PositionOut(vOut);
+    point->Momentum(p);
+    Double_t length = (vOut - vIn).Mag();                   // Track length
+    Double_t kine   = sqrt(p.Mag2() + mass * mass) - mass;  // Kinetic energy
+    // Get mother pdg code
+    Int_t motherPdg         = 0;
+    CbmMCTrack* motherTrack = NULL;
+    if (motherId != -1) motherTrack = (CbmMCTrack*) fMCTracks->At(motherId);
+    if (motherTrack) motherPdg = motherTrack->GetPdgCode();
+    new ((*fPointInfos)[i])
+      CbmMuchPointInfo(pdgCode, motherPdg, kine, length, stId);
+  }
+
+  FillChargePerPoint();
+  FillDigitizerPerformancePlots();
+}
+
+// -------------------------------------------------------------------------
+void CbmMuchDigitizerQa::FillChargePerPoint() {
+
+  if (!fMCTracks || !fPoints) {
+    LOG(debug) << " CbmMuchDigitizerQa::FillChargePerPoint()): Found no MC "
+                  "data. Skipping.";
+    return;
+  }
+  for (Int_t i = 0; i < fDigiManager->GetNofDigis(ECbmModuleId::kMuch); i++) {
+    CbmMuchDigi* digi = (CbmMuchDigi*) fDigiManager->Get<CbmMuchDigi>(i);
+    assert(digi);
+    CbmMatch* match =
+      (CbmMatch*) fDigiManager->GetMatch(ECbmModuleId::kMuch, i);
+    assert(match);
+    CbmMuchModule* module = fGeoScheme->GetModuleByDetId(digi->GetAddress());
+    assert(module);
+    if (!module) continue;
+    Double_t area = 0;
+    if (module->GetDetectorType() != 4 && module->GetDetectorType() != 3)
+      continue;  /// rpc
+    LOG(debug) << GetName() << " Processing MuchDigi " << i << " at address "
+               << digi->GetAddress() << " Module number "
+               << module->GetDetectorType();
+
+    CbmMuchModuleGem* module1 = (CbmMuchModuleGem*) module;
+    assert(module1);
+    CbmMuchPad* pad = module1->GetPad(digi->GetAddress());
+    assert(pad);
+    area           = pad->GetDx() * pad->GetDy();
+    Int_t nofLinks = match->GetNofLinks();
+    for (Int_t pt = 0; pt < nofLinks; pt++) {
+      Int_t pointId          = match->GetLink(pt).GetIndex();
+      Int_t charge           = match->GetLink(pt).GetWeight();
+      CbmMuchPointInfo* info = (CbmMuchPointInfo*) fPointInfos->At(pointId);
+      if (info->GetPdgCode() == 0) continue;
+      info->AddCharge(charge);
+      info->AddArea(area);
+    }
+  }
+}
+
+// -------------------------------------------------------------------------
+void CbmMuchDigitizerQa::FillDigitizerPerformancePlots() {
+
+  if (!fMCTracks || !fPoints) {
+    LOG(debug) << " CbmMuchDigitizerQa::FillDigitizerPerformancePlots(): Found "
+                  "no MC data. Skipping.";
+    return;
+  }
+  Bool_t verbose = (fVerbose > 2);
+  for (Int_t i = 0; i < fPointInfos->GetEntriesFast(); i++) {
+    CbmMuchPointInfo* info = (CbmMuchPointInfo*) fPointInfos->At(i);
+    if (verbose) {
+      printf("%i", i);
+      info->Print();
+    }
+    Double_t length = info->GetLength();
+    Double_t kine   = 1000 * (info->GetKine());
+    Double_t charge = info->GetCharge();
+    Int_t pdg       = info->GetPdgCode();
+    if (pdg == 0) continue;
+    if (charge <= 0) continue;
+    Double_t log_kine   = TMath::Log10(kine);
+    Double_t log_charge = TMath::Log10(charge);
+    charge              = charge / 1.e+4;  // measure charge in 10^4 electrons
+
+    Int_t nPads   = info->GetNPads();
+    Double_t area = info->GetArea() / nPads;
+    // printf("%f %i\n",TMath::Log2(area),nPads);
+    fhNpadsVsS->Fill(TMath::Log2(area), nPads);
+    fhMcPointCharge->Fill(charge);
+    fvMcPointCharge[info->GetStationId()]->Fill(charge);
+    fhMcPointChargeLog->Fill(log_charge);
+    fhMcPointChargeVsTrackEnergyLog->Fill(log_kine, charge);
+    fhMcPointChargeVsTrackLength->Fill(length, charge);
+    fhTrackLength->Fill(length);
+
+    if (pdg == 2212) {
+      fhMcPointChargeVsTrackEnergyLogPr->Fill(log_kine, charge);
+      fhMcPointChargeVsTrackLengthPr->Fill(length, charge);
+      fhTrackLengthPr->Fill(length);
+    } else if (pdg == 211 || pdg == -211) {
+      fhMcPointChargeVsTrackEnergyLogPi->Fill(log_kine, charge);
+      fhMcPointChargeVsTrackLengthPi->Fill(length, charge);
+      fhTrackLengthPi->Fill(length);
+    } else if (pdg == 11 || pdg == -11) {
+      fhMcPointChargeVsTrackEnergyLogEl->Fill(log_kine, charge);
+      fhMcPointChargeVsTrackLengthEl->Fill(length, charge);
+      fhTrackLengthEl->Fill(length);
+    }
+    if (pdg == 2212 && length > 0.3 && length < 0.32 && kine > 1000
+        && kine < 1020)
+      fhMcPointChargePr_1GeV_3mm->Fill(charge);
+  }
+}
+
+
+// -------------------------------------------------------------------------
 void CbmMuchDigitizerQa::DrawCanvases() {
 
   fCanvCharge->cd(1);
@@ -626,6 +770,50 @@ void CbmMuchDigitizerQa::DrawCanvases() {
   fhNpadsVsS->DrawCopy("colz", "");
 }
 
+
+void CbmMuchDigitizerQa::PrintFrontLayerPoints() {
+
+  if (!fMCTracks || !fPoints) {
+    LOG(debug) << " CbmMuchDigitizerQa::PrintFrontLayerPoints(): Found no MC "
+                  "data. Skipping.";
+    return;
+  }
+  for (int i = 0; i < fPoints->GetEntriesFast(); i++) {
+    CbmMuchPoint* point = (CbmMuchPoint*) fPoints->At(i);
+    Int_t stId = CbmMuchAddress::GetStationIndex(point->GetDetectorID());
+    if (stId != 0) continue;
+    Int_t layerId = CbmMuchAddress::GetLayerIndex(point->GetDetectorID());
+    if (layerId != 0) continue;
+    printf("point %4i xin=%6.2f yin=%6.2f xout=%6.2f yout=%6.2f zin=%6.2f\n",
+           i,
+           point->GetXIn(),
+           point->GetYIn(),
+           point->GetXOut(),
+           point->GetYOut(),
+           point->GetZIn());
+  }
+}
+
+// -------------------------------------------------------------------------
+void CbmMuchDigitizerQa::PrintFrontLayerDigis() {
+  for (Int_t i = 0; i < fDigiManager->GetNofDigis(ECbmModuleId::kMuch); i++) {
+    CbmMuchDigi* digi = (CbmMuchDigi*) fDigiManager->Get<CbmMuchDigi>(i);
+    UInt_t address    = digi->GetAddress();
+    Int_t stId        = CbmMuchAddress::GetStationIndex(address);
+    if (stId != 0) continue;
+    Int_t layerId = CbmMuchAddress::GetLayerIndex(address);
+    if (layerId != 0) continue;
+    CbmMuchModuleGem* module =
+      (CbmMuchModuleGem*) fGeoScheme->GetModuleByDetId(address);
+    if (!module) continue;
+    CbmMuchPad* pad = module->GetPad(address);
+    Double_t x0     = pad->GetX();
+    Double_t y0     = pad->GetY();
+    UInt_t charge   = digi->GetAdc();
+    printf("digi %4i x0=%5.1f y0=%5.1f charge=%3i\n", i, x0, y0, charge);
+  }
+}
+
 // -------------------------------------------------------------------------
 void CbmMuchDigitizerQa::FinishTask() {
 
@@ -643,9 +831,7 @@ void CbmMuchDigitizerQa::FinishTask() {
   gROOT->SetBatch(kFALSE);
   gStyle->SetPaperSize(20, 20);
 
-  if (fVerbose > 1) {
-    OutputNvsS();
-  }
+  if (fVerbose > 1) { OutputNvsS(); }
   FairSink* sink = FairRootManager::Instance()->GetSink();
   sink->WriteObject(&fOutFolder, nullptr);
   gDirectory = oldDirectory;
@@ -696,166 +882,7 @@ Double_t CbmMuchDigitizerQa::LandauMPV(Double_t* lg_x, Double_t* par) {
   Double_t x    = TMath::Power(10, lg_x[0]);
   return gaz_gain_mean * MPV_n_e(x, mass);
 }
-// -------------------------------------------------------------------------
 
-// -------------------------------------------------------------------------
-void CbmMuchDigitizerQa::DigitizerQa() {
-  TVector3 vIn;   // in  position of the track
-  TVector3 vOut;  // out position of the track
-  TVector3 p;     // track momentum
-  fPointInfos->Clear();
-
-  for (Int_t i = 0; i < fPoints->GetEntriesFast(); i++) {
-    CbmMuchPoint* point = (CbmMuchPoint*) fPoints->At(i);
-    Int_t stId = CbmMuchAddress::GetStationIndex(point->GetDetectorID());
-
-    // Check if the point corresponds to a certain  MC Track
-    Int_t trackId = point->GetTrackID();
-    if (trackId < 0) {
-      new ((*fPointInfos)[i]) CbmMuchPointInfo(0, 0, 0, 0, 0);
-      continue;
-    }
-    CbmMCTrack* mcTrack = (CbmMCTrack*) fMCTracks->At(trackId);
-    if (!mcTrack) {
-      new ((*fPointInfos)[i]) CbmMuchPointInfo(0, 0, 0, 0, 0);
-      continue;
-    }
-
-    Int_t motherId         = mcTrack->GetMotherId();
-    Int_t pdgCode          = mcTrack->GetPdgCode();
-    TParticlePDG* particle = TDatabasePDG::Instance()->GetParticle(pdgCode);
-    if (!particle || pdgCode == 22 ||  // photons
-        pdgCode == 2112)               // neutrons
-    {
-      new ((*fPointInfos)[i]) CbmMuchPointInfo(0, 0, 0, 0, 0);
-      continue;
-    }
-
-    Double_t mass = particle->Mass();
-    point->PositionIn(vIn);
-    point->PositionOut(vOut);
-    point->Momentum(p);
-    Double_t length = (vOut - vIn).Mag();                   // Track length
-    Double_t kine   = sqrt(p.Mag2() + mass * mass) - mass;  // Kinetic energy
-    // Get mother pdg code
-    Int_t motherPdg         = 0;
-    CbmMCTrack* motherTrack = NULL;
-    if (motherId != -1) motherTrack = (CbmMCTrack*) fMCTracks->At(motherId);
-    if (motherTrack) motherPdg = motherTrack->GetPdgCode();
-    new ((*fPointInfos)[i])
-      CbmMuchPointInfo(pdgCode, motherPdg, kine, length, stId);
-  }
-  FillChargePerPoint();
-  FillDigitizerPerformancePlots();
-}
-// -------------------------------------------------------------------------
-
-void CbmMuchDigitizerQa::FillChargePerPoint() {
-  for (Int_t i = 0; i < fDigiManager->GetNofDigis(ECbmModuleId::kMuch); i++) {
-    CbmMuchDigi* digi = (CbmMuchDigi*) fDigiManager->Get<CbmMuchDigi>(i);
-    assert(digi);
-    CbmMatch* match =
-      (CbmMatch*) fDigiManager->GetMatch(ECbmModuleId::kMuch, i);
-    assert(match);
-    CbmMuchModule* module = fGeoScheme->GetModuleByDetId(digi->GetAddress());
-    assert(module);
-    if (!module) continue;
-    Double_t area = 0;
-    if (module->GetDetectorType() != 4 && module->GetDetectorType() != 3)
-      continue;  /// rpc
-    LOG(debug) << GetName() << " Processing MuchDigi " << i << " at address "
-               << digi->GetAddress() << " Module number "
-               << module->GetDetectorType();
-
-    CbmMuchModuleGem* module1 = (CbmMuchModuleGem*) module;
-    assert(module1);
-    CbmMuchPad* pad = module1->GetPad(digi->GetAddress());
-    assert(pad);
-    area           = pad->GetDx() * pad->GetDy();
-    Int_t nofLinks = match->GetNofLinks();
-    for (Int_t pt = 0; pt < nofLinks; pt++) {
-      Int_t pointId          = match->GetLink(pt).GetIndex();
-      Int_t charge           = match->GetLink(pt).GetWeight();
-      CbmMuchPointInfo* info = (CbmMuchPointInfo*) fPointInfos->At(pointId);
-      if (info->GetPdgCode() == 0) continue;
-      info->AddCharge(charge);
-      info->AddArea(area);
-    }
-  }
-}
-
-void CbmMuchDigitizerQa::FillDigitizerPerformancePlots() {
-  Bool_t verbose = (fVerbose > 2);
-  for (Int_t i = 0; i < fPointInfos->GetEntriesFast(); i++) {
-    CbmMuchPointInfo* info = (CbmMuchPointInfo*) fPointInfos->At(i);
-    if (verbose) {
-      printf("%i", i);
-      info->Print();
-    }
-    Double_t length = info->GetLength();
-    Double_t kine   = 1000 * (info->GetKine());
-    Double_t charge = info->GetCharge();
-    Int_t pdg       = info->GetPdgCode();
-    if (pdg == 0) continue;
-    if (charge <= 0) continue;
-    Double_t log_kine   = TMath::Log10(kine);
-    Double_t log_charge = TMath::Log10(charge);
-    charge              = charge / 1.e+4;  // measure charge in 10^4 electrons
-
-    Int_t nPads   = info->GetNPads();
-    Double_t area = info->GetArea() / nPads;
-    // printf("%f %i\n",TMath::Log2(area),nPads);
-    fhNpadsVsS->Fill(TMath::Log2(area), nPads);
-    fhMcPointCharge->Fill(charge);
-    fvMcPointCharge[info->GetStationId()]->Fill(charge);
-    fhMcPointChargeLog->Fill(log_charge);
-    fhMcPointChargeVsTrackEnergyLog->Fill(log_kine, charge);
-    fhMcPointChargeVsTrackLength->Fill(length, charge);
-    fhTrackLength->Fill(length);
-
-    if (pdg == 2212) {
-      fhMcPointChargeVsTrackEnergyLogPr->Fill(log_kine, charge);
-      fhMcPointChargeVsTrackLengthPr->Fill(length, charge);
-      fhTrackLengthPr->Fill(length);
-    } else if (pdg == 211 || pdg == -211) {
-      fhMcPointChargeVsTrackEnergyLogPi->Fill(log_kine, charge);
-      fhMcPointChargeVsTrackLengthPi->Fill(length, charge);
-      fhTrackLengthPi->Fill(length);
-    } else if (pdg == 11 || pdg == -11) {
-      fhMcPointChargeVsTrackEnergyLogEl->Fill(log_kine, charge);
-      fhMcPointChargeVsTrackLengthEl->Fill(length, charge);
-      fhTrackLengthEl->Fill(length);
-    }
-    if (pdg == 2212 && length > 0.3 && length < 0.32 && kine > 1000
-        && kine < 1020)
-      fhMcPointChargePr_1GeV_3mm->Fill(charge);
-  }
-}
-
-// -------------------------------------------------------------------------
-void CbmMuchDigitizerQa::OccupancyQa() {
-  // Filling occupancy plots
-  for (Int_t i = 0; i < fDigiManager->GetNofDigis(ECbmModuleId::kMuch); i++) {
-    CbmMuchDigi* digi = (CbmMuchDigi*) fDigiManager->Get<CbmMuchDigi>(i);
-    assert(digi);
-    UInt_t address        = digi->GetAddress();
-    CbmMuchModule* module = fGeoScheme->GetModuleByDetId(address);
-    if (!module) continue;
-    Double_t r0 = 0;
-    if (module->GetDetectorType() != 4 && module->GetDetectorType() != 3)
-      continue;
-    CbmMuchModuleGem* module1 = (CbmMuchModuleGem*) module;
-    CbmMuchPad* pad           = module1->GetPad(
-      address);  // fGeoScheme->GetPadByDetId(detectorId, channelId);
-    assert(pad);
-    Double_t x0 = pad->GetX();
-    Double_t y0 = pad->GetY();
-    r0          = TMath::Sqrt(x0 * x0 + y0 * y0);
-    fvUsPadsFiredR[CbmMuchAddress::GetStationIndex(address)]->Fill(r0);
-    fvUsPadsFiredXY[CbmMuchAddress::GetStationIndex(address)]->Fill(x0, y0);
-  }
-}
-// -------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------
 Int_t CbmMuchDigitizerQa::GetNChannels(Int_t iStation) {
