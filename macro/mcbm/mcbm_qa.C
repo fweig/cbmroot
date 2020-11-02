@@ -31,9 +31,9 @@
 #include <TStopwatch.h>
 #endif
 
-void run_qa(Int_t nEvents   = 0,
-            TString dataset = "data/sis100_muon_jpsi_test",
-            TString setup   = "sis100_muon_jpsi") {
+void mcbm_qa(Int_t nEvents   = 0,
+            TString dataset = "data/mcbm_beam_2020_03_test",
+            TString setup   = "mcbm_beam_2020_03") {
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -44,7 +44,7 @@ void run_qa(Int_t nEvents   = 0,
   // ------------------------------------------------------------------------
 
   // -----   Environment   --------------------------------------------------
-  TString myName = "run_qa";  // this macro's name for screen output
+  TString myName = "mcbm_qa";  // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
   // ------------------------------------------------------------------------
 
