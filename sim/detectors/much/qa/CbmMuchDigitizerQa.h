@@ -40,7 +40,6 @@ public:
   virtual void Exec(Option_t* option);
   virtual void FinishTask();
   virtual void SetParContainers();
-  static void DivideCanvas2D(TCanvas* c, int nPads);
 
 protected:
   /* DigitizerQa - analysis of digitizer performance - charge distributions
@@ -65,24 +64,25 @@ private:
   CbmMuchDigitizerQa& operator=(const CbmMuchDigitizerQa&);
 
   TFolder* histFolder;
-  void InitChargeCanvases();
-  void InitPadCanvases();
+
   void InitChargeHistos();
-  void InitLengthHistos();
   void InitPadHistos();
+  void InitLengthHistos();
   void InitChannelPadInfo();
   void InitFits();
+  void InitCanvases();
   void DeInit();
 
   void FillTotalPadsHistos();
-  void DrawCanvases();
-  void OutputNvsS();
-
   void FillChargePerPoint();
   void FillDigitizerPerformancePlots();
-
   void PrintFrontLayerPoints();
   void PrintFrontLayerDigis();
+
+  void DrawChargeCanvases();
+  void DrawPadCanvases();
+  void DrawLengthCanvases();
+  void OutputNvsS();
 
   // geometry
   CbmMuchGeoScheme* fGeoScheme = nullptr;

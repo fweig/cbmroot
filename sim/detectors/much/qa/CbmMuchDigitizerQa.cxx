@@ -126,14 +126,13 @@ InitStatus CbmMuchDigitizerQa::Init() {
   printf("Init: fNstations = %i\n", fNstations);
 
   //fVerbose = 3;
-  InitChargeCanvases();
-  InitPadCanvases();
+  InitCanvases();
   InitChargeHistos();
   InitLengthHistos();
   InitPadHistos();
-  FillTotalPadsHistos();
   InitChannelPadInfo();
   InitFits();
+  FillTotalPadsHistos();
 
   gDirectory = oldDirectory;
   return kSUCCESS;
@@ -186,45 +185,47 @@ void CbmMuchDigitizerQa::InitChannelPadInfo() {
   printf("===========================================================\n");
 }
 
-void CbmMuchDigitizerQa::InitChargeCanvases() {
+void CbmMuchDigitizerQa::InitCanvases() {
 
-  fCanvCharge =
-    new CbmQaCanvas("cMcPointCharge", "MC point charge", 2 * 800, 2 * 400);
-  fCanvCharge->Divide2D(3);
+  /***** charge canvases ****/
+  if (fMCTracks && fPoints) {
+    fCanvCharge =
+      new CbmQaCanvas("cMcPointCharge", "MC point charge", 2 * 800, 2 * 400);
+    fCanvCharge->Divide2D(3);
 
-  fCanvStationCharge = new CbmQaCanvas(
-    "cMcPointChargeVsStation", "MC point charge per station", 2 * 800, 2 * 400);
-  fCanvStationCharge->Divide2D(fNstations);
+    fCanvStationCharge = new CbmQaCanvas("cMcPointChargeVsStation",
+                                         "MC point charge per station",
+                                         2 * 800,
+                                         2 * 400);
+    fCanvStationCharge->Divide2D(fNstations);
 
-  fCanvChargeVsEnergy = new CbmQaCanvas("cMcPointChargeVsEnergy",
-                                        "MC point charge vs particle Energy",
-                                        2 * 800,
-                                        2 * 400);
-  fCanvChargeVsEnergy->Divide2D(4);
+    fCanvChargeVsEnergy = new CbmQaCanvas("cMcPointChargeVsEnergy",
+                                          "MC point charge vs particle Energy",
+                                          2 * 800,
+                                          2 * 400);
+    fCanvChargeVsEnergy->Divide2D(4);
 
-  fCanvChargeVsLength = new CbmQaCanvas("cMcPointChargeVsLength",
-                                        "MC point charge vs track length",
-                                        2 * 800,
-                                        2 * 400);
-  fCanvChargeVsLength->Divide2D(4);
+    fCanvChargeVsLength = new CbmQaCanvas("cMcPointChargeVsLength",
+                                          "MC point charge vs track length",
+                                          2 * 800,
+                                          2 * 400);
+    fCanvChargeVsLength->Divide2D(4);
 
-  fCanvTrackLength =
-    new CbmQaCanvas("cTrackLength", "track length", 2 * 800, 2 * 400);
-  fCanvTrackLength->Divide2D(4);
+    fOutFolder.Add(fCanvCharge);
+    fOutFolder.Add(fCanvStationCharge);
+    fOutFolder.Add(fCanvChargeVsEnergy);
+    fOutFolder.Add(fCanvChargeVsLength);
+  }
 
-  fCanvNpadsVsArea =
-    new CbmQaCanvas("cNpadsVsArea", "N pads Vs Area", 2 * 800, 2 * 400);
+  /***** length canvas ****/
+  if (fMCTracks && fPoints) {
+    fCanvTrackLength =
+      new CbmQaCanvas("cTrackLength", "track length", 2 * 800, 2 * 400);
+    fCanvTrackLength->Divide2D(4);
+    fOutFolder.Add(fCanvTrackLength);
+  }
 
-  fOutFolder.Add(fCanvCharge);
-  fOutFolder.Add(fCanvStationCharge);
-  fOutFolder.Add(fCanvChargeVsEnergy);
-  fOutFolder.Add(fCanvChargeVsLength);
-  fOutFolder.Add(fCanvTrackLength);
-  fOutFolder.Add(fCanvNpadsVsArea);
-}
-
-void CbmMuchDigitizerQa::InitPadCanvases() {
-
+  /***** pad canvases ****/
   fCanvUsPadsFiredXY = new CbmQaCanvas(
     "cPadsFiredXY", "Number of pads fired vs XY", 2 * 800, 2 * 400);
   fCanvUsPadsFiredXY->Divide2D(fNstations);
@@ -240,9 +241,27 @@ void CbmMuchDigitizerQa::InitPadCanvases() {
   fOutFolder.Add(fCanvUsPadsFiredXY);
   fOutFolder.Add(fCanvPadOccupancyR);
   fOutFolder.Add(fCanvPadsTotalR);
+
+  /***** pad canvas (MC) ****/
+  if (fMCTracks && fPoints) {
+    fCanvNpadsVsArea =
+      new CbmQaCanvas("cNpadsVsArea", "N pads Vs Area", 2 * 800, 2 * 400);
+    fOutFolder.Add(fCanvNpadsVsArea);
+  }
 }
 
 void CbmMuchDigitizerQa::InitChargeHistos() {
+
+  if (!fMCTracks || !fPoints) { return; }
+
+  fvMcPointCharge.resize(fNstations);
+  for (Int_t i = 0; i < fNstations; i++) {
+    fvMcPointCharge[i] = new TH1F(
+      Form("hMcPointCharge%i", i + 1),
+      Form("MC point charge : Station %i; Charge [10^4 e]; Count", i + 1),
+      BINNING_CHARGE);
+    histFolder->Add(fvMcPointCharge[i]);
+  }
 
   fhMcPointCharge =
     new TH1F("hCharge", "Charge distribution from tracks", BINNING_CHARGE);
@@ -327,6 +346,8 @@ void CbmMuchDigitizerQa::InitChargeHistos() {
 
 void CbmMuchDigitizerQa::InitLengthHistos() {
 
+  if (!fMCTracks || !fPoints) { return; }
+
   fhTrackLength = new TH1F("hTrackLength", "Track length", BINNING_LENGTH);
 
   fhTrackLengthPi =
@@ -352,8 +373,7 @@ void CbmMuchDigitizerQa::InitLengthHistos() {
 }
 
 void CbmMuchDigitizerQa::InitPadHistos() {
-
-  fvMcPointCharge.resize(fNstations);
+  // non-MC
   fvPadsTotalR.resize(fNstations);
   fvUsPadsFiredR.resize(fNstations);
   fvUsPadsFiredXY.resize(fNstations);
@@ -364,11 +384,6 @@ void CbmMuchDigitizerQa::InitPadHistos() {
     CbmMuchStation* station = fGeoScheme->GetStation(i);
     Double_t rMax           = station->GetRmax();
     Double_t rMin           = station->GetRmin();
-
-    fvMcPointCharge[i] = new TH1F(
-      Form("hMcPointCharge%i", i + 1),
-      Form("MC point charge : Station %i; Charge [10^4 e]; Count", i + 1),
-      BINNING_CHARGE);
 
     fvPadsTotalR[i] =
       new TH1F(Form("hPadsTotal%i", i + 1),
@@ -409,21 +424,24 @@ void CbmMuchDigitizerQa::InitPadHistos() {
       0.6 * rMin,
       1.2 * rMax);
 
-    histFolder->Add(fvMcPointCharge[i]);
     histFolder->Add(fvPadsTotalR[i]);
     histFolder->Add(fvUsPadsFiredXY[i]);
     histFolder->Add(fvPadsFiredR[i]);
     histFolder->Add(fvPadOccupancyR[i]);
   }
-  fhNpadsVsS = new TH2F("hNpadsVsS",
-                        "Number of fired pads vs pad area:area:n pads",
-                        10,
-                        -5,
-                        0,
-                        10,
-                        0.5,
-                        10.5);
-  histFolder->Add(fhNpadsVsS);
+
+  // MC below
+  if (fMCTracks && fPoints) {
+    fhNpadsVsS = new TH2F("hNpadsVsS",
+                          "Number of fired pads vs pad area:area:n pads",
+                          10,
+                          -5,
+                          0,
+                          10,
+                          0.5,
+                          10.5);
+    histFolder->Add(fhNpadsVsS);
+  }
 }
 
 void CbmMuchDigitizerQa::FillTotalPadsHistos() {
@@ -506,7 +524,9 @@ void CbmMuchDigitizerQa::Exec(Option_t*) {
 
   OccupancyQa();
   DigitizerQa();
-  DrawCanvases();
+  FillChargePerPoint();
+  FillDigitizerPerformancePlots();
+
   if (fVerbose > 1) {
     PrintFrontLayerPoints();
     PrintFrontLayerDigis();
@@ -592,9 +612,6 @@ void CbmMuchDigitizerQa::DigitizerQa() {
     new ((*fPointInfos)[i])
       CbmMuchPointInfo(pdgCode, motherPdg, kine, length, stId);
   }
-
-  FillChargePerPoint();
-  FillDigitizerPerformancePlots();
 }
 
 // -------------------------------------------------------------------------
@@ -695,28 +712,20 @@ void CbmMuchDigitizerQa::FillDigitizerPerformancePlots() {
 
 
 // -------------------------------------------------------------------------
-void CbmMuchDigitizerQa::DrawCanvases() {
+void CbmMuchDigitizerQa::DrawChargeCanvases() {
 
+  if (!fMCTracks || !fPoints) { return; }
+
+  for (Int_t i = 0; i < fNstations; i++) {
+    fCanvStationCharge->cd(i + 1);
+    fvMcPointCharge[i]->DrawCopy("", "");
+  }
   fCanvCharge->cd(1);
   fhMcPointCharge->DrawCopy("", "");
   fCanvCharge->cd(2);
   fhMcPointChargeLog->DrawCopy("", "");
   fCanvCharge->cd(3);
   fhMcPointChargePr_1GeV_3mm->DrawCopy("", "");
-
-  for (Int_t i = 0; i < 4; i++) {
-    fCanvTrackLength->cd(i + 1);
-    gPad->SetLogy();
-    gStyle->SetOptStat(1110);
-  }
-  fCanvTrackLength->cd(1);
-  fhTrackLength->DrawCopy("", "");
-  fCanvTrackLength->cd(2);
-  fhTrackLengthPi->DrawCopy("", "");
-  fCanvTrackLength->cd(3);
-  fhTrackLengthPr->DrawCopy("", "");
-  fCanvTrackLength->cd(4);
-  fhTrackLengthEl->DrawCopy("", "");
 
   for (Int_t i = 0; i < 4; i++) {
     fCanvChargeVsEnergy->cd(i + 1);
@@ -754,7 +763,10 @@ void CbmMuchDigitizerQa::DrawCanvases() {
   fhMcPointChargeVsTrackLengthPr->DrawCopy("colz", "");
   fCanvChargeVsLength->cd(4);
   fhMcPointChargeVsTrackLengthEl->DrawCopy("colz", "");
+}
 
+void CbmMuchDigitizerQa::DrawPadCanvases() {
+  //non-MC
   for (Int_t i = 0; i < fNstations; i++) {
     *fvPadsFiredR[i] = *fvUsPadsFiredR[i];
     //fvPadsFiredR[i]->Sumw2();
@@ -762,8 +774,6 @@ void CbmMuchDigitizerQa::DrawCanvases() {
     fvPadOccupancyR[i]->Divide(fvPadsFiredR[i], fvPadsTotalR[i]);
     fvPadOccupancyR[i]->Scale(100.);
 
-    fCanvStationCharge->cd(i + 1);
-    fvMcPointCharge[i]->DrawCopy("", "");
     fCanvPadOccupancyR->cd(i + 1);
     fvPadOccupancyR[i]->DrawCopy("", "");
     fCanvPadsTotalR->cd(i + 1);
@@ -771,18 +781,36 @@ void CbmMuchDigitizerQa::DrawCanvases() {
     fCanvUsPadsFiredXY->cd(i + 1);
     fvUsPadsFiredXY[i]->DrawCopy("colz", "");
   }
-  fCanvNpadsVsArea->cd();
-  fhNpadsVsS->DrawCopy("colz", "");
+  //MC below
+  if (fMCTracks && fPoints) {
+    fCanvNpadsVsArea->cd();
+    fhNpadsVsS->DrawCopy("colz", "");
+  }
 }
 
+void CbmMuchDigitizerQa::DrawLengthCanvases() {
+
+  if (!fMCTracks || !fPoints) { return; }
+
+  for (Int_t i = 0; i < 4; i++) {
+    fCanvTrackLength->cd(i + 1);
+    gPad->SetLogy();
+    gStyle->SetOptStat(1110);
+  }
+  fCanvTrackLength->cd(1);
+  fhTrackLength->DrawCopy("", "");
+  fCanvTrackLength->cd(2);
+  fhTrackLengthPi->DrawCopy("", "");
+  fCanvTrackLength->cd(3);
+  fhTrackLengthPr->DrawCopy("", "");
+  fCanvTrackLength->cd(4);
+  fhTrackLengthEl->DrawCopy("", "");
+}
 
 void CbmMuchDigitizerQa::PrintFrontLayerPoints() {
 
-  if (!fMCTracks || !fPoints) {
-    LOG(debug) << " CbmMuchDigitizerQa::PrintFrontLayerPoints(): Found no MC "
-                  "data. Skipping.";
-    return;
-  }
+  if (!fMCTracks || !fPoints) { return; }
+
   for (int i = 0; i < fPoints->GetEntriesFast(); i++) {
     CbmMuchPoint* point = (CbmMuchPoint*) fPoints->At(i);
     Int_t stId = CbmMuchAddress::GetStationIndex(point->GetDetectorID());
@@ -824,6 +852,10 @@ void CbmMuchDigitizerQa::FinishTask() {
 
   printf("FinishTask\n");
   cout << "\n\n SG: Finish task!" << endl;
+
+  DrawChargeCanvases();
+  DrawPadCanvases();
+  DrawLengthCanvases();
 
   TDirectory* oldDirectory = gDirectory;
   bool oldBatchMode        = gROOT->IsBatch();
@@ -877,17 +909,6 @@ void CbmMuchDigitizerQa::OutputNvsS() {
   gNvsS->DrawClone("AP");
   fOutFolder.Add(c);
 }
-
-// -------------------------------------------------------------------------
-Double_t CbmMuchDigitizerQa::LandauMPV(Double_t* lg_x, Double_t* par) {
-  Double_t gaz_gain_mean = 1.7e+4;
-  Double_t scale         = 1.e+6;
-  gaz_gain_mean /= scale;
-  Double_t mass = par[0];  // mass in MeV
-  Double_t x    = TMath::Power(10, lg_x[0]);
-  return gaz_gain_mean * MPV_n_e(x, mass);
-}
-
 
 // -------------------------------------------------------------------------
 Int_t CbmMuchDigitizerQa::GetNChannels(Int_t iStation) {
@@ -958,6 +979,16 @@ TVector2 CbmMuchDigitizerQa::GetMaxPadSize(Int_t iStation) {
 // -------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------
+Double_t CbmMuchDigitizerQa::LandauMPV(Double_t* lg_x, Double_t* par) {
+  Double_t gaz_gain_mean = 1.7e+4;
+  Double_t scale         = 1.e+6;
+  gaz_gain_mean /= scale;
+  Double_t mass = par[0];  // mass in MeV
+  Double_t x    = TMath::Power(10, lg_x[0]);
+  return gaz_gain_mean * MPV_n_e(x, mass);
+}
+
+// -------------------------------------------------------------------------
 Double_t CbmMuchDigitizerQa::MPV_n_e(Double_t Tkin, Double_t mass) {
   Double_t logT;
   TF1 fPol6("fPol6", "pol6", -5, 10);
@@ -978,16 +1009,6 @@ Double_t CbmMuchDigitizerQa::MPV_n_e(Double_t Tkin, Double_t mass) {
     return fPol6.EvalPar(&logT, mpv_p);
   }
 }
-
-void CbmMuchDigitizerQa::DivideCanvas2D(TCanvas* c, int nPads) {
-  // divide canvas into nPads in 2D
-  if (!c || nPads < 1) { return; }
-  int rows = (int) sqrt(nPads);
-  int cols = nPads / rows;
-  if (cols * rows < nPads) { cols++; }
-  c->Divide(cols, rows);
-}
-
 // -------------------------------------------------------------------------
 
 ClassImp(CbmMuchDigitizerQa)
