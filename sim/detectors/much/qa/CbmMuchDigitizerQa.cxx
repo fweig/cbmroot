@@ -126,7 +126,8 @@ InitStatus CbmMuchDigitizerQa::Init() {
   printf("Init: fNstations = %i\n", fNstations);
 
   //fVerbose = 3;
-  InitCanvases();
+  InitChargeCanvases();
+  InitPadCanvases();
   InitChargeHistos();
   InitLengthHistos();
   InitPadHistos();
@@ -185,7 +186,7 @@ void CbmMuchDigitizerQa::InitChannelPadInfo() {
   printf("===========================================================\n");
 }
 
-void CbmMuchDigitizerQa::InitCanvases() {
+void CbmMuchDigitizerQa::InitChargeCanvases() {
 
   fCanvCharge =
     new CbmQaCanvas("cMcPointCharge", "MC point charge", 2 * 800, 2 * 400);
@@ -214,6 +215,16 @@ void CbmMuchDigitizerQa::InitCanvases() {
   fCanvNpadsVsArea =
     new CbmQaCanvas("cNpadsVsArea", "N pads Vs Area", 2 * 800, 2 * 400);
 
+  fOutFolder.Add(fCanvCharge);
+  fOutFolder.Add(fCanvStationCharge);
+  fOutFolder.Add(fCanvChargeVsEnergy);
+  fOutFolder.Add(fCanvChargeVsLength);
+  fOutFolder.Add(fCanvTrackLength);
+  fOutFolder.Add(fCanvNpadsVsArea);
+}
+
+void CbmMuchDigitizerQa::InitPadCanvases() {
+
   fCanvUsPadsFiredXY = new CbmQaCanvas(
     "cPadsFiredXY", "Number of pads fired vs XY", 2 * 800, 2 * 400);
   fCanvUsPadsFiredXY->Divide2D(fNstations);
@@ -226,12 +237,6 @@ void CbmMuchDigitizerQa::InitCanvases() {
     new CbmQaCanvas("cPadsTotalR", "Total pads vs radius", 2 * 800, 2 * 400);
   fCanvPadsTotalR->Divide2D(fNstations);
 
-  fOutFolder.Add(fCanvCharge);
-  fOutFolder.Add(fCanvStationCharge);
-  fOutFolder.Add(fCanvChargeVsEnergy);
-  fOutFolder.Add(fCanvChargeVsLength);
-  fOutFolder.Add(fCanvTrackLength);
-  fOutFolder.Add(fCanvNpadsVsArea);
   fOutFolder.Add(fCanvUsPadsFiredXY);
   fOutFolder.Add(fCanvPadOccupancyR);
   fOutFolder.Add(fCanvPadsTotalR);

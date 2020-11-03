@@ -65,7 +65,8 @@ private:
   CbmMuchDigitizerQa& operator=(const CbmMuchDigitizerQa&);
 
   TFolder* histFolder;
-  void InitCanvases();
+  void InitChargeCanvases();
+  void InitPadCanvases();
   void InitChargeHistos();
   void InitLengthHistos();
   void InitPadHistos();
