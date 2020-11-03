@@ -1,8 +1,8 @@
-void pl_Eff_XY(Int_t iDut       = 910,
-               Double_t dEffMin = 0.5,
-               Double_t dEffMax = 1.,
-               Double_t dThr    = 0.01,
-               TString sysinfo  = "") {
+void pl_Eff_XY_1(Int_t iDut       = 910,
+                 Double_t dEffMin = 0.5,
+                 Double_t dEffMax = 1.,
+                 Double_t dThr    = 0.01,
+                 TString sysinfo  = "") {
   gROOT->LoadMacro("pl_Datime.C");
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
