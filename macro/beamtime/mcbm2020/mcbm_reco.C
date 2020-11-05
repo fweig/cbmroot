@@ -107,6 +107,20 @@ void mcbm_reco(Int_t runId = 812, Int_t nTimeslices = 0) {
   // ------------------------------------------------------------------------
 
 
+  // -----   Local reconstruction of RICH Hits ------------------------------
+  CbmRichMCbmHitProducer* hitProd = new CbmRichMCbmHitProducer();
+  hitProd->setToTLimits(23.7, 30.0);
+  hitProd->applyToTCut();
+  run->AddTask(hitProd);
+  // ------------------------------------------------------------------------
+
+
+  // -----   Local reconstruction in RICh -> Finding of Rings ---------------
+  CbmRichReconstruction* richReco = new CbmRichReconstruction();
+  richReco->UseMCbmSetup();
+  run->AddTask(richReco);
+  // ------------------------------------------------------------------------
+
   // -----  Parameter database   --------------------------------------------
   std::cout << std::endl << std::endl;
   std::cout << "-I- " << myName << ": Set runtime DB" << std::endl;
