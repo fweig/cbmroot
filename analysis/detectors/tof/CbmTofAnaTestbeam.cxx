@@ -79,7 +79,6 @@ Double_t dTDia;
 Double_t dDTD4Min                 = 1.E8;
 static Double_t StartAnalysisTime = 0.;
 static Double_t dTLEvt            = 0.;
-static Double_t StartSpillTime    = -100.;
 
 Int_t iNspills = 0;
 
@@ -549,6 +548,7 @@ CbmTofAnaTestbeam::CbmTofAnaTestbeam(const char* name, Int_t verbose)
   , fdMulDMax(0.)
   , fdSpillDuration(20.)
   , fdSpillBreak(0.9)
+  , fdStartSpillTime(-100)
   , fdDTDia(0.)
   , fdDTD4MAX(0.)
   , fdMul0Max(0.)
@@ -4827,23 +4827,23 @@ Bool_t CbmTofAnaTestbeam::FillHistos() {
 
 
   /*
-   if( dMulD>0 && dMul4>0 && dMul0>0 && dTDia - StartSpillTime > SpillDuration*1.E9 ) {
-     Double_t dDTSpill=dTDia-StartSpillTime;
-     StartSpillTime=dTDia;
+   if( dMulD>0 && dMul4>0 && dMul0>0 && dTDia - fdStartSpillTime > SpillDuration*1.E9 ) {
+     Double_t dDTSpill=dTDia-fdStartSpillTime;
+     fdStartSpillTime=dTDia;
    */
-  if (fdSpillBreak == 0.) StartSpillTime = dTAv;
+  if (fdSpillBreak == 0.) fdStartSpillTime = dTAv;
 
-  Double_t dDTSpill = dTAv - StartSpillTime;
+  Double_t dDTSpill = dTAv - fdStartSpillTime;
   if (fDetIdMap.size() > 3 && dMulD > 0) {  // FIXME - hardwired constants
     Double_t dDTLEvt = dTAv - dTLEvt;
     dTLEvt           = dTAv;
     if (dDTLEvt > fdSpillBreak * 1.E9 && dDTSpill > fdSpillDuration * 1.E9) {
-      StartSpillTime = dTAv;
+      fdStartSpillTime = dTAv;
       iNspills++;
       LOG(info) << "StartSpillTime for " << iNspills
                 << Form(". spill set to %f ns after %7.4f s, at event %d with "
                         "MulD %2.0f, MulDet %d, DTLE %7.4f s ",
-                        StartSpillTime,
+                        fdStartSpillTime,
                         dDTSpill / 1.E9,
                         fEvents,
                         dMulD,
@@ -4853,7 +4853,7 @@ Bool_t CbmTofAnaTestbeam::FillHistos() {
   }
   Double_t dTIR = (dTAv - StartAnalysisTime) / 1.E9;
   fhRate_all->Fill(dTIR, 1. / fhRate_all->GetBinWidth(1));
-  if (StartSpillTime < 0) {
+  if (fdStartSpillTime < 0) {
     LOG(debug) << "SpillStartTime not available, abort Anatestbeam ";
     return kFALSE;
   }
@@ -4913,7 +4913,7 @@ Bool_t CbmTofAnaTestbeam::FillHistos() {
   if (fTrbHeader != NULL)
     fhTIS_all->Fill(fTrbHeader->GetTimeInSpill());
   else
-    fhTIS_all->Fill((dTAv - StartSpillTime) / 1.E9);
+    fhTIS_all->Fill((dTAv - fdStartSpillTime) / 1.E9);
 
   fhTIR_all->Fill(dTIR);
 
@@ -4929,10 +4929,10 @@ Bool_t CbmTofAnaTestbeam::FillHistos() {
 
   if (BSel[0]) {
     fhSelEfficiency->Fill(kTRUE, fiNAccRefTracks);
-    fhSelHitTupleEfficiencyTIS->Fill(kTRUE, (dTAv - StartSpillTime) / 1.E9);
+    fhSelHitTupleEfficiencyTIS->Fill(kTRUE, (dTAv - fdStartSpillTime) / 1.E9);
   } else {
     fhSelEfficiency->Fill(kFALSE, fiNAccRefTracks);
-    fhSelHitTupleEfficiencyTIS->Fill(kFALSE, (dTAv - StartSpillTime) / 1.E9);
+    fhSelHitTupleEfficiencyTIS->Fill(kFALSE, (dTAv - fdStartSpillTime) / 1.E9);
   }
 
 
@@ -4944,7 +4944,7 @@ Bool_t CbmTofAnaTestbeam::FillHistos() {
     if (fTrbHeader != NULL)
       fhTIS_sel->Fill(fTrbHeader->GetTimeInSpill());
     else
-      fhTIS_sel->Fill((dTAv - StartSpillTime) / 1.E9);
+      fhTIS_sel->Fill((dTAv - fdStartSpillTime) / 1.E9);
     fhTIR_sel->Fill(dTIR);
 
     fhTofD4sel->Fill(pHitRef->GetTime() - dTDia);  //  general normalisation
@@ -5059,7 +5059,7 @@ Bool_t CbmTofAnaTestbeam::FillHistos() {
       if (fTrbHeader != NULL)
         fhTIS_sel2->Fill(fTrbHeader->GetTimeInSpill());
       else
-        fhTIS_sel2->Fill((dTAv - StartSpillTime) / 1.E9);
+        fhTIS_sel2->Fill((dTAv - fdStartSpillTime) / 1.E9);
       fhTIR_sel2->Fill(dTIR);
 
       if (NULL != fClusterizer)
@@ -5425,12 +5425,12 @@ Bool_t CbmTofAnaTestbeam::FillHistos() {
 
         fhSelMatchEfficiency->Fill(kTRUE, fiNAccRefTracks);
         fhSelHitTupleMatchEfficiencyTIS->Fill(kTRUE,
-                                              (dTAv - StartSpillTime) / 1.E9);
+                                              (dTAv - fdStartSpillTime) / 1.E9);
 
         if (fTrbHeader != NULL)
           fhTIS_sel1->Fill(fTrbHeader->GetTimeInSpill());
         else
-          fhTIS_sel1->Fill((dTAv - StartSpillTime) / 1.E9);
+          fhTIS_sel1->Fill((dTAv - fdStartSpillTime) / 1.E9);
         fhTIR_sel1->Fill(dTIR);
 
         if (NULL != fClusterizer)
@@ -5572,7 +5572,7 @@ Bool_t CbmTofAnaTestbeam::FillHistos() {
         if (fTrbHeader != NULL)
           fhTISDT04D4best->Fill(fTrbHeader->GetTimeInSpill(), dToD);
         else
-          fhTISDT04D4best->Fill((dTAv - StartSpillTime) / 1.E9, dToD);
+          fhTISDT04D4best->Fill((dTAv - fdStartSpillTime) / 1.E9, dToD);
 
         if (fbMonteCarloComparison) {
           Int_t iDutHitInd = fTofHitsColl->IndexOf(pHit1);
@@ -5907,15 +5907,15 @@ Bool_t CbmTofAnaTestbeam::FillHistos() {
         fhSelTypeNNResidualX->Fill(0., xPos1 - xPos2 - fdDXMean);
         fhSelTypeNNResidualY->Fill(0., yPos1 - yPos2 - fdDYMean);
 
-        fhSelHitTupleResidualTTIS->Fill((dTAv - StartSpillTime) / 1.E9, dToD);
-        fhSelHitTupleDutCluSizeTIS->Fill((dTAv - StartSpillTime) / 1.E9,
+        fhSelHitTupleResidualTTIS->Fill((dTAv - fdStartSpillTime) / 1.E9, dToD);
+        fhSelHitTupleDutCluSizeTIS->Fill((dTAv - fdStartSpillTime) / 1.E9,
                                          dCluSize0);
 
       }  // fdChi2Lim end
       else {
         fhSelMatchEfficiency->Fill(kFALSE, fiNAccRefTracks);
         fhSelHitTupleMatchEfficiencyTIS->Fill(kFALSE,
-                                              (dTAv - StartSpillTime) / 1.E9);
+                                              (dTAv - fdStartSpillTime) / 1.E9);
 
         fhSelTypeNNChiSq->Fill(0., 3. * Chi2List[iM0]);
         fhSelTypeNNResidualT->Fill(0., dToD);
@@ -5947,7 +5947,7 @@ Bool_t CbmTofAnaTestbeam::FillHistos() {
     else {
       fhSelMatchEfficiency->Fill(kFALSE, fiNAccRefTracks);
       fhSelHitTupleMatchEfficiencyTIS->Fill(kFALSE,
-                                            (dTAv - StartSpillTime) / 1.E9);
+                                            (dTAv - fdStartSpillTime) / 1.E9);
     }
   }  // BSel[0] condition end
 
@@ -5980,14 +5980,14 @@ Bool_t CbmTofAnaTestbeam::FillHistos() {
      } //(fdMemoryTime > 0.) end
      */
 
-  fhTIS_Nhit->Fill((dTAv - StartSpillTime) / 1.E9, (Double_t) iNbTofHits);
+  fhTIS_Nhit->Fill((dTAv - fdStartSpillTime) / 1.E9, (Double_t) iNbTofHits);
   if (NULL != fTofTrackColl && NULL != fFindTracks) {
     Bool_t bSelTrackletFound(kFALSE);
     Int_t iBestTrklFitIndex(-1);
     Double_t dBestTrklFitRedChiSq(1.E300);
 
     iNbTofTracks = fTofTrackColl->GetEntries();
-    fhTIS_Ntrk->Fill((dTAv - StartSpillTime) / 1.E9, (Double_t) iNbTofTracks);
+    fhTIS_Ntrk->Fill((dTAv - fdStartSpillTime) / 1.E9, (Double_t) iNbTofTracks);
 
     Int_t NStations = fFindTracks->GetNStations();
     LOG(debug) << Form("Tracklet analysis of %d tracklets from %d stations",
@@ -6051,12 +6051,12 @@ Bool_t CbmTofAnaTestbeam::FillHistos() {
           }
 
           fhTrklNofHitsRateInSpill->Fill(
-            (pTrk->GetTime() - StartSpillTime) / 1.E9,
+            (pTrk->GetTime() - fdStartSpillTime) / 1.E9,
             pTrk->GetNofHits());  // Monitor tracklet size
           for (Int_t iTH = 0; iTH < pTrk->GetNofHits();
                iTH++) {  // Loop over Tracklet hits
             fhTrklDetHitRateInSpill->Fill(
-              (pTrk->GetTime() - StartSpillTime) / 1.E9,  // Station hit rate
+              (pTrk->GetTime() - fdStartSpillTime) / 1.E9,  // Station hit rate
               fFindTracks->GetStationOfAddr(
                 pTrk->GetTofHitPointer(iTH)->GetAddress() & DetMask));
           }
@@ -6273,7 +6273,7 @@ Bool_t CbmTofAnaTestbeam::FillHistos() {
 
         // fill tracklet histos
         Double_t dTiS =
-          (dTAv - StartSpillTime) / 1.E9;  // Time in Spill of current event
+          (dTAv - fdStartSpillTime) / 1.E9;  // Time in Spill of current event
         for (Int_t iTrk = 0; iTrk < iNbTofTracks;
              iTrk++) {  // loop over all Tracklets
           CbmTofTracklet* pTrk = (CbmTofTracklet*) fTofTrackColl->At(iTrk);
@@ -6707,7 +6707,7 @@ Bool_t CbmTofAnaTestbeam::FillHistos() {
 
             fhSelTrklMatchEfficiency->Fill(kTRUE, fiNAccRefTracks);
             fhSelTrklMatchEfficiencyTIS->Fill(kTRUE,
-                                              (dTAv - StartSpillTime) / 1.E9);
+                                              (dTAv - fdStartSpillTime) / 1.E9);
 
             if (fbMonteCarloComparison) {
               if (fbAttachDutHitToTracklet) {
@@ -6825,10 +6825,10 @@ Bool_t CbmTofAnaTestbeam::FillHistos() {
               CbmMatch* tDutHitDigiMatch =
                 dynamic_cast<CbmMatch*>(fTofDigiMatchColl->At(iDutHitIndex));
 
-              fhSelTrklResidualTTIS->Fill((dTAv - StartSpillTime) / 1.E9,
+              fhSelTrklResidualTTIS->Fill((dTAv - fdStartSpillTime) / 1.E9,
                                           pHit->GetTime()
                                             - pTrk->GetFitT(pHit->GetZ()));
-              fhSelTrklDutCluSizeTIS->Fill((dTAv - StartSpillTime) / 1.E9,
+              fhSelTrklDutCluSizeTIS->Fill((dTAv - fdStartSpillTime) / 1.E9,
                                            tDutHitDigiMatch->GetNofLinks() / 2);
             }
 
@@ -6893,7 +6893,7 @@ Bool_t CbmTofAnaTestbeam::FillHistos() {
 
             fhSelTrklMatchEfficiency->Fill(kFALSE, fiNAccRefTracks);
             fhSelTrklMatchEfficiencyTIS->Fill(kFALSE,
-                                              (dTAv - StartSpillTime) / 1.E9);
+                                              (dTAv - fdStartSpillTime) / 1.E9);
           }
 
           // no match for this track
@@ -6943,7 +6943,7 @@ Bool_t CbmTofAnaTestbeam::FillHistos() {
 
             fhSelTrklMatchEfficiency->Fill(kFALSE, fiNAccRefTracks);
             fhSelTrklMatchEfficiencyTIS->Fill(kFALSE,
-                                              (dTAv - StartSpillTime) / 1.E9);
+                                              (dTAv - fdStartSpillTime) / 1.E9);
           }
 
         }  // end of loop over all tracklets
@@ -7044,10 +7044,10 @@ Bool_t CbmTofAnaTestbeam::FillHistos() {
 
     if (bSelTrackletFound) {
       fhSelTrklEfficiency->Fill(kTRUE, fiNAccRefTracks);
-      fhSelTrklEfficiencyTIS->Fill(kTRUE, (dTAv - StartSpillTime) / 1.E9);
+      fhSelTrklEfficiencyTIS->Fill(kTRUE, (dTAv - fdStartSpillTime) / 1.E9);
     } else {
       fhSelTrklEfficiency->Fill(kFALSE, fiNAccRefTracks);
-      fhSelTrklEfficiencyTIS->Fill(kFALSE, (dTAv - StartSpillTime) / 1.E9);
+      fhSelTrklEfficiencyTIS->Fill(kFALSE, (dTAv - fdStartSpillTime) / 1.E9);
     }
 
   }  // (NULL!=fTofTrackColl && NULL != fFindTracks) end
@@ -7344,7 +7344,7 @@ Bool_t CbmTofAnaTestbeam::FillHistos() {
 
               fhSelMCTrackMatchEfficiency->Fill(kTRUE, fiNAccRefTracks);
               fhSelMCTrackMatchEfficiencyTIS->Fill(
-                kTRUE, (dTAv - StartSpillTime) / 1.E9);
+                kTRUE, (dTAv - fdStartSpillTime) / 1.E9);
 
               if (bGoodSelDutMatch) {
                 fhSelMCTrackMatchPurity->Fill(kTRUE, fiNAccRefTracks);
@@ -7355,10 +7355,10 @@ Bool_t CbmTofAnaTestbeam::FillHistos() {
               CbmMatch* tDutHitDigiMatch =
                 dynamic_cast<CbmMatch*>(fTofDigiMatchColl->At(iDutHit));
 
-              fhSelMCTrackResidualTTIS->Fill((dTAv - StartSpillTime) / 1.E9,
+              fhSelMCTrackResidualTTIS->Fill((dTAv - fdStartSpillTime) / 1.E9,
                                              tHit->GetTime() - tPoint->GetTime()
                                                - dMCEventStartTime);
-              fhSelMCTrackDutCluSizeTIS->Fill((dTAv - StartSpillTime) / 1.E9,
+              fhSelMCTrackDutCluSizeTIS->Fill((dTAv - fdStartSpillTime) / 1.E9,
                                               tDutHitDigiMatch->GetNofLinks()
                                                 / 2);
             } else {
@@ -7370,12 +7370,12 @@ Bool_t CbmTofAnaTestbeam::FillHistos() {
 
               fhSelMCTrackMatchEfficiency->Fill(kFALSE, fiNAccRefTracks);
               fhSelMCTrackMatchEfficiencyTIS->Fill(
-                kFALSE, (dTAv - StartSpillTime) / 1.E9);
+                kFALSE, (dTAv - fdStartSpillTime) / 1.E9);
             }
           } else {
             fhSelMCTrackMatchEfficiency->Fill(kFALSE, fiNAccRefTracks);
             fhSelMCTrackMatchEfficiencyTIS->Fill(
-              kFALSE, (dTAv - StartSpillTime) / 1.E9);
+              kFALSE, (dTAv - fdStartSpillTime) / 1.E9);
           }
 
 
@@ -7395,16 +7395,16 @@ Bool_t CbmTofAnaTestbeam::FillHistos() {
 
           fhSelMCTrackEfficiency->Fill(kTRUE, fiNAccRefTracks);
           fhSelMCTrackEfficiencyTIS->Fill(kTRUE,
-                                          (dTAv - StartSpillTime) / 1.E9);
+                                          (dTAv - fdStartSpillTime) / 1.E9);
         } else {
           fhSelMCTrackEfficiency->Fill(kFALSE, fiNAccRefTracks);
           fhSelMCTrackEfficiencyTIS->Fill(kFALSE,
-                                          (dTAv - StartSpillTime) / 1.E9);
+                                          (dTAv - fdStartSpillTime) / 1.E9);
         }
 
       } else {
         fhSelMCTrackEfficiency->Fill(kFALSE, fiNAccRefTracks);
-        fhSelMCTrackEfficiencyTIS->Fill(kFALSE, (dTAv - StartSpillTime) / 1.E9);
+        fhSelMCTrackEfficiencyTIS->Fill(kFALSE, (dTAv - fdStartSpillTime) / 1.E9);
       }
     }
   }

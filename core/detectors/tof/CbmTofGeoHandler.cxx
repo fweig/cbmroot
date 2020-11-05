@@ -111,7 +111,6 @@ Int_t CbmTofGeoHandler::CheckGeometryVersion() {
                  || (TString(node->GetName()).Contains("v16e"))
                  || (TString(node->GetName()).Contains("v17a"))
                  || (TString(node->GetName()).Contains("v17c"))
-                 || (TString(node->GetName()).Contains("v18"))
                  || (TString(node->GetName()).Contains("v19"))) {
         LOG(info)
           << "CbmTofGeoHandler::CheckGeometryVersion: Found TOF geometry "
@@ -131,6 +130,7 @@ Int_t CbmTofGeoHandler::CheckGeometryVersion() {
         }
         return fGeoVersion;
       } else if ((TString(node->GetName()).Contains("v21"))
+                 || (TString(node->GetName()).Contains("v18"))
                  || (TString(node->GetName()).Contains("v20"))) {
         LOG(info)
           << "CbmTofGeoHandler::CheckGeometryVersion: Found TOF geometry "

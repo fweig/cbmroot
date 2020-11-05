@@ -1,4 +1,5 @@
 void pl_Dut_Vel(const char* cDut = "900",
+                Double_t dEffMin  =0.,
                 Double_t Tstart  = 0.,
                 Double_t Tend    = 50.,
                 TString sysinfo  = "") {
@@ -52,6 +53,7 @@ void pl_Dut_Vel(const char* cDut = "900",
   gPad->Update();
   auto graph = pEffVel->GetPaintedGraph();
   graph->GetXaxis()->SetRangeUser(Tstart, Tend);
+  graph->SetMinimum(dEffMin);
   gPad->Update();
 
 

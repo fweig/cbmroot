@@ -41,9 +41,12 @@ void ana_trks_eval(Int_t nEvents        = 10000,
     InputDigiFile = paramDir + "/data/" + cFileId.Data() + ".rec.root";
     iRun          = 700;
   }
-  TString OutputFile = paramDir + "/data/hits_" + cFileId.Data()
+  TString InputTrklFile = paramDir + "/data/hits_" + cFileId.Data()
                        + Form("_%s_%06d_%03d", cSet.Data(), iSel, iSel2)
                        + ".out.root";
+  TString OutputFile = paramDir + "/data/ana_" + cFileId.Data()
+                       + Form("_%s_%06d_%03d", cSet.Data(), iSel, iSel2)
+                       + ".out.root";                       
   TString cHstFile =
     paramDir
     + Form(
@@ -61,6 +64,7 @@ void ana_trks_eval(Int_t nEvents        = 10000,
   TString cAnaFile = Form("%s_TrkAnaTestBeam.hst.root", cFileId.Data());
 
   cout << " InputDigiFile = " << InputDigiFile << endl;
+  cout << " InputTrklFile = " << InputTrklFile << endl;
 
   TString shcmd = "rm -v " + ParFile;
   gSystem->Exec(shcmd.Data());
@@ -73,11 +77,11 @@ void ana_trks_eval(Int_t nEvents        = 10000,
     if (iRun < 690)
       TofGeo = "v20a_mcbm";
     else
-      TofGeo = "v20b_mcbm";
+      TofGeo = "v20f_mcbm";
     cout << "Geometry version " << TofGeo << endl;
 
     TObjString* tofDigiBdfFile =
-      new TObjString(workDir + "/parameters/tof/" + TofGeo + ".digibdf.par");
+      new TObjString(workDir + "/parameters/tof/tof_" + TofGeo + ".digibdf.par");
     parFileList->Add(tofDigiBdfFile);
 
     TString geoDir  = gSystem->Getenv("VMCWORKDIR");
@@ -109,8 +113,9 @@ void ana_trks_eval(Int_t nEvents        = 10000,
   //run->SetInputFile(InputFile.Data());
   //run->AddFriend(InputDigiFile.Data());
   run->SetInputFile(InputDigiFile.Data());
-  //run->AddFriend(InputFile.Data());
-  //run->SetOutputFile(OutputFile);
+  //run->AddFriend(InputTrklFile.Data());
+  //run->SetInputFile(InputTrklFile.Data());
+
   run->SetUserOutputFileName(OutputFile.Data());
   run->SetSink(new FairRootFileSink(run->GetUserOutputFileName()));
 
@@ -232,8 +237,8 @@ void ana_trks_eval(Int_t nEvents        = 10000,
       tofFindTracks->SetSIGT(dTsig);  // allow for variable deviations in ns
     }
       iMinNofHits   = 3;
-      iNStations    = 30;
-      iNReqStations = 3;
+      iNStations    = 28;
+      iNReqStations = 4;
       tofFindTracks->SetStation(0, 5, 0, 0);
       tofFindTracks->SetStation(1, 0, 2, 2);
       tofFindTracks->SetStation(2, 0, 1, 2);
@@ -262,8 +267,8 @@ void ana_trks_eval(Int_t nEvents        = 10000,
       tofFindTracks->SetStation(25, 0, 3, 4);
       tofFindTracks->SetStation(26, 9, 0, 0);
       tofFindTracks->SetStation(27, 9, 0, 1);
-      tofFindTracks->SetStation(28, 6, 0, 0);
-      tofFindTracks->SetStation(29, 6, 0, 1);
+      //tofFindTracks->SetStation(28, 6, 0, 0);
+      //tofFindTracks->SetStation(29, 6, 0, 1);
       break;
 
     case 2:
@@ -349,26 +354,50 @@ void ana_trks_eval(Int_t nEvents        = 10000,
       tofFindTracks->SetStation(3, iDut, iDutSm, iDutRpc);
       break;
 
-    case 5:  // for calibration of 2-stack and add-on counters (STAR2, BUC)
-      iMinNofHits   = 4;
-      iNStations    = 5;
-      iNReqStations = 5;
-      tofFindTracks->SetStation(0, 5, 0, 0);
-      tofFindTracks->SetStation(1, 0, 4, 1);
-      tofFindTracks->SetStation(2, 0, 3, 1);
-      tofFindTracks->SetStation(3, 9, 0, 0);
-      tofFindTracks->SetStation(4, iDut, iDutSm, iDutRpc);
+    case 40:
+      iMinNofHits   = 3;
+      iNStations    = 15;
+      iNReqStations = 4;
+      tofFindTracks->SetStation(0, 0, 2, 2);
+      tofFindTracks->SetStation(1, 0, 1, 2);
+      tofFindTracks->SetStation(2, 0, 0, 2);
+      tofFindTracks->SetStation(0, 0, 2, 1);
+      tofFindTracks->SetStation(1, 0, 1, 1);
+      tofFindTracks->SetStation(2, 0, 0, 1);
+      tofFindTracks->SetStation(0, 0, 2, 0);
+      tofFindTracks->SetStation(1, 0, 1, 0);
+      tofFindTracks->SetStation(2, 0, 0, 0);
+      tofFindTracks->SetStation(0, 0, 2, 3);
+      tofFindTracks->SetStation(1, 0, 1, 3);
+      tofFindTracks->SetStation(2, 0, 0, 3);
+      tofFindTracks->SetStation(0, 0, 2, 4);
+      tofFindTracks->SetStation(1, 0, 1, 4);
+      tofFindTracks->SetStation(2, 0, 0, 4);
       break;
 
-    case 6:  // for double stack USTC counter 900 evaluation
-      iMinNofHits   = 4;
-      iNStations    = 5;
-      iNReqStations = 5;
-      tofFindTracks->SetStation(0, 5, 0, 0);
-      tofFindTracks->SetStation(1, 0, 4, 1);
-      tofFindTracks->SetStation(2, 0, 3, 1);
+    case 5:  // for calibration of 2-stack and add-on counters (STAR2, BUC)
+      iMinNofHits   = 3;
+      iNStations    = 7;
+      iNReqStations = 4;
+      tofFindTracks->SetStation(6, 0, 4, 1);
+      tofFindTracks->SetStation(1, 6, 0, 1);
+      tofFindTracks->SetStation(2, 9, 0, 0);
       tofFindTracks->SetStation(3, 9, 0, 1);
-      tofFindTracks->SetStation(4, iDut, iDutSm, iDutRpc);
+      tofFindTracks->SetStation(4, 6, 0, 0);
+      tofFindTracks->SetStation(5, 0, 3, 1);
+      tofFindTracks->SetStation(0, 5, 0, 0);
+      break;
+
+    case 6:  // for double stack USTC counter evaluation
+      iMinNofHits   = 5;
+      iNStations    = 6;
+      iNReqStations = 6;
+      tofFindTracks->SetStation(0, 5, 0, 0);
+      tofFindTracks->SetStation(1, 6, 0, 1);
+      tofFindTracks->SetStation(2, 0, 4, 1);
+      tofFindTracks->SetStation(3, 6, 0, 0);
+      tofFindTracks->SetStation(4, 0, 3, 1);
+      tofFindTracks->SetStation(5, iDut, iDutSm, iDutRpc);
       break;
 
     case 7:  // for double stack USTC counter evaluation
@@ -392,8 +421,29 @@ void ana_trks_eval(Int_t nEvents        = 10000,
       tofFindTracks->SetStation(4, 0, 3, 1);
       tofFindTracks->SetStation(5, iDut, iDutSm, iDutRpc);
       break;
+     
+    case 9:  // calibration of Star2 
+      iMinNofHits   = 4;
+      iNStations    = 5;
+      iNReqStations = 5;
+      tofFindTracks->SetStation(0, 5, 0, 0);
+      tofFindTracks->SetStation(2, 9, 0, 1);
+      tofFindTracks->SetStation(1, 0, 4, 1);
+      tofFindTracks->SetStation(3, 9, 0, 0);
+      tofFindTracks->SetStation(4, 0, 3, 1);
+      break;
+      
+    case 10:
+      iMinNofHits   = 3;
+      iNStations    = 4;
+      iNReqStations = 4;
+      tofFindTracks->SetStation(0, 5, 0, 0);
+      tofFindTracks->SetStation(1, 0, 2, 0);
+      tofFindTracks->SetStation(2, 0, 0, 0);
+      tofFindTracks->SetStation(3, 0, 1, 0);
+      break;
 
-    case 9:
+    case 11:
       iMinNofHits   = 3;
       iNStations    = 4;
       iNReqStations = 4;
@@ -403,106 +453,37 @@ void ana_trks_eval(Int_t nEvents        = 10000,
       tofFindTracks->SetStation(3, 0, 1, 1);
       break;
 
-    case 10:
-      iMinNofHits   = 3;
-      iNStations    = 4;
-      iNReqStations = 4;
-      tofFindTracks->SetStation(0, 5, 0, 0);
-      tofFindTracks->SetStation(1, 0, 1, 0);
-      tofFindTracks->SetStation(2, 0, 0, 0);
-      tofFindTracks->SetStation(3, 0, 2, 0);
-      break;
-
-    case 11:
-      iMinNofHits   = 3;
-      iNStations    = 4;
-      iNReqStations = 4;
-      tofFindTracks->SetStation(0, 5, 0, 0);
-      tofFindTracks->SetStation(1, 0, 1, 1);
-      tofFindTracks->SetStation(2, 0, 0, 1);
-      tofFindTracks->SetStation(3, 0, 2, 1);
-      break;
-
     case 12:
       iMinNofHits   = 3;
       iNStations    = 4;
       iNReqStations = 4;
       tofFindTracks->SetStation(0, 5, 0, 0);
-      tofFindTracks->SetStation(1, 0, 1, 2);
+      tofFindTracks->SetStation(1, 0, 2, 2);
       tofFindTracks->SetStation(2, 0, 0, 2);
-      tofFindTracks->SetStation(3, 0, 2, 2);
+      tofFindTracks->SetStation(3, 0, 1, 2);
       break;
-
+      
     case 13:
       iMinNofHits   = 3;
       iNStations    = 4;
       iNReqStations = 4;
       tofFindTracks->SetStation(0, 5, 0, 0);
-      tofFindTracks->SetStation(1, 0, 1, 3);
-      tofFindTracks->SetStation(2, 0, 0, 3);
-      tofFindTracks->SetStation(3, 0, 2, 3);
+      tofFindTracks->SetStation(1, 0, 2, 2);
+      tofFindTracks->SetStation(2, 0, 0, 2);
+      tofFindTracks->SetStation(3, 0, 1, 2);
       break;
+      
 
     case 14:
       iMinNofHits   = 3;
       iNStations    = 4;
       iNReqStations = 4;
       tofFindTracks->SetStation(0, 5, 0, 0);
-      tofFindTracks->SetStation(1, 0, 1, 4);
-      tofFindTracks->SetStation(2, 0, 0, 4);
-      tofFindTracks->SetStation(3, 0, 2, 4);
+      tofFindTracks->SetStation(1, 0, 2, 2);
+      tofFindTracks->SetStation(2, 0, 0, 2);
+      tofFindTracks->SetStation(3, 0, 1, 2);
       break;
-
-    case 20:
-      iMinNofHits   = 3;
-      iNStations    = 4;
-      iNReqStations = 4;
-      tofFindTracks->SetStation(0, 0, 2, 0);
-      tofFindTracks->SetStation(1, 0, 0, 0);
-      tofFindTracks->SetStation(2, 0, 1, 0);
-      tofFindTracks->SetStation(0, 5, 0, 0);
-      break;
-
-    case 21:
-      iMinNofHits   = 3;
-      iNStations    = 4;
-      iNReqStations = 4;
-      tofFindTracks->SetStation(0, 0, 2, 1);
-      tofFindTracks->SetStation(1, 0, 0, 1);
-      tofFindTracks->SetStation(2, 0, 1, 1);
-      tofFindTracks->SetStation(0, 5, 0, 0);
-      break;
-
-    case 22:
-      iMinNofHits   = 3;
-      iNStations    = 4;
-      iNReqStations = 4;
-      tofFindTracks->SetStation(0, 0, 2, 2);
-      tofFindTracks->SetStation(1, 0, 0, 2);
-      tofFindTracks->SetStation(2, 0, 1, 2);
-      tofFindTracks->SetStation(0, 5, 0, 0);
-      break;
-
-    case 23:
-      iMinNofHits   = 3;
-      iNStations    = 4;
-      iNReqStations = 4;
-      tofFindTracks->SetStation(0, 0, 2, 3);
-      tofFindTracks->SetStation(1, 0, 0, 3);
-      tofFindTracks->SetStation(2, 0, 1, 3);
-      tofFindTracks->SetStation(0, 5, 0, 0);
-      break;
-
-    case 24:
-      iMinNofHits   = 3;
-      iNStations    = 4;
-      iNReqStations = 4;
-      tofFindTracks->SetStation(0, 0, 2, 4);
-      tofFindTracks->SetStation(1, 0, 0, 4);
-      tofFindTracks->SetStation(2, 0, 1, 4);
-      tofFindTracks->SetStation(0, 5, 0, 0);
-      break;
-
+            
     default:
       cout << "Tracking setup " << iTrackingSetup << " not implemented "
            << endl;
@@ -514,7 +495,6 @@ void ana_trks_eval(Int_t nEvents        = 10000,
   tofFindTracks->SetNReqStations(iNReqStations);
   tofFindTracks->PrintSetup();
   run->AddTask(tofFindTracks);
-
   // =========================================================================
   // ===                       Analysis                                    ===
   // =========================================================================
@@ -531,6 +511,8 @@ void ana_trks_eval(Int_t nEvents        = 10000,
   //CbmTofAnaTestbeam defaults
   tofAnaTestbeam->SetR0LimFit(
     20.);  // limit distance of fitted track to nominal vertex
+  tofAnaTestbeam->SetStartSpillTime(0.);
+
   tofAnaTestbeam->SetDXMean(0.);
   tofAnaTestbeam->SetDYMean(0.);
   tofAnaTestbeam->SetDTMean(0.);  // in ns
@@ -626,41 +608,9 @@ void ana_trks_eval(Int_t nEvents        = 10000,
         }
         break;
 
-      case 10020:
-      case 11021:
-      case 12022:
-      case 13023:
-      case 14024:
-        switch (iRSelin) {
-          case 500:
-            tofAnaTestbeam->SetTShift(4.8);  // Shift DTD4 to 0
-            tofAnaTestbeam->SetTOffD4(11.);  // Shift DTD4 to physical value
-
-            switch (iSel2in) {
-              case 0:
-                tofAnaTestbeam->SetSel2TOff(0.);  // Shift Sel2 time peak to 0
-                break;
-              case 1:
-                tofAnaTestbeam->SetSel2TOff(0.0);  // Shift Sel2 time peak to 0
-                break;
-              case 2:
-                tofAnaTestbeam->SetSel2TOff(0.0);  // Shift Sel2 time peak to 0
-                break;
-              case 3:
-                tofAnaTestbeam->SetSel2TOff(0.0);  // Shift Sel2 time peak to 0
-                break;
-              case 4:
-                tofAnaTestbeam->SetSel2TOff(0.0);  // Shift Sel2 time peak to 0
-                break;
-
-              default:;
-            }
-            break;
-          default:;
-        }
-        break;
-
-      case 30040:
+      case 700040:
+      case 900040:
+      case 901040:
         switch (iRSelin) {
           case 500:
             tofAnaTestbeam->SetTShift(0.3);  // Shift DTD4 to 0
@@ -700,11 +650,10 @@ void ana_trks_eval(Int_t nEvents        = 10000,
                 break;
               case 31:
                 if (iMc == 0) {
-                  tofAnaTestbeam->SetSel2TOff(
-                    0.05);  // Shift Sel2 time peak to 0
+                  //tofAnaTestbeam->SetSel2TOff(-0.55);  // Shift Sel2 time peak to 0
+                  tofAnaTestbeam->SetSel2TOff(0.3);  // Shift Sel2 time peak to 0
                 } else {    // MC
-                  tofAnaTestbeam->SetSel2TOff(
-                    -1.3);  // Shift Sel2 time peak to 0
+                  tofAnaTestbeam->SetSel2TOff(-1.3);  // Shift Sel2 time peak to 0
                 }
                 break;
               case 600:
@@ -731,6 +680,24 @@ void ana_trks_eval(Int_t nEvents        = 10000,
                   -0.55);  // Shift Sel2 time peak to 0
                 break;
 
+              default:;
+            }
+            break;
+          default:;
+        }
+        break;
+
+      case 12022:
+        switch (iRSelin) {
+          case 500:
+            tofAnaTestbeam->SetTShift(3.);  // Shift DTD4 to 0
+            tofAnaTestbeam->SetTOffD4(15.);  // Shift DTD4 to physical value
+
+            switch (iSel2in) {
+              case 2:
+                tofAnaTestbeam->SetSel2TOff(0.25);  // Shift Sel2 time peak to 0
+                break;
+                
               default:;
             }
             break;
@@ -797,7 +764,7 @@ void ana_trks_eval(Int_t nEvents        = 10000,
   gROOT->LoadMacro("pl_over_trk.C");
   gROOT->LoadMacro("pl_calib_trk.C");
   gROOT->LoadMacro("pl_XY_trk.C");
-  //gROOT->LoadMacro("pl_vert_trk.C");
+  gROOT->LoadMacro("pl_vert_trk.C");
   gROOT->LoadMacro("pl_pull_trk.C");
   gROOT->LoadMacro("pl_all_Track2D.C");
   gROOT->LoadMacro("pl_TIS.C");
@@ -818,9 +785,11 @@ void ana_trks_eval(Int_t nEvents        = 10000,
     Form("pl_Dut_Vel(\"%d%d%d\")", iDut, iDutSm, iDutRpc));
   gInterpreter->ProcessLine("pl_eff_XY()");
   gInterpreter->ProcessLine("pl_calib_trk()");
+  gInterpreter->ProcessLine("pl_vert_trk()");
 
   gInterpreter->ProcessLine("pl_all_Track2D(1)");
   gInterpreter->ProcessLine("pl_all_Track2D(2)");
+  gInterpreter->ProcessLine("pl_all_Track2D(4)");
 
   TString over_trk = "pl_over_trk(" + (TString)(Form("%d", iNStations)) + ")";
   gInterpreter->ProcessLine(over_trk);

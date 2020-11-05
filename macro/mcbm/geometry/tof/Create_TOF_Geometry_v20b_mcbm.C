@@ -45,6 +45,7 @@ const TString FileNameInfo = fileTag + "_mcbm.geo.info";
 
 // TOF_Z_Front corresponds to front cover of outer super module towers
 const Float_t TOF_Z_Front_Stand = 247.2;  // = z=298 mCBM@SIS18
+const Float_t TOF_X_Front_Stand = -1.6;  // = z=298 mCBM@SIS18
 const Float_t TOF_Z_Front       = 0;      // = z=298 mCBM@SIS18
 //const Float_t TOF_Z_Front =  130;  // = z=225 mCBM@SIS18
 //const Float_t TOF_Z_Front =  250;  // SIS 100 hadron
@@ -141,11 +142,11 @@ const Int_t NCounterInModule[NofModuleTypes] = {5, 5, 3, 5, 5, 1, 2, 1, 8, 2};
 const Float_t CounterXStartPosition[NofModuleTypes] =
   {-58.5, -66.0, -56.0, -60.0, -60.0, 0.0, 0., 0., -7., 0.};
 const Float_t CounterXDistance[NofModuleTypes] =
-  {29.0, 32.0, 51.0, 30.0, 30.0, 0.0, 0., 0., 2., 0.};
+  {29.0, 32.0, 51.0, 30.0, 30.0, 0.0, 0., 0., 2., -1.25};
 const Float_t CounterYStartPosition[NofModuleTypes] =
   {0.0, 0.0, 0.0, 0.0, 0.0, 0., 0., -4., -1.3, 0.};
 const Float_t CounterYDistance[NofModuleTypes] =
-  {0.0, 0.0, 0.0, 0.0, 0.0, 0., 0., 8., 0., 0.};
+  {0.0, 0.0, 0.0, 0.0, 0.0, 0., 0., 8., 0., 1.3};
 const Float_t CounterZDistance[NofModuleTypes] =
   {-2.5, 0.0, 0.0, 2.5, 2.5, 0., 6., 0., 0.1, 4.};
 const Float_t CounterZStartPosition[NofModuleTypes] =
@@ -211,13 +212,13 @@ const Float_t Outer_Module_Number[Outer_Module_NTypes][Outer_Module_Col] =
 
 const Float_t Star2_First_Z_Position       = TOF_Z_Front + 16.5;
 const Float_t Star2_Delta_Z_Position       = 0.;
-const Float_t Star2_First_Y_Position       = 32.;  //
+const Float_t Star2_First_Y_Position       = 30.35;  //
 const Float_t Star2_Delta_Y_Position       = 0.;   //
 const Float_t Star2_rotate_Z               = -90.;
 const Int_t Star2_NTypes                   = 1;
 const Float_t Star2_Types[Star2_NTypes]    = {9.};
 const Float_t Star2_Number[Star2_NTypes]   = {1.};   //debugging, V16b
-const Float_t Star2_X_Offset[Star2_NTypes] = {51.};  //{62.};
+const Float_t Star2_X_Offset[Star2_NTypes] = {49.};  //{51.};
 
 const Float_t Buc_First_Z_Position     = TOF_Z_Front + 50.;
 const Float_t Buc_Delta_Z_Position     = 0.;
@@ -322,16 +323,16 @@ void Create_TOF_Geometry_v20b_mcbm() {
   TGeoVolume* tofstand = new TGeoVolumeAssembly(geoVersionStand);
   // Mar 2020 run
   TGeoTranslation* stand_trans =
-    new TGeoTranslation("", 0., 0., TOF_Z_Front_Stand);
+    new TGeoTranslation("", TOF_X_Front_Stand, 0., TOF_Z_Front_Stand);
   // Nov 2019 run
   // TGeoTranslation*  stand_trans   = new TGeoTranslation("", 12., 0., TOF_Z_Front_Stand);
   // TGeoTranslation*  stand_trans   = new TGeoTranslation("",  0., 0., TOF_Z_Front_Stand);
   TGeoRotation* stand_rot = new TGeoRotation();
-  stand_rot->RotateY(-1.5);  //-2.7);
+  stand_rot->RotateY(-2.9);
   TGeoCombiTrans* stand_combi_trans =
     new TGeoCombiTrans(*stand_trans, *stand_rot);
-  //tof->AddNode(tofstand, 1, stand_combi_trans);
-  tof->AddNode(tofstand, 1);
+  tof->AddNode(tofstand, 1, stand_combi_trans);
+  //tof->AddNode(tofstand, 1);
 
   for (Int_t counterType = 0; counterType < NumberOfDifferentCounterTypes;
        counterType++) {
@@ -1018,7 +1019,7 @@ void position_inner_tof_modules(Int_t modNType) {
   zPos                           = TOF_Z_Front;
   const Double_t ModDx[NModules] = {0., 0., 0., 49.8, 49.8};
   //const Double_t ModDx[NModules]= { 1.5,    0., -1.5, 49.8, 55.8};
-  const Double_t ModDy[NModules]     = {0., 0., 0., 0., 0.};
+  const Double_t ModDy[NModules]     = {0., 0., 0., 2., 0.};
   const Double_t ModDz[NModules]     = {0., 16.5, 34., 0., 34.};
   const Double_t ModAng[NModules]    = {-90., -90., -90., -90., -90.0};
   TGeoRotation* module_rot           = NULL;

@@ -9,3 +9,15 @@
 
 # Comment some single files
 Dart*.cfg
+*.root
+*.pdf
+*.orig
+*.out
+*.old
+*core_dump*
+*.digi.par
+*0
+*1
+*.info
+*~
+external*

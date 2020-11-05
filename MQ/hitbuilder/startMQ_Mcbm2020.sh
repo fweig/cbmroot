@@ -29,13 +29,13 @@ _Opt=$5
 
 _ntimeslices=-1
 #_ntimeslices=10000
-_iUnp=4
+_iUnp=1
 _batch=1
 _pulmulmin=5
 _pultotmin=50
 _pultotmax=500
+#_puldetref=12 # TSR=022
 _puldetref=16 # TSR=032
-#_puldetref=17 # TSR=032
 
 #_tofftof=0.  
 _tofftof=-30. 
@@ -69,10 +69,11 @@ fi
 #_digibdffile=/lustre/nyx/cbm/users/nh/CBM/cbmroot/trunk/parameters/tof/v18j_cosmicHD.digibdf.par
 #_digiparfile=/lustre/nyx/cbm/users/nh/CBM/cbmroot/trunk/parameters/tof/tof_v18j_cosmicHD.digi.par
 _digibdffile=/lustre/cbm/users/nh/CBM/cbmroot/trunk/parameters/tof/v19b_mcbm.digibdf.par
-_digiparfile=/lustre/cbm/users/nh/CBM/cbmroot/trunk/parameters/tof/tof_v19b_mcbm.digi.par
+#_digiparfile=/lustre/cbm/users/nh/CBM/cbmroot/trunk/parameters/tof/tof_v19b_mcbm.digi.par
 
 # ROOT files 
-_geofile=/lustre/cbm/users/nh/CBM/cbmroot/trunk/macro/beamtime/mcbm2018/tof_v18l_mCbm.par.root
+#_geofile=/lustre/cbm/users/nh/CBM/cbmroot/trunk/macro/beamtime/mcbm2018/tof_v18l_mCbm.par.root
+_geofile=/lustre/cbm/users/nh/CBM/cbmroot/trunk/macro/beamtime/mcbm2018/tof_mcbm_beam_2019_03.par.root
 
 # MQ ports
 _pPar=5603
@@ -81,7 +82,7 @@ _pCmd=5623
 _pDig=5633
 
 rm -v nohup.out 
-#rm -v *log
+rm -v *log
 rm all_*
 
 PARAMETERSERVER="parmq-server"
@@ -93,7 +94,8 @@ PARAMETERSERVER+=" --id parmq-server"
 PARAMETERSERVER+=" --channel-name parameters"
 PARAMETERSERVER+=" --channel-config name=parameters,type=rep,method=bind,rateLogging=0,transport=zeromq,address=tcp://127.0.0.1:$_pPar"
 #PARAMETERSERVER+=" --libs-to-load libCbmTof;libCbmFlibMcbm2018"
-PARAMETERSERVER+=" --first-input-name $_mapfile;$_digiparfile;$_digibdffile"
+#PARAMETERSERVER+=" --first-input-name $_mapfile;$_digiparfile;$_digibdffile"
+PARAMETERSERVER+=" --first-input-name $_mapfile;$_digibdffile"
 PARAMETERSERVER+=" --first-input-type ASCII"
 PARAMETERSERVER+=" --second-input-name $_geofile"
 PARAMETERSERVER+=" --second-input-type ROOT"
@@ -144,16 +146,17 @@ UNPACKER+=" --channel-config name=syscmd,type=sub,method=connect,rateLogging=0,t
 #UNPACKER+=" --severity DEBUG"
 UNPACKER+=" --severity  INFO"
 UNPACKER+=" --SelectComponents 1"
-#UNPACKER+=" --ReqBeam      20486" # diamond -> 0x00005006
+#UNPACKER+=" --ReqBeam      20486" # diamond -> 0x00005006 v14a
+UNPACKER+=" --ReqBeam      10246" # diamond -> 0x00002806 v21a
 if  [[ $_reqmod -lt 1 ]]; then
     UNPACKER+=" --ReqMode 0"
     case $_reqmod in
 	0)
 	    ;;
        -1)
-	    UNPACKER+=" --ReqDet0       20486" # diamond -> 0x00005006
-	    UNPACKER+=" --ReqDet1       65590" # RPC 031 -> 0x00010036
-	    UNPACKER+=" --ReqDet2       65606" # RPC 041
+	    UNPACKER+=" --ReqDet0       10246" # diamond -> 0x00002806 v21a
+	    UNPACKER+=" --ReqDet1       32822" # RPC 031 -> 0x00008036 v21a
+	    UNPACKER+=" --ReqDet2       32838" # RPC 041 -> 0x00008046 v21a
 	    ;;
        -2) 
 	    UNPACKER+=" --ReqDet0       20486" # diamond
@@ -166,12 +169,18 @@ if  [[ $_reqmod -lt 1 ]]; then
 	    UNPACKER+=" --ReqDet1      196662" # RPC 033
 	    UNPACKER+=" --ReqDet2      196678" # RPC 043
 	    ;; # for BUC
+	    
+       -4) # v21a address mode
+	    UNPACKER+=" --ReqDet0       10246" # diamond
+	    UNPACKER+=" --ReqDet1       65542" # RPC 002       
+	    UNPACKER+=" --ReqDet2       65574" # RPC 022       
+	    ;;
        
        -190) 
 	    UNPACKER+=" --ReqDet0       20486"  # diamond
 	    UNPACKER+=" --ReqDet1       65606"  # RPC 041
 	    UNPACKER+=" --ReqDet2       36870"  # RPC 900
-	    UNPACKER+=" --ReqDet3     102406"  # RPC 901
+	    UNPACKER+=" --ReqDet3      102406"  # RPC 901
 	    ;; # for  double stack calibration
        
        -191) 
@@ -213,10 +222,10 @@ UNPACKER+=" --PulMulMin $_pulmulmin"
 UNPACKER+=" --PulTotMin $_pultotmin"
 UNPACKER+=" --PulTotMax $_pultotmax"
 UNPACKER+=" --ToffTof $_tofftof"
-UNPACKER+=" --RefModType 5"
+UNPACKER+=" --RefModType    5"
 UNPACKER+=" --RefModId      0"
-UNPACKER+=" --RefCtrType  4"
-UNPACKER+=" --RefCtrId        0"
+UNPACKER+=" --RefCtrType    0"
+UNPACKER+=" --RefCtrId      0"
 if  [[ $_batch = 1 ]]; then 
 UNPACKER+=" --control static"
 UNPACKER+=" --log-to-file Unp$_iUnp.out"
@@ -242,7 +251,8 @@ HITBUILDER+=" --severity INFO"
 #HITBUILDER+=" --severity WARN"
 HITBUILDER+=" --OutRootFile $_outdir$_digifile"
 #HITBUILDER+=" --MaxEvent 10000000"
-HITBUILDER+=" --RunId 1552883952"
+#HITBUILDER+=" --RunId 1552883952"
+HITBUILDER+=" --RunId 1601311083"
 HITBUILDER+=" --PulserMode $_pulmode"
 HITBUILDER+=" --PulMulMin $_pulmulmin"
 HITBUILDER+=" --PulTotMin $_pultotmin"

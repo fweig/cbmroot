@@ -42,8 +42,14 @@ else
     cCalId=${CalIdMode}
 fi
 
+cCalRef=$8
+if [[ ${cCalRef} = "" ]]; then
+    cCalRef=${cSet:0:9};
+    echo use default CalSet $cCalRef
+fi
+
 dDTres=10000000
-nEvt=100000000
+nEvt=1000000
 
 cSel2=$iSel2;
 if [[ $iSel2 < 100 ]]; then
@@ -86,20 +92,22 @@ cd ${cRun}
 mkdir             Ana_${cSet}_${iSel}_${cSel2}_${iTraSetup}
 cp ../rootlogon.C Ana_${cSet}_${iSel}_${cSel2}_${iTraSetup}/
 cp ../.rootrc     Ana_${cSet}_${iSel}_${cSel2}_${iTraSetup}/
-digiCalFile=`ls -1 ${cCalId}*93_1*.root`
+echo look for calfile: ls -1 ${cCalId}*set${cCalRef}_93_1tofClust.hst.root
+digiCalFile=`ls -1 ${cCalId}*set${cCalRef}_93_1tofClust.hst.root`
 
 cd Ana_${cSet}_${iSel}_${cSel2}_${iTraSetup}
 rm -v  *AnaTestBeam.hst.root
 cp -v ../../${cCalId}_tofFindTracks.hst.root .
 echo create symbolic link to digiCalFile $digiCalFile in `pwd`
-ln -s ../$digiCalFile ./$digiCalFile
+rm -v ./$digiCalFile
+ln -s -v ../$digiCalFile ./$digiCalFile
 
 while [[ $dDTres > 0 ]]; do
 
 for iCal in 1 2 3 5 6 7 8 1
 do
 
-root -b -q '../../ana_trks_eval.C('$nEvt','$iSel',-1,"'$cRun'","'$cSet'",'$iSel2','$iTraSetup','$fRange1','$fRange2','$dDeadtime',"'$cCalId'",'$iCal',0,'$iCalSet',0,'$iMc')'
+root -b -q '../../ana_trks_eval.C('$nEvt','$iSel',-1,"'$cRun'","'$cSet'",'$iSel2','$iTraSetup','$fRange1','$fRange2','$dDeadtime',"'$cCalId'",'$iCal',0,'$iCalSet',1,'$iMc')'
 mv -v tofAnaTestBeam.hst.root ${cRun}_TrkAnaTestBeam.hst.root
 rm all_*
 

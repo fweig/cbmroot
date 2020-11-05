@@ -1,5 +1,6 @@
 void pl_TIR(Double_t Tstart   = 0.,
             Double_t Tend     = 1000.,
+            Double_t dFracMin = 0.0,
             Double_t dFracMax = 1.05,
             TString sysinfo   = "") {
   gROOT->LoadMacro(
@@ -92,7 +93,7 @@ void pl_TIR(Double_t Tstart   = 0.,
  */
 
   TEfficiency* pEffSel = new TEfficiency(*hTIR_sel2, *hTIR_all);
-  pEffSel->SetTitle("Selector (MRef & Sel2)  efficiency");
+  pEffSel->SetTitle("Selector (MRef & Sel2)  efficiency; time (s); efficiency");
   pEffSel->Draw("AP");
   gPad->Update();
   auto graph = pEffSel->GetPaintedGraph();
@@ -119,12 +120,13 @@ void pl_TIR(Double_t Tstart   = 0.,
  hselsel1frac->SetLineColor(hTIR_sel1->GetLineColor()); 
 */
   TEfficiency* pEffDut = new TEfficiency(*hTIR_sel1, *hTIR_sel2);
-  pEffDut->SetTitle("Relative efficiency of DUT");
+  pEffDut->SetTitle("Relative efficiency of DUT; time (s); efficiency");
   pEffDut->Draw("AP");
   // gPad->SetLogy();
   gPad->Update();
   auto gEffDut = pEffDut->GetPaintedGraph();
   gEffDut->GetXaxis()->SetRangeUser(Tstart, Tend);
+  gEffDut->SetMinimum(dFracMin);
   gEffDut->SetMaximum(dFracMax);
 
   gPad->Update();

@@ -116,6 +116,7 @@ public:
   inline void SetSel2TOff(Double_t val) { fdSel2TOff = val; }
   inline void SetSpillDuration(Double_t val) { fdSpillDuration = val; }
   inline void SetSpillBreak(Double_t val) { fdSpillBreak = val; }
+  inline void SetStartSpillTime(Double_t val) { fdStartSpillTime = val; }
   inline void SetMulDMax(Double_t val) { fdMulDMax = val; }
   inline void SetDTDia(Double_t val) { fdDTDia = val; }
   inline void SetDTD4MAX(Double_t val) { fdDTD4MAX = val; }
@@ -728,6 +729,7 @@ private:
   Double_t fdMulDMax;                   // max multiplicity in Diamond counter
   Double_t fdSpillDuration;             // min. spill length in sec
   Double_t fdSpillBreak;                // min. spill break in sec
+  Double_t fdStartSpillTime;            // Start of Spill, if negative find begin of first spill
   Double_t fdDTDia;                     // max time difference between diamonds
   Double_t fdDTD4MAX;       // max time difference between reference & diamond
   Double_t fdMul0Max;       // max multiplicity in Dut
