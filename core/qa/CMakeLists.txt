@@ -20,6 +20,7 @@ link_directories( ${LINK_DIRECTORIES})
 
 set(SRCS
 CbmQaCanvas.cxx
+CbmQaPie.cxx
 )
 
 set(LINKDEF CbmQaBaseLinkDef.h)

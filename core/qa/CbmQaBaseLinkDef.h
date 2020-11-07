@@ -5,4 +5,6 @@
 #pragma link off all functions;
 
 #pragma link C++ class CbmQaCanvas - ;
+#pragma link C++ class CbmQaPieSlice + ;
+#pragma link C++ class CbmQaPie - ;
 #endif
