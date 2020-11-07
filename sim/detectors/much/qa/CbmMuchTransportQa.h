@@ -24,7 +24,7 @@ class TClonesArray;
 class TH1F;
 class TH2F;
 class TMemberInspector;
-class TPie;
+class CbmQaPie;
 
 /// QA for the MUCH detector after a "transport" step of the simulation.
 /// The class reimplements corresponding QA checks from old CbmMuchHitFinderQa class
@@ -109,16 +109,16 @@ private:
   std::vector<TH1F*> fvFraction;   /// pointers to the above histos
 
   /// output pie charts
-  std::vector<TPie*>
+  std::vector<CbmQaPie*>
     fvMcPointPRatio;  /// MC point particle ratio pie charts [N stations]
-  std::vector<TPie*>
+  std::vector<CbmQaPie*>
     fvMcPointPrimRatio;  /// MC point particle ratio pie charts [N stations]
 
   // output canvaces with histogramm collections
   CbmQaCanvas* fCanvStationXY   = nullptr;
   CbmQaCanvas* fCanvStationPhiZ = nullptr;
   CbmQaCanvas* fCanvStationRZ   = nullptr;
-  CbmQaCanvas* fCanvUsNtra      = nullptr;
+  CbmQaCanvas* fCanvNtra        = nullptr;
 
   // output canvaces with pie chart collections
   CbmQaCanvas* fCanvStationPRatio    = nullptr;

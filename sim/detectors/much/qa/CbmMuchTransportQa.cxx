@@ -14,30 +14,24 @@
 #include "CbmMuchPoint.h"
 #include "CbmMuchStation.h"
 #include "CbmQaCanvas.h"
+#include "CbmQaPie.h"
 #include "TClonesArray.h"
 #include "TDatabasePDG.h"
 #include "TH1.h"
 #include "TH2.h"
 #include "TLegend.h"
-#include "TPie.h"
-#include "TPieSlice.h"
 #include "TStyle.h"
 #include <FairRootManager.h>
 #include <FairSink.h>
 #include <FairTask.h>
 #include <Logger.h>
-#include <ROOT/RConfig.h>
 #include <TAxis.h>
 #include <TDirectory.h>
-#include <TGenericClassInfo.h>
 #include <TMath.h>
 #include <TParameter.h>
 #include <TString.h>
 #include <TVector3.h>
-#include <stdlib.h>
-#include <sys/types.h>
 #include <vector>
-class TParticlePDG;
 
 #define BINS_STA fNstations, 0, fNstations
 
@@ -55,11 +49,9 @@ CbmMuchTransportQa::CbmMuchTransportQa(const char* name, Int_t verbose)
   , fvFraction()
   , fvMcPointPRatio()
   , fvMcPointPrimRatio() {}
-// -------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------
 CbmMuchTransportQa::~CbmMuchTransportQa() { DeInit(); }
-// -------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------
 void CbmMuchTransportQa::DeInit() {
@@ -114,15 +106,13 @@ void CbmMuchTransportQa::DeInit() {
   SafeDelete(fCanvStationXY);
   SafeDelete(fCanvStationPhiZ);
   SafeDelete(fCanvStationRZ);
-  SafeDelete(fCanvUsNtra);
+  SafeDelete(fCanvNtra);
   SafeDelete(fCanvStationPRatio);
   SafeDelete(fCanvStationPrimRatio);
 
   fNstations = 0;
   fOutFolder.Clear();
 }
-// -------------------------------------------------------------------------
-
 
 // -------------------------------------------------------------------------
 InitStatus CbmMuchTransportQa::Init() {
@@ -173,8 +163,8 @@ InitStatus CbmMuchTransportQa::Init() {
   gDirectory = oldDirectory;
   return kSUCCESS;
 }
-// -------------------------------------------------------------------------
 
+// -------------------------------------------------------------------------
 void CbmMuchTransportQa::InitCountingHistos() {
 
   fvUsNtra.clear();
@@ -197,6 +187,7 @@ void CbmMuchTransportQa::InitCountingHistos() {
   }
 }
 
+// -------------------------------------------------------------------------
 void CbmMuchTransportQa::InitFractionHistos() {
 
   fvFraction.clear();
@@ -230,11 +221,13 @@ void CbmMuchTransportQa::InitFractionHistos() {
   }
 }
 
+// -------------------------------------------------------------------------
 void CbmMuchTransportQa::Init2dSpatialDistributionHistos() {
 
   fvMcPointXY.resize(fNstations);
   fvMcPointPhiZ.resize(fNstations);
   fvMcPointRZ.resize(fNstations);
+  gStyle->SetOptStat(0);
 
   for (Int_t i = 0; i < fNstations; i++) {
     CbmMuchStation* station = CbmMuchGeoScheme::Instance()->GetStation(i);
@@ -274,26 +267,28 @@ void CbmMuchTransportQa::Init2dSpatialDistributionHistos() {
   }
 }
 
+// -------------------------------------------------------------------------
 void CbmMuchTransportQa::InitRatioPieCharts() {
 
   fvMcPointPRatio.resize(fNstations);
   fvMcPointPrimRatio.resize(fNstations);
   for (Int_t i = 0; i < fNstations; i++) {
     fvMcPointPRatio[i] =
-      new TPie(Form("fvMcPointPRatio%i", i + 1),
-               Form("McPoint Particle Ratios: Station %i", i + 1),
-               5);
+      new CbmQaPie(Form("fvMcPointPRatio%i", i + 1),
+                   Form("McPoint Particle Ratios: Station %i", i + 1),
+                   5);
 
     fvMcPointPrimRatio[i] =
-      new TPie(Form("fvMcPointPrimRatio%i", i + 1),
-               Form("McPoint Primary/Secondary Track: Station %i", i + 1),
-               2);
+      new CbmQaPie(Form("fvMcPointPrimRatio%i", i + 1),
+                   Form("McPoint Primary/Secondary Track: Station %i", i + 1),
+                   2);
 
     histFolder->Add(fvMcPointPRatio[i]);
     histFolder->Add(fvMcPointPrimRatio[i]);
   }
 }
 
+// -------------------------------------------------------------------------
 void CbmMuchTransportQa::InitCanvases() {
 
   fCanvStationXY =
@@ -308,9 +303,9 @@ void CbmMuchTransportQa::InitCanvases() {
     new CbmQaCanvas("cMcPointRZ", "Much: MC point R vs Z", 2 * 800, 2 * 400);
   fCanvStationRZ->Divide2D(fNstations);
 
-  fCanvUsNtra =
-    new CbmQaCanvas("cUsNtra", "Much: MC unscaled counts", 3 * 400, 3 * 400);
-  fCanvUsNtra->Divide2D(9);
+  fCanvNtra = new CbmQaCanvas(
+    "cNparticles", "Much: Particle counts per event", 2 * 800, 2 * 400);
+  fCanvNtra->Divide2D(8);
 
   fCanvStationPRatio = new CbmQaCanvas(
     "cMcPointPRatios", "Much: MC particle ratios", 2 * 400, 2 * 400);
@@ -326,7 +321,7 @@ void CbmMuchTransportQa::InitCanvases() {
   fOutFolder.Add(fCanvStationXY);
   fOutFolder.Add(fCanvStationPhiZ);
   fOutFolder.Add(fCanvStationRZ);
-  fOutFolder.Add(fCanvUsNtra);
+  fOutFolder.Add(fCanvNtra);
   fOutFolder.Add(fCanvStationPRatio);
   fOutFolder.Add(fCanvStationPrimRatio);
 }
@@ -336,7 +331,6 @@ InitStatus CbmMuchTransportQa::ReInit() {
   DeInit();
   return Init();
 }
-// -------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------
 void CbmMuchTransportQa::SetParContainers() {
@@ -357,7 +351,6 @@ void CbmMuchTransportQa::SetParContainers() {
   // bool mcbmFlag = geoTag.Contains("mcbm", TString::kIgnoreCase);
   // CbmMuchGeoScheme::Instance()->Init(stations, mcbmFlag);
 }
-// -------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------
 void CbmMuchTransportQa::Exec(Option_t*) {
@@ -392,18 +385,10 @@ void CbmMuchTransportQa::Exec(Option_t*) {
 
     Int_t motherId = mcTrack->GetMotherId();
     Int_t pdgCode  = mcTrack->GetPdgCode();
-    //if (pdgCode == 0) continue;
-    TParticlePDG* particle = TDatabasePDG::Instance()->GetParticle(pdgCode);
-    if (!particle) {
-      LOG(warning) << "Particle with pdg code " << pdgCode << " doesn't exist";
-      //continue;
-    }
-    if (pdgCode == 0 || pdgCode == 22 ||  // photons
-        pdgCode == 2112)                  // neutrons
+    if (pdgCode == 22 ||  // photons
+        pdgCode == 2112)  // neutrons
     {
-      LOG(warning) << "Particle with pdg code " << pdgCode
-                   << " left an mc point";
-      //continue;
+      continue;
     }
 
     if (!(trackStaCross[trackId] & stMask)) {
@@ -414,6 +399,7 @@ void CbmMuchTransportQa::Exec(Option_t*) {
   }
 }
 
+// -------------------------------------------------------------------------
 void CbmMuchTransportQa::FillCountingHistos(Int_t stId,
                                             Int_t motherId,
                                             Int_t pdgCode) {
@@ -441,8 +427,8 @@ void CbmMuchTransportQa::FillCountingHistos(Int_t stId,
       break;
   }
 }
-// -------------------------------------------------------------------------
 
+// -------------------------------------------------------------------------
 void CbmMuchTransportQa::Fill2dSpatialDistributionHistos(CbmMuchPoint* point,
                                                          Int_t stId) {
 
@@ -480,25 +466,21 @@ TFolder& CbmMuchTransportQa::GetQa() {
   gDirectory = oldDirectory;
   return fOutFolder;
 }
-// -------------------------------------------------------------------------
 
+// -------------------------------------------------------------------------
 void CbmMuchTransportQa::DrawCanvases() {
 
   for (Int_t i = 0; i < fNstations; i++) {
     fCanvStationXY->cd(i + 1);
-    gStyle->SetOptStat(0);
     fvMcPointXY[i]->DrawCopy("colz", "");
 
     fCanvStationPhiZ->cd(i + 1);
-    gStyle->SetOptStat(0);
     fvMcPointPhiZ[i]->DrawCopy("colz", "");
 
     fCanvStationRZ->cd(i + 1);
-    gStyle->SetOptStat(0);
     fvMcPointRZ[i]->DrawCopy("colz", "");
 
     fCanvStationPRatio->cd(i + 1);
-    gStyle->SetOptStat(0);
     fvMcPointPRatio[i]->DrawClone("nol <");
 
     TLegend* PRatioPieLeg = fvMcPointPRatio[i]->MakeLegend();
@@ -506,7 +488,6 @@ void CbmMuchTransportQa::DrawCanvases() {
     PRatioPieLeg->SetY2(.86);
 
     fCanvStationPrimRatio->cd(i + 1);
-    gStyle->SetOptStat(0);
     fvMcPointPrimRatio[i]->DrawClone("nol <");
 
     TLegend* PrimRatioPieLeg = fvMcPointPrimRatio[i]->MakeLegend();
@@ -514,47 +495,37 @@ void CbmMuchTransportQa::DrawCanvases() {
     PrimRatioPieLeg->SetY2(.86);
     PrimRatioPieLeg->SetX1(.40);
     PrimRatioPieLeg->SetX2(.90);
-
-    gStyle->SetOptStat(1110);
   }
 
-  fCanvUsNtra->cd(1);
-  gStyle->SetOptStat(0);
-  fhUsNtraAll->DrawCopy("colz", "");
+  double scale = (fhNevents.GetVal() > 0) ? 1. / fhNevents.GetVal() : 0;
+  int i        = 1;
 
-  fCanvUsNtra->cd(2);
-  gStyle->SetOptStat(0);
+  fCanvNtra->cd(i++);
   fhNtracks->DrawCopy("colz", "");
 
-  fCanvUsNtra->cd(3);
-  gStyle->SetOptStat(0);
-  fhUsNtraPrim->DrawCopy("colz", "");
+  fCanvNtra->cd(i++);
+  fhUsNtraPrim->DrawCopy("colz", "")->Scale(scale);
 
-  fCanvUsNtra->cd(4);
-  gStyle->SetOptStat(0);
-  fhUsNtraSec->DrawCopy("colz", "");
+  fCanvNtra->cd(i++);
+  fhUsNtraSec->DrawCopy("colz", "")->Scale(scale);
 
-  fCanvUsNtra->cd(5);
-  gStyle->SetOptStat(0);
-  fhUsNtraPr->DrawCopy("colz", "");
+  fCanvNtra->cd(i++);
+  fhUsNtraPr->DrawCopy("colz", "")->Scale(scale);
 
-  fCanvUsNtra->cd(6);
-  gStyle->SetOptStat(0);
-  fhUsNtraPi->DrawCopy("colz", "");
+  fCanvNtra->cd(i++);
+  fhUsNtraPi->DrawCopy("colz", "")->Scale(scale);
 
-  fCanvUsNtra->cd(7);
-  gStyle->SetOptStat(0);
-  fhUsNtraEl->DrawCopy("colz", "");
+  fCanvNtra->cd(i++);
+  fhUsNtraEl->DrawCopy("colz", "")->Scale(scale);
 
-  fCanvUsNtra->cd(8);
-  gStyle->SetOptStat(0);
-  fhUsNtraMu->DrawCopy("colz", "");
+  fCanvNtra->cd(i++);
+  fhUsNtraMu->DrawCopy("colz", "")->Scale(scale);
 
-  fCanvUsNtra->cd(9);
-  gStyle->SetOptStat(0);
-  fhUsNtraKa->DrawCopy("colz", "");
+  fCanvNtra->cd(i++);
+  fhUsNtraKa->DrawCopy("colz", "")->Scale(scale);
 }
 
+// -------------------------------------------------------------------------
 void CbmMuchTransportQa::MakePRatioPieCharts() {
 
   for (Int_t i = 0; i < fNstations; i++) {
@@ -619,4 +590,3 @@ void CbmMuchTransportQa::Finish() {
   FairSink* sink = FairRootManager::Instance()->GetSink();
   sink->WriteObject(&GetQa(), nullptr);
 }
-// -------------------------------------------------------------------------
