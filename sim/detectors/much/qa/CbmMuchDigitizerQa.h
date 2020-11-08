@@ -26,6 +26,7 @@ class TCanvas;
 class TH1F;
 class TH2F;
 class TVector2;
+class CbmMuchPad;
 
 /// QA for the MUCH detector after a "digitization" step of the simulation.
 /// The class reimplements corresponding QA checks from old CbmMuchHitFinderQa class
@@ -38,41 +39,38 @@ public:
   virtual ~CbmMuchDigitizerQa();
   virtual InitStatus Init();
   virtual void Exec(Option_t* option);
-  virtual void FinishTask();
+  virtual void Finish();
   virtual void SetParContainers();
 
-protected:
-  /* DigitizerQa - analysis of digitizer performance - charge distributions
-   * for tracks. Track length distrivutions. Statistics on particle types
-   */
-  void DigitizerQa();
-
-  /* Occupance analysis - all pads,fired pads,
-   * and fired/all distributions as functions of radius
-   */
-  void OccupancyQa();
+  /// Prepare Qa output and return it as a reference to an internal folder.
+  /// The reference is non-const, because FairSink can not write const objects
+  TFolder& GetQa();
 
 private:
-  Int_t GetNChannels(Int_t iStation);
-  Int_t GetNSectors(Int_t iStation);
-  TVector2 GetMinPadSize(Int_t iStation);
-  TVector2 GetMaxPadSize(Int_t iStation);
-  static Double_t LandauMPV(Double_t* x, Double_t* par);
-  static Double_t MPV_n_e(Double_t Tkin, Double_t mass);
-
   CbmMuchDigitizerQa(const CbmMuchDigitizerQa&);
   CbmMuchDigitizerQa& operator=(const CbmMuchDigitizerQa&);
 
-  TFolder* histFolder;
+  static Double_t LandauMPV(Double_t* x, Double_t* par);
+  static Double_t MPV_n_e(Double_t Tkin, Double_t mass);
+
+  /// Occupance analysis - all pads,fired pads,
+  /// and fired/all distributions as functions of radius
+  ///
+  void OccupancyQa();
+
+  /// get pad from the digi address
+  const CbmMuchPad* GetPad(UInt_t address) const;
 
   void InitChargeHistos();
   void InitPadHistos();
   void InitLengthHistos();
-  void InitChannelPadInfo();
+  int InitChannelPadInfo();
   void InitFits();
   void InitCanvases();
   void DeInit();
 
+  int CheckConsistency();
+  int ProcessMCPoints();
   void FillTotalPadsHistos();
   void FillChargePerPoint();
   void FillDigitizerPerformancePlots();
@@ -83,6 +81,8 @@ private:
   void DrawPadCanvases();
   void DrawLengthCanvases();
   void OutputNvsS();
+
+  TFolder* histFolder;  /// folder wich contains histogramms
 
   // geometry
   CbmMuchGeoScheme* fGeoScheme = nullptr;
@@ -104,9 +104,9 @@ private:
   std::vector<TH2F*> fvUsPadsFiredXY;  // fired pads vs XY, per station
 
   // output histograms
-  TH1F* fhMcPointCharge    = nullptr;  /// MC point charge
-  TH1F* fhMcPointChargeLog = nullptr;  /// MC point charge log scale
-  TH1F* fhMcPointChargePr_1GeV_3mm =
+  TH1F* fhTrackCharge    = nullptr;  /// MC point charge
+  TH1F* fhTrackChargeLog = nullptr;  /// MC point charge log scale
+  TH1F* fhTrackChargePr_1GeV_3mm =
     nullptr;  /// MC point charge for selected protons
 
   TH1F* fhTrackLength   = nullptr;
@@ -114,17 +114,17 @@ private:
   TH1F* fhTrackLengthPr = nullptr;
   TH1F* fhTrackLengthEl = nullptr;
 
-  TH2F* fhMcPointChargeVsTrackEnergyLog   = nullptr;
-  TH2F* fhMcPointChargeVsTrackEnergyLogPi = nullptr;
-  TH2F* fhMcPointChargeVsTrackEnergyLogPr = nullptr;
-  TH2F* fhMcPointChargeVsTrackEnergyLogEl = nullptr;
-  TH2F* fhMcPointChargeVsTrackLength      = nullptr;
-  TH2F* fhMcPointChargeVsTrackLengthPi    = nullptr;
-  TH2F* fhMcPointChargeVsTrackLengthPr    = nullptr;
-  TH2F* fhMcPointChargeVsTrackLengthEl    = nullptr;
-  TH2F* fhNpadsVsS                        = nullptr;
+  TH2F* fhTrackChargeVsTrackEnergyLog   = nullptr;
+  TH2F* fhTrackChargeVsTrackEnergyLogPi = nullptr;
+  TH2F* fhTrackChargeVsTrackEnergyLogPr = nullptr;
+  TH2F* fhTrackChargeVsTrackEnergyLogEl = nullptr;
+  TH2F* fhTrackChargeVsTrackLength      = nullptr;
+  TH2F* fhTrackChargeVsTrackLengthPi    = nullptr;
+  TH2F* fhTrackChargeVsTrackLengthPr    = nullptr;
+  TH2F* fhTrackChargeVsTrackLengthEl    = nullptr;
+  TH2F* fhNpadsVsS                      = nullptr;
 
-  std::vector<TH1F*> fvMcPointCharge;  // MC point charge per station
+  std::vector<TH1F*> fvTrackCharge;    // MC point charge per station
   std::vector<TH1F*> fvPadsTotalR;     // number of pads vs R, per station
   std::vector<TH1F*> fvPadsFiredR;     // fired pads vs R, per station
   std::vector<TH1F*> fvPadOccupancyR;  // pad occupancy vs R, per station

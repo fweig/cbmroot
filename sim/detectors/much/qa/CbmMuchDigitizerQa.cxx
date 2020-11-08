@@ -8,7 +8,6 @@
 /// \date   21.10.2020
 
 #include "CbmMuchDigitizerQa.h"
-#include "CbmDefs.h"
 #include "CbmDigiManager.h"
 #include "CbmLink.h"
 #include "CbmMCTrack.h"
@@ -39,20 +38,12 @@
 #include <TAxis.h>
 #include <TCanvas.h>
 #include <TDirectory.h>
-#include <TGenericClassInfo.h>
 #include <TMath.h>
 #include <TParticlePDG.h>
-#include <TROOT.h>
 #include <TVector2.h>
-#include <TVector3.h>
-#include <TVirtualPad.h>
-#include <assert.h>
-#include <boost/exception/exception.hpp>
-#include <boost/type_index/type_index_facade.hpp>
 #include <iostream>
 #include <limits>
 #include <math.h>
-#include <stdio.h>
 #include <vector>
 
 using std::cout;
@@ -65,37 +56,38 @@ using std::vector;
 #define BINNING_ENERGY_LOG 100, -0.5, 4.5
 #define BINNING_ENERGY_LOG_EL 100, -0.5, 4.5
 
+ClassImp(CbmMuchDigitizerQa);
+
 // -------------------------------------------------------------------------
 CbmMuchDigitizerQa::CbmMuchDigitizerQa(const char* name, Int_t verbose)
   : FairTask(name, verbose)
-  , fGeoScheme(CbmMuchGeoScheme::Instance())
-  , fDigiManager(CbmDigiManager::Instance())
+  , fGeoScheme(nullptr)
+  , fDigiManager(nullptr)
   , fPointInfos(new TClonesArray("CbmMuchPointInfo", 10))
   , fOutFolder("MuchDigiQA", "MuchDigitizerQA")
   , fvUsPadsFiredR()
   , fvUsPadsFiredXY()
-  , fvMcPointCharge()
+  , fvTrackCharge()
   , fvPadsTotalR()
   , fvPadsFiredR()
   , fvPadOccupancyR() {}
-// -------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------
 CbmMuchDigitizerQa::~CbmMuchDigitizerQa() { DeInit(); }
-// -------------------------------------------------------------------------
 
+// -------------------------------------------------------------------------
 void CbmMuchDigitizerQa::DeInit() {
   for (int i = 0; i < fNstations; i++) {
     delete fvUsPadsFiredR[i];
     delete fvUsPadsFiredXY[i];
-    delete fvMcPointCharge[i];
+    delete fvTrackCharge[i];
     delete fvPadsTotalR[i];
     delete fvPadsFiredR[i];
     delete fvPadOccupancyR[i];
   }
   fvUsPadsFiredR.clear();
   fvUsPadsFiredXY.clear();
-  fvMcPointCharge.clear();
+  fvTrackCharge.clear();
   fvPadsTotalR.clear();
   fvPadsFiredR.clear();
   fvPadOccupancyR.clear();
@@ -107,23 +99,43 @@ void CbmMuchDigitizerQa::DeInit() {
 // -------------------------------------------------------------------------
 InitStatus CbmMuchDigitizerQa::Init() {
 
-  TDirectory* oldDirectory  = gDirectory;
+  TDirectory* oldDirectory = gDirectory;
+
   FairRootManager* fManager = FairRootManager::Instance();
-  fMCTracks                 = (TClonesArray*) fManager->GetObject("MCTrack");
-  fPoints                   = (TClonesArray*) fManager->GetObject("MuchPoint");
-  if (fMCTracks && fPoints) {
+  if (!fManager) {
+    LOG(fatal) << "Can not find FairRootManager";
+    return kFATAL;
+  }
+
+  fGeoScheme = CbmMuchGeoScheme::Instance();
+  if (!fGeoScheme) {
+    LOG(fatal) << "Can not find Much geo scheme";
+    return kFATAL;
+  }
+
+  fNstations = fGeoScheme->GetNStations();
+  LOG(info) << "CbmMuchDigitizerQa: N Stations = " << fNstations;
+
+  fDigiManager = CbmDigiManager::Instance();
+  if (!fDigiManager) {
+    LOG(fatal) << "Can not find Much digi manager";
+    return kFATAL;
+  }
+  fDigiManager->Init();
+
+  fMCTracks = (TClonesArray*) fManager->GetObject("MCTrack");
+  fPoints   = (TClonesArray*) fManager->GetObject("MuchPoint");
+
+  if (fMCTracks && fPoints
+      && fDigiManager->IsMatchPresent(ECbmModuleId::kMuch)) {
     LOG(info) << " CbmMuchDigitizerQa: MC data read.";
   } else {
     LOG(info) << " CbmMuchDigitizerQa: No MC data found.";
+    fMCTracks = nullptr;
+    fPoints   = nullptr;
   }
 
-  // Reading Much Digis from CbmMuchDigiManager which are stored as vector
-  fDigiManager = CbmDigiManager::Instance();
-  fDigiManager->Init();
-
   histFolder = fOutFolder.AddFolder("hist", "Histogramms");
-  fNstations = fGeoScheme->GetNStations();
-  printf("Init: fNstations = %i\n", fNstations);
 
   //fVerbose = 3;
   InitCanvases();
@@ -138,7 +150,8 @@ InitStatus CbmMuchDigitizerQa::Init() {
   return kSUCCESS;
 }
 
-void CbmMuchDigitizerQa::InitChannelPadInfo() {
+// -------------------------------------------------------------------------
+int CbmMuchDigitizerQa::InitChannelPadInfo() {
 
   fPadMinLx = std::numeric_limits<Double_t>::max();
   fPadMinLy = std::numeric_limits<Double_t>::max();
@@ -155,12 +168,44 @@ void CbmMuchDigitizerQa::InitChannelPadInfo() {
   Int_t nTotSectors  = 0;
   Int_t nTotChannels = 0;
   for (Int_t iStation = 0; iStation < fNstations; iStation++) {
-    Int_t nChannels   = GetNChannels(iStation);
-    Int_t nSectors    = GetNSectors(iStation);
-    Double_t padMinLx = GetMinPadSize(iStation).X();
-    Double_t padMinLy = GetMinPadSize(iStation).Y();
-    Double_t padMaxLx = GetMaxPadSize(iStation).X();
-    Double_t padMaxLy = GetMaxPadSize(iStation).Y();
+    Int_t nChannels                = 0;
+    Int_t nSectors                 = 0;
+    Double_t padMinLx              = std::numeric_limits<Double_t>::max();
+    Double_t padMinLy              = std::numeric_limits<Double_t>::max();
+    Double_t padMaxLx              = std::numeric_limits<Double_t>::min();
+    Double_t padMaxLy              = std::numeric_limits<Double_t>::min();
+    vector<CbmMuchModule*> modules = fGeoScheme->GetModules(iStation);
+    for (UInt_t im = 0; im < modules.size(); im++) {
+      CbmMuchModule* mod = modules[im];
+      if (!mod) {
+        LOG(fatal) << "module pointer is 0";
+        return -1;
+      }
+      if (mod->GetDetectorType() != 4 && mod->GetDetectorType() != 3) {
+        LOG(fatal) << "unknown detector type " << mod->GetDetectorType();
+        return -1;
+      }
+      CbmMuchModuleGem* module = dynamic_cast<CbmMuchModuleGem*>(mod);
+      if (!module) {
+        LOG(fatal) << "module is not a Gem module";
+        return -1;
+      }
+      nChannels += module->GetNPads();
+      nSectors += module->GetNSectors();
+      vector<CbmMuchPad*> pads = module->GetPads();
+      for (UInt_t ip = 0; ip < pads.size(); ip++) {
+        CbmMuchPad* pad = pads[ip];
+        if (!pad) {
+          LOG(fatal) << "pad pointer is 0";
+          return -1;
+        }
+        if (pad->GetDx() < padMinLx) padMinLx = pad->GetDx();
+        if (pad->GetDy() < padMinLy) padMinLy = pad->GetDy();
+        if (pad->GetDx() > padMaxLx) padMaxLx = pad->GetDx();
+        if (pad->GetDy() > padMaxLy) padMaxLy = pad->GetDy();
+      }
+    }
+
     if (fPadMinLx > padMinLx) fPadMinLx = padMinLx;
     if (fPadMinLy > padMinLy) fPadMinLy = padMinLy;
     if (fPadMaxLx < padMaxLx) fPadMaxLx = padMaxLx;
@@ -180,35 +225,35 @@ void CbmMuchDigitizerQa::InitChannelPadInfo() {
       printf("%i\t\t| %i\t\t\n", iStation + 1, nChannels);
     }
   }
-  printf("-----------------------------------------------------------\n");
-  printf(" Total:\t\t| %i\t\t\n", nTotChannels);
-  printf("===========================================================\n");
+  if (fVerbose > 2) {
+    printf("-----------------------------------------------------------\n");
+    printf(" Much total channels:\t\t| %i\t\t\n", nTotChannels);
+    printf("===========================================================\n");
+  }
+  return 0;
 }
 
+// -------------------------------------------------------------------------
 void CbmMuchDigitizerQa::InitCanvases() {
 
   /***** charge canvases ****/
   if (fMCTracks && fPoints) {
-    fCanvCharge =
-      new CbmQaCanvas("cMcPointCharge", "MC point charge", 2 * 800, 2 * 400);
+    fCanvCharge = new CbmQaCanvas(
+      "cTrackCharge", "Charge collected per track", 2 * 800, 2 * 400);
     fCanvCharge->Divide2D(3);
 
-    fCanvStationCharge = new CbmQaCanvas("cMcPointChargeVsStation",
-                                         "MC point charge per station",
-                                         2 * 800,
-                                         2 * 400);
+    fCanvStationCharge = new CbmQaCanvas(
+      "cTrackChargeVsStation", "Track charge per station", 2 * 800, 2 * 400);
     fCanvStationCharge->Divide2D(fNstations);
 
-    fCanvChargeVsEnergy = new CbmQaCanvas("cMcPointChargeVsEnergy",
-                                          "MC point charge vs particle Energy",
+    fCanvChargeVsEnergy = new CbmQaCanvas("cTrackChargeVsEnergy",
+                                          "Track charge vs particle Energy",
                                           2 * 800,
                                           2 * 400);
     fCanvChargeVsEnergy->Divide2D(4);
 
-    fCanvChargeVsLength = new CbmQaCanvas("cMcPointChargeVsLength",
-                                          "MC point charge vs track length",
-                                          2 * 800,
-                                          2 * 400);
+    fCanvChargeVsLength = new CbmQaCanvas(
+      "cTrackChargeVsLength", "Track charge vs track length", 2 * 800, 2 * 400);
     fCanvChargeVsLength->Divide2D(4);
 
     fOutFolder.Add(fCanvCharge);
@@ -227,7 +272,7 @@ void CbmMuchDigitizerQa::InitCanvases() {
 
   /***** pad canvases ****/
   fCanvUsPadsFiredXY = new CbmQaCanvas(
-    "cPadsFiredXY", "Number of pads fired vs XY", 2 * 800, 2 * 400);
+    "cPadsFiredXY", "Number of pads fired vs XY", 2 * 400, 2 * 400);
   fCanvUsPadsFiredXY->Divide2D(fNstations);
 
   fCanvPadOccupancyR = new CbmQaCanvas(
@@ -250,83 +295,84 @@ void CbmMuchDigitizerQa::InitCanvases() {
   }
 }
 
+// -------------------------------------------------------------------------
 void CbmMuchDigitizerQa::InitChargeHistos() {
 
   if (!fMCTracks || !fPoints) { return; }
 
-  fvMcPointCharge.resize(fNstations);
+  fvTrackCharge.resize(fNstations);
   for (Int_t i = 0; i < fNstations; i++) {
-    fvMcPointCharge[i] = new TH1F(
-      Form("hMcPointCharge%i", i + 1),
-      Form("MC point charge : Station %i; Charge [10^4 e]; Count", i + 1),
-      BINNING_CHARGE);
-    histFolder->Add(fvMcPointCharge[i]);
+    fvTrackCharge[i] =
+      new TH1F(Form("hTrackCharge%i", i + 1),
+               Form("Track charge : Station %i; Charge [10^4 e]; Count", i + 1),
+               BINNING_CHARGE);
+    histFolder->Add(fvTrackCharge[i]);
   }
 
-  fhMcPointCharge =
+  fhTrackCharge =
     new TH1F("hCharge", "Charge distribution from tracks", BINNING_CHARGE);
-  fhMcPointCharge->GetXaxis()->SetTitle("Charge [10^{4} electrons]");
+  fhTrackCharge->GetXaxis()->SetTitle("Charge [10^{4} electrons]");
 
-  fhMcPointChargeLog = new TH1F(
+  fhTrackChargeLog = new TH1F(
     "hChargeLog", "Charge (log.) distribution from tracks", BINNING_CHARGE_LOG);
-  fhMcPointChargeLog->GetXaxis()->SetTitle("Charge [Lg(Number of electrons)]");
+  fhTrackChargeLog->GetXaxis()->SetTitle("Charge [Lg(Number of electrons)]");
 
-  fhMcPointChargePr_1GeV_3mm =
+  fhTrackChargePr_1GeV_3mm =
     new TH1F("hChargePr_1GeV_3mm", "Charge for 1 GeV protons", BINNING_CHARGE);
-  fhMcPointChargePr_1GeV_3mm->GetXaxis()->SetTitle("Charge [10^{4} electrons]");
+  fhTrackChargePr_1GeV_3mm->GetXaxis()->SetTitle("Charge [10^{4} electrons]");
 
-  fhMcPointChargeVsTrackEnergyLog =
+  fhTrackChargeVsTrackEnergyLog =
     new TH2F("hChargeEnergyLog",
              "Charge vs energy (log.) for all tracks",
              BINNING_ENERGY_LOG,
              BINNING_CHARGE);
 
-  fhMcPointChargeVsTrackEnergyLogPi =
+  fhTrackChargeVsTrackEnergyLogPi =
     new TH2F("hChargeEnergyLogPi",
              "Charge vs energy (log.) for pions",
              BINNING_ENERGY_LOG,
              BINNING_CHARGE);
 
-  fhMcPointChargeVsTrackEnergyLogPr =
+  fhTrackChargeVsTrackEnergyLogPr =
     new TH2F("hChargeEnergyLogPr",
              "Charge vs energy (log.) for protons",
              BINNING_ENERGY_LOG,
              BINNING_CHARGE);
 
-  fhMcPointChargeVsTrackEnergyLogEl =
+  fhTrackChargeVsTrackEnergyLogEl =
     new TH2F("hChargeEnergyLogEl",
              "Charge vs energy (log.) for electrons",
              BINNING_ENERGY_LOG_EL,
              BINNING_CHARGE);
 
-  fhMcPointChargeVsTrackLength = new TH2F("hChargeTrackLength",
-                                          "Charge vs length for all tracks",
+  fhTrackChargeVsTrackLength = new TH2F("hChargeTrackLength",
+                                        "Charge vs length for all tracks",
+                                        BINNING_LENGTH,
+                                        BINNING_CHARGE);
+
+  fhTrackChargeVsTrackLengthPi = new TH2F("hChargeTrackLengthPi",
+                                          "Charge vs length for pions",
                                           BINNING_LENGTH,
                                           BINNING_CHARGE);
 
-  fhMcPointChargeVsTrackLengthPi = new TH2F("hChargeTrackLengthPi",
-                                            "Charge vs length for pions",
-                                            BINNING_LENGTH,
-                                            BINNING_CHARGE);
+  fhTrackChargeVsTrackLengthPr = new TH2F("hChargeTrackLengthPr",
+                                          "Charge vs length for proton",
+                                          BINNING_LENGTH,
+                                          BINNING_CHARGE);
 
-  fhMcPointChargeVsTrackLengthPr = new TH2F("hChargeTrackLengthPr",
-                                            "Charge vs length for proton",
-                                            BINNING_LENGTH,
-                                            BINNING_CHARGE);
-
-  fhMcPointChargeVsTrackLengthEl = new TH2F("hChargeTrackLengthEl",
-                                            "Charge vs length for electrons",
-                                            BINNING_LENGTH,
-                                            BINNING_CHARGE);
+  fhTrackChargeVsTrackLengthEl = new TH2F("hChargeTrackLengthEl",
+                                          "Charge vs length for electrons",
+                                          BINNING_LENGTH,
+                                          BINNING_CHARGE);
   std::vector<TH2F*> vChargeHistos;
-  vChargeHistos.push_back(fhMcPointChargeVsTrackEnergyLog);
-  vChargeHistos.push_back(fhMcPointChargeVsTrackEnergyLogPi);
-  vChargeHistos.push_back(fhMcPointChargeVsTrackEnergyLogPr);
-  vChargeHistos.push_back(fhMcPointChargeVsTrackEnergyLogEl);
-  vChargeHistos.push_back(fhMcPointChargeVsTrackLength);
-  vChargeHistos.push_back(fhMcPointChargeVsTrackLengthPi);
-  vChargeHistos.push_back(fhMcPointChargeVsTrackLengthPr);
-  vChargeHistos.push_back(fhMcPointChargeVsTrackLengthEl);
+  vChargeHistos.push_back(fhTrackChargeVsTrackEnergyLog);
+  vChargeHistos.push_back(fhTrackChargeVsTrackEnergyLogPi);
+  vChargeHistos.push_back(fhTrackChargeVsTrackEnergyLogPr);
+  vChargeHistos.push_back(fhTrackChargeVsTrackEnergyLogEl);
+  vChargeHistos.push_back(fhTrackChargeVsTrackLength);
+  vChargeHistos.push_back(fhTrackChargeVsTrackLengthPi);
+  vChargeHistos.push_back(fhTrackChargeVsTrackLengthPr);
+  vChargeHistos.push_back(fhTrackChargeVsTrackLengthEl);
 
   for (UInt_t i = 0; i < vChargeHistos.size(); i++) {
     TH2F* histo = vChargeHistos[i];
@@ -344,6 +390,7 @@ void CbmMuchDigitizerQa::InitChargeHistos() {
   }
 }
 
+// -------------------------------------------------------------------------
 void CbmMuchDigitizerQa::InitLengthHistos() {
 
   if (!fMCTracks || !fPoints) { return; }
@@ -372,6 +419,7 @@ void CbmMuchDigitizerQa::InitLengthHistos() {
   }
 }
 
+// -------------------------------------------------------------------------
 void CbmMuchDigitizerQa::InitPadHistos() {
   // non-MC
   fvPadsTotalR.resize(fNstations);
@@ -432,18 +480,22 @@ void CbmMuchDigitizerQa::InitPadHistos() {
 
   // MC below
   if (fMCTracks && fPoints) {
-    fhNpadsVsS = new TH2F("hNpadsVsS",
-                          "Number of fired pads vs pad area:area:n pads",
-                          10,
-                          -5,
-                          0,
-                          10,
-                          0.5,
-                          10.5);
+    fhNpadsVsS =
+      new TH2F("hNpadsVsS",
+               "Number of fired pads per particle vs average pad area",
+               50,
+               0,
+               5,
+               15,
+               0.5,
+               15.5);
+    fhNpadsVsS->SetYTitle("N fired pads");
+    fhNpadsVsS->SetXTitle("pad area [cm^2]");
     histFolder->Add(fhNpadsVsS);
   }
 }
 
+// -------------------------------------------------------------------------
 void CbmMuchDigitizerQa::FillTotalPadsHistos() {
 
   vector<CbmMuchModule*> modules = fGeoScheme->GetModules();
@@ -476,6 +528,7 @@ void CbmMuchDigitizerQa::FillTotalPadsHistos() {
   }
 }
 
+// -------------------------------------------------------------------------
 void CbmMuchDigitizerQa::InitFits() {
 
   fFitEl = new TF1("fit_el", LandauMPV, -0.5, 4.5, 1);
@@ -520,10 +573,14 @@ void CbmMuchDigitizerQa::Exec(Option_t*) {
 
   fNevents++;
   LOG(info) << "Event: " << fNevents;
+
+  if (CheckConsistency() != 0) { return; }
+
   TDirectory* oldDirectory = gDirectory;
 
   OccupancyQa();
-  DigitizerQa();
+
+  ProcessMCPoints();
   FillChargePerPoint();
   FillDigitizerPerformancePlots();
 
@@ -535,37 +592,105 @@ void CbmMuchDigitizerQa::Exec(Option_t*) {
   return;
 }
 
+
+// -------------------------------------------------------------------------
+int CbmMuchDigitizerQa::CheckConsistency() {
+  // check consistency of geometry & data
+  if (!fDigiManager) {
+    LOG(error) << "Can not find Much digi manager";
+    return -1;
+  }
+  if (!fGeoScheme) {
+    LOG(error) << "Can not find Much geo scheme";
+    return -1;
+  }
+
+  for (Int_t i = 0; i < fDigiManager->GetNofDigis(ECbmModuleId::kMuch); i++) {
+    CbmMuchDigi* digi = (CbmMuchDigi*) fDigiManager->Get<CbmMuchDigi>(i);
+    if (!digi) {
+      LOG(error) << " Much digi " << i << " out of "
+                 << fDigiManager->GetNofDigis(ECbmModuleId::kMuch)
+                 << " doesn't exist";
+      return -1;
+    }
+    UInt_t address = digi->GetAddress();
+
+    int ista = CbmMuchAddress::GetStationIndex(address);
+    if (ista < 0 || ista >= fNstations) {
+      LOG(error) << " Much station " << ista << " for adress " << address
+                 << " is out of the range";
+      return -1;
+    }
+
+    CbmMuchModule* module = fGeoScheme->GetModuleByDetId(address);
+    if (!module) {
+      LOG(error) << " Much module " << address << " doesn't exist";
+      return -1;
+    }
+    if (module->GetDetectorType() != 4 && module->GetDetectorType() != 3) {
+      LOG(error) << " Much module: unknown detector type  "
+                 << module->GetDetectorType();
+      return -1;
+    }
+    CbmMuchModuleGem* moduleGem = dynamic_cast<CbmMuchModuleGem*>(module);
+    if (!moduleGem) {
+      LOG(error) << " Unexpected Much module type: module " << address
+                 << " is not a Gem module";
+      return -1;
+    }
+    CbmMuchPad* pad = moduleGem->GetPad(address);
+    if (!pad) {
+      LOG(error) << " Much pad for adress " << address << " doesn't exist";
+      return -1;
+    }
+
+    if (fDigiManager->IsMatchPresent(ECbmModuleId::kMuch)) {
+      CbmMatch* match =
+        (CbmMatch*) fDigiManager->GetMatch(ECbmModuleId::kMuch, i);
+      if (!match) {
+        LOG(error) << " Much MC match for digi " << i << " out of "
+                   << fDigiManager->GetNofDigis(ECbmModuleId::kMuch)
+                   << "doesn't exist";
+        return -1;
+      }
+    }
+  }
+  return 0;
+}
+
+// -------------------------------------------------------------------------
+const CbmMuchPad* CbmMuchDigitizerQa::GetPad(UInt_t address) const {
+  // get Much pad from the digi address
+  CbmMuchModuleGem* moduleGem =
+    dynamic_cast<CbmMuchModuleGem*>(fGeoScheme->GetModuleByDetId(address));
+  CbmMuchPad* pad = moduleGem->GetPad(address);
+  return pad;
+}
+
+
 // -------------------------------------------------------------------------
 void CbmMuchDigitizerQa::OccupancyQa() {
   // Filling occupancy plots
   for (Int_t i = 0; i < fDigiManager->GetNofDigis(ECbmModuleId::kMuch); i++) {
-    CbmMuchDigi* digi = (CbmMuchDigi*) fDigiManager->Get<CbmMuchDigi>(i);
-    assert(digi);
+    CbmMuchDigi* digi     = (CbmMuchDigi*) fDigiManager->Get<CbmMuchDigi>(i);
     UInt_t address        = digi->GetAddress();
-    CbmMuchModule* module = fGeoScheme->GetModuleByDetId(address);
-    if (!module) continue;
-    Double_t r0 = 0;
-    if (module->GetDetectorType() != 4 && module->GetDetectorType() != 3)
-      continue;
-    CbmMuchModuleGem* module1 = (CbmMuchModuleGem*) module;
-    CbmMuchPad* pad           = module1->GetPad(
-      address);  // fGeoScheme->GetPadByDetId(detectorId, channelId);
-    assert(pad);
-    Double_t x0 = pad->GetX();
-    Double_t y0 = pad->GetY();
-    r0          = TMath::Sqrt(x0 * x0 + y0 * y0);
-    fvUsPadsFiredR[CbmMuchAddress::GetStationIndex(address)]->Fill(r0);
-    fvUsPadsFiredXY[CbmMuchAddress::GetStationIndex(address)]->Fill(x0, y0);
+    int ista              = CbmMuchAddress::GetStationIndex(address);
+    const CbmMuchPad* pad = GetPad(address);
+    Double_t x0           = pad->GetX();
+    Double_t y0           = pad->GetY();
+    double r0             = TMath::Sqrt(x0 * x0 + y0 * y0);
+    fvUsPadsFiredR[ista]->Fill(r0);
+    fvUsPadsFiredXY[ista]->Fill(x0, y0);
   }
 }
 
 // -------------------------------------------------------------------------
-void CbmMuchDigitizerQa::DigitizerQa() {
+int CbmMuchDigitizerQa::ProcessMCPoints() {
 
   if (!fMCTracks || !fPoints) {
     LOG(debug)
       << " CbmMuchDigitizerQa::DigitizerQa(): Found no MC data. Skipping.";
-    return;
+    return 0;
   }
   TVector3 vIn;   // in  position of the track
   TVector3 vOut;  // out position of the track
@@ -574,44 +699,65 @@ void CbmMuchDigitizerQa::DigitizerQa() {
 
   for (Int_t i = 0; i < fPoints->GetEntriesFast(); i++) {
     CbmMuchPoint* point = (CbmMuchPoint*) fPoints->At(i);
+    if (!point) {
+      LOG(error) << " Much MC point " << i << " out of "
+                 << fPoints->GetEntriesFast() << " doesn't exist";
+      return -1;
+    }
+
     Int_t stId = CbmMuchAddress::GetStationIndex(point->GetDetectorID());
+
+    if (stId < 0 || stId > fNstations) {
+      LOG(error) << " Much MC point station " << stId << " is out of the range";
+      return -1;
+    }
 
     // Check if the point corresponds to a certain  MC Track
     Int_t trackId = point->GetTrackID();
-    if (trackId < 0) {
-      new ((*fPointInfos)[i]) CbmMuchPointInfo(0, 0, 0, 0, 0);
-      continue;
+    if (trackId < 0 || trackId >= fMCTracks->GetEntriesFast()) {
+      LOG(error) << " Much MC point track Id " << trackId
+                 << " is out of the range";
+      return -1;
     }
+
     CbmMCTrack* mcTrack = (CbmMCTrack*) fMCTracks->At(trackId);
     if (!mcTrack) {
-      new ((*fPointInfos)[i]) CbmMuchPointInfo(0, 0, 0, 0, 0);
-      continue;
+      LOG(error) << " MC track" << trackId << " is not found";
+      return -1;
     }
 
-    Int_t motherId         = mcTrack->GetMotherId();
     Int_t pdgCode          = mcTrack->GetPdgCode();
     TParticlePDG* particle = TDatabasePDG::Instance()->GetParticle(pdgCode);
-    if (!particle || pdgCode == 22 ||  // photons
-        pdgCode == 2112)               // neutrons
-    {
-      new ((*fPointInfos)[i]) CbmMuchPointInfo(0, 0, 0, 0, 0);
-      continue;
-    }
 
-    Double_t mass = particle->Mass();
     point->PositionIn(vIn);
     point->PositionOut(vOut);
     point->Momentum(p);
-    Double_t length = (vOut - vIn).Mag();                   // Track length
-    Double_t kine   = sqrt(p.Mag2() + mass * mass) - mass;  // Kinetic energy
+    Double_t length = (vOut - vIn).Mag();  // Track length
+    Double_t kine   = 0;                   // Kinetic energy
+    if (particle) {
+      Double_t mass = particle->Mass();
+      kine          = sqrt(p.Mag2() + mass * mass) - mass;
+    }
+
     // Get mother pdg code
-    Int_t motherPdg         = 0;
-    CbmMCTrack* motherTrack = NULL;
-    if (motherId != -1) motherTrack = (CbmMCTrack*) fMCTracks->At(motherId);
-    if (motherTrack) motherPdg = motherTrack->GetPdgCode();
+    Int_t motherPdg = 0;
+    Int_t motherId  = mcTrack->GetMotherId();
+    if (motherId >= fMCTracks->GetEntriesFast()) {
+      LOG(error) << " MC track mother Id" << trackId << " is out of the range";
+      return -1;
+    }
+    if (motherId >= 0) {
+      CbmMCTrack* motherTrack = (CbmMCTrack*) fMCTracks->At(motherId);
+      if (!motherTrack) {
+        LOG(error) << " MC track" << trackId << " is not found";
+        return -1;
+      }
+      motherPdg = motherTrack->GetPdgCode();
+    }
     new ((*fPointInfos)[i])
       CbmMuchPointInfo(pdgCode, motherPdg, kine, length, stId);
   }
+  return 0;
 }
 
 // -------------------------------------------------------------------------
@@ -624,31 +770,15 @@ void CbmMuchDigitizerQa::FillChargePerPoint() {
   }
   for (Int_t i = 0; i < fDigiManager->GetNofDigis(ECbmModuleId::kMuch); i++) {
     CbmMuchDigi* digi = (CbmMuchDigi*) fDigiManager->Get<CbmMuchDigi>(i);
-    assert(digi);
     CbmMatch* match =
       (CbmMatch*) fDigiManager->GetMatch(ECbmModuleId::kMuch, i);
-    assert(match);
-    CbmMuchModule* module = fGeoScheme->GetModuleByDetId(digi->GetAddress());
-    assert(module);
-    if (!module) continue;
-    Double_t area = 0;
-    if (module->GetDetectorType() != 4 && module->GetDetectorType() != 3)
-      continue;  /// rpc
-    LOG(debug) << GetName() << " Processing MuchDigi " << i << " at address "
-               << digi->GetAddress() << " Module number "
-               << module->GetDetectorType();
-
-    CbmMuchModuleGem* module1 = (CbmMuchModuleGem*) module;
-    assert(module1);
-    CbmMuchPad* pad = module1->GetPad(digi->GetAddress());
-    assert(pad);
-    area           = pad->GetDx() * pad->GetDy();
-    Int_t nofLinks = match->GetNofLinks();
+    const CbmMuchPad* pad = GetPad(digi->GetAddress());
+    Double_t area         = pad->GetDx() * pad->GetDy();
+    Int_t nofLinks        = match->GetNofLinks();
     for (Int_t pt = 0; pt < nofLinks; pt++) {
       Int_t pointId          = match->GetLink(pt).GetIndex();
       Int_t charge           = match->GetLink(pt).GetWeight();
       CbmMuchPointInfo* info = (CbmMuchPointInfo*) fPointInfos->At(pointId);
-      if (info->GetPdgCode() == 0) continue;
       info->AddCharge(charge);
       info->AddArea(area);
     }
@@ -674,39 +804,48 @@ void CbmMuchDigitizerQa::FillDigitizerPerformancePlots() {
     Double_t kine   = 1000 * (info->GetKine());
     Double_t charge = info->GetCharge();
     Int_t pdg       = info->GetPdgCode();
-    if (pdg == 0) continue;
     if (charge <= 0) continue;
-    Double_t log_kine   = TMath::Log10(kine);
+
+    if (pdg == 22 ||  // photons
+        pdg == 2112)  // neutrons
+    {
+      LOG(error) << "Particle with pdg code " << pdg
+                 << " produces signal in Much";
+    }
+
+    // special entry at -0.2 for the particles that are not known for TDataBasePDG
+    Double_t log_kine   = (kine > 0) ? TMath::Log10(kine) : -0.2;
     Double_t log_charge = TMath::Log10(charge);
     charge              = charge / 1.e+4;  // measure charge in 10^4 electrons
 
     Int_t nPads   = info->GetNPads();
     Double_t area = info->GetArea() / nPads;
     // printf("%f %i\n",TMath::Log2(area),nPads);
-    fhNpadsVsS->Fill(TMath::Log2(area), nPads);
-    fhMcPointCharge->Fill(charge);
-    fvMcPointCharge[info->GetStationId()]->Fill(charge);
-    fhMcPointChargeLog->Fill(log_charge);
-    fhMcPointChargeVsTrackEnergyLog->Fill(log_kine, charge);
-    fhMcPointChargeVsTrackLength->Fill(length, charge);
+    //fhNpadsVsS->Fill(TMath::Log2(area), nPads);
+    fhNpadsVsS->Fill(area, nPads);
+    fhTrackCharge->Fill(charge);
+    fvTrackCharge[info->GetStationId()]->Fill(charge);
+    fhTrackChargeLog->Fill(log_charge);
+    fhTrackChargeVsTrackEnergyLog->Fill(log_kine, charge);
+    fhTrackChargeVsTrackLength->Fill(length, charge);
     fhTrackLength->Fill(length);
 
     if (pdg == 2212) {
-      fhMcPointChargeVsTrackEnergyLogPr->Fill(log_kine, charge);
-      fhMcPointChargeVsTrackLengthPr->Fill(length, charge);
+      fhTrackChargeVsTrackEnergyLogPr->Fill(log_kine, charge);
+      fhTrackChargeVsTrackLengthPr->Fill(length, charge);
       fhTrackLengthPr->Fill(length);
     } else if (pdg == 211 || pdg == -211) {
-      fhMcPointChargeVsTrackEnergyLogPi->Fill(log_kine, charge);
-      fhMcPointChargeVsTrackLengthPi->Fill(length, charge);
+      fhTrackChargeVsTrackEnergyLogPi->Fill(log_kine, charge);
+      fhTrackChargeVsTrackLengthPi->Fill(length, charge);
       fhTrackLengthPi->Fill(length);
     } else if (pdg == 11 || pdg == -11) {
-      fhMcPointChargeVsTrackEnergyLogEl->Fill(log_kine, charge);
-      fhMcPointChargeVsTrackLengthEl->Fill(length, charge);
+      fhTrackChargeVsTrackEnergyLogEl->Fill(log_kine, charge);
+      fhTrackChargeVsTrackLengthEl->Fill(length, charge);
       fhTrackLengthEl->Fill(length);
     }
     if (pdg == 2212 && length > 0.3 && length < 0.32 && kine > 1000
         && kine < 1020)
-      fhMcPointChargePr_1GeV_3mm->Fill(charge);
+      fhTrackChargePr_1GeV_3mm->Fill(charge);
   }
 }
 
@@ -718,14 +857,14 @@ void CbmMuchDigitizerQa::DrawChargeCanvases() {
 
   for (Int_t i = 0; i < fNstations; i++) {
     fCanvStationCharge->cd(i + 1);
-    fvMcPointCharge[i]->DrawCopy("", "");
+    fvTrackCharge[i]->DrawCopy("", "");
   }
   fCanvCharge->cd(1);
-  fhMcPointCharge->DrawCopy("", "");
+  fhTrackCharge->DrawCopy("", "");
   fCanvCharge->cd(2);
-  fhMcPointChargeLog->DrawCopy("", "");
+  fhTrackChargeLog->DrawCopy("", "");
   fCanvCharge->cd(3);
-  fhMcPointChargePr_1GeV_3mm->DrawCopy("", "");
+  fhTrackChargePr_1GeV_3mm->DrawCopy("", "");
 
   for (Int_t i = 0; i < 4; i++) {
     fCanvChargeVsEnergy->cd(i + 1);
@@ -736,15 +875,15 @@ void CbmMuchDigitizerQa::DrawChargeCanvases() {
     gPad->SetLogz();
   }
   fCanvChargeVsEnergy->cd(1);
-  fhMcPointChargeVsTrackEnergyLog->DrawCopy("colz", "");
+  fhTrackChargeVsTrackEnergyLog->DrawCopy("colz", "");
   fCanvChargeVsEnergy->cd(2);
-  fhMcPointChargeVsTrackEnergyLogPi->DrawCopy("colz", "");
+  fhTrackChargeVsTrackEnergyLogPi->DrawCopy("colz", "");
   fFitPi->DrawCopy("same");
   fCanvChargeVsEnergy->cd(3);
-  fhMcPointChargeVsTrackEnergyLogPr->DrawCopy("colz", "");
+  fhTrackChargeVsTrackEnergyLogPr->DrawCopy("colz", "");
   fFitPr->DrawCopy("same");
   fCanvChargeVsEnergy->cd(4);
-  fhMcPointChargeVsTrackEnergyLogEl->DrawCopy("colz", "");
+  fhTrackChargeVsTrackEnergyLogEl->DrawCopy("colz", "");
   fFitEl->DrawCopy("same");
 
   for (Int_t i = 0; i < 4; i++) {
@@ -756,15 +895,16 @@ void CbmMuchDigitizerQa::DrawChargeCanvases() {
     gPad->SetLogz();
   }
   fCanvChargeVsLength->cd(1);
-  fhMcPointChargeVsTrackLength->DrawCopy("colz", "");
+  fhTrackChargeVsTrackLength->DrawCopy("colz", "");
   fCanvChargeVsLength->cd(2);
-  fhMcPointChargeVsTrackLengthPi->DrawCopy("colz", "");
+  fhTrackChargeVsTrackLengthPi->DrawCopy("colz", "");
   fCanvChargeVsLength->cd(3);
-  fhMcPointChargeVsTrackLengthPr->DrawCopy("colz", "");
+  fhTrackChargeVsTrackLengthPr->DrawCopy("colz", "");
   fCanvChargeVsLength->cd(4);
-  fhMcPointChargeVsTrackLengthEl->DrawCopy("colz", "");
+  fhTrackChargeVsTrackLengthEl->DrawCopy("colz", "");
 }
 
+// -------------------------------------------------------------------------
 void CbmMuchDigitizerQa::DrawPadCanvases() {
   //non-MC
   for (Int_t i = 0; i < fNstations; i++) {
@@ -788,6 +928,7 @@ void CbmMuchDigitizerQa::DrawPadCanvases() {
   }
 }
 
+// -------------------------------------------------------------------------
 void CbmMuchDigitizerQa::DrawLengthCanvases() {
 
   if (!fMCTracks || !fPoints) { return; }
@@ -807,6 +948,7 @@ void CbmMuchDigitizerQa::DrawLengthCanvases() {
   fhTrackLengthEl->DrawCopy("", "");
 }
 
+// -------------------------------------------------------------------------
 void CbmMuchDigitizerQa::PrintFrontLayerPoints() {
 
   if (!fMCTracks || !fPoints) { return; }
@@ -848,34 +990,27 @@ void CbmMuchDigitizerQa::PrintFrontLayerDigis() {
 }
 
 // -------------------------------------------------------------------------
-void CbmMuchDigitizerQa::FinishTask() {
-
-  printf("FinishTask\n");
-  cout << "\n\n SG: Finish task!" << endl;
-
+TFolder& CbmMuchDigitizerQa::GetQa() {
+  TDirectory* oldDirectory = gDirectory;
   DrawChargeCanvases();
   DrawPadCanvases();
   DrawLengthCanvases();
+  gDirectory = oldDirectory;
+  return fOutFolder;
+}
 
-  TDirectory* oldDirectory = gDirectory;
-  bool oldBatchMode        = gROOT->IsBatch();
+// -------------------------------------------------------------------------
+void CbmMuchDigitizerQa::Finish() {
 
   if (!FairRootManager::Instance() || !FairRootManager::Instance()->GetSink()) {
-    cout << "No sink found" << endl;
+    LOG(error) << "No sink found";
     return;
   }
-  // gROOT->SetBatch(kTRUE);
-  gROOT->SetBatch(kFALSE);
-  gStyle->SetPaperSize(20, 20);
-
-  if (fVerbose > 1) { OutputNvsS(); }
   FairSink* sink = FairRootManager::Instance()->GetSink();
-  sink->WriteObject(&fOutFolder, nullptr);
-  gDirectory = oldDirectory;
-  gROOT->SetBatch(oldBatchMode);
+  sink->WriteObject(&GetQa(), nullptr);
 }
-// -------------------------------------------------------------------------
 
+// -------------------------------------------------------------------------
 void CbmMuchDigitizerQa::OutputNvsS() {
   TCanvas* c = new TCanvas("nMeanVsS", "nMeanVsS", 2 * 800, 2 * 400);
   printf("===================================\n");
@@ -911,74 +1046,6 @@ void CbmMuchDigitizerQa::OutputNvsS() {
 }
 
 // -------------------------------------------------------------------------
-Int_t CbmMuchDigitizerQa::GetNChannels(Int_t iStation) {
-  Int_t nChannels                = 0;
-  vector<CbmMuchModule*> modules = fGeoScheme->GetModules(iStation);
-  for (UInt_t im = 0; im < modules.size(); im++) {
-    CbmMuchModule* mod = modules[im];
-    if (mod->GetDetectorType() != 4 && mod->GetDetectorType() != 3) continue;
-    CbmMuchModuleGem* module = (CbmMuchModuleGem*) mod;
-    if (!module) continue;
-    nChannels += module->GetNPads();
-  }
-  return nChannels;
-}
-
-// -------------------------------------------------------------------------
-Int_t CbmMuchDigitizerQa::GetNSectors(Int_t iStation) {
-  Int_t nSectors                 = 0;
-  vector<CbmMuchModule*> modules = fGeoScheme->GetModules(iStation);
-  for (UInt_t im = 0; im < modules.size(); im++) {
-    CbmMuchModule* mod = modules[im];
-    if (mod->GetDetectorType() != 4 && mod->GetDetectorType() != 3) continue;
-    CbmMuchModuleGem* module = (CbmMuchModuleGem*) mod;
-    if (!module) continue;
-    nSectors += module->GetNSectors();
-  }
-  return nSectors;
-}
-
-// -------------------------------------------------------------------------
-TVector2 CbmMuchDigitizerQa::GetMinPadSize(Int_t iStation) {
-  Double_t padMinLx              = std::numeric_limits<Double_t>::max();
-  Double_t padMinLy              = std::numeric_limits<Double_t>::max();
-  vector<CbmMuchModule*> modules = fGeoScheme->GetModules(iStation);
-  for (UInt_t im = 0; im < modules.size(); im++) {
-    CbmMuchModule* mod = modules[im];
-    if (mod->GetDetectorType() != 1) continue;
-    CbmMuchModuleGem* module = (CbmMuchModuleGem*) mod;
-    vector<CbmMuchPad*> pads = module->GetPads();
-    for (UInt_t ip = 0; ip < pads.size(); ip++) {
-      CbmMuchPad* pad = pads[ip];
-      if (pad->GetDx() < padMinLx) padMinLx = pad->GetDx();
-      if (pad->GetDy() < padMinLy) padMinLy = pad->GetDy();
-    }
-  }
-  return TVector2(padMinLx, padMinLy);
-}
-// -------------------------------------------------------------------------
-
-// -------------------------------------------------------------------------
-TVector2 CbmMuchDigitizerQa::GetMaxPadSize(Int_t iStation) {
-  Double_t padMaxLx              = std::numeric_limits<Double_t>::min();
-  Double_t padMaxLy              = std::numeric_limits<Double_t>::min();
-  vector<CbmMuchModule*> modules = fGeoScheme->GetModules(iStation);
-  for (UInt_t im = 0; im < modules.size(); im++) {
-    CbmMuchModule* mod = modules[im];
-    if (mod->GetDetectorType() != 1) continue;
-    CbmMuchModuleGem* module = (CbmMuchModuleGem*) mod;
-    vector<CbmMuchPad*> pads = module->GetPads();
-    for (UInt_t ip = 0; ip < pads.size(); ip++) {
-      CbmMuchPad* pad = pads[ip];
-      if (pad->GetDx() > padMaxLx) padMaxLx = pad->GetDx();
-      if (pad->GetDy() > padMaxLy) padMaxLy = pad->GetDy();
-    }
-  }
-  return TVector2(padMaxLx, padMaxLy);
-}
-// -------------------------------------------------------------------------
-
-// -------------------------------------------------------------------------
 Double_t CbmMuchDigitizerQa::LandauMPV(Double_t* lg_x, Double_t* par) {
   Double_t gaz_gain_mean = 1.7e+4;
   Double_t scale         = 1.e+6;
@@ -1009,6 +1076,3 @@ Double_t CbmMuchDigitizerQa::MPV_n_e(Double_t Tkin, Double_t mass) {
     return fPol6.EvalPar(&logT, mpv_p);
   }
 }
-// -------------------------------------------------------------------------
-
-ClassImp(CbmMuchDigitizerQa)
