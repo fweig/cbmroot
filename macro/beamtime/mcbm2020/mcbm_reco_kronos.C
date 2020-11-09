@@ -21,15 +21,18 @@ void mcbm_reco(Int_t runId = 812, Int_t nTimeslices = 0) {
 
   // -----   In- and output file names   ------------------------------------
   TString inFile = Form("/lustre/cbm/users/ploizeau/mcbm2020/"
-			"unp_evt_data_7f229b3f_20201103/unp_mcbm_%i.root",
-			runId);
+                        "unp_evt_data_7f229b3f_20201103/unp_mcbm_%i.root",
+                        runId);
   TString parFile =
-    Form("/lustre/cbm/users/ploizeau/mcbm2020/unp_evt_data_7f229b3f_20201103/unp_mcbm_params_%i.root",
-	 runId);
+    Form("/lustre/cbm/users/ploizeau/mcbm2020/unp_evt_data_7f229b3f_20201103/"
+         "unp_mcbm_params_%i.root",
+         runId);
   TString geoFile =
-    "/lustre/cbm/users/alberica/cbmroot/macro/beamtime/mcbm2020/data/test.geo.root";  // to be created by a simulation run
-  TString outFile =
-    Form("/lustre/cbm/users/ploizeau/mcbm2020/unp_evt_data_7f229b3f_20201103/reco_mcbm_%i.root", runId);
+    "/lustre/cbm/users/alberica/cbmroot/macro/beamtime/mcbm2020/data/"
+    "test.geo.root";  // to be created by a simulation run
+  TString outFile = Form("/lustre/cbm/users/ploizeau/mcbm2020/"
+                         "unp_evt_data_7f229b3f_20201103/reco_mcbm_%i.root",
+                         runId);
   // ------------------------------------------------------------------------
 
 
