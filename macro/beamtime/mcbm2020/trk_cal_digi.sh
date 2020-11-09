@@ -85,12 +85,13 @@ echo trk_cal_digi for $cRun with iDut=$iDut, iRef=$iRef, iSet=$iCalSet, iSel2=$i
 
 if [[ $iShLev = "" ]]; then 
   iShLev=0
-  nEvt=200000
+  nEvt=20000
   dDTres=100000
   dDTRMSres=100000
+  dL0DTRMSres=100000
+else
+ (( iShLev += 1 ))  
 fi 
-
-echo execute trk_cal_digi at shell level $iShLev
 
 if [ -e /lustre/cbm ]; then
 source /lustre/cbm/users/nh/CBM/cbmroot/trunk/build/config.sh 
@@ -109,7 +110,7 @@ cd    $cRun
 cp    ../.rootrc .
 cp    ../rootlogon.C .
 
-echo Execute in `pwd` at $iShLev: ./trk_cal_digi.sh $1 $2 $3 $4 $5 $6 $7 $8
+echo Execute in `pwd` at shell level $iShLev: ./trk_cal_digi.sh $1 $2 $3 $4 $5 $6 $7 $8
 
 # get initial digi calibration 
 #cp -v  ./I*/${CalFile}  .
@@ -127,7 +128,7 @@ fRange1=2.
 fRange2=4.0
 TRange2Limit=3. 
 
-iSel=901041
+iSel=900041
 iGenCor=3
 cCalSet2=${cCalSet}_$cSel2
 
@@ -139,8 +140,9 @@ case $iCalOpt in
   (( nEvtMax *= 10 ))
   ;;
 esac
-
-while [[ $dDTres > 0 ]]; do
+  
+iIter=0
+while [[ $dDTres -gt 0 ]]; do
   nEvt=`echo "scale=0;$nEvt * 1./1." | bc`
   #nEvt=`echo "scale=0;$nEvt * 1.1/1." | bc`
   if [ $nEvt -gt $nEvtMax ]; then
@@ -154,11 +156,11 @@ while [[ $dDTres > 0 ]]; do
   fi
   
   iCalAct=$iCalOpt
-  iIter=0
-  echo Enter while loop with CalAct $iCalAct in dir `pwd`
+  echo Enter while loop with Iter $iIter, CalAct $iCalAct in dir `pwd`
+
   while [[ $iCalAct -gt 0 ]]; do  
     cd $wdir/$cRun
-    echo Current loop with CalAct $iCalAct and CalOpt $iCalOpt
+    echo Current loop with Iter $iIter, CalAct $iCalAct and CalOpt $iCalOpt
     if [[ $iCalOpt = 1 ]] || [[ $iCalAct -gt 1 ]]; then 
       root -b -q '../ana_digi_cal.C('$nEvt',93,1,'$iRef',1,"'$cRun'",'$iCalSet',1,'$iSel2','$Deadtime',"'$CalIdMode'") '
       # update calibration parameter file, will only be active in next iteration 
@@ -173,26 +175,26 @@ while [[ $dDTres > 0 ]]; do
   
         cp -v New_${CalFile} ${CalFile}  
       fi
+      (( iIter   += 1 ))
     else 
       cd $wdir
       # store current status 
       dLDTres=$dDTres
       dLDTRMSres=$dDTRMSres
       iLCalOpt=$iCalOpt
-      echo Store limits $dLDTres, $dLDTRMSres
-      (( iShLev += 1 ))
-      echo exec in `pwd` at level $iShLev: trk_cal_digi $1 $2 $3 $4 $5 1 $7
+      echo Store $iIter limits $dLDTres, $dLDTRMSres
+      echo exec in `pwd` at iter $iIter, level $iShLev: trk_cal_digi $1 $2 $3 $4 $5 1 $7
       trk_cal_digi $1 $2 $3 $4 $5 1 $7
-      (( iShLev -= 1 ))
       # restore old status
+      dL0DTRMSres=$dDTRMSres
+      dLDTRMSres=50000  # prepare for next round 
       dDTres=$dLDTres
       dDTRMSres=$dLDTRMSres
       iCalOpt=$iLCalOpt
-      echo exec1done, resume old CalOpt $iCalOpt with status $dDTres, $dDTRMSres
+      echo exec1done at $iIter, $iShLev resume old CalOpt $iCalOpt with limits $dDTres, $dDTRMSres, $dL0DTRMSres
     fi
     (( iCalAct -= 1 ))
-    (( iIter   += 1 ))
-    echo Continue while loop with CalAct $iCalAct and CalOpt $iCalOpt
+    echo Continue while loop with Iter $iIter, ShLev $iShLev, CalAct $iCalAct and CalOpt $iCalOpt
   done
   
   cd $wdir/$cRun
@@ -202,13 +204,18 @@ while [[ $dDTres > 0 ]]; do
   if [[ $Tres = 0 ]]; then
     Tres=1
   fi
+  
+  if [[ $dDTRMSres -eq 50000 ]]; then 
+    TRMSres=1000
+  fi
+  
   dTdif=`echo "$dDTres - $Tres" | bc`
   compare_result=`echo "$Tres < $dDTres" | bc`
 
   dTRMSdif=`echo "$dDTRMSres - $TRMSres" | bc`
   compare_RMS=`echo "$TRMSres < $dDTRMSres" | bc`
 
-  echo at iter=$iter got TOff = $Tres, compare to $dDTres, dTdif = $dTdif, result = $compare_result, TRMS = $TRMSres, old $dDTRMSres, dif = $dTRMSdif, result = $compare_RMS 
+  echo At iter=$iter, ShLev=$iShLev got TOff = $Tres, compare to $dDTres, dTdif = $dTdif, result = $compare_result, TRMS = $TRMSres, old $dDTRMSres, dif = $dTRMSdif, result = $compare_RMS 
 
   ((compare_result += $compare_RMS))
   echo CMPR result_summary: $compare_result 
@@ -223,25 +230,28 @@ while [[ $dDTres > 0 ]]; do
     fi
     dDTres=$Tres
     dDTRMSres=$TRMSres
-    echo Store new res values $dDTres, $dDTRMSres
+    echo Stored $iIter, $iShLev new res values $dDTres, $dDTRMSres
     (( dDTRMSres -= 1 ))  # next attempt should be at least 1ps better for continuation
     cp -v New_${CalFile} ${CalFile}  
     cp -v New_${CalFile} ${CalFile}_$iter  
   else
+    echo Next iteration $TRMSres -gt $dL0DTRMSres ?
+    if [[ $TRMSres -gt $dL0DTRMSres ]]; then
+      exit 0 
+    fi
     dDTres=0
   fi
   (( iter += 1 ))
 done
 
+(( iShLev -= 1 ))
 cd $wdir/$cRun
+echo Finishing with ShLev $iShLev, Iter = $iIter 
 # generate full statistics digi file 
-if [[ $iShLev = 0 ]]; then 
-  root -b -q '../ana_digi_cal.C(-1,93,1,'$iRef',1,"'$cRun'",'$iCalSet',1,'$iSel2','$Deadtime',"'$CalIdMode'") '
-fi
-
-cd $wdir
-
-if [[ $iShLev = 0 ]]; then 
+if [[ $iShLev -eq 0 ]]; then
+#  root -b -q '../ana_digi_cal.C(-1,93,1,'$iRef',1,"'$cRun'",'$iCalSet',1,'$iSel2','$Deadtime',"'$CalIdMode'") '
+  root -b -q '../ana_digi_cal.C(1000000,93,1,'$iRef',1,"'$cRun'",'$iCalSet',1,'$iSel2','$Deadtime',"'$CalIdMode'") '
+  cd $wdir
   mv -v slurm-${SLURM_JOB_ID}.out ${outdir}/TrkCalDigi_${cRun}_${iCalSet}_${iSel2}_${CalIdMode}.out
 fi
 

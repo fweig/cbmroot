@@ -60,6 +60,12 @@ else
     CalFile=${CalIdMode}_set${CalIdSet}_93_1tofClust.hst.root    
 fi
 
+Nevt=$7
+if [[ ${Nevt} = "" ]]; then
+    echo use all events
+    Nevt=-1
+fi
+
 echo gen_digi for $cRun with iDut=$iDut, iRef=$iRef, iSet=$iCalSet, iSel2=$iSel2, iBRef=$iBRef, Deadtime=$Deadtime, CalFile=$CalFile
 
 if [ -e /lustre/cbm ]; then
@@ -78,7 +84,7 @@ cp    ../.rootrc .
 cp    ../rootlogon.C .
 cp -v ../${CalFile}  .
 #root -b -q '../ana_digi_cal.C(100000,93,1,'$iRef',1,"'$cRun'",'$iCalSet',1,'$iSel2','$Deadtime',"'$CalIdMode'") '
-root -b -q '../ana_digi_cal.C(-1,93,1,'$iRef',1,"'$cRun'",'$iCalSet',1,'$iSel2','$Deadtime',"'$CalIdMode'") '
+root -b -q '../ana_digi_cal_all.C('$Nevt',93,1,'$iRef',1,"'$cRun'",'$iCalSet',1,'$iSel2','$Deadtime',"'$CalIdMode'") '
 #root -b -q '../ana_digi_cos.C(-1,93,1,'$iRef',1,"'$cRun'",'$iCalSet',1,'$iSel2','$Deadtime',"'$CalIdMode'") '
 #root -b -q '../ana_digi_star.C(-1,93,1,'$iRef',1,"'$cRun'",'$iCalSet',1,'$iSel2','$Deadtime',"'$CalIdMode'") '
 

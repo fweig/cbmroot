@@ -268,7 +268,7 @@ void ana_trksi(Int_t nEvents        = 10000,
 
     case 2:
       iMinNofHits   = 3;
-      iNStations    = 28;
+      iNStations    = 27;
       iNReqStations = 4;
       tofFindTracks->SetStation(0, 0, 2, 2);
       tofFindTracks->SetStation(1, 0, 0, 2);
@@ -297,7 +297,7 @@ void ana_trksi(Int_t nEvents        = 10000,
       tofFindTracks->SetStation(24, 0, 3, 4);
       tofFindTracks->SetStation(25, 9, 0, 0);
       tofFindTracks->SetStation(26, 9, 0, 1);
-      tofFindTracks->SetStation(27, 5, 0, 0);
+      //tofFindTracks->SetStation(27, 5, 0, 0);
       break;
 
     case 3:
@@ -460,7 +460,7 @@ void ana_trksi(Int_t nEvents        = 10000,
   tofAnaTestbeam->SetHitDistMin(30.);   // initialization
   tofAnaTestbeam->SetEnableMatchPosScaling(kTRUE);
   tofAnaTestbeam->SetSpillDuration(3.);
-  tofAnaTestbeam->SetSpillTime(0.);
+  tofAnaTestbeam->SetStartSpillTime(-100.);
   if (iMc == 1) {
     tofAnaTestbeam->SetSpillDuration(0.);
     tofAnaTestbeam->SetSpillBreak(0.);

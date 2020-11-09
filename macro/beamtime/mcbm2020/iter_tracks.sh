@@ -81,7 +81,7 @@ cp ../.rootrc .
 cp ../rootlogon.C .
 
 # clean directory for start from scratch
-# rm -v ${cRun}_tofFindTracks.hst.root
+rm -v ${cRun}_tofFindTracks.hst.root
 rm -v TCalib.res
 
 if [[ $iter > 0 ]]; then

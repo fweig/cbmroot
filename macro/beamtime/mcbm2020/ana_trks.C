@@ -698,6 +698,7 @@ void ana_trks(Int_t nEvents        = 10000,
   gROOT->LoadMacro("pl_Eff_DTLH.C");
   gROOT->LoadMacro("pl_Eff_TIS.C");
   gROOT->LoadMacro("pl_Dut_Res.C");
+  gROOT->LoadMacro("pl_Dut_Vel.C");
 
   TString SaveToHstFile = "save_hst(\"" + cHstFile + "\")";
   gInterpreter->ProcessLine(SaveToHstFile);

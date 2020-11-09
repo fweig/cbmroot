@@ -45,14 +45,14 @@ void ana_digi_cal(Int_t nEvents      = 10000000,
 
   TList* parFileList = new TList();
 
-  TString FId = cFileId;
+  TString FId    = cFileId;
   TString cRun(FId(0, 3));
-  Int_t iRun     = cRun.Atoi();
+  Int_t iRun = cRun.Atoi();
   TString TofGeo = "";
   if (iRun < 690)
     TofGeo = "v20a_mcbm";
   else
-    TofGeo = "v20b_mcbm";
+    TofGeo = "v20f_mcbm";
   cout << "Geometry version " << TofGeo << endl;
 
   //   TObjString *tofDigiFile = new TObjString(workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par"); // TOF digi file
@@ -98,7 +98,7 @@ void ana_digi_cal(Int_t nEvents      = 10000000,
   tofClust->SetTRefId(RefSel);  // reference trigger for offset calculation
   tofClust->SetTotMax(20.);     // Tot upper limit for walk corection
   tofClust->SetTotMin(
-    0.01);  //(12000.);  // Tot lower limit for walk correction
+    0.);  //(12000.);  // Tot lower limit for walk correction
   tofClust->SetTotPreRange(
     5.);  // effective lower Tot limit  in ns from peak position
   tofClust->SetTotMean(5.);       // Tot calibration target value in ns

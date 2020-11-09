@@ -1,7 +1,4 @@
-void pl_pull_trk(Int_t NSt   = 8,
-                 Int_t iVar  = 0,
-                 Int_t iFit  = 0,
-                 Int_t iDrop = -1) {
+void pl_pull_trk(Int_t NSt = 8, Int_t iVar = 0, Int_t iFit = 0, Int_t iDrop=-1) {
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   TCanvas* can = new TCanvas("can", "can", 50, 0, 800, 800);
@@ -34,8 +31,8 @@ void pl_pull_trk(Int_t NSt   = 8,
   Double_t vSigErr[MSt];
   Double_t vResErr[MSt];
   // if (h!=NULL) h->Delete();
-  Int_t iCan   = 1;
-  Int_t iIndSt = 0;
+  Int_t iCan = 1;
+  Int_t iIndSt=0;
   TString var;
   Double_t Nall;
 
@@ -57,18 +54,18 @@ void pl_pull_trk(Int_t NSt   = 8,
       gPad->SetLogy();
       gPad->SetGridx();
       if (iFit > 0) {
-        Double_t dFMean   = h1->GetMean();
-        Double_t dFLim    = 3.0 * h1->GetRMS();
+        Double_t dFMean = h1->GetMean();
+        Double_t dFLim  = 3.0 * h1->GetRMS();
         Double_t dBinSize = h1->GetBinWidth(1);
-        dFLim             = TMath::Max(dFLim, 5. * dBinSize);
+        dFLim=TMath::Max(dFLim,5.*dBinSize);
         TFitResultPtr fRes =
           h1->Fit("gaus", "S", "", dFMean - dFLim, dFMean + dFLim);
         //cout << " fRes = "<< fRes <<endl;
-        if (-1 == fRes) return;
-        if (iDrop == iSt) {  // drop station from deconvolution
-          continue;
-        }
-        cout << "Add " << iSt << " as station index " << iIndSt << endl;
+        if (-1 == fRes) continue;
+        if ( iDrop == iSt ) { // drop station from deconvolution
+		  continue;
+		}
+		cout << "Add " << iSt << " as station index " << iIndSt << endl;
         vSt[iIndSt]      = iSt;
         vMean[iIndSt]    = fRes->Parameter(1);
         vSig[iIndSt]     = fRes->Parameter(2);
