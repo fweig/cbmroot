@@ -43,6 +43,8 @@ CbmTofCalibrator::CbmTofCalibrator()
   , fDigiBdfPar(NULL)
   , fTofDigiMatchColl(NULL)
   , fhCalR0(NULL)
+  , fhCalDX0(NULL)
+  , fhCalDY0(NULL)
   , fhCalPos()
   , fhCalTOff()
   , fhCalTot()
@@ -131,6 +133,10 @@ Bool_t CbmTofCalibrator::CreateCalHist() {
 
   fhCalR0 = new TH1D(
     "hCalR0", "Tracklet distance to nominal vertex; R_0 [cm]", 100, 0., 0.5);
+  fhCalDX0 = new TH1D(
+    "hCalDX0", "Tracklet distance to nominal vertex; #DeltaX_0 [cm]", 100, -0.5, 0.5);
+  fhCalDY0 = new TH1D(
+    "hCalDY0", "Tracklet distance to nominal vertex; #DeltaY_0 [cm]", 100, -0.5, 0.5);
 
   fhCalPos.resize(iNbDet);
   fhCalTOff.resize(iNbDet);
@@ -246,6 +252,9 @@ void CbmTofCalibrator::FillCalHist(CbmTofTracklet* pTrk, Int_t iOpt) {
     fhCalR0->Fill(pTrk->GetR0());
     if (pTrk->GetR0() > fdR0Lim) return;
   }
+  fhCalDX0->Fill(pTrk->GetFitX(0.));
+  fhCalDY0->Fill(pTrk->GetFitY(0.));
+
   for (Int_t iHit = 0; iHit < pTrk->GetNofHits(); iHit++) {
     CbmTofHit* pHit = pTrk->GetTofHitPointer(iHit);
     Int_t iDetId    = (pHit->GetAddress() & DetMask);
@@ -353,7 +362,7 @@ void CbmTofCalibrator::FillCalHist(CbmTofTracklet* pTrk, Int_t iOpt) {
       }
       Int_t iWalkMode = (iOpt - iOpt % 10) / 10;
       switch (iWalkMode) {
-        case 0:
+        case 1:
           fhCalWalk[iDetIndx][iCh0][iSide0]->Fill(
             tDigi0->GetTot(),
             tDigi0->GetTime()
@@ -362,7 +371,7 @@ void CbmTofCalibrator::FillCalHist(CbmTofTracklet* pTrk, Int_t iOpt) {
               - pTrk->GetFitT(
                 pHit
                   ->GetZ())  //-fTrackletTools->GetTexpected(pTrk, iDetId, pHit)
-              + fTofFindTracks->GetTOff(iDetId)
+	              + fTofFindTracks->GetTOff(iDetId)
               + 2. * (1. - 2. * tDigi0->GetSide()) * (hlocal_d[1] - hlocal_f[1])
                   / fDigiBdfPar->GetSigVel(iSmType, iSm, iRpc));
           /*
@@ -388,10 +397,11 @@ void CbmTofCalibrator::FillCalHist(CbmTofTracklet* pTrk, Int_t iOpt) {
                   / fDigiBdfPar->GetSigVel(iSmType, iSm, iRpc));
           break;
 
-        case 1: {
+        case 0: {
           Double_t dDeltaT = 0.5 * (tDigi0->GetTime() + tDigi1->GetTime())
-                             - pTrk->GetFitT(pHit->GetZ());
-          fhCalWalk[iDetIndx][iCh1][iSide0]->Fill(tDigi0->GetTot(), dDeltaT);
+                           + fTofFindTracks->GetTOff(iDetId)
+                           - pTrk->GetFitT(pHit->GetZ());
+          fhCalWalk[iDetIndx][iCh0][iSide0]->Fill(tDigi0->GetTot(), dDeltaT);
           fhCalWalk[iDetIndx][iCh1][iSide1]->Fill(tDigi1->GetTot(), dDeltaT);
         } break;
       }
@@ -478,6 +488,7 @@ Bool_t CbmTofCalibrator::UpdateCalHist(Int_t iOpt) {
         }
       } break;
       case 2:  // update individual channel walks
+    	if(iSmType==5) continue; // no walk correction for beam counter
         const Double_t MinCounts = 10.;
         Int_t iNbCh              = fDigiBdfPar->GetNbChan(iSmType, iRpc);
         for (Int_t iCh = 0; iCh < iNbCh; iCh++) {
