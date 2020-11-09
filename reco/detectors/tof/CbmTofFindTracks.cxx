@@ -285,23 +285,24 @@ InitStatus CbmTofFindTracks::Init() {
   //fill RpcId - map
   Bool_t bBeamCounter = kFALSE;
   Int_t iRpc          = 0;
+  fRpcAddr.resize(0);
   for (Int_t iCell = 0; iCell < fDigiPar->GetNrOfModules(); iCell++) {
     Int_t iCellId = fDigiPar->GetCellId(iCell);
     Int_t iCh     = fTofId->GetCell(iCellId);
-    if (0 == iCh) {
+    if ( 0 == iCh ) {
       LOG(info) << Form(
-        "Init found RpcInd %d at Addr 0x%08x, ModType %d, ModId %d, RpcId %d ",
-        iRpc,
+        "Init found RpcInd %d, %lu at Addr 0x%08x, ModType %d, ModId %d, RpcId %d ",
+        iRpc, fRpcAddr.size(),
         iCellId,
         fTofId->GetSMType(iCellId),
         fTofId->GetSModule(iCellId),
         fTofId->GetCounter(iCellId));
       if (fTofId->GetSMType(iCellId) == 5) {
         bBeamCounter = kTRUE;
-        LOG(info) << "Found beam counter in setup!";
+        LOG(info) << "Found beam counter in setup! at RpcInd " << iRpc
+        		  << ", Addr.size " << fRpcAddr.size();
       }
       fMapRpcIdParInd[iCellId] = iRpc;
-      fRpcAddr.resize(fRpcAddr.size() + 1);
       fRpcAddr.push_back(iCellId);
       iRpc++;
     }
@@ -736,7 +737,8 @@ Bool_t CbmTofFindTracks::WriteHistos() {
             dVal -= dFMean;
             TF1* fg              = hpy->GetFunction("gaus");
             Double_t dFMeanError = fg->GetParError(1);
-            LOG(info) << "Update hPullT_Smt_Off3 Ind " << ix << ": "
+            LOG(info) << "Update hPullT_Smt_Off3 Ind " << ix
+            		  << Form(", 0x%08x: ",fRpcAddr[ix])
                       << fhPullT_Smt_Off->GetBinContent(ix + 1) << " + "
                       << dFMean << ", Err " << dFMeanError << " -> " << dVal
                       << ", Width " << dRMS << ", Chi2 " << fg->GetChisquare();
@@ -744,8 +746,10 @@ Bool_t CbmTofFindTracks::WriteHistos() {
               if (dRMS < RMSmin) dRMS = RMSmin;
               if (dRMS > fSIGT * 3.0) dRMS = fSIGT * 3.;
               if (fRpcAddr[ix]
-                  != fiBeamCounter)  // don't correct beam counter position
+                  != fiBeamCounter)  // don't correct beam counter time
                 fhPullT_Smt_Off->SetBinContent(ix + 1, dVal);
+              else
+            	  LOG(info)<<"No Off3 correction for beam counter at index "<<ix;
               fhPullT_Smt_Width->SetBinContent(ix + 1, dRMS);
             }
           } else {
@@ -804,12 +808,12 @@ Bool_t CbmTofFindTracks::WriteHistos() {
             // limit maximal shift in X, for larger values, change geometry file
             if (dVal < -3.) dVal = -3.;
             if (dVal > 3.) dVal = 3.;
-            //if( fRpcAddr[ix] != fiBeamCounter )  // don't correct beam counter position
             LOG(info) << "Update hPullX_Smt_Off " << ix << ": "
                       << fhPullX_Smt_Off->GetBinContent(ix + 1) << " + "
                       << htmp1D->GetBinContent(ix + 1) << " -> " << dVal
                       << ", Width " << dRMS;
-            fhPullX_Smt_Off->SetBinContent(ix + 1, dVal);
+            if( fRpcAddr[ix] != fiBeamCounter )  // don't correct beam counter position
+              fhPullX_Smt_Off->SetBinContent(ix + 1, dVal);
             fhPullX_Smt_Width->SetBinContent(ix + 1, dRMS);
           }
         }
@@ -831,8 +835,8 @@ Bool_t CbmTofFindTracks::WriteHistos() {
         for (Int_t ix = 0; ix < nx; ix++) {
           Double_t dVal = fhPullY_Smt_Off->GetBinContent(ix + 1);
           dVal -= htmp1D->GetBinContent(ix + 1);
-          //if( fRpcAddr[ix] != fiBeamCounter )  // don't correct beam counter position
-          fhPullY_Smt_Off->SetBinContent(ix + 1, dVal);
+          if( fRpcAddr[ix] != fiBeamCounter )  // don't correct beam counter position
+            fhPullY_Smt_Off->SetBinContent(ix + 1, dVal);
 
           TH1D* hpy = fhPullY_Smt->ProjectionY("_py", ix + 1, ix + 1);
           if (hpy->GetEntries() > 100.) {
