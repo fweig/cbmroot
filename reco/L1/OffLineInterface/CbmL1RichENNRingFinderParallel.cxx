@@ -89,7 +89,7 @@ Int_t CbmL1RichENNRingFinderParallel::DoFind(TClonesArray* HitArray,
 
   const Int_t nhits = HitArray->GetEntriesFast();
 
-  for (register Int_t i = 0; i < nhits; ++i) {
+  for (Int_t i = 0; i < nhits; ++i) {
     CbmRichHit* hit = L1_DYNAMIC_CAST<CbmRichHit*>(HitArray->At(i));
     if (!hit) continue;
     ENNRingHit tmp;

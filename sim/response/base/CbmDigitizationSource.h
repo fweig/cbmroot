@@ -170,6 +170,10 @@ public:
   virtual void Reset() {}
 
 
+    /** @brief Abstract in base class. No implementation here.
+     **/
+  virtual Bool_t SpecifyRunId() { return kTRUE; }
+
   /** @brief Set event-by-event mode
      ** @value choice  kTRUE if event-by-event mode
      **

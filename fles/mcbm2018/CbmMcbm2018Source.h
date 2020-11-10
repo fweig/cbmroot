@@ -36,7 +36,7 @@ public:
   CbmMcbm2018Source();
 
   CbmMcbm2018Source(const CbmMcbm2018Source& source) = delete;
-  CbmMcbm2018Source operator=(const CbmMcbm2018Source&) = delete;
+  CbmMcbm2018Source& operator=(const CbmMcbm2018Source&) = delete;
 
   virtual ~CbmMcbm2018Source();
 
