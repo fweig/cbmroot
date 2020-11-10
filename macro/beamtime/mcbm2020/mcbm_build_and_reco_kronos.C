@@ -1,6 +1,6 @@
-void build_event_win_kronos(UInt_t uRunIdx = 0,
-                            Int_t nEvents  = 0,
-                            TString outDir = "data/") {
+void mcbm_build_and_reco_kronos(UInt_t uRunIdx = 0,
+                                Int_t nEvents  = 0,
+                                TString outDir = "data/") {
   UInt_t uRunId    = 0;
   TString fileName = "data/unp_mcbm_0.root";
   if (99999 != uRunIdx) {
@@ -105,6 +105,62 @@ void build_event_win_kronos(UInt_t uRunIdx = 0,
   eventBuilder->SetTriggerWindow(ECbmModuleId::kT0, -1, 10);
 
   fRun->AddTask(eventBuilder);
+
+  // -----  Parameter database   --------------------------------------------
+  TString parFile =
+    Form("/lustre/cbm/users/ploizeau/mcbm2020/unp_evt_data_7f229b3f_20201103/"
+         "unp_mcbm_params_%i.root",
+         uRunId);
+  FairRuntimeDb* rtdb       = fRun->GetRuntimeDb();
+  FairParRootFileIo* parIo1 = new FairParRootFileIo();
+  parIo1->open(parFile.Data(), "UPDATE");
+  rtdb->setFirstInput(parIo1);
+  // ------------------------------------------------------------------------
+
+  TString geoFileSts =
+    "/lustre/cbm/users/alberica/cbmroot/macro/beamtime/mcbm2020/data/"
+    "test.geo.root";  // to be created by a simulation run
+  fRun->SetGeomFile(geoFileSts);
+
+  // -----   Local reconstruction in STS   ----------------------------------
+  CbmRecoSts* recoSts = new CbmRecoSts();
+  recoSts->SetMode(kCbmRecoEvent);
+
+  //recoSts->SetTimeCutDigisAbs( 20 );// cluster finder: time cut in ns
+  //recoSts->SetTimeCutClustersAbs(20.); // hit finder: time cut in ns
+
+  // ASIC params: #ADC channels, dyn. range, threshold, time resol., dead time,
+  // noise RMS, zero-threshold crossing rate
+  auto parAsic =
+    new CbmStsParAsic(32, 75000., 3000., 5., 800., 1000., 3.9789e-3);
+
+  // Module params: number of channels, number of channels per ASIC
+  auto parMod = new CbmStsParModule(2048, 128);
+  parMod->SetAllAsics(*parAsic);
+  recoSts->UseModulePar(parMod);
+
+  // Sensor params
+  auto sensorPar = new CbmStsParSensor(CbmStsSensorClass::kDssdStereo);
+  sensorPar->SetPar(0, 6.2092);  // Extension in x
+  sensorPar->SetPar(1, 6.2);     // Extension in y
+  sensorPar->SetPar(2, 0.03);    // Extension in z
+  sensorPar->SetPar(3, 5.9692);  // Active size in y
+  sensorPar->SetPar(4, 1024.);   // Number of strips front side
+  sensorPar->SetPar(5, 1024.);   // Number of strips back side
+  sensorPar->SetPar(6, 0.0058);  // Strip pitch front side
+  sensorPar->SetPar(7, 0.0058);  // Strip pitch back side
+  sensorPar->SetPar(8, 7.5);     // Stereo angle front side
+  sensorPar->SetPar(9, 0.0);     // Stereo angle back side
+  recoSts->UseSensorPar(sensorPar);
+
+  // Sensor conditions: full depletion voltage, bias voltage, temperature,
+  // coupling capacitance, inter-strip capacitance
+  auto sensorCond = new CbmStsParSensorCond(70., 140., 268., 17.5, 1.);
+  recoSts->UseSensorCond(sensorCond);
+
+  fRun->AddTask(recoSts);
+  std::cout << "-I- : Added task " << recoSts->GetName() << std::endl;
+  // ------------------------------------------------------------------------
 
   // -----   Intialise and run   --------------------------------------------
   fRun->Init();
