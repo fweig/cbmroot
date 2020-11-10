@@ -584,7 +584,7 @@ void PairAnalysisHelper::NormalizeSlicesY(TH2* h) {
   TH2* hsum = (TH2*) h->Clone("SliceInts");
   hsum->Reset("CE");
   for (Int_t ix = 0; ix <= hsum->GetNbinsX() + 1; ix++) {
-    Double_t ysum = h->Integral(ix, ix);
+    Double_t ysum = h->Integral(ix, ix, 0, hsum->GetNbinsY() + 1);
     for (Int_t iy = 0; iy <= hsum->GetNbinsY() + 1; iy++) {
       hsum->SetBinContent(ix, iy, ysum);
     }
