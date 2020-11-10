@@ -259,9 +259,26 @@ Int_t CbmMcbm2018Source::FillBuffer() {
     }    // if( 0 == tsIndex % fuTsReduction )
 
     /// Save the TimeSlice meta-data for access by higher level tasks
-    /// TODO: do not hard-code the duration here!
+    if (fTSCounter == 1) {
+      auto nMsInTs = ts.num_core_microslices();
+      if (nMsInTs > 1) {
+        // This assumes that we have a component 0 and component independent ms/ts settings!
+        auto msDescA      = ts.descriptor(0, 0);
+        auto msDescB      = ts.descriptor(0, 1);
+        auto msLength     = msDescB.idx - msDescA.idx;
+        fTSLength         = msLength * nMsInTs;
+        fTSOverlappLength = msLength * (ts.num_microslices(0) - nMsInTs);
+      } else {
+        LOG(warning)
+          << "CbmMcbm2018Source::FillBuffer() - TS 1 - Calculate "
+             "TimesliceMetaData information - single microslice timeslices -> "
+             "TS duration can not be calculated with the given method. Hence, "
+             "TimesliceMetaData duration values are filled with 0";
+      }
+    }
     new ((*fTimeSliceMetaDataArray)[fTimeSliceMetaDataArray->GetEntriesFast()])
-      TimesliceMetaData(ts.descriptor(0, 0).idx);
+      TimesliceMetaData(
+        ts.descriptor(0, 0).idx, fTSLength, fTSOverlappLength, tsIndex);
 
     return 0;
   }

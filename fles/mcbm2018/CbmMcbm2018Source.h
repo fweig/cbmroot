@@ -92,6 +92,9 @@ private:
 
   UInt_t fTSNumber;
   UInt_t fTSCounter;
+  ULong64_t fTSLength = 0;  // used for the creation of the TimesliceMetaData
+  ULong64_t fTSOverlappLength =
+    0;  // used for the creation of the TimesliceMetaData
   TStopwatch fTimer;
 
   TH1I* fHistoMissedTS;         //!
