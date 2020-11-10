@@ -1,0 +1,26 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 60ab7e6..b70ab36 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -52,7 +52,11 @@ if(NOT DEFINED NICAFEMTO_SUBDIR_BUILD)
+ 	If(NOT _HAS_CXX11_FLAG)
+ 	  Message(FATAL_ERROR "The used C++ compiler (${CMAKE_CXX_COMPILER}) does not support C++11. NicaFemto can only be compiled with compilers supporting C++11. Please install such an compiler.")
+ 	EndIf()
+-	
++
++        if(APPLE)
++          SET(CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS "${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} -single_module -undefined dynamic_lookup")
++        endif()
++
+         Execute_process(COMMAND $ENV{SIMPATH}/bin/fairsoft-config --cxxflags OUTPUT_VARIABLE _res_fairsoft_config OUTPUT_STRIP_TRAILING_WHITESPACE)
+         String(FIND ${_res_fairsoft_config} "-std=c++11" POS_C++11)
+         If(${POS_C++11} EQUAL -1)
+@@ -131,7 +135,7 @@ if(NOT DEFINED NICAFEMTO_SUBDIR_BUILD)
+           if(APPLE)
+             set(GSL_DIR /usr/local)
+           else()
+-            unset(GSL_DIR)
++            set(GSL_DIR /usr)
+           endif()
+           find_package(GSL REQUIRED)
+         endif()

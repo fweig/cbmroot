@@ -41,7 +41,7 @@ If(UNIX AND NOT APPLE)
 EndIf()
 
 set(FAIR_LIBS
-  FairMQ
+  ${FAIRMQ_LIBS}
 )
 
 If(FAIRLOGGER_FOUND)

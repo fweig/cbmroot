@@ -10,4 +10,5 @@ ipc/ipc
 ipc_legacy/ipc
 jsroot
 spadic/spadic
+googletest
 

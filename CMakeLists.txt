@@ -39,7 +39,8 @@ set(CMAKE_MODULE_PATH "${FAIRROOTPATH}/share/fairbase/cmake/modules_old" ${CMAKE
 set(CMAKE_MODULE_PATH "${FAIRROOTPATH}/share/fairbase/cmake/modules"  ${CMAKE_MODULE_PATH})
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
 
-set(CMAKE_PREFIX_PATH "$ENV{SIMPATH}/share/cmake/ZeroMQ" ${CMAKE_PREFIX_PATH})
+#set(CMAKE_PREFIX_PATH "$ENV{SIMPATH}/share/cmake/ZeroMQ" ${CMAKE_PREFIX_PATH})
+set(CMAKE_PREFIX_PATH $ENV{SIMPATH} ${CMAKE_PREFIX_PATH})
 
 # Check if the compiler support specific C++11 features
 # Up to now this is only a check since the code does not use
@@ -87,7 +88,13 @@ EndIf()
 Execute_process(COMMAND $ENV{SIMPATH}/bin/fairsoft-config --cxxflags OUTPUT_VARIABLE _res_fairsoft_config OUTPUT_STRIP_TRAILING_WHITESPACE)
 String(FIND ${_res_fairsoft_config} "-std=c++11" POS_C++11)
 If(${POS_C++11} EQUAL -1)
-  Message(FATAL_ERROR "FairSoft wasn't compiled with c++11 support. Please recompile FairSoft with a compiler which supports c++11.")
+  String(FIND ${_res_fairsoft_config} "-std=c++14" POS_C++11)
+  If(${POS_C++11} EQUAL -1)
+    String(FIND ${_res_fairsoft_config} "-std=c++17" POS_C++11)
+    If(${POS_C++11} EQUAL -1)
+      Message(FATAL_ERROR "FairSoft wasn't compiled with support for c++11 or above. Please recompile FairSoft with a compiler which supports c++11, c++14 or c++17.")
+    EndIf()
+  EndIf()
 EndIf()
 
 Execute_process(COMMAND $ENV{SIMPATH}/bin/fairsoft-config --root-version OUTPUT_VARIABLE _res_root_version OUTPUT_STRIP_TRAILING_WHITESPACE)
@@ -174,6 +181,9 @@ If(CMAKE_BUILD_TYPE MATCHES CONTINUOUS)
   Message("C_FLAGS: ${CMAKE_C_FLAGS_CONTINUOUS}")
 EndIf()
 Check_Compiler()
+if(APPLE)
+  SET(CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS "${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} -single_module -undefined dynamic_lookup")
+endif()
 set(CMAKE_CONFIGURATION_TYPES ${CMAKE_CONFIGURATION_TYPES} "CONTINUOUS" "FullWarnings")
 #Set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wshadow -Weffc++ -Wno-unused-variable -Wno-unused-parameter -Wno-sign-compare -Wno-ignored-qualifiers -Wno-overloaded-virtual")
 #Set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Weverything -Wno-padded -Wno-global-constructors")
@@ -236,6 +246,18 @@ if(CBMROOT_MINIMAL)
   find_package(ROOT 6.00.00 REQUIRED)
 else(CBMROOT_MINIMAL)
   find_package(ROOT 6.00.00 REQUIRED)
+  if("${ROOT_VERSION_MAJOR}.${ROOT_VERSION_MINOR}" VERSION_GREATER 6.16)
+    Execute_Process(COMMAND ${ROOT_CONFIG_EXECUTABLE} --has-vmc
+                    OUTPUT_VARIABLE ROOT_vmc_FOUND
+                   )
+    String(STRIP ${ROOT_vmc_FOUND} ROOT_vmc_FOUND)
+    If(NOT ROOT_vmc_FOUND)
+      find_package2(PUBLIC VMC REQUIRED)
+      message("VMC_INCLUDE_DIRS: ${VMC_INCLUDE_DIRS}")
+      set(VMCLIB VMCLibrary)
+    endif()
+  endif()
+
   find_package(GEANT3 REQUIRED)
   find_package(GEANT4)
   find_package(GEANT4DATA)
@@ -266,9 +288,23 @@ else(CBMROOT_MINIMAL)
 
   Message("-- Looking for GSL ...")
   find_package(GSL)
+  if(NOT GSL_FOUND)
+    if(APPLE)
+      set(GSL_DIR /usr/local)
+    else()
+      unset(GSL_DIR)
+    endif()
+    find_package(GSL)
+  endif()
   Find_Package(FairLogger)
   Find_Package(FairMQ)
-
+  if(FAIRMQ_FOUND)
+    if(EXISTS ${FAIRMQ_LIBRARY_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}FairMQStateMachine${CMAKE_SHARED_LIBRARY_SUFFIX})
+      set(FairMQ_HAS_StateMachine TRUE)
+    else()
+      set(FairMQ_HAS_StateMachine FALSE)
+    endif()
+  endif()
 endif(CBMROOT_MINIMAL)
 
 # set a variable which should be used in all CMakeLists.txt
@@ -284,6 +320,7 @@ Set(BASE_INCLUDE_DIRECTORIES
 ${BASE_INCLUDE_DIRECTORIES}
 ${SYSTEM_INCLUDE_DIRECTORIES}
 ${FAIRLOGGER_INCLUDE_DIR}
+${VMC_INCLUDE_DIRS}
 )
 
 # Set the library version in the main CMakeLists.txt
@@ -321,9 +358,15 @@ If(BUILD_UNITTESTS)
   Message("Build the unit tests.")
 
   Set(GTEST_ROOT ${SIMPATH})
-  Find_Package(GTest)
-
-EndIf(BUILD_UNITTESTS)
+    find_package2(PRIVATE GTest VERSION 1.7.0)
+    if(NOT GTEST_FOUND)
+      Message(STATUS "No gtest installation found, build our internal one.")
+      Include(external/InstallGtest.cmake)
+      set(CBM_LOCAL_GTEST TRUE)
+    else()
+      set(CBM_LOCAL_GTEST FALSE)
+    endif()
+endif()
 
 ### Subdirectories to be compiled #####
 

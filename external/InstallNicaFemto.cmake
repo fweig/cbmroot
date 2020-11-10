@@ -13,6 +13,7 @@ download_project_if_needed(PROJECT         NicaFemto_source
                            GIT_REPOSITORY  ${NICAFEMTO_SRC_URL}
                            GIT_TAG         ${NICAFEMTO_VERSION}
                            SOURCE_DIR      ${CMAKE_CURRENT_SOURCE_DIR}/NicaFemto
+                           PATCH_COMMAND   "patch -p1 < ${CMAKE_CURRENT_SOURCE_DIR}/NicaFemto.patch"
                           )
 
 If(ProjectUpdated)

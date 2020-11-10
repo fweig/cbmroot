@@ -4,6 +4,9 @@ Macro(CreateGTestExeAndAddTest _testname _includeDirs _linkDirs _sources _depend
   Link_Directories(${_linkDirs})
 
   Add_Executable(${_testname} ${_sources})
+  if(CBM_LOCAL_GTEST)
+    Add_Dependencies(${_testname} GTEST)
+  endif()
   Target_Link_Libraries(${_testname} ${_dependencies})
   Gen_Exe_Script(${_testname})
   string(REPLACE ${PROJECT_SOURCE_DIR}
@@ -27,6 +30,7 @@ Set(INCLUDE_DIRECTORIES
   ${CBMDATA_DIR}/rich
   ${CBMDATA_DIR}/much
   ${BASE_INCLUDE_DIRECTORIES}
+  ${GTEST_INCLUDE_DIR}
 )
 
 MESSAGE("FAIRROOT_LIBRARY_DIR: ${FAIRROOT_LIBRARY_DIR}")

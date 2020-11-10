@@ -18,6 +18,7 @@ Set(SYSTEM_INCLUDE_DIRECTORIES
     ${FAIRROOT_INCLUDE_DIR}
     ${FAIRMQ_INCLUDE_DIR}
     ${FAIRMQ_INCLUDE_DIR}/options
+    ${VMC_INCLUDE_DIRS}
 
     ${IPC_INCLUDE_DIRECTORY}
     ${CBMROOT_SOURCE_DIR}/external/cppzmq        
@@ -50,7 +51,7 @@ EndIf()
 set(FAIR_LIBS
   Base
   ParBase
-  FairMQ
+  ${FAIRMQ_LIBS}
 )
 
 

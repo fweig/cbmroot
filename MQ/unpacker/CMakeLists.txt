@@ -51,7 +51,7 @@ EndIf()
 set(FAIR_LIBS
   Base
   ParBase
-  FairMQ
+  ${FAIRMQ_LIBS}
 )
 
 If(FAIRLOGGER_FOUND)

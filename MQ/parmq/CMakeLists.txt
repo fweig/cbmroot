@@ -39,7 +39,7 @@ EndIf()
 set(FAIR_LIBS
   Base
   ParBase
-  FairMQ
+  ${FAIRMQ_LIBS}
   Gen
 )
 

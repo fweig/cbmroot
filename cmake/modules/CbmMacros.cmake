@@ -120,7 +120,7 @@ EndMacro(Gen_Exe_Script)
 
 function(download_project_if_needed)
   include(DownloadProject)
-  set(oneValueArgs PROJECT GIT_REPOSITORY GIT_TAG GIT_STASH SOURCE_DIR TEST_FILE)
+  set(oneValueArgs PROJECT GIT_REPOSITORY GIT_TAG GIT_STASH SOURCE_DIR TEST_FILE PATCH_COMMAND)
   cmake_parse_arguments(MY "" "${oneValueArgs}"
                        "" ${ARGN} )
 
@@ -131,6 +131,7 @@ function(download_project_if_needed)
                      GIT_REPOSITORY  ${MY_GIT_REPOSITORY}
                      GIT_TAG         ${MY_GIT_TAG}
                      SOURCE_DIR      ${MY_SOURCE_DIR}
+                     PATCH_COMMAND   ${MY_PATCH_COMMAND}
                     )
   Else()
     Execute_process(COMMAND git rev-parse HEAD
@@ -147,6 +148,7 @@ function(download_project_if_needed)
                        GIT_REPOSITORY  ${MY_GIT_REPOSITORY}
                        GIT_TAG         ${MY_GIT_TAG}
                        SOURCE_DIR      ${MY_SOURCE_DIR}
+                       PATCH_COMMAND   ${MY_PATCH_COMMAND}
                       )
       Set(ProjectUpdated TRUE PARENT_SCOPE)
     EndIf()
