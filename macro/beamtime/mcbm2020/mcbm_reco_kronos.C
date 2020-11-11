@@ -122,8 +122,8 @@ void mcbm_reco(Int_t runId = 812, Int_t nTimeslices = 0) {
   CbmRichMCbmHitProducer* hitProdRich = new CbmRichMCbmHitProducer();
   hitProdRich->setToTLimits(23.7, 30.0);
   hitProdRich->applyToTCut();
-  TString sRichMapFile = srcDir
-                       + "/macro/rich/mcbm/beamtime/mRICH_Mapping_vert_20190318_elView.geo";
+  TString sRichMapFile =
+    srcDir + "/macro/rich/mcbm/beamtime/mRICH_Mapping_vert_20190318_elView.geo";
   hitProdRich->SetMappingFile( sRichMapFile.Data() );
   run->AddTask(hitProdRich);
   // ------------------------------------------------------------------------
