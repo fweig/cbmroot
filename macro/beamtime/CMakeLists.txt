@@ -154,6 +154,7 @@ If(DEFINED ENV{RAW_DATA_PATH} )
   GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/beamtime/mcbm2020/build_events.C )     # CbmMcbm2018EventBuilder.h
   GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/beamtime/mcbm2020/check_events.C )     # CbmCheckEvents.h
   GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/beamtime/mcbm2020/build_event_win.C )  # CbmMcbm2019TimeWinEventBuilderTask.h + CbmMcbm2019TimeWinEventBuilderAlgo.h
+  GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/beamtime/mcbm2020/mcbm_reco.C )        # Cluster Finding + Hit reconstruction, time based (no events)
   GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/beamtime/mcbm2020/MonitorT0.C )        # CbmMcbm2018MonitorTaskT0 + CbmMcbm2018MonitorAlgoT0
   GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/beamtime/mcbm2020/MonitorSts.C )       # CbmMcbm2018MonitorSts.h
   GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/beamtime/mcbm2020/MonitorMuch.C )      # CbmMcbm2018MonitorMuchLite.h
@@ -169,6 +170,7 @@ If(DEFINED ENV{RAW_DATA_PATH} )
       Message( STATUS "Raw data file found, tests will be performed for mCBM run ${RUN}" )
 
       ## Define tests + dependencies
+      ### Raw data analysis tests
       Set(testname mcbm_unpack_2020_${RUN})
       Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/beamtime/mcbm2020/unpack_tsa_mcbm.sh \"${RAW_DATA_PATH}/${RUN}_first20Ts.tsa\" ${RUN} )
       Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "600")
@@ -187,7 +189,7 @@ If(DEFINED ENV{RAW_DATA_PATH} )
   #    Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Total number of Psd digis: 0")
       Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
       set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_unpacked_${RUN}})
-      ### Make this test run alone to try to avoid memory errors on test machines
+      #### Make this test run alone to try to avoid memory errors on test machines
       set_tests_properties(${testname} PROPERTIES RUN_SERIAL true )
 
       Set(testname mcbm_check_pulser_2020_${RUN})
@@ -222,11 +224,21 @@ If(DEFINED ENV{RAW_DATA_PATH} )
       Set(fixture_built_evt_win_${RUN} fixture_done_${testname})
       set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_built_evt_win_${RUN}})
 
+      Set(testname mcbm_reco_2020_${RUN})
+      Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/beamtime/mcbm2020/mcbm_reco.sh ${RUN} )
+      Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "600")
+      Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
+      set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_unpacked_${RUN}})
+      set_tests_properties(${testname} PROPERTIES DEPENDS fixture_built_evt_win_${RUN})
+      Set(fixture_mcbm_reco_${RUN} fixture_done_${testname})
+      set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_mcbm_reco_${RUN}})
+
+      ### Monitors tests
       Set(testname mcbm_monit0_2020_${RUN})
       Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/beamtime/mcbm2020/MonitorT0.sh \"${RAW_DATA_PATH}/${RUN}_first20Ts.tsa\" )
       Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "300")
       Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
-      set_tests_properties(${testname} PROPERTIES DEPENDS mcbm_build_event_win_2020_${RUN})
+      set_tests_properties(${testname} PROPERTIES DEPENDS fixture_mcbm_reco_${RUN})
 
       Set(testname mcbm_monists_2020_${RUN})
       Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/beamtime/mcbm2020/MonitorSts.sh \"${RAW_DATA_PATH}/${RUN}_first20Ts.tsa\" \"\" ${RUN} )
