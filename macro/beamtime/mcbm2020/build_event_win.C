@@ -74,7 +74,7 @@ void build_event_win(UInt_t uRunId  = 0,
   eventBuilder->SetTriggerWindow(ECbmModuleId::kTrd, -250, 100);
   eventBuilder->SetTriggerWindow(ECbmModuleId::kTof, -150, 10);
   eventBuilder->SetTriggerWindow(ECbmModuleId::kRich, -50, 50);
-  eventBuilder->SetTriggerWindow(ECbmModuleId::kPsd, -50, 10);
+  eventBuilder->SetTriggerWindow(ECbmModuleId::kPsd, -50, 50);
   /// To get T0 Digis (seed + close digis) in the event
   eventBuilder->SetTriggerWindow(ECbmModuleId::kT0, -1, 10);
 
@@ -119,14 +119,6 @@ void build_event_win(UInt_t uRunId  = 0,
       Form("%sHistosEvtWin_%03u.root", outDir.Data(), uRunId));
 
   fRun->AddTask(eventBuilder);
-
-  // -----  Parameter database   --------------------------------------------
-  //  FairRuntimeDb* rtdb = fRun->GetRuntimeDb();
-  //  FairParRootFileIo* parIo1 = new FairParRootFileIo();
-  //  parIo1->open(parFile.Data(),"UPDATE");
-  //  rtdb->setFirstInput(parIo1);
-  // ------------------------------------------------------------------------
-
 
   // -----   Intialise and run   --------------------------------------------
   fRun->Init();

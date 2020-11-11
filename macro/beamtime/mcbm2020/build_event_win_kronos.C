@@ -82,14 +82,49 @@ void build_event_win_kronos(UInt_t uRunIdx = 0,
   eventBuilder->SetFillHistos(kTRUE);
 
   eventBuilder->SetEventOverlapMode(EOverlapMode::NoOverlap);
+  //  eventBuilder->SetEventOverlapMode(EOverlapMode::MergeOverlap);
+  //  eventBuilder->SetEventOverlapMode(EOverlapMode::AllowOverlap);
 
+  /*
+ * Available Pre-defined detectors:
+ * kEventBuilderDetSts
+ * kEventBuilderDetMuch
+ * kEventBuilderDetTrd
+ * kEventBuilderDetTof
+ * kEventBuilderDetRich
+ * kEventBuilderDetPsd
+ * kEventBuilderDetT0
+ */
+
+  /// Change the selection window limits for T0 as ref
   eventBuilder->SetTriggerWindow(ECbmModuleId::kSts, -50, 100);
   eventBuilder->SetTriggerWindow(ECbmModuleId::kMuch, -150, 50);
   eventBuilder->SetTriggerWindow(ECbmModuleId::kTrd, -250, 100);
   eventBuilder->SetTriggerWindow(ECbmModuleId::kTof, -150, 10);
   eventBuilder->SetTriggerWindow(ECbmModuleId::kRich, -50, 50);
   eventBuilder->SetTriggerWindow(ECbmModuleId::kPsd, -50, 50);
-  //  eventBuilder->SetT0PulserTotLimits(   185, 191 );
+  /// To get T0 Digis (seed + close digis) in the event
+  eventBuilder->SetTriggerWindow(ECbmModuleId::kT0, -1, 10);
+
+  /*
+  /// Use TOF as reference
+  eventBuilder->SetReferenceDetector( kEventBuilderDetTof );
+  eventBuilder->AddDetector( kEventBuilderDetT0 );
+
+  /// Change the selection window limits for TOF as ref
+  /// => Should always be after changes of detector lists!
+  eventBuilder->SetTriggerWindow(ECbmModuleId::kT0, -150, 0);
+  eventBuilder->SetTriggerWindow(ECbmModuleId::kSts, -50, 100);
+  eventBuilder->SetTriggerWindow(ECbmModuleId::kMuch, -50, 200);
+  eventBuilder->SetTriggerWindow(ECbmModuleId::kTrd, -50, 300);
+  eventBuilder->SetTriggerWindow(ECbmModuleId::kTof, 0, 60);
+  eventBuilder->SetTriggerWindow(ECbmModuleId::kRich, -100, 150);
+  eventBuilder->SetTriggerWindow(ECbmModuleId::kPsd, -200, 50);
+*/
+
+  /// Change the trigger requirements
+  /// => Should always be after changes of detector lists!
+  /// --- Minimum
   eventBuilder->SetTriggerMinNumber(ECbmModuleId::kT0, 1);
   eventBuilder->SetTriggerMinNumber(ECbmModuleId::kSts, 0);
   eventBuilder->SetTriggerMinNumber(ECbmModuleId::kMuch, 0);
@@ -97,12 +132,19 @@ void build_event_win_kronos(UInt_t uRunIdx = 0,
   eventBuilder->SetTriggerMinNumber(ECbmModuleId::kTof, 10);
   eventBuilder->SetTriggerMinNumber(ECbmModuleId::kRich, 0);
   eventBuilder->SetTriggerMinNumber(ECbmModuleId::kPsd, 0);
+  /// --- Maximum  (-1 to disable cut)
+  eventBuilder->SetTriggerMaxNumber(ECbmModuleId::kT0, -1);
+  eventBuilder->SetTriggerMaxNumber(ECbmModuleId::kSts, -1);
+  eventBuilder->SetTriggerMaxNumber(ECbmModuleId::kMuch, -1);
+  eventBuilder->SetTriggerMaxNumber(ECbmModuleId::kTrd, -1);
+  eventBuilder->SetTriggerMaxNumber(ECbmModuleId::kTof, -1);
+  eventBuilder->SetTriggerMaxNumber(ECbmModuleId::kRich, -1);
+  eventBuilder->SetTriggerMaxNumber(ECbmModuleId::kPsd, -1);
+
+
   if (0 < uRunId)
     eventBuilder->SetOutFilename(
       Form("%sHistosEvtWin_%03u.root", outDir.Data(), uRunId));
-
-  // To get T0 Digis (seed + close digis) in the event
-  eventBuilder->SetTriggerWindow(ECbmModuleId::kT0, -1, 10);
 
   fRun->AddTask(eventBuilder);
 
