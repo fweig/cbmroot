@@ -16,14 +16,15 @@ void mcbm_reco(Int_t runId = 812, Int_t nTimeslices = 0) {
   // -----   Environment   --------------------------------------------------
   TString myName = "mcbm_reco";  // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
-  // TString srcDir1 = gSystem->Getenv("SLURM_INDEX");  // ------------------------------------------------------------------------
+  TString paramDir = srcDir + "/macro/beamtime/mcbm2020/";
+  // ------------------------------------------------------------------------
 
 
   // -----   In- and output file names   ------------------------------------
-  TString inFile  = Form(".data/unp_mcbm_%i.root", runId);
-  TString parFile = Form(".data/unp_mcbm_params_%i.root", runId);
-  TString geoFile = ".data/test.geo.root";  // to be created by a simulation run
-  TString outFile = Form(".data/reco_mcbm_%i.root", runId);
+  TString inFile  = Form("./data/unp_mcbm_%i.root", runId);
+  TString parFile = Form("./data/unp_mcbm_params_%i.root", runId);
+  TString geoFile = paramDir + "mcbm2020_reco.geo.root";  // Created by a simulation run
+  TString outFile = Form("./data/reco_mcbm_%i.root", runId);
   // ------------------------------------------------------------------------
 
 
@@ -60,12 +61,6 @@ void mcbm_reco(Int_t runId = 812, Int_t nTimeslices = 0) {
 
 
   // -----   Reconstruction tasks   -----------------------------------------
-
-
-  // -----  Psd hit producer   ----------------------------------------------
-  CbmPsdMCbmHitProducer* hitProd = new CbmPsdMCbmHitProducer();
-  run->AddTask(hitProd);
-  // ------------------------------------------------------------------------
 
 
   // -----   Local reconstruction in STS   ----------------------------------
@@ -107,18 +102,35 @@ void mcbm_reco(Int_t runId = 812, Int_t nTimeslices = 0) {
   // ------------------------------------------------------------------------
 
 
-  // -----   Local reconstruction of RICH Hits ------------------------------
-  CbmRichMCbmHitProducer* hitProd = new CbmRichMCbmHitProducer();
-  hitProd->setToTLimits(23.7, 30.0);
-  hitProd->applyToTCut();
-  run->AddTask(hitProd);
+  // -----   Local reconstruction in MUCH   ---------------------------------
   // ------------------------------------------------------------------------
 
+
+  // -----   Local reconstruction in TRD   ----------------------------------
+  // ------------------------------------------------------------------------
+
+
+  // -----   Local reconstruction in TOF   ----------------------------------
+  // ------------------------------------------------------------------------
+
+
+  // -----   Local reconstruction of RICH Hits ------------------------------
+  CbmRichMCbmHitProducer* hitProdRich = new CbmRichMCbmHitProducer();
+  hitProdRich->setToTLimits(23.7, 30.0);
+  hitProdRich->applyToTCut();
+  run->AddTask(hitProdRich);
+  // ------------------------------------------------------------------------
 
   // -----   Local reconstruction in RICh -> Finding of Rings ---------------
   CbmRichReconstruction* richReco = new CbmRichReconstruction();
   richReco->UseMCbmSetup();
   run->AddTask(richReco);
+  // ------------------------------------------------------------------------
+
+
+  // -----  Psd hit producer   ----------------------------------------------
+  CbmPsdMCbmHitProducer* hitProdPsd = new CbmPsdMCbmHitProducer();
+  run->AddTask(hitProdPsd);
   // ------------------------------------------------------------------------
 
   // -----  Parameter database   --------------------------------------------
@@ -161,8 +173,6 @@ void mcbm_reco(Int_t runId = 812, Int_t nTimeslices = 0) {
   std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
             << std::endl;
   std::cout << std::endl;
-  std::cout << " Test passed" << std::endl;
-  std::cout << " All ok " << std::endl;
   // ------------------------------------------------------------------------
 
 
@@ -185,4 +195,8 @@ void mcbm_reco(Int_t runId = 812, Int_t nTimeslices = 0) {
   // -----   Function needed for CTest runtime dependency   -----------------
   //  RemoveGeoManager();
   // ------------------------------------------------------------------------
+
+  /// --- Screen output for automatic tests
+  std::cout << " Test passed" << std::endl;
+  std::cout << " All ok " << std::endl;
 }
