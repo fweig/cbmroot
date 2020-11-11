@@ -14,8 +14,8 @@ void mcbm_reco(Int_t runId = 812, Int_t nTimeslices = 0) {
 
 
   // -----   Environment   --------------------------------------------------
-  TString myName = "mcbm_reco";  // this macro's name for screen output
-  TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
+  TString myName   = "mcbm_reco";  // this macro's name for screen output
+  TString srcDir   = gSystem->Getenv("VMCWORKDIR");  // top source directory
   TString paramDir = srcDir + "/macro/beamtime/mcbm2020/";
   // ------------------------------------------------------------------------
 
@@ -23,7 +23,7 @@ void mcbm_reco(Int_t runId = 812, Int_t nTimeslices = 0) {
   // -----   In- and output file names   ------------------------------------
   TString inFile  = Form("./data/unp_mcbm_%i.root", runId);
   TString parFile = Form("./data/unp_mcbm_params_%i.root", runId);
-  TString geoFile = paramDir + "mcbm2020_reco.geo.root";  // Created by a simulation run
+  TString geoFile = paramDir + "mcbm2020_reco.geo.root";  // Created in sim. run
   TString outFile = Form("./data/reco_mcbm_%i.root", runId);
   // ------------------------------------------------------------------------
 
