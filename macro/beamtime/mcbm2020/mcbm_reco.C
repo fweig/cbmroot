@@ -120,7 +120,7 @@ void mcbm_reco(Int_t runId = 812, Int_t nTimeslices = 0) {
   hitProdRich->applyToTCut();
   TString sRichMapFile =
     srcDir + "/macro/rich/mcbm/beamtime/mRICH_Mapping_vert_20190318_elView.geo";
-  hitProdRich->SetMappingFile( sRichMapFile.Data() );
+  hitProdRich->SetMappingFile(sRichMapFile.Data());
   run->AddTask(hitProdRich);
   // ------------------------------------------------------------------------
 
