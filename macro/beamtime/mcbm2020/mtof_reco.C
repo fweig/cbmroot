@@ -16,12 +16,11 @@ void mtof_reco(Int_t nEvents      = 100,  // number of Timeslices
   //          Adjust this part according to your requirements
 
   // --- Logger settings ----------------------------------------------------
-  TString logLevel     = "INFO";
+  TString logLevel     = "DEBUG";
   TString logVerbosity = "VERYHIGH";
   // ------------------------------------------------------------------------
 
   Int_t iTofCluMode = 1;
-
 
   // -----   Environment   --------------------------------------------------
   TString myName = "mtof_reco";  // this macro's name for screen output
@@ -72,7 +71,7 @@ void mtof_reco(Int_t nEvents      = 100,  // number of Timeslices
     pSetup->GetGeoTag(ECbmModuleId::kTof, geoTag);
 
     TObjString* tofBdfFile =
-      new TObjString(srcDir + "/parameters/tof/" + geoTag + ".digibdf.par");
+      new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
     parFileList->Add(tofBdfFile);
     std::cout << "-I- " << myName << ": Using parameter file "
               << tofBdfFile->GetString() << std::endl;

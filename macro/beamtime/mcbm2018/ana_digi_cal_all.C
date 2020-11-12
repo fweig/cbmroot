@@ -22,7 +22,8 @@ void ana_digi_cal_all(Int_t nEvents      = 10000000,
   //TString logLevel = "DEBUG3";
   FairLogger::GetLogger();
   gLogger->SetLogScreenLevel(logLevel);
-  gLogger->SetLogVerbosityLevel("VERYHIGH");
+  //gLogger->SetLogVerbosityLevel("VERYHIGH");
+  gLogger->SetLogVerbosityLevel("MEDIUM");
 
   TString workDir = gSystem->Getenv("VMCWORKDIR");
   /*

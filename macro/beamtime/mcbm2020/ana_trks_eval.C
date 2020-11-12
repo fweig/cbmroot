@@ -33,7 +33,7 @@ void ana_trks_eval(Int_t nEvents        = 10000,
 
   TString ParFile       = paramDir + "/data/" + cFileId.Data() + ".params.root";
   TString InputFile     = paramDir + "/data/" + cFileId.Data() + ".root";
-  TString InputDigiFile = paramDir + "/data/digidev_" + cFileId.Data()
+  TString InputDigiFile = paramDir + "/data/TofHits_" + cFileId.Data()
                           + Form("_%s_%02.0f_Cal", cSet.Data(), dDeadtime)
                           + cCalId + ".out.root";
   if (iMc == 1) {
@@ -41,7 +41,7 @@ void ana_trks_eval(Int_t nEvents        = 10000,
     InputDigiFile = paramDir + "/data/" + cFileId.Data() + ".rec.root";
     iRun          = 700;
   }
-  TString InputTrklFile = paramDir + "/data/hits_" + cFileId.Data()
+  TString InputTrklFile = paramDir + "/data/TofTrks_" + cFileId.Data()
                        + Form("_%s_%06d_%03d", cSet.Data(), iSel, iSel2)
                        + ".out.root";
   TString OutputFile = paramDir + "/data/ana_" + cFileId.Data()
@@ -517,8 +517,8 @@ void ana_trks_eval(Int_t nEvents        = 10000,
   tofAnaTestbeam->SetDYMean(0.);
   tofAnaTestbeam->SetDTMean(0.);  // in ns
   tofAnaTestbeam->SetDXWidth(0.5);
-  tofAnaTestbeam->SetDYWidth(1.0);
-  tofAnaTestbeam->SetDTWidth(0.1);  // in ns
+  tofAnaTestbeam->SetDYWidth(0.8);
+  tofAnaTestbeam->SetDTWidth(0.08);  // in ns
   tofAnaTestbeam->SetCalParFileName(cAnaFile);
   Double_t dScalFacA = 0.9;  // dScalFac is used for tracking
   tofAnaTestbeam->SetPosY4Sel(
@@ -650,8 +650,15 @@ void ana_trks_eval(Int_t nEvents        = 10000,
                 break;
               case 31:
                 if (iMc == 0) {
-                  //tofAnaTestbeam->SetSel2TOff(-0.55);  // Shift Sel2 time peak to 0
-                  tofAnaTestbeam->SetSel2TOff(0.3);  // Shift Sel2 time peak to 0
+			      switch (iRun) {
+				    case 717:
+	                  tofAnaTestbeam->SetTShift(6.5);  // Shift DTD4 to 0
+					  tofAnaTestbeam->SetSel2TOff(0.6);  // Shift Sel2 time peak to 0
+				    break;
+				    default: // 714
+//                    tofAnaTestbeam->SetSel2TOff(-1.3);  // Shift Sel2 time peak to 0
+                      tofAnaTestbeam->SetSel2TOff(0.3);  // Shift Sel2 time peak to 0
+				  }
                 } else {    // MC
                   tofAnaTestbeam->SetSel2TOff(-1.3);  // Shift Sel2 time peak to 0
                 }

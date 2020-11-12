@@ -32,7 +32,7 @@ void ana_trksi(Int_t nEvents        = 10000,
   TString paramDir      = ".";
   TString ParFile       = paramDir + "/data/" + cFileId.Data() + ".params.root";
   TString InputFile     = paramDir + "/data/" + cFileId.Data() + ".root";
-  TString InputDigiFile = paramDir + "/data/digidev_" + cFileId.Data()
+  TString InputDigiFile = paramDir + "/data/TofHits_" + cFileId.Data()
                           + Form("_%s_%02.0f_Cal", cSet.Data(), dDeadtime)
                           + cCalId + ".out.root";
   if (iMc == 1) {
@@ -40,7 +40,7 @@ void ana_trksi(Int_t nEvents        = 10000,
     InputDigiFile = paramDir + "/data/" + cFileId.Data() + ".rec.root";
     iRun          = 700;
   }
-  TString OutputFile = paramDir + "/data/hits_" + cFileId.Data()
+  TString OutputFile = paramDir + "/data/TofTrks_" + cFileId.Data()
                        + Form("_%s_%06d_%03d", cSet.Data(), iSel, iSel2)
                        + ".out.root";
   TString cHstFile =
@@ -460,7 +460,7 @@ void ana_trksi(Int_t nEvents        = 10000,
   tofAnaTestbeam->SetHitDistMin(30.);   // initialization
   tofAnaTestbeam->SetEnableMatchPosScaling(kTRUE);
   tofAnaTestbeam->SetSpillDuration(3.);
-  tofAnaTestbeam->SetStartSpillTime(-100.);
+  tofAnaTestbeam->SetStartSpillTime(0.);
   if (iMc == 1) {
     tofAnaTestbeam->SetSpillDuration(0.);
     tofAnaTestbeam->SetSpillBreak(0.);
@@ -592,15 +592,21 @@ void ana_trksi(Int_t nEvents        = 10000,
       case 901041:
         switch (iRSelin) {
           case 500:
-            tofAnaTestbeam->SetTShift(0.8);  // Shift DTD4 to 0
-            tofAnaTestbeam->SetTOffD4(11.);  // Shift DTD4 to physical value
-
+            tofAnaTestbeam->SetTShift(-12.);  // Shift DTD4 to 0
+            tofAnaTestbeam->SetTOffD4(15.);   // Shift DTD4 to physical value
             switch (iSel2in) {
               case 30:
                 tofAnaTestbeam->SetSel2TOff(-0.3);  // Shift Sel2 time peak to 0
                 break;
               case 31:
-                tofAnaTestbeam->SetSel2TOff(0.);  // Shift Sel2 time peak to 0
+              switch (iRun) {
+				  case 717:
+	                tofAnaTestbeam->SetTShift(6.5);  // Shift DTD4 to 0
+					tofAnaTestbeam->SetSel2TOff(0.6);  // Shift Sel2 time peak to 0
+				  break;
+				  default: //714
+                  tofAnaTestbeam->SetSel2TOff(0.3);  // Shift Sel2 time peak to 0
+			    }
                 break;
               case 600:
                 tofAnaTestbeam->SetSel2TOff(-0.2);  // Shift Sel2 time peak to 0

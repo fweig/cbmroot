@@ -36,7 +36,7 @@ void ana_digi_cal(Int_t nEvents      = 10000000,
   TString InputFile = paramDir + "data/" + cFileId + ".root";
   // TString InputFile  =  "./data/" + cFileId + ".root";
   TString OutputFile =
-    paramDir + "data/digidev_" + cFileId
+    paramDir + "data/TofHits_" + cFileId
     + Form("_%09d_%03d_%02.0f_Cal", iCalSet, iSel2, dDeadtime) + cCalId
     + ".out.root";
 

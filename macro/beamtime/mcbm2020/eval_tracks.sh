@@ -85,6 +85,11 @@ dDeadtime=50
 #./gen_digi.sh $cRun $iCalSet $iSel2 $Deadtime $CalIdMode CalIdSet
 
 cd $wdir 
+echo look for calfile: ls -1 ${cCalId}*set${cCalRef}_93_1tofClust.hst.root
+digiCalFile=`ls -1 ./${cCalId}*set${cCalRef}_93_1tofClust.hst.root`
+DigiCalFile=`pwd`/$digiCalFile
+echo DigiCalFile=$DigiCalFile
+
 if [ ! -e ${cRun} ]; then 
   mkdir $cRun
 fi
@@ -92,22 +97,20 @@ cd ${cRun}
 mkdir             Ana_${cSet}_${iSel}_${cSel2}_${iTraSetup}
 cp ../rootlogon.C Ana_${cSet}_${iSel}_${cSel2}_${iTraSetup}/
 cp ../.rootrc     Ana_${cSet}_${iSel}_${cSel2}_${iTraSetup}/
-echo look for calfile: ls -1 ${cCalId}*set${cCalRef}_93_1tofClust.hst.root
-digiCalFile=`ls -1 ${cCalId}*set${cCalRef}_93_1tofClust.hst.root`
 
 cd Ana_${cSet}_${iSel}_${cSel2}_${iTraSetup}
 rm -v  *AnaTestBeam.hst.root
 cp -v ../../${cCalId}_tofFindTracks.hst.root .
-echo create symbolic link to digiCalFile $digiCalFile in `pwd`
+echo create symbolic link to DigiCalFile $DigiCalFile in `pwd`
 rm -v ./$digiCalFile
-ln -s -v ../$digiCalFile ./$digiCalFile
+ln -s -v $DigiCalFile ./$digiCalFile
 
 while [[ $dDTres > 0 ]]; do
 
 for iCal in 1 2 3 5 6 7 8 1
 do
 
-root -b -q '../../ana_trks_eval.C('$nEvt','$iSel',-1,"'$cRun'","'$cSet'",'$iSel2','$iTraSetup','$fRange1','$fRange2','$dDeadtime',"'$cCalId'",'$iCal',0,'$iCalSet',1,'$iMc')'
+root -b -q '../../ana_trks_eval.C('$nEvt','$iSel',-1,"'$cRun'","'$cSet'",'$iSel2','$iTraSetup','$fRange1','$fRange2','$dDeadtime',"'$cCalId'",'$iCal',0,'$iCalSet',0,'$iMc')'
 mv -v tofAnaTestBeam.hst.root ${cRun}_TrkAnaTestBeam.hst.root
 rm all_*
 
@@ -134,7 +137,7 @@ done
 
 # final action -> scan full statistics 
 iCal=1
-root -b -q '../../ana_trks_eval.C(-1,'$iSel',-1,"'$cRun'","'$cSet'",'$iSel2','$iTraSetup','$fRange1','$fRange2','$dDeadtime',"'$cCalId'",'$iCal',0,'$iCalSet',0,'$iMc')'
+root -b -q '../../ana_trks_eval.C(-1,'$iSel',-1,"'$cRun'","'$cSet'",'$iSel2','$iTraSetup','$fRange1','$fRange2','$dDeadtime',"'$cCalId'",'$iCal',0,'$iCalSet',1,'$iMc')'
 rm all_*
 cd ../..
 

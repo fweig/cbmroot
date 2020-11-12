@@ -44,7 +44,8 @@ const TString FileNameInfo = fileTag + "_mcbm.geo.info";
 
 // TOF_Z_Front corresponds to front cover of outer super module towers
 const Float_t TOF_Z_Front_Stand = 247.2;  // = z=298 mCBM@SIS18
-const Float_t TOF_Z_Front       = 0;      // = z=298 mCBM@SIS18
+const Float_t TOF_X_Front_Stand = 0.;  // = z=298 mCBM@SIS18
+const Float_t TOF_Z_Front       = 0.;      // = z=298 mCBM@SIS18
 //const Float_t TOF_Z_Front =  130;  // = z=225 mCBM@SIS18
 //const Float_t TOF_Z_Front =  250;  // SIS 100 hadron
 //const Float_t TOF_Z_Front =  450;  // SIS 100 hadron
@@ -68,7 +69,7 @@ const TString ElectronicsMedium   = "carbon";
 // Counters:
 // 0 MRPC3a
 // 1 MRPC3b
-// 2
+// 2 USTC
 // 3
 // 4 Diamond
 //
@@ -79,14 +80,14 @@ const Int_t NumberOfDifferentCounterTypes = 9;
 const Float_t Glass_X[NumberOfDifferentCounterTypes] =
   {32., 52., 32., 32., 0.2, 32., 28.8, 20., 2.4};
 const Float_t Glass_Y[NumberOfDifferentCounterTypes] =
-  {26.9, 53., 20., 10., 0.2, 10., 6., 20., 2.4};
+  {27.0, 53., 26.8, 10., 0.2, 10., 6., 20., 2.4};
 const Float_t Glass_Z[NumberOfDifferentCounterTypes] =
   {0.1, 0.1, 0.1, 0.1, 0.01, 0.1, 0.1, 0.1, 0.1};
 
 const Float_t GasGap_X[NumberOfDifferentCounterTypes] =
   {32., 52., 32., 32., 0.2, 32., 28.8, 20., 2.4};
 const Float_t GasGap_Y[NumberOfDifferentCounterTypes] =
-  {26.9, 53., 20., 10., 0.2, 10., 6., 20., 2.4};
+  {27.0, 53., 26.8, 10., 0.2, 10., 6., 20., 2.4};
 const Float_t GasGap_Z[NumberOfDifferentCounterTypes] =
   {0.025, 0.025, 0.025, 0.025, 0.01, 0.02, 0.02, 0.02, 0.025};
 
@@ -133,18 +134,18 @@ const Float_t MeanTheta       = 0.;
 
 //Type of Counter for module
 const Int_t CounterTypeInModule[NofModuleTypes] =
-  {0, 0, 1, 2, 3, 4, 6, 7, 8, 0};
+  {0, 0, 1, 2, 3, 4, 6, 7, 8, 2};
 const Int_t NCounterInModule[NofModuleTypes] = {5, 5, 3, 5, 5, 1, 2, 1, 8, 2};
 
 // Placement of the counter inside the module
 const Float_t CounterXStartPosition[NofModuleTypes] =
-  {-58.5, -66.0, -56.0, -60.0, -60.0, 0.0, 0., 0., -7., 0.};
+  {-60.1, -66.0, -56.0, -60.0, -60.0, 0.0, 0., 0., -7., 0.};
 const Float_t CounterXDistance[NofModuleTypes] =
-  {29.0, 32.0, 51.0, 30.0, 30.0, 0.0, 0., 0., 2., 0.};
+  {29.3, 32.0, 51.0, 30.0, 30.0, 0.0, 0., 0., 2., -1.};
 const Float_t CounterYStartPosition[NofModuleTypes] =
   {0.0, 0.0, 0.0, 0.0, 0.0, 0., 0., -4., -1.3, 0.};
 const Float_t CounterYDistance[NofModuleTypes] =
-  {0.0, 0.0, 0.0, 0.0, 0.0, 0., 0., 8., 0., 0.};
+  {0.0, 0.0, 0.0, 0.0, 0.0, 0., 0., 8., 0., 1.};
 const Float_t CounterZDistance[NofModuleTypes] =
   {-2.5, 0.0, 0.0, 2.5, 2.5, 0., 6., 0., 0.1, 4.};
 const Float_t CounterZStartPosition[NofModuleTypes] =
@@ -313,14 +314,25 @@ void Create_TOF_Geometry_v20a_mcbm() {
 
   TGeoVolume* tofstand = new TGeoVolumeAssembly(geoVersionStand);
   // Mar 2020 run
+  TGeoTranslation* stand_trans_local =
+    new TGeoTranslation("", TOF_X_Front_Stand, 0., 0.);
   TGeoTranslation* stand_trans =
-    new TGeoTranslation("", 0., 0., TOF_Z_Front_Stand);
-  TGeoRotation* stand_rot = new TGeoRotation();
-  stand_rot->RotateY(-3.0);
+    new TGeoTranslation("", 0., 0., TOF_Z_Front_Stand);    
   TGeoCombiTrans* stand_combi_trans =
-    new TGeoCombiTrans(*stand_trans, *stand_rot);
+    new TGeoCombiTrans(*stand_trans, *tof_rotation);  
+    
+  // Nov 2019 run
+  // TGeoTranslation*  stand_trans   = new TGeoTranslation("", 12., 0., TOF_Z_Front_Stand);
+  // TGeoTranslation*  stand_trans   = new TGeoTranslation("",  0., 0., TOF_Z_Front_Stand);
+  TGeoRotation* stand_rot = new TGeoRotation();
+  stand_rot->RotateY(0.55);
+  //stand_rot->RotateY(1.0); 
+  TGeoCombiTrans* stand_combi_trans_local =
+    new TGeoCombiTrans(*stand_trans_local, *stand_rot);
+    
   //tof->AddNode(tofstand, 1, stand_combi_trans);
-  tof->AddNode(tofstand, 1);
+  tof->AddNode(tofstand, 1, stand_combi_trans_local);
+  //tof->AddNode(tofstand, 1);
 
   for (Int_t counterType = 0; counterType < NumberOfDifferentCounterTypes;
        counterType++) {

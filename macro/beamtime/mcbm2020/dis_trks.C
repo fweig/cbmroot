@@ -34,7 +34,7 @@ void dis_trks(Int_t nEvents        = 10,
   TString paramDir      = "./";
   TString ParFile       = paramDir + "/data/" + cFileId.Data() + ".params.root";
   TString InputFile     = paramDir + "/data/" + cFileId.Data() + ".root";
-  TString InputDigiFile = paramDir + "/data/digidev_" + cFileId.Data()
+  TString InputDigiFile = paramDir + "/data/TofHits_" + cFileId.Data()
                           + Form("_%s_%02.0f_Cal", cSet.Data(), dDeadtime)
                           + cCalId + ".out.root";
   if (iMc == 1) {
@@ -42,7 +42,7 @@ void dis_trks(Int_t nEvents        = 10,
     InputDigiFile = paramDir + "/data/" + cFileId.Data() + ".rec.root";
     iRun          = 700;
   }
-  TString OutputFile = paramDir + "/data/hits_" + cFileId.Data()
+  TString OutputFile = paramDir + "/data/distrks_" + cFileId.Data()
                        + Form("_%s_%06d_%03d", cSet.Data(), iSel, iSel2)
                        + ".out.root";
   TString cHstFile =

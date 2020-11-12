@@ -22,7 +22,8 @@ void ana_digi_cal_all(Int_t nEvents      = 10000000,
   //TString logLevel = "DEBUG3";
   FairLogger::GetLogger();
   gLogger->SetLogScreenLevel(logLevel);
-  gLogger->SetLogVerbosityLevel("VERYHIGH");
+  //gLogger->SetLogVerbosityLevel("VERYHIGH");
+  gLogger->SetLogVerbosityLevel("MEDIUM");
 
   TString workDir = gSystem->Getenv("VMCWORKDIR");
   /*
@@ -36,7 +37,7 @@ void ana_digi_cal_all(Int_t nEvents      = 10000000,
   TString InputFile = paramDir + "data/" + cFileId + ".root";
   // TString InputFile  =  "./data/" + cFileId + ".root";
   TString OutputFile =
-    paramDir + "data/digidev_" + cFileId
+    paramDir + "data/TofHits_" + cFileId
     + Form("_%09d_%03d_%02.0f_Cal", iCalSet, iSel2, dDeadtime) + cCalId
     + ".out.root";
 

@@ -80,18 +80,7 @@ else
     CalFile=${CalIdMode}_set${CalIdSet}_93_1tofClust.hst.root    
 fi
 
-
 echo trk_cal_digi for $cRun with iDut=$iDut, iRef=$iRef, iSet=$iCalSet, iSel2=$iSel2, iBRef=$iBRef, Deadtime=$Deadtime, CalFile=$CalFile
-
-if [[ $iShLev = "" ]]; then 
-  iShLev=0
-  nEvt=20000
-  dDTres=100000
-  dDTRMSres=100000
-  dL0DTRMSres=100000
-else
- (( iShLev += 1 ))  
-fi 
 
 if [ -e /lustre/cbm ]; then
 source /lustre/cbm/users/nh/CBM/cbmroot/trunk/build/config.sh 
@@ -112,11 +101,19 @@ cp    ../rootlogon.C .
 
 echo Execute in `pwd` at shell level $iShLev: ./trk_cal_digi.sh $1 $2 $3 $4 $5 $6 $7 $8
 
+if [[ $iShLev = "" ]]; then 
+  iShLev=0
+  nEvt=200000
+  dDTres=100000
+  dDTRMSres=100000
+  dL0DTRMSres=100000
 # get initial digi calibration 
-#cp -v  ./I*/${CalFile}  .
- 
+  cp -v  ./I*/${CalFile}  .
 # get latest tracker offsets
 # cp -v ../${cRun}_tofFindTracks.hst.root .
+else
+ (( iShLev += 1 ))  
+fi 
 
 rm -v TCalib.res
 nEvtMax=0
@@ -247,10 +244,10 @@ done
 (( iShLev -= 1 ))
 cd $wdir/$cRun
 echo Finishing with ShLev $iShLev, Iter = $iIter 
-# generate full statistics digi file 
+# generate full statistics CalDigi / Hit file 
 if [[ $iShLev -eq 0 ]]; then
 #  root -b -q '../ana_digi_cal.C(-1,93,1,'$iRef',1,"'$cRun'",'$iCalSet',1,'$iSel2','$Deadtime',"'$CalIdMode'") '
-  root -b -q '../ana_digi_cal.C(1000000,93,1,'$iRef',1,"'$cRun'",'$iCalSet',1,'$iSel2','$Deadtime',"'$CalIdMode'") '
+  root -b -q '../ana_digi_cal_all.C(1000000,93,1,'$iRef',1,"'$cRun'",'$iCalSet',1,'$iSel2','$Deadtime',"'$CalIdMode'") '
   cd $wdir
   mv -v slurm-${SLURM_JOB_ID}.out ${outdir}/TrkCalDigi_${cRun}_${iCalSet}_${iSel2}_${CalIdMode}.out
 fi
