@@ -25,6 +25,4 @@ Bool_t CbmStsFarDetectorHit::Pass(NicaTrack* track) {
   return Validate();
 }
 
-CbmStsFarDetectorHit::~CbmStsFarDetectorHit() {
-  // TODO Auto-generated destructor stub
-}
+CbmStsFarDetectorHit::~CbmStsFarDetectorHit() {}

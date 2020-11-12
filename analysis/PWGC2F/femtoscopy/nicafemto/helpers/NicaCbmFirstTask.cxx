@@ -9,15 +9,16 @@
 #include "NicaCbmFirstTask.h"
 #include "FairRunAna.h"
 
-NicaCbmFirstTask::NicaCbmFirstTask() {
-  // TODO Auto-generated constructor stub
-}
+NicaCbmFirstTask::NicaCbmFirstTask() : fMagField(nullptr) {}
 
 InitStatus NicaCbmFirstTask::Init() {
-  CbmHelix::SetField(FairRunAna::Instance()->GetField());
+  if (fMagField != nullptr) {
+    CbmHelix::SetField(fMagField);
+    std::cout << "SET FIELD " << fMagField << std::endl;
+  } else {
+    CbmHelix::SetField(FairRunAna::Instance()->GetField());
+  }
   return kSUCCESS;
 }
 
-NicaCbmFirstTask::~NicaCbmFirstTask() {
-  // TODO Auto-generated destructor stub
-}
+NicaCbmFirstTask::~NicaCbmFirstTask() {}

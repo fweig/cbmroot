@@ -17,19 +17,25 @@
 NicaCbmEvent::NicaCbmEvent(NicaCbmSetup mode)
   : NicaCbmGlobalEvent("NicaCbmTrack")
   , fMode(mode)
+  , fTrdTracks(NULL)
   , fRichRings(NULL)
   , fMuchTracks(NULL) {
   fStsTracks = new NicaTrackClones("CbmStsTrack", "", "");
   fTofHits   = new NicaTrackClones("CbmTofHit", "", "");
-  fTrdTracks = new NicaTrackClones("CbmTrdTrack", "", "");
+
   switch (fMode) {
-    case kSis100Electron:
+    case NicaCbmSetup::kSis100Electron:
       fRichRings = new NicaTrackClones("CbmRichRing", "", "");
+      fTrdTracks = new NicaTrackClones("CbmTrdTrack", "", "");
       break;
-    case kSis100Hadron: break;
-    case kSis100Muon:
+    case NicaCbmSetup::kSis100Hadron:
+      fTrdTracks = new NicaTrackClones("CbmTrdTrack", "", "");
+      break;
+    case NicaCbmSetup::kSis100Muon:
       fMuchTracks = new NicaTrackClones("CbmMuchTrack", "", "");
+      fTrdTracks  = new NicaTrackClones("CbmTrdTrack", "", "");
       break;
+    case NicaCbmSetup::kSis100Mini: break;
   }
 }
 
@@ -37,15 +43,19 @@ void NicaCbmEvent::ShallowCopyTracks(NicaEvent* event) {
   NicaCbmEvent* ev = (NicaCbmEvent*) event;
   fStsTracks->CopyFrom<CbmStsTrack>(ev->fStsTracks->GetArray());
   fTofHits->CopyFrom<CbmTofHit>(ev->fTofHits->GetArray());
-  fTrdTracks->CopyFrom<CbmTrdTrack>(ev->fTrdTracks->GetArray());
   switch (fMode) {
-    case kSis100Electron:
+    case NicaCbmSetup::kSis100Electron:
+      fTrdTracks->CopyFrom<CbmTrdTrack>(ev->fTrdTracks->GetArray());
       fRichRings->CopyFrom<CbmRichRing>(ev->fRichRings->GetArray());
       break;
-    case kSis100Hadron: break;
-    case kSis100Muon:
-      fMuchTracks->CopyFrom<CbmMuchTrack>(ev->fMuchTracks->GetArray());
+    case NicaCbmSetup::kSis100Hadron:
+      fTrdTracks->CopyFrom<CbmTrdTrack>(ev->fTrdTracks->GetArray());
       break;
+    case NicaCbmSetup::kSis100Muon:
+      fMuchTracks->CopyFrom<CbmMuchTrack>(ev->fMuchTracks->GetArray());
+      fTrdTracks->CopyFrom<CbmTrdTrack>(ev->fTrdTracks->GetArray());
+      break;
+    case NicaCbmSetup::kSis100Mini: break;
   }
   NicaCbmGlobalEvent::ShallowCopyTracks(event);
 }
@@ -62,15 +72,19 @@ void NicaCbmEvent::Update() {
   NicaCbmEventInterface* interface = (NicaCbmEventInterface*) fSource;
   fStsTracks->CopyFrom<CbmStsTrack>(interface->fStsTracks->GetArray());
   fTofHits->CopyFrom<CbmTofHit>(interface->fTofHits->GetArray());
-  fTrdTracks->CopyFrom<CbmTrdTrack>(interface->fTrdTracks->GetArray());
   switch (fMode) {
-    case kSis100Electron:
+    case NicaCbmSetup::kSis100Electron:
+      fTrdTracks->CopyFrom<CbmTrdTrack>(interface->fTrdTracks->GetArray());
       fRichRings->CopyFrom<CbmRichRing>(interface->fRichRings->GetArray());
       break;
-    case kSis100Hadron: break;
-    case kSis100Muon:
+    case NicaCbmSetup::kSis100Hadron:
+      fTrdTracks->CopyFrom<CbmTrdTrack>(interface->fTrdTracks->GetArray());
+      break;
+    case NicaCbmSetup::kSis100Muon:
+      fTrdTracks->CopyFrom<CbmTrdTrack>(interface->fTrdTracks->GetArray());
       fMuchTracks->CopyFrom<CbmMuchTrack>(interface->fMuchTracks->GetArray());
       break;
+    case NicaCbmSetup::kSis100Mini: break;
   }
   NicaCbmGlobalEvent::Update();
 }
@@ -84,14 +98,20 @@ NicaCbmEvent::NicaCbmEvent(TString classname, NicaCbmSetup mode)
   , fMuchTracks(NULL) {
   fStsTracks = new NicaTrackClones("CbmStsTrack", "StsTrack", "STS");
   fTofHits   = new NicaTrackClones("CbmTofHit", "TofHit", "TOF");
-  fTrdTracks = new NicaTrackClones("CbmTrdTrack", "TrdTrack", "TRD");
   switch (fMode) {
-    case kSis100Electron: {
+    case NicaCbmSetup::kSis100Electron: {
+      fTrdTracks = new NicaTrackClones("CbmTrdTrack", "TrdTrack", "TRD");
       fRichRings = new NicaTrackClones("CbmRichRing", "RichRing", "");
     } break;
-    case kSis100Hadron: break;
-    case kSis100Muon: {
+    case NicaCbmSetup::kSis100Hadron:
+      fTrdTracks = new NicaTrackClones("CbmTrdTrack", "TrdTrack", "TRD");
+      break;
+    case NicaCbmSetup::kSis100Muon: {
+      fTrdTracks  = new NicaTrackClones("CbmTrdTrack", "TrdTrack", "TRD");
       fMuchTracks = new NicaTrackClones("CbmMuchTrack", "MuchTrack", "MUCH");
+    } break;
+    case NicaCbmSetup::kSis100Mini: {
+
     } break;
   }
 }
@@ -99,14 +119,17 @@ NicaCbmEvent::NicaCbmEvent(TString classname, NicaCbmSetup mode)
 Bool_t NicaCbmEvent::ExistInTree() const {
   Bool_t exists = kFALSE;
   switch (fMode) {
-    case kSis100Electron:
+    case NicaCbmSetup::kSis100Electron:
       exists = CheckBranches(4, "StsTrack", "TofHit", "TrdTrack", "RichRing");
       break;
-    case kSis100Muon:
+    case NicaCbmSetup::kSis100Muon:
       exists = CheckBranches(4, "StsTrack", "TofHit", "TrdTrack", "MuchTrack");
       break;
-    case kSis100Hadron:
+    case NicaCbmSetup::kSis100Hadron:
       exists = CheckBranches(3, "StsTrack", "TofHit", "TrdTrack");
+      break;
+    case NicaCbmSetup::kSis100Mini:
+      exists = CheckBranches(2, "StsTrack", "TofHit");
       break;
   }
   if (exists == kFALSE) return kFALSE;
@@ -116,7 +139,7 @@ Bool_t NicaCbmEvent::ExistInTree() const {
 NicaCbmEvent::~NicaCbmEvent() {
   delete fStsTracks;
   delete fTofHits;
-  delete fTrdTracks;
+  if (fTrdTracks) delete fTrdTracks;
   if (fRichRings) delete fRichRings;
   if (fMuchTracks) delete fMuchTracks;
 }

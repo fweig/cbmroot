@@ -26,7 +26,7 @@ protected:
   void Register(Bool_t write);
 
 public:
-  NicaCbmMatchedEventInterface(NicaCbmSetup mode = kSis100Hadron);
+  NicaCbmMatchedEventInterface(NicaCbmSetup mode = NicaCbmSetup::kSis100Hadron);
   TClonesArray* GetStsMatches() const { return fStsMatches->GetArray(); };
   TClonesArray* GetTofMatches() const { return fTofMatches->GetArray(); };
   TClonesArray* GetTrdMatches() const { return fTrdMatches->GetArray(); };

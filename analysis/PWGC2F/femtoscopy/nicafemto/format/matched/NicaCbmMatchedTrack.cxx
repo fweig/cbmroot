@@ -32,12 +32,11 @@ void NicaCbmMatchedTrack::Update(CbmGlobalTrack* track,
   if (GetStsTrackIndex() >= 0)
     match_sts =
       (CbmTrackMatchNew*) ev->GetStsMatches()->UncheckedAt(GetStsTrackIndex());
-  if (GetTofTrackIndex() >= 0)
+  if (GetTofHitIndex() >= 0)
     match_tof =
-      (CbmTrackMatchNew*) ev->GetTofMatches()->UncheckedAt(GetTofTrackIndex());
-  if (GetTrdTrackIndex() >= 0)
-    match_trd =
-      (CbmTrackMatchNew*) ev->GetTrdMatches()->UncheckedAt(GetTrdTrackIndex());
+      (CbmTrackMatchNew*) ev->GetTofMatches()->UncheckedAt(GetTofHitIndex());
+
+
   if (match_sts) {
     fStsMCIndex = match_sts->GetMatchedLink().GetIndex();
   } else {
@@ -48,14 +47,12 @@ void NicaCbmMatchedTrack::Update(CbmGlobalTrack* track,
   } else {
     fTofMCIndex = -1;
   }
-  if (match_trd) {
-    fTrdMCIndex = match_trd->GetMatchedLink().GetIndex();
-  } else {
-    fTrdMCIndex = -1;
-  }
   NicaCbmSetup mode = ev->GetMode();
   switch (mode) {
-    case kSis100Electron: {
+    case NicaCbmSetup::kSis100Electron: {
+      if (GetTrdTrackIndex() >= 0)
+        match_trd = (CbmTrackMatchNew*) ev->GetTrdMatches()->UncheckedAt(
+          GetTrdTrackIndex());
       if (GetRichRingIndex() >= 0)
         match_rich = (CbmTrackMatchNew*) ev->GetRichMatches()->UncheckedAt(
           GetRichRingIndex());
@@ -64,9 +61,26 @@ void NicaCbmMatchedTrack::Update(CbmGlobalTrack* track,
       } else {
         fRichMCIndex = -1;
       }
+      if (match_trd) {
+        fTrdMCIndex = match_trd->GetMatchedLink().GetIndex();
+      } else {
+        fTrdMCIndex = -1;
+      }
     } break;
-    case kSis100Hadron: break;
-    case kSis100Muon: {
+    case NicaCbmSetup::kSis100Hadron: {
+      if (GetTrdTrackIndex() >= 0)
+        match_trd = (CbmTrackMatchNew*) ev->GetTrdMatches()->UncheckedAt(
+          GetTrdTrackIndex());
+      if (match_trd) {
+        fTrdMCIndex = match_trd->GetMatchedLink().GetIndex();
+      } else {
+        fTrdMCIndex = -1;
+      }
+    } break;
+    case NicaCbmSetup::kSis100Muon: {
+      if (GetTrdTrackIndex() >= 0)
+        match_trd = (CbmTrackMatchNew*) ev->GetTrdMatches()->UncheckedAt(
+          GetTrdTrackIndex());
       if (GetMuchIndex() >= 0)
         match_much =
           (CbmTrackMatchNew*) ev->GetMuchMatches()->UncheckedAt(GetMuchIndex());
@@ -75,7 +89,13 @@ void NicaCbmMatchedTrack::Update(CbmGlobalTrack* track,
       } else {
         fMuchMCIndex = -1;
       }
+      if (match_trd) {
+        fTrdMCIndex = match_trd->GetMatchedLink().GetIndex();
+      } else {
+        fTrdMCIndex = -1;
+      }
     } break;
+    default: break;
   }
 }
 

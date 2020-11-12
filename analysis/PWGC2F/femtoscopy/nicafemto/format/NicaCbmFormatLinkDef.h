@@ -11,7 +11,14 @@
 #pragma link off all functions;
 
 #pragma link C++ enum NicaCbmEvent::ECbmMode;
+#pragma link C++ namespace NicaCbmFormats;
+#pragma link C++ enum NicaCbmFormats::ECbmFormatType;
+
 #pragma link C++ class NicaCbmGlobalMCEvent + ;
+
+#pragma link C++ class CbmHbtFullEvent + ;
+#pragma link C++ class CbmHbtEvent + ;
+#pragma link C++ class CbmHbtTrack + ;
 
 #pragma link C++ class NicaCbmEvent + ;
 #pragma link C++ class NicaCbmEventInterface + ;
@@ -40,3 +47,16 @@
 #pragma link C++ class NicaUnigenSource + ;
 #pragma link C++ class NicaUnigenTrack + ;
 #pragma link C++ class NicaUnigenTrackInterface + ;
+
+#pragma link C++ class NicaCbmATMCEvent + ;
+#pragma link C++ class NicaCbmATMCEventInterface + ;
+#pragma link C++ class NicaCbmATMCTrack + ;
+#pragma link C++ class NicaCbmATMCTrackInterface + ;
+#pragma link C++ class NicaCbmATEvent + ;
+#pragma link C++ class NicaCbmATEventInterface + ;
+#pragma link C++ class NicaCbmATTrack + ;
+#pragma link C++ class NicaCbmATTrackInterface + ;
+#pragma link C++ class CbmAnaTreeRecoSourceContainer + ;
+#pragma link C++ class CbmAnaTreeMcSourceContainer + ;
+#pragma link C++ class CbmAnaTreeSource + ;
+#pragma link C++ class NicaCbmATFullEvent + ;

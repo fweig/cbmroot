@@ -15,10 +15,11 @@
 class NicaCbmMatchedEvent : public NicaCbmEvent {
 protected:
   virtual void CreateSource();
-  NicaCbmMatchedEvent(TString classname, NicaCbmSetup mode = kSis100Hadron);
+  NicaCbmMatchedEvent(TString classname,
+                      NicaCbmSetup mode = NicaCbmSetup::kSis100Hadron);
 
 public:
-  NicaCbmMatchedEvent(NicaCbmSetup mode = kSis100Hadron);
+  NicaCbmMatchedEvent(NicaCbmSetup mode = NicaCbmSetup::kSis100Hadron);
   virtual Bool_t ExistInTree() const;
   virtual NicaEvent* GetNewEvent() const {
     return new NicaCbmMatchedEvent(fMode);

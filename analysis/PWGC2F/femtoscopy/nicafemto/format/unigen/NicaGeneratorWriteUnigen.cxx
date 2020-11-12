@@ -6,8 +6,15 @@
  *		E-mail: daniel.wielanek@gmail.com
  *		Warsaw University of Technology, Faculty of Physics
  */
+
 #include "NicaGeneratorWriteUnigen.h"
+
+#include "NicaGeneratorParametersArray.h"
 #include "NicaRunSim.h"
+
+#include <FairLogger.h>
+#include <FairTask.h>
+#include <TTree.h>
 
 NicaGeneratorWriteUnigen::NicaGeneratorWriteUnigen()
   : NicaGeneratorWrite(4, 3, 1, 0, 9, 9, 0, 0) {
@@ -72,6 +79,4 @@ void NicaGeneratorWriteUnigen::AddParticle() {
                       fTrackParameters->GetDouble(9));
 }
 
-NicaGeneratorWriteUnigen::~NicaGeneratorWriteUnigen() {
-  // TODO Auto-generated destructor stub
-}
+NicaGeneratorWriteUnigen::~NicaGeneratorWriteUnigen() {}

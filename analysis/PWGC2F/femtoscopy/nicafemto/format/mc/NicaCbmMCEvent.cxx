@@ -8,6 +8,7 @@
  */
 #include "NicaCbmMCEvent.h"
 #include "CbmMCTrack.h"
+#include "FairLogger.h"
 #include "FairRootManager.h"
 #include "NicaCbmMCEventInterface.h"
 #include "NicaCbmMCTrack.h"
@@ -16,9 +17,7 @@ NicaCbmMCEvent::NicaCbmMCEvent() : NicaMCEvent("NicaCbmMCTrack") {
   fSource = new NicaCbmMCEventInterface();
 }
 
-NicaCbmMCEvent::~NicaCbmMCEvent() {
-  // TODO Auto-generated destructor stub
-}
+NicaCbmMCEvent::~NicaCbmMCEvent() {}
 
 void NicaCbmMCEvent::CreateSource() { fSource = new NicaCbmMCEventInterface(); }
 
@@ -37,8 +36,8 @@ void NicaCbmMCEvent::Update() {
     Double_t charge    = CalculateCharge(track->GetPdgCode());
     NicaCbmMCTrack* mc = (NicaCbmMCTrack*) fTracks->UncheckedAt(i);
     mc->SetEvent(this);
+    mc->GetLink()->ClearLinks();
     mc->Update(track, charge);
-    mc->GetLink()->Clear();
     mc->GetLink()->SetLink(0, i);
   }
 }
@@ -50,6 +49,10 @@ Bool_t NicaCbmMCEvent::ExistInTree() const {
   FairRootManager* manager = FairRootManager::Instance();
   Int_t header             = manager->CheckBranch("MCEventHeader.")
                  + manager->CheckBranch("EventHeader.");
+  LOG(debug) << "Branch MCEventHeader. "
+             << manager->CheckBranch("MCEventHeader.");
+  LOG(debug) << "Branch EventHeader. " << manager->CheckBranch("EventHeader.");
+  LOG(debug) << "Branch MCTrack " << manager->CheckBranch("MCTrack");
   Int_t tracks = manager->CheckBranch("MCTrack");
   if ((header + tracks) >= 2) { return kTRUE; }
   return kFALSE;

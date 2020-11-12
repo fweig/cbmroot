@@ -27,7 +27,7 @@ public:
   virtual void Update(CbmGlobalTrack* track,
                       NicaCbmGlobalEventInterface* interface);
   CbmHelix* GetHelix() { return &fHelix; };
-  void CopyData(NicaTrack* other);
+  virtual void CopyData(NicaTrack* other);
   virtual ~NicaCbmGlobalTrack();
   ClassDef(NicaCbmGlobalTrack, 1)
 };

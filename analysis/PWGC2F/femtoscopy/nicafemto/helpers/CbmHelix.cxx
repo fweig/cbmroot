@@ -42,40 +42,61 @@ TVector3 CbmHelix::Eval(Double_t z, TVector3& mom) {
 }
 
 void CbmHelix::SetParameters(const FairTrackParam* param) {
-  fT[0] = param->GetX();
-  fT[1] = param->GetY();
-  fT[2] = param->GetTx();
-  fT[3] = param->GetTy();
-  fT[4] = param->GetQp();
-  fT[5] = param->GetZ();
-  for (Int_t i = 0, iCov = 0; i < 5; i++)
-    for (Int_t j = 0; j <= i; j++, iCov++)
-      fC[iCov] = param->GetCovariance(i, j);
+  fTb[0] = param->GetX();
+  fTb[1] = param->GetY();
+  fTb[2] = param->GetTx();
+  fTb[3] = param->GetTy();
+  fTb[4] = param->GetQp();
+  fTb[5] = param->GetZ();
+  /*
+    for (Int_t i=0,iCov=0; i<5; i++)
+    	for (Int_t j=0; j<=i; j++,iCov++)
+    		fC[iCov] = param->GetCovariance(i,j);
+    		*/
 }
 
-CbmHelix::~CbmHelix() {
-  // TODO Auto-generated destructor stub
+void CbmHelix::Build(const TVector3& pos,
+                     const TVector3& mom,
+                     Double_t charge) {
+  fTb[0]     = pos.X();
+  fTb[1]     = pos.Y();
+  Double_t p = mom.Mag();
+  fTb[2]     = mom.Px() / mom.Pz();
+  fTb[3]     = mom.Py() / mom.Pz();
+  fTb[4]     = charge / p;
+  fTb[5]     = pos.Z();
 }
+
+CbmHelix::~CbmHelix() {}
 
 CbmHelix::CbmHelix(const CbmHelix& other) : TObject() {
-  for (int i = 0; i < 6; i++)
-    fT[i] = other.fT[i];
-  for (int i = 0; i < 15; i++)
-    fC[i] = other.fC[i];
+  for (int i = 0; i < 6; i++) {
+    fT[i]  = other.fT[i];
+    fTb[i] = other.fTb[i];
+  }
+  /*
+	for(int i=0;i<15;i++){
+		fC[i] = other.fC[i];
+	}*/
 }
 
 CbmHelix& CbmHelix::operator=(const CbmHelix& other) {
   if (&other == this) return *this;
-  for (int i = 0; i < 6; i++)
-    fT[i] = other.fT[i];
-  for (int i = 0; i < 15; i++)
-    fC[i] = other.fC[i];
+  for (int i = 0; i < 6; i++) {
+    fT[i]  = other.fT[i];
+    fTb[i] = other.fTb[i];
+  }
+  //for(int i=0;i<15;i++)
+  //	fC[i] = other.fC[i];
   return *this;
 }
 
 Int_t CbmHelix::Propagate(Double_t z) {
   Int_t fMethod = 1;
   Bool_t err    = 0;
+  for (int i = 0; i < 6; i++) {
+    fT[i] = fTb[i];
+  }
   if (fabs(fT[5] - z) < 1.e-5) return 0;
 
   if (!fgField || (300 <= z && 300 <= fT[5])) {
@@ -121,22 +142,23 @@ void CbmHelix::ExtrapolateLine(Double_t z_out) {
   fT[0] += dz * fT[2];
   fT[1] += dz * fT[3];
   fT[5] = z_out;
+  /*
+	const Double_t dzC_in8 = dz * fC[8];
 
-  const Double_t dzC_in8 = dz * fC[8];
+	fC[4] = fC[4] + dzC_in8;
+	fC[1] = fC[1] + dz * (fC[4] + fC[6]);
 
-  fC[4] = fC[4] + dzC_in8;
-  fC[1] = fC[1] + dz * (fC[4] + fC[6]);
+	const Double_t C_in3 = fC[3];
 
-  const Double_t C_in3 = fC[3];
+	fC[3] = C_in3 + dz * fC[5];
+	fC[0] = fC[0] + dz * (fC[3] + C_in3);
 
-  fC[3] = C_in3 + dz * fC[5];
-  fC[0] = fC[0] + dz * (fC[3] + C_in3);
+	const Double_t C_in7 = fC[7];
 
-  const Double_t C_in7 = fC[7];
-
-  fC[7] = C_in7 + dz * fC[9];
-  fC[2] = fC[2] + dz * (fC[7] + C_in7);
-  fC[6] = fC[6] + dzC_in8;
+	fC[7] = C_in7 + dz * fC[9];
+	fC[2] = fC[2] + dz * (fC[7] + C_in7);
+	fC[6] = fC[6] + dzC_in8;
+*/
 }
 
 Int_t CbmHelix::ExtrapolateRK4(Double_t z_out) {
@@ -367,14 +389,15 @@ Int_t CbmHelix::ExtrapolateALight(Double_t z_out) {
     bool ok = 1;
     for (int i = 0; i < 6; i++)
       ok = ok && !TMath::IsNaN(fT[i]) && (fT[i] < 1.e5);
-    for (int i = 0; i < 15; i++)
-      ok = ok && !TMath::IsNaN(fC[i]);
-    if (!ok) {
-      for (int i = 0; i < 15; i++)
-        fC[i] = 0;
-      fC[0] = fC[2] = fC[5] = fC[9] = fC[14] = 100.;
-      return 1;
-    }
+    /*	for (int i = 0; i < 15; i++)
+			ok = ok && !TMath::IsNaN(fC[i]);
+		if (!ok) {
+			for (int i = 0; i < 15; i++)
+				fC[i] = 0;
+			fC[0] = fC[2] = fC[5] = fC[9] = fC[14] = 100.;
+			return 1;
+		}
+		*/
   }
   const Double_t c_light = 0.000299792458;
 
@@ -607,23 +630,21 @@ Int_t CbmHelix::ExtrapolateALight(Double_t z_out) {
   return 0;
 }
 
-void CbmHelix::multQtSQ(const Int_t N, Double_t Q[]) {
-  Double_t A[N * N];
+void CbmHelix::multQtSQ(const Int_t /*N*/, Double_t /*Q*/[]) {
+  /*Double_t A[N * N];
 
-  for (Int_t i = 0, n = 0; i < N; i++) {
-    for (Int_t j = 0; j < N; j++, ++n) {
-      A[n] = 0;
-      for (Int_t k = 0; k < N; ++k)
-        A[n] += fC[indexS(i, k)] * Q[k * N + j];
-    }
-  }
+	  for( Int_t i=0, n=0; i<N; i++ ){
+	    for( Int_t j=0; j<N; j++, ++n ){
+	      A[n] = 0 ;
+	      for( Int_t k=0; k<N; ++k ) A[n]+= fC[indexS(i,k)] * Q[ k*N+j];
+	    }
+	  }
 
-  for (Int_t i = 0; i < N; i++) {
-    for (Int_t j = 0; j <= i; j++) {
-      Int_t n = indexS(i, j);
-      fC[n]   = 0;
-      for (Int_t k = 0; k < N; k++)
-        fC[n] += Q[k * N + i] * A[k * N + j];
-    }
-  }
+	  for( Int_t i=0; i<N; i++ ){
+	    for( Int_t j=0; j<=i; j++ ){
+	      Int_t n = indexS(i,j);
+	      fC[n] = 0 ;
+	      for( Int_t k=0; k<N; k++ )  fC[n] += Q[ k*N+i ] * A[ k*N+j ];
+	    }
+	  }*/
 }

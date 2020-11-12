@@ -22,7 +22,7 @@
 
 class CbmHelix : public TObject {
 protected:
-  Double_t fT[6], fC[15];
+  Double_t fT[6], fTb[15];
   Double_t Qp() const { return fT[4]; };
   void SetQp(Double_t qp) { fT[4] = qp; }
   Double_t X() const { return fT[0]; }
@@ -49,6 +49,7 @@ public:
   void Build(const FairTrackParam* params) { SetParameters(params); }
   void Build(const CbmGlobalTrack* tr);
   void Build(const CbmStsTrack* tr, Bool_t first);
+  void Build(const TVector3& pos, const TVector3& mom, Double_t charge);
   void PrintInfo() const {
     std::cout << Form("T={%4.2f\t%4.2f\t%4.2f\t%4.2f\t%4.2f\t%4.2f}",
                       fT[0],
@@ -60,7 +61,6 @@ public:
               << std::endl;
   }
   Double_t* GetTrack() { return fT; }
-  Double_t* GetCovMatrix() { return fC; }
   TVector3 Eval(Double_t z);
   TVector3 Eval(Double_t z, TVector3& mom);
   virtual ~CbmHelix();

@@ -20,8 +20,8 @@ NicaCbmGlobalTrack::NicaCbmGlobalTrack(const NicaCbmGlobalTrack& other)
   fHelix      = other.fHelix;
 }
 
-NicaCbmGlobalTrack&
-NicaCbmGlobalTrack::operator=(const NicaCbmGlobalTrack& other) {
+NicaCbmGlobalTrack& NicaCbmGlobalTrack::
+operator=(const NicaCbmGlobalTrack& other) {
   if (this == &other) return *this;
   NicaExpTrack::operator=(other);
   *fFirstPoint          = *other.fFirstPoint;

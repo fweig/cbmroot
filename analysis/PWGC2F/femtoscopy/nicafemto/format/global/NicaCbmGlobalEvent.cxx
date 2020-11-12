@@ -26,7 +26,6 @@ void NicaCbmGlobalEvent::ShallowCopyTracks(NicaEvent* event) {
     from->SetEvent(this);
     to->CopyData(from);
     from->SetEvent(temp_event);
-    to->GetLink()->SetLink(0, i);
   }
 }
 
@@ -56,7 +55,7 @@ void NicaCbmGlobalEvent::Update() {
     NicaCbmGlobalTrack* tr_nica = (NicaCbmGlobalTrack*) fTracks->UncheckedAt(i);
     tr_nica->SetEvent(this);
     tr_nica->Update(tr_cbm, interface);
-    tr_nica->SetEvent(this);
+    tr_nica->GetLink()->ClearLinks();
     tr_nica->GetLink()->SetLink(0, i);
   }
 }
@@ -64,9 +63,7 @@ void NicaCbmGlobalEvent::Update() {
 NicaCbmGlobalEvent::NicaCbmGlobalEvent(TString classname)
   : NicaExpEvent(classname) {}
 
-NicaCbmGlobalEvent::~NicaCbmGlobalEvent() {
-  // TODO Auto-generated destructor stub
-}
+NicaCbmGlobalEvent::~NicaCbmGlobalEvent() {}
 
 Bool_t NicaCbmGlobalEvent::ExistInTree() const {
   return CheckBranches(2, "PrimaryVertex.", "GlobalTrack");

@@ -54,16 +54,17 @@ void NicaCbmGlobalMCEvent::Update() {
     id_match = link->GetMatchedLink().GetIndex();
     if (id_match < 0) {
       track->SetImgTrack(NULL);
+      track->SetMatchID(-1);
     } else {
       NicaCbmMCTrack* mc = (NicaCbmMCTrack*) fImgEvent->GetTrack(id_match);
       track->SetImgTrack(mc);
       track->SetMatchID(id_match);
     }
+    track->SetEvent(this);
   }
 }
 
 Bool_t NicaCbmGlobalMCEvent::ExistInTree() const {
-  //NicaCbmMatchedEventInterface *interface = (NicaCbmMatchedEventInterface*)fRealEvent->GetSource();
   if (fImgEvent && fRealEvent) {
     if (fImgEvent->ExistInTree() && fRealEvent->ExistInTree()) { return kTRUE; }
   }

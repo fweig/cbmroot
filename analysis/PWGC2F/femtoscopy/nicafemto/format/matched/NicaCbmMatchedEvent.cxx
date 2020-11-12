@@ -19,7 +19,7 @@ NicaCbmMatchedEvent::NicaCbmMatchedEvent(NicaCbmSetup mode)
 
 Bool_t NicaCbmMatchedEvent::ExistInTree() const {
   switch (fMode) {
-    case kSis100Electron:
+    case NicaCbmSetup::kSis100Electron:
       if (!CheckBranches(4,
                          "StsTrackMatch",
                          "TofHitMatch",
@@ -27,7 +27,7 @@ Bool_t NicaCbmMatchedEvent::ExistInTree() const {
                          "RichRingMatch"))
         return kFALSE;
       break;
-    case kSis100Muon:
+    case NicaCbmSetup::kSis100Muon:
       if (!CheckBranches(4,
                          "StsTrackMatch",
                          "TofHitMatch",
@@ -35,17 +35,18 @@ Bool_t NicaCbmMatchedEvent::ExistInTree() const {
                          "MuchTrackMatch"))
         return kFALSE;
       break;
-    default:
+    case NicaCbmSetup::kSis100Hadron: {
       if (!CheckBranches(3, "StsTrackMatch", "TofHitMatch", "TrdTrackMatch"))
         return kFALSE;
+    } break;
+    default:
+      if (!CheckBranches(2, "StsTrackMatch", "TofHitMatch")) return kFALSE;
       break;
   }
   return NicaCbmEvent::ExistInTree();
 }
 
-NicaCbmMatchedEvent::~NicaCbmMatchedEvent() {
-  // TODO Auto-generated destructor stub
-}
+NicaCbmMatchedEvent::~NicaCbmMatchedEvent() {}
 
 NicaCbmMatchedEvent::NicaCbmMatchedEvent(TString classname, NicaCbmSetup mode)
   : NicaCbmEvent(classname, mode) {}

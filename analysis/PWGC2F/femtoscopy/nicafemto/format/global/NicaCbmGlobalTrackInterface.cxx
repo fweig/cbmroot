@@ -10,6 +10,4 @@
 
 NicaCbmGlobalTrackInterface::NicaCbmGlobalTrackInterface() {}
 
-NicaCbmGlobalTrackInterface::~NicaCbmGlobalTrackInterface() {
-  // TODO Auto-generated destructor stub
-}
+NicaCbmGlobalTrackInterface::~NicaCbmGlobalTrackInterface() {}

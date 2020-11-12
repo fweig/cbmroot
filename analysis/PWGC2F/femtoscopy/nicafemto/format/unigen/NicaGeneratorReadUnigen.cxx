@@ -6,7 +6,13 @@
  *		E-mail: daniel.wielanek@gmail.com
  *		Warsaw University of Technology, Faculty of Physics
  */
+
 #include "NicaGeneratorReadUnigen.h"
+
+#include "NicaGeneratorParametersArray.h"
+#include "NicaGeneratorRead.h"
+
+#include <TString.h>
 
 
 Int_t NicaGeneratorReadUnigen::ReadEvent() {
@@ -93,6 +99,4 @@ void NicaGeneratorReadUnigen::CheckParameters() {
   fEStepT_Id  = CheckParameter("Step_t");
 }
 
-NicaGeneratorReadUnigen::~NicaGeneratorReadUnigen() {
-  // TODO Auto-generated destructor stub
-}
+NicaGeneratorReadUnigen::~NicaGeneratorReadUnigen() {}

@@ -27,7 +27,7 @@ protected:
   NicaCbmEvent(TString classname, NicaCbmSetup mode);
 
 public:
-  NicaCbmEvent(NicaCbmSetup mode = kSis100Hadron);
+  NicaCbmEvent(NicaCbmSetup mode = NicaCbmSetup::kSis100Hadron);
   NicaCbmSetup GetMode() const { return fMode; }
   virtual Bool_t ExistInTree() const;
   NicaTrackClones* GetStsTracks() const { return fStsTracks; }

@@ -35,7 +35,6 @@ Link_Directories(${LINK_DIRECTORIES})
 # List of source files
 set(SRCS
 CbmDetectorID.cxx
-CbmStsTrackMapProducer.cxx
 NicaCbmFirstTask.cxx
 CbmHelix.cxx
 )

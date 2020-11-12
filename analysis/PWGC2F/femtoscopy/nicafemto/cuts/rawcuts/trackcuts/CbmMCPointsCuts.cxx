@@ -7,6 +7,7 @@
  *		Warsaw University of Technology, Faculty of Physics
  */
 #include "CbmMCPointsCuts.h"
+
 #include "NicaCbmMCTrack.h"
 
 NicaCbmMCPointsCut::NicaCbmMCPointsCut(Int_t params) : NicaTrackCut(params) {}

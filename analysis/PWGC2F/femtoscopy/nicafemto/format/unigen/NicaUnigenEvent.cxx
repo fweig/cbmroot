@@ -8,8 +8,18 @@
  */
 
 #include "NicaUnigenEvent.h"
-#include "FairRootManager.h"
+
+#include "NicaEventInterface.h"
+#include "NicaLink.h"
+#include "NicaMCTrack.h"
+#include "NicaTrack.h"
 #include "NicaUnigenEventInterface.h"
+
+#include <FairRootManager.h>
+#include <TClonesArray.h>
+#include <TDatabasePDG.h>
+#include <TLorentzVector.h>
+#include <TParticlePDG.h>
 
 NicaUnigenEvent::NicaUnigenEvent() : NicaMCEvent("NicaUnigenTrack") {}
 
@@ -25,16 +35,17 @@ void NicaUnigenEvent::Update() {
     Double_t charge        = 0;
     if (pdg_part) { charge = pdg_part->Charge() / 3.0; }
     NicaMCTrack* target_track = (NicaMCTrack*) fTracks->ConstructedAt(i);
-    if (particle->GetMate() < 0) {
-      target_track->SetPrimary(kTRUE);
-    } else {
-      target_track->SetPrimary(kFALSE);
-    }
+
     target_track->SetID(i);
     target_track->SetCharge(charge);
     target_track->SetPdg(particle->GetPdg());
-    target_track->GetLink()->Clear();
+    target_track->GetLink()->ClearLinks();
     target_track->GetLink()->SetLink(0, i);
+    if (particle->GetParent() < 0) {
+      target_track->SetPrimary();
+    } else {
+      target_track->SetMotherIndex(particle->GetParent());
+    }
     target_track->GetMomentum()->SetPxPyPzE(
       particle->Px(), particle->Py(), particle->Pz(), particle->E());
     target_track->GetFreezoutPosition()->SetXYZT(

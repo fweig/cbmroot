@@ -15,6 +15,4 @@ NicaCbmMatchedTrackInterface::NicaCbmMatchedTrackInterface()
   , fRichLink(NULL)
   , fMuchLink(NULL) {}
 
-NicaCbmMatchedTrackInterface::~NicaCbmMatchedTrackInterface() {
-  // TODO Auto-generated destructor stub
-}
+NicaCbmMatchedTrackInterface::~NicaCbmMatchedTrackInterface() {}

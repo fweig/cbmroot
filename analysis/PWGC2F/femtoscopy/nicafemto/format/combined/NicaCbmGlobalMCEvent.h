@@ -25,7 +25,7 @@ class NicaCbmGlobalMCEvent : public NicaComplexEvent {
   NicaCbmMatchedTrackInterface* fRealTrackInterface;
 
 public:
-  NicaCbmGlobalMCEvent(NicaCbmSetup mode  = kSis100Hadron,
+  NicaCbmGlobalMCEvent(NicaCbmSetup mode  = NicaCbmSetup::kSis100Hadron,
                        ECbmModuleId match = ECbmModuleId::kSts);
   virtual void Update();
   virtual Bool_t ExistInTree() const;

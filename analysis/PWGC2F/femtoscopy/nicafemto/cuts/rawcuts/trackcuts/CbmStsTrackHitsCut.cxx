@@ -7,6 +7,7 @@
  *		Warsaw University of Technology, Faculty of Physics
  */
 #include "CbmStsTrackHitsCut.h"
+
 #include "CbmStsTrack.h"
 
 CbmStsTrackHitsCut::CbmStsTrackHitsCut() : NicaTrackCut(3) {
@@ -39,6 +40,4 @@ Bool_t CbmStsTrackHitsCut::Init(Int_t format_id) {
   return kFALSE;
 }
 
-CbmStsTrackHitsCut::~CbmStsTrackHitsCut() {
-  // TODO Auto-generated destructor stub
-}
+CbmStsTrackHitsCut::~CbmStsTrackHitsCut() {}

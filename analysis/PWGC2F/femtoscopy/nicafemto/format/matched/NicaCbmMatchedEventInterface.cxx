@@ -11,17 +11,29 @@
 #include "NicaCbmMatchedTrackInterface.h"
 
 NicaCbmMatchedEventInterface::NicaCbmMatchedEventInterface(NicaCbmSetup mode)
-  : NicaCbmEventInterface(mode), fMuchMatches(NULL), fRichMatches(NULL) {
+  : NicaCbmEventInterface(mode)
+  , fTrdMatches(NULL)
+  , fMuchMatches(NULL)
+  , fRichMatches(NULL) {
   fStsMatches = new NicaTrackClones("CbmTrackMatchNew", "StsTrackMatch", "STS");
   fTofMatches = new NicaTrackClones("CbmTrackMatchNew", "TofHitMatch", "TOF");
-  fTrdMatches = new NicaTrackClones("CbmTrackMatchNew", "TrdTrackMatch", "TRD");
   switch (fMode) {
-    case kSis100Electron: {
+    case NicaCbmSetup::kSis100Electron: {
+      fTrdMatches =
+        new NicaTrackClones("CbmTrackMatchNew", "TrdTrackMatch", "TRD");
       fRichMatches =
         new NicaTrackClones("CbmTrackMatchNew", "RichRingMatch", "RICH");
     } break;
-    case kSis100Hadron: break;
-    case kSis100Muon: {
+    case NicaCbmSetup::kSis100Hadron:
+      fTrdMatches =
+        new NicaTrackClones("CbmTrackMatchNew", "TrdTrackMatch", "TRD");
+      break;
+    case NicaCbmSetup::kSis100Mini: {
+
+    } break;
+    case NicaCbmSetup::kSis100Muon: {
+      fTrdMatches =
+        new NicaTrackClones("CbmTrackMatchNew", "TrdTrackMatch", "TRD");
       fMuchMatches =
         new NicaTrackClones("CbmTrackMatchNew", "MuchTrackMatch", "MUCH");
     } break;
@@ -33,20 +45,23 @@ void NicaCbmMatchedEventInterface::ConnectToTree() {
   if (CanDeleteEvent()) {
     fStsMatches->DeleteClones();
     fTofMatches->DeleteClones();
-    fTrdMatches->DeleteClones();
     switch (fMode) {
-      case kSis100Electron: {
+      case NicaCbmSetup::kSis100Electron: {
         fRichMatches->DeleteClones();
+        fTrdMatches->DeleteClones();
       } break;
-      case kSis100Hadron: break;
-      case kSis100Muon: {
+      case NicaCbmSetup::kSis100Hadron: fTrdMatches->DeleteClones(); break;
+      case NicaCbmSetup::kSis100Muon: {
+        fTrdMatches->DeleteClones();
         fMuchMatches->DeleteClones();
+      } break;
+      case NicaCbmSetup::kSis100Mini: {
       } break;
     }
   }
   fStsMatches->GetFromTree();
   fTofMatches->GetFromTree();
-  fTrdMatches->GetFromTree();
+  if (fTrdMatches) fTrdMatches->GetFromTree();
   if (fRichMatches) fRichMatches->GetFromTree();
   if (fMuchMatches) fMuchMatches->GetFromTree();
 }
@@ -55,7 +70,7 @@ void NicaCbmMatchedEventInterface::Register(Bool_t write) {
   NicaCbmEventInterface::Register(write);
   fStsMatches->Register(write);
   fTofMatches->Register(write);
-  fTrdMatches->Register(write);
+  if (fTrdMatches) fTrdMatches->Register(write);
   if (fMuchMatches) fMuchMatches->Register(write);
   if (fRichMatches) fRichMatches->Register(write);
 }
@@ -65,7 +80,8 @@ void NicaCbmMatchedEventInterface::CopyData(NicaEventInterface* s) {
   NicaCbmMatchedEventInterface* interface = (NicaCbmMatchedEventInterface*) s;
   fStsMatches->CopyFrom<CbmTrackMatchNew>(interface->GetStsMatches());
   fTofMatches->CopyFrom<CbmTrackMatchNew>(interface->GetTofMatches());
-  fTrdMatches->CopyFrom<CbmTrackMatchNew>(interface->GetTrdMatches());
+  if (fTrdMatches)
+    fTrdMatches->CopyFrom<CbmTrackMatchNew>(interface->GetTrdMatches());
   if (fMuchMatches)
     fMuchMatches->CopyFrom<CbmTrackMatchNew>(interface->GetMuchMatches());
   if (fRichMatches)
@@ -84,7 +100,8 @@ void NicaCbmMatchedEventInterface::CopyAndCompress(NicaEventInterface* s,
   NicaCbmMatchedEventInterface* interface = (NicaCbmMatchedEventInterface*) s;
   fStsMatches->CopyFrom<CbmTrackMatchNew>(interface->GetStsMatches());
   fTofMatches->CopyFrom<CbmTrackMatchNew>(interface->GetTofMatches());
-  fTrdMatches->CopyFrom<CbmTrackMatchNew>(interface->GetTrdMatches());
+  if (fTrdMatches)
+    fTrdMatches->CopyFrom<CbmTrackMatchNew>(interface->GetTrdMatches());
   if (fMuchMatches)
     fMuchMatches->CopyFrom<CbmTrackMatchNew>(interface->GetMuchMatches());
   if (fRichMatches)
@@ -100,8 +117,9 @@ void NicaCbmMatchedEventInterface::FillTrackInterface(NicaTrackInterface* track,
     (CbmTrackMatchNew*) fStsMatches->UncheckedAt(glob->GetStsTrackIndex()));
   Track->SetLinkTof(
     (CbmTrackMatchNew*) fTofMatches->UncheckedAt(glob->GetTofHitIndex()));
-  Track->SetLinkTrd(
-    (CbmTrackMatchNew*) fTrdMatches->UncheckedAt(glob->GetTrdTrackIndex()));
+  if (fTrdMatches)
+    Track->SetLinkTrd(
+      (CbmTrackMatchNew*) fTrdMatches->UncheckedAt(glob->GetTrdTrackIndex()));
   if (fMuchMatches) {
     Track->SetLinkMuch(
       (CbmTrackMatchNew*) fMuchMatches->UncheckedAt(glob->GetMuchTrackIndex()));

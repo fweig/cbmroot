@@ -13,17 +13,25 @@
 
 NicaCbmTrack::NicaCbmTrack()
   : fStsTrack(NULL)
-  , fTofTrack(NULL)
+  , fTofHit(NULL)
   , fTrdTrack(NULL)
   , fRichRing(NULL)
   , fMuchTrack(NULL)
+  , fTofTrack(new NicaToFTrack())
   , fStsTrackIndex(-1)
   , fTofTrackIndex(-1)
   , fTrdTrackIndex(-1)
   , fRichRingIndex(-1)
-  , fMuchTrackIndex(-1) {}
+  , fMuchTrackIndex(-1) {
+  fTofTrack->SetFlag(-1);
+}
 
-NicaCbmTrack::~NicaCbmTrack() {}
+TObject* NicaCbmTrack::GetDetTrack(const UInt_t detID) const {
+  if (detID == NicaDetectorID::kTOF) { return fTofTrack; }
+  return nullptr;
+}
+
+NicaCbmTrack::~NicaCbmTrack() { delete fTofTrack; }
 
 void NicaCbmTrack::Update(CbmGlobalTrack* track,
                           NicaCbmGlobalEventInterface* interface) {
@@ -31,11 +39,12 @@ void NicaCbmTrack::Update(CbmGlobalTrack* track,
   NicaCbmGlobalTrack::Update(track, interface);
   fStsTrackIndex    = track->GetStsTrackIndex();
   fTofTrackIndex    = track->GetTofHitIndex();
-  fTrdTrackIndex    = track->GetTrdTrackIndex();
   NicaCbmSetup mode = evint->GetMode();
-  if (mode == kSis100Electron)
+  if (mode != NicaCbmSetup::kSis100Mini)
+    fTrdTrackIndex = track->GetTrdTrackIndex();
+  if (mode == NicaCbmSetup::kSis100Electron)
     fRichRingIndex = track->GetRichRingIndex();
-  else if (mode == kSis100Muon)
+  else if (mode == NicaCbmSetup::kSis100Muon)
     fMuchTrackIndex = track->GetMuchTrackIndex();
   if (fStsTrackIndex >= 0)
     SetStsTrack(
@@ -45,18 +54,24 @@ void NicaCbmTrack::Update(CbmGlobalTrack* track,
   if (fTofTrackIndex >= 0) {
     CbmTofHit* hit =
       (CbmTofHit*) evint->GetTofHits()->UncheckedAt(fTofTrackIndex);
-    SetTofTrack(hit);
+    SetTofHit(hit);
     Double_t t    = hit->GetTime();
     Double_t beta = GetTrackLenght() / t / (29.9792458);
     Double_t p    = GetMomentum()->P();
     Double_t m2   = p * p * (1. / beta / beta - 1.);
+    fTofTrack->SetMass2(m2);
+    fTofTrack->SetBeta(beta);
+    fTofTrack->SetFlag(1);
     if (m2 > 0) {
       SetMass(TMath::Sqrt(m2));
     } else {
       SetMass(TMath::Sqrt(-m2));
     }
   } else {
-    SetTofTrack(NULL);
+    fTofTrack->SetFlag(0);
+    fTofTrack->SetMass2(-100);
+    fTofTrack->SetBeta(-1);
+    SetTofHit(NULL);
     SetMass(-2);
   }
   if (fTrdTrackIndex >= 0)
@@ -90,9 +105,9 @@ void NicaCbmTrack::CopyData(NicaTrack* track) {
   else
     fStsTrack = NULL;
   if (fTofTrackIndex >= 0)
-    fTofTrack = (CbmTofHit*) ev->GetTofHits()->UncheckedAt(fTofTrackIndex);
+    fTofHit = (CbmTofHit*) ev->GetTofHits()->UncheckedAt(fTofTrackIndex);
   else
-    fTofTrack = NULL;
+    fTofHit = NULL;
   if (fTrdTrackIndex >= 0)
     fTrdTrack = (CbmTrdTrack*) ev->GetTrdTracks()->UncheckedAt(fTrdTrackIndex);
   else
@@ -106,4 +121,5 @@ void NicaCbmTrack::CopyData(NicaTrack* track) {
       (CbmMuchTrack*) ev->GetMuchTracks()->UncheckedAt(fMuchTrackIndex);
   else
     fMuchTrack = NULL;
+  *fTofTrack = *other->fTofTrack;
 }

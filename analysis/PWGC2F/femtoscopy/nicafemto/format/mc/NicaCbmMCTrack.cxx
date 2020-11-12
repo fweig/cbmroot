@@ -8,8 +8,6 @@
  */
 #include "NicaCbmMCTrack.h"
 
-#include <FairLogger.h>
-
 NicaCbmMCTrack::NicaCbmMCTrack() : fNPoints(0) {}
 
 void NicaCbmMCTrack::Update(CbmMCTrack* mc, Double_t charge) {
@@ -17,9 +15,9 @@ void NicaCbmMCTrack::Update(CbmMCTrack* mc, Double_t charge) {
     mc->GetPx(), mc->GetPy(), mc->GetPz(), mc->GetEnergy());
   SetMotherIndex(mc->GetMotherId());
   if (GetMotherIndex() > -1) {
-    SetPrimary(kFALSE);
+    SetMotherIndex(mc->GetMotherId());
   } else {
-    SetPrimary(kTRUE);
+    SetPrimary();
   }
   SetStatus(0);
   SetCharge(charge);
@@ -104,9 +102,7 @@ void NicaCbmMCTrack::SetNPoints(ECbmModuleId iDet, Int_t nPoints) {
         nPoints = 1;
       fNPoints = (fNPoints & (~(1 << 25))) | (nPoints << 25);
     } break;
-    default: {
-      LOG(warn) << "Call NicaCbmMCTrack::SetNPoints with unsupported system";
-    }
+    default: break;
   }
 }
 

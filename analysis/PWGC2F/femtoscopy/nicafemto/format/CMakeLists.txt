@@ -9,10 +9,11 @@ Set(INCLUDE_DIRECTORIES
 	${NICAFEMTO_GEN}
 	${KF_HEADERS}
 	${CBMROOT_SOURCE_DIR}/sim/transport/generators/unigen
+	${CBMROOT_SOURCE_DIR}/core/data
 	${NICA_CBM}/helpers
 	${NICA_CBM_FORMAT}
+	${AnalysisTree_INCLUDE_DIR}
 )
-
 Set(SYSTEM_INCLUDE_DIRECTORIES
  ${ROOT_INCLUDE_DIR} 
  ${CLHEP_INCLUDE_DIR}
@@ -25,6 +26,7 @@ Set(LINK_DIRECTORIES
   ${Boost_LIBRARY_DIRS}
   ${Vc_LIB_DIR}
   ${KFParticle_LIB_DIR}
+  ${AnalysisTree_LIBRARY_DIR}
 )
 
 Include_Directories(${INCLUDE_DIRECTORIES})
@@ -35,7 +37,11 @@ Link_Directories(${LINK_DIRECTORIES})
 # List of source files
 set(SRCS
 
+NicaCbmFormatTypes.cxx
+
 combined/NicaCbmGlobalMCEvent.cxx
+combined/NicaCbmATFullEvent.cxx
+combined/CbmHbtFullEvent.cxx
 
 full/NicaCbmEvent.cxx
 full/NicaCbmEventInterface.cxx
@@ -52,6 +58,7 @@ global/NicaCbmGlobalEventInterface.cxx
 global/NicaCbmGlobalTrack.cxx
 global/NicaCbmGlobalTrackInterface.cxx
 
+
 matched/NicaCbmMatchedEvent.cxx
 matched/NicaCbmMatchedEventInterface.cxx
 matched/NicaCbmMatchedTrack.cxx
@@ -64,14 +71,34 @@ unigen/NicaUnigenEvent.cxx
 unigen/NicaUnigenEventInterface.cxx
 unigen/NicaUnigenTrack.cxx
 unigen/NicaUnigenTrackInterface.cxx
+
+anatree/mc/NicaCbmATMCEvent.cxx
+anatree/mc/NicaCbmATMCEventInterface.cxx
+anatree/mc/NicaCbmATMCTrack.cxx
+anatree/mc/NicaCbmATMCTrackInterface.cxx
+anatree/reco/NicaCbmATEvent.cxx
+anatree/reco/NicaCbmATEventInterface.cxx
+anatree/reco/NicaCbmATTrack.cxx
+anatree/reco/NicaCbmATTrackInterface.cxx
+anatree/femto/CbmHbtTrack.cxx
+anatree/femto/CbmHbtEvent.cxx
+anatree/CbmAnaTreeContainer.cxx
+anatree/CbmAnaTreeSource.cxx
 )
 
 Set(HEADERS )
 Set(LINKDEF NicaCbmFormatLinkDef.h)
 Set(LIBRARY_NAME NicaCbmFormat)
-Set(DEPENDENCIES NicaFeatures NicaGen NicaDataFormat NicaCbmHelper CbmSimGenerators)
+
+If(UNIX AND NOT APPLE)
+  Set(_AnalysisTree_LIB  AnalysisTreeBase.so AnalysisTreeInfra.so)
+  Else()
+  Set(_AnalysisTree_LIB  AnalysisTreeBase.dylib AnalysisTreeInfra.dylib)
+EndIf()
+
+Set(DEPENDENCIES ${_AnalysisTree_LIB} CbmData NicaFeatures NicaGen NicaDataFormat NicaCbmHelper CbmSimGenerators Tree)
 
 GENERATE_LIBRARY()
 
-Add_Dependencies(NicaCbmFormat NICAFEMTO)
+Add_Dependencies(NicaCbmFormat NICAFEMTO ANALYSISTREE )
 

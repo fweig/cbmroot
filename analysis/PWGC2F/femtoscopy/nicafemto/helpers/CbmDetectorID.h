@@ -22,7 +22,12 @@ namespace NicaCbmDetectorID {
   const UInt_t kMUCH = 1065761;
 };  // namespace NicaCbmDetectorID
 
-enum NicaCbmSetup { kSis100Hadron = 0, kSis100Electron = 1, kSis100Muon = 2 };
+enum class NicaCbmSetup {
+  kSis100Hadron   = 0,
+  kSis100Electron = 1,
+  kSis100Muon     = 2,
+  kSis100Mini     = 3
+};
 
 
 #endif /* CBMROOT_NICA_CBM_HELPERS_CBMDETECTORID_H_ */

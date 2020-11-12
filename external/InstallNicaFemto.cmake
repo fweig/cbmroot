@@ -1,4 +1,4 @@
-set(NICAFEMTO_VERSION 7c5c9286cc18da15b80baaaa972010f0ee134ebe)
+set(NICAFEMTO_VERSION 7b5fe1ef06433c55ee9f11efef05872c177f273f)
 
 set(NICAFEMTO_SRC_URL "https://git.jinr.ru/nica/nicafemto.git")
 set(NICAFEMTO_DESTDIR "${CMAKE_BINARY_DIR}/external/NICAFEMTO-prefix")

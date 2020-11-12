@@ -19,7 +19,7 @@ Bool_t CbmHasTofTrackCut::Init(Int_t format_id) {
 
 Bool_t CbmHasTofTrackCut::Pass(NicaTrack* track) {
   NicaCbmTrack* tr = (NicaCbmTrack*) track;
-  CbmTofHit* tof   = tr->GetTofTrack();
+  CbmTofHit* tof   = tr->GetTofHit();
   if (tof == NULL) {
     SetValue(0);
     return ForcedUpdate(kFALSE);
@@ -29,6 +29,4 @@ Bool_t CbmHasTofTrackCut::Pass(NicaTrack* track) {
   }
 }
 
-CbmHasTofTrackCut::~CbmHasTofTrackCut() {
-  // TODO Auto-generated destructor stub
-}
+CbmHasTofTrackCut::~CbmHasTofTrackCut() {}

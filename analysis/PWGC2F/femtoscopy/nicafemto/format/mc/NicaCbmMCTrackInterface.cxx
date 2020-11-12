@@ -8,10 +8,6 @@
  */
 #include "NicaCbmMCTrackInterface.h"
 
-NicaCbmMCTrackInterface::NicaCbmMCTrackInterface() {
-  // TODO Auto-generated constructor stub
-}
+NicaCbmMCTrackInterface::NicaCbmMCTrackInterface() {}
 
-NicaCbmMCTrackInterface::~NicaCbmMCTrackInterface() {
-  // TODO Auto-generated destructor stub
-}
+NicaCbmMCTrackInterface::~NicaCbmMCTrackInterface() {}

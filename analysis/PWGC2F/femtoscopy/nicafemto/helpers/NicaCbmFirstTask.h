@@ -9,12 +9,15 @@
 #ifndef NICACBMFIRSTTASK_H_
 #define NICACBMFIRSTTASK_H_
 #include "CbmHelix.h"
+#include "FairField.h"
 #include "FairTask.h"
 
-
 class NicaCbmFirstTask : public FairTask {
+  FairField* fMagField;
+
 public:
   NicaCbmFirstTask();
+  void SetMagField(FairField* f) { fMagField = f; };
   InitStatus Init();
   void Exec(Option_t* /*opt*/) {};
   virtual ~NicaCbmFirstTask();

@@ -7,6 +7,7 @@
  *		Warsaw University of Technology, Faculty of Physics
  */
 #include "CbmTofTrackCuts.h"
+
 #include "CbmGlobalTrack.h"
 #include "CbmTofHit.h"
 #include "NicaCbmTrack.h"
@@ -30,7 +31,7 @@ void CbmTofTrackCuts::SetBetaCut(Double_t min, Double_t max) {
 Bool_t CbmTofTrackCuts::Pass(NicaTrack* track) {
   NicaCbmTrack* tr = (NicaCbmTrack*) track;
   Double_t l       = tr->GetTrackLenght();
-  CbmTofHit* h     = tr->GetTofTrack();
+  CbmTofHit* h     = tr->GetTofHit();
   if (h == NULL) {
     SetValue(2, Beta());
     SetValue(-1000, M2());
@@ -45,9 +46,7 @@ Bool_t CbmTofTrackCuts::Pass(NicaTrack* track) {
   return Validate();
 }
 
-CbmTofTrackCuts::~CbmTofTrackCuts() {
-  // TODO Auto-generated destructor stub
-}
+CbmTofTrackCuts::~CbmTofTrackCuts() {}
 
 CbmTofM2Cut::CbmTofM2Cut() : fOneOverC(1.0 / 29.99792458) {
   SetUnitName("m^2 [GeV^2/c^4]");
@@ -56,7 +55,7 @@ CbmTofM2Cut::CbmTofM2Cut() : fOneOverC(1.0 / 29.99792458) {
 Bool_t CbmTofM2Cut::Pass(NicaTrack* track) {
   NicaCbmTrack* tr = (NicaCbmTrack*) track;
   Double_t l       = tr->GetTrackLenght();
-  CbmTofHit* h     = tr->GetTofTrack();
+  CbmTofHit* h     = tr->GetTofHit();
   if (h == NULL) {
     SetValue(-1000);
     return ForcedUpdate(kFALSE);
@@ -81,7 +80,7 @@ CbmTofMassCut::CbmTofMassCut() : fOneOverC(1.0 / 29.99792458) {
 Bool_t CbmTofMassCut::Pass(NicaTrack* track) {
   NicaCbmTrack* tr = (NicaCbmTrack*) track;
   Double_t l       = tr->GetTrackLenght();
-  CbmTofHit* h     = tr->GetTofTrack();
+  CbmTofHit* h     = tr->GetTofHit();
   if (h == NULL) {
     SetValue(-1000);
     return ForcedUpdate(kFALSE);

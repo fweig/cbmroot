@@ -32,7 +32,7 @@ protected:
   void Register(Bool_t write);
 
 public:
-  NicaCbmEventInterface(NicaCbmSetup mode = kSis100Electron);
+  NicaCbmEventInterface(NicaCbmSetup mode = NicaCbmSetup::kSis100Electron);
   NicaTrackClones* GetStsTracks() const { return fStsTracks; }
   NicaTrackClones* GetTrdTracks() const { return fTrdTracks; }
   NicaTrackClones* GetMuchTracks() const { return fMuchTracks; }

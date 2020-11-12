@@ -32,6 +32,10 @@ set(NICA_CBM_FORMAT
 	${NICA_CBM}/format/global
 	${NICA_CBM}/format/matched
 	${NICA_CBM}/format/mc
+	${NICA_CBM}/format/anatree
+	${NICA_CBM}/format/anatree/reco
+	${NICA_CBM}/format/anatree/mc
+	${NICA_CBM}/format/anatree/femto
 	${NICA_CBM}/format/unigen
 	${NICA_CBM}/format/hits
 	${NICA_CBM}/format/matched_hits
@@ -56,6 +60,7 @@ set(NICAFEMTO_FEATURES
 	${CBMROOT_SOURCE_DIR}/external/NicaFemto/features
 	${CBMROOT_SOURCE_DIR}/external/NicaFemto/features/hist
 	${CBMROOT_SOURCE_DIR}/external/NicaFemto/features/io
+	${CBMROOT_SOURCE_DIR}/external/NicaFemto/features/io/html
 	${CBMROOT_SOURCE_DIR}/external/NicaFemto/features/std
 )
 

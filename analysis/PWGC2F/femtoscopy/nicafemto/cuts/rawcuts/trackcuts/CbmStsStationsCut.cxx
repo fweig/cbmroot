@@ -7,6 +7,7 @@
  *		Warsaw University of Technology, Faculty of Physics
  */
 #include "CbmStsStationsCut.h"
+
 #include "CbmStsTrack.h"
 #include "NicaCbmTrack.h"
 

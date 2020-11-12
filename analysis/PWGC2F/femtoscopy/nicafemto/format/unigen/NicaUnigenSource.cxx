@@ -13,7 +13,6 @@
 #include "UParticle.h"
 #include <TBranch.h>
 #include <fstream>
-#include <iostream>
 
 NicaUnigenSource::NicaUnigenSource()
   : fUnigenChain(NULL), fFileName("data.root"), fEvent(NULL) {}
