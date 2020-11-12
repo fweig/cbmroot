@@ -32,8 +32,6 @@ if(DOWNLOAD_EXTERNALS)
 
   Include(InstallVC.cmake)
   Include(InstallKFParticle.cmake)
-  Include(InstallDataTree.cmake)
-  Include(InstallDataTreeQA.cmake)
   Include(InstallNicaFemto.cmake)
   Include(InstallAnalysisTree.cmake)
 #  Include(InstallAnalysisTreeQA.cmake)
@@ -44,7 +42,6 @@ if(DOWNLOAD_EXTERNALS)
 else()
   # Define targets which are needed by CbmRoot but are not available
   # whithout the external packages
-  add_library(DATATREE SHARED IMPORTED GLOBAL)
   add_library(ANALYSISTREE SHARED IMPORTED GLOBAL)
   add_library(NICAFEMTO SHARED IMPORTED GLOBAL)
   add_library(KFPARTICLE SHARED IMPORTED GLOBAL)

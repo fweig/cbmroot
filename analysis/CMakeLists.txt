@@ -6,7 +6,6 @@ add_subdirectory (PWGDIL/dielectron/lmvm)
 add_subdirectory (PWGDIL/dimuon)
 
 add_subdirectory (PWGC2F/femtoscopy/nicafemto)
-add_subdirectory (PWGC2F/flow)
 
 add_subdirectory (PWGCHA/jpsi)
 
