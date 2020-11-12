@@ -1149,7 +1149,7 @@ Bool_t CbmTofDigitize::DeleteHistos() {
 Bool_t CbmTofDigitize::MergeSameChanDigis() {
 
   if (bFakeBeamCounter) {
-    UInt_t uChanUId        = 0x00005006;
+    UInt_t uChanUId        = 0x00002806;
     Double_t dHitTime      = fCurrentEventTime + gRandom->Gaus(0., 0.04);
     const Double_t dHitTot = 2.;
     CbmTofDigi* tDigi      = new CbmTofDigi(uChanUId, dHitTime, dHitTot);
