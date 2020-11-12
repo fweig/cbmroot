@@ -38,7 +38,7 @@ CbmMcbm2018UnpackerTaskTof::CbmMcbm2018UnpackerTaskTof(UInt_t /*uNbGdpb*/)
   , fbDebugMonitorMode(kFALSE)
   , fbSeparateArrayT0(kFALSE)
   , fbWriteOutput(kTRUE)
-  , fuDigiMaskedIdT0(0x00005006)
+  , fuDigiMaskedIdT0(0x00002806)
   , fuDigiMaskId(0x0001FFFF)
   , fulTsCounter(0)
   , fUnpackerAlgo(nullptr) {
