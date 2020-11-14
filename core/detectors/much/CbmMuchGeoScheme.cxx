@@ -379,7 +379,7 @@ CbmMuchGeoScheme::GetLayerSides(Int_t iStation) const {
 
   try {
     return fSides.at(iStation);
-  } catch (std::out_of_range exc) {
+  } catch (const std::out_of_range& exc) {
     Fatal("GetLayerSides", "No input array of stations.");
   }
   return vector<CbmMuchLayerSide*>();
@@ -895,7 +895,7 @@ vector<CbmMuchModule*> CbmMuchGeoScheme::GetModules(Int_t iStation) const {
 
   try {
     return fModules.at(iStation);
-  } catch (std::out_of_range exc) {
+  } catch (const std::out_of_range& exc) {
     Fatal("GetModules", "No input array of stations.");
   }
   return vector<CbmMuchModule*>();

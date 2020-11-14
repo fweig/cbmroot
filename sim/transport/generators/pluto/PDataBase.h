@@ -89,7 +89,7 @@ public:
                     Int_t length = -1);  //get "paramname" from string database
   Int_t GetParamTObj(const char* paramname);
 
-  char* GetDescription(const char* paramname);
+  TString GetDescription(const char* paramname);
 
   void GetFastParamInt(const char* paramname, Int_t* pkey) {
     if ((*pkey) < 0) *pkey = GetParamInt(paramname);

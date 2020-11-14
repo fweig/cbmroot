@@ -225,7 +225,7 @@ Int_t PDataBase ::ConvertParamKey(const char*& newparamname, Int_t key) {
   return -1;
 };
 
-char* PDataBase ::GetDescription(const char* paramname) {
+TString PDataBase ::GetDescription(const char* paramname) {
   //Interpretation of pattern
   TString spattern(paramname);
   TObjArray* array = spattern.Tokenize(TString(":"));
@@ -252,7 +252,7 @@ char* PDataBase ::GetDescription(const char* paramname) {
       done = 1;
     }
   }
-  return (char*) bla.Data();
+  return bla;
 }
 
 Bool_t PDataBase ::GetParamDouble(Int_t key,

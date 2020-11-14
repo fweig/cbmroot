@@ -102,7 +102,7 @@ Int_t CbmMcbm2018PsdPar::FeeChanToGbtChan(UInt_t uChannelInFee) {
   else {
     LOG(fatal) << "CbmMcbm2018PsdPar::FeeChanToGbtChan => Index out of bound, "
                << uChannelInFee << " vs "
-               << static_cast<const uint32_t>(kuNbChannelsPerFee)
+               << static_cast<uint32_t>(kuNbChannelsPerFee)
                << ", returning crazy value!";
     return -1;
   }  // else of if( uChannelInFee < kuNbChannelsPerFee )

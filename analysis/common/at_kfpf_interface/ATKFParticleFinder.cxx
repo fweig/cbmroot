@@ -103,7 +103,7 @@ KFParticleTopoReconstructor* ATKFParticleFinder::CreateTopoReconstructor() {
 
   int n_good_tracks = 0;
 
-  for (int i_track = 0; i_track < kf_tracks_->GetNumberOfChannels();
+  for (unsigned int i_track = 0; i_track < kf_tracks_->GetNumberOfChannels();
        i_track++) {
     const AnalysisTree::Track& rec_track = kf_tracks_->GetChannel(i_track);
     if (rec_track.GetField<bool>(passcuts_field_id_) == 0) continue;
@@ -117,7 +117,7 @@ KFParticleTopoReconstructor* ATKFParticleFinder::CreateTopoReconstructor() {
 
   int j_track = 0;
 
-  for (int i_track = 0; i_track < kf_tracks_->GetNumberOfChannels();
+  for (unsigned int i_track = 0; i_track < kf_tracks_->GetNumberOfChannels();
        i_track++) {
     const AnalysisTree::Track& rec_track = kf_tracks_->GetChannel(i_track);
 

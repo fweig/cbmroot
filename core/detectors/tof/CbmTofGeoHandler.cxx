@@ -405,10 +405,10 @@ Int_t CbmTofGeoHandler::VolId(const Text_t* name) const {
     //
     // Return the unique numeric identifier for volume name
     //
-    char sname[20];
     Int_t len = strlen(name) - 1;
     if (name[len] != ' ') { return VolIdGeo(name); }
-    strncpy(sname, name, len);
+    char sname[len + 1];
+    memcpy(sname, name, len);
     sname[len] = 0;
     return VolIdGeo(sname);
   }

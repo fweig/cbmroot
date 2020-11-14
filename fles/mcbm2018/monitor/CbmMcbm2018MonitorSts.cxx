@@ -445,7 +445,7 @@ void CbmMcbm2018MonitorSts::AddMsComponentToList(size_t component,
     LOG(error) << "CbmMcbm2018MonitorSts::AddMsComponentToList => "
                << "Ignored the addition of component " << component
                << " as it is above the hadcoded limit of "
-               << static_cast<const Int_t>(kiMaxNbFlibLinks) << " !!!!!!!!! "
+               << static_cast<Int_t>(kiMaxNbFlibLinks) << " !!!!!!!!! "
                << "\n"
                << "         To change this behavior check kiMaxNbFlibLinks in "
                   "CbmMcbm2018MonitorSts.cxx";

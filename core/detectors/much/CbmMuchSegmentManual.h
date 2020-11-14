@@ -256,7 +256,7 @@ private:
       std::stringstream ss(str);
       if ((ss >> number).fail() || !(ss >> std::ws).eof())
         throw std::bad_cast();
-    } catch (std::bad_cast exc) { Fatal("", "Invalid cast.\n"); }
+    } catch (const std::bad_cast& exc) { Fatal("", "Invalid cast.\n"); }
   }
   // --------------------------------------------------------------------------------
 
