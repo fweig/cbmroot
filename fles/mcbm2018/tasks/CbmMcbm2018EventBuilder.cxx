@@ -601,7 +601,7 @@ void CbmMcbm2018EventBuilder::AddDigiToEvent(ECbmModuleId _system,
 template<class Digi>
 void CbmMcbm2018EventBuilder::AddDigiToSorter(ECbmModuleId _system,
                                               Int_t _entry) {
-  LOG(debug) << "Entry: " << _entry;
+  LOG(debug4) << "Entry: " << _entry;
 
   Double_t time = -1.;
 
