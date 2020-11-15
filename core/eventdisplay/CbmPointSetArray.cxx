@@ -71,15 +71,17 @@ void CbmPointSetArray::FillValues(Int_t id,
 void CbmPointSetArray::ApplyColorMode() {
   //parameters needed for color-calculation
   Double_t binTime =
-    3.5;  // ns    max. length of one particle passing through detector
+    12.;  // ns    max. length of one particle passing through detector
   Double_t binCol =
-    35;  // green ->allows for visual distinction of a track-time
+    35.;  // green ->allows for visual distinction of a track-time
   Double_t eveTime = 50;  // 50ns Event Length
   Double_t binToT =
     20;  // a.u.  max. ToT of hit in arbitray units (aka calibrated to mean of 5)
   TColor::SetPalette(
     1, 0);  //rainbow color palette with 50 colors from purple to red
   Int_t nCol = TColor::GetNumberOfColors();
+
+  LOG(info) << "ApplyColorMode " << fColorMode << " with " << nCol << " colors";
 
   for (Int_t id = 0; id < fNPoints; id++) {
     switch (fColorMode) {
@@ -98,6 +100,8 @@ void CbmPointSetArray::ApplyColorMode() {
                                                        * (nCol - binCol - 1)
                                                        / (eveTime - binTime)));
         }
+        LOG(info) << "Color for id " << id << ", ind " << fIndex[id] << ", t "<<fTime[id]<<": " << this->GetBin(fIndex[id])->GetMainColor();
+
         break;
       case 2:  //according to Tot of hit
         // color calculated to represent ToT. high ToT -> yellow and red . low ToT -> purple and blue. max.ToT = binToT

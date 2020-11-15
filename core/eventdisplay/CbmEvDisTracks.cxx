@@ -27,6 +27,8 @@
 #include <TEveTrackPropagator.h>  // for TEveTrackPropagator
 #include <TEveVSDStructs.h>       // for TEveRecTrack
 #include <TEveVector.h>           // for TEveVector, TEveVectorT
+#include <TGLAnnotation.h>
+#include <TGLViewer.h>
 #include <TGenericClassInfo.h>    // for TGenericClassInfo
 #include <TObjArray.h>            // for TObjArray
 #include <TParticle.h>            // for TParticle
@@ -36,6 +38,9 @@
 
 ClassImp(CbmEvDisTracks);
 CbmEvDisTracks* CbmEvDisTracks::fInstance = 0;
+
+static TGLAnnotation* anne;
+static TGLAnnotation* annt;
 
 // -----   Default constructor   -------------------------------------------
 CbmEvDisTracks::CbmEvDisTracks()
@@ -117,6 +122,7 @@ void CbmEvDisTracks::Exec(Option_t* option) {
     Reset();
 
     LOG(debug4) << " CbmEvDisTracks:: NTrks " << fTrackList->GetEntries();
+    Int_t TMul[10]={10*0};  //FIXME - don't use constants in code
 
     for (Int_t iOpt = 0; iOpt < 2; iOpt++)
       for (Int_t i = 0; i < fTrackList->GetEntriesFast(); i++) {
@@ -126,6 +132,7 @@ void CbmEvDisTracks::Exec(Option_t* option) {
         Int_t Np = tr->GetNofHits();
 
 #if TOFDisplay == 1  //List for TEvePointSets
+        if(iOpt==0) TMul[Np]++;
         fPSList = GetPSGroup(Np, iOpt);
 #endif
 
@@ -202,9 +209,9 @@ void CbmEvDisTracks::Exec(Option_t* option) {
           switch (iOpt) {
             case 0:
               point = tr->GetPoint(
-                n);  //pointer to membervaribale so GetFitPoint() would also change GetPoint()
+                n);  //pointer to member variable so GetFitPoint() would also change GetPoint()
 #if TOFDisplay == 1
-              // follwing belongs to filling and labeling of PointSetArray
+              // following belongs to filling and labeling of PointSetArray
               psa->Fill(point[0], point[1], point[2], n + 1);
               hit   = tr->GetTofHitPointer(n);
               res_x = (point[0] - tr->GetFitX(point[2])) / hit->GetDx();
@@ -258,6 +265,22 @@ void CbmEvDisTracks::Exec(Option_t* option) {
     }
     fEventManager->SetEvtMaxEnergy(MaxEnergyLimit);
     fEventManager->SetEvtMinEnergy(MinEnergyLimit);
+
+    TString cEventInfo=Form("ev# %d ",fEventManager->GetCurrentEvent());
+    TString cTrackInfo="trkl mul: "; // to be completed while building the display
+    for (Int_t i=9; i>0; i--) if(TMul[i]>0)  cTrackInfo += Form("M%d %d/",i,TMul[i]);
+
+    TGLViewer* v = gEve->GetDefaultGLViewer();
+
+    if(NULL != anne) anne->SetText(cEventInfo);
+    else             anne = new TGLAnnotation(v,cEventInfo,0.01,0.95);
+    if(NULL != annt) annt->SetText(cTrackInfo);
+    else             annt = new TGLAnnotation(v,cTrackInfo,0.01,0.92);
+    anne->SetTextSize(0.03);// % of window diagonal
+    annt->SetTextSize(0.03);// % of window diagonal
+    anne->SetTextColor(4);
+    annt->SetTextColor(4);
+
     gEve->Redraw3D(kFALSE);
     //gEve->DoRedraw3D();
     //gEve->Redraw3D(kTRUE);
