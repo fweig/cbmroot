@@ -302,7 +302,7 @@ void ana_trksi(Int_t nEvents        = 10000,
 
     case 3:
       iMinNofHits   = 3;
-      iNStations    = 15;
+      iNStations    = 28;
       iNReqStations = 4;
       tofFindTracks->SetStation(0, 0, 2, 2);
       tofFindTracks->SetStation(1, 0, 1, 2);
@@ -324,20 +324,21 @@ void ana_trksi(Int_t nEvents        = 10000,
       tofFindTracks->SetStation(13, 0, 1, 4);
       tofFindTracks->SetStation(14, 0, 0, 4);
 
-//      tofFindTracks->SetStation(15, 5, 0, 0);
-
-      /*
-     tofFindTracks->SetStation(16, 0, 3, 2);         
-     tofFindTracks->SetStation(17, 0, 4, 2);  
-     tofFindTracks->SetStation(18, 0, 3, 1);         
-     tofFindTracks->SetStation(19, 0, 4, 1);
-     tofFindTracks->SetStation(20, 0, 3, 3);         
-     tofFindTracks->SetStation(21, 0, 4, 3);
-     tofFindTracks->SetStation(22, 0, 3, 0);         
-     tofFindTracks->SetStation(23, 0, 4, 0);
-     tofFindTracks->SetStation(24, 0, 3, 4);         
-     tofFindTracks->SetStation(25, 0, 4, 4); 
-     */
+      tofFindTracks->SetStation(15, 0, 3, 2);         
+      tofFindTracks->SetStation(16, 0, 4, 2);  
+      tofFindTracks->SetStation(17, 0, 3, 1);         
+      tofFindTracks->SetStation(18, 0, 4, 1);
+      tofFindTracks->SetStation(19, 0, 3, 3);         
+      tofFindTracks->SetStation(20, 0, 4, 3);
+      tofFindTracks->SetStation(21, 0, 3, 0);         
+      tofFindTracks->SetStation(22, 0, 4, 0);
+      tofFindTracks->SetStation(23, 0, 3, 4);         
+      tofFindTracks->SetStation(24, 0, 4, 4);
+       
+      tofFindTracks->SetStation(25, 9, 0, 0);
+      tofFindTracks->SetStation(26, 9, 0, 1);
+      tofFindTracks->SetStation(27, 5, 0, 0);
+   
       break;
 
     case 4:  // for USTC evaluation
