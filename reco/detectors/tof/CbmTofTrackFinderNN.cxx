@@ -35,6 +35,7 @@
 #include "CbmTofTrackFitter.h"
 #include "CbmTofTracklet.h"
 #include "CbmTofTrackletParam.h"
+#include "CbmTofClusterizersDef.h"
 #include "LKFMinuit.h"
 #include <CbmEvDisTracks.h>  // in eventdisplay/tof
 
@@ -46,7 +47,7 @@ using std::endl;
 using std::map;
 
 //const Int_t DetMask = 0x3FFFFF;  // check for consistency with v14a geometry
-const Int_t DetMask = 0x3FFFFF;  // check for consistency with v21a geometry
+//const Int_t DetMask = 0x1FFFFF;  // check for consistency with v21a geometry
 LKFMinuit CbmTofTrackFinderNN::fMinuit;
 
 CbmTofTrackFinderNN::CbmTofTrackFinderNN()
