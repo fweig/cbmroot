@@ -32,53 +32,89 @@ CbmBuildEventsIdeal::~CbmBuildEventsIdeal() {}
 // ===========================================================================
 
 
+// =====   Number if different pairs (input,event) in a match object   =======
+UInt_t CbmBuildEventsIdeal::EventsInMatch(const CbmMatch* match) {
+
+  // --- No or empty match object
+  if (match == nullptr) return 0;
+  if (!match->GetNofLinks()) return 0;
+
+  // --- Only one link
+  if (match->GetNofLinks() == 1) return 1;
+
+  // --- More than one link: check whether they are from different events
+  CbmMatch testMatch;
+  for (Int_t iLink = 0; iLink < match->GetNofLinks(); iLink++) {
+    Int_t input = match->GetLink(iLink).GetFile();
+    Int_t event = match->GetLink(iLink).GetEntry();
+    testMatch.AddLink(1., 0, event, input);
+  }
+  return testMatch.GetNofLinks();
+}
+// ===========================================================================
+
+
 // =====   Task execution   ==================================================
 void CbmBuildEventsIdeal::Exec(Option_t*) {
 
+  // --- Timer and counters
   TStopwatch timer;
   timer.Start();
-  std::map<Int_t, CbmEvent*> eventMap;
-  Int_t nEvents      = 0;
-  UInt_t nDigisTot   = 0;
-  UInt_t nDigisNoise = 0;
+  Int_t nEvents      = 0;  // Number of created events
+  UInt_t nDigisTot   = 0;  // Total number of digis
+  UInt_t nDigisNoise = 0;  // Digis without link to MC event
+  UInt_t nDigisAmbig = 0;  // Digis with links to multiple MC events
 
-  // Clear output array
+  // --- Clear output array
   fEvents->Delete();
 
+  // --- Bookkeeping: Map from (input number, event number) to event
+  map<pair<Int_t, Int_t>, CbmEvent*> eventMap;
+
+  // --- Loop over all detector systems
   for (ECbmModuleId& system : fSystems) {
+
+    // --- Skip system if no data branch or no match match present
     if (!fDigiMan->IsPresent(system)) continue;
     if (!fDigiMan->IsMatchPresent(system)) continue;
+
+    // --- Loop over digis for the current system
     Int_t nDigis  = fDigiMan->GetNofDigis(system);
     UInt_t nNoise = 0;
-    LOG(info) << GetName() << ": System "
-              << CbmModuleList::GetModuleNameCaps(system) << ", digis "
-              << nDigis;
-
+    UInt_t nAmbig = 0;
     for (Int_t iDigi = 0; iDigi < nDigis; iDigi++) {
+
+      // --- Get the MC input and event number through the match object
       const CbmMatch* match = fDigiMan->GetMatch(system, iDigi);
       assert(match);
+      Int_t mcInput = -1;
+      Int_t mcEvent = -1;
+      if (match->GetNofLinks()) {
+        mcInput = match->GetMatchedLink().GetFile();
+        mcEvent = match->GetMatchedLink().GetEntry();
+      }
 
-      // This implementation uses only MC event number from
-      // the matched link, i.e. that with the largest weight.
-      // Can be refined later on.
-      Int_t mcEventNr = match->GetMatchedLink().GetEntry();
-
-      // Ignore digis with missing event number (noise)
-      if (mcEventNr < 0) {
+      // --- Empty match objects or negative event numbers signal noise
+      if (mcInput < 0 || mcEvent < 0) {
         nNoise++;
         continue;
       }
 
-      // Get event pointer. If event is not yet present, create it.
-      CbmEvent* event = NULL;
-      if (eventMap.find(mcEventNr) == eventMap.end()) {
-        event               = new ((*fEvents)[nEvents]) CbmEvent(nEvents);
-        eventMap[mcEventNr] = event;
+      // --- Count occurrences of multiple MC events in match
+      if (EventsInMatch(match) > 1) nAmbig++;
+
+      // --- Get event pointer. If event is not yet present, create it.
+      CbmEvent* event = nullptr;
+      auto it         = eventMap.find(make_pair(mcInput, mcEvent));
+      if (it == eventMap.end()) {
+        assert(nEvents == fEvents->GetEntriesFast());
+        event = new ((*fEvents)[nEvents]) CbmEvent(nEvents);
+        eventMap[make_pair(mcInput, mcEvent)] = event;
         nEvents++;
       } else
-        event = eventMap.at(mcEventNr);
+        event = it->second;
 
-      // Fill digi index into event
+      // --- Fill digi index into event
       switch (system) {
         case ECbmModuleId::kMvd:
           event->AddData(ECbmDataType::kMvdDigi, iDigi);
@@ -105,25 +141,25 @@ void CbmBuildEventsIdeal::Exec(Option_t*) {
       }  //? detector
 
     }  //# digis
-    LOG(debug) << GetName() << ": Detector "
-               << CbmModuleList::GetModuleNameCaps(system) << ", digis "
-               << nDigis << ", noise " << nNoise;
+    LOG(info) << GetName() << ": Detector "
+              << CbmModuleList::GetModuleNameCaps(system) << ", digis "
+              << nDigis << " (" << nAmbig << " ambiguous), noise " << nNoise;
     nDigisTot += nDigis;
+    nDigisAmbig += nAmbig;
     nDigisNoise += nNoise;
 
-  }  //# detectors
-
+  }  //# detector systems
 
   timer.Stop();
   assert(nEvents == fEvents->GetEntriesFast());
 
   // --- Execution log
   std::cout << std::endl;
-  LOG(info) << "+ " << setw(15) << GetName() << ": Time-slice " << setw(3)
-            << right << fNofEntries << ", events: " << setw(6) << nEvents
-            << ", digis: " << nDigisTot << ", noise: " << nDigisNoise
-            << ". Exec time " << fixed << setprecision(6) << timer.RealTime()
-            << " s.";
+  Double_t execTime = 1000. * timer.RealTime();
+  LOG(info) << setw(20) << left << GetName() << "[" << fixed << setprecision(4)
+            << execTime << " ms] : TSlice " << right << fNofEntries
+            << ", events: " << nEvents << ", digis: " << nDigisTot << " ("
+            << nDigisAmbig << " ambiguous), noise: " << nDigisNoise;
 
   // --- For debug: event info
   if (gLogger->IsLogNeeded(fair::Severity::debug)) {
