@@ -364,11 +364,17 @@ void CbmTofEventClusterizer::Exec(Option_t* option) {
       fTofDigiVec.clear();
       //if (fTofDigisColl) fTofDigisColl->Clear("C");
       //Int_t iNbDigis=0;  (VF) not used
+      LOG(debug) << "TS event "<<iEvent<<" with "
+    		  <<tEvent->GetNofData(ECbmDataType::kT0Digi)  << " T0 and "
+    		  <<tEvent->GetNofData(ECbmDataType::kTofDigi) << " Tof digis ";
+
       for (Int_t iDigi = 0; iDigi < tEvent->GetNofData(ECbmDataType::kT0Digi);
            iDigi++) {
         Int_t iDigiIndex =
           static_cast<Int_t>(tEvent->GetIndex(ECbmDataType::kT0Digi, iDigi));
         const CbmTofDigi* tDigi = fDigiMan->Get<CbmTofDigi>(iDigiIndex);
+        if( tDigi->GetType() != 5 )
+        	LOG(fatal) << "Wrong T0 type " << tDigi->GetType() << ", Addr 0x" <<std::hex<< tDigi->GetAddress();
         fTofDigiVec.push_back(CbmTofDigi(*tDigi));
       }
       for (Int_t iDigi = 0; iDigi < tEvent->GetNofData(ECbmDataType::kTofDigi);
@@ -528,7 +534,7 @@ Bool_t CbmTofEventClusterizer::RegisterInputs() {
     return kFALSE;
   }
   if (fDigiMan->IsPresent(ECbmModuleId::kT0)) {
-    LOG(warn) << GetName() << ": separate T0 digi input!";
+    LOG(info) << GetName() << ": separate T0 digi input!";
   }
   fTrbHeader = (TTrbHeader*) fManager->GetObject("TofTrbHeader.");
   if (NULL == fTrbHeader) {
