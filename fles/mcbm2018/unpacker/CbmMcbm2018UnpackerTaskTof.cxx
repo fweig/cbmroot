@@ -39,7 +39,7 @@ CbmMcbm2018UnpackerTaskTof::CbmMcbm2018UnpackerTaskTof(UInt_t /*uNbGdpb*/)
   , fbSeparateArrayT0(kFALSE)
   , fbWriteOutput(kTRUE)
   , fuDigiMaskedIdT0(0x00002806)
-  , fuDigiMaskId(0x0001FFFF)
+  , fuDigiMaskId(0x001FFFFF)
   , fulTsCounter(0)
   , fUnpackerAlgo(nullptr) {
   fUnpackerAlgo = new CbmMcbm2018UnpackerAlgoTof();
