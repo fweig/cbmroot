@@ -345,9 +345,10 @@ void CbmTofCalibrator::FillCalHist(CbmTofTracklet* pTrk, Int_t iOpt) {
       }
 
       if (iCh0 != iCh1 || iSide0 == iSide1) {
-        LOG(fatal) << "Invalid digi pair for TSR " << iSmType << iSm << iRpc
+        LOG(error) << "Invalid digi pair for TSR " << iSmType << iSm << iRpc
                    << " Ch " << iCh0 << " " << iCh1 << ", Side " << iSide0
                    << " " << iSide1;
+        continue;
       }
 
       hlocal_d[1] = -0.5
