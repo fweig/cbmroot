@@ -258,7 +258,7 @@ void mtof_reco(Int_t nEvents      = 100,  // number of Timeslices
       Double_t dChi2Lim2   = 3.5;
       TString cTrkFile     = Form("%s_tofFindTracks.hst.root", cCalId.Data());
       Int_t iTrackingSetup = 1;
-      Int_t iCalOpt        = 1;
+      Int_t iCalOpt        = 0;
 
       CbmTofTrackFinder* tofTrackFinder = new CbmTofTrackFinderNN();
       tofTrackFinder->SetMaxTofTimeDifference(0.2);  // in ns/cm
