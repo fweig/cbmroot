@@ -1,25 +1,32 @@
 void dis_trks(Int_t nEvents        = 10,
               Int_t iSel           = 1,
               Int_t iGenCor        = 1,
-              TString cFileId      = "48.50.7.1",
-              TString cSet         = "000010020",
-              Int_t iSel2          = 20,
-              Int_t iTrackingSetup = 2,
+              TString cFileId      = "831.50.3.0",
+              TString cSet         = "012022500_500",
+              Int_t iSel2          = 500,
+              Int_t iTrackingSetup = 1,
               Double_t dScalFac    = 1.,
-              Double_t dChi2Lim2   = 500.,
+              Double_t dChi2Lim2   = 5.,
               Double_t dDeadtime   = 50,
               TString cCalId       = "",
               Int_t iAnaCor        = 1,
               Bool_t bUseSigCalib  = kFALSE,
-              Int_t iCalSet        = 30040500,
+              Int_t iCalSet        = 12022500,
               Int_t iCalOpt        = 1,
               Int_t iMc            = 0) {
 
   Int_t iVerbose = 1;
-  if (cCalId == "") cCalId = cFileId;
   TString FId = cFileId;
   TString cRun(FId(0, 3));
-  Int_t iRun = cRun.Atoi();
+  Int_t iRun=-1;
+  if(cRun == "unp") {
+	iRun=831;  
+	cCalId="831.100.4.0";
+	iCalSet=10020500;
+  }else {
+    iRun = cRun.Atoi();
+    if (cCalId == "") cCalId = cFileId;
+  }
   // Specify log level (INFO, DEBUG, DEBUG1, ...)
   //TString logLevel = "FATAL";
   //TString logLevel = "ERROR";
@@ -32,17 +39,23 @@ void dis_trks(Int_t nEvents        = 10,
   //TString workDir          = "../../..";
   //TString paramDir       = workDir  + "/macro/beamtime/mcbm2020";
   TString paramDir      = "./";
-  TString ParFile       = paramDir + "/data/" + cFileId.Data() + ".params.root";
-  TString InputFile     = paramDir + "/data/" + cFileId.Data() + ".root";
-  TString InputDigiFile = paramDir + "/data/TofHits_" + cFileId.Data()
-                          + Form("_%s_%02.0f_Cal", cSet.Data(), dDeadtime)
-                          + cCalId + ".out.root";
+  TString ParFile       = paramDir + "data/" + cFileId.Data() + ".params.root";
+  TString InputFile     = paramDir + "data/" + cFileId.Data() + ".root";
+  TString InputDigiFile ="";
+  if(cRun == "unp") {
+	InputDigiFile = paramDir + "data/" + cFileId.Data()
+	              + ".root";
+  } else {
+    InputDigiFile = paramDir + "data/TofHits_" + cFileId.Data()
+                  + Form("_%s_%02.0f_Cal", cSet.Data(), dDeadtime)
+                  + cCalId + ".out.root";
+  }
   if (iMc == 1) {
-    InputFile     = paramDir + "/data/" + cFileId.Data() + ".raw.root";
-    InputDigiFile = paramDir + "/data/" + cFileId.Data() + ".rec.root";
+    InputFile     = paramDir + "data/" + cFileId.Data() + ".raw.root";
+    InputDigiFile = paramDir + "data/" + cFileId.Data() + ".rec.root";
     iRun          = 700;
   }
-  TString OutputFile = paramDir + "/data/distrks_" + cFileId.Data()
+  TString OutputFile = paramDir + "data/distrks_" + cFileId.Data()
                        + Form("_%s_%06d_%03d", cSet.Data(), iSel, iSel2)
                        + ".out.root";
   TString cHstFile =
@@ -271,22 +284,35 @@ void dis_trks(Int_t nEvents        = 10,
 
       case 2:
         iMinNofHits   = 3;
-        iNStations    = 14;
-        iNReqStations = 5;
-        tofFindTracks->SetStation(0, 5, 0, 0);
-        tofFindTracks->SetStation(1, 0, 4, 1);
-        tofFindTracks->SetStation(2, 0, 3, 1);
-        tofFindTracks->SetStation(3, 0, 4, 0);
-        tofFindTracks->SetStation(4, 0, 3, 0);
-        tofFindTracks->SetStation(5, 0, 4, 2);
-        tofFindTracks->SetStation(6, 0, 3, 2);
-        tofFindTracks->SetStation(7, 0, 4, 3);
-        tofFindTracks->SetStation(8, 0, 3, 3);
-        tofFindTracks->SetStation(9, 0, 4, 4);
-        tofFindTracks->SetStation(10, 0, 3, 4);
-        tofFindTracks->SetStation(11, 9, 0, 0);
-        tofFindTracks->SetStation(12, 9, 0, 1);
-        tofFindTracks->SetStation(13, 7, 0, 0);
+        iNStations    = 27;
+        iNReqStations = 4;
+        tofFindTracks->SetStation(0, 0, 2, 2);
+        tofFindTracks->SetStation(1, 0, 1, 2);
+        tofFindTracks->SetStation(2, 0, 0, 2);
+        tofFindTracks->SetStation(3, 0, 2, 1);
+        tofFindTracks->SetStation(4, 0, 1, 1);
+        tofFindTracks->SetStation(5, 0, 0, 1);
+        tofFindTracks->SetStation(6, 0, 2, 3);
+        tofFindTracks->SetStation(7, 0, 1, 3);
+        tofFindTracks->SetStation(8, 0, 0, 3);
+        tofFindTracks->SetStation(9, 0, 2, 0);
+        tofFindTracks->SetStation(10, 0, 1, 0);
+        tofFindTracks->SetStation(11, 0, 0, 0);
+        tofFindTracks->SetStation(12, 0, 2, 4);
+        tofFindTracks->SetStation(13, 0, 1, 4);
+        tofFindTracks->SetStation(14, 0, 0, 4);
+        tofFindTracks->SetStation(15, 0, 4, 0);
+        tofFindTracks->SetStation(16, 0, 3, 0);
+        tofFindTracks->SetStation(17, 0, 4, 1);
+        tofFindTracks->SetStation(18, 0, 3, 1);
+        tofFindTracks->SetStation(19, 0, 4, 2);
+        tofFindTracks->SetStation(20, 0, 3, 2);
+        tofFindTracks->SetStation(21, 0, 4, 3);
+        tofFindTracks->SetStation(22, 0, 3, 3);
+        tofFindTracks->SetStation(23, 0, 4, 4);
+        tofFindTracks->SetStation(24, 0, 3, 4);
+        tofFindTracks->SetStation(25, 9, 0, 0);
+        tofFindTracks->SetStation(26, 9, 0, 1);
         break;
 
       case 3:
