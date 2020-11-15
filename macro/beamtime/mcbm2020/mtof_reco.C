@@ -4,19 +4,19 @@
 // --------------------------------------------------------------------------
 
 void mtof_reco(Int_t nEvents      = 100,  // number of Timeslices
-               TString dataset    = "data/unp_mcbm_759",
+               TString dataset    = "data/unp_mcbm_831",
                TString setup      = "mcbm_beam_2020_03",
-               TString cCalId     = "759.100.4.0",
-               Int_t iCalSet      = 10020500,  // calibration settings
-               Double_t ReqTofMul = 2.,    // requested TOF digi multiplicity
+               TString cCalId     = "831.50.3.0",
+               Int_t iCalSet      = 12022500,  // calibration settings
+               Double_t ReqTofMul = 5.,    // requested TOF digi multiplicity
                Double_t Tint      = 100.,  // coincidence time interval
-               Int_t iTrackMode   = 0,     // 2 for TofTracker
-               Double_t ReqT0Mul  = 0.) {
+               Int_t iTrackMode   = 2,     // 2 for TofTracker
+               Double_t ReqT0Mul  = 1.) {
   // ========================================================================
   //          Adjust this part according to your requirements
 
   // --- Logger settings ----------------------------------------------------
-  TString logLevel     = "DEBUG";
+  TString logLevel     = "INFO";
   TString logVerbosity = "VERYHIGH";
   // ------------------------------------------------------------------------
 
@@ -258,6 +258,7 @@ void mtof_reco(Int_t nEvents      = 100,  // number of Timeslices
       Double_t dChi2Lim2   = 3.5;
       TString cTrkFile     = Form("%s_tofFindTracks.hst.root", cCalId.Data());
       Int_t iTrackingSetup = 1;
+      Int_t iCalOpt        = 1;
 
       CbmTofTrackFinder* tofTrackFinder = new CbmTofTrackFinderNN();
       tofTrackFinder->SetMaxTofTimeDifference(0.2);  // in ns/cm
@@ -267,15 +268,18 @@ void mtof_reco(Int_t nEvents      = 100,  // number of Timeslices
       CbmTofTrackFitter* tofTrackFitter = new CbmTofTrackFitterKF(0, 211);
       TFitter* MyFit                    = new TFitter(1);  // initialize Minuit
       tofTrackFinder->SetFitter(tofTrackFitter);
+
       CbmTofFindTracks* tofFindTracks =
         new CbmTofFindTracks("TOF Track Finder");
       tofFindTracks->UseFinder(tofTrackFinder);
       tofFindTracks->UseFitter(tofTrackFitter);
+      tofFindTracks->SetCalOpt(iCalOpt);  
+                   // 1 - update offsets, 2 - update walk, 0 - bypass
       tofFindTracks->SetCorMode(
         iGenCor);  // valid options: 0,1,2,3,4,5,6, 10 - 19
-      tofFindTracks->SetTtTarg(
-        0.041);  // target value for inverse velocity, > 0.033 ns/cm!
-      //tofFindTracks->SetTtTarg(0.035);                // target value for inverse velocity, > 0.033 ns/cm!
+      tofFindTracks->SetTtTarg(0.065);          // target value for Mar2020 triple stack -> betapeak ~ 0.95
+      //tofFindTracks->SetTtTarg(0.041);  // target value for inverse velocity, > 0.033 ns/cm!
+      //tofFindTracks->SetTtTarg(0.035);  // target value for inverse velocity, > 0.033 ns/cm!
       tofFindTracks->SetCalParFileName(
         cTrkFile);  // Tracker parameter value file name
       tofFindTracks->SetBeamCounter(5, 0, 0);  // default beam counter
@@ -305,7 +309,7 @@ void mtof_reco(Int_t nEvents      = 100,  // number of Timeslices
 
         case 1:  // for calibration mode of full setup
           iMinNofHits   = 3;
-          iNStations    = 30;
+          iNStations    = 28;
           iNReqStations = 4;
           tofFindTracks->SetStation(0, 5, 0, 0);
           tofFindTracks->SetStation(1, 0, 2, 2);
@@ -335,9 +339,74 @@ void mtof_reco(Int_t nEvents      = 100,  // number of Timeslices
           tofFindTracks->SetStation(25, 0, 3, 4);
           tofFindTracks->SetStation(26, 9, 0, 0);
           tofFindTracks->SetStation(27, 9, 0, 1);
-          tofFindTracks->SetStation(28, 6, 0, 0);
-          tofFindTracks->SetStation(29, 6, 0, 1);
           break;
+          
+        case 2:  // for geometry check mode of full setup
+          iMinNofHits   = 3;
+          iNStations    = 27;
+          iNReqStations = 4;
+          tofFindTracks->SetStation(0, 0, 2, 2);
+          tofFindTracks->SetStation(1, 0, 1, 2);
+          tofFindTracks->SetStation(2, 0, 0, 2);
+          tofFindTracks->SetStation(3, 0, 2, 1);
+          tofFindTracks->SetStation(4, 0, 1, 1);
+          tofFindTracks->SetStation(5, 0, 0, 1);
+          tofFindTracks->SetStation(6, 0, 2, 3);
+          tofFindTracks->SetStation(7, 0, 1, 3);
+          tofFindTracks->SetStation(8, 0, 0, 3);
+          tofFindTracks->SetStation(9, 0, 2, 0);
+          tofFindTracks->SetStation(10, 0, 1, 0);
+          tofFindTracks->SetStation(11, 0, 0, 0);
+          tofFindTracks->SetStation(12, 0, 2, 4);
+          tofFindTracks->SetStation(13, 0, 1, 4);
+          tofFindTracks->SetStation(14, 0, 0, 4);
+          tofFindTracks->SetStation(15, 0, 4, 0);
+          tofFindTracks->SetStation(16, 0, 3, 0);
+          tofFindTracks->SetStation(17, 0, 4, 1);
+          tofFindTracks->SetStation(18, 0, 3, 1);
+          tofFindTracks->SetStation(19, 0, 4, 2);
+          tofFindTracks->SetStation(20, 0, 3, 2);
+          tofFindTracks->SetStation(21, 0, 4, 3);
+          tofFindTracks->SetStation(22, 0, 3, 3);
+          tofFindTracks->SetStation(23, 0, 4, 4);
+          tofFindTracks->SetStation(24, 0, 3, 4);
+          tofFindTracks->SetStation(25, 9, 0, 0);
+          tofFindTracks->SetStation(26, 9, 0, 1);
+          break;
+
+        case 3:  // for reduced bias tracking of full setup
+          iMinNofHits   = 3;
+          iNStations    = 28;
+          iNReqStations = 4;
+          tofFindTracks->SetStation(0, 0, 2, 2);
+          tofFindTracks->SetStation(1, 0, 1, 2);
+          tofFindTracks->SetStation(2, 0, 0, 2);
+          tofFindTracks->SetStation(3, 0, 2, 1);
+          tofFindTracks->SetStation(4, 0, 1, 1);
+          tofFindTracks->SetStation(5, 0, 0, 1);
+          tofFindTracks->SetStation(6, 0, 2, 3);
+          tofFindTracks->SetStation(7, 0, 1, 3);
+          tofFindTracks->SetStation(8, 0, 0, 3);
+          tofFindTracks->SetStation(9, 0, 2, 0);
+          tofFindTracks->SetStation(10, 0, 1, 0);
+          tofFindTracks->SetStation(11, 0, 0, 0);
+          tofFindTracks->SetStation(12, 0, 2, 4);
+          tofFindTracks->SetStation(13, 0, 1, 4);
+          tofFindTracks->SetStation(14, 0, 0, 4);
+          tofFindTracks->SetStation(15, 0, 4, 0);
+          tofFindTracks->SetStation(16, 0, 3, 0);
+          tofFindTracks->SetStation(17, 0, 4, 1);
+          tofFindTracks->SetStation(18, 0, 3, 1);
+          tofFindTracks->SetStation(19, 0, 4, 2);
+          tofFindTracks->SetStation(20, 0, 3, 2);
+          tofFindTracks->SetStation(21, 0, 4, 3);
+          tofFindTracks->SetStation(22, 0, 3, 3);
+          tofFindTracks->SetStation(23, 0, 4, 4);
+          tofFindTracks->SetStation(24, 0, 3, 4);
+          tofFindTracks->SetStation(25, 9, 0, 0);
+          tofFindTracks->SetStation(26, 9, 0, 1);
+          tofFindTracks->SetStation(27, 5, 0, 0);
+          break;                    
       }
       tofFindTracks->SetMinNofHits(iMinNofHits);
       tofFindTracks->SetNStations(iNStations);
@@ -391,6 +460,7 @@ void mtof_reco(Int_t nEvents      = 100,  // number of Timeslices
   run->Run(0, nEvents);
   // ------------------------------------------------------------------------
   // save all historgrams
+  gROOT->LoadMacro("fit_ybox.h");
   gROOT->LoadMacro("save_hst.C");
   TString FSave = Form("save_hst(\"%s\")", hstFile.Data());
   gInterpreter->ProcessLine(FSave.Data());
