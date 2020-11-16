@@ -208,13 +208,13 @@ void pl_over_trk(Int_t NSt = 4) {
   if (h1 != NULL) {
     h1->Draw("");
     gPad->SetLogy();
-    hname = Form("hCalDY0");
-    TH1 *h1y = (TH1*) gROOT->FindObjectAny(hname);
+    hname    = Form("hCalDY0");
+    TH1* h1y = (TH1*) gROOT->FindObjectAny(hname);
     h1y->SetLineColor(2);
     h1y->Draw("same");
   } else {
     cout << hname << " not found" << endl;
-  }  
+  }
 
   can->cd(14);
   gROOT->cd();

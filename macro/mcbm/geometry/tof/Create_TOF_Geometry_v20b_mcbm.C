@@ -45,7 +45,7 @@ const TString FileNameInfo = fileTag + "_mcbm.geo.info";
 
 // TOF_Z_Front corresponds to front cover of outer super module towers
 const Float_t TOF_Z_Front_Stand = 247.2;  // = z=298 mCBM@SIS18
-const Float_t TOF_X_Front_Stand = -1.6;  // = z=298 mCBM@SIS18
+const Float_t TOF_X_Front_Stand = -1.6;   // = z=298 mCBM@SIS18
 const Float_t TOF_Z_Front       = 0;      // = z=298 mCBM@SIS18
 //const Float_t TOF_Z_Front =  130;  // = z=225 mCBM@SIS18
 //const Float_t TOF_Z_Front =  250;  // SIS 100 hadron
@@ -213,7 +213,7 @@ const Float_t Outer_Module_Number[Outer_Module_NTypes][Outer_Module_Col] =
 const Float_t Star2_First_Z_Position       = TOF_Z_Front + 16.5;
 const Float_t Star2_Delta_Z_Position       = 0.;
 const Float_t Star2_First_Y_Position       = 30.35;  //
-const Float_t Star2_Delta_Y_Position       = 0.;   //
+const Float_t Star2_Delta_Y_Position       = 0.;     //
 const Float_t Star2_rotate_Z               = -90.;
 const Int_t Star2_NTypes                   = 1;
 const Float_t Star2_Types[Star2_NTypes]    = {9.};

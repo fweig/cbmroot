@@ -44,8 +44,8 @@ const TString FileNameInfo = fileTag + "_mcbm.geo.info";
 
 // TOF_Z_Front corresponds to front cover of outer super module towers
 const Float_t TOF_Z_Front_Stand = 247.2;  // = z=298 mCBM@SIS18
-const Float_t TOF_X_Front_Stand = 0.;  // = z=298 mCBM@SIS18
-const Float_t TOF_Z_Front       = 0.;      // = z=298 mCBM@SIS18
+const Float_t TOF_X_Front_Stand = 0.;     // = z=298 mCBM@SIS18
+const Float_t TOF_Z_Front       = 0.;     // = z=298 mCBM@SIS18
 //const Float_t TOF_Z_Front =  130;  // = z=225 mCBM@SIS18
 //const Float_t TOF_Z_Front =  250;  // SIS 100 hadron
 //const Float_t TOF_Z_Front =  450;  // SIS 100 hadron
@@ -317,19 +317,19 @@ void Create_TOF_Geometry_v20a_mcbm() {
   TGeoTranslation* stand_trans_local =
     new TGeoTranslation("", TOF_X_Front_Stand, 0., 0.);
   TGeoTranslation* stand_trans =
-    new TGeoTranslation("", 0., 0., TOF_Z_Front_Stand);    
+    new TGeoTranslation("", 0., 0., TOF_Z_Front_Stand);
   TGeoCombiTrans* stand_combi_trans =
-    new TGeoCombiTrans(*stand_trans, *tof_rotation);  
-    
+    new TGeoCombiTrans(*stand_trans, *tof_rotation);
+
   // Nov 2019 run
   // TGeoTranslation*  stand_trans   = new TGeoTranslation("", 12., 0., TOF_Z_Front_Stand);
   // TGeoTranslation*  stand_trans   = new TGeoTranslation("",  0., 0., TOF_Z_Front_Stand);
   TGeoRotation* stand_rot = new TGeoRotation();
   stand_rot->RotateY(0.55);
-  //stand_rot->RotateY(1.0); 
+  //stand_rot->RotateY(1.0);
   TGeoCombiTrans* stand_combi_trans_local =
     new TGeoCombiTrans(*stand_trans_local, *stand_rot);
-    
+
   //tof->AddNode(tofstand, 1, stand_combi_trans);
   tof->AddNode(tofstand, 1, stand_combi_trans_local);
   //tof->AddNode(tofstand, 1);
