@@ -376,8 +376,8 @@ void CbmTofCalibrator::FillCalHist(CbmTofTracklet* pTrk, Int_t iOpt) {
               + (1. - 2. * tDigi0->GetSide()) * hlocal_d[1]
                   / fDigiBdfPar->GetSigVel(iSmType, iSm, iRpc)
               - pTrk->GetFitT(
-                  pHit
-                    ->GetZ())  //-fTrackletTools->GetTexpected(pTrk, iDetId, pHit)
+                pHit
+                  ->GetZ())  //-fTrackletTools->GetTexpected(pTrk, iDetId, pHit)
               + fTofFindTracks->GetTOff(iDetId)
               + 2. * (1. - 2. * tDigi0->GetSide()) * (hlocal_d[1] - hlocal_f[1])
                   / fDigiBdfPar->GetSigVel(iSmType, iSm, iRpc));
@@ -397,8 +397,8 @@ void CbmTofCalibrator::FillCalHist(CbmTofTracklet* pTrk, Int_t iOpt) {
               + (1. - 2. * tDigi1->GetSide()) * hlocal_d[1]
                   / fDigiBdfPar->GetSigVel(iSmType, iSm, iRpc)
               - pTrk->GetFitT(
-                  pHit
-                    ->GetZ())  //-fTrackletTools->GetTexpected(pTrk, iDetId, pHit)
+                pHit
+                  ->GetZ())  //-fTrackletTools->GetTexpected(pTrk, iDetId, pHit)
               + fTofFindTracks->GetTOff(iDetId)
               + 2. * (1. - 2. * tDigi1->GetSide()) * (hlocal_d[1] - hlocal_f[1])
                   / fDigiBdfPar->GetSigVel(iSmType, iSm, iRpc));

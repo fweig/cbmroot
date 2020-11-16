@@ -1750,9 +1750,7 @@ void CbmTofFindTracks::FindVertex() {
       w,
       fMinNofHits);
 
-    if (
-      w
-      > (Double_t)
+    if (w > (Double_t)
           fMinNofHits) {  // for further analysis request minimum number of hits
       fVTXNorm += w;
       fVTX_T += w * pTrk->GetFitT(0.);
@@ -1906,13 +1904,13 @@ void CbmTofFindTracks::FillHistograms() {
           Double_t dDX =
             pHit->GetX()
             - pTrk->GetFitX(
-                pHit->GetZ());  // - tPar->GetX() - tPar->GetTx()*dDZ;
+              pHit->GetZ());  // - tPar->GetX() - tPar->GetTx()*dDZ;
           Double_t dDY =
             pHit->GetY() - pTrk->GetFitY(pHit->GetZ());  // - tPar->GetTy()*dDZ;
           Double_t dDT =
             pHit->GetTime()
             - pTrk->GetFitT(
-                pHit->GetZ());  // pTrk->GetTdif(fMapStationRpcId[iSt]);
+              pHit->GetZ());  // pTrk->GetTdif(fMapStationRpcId[iSt]);
           Double_t dDTB =
             fTrackletTools->GetTdif(pTrk,
                                     fMapStationRpcId[iSt],
@@ -1920,21 +1918,20 @@ void CbmTofFindTracks::FillHistograms() {
           Double_t dTOT = pHit->GetCh() / 10.;  // misuse of channel field
 
           Double_t dZZ = pHit->GetZ() - tPar->GetZy(pHit->GetY());
-          LOG(debug)
-            << Form("  St %d Id 0x%08x Hit %2d, Z %6.2f - DX %6.2f, DY %6.2f, "
-                    "Z %6.2f, DT %6.2f, %6.2f, ZZ %6.2f, Tt %6.4f ",
-                    iSt,
-                    fMapStationRpcId[iSt],
-                    iH,
-                    pHit->GetZ(),
-                    dDX,
-                    dDY,
-                    dDZ,
-                    dDT,
-                    dDTB,
-                    dZZ,
-                    dTt)
-            << tPar->ToString();
+          LOG(debug) << Form(
+            "  St %d Id 0x%08x Hit %2d, Z %6.2f - DX %6.2f, DY %6.2f, "
+            "Z %6.2f, DT %6.2f, %6.2f, ZZ %6.2f, Tt %6.4f ",
+            iSt,
+            fMapStationRpcId[iSt],
+            iH,
+            pHit->GetZ(),
+            dDX,
+            dDY,
+            dDZ,
+            dDT,
+            dDTB,
+            dZZ,
+            dTt) << tPar->ToString();
 
           vhPullX[iSt]->Fill(dDX);
           vhPullY[iSt]->Fill(dDY);
@@ -2043,7 +2040,7 @@ void CbmTofFindTracks::FillHistograms() {
           Double_t dDX =
             pHit->GetX()
             - pTrk->GetFitX(
-                pHit->GetZ());  // - tPar->GetX() - tPar->GetTx()*dDZ;
+              pHit->GetZ());  // - tPar->GetX() - tPar->GetTx()*dDZ;
           Double_t dDY =
             pHit->GetY() - pTrk->GetFitY(pHit->GetZ());  // - tPar->GetTy()*dDZ;
           //Double_t dDT = pHit->GetTime() - pTrk->GetFitT(pHit->GetR()); //pTrk->GetTdif(fMapStationRpcId[iSt]);

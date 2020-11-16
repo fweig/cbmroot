@@ -97,8 +97,8 @@ CbmTofTrackFinderNN::CbmTofTrackFinderNN(const CbmTofTrackFinderNN& finder)
 }
 
 // assignment operator
-CbmTofTrackFinderNN& CbmTofTrackFinderNN::
-operator=(const CbmTofTrackFinderNN& /*fSource*/) {
+CbmTofTrackFinderNN&
+CbmTofTrackFinderNN::operator=(const CbmTofTrackFinderNN& /*fSource*/) {
   // do copy
   // ... (too lazy) ...
   // return the existing object
@@ -204,7 +204,7 @@ Int_t CbmTofTrackFinderNN::DoFind(TClonesArray* fTofHits,
           fvTrkVec[iHit].size());
         if (iAddr
             == fFindTracks->GetAddrOfStation(
-                 iSt0)) {  // generate new track seed
+              iSt0)) {  // generate new track seed
           LOG(debug) << Form(
             "<I> TofTracklet seed St0 %2d, St1 %2d, Mul %2d, Hit %2d, addr = "
             "0x%08x - X %6.2f, Y %6.2f Z %6.2f T %6.2f TM %lu",
@@ -270,7 +270,7 @@ Int_t CbmTofTrackFinderNN::DoFind(TClonesArray* fTofHits,
               //if (iSmType1 == fFindTracks->GetStationType(1)) { // generate new track seed
               if (iAddr1
                   == fFindTracks->GetAddrOfStation(
-                       iSt1)) {  // generate new track seed
+                    iSt1)) {  // generate new track seed
                 Int_t iChId1              = pHit1->GetAddress();
                 CbmTofCell* fChannelInfo1 = fDigiPar->GetCell(iChId1);
                 Int_t iCh1                = CbmTofAddress::GetChannelId(iChId1);
@@ -829,7 +829,7 @@ void CbmTofTrackFinderNN::TrklSeed(Int_t iHit) {
       //if (iSmType1 == fFindTracks->GetStationType(iDet1)) {      // generate candidate for new track seed
       if (iAddr1
           == fFindTracks->GetAddrOfStation(
-               iDet1)) {  // generate candidate for new track seed
+            iDet1)) {  // generate candidate for new track seed
         Int_t iChId1              = pHit1->GetAddress();
         CbmTofCell* fChannelInfo1 = fDigiPar->GetCell(iChId1);
         Int_t iCh1                = CbmTofAddress::GetChannelId(iChId1);

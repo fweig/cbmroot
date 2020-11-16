@@ -2798,9 +2798,8 @@ Bool_t CbmTofEventClusterizer::FillHistos() {
                       || (TMath::Sqrt(
                             TMath::Power(
                               pHit->GetX() - dzscal * pTrig[iSel]->GetX(), 2.)
-                            + TMath::Power(pHit->GetY()
-                                             - dzscal * pTrig[iSel]->GetY(),
-                                           2.))
+                            + TMath::Power(
+                              pHit->GetY() - dzscal * pTrig[iSel]->GetY(), 2.))
                           < fdCaldXdYMax)) {
                     BSel[iSel]     = kTRUE;
                     Double_t dX2Y2 = TMath::Sqrt(dSEl2dXdz * dSEl2dXdz
@@ -3243,11 +3242,11 @@ Bool_t CbmTofEventClusterizer::FillHistos() {
                                    * (pHit->GetZ() - (pTrig[iSel]->GetZ()))),
                           2.)
                         + TMath::Power(
-                            pHit->GetY()
-                              - (pTrig[iSel]->GetY()
-                                 + ddYdZ[iSel]
-                                     * (pHit->GetZ() - (pTrig[iSel]->GetZ()))),
-                            2.))
+                          pHit->GetY()
+                            - (pTrig[iSel]->GetY()
+                               + ddYdZ[iSel]
+                                   * (pHit->GetZ() - (pTrig[iSel]->GetZ()))),
+                          2.))
                       > 0.5 * fdCaldXdYMax)
                     continue;  // refine position selection cut in cosmic measurement
                 dTcor[iSel] = 0.;  // precaution
