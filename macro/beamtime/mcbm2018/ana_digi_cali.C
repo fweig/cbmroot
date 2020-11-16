@@ -1,15 +1,15 @@
 void ana_digi_cali(Int_t nEvents      = 10000000,
-                  Int_t calMode      = 53,
-                  Int_t calSel       = 0,
-                  Int_t calSm        = 900,
-                  Int_t RefSel       = 1,
-                  TString cFileId    = "Test",
-                  Int_t iCalSet      = 910601600,
-                  Bool_t bOut        = 0,
-                  Int_t iSel2        = 0,
-                  Double_t dDeadtime = 50,
-                  TString cCalId     = "XXX",
-                  Int_t iPlot        = 1) {
+                   Int_t calMode      = 53,
+                   Int_t calSel       = 0,
+                   Int_t calSm        = 900,
+                   Int_t RefSel       = 1,
+                   TString cFileId    = "Test",
+                   Int_t iCalSet      = 910601600,
+                   Bool_t bOut        = 0,
+                   Int_t iSel2        = 0,
+                   Double_t dDeadtime = 50,
+                   TString cCalId     = "XXX",
+                   Int_t iPlot        = 1) {
   Int_t iVerbose = 1;
   Int_t iBugCor  = 0;
   //Specify log level (INFO, DEBUG, DEBUG1, ...)
@@ -31,7 +31,7 @@ void ana_digi_cali(Int_t nEvents      = 10000000,
    return;
   */
   //TString paramDir  = workDir + "/macro/beamtime/mcbm2018/";
-  TString paramDir  = "./"; 
+  TString paramDir  = "./";
   TString ParFile   = paramDir + "data/" + cFileId + ".params.root";
   TString InputFile = paramDir + "data/" + cFileId + ".root";
   TString OutputFile =
@@ -47,7 +47,7 @@ void ana_digi_cali(Int_t nEvents      = 10000000,
   TString FId    = cFileId;
   TString TofGeo = "v18m_mcbm";
   cout << "Geometry version " << TofGeo << endl;
-/*
+  /*
   TObjString* tofDigiFile = new TObjString(
     workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par");  // TOF digi file
   parFileList->Add(tofDigiFile);

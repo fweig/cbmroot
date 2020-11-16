@@ -42,11 +42,11 @@ void ana_trks_eval(Int_t nEvents        = 10000,
     iRun          = 700;
   }
   TString InputTrklFile = paramDir + "/data/TofTrks_" + cFileId.Data()
-                       + Form("_%s_%06d_%03d", cSet.Data(), iSel, iSel2)
-                       + ".out.root";
+                          + Form("_%s_%06d_%03d", cSet.Data(), iSel, iSel2)
+                          + ".out.root";
   TString OutputFile = paramDir + "/data/ana_" + cFileId.Data()
                        + Form("_%s_%06d_%03d", cSet.Data(), iSel, iSel2)
-                       + ".out.root";                       
+                       + ".out.root";
   TString cHstFile =
     paramDir
     + Form(
@@ -80,8 +80,8 @@ void ana_trks_eval(Int_t nEvents        = 10000,
       TofGeo = "v20f_mcbm";
     cout << "Geometry version " << TofGeo << endl;
 
-    TObjString* tofDigiBdfFile =
-      new TObjString(workDir + "/parameters/tof/tof_" + TofGeo + ".digibdf.par");
+    TObjString* tofDigiBdfFile = new TObjString(workDir + "/parameters/tof/tof_"
+                                                + TofGeo + ".digibdf.par");
     parFileList->Add(tofDigiBdfFile);
 
     TString geoDir  = gSystem->Getenv("VMCWORKDIR");
@@ -421,8 +421,8 @@ void ana_trks_eval(Int_t nEvents        = 10000,
       tofFindTracks->SetStation(4, 0, 3, 1);
       tofFindTracks->SetStation(5, iDut, iDutSm, iDutRpc);
       break;
-     
-    case 9:  // calibration of Star2 
+
+    case 9:  // calibration of Star2
       iMinNofHits   = 4;
       iNStations    = 5;
       iNReqStations = 5;
@@ -432,7 +432,7 @@ void ana_trks_eval(Int_t nEvents        = 10000,
       tofFindTracks->SetStation(3, 9, 0, 0);
       tofFindTracks->SetStation(4, 0, 3, 1);
       break;
-      
+
     case 10:
       iMinNofHits   = 3;
       iNStations    = 4;
@@ -462,7 +462,7 @@ void ana_trks_eval(Int_t nEvents        = 10000,
       tofFindTracks->SetStation(2, 0, 0, 2);
       tofFindTracks->SetStation(3, 0, 1, 2);
       break;
-      
+
     case 13:
       iMinNofHits   = 3;
       iNStations    = 4;
@@ -472,7 +472,7 @@ void ana_trks_eval(Int_t nEvents        = 10000,
       tofFindTracks->SetStation(2, 0, 0, 2);
       tofFindTracks->SetStation(3, 0, 1, 2);
       break;
-      
+
 
     case 14:
       iMinNofHits   = 3;
@@ -483,7 +483,7 @@ void ana_trks_eval(Int_t nEvents        = 10000,
       tofFindTracks->SetStation(2, 0, 0, 2);
       tofFindTracks->SetStation(3, 0, 1, 2);
       break;
-            
+
     default:
       cout << "Tracking setup " << iTrackingSetup << " not implemented "
            << endl;
@@ -650,17 +650,20 @@ void ana_trks_eval(Int_t nEvents        = 10000,
                 break;
               case 31:
                 if (iMc == 0) {
-			      switch (iRun) {
-				    case 717:
-	                  tofAnaTestbeam->SetTShift(6.5);  // Shift DTD4 to 0
-					  tofAnaTestbeam->SetSel2TOff(0.6);  // Shift Sel2 time peak to 0
-				    break;
-				    default: // 714
-//                    tofAnaTestbeam->SetSel2TOff(-1.3);  // Shift Sel2 time peak to 0
-                      tofAnaTestbeam->SetSel2TOff(0.3);  // Shift Sel2 time peak to 0
-				  }
-                } else {    // MC
-                  tofAnaTestbeam->SetSel2TOff(-1.3);  // Shift Sel2 time peak to 0
+                  switch (iRun) {
+                    case 717:
+                      tofAnaTestbeam->SetTShift(6.5);  // Shift DTD4 to 0
+                      tofAnaTestbeam->SetSel2TOff(
+                        0.6);  // Shift Sel2 time peak to 0
+                      break;
+                    default:  // 714
+                      //                    tofAnaTestbeam->SetSel2TOff(-1.3);  // Shift Sel2 time peak to 0
+                      tofAnaTestbeam->SetSel2TOff(
+                        0.3);  // Shift Sel2 time peak to 0
+                  }
+                } else {  // MC
+                  tofAnaTestbeam->SetSel2TOff(
+                    -1.3);  // Shift Sel2 time peak to 0
                 }
                 break;
               case 600:
@@ -697,14 +700,14 @@ void ana_trks_eval(Int_t nEvents        = 10000,
       case 12022:
         switch (iRSelin) {
           case 500:
-            tofAnaTestbeam->SetTShift(3.);  // Shift DTD4 to 0
+            tofAnaTestbeam->SetTShift(3.);   // Shift DTD4 to 0
             tofAnaTestbeam->SetTOffD4(15.);  // Shift DTD4 to physical value
 
             switch (iSel2in) {
               case 2:
                 tofAnaTestbeam->SetSel2TOff(0.25);  // Shift Sel2 time peak to 0
                 break;
-                
+
               default:;
             }
             break;

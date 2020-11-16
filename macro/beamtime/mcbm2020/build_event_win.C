@@ -14,8 +14,8 @@ void build_event_win(UInt_t uRunId  = 0,
 
   // --- Set log output levels
   FairLogger::GetLogger();
-  gLogger->SetLogScreenLevel("INFO");
-  //  gLogger->SetLogScreenLevel("DEBUG");
+  //gLogger->SetLogScreenLevel("INFO");
+  gLogger->SetLogScreenLevel("DEBUG");
   gLogger->SetLogVerbosityLevel("MEDIUM");
 
   // MC file

@@ -47,16 +47,16 @@ void ana_trks(Int_t nEvents        = 10000,
   TString cHstFile =
     paramDir
     + Form(
-        "/hst/%s_%03.0f_%s_%06d_%03d_%03.1f_%03.1f_trk%03d_Cal%s_Ana.hst.root",
-        cFileId.Data(),
-        dDeadtime,
-        cSet.Data(),
-        iSel,
-        iSel2,
-        dScalFac,
-        dChi2Lim2,
-        iTrackingSetup,
-        cCalId.Data());
+      "/hst/%s_%03.0f_%s_%06d_%03d_%03.1f_%03.1f_trk%03d_Cal%s_Ana.hst.root",
+      cFileId.Data(),
+      dDeadtime,
+      cSet.Data(),
+      iSel,
+      iSel2,
+      dScalFac,
+      dChi2Lim2,
+      iTrackingSetup,
+      cCalId.Data());
   TString cTrkFile = Form("%s_tofFindTracks.hst.root", cCalId.Data());
   TString cAnaFile = Form("%s_TrkAnaTestBeam.hst.root", cFileId.Data());
 
@@ -76,8 +76,8 @@ void ana_trks(Int_t nEvents        = 10000,
       TofGeo = "v20f_mcbm";
     cout << "Geometry version " << TofGeo << endl;
 
-    TObjString* tofDigiBdfFile =
-      new TObjString(workDir + "/parameters/tof/tof_" + TofGeo + ".digibdf.par");
+    TObjString* tofDigiBdfFile = new TObjString(workDir + "/parameters/tof/tof_"
+                                                + TofGeo + ".digibdf.par");
     parFileList->Add(tofDigiBdfFile);
 
     TString geoDir  = gSystem->Getenv("VMCWORKDIR");
@@ -192,7 +192,8 @@ void ana_trks(Int_t nEvents        = 10000,
   tofFindTracks->SetCalOpt(
     iCalOpt);  // 1 - update offsets, 2 - update walk, 0 - bypass
   tofFindTracks->SetCorMode(iGenCor);  // valid options: 0,1,2,3,4,5,6, 10 - 19
-  tofFindTracks->SetTtTarg(0.065);          // target value for Mar2020 triple stack -> betapeak ~ 0.95
+  tofFindTracks->SetTtTarg(
+    0.065);  // target value for Mar2020 triple stack -> betapeak ~ 0.95
   //tofFindTracks->SetTtTarg(0.0605);  // target value for Mar2020 triple stack -> betapeak ~ 0.95
   //tofFindTracks->SetTtTarg(0.058);          // target value for Mar2020 double stack
   //tofFindTracks->SetTtTarg(0.055);            // target value Nov2019 (triple stack run 831)
@@ -418,7 +419,7 @@ void ana_trks(Int_t nEvents        = 10000,
       tofFindTracks->SetStation(5, iDut, iDutSm, iDutRpc);
       break;
 
-    case 9:  // calibration of Star2 
+    case 9:  // calibration of Star2
       iMinNofHits   = 4;
       iNStations    = 5;
       iNReqStations = 5;

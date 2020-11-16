@@ -119,8 +119,8 @@ void pl_over_Mat04D4best(Int_t iLog = 0) {
       TString hname2 = "hDTD4DT04D4best_pfx_px";
       h2pfxpx        = (TH1*) gROOT->FindObjectAny(hname2);
       if (h2pfxpx != NULL) {
-		  h2pfxpx->SetLineColor(6);
-		  h2pfxpx->Draw("same");
+        h2pfxpx->SetLineColor(6);
+        h2pfxpx->Draw("same");
       }
       Int_t iNbinsX = h2->GetNbinsX();
       cout << " Histo " << hname << " has " << iNbinsX << " Xbins" << endl;
@@ -200,8 +200,8 @@ void pl_over_Mat04D4best(Int_t iLog = 0) {
       TString hname2 = "hTexpDT04D4best_pfx_px";
       TH1* hpfxpx    = (TH1*) gROOT->FindObjectAny(hname2);
       if (hpfxpx != NULL) {
-		  hpfxpx->SetLineColor(6);
-		  hpfxpx->Draw("same");
+        hpfxpx->SetLineColor(6);
+        hpfxpx->Draw("same");
       }
     } else {
       cout << hname << " not found" << endl;
@@ -231,12 +231,12 @@ void pl_over_Mat04D4best(Int_t iLog = 0) {
       gPad->SetLogz();
       TProfile* h2pfx = h2->ProfileX();
       h2pfx->Draw("same");
-      
+
       TString hname2 = "hDTX4D4best_pfx_px";
       TH1* hpfxpx    = (TH1*) gROOT->FindObjectAny(hname2);
       if (hpfxpx != NULL) {
-		  hpfxpx->SetLineColor(6);
-		  hpfxpx->Draw("same");
+        hpfxpx->SetLineColor(6);
+        hpfxpx->Draw("same");
       }
     } else {
       cout << hname << " not found" << endl;
@@ -257,8 +257,8 @@ void pl_over_Mat04D4best(Int_t iLog = 0) {
       TString hname2 = "hDTY4D4best_pfx_px";
       TH1* hpfxpx    = (TH1*) gROOT->FindObjectAny(hname2);
       if (hpfxpx != NULL) {
-		  hpfxpx->SetLineColor(6);
-		  hpfxpx->Draw("same");
+        hpfxpx->SetLineColor(6);
+        hpfxpx->Draw("same");
       }
 
     } else {
@@ -316,14 +316,14 @@ void pl_over_Mat04D4best(Int_t iLog = 0) {
       TH1D* h2clu   = h2->ProjectionX("_px", 1, h2->GetNbinsY());
       dMeanCluSize0 = h2clu->GetMean();
       h2->ProfileX()->Draw("same");
-      
+
       TString hname2 = "hCluSize0DT04D4best_pfx_px";
       TH1* hpfxpx    = (TH1*) gROOT->FindObjectAny(hname2);
       if (hpfxpx != NULL) {
-		  hpfxpx->SetLineColor(6);
-		  hpfxpx->Draw("same");
+        hpfxpx->SetLineColor(6);
+        hpfxpx->Draw("same");
       }
-      
+
     } else {
       cout << hname << " not found" << endl;
     }
@@ -340,14 +340,14 @@ void pl_over_Mat04D4best(Int_t iLog = 0) {
       TH1D* h2clu   = h2->ProjectionX("_px", 1, h2->GetNbinsY());
       dMeanCluSize4 = h2clu->GetMean();
       h2->ProfileX()->Draw("same");
-      
+
       TString hname2 = "hCluSize4DT04D4best_pfx_px";
       TH1* hpfxpx    = (TH1*) gROOT->FindObjectAny(hname2);
       if (hpfxpx != NULL) {
-		  hpfxpx->SetLineColor(6);
-		  hpfxpx->Draw("same");
-      }      
-      
+        hpfxpx->SetLineColor(6);
+        hpfxpx->Draw("same");
+      }
+
     } else {
       cout << hname << " not found" << endl;
     }
@@ -363,14 +363,14 @@ void pl_over_Mat04D4best(Int_t iLog = 0) {
       TProfile* h2pfxt = h2->ProfileX();
       h2pfxt->Draw("same");
       gPad->SetLogz();
-      
+
       TString hname2 = "hTot0DT04D4best_pfx_px";
       TH1* hpfxpx    = (TH1*) gROOT->FindObjectAny(hname2);
       if (hpfxpx != NULL) {
-		  hpfxpx->SetLineColor(6);
-		  hpfxpx->Draw("same");
-      }      
-      
+        hpfxpx->SetLineColor(6);
+        hpfxpx->Draw("same");
+      }
+
     } else {
       cout << hname << " not found" << endl;
     }
@@ -386,14 +386,14 @@ void pl_over_Mat04D4best(Int_t iLog = 0) {
       TProfile* h2pfxt = h2->ProfileX();
       h2pfxt->Draw("same");
       gPad->SetLogz();
-      
+
       TString hname2 = "hTot4DT04D4best_pfx_px";
       TH1* hpfxpx    = (TH1*) gROOT->FindObjectAny(hname2);
       if (hpfxpx != NULL) {
-		  hpfxpx->SetLineColor(6);
-		  hpfxpx->Draw("same");
-      }      
-      
+        hpfxpx->SetLineColor(6);
+        hpfxpx->Draw("same");
+      }
+
     } else {
       cout << hname << " not found" << endl;
     }

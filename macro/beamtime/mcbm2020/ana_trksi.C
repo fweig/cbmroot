@@ -1,19 +1,19 @@
 void ana_trksi(Int_t nEvents        = 10000,
-              Int_t iSel           = 1,
-              Int_t iGenCor        = 1,
-              TString cFileId      = "48.50.7.1",
-              TString cSet         = "000010020",
-              Int_t iSel2          = 20,
-              Int_t iTrackingSetup = 2,
-              Double_t dScalFac    = 1.,
-              Double_t dChi2Lim2   = 500.,
-              Double_t dDeadtime   = 50,
-              TString cCalId       = "",
-              Int_t iAnaCor        = 1,
-              Bool_t bUseSigCalib  = kFALSE,
-              Int_t iCalSet        = 30040500,
-              Int_t iCalOpt        = 1,
-              Int_t iMc            = 0) {
+               Int_t iSel           = 1,
+               Int_t iGenCor        = 1,
+               TString cFileId      = "48.50.7.1",
+               TString cSet         = "000010020",
+               Int_t iSel2          = 20,
+               Int_t iTrackingSetup = 2,
+               Double_t dScalFac    = 1.,
+               Double_t dChi2Lim2   = 500.,
+               Double_t dDeadtime   = 50,
+               TString cCalId       = "",
+               Int_t iAnaCor        = 1,
+               Bool_t bUseSigCalib  = kFALSE,
+               Int_t iCalSet        = 30040500,
+               Int_t iCalOpt        = 1,
+               Int_t iMc            = 0) {
   Int_t iVerbose = 1;
   if (cCalId == "") cCalId = cFileId;
   TString FId = cFileId;
@@ -46,16 +46,16 @@ void ana_trksi(Int_t nEvents        = 10000,
   TString cHstFile =
     paramDir
     + Form(
-        "/hst/%s_%03.0f_%s_%06d_%03d_%03.1f_%03.1f_trk%03d_Cal%s_Ana.hst.root",
-        cFileId.Data(),
-        dDeadtime,
-        cSet.Data(),
-        iSel,
-        iSel2,
-        dScalFac,
-        dChi2Lim2,
-        iTrackingSetup,
-        cCalId.Data());
+      "/hst/%s_%03.0f_%s_%06d_%03d_%03.1f_%03.1f_trk%03d_Cal%s_Ana.hst.root",
+      cFileId.Data(),
+      dDeadtime,
+      cSet.Data(),
+      iSel,
+      iSel2,
+      dScalFac,
+      dChi2Lim2,
+      iTrackingSetup,
+      cCalId.Data());
   TString cTrkFile = Form("%s_tofFindTracks.hst.root", cCalId.Data());
   TString cAnaFile = Form("%s_TrkAnaTestBeam.hst.root", cFileId.Data());
 
@@ -75,8 +75,8 @@ void ana_trksi(Int_t nEvents        = 10000,
       TofGeo = "v20f_mcbm";
     cout << "Geometry version " << TofGeo << endl;
 
-    TObjString* tofDigiBdfFile =
-      new TObjString(workDir + "/parameters/tof/tof_" + TofGeo + ".digibdf.par");
+    TObjString* tofDigiBdfFile = new TObjString(workDir + "/parameters/tof/tof_"
+                                                + TofGeo + ".digibdf.par");
     parFileList->Add(tofDigiBdfFile);
 
     TString geoDir  = gSystem->Getenv("VMCWORKDIR");
@@ -316,7 +316,7 @@ void ana_trksi(Int_t nEvents        = 10000,
       tofFindTracks->SetStation(7, 0, 1, 3);
       tofFindTracks->SetStation(8, 0, 0, 3);
 
-      tofFindTracks->SetStation(9,  0, 2, 0);
+      tofFindTracks->SetStation(9, 0, 2, 0);
       tofFindTracks->SetStation(10, 0, 1, 0);
       tofFindTracks->SetStation(11, 0, 0, 0);
 
@@ -324,21 +324,21 @@ void ana_trksi(Int_t nEvents        = 10000,
       tofFindTracks->SetStation(13, 0, 1, 4);
       tofFindTracks->SetStation(14, 0, 0, 4);
 
-      tofFindTracks->SetStation(15, 0, 3, 2);         
-      tofFindTracks->SetStation(16, 0, 4, 2);  
-      tofFindTracks->SetStation(17, 0, 3, 1);         
+      tofFindTracks->SetStation(15, 0, 3, 2);
+      tofFindTracks->SetStation(16, 0, 4, 2);
+      tofFindTracks->SetStation(17, 0, 3, 1);
       tofFindTracks->SetStation(18, 0, 4, 1);
-      tofFindTracks->SetStation(19, 0, 3, 3);         
+      tofFindTracks->SetStation(19, 0, 3, 3);
       tofFindTracks->SetStation(20, 0, 4, 3);
-      tofFindTracks->SetStation(21, 0, 3, 0);         
+      tofFindTracks->SetStation(21, 0, 3, 0);
       tofFindTracks->SetStation(22, 0, 4, 0);
-      tofFindTracks->SetStation(23, 0, 3, 4);         
+      tofFindTracks->SetStation(23, 0, 3, 4);
       tofFindTracks->SetStation(24, 0, 4, 4);
-       
+
       tofFindTracks->SetStation(25, 9, 0, 0);
       tofFindTracks->SetStation(26, 9, 0, 1);
       tofFindTracks->SetStation(27, 5, 0, 0);
-   
+
       break;
 
     case 4:  // for USTC evaluation
@@ -419,7 +419,7 @@ void ana_trksi(Int_t nEvents        = 10000,
       tofFindTracks->SetStation(5, iDut, iDutSm, iDutRpc);
       break;
 
-    case 9:  // calibration of Star2 
+    case 9:  // calibration of Star2
       iMinNofHits   = 4;
       iNStations    = 5;
       iNReqStations = 5;
@@ -600,14 +600,16 @@ void ana_trksi(Int_t nEvents        = 10000,
                 tofAnaTestbeam->SetSel2TOff(-0.3);  // Shift Sel2 time peak to 0
                 break;
               case 31:
-              switch (iRun) {
-				  case 717:
-	                tofAnaTestbeam->SetTShift(6.5);  // Shift DTD4 to 0
-					tofAnaTestbeam->SetSel2TOff(0.6);  // Shift Sel2 time peak to 0
-				  break;
-				  default: //714
-                  tofAnaTestbeam->SetSel2TOff(0.3);  // Shift Sel2 time peak to 0
-			    }
+                switch (iRun) {
+                  case 717:
+                    tofAnaTestbeam->SetTShift(6.5);  // Shift DTD4 to 0
+                    tofAnaTestbeam->SetSel2TOff(
+                      0.6);  // Shift Sel2 time peak to 0
+                    break;
+                  default:  //714
+                    tofAnaTestbeam->SetSel2TOff(
+                      0.3);  // Shift Sel2 time peak to 0
+                }
                 break;
               case 600:
                 tofAnaTestbeam->SetSel2TOff(-0.2);  // Shift Sel2 time peak to 0
@@ -643,14 +645,14 @@ void ana_trksi(Int_t nEvents        = 10000,
       case 12022:
         switch (iRSelin) {
           case 500:
-            tofAnaTestbeam->SetTShift(3.);  // Shift DTD4 to 0
+            tofAnaTestbeam->SetTShift(3.);   // Shift DTD4 to 0
             tofAnaTestbeam->SetTOffD4(16.);  // Shift DTD4 to physical value
 
             switch (iSel2in) {
               case 2:
                 tofAnaTestbeam->SetSel2TOff(0.25);  // Shift Sel2 time peak to 0
                 break;
-                
+
               default:;
             }
             break;

@@ -273,11 +273,12 @@ void mtof_reco(Int_t nEvents      = 100,  // number of Timeslices
         new CbmTofFindTracks("TOF Track Finder");
       tofFindTracks->UseFinder(tofTrackFinder);
       tofFindTracks->UseFitter(tofTrackFitter);
-      tofFindTracks->SetCalOpt(iCalOpt);  
-                   // 1 - update offsets, 2 - update walk, 0 - bypass
+      tofFindTracks->SetCalOpt(iCalOpt);
+      // 1 - update offsets, 2 - update walk, 0 - bypass
       tofFindTracks->SetCorMode(
         iGenCor);  // valid options: 0,1,2,3,4,5,6, 10 - 19
-      tofFindTracks->SetTtTarg(0.065);          // target value for Mar2020 triple stack -> betapeak ~ 0.95
+      tofFindTracks->SetTtTarg(
+        0.065);  // target value for Mar2020 triple stack -> betapeak ~ 0.95
       //tofFindTracks->SetTtTarg(0.041);  // target value for inverse velocity, > 0.033 ns/cm!
       //tofFindTracks->SetTtTarg(0.035);  // target value for inverse velocity, > 0.033 ns/cm!
       tofFindTracks->SetCalParFileName(
@@ -340,7 +341,7 @@ void mtof_reco(Int_t nEvents      = 100,  // number of Timeslices
           tofFindTracks->SetStation(26, 9, 0, 0);
           tofFindTracks->SetStation(27, 9, 0, 1);
           break;
-          
+
         case 2:  // for geometry check mode of full setup
           iMinNofHits   = 3;
           iNStations    = 27;
@@ -406,7 +407,7 @@ void mtof_reco(Int_t nEvents      = 100,  // number of Timeslices
           tofFindTracks->SetStation(25, 9, 0, 0);
           tofFindTracks->SetStation(26, 9, 0, 1);
           tofFindTracks->SetStation(27, 5, 0, 0);
-          break;                    
+          break;
       }
       tofFindTracks->SetMinNofHits(iMinNofHits);
       tofFindTracks->SetNStations(iNStations);

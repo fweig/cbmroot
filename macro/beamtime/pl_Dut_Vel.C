@@ -1,5 +1,5 @@
 void pl_Dut_Vel(const char* cDut = "900",
-                Double_t dEffMin  =0.7,
+                Double_t dEffMin = 0.7,
                 Double_t Tstart  = 0.,
                 Double_t Tend    = 50.,
                 TString sysinfo  = "") {
