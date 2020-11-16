@@ -142,7 +142,7 @@ Int_t CbmPointSetArrayDraw::GetClusterSize(TObject* obj) {
   CbmTofHit* p     = (CbmTofHit*) obj;
   Double_t cluSize = p->GetFlag();
   //Flag= #digis = 2*cluSize  +100 if used for track
-  cluSize=((int)cluSize%100)/2;
+  cluSize = ((int) cluSize % 100) / 2;
   LOG(debug3) << "-I- CbmPointSetArrayDraw::GetClusterSize(): " << cluSize;
   return cluSize;
 }

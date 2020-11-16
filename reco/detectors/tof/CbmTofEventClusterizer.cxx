@@ -351,7 +351,7 @@ void CbmTofEventClusterizer::Exec(Option_t* option) {
     LOG(info) << "CbmTofEventClusterizer::Exec => New timeslice " << iNbTs
               << " with " << fEventsColl->GetEntriesFast() << " events, "
               << fDigiMan->GetNofDigis(ECbmModuleId::kTof) << " TOF digis + "
-              << fDigiMan->GetNofDigis(ECbmModuleId::kT0)  << " T0 digis ";
+              << fDigiMan->GetNofDigis(ECbmModuleId::kT0) << " T0 digis ";
     iNbTs++;
 
     Int_t iNbHits     = 0;
@@ -364,17 +364,18 @@ void CbmTofEventClusterizer::Exec(Option_t* option) {
       fTofDigiVec.clear();
       //if (fTofDigisColl) fTofDigisColl->Clear("C");
       //Int_t iNbDigis=0;  (VF) not used
-      LOG(debug) << "TS event "<<iEvent<<" with "
-    		  <<tEvent->GetNofData(ECbmDataType::kT0Digi)  << " T0 and "
-    		  <<tEvent->GetNofData(ECbmDataType::kTofDigi) << " Tof digis ";
+      LOG(debug) << "TS event " << iEvent << " with "
+                 << tEvent->GetNofData(ECbmDataType::kT0Digi) << " T0 and "
+                 << tEvent->GetNofData(ECbmDataType::kTofDigi) << " Tof digis ";
 
       for (Int_t iDigi = 0; iDigi < tEvent->GetNofData(ECbmDataType::kT0Digi);
            iDigi++) {
         Int_t iDigiIndex =
           static_cast<Int_t>(tEvent->GetIndex(ECbmDataType::kT0Digi, iDigi));
         const CbmTofDigi* tDigi = fDigiMan->Get<CbmTofDigi>(iDigiIndex);
-        if( tDigi->GetType() != 5 )
-        	LOG(fatal) << "Wrong T0 type " << tDigi->GetType() << ", Addr 0x" <<std::hex<< tDigi->GetAddress();
+        if (tDigi->GetType() != 5)
+          LOG(fatal) << "Wrong T0 type " << tDigi->GetType() << ", Addr 0x"
+                     << std::hex << tDigi->GetAddress();
         fTofDigiVec.push_back(CbmTofDigi(*tDigi));
       }
       for (Int_t iDigi = 0; iDigi < tEvent->GetNofData(ECbmDataType::kTofDigi);
@@ -2797,8 +2798,9 @@ Bool_t CbmTofEventClusterizer::FillHistos() {
                       || (TMath::Sqrt(
                             TMath::Power(
                               pHit->GetX() - dzscal * pTrig[iSel]->GetX(), 2.)
-                            + TMath::Power(
-                              pHit->GetY() - dzscal * pTrig[iSel]->GetY(), 2.))
+                            + TMath::Power(pHit->GetY()
+                                             - dzscal * pTrig[iSel]->GetY(),
+                                           2.))
                           < fdCaldXdYMax)) {
                     BSel[iSel]     = kTRUE;
                     Double_t dX2Y2 = TMath::Sqrt(dSEl2dXdz * dSEl2dXdz
@@ -3241,11 +3243,11 @@ Bool_t CbmTofEventClusterizer::FillHistos() {
                                    * (pHit->GetZ() - (pTrig[iSel]->GetZ()))),
                           2.)
                         + TMath::Power(
-                          pHit->GetY()
-                            - (pTrig[iSel]->GetY()
-                               + ddYdZ[iSel]
-                                   * (pHit->GetZ() - (pTrig[iSel]->GetZ()))),
-                          2.))
+                            pHit->GetY()
+                              - (pTrig[iSel]->GetY()
+                                 + ddYdZ[iSel]
+                                     * (pHit->GetZ() - (pTrig[iSel]->GetZ()))),
+                            2.))
                       > 0.5 * fdCaldXdYMax)
                     continue;  // refine position selection cut in cosmic measurement
                 dTcor[iSel] = 0.;  // precaution
@@ -5422,8 +5424,7 @@ Bool_t CbmTofEventClusterizer::BuildClusters() {
                            (0 == pDigi->GetSide()) ? 1 : 0,
                            pDigi->GetType());
         LOG(debug) << "Duplicated digi " << fTofDigiVec.size()
-        		   << " with address 0x" << std::hex
-                   << pDigiN->GetAddress();
+                   << " with address 0x" << std::hex << pDigiN->GetAddress();
       }
     }
     iNbTofDigi = fTofDigiVec.size();
@@ -6936,55 +6937,72 @@ Bool_t CbmTofEventClusterizer::BuildHits() {
                           (CbmTofHit*) fTofHitsColl->At(fiNbHits - 1);
                         if (iDetId == pHitL->GetAddress()
                             && dWeightedTime == pHitL->GetTime()) {
-                          LOG(debug) << "Store Hit twice? "
-                                     << " fiNbHits " << fiNbHits << ", "
-                                     << Form("0x%08x, MatchCollSize %d, IndRefSize %lu ",
-                                    		 iDetId, fTofDigiMatchColl->GetEntriesFast(),vDigiIndRef.size());
+                          LOG(debug)
+                            << "Store Hit twice? "
+                            << " fiNbHits " << fiNbHits << ", "
+                            << Form("0x%08x, MatchCollSize %d, IndRefSize %lu ",
+                                    iDetId,
+                                    fTofDigiMatchColl->GetEntriesFast(),
+                                    vDigiIndRef.size());
 
                           for (UInt_t i = 0; i < vDigiIndRef.size(); i++) {
-                        	if(vDigiIndRef.at(i) < (Int_t) fTofCalDigiVec->size()) {
-                              CbmTofDigi* pDigiC = &(fTofCalDigiVec->at(vDigiIndRef.at(i)));
-                              LOG(debug) << " Digi " <<i<<" "<< pDigiC->ToString();
-                        	} else {
-                        	  LOG(fatal) << "Insufficient CalDigiVec size for i "
-                        			     << i <<", Ind " << vDigiIndRef.at(i);
-                        	}
+                            if (vDigiIndRef.at(i)
+                                < (Int_t) fTofCalDigiVec->size()) {
+                              CbmTofDigi* pDigiC =
+                                &(fTofCalDigiVec->at(vDigiIndRef.at(i)));
+                              LOG(debug)
+                                << " Digi " << i << " " << pDigiC->ToString();
+                            } else {
+                              LOG(fatal)
+                                << "Insufficient CalDigiVec size for i " << i
+                                << ", Ind " << vDigiIndRef.at(i);
+                            }
                           }
 
-                          if(NULL == fTofDigiMatchColl) assert("No DigiMatchColl");
-                          CbmMatch* digiMatchL=NULL;
-                          if( fTofDigiMatchColl->GetEntriesFast() >= fiNbHits-1) {
-                            digiMatchL=(CbmMatch*) fTofDigiMatchColl->At(fiNbHits-1);
-                          }else{
-                        	LOG(fatal) << "DigiMatchColl has insufficient size "
-                        			   << fTofDigiMatchColl->GetEntriesFast();
+                          if (NULL == fTofDigiMatchColl)
+                            assert("No DigiMatchColl");
+                          CbmMatch* digiMatchL = NULL;
+                          if (fTofDigiMatchColl->GetEntriesFast()
+                              >= fiNbHits - 1) {
+                            digiMatchL =
+                              (CbmMatch*) fTofDigiMatchColl->At(fiNbHits - 1);
+                          } else {
+                            LOG(fatal) << "DigiMatchColl has insufficient size "
+                                       << fTofDigiMatchColl->GetEntriesFast();
                           }
 
-                          if(NULL != digiMatchL)
-                          for (Int_t i = 0; i < digiMatchL->GetNofLinks(); i++) {
-                            CbmLink L0     = digiMatchL->GetLink(i);
-                            LOG(debug) << "report link "<<i<<"("<<digiMatchL->GetNofLinks()<<"), ind "<<L0.GetIndex();
-                            Int_t iDigIndL = L0.GetIndex();
-                            if (iDigIndL >= (Int_t) vDigiIndRef.size()) {
-                              if (iDetId != fiBeamRefAddr) {
-                                LOG(warn) << Form(
-                                  "Invalid DigiRefInd for det 0x%08x", iDetId);
+                          if (NULL != digiMatchL)
+                            for (Int_t i = 0; i < digiMatchL->GetNofLinks();
+                                 i++) {
+                              CbmLink L0 = digiMatchL->GetLink(i);
+                              LOG(debug) << "report link " << i << "("
+                                         << digiMatchL->GetNofLinks()
+                                         << "), ind " << L0.GetIndex();
+                              Int_t iDigIndL = L0.GetIndex();
+                              if (iDigIndL >= (Int_t) vDigiIndRef.size()) {
+                                if (iDetId != fiBeamRefAddr) {
+                                  LOG(warn)
+                                    << Form("Invalid DigiRefInd for det 0x%08x",
+                                            iDetId);
+                                  continue;
+                                }
+                              }
+                              if (vDigiIndRef.at(iDigIndL)
+                                  >= (Int_t) fTofCalDigiVec->size()) {
+                                LOG(warn) << "Invalid CalDigiInd";
                                 continue;
                               }
+                              CbmTofDigi* pDigiC =
+                                &(fTofCalDigiVec->at(vDigiIndRef.at(iDigIndL)));
+                              LOG(debug) << " DigiL " << pDigiC->ToString();
                             }
-                            if (vDigiIndRef.at(iDigIndL)
-                                >= (Int_t) fTofCalDigiVec->size()) {
-                              LOG(warn) << "Invalid CalDigiInd";
-                              continue;
-                            }
-                            CbmTofDigi* pDigiC =
-                              &(fTofCalDigiVec->at(vDigiIndRef.at(iDigIndL)));
-                            LOG(debug) << " DigiL " << pDigiC->ToString();
-                          } else {
-                            LOG(warn) << "Invalid digMatch Link at Index " << fiNbHits-1;
+                          else {
+                            LOG(warn) << "Invalid digMatch Link at Index "
+                                      << fiNbHits - 1;
                           }
                         }
-                        LOG(debug)<< "Current HitsColl length " << fTofHitsColl->GetEntriesFast();
+                        LOG(debug) << "Current HitsColl length "
+                                   << fTofHitsColl->GetEntriesFast();
                       }
                       CbmTofHit* pHit = new CbmTofHit(
                         iDetId,
@@ -6992,7 +7010,8 @@ Bool_t CbmTofEventClusterizer::BuildHits() {
                         hitPosErr,  //local detector coordinates
                         fiNbHits,   // this number is used as reference!!
                         dWeightedTime,
-                        vDigiIndRef.size(),  // number of linked digis =  2*CluSize
+                        vDigiIndRef
+                          .size(),  // number of linked digis =  2*CluSize
                         //vPtsRef.size(), // flag  = number of TofPoints generating the cluster
                         Int_t(dWeightsSum * 10.));  //channel -> Tot
                       //0) ; //channel
@@ -7542,11 +7561,12 @@ Bool_t CbmTofEventClusterizer::CalibRawDigis() {
                 << fDigiBdfPar->GetNbChan(pDigi->GetType(), 0);
     }
 
-    if (0) // (bAddBeamCounterSideDigi)
+    if (0)  // (bAddBeamCounterSideDigi)
       if (pCalDigi->GetType() == 5
           || pCalDigi->GetType()
                == 8) {  // for Pad counters generate fake digi to mockup a strip
-    	LOG(debug) << "add Pad counter 2. Side digi for 0x" << std::hex << pCalDigi->GetAddress();
+        LOG(debug) << "add Pad counter 2. Side digi for 0x" << std::hex
+                   << pCalDigi->GetAddress();
         fTofCalDigiVec->push_back(CbmTofDigi(*pCalDigi));
         CbmTofDigi* pCalDigi2 = &(fTofCalDigiVec->back());
         iDigIndCal++;

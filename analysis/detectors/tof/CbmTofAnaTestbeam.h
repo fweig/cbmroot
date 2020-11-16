@@ -729,14 +729,15 @@ private:
   Double_t fdMulDMax;                   // max multiplicity in Diamond counter
   Double_t fdSpillDuration;             // min. spill length in sec
   Double_t fdSpillBreak;                // min. spill break in sec
-  Double_t fdStartSpillTime;            // Start of Spill, if negative find begin of first spill
-  Double_t fdDTDia;                     // max time difference between diamonds
-  Double_t fdDTD4MAX;       // max time difference between reference & diamond
-  Double_t fdMul0Max;       // max multiplicity in Dut
-  Double_t fdMul4Max;       // max multiplicity in HD/Buc Ref counter
-  Double_t fdCh4Sel;        // Center of selected strip numbers
-  Double_t fdDCh4Sel;       // Width  of selected strip numbers
-  Double_t fdPosY4Sel;      // Fraction of Y-Size
+  Double_t
+    fdStartSpillTime;   // Start of Spill, if negative find begin of first spill
+  Double_t fdDTDia;     // max time difference between diamonds
+  Double_t fdDTD4MAX;   // max time difference between reference & diamond
+  Double_t fdMul0Max;   // max multiplicity in Dut
+  Double_t fdMul4Max;   // max multiplicity in HD/Buc Ref counter
+  Double_t fdCh4Sel;    // Center of selected strip numbers
+  Double_t fdDCh4Sel;   // Width  of selected strip numbers
+  Double_t fdPosY4Sel;  // Fraction of Y-Size
   Double_t fdPosY4SelOff;   // Offset of selection interval in cm
   Double_t fdChS2Sel;       // Center of selected strip numbers
   Double_t fdDChS2Sel;      // Width  of selected strip numbers

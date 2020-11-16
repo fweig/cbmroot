@@ -73,7 +73,7 @@ using std::endl;
 using std::vector;
 
 const Int_t DetMask   = 0x001FFFFF;  // for v21a geometries
-const Double_t DTDMAX = 6.;  // diamond inspection range in ns
+const Double_t DTDMAX = 6.;          // diamond inspection range in ns
 
 Double_t dTDia;
 Double_t dDTD4Min                 = 1.E8;
@@ -4917,14 +4917,15 @@ Bool_t CbmTofAnaTestbeam::FillHistos() {
 
   fhTIR_all->Fill(dTIR);
 
-  LOG(debug) << Form(
-    " FoundMatches: %d with first chi2s = %12.1f, %12.1f, %12.1f, %12.1f",
-    iNbMatchedHits,
-    Chi2List[0],
-    Chi2List[1],
-    Chi2List[2],
-    Chi2List[3])
-             << Form(", Muls %4.0f, %4.0f, %4.0f", dMulD, dMul0, dMul4);
+  LOG(debug)
+    << Form(
+         " FoundMatches: %d with first chi2s = %12.1f, %12.1f, %12.1f, %12.1f",
+         iNbMatchedHits,
+         Chi2List[0],
+         Chi2List[1],
+         Chi2List[2],
+         Chi2List[3])
+    << Form(", Muls %4.0f, %4.0f, %4.0f", dMulD, dMul0, dMul4);
 
 
   if (BSel[0]) {
@@ -6638,7 +6639,7 @@ Bool_t CbmTofAnaTestbeam::FillHistos() {
             Double_t dDX =
               pHit->GetX()
               - pTrk->GetFitX(
-                pHit->GetZ());  // - tPar->GetX() - tPar->GetTx()*dDZ;
+                  pHit->GetZ());  // - tPar->GetX() - tPar->GetTx()*dDZ;
             Double_t dDXB = pTrk->GetXdif(
               fiDutAddr, pHit);  // ignore pHit in calc of reference
             Double_t dDY =
@@ -6649,7 +6650,7 @@ Bool_t CbmTofAnaTestbeam::FillHistos() {
             Double_t dDT =
               pHit->GetTime()
               - pTrk->GetFitT(
-                pHit->GetZ());  // pTrk->GetTdif(fStationType[iSt]);
+                  pHit->GetZ());  // pTrk->GetTdif(fStationType[iSt]);
             Double_t dDTB = pTrk->GetTdif(
               fiDutAddr, pHit);  // ignore pHit in calc of reference
 
@@ -6996,13 +6997,13 @@ Bool_t CbmTofAnaTestbeam::FillHistos() {
             fhLHTime[iDet]->FindBin(hitpos_local[0], hitpos_local[1]);
           Int_t iBinA = iBin - 1;  // index in pointer array
           if (0)
-            LOG(info) << Form(
-              "Insert Dut hit for Det %d, Bin %d, x %f, y %f, poi ",
-              iDet,
-              iBinA,
-              hitpos_local[0],
-              hitpos_local[1])
-                      << fhLHTime[iDet];
+            LOG(info)
+              << Form("Insert Dut hit for Det %d, Bin %d, x %f, y %f, poi ",
+                      iDet,
+                      iBinA,
+                      hitpos_local[0],
+                      hitpos_local[1])
+              << fhLHTime[iDet];
 
           if (iBin <= 0
               || iBin > fhLHTime[iDet]->GetNbinsX()
@@ -7404,7 +7405,8 @@ Bool_t CbmTofAnaTestbeam::FillHistos() {
 
       } else {
         fhSelMCTrackEfficiency->Fill(kFALSE, fiNAccRefTracks);
-        fhSelMCTrackEfficiencyTIS->Fill(kFALSE, (dTAv - fdStartSpillTime) / 1.E9);
+        fhSelMCTrackEfficiencyTIS->Fill(kFALSE,
+                                        (dTAv - fdStartSpillTime) / 1.E9);
       }
     }
   }
@@ -7575,7 +7577,7 @@ Bool_t CbmTofAnaTestbeam::FillHistos() {
               for (Int_t iHit = 0; iHit < tTracklet->GetNofHits(); iHit++) {
                 if (5
                     == CbmTofAddress::GetSmType(
-                      (tTracklet->GetTofHitPointer(iHit))->GetAddress())) {
+                         (tTracklet->GetTofHitPointer(iHit))->GetAddress())) {
                   iNTrackletHits--;
                 }
               }

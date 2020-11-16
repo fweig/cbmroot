@@ -289,18 +289,19 @@ InitStatus CbmTofFindTracks::Init() {
   for (Int_t iCell = 0; iCell < fDigiPar->GetNrOfModules(); iCell++) {
     Int_t iCellId = fDigiPar->GetCellId(iCell);
     Int_t iCh     = fTofId->GetCell(iCellId);
-    if ( 0 == iCh ) {
-      LOG(info) << Form(
-        "Init found RpcInd %d, %lu at Addr 0x%08x, ModType %d, ModId %d, RpcId %d ",
-        iRpc, fRpcAddr.size(),
-        iCellId,
-        fTofId->GetSMType(iCellId),
-        fTofId->GetSModule(iCellId),
-        fTofId->GetCounter(iCellId));
+    if (0 == iCh) {
+      LOG(info) << Form("Init found RpcInd %d, %lu at Addr 0x%08x, ModType %d, "
+                        "ModId %d, RpcId %d ",
+                        iRpc,
+                        fRpcAddr.size(),
+                        iCellId,
+                        fTofId->GetSMType(iCellId),
+                        fTofId->GetSModule(iCellId),
+                        fTofId->GetCounter(iCellId));
       if (fTofId->GetSMType(iCellId) == 5) {
         bBeamCounter = kTRUE;
         LOG(info) << "Found beam counter in setup! at RpcInd " << iRpc
-        		  << ", Addr.size " << fRpcAddr.size();
+                  << ", Addr.size " << fRpcAddr.size();
       }
       fMapRpcIdParInd[iCellId] = iRpc;
       fRpcAddr.push_back(iCellId);
@@ -738,7 +739,7 @@ Bool_t CbmTofFindTracks::WriteHistos() {
             TF1* fg              = hpy->GetFunction("gaus");
             Double_t dFMeanError = fg->GetParError(1);
             LOG(info) << "Update hPullT_Smt_Off3 Ind " << ix
-            		  << Form(", 0x%08x: ",fRpcAddr[ix])
+                      << Form(", 0x%08x: ", fRpcAddr[ix])
                       << fhPullT_Smt_Off->GetBinContent(ix + 1) << " + "
                       << dFMean << ", Err " << dFMeanError << " -> " << dVal
                       << ", Width " << dRMS << ", Chi2 " << fg->GetChisquare();
@@ -749,7 +750,8 @@ Bool_t CbmTofFindTracks::WriteHistos() {
                   != fiBeamCounter)  // don't correct beam counter time
                 fhPullT_Smt_Off->SetBinContent(ix + 1, dVal);
               else
-            	  LOG(info)<<"No Off3 correction for beam counter at index "<<ix;
+                LOG(info) << "No Off3 correction for beam counter at index "
+                          << ix;
               fhPullT_Smt_Width->SetBinContent(ix + 1, dRMS);
             }
           } else {
@@ -812,7 +814,8 @@ Bool_t CbmTofFindTracks::WriteHistos() {
                       << fhPullX_Smt_Off->GetBinContent(ix + 1) << " + "
                       << htmp1D->GetBinContent(ix + 1) << " -> " << dVal
                       << ", Width " << dRMS;
-            if( fRpcAddr[ix] != fiBeamCounter )  // don't correct beam counter position
+            if (fRpcAddr[ix]
+                != fiBeamCounter)  // don't correct beam counter position
               fhPullX_Smt_Off->SetBinContent(ix + 1, dVal);
             fhPullX_Smt_Width->SetBinContent(ix + 1, dRMS);
           }
@@ -835,7 +838,8 @@ Bool_t CbmTofFindTracks::WriteHistos() {
         for (Int_t ix = 0; ix < nx; ix++) {
           Double_t dVal = fhPullY_Smt_Off->GetBinContent(ix + 1);
           dVal -= htmp1D->GetBinContent(ix + 1);
-          if( fRpcAddr[ix] != fiBeamCounter )  // don't correct beam counter position
+          if (fRpcAddr[ix]
+              != fiBeamCounter)  // don't correct beam counter position
             fhPullY_Smt_Off->SetBinContent(ix + 1, dVal);
 
           TH1D* hpy = fhPullY_Smt->ProjectionY("_py", ix + 1, ix + 1);
@@ -1746,7 +1750,9 @@ void CbmTofFindTracks::FindVertex() {
       w,
       fMinNofHits);
 
-    if (w > (Double_t)
+    if (
+      w
+      > (Double_t)
           fMinNofHits) {  // for further analysis request minimum number of hits
       fVTXNorm += w;
       fVTX_T += w * pTrk->GetFitT(0.);
@@ -1900,13 +1906,13 @@ void CbmTofFindTracks::FillHistograms() {
           Double_t dDX =
             pHit->GetX()
             - pTrk->GetFitX(
-              pHit->GetZ());  // - tPar->GetX() - tPar->GetTx()*dDZ;
+                pHit->GetZ());  // - tPar->GetX() - tPar->GetTx()*dDZ;
           Double_t dDY =
             pHit->GetY() - pTrk->GetFitY(pHit->GetZ());  // - tPar->GetTy()*dDZ;
           Double_t dDT =
             pHit->GetTime()
             - pTrk->GetFitT(
-              pHit->GetZ());  // pTrk->GetTdif(fMapStationRpcId[iSt]);
+                pHit->GetZ());  // pTrk->GetTdif(fMapStationRpcId[iSt]);
           Double_t dDTB =
             fTrackletTools->GetTdif(pTrk,
                                     fMapStationRpcId[iSt],
@@ -1914,20 +1920,21 @@ void CbmTofFindTracks::FillHistograms() {
           Double_t dTOT = pHit->GetCh() / 10.;  // misuse of channel field
 
           Double_t dZZ = pHit->GetZ() - tPar->GetZy(pHit->GetY());
-          LOG(debug) << Form(
-            "  St %d Id 0x%08x Hit %2d, Z %6.2f - DX %6.2f, DY %6.2f, "
-            "Z %6.2f, DT %6.2f, %6.2f, ZZ %6.2f, Tt %6.4f ",
-            iSt,
-            fMapStationRpcId[iSt],
-            iH,
-            pHit->GetZ(),
-            dDX,
-            dDY,
-            dDZ,
-            dDT,
-            dDTB,
-            dZZ,
-            dTt) << tPar->ToString();
+          LOG(debug)
+            << Form("  St %d Id 0x%08x Hit %2d, Z %6.2f - DX %6.2f, DY %6.2f, "
+                    "Z %6.2f, DT %6.2f, %6.2f, ZZ %6.2f, Tt %6.4f ",
+                    iSt,
+                    fMapStationRpcId[iSt],
+                    iH,
+                    pHit->GetZ(),
+                    dDX,
+                    dDY,
+                    dDZ,
+                    dDT,
+                    dDTB,
+                    dZZ,
+                    dTt)
+            << tPar->ToString();
 
           vhPullX[iSt]->Fill(dDX);
           vhPullY[iSt]->Fill(dDY);
@@ -2036,7 +2043,7 @@ void CbmTofFindTracks::FillHistograms() {
           Double_t dDX =
             pHit->GetX()
             - pTrk->GetFitX(
-              pHit->GetZ());  // - tPar->GetX() - tPar->GetTx()*dDZ;
+                pHit->GetZ());  // - tPar->GetX() - tPar->GetTx()*dDZ;
           Double_t dDY =
             pHit->GetY() - pTrk->GetFitY(pHit->GetZ());  // - tPar->GetTy()*dDZ;
           //Double_t dDT = pHit->GetTime() - pTrk->GetFitT(pHit->GetR()); //pTrk->GetTdif(fMapStationRpcId[iSt]);

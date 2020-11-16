@@ -100,7 +100,9 @@ void CbmPointSetArray::ApplyColorMode() {
                                                        * (nCol - binCol - 1)
                                                        / (eveTime - binTime)));
         }
-        LOG(info) << "Color for id " << id << ", ind " << fIndex[id] << ", t "<<fTime[id]<<": " << this->GetBin(fIndex[id])->GetMainColor();
+        LOG(info) << "Color for id " << id << ", ind " << fIndex[id] << ", t "
+                  << fTime[id] << ": "
+                  << this->GetBin(fIndex[id])->GetMainColor();
 
         break;
       case 2:  //according to Tot of hit

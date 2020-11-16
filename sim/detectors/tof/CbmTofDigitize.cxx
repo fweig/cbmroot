@@ -2362,7 +2362,7 @@ Bool_t CbmTofDigitize::DigitizeFlatDisc() {
     Double_t dChargeCentral =
       dClustCharge
       * ComputeClusterAreaOnChannel(
-        iChanId, dClusterSize, poipos_local[0], poipos_local[1]);
+          iChanId, dClusterSize, poipos_local[0], poipos_local[1]);
     LOG(debug2) << "CbmTofDigitize::DigitizeFlatDisc: ChargeCentral "
                 << dChargeCentral << ", " << dClustCharge
                 << Form(", 0x%08x", iChanId) << ", " << dClusterSize << ", "
@@ -2721,7 +2721,7 @@ Bool_t CbmTofDigitize::DigitizeFlatDisc() {
         Double_t dChargeSideCh =
           dClustCharge
           * ComputeClusterAreaOnChannel(
-            iSideChId, dClusterSize, poipos_local[0], poipos_local[1]);
+              iSideChId, dClusterSize, poipos_local[0], poipos_local[1]);
         dChargeSideCh /= dClustArea;
         if (dClustCharge + 0.0000001 < dChargeSideCh) {
           LOG(error) << "CbmTofDigitize::DigitizeFlatDisc => Side Charge "
@@ -2970,7 +2970,7 @@ Bool_t CbmTofDigitize::DigitizeFlatDisc() {
         Double_t dChargeSideCh =
           dClustCharge
           * ComputeClusterAreaOnChannel(
-            iSideChId, dClusterSize, poipos_local[0], poipos_local[1]);
+              iSideChId, dClusterSize, poipos_local[0], poipos_local[1]);
         dChargeSideCh /= dClustArea;
 
         // Fee Threshold on charge
@@ -3047,7 +3047,7 @@ Bool_t CbmTofDigitize::DigitizeFlatDisc() {
           Double_t dChargeSideCh =
             dClustCharge
             * ComputeClusterAreaOnChannel(
-              iSideChId, dClusterSize, poipos_local[0], poipos_local[1]);
+                iSideChId, dClusterSize, poipos_local[0], poipos_local[1]);
 
           // Fee Threshold on charge
           if (dChargeSideCh
@@ -4134,16 +4134,16 @@ Bool_t CbmTofDigitize::DigitizeGaussCharge() {
               dClustToReadout = TMath::Sqrt(
                 TMath::Power(poipos_local[1], 2)
                 + TMath::Power(
-                  poipos_local[0]
-                    - (+(1 - 2 * iRow) * fChannelInfo->GetSizex() / 2.0),
-                  2));
+                    poipos_local[0]
+                      - (+(1 - 2 * iRow) * fChannelInfo->GetSizex() / 2.0),
+                    2));
             else  // Horizontal => base = bottom/upper edge
               dClustToReadout = TMath::Sqrt(
                 TMath::Power(poipos_local[0], 2)
                 + TMath::Power(
-                  poipos_local[1]
-                    - (-(1 - 2 * iRow) * fChannelInfo->GetSizey() / 2.0),
-                  2));
+                    poipos_local[1]
+                      - (-(1 - 2 * iRow) * fChannelInfo->GetSizey() / 2.0),
+                    2));
 
             dPadTime +=
               gRandom->Gaus(0.0, fdTimeResElec)
