@@ -2068,14 +2068,11 @@ void PairAnalysisHistos::StoreVariables(TH1* obj, UInt_t valType[20]) {
     dim++;
   }
 
-  switch (dim) {
-    case 4: obj->SetUniqueID(valType[3]);  // Tprofile3D variable
-    case 3: obj->GetZaxis()->SetUniqueID(valType[2]);
-    case 2: obj->GetYaxis()->SetUniqueID(valType[1]);
-    case 1:
-      obj->GetXaxis()->SetUniqueID(valType[0]);
-      // fall through is intended
-  }
+  if (dim >= 1) { obj->GetXaxis()->SetUniqueID(valType[0]); }
+  if (dim >= 2) { obj->GetYaxis()->SetUniqueID(valType[1]); }
+  if (dim >= 3) { obj->GetZaxis()->SetUniqueID(valType[2]); }
+  // Tprofile3D variable
+  if (dim >= 4) { obj->SetUniqueID(valType[3]); }
 
   return;
 }
