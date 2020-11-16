@@ -561,7 +561,7 @@ void unpack_tsa_mcbm_kronos(UInt_t uRunIdx  = 99999,
       std::cout << "MUCH: Feb by feb time offset correction......" << std::endl;
       UInt_t uRun, uNx;
       Double_t offset;
-      ifstream infile_off("../mcbm2020/parameters/time_offset_much.txt");
+      ifstream infile_off(paramDir + "/parameters/time_offset_much.txt");
       if (!infile_off) {
         std::cout << "can not open time offset MUCH parameter List" << std::endl;
         return kFALSE;
@@ -574,7 +574,7 @@ void unpack_tsa_mcbm_kronos(UInt_t uRunIdx  = 99999,
       infile_off.close();
       std::cout << "masking noisy channels......" << std::endl;
       UInt_t uChan = 0;
-      ifstream infile_noise("../mcbm2020/parameters/much_noisy_channel_list.txt");
+      ifstream infile_noise(paramDir + "parameters/much_noisy_channel_list.txt");
       if (!infile_noise) {
         std::cout << "can not open MUCH noisy channel List" << std::endl;
         return kFALSE;
