@@ -170,7 +170,10 @@ void CbmStack::PushTrack(Int_t toBeDone,
   // Note that for particles created by TGeant4, toBeDone is kFALSE,
   // meaning that particles will not be put onto the internal stack.
   // Geant4 seems to have a separate, internal stack administration.
-  if (fdoTracking && toBeDone) fStack.push(particle);
+  if (fdoTracking && toBeDone) {
+    particle->SetBit(1);
+    fStack.push(particle);
+  }
 }
 // -------------------------------------------------------------------------
 
@@ -212,7 +215,11 @@ TParticle* CbmStack::PopPrimaryForTracking(Int_t iPrim) {
   // a primary.
   TParticle* part = (TParticle*) fParticles->At(iPrim);
   assert(part->GetUniqueID() == kPPrimary);
-  return part;
+  if (!part->TestBit(1)) {
+    return NULL;
+  } else {
+    return part;
+  }
 }
 // -------------------------------------------------------------------------
 
