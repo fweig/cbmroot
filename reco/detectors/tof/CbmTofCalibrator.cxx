@@ -434,6 +434,25 @@ Bool_t CbmTofCalibrator::UpdateCalHist(Int_t iOpt) {
 
   const Double_t MINCTS = 100.;  //FIXME, numerical constant in code
   // modify calibration histograms
+  // check or beam counter
+  Double_t dBeamTOff=0.;
+  for (Int_t iDetIndx = 0; iDetIndx < fDigiBdfPar->GetNbDet(); iDetIndx++) {
+    Int_t iUniqueId = fDigiBdfPar->GetDetUId(iDetIndx);
+    Int_t iSmType = CbmTofAddress::GetSmType(iUniqueId);
+    if ( 5 == iSmType ) {
+      TH1* hBy = (TH1*) fhCalTOff[iDetIndx]->ProjectionY();
+      // Fit gaussian around peak value
+      Double_t dFMean   = hBy->GetBinCenter(hBy->GetMaximumBin());
+      Double_t dFLim    = 0.5;  // CAUTION, fixed numeric value
+      Double_t dBinSize = hBy->GetBinWidth(1);
+      dFLim             = TMath::Max(dFLim, 5. * dBinSize);
+      TFitResultPtr fRes =
+        hBy->Fit("gaus", "SQM0", "", dFMean - dFLim, dFMean + dFLim);
+      dBeamTOff = fRes->Parameter(1);  //overwrite mean
+      LOG(info)<< "Found beam counter with average TOff = " << dBeamTOff;
+    }
+  }
+
   for (Int_t iDetIndx = 0; iDetIndx < fDigiBdfPar->GetNbDet(); iDetIndx++) {
     Int_t iUniqueId = fDigiBdfPar->GetDetUId(iDetIndx);
     // Int_t iSmAddr   = iUniqueId & DetMask;
@@ -458,21 +477,16 @@ Bool_t CbmTofCalibrator::UpdateCalHist(Int_t iOpt) {
         TH1* hCalT    = fhCalTOff[iDetIndx]->ProjectionX();
         //fhCorPos[iDetIndx]->Add((TH1 *)hpP,-1.);
         //fhCorTOff[iDetIndx]->Add((TH1*)hpT,-1.);
-        Double_t dAvOff = 0.;  //hpT->GetMean(2);
         for (Int_t iBin = 0; iBin < fhCorTOff[iDetIndx]->GetNbinsX(); iBin++) {
           Double_t dDt   = hpT->GetBinContent(iBin + 1);
           Double_t dCorT = fhCorTOff[iDetIndx]->GetBinContent(iBin + 1);
           Double_t dCts  = hCalT->GetBinContent(iBin + 1);
           if (iDetIndx == -1) {
             LOG(info) << Form(
-              "Update %s: bin %02d, Cts: %d, Old %f, dev %f, av %f, new %f",
+              "Update %s: bin %02d, Cts: %d, Old %f, dev %f, beam %f, new %f",
               fhCorTOff[iDetIndx]->GetName(),
-              iBin,
-              (Int_t) dCts,
-              dCorT,
-              dDt,
-              dAvOff,
-              dCorT - dDt + dAvOff);
+              iBin, (Int_t) dCts, dCorT, dDt, dBeamTOff,
+              dCorT - dDt);
           }
           Double_t dDp   = hpP->GetBinContent(iBin + 1);
           Double_t dCorP = fhCorPos[iDetIndx]->GetBinContent(iBin + 1);
@@ -488,9 +502,11 @@ Bool_t CbmTofCalibrator::UpdateCalHist(Int_t iOpt) {
               hpPy->Fit("gaus", "S", "", dFMean - dFLim, dFMean + dFLim);
             dDp = fRes->Parameter(1);  //overwrite mean
             // Double_t dDpRes = fRes->Parameter(2);
-
-            fhCorTOff[iDetIndx]->SetBinContent(iBin + 1, dCorT + dDt + dAvOff);
-            fhCorPos[iDetIndx]->SetBinContent(iBin + 1, dCorP + dDp);
+            if( iSmType == 5 )  // do not shift beam counter in time
+              fhCorTOff[iDetIndx]->SetBinContent(iBin + 1, dCorT + dDt - dBeamTOff);
+            else
+              fhCorTOff[iDetIndx]->SetBinContent(iBin + 1, dCorT + dDt + dBeamTOff);
+            if(0) fhCorPos[iDetIndx]->SetBinContent(iBin + 1, dCorP + dDp);
           }
         }
       } break;
