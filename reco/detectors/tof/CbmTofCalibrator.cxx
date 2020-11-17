@@ -435,11 +435,11 @@ Bool_t CbmTofCalibrator::UpdateCalHist(Int_t iOpt) {
   const Double_t MINCTS = 100.;  //FIXME, numerical constant in code
   // modify calibration histograms
   // check or beam counter
-  Double_t dBeamTOff=0.;
+  Double_t dBeamTOff = 0.;
   for (Int_t iDetIndx = 0; iDetIndx < fDigiBdfPar->GetNbDet(); iDetIndx++) {
     Int_t iUniqueId = fDigiBdfPar->GetDetUId(iDetIndx);
-    Int_t iSmType = CbmTofAddress::GetSmType(iUniqueId);
-    if ( 5 == iSmType ) {
+    Int_t iSmType   = CbmTofAddress::GetSmType(iUniqueId);
+    if (5 == iSmType) {
       TH1* hBy = (TH1*) fhCalTOff[iDetIndx]->ProjectionY();
       // Fit gaussian around peak value
       Double_t dFMean   = hBy->GetBinCenter(hBy->GetMaximumBin());
@@ -449,7 +449,7 @@ Bool_t CbmTofCalibrator::UpdateCalHist(Int_t iOpt) {
       TFitResultPtr fRes =
         hBy->Fit("gaus", "SQM0", "", dFMean - dFLim, dFMean + dFLim);
       dBeamTOff = fRes->Parameter(1);  //overwrite mean
-      LOG(info)<< "Found beam counter with average TOff = " << dBeamTOff;
+      LOG(info) << "Found beam counter with average TOff = " << dBeamTOff;
     }
   }
 
@@ -485,7 +485,11 @@ Bool_t CbmTofCalibrator::UpdateCalHist(Int_t iOpt) {
             LOG(info) << Form(
               "Update %s: bin %02d, Cts: %d, Old %f, dev %f, beam %f, new %f",
               fhCorTOff[iDetIndx]->GetName(),
-              iBin, (Int_t) dCts, dCorT, dDt, dBeamTOff,
+              iBin,
+              (Int_t) dCts,
+              dCorT,
+              dDt,
+              dBeamTOff,
               dCorT - dDt);
           }
           Double_t dDp   = hpP->GetBinContent(iBin + 1);
@@ -502,11 +506,13 @@ Bool_t CbmTofCalibrator::UpdateCalHist(Int_t iOpt) {
               hpPy->Fit("gaus", "S", "", dFMean - dFLim, dFMean + dFLim);
             dDp = fRes->Parameter(1);  //overwrite mean
             // Double_t dDpRes = fRes->Parameter(2);
-            if( iSmType == 5 )  // do not shift beam counter in time
-              fhCorTOff[iDetIndx]->SetBinContent(iBin + 1, dCorT + dDt - dBeamTOff);
+            if (iSmType == 5)  // do not shift beam counter in time
+              fhCorTOff[iDetIndx]->SetBinContent(iBin + 1,
+                                                 dCorT + dDt - dBeamTOff);
             else
-              fhCorTOff[iDetIndx]->SetBinContent(iBin + 1, dCorT + dDt + dBeamTOff);
-            if(0) fhCorPos[iDetIndx]->SetBinContent(iBin + 1, dCorP + dDp);
+              fhCorTOff[iDetIndx]->SetBinContent(iBin + 1,
+                                                 dCorT + dDt + dBeamTOff);
+            if (0) fhCorPos[iDetIndx]->SetBinContent(iBin + 1, dCorP + dDp);
           }
         }
       } break;
