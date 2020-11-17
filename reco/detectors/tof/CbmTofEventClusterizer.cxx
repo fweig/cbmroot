@@ -537,10 +537,9 @@ Bool_t CbmTofEventClusterizer::RegisterInputs() {
   if (fDigiMan->IsPresent(ECbmModuleId::kT0)) {
     LOG(info) << GetName() << ": separate T0 digi input!";
   } else {
-    fT0DigiVec = fManager->InitObjectAs<std::vector<CbmTofDigi> const*>("T0Digi");
-    if (!fT0DigiVec) {
-      LOG(info) << "No T0 digi input vector found.";
-    }
+    fT0DigiVec =
+      fManager->InitObjectAs<std::vector<CbmTofDigi> const*>("T0Digi");
+    if (!fT0DigiVec) { LOG(info) << "No T0 digi input vector found."; }
   }  // if( ! fT0DigiVec )
 
   fTrbHeader = (TTrbHeader*) fManager->GetObject("TofTrbHeader.");

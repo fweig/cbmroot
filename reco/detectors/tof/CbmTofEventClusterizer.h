@@ -257,10 +257,10 @@ private:
   TClonesArray* fTofPointsColl;  // TOF MC points
   TClonesArray* fMcTracksColl;   // MC tracks
   //TClonesArray          * fTofDigisColl;     // TOF Digis
-  std::vector<CbmTofDigi> fTofDigiVec {};  //! TOF Digis
-  const std::vector<CbmTofDigi>* fT0DigiVec = nullptr; //! T0 Digis
-  CbmDigiManager* fDigiMan;                // TOF Input Digis
-  TClonesArray* fEventsColl;               // CBMEvents (time based)
+  std::vector<CbmTofDigi> fTofDigiVec {};               //! TOF Digis
+  const std::vector<CbmTofDigi>* fT0DigiVec = nullptr;  //! T0 Digis
+  CbmDigiManager* fDigiMan;                             // TOF Input Digis
+  TClonesArray* fEventsColl;  // CBMEvents (time based)
 
   // Output variables
   Bool_t fbWriteHitsInOut;
