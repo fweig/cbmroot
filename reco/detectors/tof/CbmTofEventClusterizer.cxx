@@ -372,11 +372,11 @@ void CbmTofEventClusterizer::Exec(Option_t* option) {
            iDigi++) {
         Int_t iDigiIndex =
           static_cast<Int_t>(tEvent->GetIndex(ECbmDataType::kT0Digi, iDigi));
-        const CbmTofDigi* tDigi = fDigiMan->Get<CbmTofDigi>(iDigiIndex);
-        if (tDigi->GetType() != 5)
-          LOG(fatal) << "Wrong T0 type " << tDigi->GetType() << ", Addr 0x"
-                     << std::hex << tDigi->GetAddress();
-        fTofDigiVec.push_back(CbmTofDigi(*tDigi));
+        const CbmTofDigi tDigi = fT0DigiVec->at(iDigiIndex);
+        if (tDigi.GetType() != 5)
+          LOG(fatal) << "Wrong T0 type " << tDigi.GetType() << ", Addr 0x"
+                     << std::hex << tDigi.GetAddress();
+        fTofDigiVec.push_back(CbmTofDigi(tDigi));
       }
       for (Int_t iDigi = 0; iDigi < tEvent->GetNofData(ECbmDataType::kTofDigi);
            iDigi++) {
@@ -536,7 +536,13 @@ Bool_t CbmTofEventClusterizer::RegisterInputs() {
   }
   if (fDigiMan->IsPresent(ECbmModuleId::kT0)) {
     LOG(info) << GetName() << ": separate T0 digi input!";
-  }
+  } else {
+    fT0DigiVec = fManager->InitObjectAs<std::vector<CbmTofDigi> const*>("T0Digi");
+    if (!fT0DigiVec) {
+      LOG(info) << "No T0 digi input vector found.";
+    }
+  }  // if( ! fT0DigiVec )
+
   fTrbHeader = (TTrbHeader*) fManager->GetObject("TofTrbHeader.");
   if (NULL == fTrbHeader) {
     LOG(info) << "CbmTofEventClusterizer::RegisterInputs => Could not get "
