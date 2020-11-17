@@ -172,7 +172,7 @@ void unpack_tsa_mcbm_kronos(UInt_t uRunIdx  = 99999,
 
   unpacker_sts ->MaskNoisyChannel(3,770 ,  true );
 
-  //unpacker_tof->SetSeparateArrayT0();
+  unpacker_tof->SetSeparateArrayT0();
 
   // ------------------------------ //
   // Enable Asic type for MUCH data.
