@@ -3,99 +3,37 @@
 using std::cout;
 using std::endl;
 
-void radlength_sim(Int_t nEvents = 1210000) {
-  TString script = TString(gSystem->Getenv("LIT_SCRIPT"));
+void radlength_sim(
+  const string& mcFile = "/Users/slebedev/Development/cbm/data/sim/rich/radlen/mc.ac.root",
+  const string& parFile = "/Users/slebedev/Development/cbm/data/sim/rich/radlen/param.ac.root",
+  const string &geoSetup = "sis100_electron_rich_pal_bcarb", 
+  Int_t nofEvents = 0) {
 
-  TString dir     = "events/radlength_rich_v13c/";
-  TString mcFile  = dir + "radlength.mc.0000.root";
-  TString parFile = dir + "radlength.param.0000.root";
+  TTree::SetMaxTreeSize(90000000000);
 
-  TString caveGeom = "cave.geo";
-  TString mvdGeom  = "";  //"mvd/mvd_v07a.geo";
-  TString stsGeom  = "";  //"sts/sts_v12b.geo.root";
-  TString richGeom = "rich/rich_v13c.root";
-  TString trdGeom  = "";  //"trd/trd_v13p_3e.geo.root";
-  TString muchGeom = "";  //"much/much_v12b.geo";
-  TString tofGeom  = "";  //"tof/tof_v13b.geo.root";
-
-  if (script == "yes") {
-    mcFile  = TString(gSystem->Getenv("LIT_MC_FILE"));
-    parFile = TString(gSystem->Getenv("LIT_PAR_FILE"));
-
-    caveGeom = TString(gSystem->Getenv("LIT_CAVE_GEOM"));
-    //stsGeom = TString(gSystem->Getenv("LIT_STS_GEOM"));
-    trdGeom = TString(gSystem->Getenv("LIT_TRD_GEOM"));
-  }
+  remove(parFile.c_str());
+  remove(mcFile.c_str());
 
   TStopwatch timer;
   timer.Start();
 
-  gROOT->LoadMacro("$VMCWORKDIR/macro/littrack/loadlibs.C");
-  loadlibs();
+//   const Double_t minX   = -550;  // cm
+//   const Double_t maxX   = 550;   // cm
+//   const Double_t stepX  = 10.;    // cm
+//   const Int_t nofBinsX  = (maxX - minX) / stepX;
+//   const Double_t minY   = -550;  // cm
+//   const Double_t maxY   = 550;   // cm
+//   const Double_t stepY  = 10.;    // cm
 
-  FairRunSim* run = new FairRunSim();
-  run->SetName("TGeant3");     // Transport engine
-  run->SetOutputFile(mcFile);  // Output file
-  FairRuntimeDb* rtdb = run->GetRuntimeDb();
-
-  run->SetMaterials("media.geo");  // Materials
-
-  // -----   Create detectors and passive volumes   -------------------------
-  if (caveGeom != "") {
-    FairModule* cave = new CbmCave("CAVE");
-    cave->SetGeometryFileName(caveGeom);
-    run->AddModule(cave);
-  }
-
-  if (mvdGeom != "") {
-    FairDetector* mvd = new CbmMvd("MVD", kTRUE);
-    mvd->SetGeometryFileName(mvdGeom);
-    run->AddModule(mvd);
-  }
-
-  if (stsGeom != "") {
-    FairDetector* sts = new CbmStsMC(kTRUE);
-    sts->SetGeometryFileName(stsGeom);
-    run->AddModule(sts);
-  }
-
-  if (richGeom != "") {
-    FairDetector* rich = new CbmRich("RICH", kTRUE);
-    rich->SetGeometryFileName(richGeom);
-    run->AddModule(rich);
-  }
-
-  if (muchGeom != "") {
-    FairDetector* much = new CbmMuch("MUCH", kTRUE);
-    much->SetGeometryFileName(muchGeom);
-    run->AddModule(much);
-  }
-
-  if (trdGeom != "") {
-    FairDetector* trd = new CbmTrd("TRD", kTRUE);
-    trd->SetGeometryFileName(trdGeom);
-    run->AddModule(trd);
-  }
-
-  if (tofGeom != "") {
-    FairDetector* tof = new CbmTof("TOF", kTRUE);
-    tof->SetGeometryFileName(tofGeom);
-    run->AddModule(tof);
-  }
-
-  // -----   Create PrimaryGenerator   --------------------------------------
-  FairPrimaryGenerator* primGen = new FairPrimaryGenerator();
-  run->SetGenerator(primGen);
-
-  const Double_t minX   = -550;  // cm
-  const Double_t maxX   = 550;   // cm
+  const Double_t minX   = -250;  // cm
+  const Double_t maxX   = 250;   // cm
   const Double_t stepX  = 1.;    // cm
   const Int_t nofBinsX  = (maxX - minX) / stepX;
-  const Double_t minY   = -550;  // cm
-  const Double_t maxY   = 550;   // cm
+  const Double_t minY   = -250;  // cm
+  const Double_t maxY   = 250;   // cm
   const Double_t stepY  = 1.;    // cm
   const Int_t nofBinsY  = (maxY - minY) / stepY;
-  const Int_t nofEvents = nofBinsX * nofBinsY;
+  nofEvents = nofBinsX * nofBinsY;
 
   std::vector<Double_t> vectorX, vectorY;
   for (Int_t iX = 0; iX < nofBinsX; iX++) {
@@ -107,13 +45,10 @@ void radlength_sim(Int_t nEvents = 1210000) {
     }
   }
 
-  std::cout << "CbmLitRadLengthGenerator:\n";
-  std::cout << "nofBinX=" << nofBinsX << " nofBinsY=" << nofBinsY
-            << " nofEvents=" << nofEvents << std::endl;
-
+  CbmTransport run;
   CbmLitRadLengthGenerator* generator = new CbmLitRadLengthGenerator();
   generator->SetXY(vectorX, vectorY);
-  primGen->AddGenerator(generator);
+  run.AddInput(generator);
 
   /*
    const int RMax = 700; // Maximum radius of the station
@@ -133,29 +68,22 @@ void radlength_sim(Int_t nEvents = 1210000) {
    box->SetThetaRange(0., 50.);
    primGen->AddGenerator(box);
 */
-  run->SetStoreTraj(kFALSE);
-  run->SetRadLenRegister(kTRUE);
-  // ------------------------------------------------------------------------
 
-  run->Init();
+    run.SetOutFileName(mcFile.c_str());
+    run.SetParFileName(parFile.c_str());
+    run.LoadSetup(geoSetup.c_str());
+    run.SetTarget("Gold", 0.025, 2.5);
+    run.SetBeamPosition(0., 0., 0., 0.);
+    //run.SetEngine(kGeant4);
+    //run.StoreTrajectories(true);
+    run.RegisterRadLength(true);
+    run.Run(nofEvents);
 
-  // -----   Runtime database   ---------------------------------------------
-  Bool_t kParameterMerged   = kTRUE;
-  FairParRootFileIo* parOut = new FairParRootFileIo(kParameterMerged);
-  parOut->open(parFile.Data());
-  rtdb->setOutput(parOut);
-  rtdb->saveOutput();
-  rtdb->print();
-  // ------------------------------------------------------------------------
-
-  run->Run(nEvents);
-
-  // -----   Finish   -------------------------------------------------------
-  timer.Stop();
-  cout << "Macro finished succesfully." << endl;
-  cout << "Output file is " << mcFile << endl;
-  cout << "Parameter file is " << parFile << endl;
-  cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime()
-       << "s" << endl;
-  // ------------------------------------------------------------------------
+    timer.Stop();
+    std::cout << std::endl << std::endl;
+    std::cout << "Macro finished successfully." << std::endl;
+    std::cout << "MC file is "    << mcFile << std::endl;
+    std::cout << "Parameter file is " << parFile << std::endl;
+    std::cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime() << "s" << std::endl;
+    std::cout << std::endl << "Test passed" << std::endl << "All ok" << std::endl;
 }

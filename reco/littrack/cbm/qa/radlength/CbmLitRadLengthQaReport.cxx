@@ -27,6 +27,8 @@ void CbmLitRadLengthQaReport::Create() {
 }
 
 void CbmLitRadLengthQaReport::Draw() {
+  SetDefaultDrawStyle();
+
   DrawDetector("Total");
   DrawDetector("Mvd");
   DrawDetector("Sts");
@@ -77,6 +79,17 @@ void CbmLitRadLengthQaReport::DrawDetector(const string& detName) {
                    1200,
                    1000);
     DrawH2(HM()->P2("hrl_RadThickness_" + detName + "_P2"));
+
+
+    TCanvas* canvas4_2 =
+      CreateCanvas(string("hrl_RadThickness_" + detName + "_P2_zoom").c_str(),
+                   string("hrl_RadThickness_" + detName + "_P2_zoom").c_str(),
+                   1200,
+                   1000);
+    TProfile2D* pr =
+      (TProfile2D*) HM()->P2("hrl_RadThickness_" + detName + "_P2")->Clone();
+    pr->GetZaxis()->SetRangeUser(0, 100);
+    DrawH2(pr);
   }
 
   if (HM()->Exists("hrl_ThicknessSilicon_" + detName + "_H1")) {

@@ -63,17 +63,17 @@ void CbmLitRadLengthQa::Exec(Option_t* opt) {
   }
 
   ExecDetector(".+", "Total");
-  ExecDetector("/cave_1/pipevac1_0/mvdstation.+", "Mvd");
-  ExecDetector("/cave_1/STS.+", "Sts");
+  //ExecDetector("/cave_1/pipevac1_0/mvdstation.+", "Mvd");
+  ExecDetector("/cave_1/sts.+", "Sts");
   ExecDetector("/cave_1/rich.+", "Rich");
-  ExecDetector("/cave_1/trd.+", "Trd");
-  ExecDetector("/cave_1/much.+", "Much");
-  ExecDetector("/cave_1/tof.+", "Tof");
-  ExecDetector("Mvd", CbmLitRadLengthQa::GetMvdStationId);
-  ExecDetector("Sts", CbmLitRadLengthQa::GetStsStationId);
-  ExecDetector("Trd", CbmLitRadLengthQa::GetTrdStationId);
-  ExecDetector("Much", CbmLitRadLengthQa::GetMuchStationId);
-  ExecDetector("MuchAbsorber", CbmLitRadLengthQa::GetMuchAbsorberId);
+  //ExecDetector("/cave_1/trd.+", "Trd");
+  //ExecDetector("/cave_1/much.+", "Much");
+  //ExecDetector("/cave_1/tof.+", "Tof");
+  //ExecDetector("Mvd", CbmLitRadLengthQa::GetMvdStationId);
+  //ExecDetector("Sts", CbmLitRadLengthQa::GetStsStationId);
+  //ExecDetector("Trd", CbmLitRadLengthQa::GetTrdStationId);
+  //ExecDetector("Much", CbmLitRadLengthQa::GetMuchStationId);
+  //ExecDetector("MuchAbsorber", CbmLitRadLengthQa::GetMuchAbsorberId);
 }
 
 void CbmLitRadLengthQa::Finish() {
@@ -100,15 +100,15 @@ void CbmLitRadLengthQa::ReadDataBranches() {
 }
 
 void CbmLitRadLengthQa::CreateHistograms() {
-  const Int_t nofBins                  = 1000;
-  const Int_t nofBinsX                 = 1000;
-  const Int_t nofBinsY                 = 1000;
-  const Int_t nofBinsSiliconThicknessX = 1100;
-  const Int_t nofBinsSiliconThicknessY = 1100;
-  const Double_t minX                  = -550.1;
-  const Double_t maxX                  = 549.9;
-  const Double_t minY                  = -550.1;
-  const Double_t maxY                  = 549.9;
+  const Int_t nofBins                  = 500;
+  const Int_t nofBinsX                 = 500;
+  const Int_t nofBinsY                 = 500;
+  const Int_t nofBinsSiliconThicknessX = 500;
+  const Int_t nofBinsSiliconThicknessY = 500;
+  const Double_t minX                  = -250.1;
+  const Double_t maxX                  = 249.9;
+  const Double_t minY                  = -250.1;
+  const Double_t maxY                  = 249.9;
   vector<string> detNames =
     list_of("Total")("Mvd")("Sts")("Rich")("Trd")("Much")("Tof");
   Int_t nofDetNames = detNames.size();
