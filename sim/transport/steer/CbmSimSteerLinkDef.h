@@ -10,6 +10,7 @@
 #pragma link C++ class CbmVMCSettings + ;
 #pragma link C++ class CbmGeant3Settings + ;
 #pragma link C++ class CbmGeant4Settings + ;
+#pragma link C++ enum ECbmEngine;
 
 
 #endif /* __CINT__ */

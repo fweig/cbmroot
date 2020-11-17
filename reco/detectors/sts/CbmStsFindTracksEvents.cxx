@@ -109,9 +109,13 @@ InitStatus CbmStsFindTracksEvents::Init() {
 
   // Array of MvdHits
   if (fUseMvd) {
-    LOG(info) << GetName() << ": including MVD hits in tracking";
     fMvdHits = (TClonesArray*) ioman->GetObject("MvdHit");
-    assert(fMvdHits);
+    if (fMvdHits == nullptr) {
+      LOG(error) << GetName()
+                 << ": Use of MVD hits selected, but no hit branch present! "
+                 << "Tracking will be done without MVD hits.";
+    } else
+      LOG(info) << GetName() << ": including MVD hits in tracking";
   }
 
   // Create and register output array for StsTracks

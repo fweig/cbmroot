@@ -20,9 +20,9 @@ set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP fixture_much_digi)
 
 # --- Digitisation, event-by-event
 Set(testname much_digi)
-Add_Test(${testname} ${MACRO_DIR}/run_digi.sh ${NumEvents} \"muons\" 0. 0. 1)
+Add_Test(${testname} ${MACRO_DIR}/run_digi.sh \"muons\" ${NumEvents} \"muons.event\" -1.)
 Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "1200")
-Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
+Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Macro finished successfully")
 set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED fixture_much_digi)
 set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP fixture_much_reco)
 

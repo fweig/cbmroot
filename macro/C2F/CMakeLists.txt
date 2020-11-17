@@ -18,6 +18,7 @@ Set(NumEvents 20)
 # Define the different setups to be tested
 If( ($ENV{ctest_model} MATCHES Nightly) OR ($ENV{ctest_model} MATCHES Weekly) )
   List(APPEND cbm_setup sis100_electron)
+EndIf()
 
   ForEach(setup IN LISTS cbm_setup)
 
@@ -36,9 +37,10 @@ If( ($ENV{ctest_model} MATCHES Nightly) OR ($ENV{ctest_model} MATCHES Weekly) )
   
     # --- Digitisation run, event-by-event
     Set(testname c2f_digi_event_${setup})
-    Add_Test(${testname} ${MACRO_DIR}/run_digi.sh ${NumEvents} \"data/${setup}_test\" 0. 0. 1)
+    Add_Test(${testname} ${MACRO_DIR}/run_digi.sh \"data/${setup}_test\" ${NumEvents} 
+    	\"data/${setup}_test.event\" -1.)
     Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "300")
-    Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
+    Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Macro finished successfully")
     set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_c2f_digi})
     Set(fixture_c2f_reco_event fixture_c2f_reco_event_${testname})
     set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_c2f_reco_event})
@@ -72,7 +74,6 @@ If( ($ENV{ctest_model} MATCHES Nightly) OR ($ENV{ctest_model} MATCHES Weekly) )
 
   EndForEach(setup IN LISTS cbm_setup)
   # end of test CBM setups from geometry/setup
-EndIf()
 
 Install(FILES .rootrc c2f_transport.C 
         DESTINATION share/cbmroot/macro/c2f

@@ -1,186 +1,186 @@
-# start of test CBM setups from geometry/setup
-GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_transport.C)
+# =====   Generate the needed shell scripts   ================================
+GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_tra_file.C)
+GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_tra_beam.C)
 GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_digi.C)
-GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_reco_event.C)
-GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/check_overlaps.C)
-GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_transport_qa.C)
-GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_qa.C)
-GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_reco_tb_track.C)
-GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_recoqa_tb_track.C)
-GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_reco_analysis.C)
+GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_reco.C)
+# ============================================================================
 
-Set(MACRO_DIR ${CMAKE_CURRENT_BINARY_DIR})
-GENERATE_CBM_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/geometry/check_media.C ${MACRO_DIR})
 
-# Put the .rootrc file into the directory from which root is executed.
-# Otherwise the rootalias file is not loaded
-File(COPY ${CBMROOT_SOURCE_DIR}/macro/include/.rootrc DESTINATION ${CBMROOT_BINARY_DIR}/macro/run)
+# =====   Copy the .rootrc file into the directory from which root is executed
+# --- Otherwise the rootalias file is not loaded
+file(COPY ${CBMROOT_SOURCE_DIR}/macro/include/.rootrc 
+	DESTINATION ${CBMROOT_BINARY_DIR}/macro/run)
+# ============================================================================
 
-# Define Variables for Tests
+
+# =====   Define variables for tests   =======================================
 if($ENV{ctest_model} MATCHES Weekly)
-  Set(NumEvents 100)
+  Set(nEvents 100)
   Set(uploadHistJPG 1)
   Set(pullDevAllowed .2)
-Else()
-  Set(NumEvents 3)
+else()
+  Set(nEvents 3)
   Set(uploadHistJPG 0)
   Set(pullDevAllowed .5)
-EndIf()
+endIf()
 
-math(EXPR timeOutTime "${NumEvents} * 200")
+math(EXPR timeOutTime "${nEvents} * 200")
+math(EXPR nBeam "${nEvents} * 3")
+# ============================================================================
 
-# Define the different setups to be tested
-If(($ENV{ctest_model} MATCHES Nightly) OR ($ENV{ctest_model} MATCHES Weekly))
-  List(APPEND cbm_setup sis100_hadron sis100_electron sis100_muon_lmvm sis100_muon_jpsi sis300_electron)
-Else()
+
+# =====   Define the different setups to be tested with   ====================
+if(($ENV{ctest_model} MATCHES Nightly) OR ($ENV{ctest_model} MATCHES Weekly))
+  List(APPEND cbm_setup sis100_hadron sis100_electron sis100_muon_lmvm 
+  	sis100_muon_jpsi sis300_electron)
+else()
   List(APPEND cbm_setup sis100_electron sis100_muon_jpsi)
-EndIf()
+endif()
+# ============================================================================
 
-ForEach(setup IN LISTS cbm_setup)
 
-  # The test dependencies are set such that parallel execution is prevented, even is there is no logical
-  # dependence. The reason is that all runs (for a given setup) use the same ROOT parameter file,
-  # and concurrent access to this file results in erros.
-  # The logical dependences are expressed in the required "ok" files.
+# =====   Cleanup the data directory   =======================================
+add_test(run_cleanup ${CMAKE_COMMAND} 
+	-P ${CMAKE_SOURCE_DIR}/cmake/scripts/cleanmacrodir.cmake)
+set_tests_properties(run_cleanup PROPERTIES 
+	TIMEOUT ${timeOutTime}
+	FIXTURES_SETUP cleanup
+)
+# ============================================================================
 
-  # --- Transport run, using run_transport.C
-  Set(testname run_transport_${setup})
-  Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/run/run_transport.sh ${NumEvents} \"${setup}\" \"data/${setup}_test\")
-  Set_Tests_Properties(${testname} PROPERTIES TIMEOUT ${timeOutTime})
-  Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
-  Set(fixture_digi fixture_digi_${testname})
-  set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_digi})
+
+# =====   Define tests for each setup   ======================================
+foreach(setup IN LISTS cbm_setup)
+
+  # --- Short name for setup
+  if(setup MATCHES sis100_hadron) 
+  	set(sname s100h)
+  elseif(setup MATCHES sis100_electron) 
+  	set(sname s100e)
+  elseif(setup MATCHES sis100_muon_lmvm) 
+  	set(sname s100m2)
+  elseif(setup MATCHES sis100_muon_jpsi) 
+  	set(sname s100m3)
+  elseif(setup MATCHES sis300_electron) 
+  	set(sname s300e)
+  else()
+  	set(sname test)
+  endif()
+
+  # --- Test run_tra_coll
+  # --- Transport run with collision events, using run_tra_file.C
+  set(testname run_${sname}_tra_coll)
+  set(input ${CBMROOT_SOURCE_DIR}/input/urqmd.auau.10gev.centr.root)
+  add_test(${testname} ${MACRO_DIR}/run_tra_file.sh 
+  	\"${input}\" ${nEvents} \"data/${sname}_coll\" \"${setup}\")
+  set_tests_properties(${testname} PROPERTIES 
+  	TIMEOUT ${timeOutTime}
+  	PASS_REGULAR_EXPRESSION "Macro finished successfully"
+  	FIXTURES_REQUIRED cleanup
+  	FIXTURES_SETUP "fixt_digi_ts_${setup};fixt_digi_ev_${setup}"
+  	RESOURCE_LOCK collParDb_${setup}
+  )
   
-  # --- Digitisation run, event-by-event
-  Set(testname run_digi_event_${setup})
-  Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/run/run_digi.sh ${NumEvents} \"data/${setup}_test\" 0. 0. 1)
-  Set_Tests_Properties(${testname} PROPERTIES TIMEOUT ${timeOutTime}/2)
-  Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
-  set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_digi})
-  Set(fixture_reco_event fixture_reco_event_${testname})
-  set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_reco_event})
-
-  # --- Reconstruction run, event-by-event
-  Set(testname run_reco_event_${setup})
-  Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/run/run_reco_event.sh ${NumEvents} \"data/${setup}_test\" \"${setup}\")
-  Set_Tests_Properties(${testname} PROPERTIES TIMEOUT ${timeOutTime})
-  Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
-  set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_reco_event})
-  Set(fixture_reco_event_mc fixture_reco_event_mc_${testname})
-  set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_reco_event_mc})
+  # --- Test run_tra_sign
+  # --- Transport run with signal events, using run_tra_file.C
+  set(testname run_${sname}_tra_sign)
+  set(input ${CBMROOT_SOURCE_DIR}/input/pluto.auau.8gev.omega.mpmm.0001.root)
+  add_test(${testname} ${MACRO_DIR}/run_tra_file.sh 
+  	\"${input}\" ${nEvents} \"data/${sname}_sign\" \"${setup}\")
+  set_tests_properties(${testname} PROPERTIES 
+  	TIMEOUT ${timeOutTime}
+  	PASS_REGULAR_EXPRESSION "Macro finished successfully"
+  	FIXTURES_REQUIRED cleanup
+  	FIXTURES_SETUP fixt_digi_ts_${setup}
+  	RESOURCE_LOCK signParDb_${setup}
+  )
   
-  # --- Reconstruction run, event-by-event, with MC input
-  Set(testname run_reco_event_mc_${setup})
-  Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/run/run_reco_event.sh ${NumEvents} \"data/${setup}_test\" \"${setup}\" 1)
-  Set_Tests_Properties(${testname} PROPERTIES TIMEOUT ${timeOutTime})
-  Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
-  set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_reco_event_mc})
-  Set(fixture_qa_event_mc fixture_qa_event_mc_${testname})
-  set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_qa_event_mc})
-
-  # --- Quality Assurance
-  Set(testname run_qa_event_mc_${setup})
-  Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/run/run_qa.sh ${NumEvents} \"data/${setup}_test\" \"${setup}\")
-  Set_Tests_Properties(${testname} PROPERTIES TIMEOUT ${timeOutTime})
-  Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
-  Set_Tests_Properties(${testname} PROPERTIES FAIL_REGULAR_EXPRESSION "ERROR")
-  Set_Tests_Properties(${testname} PROPERTIES FAIL_REGULAR_EXPRESSION "FATAL")
-  Set_Tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_qa_event_mc})
-  Set(fixture_digi_tb fixture_digi_tb_${testname})
-  set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_digi_tb})
-
-#  # --- Reconstruction Quality Assurance
-#  Set(testname run_reco_event_qa_${setup})
-#  Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/run/run_reco_analysis.sh \"data/${setup}_test\" {{\"MvdCluster\",\"CbmMvdCluster\",\"MVD_Cluster_Finder\"},{\"MvdHit\",\"CbmMvdHit\",\"MVD_Hit_Finder\"},{\"StsCluster\",\"CbmStsCluster\",\"StsFindCluster\"},{\"StsHit\",\"CbmStsHit\",\"StsFindHit\"},{\"StsTrack\",\"CbmStsTrack\",\"StsFindTracksEvents\"}} {{\"sts\",{${pullDevAllowed},1,1,1}},{\"mvd\",{${pullDevAllowed},1,1,1}}} 2500 ${uploadHistJPG})
-#  Set_Tests_Properties(${testname} PROPERTIES TIMEOUT ${timeOutTime})
-#  Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
-#  Set_Tests_Properties(${testname} PROPERTIES FAIL_REGULAR_EXPRESSION "Strong Deviation")
-#  Set_Tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_digi_tb})
-#  set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_digi_tb})
+  # --- Test run_tra_beam
+  # --- Transport run with beam events, using run_tra_beam.C
+  set(testname run_${sname}_tra_beam)
+  add_test(${testname} ${MACRO_DIR}/run_tra_beam.sh 
+  	${nBeam} \"Au\" 10 -1 \"data/${sname}_beam\" \"${setup}\")
+  set_tests_properties(${testname} PROPERTIES 
+  	TIMEOUT ${timeOutTime}
+  	PASS_REGULAR_EXPRESSION "Macro finished successfully"
+  	FIXTURES_REQUIRED cleanup
+  	FIXTURES_SETUP fixt_digi_ts_${setup}
+  	RESOURCE_LOCK beamParDb_${setup}
+  )
+   
+  # --- Test run_digi_ev
+  # --- Detector response simulation, event-by-event, using run_digi.C
+  set(testname run_${sname}_digi_ev)
+  add_test(${testname} ${MACRO_DIR}/run_digi.sh 
+  	\"data/${sname}_coll\" -1 \"data/${sname}_ev\" -1.)
+  set_tests_properties(${testname} PROPERTIES 
+  	TIMEOUT ${timeOutTime}
+  	PASS_REGULAR_EXPRESSION "Macro finished successfully"
+	FIXTURES_REQUIRED fixt_digi_ev_${setup}	 
+  	FIXTURES_SETUP fixt_reco_ev_${setup}
+ 	RESOURCE_LOCK collParDb_${setup}
+  )
  
-  # --- Digitisation run, time-based
-  Set(testname run_digi_${setup})
-  Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/run/run_digi.sh ${NumEvents} \"data/${setup}_test\")
-  Set_Tests_Properties(${testname} PROPERTIES TIMEOUT ${timeOutTime})
-  Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
-  set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_digi_tb})
-  Set(fixture_reco_tb fixture_reco_tb_${testname})
-  set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_reco_tb})
+  # --- Test run_digi_ts
+  # --- Detector response simulation, time-based, using run_digi.C
+  set(testname run_${sname}_digi_ts)
+  set(eventrate 1.e7)
+  set(beamrate 1.e9)
+  set(tslength 1.e6)
+  add_test(${testname} ${MACRO_DIR}/run_digi.sh 
+  	\"data/${sname}_coll\" -1 \"data/${sname}_ts\"\ ${eventrate} ${tslength} 
+  	\"data/${sname}_sign\" \"data/${sname}_beam\" ${beamrate})
+  set_tests_properties(${testname} PROPERTIES 
+  	TIMEOUT ${timeOutTime}
+  	PASS_REGULAR_EXPRESSION "Macro finished successfully"
+ 	FIXTURES_REQUIRED fixt_digi_ts_${setup}
+  	FIXTURES_SETUP fixt_reco_ts_${setup}
+ 	RESOURCE_LOCK collParDb_${setup}
+  )
   
-  # --- Reconstruction run, Time Based
-  Set(testname run_reco_tb_${setup})
-  Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/run/run_reco_tb_track.sh \"data/${setup}_test\" -1 \"${setup}\")
-  Set_Tests_Properties(${testname} PROPERTIES TIMEOUT ${timeOutTime})
-  Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
-  set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_reco_tb})
-  Set(fixture_reco_tb_qa fixture_reco_tb_qa_${testname})
-  set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_reco_tb_qa})
-
-  # --- Reconstruction run, Time Based
-  Set(testname run_reco_tb_qa_${setup})
-  Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/run/run_recoqa_tb_track.sh \"data/${setup}_test\" -1 \"${setup}\")
-  Set_Tests_Properties(${testname} PROPERTIES TIMEOUT ${timeOutTime})
-  Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
-  set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_reco_tb_qa})
-  Set(fixture_reco_tb_ana fixture_reco_tb_ana_${testname})
-  set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_reco_tb_ana})
-
-  # --- Reconstruction Quality Assurance
-  Set(testname run_reco_tb_ana_${setup})
-  Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/run/run_reco_analysis.sh \"data/${setup}_test\" {{\"StsHit\",\"CbmStsHit\",\"RecoSts\"},{\"StsTrack\",\"CbmStsTrack\",\"STSFindTracks\"}} {{\"sts\",{${pullDevAllowed},1,1,1}}} 2500 ${uploadHistJPG})
-  Set_Tests_Properties(${testname} PROPERTIES TIMEOUT ${timeOutTime})
-  Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
-  Set_Tests_Properties(${testname} PROPERTIES FAIL_REGULAR_EXPRESSION "Strong Deviation")
-  Set_Tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_reco_tb_ana})
-  set(dep_qa_transport ${testname}) 
-
-  # --- QA run
-#  Set(testname run_transport_qa_${setup})
-#  Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/run/run_transport_qa.sh \"${setup}\" \"data/${setup}_test\")
-#  Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "20")
-#  Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
-#  Set_Tests_Properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_digi})
-#  Set_Tests_Properties(${testname} PROPERTIES DEPENDS ${dep_qa_transport})
-#  set(dep_overlaps ${testname}) 
-
-
-
-  # --- Geometry checking; only for nightly test
-  If( ($ENV{ctest_model} MATCHES Nightly) OR ($ENV{ctest_model} MATCHES Weekly) )
-    Set(testname run_check_media_${setup})
-    Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/run/check_media.sh \"data/${setup}_test\")
-    Set_Tests_Properties(${testname} PROPERTIES TIMEOUT ${timeOutTime})
-    Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
-    Set_Tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_digi})
-
-  	Set(testname run_overlap_${setup})
-  	Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/run/check_overlaps.sh \"data/${setup}_test\")
-  	Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "900")
-  	Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
-        Set_Tests_Properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_digi})
-#        Set_Tests_Properties(${testname} PROPERTIES DEPENDS ${dep_overlaps})
-        Set_Tests_Properties(${testname} PROPERTIES DEPENDS ${dep_qa_transport})
-  EndIf()
+  # --- Test run_reco_ev
+  # --- Event-by-event reconstruction from event-based simulation
+  set(testname run_${sname}_reco_ev)
+  add_test(${testname} ${MACRODIR}/run_reco.sh
+  	\"data/${sname}_ev\" -1 0 \"\" \"Ideal\" \"${setup}\" \"data/${sname}_coll\")
+  set_tests_properties(${testname} PROPERTIES 
+  	TIMEOUT ${timeOutTime}
+  	PASS_REGULAR_EXPRESSION "Macro finished successfully"
+	FIXTURES_REQUIRED fixt_reco_ev_${setup}	 
+ 	RESOURCE_LOCK collParDb_${setup}
+  )
+  
+  # --- Test run_reco_ts_eb
+  # --- Event-by-event reconstruction from time-based simulation
+  set(testname run_${sname}_reco_ts_eb)
+  add_test(${testname} ${MACRODIR}/run_reco.sh
+  	\"data/${sname}_ts\" -1 0 \"data/${sname}_ts_eb\" \"Ideal\" \"${setup}\" 
+  	\"data/${sname}_coll\")
+  set_tests_properties(${testname} PROPERTIES 
+  	TIMEOUT ${timeOutTime}
+  	PASS_REGULAR_EXPRESSION "Macro finished successfully"
+	FIXTURES_REQUIRED fixt_reco_ts_${setup}	 
+ 	RESOURCE_LOCK collParDb_${setup}
+  )
+  
+  # --- Test run_reco_ts_tb
+  # --- Time-based reconstruction from time-based simulation
+  set(testname run_${sname}_reco_ts_tb)
+  add_test(${testname} ${MACRODIR}/run_reco.sh
+  	\"data/${sname}_ts\" -1 0 \"data/${sname}_ts_tb\" \"\" \"${setup}\" 
+  	\"data/${sname}_coll\")
+  set_tests_properties(${testname} PROPERTIES 
+  	TIMEOUT ${timeOutTime}
+  	PASS_REGULAR_EXPRESSION "Macro finished successfully"
+	FIXTURES_REQUIRED fixt_reco_ts_${setup}	 
+ 	RESOURCE_LOCK collParDb_${setup}
+  )
  
-EndForEach(setup IN LISTS cbm_setup)
+endforeach(setup IN LISTS cbm_setup)
+# ============================================================================
 
-# I will have to check these macros for being up-to-date or necessary
-#GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run.C)
-#add_test(run_run ${CBMROOT_BINARY_DIR}/macro/run/run.sh)
-#SET_TESTS_PROPERTIES(run_run PROPERTIES TIMEOUT "300")
-#SET_TESTS_PROPERTIES(run_run PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
 
-#GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/checkFields.C)
-#add_test(run_checkFields ${CBMROOT_BINARY_DIR}/macro/run/checkFields.sh)
-#SET_TESTS_PROPERTIES(run_checkFields PROPERTIES TIMEOUT "60")
 
-#GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/checkFieldMap.C)
-#add_test(run_checkFieldMap ${CBMROOT_BINARY_DIR}/macro/run/checkFieldMap.sh)
-#SET_TESTS_PROPERTIES(run_checkFieldMap PROPERTIES TIMEOUT "60")
-
-#GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/checkFieldSym.C)
-#add_test(run_checkFieldSym ${CBMROOT_BINARY_DIR}/macro/run/checkFieldSym.sh)
-#SET_TESTS_PROPERTIES(run_checkFieldSym PROPERTIES TIMEOUT "60")
 
 
 Install(FILES .rootrc run_transport.C run_digi.C run_reco_event.C check_overlaps.C 

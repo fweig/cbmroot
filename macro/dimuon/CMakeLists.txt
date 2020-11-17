@@ -35,9 +35,10 @@ If( ($ENV{ctest_model} MATCHES Nightly) OR ($ENV{ctest_model} MATCHES Weekly) )
   
     # --- Digitisation run, event-by-event
     Set(testname dimuon_digi_event_${setup})
-    Add_Test(${testname} ${MACRO_DIR}/run_digi.sh ${NumEvents} \"data/${setup}_test\" 0. 0. 1)
+    Add_Test(${testname} ${MACRO_DIR}/run_digi.sh \"data/${setup}_test\" ${NumEvents} 
+    	\"data/${setup}_test.event\" -1.)
     Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "300")
-    Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
+    Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Macro finished successfully")
     set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_dimuon_digi})
     Set(fixture_dimuon_reco_event fixture_dimuon_reco_event_${testname})
     set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_dimuon_reco_event})
