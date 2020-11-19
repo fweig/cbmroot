@@ -320,8 +320,7 @@ InitStatus CbmTofFindTracks::Init() {
     if (fTofCalibrator->Init() != kSUCCESS) return kFATAL;
     if (bBeamCounter) {
       fTofCalibrator->SetBeam(bBeamCounter);
-      fTofCalibrator->SetR0Lim(
-        fdR0Lim);  // FIXME, hardwired parameter for debugging
+      fTofCalibrator->SetR0Lim(fdR0Lim);
       LOG(info) << "Set CbmTofCalibrator::R0Lim to " << fdR0Lim;
     }
   }
@@ -1042,6 +1041,9 @@ Bool_t CbmTofFindTracks::WriteHistos() {
 
 // -----   Public method Exec   --------------------------------------------
 void CbmTofFindTracks::Exec(Option_t* opt) {
+  if (gLogger->IsLogNeeded(fair::Severity::debug)) {
+	fDigiBdfPar->printParams();
+  }
   if (!fEventsColl) {
     //    fTofHitArray = (TClonesArray*)fTofHitArrayIn->Clone();
     fTofHitArray = (TClonesArray*) fTofHitArrayIn;
@@ -1105,7 +1107,7 @@ void CbmTofFindTracks::ExecFind(Option_t* /*opt*/) {
 
     if (fiBeamCounter > -1) {
       // set diamond positions to (0,0,0) to allow inclusion in straight line fit
-      if ((iDetId & 0x0000F00F) == 0x00005006)  // modify diamond position
+      if ((iDetId & DetMask) == fiBeamCounter)  // modify diamond position
       {
         if (0. != fdBeamMomentumLab) {
           Double_t dTargetTimeOffset =
@@ -1145,8 +1147,8 @@ void CbmTofFindTracks::ExecFind(Option_t* /*opt*/) {
 
     // tune positions and times
     Double_t dTcor = 0.;
-    if ((iDetId & 0x0000F00F)
-        != 0x00005006) {  // do not modify diamond position
+    if ((iDetId & DetMask)
+        != fiBeamCounter) {  // do not modify diamond position
       Int_t iRpcInd = fMapRpcIdParInd[iDetId];
       if (fhPullT_Smt_Off != NULL) {
         dTcor = (Double_t) fhPullT_Smt_Off->GetBinContent(iRpcInd + 1);
@@ -1170,11 +1172,12 @@ void CbmTofFindTracks::ExecFind(Option_t* /*opt*/) {
     MarkStationFired(iSt);
 
     LOG(debug) << Form(
-      "Exec found Hit %02d, addr 0x%08x, sta %02d, HM %02d, X %6.2f(%3.2f) Y "
+      "Exec found Hit %02d, addr 0x%08x, sta %02d, %02d, HM %02d, X %6.2f(%3.2f) Y "
       "%6.2f(%3.2f)  Z %6.2f(%3.2f)  T %6.2f(%3.2f) (%6.2f)",
       iHit,
       pHit->GetAddress(),
       GetStationOfAddr(iDetId),
+	  fDigiBdfPar->GetTrackingStation(pHit),
       fStationHMul[GetStationOfAddr(iDetId)],
       pHit->GetX(),
       pHit->GetDx(),
@@ -1187,9 +1190,10 @@ void CbmTofFindTracks::ExecFind(Option_t* /*opt*/) {
       dTcor);
   }
 
-  LOG(debug) << Form("CbmTofFindTracks::Exec NStationsFired %d > %d Min ?",
+  LOG(debug) << Form("CbmTofFindTracks::Exec NStationsFired %d > %d Min ?, NbStations %d",
                      GetNStationsFired(),
-                     GetMinNofHits());
+                     GetMinNofHits(),
+					 fDigiBdfPar->GetNbTrackingStations());
 
   if (GetNStationsFired() < GetMinNofHits()) {
     fInspectEvent = kFALSE;  // mark event as non trackable
