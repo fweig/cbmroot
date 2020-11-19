@@ -1042,7 +1042,7 @@ Bool_t CbmTofFindTracks::WriteHistos() {
 // -----   Public method Exec   --------------------------------------------
 void CbmTofFindTracks::Exec(Option_t* opt) {
   if (gLogger->IsLogNeeded(fair::Severity::debug)) {
-	fDigiBdfPar->printParams();
+    fDigiBdfPar->printParams();
   }
   if (!fEventsColl) {
     //    fTofHitArray = (TClonesArray*)fTofHitArrayIn->Clone();
@@ -1171,29 +1171,30 @@ void CbmTofFindTracks::ExecFind(Option_t* /*opt*/) {
     Int_t iSt = GetStationOfAddr(iDetId);
     MarkStationFired(iSt);
 
-    LOG(debug) << Form(
-      "Exec found Hit %02d, addr 0x%08x, sta %02d, %02d, HM %02d, X %6.2f(%3.2f) Y "
-      "%6.2f(%3.2f)  Z %6.2f(%3.2f)  T %6.2f(%3.2f) (%6.2f)",
-      iHit,
-      pHit->GetAddress(),
-      GetStationOfAddr(iDetId),
-	  fDigiBdfPar->GetTrackingStation(pHit),
-      fStationHMul[GetStationOfAddr(iDetId)],
-      pHit->GetX(),
-      pHit->GetDx(),
-      pHit->GetY(),
-      pHit->GetDy(),
-      pHit->GetZ(),
-      pHit->GetDz(),
-      pHit->GetTime(),
-      pHit->GetTimeError(),
-      dTcor);
+    LOG(debug) << Form("Exec found Hit %02d, addr 0x%08x, sta %02d, %02d, HM "
+                       "%02d, X %6.2f(%3.2f) Y "
+                       "%6.2f(%3.2f)  Z %6.2f(%3.2f)  T %6.2f(%3.2f) (%6.2f)",
+                       iHit,
+                       pHit->GetAddress(),
+                       GetStationOfAddr(iDetId),
+                       fDigiBdfPar->GetTrackingStation(pHit),
+                       fStationHMul[GetStationOfAddr(iDetId)],
+                       pHit->GetX(),
+                       pHit->GetDx(),
+                       pHit->GetY(),
+                       pHit->GetDy(),
+                       pHit->GetZ(),
+                       pHit->GetDz(),
+                       pHit->GetTime(),
+                       pHit->GetTimeError(),
+                       dTcor);
   }
 
-  LOG(debug) << Form("CbmTofFindTracks::Exec NStationsFired %d > %d Min ?, NbStations %d",
-                     GetNStationsFired(),
-                     GetMinNofHits(),
-					 fDigiBdfPar->GetNbTrackingStations());
+  LOG(debug) << Form(
+    "CbmTofFindTracks::Exec NStationsFired %d > %d Min ?, NbStations %d",
+    GetNStationsFired(),
+    GetMinNofHits(),
+    fDigiBdfPar->GetNbTrackingStations());
 
   if (GetNStationsFired() < GetMinNofHits()) {
     fInspectEvent = kFALSE;  // mark event as non trackable

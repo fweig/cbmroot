@@ -38,11 +38,13 @@ ClassImp(CbmTofDigiBdfPar)
   , fdDeadtime(5.0)
   , fdSignalPropSpeed(0.0)
   , fiNbSmTypes(0)
+  , fiNbTrackingStations(0)
   , fiNbSm()
   , fiNbRpc()
   , fiNbGaps()
   , fdGapSize()
   , fdSigVel()
+  , fiTrkStation()
   , fiNbCh()
   , fiChType()
   , fiChOrientation()
@@ -109,6 +111,8 @@ void CbmTofDigiBdfPar::putParams(FairParamList* l) {
     l->add(Form("GapSize%03d", iSmType), fdGapSize[iSmType]);
   for (Int_t iSmType = 0; iSmType < fiNbSmTypes; iSmType++)
     l->add(Form("SigVel%03d", iSmType), fdSigVel[iSmType]);
+  for (Int_t iSmType = 0; iSmType < fiNbSmTypes; iSmType++)
+    l->add(Form("TrkStation%03d", iSmType), fiTrkStation[iSmType]);
   for (Int_t iSmType = 0; iSmType < fiNbSmTypes; iSmType++)
     l->add(Form("NbCh%03d", iSmType), fiNbCh[iSmType]);
   for (Int_t iSmType = 0; iSmType < fiNbSmTypes; iSmType++)
@@ -222,6 +226,23 @@ Bool_t CbmTofDigiBdfPar::getParams(FairParamList* l) {
       }  // else of if( (fdSigVel[iSmType]).GetSize() == fiNbRpc[iSmType] )
     }
 
+  }  // for( Int_t iSmType = 0; iSmType < fiNbSmTypes; iSmType ++)
+
+  fiTrkStation.resize(fiNbSmTypes);
+  for (Int_t iSmType = 0; iSmType < fiNbSmTypes; iSmType++) {
+    fiTrkStation[iSmType].Set(fiNbSm[iSmType] * fiNbRpc[iSmType]);
+    if (!l->fill(Form("TrkStation%03d", iSmType), &(fiTrkStation[iSmType]))) {
+      LOG(info) << "CbmTofDigiBdfPar::getParams => parameter "
+                << Form("TrkStation%03d", iSmType)
+                << " not found in the text file. "
+                << "Initialized to 0 ";
+      for (Int_t iRpc = 0; iRpc < fiNbSm[iSmType] * fiNbRpc[iSmType]; iRpc++)
+        fiTrkStation[iSmType].SetAt(0, iRpc);
+      //return kFALSE;
+    }  // if ( ! l->fill( Form("SigVel%03d", iSmType), &(fdSigVel[iSmType]) ) )
+    for (Int_t iRpc = 0; iRpc < fiNbSm[iSmType] * fiNbRpc[iSmType]; iRpc++)
+      fiNbTrackingStations =
+        TMath::Max(fiNbTrackingStations, fiTrkStation[iSmType][iRpc] + 1);
   }  // for( Int_t iSmType = 0; iSmType < fiNbSmTypes; iSmType ++)
 
   fiNbCh.resize(fiNbSmTypes);
@@ -567,6 +588,18 @@ void CbmTofDigiBdfPar::SetSigVel(Int_t iSmType,
     LOG(error) << "Invalid SMType " << iSmType;
   }
 }
+Int_t CbmTofDigiBdfPar::GetTrackingStation(Int_t iSmType,
+                                           Int_t iSm,
+                                           Int_t iRpc) const {
+  if (iSmType < fiNbSmTypes) {
+    if (iSm < fiNbSm[iSmType] && iRpc < fiNbRpc[iSmType])
+      return fiTrkStation[iSmType][iSm * fiNbRpc[iSmType] + iRpc];
+    else
+      return 0.0;
+  }  // if( iSmType < fiNbSmTypes )
+  else
+    return 0.0;
+}
 Int_t CbmTofDigiBdfPar::GetNbChan(Int_t iSmType, Int_t iRpc) const {
   if (iSmType < fiNbSmTypes) {
     if (iRpc < fiNbRpc[iSmType])
@@ -705,22 +738,26 @@ void CbmTofDigiBdfPar::printParams() {
   sIndex          = "  Rpc index                   |--  ";
   Int_t iMaxRpcNb = 0;
 
-  TString* sGapsNb   = new TString[fiNbSmTypes];
-  TString* sGapsSz   = new TString[fiNbSmTypes];
-  TString* sSigVel   = new TString[fiNbSmTypes];
-  TString* sChNb     = new TString[fiNbSmTypes];
-  TString* sChType   = new TString[fiNbSmTypes];
-  TString* sChOrient = new TString[fiNbSmTypes];
+  TString* sGapsNb     = new TString[fiNbSmTypes];
+  TString* sGapsSz     = new TString[fiNbSmTypes];
+  TString* sSigVel     = new TString[fiNbSmTypes];
+  TString* sChNb       = new TString[fiNbSmTypes];
+  TString* sChType     = new TString[fiNbSmTypes];
+  TString* sChOrient   = new TString[fiNbSmTypes];
+  TString* sTrkStation = new TString[fiNbSmTypes];
 
   for (Int_t iSmType = 0; iSmType < fiNbSmTypes; iSmType++) {
     sSmNb += Form("%3d ", GetNbSm(iSmType));
     sRpcNb += Form("%3d ", GetNbRpc(iSmType));
-    sGapsNb[iSmType]   = Form("  Nb of Gaps in SM type    %3d:|->  ", iSmType);
-    sGapsSz[iSmType]   = Form("  Gap Size(mm) in SM type  %3d:|-> ", iSmType);
-    sSigVel[iSmType]   = Form("  SigVel(cm/ps) in SM type %3d:|-> ", iSmType);
-    sChNb[iSmType]     = Form("  Nb of Chan in SM type    %3d:|->  ", iSmType);
-    sChType[iSmType]   = Form("  Chan Type in SM type     %3d:|->  ", iSmType);
-    sChOrient[iSmType] = Form("  Chan orient. in SM type  %3d:|->  ", iSmType);
+    sGapsNb[iSmType] = Form("  Nb of Gaps in SM type    %3d:|->  ", iSmType);
+    sGapsSz[iSmType] = Form("  Gap Size(mm) in SM type  %3d:|-> ", iSmType);
+    sSigVel[iSmType] = Form("  SigVel(cm/ps) in SM type %3d:|-> ", iSmType);
+    sChNb[iSmType]   = Form("  Nb of Chan in SM type    %3d:|->  ", iSmType);
+    sChType[iSmType] = Form("  Chan Type in SM type     %3d:|->  ", iSmType);
+    sChOrient[iSmType] =
+      Form("  Chan Orientation in SM type  %3d:|->  ", iSmType);
+    sTrkStation[iSmType] =
+      Form(" TrackStations   in SM type  %3d:|->  ", iSmType);
     if (iMaxRpcNb < fiNbRpc[iSmType]) iMaxRpcNb = fiNbRpc[iSmType];
 
 
@@ -734,10 +771,11 @@ void CbmTofDigiBdfPar::printParams() {
         sChType[iSmType] += "pad  ";
       else
         sChType[iSmType] += "str  ";
-      if (1 == GetChanOrient(iSmType, iRpc))
-        sChOrient[iSmType] += "hor  ";
-      else
-        sChOrient[iSmType] += "ver  ";
+
+      sChOrient[iSmType] += Form(" %d ", GetChanOrient(iSmType, iRpc));
+      for (Int_t iSm = 0; iSm < fiNbSm[iSmType]; iSm++)
+        sTrkStation[iSmType] +=
+          Form(" %d ", GetTrackingStation(iSmType, iSm, iRpc));
     }
   }  // for( Int_t iSmType = 0; iSmType < fiNbSmTypes; iSmType ++)
   for (Int_t iRpc = 0; iRpc < iMaxRpcNb; iRpc++)
@@ -753,6 +791,7 @@ void CbmTofDigiBdfPar::printParams() {
     LOG(info) << sChNb[iSmType];
     LOG(info) << sChType[iSmType];
     LOG(info) << sChOrient[iSmType];
+    LOG(info) << sTrkStation[iSmType];
   }  // for( Int_t iSmType = 0; iSmType < fiNbSmTypes; iSmType ++)
 
   // Beamtime variables

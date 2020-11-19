@@ -13,6 +13,9 @@
 #ifndef CBMTOFDIGIBDFPAR_H
 #define CBMTOFDIGIBDFPAR_H 1
 
+#include <CbmTofAddress.h>  // for accessors
+#include <CbmTofHit.h>      // for accessors
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Int_t, Double_t, Bool_t
 #include <TArrayD.h>     // for TArrayD
@@ -66,6 +69,13 @@ public:
   Int_t GetNbDet() const;
   Int_t GetDetUId(Int_t iDet);
   Int_t GetDetInd(Int_t iAddr);
+  Int_t GetTrackingStation(Int_t iSmType, Int_t iSm, Int_t iRpc) const;
+  Int_t GetTrackingStation(CbmTofHit* pHit) const {
+    return GetTrackingStation(CbmTofAddress::GetSmType(pHit->GetAddress()),
+                              CbmTofAddress::GetSmId(pHit->GetAddress()),
+                              CbmTofAddress::GetRpcId(pHit->GetAddress()));
+  };
+  Int_t GetNbTrackingStations() const { return fiNbTrackingStations; };
 
   // Beamtime variables
   TString GetInputFileName() const { return fsBeamInputFile; };
@@ -127,12 +137,15 @@ private:
   // Geometry variables, text to be generated in the CreateGeometry macros
   Double_t fdSignalPropSpeed;      //  -> in parameter?
   Int_t fiNbSmTypes;               //
+  Int_t fiNbTrackingStations;      //
   TArrayI fiNbSm;                  // [fiNbSmTypes]
   TArrayI fiNbRpc;                 // [fiNbSmTypes]
   std::vector<TArrayI> fiNbGaps;   // [fiNbSmTypes][fiNbRpc]
   std::vector<TArrayD> fdGapSize;  // [fiNbSmTypes][fiNbRpc]
   std::vector<TArrayD>
     fdSigVel;  // [fiNbSmTypes][fiNbSm*fiNbRpc]  // Signal velocity
+  std::vector<TArrayI>
+    fiTrkStation;  // [fiNbSmTypes][fiNbSm*fiNbRpc]  // Signal velocity
   std::vector<TArrayI> fiNbCh;    // [fiNbSmTypes][fiNbRpc]
   std::vector<TArrayI> fiChType;  // [fiNbSmTypes][fiNbRpc]
   std::vector<TArrayI>
