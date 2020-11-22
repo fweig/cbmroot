@@ -21,11 +21,11 @@ link_directories( ${LINK_DIRECTORIES})
 set(SRCS
 CbmQaCanvas.cxx
 CbmQaPie.cxx
+CbmQaHist.cxx
 )
 
 set(LINKDEF CbmQaBaseLinkDef.h)
 Set(LIBRARY_NAME CbmQaBase)
-Set(DEPENDENCIES
-)
+Set(DEPENDENCIES)
 
 GENERATE_LIBRARY()
