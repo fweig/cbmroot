@@ -4,7 +4,7 @@ ${CMAKE_CURRENT_SOURCE_DIR}
 ${CBMDETECTORBASE_DIR}/much
 
 ${CBMROOT_SOURCE_DIR}/reco/base
-${CBMROOT_SOURCE_DIR}/sim/detectors/much/qa
+${CBMROOT_SOURCE_DIR}/core/qa
 
 ${CBMBASE_DIR} 
 
@@ -32,12 +32,13 @@ link_directories( ${LINK_DIRECTORIES})
 
 set(SRCS
 CbmMuchFindHitsGem.cxx
-CbmMuchHitFinderQa.cxx
 CbmMuchHitProducerIdeal.cxx
 
 CbmMuchFindTracks.cxx
 CbmMuchMatchTracks.cxx 
 CbmMuchTrackFinderIdeal.cxx
+
+qa/CbmMuchHitFinderQa.cxx
 )
 
 set(LINKDEF CbmMuchRecoLinkDef.h)

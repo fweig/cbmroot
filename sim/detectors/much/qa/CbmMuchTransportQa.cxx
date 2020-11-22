@@ -41,7 +41,7 @@ ClassImp(CbmMuchTransportQa);
 CbmMuchTransportQa::CbmMuchTransportQa(const char* name, Int_t verbose)
   : FairTask(name, verbose)
   , fOutFolder("MuchTransportQA", "Much Transport QA")
-  , fhNevents("nEvents", 0)
+  , fNevents("nEvents", 0)
   , fvUsNtra()
   , fvMcPointXY()
   , fvMcPointPhiZ()
@@ -59,7 +59,8 @@ void CbmMuchTransportQa::DeInit() {
   fPoints   = nullptr;
   fMcTracks = nullptr;
   fOutFolder.Clear();
-  fhNevents.SetVal(0);
+  histFolder = nullptr;
+  fNevents.SetVal(0);
 
   SafeDelete(fhUsNtraAll);
   SafeDelete(fhUsNtraPrim);
@@ -69,6 +70,7 @@ void CbmMuchTransportQa::DeInit() {
   SafeDelete(fhUsNtraEl);
   SafeDelete(fhUsNtraMu);
   SafeDelete(fhUsNtraKa);
+  fvUsNtra.clear();
 
   for (uint i = 0; i < fvMcPointXY.size(); i++) {
     SafeDelete(fvMcPointXY[i]);
@@ -83,12 +85,6 @@ void CbmMuchTransportQa::DeInit() {
   fvMcPointPhiZ.clear();
   fvMcPointRZ.clear();
 
-  for (uint i = 0; i < fvMcPointPRatio.size(); i++) {
-    SafeDelete(fvMcPointPRatio[i]);
-  }
-  for (uint i = 0; i < fvMcPointPrimRatio.size(); i++) {
-    SafeDelete(fvMcPointPrimRatio[i]);
-  }
   SafeDelete(fhNtracks);
   SafeDelete(fhFractionPrim);
   SafeDelete(fhFractionSec);
@@ -97,9 +93,14 @@ void CbmMuchTransportQa::DeInit() {
   SafeDelete(fhFractionEl);
   SafeDelete(fhFractionMu);
   SafeDelete(fhFractionKa);
-
-  fvUsNtra.clear();
   fvFraction.clear();
+
+  for (uint i = 0; i < fvMcPointPRatio.size(); i++) {
+    SafeDelete(fvMcPointPRatio[i]);
+  }
+  for (uint i = 0; i < fvMcPointPrimRatio.size(); i++) {
+    SafeDelete(fvMcPointPrimRatio[i]);
+  }
   fvMcPointPRatio.clear();
   fvMcPointPrimRatio.clear();
 
@@ -109,13 +110,12 @@ void CbmMuchTransportQa::DeInit() {
   SafeDelete(fCanvNtra);
   SafeDelete(fCanvStationPRatio);
   SafeDelete(fCanvStationPrimRatio);
-
   fNstations = 0;
-  fOutFolder.Clear();
 }
 
 // -------------------------------------------------------------------------
 InitStatus CbmMuchTransportQa::Init() {
+  DeInit();
 
   TDirectory* oldDirectory = gDirectory;
   FairRootManager* manager = FairRootManager::Instance();
@@ -151,8 +151,8 @@ InitStatus CbmMuchTransportQa::Init() {
       return kFATAL;
     }
   }
-  fhNevents.SetVal(0);
-  histFolder->Add(&fhNevents);
+  fNevents.SetVal(0);
+  histFolder->Add(&fNevents);
 
   InitCountingHistos();
   InitFractionHistos();
@@ -355,8 +355,8 @@ void CbmMuchTransportQa::SetParContainers() {
 // -------------------------------------------------------------------------
 void CbmMuchTransportQa::Exec(Option_t*) {
 
-  LOG(info) << "Event: " << fhNevents.GetVal();
-  fhNevents.SetVal(fhNevents.GetVal() + 1);
+  fNevents.SetVal(fNevents.GetVal() + 1);
+  LOG(debug) << "Event: " << fNevents.GetVal();
   // bitmask tells which stations were crossed by mc track
   std::vector<UInt_t> trackStaCross(fMcTracks->GetEntriesFast(), 0);
 
@@ -450,7 +450,7 @@ TFolder& CbmMuchTransportQa::GetQa() {
 
   TDirectory* oldDirectory = gDirectory;
   fhNtracks->Reset();
-  fhNtracks->Add(fhUsNtraAll, 1. / fhNevents.GetVal());
+  fhNtracks->Add(fhUsNtraAll, 1. / fNevents.GetVal());
 
   std::vector<Double_t> errors(fNstations, 0.);
   fhUsNtraAll->SetError(errors.data());
@@ -497,7 +497,7 @@ void CbmMuchTransportQa::DrawCanvases() {
     PrimRatioPieLeg->SetX2(.90);
   }
 
-  double scale = (fhNevents.GetVal() > 0) ? 1. / fhNevents.GetVal() : 0;
+  double scale = (fNevents.GetVal() > 0) ? 1. / fNevents.GetVal() : 0;
   int i        = 1;
 
   fCanvNtra->cd(i++);

@@ -29,6 +29,7 @@
 #include "TGraph.h"
 #include "TH1.h"
 #include "TH2.h"
+#include "TParameter.h"
 #include "TString.h"
 #include "TStyle.h"
 #include <FairRootManager.h>
@@ -46,7 +47,6 @@
 #include <math.h>
 #include <vector>
 
-using std::cout;
 using std::endl;
 using std::vector;
 
@@ -61,10 +61,8 @@ ClassImp(CbmMuchDigitizerQa);
 // -------------------------------------------------------------------------
 CbmMuchDigitizerQa::CbmMuchDigitizerQa(const char* name, Int_t verbose)
   : FairTask(name, verbose)
-  , fGeoScheme(nullptr)
-  , fDigiManager(nullptr)
-  , fPointInfos(new TClonesArray("CbmMuchPointInfo", 10))
   , fOutFolder("MuchDigiQA", "MuchDigitizerQA")
+  , fNevents("nEvents", 0)
   , fvUsPadsFiredR()
   , fvUsPadsFiredXY()
   , fvTrackCharge()
@@ -77,13 +75,35 @@ CbmMuchDigitizerQa::~CbmMuchDigitizerQa() { DeInit(); }
 
 // -------------------------------------------------------------------------
 void CbmMuchDigitizerQa::DeInit() {
-  for (int i = 0; i < fNstations; i++) {
-    delete fvUsPadsFiredR[i];
-    delete fvUsPadsFiredXY[i];
-    delete fvTrackCharge[i];
-    delete fvPadsTotalR[i];
-    delete fvPadsFiredR[i];
-    delete fvPadOccupancyR[i];
+
+  histFolder   = nullptr;
+  fGeoScheme   = nullptr;
+  fDigiManager = nullptr;
+  fPoints      = nullptr;
+  fDigis       = nullptr;
+  fDigiMatches = nullptr;
+  fMCTracks    = nullptr;
+  fOutFolder.Clear();
+
+  SafeDelete(fPointInfos);
+
+  for (uint i = 0; i < fvUsPadsFiredR.size(); i++) {
+    SafeDelete(fvUsPadsFiredR[i]);
+  }
+  for (uint i = 0; i < fvUsPadsFiredXY.size(); i++) {
+    SafeDelete(fvUsPadsFiredXY[i]);
+  }
+  for (uint i = 0; i < fvTrackCharge.size(); i++) {
+    SafeDelete(fvTrackCharge[i]);
+  }
+  for (uint i = 0; i < fvPadsTotalR.size(); i++) {
+    SafeDelete(fvPadsTotalR[i]);
+  }
+  for (uint i = 0; i < fvPadsFiredR.size(); i++) {
+    SafeDelete(fvPadsFiredR[i]);
+  }
+  for (uint i = 0; i < fvPadOccupancyR.size(); i++) {
+    SafeDelete(fvPadOccupancyR[i]);
   }
   fvUsPadsFiredR.clear();
   fvUsPadsFiredXY.clear();
@@ -92,13 +112,46 @@ void CbmMuchDigitizerQa::DeInit() {
   fvPadsFiredR.clear();
   fvPadOccupancyR.clear();
 
-  fNstations = 0;
-  fOutFolder.Clear();
+  SafeDelete(fhTrackLength);
+  SafeDelete(fhTrackLengthPi);
+  SafeDelete(fhTrackLengthPr);
+  SafeDelete(fhTrackLengthEl);
+  SafeDelete(fhTrackChargeVsTrackEnergyLog);
+  SafeDelete(fhTrackChargeVsTrackEnergyLogPi);
+  SafeDelete(fhTrackChargeVsTrackEnergyLogPr);
+  SafeDelete(fhTrackChargeVsTrackEnergyLogEl);
+  SafeDelete(fhTrackChargeVsTrackLength);
+  SafeDelete(fhTrackChargeVsTrackLengthPi);
+  SafeDelete(fhTrackChargeVsTrackLengthPr);
+  SafeDelete(fhTrackChargeVsTrackLengthEl);
+  SafeDelete(fhNpadsVsS);
+  SafeDelete(fCanvCharge);
+  SafeDelete(fCanvStationCharge);
+  SafeDelete(fCanvChargeVsEnergy);
+  SafeDelete(fCanvChargeVsLength);
+  SafeDelete(fCanvTrackLength);
+  SafeDelete(fCanvNpadsVsArea);
+  SafeDelete(fCanvUsPadsFiredXY);
+  SafeDelete(fCanvPadOccupancyR);
+  SafeDelete(fCanvPadsTotalR);
+  SafeDelete(fFitEl);
+  SafeDelete(fFitPi);
+  SafeDelete(fFitPr);
+
+  fNevents.SetVal(0);
+  fNstations  = 0;
+  fnPadSizesX = 0;
+  fnPadSizesY = 0;
+  fPadMinLx   = 0.;
+  fPadMinLy   = 0.;
+  fPadMaxLx   = 0.;
+  fPadMaxLy   = 0.;
 }
 
 // -------------------------------------------------------------------------
 InitStatus CbmMuchDigitizerQa::Init() {
-
+  DeInit();
+  fPointInfos              = new TClonesArray("CbmMuchPointInfo", 10);
   TDirectory* oldDirectory = gDirectory;
 
   FairRootManager* fManager = FairRootManager::Instance();
@@ -134,8 +187,9 @@ InitStatus CbmMuchDigitizerQa::Init() {
     fMCTracks = nullptr;
     fPoints   = nullptr;
   }
-
   histFolder = fOutFolder.AddFolder("hist", "Histogramms");
+  fNevents.SetVal(0);
+  histFolder->Add(&fNevents);
 
   //fVerbose = 3;
   InitCanvases();
@@ -570,9 +624,8 @@ void CbmMuchDigitizerQa::SetParContainers() {
 
 // -------------------------------------------------------------------------x
 void CbmMuchDigitizerQa::Exec(Option_t*) {
-
-  fNevents++;
-  LOG(info) << "Event: " << fNevents;
+  fNevents.SetVal(fNevents.GetVal() + 1);
+  LOG(debug) << "Event: " << fNevents.GetVal();
 
   if (CheckConsistency() != 0) { return; }
 
@@ -910,7 +963,7 @@ void CbmMuchDigitizerQa::DrawPadCanvases() {
   for (Int_t i = 0; i < fNstations; i++) {
     *fvPadsFiredR[i] = *fvUsPadsFiredR[i];
     //fvPadsFiredR[i]->Sumw2();
-    fvPadsFiredR[i]->Scale(1. / fNevents);
+    fvPadsFiredR[i]->Scale(1. / fNevents.GetVal());
     fvPadOccupancyR[i]->Divide(fvPadsFiredR[i], fvPadsTotalR[i]);
     fvPadOccupancyR[i]->Scale(100.);
 

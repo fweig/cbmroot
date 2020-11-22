@@ -10,6 +10,7 @@
 #define CbmMuchDigitizerQa_H
 
 #include "FairTask.h"
+#include "TParameter.h"
 #include <Rtypes.h>
 #include <RtypesCore.h>
 #include <TFolder.h>
@@ -96,8 +97,8 @@ private:
   TClonesArray* fMCTracks    = nullptr;
   TClonesArray* fPointInfos  = nullptr;  /// temporary additional information
 
-  TFolder fOutFolder;  /// output folder with histos and canvases
-  Int_t fNevents = 0;  /// number of processed events
+  TFolder fOutFolder;        /// output folder with histos and canvases
+  TParameter<int> fNevents;  /// number of processed events
 
   // internal unscaled histograms, need to be scaled at the output
   std::vector<TH1F*> fvUsPadsFiredR;   // fired pads vs R, per station
@@ -144,9 +145,8 @@ private:
   TF1* fFitPi = nullptr;
   TF1* fFitPr = nullptr;
 
-  Int_t fSignalPoints = 0;  // Number of signal MC points
-  Int_t fnPadSizesX   = 0;
-  Int_t fnPadSizesY   = 0;
+  Int_t fnPadSizesX = 0;
+  Int_t fnPadSizesY = 0;
 
   Double_t fPadMinLx = 0.;
   Double_t fPadMinLy = 0.;

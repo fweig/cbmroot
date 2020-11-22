@@ -25,6 +25,8 @@
 
 #include "CbmDefs.h"
 #include "CbmMCDataManager.h"
+#include "CbmMuchDigitizerQa.h"
+#include "CbmMuchHitFinderQa.h"
 #include "CbmMuchTransportQa.h"
 #include "CbmSetup.h"
 
@@ -153,6 +155,7 @@ void run_qa(Int_t nEvents   = 0,
   if (CbmSetup::Instance()->IsActive(ECbmModuleId::kMuch)) {
     run->AddTask(new CbmMuchTransportQa());
     run->AddTask(new CbmMuchDigitizerQa());
+    run->AddTask(new CbmMuchHitFinderQa());
   }
   // ------------------------------------------------------------------------
 

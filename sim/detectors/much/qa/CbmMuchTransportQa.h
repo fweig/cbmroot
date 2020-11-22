@@ -78,9 +78,9 @@ private:
   TClonesArray* fMcTracks = nullptr;
   ///
 
-  TFolder* histFolder;        /// subfolder for histograms
-  TFolder fOutFolder;         /// output folder with histos and canvases
-  TParameter<int> fhNevents;  /// number of processed events
+  TFolder* histFolder;       /// subfolder for histograms
+  TFolder fOutFolder;        /// output folder with histos and canvases
+  TParameter<int> fNevents;  /// number of processed events
 
   /// internal unscaled histogramms
   TH1F* fhUsNtraAll  = nullptr;  /// number of all tracks
