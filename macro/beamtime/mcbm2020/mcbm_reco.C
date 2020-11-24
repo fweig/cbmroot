@@ -35,24 +35,20 @@ void mcbm_reco(Int_t runId = 831, Int_t nTimeslices = 0) {
   // ------------------------------------------------------------------------
 
 
-  // ----    Debug option   -------------------------------------------------
-  gDebug = 0;
-  // ------------------------------------------------------------------------
-
-
   // -----   FairRunAna   ---------------------------------------------------
   FairRunAna* run             = new FairRunAna();
   FairFileSource* inputSource = new FairFileSource(inFile);
   run->SetSource(inputSource);
 
-  run->SetOutputFile(outFile);
-  //  run->SetGenerateRunInfo(kTRUE);
+  FairRootFileSink* outputSink = new FairRootFileSink(outFile);
+  run->SetSink(outputSink);
   run->SetGeomFile(geoFile);
 
+  // Define output file for FairMonitor histograms
   TString monitorFile {outFile};
   monitorFile.ReplaceAll("rec", "rec.monitor");
   FairMonitor::GetMonitor()->EnableMonitor(kTRUE, monitorFile);
-  // -----------------------------------------------------------------------
+  // ------------------------------------------------------------------------
 
 
   // -----   Logger settings   ----------------------------------------------
@@ -78,8 +74,9 @@ void mcbm_reco(Int_t runId = 831, Int_t nTimeslices = 0) {
 
   // -----   Local reconstruction in STS   ----------------------------------
   CbmRecoSts* recoSts = new CbmRecoSts();
-  //recoSts->SetTimeCutDigisAbs( 100 );// cluster finder: time cut in ns
-  //recoSts->SetTimeCutClustersAbs(100.); // hit finder: time cut in ns
+
+  //recoSts->SetTimeCutDigisAbs( 20 );// cluster finder: time cut in ns
+  //recoSts->SetTimeCutClustersAbs(20.); // hit finder: time cut in ns
 
   // ASIC params: #ADC channels, dyn. range, threshold, time resol., dead time,
   // noise RMS, zero-threshold crossing rate
@@ -115,9 +112,6 @@ void mcbm_reco(Int_t runId = 831, Int_t nTimeslices = 0) {
   // ------------------------------------------------------------------------
 
 
-  // ------------------------------------------------------------------------
-
-
   // -----   Local reconstruction in TRD   ----------------------------------
   // ------------------------------------------------------------------------
 
@@ -148,6 +142,7 @@ void mcbm_reco(Int_t runId = 831, Int_t nTimeslices = 0) {
   run->AddTask(hitProdPsd);
   // ------------------------------------------------------------------------
 
+
   // -----  Parameter database   --------------------------------------------
   std::cout << std::endl << std::endl;
   std::cout << "-I- " << myName << ": Set runtime DB" << std::endl;
@@ -156,7 +151,6 @@ void mcbm_reco(Int_t runId = 831, Int_t nTimeslices = 0) {
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
   parIo1->open(parFile.Data(), "UPDATE");
   rtdb->setFirstInput(parIo1);
-
   // ------------------------------------------------------------------------
 
 

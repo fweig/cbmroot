@@ -1,16 +1,18 @@
 // --------------------------------------------------------------------------
 //
 // Macro for reconstruction of mcbm data (2020)
-// Combined reconstruction (Event building + cluster + hit finder) for different subsystems.
+// Combined event based reconstruction (Event building + cluster + hit finder)
+// for different subsystems.
 //
 // --------------------------------------------------------------------------
 
 
 void mcbm_build_and_reco_kronos(UInt_t uRunIdx = 28,
-                                Int_t nEvents  = 300,
+                                Int_t nTimeslices  = 300,
                                 TString outDir = "data/") {
   UInt_t uRunId    = 0;
-  TString fileName = "data/unp_mcbm_0.root";
+  TString inFile = "./data/unp_mcbm_0.root";
+  TString parFileIn = "./data/unp_mcbm_params_0.root";
   if (99999 != uRunIdx) {
     std::vector<UInt_t> vuListRunId = {
       692, 698, 702, 704, 705, 706, 707,            //  7 =>  0 -  6
@@ -33,9 +35,12 @@ void mcbm_build_and_reco_kronos(UInt_t uRunIdx = 28,
     };
     if (vuListRunId.size() <= uRunIdx) return kFALSE;
     uRunId = vuListRunId[uRunIdx];
-    //fileName = Form("data/unp_mcbm_%03u.root", uRunId);
-    fileName = Form("/lustre/cbm/users/ploizeau/mcbm2020/"
-                    "unp_evt_data_7f229b3f_20201103/unp_mcbm_%i.root",
+
+    inFile = Form("/lustre/cbm/users/ploizeau/mcbm2020/"
+                    "unp_evt_data_7f229b3f_20201103/unp_mcbm_%u.root",
+                    uRunId);
+    parFileIn = Form("/lustre/cbm/users/ploizeau/mcbm2020/
+                      "unp_evt_data_7f229b3f_20201103/unp_mcbm_params_%u.root",
                     uRunId);
   }  // if( 99999 != uRunIdx )
 
@@ -45,44 +50,56 @@ void mcbm_build_and_reco_kronos(UInt_t uRunIdx = 28,
   // ========================================================================
   //          Adjust this part according to your requirements
 
-  // Verbosity level (0=quiet, 1=event level, 2=track level, 3=debug)
-  //  Int_t iVerbose = 1;
+  // --- Logger settings ----------------------------------------------------
+  TString logLevel     = "INFO";
+  TString logVerbosity = "LOW";
+  // ------------------------------------------------------------------------
 
-  // --- Set log output levels
-  FairLogger::GetLogger();
-  gLogger->SetLogScreenLevel("INFO");
-  //  gLogger->SetLogScreenLevel("DEBUG");
-  gLogger->SetLogVerbosityLevel("MEDIUM");
 
-  // MC file
-
-  TString srcDir   = gSystem->Getenv("VMCWORKDIR");
+  // -----   Environment   --------------------------------------------------
+  TString myName   = "mcbm_reco";  // this macro's name for screen output
+  TString srcDir   = gSystem->Getenv("VMCWORKDIR");  // top source directory
   TString paramDir = srcDir + "/macro/beamtime/mcbm2020/";
+  //    ------------------------------------------------------------------------
+
+
+  // -----   In- and output file names   ------------------------------------
+  TString geoFile = paramDir + "mcbm2020_reco.geo.root";  // Created in sim. run
+  TString parFileOut = Form("./data/reco_mcbm_evt_win_params_%u.root", uRunId);
+  TString outFile = Form("./data/reco_mcbm_evt_win_%u.root", uRunId);
+  // ------------------------------------------------------------------------
+
+
   // -----   Timer   --------------------------------------------------------
   TStopwatch timer;
   timer.Start();
   // ------------------------------------------------------------------------
 
-  // -----  Analysis run   --------------------------------------------------
-  //  FairRunOnline *fRun= new FairRunOnline();
-  FairRunAna* fRun = new FairRunAna();
-  fRun->SetEventHeaderPersistence(kFALSE);
 
-  FairFileSource* inputSource = new FairFileSource(fileName);
-  fRun->SetSource(inputSource);
+  // -----   FairRunAna   ---------------------------------------------------
+  FairRunAna* run = new FairRunAna();
+  run->SetEventHeaderPersistence(kFALSE);
 
-  TString runId                = TString::Format("%03u", uRunId);
-  TString outFile              = outDir + "/events_win_" + runId + ".root";
+  FairFileSource* inputSource = new FairFileSource(inFile);
+  run->SetSource(inputSource);
+
   FairRootFileSink* outputSink = new FairRootFileSink(outFile);
-  fRun->SetSink(outputSink);
+  run->SetSink(outputSink);
+  run->SetGeomFile(geoFile);
 
   // Define output file for FairMonitor histograms
-  //  TString monitorFile{outFile};
-  //  monitorFile.ReplaceAll("qa","qa.monitor");
-  FairMonitor::GetMonitor()->EnableMonitor(kTRUE);
-  //  FairMonitor::GetMonitor()->EnableMonitor(kFALSE);
+  TString monitorFile {outFile};
+  monitorFile.ReplaceAll("rec", "rec.monitor");
+  FairMonitor::GetMonitor()->EnableMonitor(kTRUE, monitorFile);
   // ------------------------------------------------------------------------
 
+
+  // -----   Logger settings   ----------------------------------------------
+  FairLogger::GetLogger()->SetLogScreenLevel(logLevel.Data());
+  FairLogger::GetLogger()->SetLogVerbosityLevel(logVerbosity.Data());
+  // ------------------------------------------------------------------------
+
+  //-------- Event builder --------------------------------------------------
   //  CbmMcbm2019TimeWinEventBuilder* eventBuilder = new CbmMcbm2019TimeWinEventBuilder();
   CbmMcbm2019TimeWinEventBuilderTask* eventBuilder =
     new CbmMcbm2019TimeWinEventBuilderTask();
@@ -154,37 +171,15 @@ void mcbm_build_and_reco_kronos(UInt_t uRunIdx = 28,
     eventBuilder->SetOutFilename(
       Form("%sHistosEvtWin_%03u.root", outDir.Data(), uRunId));
 
-  fRun->AddTask(eventBuilder);
-
-  // -----  Parameter database   --------------------------------------------
-
-  TString parFileIn =
-    Form("/lustre/cbm/users/ploizeau/mcbm2020/unp_evt_data_7f229b3f_20201103/"
-         "unp_mcbm_params_%i.root",
-         uRunId);
-  TString parFileOut = Form("reco_mcbm_params_%i.root", uRunId);
-
-
-  FairRuntimeDb* rtdb       = fRun->GetRuntimeDb();
-  FairParRootFileIo* parIo1 = new FairParRootFileIo();
-  FairParRootFileIo* parIo3 = new FairParRootFileIo();
-  parIo1->open(parFileIn.Data(), "READ");
-  parIo3->open(parFileOut.Data(), "RECREATE");
-  rtdb->setFirstInput(parIo1);
-  rtdb->setOutput(parIo3);
-
-  //----------------------------------Reconstruction-------------------------------------
-
-
+  run->AddTask(eventBuilder);
   // ------------------------------------------------------------------------
-  TString geoFileSts = paramDir + "mcbm2020_reco.geo.root";
-  //TString geoFileSts =
-  //  "/lustre/cbm/users/alberica/cbmroot/macro/beamtime/mcbm2020/data/test.geo.root";  // to be created by a simulation run
-  fRun->SetGeomFile(geoFileSts);
+
+
+  // -----   Reconstruction tasks   -----------------------------------------
 
   // -----   Local reconstruction in STS   ----------------------------------
   CbmRecoSts* recoSts = new CbmRecoSts();
-  //  recoSts->SetMode(kCbmRecoEvent);
+  recoSts->SetMode(kCbmRecoEvent);
 
   //recoSts->SetTimeCutDigisAbs( 20 );// cluster finder: time cut in ns
   //recoSts->SetTimeCutClustersAbs(20.); // hit finder: time cut in ns
@@ -218,7 +213,7 @@ void mcbm_build_and_reco_kronos(UInt_t uRunIdx = 28,
   auto sensorCond = new CbmStsParSensorCond(70., 140., 268., 17.5, 1.);
   recoSts->UseSensorCond(sensorCond);
 
-  fRun->AddTask(recoSts);
+  run->AddTask(recoSts);
   std::cout << "-I- : Added task " << recoSts->GetName() << std::endl;
   // ------------------------------------------------------------------------
 
@@ -232,54 +227,108 @@ void mcbm_build_and_reco_kronos(UInt_t uRunIdx = 28,
   CbmMuchFindHitsGem* muchFindHits =
     new CbmMuchFindHitsGem(muchDigiFile.Data(), flag);
   muchFindHits->SetBeamTimeDigi(kTRUE);
-  fRun->AddTask(muchFindHits);
+  run->AddTask(muchFindHits);
   std::cout << "-I- : Added task " << muchFindHits->GetName() << std::endl;
+  // ------------------------------------------------------------------------
 
-  //--------------------------------------------------------
+
+  // -----   Local reconstruction in TRD   ----------------------------------
+  // ------------------------------------------------------------------------
 
 
-  // -----   Intialise and run   --------------------------------------------
-  fRun->Init();
+  // -----   Local reconstruction in TOF   ----------------------------------
+  // ------------------------------------------------------------------------
 
-  //  rtdb->setOutput(parIo1);
-  //  rtdb->saveOutput();
-  //  rtdb->print();
 
-  cout << "Starting run" << endl;
-  if (0 == nEvents) {
-    fRun->Run(0, 0);  // run until end of input file
-  } else {
-    fRun->Run(0, nEvents);  // process  N Events
-  }
+  // -----   Local reconstruction of RICH Hits ------------------------------
+  CbmRichMCbmHitProducer* hitProdRich = new CbmRichMCbmHitProducer();
+  hitProdRich->setToTLimits(23.7, 30.0);
+  hitProdRich->applyToTCut();
+  TString sRichMapFile =
+    srcDir + "/macro/rich/mcbm/beamtime/mRICH_Mapping_vert_20190318_elView.geo";
+  hitProdRich->SetMappingFile(sRichMapFile.Data());
+  run->AddTask(hitProdRich);
+  // ------------------------------------------------------------------------
+
+  // -----   Local reconstruction in RICh -> Finding of Rings ---------------
+  CbmRichReconstruction* richReco = new CbmRichReconstruction();
+  richReco->UseMCbmSetup();
+  run->AddTask(richReco);
+  // ------------------------------------------------------------------------
+
+
+  // -----  Psd hit producer   ----------------------------------------------
+  CbmPsdMCbmHitProducer* hitProdPsd = new CbmPsdMCbmHitProducer();
+  run->AddTask(hitProdPsd);
+  // ------------------------------------------------------------------------
+
+
+  // -----  Parameter database   --------------------------------------------
+  std::cout << std::endl << std::endl;
+  std::cout << "-I- " << myName << ": Set runtime DB" << std::endl;
+  FairRuntimeDb* rtdb       = run->GetRuntimeDb();
+  FairParRootFileIo* parIo1 = new FairParRootFileIo();
+  FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
+  FairParRootFileIo* parIo3 = new FairParRootFileIo();
+  parIo1->open(parFileIn.Data(), "READ");
+  parIo3->open(parFileOut.Data(), "RECREATE");
+  rtdb->setFirstInput(parIo1);
+  // ------------------------------------------------------------------------
+
+
+  // -----   Run initialisation   -------------------------------------------
+  std::cout << std::endl;
+  std::cout << "-I- " << myName << ": Initialise run" << std::endl;
+  run->Init();
+  rtdb->setOutput(parIo3);
+  rtdb->saveOutput();
+  rtdb->print();
+  // ------------------------------------------------------------------------
+
+
+  // -----   Start run   ----------------------------------------------------
+  std::cout << std::endl << std::endl;
+  std::cout << "-I- " << myName << ": Starting run" << std::endl;
+  run->Run(0, nTimeslices);
   // ------------------------------------------------------------------------
 
 
   // -----   Finish   -------------------------------------------------------
   timer.Stop();
+  FairMonitor::GetMonitor()->Print();
   Double_t rtime = timer.RealTime();
   Double_t ctime = timer.CpuTime();
-  cout << endl << endl;
-  cout << "Macro finished succesfully." << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << endl;
-  cout << endl;
+  std::cout << std::endl << std::endl;
+  std::cout << "Macro finished successfully." << std::endl;
+  std::cout << "Output file is " << outFile << std::endl;
+  std::cout << "Parameter file is " << parFileOut << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
+            << std::endl;
+  std::cout << std::endl;
   // ------------------------------------------------------------------------
 
+
+  // -----   Resource monitoring   ------------------------------------------
   // Extract the maximal used memory an add is as Dart measurement
   // This line is filtered by CTest and the value send to CDash
   FairSystemInfo sysInfo;
   Float_t maxMemory = sysInfo.GetMaxMemory();
-  cout << "<DartMeasurement name=\"MaxMemory\" type=\"numeric/double\">";
-  cout << maxMemory;
-  cout << "</DartMeasurement>" << endl;
+  std::cout << "<DartMeasurement name=\"MaxMemory\" type=\"numeric/double\">";
+  std::cout << maxMemory;
+  std::cout << "</DartMeasurement>" << std::endl;
 
   Float_t cpuUsage = ctime / rtime;
-  cout << "<DartMeasurement name=\"CpuLoad\" type=\"numeric/double\">";
-  cout << cpuUsage;
-  cout << "</DartMeasurement>" << endl;
+  std::cout << "<DartMeasurement name=\"CpuLoad\" type=\"numeric/double\">";
+  std::cout << cpuUsage;
+  std::cout << "</DartMeasurement>" << std::endl;
+  // ------------------------------------------------------------------------
 
-  FairMonitor* tempMon = FairMonitor::GetMonitor();
-  tempMon->Print();
 
-  cout << " Test passed" << endl;
-  cout << " All ok " << endl;
+  // -----   Function needed for CTest runtime dependency   -----------------
+  //  RemoveGeoManager();
+  // ------------------------------------------------------------------------
+
+  /// --- Screen output for automatic tests
+  std::cout << " Test passed" << std::endl;
+  std::cout << " All ok " << std::endl;
 }

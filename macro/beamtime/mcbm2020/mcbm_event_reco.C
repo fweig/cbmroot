@@ -1,7 +1,8 @@
 // --------------------------------------------------------------------------
 //
 // Macro for reconstruction of mcbm data (2020)
-// MUCH STS  local reconstruction (Event Building (Florian one) + cluster + hit finder) for the time being
+// Combined Event based local reconstruction (Event Building (Florian one) +
+// cluster + hit finder) for different subsystems.
 //
 // --------------------------------------------------------------------------
 
@@ -17,7 +18,7 @@ void mcbm_event_reco(Int_t runId = 831, Int_t nTimeslices = 300) {
   TString myName   = "mcbm_reco";  // this macro's name for screen output
   TString srcDir   = gSystem->Getenv("VMCWORKDIR");  // top source directory
   TString paramDir = srcDir + "/macro/beamtime/mcbm2020/";
-  // TString srcDir1 = gSystem->Getenv("SLURM_INDEX");  // ------------------------------------------------------------------------
+  // ------------------------------------------------------------------------
 
 
   // -----   In- and output file names   ------------------------------------
@@ -28,20 +29,9 @@ void mcbm_event_reco(Int_t runId = 831, Int_t nTimeslices = 300) {
   // ------------------------------------------------------------------------
 
 
-  // ------------------------------------------------------------------------
-  TString parDir =
-    TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
-  TString muchDigiFile(
-    parDir + "/much/much_v19c_mcbm_digi_sector.root");  // MUCH digi file
-
   // -----   Timer   --------------------------------------------------------
   TStopwatch timer;
   timer.Start();
-  // ------------------------------------------------------------------------
-
-
-  // ----    Debug option   -------------------------------------------------
-  gDebug = 0;
   // ------------------------------------------------------------------------
 
 
@@ -50,14 +40,15 @@ void mcbm_event_reco(Int_t runId = 831, Int_t nTimeslices = 300) {
   FairFileSource* inputSource = new FairFileSource(inFile);
   run->SetSource(inputSource);
 
-  run->SetOutputFile(outFile);
-  //run->SetGenerateRunInfo(kTRUE);
+  FairRootFileSink* outputSink = new FairRootFileSink(outFile);
+  run->SetSink(outputSink);
   run->SetGeomFile(geoFile);
 
+  // Define output file for FairMonitor histograms
   TString monitorFile {outFile};
   monitorFile.ReplaceAll("rec", "rec.monitor");
   FairMonitor::GetMonitor()->EnableMonitor(kTRUE, monitorFile);
-  // -----------------------------------------------------------------------
+  // ------------------------------------------------------------------------
 
 
   // -----   Logger settings   ----------------------------------------------
@@ -76,11 +67,17 @@ void mcbm_event_reco(Int_t runId = 831, Int_t nTimeslices = 300) {
   eventBuilder->SetTriggerMinNumberMuch(1);
   eventBuilder->SetTriggerMinNumberTof(10);
   run->AddTask(eventBuilder);
+  // ------------------------------------------------------------------------
+
 
   // -----   Reconstruction tasks   -----------------------------------------
 
-  // ------------------------------------------------------------------------
+  // -----   Local reconstruction in MUCH   ---------------------------------
   Int_t flag = 1;
+  TString parDir =
+    TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
+  TString muchDigiFile(
+    parDir + "/much/much_v19c_mcbm_digi_sector.root");  // MUCH digi file
   CbmMuchFindHitsGem* muchFindHits =
     new CbmMuchFindHitsGem(muchDigiFile.Data(), flag);
   muchFindHits->SetBeamTimeDigi(kTRUE);
@@ -91,7 +88,7 @@ void mcbm_event_reco(Int_t runId = 831, Int_t nTimeslices = 300) {
 
   // -----   Local reconstruction in STS   ----------------------------------
   CbmRecoSts* recoSts = new CbmRecoSts();
-  //  recoSts->SetMode(kCbmRecoEvent);
+  recoSts->SetMode(kCbmRecoEvent);
 
   //recoSts->SetTimeCutDigisAbs( 20 );// cluster finder: time cut in ns
   //recoSts->SetTimeCutClustersAbs(20.); // hit finder: time cut in ns
@@ -125,8 +122,39 @@ void mcbm_event_reco(Int_t runId = 831, Int_t nTimeslices = 300) {
   auto sensorCond = new CbmStsParSensorCond(70., 140., 268., 17.5, 1.);
   recoSts->UseSensorCond(sensorCond);
 
-  fRun->AddTask(recoSts);
+  run->AddTask(recoSts);
   std::cout << "-I- : Added task " << recoSts->GetName() << std::endl;
+  // ------------------------------------------------------------------------
+
+
+  // -----   Local reconstruction in TRD   ----------------------------------
+  // ------------------------------------------------------------------------
+
+
+  // -----   Local reconstruction in TOF   ----------------------------------
+  // ------------------------------------------------------------------------
+
+
+  // -----   Local reconstruction of RICH Hits ------------------------------
+  CbmRichMCbmHitProducer* hitProdRich = new CbmRichMCbmHitProducer();
+  hitProdRich->setToTLimits(23.7, 30.0);
+  hitProdRich->applyToTCut();
+  TString sRichMapFile =
+    srcDir + "/macro/rich/mcbm/beamtime/mRICH_Mapping_vert_20190318_elView.geo";
+  hitProdRich->SetMappingFile(sRichMapFile.Data());
+  run->AddTask(hitProdRich);
+  // ------------------------------------------------------------------------
+
+  // -----   Local reconstruction in RICh -> Finding of Rings ---------------
+  CbmRichReconstruction* richReco = new CbmRichReconstruction();
+  richReco->UseMCbmSetup();
+  run->AddTask(richReco);
+  // ------------------------------------------------------------------------
+
+
+  // -----  Psd hit producer   ----------------------------------------------
+  CbmPsdMCbmHitProducer* hitProdPsd = new CbmPsdMCbmHitProducer();
+  run->AddTask(hitProdPsd);
   // ------------------------------------------------------------------------
 
 
@@ -170,8 +198,6 @@ void mcbm_event_reco(Int_t runId = 831, Int_t nTimeslices = 300) {
   std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
             << std::endl;
   std::cout << std::endl;
-  std::cout << " Test passed" << std::endl;
-  std::cout << " All ok " << std::endl;
   // ------------------------------------------------------------------------
 
 
@@ -194,4 +220,8 @@ void mcbm_event_reco(Int_t runId = 831, Int_t nTimeslices = 300) {
   // -----   Function needed for CTest runtime dependency   -----------------
   //  RemoveGeoManager();
   // ------------------------------------------------------------------------
+
+  /// --- Screen output for automatic tests
+  std::cout << " Test passed" << std::endl;
+  std::cout << " All ok " << std::endl;
 }

@@ -17,7 +17,6 @@ void mcbm_reco_kronos(Int_t runId = 831, Int_t nTimeslices = 0) {
   TString myName   = "mcbm_reco";  // this macro's name for screen output
   TString srcDir   = gSystem->Getenv("VMCWORKDIR");  // top source directory
   TString paramDir = srcDir + "/macro/beamtime/mcbm2020/";
-  // TString srcDir1 = gSystem->Getenv("SLURM_INDEX");
   //    ------------------------------------------------------------------------
 
 
@@ -29,8 +28,8 @@ void mcbm_reco_kronos(Int_t runId = 831, Int_t nTimeslices = 0) {
     Form("/lustre/cbm/users/ploizeau/mcbm2020/unp_evt_data_7f229b3f_20201103/"
          "unp_mcbm_params_%i.root",
          runId);
-  TString parFileOut = Form("reco_mcbm_params_%i.root", runId);
   TString geoFile = paramDir + "mcbm2020_reco.geo.root";  // Created in sim. run
+  TString parFileOut = Form("./data/reco_mcbm_params_%i.root", runId);
   TString outFile = Form("./data/reco_mcbm_%i.root", runId);
   // ------------------------------------------------------------------------
 
@@ -41,24 +40,20 @@ void mcbm_reco_kronos(Int_t runId = 831, Int_t nTimeslices = 0) {
   // ------------------------------------------------------------------------
 
 
-  // ----    Debug option   -------------------------------------------------
-  gDebug = 0;
-  // ------------------------------------------------------------------------
-
-
   // -----   FairRunAna   ---------------------------------------------------
   FairRunAna* run             = new FairRunAna();
   FairFileSource* inputSource = new FairFileSource(inFile);
   run->SetSource(inputSource);
 
-  run->SetOutputFile(outFile);
-  //run->SetGenerateRunInfo(kTRUE);
+  FairRootFileSink* outputSink = new FairRootFileSink(outFile);
+  run->SetSink(outputSink);
   run->SetGeomFile(geoFile);
 
+  // Define output file for FairMonitor histograms
   TString monitorFile {outFile};
   monitorFile.ReplaceAll("rec", "rec.monitor");
   FairMonitor::GetMonitor()->EnableMonitor(kTRUE, monitorFile);
-  // -----------------------------------------------------------------------
+  // ------------------------------------------------------------------------
 
 
   // -----   Logger settings   ----------------------------------------------
@@ -80,13 +75,13 @@ void mcbm_reco_kronos(Int_t runId = 831, Int_t nTimeslices = 0) {
   muchFindHits->SetBeamTimeDigi(kTRUE);
   run->AddTask(muchFindHits);
   std::cout << "-I- : Added task " << muchFindHits->GetName() << std::endl;
-
   //--------------------------------------------------------
 
   // -----   Local reconstruction in STS   ----------------------------------
   CbmRecoSts* recoSts = new CbmRecoSts();
-  //recoSts->SetTimeCutDigisAbs( 100 );// cluster finder: time cut in ns
-  //recoSts->SetTimeCutClustersAbs(100.); // hit finder: time cut in ns
+
+  //recoSts->SetTimeCutDigisAbs( 20 );// cluster finder: time cut in ns
+  //recoSts->SetTimeCutClustersAbs(20.); // hit finder: time cut in ns
 
   // ASIC params: #ADC channels, dyn. range, threshold, time resol., dead time,
   // noise RMS, zero-threshold crossing rate
@@ -152,27 +147,25 @@ void mcbm_reco_kronos(Int_t runId = 831, Int_t nTimeslices = 0) {
   run->AddTask(hitProdPsd);
   // ------------------------------------------------------------------------
 
+
   // -----  Parameter database   --------------------------------------------
   std::cout << std::endl << std::endl;
   std::cout << "-I- " << myName << ": Set runtime DB" << std::endl;
   FairRuntimeDb* rtdb        = run->GetRuntimeDb();
   FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
-  // ------------------------------------------------------------------------
-
   FairParRootFileIo* parIo3 = new FairParRootFileIo();
   parIo1->open(parFileIn.Data(), "READ");
   parIo3->open(parFileOut.Data(), "RECREATE");
   rtdb->setFirstInput(parIo1);
-  rtdb->setOutput(parIo3);
+  // ------------------------------------------------------------------------
 
-  //--------------------------------------------------------------------------
 
   // -----   Run initialisation   -------------------------------------------
   std::cout << std::endl;
   std::cout << "-I- " << myName << ": Initialise run" << std::endl;
   run->Init();
-  rtdb->setOutput(parIo1);
+  rtdb->setOutput(parIo3);
   rtdb->saveOutput();
   rtdb->print();
   // ------------------------------------------------------------------------
