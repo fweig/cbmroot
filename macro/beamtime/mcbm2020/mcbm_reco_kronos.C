@@ -14,10 +14,10 @@ void mcbm_reco_kronos(Int_t runId = 831, Int_t nTimeslices = 0) {
 
 
   // -----   Environment   --------------------------------------------------
-  TString myName = "mcbm_reco";  // this macro's name for screen output
-  TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
+  TString myName   = "mcbm_reco";  // this macro's name for screen output
+  TString srcDir   = gSystem->Getenv("VMCWORKDIR");  // top source directory
   TString paramDir = srcDir + "/macro/beamtime/mcbm2020/";
-  // TString srcDir1 = gSystem->Getenv("SLURM_INDEX");  
+  // TString srcDir1 = gSystem->Getenv("SLURM_INDEX");
   //    ------------------------------------------------------------------------
 
 
@@ -71,9 +71,12 @@ void mcbm_reco_kronos(Int_t runId = 831, Int_t nTimeslices = 0) {
 
   // -----   Local reconstruction in MUCH   ---------------------------------
   Int_t flag = 1;
-  TString parDir = TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
-  TString muchDigiFile(parDir + "/much/much_v19c_mcbm_digi_sector.root"); // MUCH digi file
-  CbmMuchFindHitsGem* muchFindHits = new CbmMuchFindHitsGem(muchDigiFile.Data(), flag);
+  TString parDir =
+    TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
+  TString muchDigiFile(
+    parDir + "/much/much_v19c_mcbm_digi_sector.root");  // MUCH digi file
+  CbmMuchFindHitsGem* muchFindHits =
+    new CbmMuchFindHitsGem(muchDigiFile.Data(), flag);
   muchFindHits->SetBeamTimeDigi(kTRUE);
   run->AddTask(muchFindHits);
   std::cout << "-I- : Added task " << muchFindHits->GetName() << std::endl;
@@ -119,8 +122,6 @@ void mcbm_reco_kronos(Int_t runId = 831, Int_t nTimeslices = 0) {
   // ------------------------------------------------------------------------
 
 
-
-
   // -----   Local reconstruction in TRD   ----------------------------------
   // ------------------------------------------------------------------------
 
@@ -159,7 +160,7 @@ void mcbm_reco_kronos(Int_t runId = 831, Int_t nTimeslices = 0) {
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
   // ------------------------------------------------------------------------
 
-  FairParRootFileIo* parIo3  = new FairParRootFileIo();
+  FairParRootFileIo* parIo3 = new FairParRootFileIo();
   parIo1->open(parFileIn.Data(), "READ");
   parIo3->open(parFileOut.Data(), "RECREATE");
   rtdb->setFirstInput(parIo1);

@@ -65,9 +65,12 @@ void mcbm_reco(Int_t runId = 831, Int_t nTimeslices = 0) {
 
   // -----   Local reconstruction in MUCH   ---------------------------------
   Int_t flag = 1;
-  TString parDir = TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
-  TString muchDigiFile(parDir + "/much/much_v19c_mcbm_digi_sector.root"); // MUCH digi file
-  CbmMuchFindHitsGem* muchFindHits = new CbmMuchFindHitsGem(muchDigiFile.Data(), flag);
+  TString parDir =
+    TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
+  TString muchDigiFile(
+    parDir + "/much/much_v19c_mcbm_digi_sector.root");  // MUCH digi file
+  CbmMuchFindHitsGem* muchFindHits =
+    new CbmMuchFindHitsGem(muchDigiFile.Data(), flag);
   muchFindHits->SetBeamTimeDigi(kTRUE);
   run->AddTask(muchFindHits);
   std::cout << "-I- : Added task " << muchFindHits->GetName() << std::endl;

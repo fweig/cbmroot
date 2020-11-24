@@ -56,7 +56,7 @@ void mcbm_build_and_reco_kronos(UInt_t uRunIdx = 28,
 
   // MC file
 
-  TString srcDir = gSystem->Getenv("VMCWORKDIR");
+  TString srcDir   = gSystem->Getenv("VMCWORKDIR");
   TString paramDir = srcDir + "/macro/beamtime/mcbm2020/";
   // -----   Timer   --------------------------------------------------------
   TStopwatch timer;
@@ -157,7 +157,7 @@ void mcbm_build_and_reco_kronos(UInt_t uRunIdx = 28,
   fRun->AddTask(eventBuilder);
 
   // -----  Parameter database   --------------------------------------------
-  
+
   TString parFileIn =
     Form("/lustre/cbm/users/ploizeau/mcbm2020/unp_evt_data_7f229b3f_20201103/"
          "unp_mcbm_params_%i.root",
@@ -167,7 +167,7 @@ void mcbm_build_and_reco_kronos(UInt_t uRunIdx = 28,
 
   FairRuntimeDb* rtdb       = fRun->GetRuntimeDb();
   FairParRootFileIo* parIo1 = new FairParRootFileIo();
-  FairParRootFileIo* parIo3  = new FairParRootFileIo();
+  FairParRootFileIo* parIo3 = new FairParRootFileIo();
   parIo1->open(parFileIn.Data(), "READ");
   parIo3->open(parFileOut.Data(), "RECREATE");
   rtdb->setFirstInput(parIo1);
@@ -176,9 +176,8 @@ void mcbm_build_and_reco_kronos(UInt_t uRunIdx = 28,
   //----------------------------------Reconstruction-------------------------------------
 
 
-  
   // ------------------------------------------------------------------------
-  TString geoFileSts = paramDir + "mcbm2020_reco.geo.root";  
+  TString geoFileSts = paramDir + "mcbm2020_reco.geo.root";
   //TString geoFileSts =
   //  "/lustre/cbm/users/alberica/cbmroot/macro/beamtime/mcbm2020/data/test.geo.root";  // to be created by a simulation run
   fRun->SetGeomFile(geoFileSts);
@@ -226,15 +225,17 @@ void mcbm_build_and_reco_kronos(UInt_t uRunIdx = 28,
 
   // -----   Local reconstruction in MUCH   ---------------------------------
   Int_t flag = 1;
-  TString parDir = TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
-  TString muchDigiFile(parDir + "/much/much_v19c_mcbm_digi_sector.root"); // MUCH digi file
-  CbmMuchFindHitsGem* muchFindHits = new CbmMuchFindHitsGem(muchDigiFile.Data(), flag);
+  TString parDir =
+    TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
+  TString muchDigiFile(
+    parDir + "/much/much_v19c_mcbm_digi_sector.root");  // MUCH digi file
+  CbmMuchFindHitsGem* muchFindHits =
+    new CbmMuchFindHitsGem(muchDigiFile.Data(), flag);
   muchFindHits->SetBeamTimeDigi(kTRUE);
   fRun->AddTask(muchFindHits);
   std::cout << "-I- : Added task " << muchFindHits->GetName() << std::endl;
 
   //--------------------------------------------------------
-
 
 
   // -----   Intialise and run   --------------------------------------------

@@ -14,8 +14,8 @@ void mcbm_event_reco(Int_t runId = 831, Int_t nTimeslices = 300) {
 
 
   // -----   Environment   --------------------------------------------------
-  TString myName = "mcbm_reco";  // this macro's name for screen output
-  TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
+  TString myName   = "mcbm_reco";  // this macro's name for screen output
+  TString srcDir   = gSystem->Getenv("VMCWORKDIR");  // top source directory
   TString paramDir = srcDir + "/macro/beamtime/mcbm2020/";
   // TString srcDir1 = gSystem->Getenv("SLURM_INDEX");  // ------------------------------------------------------------------------
 
@@ -29,8 +29,10 @@ void mcbm_event_reco(Int_t runId = 831, Int_t nTimeslices = 300) {
 
 
   // ------------------------------------------------------------------------
-  TString parDir = TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
-  TString muchDigiFile(parDir + "/much/much_v19c_mcbm_digi_sector.root"); // MUCH digi file
+  TString parDir =
+    TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
+  TString muchDigiFile(
+    parDir + "/much/much_v19c_mcbm_digi_sector.root");  // MUCH digi file
 
   // -----   Timer   --------------------------------------------------------
   TStopwatch timer;
@@ -66,7 +68,7 @@ void mcbm_event_reco(Int_t runId = 831, Int_t nTimeslices = 300) {
   //--------------------event builder-------------------//
   CbmMcbm2018EventBuilder* eventBuilder = new CbmMcbm2018EventBuilder();
   // eventBuilder->SetEventBuilderAlgo(EventBuilderAlgo::MaximumTimeGap);
-   //eventBuilder->SetMaximumTimeGap(50.);
+  //eventBuilder->SetMaximumTimeGap(50.);
   eventBuilder->SetEventBuilderAlgo(EventBuilderAlgo::FixedTimeWindow);
   eventBuilder->SetFixedTimeWindow(200.);
   eventBuilder->SetTriggerMinNumberT0(1);
@@ -79,8 +81,9 @@ void mcbm_event_reco(Int_t runId = 831, Int_t nTimeslices = 300) {
 
   // ------------------------------------------------------------------------
   Int_t flag = 1;
-  CbmMuchFindHitsGem* muchFindHits = new CbmMuchFindHitsGem(muchDigiFile.Data(), flag);
-  muchFindHits->SetBeamTimeDigi(kTRUE);  
+  CbmMuchFindHitsGem* muchFindHits =
+    new CbmMuchFindHitsGem(muchDigiFile.Data(), flag);
+  muchFindHits->SetBeamTimeDigi(kTRUE);
   run->AddTask(muchFindHits);
   std::cout << "-I- : Added task " << muchFindHits->GetName() << std::endl;
   //-------------------------------------------------------------------------------
