@@ -14,7 +14,7 @@
 //#include "CbmHistManager.h"
 #include "CbmTbDaqBuffer.h"
 #include "CbmTofAddress.h"
-#include "CbmTofDetectorId_v14a.h"  // in cbmdata/tof
+#include "CbmTofDetectorId_v21a.h"  // in cbmdata/tof
 #include "CbmTofDigi.h"
 
 #include "StorableTimeslice.hpp"
@@ -205,6 +205,7 @@ void CbmDeviceUnpackTofMcbm2018::InitTask() try {
               }
             break;
 
+	  case 4:
           case 9:  // HD 2-RPC boxes
             for (Int_t iRpc = 0; iRpc < 2; iRpc++) {
               Int_t iAddr = CbmTofAddress::GetUniqueAddress(
@@ -584,6 +585,7 @@ Bool_t CbmDeviceUnpackTofMcbm2018::ReInitContainers() {
 
         break;
 
+      case 4:
       case 9:  // Star2 boxes
       {
         LOG(info) << " Map Star2 box  at GBTX  -  iCh = " << iCh;
