@@ -74,8 +74,9 @@ void CbmTofCreateDigiPar::SetParContainers() {
   LOG(info) << " * CbmTofCreateDigiPar:: SetParContainers() ";
 
   // Get Base Container
-  FairRunAna* ana     = FairRunAna::Instance();
-  FairRuntimeDb* rtdb = ana->GetRuntimeDb();
+  //FairRunAna* ana     = FairRunAna::Instance();
+  //FairRuntimeDb* rtdb = ana->GetRuntimeDb();
+  FairRuntimeDb* rtdb = FairRuntimeDb::instance();
 
   fDigiPar = (CbmTofDigiPar*) (rtdb->getContainer("CbmTofDigiPar"));
 
@@ -89,8 +90,9 @@ InitStatus CbmTofCreateDigiPar::ReInit() {
   LOG(info) << " * CbmTofCreateDigiPar * :: ReInit() ";
 
   // Get Base Container
-  FairRunAna* ana     = FairRunAna::Instance();
-  FairRuntimeDb* rtdb = ana->GetRuntimeDb();
+  //FairRunAna* ana     = FairRunAna::Instance();
+  //FairRuntimeDb* rtdb = ana->GetRuntimeDb();
+  FairRuntimeDb* rtdb = FairRuntimeDb::instance();
 
   fDigiPar = (CbmTofDigiPar*) (rtdb->getContainer("CbmTofDigiPar"));
 
