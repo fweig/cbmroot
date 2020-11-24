@@ -219,6 +219,7 @@ void ana_trks_eval(Int_t nEvents        = 10000,
   tofTrackFinder->SetSIGLIM(dChi2Lim2
                             * 2.);  // matching window in multiples of chi2
   tofTrackFinder->SetChiMaxAccept(dChi2Lim2);  // max tracklet chi2
+  tofTrackFinder->SetSIGLIMMOD(5.);  // max deviation for last hit
 
   Int_t iMinNofHits   = -1;
   Int_t iNStations    = 0;
@@ -273,7 +274,7 @@ void ana_trks_eval(Int_t nEvents        = 10000,
 
     case 2:
       iMinNofHits   = 3;
-      iNStations    = 28;
+      iNStations    = 27;
       iNReqStations = 4;
       tofFindTracks->SetStation(0, 0, 2, 2);
       tofFindTracks->SetStation(1, 0, 0, 2);
@@ -302,45 +303,45 @@ void ana_trks_eval(Int_t nEvents        = 10000,
       tofFindTracks->SetStation(24, 0, 3, 4);
       tofFindTracks->SetStation(25, 9, 0, 0);
       tofFindTracks->SetStation(26, 9, 0, 1);
-      tofFindTracks->SetStation(27, 5, 0, 0);
       break;
 
     case 3:
       iMinNofHits   = 3;
       iNStations    = 16;
       iNReqStations = 4;
-      tofFindTracks->SetStation(0, 5, 0, 0);
-      tofFindTracks->SetStation(1, 0, 2, 2);
-      tofFindTracks->SetStation(2, 0, 1, 2);
-      tofFindTracks->SetStation(3, 0, 0, 2);
+      tofFindTracks->SetStation(0, 0, 2, 2);
+      tofFindTracks->SetStation(1, 0, 1, 2);
+      tofFindTracks->SetStation(2, 0, 0, 2);
 
-      tofFindTracks->SetStation(4, 0, 2, 1);
-      tofFindTracks->SetStation(5, 0, 1, 1);
-      tofFindTracks->SetStation(6, 0, 0, 1);
+      tofFindTracks->SetStation(3, 0, 2, 1);
+      tofFindTracks->SetStation(4, 0, 1, 1);
+      tofFindTracks->SetStation(5, 0, 0, 1);
 
-      tofFindTracks->SetStation(7, 0, 2, 3);
-      tofFindTracks->SetStation(8, 0, 1, 3);
-      tofFindTracks->SetStation(9, 0, 0, 3);
+      tofFindTracks->SetStation(6, 0, 2, 3);
+      tofFindTracks->SetStation(7, 0, 1, 3);
+      tofFindTracks->SetStation(8, 0, 0, 3);
 
-      tofFindTracks->SetStation(10, 0, 2, 0);
-      tofFindTracks->SetStation(11, 0, 1, 0);
-      tofFindTracks->SetStation(12, 0, 0, 0);
+      tofFindTracks->SetStation(9, 0, 2, 0);
+      tofFindTracks->SetStation(10, 0, 1, 0);
+      tofFindTracks->SetStation(11, 0, 0, 0);
 
-      tofFindTracks->SetStation(13, 0, 2, 4);
-      tofFindTracks->SetStation(14, 0, 1, 4);
-      tofFindTracks->SetStation(15, 0, 0, 4);
+      tofFindTracks->SetStation(12, 0, 2, 4);
+      tofFindTracks->SetStation(13, 0, 1, 4);
+      tofFindTracks->SetStation(14, 0, 0, 4);
+
+      tofFindTracks->SetStation(15, 5, 0, 0);
 
       /*
-     tofFindTracks->SetStation(16, 0, 3, 2);         
-     tofFindTracks->SetStation(17, 0, 4, 2);  
-     tofFindTracks->SetStation(18, 0, 3, 1);         
-     tofFindTracks->SetStation(19, 0, 4, 1);
-     tofFindTracks->SetStation(20, 0, 3, 3);         
-     tofFindTracks->SetStation(21, 0, 4, 3);
-     tofFindTracks->SetStation(22, 0, 3, 0);         
-     tofFindTracks->SetStation(23, 0, 4, 0);
-     tofFindTracks->SetStation(24, 0, 3, 4);         
-     tofFindTracks->SetStation(25, 0, 4, 4); 
+     tofFindTracks->SetStation(15, 0, 3, 2);         
+     tofFindTracks->SetStation(16, 0, 4, 2);  
+     tofFindTracks->SetStation(17, 0, 3, 1);         
+     tofFindTracks->SetStation(18, 0, 4, 1);
+     tofFindTracks->SetStation(19, 0, 3, 3);         
+     tofFindTracks->SetStation(20, 0, 4, 3);
+     tofFindTracks->SetStation(21, 0, 3, 0);         
+     tofFindTracks->SetStation(22, 0, 4, 0);
+     tofFindTracks->SetStation(23, 0, 3, 4);         
+     tofFindTracks->SetStation(24, 0, 4, 4); 
      */
       break;
 
@@ -483,6 +484,56 @@ void ana_trks_eval(Int_t nEvents        = 10000,
       tofFindTracks->SetStation(2, 0, 0, 2);
       tofFindTracks->SetStation(3, 0, 1, 2);
       break;
+      
+    case 30:
+      iMinNofHits   = 3;
+      iNStations    = 4;
+      iNReqStations = 4;
+      tofFindTracks->SetStation(0, 0, 2, 0);
+      tofFindTracks->SetStation(1, 0, 0, 0);
+      tofFindTracks->SetStation(2, 5, 0, 0);
+      tofFindTracks->SetStation(3, 0, 1, 0);
+      break;      
+
+    case 31:
+      iMinNofHits   = 3;
+      iNStations    = 4;
+      iNReqStations = 4;
+      tofFindTracks->SetStation(0, 0, 2, 1);
+      tofFindTracks->SetStation(1, 0, 0, 1);
+      tofFindTracks->SetStation(2, 5, 0, 0);
+      tofFindTracks->SetStation(3, 0, 1, 1);
+      break;
+            
+    case 32:
+      iMinNofHits   = 3;
+      iNStations    = 4;
+      iNReqStations = 4;
+      tofFindTracks->SetStation(0, 0, 2, 2);
+      tofFindTracks->SetStation(1, 0, 0, 2);
+      tofFindTracks->SetStation(2, 5, 0, 0);
+      tofFindTracks->SetStation(3, 0, 1, 2);
+      break;      
+      
+    case 33:
+      iMinNofHits   = 3;
+      iNStations    = 4;
+      iNReqStations = 4;
+      tofFindTracks->SetStation(0, 0, 2, 3);
+      tofFindTracks->SetStation(1, 0, 0, 3);
+      tofFindTracks->SetStation(2, 5, 0, 0);
+      tofFindTracks->SetStation(3, 0, 1, 3);
+      break;      
+      
+    case 34:
+      iMinNofHits   = 3;
+      iNStations    = 4;
+      iNReqStations = 4;
+      tofFindTracks->SetStation(0, 0, 2, 4);
+      tofFindTracks->SetStation(1, 0, 0, 4);
+      tofFindTracks->SetStation(2, 5, 0, 0);
+      tofFindTracks->SetStation(3, 0, 1, 4);
+      break;       
 
     default:
       cout << "Tracking setup " << iTrackingSetup << " not implemented "
