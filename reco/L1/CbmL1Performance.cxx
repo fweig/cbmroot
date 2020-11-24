@@ -675,8 +675,7 @@ void CbmL1::
     first_call = 0;
 
     TDirectory* curdir = gDirectory;
-    gDirectory         = histodir;
-    gDirectory->cd("L1");
+    gDirectory         = fHistoDir;
 
     p_eff_all_vs_mom    = new TProfile("p_eff_all_vs_mom",
                                     "AllSet Efficiency vs Momentum",
@@ -1553,8 +1552,7 @@ void CbmL1::TrackFitPerformance() {
     first_call = 0;
 
     TDirectory* currentDir = gDirectory;
-    gDirectory             = histodir;
-    gDirectory->cd("L1");
+    gDirectory             = fHistoDir;
     gDirectory->mkdir("Fit");
     gDirectory->cd("Fit");
     {
@@ -2283,8 +2281,7 @@ void CbmL1::InputPerformance() {
     first_call = 0;
 
     TDirectory* currentDir = gDirectory;
-    gDirectory             = histodir;
-    gDirectory->cd("L1");
+    gDirectory             = fHistoDir;
     gDirectory->mkdir("Input");
     gDirectory->cd("Input");
     gDirectory->mkdir("STS");

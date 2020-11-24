@@ -177,7 +177,6 @@ CbmL1::CbmL1()
   , dFEI2vMCPoints()
   , dFEI2vMCTracks()
   , fData(nullptr)
-  , histodir(nullptr)
   , fFindParticlesMode()
   , fStsMatBudgetFileName("")
   , fMvdMatBudgetFileName("")
@@ -287,7 +286,6 @@ CbmL1::CbmL1(const char* name,
   , dFEI2vMCPoints()
   , dFEI2vMCTracks()
   , fData(nullptr)
-  , histodir(nullptr)
   , fFindParticlesMode(findParticleMode_)
   , fStsMatBudgetFileName("")
   , fMvdMatBudgetFileName("")
@@ -389,7 +387,7 @@ InitStatus CbmL1::Init() {
 
   fUseMVD = 0;
 
-  histodir = gROOT->mkdir("L1");
+  fHistoDir = gROOT->mkdir("L1");
 
 
   // turn on reconstruction in sub-detectors
@@ -1620,7 +1618,7 @@ void CbmL1::Finish() {
   // Open output file and write histograms
   TFile* outfile = new TFile("L1_histo.root", "RECREATE");
   outfile->cd();
-  writedir2current(histodir);
+  writedir2current(fHistoDir);
   outfile->Close();
   outfile->Delete();
 

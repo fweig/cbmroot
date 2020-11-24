@@ -349,8 +349,6 @@ private:
   // DFEI2I::iterator map_it;
   L1AlgoInputData* fData;
 
-  TDirectory* histodir;
-
   static CbmL1* fInstance;
 
 private:
