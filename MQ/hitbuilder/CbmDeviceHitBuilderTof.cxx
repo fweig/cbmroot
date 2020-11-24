@@ -414,7 +414,7 @@ Bool_t CbmDeviceHitBuilderTof::InitContainers() {
   Int_t iGeoVersion;
   FairParSet* cont;
 
-  for (Int_t iSet = 0; iSet < NSet; iSet++) {
+  for (Int_t iSet = 1; iSet < NSet; iSet++) {
     std::string message = parSet[iSet] + "," + to_string(fiRunId);
     LOG(info) << "Requesting parameter container, sending message: " << message;
 
@@ -2077,8 +2077,9 @@ Bool_t CbmDeviceHitBuilderTof::InspectRawDigis() {
       fChannelInfo = fDigiPar->GetCell(iChId);
       if (NULL == fChannelInfo) {
         LOG(warn) << Form("Invalid ChannelInfo for 0x%08x, 0x%08x",
-                          iChId,
-                          pDigi2Min->GetAddress());
+                          iChId, pDigi2Min->GetAddress())
+		  << " TSRC " << pDigi->GetType()
+		  <<pDigi->GetSm() <<pDigi->GetRpc()<<pDigi->GetChannel();
         continue;
       }
       if (fDigiBdfPar->GetSigVel(
