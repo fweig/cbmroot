@@ -1,5 +1,13 @@
-void mcbm_build_and_reco_kronos(UInt_t uRunIdx = 0,
-                                Int_t nEvents  = 0,
+// --------------------------------------------------------------------------
+//
+// Macro for reconstruction of mcbm data (2020)
+// Combined reconstruction (Event building + cluster + hit finder) for different subsystems.
+//
+// --------------------------------------------------------------------------
+
+
+void mcbm_build_and_reco_kronos(UInt_t uRunIdx = 28,
+                                Int_t nEvents  = 300,
                                 TString outDir = "data/") {
   UInt_t uRunId    = 0;
   TString fileName = "data/unp_mcbm_0.root";
@@ -49,7 +57,7 @@ void mcbm_build_and_reco_kronos(UInt_t uRunIdx = 0,
   // MC file
 
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
-
+  TString paramDir = srcDir + "/macro/beamtime/mcbm2020/";
   // -----   Timer   --------------------------------------------------------
   TStopwatch timer;
   timer.Start();
@@ -149,24 +157,35 @@ void mcbm_build_and_reco_kronos(UInt_t uRunIdx = 0,
   fRun->AddTask(eventBuilder);
 
   // -----  Parameter database   --------------------------------------------
-  TString parFile =
+  
+  TString parFileIn =
     Form("/lustre/cbm/users/ploizeau/mcbm2020/unp_evt_data_7f229b3f_20201103/"
          "unp_mcbm_params_%i.root",
          uRunId);
+  TString parFileOut = Form("reco_mcbm_params_%i.root", uRunId);
+
+
   FairRuntimeDb* rtdb       = fRun->GetRuntimeDb();
   FairParRootFileIo* parIo1 = new FairParRootFileIo();
-  parIo1->open(parFile.Data(), "UPDATE");
+  FairParRootFileIo* parIo3  = new FairParRootFileIo();
+  parIo1->open(parFileIn.Data(), "READ");
+  parIo3->open(parFileOut.Data(), "RECREATE");
   rtdb->setFirstInput(parIo1);
-  // ------------------------------------------------------------------------
+  rtdb->setOutput(parIo3);
 
-  TString geoFileSts =
-    "/lustre/cbm/users/alberica/cbmroot/macro/beamtime/mcbm2020/data/"
-    "test.geo.root";  // to be created by a simulation run
+  //----------------------------------Reconstruction-------------------------------------
+
+
+  
+  // ------------------------------------------------------------------------
+  TString geoFileSts = paramDir + "mcbm2020_reco.geo.root";  
+  //TString geoFileSts =
+  //  "/lustre/cbm/users/alberica/cbmroot/macro/beamtime/mcbm2020/data/test.geo.root";  // to be created by a simulation run
   fRun->SetGeomFile(geoFileSts);
 
   // -----   Local reconstruction in STS   ----------------------------------
   CbmRecoSts* recoSts = new CbmRecoSts();
-  recoSts->SetMode(kCbmRecoEvent);
+  //  recoSts->SetMode(kCbmRecoEvent);
 
   //recoSts->SetTimeCutDigisAbs( 20 );// cluster finder: time cut in ns
   //recoSts->SetTimeCutClustersAbs(20.); // hit finder: time cut in ns
@@ -203,6 +222,20 @@ void mcbm_build_and_reco_kronos(UInt_t uRunIdx = 0,
   fRun->AddTask(recoSts);
   std::cout << "-I- : Added task " << recoSts->GetName() << std::endl;
   // ------------------------------------------------------------------------
+
+
+  // -----   Local reconstruction in MUCH   ---------------------------------
+  Int_t flag = 1;
+  TString parDir = TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
+  TString muchDigiFile(parDir + "/much/much_v19c_mcbm_digi_sector.root"); // MUCH digi file
+  CbmMuchFindHitsGem* muchFindHits = new CbmMuchFindHitsGem(muchDigiFile.Data(), flag);
+  muchFindHits->SetBeamTimeDigi(kTRUE);
+  fRun->AddTask(muchFindHits);
+  std::cout << "-I- : Added task " << muchFindHits->GetName() << std::endl;
+
+  //--------------------------------------------------------
+
+
 
   // -----   Intialise and run   --------------------------------------------
   fRun->Init();

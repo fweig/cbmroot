@@ -1,11 +1,11 @@
 // --------------------------------------------------------------------------
 //
-// Macro for reconstruction of mcbm data (2019)
-// Only STS local reconstruction (cluster + hit finder) for the time being
+// Macro for reconstruction of mcbm data (2020)
+// Combined reconstruction (cluster + hit finder) for different subsystems.
 //
 // --------------------------------------------------------------------------
 
-void mcbm_reco(Int_t runId = 812, Int_t nTimeslices = 0) {
+void mcbm_reco_kronos(Int_t runId = 831, Int_t nTimeslices = 0) {
 
   // --- Logger settings ----------------------------------------------------
   TString logLevel     = "INFO";
@@ -16,18 +16,21 @@ void mcbm_reco(Int_t runId = 812, Int_t nTimeslices = 0) {
   // -----   Environment   --------------------------------------------------
   TString myName = "mcbm_reco";  // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
-  // TString srcDir1 = gSystem->Getenv("SLURM_INDEX");  // ------------------------------------------------------------------------
+  TString paramDir = srcDir + "/macro/beamtime/mcbm2020/";
+  // TString srcDir1 = gSystem->Getenv("SLURM_INDEX");  
+  //    ------------------------------------------------------------------------
 
 
   // -----   In- and output file names   ------------------------------------
   TString inFile = Form("/lustre/cbm/users/ploizeau/mcbm2020/"
                         "unp_evt_data_7f229b3f_20201103/unp_mcbm_%i.root",
                         runId);
-  TString parFile =
+  TString parFileIn =
     Form("/lustre/cbm/users/ploizeau/mcbm2020/unp_evt_data_7f229b3f_20201103/"
          "unp_mcbm_params_%i.root",
          runId);
-  TString geoFile = "./mcbm2020_reco.geo.root";  // Created by a simulation run
+  TString parFileOut = Form("reco_mcbm_params_%i.root", runId);
+  TString geoFile = paramDir + "mcbm2020_reco.geo.root";  // Created in sim. run
   TString outFile = Form("./data/reco_mcbm_%i.root", runId);
   // ------------------------------------------------------------------------
 
@@ -49,7 +52,7 @@ void mcbm_reco(Int_t runId = 812, Int_t nTimeslices = 0) {
   run->SetSource(inputSource);
 
   run->SetOutputFile(outFile);
-  run->SetGenerateRunInfo(kTRUE);
+  //run->SetGenerateRunInfo(kTRUE);
   run->SetGeomFile(geoFile);
 
   TString monitorFile {outFile};
@@ -66,6 +69,16 @@ void mcbm_reco(Int_t runId = 812, Int_t nTimeslices = 0) {
 
   // -----   Reconstruction tasks   -----------------------------------------
 
+  // -----   Local reconstruction in MUCH   ---------------------------------
+  Int_t flag = 1;
+  TString parDir = TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
+  TString muchDigiFile(parDir + "/much/much_v19c_mcbm_digi_sector.root"); // MUCH digi file
+  CbmMuchFindHitsGem* muchFindHits = new CbmMuchFindHitsGem(muchDigiFile.Data(), flag);
+  muchFindHits->SetBeamTimeDigi(kTRUE);
+  run->AddTask(muchFindHits);
+  std::cout << "-I- : Added task " << muchFindHits->GetName() << std::endl;
+
+  //--------------------------------------------------------
 
   // -----   Local reconstruction in STS   ----------------------------------
   CbmRecoSts* recoSts = new CbmRecoSts();
@@ -106,8 +119,6 @@ void mcbm_reco(Int_t runId = 812, Int_t nTimeslices = 0) {
   // ------------------------------------------------------------------------
 
 
-  // -----   Local reconstruction in MUCH   ---------------------------------
-  // ------------------------------------------------------------------------
 
 
   // -----   Local reconstruction in TRD   ----------------------------------
@@ -146,10 +157,15 @@ void mcbm_reco(Int_t runId = 812, Int_t nTimeslices = 0) {
   FairRuntimeDb* rtdb        = run->GetRuntimeDb();
   FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
-  parIo1->open(parFile.Data(), "UPDATE");
-  rtdb->setFirstInput(parIo1);
   // ------------------------------------------------------------------------
 
+  FairParRootFileIo* parIo3  = new FairParRootFileIo();
+  parIo1->open(parFileIn.Data(), "READ");
+  parIo3->open(parFileOut.Data(), "RECREATE");
+  rtdb->setFirstInput(parIo1);
+  rtdb->setOutput(parIo3);
+
+  //--------------------------------------------------------------------------
 
   // -----   Run initialisation   -------------------------------------------
   std::cout << std::endl;
@@ -176,7 +192,7 @@ void mcbm_reco(Int_t runId = 812, Int_t nTimeslices = 0) {
   std::cout << std::endl << std::endl;
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output file is " << outFile << std::endl;
-  std::cout << "Parameter file is " << parFile << std::endl;
+  std::cout << "Parameter file is " << parFileOut << std::endl;
   std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
             << std::endl;
   std::cout << std::endl;

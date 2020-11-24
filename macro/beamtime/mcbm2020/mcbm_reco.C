@@ -1,11 +1,12 @@
 // --------------------------------------------------------------------------
 //
-// Macro for reconstruction of mcbm data (2019)
-// Only STS local reconstruction (cluster + hit finder) for the time being
+// Macro for reconstruction of mcbm data (2020)
+// Combined reconstruction (cluster + hit finder) for different subsystems.
 //
 // --------------------------------------------------------------------------
 
-void mcbm_reco(Int_t runId = 812, Int_t nTimeslices = 0) {
+
+void mcbm_reco(Int_t runId = 831, Int_t nTimeslices = 0) {
 
   // --- Logger settings ----------------------------------------------------
   TString logLevel     = "INFO";
@@ -45,7 +46,7 @@ void mcbm_reco(Int_t runId = 812, Int_t nTimeslices = 0) {
   run->SetSource(inputSource);
 
   run->SetOutputFile(outFile);
-  run->SetGenerateRunInfo(kTRUE);
+  //  run->SetGenerateRunInfo(kTRUE);
   run->SetGeomFile(geoFile);
 
   TString monitorFile {outFile};
@@ -62,6 +63,15 @@ void mcbm_reco(Int_t runId = 812, Int_t nTimeslices = 0) {
 
   // -----   Reconstruction tasks   -----------------------------------------
 
+  // -----   Local reconstruction in MUCH   ---------------------------------
+  Int_t flag = 1;
+  TString parDir = TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
+  TString muchDigiFile(parDir + "/much/much_v19c_mcbm_digi_sector.root"); // MUCH digi file
+  CbmMuchFindHitsGem* muchFindHits = new CbmMuchFindHitsGem(muchDigiFile.Data(), flag);
+  muchFindHits->SetBeamTimeDigi(kTRUE);
+  run->AddTask(muchFindHits);
+  std::cout << "-I- : Added task " << muchFindHits->GetName() << std::endl;
+  //--------------------------------------------------------
 
   // -----   Local reconstruction in STS   ----------------------------------
   CbmRecoSts* recoSts = new CbmRecoSts();
@@ -102,7 +112,6 @@ void mcbm_reco(Int_t runId = 812, Int_t nTimeslices = 0) {
   // ------------------------------------------------------------------------
 
 
-  // -----   Local reconstruction in MUCH   ---------------------------------
   // ------------------------------------------------------------------------
 
 
@@ -144,6 +153,7 @@ void mcbm_reco(Int_t runId = 812, Int_t nTimeslices = 0) {
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
   parIo1->open(parFile.Data(), "UPDATE");
   rtdb->setFirstInput(parIo1);
+
   // ------------------------------------------------------------------------
 
 
@@ -172,7 +182,7 @@ void mcbm_reco(Int_t runId = 812, Int_t nTimeslices = 0) {
   std::cout << std::endl << std::endl;
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output file is " << outFile << std::endl;
-  std::cout << "Parameter file is " << parFile << std::endl;
+  std::cout << "Parameter file is " << parFileOut << std::endl;
   std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
             << std::endl;
   std::cout << std::endl;
