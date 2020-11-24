@@ -205,7 +205,7 @@ void CbmDeviceUnpackTofMcbm2018::InitTask() try {
               }
             break;
 
-	  case 4:
+          case 4:
           case 9:  // HD 2-RPC boxes
             for (Int_t iRpc = 0; iRpc < 2; iRpc++) {
               Int_t iAddr = CbmTofAddress::GetUniqueAddress(

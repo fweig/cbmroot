@@ -2077,9 +2077,10 @@ Bool_t CbmDeviceHitBuilderTof::InspectRawDigis() {
       fChannelInfo = fDigiPar->GetCell(iChId);
       if (NULL == fChannelInfo) {
         LOG(warn) << Form("Invalid ChannelInfo for 0x%08x, 0x%08x",
-                          iChId, pDigi2Min->GetAddress())
-		  << " TSRC " << pDigi->GetType()
-		  <<pDigi->GetSm() <<pDigi->GetRpc()<<pDigi->GetChannel();
+                          iChId,
+                          pDigi2Min->GetAddress())
+                  << " TSRC " << pDigi->GetType() << pDigi->GetSm()
+                  << pDigi->GetRpc() << pDigi->GetChannel();
         continue;
       }
       if (fDigiBdfPar->GetSigVel(
@@ -4362,12 +4363,12 @@ Bool_t CbmDeviceHitBuilderTof::FillHistos() {
           Int_t iS0  = pDig0->GetSide();
           Int_t iS1  = pDig1->GetSide();
           if (iCh0 != iCh1 || iS0 == iS1) {
-            LOG(error) << Form(
-              " MT2 for Tofhit %d in iDetIndx %d, Ch %d from %3.0f strips: ",
-              iHitInd,
-              iDetIndx,
-              iCh,
-              dNstrips)
+            LOG(error) << Form(" MT2 for Tofhit %d in iDetIndx %d, Ch %d from "
+                               "%3.0f strips: ",
+                               iHitInd,
+                               iDetIndx,
+                               iCh,
+                               dNstrips)
                        << Form(" Dig0: Ind %d, Ch %d, Side %d, T: %6.1f ",
                                iDigInd0,
                                iCh0,

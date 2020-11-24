@@ -251,6 +251,8 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::InitParameters() {
 
       case 1:                         // STAR eTOF  modules
         if (fviRpcSide[iGbtx] < 2) {  // mTof modules
+          LOG(info) << "Start eTOF module side " << fviRpcSide[iGbtx] << " at "
+                    << iCh;
           const Int_t RpcMap[3] = {0, 1, 2};
           for (Int_t iRpc = 0; iRpc < fviNrOfRpc[iGbtx]; iRpc++) {
             Int_t iStrMax = 32;
@@ -370,6 +372,8 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::InitParameters() {
         LOG(info) << " Map end ceramics  box  at GBTX  -  iCh = " << iCh;
         break;
 
+      case 4:  // intended fallthrough
+        [[fallthrough]];
       case 9:  // Star2 boxes
       {
         LOG(info) << " Map Star2 box  at GBTX  -  iCh = " << iCh;
@@ -452,10 +456,17 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::InitParameters() {
                   case 0: iRpcMap = 0; break;
                   case 1: iRpcMap = 1; break;
                 }
-                if (iFeet > 2)
+                if (iFeet % 2 == 1)
                   iModuleIdMap = 1;
                 else
                   iModuleIdMap = 0;
+
+                switch (iFeet) {
+                  case 0:
+                  case 3: iSideMap = 0; break;
+                  case 1:
+                  case 2: iSideMap = 1; break;
+                }
               } break;
             }
             if (iSideMap > -1)

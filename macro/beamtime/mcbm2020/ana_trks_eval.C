@@ -219,7 +219,7 @@ void ana_trks_eval(Int_t nEvents        = 10000,
   tofTrackFinder->SetSIGLIM(dChi2Lim2
                             * 2.);  // matching window in multiples of chi2
   tofTrackFinder->SetChiMaxAccept(dChi2Lim2);  // max tracklet chi2
-  tofTrackFinder->SetSIGLIMMOD(5.);  // max deviation for last hit
+  tofTrackFinder->SetSIGLIMMOD(5.);            // max deviation for last hit
 
   Int_t iMinNofHits   = -1;
   Int_t iNStations    = 0;
@@ -484,7 +484,7 @@ void ana_trks_eval(Int_t nEvents        = 10000,
       tofFindTracks->SetStation(2, 0, 0, 2);
       tofFindTracks->SetStation(3, 0, 1, 2);
       break;
-      
+
     case 30:
       iMinNofHits   = 3;
       iNStations    = 4;
@@ -493,7 +493,7 @@ void ana_trks_eval(Int_t nEvents        = 10000,
       tofFindTracks->SetStation(1, 0, 0, 0);
       tofFindTracks->SetStation(2, 5, 0, 0);
       tofFindTracks->SetStation(3, 0, 1, 0);
-      break;      
+      break;
 
     case 31:
       iMinNofHits   = 3;
@@ -504,7 +504,7 @@ void ana_trks_eval(Int_t nEvents        = 10000,
       tofFindTracks->SetStation(2, 5, 0, 0);
       tofFindTracks->SetStation(3, 0, 1, 1);
       break;
-            
+
     case 32:
       iMinNofHits   = 3;
       iNStations    = 4;
@@ -513,8 +513,8 @@ void ana_trks_eval(Int_t nEvents        = 10000,
       tofFindTracks->SetStation(1, 0, 0, 2);
       tofFindTracks->SetStation(2, 5, 0, 0);
       tofFindTracks->SetStation(3, 0, 1, 2);
-      break;      
-      
+      break;
+
     case 33:
       iMinNofHits   = 3;
       iNStations    = 4;
@@ -523,8 +523,8 @@ void ana_trks_eval(Int_t nEvents        = 10000,
       tofFindTracks->SetStation(1, 0, 0, 3);
       tofFindTracks->SetStation(2, 5, 0, 0);
       tofFindTracks->SetStation(3, 0, 1, 3);
-      break;      
-      
+      break;
+
     case 34:
       iMinNofHits   = 3;
       iNStations    = 4;
@@ -533,7 +533,7 @@ void ana_trks_eval(Int_t nEvents        = 10000,
       tofFindTracks->SetStation(1, 0, 0, 4);
       tofFindTracks->SetStation(2, 5, 0, 0);
       tofFindTracks->SetStation(3, 0, 1, 4);
-      break;       
+      break;
 
     default:
       cout << "Tracking setup " << iTrackingSetup << " not implemented "
