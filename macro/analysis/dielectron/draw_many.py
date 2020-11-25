@@ -1,20 +1,22 @@
 #!/usr/bin/env python3
 
-import os      # operating system interfaces
-import sys     # provides access to some variables used or maintained by the interpreter and to functions that interact strongly with the interpreter
-import shutil  # offers a number of high-level operations on files and collections of files
+import os
+import sys
+import shutil
 
 
 def main():
+    
+    print ("Use 'draw_all.py' instead!")
+
+    """
     dataDir = sys.argv[1]
     geoSetup = sys.argv[2]
     plutoParticle = sys.argv[3]
-    cbmrootConfigPath = "/lustre/nyx/cbm/users/criesen/build/config.sh"
-    macroDir = "/lustre/nyx/cbm/users/criesen/cbmroot/macro/analysis/dielectron/"
-    nofEvents = 1000
-    
+    cbmrootConfigPath = "/lustre/nyx/cbm/users/slebedev/cbm/trunk/build/config.sh"
+    macroDir = "/lustre/nyx/cbm/users/slebedev/cbm/trunk/cbmroot/macro/analysis/dielectron/"
+    nofEvents = 10
     taskId = os.environ.get('SLURM_ARRAY_TASK_ID')
-
     jobId = os.environ.get('SLURM_ARRAY_JOB_ID')
     colEnergy = "8gev"
     colSystem = "auau"
@@ -29,11 +31,7 @@ def main():
     os.chdir(workDir)
 
     plutoFile = getPlutoPath(colSystem, colEnergy, plutoParticle, taskId)
-    #plutoFile = getPlutoPath("auau", "8gev", plutoParticle, taskId)    
-    
     urqmdFile = "/lustre/nyx/cbm/prod/gen/urqmd/auau/"+colEnergy+"/centr/urqmd.auau.8gev.centr." + str(taskId).zfill(5) + ".root"
-    #urqmdFile = "/lustre/nyx/cbm/prod/gen/urqmd/auau/8gev/centr/urqmd.auau.8gev.centr.00001.root"
-    
     mcFile = dataDir + "/mc." + taskId + ".root"
     parFile = dataDir + "/param." + taskId + ".root"
     digiFile = dataDir + "/digi." + taskId + ".root"
@@ -70,7 +68,9 @@ def getPlutoPath(colSystem, colEnergy, plutoParticle, taskId):
         return "/lustre/nyx/cbm/prod/gen/pluto/auau/cktRapp/"+colEnergy+"/rapp.qgp/epem/pluto.auau."+colEnergy+".rapp.qgp.epem." + str(taskId).zfill(4) + ".root"
     elif plutoParticle == "urqmd":
         return ""
-
+"""
 
 if __name__ == '__main__':
     main()
+    
+

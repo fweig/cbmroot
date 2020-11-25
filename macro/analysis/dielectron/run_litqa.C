@@ -1,16 +1,16 @@
-void run_litqa(const string& mcFile =
-                 "/lustre/nyx/cbm/users/slebedev/cbm/data/mc.00000.root",
-               const string& parFile =
-                 "/lustre/nyx/cbm/users/slebedev/cbm/data/param.00000.root",
-               const string& digiFile =
-                 "/lustre/nyx/cbm/users/slebedev/cbm/data/digi.00000.root",
-               const string& recoFile =
-                 "/lustre/nyx/cbm/users/slebedev/cbm/data/reco.00000.root",
-               const string& qaFile =
-                 "/lustre/nyx/cbm/users/slebedev/cbm/data/litqa.00000.root",
-               const string& geoSetup = "sis100_electron",
-               //const string& resultDir = "results_litqa/",
-               int nEvents = 100) {
+void run_litqa(
+  const string& mcFile =
+    "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/mc.2.root",
+  const string& parFile =
+    "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/param.2.root",
+  const string& digiFile =
+    "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/digi.2.root",
+  const string& recoFile =
+    "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/reco.2.root",
+  const string& qaFile =
+    "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/litqa.2.root",
+  const string& geoSetup = "sis100_electron",
+  int nEvents            = 1000) {
   TTree::SetMaxTreeSize(90000000000);
 
   TString myName = "run_litqa";
@@ -18,19 +18,14 @@ void run_litqa(const string& mcFile =
 
   remove(qaFile.c_str());
 
-  TString setupFile  = srcDir + "/geometry/setup/setup_" + geoSetup + ".C";
-  TString setupFunct = "setup_" + geoSetup + "()";
-  gROOT->LoadMacro(setupFile);
-  gROOT->ProcessLine(setupFunct);
-
+  CbmSetup::Instance()->LoadSetup(geoSetup.c_str());
 
   std::cout << std::endl
             << "-I- " << myName << ": Defining parameter files " << std::endl;
   TList* parFileList = new TList();
   TString geoTag;
-
   // - TRD digitisation parameters
-  if (CbmSetup::Instance()->GetGeoTag(kTrd, geoTag)) {
+  if (CbmSetup::Instance()->GetGeoTag(ECbmModuleId::kTrd, geoTag)) {
     const Char_t* npar[4] = {"asic", "digi", "gas", "gain"};
     TObjString* trdParFile(NULL);
     for (Int_t i(0); i < 4; i++) {
@@ -43,7 +38,7 @@ void run_litqa(const string& mcFile =
   }
 
   // - TOF digitisation parameters
-  if (CbmSetup::Instance()->GetGeoTag(kTof, geoTag)) {
+  if (CbmSetup::Instance()->GetGeoTag(ECbmModuleId::kTof, geoTag)) {
     TObjString* tofFile =
       new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digi.par");
     parFileList->Add(tofFile);
@@ -55,11 +50,9 @@ void run_litqa(const string& mcFile =
     std::cout << "-I- " << myName << ": Using parameter file "
               << tofBdfFile->GetString() << std::endl;
   }
-
   TStopwatch timer;
   timer.Start();
   gDebug = 0;
-
 
   FairRunAna* run             = new FairRunAna();
   FairFileSource* inputSource = new FairFileSource(digiFile.c_str());
@@ -67,7 +60,7 @@ void run_litqa(const string& mcFile =
   inputSource->AddFriend(recoFile.c_str());
   run->SetSource(inputSource);
   run->SetOutputFile(qaFile.c_str());
-  run->SetGenerateRunInfo(kTRUE);
+  run->SetGenerateRunInfo(kFALSE);
 
 
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
@@ -80,8 +73,8 @@ void run_litqa(const string& mcFile =
 
   // RICH reco QA
   CbmRichRecoQa* richRecoQa = new CbmRichRecoQa();
-  richRecoQa->SetOutputDir(resultDir);
-  run->AddTask(richRecoQa);
+  richRecoQa->SetOutputDir("");
+  // run->AddTask(richRecoQa);
 
   // Reconstruction Qa
   CbmLitTrackingQa* trackingQa = new CbmLitTrackingQa();
@@ -96,9 +89,9 @@ void run_litqa(const string& mcFile =
   trackingQa->SetVerbose(0);
   trackingQa->SetMinNofHitsRich(7);
   trackingQa->SetQuotaRich(0.6);
-  trackingQa->SetOutputDir(resultDir);
+  trackingQa->SetOutputDir("");
   trackingQa->SetPRange(12, 0., 6.);
-  // trackingQa->SetTrdAnnCut(trdAnnCut);
+  //trackingQa->SetTrdAnnCut(trdAnnCut);  // removed comment
   std::vector<std::string> trackCat, richCat;
   trackCat.push_back("All");
   trackCat.push_back("Electron");
@@ -106,22 +99,22 @@ void run_litqa(const string& mcFile =
   richCat.push_back("ElectronReference");
   trackingQa->SetTrackCategories(trackCat);
   trackingQa->SetRingCategories(richCat);
-  // run->AddTask(trackingQa);
+  run->AddTask(trackingQa);
 
   CbmLitFitQa* fitQa = new CbmLitFitQa();
   fitQa->SetMvdMinNofHits(0);
   fitQa->SetStsMinNofHits(6);
   fitQa->SetMuchMinNofHits(10);
   fitQa->SetTrdMinNofHits(2);
-  fitQa->SetOutputDir(resultDir);
+  fitQa->SetOutputDir("");
   // run->AddTask(fitQa);
 
   CbmLitClusteringQa* clusteringQa = new CbmLitClusteringQa();
-  clusteringQa->SetOutputDir(resultDir);
+  clusteringQa->SetOutputDir("");
   // run->AddTask(clusteringQa);
 
   CbmLitTofQa* tofQa = new CbmLitTofQa();
-  tofQa->SetOutputDir(std::string(resultDir));
+  tofQa->SetOutputDir(std::string(""));
   // run->AddTask(tofQa);
 
   std::cout << std::endl
@@ -136,7 +129,6 @@ void run_litqa(const string& mcFile =
     parIo2->open(parFileList, "in");
     rtdb->setSecondInput(parIo2);
   }
-
   std::cout << std::endl << "-I- " << myName << ": Initialise run" << std::endl;
   run->Init();
 
@@ -150,7 +142,7 @@ void run_litqa(const string& mcFile =
   timer.Stop();
   std::cout << std::endl << std::endl;
   std::cout << "Macro finished succesfully." << std::endl;
-  std::cout << "Output file is " << recoFile << std::endl;
+  std::cout << "Qa file is " << qaFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
   std::cout << "Real time " << timer.RealTime() << " s, CPU time "
             << timer.CpuTime() << " s" << std::endl;

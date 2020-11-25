@@ -294,7 +294,9 @@ CbmAnaDielectronTask::CbmAnaDielectronTask()
   , fh_piprim_plus_rapidity_mc(NULL)
   , fh_piprim_minus_rapidity_mc(NULL)
   , fh_pi0prim_rapidity_mc(NULL)
-  , fh_etaprim_rapidity_mc(NULL) {
+  , fh_etaprim_rapidity_mc(NULL)
+  , fh_mom_likelihood_El(NULL)
+  , fh_mom_likelihood_Pi(NULL) {
   // weight for rho0 = 0.001081; omega_ee = 0.0026866; omega_dalitz = 0.02242; phi = 0.00039552; pi0 = 4.38   ------ Au + Au, for 25 GeV central collision
   fWeight         = 0.0;
   fUseRich        = true;
@@ -306,7 +308,9 @@ CbmAnaDielectronTask::CbmAnaDielectronTask()
   fCuts.SetDefaultCuts();
 }
 
+
 CbmAnaDielectronTask::~CbmAnaDielectronTask() {}
+
 
 void CbmAnaDielectronTask::InitHists() {
   fHistoList.clear();
@@ -1016,6 +1020,29 @@ void CbmAnaDielectronTask::InitHists() {
                             -0.5,
                             2.5);
   fHistoList.push_back(fh_nof_rec_pi0);
+
+  //Occurency vs Likelihood and Momentum
+  fh_mom_likelihood_El =
+    new TH2D("fh_mom_likelihood_El",
+             "fh_mom_likelihood_El;p [GeV/c]; likelihood electron; counter",
+             100,
+             0.,
+             6.,
+             100,
+             0.,
+             1.);
+  fh_mom_likelihood_Pi =
+    new TH2D("fh_mom_likelihood_Pi",
+             "fh_mom_likelihood_Pi;p [GeV/c]; likelihood pion; counter",
+             100,
+             0.,
+             6.,
+             100,
+             0.,
+             1.);
+
+  fHistoList.push_back(fh_mom_likelihood_El);
+  fHistoList.push_back(fh_mom_likelihood_Pi);
 }
 
 InitStatus CbmAnaDielectronTask::Init() {
@@ -1193,8 +1220,45 @@ void CbmAnaDielectronTask::Exec(Option_t*) {
     SignalAndBgReco();
     FillElPiMomHist();
     FillNofChargedParticlesPerEvent();
+    FillMomLikeHist();
   }
 }  // Exec
+
+void CbmAnaDielectronTask::FillMomLikeHist() {
+  Int_t ngTracks = fGlobalTracks->GetEntriesFast();
+
+  for (int i = 0; i < ngTracks; i++) {
+
+    CbmGlobalTrack* gTrack = (CbmGlobalTrack*) fGlobalTracks->At(i);
+    if (NULL == gTrack) continue;
+
+    // getting TRD index and likelihood value
+    int trdInd = gTrack->GetTrdTrackIndex();
+    if (trdInd < 0) continue;
+    CbmTrdTrack* trdTrack = (CbmTrdTrack*) fTrdTracks->At(trdInd);
+    if (NULL == trdTrack) continue;
+    double_t likelihoodEl = trdTrack->GetPidLikeEL();
+    double_t likelihoodPi = trdTrack->GetPidLikePI();
+
+    // getting momentum via matching STS track with corresponding MC track
+    int stsInd = gTrack->GetStsTrackIndex();
+    if (stsInd < 0) continue;
+    CbmStsTrack* stsTrack = (CbmStsTrack*) fStsTracks->At(stsInd);
+    if (stsTrack == NULL) continue;
+    CbmTrackMatchNew* stsMatch =
+      (CbmTrackMatchNew*) fStsTrackMatches->At(stsInd);
+    if (stsMatch == NULL) continue;
+    if (stsMatch->GetNofLinks() == 0) continue;  // what is this for?
+    int stsMcTrackId = stsMatch->GetMatchedLink().GetIndex();
+    if (stsMcTrackId < 0) continue;
+    CbmMCTrack* mcTrack1 = (CbmMCTrack*) fMCTracks->At(stsMcTrackId);
+    if (mcTrack1 == NULL) continue;
+    double momentum = mcTrack1->GetP();  // momentum of MC track
+
+    fh_mom_likelihood_El->Fill(momentum, likelihoodEl);
+    fh_mom_likelihood_Pi->Fill(momentum, likelihoodPi);
+  }
+}
 
 void CbmAnaDielectronTask::FillRichRingNofHits() {
   fNofHitsInRingMap.clear();
@@ -1342,7 +1406,7 @@ void CbmAnaDielectronTask::FillNofChargedParticlesPerEvent() {
   for (Int_t i = 0; i < nofMcTracks; i++) {
     CbmMCTrack* mcTrack     = (CbmMCTrack*) fMCTracks->At(i);
     Bool_t isMcTrackCharged = false;
-    if (mcTrack->GetCharge() != 0) isMcTrackCharged = true;
+    //if (mcTrack->GetCharge() != 0) isMcTrackCharged = true;   // FIXME: TODO: uncomment when bug is fixed; issue https://lxcbmredmine01.gsi.de/issues/1826;
     Bool_t isMcSignalElectron = CbmLmvmUtils::IsMcSignalElectron(mcTrack);
     Bool_t isMcTrackAccepted  = false;
     if (mcTrack->GetNPoints(ECbmModuleId::kSts) >= 4) isMcTrackAccepted = true;

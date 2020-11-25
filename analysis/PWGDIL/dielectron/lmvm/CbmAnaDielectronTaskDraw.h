@@ -249,6 +249,9 @@ private:
 
   void DrawPmtXY();
 
+  // Draw Likelihood vs Momentum
+  void DrawMomLikeHist();
+
   CbmAnaDielectronTaskDraw(const CbmAnaDielectronTaskDraw&);
   CbmAnaDielectronTaskDraw& operator=(const CbmAnaDielectronTaskDraw&);
 

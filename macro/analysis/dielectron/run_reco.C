@@ -1,13 +1,14 @@
-void run_reco(const string& mcFile =
-                "/lustre/nyx/cbm/users/slebedev/cbm/data/mc.00000.root",
-              const string& parFile =
-                "/lustre/nyx/cbm/users/slebedev/cbm/data/param.00000.root",
-              const string& digiFile =
-                "/lustre/nyx/cbm/users/slebedev/cbm/data/digi.00000.root",
-              const string& recoFile =
-                "/lustre/nyx/cbm/users/slebedev/cbm/data/reco.00000.root",
-              const string& geoSetup = "sis100_electron",
-              int nEvents            = 100) {
+void run_reco(
+  const string& mcFile =
+    "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/mc.1.root",
+  const string& parFile =
+    "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/param.1.root",
+  const string& digiFile =
+    "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/digi.1.root",
+  const string& recoFile =
+    "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/reco.1.root",
+  const string& geoSetup = "sis100_electron",
+  int nEvents            = 1000) {
   TTree::SetMaxTreeSize(90000000000);
 
   TString myName = "run_reco";
@@ -15,11 +16,7 @@ void run_reco(const string& mcFile =
 
   remove(recoFile.c_str());
 
-  TString setupFile  = srcDir + "/geometry/setup/setup_" + geoSetup + ".C";
-  TString setupFunct = "setup_" + geoSetup + "()";
-  gROOT->LoadMacro(setupFile);
-  gROOT->ProcessLine(setupFunct);
-
+  CbmSetup::Instance()->LoadSetup(geoSetup.c_str());
 
   std::cout << std::endl
             << "-I- " << myName << ": Defining parameter files " << std::endl;
@@ -27,7 +24,7 @@ void run_reco(const string& mcFile =
   TString geoTag;
 
   // - TRD digitisation parameters
-  if (CbmSetup::Instance()->GetGeoTag(kTrd, geoTag)) {
+  if (CbmSetup::Instance()->GetGeoTag(ECbmModuleId::kTrd, geoTag)) {
     const Char_t* npar[4] = {"asic", "digi", "gas", "gain"};
     TObjString* trdParFile(NULL);
     for (Int_t i(0); i < 4; i++) {
@@ -40,7 +37,7 @@ void run_reco(const string& mcFile =
   }
 
   // - TOF digitisation parameters
-  if (CbmSetup::Instance()->GetGeoTag(kTof, geoTag)) {
+  if (CbmSetup::Instance()->GetGeoTag(ECbmModuleId::kTof, geoTag)) {
     TObjString* tofFile =
       new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digi.par");
     parFileList->Add(tofFile);
@@ -62,7 +59,7 @@ void run_reco(const string& mcFile =
   inputSource->AddFriend(mcFile.c_str());
   run->SetSource(inputSource);
   run->SetOutputFile(recoFile.c_str());
-  run->SetGenerateRunInfo(kTRUE);
+  run->SetGenerateRunInfo(kFALSE);
 
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
   FairLogger::GetLogger()->SetLogVerbosityLevel("LOW");
@@ -83,6 +80,12 @@ void run_reco(const string& mcFile =
   }
   std::cout << "-I-" << myName << ": " << macroName << " excuted successfully"
             << std::endl;
+
+  CbmTrdSetTracksPidLike* trdLI =
+    new CbmTrdSetTracksPidLike("TRDLikelihood", "TRDLikelihood");
+  trdLI->SetUseMCInfo(kTRUE);
+  trdLI->SetUseMomDependence(kTRUE);
+  run->AddTask(trdLI);
 
   CbmMatchRecoToMC* matchRecoToMc = new CbmMatchRecoToMC();
   run->AddTask(matchRecoToMc);
@@ -113,7 +116,7 @@ void run_reco(const string& mcFile =
   timer.Stop();
   std::cout << std::endl << std::endl;
   std::cout << "Macro finished succesfully." << std::endl;
-  std::cout << "Output file is " << recoFile << std::endl;
+  std::cout << "Reco file is " << recoFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
   std::cout << "Real time " << timer.RealTime() << " s, CPU time "
             << timer.CpuTime() << " s" << std::endl;

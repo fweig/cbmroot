@@ -62,8 +62,8 @@ void CbmAnaDielectronTaskDraw::DrawHistFromFile(const string& fileName,
   fHM         = new CbmHistManager();
   TFile* file = new TFile(fileName.c_str());
   fHM->ReadFromFile(file);
-
   fNofEvents = (Int_t) H1("fh_event_number")->GetEntries();
+  //fNofEvents = 10000;
   cout << "File name = " << fileName << endl;
   cout << "Number of events = " << fNofEvents << endl;
 
@@ -92,8 +92,19 @@ void CbmAnaDielectronTaskDraw::DrawHistFromFile(const string& fileName,
   DrawMvdAndStsHist();
   DrawElPiMomHis();
   DrawPmtXY();
-
+  DrawMomLikeHist();
   SaveCanvasToImage();
+}
+
+void CbmAnaDielectronTaskDraw::DrawMomLikeHist() {
+  TCanvas* c =
+    fHM->CreateCanvas("lmvm_mom_likelihood", "lmvm_mom_likelihood", 1000, 500);
+
+  c->Divide(2, 1);
+  c->cd(1);
+  DrawH2(H2("fh_mom_likelihood_El"));
+  c->cd(2);
+  DrawH2(H2("fh_mom_likelihood_Pi"));
 }
 
 void CbmAnaDielectronTaskDraw::RebinMinvHist() {
@@ -462,11 +473,12 @@ void CbmAnaDielectronTaskDraw::Draw1DCut(const string& hName,
 }
 
 void CbmAnaDielectronTaskDraw::DrawCutDistributions() {
-  Draw1DCut("fh_richann",
-            "left",
-            CbmLitGlobalElectronId::GetInstance().GetRichAnnCut());
-  Draw1DCut(
-    "fh_trdann", "left", CbmLitGlobalElectronId::GetInstance().GetTrdAnnCut());
+  //Draw1DCut("fh_richann", "left", CbmLitGlobalElectronId::GetInstance().GetRichAnnCut());
+  //Draw1DCut("fh_trdann", "left", CbmLitGlobalElectronId::GetInstance().GetTrdAnnCut());
+
+  Draw1DCut("fh_richann", "left", -0.4);
+  Draw1DCut("fh_trdann", "left", 0.85);
+
   Draw2DCut("fh_tofm2");
 
   Draw1DCut("fh_chi2prim", "right", fCuts.fChiPrimCut);

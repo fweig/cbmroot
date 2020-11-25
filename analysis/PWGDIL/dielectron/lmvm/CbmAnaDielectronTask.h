@@ -239,6 +239,9 @@ public:
 
   void MvdCutMcDistance();
 
+  // Likelihood vs Momentum
+  void FillMomLikeHist();
+
   virtual void Finish();
 
   void FillElPiMomHist();
@@ -469,6 +472,10 @@ private:
   TH1D* fh_piprim_minus_rapidity_mc;
   TH1D* fh_pi0prim_rapidity_mc;
   TH1D* fh_etaprim_rapidity_mc;
+
+  // Likelihood vs Momentum
+  TH2D* fh_mom_likelihood_El;
+  TH2D* fh_mom_likelihood_Pi;
 
 public:
   void SetUseMvd(Bool_t use) { fUseMvd = use; };

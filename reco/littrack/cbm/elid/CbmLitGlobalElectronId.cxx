@@ -21,7 +21,7 @@
 #include <cmath>
 
 CbmLitGlobalElectronId::CbmLitGlobalElectronId()
-  : fTrdAnnCut(0.85)
+  : fTrdAnnCut(0.6)
   , fRichAnnCut(-0.4)
   , fRichUseAnn(true)
   , fRichMeanA(-1.)
@@ -89,7 +89,7 @@ Bool_t CbmLitGlobalElectronId::IsTrdElectron(Int_t globalTrackIndex,
   CbmTrdTrack* trdTrack = static_cast<CbmTrdTrack*>(fTrdTracks->At(trdId));
   if (NULL == trdTrack) return false;
 
-  Double_t ann = trdTrack->GetPidANN();
+  Double_t ann = trdTrack->GetPidLikeEL();
   if (ann > fTrdAnnCut)
     return true;
   else
@@ -138,7 +138,7 @@ Double_t CbmLitGlobalElectronId::GetTrdAnn(Int_t globalTrackIndex,
   CbmTrdTrack* trdTrack = static_cast<CbmTrdTrack*>(fTrdTracks->At(trdId));
   if (NULL == trdTrack) return -1.;
 
-  return trdTrack->GetPidANN();
+  return trdTrack->GetPidLikeEL();
 }
 
 ClassImp(CbmLitGlobalElectronId);

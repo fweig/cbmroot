@@ -1,16 +1,17 @@
 void run_analysis(
   const string& mcFile =
-    "/lustre/nyx/cbm/users/slebedev/cbm/data/mc.00000.root",
+    "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/mc.1.root",
   const string& parFile =
-    "/lustre/nyx/cbm/users/slebedev/cbm/data/param.00000.root",
+    "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/param.1.root",
   const string& digiFile =
-    "/lustre/nyx/cbm/users/slebedev/cbm/data/digi.00000.root",
+    "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/digi.1.root",
   const string& recoFile =
-    "/lustre/nyx/cbm/users/slebedev/cbm/data/reco.00000.root",
+    "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/reco.1.root",
   const string& analysisFile =
-    "/lustre/nyx/cbm/users/slebedev/cbm/data/analysis.00000.root",
-  const string& plutoParticle = "omegaepem",
-  const string& energy        = "8gev",
+    "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/analysis.1.root",
+  const string& plutoParticle = "inmed",
+  const string& colSystem     = "auau",
+  const string& colEnergy     = "8gev",
   const string& geoSetup      = "sis100_electron",
   int nEvents                 = 100) {
 
@@ -21,10 +22,7 @@ void run_analysis(
 
   remove(analysisFile.c_str());
 
-  TString setupFile  = srcDir + "/geometry/setup/setup_" + geoSetup + ".C";
-  TString setupFunct = "setup_" + geoSetup + "()";
-  gROOT->LoadMacro(setupFile);
-  gROOT->ProcessLine(setupFunct);
+  CbmSetup::Instance()->LoadSetup(geoSetup.c_str());
 
   std::cout << std::endl
             << "-I- " << myName << ": Defining parameter files " << std::endl;
@@ -40,7 +38,7 @@ void run_analysis(
   inputSource->AddFriend(recoFile.c_str());
   run->SetSource(inputSource);
   run->SetOutputFile(analysisFile.c_str());
-  run->SetGenerateRunInfo(kTRUE);
+  run->SetGenerateRunInfo(kFALSE);
 
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
   FairLogger::GetLogger()->SetLogVerbosityLevel("LOW");
@@ -55,7 +53,7 @@ void run_analysis(
   run->AddTask(l1);
 
   CbmAnaDielectronTask* task = new CbmAnaDielectronTask();
-  task->SetEnergyAndPlutoParticle(energy, plutoParticle);
+  task->SetEnergyAndPlutoParticle(colEnergy, plutoParticle);
   task->SetUseMvd(false);
   task->SetUseRich(true);
   task->SetUseTrd(true);
@@ -64,7 +62,6 @@ void run_analysis(
   // task->SetTrdAnnCut(0.85);
   // task->SetRichAnnCut(-0.4);
   run->AddTask(task);
-
   std::cout << std::endl
             << std::endl
             << "-I- " << myName << ": Set runtime DB" << std::endl;
@@ -77,7 +74,6 @@ void run_analysis(
     parIo2->open(parFileList, "in");
     rtdb->setSecondInput(parIo2);
   }
-
   std::cout << std::endl << "-I- " << myName << ": Initialise run" << std::endl;
   run->Init();
 
@@ -91,7 +87,7 @@ void run_analysis(
   timer.Stop();
   std::cout << std::endl << std::endl;
   std::cout << "Macro finished succesfully." << std::endl;
-  std::cout << "Output file is " << recoFile << std::endl;
+  std::cout << "Analysis file is " << analysisFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
   std::cout << "Real time " << timer.RealTime() << " s, CPU time "
             << timer.CpuTime() << " s" << std::endl;

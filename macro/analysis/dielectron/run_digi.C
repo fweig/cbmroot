@@ -1,10 +1,11 @@
-void run_digi(const string& mcFile =
-                "/lustre/nyx/cbm/users/slebedev/cbm/data/mc.00000.root",
-              const string& parFile =
-                "/lustre/nyx/cbm/users/slebedev/cbm/data/param.00000.root",
-              const string& digiFile =
-                "/lustre/nyx/cbm/users/slebedev/cbm/data/digi.00000.root",
-              int nEvents = 100) {
+void run_digi(
+  const string& mcFile =
+    "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/mc.2.root",
+  const string& parFile =
+    "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/param.2.root",
+  const string& digiFile =
+    "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/digi.2.root",
+  int nEvents = 1000) {
   TTree::SetMaxTreeSize(90000000000);
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
   FairLogger::GetLogger()->SetLogVerbosityLevel("LOW");

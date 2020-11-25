@@ -1,26 +1,21 @@
-void draw_litqa() {
-  std::string dir =
-    "/Users/slebedev/Development/cbm/data/lmvm/may18_100k/8gev/omegaepem/";
-  std::string fileName = dir + "litqa.auau.8gev.centr.all.root";
+void draw_litqa(
+  const string& histRootFile =
+    "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/litqa.all.root",
+  const string& resultDir =
+    "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/histograms/inmed/")
 
-  std::string script = std::string(TString(gSystem->Getenv("SCRIPT")).Data());
-  if (script == "yes") {
-    dir = std::string(TString(gSystem->Getenv("LMVM_MAIN_DIR")).Data());
-    fileName =
-      dir
-      + std::string(TString(gSystem->Getenv("LMVM_LITQA_FILE_NAME")).Data());
-  }
-
-  std::string outputDirTracking   = dir + "results_litqa_tracking/";
-  std::string outputDirClustering = dir + "results_litqa_clustering/";
+{
+  string outputDirTracking = resultDir + "results_litqa_tracking/";
   gSystem->mkdir(outputDirTracking.c_str(), true);
-  gSystem->mkdir(outputDirClustering.c_str(), true);
 
   CbmSimulationReport* trackingQaReport = new CbmLitTrackingQaReport();
-  trackingQaReport->Create(fileName, outputDirTracking);
+  trackingQaReport->Create(histRootFile, outputDirTracking);
 
-  //  CbmSimulationReport* clusteringQaReport = new CbmLitClusteringQaReport();
-  // clusteringQaReport->Create(fileName, outputDirClustering);
+  //   string outputDirClustering = resultDir + "results_litqa_clustering/";
+  //   gSystem->mkdir(outputDirClustering.c_str(), true);
+
+  //   CbmSimulationReport* clusteringQaReport = new CbmLitClusteringQaReport();
+  //   clusteringQaReport->Create(fileName, outputDirClustering);
 
   //   CbmSimulationReport* fitQaReport = new CbmLitFitQaReport();
   //   fitQaReport->Create(fileName, outputDir);

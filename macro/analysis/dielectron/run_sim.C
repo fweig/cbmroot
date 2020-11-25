@@ -1,18 +1,18 @@
 void run_sim(
   const string& urqmdFile =
     "/lustre/nyx/cbm/prod/gen/urqmd/auau/8gev/centr/"
-    "urqmd.auau.8gev.centr.00000.root",  // if "", no urqmd
+    "urqmd.auau.8gev.centr.00001.root",  // if "", no urqmd
   const string& plutoFile =
     "/lustre/nyx/cbm/prod/gen/pluto/auau/cktA/8gev/omega/epem/"
-    "pluto.auau.8gev.omega.epem.0000.root",  // if "", no pluto particles are embedded into event
+    "pluto.auau.8gev.omega.epem.0001.root",  // if "", no pluto particles are embedded into event
   const string& mcFile =
-    "/lustre/nyx/cbm/users/slebedev/cbm/data/mc.00000.root",
+    "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/mc.2.root",
   const string& parFile =
-    "/lustre/nyx/cbm/users/slebedev/cbm/data/param.00000.root",
+    "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/param.2.root",
   const string& geoFile =
-    "/lustre/nyx/cbm/users/slebedev/cbm/data/geosim.00000.root",
+    "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/geosim.2.root",
   const string& geoSetup = "sis100_electron",
-  int nEvents            = 10) {
+  int nEvents            = 1000) {
   TTree::SetMaxTreeSize(90000000000);
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
   FairLogger::GetLogger()->SetLogVerbosityLevel("LOW");
@@ -37,7 +37,6 @@ void run_sim(
   run.SetTarget("Gold", 0.0025, 2.5);  // for lmvm thickness = 0.0025; // 25 mum
   run.SetBeamPosition(0., 0., 0.1, 0.1);
   run.Run(nEvents);
-
 
   timer.Stop();
   std::cout << std::endl << std::endl;

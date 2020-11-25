@@ -461,9 +461,8 @@ void CbmAnaDielectronTaskDrawAll::DrawMinvPt(CbmLmvmAnalysisSteps step) {
   TH2D* sPhi =
     (TH2D*) H2(kPhi, "fh_signal_minv_pt_" + CbmLmvmHist::fAnaSteps[step])
       ->Clone();
-  TH2D* sEta = fh_mean_eta_minv_pt[step];
-  TH2D* sPi0 = fh_mean_pi0_minv_pt[step];
-
+  TH2D* sEta    = fh_mean_eta_minv_pt[step];
+  TH2D* sPi0    = fh_mean_pi0_minv_pt[step];
   TH2D* coctail = (TH2D*) sInmed->Clone();
   if (fDrawQgp) coctail->Add(sQgp);
   coctail->Add(sOmega);
@@ -471,7 +470,6 @@ void CbmAnaDielectronTaskDrawAll::DrawMinvPt(CbmLmvmAnalysisSteps step) {
   coctail->Add(sOmegaDalitz);
   coctail->Add(sEta);
   coctail->Add(sPi0);
-
   DrawH2(coctail);
 }
 
