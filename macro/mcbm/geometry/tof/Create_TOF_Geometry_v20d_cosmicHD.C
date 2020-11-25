@@ -210,15 +210,15 @@ const Float_t Star2_Delta_Z_Position[3]    = {0., 22.3, 37.8};
 const Float_t Star2_First_Y_Position       = 0.;  //
 const Float_t Star2_Delta_Y_Position       = 0.;  //
 const Float_t Star2_rotate_Z               = 0.;
-const Int_t Star2_NTypes                    = 2;
-const Float_t Star2_Types[Star2_NTypes]     = {9.,4.};
-const Float_t Star2_Number[Star2_NTypes]  = {1.,2.};  //debugging, V16b
-const Float_t Star2_X_Offset[Star2_NTypes] = {0.,0.};  //{62.};
+const Int_t Star2_NTypes                   = 2;
+const Float_t Star2_Types[Star2_NTypes]    = {9., 4.};
+const Float_t Star2_Number[Star2_NTypes]   = {1., 2.};  //debugging, V16b
+const Float_t Star2_X_Offset[Star2_NTypes] = {0., 0.};  //{62.};
 
 const Float_t Buc_First_Z_Position     = TOF_Z_Front + 46.3;
 const Float_t Buc_Delta_Z_Position     = 0.;
-const Float_t Buc_First_Y_Position       = 7.9;  // 7.5
-const Float_t Buc_Delta_Y_Position     = -15.;    //
+const Float_t Buc_First_Y_Position     = 7.9;   // 7.5
+const Float_t Buc_Delta_Y_Position     = -15.;  //
 const Float_t Buc_rotate_Z             = 180.;
 const Float_t Buc_rotate_X             = 180.;
 const Int_t Buc_NTypes                 = 2;
@@ -246,12 +246,12 @@ const Float_t CERN_Number[CERN_NTypes] = {
   1.};  // evtl. double for split signals
 
 const Float_t Star_First_Z_Position       = TOF_Z_Front - 12.;
-const Float_t Star_Delta_Z_Position      = 0;   //20.;
+const Float_t Star_Delta_Z_Position       = 0;   //20.;
 const Float_t Star_First_Y_Position       = 0.;  //
 const Float_t Star_Delta_Y_Position       = 0.;  //
 const Float_t Star_rotate_Y               = 0;   //-6.8;
 const Float_t Star_rotate_Z               = 0.;
-const Int_t Star_NTypes                    = 1;
+const Int_t Star_NTypes                   = 1;
 const Float_t Star_Types[Star2_NTypes]    = {1.};
 const Float_t Star_Number[Star2_NTypes]   = {1.};
 const Float_t Star_X_Offset[Star2_NTypes] = {-5.};
@@ -774,8 +774,8 @@ TGeoVolume* create_new_tof_module(Int_t modType) {
 
     TGeoRotation* counter_rot = new TGeoRotation();
     counter_rot->RotateY(rotangle);
-    if (modType == 6)  counter_rot->RotateX(180);
-    
+    if (modType == 6) counter_rot->RotateX(180);
+
     TGeoCombiTrans* counter_combi_trans =
       new TGeoCombiTrans(*counter_trans, *counter_rot);
     gas_box_vol->AddNode(gCounter[cType], j, counter_combi_trans);
@@ -1098,7 +1098,7 @@ void position_Star2(Int_t modNType) {
   for (Int_t j = 0; j < modNType; j++) {
     Int_t modType = Star2_Types[j];
     Float_t xPos  = Star2_X_Offset[j];
-    modNum=0;
+    modNum        = 0;
     for (Int_t i = 0; i < Star2_Number[j]; i++) {
       ii++;
       module_trans       = new TGeoTranslation("", xPos, yPos, zPos);
@@ -1117,8 +1117,7 @@ void position_Buc(Int_t modNType) {
   TGeoRotation* module_rot =
     new TGeoRotation("Buc2018", Buc_rotate_Z, Buc_rotate_X, 0.);
 
-    TGeoRotation* module_rot0 =
-    new TGeoRotation("Buc2018", Buc_rotate_Z, 0, 0.);
+  TGeoRotation* module_rot0 = new TGeoRotation("Buc2018", Buc_rotate_Z, 0, 0.);
   //TGeoRotation* module_rot = new TGeoRotation();
   // module_rot->RotateZ(Buc_rotate_Z);
   // module_rot->RotateX(Buc_rotate_X);
@@ -1134,12 +1133,12 @@ void position_Buc(Int_t modNType) {
     Float_t xPos  = Buc_X_Offset[j];
     for (Int_t i = 0; i < Buc_Number[j]; i++) {
       ii++;
-      module_trans       = new TGeoTranslation("", xPos, yPos, zPos);
-      if(j==0)
+      module_trans = new TGeoTranslation("", xPos, yPos, zPos);
+      if (j == 0)
         module_combi_trans = new TGeoCombiTrans(*module_trans, *module_rot);
-      else 
+      else
         module_combi_trans = new TGeoCombiTrans(*module_trans, *module_rot);
-      
+
       gGeoMan->GetVolume(geoVersionStand)
         ->AddNode(gModules[modType], modNum, module_combi_trans);
       modNum++;
