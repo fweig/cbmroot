@@ -192,14 +192,44 @@ void L1Algo::SetData(const vector<L1StsHit>& StsHits_,
   vSFlag      = &SFlag_;
   vSFlagB     = &SFlagB_;
 
-
   StsHitsStartIndex = StsHitsStartIndex_;
   StsHitsStopIndex  = StsHitsStopIndex_;
 
+  // TODO: maximal array sizes need to be adjusted
 
-  /*  
-  
-  
+  int nHits = vStsHits->size();
+
+  vStsDontUsedHits_A.resize(nHits);
+  vStsDontUsedHits_B.resize(nHits);
+  vStsDontUsedHits_Buf.resize(nHits);
+  vStsDontUsedHitsxy_A.resize(nHits);
+  vStsDontUsedHitsxy_buf.resize(nHits);
+  vStsDontUsedHitsxy_B.resize(nHits);
+  RealIHit_v.resize(nHits);
+  RealIHit_v_buf.resize(nHits);
+  RealIHit_v_buf2.resize(nHits);
+
+#ifdef _OPENMP
+  hitToBestTrackF.resize(nHits);
+  hitToBestTrackB.resize(nHits);
+#endif
+  vStripToTrack.resize(nHits);
+  vStripToTrackB.resize(nHits);
+
+  TripForHit[0].resize(nHits);
+  TripForHit[1].resize(nHits);
+  NHitsIsecAll = nHits;
+  n_g1.resize(2 * nHits);
+
+  for (int i = 0; i < fNThreads; i++) {
+    vTracks_local[i].resize(nHits / 10);
+    vRecoHits_local[i].resize(nHits);
+    CandidatesTrack[i].resize(nHits / 10);
+    for (int j = 0; j < MaxNStations; j++)
+      TripletsLocal1[j][i].resize(2 * nHits);
+  }
+
+  /*    
   vStsHits.resize(StsHits_.size());
  vStsStrips.resize(StsStrips_.size());
  vStsStripsB.resize(StsStripsB_.size());

@@ -1694,7 +1694,7 @@ L1Algo::TripletsStaPort(  /// creates triplets: input: @istal - start station nu
       L1_assert(hitsr_3[i] < StsHitsUnusedStopIndex[istar]
                                - StsHitsUnusedStartIndex[istar]);
 
-    //        if (n3 >= MaxPortionTriplets) cout << "isec: " << isec << " stantion: " << istal << " portion number: " << ip << " CATrackFinder: Warning: Too many Triplets created in portion" << endl;
+    //        if (n3 >= MaxPortionTriplets) cout << "isec: " << isec << " station: " << istal << " portion number: " << ip << " CATrackFinder: Warning: Too many Triplets created in portion" << endl;
 
     /// Add the right hits to parameters estimation.
     f31(  // input
@@ -2101,7 +2101,7 @@ void L1Algo::CATrackFinder() {
           MaxDZ = 0.1;
 
         if (NStations > MaxNStations)
-          cout << " CATrackFinder: Error: Too many Stantions" << endl;
+          cout << " CATrackFinder: Error: Too many Stations" << endl;
       }
 
 #ifndef L1_NO_ASSERT

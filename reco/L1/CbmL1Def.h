@@ -99,12 +99,15 @@ public:
 
 
   T& operator[](const size_t index) {
+
+    //assert(index <= fSize);  // allow auto-resize by 1 element only
+
     if (index >= std::vector<T>::size()) {
 #ifdef _OPENMP
 #pragma omp critical
 #endif
       std::vector<T>::resize(index + 1);
-      std::cout << index << " index " << std::endl;
+      std::cout << "Warning: L1Vector autoresize to " << index + 1 << std::endl;
     }
     if (index >= fSize) fSize = index + 1;
 

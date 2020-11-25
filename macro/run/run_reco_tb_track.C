@@ -41,7 +41,8 @@ using std::endl;
 
 void run_reco_tb_track(TString dataSet = "test",
                        Int_t nSlices   = -1,
-                       TString setup   = "sis100_electron") {
+                       TString setup   = "sis100_electron",
+                       Bool_t useMC    = kFALSE) {
 
   // =========================================================================
   // ===                      Settings                                     ===
@@ -53,6 +54,7 @@ void run_reco_tb_track(TString dataSet = "test",
   TString inFile  = dataSet + ".raw.root";     // Input file (digis)
   TString parFile = dataSet + ".par.root";     // Parameter file
   TString outFile = dataSet + ".tb.rec.root";  // Output file
+  TString traFile = dataSet + ".tra.root";     // Transport file
 
   // Log level
   TString logLevel     = "INFO";  // switch to DEBUG or DEBUG1,... for more info
@@ -83,6 +85,13 @@ void run_reco_tb_track(TString dataSet = "test",
   FairMonitor::GetMonitor()->EnableMonitor(kTRUE, monitorFile);
   // ------------------------------------------------------------------------
 
+  // -----   MC manager   -------------------------------------------
+
+  if (useMC) {
+    CbmMCDataManager* mcManager = new CbmMCDataManager("MCDataManager", 0);
+    mcManager->AddFile(traFile);
+    run->AddTask(mcManager);
+  }
 
   // ---- Set the log level   -----------------------------------------------
   FairLogger::GetLogger()->SetLogScreenLevel(logLevel.Data());
@@ -170,14 +179,38 @@ void run_reco_tb_track(TString dataSet = "test",
   //    run->AddTask(ECbmModuleId::psdHit);
   //    std::cout << "-I- : Added task CbmPsdHitProducer" << std::endl;
 
+  if (useMC) {
+    // ---   STS MC matching   ----------------------------------------------
+    CbmMatchRecoToMC* matchTask = new CbmMatchRecoToMC();
+    matchTask->SetIncludeMvdHitsInStsTrack(0);
+    run->AddTask(matchTask);
+  }
+
   // --- STS track finder
-  run->AddTask(new CbmKF());
-  CbmL1* l1 = new CbmL1();
-  l1->SetDataMode(1);
-  run->AddTask(l1);
-  CbmStsTrackFinder* stsTrackFinder = new CbmL1StsTrackFinder();
-  FairTask* stsFindTracks           = new CbmStsFindTracks(0, stsTrackFinder);
-  run->AddTask(stsFindTracks);
+  {
+    TString geoTag;
+    CbmSetup::Instance()->GetGeoTag(ECbmModuleId::kSts, geoTag);
+
+    TString parFile1 = gSystem->Getenv("VMCWORKDIR");
+    parFile1 =
+      parFile1 + "/parameters/sts/sts_matbudget_" + geoTag(0, 4) + ".root";
+    LOG(info) << "CA: Using material budget file " << parFile1;
+    bool err = gSystem->AccessPathName(parFile1);
+    if (!err) {
+      run->AddTask(new CbmKF());
+      CbmL1* l1 = new CbmL1("CbmL1", 2, (useMC ? 3 : 0));
+      l1->SetStsMaterialBudgetFileName(parFile1.Data());
+      l1->SetDataMode(1);
+      l1->SetUseHitErrors(1);
+      run->AddTask(l1);
+      CbmStsTrackFinder* stsTrackFinder = new CbmL1StsTrackFinder();
+      FairTask* stsFindTracks = new CbmStsFindTracks(0, stsTrackFinder);
+      run->AddTask(stsFindTracks);
+    } else {
+      LOG(warning)
+        << "CA: STS material budget file doesn't exist, L1 reco stops";
+    }
+  }
   //
   //  // --- Event builder (track-based)
   //  run->AddTask(new CbmBuildEventsFromTracksReal());
