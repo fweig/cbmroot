@@ -5418,6 +5418,7 @@ Bool_t CbmTofEventClusterizer::BuildClusters() {
         if (pDigi->GetSide() == 1) {
           bAddBeamCounterSideDigi = kFALSE;  // disable for current data set
           LOG(info) << "Start counter digi duplication disabled";
+          break;
         }
         fTofDigiVec.push_back(CbmTofDigi(*pDigi));
         CbmTofDigi* pDigiN = &(fTofDigiVec.back());
