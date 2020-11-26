@@ -109,7 +109,7 @@ InitStatus CbmKFParticleFinderQA::Init() {
 
   //check the mode
   fTimeSliceMode = 0;
-  if (ioman->CheckBranch("Event")) fTimeSliceMode = 1;
+  if (ioman->CheckBranch("CbmEvent")) fTimeSliceMode = 1;
 
   //MC Tracks
   if (fTimeSliceMode) {

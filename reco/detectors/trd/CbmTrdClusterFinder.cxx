@@ -172,7 +172,8 @@ InitStatus CbmTrdClusterFinder::Init() {
   ioman->Register(
     "TrdCluster", "TRD", fClusters, IsOutputBranchPersistent("TrdCluster"));
 
-  if (!IsTimeBased() && !ioman->GetObject("Event")) {
+  if (!IsTimeBased() &&
+      nullptr == dynamic_cast<TClonesArray*>(ioman->GetObject("CbmEvent"))) {
     LOG(warn) << GetName()
               << ": Event mode selected but no event array found! Run in "
                  "time-based mode.";
@@ -212,14 +213,14 @@ InitStatus CbmTrdClusterFinder::Init() {
 //_____________________________________________________________________
 void CbmTrdClusterFinder::Exec(Option_t* /*option*/) {
   /**
-* Digis are sorted according to the moduleAddress. A combiId is calculted based 
-* on the rowId and the colId to have a neighbouring criterion for digis within 
+* Digis are sorted according to the moduleAddress. A combiId is calculted based
+* on the rowId and the colId to have a neighbouring criterion for digis within
 * the same pad row. The digis of each module are sorted according to this combiId.
 * All sorted digis of one pad row are 'clustered' into rowCluster. For a new row
-* the rowClusters are compared to the rowClusters of the last row. If an overlap 
-* is found they are marked to be parents(last row) and childrens(activ row) 
-* (mergeRowCluster()). After this, the finale clusters are created. Therefor 
-* walkCluster() walks along the list of marked parents and markes every visited 
+* the rowClusters are compared to the rowClusters of the last row. If an overlap
+* is found they are marked to be parents(last row) and childrens(activ row)
+* (mergeRowCluster()). After this, the finale clusters are created. Therefor
+* walkCluster() walks along the list of marked parents and markes every visited
 * rowCluster to avoid multiple usage of one rowCluster. drawCluster() can be used to
 * get a visual output.
 */

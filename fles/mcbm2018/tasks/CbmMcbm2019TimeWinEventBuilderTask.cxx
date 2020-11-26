@@ -42,7 +42,7 @@ InitStatus CbmMcbm2019TimeWinEventBuilderTask::Init() {
   /// Register output array (CbmEvent)
   fEvents = new TClonesArray("CbmEvent", 100);
   ioman->Register(
-    "CbmEvent", "Cbm Event", fEvents, IsOutputBranchPersistent("CbmEvent"));
+    "CbmEvent", "Cbm_Event", fEvents, IsOutputBranchPersistent("CbmEvent"));
 
   if (!fEvents) LOG(fatal) << "Output branch was not created";
 

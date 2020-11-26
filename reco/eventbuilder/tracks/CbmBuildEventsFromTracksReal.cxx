@@ -50,7 +50,7 @@ InitStatus CbmBuildEventsFromTracksReal::Init() {
   // Register output array (CbmStsDigi)
   fEvents = new TClonesArray("CbmEvent", 100);
   ioman->Register(
-    "Event", "CbmEvent", fEvents, IsOutputBranchPersistent("Event"));
+    "CbmEvent", "Cbm_Event", fEvents, IsOutputBranchPersistent("CbmEvent"));
 
   return kSUCCESS;
 }

@@ -67,7 +67,7 @@ InitStatus CbmKFParticleFinder::Init() {
 
   //check the mode
   fTimeSliceMode = 0;
-  if (ioman->CheckBranch("Event")) {
+  if (ioman->CheckBranch("CbmEvent")) {
     fTimeSliceMode = 1;
     LOG(info) << GetName() << ": Running in the timeslice mode.";
   } else
@@ -75,7 +75,7 @@ InitStatus CbmKFParticleFinder::Init() {
 
   // Get reconstructed events
   if (fTimeSliceMode) {
-    fEvents = (TClonesArray*) ioman->GetObject("Event");
+    fEvents = (TClonesArray*) ioman->GetObject("CbmEvent");
     if (fEvents == 0)
       Fatal("CbmKFParticleFinder::Init",
             "No events available. Running in the event-by-event mode.");

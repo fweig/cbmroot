@@ -98,8 +98,8 @@ InitStatus CbmStsFindTracksEvents::Init() {
   assert(ioman);
 
   // --- Get input array (Events)
-  fEvents = dynamic_cast<TClonesArray*>(ioman->GetObject("Event"));
-  if (!fEvents) {
+  fEvents = dynamic_cast<TClonesArray*>(ioman->GetObject("CbmEvent"));
+  if (nullptr == fEvents) {
     LOG(warn) << GetName() << ": No event array! Will process entire tree.";
   }
 

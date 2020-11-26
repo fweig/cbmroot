@@ -167,7 +167,7 @@ void CbmBuildEventsSimple::Exec(Option_t*) {
         fSN     = i + 1;
         digi2   = (CbmStsDigi*) fStsDigis->At(i + 1);
         fST     = digi2->GetTime();
-        /*	
+        /*
 	cout << "--> ";
         digi2=(CbmStsDigi*)fSlice->GetData(kSTS, n0);
 	cout << n0 << "(" << digi2->GetTime() << ")" << ", ";
@@ -200,7 +200,7 @@ InitStatus CbmBuildEventsSimple::Init() {
   // Register output array (CbmStsDigi)
   fEvents = new TClonesArray("CbmEvent", 100);
   ioman->Register(
-    "Event", "CbmEvent", fEvents, IsOutputBranchPersistent("Event"));
+    "CbmEvent", "Cbm_Event", fEvents, IsOutputBranchPersistent("CbmEvent"));
 
   return kSUCCESS;
 }

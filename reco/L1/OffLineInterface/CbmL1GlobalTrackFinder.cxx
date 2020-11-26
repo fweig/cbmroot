@@ -2,8 +2,8 @@
 /*
  *====================================================================
  *
- *  CBM Level 1 Reconstruction 
- *  
+ *  CBM Level 1 Reconstruction
+ *
  *  Authors: V. Akishina
  *
  *  e-mail : v.akishina@gsi.de
@@ -74,7 +74,7 @@ InitStatus CbmL1GlobalTrackFinder::Init() {
     ioman->Register("TofTrack", "Tof", fTofTracks, "TofTrack");
   }
 
-  fEvents = dynamic_cast<TClonesArray*>(ioman->GetObject("Event"));
+  fEvents = dynamic_cast<TClonesArray*>(ioman->GetObject("CbmEvent"));
 
   LOG(info) << fEvents << " fEvents ";
 

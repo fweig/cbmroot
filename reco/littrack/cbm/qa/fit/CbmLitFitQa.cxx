@@ -127,7 +127,7 @@ void CbmLitFitQa::ReadDataBranches() {
       << "CbmMatchRecoToMC::ReadAndCreateDataBranches() NULL MCDataManager.";
 
   fMCTracks = mcManager->InitBranch("MCTrack");
-  fEvents   = dynamic_cast<TClonesArray*>(ioman->GetObject("Event"));
+  fEvents   = dynamic_cast<TClonesArray*>(ioman->GetObject("CbmEvent"));
   //    fPrimVertex = (CbmVertex*) ioman->GetObject("PrimaryVertex");
   // Get pointer to PrimaryVertex object from IOManager if it exists
   // The old name for the object is "PrimaryVertex" the new one

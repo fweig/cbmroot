@@ -238,8 +238,8 @@ InitStatus CbmRecoSts::Init() {
   // --- In event mode: get input array (CbmEvent)
   if (fMode == kCbmRecoEvent) {
     LOG(info) << GetName() << ": Using event-by-event mode";
-    fEvents = dynamic_cast<TClonesArray*>(ioman->GetObject("Event"));
-    if (!fEvents) {
+    fEvents = dynamic_cast<TClonesArray*>(ioman->GetObject("CbmEvent"));
+    if (nullptr == fEvents) {
       LOG(warn) << GetName()
                 << ": Event mode selected but no event array found!";
       return kFATAL;

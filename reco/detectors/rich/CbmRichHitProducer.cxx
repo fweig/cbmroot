@@ -45,7 +45,7 @@ void CbmRichHitProducer::SetParContainers() {}
 InitStatus CbmRichHitProducer::Init() {
   FairRootManager* manager = FairRootManager::Instance();
 
-  fCbmEvents = dynamic_cast<TClonesArray*>(manager->GetObject("Event"));
+  fCbmEvents = dynamic_cast<TClonesArray*>(manager->GetObject("CbmEvent"));
   if (fCbmEvents == nullptr) {
     LOG(info) << ": CbmEvent NOT found \n \n \n";
   } else {

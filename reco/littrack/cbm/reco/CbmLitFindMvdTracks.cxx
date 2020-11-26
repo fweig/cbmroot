@@ -87,9 +87,9 @@ void CbmLitFindMvdTracks::ReadAndCreateDataBranches() {
     LOG(fatal) << "CbmLitFindMvdTracks::ReadAndCreateDataBranches "
                   "FairRootManager is not instantiated";
   }
-  fMvdHits   = (TClonesArray*) ioman->GetObject("MvdHit");
-  fStsTracks = (TClonesArray*) ioman->GetObject("StsTrack");
-  fEvents    = dynamic_cast<TClonesArray*>(ioman->GetObject("Event"));
+  fMvdHits   = dynamic_cast<TClonesArray*>(ioman->GetObject("MvdHit"));
+  fStsTracks = dynamic_cast<TClonesArray*>(ioman->GetObject("StsTrack"));
+  fEvents    = dynamic_cast<TClonesArray*>(ioman->GetObject("CbmEvent"));
 }
 
 void CbmLitFindMvdTracks::ConvertInputData(CbmEvent* event) {

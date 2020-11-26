@@ -82,8 +82,10 @@ InitStatus CbmFindPrimaryVertexEvents::Init() {
   assert(ioman);
 
   // Get event array
-  fEvents = (TClonesArray*) ioman->GetObject("Event");
-  assert(fEvents);
+  fEvents = dynamic_cast<TClonesArray*>(ioman->GetObject("CbmEvent"));
+  if (nullptr == fEvents) {
+    LOG(fatal) << GetName() << "No CbmEvent TClonesArray found!";
+  }
 
   // Get CbmStsTrack array
   fTracks = (TClonesArray*) ioman->GetObject("StsTrack");

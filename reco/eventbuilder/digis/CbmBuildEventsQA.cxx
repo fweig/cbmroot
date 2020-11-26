@@ -116,8 +116,12 @@ InitStatus CbmBuildEventsQA::Init() {
   assert(ioman);
 
   // --- Get input array (CbmEvent)
-  fEvents = (TClonesArray*) ioman->GetObject("Event");
-  assert(fEvents);
+  fEvents = dynamic_cast<TClonesArray*>(ioman->GetObject("CbmEvent"));
+  if (nullptr == fEvents) {
+    LOG(fatal) << "CbmBuildEventsQA::Init"
+               << "No CbmEvent TClonesArray found!";
+  }
+
 
   // --- Get input array (CbmStsDigi)
   fStsDigis = (TClonesArray*) ioman->GetObject("StsDigi");

@@ -200,7 +200,7 @@ void CbmLitFindGlobalTracks::ReadInputBranches() {
   }  //? TOF in geometry
 
   // --- Events
-  fEvents = dynamic_cast<TClonesArray*>(ioman->GetObject("Event"));
+  fEvents = dynamic_cast<TClonesArray*>(ioman->GetObject("CbmEvent"));
   if (fEvents)
     LOG(INFO) << GetName() << ": Found Event branch";
   else

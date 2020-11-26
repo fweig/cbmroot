@@ -188,13 +188,13 @@ InitStatus CbmBuildEventsIdealNew::Init() {
   }
 
   // Register output array (CbmEvent)
-  if (ioman->GetObject("Event")) {
-    LOG(fatal) << GetName() << ": Branch Event already exists!";
+  if (ioman->GetObject("CbmEventStore")) {
+    LOG(fatal) << GetName() << ": Branch CbmEventStore already exists!";
     return kFATAL;
   }
   /*
   fEvents = new std::vector<CbmEventStore>();
-  ioman->RegisterAny("Event", fEvents, kTRUE);
+  ioman->RegisterAny("CbmEventStore", fEvents, kTRUE);
   if ( ! fEvents ) {
     LOG(fatal) << GetName() << ": Output branch could not be created!";
     return kFATAL;

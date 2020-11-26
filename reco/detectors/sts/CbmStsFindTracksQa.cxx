@@ -226,7 +226,7 @@ InitStatus CbmStsFindTracksQa::Init() {
   assert(fStsPoints);
 
   // Get Event array
-  fEvents = dynamic_cast<TClonesArray*>(ioman->GetObject("Event"));
+  fEvents = dynamic_cast<TClonesArray*>(ioman->GetObject("CbmEvent"));
 
   // Get StsHit array
   fStsHits = (TClonesArray*) ioman->GetObject("StsHit");

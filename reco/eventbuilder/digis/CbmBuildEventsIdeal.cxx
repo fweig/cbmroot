@@ -206,13 +206,13 @@ InitStatus CbmBuildEventsIdeal::Init() {
   }
 
   // Register output array (CbmEvent)
-  if (ioman->GetObject("Event")) {
-    LOG(fatal) << GetName() << ": Branch Event already exists!";
+  if (ioman->GetObject("CbmEvent")) {
+    LOG(fatal) << GetName() << ": Branch CbmEvent already exists!";
     return kFATAL;
   }
   fEvents = new TClonesArray("CbmEvent", 100);
   ioman->Register(
-    "Event", "CbmEvent", fEvents, IsOutputBranchPersistent("Event"));
+    "CbmEvent", "Cbm_Event", fEvents, IsOutputBranchPersistent("CbmEvent"));
   if (!fEvents) {
     LOG(fatal) << GetName() << ": Output branch could not be created!";
     return kFATAL;

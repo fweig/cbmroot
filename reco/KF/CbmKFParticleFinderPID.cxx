@@ -100,7 +100,7 @@ InitStatus CbmKFParticleFinderPID::Init() {
 
   //check the mode
   fTimeSliceMode = 0;
-  if (ioman->CheckBranch("Event")) {
+  if (ioman->CheckBranch("CbmEvent")) {
     fTimeSliceMode = 1;
     LOG(info) << GetName() << ": Running in the timeslice mode.";
   } else
