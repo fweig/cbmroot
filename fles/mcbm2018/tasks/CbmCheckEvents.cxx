@@ -84,12 +84,12 @@ InitStatus CbmCheckEvents::Init() {
   fEvents = dynamic_cast<TClonesArray*>(ioman->GetObject("CbmEvent"));
   if (nullptr == fEvents) {
 
-    if (nullptr != (ioman->GetObject("Event"))) {
+    if (nullptr != (ioman->GetObject("CbmEvent"))) {
       LOG(error) << "Got pointer of type"
-                 << typeid(ioman->GetObject("Event")).name();
+                 << typeid(ioman->GetObject("CbmEvent")).name();
       LOG(error) << "Got Object of type"
-                 << typeid(*(ioman->GetObject("Event"))).name();
-    }  // if( nullptr != (ioman->GetObject("Event") )
+                 << typeid(*(ioman->GetObject("CbmEvent"))).name();
+    }  // if( nullptr != (ioman->GetObject("CbmEvent") )
     LOG(fatal) << "No TClonesArray with events found.";
   }  // if (nullptr == fEvents)
 

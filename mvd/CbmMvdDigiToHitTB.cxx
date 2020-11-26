@@ -118,7 +118,7 @@ InitStatus CbmMvdDigiToHitTB::Init() {
   }
 
   // **********  Get input arrays
-  fEvents = (TClonesArray*) ioman->GetObject("Event");
+  fEvents = dynamic_cast<TClonesArray*>(ioman->GetObject("CbmEvent"));
 
   fInputDigis = (TClonesArray*) ioman->GetObject("MvdDigi");
   fEventDigis = new TClonesArray("CbmMvdDigi", 10000);
