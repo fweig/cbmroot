@@ -172,8 +172,8 @@ InitStatus CbmTrdClusterFinder::Init() {
   ioman->Register(
     "TrdCluster", "TRD", fClusters, IsOutputBranchPersistent("TrdCluster"));
 
-  if (!IsTimeBased() &&
-      nullptr == dynamic_cast<TClonesArray*>(ioman->GetObject("CbmEvent"))) {
+  if (!IsTimeBased()
+      && nullptr == dynamic_cast<TClonesArray*>(ioman->GetObject("CbmEvent"))) {
     LOG(warn) << GetName()
               << ": Event mode selected but no event array found! Run in "
                  "time-based mode.";

@@ -7,11 +7,11 @@
 // --------------------------------------------------------------------------
 
 
-void mcbm_build_and_reco_kronos(UInt_t uRunIdx = 28,
-                                Int_t nTimeslices  = 300,
-                                TString outDir = "data/") {
+void mcbm_build_and_reco_kronos(UInt_t uRunIdx    = 28,
+                                Int_t nTimeslices = 300,
+                                TString outDir    = "data/") {
   UInt_t uRunId    = 0;
-  TString inFile = "./data/unp_mcbm_0.root";
+  TString inFile    = "./data/unp_mcbm_0.root";
   TString parFileIn = "./data/unp_mcbm_params_0.root";
   if (99999 != uRunIdx) {
     std::vector<UInt_t> vuListRunId = {
@@ -36,12 +36,12 @@ void mcbm_build_and_reco_kronos(UInt_t uRunIdx = 28,
     if (vuListRunId.size() <= uRunIdx) return kFALSE;
     uRunId = vuListRunId[uRunIdx];
 
-    inFile = Form("/lustre/cbm/users/ploizeau/mcbm2020/"
-                    "unp_evt_data_7f229b3f_20201103/unp_mcbm_%u.root",
-                    uRunId);
+    inFile    = Form("/lustre/cbm/users/ploizeau/mcbm2020/"
+                  "unp_evt_data_7f229b3f_20201103/unp_mcbm_%u.root",
+                  uRunId);
     parFileIn = Form("/lustre/cbm/users/ploizeau/mcbm2020/
-                      "unp_evt_data_7f229b3f_20201103/unp_mcbm_params_%u.root",
-                    uRunId);
+                     "unp_evt_data_7f229b3f_20201103/unp_mcbm_params_%u.root",
+                     uRunId);
   }  // if( 99999 != uRunIdx )
 
   if (uRunId < 692 && 0 != uRunId) return kFALSE;
@@ -66,7 +66,7 @@ void mcbm_build_and_reco_kronos(UInt_t uRunIdx = 28,
   // -----   In- and output file names   ------------------------------------
   TString geoFile = paramDir + "mcbm2020_reco.geo.root";  // Created in sim. run
   TString parFileOut = Form("./data/reco_mcbm_evt_win_params_%u.root", uRunId);
-  TString outFile = Form("./data/reco_mcbm_evt_win_%u.root", uRunId);
+  TString outFile    = Form("./data/reco_mcbm_evt_win_%u.root", uRunId);
   // ------------------------------------------------------------------------
 
 
@@ -266,10 +266,10 @@ void mcbm_build_and_reco_kronos(UInt_t uRunIdx = 28,
   // -----  Parameter database   --------------------------------------------
   std::cout << std::endl << std::endl;
   std::cout << "-I- " << myName << ": Set runtime DB" << std::endl;
-  FairRuntimeDb* rtdb       = run->GetRuntimeDb();
-  FairParRootFileIo* parIo1 = new FairParRootFileIo();
+  FairRuntimeDb* rtdb        = run->GetRuntimeDb();
+  FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
-  FairParRootFileIo* parIo3 = new FairParRootFileIo();
+  FairParRootFileIo* parIo3  = new FairParRootFileIo();
   parIo1->open(parFileIn.Data(), "READ");
   parIo3->open(parFileOut.Data(), "RECREATE");
   rtdb->setFirstInput(parIo1);
