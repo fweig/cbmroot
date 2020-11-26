@@ -135,13 +135,13 @@ InitStatus CbmRichMCbmQaReal::Init() {
 	if ( pSetup->IsActive(ECbmModuleId::kRich) ) {
 		pSetup->GetGeoTag(ECbmModuleId::kRich, geoTag);
     }
-    
+
     if (geoTag == "v20d") RichZPos = 340.8;
     std::cout<<"mRICH Geo Tag is "<< geoTag<< ". Z Position of PMT plane set to "<<RichZPos<<"."<<std::endl;
     */
   // ---------------------------------
 
-  fCbmEvent = (TClonesArray*) ioman->GetObject("CbmEvent");
+  fCbmEvent = dynamic_cast<TClonesArray*>(ioman->GetObject("CbmEvent"));
   if (nullptr == fCbmEvent) { Fatal("CbmRichMCbmQaReal::Init", "No Event!"); }
 
   InitHistograms();

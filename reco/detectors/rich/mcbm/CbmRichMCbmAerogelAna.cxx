@@ -103,7 +103,7 @@ InitStatus CbmRichMCbmAerogelAna::Init() {
 
   //fT0Digis = ioman->InitObjectAs<std::vector<CbmTofDigi> const *>("T0Digi");
 
-  fCbmEvent = (TClonesArray*) ioman->GetObject("CbmEvent");
+  fCbmEvent = dynamic_cast<TClonesArray*>(ioman->GetObject("CbmEvent"));
   if (nullptr == fCbmEvent) { Fatal("fTofDigis::Init", "No Event!"); }
 
   InitHistograms();

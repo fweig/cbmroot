@@ -27,6 +27,8 @@
 #include <TFile.h>
 
 #include <iomanip>
+#include <typeinfo>
+
 using std::fixed;
 using std::setprecision;
 
@@ -79,8 +81,18 @@ InitStatus CbmCheckEvents::Init() {
     LOG(info) << "No TClonesArray with TOF digis found.";
   }
 
-  fEvents = static_cast<TClonesArray*>(ioman->GetObject("CbmEvent"));
-  if (!fEvents) { LOG(fatal) << "No TClonesArray with events found."; }
+  fEvents = dynamic_cast<TClonesArray*>(ioman->GetObject("CbmEvent"));
+  if (nullptr == fEvents) {
+
+    if (nullptr != (ioman->GetObject("Event"))) {
+      LOG(error) << "Got pointer of type"
+                 << typeid(ioman->GetObject("Event")).name();
+      LOG(error) << "Got Object of type"
+                 << typeid(*(ioman->GetObject("Event"))).name();
+    }  // if( nullptr != (ioman->GetObject("Event") )
+    LOG(fatal) << "No TClonesArray with events found.";
+  }  // if (nullptr == fEvents)
+
 
   CreateHistos();
 
@@ -188,7 +200,7 @@ void CbmCheckEvents::Exec(Option_t* /*option*/) {
 
   // Loop over all CbmEvents in the time slice
   for (Int_t iEvent = 0; iEvent < nrEvents; iEvent++) {
-    CbmEvent* event = static_cast<CbmEvent*>(fEvents->At(iEvent));
+    CbmEvent* event = dynamic_cast<CbmEvent*>(fEvents->At(iEvent));
     fEventSize->Fill(event->GetNofData());
     fEventLength->Fill(event->GetEndTime() - event->GetStartTime());
     fLengthvsTS->Fill(fNrTs, event->GetEndTime() - event->GetStartTime(), 1);

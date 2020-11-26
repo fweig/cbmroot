@@ -46,9 +46,11 @@ void check_events(Int_t nEvents      = 10,
 
   FairFileSource* inputSource = new FairFileSource(InputFile);
   inputSource->AddFriend(InputFileEvent);
-
   run->SetSource(inputSource);
-  run->SetOutputFile(OutputFile);
+
+  FairRootFileSink* outputSink = new FairRootFileSink(OutputFile);
+  run->SetSink(outputSink);
+
 
   run->SetEventHeaderPersistence(kFALSE);
 

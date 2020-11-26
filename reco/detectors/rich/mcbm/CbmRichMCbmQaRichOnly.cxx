@@ -101,7 +101,7 @@ InitStatus CbmRichMCbmQaRichOnly::Init() {
     Fatal("CbmRichMCbmQaRichOnly::Init", "No Rich Rings!");
   }
 
-  fCbmEvent = (TClonesArray*) ioman->GetObject("CbmEvent");
+  fCbmEvent = dynamic_cast<TClonesArray*>(ioman->GetObject("CbmEvent"));
   if (nullptr == fCbmEvent) {
     Fatal("CbmRichMCbmQaRichOnly::Init", "No Event!");
   }
