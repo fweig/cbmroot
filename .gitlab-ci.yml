@@ -112,7 +112,7 @@ CbmRoot_Continuous:
     - echo "export BUILDDIR=$PWD/build" >> Dart.cfg
     - echo "export SOURCEDIR=$PWD" >> Dart.cfg
     - echo "export NCPU=5" >> Dart.cfg
-    - echo "export PATH=\$SIMPATH/bin:$PATH" >> Dart.cfg
+    - echo "export PATH=/cvmfs/it.gsi.de/cmake/3.19.1/bin:$PATH" >> Dart.cfg
     - ls
     - pwd
     - cat Dart.cfg
@@ -145,7 +145,7 @@ CbmRoot_Merge:
     - echo "export BUILDDIR=$PWD/build" >> Dart.cfg
     - echo "export SOURCEDIR=$PWD" >> Dart.cfg
     - echo "export NCPU=5" >> Dart.cfg
-    - echo "export PATH=\$SIMPATH/bin:$PATH" >> Dart.cfg
+    - echo "export PATH=/cvmfs/it.gsi.de/cmake/3.19.1/bin:$PATH" >> Dart.cfg
     - ls
     - pwd
     - cat Dart.cfg
