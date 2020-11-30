@@ -5,7 +5,6 @@
 #include "KFPTrackVector.h"
 #include "KFParticleTopoReconstructor.h"
 #include "KFTopoPerformance.h"
-#include "L1StsHit.h"
 #include <vector>
 
 using std::vector;

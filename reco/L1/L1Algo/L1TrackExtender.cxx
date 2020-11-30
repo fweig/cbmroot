@@ -51,20 +51,20 @@ void L1Algo::BranchFitterFast(const L1Branch& t,
   L1Station& sta1 = vStations[ista1];
   L1Station& sta2 = vStations[ista2];
 
-  fvec u0 = static_cast<fscal>((*vStsStrips)[hit0.f]);
-  fvec v0 = static_cast<fscal>((*vStsStripsB)[hit0.b]);
+  fvec u0 = hit0.u;
+  fvec v0 = hit0.v;
   fvec x0, y0;
   StripsToCoor(u0, v0, x0, y0, sta0);
   fvec z0 = (*vStsZPos)[hit0.iz];
 
-  fvec u1 = static_cast<fscal>((*vStsStrips)[hit1.f]);
-  fvec v1 = static_cast<fscal>((*vStsStripsB)[hit1.b]);
+  fvec u1 = hit1.u;
+  fvec v1 = hit1.v;
   fvec x1, y1;
   StripsToCoor(u1, v1, x1, y1, sta1);
   fvec z1 = (*vStsZPos)[hit1.iz];
 
-  fvec u2 = static_cast<fscal>((*vStsStrips)[hit2.f]);
-  fvec v2 = static_cast<fscal>((*vStsStripsB)[hit2.b]);
+  fvec u2 = hit2.u;
+  fvec v2 = hit2.v;
   fvec x2, y2;
   StripsToCoor(u2, v2, x2, y2, sta2);
   //  fvec z2 = (*vStsZPos)[hit2.iz];
@@ -144,8 +144,8 @@ void L1Algo::BranchFitterFast(const L1Branch& t,
             >= step * (NMvdStations + (step + 1) / 2 - 1 - step)))
       L1AddPipeMaterial(T, qp0);
 
-    fvec u = static_cast<fscal>((*vStsStrips)[hit.f]);
-    fvec v = static_cast<fscal>((*vStsStripsB)[hit.b]);
+    fvec u = hit.u;
+    fvec v = hit.v;
 
     L1UMeasurementInfo info = sta.frontInfo;
 
@@ -222,25 +222,20 @@ void L1Algo::FindMoreHits(L1Branch& t,
   const L1Station& sta1 = vStations[ista1];
   const L1Station& sta2 = vStations[ista2];
 
-  fvec u0 = static_cast<fscal>((*vStsStrips)[hit0.f]);
-  fvec v0 = static_cast<fscal>((*vStsStripsB)[hit0.b]);
+  fvec u0 = hit0.u;
+  fvec v0 = hit0.v;
   fvec x0, y0;
-
-
   StripsToCoor(u0, v0, x0, y0, sta0);
 
-
-  fvec u1 = static_cast<fscal>((*vStsStrips)[hit1.f]);
-  fvec v1 = static_cast<fscal>((*vStsStripsB)[hit1.b]);
+  fvec u1 = hit1.u;
+  fvec v1 = hit1.v;
   fvec x1, y1;
   StripsToCoor(u1, v1, x1, y1, sta1);
 
-
-  fvec u2 = static_cast<fscal>((*vStsStrips)[hit2.f]);
-  fvec v2 = static_cast<fscal>((*vStsStripsB)[hit2.b]);
+  fvec u2 = hit2.u;
+  fvec v2 = hit2.v;
   fvec x2, y2;
   StripsToCoor(u2, v2, x2, y2, sta2);
-
 
   L1FieldValue fB0, fB1, fB2 _fvecalignment;
   L1FieldRegion fld _fvecalignment;
@@ -332,8 +327,8 @@ void L1Algo::FindMoreHits(L1Branch& t,
     newHits.push_back((*RealIHitP)[iHit_best]);
 
     const L1StsHit& hit = (*vStsHitsUnused)[iHit_best];
-    fvec u              = static_cast<fvec>((*vStsStrips)[hit.f]);
-    fvec v              = static_cast<fvec>((*vStsStripsB)[hit.b]);
+    fvec u              = hit.u;
+    fvec v              = hit.v;
     fvec x, y, z;
     StripsToCoor(u, v, x, y, sta);
     z = (*vStsZPos)[hit.iz];

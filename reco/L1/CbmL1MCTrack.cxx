@@ -18,6 +18,7 @@
 #include "CbmL1.h"
 #include "CbmL1Constants.h"
 #include "L1Algo/L1Algo.h"
+#include "L1Algo/L1StsHit.h"
 
 CbmL1MCTrack::CbmL1MCTrack(double mass_,
                            double q_,

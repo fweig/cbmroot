@@ -2,7 +2,6 @@
 #define _L1AlgoInputData_h
 
 #include "CbmL1Def.h"
-#include "L1Strip.h"
 #include "L1StsHit.h"
 
 #include <fstream>
@@ -17,8 +16,8 @@ class L1AlgoInputData {
 public:
   L1AlgoInputData()
     : vStsHits()
-    , vStsStrips()
-    , vStsStripsB()
+    , NStsStripsF(0)
+    , NStsStripsB(0)
     , vStsZPos()
     , vSFlag()
     , vSFlagB()
@@ -32,22 +31,9 @@ public:
   }
   ~L1AlgoInputData() {};
 
-  /*
-const  vector< L1StsHit >      & GetStsHits() const { return vStsHits; }
-  vector< L1Strip >       & GetStsStrips()   { return vStsStrips; }
-  vector< L1Strip >       & GetStsStripsB()  { return vStsStripsB; }
-  vector< fscal >         & GetStsZPos()     { return vStsZPos; }
-  vector< unsigned char > & GetSFlag()       { return vSFlag; }
-  vector< unsigned char > & GetSFlagB()      { return vSFlagB; }
-  THitI* GetStsHitsStartIndex()  { return StsHitsStartIndex; }
-  THitI* GetStsHitsStopIndex()   { return StsHitsStopIndex; }
-
-*/
-
-
   const vector<L1StsHit>& GetStsHits() const { return vStsHits; }
-  const vector<L1Strip>& GetStsStrips() const { return vStsStrips; }
-  const vector<L1Strip>& GetStsStripsB() const { return vStsStripsB; }
+  int GetNStsStripsF() const { return NStsStripsF; }
+  int GetNStsStripsB() const { return NStsStripsB; }
   const vector<fscal>& GetStsZPos() const { return vStsZPos; }
   const L1Vector<unsigned char>& GetSFlag() const { return vSFlag; }
   const L1Vector<unsigned char>& GetSFlagB() const { return vSFlagB; }
@@ -79,8 +65,8 @@ const  vector< L1StsHit >      & GetStsHits() const { return vStsHits; }
   void Clear() {
 
     vStsHits.clear();
-    vStsStrips.clear();
-    vStsStripsB.clear();
+    NStsStripsF = 0;
+    NStsStripsB = 0;
     vStsZPos.clear();
     vSFlag.clear();
     vSFlagB.clear();
@@ -102,9 +88,8 @@ const  vector< L1StsHit >      & GetStsHits() const { return vStsHits; }
   enum { MaxNStations = 25 };
   vector<L1StsHit>
     vStsHits;  // hits as a combination of front-, backstrips and z-position
-  vector<L1Strip>
-    vStsStrips,            // strips positions created from hits. Front strips
-    vStsStripsB;           // back strips
+  int NStsStripsF,         // Number of front strips in sts
+    NStsStripsB;           // Number of back strips in sts
   vector<fscal> vStsZPos;  // all possible z-positions of hits
 
   L1Vector<unsigned char>

@@ -81,8 +81,8 @@ bool L1AlgoInputData::ReadHitsFromFile(const char work_dir[100],
   if (nEvent <= maxNEvent) {
 
     vStsHits.clear();
-    vStsStrips.clear();
-    vStsStripsB.clear();
+    NStsStripsF = 0;
+    NStsStripsB = 0;
     vStsZPos.clear();
     vSFlag.clear();
     vSFlagB.clear();
@@ -103,28 +103,14 @@ bool L1AlgoInputData::ReadHitsFromFile(const char work_dir[100],
       // read algo->vStsStrips
     fadata >> n;
     //     cout << n<<  " vStsStrips"<<endl;
-    for (int i = 0; i < n; i++) {
-      fscal element;
-      unsigned short int element2 = 0;
-      fadata >> element;
-      vStsStrips.push_back(L1Strip(element, element2));
-      // fadata >> element;
-      //  vStsStrips.push_back(L1Strip(element));
-    }
+    NStsStripsF = n;
     if (iVerbose >= 4)
       cout << "vStsStrips[" << n << "]"
            << " have been read." << endl;
     // read algo->vStsStripsB
     fadata >> n;
     //  cout << n<<  " vStsStripsB"<<endl;
-    for (int i = 0; i < n; i++) {
-      fscal element;
-      unsigned short int element2 = 0;
-      fadata >> element;
-      vStsStripsB.push_back(L1Strip(element, element2));
-      // fadata >> element;
-      // vStsStripsB.push_back(L1Strip(element));
-    }
+    NStsStripsB = n;
     if (iVerbose >= 4)
       cout << "vStsStripsB[" << n << "]"
            << " have been read." << endl;
@@ -168,18 +154,16 @@ bool L1AlgoInputData::ReadHitsFromFile(const char work_dir[100],
     int element_b;
     int element_n;
     int element_iz;
-    float element_time;
     for (int i = 0; i < n; i++) {
       L1StsHit element;
-      fadata >> element_f >> element_b >> element_n >> element_iz
-        >> element_time;
+      fadata >> element_f >> element_b >> element_n >> element_iz >> element.u
+        >> element.v >> element.t_reco;
       element.f = static_cast<THitI>(element_f);
       element.b = static_cast<THitI>(element_b);
 #ifdef USE_EVENT_NUMBER
       element.n = static_cast<unsigned short int>(element_n);
 #endif
       element.iz     = static_cast<TZPosI>(element_iz);
-      element.t_reco = element_time;
       vStsHits.push_back(element);
     }
     if (iVerbose >= 4)

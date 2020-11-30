@@ -1035,8 +1035,8 @@ inline void L1Algo::f32(  // input // TODO not updated after gaps introduction
     fscal u[NHits], v[NHits], x[NHits], y[NHits], z[NHits];
     for (int ih = 0; ih < NHits; ++ih) {
       const L1StsHit& hit = (*vStsHits)[ihit[ih]];
-      u[ih]               = (*vStsStrips)[hit.f];
-      v[ih]               = (*vStsStripsB)[hit.b];
+      u[ih]               = hit.u;
+      v[ih]               = hit.v;
       StripsToCoor(u[ih], v[ih], x[ih], y[ih], sta[ih]);
       z[ih] = (*vStsZPos)[hit.iz];
     };

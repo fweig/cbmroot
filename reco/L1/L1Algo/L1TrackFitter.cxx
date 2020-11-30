@@ -73,20 +73,20 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
         L1Station& sta1 = vStations[ista1];
         L1Station& sta2 = vStations[ista2];
 
-        fvec u0 = static_cast<fscal>((*vStsStrips)[hit0.f]);
-        fvec v0 = static_cast<fscal>((*vStsStripsB)[hit0.b]);
+        fvec u0 = hit0.u;
+        fvec v0 = hit0.v;
         fvec x0, y0;
         StripsToCoor(u0, v0, x0, y0, sta0);
         fvec z0 = (*vStsZPos)[hit0.iz];
 
-        fvec u1 = static_cast<fscal>((*vStsStrips)[hit1.f]);
-        fvec v1 = static_cast<fscal>((*vStsStripsB)[hit1.b]);
+        fvec u1 = hit1.u;
+        fvec v1 = hit1.v;
         fvec x1, y1;
         StripsToCoor(u1, v1, x1, y1, sta1);
         fvec z1 = (*vStsZPos)[hit1.iz];
 
-        fvec u2 = static_cast<fscal>((*vStsStrips)[hit2.f]);
-        fvec v2 = static_cast<fscal>((*vStsStripsB)[hit2.b]);
+        fvec u2 = hit2.u;
+        fvec v2 = hit2.v;
         fvec x2, y2;
         StripsToCoor(u2, v2, x2, y2, sta2);
         // fvec z2 = (*vStsZPos)[hit2.iz];
@@ -151,16 +151,17 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
 
           //         if (ista==NMvdStations-1) L1AddPipeMaterial( T, qp0);
 
-          fvec u = static_cast<fscal>((*vStsStrips)[hit.f]);
-          fvec v = static_cast<fscal>((*vStsStripsB)[hit.b]);
+          fvec u = hit.u;
+          fvec v = hit.v;
+          fvec x, y;
+          StripsToCoor(u, v, x, y, sta);
+
           L1Filter(T, sta.frontInfo, u);
           L1Filter(T, sta.backInfo, v);
           fB0 = fB1;
           fB1 = fB2;
           fz0 = fz1;
           fz1 = fz2;
-          fvec x, y;
-          StripsToCoor(u, v, x, y, sta);
           sta.fieldSlice.GetFieldValue(x, y, fB2);
 
           fz2 = sta.z;
@@ -212,20 +213,20 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
         L1Station& sta1 = vStations[ista1];
         L1Station& sta2 = vStations[ista2];
 
-        fvec u0 = static_cast<fscal>((*vStsStrips)[hit0.f]);
-        fvec v0 = static_cast<fscal>((*vStsStripsB)[hit0.b]);
+        fvec u0 = hit0.u;
+        fvec v0 = hit0.v;
         fvec x0, y0;
         StripsToCoor(u0, v0, x0, y0, sta0);
         fvec z0 = (*vStsZPos)[hit0.iz];
 
-        fvec u1 = static_cast<fscal>((*vStsStrips)[hit1.f]);
-        fvec v1 = static_cast<fscal>((*vStsStripsB)[hit1.b]);
+        fvec u1 = hit1.u;
+        fvec v1 = hit1.v;
         fvec x1, y1;
         StripsToCoor(u1, v1, x1, y1, sta1);
         // fvec z1 = (*vStsZPos)[hit1.iz];
 
-        fvec u2 = static_cast<fscal>((*vStsStrips)[hit2.f]);
-        fvec v2 = static_cast<fscal>((*vStsStripsB)[hit2.b]);
+        fvec u2 = hit2.u;
+        fvec v2 = hit2.v;
         fvec x2, y2;
         StripsToCoor(u2, v2, x2, y2, sta2);
         //  fvec z2 = (*vStsZPos)[hit2.iz];
@@ -272,9 +273,10 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
           const L1StsHit& hit = (*vStsHits)[hits[i]];
           ista                = (*vSFlag)[hit.f] / 4;
           L1Station& sta      = vStations[ista];
-          fvec u              = static_cast<fscal>((*vStsStrips)[hit.f]);
-          fvec v              = static_cast<fscal>((*vStsStripsB)[hit.b]);
-
+          fvec u              = hit.u;
+          fvec v              = hit.v;
+          fvec x, y;
+          StripsToCoor(u, v, x, y, sta);
 
           //   L1Extrapolate( T, (*vStsZPos)[hit.iz], qp0, fld );
           L1ExtrapolateLine(T, (*vStsZPos)[hit.iz]);
@@ -293,8 +295,6 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
           fB1 = fB2;
           fz0 = fz1;
           fz1 = fz2;
-          fvec x, y;
-          StripsToCoor(u, v, x, y, sta);
           sta.fieldSlice.GetFieldValue(x, y, fB2);
           fz2 = sta.z;
           fld.Set(fB2, fz2, fB1, fz1, fB0, fz0);
@@ -400,8 +400,8 @@ void L1Algo::L1KFTrackFitter() {
         w[ista][iVec]       = 1.;
         if (ista > NMvdStations) w_time[ista][iVec] = 1.;
 
-        u[ista][iVec]   = (*vStsStrips)[hit.f];
-        v[ista][iVec]   = (*vStsStripsB)[hit.b];
+        u[ista][iVec]   = hit.u;
+        v[ista][iVec]   = hit.v;
         d_u[ista][iVec] = hit.du;
         d_v[ista][iVec] = hit.dv;
         StripsToCoor(u[ista], v[ista], x_temp, y_temp, sta[ista]);
@@ -850,8 +850,8 @@ void L1Algo::L1KFTrackFitterMuch() {
         d_x[i][iVec] = 0;
         d_y[i][iVec] = 0;
 
-        u[ista][iVec] = (*vStsStrips)[hit.f];
-        v[ista][iVec] = (*vStsStripsB)[hit.b];
+        u[ista][iVec] = hit.u;
+        v[ista][iVec] = hit.v;
         StripsToCoor(u[ista], v[ista], x_temp, y_temp, sta[ista]);
         x[ista][iVec]      = x_temp[iVec];
         y[ista][iVec]      = y_temp[iVec];

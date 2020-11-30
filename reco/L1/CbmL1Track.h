@@ -26,8 +26,6 @@
 using std::map;
 using std::vector;
 
-class L1Triplet;
-class L1StsHit;
 class CbmL1MCTrack;
 
 class CbmL1Track : public CbmL1TrackPar {

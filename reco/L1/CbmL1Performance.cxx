@@ -21,7 +21,6 @@
 #include "L1Algo/L1AddMaterial.h"  // for vertex pulls
 #include "L1Algo/L1Algo.h"
 #include "L1Algo/L1Extrapolation.h"  // for vertex pulls
-#include "L1Algo/L1StsHit.h"
 
 #include "CbmMuchPixelHit.h"
 #include "CbmMuchPoint.h"

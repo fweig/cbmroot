@@ -520,8 +520,8 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, CbmEvent* event) {
                       + CbmStsSetup::Instance()->GetStationNumber(
                         mh->GetAddress());  //mh->GetStationNr() - 1;
         th.isStrip = 0;
-        th.iStripF = 0;  //mh->GetFrontDigiId();
-        th.iStripB = 0;  //mh->GetBackDigiId();
+        th.iStripF = 0;  //mh->GetFrontClusterId();
+        th.iStripB = 0;  //mh->GetBackClusterId();
 
         //Get time
         th.time = mh->GetTime();
@@ -1028,7 +1028,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, CbmEvent* event) {
     ts.effIndex = NEffStrips++;
     char flag   = ts.iStation * 4;
 
-    fData_->vStsStrips.push_back(ts.u);
+    fData_->NStsStripsF++;
     fData_->vSFlag.push_back(flag);
   }
   for (int i = 0; i < NStripsB; i++) {
@@ -1037,7 +1037,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, CbmEvent* event) {
     ts.effIndex = NEffStripsB++;
     char flag   = ts.iStation * 4;
 
-    fData_->vStsStripsB.push_back(ts.u);
+    fData_->NStsStripsB++;
     fData_->vSFlagB.push_back(flag);
   }
 
@@ -1079,6 +1079,8 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, CbmEvent* event) {
     //    h.dy  = th.dy;
     h.du = th.du;
     h.dv = th.dv;
+    h.u  = th.u_front;
+    h.v  = th.u_back;
     //    h.dxy = th.dxy;
     //     h.p = th.p;
     //     h.q = th.q;
@@ -1239,8 +1241,8 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, CbmEvent* event) {
   if (fVerbose >= 10) cout << "ReadEvent: z-pos are saved." << endl;
 
   algo->SetData(fData_->GetStsHits(),
-                fData_->GetStsStrips(),
-                fData_->GetStsStripsB(),
+                fData_->GetNStsStripsF(),
+                fData_->GetNStsStripsB(),
                 fData_->GetStsZPos(),
                 fData_->GetSFlag(),
                 fData_->GetSFlagB(),

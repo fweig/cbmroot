@@ -1339,8 +1339,8 @@ void CbmL1::Reconstruct(CbmEvent* event) {
     fData->ReadHitsFromFile(fSTAPDataDir.Data(), 1, fVerbose);
 
     algo->SetData(fData->GetStsHits(),
-                  fData->GetStsStrips(),
-                  fData->GetStsStripsB(),
+                  fData->GetNStsStripsF(),
+                  fData->GetNStsStripsB(),
                   fData->GetStsZPos(),
                   fData->GetSFlag(),
                   fData->GetSFlagB(),
@@ -1375,19 +1375,15 @@ void CbmL1::Reconstruct(CbmEvent* event) {
         const_cast<vector<unsigned char>*>(algo->vSFlag)
           ->push_back((*algo->vSFlag)[h.f]);
 
-        h.f = (*algo->vStsStrips).size();
-
-        const_cast<std::vector<L1Strip>*>(algo->vStsStrips)
-          ->push_back(L1Strip());
+        h.f = algo->NStsStripsF;
+        algo->NStsStripsF++;
       }
       sF.push_back(h.f);
       if (std::find(sB.begin(), sB.end(), h.b) != sB.end()) {
         const_cast<vector<unsigned char>*>(algo->vSFlagB)
           ->push_back((*algo->vSFlagB)[h.b]);
-        h.b = (*algo->vStsStripsB).size();
-
-        const_cast<std::vector<L1Strip>*>(algo->vStsStripsB)
-          ->push_back(L1Strip());
+        h.b = algo->NStsStripsB;
+        algo->NStsStripsB++;
       }
       sB.push_back(h.b);
       if (std::find(zP.begin(), zP.end(), h.iz)
@@ -1397,27 +1393,20 @@ void CbmL1::Reconstruct(CbmEvent* event) {
       }
       zP.push_back(h.iz);
 
-      const fscal idet = 1
-                         / (sta.xInfo.sin_phi * sta.yInfo.sin_phi
-                            - sta.xInfo.cos_phi * sta.yInfo.cos_phi)[0];
+      double u =
+        mcp.x * sta.frontInfo.cos_phi[0] + mcp.y * sta.frontInfo.sin_phi[0];
+      double v =
+        mcp.x * sta.backInfo.cos_phi[0] + mcp.y * sta.backInfo.sin_phi[0];
 
 #if 1  // GAUSS
-      const_cast<std::vector<L1Strip>*>(algo->vStsStrips)->at(h.f) =
-        idet * (+sta.yInfo.sin_phi[0] * mcp.x - sta.xInfo.cos_phi[0] * mcp.y)
-        + random.Gaus(0, sqrt(sta.frontInfo.sigma2)[0]);
-      const_cast<L1Strip&>((*algo->vStsStripsB)[h.b]) =
-        idet * (-sta.yInfo.cos_phi[0] * mcp.x + sta.xInfo.sin_phi[0] * mcp.y)
-        + random.Gaus(0, sqrt(sta.backInfo.sigma2)[0]);
+      u += random.Gaus(0, sqrt(sta.frontInfo.sigma2)[0]);
+      v += random.Gaus(0, sqrt(sta.backInfo.sigma2)[0]);
 #else  // UNIFORM
-      (*algo->vStsStrips)[h.f] =
-        idet * (+sta.yInfo.sin_phi[0] * mcp.x - sta.xInfo.cos_phi[0] * mcp.y)
-        + random.Uniform(-sqrt(sta.frontInfo.sigma2)[0] * 3.5,
-                         sqrt(sta.frontInfo.sigma2)[0] * 3.5);
-      (*algo->vStsStripsB)[h.b] =
-        idet * (-sta.yInfo.cos_phi[0] * mcp.x + sta.xInfo.sin_phi[0] * mcp.y)
-        + random.Uniform(-sqrt(sta.backInfo.sigma2)[0] * 3.5,
-                         sqrt(sta.backInfo.sigma2)[0] * 3.5);
+      u += 3.5 * sqrt(sta.frontInfo.sigma2)[0] * random.Uniform(-1, 1);
+      v += 3.5 * sqrt(sta.backInfo.sigma2)[0] * random.Uniform(-1, 1);
 #endif
+      h.u                                         = u;
+      h.v                                         = v;
       const_cast<float&>((*algo->vStsZPos)[h.iz]) = mcp.z;
     }
   }
@@ -1740,20 +1729,14 @@ void CbmL1::WriteSTAPAlgoData()  // must be called after ReadEvent
            << " ";
     fadata << vNEvent << endl;
     // write vStsStrips
-    int n = (*algo->vStsStrips).size();  // number of elements
+    int n = algo->NStsStripsF;
     fadata << n << endl;
-    for (int i = 0; i < n; i++) {
-      fadata << (*algo->vStsStrips)[i] << endl;
-    };
     if (fVerbose >= 4)
       cout << "vStsStrips[" << n << "]"
            << " have been written." << endl;
     // write vStsStripsB
-    n = (*algo->vStsStripsB).size();
+    n = algo->NStsStripsB;
     fadata << n << endl;
-    for (int i = 0; i < n; i++) {
-      fadata << (*algo->vStsStripsB)[i] << endl;
-    };
     if (fVerbose >= 4)
       cout << "vStsStripsB[" << n << "]"
            << " have been written." << endl;
@@ -1791,15 +1774,17 @@ void CbmL1::WriteSTAPAlgoData()  // must be called after ReadEvent
     n = (*algo->vStsHits).size();
     fadata << n << endl;
     for (int i = 0; i < n; i++) {
-      fadata << static_cast<int>((*algo->vStsHits)[i].f) << " ";
-      fadata << static_cast<int>((*algo->vStsHits)[i].b) << " ";
+      const L1StsHit& h = (*algo->vStsHits)[i];
+      fadata << static_cast<int>(h.f) << " ";
+      fadata << static_cast<int>(h.b) << " ";
 #ifdef USE_EVENT_NUMBER
-      fadata << static_cast<unsigned short int>((*algo->vStsHits)[i].n) << " ";
+      fadata << static_cast<unsigned short int>(h.n) << " ";
 #endif
-      fadata << static_cast<int>((*algo->vStsHits)[i].iz) << " ";
+      fadata << static_cast<int>(h.iz) << " ";
+      fadata << h.u << " ";
+      fadata << h.v << " ";
       // fadata  << (*algo->vStsHits)[i].time << endl;
-
-      fadata << (*algo->vStsHits)[i].t_reco << endl;
+      fadata << h.t_reco << endl;
     };
     if (fVerbose >= 4)
       cout << "vStsHits[" << n << "]"
@@ -2018,10 +2003,8 @@ void CbmL1::ReadSTAPAlgoData() {
 
     if (algo->vStsHits)
       const_cast<std::vector<L1StsHit>*>(algo->vStsHits)->clear();
-    if (algo->vStsStrips)
-      const_cast<std::vector<L1Strip>*>(algo->vStsStrips)->clear();
-    if (algo->vStsStripsB)
-      const_cast<std::vector<L1Strip>*>(algo->vStsStripsB)->clear();
+    algo->NStsStripsF = 0;
+    algo->NStsStripsB = 0;
     if (algo->vStsZPos)
       const_cast<std::vector<float>*>(algo->vStsZPos)->clear();
     if (algo->vSFlag) const_cast<vector<unsigned char>*>(algo->vSFlag)->clear();
@@ -2041,21 +2024,13 @@ void CbmL1::ReadSTAPAlgoData() {
     // read algo->vStsStrips
     fadata >> n;
     cout << " n " << n << endl;
-    for (int i = 0; i < n; i++) {
-      fscal element;
-      fadata >> element;
-      const_cast<std::vector<L1Strip>*>(algo->vStsStrips)->push_back(element);
-    }
+    algo->NStsStripsF = n;
     if (fVerbose >= 4)
       cout << "vStsStrips[" << n << "]"
            << " have been read." << endl;
     // read algo->vStsStripsB
     fadata >> n;
-    for (int i = 0; i < n; i++) {
-      fscal element;
-      fadata >> element;
-      const_cast<std::vector<L1Strip>*>(algo->vStsStripsB)->push_back(element);
-    }
+    algo->NStsStripsB = n;
     if (fVerbose >= 4)
       cout << "vStsStripsB[" << n << "]"
            << " have been read." << endl;
@@ -2085,7 +2060,7 @@ void CbmL1::ReadSTAPAlgoData() {
     for (int i = 0; i < n; i++) {
       int element;
       fadata >> element;
-      const_cast<std::vector<L1Strip>*>(algo->vStsStripsB)
+      const_cast<vector<unsigned char>*>(algo->vSFlagB)
         ->push_back(static_cast<unsigned char>(element));
     }
     if (fVerbose >= 4)
@@ -2097,15 +2072,13 @@ void CbmL1::ReadSTAPAlgoData() {
     int element_b;
     int element_n;
     int element_iz;
-    float time;
     for (int i = 0; i < n; i++) {
       L1StsHit element;
-      fadata >> element_f >> element_b >> element_n >> element_iz >> time;
+      fadata >> element_f >> element_b >> element_n >> element_iz >> element.u
+        >> element.v >> element.t_reco;
       element.f  = static_cast<THitI>(element_f);
       element.b  = static_cast<THitI>(element_b);
       element.iz = static_cast<TZPosI>(element_iz);
-
-      element.t_reco = time;
       const_cast<std::vector<L1StsHit>*>(algo->vStsHits)->push_back(element);
     }
     if (fVerbose >= 4)

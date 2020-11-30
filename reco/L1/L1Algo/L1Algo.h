@@ -46,8 +46,6 @@ class L1AlgoDraw;
 #include "L1HitPoint.h"
 #include "L1HitsSortHelper.h"
 #include "L1Portion.h"
-#include "L1Strip.h"
-
 
 #include <iomanip>
 #include <iostream>
@@ -96,9 +94,9 @@ public:
     NStsStations(0)
     , NFStations(0)
     , fRadThick()
-    , vStsStrips(0)
+    , NStsStripsF(0)
     ,  // strips positions created from hits. Front strips
-    vStsStripsB(0)
+    NStsStripsB(0)
     ,  // back strips
     vStsZPos(0)
     ,  // all possible z-positions of hits
@@ -292,18 +290,9 @@ public:
   void
   Init(const vector<fscal>& geo, const bool UseHitErrors, const bool mCBMmode);
 
-  //   void SetData( const vector< L1StsHit >      & StsHits_,
-  //                 const vector< L1Strip >       & StsStrips_,
-  //                 const vector< L1Strip >       & StsStripsB_,
-  //                 const vector< fscal >         & StsZPos_,
-  //                 const vector< unsigned char > & SFlag_,
-  //                 const vector< unsigned char > & SFlagB_,
-  //                 const THitI* StsHitsStartIndex_,
-  //                 const THitI* StsHitsStopIndex_ );
-
   void SetData(const vector<L1StsHit>& StsHits_,
-               const vector<L1Strip>& StsStrips_,
-               const vector<L1Strip>& StsStripsB_,
+               int nStsStripsF_,
+               int nStsStripsB_,
                const vector<fscal>& StsZPos_,
                const vector<unsigned char>& SFlag_,
                const vector<unsigned char>& SFlagB_,
@@ -336,9 +325,8 @@ public:
   L1Station vStations[MaxNStations] _fvecalignment;  // station info
   vector<L1Material> fRadThick;  // material for each station
 
-  const vector<L1Strip>
-    *vStsStrips,   // strips positions created from hits. Front strips
-    *vStsStripsB;  // back strips
+  int NStsStripsF;                // number of front strips
+  int NStsStripsB;                // number of back strips
   const vector<fscal>* vStsZPos;  // all possible z-positions of hits
   const vector<L1StsHit>*
     vStsHits;  // hits as a combination of front-, backstrips and z-position
