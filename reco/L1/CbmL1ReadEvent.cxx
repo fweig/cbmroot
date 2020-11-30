@@ -520,8 +520,8 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, CbmEvent* event) {
                       + CbmStsSetup::Instance()->GetStationNumber(
                         mh->GetAddress());  //mh->GetStationNr() - 1;
         th.isStrip = 0;
-        th.iStripF = 0;  //mh->GetFrontClusterId();
-        th.iStripB = 0;  //mh->GetBackClusterId();
+        th.iStripF = mh->GetFrontClusterId();
+        th.iStripB = mh->GetBackClusterId();
 
         //Get time
         th.time = mh->GetTime();
@@ -985,16 +985,16 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, CbmEvent* event) {
       TmpStrip& s = tmpStrips[is];
       if (s.iStation != th.iStation) continue;
       if (s.iStrip != th.iStripF) continue;
-      if (fabs(s.time - th.time) > 30) continue;
-      if (fabs(s.u - th.u_front) > 1.e-4) continue;
+      //if (fabs(s.time - th.time) > 30) continue;
+      //if (fabs(s.u - th.u_front) > 1.e-4) continue;
       th.indStripF = is;
     }
     for (int is = 0; is < NStripsB; is++) {
       TmpStrip& s = tmpStripsB[is];
       if (s.iStation != th.iStation) continue;
       if (s.iStrip != th.iStripB) continue;
-      if (fabs(s.time - th.time) > 30) continue;
-      if (fabs(s.u - th.u_back) > 1.e-4) continue;
+      //if (fabs(s.time - th.time) > 30) continue;
+      //if (fabs(s.u - th.u_back) > 1.e-4) continue;
       th.indStripB = is;
     }
     // create new strips
