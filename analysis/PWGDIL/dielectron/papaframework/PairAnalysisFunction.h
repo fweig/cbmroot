@@ -22,7 +22,7 @@
 class PairAnalysisFunction : public TNamed {
 
 public:
-  enum EFunction { kBoltzmann = 0, kPtExp, kHagedorn, kLevi };
+  enum class EFunction { kBoltzmann = 0, kPtExp, kHagedorn, kLevi };
 
   PairAnalysisFunction();
   PairAnalysisFunction(const char* name, const char* title);

@@ -287,7 +287,8 @@ PairAnalysisSignalExt::FindObject(TObjArray* arrhist,
   //
 
   //  return ( arrhist->FindObject(Form("Pair.%s",PairAnalysis::PairClassName(type))) );
-  TString ref = Form("Pair.%s", PairAnalysis::PairClassName(type));
+  TString ref =
+    Form("Pair.%s", PairAnalysis::PairClassName(static_cast<Int_t>(type)));
   for (Int_t i = 0; i < arrhist->GetEntriesFast(); i++) {
     if (!ref.CompareTo(arrhist->UncheckedAt(i)->GetTitle()))
       return arrhist->UncheckedAt(i);

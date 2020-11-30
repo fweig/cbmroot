@@ -544,19 +544,19 @@ Bool_t PairAnalysisMC::CheckParticleSource(
   //  printf("process: id %d --> %s \n",processID,TMCProcessName[processID]);
 
   switch (source) {
-    case PairAnalysisSignalMC::kDontCare: return kTRUE; break;
-    case PairAnalysisSignalMC::kPrimary:
+    case PairAnalysisSignalMC::ESource::kDontCare: return kTRUE; break;
+    case PairAnalysisSignalMC::ESource::kPrimary:
       // NOTE: This includes all physics event history (initial state particles,
       //       exchange bosons, quarks, di-quarks, strings, un-stable particles, final state particles)
       //       Only the final state particles make it to the detector!!
       return (processID == kPPrimary);
       break;
-    case PairAnalysisSignalMC::kSecondary:
+    case PairAnalysisSignalMC::ESource::kSecondary:
       // particles which are created by the interaction of final state primaries with the detector
       // or particles from strange weakly decaying particles (e.g. lambda, kaons, etc.)
       return (!IsPhysicalPrimary(label, processID));
       break;
-    case PairAnalysisSignalMC::kFinalState:
+    case PairAnalysisSignalMC::ESource::kFinalState:
       // primary particles created in the collision which reach the detectors
       // These would be:
       // 1.) particles produced in the collision
@@ -567,7 +567,7 @@ Bool_t PairAnalysisMC::CheckParticleSource(
       // 6.) includes products of directly produced beauty hadron decays
       return IsPhysicalPrimary(label, processID);
       break;
-    case PairAnalysisSignalMC::kDirect:
+    case PairAnalysisSignalMC::ESource::kDirect:
       // Primary particles which do not have any mother
       // This is the case for:
       // 1.) Initial state particles (the 2 protons in Pythia pp collisions)
@@ -576,12 +576,12 @@ Bool_t PairAnalysisMC::CheckParticleSource(
       // 3.) Certain particles added via MC generator cocktails (e.g. J/psi added to pythia MB events)
       return (label >= 0 && GetMothersLabel(label) < 0);
       break;
-    case PairAnalysisSignalMC::kSecondaryFromWeakDecay:
+    case PairAnalysisSignalMC::ESource::kSecondaryFromWeakDecay:
       // secondary particle from weak decay
       // or particles from strange weakly decaying particles (e.g. lambda, kaons, etc.)
       return (IsSecondaryFromWeakDecay(label, processID));
       break;
-    case PairAnalysisSignalMC::kSecondaryFromMaterial:
+    case PairAnalysisSignalMC::ESource::kSecondaryFromMaterial:
       // secondary particle from material
       return (IsSecondaryFromMaterial(label, processID));
       break;
@@ -621,12 +621,15 @@ Bool_t PairAnalysisMC::CheckDalitzDecision(
 
   if (!signalMC) return kFALSE;
 
-  if (signalMC->GetDalitz() == PairAnalysisSignalMC::kWhoCares) return kTRUE;
+  if (signalMC->GetDalitz() == PairAnalysisSignalMC::EDalitz::kWhoCares)
+    return kTRUE;
 
   Bool_t isDalitz = CheckIsDalitz(mLabel, signalMC);
-  if ((signalMC->GetDalitz() == PairAnalysisSignalMC::kIsDalitz) && !isDalitz)
+  if ((signalMC->GetDalitz() == PairAnalysisSignalMC::EDalitz::kIsDalitz)
+      && !isDalitz)
     return kFALSE;
-  if ((signalMC->GetDalitz() == PairAnalysisSignalMC::kIsNotDalitz) && isDalitz)
+  if ((signalMC->GetDalitz() == PairAnalysisSignalMC::EDalitz::kIsNotDalitz)
+      && isDalitz)
     return kFALSE;
 
   return kTRUE;
@@ -675,7 +678,8 @@ Bool_t PairAnalysisMC::IsMCTruth(Int_t label,
   CbmMCTrack* mcMother = 0x0;
   Int_t mLabel         = -1;
   if (signalMC->GetMotherPDG(branch) != 0
-      || signalMC->GetMotherSource(branch) != PairAnalysisSignalMC::kDontCare) {
+      || signalMC->GetMotherSource(branch)
+           != PairAnalysisSignalMC::ESource::kDontCare) {
     mLabel   = GetMothersLabel(label);
     mcMother = GetMCTrackFromMCEvent(mLabel);
 
@@ -698,7 +702,7 @@ Bool_t PairAnalysisMC::IsMCTruth(Int_t label,
   Int_t gmLabel             = -1;
   if (signalMC->GetGrandMotherPDG(branch) != 0
       || signalMC->GetGrandMotherSource(branch)
-           != PairAnalysisSignalMC::kDontCare) {
+           != PairAnalysisSignalMC::ESource::kDontCare) {
     if (mcMother) {
       gmLabel       = GetMothersLabel(mLabel);
       mcGrandMother = GetMCTrackFromMCEvent(gmLabel);
@@ -719,7 +723,7 @@ Bool_t PairAnalysisMC::IsMCTruth(Int_t label,
   CbmMCTrack* mcGreatGrandMother = 0x0;
   Int_t ggmLabel                 = -1;
   if(signalMC->GetGreatGrandMotherPDG(branch)   !=0/* ||
-     signalMC->GetGreatGrandMotherSource(branch)!=PairAnalysisSignalMC::kDontCare
+     signalMC->GetGreatGrandMotherSource(branch)!=PairAnalysisSignalMC::ESource::kDontCare
 						   */) {
     if (mcGrandMother) {
       ggmLabel           = GetMothersLabel(gmLabel);
@@ -804,7 +808,8 @@ Bool_t PairAnalysisMC::IsMCTruth(const PairAnalysisPair* pair,
   // mothers
   Int_t labelM1 = -1;
   if (signalMC->GetMotherPDG(1) != 0
-      || signalMC->GetMotherSource(1) != PairAnalysisSignalMC::kDontCare) {
+      || signalMC->GetMotherSource(1)
+           != PairAnalysisSignalMC::ESource::kDontCare) {
     labelM1 = GetMothersLabel(labelD1);
     if (labelD1 > -1 && labelM1 > -1) mcM1 = GetMCTrackFromMCEvent(labelM1);
     directTerm = directTerm && (mcM1 || signalMC->GetMotherPDGexclude(1))
@@ -818,7 +823,8 @@ Bool_t PairAnalysisMC::IsMCTruth(const PairAnalysisPair* pair,
 
   Int_t labelM2 = -1;
   if (signalMC->GetMotherPDG(2) != 0
-      || signalMC->GetMotherSource(2) != PairAnalysisSignalMC::kDontCare) {
+      || signalMC->GetMotherSource(2)
+           != PairAnalysisSignalMC::ESource::kDontCare) {
     labelM2 = GetMothersLabel(labelD2);
     if (labelD2 > -1 && labelM2 > -1) mcM2 = GetMCTrackFromMCEvent(labelM2);
     directTerm = directTerm && (mcM2 || signalMC->GetMotherPDGexclude(2))
@@ -833,7 +839,8 @@ Bool_t PairAnalysisMC::IsMCTruth(const PairAnalysisPair* pair,
   // grand-mothers
   Int_t labelG1 = -1;
   if (signalMC->GetGrandMotherPDG(1) != 0
-      || signalMC->GetGrandMotherSource(1) != PairAnalysisSignalMC::kDontCare) {
+      || signalMC->GetGrandMotherSource(1)
+           != PairAnalysisSignalMC::ESource::kDontCare) {
     labelG1 = GetMothersLabel(labelM1);
     if (mcM1 && labelG1 > -1) mcG1 = GetMCTrackFromMCEvent(labelG1);
     directTerm =
@@ -847,7 +854,8 @@ Bool_t PairAnalysisMC::IsMCTruth(const PairAnalysisPair* pair,
 
   Int_t labelG2 = -1;
   if (signalMC->GetGrandMotherPDG(2) != 0
-      || signalMC->GetGrandMotherSource(2) != PairAnalysisSignalMC::kDontCare) {
+      || signalMC->GetGrandMotherSource(2)
+           != PairAnalysisSignalMC::ESource::kDontCare) {
     labelG2 = GetMothersLabel(labelM2);
     if (mcM2 && labelG2 > -1) mcG2 = GetMCTrackFromMCEvent(labelG2);
     directTerm =
@@ -863,7 +871,7 @@ Bool_t PairAnalysisMC::IsMCTruth(const PairAnalysisPair* pair,
   Int_t labelGG1 = -1;
   if (
     signalMC->GetGreatGrandMotherPDG(1) != 0
-    /* || signalMC->GetGreatGrandMotherSource(1)!=PairAnalysisSignalMC::kDontCare*/) {
+    /* || signalMC->GetGreatGrandMotherSource(1)!=PairAnalysisSignalMC::ESource::kDontCare*/) {
     labelGG1 = GetMothersLabel(labelG1);
     if (mcG1 && labelGG1 > -1) mcGG1 = GetMCTrackFromMCEvent(labelGG1);
     directTerm =
@@ -878,7 +886,7 @@ Bool_t PairAnalysisMC::IsMCTruth(const PairAnalysisPair* pair,
   Int_t labelGG2 = -1;
   if (
     signalMC->GetGreatGrandMotherPDG(2) != 0
-    /* || signalMC->GetGreatGrandMotherSource(2)!=PairAnalysisSignalMC::kDontCare*/) {
+    /* || signalMC->GetGreatGrandMotherSource(2)!=PairAnalysisSignalMC::ESource::kDontCare*/) {
     labelGG2 = GetMothersLabel(labelG2);
     if (mcG2 && labelGG2 > -1) mcGG2 = GetMCTrackFromMCEvent(labelGG2);
     directTerm =
@@ -909,7 +917,8 @@ Bool_t PairAnalysisMC::IsMCTruth(const PairAnalysisPair* pair,
 
   // mothers
   if (signalMC->GetMotherPDG(1) != 0
-      || signalMC->GetMotherSource(1) != PairAnalysisSignalMC::kDontCare) {
+      || signalMC->GetMotherSource(1)
+           != PairAnalysisSignalMC::ESource::kDontCare) {
     if (!mcM2 && labelD2 > -1) {
       labelM2 = GetMothersLabel(labelD2);
       if (labelM2 > -1) mcM2 = GetMCTrackFromMCEvent(labelM2);
@@ -924,7 +933,8 @@ Bool_t PairAnalysisMC::IsMCTruth(const PairAnalysisPair* pair,
   }
 
   if (signalMC->GetMotherPDG(2) != 0
-      || signalMC->GetMotherSource(2) != PairAnalysisSignalMC::kDontCare) {
+      || signalMC->GetMotherSource(2)
+           != PairAnalysisSignalMC::ESource::kDontCare) {
     if (!mcM1 && labelD1 > -1) {
       labelM1 = GetMothersLabel(labelD1);
       if (labelM1 > -1) mcM1 = GetMCTrackFromMCEvent(labelM1);
@@ -940,7 +950,8 @@ Bool_t PairAnalysisMC::IsMCTruth(const PairAnalysisPair* pair,
 
   // grand-mothers
   if (signalMC->GetGrandMotherPDG(1) != 0
-      || signalMC->GetGrandMotherSource(1) != PairAnalysisSignalMC::kDontCare) {
+      || signalMC->GetGrandMotherSource(1)
+           != PairAnalysisSignalMC::ESource::kDontCare) {
     if (!mcG2 && mcM2) {
       labelG2 = GetMothersLabel(labelM2);
       if (labelG2 > -1) mcG2 = GetMCTrackFromMCEvent(labelG2);
@@ -955,7 +966,8 @@ Bool_t PairAnalysisMC::IsMCTruth(const PairAnalysisPair* pair,
   }
 
   if (signalMC->GetGrandMotherPDG(2) != 0
-      || signalMC->GetGrandMotherSource(2) != PairAnalysisSignalMC::kDontCare) {
+      || signalMC->GetGrandMotherSource(2)
+           != PairAnalysisSignalMC::ESource::kDontCare) {
     if (!mcG1 && mcM1) {
       labelG1 = GetMothersLabel(labelM1);
       if (labelG1 > -1) mcG1 = GetMCTrackFromMCEvent(labelG1);
@@ -972,7 +984,7 @@ Bool_t PairAnalysisMC::IsMCTruth(const PairAnalysisPair* pair,
   // great grand-mothers
   if (
     signalMC->GetGreatGrandMotherPDG(1) != 0
-    /*|| signalMC->GetGreatGrandMotherSource(1)!=PairAnalysisSignalMC::kDontCare*/) {
+    /*|| signalMC->GetGreatGrandMotherSource(1)!=PairAnalysisSignalMC::ESource::kDontCare*/) {
     if (!mcGG2 && mcG2) {
       labelGG2 = GetMothersLabel(labelG2);
       if (labelGG2 > -1) mcGG2 = GetMCTrackFromMCEvent(labelGG2);
@@ -988,7 +1000,7 @@ Bool_t PairAnalysisMC::IsMCTruth(const PairAnalysisPair* pair,
 
   if (
     signalMC->GetGreatGrandMotherPDG(2) != 0
-    /* || signalMC->GetGreatGrandMotherSource(2)!=PairAnalysisSignalMC::kDontCare*/) {
+    /* || signalMC->GetGreatGrandMotherSource(2)!=PairAnalysisSignalMC::ESource::kDontCare*/) {
     if (!mcGG1 && mcG1) {
       labelGG1 = GetMothersLabel(labelG1);
       if (labelGG1 > -1) mcGG1 = GetMCTrackFromMCEvent(labelGG1);
@@ -1003,10 +1015,12 @@ Bool_t PairAnalysisMC::IsMCTruth(const PairAnalysisPair* pair,
   }
 
   Bool_t motherRelation = kTRUE;
-  if (signalMC->GetMothersRelation() == PairAnalysisSignalMC::kSame) {
+  if (signalMC->GetMothersRelation()
+      == PairAnalysisSignalMC::EBranchRelation::kSame) {
     motherRelation = motherRelation && HaveSameMother(pair);
   }
-  if (signalMC->GetMothersRelation() == PairAnalysisSignalMC::kDifferent) {
+  if (signalMC->GetMothersRelation()
+      == PairAnalysisSignalMC::EBranchRelation::kDifferent) {
     motherRelation = motherRelation && !HaveSameMother(pair);
   }
 

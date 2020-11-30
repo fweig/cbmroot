@@ -266,7 +266,8 @@ void PairAnalysisSpectrum::Process() {
 
       if (!histArr && h)
         histArr = h->DrawSame(Form("pM_%s", fVar.Data()), "nomc goff");
-      TH2* histPM = (TH2*) sig->FindObject(histArr, PairAnalysis::kSEPM);
+      TH2* histPM =
+        (TH2*) sig->FindObject(histArr, PairAnalysis::EPairType::kSEPM);
       if (!histPM) return;
 
       TObjArray tmpArr;
@@ -637,7 +638,7 @@ void PairAnalysisSpectrum::DrawSpectrum(const char* varexp,
           //	  if(gx[j]!=xLo) break; // check should not be needed
           Double_t uce = 0.;
           switch (fSystMthd) {
-            case kBarlow:
+            case ESystMethod::kBarlow:
               // I.  calc uncorr. stat. error from sub/superset w.r.t. first measurement
               uce = TMath::Sqrt(
                 TMath::Abs(gye[j] * gye[j] - gye[first] * gye[first]));
@@ -645,19 +646,19 @@ void PairAnalysisSpectrum::DrawSpectrum(const char* varexp,
               // NOTE: 0.9 can be change to a max value of 1->1sigma, 0.9 is more consevative
               esys = TMath::Max(esys, TMath::Abs(ysys - gy[j]) - 0.9 * uce);
               break;
-            case kSystMax:
+            case ESystMethod::kSystMax:
               esys = TMath::Max(esys, TMath::Abs(ysys - gy[j]));
               break;
-            case kSystRMS: esys += gy[j] * gy[j]; break;
+            case ESystMethod::kSystRMS: esys += gy[j] * gy[j]; break;
           }
           //	  printf("bin error %f \t  syst %f  from abs %f \n",gye[j],esys, TMath::Abs( gy[j] ));
         }
 
         // normalisation
         switch (fSystMthd) {
-          case kBarlow: /* nothing to be done */ break;
-          case kSystMax: /* nothing to be done */ break;
-          case kSystRMS:
+          case ESystMethod::kBarlow: /* nothing to be done */ break;
+          case ESystMethod::kSystMax: /* nothing to be done */ break;
+          case ESystMethod::kSystRMS:
             esys =
               TMath::Sqrt(TMath::Abs(esys / (nsys ? nsys : 1) - ysys * ysys));
             break;
@@ -865,7 +866,8 @@ void PairAnalysisSpectrum::Fit(TString drawoption) {
     return;
   }
 
-  PairAnalysisStyler::Style(fFuncSigBack, PairAnalysisStyler::kFit);
+  PairAnalysisStyler::Style(fFuncSigBack,
+                            static_cast<Int_t>(PairAnalysisStyler::Eidx::kFit));
   fFuncSigBack->SetLineColor(fSignal->GetLineColor());
   //  fFuncSigBack->SetLineStyle(kDashed);
 

@@ -43,11 +43,11 @@ ClassImp(PairAnalysisMixingHandler)
 //______________________________________________
 PairAnalysisMixingHandler::PairAnalysisMixingHandler(const char* name,
                                                      const char* title)
-  : TNamed(name, title), fArrPools("TClonesArray"), fAxes(kMaxCuts) {
+  : TNamed(name, title), fArrPools("TClonesArray"), fAxes(fMaxCuts) {
   //
   // Named Constructor
   //
-  for (Int_t i = 0; i < kMaxCuts; ++i) {
+  for (Int_t i = 0; i < fMaxCuts; ++i) {
     fEventCuts[i] = 0;
   }
   fAxes.SetOwner(kTRUE);
@@ -70,8 +70,8 @@ void PairAnalysisMixingHandler::AddVariable(
   // Add a variable to the mixing handler with arbitrary binning 'bins'
   //
 
-  // limit number of variables to kMaxCuts
-  if (fAxes.GetEntriesFast() >= kMaxCuts) return;
+  // limit number of variables to fMaxCuts
+  if (fAxes.GetEntriesFast() >= fMaxCuts) return;
 
   Int_t size       = fAxes.GetEntriesFast();
   fEventCuts[size] = (UShort_t) type;
@@ -192,7 +192,7 @@ void PairAnalysisMixingHandler::DoMixing(TClonesArray& pool,
       papa->fTracks[2].Add(o);
     papa->FillPairArrays(1, 2);
 
-    if (fMixType == kAll || fMixType == kOSandLS) {
+    if (fMixType == EMixType::kAll || fMixType == EMixType::kOSandLS) {
       // all 4 pair arrays will be filled
       while ((o = ev1P()))
         papa->fTracks[0].Add(o);
@@ -200,10 +200,10 @@ void PairAnalysisMixingHandler::DoMixing(TClonesArray& pool,
         papa->fTracks[3].Add(o);
       papa->FillPairArrays(0, 2);
       papa->FillPairArrays(1, 3);
-      if (fMixType == kAll) papa->FillPairArrays(0, 3);
+      if (fMixType == EMixType::kAll) papa->FillPairArrays(0, 3);
     }
 
-    if (fMixType == kOSonly || fMixType == kOSandLS) {
+    if (fMixType == EMixType::kOSonly || fMixType == EMixType::kOSandLS) {
       //use the pair type of ev1- ev1 also for ev1 ev1-
       papa->fTracks[1].Clear();
       papa->fTracks[2].Clear();

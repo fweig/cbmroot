@@ -59,7 +59,7 @@ Bool_t PairAnalysisCutGroup::IsSelected(Double_t* const values) {
 
   TIter listIterator(&fCutGroupList);
   while (AnalysisCuts* thisCut = (AnalysisCuts*) listIterator()) {
-    if (fCompOperator == kCompOR) {
+    if (fCompOperator == static_cast<Bool_t>(ETruthValues::kCompOR)) {
       selectionResult = (selectionResult || thisCut->IsSelected(values));
     } else {  //kCompAND
       selectionResult = (selectionResult && thisCut->IsSelected(values));
@@ -113,7 +113,7 @@ void PairAnalysisCutGroup::Print(const Option_t* /*option*/) const {
 
   printf("*****************************************************************\n");
   printf("cut group '%s'\n", GetTitle());
-  if (fCompOperator == kCompAND) {
+  if (fCompOperator == static_cast<Bool_t>(ETruthValues::kCompAND)) {
     printf("Cut are compared with AND \n");
   } else {
     printf("Cut are compared with OR \n");

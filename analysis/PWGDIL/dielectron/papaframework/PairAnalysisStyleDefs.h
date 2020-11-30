@@ -21,25 +21,29 @@
 
 namespace PairAnalysisStyler {
 
-  //  enum Eidx : Int_t { kRaw=100, kBgrd, kSig, kFit, kCocktail, kNidx };
-  //  enum EfillMark : Int_t { kOpenMarker=1, kFullMarker, kDontCare };
-  //  enum Estyle : Int_t { kNMaxMarker=13, kNMaxLine=4, kNMaxColor=17 };
-  //  enum Epalette : Int_t { kDefault=0, kGoodBad };
+  /* enum class Eidx  { kRaw=100, kBgrd, kSig, kFit, kCocktail, kNidx }; */
+  /* enum class EfillMark { kOpenMarker=1, kFullMarker, kDontCare }; */
+  /* enum class Estyle  { kNMaxMarker=13, kNMaxLine=4, kNMaxColor=17 }; */
+  /* enum class Epalette  { kDefault=0, kGoodBad }; */
 
-  static Int_t fCol[kNidx - kRaw]    = {kBlack,
-                                     kTeal - 8,
-                                     kBlack,
-                                     kTeal - 7,
-                                     kTeal - 7};
-  static Int_t fMrk[kNidx - kRaw]    = {kFullCircle,
-                                     kOpenCircle,
-                                     kOpenCircle,
-                                     kDot,
-                                     kDot};
-  static Double_t fSze[kNidx - kRaw] = {1., 1., 1., 1., 1.};
-  static Int_t fLne[kNidx - kRaw]    = {kSolid, kSolid, kSolid, kSolid, kSolid};
-  static Double_t fWdt[kNidx - kRaw] = {2., 2., 2., 2., 2.};
-  static Int_t fFll[kNidx - kRaw]    = {0, 0, 0, 0, 0};  //kFEmpty
+  static Int_t fCol[static_cast<Int_t>(PairAnalysisStyler::Eidx::kNidx)
+                    - static_cast<Int_t>(PairAnalysisStyler::Eidx::kRaw)] =
+    {kBlack, kTeal - 8, kBlack, kTeal - 7, kTeal - 7};
+  static Int_t fMrk[static_cast<Int_t>(PairAnalysisStyler::Eidx::kNidx)
+                    - static_cast<Int_t>(PairAnalysisStyler::Eidx::kRaw)] =
+    {kFullCircle, kOpenCircle, kOpenCircle, kDot, kDot};
+  static Double_t fSze[static_cast<Int_t>(PairAnalysisStyler::Eidx::kNidx)
+                       - static_cast<Int_t>(PairAnalysisStyler::Eidx::kRaw)] =
+    {1., 1., 1., 1., 1.};
+  static Int_t fLne[static_cast<Int_t>(PairAnalysisStyler::Eidx::kNidx)
+                    - static_cast<Int_t>(PairAnalysisStyler::Eidx::kRaw)] =
+    {kSolid, kSolid, kSolid, kSolid, kSolid};
+  static Double_t fWdt[static_cast<Int_t>(PairAnalysisStyler::Eidx::kNidx)
+                       - static_cast<Int_t>(PairAnalysisStyler::Eidx::kRaw)] =
+    {2., 2., 2., 2., 2.};
+  static Int_t fFll[static_cast<Int_t>(PairAnalysisStyler::Eidx::kNidx)
+                    - static_cast<Int_t>(PairAnalysisStyler::Eidx::kRaw)] =
+    {0, 0, 0, 0, 0};  //kFEmpty
 
   static Int_t Marker[] = {kFullCircle,
                            kFullDiamond,

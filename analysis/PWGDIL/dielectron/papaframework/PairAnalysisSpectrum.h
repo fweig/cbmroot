@@ -59,7 +59,7 @@ ClassImp(Extraction)
   class PairAnalysisSpectrum : public PairAnalysisFunction {
 
 public:
-  enum ESystMethod { kBarlow = 0, kSystMax, kSystRMS };
+  enum class ESystMethod { kBarlow = 0, kSystMax, kSystRMS };
 
   PairAnalysisSpectrum();
   PairAnalysisSpectrum(const char* name, const char* title);
@@ -108,7 +108,7 @@ private:
 
   // calculation
   ESystMethod fSystMthd =
-    kSystMax;  // method for systematic uncertainty calculation
+    ESystMethod::kSystMax;  // method for systematic uncertainty calculation
 
   // input
   TString fInputKeys[100];  // keys to identify the extraction

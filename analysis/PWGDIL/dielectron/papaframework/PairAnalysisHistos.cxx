@@ -110,7 +110,7 @@ ClassImp(PairAnalysisHistos)
   , fList(0x0)
   , fUsedVars(new TBits(PairAnalysisVarManager::kNMaxValues))
   , fReservedWords(new TString("Hit;Track;Pair"))
-  , fPrecision(kFloat) {
+  , fPrecision(Eprecision::kFloat) {
   //
   // Default constructor
   //
@@ -129,7 +129,7 @@ PairAnalysisHistos::PairAnalysisHistos(const char* name, const char* title)
   , fList(0x0)
   , fUsedVars(new TBits(PairAnalysisVarManager::kNMaxValues))
   , fReservedWords(new TString("Hit;Track;Pair"))
-  , fPrecision(kFloat) {
+  , fPrecision(Eprecision::kFloat) {
   //
   // TNamed constructor
   //
@@ -437,7 +437,7 @@ TH1* PairAnalysisHistos::GetTHist(const char* histClass,
   isOk &= (binsX != 0x0);
   if (!isOk) return 0x0;
   switch (fPrecision) {
-    case kFloat:
+    case Eprecision::kFloat:
       if (!binsY)
         return (new TH1F(
           name, title, binsX->GetNrows() - 1, binsX->GetMatrixArray()));
@@ -458,7 +458,7 @@ TH1* PairAnalysisHistos::GetTHist(const char* histClass,
                          binsZ->GetNrows() - 1,
                          binsZ->GetMatrixArray()));
       break;
-    case kDouble:
+    case Eprecision::kDouble:
       if (!binsY)
         return (new TH1D(
           name, title, binsX->GetNrows() - 1, binsX->GetMatrixArray()));
@@ -1821,7 +1821,9 @@ TObjArray* PairAnalysisHistos::DrawSame(TString histName,
                            "");
       }
       // change default signal names to titles
-      for (Int_t isig = 0; isig < PairAnalysisSignalMC::kNSignals; isig++) {
+      for (Int_t isig = 0; isig < static_cast<Int_t>(
+                             PairAnalysisSignalMC::EDefinedSignal::kNSignals);
+           isig++) {
         TString src = PairAnalysisSignalMC::fgkSignals[isig][0];
         TString rpl = PairAnalysisSignalMC::fgkSignals[isig][1];
         // avoid mc signal in header AND leg-entry
@@ -1835,13 +1837,15 @@ TObjArray* PairAnalysisHistos::DrawSame(TString histName,
       //	printf("histClass %s \n",histClass.Data());
 
       // change MCtruth to MC
-      for (Int_t isig = 0; isig < PairAnalysisSignalMC::kNSignals; isig++) {
+      for (Int_t isig = 0; isig < static_cast<Int_t>(
+                             PairAnalysisSignalMC::EDefinedSignal::kNSignals);
+           isig++) {
         histClass.ReplaceAll("MCtruth", "MC");
         ratioName.ReplaceAll("MCtruth", "MC");
         divName.ReplaceAll("MCtruth", "MC");
       }
       // remove pairing name if it is a MC
-      for (Int_t iptype = 0; iptype < PairAnalysis::kPairTypes; iptype++) {
+      for (Int_t iptype = 0; iptype < PairAnalysis::fNTypes; iptype++) {
         if (ndel > 0)
           histClass.ReplaceAll(PairAnalysis::PairClassName(iptype), "");
         if (ratioName.CountChar('_') > 0)
@@ -2129,8 +2133,10 @@ void PairAnalysisHistos::FillValues(TH1* obj, const Double_t* values) {
   Bool_t bprf = kFALSE;
   //  UInt_t nValues = (UInt_t) PairAnalysisVarManager::kNMaxValues;
   UInt_t valueTypes = obj->GetUniqueID();
-  if (valueTypes == (UInt_t) PairAnalysisHistos::kNoAutoFill) return;
-  Bool_t weight = (valueTypes != kNoWeights);
+  if (valueTypes
+      == static_cast<UInt_t>(PairAnalysisHistos::Eoption::kNoAutoFill))
+    return;
+  Bool_t weight = (valueTypes != static_cast<UInt_t>(Eoption::kNoWeights));
 
   // check if tprofile
   if (obj->IsA() == TProfile::Class() || obj->IsA() == TProfile2D::Class()
@@ -2261,7 +2267,8 @@ void PairAnalysisHistos::FillValues(THnBase* obj, const Double_t* values) {
 
   // skip if manual filling
   UInt_t value4 = obj->GetUniqueID();  // weighting variable if any
-  if (value4 == (UInt_t) PairAnalysisHistos::kNoAutoFill) return;
+  if (value4 == static_cast<UInt_t>(PairAnalysisHistos::Eoption::kNoAutoFill))
+    return;
 
   // check for formulas and skip the rest if needed
   TList* list = obj->GetListOfFunctions();
@@ -2270,7 +2277,7 @@ void PairAnalysisHistos::FillValues(THnBase* obj, const Double_t* values) {
   Bool_t useFormulas = (list && list->Last());
 
   //  do weighting
-  Bool_t weight = (value4 != kNoWeights);
+  Bool_t weight = (value4 != static_cast<UInt_t>(Eoption::kNoWeights));
 
   // fill array
   const Int_t dim = obj->GetNdimensions();
@@ -2380,7 +2387,7 @@ void PairAnalysisHistos::AdaptNameTitle(TH1* hist, const char* histClass) {
   UInt_t vary   = hist->GetYaxis()->GetUniqueID();
   UInt_t varz   = hist->GetZaxis()->GetUniqueID();
   UInt_t varp   = hist->GetUniqueID();
-  Bool_t weight = (varp != kNoWeights);
+  Bool_t weight = (varp != static_cast<UInt_t>(Eoption::kNoWeights));
   if (bprf && dim == 3) weight = kFALSE;  // no weighting for profile3D
 
   // store titles in the axis

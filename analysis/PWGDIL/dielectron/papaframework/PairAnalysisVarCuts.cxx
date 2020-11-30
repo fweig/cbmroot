@@ -38,7 +38,7 @@ ClassImp(PairAnalysisVarCuts)
   , fNActiveCuts(0)
   , fActiveCutsMask(0)
   , fSelectedCutsMask(0)
-  , fCutType(kAll) {
+  , fCutType(ECutType::kAll) {
   //
   // Default costructor
   //
@@ -60,7 +60,7 @@ PairAnalysisVarCuts::PairAnalysisVarCuts(const char* name, const char* title)
   , fNActiveCuts(0)
   , fActiveCutsMask(0)
   , fSelectedCutsMask(0)
-  , fCutType(kAll) {
+  , fCutType(ECutType::kAll) {
   //
   // Named contructor
   //
@@ -122,12 +122,12 @@ Bool_t PairAnalysisVarCuts::IsSelected(Double_t* const values) {
       }
     }
     // cut type and decision
-    if (fCutType == kAll && !TESTBIT(fSelectedCutsMask, iCut))
+    if (fCutType == ECutType::kAll && !TESTBIT(fSelectedCutsMask, iCut))
       return kFALSE;  // option to (minor) speed improvement
   }
 
   Bool_t isSelected = (fSelectedCutsMask == fActiveCutsMask);
-  if (fCutType == kAny) isSelected = (fSelectedCutsMask > 0);
+  if (fCutType == ECutType::kAny) isSelected = (fSelectedCutsMask > 0);
   SetSelected(isSelected);
   return isSelected;
 }
@@ -232,7 +232,7 @@ void PairAnalysisVarCuts::Print(const Option_t* /*option*/) const {
   //
   printf("------------------------------------------\n");
   printf("cut ranges for '%s'\n", GetTitle());
-  if (fCutType == kAll) {
+  if (fCutType == ECutType::kAll) {
     printf("All Cuts have to be fulfilled\n");
   } else {
     printf("Any Cut has to be fulfilled\n");

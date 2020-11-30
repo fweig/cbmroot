@@ -23,7 +23,7 @@
 
 class PairAnalysisHF : public PairAnalysisHistos {
 public:
-  enum { kMaxCuts = 20 };
+  enum class Max { kMaxCuts = 20 };
 
   PairAnalysisHF();
   PairAnalysisHF(const char* name, const char* title);
@@ -61,7 +61,8 @@ private:
   TObjArray fArrDielHistos;  //-> array of papahistos
   TObjArray* fSignalsMC;     //! array of MC signals to be stupapad
 
-  UShort_t fVarCuts[kMaxCuts];  // cut variables
+  static const Int_t fMaxCuts = 20;
+  UShort_t fVarCuts[fMaxCuts];  // cut variables
   TBits* fVarCutType;           // array to store leg booleans
   //  Bool_t    fVarCutType[kMaxCuts];  // array to store leg booleans
   TObjArray fAxes;  // Axis descriptions of the cut binning

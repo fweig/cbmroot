@@ -53,18 +53,18 @@ PairAnalysisCutQA::PairAnalysisCutQA(const char* name, const char* title)
   //
   // Named Constructor
   //
-  for (Int_t itype = 0; itype < kNtypes; itype++) {
+  for (Int_t itype = 0; itype < fNtypes; itype++) {
     fNCuts[itype] = 1;
     for (Int_t i = 0; i < 20; i++) {
       fCutNames[i][itype] = "";
     }
   }
-  fTypeKeys[kTrack]   = "Track";
-  fTypeKeys[kTrack2]  = "FinalTrack";
-  fTypeKeys[kTrackMC] = "MCTrack";
-  fTypeKeys[kPair]    = "Pair";
-  fTypeKeys[kPrePair] = "PrePair";
-  fTypeKeys[kEvent]   = "Event";
+  fTypeKeys[static_cast<Int_t>(ETypes::kTrack)]   = "Track";
+  fTypeKeys[static_cast<Int_t>(ETypes::kTrack2)]  = "FinalTrack";
+  fTypeKeys[static_cast<Int_t>(ETypes::kTrackMC)] = "MCTrack";
+  fTypeKeys[static_cast<Int_t>(ETypes::kPair)]    = "Pair";
+  fTypeKeys[static_cast<Int_t>(ETypes::kPrePair)] = "PrePair";
+  fTypeKeys[static_cast<Int_t>(ETypes::kEvent)]   = "Event";
   fQAHistList.SetOwner(kFALSE);
 }
 
@@ -104,10 +104,10 @@ void PairAnalysisCutQA::Init() {
   const TVectorD* binsPdg = PairAnalysisHelper::MakeLinBinning(5, 0, 5);
   const TVectorD* binsDet = PairAnalysisHelper::MakeLinBinning(6, 0, 6);
   // loop over all types
-  for (Int_t itype = 0; itype < kNtypes; itype++) {
+  for (Int_t itype = 0; itype < fNtypes; itype++) {
     //    printf("\n type: %d\n",itype);
     TString logic = "passed";
-    if (itype == kPrePair) logic = "rejected";
+    if (itype == static_cast<Int_t>(ETypes::kPrePair)) logic = "rejected";
 
     const TVectorD* binsX =
       PairAnalysisHelper::MakeLinBinning(fNCuts[itype], 0, fNCuts[itype]);
@@ -119,7 +119,8 @@ void PairAnalysisCutQA::Init() {
       fNCuts[itype],
       binsX->GetMatrixArray());
 
-    if (itype == kTrack || itype == kTrack2) {
+    if (itype == static_cast<Int_t>(ETypes::kTrack)
+        || itype == static_cast<Int_t>(ETypes::kTrack2)) {
       fPdgCutQA = new TH2I(Form("%sPDG", fTypeKeys[itype]),
                            Form("%sPDG;cuts;PDG code;# %s %ss",
                                 fTypeKeys[itype],
@@ -148,10 +149,10 @@ void PairAnalysisCutQA::Init() {
 
     // Set labels to histograms
     fCutNames[0][itype] = "no cuts";
-    if (fNCuts[kPrePair] > 1)
-      fCutNames[0][kTrack2] = "pair prefilter";
+    if (fNCuts[static_cast<Int_t>(ETypes::kPrePair)] > 1)
+      fCutNames[0][static_cast<Int_t>(ETypes::kTrack2)] = "pair prefilter";
     else
-      fCutNames[0][kTrack2] = "1st track filter";
+      fCutNames[0][static_cast<Int_t>(ETypes::kTrack2)] = "1st track filter";
     // loop over all cuts
     for (Int_t i = 0; i < fNCuts[itype]; i++) {
       fCutQA->GetXaxis()->SetBinLabel(i + 1, fCutNames[i][itype]);
@@ -207,13 +208,13 @@ void PairAnalysisCutQA::Init() {
 
     // add to output list
     switch (itype) {
-      case kEvent:
+      case static_cast<Int_t>(ETypes::kEvent):
         static_cast<THashList*>(fQAHistList.FindObject("Event"))
           ->AddLast(fCutQA);
         break;
-      case kTrack:
-      case kTrack2:
-      case kTrackMC:
+      case static_cast<Int_t>(ETypes::kTrack):
+      case static_cast<Int_t>(ETypes::kTrack2):
+      case static_cast<Int_t>(ETypes::kTrackMC):
         static_cast<THashList*>(fQAHistList.FindObject("Track"))
           ->AddLast(fCutQA);
         if (fPdgCutQA)
@@ -223,8 +224,8 @@ void PairAnalysisCutQA::Init() {
           static_cast<THashList*>(fQAHistList.FindObject("Track"))
             ->AddLast(fEffCutQA);
         break;
-      case kPair:
-      case kPrePair:
+      case static_cast<Int_t>(ETypes::kPair):
+      case static_cast<Int_t>(ETypes::kPrePair):
         static_cast<THashList*>(fQAHistList.FindObject("Pair"))
           ->AddLast(fCutQA);
         break;
@@ -249,9 +250,10 @@ void PairAnalysisCutQA::AddTrackFilter(AnalysisFilter* filter) {
 
     // add new cut class to the list
     if (addCut) {
-      fCutNames[fNCuts[kTrack]][kTrack] = thisCut->GetTitle();
+      fCutNames[fNCuts[static_cast<Int_t>(ETypes::kTrack)]]
+               [static_cast<Int_t>(ETypes::kTrack)] = thisCut->GetTitle();
       //      printf("add cut %s to %d \n",thisCut->GetTitle(),fNCuts[kTrack]);
-      fNCuts[kTrack]++;
+      fNCuts[static_cast<Int_t>(ETypes::kTrack)]++;
     }
 
   }  // pair filter loop
@@ -270,9 +272,10 @@ void PairAnalysisCutQA::AddTrackFilterMC(AnalysisFilter* filter) {
 
     // add new cut class to the list
     if (addCut) {
-      fCutNames[fNCuts[kTrackMC]][kTrackMC] = thisCut->GetTitle();
+      fCutNames[fNCuts[static_cast<Int_t>(ETypes::kTrackMC)]]
+               [static_cast<Int_t>(ETypes::kTrackMC)] = thisCut->GetTitle();
       //      printf("add cut %s to %d \n",thisCut->GetTitle(),fNCuts[kTrack]);
-      fNCuts[kTrackMC]++;
+      fNCuts[static_cast<Int_t>(ETypes::kTrackMC)]++;
     }
 
   }  // pair filter loop
@@ -291,9 +294,10 @@ void PairAnalysisCutQA::AddTrackFilter2(AnalysisFilter* filter) {
 
     // add new cut class to the list
     if (addCut) {
-      fCutNames[fNCuts[kTrack2]][kTrack2] = thisCut->GetTitle();
+      fCutNames[fNCuts[static_cast<Int_t>(ETypes::kTrack2)]]
+               [static_cast<Int_t>(ETypes::kTrack2)] = thisCut->GetTitle();
       //      printf("add cut %s to %d \n",thisCut->GetTitle(),fNCuts[kTrack]);
-      fNCuts[kTrack2]++;
+      fNCuts[static_cast<Int_t>(ETypes::kTrack2)]++;
     }
 
   }  // pair filter loop
@@ -312,9 +316,10 @@ void PairAnalysisCutQA::AddPairFilter(AnalysisFilter* pairFilter) {
 
     // add new cut class to the list
     if (addCut) {
-      fCutNames[fNCuts[kPair]][kPair] = thisCut->GetTitle();
+      fCutNames[fNCuts[static_cast<Int_t>(ETypes::kPair)]]
+               [static_cast<Int_t>(ETypes::kPair)] = thisCut->GetTitle();
       //  printf("add cut %s to %d \n",thisCut->GetTitle(),fNCuts[kPair]);
-      fNCuts[kPair]++;
+      fNCuts[static_cast<Int_t>(ETypes::kPair)]++;
     }
 
   }  // trk filter loop
@@ -333,9 +338,10 @@ void PairAnalysisCutQA::AddPrePairFilter(AnalysisFilter* pairFilter) {
 
     // add new cut class to the list
     if (addCut) {
-      fCutNames[fNCuts[kPrePair]][kPrePair] = thisCut->GetTitle();
+      fCutNames[fNCuts[static_cast<Int_t>(ETypes::kPrePair)]]
+               [static_cast<Int_t>(ETypes::kPrePair)] = thisCut->GetTitle();
       //  printf("add cut %s to %d \n",thisCut->GetTitle(),fNCuts[kPair]);
-      fNCuts[kPrePair]++;
+      fNCuts[static_cast<Int_t>(ETypes::kPrePair)]++;
     }
 
   }  // trk filter loop
@@ -354,9 +360,10 @@ void PairAnalysisCutQA::AddEventFilter(AnalysisFilter* eventFilter) {
 
     // add new cut class to the list
     if (addCut) {
-      fCutNames[fNCuts[kEvent]][kEvent] = thisCut->GetTitle();
+      fCutNames[fNCuts[static_cast<Int_t>(ETypes::kEvent)]]
+               [static_cast<Int_t>(ETypes::kEvent)] = thisCut->GetTitle();
       //      printf("add cut %s to %d \n",thisCut->GetTitle(),fNCuts[kEvent]);
-      fNCuts[kEvent]++;
+      fNCuts[static_cast<Int_t>(ETypes::kEvent)]++;
     }
 
   }  // trk filter loop
@@ -373,7 +380,8 @@ void PairAnalysisCutQA::Fill(UInt_t mask, TObject* obj, UInt_t addIdx) {
   // pdg to pdg label
   Int_t pdg      = 0;
   TString pdglbl = "";
-  if (idx == kTrack || idx == kTrack2) {
+  if (idx == static_cast<Int_t>(ETypes::kTrack)
+      || idx == static_cast<Int_t>(ETypes::kTrack2)) {
     pdg = (Int_t)(static_cast<PairAnalysisTrack*>(obj)->PdgCode());
     switch (TMath::Abs(pdg)) {
       case 11: pdglbl = "electron"; break;  // electron
@@ -387,16 +395,16 @@ void PairAnalysisCutQA::Fill(UInt_t mask, TObject* obj, UInt_t addIdx) {
   // find histolist
   THashList* histos = 0x0;
   switch (idx) {
-    case kEvent:
+    case static_cast<Int_t>(ETypes::kEvent):
       histos = static_cast<THashList*>(fQAHistList.FindObject("Event"));
       break;
-    case kTrack:
-    case kTrack2:
-    case kTrackMC:
+    case static_cast<Int_t>(ETypes::kTrack):
+    case static_cast<Int_t>(ETypes::kTrack2):
+    case static_cast<Int_t>(ETypes::kTrackMC):
       histos = static_cast<THashList*>(fQAHistList.FindObject("Track"));
       break;
-    case kPair:
-    case kPrePair:
+    case static_cast<Int_t>(ETypes::kPair):
+    case static_cast<Int_t>(ETypes::kPrePair):
       histos = static_cast<THashList*>(fQAHistList.FindObject("Pair"));
       break;
   }
@@ -415,7 +423,8 @@ void PairAnalysisCutQA::Fill(UInt_t mask, TObject* obj, UInt_t addIdx) {
           ->Fill(cutstep, pdglbl.Data(), 1.);
 
       // fill detector dependent
-      if (idx == kTrack || idx == kTrack2) {
+      if (idx == static_cast<Int_t>(ETypes::kTrack)
+          || idx == static_cast<Int_t>(ETypes::kTrack2)) {
         TProfile2D* detQA = static_cast<TProfile2D*>(
           histos->FindObject(Form("%sMatchEff", fTypeKeys[idx])));
         PairAnalysisTrack* t = static_cast<PairAnalysisTrack*>(obj);
@@ -455,7 +464,8 @@ void PairAnalysisCutQA::FillAll(TObject* obj, UInt_t addIdx) {
   // pdg to pdg label
   Int_t pdg      = 0;
   TString pdglbl = "";
-  if (idx == kTrack || idx == kTrack2) {
+  if (idx == static_cast<Int_t>(ETypes::kTrack)
+      || idx == static_cast<Int_t>(ETypes::kTrack2)) {
     pdg = (Int_t)(static_cast<PairAnalysisTrack*>(obj)->PdgCode());
     switch (TMath::Abs(pdg)) {
       case 11: pdglbl = "electron"; break;  // electron
@@ -469,16 +479,16 @@ void PairAnalysisCutQA::FillAll(TObject* obj, UInt_t addIdx) {
   // find histolist
   THashList* histos = 0x0;
   switch (idx) {
-    case kEvent:
+    case static_cast<Int_t>(ETypes::kEvent):
       histos = static_cast<THashList*>(fQAHistList.FindObject("Event"));
       break;
-    case kTrack:
-    case kTrack2:
-    case kTrackMC:
+    case static_cast<Int_t>(ETypes::kTrack):
+    case static_cast<Int_t>(ETypes::kTrack2):
+    case static_cast<Int_t>(ETypes::kTrackMC):
       histos = static_cast<THashList*>(fQAHistList.FindObject("Track"));
       break;
-    case kPair:
-    case kPrePair:
+    case static_cast<Int_t>(ETypes::kPair):
+    case static_cast<Int_t>(ETypes::kPrePair):
       histos = static_cast<THashList*>(fQAHistList.FindObject("Pair"));
       break;
   }
@@ -490,7 +500,8 @@ void PairAnalysisCutQA::FillAll(TObject* obj, UInt_t addIdx) {
       ->Fill(0., pdglbl.Data(), 1.);
 
   // fill detector dependent
-  if (idx == kTrack || idx == kTrack2) {
+  if (idx == static_cast<Int_t>(ETypes::kTrack)
+      || idx == static_cast<Int_t>(ETypes::kTrack2)) {
     TProfile2D* detQA = static_cast<TProfile2D*>(
       histos->FindObject(Form("%sMatchEff", fTypeKeys[idx])));
     PairAnalysisTrack* t = static_cast<PairAnalysisTrack*>(obj);
@@ -522,15 +533,15 @@ UInt_t PairAnalysisCutQA::GetObjIndex(TObject* obj) {
   //
   //  printf("INFO: object type is a %s \n", obj->IsA()->GetName());
   if (obj->IsA() == CbmMCTrack::Class())
-    return kTrackMC;
+    return static_cast<Int_t>(ETypes::kTrackMC);
   else if (obj->IsA() == PairAnalysisTrack::Class())
-    return kTrack;
+    return static_cast<Int_t>(ETypes::kTrack);
   else if (obj->IsA() == PairAnalysisPairLV::Class())
-    return kPair;
+    return static_cast<Int_t>(ETypes::kPair);
   else if (obj->IsA() == PairAnalysisPairKF::Class())
-    return kPair;
+    return static_cast<Int_t>(ETypes::kPair);
   else if (obj->IsA() == PairAnalysisEvent::Class())
-    return kEvent;
+    return static_cast<Int_t>(ETypes::kEvent);
   else
     fprintf(stderr,
             "ERROR: object type not supported, please let the author know "

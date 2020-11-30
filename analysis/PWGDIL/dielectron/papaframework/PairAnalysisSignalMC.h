@@ -15,8 +15,8 @@
 class PairAnalysisSignalMC : public TNamed {
 
 public:
-  enum EBranchRelation { kUndefined = 0, kSame, kDifferent };
-  enum ESource {
+  enum class EBranchRelation { kUndefined = 0, kSame, kDifferent };
+  enum class ESource {
     kDontCare = 0,
     kPrimary,
     kSecondary,
@@ -25,8 +25,8 @@ public:
     kSecondaryFromWeakDecay,
     kSecondaryFromMaterial
   };
-  enum EDalitz { kWhoCares = 0, kIsDalitz, kIsNotDalitz };
-  enum EDefinedSignal {
+  enum class EDalitz { kWhoCares = 0, kIsDalitz, kIsNotDalitz };
+  enum class EDefinedSignal {
     kInclJpsi = 0,
     kNonRadJpsi,
     kRadJpsi,
@@ -204,7 +204,8 @@ public:
   EDalitz GetDalitz() const { return fDalitz; }
   Int_t GetDalitzPdg() const { return fDalitzPdg; }
 
-  static const char* fgkSignals[kNSignals][2];  //default signal names+titles
+  static const char* fgkSignals[static_cast<int>(EDefinedSignal::kNSignals)]
+                               [2];  //default signal names+titles
 
   void Print(Option_t* option = "") const;
 
@@ -232,12 +233,12 @@ private:
   Bool_t fGreatGrandMother2Exclude = kFALSE;  // great grandmother 2
 
   // Particle sources
-  ESource fLeg1Source         = kDontCare;  // leg 1 source
-  ESource fLeg2Source         = kDontCare;  // leg 2 source
-  ESource fMother1Source      = kDontCare;  // mother 1 source
-  ESource fMother2Source      = kDontCare;  // mother 2 source
-  ESource fGrandMother1Source = kDontCare;  // grandmother 1 source
-  ESource fGrandMother2Source = kDontCare;  // grandmother 2 source
+  ESource fLeg1Source         = ESource::kDontCare;  // leg 1 source
+  ESource fLeg2Source         = ESource::kDontCare;  // leg 2 source
+  ESource fMother1Source      = ESource::kDontCare;  // mother 1 source
+  ESource fMother2Source      = ESource::kDontCare;  // mother 2 source
+  ESource fGrandMother1Source = ESource::kDontCare;  // grandmother 1 source
+  ESource fGrandMother2Source = ESource::kDontCare;  // grandmother 2 source
 
   // Flaggs whether to check both charges of a given PDG code
   Bool_t fCheckBothChargesLeg1 = kFALSE;  // check both charges of the legs pdg
@@ -252,7 +253,7 @@ private:
     kFALSE;                            //         great grand mother 2
   Bool_t fCheckGEANTProcess = kFALSE;  //              GEANT process
 
-  EBranchRelation fMothersRelation =
+  EBranchRelation fMothersRelation = EBranchRelation::
     kUndefined;  // mother 1&2 relation (same, different or whatever)
   TMCProcess fGEANTProcess =
     kPPrimary;                // GEANT process ID (see roots TMCProcess)
@@ -261,8 +262,8 @@ private:
   UInt_t fType       = 0;     // lookup variable for weighting factors
 
   // dalitz decays
-  EDalitz fDalitz  = kWhoCares;  // check for dalitz decay
-  Int_t fDalitzPdg = 0;          // dalitz PDG
+  EDalitz fDalitz  = EDalitz::kWhoCares;  // check for dalitz decay
+  Int_t fDalitzPdg = 0;                   // dalitz PDG
 
   Bool_t fFillPureMCStep = kFALSE;  // check and fill the pure MC step
   Bool_t fIsSingleParticle =

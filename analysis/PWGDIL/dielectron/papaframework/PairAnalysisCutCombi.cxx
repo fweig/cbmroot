@@ -39,7 +39,7 @@ ClassImp(PairAnalysisCutCombi)
   , fNActiveCuts(0)
   , fActiveCutsMask(0)
   , fSelectedCutsMask(0)
-  , fCutType(kAll) {
+  , fCutType(ECutType::kAll) {
   //
   // Default Constructor
   //
@@ -55,7 +55,7 @@ PairAnalysisCutCombi::PairAnalysisCutCombi(const char* name, const char* title)
   , fNActiveCuts(0)
   , fActiveCutsMask(0)
   , fSelectedCutsMask(0)
-  , fCutType(kAll) {
+  , fCutType(ECutType::kAll) {
   //
   // Named Constructor
   //
@@ -132,12 +132,13 @@ Bool_t PairAnalysisCutCombi::IsSelected(Double_t* const values) {
     if (!fCuts[iCut]->IsSelected(values)) CLRBIT(fSelectedCutsMask, iCut);
 
     // cut type and intermediate decision
-    if (fCutType == kAll && !TESTBIT(fSelectedCutsMask, iCut)) return kFALSE;
+    if (fCutType == ECutType::kAll && !TESTBIT(fSelectedCutsMask, iCut))
+      return kFALSE;
   }
 
   // cut type and final decision
   Bool_t isSelected = (fSelectedCutsMask == fActiveCutsMask);
-  if (fCutType == kAny) isSelected = (fSelectedCutsMask > 0);
+  if (fCutType == ECutType::kAny) isSelected = (fSelectedCutsMask > 0);
   SetSelected(isSelected);
   return isSelected;
 }
@@ -149,7 +150,7 @@ void PairAnalysisCutCombi::Print(const Option_t* /*option*/) const {
   //
   printf("-----------------------------------------------------------------\n");
   printf("cut ranges for '%s'\n", GetTitle());
-  if (fCutType == kAll) {
+  if (fCutType == ECutType::kAll) {
     printf("All Cuts have to be fulfilled\n");
   } else {
     printf("Any Cut has to be fulfilled\n");

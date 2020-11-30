@@ -290,7 +290,9 @@ Bool_t PairAnalysis::Process(PairAnalysisEvent* ev1) {
   if (!fNoPairing) {
     for (Int_t itrackArr1 = 0; itrackArr1 < 2; ++itrackArr1) {
       for (Int_t itrackArr2 = itrackArr1; itrackArr2 < 2; ++itrackArr2) {
-        if (!fProcessLS && GetPairIndex(itrackArr1, itrackArr2) != kSEPM)
+        if (!fProcessLS
+            && GetPairIndex(itrackArr1, itrackArr2)
+                 != static_cast<Int_t>(EPairType::kSEPM))
           continue;
         FillPairArrays(itrackArr1, itrackArr2);
       }
@@ -307,7 +309,8 @@ Bool_t PairAnalysis::Process(PairAnalysisEvent* ev1) {
 
   // fill candidate variables
   Double_t ntracks = fTracks[0].GetEntriesFast() + fTracks[1].GetEntriesFast();
-  Double_t npairs  = PairArray(PairAnalysis::kSEPM)->GetEntriesFast();
+  Double_t npairs =
+    PairArray(static_cast<Int_t>(EPairType::kSEPM))->GetEntriesFast();
   PairAnalysisVarManager::SetValue(PairAnalysisVarManager::kTracks, ntracks);
   PairAnalysisVarManager::SetValue(PairAnalysisVarManager::kPairs, npairs);
 
@@ -647,7 +650,7 @@ void PairAnalysis::FillHistograms(const PairAnalysisEvent* ev,
         isig, fHistoArray && fHistoArray->HasHistClass(sigName));
     }
     // loop over both track arrays
-    for (Int_t i = 0; i < kLegTypes; ++i) {
+    for (Int_t i = 0; i < fLegTypes; ++i) {
       className.Form("Track.%s", fgkTrackClassNames[i]);
       Bool_t trkClass  = fHistos->HasHistClass(className);
       Bool_t trkClass2 = (fHistoArray && fHistoArray->HasHistClass(className));
@@ -702,7 +705,7 @@ void PairAnalysis::FillHistograms(const PairAnalysisEvent* ev,
   TBits pairClassMC(nsig);
   TBits pairClassMChf(nsig);
   TObjArray arrLegs(100);
-  for (Int_t i = 0; i < (kPairTypes - 1); ++i) {
+  for (Int_t i = 0; i < (fNTypes - 1); ++i) {
     className.Form("Pair.%s", fgkPairClassNames[i]);
     className2.Form("Track.Legs.%s", fgkPairClassNames[i]);
     Bool_t pairClass  = fHistos->HasHistClass(className);
@@ -713,7 +716,7 @@ void PairAnalysis::FillHistograms(const PairAnalysisEvent* ev,
     Bool_t legClassHits = kFALSE;
 
     // check leg hits and mc signal filling
-    if (i == kSEPM) {
+    if (i == static_cast<Int_t>(EPairType::kSEPM)) {
 
       // loop over all detectors and check for hit histos
       for (ECbmModuleId idet = ECbmModuleId::kRef;
@@ -788,7 +791,7 @@ void PairAnalysis::FillHistograms(const PairAnalysisEvent* ev,
 
         // check mc filling
         fillMC.ResetAllBits();
-        if (i == kSEPM) {
+        if (i == static_cast<Int_t>(EPairType::kSEPM)) {
           for (Int_t isig = 0; isig < nsig; isig++) {
             // next if nothing needs to be filled
             if (!pairClassMC.TestBitNumber(isig)
@@ -823,7 +826,7 @@ void PairAnalysis::FillHistograms(const PairAnalysisEvent* ev,
           if (legClass) fHistos->FillClass(className2, values);
           if (legClass2) fHistoArray->FillClass(className2, values);
           // mc signal filling
-          if (i == kSEPM) {
+          if (i == static_cast<Int_t>(EPairType::kSEPM)) {
             for (Int_t isig = 0; isig < nsig; isig++) {
               if (!fillMC.TestBitNumber(isig)) continue;
               sigMC   = (PairAnalysisSignalMC*) fSignalsMC->At(isig);
@@ -845,7 +848,7 @@ void PairAnalysis::FillHistograms(const PairAnalysisEvent* ev,
           if (legClass) fHistos->FillClass(className2, values);
           if (legClass2) fHistoArray->FillClass(className2, values);
           // mc signal filling
-          if (i == kSEPM) {
+          if (i == static_cast<Int_t>(EPairType::kSEPM)) {
             for (Int_t isig = 0; isig < nsig; isig++) {
               if (!fillMC.TestBitNumber(isig)) continue;
               sigMC   = (PairAnalysisSignalMC*) fSignalsMC->At(isig);
@@ -1147,11 +1150,16 @@ void PairAnalysis::PairPreFilter(Int_t arr1,
       if (!track1) continue;
 
       /// pair prefilter leg cuts
+      // pre-pairing filter for the first track candidate in the pairing step
+      // kBothLegs demands that both track candidates fullfill the cuts
+      // kAnyLeg demands that at least one candidate fullfills the cuts
+      // kOneLeg demands exactly one candidate to fullfill the cuts
       if (selectedMaskLeg) {
-        isLeg1selected = (fPairPreFilterLegs.IsSelected(
-                            static_cast<PairAnalysisTrack*>(track1))
-                          == selectedMaskLeg);
-        if (fCutType == kBothLegs && !isLeg1selected) continue;
+        isLeg1selected =
+          (fPairPreFilterLegs.IsSelected(
+             static_cast<PairAnalysisTrack*>(track1))
+           == selectedMaskLeg);  // check cuts for the first track candidate
+        if (fCutType == ECutType::kBothLegs && !isLeg1selected) continue;
       }
 
 
@@ -1160,23 +1168,20 @@ void PairAnalysis::PairPreFilter(Int_t arr1,
         if (!track2) continue;
 
         /// pair prefilter leg cuts
-        /// TODO: check rejection of pairleg only, when non prepair cut is applied!
-        /// NOTE: in mode kAnyLeg do the next check only if track1 was not selected
-        if ((selectedMaskLeg && fCutType != kAnyLeg)
-            || (selectedMaskLeg && fCutType == kAnyLeg && !isLeg1selected)) {
-          isLeg2selected = (fPairPreFilterLegs.IsSelected(
-                              static_cast<PairAnalysisTrack*>(track2))
-                            == selectedMaskLeg);  // apply selection
-          switch (fCutType) {
-            case kBothLegs:
-              if (!isLeg2selected) continue;
-              break;
-            case kAnyLeg:
-              if (!isLeg2selected) continue;
-              break;
-            case kOneLeg:
-              if (isLeg1selected == isLeg2selected) continue;
-              break;
+        if (selectedMaskLeg) {
+          if (fCutType != ECutType::kAnyLeg
+              || (fCutType == ECutType::kAnyLeg && !isLeg1selected)) {
+            isLeg2selected =
+              (fPairPreFilterLegs.IsSelected(
+                 static_cast<PairAnalysisTrack*>(track2))
+               == selectedMaskLeg);  // check cuts for the second track candidate
+            if (fCutType == ECutType::kBothLegs && !isLeg2selected)
+              continue;  // the second track did not fullfill cuts
+            if (fCutType == ECutType::kAnyLeg && !isLeg2selected)
+              continue;  // the first and second track did not fullfill cuts
+            if (fCutType == ECutType::kOneLeg
+                && isLeg1selected == isLeg2selected)
+              continue;  // both tracks have the same value
           }
         }
 
@@ -1374,7 +1379,7 @@ void PairAnalysis::FillPairArrays(Int_t arr1, Int_t arr2) {
   ///       otherwise this will crash in the refiting done in PairAnalysisPairKF
   ///       track rotation is not done here!
   PairAnalysisPair* candidate;
-  if (fUseKF && pairIndex <= kSEMM)
+  if (fUseKF && pairIndex <= static_cast<Int_t>(EPairType::kSEMM))
     candidate = new PairAnalysisPairKF();
   else
     candidate = new PairAnalysisPairLV();
@@ -1406,7 +1411,7 @@ void PairAnalysis::FillPairArrays(Int_t arr1, Int_t arr2) {
       UInt_t cutMask = fPairFilter.IsSelected(candidate);
 
       // cut qa
-      if (pairIndex == kSEPM && fCutQA) {
+      if (pairIndex == static_cast<Int_t>(EPairType::kSEPM) && fCutQA) {
         fQAmonitor->FillAll(candidate);
         fQAmonitor->Fill(cutMask, candidate);
       }
@@ -1423,7 +1428,7 @@ void PairAnalysis::FillPairArrays(Int_t arr1, Int_t arr2) {
       //add the candidate to the candidate array
       PairArray(pairIndex)->Add(candidate);
       //get a new candidate
-      if (fUseKF && pairIndex <= kSEMM)
+      if (fUseKF && pairIndex <= static_cast<Int_t>(EPairType::kSEMM))
         candidate = new PairAnalysisPairKF();
       else
         candidate = new PairAnalysisPairLV();
@@ -1450,7 +1455,7 @@ void PairAnalysis::FillPairArrayTR() {
   else
     candidate = new PairAnalysisPairLV();
   candidate->SetKFUsage(fUseKF);
-  candidate->SetType(kSEPMRot);
+  candidate->SetType(static_cast<Int_t>(EPairType::kSEPMRot));
 
   UInt_t selectedMask = (1 << fPairFilter.GetCuts()->GetEntries()) - 1;
   // loop over track arrays
@@ -1475,16 +1480,17 @@ void PairAnalysis::FillPairArrayTR() {
         if (cutMask != selectedMask) continue;
 
         //histogram array for the pair
-        if (fHistoArray) fHistoArray->Fill((Int_t) kSEPMRot, candidate);
+        if (fHistoArray)
+          fHistoArray->Fill(static_cast<Int_t>(EPairType::kSEPMRot), candidate);
 
         if (fHistos) FillHistogramsPair(candidate);
         if (fStoreRotatedPairs) {
           if (fUseKF)
-            PairArray(kSEPMRot)->Add(
-              static_cast<PairAnalysisPairKF*>(candidate->Clone()));
+            PairArray(static_cast<Int_t>(EPairType::kSEPMRot))
+              ->Add(static_cast<PairAnalysisPairKF*>(candidate->Clone()));
           else
-            PairArray(kSEPMRot)->Add(
-              static_cast<PairAnalysisPairLV*>(candidate->Clone()));
+            PairArray(static_cast<Int_t>(EPairType::kSEPMRot))
+              ->Add(static_cast<PairAnalysisPairLV*>(candidate->Clone()));
           // if(fUseKF) PairArray(kSEPMRot)->Add(new PairAnalysisPairKF(*candidate);
           // else       PairArray(kSEPMRot)->Add(new PairAnalysisPairLV(*candidate);
         }
@@ -1547,10 +1553,12 @@ PairAnalysis::FillMCHistograms(Int_t label1, Int_t label2, Int_t nSignal) {
   //  printf("leg/mother labels: %d/%d %d/%d \t part %p,%p \n",label1,mLabel1,label2,mLabel2,part1,part2);
 
   // check the same mother option
-  if (sigMC->GetMothersRelation() == PairAnalysisSignalMC::kSame
+  if (sigMC->GetMothersRelation()
+        == PairAnalysisSignalMC::EBranchRelation::kSame
       && mLabel1 != mLabel2)
     return kFALSE;
-  if (sigMC->GetMothersRelation() == PairAnalysisSignalMC::kDifferent
+  if (sigMC->GetMothersRelation()
+        == PairAnalysisSignalMC::EBranchRelation::kDifferent
       && mLabel1 == mLabel2)
     return kFALSE;
 
@@ -1655,7 +1663,7 @@ void PairAnalysis::FillHistogramsFromPairArray(
 
   //Fill Pair information, separately for all pair candidate arrays and the legs
   TObjArray arrLegs(100);
-  for (Int_t i = 0; i < (kPairTypes - 1); ++i) {
+  for (Int_t i = 0; i < (fNTypes - 1); ++i) {
     Int_t npairs = PairArray(i)->GetEntriesFast();
     if (npairs < 1) continue;
 
@@ -1673,7 +1681,7 @@ void PairAnalysis::FillHistogramsFromPairArray(
       UInt_t cutMask = fPairFilter.IsSelected(pair);
 
       // cut qa
-      if (i == kSEPM && fCutQA) {
+      if (i == static_cast<Int_t>(EPairType::kSEPM) && fCutQA) {
         fQAmonitor->FillAll(pair);
         fQAmonitor->Fill(cutMask, pair);
       }
@@ -1773,7 +1781,7 @@ void PairAnalysis::FillCutStepHistograms(AnalysisFilter* filter,
         /// fill track histos only once
         if (!isig) {
           histo.FillClass(classNamePM, values);
-          for (Int_t i = 0; i < kLegTypes; ++i) {
+          for (Int_t i = 0; i < fLegTypes; ++i) {
             className.Form("Track.%s", fgkTrackClassNames[i]);
             histo.FillClass(className, values);
           }

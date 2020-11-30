@@ -289,19 +289,25 @@ void PairAnalysisStyler::Style(TObject* obj, Int_t idx) {
   // marker attributes
   if (obj->InheritsFrom(TAttMarker::Class())) {
     if (idx >= 100) {  // predefined styles
-      dynamic_cast<TAttMarker*>(obj)->SetMarkerSize(fSze[idx - kRaw]);
-      dynamic_cast<TAttMarker*>(obj)->SetMarkerStyle(fMrk[idx - kRaw]);
-      dynamic_cast<TAttMarker*>(obj)->SetMarkerColor(fCol[idx - kRaw]);
+      dynamic_cast<TAttMarker*>(obj)->SetMarkerSize(
+        fSze[idx - static_cast<Int_t>(Eidx::kRaw)]);
+      dynamic_cast<TAttMarker*>(obj)->SetMarkerStyle(
+        fMrk[idx - static_cast<Int_t>(Eidx::kRaw)]);
+      dynamic_cast<TAttMarker*>(obj)->SetMarkerColor(
+        fCol[idx - static_cast<Int_t>(Eidx::kRaw)]);
     } else {
       dynamic_cast<TAttMarker*>(obj)->SetMarkerSize(1.5);
-      dynamic_cast<TAttMarker*>(obj)->SetMarkerStyle(Marker[idx % kNMaxMarker]);
-      dynamic_cast<TAttMarker*>(obj)->SetMarkerColor(Color[idx % kNMaxColor]);
-      if (idx >= kNMaxColor && idx < kNMaxColor * 2) {
-        idx = idx % kNMaxColor;
+      dynamic_cast<TAttMarker*>(obj)->SetMarkerStyle(
+        Marker[idx % static_cast<Int_t>(Estyle::kNMaxMarker)]);
+      dynamic_cast<TAttMarker*>(obj)->SetMarkerColor(
+        Color[idx % static_cast<Int_t>(Estyle::kNMaxColor)]);
+      if (idx >= static_cast<Int_t>(Estyle::kNMaxColor)
+          && idx < static_cast<Int_t>(Estyle::kNMaxColor) * 2) {
+        idx = idx % static_cast<Int_t>(Estyle::kNMaxColor);
         dynamic_cast<TAttMarker*>(obj)->SetMarkerColor(
           TColor::GetColorDark(Color[idx]));
-      } else if (idx >= kNMaxColor * 2) {
-        idx = idx % (2 * kNMaxColor);
+      } else if (idx >= static_cast<Int_t>(Estyle::kNMaxColor) * 2) {
+        idx = idx % (2 * static_cast<Int_t>(Estyle::kNMaxColor));
         dynamic_cast<TAttMarker*>(obj)->SetMarkerColor(
           TColor::GetColorBright(Color[idx]));
       }
@@ -312,19 +318,25 @@ void PairAnalysisStyler::Style(TObject* obj, Int_t idx) {
   if (obj->InheritsFrom(TAttLine::Class())) {
     //    printf("index %d for %s \n",idx,obj->GetName());
     if (idx >= 100) {  // predefined styles
-      dynamic_cast<TAttLine*>(obj)->SetLineWidth(fWdt[idx - kRaw]);
-      dynamic_cast<TAttLine*>(obj)->SetLineStyle(fLne[idx - kRaw]);
-      dynamic_cast<TAttLine*>(obj)->SetLineColor(fCol[idx - kRaw]);
+      dynamic_cast<TAttLine*>(obj)->SetLineWidth(
+        fWdt[idx - static_cast<Int_t>(Eidx::kRaw)]);
+      dynamic_cast<TAttLine*>(obj)->SetLineStyle(
+        fLne[idx - static_cast<Int_t>(Eidx::kRaw)]);
+      dynamic_cast<TAttLine*>(obj)->SetLineColor(
+        fCol[idx - static_cast<Int_t>(Eidx::kRaw)]);
     } else {
       dynamic_cast<TAttLine*>(obj)->SetLineWidth(2);
-      dynamic_cast<TAttLine*>(obj)->SetLineStyle(Line[idx % kNMaxLine]);
-      dynamic_cast<TAttLine*>(obj)->SetLineColor(Color[idx % kNMaxColor]);
-      if (idx >= kNMaxColor && idx < kNMaxColor * 2) {
-        idx = idx % kNMaxColor;
+      dynamic_cast<TAttLine*>(obj)->SetLineStyle(
+        Line[idx % static_cast<Int_t>(Estyle::kNMaxLine)]);
+      dynamic_cast<TAttLine*>(obj)->SetLineColor(
+        Color[idx % static_cast<Int_t>(Estyle::kNMaxColor)]);
+      if (idx >= static_cast<Int_t>(Estyle::kNMaxColor)
+          && idx < static_cast<Int_t>(Estyle::kNMaxColor) * 2) {
+        idx = idx % static_cast<Int_t>(Estyle::kNMaxColor);
         dynamic_cast<TAttLine*>(obj)->SetLineColor(
           TColor::GetColorDark(Color[idx]));
-      } else if (idx >= kNMaxColor * 2) {
-        idx = idx % (2 * kNMaxColor);
+      } else if (idx >= static_cast<Int_t>(Estyle::kNMaxColor) * 2) {
+        idx = idx % (2 * static_cast<Int_t>(Estyle::kNMaxColor));
         dynamic_cast<TAttLine*>(obj)->SetLineColor(
           TColor::GetColorBright(Color[idx]));
       }
@@ -334,17 +346,23 @@ void PairAnalysisStyler::Style(TObject* obj, Int_t idx) {
   // fill attributes, only used if fill style is set (default: not)
   if (obj->InheritsFrom(TAttFill::Class())) {
     //    printf("fill style %d for index: %d \n",Fill[0],idx);
-    if (idx >= 100 && fFll[idx - kRaw] >= 0) {  // predefined styles
-      dynamic_cast<TAttFill*>(obj)->SetFillColor(fCol[idx - kRaw]);
-      dynamic_cast<TAttFill*>(obj)->SetFillStyle(fFll[idx - kRaw]);
+    if (idx >= 100
+        && fFll[idx - static_cast<Int_t>(Eidx::kRaw)]
+             >= 0) {  // predefined styles
+      dynamic_cast<TAttFill*>(obj)->SetFillColor(
+        fCol[idx - static_cast<Int_t>(Eidx::kRaw)]);
+      dynamic_cast<TAttFill*>(obj)->SetFillStyle(
+        fFll[idx - static_cast<Int_t>(Eidx::kRaw)]);
     } else if (Fill[0] >= 0) {
-      dynamic_cast<TAttFill*>(obj)->SetFillColor(Color[idx % kNMaxColor]);
-      if (idx >= kNMaxColor && idx < kNMaxColor * 2) {
-        idx = idx % kNMaxColor;
+      dynamic_cast<TAttFill*>(obj)->SetFillColor(
+        Color[idx % static_cast<Int_t>(Estyle::kNMaxColor)]);
+      if (idx >= static_cast<Int_t>(Estyle::kNMaxColor)
+          && idx < static_cast<Int_t>(Estyle::kNMaxColor) * 2) {
+        idx = idx % static_cast<Int_t>(Estyle::kNMaxColor);
         dynamic_cast<TAttFill*>(obj)->SetFillColor(
           TColor::GetColorDark(Color[idx]));
-      } else if (idx >= kNMaxColor * 2) {
-        idx = idx % (2 * kNMaxColor);
+      } else if (idx >= static_cast<Int_t>(Estyle::kNMaxColor) * 2) {
+        idx = idx % (2 * static_cast<Int_t>(Estyle::kNMaxColor));
         dynamic_cast<TAttFill*>(obj)->SetFillColor(
           TColor::GetColorBright(Color[idx]));
       }
@@ -358,7 +376,7 @@ void PairAnalysisStyler::SetForceLineStyle(Int_t line) {
   //
   // force a certain line style
   //
-  for (Int_t i = 0; i < kNMaxLine; i++) {
+  for (Int_t i = 0; i < static_cast<Int_t>(Estyle::kNMaxLine); i++) {
     Line[i] = line;
   }
 }
@@ -368,7 +386,7 @@ void PairAnalysisStyler::SetForceColor(Int_t color) {
   //
   // force a certain color
   //
-  for (Int_t i = 0; i < kNMaxColor; i++) {
+  for (Int_t i = 0; i < static_cast<Int_t>(Estyle::kNMaxColor); i++) {
     Color[i] = color;
   }
 }
@@ -378,7 +396,9 @@ void PairAnalysisStyler::SetForceFillStyle(Int_t fill) {
   //
   // force a certain color
   //
-  for (Int_t i = 0; i < (kNidx - kRaw); i++) {
+  for (Int_t i = 0;
+       i < (static_cast<Int_t>(Eidx::kNidx) - static_cast<Int_t>(Eidx::kRaw));
+       i++) {
     fFll[i] = fill;
   }
   Fill[0] = fill;
@@ -389,50 +409,50 @@ void PairAnalysisStyler::SetForceMarkerFillStyle(EfillMark fill) {
   //
   // force a certain marker fill style
   //
-  for (Int_t i = 0; i < kNMaxMarker; i++) {
+  for (Int_t i = 0; i < static_cast<Int_t>(Estyle::kNMaxMarker); i++) {
 
     switch (Marker[i]) {
       case kOpenCircle:
-        if (fill == kFullMarker) Marker[i] = kFullCircle;
+        if (fill == EfillMark::kFullMarker) Marker[i] = kFullCircle;
         break;
       case kOpenSquare:
-        if (fill == kFullMarker) Marker[i] = kFullSquare;
+        if (fill == EfillMark::kFullMarker) Marker[i] = kFullSquare;
         break;
       case kOpenTriangleUp:
-        if (fill == kFullMarker) Marker[i] = kFullTriangleUp;
+        if (fill == EfillMark::kFullMarker) Marker[i] = kFullTriangleUp;
         break;
       case kOpenTriangleDown:
-        if (fill == kFullMarker) Marker[i] = kFullTriangleDown;
+        if (fill == EfillMark::kFullMarker) Marker[i] = kFullTriangleDown;
         break;
       case kOpenStar:
-        if (fill == kFullMarker) Marker[i] = kFullStar;
+        if (fill == EfillMark::kFullMarker) Marker[i] = kFullStar;
         break;
       case kOpenDiamond:
-        if (fill == kFullMarker) Marker[i] = kFullDiamond;
+        if (fill == EfillMark::kFullMarker) Marker[i] = kFullDiamond;
         break;
       case kOpenCross:
-        if (fill == kFullMarker) Marker[i] = kFullCross;
+        if (fill == EfillMark::kFullMarker) Marker[i] = kFullCross;
         break;
       case kFullCircle:
-        if (fill == kOpenMarker) Marker[i] = kOpenCircle;
+        if (fill == EfillMark::kOpenMarker) Marker[i] = kOpenCircle;
         break;
       case kFullSquare:
-        if (fill == kOpenMarker) Marker[i] = kOpenSquare;
+        if (fill == EfillMark::kOpenMarker) Marker[i] = kOpenSquare;
         break;
       case kFullTriangleUp:
-        if (fill == kOpenMarker) Marker[i] = kOpenTriangleUp;
+        if (fill == EfillMark::kOpenMarker) Marker[i] = kOpenTriangleUp;
         break;
       case kFullTriangleDown:
-        if (fill == kOpenMarker) Marker[i] = kOpenTriangleDown;
+        if (fill == EfillMark::kOpenMarker) Marker[i] = kOpenTriangleDown;
         break;
       case kFullStar:
-        if (fill == kOpenMarker) Marker[i] = kOpenStar;
+        if (fill == EfillMark::kOpenMarker) Marker[i] = kOpenStar;
         break;
       case kFullDiamond:
-        if (fill == kOpenMarker) Marker[i] = kOpenDiamond;
+        if (fill == EfillMark::kOpenMarker) Marker[i] = kOpenDiamond;
         break;
       case kFullCross:
-        if (fill == kOpenMarker) Marker[i] = kOpenCross;
+        if (fill == EfillMark::kOpenMarker) Marker[i] = kOpenCross;
         break;
     }
   }
@@ -450,12 +470,12 @@ void PairAnalysisStyler::SetStyle(Eidx idx,
   //
   // change predefined style "idx" according to arguments
   //
-  fCol[idx - kRaw] = col;
-  fMrk[idx - kRaw] = marker;
-  fSze[idx - kRaw] = size;
-  fLne[idx - kRaw] = line;
-  fWdt[idx - kRaw] = width;
-  fFll[idx - kRaw] = fill;
+  fCol[static_cast<Int_t>(idx) - static_cast<Int_t>(Eidx::kRaw)] = col;
+  fMrk[static_cast<Int_t>(idx) - static_cast<Int_t>(Eidx::kRaw)] = marker;
+  fSze[static_cast<Int_t>(idx) - static_cast<Int_t>(Eidx::kRaw)] = size;
+  fLne[static_cast<Int_t>(idx) - static_cast<Int_t>(Eidx::kRaw)] = line;
+  fWdt[static_cast<Int_t>(idx) - static_cast<Int_t>(Eidx::kRaw)] = width;
+  fFll[static_cast<Int_t>(idx) - static_cast<Int_t>(Eidx::kRaw)] = fill;
 }
 
 
@@ -575,7 +595,7 @@ void PairAnalysisStyler::SetPalette(Epalette colors, Bool_t reverse) {
   Double_t stops[NRGBs] = {0.00, 0.34, 0.61, 0.84, 1.00};
 
   switch (colors) {
-    case kDefault: {
+    case Epalette::kDefault: {
       Double_t red[NRGBs]   = {0.00, 0.00, 0.87, 1.00, 0.51};
       Double_t green[NRGBs] = {0.00, 0.81, 1.00, 0.20, 0.00};
       Double_t blue[NRGBs]  = {0.51, 1.00, 0.12, 0.00, 0.00};
@@ -585,7 +605,7 @@ void PairAnalysisStyler::SetPalette(Epalette colors, Bool_t reverse) {
         TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
       break;
     }
-    case kGoodBad: {
+    case Epalette::kGoodBad: {
       Double_t red[NRGBs]   = {0.00, 0.00, 0.87, 1.00, 0.36};
       Double_t green[NRGBs] = {0.20, 0.81, 1.00, 0.20, 0.00};
       Double_t blue[NRGBs]  = {0.00, 0.00, 0.00, 0.00, 0.00};

@@ -24,7 +24,15 @@ class TCollection;
 class PairAnalysisCutQA : public TNamed {
 
 public:
-  enum { kEvent = 0, kTrack, kTrack2, kTrackMC, kPair, kPrePair, kNtypes };
+  enum class ETypes {
+    kEvent = 0,
+    kTrack,
+    kTrack2,
+    kTrackMC,
+    kPair,
+    kPrePair,
+    kNtypes
+  };
 
   PairAnalysisCutQA();
   PairAnalysisCutQA(const char* name, const char* title);
@@ -46,10 +54,11 @@ public:
 
 
 private:
-  THashList fQAHistList;               //-> list of QA histograms
-  Int_t fNCuts[kNtypes];               // number of cuts
-  const char* fCutNames[20][kNtypes];  // cut names
-  const char* fTypeKeys[kNtypes];      // type names
+  THashList fQAHistList;  //-> list of QA histograms
+  static constexpr Int_t fNtypes = static_cast<Int_t>(ETypes::kNtypes);
+  Int_t fNCuts[fNtypes];               // number of cuts
+  const char* fCutNames[20][fNtypes];  // cut names
+  const char* fTypeKeys[fNtypes];      // type names
 
 
   UInt_t GetObjIndex(TObject* obj);  // return object index

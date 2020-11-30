@@ -22,8 +22,8 @@ class THnBase;
 class PairAnalysisObjectCuts : public AnalysisCuts {
 public:
   // Whether all cut criteria have to be fulfilled of just any
-  enum CutType { kAll = 0, kAny };
-  enum { kNMaxCuts = 10 };
+  enum class ECutType { kAll = 0, kAny };
+  static const Int_t fMaxCuts = 10;
 
   PairAnalysisObjectCuts();
   PairAnalysisObjectCuts(const char* name, const char* title);
@@ -57,10 +57,10 @@ public:
               Bool_t excludeRange = kFALSE);
 
   // setters
-  void SetCutType(CutType type) { fCutType = type; }
+  void SetCutType(ECutType type) { fCutType = type; }
 
   // getters
-  CutType GetCutType() const { return fCutType; }
+  ECutType GetCutType() const { return fCutType; }
 
   Int_t GetNCuts() { return fNActiveCuts; }
 
@@ -80,23 +80,19 @@ public:
 
 
 private:
-  TBits* fUsedVars;  // list of used variables
-  UShort_t
-    fActiveCuts[PairAnalysisObjectCuts::kNMaxCuts];  // list of activated cuts
-  UShort_t fNActiveCuts  = 0;                        // number of acive cuts
-  UInt_t fActiveCutsMask = 0;                        // mask of active cuts
+  TBits* fUsedVars;                // list of used variables
+  UShort_t fActiveCuts[fMaxCuts];  // list of activated cuts
+  UShort_t fNActiveCuts  = 0;      // number of acive cuts
+  UInt_t fActiveCutsMask = 0;      // mask of active cuts
 
   UInt_t fSelectedCutsMask =
     0;  // Maks of selected cuts, is available after calling IsSelected
-  CutType fCutType = kAll;  // type of the cut: any, all
+  ECutType fCutType = ECutType::kAll;  // type of the cut: any, all
 
-  Bool_t fCutExclude[PairAnalysisObjectCuts::kNMaxCuts];  // inverse cut logic?
-  TObject*
-    fCutMin[PairAnalysisObjectCuts::kNMaxCuts];  // use object as lower cut
-  TObject*
-    fCutMax[PairAnalysisObjectCuts::kNMaxCuts];  // use object as upper cut
-  TFormula* fVarFormula
-    [PairAnalysisObjectCuts::kNMaxCuts];  // use a formula for the variable
+  Bool_t fCutExclude[fMaxCuts];     // inverse cut logic?
+  TObject* fCutMin[fMaxCuts];       // use object as lower cut
+  TObject* fCutMax[fMaxCuts];       // use object as upper cut
+  TFormula* fVarFormula[fMaxCuts];  // use a formula for the variable
 
   PairAnalysisObjectCuts(const PairAnalysisObjectCuts& c);
   PairAnalysisObjectCuts& operator=(const PairAnalysisObjectCuts& c);

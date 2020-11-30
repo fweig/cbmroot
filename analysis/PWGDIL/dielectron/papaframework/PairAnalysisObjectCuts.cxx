@@ -43,7 +43,7 @@ PairAnalysisObjectCuts::PairAnalysisObjectCuts(const char* name,
   //
   // Named contructor
   //
-  for (Int_t i = 0; i < PairAnalysisObjectCuts::kNMaxCuts; ++i) {
+  for (Int_t i = 0; i < fMaxCuts; ++i) {
     fActiveCuts[i] = 0;
     fCutExclude[i] = kFALSE;
     fCutMin[i]     = 0x0;
@@ -59,7 +59,7 @@ PairAnalysisObjectCuts::~PairAnalysisObjectCuts() {
   // Destructor
   //
   if (fUsedVars) delete fUsedVars;
-  for (Int_t i = 0; i < PairAnalysisObjectCuts::kNMaxCuts; ++i) {
+  for (Int_t i = 0; i < fMaxCuts; ++i) {
     fActiveCuts[i] = 0;
     if (fCutMin[i]) delete fCutMin[i];
     if (fCutMax[i]) delete fCutMax[i];
@@ -191,12 +191,12 @@ Bool_t PairAnalysisObjectCuts::IsSelected(Double_t* const values) {
       CLRBIT(fSelectedCutsMask, iCut);
 
     // cut type and decision
-    if (fCutType == kAll && !TESTBIT(fSelectedCutsMask, iCut))
+    if (fCutType == ECutType::kAll && !TESTBIT(fSelectedCutsMask, iCut))
       return kFALSE;  // option to (minor) speed improvement
   }
 
   Bool_t isSelected = (fSelectedCutsMask == fActiveCutsMask);
-  if (fCutType == kAny) isSelected = (fSelectedCutsMask > 0);
+  if (fCutType == ECutType::kAny) isSelected = (fSelectedCutsMask > 0);
   SetSelected(isSelected);
   return isSelected;
 }
@@ -348,7 +348,7 @@ void PairAnalysisObjectCuts::Print(const Option_t* /*option*/) const {
   // Print cuts and the range
   //
   printf("cut ranges for '%s'\n", GetTitle());
-  if (fCutType == kAll) {
+  if (fCutType == ECutType::kAll) {
     printf("All Cuts have to be fulfilled\n");
   } else {
     printf("Any Cut has to be fulfilled\n");

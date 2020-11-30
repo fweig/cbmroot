@@ -242,10 +242,10 @@ void PairAnalysisFunction::SetDefault(EFunction predefinedFunc) {
   /// use a predefined function, that internally sets the "fFuncSigBack"
   ///
   switch (predefinedFunc) {
-    case kBoltzmann: GetBoltzmann(); break;
-    case kPtExp: GetPtExp(); break;
-    case kHagedorn: GetHagedorn(); break;
-    case kLevi: GetLevi(); break;
+    case EFunction::kBoltzmann: GetBoltzmann(); break;
+    case EFunction::kPtExp: GetPtExp(); break;
+    case EFunction::kHagedorn: GetHagedorn(); break;
+    case EFunction::kLevi: GetLevi(); break;
     default: Error("SetDefault", "predefined function not yet implemented");
   }
 }

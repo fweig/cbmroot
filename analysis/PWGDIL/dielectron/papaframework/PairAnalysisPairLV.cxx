@@ -339,8 +339,10 @@ void PairAnalysisPairLV::RotateTrack(PairAnalysisTrackRotator* rot) {
   //fD1.Print("");
   //fD2.Print("");
 
-  if (rot->GetRotationType() == PairAnalysisTrackRotator::kRotatePositive
-      || (rot->GetRotationType() == PairAnalysisTrackRotator::kRotateBothRandom
+  if (rot->GetRotationType()
+        == PairAnalysisTrackRotator::ERotationType::kRotatePositive
+      || (rot->GetRotationType()
+            == PairAnalysisTrackRotator::ERotationType::kRotateBothRandom
           && rotCharge == 0)) {
     if (first->Charge() > 0)
       fD1.RotateZ(rotAngle);
@@ -348,8 +350,10 @@ void PairAnalysisPairLV::RotateTrack(PairAnalysisTrackRotator* rot) {
       fD2.RotateZ(rotAngle);
   }
 
-  if (rot->GetRotationType() == PairAnalysisTrackRotator::kRotateNegative
-      || (rot->GetRotationType() == PairAnalysisTrackRotator::kRotateBothRandom
+  if (rot->GetRotationType()
+        == PairAnalysisTrackRotator::ERotationType::kRotateNegative
+      || (rot->GetRotationType()
+            == PairAnalysisTrackRotator::ERotationType::kRotateBothRandom
           && rotCharge == 1)) {
     if (first->Charge() > 0)
       fD1.RotateZ(rotAngle);

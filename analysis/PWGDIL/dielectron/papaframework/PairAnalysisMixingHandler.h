@@ -25,8 +25,7 @@ class PairAnalysisEvent;
 
 class PairAnalysisMixingHandler : public TNamed {
 public:
-  enum { kMaxCuts = 10 };
-  enum EMixType { kOSonly = 0, kOSandLS, kAll };
+  enum class EMixType { kOSonly = 0, kOSandLS, kAll };
   PairAnalysisMixingHandler();
   PairAnalysisMixingHandler(const char* name, const char* title);
 
@@ -49,11 +48,13 @@ public:
 
 private:
   UShort_t fDepth = 10;  // Number of events per bin to keep in the ring buffer
-  TClonesArray fArrPools;         // Array of events in bins
-  UShort_t fEventCuts[kMaxCuts];  // cut variables
+  TClonesArray fArrPools;  // Array of events in bins
+  static const Int_t fMaxCuts = 10;
+  UShort_t fEventCuts[fMaxCuts];  // cut variables
   TObjArray fAxes;                // Axis descriptions of the event binning
-  EMixType fMixType = kOSonly;    // which combinations to include in the mixing
-  TProcessID* fPID  = NULL;  //! internal PID for references to buffered objects
+  EMixType fMixType =
+    EMixType::kOSonly;      // which combinations to include in the mixing
+  TProcessID* fPID = NULL;  //! internal PID for references to buffered objects
 
   void DoMixing(TClonesArray& pool, PairAnalysis* papa);
 

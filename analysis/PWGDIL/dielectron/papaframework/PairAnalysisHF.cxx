@@ -52,12 +52,12 @@ ClassImp(PairAnalysisHF)
   , fUsedVars(new TBits(PairAnalysisVarManager::kNMaxValuesMC))
   , fArrDielHistos()
   , fSignalsMC(0x0)
-  , fVarCutType(new TBits(kMaxCuts))
-  , fAxes(kMaxCuts) {
+  , fVarCutType(new TBits(fMaxCuts))
+  , fAxes(fMaxCuts) {
   //
   // Default Constructor
   //
-  for (Int_t i = 0; i < kMaxCuts; ++i) {
+  for (Int_t i = 0; i < fMaxCuts; ++i) {
     fVarCuts[i] = 0;
     //    fVarCutType[i]=0;
   }
@@ -72,12 +72,12 @@ PairAnalysisHF::PairAnalysisHF(const char* name, const char* title)
   , fUsedVars(new TBits(PairAnalysisVarManager::kNMaxValuesMC))
   , fArrDielHistos()
   , fSignalsMC(0x0)
-  , fVarCutType(new TBits(kMaxCuts))
-  , fAxes(kMaxCuts) {
+  , fVarCutType(new TBits(fMaxCuts))
+  , fAxes(fMaxCuts) {
   //
   // Named Constructor
   //
-  for (Int_t i = 0; i < kMaxCuts; ++i) {
+  for (Int_t i = 0; i < fMaxCuts; ++i) {
     fVarCuts[i] = 0;
     //    fVarCutType[i]=0;
   }
@@ -105,8 +105,8 @@ void PairAnalysisHF::AddCutVariable(PairAnalysisVarManager::ValueTypes type,
   // the TVectorD is assumed to be surplus after the creation and will be deleted!!!
   //
 
-  // limit number of variables to kMaxCuts
-  if (fAxes.GetEntriesFast() >= kMaxCuts) return;
+  // limit number of variables to fMaxCuts
+  if (fAxes.GetEntriesFast() >= fMaxCuts) return;
 
   if (!binLimits) return;
 

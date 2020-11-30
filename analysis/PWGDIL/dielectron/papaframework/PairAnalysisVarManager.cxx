@@ -129,6 +129,7 @@ ClassImp(PairAnalysisVarManager)
     {"MVDFirstExtY", "y_{first station}^{MVD}", "(cm)"},
     //  {"ImpactParZ",             "#it{dca}_{z}/#Delta#it{dca}_{z}",                    "#sigma"},
     {"STSHits", "N_{hit}^{STS}", ""},
+    {"STSMVDHits", "N_{hit}^{STS}+MVD", ""},
     {"STSChi2NDF", "#chi^{2}/^{}N_{df}^{STS}", ""},
     {"STSPin", "#it{p}^{STSin}", "(GeV/#it{c})"},
     {"STSPtin", "#it{p}_{T}^{STSin}", "(GeV/#it{c})"},
@@ -182,6 +183,8 @@ ClassImp(PairAnalysisVarManager)
     {"Cos2PhiCS", "cos(2#phi_{CS})", ""},
     {"CosTilPhiCS", "cos(#phi_{CS})", ""},
     {"PsiPair", "#Psi^{pair}", "(rad.)"},
+    {"StsMvdFirstDaughter", "", ""},
+    {"StsMvdSecondDaughter", "", ""},
     {"PhivPair", "#Phi_{v}^{pair}", "(rad.)"},
 
     {"LegDistance", "d^{legs}", "(cm)"},
@@ -238,6 +241,7 @@ ClassImp(PairAnalysisVarManager)
     {"PMC", "#it{p}^{MC}", "(GeV/#it{c})"},
     {"XvMC", "x_{vtx}^{MC}", "(cm)"},
     {"YvMC", "y_{vtx}^{MC}", "(cm)"},
+    {"RvMC", "Sqrt(x_{vtx}^{2}_{MC}+y_{vtx}^{2}_{MC})", "(cm)"},
     {"ZvMC", "z_{vtx}^{MC}", "(cm)"},
     {"PhivMC", "#phi_{vtx}^{MC}", "(rad.)"},
     {"ThetavMC",
@@ -265,6 +269,7 @@ ClassImp(PairAnalysisVarManager)
     {"TRDHitsMC", "N_{hit}^{TRD} (MC)", ""},
     {"MVDHitsMC", "N_{hit}^{MVD} (MC)", ""},
     {"STSHitsMC", "N_{hit}^{STS} (MC)", ""},
+    {"STSMVDHitsMC", "N_{hit}^{STS} (MC)", ""},
     {"TOFHitsMC", "N_{hit}^{TOF} (MC)", ""},
     {"MUCHHitsMC", "N_{hit}^{MUCH} (MC)", ""},
     {"RICHHitsMC", "N_{hit}^{RICH} (MC)", ""},
@@ -287,6 +292,8 @@ ClassImp(PairAnalysisVarManager)
     // Pair specific MC variables
     {"OpeningAngleMC", "#varphi^{MC}", "(rad.)"},
     {"CosPointingAngleMC", "cos(#theta)^{MC}", "(rad.)"},
+    {"StsMvdFirstDaughterMC", "", ""},
+    {"StsMvdSecondDaughterMC", "", ""},
     //  {"PhivPairMC",               "#Phi_{v}^{MC}",                                    "(rad.)"},
 
     // Event specific MCvariables

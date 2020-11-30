@@ -22,10 +22,10 @@
 
 namespace PairAnalysisStyler {
 
-  enum Eidx { kRaw = 100, kBgrd, kSig, kFit, kCocktail, kNidx };
-  enum Epalette { kDefault = 0, kGoodBad };
-  enum EfillMark { kOpenMarker = 1, kFullMarker, kDontCare };
-  enum Estyle { kNMaxMarker = 13, kNMaxLine = 4, kNMaxColor = 17 };
+  enum class Eidx { kRaw = 100, kBgrd, kSig, kFit, kCocktail, kNidx };
+  enum class Epalette { kDefault = 0, kGoodBad };
+  enum class EfillMark { kOpenMarker = 1, kFullMarker, kDontCare };
+  enum class Estyle { kNMaxMarker = 13, kNMaxLine = 4, kNMaxColor = 17 };
 
   void SetStyle(TStyle* userStyle);
 
@@ -45,7 +45,8 @@ namespace PairAnalysisStyler {
 
   void SetForceMarkerFillStyle(EfillMark fill);
 
-  void SetPalette(Epalette colors = kDefault, Bool_t reverse = kFALSE);
+  void SetPalette(Epalette colors = Epalette::kDefault,
+                  Bool_t reverse  = kFALSE);
 
   void SetLegendAlign(UInt_t align);
   void SetLegendAttributes(TLegend* leg, Bool_t fill = kFALSE);

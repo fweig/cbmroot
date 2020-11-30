@@ -23,7 +23,7 @@ class PairAnalysis : public TNamed {
 
   friend class PairAnalysisMixingHandler;  //mixing as friend class
 public:
-  enum EPairType {
+  enum class EPairType {
     kSEPP = 0,
     kSEPM,
     kSEMM,
@@ -34,8 +34,10 @@ public:
     kSEPMRot,
     kPairTypes
   };
-  enum ELegType { kSEP, kSEM, kLegTypes };
-  enum CutType {
+  static constexpr Int_t fNTypes = static_cast<Int_t>(EPairType::kPairTypes);
+  enum class ELegType { kSEP, kSEM, kLegTypes };
+  static constexpr Int_t fLegTypes = static_cast<Int_t>(ELegType::kLegTypes);
+  enum class ECutType {
     kBothLegs = 0,
     kAnyLeg,
     kOneLeg
@@ -67,7 +69,7 @@ public:
   AnalysisFilter& GetTrackFilterMC() { return fTrackFilterMC; }
   AnalysisFilter& GetPairFilterMC() { return fPairFilterMC; }
 
-  void SetPairPreFilterLegCutType(CutType type) { fCutType = type; }
+  void SetPairPreFilterLegCutType(ECutType type) { fCutType = type; }
   void SetCutQA(Bool_t qa = kTRUE) { fCutQA = qa; }
   void SetNoPairing(Bool_t noPairing = kTRUE) { fNoPairing = noPairing; }
   Bool_t IsNoPairing() { return fNoPairing; }
@@ -79,7 +81,7 @@ public:
     return (i >= 0 && i < 4) ? &fTracks[i] : 0;
   }
   const TObjArray* GetPairArray(Int_t i) const {
-    return (i >= 0 && i < kPairTypes)
+    return (i >= 0 && i < fNTypes)
              ? static_cast<TObjArray*>(fPairCandidates->UncheckedAt(i))
              : 0;
   }
@@ -196,7 +198,8 @@ private:
 
   TObjArray* fSignalsMC = NULL;  // array of PairAnalysisSignalMC
 
-  CutType fCutType = kBothLegs;  // type of pairprefilterleg cut logic
+  ECutType fCutType =
+    ECutType::kBothLegs;  // type of pairprefilterleg cut logic
   Bool_t fNoPairing =
     kFALSE;  // if to skip pairing, can be used for track QA only
   Bool_t fProcessLS = kTRUE;   // do the like-sign pairing
@@ -285,14 +288,14 @@ inline Int_t PairAnalysis::GetPairIndex(Int_t arr1, Int_t arr2) const {
   //
   // get pair index
   //
-  if (arr1 == 0 && arr2 == arr1) return kSEPP;
-  if (arr1 == 0 && arr2 == 1) return kSEPM;
-  if (arr1 == 1 && arr2 == arr1) return kSEMM;
-  if (arr1 == 0 && arr2 == 2) return kMEPP;
-  if (arr1 == 1 && arr2 == 2) return kMEMP;
-  if (arr1 == 0 && arr2 == 3) return kMEPM;
-  if (arr1 == 1 && arr2 == 3) return kMEMM;
-  return kSEPMRot;
+  if (arr1 == 0 && arr2 == arr1) return static_cast<Int_t>(EPairType::kSEPP);
+  if (arr1 == 0 && arr2 == 1) return static_cast<Int_t>(EPairType::kSEPM);
+  if (arr1 == 1 && arr2 == arr1) return static_cast<Int_t>(EPairType::kSEMM);
+  if (arr1 == 0 && arr2 == 2) return static_cast<Int_t>(EPairType::kMEPP);
+  if (arr1 == 1 && arr2 == 2) return static_cast<Int_t>(EPairType::kMEMP);
+  if (arr1 == 0 && arr2 == 3) return static_cast<Int_t>(EPairType::kMEPM);
+  if (arr1 == 1 && arr2 == 3) return static_cast<Int_t>(EPairType::kMEMM);
+  return static_cast<Int_t>(EPairType::kSEPMRot);
 }
 
 

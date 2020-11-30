@@ -603,7 +603,7 @@ void PairAnalysisSignalExt::Process(TObjArray* const arrhist) {
   // calculate optimal binning if configured
   if (fRebinStat < 1. && fBinLimits == 0x0) {
     fBinLimits = PairAnalysisHelper::MakeStatBinLimits(
-      (TH1*) FindObject(arrhist, PairAnalysis::kSEPM), fRebinStat);
+      (TH1*) FindObject(arrhist, PairAnalysis::EPairType::kSEPM), fRebinStat);
   }
 
 
@@ -677,7 +677,7 @@ void PairAnalysisSignalExt::Process(TObjArray* const arrhist) {
 
   //// get histograms and rebin
   // SE ++
-  fHistDataPP = (TH1*) FindObject(arrhist, PairAnalysis::kSEPP);
+  fHistDataPP = (TH1*) FindObject(arrhist, PairAnalysis::EPairType::kSEPP);
   if (fHistDataPP) {
     if (fBinLimits) {
       fHistDataPP = fHistDataPP->Rebin(
@@ -690,7 +690,7 @@ void PairAnalysisSignalExt::Process(TObjArray* const arrhist) {
     if (fRebin > 1) fHistDataPP->Rebin(fRebin);
   }
   // SE +-
-  fHistDataPM = (TH1*) FindObject(arrhist, PairAnalysis::kSEPM);
+  fHistDataPM = (TH1*) FindObject(arrhist, PairAnalysis::EPairType::kSEPM);
   if (fHistDataPM) {
     if (fBinLimits) {
       fHistDataPM = fHistDataPM->Rebin(
@@ -704,7 +704,7 @@ void PairAnalysisSignalExt::Process(TObjArray* const arrhist) {
     fHistDataPM->SetYTitle((fBinLimits ? "dN/dm" : "Counts"));
   }
   // SE --
-  fHistDataMM = (TH1*) FindObject(arrhist, PairAnalysis::kSEMM);
+  fHistDataMM = (TH1*) FindObject(arrhist, PairAnalysis::EPairType::kSEMM);
   if (fHistDataMM) {
     if (fBinLimits) {
       fHistDataMM = fHistDataMM->Rebin(
@@ -717,7 +717,7 @@ void PairAnalysisSignalExt::Process(TObjArray* const arrhist) {
     if (fRebin > 1) fHistDataMM->Rebin(fRebin);
   }
   // ME ++
-  fHistMixPP = (TH1*) FindObject(arrhist, PairAnalysis::kMEPP);
+  fHistMixPP = (TH1*) FindObject(arrhist, PairAnalysis::EPairType::kMEPP);
   if (fHistMixPP) {
     if (fBinLimits) {
       fHistMixPP = fHistMixPP->Rebin(
@@ -730,7 +730,7 @@ void PairAnalysisSignalExt::Process(TObjArray* const arrhist) {
     if (fRebin > 1) fHistMixPP->Rebin(fRebin);
   }
   // ME +-
-  fHistMixPM = (TH1*) FindObject(arrhist, PairAnalysis::kMEPM);
+  fHistMixPM = (TH1*) FindObject(arrhist, PairAnalysis::EPairType::kMEPM);
   if (fHistMixPM) {
     if (fBinLimits) {
       fHistMixPM = fHistMixPM->Rebin(
@@ -743,7 +743,7 @@ void PairAnalysisSignalExt::Process(TObjArray* const arrhist) {
     if (fRebin > 1) fHistMixPM->Rebin(fRebin);
   }
   // ME -+
-  fHistMixMP = (TH1*) FindObject(arrhist, PairAnalysis::kMEMP);
+  fHistMixMP = (TH1*) FindObject(arrhist, PairAnalysis::EPairType::kMEMP);
   if (fHistMixMP) {
     if (fBinLimits) {
       fHistMixMP = fHistMixMP->Rebin(
@@ -758,7 +758,7 @@ void PairAnalysisSignalExt::Process(TObjArray* const arrhist) {
     if (fHistMixPM) fHistMixMP->Add(fHistMixPM);  // merge ME +- and -+
   }
   // ME --
-  fHistMixMM = (TH1*) FindObject(arrhist, PairAnalysis::kMEMM);
+  fHistMixMM = (TH1*) FindObject(arrhist, PairAnalysis::EPairType::kMEMM);
   if (fHistMixMM) {
     if (fBinLimits) {
       fHistMixMM = fHistMixMM->Rebin(
@@ -771,7 +771,7 @@ void PairAnalysisSignalExt::Process(TObjArray* const arrhist) {
     if (fRebin > 1) fHistMixMM->Rebin(fRebin);
   }
   // TR +-
-  fHistDataTR = (TH1*) FindObject(arrhist, PairAnalysis::kSEPMRot);
+  fHistDataTR = (TH1*) FindObject(arrhist, PairAnalysis::EPairType::kSEPMRot);
   if (fHistDataTR) {
     if (fBinLimits) {
       fHistDataTR = fHistDataTR->Rebin(
@@ -1289,23 +1289,27 @@ void PairAnalysisSignalExt::Draw(const Option_t* option) {
   // styling
   fHistDataPM->SetNameTitle(Form("unlike-sign%s", GetName()), "unlike-sign");
   fHistDataPM->UseCurrentStyle();
-  PairAnalysisStyler::Style(fHistDataPM, PairAnalysisStyler::kRaw);
+  PairAnalysisStyler::Style(fHistDataPM,
+                            static_cast<Int_t>(PairAnalysisStyler::Eidx::kRaw));
   if (fPlotMin != fPlotMax) fHistDataPM->SetAxisRange(fPlotMin, fPlotMax, "X");
 
   fHistBackground->SetNameTitle(fgkBackgroundMethodNames[fMethod],
                                 fgkBackgroundMethodNames[fMethod]);
   fHistBackground->UseCurrentStyle();
-  PairAnalysisStyler::Style(fHistBackground, PairAnalysisStyler::kBgrd);
+  PairAnalysisStyler::Style(
+    fHistBackground, static_cast<Int_t>(PairAnalysisStyler::Eidx::kBgrd));
 
   fHistSignal->SetNameTitle(Form("signal%s", GetName()), "signal");
   fHistSignal->UseCurrentStyle();
-  PairAnalysisStyler::Style(fHistSignal, PairAnalysisStyler::kSig);
+  PairAnalysisStyler::Style(fHistSignal,
+                            static_cast<Int_t>(PairAnalysisStyler::Eidx::kSig));
   if (fPlotMin != fPlotMax) fHistSignal->SetAxisRange(fPlotMin, fPlotMax, "X");
 
   if (fHistCocktail) {
     fHistCocktail->SetNameTitle(Form("cocktail%s", GetName()), "cocktail");
     fHistCocktail->UseCurrentStyle();
-    PairAnalysisStyler::Style(fHistCocktail, PairAnalysisStyler::kCocktail);
+    PairAnalysisStyler::Style(
+      fHistCocktail, static_cast<Int_t>(PairAnalysisStyler::Eidx::kCocktail));
     if (fPlotMin != fPlotMax)
       fHistCocktail->SetAxisRange(fPlotMin, fPlotMax, "X");
   }
@@ -1313,12 +1317,14 @@ void PairAnalysisSignalExt::Draw(const Option_t* option) {
   if (optSB) {
     fHistSB->SetNameTitle(Form("s2b%s", GetName()), "signal");
     fHistSB->UseCurrentStyle();
-    PairAnalysisStyler::Style(fHistSB, PairAnalysisStyler::kSig);
+    PairAnalysisStyler::Style(
+      fHistSB, static_cast<Int_t>(PairAnalysisStyler::Eidx::kSig));
     if (fPlotMin != fPlotMax) fHistSB->SetAxisRange(fPlotMin, fPlotMax, "X");
   } else if (optSgn) {
     fHistSgn->SetNameTitle(Form("sgn%s", GetName()), "signal");
     fHistSgn->UseCurrentStyle();
-    PairAnalysisStyler::Style(fHistSgn, PairAnalysisStyler::kSig);
+    PairAnalysisStyler::Style(
+      fHistSgn, static_cast<Int_t>(PairAnalysisStyler::Eidx::kSig));
     if (fPlotMin != fPlotMax) fHistSgn->SetAxisRange(fPlotMin, fPlotMax, "X");
   }
 
@@ -1328,7 +1334,8 @@ void PairAnalysisSignalExt::Draw(const Option_t* option) {
 
   fgPeakShape->UseCurrentStyle();
   //  fgPeakShape->SetTitle("");
-  PairAnalysisStyler::Style(fgPeakShape, PairAnalysisStyler::kFit);
+  PairAnalysisStyler::Style(fgPeakShape,
+                            static_cast<Int_t>(PairAnalysisStyler::Eidx::kFit));
 
   // draw stuff
   if (c) c->cd(1);
@@ -1494,7 +1501,9 @@ void PairAnalysisSignalExt::Draw(const Option_t* option) {
         histClass.ReplaceAll("Pair.", "");
         histClass.ReplaceAll("Pair_", "");
         // change default signal names to titles
-        for (Int_t isig = 0; isig < PairAnalysisSignalMC::kNSignals; isig++) {
+        for (Int_t isig = 0; isig < static_cast<Int_t>(
+                               PairAnalysisSignalMC::EDefinedSignal::kNSignals);
+             isig++) {
           histClass.ReplaceAll(PairAnalysisSignalMC::fgkSignals[isig][0],
                                PairAnalysisSignalMC::fgkSignals[isig][1]);
         }

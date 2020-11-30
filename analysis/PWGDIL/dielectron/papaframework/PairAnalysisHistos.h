@@ -94,13 +94,13 @@ public:
   PairAnalysisHistos(const char* name, const char* title);
   virtual ~PairAnalysisHistos();
 
-  enum {
+  enum class Eoption {
     kNoAutoFill = 1000000000,
     kNoProfile  = 999,
     kNoWeights  = 998,
-    kNone       = 997
+    kNo         = 997
   };
-  enum Eprecision { kFloat = 0, kDouble };
+  enum class Eprecision { kFloat = 0, kDouble };
 
   // functions for object creation
   void SetPrecision(Eprecision precision) { fPrecision = precision; }
@@ -114,21 +114,22 @@ public:
   static void StoreVariables(TH1* obj, UInt_t valType[20]);
   static void StoreVariables(THnBase* obj, UInt_t valType[20]);
 
-  void UserHistogram(const char* histClass,
-                     Int_t ndim,
-                     TObjArray* limits,
-                     UInt_t* vars,
-                     UInt_t valTypeW = kNoWeights);
+  void
+  UserHistogram(const char* histClass,
+                Int_t ndim,
+                TObjArray* limits,
+                UInt_t* vars,
+                UInt_t valTypeW = static_cast<UInt_t>(Eoption::kNoWeights));
   void AddSparse(const char* histClass,
                  Int_t ndim,
                  TObjArray* limits,
                  UInt_t* vars,
-                 UInt_t valTypeW = kNoWeights);
+                 UInt_t valTypeW = static_cast<UInt_t>(Eoption::kNoWeights));
   void AddSparse(const char* histClass,
                  Int_t ndim,
                  TObjArray* limits,
                  TFormula** vars,
-                 UInt_t valTypeW = kNoWeights);
+                 UInt_t valTypeW = static_cast<UInt_t>(Eoption::kNoWeights));
 
   // templates
   template<typename valX,
@@ -161,10 +162,10 @@ public:
                       binsX,
                       valTypeX,
                       0x0,
-                      (UInt_t) kNone,
+                      static_cast<UInt_t>(Eoption::kNo),
                       0x0,
-                      (UInt_t) kNone,
-                      (UInt_t) kNoProfile,
+                      static_cast<UInt_t>(Eoption::kNo),
+                      static_cast<UInt_t>(Eoption::kNoProfile),
                       valTypeW,
                       "");
   }
@@ -173,7 +174,8 @@ public:
   TString AddHistogram(const char* histClass,
                        const TVectorD* const binsX,
                        valX valTypeX) {
-    return AddHistogram(histClass, binsX, valTypeX, (UInt_t) kNoWeights);
+    return AddHistogram(
+      histClass, binsX, valTypeX, static_cast<UInt_t>(Eoption::kNoWeights));
   }
 
   template<typename valX, typename valP, typename valW>
@@ -191,7 +193,7 @@ public:
                       0x0,
                       valTypeP,
                       0x0,
-                      (UInt_t) kNone,
+                      static_cast<UInt_t>(Eoption::kNo),
                       valTypeP,
                       valTypeW,
                       option);
@@ -203,8 +205,12 @@ public:
                      valX valTypeX,
                      valP valTypeP,
                      TString option) {
-    return AddProfile(
-      histClass, binsX, valTypeX, valTypeP, option, (UInt_t) kNoWeights);
+    return AddProfile(histClass,
+                      binsX,
+                      valTypeX,
+                      valTypeP,
+                      option,
+                      static_cast<UInt_t>(Eoption::kNoWeights));
   }
 
   // 2D
@@ -223,8 +229,8 @@ public:
                       binsY,
                       valTypeY,
                       0x0,
-                      (UInt_t) kNone,
-                      (UInt_t) kNoProfile,
+                      static_cast<UInt_t>(Eoption::kNo),
+                      static_cast<UInt_t>(Eoption::kNoProfile),
                       valTypeW,
                       "");
   }
@@ -235,8 +241,12 @@ public:
                        valX valTypeX,
                        const TVectorD* const binsY,
                        valY valTypeY) {
-    return AddHistogram(
-      histClass, binsX, valTypeX, binsY, valTypeY, (UInt_t) kNoWeights);
+    return AddHistogram(histClass,
+                        binsX,
+                        valTypeX,
+                        binsY,
+                        valTypeY,
+                        static_cast<UInt_t>(Eoption::kNoWeights));
   }
 
   template<typename valX, typename valY, typename valP, typename valW>
@@ -277,7 +287,7 @@ public:
                       valTypeY,
                       valTypeP,
                       option,
-                      (UInt_t) kNoWeights);
+                      static_cast<UInt_t>(Eoption::kNoWeights));
   }
 
   // 3D
@@ -299,7 +309,7 @@ public:
                       valTypeY,
                       binsZ,
                       valTypeZ,
-                      (UInt_t) kNoProfile,
+                      static_cast<UInt_t>(Eoption::kNoProfile),
                       valTypeW,
                       "");
   }
@@ -319,7 +329,7 @@ public:
                         valTypeY,
                         binsZ,
                         valTypeZ,
-                        (UInt_t) kNoWeights);
+                        static_cast<UInt_t>(Eoption::kNoWeights));
   }
 
   //profs
@@ -371,7 +381,7 @@ public:
                       valTypeZ,
                       valTypeP,
                       option,
-                      (UInt_t) kNoWeights);
+                      static_cast<UInt_t>(Eoption::kNoWeights));
   }
 
   // functions to fill objects
@@ -486,7 +496,8 @@ TString PairAnalysisHistos::UserObject(const char* histClass,
   TH1* hist   = 0x0;
   TString err = "err";
   //profile or histogram
-  if (typeid(valTypeP) == typeid(UInt_t) && (uintptr_t) valTypeP == kNoProfile)
+  if (typeid(valTypeP) == typeid(UInt_t)
+      && (uintptr_t) valTypeP == static_cast<UInt_t>(Eoption::kNoProfile))
     hist = GetTHist(histClass, name, title, binsX, binsY, binsZ);
   else
     hist = GetTProf(histClass, name, title, binsX, binsY, binsZ, option);
@@ -499,40 +510,55 @@ TString PairAnalysisHistos::UserObject(const char* histClass,
   // and store variales in uniqueIDs
   UInt_t valType[20] = {0};
   TString func       = "";
-  func += valTypeX;
+  func.Form("%d", valTypeX);
   if (!func.Atoi())
-    hist->GetListOfFunctions()->Add(GetFormula("xFormula", func));
+    std::cout
+      << func
+      << std::
+           endl;  //hist->GetListOfFunctions()->Add( GetFormula("xFormula",func) );
   else
     valType[0] = func.Atoi();
 
   func = "";
-  func += valTypeY;
+  func.Form("%d", valTypeY);
   if (!func.Atoi())
-    hist->GetListOfFunctions()->Add(GetFormula("yFormula", func));
+    std::cout
+      << func
+      << std::
+           endl;  //hist->GetListOfFunctions()->Add( GetFormula("yFormula",func) );
   else
     valType[1] = func.Atoi();
 
   func = "";
-  func += valTypeZ;
+  func.Form("%d", valTypeZ);
   if (!func.Atoi())
-    hist->GetListOfFunctions()->Add(GetFormula("zFormula", func));
+    std::cout
+      << func
+      << std::
+           endl;  //hist->GetListOfFunctions()->Add( GetFormula("zFormula",func) );
   else
     valType[2] = func.Atoi();
 
   func = "";
-  func += valTypeP;
+  func.Form("%d", valTypeP);
   if (!func.Atoi())
-    hist->GetListOfFunctions()->Add(GetFormula("pFormula", func));
+    std::cout
+      << func
+      << std::
+           endl;  //hist->GetListOfFunctions()->Add( GetFormula("pFormula",func) );
   else
     valType[3] = func.Atoi();
 
   TString func2 = "";
-  func2 += valTypeX;
+  func2.Form("%d", valTypeX);
   func = "";
-  func += valTypeW;
+  func.Form("%d", valTypeW);  //func+=valTypeW;
   if (!func.Atoi())
-    hist->GetListOfFunctions()->Add(GetFormula("wFormula", func));
-  else if (func2.Atoi() != kNoWeights) {
+    std::cout
+      << func
+      << std::
+           endl;  //hist->GetListOfFunctions()->Add( GetFormula("wFormula",func) );
+  else if (func2.Atoi() != static_cast<UInt_t>(Eoption::kNoWeights)) {
     hist->SetUniqueID(func.Atoi());  // store weighting variable
     fUsedVars->SetBitNumber(func.Atoi(), kTRUE);
   }
@@ -560,7 +586,7 @@ TString PairAnalysisHistos::UserObject(const char* histClass,
   */
 
   Bool_t isReserved = fReservedWords->Contains(histClass);
-  if (func2.Atoi() && func2.Atoi() == kNoAutoFill)
+  if (func2.Atoi() && func2.Atoi() == static_cast<UInt_t>(Eoption::kNoAutoFill))
     hist->SetUniqueID(func2.Atoi());
   if (isReserved)
     UserHistogramReservedWords(histClass, hist);

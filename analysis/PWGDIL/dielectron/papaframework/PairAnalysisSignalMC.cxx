@@ -66,35 +66,35 @@
 
 ClassImp(PairAnalysisSignalMC)
 
-  const char* PairAnalysisSignalMC::fgkSignals[kNSignals][2] =
-    {  //default signal names+titles
-      {"InclJpsi", "J/#psi (incl.)"},
-      {"NonRadJpsi", "J/#psi"},
-      {"RadJpsi", "J/#psi (rad.)"},
-      {"Psi2S", "#psi(2S)"},
-      {"Conversion", "#gamma#rightarrow e^{+}e^{-}"},
-      {"Rho0", "#rho^{0}"},
-      {"OmegaDalitz", "#omega_{Dalitz}"},
-      {"Omega", "#omega"},
-      {"Phi", "#phi"},
-      {"EtaDalitz", "#eta_{Dalitz}"},
-      {"Eta", "#eta"},
-      {"Pi0Dalitz", "#pi^{0}_{Dalitz}"},
-      {"Pi0Gamma", "#pi^{0}"},
-      {"Pi0", "#pi^{0}"},
-      {"K0Short", "K^{0}_{S}"},
-      {"Lambda", "#Lambda"},
-      {"InclElePM", "e^{+}e^{-} (incl.)"},
-      {"DeltaElectron", "#delta rays"},
-      {"PrimElectron", "e (prim.)"},
-      {"PrimMuon", "#mu (prim.)"},
-      {"PrimPion", "#pi (prim.)"},
-      {"PrimKaon", "K (prim.)"},
-      {"PrimProton", "p (prim.)"},
-      {"Deuteron", "d"},
-      {"Triton", "t"},
-      {"Helion", "^{3}He"},
-      {"Alpha", "^{4}He"}};
+  const char* PairAnalysisSignalMC::fgkSignals[static_cast<int>(
+    EDefinedSignal::kNSignals)][2] = {  //default signal names+titles
+    {"InclJpsi", "J/#psi (incl.)"},
+    {"NonRadJpsi", "J/#psi"},
+    {"RadJpsi", "J/#psi (rad.)"},
+    {"Psi2S", "#psi(2S)"},
+    {"Conversion", "#gamma#rightarrow e^{+}e^{-}"},
+    {"Rho0", "#rho^{0}"},
+    {"OmegaDalitz", "#omega_{Dalitz}"},
+    {"Omega", "#omega"},
+    {"Phi", "#phi"},
+    {"EtaDalitz", "#eta_{Dalitz}"},
+    {"Eta", "#eta"},
+    {"Pi0Dalitz", "#pi^{0}_{Dalitz}"},
+    {"Pi0Gamma", "#pi^{0}"},
+    {"Pi0", "#pi^{0}"},
+    {"K0Short", "K^{0}_{S}"},
+    {"Lambda", "#Lambda"},
+    {"InclElePM", "e^{+}e^{-} (incl.)"},
+    {"DeltaElectron", "#delta rays"},
+    {"PrimElectron", "e (prim.)"},
+    {"PrimMuon", "#mu (prim.)"},
+    {"PrimPion", "#pi (prim.)"},
+    {"PrimKaon", "K (prim.)"},
+    {"PrimProton", "p (prim.)"},
+    {"Deuteron", "d"},
+    {"Triton", "t"},
+    {"Helion", "^{3}He"},
+    {"Alpha", "^{4}He"}};
 
 //_________________________________________________________________________
 PairAnalysisSignalMC::PairAnalysisSignalMC()
@@ -125,160 +125,176 @@ PairAnalysisSignalMC::PairAnalysisSignalMC(EDefinedSignal defaultSignal)
   //
   TString title = "";
   switch (defaultSignal) {
-    case kInclJpsi:
-      SetNameTitle(fgkSignals[defaultSignal][0], fgkSignals[defaultSignal][1]);
+    case EDefinedSignal::kInclJpsi:
+      SetNameTitle(fgkSignals[static_cast<UInt_t>(defaultSignal)][0],
+                   fgkSignals[static_cast<UInt_t>(defaultSignal)][1]);
       fLeg1            = 11;
       fLeg2            = -11;
       fMother1         = 443;
       fMother2         = 443;
-      fMothersRelation = kSame;
+      fMothersRelation = EBranchRelation::kSame;
       break;
-    case kRadJpsi:
-      SetNameTitle(fgkSignals[defaultSignal][0], fgkSignals[defaultSignal][1]);
+    case EDefinedSignal::kRadJpsi:
+      SetNameTitle(fgkSignals[static_cast<UInt_t>(defaultSignal)][0],
+                   fgkSignals[static_cast<UInt_t>(defaultSignal)][1]);
       fLeg1            = 11;
       fLeg2            = -11;
       fMother1         = 443;
       fMother2         = 443;
-      fMothersRelation = kSame;
-      fDalitz          = kIsDalitz;
+      fMothersRelation = EBranchRelation::kSame;
+      fDalitz          = EDalitz::kIsDalitz;
       fDalitzPdg       = 22;
       break;
-    case kNonRadJpsi:
-      SetNameTitle(fgkSignals[defaultSignal][0], fgkSignals[defaultSignal][1]);
+    case EDefinedSignal::kNonRadJpsi:
+      SetNameTitle(fgkSignals[static_cast<UInt_t>(defaultSignal)][0],
+                   fgkSignals[static_cast<UInt_t>(defaultSignal)][1]);
       fLeg1            = 11;
       fLeg2            = -11;
       fMother1         = 443;
       fMother2         = 443;
-      fMothersRelation = kSame;
-      fDalitz          = kIsNotDalitz;
+      fMothersRelation = EBranchRelation::kSame;
+      fDalitz          = EDalitz::kIsNotDalitz;
       fDalitzPdg       = 22;
       break;
-    case kPsi2S:
-      SetNameTitle(fgkSignals[defaultSignal][0], fgkSignals[defaultSignal][1]);
+    case EDefinedSignal::kPsi2S:
+      SetNameTitle(fgkSignals[static_cast<UInt_t>(defaultSignal)][0],
+                   fgkSignals[static_cast<UInt_t>(defaultSignal)][1]);
       fLeg1            = 11;
       fLeg2            = -11;
       fMother1         = 100443;
       fMother2         = 100443;
-      fMothersRelation = kSame;
+      fMothersRelation = EBranchRelation::kSame;
       break;
-    case kConversion:
-      SetNameTitle(fgkSignals[defaultSignal][0], fgkSignals[defaultSignal][1]);
+    case EDefinedSignal::kConversion:
+      SetNameTitle(fgkSignals[static_cast<UInt_t>(defaultSignal)][0],
+                   fgkSignals[static_cast<UInt_t>(defaultSignal)][1]);
       fLeg1            = 11;
       fLeg2            = -11;
       fMother1         = 22;
       fMother2         = 22;
-      fMother1Source   = kSecondary;
-      fMother2Source   = kSecondary;
-      fMothersRelation = kSame;
+      fMother1Source   = ESource::kSecondary;
+      fMother2Source   = ESource::kSecondary;
+      fMothersRelation = EBranchRelation::kSame;
       // fGrandMother1=111; fGrandMother2=111;
       // fGrandMother1Exclude=kTRUE; fGrandMother1Exclude=111;
       SetGEANTProcess(kPPair);
       break;
-    case kRho0:
-      SetNameTitle(fgkSignals[defaultSignal][0], fgkSignals[defaultSignal][1]);
+    case EDefinedSignal::kRho0:
+      SetNameTitle(fgkSignals[static_cast<UInt_t>(defaultSignal)][0],
+                   fgkSignals[static_cast<UInt_t>(defaultSignal)][1]);
       fLeg1            = 11;
       fLeg2            = -11;
       fMother1         = 113;
       fMother2         = 113;
-      fMothersRelation = kSame;
+      fMothersRelation = EBranchRelation::kSame;
       SetGEANTProcess(kPPrimary);  //pluto
       break;
-    case kOmega:
-      SetNameTitle(fgkSignals[defaultSignal][0], fgkSignals[defaultSignal][1]);
+    case EDefinedSignal::kOmega:
+      SetNameTitle(fgkSignals[static_cast<UInt_t>(defaultSignal)][0],
+                   fgkSignals[static_cast<UInt_t>(defaultSignal)][1]);
       fLeg1            = 11;
       fLeg2            = -11;
       fMother1         = 223;
       fMother2         = 223;
-      fMothersRelation = kSame;
-      fDalitz          = kIsNotDalitz;
+      fMothersRelation = EBranchRelation::kSame;
+      fDalitz          = EDalitz::kIsNotDalitz;
       fDalitzPdg       = 111;
       SetGEANTProcess(kPPrimary);  //pluto
       break;
-    case kOmegaDalitz:
-      SetNameTitle(fgkSignals[defaultSignal][0], fgkSignals[defaultSignal][1]);
+    case EDefinedSignal::kOmegaDalitz:
+      SetNameTitle(fgkSignals[static_cast<UInt_t>(defaultSignal)][0],
+                   fgkSignals[static_cast<UInt_t>(defaultSignal)][1]);
       fLeg1            = 11;
       fLeg2            = -11;
       fMother1         = 223;
       fMother2         = 223;
-      fMothersRelation = kSame;
-      fDalitz          = kIsDalitz;
+      fMothersRelation = EBranchRelation::kSame;
+      fDalitz          = EDalitz::kIsDalitz;
       fDalitzPdg       = 111;
       SetGEANTProcess(kPPrimary);  //pluto
       break;
-    case kPhi:
-      SetNameTitle(fgkSignals[defaultSignal][0], fgkSignals[defaultSignal][1]);
+    case EDefinedSignal::kPhi:
+      SetNameTitle(fgkSignals[static_cast<UInt_t>(defaultSignal)][0],
+                   fgkSignals[static_cast<UInt_t>(defaultSignal)][1]);
       fLeg1            = 11;
       fLeg2            = -11;
       fMother1         = 333;
       fMother2         = 333;
-      fMothersRelation = kSame;
+      fMothersRelation = EBranchRelation::kSame;
       SetGEANTProcess(kPPrimary);  //pluto
       break;
-    case kEtaDalitz:
-      SetNameTitle(fgkSignals[defaultSignal][0], fgkSignals[defaultSignal][1]);
+    case EDefinedSignal::kEtaDalitz:
+      SetNameTitle(fgkSignals[static_cast<UInt_t>(defaultSignal)][0],
+                   fgkSignals[static_cast<UInt_t>(defaultSignal)][1]);
       fLeg1                 = 11;
       fLeg2                 = -11;
       fCheckBothChargesLeg1 = kTRUE;
       fCheckBothChargesLeg2 = kTRUE;
       fMother1              = 221;
       fMother2              = 221;
-      fMothersRelation      = kSame;
-      fDalitz               = kIsDalitz;
+      fMothersRelation      = EBranchRelation::kSame;
+      fDalitz               = EDalitz::kIsDalitz;
       fDalitzPdg            = 22;
       //    SetGEANTProcess(kPPrimary); //pluto
       break;
-    case kEta:
-      SetNameTitle(fgkSignals[defaultSignal][0], fgkSignals[defaultSignal][1]);
+    case EDefinedSignal::kEta:
+      SetNameTitle(fgkSignals[static_cast<UInt_t>(defaultSignal)][0],
+                   fgkSignals[static_cast<UInt_t>(defaultSignal)][1]);
       fLeg1            = 11;
       fLeg2            = -11;
       fMother1         = 221;
       fMother2         = 221;
-      fMothersRelation = kSame;
+      fMothersRelation = EBranchRelation::kSame;
       //    SetGEANTProcess(kPUserDefined);
       break;
-    case kPi0:
-      SetNameTitle(fgkSignals[defaultSignal][0], fgkSignals[defaultSignal][1]);
+    case EDefinedSignal::kPi0:
+      SetNameTitle(fgkSignals[static_cast<UInt_t>(defaultSignal)][0],
+                   fgkSignals[static_cast<UInt_t>(defaultSignal)][1]);
       fLeg1            = 11;
       fLeg2            = -11;
       fMother1         = 111;
       fMother2         = 111;
-      fMothersRelation = kSame;
+      fMothersRelation = EBranchRelation::kSame;
       //    SetGEANTProcess(kPUserDefined);
       break;
-    case kPi0Gamma:
-      SetNameTitle(fgkSignals[defaultSignal][0], fgkSignals[defaultSignal][1]);
+    case EDefinedSignal::kPi0Gamma:
+      SetNameTitle(fgkSignals[static_cast<UInt_t>(defaultSignal)][0],
+                   fgkSignals[static_cast<UInt_t>(defaultSignal)][1]);
       fLeg1            = 11;
       fLeg2            = -11;
       fMother1         = 22;
       fMother2         = 22;
-      fMothersRelation = kSame;
+      fMothersRelation = EBranchRelation::kSame;
       fGrandMother1    = 111;
       fGrandMother2    = 111;
       //    SetGEANTProcess(kPUserDefined);
       break;
-    case kPi0Dalitz:
-      SetNameTitle(fgkSignals[defaultSignal][0], fgkSignals[defaultSignal][1]);
+    case EDefinedSignal::kPi0Dalitz:
+      SetNameTitle(fgkSignals[static_cast<UInt_t>(defaultSignal)][0],
+                   fgkSignals[static_cast<UInt_t>(defaultSignal)][1]);
       fLeg1            = 11;
       fLeg2            = -11;
       fMother1         = 111;
       fMother2         = 111;
-      fMothersRelation = kSame;
-      fDalitz          = kIsDalitz;
+      fMothersRelation = EBranchRelation::kSame;
+      fDalitz          = EDalitz::kIsDalitz;
       fDalitzPdg       = 22;
       // SetGEANTProcess(kPPrimary); //pluto
       break;
-    case kK0Short:
-      SetNameTitle(fgkSignals[defaultSignal][0], fgkSignals[defaultSignal][1]);
+    case EDefinedSignal::kK0Short:
+      SetNameTitle(fgkSignals[static_cast<UInt_t>(defaultSignal)][0],
+                   fgkSignals[static_cast<UInt_t>(defaultSignal)][1]);
       fLeg1                    = 211;
       fLeg2                    = -211;
       fMother1                 = 310;
       fMother2                 = 310;
       fCheckBothChargesMother1 = kTRUE;
       fCheckBothChargesMother2 = kTRUE;
-      fMothersRelation         = kSame;
+      fMothersRelation         = EBranchRelation::kSame;
       break;
-    case kLambda:
-      SetNameTitle(fgkSignals[defaultSignal][0], fgkSignals[defaultSignal][1]);
+    case EDefinedSignal::kLambda:
+      SetNameTitle(fgkSignals[static_cast<UInt_t>(defaultSignal)][0],
+                   fgkSignals[static_cast<UInt_t>(defaultSignal)][1]);
       fLeg1                    = 211;
       fLeg2                    = 2212;
       fCheckBothChargesLeg1    = kTRUE;
@@ -287,109 +303,120 @@ PairAnalysisSignalMC::PairAnalysisSignalMC(EDefinedSignal defaultSignal)
       fMother2                 = 3122;
       fCheckBothChargesMother1 = kTRUE;
       fCheckBothChargesMother2 = kTRUE;
-      fMothersRelation         = kSame;
+      fMothersRelation         = EBranchRelation::kSame;
       break;
-    case kInclElePM:
-      SetNameTitle(fgkSignals[defaultSignal][0], fgkSignals[defaultSignal][1]);
+    case EDefinedSignal::kInclElePM:
+      SetNameTitle(fgkSignals[static_cast<UInt_t>(defaultSignal)][0],
+                   fgkSignals[static_cast<UInt_t>(defaultSignal)][1]);
       fLeg1                 = 11;
       fLeg2                 = -11;
       fCheckBothChargesLeg1 = kTRUE;
       fCheckBothChargesLeg2 = kTRUE;
-      fMother1Source        = kPrimary;
-      fMother2Source        = kPrimary;
-      //    fMothersRelation=kSame;
+      fMother1Source        = ESource::kPrimary;
+      fMother2Source        = ESource::kPrimary;
+      //    fMothersRelation=EBranchRelation::kSame;
       break;
-    case kDeltaElectron:  //single delta ray electrons
-      SetNameTitle(fgkSignals[defaultSignal][0], fgkSignals[defaultSignal][1]);
+    case EDefinedSignal::kDeltaElectron:  //single delta ray electrons
+      SetNameTitle(fgkSignals[static_cast<UInt_t>(defaultSignal)][0],
+                   fgkSignals[static_cast<UInt_t>(defaultSignal)][1]);
       fLeg1                 = 11;
       fLeg2                 = 1;
       fCheckBothChargesLeg1 = kTRUE;
       SetGEANTProcess(kPDeltaRay);
       fIsSingleParticle = kTRUE;
-      //    fMother1Source=kPrimary; fMother2Source=kDontCare;
+      //    fMother1Source=ESource::kPrimary; fMother2Source=kDontCare;
       break;
-    case kPrimElectron:  //single electrons
-      SetNameTitle(fgkSignals[defaultSignal][0], fgkSignals[defaultSignal][1]);
+    case EDefinedSignal::kPrimElectron:  //single electrons
+      SetNameTitle(fgkSignals[static_cast<UInt_t>(defaultSignal)][0],
+                   fgkSignals[static_cast<UInt_t>(defaultSignal)][1]);
       fLeg1                 = 11;
       fLeg2                 = 1;
       fCheckBothChargesLeg1 = kTRUE;
-      //fMother1Source=kPrimary;
+      //fMother1Source=ESource::kPrimary;
       SetGEANTProcess(kPPrimary);
       fIsSingleParticle = kTRUE;
       break;
-    case kPrimMuon:  //single muoons
-      SetNameTitle(fgkSignals[defaultSignal][0], fgkSignals[defaultSignal][1]);
+    case EDefinedSignal::kPrimMuon:  //single muoons
+      SetNameTitle(fgkSignals[static_cast<UInt_t>(defaultSignal)][0],
+                   fgkSignals[static_cast<UInt_t>(defaultSignal)][1]);
       fLeg1                 = 13;
       fLeg2                 = 1;
       fCheckBothChargesLeg1 = kTRUE;
-      //fMother1Source=kPrimary;
+      //fMother1Source=ESource::kPrimary;
       SetGEANTProcess(kPPrimary);
       fIsSingleParticle = kTRUE;
       break;
-    case kPrimPion:  //single pions
-      SetNameTitle(fgkSignals[defaultSignal][0], fgkSignals[defaultSignal][1]);
+    case EDefinedSignal::kPrimPion:  //single pions
+      SetNameTitle(fgkSignals[static_cast<UInt_t>(defaultSignal)][0],
+                   fgkSignals[static_cast<UInt_t>(defaultSignal)][1]);
       fLeg1                 = 211;
       fLeg2                 = 1;
       fCheckBothChargesLeg1 = kTRUE;
-      //fMother1Source=kPrimary;
+      //fMother1Source=ESource::kPrimary;
       SetGEANTProcess(kPPrimary);
       fIsSingleParticle = kTRUE;
       break;
-    case kPrimKaon:  //single kaons
-      SetNameTitle(fgkSignals[defaultSignal][0], fgkSignals[defaultSignal][1]);
+    case EDefinedSignal::kPrimKaon:  //single kaons
+      SetNameTitle(fgkSignals[static_cast<UInt_t>(defaultSignal)][0],
+                   fgkSignals[static_cast<UInt_t>(defaultSignal)][1]);
       fLeg1                 = 321;
       fLeg2                 = 1;
       fCheckBothChargesLeg1 = kTRUE;
-      //fMother1Source=kPrimary;
+      //fMother1Source=ESource::kPrimary;
       SetGEANTProcess(kPPrimary);
       fIsSingleParticle = kTRUE;
       break;
-    case kPrimProton:  //single protons
-      SetNameTitle(fgkSignals[defaultSignal][0], fgkSignals[defaultSignal][1]);
+    case EDefinedSignal::kPrimProton:  //single protons
+      SetNameTitle(fgkSignals[static_cast<UInt_t>(defaultSignal)][0],
+                   fgkSignals[static_cast<UInt_t>(defaultSignal)][1]);
       fLeg1                 = 2212;
       fLeg2                 = 1;
       fCheckBothChargesLeg1 = kTRUE;
-      //fMother1Source=kPrimary;
+      //fMother1Source=ESource::kPrimary;
       SetGEANTProcess(kPPrimary);
       fIsSingleParticle = kTRUE;
       break;
-    case kDeuteron:
-      SetNameTitle(fgkSignals[defaultSignal][0], fgkSignals[defaultSignal][1]);
+    case EDefinedSignal::kDeuteron:
+      SetNameTitle(fgkSignals[static_cast<UInt_t>(defaultSignal)][0],
+                   fgkSignals[static_cast<UInt_t>(defaultSignal)][1]);
       fLeg1 = 1000010020;
       ;
       fLeg2                 = 1;
       fCheckBothChargesLeg1 = kTRUE;
-      //fMother1Source=kPrimary;
+      //fMother1Source=ESource::kPrimary;
       //SetGEANTProcess(kPPrimary);
       fIsSingleParticle = kTRUE;
       break;
-    case kTriton:
-      SetNameTitle(fgkSignals[defaultSignal][0], fgkSignals[defaultSignal][1]);
+    case EDefinedSignal::kTriton:
+      SetNameTitle(fgkSignals[static_cast<UInt_t>(defaultSignal)][0],
+                   fgkSignals[static_cast<UInt_t>(defaultSignal)][1]);
       fLeg1 = 1000010030;
       ;
       fLeg2                 = 1;
       fCheckBothChargesLeg1 = kTRUE;
-      //fMother1Source=kPrimary;
+      //fMother1Source=ESource::kPrimary;
       //SetGEANTProcess(kPPrimary);
       fIsSingleParticle = kTRUE;
       break;
-    case kHe3:
-      SetNameTitle(fgkSignals[defaultSignal][0], fgkSignals[defaultSignal][1]);
+    case EDefinedSignal::kHe3:
+      SetNameTitle(fgkSignals[static_cast<UInt_t>(defaultSignal)][0],
+                   fgkSignals[static_cast<UInt_t>(defaultSignal)][1]);
       fLeg1 = 1000020030;
       ;
       fLeg2                 = 1;
       fCheckBothChargesLeg1 = kTRUE;
-      //fMother1Source=kPrimary;
+      //fMother1Source=ESource::kPrimary;
       //SetGEANTProcess(kPPrimary);
       fIsSingleParticle = kTRUE;
       break;
-    case kAlpha:
-      SetNameTitle(fgkSignals[defaultSignal][0], fgkSignals[defaultSignal][1]);
+    case EDefinedSignal::kAlpha:
+      SetNameTitle(fgkSignals[static_cast<UInt_t>(defaultSignal)][0],
+                   fgkSignals[static_cast<UInt_t>(defaultSignal)][1]);
       fLeg1 = 1000020040;
       ;
       fLeg2                 = 1;
       fCheckBothChargesLeg1 = kTRUE;
-      //fMother1Source=kPrimary;
+      //fMother1Source=ESource::kPrimary;
       //SetGEANTProcess(kPPrimary);
       fIsSingleParticle = kTRUE;
       break;
