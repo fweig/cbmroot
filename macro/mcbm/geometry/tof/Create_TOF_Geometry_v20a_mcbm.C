@@ -211,13 +211,13 @@ const Float_t Outer_Module_Number[Outer_Module_NTypes][Outer_Module_Col] =
 
 const Float_t Star2_First_Z_Position       = TOF_Z_Front + 34.;
 const Float_t Star2_Delta_Z_Position       = 0.;
-const Float_t Star2_First_Y_Position       = 30.;  //32.
+const Float_t Star2_First_Y_Position       = 30.35;  //
 const Float_t Star2_Delta_Y_Position       = 0.;   //
 const Float_t Star2_rotate_Z               = -90.;
 const Int_t Star2_NTypes                   = 1;
 const Float_t Star2_Types[Star2_NTypes]    = {9.};
 const Float_t Star2_Number[Star2_NTypes]   = {1.};   //debugging, V16b
-const Float_t Star2_X_Offset[Star2_NTypes] = {51.};  //{62.};
+const Float_t Star2_X_Offset[Star2_NTypes] = {49.};  //{51.};
 
 const Float_t Buc_First_Z_Position     = TOF_Z_Front + 50.;
 const Float_t Buc_Delta_Z_Position     = 0.;
