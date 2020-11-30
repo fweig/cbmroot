@@ -4594,13 +4594,13 @@ Bool_t CbmTofEventClusterizer::WriteHistos() {
                 Form("%s_py%d", htempTOff->GetName(), iCh), iCh + 1, iCh + 1);
               if (hTy->GetEntries() > WalkNHmin) {
                 Double_t dFMean   = hTy->GetBinCenter(hTy->GetMaximumBin());
-                Double_t dFLim    = 0.5;  // CAUTION, fixed numeric value
+                Double_t dFLim    = 1.0;  // CAUTION, fixed numeric value
                 Double_t dBinSize = hTy->GetBinWidth(1);
                 dFLim             = TMath::Max(dFLim, 5. * dBinSize);
                 TFitResultPtr fRes =
                   hTy->Fit("gaus", "SQM0", "", dFMean - dFLim, dFMean + dFLim);
-                LOG(info) << "CalibF "
-                          << Form(" TSRC %d%d%d%d gaus %8.2f %8.2f %8.2f ",
+                LOG(debug) << "CalibF "
+                          << Form("TSRC %d%d%d%d gaus %8.2f %8.2f %8.2f ",
                                   iSmType,
                                   iSm,
                                   iRpc,
