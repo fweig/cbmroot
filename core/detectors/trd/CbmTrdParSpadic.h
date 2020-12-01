@@ -6,7 +6,9 @@
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Int_t, Double_t, UInt_t
 
+#include <map>       // fMapAsicChannelToElink
 #include <stdint.h>  // for uint64_t, uint8_t, uint16_t
+#include <vector>    // fVecSpadicChannels
 
 #include "CbmTrdParAsic.h"  // for CbmTrdParAsic
 
@@ -40,6 +42,9 @@ public:
     Int_t
       eLinkId);  ///< Create the componentId from a given criId, crobId, eLinkId and the nThCrobOnModule count, according to the scheme, defined by ECbmTrdComponentIdDecoding.
 
+  std::vector<UInt_t> GetSpadicChannelVec() { return fVecSpadicChannels; }
+  ///< Return the vector with the corresponding spadic channel numbers sorted from channel 00..31 in pad plane coordinates
+
   static Int_t GetNasicsOnModule(
     Int_t
       moduleType);  ///< Returns the number of asics on a given moduleType defined in eCbmTrdModuleTypes
@@ -66,6 +71,8 @@ public:
   std::uint8_t GetElinkId(
     Int_t
       channelId);  ///< eLinkId for the current asic par set and the given channelId (in the asic coordinates, i.e. 00..31).
+  UInt_t GetElinkNr(Int_t moduleChannel, UInt_t nChannelsPerRow);
+  ///< Return the number of the elink (counting started in channel order from bottom left to right) correlated to module wide channel number passed as argument, e.g. 000...767 for the mcbm module type
   UInt_t GetAddressOnModule() const {
     return fAddress % 1000;
   }  ///< Returns the number of the asic on the module counted from top left
@@ -78,12 +85,15 @@ private:
   static Double_t fgSizeY;  ///< SPADIC half size in y [cm]
   static Double_t fgSizeZ;  ///< SPADIC half size in z [cm]
 
-  const std::vector<Int_t> fVecSpadicChannels = {
+  const std::vector<UInt_t> fVecSpadicChannels = {
     23, 7,  22, 6,  21, 19, 5,  20, 18, 4,  3,  17, 16, 2, 1,  0,
     31, 30, 29, 15, 14, 28, 27, 13, 11, 26, 12, 10, 25, 9, 24, 8};
+  std::map<UInt_t, UInt_t> fMapAsicChannelToElink = {};
+  void FillAsicChannelToElinkMap(
+    std::map<UInt_t, UInt_t>*
+      map);  ///< Write the eLink to asicChannel mapping to the passed map
 
-
-  ClassDef(CbmTrdParSpadic, 2)  // Definition of SPADIC ASIC parameters
+  ClassDef(CbmTrdParSpadic, 3)  // Definition of SPADIC ASIC parameters
 };
 
 #endif

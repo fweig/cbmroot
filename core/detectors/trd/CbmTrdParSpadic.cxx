@@ -23,6 +23,7 @@ CbmTrdParSpadic::CbmTrdParSpadic(Int_t address,
                                  std::uint64_t compId)
   : CbmTrdParAsic(address, FebGrouping, x, y, z, compId) {
   fChannelAddresses.resize(NSPADICCH);
+  FillAsicChannelToElinkMap(&fMapAsicChannelToElink);
 }
 
 // ---- LoadParams ----------------------------------------------------
@@ -192,6 +193,46 @@ Int_t CbmTrdParSpadic::GetAsicChAddress(const Int_t asicChannel) {
 
   address = fVecSpadicChannels.at(asicChannel);
   return address;
+}
+
+// ---- FillAsicChannelToElinkMap ----
+void CbmTrdParSpadic::FillAsicChannelToElinkMap(std::map<UInt_t, UInt_t>* map) {
+
+  // Only emplace pairs in an empty map.
+  if (map->size() > 0) return;
+
+  // This assumes that we have 2 elinks per SPADIC and that positions 00..15 in fVecSpadicChannels corresponds to the first elink while 16..31 corresponds to the second
+  UInt_t nthAsicElink = 0;
+  UInt_t rawchannel   = 0;
+  for (size_t ichannel = 0; ichannel < fVecSpadicChannels.size(); ichannel++) {
+    rawchannel = fVecSpadicChannels[ichannel];
+    if (rawchannel >= NSPADICCH / 2)
+      nthAsicElink = 1;
+    else
+      nthAsicElink = 0;
+    auto channelpair = std::pair<UInt_t, UInt_t>(ichannel, nthAsicElink);
+    map->emplace(channelpair);
+  }
+}
+
+// ---- GetElinkNr ----
+UInt_t CbmTrdParSpadic::GetElinkNr(Int_t moduleChannel,
+                                   UInt_t nChannelsPerRow) {
+  ///< Return the number of the elink (counting started in channel order from bottom left to right) correlated to module wide channel number passed as argument, e.g. 000...767 for the mcbm module type
+  UInt_t row           = moduleChannel / nChannelsPerRow;
+  UInt_t column        = moduleChannel % nChannelsPerRow;
+  UInt_t nelinksPerRow = nChannelsPerRow / (NSPADICCH / 2);
+
+  // each SPADIC has its channels distributed over 2 rows. Hence, we have (nspadics per row) * 2 elinks per row
+  // row 0 and 1, 2 and 3, ... use the same elinks
+  UInt_t nthelink = (column / (NSPADICCH / 2)) * 2 + (row / 2) * nelinksPerRow;
+
+  // up to now we do not know if we have the first or second elink on the asic. Hence, we get the channel number in the asic coordinates and check the asicChannel to elink map, wether it is on the first (0) or second (1) elink. And add the result.
+  UInt_t asicRow     = row % 2;
+  UInt_t asicChannel = column % (NSPADICCH / 2) + (NSPADICCH / 2) * asicRow;
+  nthelink += fMapAsicChannelToElink.find(asicChannel)->second;
+
+  return nthelink;
 }
 
 ClassImp(CbmTrdParSpadic)
