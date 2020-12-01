@@ -26,6 +26,6 @@ CbmQaHist.cxx
 
 set(LINKDEF CbmQaBaseLinkDef.h)
 Set(LIBRARY_NAME CbmQaBase)
-Set(DEPENDENCIES)
+Set(DEPENDENCIES Hist Gpad)
 
 GENERATE_LIBRARY()

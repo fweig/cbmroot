@@ -40,6 +40,7 @@ Set(LINK_DIRECTORIES
   ${ROOT_LIBRARY_DIR}
   ${FAIRROOT_LIBRARY_DIR}
   ${Boost_LIBRARY_DIRS}
+  ${KFParticle_LIB_DIR}
 )
  
 Link_Directories( ${LINK_DIRECTORIES})
@@ -56,7 +57,7 @@ Set(NO_DICT_SRCS
 set(LINKDEF GlobalLinkDef.h)
 Set(LIBRARY_NAME CbmGlobalTracking)
 Set(DEPENDENCIES
-    CbmBase CbmData Base CbmMuchBase 
+    CbmBase CbmData Base CbmMuchBase KF
 #   CbmLitTrack CbmKF CbmRun ????
 )
 

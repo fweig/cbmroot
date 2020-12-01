@@ -11,6 +11,8 @@
 #pragma link C++ class CbmOffsetDigiTime                                       \
   < CbmStsDigi> + ;  // <= Template specialization
 #pragma link C++ class CbmOffsetDigiTime                                       \
+  < CbmTofDigi> + ;  // <= Template specialization
+#pragma link C++ class CbmOffsetDigiTime                                       \
   < CbmMuchBeamTimeDigi> + ;  // <= Template specialization
 
 #pragma link C++ class CbmOffsetDigiTimeSts                                    \

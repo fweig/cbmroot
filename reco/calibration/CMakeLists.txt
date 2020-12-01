@@ -51,7 +51,7 @@ ${Boost_LIBRARY_DIRS}
 
 # -----   Library dependences   ---------------------------
 Set(DEPENDENCIES
-#CbmBase
+CbmBase
 CbmData
 CbmRecoBase
 )

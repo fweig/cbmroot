@@ -67,7 +67,7 @@ ${Boost_LIBRARY_DIRS}
 Set(DEPENDENCIES
 fles_ipc
 Base
-#CbmBase
+CbmBase
 #CbmData
 )
 # ---------------------------------------------------------

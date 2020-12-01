@@ -33,7 +33,7 @@ set(SRCS
 set(LINKDEF CbmPsdSimLinkDef.h)
 set(LIBRARY_NAME CbmPsdSim)
 set(DEPENDENCIES
-    CbmData CbmBase Base 
+    CbmSimBase CbmData CbmBase Base
 )
 
 GENERATE_LIBRARY()
