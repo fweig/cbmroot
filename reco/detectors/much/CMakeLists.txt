@@ -6,18 +6,18 @@ ${CBMDETECTORBASE_DIR}/much
 ${CBMROOT_SOURCE_DIR}/reco/base
 ${CBMROOT_SOURCE_DIR}/core/qa
 
-${CBMBASE_DIR} 
+${CBMBASE_DIR}
 
-${CBMDATA_DIR} 
-${CBMDATA_DIR}/much 
-${CBMDATA_DIR}/global 
+${CBMDATA_DIR}
+${CBMDATA_DIR}/much
+${CBMDATA_DIR}/global
 ${CBMDATA_DIR}/base
 )
 
 Include_Directories( ${INCLUDE_DIRECTORIES})
 
 Set(SYSTEM_INCLUDE_DIRECTORIES
-  ${BASE_INCLUDE_DIRECTORIES} 
+  ${BASE_INCLUDE_DIRECTORIES}
 )
 
 Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
@@ -27,7 +27,7 @@ ${ROOT_LIBRARY_DIR}
 ${FAIRROOT_LIBRARY_DIR}
 ${Boost_LIBRARY_DIRS}
 )
- 
+
 link_directories( ${LINK_DIRECTORIES})
 
 set(SRCS
@@ -35,7 +35,7 @@ CbmMuchFindHitsGem.cxx
 CbmMuchHitProducerIdeal.cxx
 
 CbmMuchFindTracks.cxx
-CbmMuchMatchTracks.cxx 
+CbmMuchMatchTracks.cxx
 CbmMuchTrackFinderIdeal.cxx
 
 qa/CbmMuchHitFinderQa.cxx
@@ -44,7 +44,7 @@ qa/CbmMuchHitFinderQa.cxx
 set(LINKDEF CbmMuchRecoLinkDef.h)
 Set(LIBRARY_NAME CbmMuchReco)
 Set(DEPENDENCIES
-    CbmMuchBase CbmRecoBase CbmBase CbmData Base 
+    CbmMuchBase CbmRecoBase CbmBase CbmQaBase CbmData Base
 )
 
 GENERATE_LIBRARY()
