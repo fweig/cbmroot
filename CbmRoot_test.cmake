@@ -54,16 +54,16 @@ If($ENV{ctest_model} MATCHES Nightly OR $ENV{ctest_model} MATCHES Weekly OR $ENV
   # from svn, extract the relavant information about the file name
   # and put the result in the output variable
   If(EXISTS ${CTEST_SOURCE_DIRECTORY}/.svn)
-    Execute_Process(COMMAND svn stat -u  
+    Execute_Process(COMMAND svn stat -u
                     COMMAND grep ^[CM]
-                    COMMAND cut -c21- 
+                    COMMAND cut -c21-
                     OUTPUT_VARIABLE FILELIST
                     )
 
     # create out of the output a cmake list. This step is done to convert the
     # stream into seperated filenames.
     # The trick is to exchange an "\n" by an ";" which is the separartor in
-    # a list created by cmake 
+    # a list created by cmake
     String(REGEX REPLACE "\n" ";" _result "${FILELIST}")
 
     ForEach(_file ${_result})
@@ -102,28 +102,50 @@ Ctest_Configure(BUILD "${CTEST_BINARY_DIRECTORY}"
 If(NOT _RETVAL)
   Ctest_Build(BUILD "${CTEST_BINARY_DIRECTORY}")
   If($ENV{ctest_model} MATCHES Continuous)
-    CTest_Submit(PARTS Update Configure Build)
+    If(${CMAKE_VERSION} VERSION_LESS 3.14.0)
+      CTest_Submit(PARTS Update Configure Build)
+    Else()
+      CTest_Submit(PARTS Update Configure Build
+                   BUILD_ID cdash_build_id
+                  )
+    EndIf()
   EndIf()
 
-  Ctest_Test(BUILD "${CTEST_BINARY_DIRECTORY}" 
+  Ctest_Test(BUILD "${CTEST_BINARY_DIRECTORY}"
              PARALLEL_LEVEL $ENV{number_of_processors}
              RETURN_VALUE _ctest_test_ret_val
             )
 
   If($ENV{ctest_model} MATCHES Continuous)
-    CTest_Submit(PARTS Test)
+    If(${CMAKE_VERSION} VERSION_LESS 3.14.0)
+      CTest_Submit(PARTS Test)
+    Else()
+      CTest_Submit(PARTS Test
+                   BUILD_ID cdash_build_id
+                  )
+    EndIf()
   EndIf()
 
   If(GCOV_COMMAND)
     Ctest_Coverage(BUILD "${CTEST_BINARY_DIRECTORY}")
     If($ENV{ctest_model} MATCHES Continuous)
-      CTest_Submit(PARTS Coverage)
+      If(${CMAKE_VERSION} VERSION_LESS 3.14.0)
+        CTest_Submit(PARTS Coverage)
+      Else()
+        CTest_Submit(PARTS Coverage
+                     BUILD_ID cdash_build_id
+                    )
+      EndIf()
     EndIf()
   EndIf()
 
   Ctest_Upload(FILES ${CTEST_NOTES_FILES})
   If(NOT $ENV{ctest_model} MATCHES Continuous)
-    Ctest_Submit()
+    If(${CMAKE_VERSION} VERSION_LESS 3.14.0)
+      Ctest_Submit()
+    Else()
+      Ctest_Submit(BUILD_ID cdash_build_id)
+    EndIf()
   EndIf()
 
   # Pipeline should fail also in case of failed tests
@@ -132,5 +154,23 @@ If(NOT _RETVAL)
   endif()
 
 Else()
-  CTest_Submit()
+  If(${CMAKE_VERSION} VERSION_LESS "3.14.0")
+    Ctest_Submit()
+  Else()
+    CTest_Submit(BUILD_ID cdash_build_id)
+  EndIf()
+EndIf()
+
+If(${CMAKE_VERSION} VERSION_LESS 3.14.0)
+Else()
+  message(STATUS " ")
+  message(STATUS " You can find the produced results on the CDash server")
+  message(STATUS " ")
+  message(STATUS " CDash Build Summary ..: "
+          "${CTEST_DROP_METHOD}://${CTEST_DROP_SITE}/buildSummary.php?buildid=${cdash_build_id}"
+         )
+  message(STATUS " CDash Test List ......: "
+          "${CTEST_DROP_METHOD}://${CTEST_DROP_SITE}/viewTest.php?buildid=${cdash_build_id}"
+         )
+  message(STATUS " ")
 EndIf()
