@@ -46,7 +46,7 @@ TGeoVolume* ConstructShield(const char* name,
 // ============================================================================
 
 void create_psdgeo_with_hole() {
-  TString geoTag = "v18e";  // Geometry tag
+  TString geoTag = "v20b";  // Geometry tag
 
   // -----   Steering variables   ---------------------------------------------
   Double_t psdX;      // x position (cm) of PSD in cave (front plane center)
@@ -55,7 +55,19 @@ void create_psdgeo_with_hole() {
   Double_t psdRotY;   // Rotation of PSD around y axis (rad)
   Double_t holeSize;  // side length of the square shaped hole (cm)
 
-  if (geoTag == "v18e") {
+  if (geoTag == "v20a") {
+    psdX     = 12.95;
+    psdY     = 0.;
+    psdZ     = 1050;
+    psdRotY  = 0.0132;
+    holeSize = 20.;
+  } else if (geoTag == "v20b") {
+    psdX     = 13.75;
+    psdY     = 0.;
+    psdZ     = 1100;
+    psdRotY  = 0.0132;
+    holeSize = 20.;
+  } else if (geoTag == "v18e") {
     psdX     = 9.65;
     psdY     = 0.;
     psdZ     = 800.;
