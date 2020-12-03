@@ -1,5 +1,12 @@
 #!/bin/bash
 
+if [[ $# -ne 1 ]]; then
+  echo "Missing argument! please call this script with either the check or apply argument:"
+  echo "./scripts/check-apply-format-changes.sh check"
+  echo "./scripts/check-apply-format-changes.sh apply"
+  exit -1
+fi
+
 if [[ -z $GIT_CLANG_FORMAT_BIN || -z $CLANG_FORMAT_BIN ]]; then
   echo "Error: GIT_CLANG_FORMAT_BIN or CLANG_FORMAT_BIN not defined"
   echo "=> Please follow the instruction at https://redmine.cbm.gsi.de/projects/cbmroot/wiki/Clang-format"
@@ -27,13 +34,6 @@ echo "Upstream name is :" $UPSTREAM
 
 BASE_COMMIT=$UPSTREAM/master
 CHANGED_FILES=$(git diff --name-only $BASE_COMMIT | grep -E '.*\.(h|hpp|c|C|cpp|cxx|tpl)$' | grep -viE '.*LinkDef.h$')
-
-if [[ $# -ne 1 ]]; then
-  echo "Missing argument! please call this script with either the check or apply argument:"
-  echo "./scripts/check-apply-format-changes.sh check"
-  echo "./scripts/check-apply-format-changes.sh apply"
-  exit -1
-fi
 
 case $1 in
   check)
