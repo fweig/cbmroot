@@ -6,6 +6,9 @@ Set(CTEST_CMAKE_GENERATOR "Unix Makefiles")
 Set(CTEST_PROJECT_NAME "CBMROOT")
 Set(EXTRA_FLAGS $ENV{EXTRA_FLAGS})
 
+include(${CTEST_SOURCE_DIRECTORY}/CTestConfig.cmake)
+Ctest_Read_Custom_Files("${CTEST_SOURCE_DIRECTORY}")
+
 Set(CTEST_UPDATE_COMMAND "git")
 
 Set(BUILD_COMMAND "make")
@@ -76,11 +79,6 @@ If($ENV{ctest_model} MATCHES Nightly OR $ENV{ctest_model} MATCHES Weekly OR $ENV
 
 EndIf()
 
-Configure_File(${CTEST_SOURCE_DIRECTORY}/CTestCustom.cmake
-               ${CTEST_BINARY_DIRECTORY}/CTestCustom.cmake
-              )
-Ctest_Read_Custom_Files("${CTEST_BINARY_DIRECTORY}")
-
 If($ENV{ctest_model} MATCHES MergeRequest)
   set(ENV{ctest_model} Continuous)
 EndIf()
@@ -150,6 +148,19 @@ If(NOT _RETVAL)
 
   # Pipeline should fail also in case of failed tests
   if (_ctest_test_ret_val)
+    If(${CMAKE_VERSION} VERSION_LESS 3.14.0)
+    Else()
+      message(STATUS " ")
+      message(STATUS " You can find the produced results on the CDash server")
+      message(STATUS " ")
+      message(STATUS " CDash Build Summary ..: "
+              "${CTEST_DROP_METHOD}://${CTEST_DROP_SITE}/buildSummary.php?buildid=${cdash_build_id}"
+             )
+      message(STATUS " CDash Test List ......: "
+              "${CTEST_DROP_METHOD}://${CTEST_DROP_SITE}/viewTest.php?buildid=${cdash_build_id}"
+             )
+      message(STATUS " ")
+    EndIf()
     Message(FATAL_ERROR "Some tests failed.")
   endif()
 
