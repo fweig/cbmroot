@@ -21,7 +21,6 @@ CHANGED_FILES=$(git diff --name-only $BASE_COMMIT | grep -E '.*\.(h|hpp|c|C|cpp|
 
 
 $GIT_CLANG_FORMAT_BIN --verbose --commit $BASE_COMMIT $CHANGED_FILES --extensions h,hpp,c,C,cpp,cxx,tpl
-git add $CHANGED_FILES
-echo ""
 git status
-git commit -m"Apply clang-format"
+echo "Next step: git add "$CHANGED_FILES
+echo 'Then     : git commit -m"Apply clang-format"'
