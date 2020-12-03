@@ -28,7 +28,7 @@ if [ -z $UPSTREAM ]; then
 fi
 echo "Upstream name is :" $UPSTREAM
 
-BASE_COMMIT=upstream/master
+BASE_COMMIT=$UPSTREAM/master
 CHANGED_FILES=$(git diff --name-only $BASE_COMMIT | grep -E '.*\.(h|hpp|c|C|cpp|cxx|tpl)$' | grep -viE '.*LinkDef.h$')
 
 if [[ $# -ne 1 ]]; then
@@ -41,6 +41,7 @@ fi
 case $1 in
   check)
     echo "Checking if there are format changes required"
+    git fetch $UPSTREAM
     $GIT_CLANG_FORMAT_BIN --commit $BASE_COMMIT --diff $CHANGED_FILES --extensions h,hpp,c,C,cpp,cxx,tpl
     ;;
 
