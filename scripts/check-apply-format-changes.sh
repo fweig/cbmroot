@@ -16,14 +16,11 @@ if [[ "$VERSION" != *"11.0.0"* ]]; then
 fi
 
 if [ -z $UPSTREAM ]; then
-  UPSTREAM=$(git remote -v | grep https://git.cbm.gsi.de/computing/cbmroot | cut -f1 | uniq)
+  UPSTREAM=$(git remote -v | grep git.cbm.gsi.de[:/]computing/cbmroot | cut -f1 | uniq)
   if [ -z $UPSTREAM ]; then
-    UPSTREAM=$(git remote -v | grep git@git.cbm.gsi.de:computing/cbmroot.git | cut -f1 | uniq)
-    if [ -z $UPSTREAM ]; then
-      echo "Error: Name of upstream repository not provided and not found by automatic means"
-      echo 'Please provide if by checking your remotes with "git remote -v" and exporting UPSTREAM'
-      exit -1
-    fi
+    echo "Error: Name of upstream repository not provided and not found by automatic means"
+    echo 'Please provide if by checking your remotes with "git remote -v" and exporting UPSTREAM'
+    exit -1
   fi
 fi
 echo "Upstream name is :" $UPSTREAM
