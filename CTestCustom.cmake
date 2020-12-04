@@ -47,12 +47,13 @@ set(CTEST_CUSTOM_WARNING_EXCEPTION
         "include/AnalysisTree"
 
         # -- remove intended fall through warnings
+        "[[fallthrough]]"
+        "CbmMcbm2018UnpackerAlgoTof.cxx.*warning: attributes at the beginning of statement are ignored" 
         "CbmMcbm2018UnpackerAlgoTof.cxx.*warning: this statement may fall through"
         "CbmMcbm2018UnpackerAlgoTof.cxx.*note: here"
+        "CbmDeviceUnpackTofMcbm2018.cxx.*warning: attributes at the beginning of statement are ignored"
         "CbmDeviceUnpackTofMcbm2018.cxx.*warning: this statement may fall through"
         "CbmDeviceUnpackTofMcbm2018.cxx.*note: here"
-        "PairAnalysisHistos.cxx.*warning: this statement may fall through"
-        "PairAnalysisHistos.cxx.*note: here"
 
         # -- warnings from structures for HADAQ memory casting
         "struct hadaq::HadTu"
@@ -85,6 +86,7 @@ Set (CTEST_CUSTOM_COVERAGE_EXCLUDE
      ".*Dict.cxx"
      ".*Fair.*"
      ".*GTest.*"
+     "external/"
     )
 
 Set(CTEST_CUSTOM_ERROR_EXCEPTION
