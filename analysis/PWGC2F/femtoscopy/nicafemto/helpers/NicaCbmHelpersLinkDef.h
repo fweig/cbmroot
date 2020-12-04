@@ -14,4 +14,4 @@
 #pragma link C++ class NicaCbmFirstTask + ;
 #pragma link C++ class CbmHelix + ;
 #pragma link C++ enum NicaCbmSetup;
-#pragma link C++ class CbmNicaCompression + ;
+//#pragma link C++ class CbmNicaCompression + ;
