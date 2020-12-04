@@ -6,28 +6,31 @@
 
 #include <TF1.h>    // for TF1
 #include <TMath.h>  // for Exp
+#include <TRandom.h>
 
 #include <assert.h>  // for assert
 #include <sstream>   // for operator<<, basic_ostream, stringstream
 
 ClassImp(CbmStsParAsic)
 
-  // -----   Constructor   ---------------------------------------------------
-  CbmStsParAsic::CbmStsParAsic(UShort_t nAdc,
-                               Double_t dynRange,
-                               Double_t threshold,
-                               Double_t timeResol,
-                               Double_t deadTime,
-                               Double_t noise,
-                               Double_t znr) {
-  Set(nAdc, dynRange, threshold, timeResol, deadTime, noise, znr);
+// -----   Constructor   ---------------------------------------------------
+CbmStsParAsic::CbmStsParAsic(UShort_t nChannels,
+                             UShort_t nAdc,
+                             Double_t dynRange,
+                             Double_t threshold,
+                             Double_t timeResol,
+                             Double_t deadTime,
+                             Double_t noise,
+                             Double_t znr) {
+  Set(nChannels, nAdc, dynRange, threshold, timeResol, deadTime, noise, znr);
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Copy constructor   ----------------------------------------------
 CbmStsParAsic::CbmStsParAsic(const CbmStsParAsic& other) {
-  Set(other.fNofAdc,
+  Set(other.fNofChannels,
+      other.fNofAdc,
       other.fDynRange,
       other.fThreshold,
       other.fTimeResolution,
@@ -40,7 +43,8 @@ CbmStsParAsic::CbmStsParAsic(const CbmStsParAsic& other) {
 
 // -----   Copy assignment operator   --------------------------------------
 CbmStsParAsic& CbmStsParAsic::operator=(const CbmStsParAsic& other) {
-  Set(other.fNofAdc,
+  Set(other.fNofChannels,
+      other.fNofAdc,
       other.fDynRange,
       other.fThreshold,
       other.fTimeResolution,
@@ -64,6 +68,34 @@ Short_t CbmStsParAsic::ChargeToAdc(Double_t charge) const {
   if (charge < fThreshold) return -1;                        // Underflow
   if (charge >= fThreshold + fDynRange) return fNofAdc - 1;  // Overflow
   return Short_t((charge - fThreshold) / fDynRange * Double_t(fNofAdc));
+}
+// -------------------------------------------------------------------------
+
+
+// -----   Deactivate channels   -------------------------------------------
+UInt_t CbmStsParAsic::DeactivateRandomChannels(Double_t fraction) {
+
+  if ( fraction < 0. ) return 0;
+
+  // --- Average number of dead channels
+  Double_t meanDead = fraction * Double_t(fNofChannels);
+  if ( meanDead > fNofChannels) meanDead = fNofChannels;
+
+  // --- Sample actual number of dead channels from Poissonian
+  Int_t nDead = gRandom->Poisson(meanDead);
+
+  // --- Deactivate the given number of channels
+  Int_t nDeactivated = 0;
+  while(nDeactivated < nDead) {
+    Int_t channel = Int_t(gRandom->Uniform(0, fNofChannels));
+    if ( IsChannelActive(channel) ) {
+      fDeadChannels.insert(channel);
+      nDeactivated++;
+    } //? Channel was active
+  } //# Deactivated channels
+
+  assert(nDeactivated == nDead);
+  return nDead;
 }
 // -------------------------------------------------------------------------
 
@@ -97,7 +129,8 @@ void CbmStsParAsic::Init() {
 
 
 // -----   Set the parameters   ---------------------------------------------
-void CbmStsParAsic::Set(UShort_t nAdc,
+void CbmStsParAsic::Set(UShort_t nChannels,
+                        UShort_t nAdc,
                         Double_t dynRange,
                         Double_t threshold,
                         Double_t timeResol,
@@ -114,6 +147,7 @@ void CbmStsParAsic::Set(UShort_t nAdc,
   assert(noise >= 0.);
   assert(zeroNoiseRate >= 0.);
 
+  fNofChannels    = nChannels;
   fNofAdc         = nAdc;
   fDynRange       = dynRange;
   fThreshold      = threshold;

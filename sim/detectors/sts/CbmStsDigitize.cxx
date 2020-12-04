@@ -438,12 +438,20 @@ void CbmStsDigitize::InitParams() {
   assert(fUserParModule);
   assert(fUserParAsic);
   fUserParModule->SetAllAsics(*fUserParAsic);
-  fParSetModule->SetGlobalPar(*fUserParModule);
+  for (Int_t iModule = 0; iModule < fSetup->GetNofModules(); iModule++) {
+    UInt_t address = fSetup->GetModule(iModule)->GetAddress();
+    fParSetModule->SetParModule(address, *fUserParModule);
+  }
+  UInt_t deactivated = 0;
+  if ( fUserFracDeadChan > 0. ) {
+     deactivated = fParSetModule->DeactivateRandomChannels(fUserFracDeadChan);
+  }
   fParSetModule->setChanged();
   fParSetModule->setInputVersion(-2, 1);
   LOG(info) << "--- Using global ASIC parameters: \n       "
             << fUserParAsic->ToString();
   LOG(info) << "--- Module parameters: " << fParSetModule->ToString();
+  LOG(info) << "--- Deactive channels: " << deactivated << " " << fUserFracDeadChan;
 
   // --- Sensor parameters
   // TODO: The code above is highly unsatisfactory. A better implementation
@@ -714,24 +722,23 @@ void CbmStsDigitize::SetGlobalDefaults() {
   // through the base class CbmDigitizeBase, such that the settings here
   // will be overwritten later (in Init).
 
-  // --- ASIC parameters
-  if (fUserParAsic) delete fUserParAsic;
-  UInt_t nAdc        = 32;         // Number of ADC channels (5 bit)
-  Double_t dynRange  = 75000.;     // Dynamic range [e]
-  Double_t threshold = 3000.;      // Threshold [e]
-  Double_t timeResol = 5.;         // Time resolution [ns]
-  Double_t deadTime  = 800.;       // Channel dead time [ns]
-  Double_t noiseRms  = 1000.;      // RMS of noise [e]
-  Double_t znr       = 3.9789e-3;  // Zero-crossing noise rate [1/ns]
-  fUserParAsic       = new CbmStsParAsic(
-    nAdc, dynRange, threshold, timeResol, deadTime, noiseRms, znr);
-
   // --- Module parameters
   if (fUserParModule) delete fUserParModule;
   UInt_t nChannels     = 2048;  // Number of module readout channels
   UInt_t nAsicChannels = 128;   // Number of readout channels per ASIC
   fUserParModule       = new CbmStsParModule(nChannels, nAsicChannels);
 
+  // --- ASIC parameters
+  if (fUserParAsic) delete fUserParAsic;
+  UShort_t nAdc      = 32;         // Number of ADC channels (5 bit)
+  Double_t dynRange  = 75000.;     // Dynamic range [e]
+  Double_t threshold = 3000.;      // Threshold [e]
+  Double_t timeResol = 5.;         // Time resolution [ns]
+  Double_t deadTime  = 800.;       // Channel dead time [ns]
+  Double_t noiseRms  = 1000.;      // RMS of noise [e]
+  Double_t znr       = 3.9789e-3;  // Zero-crossing noise rate [1/ns]
+  fUserParAsic       = new CbmStsParAsic(nAsicChannels, nAdc, dynRange, threshold,
+                                         timeResol, deadTime, noiseRms, znr);
   // --- Sensor parameters
   // --- Here, only the default pitch and stereo angles are defined. The
   // --- other parameters are extracted from the geometry.
@@ -762,7 +769,8 @@ void CbmStsDigitize::SetGlobalDefaults() {
 
 
 // -----   Set the global module parameters   ------------------------------
-void CbmStsDigitize::SetGlobalAsicParams(UInt_t nAdc,
+void CbmStsDigitize::SetGlobalAsicParams(UShort_t nChannels,
+                                         UShort_t nAdc,
                                          Double_t dynRange,
                                          Double_t threshold,
                                          Double_t timeResolution,
@@ -772,8 +780,9 @@ void CbmStsDigitize::SetGlobalAsicParams(UInt_t nAdc,
   assert(!fIsInitialised);
   assert(nAdc > 0);
   if (fUserParAsic) delete fUserParAsic;
-  fUserParAsic = new CbmStsParAsic(
-    nAdc, dynRange, threshold, timeResolution, deadTime, noise, zeroNoiseRate);
+  fUserParAsic = new CbmStsParAsic(nChannels, nAdc, dynRange, threshold,
+                                   timeResolution, deadTime, noise,
+                                   zeroNoiseRate);
 }
 // -------------------------------------------------------------------------
 

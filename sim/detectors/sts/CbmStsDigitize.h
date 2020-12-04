@@ -116,6 +116,7 @@ public:
 
 
   /** @brief Set the global ASIC parameters
+   ** @param nChannels        Number of readout channels
    ** @param nAdc             Number of ADC channels
    ** @param dynRange         Dynamic range [e]
    ** @param threshold        Threshold [e]
@@ -126,13 +127,25 @@ public:
    **
    ** These parameters will be applied to all ASICS in all modules.
    **/
-  void SetGlobalAsicParams(UInt_t nAdc,
+  void SetGlobalAsicParams(UShort_t nChannels,
+                           UShort_t nAdc,
                            Double_t dynRange,
                            Double_t threshold,
                            Double_t timeResolution,
                            Double_t deadTime,
                            Double_t noise,
                            Double_t zeroNoiseRate);
+
+
+  /** @brief Set global fraction of dead channels
+   ** @param fraction Fraction of dead channels
+   **
+   ** If this number is different from zero, in each ASIC a number of
+   ** channels corresponding to this fraction are deactivated.
+   **/
+  void SetGlobalFracDeadChannels(Double_t fraction) {
+    fUserFracDeadChan = fraction;
+  }
 
 
   /** @brief Set the global module parameters
@@ -253,6 +266,7 @@ private:
   CbmStsParSensor* fUserParSensor   = nullptr;  ///< User defined, global
   CbmStsParSensorCond* fUserParCond = nullptr;  ///< User defined, global
   Double_t fUserDinactive = 0.;  ///< Size of inactive sensor border [cm]
+  Double_t fUserFracDeadChan = 0.; ///< Fraction of inactive ASIC channels
 
   // --- Module and sensor parameters for runtime DB output
   CbmStsParSim* fParSim               = nullptr;  ///< Simulation settings

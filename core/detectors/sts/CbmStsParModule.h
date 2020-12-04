@@ -43,6 +43,13 @@ public:
   ~CbmStsParModule() {};
 
 
+  /** @brief Randomly deactivate a fraction of the channels
+   ** @param fraction  Fraction of channels to deactivate
+   ** @return Number of deactivated channels
+   **/
+  UInt_t DeactivateRandomChannels(Double_t fraction);
+
+
   /** @brief ASIC parameters for a given channel
      ** @param channel  Channel number
      ** @return ASIC parameters

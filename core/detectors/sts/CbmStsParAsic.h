@@ -30,6 +30,7 @@ public:
 
 
   /** @brief Constructor with parameters
+   ** @param nChannels   Number of readout channels
      ** @param nAdc  Number of ADC channels
      ** @param dynRange  Dynamic range of ADC [e]
      ** @param threshold  ADC threshold [e]
@@ -38,7 +39,8 @@ public:
      ** @param noise   Noise RMS [e]
      ** @param znr   Zero-crossing noise rate [1/ns]
      **/
-  CbmStsParAsic(UShort_t nAdc,
+  CbmStsParAsic(UShort_t nChannels,
+                UShort_t nAdc,
                 Double_t dynRange,
                 Double_t threshold,
                 Double_t timeResol,
@@ -76,6 +78,13 @@ public:
   }
 
 
+  /** @brief Randomly deactivate a fraction of the channels
+   ** @param fraction  Fraction of channels to deactivate
+   ** @return Number of deactivated channels
+   **/
+  UInt_t DeactivateRandomChannels(Double_t fraction);
+
+
   /** @brief ADC channel for a given charge
      ** @param charge  Charge [e]
      ** @return ADC channel number
@@ -101,6 +110,12 @@ public:
      ** @return Number of ADC channels
      **/
   UShort_t GetNofAdc() const { return fNofAdc; }
+
+
+  /** @brief Number of readout channels
+     ** @return Number of readout channels
+     **/
+  UShort_t GetNofChannels() const { return fNofChannels; }
 
 
   /** @brief Electronic noise RMS
@@ -160,6 +175,7 @@ public:
 
 
   /** @brief Set parameters
+   ** @param nChannels          Number of readout channels
      ** @param nAdc             Number of ADC channels
      ** @param dynRange         Dynamic range [e]
      ** @param threshold        Threshold [e]
@@ -169,7 +185,8 @@ public:
      ** @param zeroNoiseRate    Zero-crossing noise rate
      ** @param deadChannels     Set of dead channels
      **/
-  void Set(UShort_t nAdc,
+  void Set(UShort_t nChannels,
+           UShort_t nAdc,
            Double_t dynRange,
            Double_t threshold,
            Double_t timeResol,
@@ -184,6 +201,7 @@ public:
 
 
 private:
+  UShort_t fNofChannels    = 0;         ///< Number of readout channels
   UShort_t fNofAdc         = 0;         ///< Number of ADC channels
   Double_t fDynRange       = 0.;        ///< Dynamic range [e]
   Double_t fThreshold      = 0.;        ///< Threshold [e]
@@ -199,7 +217,7 @@ private:
      ** method in order to avoid frequent re-calculation. **/
   TF1* fNoiseCharge = nullptr;  //!
 
-  ClassDefNV(CbmStsParAsic, 2);
+  ClassDefNV(CbmStsParAsic, 3);
 };
 
 #endif /* CBMSTSPARASIC_H */

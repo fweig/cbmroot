@@ -56,6 +56,13 @@ public:
   virtual void clear();
 
 
+  /** @brief Randomly deactivate a fraction of the channels
+   ** @param fraction  Fraction of channels to deactivate
+   ** @return Number of deactivated channels
+   **/
+  UInt_t DeactivateRandomChannels(Double_t fraction);
+
+
   /** @brief Reading parameters from ASCII. Abstract in base class.
      **
      ** An ASCII I/O is not implemented. The method throws an error.
@@ -102,6 +109,12 @@ public:
     fUseGlobal    = kTRUE;
   }
 
+  /** @brief Set the parameters for a module
+     ** @param address  Module address
+     ** @param par      Module parameter object
+     **/
+  void SetParModule(UInt_t address, const CbmStsParModule& par);
+
 
   /** @brief Info to string **/
   std::string ToString() const;
@@ -114,7 +127,7 @@ private:
   /** @brief Global parameters, used for all modules **/
   CbmStsParModule fGlobalParams {};
 
-  /** @brief Map of parameters. Key is sensor address. **/
+  /** @brief Map of parameters. Key is module address. **/
   std::map<UInt_t, CbmStsParModule> fParams {};
 
 
