@@ -200,7 +200,7 @@ void ana_trksi(Int_t nEvents        = 10000,
   tofFindTracks->SetCalParFileName(
     cTrkFile);                             // Tracker parameter value file name
   tofFindTracks->SetBeamCounter(5, 0, 0);  // default beam counter
-  tofFindTracks->SetR0Lim(100.);
+  tofFindTracks->SetR0Lim(2.);
   tofFindTracks->SetStationMaxHMul(
     30);  // Max Hit Multiplicity in any used station
 
@@ -214,6 +214,7 @@ void ana_trksi(Int_t nEvents        = 10000,
   tofTrackFinder->SetSIGLIM(dChi2Lim2
                             * 2.);  // matching window in multiples of chi2
   tofTrackFinder->SetChiMaxAccept(dChi2Lim2);  // max tracklet chi2
+  tofTrackFinder->SetSIGLIMMOD(5.);            // max deviation for last hit
 
   Int_t iMinNofHits   = -1;
   Int_t iNStations    = 0;
@@ -468,7 +469,7 @@ void ana_trksi(Int_t nEvents        = 10000,
   }
   //CbmTofAnaTestbeam defaults
   tofAnaTestbeam->SetR0LimFit(
-    20.);  // limit distance of fitted track to nominal vertex
+    2.);  // limit distance of fitted track to nominal vertex
   tofAnaTestbeam->SetDXMean(0.);
   tofAnaTestbeam->SetDYMean(0.);
   tofAnaTestbeam->SetDTMean(0.);  // in ns
@@ -593,22 +594,26 @@ void ana_trksi(Int_t nEvents        = 10000,
       case 901041:
         switch (iRSelin) {
           case 500:
-            tofAnaTestbeam->SetTShift(-12.);  // Shift DTD4 to 0
-            tofAnaTestbeam->SetTOffD4(15.);   // Shift DTD4 to physical value
+            tofAnaTestbeam->SetTShift(-2.);  // Shift DTD4 to 0
+            tofAnaTestbeam->SetTOffD4(15.);  // Shift DTD4 to physical value
             switch (iSel2in) {
               case 30:
                 tofAnaTestbeam->SetSel2TOff(-0.3);  // Shift Sel2 time peak to 0
                 break;
               case 31:
                 switch (iRun) {
-                  case 717:
+                  case 727:
+                  case 726:
+                  case 723:
+                  case 721:
                     tofAnaTestbeam->SetTShift(6.5);  // Shift DTD4 to 0
                     tofAnaTestbeam->SetSel2TOff(
                       0.6);  // Shift Sel2 time peak to 0
                     break;
+                  case 717:
                   default:  //714
                     tofAnaTestbeam->SetSel2TOff(
-                      0.3);  // Shift Sel2 time peak to 0
+                      0.);  // Shift Sel2 time peak to 0
                 }
                 break;
               case 600:

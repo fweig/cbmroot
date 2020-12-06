@@ -82,6 +82,7 @@ CbmTofFindTracks::CbmTofFindTracks(const char* name,
   , fTofHitArrayIn(NULL)
   , fTofMatchArrayIn(NULL)
   , fTofHitArray(NULL)
+  , fTofHitIndexArray()
   , fTrackArray(NULL)
   , fTrackArrayOut(nullptr)
   , fTofUHitArray(NULL)
@@ -246,7 +247,7 @@ InitStatus CbmTofFindTracks::Init() {
     return kERROR;
   }
 
-  // Get TOF hit Array
+  // Get TOF DigiMatch Array
   fTofMatchArrayIn = (TClonesArray*) ioman->GetObject("TofCalDigiMatch");
   if (!fTofMatchArrayIn) {
     LOG(fatal) << "CbmTofFindTracks::Init: No TofDigiMatch array!";
@@ -1058,16 +1059,18 @@ void CbmTofFindTracks::Exec(Option_t* opt) {
 
       if (fTofHitArray) fTofHitArray->Clear("C");
       Int_t iNbHits = 0;
+      fTofHitIndexArray.resize(tEvent->GetNofData(ECbmDataType::kTofHit));
       for (Int_t iHit = 0; iHit < tEvent->GetNofData(ECbmDataType::kTofHit);
            iHit++) {
         Int_t iHitIndex =
           static_cast<Int_t>(tEvent->GetIndex(ECbmDataType::kTofHit, iHit));
         CbmTofHit* tHit =
           dynamic_cast<CbmTofHit*>(fTofHitArrayIn->At(iHitIndex));
+        fTofHitIndexArray[iNbHits] = iHitIndex;
         new ((*fTofHitArray)[iNbHits++]) CbmTofHit(*tHit);
       }
 
-      ExecFind(opt);
+      ExecFind(opt, tEvent);
 
       // --- In event-by-event mode: copy tracks to output array and register them to event
       for (Int_t iTrk = 0; iTrk < fTrackArray->GetEntries(); iTrk++) {
@@ -1081,7 +1084,7 @@ void CbmTofFindTracks::Exec(Option_t* opt) {
   }
 }
 
-void CbmTofFindTracks::ExecFind(Option_t* /*opt*/) {
+void CbmTofFindTracks::ExecFind(Option_t* /*opt*/, CbmEvent* tEvent) {
   fiEvent++;
   ResetStationsFired();
   if (NULL != fTofUHitArray) fTofUHitArray->Clear("C");
@@ -1220,7 +1223,7 @@ void CbmTofFindTracks::ExecFind(Option_t* /*opt*/) {
 
     FindVertex();
 
-    FillHistograms();
+    FillHistograms(tEvent);
   }
 
   FillUHits();  // put unused hits into TClonesArray
@@ -1780,7 +1783,7 @@ void CbmTofFindTracks::FindVertex() {
 
 static Int_t iWarnNotDefined = 0;
 
-void CbmTofFindTracks::FillHistograms() {
+void CbmTofFindTracks::FillHistograms(CbmEvent* tEvent) {
   // Locate reference ("beam counter") hit
   CbmTofHit* pRefHit  = NULL;
   Double_t RefMinTime = 1.E300;
@@ -1854,7 +1857,7 @@ void CbmTofFindTracks::FillHistograms() {
       iTMul++;
       fhTrklChi2->Fill(pTrk->GetNofHits(), pTrk->GetChiSq());
 
-      if (fiCalOpt > 0) fTofCalibrator->FillCalHist(pTrk, fiCalOpt);
+      if (fiCalOpt > 0) fTofCalibrator->FillCalHist(pTrk, fiCalOpt, tEvent);
 
       CbmTofTrackletParam* tPar = pTrk->GetTrackParameter();
       Double_t dTt              = pTrk->GetTt();

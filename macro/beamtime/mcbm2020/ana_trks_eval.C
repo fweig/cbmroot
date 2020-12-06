@@ -689,11 +689,11 @@ void ana_trks_eval(Int_t nEvents        = 10000,
         switch (iRSelin) {
           case 500:
             if (iMc == 0) {
-              tofAnaTestbeam->SetTShift(4.8);   // Shift DTD4 to 0
-              tofAnaTestbeam->SetTOffD4(11.);   // Shift DTD4 to physical value
-            } else {                            // MC
-              tofAnaTestbeam->SetTShift(-12.);  // Shift DTD4 to 0
-              tofAnaTestbeam->SetTOffD4(15.);   // Shift DTD4 to physical value
+              tofAnaTestbeam->SetTShift(4.8);  // Shift DTD4 to 0
+              tofAnaTestbeam->SetTOffD4(11.);  // Shift DTD4 to physical value
+            } else {                           // MC
+              tofAnaTestbeam->SetTShift(-2.);  // Shift DTD4 to 0
+              tofAnaTestbeam->SetTOffD4(15.);  // Shift DTD4 to physical value
             }
             switch (iSel2in) {
               case 30:
@@ -702,15 +702,19 @@ void ana_trks_eval(Int_t nEvents        = 10000,
               case 31:
                 if (iMc == 0) {
                   switch (iRun) {
-                    case 717:
+                    case 727:
+                    case 726:
+                    case 723:
+                    case 721:
                       tofAnaTestbeam->SetTShift(6.5);  // Shift DTD4 to 0
                       tofAnaTestbeam->SetSel2TOff(
                         0.6);  // Shift Sel2 time peak to 0
                       break;
+                    case 717:
                     default:  // 714
-                      //                    tofAnaTestbeam->SetSel2TOff(-1.3);  // Shift Sel2 time peak to 0
+                      //tofAnaTestbeam->SetSel2TOff(-1.3);  // Shift Sel2 time peak to 0
                       tofAnaTestbeam->SetSel2TOff(
-                        0.3);  // Shift Sel2 time peak to 0
+                        0.);  // Shift Sel2 time peak to 0
                   }
                 } else {  // MC
                   tofAnaTestbeam->SetSel2TOff(

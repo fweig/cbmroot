@@ -6,6 +6,7 @@
 
 // CBMroot classes and includes
 #include "CbmTofCalibrator.h"
+#include "CbmEvent.h"
 #include "CbmMatch.h"
 #include "CbmTofAddress.h"  // in cbmdata/tof
 #include "CbmTofCell.h"     // in tof/TofData
@@ -62,6 +63,12 @@ CbmTofCalibrator::~CbmTofCalibrator() {}
 InitStatus CbmTofCalibrator::Init() {
 
   FairRootManager* fManager = FairRootManager::Instance();
+  // Get access to TofCalDigis
+  fTofCalDigiVec =
+    fManager->InitObjectAs<std::vector<CbmTofDigi> const*>("TofCalDigi");
+  //dynamic_cast<std::vector<CbmTofDigi> const*>(fManager->GetObject("TofCalDigi"));
+  if (NULL == fTofCalDigiVec) LOG(fatal) << "No access to TofCalDigis!";
+
   // check for availability of digis
   fDigiMan = CbmDigiManager::Instance();
   if (NULL == fDigiMan) {
@@ -88,9 +95,9 @@ InitStatus CbmTofCalibrator::Init() {
   }
 
   // Get Access to MatchCollection
-  fTofDigiMatchColl = (TClonesArray*) fManager->GetObject("TofDigiMatch");
+  fTofDigiMatchColl = (TClonesArray*) fManager->GetObject("TofCalDigiMatch");
   if (NULL == fTofDigiMatchColl)
-    fTofDigiMatchColl = (TClonesArray*) fManager->GetObject("TofCalDigiMatch");
+    fTofDigiMatchColl = (TClonesArray*) fManager->GetObject("TofDigiMatch");
 
   if (NULL == fTofDigiMatchColl) {
     LOG(error) << "CbmTofCalibrator: no access to DigiMatch ";
@@ -243,7 +250,9 @@ Bool_t CbmTofCalibrator::CreateCalHist() {
   return kTRUE;
 }
 
-void CbmTofCalibrator::FillCalHist(CbmTofTracklet* pTrk, Int_t iOpt) {
+void CbmTofCalibrator::FillCalHist(CbmTofTracklet* pTrk,
+                                   Int_t iOpt,
+                                   CbmEvent* tEvent) {
   // fill deviation histograms on walk level
   if (pTrk->GetTt() < 0) return;  // take tracks with positive velocity only
   if (fbBeam
@@ -304,12 +313,14 @@ void CbmTofCalibrator::FillCalHist(CbmTofTracklet* pTrk, Int_t iOpt) {
         - pTrk->GetFitT(pHit->GetZ()));  // residuals transformed into LRF
     //fhCalTOff[iDetIndx]->Fill((Double_t)iCh,fTrackletTools->GetTdif(pTrk, iDetId, pHit));   // prediction by other hits
 
-    Int_t iMA = pTrk->GetTofHitIndex(iHit);
-    if (iMA > fTofDigiMatchColl->GetEntries()) {
-      LOG(error) << " Inconsistent DigiMatches for Hitind " << iMA
+    Int_t iEA  = pTrk->GetTofHitIndex(iHit);
+    Int_t iTSA = fTofFindTracks->GetTofHitIndex(iEA);
+
+    if (iTSA > fTofDigiMatchColl->GetEntries()) {
+      LOG(error) << " Inconsistent DigiMatches for Hitind " << iTSA
                  << ", TClonesArraySize: " << fTofDigiMatchColl->GetEntries();
     }
-    CbmMatch* digiMatch = (CbmMatch*) fTofDigiMatchColl->At(iMA);
+    CbmMatch* digiMatch = (CbmMatch*) fTofDigiMatchColl->At(iTSA);
 
     Double_t hlocal_d[3];
     for (Int_t iLink = 0; iLink < digiMatch->GetNofLinks();
@@ -318,11 +329,43 @@ void CbmTofCalibrator::FillCalHist(CbmTofTracklet* pTrk, Int_t iOpt) {
       Int_t iDigInd0 = L0.GetIndex();
       Int_t iDigInd1 = (digiMatch->GetLink(iLink + 1)).GetIndex();
 
-      const CbmTofDigi* tDigi0 = fDigiMan->Get<CbmTofDigi>(iDigInd0);
-      Int_t iCh0               = tDigi0->GetChannel();
-      Int_t iSide0             = tDigi0->GetSide();
-      LOG(debug) << "Fill Walk for " << iDetIndx << ", TSRCS " << iSmType << iSm
-                 << iRpc << iCh0 << iSide0 << ", " << tDigi0 << ", " << pTrk;
+      const CbmTofDigi* tDigi0 = NULL;
+      const CbmTofDigi* tDigi1 = NULL;
+      if (tEvent != NULL) {  //disable
+        LOG(debug) << "Locate MatchDigiInd " << iDigInd0 << " and " << iDigInd1
+                   << " in CalDigiVec of size " << fTofCalDigiVec->size();
+        //		  <<" in current event not implemented";
+        //continue;
+        tDigi0 = &(fTofCalDigiVec->at(iDigInd0));
+        tDigi1 = &(fTofCalDigiVec->at(iDigInd1));
+      } else {  // event wise entries
+        tDigi0 = fDigiMan->Get<CbmTofDigi>(iDigInd0);
+        tDigi1 = fDigiMan->Get<CbmTofDigi>(iDigInd1);
+      }
+
+      Int_t iCh0   = tDigi0->GetChannel();
+      Int_t iSide0 = tDigi0->GetSide();
+
+      LOG(debug) << "Fill Walk for Hit Ind " << iEA << ", " << iTSA
+                 << Form(", TSRC %d%d%d%2d, DigiInd %2d, %2d",
+                         iSmType,
+                         iSm,
+                         iRpc,
+                         iCh,
+                         iDigInd0,
+                         iDigInd1)
+                 << Form(", TSRCS %d%d%d%2d%d %d%d%d%2d%d",
+                         (Int_t) tDigi0->GetType(),
+                         (Int_t) tDigi0->GetSm(),
+                         (Int_t) tDigi0->GetRpc(),
+                         (Int_t) tDigi0->GetChannel(),
+                         (Int_t) tDigi0->GetSide(),
+                         (Int_t) tDigi1->GetType(),
+                         (Int_t) tDigi1->GetSm(),
+                         (Int_t) tDigi1->GetRpc(),
+                         (Int_t) tDigi1->GetChannel(),
+                         (Int_t) tDigi1->GetSide());
+
       if (iDetIndx > (Int_t) fhCalWalk.size()) {
         LOG(error) << "Invalid DetIndx " << iDetIndx;
         continue;
@@ -336,11 +379,8 @@ void CbmTofCalibrator::FillCalHist(CbmTofTracklet* pTrk, Int_t iOpt) {
         continue;
       }
 
-      const CbmTofDigi* tDigi1 = fDigiMan->Get<CbmTofDigi>(iDigInd1);
-      Int_t iCh1               = tDigi1->GetChannel();
-      Int_t iSide1             = tDigi1->GetSide();
-      LOG(debug) << "Fill Walk for " << iDetIndx << ", TSRCS " << iSmType << iSm
-                 << iRpc << iCh1 << iSide1 << ", " << tDigi1 << ", " << pTrk;
+      Int_t iCh1   = tDigi1->GetChannel();
+      Int_t iSide1 = tDigi1->GetSide();
       if (iCh1 > (Int_t) fhCalWalk[iDetIndx].size()) {
         LOG(error) << "Invalid Ch1 " << iCh1;
         continue;
@@ -352,8 +392,8 @@ void CbmTofCalibrator::FillCalHist(CbmTofTracklet* pTrk, Int_t iOpt) {
 
       if (iCh0 != iCh1 || iSide0 == iSide1) {
         LOG(error) << "Invalid digi pair for TSR " << iSmType << iSm << iRpc
-                   << " Ch " << iCh0 << " " << iCh1 << ", Side " << iSide0
-                   << " " << iSide1;
+                   << Form(
+                        " Ch  %2d %2d side %d %d", iCh0, iCh1, iSide0, iSide1);
         continue;
       }
 

@@ -39,6 +39,7 @@ class CbmTofDigiBdfPar;
 class CbmTofAddress;
 class CbmTofHit;
 class CbmMatch;
+class CbmEvent;
 
 class CbmTofFindTracks : public FairTask {
   friend class CbmTofTrackFinderNN;
@@ -72,7 +73,7 @@ public:
 
   /** Task execution **/
   virtual void Exec(Option_t* opt);
-  virtual void ExecFind(Option_t* opt);
+  virtual void ExecFind(Option_t* opt, CbmEvent* tEvent = NULL);
 
   /** Finish at the end of each event **/
   virtual void Finish();
@@ -88,7 +89,7 @@ public:
 
   virtual void FindVertex();
 
-  virtual void FillHistograms();
+  virtual void FillHistograms(CbmEvent* tEvent = NULL);
 
   /** Accessors **/
   CbmTofTrackFinder* GetFinder() { return fFinder; };
@@ -173,6 +174,13 @@ public:
   inline Double_t GetVertexY() const { return fVTX_Y; }
   inline Double_t GetVertexZ() const { return fVTX_Z; }
 
+  inline Int_t GetTofHitIndex(Int_t iHit) {
+    if (fTofHitIndexArray.size() < 1)
+      return iHit;
+    else
+      return fTofHitIndexArray[iHit];
+  }
+
 private:
   static CbmTofFindTracks* fInstance;
   CbmTofTrackFinder* fFinder;           // Pointer to TrackFinder concrete class
@@ -183,7 +191,8 @@ private:
   TClonesArray* fTofHitArrayIn;         // Input array of TOF hits
   TClonesArray* fTofMatchArrayIn;       // Input array of TOF hit matches
   TClonesArray* fTofHitArray;           // Output array of recalibrated TOF hits
-  TClonesArray* fTrackArray;            // Output array of CbmTofTracks
+  std::vector<Int_t> fTofHitIndexArray;  // Index of hit in TS
+  TClonesArray* fTrackArray;             // Output array of CbmTofTracks
   TClonesArray*
     fTrackArrayOut;             // Output array of CbmTofTracks in CbmEvent mode
   TClonesArray* fTofUHitArray;  // Output array of unused TOF hits

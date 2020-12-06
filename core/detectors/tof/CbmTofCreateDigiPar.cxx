@@ -140,8 +140,12 @@ InitStatus CbmTofCreateDigiPar::Init() {
     nodemap.insert(std::pair<Int_t, TGeoNode*>(iAddr, tGeoNode));
     LOG(debug) << Form(
       "Digipar for %d, addr 0x%08x: Node=%p, x %6.2f, y %6.2f, z %6.2f ",
-	  iCell, iAddr, tGeoNode,
-	  fChannelInfo->GetX(), fChannelInfo->GetY(), fChannelInfo->GetZ());
+      iCell,
+      iAddr,
+      tGeoNode,
+      fChannelInfo->GetX(),
+      fChannelInfo->GetY(),
+      fChannelInfo->GetZ());
   }
   fDigiPar->SetNodeMap(nodemap);
 

@@ -192,13 +192,14 @@ void ana_trks(Int_t nEvents        = 10000,
   tofFindTracks->SetCalOpt(
     iCalOpt);  // 1 - update offsets, 2 - update walk, 0 - bypass
   tofFindTracks->SetCorMode(iGenCor);  // valid options: 0,1,2,3,4,5,6, 10 - 19
+  //tofFindTracks->SetTtTarg(0.065);  // target value for Mar2020 triple stack -> betapeak ~ 0.95
+  //tofFindTracks->SetTtTarg(0.0605); // target value for Mar2020 triple stack -> betapeak ~ 0.95
+  //tofFindTracks->SetTtTarg(0.058);    // target value for Mar2020 double stack
+  //tofFindTracks->SetTtTarg(0.055);  // target value Nov2019 (triple stack run 831)
+  //tofFindTracks->SetTtTarg(0.048);  // target value Nov2019 (double stack run 714)
   tofFindTracks->SetTtTarg(
-    0.065);  // target value for Mar2020 triple stack -> betapeak ~ 0.95
-  //tofFindTracks->SetTtTarg(0.0605);  // target value for Mar2020 triple stack -> betapeak ~ 0.95
-  //tofFindTracks->SetTtTarg(0.058);          // target value for Mar2020 double stack
-  //tofFindTracks->SetTtTarg(0.055);            // target value Nov2019 (triple stack run 831)
-  //tofFindTracks->SetTtTarg(0.048);          // target value Nov2019 (double stack run 714)
-  //tofFindTracks->SetTtTarg(0.035);          // target value for inverse velocity, > 0.033 ns/cm!
+    0.044);  // target value Mar2020, after T0 fix (double stack run 714)
+  //tofFindTracks->SetTtTarg(0.035);  // target value for inverse velocity, > 0.033 ns/cm!
   tofFindTracks->SetCalParFileName(
     cTrkFile);                             // Tracker parameter value file name
   tofFindTracks->SetBeamCounter(5, 0, 0);  // default beam counter

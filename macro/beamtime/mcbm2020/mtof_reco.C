@@ -3,7 +3,7 @@
 //
 // --------------------------------------------------------------------------
 
-void mtof_reco(Int_t nEvents      = 100,  // number of Timeslices
+void mtof_reco(Int_t nEvents      = -1,  // number of Timeslices
                TString dataset    = "data/unp_mcbm_831",
                TString setup      = "mcbm_beam_2020_03",
                TString cCalId     = "831.50.3.0",
@@ -25,6 +25,7 @@ void mtof_reco(Int_t nEvents      = 100,  // number of Timeslices
   // -----   Environment   --------------------------------------------------
   TString myName = "mtof_reco";  // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
+  TString parDir = srcDir + "/parameters";
   // ------------------------------------------------------------------------
 
 
@@ -152,11 +153,12 @@ void mtof_reco(Int_t nEvents      = 100,  // number of Timeslices
       case 1: {
         CbmTofEventClusterizer* tofCluster =
           new CbmTofEventClusterizer("TOF Event Clusterizer", 0, 1);
-        TString cFname = Form("%s_set%09d_%02d_%01dtofClust.hst.root",
-                              cCalId.Data(),
-                              iCalSet,
-                              calMode,
-                              calSel);
+        TString cFname = parDir + "/tof/"
+                         + Form("%s_set%09d_%02d_%01dtofClust.hst.root",
+                                cCalId.Data(),
+                                iCalSet,
+                                calMode,
+                                calSel);
         tofCluster->SetCalParFileName(cFname);
         tofCluster->SetCalMode(calMode);
         tofCluster->SetCalSel(calSel);
@@ -223,7 +225,7 @@ void mtof_reco(Int_t nEvents      = 100,  // number of Timeslices
         Int_t iDutSm  = iDut % 10;
         iDut          = (iDut - iDutSm) / 10;
 
-        tofCluster->SetDutId(iDut);
+        //tofCluster->SetDutId(iDut);
         tofCluster->SetDutSm(iDutSm);
         tofCluster->SetDutRpc(iDutRpc);
 
@@ -253,12 +255,13 @@ void mtof_reco(Int_t nEvents      = 100,  // number of Timeslices
   Double_t beamWidthY = 0.1;
   switch (iTrackMode) {
     case 2: {
-      Int_t iGenCor        = 1;
-      Double_t dScalFac    = 1.;
-      Double_t dChi2Lim2   = 3.5;
-      TString cTrkFile     = Form("%s_tofFindTracks.hst.root", cCalId.Data());
+      Int_t iGenCor      = 1;
+      Double_t dScalFac  = 1.;
+      Double_t dChi2Lim2 = 3.5;
+      TString cTrkFile =
+        parDir + "/tof/" + Form("%s_tofFindTracks.hst.root", cCalId.Data());
       Int_t iTrackingSetup = 1;
-      Int_t iCalOpt        = 0;
+      Int_t iCalOpt        = 1;
 
       CbmTofTrackFinder* tofTrackFinder = new CbmTofTrackFinderNN();
       tofTrackFinder->SetMaxTofTimeDifference(0.2);  // in ns/cm

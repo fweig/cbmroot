@@ -104,19 +104,13 @@ CbmTofEventClusterizer::CbmTofEventClusterizer(const char* name,
   , fTrbHeader(NULL)
   , fTofPointsColl(NULL)
   , fMcTracksColl(NULL)
-  ,
-  //fTofDigisColl(NULL),
-  fDigiMan(nullptr)
+  , fDigiMan(nullptr)
   , fEventsColl(nullptr)
   , fbWriteHitsInOut(writeDataInOut)
   , fbWriteDigisInOut(writeDataInOut)
-  ,
-  //fTofCalDigisColl(NULL),
-  fTofHitsColl(NULL)
+  , fTofHitsColl(NULL)
   , fTofDigiMatchColl(NULL)
-  ,
-  //fTofCalDigisCollOut(NULL),
-  fTofHitsCollOut(NULL)
+  , fTofHitsCollOut(NULL)
   , fTofDigiMatchCollOut(NULL)
   , fiNbHits(0)
   , fVerbose(verbose)
@@ -226,7 +220,7 @@ CbmTofEventClusterizer::CbmTofEventClusterizer(const char* name,
   , fTRefMode(0)
   , fTRefHits(0)
   , fIdMode(0)
-  , fDutId(0)
+  , fDutId(-1)
   , fDutSm(0)
   , fDutRpc(0)
   , fDutAddr(0)
@@ -390,7 +384,7 @@ void CbmTofEventClusterizer::Exec(Option_t* option) {
 
       // --- In event-by-event mode: copy caldigis, hits and matches to output array and register them to event
 
-      // Int_t iDigi0=iNbCalDigis; //starting index of current event  (VF) not used
+      Int_t iDigi0 = iNbCalDigis;  //starting index of current event
       for (UInt_t index = 0; index < fTofCalDigiVec->size(); index++) {
         //      for (Int_t index = 0; index < fTofCalDigisColl->GetEntriesFast(); index++){
         CbmTofDigi* tDigi = &(fTofCalDigiVec->at(index));
@@ -407,14 +401,25 @@ void CbmTofEventClusterizer::Exec(Option_t* option) {
         tEvent->AddData(ECbmDataType::kTofHit, iNbHits);
 
         CbmMatch* pDigiMatch = (CbmMatch*) fTofDigiMatchColl->At(index);
-        // update content of match object, not necessary if event definition  is kept !
-        /*
-				 for (Int_t iLink=0; iLink<pDigiMatch->GetNofLinks(); iLink++) {  // loop over digis
-				 CbmLink Link = pDigiMatch->GetLink(iLink);
-				 Link.SetIndex(Link.GetIndex()+iDigi0);
-				 }
-				 */
-        new ((*fTofDigiMatchCollOut)[iNbHits]) CbmMatch(*pDigiMatch);
+
+        TString cstr = Form("Modify for hit %d, (%d", index, iNbHits);
+        cstr += Form(") %d links by iDigi0 %d: ",
+                     (Int_t) pDigiMatch->GetNofLinks(),
+                     iDigi0);
+
+        // update content of match object to TS array
+        CbmMatch* mDigiMatch = new CbmMatch();
+        for (Int_t iLink = 0; iLink < pDigiMatch->GetNofLinks(); iLink++) {
+          CbmLink Link = pDigiMatch->GetLink(iLink);
+          Link.SetIndex(Link.GetIndex() + iDigi0);
+          cstr += Form(" %d", (Int_t) Link.GetIndex());
+          mDigiMatch->AddLink(Link);
+        }
+        //delete pDigiMatch;
+
+        LOG(debug) << cstr;
+
+        new ((*fTofDigiMatchCollOut)[iNbHits]) CbmMatch(*mDigiMatch);
 
         iNbHits++;
       }
@@ -1171,8 +1176,18 @@ Bool_t CbmTofEventClusterizer::CreateHistos() {
              4000,
              0.0,
              4.0);
+  // RPC related distributions
+  Int_t iNbDet = fDigiBdfPar->GetNbDet();
+  fviDetId.resize(iNbDet);
 
-  /*   TH2* hTemp = 0;*/
+  fDetIdIndexMap.clear();
+  for (Int_t iDetIndx = 0; iDetIndx < iNbDet; iDetIndx++) {
+    Int_t iUniqueId           = fDigiBdfPar->GetDetUId(iDetIndx);
+    fDetIdIndexMap[iUniqueId] = iDetIndx;
+    fviDetId[iDetIndx]        = iUniqueId;
+  }
+
+  if (fDutId < 0) return kTRUE;
 
   // Sm related distributions
   fhSmCluPosition.resize(fDigiBdfPar->GetNbSmTypes());
@@ -1312,8 +1327,6 @@ Bool_t CbmTofEventClusterizer::CreateHistos() {
     }
   }
 
-  // RPC related distributions
-  Int_t iNbDet = fDigiBdfPar->GetNbDet();
   LOG(info) << " Define Clusterizer histos for " << iNbDet << " detectors ";
 
   fhRpcDigiCor.resize(iNbDet);
@@ -1342,17 +1355,12 @@ Bool_t CbmTofEventClusterizer::CreateHistos() {
   fhRpcDTLastHits.resize(iNbDet);
   fhRpcDTLastHits_Tot.resize(iNbDet);
   fhRpcDTLastHits_CluSize.resize(iNbDet);
-  fviDetId.resize(iNbDet);
-
-  fDetIdIndexMap.clear();
 
   if (fTotMax != 0.) fdTOTMax = fTotMax;
   if (fTotMin != 0.) fdTOTMin = fTotMin;
 
   for (Int_t iDetIndx = 0; iDetIndx < iNbDet; iDetIndx++) {
-    Int_t iUniqueId           = fDigiBdfPar->GetDetUId(iDetIndx);
-    fDetIdIndexMap[iUniqueId] = iDetIndx;
-    fviDetId[iDetIndx]        = iUniqueId;
+    Int_t iUniqueId = fDigiBdfPar->GetDetUId(iDetIndx);
 
     Int_t iSmType = CbmTofAddress::GetSmType(iUniqueId);
     Int_t iSmId   = CbmTofAddress::GetSmId(iUniqueId);
@@ -2388,6 +2396,9 @@ Bool_t CbmTofEventClusterizer::CreateHistos() {
 Bool_t CbmTofEventClusterizer::FillHistos() {
   fhClustBuildTime->Fill(fStop.GetSec() - fStart.GetSec()
                          + (fStop.GetNanoSec() - fStart.GetNanoSec()) / 1e9);
+
+  if (fDutId < 0) return kTRUE;
+
   Int_t iNbTofHits = fTofHitsColl->GetEntries();
   CbmTofHit* pHit;
   //gGeoManager->SetTopVolume( gGeoManager->FindVolumeFast("tof_v14a") );
@@ -3586,6 +3597,7 @@ Bool_t CbmTofEventClusterizer::FillHistos() {
 }
 
 Bool_t CbmTofEventClusterizer::WriteHistos() {
+  if (fDutId < 0) return kTRUE;
   TDirectory* oldir = gDirectory;
   TFile* fHist;
   fHist = new TFile(fOutHstFileName, "RECREATE");
@@ -4600,14 +4612,14 @@ Bool_t CbmTofEventClusterizer::WriteHistos() {
                 TFitResultPtr fRes =
                   hTy->Fit("gaus", "SQM0", "", dFMean - dFLim, dFMean + dFLim);
                 LOG(debug) << "CalibF "
-                          << Form("TSRC %d%d%d%d gaus %8.2f %8.2f %8.2f ",
-                                  iSmType,
-                                  iSm,
-                                  iRpc,
-                                  iCh,
-                                  fRes->Parameter(0),
-                                  fRes->Parameter(1),
-                                  fRes->Parameter(2));
+                           << Form("TSRC %d%d%d%d gaus %8.2f %8.2f %8.2f ",
+                                   iSmType,
+                                   iSm,
+                                   iRpc,
+                                   iCh,
+                                   fRes->Parameter(0),
+                                   fRes->Parameter(1),
+                                   fRes->Parameter(2));
                 TMean = fRes->Parameter(1);  //overwrite mean
               }
             }
@@ -5490,7 +5502,6 @@ Bool_t CbmTofEventClusterizer::BuildClusters() {
       }
     }
     iNbTofDigi = fTofDigiVec.size();
-    //iNbTofDigi = fTofDigisColl->GetEntries(); // Update
   }
 
   if (kTRUE) {
@@ -5505,7 +5516,7 @@ Bool_t CbmTofEventClusterizer::BuildClusters() {
       CbmTofDigi* pDigi = &(fTofDigiVec.at(iDigInd));
       Int_t iDetIndx    = fDigiBdfPar->GetDetInd(pDigi->GetAddress());
 
-      LOG(debug) << iDigInd << " " << pDigi
+      LOG(debug) << "RawDigi" << iDigInd << " " << pDigi
                  << Form(" Address : 0x%08x ", pDigi->GetAddress()) << " SmT "
                  << pDigi->GetType() << " Sm " << pDigi->GetSm() << " Rpc "
                  << pDigi->GetRpc() << " Ch " << pDigi->GetChannel() << " S "
@@ -5521,143 +5532,150 @@ Bool_t CbmTofEventClusterizer::BuildClusters() {
         break;
       }
 
-      if (NULL == fhRpcDigiCor[iDetIndx]) {
-        if (100 < iMess++)
-          LOG(warning) << Form(
-            " DigiCor Histo for  DetIndx %d derived from 0x%08x not found",
-            iDetIndx,
-            pDigi->GetAddress());
-        continue;
-      }
-
-      size_t iDigiCh = pDigi->GetChannel() * 2 + pDigi->GetSide();
-      if (iDigiCh < fvTimeLastDigi[iDetIndx].size()) {
-
-        if (fvTimeLastDigi[iDetIndx][iDigiCh] > 0) {
-          if (fdStartAna10s > 0.) {
-            Double_t dTimeAna10s = (pDigi->GetTime() - fdStartAna10s) / 1.E9;
-            if (dTimeAna10s < fdSpillDuration)
-              fhRpcDigiDTLD[iDetIndx]->Fill(
-                iDigiCh,
-                (pDigi->GetTime() - fvTimeLastDigi[iDetIndx][iDigiCh]) / 1.E9);
-          }
-        }
-        fvTimeLastDigi[iDetIndx][iDigiCh] = pDigi->GetTime();
-
-        if (fvTimeFirstDigi[iDetIndx][iDigiCh] != 0.) {
-          fhRpcDigiDTFD[iDetIndx]->Fill(
-            iDigiCh, (pDigi->GetTime() - fvTimeFirstDigi[iDetIndx][iDigiCh]));
-          fvMulDigi[iDetIndx][iDigiCh]++;
-        } else {
-          fvTimeFirstDigi[iDetIndx][iDigiCh] = pDigi->GetTime();
-          fvMulDigi[iDetIndx][iDigiCh]++;
-        }
-      }
-
-      Double_t dTDifMin     = dDoubleMax;
       CbmTofDigi* pDigi2Min = NULL;
-      //       for (Int_t iDigI2 =iDigInd+1; iDigI2<iNbTofDigi;iDigI2++){
-      for (Int_t iDigI2 = 0; iDigI2 < iNbTofDigi; iDigI2++) {
-        CbmTofDigi* pDigi2 = &(fTofDigiVec.at(iDigI2));
-        //         CbmTofDigi *pDigi2 = (CbmTofDigi*) fTofDigisColl->At( iDigI2 );
-        // Fill digi correlation histogram per counter
-        if (iDetIndx == fDigiBdfPar->GetDetInd(pDigi2->GetAddress())) {
-          if (0. == pDigi->GetSide() && 1. == pDigi2->GetSide()) {
-            fhRpcDigiCor[iDetIndx]->Fill(pDigi->GetChannel(),
-                                         pDigi2->GetChannel());
-          } else {
-            if (1. == pDigi->GetSide() && 0. == pDigi2->GetSide()) {
-              fhRpcDigiCor[iDetIndx]->Fill(pDigi2->GetChannel(),
-                                           pDigi->GetChannel());
+      Double_t dTDifMin     = dDoubleMax;
+
+      if (fDutId > -1) {
+        if (fhRpcDigiCor.size() > 0) {
+          if (NULL == fhRpcDigiCor[iDetIndx]) {
+            if (100 < iMess++)
+              LOG(warning) << Form(
+                " DigiCor Histo for  DetIndx %d derived from 0x%08x not found",
+                iDetIndx,
+                pDigi->GetAddress());
+            continue;
+          }
+        } else
+          break;
+
+        size_t iDigiCh = pDigi->GetChannel() * 2 + pDigi->GetSide();
+        if (iDigiCh < fvTimeLastDigi[iDetIndx].size()) {
+          if (fvTimeLastDigi[iDetIndx][iDigiCh] > 0) {
+            if (fdStartAna10s > 0.) {
+              Double_t dTimeAna10s = (pDigi->GetTime() - fdStartAna10s) / 1.E9;
+              if (dTimeAna10s < fdSpillDuration)
+                fhRpcDigiDTLD[iDetIndx]->Fill(
+                  iDigiCh,
+                  (pDigi->GetTime() - fvTimeLastDigi[iDetIndx][iDigiCh])
+                    / 1.E9);
             }
           }
-          if (pDigi->GetSide() != pDigi2->GetSide()) {
-            if (pDigi->GetChannel() == pDigi2->GetChannel()) {
-              Double_t dTDif = TMath::Abs(pDigi->GetTime() - pDigi2->GetTime());
-              if (dTDif < dTDifMin) {
-                dTDifMin  = dTDif;
-                pDigi2Min = pDigi2;
+          fvTimeLastDigi[iDetIndx][iDigiCh] = pDigi->GetTime();
+
+          if (fvTimeFirstDigi[iDetIndx][iDigiCh] != 0.) {
+            fhRpcDigiDTFD[iDetIndx]->Fill(
+              iDigiCh, (pDigi->GetTime() - fvTimeFirstDigi[iDetIndx][iDigiCh]));
+            fvMulDigi[iDetIndx][iDigiCh]++;
+          } else {
+            fvTimeFirstDigi[iDetIndx][iDigiCh] = pDigi->GetTime();
+            fvMulDigi[iDetIndx][iDigiCh]++;
+          }
+        }
+
+        //       for (Int_t iDigI2 =iDigInd+1; iDigI2<iNbTofDigi;iDigI2++){
+        for (Int_t iDigI2 = 0; iDigI2 < iNbTofDigi; iDigI2++) {
+          CbmTofDigi* pDigi2 = &(fTofDigiVec.at(iDigI2));
+          //         CbmTofDigi *pDigi2 = (CbmTofDigi*) fTofDigisColl->At( iDigI2 );
+          // Fill digi correlation histogram per counter
+          if (iDetIndx == fDigiBdfPar->GetDetInd(pDigi2->GetAddress())) {
+            if (0. == pDigi->GetSide() && 1. == pDigi2->GetSide()) {
+              fhRpcDigiCor[iDetIndx]->Fill(pDigi->GetChannel(),
+                                           pDigi2->GetChannel());
+            } else {
+              if (1. == pDigi->GetSide() && 0. == pDigi2->GetSide()) {
+                fhRpcDigiCor[iDetIndx]->Fill(pDigi2->GetChannel(),
+                                             pDigi->GetChannel());
               }
-            } else if (
-              TMath::Abs(pDigi->GetChannel() - pDigi2->GetChannel())
-              == 1) {  // opposite side missing, neighbouring channel has hit on opposite side // FIXME
-              // check that same side digi of neighbouring channel is absent
-              Int_t iDigI3 = 0;
-              for (; iDigI3 < iNbTofDigi; iDigI3++) {
-                CbmTofDigi* pDigi3 = &(fTofDigiVec.at(iDigI3));
-                //       CbmTofDigi *pDigi3 = (CbmTofDigi*) fTofDigisColl->At( iDigI3 );
-                if (pDigi3->GetSide() == pDigi->GetSide()
-                    && pDigi2->GetChannel() == pDigi3->GetChannel())
-                  break;
-              }
-              if (iDigI3 == iNbTofDigi)  // same side neighbour did not fire
-              {
-                Int_t iCorMode = 0;  // Missing hit correction mode
-                switch (iCorMode) {
-                  case 0:  // no action
+            }
+            if (pDigi->GetSide() != pDigi2->GetSide()) {
+              if (pDigi->GetChannel() == pDigi2->GetChannel()) {
+                Double_t dTDif =
+                  TMath::Abs(pDigi->GetTime() - pDigi2->GetTime());
+                if (dTDif < dTDifMin) {
+                  dTDifMin  = dTDif;
+                  pDigi2Min = pDigi2;
+                }
+              } else if (
+                TMath::Abs(pDigi->GetChannel() - pDigi2->GetChannel())
+                == 1) {  // opposite side missing, neighbouring channel has hit on opposite side // FIXME
+                // check that same side digi of neighbouring channel is absent
+                Int_t iDigI3 = 0;
+                for (; iDigI3 < iNbTofDigi; iDigI3++) {
+                  CbmTofDigi* pDigi3 = &(fTofDigiVec.at(iDigI3));
+                  //       CbmTofDigi *pDigi3 = (CbmTofDigi*) fTofDigisColl->At( iDigI3 );
+                  if (pDigi3->GetSide() == pDigi->GetSide()
+                      && pDigi2->GetChannel() == pDigi3->GetChannel())
                     break;
-                  case 1:  // shift found hit
-                    LOG(debug2) << Form("shift channel %d%d%d%d%d and  ",
-                                        (Int_t) pDigi->GetType(),
-                                        (Int_t) pDigi->GetSm(),
-                                        (Int_t) pDigi->GetRpc(),
-                                        (Int_t) pDigi->GetChannel(),
-                                        (Int_t) pDigi->GetSide())
-                                << Form(" %d%d%d%d%d ",
-                                        (Int_t) pDigi2->GetType(),
-                                        (Int_t) pDigi2->GetSm(),
-                                        (Int_t) pDigi2->GetRpc(),
-                                        (Int_t) pDigi2->GetChannel(),
-                                        (Int_t) pDigi2->GetSide());
-                    //if(pDigi->GetTime() < pDigi2->GetTime())
-                    if (pDigi->GetSide() == 0)
-                      pDigi2->SetAddress(pDigi->GetSm(),
+                }
+                if (iDigI3 == iNbTofDigi)  // same side neighbour did not fire
+                {
+                  Int_t iCorMode = 0;  // Missing hit correction mode
+                  switch (iCorMode) {
+                    case 0:  // no action
+                      break;
+                    case 1:  // shift found hit
+                      LOG(debug2) << Form("shift channel %d%d%d%d%d and  ",
+                                          (Int_t) pDigi->GetType(),
+                                          (Int_t) pDigi->GetSm(),
+                                          (Int_t) pDigi->GetRpc(),
+                                          (Int_t) pDigi->GetChannel(),
+                                          (Int_t) pDigi->GetSide())
+                                  << Form(" %d%d%d%d%d ",
+                                          (Int_t) pDigi2->GetType(),
+                                          (Int_t) pDigi2->GetSm(),
+                                          (Int_t) pDigi2->GetRpc(),
+                                          (Int_t) pDigi2->GetChannel(),
+                                          (Int_t) pDigi2->GetSide());
+                      //if(pDigi->GetTime() < pDigi2->GetTime())
+                      if (pDigi->GetSide() == 0)
+                        pDigi2->SetAddress(pDigi->GetSm(),
+                                           pDigi->GetRpc(),
+                                           pDigi->GetChannel(),
+                                           1 - pDigi->GetSide(),
+                                           pDigi->GetType());
+                      else
+                        pDigi->SetAddress(pDigi2->GetSm(),
+                                          pDigi2->GetRpc(),
+                                          pDigi2->GetChannel(),
+                                          1 - pDigi2->GetSide(),
+                                          pDigi2->GetType());
+
+                      LOG(debug2) << Form("resultchannel %d%d%d%d%d and  ",
+                                          (Int_t) pDigi->GetType(),
+                                          (Int_t) pDigi->GetSm(),
+                                          (Int_t) pDigi->GetRpc(),
+                                          (Int_t) pDigi->GetChannel(),
+                                          (Int_t) pDigi->GetSide())
+                                  << Form(" %d%d%d%d%d ",
+                                          (Int_t) pDigi2->GetType(),
+                                          (Int_t) pDigi2->GetSm(),
+                                          (Int_t) pDigi2->GetRpc(),
+                                          (Int_t) pDigi2->GetChannel(),
+                                          (Int_t) pDigi2->GetSide());
+                      break;
+                    case 2:  // insert missing hits
+                      fTofDigiVec.push_back(CbmTofDigi(*pDigi));
+                      CbmTofDigi* pDigiN = &(fTofDigiVec.back());
+                      //		     CbmTofDigi *pDigiN  = new((*fTofDigisColl)[iNbTofDigi++]) CbmTofDigi( *pDigi );
+                      pDigiN->SetAddress(pDigi->GetSm(),
                                          pDigi->GetRpc(),
-                                         pDigi->GetChannel(),
-                                         1 - pDigi->GetSide(),
+                                         pDigi2->GetChannel(),
+                                         pDigi->GetSide(),
                                          pDigi->GetType());
-                    else
-                      pDigi->SetAddress(pDigi2->GetSm(),
-                                        pDigi2->GetRpc(),
-                                        pDigi2->GetChannel(),
-                                        1 - pDigi2->GetSide(),
-                                        pDigi2->GetType());
+                      pDigiN->SetTot(pDigi2->GetTot());
 
-                    LOG(debug2) << Form("resultchannel %d%d%d%d%d and  ",
-                                        (Int_t) pDigi->GetType(),
-                                        (Int_t) pDigi->GetSm(),
-                                        (Int_t) pDigi->GetRpc(),
-                                        (Int_t) pDigi->GetChannel(),
-                                        (Int_t) pDigi->GetSide())
-                                << Form(" %d%d%d%d%d ",
-                                        (Int_t) pDigi2->GetType(),
-                                        (Int_t) pDigi2->GetSm(),
-                                        (Int_t) pDigi2->GetRpc(),
-                                        (Int_t) pDigi2->GetChannel(),
-                                        (Int_t) pDigi2->GetSide());
-                    break;
-                  case 2:  // insert missing hits
-                    fTofDigiVec.push_back(CbmTofDigi(*pDigi));
-                    CbmTofDigi* pDigiN = &(fTofDigiVec.back());
-                    //		     CbmTofDigi *pDigiN  = new((*fTofDigisColl)[iNbTofDigi++]) CbmTofDigi( *pDigi );
-                    pDigiN->SetAddress(pDigi->GetSm(),
-                                       pDigi->GetRpc(),
-                                       pDigi2->GetChannel(),
-                                       pDigi->GetSide(),
-                                       pDigi->GetType());
-                    pDigiN->SetTot(pDigi2->GetTot());
+                      fTofDigiVec.push_back(CbmTofDigi(*pDigi2));
+                      CbmTofDigi* pDigiN2 = &(fTofDigiVec.back());
+                      //		     CbmTofDigi *pDigiN2 = new((*fTofDigisColl)[iNbTofDigi++]) CbmTofDigi( *pDigi2 );
+                      pDigiN2->SetAddress(pDigi2->GetSm(),
+                                          pDigi2->GetRpc(),
+                                          pDigi->GetChannel(),
+                                          pDigi2->GetSide(),
+                                          pDigi2->GetType());
+                      pDigiN2->SetTot(pDigi->GetTot());
 
-                    fTofDigiVec.push_back(CbmTofDigi(*pDigi2));
-                    CbmTofDigi* pDigiN2 = &(fTofDigiVec.back());
-                    //		     CbmTofDigi *pDigiN2 = new((*fTofDigisColl)[iNbTofDigi++]) CbmTofDigi( *pDigi2 );
-                    pDigiN2->SetAddress(pDigi2->GetSm(),
-                                        pDigi2->GetRpc(),
-                                        pDigi->GetChannel(),
-                                        pDigi2->GetSide(),
-                                        pDigi2->GetType());
-                    pDigiN2->SetTot(pDigi->GetTot());
-
-                    break;
+                      break;
+                  }
                 }
               }
             }
@@ -5719,7 +5737,7 @@ Bool_t CbmTofEventClusterizer::BuildClusters() {
   }  // kTRUE end
 
   // Calibrate RawDigis
-  if (kTRUE == fDigiBdfPar->UseExpandedDigi()) {
+  if (kTRUE) {
     CbmTofDigi* pDigi;
     // CbmTofDigi *pCalDigi=NULL;  (VF) not used
     CalibRawDigis();
@@ -5766,67 +5784,68 @@ Bool_t CbmTofEventClusterizer::BuildClusters() {
     }  // for( Int_t iDigInd = 0; iDigInd < nTofDigi; iDigInd++ )
 
     // inspect digi array
-    Int_t iNbDet = fDigiBdfPar->GetNbDet();
-    for (Int_t iDetIndx = 0; iDetIndx < iNbDet; iDetIndx++) {
-      Int_t iDetId    = fviDetId[iDetIndx];
-      Int_t iSmType   = CbmTofAddress::GetSmType(iDetId);
-      Int_t iSm       = CbmTofAddress::GetSmId(iDetId);
-      Int_t iRpc      = CbmTofAddress::GetRpcId(iDetId);
-      Int_t iNbStrips = fDigiBdfPar->GetNbChan(iSmType, iRpc);
-      for (Int_t iStrip = 0; iStrip < iNbStrips; iStrip++) {
-        Int_t iDigiMul = fStorDigi[iSmType][iSm * fDigiBdfPar->GetNbRpc(iSmType)
-                                            + iRpc][iStrip]
-                           .size();
-        //LOG(info)<<"Inspect TSRC "<<iSmType<<iSm<<iRpc<<iStrip<<" with "<<iNbStrips<<" strips: Mul "<<iDigiMul;
-        if (iDigiMul > 0) {
-          fhRpcDigiMul[iDetIndx]->Fill(iStrip, iDigiMul);
-          if (iDigiMul == 1) {
-            fhRpcDigiStatus[iDetIndx]->Fill(iStrip, 0);
-            if (iStrip > 0)
-              if (fStorDigi[iSmType][iSm * fDigiBdfPar->GetNbRpc(iSmType)
-                                     + iRpc][iStrip - 1]
-                    .size()
-                  > 1) {
-                fhRpcDigiStatus[iDetIndx]->Fill(iStrip, 1);
-                if (TMath::Abs(
-                      fStorDigi[iSmType][iSm * fDigiBdfPar->GetNbRpc(iSmType)
-                                         + iRpc][iStrip][0]
-                        ->GetTime()
-                      - fStorDigi[iSmType][iSm * fDigiBdfPar->GetNbRpc(iSmType)
-                                           + iRpc][iStrip - 1][0]
-                          ->GetTime())
-                    < fMaxTimeDist)
-                  fhRpcDigiStatus[iDetIndx]->Fill(iStrip, 3);
-              }
-            if (iStrip < iNbStrips - 2) {
-              if (fStorDigi[iSmType][iSm * fDigiBdfPar->GetNbRpc(iSmType)
-                                     + iRpc][iStrip + 1]
-                    .size()
-                  > 1) {
-                fhRpcDigiStatus[iDetIndx]->Fill(iStrip, 2);
-                if (TMath::Abs(
-                      fStorDigi[iSmType][iSm * fDigiBdfPar->GetNbRpc(iSmType)
-                                         + iRpc][iStrip][0]
-                        ->GetTime()
-                      - fStorDigi[iSmType][iSm * fDigiBdfPar->GetNbRpc(iSmType)
-                                           + iRpc][iStrip + 1][0]
-                          ->GetTime())
-                    < fMaxTimeDist)
-                  fhRpcDigiStatus[iDetIndx]->Fill(iStrip, 4);
+    if (fDutId > -1) {
+      Int_t iNbDet = fDigiBdfPar->GetNbDet();
+      for (Int_t iDetIndx = 0; iDetIndx < iNbDet; iDetIndx++) {
+        Int_t iDetId    = fviDetId[iDetIndx];
+        Int_t iSmType   = CbmTofAddress::GetSmType(iDetId);
+        Int_t iSm       = CbmTofAddress::GetSmId(iDetId);
+        Int_t iRpc      = CbmTofAddress::GetRpcId(iDetId);
+        Int_t iNbStrips = fDigiBdfPar->GetNbChan(iSmType, iRpc);
+        for (Int_t iStrip = 0; iStrip < iNbStrips; iStrip++) {
+          Int_t iDigiMul =
+            fStorDigi[iSmType][iSm * fDigiBdfPar->GetNbRpc(iSmType) + iRpc]
+                     [iStrip]
+                       .size();
+          //LOG(info)<<"Inspect TSRC "<<iSmType<<iSm<<iRpc<<iStrip<<" with "<<iNbStrips<<" strips: Mul "<<iDigiMul;
+          if (iDigiMul > 0) {
+            fhRpcDigiMul[iDetIndx]->Fill(iStrip, iDigiMul);
+            if (iDigiMul == 1) {
+              fhRpcDigiStatus[iDetIndx]->Fill(iStrip, 0);
+              if (iStrip > 0)
+                if (fStorDigi[iSmType][iSm * fDigiBdfPar->GetNbRpc(iSmType)
+                                       + iRpc][iStrip - 1]
+                      .size()
+                    > 1) {
+                  fhRpcDigiStatus[iDetIndx]->Fill(iStrip, 1);
+                  if (TMath::Abs(
+                        fStorDigi[iSmType][iSm * fDigiBdfPar->GetNbRpc(iSmType)
+                                           + iRpc][iStrip][0]
+                          ->GetTime()
+                        - fStorDigi[iSmType]
+                                   [iSm * fDigiBdfPar->GetNbRpc(iSmType) + iRpc]
+                                   [iStrip - 1][0]
+                                     ->GetTime())
+                      < fMaxTimeDist)
+                    fhRpcDigiStatus[iDetIndx]->Fill(iStrip, 3);
+                }
+              if (iStrip < iNbStrips - 2) {
+                if (fStorDigi[iSmType][iSm * fDigiBdfPar->GetNbRpc(iSmType)
+                                       + iRpc][iStrip + 1]
+                      .size()
+                    > 1) {
+                  fhRpcDigiStatus[iDetIndx]->Fill(iStrip, 2);
+                  if (TMath::Abs(
+                        fStorDigi[iSmType][iSm * fDigiBdfPar->GetNbRpc(iSmType)
+                                           + iRpc][iStrip][0]
+                          ->GetTime()
+                        - fStorDigi[iSmType]
+                                   [iSm * fDigiBdfPar->GetNbRpc(iSmType) + iRpc]
+                                   [iStrip + 1][0]
+                                     ->GetTime())
+                      < fMaxTimeDist)
+                    fhRpcDigiStatus[iDetIndx]->Fill(iStrip, 4);
+                }
               }
             }
           }
         }
       }
     }
-
     BuildHits();
 
-  }  // if( kTRUE == fDigiBdfPar->UseExpandedDigi() )
-  else {
-    LOG(error) << " Compressed Digis not implemented ... ";
-    return kFALSE;  // not implemented properly yet
-  }
+  }  // if( kTRUE ) obsolete )
+
   return kTRUE;
 }
 
@@ -5841,7 +5860,7 @@ Bool_t CbmTofEventClusterizer::MergeClusters() {
     CbmTofHit* pHit = (CbmTofHit*) fTofHitsColl->At(iHitInd);
     if (NULL == pHit) continue;
 
-    Int_t iDetId  = (pHit->GetAddress() & SelMask);
+    Int_t iDetId  = (pHit->GetAddress() & DetMask);
     Int_t iSmType = CbmTofAddress::GetSmType(iDetId);
     Int_t iNbRpc  = fDigiBdfPar->GetNbRpc(iSmType);
     if (iSmType != 5 && iSmType != 8) continue;  // only merge diamonds and Pad
@@ -5865,7 +5884,7 @@ Bool_t CbmTofEventClusterizer::MergeClusters() {
            iHitInd2++) {
         CbmTofHit* pHit2 = (CbmTofHit*) fTofHitsColl->At(iHitInd2);
         if (NULL == pHit2) continue;
-        Int_t iDetId2  = (pHit2->GetAddress() & SelMask);
+        Int_t iDetId2  = (pHit2->GetAddress() & DetMask);
         Int_t iSmType2 = CbmTofAddress::GetSmType(iDetId2);
         if (iSmType2 == iSmType) {
           Int_t iSm2 = CbmTofAddress::GetSmId(iDetId2);
@@ -6208,7 +6227,9 @@ Bool_t CbmTofEventClusterizer::AddNextChan(Int_t iSmType,
   if (iCh == iNbCh) return kFALSE;
   if (0 == fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].size()) return kFALSE;
   if (0 < fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].size())
-    fhNbDigiPerChan->Fill(fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].size());
+    if (fDutId > -1)
+      fhNbDigiPerChan->Fill(
+        fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].size());
   if (1 < fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].size()) {
     Bool_t AddedHit = kFALSE;
     for (size_t i1 = 0;
@@ -6493,7 +6514,7 @@ Bool_t CbmTofEventClusterizer::BuildHits() {
   Double_t dTimeDif = 0.0;
   Double_t dTotS    = 0.0;
   fiNbSameSide      = 0;
-  if (kTRUE == fDigiBdfPar->UseExpandedDigi()) {
+  if (kTRUE) {
     for (Int_t iSmType = 0; iSmType < iNbSmTypes; iSmType++) {
       Int_t iNbSm  = fDigiBdfPar->GetNbSm(iSmType);
       Int_t iNbRpc = fDigiBdfPar->GetNbRpc(iSmType);
@@ -6549,8 +6570,9 @@ Bool_t CbmTofEventClusterizer::BuildHits() {
                 if (fvDeadStrips[iDetIndx] & (1 << iCh))
                   continue;  // skip over dead channels
                 if (0 < fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].size())
-                  fhNbDigiPerChan->Fill(
-                    fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].size());
+                  if (fDutId > -1)
+                    fhNbDigiPerChan->Fill(
+                      fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].size());
 
                 while (1
                        < fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].size()) {
@@ -6813,6 +6835,9 @@ Bool_t CbmTofEventClusterizer::BuildHits() {
                   if (TMath::Abs(dPosY)
                       > fChannelInfo->GetSizey()
                           * fPosYMaxScal) {  // remove both digis
+                    LOG(debug1) << "Remove digis on TSRC " << iSmType << iSm
+                                << iRpc << iCh << " with dPosY " << dPosY
+                                << " > " << fChannelInfo->GetSizey();
                     fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].erase(
                       fStorDigi[iSmType][iSm * iNbRpc + iRpc][iCh].begin());
                     fStorDigiInd[iSmType][iSm * iNbRpc + iRpc][iCh].erase(
@@ -6852,10 +6877,12 @@ Bool_t CbmTofEventClusterizer::BuildHits() {
                   // Now check if a hit/cluster is already started
                   if (0 < iNbChanInHit) {
                     if (iLastChan == iCh - 1) {
-                      fhDigTimeDifClust->Fill(dTime - dLastTime);
-                      fhDigSpacDifClust->Fill(dPosY - dLastPosY);
-                      fhDigDistClust->Fill(dPosY - dLastPosY,
-                                           dTime - dLastTime);
+                      if (fDutId > -1) {
+                        fhDigTimeDifClust->Fill(dTime - dLastTime);
+                        fhDigSpacDifClust->Fill(dPosY - dLastPosY);
+                        fhDigDistClust->Fill(dPosY - dLastPosY,
+                                             dTime - dLastTime);
+                      }
                     }
                     // if( iLastChan == iCh - 1 )
                     // a cluster is already started => check distance in space/time
@@ -7077,10 +7104,7 @@ Bool_t CbmTofEventClusterizer::BuildHits() {
                       } else {
                         pHit->Delete();
                       }
-                      /*
-											 new((*fTofDigiMatchColl)[fiNbHits]) CbmMatch();
-											 CbmMatch* digiMatch = (CbmMatch *)fTofDigiMatchColl->At(fiNbHits);
-											 */
+
                       CbmMatch* digiMatch =
                         new ((*fTofDigiMatchColl)[fiNbHits]) CbmMatch();
                       for (size_t i = 0; i < vDigiIndRef.size(); i++) {
@@ -7311,25 +7335,30 @@ Bool_t CbmTofEventClusterizer::BuildHits() {
               if (iChm > iNbCh - 1) iChm = iNbCh - 1;
               iDetId =
                 CbmTofAddress::GetUniqueAddress(iSm, iRpc, iChm, 0, iSmType);
-              Int_t iRefId = 0;  // Index of the correspondng TofPoint
+              //Int_t iRefId = 0;  // Index of the correspondng TofPoint
               //if(NULL != fTofPointsColl) iRefId = fTofPointsColl->IndexOf( vPtsRef[0] );
               TString cstr = "Save V-Hit  ";
-              cstr += Form(" %3d %3d 0x%08x %3d 0x%08x %8.2f %6.2f",  // %3d %3d
-                           fiNbHits,
-                           iNbChanInHit,
-                           iDetId,
-                           iLastChan,
-                           iRefId,  //vPtsRef.size(),vPtsRef[0])
-                           dWeightedTime,
-                           dWeightedPosY);
+              cstr += Form(
+                " %3d %3d 0x%08x TSR %d%d%d Ch %2d %8.2f %6.2f",  // %3d %3d
+                fiNbHits,
+                iNbChanInHit,
+                iDetId,
+                iSmType,
+                iSm,
+                iRpc,
+                iChm,
+                dWeightedTime,
+                dWeightedPosY);
 
-              cstr += Form(", DigiSize: %lu ", vDigiIndRef.size());
+              cstr += Form(", DigiSize: %lu (%3lu)",
+                           vDigiIndRef.size(),
+                           fTofCalDigiVec->size());
               cstr += ", DigiInds: ";
 
               fviClusterMul[iSmType][iSm][iRpc]++;
 
               for (UInt_t i = 0; i < vDigiIndRef.size(); i++) {
-                cstr += Form(" %d (M,%d)",
+                cstr += Form(" %3d (M,%2d)",
                              vDigiIndRef.at(i),
                              fviClusterMul[iSmType][iSm][iRpc]);
               }
@@ -7367,10 +7396,7 @@ Bool_t CbmTofEventClusterizer::BuildHits() {
               } else {
                 pHit->Delete();
               }
-              /*
-							 new((*fTofDigiMatchColl)[fiNbHits]) CbmMatch();
-							 CbmMatch* digiMatch = (CbmMatch *)fTofDigiMatchColl->At(fiNbHits);
-							 */
+
               CbmMatch* digiMatch =
                 new ((*fTofDigiMatchColl)[fiNbHits]) CbmMatch();
 

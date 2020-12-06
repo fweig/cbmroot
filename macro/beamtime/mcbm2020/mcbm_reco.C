@@ -192,6 +192,7 @@ void mcbm_reco(Int_t runId = 831, Int_t nTimeslices = 0) {
   FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
   parIo1->open(parFile.Data(), "UPDATE");
+  parIo2->open(parFileList, "in");
   rtdb->setFirstInput(parIo1);
   parIo2->open(parFileList, "in");
   rtdb->setSecondInput(parIo2);
@@ -223,7 +224,7 @@ void mcbm_reco(Int_t runId = 831, Int_t nTimeslices = 0) {
   std::cout << std::endl << std::endl;
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output file is " << outFile << std::endl;
-  std::cout << "Parameter file is " << parFile << std::endl;
+  std::cout << "Parameter file is " << parFileOut << std::endl;
   std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
             << std::endl;
   std::cout << std::endl;
