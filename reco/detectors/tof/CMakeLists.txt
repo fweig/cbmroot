@@ -34,6 +34,7 @@ link_directories(${LINK_DIRECTORIES})
 
 set(SRCS
   CbmTofBuildDigiEvents.cxx
+  CbmTofHitMaker.cxx
   CbmTofCosmicClusterizer.cxx
   CbmTofEventClusterizer.cxx
   CbmTofFindTracks.cxx 

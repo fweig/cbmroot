@@ -5,6 +5,7 @@
 #pragma link off all functions;
 
 #pragma link C++ class CbmTofBuildDigiEvents + ;
+#pragma link C++ class CbmTofHitMaker + ;
 #pragma link C++ class CbmTofCosmicClusterizer + ;
 #pragma link C++ class CbmTofEventClusterizer + ;
 #pragma link C++ class CbmTofFindTracks + ;
