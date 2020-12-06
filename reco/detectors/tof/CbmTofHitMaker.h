@@ -66,8 +66,8 @@ public:
        ** @brief Constructor.
        **/
   CbmTofHitMaker(const char* name,
-                         Int_t verbose         = 1,
-                         Bool_t writeDataInOut = kTRUE);
+                 Int_t verbose         = 1,
+                 Bool_t writeDataInOut = kTRUE);
   /**
        ** @brief Destructor.
        **/

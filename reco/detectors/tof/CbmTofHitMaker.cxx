@@ -68,7 +68,7 @@
 // Globals
 #include <vector>
 
-static Int_t iNbTs            = 0;
+static Int_t iNbTs = 0;
 
 static Bool_t bAddBeamCounterSideDigi = kTRUE;
 static TRandom3* fRndm                = new TRandom3();
@@ -78,14 +78,13 @@ static TRandom3* fRndm                = new TRandom3();
 CbmTofHitMaker* CbmTofHitMaker::fInstance = 0;
 
 /************************************************************************************/
-CbmTofHitMaker::CbmTofHitMaker()
-  : CbmTofHitMaker("TofHitMaker", 0, 0) {
+CbmTofHitMaker::CbmTofHitMaker() : CbmTofHitMaker("TofHitMaker", 0, 0) {
   // if ( !fInstance ) fInstance = this;
 }
 
 CbmTofHitMaker::CbmTofHitMaker(const char* name,
-                                               Int_t verbose,
-                                               Bool_t writeDataInOut)
+                               Int_t verbose,
+                               Bool_t writeDataInOut)
   : FairTask(TString(name), verbose)
   , fGeoHandler(new CbmTofGeoHandler())
   , fTofId(NULL)
@@ -275,8 +274,7 @@ CbmTofHitMaker::~CbmTofHitMaker() {
 /************************************************************************************/
 // FairTasks inherited functions
 InitStatus CbmTofHitMaker::Init() {
-  LOG(info)
-    << "CbmTofHitMaker initializing... expect Digis in ns units! ";
+  LOG(info) << "CbmTofHitMaker initializing... expect Digis in ns units! ";
 
   if (kFALSE == RegisterInputs()) return kFATAL;
 
@@ -310,8 +308,8 @@ void CbmTofHitMaker::Exec(Option_t* option) {
 
   if (fTofCalDigiVecOut) fTofCalDigiVecOut->clear();
   if (fEventsColl) {
-    LOG(info) << "CbmTofHitMaker::Exec => New timeslice " << iNbTs
-              << " with " << fEventsColl->GetEntriesFast() << " events, "
+    LOG(info) << "CbmTofHitMaker::Exec => New timeslice " << iNbTs << " with "
+              << fEventsColl->GetEntriesFast() << " events, "
               << fDigiMan->GetNofDigis(ECbmModuleId::kTof) << " TOF digis + "
               << fDigiMan->GetNofDigis(ECbmModuleId::kT0) << " T0 digis ";
     iNbTs++;
@@ -557,8 +555,7 @@ Bool_t CbmTofHitMaker::InitParameters() {
 
   // Initialize the TOF GeoHandler
   Bool_t isSimulation = kFALSE;
-  LOG(info)
-    << "CbmTofHitMaker::InitParameters - Geometry, Mapping, ...  ??";
+  LOG(info) << "CbmTofHitMaker::InitParameters - Geometry, Mapping, ...  ??";
 
   // Get Base Container
   FairRun* ana        = FairRun::Instance();
@@ -778,8 +775,8 @@ Bool_t CbmTofHitMaker::InitCalibParameter() {
                   htempTot_Off->GetBinContent(iCh * 2 + 1 + iSide);
               }
 
-              Double_t YMean = ((TProfile*) htempPos_pfx)
-                                 ->GetBinContent(iCh + 1);  
+              Double_t YMean =
+                ((TProfile*) htempPos_pfx)->GetBinContent(iCh + 1);
               Double_t TMean =
                 ((TProfile*) htempTOff_pfx)->GetBinContent(iCh + 1);
               //Double_t dTYOff=YMean/fDigiBdfPar->GetSignalSpeed() ;
@@ -915,8 +912,7 @@ Bool_t CbmTofHitMaker::InitCalibParameter() {
   gDirectory->cd(
     oldir
       ->GetPath());  // <= To prevent histos from being sucked in by the param file of the TRootManager!
-  LOG(info)
-    << "CbmTofHitMaker::InitCalibParameter: initialization done";
+  LOG(info) << "CbmTofHitMaker::InitCalibParameter: initialization done";
   return kTRUE;
 }
 /************************************************************************************/
@@ -1092,13 +1088,15 @@ Bool_t CbmTofHitMaker::DeleteGeometry() {
 // Histogramming functions
 Bool_t CbmTofHitMaker::CreateHistos() {
   // <= To prevent histos from being sucked in by the param file of the TRootManager!
-  TDirectory* oldir = gDirectory;  
-  gROOT->cd();  
+  TDirectory* oldir = gDirectory;
+  gROOT->cd();
   fhClustBuildTime =
     new TH1I("TofClustBuildTime",
              "Time needed to build clusters in each event; Time [s]",
-             100, 0.0, 4.0);
-  gDirectory->cd(oldir->GetPath());  
+             100,
+             0.0,
+             4.0);
+  gDirectory->cd(oldir->GetPath());
   // <= To prevent histos from being sucked in by the param file of the TRootManager!
 
   return kTRUE;
@@ -1519,9 +1517,7 @@ void CbmTofHitMaker::fit_ybox(TH1* h1, Double_t ysize) {
   fit_ybox(h1, ysize, fpar);
 }
 
-void CbmTofHitMaker::fit_ybox(TH1* h1,
-                                      Double_t ysize,
-                                      Double_t* fpar = NULL) {
+void CbmTofHitMaker::fit_ybox(TH1* h1, Double_t ysize, Double_t* fpar = NULL) {
   TAxis* xaxis  = h1->GetXaxis();
   Double_t Ymin = xaxis->GetXmin();
   Double_t Ymax = xaxis->GetXmax();
@@ -1679,13 +1675,13 @@ void CbmTofHitMaker::CleanLHMemory() {
 }
 
 Bool_t CbmTofHitMaker::AddNextChan(Int_t iSmType,
-                                           Int_t iSm,
-                                           Int_t iRpc,
-                                           Int_t iLastChan,
-                                           Double_t dLastPosX,
-                                           Double_t dLastPosY,
-                                           Double_t dLastTime,
-                                           Double_t dLastTotS) {
+                                   Int_t iSm,
+                                   Int_t iRpc,
+                                   Int_t iLastChan,
+                                   Double_t dLastPosX,
+                                   Double_t dLastPosY,
+                                   Double_t dLastTime,
+                                   Double_t dLastTotS) {
   // Int_t iNbSm  = fDigiBdfPar->GetNbSm(  iSmType);  (VF) not used
   Int_t iNbRpc = fDigiBdfPar->GetNbRpc(iSmType);
   Int_t iNbCh  = fDigiBdfPar->GetNbChan(iSmType, iRpc);
@@ -1887,10 +1883,10 @@ Bool_t CbmTofHitMaker::AddNextChan(Int_t iSmType,
 }
 
 void CbmTofHitMaker::LH_store(Int_t iSmType,
-                                      Int_t iSm,
-                                      Int_t iRpc,
-                                      Int_t iChm,
-                                      CbmTofHit* pHit) {
+                              Int_t iSm,
+                              Int_t iRpc,
+                              Int_t iChm,
+                              CbmTofHit* pHit) {
 
   if (fvLastHits[iSmType][iSm][iRpc][iChm].size() == 0)
     fvLastHits[iSmType][iSm][iRpc][iChm].push_back(pHit);
@@ -3152,8 +3148,8 @@ Bool_t CbmTofHitMaker::CalibRawDigis() {
     fTofCalDigiVec->size();  // update because of added duplicted digis
   //if(fTofCalDigisColl->IsSortable())
   //    LOG(debug)<<"CbmTofHitMaker::BuildClusters: Sort "<<fTofCalDigisColl->GetEntries()<<" calibrated digis ";
-  LOG(debug) << "CbmTofHitMaker::BuildClusters: Sort "
-             << fTofCalDigiVec->size() << " calibrated digis ";
+  LOG(debug) << "CbmTofHitMaker::BuildClusters: Sort " << fTofCalDigiVec->size()
+             << " calibrated digis ";
   if (iNbTofDigi > 1) {
     //    fTofCalDigisColl->Sort(iNbTofDigi); // Time order again, in case modified by the calibration
     /// Sort the buffers of hits due to the time offsets applied
@@ -3170,8 +3166,7 @@ Bool_t CbmTofHitMaker::CalibRawDigis() {
                         [](const CbmTofDigi& a, const CbmTofDigi& b) -> bool {
                           return a.GetTime() < b.GetTime();
                         }))
-      LOG(warning)
-        << "CbmTofHitMaker::BuildClusters: Sorting not successful ";
+      LOG(warning) << "CbmTofHitMaker::BuildClusters: Sorting not successful ";
   }
   //  }
 
