@@ -24,6 +24,7 @@ public:
     , fChi2Prim(0.)
     , fChi2sts(0.)
     , fMcMotherId(-1)
+    , fEventNumber(0.)
     , fStsMcTrackId(-1)
     , fRichMcTrackId(-1)
     , fTrdMcTrackId(-1)
@@ -75,6 +76,7 @@ public:
   Double_t fChi2sts;
 
   Int_t fMcMotherId;
+  Int_t fEventNumber;
   Int_t fStsMcTrackId;
   Int_t fRichMcTrackId;
   Int_t fTrdMcTrackId;

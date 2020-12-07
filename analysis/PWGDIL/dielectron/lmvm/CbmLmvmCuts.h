@@ -57,8 +57,8 @@ public:
     fStCutPP    = 1.;
     //fTtCutAngle = 0.75;
     //fTtCutPP = 4.0;
-    fTtCutAngle = 1.5;
-    fTtCutPP    = 1.7;
+    fTtCutAngle = 2.0;
+    fTtCutPP    = 3.0;
     //fRtCutAngle = 1.0;
     //fRtCutPP = 2.5;
     fRtCutAngle = 1.2;

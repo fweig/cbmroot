@@ -34,9 +34,9 @@ void run_litqa(const string& mcFile   = "/lustre/nyx/cbm/users/criesen/cbm/data/
 
   // - TOF digitisation parameters
   if (CbmSetup::Instance()->GetGeoTag(ECbmModuleId::kTof, geoTag)) {
-    TObjString* tofFile = new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digi.par");
-    parFileList->Add(tofFile);
-    std::cout << "-I- " << myName << ": Using parameter file " << tofFile->GetString() << std::endl;
+    //TObjString* tofFile = new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digi.par");
+    //parFileList->Add(tofFile);
+    //std::cout << "-I- " << myName << ": Using parameter file " << tofFile->GetString() << std::endl;
     TObjString* tofBdfFile = new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
     parFileList->Add(tofBdfFile);
     std::cout << "-I- " << myName << ": Using parameter file " << tofBdfFile->GetString() << std::endl;
@@ -93,7 +93,7 @@ void run_litqa(const string& mcFile   = "/lustre/nyx/cbm/users/criesen/cbm/data/
   run->AddTask(trackingQa);
 
   CbmLitFitQa* fitQa = new CbmLitFitQa();
-  fitQa->SetMvdMinNofHits(0);
+  fitQa->SetMvdMinNofHits(3);
   fitQa->SetStsMinNofHits(6);
   fitQa->SetMuchMinNofHits(10);
   fitQa->SetTrdMinNofHits(2);
@@ -102,7 +102,7 @@ void run_litqa(const string& mcFile   = "/lustre/nyx/cbm/users/criesen/cbm/data/
 
   CbmLitClusteringQa* clusteringQa = new CbmLitClusteringQa();
   clusteringQa->SetOutputDir("");
-  // run->AddTask(clusteringQa);
+  run->AddTask(clusteringQa);
 
   CbmLitTofQa* tofQa = new CbmLitTofQa();
   tofQa->SetOutputDir(std::string(""));

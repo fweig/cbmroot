@@ -81,6 +81,8 @@ public:
 private:
   static const int fNofSignals = 5;
 
+  int nRebin;
+
   Bool_t fUseMvd;   // do you want to draw histograms related to the MVD detector?
   Bool_t fDrawQgp;  // do you wan to draq QGP signal
 
@@ -95,6 +97,41 @@ private:
   std::vector<TH2D*> fh_mean_pi0_minv_pt;
   std::vector<TH1D*> fh_mean_sbg_vs_minv;  //Coctail/BG vs. invariant mass for different analysis steps
 
+  // Combinatorial histograms
+  std::vector<TH1D*> fh_mean_combPairsPM_sameEvent_minv;
+  std::vector<TH1D*> fh_mean_combPairsPP_sameEvent_minv;
+  std::vector<TH1D*> fh_mean_combPairsMM_sameEvent_minv;
+  std::vector<TH1D*> fh_mean_combPairsPM_mixedEvents_minv;
+  std::vector<TH1D*> fh_mean_combPairsPP_mixedEvents_minv;
+  std::vector<TH1D*> fh_mean_combPairsMM_mixedEvents_minv;
+  std::vector<TH1D*> fh_mean_combPairsPM_sameEvent_minv_raw;  // won't be scaled with binWidth
+  std::vector<TH1D*> fh_mean_combPairsPP_sameEvent_minv_raw;
+  std::vector<TH1D*> fh_mean_combPairsMM_sameEvent_minv_raw;
+  std::vector<TH1D*> fh_mean_combPairsPM_mixedEvents_minv_raw;
+  std::vector<TH1D*> fh_mean_combPairsPP_mixedEvents_minv_raw;
+  std::vector<TH1D*> fh_mean_combPairsMM_mixedEvents_minv_raw;
+  std::vector<TH1D*> fh_mean_combBg_errProp_minv;  // to observe error propagation
+  std::vector<TH1D*> fh_mean_combSignal_errProp_minv;
+  std::vector<TH1D*> fh_mean_combBg_GeomMeanSame_minv;   // geom. mean of comb. BG ( := SQRT[(B++) * (B--)] )
+  std::vector<TH1D*> fh_mean_combBg_GeomMeanMixed_minv;  // geom. mean of comb. BG ( := SQRT[(b++) * (b--)] )
+  std::vector<TH1D*> fh_mean_combBg_k_minv;              // k = (b+-) / ( 2 * Sqrt[(b++) * (b--)] )
+  std::vector<TH1D*> fh_mean_combBg_minv;                // combinatorial BG ( := B = 2 * geomMean * k )
+  std::vector<TH1D*> fh_mean_combBg_raw_minv;            // won't be scaled; for error propagation
+  std::vector<TH1D*>
+    fh_mean_combBg_assemb_minv;  // as previous, but with assembled same (0 - 0.3 GeV) and mixed (0.3 - 2 GeV) data
+  std::vector<TH1D*> fh_mean_combSignalNpm_minv;  // combinatorial signal ( := cSig = (N+-) - B )
+  std::vector<TH1D*>
+    fh_mean_combSignalNpm_assemb_minv;  // as previous, but with assembled same (0 - 0.3 GeV) and mixed (0.3 - 2 GeV) data
+  std::vector<TH1D*> fh_mean_combSignalBCoc_minv;  // combinatorial signal ( := cSig = (Coc + BG) - B )
+  std::vector<TH1D*>
+    fh_mean_combSignalBCoc_assemb_minv;  // as previous, but with assembled same (0 - 0.3 GeV) and mixed (0.3 - 2 GeV) data
+  std::vector<TH1D*> fh_mean_combSBg_vs_minv;  // cocktail/combBG
+
+  // Number of charged particles vs. momentum
+  std::vector<TH1D*> fh_mean_nof_plutoElectrons;
+  std::vector<TH1D*> fh_mean_nof_plutoPositrons;
+  std::vector<TH1D*> fh_mean_nof_urqmdElectrons;
+  std::vector<TH1D*> fh_mean_nof_urqmdPositrons;
 
   // index: AnalysisSteps
   std::vector<TH1D*> fh_sum_s_minv;  // sum of all signals
@@ -125,6 +162,12 @@ private:
      * \param[in] step Analysis step.
      */
   void DrawMinv(CbmLmvmAnalysisSteps step);
+
+  /**
+     * \brief Draw invariant mass spectra for all signal types for specified analysis step with BG reduced by combinatorial BG.
+     * \param[in] step Analysis step.
+     */
+  void DrawMinvCombSignalAndBg();
 
   /**
      * \brief Draw invariant mass vs Pt histograms.
@@ -158,6 +201,16 @@ private:
      * \param[in] max Maximum invariant mass.
      */
   void CalcCutEffRange(Double_t minMinv, Double_t maxMinv);
+
+  /**
+     * \brief Calculate combinatorial BG contribution.
+     */
+  void CalcCombBGHistos();
+
+  /**
+     * \brief To compare outputs from simulations with different STS versions
+     */
+  void CompareSTSversions();
 
   /**
      * \brief Create S/BG vs cuts for specified invariant mass range.

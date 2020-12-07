@@ -70,7 +70,6 @@ void CbmAnaDielectronTaskDraw::DrawHistFromFile(const string& fileName, const st
   TFile* file = new TFile(fileName.c_str());
   fHM->ReadFromFile(file);
   fNofEvents = (Int_t) H1("fh_event_number")->GetEntries();
-  //fNofEvents = 10000;
   cout << "File name = " << fileName << endl;
   cout << "Number of events = " << fNofEvents << endl;
 
@@ -100,6 +99,7 @@ void CbmAnaDielectronTaskDraw::DrawHistFromFile(const string& fileName, const st
   DrawElPiMomHis();
   DrawPmtXY();
   DrawMomLikeHist();
+  DrawSingleParticleYield();
   SaveCanvasToImage();
 
   /// Restore old global file and folder pointer to avoid messing with FairRoot
@@ -118,18 +118,159 @@ void CbmAnaDielectronTaskDraw::DrawMomLikeHist()
   DrawH2(H2("fh_mom_likelihood_Pi"));
 }
 
+void CbmAnaDielectronTaskDraw::DrawSingleParticleYield()
+{
+  TCanvas* c2 = fHM->CreateCanvas("fh_mom_ElPos_pluto", "fh_mom_ElPos_pluto", 1000, 500);
+  c2->Divide(2, 1);
+  c2->cd(1);
+  Draw1DHistoForEachAnalysisStep("fh_nof_plutoElectrons", true);
+  c2->cd(2);
+  Draw1DHistoForEachAnalysisStep("fh_nof_plutoPositrons", true);
+
+  TCanvas* c3 = fHM->CreateCanvas("fh_mom_ElPos_urqmd", "fh_mom_ElPos_urqmd", 1000, 500);
+  c3->Divide(2, 1);
+  c3->cd(1);
+  Draw1DHistoForEachAnalysisStep("fh_nof_urqmdElectrons", true);
+  c3->cd(2);
+  Draw1DHistoForEachAnalysisStep("fh_nof_urqmdPositrons", true);
+
+  // draw electron and positron yield vs. momentum
+  TH1D* nPlutoElMc    = (TH1D*) H1("fh_nof_plutoElectrons_mc")->Clone();
+  TH1D* nPlutoPosMc   = (TH1D*) H1("fh_nof_plutoPositrons_mc")->Clone();
+  TH1D* nPlutoElAcc   = (TH1D*) H1("fh_nof_plutoElectrons_acc")->Clone();
+  TH1D* nPlutoPosAcc  = (TH1D*) H1("fh_nof_plutoPositrons_acc")->Clone();
+  TH1D* nPlutoElReco  = (TH1D*) H1("fh_nof_plutoElectrons_reco")->Clone();
+  TH1D* nPlutoPosReco = (TH1D*) H1("fh_nof_plutoPositrons_reco")->Clone();
+  TH1D* nPlutoElElid  = (TH1D*) H1("fh_nof_plutoElectrons_elid")->Clone();
+  TH1D* nPlutoPosElid = (TH1D*) H1("fh_nof_plutoPositrons_elid")->Clone();
+  TH1D* nPlutoElTt    = (TH1D*) H1("fh_nof_plutoElectrons_ttcut")->Clone();
+  TH1D* nPlutoPosTt   = (TH1D*) H1("fh_nof_plutoPositrons_ttcut")->Clone();
+  TH1D* nPlutoElPt    = (TH1D*) H1("fh_nof_plutoElectrons_ptcut")->Clone();
+  TH1D* nPlutoPosPt   = (TH1D*) H1("fh_nof_plutoPositrons_ptcut")->Clone();
+  TH1D* nUrqmdElMc    = (TH1D*) H1("fh_nof_urqmdElectrons_mc")->Clone();
+  TH1D* nUrqmdPosMc   = (TH1D*) H1("fh_nof_urqmdPositrons_mc")->Clone();
+  TH1D* nUrqmdElAcc   = (TH1D*) H1("fh_nof_urqmdElectrons_acc")->Clone();
+  TH1D* nUrqmdPosAcc  = (TH1D*) H1("fh_nof_urqmdPositrons_acc")->Clone();
+  TH1D* nUrqmdElReco  = (TH1D*) H1("fh_nof_urqmdElectrons_reco")->Clone();
+  TH1D* nUrqmdPosReco = (TH1D*) H1("fh_nof_urqmdPositrons_reco")->Clone();
+  TH1D* nUrqmdElElid  = (TH1D*) H1("fh_nof_urqmdElectrons_elid")->Clone();
+  TH1D* nUrqmdPosElid = (TH1D*) H1("fh_nof_urqmdPositrons_elid")->Clone();
+  TH1D* nUrqmdElTt    = (TH1D*) H1("fh_nof_urqmdElectrons_ttcut")->Clone();
+  TH1D* nUrqmdPosTt   = (TH1D*) H1("fh_nof_urqmdPositrons_ttcut")->Clone();
+  TH1D* nUrqmdElPt    = (TH1D*) H1("fh_nof_urqmdElectrons_ptcut")->Clone();
+  TH1D* nUrqmdPosPt   = (TH1D*) H1("fh_nof_urqmdPositrons_ptcut")->Clone();
+
+  double min1 = 5e-8;
+  double max1 = 50;
+  nPlutoElMc->SetMinimum(min1);
+  nPlutoElMc->SetMaximum(max1);
+  nPlutoPosMc->SetMinimum(min1);
+  nPlutoPosMc->SetMaximum(max1);
+  nPlutoElAcc->SetMinimum(min1);
+  nPlutoElAcc->SetMaximum(max1);
+  nPlutoPosAcc->SetMinimum(min1);
+  nPlutoPosAcc->SetMaximum(max1);
+  nPlutoElReco->SetMinimum(min1);
+  nPlutoElReco->SetMaximum(max1);
+  nPlutoPosReco->SetMinimum(min1);
+  nPlutoPosReco->SetMaximum(max1);
+  nPlutoElElid->SetMinimum(min1);
+  nPlutoElElid->SetMaximum(max1);
+  nPlutoPosElid->SetMinimum(min1);
+  nPlutoPosElid->SetMaximum(max1);
+  nPlutoElTt->SetMinimum(min1);
+  nPlutoElTt->SetMaximum(max1);
+  nPlutoPosTt->SetMinimum(min1);
+  nPlutoPosTt->SetMaximum(max1);
+  nPlutoElPt->SetMinimum(min1);
+  nPlutoElPt->SetMaximum(max1);
+  nPlutoPosPt->SetMinimum(min1);
+  nPlutoPosPt->SetMaximum(max1);
+  nUrqmdElMc->SetMinimum(min1);
+  nUrqmdElMc->SetMaximum(max1);
+  nUrqmdPosMc->SetMinimum(min1);
+  nUrqmdPosMc->SetMaximum(max1);
+  nUrqmdElAcc->SetMinimum(min1);
+  nUrqmdElAcc->SetMaximum(max1);
+  nUrqmdPosAcc->SetMinimum(min1);
+  nUrqmdPosAcc->SetMaximum(max1);
+  nUrqmdElReco->SetMinimum(min1);
+  nUrqmdElReco->SetMaximum(max1);
+  nUrqmdPosReco->SetMinimum(min1);
+  nUrqmdPosReco->SetMaximum(max1);
+  nUrqmdElElid->SetMinimum(min1);
+  nUrqmdElElid->SetMaximum(max1);
+  nUrqmdPosElid->SetMinimum(min1);
+  nUrqmdPosElid->SetMaximum(max1);
+  nUrqmdElTt->SetMinimum(min1);
+  nUrqmdElTt->SetMaximum(max1);
+  nUrqmdPosTt->SetMinimum(min1);
+  nUrqmdPosTt->SetMaximum(max1);
+  nUrqmdElPt->SetMinimum(min1);
+  nUrqmdElPt->SetMaximum(max1);
+  nUrqmdPosPt->SetMinimum(min1);
+  nUrqmdPosPt->SetMaximum(max1);
+
+  fHM->CreateCanvas("fh_nof_plutoElPos", "fh_nof_plutoElPos", 800, 800);
+  DrawH1({nPlutoElMc, nPlutoPosMc, nPlutoElAcc, nPlutoPosAcc, nPlutoElReco, nPlutoPosReco}, {"", "", "", "", "", ""},
+         kLinear, kLog, false, 0, 0, 0, 0, "Hist p");
+
+  TLegend* legendNofPP = new TLegend(0.65, 0.6, 0.88, 0.93);
+  legendNofPP->SetFillColor(kWhite);
+  legendNofPP->AddEntry(nPlutoElMc, "electrons kMc");
+  legendNofPP->AddEntry(nPlutoPosMc, "positrons kMc");
+  legendNofPP->AddEntry(nPlutoElAcc, "electrons kAcc");
+  legendNofPP->AddEntry(nPlutoPosAcc, "positrons kAcc");
+  legendNofPP->AddEntry(nPlutoElReco, "electrons kReco");
+  legendNofPP->AddEntry(nPlutoPosReco, "positrons kReco");
+  legendNofPP->Draw();
+
+  fHM->CreateCanvas("fh_nof_urqmdElPos", "fh_nof_urqmdElPos", 800, 800);
+  DrawH1({nUrqmdElMc, nUrqmdPosMc, nUrqmdElAcc, nUrqmdPosAcc, nUrqmdElReco, nUrqmdPosReco}, {"", "", "", "", "", ""},
+         kLinear, kLog, false, 0, 0, 0, 0, "Hist p");
+
+  TLegend* legendNofUP = new TLegend(0.65, 0.6, 0.88, 0.93);
+  legendNofUP->SetFillColor(kWhite);
+  legendNofUP->AddEntry(nUrqmdElMc, "electrons kMc");
+  legendNofUP->AddEntry(nUrqmdPosMc, "positrons kMc");
+  legendNofUP->AddEntry(nUrqmdElAcc, "electrons kAcc");
+  legendNofUP->AddEntry(nUrqmdPosAcc, "positrons kAcc");
+  legendNofUP->AddEntry(nUrqmdElReco, "electrons kReco");
+  legendNofUP->AddEntry(nUrqmdPosReco, "positrons kReco");
+  legendNofUP->Draw();
+}
+
 void CbmAnaDielectronTaskDraw::RebinMinvHist()
 {
-  int nRebin = 10;
+  int nRebin = 20;
   for (int i = 0; i < CbmLmvmHist::fNofAnaSteps; i++) {
     H1("fh_signal_minv_" + CbmLmvmHist::fAnaSteps[i])->Rebin(nRebin);
     H1("fh_bg_minv_" + CbmLmvmHist::fAnaSteps[i])->Rebin(nRebin);
+    H1("fh_combPairsPM_minv_sameEvent_" + CbmLmvmHist::fAnaSteps[i])->Rebin(nRebin);
+    H1("fh_combPairsPP_minv_sameEvent_" + CbmLmvmHist::fAnaSteps[i])->Rebin(nRebin);
+    H1("fh_combPairsMM_minv_sameEvent_" + CbmLmvmHist::fAnaSteps[i])->Rebin(nRebin);
+    H1("fh_combPairsPM_minv_mixedEvents_" + CbmLmvmHist::fAnaSteps[i])->Rebin(nRebin);
+    H1("fh_combPairsPP_minv_mixedEvents_" + CbmLmvmHist::fAnaSteps[i])->Rebin(nRebin);
+    H1("fh_combPairsMM_minv_mixedEvents_" + CbmLmvmHist::fAnaSteps[i])->Rebin(nRebin);
+    H1("fh_nof_plutoElectrons_" + CbmLmvmHist::fAnaSteps[i])->Rebin(nRebin);
+    H1("fh_nof_plutoPositrons_" + CbmLmvmHist::fAnaSteps[i])->Rebin(nRebin);
+    H1("fh_nof_urqmdElectrons_" + CbmLmvmHist::fAnaSteps[i])->Rebin(nRebin);
+    H1("fh_nof_urqmdPositrons_" + CbmLmvmHist::fAnaSteps[i])->Rebin(nRebin);
     H1("fh_pi0_minv_" + CbmLmvmHist::fAnaSteps[i])->Rebin(nRebin);
     H1("fh_eta_minv_" + CbmLmvmHist::fAnaSteps[i])->Rebin(nRebin);
     H1("fh_bg_truematch_minv_" + CbmLmvmHist::fAnaSteps[i])->Rebin(2 * nRebin);
     H1("fh_bg_mismatch_minv_" + CbmLmvmHist::fAnaSteps[i])->Rebin(2 * nRebin);
     H1("fh_bg_truematch_el_minv_" + CbmLmvmHist::fAnaSteps[i])->Rebin(2 * nRebin);
     H1("fh_bg_truematch_notel_minv_" + CbmLmvmHist::fAnaSteps[i])->Rebin(2 * nRebin);
+
+    H1("fh_nof_plutoElectrons_" + CbmLmvmHist::fAnaSteps[i])->Rebin(nRebin);
+    H1("fh_nof_plutoPositrons_" + CbmLmvmHist::fAnaSteps[i])->Rebin(nRebin);
+    H1("fh_nof_urqmdElectrons_" + CbmLmvmHist::fAnaSteps[i])->Rebin(nRebin);
+    H1("fh_nof_urqmdPositrons_" + CbmLmvmHist::fAnaSteps[i])->Rebin(nRebin);
+    H1("fh_nof_plutoElectrons_" + CbmLmvmHist::fAnaSteps[i])->Scale(1. / nRebin);
+    H1("fh_nof_plutoPositrons_" + CbmLmvmHist::fAnaSteps[i])->Scale(1. / nRebin);
+    H1("fh_nof_urqmdElectrons_" + CbmLmvmHist::fAnaSteps[i])->Scale(1. / nRebin);
+    H1("fh_nof_urqmdPositrons_" + CbmLmvmHist::fAnaSteps[i])->Scale(1. / nRebin);
 
     for (int iP = 0; iP < CbmLmvmHist::fNofBgPairSources; iP++) {
       stringstream ss;
@@ -722,6 +863,7 @@ void CbmAnaDielectronTaskDraw::DrawMinvForEachAnalysisStep()
   c1->cd(2);
   Draw1DHistoForEachAnalysisStep("fh_bg_minv", true);
 
+
   TCanvas* c2 = fHM->CreateCanvas("lmvm_minv_for_each_analysis_step_pi0_eta",
                                   "lmvm_minv_for_each_analysis_step_pi0_eta", 1200, 600);
   c2->Divide(2, 1);
@@ -729,6 +871,26 @@ void CbmAnaDielectronTaskDraw::DrawMinvForEachAnalysisStep()
   Draw1DHistoForEachAnalysisStep("fh_pi0_minv", true);
   c2->cd(2);
   Draw1DHistoForEachAnalysisStep("fh_eta_minv", true);
+
+  TCanvas* c3 = fHM->CreateCanvas("lmvm_minv_for_each_analysis_step_combinatorial_Pairs_same_Event",
+                                  "lmvm_minv_for_each_analysis_step_combinatorial_Pairs_same_event", 1800, 600);
+  c3->Divide(3, 1);
+  c3->cd(1);
+  Draw1DHistoForEachAnalysisStep("fh_combPairsPM_minv_sameEvent", true);
+  c3->cd(2);
+  Draw1DHistoForEachAnalysisStep("fh_combPairsPP_minv_sameEvent", true);
+  c3->cd(3);
+  Draw1DHistoForEachAnalysisStep("fh_combPairsMM_minv_sameEvent", true);
+
+  TCanvas* c4 = fHM->CreateCanvas("lmvm_minv_for_each_analysis_step_combinatorial_Pairs_mixed_Events",
+                                  "lmvm_minv_for_each_analysis_step_combinatorial_Pairs_mixed_Events", 1800, 600);
+  c4->Divide(3, 1);
+  c4->cd(1);
+  Draw1DHistoForEachAnalysisStep("fh_combPairsPM_minv_mixedEvents", true);
+  c4->cd(2);
+  Draw1DHistoForEachAnalysisStep("fh_combPairsPP_minv_mixedEvents", true);
+  c4->cd(3);
+  Draw1DHistoForEachAnalysisStep("fh_combPairsMM_minv_mixedEvents", true);
 
   fHM->CreateCanvas("lmvm_minv_for_each_analysis_step_gamma", "lmvm_minv_for_each_analysis_step_gamma", 600, 600);
   // H1("fh_gamma_minv_mc")->GetXaxis()->SetRangeUser(0., 0.05);
@@ -1242,4 +1404,7 @@ void CbmAnaDielectronTaskDraw::DrawMvdAndStsHist()
 }
 
 
-void CbmAnaDielectronTaskDraw::SaveCanvasToImage() { fHM->SaveCanvasToImage(fOutputDir, "png;eps"); }
+void CbmAnaDielectronTaskDraw::SaveCanvasToImage()
+{
+  fHM->SaveCanvasToImage(fOutputDir, "png");  // fHM->SaveCanvasToImage(fOutputDir, "png;eps");
+}

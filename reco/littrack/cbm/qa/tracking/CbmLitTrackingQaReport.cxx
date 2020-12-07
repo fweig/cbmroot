@@ -541,8 +541,8 @@ void CbmLitTrackingQaReport::CalculatePionSuppressionHistos()
     string recHistName     = FindAndReplace(psHistName, "_PionSup_", "_Rec_");
     string pionRecHistName = FindAndReplace(psHistName, "_PionSup_", "_RecPions_");
     DivideHistos(HM()->H1(pionRecHistName), HM()->H1(recHistName), psHist, 1.);
-    //  psHist->SetMinimum(1.);
-    //  psHist->SetMaximum(20000.);
+    psHist->SetMinimum(10.);
+    psHist->SetMaximum(2e5);
   }
 }
 

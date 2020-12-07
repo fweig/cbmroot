@@ -6,7 +6,7 @@
  * @author Elena Lebedeva <e.lebedeva@gsi.de>
  * @since 2010
  * @version 3.0
- **/
+**/
 
 #ifndef CBM_ANA_DIELECTRON_TASK_H
 #define CBM_ANA_DIELECTRON_TASK_H
@@ -140,7 +140,7 @@ public:
                   CbmLmvmKinematicParams* parRec);
 
   /*
-     * \brief Fills minv, pty, mom histograms for specified analysis step.
+     *  \brief Fills minv, pty, mom histograms for specified analysis step.
      * \param[in] candP Positive candidate.
      * \param[in] candM Negative candidate.
      * \param[in] parMc MC kinematic parameters.
@@ -168,8 +168,9 @@ public:
 
   void FillCandidates();
 
-
-  void AssignMcToCandidates();
+  void AssignMcToCandidates(std::vector<CbmLmvmCandidate>& candVector);
+  //void AssignMcToCandidates();
+  //void AssignMcToCandidatesTotal();
 
   void AssignMcToTopologyCandidates(std::vector<CbmLmvmCandidate>& cutCandidates);
 
@@ -184,7 +185,7 @@ public:
 
   void CheckGammaConvAndPi0();
 
-  void FillNofChargedParticlesPerEvent();
+  void FillNofChargedParticles();
 
   /*
      * \brief
@@ -201,12 +202,20 @@ public:
                         const std::vector<TH2D*>& hcut, const std::vector<TH2D*>& hcutPion,
                         const std::vector<TH2D*>& hcutTruepair, Double_t angleCut, Double_t ppCut);
 
+  /*
+     * \brief Set cut values and fill histograms for topology cut
+     * \param[in] cutName ST or TT
+     */
+  // void CheckTopologyCutTotal(const std::string& cutName, const std::vector<CbmLmvmCandidate>& cutCandidates, Double_t angleCut, Double_t ppCut);
+
   void CalculateNofTopologyPairs(TH1D* h_nof_pairs, const std::string& source);
 
   void MvdCutMcDistance();
 
   // Likelihood vs Momentum
   void FillMomLikeHist();
+
+  void CombinatorialPairs();
 
   virtual void Finish();
 
@@ -257,6 +266,7 @@ private:
   Bool_t fUseTof;
 
   std::vector<CbmLmvmCandidate> fCandidates;
+  std::vector<CbmLmvmCandidate> fCandidatesTotal;
   std::vector<CbmLmvmCandidate> fSTCandidates;  // STCut Segmented tracks, reconstructed only in STS
   std::vector<CbmLmvmCandidate>
     fTTCandidates;  // TTCut Reconstructed tracks, reconstructed in all detectors but not identified as electrons
@@ -267,6 +277,8 @@ private:
 
   Double_t fPionMisidLevel;  // For the ideal particle identification cases, set to -1 for real PID
   TRandom3* fRandom3;
+
+  Int_t fEventNumber;  // number of current event
 
   //Bool_t fUseMcMomentum;
 
@@ -279,8 +291,8 @@ private:
 
   TH2D* fh_mc_signal_mom_angle;  // angle vs. sqrt(mom1*mom2) with MCTracks
 
-  TH1D* fh_nof_charged_particles;      //charged UrQMD particles
-  TH1D* fh_nof_charged_particles_acc;  //accepted charged UrQMD particles
+  TH1D* fh_nof_charged_particles;      // charged UrQMD particles
+  TH1D* fh_nof_charged_particles_acc;  // accepted charged UrQMD particles
 
   TH1D* fh_mc_mother_pdg;   //mother pdg code for e-/e+
   TH1D* fh_acc_mother_pdg;  //mother pdg code for accepted e-/e+
@@ -302,8 +314,20 @@ private:
   // [5]-gamma cut, [6]-mvd1cut, [7]-mvd2cut, [8]-stcut, [9]-ttcut, [10]-ptcut.
   //Use AnalysisSteps enumeration for access.
   //MC and ACC histograms are not filled sometimes.
-  std::vector<TH1D*> fh_signal_minv;     // Invariant mass for Signal
-  std::vector<TH1D*> fh_bg_minv;         // Invariant mass for BG
+  std::vector<TH1D*> fh_signal_minv;  // Invariant mass for Signal
+  std::vector<TH1D*> fh_bg_minv;      // Invariant mass for BG
+
+  std::vector<TH1D*> fh_combPairsPM_minv_sameEvent;    // Invariant mass for comb. Pairs of e+/e-
+  std::vector<TH1D*> fh_combPairsPP_minv_sameEvent;    // Invariant mass for comb. Pairs of e+/e+
+  std::vector<TH1D*> fh_combPairsMM_minv_sameEvent;    // Invariant mass for comb. Pairs of e-/e-
+  std::vector<TH1D*> fh_combPairsPM_minv_mixedEvents;  // Invariant mass for comb. Pairs of e+/e-
+  std::vector<TH1D*> fh_combPairsPP_minv_mixedEvents;  // Invariant mass for comb. Pairs of e+/e+
+  std::vector<TH1D*> fh_combPairsMM_minv_mixedEvents;  // Invariant mass for comb. Pairs of e-/e-
+  std::vector<TH1D*> fh_nof_plutoElectrons;            // nof electrons / positrons vs. momentum
+  std::vector<TH1D*> fh_nof_plutoPositrons;            // nof electrons / positrons vs. momentum
+  std::vector<TH1D*> fh_nof_urqmdElectrons;            // nof electrons / positrons vs. momentum
+  std::vector<TH1D*> fh_nof_urqmdPositrons;            // nof electrons / positrons vs. momentum
+
   std::vector<TH1D*> fh_pi0_minv;        // Invariant mass for Pi0
   std::vector<TH1D*> fh_eta_minv;        // Invariant mass for Eta
   std::vector<TH1D*> fh_gamma_minv;      // Invariant mass for Eta
@@ -374,6 +398,7 @@ private:
 
   //store event number
   TH1D* fh_event_number;
+  TH1D* fh_event_number_mixed;  // number of involved mixed events
 
   //nof signal and bg tracks after each cut
   TH1D* fh_nof_bg_tracks;
@@ -442,7 +467,6 @@ public:
   void SetUseTof(Bool_t use) { fUseTof = use; };
   void SetWeight(Double_t weight) { fWeight = weight; };
   void SetEnergyAndPlutoParticle(const string& energy, const string& particle);
-
   void SetPionMisidLevel(Double_t level) { fPionMisidLevel = level; }
   // void SetMomentumCut(Double_t mom) {fMomentumCut = mom;}
 };

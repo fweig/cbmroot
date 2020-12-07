@@ -46,7 +46,8 @@ public:
                         Bool_t drawSig = true);
 
 private:
-  Int_t fNofEvents;
+  Int_t fNofEvents;  // number of events of current job
+
   Bool_t fUseMvd;            // do you want to draw histograms related to the MVD detector?
   Bool_t fDrawSignificance;  // do you want to draw significance histograms of 1D cuts?
 
@@ -236,6 +237,9 @@ private:
 
   // Draw Likelihood vs Momentum
   void DrawMomLikeHist();
+
+  // Draw yield of electrons and positrons vs. momentum
+  void DrawSingleParticleYield();
 
   CbmAnaDielectronTaskDraw(const CbmAnaDielectronTaskDraw&);
   CbmAnaDielectronTaskDraw& operator=(const CbmAnaDielectronTaskDraw&);
