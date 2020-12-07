@@ -86,7 +86,7 @@ Set (CTEST_CUSTOM_COVERAGE_EXCLUDE
      ".*Dict.cxx"
      ".*Fair.*"
      ".*GTest.*"
-     "external/"
+     ".*external/.*"
     )
 
 Set(CTEST_CUSTOM_ERROR_EXCEPTION
