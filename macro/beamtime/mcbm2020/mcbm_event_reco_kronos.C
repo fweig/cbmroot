@@ -22,10 +22,16 @@ void mcbm_event_reco(Int_t runId = 831, Int_t nTimeslices = 300) {
 
 
   // -----   In- and output file names   ------------------------------------
-  TString inFile  = Form("./data/unp_mcbm_%i.root", runId);
-  TString parFile = Form("./data/unp_mcbm_params_%i.root", runId);
+  TString inFile = Form("/lustre/cbm/users/ploizeau/mcbm2020/"
+                        "unp_evt_data_7f229b3f_20201103/unp_mcbm_%i.root",
+                        runId);
+  TString parFileIn =
+    Form("/lustre/cbm/users/ploizeau/mcbm2020/unp_evt_data_7f229b3f_20201103/"
+         "unp_mcbm_params_%i.root",
+         runId);
   TString geoFile = paramDir + "mcbm2020_reco.geo.root";  // Created in sim. run
-  TString outFile = Form("./data/reco_mcbm_%i.root", runId);
+  TString parFileOut = Form("./data/reco_mcbm_params_%i.root", runId);
+  TString outFile    = Form("./data/reco_mcbm_%i.root", runId);
   // ------------------------------------------------------------------------
 
 
@@ -164,7 +170,9 @@ void mcbm_event_reco(Int_t runId = 831, Int_t nTimeslices = 300) {
   FairRuntimeDb* rtdb        = run->GetRuntimeDb();
   FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
-  parIo1->open(parFile.Data(), "UPDATE");
+  FairParRootFileIo* parIo3  = new FairParRootFileIo();
+  parIo1->open(parFileIn.Data(), "READ");
+  parIo3->open(parFileOut.Data(), "RECREATE");
   rtdb->setFirstInput(parIo1);
   // ------------------------------------------------------------------------
 
@@ -173,7 +181,7 @@ void mcbm_event_reco(Int_t runId = 831, Int_t nTimeslices = 300) {
   std::cout << std::endl;
   std::cout << "-I- " << myName << ": Initialise run" << std::endl;
   run->Init();
-  rtdb->setOutput(parIo1);
+  rtdb->setOutput(parIo3);
   rtdb->saveOutput();
   rtdb->print();
   // ------------------------------------------------------------------------
@@ -194,7 +202,7 @@ void mcbm_event_reco(Int_t runId = 831, Int_t nTimeslices = 300) {
   std::cout << std::endl << std::endl;
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output file is " << outFile << std::endl;
-  std::cout << "Parameter file is " << parFile << std::endl;
+  std::cout << "Parameter file is " << parFileOut << std::endl;
   std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
             << std::endl;
   std::cout << std::endl;

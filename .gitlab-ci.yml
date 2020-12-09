@@ -184,6 +184,40 @@ CbmRoot_Merge_macosx:
     - cat Dart.cfg
     - $PWD/Dart.sh MergeRequest Dart.cfg
 
+CbmRoot_Merge_realData:
+  stage: build
+  tags:
+    - CbmRoot_realData
+  only:
+    refs:
+      - merge_requests
+    variables:
+      - $CI_MERGE_REQUEST_PROJECT_PATH == "computing/cbmroot" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"
+  script:
+    - echo $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH
+    - echo $CI_MERGE_REQUEST_PROJECT_PATH
+    - if [ "$CI_MERGE_REQUEST_PROJECT_PATH" != "computing/cbmroot" ]; then
+    -   echo "Should not come here"
+    -   exit 1
+    - fi
+    - echo $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
+    - echo $CI_MERGE_REQUEST_ID
+    - echo $CI_MERGE_REQUEST_IID
+    - echo "export LINUX_FLAVOUR=Debian10" >> Dart.cfg
+    - echo "export FAIRSOFT_VERSION=jun19p2" >> Dart.cfg
+    - echo "export FAIRROOT_VERSION=v18.2.1" >> Dart.cfg
+    - echo "export SIMPATH=/opt/cbmsoft/fairsoft_\${FAIRSOFT_VERSION}_root6/installation" >> Dart.cfg
+    - echo "export FAIRROOTPATH=/opt/cbmsoft/fairroot_\${FAIRROOT_VERSION}-fairsoft_\${FAIRSOFT_VERSION}_root6" >> Dart.cfg
+    - echo "export RAW_DATA_PATH=/opt/cbmsoft/beamtime-test-data/mcbm2020/" >> Dart.cfg
+    - echo "export BUILDDIR=$PWD/build" >> Dart.cfg
+    - echo "export SOURCEDIR=$PWD" >> Dart.cfg
+    - echo "export NCPU=16" >> Dart.cfg
+    - echo "export PATH=\$SIMPATH/bin:$PATH" >> Dart.cfg
+    - ls
+    - pwd
+    - cat Dart.cfg
+    - $PWD/Dart.sh MergeRequest Dart.cfg
+
 pages:
   stage: documentation
   image: alpine
