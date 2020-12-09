@@ -18,6 +18,7 @@ void mcbm_reco(Int_t runId = 831, Int_t nTimeslices = 0) {
   TString myName   = "mcbm_reco";  // this macro's name for screen output
   TString srcDir   = gSystem->Getenv("VMCWORKDIR");  // top source directory
   TString paramDir = srcDir + "/macro/beamtime/mcbm2020/";
+  TString parDir   = srcDir + "/parameters";
   // ------------------------------------------------------------------------
 
 
@@ -69,8 +70,6 @@ void mcbm_reco(Int_t runId = 831, Int_t nTimeslices = 0) {
 
   // -----   Local reconstruction in MUCH   ---------------------------------
   Int_t flag = 1;
-  TString parDir =
-    TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
   TString muchDigiFile(
     parDir + "/much/much_v19c_mcbm_digi_sector.root");  // MUCH digi file
   CbmMuchFindHitsGem* muchFindHits =
@@ -160,7 +159,39 @@ void mcbm_reco(Int_t runId = 831, Int_t nTimeslices = 0) {
 
   // -----   Local reconstruction in TOF   ----------------------------------
   // ------------------------------------------------------------------------
+  // TOF defaults
+  Int_t calMode      = 93;
+  Int_t calSel       = 1;
+  Int_t calSm        = 0;
+  Int_t RefSel       = 0;
+  Double_t dDeadtime = 50.;
+  Int_t iSel2        = 500;
+  TString TofGeoTag  = "v20f_mcbm";
+  TString cCalId     = "831.50.3.0";
+  Int_t iCalSet      = 12022500;  // calibration settings
 
+  TObjString* tofBdfFile =
+    new TObjString(parDir + "/tof/tof_" + TofGeoTag + ".digibdf.par");
+  parFileList->Add(tofBdfFile);
+  std::cout << "-I- Using parameter file " << tofBdfFile->GetString()
+            << std::endl;
+
+  CbmTofEventClusterizer* tofCluster =
+    new CbmTofEventClusterizer("TOF Event Clusterizer", 0, 1);
+  TString cFname = parDir + "/tof/"
+                   + Form("%s_set%09d_%02d_%01dtofClust.hst.root",
+                          cCalId.Data(),
+                          iCalSet,
+                          calMode,
+                          calSel);
+  tofCluster->SetCalParFileName(cFname);
+  tofCluster->SetCalMode(calMode);
+  tofCluster->SetCalSel(calSel);
+  tofCluster->PosYMaxScal(0.75);              //in % of 2*length
+  tofCluster->SetChannelDeadtime(dDeadtime);  // artificial deadtime in ns
+
+  run->AddTask(tofCluster);
+  std::cout << "-I- Added task " << tofCluster->GetName() << std::endl;
 
   // -----   Local reconstruction of RICH Hits ------------------------------
   CbmRichMCbmHitProducer* hitProdRich = new CbmRichMCbmHitProducer();
@@ -224,7 +255,7 @@ void mcbm_reco(Int_t runId = 831, Int_t nTimeslices = 0) {
   std::cout << std::endl << std::endl;
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output file is " << outFile << std::endl;
-  std::cout << "Parameter file is " << parFileOut << std::endl;
+  std::cout << "Parameter file is " << parFile << std::endl;
   std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
             << std::endl;
   std::cout << std::endl;

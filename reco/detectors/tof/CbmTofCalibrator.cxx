@@ -543,7 +543,7 @@ Bool_t CbmTofCalibrator::UpdateCalHist(Int_t iOpt) {
             Double_t dBinSize = hpPy->GetBinWidth(1);
             dFLim             = TMath::Max(dFLim, 5. * dBinSize);
             TFitResultPtr fRes =
-              hpPy->Fit("gaus", "S", "", dFMean - dFLim, dFMean + dFLim);
+              hpPy->Fit("gaus", "SQM0", "", dFMean - dFLim, dFMean + dFLim);
             dDp = fRes->Parameter(1);  //overwrite mean
             // Double_t dDpRes = fRes->Parameter(2);
             if (iSmType == 5)  // do not shift beam counter in time
@@ -624,11 +624,13 @@ Bool_t CbmTofCalibrator::UpdateCalHist(Int_t iOpt) {
     }  //switch( iOpt) end
   }
 
-  TFile* fCalParFileNew =
-    new TFile(Form("New_%s", fCalParFile->GetName()), "RECREATE");
-  WriteHist(fCalParFileNew);
-  fCalParFileNew->Close();
-
+  TString fFile = fCalParFile->GetName();
+  if (!fFile.Contains("/")) {
+    TFile* fCalParFileNew =
+      new TFile(Form("New_%s", fCalParFile->GetName()), "RECREATE");
+    WriteHist(fCalParFileNew);
+    fCalParFileNew->Close();
+  }
   return kTRUE;
 }
 

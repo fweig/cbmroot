@@ -420,7 +420,7 @@ void CbmTofEventClusterizer::Exec(Option_t* option) {
         LOG(debug) << cstr;
 
         new ((*fTofDigiMatchCollOut)[iNbHits]) CbmMatch(*mDigiMatch);
-
+        delete mDigiMatch;
         iNbHits++;
       }
       //fTofDigisColl->Delete();
@@ -490,12 +490,13 @@ void CbmTofEventClusterizer::Finish() {
   // Prevent them from being sucked in by the CbmHadronAnalysis WriteHistograms method
   // DeleteHistos();
   if (fdMemoryTime > 0.) CleanLHMemory();
+  delete fDigiPar;
 }
 
 void CbmTofEventClusterizer::Finish(Double_t calMode) {
   if (fdEvent < 100) return;  // don't save histos with insufficient statistics
   SetCalMode(calMode);
-  WriteHistos();
+  Finish();
 }
 
 /************************************************************************************/

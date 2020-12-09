@@ -114,7 +114,7 @@ void mtof_reco(Int_t nEvents      = -1,  // number of Timeslices
   run->SetInputFile(rawFile);
   run->SetOutputFile(recFile);
   run->SetGenerateRunInfo(kFALSE);
-  Bool_t hasFairMonitor = kFALSE;  //Has_Fair_Monitor();
+  Bool_t hasFairMonitor = Has_Fair_Monitor();
   if (hasFairMonitor) FairMonitor::GetMonitor()->EnableMonitor(kTRUE);
   // ------------------------------------------------------------------------
 
