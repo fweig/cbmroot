@@ -25,6 +25,11 @@ If(EXISTS ${CBMROOT_SOURCE_DIR}/input/hodoTop_source_1000ts_20160422.tsa)
 EndIf()
 #####################
 
+##### COSY 2019 tests
+add_subdirectory(cosy2019)
+#####################
+
+
 ##### mCBM 2019 tests
 add_subdirectory(mcbm2019)
 #####################

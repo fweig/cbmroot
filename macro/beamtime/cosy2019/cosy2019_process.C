@@ -1,6 +1,6 @@
 // --------------------------------------------------------------------------
 //
-// Macro for reconstruction of mcbm data (2019)
+// Macro for reconstruction of cosy real data (2019)
 // Only STS local reconstruction (cluster + hit finder) for the time being
 //
 //
@@ -24,7 +24,7 @@ void cosy2019_process(
 
 
   // -----   Environment   --------------------------------------------------
-  TString myName = "cosy2019_reco";  // this macro's name for screen output
+  TString myName = "cosy2019_process";  // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
   // TString srcDir1 = gSystem->Getenv("SLURM_INDEX");  // ------------------------------------------------------------------------
 

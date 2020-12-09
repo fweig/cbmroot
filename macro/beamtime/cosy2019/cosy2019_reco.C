@@ -1,6 +1,6 @@
 // --------------------------------------------------------------------------
 //
-// Macro for reconstruction of mcbm data (2019)
+// Macro for reconstruction of cosy simulated data (2019)
 // Only STS local reconstruction (cluster + hit finder) for the time being
 //
 //

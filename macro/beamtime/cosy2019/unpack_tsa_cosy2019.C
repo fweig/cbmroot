@@ -1245,11 +1245,14 @@ void unpack_tsa_cosy2019(TString inFile  = "",
   CbmMcbm2018Source* source = new CbmMcbm2018Source();
 
   source->SetFileName(inFile);
-  if (13 <= uRunId) source->AddUnpacker(unpacker_tof, 0x90, kTof);  //gDPB T0
-  source->AddUnpacker(unpacker_hodo, 0x10, kHodo);  //HODO + STS xyter
+  if (13 <= uRunId) {
+    source->AddUnpacker(unpacker_tof, 0x90, ECbmModuleId::kTof);  //gDPB T0
+  }  // if (13 <= uRunId)
+  source->AddUnpacker(
+    unpacker_hodo, 0x10, ECbmModuleId::kHodo);  //HODO + STS xyter
 
   // --- Event header
-  FairEventHeader* event = new CbmTbEvent();
+  FairEventHeader* event = new FairEventHeader();
   event->SetRunId(uRunId);
 
   // --- RootFileSink

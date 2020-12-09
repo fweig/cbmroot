@@ -81,10 +81,11 @@ void cosy2019_digi(
 
   run.DefaultInit();
   CbmStsDigitize* stsDigitizer =
-    dynamic_cast<CbmStsDigitize*>(run.GetDigitizer(kSts));
+    dynamic_cast<CbmStsDigitize*>(run.GetDigitizer(ECbmModuleId::kSts));
   if (nullptr == stsDigitizer) {
     std::cout << "No STS digitizer could be accessed: "
-              << run.GetDigitizer(kSts) << " -> " << stsDigitizer << std::endl;
+              << run.GetDigitizer(ECbmModuleId::kSts) << " -> " << stsDigitizer
+              << std::endl;
     return;
   }  // if( nullptr == stsDigitizer )
   stsDigitizer->SetSensorParameterFile(sStsHodoGeoPar);

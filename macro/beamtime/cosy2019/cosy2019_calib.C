@@ -21,7 +21,7 @@ void cosy2019_calib(
 
 
   // -----   Environment   --------------------------------------------------
-  TString myName = "cosy2019_reco";  // this macro's name for screen output
+  TString myName = "cosy2019_calib";  // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
   // TString srcDir1 = gSystem->Getenv("SLURM_INDEX");
   // ------------------------------------------------------------------------
@@ -86,9 +86,6 @@ void cosy2019_calib(
   std::cout << std::endl;
   std::cout << "-I- " << myName << ": Initialise run" << std::endl;
   run->Init();
-  rtdb->setOutput(parIo1);
-  rtdb->saveOutput();
-  rtdb->print();
   // ------------------------------------------------------------------------
 
 
