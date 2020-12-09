@@ -51,6 +51,8 @@ public:
 
   virtual Bool_t ReInitUnpackers();
 
+  virtual Bool_t SpecifyRunId() { return true; };
+
   void Close();
   void Reset();
 

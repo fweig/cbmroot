@@ -170,9 +170,16 @@ public:
   virtual void Reset() {}
 
 
-    /** @brief Abstract in base class. No implementation here.
+  /** @brief Implement abstract function from base class
+     **
+     ** Read the first event from input file to fill the
+     ** event header and get the RunID
      **/
-  virtual Bool_t SpecifyRunId() { return kTRUE; }
+  virtual Bool_t SpecifyRunId() {
+    if (ReadEvent(0)) return true;
+
+    return false;
+  }
 
   /** @brief Set event-by-event mode
      ** @value choice  kTRUE if event-by-event mode
