@@ -107,7 +107,10 @@ void mcbm_reco_event(Int_t nEvents         = 3,
 
   // -----   FairRunAna   ---------------------------------------------------
   FairRunAna* run = new FairRunAna();
-  run->SetInputFile(rawFile);
+
+  FairFileSource* inputSource = new FairFileSource(rawFile);
+  run->SetSource(inputSource);
+
   run->SetOutputFile(recFile);
   run->SetGenerateRunInfo(kTRUE);
   Bool_t hasFairMonitor = kFALSE;  //Has_Fair_Monitor();

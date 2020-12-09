@@ -21,8 +21,10 @@ void run_ana(Int_t nEvents   = 1000,
     outFile = Form("%s.ana.ANN_%1.2f.root", dataSet.Data(), ANN);
 
   FairRunAna* run = new FairRunAna();
-  run->SetInputFile(recoFile);
-  run->AddFriend(traFile);
+  FairFileSource* inputSource = new FairFileSource(recoFile);
+  inputSource->AddFriend(traFile);
+  run->SetSource(inputSource);
+
   run->SetOutputFile(outFile);
   // run->SetGenerateRunInfo(kTRUE);
 

@@ -65,7 +65,10 @@ void mvd_qa4_reco(const char* setup = "sis100_electron") {
 
   // -----   Reconstruction run   -------------------------------------------
   FairRunAna* fRun = new FairRunAna();
-  fRun->SetInputFile(inFile);
+
+  FairFileSource* inputSource = new FairFileSource(inFile);
+  fRun->SetSource(inputSource);
+
   fRun->SetOutputFile(outFile);
   Bool_t hasFairMonitor = Has_Fair_Monitor();
   if (hasFairMonitor) { FairMonitor::GetMonitor()->EnableMonitor(kTRUE); }
