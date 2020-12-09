@@ -208,7 +208,7 @@ CbmRoot_Merge_realData:
     - echo "export FAIRROOT_VERSION=v18.2.1" >> Dart.cfg
     - echo "export SIMPATH=/opt/cbmsoft/fairsoft_\${FAIRSOFT_VERSION}_root6/installation" >> Dart.cfg
     - echo "export FAIRROOTPATH=/opt/cbmsoft/fairroot_\${FAIRROOT_VERSION}-fairsoft_\${FAIRSOFT_VERSION}_root6" >> Dart.cfg
-    - echo "export RAW_DATA_PATH=/opt/cbmsoft/beamtime-test-data/mcbm2020/" >> Dart.cfg
+    - echo "export RAW_DATA_PATH=/opt/cbmsoft/beamtime-test-data/reduced/" >> Dart.cfg
     - echo "export BUILDDIR=$PWD/build" >> Dart.cfg
     - echo "export SOURCEDIR=$PWD" >> Dart.cfg
     - echo "export NCPU=16" >> Dart.cfg
