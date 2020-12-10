@@ -50,10 +50,18 @@ If(DEFINED ENV{RAW_DATA_PATH} )
     If(EXISTS ${RAW_DATA_PATH}/r00${RUN}_first20Ts.tsa)
       Message( STATUS "Raw data file found, tests will be performed for COSY 2019 run ${RUN}" )
 
+      If( 08 EQUAL ${RUN} )
+        SET( RUN_INDEX 8 )
+      ElseIf( 09 EQUAL ${RUN} )
+        SET( RUN_INDEX 9 )
+      Else()
+        SET( RUN_INDEX ${RUN} )
+      EndIf()
+
       ## Define tests + dependencies
       ### Raw data analysis tests
       Set(testname cosy_unpack_2019_${RUN})
-      Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/beamtime/cosy2019/unpack_tsa_cosy2019.sh \"${RAW_DATA_PATH}/r00${RUN}_first20Ts.tsa\" ${RUN} )
+      Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/beamtime/cosy2019/unpack_tsa_cosy2019.sh \"${RAW_DATA_PATH}/r00${RUN}_first20Ts.tsa\" ${RUN_INDEX} )
       Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "600")
       Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
       set_tests_properties(${testname} PROPERTIES DEPENDS run_cleanup_cosy2019)
@@ -62,7 +70,7 @@ If(DEFINED ENV{RAW_DATA_PATH} )
       set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_cosy_unpacked_${RUN}})
 
       Set(testname cosy_calib_2019_${RUN})
-      Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/beamtime/cosy2019/cosy2019_calib.sh 20 ${RUN} )
+      Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/beamtime/cosy2019/cosy2019_calib.sh 20 ${RUN_INDEX} )
       Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "600")
       Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
       set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_cosy_unpacked_${RUN}})
@@ -72,7 +80,7 @@ If(DEFINED ENV{RAW_DATA_PATH} )
 
 ## Clustering = broken as of 09/12/2020
 #      Set(testname cosy_process_2019_${RUN})
-#      Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/beamtime/cosy2019/cosy2019_process.sh ${RUN} )
+#      Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/beamtime/cosy2019/cosy2019_process.sh ${RUN_INDEX} )
 #      Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "600")
 #      Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
 #      set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_cosy_calib_${RUN}})
