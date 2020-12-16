@@ -70,11 +70,6 @@ void mcbm_reco_event(Int_t nEvents         = 3,
 
   // - TOF digitisation parameters
   if (setup->GetGeoTag(ECbmModuleId::kTof, geoTag)) {
-    TObjString* tofFile =
-      new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digi.par");
-    parFileList->Add(tofFile);
-    std::cout << "-I- " << myName << ": Using parameter file "
-              << tofFile->GetString() << std::endl;
     TObjString* tofBdfFile =
       new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
     parFileList->Add(tofBdfFile);

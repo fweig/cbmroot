@@ -69,7 +69,7 @@ void mcbm_qa(Int_t nEvents   = 0,
 
   // -----   Parameter files as input to the runtime database   -------------
   std::cout << std::endl;
-  std::cout << "-I- " << myName << ": Defining parameter files " << std::endl;
+  std::cout << "-I- " << myName << ": Defining paramete files " << std::endl;
   TList* parFileList = new TList();
   TString geoTag;
 
@@ -101,11 +101,6 @@ void mcbm_qa(Int_t nEvents   = 0,
 
   // - TOF digitisation parameters
   if (CbmSetup::Instance()->GetGeoTag(ECbmModuleId::kTof, geoTag)) {
-    TObjString* tofFile =
-      new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digi.par");
-    parFileList->Add(tofFile);
-    std::cout << "-I- " << myName << ": Using parameter file "
-              << tofFile->GetString() << std::endl;
     TObjString* tofBdfFile =
       new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
     parFileList->Add(tofBdfFile);
