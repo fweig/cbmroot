@@ -41,16 +41,6 @@
 //#pragma link C++ class  KFPartEfficiencies+;
 //#pragma link C++ class  KFMCParticle+;
 
-
-#pragma link C++ class CbmModelBase + ;
-#pragma link C++ class CbmThermalModelNoFlow + ;
-#pragma link C++ class CbmHRGModel + ;
-#pragma link C++ class CbmMultiscatteringModel + ;
-#pragma link C++ class CbmImpactParameterModel + ;
-#pragma link C++ class CbmInverseSlope + ;
-#pragma link C++ class CbmBoltzmannDistribution + ;
-#pragma link C++ class CbmBlastWave + ;
-#pragma link C++ class CbmModelsQA + ;
 //KFQA
 #pragma link C++ class CbmKFPartEfficiencies + ;
 

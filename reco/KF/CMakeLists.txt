@@ -19,14 +19,6 @@ ${CBMDATA_DIR}/global
 
 ${CBMROOT_SOURCE_DIR}/reco/KF
 ${CBMROOT_SOURCE_DIR}/reco/KF/Interface
-${CBMROOT_SOURCE_DIR}/reco/KF/KFModelParameters
-${CBMROOT_SOURCE_DIR}/reco/KF/KFModelParameters/common
-${CBMROOT_SOURCE_DIR}/reco/KF/KFModelParameters/HRGModel
-${CBMROOT_SOURCE_DIR}/reco/KF/KFModelParameters/MultiscatteringModel
-${CBMROOT_SOURCE_DIR}/reco/KF/KFModelParameters/ImpactParameterModel
-${CBMROOT_SOURCE_DIR}/reco/KF/KFModelParameters/InverseSlope
-${CBMROOT_SOURCE_DIR}/reco/KF/KFModelParameters/BoltzmannDistribution
-${CBMROOT_SOURCE_DIR}/reco/KF/KFModelParameters/BlastWaveModel
 ${CBMROOT_SOURCE_DIR}/reco/KF/KFQA
 
 ${CBMDETECTORBASE_DIR}/sts
@@ -85,31 +77,6 @@ Interface/CbmGlobalTrackFitterKF.cxx
 # CbmKFParticle.cxx
 # CbmKFParticle_simd.cxx
 # CbmKFParticleInterface.cxx
-KFModelParameters/CbmThermalModelNoFlow.cxx
-KFModelParameters/common/Acceptance.cxx
-KFModelParameters/HRGModel/CbmHRGModel.cxx
-KFModelParameters/HRGModel/HagedornSpectrum.cxx
-KFModelParameters/HRGModel/ThermalModel.cxx
-# KFModelParameters/HRGModel/ThermalModelBase.cxx
-KFModelParameters/HRGModel/ThermalModelEVMF.cxx
-KFModelParameters/HRGModel/ThermalModelFit.cxx
-KFModelParameters/HRGModel/ThermalParticle.cxx
-KFModelParameters/HRGModel/ThermalParticleSystem.cxx
-KFModelParameters/HRGModel/xMath.cxx
-KFModelParameters/MultiscatteringModel/CbmMultiscatteringModel.cxx
-KFModelParameters/MultiscatteringModel/MultiscatteringModel.cxx
-KFModelParameters/InverseSlope/CbmInverseSlope.cxx
-KFModelParameters/InverseSlope/InverseSlope.cxx
-KFModelParameters/InverseSlope/RapidityFit.cxx
-KFModelParameters/BoltzmannDistribution/CbmBoltzmannDistribution.cxx
-KFModelParameters/BoltzmannDistribution/BoltzmannDistribution.cxx
-KFModelParameters/BlastWaveModel/CbmBlastWave.cxx
-KFModelParameters/BlastWaveModel/BlastWave.cxx
-KFModelParameters/BlastWaveModel/BlastWaveLongitudinal.cxx
-KFModelParameters/BlastWaveModel/RapidityFitBlastWave.cxx
-KFModelParameters/ImpactParameterModel/CbmImpactParameterModel.cxx
-KFModelParameters/ImpactParameterModel/ImpactParameterModel.cxx
-KFModelParameters/CbmModelsQA.cxx
 KFQA/CbmKFTrErrMCPoints.cxx
 KFQA/CbmKFTrackFitQA.cxx
 KFQA/CbmKFTrackQA.cxx
@@ -146,32 +113,6 @@ Interface/CbmTrdTrackFitterKF.h
 Interface/CbmTofTrackFitterKF.h
 Interface/CbmGlobalTrackFitterKF.h
 # CbmKFParticle.h
-KFModelParameters/CbmModelBase.h
-KFModelParameters/CbmThermalModelNoFlow.h
-KFModelParameters/common/Acceptance.h
-KFModelParameters/HRGModel/CbmHRGModel.h
-KFModelParameters/HRGModel/HagedornSpectrum.h
-KFModelParameters/HRGModel/ThermalModel.h
-KFModelParameters/HRGModel/ThermalModelBase.h
-KFModelParameters/HRGModel/ThermalModelEVMF.h
-KFModelParameters/HRGModel/ThermalModelFit.h
-KFModelParameters/HRGModel/ThermalParticle.h
-KFModelParameters/HRGModel/ThermalParticleSystem.h
-KFModelParameters/HRGModel/xMath.h
-KFModelParameters/MultiscatteringModel/CbmMultiscatteringModel.h
-KFModelParameters/MultiscatteringModel/MultiscatteringModel.h
-KFModelParameters/InverseSlope/CbmInverseSlope.h
-KFModelParameters/InverseSlope/InverseSlope.h
-KFModelParameters/InverseSlope/RapidityFit.h
-KFModelParameters/BoltzmannDistribution/CbmBoltzmannDistribution.h
-KFModelParameters/BoltzmannDistribution/BoltzmannDistribution.h
-KFModelParameters/BlastWaveModel/CbmBlastWave.h
-KFModelParameters/BlastWaveModel/BlastWave.h
-KFModelParameters/BlastWaveModel/BlastWaveLongitudinal.h
-KFModelParameters/BlastWaveModel/RapidityFitBlastWave.h
-KFModelParameters/ImpactParameterModel/CbmImpactParameterModel.h
-KFModelParameters/ImpactParameterModel/ImpactParameterModel.h
-KFModelParameters/CbmModelsQA.h
 KFQA/CbmKFTrErrMCPoints.h
 KFQA/CbmKFTrackFitQA.h
 KFQA/CbmKFTrackQA.h
@@ -231,8 +172,4 @@ Install(FILES KFQA/CbmKFTrErrMCPoints.h
               KFQA/CbmKFPartEfficiencies.h
         DESTINATION include/KF/KFQA)
 Install(FILES Interface/CbmKFVertex.h
-              KFModelParameters/CbmBilinearSplineFunction.h
-              KFModelParameters/CbmSplineFunction.h
         DESTINATION include)
-Install(FILES KFModelParameters/common/Acceptance.h
-        DESTINATION include/KF/common)
