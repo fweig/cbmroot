@@ -1297,9 +1297,9 @@ void CbmTofFindTracks::CreateHistograms() {
                             150,
                             0,
                             150,
-                            25,
+                            30,
                             0,
-                            25);
+                            30);
 
   fhTrklMulMaxMM = new TH2F(Form("hTrklMulMaxMax-1"),
                             Form("Tracklet Multiplicity; TMulMax; TMulMax-1"),
@@ -2329,9 +2329,9 @@ void CbmTofFindTracks::FillHistograms(CbmEvent* tEvent) {
       }
   if (1)
     if (fTrackArray->GetEntries() > 25) {  // temporary
-      LOG(info) << "Found  high multiplicity of " << fTrackArray->GetEntries()
-                << " in event " << fiEvent << " from "
-                << fTofHitArray->GetEntries() << " hits ";
+      LOG(info) << "Found high track multiplicity of "
+                << fTrackArray->GetEntries() << " in event " << fiEvent
+                << " from " << fTofHitArray->GetEntries() << " hits ";
       for (Int_t iTrk = 0; iTrk < fTrackArray->GetEntries(); iTrk++) {
         CbmTofTracklet* pTrk = (CbmTofTracklet*) fTrackArray->At(iTrk);
         if (NULL == pTrk) continue;
