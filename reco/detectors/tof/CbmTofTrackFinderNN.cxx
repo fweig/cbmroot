@@ -1236,11 +1236,8 @@ void CbmTofTrackFinderNN::Line3Dfit(CbmTofTracklet* pTrk) {
   (pTrk->GetTrackParameter())->SetTx(dRes[1]);
   (pTrk->GetTrackParameter())->SetTy(dRes[3]);
   (pTrk->GetTrackParameter())->SetQp(1.);  // FIXME
-  //  pTrk->SetChiSq(fMinuit.GetChi2DoF());
-  pTrk->SetChiSq(
-    fMinuit.GetChi2DoF()
-    / pTrk
-        ->GetNofHits());  // empirical to equilibrate bias on hit multiplicity!!!
+  pTrk->SetChiSq(fMinuit.GetChi2DoF() / pTrk->GetNofHits());
+  // empirical to equilibrate bias on hit multiplicity!!!
 }
 
 ClassImp(CbmTofTrackFinderNN)
