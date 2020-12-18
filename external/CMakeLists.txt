@@ -14,20 +14,12 @@ if(DOWNLOAD_EXTERNALS)
                              TEST_FILE       zmq.hpp
                             )
 
-  download_project_if_needed(PROJECT         flib_dpb_20
-                             GIT_REPOSITORY  "https://git.cbm.gsi.de/f.uhlig/flib_dpb_20.git"
-                             GIT_TAG         "9ce7c7c0ccc7c9ea2f8c396c35d7fe39ac9aafb6"
-                             SOURCE_DIR      ${CMAKE_CURRENT_SOURCE_DIR}/flib_dpb_20
-                             TEST_FILE       CMakeLists.txt
-                            )
 
   Set(IPC_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/ipc/ipc/lib/fles_ipc PARENT_SCOPE)
   Set(IPCLOG_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/ipc/ipc/lib/logging PARENT_SCOPE)
 
   Add_Subdirectory(ipc)
-  Add_Subdirectory(ipc_legacy)
   Add_Subdirectory(flib_dpb)
-  Add_Subdirectory(flib_dpb_20)
   Add_Subdirectory(spadic)
 
   Include(InstallVC.cmake)
