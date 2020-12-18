@@ -872,18 +872,17 @@ Bool_t CbmTofEventClusterizer::InitCalibParameter() {
                 fvCPTotOff[iSmType][iSm * iNbRpc + iRpc][iCh][1] =
                   fvCPTotOff[iSmType][iSm * iNbRpc + iRpc][iCh][0];
               }
-
-              LOG(debug) << "CbmTofEventClusterizer::InitCalibParameter:"
-                         << " SmT " << iSmType << " Sm " << iSm << " Rpc "
-                         << iRpc << " Ch " << iCh
-                         << Form(": YMean %f, TMean %f", YMean, TMean) << " -> "
-                         << Form(
-                              " %f, %f, %f, %f ",
-                              fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0],
-                              fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1],
-                              fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][0],
-                              fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][1])
-                         << ", NbinTot " << iNbinTot;
+              //if(iSmType==0 && iSm==4 && iRpc==2 && iCh==26)
+              LOG(info) << "InitCalibParameter:"
+                        << " TSRC " << iSmType << iSm << iRpc << iCh
+                        << Form(": YMean %f, TMean %f", YMean, TMean) << " -> "
+                        << Form(
+                             " TOff %f, %f, TotG %f, %f ",
+                             fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0],
+                             fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1],
+                             fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][0],
+                             fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][1])
+                        << ", NbinTot " << iNbinTot;
 
               TH1D* htempWalk0 = (TH1D*) gDirectory->FindObjectAny(
                 Form("Cor_SmT%01d_sm%03d_rpc%03d_Ch%03d_S0_Walk_px",
@@ -2971,12 +2970,15 @@ Bool_t CbmTofEventClusterizer::FillHistos() {
                           hitpos_local[0],
                           hitpos_local[1],
                           hitpos_local[2]);
-
-      fhRpcCluPosition[iDetIndx]->Fill(
-        (Double_t) iCh, hitpos_local[1]);  //pHit->GetY()-fChannelInfo->GetY());
-      fhSmCluPosition[iSmType]->Fill((Double_t)(iSm * iNbRpc + iRpc),
-                                     hitpos_local[1]);
-
+      Bool_t bFillPos = kTRUE;
+      //if( fCalMode/10 > 4 && pHit->GetClusterSize() < 3 ) bFillPos=kFALSE;
+      if (bFillPos) {
+        fhRpcCluPosition[iDetIndx]->Fill(
+          (Double_t) iCh,
+          hitpos_local[1]);  //pHit->GetY()-fChannelInfo->GetY());
+        fhSmCluPosition[iSmType]->Fill((Double_t)(iSm * iNbRpc + iRpc),
+                                       hitpos_local[1]);
+      }
       for (Int_t iSel = 0; iSel < iNSel; iSel++)
         if (BSel[iSel]) {
           fhTRpcCluPosition[iDetIndx][iSel]->Fill(
@@ -4607,20 +4609,24 @@ Bool_t CbmTofEventClusterizer::WriteHistos() {
                 Form("%s_py%d", htempTOff->GetName(), iCh), iCh + 1, iCh + 1);
               if (hTy->GetEntries() > WalkNHmin) {
                 Double_t dFMean   = hTy->GetBinCenter(hTy->GetMaximumBin());
-                Double_t dFLim    = 1.0;  // CAUTION, fixed numeric value
+                Double_t dFLim    = 2.0;  // CAUTION, fixed numeric value
                 Double_t dBinSize = hTy->GetBinWidth(1);
                 dFLim             = TMath::Max(dFLim, 5. * dBinSize);
                 TFitResultPtr fRes =
                   hTy->Fit("gaus", "SQM0", "", dFMean - dFLim, dFMean + dFLim);
-                LOG(debug) << "CalibF "
-                           << Form("TSRC %d%d%d%d gaus %8.2f %8.2f %8.2f ",
-                                   iSmType,
-                                   iSm,
-                                   iRpc,
-                                   iCh,
-                                   fRes->Parameter(0),
-                                   fRes->Parameter(1),
-                                   fRes->Parameter(2));
+                if (TMath::Abs(TMean - fRes->Parameter(1)) > 5.)
+                  LOG(warn) << "CalibF "
+                            << Form("TSRC %d%d%d%d gaus %8.2f %8.2f %8.2f for "
+                                    "TM %8.2f, YM %6.2f",
+                                    iSmType,
+                                    iSm,
+                                    iRpc,
+                                    iCh,
+                                    fRes->Parameter(0),
+                                    fRes->Parameter(1),
+                                    fRes->Parameter(2),
+                                    TMean,
+                                    YMean);
                 TMean = fRes->Parameter(1);  //overwrite mean
               }
             }
@@ -4700,6 +4706,7 @@ Bool_t CbmTofEventClusterizer::WriteHistos() {
               Double_t dOff1 = fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1];
               fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0] += -dTYOff + TMean;
               fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1] += +dTYOff + TMean;
+              //if(iSmType==0 && iSm==4 && iRpc==2 && iCh==26)
               LOG(info) << Form(
                 "CalibB %d,%2d,%2d: TSRC %d%d%d%d, hits %6.0f, YM %6.3f"
                 ", dTY %6.3f, TM %8.3f, Off %8.3f,%8.3f -> %8.3f,%8.3f ",
@@ -4819,7 +4826,7 @@ Bool_t CbmTofEventClusterizer::WriteHistos() {
         TOff0_mean /= (Double_t) iNbCh;
         TOff1_mean /= (Double_t) iNbCh;
 
-        const Double_t TMaxDev = 1.;             //FIXME, const value in code
+        const Double_t TMaxDev = htempTOff->GetYaxis()->GetXmax();
         for (Int_t iCh = 0; iCh < iNbCh; iCh++)  // remove outlyers
         {
           if (TMath::Abs(TOff0_mean
@@ -4849,6 +4856,22 @@ Bool_t CbmTofEventClusterizer::WriteHistos() {
                        << YMean;
           }
           htempTOff_pfx->Fill(iCh, TMean);
+
+          LOG(debug) << Form(
+            "CalibU %d,%2d,%2d: TSRC %d%d%d%d, hits %6.0f, YM %6.3f"
+            ", TM %8.3f, OffM %8.3f,%8.3f ",
+            fCalMode,
+            fCalSel,
+            fTRefMode,
+            iSmType,
+            iSm,
+            iRpc,
+            iCh,
+            htempTOff_px->GetBinContent(iCh + 1),
+            YMean,
+            TMean,
+            TOff0_mean,
+            TOff1_mean);
 
           for (Int_t iSide = 0; iSide < 2; iSide++) {
             htempTot_Mean->SetBinContent(
