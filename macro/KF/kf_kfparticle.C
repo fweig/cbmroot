@@ -129,14 +129,14 @@ void kf_kfparticle(Int_t nEvents               = 2,
   CbmKF* KF = new CbmKF();
   run->AddTask(KF);
   CbmL1* l1 = new CbmL1("CbmL1", 1, 3);
-  if (setup->IsActive(kMvd)) {
-    setup->GetGeoTag(kMvd, geoTag);
+  if (setup->IsActive(ECbmModuleId::kMvd)) {
+    setup->GetGeoTag(ECbmModuleId::kMvd, geoTag);
     const TString mvdMatBudgetFileName =
       paramDir + "/mvd/mvd_matbudget_" + geoTag + ".root";
     l1->SetMvdMaterialBudgetFileName(mvdMatBudgetFileName.Data());
   }
-  if (setup->IsActive(kSts)) {
-    setup->GetGeoTag(kSts, geoTag);
+  if (setup->IsActive(ECbmModuleId::kSts)) {
+    setup->GetGeoTag(ECbmModuleId::kSts, geoTag);
     const TString stsMatBudgetFileName =
       paramDir + "/sts/sts_matbudget_" + geoTag + ".root";
     l1->SetStsMaterialBudgetFileName(stsMatBudgetFileName.Data());
@@ -149,7 +149,7 @@ void kf_kfparticle(Int_t nEvents               = 2,
   kfParticleFinderPID->SetSIS100();
   if (useDetectorPID) {
     kfParticleFinderPID->UseDetectorPID();
-    if (setup->IsActive(kMuch)) {
+    if (setup->IsActive(ECbmModuleId::kMuch)) {
       kfParticleFinderPID->UseMuch();
       kfParticleFinderPID->SetNMinStsHitsForMuon(7);
       kfParticleFinderPID->SetNMinMuchHitsForLMVM(10);
