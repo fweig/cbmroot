@@ -46,6 +46,7 @@ CbmTofCalibrator::CbmTofCalibrator()
   , fhCalR0(NULL)
   , fhCalDX0(NULL)
   , fhCalDY0(NULL)
+  , fhCalPosition()
   , fhCalPos()
   , fhCalTOff()
   , fhCalTot()
@@ -151,6 +152,7 @@ Bool_t CbmTofCalibrator::CreateCalHist() {
                       -0.5,
                       0.5);
 
+  fhCalPosition.resize(iNbDet);
   fhCalPos.resize(iNbDet);
   fhCalTOff.resize(iNbDet);
   fhCalTot.resize(iNbDet);
@@ -172,27 +174,38 @@ Bool_t CbmTofCalibrator::CreateCalHist() {
       LOG(warning) << "No DigiPar for Det " << Form("0x%08x", iUCellId);
       continue;
     }
-    Double_t YDMAX     = 5;
-    fhCalPos[iDetIndx] = new TH2F(
-      Form("cal_SmT%01d_sm%03d_rpc%03d_Pos", iSmType, iSmId, iRpcId),
+
+    Double_t YDMAX = TMath::Max(2., fChannelInfo->GetSizey()) * 0.8;
+    fhCalPosition[iDetIndx] = new TH2F(
+      Form("cal_SmT%01d_sm%03d_rpc%03d_Position", iSmType, iSmId, iRpcId),
       Form(
         "Clu position of Rpc #%03d in Sm %03d of type %d; Strip []; ypos [cm]",
         iRpcId,
         iSmId,
         iSmType),
       fDigiBdfPar->GetNbChan(iSmType, iRpcId),
+      0, fDigiBdfPar->GetNbChan(iSmType, iRpcId),
+      100, -YDMAX, YDMAX);
+
+    YDMAX = 5;
+    fhCalPos[iDetIndx] = new TH2F(
+      Form("cal_SmT%01d_sm%03d_rpc%03d_Pos", iSmType, iSmId, iRpcId),
+      Form(
+        "Clu pos deviation of Rpc #%03d in Sm %03d of type %d; Strip []; ypos [cm]",
+        iRpcId,
+        iSmId,
+        iSmType),
+      fDigiBdfPar->GetNbChan(iSmType, iRpcId),
       0,
       fDigiBdfPar->GetNbChan(iSmType, iRpcId),
-      99,
-      -YDMAX,
-      YDMAX);
+      99, -YDMAX, YDMAX);
 
     Double_t TSumMax = 2.;
     //if(iSmType == 5) TSumMax *= 2.; // enlarge for diamond / beamcounter
     fhCalTOff[iDetIndx] = new TH2F(
       Form("cal_SmT%01d_sm%03d_rpc%03d_TOff", iSmType, iSmId, iRpcId),
       Form(
-        "Clu TimeZero of Rpc #%03d in Sm %03d of type %d; Strip []; TOff [ns]",
+        "Clu T0 deviation of Rpc #%03d in Sm %03d of type %d; Strip []; TOff [ns]",
         iRpcId,
         iSmId,
         iSmType),
@@ -304,14 +317,15 @@ void CbmTofCalibrator::FillCalHist(CbmTofTracklet* pTrk,
     hitpos[1] = pTrk->GetFitY(pHit->GetZ());
     Double_t hlocal_f[3];
     gGeoManager->MasterToLocal(hitpos, hlocal_f);
-
+    fhCalPosition[iDetIndx]->Fill(
+      (Double_t) iCh, hlocal_p[1]);  // transformed into LRF
     fhCalPos[iDetIndx]->Fill(
       (Double_t) iCh, hlocal_p[1] - hlocal_f[1]);  // transformed into LRF
     fhCalTOff[iDetIndx]->Fill(
       (Double_t) iCh,
       pHit->GetTime()
         - pTrk->GetFitT(pHit->GetZ()));  // residuals transformed into LRF
-    //fhCalTOff[iDetIndx]->Fill((Double_t)iCh,fTrackletTools->GetTdif(pTrk, iDetId, pHit));   // prediction by other hits
+    //fhCalTOff[iDetIndx]->Fill((Double_t)iCh,fTrackletTools->GetTdif(pTrk, iDetId, pHit));
 
     Int_t iEA  = pTrk->GetTofHitIndex(iHit);
     Int_t iTSA = fTofFindTracks->GetTofHitIndex(iEA);
