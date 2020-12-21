@@ -779,31 +779,20 @@ Bool_t CbmTofFindTracks::WriteHistos() {
           Double_t dVal = fhPullX_Smt_Off->GetBinContent(ix + 1);
           //dVal -= htmp1D->GetBinContent(ix + 1);
           if (hpy->GetEntries() > 100.) {
-            Double_t dRMS = TMath::Abs(hpy->GetRMS());
-            /* not found by linker
-            Int_t maxPeaks=1;
-            auto *s=new TSpectrum(maxPeaks);
-            Int_t nPeaks=s->Search(hpy,dRMS,"new");
-            if (nPeaks==1) {
-            */
-            if (kTRUE) {
-              //Double_t *xPeaks=s->GetPositionX();
-              //LOG(info) << "Found peak at" << xPeaks[0];
-              // Fit gaussian
-              //Double_t dFMean = xPeaks[0];
-              Double_t dFMean   = hpy->GetBinCenter(hpy->GetMaximumBin());
-              Double_t dFLim    = 0.5;  // CAUTION, fixed numeric value
-              Double_t dBinSize = hpy->GetBinWidth(1);
-              dFLim             = TMath::Max(dFLim, 5. * dBinSize);
-              TFitResultPtr fRes =
-                hpy->Fit("gaus", "S", "", dFMean - dFLim, dFMean + dFLim);
-              dVal -= fRes->Parameter(1);
-              dRMS = fRes->Parameter(2);
-              LOG(info) << "PeakFit at " << dFMean << ", lim " << dFLim
-                        << " : mean " << fRes->Parameter(1) << ", width "
-                        << dRMS;
-            }
+            // Fit gaussian
+            Double_t dFMean   = hpy->GetBinCenter(hpy->GetMaximumBin());
+            Double_t dFLim    = 0.5;  // CAUTION, fixed numeric value
+            Double_t dBinSize = hpy->GetBinWidth(1);
+            dFLim             = TMath::Max(dFLim, 5. * dBinSize);
+            TFitResultPtr fRes =
+              hpy->Fit("gaus", "S", "", dFMean - dFLim, dFMean + dFLim);
+            dVal -= fRes->Parameter(1);
+            Double_t dRMS = fRes->Parameter(2);
+            LOG(debug) << "PeakFit at " << dFMean << ", lim " << dFLim
+                       << " : mean " << fRes->Parameter(1) << ", width "
+                       << dRMS;
 
+            dRMS = TMath::Abs(hpy->GetRMS());
             if (dRMS < fSIGX * 0.5) dRMS = fSIGX * 0.5;
             if (dRMS > fSIGX * 3.0) dRMS = fSIGX * 3.;
 
@@ -837,14 +826,26 @@ Bool_t CbmTofFindTracks::WriteHistos() {
         Double_t nx = htmp1D->GetNbinsX();
         for (Int_t ix = 0; ix < nx; ix++) {
           Double_t dVal = fhPullY_Smt_Off->GetBinContent(ix + 1);
-          dVal -= htmp1D->GetBinContent(ix + 1);
-          if (fRpcAddr[ix]
-              != fiBeamCounter)  // don't correct beam counter position
-            fhPullY_Smt_Off->SetBinContent(ix + 1, dVal);
-
-          TH1D* hpy = fhPullY_Smt->ProjectionY("_py", ix + 1, ix + 1);
+          //dVal -= htmp1D->GetBinContent(ix + 1);
+          // Fit gaussian
+          TH1D* hpy     = fhPullY_Smt->ProjectionY("_py", ix + 1, ix + 1);
           if (hpy->GetEntries() > 100.) {
-            Double_t dRMS = TMath::Abs(hpy->GetRMS());
+            Double_t dFMean   = hpy->GetBinCenter(hpy->GetMaximumBin());
+            Double_t dFLim    = 2.;  // CAUTION, fixed numeric value
+            Double_t dBinSize = hpy->GetBinWidth(1);
+            dFLim             = TMath::Max(dFLim, 5. * dBinSize);
+            TFitResultPtr fRes =
+              hpy->Fit("gaus", "S", "", dFMean - dFLim, dFMean + dFLim);
+            dVal -= fRes->Parameter(1);
+            Double_t dRMS = fRes->Parameter(2);
+            LOG(debug) << "PeakFit at " << dFMean << ", lim " << dFLim
+                      << " : mean " << fRes->Parameter(1) << ", width "
+                      << dRMS;
+            if (fRpcAddr[ix]
+              != fiBeamCounter)  // don't correct beam counter position
+              fhPullY_Smt_Off->SetBinContent(ix + 1, dVal);
+
+            dRMS = TMath::Abs(hpy->GetRMS());
             if (dRMS < fSIGY * 0.5) dRMS = 0.5 * fSIGY;
             if (dRMS > fSIGY * 3.0) dRMS = fSIGY * 3.;
             fhPullY_Smt_Width->SetBinContent(ix + 1, dRMS);
