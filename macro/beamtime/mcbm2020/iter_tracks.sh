@@ -65,12 +65,12 @@ outdir=${wdir}/${cRun}
 fi
 
 # frange2 limits chi2
-fRange2=9.
-TRange2Limit=3. 
+fRange2=8.
+TRange2Limit=3.5 
 
 #frange1 limits DT spectrum range 
-fRange1=4.
-TRange1Limit=2.
+fRange1=2.
+TRange1Limit=1.5
 dDeadtime=50
 
 if [ ! -e ${cRun} ]; then 
@@ -97,7 +97,7 @@ nEvt=`echo "scale=0;$nEvt * 1./1." | bc`
 #nEvt=`echo "scale=0;$nEvt * 1.1/1." | bc`
 
 if [ $nEvt -gt $nEvtMax ]; then
-    nEvt=$nEvtMax
+  nEvt=$nEvtMax
 fi
 
 #((fRange2 /= 2))
@@ -107,7 +107,7 @@ fi
 fRange2=`echo "$fRange2 * 0.8" | bc`
 compare_TRange2=`echo "$fRange2 < $TRange2Limit" | bc`
 if  [[ $compare_TRange2 > 0 ]]; then
-fRange2=$TRange2Limit
+  fRange2=$TRange2Limit
 fi
 
 #bash only handles integers!!

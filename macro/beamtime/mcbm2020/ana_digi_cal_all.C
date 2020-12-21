@@ -110,7 +110,7 @@ void ana_digi_cal_all(Int_t nEvents      = 10000000,
   tofClust->SetChannelDeadtime(dDeadtime);  // artificial deadtime in ns
   tofClust->SetEnableAvWalk(kFALSE);
   //tofClust->SetEnableMatchPosScaling(kFALSE); // turn off projection to nominal target
-  tofClust->SetYFitMin(1.E4);
+  tofClust->SetYFitMin(1.E3);
   tofClust->SetToDAv(0.04);
   // tofClust->SetTimePeriod(25600.);       // ignore coarse time
   // tofClust->SetCorMode(iBugCor);         // correct missing hits

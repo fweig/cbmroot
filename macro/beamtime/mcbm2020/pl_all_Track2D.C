@@ -23,7 +23,7 @@ void pl_all_Track2D(Int_t iOpt = 1, Int_t iNSt = 4) {
   TString cOpt;
 
   switch (iOpt) {
-    case 0: cOpt = "Size"; break;
+    case 0: cOpt = "Position"; break;
     case 1: cOpt = "Pos"; break;
     case 2: cOpt = "TOff"; break;
     case 3: cOpt = "Tot"; break;

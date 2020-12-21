@@ -120,10 +120,10 @@ nEvtMax=0
 (( nEvtMax = nEvt*10 ))
 
 #frange1 limits DT spectrum range 
-fRange1=2.
+fRange1=1.5
 # frange2 limits chi2
-fRange2=4.0
-TRange2Limit=3. 
+fRange2=5.0
+TRange2Limit=3.5 
 
 iSel=900041
 iGenCor=3
@@ -203,7 +203,7 @@ while [[ $dDTres -gt 0 ]]; do
   fi
   
   if [[ $dDTRMSres -eq 50000 ]]; then 
-    TRMSres=1000
+    TRMSres=5000
   fi
   
   dTdif=`echo "$dDTres - $Tres" | bc`
