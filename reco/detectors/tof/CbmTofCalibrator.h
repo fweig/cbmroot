@@ -76,9 +76,10 @@ private:
   TH1* fhCalDX0;
   TH1* fhCalDY0;
 
-  std::vector<TH2*> fhCalPos;   // [nbDet]
-  std::vector<TH2*> fhCalTOff;  // [nbDet]
-  std::vector<TH2*> fhCalTot;   // [nbDet]
+  std::vector<TH2*> fhCalPosition;   // [nbDet]
+  std::vector<TH2*> fhCalPos;        // [nbDet]
+  std::vector<TH2*> fhCalTOff;       // [nbDet]
+  std::vector<TH2*> fhCalTot;        // [nbDet]
   std::vector<std::vector<std::vector<TH2*>>>
     fhCalWalk;  // [nbDet][nbCh][nSide]
 
