@@ -38,12 +38,13 @@ set(SRCS
   CbmTofCosmicClusterizer.cxx
   CbmTofEventClusterizer.cxx
   CbmTofFindTracks.cxx 
+  CbmTofExtendTracks.cxx 
   CbmTofSimpClusterizer.cxx 
   CbmTofTrackFinderNN.cxx 
   CbmTofTestBeamClusterizer.cxx 
   CbmTofTrackletTools.cxx 
   CbmTofCalibrator.cxx 
- LKFMinuit.cxx 
+  LKFMinuit.cxx 
 )
 
 set(LINKDEF CbmTofRecoLinkDef.h)

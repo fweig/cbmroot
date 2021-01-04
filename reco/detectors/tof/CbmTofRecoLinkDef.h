@@ -9,6 +9,7 @@
 #pragma link C++ class CbmTofCosmicClusterizer + ;
 #pragma link C++ class CbmTofEventClusterizer + ;
 #pragma link C++ class CbmTofFindTracks + ;
+#pragma link C++ class CbmTofExtendTracks + ;
 #pragma link C++ class CbmTofSimpClusterizer + ;
 #pragma link C++ class CbmTofTestBeamClusterizer + ;
 #pragma link C++ class CbmTofTrackFinderNN + ;
