@@ -192,6 +192,7 @@ private:
   TClonesArray* fTofMatchArrayIn;       // Input array of TOF hit matches
   TClonesArray* fTofHitArray;           // Output array of recalibrated TOF hits
   std::vector<Int_t> fTofHitIndexArray;  // Index of hit in TS
+  TClonesArray* fTofHitArrayOut;           // Output array of recalibrated TOF hits
   TClonesArray* fTrackArray;             // Output array of CbmTofTracks
   TClonesArray*
     fTrackArrayOut;             // Output array of CbmTofTracks in CbmEvent mode
@@ -208,6 +209,11 @@ private:
   std::vector<Int_t> fRpcAddr;      // vector of RPC addresses
   std::map<Int_t, Int_t> fMapStationRpcId;
   std::map<Int_t, Int_t> fMapRpcIdParInd;
+
+  std::vector<Double_t> fvToff; // station correction parameter
+  std::vector<Double_t> fvXoff; // station correction parameter
+  std::vector<Double_t> fvYoff; // station correction parameter
+  std::vector<Double_t> fvZoff; // station correction parameter
 
   CbmTofFindTracks(const CbmTofFindTracks&);
   CbmTofFindTracks& operator=(const CbmTofFindTracks&);
@@ -268,6 +274,7 @@ private:
 
   Bool_t LoadCalParameter();
   Bool_t WriteHistos();
+
   TString fCalParFileName;  // name of the file name with Calibration Parameters
   TString fCalOutFileName;
   TFile* fCalParFile;      // pointer to Calibration Parameter file

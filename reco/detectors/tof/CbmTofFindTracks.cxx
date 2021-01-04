@@ -83,6 +83,7 @@ CbmTofFindTracks::CbmTofFindTracks(const char* name,
   , fTofMatchArrayIn(NULL)
   , fTofHitArray(NULL)
   , fTofHitIndexArray()
+  , fTofHitArrayOut(NULL)
   , fTrackArray(NULL)
   , fTrackArrayOut(nullptr)
   , fTofUHitArray(NULL)
@@ -96,6 +97,10 @@ CbmTofFindTracks::CbmTofFindTracks(const char* name,
   , fRpcAddr()
   , fMapStationRpcId()
   , fMapRpcIdParInd()
+  , fvToff()
+  , fvXoff()
+  , fvYoff()
+  , fvZoff()
   , fhTrklMul(NULL)
   , fhTrklChi2(NULL)
   , fhAllHitsStation(NULL)
@@ -261,12 +266,17 @@ InitStatus CbmTofFindTracks::Init() {
   //ioman->Register("TofTracks", "TOF", fTrackArray, kFALSE); //FIXME
   if (fEventsColl) {
     fTrackArrayOut = new TClonesArray("CbmTofTracklet", 100);
+    fTofHitArrayOut = new TClonesArray("CbmTofHit", 100);
     ioman->Register(
-      "TofTracks", "TOF", fTrackArrayOut, kTRUE);  //FIXME, does not work !
+      "TofTracks", "TOF", fTrackArrayOut, kTRUE);
+    ioman->Register(
+      "TofCalHit", "TOF", fTofHitArrayOut, kTRUE);
   } else {
     ioman->Register(
-      "TofTracks", "TOF", fTrackArray, kTRUE);  //FIXME, does not work !
+      "TofTracks", "TOF", fTrackArray, kTRUE);
     cout << "-I- CbmTofFindTracks::Init:TofTrack array registered" << endl;
+
+    ioman->Register("TofCalHit", "TOF", fTofHitArray, kFALSE);
 
     // Create and register TofUHit array for unused Hits
     ioman->Register("TofUHit", "TOF", fTofUHitArray, kFALSE);
@@ -334,6 +344,12 @@ InitStatus CbmTofFindTracks::Init() {
 // -------------------------------------------------------------------------
 /************************************************************************************/
 Bool_t CbmTofFindTracks::LoadCalParameter() {
+  UInt_t NSt=fMapRpcIdParInd.size();
+  fvToff.resize(NSt);for(uint i=0; i<NSt;i++)fvToff[i]=0.;
+  fvXoff.resize(NSt);for(uint i=0; i<NSt;i++)fvXoff[i]=0.;
+  fvYoff.resize(NSt);for(uint i=0; i<NSt;i++)fvYoff[i]=0.;
+  fvZoff.resize(NSt);for(uint i=0; i<NSt;i++)fvZoff[i]=0.;
+
   if (fCalParFileName.IsNull()) return kTRUE;
 
   fCalParFile = new TFile(fCalParFileName, "");
@@ -362,6 +378,8 @@ Bool_t CbmTofFindTracks::LoadCalParameter() {
               << " not found. ";
   } else {
     fhPullT_Smt_Off = (TH1D*) fhtmp->Clone();
+    for (UInt_t iSt=0; iSt<NSt; iSt++)
+        fvToff[iSt]=fhPullT_Smt_Off->GetBinContent(iSt+1);
   }
 
   if (NULL == fhtmpX) {
@@ -369,6 +387,8 @@ Bool_t CbmTofFindTracks::LoadCalParameter() {
               << " not found. ";
   } else {
     fhPullX_Smt_Off = (TH1D*) fhtmpX->Clone();
+    for (UInt_t iSt=0; iSt<NSt; iSt++)
+      fvXoff[iSt]=fhPullX_Smt_Off->GetBinContent(iSt+1);
   }
 
   if (NULL == fhtmpY) {
@@ -376,6 +396,8 @@ Bool_t CbmTofFindTracks::LoadCalParameter() {
               << " not found. ";
   } else {
     fhPullY_Smt_Off = (TH1D*) fhtmpY->Clone();
+    for (UInt_t iSt=0; iSt<NSt; iSt++)
+      fvYoff[iSt]=fhPullY_Smt_Off->GetBinContent(iSt+1);
   }
 
   if (NULL == fhtmpZ) {
@@ -383,6 +405,8 @@ Bool_t CbmTofFindTracks::LoadCalParameter() {
               << " not found. ";
   } else {
     fhPullZ_Smt_Off = (TH1D*) fhtmpZ->Clone();
+    for (UInt_t iSt=0; iSt<NSt; iSt++)
+      fvZoff[iSt]=fhPullZ_Smt_Off->GetBinContent(iSt+1);
   }
 
   if (NULL == fhtmpW) {
@@ -1052,7 +1076,9 @@ void CbmTofFindTracks::Exec(Option_t* opt) {
     ExecFind(opt);
   } else {
     Int_t iNbTrks = 0;
-    fTrackArrayOut->Delete();  //Clear("C");
+    Int_t iNbCalHits=0;
+    fTrackArrayOut->Delete();   //Clear("C");
+    fTofHitArrayOut->Delete();  //Clear("C");
     for (Int_t iEvent = 0; iEvent < fEventsColl->GetEntriesFast(); iEvent++) {
       CbmEvent* tEvent = dynamic_cast<CbmEvent*>(fEventsColl->At(iEvent));
       LOG(debug) << "Process event " << iEvent << " with "
@@ -1077,9 +1103,21 @@ void CbmTofFindTracks::Exec(Option_t* opt) {
       for (Int_t iTrk = 0; iTrk < fTrackArray->GetEntries(); iTrk++) {
         CbmTofTracklet* pTrk = (CbmTofTracklet*) fTrackArray->At(iTrk);
         new ((*fTrackArrayOut)[iNbTrks]) CbmTofTracklet(*pTrk);
+        pTrk=(CbmTofTracklet*) fTrackArrayOut->At(iNbTrks);
+        for(Int_t iHit=0; iHit<pTrk->GetNofHits(); iHit++)//update to original index
+        {
+          pTrk->SetTofHitIndex(iHit, fTofHitIndexArray[ pTrk->GetTofHitIndex(iHit) ] );
+        }
         tEvent->AddData(ECbmDataType::kTofTrack, iNbTrks);
         iNbTrks++;
       }
+      // Update TofHitArrayIn
+      for (Int_t iHit = 0; iHit < fTofHitArray->GetEntriesFast(); iHit++) {
+        CbmTofHit* tHit =
+          dynamic_cast<CbmTofHit*>(fTofHitArray->At(iHit));
+        new ((*fTofHitArrayOut)[iNbCalHits++]) CbmTofHit(*tHit);
+      }
+
       fTrackArray->Delete();
     }
   }
@@ -1154,6 +1192,11 @@ void CbmTofFindTracks::ExecFind(Option_t* /*opt*/, CbmEvent* tEvent) {
     if ((iDetId & DetMask)
         != fiBeamCounter) {  // do not modify diamond position
       Int_t iRpcInd = fMapRpcIdParInd[iDetId];
+      pHit->SetTime(pHit->GetTime() + fvToff[iRpcInd]);
+      pHit->SetX(pHit->GetX() + fvXoff[iRpcInd]);
+      pHit->SetY(pHit->GetY() + fvYoff[iRpcInd]);
+      pHit->SetZ(pHit->GetZ() + fvZoff[iRpcInd]);
+      /*
       if (fhPullT_Smt_Off != NULL) {
         dTcor = (Double_t) fhPullT_Smt_Off->GetBinContent(iRpcInd + 1);
         pHit->SetTime(pHit->GetTime() + dTcor);
@@ -1170,6 +1213,7 @@ void CbmTofFindTracks::ExecFind(Option_t* /*opt*/, CbmEvent* tEvent) {
         Double_t dZcor = (Double_t) fhPullZ_Smt_Off->GetBinContent(iRpcInd + 1);
         pHit->SetZ(pHit->GetZ() + dZcor);
       }
+      */
     }
 
     Int_t iSt = GetStationOfAddr(iDetId);
