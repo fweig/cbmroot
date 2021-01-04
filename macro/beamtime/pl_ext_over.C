@@ -113,7 +113,7 @@ void pl_ext_over() {
   } else {
     cout << hname << " not found" << endl;
   }
-  
+
   can->cd(9);
   gROOT->cd();
   hname = Form("hExt_TrkSizChiSq1");
@@ -137,6 +137,6 @@ void pl_ext_over() {
   } else {
     cout << hname << " not found" << endl;
   }
-        
+
   can->SaveAs("pl_ext_over.pdf");
 }

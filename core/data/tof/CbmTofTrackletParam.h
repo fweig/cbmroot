@@ -148,9 +148,9 @@ public:
 
 private:
   Double_t fX, fY, fZ, fT;  // X, Y, Z coordinates in [cm]
-  Double_t fTx, fTy, fTt;    // Slopes: tx=dx/dz, ty=dy/dz
-  Double_t fQp;         // Q/p: Q is a charge (+/-1), p is momentum in [GeV/c]
-  Double_t fLz;         // tracklength in z - direction
+  Double_t fTx, fTy, fTt;   // Slopes: tx=dx/dz, ty=dy/dz
+  Double_t fQp;  // Q/p: Q is a charge (+/-1), p is momentum in [GeV/c]
+  Double_t fLz;  // tracklength in z - direction
   Double_t fChiSq;
   /* Covariance matrix.
     * Upper triangle symmetric matrix.

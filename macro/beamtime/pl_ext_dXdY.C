@@ -1,4 +1,4 @@
-void pl_ext_dXdY(Int_t iLev=0, Int_t NSt=12) {
+void pl_ext_dXdY(Int_t iLev = 0, Int_t NSt = 12) {
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   TCanvas* can = new TCanvas("can", "can", 50, 0, 1200, 800);
@@ -18,12 +18,12 @@ void pl_ext_dXdY(Int_t iLev=0, Int_t NSt=12) {
 
   // if (h!=NULL) h->Delete();
 
-  Int_t iPad=0;
-  for (Int_t iSt=0; iSt<NSt; iSt++) {
-	iPad++;
+  Int_t iPad = 0;
+  for (Int_t iSt = 0; iSt < NSt; iSt++) {
+    iPad++;
     can->cd(iPad);
     gROOT->cd();
-    hname = Form("hTrkPosCor%d_St%d",iLev,iSt);
+    hname = Form("hTrkPosCor%d_St%d", iLev, iSt);
     h2    = (TH2*) gROOT->FindObjectAny(hname);
     if (h2 != NULL) {
       h2->Draw("colz");

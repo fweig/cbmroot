@@ -265,15 +265,12 @@ InitStatus CbmTofFindTracks::Init() {
   //fTrackArray->BypassStreamer(kTRUE);  //needed?
   //ioman->Register("TofTracks", "TOF", fTrackArray, kFALSE); //FIXME
   if (fEventsColl) {
-    fTrackArrayOut = new TClonesArray("CbmTofTracklet", 100);
+    fTrackArrayOut  = new TClonesArray("CbmTofTracklet", 100);
     fTofHitArrayOut = new TClonesArray("CbmTofHit", 100);
-    ioman->Register(
-      "TofTracks", "TOF", fTrackArrayOut, kTRUE);
-    ioman->Register(
-      "TofCalHit", "TOF", fTofHitArrayOut, kTRUE);
+    ioman->Register("TofTracks", "TOF", fTrackArrayOut, kTRUE);
+    ioman->Register("TofCalHit", "TOF", fTofHitArrayOut, kTRUE);
   } else {
-    ioman->Register(
-      "TofTracks", "TOF", fTrackArray, kTRUE);
+    ioman->Register("TofTracks", "TOF", fTrackArray, kTRUE);
     cout << "-I- CbmTofFindTracks::Init:TofTrack array registered" << endl;
 
     ioman->Register("TofCalHit", "TOF", fTofHitArray, kFALSE);
@@ -344,11 +341,19 @@ InitStatus CbmTofFindTracks::Init() {
 // -------------------------------------------------------------------------
 /************************************************************************************/
 Bool_t CbmTofFindTracks::LoadCalParameter() {
-  UInt_t NSt=fMapRpcIdParInd.size();
-  fvToff.resize(NSt);for(uint i=0; i<NSt;i++)fvToff[i]=0.;
-  fvXoff.resize(NSt);for(uint i=0; i<NSt;i++)fvXoff[i]=0.;
-  fvYoff.resize(NSt);for(uint i=0; i<NSt;i++)fvYoff[i]=0.;
-  fvZoff.resize(NSt);for(uint i=0; i<NSt;i++)fvZoff[i]=0.;
+  UInt_t NSt = fMapRpcIdParInd.size();
+  fvToff.resize(NSt);
+  for (uint i = 0; i < NSt; i++)
+    fvToff[i] = 0.;
+  fvXoff.resize(NSt);
+  for (uint i = 0; i < NSt; i++)
+    fvXoff[i] = 0.;
+  fvYoff.resize(NSt);
+  for (uint i = 0; i < NSt; i++)
+    fvYoff[i] = 0.;
+  fvZoff.resize(NSt);
+  for (uint i = 0; i < NSt; i++)
+    fvZoff[i] = 0.;
 
   if (fCalParFileName.IsNull()) return kTRUE;
 
@@ -378,8 +383,8 @@ Bool_t CbmTofFindTracks::LoadCalParameter() {
               << " not found. ";
   } else {
     fhPullT_Smt_Off = (TH1D*) fhtmp->Clone();
-    for (UInt_t iSt=0; iSt<NSt; iSt++)
-        fvToff[iSt]=fhPullT_Smt_Off->GetBinContent(iSt+1);
+    for (UInt_t iSt = 0; iSt < NSt; iSt++)
+      fvToff[iSt] = fhPullT_Smt_Off->GetBinContent(iSt + 1);
   }
 
   if (NULL == fhtmpX) {
@@ -387,8 +392,8 @@ Bool_t CbmTofFindTracks::LoadCalParameter() {
               << " not found. ";
   } else {
     fhPullX_Smt_Off = (TH1D*) fhtmpX->Clone();
-    for (UInt_t iSt=0; iSt<NSt; iSt++)
-      fvXoff[iSt]=fhPullX_Smt_Off->GetBinContent(iSt+1);
+    for (UInt_t iSt = 0; iSt < NSt; iSt++)
+      fvXoff[iSt] = fhPullX_Smt_Off->GetBinContent(iSt + 1);
   }
 
   if (NULL == fhtmpY) {
@@ -396,8 +401,8 @@ Bool_t CbmTofFindTracks::LoadCalParameter() {
               << " not found. ";
   } else {
     fhPullY_Smt_Off = (TH1D*) fhtmpY->Clone();
-    for (UInt_t iSt=0; iSt<NSt; iSt++)
-      fvYoff[iSt]=fhPullY_Smt_Off->GetBinContent(iSt+1);
+    for (UInt_t iSt = 0; iSt < NSt; iSt++)
+      fvYoff[iSt] = fhPullY_Smt_Off->GetBinContent(iSt + 1);
   }
 
   if (NULL == fhtmpZ) {
@@ -405,8 +410,8 @@ Bool_t CbmTofFindTracks::LoadCalParameter() {
               << " not found. ";
   } else {
     fhPullZ_Smt_Off = (TH1D*) fhtmpZ->Clone();
-    for (UInt_t iSt=0; iSt<NSt; iSt++)
-      fvZoff[iSt]=fhPullZ_Smt_Off->GetBinContent(iSt+1);
+    for (UInt_t iSt = 0; iSt < NSt; iSt++)
+      fvZoff[iSt] = fhPullZ_Smt_Off->GetBinContent(iSt + 1);
   }
 
   if (NULL == fhtmpW) {
@@ -852,7 +857,7 @@ Bool_t CbmTofFindTracks::WriteHistos() {
           Double_t dVal = fhPullY_Smt_Off->GetBinContent(ix + 1);
           //dVal -= htmp1D->GetBinContent(ix + 1);
           // Fit gaussian
-          TH1D* hpy     = fhPullY_Smt->ProjectionY("_py", ix + 1, ix + 1);
+          TH1D* hpy = fhPullY_Smt->ProjectionY("_py", ix + 1, ix + 1);
           if (hpy->GetEntries() > 100.) {
             Double_t dFMean   = hpy->GetBinCenter(hpy->GetMaximumBin());
             Double_t dFLim    = 2.;  // CAUTION, fixed numeric value
@@ -863,10 +868,10 @@ Bool_t CbmTofFindTracks::WriteHistos() {
             dVal -= fRes->Parameter(1);
             Double_t dRMS = fRes->Parameter(2);
             LOG(debug) << "PeakFit at " << dFMean << ", lim " << dFLim
-                      << " : mean " << fRes->Parameter(1) << ", width "
-                      << dRMS;
+                       << " : mean " << fRes->Parameter(1) << ", width "
+                       << dRMS;
             if (fRpcAddr[ix]
-              != fiBeamCounter)  // don't correct beam counter position
+                != fiBeamCounter)  // don't correct beam counter position
               fhPullY_Smt_Off->SetBinContent(ix + 1, dVal);
 
             dRMS = TMath::Abs(hpy->GetRMS());
@@ -1075,8 +1080,8 @@ void CbmTofFindTracks::Exec(Option_t* opt) {
     fTofHitArray = (TClonesArray*) fTofHitArrayIn;
     ExecFind(opt);
   } else {
-    Int_t iNbTrks = 0;
-    Int_t iNbCalHits=0;
+    Int_t iNbTrks    = 0;
+    Int_t iNbCalHits = 0;
     fTrackArrayOut->Delete();   //Clear("C");
     fTofHitArrayOut->Delete();  //Clear("C");
     for (Int_t iEvent = 0; iEvent < fEventsColl->GetEntriesFast(); iEvent++) {
@@ -1103,18 +1108,19 @@ void CbmTofFindTracks::Exec(Option_t* opt) {
       for (Int_t iTrk = 0; iTrk < fTrackArray->GetEntries(); iTrk++) {
         CbmTofTracklet* pTrk = (CbmTofTracklet*) fTrackArray->At(iTrk);
         new ((*fTrackArrayOut)[iNbTrks]) CbmTofTracklet(*pTrk);
-        pTrk=(CbmTofTracklet*) fTrackArrayOut->At(iNbTrks);
-        for(Int_t iHit=0; iHit<pTrk->GetNofHits(); iHit++)//update to original index
+        pTrk = (CbmTofTracklet*) fTrackArrayOut->At(iNbTrks);
+        for (Int_t iHit = 0; iHit < pTrk->GetNofHits();
+             iHit++)  //update to original index
         {
-          pTrk->SetTofHitIndex(iHit, fTofHitIndexArray[ pTrk->GetTofHitIndex(iHit) ] );
+          pTrk->SetTofHitIndex(iHit,
+                               fTofHitIndexArray[pTrk->GetTofHitIndex(iHit)]);
         }
         tEvent->AddData(ECbmDataType::kTofTrack, iNbTrks);
         iNbTrks++;
       }
       // Update TofHitArrayIn
       for (Int_t iHit = 0; iHit < fTofHitArray->GetEntriesFast(); iHit++) {
-        CbmTofHit* tHit =
-          dynamic_cast<CbmTofHit*>(fTofHitArray->At(iHit));
+        CbmTofHit* tHit = dynamic_cast<CbmTofHit*>(fTofHitArray->At(iHit));
         new ((*fTofHitArrayOut)[iNbCalHits++]) CbmTofHit(*tHit);
       }
 

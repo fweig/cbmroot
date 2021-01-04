@@ -69,7 +69,7 @@ public:
   }
 
   Int_t GetTofHitIndex(Int_t ind) const { return fTofHit[ind]; }
-  inline void  SetTofHitIndex(Int_t ind, Int_t i) { fTofHit[ind]=i; }
+  inline void SetTofHitIndex(Int_t ind, Int_t i) { fTofHit[ind] = i; }
   CbmTofHit* GetTofHitPointer(Int_t ind) { return &fhit[ind]; }
   Int_t GetTofDetIndex(Int_t ind) const { return fTofDet[ind]; }
 

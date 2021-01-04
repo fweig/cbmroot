@@ -1,4 +1,4 @@
-void pl_ext_trk(Int_t iLev=1) {
+void pl_ext_trk(Int_t iLev = 1) {
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   TCanvas* can = new TCanvas("can", "can", 50, 0, 800, 800);
@@ -20,7 +20,7 @@ void pl_ext_trk(Int_t iLev=1) {
 
   can->cd(1);
   gROOT->cd();
-  hname = Form("hTrkStationDX%d",iLev);
+  hname = Form("hTrkStationDX%d", iLev);
   h2    = (TH2*) gROOT->FindObjectAny(hname);
   if (h2 != NULL) {
     h2->Draw("colz");
@@ -32,7 +32,7 @@ void pl_ext_trk(Int_t iLev=1) {
 
   can->cd(2);
   gROOT->cd();
-  hname = Form("hTrkStationDY%d",iLev);
+  hname = Form("hTrkStationDY%d", iLev);
   h2    = (TH2*) gROOT->FindObjectAny(hname);
   if (h2 != NULL) {
     h2->Draw("colz");
@@ -44,7 +44,7 @@ void pl_ext_trk(Int_t iLev=1) {
 
   can->cd(3);
   gROOT->cd();
-  hname = Form("hTrkStationDT%d",iLev);
+  hname = Form("hTrkStationDT%d", iLev);
   h2    = (TH2*) gROOT->FindObjectAny(hname);
   if (h2 != NULL) {
     h2->Draw("colz");
@@ -56,7 +56,7 @@ void pl_ext_trk(Int_t iLev=1) {
 
   can->cd(4);
   gROOT->cd();
-  hname = Form("hTrkStationNHits%d",iLev);
+  hname = Form("hTrkStationNHits%d", iLev);
   h2    = (TH2*) gROOT->FindObjectAny(hname);
   if (h2 != NULL) {
     h2->Draw("colz");
@@ -68,7 +68,7 @@ void pl_ext_trk(Int_t iLev=1) {
 
   can->cd(5);
   gROOT->cd();
-  hname = Form("hTrkPullDX%d",iLev);
+  hname = Form("hTrkPullDX%d", iLev);
   h2    = (TH2*) gROOT->FindObjectAny(hname);
   if (h2 != NULL) {
     h2->Draw("colz");
@@ -80,7 +80,7 @@ void pl_ext_trk(Int_t iLev=1) {
 
   can->cd(6);
   gROOT->cd();
-  hname = Form("hTrkPullDY%d",iLev);
+  hname = Form("hTrkPullDY%d", iLev);
   h2    = (TH2*) gROOT->FindObjectAny(hname);
   if (h2 != NULL) {
     h2->Draw("colz");
@@ -92,7 +92,7 @@ void pl_ext_trk(Int_t iLev=1) {
 
   can->cd(7);
   gROOT->cd();
-  hname = Form("hTrkPullDT%d",iLev);
+  hname = Form("hTrkPullDT%d", iLev);
   h2    = (TH2*) gROOT->FindObjectAny(hname);
   if (h2 != NULL) {
     h2->Draw("colz");
@@ -104,7 +104,7 @@ void pl_ext_trk(Int_t iLev=1) {
 
   can->cd(8);
   gROOT->cd();
-  hname = Form("hExt_TrkSizVel%d",iLev);
+  hname = Form("hExt_TrkSizVel%d", iLev);
   h2    = (TH2*) gROOT->FindObjectAny(hname);
   if (h2 != NULL) {
     h2->Draw("colz");
@@ -113,7 +113,7 @@ void pl_ext_trk(Int_t iLev=1) {
   } else {
     cout << hname << " not found" << endl;
   }
-  
+
   can->cd(9);
   gROOT->cd();
   hname = Form("hExt_Xoff");
@@ -146,7 +146,7 @@ void pl_ext_trk(Int_t iLev=1) {
 
   can->cd(12);
   gROOT->cd();
-  hname = Form("hExt_TrkSizChiSq%d",iLev);
+  hname = Form("hExt_TrkSizChiSq%d", iLev);
   h2    = (TH2*) gROOT->FindObjectAny(hname);
   if (h2 != NULL) {
     h2->Draw("colz");
