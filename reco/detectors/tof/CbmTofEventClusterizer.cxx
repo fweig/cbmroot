@@ -4461,9 +4461,10 @@ Bool_t CbmTofEventClusterizer::WriteHistos() {
                           << " entries in TSR " << iSmType << iSm << iRpc
                           << ", stat: " << gMinuit->fCstatu
                           << Form(", chi2 %6.2f, striplen (%5.2f): "
-                        		  "%7.2f+/-%5.2f, pos res "
+                                  "%7.2f+/-%5.2f, pos res "
                                   "%5.2f+/-%5.2f at y_cen = %5.2f+/-%5.2f",
-								  ff->GetChisquare() / ff->GetNDF(),                                  fChannelInfo->GetSizey(),
+                                  ff->GetChisquare() / ff->GetNDF(),
+                                  fChannelInfo->GetSizey(),
                                   2. * ff->GetParameter(1),
                                   2. * ff->GetParError(1),
                                   ff->GetParameter(2),
@@ -4522,11 +4523,12 @@ Bool_t CbmTofEventClusterizer::WriteHistos() {
               htempPos_py = htempPos->ProjectionY(
                 Form("%s_py%02d", htempPos->GetName(), iCh), iCh + 1, iCh + 1);
               if (htempPos_py->GetEntries() > fdYFitMin) {
-                LOG(debug1) << Form(
-                  "Determine YMean in %s of channel %d by length fit with %6.3f to %d entries",
-                  htempPos->GetName(),
-                  iCh, dYLenFit,
-                  (Int_t) htempPos_py->GetEntries());
+                LOG(debug1) << Form("Determine YMean in %s of channel %d by "
+                                    "length fit with %6.3f to %d entries",
+                                    htempPos->GetName(),
+                                    iCh,
+                                    dYLenFit,
+                                    (Int_t) htempPos_py->GetEntries());
                 CbmTofDetectorInfo xDetInfo(
                   ECbmModuleId::kTof, iSmType, iSm, iRpc, 0, iCh);
                 Int_t iChId  = fTofId->SetDetectorInfo(xDetInfo);
@@ -4536,7 +4538,7 @@ Bool_t CbmTofEventClusterizer::WriteHistos() {
                   continue;
                 }
                 Double_t fp[4] = {1., 3 * 0.};  // initialize fit parameter
-                if(0)
+                if (0)
                   for (Int_t iPar = 2; iPar < 4; iPar++)
                     if (NULL != fhSmCluFpar[iSmType][iPar])
                       fp[iPar] = fhSmCluFpar[iSmType][iPar]->GetBinContent(
@@ -4547,12 +4549,12 @@ Bool_t CbmTofEventClusterizer::WriteHistos() {
                 fit_ybox(htempPos_py, dYLenFit, fpp);
                 TF1* ff = htempPos_py->GetFunction("YBox");
                 if (NULL != ff) {
-                  LOG(debug1) << Form("FitPar1 %6.3f Err %6.3f, Par3 %6.3f Err %6.3f ",
-        		            		ff->GetParameter(1),
-									ff->GetParError(1),
-									ff->GetParameter(3),
-									ff->GetParError(3)
-                                    );
+                  LOG(debug1)
+                    << Form("FitPar1 %6.3f Err %6.3f, Par3 %6.3f Err %6.3f ",
+                            ff->GetParameter(1),
+                            ff->GetParError(1),
+                            ff->GetParameter(3),
+                            ff->GetParError(3));
                   if (TMath::Abs(fChannelInfo->GetSizey()
                                  - 2. * ff->GetParameter(1))
                           / fChannelInfo->GetSizey()
@@ -4570,7 +4572,7 @@ Bool_t CbmTofEventClusterizer::WriteHistos() {
                         (Double_t)(iSm * iNbRpc + iRpc), dV, dVW);
                       LOG(info)
                         << "FRes YBox " << htempPos_py->GetEntries()
-                        << " entries in TSRC " <<iSmType<<iSm<<iRpc<<iCh
+                        << " entries in TSRC " << iSmType << iSm << iRpc << iCh
                         << ", chi2 " << ff->GetChisquare()
                         << Form(", striplen (%5.2f), %4.2f -> %4.2f,  "
                                 "%4.1f: %7.2f+/-%5.2f, pos res "
@@ -4591,10 +4593,10 @@ Bool_t CbmTofEventClusterizer::WriteHistos() {
                           ff->GetParameter(2 + iPar));
                     }
                   } else {
-                    YMean=dYMeanFit;  // no new info available
+                    YMean = dYMeanFit;  // no new info available
                     LOG(info)
                       << "FBad YBox " << htempPos_py->GetEntries()
-                      << " entries in TSRC "<<iSmType<<iSm<<iRpc<<iCh
+                      << " entries in TSRC " << iSmType << iSm << iRpc << iCh
                       << ", chi2 " << ff->GetChisquare()
                       << Form(", striplen (%5.2f), %4.2f: %7.2f +/- %5.2f, pos "
                               "res %5.2f +/- %5.2f at y_cen = %5.2f +/- %5.2f",
@@ -6079,7 +6081,7 @@ void CbmTofEventClusterizer::fit_ybox(TH1* h1,
   f1->SetParLimits(2, 0.2, 3.);
   f1->SetParLimits(3, -4., 4.);
   if (fpar != NULL) {
-	f1->SetParLimits(1,ysize*0.5,ysize*0.5);
+    f1->SetParLimits(1, ysize * 0.5, ysize * 0.5);
     Double_t fp[4];
     for (Int_t i = 0; i < 4; i++)
       fp[i] = *fpar++;

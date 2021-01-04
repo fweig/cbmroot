@@ -175,7 +175,7 @@ Bool_t CbmTofCalibrator::CreateCalHist() {
       continue;
     }
 
-    Double_t YDMAX = TMath::Max(2., fChannelInfo->GetSizey()) * 0.8;
+    Double_t YDMAX          = TMath::Max(2., fChannelInfo->GetSizey()) * 0.8;
     fhCalPosition[iDetIndx] = new TH2F(
       Form("cal_SmT%01d_sm%03d_rpc%03d_Position", iSmType, iSmId, iRpcId),
       Form(
@@ -184,37 +184,42 @@ Bool_t CbmTofCalibrator::CreateCalHist() {
         iSmId,
         iSmType),
       fDigiBdfPar->GetNbChan(iSmType, iRpcId),
-      0, fDigiBdfPar->GetNbChan(iSmType, iRpcId),
-      100, -YDMAX, YDMAX);
-
-    YDMAX = 5;
-    fhCalPos[iDetIndx] = new TH2F(
-      Form("cal_SmT%01d_sm%03d_rpc%03d_Pos", iSmType, iSmId, iRpcId),
-      Form(
-        "Clu pos deviation of Rpc #%03d in Sm %03d of type %d; Strip []; ypos [cm]",
-        iRpcId,
-        iSmId,
-        iSmType),
-      fDigiBdfPar->GetNbChan(iSmType, iRpcId),
       0,
       fDigiBdfPar->GetNbChan(iSmType, iRpcId),
-      99, -YDMAX, YDMAX);
+      100,
+      -YDMAX,
+      YDMAX);
+
+    YDMAX = 5;
+    fhCalPos[iDetIndx] =
+      new TH2F(Form("cal_SmT%01d_sm%03d_rpc%03d_Pos", iSmType, iSmId, iRpcId),
+               Form("Clu pos deviation of Rpc #%03d in Sm %03d of type %d; "
+                    "Strip []; ypos [cm]",
+                    iRpcId,
+                    iSmId,
+                    iSmType),
+               fDigiBdfPar->GetNbChan(iSmType, iRpcId),
+               0,
+               fDigiBdfPar->GetNbChan(iSmType, iRpcId),
+               99,
+               -YDMAX,
+               YDMAX);
 
     Double_t TSumMax = 2.;
     //if(iSmType == 5) TSumMax *= 2.; // enlarge for diamond / beamcounter
-    fhCalTOff[iDetIndx] = new TH2F(
-      Form("cal_SmT%01d_sm%03d_rpc%03d_TOff", iSmType, iSmId, iRpcId),
-      Form(
-        "Clu T0 deviation of Rpc #%03d in Sm %03d of type %d; Strip []; TOff [ns]",
-        iRpcId,
-        iSmId,
-        iSmType),
-      fDigiBdfPar->GetNbChan(iSmType, iRpcId),
-      0,
-      fDigiBdfPar->GetNbChan(iSmType, iRpcId),
-      99,
-      -TSumMax,
-      TSumMax);
+    fhCalTOff[iDetIndx] =
+      new TH2F(Form("cal_SmT%01d_sm%03d_rpc%03d_TOff", iSmType, iSmId, iRpcId),
+               Form("Clu T0 deviation of Rpc #%03d in Sm %03d of type %d; "
+                    "Strip []; TOff [ns]",
+                    iRpcId,
+                    iSmId,
+                    iSmType),
+               fDigiBdfPar->GetNbChan(iSmType, iRpcId),
+               0,
+               fDigiBdfPar->GetNbChan(iSmType, iRpcId),
+               99,
+               -TSumMax,
+               TSumMax);
 
     Double_t TotMax    = 20.;  //FIXME: has to be consistent with Clusterizer!
     fhCalTot[iDetIndx] = new TH2F(
@@ -317,8 +322,8 @@ void CbmTofCalibrator::FillCalHist(CbmTofTracklet* pTrk,
     hitpos[1] = pTrk->GetFitY(pHit->GetZ());
     Double_t hlocal_f[3];
     gGeoManager->MasterToLocal(hitpos, hlocal_f);
-    fhCalPosition[iDetIndx]->Fill(
-      (Double_t) iCh, hlocal_p[1]);  // transformed into LRF
+    fhCalPosition[iDetIndx]->Fill((Double_t) iCh,
+                                  hlocal_p[1]);  // transformed into LRF
     fhCalPos[iDetIndx]->Fill(
       (Double_t) iCh, hlocal_p[1] - hlocal_f[1]);  // transformed into LRF
     fhCalTOff[iDetIndx]->Fill(

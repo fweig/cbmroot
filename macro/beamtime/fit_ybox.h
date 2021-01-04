@@ -23,20 +23,20 @@ void fit_ybox(const char* hname, Double_t YLen) {
   TH2* h2;
   h1 = (TH1*) gROOT->FindObjectAny(hname);
   if (NULL != h1) {
-    TAxis* xaxis  = h1->GetXaxis();
-    Double_t Ymin = xaxis->GetXmin();
-    Double_t Ymax = xaxis->GetXmax();
-    TF1* f1       = new TF1("YBox", f1_xboxe, Ymin, Ymax, 6);
-    Double_t yini = (h1->GetMaximum() + h1->GetMinimum()) * 0.5;
-    Double_t dLini = Ymax*0.8;
-    if ( YLen != 0.) {
-	  dLini=YLen*0.5;
-	  f1->SetParLimits(1,dLini,dLini);
-	}
+    TAxis* xaxis   = h1->GetXaxis();
+    Double_t Ymin  = xaxis->GetXmin();
+    Double_t Ymax  = xaxis->GetXmax();
+    TF1* f1        = new TF1("YBox", f1_xboxe, Ymin, Ymax, 6);
+    Double_t yini  = (h1->GetMaximum() + h1->GetMinimum()) * 0.5;
+    Double_t dLini = Ymax * 0.8;
+    if (YLen != 0.) {
+      dLini = YLen * 0.5;
+      f1->SetParLimits(1, dLini, dLini);
+    }
     f1->SetParameters(yini, dLini, 2., -1., 0., 0.);
-    f1->SetParLimits(2,0.2,3.);
-    f1->SetParLimits(3,-3.,3.);    
-    h1->Fit("YBox","SQM");
+    f1->SetParLimits(2, 0.2, 3.);
+    f1->SetParLimits(3, -3., 3.);
+    h1->Fit("YBox", "SQM");
 
     double res[10];
     double err[10];
@@ -61,6 +61,6 @@ void fit_ybox(const char* hname, Double_t YLen) {
 }
 
 void fit_ybox(const char* hname) {
-	Double_t Ylen=0.;
-	fit_ybox(hname,Ylen);
+  Double_t Ylen = 0.;
+  fit_ybox(hname, Ylen);
 }
