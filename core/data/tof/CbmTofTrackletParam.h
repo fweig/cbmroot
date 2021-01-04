@@ -1,7 +1,7 @@
 /**
- * \file CbmLitTrackParam.h
- * \author Andrey Lebedev <andrey.lebedev@gsi.de>
- * \date 2008
+ * \file CbmTofTrackletParam.h
+ * \author Norbert Herrmann <n.herrmann@gsi.de>
+ * \date 2020
  * \brief Data class for track parameters.
  **/
 
@@ -33,10 +33,13 @@ public:
     : fX(0.)
     , fY(0.)
     , fZ(0.)
+    , fT(0.)
     , fTx(0.)
     , fTy(0.)
+    , fTt(0.)
     , fQp(0.)
     , fLz(0.)
+    , fChiSq(0.)
     , fCovMatrix(15, 0.) {}
 
   /**
@@ -48,10 +51,13 @@ public:
   Double_t GetX() const { return fX; }
   Double_t GetY() const { return fY; }
   Double_t GetZ() const { return fZ; }
+  Double_t GetT() const { return fT; }
   Double_t GetLz() const { return fLz; }
   Double_t GetTx() const { return fTx; }
   Double_t GetTy() const { return fTy; }
+  Double_t GetTt() const { return fTt; }
   Double_t GetQp() const { return fQp; }
+  Double_t GetChiSq() const { return fChiSq; }
   Double_t GetCovariance(int index) const { return fCovMatrix[index]; }
   const std::vector<Double_t>& GetCovMatrix() const { return fCovMatrix; }
 
@@ -59,10 +65,13 @@ public:
   void SetX(Double_t x) { fX = x; }
   void SetY(Double_t y) { fY = y; }
   void SetZ(Double_t z) { fZ = z; }
+  void SetT(Double_t t) { fT = t; }
   void SetLz(Double_t lz) { fLz = lz; }
   void SetTx(Double_t tx) { fTx = tx; }
   void SetTy(Double_t ty) { fTy = ty; }
+  void SetTt(Double_t tt) { fTt = tt; }
   void SetQp(Double_t qp) { fQp = qp; }
+  void SetChiSq(Double_t v) { fChiSq = v; }
   void SetCovMatrix(const std::vector<Double_t>& C) {
     fCovMatrix.assign(C.begin(), C.end());
   }
@@ -117,7 +126,7 @@ public:
     */
   std::string ToString() const {
     std::stringstream ss;
-    ss << "TrackletParam: pos=(" << fX << "," << fY << "," << fZ
+    ss << "TofTrackletParam: pos=(" << fX << "," << fY << "," << fZ
        << ") tx=" << fTx << " ty=" << fTy << " qp=" << fQp;  // << std::endl;
                                                              // ss << "cov: ";
     // for (Int_t i = 0; i < 15; i++) ss << fCovMatrix[i] << " ";
@@ -138,11 +147,11 @@ public:
 
 
 private:
-  Double_t fX, fY, fZ;  // X, Y, Z coordinates in [cm]
-  Double_t fTx, fTy;    // Slopes: tx=dx/dz, ty=dy/dz
+  Double_t fX, fY, fZ, fT;  // X, Y, Z coordinates in [cm]
+  Double_t fTx, fTy, fTt;    // Slopes: tx=dx/dz, ty=dy/dz
   Double_t fQp;         // Q/p: Q is a charge (+/-1), p is momentum in [GeV/c]
   Double_t fLz;         // tracklength in z - direction
-
+  Double_t fChiSq;
   /* Covariance matrix.
     * Upper triangle symmetric matrix.
     * a[0,0..4], a[1,1..4], a[2,2..4], a[3,3..4], a[4,4] */
