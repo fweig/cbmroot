@@ -68,6 +68,7 @@ Set(SRCS
    parameter/CbmMcbm2018HodoPar.cxx
    parameter/CbmMcbm2018ContFact.cxx
    parameter/CbmMcbm2018PsdPar.cxx
+   parameter/CbmMcbm2020TrdTshiftPar.cxx
 
    unpacker/CbmMcbm2018RawConverterSdpb.cxx
    unpacker/CbmMcbm2018RawConverterGdpb.cxx

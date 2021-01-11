@@ -14,6 +14,7 @@
 #include "CbmMcbm2018RichPar.h"
 #include "CbmMcbm2018StsPar.h"
 #include "CbmMcbm2018TofPar.h"
+#include "CbmMcbm2020TrdTshiftPar.h"
 
 #include "FairRuntimeDb.h"
 
@@ -72,6 +73,13 @@ void CbmMcbm2018ContFact::setAllContainers() {
                                           "TestDefaultContext");
   pPsd->addContext("TestNonDefaultContext");
   containers->Add(pPsd);
+
+  FairContainer* pTrd =
+    new FairContainer("CbmMcbm2020TrdTshiftPar",
+                      "TRD timeshift unpacker parameters mCbm 2020",
+                      "Trd mCbm 2020 timeshift correction");
+  pTrd->addContext("TestDefaultContext");
+  containers->Add(pTrd);
 }
 
 FairParSet* CbmMcbm2018ContFact::createContainer(FairContainer* c) {
@@ -103,6 +111,10 @@ FairParSet* CbmMcbm2018ContFact::createContainer(FairContainer* c) {
   }
   if (strcmp(name, "CbmMcbm2018PsdPar") == 0) {
     p = new CbmMcbm2018PsdPar(
+      c->getConcatName().Data(), c->GetTitle(), c->getContext());
+  }
+  if (strcmp(name, "CbmMcbm2020TrdTshiftPar") == 0) {
+    p = new CbmMcbm2020TrdTshiftPar(
       c->getConcatName().Data(), c->GetTitle(), c->getContext());
   }
 

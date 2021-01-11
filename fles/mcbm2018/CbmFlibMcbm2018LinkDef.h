@@ -15,6 +15,7 @@
 #pragma link C++ class CbmMcbm2018HodoPar;
 #pragma link C++ class CbmMcbm2018ContFact;
 #pragma link C++ class CbmMcbm2018PsdPar;
+#pragma link C++ class CbmMcbm2020TrdTshiftPar + ;
 
 #pragma link C++ class CbmMcbm2018RawConverterSdpb;
 #pragma link C++ class CbmMcbm2018RawConverterGdpb;
@@ -73,7 +74,7 @@
 #pragma link C++ class CbmMcbm2019TimeWinEventBuilderAlgo + ;
 #pragma link C++ class CbmMcbm2019TimeWinEventBuilderTask + ;
 
-#pragma link C++ class CbmMcbmCheckTimingAlgo+;
-#pragma link C++ class CbmMcbmCheckTimingTask+;
+#pragma link C++ class CbmMcbmCheckTimingAlgo + ;
+#pragma link C++ class CbmMcbmCheckTimingTask + ;
 
 #endif

@@ -16,7 +16,7 @@ public:
   CbmMcbm2018ContFact();
   ~CbmMcbm2018ContFact() {}
   FairParSet* createContainer(FairContainer*);
-  ClassDef(CbmMcbm2018ContFact, 0)  // Factory for all TRD parameter containers
+  ClassDef(CbmMcbm2018ContFact, 0)  // Factory for all mcbm parameter containers
 };
 
 #endif /* !CBMMCBM2018CONTFACT_H */
