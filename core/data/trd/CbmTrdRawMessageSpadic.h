@@ -120,6 +120,11 @@ public:
   /** Returns the full time in nanoseconds */
   Double_t GetTime() const { return fFullTime * 62.5; }
 
+  /** Set the full time in nanoseconds */
+  void SetTime(Double_t setvalue) {
+    fFullTime = (std::uint64_t)(setvalue / 62.5);
+  }
+
   /** Returns the value of the sample with the highest value. */
   int16_t GetMaxAdc();
 
