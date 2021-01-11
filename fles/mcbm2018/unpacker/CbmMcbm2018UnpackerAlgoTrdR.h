@@ -133,6 +133,12 @@ public:
     fdTimeOffsetNs = dOffsetIn;
   }
 
+  void SetTimeshiftsMap(std::map<size_t, std::vector<Int_t>>* setvalue) {
+    fmapTimeshifts.clear();
+    fmapTimeshifts.insert(setvalue->begin(), setvalue->end());
+  }
+  ///< In the mCbm 2020 beamtime timeshifts changing during the run of the correlation time to the T0 have been observed. This is part of their correction
+
   /**
 	 *  @brief Call this when Spadic Average-Baseline feature is enabled.
 	 **/
@@ -261,10 +267,19 @@ private:
   CbmTrdParSetDigi* fDigiPar;  ///< CbmTrdParameter container
   CbmTrdParSetGas* fGasPar;    ///< CbmTrdParameter container
   CbmTrdParSetGain* fGainPar;  ///< CbmTrdParameter container
-  std::map<std::uint64_t, Int_t>
-    fSpadicMap;  ///< Map to retrieve asic address from CriId/CrobId/ElinkId (see CbmTrdHardwareSetupR)
-  std::map<Int_t, std::vector<Int_t>>
-    fAsicChannelMap;  ///< Map to retrieve module channelId from asicAddress and asicChannel
+
+  std::map<std::uint64_t, Int_t> fSpadicMap;
+  ///< Map to retrieve asic address from CriId/CrobId/ElinkId (see CbmTrdHardwareSetupR)
+
+  std::map<Int_t, std::vector<Int_t>> fAsicChannelMap;
+  ///< Map to retrieve module channelId from asicAddress and asicChannel
+
+  std::map<size_t, std::vector<Int_t>> fmapTimeshifts = {};
+  ///< Map containing the timeshift parameters for the correction of the µSlice timeshifts. The keys are the tsIdx, if no key is found, the shifts of the previous tsIdx are still valid
+
+  std::vector<Int_t>* fvecTimeshiftsPar = nullptr;
+  ///< Vector containing the timeshift parameters for the correction of the µSlice timeshifts for a given tsIdx.
+
   bool
     fIsFirstChannelsElinkEven;  ///< define if the first 16 channels (00..15) are found on the even (set true) or odd (false) eLinkId, default for mCbm2020 is false thus, initialized as false
 

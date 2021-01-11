@@ -172,7 +172,13 @@ Bool_t CbmMcbm2018UnpackerAlgoTrdR::InitParameters() {
 }
 
 Bool_t CbmMcbm2018UnpackerAlgoTrdR::ProcessTs(const fles::Timeslice& ts) {
-  fCurrTsIdx   = ts.index();
+  fCurrTsIdx         = ts.index();
+  size_t itimeslice  = fCurrTsIdx / 10;
+  auto timeshiftpair = fmapTimeshifts.find(itimeslice);
+  if (timeshiftpair != fmapTimeshifts.end()) {
+    fvecTimeshiftsPar = &timeshiftpair->second;
+  }
+
   fTsStartTime = static_cast<Double_t>(ts.descriptor(0, 0).idx);
 
   /// On first TS, extract the TS parameters from header (by definition stable over time).
@@ -862,7 +868,7 @@ CbmMcbm2018UnpackerAlgoTrdR::MakeDigi(CbmTrdRawMessageSpadic raw) {
   Float_t digiCharge =
     (Float_t) raw.GetMaxAdc()
     + 256;  // REMARK raw.GetMaxADC returns a the value in the range of -256 til 255. However, the digiCharge is stored as unsigned.  // TODO make Settable
-  ULong64_t digiTime = raw.GetTime() - fdTimeOffsetNs;
+
   // Int_t digiTriggerType = raw.GetHitType() ; // Spadic::TriggerType this does not work 03/27/2020 - PR digiTriggerType is not Spadic::TriggerType!
   Int_t digiTriggerType = raw.GetHitType();
   if (digiTriggerType == 1)
@@ -896,6 +902,13 @@ CbmMcbm2018UnpackerAlgoTrdR::MakeDigi(CbmTrdRawMessageSpadic raw) {
                          : raw.GetChannelId() + (NSPADICCH / 2);
 
   digiAddress = (fAsicChannelMap.find(asicAddress))->second.at(asicChannelId);
+
+  ULong64_t digiTime = raw.GetTime();
+  if (fvecTimeshiftsPar) {
+    digiTime = digiTime - fvecTimeshiftsPar->at(digiAddress);
+    raw.SetTime(digiTime);
+  }
+  digiTime -= fdTimeOffsetNs;
 
   std::shared_ptr<CbmTrdDigi> digi =
     std::make_shared<CbmTrdDigi>(CbmTrdDigi(digiAddress,

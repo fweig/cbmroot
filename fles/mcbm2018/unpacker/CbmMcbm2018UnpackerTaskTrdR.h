@@ -9,6 +9,7 @@
 
 #include "TString.h"
 
+#include "CbmMcbm2020TrdTshiftPar.h"
 #include "CbmMcbmUnpack.h"
 #include "CbmTrdDigi.h"
 #include "CbmTrdRawMessageSpadic.h"
@@ -126,6 +127,9 @@ private:
 
   TString fMonitorHistoFileName;
   std::vector<bool> fIsActiveHistoVec;  // Define active histos in algo
+
+  /// mCbm2020 timeshift correction parameters
+  CbmMcbm2020TrdTshiftPar* fTimeshiftPar = nullptr;
 
   /// Output Digi vector
   std::vector<CbmTrdDigi>* fTrdDigiVector;

@@ -164,6 +164,11 @@ void CbmMcbm2018UnpackerTaskTrdR::SetParContainers() {
     }
     fParContList->AddAt(updatedParSet, iParCont);
   }
+
+  // Get timeshift parameters
+  fTimeshiftPar = dynamic_cast<CbmMcbm2020TrdTshiftPar*>(
+    FairRun::Instance()->GetRuntimeDb()->getContainer(
+      "CbmMcbm2020TrdTshiftPar"));
 }
 
 Bool_t CbmMcbm2018UnpackerTaskTrdR::InitContainers() {
@@ -185,6 +190,13 @@ Bool_t CbmMcbm2018UnpackerTaskTrdR::InitContainers() {
   fUnpackerAlgo->SetActiveHistograms(fIsActiveHistoVec);
 
   Bool_t initOK = fUnpackerAlgo->InitContainers();
+
+  if (fTimeshiftPar) {
+    auto maptimeshifts = fTimeshiftPar->GetTimeshiftsMap();
+    fUnpackerAlgo->SetTimeshiftsMap(maptimeshifts);
+    LOG(info) << "CbmMcbm2018UnpackerTaskTrdR::SetParContainers() - Parsing "
+                 "timeshift correction map to unpacker algo";
+  }
 
   /// If monitor mode enabled, trigger histos creation,
   /// obtain pointer on them and add them to the HTTP server.
