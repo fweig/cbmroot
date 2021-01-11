@@ -886,9 +886,9 @@ CbmMcbm2018UnpackerAlgoTrdR::MakeDigi(CbmTrdRawMessageSpadic raw) {
   Int_t asicAddress(0);
   auto mapIt = fSpadicMap.find(spadicHwAddress);  // check if asic exists
   if (mapIt == fSpadicMap.end()) {
-    LOG(debug4) << Form("CbmMcbm2018UnpackerAlgoTrdR::MakeDigi - No asic "
-                        "address found for Spadic hardware address %lu",
-                        spadicHwAddress);
+    LOG(debug4) << "CbmMcbm2018UnpackerAlgoTrdR::MakeDigi - No asic address "
+                   "found for Spadic hardware address %lu"
+                << spadicHwAddress;
     return nullptr;
   }
   asicAddress          = mapIt->second;
