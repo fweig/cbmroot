@@ -11,6 +11,7 @@ void mcbm_build_and_reco(UInt_t uRunId     = 28,
                          Int_t nTimeslices = 300,
                          TString outDir    = "data/") {
 
+
   // ========================================================================
   //          Adjust this part according to your requirements
 
@@ -31,6 +32,7 @@ void mcbm_build_and_reco(UInt_t uRunId     = 28,
 
   TString inFile     = Form("./data/unp_mcbm_%i.root", uRunId);
   TString parFileIn  = Form("./data/unp_mcbm_params_%i.root", uRunId);
+
   TString geoFile = paramDir + "mcbm2020_reco.geo.root";  // Created in sim. run
   TString parFileOut = Form("./data/reco_mcbm_evt_win_params_%u.root", uRunId);
   TString outFile    = Form("./data/reco_mcbm_evt_win_%u.root", uRunId);
@@ -45,6 +47,7 @@ void mcbm_build_and_reco(UInt_t uRunId     = 28,
   geoSetup->LoadSetup(geoSetupTag.data());
   TList* parFileList = new TList();
   // ------------------------------------------------------------------------
+
 
   // -----   Timer   --------------------------------------------------------
   TStopwatch timer;
@@ -208,6 +211,7 @@ void mcbm_build_and_reco(UInt_t uRunId     = 28,
   // ------------------------------------------------------------------------
 
 
+
   // -----   Local reconstruction in TRD   ----------------------------------
   // Load parameters <- they are required by the hit producer.
   // For now, it is enough to load the default ascii parameters
@@ -244,6 +248,7 @@ void mcbm_build_and_reco(UInt_t uRunId     = 28,
   run->AddTask(trdHit);
   std::cout << "-I- : Added task " << trdHit->GetName() << std::endl;
   // ------------------------------------------------------------------------
+
 
 
   // -----   Local reconstruction in TOF   ----------------------------------
@@ -487,9 +492,11 @@ void mcbm_build_and_reco(UInt_t uRunId     = 28,
   FairParRootFileIo* parIo3  = new FairParRootFileIo();
   parIo1->open(parFileIn.Data(), "READ");
   rtdb->setFirstInput(parIo1);
+
   parIo2->open(parFileList, "in");
   rtdb->setSecondInput(parIo2);
   parIo3->open(parFileOut.Data(), "RECREATE");
+
 
   // ------------------------------------------------------------------------
 

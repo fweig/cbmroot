@@ -9,7 +9,7 @@
 void mcbm_event_reco(Int_t runId = 831, Int_t nTimeslices = -1) {
 
   // --- Logger settings ----------------------------------------------------
-  TString logLevel     = "INFO";
+  TString logLevel     = "WARN";
   TString logVerbosity = "LOW";
   // ------------------------------------------------------------------------
 
