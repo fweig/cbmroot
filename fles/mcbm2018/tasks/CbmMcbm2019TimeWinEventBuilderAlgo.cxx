@@ -585,27 +585,23 @@ Bool_t CbmMcbm2019TimeWinEventBuilderAlgo::CheckTriggerConditions(
     }  // if( !fDigiMan->IsPresent( det ) )
   }    // else of if( ECbmDataType::kT0Digi == det )
 
-  /// Check Minimal trigger acceptance by minimal number
+  /// Check trigger rejection by minimal number or absence
   Int_t iNbDigis = event->GetNofData(det.dataType);
-  if ((-1 != iNbDigis)
-      && (det.fuTriggerMinDigis <= static_cast<UInt_t>(iNbDigis))) {
-    return kTRUE;
-  }  // if( ( -1 != iNbDigis ) && ( det.fuTriggerMinDigis <= static_cast< UInt_t >( iNbDigis )  )
-  else {
+  if ((-1 == iNbDigis)
+      || (static_cast<UInt_t>(iNbDigis) < det.fuTriggerMinDigis)) {
     LOG(debug2) << "Event does not have enough digis: " << iNbDigis << " vs "
                 << det.fuTriggerMinDigis << " for " << det.sName;
     return kFALSE;
-  }  // else of if( ( -1 != iNbDigis ) && ( det.fuTriggerMinDigis <= static_cast< UInt_t >( iNbDigis )  )
-
+  }  // if((-1 == iNbDigis) || (static_cast<UInt_t>(iNbDigis) < det.fuTriggerMinDigis))
   /// Check trigger rejection by maximal number
-  if (iNbDigis < det.fiTriggerMaxDigis) {
-    return kTRUE;
-  }  // if( iNbDigis < det.fiTriggerMaxDigis )
-  else {
+  else if (det.fiTriggerMaxDigis < iNbDigis) {
     LOG(debug2) << "Event Has too many digis: " << iNbDigis << " vs "
                 << det.fiTriggerMaxDigis << " for " << det.sName;
     return kFALSE;
-  }  // else of if( iNbDigis < det.fiTriggerMaxDigis )
+  }  // else if( iNbDigis < det.fiTriggerMaxDigis )
+  else {
+    return kTRUE;
+  }  // else of else if( iNbDigis < det.fiTriggerMaxDigis )
 }
 //----------------------------------------------------------------------
 void CbmMcbm2019TimeWinEventBuilderAlgo::CreateHistograms() {
