@@ -1,14 +1,14 @@
 set(KFPARTICLE_LIBNAME "${CMAKE_SHARED_LIBRARY_PREFIX}KFParticle${CMAKE_SHARED_LIBRARY_SUFFIX}")
 
-set(KFPARTICLE_SRC_URL "https://git.cbm.gsi.de/CbmSoft/KFParticle.git")
+set(KFPARTICLE_SRC_URL "https://github.com/cbmsw/KFParticle.git")
 set(KFPARTICLE_DESTDIR "${CMAKE_BINARY_DIR}/external/KFPARTICLE-prefix")
 
+# GIT_TAG is a hash for KFParticle tag cbm/v1.1-1 
 download_project_if_needed(PROJECT         kfparticle_source
                            GIT_REPOSITORY  ${KFPARTICLE_SRC_URL}
-                           GIT_TAG         "98712bbb2e2ae633e16a543ec38fea62a9ca2053"
+                           GIT_TAG         "d4e22c8222cc6da877eefa453ade73d31d85e2e9"
                            SOURCE_DIR      ${CMAKE_CURRENT_SOURCE_DIR}/KFParticle
                            TEST_FILE       CMakeLists.txt
-                           PATCH_COMMAND   "patch -p1 < ${CMAKE_CURRENT_SOURCE_DIR}/KFParticle.patch"
                           )
 
 If(ProjectUpdated)
