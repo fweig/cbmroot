@@ -81,10 +81,11 @@ inline void L1Algo::f10(  // input
   THitI* hitsl,
   fvec* HitTime_l,
   fvec* HitTimeEr,
-  fvec* Event_l,
-  fvec* d_x,
-  fvec* d_y,
-  fvec* d_xy,
+  // comment unused parameters, FU, 18.01.21
+  fvec* /*Event_l*/,
+  fvec* /*d_x*/,
+  fvec* /*d_y*/,
+  fvec* /*d_xy*/,
   fvec* d_u,
   fvec* d_v) {
   const Tindex& end_lh = start_lh + n1_l;
@@ -135,9 +136,10 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
   //                 L1TrackPar *T_1,
   L1TrackPar* T_1,
   L1FieldRegion* fld_1,
-  fvec* d_x,
-  fvec* d_y,
-  fvec* d_xy,
+  // comment unused parameters, FU, 18.01.21
+  fvec* /*d_x*/,
+  fvec* /*d_y*/,
+  fvec* /*d_xy*/,
   fvec* d_u,
   fvec* d_v) {
   L1Station& stal = vStations[istal];
@@ -447,7 +449,8 @@ inline void L1Algo::f20(  // input
   vector<THitI>& hitsl_2,
 #endif  // DOUB_PERFORMANCE
   vector<THitI>& hitsm_2,
-  fvec* Event,
+  // comment unused parameters, FU, 18.01.21
+  fvec* /*Event*/,
   vector<bool>& lmDuplets) {
   n2 = 0;                             // number of doublet
   for (Tindex i1 = 0; i1 < n1; ++i1)  // for each singlet

@@ -1409,7 +1409,7 @@ Bool_t CbmMcbm2018MonitorMuch::DoUnpack(const fles::Timeslice& ts,
               /// Module P-N coincidences
               //Bool_t bSameModulePNsides = kFALSE;
               //                     Double_t dBestDtMatch     = 1e9; // ns
-              std::vector<stsxyter::FinalHit>::iterator itBestMatch;
+              // comment unused variable, FU, 18.01.21              std::vector<stsxyter::FinalHit>::iterator itBestMatch;
               //                     UInt_t uFebB     =   uFebIdxB % fUnpackParMuch->GetNbFebsPerCrob();
               //                     UInt_t uCrobIdxB = ( uFebIdxB / fUnpackParMuch->GetNbFebsPerCrob() ) % fUnpackParMuch->GetNbCrobsPerDpb();
               //                     UInt_t uDpbIdxB  = ( uFebIdxB / fUnpackParMuch->GetNbFebsPerCrob() ) / fUnpackParMuch->GetNbCrobsPerDpb();

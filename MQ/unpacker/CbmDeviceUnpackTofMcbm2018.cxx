@@ -45,7 +45,7 @@ struct InitTaskError : std::runtime_error {
 using namespace std;
 
 //static Int_t iMess=0;
-const Int_t DetMask = 0x001FFFFF;
+//const Int_t DetMask = 0x001FFFFF;
 
 CbmDeviceUnpackTofMcbm2018::CbmDeviceUnpackTofMcbm2018()
   : fNumMessages(0)

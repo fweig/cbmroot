@@ -1627,7 +1627,7 @@ Bool_t CbmMcbm2018MonitorSts::DoUnpack(const fles::Timeslice& ts,
     if (0 < fvmHitsInMs.size()) {
       //         ULong64_t ulLastHitTime = ( *( fvmHitsInMs.rbegin() ) ).GetTs();
       std::vector<stsxyter::FinalHit>::iterator itA;
-      std::vector<stsxyter::FinalHit>::iterator itB;
+      // comment unused variable, FU, 18.01.21     std::vector<stsxyter::FinalHit>::iterator itB;
 
       //         std::chrono::steady_clock::time_point tNow = std::chrono::steady_clock::now();
       //         Double_t dUnixTimeInRun = std::chrono::duration_cast< std::chrono::seconds >(tNow - ftStartTimeUnix).count();

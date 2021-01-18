@@ -250,9 +250,9 @@ void L1Algo::SetData(const vector<L1StsHit>& StsHits_,
 
 
 void L1Algo::GetHitCoor(const L1StsHit& _h, fscal& _x, fscal& _y, char iS) {
-  L1Station& sta   = vStations[int(iS)];
-  fscal u          = _h.u;
-  fscal v          = _h.v;
+  L1Station& sta = vStations[int(iS)];
+  fscal u        = _h.u;
+  fscal v        = _h.v;
   // const fscal &z = (*vStsZPos)[_h.iz];
   // fscal x, y;
   _x =
@@ -344,7 +344,7 @@ void L1Algo::StripsToCoor(const fvec& u,
 }
 
 /// full the hit point by hit information: takes hit as input (2 strips) and creates hit_point with all coordinates (x,y,z,u,v, n - event number);
-L1HitPoint L1Algo::CreateHitPoint(const L1StsHit& hit, char ista)
+L1HitPoint L1Algo::CreateHitPoint(const L1StsHit& hit, char /*ista*/)
 /// hit and station number
 {
   // L1Station& sta   = vStations[int(ista)];
@@ -353,7 +353,9 @@ L1HitPoint L1Algo::CreateHitPoint(const L1StsHit& hit, char ista)
   return L1HitPoint(z, hit.u, hit.v, hit.du, hit.dv, time, hit.t_er);
 }
 
-void L1Algo::CreateHitPoint(const L1StsHit& hit, char ista, L1HitPoint& point)
+void L1Algo::CreateHitPoint(const L1StsHit& hit,
+                            char /*ista*/,
+                            L1HitPoint& point)
 /// hit and station number
 {
   // L1Station& sta   = vStations[int(ista)];
