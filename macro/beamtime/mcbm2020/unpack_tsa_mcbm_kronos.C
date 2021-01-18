@@ -96,6 +96,12 @@ void unpack_tsa_mcbm_kronos(UInt_t uRunIdx  = 99999,
       parFileList->Add(
         new TObjString(Form("%s.%s.par", paramFilesTrd.Data(), parIt.data())));
     }
+    // Add timeshift calibration, currently only available for run 831 others to come
+    if (uRunId == 831)
+      parFileList->Add(new TObjString(Form(
+        "%s/parameters/trd/mcbm2020_special/CbmMcbm2020TrdTshiftPar_run%d.par",
+        srcDir.Data(),
+        uRunId)));
   }
 
   TString paramFileTof = paramDir + "mTofPar.par";
