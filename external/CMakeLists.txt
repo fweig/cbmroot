@@ -20,7 +20,6 @@ if(DOWNLOAD_EXTERNALS)
 
   Add_Subdirectory(ipc)
   Add_Subdirectory(flib_dpb)
-  Add_Subdirectory(spadic)
 
   Include(InstallVC.cmake)
   Include(InstallKFParticle.cmake)
