@@ -230,7 +230,7 @@ void CbmMQTsaMultiSampler::InitTask() try {
   } else {
     // Create a ";" separated string with all file names
     std::string fileList {""};
-    for (const auto obj : fInputFileList) {
+    for (const auto& obj : fInputFileList) {
       std::string fileName = obj;
       fileList += fileName;
       fileList += ";";

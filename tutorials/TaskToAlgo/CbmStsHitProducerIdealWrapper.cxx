@@ -124,7 +124,7 @@ void CbmStsHitProducerIdealWrapper::Exec(Option_t* /*opt*/) {
 
   // Fill the content of vector into TCA
   int iPoint = 0;
-  for (auto const hit : hits) {
+  for (const auto& hit : hits) {
     new ((*fHitArray)[iPoint]) CbmStsHit(hit);
     iPoint++;
   }

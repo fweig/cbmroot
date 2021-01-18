@@ -78,7 +78,7 @@ namespace {  //anonymous namespace with helpers
     std::regex setupRegex(searchPattern);
     std::smatch match;
     std::vector<std::string> result;
-    for (const auto& file : *fileList) {
+    for (const auto&& file : *fileList) {
       std::string fileName = file->GetName();
 
       if (std::regex_search(fileName, match, setupRegex))
