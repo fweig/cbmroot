@@ -3,7 +3,7 @@
  * Created Date: Thursday December 17th 2020
  * Author: Pascal Raisig -- praisig@ikf.uni-frankfurt.de
  * -----
- * Last Modified: Tuesday December 22nd 2020 16:35:01
+ * Last Modified: Monday January 18th 2021 16:01:05
  * Modified By: Pascal Raisig
  * -----
  * Purpose: This container is only to be used for Trd mCbm2020 data. It contains the
@@ -51,7 +51,7 @@ void CbmMcbm2020TrdTshiftPar::printparams()
 {
   std::cout << "CbmMcbm2020TrdTshiftPar::printparams() " << &fTimeshifts
             << std::endl;
-  auto ntimeshifts = (fTimeshifts.GetSize() / (fgNchannels + 1));
+  size_t ntimeshifts = (fTimeshifts.GetSize() / (fgNchannels + 1));
   std::cout << "ParSet has " << ntimeshifts << " timeshift changes stored"
             << std::endl;
 
@@ -108,7 +108,9 @@ Bool_t CbmMcbm2020TrdTshiftPar::getParams(FairParamList* l) {
     }
   }
   // Now we have to fill the blank spots in the map, since, we do not now if the timeslices are accessed in a completely ordered manor
-  for (itimeslice = 0; itimeslice < std::abs(fNtimeslices[0]); itimeslice++) {
+  for (itimeslice = 0;
+       itimeslice < static_cast<size_t>(std::abs(fNtimeslices[0]));
+       itimeslice++) {
     auto itspair = fmapTimeshifts.find(itimeslice);
 
     if (itspair != fmapTimeshifts.end()) {
@@ -146,7 +148,9 @@ bool CbmMcbm2020TrdTshiftPar::GetTimeshifts(
   fTimeshifts.Set(nentries);
 
   bool didChange = true;
-  for (size_t ievent = 1; ievent < std::abs(fNtimeslices[0]); ievent++) {
+  for (size_t ievent = 1;
+       ievent < static_cast<size_t>(std::abs(fNtimeslices[0]));
+       ievent++) {
     tsidx = timeshiftHisto->GetXaxis()->GetBinLowEdge(ievent);
     for (size_t ichannel = 0; ichannel < fgNchannels; ichannel++) {
       tshift = (Int_t) timeshiftHisto->GetBinContent(ievent, ichannel);
