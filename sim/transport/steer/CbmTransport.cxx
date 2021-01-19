@@ -37,6 +37,7 @@
 #include "CbmEventGenerator.h"
 #include "CbmFieldMap.h"
 #include "CbmFieldPar.h"
+#include "CbmFileUtils.h"
 #include "CbmPlutoGenerator.h"
 #include "CbmSetup.h"
 #include "CbmStack.h"
@@ -104,9 +105,16 @@ void CbmTransport::AddInput(const char* fileName, ECbmGenerator genType) {
 
   FairGenerator* generator = NULL;
 
-  if (gSystem->AccessPathName(fileName)) {
-    LOG(fatal) << GetName() << ": Input file " << fileName << " not found!";
-    return;
+  if (genType == kUrqmd) {
+    if (gSystem->AccessPathName(fileName)) {
+      LOG(fatal) << GetName() << ": Input file " << fileName << " not found!";
+      return;
+    }
+  } else {
+    if (!Cbm::File::IsRootFile(fileName)) {
+      LOG(fatal) << GetName() << ": Input file " << fileName << " not found!";
+      return;
+    }
   }
 
   switch (genType) {

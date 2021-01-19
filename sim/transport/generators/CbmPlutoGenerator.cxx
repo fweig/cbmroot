@@ -4,6 +4,8 @@
 // -------------------------------------------------------------------------
 #include "CbmPlutoGenerator.h"
 
+#include "CbmFileUtils.h"
+
 #include "FairLogger.h"
 #include "FairPrimaryGenerator.h"  // for FairPrimaryGenerator
 
@@ -49,7 +51,7 @@ CbmPlutoGenerator::CbmPlutoGenerator(const Char_t* fileName)
   , fPDGmanual(0) {
   fInputChain = new TChain("data");
 
-  if (CheckFileExist(fileName)) {
+  if (Cbm::File::IsRootFile(fileName)) {
     fInputChain->Add(fileName);
     fInputChain->SetBranchAddress("Particles", &fParticles);
     LOG(info) << "CbmPlutoGenerator: Add file " << fileName
@@ -71,8 +73,8 @@ CbmPlutoGenerator::CbmPlutoGenerator(std::vector<std::string> fileNames)
   , fParticles(new TClonesArray("PParticle", 100))
   , fPDGmanual(0) {
   fInputChain = new TChain("data");
-  for (auto& name : fileNames) {
-    if (CheckFileExist(name)) {
+  for (const auto& name : fileNames) {
+    if (Cbm::File::IsRootFile(name)) {
       fInputChain->Add(name.c_str());
       LOG(info) << "CbmPlutoGenerator: Add file " << name << " to input chain";
     } else {
@@ -188,66 +190,5 @@ void CbmPlutoGenerator::CloseInput() {
   fInputChain = nullptr;
 }
 // ------------------------------------------------------------------------
-
-Bool_t CbmPlutoGenerator::CheckFileExist(std::string filename) {
-
-  // In case the filename contains a hash (e.g. multi.zip#file.root) assume that the hash
-  // separates the name of a zipfile (multi.zip) which contains the real root file
-  // (file.root). Split the filename at the # in the name of the zipfile and
-  // the name of the contained root file.
-  std::string checkFilename {""};
-  std::string membername {""};
-  std::size_t found = filename.find("#");
-  if (found != std::string::npos) {
-    checkFilename = filename.substr(0, found);
-    membername    = filename.substr(found + 1);
-  } else {
-    checkFilename = filename;
-  }
-
-  Bool_t wasfound = kFALSE;
-
-  // Check if the file exist
-  // In case of a root file contained in a zip archive check if the zip file
-  // exist
-  struct stat buffer;
-  if (stat(checkFilename.c_str(), &buffer) == 0) {
-    wasfound = kTRUE;
-  } else {
-    wasfound = kFALSE;
-    LOG(error) << "Input File " << checkFilename << " not found";
-  }
-
-  // In case of a zip archive check if the archive contains the root file
-  if (membername.compare("") != 0) {
-    TFile* fzip = TFile::Open(checkFilename.c_str());
-    if (fzip->IsOpen()) {
-      TArchiveFile* archive = fzip->GetArchive();
-      if (archive) {
-        TObjArray* members = archive->GetMembers();
-        if (members->FindObject(membername.c_str()) == 0) {
-          LOG(error) << "File " << membername << " not found in zipfile "
-                     << checkFilename;
-          wasfound = kFALSE;
-        } else {
-          LOG(info) << "File " << membername << " found in zipfile "
-                    << checkFilename;
-          wasfound = kTRUE;
-        }
-      } else {
-        LOG(error) << "Zipfile " << checkFilename
-                   << " does not contain an archive";
-        wasfound = kFALSE;
-      }
-      fzip->Close();
-      delete fzip;
-    } else {
-      LOG(error) << "Could not open zipfile " << checkFilename;
-      wasfound = kFALSE;
-    }
-  }
-
-  return wasfound;
-}
 
 ClassImp(CbmPlutoGenerator)

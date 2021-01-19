@@ -30,6 +30,7 @@ pluto/PValues.cxx
 # ----  Include directories -------------------------------
 set(INCLUDE_DIRECTORIES
 ${CBMDATA_DIR}
+${CBMBASE_DIR}/utils
 ${CBMROOT_SOURCE_DIR}/sim
 ${CBMROOT_SOURCE_DIR}/sim/transport
 ${CBMROOT_SOURCE_DIR}/sim/transport/base

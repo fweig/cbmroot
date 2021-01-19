@@ -33,7 +33,7 @@ ${CBMROOT_SOURCE_DIR}/sim/transport/generators
 ${CBMROOT_SOURCE_DIR}/sim/transport/steer
 ${CBMROOT_SOURCE_DIR}/sim/transport/geosetup
 ${CBMDATA_DIR}
-${CBMROOT_SOURCE_DIR}/generators/unigen
+${CBMBASE_DIR}/utils
 )
 
 set(SYSTEM_INCLUDE_DIRECTORIES

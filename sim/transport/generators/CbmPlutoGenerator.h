@@ -77,9 +77,6 @@ private:
      ** input file properly. Called from destructor and from ReadEvent. **/
   void CloseInput();
 
-  /** Check if file exists. Break fatal when it doesn't exist **/
-  Bool_t CheckFileExist(std::string filename);
-
   ClassDef(CbmPlutoGenerator, 4);
 };
 
