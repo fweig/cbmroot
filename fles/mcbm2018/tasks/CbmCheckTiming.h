@@ -242,7 +242,7 @@ private:
 
   UInt_t fuNbTofDigisSel   = 6;
   UInt_t fuNbTofDigiInSync = 0;
-  std::vector<Double_t> fvdTimeSelectedT0;
+  std::vector<Double_t> fvdTimeSelectedT0;  //!
   TH1* fSelT0StsDiff  = nullptr;
   TH1* fSelT0MuchDiff = nullptr;
   TH1* fSelT0TrdDiff  = nullptr;
