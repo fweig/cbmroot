@@ -73,4 +73,6 @@
 // can not read the file with the CbmMediaList object. For other platforms there is no
 // problem without the line. So generate the correct streamer info in any way.
 #pragma link C++ class std::pair < TString, TString>;
+
+#pragma link C++ function Cbm::File::IsRootFile( string );
 #endif

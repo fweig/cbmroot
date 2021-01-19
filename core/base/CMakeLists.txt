@@ -57,6 +57,7 @@ report/CbmLatexReportElement.cxx
 utils/CbmUtils.cxx
 utils/CbmGeometryUtils.cxx
 utils/CbmMediaList.cxx
+utils/CbmFileUtils.cxx
 )
 
 Set(LINKDEF CbmBaseLinkDef.h)
