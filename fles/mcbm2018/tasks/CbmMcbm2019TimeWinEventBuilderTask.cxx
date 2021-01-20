@@ -140,17 +140,6 @@ void CbmMcbm2019TimeWinEventBuilderTask::SetOutFilename(TString sNameIn) {
 }
 
 void CbmMcbm2019TimeWinEventBuilderTask::SetReferenceDetector(
-  ECbmModuleId refDet) {
-  if (nullptr != fpAlgo) fpAlgo->SetReferenceDetector(refDet);
-}
-void CbmMcbm2019TimeWinEventBuilderTask::AddDetector(ECbmModuleId selDet) {
-  if (nullptr != fpAlgo) fpAlgo->AddDetector(selDet);
-}
-void CbmMcbm2019TimeWinEventBuilderTask::RemoveDetector(ECbmModuleId selDet) {
-  if (nullptr != fpAlgo) fpAlgo->RemoveDetector(selDet);
-}
-
-void CbmMcbm2019TimeWinEventBuilderTask::SetReferenceDetector(
   EventBuilderDetector refDet) {
   if (nullptr != fpAlgo) fpAlgo->SetReferenceDetector(refDet);
 }

@@ -143,10 +143,6 @@ public:
                    Double_t fdTimeWinBegIn   = -100,
                    Double_t fdTimeWinEndIn   = 100);
 
-  void SetReferenceDetector(ECbmModuleId refDet) __attribute__((deprecated));
-  void AddDetector(ECbmModuleId selDet) __attribute__((deprecated));
-  void RemoveDetector(ECbmModuleId selDet) __attribute__((deprecated));
-
   void SetReferenceDetector(EventBuilderDetector refDetIn);
   void AddDetector(EventBuilderDetector selDet);
   void RemoveDetector(EventBuilderDetector selDet);

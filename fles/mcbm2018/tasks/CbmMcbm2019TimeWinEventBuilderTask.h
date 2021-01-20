@@ -63,10 +63,6 @@ public:
   void SetFillHistos(Bool_t bFlag = kTRUE);
   void SetOutFilename(TString sNameIn);
 
-  void SetReferenceDetector(ECbmModuleId refDet) __attribute__((deprecated));
-  void AddDetector(ECbmModuleId selDet) __attribute__((deprecated));
-  void RemoveDetector(ECbmModuleId selDet) __attribute__((deprecated));
-
   void SetReferenceDetector(EventBuilderDetector refDet);
   void AddDetector(EventBuilderDetector selDet);
   void RemoveDetector(EventBuilderDetector selDet);
