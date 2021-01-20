@@ -1,16 +1,10 @@
 #!/bin/bash
-#SBATCH -J cbmroot
-#SBATCH -D batch
-#SBATCH -o %j.out
-#SBATCH -e %j.err
-#SBATCH --time=08:00:00
-#SBATCH -p main
-#SBATCH --array=0-999
+#SBATCH --output %j.out
 
 cbmroot_dir=$1
  
 cd ${cbmroot_dir}/build
-. ./config.sh
+. ./config.sh -a
 export DISPLAY=localhost:0.0
 
 DATASET="muons"
