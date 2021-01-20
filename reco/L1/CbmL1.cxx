@@ -385,8 +385,6 @@ InitStatus CbmL1::Init() {
     if (FindTask) fUseMVD = FindTask->MvdUsage();
   }
 
-  fUseMVD = 0;
-
   fHistoDir = gROOT->mkdir("L1");
 
 
