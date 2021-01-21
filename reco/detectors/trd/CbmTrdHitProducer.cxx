@@ -160,8 +160,9 @@ InitStatus CbmTrdHitProducer::Init() {
   Int_t nrModules = fDigiPar->GetNrOfModules();
   Int_t nrNodes   = moduleMap.size();
   if (nrModules != nrNodes)
-    LOG(fatal) << "CbmTrdHitProducer::Init() - Geometry and parameter files "
-                  "have different number of modules.";
+    LOG(fatal) << "CbmTrdHitProducer::Init() - Geometry(" << nrNodes
+               << ") and parameter files(" << nrModules
+               << ") have different number of modules.";
   for (Int_t loop = 0; loop < nrModules; ++loop) {
     Int_t address = fDigiPar->GetModuleId(loop);
     std::map<Int_t, TGeoPhysicalNode*>::iterator it = moduleMap.find(address);
