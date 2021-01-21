@@ -10,7 +10,7 @@
 void mcbm_build_and_reco_kronos(UInt_t uRunIdx    = 28,
                                 Int_t nTimeslices = 300,
                                 TString outDir    = "data/") {
-  UInt_t uRunId    = 0;
+  UInt_t uRunId     = 0;
   TString inFile    = "./data/unp_mcbm_0.root";
   TString parFileIn = "./data/unp_mcbm_params_0.root";
   if (99999 != uRunIdx) {
@@ -233,6 +233,17 @@ void mcbm_build_and_reco_kronos(UInt_t uRunIdx    = 28,
 
 
   // -----   Local reconstruction in TRD   ----------------------------------
+  Double_t triggerThreshold       = 0.5e-6;  // Default
+  CbmTrdClusterFinder* trdCluster = new CbmTrdClusterFinder();
+  trdCluster->SetNeighbourEnable(true, false);
+  trdCluster->SetMinimumChargeTH(triggerThreshold);
+  trdCluster->SetRowMerger(true);
+  run->AddTask(trdCluster);
+  std::cout << "-I- : Added task " << trdCluster->GetName() << std::endl;
+
+  CbmTrdHitProducer* trdHit = new CbmTrdHitProducer();
+  run->AddTask(trdHit);
+  std::cout << "-I- : Added task " << trdHit->GetName() << std::endl;
   // ------------------------------------------------------------------------
 
 

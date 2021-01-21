@@ -30,7 +30,7 @@ void mcbm_reco_kronos(Int_t runId = 831, Int_t nTimeslices = 0) {
          runId);
   TString geoFile = paramDir + "mcbm2020_reco.geo.root";  // Created in sim. run
   TString parFileOut = Form("./data/reco_mcbm_params_%i.root", runId);
-  TString outFile = Form("./data/reco_mcbm_%i.root", runId);
+  TString outFile    = Form("./data/reco_mcbm_%i.root", runId);
   // ------------------------------------------------------------------------
 
 
@@ -118,6 +118,17 @@ void mcbm_reco_kronos(Int_t runId = 831, Int_t nTimeslices = 0) {
 
 
   // -----   Local reconstruction in TRD   ----------------------------------
+  Double_t triggerThreshold       = 0.5e-6;  // Default
+  CbmTrdClusterFinder* trdCluster = new CbmTrdClusterFinder();
+  trdCluster->SetNeighbourEnable(true, false);
+  trdCluster->SetMinimumChargeTH(triggerThreshold);
+  trdCluster->SetRowMerger(true);
+  run->AddTask(trdCluster);
+  std::cout << "-I- : Added task " << trdCluster->GetName() << std::endl;
+
+  CbmTrdHitProducer* trdHit = new CbmTrdHitProducer();
+  run->AddTask(trdHit);
+  std::cout << "-I- : Added task " << trdHit->GetName() << std::endl;
   // ------------------------------------------------------------------------
 
 
@@ -154,7 +165,7 @@ void mcbm_reco_kronos(Int_t runId = 831, Int_t nTimeslices = 0) {
   FairRuntimeDb* rtdb        = run->GetRuntimeDb();
   FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
-  FairParRootFileIo* parIo3 = new FairParRootFileIo();
+  FairParRootFileIo* parIo3  = new FairParRootFileIo();
   parIo1->open(parFileIn.Data(), "READ");
   parIo3->open(parFileOut.Data(), "RECREATE");
   rtdb->setFirstInput(parIo1);

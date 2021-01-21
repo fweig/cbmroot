@@ -89,7 +89,7 @@ void mcbm_build_and_reco(UInt_t uRunId     = 28,
   /// Change the selection window limits for T0 as ref
   eventBuilder->SetTriggerWindow(ECbmModuleId::kSts, -50, 100);
   eventBuilder->SetTriggerWindow(ECbmModuleId::kMuch, -150, 50);
-  eventBuilder->SetTriggerWindow(ECbmModuleId::kTrd, -250, 100);
+  eventBuilder->SetTriggerWindow(ECbmModuleId::kTrd, -50, 250);
   eventBuilder->SetTriggerWindow(ECbmModuleId::kTof, -150, 10);
   eventBuilder->SetTriggerWindow(ECbmModuleId::kRich, -50, 50);
   eventBuilder->SetTriggerWindow(ECbmModuleId::kPsd, -50, 50);
@@ -99,7 +99,7 @@ void mcbm_build_and_reco(UInt_t uRunId     = 28,
   /*
   /// Use TOF as reference
   eventBuilder->SetReferenceDetector( kEventBuilderDetTof );
-  eventBuilder->AddDetector( kEventBuilderDetT0 );
+  eventBuilder->AddDetector(kEventBuilderDetT0);
 
   /// Change the selection window limits for TOF as ref
   /// => Should always be after changes of detector lists!
@@ -198,6 +198,17 @@ void mcbm_build_and_reco(UInt_t uRunId     = 28,
 
 
   // -----   Local reconstruction in TRD   ----------------------------------
+  Double_t triggerThreshold       = 0.5e-6;  // Default
+  CbmTrdClusterFinder* trdCluster = new CbmTrdClusterFinder();
+  trdCluster->SetNeighbourEnable(true, false);
+  trdCluster->SetMinimumChargeTH(triggerThreshold);
+  trdCluster->SetRowMerger(true);
+  run->AddTask(trdCluster);
+  std::cout << "-I- : Added task " << trdCluster->GetName() << std::endl;
+
+  CbmTrdHitProducer* trdHit = new CbmTrdHitProducer();
+  run->AddTask(trdHit);
+  std::cout << "-I- : Added task " << trdHit->GetName() << std::endl;
   // ------------------------------------------------------------------------
 
 

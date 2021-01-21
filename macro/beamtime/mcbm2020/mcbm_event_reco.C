@@ -63,9 +63,11 @@ void mcbm_event_reco(Int_t runId = 831, Int_t nTimeslices = 300) {
   eventBuilder->SetEventBuilderAlgo(EventBuilderAlgo::FixedTimeWindow);
   eventBuilder->SetFixedTimeWindow(200.);
   eventBuilder->SetTriggerMinNumberT0(1);
+  // eventBuilder->SetTriggerMinNumberTrd(1);
   //eventBuilder->SetTriggerMinNumberSts(0);
   eventBuilder->SetTriggerMinNumberMuch(1);
   eventBuilder->SetTriggerMinNumberTof(10);
+  // eventBuilder->SetFillHistos(kTRUE);
   run->AddTask(eventBuilder);
   // ------------------------------------------------------------------------
 
@@ -128,6 +130,17 @@ void mcbm_event_reco(Int_t runId = 831, Int_t nTimeslices = 300) {
 
 
   // -----   Local reconstruction in TRD   ----------------------------------
+  Double_t triggerThreshold       = 0.5e-6;  // Default
+  CbmTrdClusterFinder* trdCluster = new CbmTrdClusterFinder();
+  trdCluster->SetNeighbourEnable(true, false);
+  trdCluster->SetMinimumChargeTH(triggerThreshold);
+  trdCluster->SetRowMerger(true);
+  run->AddTask(trdCluster);
+  std::cout << "-I- : Added task " << trdCluster->GetName() << std::endl;
+
+  CbmTrdHitProducer* trdHit = new CbmTrdHitProducer();
+  run->AddTask(trdHit);
+  std::cout << "-I- : Added task " << trdHit->GetName() << std::endl;
   // ------------------------------------------------------------------------
 
 
