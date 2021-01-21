@@ -41,8 +41,7 @@ void L1Grid::UpdateIterGrid(unsigned int Nelements,
                             int& NHitsOnStation,
                             char iS,
                             L1Algo& Algo,
-                            const vector<unsigned char>* vSFlag,
-                            const vector<unsigned char>* vSFlagB) {
+                            const vector<unsigned char>* vSFlag) {
 
   fFirstHitInBin.assign(fN + 2, 0);
 
@@ -56,7 +55,7 @@ void L1Grid::UpdateIterGrid(unsigned int Nelements,
 
     const L1StsHit& hit = hits[x];
 
-    if (!L1Algo::GetFUsed((*vSFlag)[hit.f] | (*vSFlagB)[hit.b])) {
+    if (!L1Algo::GetFUsed((*vSFlag)[hit.f] | (*vSFlag)[hit.b])) {
       Algo.GetHitCoor(hit, xs, ys, iS);
 
       const THitI& bin = GetBinBounded(xs, ys, hit.t_reco);
@@ -98,7 +97,7 @@ void L1Grid::UpdateIterGrid(unsigned int Nelements,
   for (THitI x = 0; x < Nelements; x++) {
 
     const L1StsHit& hit = hits[x];
-    if (!L1Algo::GetFUsed((*vSFlag)[hit.f] | (*vSFlagB)[hit.b])) {
+    if (!L1Algo::GetFUsed((*vSFlag)[hit.f] | (*vSFlag)[hit.b])) {
       Algo.GetHitCoor(hit, xs, ys, iS);
 
 

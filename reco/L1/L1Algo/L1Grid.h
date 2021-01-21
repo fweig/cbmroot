@@ -201,8 +201,7 @@ public:
                       int& NHitsOnStation,
                       char iS,
                       L1Algo& Algo,
-                      const vector<unsigned char>* vSFlag,
-                      const vector<unsigned char>* vSFlagB);
+                      const vector<unsigned char>* vSFlag);
 
 
 private:

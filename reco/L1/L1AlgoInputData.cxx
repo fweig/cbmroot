@@ -81,11 +81,10 @@ bool L1AlgoInputData::ReadHitsFromFile(const char work_dir[100],
   if (nEvent <= maxNEvent) {
 
     vStsHits.clear();
-    NStsStripsF = 0;
-    NStsStripsB = 0;
+    NStsStrips = 0;
+
     vStsZPos.clear();
     vSFlag.clear();
-    vSFlagB.clear();
 
     // check correct position in file
     char s[] = "Event:  ";
@@ -103,17 +102,11 @@ bool L1AlgoInputData::ReadHitsFromFile(const char work_dir[100],
       // read algo->vStsStrips
     fadata >> n;
     //     cout << n<<  " vStsStrips"<<endl;
-    NStsStripsF = n;
-    if (iVerbose >= 4)
+    NStsStrips = n;
+    if (iVerbose >= 4) {
       cout << "vStsStrips[" << n << "]"
            << " have been read." << endl;
-    // read algo->vStsStripsB
-    fadata >> n;
-    //  cout << n<<  " vStsStripsB"<<endl;
-    NStsStripsB = n;
-    if (iVerbose >= 4)
-      cout << "vStsStripsB[" << n << "]"
-           << " have been read." << endl;
+    }
     // read algo->vStsZPos
     fadata >> n;
     //   cout << n<<  " vStsZPos"<<endl;
@@ -122,9 +115,10 @@ bool L1AlgoInputData::ReadHitsFromFile(const char work_dir[100],
       fadata >> element;
       vStsZPos.push_back(element);
     }
-    if (iVerbose >= 4)
+    if (iVerbose >= 4) {
       cout << "vStsZPos[" << n << "]"
            << " have been read." << endl;
+    }
     // read algo->vSFlag
     fadata >> n;
     //  cout << n<<  " vSFlagB"<<endl;
@@ -133,20 +127,10 @@ bool L1AlgoInputData::ReadHitsFromFile(const char work_dir[100],
       fadata >> element;
       vSFlag.push_back(static_cast<unsigned char>(element));
     }
-    if (iVerbose >= 4)
+    if (iVerbose >= 4) {
       cout << "vSFlag[" << n << "]"
            << " have been read." << endl;
-    // read algo->vSFlagB
-    fadata >> n;
-    // cout << n<<  " vSFlagB"<<endl;
-    for (int i = 0; i < n; i++) {
-      int element;
-      fadata >> element;
-      vSFlagB.push_back(static_cast<unsigned char>(element));
     }
-    if (iVerbose >= 4)
-      cout << "vSFlagB[" << n << "]"
-           << " have been read." << endl;
     // read algo->vStsHits
     fadata >> n;
     //   cout << n<<  " vStsHits"<<endl;
@@ -166,9 +150,10 @@ bool L1AlgoInputData::ReadHitsFromFile(const char work_dir[100],
       element.iz     = static_cast<TZPosI>(element_iz);
       vStsHits.push_back(element);
     }
-    if (iVerbose >= 4)
+    if (iVerbose >= 4) {
       cout << "vStsHits[" << n << "]"
            << " have been read." << endl;
+    }
     // read StsHitsStartIndex and StsHitsStopIndex
     n = 20;
     for (int i = 0; i < n; i++) {
@@ -187,9 +172,10 @@ bool L1AlgoInputData::ReadHitsFromFile(const char work_dir[100],
       //   cout << tmp<<  " tmp"<<endl;
     }
 
-    if (iVerbose >= 2)
+    if (iVerbose >= 2) {
       cout << "-I- CbmL1: CATrackFinder data for event " << nEvent
            << " has been read from file " << fname << " successfully." << endl;
+    }
     //    if (nEvent == maxNEvent) fadata.close();
   }
   nEvent++;

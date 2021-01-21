@@ -56,14 +56,11 @@ static bool compareZ(const int& a, const int& b) {
   return l1->Get_Z_vMCPoint(a) < l1->Get_Z_vMCPoint(b);
 }
 
-
 struct TmpHit {  // used for sort Hits before writing in the normal arrays
   int iStripF,
-    iStripB;  // indices of real-strips, sts-strips (one got from detector. They consist from parts with differen positions, so will be divided before using)
-  int indStripF, indStripB;  // indices of L1-strips, indices in TmpStrip arrays
+    iStripB;  // indices of strips
   int iStation;
   int ExtIndex;  // index of hit in the TClonesArray array ( negative for MVD )
-  bool isStrip;
   double u_front, u_back;  // positions of strips
   double x, y;             // position of hit
   double dx, dy, dxy;
@@ -77,15 +74,6 @@ struct TmpHit {  // used for sort Hits before writing in the normal arrays
     return (a.iStation < b.iStation)
            || ((a.iStation == b.iStation) && (a.y < b.y));
   }
-};
-
-struct TmpStrip {
-  fscal u;
-  fscal time;
-  int iStation;
-  int iStrip;
-  bool isStrip;
-  int effIndex;  // used for unefficiency
 };
 
 /// Repack data from Clones Arrays to L1 arrays
@@ -105,8 +93,6 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, CbmEvent* event) {
   if (fVerbose >= 10) cout << "ReadEvent: clear is done." << endl;
 
   vector<TmpHit> tmpHits;
-  vector<TmpStrip> tmpStrips;
-  vector<TmpStrip> tmpStripsB;
 
   // -- produce Sts hits from space points --
 
@@ -385,6 +371,8 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, CbmEvent* event) {
   }  //fPerformance
 
 
+  int NStrips = 0;
+
   // get MVD hits
 
   if (listMvdHits) {
@@ -395,6 +383,8 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, CbmEvent* event) {
     //       for(int iMc=0; iMc<nMC; iMc++) isUsedMvdPoint[iMc]=0;
     //     }
 
+    int firstDetStrip = NStrips;
+
     for (int j = 0; j < listMvdHits->GetEntries(); j++) {
       TmpHit th;
       {
@@ -402,12 +392,10 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, CbmEvent* event) {
         th.ExtIndex   = -(1 + j);
         th.iStation   = mh->GetStationNr();
         //   th.iSector  = 0;
-        th.isStrip = 0;
-        th.iStripF = j;
-        th.iStripB = -1;
-        if (th.iStripF < 0) continue;
-        if (th.iStripF >= 0 && th.iStripB >= 0) th.isStrip = 1;
-        if (th.iStripB < 0) th.iStripB = th.iStripF;
+        int iStripF = j;
+        th.iStripF  = firstDetStrip + iStripF;
+        th.iStripB  = th.iStripF;
+        if (NStrips <= iStripF) { NStrips = iStripF + 1; }
 
         TVector3 pos, err;
         mh->Position(pos);
@@ -502,6 +490,8 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, CbmEvent* event) {
       nEnt = (event ? event->GetNofData(ECbmDataType::kStsHit)
                     : listStsHits->GetEntries());
 
+    int firstDetStrip = NStrips;
+
     for (Int_t j = 0; j < nEnt; j++) {
       Int_t hitIndex = 0;
       if (fTimesliceMode)
@@ -519,9 +509,11 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, CbmEvent* event) {
         th.iStation   = NMvdStations
                       + CbmStsSetup::Instance()->GetStationNumber(
                         mh->GetAddress());  //mh->GetStationNr() - 1;
-        th.isStrip = 0;
-        th.iStripF = mh->GetFrontClusterId();
-        th.iStripB = mh->GetBackClusterId();
+        th.iStripF = firstDetStrip + mh->GetFrontClusterId();
+        th.iStripB = firstDetStrip + mh->GetBackClusterId();
+
+        if (NStrips <= th.iStripF) { NStrips = th.iStripF + 1; }
+        if (NStrips <= th.iStripB) { NStrips = th.iStripB + 1; }
 
         //Get time
         th.time = mh->GetTime();
@@ -616,6 +608,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, CbmEvent* event) {
 
     Int_t nEnt = fMuchPixelHits->GetEntries();
 
+    int firstDetStrip = NStrips;
 
     for (int j = 0; j < nEnt; j++) {
       TmpHit th;
@@ -642,15 +635,9 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, CbmEvent* event) {
 
 
         //   th.iSector  = 0;
-        th.isStrip = 0;
-        th.iStripF = j;
-        th.iStripB = -1;
-        if (th.iStripF < 0) continue;
-        if (th.iStripF >= 0 && th.iStripB >= 0) th.isStrip = 1;
-        if (th.iStripB < 0) th.iStripB = th.iStripF;
-
-        th.iStripF += nMvdHits + nStsHits;
-        th.iStripB += nMvdHits + nStsHits;
+        th.iStripF = firstDetStrip + j;
+        th.iStripB = th.iStripF;
+        if (NStrips <= th.iStripF) { NStrips = th.iStripF + 1; }
 
         th.x = mh->GetX();
         th.y = mh->GetY();
@@ -731,6 +718,8 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, CbmEvent* event) {
 
   if (listTrdHits) {
 
+    int firstDetStrip = NStrips;
+
     for (int j = 0; j < listTrdHits->GetEntries(); j++) {
       TmpHit th;
 
@@ -759,12 +748,9 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, CbmEvent* event) {
       th.t_er = mh->GetTimeError();
 
       //   th.iSector  = 0;
-      th.isStrip = 0;
-      th.iStripF = j;
-      th.iStripB = -1;  //TrdHitsOnStationIndex[num+1][k];
-
-      th.iStripF += nMvdHits + nStsHits + nMuchHits;
-      th.iStripB += nMvdHits + nStsHits + nMuchHits;
+      th.iStripF = firstDetStrip + j;
+      th.iStripB = th.iStripF;  //TrdHitsOnStationIndex[num+1][k];
+      if (NStrips <= th.iStripF) { NStrips = th.iStripF + 1; }
 
       TVector3 pos, err;
       mh->Position(pos);
@@ -879,6 +865,8 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, CbmEvent* event) {
 
   if (fTofHits) {
 
+    int firstDetStrip = NStrips;
+
     for (int j = 0; j < fTofHits->GetEntries(); j++) {
       TmpHit th;
 
@@ -900,15 +888,9 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, CbmEvent* event) {
       th.dv = mh->GetDy();
 
       //   th.iSector  = 0;
-      th.isStrip = 0;
-      th.iStripF = j;
-      th.iStripB = -1;
-      if (th.iStripF < 0) continue;
-      if (th.iStripF >= 0 && th.iStripB >= 0) th.isStrip = 1;
-      if (th.iStripB < 0) th.iStripB = th.iStripF;
-
-      th.iStripF += nMvdHits + nStsHits + nMuchHits + nTrdHits;
-      th.iStripB += nMvdHits + nStsHits + nMuchHits + nTrdHits;
+      th.iStripF = firstDetStrip + j;
+      th.iStripB = th.iStripF;
+      if (NStrips <= th.iStripF) { NStrips = th.iStripF + 1; }
 
       TVector3 pos, err;
       mh->Position(pos);
@@ -964,7 +946,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, CbmEvent* event) {
       nTofHits++;
 
     }  // for j
-  }    // if listTrdHits
+  }    // if listTofHits
 
   if (fVerbose >= 10) cout << "ReadEvent: sts hits are gotten." << endl;
 
@@ -973,76 +955,17 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, CbmEvent* event) {
 
   sort(tmpHits.begin(), tmpHits.end(), TmpHit::Compare);
 
-  // -- create strips --
-  int NStrips = 0, NStripsB = 0;
+  // save strips in L1Algo
+  fData_->NStsStrips = NStrips;
+  fData_->vSFlag.resize(NStrips, 0);
   for (int ih = 0; ih < nHits; ih++) {
     TmpHit& th = tmpHits[ih];
-
-    // try to find the respective front and back strip from the already created
-    th.indStripF = -1;
-    th.indStripB = -1;
-    for (int is = 0; is < NStrips; is++) {
-      TmpStrip& s = tmpStrips[is];
-      if (s.iStation != th.iStation) continue;
-      if (s.iStrip != th.iStripF) continue;
-      //if (fabs(s.time - th.time) > 30) continue;
-      //if (fabs(s.u - th.u_front) > 1.e-4) continue;
-      th.indStripF = is;
-    }
-    for (int is = 0; is < NStripsB; is++) {
-      TmpStrip& s = tmpStripsB[is];
-      if (s.iStation != th.iStation) continue;
-      if (s.iStrip != th.iStripB) continue;
-      //if (fabs(s.time - th.time) > 30) continue;
-      //if (fabs(s.u - th.u_back) > 1.e-4) continue;
-      th.indStripB = is;
-    }
-    // create new strips
-    if (th.indStripF < 0) {
-      TmpStrip tmp;
-      tmp.iStation = th.iStation;
-      tmp.iStrip   = th.iStripF;
-      tmp.u        = th.u_front;
-      tmp.time     = th.time;
-      tmp.isStrip  = th.isStrip;
-      tmpStrips.push_back(tmp);
-      th.indStripF = NStrips++;
-    }
-    if (th.indStripB < 0) {
-      TmpStrip tmp1;
-      tmp1.iStation = th.iStation;
-      tmp1.iStrip   = th.iStripB;
-      tmp1.isStrip  = th.isStrip;
-      tmp1.u        = th.u_back;
-      tmp1.time     = th.time;
-      tmpStripsB.push_back(tmp1);
-      th.indStripB = NStripsB++;
-    }
+    char flag                  = th.iStation * 4;
+    fData_->vSFlag[th.iStripF] = flag;
+    fData_->vSFlag[th.iStripB] = flag;
   }  // ih
 
-  // take into account unefficiency and save strips in L1Algo
-  Int_t NEffStrips = 0, NEffStripsB = 0;
-  for (int i = 0; i < NStrips; i++) {
-    TmpStrip& ts = tmpStrips[i];
-    //     if( ts.effIndex == -1 ){
-    ts.effIndex = NEffStrips++;
-    char flag   = ts.iStation * 4;
-
-    fData_->NStsStripsF++;
-    fData_->vSFlag.push_back(flag);
-  }
-  for (int i = 0; i < NStripsB; i++) {
-    TmpStrip& ts = tmpStripsB[i];
-    //     if( ts.effIndex == -1 ){
-    ts.effIndex = NEffStripsB++;
-    char flag   = ts.iStation * 4;
-
-    fData_->NStsStripsB++;
-    fData_->vSFlagB.push_back(flag);
-  }
-
-
-  if (fVerbose >= 10) cout << "ReadEvent: strips are read." << endl;
+  if (fVerbose >= 10) { cout << "ReadEvent: strips are read." << endl; }
 
   // -- save hits --
   int nEffHits = 0;
@@ -1062,15 +985,12 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, CbmEvent* event) {
     s.dxy      = th.dxy;
     s.time     = th.time;
 
-    if (th.indStripF < 0 || th.indStripF >= NStrips) continue;
-    if (th.indStripB < 0 || th.indStripB >= NStripsB) continue;
-
-    TmpStrip& tsF = tmpStrips[th.indStripF];
-    TmpStrip& tsB = tmpStripsB[th.indStripB];
+    assert(th.iStripF >= 0 || th.iStripF < NStrips);
+    assert(th.iStripB >= 0 || th.iStripB < NStrips);
 
     L1StsHit h;
-    h.f = tsF.effIndex;
-    h.b = tsB.effIndex;
+    h.f = th.iStripF;
+    h.b = th.iStripB;
 
     h.t_reco = th.time;
     h.t_er   = th.t_er;
@@ -1241,11 +1161,9 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, CbmEvent* event) {
   if (fVerbose >= 10) cout << "ReadEvent: z-pos are saved." << endl;
 
   algo->SetData(fData_->GetStsHits(),
-                fData_->GetNStsStripsF(),
-                fData_->GetNStsStripsB(),
+                fData_->GetNStsStrips(),
                 fData_->GetStsZPos(),
                 fData_->GetSFlag(),
-                fData_->GetSFlagB(),
                 fData_->GetStsHitsStartIndex(),
                 fData_->GetStsHitsStopIndex());
 

@@ -296,7 +296,7 @@ void L1Algo::FindMoreHits(L1Branch& t,
       const L1StsHit& hit = (*vStsHitsUnused)[ih];
       if (fabs(hit.t_reco - T.t[0]) > sqrt(T.C55[0] + hit.t_er) * 5) continue;
 
-      if (GetFUsed((*vSFlag)[hit.f] | (*vSFlagB)[hit.b])) continue;  // if used
+      if (GetFUsed((*vSFlag)[hit.f] | (*vSFlag)[hit.b])) continue;  // if used
 
       fscal xh, yh, zh;
       GetHitCoor(hit, xh, yh, zh, sta);  // faster

@@ -1324,8 +1324,9 @@ void CbmL1::Reconstruct(CbmEvent* event) {
   }
 
 
-  if (fVerbose > 1)
+  if (fVerbose > 1) {
     cout << endl << "CbmL1::Exec event " << ++nevent << " ..." << endl << endl;
+  }
 #ifdef _OPENMP
   omp_set_num_threads(1);
 #endif
@@ -1337,11 +1338,9 @@ void CbmL1::Reconstruct(CbmEvent* event) {
     fData->ReadHitsFromFile(fSTAPDataDir.Data(), 1, fVerbose);
 
     algo->SetData(fData->GetStsHits(),
-                  fData->GetNStsStripsF(),
-                  fData->GetNStsStripsB(),
+                  fData->GetNStsStrips(),
                   fData->GetStsZPos(),
                   fData->GetSFlag(),
-                  fData->GetSFlagB(),
                   fData->GetStsHitsStartIndex(),
                   fData->GetStsHitsStopIndex());
   } else
@@ -1349,9 +1348,8 @@ void CbmL1::Reconstruct(CbmEvent* event) {
 
   if (0) {  // correct hits on MC // dbg
     TRandom3 random;
-    vector<int> sF, sB, zP;
-    sF.clear();
-    sB.clear();
+    vector<int> strips, zP;
+    strips.clear();
     zP.clear();
     for (unsigned int iH = 0; iH < (*algo->vStsHits).size(); ++iH) {
       L1StsHit& h = const_cast<L1StsHit&>((*algo->vStsHits)[iH]);
@@ -1367,23 +1365,23 @@ void CbmL1::Reconstruct(CbmEvent* event) {
 #endif
       const int ista       = (*algo->vSFlag)[h.f] / 4;
       const L1Station& sta = algo->vStations[ista];
-      if (std::find(sF.begin(), sF.end(), h.f)
-          != sF.end()) {  // separate strips
+      if (std::find(strips.begin(), strips.end(), h.f)
+          != strips.end()) {  // separate strips
 
         const_cast<vector<unsigned char>*>(algo->vSFlag)
           ->push_back((*algo->vSFlag)[h.f]);
 
-        h.f = algo->NStsStripsF;
-        algo->NStsStripsF++;
+        h.f = algo->NStsStrips;
+        algo->NStsStrips++;
       }
-      sF.push_back(h.f);
-      if (std::find(sB.begin(), sB.end(), h.b) != sB.end()) {
-        const_cast<vector<unsigned char>*>(algo->vSFlagB)
-          ->push_back((*algo->vSFlagB)[h.b]);
-        h.b = algo->NStsStripsB;
-        algo->NStsStripsB++;
+      strips.push_back(h.f);
+      if (std::find(strips.begin(), strips.end(), h.b) != strips.end()) {
+        const_cast<vector<unsigned char>*>(algo->vSFlag)
+          ->push_back((*algo->vSFlag)[h.b]);
+        h.b = algo->NStsStrips;
+        algo->NStsStrips++;
       }
-      sB.push_back(h.b);
+      strips.push_back(h.b);
       if (std::find(zP.begin(), zP.end(), h.iz)
           != zP.end()) {  // TODO why do we need it??gives prob=0
         h.iz = (*algo->vStsZPos).size();
@@ -1470,12 +1468,12 @@ void CbmL1::Reconstruct(CbmEvent* event) {
   }
 
 
-  if (fVerbose > 1) cout << "L1 Track finder..." << endl;
+  if (fVerbose > 1) { cout << "L1 Track finder..." << endl; }
   algo->CATrackFinder();
   // IdealTrackFinder();
 
 
-  if (fVerbose > 1) cout << "L1 Track finder ok" << endl;
+  if (fVerbose > 1) { cout << "L1 Track finder ok" << endl; }
   //  algo->L1KFTrackFitter( fExtrapolateToTheEndOfSTS );
 
 
@@ -1502,7 +1500,7 @@ void CbmL1::Reconstruct(CbmEvent* event) {
   }
 
 
-  if (fVerbose > 1) cout << "L1 Track fitter  ok" << endl;
+  if (fVerbose > 1) { cout << "L1 Track fitter  ok" << endl; }
 
   // save recontstructed tracks
   vRTracks.clear();
@@ -1570,7 +1568,7 @@ void CbmL1::Reconstruct(CbmEvent* event) {
   }
   // output performance
   if (fPerformance) {
-    if (fVerbose > 1) cout << "Performance..." << endl;
+    if (fVerbose > 1) { cout << "Performance..." << endl; }
     //HitMatch();
     TrackMatch();
   }
@@ -1583,7 +1581,7 @@ void CbmL1::Reconstruct(CbmEvent* event) {
     // TimeHist();
     ///    WriteSIMDKFData();
   }
-  if (fVerbose > 1) cout << "End of L1" << endl;
+  if (fVerbose > 1) { cout << "End of L1" << endl; }
 
   static bool ask = 0;
   char symbol;
@@ -1727,26 +1725,22 @@ void CbmL1::WriteSTAPAlgoData()  // must be called after ReadEvent
            << " ";
     fadata << vNEvent << endl;
     // write vStsStrips
-    int n = algo->NStsStripsF;
+    int n = algo->NStsStrips;
     fadata << n << endl;
-    if (fVerbose >= 4)
+    if (fVerbose >= 4) {
       cout << "vStsStrips[" << n << "]"
            << " have been written." << endl;
-    // write vStsStripsB
-    n = algo->NStsStripsB;
-    fadata << n << endl;
-    if (fVerbose >= 4)
-      cout << "vStsStripsB[" << n << "]"
-           << " have been written." << endl;
+    }
     // write vStsZPos
     n = (*algo->vStsZPos).size();
     fadata << n << endl;
     for (int i = 0; i < n; i++) {
       fadata << (*algo->vStsZPos)[i] << endl;
     };
-    if (fVerbose >= 4)
+    if (fVerbose >= 4) {
       cout << "vStsZPos[" << n << "]"
            << " have been written." << endl;
+    }
     // write vSFlag
     n = (*algo->vSFlag).size();
     fadata << n << endl;
@@ -1755,19 +1749,14 @@ void CbmL1::WriteSTAPAlgoData()  // must be called after ReadEvent
       element = (*algo->vSFlag)[i];
       fadata << static_cast<int>(element) << endl;
     };
-    if (fVerbose >= 4)
+    if (fVerbose >= 4) {
       cout << "vSFlag[" << n << "]"
            << " have been written." << endl;
-    // write vSFlagB
-    n = (*algo->vSFlagB).size();
-    fadata << n << endl;
-    for (int i = 0; i < n; i++) {
-      element = (*algo->vSFlagB)[i];
-      fadata << static_cast<int>(element) << endl;
-    };
-    if (fVerbose >= 4)
+    }
+    if (fVerbose >= 4) {
       cout << "vSFlagB[" << n << "]"
            << " have been written." << endl;
+    }
     // write vStsHits
     n = (*algo->vStsHits).size();
     fadata << n << endl;
@@ -1784,9 +1773,10 @@ void CbmL1::WriteSTAPAlgoData()  // must be called after ReadEvent
       // fadata  << (*algo->vStsHits)[i].time << endl;
       fadata << h.t_reco << endl;
     };
-    if (fVerbose >= 4)
+    if (fVerbose >= 4) {
       cout << "vStsHits[" << n << "]"
            << " have been written." << endl;
+    }
     // write StsHitsStartIndex and StsHitsStopIndex
     n = 20;
     for (int i = 0; i < n; i++) {
@@ -1864,10 +1854,10 @@ void CbmL1::WriteSTAPPerfData()  // must be called after ReadEvent
       };
       fpdata << endl;
     };
-    if (fVerbose >= 4)
+    if (fVerbose >= 4) {
       cout << "vMCPoints[" << n << "]"
            << " have been written." << endl;
-
+    }
     // write vMCTracks  . without Points
     n = vMCTracks.size();  // number of elements
     fpdata << n << endl;
@@ -1908,20 +1898,20 @@ void CbmL1::WriteSTAPPerfData()  // must be called after ReadEvent
       fpdata << vMCTracks[i].maxNStaHits << " ";
       fpdata << vMCTracks[i].nStations << endl;
     };
-    if (fVerbose >= 4)
+    if (fVerbose >= 4) {
       cout << "vMCTracks[" << n << "]"
            << " have been written." << endl;
-
+    }
     // write vHitMCRef
     n = vHitMCRef.size();  // number of elements
     fpdata << n << endl;
     for (int i = 0; i < n; i++) {
       fpdata << vHitMCRef[i] << endl;
     };
-    if (fVerbose >= 4)
+    if (fVerbose >= 4) {
       cout << "vHitMCRef[" << n << "]"
            << " have been written." << endl;
-
+    }
     // write vHitStore
     n = vHitStore.size();  // number of elements
     fpdata << n << endl;
@@ -1932,10 +1922,10 @@ void CbmL1::WriteSTAPPerfData()  // must be called after ReadEvent
       fpdata << vHitStore[i].x << " ";
       fpdata << vHitStore[i].y << endl;
     };
-    if (fVerbose >= 4)
+    if (fVerbose >= 4) {
       cout << "vHitStore[" << n << "]"
            << " have been written." << endl;
-
+    }
     // write vStsHits
     n = vStsHits.size();  // number of elements
     fpdata << n << endl;
@@ -1950,10 +1940,10 @@ void CbmL1::WriteSTAPPerfData()  // must be called after ReadEvent
       };
       fpdata << endl;
     };
-    if (fVerbose >= 4)
+    if (fVerbose >= 4) {
       cout << "vStsHits[" << n << "]"
            << " have been written." << endl;
-
+    }
     fpdata.close();
   }
   cout << "-I- CbmL1: Data for performance of event number " << vNEvent
@@ -2001,13 +1991,10 @@ void CbmL1::ReadSTAPAlgoData() {
 
     if (algo->vStsHits)
       const_cast<std::vector<L1StsHit>*>(algo->vStsHits)->clear();
-    algo->NStsStripsF = 0;
-    algo->NStsStripsB = 0;
+    algo->NStsStrips = 0;
     if (algo->vStsZPos)
       const_cast<std::vector<float>*>(algo->vStsZPos)->clear();
     if (algo->vSFlag) const_cast<vector<unsigned char>*>(algo->vSFlag)->clear();
-    if (algo->vSFlagB)
-      const_cast<vector<unsigned char>*>(algo->vSFlagB)->clear();
 
     // check correct position in file
     char s[] = "Event:  ";
@@ -2022,16 +2009,11 @@ void CbmL1::ReadSTAPAlgoData() {
     // read algo->vStsStrips
     fadata >> n;
     cout << " n " << n << endl;
-    algo->NStsStripsF = n;
-    if (fVerbose >= 4)
+    algo->NStsStrips = n;
+    if (fVerbose >= 4) {
       cout << "vStsStrips[" << n << "]"
            << " have been read." << endl;
-    // read algo->vStsStripsB
-    fadata >> n;
-    algo->NStsStripsB = n;
-    if (fVerbose >= 4)
-      cout << "vStsStripsB[" << n << "]"
-           << " have been read." << endl;
+    }
     // read algo->vStsZPos
     fadata >> n;
     for (int i = 0; i < n; i++) {
@@ -2039,9 +2021,10 @@ void CbmL1::ReadSTAPAlgoData() {
       fadata >> element;
       const_cast<std::vector<float>*>(algo->vStsZPos)->push_back(element);
     }
-    if (fVerbose >= 4)
+    if (fVerbose >= 4) {
       cout << "vStsZPos[" << n << "]"
            << " have been read." << endl;
+    }
     // read algo->vSFlag
     fadata >> n;
     for (int i = 0; i < n; i++) {
@@ -2050,20 +2033,10 @@ void CbmL1::ReadSTAPAlgoData() {
       const_cast<vector<unsigned char>*>(algo->vSFlag)
         ->push_back(static_cast<unsigned char>(element));
     }
-    if (fVerbose >= 4)
+    if (fVerbose >= 4) {
       cout << "vSFlag[" << n << "]"
            << " have been read." << endl;
-    // read algo->vSFlagB
-    fadata >> n;
-    for (int i = 0; i < n; i++) {
-      int element;
-      fadata >> element;
-      const_cast<vector<unsigned char>*>(algo->vSFlagB)
-        ->push_back(static_cast<unsigned char>(element));
     }
-    if (fVerbose >= 4)
-      cout << "vSFlagB[" << n << "]"
-           << " have been read." << endl;
     // read algo->vStsHits
     fadata >> n;
     int element_f;  // for convert
@@ -2079,9 +2052,10 @@ void CbmL1::ReadSTAPAlgoData() {
       element.iz = static_cast<TZPosI>(element_iz);
       const_cast<std::vector<L1StsHit>*>(algo->vStsHits)->push_back(element);
     }
-    if (fVerbose >= 4)
+    if (fVerbose >= 4) {
       cout << "vStsHits[" << n << "]"
            << " have been read." << endl;
+    }
     // read StsHitsStartIndex and StsHitsStopIndex
     n = 20;
     for (int i = 0; i < n; i++) {
@@ -2169,10 +2143,10 @@ void CbmL1::ReadSTAPPerfData() {
 
       vMCPoints.push_back(element);
     };
-    if (fVerbose >= 4)
+    if (fVerbose >= 4) {
       cout << "vMCPoints[" << n << "]"
            << " have been read." << endl;
-
+    }
     // vMCTracks . without Points
     fpdata >> n;
     for (int i = 0; i < n; i++) {
@@ -2217,10 +2191,10 @@ void CbmL1::ReadSTAPPerfData() {
       element.CalculateIsReconstructable();
       vMCTracks.push_back(element);
     };
-    if (fVerbose >= 4)
+    if (fVerbose >= 4) {
       cout << "vMCTracks[" << n << "]"
            << " have been read." << endl;
-
+    }
     // vHitMCRef
     fpdata >> n;
     for (int i = 0; i < n; i++) {
@@ -2228,10 +2202,10 @@ void CbmL1::ReadSTAPPerfData() {
       fpdata >> element;
       vHitMCRef.push_back(element);
     };
-    if (fVerbose >= 4)
+    if (fVerbose >= 4) {
       cout << "vHitMCRef[" << n << "]"
            << " have been read." << endl;
-
+    }
     // vHitStore
     fpdata >> n;
     for (int i = 0; i < n; i++) {
@@ -2243,10 +2217,10 @@ void CbmL1::ReadSTAPPerfData() {
       fpdata >> element.y;
       vHitStore.push_back(element);
     };
-    if (fVerbose >= 4)
+    if (fVerbose >= 4) {
       cout << "vHitStore[" << n << "]"
            << " have been read." << endl;
-
+    }
     // vStsHits
     fpdata >> n;
     for (int i = 0; i < n; i++) {
@@ -2263,10 +2237,10 @@ void CbmL1::ReadSTAPPerfData() {
       };
       vStsHits.push_back(element);
     };
-    if (fVerbose >= 4)
+    if (fVerbose >= 4) {
       cout << "vStsHits[" << n << "]"
            << " have been read." << endl;
-
+    }
 
     //    if (nEvent == maxNEvent) { // file open on begin of all work class and close at end
     //       fpdata.close();

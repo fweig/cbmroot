@@ -1951,7 +1951,7 @@ void L1Algo::CATrackFinder() {
     for (THitI ih = StsHitsStartIndex[ist]; ih < StsHitsStopIndex[ist]; ++ih) {
       L1StsHit& h = *(const_cast<L1StsHit*>(&((*vStsHits)[ih])));
       SetFUnUsed(const_cast<unsigned char&>((*vSFlag)[h.f]));
-      SetFUnUsed(const_cast<unsigned char&>((*vSFlagB)[h.b]));
+      SetFUnUsed(const_cast<unsigned char&>((*vSFlag)[h.b]));
     }
 
   for (int ista = 0; ista < NStations; ++ista) {
@@ -2431,7 +2431,7 @@ void L1Algo::CATrackFinder() {
 
             if (GetFUsed(
                   (*vSFlag)[(*vStsHitsUnused)[first_trip.GetLHit()].f]
-                  | (*vSFlagB)[(*vStsHitsUnused)[first_trip.GetLHit()].b]))
+                  | (*vSFlag)[(*vStsHitsUnused)[first_trip.GetLHit()].b]))
               continue;
 
 
@@ -2652,7 +2652,7 @@ void L1Algo::CATrackFinder() {
 
 
                 SetFUsed(const_cast<unsigned char&>((*vSFlag)[h.f]));
-                SetFUsed(const_cast<unsigned char&>((*vSFlagB)[h.b]));
+                SetFUsed(const_cast<unsigned char&>((*vSFlag)[h.b]));
 
 
                 vRecoHits_local[num_thread][SavedHits[num_thread]] = (*phIt);
@@ -2747,8 +2747,7 @@ void L1Algo::CATrackFinder() {
           NHitsOnStation,
           ista,
           *this,
-          vSFlag,
-          vSFlagB);
+          vSFlag);
         StsHitsUnusedStartIndex[ista] = NHitsOnStationTmp;
         StsHitsUnusedStopIndex[ista]  = NHitsOnStation;
       }
@@ -2927,7 +2926,7 @@ inline void L1Algo::CAFindTrack(int ista,
 
 
     if (!GetFUsed((*vSFlag)[(*vStsHitsUnused)[ihitm].f]
-                  | (*vSFlagB)[(*vStsHitsUnused)[ihitm].b])) {
+                  | (*vSFlag)[(*vStsHitsUnused)[ihitm].b])) {
 
       //        curr_tr.StsHits.push_back((*RealIHitP)[ihitm]);
 
@@ -2939,7 +2938,7 @@ inline void L1Algo::CAFindTrack(int ista,
     }
 
     if (!GetFUsed((*vSFlag)[(*vStsHitsUnused)[ihitr].f]
-                  | (*vSFlagB)[(*vStsHitsUnused)[ihitr].b])) {
+                  | (*vSFlag)[(*vStsHitsUnused)[ihitr].b])) {
 
       //curr_tr.StsHits.push_back((*RealIHitP)[ihitr]);
       curr_tr.StsHits[curr_tr.NHits] = ((*RealIHitP)[ihitr]);
@@ -3031,8 +3030,8 @@ inline void L1Algo::CAFindTrack(int ista,
 
 
       if (GetFUsed((*vSFlag)[(*vStsHitsUnused)[new_trip.GetLHit()].f]
-                   | (*vSFlagB)[(*vStsHitsUnused)[new_trip.GetLHit()]
-                                  .b])) {  //hits are used
+                   | (*vSFlag)[(*vStsHitsUnused)[new_trip.GetLHit()]
+                                 .b])) {  //hits are used
         //  no used hits allowed -> compare and store track
         if ((curr_L > best_L)
             || ((curr_L == best_L) && (curr_chi2 < best_chi2))) {

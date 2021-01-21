@@ -94,17 +94,11 @@ public:
     NStsStations(0)
     , NFStations(0)
     , fRadThick()
-    , NStsStripsF(0)
-    ,  // strips positions created from hits. Front strips
-    NStsStripsB(0)
-    ,  // back strips
-    vStsZPos(0)
-    ,  // all possible z-positions of hits
-    vStsHits(0)
-    ,  // hits as a combination of front-, backstrips and z-position
-    vSFlag(0)
-    ,  // information of hits station & using hits in tracks(),
-    vSFlagB(0)
+    , NStsStrips(0)  // strips positions created from hits
+    , vStsZPos(0)
+    ,            // all possible z-positions of hits
+    vStsHits(0)  // hits as a combination of front-, backstrips and z-position
+    , vSFlag(0)  // information of hits station & using hits in tracks(),
     , CATime(0)
     ,  // time of trackfinding
     vTracks(40000)
@@ -291,11 +285,9 @@ public:
   Init(const vector<fscal>& geo, const bool UseHitErrors, const bool mCBMmode);
 
   void SetData(const vector<L1StsHit>& StsHits_,
-               int nStsStripsF_,
-               int nStsStripsB_,
+               int nStsStrips_,
                const vector<fscal>& StsZPos_,
                const vector<unsigned char>& SFlag_,
-               const vector<unsigned char>& SFlagB_,
                const THitI* StsHitsStartIndex_,
                const THitI* StsHitsStopIndex_
 
@@ -325,8 +317,7 @@ public:
   L1Station vStations[MaxNStations] _fvecalignment;  // station info
   vector<L1Material> fRadThick;  // material for each station
 
-  int NStsStripsF;                // number of front strips
-  int NStsStripsB;                // number of back strips
+  int NStsStrips;                 // number of strips
   const vector<fscal>* vStsZPos;  // all possible z-positions of hits
   const vector<L1StsHit>*
     vStsHits;  // hits as a combination of front-, backstrips and z-position
@@ -334,9 +325,8 @@ public:
     [MaxNStations];  // hits as a combination of front-, backstrips and z-position
   L1Grid vGridTime[MaxNStations];
 
-  const vector<unsigned char>
-    *vSFlag,  // information of hits station & using hits in tracks;
-    *vSFlagB;
+  const vector<unsigned char>*
+    vSFlag;  // information of hits station & using hits in tracks;
 
   double CATime;  // time of trackfinding
 

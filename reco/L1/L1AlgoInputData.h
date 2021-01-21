@@ -16,11 +16,9 @@ class L1AlgoInputData {
 public:
   L1AlgoInputData()
     : vStsHits()
-    , NStsStripsF(0)
-    , NStsStripsB(0)
+    , NStsStrips(0)
     , vStsZPos()
     , vSFlag()
-    , vSFlagB()
   //  MaxNStations(12)
 
   {
@@ -32,11 +30,9 @@ public:
   ~L1AlgoInputData() {};
 
   const vector<L1StsHit>& GetStsHits() const { return vStsHits; }
-  int GetNStsStripsF() const { return NStsStripsF; }
-  int GetNStsStripsB() const { return NStsStripsB; }
+  int GetNStsStrips() const { return NStsStrips; }
   const vector<fscal>& GetStsZPos() const { return vStsZPos; }
   const L1Vector<unsigned char>& GetSFlag() const { return vSFlag; }
-  const L1Vector<unsigned char>& GetSFlagB() const { return vSFlagB; }
   const THitI* GetStsHitsStartIndex() const { return StsHitsStartIndex; }
   const THitI* GetStsHitsStopIndex() const { return StsHitsStopIndex; }
 
@@ -65,11 +61,9 @@ public:
   void Clear() {
 
     vStsHits.clear();
-    NStsStripsF = 0;
-    NStsStripsB = 0;
+    NStsStrips = 0;
     vStsZPos.clear();
     vSFlag.clear();
-    vSFlagB.clear();
 
     {
       for (int i = 0; i < MaxNStations + 1; ++i)
@@ -88,13 +82,12 @@ public:
   enum { MaxNStations = 25 };
   vector<L1StsHit>
     vStsHits;  // hits as a combination of front-, backstrips and z-position
-  int NStsStripsF,         // Number of front strips in sts
-    NStsStripsB;           // Number of back strips in sts
+  int NStsStrips;          // Number of strips in sts
   vector<fscal> vStsZPos;  // all possible z-positions of hits
 
   L1Vector<unsigned char>
-    vSFlag,  // information of hits station & using hits in tracks;
-    vSFlagB;
+    vSFlag;  // information of hits station & using hits in tracks;
+
   THitI StsHitsStartIndex[MaxNStations + 1],
     StsHitsStopIndex[MaxNStations + 1];  // station-bounders in vStsHits array
 

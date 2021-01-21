@@ -177,20 +177,16 @@ void L1Algo::Init(const vector<fscal>& geo,
 
 
 void L1Algo::SetData(const vector<L1StsHit>& StsHits_,
-                     int nStsStripsF_,
-                     int nStsStripsB_,
+                     int nStsStrips_,
                      const vector<fscal>& StsZPos_,
                      const vector<unsigned char>& SFlag_,
-                     const vector<unsigned char>& SFlagB_,
                      const THitI* StsHitsStartIndex_,
                      const THitI* StsHitsStopIndex_) {
 
   vStsHits    = &StsHits_;
-  NStsStripsF = nStsStripsF_;
-  NStsStripsB = nStsStripsB_;
+  NStsStrips  = nStsStrips_;
   vStsZPos    = &StsZPos_;
   vSFlag      = &SFlag_;
-  vSFlagB     = &SFlagB_;
 
   StsHitsStartIndex = StsHitsStartIndex_;
   StsHitsStopIndex  = StsHitsStopIndex_;
