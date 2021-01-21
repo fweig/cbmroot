@@ -594,7 +594,7 @@ Bool_t CbmMcbm2019TimeWinEventBuilderAlgo::CheckTriggerConditions(
     return kFALSE;
   }  // if((-1 == iNbDigis) || (static_cast<UInt_t>(iNbDigis) < det.fuTriggerMinDigis))
   /// Check trigger rejection by maximal number
-  else if (det.fiTriggerMaxDigis < iNbDigis) {
+  else if (0 < det.fiTriggerMaxDigis && det.fiTriggerMaxDigis < iNbDigis) {
     LOG(debug2) << "Event Has too many digis: " << iNbDigis << " vs "
                 << det.fiTriggerMaxDigis << " for " << det.sName;
     return kFALSE;
