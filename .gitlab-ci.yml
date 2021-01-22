@@ -8,8 +8,9 @@ RebaseCheck:
   stage: checkRepository
   variables:
     GIT_DEPTH: 100
+  image: alpine
   tags:
-    - CbmRoot
+    - docker
   only:
     refs:
       - merge_requests
@@ -20,6 +21,7 @@ RebaseCheck:
     # comparison
     # Check if a rebase is needed
     # If a rebase is needed stop immediately
+    - apk update && apk add git bash
     - scripts/connect_upstream_repo.sh $CI_MERGE_REQUEST_PROJECT_URL
     - git fetch upstream
     - hash1=$(git show-ref upstream/master | cut -f1 -d' ')
@@ -39,8 +41,9 @@ LinearHistCheck:
   stage: checkRepository
   variables:
     GIT_DEPTH: 100
+  image: alpine
   tags:
-    - CbmRoot
+    - docker
   only:
     refs:
       - merge_requests
@@ -51,6 +54,7 @@ LinearHistCheck:
     # comparison
     # Check if the history introduced by the MR is linear (no branch loop in fork)
     # If not linear stop immediately
+    - apk update && apk add git bash
     - scripts/connect_upstream_repo.sh $CI_MERGE_REQUEST_PROJECT_URL
     - git fetch upstream
     - count=$(git rev-list --min-parents=2 --count upstream/master..HEAD)
@@ -91,8 +95,9 @@ CodeFormatCheck:
 
 FileFormatCheck:
   stage: checkFormat
+  image: alpine
   tags:
-    - CbmRoot
+    - docker
   only:
     refs:
       - merge_requests
@@ -101,6 +106,7 @@ FileFormatCheck:
   script:
     # Get the upstream repository manually. I did not find any other way to have it for
     # comparison
+    - apk update && apk add git bash file
     - scripts/connect_upstream_repo.sh $CI_MERGE_REQUEST_PROJECT_URL
     - git fetch upstream
     - scripts/check-file-format.sh upstream
