@@ -64,7 +64,7 @@ LinearHistCheck:
     -   exit 1
     - fi
 
-FormatCheck:
+CodeFormatCheck:
   stage: checkFormat
   tags:
     - CbmRoot
@@ -89,6 +89,21 @@ FormatCheck:
     - echo "export FAIRROOT_FORMAT_BASE=upstream/\${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}" >> env.sh
     - . ./env.sh && ctest -S cmake/scripts/checkformat.cmake -VV
 
+FileFormatCheck:
+  stage: checkFormat
+  tags:
+    - CbmRoot
+  only:
+    refs:
+      - merge_requests
+    variables:
+      - $CI_MERGE_REQUEST_PROJECT_PATH == "computing/cbmroot" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"
+  script:
+    # Get the upstream repository manually. I did not find any other way to have it for
+    # comparison
+    - scripts/connect_upstream_repo.sh $CI_MERGE_REQUEST_PROJECT_URL
+    - git fetch upstream
+    - scripts/check-file-format.sh upstream
 
 CbmRoot_Continuous:
   stage: build
