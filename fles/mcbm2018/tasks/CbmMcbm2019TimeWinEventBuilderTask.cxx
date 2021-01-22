@@ -170,12 +170,12 @@ void CbmMcbm2019TimeWinEventBuilderTask::SetTriggerWindow(ECbmModuleId det,
 }
 
 
-void CbmMcbm2019TimeWinEventBuilderTask::SetTsParameters(Double_t dTsStartTime,
-                                                         Double_t dTsLength,
-                                                         Double_t dTsOverLength) {
-  if (nullptr != fpAlgo) fpAlgo->SetTsParameters(dTsStartTime,
-                                                 dTsLength,
-                                                 dTsOverLength);
+void CbmMcbm2019TimeWinEventBuilderTask::SetTsParameters(
+  Double_t dTsStartTime,
+  Double_t dTsLength,
+  Double_t dTsOverLength) {
+  if (nullptr != fpAlgo)
+    fpAlgo->SetTsParameters(dTsStartTime, dTsLength, dTsOverLength);
 }
 
 void CbmMcbm2019TimeWinEventBuilderTask::SetEventOverlapMode(
@@ -185,7 +185,8 @@ void CbmMcbm2019TimeWinEventBuilderTask::SetEventOverlapMode(
 void CbmMcbm2019TimeWinEventBuilderTask::SetIgnoreTsOverlap(Bool_t bFlagIn) {
   if (nullptr != fpAlgo) fpAlgo->SetIgnoreTsOverlap(bFlagIn);
 }
-void CbmMcbm2019TimeWinEventBuilderTask::ChangeMuchBeamtimeDigiFlag(Bool_t bFlagIn) {
+void CbmMcbm2019TimeWinEventBuilderTask::ChangeMuchBeamtimeDigiFlag(
+  Bool_t bFlagIn) {
   if (nullptr != fpAlgo) fpAlgo->ChangeMuchBeamtimeDigiFlag(bFlagIn);
 }
 
