@@ -153,6 +153,14 @@ public:
   void
   SetTriggerWindow(ECbmModuleId selDet, Double_t dWinBeg, Double_t dWinEnd);
 
+  void SetTsParameters(Double_t dTsStartTime,
+                       Double_t dTsLength,
+                       Double_t dTsOverLength) {
+    fdTsStartTime  = dTsStartTime;
+    fdTsLength     = dTsLength;
+    fdTsOverLength = fdTsOverLength;
+  }
+
   /// Control flags
   void SetEventOverlapMode(EOverlapMode mode) { fOverMode = mode; }
   void SetIgnoreTsOverlap(Bool_t bFlagIn = kTRUE) {
@@ -224,6 +232,10 @@ private:
   Double_t fdEarliestTimeWinBeg = kdDefaultTimeWinBeg;
   Double_t fdLatestTimeWinEnd   = kdDefaultTimeWinEnd;
   Double_t fdWidestTimeWinRange = kdDefaultTimeWinEnd - kdDefaultTimeWinBeg;
+
+  Double_t fdTsStartTime  = -1;
+  Double_t fdTsLength     = -1;
+  Double_t fdTsOverLength = -1;
 
   /// Data input
   /// FIXME: usage of CbmDigiManager in FairMq context?!?

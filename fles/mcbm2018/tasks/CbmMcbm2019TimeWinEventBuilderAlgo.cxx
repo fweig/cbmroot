@@ -67,17 +67,19 @@ Bool_t CbmMcbm2019TimeWinEventBuilderAlgo::InitAlgo() {
     }  // if( kFALSE == CheckDataAvailable( *det ) )
   }  // for (std::vector<EventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det)
 
-  /// Access the TS metadata to know TS start tim
-  fTimeSliceMetaDataArray =
-    dynamic_cast<TClonesArray*>(ioman->GetObject("TimesliceMetaData"));
-  if (!fTimeSliceMetaDataArray) {
-    LOG(fatal)
-      << "No TS metadata input found"
-      << " => Please check in the unpacking macro if the following line was "
-         "present!"
-      << std::endl
-      << "source->SetWriteOutputFlag(kTRUE);  // For writing TS metadata";
-  }  // if (!fTimeSliceMetaDataArray)
+  /// Access the TS metadata to know TS start time if needed
+  if (fdTsStartTime < 0 || fdTsLength < 0 || fdTsOverLength < 0) {
+    fTimeSliceMetaDataArray =
+      dynamic_cast<TClonesArray*>(ioman->GetObject("TimesliceMetaData"));
+    if (!fTimeSliceMetaDataArray) {
+      LOG(fatal)
+        << "No TS metadata input found"
+        << " => Please check in the unpacking macro if the following line was "
+           "present!"
+        << std::endl
+        << "source->SetWriteOutputFlag(kTRUE);  // For writing TS metadata";
+    }  // if (!fTimeSliceMetaDataArray)
+  } // if ( fdTsStartTime < 0 || fdTsLength < 0 || fdTsOverLength < 0 )
 
   if (fbFillHistos) { CreateHistograms(); }  // if( fbFillHistos )
 
@@ -209,37 +211,47 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::BuildEvents() {
 
 template<class DigiSeed>
 void CbmMcbm2019TimeWinEventBuilderAlgo::LoopOnSeeds() {
-  pTsMetaData =
-    dynamic_cast<TimesliceMetaData*>(fTimeSliceMetaDataArray->At(0));
-  if (nullptr == pTsMetaData)
-    LOG(fatal) << Form("CbmMcbm2019TimeWinEventBuilderAlgo::LoopOnSeeds => "
-                       "No TS metadata found for TS %6u.",
-                       fuNrTs);
+  /// Access the TS metadata if needed to know TS start time and overlap size
+  Double_t dTsStartTime  = fdTsStartTime;
+  Double_t dOverlapStart = fdTsStartTime + fdTsLength;
+  Double_t dOverlapSize  = fdTsOverLength;
+  if (fdTsStartTime < 0 || fdTsLength < 0 || fdTsOverLength < 0) {
+    pTsMetaData =
+      dynamic_cast<TimesliceMetaData*>(fTimeSliceMetaDataArray->At(0));
+    if (nullptr == pTsMetaData)
+      LOG(fatal) << Form("CbmMcbm2019TimeWinEventBuilderAlgo::LoopOnSeeds => "
+                         "No TS metadata found for TS %6u.",
+                         fuNrTs);
+
+    dTsStartTime  = pTsMetaData->GetStartTime();
+    dOverlapStart = pTsMetaData->GetOverlapStartTime();
+    dOverlapSize  = pTsMetaData->GetOverlapDuration();
+  } // if ( fdTsStartTime < 0 || fdTsLength < 0  || fdTsOverLength < 0 )
 
   /// Print warning in first TS if time window borders out of potential overlap
   if ((0.0 < fdEarliestTimeWinBeg
-       && pTsMetaData->GetOverlapDuration() < fdLatestTimeWinEnd)
-      || (pTsMetaData->GetOverlapDuration() < fdWidestTimeWinRange)) {
+       && dOverlapSize < fdLatestTimeWinEnd)
+      || (dOverlapSize < fdWidestTimeWinRange)) {
     LOG(warning) << "CbmMcbm2019TimeWinEventBuilderAlgo::LoopOnSeeds => "
                  << Form("Event window not fitting in TS overlap, risk of "
                          "incomplete events: %f %f %f %llu",
                          fdEarliestTimeWinBeg,
                          fdLatestTimeWinEnd,
                          fdWidestTimeWinRange,
-                         pTsMetaData->GetOverlapDuration());
+                         dOverlapSize);
   }  // if end of event window does not fit in overlap for a seed at edge of TS core
 
   /// Define an acceptance window for the seeds in order to use the overlap
   /// part of the TS to avoid incomplete events
   Double_t dSeedWindowBeg =
-    pTsMetaData->GetStartTime()
+    dTsStartTime
     + (0.0 < fdEarliestTimeWinBeg ? 0.0 : -fdEarliestTimeWinBeg);
   Double_t dSeedWindowEnd =
-    pTsMetaData->GetOverlapStartTime()
+    dOverlapStart
     + (0.0 < fdEarliestTimeWinBeg ? 0.0 : -fdEarliestTimeWinBeg);
   if (fbIgnoreTsOverlap) {
-    dSeedWindowBeg = pTsMetaData->GetStartTime();
-    dSeedWindowEnd = pTsMetaData->GetOverlapStartTime();
+    dSeedWindowBeg = dTsStartTime;
+    dSeedWindowEnd = dOverlapStart;
   }  // if( fbIgnoreTsOverlap )
 
   if (ECbmModuleId::kT0 == fRefDet.detId) {

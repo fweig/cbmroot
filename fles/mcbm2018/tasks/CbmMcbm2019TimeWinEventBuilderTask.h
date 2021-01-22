@@ -72,6 +72,10 @@ public:
 
   void SetTriggerWindow(ECbmModuleId det, Double_t dWinBeg, Double_t dWinEnd);
 
+  void SetTsParameters(Double_t dTsStartTime,
+                       Double_t dTsLength,
+                       Double_t dTsOverLength);
+
   void SetEventOverlapMode(EOverlapMode mode);
   void SetIgnoreTsOverlap(Bool_t bFlagIn);
 

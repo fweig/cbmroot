@@ -169,6 +169,15 @@ void CbmMcbm2019TimeWinEventBuilderTask::SetTriggerWindow(ECbmModuleId det,
   if (nullptr != fpAlgo) fpAlgo->SetTriggerWindow(det, dWinBeg, dWinEnd);
 }
 
+
+void CbmMcbm2019TimeWinEventBuilderTask::SetTsParameters(Double_t dTsStartTime,
+                                                         Double_t dTsLength,
+                                                         Double_t dTsOverLength) {
+  if (nullptr != fpAlgo) fpAlgo->SetTsParameters(dTsStartTime,
+                                                 dTsLength,
+                                                 dTsOverLength);
+}
+
 void CbmMcbm2019TimeWinEventBuilderTask::SetEventOverlapMode(
   EOverlapMode mode) {
   if (nullptr != fpAlgo) fpAlgo->SetEventOverlapMode(mode);
