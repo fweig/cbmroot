@@ -29,11 +29,19 @@ void mcbm_event_reco(Int_t runId = 831, Int_t nTimeslices = 300) {
     Form("/lustre/cbm/users/ploizeau/mcbm2020/unp_evt_data_7f229b3f_20201103/"
          "unp_mcbm_params_%i.root",
          runId);
-  TString geoFile = paramDir + "mcbm2020_reco.geo.root";  // Created in sim. run
   TString parFileOut = Form("./data/reco_mcbm_params_%i.root", runId);
   TString outFile    = Form("./data/reco_mcbm_%i.root", runId);
   // ------------------------------------------------------------------------
 
+  // --- Load the geometry setup ----
+  // This is currently only required by the TRD (parameters)
+  std::string geoSetupTag = "mcbm_beam_2020_03";
+  TString geoFile =
+    paramDir + geoSetupTag.data() + ".geo.root";  // Created in sim. run
+  CbmSetup* geoSetup = CbmSetup::Instance();
+  geoSetup->LoadSetup(geoSetupTag.data());
+  TList* parFileList = new TList();
+  // ------------------------------------------------------------------------
 
   // -----   Timer   --------------------------------------------------------
   TStopwatch timer;
@@ -134,6 +142,29 @@ void mcbm_event_reco(Int_t runId = 831, Int_t nTimeslices = 300) {
 
 
   // -----   Local reconstruction in TRD   ----------------------------------
+  // Load parameters <- they are required by the hit producer.
+  // For now, it is enough to load the default ascii parameters
+  // if no root file is existing from the unpacking process.
+  TString geoTagTrd = "";
+  bool isActiveTrd =
+    (geoSetup->GetGeoTag(ECbmModuleId::kTrd, geoTagTrd)) ? true : false;
+  if (!isActiveTrd) {
+    LOG(warning) << Form(
+      "TRD - parameter loading - Trd not found in CbmSetup(%s) -> parameters "
+      "can not be loaded correctly!",
+      geoSetupTag.data());
+  } else {
+    TString paramFilesTrd(
+      Form("%s/parameters/trd/trd_%s", srcDir.Data(), geoTagTrd.Data()));
+    std::vector<std::string> paramFilesVecTrd;
+    CbmTrdParManager::GetParFileExtensions(&paramFilesVecTrd);
+    for (auto parIt : paramFilesVecTrd) {
+      parFileList->Add(
+        new TObjString(Form("%s.%s.par", paramFilesTrd.Data(), parIt.data())));
+    }
+  }
+  // -- end trd parameters
+  // -- beginn trd reco
   Double_t triggerThreshold       = 0.5e-6;  // Default
   CbmTrdClusterFinder* trdCluster = new CbmTrdClusterFinder();
   trdCluster->SetNeighbourEnable(true, false);
@@ -183,8 +214,10 @@ void mcbm_event_reco(Int_t runId = 831, Int_t nTimeslices = 300) {
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
   FairParRootFileIo* parIo3  = new FairParRootFileIo();
   parIo1->open(parFileIn.Data(), "READ");
-  parIo3->open(parFileOut.Data(), "RECREATE");
   rtdb->setFirstInput(parIo1);
+  parIo2->open(parFileList, "in");
+  rtdb->setSecondInput(parIo2);
+  parIo3->open(parFileOut.Data(), "RECREATE");
   // ------------------------------------------------------------------------
 
 
