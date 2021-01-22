@@ -158,13 +158,17 @@ public:
                        Double_t dTsOverLength) {
     fdTsStartTime  = dTsStartTime;
     fdTsLength     = dTsLength;
-    fdTsOverLength = fdTsOverLength;
+    fdTsOverLength = dTsOverLength;
   }
 
   /// Control flags
   void SetEventOverlapMode(EOverlapMode mode) { fOverMode = mode; }
   void SetIgnoreTsOverlap(Bool_t bFlagIn = kTRUE) {
     fbIgnoreTsOverlap = bFlagIn;
+  }
+
+  void ChangeMuchBeamtimeDigiFlag(Bool_t bFlagIn = kFALSE) {
+    fbUseMuchBeamtimeDigi = bFlagIn;
   }
 
   /// For monitor algos
@@ -213,9 +217,10 @@ private:
   static constexpr Double_t kdDefaultTimeWinEnd = 100.0;
 
   /// User parameters
-  /// Control flags
+    /// Control flags
   Bool_t fbIgnoreTsOverlap = kFALSE;  //! Ignore data in Overlap part of the TS
   Bool_t fbFillHistos {kTRUE};        //! Switch ON/OFF filling of histograms
+  Bool_t fbUseMuchBeamtimeDigi = kTRUE; //! Switch between the MUCH digi classes
     /// Event building mode and detectors selection
   EOverlapMode fOverMode {EOverlapMode::AllowOverlap};
 

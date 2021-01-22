@@ -79,6 +79,8 @@ public:
   void SetEventOverlapMode(EOverlapMode mode);
   void SetIgnoreTsOverlap(Bool_t bFlagIn);
 
+  void ChangeMuchBeamtimeDigiFlag(Bool_t bFlagIn = kFALSE);
+
 private:
   void FillOutput();
   void SaveHistos();

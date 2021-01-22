@@ -10,6 +10,7 @@
 /// CBM headers
 #include "CbmEvent.h"
 #include "CbmMuchBeamTimeDigi.h"
+#include "CbmMuchDigi.h"
 #include "CbmPsdDigi.h"
 #include "CbmRichDigi.h"
 #include "CbmStsDigi.h"
@@ -49,7 +50,9 @@ Bool_t CbmMcbm2019TimeWinEventBuilderAlgo::InitAlgo() {
 
   // Get a pointer to the previous already existing data level
   fDigiMan = CbmDigiManager::Instance();
-  fDigiMan->UseMuchBeamTimeDigi();
+  if (fbUseMuchBeamtimeDigi) {
+    fDigiMan->UseMuchBeamTimeDigi();
+  } // if (fbUseMuchBeamtimeDigi)
   fDigiMan->Init();
 
   /// Check if reference detector data are available
@@ -177,7 +180,12 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::BuildEvents() {
       break;
     }  // case ECbmModuleId::kSts:
     case ECbmModuleId::kMuch: {
-      LoopOnSeeds<CbmMuchBeamTimeDigi>();
+      if (fbUseMuchBeamtimeDigi) {
+        LoopOnSeeds<CbmMuchBeamTimeDigi>();
+      } // if (fbUseMuchBeamtimeDigi)
+        else {
+          LoopOnSeeds<CbmMuchDigi>();
+        } // else of if (fbUseMuchBeamtimeDigi)
       break;
     }  // case ECbmModuleId::kMuch:
     case ECbmModuleId::kTrd: {
@@ -234,7 +242,7 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::LoopOnSeeds() {
       || (dOverlapSize < fdWidestTimeWinRange)) {
     LOG(warning) << "CbmMcbm2019TimeWinEventBuilderAlgo::LoopOnSeeds => "
                  << Form("Event window not fitting in TS overlap, risk of "
-                         "incomplete events: %f %f %f %llu",
+                         "incomplete events: %f %f %f %f",
                          fdEarliestTimeWinBeg,
                          fdLatestTimeWinEnd,
                          fdWidestTimeWinRange,
@@ -350,7 +358,13 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::CheckSeed(Double_t dSeedTime,
         break;
       }  // case ECbmModuleId::kSts:
       case ECbmModuleId::kMuch: {
-        SearchMatches<CbmMuchBeamTimeDigi>(dSeedTime, fRefDet);
+        if (fbUseMuchBeamtimeDigi) {
+          SearchMatches<CbmMuchBeamTimeDigi>(dSeedTime, fRefDet);
+        } // if (fbUseMuchBeamtimeDigi)
+          else
+          {
+            SearchMatches<CbmMuchDigi>(dSeedTime, fRefDet);
+          } // else of if (fbUseMuchBeamtimeDigi)
         break;
       }  // case ECbmModuleId::kMuch:
       case ECbmModuleId::kTrd: {
@@ -399,7 +413,12 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::CheckSeed(Double_t dSeedTime,
         break;
       }  // case ECbmModuleId::kSts:
       case ECbmModuleId::kMuch: {
-        SearchMatches<CbmMuchBeamTimeDigi>(dSeedTime, *det);
+        if (fbUseMuchBeamtimeDigi) {
+          SearchMatches<CbmMuchBeamTimeDigi>(dSeedTime, *det);
+        } // if (fbUseMuchBeamtimeDigi)
+          else {
+            SearchMatches<CbmMuchDigi>(dSeedTime, *det);
+          } // else of if (fbUseMuchBeamtimeDigi)
         break;
       }  // case ECbmModuleId::kMuch:
       case ECbmModuleId::kTrd: {
