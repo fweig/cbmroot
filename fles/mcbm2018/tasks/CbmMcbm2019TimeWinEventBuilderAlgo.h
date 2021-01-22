@@ -220,7 +220,7 @@ private:
   /// Control flags
   Bool_t fbIgnoreTsOverlap = kFALSE;  //! Ignore data in Overlap part of the TS
   Bool_t fbFillHistos {kTRUE};        //! Switch ON/OFF filling of histograms
-  Bool_t fbUseMuchBeamtimeDigi = kTRUE; //! Switch between MUCH digi classes
+  Bool_t fbUseMuchBeamtimeDigi = kTRUE;  //! Switch between MUCH digi classes
     /// Event building mode and detectors selection
   EOverlapMode fOverMode {EOverlapMode::AllowOverlap};
 

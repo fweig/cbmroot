@@ -82,7 +82,7 @@ Bool_t CbmMcbm2019TimeWinEventBuilderAlgo::InitAlgo() {
         << std::endl
         << "source->SetWriteOutputFlag(kTRUE);  // For writing TS metadata";
     }  // if (!fTimeSliceMetaDataArray)
-  } // if ( fdTsStartTime < 0 || fdTsLength < 0 || fdTsOverLength < 0 )
+  }    // if ( fdTsStartTime < 0 || fdTsLength < 0 || fdTsOverLength < 0 )
 
   if (fbFillHistos) { CreateHistograms(); }  // if( fbFillHistos )
 
@@ -182,10 +182,10 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::BuildEvents() {
     case ECbmModuleId::kMuch: {
       if (fbUseMuchBeamtimeDigi) {
         LoopOnSeeds<CbmMuchBeamTimeDigi>();
-      } // if (fbUseMuchBeamtimeDigi)
-        else {
-          LoopOnSeeds<CbmMuchDigi>();
-        } // else of if (fbUseMuchBeamtimeDigi)
+      }  // if (fbUseMuchBeamtimeDigi)
+      else {
+        LoopOnSeeds<CbmMuchDigi>();
+      }  // else of if (fbUseMuchBeamtimeDigi)
       break;
     }  // case ECbmModuleId::kMuch:
     case ECbmModuleId::kTrd: {
@@ -358,8 +358,7 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::CheckSeed(Double_t dSeedTime,
         if (fbUseMuchBeamtimeDigi) {
           SearchMatches<CbmMuchBeamTimeDigi>(dSeedTime, fRefDet);
         }  // if (fbUseMuchBeamtimeDigi)
-        else
-        {
+        else {
           SearchMatches<CbmMuchDigi>(dSeedTime, fRefDet);
         }  // else of if (fbUseMuchBeamtimeDigi)
         break;
