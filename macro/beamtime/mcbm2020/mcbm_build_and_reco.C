@@ -12,7 +12,6 @@ void mcbm_build_and_reco(UInt_t uRunId     = 28,
                          TString outDir    = "data/") {
 
 
-
   // ========================================================================
   //          Adjust this part according to your requirements
 
@@ -31,8 +30,8 @@ void mcbm_build_and_reco(UInt_t uRunId     = 28,
 
   // -----   In- and output file names   ------------------------------------
 
-  TString inFile     = Form("./data/unp_mcbm_%i.root", uRunId);
-  TString parFileIn  = Form("./data/unp_mcbm_params_%i.root", uRunId);
+  TString inFile    = Form("./data/unp_mcbm_%i.root", uRunId);
+  TString parFileIn = Form("./data/unp_mcbm_params_%i.root", uRunId);
 
   TString geoFile = paramDir + "mcbm2020_reco.geo.root";  // Created in sim. run
   TString parFileOut = Form("./data/reco_mcbm_evt_win_params_%u.root", uRunId);
@@ -212,7 +211,6 @@ void mcbm_build_and_reco(UInt_t uRunId     = 28,
   // ------------------------------------------------------------------------
 
 
-
   // -----   Local reconstruction in TRD   ----------------------------------
   // Load parameters <- they are required by the hit producer.
   // For now, it is enough to load the default ascii parameters
@@ -249,7 +247,6 @@ void mcbm_build_and_reco(UInt_t uRunId     = 28,
   run->AddTask(trdHit);
   std::cout << "-I- : Added task " << trdHit->GetName() << std::endl;
   // ------------------------------------------------------------------------
-
 
 
   // -----   Local reconstruction in TOF   ----------------------------------
