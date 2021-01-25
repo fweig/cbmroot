@@ -29,8 +29,8 @@ void mcbm_build_and_reco(UInt_t uRunId     = 831,
 
 
   // -----   In- and output file names   ------------------------------------
-  TString inFile    = Form("./data/unp_mcbm_%i.root", uRunId);
-  TString parFileIn = Form("./data/unp_mcbm_params_%i.root", uRunId);
+  TString inFile     = Form("./data/unp_mcbm_%i.root", uRunId);
+  TString parFileIn  = Form("./data/unp_mcbm_params_%i.root", uRunId);
   TString parFileOut = Form("./data/reco_mcbm_evt_win_params_%u.root", uRunId);
   TString outFile    = Form("./data/reco_mcbm_evt_win_%u.root", uRunId);
   // ------------------------------------------------------------------------
