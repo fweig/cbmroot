@@ -7,7 +7,7 @@
  * Modified By: Pascal Raisig
  * -----
  * Purpose: This container is only to be used for Trd mCbm2020 data. It contains the
- * corrections for the observed timeshifts within the 2020 data. 
+ * corrections for the observed timeshifts within the 2020 data.
  * -----
  */
 

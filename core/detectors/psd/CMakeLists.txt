@@ -5,7 +5,7 @@ set(INCLUDE_DIRECTORIES
 include_directories(${INCLUDE_DIRECTORIES})
 
 set(SYSTEM_INCLUDE_DIRECTORIES
-  ${BASE_INCLUDE_DIRECTORIES} 
+  ${BASE_INCLUDE_DIRECTORIES}
 )
 
 include_directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
@@ -20,10 +20,12 @@ link_directories(${LINK_DIRECTORIES})
 
 set(SRCS
   PronyFitter.cxx
+  CbmPsdContFact.cxx
+  CbmMcbm2018PsdPar.cxx
 )
 
 set(LINKDEF CbmPsdBaseLinkDef.h)
 Set(LIBRARY_NAME CbmPsdBase)
-Set(DEPENDENCIES)
+Set(DEPENDENCIES Base)
 
 GENERATE_LIBRARY()

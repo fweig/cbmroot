@@ -8,14 +8,8 @@
 #pragma link C++ class CbmMcbm2018Source;
 #pragma link C++ class CbmMcbm2018MsCrcCheck;
 
-#pragma link C++ class CbmMcbm2018StsPar;
-#pragma link C++ class CbmMcbm2018MuchPar;
-#pragma link C++ class CbmMcbm2018TofPar;
-#pragma link C++ class CbmMcbm2018RichPar;
 #pragma link C++ class CbmMcbm2018HodoPar;
 #pragma link C++ class CbmMcbm2018ContFact;
-#pragma link C++ class CbmMcbm2018PsdPar;
-#pragma link C++ class CbmMcbm2020TrdTshiftPar + ;
 
 #pragma link C++ class CbmMcbm2018RawConverterSdpb;
 #pragma link C++ class CbmMcbm2018RawConverterGdpb;

@@ -10,11 +10,12 @@
 /////////////////////////////////////////////////////////////
 #include "CbmTrdContFact.h"
 
-#include "CbmTrdParSetAsic.h"  // for CbmTrdParSetAsic
-#include "CbmTrdParSetDigi.h"  // for CbmTrdParSetDigi
-#include "CbmTrdParSetGain.h"  // for CbmTrdParSetGain
-#include "CbmTrdParSetGas.h"   // for CbmTrdParSetGas
-#include "CbmTrdParSetGeo.h"   // for CbmTrdParSetGeo
+#include "CbmMcbm2020TrdTshiftPar.h"  // for CbmMcbm2020TrdTshiftPar
+#include "CbmTrdParSetAsic.h"         // for CbmTrdParSetAsic
+#include "CbmTrdParSetDigi.h"         // for CbmTrdParSetDigi
+#include "CbmTrdParSetGain.h"         // for CbmTrdParSetGain
+#include "CbmTrdParSetGas.h"          // for CbmTrdParSetGas
+#include "CbmTrdParSetGeo.h"          // for CbmTrdParSetGeo
 
 #include <FairContFact.h>   // for FairContainer
 #include <FairLogger.h>     // for Logger, LOG
@@ -68,6 +69,13 @@ void CbmTrdContFact::setAllContainers() {
     "CbmTrdParSetGeo", "Trd Geometry Parameters", "TestDefaultContext");
   par->addContext("TestNonDefaultContext");
   containers->Add(par);
+
+  FairContainer* pTrd =
+    new FairContainer("CbmMcbm2020TrdTshiftPar",
+                      "TRD timeshift unpacker parameters mCbm 2020",
+                      "Default");
+  pTrd->addContext("Default");
+  containers->Add(pTrd);
 }
 
 FairParSet* CbmTrdContFact::createContainer(FairContainer* c) {
@@ -93,5 +101,10 @@ FairParSet* CbmTrdContFact::createContainer(FairContainer* c) {
   else if (strcmp(name, "CbmTrdParSetGeo") == 0)
     p = new CbmTrdParSetGeo(
       c->getConcatName().Data(), c->GetTitle(), c->getContext());
+  else if (strcmp(name, "CbmMcbm2020TrdTshiftPar") == 0) {
+    p = new CbmMcbm2020TrdTshiftPar(
+      c->getConcatName().Data(), c->GetTitle(), c->getContext());
+  }
+
   return p;
 }

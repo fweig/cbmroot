@@ -6,6 +6,7 @@
 
 
 #pragma link C++ class CbmGeoMuchPar;
+#pragma link C++ class CbmMcbm2018MuchPar + ;
 #pragma link C++ class CbmMuchContFact;
 #pragma link C++ class CbmMuchGeoScheme + ;
 #pragma link C++ class CbmMuchLayer + ;

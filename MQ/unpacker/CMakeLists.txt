@@ -3,14 +3,18 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startMQSamplerUnpackerParserver.sh.in
 set(INCLUDE_DIRECTORIES
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CBMROOT_SOURCE_DIR}/MQ/base
-    ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/parameter
+#    ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/parameter
     ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/dataformat
     ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/unpacker
     ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/commonMQ
+
     ${CBMDATA_DIR}
     ${CBMDATA_DIR}/raw
     ${CBMDATA_DIR}/tof
+
     ${CBMBASE_DIR}
+
+    ${CBMDETECTORBASE_DIR}/tof
 )
 
 Set(SYSTEM_INCLUDE_DIRECTORIES
@@ -70,6 +74,7 @@ set(DEPENDENCIES
   ${BOOST_LIBS}
   fles_ipc
   CbmFlibMcbm2018
+  CbmTofBase
   CbmBase
 #  CbmBeamtimeBase
   CbmData

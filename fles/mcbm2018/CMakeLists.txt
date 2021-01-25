@@ -28,6 +28,10 @@ Set(INCLUDE_DIRECTORIES
 
   ${CBMDETECTORBASE_DIR}/trd # required for parameter handling of the trd
   ${CBMDETECTORBASE_DIR}/psd
+  ${CBMDETECTORBASE_DIR}/sts
+  ${CBMDETECTORBASE_DIR}/tof
+  ${CBMDETECTORBASE_DIR}/much
+  ${CBMDETECTORBASE_DIR}/rich
 )
 
 Set(SYSTEM_INCLUDE_DIRECTORIES
@@ -36,8 +40,6 @@ Set(SYSTEM_INCLUDE_DIRECTORIES
   ${ROOT_INCLUDE_DIR}
   ${IPC_INCLUDE_DIRECTORY}
   ${CBMROOT_SOURCE_DIR}/external/flib_dpb/flib_dpb
-  ${CBMDATA_DIR}
-  ${CBMDATA_DIR}/tof
   ${CMAKE_SOURCE_DIR}/external/cppzmq
 )
 
@@ -61,14 +63,8 @@ Set(SRCS
    CbmMcbm2018Source.cxx
    CbmMcbm2018MsCrcCheck.cxx
 
-   parameter/CbmMcbm2018StsPar.cxx
-   parameter/CbmMcbm2018MuchPar.cxx
-   parameter/CbmMcbm2018TofPar.cxx
-   parameter/CbmMcbm2018RichPar.cxx
    parameter/CbmMcbm2018HodoPar.cxx
    parameter/CbmMcbm2018ContFact.cxx
-   parameter/CbmMcbm2018PsdPar.cxx
-   parameter/CbmMcbm2020TrdTshiftPar.cxx
 
    unpacker/CbmMcbm2018RawConverterSdpb.cxx
    unpacker/CbmMcbm2018RawConverterGdpb.cxx
@@ -143,7 +139,9 @@ EndIf()
 Set(LINKDEF CbmFlibMcbm2018LinkDef.h )
 Set(LIBRARY_NAME CbmFlibMcbm2018)
 Set(DEPENDENCIES
-    CbmFlibFlesTools CbmData CbmBase fles_ipc Eve Base CbmTrdBase CbmPsdBase
+    CbmFlibFlesTools CbmStsBase CbmTofBase
+    CbmRichBase CbmMuchBase CbmTrdBase CbmPsdBase
+    CbmData CbmBase fles_ipc Eve Base
 )
 
 GENERATE_LIBRARY()

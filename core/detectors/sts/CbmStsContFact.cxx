@@ -4,6 +4,7 @@
  **/
 #include "CbmStsContFact.h"
 
+#include "CbmMcbm2018StsPar.h"       // for CbmMcbm2018StsPar
 #include "CbmStsParSetModule.h"      // for CbmStsParSetModule
 #include "CbmStsParSetSensor.h"      // for CbmStsParSetSensor
 #include "CbmStsParSetSensorCond.h"  // for CbmStsParSetSensorCond
@@ -63,12 +64,18 @@ FairParSet* CbmStsContFact::createContainer(FairContainer* container) {
     LOG(info) << "Done";
   }
 
-
   // --- Sensor conditions
   else if (strcmp(contName, "CbmStsParSetSensorCond") == 0) {
     parSet = new CbmStsParSetSensorCond(container->getConcatName().Data(),
                                         container->GetTitle(),
                                         container->getContext());
+  }
+
+  // --- Beamtime parameters
+  else if (strcmp(contName, "CbmMcbm2018StsPar") == 0) {
+    parSet = new CbmMcbm2018StsPar(container->getConcatName().Data(),
+                                   container->GetTitle(),
+                                   container->getContext());
   }
 
   LOG(info) << GetName() << ": Create container " << contName
@@ -104,5 +111,11 @@ void CbmStsContFact::setAllContainers() {
     "CbmStsParSetSensorCond", "STS sensor conditions", "Default");
   sensorCond->addContext("Default");
   containers->Add(sensorCond);
+
+  // Beamtime parameters
+  FairContainer* beamPars = new FairContainer(
+    "CbmMcbm2018StsPar", "STS at MCBM 2018 Unpack Parameters", "Default");
+  beamPars->addContext("Default");
+  containers->Add(beamPars);
 }
 // --------------------------------------------------------------------------

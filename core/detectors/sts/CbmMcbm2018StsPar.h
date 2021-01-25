@@ -116,7 +116,7 @@ private:
     0x0014, 0x0009, 0x000D, 0x000F, 0x0008, 0x000A, 0x0002, 0x0004, 0x0006,
     0x000B, 0x0005, 0x0000, 0x0003, 0x0007, 0x0001,
   };  //! Map from eLink index to ASIC index within CROB ( 0 to kuNbFebsPerCrob * kuNbAsicPerFeb )
-      //   static constexpr UInt_t  kuCrobMapElinkFebB[ kuNbElinksPerCrob ] = {
+  //   static constexpr UInt_t  kuCrobMapElinkFebB[ kuNbElinksPerCrob ] = {
   const UInt_t
     kuCrobMapElinkFebB
       [kuNbElinksPerCrob] =

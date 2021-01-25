@@ -8,6 +8,7 @@
 
 #pragma link C++ class CbmTrdGas + ;
 #pragma link C++ class CbmTrdContFact + ;
+#pragma link C++ class CbmMcbm2020TrdTshiftPar +;
 #pragma link C++ class CbmTrdModuleAbstract + ;
 
 #pragma link C++ class CbmTrdParManager + ;

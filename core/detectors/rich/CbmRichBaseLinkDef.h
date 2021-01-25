@@ -6,5 +6,7 @@
 
 #pragma link C++ class CbmRichPmt + ;
 #pragma link C++ class CbmRichEventDisplay;
+#pragma link C++ class CbmRichContFact + ;
+#pragma link C++ class CbmMcbm2018RichPar + ;
 
 #endif

@@ -14,6 +14,7 @@
 #pragma link C++ class CbmStsParSetModule + ;
 #pragma link C++ class CbmStsParSetSensor + ;
 #pragma link C++ class CbmStsParSetSensorCond + ;
+#pragma link C++ class CbmMcbm2018StsPar + ;
 #pragma link C++ class CbmStsParSim + ;
 #pragma link C++ class CbmStsPhysics + ;
 #pragma link C++ class CbmStsSensor + ;

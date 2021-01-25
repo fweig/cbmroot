@@ -28,6 +28,8 @@ link_directories(${LINK_DIRECTORIES})
 set(SRCS
   CbmRichPmt.cxx
   CbmRichEventDisplay.cxx
+  CbmRichContFact.cxx
+  CbmMcbm2018RichPar.cxx
 )
 
 set(NO_DICT_SRCS

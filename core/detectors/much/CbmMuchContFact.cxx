@@ -3,13 +3,14 @@
  * @author  M. Ryzhinskiy <m.ryzhinskiy@gsi.de>
  * @version 0.0
  * @since   15.03.07
- * 
+ *
  * Factory for the parameter containers for MUon CHambers detector
  *
  */
 #include "CbmMuchContFact.h"
 
-#include "CbmGeoMuchPar.h"  // for CbmGeoMuchPar
+#include "CbmGeoMuchPar.h"       // for CbmGeoMuchPar
+#include "CbmMcbm2018MuchPar.h"  // for CbmMcbm2018MuchPar
 
 #include <FairContFact.h>   // for FairContainer
 #include <FairLogger.h>     // for LOG
@@ -39,13 +40,17 @@ void CbmMuchContFact::setAllContainers() {
   // 				     "Much Digitization Parameters",
   // 				     "TestDefaultContext");
   //   p1->addContext("TestNonDefaultContext");
+  //  containers->Add(p1);
 
   FairContainer* p2 = new FairContainer(
     "CbmGeoMuchPar", "Much Geometry Parameters", "TestDefaultContext");
   p2->addContext("TestNonDefaultContext");
-
-  //  containers->Add(p1);
   containers->Add(p2);
+
+  FairContainer* beamPars = new FairContainer(
+    "CbmMcbm2018MuchPar", "Much at MCBM 2018 Unpack Parameters", "Default");
+  beamPars->addContext("Default");
+  containers->Add(beamPars);
 }
 
 FairParSet* CbmMuchContFact::createContainer(FairContainer* c) {
@@ -58,7 +63,11 @@ FairParSet* CbmMuchContFact::createContainer(FairContainer* c) {
   if (strcmp(name, "CbmGeoMuchPar") == 0) {
     p = new CbmGeoMuchPar(
       c->getConcatName().Data(), c->GetTitle(), c->getContext());
+  } else if (strcmp(name, "CbmMcbm2018MuchPar") == 0) {
+    p = new CbmMcbm2018MuchPar(
+      c->getConcatName().Data(), c->GetTitle(), c->getContext());
   }
+
   return p;
 }
 

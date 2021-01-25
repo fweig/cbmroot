@@ -7,5 +7,7 @@
 #pragma link off all functions;
 
 #pragma link C++ class PsdSignalFitting::PronyFitter;
+#pragma link C++ class CbmPsdContFact + ;
+#pragma link C++ class CbmMcbm2018PsdPar + ;
 
 #endif

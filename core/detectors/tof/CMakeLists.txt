@@ -3,12 +3,13 @@ set(INCLUDE_DIRECTORIES
 
   ${CBMDATA_DIR}
   ${CBMDATA_DIR}/tof
+  ${CBMDATA_DIR}/raw
 )
 
 include_directories(${INCLUDE_DIRECTORIES})
 
 set(SYSTEM_INCLUDE_DIRECTORIES
-  ${BASE_INCLUDE_DIRECTORIES} 
+  ${BASE_INCLUDE_DIRECTORIES}
 )
 
 include_directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
@@ -23,10 +24,11 @@ link_directories(${LINK_DIRECTORIES})
 
 set(SRCS
   CbmTofCell.cxx
-  CbmTofContFact.cxx 
+  CbmTofContFact.cxx
   CbmTofCreateDigiPar.cxx
-  CbmTofDigiBdfPar.cxx 
-  CbmTofDigiPar.cxx 
+  CbmTofDigiBdfPar.cxx
+  CbmTofDigiPar.cxx
+  CbmMcbm2018TofPar.cxx
   CbmTofGeoHandler.cxx
   TTrbHeader.cxx
 )

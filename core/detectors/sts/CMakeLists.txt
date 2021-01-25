@@ -20,6 +20,7 @@ CbmStsParSetModule.cxx
 CbmStsParSetSensor.cxx
 CbmStsParSetSensorCond.cxx
 CbmStsParSim.cxx
+CbmMcbm2018StsPar.cxx
 CbmStsPhysics.cxx
 CbmStsSensor.cxx
 CbmStsSetup.cxx

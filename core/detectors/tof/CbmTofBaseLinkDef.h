@@ -11,6 +11,7 @@
 #pragma link C++ class CbmTofCreateDigiPar + ;
 #pragma link C++ class CbmTofDigiBdfPar + ;
 #pragma link C++ class CbmTofDigiPar + ;
+#pragma link C++ class CbmMcbm2018TofPar + ;
 #pragma link C++ class CbmTofGeoHandler + ;
 
 #pragma link C++ class TTrbHeader + ;

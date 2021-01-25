@@ -5,14 +5,14 @@
 Set(INCLUDE_DIRECTORIES
 ${CMAKE_CURRENT_SOURCE_DIR}
 ${CBMBASE_DIR}
-${CBMDATA_DIR} 
-${CBMDATA_DIR}/trd 
+${CBMDATA_DIR}
+${CBMDATA_DIR}/trd
 )
 
 Include_Directories( ${INCLUDE_DIRECTORIES})
 
 Set(SYSTEM_INCLUDE_DIRECTORIES
-  ${BASE_INCLUDE_DIRECTORIES} 
+  ${BASE_INCLUDE_DIRECTORIES}
   ${Boost_INCLUDE_DIR}
 )
 
@@ -23,46 +23,47 @@ ${ROOT_LIBRARY_DIR}
 ${FAIRROOT_LIBRARY_DIR}
 ${Boost_LIBRARY_DIRS}
 ${Vc_LIB_DIR}
-) 
+)
 
 link_directories( ${LINK_DIRECTORIES})
 
 set(SRCS
-CbmTrdGas.cxx 
-CbmTrdContFact.cxx 
-CbmTrdParManager.cxx 
-CbmTrdModuleAbstract.cxx 
-CbmTrdParSet.cxx 
-CbmTrdParSetAsic.cxx 
-CbmTrdParSetGas.cxx 
-CbmTrdParSetGain.cxx 
-CbmTrdParSetGeo.cxx 
-CbmTrdParSetDigi.cxx 
-CbmTrdParMod.cxx 
-CbmTrdParAsic.cxx 
-CbmTrdParSpadic.cxx 
-CbmTrdSPADIC.cxx 
-CbmTrdFASP.cxx 
-CbmTrdParFasp.cxx 
-CbmTrdParModDigi.cxx 
-CbmTrdParModGas.cxx 
-CbmTrdParModGain.cxx 
-CbmTrdParModGeo.cxx 
+CbmTrdGas.cxx
+CbmTrdContFact.cxx
+CbmTrdParManager.cxx
+CbmTrdModuleAbstract.cxx
+CbmMcbm2020TrdTshiftPar.cxx
+CbmTrdParSet.cxx
+CbmTrdParSetAsic.cxx
+CbmTrdParSetGas.cxx
+CbmTrdParSetGain.cxx
+CbmTrdParSetGeo.cxx
+CbmTrdParSetDigi.cxx
+CbmTrdParMod.cxx
+CbmTrdParAsic.cxx
+CbmTrdParSpadic.cxx
+CbmTrdSPADIC.cxx
+CbmTrdFASP.cxx
+CbmTrdParFasp.cxx
+CbmTrdParModDigi.cxx
+CbmTrdParModGas.cxx
+CbmTrdParModGain.cxx
+CbmTrdParModGeo.cxx
 #tools
 CbmTrdGeoHandler.cxx
 CbmTrdUtils.cxx
 CbmTrdHardwareSetupR.cxx
-CbmTrdRadiator.cxx 
+CbmTrdRadiator.cxx
 )
 
 IF (SSE_FOUND)
   ADD_DEFINITIONS(-DHAVE_SSE)
-  SET_SOURCE_FILES_PROPERTIES(${SRCS} PROPERTIES COMPILE_FLAGS 
+  SET_SOURCE_FILES_PROPERTIES(${SRCS} PROPERTIES COMPILE_FLAGS
   "-msse -O3")
   Message(STATUS "TRD BASE will be compiled with SSE support")
 ELSE (SSE_FOUND)
   Message(STATUS "TRD BASE will be compiled without SSE support")
-  SET_SOURCE_FILES_PROPERTIES(${SRCS} PROPERTIES COMPILE_FLAGS 
+  SET_SOURCE_FILES_PROPERTIES(${SRCS} PROPERTIES COMPILE_FLAGS
   "-O3")
 ENDIF (SSE_FOUND)
 

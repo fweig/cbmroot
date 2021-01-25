@@ -9,15 +9,16 @@ class FairParSet;
 class FairContainer;
 
 class CbmTofContFact : public FairContFact {
-private:
-  void setAllContainers();
-  CbmTofContFact(const CbmTofContFact&);
-  CbmTofContFact& operator=(const CbmTofContFact&);
 
 public:
   CbmTofContFact();
   ~CbmTofContFact() {}
   FairParSet* createContainer(FairContainer*);
+
+private:
+  void setAllContainers();
+  CbmTofContFact(const CbmTofContFact&);
+  CbmTofContFact& operator=(const CbmTofContFact&);
   ClassDef(CbmTofContFact, 0)  // Factory for all TOF parameter containers
 };
 
