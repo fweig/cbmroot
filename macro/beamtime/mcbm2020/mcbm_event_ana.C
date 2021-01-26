@@ -6,37 +6,32 @@
 //
 // --------------------------------------------------------------------------
 
-void mcbm_event_reco(Int_t runId = 831, Int_t nTimeslices = -1) {
+void mcbm_event_ana(Int_t runId = 831, Int_t nTimeslices = 1000) {
 
   // --- Logger settings ----------------------------------------------------
   TString logLevel     = "WARN";
   TString logVerbosity = "LOW";
   // ------------------------------------------------------------------------
 
-
   // -----   Environment   --------------------------------------------------
-  TString myName   = "mcbm_event_reco";  // this macro's name for screen output
+  TString myName   = "mcbm_event_ana";  // this macro's name for screen output
   TString srcDir   = gSystem->Getenv("VMCWORKDIR");  // top source directory
   TString paramDir = srcDir + "/macro/beamtime/mcbm2020/";
   TString parDir   = srcDir + "/parameters";
   // ------------------------------------------------------------------------
 
-
   // -----   In- and output file names   ------------------------------------
-  TString inFile  = Form("./data/unp_mcbm_%i.root", runId);
+  //TString inFile  = Form("./data/reco_mcbm_%i.root", runId);
+  TString inFile  = Form("./data/reco_mcbm_evt_win_%i.root", runId);
   TString parFile = Form("./data/unp_mcbm_params_%i.root", runId);
-  TString outFile = Form("./data/reco_mcbm_%i.root", runId);
-  // ------------------------------------------------------------------------
-  // --- Load the geometry setup ----
-  // This is currently only required by the TRD (parameters)
-  std::string geoSetupTag = "mcbm_beam_2020_03";
-  TString geoFile =
-    paramDir + geoSetupTag.data() + ".geo.root";  // Created in sim. run
-  CbmSetup* geoSetup = CbmSetup::Instance();
-  geoSetup->LoadSetup(geoSetupTag.data());
-  TList* parFileList = new TList();
+  TString geoFile = paramDir + "mcbm2020_reco.geo.root";  // Created in sim. run
+  TString outFile = Form("./data/ana_mcbm_%i.root", runId);
   // ------------------------------------------------------------------------
 
+  // -----   Parameter files as input to the runtime database   -------------
+  std::cout << std::endl;
+  std::cout << "-I- " << myName << ": Defining parameter files " << std::endl;
+  TList* parFileList = new TList();
 
   // -----   Timer   --------------------------------------------------------
   TStopwatch timer;
@@ -55,7 +50,7 @@ void mcbm_event_reco(Int_t runId = 831, Int_t nTimeslices = -1) {
 
   // Define output file for FairMonitor histograms
   TString monitorFile {outFile};
-  monitorFile.ReplaceAll("rec", "rec.monitor");
+  monitorFile.ReplaceAll("ana", "ana.monitor");
   FairMonitor::GetMonitor()->EnableMonitor(kTRUE, monitorFile);
   // ------------------------------------------------------------------------
 
@@ -72,12 +67,10 @@ void mcbm_event_reco(Int_t runId = 831, Int_t nTimeslices = -1) {
   eventBuilder->SetEventBuilderAlgo(EventBuilderAlgo::FixedTimeWindow);
   eventBuilder->SetFixedTimeWindow(200.);
   eventBuilder->SetTriggerMinNumberT0(1);
-  // eventBuilder->SetTriggerMinNumberTrd(1);
   //eventBuilder->SetTriggerMinNumberSts(0);
   eventBuilder->SetTriggerMinNumberMuch(1);
   eventBuilder->SetTriggerMinNumberTof(10);
-  // eventBuilder->SetFillHistos(kTRUE);
-  run->AddTask(eventBuilder);
+  //  run->AddTask(eventBuilder);
   // ------------------------------------------------------------------------
 
 
@@ -90,7 +83,7 @@ void mcbm_event_reco(Int_t runId = 831, Int_t nTimeslices = -1) {
   CbmMuchFindHitsGem* muchFindHits =
     new CbmMuchFindHitsGem(muchDigiFile.Data(), flag);
   muchFindHits->SetBeamTimeDigi(kTRUE);
-  run->AddTask(muchFindHits);
+  //  run->AddTask(muchFindHits);
   std::cout << "-I- : Added task " << muchFindHits->GetName() << std::endl;
   //-------------------------------------------------------------------------------
 
@@ -131,46 +124,12 @@ void mcbm_event_reco(Int_t runId = 831, Int_t nTimeslices = -1) {
   auto sensorCond = new CbmStsParSensorCond(70., 140., 268., 17.5, 1.);
   recoSts->UseSensorCond(sensorCond);
 
-  run->AddTask(recoSts);
-  std::cout << "-I- : Added task " << recoSts->GetName() << std::endl;
+  //  run->AddTask(recoSts);
+  //  std::cout << "-I- : Added task " << recoSts->GetName() << std::endl;
   // ------------------------------------------------------------------------
 
 
   // -----   Local reconstruction in TRD   ----------------------------------
-  // Load parameters <- they are required by the hit producer.
-  // For now, it is enough to load the default ascii parameters
-  // if no root file is existing from the unpacking process.
-  TString geoTagTrd = "";
-  bool isActiveTrd =
-    (geoSetup->GetGeoTag(ECbmModuleId::kTrd, geoTagTrd)) ? true : false;
-  if (!isActiveTrd) {
-    LOG(warning) << Form(
-      "TRD - parameter loading - Trd not found in CbmSetup(%s) -> parameters "
-      "can not be loaded correctly!",
-      geoSetupTag.data());
-  } else {
-    TString paramFilesTrd(
-      Form("%s/parameters/trd/trd_%s", srcDir.Data(), geoTagTrd.Data()));
-    std::vector<std::string> paramFilesVecTrd;
-    CbmTrdParManager::GetParFileExtensions(&paramFilesVecTrd);
-    for (auto parIt : paramFilesVecTrd) {
-      parFileList->Add(
-        new TObjString(Form("%s.%s.par", paramFilesTrd.Data(), parIt.data())));
-    }
-  }
-  // -- end trd parameters
-  // -- beginn trd reco
-  Double_t triggerThreshold       = 0.5e-6;  // Default
-  CbmTrdClusterFinder* trdCluster = new CbmTrdClusterFinder();
-  trdCluster->SetNeighbourEnable(true, false);
-  trdCluster->SetMinimumChargeTH(triggerThreshold);
-  trdCluster->SetRowMerger(true);
-  run->AddTask(trdCluster);
-  std::cout << "-I- : Added task " << trdCluster->GetName() << std::endl;
-
-  CbmTrdHitProducer* trdHit = new CbmTrdHitProducer();
-  run->AddTask(trdHit);
-  std::cout << "-I- : Added task " << trdHit->GetName() << std::endl;
   // ------------------------------------------------------------------------
 
 
@@ -207,8 +166,8 @@ void mcbm_event_reco(Int_t runId = 831, Int_t nTimeslices = -1) {
   tofCluster->PosYMaxScal(0.75);              //in % of 2*length
   tofCluster->SetChannelDeadtime(dDeadtime);  // artificial deadtime in ns
 
-  run->AddTask(tofCluster);
-  std::cout << "-I- Added task " << tofCluster->GetName() << std::endl;
+  //  run->AddTask(tofCluster);
+  //  std::cout << "-I- Added task " << tofCluster->GetName() << std::endl;
 
   // -----   Track reconstruction   ------------------------------------------
   Int_t iTrackMode = 2;
@@ -375,7 +334,7 @@ void mcbm_event_reco(Int_t runId = 831, Int_t nTimeslices = -1) {
       tofFindTracks->SetNStations(iNStations);
       tofFindTracks->SetNReqStations(iNReqStations);
       //tofFindTracks->PrintSetup();
-      run->AddTask(tofFindTracks);
+      //      run->AddTask(tofFindTracks);
     } break;
     case 1: {
     }
@@ -390,21 +349,41 @@ void mcbm_event_reco(Int_t runId = 831, Int_t nTimeslices = -1) {
   TString sRichMapFile =
     srcDir + "/macro/rich/mcbm/beamtime/mRICH_Mapping_vert_20190318_elView.geo";
   hitProdRich->SetMappingFile(sRichMapFile.Data());
-  run->AddTask(hitProdRich);
+  //  run->AddTask(hitProdRich);
   // ------------------------------------------------------------------------
 
   // -----   Local reconstruction in RICh -> Finding of Rings ---------------
   CbmRichReconstruction* richReco = new CbmRichReconstruction();
   richReco->UseMCbmSetup();
-  run->AddTask(richReco);
+  //  run->AddTask(richReco);
   // ------------------------------------------------------------------------
 
 
   // -----  Psd hit producer   ----------------------------------------------
   CbmPsdMCbmHitProducer* hitProdPsd = new CbmPsdMCbmHitProducer();
-  run->AddTask(hitProdPsd);
+  //  run->AddTask(hitProdPsd);
   // ------------------------------------------------------------------------
 
+  // --- Analysis by TOF track extension
+  CbmTofExtendTracks* tofExtendTracks = new CbmTofExtendTracks("TofExtAna");
+  tofExtendTracks->SetCalParFileName("TofExtTracksPar.root");
+  tofExtendTracks->SetCalOutFileName("TofExtTracksOut.root");
+  tofExtendTracks->SetStationUT(1);
+  //iLev: 0 update alignment with deviation from original tracklet
+  //iLev: 1 update alignment with deviation from extended and refitted tracklet
+  tofExtendTracks->SetCorSrc(0);  // [iLev]0 - all hits, [ilev]1 - pulls,
+  tofExtendTracks->SetCorMode(
+    210);  // 2 - Y coordinate, 1 - X coordinat, 0 Time offset
+  tofExtendTracks->SetTrkHitsMin(4);
+  tofExtendTracks->SetAddStations(1);
+  tofExtendTracks->SetReqStations(509);
+  tofExtendTracks->SetCutDX(10.);
+  tofExtendTracks->SetCutDY(10.);
+  tofExtendTracks->SetCutDT(50.);
+  tofExtendTracks->SetChi2Max(1000.);
+  tofExtendTracks->SetCutStationMaxHitMul(100.);
+  tofExtendTracks->SetNTrkTofMax(50);
+  run->AddTask(tofExtendTracks);
 
   // -----  Parameter database   --------------------------------------------
   std::cout << std::endl << std::endl;
@@ -415,8 +394,7 @@ void mcbm_event_reco(Int_t runId = 831, Int_t nTimeslices = -1) {
   parIo1->open(parFile.Data(), "UPDATE");
   parIo2->open(parFileList, "in");
   rtdb->setFirstInput(parIo1);
-  parIo2->open(parFileList, "in");
-  rtdb->setSecondInput(parIo2); 
+  rtdb->setSecondInput(parIo2);
   // ------------------------------------------------------------------------
 
 
