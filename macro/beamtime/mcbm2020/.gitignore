@@ -1,0 +1,3 @@
+all_*.par
+*.root
+!mcbm_beam_2020_03.geo.root
