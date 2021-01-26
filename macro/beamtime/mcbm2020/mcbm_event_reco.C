@@ -416,7 +416,7 @@ void mcbm_event_reco(Int_t runId = 831, Int_t nTimeslices = -1) {
   parIo2->open(parFileList, "in");
   rtdb->setFirstInput(parIo1);
   parIo2->open(parFileList, "in");
-  rtdb->setSecondInput(parIo2); 
+  rtdb->setSecondInput(parIo2);
   // ------------------------------------------------------------------------
 
 
