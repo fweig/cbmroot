@@ -1,8 +1,12 @@
-void build_event_win_kronos(UInt_t uRunIdx = 0,
-                            Int_t nEvents  = 0,
-                            TString outDir = "data/") {
+#include "build_event_win.C"
+
+Bool_t build_event_win_kronos(UInt_t uRunIdx = 28,
+                              Int_t nTimeslices = 0,
+                              TString sOutDir = "./data",
+                              TString sInpDir = "/lustre/cbm/users/ploizeau/mcbm2020/"
+                                                "unp_evt_data_7f229b3f_20201103") {
   UInt_t uRunId    = 0;
-  TString fileName = "data/unp_mcbm_0.root";
+
   if (99999 != uRunIdx) {
     std::vector<UInt_t> vuListRunId = {
       692, 698, 702, 704, 705, 706, 707,            //  7 =>  0 -  6
@@ -13,183 +17,23 @@ void build_event_win_kronos(UInt_t uRunIdx = 0,
       841, 846, 849,                                //  3 => 30 - 32
       850, 851, 852, 854, 855, 856, 857, 858, 859,  //  9 => 33 - 41
       860, 861, 862, 863, 864, 865, 866             //  7 => 42 - 48
-                                                    /*
- /// With runs < 1 min due to missmatch!
-             811, 812, 816, 817, 818, 819,                     //  6 => 14 - 19
-             820, 821, 822, 824, 826, 827, 828, 829,           //  8 => 20 - 27
-             830, 831, 836, 839,                               //  4 => 28 - 31
-             840, 841, 842, 844, 845, 846, 848, 849,           //  8 => 32 - 39
-             850, 851, 852, 854, 855, 856, 857, 858, 859,      //  9 => 40 - 48
-             860, 861, 862, 863, 864, 865, 866                 //  7 => 49 - 55
-*/
+
+      /*
+      /// With runs < 1 min due to missmatch!
+      811, 812, 816, 817, 818, 819,                  //  6 => 14 - 19
+      820, 821, 822, 824, 826, 827, 828, 829,        //  8 => 20 - 27
+      830, 831, 836, 839,                            //  4 => 28 - 31
+      840, 841, 842, 844, 845, 846, 848, 849,        //  8 => 32 - 39
+      850, 851, 852, 854, 855, 856, 857, 858, 859,   //  9 => 40 - 48
+      860, 861, 862, 863, 864, 865, 866              //  7 => 49 - 55
+      */
     };
     if (vuListRunId.size() <= uRunIdx) return kFALSE;
+
     uRunId = vuListRunId[uRunIdx];
-    //fileName = Form("data/unp_mcbm_%03u.root", uRunId);
-    fileName = Form("/lustre/cbm/users/ploizeau/mcbm2020/"
-                    "unp_evt_data_7f229b3f_20201103/unp_mcbm_%i.root",
-                    uRunId);
   }  // if( 99999 != uRunIdx )
 
   if (uRunId < 692 && 0 != uRunId) return kFALSE;
 
-
-  // ========================================================================
-  //          Adjust this part according to your requirements
-
-  // Verbosity level (0=quiet, 1=event level, 2=track level, 3=debug)
-  //  Int_t iVerbose = 1;
-
-  // --- Set log output levels
-  FairLogger::GetLogger();
-  gLogger->SetLogScreenLevel("INFO");
-  //  gLogger->SetLogScreenLevel("DEBUG");
-  gLogger->SetLogVerbosityLevel("MEDIUM");
-
-  // MC file
-
-  TString srcDir = gSystem->Getenv("VMCWORKDIR");
-
-  // -----   Timer   --------------------------------------------------------
-  TStopwatch timer;
-  timer.Start();
-  // ------------------------------------------------------------------------
-
-  // -----  Analysis run   --------------------------------------------------
-  //  FairRunOnline *fRun= new FairRunOnline();
-  FairRunAna* fRun = new FairRunAna();
-  fRun->SetEventHeaderPersistence(kFALSE);
-
-  FairFileSource* inputSource = new FairFileSource(fileName);
-  fRun->SetSource(inputSource);
-
-  TString runId                = TString::Format("%03u", uRunId);
-  TString outFile              = outDir + "/mcbm_events_win_" + runId + ".root";
-  FairRootFileSink* outputSink = new FairRootFileSink(outFile);
-  fRun->SetSink(outputSink);
-
-  // Define output file for FairMonitor histograms
-  //  TString monitorFile{outFile};
-  //  monitorFile.ReplaceAll("qa","qa.monitor");
-  FairMonitor::GetMonitor()->EnableMonitor(kTRUE);
-  //  FairMonitor::GetMonitor()->EnableMonitor(kFALSE);
-  // ------------------------------------------------------------------------
-
-  //  CbmMcbm2019TimeWinEventBuilder* eventBuilder = new CbmMcbm2019TimeWinEventBuilder();
-  CbmMcbm2019TimeWinEventBuilderTask* eventBuilder =
-    new CbmMcbm2019TimeWinEventBuilderTask();
-
-  eventBuilder->SetFillHistos(kTRUE);
-
-  eventBuilder->SetEventOverlapMode(EOverlapMode::NoOverlap);
-  //  eventBuilder->SetEventOverlapMode(EOverlapMode::MergeOverlap);
-  //  eventBuilder->SetEventOverlapMode(EOverlapMode::AllowOverlap);
-
-  /*
- * Available Pre-defined detectors:
- * kEventBuilderDetSts
- * kEventBuilderDetMuch
- * kEventBuilderDetTrd
- * kEventBuilderDetTof
- * kEventBuilderDetRich
- * kEventBuilderDetPsd
- * kEventBuilderDetT0
- */
-
-  /// Change the selection window limits for T0 as ref
-  eventBuilder->SetTriggerWindow(ECbmModuleId::kSts, -50, 100);
-  eventBuilder->SetTriggerWindow(ECbmModuleId::kMuch, -150, 50);
-  eventBuilder->SetTriggerWindow(ECbmModuleId::kTrd, -50, 250);
-  eventBuilder->SetTriggerWindow(ECbmModuleId::kTof, -150, 10);
-  eventBuilder->SetTriggerWindow(ECbmModuleId::kRich, -50, 50);
-  eventBuilder->SetTriggerWindow(ECbmModuleId::kPsd, -50, 50);
-  /// To get T0 Digis (seed + close digis) in the event
-  eventBuilder->SetTriggerWindow(ECbmModuleId::kT0, -1, 10);
-
-  /*
-  /// Use TOF as reference
-  eventBuilder->SetReferenceDetector( kEventBuilderDetTof );
-  eventBuilder->AddDetector(kEventBuilderDetT0);
-
-  /// Change the selection window limits for TOF as ref
-  /// => Should always be after changes of detector lists!
-  eventBuilder->SetTriggerWindow(ECbmModuleId::kT0, -150, 0);
-  eventBuilder->SetTriggerWindow(ECbmModuleId::kSts, -50, 100);
-  eventBuilder->SetTriggerWindow(ECbmModuleId::kMuch, -50, 200);
-  eventBuilder->SetTriggerWindow(ECbmModuleId::kTrd, -50, 300);
-  eventBuilder->SetTriggerWindow(ECbmModuleId::kTof, 0, 60);
-  eventBuilder->SetTriggerWindow(ECbmModuleId::kRich, -100, 150);
-  eventBuilder->SetTriggerWindow(ECbmModuleId::kPsd, -200, 50);
-*/
-
-  /// Change the trigger requirements
-  /// => Should always be after changes of detector lists!
-  /// --- Minimum
-  eventBuilder->SetTriggerMinNumber(ECbmModuleId::kT0, 1);
-  eventBuilder->SetTriggerMinNumber(ECbmModuleId::kSts, 0);
-  eventBuilder->SetTriggerMinNumber(ECbmModuleId::kMuch, 0);
-  eventBuilder->SetTriggerMinNumber(ECbmModuleId::kTrd, 0);
-  eventBuilder->SetTriggerMinNumber(ECbmModuleId::kTof, 10);
-  eventBuilder->SetTriggerMinNumber(ECbmModuleId::kRich, 0);
-  eventBuilder->SetTriggerMinNumber(ECbmModuleId::kPsd, 0);
-  /// --- Maximum  (-1 to disable cut)
-  eventBuilder->SetTriggerMaxNumber(ECbmModuleId::kT0, -1);
-  eventBuilder->SetTriggerMaxNumber(ECbmModuleId::kSts, -1);
-  eventBuilder->SetTriggerMaxNumber(ECbmModuleId::kMuch, -1);
-  eventBuilder->SetTriggerMaxNumber(ECbmModuleId::kTrd, -1);
-  eventBuilder->SetTriggerMaxNumber(ECbmModuleId::kTof, -1);
-  eventBuilder->SetTriggerMaxNumber(ECbmModuleId::kRich, -1);
-  eventBuilder->SetTriggerMaxNumber(ECbmModuleId::kPsd, -1);
-
-
-  if (0 < uRunId)
-    eventBuilder->SetOutFilename(
-      Form("%sHistosEvtWin_%03u.root", outDir.Data(), uRunId));
-
-  fRun->AddTask(eventBuilder);
-
-  // -----   Intialise and run   --------------------------------------------
-  fRun->Init();
-
-  //  rtdb->setOutput(parIo1);
-  //  rtdb->saveOutput();
-  //  rtdb->print();
-
-  cout << "Starting run" << endl;
-  if (0 == nEvents) {
-    fRun->Run(0, 0);  // run until end of input file
-  } else {
-    fRun->Run(0, nEvents);  // process  N Events
-  }
-  // ------------------------------------------------------------------------
-
-
-  // -----   Finish   -------------------------------------------------------
-  timer.Stop();
-  Double_t rtime = timer.RealTime();
-  Double_t ctime = timer.CpuTime();
-  cout << endl << endl;
-  cout << "Macro finished succesfully." << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << endl;
-  cout << endl;
-  // ------------------------------------------------------------------------
-
-  // Extract the maximal used memory an add is as Dart measurement
-  // This line is filtered by CTest and the value send to CDash
-  FairSystemInfo sysInfo;
-  Float_t maxMemory = sysInfo.GetMaxMemory();
-  cout << "<DartMeasurement name=\"MaxMemory\" type=\"numeric/double\">";
-  cout << maxMemory;
-  cout << "</DartMeasurement>" << endl;
-
-  Float_t cpuUsage = ctime / rtime;
-  cout << "<DartMeasurement name=\"CpuLoad\" type=\"numeric/double\">";
-  cout << cpuUsage;
-  cout << "</DartMeasurement>" << endl;
-
-  FairMonitor* tempMon = FairMonitor::GetMonitor();
-  tempMon->Print();
-
-  cout << " Test passed" << endl;
-  cout << " All ok " << endl;
+  return build_event_win(uRunId, nTimeslices, sOutDir, sInpDir);
 }

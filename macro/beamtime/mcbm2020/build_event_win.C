@@ -1,10 +1,24 @@
-void build_event_win(UInt_t uRunId  = 0,
-                     Int_t nEvents  = 0,
-                     TString outDir = "data/") {
-  TString fileName = Form("data/unp_mcbm_%03u.root", uRunId);
+Bool_t build_event_win(UInt_t uRunId     = 0,
+                       Int_t nTimeslices = 0,
+                       TString sOutDir   = "./data",
+                       TString sInpDir   = "./data") {
+
+  // -----   In- and output file names   ------------------------------------
+  TString fileName = Form("%s/unp_mcbm_%03u.root", sInpDir.Data(), uRunId);
+  TString runId    = TString::Format("%03u", uRunId);
+  TString outFile  = sOutDir + "/mcbm_events_win_" + runId + ".root";
+  // ------------------------------------------------------------------------
 
   if (uRunId < 692) return kFALSE;
 
+  /*
+  std::cout << sOutDir << std::endl << sInpDir << std::endl;
+  std::cout << fileName << std::endl
+            << outFile << std::endl;
+  std::cout << uRunId << " " << nTimeslices << std::endl;
+
+  return kTRUE;
+  */
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -35,8 +49,6 @@ void build_event_win(UInt_t uRunId  = 0,
   FairFileSource* inputSource = new FairFileSource(fileName);
   fRun->SetSource(inputSource);
 
-  TString runId                = TString::Format("%03u", uRunId);
-  TString outFile              = outDir + "/mcbm_events_win_" + runId + ".root";
   FairRootFileSink* outputSink = new FairRootFileSink(outFile);
   fRun->SetSink(outputSink);
 
@@ -72,7 +84,7 @@ void build_event_win(UInt_t uRunId  = 0,
   eventBuilder->SetTriggerWindow(ECbmModuleId::kSts, -50, 100);
   eventBuilder->SetTriggerWindow(ECbmModuleId::kMuch, -150, 50);
   eventBuilder->SetTriggerWindow(ECbmModuleId::kTrd, -50, 250);
-  eventBuilder->SetTriggerWindow(ECbmModuleId::kTof, -150, 10);
+  eventBuilder->SetTriggerWindow(ECbmModuleId::kTof, -50, 50);
   eventBuilder->SetTriggerWindow(ECbmModuleId::kRich, -50, 50);
   eventBuilder->SetTriggerWindow(ECbmModuleId::kPsd, -50, 50);
   /// To get T0 Digis (seed + close digis) in the event
@@ -116,7 +128,7 @@ void build_event_win(UInt_t uRunId  = 0,
 
   if (0 < uRunId)
     eventBuilder->SetOutFilename(
-      Form("%sHistosEvtWin_%03u.root", outDir.Data(), uRunId));
+      Form("%s/HistosEvtWin_%03u.root", sOutDir.Data(), uRunId));
 
   fRun->AddTask(eventBuilder);
 
@@ -128,10 +140,10 @@ void build_event_win(UInt_t uRunId  = 0,
   //  rtdb->print();
 
   cout << "Starting run" << endl;
-  if (0 == nEvents) {
+  if (0 == nTimeslices) {
     fRun->Run(0, 0);  // run until end of input file
   } else {
-    fRun->Run(0, nEvents);  // process  N Events
+    fRun->Run(0, nTimeslices);  // process  N Timeslices
   }
   // ------------------------------------------------------------------------
 
@@ -164,4 +176,6 @@ void build_event_win(UInt_t uRunId  = 0,
 
   cout << " Test passed" << endl;
   cout << " All ok " << endl;
+
+  return kTRUE;
 }

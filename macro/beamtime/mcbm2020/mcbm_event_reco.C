@@ -6,10 +6,13 @@
 //
 // --------------------------------------------------------------------------
 
-void mcbm_event_reco(Int_t runId = 831, Int_t nTimeslices = -1) {
+Bool_t mcbm_event_reco(UInt_t uRunId     = 831,
+                       Int_t nTimeslices = 0,
+                       TString sInpDir   = "./data",
+                       TString sOutDir   = "./data") {
 
   // --- Logger settings ----------------------------------------------------
-  TString logLevel     = "WARN";
+  TString logLevel     = "INFO";
   TString logVerbosity = "LOW";
   // ------------------------------------------------------------------------
 
@@ -23,11 +26,23 @@ void mcbm_event_reco(Int_t runId = 831, Int_t nTimeslices = -1) {
 
 
   // -----   In- and output file names   ------------------------------------
-  TString inFile     = Form("./data/unp_mcbm_%i.root", runId);
-  TString parFileIn  = Form("./data/unp_mcbm_params_%i.root", runId);
-  TString parFileOut = Form("./data/reco_mcbm_event_params_%i.root", runId);
-  TString outFile    = Form("./data/reco_mcbm_event_%i.root", runId);
+  TString inFile     = sInpDir + Form("/unp_mcbm_%03u.root", uRunId);
+  TString parFileIn  = sInpDir + Form("/unp_mcbm_params_%03u.root", uRunId);
+  TString parFileOut = sOutDir + Form("/reco_mcbm_event_params_%03u.root",
+                                      uRunId);
+  TString outFile    = sOutDir + Form("/reco_mcbm_event_%03u.root", uRunId);
   // ------------------------------------------------------------------------
+
+/*
+  std::cout << sInpDir << std::endl << sOutDir << std::endl;
+  std::cout << inFile << std::endl
+            << parFileIn << std::endl
+            << parFileOut << std::endl
+            << outFile << std::endl;
+  std::cout << uRunId << " " << nTimeslices << std::endl;
+
+  return kTRUE;
+*/
 
   // --- Load the geometry setup ----
   // This is currently only required by the TRD (parameters)
@@ -477,4 +492,6 @@ void mcbm_event_reco(Int_t runId = 831, Int_t nTimeslices = -1) {
   /// --- Screen output for automatic tests
   std::cout << " Test passed" << std::endl;
   std::cout << " All ok " << std::endl;
+
+  return kTRUE;
 }

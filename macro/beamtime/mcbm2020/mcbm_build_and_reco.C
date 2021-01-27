@@ -7,9 +7,10 @@
 // --------------------------------------------------------------------------
 
 
-void mcbm_build_and_reco(UInt_t uRunId     = 831,
-                         Int_t nTimeslices = 300,
-                         TString outDir    = "data/") {
+Bool_t mcbm_build_and_reco(UInt_t uRunId     = 831,
+                           Int_t nTimeslices = 0,
+                           TString sInpDir   = "./data",
+                           TString sOutDir   = "./data") {
 
 
   // ========================================================================
@@ -25,15 +26,28 @@ void mcbm_build_and_reco(UInt_t uRunId     = 831,
   TString myName   = "mcbm_reco";  // this macro's name for screen output
   TString srcDir   = gSystem->Getenv("VMCWORKDIR");  // top source directory
   TString paramDir = srcDir + "/macro/beamtime/mcbm2020/";
+  TString parDir   = srcDir + "/parameters";
   //    ------------------------------------------------------------------------
 
 
   // -----   In- and output file names   ------------------------------------
-  TString inFile     = Form("./data/unp_mcbm_%i.root", uRunId);
-  TString parFileIn  = Form("./data/unp_mcbm_params_%i.root", uRunId);
-  TString parFileOut = Form("./data/reco_mcbm_evt_win_params_%u.root", uRunId);
-  TString outFile    = Form("./data/reco_mcbm_evt_win_%u.root", uRunId);
+  TString inFile     = sInpDir + Form("/unp_mcbm_%03u.root", uRunId);
+  TString parFileIn  = sInpDir + Form("/unp_mcbm_params_%03u.root", uRunId);
+  TString parFileOut = sOutDir + Form("/reco_mcbm_evt_win_params_%03u.root",
+                                      uRunId);
+  TString outFile    = sOutDir + Form("/reco_mcbm_evt_win_%03u.root", uRunId);
   // ------------------------------------------------------------------------
+
+/*
+  std::cout << sInpDir << std::endl << sOutDir << std::endl;
+  std::cout << inFile << std::endl
+            << parFileIn << std::endl
+            << parFileOut << std::endl
+            << outFile << std::endl;
+  std::cout << uRunId << " " << nTimeslices << std::endl;
+
+  return kTRUE;
+*/
 
   // --- Load the geometry setup ----
   // This is currently only required by the TRD (parameters)
@@ -96,8 +110,8 @@ void mcbm_build_and_reco(UInt_t uRunId     = 831,
  * kEventBuilderDetT0
  */
   /// Use T0 as reference
-  eventBuilder->SetReferenceDetector(kEventBuilderDetT0);
-  eventBuilder->AddDetector(kEventBuilderDetTof);
+  /// The default (hardcoded) settings are T0 as reference detector and
+  /// STS, MUCH, TRD, TOF, RICH and PSD as selected detectors
 
   /// Change the selection window limits for T0 as ref
   eventBuilder->SetTriggerWindow(ECbmModuleId::kSts, -50, 100);
@@ -147,7 +161,7 @@ void mcbm_build_and_reco(UInt_t uRunId     = 831,
 
   if (0 < uRunId)
     eventBuilder->SetOutFilename(
-      Form("%sHistosEvtWin_%03u.root", outDir.Data(), uRunId));
+      Form("%sHistosEvtWin_%03u.root", sOutDir.Data(), uRunId));
 
   run->AddTask(eventBuilder);
   // ------------------------------------------------------------------------
@@ -198,8 +212,6 @@ void mcbm_build_and_reco(UInt_t uRunId     = 831,
 
   // -----   Local reconstruction in MUCH   ---------------------------------
   Int_t flag = 1;
-  TString parDir =
-    TString(gSystem->Getenv("VMCWORKDIR")) + TString("/parameters");
   TString muchDigiFile(
     parDir + "/much/much_v19c_mcbm_digi_sector.root");  // MUCH digi file
   CbmMuchFindHitsGem* muchFindHits =
@@ -246,6 +258,7 @@ void mcbm_build_and_reco(UInt_t uRunId     = 831,
   run->AddTask(trdHit);
   std::cout << "-I- : Added task " << trdHit->GetName() << std::endl;
   // ------------------------------------------------------------------------
+
 
   // -----   Local reconstruction in TOF   ----------------------------------
   // ------------------------------------------------------------------------
@@ -552,4 +565,6 @@ void mcbm_build_and_reco(UInt_t uRunId     = 831,
   /// --- Screen output for automatic tests
   std::cout << " Test passed" << std::endl;
   std::cout << " All ok " << std::endl;
+
+  return kTRUE;
 }
