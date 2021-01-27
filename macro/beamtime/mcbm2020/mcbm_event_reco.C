@@ -23,10 +23,12 @@ void mcbm_event_reco(Int_t runId = 831, Int_t nTimeslices = -1) {
 
 
   // -----   In- and output file names   ------------------------------------
-  TString inFile  = Form("./data/unp_mcbm_%i.root", runId);
-  TString parFile = Form("./data/unp_mcbm_params_%i.root", runId);
-  TString outFile = Form("./data/reco_mcbm_%i.root", runId);
+  TString inFile     = Form("./data/unp_mcbm_%i.root", runId);
+  TString parFileIn  = Form("./data/unp_mcbm_params_%i.root", runId);
+  TString parFileOut = Form("./data/reco_mcbm_event_params_%i.root", runId);
+  TString outFile    = Form("./data/reco_mcbm_event_%i.root", runId);
   // ------------------------------------------------------------------------
+
   // --- Load the geometry setup ----
   // This is currently only required by the TRD (parameters)
   std::string geoSetupTag = "mcbm_beam_2020_03";
@@ -36,7 +38,6 @@ void mcbm_event_reco(Int_t runId = 831, Int_t nTimeslices = -1) {
   geoSetup->LoadSetup(geoSetupTag.data());
   TList* parFileList = new TList();
   // ------------------------------------------------------------------------
-
 
   // -----   Timer   --------------------------------------------------------
   TStopwatch timer;
@@ -55,7 +56,7 @@ void mcbm_event_reco(Int_t runId = 831, Int_t nTimeslices = -1) {
 
   // Define output file for FairMonitor histograms
   TString monitorFile {outFile};
-  monitorFile.ReplaceAll("rec", "rec.monitor");
+  monitorFile.ReplaceAll("reco", "reco.monitor");
   FairMonitor::GetMonitor()->EnableMonitor(kTRUE, monitorFile);
   // ------------------------------------------------------------------------
 
@@ -72,9 +73,9 @@ void mcbm_event_reco(Int_t runId = 831, Int_t nTimeslices = -1) {
   eventBuilder->SetEventBuilderAlgo(EventBuilderAlgo::FixedTimeWindow);
   eventBuilder->SetFixedTimeWindow(200.);
   eventBuilder->SetTriggerMinNumberT0(1);
-  // eventBuilder->SetTriggerMinNumberTrd(1);
   //eventBuilder->SetTriggerMinNumberSts(0);
   eventBuilder->SetTriggerMinNumberMuch(1);
+  // eventBuilder->SetTriggerMinNumberTrd(1);
   eventBuilder->SetTriggerMinNumberTof(10);
   // eventBuilder->SetFillHistos(kTRUE);
   run->AddTask(eventBuilder);
@@ -412,11 +413,12 @@ void mcbm_event_reco(Int_t runId = 831, Int_t nTimeslices = -1) {
   FairRuntimeDb* rtdb        = run->GetRuntimeDb();
   FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
-  parIo1->open(parFile.Data(), "UPDATE");
-  parIo2->open(parFileList, "in");
+  FairParRootFileIo* parIo3  = new FairParRootFileIo();
+  parIo1->open(parFileIn.Data(), "READ");
   rtdb->setFirstInput(parIo1);
   parIo2->open(parFileList, "in");
   rtdb->setSecondInput(parIo2);
+  parIo3->open(parFileOut.Data(), "RECREATE");
   // ------------------------------------------------------------------------
 
 
@@ -424,7 +426,7 @@ void mcbm_event_reco(Int_t runId = 831, Int_t nTimeslices = -1) {
   std::cout << std::endl;
   std::cout << "-I- " << myName << ": Initialise run" << std::endl;
   run->Init();
-  rtdb->setOutput(parIo1);
+  rtdb->setOutput(parIo3);
   rtdb->saveOutput();
   rtdb->print();
   // ------------------------------------------------------------------------
@@ -445,7 +447,7 @@ void mcbm_event_reco(Int_t runId = 831, Int_t nTimeslices = -1) {
   std::cout << std::endl << std::endl;
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output file is " << outFile << std::endl;
-  std::cout << "Parameter file is " << parFile << std::endl;
+  std::cout << "Parameter file is " << parFileOut << std::endl;
   std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
             << std::endl;
   std::cout << std::endl;

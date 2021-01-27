@@ -97,7 +97,7 @@ void mcbm_build_and_reco_kronos(UInt_t uRunIdx    = 28,
 
   // Define output file for FairMonitor histograms
   TString monitorFile {outFile};
-  monitorFile.ReplaceAll("rec", "rec.monitor");
+  monitorFile.ReplaceAll("reco", "reco.monitor");
   FairMonitor::GetMonitor()->EnableMonitor(kTRUE, monitorFile);
   // ------------------------------------------------------------------------
 
@@ -132,7 +132,7 @@ void mcbm_build_and_reco_kronos(UInt_t uRunIdx    = 28,
   /// Change the selection window limits for T0 as ref
   eventBuilder->SetTriggerWindow(ECbmModuleId::kSts, -50, 100);
   eventBuilder->SetTriggerWindow(ECbmModuleId::kMuch, -150, 50);
-  eventBuilder->SetTriggerWindow(ECbmModuleId::kTrd, -250, 100);
+  eventBuilder->SetTriggerWindow(ECbmModuleId::kTrd, -50, 250);
   eventBuilder->SetTriggerWindow(ECbmModuleId::kTof, -150, 10);
   eventBuilder->SetTriggerWindow(ECbmModuleId::kRich, -50, 50);
   eventBuilder->SetTriggerWindow(ECbmModuleId::kPsd, -50, 50);
@@ -142,7 +142,7 @@ void mcbm_build_and_reco_kronos(UInt_t uRunIdx    = 28,
   /*
   /// Use TOF as reference
   eventBuilder->SetReferenceDetector( kEventBuilderDetTof );
-  eventBuilder->AddDetector( kEventBuilderDetT0 );
+  eventBuilder->AddDetector(kEventBuilderDetT0);
 
   /// Change the selection window limits for TOF as ref
   /// => Should always be after changes of detector lists!
@@ -323,7 +323,7 @@ void mcbm_build_and_reco_kronos(UInt_t uRunIdx    = 28,
       TString cTrkFile =
         parDir + "/tof/" + Form("%s_tofFindTracks.hst.root", cCalId.Data());
       Int_t iTrackingSetup = 1;
-      Int_t iCalOpt        = 0;
+      Int_t iCalOpt        = 1;
 
       CbmTofTrackFinder* tofTrackFinder = new CbmTofTrackFinderNN();
       tofTrackFinder->SetMaxTofTimeDifference(0.2);  // in ns/cm
@@ -518,8 +518,10 @@ void mcbm_build_and_reco_kronos(UInt_t uRunIdx    = 28,
   FairParRootFileIo* parIo3  = new FairParRootFileIo();
   parIo1->open(parFileIn.Data(), "READ");
   rtdb->setFirstInput(parIo1);
+
   parIo2->open(parFileList, "in");
   rtdb->setSecondInput(parIo2);
+
   parIo3->open(parFileOut.Data(), "RECREATE");
 
   // ------------------------------------------------------------------------

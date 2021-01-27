@@ -64,7 +64,7 @@ void build_event_win_kronos(UInt_t uRunIdx = 0,
   fRun->SetSource(inputSource);
 
   TString runId                = TString::Format("%03u", uRunId);
-  TString outFile              = outDir + "/events_win_" + runId + ".root";
+  TString outFile              = outDir + "/mcbm_events_win_" + runId + ".root";
   FairRootFileSink* outputSink = new FairRootFileSink(outFile);
   fRun->SetSink(outputSink);
 
@@ -99,7 +99,7 @@ void build_event_win_kronos(UInt_t uRunIdx = 0,
   /// Change the selection window limits for T0 as ref
   eventBuilder->SetTriggerWindow(ECbmModuleId::kSts, -50, 100);
   eventBuilder->SetTriggerWindow(ECbmModuleId::kMuch, -150, 50);
-  eventBuilder->SetTriggerWindow(ECbmModuleId::kTrd, -250, 100);
+  eventBuilder->SetTriggerWindow(ECbmModuleId::kTrd, -50, 250);
   eventBuilder->SetTriggerWindow(ECbmModuleId::kTof, -150, 10);
   eventBuilder->SetTriggerWindow(ECbmModuleId::kRich, -50, 50);
   eventBuilder->SetTriggerWindow(ECbmModuleId::kPsd, -50, 50);
@@ -109,7 +109,7 @@ void build_event_win_kronos(UInt_t uRunIdx = 0,
   /*
   /// Use TOF as reference
   eventBuilder->SetReferenceDetector( kEventBuilderDetTof );
-  eventBuilder->AddDetector( kEventBuilderDetT0 );
+  eventBuilder->AddDetector(kEventBuilderDetT0);
 
   /// Change the selection window limits for TOF as ref
   /// => Should always be after changes of detector lists!

@@ -45,7 +45,6 @@ void mcbm_build_and_reco(UInt_t uRunId     = 831,
   TList* parFileList = new TList();
   // ------------------------------------------------------------------------
 
-
   // -----   Timer   --------------------------------------------------------
   TStopwatch timer;
   timer.Start();
@@ -65,7 +64,7 @@ void mcbm_build_and_reco(UInt_t uRunId     = 831,
 
   // Define output file for FairMonitor histograms
   TString monitorFile {outFile};
-  monitorFile.ReplaceAll("rec", "rec.monitor");
+  monitorFile.ReplaceAll("reco", "reco.monitor");
   FairMonitor::GetMonitor()->EnableMonitor(kTRUE, monitorFile);
   // ------------------------------------------------------------------------
 
@@ -247,7 +246,6 @@ void mcbm_build_and_reco(UInt_t uRunId     = 831,
   run->AddTask(trdHit);
   std::cout << "-I- : Added task " << trdHit->GetName() << std::endl;
   // ------------------------------------------------------------------------
-
 
   // -----   Local reconstruction in TOF   ----------------------------------
   // ------------------------------------------------------------------------
@@ -493,8 +491,8 @@ void mcbm_build_and_reco(UInt_t uRunId     = 831,
 
   parIo2->open(parFileList, "in");
   rtdb->setSecondInput(parIo2);
-  parIo3->open(parFileOut.Data(), "RECREATE");
 
+  parIo3->open(parFileOut.Data(), "RECREATE");
 
   // ------------------------------------------------------------------------
 
