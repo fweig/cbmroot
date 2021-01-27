@@ -199,10 +199,57 @@ void run_reco(TString input        = "",
       eventBased = kTRUE;
     }  //? Ideal raw event building
     else if (evBuildRaw.EqualTo("Real", TString::ECaseCompare::kIgnoreCase)) {
-      std::cerr << "-E- " << myName
-                << ": Real event building is not yet available! "
-                << "Terminating macro execution." << std::endl;
-      return;
+      // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
+      /// to use 2018 version, uncomment this section and comment the next one
+      /*
+      CbmMcbm2018EventBuilder* evBuildRaw = new CbmMcbm2018EventBuilder();
+
+      evBuildRaw->SetFixedTimeWindow(5500.);
+      evBuildRaw->SetTriggerMinNumberSts(50);
+
+      if (!useSts) {
+        std::cerr << "-E- " << myName << ": Sts must be present for raw event "
+                  << "building using ``Real'' option. Terminating macro."
+                  << std::endl;
+         return;
+      }
+      */
+      // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
+
+      // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
+      /// to use 2018 version, uncomment this section and comment the prev. one
+      CbmMcbm2019TimeWinEventBuilderTask* evBuildRaw =
+        new CbmMcbm2019TimeWinEventBuilderTask();
+      evBuildRaw->SetTsParameters(0.0, 1.e7, 0.0);
+
+      // Use CbmMuchDigi instead of CbmMuchBeamtimeDigi
+      evBuildRaw->ChangeMuchBeamtimeDigiFlag(kFALSE);
+
+      // Remove detectors where digis not found
+      if (!useRich) evBuildRaw->RemoveDetector(kEventBuilderDetRich);
+      if (!useMuch) evBuildRaw->RemoveDetector(kEventBuilderDetMuch);
+      if (!usePsd) evBuildRaw->RemoveDetector(kEventBuilderDetPsd);
+      if (!useTof) evBuildRaw->RemoveDetector(kEventBuilderDetTof);
+      if (!useTrd) evBuildRaw->RemoveDetector(kEventBuilderDetTrd);
+
+      // Remove STS as it will be our reference
+      evBuildRaw->RemoveDetector(kEventBuilderDetSts);
+
+      // Set STS as reference detector
+      evBuildRaw->SetReferenceDetector(kEventBuilderDetSts);
+
+      //Choose between NoOverlap, MergeOverlap, AllowOverlap
+      evBuildRaw->SetEventOverlapMode(EOverlapMode::AllowOverlap);
+
+      evBuildRaw->SetTriggerMinNumber(ECbmModuleId::kSts, 10);
+      evBuildRaw->SetTriggerMaxNumber(ECbmModuleId::kSts, -1);
+      evBuildRaw->SetTriggerWindow(ECbmModuleId::kSts, -5500, 5500);
+      // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
+
+      run->AddTask(evBuildRaw);
+      std::cout << "-I- " << myName << ": Added task " << evBuildRaw->GetName()
+                << std::endl;
+      eventBased = kTRUE;
     }  //? Real raw event building
     else {
       std::cerr << "-E- " << myName << ": Unknown option " << evBuildRaw
