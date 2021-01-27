@@ -48,7 +48,7 @@
  ** @param nTimeSlices    Number of time-slices to process
  ** @param firstTimeSlice First time-slice (entry) to be processed
  ** @param output         Name of output file (w/o extension .rec.root)
- ** @param evBuildRaw     Option for raw event building
+ ** @param sEvBuildRaw    Option for raw event building
  ** @param setup          Name of predefined geometry setup
  ** @param paramFile      Parameter ROOT file (w/o extension .par.root)
  **
@@ -78,7 +78,7 @@ void run_reco(TString input        = "",
               Int_t nTimeSlices    = -1,
               Int_t firstTimeSlice = 0,
               TString output       = "",
-              TString evBuildRaw   = "",
+              TString sEvBuildRaw  = "",
               TString setup        = "sis100_electron",
               TString paramFile    = "") {
 
@@ -123,7 +123,7 @@ void run_reco(TString input        = "",
 
 
   // -----   Some global switches   -----------------------------------------
-  Bool_t eventBased = !evBuildRaw.IsNull();
+  Bool_t eventBased = !sEvBuildRaw.IsNull();
   Bool_t useMvd     = geo->IsActive(ECbmModuleId::kMvd);
   Bool_t useSts     = geo->IsActive(ECbmModuleId::kSts);
   Bool_t useRich    = geo->IsActive(ECbmModuleId::kRich);
@@ -191,14 +191,14 @@ void run_reco(TString input        = "",
 
   // -----   Raw event building from digis   --------------------------------
   if (eventBased) {
-    if (evBuildRaw.EqualTo("Ideal", TString::ECaseCompare::kIgnoreCase)) {
+    if (sEvBuildRaw.EqualTo("Ideal", TString::ECaseCompare::kIgnoreCase)) {
       FairTask* evBuildRaw = new CbmBuildEventsIdeal();
       run->AddTask(evBuildRaw);
       std::cout << "-I- " << myName << ": Added task " << evBuildRaw->GetName()
                 << std::endl;
       eventBased = kTRUE;
     }  //? Ideal raw event building
-    else if (evBuildRaw.EqualTo("Real", TString::ECaseCompare::kIgnoreCase)) {
+    else if (sEvBuildRaw.EqualTo("Real", TString::ECaseCompare::kIgnoreCase)) {
       // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
       /// to use 2018 version, uncomment this section and comment the next one
       /*
@@ -252,7 +252,7 @@ void run_reco(TString input        = "",
       eventBased = kTRUE;
     }  //? Real raw event building
     else {
-      std::cerr << "-E- " << myName << ": Unknown option " << evBuildRaw
+      std::cerr << "-E- " << myName << ": Unknown option " << sEvBuildRaw
                 << " for raw event building! Terminating macro execution."
                 << std::endl;
       return;
