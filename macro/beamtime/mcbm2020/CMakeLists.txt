@@ -25,6 +25,7 @@ If(DEFINED ENV{RAW_DATA_PATH} )
   GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/beamtime/mcbm2020/mcbm_build_and_reco.C ) # TW event building + Cluster Finding + Hit reconstruction, Event based
   GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/beamtime/mcbm2020/mcbm_event_reco.C )  # Digi dt event building + Cluster Finding + Hit reconstruction, Event based
   GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/beamtime/mcbm2020/mcbm_event_ana.C )   # TOF Track extension toward other detectors
+  GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/beamtime/mcbm2020/mcbm_tof_tracking.C ) # TOF Tracking, Event based
   GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/beamtime/mcbm2020/MonitorT0.C )        # CbmMcbm2018MonitorTaskT0 + CbmMcbm2018MonitorAlgoT0
   GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/beamtime/mcbm2020/MonitorSts.C )       # CbmMcbm2018MonitorSts.h
   GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/beamtime/mcbm2020/MonitorMuch.C )      # CbmMcbm2018MonitorMuchLite.h
@@ -122,6 +123,24 @@ If(DEFINED ENV{RAW_DATA_PATH} )
       set_tests_properties(${testname} PROPERTIES DEPENDS mcbm_build_reco_2020_${RUN})
       Set(fixture_mcbm_event_reco_${RUN} fixture_done_${testname})
       set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_mcbm_event_reco_${RUN}})
+
+      Set(testname mcbm_track_evt_win_2020_${RUN})
+      Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/beamtime/mcbm2020/mcbm_tof_tracking.sh ${RUN} "kTRUE" )
+      Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "600")
+      Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
+      set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_mcbm_build_reco_${RUN}})
+      set_tests_properties(${testname} PROPERTIES DEPENDS mcbm_build_reco_2020_${RUN})
+      Set(fixture_mcbm_track_evt_win_${RUN} fixture_done_${testname})
+      set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_mcbm_track_evt_win_${RUN}})
+
+      Set(testname mcbm_track_event_2020_${RUN})
+      Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/beamtime/mcbm2020/mcbm_tof_tracking.sh ${RUN} )
+      Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "600")
+      Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
+      set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_mcbm_event_reco_${RUN}})
+      set_tests_properties(${testname} PROPERTIES DEPENDS mcbm_event_reco_2020_${RUN})
+      Set(fixture_mcbm_track_event_${RUN} fixture_done_${testname})
+      set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_mcbm_track_event_${RUN}})
 
       Set(testname mcbm_evt_win_ana_2020_${RUN})
       Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/beamtime/mcbm2020/mcbm_event_ana.sh ${RUN} 1000 "kTRUE" )
