@@ -51,7 +51,8 @@ find_package_handle_standard_args(GTEST
   REQUIRED_VARS GTEST_INCLUDE_DIR GTEST_LIBRARY GTEST_MAIN_LIBRARY GTEST_BOTH_LIBRARIES
 )
 
-install(DIRECTORY ${Gtest_ROOTDIR}/ DESTINATION ".")
+#Installation is not needed and currently fails to a strange PATH
+#install(DIRECTORY ${Gtest_ROOTDIR}/ DESTINATION ".")
 
 #if(GTEST_FOUND)
 #  set(GTEST_INCLUDE_DIRS ${Gtest_INCLUDE_DIR})
