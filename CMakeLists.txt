@@ -477,6 +477,7 @@ if(NOT CBMROOT_MINIMAL)
       "${CMAKE_INSTALL_PREFIX}/include/littrack"
       "${CMAKE_INSTALL_PREFIX}/include/KF"
      )
+  set(CMAKE_INSTALL_LIBDIR lib)
   SET(VMCWORKDIR ${CMAKE_INSTALL_PREFIX}/share/cbmroot)
   WRITE_CONFIG_FILE(config.sh_install)
   WRITE_CONFIG_FILE(config.csh_install)
