@@ -6,9 +6,21 @@ add_subdirectory(parallel)
 INCLUDE(std/CMakeLists.txt)
 
 set(INCLUDE_DIRECTORIES
-${CBMROOT_SOURCE_DIR}/reco/littrack
-${CBMROOT_SOURCE_DIR}/reco/littrack/std
-${CBMROOT_SOURCE_DIR}/reco/littrack/cbm
+${CMAKE_CURRENT_SOURCE_DIR}
+${CMAKE_CURRENT_SOURCE_DIR}/std
+${CMAKE_CURRENT_SOURCE_DIR}/cbm
+${CMAKE_CURRENT_SOURCE_DIR}/cbm/elid
+${CMAKE_CURRENT_SOURCE_DIR}/cbm/reco
+${CMAKE_CURRENT_SOURCE_DIR}/cbm/generators
+${CMAKE_CURRENT_SOURCE_DIR}/cbm/qa
+${CMAKE_CURRENT_SOURCE_DIR}/cbm/qa/material
+${CMAKE_CURRENT_SOURCE_DIR}/cbm/qa/tracking
+${CMAKE_CURRENT_SOURCE_DIR}/cbm/qa/clustering
+${CMAKE_CURRENT_SOURCE_DIR}/cbm/qa/fit
+${CMAKE_CURRENT_SOURCE_DIR}/cbm/qa/field
+${CMAKE_CURRENT_SOURCE_DIR}/cbm/qa/fieldapr
+${CMAKE_CURRENT_SOURCE_DIR}/cbm/qa/radlength
+${CMAKE_CURRENT_SOURCE_DIR}/cbm/qa/tof
 
 ${CBMROOT_SOURCE_DIR}/reco/base
 ${CBMROOT_SOURCE_DIR}/reco/detectors/rich

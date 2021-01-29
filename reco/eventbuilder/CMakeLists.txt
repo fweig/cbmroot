@@ -3,6 +3,10 @@
 # The extension is already found.  Any number of sources could be listed here.
 
 Set(INCLUDE_DIRECTORIES
+${CMAKE_CURRENT_SOURCE_DIR}
+${CMAKE_CURRENT_SOURCE_DIR}/digis
+${CMAKE_CURRENT_SOURCE_DIR}/tracks
+
 ${CBMBASE_DIR}
 ${CBMROOT_SOURCE_DIR}/run
 
@@ -38,7 +42,6 @@ ${CBMROOT_SOURCE_DIR}/tof/TofMC
 ${CBMROOT_SOURCE_DIR}/psd
 ${CBMROOT_SOURCE_DIR}/field
 
-${CBMROOT_SOURCE_DIR}/reco/eventbuilder
 )
 
 Include_Directories( ${INCLUDE_DIRECTORIES})
