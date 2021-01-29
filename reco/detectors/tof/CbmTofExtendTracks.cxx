@@ -353,6 +353,8 @@ void CbmTofExtendTracks::SetParContainers() {
 // -------------------------------------------------------------------------
 
 Bool_t CbmTofExtendTracks::UpdateCalHistos() {
+  if (fiEvent <= NDefSetup) return kTRUE;
+
   while (fiCorMode > 0) {
     Int_t iCorMode = fiCorMode % 10;
     fiCorMode /= 10;

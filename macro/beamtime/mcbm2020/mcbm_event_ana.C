@@ -21,10 +21,10 @@ void mcbm_event_ana(Int_t runId = 831, Int_t nTimeslices = 1000) {
   // ------------------------------------------------------------------------
 
   // -----   In- and output file names   ------------------------------------
-  //TString inFile  = Form("./data/reco_mcbm_%i.root", runId);
-  TString inFile  = Form("./data/reco_mcbm_evt_win_%i.root", runId);
-  TString parFile = Form("./data/unp_mcbm_params_%i.root", runId);
-  TString geoFile = paramDir + "mcbm2020_reco.geo.root";  // Created in sim. run
+  TString inFile = Form("./data/reco_mcbm_%i.root", runId);
+  TString inFile = Form("./data/reco_mcbm_evt_win_%i.root", runId);
+  //TString parFile = Form("./data/unp_mcbm_params_%i.root", runId);
+  TString geoFile = paramDir + "mcbm_beam_2020_03.geo.root";
   TString outFile = Form("./data/ana_mcbm_%i.root", runId);
   // ------------------------------------------------------------------------
 

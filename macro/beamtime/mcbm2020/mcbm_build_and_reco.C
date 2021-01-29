@@ -96,12 +96,15 @@ void mcbm_build_and_reco(UInt_t uRunId     = 831,
  * kEventBuilderDetPsd
  * kEventBuilderDetT0
  */
+  /// Use T0 as reference
+  eventBuilder->SetReferenceDetector(kEventBuilderDetT0);
+  eventBuilder->AddDetector(kEventBuilderDetTof);
 
   /// Change the selection window limits for T0 as ref
   eventBuilder->SetTriggerWindow(ECbmModuleId::kSts, -50, 100);
   eventBuilder->SetTriggerWindow(ECbmModuleId::kMuch, -150, 50);
   eventBuilder->SetTriggerWindow(ECbmModuleId::kTrd, -50, 250);
-  eventBuilder->SetTriggerWindow(ECbmModuleId::kTof, -150, 10);
+  eventBuilder->SetTriggerWindow(ECbmModuleId::kTof, -50, 50);
   eventBuilder->SetTriggerWindow(ECbmModuleId::kRich, -50, 50);
   eventBuilder->SetTriggerWindow(ECbmModuleId::kPsd, -50, 50);
   /// To get T0 Digis (seed + close digis) in the event
