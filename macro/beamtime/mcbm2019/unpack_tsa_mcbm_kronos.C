@@ -78,22 +78,18 @@ void unpack_tsa_mcbm_kronos(UInt_t uRunId   = 0,
   CbmMcbm2018UnpackerTaskTof* unpacker_tof = new CbmMcbm2018UnpackerTaskTof();
   CbmMcbm2018UnpackerTaskRich* unpacker_rich =
     new CbmMcbm2018UnpackerTaskRich();
-  CbmMcbm2018UnpackerTaskHodo* unpacker_hodo =
-    new CbmMcbm2018UnpackerTaskHodo();
   CbmMcbm2018UnpackerTaskPsd* unpacker_psd = new CbmMcbm2018UnpackerTaskPsd();
 
   unpacker_sts->SetMonitorMode();
   unpacker_much->SetMonitorMode();
   unpacker_tof->SetMonitorMode();
   unpacker_rich->SetMonitorMode();
-  unpacker_hodo->SetMonitorMode();
   unpacker_psd->SetMonitorMode();
 
   unpacker_sts->SetIgnoreOverlapMs();
   unpacker_much->SetIgnoreOverlapMs();
   unpacker_tof->SetIgnoreOverlapMs();
   unpacker_rich->SetIgnoreOverlapMs();
-  unpacker_hodo->SetIgnoreOverlapMs();
   unpacker_psd->SetIgnoreOverlapMs();
 
   //  unpacker_sts ->SetAdcCut( 3 );

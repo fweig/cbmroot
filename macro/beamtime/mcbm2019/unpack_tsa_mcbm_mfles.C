@@ -78,22 +78,18 @@ void unpack_tsa_mcbm_mfles(UInt_t uRunId   = 0,
   CbmMcbm2018UnpackerTaskTof* unpacker_tof = new CbmMcbm2018UnpackerTaskTof();
   CbmMcbm2018UnpackerTaskRich* unpacker_rich =
     new CbmMcbm2018UnpackerTaskRich();
-  CbmMcbm2018UnpackerTaskHodo* unpacker_hodo =
-    new CbmMcbm2018UnpackerTaskHodo();
   CbmMcbm2018UnpackerTaskPsd* unpacker_psd = new CbmMcbm2018UnpackerTaskPsd();
 
   unpacker_sts->SetMonitorMode();
   unpacker_much->SetMonitorMode();
   unpacker_tof->SetMonitorMode();
   unpacker_rich->SetMonitorMode();
-  unpacker_hodo->SetMonitorMode();
   unpacker_psd->SetMonitorMode();
 
   unpacker_sts->SetIgnoreOverlapMs();
   unpacker_much->SetIgnoreOverlapMs();
   unpacker_tof->SetIgnoreOverlapMs();
   unpacker_rich->SetIgnoreOverlapMs();
-  unpacker_hodo->SetIgnoreOverlapMs();
   unpacker_psd->SetIgnoreOverlapMs();
 
   unpacker_sts->SetAdcCut(3);
@@ -1611,7 +1607,6 @@ void unpack_tsa_mcbm_mfles(UInt_t uRunId   = 0,
   if (358 != uRunId && 361 != uRunId && 367 != uRunId && 369 != uRunId)
     source->AddUnpacker(unpacker_rich, 0x30, ECbmModuleId::kRich);  //RICH trb
   source->AddUnpacker(unpacker_psd, 0x80, ECbmModuleId::kPsd);      //PSD
-  //  source->AddUnpacker(unpacker_hodo, 0x10, ECbmModuleId::kHodo );//HODO xyter
 
   // --- Event header
   FairEventHeader* event = new FairEventHeader();
