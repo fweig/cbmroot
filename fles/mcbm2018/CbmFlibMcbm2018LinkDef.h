@@ -8,9 +8,6 @@
 #pragma link C++ class CbmMcbm2018Source;
 #pragma link C++ class CbmMcbm2018MsCrcCheck;
 
-#pragma link C++ class CbmMcbm2018HodoPar;
-#pragma link C++ class CbmMcbm2018ContFact;
-
 #pragma link C++ class CbmMcbm2018RawConverterSdpb;
 #pragma link C++ class CbmMcbm2018RawConverterGdpb;
 
@@ -22,8 +19,6 @@
 #pragma link C++ class CbmMcbm2018UnpackerTaskTof + ;
 #pragma link C++ class CbmMcbm2018UnpackerAlgoRich;
 #pragma link C++ class CbmMcbm2018UnpackerTaskRich + ;
-#pragma link C++ class CbmMcbm2018UnpackerAlgoHodo;
-#pragma link C++ class CbmMcbm2018UnpackerTaskHodo + ;
 #pragma link C++ class CbmMcbm2018UnpackerAlgoPsd;
 #pragma link C++ class CbmMcbm2018UnpackerTaskPsd + ;
 #pragma link C++ class CbmMcbm2018UnpackerAlgoTrdR + ;
@@ -52,9 +47,6 @@
 #pragma link C++ class CbmMcbm2018TofFeeThr;
 #pragma link C++ class CbmMcbm2018MonitorAlgoPsd;
 #pragma link C++ class CbmMcbm2018MonitorTaskPsd;
-
-#pragma link C++ class CbmMcbm2018MonitorAlgoHodo;
-#pragma link C++ class CbmMcbm2018MonitorTaskHodo;
 
 #pragma link C++ class CbmCheckDigisNbCorr;
 #pragma link C++ class CbmCheckTiming;

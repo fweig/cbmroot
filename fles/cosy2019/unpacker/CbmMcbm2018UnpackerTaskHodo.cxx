@@ -10,7 +10,7 @@
 #include "CbmMcbm2018HodoPar.h"
 #include "CbmMcbm2018UnpackerAlgoHodo.h"
 
-#include "CbmMcbm2018StsPar.h"
+//#include "CbmMcbm2018StsPar.h"
 #include "CbmMcbm2018UnpackerAlgoSts.h"
 
 #include "FairLogger.h"

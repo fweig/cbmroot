@@ -21,7 +21,7 @@ Set(INCLUDE_DIRECTORIES
   ${CBMROOT_SOURCE_DIR}/fles/mcbm2018
   ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/dataforma
   ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/commonMQ
-  ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/parameter
+#  ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/parameter
   ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/unpacker
   ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/monitor
   ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/tasks
@@ -63,9 +63,6 @@ Set(SRCS
    CbmMcbm2018Source.cxx
    CbmMcbm2018MsCrcCheck.cxx
 
-   parameter/CbmMcbm2018HodoPar.cxx
-   parameter/CbmMcbm2018ContFact.cxx
-
    unpacker/CbmMcbm2018RawConverterSdpb.cxx
    unpacker/CbmMcbm2018RawConverterGdpb.cxx
 
@@ -78,8 +75,6 @@ Set(SRCS
    unpacker/CbmMcbm2018UnpackerAlgoRich.cxx
    unpacker/CbmMcbm2018UnpackerTaskRich.cxx
    unpacker/CbmMcbm2018UnpackerUtilRich.cxx
-   unpacker/CbmMcbm2018UnpackerAlgoHodo.cxx
-   unpacker/CbmMcbm2018UnpackerTaskHodo.cxx
    unpacker/CbmMcbm2018UnpackerAlgoPsd.cxx
    unpacker/CbmMcbm2018UnpackerTaskPsd.cxx
    unpacker/CbmMcbm2018UnpackerAlgoTrdR.cxx
@@ -108,9 +103,6 @@ Set(SRCS
    monitor/CbmMcbm2018TofFeeThr.cxx
    monitor/CbmMcbm2018MonitorAlgoPsd.cxx
    monitor/CbmMcbm2018MonitorTaskPsd.cxx
-
-   monitor/CbmMcbm2018MonitorAlgoHodo.cxx
-   monitor/CbmMcbm2018MonitorTaskHodo.cxx
 
    tasks/CbmCheckDigisNbCorr.cxx
    tasks/CbmCheckTiming.cxx

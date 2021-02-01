@@ -17,6 +17,11 @@
 
 // CbmRoot
 
+// ROOT
+#include "TCanvas.h"
+#include "TH1.h"
+#include "TH2.h"
+
 // C++11
 #include <chrono>
 
@@ -24,13 +29,6 @@
 #include <map>
 #include <vector>
 
-//class CbmMcbm2018HodoPar;
-/*
-class TCanvas;
-class THttpServer;
-*/
-class TH1;
-class TH2;
 class TProfile;
 
 class CbmMcbm2018MonitorAlgoHodo : public CbmStar2019Algo<CbmStsDigi> {
