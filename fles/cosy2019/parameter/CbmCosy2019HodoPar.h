@@ -1,10 +1,10 @@
 // -------------------------------------------------------------------------
-// -----            CbmMcbm2018HodoPar header file                     -----
+// -----            CbmCosy2019HodoPar header file                     -----
 // -----            Created 31/07/19  by P.-A. Loizeau                 -----
 // -------------------------------------------------------------------------
 
-#ifndef CBMMCBM2018HODOPAR_H
-#define CBMMCBM2018HODOPAR_H
+#ifndef CBMCOSY2019HODOPAR_H
+#define CBMCOSY2019HODOPAR_H
 
 #include "FairParGenericSet.h"
 
@@ -15,17 +15,17 @@ class FairParIo;
 class FairParamList;
 
 
-class CbmMcbm2018HodoPar : public FairParGenericSet {
+class CbmCosy2019HodoPar : public FairParGenericSet {
 
 public:
   /** Standard constructor **/
-  CbmMcbm2018HodoPar(const char* name    = "CbmMcbm2018HodoPar",
+  CbmCosy2019HodoPar(const char* name    = "CbmCosy2019HodoPar",
                      const char* title   = "Much parameters",
                      const char* context = "Default");
 
 
   /** Destructor **/
-  virtual ~CbmMcbm2018HodoPar();
+  virtual ~CbmCosy2019HodoPar();
 
   /** Reset all parameters **/
   virtual void clear();
@@ -187,6 +187,6 @@ private:
   TArrayI
     fiFebAdcThrOffs;  // Thr. offset in Units vs Cal. Thr. for each FEB, [ NbDpb * kuNbCrobPerDpb * kuNbFebsPerCrob ]
 
-  ClassDef(CbmMcbm2018HodoPar, 1);
+  ClassDef(CbmCosy2019HodoPar, 1);
 };
-#endif  // CBMMCBM2018HODOPAR_H
+#endif  // CBMCOSY2019HODOPAR_H

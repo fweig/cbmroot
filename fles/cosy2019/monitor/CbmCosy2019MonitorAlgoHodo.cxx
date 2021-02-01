@@ -1,15 +1,15 @@
 // -----------------------------------------------------------------------------
 // -----                                                                   -----
-// -----                  CbmMcbm2018MonitorAlgoHodo                       -----
+// -----                  CbmCosy2019MonitorAlgoHodo                       -----
 // -----               Created 03.07.2019 by P.-A. Loizeau                 -----
 // -----                                                                   -----
 // -----------------------------------------------------------------------------
 
-#include "CbmMcbm2018MonitorAlgoHodo.h"
+#include "CbmCosy2019MonitorAlgoHodo.h"
 
 #include "CbmFormatMsHeaderPrintout.h"
 
-//#include "CbmMcbm2018HodoPar.h"
+//#include "CbmCosy2019HodoPar.h"
 
 #include "FairLogger.h"
 #include "FairRootManager.h"
@@ -31,7 +31,7 @@
 #include <stdint.h>
 
 // -------------------------------------------------------------------------
-CbmMcbm2018MonitorAlgoHodo::CbmMcbm2018MonitorAlgoHodo()
+CbmCosy2019MonitorAlgoHodo::CbmCosy2019MonitorAlgoHodo()
   : CbmStar2019Algo()
   ,
   /// From the class itself
@@ -138,36 +138,36 @@ CbmMcbm2018MonitorAlgoHodo::CbmMcbm2018MonitorAlgoHodo()
   , fcHodoFullCoinc(nullptr)
   , fcHodoFullCoincPos(nullptr)
   , fcHodoPrevHitDt(nullptr) {}
-CbmMcbm2018MonitorAlgoHodo::~CbmMcbm2018MonitorAlgoHodo() {
+CbmCosy2019MonitorAlgoHodo::~CbmCosy2019MonitorAlgoHodo() {
   /// Clear buffers
   fvmHitsInMs.clear();
 }
 
 // -------------------------------------------------------------------------
-Bool_t CbmMcbm2018MonitorAlgoHodo::Init() {
+Bool_t CbmCosy2019MonitorAlgoHodo::Init() {
   LOG(info) << "Initializing mCBM HODO 2019 monitor algo";
 
   return kTRUE;
 }
-void CbmMcbm2018MonitorAlgoHodo::Reset() {}
-void CbmMcbm2018MonitorAlgoHodo::Finish() {
+void CbmCosy2019MonitorAlgoHodo::Reset() {}
+void CbmCosy2019MonitorAlgoHodo::Finish() {
   /// Printout Goodbye message and stats
 
   /// Write Output histos
 }
 
 // -------------------------------------------------------------------------
-Bool_t CbmMcbm2018MonitorAlgoHodo::InitContainers() {
-  LOG(info) << "Init parameter containers for CbmMcbm2018MonitorAlgoHodo";
+Bool_t CbmCosy2019MonitorAlgoHodo::InitContainers() {
+  LOG(info) << "Init parameter containers for CbmCosy2019MonitorAlgoHodo";
   Bool_t initOK = ReInitContainers();
 
   return initOK;
 }
-Bool_t CbmMcbm2018MonitorAlgoHodo::ReInitContainers() {
+Bool_t CbmCosy2019MonitorAlgoHodo::ReInitContainers() {
   LOG(info) << "**********************************************";
-  LOG(info) << "ReInit parameter containers for CbmMcbm2018MonitorAlgoHodo";
+  LOG(info) << "ReInit parameter containers for CbmCosy2019MonitorAlgoHodo";
   /*
-   fUnpackPar = (CbmMcbm2018HodoPar*)fParCList->FindObject("CbmMcbm2018HodoPar");
+   fUnpackPar = (CbmCosy2019HodoPar*)fParCList->FindObject("CbmCosy2019HodoPar");
    if( nullptr == fUnpackPar )
       return kFALSE;
 */
@@ -175,15 +175,15 @@ Bool_t CbmMcbm2018MonitorAlgoHodo::ReInitContainers() {
 
   return initOK;
 }
-TList* CbmMcbm2018MonitorAlgoHodo::GetParList() {
+TList* CbmCosy2019MonitorAlgoHodo::GetParList() {
   if (nullptr == fParCList) fParCList = new TList();
   /*
-   fUnpackPar = new CbmMcbm2018HodoPar("CbmMcbm2018HodoPar");
+   fUnpackPar = new CbmCosy2019HodoPar("CbmCosy2019HodoPar");
    fParCList->Add(fUnpackPar);
 */
   return fParCList;
 }
-Bool_t CbmMcbm2018MonitorAlgoHodo::InitParameters() {
+Bool_t CbmCosy2019MonitorAlgoHodo::InitParameters() {
   /*
    fuNbModules   = fUnpackPar->GetNbOfModules();
    LOG(info) << "Nr. of STS Modules:    " << fuNbModules;
@@ -369,7 +369,7 @@ Bool_t CbmMcbm2018MonitorAlgoHodo::InitParameters() {
 }
 // -------------------------------------------------------------------------
 
-void CbmMcbm2018MonitorAlgoHodo::AddMsComponentToList(size_t component,
+void CbmCosy2019MonitorAlgoHodo::AddMsComponentToList(size_t component,
                                                       UShort_t usDetectorId) {
   /// Check for duplicates and ignore if it is the case
   for (UInt_t uCompIdx = 0; uCompIdx < fvMsComponentsList.size(); ++uCompIdx)
@@ -378,13 +378,13 @@ void CbmMcbm2018MonitorAlgoHodo::AddMsComponentToList(size_t component,
   /// Add to list
   fvMsComponentsList.push_back(component);
 
-  LOG(info) << "CbmMcbm2018MonitorAlgoHodo::AddMsComponentToList => Component "
+  LOG(info) << "CbmCosy2019MonitorAlgoHodo::AddMsComponentToList => Component "
             << component << " with detector ID 0x" << std::hex << usDetectorId
             << std::dec << " added to list";
 }
 // -------------------------------------------------------------------------
 
-Bool_t CbmMcbm2018MonitorAlgoHodo::ProcessTs(const fles::Timeslice& ts) {
+Bool_t CbmCosy2019MonitorAlgoHodo::ProcessTs(const fles::Timeslice& ts) {
   fulCurrentTsIdx = ts.index();
   fdTsStartTime   = static_cast<Double_t>(ts.descriptor(0, 0).idx);
 
@@ -459,7 +459,7 @@ Bool_t CbmMcbm2018MonitorAlgoHodo::ProcessTs(const fles::Timeslice& ts) {
   return kTRUE;
 }
 
-Bool_t CbmMcbm2018MonitorAlgoHodo::ProcessMs(const fles::Timeslice& ts,
+Bool_t CbmCosy2019MonitorAlgoHodo::ProcessMs(const fles::Timeslice& ts,
                                              size_t uMsCompIdx,
                                              size_t uMsIdx) {
   auto msDescriptor    = ts.descriptor(uMsCompIdx, uMsIdx);
@@ -605,7 +605,7 @@ Bool_t CbmMcbm2018MonitorAlgoHodo::ProcessMs(const fles::Timeslice& ts,
           }  // if( fuElinkIdxHodo[ uHodo ] == usElinkIdx )
 
         if (bBadElink) {
-          LOG(warning) << "CbmMcbm2018MonitorAlgoHodo::DoUnpack => "
+          LOG(warning) << "CbmCosy2019MonitorAlgoHodo::DoUnpack => "
                        << "Wrong elink Idx! Elink raw "
                        << Form("%2d", usElinkIdx);
           continue;
@@ -627,7 +627,7 @@ Bool_t CbmMcbm2018MonitorAlgoHodo::ProcessMs(const fles::Timeslice& ts,
         ProcessEpochInfo(mess);
 
         if (0 < uIdx)
-          LOG(info) << "CbmMcbm2018MonitorAlgoHodo::DoUnpack => "
+          LOG(info) << "CbmCosy2019MonitorAlgoHodo::DoUnpack => "
                     << "EPOCH message at unexpected position in MS: message "
                     << uIdx << " VS message 0 expected!";
         break;
@@ -649,7 +649,7 @@ Bool_t CbmMcbm2018MonitorAlgoHodo::ProcessMs(const fles::Timeslice& ts,
         break;
       }  // case stsxyter::MessType::Dummy / ReadDataAck / Ack :
       default: {
-        LOG(fatal) << "CbmMcbm2018MonitorAlgoHodo::DoUnpack => "
+        LOG(fatal) << "CbmCosy2019MonitorAlgoHodo::DoUnpack => "
                    << "Unknown message type, should never happen, stopping "
                       "here! Type found was: "
                    << static_cast<int>(typeMess);
@@ -661,7 +661,7 @@ Bool_t CbmMcbm2018MonitorAlgoHodo::ProcessMs(const fles::Timeslice& ts,
 }
 
 // -------------------------------------------------------------------------
-void CbmMcbm2018MonitorAlgoHodo::ProcessHitInfo(stsxyter::Message mess,
+void CbmCosy2019MonitorAlgoHodo::ProcessHitInfo(stsxyter::Message mess,
                                                 const UInt_t& uHodoIdx,
                                                 const UInt_t& /*uMsIdx*/) {
   UShort_t usChan   = mess.GetHitChannel();
@@ -726,7 +726,7 @@ void CbmMcbm2018MonitorAlgoHodo::ProcessHitInfo(stsxyter::Message mess,
   }  // if( mess.IsHitMissedEvts() )
 }
 
-void CbmMcbm2018MonitorAlgoHodo::ProcessTsMsbInfo(stsxyter::Message mess,
+void CbmCosy2019MonitorAlgoHodo::ProcessTsMsbInfo(stsxyter::Message mess,
                                                   UInt_t uMessIdx,
                                                   UInt_t uMsIdx) {
   UInt_t uVal = mess.GetTsMsbVal();
@@ -762,7 +762,7 @@ void CbmMcbm2018MonitorAlgoHodo::ProcessTsMsbInfo(stsxyter::Message mess,
 */
 }
 
-void CbmMcbm2018MonitorAlgoHodo::ProcessEpochInfo(stsxyter::Message /*mess*/) {
+void CbmCosy2019MonitorAlgoHodo::ProcessEpochInfo(stsxyter::Message /*mess*/) {
   //   UInt_t uVal    = mess.GetEpochVal();
   //   UInt_t uCurrentCycle = uVal % stsxyter::kulTsCycleNbBins;
 
@@ -774,7 +774,7 @@ void CbmMcbm2018MonitorAlgoHodo::ProcessEpochInfo(stsxyter::Message /*mess*/) {
 */
 }
 
-void CbmMcbm2018MonitorAlgoHodo::ProcessStatusInfo(stsxyter::Message /*mess*/) {
+void CbmCosy2019MonitorAlgoHodo::ProcessStatusInfo(stsxyter::Message /*mess*/) {
   /*
    UInt_t   uCrobIdx   = usElinkIdx / XXXX
    Int_t   uFebIdx    = XXXX
@@ -796,7 +796,7 @@ void CbmMcbm2018MonitorAlgoHodo::ProcessStatusInfo(stsxyter::Message /*mess*/) {
 
 // -------------------------------------------------------------------------
 
-Bool_t CbmMcbm2018MonitorAlgoHodo::CreateHistograms() {
+Bool_t CbmCosy2019MonitorAlgoHodo::CreateHistograms() {
   fhHodoMessType =
     new TH1I("hHodoMessType", "Nb of message for each type; Type", 6, 0., 6.);
   fhHodoMessType->GetXaxis()->SetBinLabel(1, "Dummy");
@@ -1668,7 +1668,7 @@ Bool_t CbmMcbm2018MonitorAlgoHodo::CreateHistograms() {
 
   return kTRUE;
 }
-Bool_t CbmMcbm2018MonitorAlgoHodo::FillHistograms() {
+Bool_t CbmCosy2019MonitorAlgoHodo::FillHistograms() {
   /// Prepare storage variables
   std::vector<std::vector<stsxyter::FinalHit>> lastHitHodoAxis;
   std::vector<std::vector<Bool_t>> bHitFoundHodoAxis;
@@ -1853,7 +1853,7 @@ Bool_t CbmMcbm2018MonitorAlgoHodo::FillHistograms() {
 
   return kTRUE;
 }
-Bool_t CbmMcbm2018MonitorAlgoHodo::ResetHistograms() {
+Bool_t CbmCosy2019MonitorAlgoHodo::ResetHistograms() {
   fhHodoMessType->Reset();
   fhHodoStatusMessType->Reset();
   fhHodoMsStatusFieldType->Reset();

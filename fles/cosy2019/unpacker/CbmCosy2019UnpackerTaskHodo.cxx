@@ -1,14 +1,14 @@
 // -----------------------------------------------------------------------------
 // -----                                                                   -----
-// -----                   CbmMcbm2018UnpackerTaskHodo                     -----
+// -----                   CbmCosy2019UnpackerTaskHodo                     -----
 // -----              Created 31/07/19  by P.-A. Loizeau                   -----
 // -----                                                                   -----
 // -----------------------------------------------------------------------------
 
-#include "CbmMcbm2018UnpackerTaskHodo.h"
+#include "CbmCosy2019UnpackerTaskHodo.h"
 
-#include "CbmMcbm2018HodoPar.h"
-#include "CbmMcbm2018UnpackerAlgoHodo.h"
+#include "CbmCosy2019HodoPar.h"
+#include "CbmCosy2019UnpackerAlgoHodo.h"
 
 //#include "CbmMcbm2018StsPar.h"
 #include "CbmMcbm2018UnpackerAlgoSts.h"
@@ -32,33 +32,33 @@
 #include <iostream>
 #include <stdint.h>
 
-Bool_t bMcbm2018UnpackerTaskHodoResetHistos = kFALSE;
+Bool_t bCosy2019UnpackerTaskHodoResetHistos = kFALSE;
 
-CbmMcbm2018UnpackerTaskHodo::CbmMcbm2018UnpackerTaskHodo(UInt_t /*uNbGdpb*/)
+CbmCosy2019UnpackerTaskHodo::CbmCosy2019UnpackerTaskHodo(UInt_t /*uNbGdpb*/)
   : CbmMcbmUnpack()
   , fbMonitorMode(kFALSE)
   , fbWriteOutput(kTRUE)
   , fvChanMasks()
   , fulTsCounter(0)
   , fUnpackerAlgo(nullptr) {
-  fUnpackerAlgo    = new CbmMcbm2018UnpackerAlgoHodo();
+  fUnpackerAlgo    = new CbmCosy2019UnpackerAlgoHodo();
   fUnpackerAlgoSts = new CbmMcbm2018UnpackerAlgoSts();
 }
 
-CbmMcbm2018UnpackerTaskHodo::~CbmMcbm2018UnpackerTaskHodo() {
+CbmCosy2019UnpackerTaskHodo::~CbmCosy2019UnpackerTaskHodo() {
   delete fUnpackerAlgo;
   delete fUnpackerAlgoSts;
 }
 
-Bool_t CbmMcbm2018UnpackerTaskHodo::Init() {
-  LOG(info) << "CbmMcbm2018UnpackerTaskHodo::Init";
+Bool_t CbmCosy2019UnpackerTaskHodo::Init() {
+  LOG(info) << "CbmCosy2019UnpackerTaskHodo::Init";
   LOG(info) << "Initializing mCBM STS 2018 Unpacker";
 
   FairRootManager* ioman = FairRootManager::Instance();
   if (NULL == ioman) { LOG(fatal) << "No FairRootManager instance"; }
   /// WARNING: incompatible with the hodoscopes unpacker!!!!
   if (nullptr != ioman->InitObjectAs<std::vector<CbmStsDigi> const*>("StsDigi"))
-    LOG(fatal) << "CbmMcbm2018UnpackerTaskHodo::Init => output vector already "
+    LOG(fatal) << "CbmCosy2019UnpackerTaskHodo::Init => output vector already "
                   "registered,"
                << " probably by CbmMcbm2018UnpackerTaskSts" << std::endl
                << " THESE TWO CLASSES ARE INCOMPATIBLE!";
@@ -74,7 +74,7 @@ Bool_t CbmMcbm2018UnpackerTaskHodo::Init() {
   return kTRUE;
 }
 
-void CbmMcbm2018UnpackerTaskHodo::SetParContainers() {
+void CbmCosy2019UnpackerTaskHodo::SetParContainers() {
   LOG(info) << "Setting parameter containers for " << GetName();
 
   TList* fParCList = fUnpackerAlgo->GetParList();
@@ -118,14 +118,14 @@ void CbmMcbm2018UnpackerTaskHodo::SetParContainers() {
   }  // for( Int_t iparC = 0; iparC < fParCList->GetEntries(); ++iparC )
 }
 
-Bool_t CbmMcbm2018UnpackerTaskHodo::InitContainers() {
+Bool_t CbmCosy2019UnpackerTaskHodo::InitContainers() {
   LOG(info) << "Init parameter containers for " << GetName();
 
   /// Control flags
-  CbmMcbm2018HodoPar* pUnpackPar = dynamic_cast<CbmMcbm2018HodoPar*>(
-    FairRun::Instance()->GetRuntimeDb()->getContainer("CbmMcbm2018HodoPar"));
+  CbmCosy2019HodoPar* pUnpackPar = dynamic_cast<CbmCosy2019HodoPar*>(
+    FairRun::Instance()->GetRuntimeDb()->getContainer("CbmCosy2019HodoPar"));
   if (nullptr == pUnpackPar) {
-    LOG(error) << "Failed to obtain parameter container CbmMcbm2018HodoPar";
+    LOG(error) << "Failed to obtain parameter container CbmCosy2019HodoPar";
     return kFALSE;
   }  // if( nullptr == pUnpackPar )
      /*
@@ -162,7 +162,7 @@ Bool_t CbmMcbm2018UnpackerTaskHodo::InitContainers() {
       }  // for( UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto )
 
       server->RegisterCommand("/Reset_UnpHodo_Hist",
-                              "bMcbm2018UnpackerTaskHodoResetHistos=kTRUE");
+                              "bCosy2019UnpackerTaskHodoResetHistos=kTRUE");
       server->Restrict("/Reset_UnpHodo_Hist", "allow=admin");
     }  // if( nullptr != server )
 
@@ -179,7 +179,7 @@ Bool_t CbmMcbm2018UnpackerTaskHodo::InitContainers() {
   return initOK;
 }
 
-Bool_t CbmMcbm2018UnpackerTaskHodo::ReInitContainers() {
+Bool_t CbmCosy2019UnpackerTaskHodo::ReInitContainers() {
   LOG(info) << "ReInit parameter containers for " << GetName();
   Bool_t initOK = fUnpackerAlgo->ReInitContainers();
   initOK &= fUnpackerAlgoSts->ReInitContainers();
@@ -187,20 +187,20 @@ Bool_t CbmMcbm2018UnpackerTaskHodo::ReInitContainers() {
   return initOK;
 }
 
-void CbmMcbm2018UnpackerTaskHodo::AddMsComponentToList(size_t component,
+void CbmCosy2019UnpackerTaskHodo::AddMsComponentToList(size_t component,
                                                        UShort_t usDetectorId) {
   fUnpackerAlgo->AddMsComponentToList(component, usDetectorId);
   fUnpackerAlgoSts->AddMsComponentToList(component, usDetectorId);
 }
 
-Bool_t CbmMcbm2018UnpackerTaskHodo::DoUnpack(const fles::Timeslice& ts,
+Bool_t CbmCosy2019UnpackerTaskHodo::DoUnpack(const fles::Timeslice& ts,
                                              size_t /*component*/) {
-  if (fbMonitorMode && bMcbm2018UnpackerTaskHodoResetHistos) {
+  if (fbMonitorMode && bCosy2019UnpackerTaskHodoResetHistos) {
     LOG(info) << "Reset Hodo + STS unpacker histos ";
     fUnpackerAlgo->ResetHistograms();
     fUnpackerAlgoSts->ResetHistograms();
-    bMcbm2018UnpackerTaskHodoResetHistos = kFALSE;
-  }  // if( fbMonitorMode && bMcbm2018UnpackerTaskHodoResetHistos )
+    bCosy2019UnpackerTaskHodoResetHistos = kFALSE;
+  }  // if( fbMonitorMode && bCosy2019UnpackerTaskHodoResetHistos )
 
   if (kFALSE == fUnpackerAlgo->ProcessTs(ts)) {
     LOG(error) << "Failed processing TS " << ts.index()
@@ -252,12 +252,12 @@ Bool_t CbmMcbm2018UnpackerTaskHodo::DoUnpack(const fles::Timeslice& ts,
   return kTRUE;
 }
 
-void CbmMcbm2018UnpackerTaskHodo::Reset() {
+void CbmCosy2019UnpackerTaskHodo::Reset() {
   fpvDigiSts->clear();
   fpvErrorSts->clear();
 }
 
-void CbmMcbm2018UnpackerTaskHodo::Finish() {
+void CbmCosy2019UnpackerTaskHodo::Finish() {
   /// If monitor mode enabled, trigger histos creation, obtain pointer on them and add them to the HTTP server
   if (kTRUE == fbMonitorMode) {
     /// Obtain vector of pointers on each histo from the algo (+ optionally desired folder)
@@ -298,37 +298,37 @@ void CbmMcbm2018UnpackerTaskHodo::Finish() {
   }  // if( kTRUE == fbMonitorMode )
 }
 
-void CbmMcbm2018UnpackerTaskHodo::SetIgnoreOverlapMs(Bool_t bFlagIn) {
+void CbmCosy2019UnpackerTaskHodo::SetIgnoreOverlapMs(Bool_t bFlagIn) {
   fUnpackerAlgo->SetIgnoreOverlapMs(bFlagIn);
   fUnpackerAlgoSts->SetIgnoreOverlapMs(bFlagIn);
 }
 
-void CbmMcbm2018UnpackerTaskHodo::SetTimeOffsetNs(Double_t dOffsetIn) {
+void CbmCosy2019UnpackerTaskHodo::SetTimeOffsetNs(Double_t dOffsetIn) {
   fUnpackerAlgo->SetTimeOffsetNs(dOffsetIn);
 }
 
-void CbmMcbm2018UnpackerTaskHodo::SetTimeOffsetNsSts(Double_t dOffsetIn) {
+void CbmCosy2019UnpackerTaskHodo::SetTimeOffsetNsSts(Double_t dOffsetIn) {
   fUnpackerAlgoSts->SetTimeOffsetNs(dOffsetIn);
 }
 
-void CbmMcbm2018UnpackerTaskHodo::SetTimeOffsetNsAsic(UInt_t uAsicIdx,
+void CbmCosy2019UnpackerTaskHodo::SetTimeOffsetNsAsic(UInt_t uAsicIdx,
                                                       Double_t dOffsetIn) {
   fUnpackerAlgo->SetTimeOffsetNsAsic(uAsicIdx, dOffsetIn);
 }
 
-void CbmMcbm2018UnpackerTaskHodo::SetTimeOffsetNsAsicSts(UInt_t uAsicIdx,
+void CbmCosy2019UnpackerTaskHodo::SetTimeOffsetNsAsicSts(UInt_t uAsicIdx,
                                                          Double_t dOffsetIn) {
   fUnpackerAlgoSts->SetTimeOffsetNsAsic(uAsicIdx, dOffsetIn);
 }
 
-void CbmMcbm2018UnpackerTaskHodo::MaskNoisyChannelSts(UInt_t uFeb,
+void CbmCosy2019UnpackerTaskHodo::MaskNoisyChannelSts(UInt_t uFeb,
                                                       UInt_t uChan,
                                                       Bool_t bMasked) {
   fvChanMasks.push_back(FebChanMaskSts {uFeb, uChan, bMasked});
 }
 
-void CbmMcbm2018UnpackerTaskHodo::SetAdcCutSts(UInt_t uAdc) {
+void CbmCosy2019UnpackerTaskHodo::SetAdcCutSts(UInt_t uAdc) {
   fUnpackerAlgoSts->SetAdcCut(uAdc);
 }
 
-ClassImp(CbmMcbm2018UnpackerTaskHodo)
+ClassImp(CbmCosy2019UnpackerTaskHodo)

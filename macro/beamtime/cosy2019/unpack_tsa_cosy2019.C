@@ -60,8 +60,8 @@ void unpack_tsa_cosy2019(TString inFile  = "",
   std::cout << ">>> unpack_tsa: Initialising..." << std::endl;
 
   CbmMcbm2018UnpackerTaskTof* unpacker_tof = new CbmMcbm2018UnpackerTaskTof();
-  CbmMcbm2018UnpackerTaskHodo* unpacker_hodo =
-    new CbmMcbm2018UnpackerTaskHodo();
+  CbmCosy2019UnpackerTaskHodo* unpacker_hodo =
+    new CbmCosy2019UnpackerTaskHodo();
 
   unpacker_tof->SetMonitorMode();
   unpacker_hodo->SetMonitorMode();

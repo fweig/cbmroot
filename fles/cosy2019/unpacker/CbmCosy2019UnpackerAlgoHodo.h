@@ -1,12 +1,12 @@
 // -----------------------------------------------------------------------------
 // -----                                                                   -----
-// -----                  CbmMcbm2018UnpackerAlgoHodo                      -----
+// -----                  CbmCosy2019UnpackerAlgoHodo                      -----
 // -----              Created 31/07/19  by P.-A. Loizeau                   -----
 // -----                                                                   -----
 // -----------------------------------------------------------------------------
 
-#ifndef CbmMcbm2018UnpackerAlgoHodo_H
-#define CbmMcbm2018UnpackerAlgoHodo_H
+#ifndef CbmCosy2019UnpackerAlgoHodo_H
+#define CbmCosy2019UnpackerAlgoHodo_H
 
 #include "CbmStar2019Algo.h"
 
@@ -28,14 +28,14 @@
 #include <map>
 #include <vector>
 
-class CbmMcbm2018HodoPar;
+class CbmCosy2019HodoPar;
 
 class TProfile;
 
-class CbmMcbm2018UnpackerAlgoHodo : public CbmStar2019Algo<CbmStsDigi> {
+class CbmCosy2019UnpackerAlgoHodo : public CbmStar2019Algo<CbmStsDigi> {
 public:
-  CbmMcbm2018UnpackerAlgoHodo();
-  ~CbmMcbm2018UnpackerAlgoHodo();
+  CbmCosy2019UnpackerAlgoHodo();
+  ~CbmCosy2019UnpackerAlgoHodo();
 
   virtual Bool_t Init();
   virtual void Reset();
@@ -80,7 +80,7 @@ private:
   std::vector<Bool_t> fvbMaskedComponents;
 
   /// Settings from parameter file
-  CbmMcbm2018HodoPar* fUnpackPar;  //!
+  CbmCosy2019HodoPar* fUnpackPar;  //!
                                    /// Readout chain dimensions and mapping
   UInt_t fuNbModules;              //! Total number of STS modules in the setup
   std::vector<Int_t>
@@ -170,10 +170,10 @@ private:
   void ProcessEpochInfo(const stsxyter::Message& mess);
   void ProcessStatusInfo(const stsxyter::Message& mess);
 
-  CbmMcbm2018UnpackerAlgoHodo(const CbmMcbm2018UnpackerAlgoHodo&);
-  CbmMcbm2018UnpackerAlgoHodo operator=(const CbmMcbm2018UnpackerAlgoHodo&);
+  CbmCosy2019UnpackerAlgoHodo(const CbmCosy2019UnpackerAlgoHodo&);
+  CbmCosy2019UnpackerAlgoHodo operator=(const CbmCosy2019UnpackerAlgoHodo&);
 
-  ClassDef(CbmMcbm2018UnpackerAlgoHodo, 1)
+  ClassDef(CbmCosy2019UnpackerAlgoHodo, 1)
 };
 
-#endif  // CbmMcbm2018UnpackerAlgoHodo_H
+#endif  // CbmCosy2019UnpackerAlgoHodo_H

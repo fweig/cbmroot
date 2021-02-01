@@ -51,7 +51,7 @@ void MonitorHodo(TString inFile           = "",
   std::cout << ">>> MonitorHodo: Initialising..." << std::endl;
 
   // Hodoscopes Monitor
-  CbmMcbm2018MonitorTaskHodo* monitorHodo = new CbmMcbm2018MonitorTaskHodo();
+  CbmCosy2019MonitorTaskHodo* monitorHodo = new CbmCosy2019MonitorTaskHodo();
   monitorHodo->SetIgnoreOverlapMs();
   monitorHodo->SetDpbId(0x4efb);
   monitorHodo->SetHodoElinkIdx(5, 10);

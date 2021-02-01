@@ -1,14 +1,14 @@
 // -----------------------------------------------------------------------------
 // -----                                                                   -----
-// -----                     CbmMcbm2018MonitorTaskHodo                    -----
+// -----                     CbmCosy2019MonitorTaskHodo                    -----
 // -----               Created 03.07.2019 by P.-A. Loizeau                 -----
 // -----                                                                   -----
 // -----------------------------------------------------------------------------
 
-#include "CbmMcbm2018MonitorTaskHodo.h"
+#include "CbmCosy2019MonitorTaskHodo.h"
 
-#include "CbmMcbm2018MonitorAlgoHodo.h"
-//#include "CbmMcbm2018HodoPar.h"
+#include "CbmCosy2019MonitorAlgoHodo.h"
+//#include "CbmCosy2019HodoPar.h"
 //#include "CbmHodoDigi.h"
 
 #include "FairLogger.h"
@@ -31,9 +31,9 @@
 #include <iostream>
 #include <stdint.h>
 
-Bool_t bMcbm2018MonitorTaskHodoResetHistos = kFALSE;
+Bool_t bCosy2019MonitorTaskHodoResetHistos = kFALSE;
 
-CbmMcbm2018MonitorTaskHodo::CbmMcbm2018MonitorTaskHodo(UInt_t /*uNbGdpb*/)
+CbmCosy2019MonitorTaskHodo::CbmCosy2019MonitorTaskHodo(UInt_t /*uNbGdpb*/)
   : CbmMcbmUnpack()
   , fbMonitorMode(kFALSE)
   , fbWriteOutput(kTRUE)
@@ -41,15 +41,15 @@ CbmMcbm2018MonitorTaskHodo::CbmMcbm2018MonitorTaskHodo(UInt_t /*uNbGdpb*/)
   ,
   //    fHodoDigiCloneArray(),
   fMonitorAlgo(nullptr) {
-  fMonitorAlgo = new CbmMcbm2018MonitorAlgoHodo();
+  fMonitorAlgo = new CbmCosy2019MonitorAlgoHodo();
 }
 
-CbmMcbm2018MonitorTaskHodo::~CbmMcbm2018MonitorTaskHodo() {
+CbmCosy2019MonitorTaskHodo::~CbmCosy2019MonitorTaskHodo() {
   delete fMonitorAlgo;
 }
 
-Bool_t CbmMcbm2018MonitorTaskHodo::Init() {
-  LOG(info) << "CbmMcbm2018MonitorTaskHodo::Init";
+Bool_t CbmCosy2019MonitorTaskHodo::Init() {
+  LOG(info) << "CbmCosy2019MonitorTaskHodo::Init";
   LOG(info) << "Initializing mCBM Hodoscopes Monitor";
   /*
    FairRootManager* ioman = FairRootManager::Instance();
@@ -68,7 +68,7 @@ Bool_t CbmMcbm2018MonitorTaskHodo::Init() {
   return kTRUE;
 }
 
-void CbmMcbm2018MonitorTaskHodo::SetParContainers() {
+void CbmCosy2019MonitorTaskHodo::SetParContainers() {
   LOG(info) << "Setting parameter containers for " << GetName();
 
   TList* parCList = fMonitorAlgo->GetParList();
@@ -92,15 +92,15 @@ void CbmMcbm2018MonitorTaskHodo::SetParContainers() {
   }  // for( Int_t iparC = 0; iparC < parCList->GetEntries(); ++iparC )
 }
 
-Bool_t CbmMcbm2018MonitorTaskHodo::InitContainers() {
+Bool_t CbmCosy2019MonitorTaskHodo::InitContainers() {
   LOG(info) << "Init parameter containers for " << GetName();
 
   /// Control flags
   /*
-   CbmMcbm2018HodoPar * pUnpackPar = dynamic_cast<CbmMcbm2018HodoPar*>( FairRun::Instance()->GetRuntimeDb()->getContainer( "CbmMcbm2018HodoPar" ) );
+   CbmCosy2019HodoPar * pUnpackPar = dynamic_cast<CbmCosy2019HodoPar*>( FairRun::Instance()->GetRuntimeDb()->getContainer( "CbmCosy2019HodoPar" ) );
    if( nullptr == pUnpackPar )
    {
-      LOG(error) << "Failed to obtain parameter container CbmMcbm2018HodoPar";
+      LOG(error) << "Failed to obtain parameter container CbmCosy2019HodoPar";
       return kFALSE;
    } // if( nullptr == pUnpackPar )
 */
@@ -141,7 +141,7 @@ Bool_t CbmMcbm2018MonitorTaskHodo::InitContainers() {
     }  // for( UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto )
 
     server->RegisterCommand("/Reset_MoniHodo_Hist",
-                            "bMcbm2018MonitorTaskHodoResetHistos=kTRUE");
+                            "bCosy2019MonitorTaskHodoResetHistos=kTRUE");
     server->Restrict("/Reset_MoniHodo_Hist", "allow=admin");
   }  // if( nullptr != server )
 
@@ -150,25 +150,25 @@ Bool_t CbmMcbm2018MonitorTaskHodo::InitContainers() {
   return initOK;
 }
 
-Bool_t CbmMcbm2018MonitorTaskHodo::ReInitContainers() {
+Bool_t CbmCosy2019MonitorTaskHodo::ReInitContainers() {
   LOG(info) << "ReInit parameter containers for " << GetName();
   Bool_t initOK = fMonitorAlgo->ReInitContainers();
 
   return initOK;
 }
 
-void CbmMcbm2018MonitorTaskHodo::AddMsComponentToList(size_t component,
+void CbmCosy2019MonitorTaskHodo::AddMsComponentToList(size_t component,
                                                       UShort_t usDetectorId) {
   fMonitorAlgo->AddMsComponentToList(component, usDetectorId);
 }
 
-Bool_t CbmMcbm2018MonitorTaskHodo::DoUnpack(const fles::Timeslice& ts,
+Bool_t CbmCosy2019MonitorTaskHodo::DoUnpack(const fles::Timeslice& ts,
                                             size_t /*component*/) {
-  if (fbMonitorMode && bMcbm2018MonitorTaskHodoResetHistos) {
+  if (fbMonitorMode && bCosy2019MonitorTaskHodoResetHistos) {
     LOG(info) << "Reset Hodoscopes monitor histos ";
     fMonitorAlgo->ResetHistograms();
-    bMcbm2018MonitorTaskHodoResetHistos = kFALSE;
-  }  // if( fbMonitorMode && bMcbm2018MonitorTaskHodoResetHistos )
+    bCosy2019MonitorTaskHodoResetHistos = kFALSE;
+  }  // if( fbMonitorMode && bCosy2019MonitorTaskHodoResetHistos )
 
   if (kFALSE == fMonitorAlgo->ProcessTs(ts)) {
     LOG(error) << "Failed processing TS " << ts.index()
@@ -201,18 +201,18 @@ Bool_t CbmMcbm2018MonitorTaskHodo::DoUnpack(const fles::Timeslice& ts,
   return kTRUE;
 }
 
-void CbmMcbm2018MonitorTaskHodo::Reset() {
+void CbmCosy2019MonitorTaskHodo::Reset() {
   //   fHodoDigiCloneArray->Clear();
 }
 
-void CbmMcbm2018MonitorTaskHodo::Finish() {
+void CbmCosy2019MonitorTaskHodo::Finish() {
   /// If monitor mode enabled, trigger histos creation, obtain pointer on them and add them to the HTTP server
   if (kTRUE == fbMonitorMode) {
     SaveHistograms();
   }  // if( kTRUE == fbMonitorMode )
 }
 
-Bool_t CbmMcbm2018MonitorTaskHodo::SaveHistograms() {
+Bool_t CbmCosy2019MonitorTaskHodo::SaveHistograms() {
   /// Obtain vector of pointers on each histo from the algo (+ optionally desired folder)
   std::vector<std::pair<TNamed*, std::string>> vHistos =
     fMonitorAlgo->GetHistoVector();
@@ -266,32 +266,32 @@ Bool_t CbmMcbm2018MonitorTaskHodo::SaveHistograms() {
   return kTRUE;
 }
 
-void CbmMcbm2018MonitorTaskHodo::SetIgnoreOverlapMs(Bool_t bFlagIn) {
+void CbmCosy2019MonitorTaskHodo::SetIgnoreOverlapMs(Bool_t bFlagIn) {
   fMonitorAlgo->SetIgnoreOverlapMs(bFlagIn);
 }
 
-void CbmMcbm2018MonitorTaskHodo::SetTimeOffsetNs(Double_t dOffsetIn) {
+void CbmCosy2019MonitorTaskHodo::SetTimeOffsetNs(Double_t dOffsetIn) {
   fMonitorAlgo->SetTimeOffsetNs(dOffsetIn);
 }
-void CbmMcbm2018MonitorTaskHodo::SetDpbId(UInt_t uDpbId) {
+void CbmCosy2019MonitorTaskHodo::SetDpbId(UInt_t uDpbId) {
   fMonitorAlgo->SetDpbId(uDpbId);
 }
-void CbmMcbm2018MonitorTaskHodo::SetHodoElinkIdx(UInt_t uElinkHodoA,
+void CbmCosy2019MonitorTaskHodo::SetHodoElinkIdx(UInt_t uElinkHodoA,
                                                  UInt_t uElinkHodoB) {
   fMonitorAlgo->SetHodoElinkIdx(uElinkHodoA, uElinkHodoB);
 }
-void CbmMcbm2018MonitorTaskHodo::SetHodoSwapXY(Bool_t bSwapHodoA,
+void CbmCosy2019MonitorTaskHodo::SetHodoSwapXY(Bool_t bSwapHodoA,
                                                Bool_t bSwapHodoB) {
   fMonitorAlgo->SetHodoSwapXY(bSwapHodoA, bSwapHodoB);
 }
-void CbmMcbm2018MonitorTaskHodo::SetHodoInvertX(Bool_t bInvHodoA,
+void CbmCosy2019MonitorTaskHodo::SetHodoInvertX(Bool_t bInvHodoA,
                                                 Bool_t bInvHodoB) {
   fMonitorAlgo->SetHodoInvertX(bInvHodoA, bInvHodoB);
 }
-void CbmMcbm2018MonitorTaskHodo::SetHodoInvertY(Bool_t bInvHodoA,
+void CbmCosy2019MonitorTaskHodo::SetHodoInvertY(Bool_t bInvHodoA,
                                                 Bool_t bInvHodoB) {
   fMonitorAlgo->SetHodoInvertY(bInvHodoA, bInvHodoB);
 }
 
 
-ClassImp(CbmMcbm2018MonitorTaskHodo)
+ClassImp(CbmCosy2019MonitorTaskHodo)

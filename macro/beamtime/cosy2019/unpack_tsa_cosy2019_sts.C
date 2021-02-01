@@ -61,7 +61,7 @@ void unpack_tsa_cosy2019_sts(TString inFile  = "",
 
   CbmMcbm2018UnpackerTaskSts* unpacker_sts = new CbmMcbm2018UnpackerTaskSts();
   //  CbmMcbm2018UnpackerTaskTof  * unpacker_tof  = new CbmMcbm2018UnpackerTaskTof();
-  //  CbmMcbm2018UnpackerTaskHodo * unpacker_hodo = new CbmMcbm2018UnpackerTaskHodo();
+  //  CbmCosy2019UnpackerTaskHodo * unpacker_hodo = new CbmCosy2019UnpackerTaskHodo();
 
   unpacker_sts->SetMonitorMode();
   //  unpacker_tof ->SetMonitorMode();

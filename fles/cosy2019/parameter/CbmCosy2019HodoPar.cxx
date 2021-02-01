@@ -1,9 +1,9 @@
 // -------------------------------------------------------------------------
-// -----            CbmMcbm2018HodoPar source file                      -----
+// -----            CbmCosy2019HodoPar source file                      -----
 // -----            Created 31/07/19  by P.-A. Loizeau                 -----
 // -------------------------------------------------------------------------
 
-#include "CbmMcbm2018HodoPar.h"
+#include "CbmCosy2019HodoPar.h"
 
 #include "FairDetParIo.h"
 #include "FairLogger.h"
@@ -16,7 +16,7 @@
 using namespace std;
 
 // -----   Standard constructor   ------------------------------------------
-CbmMcbm2018HodoPar::CbmMcbm2018HodoPar(const char* name,
+CbmCosy2019HodoPar::CbmCosy2019HodoPar(const char* name,
                                        const char* title,
                                        const char* context)
   : FairParGenericSet(name, title, context)
@@ -41,12 +41,12 @@ CbmMcbm2018HodoPar::CbmMcbm2018HodoPar(const char* name,
 
 
 // -----   Destructor   ----------------------------------------------------
-CbmMcbm2018HodoPar::~CbmMcbm2018HodoPar() {}
+CbmCosy2019HodoPar::~CbmCosy2019HodoPar() {}
 // -------------------------------------------------------------------------
 
 
 // -----   Public method clear   -------------------------------------------
-void CbmMcbm2018HodoPar::clear() {
+void CbmCosy2019HodoPar::clear() {
   status = kFALSE;
   resetInputVersions();
 }
@@ -54,7 +54,7 @@ void CbmMcbm2018HodoPar::clear() {
 
 // -------------------------------------------------------------------------
 
-void CbmMcbm2018HodoPar::putParams(FairParamList* l) {
+void CbmCosy2019HodoPar::putParams(FairParamList* l) {
   if (!l) return;
 
   l->add("NbModules", fuNbModules);
@@ -78,7 +78,7 @@ void CbmMcbm2018HodoPar::putParams(FairParamList* l) {
 
 // -------------------------------------------------------------------------
 
-Bool_t CbmMcbm2018HodoPar::getParams(FairParamList* l) {
+Bool_t CbmCosy2019HodoPar::getParams(FairParamList* l) {
 
   if (!l) return kFALSE;
 
@@ -119,137 +119,137 @@ Bool_t CbmMcbm2018HodoPar::getParams(FairParamList* l) {
   return kTRUE;
 }
 // -------------------------------------------------------------------------
-Int_t CbmMcbm2018HodoPar::ElinkIdxToFebIdx(UInt_t uElink) {
+Int_t CbmCosy2019HodoPar::ElinkIdxToFebIdx(UInt_t uElink) {
   //LOG(info) <<" uElink "<<uElink<<" kuNbElinksPerCrob "<<kuNbElinksPerCrob;
   if (uElink < kuNbElinksPerCrob)
     return kiCrobMapElinkFebIdx[uElink];
   else {
     LOG(warning)
-      << "CbmMcbm2018HodoPar::ElinkIdxToFebIdx => Index out of bound, "
+      << "CbmCosy2019HodoPar::ElinkIdxToFebIdx => Index out of bound, "
       << "returning crazy value!";
     return -1;
   }  // else of if( uElink < kuNbElinksPerCrob )
 }
 // -------------------------------------------------------------------------
-UInt_t CbmMcbm2018HodoPar::ElinkIdxToAsicIdxFebMuch(UInt_t uElink) {
+UInt_t CbmCosy2019HodoPar::ElinkIdxToAsicIdxFebMuch(UInt_t uElink) {
   if (uElink < kuNbElinksPerCrob)
     return kuCrobMapElinkFebMuch[uElink];
   else {
     LOG(warning)
-      << "CbmMcbm2018HodoPar::ElinkIdxToAsicIdxFebMuch => Index out of bound, "
+      << "CbmCosy2019HodoPar::ElinkIdxToAsicIdxFebMuch => Index out of bound, "
       << "returning crazy value!";
     return 0xFFFF;
   }  // else of if( uElink < kuNbElinksPerCrob )
 }
 // -------------------------------------------------------------------------
-UInt_t CbmMcbm2018HodoPar::ChannelToFiber(UInt_t uChan) {
+UInt_t CbmCosy2019HodoPar::ChannelToFiber(UInt_t uChan) {
   if (uChan < kuNbChanPerAsic)
     return kuChannelToFiberMap[uChan];
   else {
-    LOG(warning) << "CbmMcbm2018HodoPar::ChannelToFiber => Index out of bound, "
+    LOG(warning) << "CbmCosy2019HodoPar::ChannelToFiber => Index out of bound, "
                  << "returning crazy value!";
     return 0xFFFF;
   }  // else of if( uChan < kuNbChanPerAsic )
 }
-UInt_t CbmMcbm2018HodoPar::ChannelToPixel(UInt_t uChan) {
+UInt_t CbmCosy2019HodoPar::ChannelToPixel(UInt_t uChan) {
   if (uChan < kuNbChanPerAsic)
     return kuChannelToPixelMap[uChan];
   else {
-    LOG(warning) << "CbmMcbm2018HodoPar::ChannelToPixel => Index out of bound, "
+    LOG(warning) << "CbmCosy2019HodoPar::ChannelToPixel => Index out of bound, "
                  << "returning crazy value!";
     return 0xFFFF;
   }  // else of if( uChan < kuNbChanPerAsic )
 }
-UInt_t CbmMcbm2018HodoPar::ChannelToAxis(UInt_t uChan) {
+UInt_t CbmCosy2019HodoPar::ChannelToAxis(UInt_t uChan) {
   if (uChan < kuNbChanPerAsic)
     return kuChannelToPlaneMap[uChan];
   else {
-    LOG(warning) << "CbmMcbm2018HodoPar::ChannelToAxis => Index out of bound, "
+    LOG(warning) << "CbmCosy2019HodoPar::ChannelToAxis => Index out of bound, "
                  << "returning crazy value!";
     return 0xFFFF;
   }  // else of if( uChan < kuNbChanPerAsic )
 }
 // -------------------------------------------------------------------------
-Bool_t CbmMcbm2018HodoPar::CheckModuleIndex(UInt_t uModuleIdx) {
+Bool_t CbmCosy2019HodoPar::CheckModuleIndex(UInt_t uModuleIdx) {
   if (uModuleIdx < fuNbModules)
     return kTRUE;
   else {
     LOG(warning)
-      << "CbmMcbm2018HodoPar::CheckModuleIndex => Index out of bound!";
+      << "CbmCosy2019HodoPar::CheckModuleIndex => Index out of bound!";
     return kFALSE;
   }  // else of if( uModuleIdx < fuNbModules )
 }
-UInt_t CbmMcbm2018HodoPar::GetModuleAddress(UInt_t uModuleIdx) {
+UInt_t CbmCosy2019HodoPar::GetModuleAddress(UInt_t uModuleIdx) {
   if (uModuleIdx < fuNbModules)
     return fiModAddress[uModuleIdx];
   else {
     LOG(warning)
-      << "CbmMcbm2018HodoPar::GetModuleAddress => Index out of bound, "
+      << "CbmCosy2019HodoPar::GetModuleAddress => Index out of bound, "
       << "returning crazy value!";
     return 0xFFFFFFFF;
   }  // else of if( uModuleIdx < fuNbModules )
 }
-Double_t CbmMcbm2018HodoPar::GetModuleCenterPosX(UInt_t uModuleIdx) {
+Double_t CbmCosy2019HodoPar::GetModuleCenterPosX(UInt_t uModuleIdx) {
   if (uModuleIdx < fuNbModules)
     return fdModCenterPosX[uModuleIdx];
   else {
     LOG(warning)
-      << "CbmMcbm2018HodoPar::GetModuleCenterPosX => Index out of bound, "
+      << "CbmCosy2019HodoPar::GetModuleCenterPosX => Index out of bound, "
       << "returning crazy value!";
     return 3.844e11;  // Fly to the Moon!
   }                   // else of if( uModuleIdx < fuNbModules )
 }
-Double_t CbmMcbm2018HodoPar::GetModuleCenterPosY(UInt_t uModuleIdx) {
+Double_t CbmCosy2019HodoPar::GetModuleCenterPosY(UInt_t uModuleIdx) {
   if (uModuleIdx < fuNbModules)
     return fdModCenterPosY[uModuleIdx];
   else {
     LOG(warning)
-      << "CbmMcbm2018HodoPar::GetModuleCenterPosY => Index out of bound, "
+      << "CbmCosy2019HodoPar::GetModuleCenterPosY => Index out of bound, "
       << "returning crazy value!";
     return 3.844e11;  // Fly to the Moon!
   }                   // else of if( uModuleIdx < fuNbModules )
 }
-Bool_t CbmMcbm2018HodoPar::GetModuleSwapXY(UInt_t uModuleIdx) {
+Bool_t CbmCosy2019HodoPar::GetModuleSwapXY(UInt_t uModuleIdx) {
   if (uModuleIdx < fuNbModules)
     return fiModSwapXY[uModuleIdx];
   else {
     LOG(warning)
-      << "CbmMcbm2018HodoPar::GetModuleSwapXY => Index out of bound, "
+      << "CbmCosy2019HodoPar::GetModuleSwapXY => Index out of bound, "
       << "returning false!";
     return kFALSE;  // Fly to the Moon!
   }                 // else of if( uModuleIdx < fuNbModules )
 }
-Bool_t CbmMcbm2018HodoPar::GetModuleInvertX(UInt_t uModuleIdx) {
+Bool_t CbmCosy2019HodoPar::GetModuleInvertX(UInt_t uModuleIdx) {
   if (uModuleIdx < fuNbModules)
     return fiModInvertX[uModuleIdx];
   else {
     LOG(warning)
-      << "CbmMcbm2018HodoPar::GetModuleInvertX => Index out of bound, "
+      << "CbmCosy2019HodoPar::GetModuleInvertX => Index out of bound, "
       << "returning false!";
     return kFALSE;  // Fly to the Moon!
   }                 // else of if( uModuleIdx < fuNbModules )
 }
-Bool_t CbmMcbm2018HodoPar::GetModuleInvertY(UInt_t uModuleIdx) {
+Bool_t CbmCosy2019HodoPar::GetModuleInvertY(UInt_t uModuleIdx) {
   if (uModuleIdx < fuNbModules)
     return fiModInvertY[uModuleIdx];
   else {
     LOG(warning)
-      << "CbmMcbm2018HodoPar::GetModuleInvertY => Index out of bound, "
+      << "CbmCosy2019HodoPar::GetModuleInvertY => Index out of bound, "
       << "returning false!";
     return kFALSE;  // Fly to the Moon!
   }                 // else of if( uModuleIdx < fuNbModules )
 }
 // -------------------------------------------------------------------------
-UInt_t CbmMcbm2018HodoPar::GetDpbId(UInt_t uDpbIdx) {
+UInt_t CbmCosy2019HodoPar::GetDpbId(UInt_t uDpbIdx) {
   if (uDpbIdx < fuNrOfDpbs)
     return fiDbpIdArray[uDpbIdx];
   else {
-    LOG(warning) << "CbmMcbm2018HodoPar::GetDpbId => Index out of bound, "
+    LOG(warning) << "CbmCosy2019HodoPar::GetDpbId => Index out of bound, "
                  << "returning crazy value!";
     return 0xFFFFFFFF;
   }  // else of if( uDpbIdx < fuNrOfDpbs )
 }
-Bool_t CbmMcbm2018HodoPar::IsCrobActive(UInt_t uDpbIdx, UInt_t uCrobIdx) {
+Bool_t CbmCosy2019HodoPar::IsCrobActive(UInt_t uDpbIdx, UInt_t uCrobIdx) {
   if (uDpbIdx < fuNrOfDpbs) {
     if (uCrobIdx < kuNbCrobsPerDpb)
       return 0 < fiCrobActiveFlag[uDpbIdx * kuNbCrobsPerDpb + uCrobIdx]
@@ -257,31 +257,31 @@ Bool_t CbmMcbm2018HodoPar::IsCrobActive(UInt_t uDpbIdx, UInt_t uCrobIdx) {
                : kFALSE;
     else {
       LOG(warning)
-        << "CbmMcbm2018HodoPar::IsCrobActive => Crob Index out of bound, "
+        << "CbmCosy2019HodoPar::IsCrobActive => Crob Index out of bound, "
         << "returning default inactive!";
       return kFALSE;
     }  // else of if( uCrobIdx < kuNbCrobsPerDpb )
   }    // if( uDpbIdx < fuNrOfDpbs )
   else {
     LOG(warning)
-      << "CbmMcbm2018HodoPar::IsCrobActive => Dpb Index out of bound, "
+      << "CbmCosy2019HodoPar::IsCrobActive => Dpb Index out of bound, "
       << "returning default inactive!";
     return kFALSE;
   }  // else of if( uDpbIdx < fuNrOfDpbs )
 }
-Bool_t CbmMcbm2018HodoPar::IsFebActive(UInt_t uFebInSystIdx) {
+Bool_t CbmCosy2019HodoPar::IsFebActive(UInt_t uFebInSystIdx) {
 
   if (uFebInSystIdx < GetNrOfFebs()) {
     return (-1 == fiFebModuleIdx[uFebInSystIdx] ? kFALSE : kTRUE);
   }  // if( uFebInSystIdx < GetNrOfFebs() )
   else {
     LOG(warning)
-      << "CbmMcbm2018HodoPar::IsFebActive => Feb Index out of bound, "
+      << "CbmCosy2019HodoPar::IsFebActive => Feb Index out of bound, "
       << "returning default inactive!";
     return kFALSE;
   }  // else of if( uFebInSystIdx < GetNrOfFebs() )
 }
-Bool_t CbmMcbm2018HodoPar::IsFebActive(UInt_t uDpbIdx,
+Bool_t CbmCosy2019HodoPar::IsFebActive(UInt_t uDpbIdx,
                                        UInt_t uCrobIdx,
                                        UInt_t uFebIdx) {
   if (uDpbIdx < fuNrOfDpbs) {
@@ -293,26 +293,26 @@ Bool_t CbmMcbm2018HodoPar::IsFebActive(UInt_t uDpbIdx,
       }  // if( uFebIdx < kuNbFebsPerCrob )
       else {
         LOG(warning)
-          << "CbmMcbm2018HodoPar::IsFebActive => Feb Index out of bound, "
+          << "CbmCosy2019HodoPar::IsFebActive => Feb Index out of bound, "
           << "returning default inactive!";
         return kFALSE;
       }  // else of if( uFebIdx < kuNbCrobsPerDpb )
     }    // if( uCrobIdx < kuNbCrobsPerDpb )
     else {
       LOG(warning)
-        << "CbmMcbm2018HodoPar::IsFebActive => Crob Index out of bound, "
+        << "CbmCosy2019HodoPar::IsFebActive => Crob Index out of bound, "
         << "returning default inactive!";
       return kFALSE;
     }  // else of if( uCrobIdx < kuNbCrobsPerDpb )
   }    // if( uDpbIdx < fuNrOfDpbs )
   else {
     LOG(warning)
-      << "CbmMcbm2018HodoPar::IsFebActive => Dpb Index out of bound, "
+      << "CbmCosy2019HodoPar::IsFebActive => Dpb Index out of bound, "
       << "returning default inactive!";
     return kFALSE;
   }  // else of if( uDpbIdx < fuNrOfDpbs )
 }
-Int_t CbmMcbm2018HodoPar::GetFebModuleIdx(UInt_t uDpbIdx,
+Int_t CbmCosy2019HodoPar::GetFebModuleIdx(UInt_t uDpbIdx,
                                           UInt_t uCrobIdx,
                                           UInt_t uFebIdx) {
   if (uDpbIdx < fuNrOfDpbs) {
@@ -324,26 +324,26 @@ Int_t CbmMcbm2018HodoPar::GetFebModuleIdx(UInt_t uDpbIdx,
       }  // if( uFebIdx < kuNbFebsPerCrob )
       else {
         LOG(warning)
-          << "CbmMcbm2018HodoPar::GetFebModuleIdx => Feb Index out of bound, "
+          << "CbmCosy2019HodoPar::GetFebModuleIdx => Feb Index out of bound, "
           << "returning default inactive!";
         return -1;
       }  // else of if( uCrobIdx < kuNbCrobsPerDpb )
     }    // if( uCrobIdx < kuNbCrobsPerDpb )
     else {
       LOG(warning)
-        << "CbmMcbm2018HodoPar::GetFebModuleIdx => Crob Index out of bound, "
+        << "CbmCosy2019HodoPar::GetFebModuleIdx => Crob Index out of bound, "
         << "returning default inactive!";
       return -1;
     }  // else of if( uCrobIdx < kuNbCrobsPerDpb )
   }    // if( uDpbIdx < fuNrOfDpbs )
   else {
     LOG(warning)
-      << "CbmMcbm2018HodoPar::GetFebModuleIdx => Dpb Index out of bound, "
+      << "CbmCosy2019HodoPar::GetFebModuleIdx => Dpb Index out of bound, "
       << "returning default inactive!";
     return -1;
   }  // else of if( uDpbIdx < fuNrOfDpbs )
 }
-Double_t CbmMcbm2018HodoPar::GetFebAdcGain(UInt_t uDpbIdx,
+Double_t CbmCosy2019HodoPar::GetFebAdcGain(UInt_t uDpbIdx,
                                            UInt_t uCrobIdx,
                                            UInt_t uFebIdx) {
   if (uDpbIdx < fuNrOfDpbs) {
@@ -355,26 +355,26 @@ Double_t CbmMcbm2018HodoPar::GetFebAdcGain(UInt_t uDpbIdx,
       }  // if( uFebIdx < kuNbFebsPerCrob )
       else {
         LOG(warning)
-          << "CbmMcbm2018HodoPar::GetFebAdcGain => Feb Index out of bound, "
+          << "CbmCosy2019HodoPar::GetFebAdcGain => Feb Index out of bound, "
           << "returning default value!";
         return 0.0;
       }  // else of if( uCrobIdx < kuNbCrobsPerDpb )
     }    // if( uCrobIdx < kuNbCrobsPerDpb )
     else {
       LOG(warning)
-        << "CbmMcbm2018HodoPar::GetFebAdcGain => Crob Index out of bound, "
+        << "CbmCosy2019HodoPar::GetFebAdcGain => Crob Index out of bound, "
         << "returning default value!";
       return 0.0;
     }  // else of if( uCrobIdx < kuNbCrobsPerDpb )
   }    // if( uDpbIdx < fuNrOfDpbs )
   else {
     LOG(warning)
-      << "CbmMcbm2018HodoPar::GetFebAdcGain => Dpb Index out of bound, "
+      << "CbmCosy2019HodoPar::GetFebAdcGain => Dpb Index out of bound, "
       << "returning default value!";
     return 0.0;
   }  // else of if( uDpbIdx < fuNrOfDpbs )
 }
-Double_t CbmMcbm2018HodoPar::GetFebAdcOffset(UInt_t uDpbIdx,
+Double_t CbmCosy2019HodoPar::GetFebAdcOffset(UInt_t uDpbIdx,
                                              UInt_t uCrobIdx,
                                              UInt_t uFebIdx) {
   if (uDpbIdx < fuNrOfDpbs) {
@@ -387,26 +387,26 @@ Double_t CbmMcbm2018HodoPar::GetFebAdcOffset(UInt_t uDpbIdx,
       }  // if( uFebIdx < kuNbFebsPerCrob )
       else {
         LOG(warning)
-          << "CbmMcbm2018HodoPar::GetFebAdcOffset => Feb Index out of bound, "
+          << "CbmCosy2019HodoPar::GetFebAdcOffset => Feb Index out of bound, "
           << "returning default value!";
         return 0.0;
       }  // else of if( uCrobIdx < kuNbCrobsPerDpb )
     }    // if( uCrobIdx < kuNbCrobsPerDpb )
     else {
       LOG(warning)
-        << "CbmMcbm2018HodoPar::GetFebAdcOffset => Crob Index out of bound, "
+        << "CbmCosy2019HodoPar::GetFebAdcOffset => Crob Index out of bound, "
         << "returning default value!";
       return 0.0;
     }  // else of if( uCrobIdx < kuNbCrobsPerDpb )
   }    // if( uDpbIdx < fuNrOfDpbs )
   else {
     LOG(warning)
-      << "CbmMcbm2018HodoPar::GetFebAdcOffset => Dpb Index out of bound, "
+      << "CbmCosy2019HodoPar::GetFebAdcOffset => Dpb Index out of bound, "
       << "returning default value!";
     return 0.0;
   }  // else of if( uDpbIdx < fuNrOfDpbs )
 }
-Double_t CbmMcbm2018HodoPar::GetFebAdcBase(UInt_t uDpbIdx,
+Double_t CbmCosy2019HodoPar::GetFebAdcBase(UInt_t uDpbIdx,
                                            UInt_t uCrobIdx,
                                            UInt_t uFebIdx) {
   if (uDpbIdx < fuNrOfDpbs) {
@@ -418,26 +418,26 @@ Double_t CbmMcbm2018HodoPar::GetFebAdcBase(UInt_t uDpbIdx,
       }  // if( uFebIdx < kuNbFebsPerCrob )
       else {
         LOG(warning)
-          << "CbmMcbm2018HodoPar::GetFebAdcBase => Feb Index out of bound, "
+          << "CbmCosy2019HodoPar::GetFebAdcBase => Feb Index out of bound, "
           << "returning default value!";
         return 0.0;
       }  // else of if( uCrobIdx < kuNbCrobsPerDpb )
     }    // if( uCrobIdx < kuNbCrobsPerDpb )
     else {
       LOG(warning)
-        << "CbmMcbm2018HodoPar::GetFebAdcBase => Crob Index out of bound, "
+        << "CbmCosy2019HodoPar::GetFebAdcBase => Crob Index out of bound, "
         << "returning default value!";
       return 0.0;
     }  // else of if( uCrobIdx < kuNbCrobsPerDpb )
   }    // if( uDpbIdx < fuNrOfDpbs )
   else {
     LOG(warning)
-      << "CbmMcbm2018HodoPar::GetFebAdcBase => Dpb Index out of bound, "
+      << "CbmCosy2019HodoPar::GetFebAdcBase => Dpb Index out of bound, "
       << "returning default value!";
     return 0.0;
   }  // else of if( uDpbIdx < fuNrOfDpbs )
 }
-Double_t CbmMcbm2018HodoPar::GetFebAdcThrGain(UInt_t uDpbIdx,
+Double_t CbmCosy2019HodoPar::GetFebAdcThrGain(UInt_t uDpbIdx,
                                               UInt_t uCrobIdx,
                                               UInt_t uFebIdx) {
   if (uDpbIdx < fuNrOfDpbs) {
@@ -449,26 +449,26 @@ Double_t CbmMcbm2018HodoPar::GetFebAdcThrGain(UInt_t uDpbIdx,
       }  // if( uFebIdx < kuNbFebsPerCrob )
       else {
         LOG(warning)
-          << "CbmMcbm2018HodoPar::GetFebAdcThrGain => Feb Index out of bound, "
+          << "CbmCosy2019HodoPar::GetFebAdcThrGain => Feb Index out of bound, "
           << "returning default value!";
         return 0.0;
       }  // else of if( uCrobIdx < kuNbCrobsPerDpb )
     }    // if( uCrobIdx < kuNbCrobsPerDpb )
     else {
       LOG(warning)
-        << "CbmMcbm2018HodoPar::GetFebAdcThrGain => Crob Index out of bound, "
+        << "CbmCosy2019HodoPar::GetFebAdcThrGain => Crob Index out of bound, "
         << "returning default value!";
       return 0.0;
     }  // else of if( uCrobIdx < kuNbCrobsPerDpb )
   }    // if( uDpbIdx < fuNrOfDpbs )
   else {
     LOG(warning)
-      << "CbmMcbm2018HodoPar::GetFebAdcThrGain => Dpb Index out of bound, "
+      << "CbmCosy2019HodoPar::GetFebAdcThrGain => Dpb Index out of bound, "
       << "returning default value!";
     return 0.0;
   }  // else of if( uDpbIdx < fuNrOfDpbs )
 }
-Int_t CbmMcbm2018HodoPar::GetFebAdcThrOffs(UInt_t uDpbIdx,
+Int_t CbmCosy2019HodoPar::GetFebAdcThrOffs(UInt_t uDpbIdx,
                                            UInt_t uCrobIdx,
                                            UInt_t uFebIdx) {
   if (uDpbIdx < fuNrOfDpbs) {
@@ -480,27 +480,27 @@ Int_t CbmMcbm2018HodoPar::GetFebAdcThrOffs(UInt_t uDpbIdx,
       }  // if( uFebIdx < kuNbFebsPerCrob )
       else {
         LOG(warning)
-          << "CbmMcbm2018HodoPar::GetFebAdcThrOffs => Feb Index out of bound, "
+          << "CbmCosy2019HodoPar::GetFebAdcThrOffs => Feb Index out of bound, "
           << "returning default value!";
         return 0;
       }  // else of if( uCrobIdx < kuNbCrobsPerDpb )
     }    // if( uCrobIdx < kuNbCrobsPerDpb )
     else {
       LOG(warning)
-        << "CbmMcbm2018HodoPar::GetFebAdcThrOffs => Crob Index out of bound, "
+        << "CbmCosy2019HodoPar::GetFebAdcThrOffs => Crob Index out of bound, "
         << "returning default value!";
       return 0;
     }  // else of if( uCrobIdx < kuNbCrobsPerDpb )
   }    // if( uDpbIdx < fuNrOfDpbs )
   else {
     LOG(warning)
-      << "CbmMcbm2018HodoPar::GetFebAdcThrOffs => Dpb Index out of bound, "
+      << "CbmCosy2019HodoPar::GetFebAdcThrOffs => Dpb Index out of bound, "
       << "returning default value!";
     return 0;
   }  // else of if( uDpbIdx < fuNrOfDpbs )
 }
 // -------------------------------------------------------------------------
-UInt_t CbmMcbm2018HodoPar::GetChannelInModule(UInt_t uModuleIdx, UInt_t uChan) {
+UInt_t CbmCosy2019HodoPar::GetChannelInModule(UInt_t uModuleIdx, UInt_t uChan) {
   if (uModuleIdx < fuNbModules || uChan < kuNbChanPerAsic) {
     UInt_t uAxis       = ChannelToAxis(uChan);
     UInt_t uChanInAxis = ChannelToFiber(uChan);
@@ -519,11 +519,11 @@ UInt_t CbmMcbm2018HodoPar::GetChannelInModule(UInt_t uModuleIdx, UInt_t uChan) {
   }  // if( uModuleIdx < fuNbModules || uChan < kuNbChanPerAsic )
   else {
     LOG(warning)
-      << "CbmMcbm2018HodoPar::GetChannelInModule => Index out of bound, "
+      << "CbmCosy2019HodoPar::GetChannelInModule => Index out of bound, "
       << "returning crazy value!";
     return 0xFFFF;
   }  // else of if( uModuleIdx < fuNbModules || uChan < kuNbChanPerAsic )
 }
 // -------------------------------------------------------------------------
 
-ClassImp(CbmMcbm2018HodoPar)
+ClassImp(CbmCosy2019HodoPar)

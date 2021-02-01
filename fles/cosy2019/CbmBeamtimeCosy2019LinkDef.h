@@ -4,13 +4,13 @@
 #pragma link off all classes;
 #pragma link off all functions;
 
-#pragma link C++ class CbmMcbm2018HodoPar;
-#pragma link C++ class CbmMcbm2018ContFact;
+#pragma link C++ class CbmCosy2019HodoPar;
+#pragma link C++ class CbmCosy2019ContFact;
 
-#pragma link C++ class CbmMcbm2018UnpackerAlgoHodo;
-#pragma link C++ class CbmMcbm2018UnpackerTaskHodo + ;
+#pragma link C++ class CbmCosy2019UnpackerAlgoHodo;
+#pragma link C++ class CbmCosy2019UnpackerTaskHodo + ;
 
-#pragma link C++ class CbmMcbm2018MonitorAlgoHodo;
-#pragma link C++ class CbmMcbm2018MonitorTaskHodo;
+#pragma link C++ class CbmCosy2019MonitorAlgoHodo;
+#pragma link C++ class CbmCosy2019MonitorTaskHodo;
 
 #endif

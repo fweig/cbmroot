@@ -1,37 +1,28 @@
 // -----------------------------------------------------------------------------
 // -----                                                                   -----
-// -----                   CbmMcbm2018UnpackerTaskHodo                     -----
-// -----              Created 31/07/19  by P.-A. Loizeau                   -----
+// -----                     CbmCosy2019MonitorTaskHodo                    -----
+// -----               Created 03.07.2019 by P.-A. Loizeau                 -----
 // -----                                                                   -----
 // -----------------------------------------------------------------------------
 
-#ifndef CbmMcbm2018UnpackerTaskHodo_H
-#define CbmMcbm2018UnpackerTaskHodo_H
+#ifndef CbmCosy2019MonitorTaskHodo_H
+#define CbmCosy2019MonitorTaskHodo_H
 
 #include "Timeslice.hpp"
 
-#include "CbmErrorMessage.h"
 #include "CbmMcbmUnpack.h"
-#include "CbmStsDigi.h"
 
-class CbmMcbm2018UnpackerAlgoHodo;
-class CbmMcbm2018UnpackerAlgoSts;
+class CbmCosy2019MonitorAlgoHodo;
 
-struct FebChanMaskSts {
-  UInt_t uFeb;
-  UInt_t uChan;
-  Bool_t bMasked;
-};
-
-class CbmMcbm2018UnpackerTaskHodo : public CbmMcbmUnpack {
+class CbmCosy2019MonitorTaskHodo : public CbmMcbmUnpack {
 public:
-  CbmMcbm2018UnpackerTaskHodo(UInt_t uNbSdpb = 1);
+  CbmCosy2019MonitorTaskHodo(UInt_t uNbSdpb = 1);
 
-  CbmMcbm2018UnpackerTaskHodo(const CbmMcbm2018UnpackerTaskHodo&) = delete;
-  CbmMcbm2018UnpackerTaskHodo
-  operator=(const CbmMcbm2018UnpackerTaskHodo&) = delete;
+  CbmCosy2019MonitorTaskHodo(const CbmCosy2019MonitorTaskHodo&) = delete;
+  CbmCosy2019MonitorTaskHodo
+  operator=(const CbmCosy2019MonitorTaskHodo&) = delete;
 
-  virtual ~CbmMcbm2018UnpackerTaskHodo();
+  virtual ~CbmCosy2019MonitorTaskHodo();
 
   virtual Bool_t Init();
   virtual Bool_t DoUnpack(const fles::Timeslice& ts, size_t component);
@@ -53,14 +44,13 @@ public:
     fbMonitorMode = bFlagIn;
   }
   void SetIgnoreOverlapMs(Bool_t bFlagIn = kTRUE);
+  void SetDpbId(UInt_t uDpbId = 0x5b75);
+  void SetHodoElinkIdx(UInt_t uElinkHodoA = 5, UInt_t uElinkHodoB = 10);
+  void SetHodoSwapXY(Bool_t bSwapHodoA = kFALSE, Bool_t bSwapHodoB = kTRUE);
+  void SetHodoInvertX(Bool_t bInvHodoA = kFALSE, Bool_t bInvHodoB = kTRUE);
+  void SetHodoInvertY(Bool_t bInvHodoA = kFALSE, Bool_t bInvHodoB = kTRUE);
 
   void SetTimeOffsetNs(Double_t dOffsetIn = 0.0);
-  void SetTimeOffsetNsAsic(UInt_t uAsicIdx, Double_t dOffsetIn = 0.0);
-
-  void SetTimeOffsetNsSts(Double_t dOffsetIn = 0.0);
-  void SetTimeOffsetNsAsicSts(UInt_t uAsicIdx, Double_t dOffsetIn = 0.0);
-  void MaskNoisyChannelSts(UInt_t uFeb, UInt_t uChan, Bool_t bMasked = kTRUE);
-  void SetAdcCutSts(UInt_t uAdc);
 
   /// Task settings
   void SetWriteOutputFlag(Bool_t bFlagIn) { fbWriteOutput = bFlagIn; }
@@ -74,21 +64,15 @@ private:
   Bool_t
     fbWriteOutput;  //! If ON the output TClonesArray of digi is written to disk
 
-  /// Temporary storage of user parameters
-  std::vector<FebChanMaskSts> fvChanMasks;
-
   /// Statistics & first TS rejection
   uint64_t fulTsCounter;
 
-  /// Output vectors
-  std::vector<CbmStsDigi>* fpvDigiSts       = nullptr;
-  std::vector<CbmErrorMessage>* fpvErrorSts = nullptr;
-
   /// Processing algo
-  CbmMcbm2018UnpackerAlgoHodo* fUnpackerAlgo;
-  CbmMcbm2018UnpackerAlgoSts* fUnpackerAlgoSts = nullptr;
+  CbmCosy2019MonitorAlgoHodo* fMonitorAlgo;
 
-  ClassDef(CbmMcbm2018UnpackerTaskHodo, 1)
+  Bool_t SaveHistograms();
+
+  ClassDef(CbmCosy2019MonitorTaskHodo, 1)
 };
 
 #endif

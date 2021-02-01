@@ -47,14 +47,14 @@ Link_Directories(
 
 Set(SRCS
 
-   parameter/CbmMcbm2018HodoPar.cxx
-   parameter/CbmMcbm2018ContFact.cxx
+   parameter/CbmCosy2019HodoPar.cxx
+   parameter/CbmCosy2019ContFact.cxx
 
-   unpacker/CbmMcbm2018UnpackerAlgoHodo.cxx
-   unpacker/CbmMcbm2018UnpackerTaskHodo.cxx
+   unpacker/CbmCosy2019UnpackerAlgoHodo.cxx
+   unpacker/CbmCosy2019UnpackerTaskHodo.cxx
 
-   monitor/CbmMcbm2018MonitorAlgoHodo.cxx
-   monitor/CbmMcbm2018MonitorTaskHodo.cxx
+   monitor/CbmCosy2019MonitorAlgoHodo.cxx
+   monitor/CbmCosy2019MonitorTaskHodo.cxx
 )
 
 If(_UINT8_T_EXIST)

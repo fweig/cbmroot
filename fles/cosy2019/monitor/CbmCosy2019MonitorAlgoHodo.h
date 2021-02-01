@@ -1,12 +1,12 @@
 // -----------------------------------------------------------------------------
 // -----                                                                   -----
-// -----                  CbmMcbm2018MonitorAlgoHodo                       -----
+// -----                  CbmCosy2019MonitorAlgoHodo                       -----
 // -----               Created 03.07.2019 by P.-A. Loizeau                 -----
 // -----                                                                   -----
 // -----------------------------------------------------------------------------
 
-#ifndef CbmMcbm2018MonitorAlgoHodo_H
-#define CbmMcbm2018MonitorAlgoHodo_H
+#ifndef CbmCosy2019MonitorAlgoHodo_H
+#define CbmCosy2019MonitorAlgoHodo_H
 
 #include "CbmStar2019Algo.h"
 
@@ -31,10 +31,10 @@
 
 class TProfile;
 
-class CbmMcbm2018MonitorAlgoHodo : public CbmStar2019Algo<CbmStsDigi> {
+class CbmCosy2019MonitorAlgoHodo : public CbmStar2019Algo<CbmStsDigi> {
 public:
-  CbmMcbm2018MonitorAlgoHodo();
-  ~CbmMcbm2018MonitorAlgoHodo();
+  CbmCosy2019MonitorAlgoHodo();
+  ~CbmCosy2019MonitorAlgoHodo();
 
   virtual Bool_t Init();
   virtual void Reset();
@@ -96,7 +96,7 @@ private:
 
   /// Settings from parameter file => For now use only accessors!
   /*
-      CbmMcbm2018HodoPar* fUnpackPar;      //!
+      CbmCosy2019HodoPar* fUnpackPar;      //!
          /// Readout chain dimensions and mapping
       UInt_t                   fuNbModules;       //! Total number of STS modules in the setup
       std::vector< Int_t    >  fviModuleType;     //! Type of each module: 0 for connectors on the right, 1 for connectors on the left
@@ -294,10 +294,10 @@ private:
   void ProcessEpochInfo(stsxyter::Message mess);
   void ProcessStatusInfo(stsxyter::Message mess);
 
-  CbmMcbm2018MonitorAlgoHodo(const CbmMcbm2018MonitorAlgoHodo&);
-  CbmMcbm2018MonitorAlgoHodo operator=(const CbmMcbm2018MonitorAlgoHodo&);
+  CbmCosy2019MonitorAlgoHodo(const CbmCosy2019MonitorAlgoHodo&);
+  CbmCosy2019MonitorAlgoHodo operator=(const CbmCosy2019MonitorAlgoHodo&);
 
-  ClassDef(CbmMcbm2018MonitorAlgoHodo, 1)
+  ClassDef(CbmCosy2019MonitorAlgoHodo, 1)
 };
 
 #endif

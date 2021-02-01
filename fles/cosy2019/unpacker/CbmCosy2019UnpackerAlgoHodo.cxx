@@ -1,14 +1,14 @@
 // -----------------------------------------------------------------------------
 // -----                                                                   -----
-// -----                  CbmMcbm2018UnpackerAlgoHodo                      -----
+// -----                  CbmCosy2019UnpackerAlgoHodo                      -----
 // -----              Created 31/07/19  by P.-A. Loizeau                   -----
 // -----                                                                   -----
 // -----------------------------------------------------------------------------
 
-#include "CbmMcbm2018UnpackerAlgoHodo.h"
+#include "CbmCosy2019UnpackerAlgoHodo.h"
 
+#include "CbmCosy2019HodoPar.h"
 #include "CbmFormatMsHeaderPrintout.h"
-#include "CbmMcbm2018HodoPar.h"
 
 #include <Logger.h>
 
@@ -26,7 +26,7 @@
 #include <stdint.h>
 
 // -------------------------------------------------------------------------
-CbmMcbm2018UnpackerAlgoHodo::CbmMcbm2018UnpackerAlgoHodo()
+CbmCosy2019UnpackerAlgoHodo::CbmCosy2019UnpackerAlgoHodo()
   : CbmStar2019Algo()
   ,
   /// From the class itself
@@ -73,7 +73,7 @@ CbmMcbm2018UnpackerAlgoHodo::CbmMcbm2018UnpackerAlgoHodo()
    fcTimeToTrigRaw( nullptr )
 */
 {}
-CbmMcbm2018UnpackerAlgoHodo::~CbmMcbm2018UnpackerAlgoHodo() {
+CbmCosy2019UnpackerAlgoHodo::~CbmCosy2019UnpackerAlgoHodo() {
   /// Clear buffers
   fvmHitsInMs.clear();
   /*
@@ -85,45 +85,45 @@ CbmMcbm2018UnpackerAlgoHodo::~CbmMcbm2018UnpackerAlgoHodo() {
 }
 
 // -------------------------------------------------------------------------
-Bool_t CbmMcbm2018UnpackerAlgoHodo::Init() {
+Bool_t CbmCosy2019UnpackerAlgoHodo::Init() {
   LOG(info) << "Initializing mCBM STS 2019 unpacker algo";
 
   return kTRUE;
 }
-void CbmMcbm2018UnpackerAlgoHodo::Reset() {}
-void CbmMcbm2018UnpackerAlgoHodo::Finish() {
+void CbmCosy2019UnpackerAlgoHodo::Reset() {}
+void CbmCosy2019UnpackerAlgoHodo::Finish() {
   /// Printout Goodbye message and stats
 
   /// Write Output histos
 }
 
 // -------------------------------------------------------------------------
-Bool_t CbmMcbm2018UnpackerAlgoHodo::InitContainers() {
-  LOG(info) << "Init parameter containers for CbmMcbm2018UnpackerAlgoHodo";
+Bool_t CbmCosy2019UnpackerAlgoHodo::InitContainers() {
+  LOG(info) << "Init parameter containers for CbmCosy2019UnpackerAlgoHodo";
   Bool_t initOK = ReInitContainers();
 
   return initOK;
 }
-Bool_t CbmMcbm2018UnpackerAlgoHodo::ReInitContainers() {
+Bool_t CbmCosy2019UnpackerAlgoHodo::ReInitContainers() {
   LOG(info) << "**********************************************";
-  LOG(info) << "ReInit parameter containers for CbmMcbm2018UnpackerAlgoHodo";
+  LOG(info) << "ReInit parameter containers for CbmCosy2019UnpackerAlgoHodo";
 
   fUnpackPar =
-    (CbmMcbm2018HodoPar*) fParCList->FindObject("CbmMcbm2018HodoPar");
+    (CbmCosy2019HodoPar*) fParCList->FindObject("CbmCosy2019HodoPar");
   if (nullptr == fUnpackPar) return kFALSE;
 
   Bool_t initOK = InitParameters();
 
   return initOK;
 }
-TList* CbmMcbm2018UnpackerAlgoHodo::GetParList() {
+TList* CbmCosy2019UnpackerAlgoHodo::GetParList() {
   if (nullptr == fParCList) fParCList = new TList();
-  fUnpackPar = new CbmMcbm2018HodoPar("CbmMcbm2018HodoPar");
+  fUnpackPar = new CbmCosy2019HodoPar("CbmCosy2019HodoPar");
   fParCList->Add(fUnpackPar);
 
   return fParCList;
 }
-Bool_t CbmMcbm2018UnpackerAlgoHodo::InitParameters() {
+Bool_t CbmCosy2019UnpackerAlgoHodo::InitParameters() {
   fuNbModules = fUnpackPar->GetNbOfModules();
   LOG(info) << "Nr. of STS Modules:    " << fuNbModules;
 
@@ -255,7 +255,7 @@ Bool_t CbmMcbm2018UnpackerAlgoHodo::InitParameters() {
 }
 // -------------------------------------------------------------------------
 
-void CbmMcbm2018UnpackerAlgoHodo::AddMsComponentToList(size_t component,
+void CbmCosy2019UnpackerAlgoHodo::AddMsComponentToList(size_t component,
                                                        UShort_t usDetectorId) {
   /// Check for duplicates and ignore if it is the case
   for (UInt_t uCompIdx = 0; uCompIdx < fvMsComponentsList.size(); ++uCompIdx)
@@ -264,13 +264,13 @@ void CbmMcbm2018UnpackerAlgoHodo::AddMsComponentToList(size_t component,
   /// Add to list
   fvMsComponentsList.push_back(component);
 
-  LOG(info) << "CbmMcbm2018UnpackerAlgoHodo::AddMsComponentToList => Component "
+  LOG(info) << "CbmCosy2019UnpackerAlgoHodo::AddMsComponentToList => Component "
             << component << " with detector ID 0x" << std::hex << usDetectorId
             << std::dec << " added to list";
 }
 // -------------------------------------------------------------------------
 
-Bool_t CbmMcbm2018UnpackerAlgoHodo::ProcessTs(const fles::Timeslice& ts) {
+Bool_t CbmCosy2019UnpackerAlgoHodo::ProcessTs(const fles::Timeslice& ts) {
   fulCurrentTsIdx = ts.index();
   fdTsStartTime   = static_cast<Double_t>(ts.descriptor(0, 0).idx);
 
@@ -372,7 +372,7 @@ Bool_t CbmMcbm2018UnpackerAlgoHodo::ProcessTs(const fles::Timeslice& ts) {
   return kTRUE;
 }
 
-Bool_t CbmMcbm2018UnpackerAlgoHodo::ProcessMs(const fles::Timeslice& ts,
+Bool_t CbmCosy2019UnpackerAlgoHodo::ProcessMs(const fles::Timeslice& ts,
                                               size_t uMsCompIdx,
                                               size_t uMsIdx) {
   auto msDescriptor    = ts.descriptor(uMsCompIdx, uMsIdx);
@@ -479,7 +479,7 @@ Bool_t CbmMcbm2018UnpackerAlgoHodo::ProcessMs(const fles::Timeslice& ts,
         Int_t uFebIdx   = fUnpackPar->ElinkIdxToFebIdx(usElinkIdx);
 
         if (-1 == uFebIdx) {
-          LOG(warning) << "CbmMcbm2018UnpackerAlgoHodo::DoUnpack => "
+          LOG(warning) << "CbmCosy2019UnpackerAlgoHodo::DoUnpack => "
                        << "Wrong elink Idx! Elink raw "
                        << Form("%d remap %d", usElinkIdx, uFebIdx);
           continue;
@@ -506,7 +506,7 @@ Bool_t CbmMcbm2018UnpackerAlgoHodo::ProcessMs(const fles::Timeslice& ts,
         ProcessEpochInfo(pMess[uIdx]);
 
         if (0 < uIdx)
-          LOG(info) << "CbmMcbm2018UnpackerAlgoHodo::DoUnpack => "
+          LOG(info) << "CbmCosy2019UnpackerAlgoHodo::DoUnpack => "
                     << "EPOCH message at unexpected position in MS: message "
                     << uIdx << " VS message 0 expected!";
         break;
@@ -527,7 +527,7 @@ Bool_t CbmMcbm2018UnpackerAlgoHodo::ProcessMs(const fles::Timeslice& ts,
         break;
       }  // case stsxyter::MessType::Dummy / ReadDataAck / Ack :
       default: {
-        LOG(fatal) << "CbmMcbm2018UnpackerAlgoHodo::DoUnpack => "
+        LOG(fatal) << "CbmCosy2019UnpackerAlgoHodo::DoUnpack => "
                    << "Unknown message type, should never happen, stopping "
                       "here! Type found was: "
                    << static_cast<int>(typeMess);
@@ -539,7 +539,7 @@ Bool_t CbmMcbm2018UnpackerAlgoHodo::ProcessMs(const fles::Timeslice& ts,
 }
 
 // -------------------------------------------------------------------------
-void CbmMcbm2018UnpackerAlgoHodo::ProcessHitInfo(const stsxyter::Message& mess,
+void CbmCosy2019UnpackerAlgoHodo::ProcessHitInfo(const stsxyter::Message& mess,
                                                  const UShort_t& usElinkIdx,
                                                  const UInt_t& uAsicIdx,
                                                  const UInt_t& /*uMsIdx*/) {
@@ -626,7 +626,7 @@ void CbmMcbm2018UnpackerAlgoHodo::ProcessHitInfo(const stsxyter::Message& mess,
 */
 }
 
-void CbmMcbm2018UnpackerAlgoHodo::ProcessTsMsbInfo(
+void CbmCosy2019UnpackerAlgoHodo::ProcessTsMsbInfo(
   const stsxyter::Message& mess,
   UInt_t uMessIdx,
   UInt_t uMsIdx) {
@@ -689,7 +689,7 @@ void CbmMcbm2018UnpackerAlgoHodo::ProcessTsMsbInfo(
 */
 }
 
-void CbmMcbm2018UnpackerAlgoHodo::ProcessEpochInfo(
+void CbmCosy2019UnpackerAlgoHodo::ProcessEpochInfo(
   const stsxyter::Message& /*mess*/) {
   //   UInt_t uVal    = mess.GetEpochVal();
   //   UInt_t uCurrentCycle = uVal % stsxyter::kulTsCycleNbBins;
@@ -704,7 +704,7 @@ void CbmMcbm2018UnpackerAlgoHodo::ProcessEpochInfo(
 */
 }
 
-void CbmMcbm2018UnpackerAlgoHodo::ProcessStatusInfo(
+void CbmCosy2019UnpackerAlgoHodo::ProcessStatusInfo(
   const stsxyter::Message& /*mess*/) {
   /*
    UInt_t   uCrobIdx   = usElinkIdx / fUnpackPar->GetNbElinkPerCrob();
@@ -729,7 +729,7 @@ void CbmMcbm2018UnpackerAlgoHodo::ProcessStatusInfo(
 
 // -------------------------------------------------------------------------
 
-Bool_t CbmMcbm2018UnpackerAlgoHodo::CreateHistograms() {
+Bool_t CbmCosy2019UnpackerAlgoHodo::CreateHistograms() {
   /// Create General unpacking histograms
   fhDigisTimeInRun =
     new TH1I("hStsDigisTimeInRun",
@@ -990,13 +990,13 @@ Bool_t CbmMcbm2018UnpackerAlgoHodo::CreateHistograms() {
 */
   return kTRUE;
 }
-Bool_t CbmMcbm2018UnpackerAlgoHodo::FillHistograms() {
+Bool_t CbmCosy2019UnpackerAlgoHodo::FillHistograms() {
   for (auto itHit = fDigiVect.begin(); itHit != fDigiVect.end(); ++itHit) {
     fhDigisTimeInRun->Fill(itHit->GetTime() * 1e-9);
   }  // for( auto itHit = fDigiVect.begin(); itHit != fDigiVect.end(); ++itHit)
   return kTRUE;
 }
-Bool_t CbmMcbm2018UnpackerAlgoHodo::ResetHistograms() {
+Bool_t CbmCosy2019UnpackerAlgoHodo::ResetHistograms() {
   fhDigisTimeInRun->Reset();
   /*
    for( UInt_t uGdpb = 0; uGdpb < fuNrOfGdpbs; ++uGdpb )
@@ -1033,7 +1033,7 @@ Bool_t CbmMcbm2018UnpackerAlgoHodo::ResetHistograms() {
 }
 // -------------------------------------------------------------------------
 
-void CbmMcbm2018UnpackerAlgoHodo::SetTimeOffsetNsAsic(UInt_t uAsicIdx,
+void CbmCosy2019UnpackerAlgoHodo::SetTimeOffsetNsAsic(UInt_t uAsicIdx,
                                                       Double_t dOffsetIn) {
   if (uAsicIdx >= fvdTimeOffsetNsAsics.size()) {
     fvdTimeOffsetNsAsics.resize(uAsicIdx + 1, 0.0);
