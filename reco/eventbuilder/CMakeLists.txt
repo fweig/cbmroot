@@ -41,6 +41,7 @@ ${CBMROOT_SOURCE_DIR}/rich
 ${CBMROOT_SOURCE_DIR}/tof/TofMC
 ${CBMROOT_SOURCE_DIR}/psd
 ${CBMROOT_SOURCE_DIR}/field
+${CBMROOT_SOURCE_DIR}/core/data/raw
 
 )
 
@@ -66,6 +67,8 @@ link_directories( ${LINK_DIRECTORIES})
 
 set(SRCS
 
+digis/Cbm2021EventBuilderAlgo.cxx
+digis/Cbm2021EventBuilderTask.cxx
 digis/CbmBuildEventsIdeal.cxx
 digis/CbmBuildEventsIdealNew.cxx
 digis/CbmBuildEventsQA.cxx

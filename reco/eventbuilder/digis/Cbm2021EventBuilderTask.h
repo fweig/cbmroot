@@ -6,7 +6,10 @@
  *                  copied verbatim in the file "LICENSE"                       *
  ********************************************************************************/
 #ifndef CBMM2021EVENTBUILDERTASK_H
-#define CBMM2021EVENTBUILDERTASK_H 
+#define CBMM2021EVENTBUILDERTASK_H
+
+// CBM headers
+#include "../../fles/mcbm2018/tasks/CbmMcbm2019TimeWinEventBuilderAlgo.h"  // for EOverlapMode and EventBuilderDetector
 
 /// FAIRROOT headers
 #include "FairTask.h"
@@ -30,7 +33,6 @@
 
 class CbmDigiManager;
 class Cbm2021EventBuilderAlgo;
-class EventBuilderDetector;
 class TClonesArray;
 
 class Cbm2021EventBuilderTask : public FairTask {
@@ -38,10 +40,8 @@ public:
   /** Default constructor **/
   Cbm2021EventBuilderTask();
 
-  Cbm2021EventBuilderTask(
-    const Cbm2021EventBuilderTask&) = delete;
-  Cbm2021EventBuilderTask
-  operator=(const Cbm2021EventBuilderTask&) = delete;
+  Cbm2021EventBuilderTask(const Cbm2021EventBuilderTask&) = delete;
+  Cbm2021EventBuilderTask operator=(const Cbm2021EventBuilderTask&) = delete;
 
   /** Constructor with parameters (Optional) **/
   //  Cbm2021EventBuilderTask(Int_t verbose);
@@ -92,14 +92,14 @@ private:
   void FillOutput();
   void SaveHistos();
 
-  CbmDigiManager* fDigiMan = nullptr;  
-  std::vector<CbmMuchDigi>* fMuchDigis = nullptr;
+  CbmDigiManager* fDigiMan                             = nullptr;
+  std::vector<CbmMuchDigi>* fMuchDigis                 = nullptr;
   std::vector<CbmMuchBeamTimeDigi>* fMuchBeamTimeDigis = nullptr;
-  std::vector<CbmStsDigi>* fStsDigis = nullptr;
-  std::vector<CbmTrdDigi>* fTrdDigis = nullptr;
-  std::vector<CbmTofDigi>* fTofDigis = nullptr;
-  std::vector<CbmRichDigi>* fRichDigis = nullptr;
-  std::vector<CbmPsdDigi>* fPsdDigis = nullptr;
+  std::vector<CbmStsDigi>* fStsDigis                   = nullptr;
+  std::vector<CbmTrdDigi>* fTrdDigis                   = nullptr;
+  std::vector<CbmTofDigi>* fTofDigis                   = nullptr;
+  std::vector<CbmRichDigi>* fRichDigis                 = nullptr;
+  std::vector<CbmPsdDigi>* fPsdDigis                   = nullptr;
 
   Bool_t fbUseMuchBeamtimeDigi = kTRUE;  //! Switch between MUCH digi classes
 
@@ -115,4 +115,4 @@ private:
   ClassDef(Cbm2021EventBuilderTask, 1);
 };
 
-#endif  // CBMM2021EVENTBUILDERTASK_H 
+#endif  // CBMM2021EVENTBUILDERTASK_H

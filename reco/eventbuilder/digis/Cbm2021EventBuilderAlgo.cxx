@@ -40,8 +40,7 @@ Cbm2021EventBuilderAlgo::~Cbm2021EventBuilderAlgo() {}
 
 // ---- Init -----------------------------------------------------------
 Bool_t Cbm2021EventBuilderAlgo::InitAlgo() {
-  LOG(info)
-    << "Cbm2021EventBuilderAlgo::InitAlgo => Starting sequence";
+  LOG(info) << "Cbm2021EventBuilderAlgo::InitAlgo => Starting sequence";
 
   // Get a handle from the IO manager
   FairRootManager* ioman = FairRootManager::Instance();
@@ -126,8 +125,7 @@ void Cbm2021EventBuilderAlgo::Finish() {
 }
 
 // ---------------------------------------------------------------------
-Bool_t Cbm2021EventBuilderAlgo::CheckDataAvailable(
-  EventBuilderDetector& det) {
+Bool_t Cbm2021EventBuilderAlgo::CheckDataAvailable(EventBuilderDetector& det) {
   // Get a handle from the IO manager
   FairRootManager* ioman = FairRootManager::Instance();
 
@@ -137,39 +135,33 @@ Bool_t Cbm2021EventBuilderAlgo::CheckDataAvailable(
     if (!fT0DigiVec) {
       LOG(info) << "No T0 digi input found.";
       return kFALSE;
-    }    
-  } 
-  else if (ECbmModuleId::kSts == det.detId) {
+    }
+  } else if (ECbmModuleId::kSts == det.detId) {
     if (!fStsDigis) {
       LOG(info) << "No " << det.sName << " digi input found.";
       return kFALSE;
     }
-  }
-  else if (ECbmModuleId::kMuch == det.detId) {
-    if (!fMuchDigis && !fMuchBeamTimeDigis ) {
+  } else if (ECbmModuleId::kMuch == det.detId) {
+    if (!fMuchDigis && !fMuchBeamTimeDigis) {
       LOG(info) << "No " << det.sName << " digi input found.";
       return kFALSE;
     }
-  }
-  else if (ECbmModuleId::kTrd == det.detId) {
+  } else if (ECbmModuleId::kTrd == det.detId) {
     if (!fTrdDigis) {
       LOG(info) << "No " << det.sName << " digi input found.";
       return kFALSE;
     }
-  }
-  else if (ECbmModuleId::kTof == det.detId) {
+  } else if (ECbmModuleId::kTof == det.detId) {
     if (!fTofDigis) {
       LOG(info) << "No " << det.sName << " digi input found.";
       return kFALSE;
     }
-  }
-  else if (ECbmModuleId::kRich == det.detId) {
+  } else if (ECbmModuleId::kRich == det.detId) {
     if (!fRichDigis) {
       LOG(info) << "No " << det.sName << " digi input found.";
       return kFALSE;
     }
-  }
-  else if (ECbmModuleId::kPsd == det.detId) {
+  } else if (ECbmModuleId::kPsd == det.detId) {
     if (!fPsdDigis) {
       LOG(info) << "No " << det.sName << " digi input found.";
       return kFALSE;
@@ -237,98 +229,103 @@ void Cbm2021EventBuilderAlgo::BuildEvents() {
   }    // switch( *det )
 }
 
-UInt_t Cbm2021EventBuilderAlgo::GetNofDigis( ECbmModuleId detId ) {
+UInt_t Cbm2021EventBuilderAlgo::GetNofDigis(ECbmModuleId detId) {
   switch (detId) {
     case ECbmModuleId::kSts: {
-	return fStsDigis->size();
-    }  
+      return fStsDigis->size();
+    }
     case ECbmModuleId::kMuch: {
       if (fbUseMuchBeamtimeDigi) {
-	return fMuchBeamTimeDigis->size();
-      }  
-      else {
-	return fMuchDigis->size();
-      }  
-    }  
+        return fMuchBeamTimeDigis->size();
+      } else {
+        return fMuchDigis->size();
+      }
+    }
     case ECbmModuleId::kTrd: {
       return fTrdDigis->size();
-    }  
+    }
     case ECbmModuleId::kTof: {
       return fTofDigis->size();
-    }  
+    }
     case ECbmModuleId::kRich: {
       return fRichDigis->size();
-    }  
+    }
     case ECbmModuleId::kPsd: {
       return fPsdDigis->size();
-    }  
+    }
     case ECbmModuleId::kT0: {
-      return fT0DigiVec->size(); //what to do here? Not in digi manager.
-    }  
+      return fT0DigiVec->size();  //what to do here? Not in digi manager.
+    }
     default: {
       LOG(fatal) << "Cbm2021EventBuilderAlgo::GetNofDigis => "
                  << "Trying to get digi number with unsupported detector.";
       return -1;
-    }  
-  }    
+    }
+  }
 }
 
-bool Cbm2021EventBuilderAlgo::DetIsPresent( ECbmModuleId detId ) {
+bool Cbm2021EventBuilderAlgo::DetIsPresent(ECbmModuleId detId) {
   switch (detId) {
     case ECbmModuleId::kSts: {
-	return fStsDigis!=nullptr;
-    }  
+      return fStsDigis != nullptr;
+    }
     case ECbmModuleId::kMuch: {
       if (fbUseMuchBeamtimeDigi) {
-	return fMuchBeamTimeDigis!=nullptr;
-      }  
-      else {
-	return fMuchDigis!=nullptr;
-      }  
-    }  
+        return fMuchBeamTimeDigis != nullptr;
+      } else {
+        return fMuchDigis != nullptr;
+      }
+    }
     case ECbmModuleId::kTrd: {
-      return fTrdDigis!=nullptr;
-    }  
+      return fTrdDigis != nullptr;
+    }
     case ECbmModuleId::kTof: {
-      return fTofDigis!=nullptr;
-    }  
+      return fTofDigis != nullptr;
+    }
     case ECbmModuleId::kRich: {
-      return fRichDigis!=nullptr;
-    }  
+      return fRichDigis != nullptr;
+    }
     case ECbmModuleId::kPsd: {
-      return fPsdDigis!=nullptr;
-    }  
+      return fPsdDigis != nullptr;
+    }
     case ECbmModuleId::kT0: {
-      return fT0DigiVec!=nullptr; //what to do here? Not in digi manager.
-    }  
+      return fT0DigiVec != nullptr;  //what to do here? Not in digi manager.
+    }
     default: {
       LOG(fatal) << "Cbm2021EventBuilderAlgo::GetNofDigis => "
                  << "Trying to get digi number with unsupported detector.";
       return -1;
-    }  
-  }    
+    }
+  }
 }
 
-template<> const CbmStsDigi* Cbm2021EventBuilderAlgo::GetDigi( UInt_t uDigi ) {
-	return &((*fStsDigis)[uDigi]);
+template<>
+const CbmStsDigi* Cbm2021EventBuilderAlgo::GetDigi(UInt_t uDigi) {
+  return &((*fStsDigis)[uDigi]);
 }
-template<> const CbmMuchBeamTimeDigi* Cbm2021EventBuilderAlgo::GetDigi( UInt_t uDigi ) {
-	return &((*fMuchBeamTimeDigis)[uDigi]);
+template<>
+const CbmMuchBeamTimeDigi* Cbm2021EventBuilderAlgo::GetDigi(UInt_t uDigi) {
+  return &((*fMuchBeamTimeDigis)[uDigi]);
 }
-template<> const CbmMuchDigi* Cbm2021EventBuilderAlgo::GetDigi( UInt_t uDigi ) {
-	return &((*fMuchDigis)[uDigi]);
+template<>
+const CbmMuchDigi* Cbm2021EventBuilderAlgo::GetDigi(UInt_t uDigi) {
+  return &((*fMuchDigis)[uDigi]);
 }
-template<> const CbmTrdDigi* Cbm2021EventBuilderAlgo::GetDigi( UInt_t uDigi ) {
-	return &((*fTrdDigis)[uDigi]);
+template<>
+const CbmTrdDigi* Cbm2021EventBuilderAlgo::GetDigi(UInt_t uDigi) {
+  return &((*fTrdDigis)[uDigi]);
 }
-template<> const CbmTofDigi* Cbm2021EventBuilderAlgo::GetDigi( UInt_t uDigi ) {
-	return &((*fTofDigis)[uDigi]);
+template<>
+const CbmTofDigi* Cbm2021EventBuilderAlgo::GetDigi(UInt_t uDigi) {
+  return &((*fTofDigis)[uDigi]);
 }
-template<> const CbmRichDigi* Cbm2021EventBuilderAlgo::GetDigi( UInt_t uDigi ) {
-	return &((*fRichDigis)[uDigi]);
+template<>
+const CbmRichDigi* Cbm2021EventBuilderAlgo::GetDigi(UInt_t uDigi) {
+  return &((*fRichDigis)[uDigi]);
 }
-template<> const CbmPsdDigi* Cbm2021EventBuilderAlgo::GetDigi( UInt_t uDigi ) {
-	return &((*fPsdDigis)[uDigi]);
+template<>
+const CbmPsdDigi* Cbm2021EventBuilderAlgo::GetDigi(UInt_t uDigi) {
+  return &((*fPsdDigis)[uDigi]);
 }
 
 template<class DigiSeed>
@@ -392,9 +389,8 @@ void Cbm2021EventBuilderAlgo::LoopOnSeeds() {
                  << "T0 as reference detector but vector not found!";
   }  // if (ECbmModuleId::kT0 == fRefDet.detId)
   else {
-    UInt_t uNbRefDigis = (0 < GetNofDigis(fRefDet.detId)
-                            ? GetNofDigis(fRefDet.detId)
-                            : 0);
+    UInt_t uNbRefDigis =
+      (0 < GetNofDigis(fRefDet.detId) ? GetNofDigis(fRefDet.detId) : 0);
     /// Loop on size of vector
     for (UInt_t uDigi = 0; uDigi < uNbRefDigis; ++uDigi) {
       LOG(debug) << Form("Checking seed %6u / %6u", uDigi, uNbRefDigis);
@@ -419,7 +415,7 @@ void Cbm2021EventBuilderAlgo::LoopOnSeeds() {
 }
 
 void Cbm2021EventBuilderAlgo::CheckSeed(Double_t dSeedTime,
-                                                   UInt_t uSeedDigiIdx) {
+                                        UInt_t uSeedDigiIdx) {
   /// If previous event valid and event overlap not allowed, check if we are in overlap
   /// and react accordingly
   if (nullptr != fCurrentEvent
@@ -589,9 +585,8 @@ void Cbm2021EventBuilderAlgo::CheckSeed(Double_t dSeedTime,
 }
 
 template<class DigiCheck>
-void Cbm2021EventBuilderAlgo::SearchMatches(
-  Double_t dSeedTime,
-  EventBuilderDetector& detMatch) {
+void Cbm2021EventBuilderAlgo::SearchMatches(Double_t dSeedTime,
+                                            EventBuilderDetector& detMatch) {
   /// This algo relies on time sorted vectors for the selected detectors
   UInt_t uLocalIndexStart = detMatch.fuStartIndex;
   UInt_t uLocalIndexEnd   = detMatch.fuStartIndex;
@@ -632,9 +627,8 @@ void Cbm2021EventBuilderAlgo::SearchMatches(
                  << "T0 as selection detector but vector not found!";
   }  // if( ECbmModuleId::kT0 == detMatch.detId )
   else {
-    UInt_t uNbSelDigis = (0 < GetNofDigis(detMatch.detId)
-                            ? GetNofDigis(detMatch.detId)
-                            : 0);
+    UInt_t uNbSelDigis =
+      (0 < GetNofDigis(detMatch.detId) ? GetNofDigis(detMatch.detId) : 0);
     /// Loop on size of vector
     for (UInt_t uDigi = detMatch.fuStartIndex; uDigi < uNbSelDigis; ++uDigi) {
       const DigiCheck* pDigi = GetDigi<DigiCheck>(uDigi);
@@ -676,9 +670,8 @@ void Cbm2021EventBuilderAlgo::SearchMatches(
   detMatch.fuEndIndex   = uLocalIndexEnd;
 }
 
-void Cbm2021EventBuilderAlgo::AddDigiToEvent(
-  EventBuilderDetector& det,
-  Int_t _entry) {
+void Cbm2021EventBuilderAlgo::AddDigiToEvent(EventBuilderDetector& det,
+                                             Int_t _entry) {
   fCurrentEvent->AddData(det.dataType, _entry);
 }
 
@@ -699,9 +692,9 @@ Bool_t Cbm2021EventBuilderAlgo::HasTrigger(CbmEvent* event) {
   return kTRUE;
 }
 
-Bool_t Cbm2021EventBuilderAlgo::CheckTriggerConditions(
-  CbmEvent* event,
-  EventBuilderDetector& det) {
+Bool_t
+Cbm2021EventBuilderAlgo::CheckTriggerConditions(CbmEvent* event,
+                                                EventBuilderDetector& det) {
   /// Check if both Trigger conditions disabled for this detector
   if (0 == det.fuTriggerMinDigis && det.fiTriggerMaxDigis < 0) {
     return kTRUE;
@@ -820,8 +813,7 @@ void Cbm2021EventBuilderAlgo::FillHistos() {
     dPreEvtTime = evt->GetStartTime();
   }  // for( CbmEvent * evt: fEventVector )
 }
-void Cbm2021EventBuilderAlgo::ResetHistograms(
-  Bool_t /*bResetTime*/) {
+void Cbm2021EventBuilderAlgo::ResetHistograms(Bool_t /*bResetTime*/) {
   fhEventTime->Reset();
   fhEventDt->Reset();
   fhEventSize->Reset();
@@ -843,14 +835,13 @@ void Cbm2021EventBuilderAlgo::ResetHistograms(
 */
 }
 //----------------------------------------------------------------------
-void Cbm2021EventBuilderAlgo::SetReferenceDetector(
-  ECbmModuleId refDet,
-  ECbmDataType dataTypeIn,
-  std::string sNameIn,
-  UInt_t uTriggerMinDigisIn,
-  Int_t iTriggerMaxDigisIn,
-  Double_t fdTimeWinBegIn,
-  Double_t fdTimeWinEndIn) {
+void Cbm2021EventBuilderAlgo::SetReferenceDetector(ECbmModuleId refDet,
+                                                   ECbmDataType dataTypeIn,
+                                                   std::string sNameIn,
+                                                   UInt_t uTriggerMinDigisIn,
+                                                   Int_t iTriggerMaxDigisIn,
+                                                   Double_t fdTimeWinBegIn,
+                                                   Double_t fdTimeWinEndIn) {
 
   /// FIXME: Deprecated method to be removed later. For now create temp object.
   SetReferenceDetector(EventBuilderDetector(refDet,
@@ -862,12 +853,12 @@ void Cbm2021EventBuilderAlgo::SetReferenceDetector(
                                             fdTimeWinEndIn));
 }
 void Cbm2021EventBuilderAlgo::AddDetector(ECbmModuleId selDet,
-                                                     ECbmDataType dataTypeIn,
-                                                     std::string sNameIn,
-                                                     UInt_t uTriggerMinDigisIn,
-                                                     Int_t iTriggerMaxDigisIn,
-                                                     Double_t fdTimeWinBegIn,
-                                                     Double_t fdTimeWinEndIn) {
+                                          ECbmDataType dataTypeIn,
+                                          std::string sNameIn,
+                                          UInt_t uTriggerMinDigisIn,
+                                          Int_t iTriggerMaxDigisIn,
+                                          Double_t fdTimeWinBegIn,
+                                          Double_t fdTimeWinEndIn) {
 
   /// FIXME: Deprecated method to be removed later. For now create temp object.
   AddDetector(EventBuilderDetector(selDet,
@@ -887,10 +878,9 @@ void Cbm2021EventBuilderAlgo::SetReferenceDetector(
        det != fvDets.end();
        ++det) {
     if ((*det) == refDetIn) {
-      LOG(warning)
-        << "Cbm2021EventBuilderAlgo::SetReferenceDetector => "
-           "Reference detector already in selection detector list!"
-        << refDetIn.sName;
+      LOG(warning) << "Cbm2021EventBuilderAlgo::SetReferenceDetector => "
+                      "Reference detector already in selection detector list!"
+                   << refDetIn.sName;
       LOG(warning)
         << "                                                         => "
            "It will be automatically removed from selection detector list!";
@@ -927,8 +917,7 @@ void Cbm2021EventBuilderAlgo::SetReferenceDetector(
   /// Update the variable storing the size if widest time window for overlap detection
   UpdateWidestTimeWinRange();
 }
-void Cbm2021EventBuilderAlgo::AddDetector(
-  EventBuilderDetector selDet) {
+void Cbm2021EventBuilderAlgo::AddDetector(EventBuilderDetector selDet) {
   if (fRefDet == selDet) {
     LOG(fatal) << "Cbm2021EventBuilderAlgo::AddDetector => Cannot "
                   "add the reference detector as selection detector!"
@@ -955,8 +944,7 @@ void Cbm2021EventBuilderAlgo::AddDetector(
   /// Update the variable storing the size if widest time window for overlap detection
   UpdateWidestTimeWinRange();
 }
-void Cbm2021EventBuilderAlgo::RemoveDetector(
-  EventBuilderDetector selDet) {
+void Cbm2021EventBuilderAlgo::RemoveDetector(EventBuilderDetector selDet) {
   /// Loop on selection detectors
   for (std::vector<EventBuilderDetector>::iterator det = fvDets.begin();
        det != fvDets.end();
@@ -971,9 +959,8 @@ void Cbm2021EventBuilderAlgo::RemoveDetector(
                << selDet.sName;
 }
 //----------------------------------------------------------------------
-void Cbm2021EventBuilderAlgo::SetTriggerMinNumber(
-  ECbmModuleId selDet,
-  UInt_t uVal) {
+void Cbm2021EventBuilderAlgo::SetTriggerMinNumber(ECbmModuleId selDet,
+                                                  UInt_t uVal) {
   /// Check first if reference detector
   if (fRefDet.detId == selDet) {
     fRefDet.fuTriggerMinDigis = uVal;
@@ -1003,9 +990,8 @@ void Cbm2021EventBuilderAlgo::SetTriggerMinNumber(
        "Doing nothing, detector neither reference nor in selection list!"
     << selDet;
 }
-void Cbm2021EventBuilderAlgo::SetTriggerMaxNumber(
-  ECbmModuleId selDet,
-  Int_t iVal) {
+void Cbm2021EventBuilderAlgo::SetTriggerMaxNumber(ECbmModuleId selDet,
+                                                  Int_t iVal) {
   /// Check first if reference detector
   if (fRefDet.detId == selDet) {
     fRefDet.fiTriggerMaxDigis = iVal;
@@ -1036,8 +1022,8 @@ void Cbm2021EventBuilderAlgo::SetTriggerMaxNumber(
     << selDet;
 }
 void Cbm2021EventBuilderAlgo::SetTriggerWindow(ECbmModuleId selDet,
-                                                          Double_t dWinBeg,
-                                                          Double_t dWinEnd) {
+                                               Double_t dWinBeg,
+                                               Double_t dWinEnd) {
   /// Check if valid time window: end strictly after beginning
   if (dWinEnd <= dWinBeg)
     LOG(fatal) << "Cbm2021EventBuilderAlgo::SetTriggerWindow => "

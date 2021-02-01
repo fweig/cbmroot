@@ -5,11 +5,11 @@
  *              GNU Lesser General Public Licence (LGPL) version 3,             *
  *                  copied verbatim in the file "LICENSE"                       *
  ********************************************************************************/
-#include "Cbm2021EventBuilderAlgo.h"
 #include "Cbm2021EventBuilderTask.h"
+#include "Cbm2021EventBuilderAlgo.h"
 
-#include "CbmEvent.h"
 #include "CbmDigiManager.h"
+#include "CbmEvent.h"
 
 #include "FairLogger.h"
 #include "FairRootManager.h"
@@ -29,8 +29,7 @@ Cbm2021EventBuilderTask::Cbm2021EventBuilderTask()
 }
 
 // ---- Destructor ----------------------------------------------------
-Cbm2021EventBuilderTask::~Cbm2021EventBuilderTask() {
-}
+Cbm2021EventBuilderTask::~Cbm2021EventBuilderTask() {}
 
 // ----  Initialisation  ----------------------------------------------
 void Cbm2021EventBuilderTask::SetParContainers() {
@@ -44,15 +43,13 @@ InitStatus Cbm2021EventBuilderTask::Init() {
 
   // Get a pointer to the previous already existing data level
   fDigiMan = CbmDigiManager::Instance();
-  if (fbUseMuchBeamtimeDigi) {
-    fDigiMan->UseMuchBeamTimeDigi();
-  }  
+  if (fbUseMuchBeamtimeDigi) { fDigiMan->UseMuchBeamTimeDigi(); }
   fDigiMan->Init();
 
   //Init STS digis
   if (!fDigiMan->IsPresent(ECbmModuleId::kSts)) {
     LOG(info) << "No STS digi input.";
-  }else{
+  } else {
     LOG(info) << "STS digi input.";
     fStsDigis = new std::vector<CbmStsDigi>;
     fpAlgo->SetStsDigis(fStsDigis);
@@ -61,12 +58,12 @@ InitStatus Cbm2021EventBuilderTask::Init() {
   //Init MUCH digis
   if (!fDigiMan->IsPresent(ECbmModuleId::kMuch)) {
     LOG(info) << "No MUCH digi input.";
-  }else{
+  } else {
     LOG(info) << "MUCH digi input.";
-    if( fbUseMuchBeamtimeDigi ){
+    if (fbUseMuchBeamtimeDigi) {
       fMuchBeamTimeDigis = new std::vector<CbmMuchBeamTimeDigi>;
       fpAlgo->SetMuchBeamTimeDigis(fMuchBeamTimeDigis);
-    }else{
+    } else {
       fMuchDigis = new std::vector<CbmMuchDigi>;
       fpAlgo->SetMuchDigis(fMuchDigis);
     }
@@ -75,7 +72,7 @@ InitStatus Cbm2021EventBuilderTask::Init() {
   //Init TRD digis
   if (!fDigiMan->IsPresent(ECbmModuleId::kTrd)) {
     LOG(info) << "No TRD digi input.";
-  }else{
+  } else {
     LOG(info) << "TRD digi input.";
     fTrdDigis = new std::vector<CbmTrdDigi>;
     fpAlgo->SetTrdDigis(fTrdDigis);
@@ -84,7 +81,7 @@ InitStatus Cbm2021EventBuilderTask::Init() {
   //Init TOF digis
   if (!fDigiMan->IsPresent(ECbmModuleId::kTof)) {
     LOG(info) << "No TOF digi input.";
-  }else{
+  } else {
     LOG(info) << "TOF digi input.";
     fTofDigis = new std::vector<CbmTofDigi>;
     fpAlgo->SetTofDigis(fTofDigis);
@@ -93,7 +90,7 @@ InitStatus Cbm2021EventBuilderTask::Init() {
   //Init RICH digis
   if (!fDigiMan->IsPresent(ECbmModuleId::kRich)) {
     LOG(info) << "No RICH digi input.";
-  }else{
+  } else {
     LOG(info) << "RICH digi input.";
     fRichDigis = new std::vector<CbmRichDigi>;
     fpAlgo->SetRichDigis(fRichDigis);
@@ -102,7 +99,7 @@ InitStatus Cbm2021EventBuilderTask::Init() {
   //Init PSD digis
   if (!fDigiMan->IsPresent(ECbmModuleId::kPsd)) {
     LOG(info) << "No PSD digi input.";
-  }else{
+  } else {
     LOG(info) << "PSD digi input.";
     fPsdDigis = new std::vector<CbmPsdDigi>;
     fpAlgo->SetPsdDigis(fPsdDigis);
@@ -127,83 +124,90 @@ InitStatus Cbm2021EventBuilderTask::ReInit() { return kSUCCESS; }
 
 // ---- Exec ----------------------------------------------------------
 void Cbm2021EventBuilderTask::Exec(Option_t* /*option*/) {
-  LOG(debug2)
-    << "Cbm2021EventBuilderTask::Exec => Starting sequence";
+  LOG(debug2) << "Cbm2021EventBuilderTask::Exec => Starting sequence";
 
   //Read STS digis
   if (fDigiMan->IsPresent(ECbmModuleId::kSts)) {
     fStsDigis->clear();
-    for( Int_t i=0; i<fDigiMan->GetNofDigis(ECbmModuleId::kSts); i++){
-	const CbmStsDigi* Digi = fDigiMan->Get<CbmStsDigi>(i);
-	fStsDigis->insert( fStsDigis->begin()+i, *Digi );
+    for (Int_t i = 0; i < fDigiMan->GetNofDigis(ECbmModuleId::kSts); i++) {
+      const CbmStsDigi* Digi = fDigiMan->Get<CbmStsDigi>(i);
+      fStsDigis->insert(fStsDigis->begin() + i, *Digi);
     }
-    LOG(debug) << "Read: "<< fStsDigis->size() << " STS digis.";
-    LOG(debug) << "In DigiManager: "<< fDigiMan->GetNofDigis(ECbmModuleId::kSts) << " STS digis.";
+    LOG(debug) << "Read: " << fStsDigis->size() << " STS digis.";
+    LOG(debug) << "In DigiManager: "
+               << fDigiMan->GetNofDigis(ECbmModuleId::kSts) << " STS digis.";
   }
 
   //Read MUCH digis
   if (fDigiMan->IsPresent(ECbmModuleId::kMuch)) {
-    if( fbUseMuchBeamtimeDigi ){
+    if (fbUseMuchBeamtimeDigi) {
       fMuchBeamTimeDigis->clear();
-      for( Int_t i=0; i<fDigiMan->GetNofDigis(ECbmModuleId::kMuch); i++){
-  	const CbmMuchBeamTimeDigi* Digi = fDigiMan->Get<CbmMuchBeamTimeDigi>(i);
-  	fMuchBeamTimeDigis->insert( fMuchBeamTimeDigis->begin()+i, *Digi );
+      for (Int_t i = 0; i < fDigiMan->GetNofDigis(ECbmModuleId::kMuch); i++) {
+        const CbmMuchBeamTimeDigi* Digi = fDigiMan->Get<CbmMuchBeamTimeDigi>(i);
+        fMuchBeamTimeDigis->insert(fMuchBeamTimeDigis->begin() + i, *Digi);
       }
-      LOG(debug) << "Read: "<< fDigiMan->GetNofDigis(ECbmModuleId::kMuch) << " MUCH digis.";
-      LOG(debug) << "In DigiManager: "<< fMuchBeamTimeDigis->size() << " MUCH digis.";
-    }else{
+      LOG(debug) << "Read: " << fDigiMan->GetNofDigis(ECbmModuleId::kMuch)
+                 << " MUCH digis.";
+      LOG(debug) << "In DigiManager: " << fMuchBeamTimeDigis->size()
+                 << " MUCH digis.";
+    } else {
       fMuchDigis->clear();
-      for( Int_t i=0; i<fDigiMan->GetNofDigis(ECbmModuleId::kMuch); i++){
-  	const CbmMuchDigi* Digi = fDigiMan->Get<CbmMuchDigi>(i);
-  	fMuchDigis->insert( fMuchDigis->begin()+i, *Digi );
+      for (Int_t i = 0; i < fDigiMan->GetNofDigis(ECbmModuleId::kMuch); i++) {
+        const CbmMuchDigi* Digi = fDigiMan->Get<CbmMuchDigi>(i);
+        fMuchDigis->insert(fMuchDigis->begin() + i, *Digi);
       }
-      LOG(debug) << "Read: "<< fDigiMan->GetNofDigis(ECbmModuleId::kMuch) << " MUCH digis.";
-      LOG(debug) << "In DigiManager: "<< fMuchDigis->size() << " MUCH digis.";
+      LOG(debug) << "Read: " << fDigiMan->GetNofDigis(ECbmModuleId::kMuch)
+                 << " MUCH digis.";
+      LOG(debug) << "In DigiManager: " << fMuchDigis->size() << " MUCH digis.";
     }
   }
 
   //Read TRD digis
   if (fDigiMan->IsPresent(ECbmModuleId::kTrd)) {
     fTrdDigis->clear();
-    for( Int_t i=0; i<fDigiMan->GetNofDigis(ECbmModuleId::kTrd); i++){
-	const CbmTrdDigi* Digi = fDigiMan->Get<CbmTrdDigi>(i);
-	fTrdDigis->insert( fTrdDigis->begin()+i, *Digi );
+    for (Int_t i = 0; i < fDigiMan->GetNofDigis(ECbmModuleId::kTrd); i++) {
+      const CbmTrdDigi* Digi = fDigiMan->Get<CbmTrdDigi>(i);
+      fTrdDigis->insert(fTrdDigis->begin() + i, *Digi);
     }
-    LOG(debug) << "Read: "<< fDigiMan->GetNofDigis(ECbmModuleId::kTrd) << " TRD digis.";
-    LOG(debug) << "In DigiManager: "<< fTrdDigis->size() << " TRD digis.";
+    LOG(debug) << "Read: " << fDigiMan->GetNofDigis(ECbmModuleId::kTrd)
+               << " TRD digis.";
+    LOG(debug) << "In DigiManager: " << fTrdDigis->size() << " TRD digis.";
   }
 
   //Read TOF digis
   if (fDigiMan->IsPresent(ECbmModuleId::kTof)) {
     fTofDigis->clear();
-    for( Int_t i=0; i<fDigiMan->GetNofDigis(ECbmModuleId::kTof); i++){
-	const CbmTofDigi* Digi = fDigiMan->Get<CbmTofDigi>(i);
-	fTofDigis->insert( fTofDigis->begin()+i, *Digi );
+    for (Int_t i = 0; i < fDigiMan->GetNofDigis(ECbmModuleId::kTof); i++) {
+      const CbmTofDigi* Digi = fDigiMan->Get<CbmTofDigi>(i);
+      fTofDigis->insert(fTofDigis->begin() + i, *Digi);
     }
-    LOG(debug) << "Read: "<< fDigiMan->GetNofDigis(ECbmModuleId::kTof) << " TOF digis.";
-    LOG(debug) << "In DigiManager: "<< fTofDigis->size() << " TOF digis.";
+    LOG(debug) << "Read: " << fDigiMan->GetNofDigis(ECbmModuleId::kTof)
+               << " TOF digis.";
+    LOG(debug) << "In DigiManager: " << fTofDigis->size() << " TOF digis.";
   }
 
   //Read RICH digis
   if (fDigiMan->IsPresent(ECbmModuleId::kRich)) {
     fRichDigis->clear();
-    for( Int_t i=0; i<fDigiMan->GetNofDigis(ECbmModuleId::kRich); i++){
-	const CbmRichDigi* Digi = fDigiMan->Get<CbmRichDigi>(i);
-	fRichDigis->insert( fRichDigis->begin()+i, *Digi );
+    for (Int_t i = 0; i < fDigiMan->GetNofDigis(ECbmModuleId::kRich); i++) {
+      const CbmRichDigi* Digi = fDigiMan->Get<CbmRichDigi>(i);
+      fRichDigis->insert(fRichDigis->begin() + i, *Digi);
     }
-    LOG(debug) << "Read: "<< fDigiMan->GetNofDigis(ECbmModuleId::kRich) << " RICH digis.";
-    LOG(debug) << "In DigiManager: "<< fRichDigis->size() << " RICH digis.";
+    LOG(debug) << "Read: " << fDigiMan->GetNofDigis(ECbmModuleId::kRich)
+               << " RICH digis.";
+    LOG(debug) << "In DigiManager: " << fRichDigis->size() << " RICH digis.";
   }
 
   //Read PSD digis
   if (fDigiMan->IsPresent(ECbmModuleId::kPsd)) {
     fPsdDigis->clear();
-    for( Int_t i=0; i<fDigiMan->GetNofDigis(ECbmModuleId::kPsd); i++){
-	const CbmPsdDigi* Digi = fDigiMan->Get<CbmPsdDigi>(i);
-	fPsdDigis->insert( fPsdDigis->begin()+i, *Digi );
+    for (Int_t i = 0; i < fDigiMan->GetNofDigis(ECbmModuleId::kPsd); i++) {
+      const CbmPsdDigi* Digi = fDigiMan->Get<CbmPsdDigi>(i);
+      fPsdDigis->insert(fPsdDigis->begin() + i, *Digi);
     }
-    LOG(debug) << "Read: "<< fDigiMan->GetNofDigis(ECbmModuleId::kPsd) << " PSD digis.";
-    LOG(debug) << "In DigiManager: "<< fPsdDigis->size() << " PSD digis.";
+    LOG(debug) << "Read: " << fDigiMan->GetNofDigis(ECbmModuleId::kPsd)
+               << " PSD digis.";
+    LOG(debug) << "In DigiManager: " << fPsdDigis->size() << " PSD digis.";
   }
 
   /// Call Algo ProcessTs method
@@ -289,50 +293,43 @@ void Cbm2021EventBuilderTask::SetReferenceDetector(
   EventBuilderDetector refDet) {
   if (nullptr != fpAlgo) fpAlgo->SetReferenceDetector(refDet);
 }
-void Cbm2021EventBuilderTask::AddDetector(
-  EventBuilderDetector selDet) {
+void Cbm2021EventBuilderTask::AddDetector(EventBuilderDetector selDet) {
   if (nullptr != fpAlgo) fpAlgo->AddDetector(selDet);
 }
-void Cbm2021EventBuilderTask::RemoveDetector(
-  EventBuilderDetector selDet) {
+void Cbm2021EventBuilderTask::RemoveDetector(EventBuilderDetector selDet) {
   if (nullptr != fpAlgo) fpAlgo->RemoveDetector(selDet);
 }
 
-void Cbm2021EventBuilderTask::SetTriggerMinNumber(
-  ECbmModuleId selDet,
-  UInt_t uVal) {
+void Cbm2021EventBuilderTask::SetTriggerMinNumber(ECbmModuleId selDet,
+                                                  UInt_t uVal) {
   if (nullptr != fpAlgo) fpAlgo->SetTriggerMinNumber(selDet, uVal);
 }
-void Cbm2021EventBuilderTask::SetTriggerMaxNumber(
-  ECbmModuleId selDet,
-  Int_t iVal) {
+void Cbm2021EventBuilderTask::SetTriggerMaxNumber(ECbmModuleId selDet,
+                                                  Int_t iVal) {
   if (nullptr != fpAlgo) fpAlgo->SetTriggerMaxNumber(selDet, iVal);
 }
 
 void Cbm2021EventBuilderTask::SetTriggerWindow(ECbmModuleId det,
-                                                          Double_t dWinBeg,
-                                                          Double_t dWinEnd) {
+                                               Double_t dWinBeg,
+                                               Double_t dWinEnd) {
   if (nullptr != fpAlgo) fpAlgo->SetTriggerWindow(det, dWinBeg, dWinEnd);
 }
 
 
-void Cbm2021EventBuilderTask::SetTsParameters(
-  Double_t dTsStartTime,
-  Double_t dTsLength,
-  Double_t dTsOverLength) {
+void Cbm2021EventBuilderTask::SetTsParameters(Double_t dTsStartTime,
+                                              Double_t dTsLength,
+                                              Double_t dTsOverLength) {
   if (nullptr != fpAlgo)
     fpAlgo->SetTsParameters(dTsStartTime, dTsLength, dTsOverLength);
 }
 
-void Cbm2021EventBuilderTask::SetEventOverlapMode(
-  EOverlapMode mode) {
+void Cbm2021EventBuilderTask::SetEventOverlapMode(EOverlapMode mode) {
   if (nullptr != fpAlgo) fpAlgo->SetEventOverlapMode(mode);
 }
 void Cbm2021EventBuilderTask::SetIgnoreTsOverlap(Bool_t bFlagIn) {
   if (nullptr != fpAlgo) fpAlgo->SetIgnoreTsOverlap(bFlagIn);
 }
-void Cbm2021EventBuilderTask::ChangeMuchBeamtimeDigiFlag(
-  Bool_t bFlagIn) {
+void Cbm2021EventBuilderTask::ChangeMuchBeamtimeDigiFlag(Bool_t bFlagIn) {
   if (nullptr != fpAlgo) fpAlgo->ChangeMuchBeamtimeDigiFlag(bFlagIn);
   fbUseMuchBeamtimeDigi = bFlagIn;
 }

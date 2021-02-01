@@ -9,6 +9,7 @@
 #define CBM2021EVENTBUILDERALGO_H
 
 /// CBM headers
+#include "../../fles/mcbm2018/tasks/CbmMcbm2019TimeWinEventBuilderAlgo.h"  // for EOverlapMode and EventBuilderDetector
 #include "CbmMuchBeamTimeDigi.h"
 #include "CbmMuchDigi.h"
 #include "CbmPsdDigi.h"
@@ -29,7 +30,7 @@
 #include <tuple>
 #include <vector>
 
-#include <boost/any.hpp> 
+#include <boost/any.hpp>
 
 class TimesliceMetaData;
 class CbmEvent;
@@ -39,6 +40,7 @@ class TH2;
 class TNamed;
 class TCanvas;
 
+/*    get from CbmMcbm2019TimeWinEventBuilderAlgo.h for now
 enum class EOverlapMode { NoOverlap, MergeOverlap, AllowOverlap };
 
 class EventBuilderDetector {
@@ -110,15 +112,15 @@ static const EventBuilderDetector kEventBuilderDetT0 =
 static const EventBuilderDetector kEventBuilderDetUndef =
   EventBuilderDetector();
 
+*/
+
 class Cbm2021EventBuilderAlgo {
 public:
   /** Default constructor **/
   Cbm2021EventBuilderAlgo();
 
-  Cbm2021EventBuilderAlgo(
-    const Cbm2021EventBuilderAlgo&) = delete;
-  Cbm2021EventBuilderAlgo
-  operator=(const Cbm2021EventBuilderAlgo&) = delete;
+  Cbm2021EventBuilderAlgo(const Cbm2021EventBuilderAlgo&) = delete;
+  Cbm2021EventBuilderAlgo operator=(const Cbm2021EventBuilderAlgo&) = delete;
 
   /** Destructor **/
   ~Cbm2021EventBuilderAlgo();
@@ -195,25 +197,18 @@ public:
   }
 
   /// Set digi containers
-  void SetStsDigis( std::vector<CbmStsDigi>* StsDigis ){
-    fStsDigis = StsDigis;
-  }
-  void SetMuchDigis( std::vector<CbmMuchDigi>* MuchDigis ){
+  void SetStsDigis(std::vector<CbmStsDigi>* StsDigis) { fStsDigis = StsDigis; }
+  void SetMuchDigis(std::vector<CbmMuchDigi>* MuchDigis) {
     fMuchDigis = MuchDigis;
   }
-  void SetTrdDigis( std::vector<CbmTrdDigi>* TrdDigis ){
-    fTrdDigis = TrdDigis;
-  }
-  void SetTofDigis( std::vector<CbmTofDigi>* TofDigis ){
-    fTofDigis = TofDigis;
-  }
-  void SetRichDigis( std::vector<CbmRichDigi>* RichDigis ){
+  void SetTrdDigis(std::vector<CbmTrdDigi>* TrdDigis) { fTrdDigis = TrdDigis; }
+  void SetTofDigis(std::vector<CbmTofDigi>* TofDigis) { fTofDigis = TofDigis; }
+  void SetRichDigis(std::vector<CbmRichDigi>* RichDigis) {
     fRichDigis = RichDigis;
   }
-  void SetPsdDigis( std::vector<CbmPsdDigi>* PsdDigis ){
-    fPsdDigis = PsdDigis;
-  }
-  void SetMuchBeamTimeDigis( std::vector<CbmMuchBeamTimeDigi>* MuchBeamTimeDigis ){
+  void SetPsdDigis(std::vector<CbmPsdDigi>* PsdDigis) { fPsdDigis = PsdDigis; }
+  void
+  SetMuchBeamTimeDigis(std::vector<CbmMuchBeamTimeDigi>* MuchBeamTimeDigis) {
     fMuchBeamTimeDigis = MuchBeamTimeDigis;
   }
 
@@ -280,17 +275,18 @@ private:
   TClonesArray* fTimeSliceMetaDataArray     = nullptr;  //!
   const TimesliceMetaData* pTsMetaData      = nullptr;
 
-  const std::vector<CbmMuchDigi>* fMuchDigis = nullptr;
+  const std::vector<CbmMuchDigi>* fMuchDigis                 = nullptr;
   const std::vector<CbmMuchBeamTimeDigi>* fMuchBeamTimeDigis = nullptr;
-  const std::vector<CbmStsDigi>* fStsDigis = nullptr;
-  const std::vector<CbmTrdDigi>* fTrdDigis = nullptr;
-  const std::vector<CbmTofDigi>* fTofDigis = nullptr;
-  const std::vector<CbmRichDigi>* fRichDigis = nullptr;
-  const std::vector<CbmPsdDigi>* fPsdDigis = nullptr;
+  const std::vector<CbmStsDigi>* fStsDigis                   = nullptr;
+  const std::vector<CbmTrdDigi>* fTrdDigis                   = nullptr;
+  const std::vector<CbmTofDigi>* fTofDigis                   = nullptr;
+  const std::vector<CbmRichDigi>* fRichDigis                 = nullptr;
+  const std::vector<CbmPsdDigi>* fPsdDigis                   = nullptr;
 
-  bool DetIsPresent( ECbmModuleId detId ); 
-  UInt_t GetNofDigis( ECbmModuleId detId ); 
-  template <class Digi> const Digi* GetDigi( UInt_t uDigi );
+  bool DetIsPresent(ECbmModuleId detId);
+  UInt_t GetNofDigis(ECbmModuleId detId);
+  template<class Digi>
+  const Digi* GetDigi(UInt_t uDigi);
 
   /// Data ouptut
   CbmEvent* fCurrentEvent =

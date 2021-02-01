@@ -4,7 +4,8 @@
 #pragma link off all classes;
 #pragma link off all functions;
 
-
+#pragma link C++ class Cbm2021EventBuilderAlgo + ;
+#pragma link C++ class Cbm2021EventBuilderTask + ;
 #pragma link C++ class CbmBuildEventsFromTracksIdeal + ;
 #pragma link C++ class CbmBuildEventsFromTracksReal + ;
 #pragma link C++ class CbmEventBuilderQA + ;

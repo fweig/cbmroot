@@ -218,8 +218,13 @@ void run_reco(TString input        = "",
 
       // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
       /// to use 2018 version, uncomment this section and comment the prev. one
+
+      /* switch between 2019 and 2021 version here, which have the same interface
       CbmMcbm2019TimeWinEventBuilderTask* evBuildRaw =
         new CbmMcbm2019TimeWinEventBuilderTask();
+*/
+      Cbm2021EventBuilderTask* evBuildRaw = new Cbm2021EventBuilderTask();
+
       evBuildRaw->SetTsParameters(0.0, 1.e7, 0.0);
 
       // Use CbmMuchDigi instead of CbmMuchBeamtimeDigi
@@ -259,7 +264,6 @@ void run_reco(TString input        = "",
     }
   }  //? event-based reco
   // ------------------------------------------------------------------------
-
 
   // -----   Local reconstruction in MVD   ----------------------------------
   if (useMvd) {
@@ -451,7 +455,6 @@ void run_reco(TString input        = "",
     // ----------------------------------------------------------------------
 
   }  //? time-based reco
-
 
   // -----  Parameter database   --------------------------------------------
   std::cout << std::endl << std::endl;
