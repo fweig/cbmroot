@@ -194,6 +194,9 @@ public:
   }
 
   /// Set digi containers
+  void SetT0Digis(const std::vector<CbmTofDigi>* T0DigiVec) {
+    fT0DigiVec = T0DigiVec;
+  }
   void SetStsDigis(std::vector<CbmStsDigi>* StsDigis) { fStsDigis = StsDigis; }
   void SetMuchDigis(std::vector<CbmMuchDigi>* MuchDigis) {
     fMuchDigis = MuchDigis;
@@ -274,10 +277,10 @@ private:
   /// FIXME: usage of CbmDigiManager in FairMq context?!?
   ///        => Maybe by registering vector (or vector reference) to ioman in Device?
   //CbmDigiManager* fDigiMan                  = nullptr;  //!
-  const std::vector<CbmTofDigi>* fT0DigiVec = nullptr;  //!
-  TClonesArray* fTimeSliceMetaDataArray     = nullptr;  //!
-  const TimesliceMetaData* pTsMetaData      = nullptr;
+  TClonesArray* fTimeSliceMetaDataArray = nullptr;  //!
+  const TimesliceMetaData* pTsMetaData  = nullptr;
 
+  const std::vector<CbmTofDigi>* fT0DigiVec                  = nullptr;
   const std::vector<CbmMuchDigi>* fMuchDigis                 = nullptr;
   const std::vector<CbmMuchBeamTimeDigi>* fMuchBeamTimeDigis = nullptr;
   const std::vector<CbmStsDigi>* fStsDigis                   = nullptr;

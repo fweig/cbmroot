@@ -93,6 +93,7 @@ private:
   void SaveHistos();
 
   CbmDigiManager* fDigiMan                             = nullptr;
+  const std::vector<CbmTofDigi>* fT0Digis              = nullptr;
   std::vector<CbmMuchDigi>* fMuchDigis                 = nullptr;
   std::vector<CbmMuchBeamTimeDigi>* fMuchBeamTimeDigis = nullptr;
   std::vector<CbmStsDigi>* fStsDigis                   = nullptr;

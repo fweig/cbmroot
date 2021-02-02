@@ -41,6 +41,15 @@ InitStatus CbmTaskBuildRawEvents::Init() {
   /// Get a handle from the IO manager
   FairRootManager* ioman = FairRootManager::Instance();
 
+  //T0 not included in digi manager.
+  fT0Digis = ioman->InitObjectAs<std::vector<CbmTofDigi> const*>("T0Digi");
+  if (!fT0Digis) {
+    LOG(info) << "No T0 digi input.";
+  } else {
+    LOG(info) << "T0 digi input.";
+    fpAlgo->SetT0Digis(fT0Digis);
+  }
+
   // Get a pointer to the previous already existing data level
   fDigiMan = CbmDigiManager::Instance();
   if (fbUseMuchBeamtimeDigi) { fDigiMan->UseMuchBeamTimeDigi(); }

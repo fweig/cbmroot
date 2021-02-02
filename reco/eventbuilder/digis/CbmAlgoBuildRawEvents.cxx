@@ -126,12 +126,8 @@ void CbmAlgoBuildRawEvents::Finish() {
 
 // ---------------------------------------------------------------------
 Bool_t CbmAlgoBuildRawEvents::CheckDataAvailable(RawEventBuilderDetector& det) {
-  // Get a handle from the IO manager
-  FairRootManager* ioman = FairRootManager::Instance();
 
   if (ECbmModuleId::kT0 == det.detId) {
-    // T0 is not included in DigiManager
-    fT0DigiVec = ioman->InitObjectAs<std::vector<CbmTofDigi> const*>("T0Digi");
     if (!fT0DigiVec) {
       LOG(info) << "No T0 digi input found.";
       return kFALSE;
