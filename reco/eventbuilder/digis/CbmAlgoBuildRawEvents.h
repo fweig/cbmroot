@@ -5,11 +5,10 @@
  *              GNU Lesser General Public Licence (LGPL) version 3,             *
  *                  copied verbatim in the file "LICENSE"                       *
  ********************************************************************************/
-#ifndef CBM2021EVENTBUILDERALGO_H
-#define CBM2021EVENTBUILDERALGO_H
+#ifndef CBMALGOBUILDRAWEVENTS_H
+#define CBMALGOBUILDRAWEVENTS_H
 
 /// CBM headers
-#include "../../fles/mcbm2018/tasks/CbmMcbm2019TimeWinEventBuilderAlgo.h"  // for EOverlapMode and EventBuilderDetector
 #include "CbmMuchBeamTimeDigi.h"
 #include "CbmMuchDigi.h"
 #include "CbmPsdDigi.h"
@@ -40,27 +39,26 @@ class TH2;
 class TNamed;
 class TCanvas;
 
-/*    get from CbmMcbm2019TimeWinEventBuilderAlgo.h for now
-enum class EOverlapMode { NoOverlap, MergeOverlap, AllowOverlap };
+enum class EOverlapModeRaw { NoOverlap, MergeOverlap, AllowOverlap };
 
-class EventBuilderDetector {
+class RawEventBuilderDetector {
 public:
-  EventBuilderDetector() { ; }
-  EventBuilderDetector(ECbmModuleId detIdIn,
-                       ECbmDataType dataTypeIn,
-                       std::string sNameIn) {
+  RawEventBuilderDetector() { ; }
+  RawEventBuilderDetector(ECbmModuleId detIdIn,
+                          ECbmDataType dataTypeIn,
+                          std::string sNameIn) {
     detId    = detIdIn;
     dataType = dataTypeIn;
     sName    = sNameIn;
   }
-  EventBuilderDetector(ECbmModuleId detIdIn,
-                       ECbmDataType dataTypeIn,
-                       std::string sNameIn,
-                       UInt_t uTriggerMinDigisIn,
-                       Int_t iTriggerMaxDigisIn,
-                       Double_t fdTimeWinBegIn,
-                       Double_t fdTimeWinEndIn)
-    : EventBuilderDetector(detIdIn, dataTypeIn, sNameIn) {
+  RawEventBuilderDetector(ECbmModuleId detIdIn,
+                          ECbmDataType dataTypeIn,
+                          std::string sNameIn,
+                          UInt_t uTriggerMinDigisIn,
+                          Int_t iTriggerMaxDigisIn,
+                          Double_t fdTimeWinBegIn,
+                          Double_t fdTimeWinEndIn)
+    : RawEventBuilderDetector(detIdIn, dataTypeIn, sNameIn) {
     fuTriggerMinDigis = uTriggerMinDigisIn;
     fiTriggerMaxDigis = iTriggerMaxDigisIn;
 
@@ -68,10 +66,10 @@ public:
     fdTimeWinEnd = fdTimeWinEndIn;
   }
 
-  bool operator==(const EventBuilderDetector& other) const {
+  bool operator==(const RawEventBuilderDetector& other) const {
     return (other.detId == this->detId);
   }
-  bool operator!=(const EventBuilderDetector& other) const {
+  bool operator!=(const RawEventBuilderDetector& other) const {
     return (other.detId != this->detId);
   }
 
@@ -95,35 +93,34 @@ public:
 };
 
 /// Pre-defined detector types
-static const EventBuilderDetector kEventBuilderDetSts =
-  EventBuilderDetector(ECbmModuleId::kSts, ECbmDataType::kStsDigi, "Sts");
-static const EventBuilderDetector kEventBuilderDetMuch =
-  EventBuilderDetector(ECbmModuleId::kMuch, ECbmDataType::kMuchDigi, "Much");
-static const EventBuilderDetector kEventBuilderDetTrd =
-  EventBuilderDetector(ECbmModuleId::kTrd, ECbmDataType::kTrdDigi, "Trd");
-static const EventBuilderDetector kEventBuilderDetTof =
-  EventBuilderDetector(ECbmModuleId::kTof, ECbmDataType::kTofDigi, "Tof");
-static const EventBuilderDetector kEventBuilderDetRich =
-  EventBuilderDetector(ECbmModuleId::kRich, ECbmDataType::kRichDigi, "Rich");
-static const EventBuilderDetector kEventBuilderDetPsd =
-  EventBuilderDetector(ECbmModuleId::kPsd, ECbmDataType::kPsdDigi, "Psd");
-static const EventBuilderDetector kEventBuilderDetT0 =
-  EventBuilderDetector(ECbmModuleId::kT0, ECbmDataType::kT0Digi, "T0");
-static const EventBuilderDetector kEventBuilderDetUndef =
-  EventBuilderDetector();
+static const RawEventBuilderDetector kEventBuilderDetSts =
+  RawEventBuilderDetector(ECbmModuleId::kSts, ECbmDataType::kStsDigi, "Sts");
+static const RawEventBuilderDetector kEventBuilderDetMuch =
+  RawEventBuilderDetector(ECbmModuleId::kMuch, ECbmDataType::kMuchDigi, "Much");
+static const RawEventBuilderDetector kEventBuilderDetTrd =
+  RawEventBuilderDetector(ECbmModuleId::kTrd, ECbmDataType::kTrdDigi, "Trd");
+static const RawEventBuilderDetector kEventBuilderDetTof =
+  RawEventBuilderDetector(ECbmModuleId::kTof, ECbmDataType::kTofDigi, "Tof");
+static const RawEventBuilderDetector kEventBuilderDetRich =
+  RawEventBuilderDetector(ECbmModuleId::kRich, ECbmDataType::kRichDigi, "Rich");
+static const RawEventBuilderDetector kEventBuilderDetPsd =
+  RawEventBuilderDetector(ECbmModuleId::kPsd, ECbmDataType::kPsdDigi, "Psd");
+static const RawEventBuilderDetector kEventBuilderDetT0 =
+  RawEventBuilderDetector(ECbmModuleId::kT0, ECbmDataType::kT0Digi, "T0");
+static const RawEventBuilderDetector kEventBuilderDetUndef =
+  RawEventBuilderDetector();
 
-*/
 
-class Cbm2021EventBuilderAlgo {
+class CbmAlgoBuildRawEvents {
 public:
   /** Default constructor **/
-  Cbm2021EventBuilderAlgo();
+  CbmAlgoBuildRawEvents();
 
-  Cbm2021EventBuilderAlgo(const Cbm2021EventBuilderAlgo&) = delete;
-  Cbm2021EventBuilderAlgo operator=(const Cbm2021EventBuilderAlgo&) = delete;
+  CbmAlgoBuildRawEvents(const CbmAlgoBuildRawEvents&) = delete;
+  CbmAlgoBuildRawEvents operator=(const CbmAlgoBuildRawEvents&) = delete;
 
   /** Destructor **/
-  ~Cbm2021EventBuilderAlgo();
+  ~CbmAlgoBuildRawEvents();
 
   /** Initiliazation at the beginning of a run **/
   Bool_t InitAlgo();
@@ -152,9 +149,9 @@ public:
                    Double_t fdTimeWinBegIn   = -100,
                    Double_t fdTimeWinEndIn   = 100);
 
-  void SetReferenceDetector(EventBuilderDetector refDetIn);
-  void AddDetector(EventBuilderDetector selDet);
-  void RemoveDetector(EventBuilderDetector selDet);
+  void SetReferenceDetector(RawEventBuilderDetector refDetIn);
+  void AddDetector(RawEventBuilderDetector selDet);
+  void RemoveDetector(RawEventBuilderDetector selDet);
 
   void SetTriggerMinNumber(ECbmModuleId selDet, UInt_t uVal);
   void SetTriggerMaxNumber(ECbmModuleId selDet, Int_t iVal);
@@ -171,7 +168,7 @@ public:
   }
 
   /// Control flags
-  void SetEventOverlapMode(EOverlapMode mode) { fOverMode = mode; }
+  void SetEventOverlapMode(EOverlapModeRaw mode) { fOverMode = mode; }
   void SetIgnoreTsOverlap(Bool_t bFlagIn = kTRUE) {
     fbIgnoreTsOverlap = bFlagIn;
   }
@@ -218,7 +215,7 @@ public:
 
 private:
   /// Internal methods
-  Bool_t CheckDataAvailable(EventBuilderDetector& det);
+  Bool_t CheckDataAvailable(RawEventBuilderDetector& det);
   void InitTs();
   void BuildEvents();
 
@@ -229,10 +226,10 @@ private:
   void LoopOnSeeds();
   void CheckSeed(Double_t dSeedTime, UInt_t uSeedDigiIdx);
   template<class DigiCheck>
-  void SearchMatches(Double_t dSeedTime, EventBuilderDetector& detMatch);
-  void AddDigiToEvent(EventBuilderDetector& det, Int_t uIdx);
+  void SearchMatches(Double_t dSeedTime, RawEventBuilderDetector& detMatch);
+  void AddDigiToEvent(RawEventBuilderDetector& det, Int_t uIdx);
   Bool_t HasTrigger(CbmEvent*);
-  Bool_t CheckTriggerConditions(CbmEvent* event, EventBuilderDetector& det);
+  Bool_t CheckTriggerConditions(CbmEvent* event, RawEventBuilderDetector& det);
 
   void UpdateTimeWinBoundariesExtrema();
   void UpdateWidestTimeWinRange();
@@ -247,17 +244,23 @@ private:
   Bool_t fbFillHistos {kTRUE};        //! Switch ON/OFF filling of histograms
   Bool_t fbUseMuchBeamtimeDigi = kTRUE;  //! Switch between MUCH digi classes
     /// Event building mode and detectors selection
-  EOverlapMode fOverMode {EOverlapMode::AllowOverlap};
+  EOverlapModeRaw fOverMode {EOverlapModeRaw::AllowOverlap};
 
-  EventBuilderDetector fRefDet =
-    EventBuilderDetector(ECbmModuleId::kT0, ECbmDataType::kT0Digi, "T0");
-  std::vector<EventBuilderDetector> fvDets = {
-    EventBuilderDetector(ECbmModuleId::kSts, ECbmDataType::kStsDigi, "kSts"),
-    EventBuilderDetector(ECbmModuleId::kMuch, ECbmDataType::kMuchDigi, "kMuch"),
-    EventBuilderDetector(ECbmModuleId::kTrd, ECbmDataType::kTrdDigi, "kTrd"),
-    EventBuilderDetector(ECbmModuleId::kTof, ECbmDataType::kTofDigi, "kTof"),
-    EventBuilderDetector(ECbmModuleId::kRich, ECbmDataType::kRichDigi, "kRich"),
-    EventBuilderDetector(ECbmModuleId::kPsd, ECbmDataType::kPsdDigi, "kPsd")};
+  RawEventBuilderDetector fRefDet =
+    RawEventBuilderDetector(ECbmModuleId::kT0, ECbmDataType::kT0Digi, "T0");
+  std::vector<RawEventBuilderDetector> fvDets = {
+    RawEventBuilderDetector(ECbmModuleId::kSts, ECbmDataType::kStsDigi, "kSts"),
+    RawEventBuilderDetector(ECbmModuleId::kMuch,
+                            ECbmDataType::kMuchDigi,
+                            "kMuch"),
+    RawEventBuilderDetector(ECbmModuleId::kTrd, ECbmDataType::kTrdDigi, "kTrd"),
+    RawEventBuilderDetector(ECbmModuleId::kTof, ECbmDataType::kTofDigi, "kTof"),
+    RawEventBuilderDetector(ECbmModuleId::kRich,
+                            ECbmDataType::kRichDigi,
+                            "kRich"),
+    RawEventBuilderDetector(ECbmModuleId::kPsd,
+                            ECbmDataType::kPsdDigi,
+                            "kPsd")};
 
   Double_t fdEarliestTimeWinBeg = kdDefaultTimeWinBeg;
   Double_t fdLatestTimeWinEnd   = kdDefaultTimeWinEnd;
@@ -327,7 +330,7 @@ private:
   Double_t fdPrevEvtEndTime =
     0.;  //! Save previous event last digi time information
 
-  ClassDefNV(Cbm2021EventBuilderAlgo, 1);
+  ClassDefNV(CbmAlgoBuildRawEvents, 1);
 };
 
-#endif  //  CBM2021EVENTBUILDERALGO_H
+#endif  // CBMALGOBUILDRAWEVENTS_H

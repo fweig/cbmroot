@@ -222,8 +222,16 @@ void run_reco(TString input        = "",
       /* switch between 2019 and 2021 version here, which have the same interface
       CbmMcbm2019TimeWinEventBuilderTask* evBuildRaw =
         new CbmMcbm2019TimeWinEventBuilderTask();
-*/
-      Cbm2021EventBuilderTask* evBuildRaw = new Cbm2021EventBuilderTask();
+
+      //Choose between NoOverlap, MergeOverlap, AllowOverlap
+      evBuildRaw->SetEventOverlapMode(EOverlapMode::AllowOverlap);  // for 2019 version
+      */
+
+      CbmTaskBuildRawEvents* evBuildRaw = new CbmTaskBuildRawEvents();
+
+      //Choose between NoOverlap, MergeOverlap, AllowOverlap
+      evBuildRaw->SetEventOverlapMode(
+        EOverlapModeRaw::AllowOverlap);  // for raw version
 
       evBuildRaw->SetTsParameters(0.0, 1.e7, 0.0);
 
@@ -243,8 +251,6 @@ void run_reco(TString input        = "",
       // Set STS as reference detector
       evBuildRaw->SetReferenceDetector(kEventBuilderDetSts);
 
-      //Choose between NoOverlap, MergeOverlap, AllowOverlap
-      evBuildRaw->SetEventOverlapMode(EOverlapMode::AllowOverlap);
 
       evBuildRaw->SetTriggerMinNumber(ECbmModuleId::kSts, 10);
       evBuildRaw->SetTriggerMaxNumber(ECbmModuleId::kSts, -1);

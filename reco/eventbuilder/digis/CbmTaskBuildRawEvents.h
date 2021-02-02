@@ -5,11 +5,8 @@
  *              GNU Lesser General Public Licence (LGPL) version 3,             *
  *                  copied verbatim in the file "LICENSE"                       *
  ********************************************************************************/
-#ifndef CBMM2021EVENTBUILDERTASK_H
-#define CBMM2021EVENTBUILDERTASK_H
-
-// CBM headers
-#include "../../fles/mcbm2018/tasks/CbmMcbm2019TimeWinEventBuilderAlgo.h"  // for EOverlapMode and EventBuilderDetector
+#ifndef CBMTASKBUILDRAWEVENTS_H
+#define CBMTASKBUILDRAWEVENTS_H
 
 /// FAIRROOT headers
 #include "FairTask.h"
@@ -32,23 +29,26 @@
 #include <vector>
 
 class CbmDigiManager;
-class Cbm2021EventBuilderAlgo;
+class CbmAlgoBuildRawEvents;
+class RawEventBuilderDetector;
 class TClonesArray;
 
-class Cbm2021EventBuilderTask : public FairTask {
+enum class EOverlapModeRaw;
+
+class CbmTaskBuildRawEvents : public FairTask {
 public:
   /** Default constructor **/
-  Cbm2021EventBuilderTask();
+  CbmTaskBuildRawEvents();
 
-  Cbm2021EventBuilderTask(const Cbm2021EventBuilderTask&) = delete;
-  Cbm2021EventBuilderTask operator=(const Cbm2021EventBuilderTask&) = delete;
+  CbmTaskBuildRawEvents(const CbmTaskBuildRawEvents&) = delete;
+  CbmTaskBuildRawEvents operator=(const CbmTaskBuildRawEvents&) = delete;
 
   /** Constructor with parameters (Optional) **/
-  //  Cbm2021EventBuilderTask(Int_t verbose);
+  //  CbmTaskBuildRawEvents(Int_t verbose);
 
 
   /** Destructor **/
-  ~Cbm2021EventBuilderTask();
+  ~CbmTaskBuildRawEvents();
 
 
   /** Initiliazation of task at the beginning of a run **/
@@ -70,9 +70,9 @@ public:
   void SetFillHistos(Bool_t bFlag = kTRUE);
   void SetOutFilename(TString sNameIn);
 
-  void SetReferenceDetector(EventBuilderDetector refDet);
-  void AddDetector(EventBuilderDetector selDet);
-  void RemoveDetector(EventBuilderDetector selDet);
+  void SetReferenceDetector(RawEventBuilderDetector refDet);
+  void AddDetector(RawEventBuilderDetector selDet);
+  void RemoveDetector(RawEventBuilderDetector selDet);
 
   void SetTriggerMinNumber(ECbmModuleId selDet, UInt_t uVal);
   void SetTriggerMaxNumber(ECbmModuleId selDet, Int_t iVal);
@@ -83,7 +83,7 @@ public:
                        Double_t dTsLength,
                        Double_t dTsOverLength);
 
-  void SetEventOverlapMode(EOverlapMode mode);
+  void SetEventOverlapMode(EOverlapModeRaw mode);
   void SetIgnoreTsOverlap(Bool_t bFlagIn);
 
   void ChangeMuchBeamtimeDigiFlag(Bool_t bFlagIn = kFALSE);
@@ -103,7 +103,7 @@ private:
 
   Bool_t fbUseMuchBeamtimeDigi = kTRUE;  //! Switch between MUCH digi classes
 
-  Cbm2021EventBuilderAlgo* fpAlgo = nullptr;
+  CbmAlgoBuildRawEvents* fpAlgo = nullptr;
 
   TClonesArray* fEvents = nullptr;  //! output container of CbmEvents
 
@@ -112,7 +112,7 @@ private:
   /** Name of the histogram output file **/
   TString fsOutFileName {"data/HistosEvtWin.root"};
 
-  ClassDef(Cbm2021EventBuilderTask, 1);
+  ClassDef(CbmTaskBuildRawEvents, 1);
 };
 
-#endif  // CBMM2021EVENTBUILDERTASK_H
+#endif  // CBMTASKBUILDRAWEVENTS_H

@@ -67,8 +67,8 @@ link_directories( ${LINK_DIRECTORIES})
 
 set(SRCS
 
-digis/Cbm2021EventBuilderAlgo.cxx
-digis/Cbm2021EventBuilderTask.cxx
+digis/CbmAlgoBuildRawEvents.cxx
+digis/CbmTaskBuildRawEvents.cxx
 digis/CbmBuildEventsIdeal.cxx
 digis/CbmBuildEventsIdealNew.cxx
 digis/CbmBuildEventsQA.cxx

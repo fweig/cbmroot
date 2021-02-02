@@ -5,8 +5,8 @@
  *              GNU Lesser General Public Licence (LGPL) version 3,             *
  *                  copied verbatim in the file "LICENSE"                       *
  ********************************************************************************/
-#include "Cbm2021EventBuilderTask.h"
-#include "Cbm2021EventBuilderAlgo.h"
+#include "CbmTaskBuildRawEvents.h"
+#include "CbmAlgoBuildRawEvents.h"
 
 #include "CbmDigiManager.h"
 #include "CbmEvent.h"
@@ -22,22 +22,22 @@
 #include <TFile.h>
 
 // ---- Default constructor -------------------------------------------
-Cbm2021EventBuilderTask::Cbm2021EventBuilderTask()
-  : FairTask("Cbm2021EventBuilderTask") {
+CbmTaskBuildRawEvents::CbmTaskBuildRawEvents()
+  : FairTask("CbmTaskBuildRawEvents") {
   /// Create Algo. To be made generic/switchable when more event building algo are available!
-  fpAlgo = new Cbm2021EventBuilderAlgo();
+  fpAlgo = new CbmAlgoBuildRawEvents();
 }
 
 // ---- Destructor ----------------------------------------------------
-Cbm2021EventBuilderTask::~Cbm2021EventBuilderTask() {}
+CbmTaskBuildRawEvents::~CbmTaskBuildRawEvents() {}
 
 // ----  Initialisation  ----------------------------------------------
-void Cbm2021EventBuilderTask::SetParContainers() {
+void CbmTaskBuildRawEvents::SetParContainers() {
   /// Nothing to do
 }
 
 // ---- Init ----------------------------------------------------------
-InitStatus Cbm2021EventBuilderTask::Init() {
+InitStatus CbmTaskBuildRawEvents::Init() {
   /// Get a handle from the IO manager
   FairRootManager* ioman = FairRootManager::Instance();
 
@@ -120,11 +120,11 @@ InitStatus Cbm2021EventBuilderTask::Init() {
 }
 
 // ---- ReInit  -------------------------------------------------------
-InitStatus Cbm2021EventBuilderTask::ReInit() { return kSUCCESS; }
+InitStatus CbmTaskBuildRawEvents::ReInit() { return kSUCCESS; }
 
 // ---- Exec ----------------------------------------------------------
-void Cbm2021EventBuilderTask::Exec(Option_t* /*option*/) {
-  LOG(debug2) << "Cbm2021EventBuilderTask::Exec => Starting sequence";
+void CbmTaskBuildRawEvents::Exec(Option_t* /*option*/) {
+  LOG(debug2) << "CbmTaskBuildRawEvents::Exec => Starting sequence";
 
   //Read STS digis
   if (fDigiMan->IsPresent(ECbmModuleId::kSts)) {
@@ -215,12 +215,12 @@ void Cbm2021EventBuilderTask::Exec(Option_t* /*option*/) {
 
   /// Save the resulting vector of events in TClonesArray
   FillOutput();
-  LOG(debug2) << "Cbm2021EventBuilderTask::Exec => Done";
+  LOG(debug2) << "CbmTaskBuildRawEvents::Exec => Done";
 }
 
 
 // ---- Finish --------------------------------------------------------
-void Cbm2021EventBuilderTask::Finish() {
+void CbmTaskBuildRawEvents::Finish() {
   if (fbFillHistos) { SaveHistos(); }  // if( fbFillHistos )
 
   /// Call Algo finish method
@@ -228,7 +228,7 @@ void Cbm2021EventBuilderTask::Finish() {
 }
 
 //----------------------------------------------------------------------
-void Cbm2021EventBuilderTask::FillOutput() {
+void CbmTaskBuildRawEvents::FillOutput() {
   /// Clear TClonesArray before usage.
   fEvents->Delete();
 
@@ -249,7 +249,7 @@ void Cbm2021EventBuilderTask::FillOutput() {
   fpAlgo->ClearEventVector();
 }
 //----------------------------------------------------------------------
-void Cbm2021EventBuilderTask::SaveHistos() {
+void CbmTaskBuildRawEvents::SaveHistos() {
   /// Obtain vector of pointers on each histo from the algo (+ optionally desired folder)
   std::vector<std::pair<TNamed*, std::string>> vHistos =
     fpAlgo->GetHistoVector();
@@ -281,59 +281,59 @@ void Cbm2021EventBuilderTask::SaveHistos() {
   histoFile->Close();
 }
 //----------------------------------------------------------------------
-void Cbm2021EventBuilderTask::SetFillHistos(Bool_t bFlag) {
+void CbmTaskBuildRawEvents::SetFillHistos(Bool_t bFlag) {
   fbFillHistos = bFlag;
   if (nullptr != fpAlgo) fpAlgo->SetFillHistos(fbFillHistos);
 }
-void Cbm2021EventBuilderTask::SetOutFilename(TString sNameIn) {
+void CbmTaskBuildRawEvents::SetOutFilename(TString sNameIn) {
   fsOutFileName = sNameIn;
 }
 
-void Cbm2021EventBuilderTask::SetReferenceDetector(
-  EventBuilderDetector refDet) {
+void CbmTaskBuildRawEvents::SetReferenceDetector(
+  RawEventBuilderDetector refDet) {
   if (nullptr != fpAlgo) fpAlgo->SetReferenceDetector(refDet);
 }
-void Cbm2021EventBuilderTask::AddDetector(EventBuilderDetector selDet) {
+void CbmTaskBuildRawEvents::AddDetector(RawEventBuilderDetector selDet) {
   if (nullptr != fpAlgo) fpAlgo->AddDetector(selDet);
 }
-void Cbm2021EventBuilderTask::RemoveDetector(EventBuilderDetector selDet) {
+void CbmTaskBuildRawEvents::RemoveDetector(RawEventBuilderDetector selDet) {
   if (nullptr != fpAlgo) fpAlgo->RemoveDetector(selDet);
 }
 
-void Cbm2021EventBuilderTask::SetTriggerMinNumber(ECbmModuleId selDet,
-                                                  UInt_t uVal) {
+void CbmTaskBuildRawEvents::SetTriggerMinNumber(ECbmModuleId selDet,
+                                                UInt_t uVal) {
   if (nullptr != fpAlgo) fpAlgo->SetTriggerMinNumber(selDet, uVal);
 }
-void Cbm2021EventBuilderTask::SetTriggerMaxNumber(ECbmModuleId selDet,
-                                                  Int_t iVal) {
+void CbmTaskBuildRawEvents::SetTriggerMaxNumber(ECbmModuleId selDet,
+                                                Int_t iVal) {
   if (nullptr != fpAlgo) fpAlgo->SetTriggerMaxNumber(selDet, iVal);
 }
 
-void Cbm2021EventBuilderTask::SetTriggerWindow(ECbmModuleId det,
-                                               Double_t dWinBeg,
-                                               Double_t dWinEnd) {
+void CbmTaskBuildRawEvents::SetTriggerWindow(ECbmModuleId det,
+                                             Double_t dWinBeg,
+                                             Double_t dWinEnd) {
   if (nullptr != fpAlgo) fpAlgo->SetTriggerWindow(det, dWinBeg, dWinEnd);
 }
 
 
-void Cbm2021EventBuilderTask::SetTsParameters(Double_t dTsStartTime,
-                                              Double_t dTsLength,
-                                              Double_t dTsOverLength) {
+void CbmTaskBuildRawEvents::SetTsParameters(Double_t dTsStartTime,
+                                            Double_t dTsLength,
+                                            Double_t dTsOverLength) {
   if (nullptr != fpAlgo)
     fpAlgo->SetTsParameters(dTsStartTime, dTsLength, dTsOverLength);
 }
 
-void Cbm2021EventBuilderTask::SetEventOverlapMode(EOverlapMode mode) {
+void CbmTaskBuildRawEvents::SetEventOverlapMode(EOverlapModeRaw mode) {
   if (nullptr != fpAlgo) fpAlgo->SetEventOverlapMode(mode);
 }
-void Cbm2021EventBuilderTask::SetIgnoreTsOverlap(Bool_t bFlagIn) {
+void CbmTaskBuildRawEvents::SetIgnoreTsOverlap(Bool_t bFlagIn) {
   if (nullptr != fpAlgo) fpAlgo->SetIgnoreTsOverlap(bFlagIn);
 }
-void Cbm2021EventBuilderTask::ChangeMuchBeamtimeDigiFlag(Bool_t bFlagIn) {
+void CbmTaskBuildRawEvents::ChangeMuchBeamtimeDigiFlag(Bool_t bFlagIn) {
   if (nullptr != fpAlgo) fpAlgo->ChangeMuchBeamtimeDigiFlag(bFlagIn);
   fbUseMuchBeamtimeDigi = bFlagIn;
 }
 
 //----------------------------------------------------------------------
 
-ClassImp(Cbm2021EventBuilderTask)
+ClassImp(CbmTaskBuildRawEvents)
