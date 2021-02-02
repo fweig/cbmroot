@@ -26,7 +26,7 @@ CbmTofDetectorId_v21a::CbmTofDetectorId_v21a()
     if (i == 4) continue;  // ignore side bit
     modulemask |= (maskarray[i] << shiftarray[i]);
   }
-  char prev = std::cout.fill('x');
+  char prev = std::cout.fill();
   std::cout << "<I> V21a module mask 0x" << std::setfill('0') << std::setw(8)
             << std::right << std::hex << modulemask << std::setfill(prev)
             << std::dec << std::endl;

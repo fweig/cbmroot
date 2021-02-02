@@ -23,9 +23,11 @@ void mcbm_event_ana(Int_t runId       = 831,
   // ------------------------------------------------------------------------
 
   // -----   In- and output file names   ------------------------------------
-  TString inFile = Form("./data/reco_mcbm_%03u.root", runId);
+  TString inFile  = Form("./data/reco_mcbm_event_%03u.root", runId);
+  TString trkFile = Form("./data/tracking_mcbm_event_%03u.root", runId);
   if (bUseEvtWin) {
     inFile = Form("./data/reco_mcbm_evt_win_%03u.root", runId);
+    trkFile = Form("./data/tracking_mcbm_evt_win_%03u.root", runId);
   }  // if (bUseEvtWin)
   TString parFile = Form("./data/unp_mcbm_params_%i.root", runId);
   TString geoFile = paramDir + "mcbm_beam_2020_03.geo.root";
@@ -47,6 +49,7 @@ void mcbm_event_ana(Int_t runId       = 831,
   // -----   FairRunAna   ---------------------------------------------------
   FairRunAna* run             = new FairRunAna();
   FairFileSource* inputSource = new FairFileSource(inFile);
+  inputSource->AddFriend(trkFile);
   run->SetSource(inputSource);
 
   FairRootFileSink* outputSink = new FairRootFileSink(outFile);
