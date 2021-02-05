@@ -39,4 +39,3 @@ source /hera/cbm/users/andrey/cbmroot/trunk/build/config.sh
 #rm -rf ${infiles} 
 
 cp -v ${SGE_STDOUT_PATH} ${outdir}/log/${JOB_ID}.${SGE_TASK_ID}.log
-  

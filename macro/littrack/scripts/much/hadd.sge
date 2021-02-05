@@ -19,6 +19,3 @@ infiles=${dir}/qa.auau.${energy}.${centrality}.*.root
 hadd -T -f -k ${outfile} ${infiles}
 
 cp -v ${SGE_STDOUT_PATH} ${outdir}/log/qa.${JOB_ID}.${SGE_TASK_ID}.log
-
-
-  
