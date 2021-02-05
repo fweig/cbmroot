@@ -252,9 +252,9 @@ void run_reco(TString input        = "",
       evBuildRaw->SetReferenceDetector(kEventBuilderDetSts);
 
 
-      evBuildRaw->SetTriggerMinNumber(ECbmModuleId::kSts, 10);
+      evBuildRaw->SetTriggerMinNumber(ECbmModuleId::kSts, 1000);
       evBuildRaw->SetTriggerMaxNumber(ECbmModuleId::kSts, -1);
-      evBuildRaw->SetTriggerWindow(ECbmModuleId::kSts, -5500, 5500);
+      evBuildRaw->SetTriggerWindow(ECbmModuleId::kSts, -500, 500);
       // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
 
       run->AddTask(evBuildRaw);
