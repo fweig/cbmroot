@@ -581,7 +581,7 @@ void CbmMuchSegmentAuto::Print(Option_t*) const {
 }
 
 void CbmMuchSegmentAuto::DrawSegmentation() {
-  string digifile(fDigiFileName);
+  string digifile(fDigiFileName.Data());
   Int_t startIndex = digifile.size() - 4;
   string txtfile   = digifile.erase(startIndex, 4);
   txtfile.append("txt");

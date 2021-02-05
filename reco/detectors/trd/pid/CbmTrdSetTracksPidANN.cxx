@@ -49,7 +49,8 @@ Bool_t CbmTrdSetTracksPidANN::ReadData() {
          << " is wrong geometry type." << endl;
     return kFALSE;
   }
-  fileName += "/parameters/trd/elid/ann/" + string(fTRDGeometryType) + "/";
+  fileName +=
+    "/parameters/trd/elid/ann/" + string(fTRDGeometryType.Data()) + "/";
 
   for (int i = 0; i < 10; i++) {
     stringstream ss;
