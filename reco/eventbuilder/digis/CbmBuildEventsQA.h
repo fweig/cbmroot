@@ -9,6 +9,7 @@
 #include <FairTask.h>
 
 class TClonesArray;
+class CbmDigiManager;
 class CbmEvent;
 
 /** @class CbmStsBuildEventsQA
@@ -35,10 +36,9 @@ public:
 
 
 private:
-  TClonesArray* fStsDigis;        ///< Input array (class CbmStsDigi)
-  TClonesArray* fStsDigiMatches;  ///< Input array (class CbmMatch)
-  TClonesArray* fEvents;          ///< Input array (class CbmEvent)
-  Int_t fNofEntries;              ///< Number of processed entries
+  CbmDigiManager* fDigiMan = nullptr;  //!
+  TClonesArray* fEvents;               ///< Input array (class CbmEvent)
+  Int_t fNofEntries;                   ///< Number of processed entries
 
   /** Task initialisation **/
   virtual InitStatus Init();

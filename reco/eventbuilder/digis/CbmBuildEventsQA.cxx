@@ -5,6 +5,7 @@
 
 #include "CbmBuildEventsQA.h"
 
+#include "CbmDigiManager.h"
 #include "CbmEvent.h"
 #include "CbmLink.h"
 #include "CbmMatch.h"
@@ -23,11 +24,7 @@ using namespace std;
 
 // =====   Constructor   =====================================================
 CbmBuildEventsQA::CbmBuildEventsQA()
-  : FairTask("BuildEventsQA")
-  , fStsDigis(NULL)
-  , fStsDigiMatches(nullptr)
-  , fEvents(NULL)
-  , fNofEntries(0) {}
+  : FairTask("BuildEventsQA"), fEvents(NULL), fNofEntries(0) {}
 // ===========================================================================
 
 
@@ -47,6 +44,7 @@ void CbmBuildEventsQA::Exec(Option_t*) {
   // --- Event loop
   Int_t nEvents = fEvents->GetEntriesFast();
   for (Int_t iEvent = 0; iEvent < nEvents; iEvent++) {
+    //LOG(info) << "iEvent = " << iEvent << " , nEvents = " << nEvents;
     CbmEvent* event = (CbmEvent*) fEvents->At(iEvent);
 
     // --- Match event to MC
@@ -66,9 +64,9 @@ void CbmBuildEventsQA::Exec(Option_t*) {
 
     // --- Loop over STS digis
     for (Int_t iDigi = 0; iDigi < nDigis; iDigi++) {
-      UInt_t index        = event->GetIndex(ECbmDataType::kStsDigi, iDigi);
-      CbmStsDigi* digi    = (CbmStsDigi*) fStsDigis->At(index);
-      CbmMatch* digiMatch = (CbmMatch*) fStsDigiMatches->At(index);
+      UInt_t index           = event->GetIndex(ECbmDataType::kStsDigi, iDigi);
+      const CbmStsDigi* digi = fDigiMan->Get<CbmStsDigi>(index);
+      const CbmMatch* digiMatch = fDigiMan->GetMatch(ECbmModuleId::kSts, index);
       assert(digi);
       assert(digiMatch);
 
@@ -122,10 +120,22 @@ InitStatus CbmBuildEventsQA::Init() {
                << "No CbmEvent TClonesArray found!";
   }
 
+  // --- DigiManager instance
+  fDigiMan = CbmDigiManager::Instance();
+  fDigiMan->Init();
 
-  // --- Get input array (CbmStsDigi)
-  fStsDigis = (TClonesArray*) ioman->GetObject("StsDigi");
-  assert(fStsDigis);
+  //Init STS digis
+  if (fDigiMan->IsPresent(ECbmModuleId::kSts)) {
+    LOG(info) << "CbmBuildEventsQA(): Found STS digi input.";
+  } else {
+    LOG(fatal) << "CbmBuildEventsQA(): No STS digi input.";
+  }
+
+  if (fDigiMan->IsMatchPresent(ECbmModuleId::kSts)) {
+    LOG(info) << "CbmBuildEventsQA(): Found STS match branch.";
+  } else {
+    LOG(fatal) << "CbmBuildEventsQA(): No STS match branch.";
+  }
 
   return kSUCCESS;
 }
@@ -142,16 +152,25 @@ void CbmBuildEventsQA::MatchEvent(CbmEvent* event) {
   // --- it will be created.
   CbmMatch* match = event->GetMatch();
   if (!match) {
+    LOG(info) << "No match data found in event. Creating new.";
     match = new CbmMatch();
     event->SetMatch(match);
-  }  //? event has no match
+  }
+
+  //else{
+  //  LOG(info) << "Match data found in event. Clearing.";
+  //  match->ClearLinks();
+  // }  //? event has no match
+
+  //  LOG(info) << GetName() << ": Event " << event->GetNumber()
+  //              << ", STS digis : " << event->GetNofData(ECbmDataType::kStsDigi);
 
   // --- Loop over digis
   for (Int_t iDigi = 0; iDigi < event->GetNofData(ECbmDataType::kStsDigi);
        iDigi++) {
-    Int_t index         = event->GetIndex(ECbmDataType::kStsDigi, iDigi);
-    CbmStsDigi* digi    = (CbmStsDigi*) fStsDigis->At(index);
-    CbmMatch* digiMatch = (CbmMatch*) fStsDigiMatches->At(index);
+    Int_t index               = event->GetIndex(ECbmDataType::kStsDigi, iDigi);
+    const CbmStsDigi* digi    = fDigiMan->Get<CbmStsDigi>(index);
+    const CbmMatch* digiMatch = fDigiMan->GetMatch(ECbmModuleId::kSts, index);
     assert(digi);
     assert(digiMatch);
 
@@ -162,6 +181,8 @@ void CbmBuildEventsQA::MatchEvent(CbmEvent* event) {
       Int_t file      = digiMatch->GetLink(iLink).GetFile();
       Int_t entry     = digiMatch->GetLink(iLink).GetEntry();
       Double_t weight = digiMatch->GetLink(iLink).GetWeight();
+      //     LOG(info) << "Adding link (weight, entry, file): " << weight << " "
+      //		<< entry << " " << file;
       match->AddLink(weight, 0, entry, file);
     }  //# links in digi
 
