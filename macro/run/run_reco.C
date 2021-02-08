@@ -219,24 +219,12 @@ void run_reco(TString input        = "",
       // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
       /// to use 2018 version, uncomment this section and comment the prev. one
 
-      /* switch between 2019 and 2021 version here, which have the same interface
+      /* switch between 2019 and 2021 version here
       CbmMcbm2019TimeWinEventBuilderTask* evBuildRaw =
         new CbmMcbm2019TimeWinEventBuilderTask();
 
       //Choose between NoOverlap, MergeOverlap, AllowOverlap
       evBuildRaw->SetEventOverlapMode(EOverlapMode::AllowOverlap);  // for 2019 version
-      */
-
-      CbmTaskBuildRawEvents* evBuildRaw = new CbmTaskBuildRawEvents();
-
-      //Choose between NoOverlap, MergeOverlap, AllowOverlap
-      evBuildRaw->SetEventOverlapMode(
-        EOverlapModeRaw::AllowOverlap);  // for raw version
-
-      evBuildRaw->SetTsParameters(0.0, 1.e7, 0.0);
-
-      // Use CbmMuchDigi instead of CbmMuchBeamtimeDigi
-      evBuildRaw->ChangeMuchBeamtimeDigiFlag(kFALSE);
 
       // Remove detectors where digis not found
       if (!useRich) evBuildRaw->RemoveDetector(kEventBuilderDetRich);
@@ -250,7 +238,30 @@ void run_reco(TString input        = "",
 
       // Set STS as reference detector
       evBuildRaw->SetReferenceDetector(kEventBuilderDetSts);
+*/
+      CbmTaskBuildRawEvents* evBuildRaw = new CbmTaskBuildRawEvents();
+      //Choose between NoOverlap, MergeOverlap, AllowOverlap
 
+      evBuildRaw->SetEventOverlapMode(
+        EOverlapModeRaw::AllowOverlap);  // for raw version
+
+      // Remove detectors where digis not found
+      if (!useRich) evBuildRaw->RemoveDetector(kRawEventBuilderDetRich);
+      if (!useMuch) evBuildRaw->RemoveDetector(kRawEventBuilderDetMuch);
+      if (!usePsd) evBuildRaw->RemoveDetector(kRawEventBuilderDetPsd);
+      if (!useTof) evBuildRaw->RemoveDetector(kRawEventBuilderDetTof);
+      if (!useTrd) evBuildRaw->RemoveDetector(kRawEventBuilderDetTrd);
+
+      // Remove STS as it will be our reference
+      evBuildRaw->RemoveDetector(kRawEventBuilderDetSts);
+
+      // Set STS as reference detector
+      evBuildRaw->SetReferenceDetector(kRawEventBuilderDetSts);
+
+      evBuildRaw->SetTsParameters(0.0, 1.e7, 0.0);
+
+      // Use CbmMuchDigi instead of CbmMuchBeamtimeDigi
+      evBuildRaw->ChangeMuchBeamtimeDigiFlag(kFALSE);
 
       evBuildRaw->SetTriggerMinNumber(ECbmModuleId::kSts, 1000);
       evBuildRaw->SetTriggerMaxNumber(ECbmModuleId::kSts, -1);
@@ -270,6 +281,10 @@ void run_reco(TString input        = "",
     }
   }  //? event-based reco
   // ------------------------------------------------------------------------
+
+  //CbmBuildEventsQA* evBuildQA = new CbmBuildEventsQA();
+  //run->AddTask(evBuildQA);
+
 
   // -----   Local reconstruction in MVD   ----------------------------------
   if (useMvd) {
@@ -461,6 +476,7 @@ void run_reco(TString input        = "",
     // ----------------------------------------------------------------------
 
   }  //? time-based reco
+
 
   // -----  Parameter database   --------------------------------------------
   std::cout << std::endl << std::endl;

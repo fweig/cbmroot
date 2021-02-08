@@ -93,21 +93,21 @@ public:
 };
 
 /// Pre-defined detector types
-static const RawEventBuilderDetector kEventBuilderDetSts =
+static const RawEventBuilderDetector kRawEventBuilderDetSts =
   RawEventBuilderDetector(ECbmModuleId::kSts, ECbmDataType::kStsDigi, "Sts");
-static const RawEventBuilderDetector kEventBuilderDetMuch =
+static const RawEventBuilderDetector kRawEventBuilderDetMuch =
   RawEventBuilderDetector(ECbmModuleId::kMuch, ECbmDataType::kMuchDigi, "Much");
-static const RawEventBuilderDetector kEventBuilderDetTrd =
+static const RawEventBuilderDetector kRawEventBuilderDetTrd =
   RawEventBuilderDetector(ECbmModuleId::kTrd, ECbmDataType::kTrdDigi, "Trd");
-static const RawEventBuilderDetector kEventBuilderDetTof =
+static const RawEventBuilderDetector kRawEventBuilderDetTof =
   RawEventBuilderDetector(ECbmModuleId::kTof, ECbmDataType::kTofDigi, "Tof");
-static const RawEventBuilderDetector kEventBuilderDetRich =
+static const RawEventBuilderDetector kRawEventBuilderDetRich =
   RawEventBuilderDetector(ECbmModuleId::kRich, ECbmDataType::kRichDigi, "Rich");
-static const RawEventBuilderDetector kEventBuilderDetPsd =
+static const RawEventBuilderDetector kRawEventBuilderDetPsd =
   RawEventBuilderDetector(ECbmModuleId::kPsd, ECbmDataType::kPsdDigi, "Psd");
-static const RawEventBuilderDetector kEventBuilderDetT0 =
+static const RawEventBuilderDetector kRawEventBuilderDetT0 =
   RawEventBuilderDetector(ECbmModuleId::kT0, ECbmDataType::kT0Digi, "T0");
-static const RawEventBuilderDetector kEventBuilderDetUndef =
+static const RawEventBuilderDetector kRawEventBuilderDetUndef =
   RawEventBuilderDetector();
 
 
