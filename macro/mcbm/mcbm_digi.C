@@ -4,8 +4,8 @@
  ** data, which serves as input for reconstruction. Raw data will
  ** be delivered in time-slice format (one tree entry per time-slice).
  **
- ** The first five arguments to the macro call represent the minimal 
- ** information to be passed to the digitization run. In addition, 
+ ** The first five arguments to the macro call represent the minimal
+ ** information to be passed to the digitization run. In addition,
  ** the mode (time-based as default, or event-by-event) can be specified.
  ** By default, already existing output files will not be overwritten
  ** to prevent accidental data loss.
@@ -22,17 +22,17 @@
  **
  ** For further options to modify the run settings, consult
  ** the documentation of the CbmDigitization class.
- ** 
+ **
  ** @author Volker Friese <v.friese@gsi.de>
  ** @date 8 June 2018
  **/
 
 
-void mcbm_digi(Int_t nEvents            = 3,  // Number of events to process
-               TString dataSet          = "test",  // Data set for file names
-               Double_t eventRate       = 1.e7,    // Interaction rate [1/s]
-               Double_t timeSliceLength = 1.e4,    // Length of time-slice [ns]
-               Bool_t eventMode         = kTRUE    // Event-by-event mode
+void mcbm_digi(Int_t nEvents      = 3,            // Number of events to process
+               TString dataSet    = "data/test",  // Data set for file names
+               Double_t eventRate = 1.e7,         // Interaction rate [1/s]
+               Double_t timeSliceLength = 1.e4,   // Length of time-slice [ns]
+               Bool_t eventMode         = kTRUE   // Event-by-event mode
 ) {
 
   // --- Logger settings ----------------------------------------------------

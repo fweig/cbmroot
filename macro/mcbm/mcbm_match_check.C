@@ -1,15 +1,15 @@
-void mcbm_hadron_analysis(Int_t nEvents      = 10,
-                          TString setup      = "mcbm_beam_2020_03",
-                          const char* output = "data/test") {
+void mcbm_match_check(Int_t nEvents      = 10,
+                      TString setup      = "mcbm_beam_2020_03",
+                      const char* output = "data/test") {
   TString dataset(output);
   TString InputFile = dataset + ".tra.root";
   TString DigiFile  = dataset + ".event.raw.root";
   TString RecoFile  = dataset + ".rec.root";
   TString ParFile   = dataset + ".par.root";
-  TString OutFile   = dataset + ".ana.root";
+  TString OutFile   = dataset + ".match_check.root";
 
-  FairLogger::GetLogger()->SetLogScreenLevel("INFO");
-  FairLogger::GetLogger()->SetLogVerbosityLevel("VERYHIGH");
+  FairLogger::GetLogger()->SetLogScreenLevel("DEBUG");
+  FairLogger::GetLogger()->SetLogVerbosityLevel("HIGH");
 
   // -----   Timer   --------------------------------------------------------
   TStopwatch timer;
@@ -18,8 +18,8 @@ void mcbm_hadron_analysis(Int_t nEvents      = 10,
 
   // -----   Reconstruction run   -------------------------------------------
   FairFileSource* inputFiles = new FairFileSource(InputFile.Data());
-  inputFiles->AddFriend(RecoFile.Data());
   inputFiles->AddFriend(DigiFile.Data());
+  inputFiles->AddFriend(RecoFile.Data());
 
   FairRootFileSink* sink = new FairRootFileSink(OutFile.Data());
 
@@ -33,58 +33,12 @@ void mcbm_hadron_analysis(Int_t nEvents      = 10,
   parInput1->open(ParFile.Data());
   rtdb->setFirstInput(parInput1);
 
-
-  /*
   CbmMCDataManager* mcManager = new CbmMCDataManager("MCDataManager", 1);
   mcManager->AddFile(InputFile);
   fRun->AddTask(mcManager);
 
   CbmMatchRecoToMC* match = new CbmMatchRecoToMC();
   fRun->AddTask(match);
-*/
-
-  CbmHadronAnalysis* HadronAna = new CbmHadronAnalysis();  // in hadron
-  HadronAna->SetBeamMomentum(1.65);                        // beam momentum
-  HadronAna->SetDY(0.5);        // flow analysis exclusion window
-  HadronAna->SetRecSec(kTRUE);  // enable lambda reconstruction
-  Int_t parSet = 1;
-  switch (parSet) {
-    case 0:  // with background
-      HadronAna->SetDistPrimLim(
-        1.2);  // Max Tof-Sts trans distance for primaries
-      HadronAna->SetDistPrimLim2(
-        0.3);  // Max Sts-Sts trans distance for primaries
-      HadronAna->SetDistSecLim2(
-        0.3);  // Max Sts-Sts trans distance from TOF direction for secondaries
-      HadronAna->SetD0ProtLim(
-        0.5);                       // Min impact parameter for secondary proton
-      HadronAna->SetOpAngMin(0.1);  // Min opening angle for accepting pair
-      HadronAna->SetDCALim(0.1);    // Max DCA for accepting pair
-      HadronAna->SetVLenMin(
-        5.);  // Min Lambda flight path length for accepting pair
-      HadronAna->SetVLenMax(
-        25.);  // Max Lambda flight path length for accepting pair
-      HadronAna->SetNMixedEvents(10);  // Number of events to be mixed with
-      break;
-    case 1:  // signal only, debugging
-      HadronAna->SetDistPrimLim(
-        0.5);  // Max Tof-Sts trans distance for primaries
-      HadronAna->SetDistPrimLim2(
-        0.3);  // Max Sts-Sts trans distance for primaries
-      HadronAna->SetDistSecLim2(
-        0.3);  // Max Sts-Sts trans distance from TOF direction for secondaries
-      HadronAna->SetD0ProtLim(
-        0.4);                       // Min impact parameter for secondary proton
-      HadronAna->SetOpAngMin(0.1);  // Min opening angle for accepting pair
-      HadronAna->SetDCALim(0.2);    // Max DCA for accepting pair
-      HadronAna->SetVLenMin(
-        5.);  // Min Lambda flight path length for accepting pair
-      HadronAna->SetVLenMax(
-        25.);  // Max Lambda flight path length for accepting pair
-      HadronAna->SetNMixedEvents(10);  // Number of events to be mixed with
-      break;
-  }
-  fRun->AddTask(HadronAna);
 
   // -----   Intialise and run   --------------------------------------------
   fRun->Init();

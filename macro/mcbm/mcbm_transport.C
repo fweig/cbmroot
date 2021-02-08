@@ -20,7 +20,7 @@ void mcbm_transport(
   //                  const char* setupName = "mcbm_beam_2019_11",
   //                  const char* setupName = "mcbm_beam_2019_03",
   //                  const char* setupName = "sis18_mcbm_25deg_long",
-  const char* output    = "test",
+  const char* output    = "data/test",
   const char* inputFile = "") {
   // --- Define the beam angle ----------------------------------------------
   Double_t beamRotY = 25.;

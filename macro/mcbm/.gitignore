@@ -1,0 +1,4 @@
+all_*.par
+core_dump_*
+TRhistos.root
+gphysi.dat
