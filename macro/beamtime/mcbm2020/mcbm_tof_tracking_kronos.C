@@ -8,6 +8,9 @@
 
 #include "mcbm_tof_tracking.C"
 
+/// FIXME: Disable clang formatting around parameters initial value setting
+/// due to problem with real file path length
+/* clang-format off */
 Bool_t mcbm_tof_tracking_kronos(UInt_t uRunIdx = 28,
                                 Bool_t bEventWin  = kFALSE,
                                 Int_t iTrackMode  = 2,
@@ -16,6 +19,9 @@ Bool_t mcbm_tof_tracking_kronos(UInt_t uRunIdx = 28,
                                 TString sInpDir = "/lustre/cbm/users/ploizeau/mcbm2020/"
                                                   "unp_evt_data_7f229b3f_20201103",
                                 TString sOutDir = "./data") {
+  /// FIXME: Re-enable clang formatting after parameters initial values setting
+  /* clang-format on */
+
   UInt_t uRunId = 0;
 
   if (99999 != uRunIdx) {
@@ -46,11 +52,6 @@ Bool_t mcbm_tof_tracking_kronos(UInt_t uRunIdx = 28,
 
   if (uRunId < 692 && 0 != uRunId) return kFALSE;
 
-  return mcbm_tof_tracking(uRunId,
-                           bEventWin,
-                           iTrackMode,
-                           iCalOpt,
-                           nTimeslices,
-                           sInpDir,
-                           sOutDir );
+  return mcbm_tof_tracking(
+    uRunId, bEventWin, iTrackMode, iCalOpt, nTimeslices, sInpDir, sOutDir);
 }

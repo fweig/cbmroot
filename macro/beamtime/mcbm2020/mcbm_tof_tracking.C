@@ -12,7 +12,7 @@ Bool_t mcbm_tof_tracking(UInt_t uRunId     = 831,
                          Int_t nTimeslices = 0,
                          TString sInpDir   = "./data",
                          TString sOutDir   = "./data",
-                         TString cCalId     = "831.50.3.0") {
+                         TString cCalId    = "831.50.3.0") {
 
   // --- Logger settings ----------------------------------------------------
   TString logLevel     = "INFO";
@@ -27,7 +27,9 @@ Bool_t mcbm_tof_tracking(UInt_t uRunId     = 831,
   TString parDir   = srcDir + "/parameters";
   // ------------------------------------------------------------------------
 
-
+  /// FIXME: Disable clang formatting around parameters initial value setting
+  /// due to problem with real file path length
+  /* clang-format off */
   // -----   In- and output file names   ------------------------------------
   TString inFile     = sInpDir + Form("/reco_mcbm_event_%03u.root", uRunId);
   TString parFileIn  = sInpDir + Form("/reco_mcbm_event_params_%03u.root",
@@ -44,6 +46,8 @@ Bool_t mcbm_tof_tracking(UInt_t uRunId     = 831,
      outFile    = sOutDir + Form("/tracking_mcbm_evt_win_%03u.root", uRunId);
   }  // if( bEventWin )
   // ------------------------------------------------------------------------
+  /// FIXME: Re-enable clang formatting after parameters initial values setting
+  /* clang-format on */
 
   /*
   std::cout << sInpDir << std::endl << sOutDir << std::endl;

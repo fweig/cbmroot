@@ -30,6 +30,9 @@ Bool_t mcbm_build_and_reco(UInt_t uRunId     = 831,
   //    ------------------------------------------------------------------------
 
 
+  /// FIXME: Disable clang formatting around parameters initial value setting
+  /// due to problem with real file path length
+  /* clang-format off */
   // -----   In- and output file names   ------------------------------------
   TString inFile     = sInpDir + Form("/unp_mcbm_%03u.root", uRunId);
   TString parFileIn  = sInpDir + Form("/unp_mcbm_params_%03u.root", uRunId);
@@ -37,8 +40,10 @@ Bool_t mcbm_build_and_reco(UInt_t uRunId     = 831,
                                       uRunId);
   TString outFile    = sOutDir + Form("/reco_mcbm_evt_win_%03u.root", uRunId);
   // ------------------------------------------------------------------------
+  /// FIXME: Re-enable clang formatting after parameters initial values setting
+  /* clang-format on */
 
-/*
+  /*
   std::cout << sInpDir << std::endl << sOutDir << std::endl;
   std::cout << inFile << std::endl
             << parFileIn << std::endl
@@ -47,7 +52,7 @@ Bool_t mcbm_build_and_reco(UInt_t uRunId     = 831,
   std::cout << uRunId << " " << nTimeslices << std::endl;
 
   return kTRUE;
-*/
+  */
 
   // --- Load the geometry setup ----
   // This is currently only required by the TRD (parameters)

@@ -8,11 +8,17 @@
 
 #include "mcbm_event_reco.C"
 
+/// FIXME: Disable clang formatting around parameters initial value setting
+/// due to problem with real file path length
+/* clang-format off */
 Bool_t mcbm_event_reco_kronos(UInt_t uRunIdx = 28,
                               Int_t nTimeslices = 0,
                               TString sInpDir = "/lustre/cbm/users/ploizeau/mcbm2020/"
                                                 "unp_evt_data_7f229b3f_20201103",
                               TString sOutDir = "./data") {
+  /// FIXME: Re-enable clang formatting after parameters initial values setting
+  /* clang-format on */
+
   UInt_t uRunId = 0;
 
   if (99999 != uRunIdx) {
