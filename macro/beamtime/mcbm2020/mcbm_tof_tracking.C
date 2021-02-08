@@ -5,14 +5,20 @@
 //
 // --------------------------------------------------------------------------
 
-Bool_t mcbm_tof_tracking(UInt_t uRunId     = 831,
-                         Bool_t bEventWin  = kFALSE,
-                         Int_t iTrackMode  = 2,
-                         Int_t iCalOpt     = 0,
-                         Int_t nTimeslices = 0,
-                         TString sInpDir   = "./data",
-                         TString sOutDir   = "./data",
-                         TString cCalId    = "831.50.3.0") {
+/// FIXME: Disable clang formatting to keep easy parameters overview
+/* clang-format off */
+Bool_t mcbm_tof_tracking(UInt_t uRunId         = 831,
+                         Bool_t bEventWin      = kFALSE,
+                         Int_t iTrackMode      = 2,
+                         Int_t iCalOpt         = 0,
+                         Int_t nTimeslices     = 0,
+                         TString sInpDir       = "./data",
+                         TString sOutDir       = "./data",
+                         TString cCalId        = "831.50.3.0",
+                         Int_t iUnpFileIndex   = -1)
+{
+  /// FIXME: Re-enable clang formatting after parameters initial values setting
+  /* clang-format on */
 
   // --- Logger settings ----------------------------------------------------
   TString logLevel     = "INFO";
@@ -21,7 +27,7 @@ Bool_t mcbm_tof_tracking(UInt_t uRunId     = 831,
 
 
   // -----   Environment   --------------------------------------------------
-  TString myName   = "mcbm_tof_tracking";  // this macro's name for screen outp
+  TString myName   = "mcbm_tof_tracking";            // this macro's name for screen outp
   TString srcDir   = gSystem->Getenv("VMCWORKDIR");  // top source directory
   TString paramDir = srcDir + "/macro/beamtime/mcbm2020/";
   TString parDir   = srcDir + "/parameters";
@@ -31,20 +37,32 @@ Bool_t mcbm_tof_tracking(UInt_t uRunId     = 831,
   /// due to problem with real file path length
   /* clang-format off */
   // -----   In- and output file names   ------------------------------------
-  TString inFile     = sInpDir + Form("/reco_mcbm_event_%03u.root", uRunId);
-  TString parFileIn  = sInpDir + Form("/reco_mcbm_event_params_%03u.root",
-                                      uRunId);
-  TString parFileOut = sOutDir + Form("/tracking_mcbm_event_params_%03u.root",
-                                      uRunId);
-  TString outFile    = sOutDir + Form("/tracking_mcbm_event_%03u.root", uRunId);
+  /// Standardized RUN ID
+  TString sRunId     = TString::Format("%03u", uRunId);
+  /// Initial pattern
+  TString inFile     = sInpDir + "/reco_mcbm_event_" + sRunId;
+  TString parFileIn  = sInpDir + "/reco_mcbm_event_params_" + sRunId;
+  TString parFileOut = sOutDir + "/tracking_mcbm_event_params_" + sRunId;
+  TString outFile    = sOutDir + "/tracking_mcbm_event_" + sRunId;
+  /// Initial pattern if using event builder with time window
   if (bEventWin) {
-     inFile     = sInpDir + Form("/reco_mcbm_evt_win_%03u.root", uRunId);
-     parFileIn  = sInpDir + Form("/reco_mcbm_evt_win_params_%03u.root",
-                                 uRunId);
-     parFileOut = sOutDir + Form("/tracking_mcbm_evt_win_params_%03u.root",
-                                 uRunId);
-     outFile    = sOutDir + Form("/tracking_mcbm_evt_win_%03u.root", uRunId);
+     inFile     = sInpDir + "/reco_mcbm_evt_win_" + sRunId;
+     parFileIn  = sInpDir + "/reco_mcbm_evt_win_params_" + sRunId;
+     parFileOut = sOutDir + "/tracking_mcbm_evt_win_params_" + sRunId;
+     outFile    = sOutDir + "/tracking_mcbm_evt_win_" + sRunId;
   }  // if( bEventWin )
+  /// Add index of splitting at unpacking level if needed
+  if ( 0 <= iUnpFileIndex ) {
+    inFile     += TString::Format( "_%02u", iUnpFileIndex );
+    parFileIn  += TString::Format( "_%02u", iUnpFileIndex );
+    parFileOut += TString::Format( "_%02u", iUnpFileIndex );
+    outFile    += TString::Format( "_%02u", iUnpFileIndex );
+  }  // if ( 0 <= iUnpFileIndex )
+  /// Add ROOT file suffix
+  inFile     += ".root";
+  parFileIn  += ".root";
+  parFileOut += ".root";
+  outFile    += ".root";
   // ------------------------------------------------------------------------
   /// FIXME: Re-enable clang formatting after parameters initial values setting
   /* clang-format on */
@@ -63,9 +81,8 @@ Bool_t mcbm_tof_tracking(UInt_t uRunId     = 831,
   // --- Load the geometry setup ----
   // This is currently only required by the TRD (parameters)
   std::string geoSetupTag = "mcbm_beam_2020_03";
-  TString geoFile =
-    paramDir + geoSetupTag.data() + ".geo.root";  // Created in sim. run
-  CbmSetup* geoSetup = CbmSetup::Instance();
+  TString geoFile         = paramDir + geoSetupTag.data() + ".geo.root";  // Created in sim. run
+  CbmSetup* geoSetup      = CbmSetup::Instance();
   geoSetup->LoadSetup(geoSetupTag.data());
   TList* parFileList = new TList();
   // ------------------------------------------------------------------------
@@ -101,49 +118,41 @@ Bool_t mcbm_tof_tracking(UInt_t uRunId     = 831,
   // -----   Track reconstruction   ------------------------------------------
   switch (iTrackMode) {
     case 2: {
-      Int_t iGenCor      = 1;
-      Double_t dScalFac  = 1.;
-      Double_t dChi2Lim2 = 3.5;
-      TString cTrkFile =
-        parDir + "/tof/" + Form("%s_tofFindTracks.hst.root", cCalId.Data());
+      Int_t iGenCor        = 1;
+      Double_t dScalFac    = 1.;
+      Double_t dChi2Lim2   = 3.5;
+      TString cTrkFile     = parDir + "/tof/" + Form("%s_tofFindTracks.hst.root", cCalId.Data());
       Int_t iTrackingSetup = 1;
 
       CbmTofTrackFinder* tofTrackFinder = new CbmTofTrackFinderNN();
       tofTrackFinder->SetMaxTofTimeDifference(0.2);  // in ns/cm
       tofTrackFinder->SetTxLIM(0.3);                 // max slope dx/dz
-      tofTrackFinder->SetTyLIM(0.3);  // max dev from mean slope dy/dz
-      tofTrackFinder->SetTyMean(0.);  // mean slope dy/dz
+      tofTrackFinder->SetTyLIM(0.3);                 // max dev from mean slope dy/dz
+      tofTrackFinder->SetTyMean(0.);                 // mean slope dy/dz
       CbmTofTrackFitter* tofTrackFitter = new CbmTofTrackFitterKF(0, 211);
       TFitter* MyFit                    = new TFitter(1);  // initialize Minuit
       tofTrackFinder->SetFitter(tofTrackFitter);
 
-      CbmTofFindTracks* tofFindTracks =
-        new CbmTofFindTracks("TOF Track Finder");
+      CbmTofFindTracks* tofFindTracks = new CbmTofFindTracks("TOF Track Finder");
       tofFindTracks->UseFinder(tofTrackFinder);
       tofFindTracks->UseFitter(tofTrackFitter);
       tofFindTracks->SetCalOpt(iCalOpt);
       // 1 - update offsets, 2 - update walk, 0 - bypass
-      tofFindTracks->SetCorMode(
-        iGenCor);  // valid options: 0,1,2,3,4,5,6, 10 - 19
-      tofFindTracks->SetTtTarg(
-        0.065);  // target value for Mar2020 triple stack -> betapeak ~ 0.95
+      tofFindTracks->SetCorMode(iGenCor);  // valid options: 0,1,2,3,4,5,6, 10 - 19
+      tofFindTracks->SetTtTarg(0.065);     // target value for Mar2020 triple stack -> betapeak ~ 0.95
       //tofFindTracks->SetTtTarg(0.041);  // target value for inverse velocity, > 0.033 ns/cm!
       //tofFindTracks->SetTtTarg(0.035);  // target value for inverse velocity, > 0.033 ns/cm!
-      tofFindTracks->SetCalParFileName(
-        cTrkFile);  // Tracker parameter value file name
-      tofFindTracks->SetBeamCounter(5, 0, 0);  // default beam counter
-      tofFindTracks->SetStationMaxHMul(
-        30);  // Max Hit Multiplicity in any used station
+      tofFindTracks->SetCalParFileName(cTrkFile);  // Tracker parameter value file name
+      tofFindTracks->SetBeamCounter(5, 0, 0);      // default beam counter
+      tofFindTracks->SetStationMaxHMul(30);        // Max Hit Multiplicity in any used station
 
-      tofFindTracks->SetT0MAX(dScalFac);  // in ns
-      tofFindTracks->SetSIGT(0.08);       // default in ns
-      tofFindTracks->SetSIGX(0.3);        // default in cm
-      tofFindTracks->SetSIGY(0.45);       // default in cm
-      tofFindTracks->SetSIGZ(0.05);       // default in cm
-      tofFindTracks->SetUseSigCalib(
-        kFALSE);  // ignore resolutions in CalPar file
-      tofTrackFinder->SetSIGLIM(dChi2Lim2
-                                * 2.);  // matching window in multiples of chi2
+      tofFindTracks->SetT0MAX(dScalFac);           // in ns
+      tofFindTracks->SetSIGT(0.08);                // default in ns
+      tofFindTracks->SetSIGX(0.3);                 // default in cm
+      tofFindTracks->SetSIGY(0.45);                // default in cm
+      tofFindTracks->SetSIGZ(0.05);                // default in cm
+      tofFindTracks->SetUseSigCalib(kFALSE);       // ignore resolutions in CalPar file
+      tofTrackFinder->SetSIGLIM(dChi2Lim2 * 2.);   // matching window in multiples of chi2
       tofTrackFinder->SetChiMaxAccept(dChi2Lim2);  // max tracklet chi2
 
       Int_t iMinNofHits   = -1;
@@ -311,8 +320,7 @@ Bool_t mcbm_tof_tracking(UInt_t uRunId     = 831,
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFileOut << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
   // ------------------------------------------------------------------------
 

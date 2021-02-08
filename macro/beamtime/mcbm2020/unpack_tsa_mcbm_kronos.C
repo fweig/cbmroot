@@ -9,9 +9,18 @@
  */
 #include "unpack_tsa_mcbm.C"
 
+/// FIXME: Disable clang formatting to keep easy parameters overview
+/* clang-format off */
 Bool_t unpack_tsa_mcbm_kronos(UInt_t uRunIdx       = 28,
                               UInt_t uNbTimeslices = 0,
-                              TString sOutDir      = "data") {
+                              TString sOutDir      = "data",
+                              Int_t iSpillIndex    = -1,
+                              Int_t iSpillnumber   = 3,
+                              UInt_t uSpillLimType = 1)
+{
+  /// FIXME: Re-enable clang formatting after parameters initial values setting
+  /* clang-format on */
+
   UInt_t uRunId = 0;
   if (99999 != uRunIdx) {
     std::vector<UInt_t> vuListRunId = {
@@ -63,5 +72,5 @@ Bool_t unpack_tsa_mcbm_kronos(UInt_t uRunIdx       = 28,
   inFile +=
     Form("/lustre/cbm/users/ploizeau/mcbm2020/data/%3u_pn15_*.tsa", uRunId);
 
-  return unpack_tsa_mcbm(inFile, uRunId, uNbTimeslices, sOutDir);
+  return unpack_tsa_mcbm(inFile, uRunId, uNbTimeslices, sOutDir, iSpillIndex, iSpillnumber, uSpillLimType);
 }

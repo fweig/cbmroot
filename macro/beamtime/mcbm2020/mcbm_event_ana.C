@@ -6,9 +6,17 @@
 //
 // --------------------------------------------------------------------------
 
-void mcbm_event_ana(Int_t runId       = 831,
-                    Int_t nTimeslices = 1000,
-                    Bool_t bUseEvtWin = kFALSE) {
+/// FIXME: Disable clang formatting to keep easy parameters overview
+/* clang-format off */
+void mcbm_event_ana(UInt_t uRunId         = 831,
+                    Int_t nTimeslices     = 1000,
+                    Bool_t bUseEvtWin     = kFALSE,
+                    TString sInpDir       = "./data",
+                    TString sOutDir       = "./data",
+                    Int_t iUnpFileIndex   = -1)
+{
+  /// FIXME: Re-enable clang formatting after parameters initial values setting
+  /* clang-format on */
 
   // --- Logger settings ----------------------------------------------------
   TString logLevel     = "WARN";
@@ -23,16 +31,36 @@ void mcbm_event_ana(Int_t runId       = 831,
   // ------------------------------------------------------------------------
 
   // -----   In- and output file names   ------------------------------------
-  TString inFile  = Form("./data/reco_mcbm_event_%03u.root", runId);
-  TString trkFile = Form("./data/tracking_mcbm_event_%03u.root", runId);
+  /// Standardized RUN ID
+  TString sRunId = TString::Format("%03u", uRunId);
+  /// Initial pattern
+  TString inFile     = sInpDir + "/reco_mcbm_event_" + sRunId;
+  TString trkFile    = sInpDir + "/tracking_mcbm_event_" + sRunId;
+  TString parFileIn  = sInpDir + "/unp_mcbm_params_" + sRunId;
+  TString parFileOut = sOutDir + "/mcbm_event_ana_params_" + sRunId;
+  TString geoFile    = paramDir + "mcbm_beam_2020_03.geo.root";
+  TString outFile    = sOutDir + "/mcbm_event_ana__" + sRunId;
+  /// Initial pattern if using event builder with time window
   if (bUseEvtWin) {
-    inFile = Form("./data/reco_mcbm_evt_win_%03u.root", runId);
-    trkFile = Form("./data/tracking_mcbm_evt_win_%03u.root", runId);
-  }  // if (bUseEvtWin)
-  TString parFile = Form("./data/unp_mcbm_params_%i.root", runId);
-  TString geoFile = paramDir + "mcbm_beam_2020_03.geo.root";
-  TString outFile = Form("./data/ana_mcbm_%i.root", runId);
-
+    inFile     = sInpDir + "/reco_mcbm_evt_win_" + sRunId;
+    trkFile    = sInpDir + "/tracking_mcbm_evt_win_" + sRunId;
+    parFileOut = sOutDir + "/mcbm_event_ana_evt_win_params_" + sRunId;
+    outFile    = sOutDir + "/mcbm_event_ana_evt_win_" + sRunId;
+  }  // if( bUseEvtWin )
+  /// Add index of splitting at unpacking level if needed
+  if (0 <= iUnpFileIndex) {
+    inFile += TString::Format("_%02u", iUnpFileIndex);
+    trkFile += TString::Format("_%02u", iUnpFileIndex);
+    // the input par file is from unpacking and not split during it!
+    parFileOut += TString::Format("_%02u", iUnpFileIndex);
+    outFile += TString::Format("_%02u", iUnpFileIndex);
+  }  // if ( 0 <= iUnpFileIndex )
+  /// Add ROOT file suffix
+  inFile += ".root";
+  trkFile += ".root";
+  parFileIn += ".root";
+  parFileOut += ".root";
+  outFile += ".root";
   // ------------------------------------------------------------------------
 
   // -----   Parameter files as input to the runtime database   -------------
@@ -399,10 +427,12 @@ void mcbm_event_ana(Int_t runId       = 831,
   FairRuntimeDb* rtdb        = run->GetRuntimeDb();
   FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
-  parIo1->open(parFile.Data(), "UPDATE");
+  FairParRootFileIo* parIo3  = new FairParRootFileIo();
+  parIo1->open(parFileIn.Data(), "READ");
   parIo2->open(parFileList, "in");
   rtdb->setFirstInput(parIo1);
   rtdb->setSecondInput(parIo2);
+  parIo3->open(parFileOut.Data(), "RECREATE");
   // ------------------------------------------------------------------------
 
 
@@ -410,7 +440,7 @@ void mcbm_event_ana(Int_t runId       = 831,
   std::cout << std::endl;
   std::cout << "-I- " << myName << ": Initialise run" << std::endl;
   run->Init();
-  rtdb->setOutput(parIo1);
+  rtdb->setOutput(parIo3);
   rtdb->saveOutput();
   rtdb->print();
   // ------------------------------------------------------------------------
@@ -431,7 +461,7 @@ void mcbm_event_ana(Int_t runId       = 831,
   std::cout << std::endl << std::endl;
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output file is " << outFile << std::endl;
-  std::cout << "Parameter file is " << parFile << std::endl;
+  std::cout << "Parameter file is " << parFileOut << std::endl;
   std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
             << std::endl;
   std::cout << std::endl;

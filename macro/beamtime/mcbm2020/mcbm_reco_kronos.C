@@ -7,11 +7,18 @@
 
 #include "mcbm_reco.C"
 
+/// FIXME: Disable clang formatting to keep easy parameters overview
+/* clang-format off */
 Bool_t mcbm_reco_kronos(UInt_t uRunIdx    = 28,
                         Int_t nTimeslices = 0,
                         TString sInpDir = "/lustre/cbm/users/ploizeau/mcbm2020/"
                                           "unp_evt_data_7f229b3f_20201103",
-                        TString sOutDir = "./data") {
+                        TString sOutDir      = "./data",
+                        Int_t iUnpFileIndex = -1)
+{
+  /// FIXME: Re-enable clang formatting after parameters initial values setting
+  /* clang-format on */
+
   UInt_t uRunId = 0;
 
   if (99999 != uRunIdx) {
@@ -42,5 +49,5 @@ Bool_t mcbm_reco_kronos(UInt_t uRunIdx    = 28,
 
   if (uRunId < 692 && 0 != uRunId) return kFALSE;
 
-  return mcbm_reco(uRunId, nTimeslices, sInpDir, sOutDir);
+  return mcbm_reco(uRunId, nTimeslices, sInpDir, sOutDir, iUnpFileIndex);
 }

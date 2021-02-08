@@ -1,19 +1,36 @@
-Bool_t build_event_win(UInt_t uRunId     = 0,
-                       Int_t nTimeslices = 0,
-                       TString sOutDir   = "./data",
-                       TString sInpDir   = "./data") {
+
+/// FIXME: Disable clang formatting to keep easy parameters overview
+/* clang-format off */
+Bool_t build_event_win(UInt_t uRunId        = 0,
+                       Int_t nTimeslices    = 0,
+                       TString sOutDir      = "./data",
+                       TString sInpDir      = "./data",
+                       Int_t iUnpFileIndex  = -1)
+{
+  /// FIXME: Re-enable clang formatting after parameters initial values setting
+  /* clang-format on */
 
   // -----   In- and output file names   ------------------------------------
-  TString fileName = Form("%s/unp_mcbm_%03u.root", sInpDir.Data(), uRunId);
-  TString runId    = TString::Format("%03u", uRunId);
-  TString outFile  = sOutDir + "/mcbm_events_win_" + runId + ".root";
+  /// Standardized RUN ID
+  TString sRunId = TString::Format("%03u", uRunId);
+  /// Initial pattern
+  TString inFile  = sInpDir + "/unp_mcbm_" + sRunId;
+  TString outFile = sOutDir + "/mcbm_events_win_" + sRunId;
+  /// Add index of splitting at unpacking level if needed
+  if (0 <= iUnpFileIndex) {
+    inFile += TString::Format("_%02u", iUnpFileIndex);
+    outFile += TString::Format("_%02u", iUnpFileIndex);
+  }  // if ( 0 <= iUnpFileIndex )
+  /// Add ROOT file suffix
+  inFile += ".root";
+  outFile += ".root";
   // ------------------------------------------------------------------------
 
   if (uRunId < 692) return kFALSE;
 
   /*
   std::cout << sOutDir << std::endl << sInpDir << std::endl;
-  std::cout << fileName << std::endl
+  std::cout << inFile << std::endl
             << outFile << std::endl;
   std::cout << uRunId << " " << nTimeslices << std::endl;
 
@@ -46,7 +63,7 @@ Bool_t build_event_win(UInt_t uRunId     = 0,
   FairRunAna* fRun = new FairRunAna();
   fRun->SetEventHeaderPersistence(kFALSE);
 
-  FairFileSource* inputSource = new FairFileSource(fileName);
+  FairFileSource* inputSource = new FairFileSource(inFile);
   fRun->SetSource(inputSource);
 
   FairRootFileSink* outputSink = new FairRootFileSink(outFile);
@@ -126,9 +143,7 @@ Bool_t build_event_win(UInt_t uRunId     = 0,
   eventBuilder->SetTriggerMaxNumber(ECbmModuleId::kPsd, -1);
 
 
-  if (0 < uRunId)
-    eventBuilder->SetOutFilename(
-      Form("%s/HistosEvtWin_%03u.root", sOutDir.Data(), uRunId));
+  if (0 < uRunId) eventBuilder->SetOutFilename(Form("%s/HistosEvtWin_%03u.root", sOutDir.Data(), uRunId));
 
   fRun->AddTask(eventBuilder);
 
@@ -142,7 +157,8 @@ Bool_t build_event_win(UInt_t uRunId     = 0,
   cout << "Starting run" << endl;
   if (0 == nTimeslices) {
     fRun->Run(0, 0);  // run until end of input file
-  } else {
+  }
+  else {
     fRun->Run(0, nTimeslices);  // process  N Timeslices
   }
   // ------------------------------------------------------------------------

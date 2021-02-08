@@ -6,12 +6,16 @@
 //
 // --------------------------------------------------------------------------
 
-
-Bool_t mcbm_build_and_reco(UInt_t uRunId     = 831,
-                           Int_t nTimeslices = 0,
-                           TString sInpDir   = "./data",
-                           TString sOutDir   = "./data") {
-
+/// FIXME: Disable clang formatting to keep easy parameters overview
+/* clang-format off */
+Bool_t mcbm_build_and_reco(UInt_t uRunId        = 831,
+                           Int_t nTimeslices    = 0,
+                           TString sInpDir      = "./data",
+                           TString sOutDir      = "./data",
+                           Int_t iUnpFileIndex  = -1)
+{
+  /// FIXME: Re-enable clang formatting after parameters initial values setting
+  /* clang-format on */
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -34,11 +38,25 @@ Bool_t mcbm_build_and_reco(UInt_t uRunId     = 831,
   /// due to problem with real file path length
   /* clang-format off */
   // -----   In- and output file names   ------------------------------------
-  TString inFile     = sInpDir + Form("/unp_mcbm_%03u.root", uRunId);
-  TString parFileIn  = sInpDir + Form("/unp_mcbm_params_%03u.root", uRunId);
-  TString parFileOut = sOutDir + Form("/reco_mcbm_evt_win_params_%03u.root",
-                                      uRunId);
-  TString outFile    = sOutDir + Form("/reco_mcbm_evt_win_%03u.root", uRunId);
+  /// Standardized RUN ID
+  TString sRunId     = TString::Format("%03u", uRunId);
+  /// Initial pattern
+  TString inFile     = sInpDir + "/unp_mcbm_" + sRunId;
+  TString parFileIn  = sInpDir + "/unp_mcbm_params_" + sRunId;
+  TString parFileOut = sOutDir + "/reco_mcbm_evt_win_params_" + sRunId;
+  TString outFile    = sOutDir + "/reco_mcbm_evt_win_" + sRunId;
+  /// Add index of splitting at unpacking level if needed
+  if ( 0 <= iUnpFileIndex ) {
+    inFile     += TString::Format( "_%02u", iUnpFileIndex );
+    // the input par file is not split during unpacking!
+    parFileOut += TString::Format( "_%02u", iUnpFileIndex );
+    outFile    += TString::Format( "_%02u", iUnpFileIndex );
+  }  // if ( 0 <= iUnpFileIndex )
+  /// Add ROOT file suffix
+  inFile     += ".root";
+  parFileIn  += ".root";
+  parFileOut += ".root";
+  outFile    += ".root";
   // ------------------------------------------------------------------------
   /// FIXME: Re-enable clang formatting after parameters initial values setting
   /* clang-format on */
@@ -164,9 +182,7 @@ Bool_t mcbm_build_and_reco(UInt_t uRunId     = 831,
   eventBuilder->SetTriggerMaxNumber(ECbmModuleId::kPsd, -1);
 
 
-  if (0 < uRunId)
-    eventBuilder->SetOutFilename(
-      Form("%sHistosEvtWin_%03u.root", sOutDir.Data(), uRunId));
+  if (0 < uRunId) eventBuilder->SetOutFilename(Form("%sHistosEvtWin_%03u.root", sOutDir.Data(), uRunId));
 
   run->AddTask(eventBuilder);
   // ------------------------------------------------------------------------

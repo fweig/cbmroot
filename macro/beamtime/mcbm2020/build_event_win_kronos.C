@@ -1,13 +1,14 @@
 #include "build_event_win.C"
 
-/// FIXME: Disable clang formatting around parameters initial value setting
-/// due to problem with real file path length
+/// FIXME: Disable clang formatting to keep easy parameters overview
 /* clang-format off */
 Bool_t build_event_win_kronos(UInt_t uRunIdx = 28,
                               Int_t nTimeslices = 0,
                               TString sOutDir = "./data",
                               TString sInpDir = "/lustre/cbm/users/ploizeau/mcbm2020/"
-                                                "unp_evt_data_7f229b3f_20201103") {
+                                                "unp_evt_data_7f229b3f_20201103",
+                              Int_t iUnpFileIndex = -1)
+{
   /// FIXME: Re-enable clang formatting after parameters initial values setting
   /* clang-format on */
 
@@ -41,5 +42,5 @@ Bool_t build_event_win_kronos(UInt_t uRunIdx = 28,
 
   if (uRunId < 692 && 0 != uRunId) return kFALSE;
 
-  return build_event_win(uRunId, nTimeslices, sOutDir, sInpDir);
+  return build_event_win(uRunId, nTimeslices, sOutDir, sInpDir, iUnpFileIndex);
 }
