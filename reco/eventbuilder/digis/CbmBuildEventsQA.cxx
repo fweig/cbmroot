@@ -9,6 +9,7 @@
 #include "CbmEvent.h"
 #include "CbmLink.h"
 #include "CbmMatch.h"
+#include "CbmModuleList.h"
 #include "CbmStsDigi.h"
 #include "FairLogger.h"
 #include "FairRootManager.h"
@@ -124,17 +125,19 @@ InitStatus CbmBuildEventsQA::Init() {
   fDigiMan = CbmDigiManager::Instance();
   fDigiMan->Init();
 
-  //Init STS digis
-  if (fDigiMan->IsPresent(ECbmModuleId::kSts)) {
-    LOG(info) << "CbmBuildEventsQA(): Found STS digi input.";
-  } else {
-    LOG(fatal) << "CbmBuildEventsQA(): No STS digi input.";
+  // --- Check input data
+  for (ECbmModuleId system = ECbmModuleId::kMvd;
+       system < ECbmModuleId::kNofSystems;
+       ++system) {
+    if (fDigiMan->IsMatchPresent(system)) {
+      LOG(info) << GetName() << ": Found match branch for "
+                << CbmModuleList::GetModuleNameCaps(system);
+      fSystems.push_back(system);
+    }
   }
-
-  if (fDigiMan->IsMatchPresent(ECbmModuleId::kSts)) {
-    LOG(info) << "CbmBuildEventsQA(): Found STS match branch.";
-  } else {
-    LOG(fatal) << "CbmBuildEventsQA(): No STS match branch.";
+  if (fSystems.empty()) {
+    LOG(fatal) << GetName() << ": No match branch found!";
+    return kFATAL;
   }
 
   return kSUCCESS;
@@ -166,12 +169,13 @@ void CbmBuildEventsQA::MatchEvent(CbmEvent* event) {
   //              << ", STS digis : " << event->GetNofData(ECbmDataType::kStsDigi);
 
   // --- Loop over digis
-  for (Int_t iDigi = 0; iDigi < event->GetNofData(ECbmDataType::kStsDigi);
+  for (Int_t iDigi = 0;
+       iDigi < event->GetNofData(GetDigiType(ECbmModuleId::kSts));
        iDigi++) {
-    Int_t index               = event->GetIndex(ECbmDataType::kStsDigi, iDigi);
-    const CbmStsDigi* digi    = fDigiMan->Get<CbmStsDigi>(index);
+    Int_t index = event->GetIndex(GetDigiType(ECbmModuleId::kSts), iDigi);
+    //const CbmStsDigi* digi    = fDigiMan->Get<CbmStsDigi>(index); not needed ?
     const CbmMatch* digiMatch = fDigiMan->GetMatch(ECbmModuleId::kSts, index);
-    assert(digi);
+    //assert(digi);
     assert(digiMatch);
 
     // --- Update event match with digi links
@@ -187,6 +191,22 @@ void CbmBuildEventsQA::MatchEvent(CbmEvent* event) {
     }  //# links in digi
 
   }  //#digis
+}
+// ===========================================================================
+
+
+// =====  Get digi type  =====================================================
+ECbmDataType CbmBuildEventsQA::GetDigiType(ECbmModuleId system) {
+  switch (system) {
+    case ECbmModuleId::kMvd: return ECbmDataType::kMvdDigi;
+    case ECbmModuleId::kSts: return ECbmDataType::kStsDigi;
+    case ECbmModuleId::kRich: return ECbmDataType::kRichDigi;
+    case ECbmModuleId::kMuch: return ECbmDataType::kMuchDigi;
+    case ECbmModuleId::kTrd: return ECbmDataType::kTrdDigi;
+    case ECbmModuleId::kTof: return ECbmDataType::kTofDigi;
+    case ECbmModuleId::kPsd: return ECbmDataType::kPsdDigi;
+    default: return ECbmDataType::kUnknown;
+  }
 }
 // ===========================================================================
 

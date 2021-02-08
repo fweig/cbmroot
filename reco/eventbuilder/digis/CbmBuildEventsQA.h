@@ -5,7 +5,7 @@
 #ifndef CBMBUILDEVENTSQA_H_
 #define CBMBUILDEVENTSQA_H 1
 
-
+#include "CbmDefs.h"
 #include <FairTask.h>
 
 class TClonesArray;
@@ -36,9 +36,10 @@ public:
 
 
 private:
-  CbmDigiManager* fDigiMan = nullptr;  //!
-  TClonesArray* fEvents;               ///< Input array (class CbmEvent)
-  Int_t fNofEntries;                   ///< Number of processed entries
+  CbmDigiManager* fDigiMan = nullptr;     //!
+  std::vector<ECbmModuleId> fSystems {};  //  List of detector systems
+  TClonesArray* fEvents;                  ///< Input array (class CbmEvent)
+  Int_t fNofEntries = 0;                  ///< Number of processed entries
 
   /** Task initialisation **/
   virtual InitStatus Init();
@@ -48,6 +49,8 @@ private:
 		 ** @param event Pointer to reconstructed event
 		 **/
   void MatchEvent(CbmEvent* event);
+
+  ECbmDataType GetDigiType(ECbmModuleId system);
 
   CbmBuildEventsQA(const CbmBuildEventsQA&);
   CbmBuildEventsQA& operator=(const CbmBuildEventsQA&);
