@@ -397,7 +397,23 @@ void CbmMatchRecoToMC::ReadAndCreateDataBranches() {
 
   // TOF
   fTofPoints         = mcManager->InitBranch("TofPoint");
-  fTofHitDigiMatches = (TClonesArray*) ioman->GetObject("TofHitDigiMatch");
+  fTofHitDigiMatches =
+    static_cast<TClonesArray*>(ioman->GetObject("TofHitDigiMatch"));
+
+  /// FIXME: Temporary fix to catch all versions of the TOF Hit to Digi Match
+  ///        array. To be removed after a full review of the TOF reco
+  if (nullptr == fTofHitDigiMatches) {
+    fTofHitDigiMatches =
+      static_cast<TClonesArray*>(ioman->GetObject(" TofCalDigiMatch"));
+    if (nullptr == fTofHitDigiMatches) {
+      LOG(warning) << "CbmMatchRecoToMC::ReadAndCreateDataBranches()"
+                   << " no TOF Hit to Digi array found!";
+    }  // if (nullptr == fTofHitDigiMatches)
+    else {
+      LOG(info)
+        << "CbmMatchRecoToMC: Using alternative TOF Hit to Digi match array!";
+    }  // else of if (nullptr == fTofHitDigiMatches)
+  }    // if (nullptr == fTofHitDigiMatches)
 
   fTofHits = static_cast<TClonesArray*>(ioman->GetObject("TofHit"));
   if (nullptr != fTofHits) {
