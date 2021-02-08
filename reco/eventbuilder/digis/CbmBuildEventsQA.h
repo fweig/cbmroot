@@ -52,6 +52,8 @@ private:
 
   ECbmDataType GetDigiType(ECbmModuleId system);
 
+  ECbmModuleId fRefDetector = ECbmModuleId::kSts;
+
   CbmBuildEventsQA(const CbmBuildEventsQA&);
   CbmBuildEventsQA& operator=(const CbmBuildEventsQA&);
 
