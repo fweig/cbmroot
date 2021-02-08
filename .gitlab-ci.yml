@@ -111,6 +111,24 @@ FileFormatCheck:
     - git fetch upstream
     - scripts/check-file-format.sh upstream
 
+FileEndCheck:
+  stage: checkFormat
+  image: alpine
+  tags:
+    - docker
+  only:
+    refs:
+      - merge_requests
+    variables:
+      - $CI_MERGE_REQUEST_PROJECT_PATH == "computing/cbmroot" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"
+  script:
+    # Get the upstream repository manually. I did not find any other way to have it for
+    # comparison
+    - apk update && apk add git bash file
+    - scripts/connect_upstream_repo.sh $CI_MERGE_REQUEST_PROJECT_URL
+    - git fetch upstream
+    - scripts/check-file-ending.sh upstream
+
 CbmRoot_Continuous:
   stage: build
   tags:
