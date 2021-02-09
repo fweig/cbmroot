@@ -206,6 +206,8 @@ void run_reco(TString input        = "",
       evBuildRaw->SetFixedTimeWindow(5500.);
       evBuildRaw->SetTriggerMinNumberSts(50);
 
+      evBuildRaw->SetUseBaseMuchDigi(kTRUE);
+
       run->AddTask(evBuildRaw);
       std::cout << "-I- " << myName << ": Added task " << evBuildRaw->GetName()
                 << std::endl;
@@ -296,9 +298,12 @@ void run_reco(TString input        = "",
   }  //? event-based reco
   // ------------------------------------------------------------------------
 
-  //CbmBuildEventsQA* evBuildQA = new CbmBuildEventsQA();
-  //run->AddTask(evBuildQA);
-
+  // ----------- QA for raw event builder -----------------------------------
+  if (eventBased) {
+    CbmBuildEventsQA* evBuildQA = new CbmBuildEventsQA();
+    run->AddTask(evBuildQA);
+  }
+  // ------------------------------------------------------------------------
 
   // -----   Local reconstruction in MVD   ----------------------------------
   if (useMvd) {
@@ -490,7 +495,6 @@ void run_reco(TString input        = "",
     // ----------------------------------------------------------------------
 
   }  //? time-based reco
-
 
   // -----  Parameter database   --------------------------------------------
   std::cout << std::endl << std::endl;

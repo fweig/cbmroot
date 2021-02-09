@@ -71,10 +71,6 @@ void CbmBuildEventsQA::Exec(Option_t*) {
       Int_t nLinks        = 0;
       Int_t nLinksCorrect = 0;
 
-      //LOG(info) << GetName() << ": Detector "
-      //          << CbmModuleList::GetModuleNameCaps(system)
-      //          << ", nDigis = " << nDigis;
-
       // --- Loop over digis
       for (Int_t iDigi = 0; iDigi < nDigis; iDigi++) {
         UInt_t index = event->GetIndex(GetDigiType(system), iDigi);
@@ -83,11 +79,10 @@ void CbmBuildEventsQA::Exec(Option_t*) {
         assert(digiMatch);
 
         // --- Check MC event of digi match
-        if (digiMatch->GetMatchedLink().GetEntry() == mcEventNr) nDigiCorrect++;
-
-        //if (system == ECbmModuleId::kTof){ dev
-        //     LOG(info) << "index = " <<index;
-        //}
+        if (digiMatch->GetNofLinks()) {
+          if (digiMatch->GetMatchedLink().GetEntry() == mcEventNr)
+            nDigiCorrect++;
+        }
 
         for (Int_t iLink = 0; iLink < digiMatch->GetNofLinks(); iLink++) {
           Int_t entry = digiMatch->GetLink(iLink).GetEntry();
