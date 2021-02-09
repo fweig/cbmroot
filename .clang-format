@@ -1,42 +1,79 @@
 ---
 AccessModifierOffset: -2
+
 AlignAfterOpenBracket: Align
-#AlignConsecutiveMacros: true
 AlignConsecutiveAssignments: true
+AlignConsecutiveBitFields: true
 AlignConsecutiveDeclarations: false
+#AlignConsecutiveMacros: true
 AlignEscapedNewlines: Right
 AlignOperands: true
 AlignTrailingComments: true
-#AllowAllArgumentsOnNextLine: true
-#AllowAllConstructorInitializersOnNextLine: true
+
+AllowAllArgumentsOnNextLine: false
+AllowAllConstructorInitializersOnNextLine: false
 AllowAllParametersOfDeclarationOnNextLine: false
-AllowShortBlocksOnASingleLine: true
+
+AllowShortBlocksOnASingleLine: Always
 AllowShortCaseLabelsOnASingleLine: true
+AllowShortEnumsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: All
-AllowShortIfStatementsOnASingleLine: true
-#AllowShortLambdasOnASingleLine: All
+AllowShortIfStatementsOnASingleLine: Always
+AllowShortLambdasOnASingleLine: All
 AllowShortLoopsOnASingleLine: false
-AlwaysBreakAfterDefinitionReturnType: None
+
+#AlwaysBreakAfterDefinitionReturnType: None
 AlwaysBreakAfterReturnType: None
 AlwaysBreakBeforeMultilineStrings: false
-AlwaysBreakTemplateDeclarations: true
+AlwaysBreakTemplateDeclarations: Yes
+
 BinPackArguments: false
 BinPackParameters: false
+
+# Discuss
 BreakBeforeBinaryOperators: NonAssignment
-BreakBeforeBraces: Attach
+
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterCaseLabel:        false
+  AfterClass:            false
+  AfterControlStatement: Never
+  AfterEnum:             false
+  AfterFunction:         true
+  AfterNamespace:        true
+  AfterObjCDeclaration:  false
+  AfterStruct:           false
+  AfterUnion:            false
+  AfterExternBlock:      false
+  BeforeCatch:           true
+  BeforeElse:            true
+  BeforeLambdaBody:      false
+  BeforeWhile:           false
+  IndentBraces:          false
+  SplitEmptyFunction:    true
+  SplitEmptyRecord:      true
+  SplitEmptyNamespace:   true 
+
 BreakBeforeTernaryOperators: true
 BreakConstructorInitializers: BeforeComma
 BreakInheritanceList: AfterColon
-ColumnLimit: 80
+
+#Discuss
+BreakStringLiterals: true
+
+ColumnLimit: 120
 CompactNamespaces: false
 ConstructorInitializerAllOnOneLineOrOnePerLine: true
 ConstructorInitializerIndentWidth: 2
 ContinuationIndentWidth: 2
 Cpp11BracedListStyle: true
+DeriveLineEnding: false
 DerivePointerAlignment: false
 DisableFormat: false
 ExperimentalAutoDetectBinPacking: false
 FixNamespaceComments: true
+
+# Implement ordering of include statements
 IncludeBlocks: Regroup
 IncludeCategories:
   - Regex:           '^("|<)Cbm'
@@ -53,21 +90,30 @@ IncludeCategories:
     Priority:        6
   - Regex:           '.*'
     Priority:        7
+
+IndentCaseBlocks: false
 IndentCaseLabels: true
+IndentExternBlock: Indent
+IndentGotoLabels: false
 IndentPPDirectives: None
 IndentWidth: 2
 IndentWrappedFunctionNames: false
+
 KeepEmptyLinesAtTheStartOfBlocks: true
 Language: Cpp
 MaxEmptyLinesToKeep: 2
 NamespaceIndentation: All
 ObjCBinPackProtocolList: Auto
 ObjCBlockIndentWidth: 2
+
+#Discuss Penalties
 PenaltyBreakAssignment: 2
+
 PointerAlignment: Left
 ReflowComments: false
 SortIncludes: true
 SortUsingDeclarations: true
+
 SpaceAfterCStyleCast: true
 #SpaceAfterLogicalNot: true
 SpaceAfterTemplateKeyword: false
@@ -77,13 +123,20 @@ SpaceBeforeCtorInitializerColon: true
 SpaceBeforeInheritanceColon: true
 SpaceBeforeParens: ControlStatements
 SpaceBeforeRangeBasedForLoopColon: true
+SpaceBeforeSquareBrackets: false
+SpaceInEmptyBlock: false
 SpaceInEmptyParentheses: false
 SpacesBeforeTrailingComments: 2
 SpacesInAngles: false
 SpacesInCStyleCastParentheses: false
+SpacesInConditionalStatement: false
+SpacesInContainerLiterals: false
 SpacesInParentheses: false
 SpacesInSquareBrackets: false
-TabWidth: 8
-UseTab: Never
 
+Standard: c++11
+
+TabWidth: 8
+UseCRLF: false
+UseTab: Never
 ...
