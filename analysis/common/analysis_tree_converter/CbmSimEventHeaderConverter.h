@@ -11,12 +11,10 @@ class CbmVertex;
 class CbmSimEventHeaderConverter final : public CbmConverterTask {
 public:
   explicit CbmSimEventHeaderConverter(std::string out_branch_name)
-    : CbmConverterTask(std::move(out_branch_name)) {
-    in_branches_.emplace_back("MCEventHeader.");
-  };
+    : CbmConverterTask(std::move(out_branch_name)) {};
   ~CbmSimEventHeaderConverter() final = default;
 
-  void Init(std::map<std::string, void*>&) final;
+  void Init() final;
   void Exec() final;
   void Finish() final { delete sim_event_header_; };
 

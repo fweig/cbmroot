@@ -11,13 +11,10 @@ class CbmVertex;
 class CbmRecEventHeaderConverter final : public CbmConverterTask {
 public:
   explicit CbmRecEventHeaderConverter(std::string out_branch_name)
-    : CbmConverterTask(std::move(out_branch_name)) {
-    in_branches_.emplace_back("MCEventHeader.");
-    in_branches_.emplace_back("PrimaryVertex.");
-  };
+    : CbmConverterTask(std::move(out_branch_name)) {};
   ~CbmRecEventHeaderConverter() final = default;
 
-  void Init(std::map<std::string, void*>&) final;
+  void Init() final;
   void Exec() final;
   void Finish() final { delete rec_event_header_; };
 

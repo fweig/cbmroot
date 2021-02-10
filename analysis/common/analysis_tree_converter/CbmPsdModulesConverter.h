@@ -12,12 +12,11 @@ public:
                                   std::string match_to = "")
     : CbmConverterTask(std::move(out_branch_name), std::move(match_to)) {
     out_branch_ = "PsdModules";
-    in_branches_.emplace_back("PsdHits");
   };
 
   ~CbmPsdModulesConverter() final;
 
-  void Init(std::map<std::string, void*>&) final;
+  void Init() final;
   void Exec() final;
   void Finish() final;
 

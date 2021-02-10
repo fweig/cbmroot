@@ -12,9 +12,9 @@
 #pragma link C++ class CbmStsTracksConverter + ;
 #pragma link C++ class CbmTofHitsConverter + ;
 #pragma link C++ class CbmPsdModulesConverter + ;
+#pragma link C++ class CbmTrdTracksConverter + ;
+#pragma link C++ class CbmRichRingsConverter + ;
 
 //#pragma link C++ class CbmMuchTracksConverter+;
-//#pragma link C++ class CbmTrdTracksConverter+;
-//#pragma link C++ class CbmRichRingsConverter+;
 
 #endif

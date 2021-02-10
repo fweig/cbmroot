@@ -16,14 +16,12 @@ class CbmTofHitsConverter final : public CbmConverterTask {
 public:
   explicit CbmTofHitsConverter(std::string out_branch_name,
                                std::string match_to = "")
-    : CbmConverterTask(std::move(out_branch_name), std::move(match_to)) {
-    in_branches_.emplace_back("TofHits");
-  };
+    : CbmConverterTask(std::move(out_branch_name), std::move(match_to)) {};
 
   ~CbmTofHitsConverter() final;
   ;
 
-  void Init(std::map<std::string, void*>&) final;
+  void Init() final;
   void Exec() final;
   void Finish() final {};
 

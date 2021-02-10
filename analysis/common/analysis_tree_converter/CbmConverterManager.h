@@ -3,6 +3,8 @@
 
 #include "FairTask.h"
 
+#include "AnalysisTree/TaskManager.hpp"
+
 namespace AnalysisTree {
   class Configuration;
   class DataHeader;
@@ -20,26 +22,27 @@ public:
   void Exec(Option_t* opt) override;
   void Finish() override;
 
-  void AddTask(CbmConverterTask* task) { tasks_.emplace_back(task); }
-  void SetOutFileName(std::string name) { out_file_name_ = std::move(name); }
-  void SetOutTreeName(std::string name) { out_tree_name_ = std::move(name); }
+  void AddTask(CbmConverterTask* task) {
+    tasks_.emplace_back(task);
+    task_manager_->AddTask(reinterpret_cast<AnalysisTree::Task*>(task));
+  }
 
   void SetSystem(const std::string& system) { system_ = system; }
   void SetBeamMomentum(float beam_mom) { beam_mom_ = beam_mom; }
 
+  void SetOutputName(std::string file, std::string tree = "aTree") {
+    task_manager_->SetOutputName(file, tree);
+  }
+
 private:
   void FillDataHeader();
 
-  TFile* out_file_ {nullptr};
-  TTree* out_tree_ {nullptr};
-  std::string out_file_name_ {""};
-  std::string out_tree_name_ {""};
+  AnalysisTree::TaskManager* task_manager_ {
+    AnalysisTree::TaskManager::GetInstance()};
 
-  std::string system_ {""};
+  std::string system_;
   float beam_mom_ {0.};
 
-  AnalysisTree::Configuration* out_config_ {nullptr};
-  AnalysisTree::DataHeader* data_header_ {nullptr};
   std::vector<CbmConverterTask*> tasks_ {};
 
   std::map<std::string, std::map<int, int>>

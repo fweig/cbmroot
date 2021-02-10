@@ -12,69 +12,46 @@
 ClassImp(CbmConverterManager)
 
   InitStatus CbmConverterManager::Init() {
-  assert(!out_file_name_.empty() && !out_tree_name_.empty());
-
-  out_file_ = TFile::Open(out_file_name_.c_str(), "RECREATE");
-  out_file_->cd();
-  out_tree_ = new TTree(out_tree_name_.c_str(), "Analysis Tree");
-
+  task_manager_->Init();
   FillDataHeader();
-
-  std::map<std::string, void*> unused_map {};
-
-  out_config_ = new AnalysisTree::Configuration;
-  for (auto* task : tasks_) {
-    task->SetOutTree(out_tree_);
-    task->SetOutConfiguration(out_config_);
-    task->SetDataHeader(data_header_);
-    task->Init(unused_map);
-  }
-
-  out_config_->Write("Configuration");
-
   return kSUCCESS;
 }
 
 void CbmConverterManager::Exec(Option_t* /*opt*/) {
   index_map_.clear();
+
   for (auto* task : tasks_) {
     task->SetIndexesMap(&index_map_);
     task->Exec();
-    //    if(!task->GetOutIndexesMap().empty()) {
     index_map_.insert(
       std::make_pair(task->GetOutputBranchName(), task->GetOutIndexesMap()));
-    //    }
   }
-  out_tree_->Fill();
+  task_manager_->FillOutput();
 }
 
 void CbmConverterManager::Finish() {
-  TDirectory* old_dir = gDirectory;
+  TDirectory* curr   = gDirectory;  // TODO check why this is needed
+  TFile* currentFile = gFile;
 
-  out_file_->cd();
-  for (auto* task : tasks_) {
-    task->Finish();
-  }
-  out_tree_->Write();
-  out_file_->Close();
+  task_manager_->GetChain()->Write();
 
-  old_dir->cd();
+  task_manager_->Finish();
+
+  gFile      = currentFile;
+  gDirectory = curr;
 }
 
 void CbmConverterManager::FillDataHeader() {
+  // Force user to write data info //TODO is there a way to read it from a file automatically?
+  assert(!system_.empty() && beam_mom_);
 
-  assert(
-    !system_.empty()
-    && beam_mom_);  // Force user to write data info //TODO is there a way to
-                    // read it from a file automatically?
-
-  data_header_ = new AnalysisTree::DataHeader;
+  auto* data_header = new AnalysisTree::DataHeader();
 
   std::cout << "ReadDataHeader" << std::endl;
-  data_header_->SetSystem(system_);
-  data_header_->SetBeamMomentum(beam_mom_);
+  data_header->SetSystem(system_);
+  data_header->SetBeamMomentum(beam_mom_);
 
-  auto& psd_mod_pos              = data_header_->AddDetector();
+  auto& psd_mod_pos              = data_header->AddDetector();
   const int psd_node_id          = 6;
   const char* module_name_prefix = "module";
 
@@ -110,18 +87,6 @@ void CbmConverterManager::FillDataHeader() {
     }
   }
 
-  TDirectory* curr   = gDirectory;  // TODO check why this is needed
-  TFile* currentFile = gFile;
-
-  out_file_->cd();
-  data_header_->Write("DataHeader");
-
-  gFile      = currentFile;
-  gDirectory = curr;
+  task_manager_->SetOutputDataHeader(data_header);
 }
-CbmConverterManager::~CbmConverterManager() {
-  delete out_config_;
-  delete data_header_;
-  delete out_tree_;
-  delete out_file_;
-}
+CbmConverterManager::~CbmConverterManager() = default;

@@ -11,13 +11,11 @@ class CbmSimTracksConverter final : public CbmConverterTask {
 public:
   explicit CbmSimTracksConverter(std::string out_branch_name,
                                  std::string match_to = "")
-    : CbmConverterTask(std::move(out_branch_name), std::move(match_to)) {
-    in_branches_.emplace_back("MCTrack");
-  };
+    : CbmConverterTask(std::move(out_branch_name), std::move(match_to)) {};
 
   ~CbmSimTracksConverter() final;
 
-  void Init(std::map<std::string, void*>&) final;
+  void Init() final;
   void Exec() final;
   void Finish() final {};
 

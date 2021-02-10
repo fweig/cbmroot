@@ -1,4 +1,4 @@
-set(ANALYSISTREEQA_VERSION 634a0200ba4110eb31328c327a462d11f96f7e14)
+set(ANALYSISTREEQA_VERSION be56549d0ee90b628e1ec49131924a03982365d6)
 
 set(ANALYSISTREEQA_SRC_URL "https://github.com/HeavyIonAnalysis/AnalysisTreeQA.git")
 set(ANALYSISTREEQA_DESTDIR "${CMAKE_BINARY_DIR}/external/ANALYSISTREEQA-prefix")
@@ -17,7 +17,7 @@ If(ProjectUpdated)
 EndIf()
 
 ExternalProject_Add(ANALYSISTREEQA
-        DEPENDS AnalysisTreeBase
+        DEPENDS AnalysisTreeInfra
         BUILD_IN_SOURCE 0
         SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/AnalysisTreeQA
         BUILD_BYPRODUCTS ${ANALYSISTREEQA_LIBRARY}
@@ -31,9 +31,9 @@ ExternalProject_Add(ANALYSISTREEQA
         -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}
         -DCMAKE_CXX_STANDARD=11
         -DROOTSYS=${SIMPATH}
-        -DUSEBOOST=TRUE
         -DBOOST_ROOT=${SIMPATH}
         -DBoost_NO_BOOST_CMAKE=ON
+        -DAnalysisTreeQA_BUNDLED_AT=OFF
         -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
         INSTALL_COMMAND  ${CMAKE_COMMAND} --build . --target install
         )
@@ -47,8 +47,16 @@ set(AnalysisTreeQA_LIBRARIES AnalysisTreeQA)
 set(AnalysisTreeQA_INCLUDE_DIR "${CMAKE_BINARY_DIR}/include")
 set(AnalysisTreeQA_FOUND TRUE)
 
-Install(FILES ${CMAKE_BINARY_DIR}/lib/${ANALYSISTREEQA_LIBNAME}
-        ${CMAKE_BINARY_DIR}/lib/${CMAKE_SHARED_LIBRARY_PREFIX}AnalysisTreeQA.rootmap
-        ${CMAKE_BINARY_DIR}/lib/${CMAKE_SHARED_LIBRARY_PREFIX}AnalysisTreeQA_rdict.pcm
-        DESTINATION lib
+Install( FILES
+        ${CMAKE_BINARY_DIR}/lib/${CMAKE_SHARED_LIBRARY_PREFIX}${ANALYSISTREEQA_LIBNAME}${CMAKE_SHARED_LIBRARY_SUFFIX}
+        ${CMAKE_BINARY_DIR}/lib/${CMAKE_SHARED_LIBRARY_PREFIX}${ANALYSISTREEQA_LIBNAME}_rdict.pcm
+        ${CMAKE_BINARY_DIR}/lib/${CMAKE_SHARED_LIBRARY_PREFIX}${ANALYSISTREEQA_LIBNAME}.rootmap
+        DESTINATION lib)
+
+Install(DIRECTORY  ${CMAKE_BINARY_DIR}/include/AnalysisTreeQA
+        DESTINATION include
+        )
+
+Install(FILES {CMAKE_SOURCE_DIR}/macro/analysis/common/qa/run_analysistree_qa.C
+        DESTINATION share/cbmroot/macro
         )

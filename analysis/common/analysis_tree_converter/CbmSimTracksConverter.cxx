@@ -1,6 +1,8 @@
 #include <cassert>
 #include <vector>
 
+#include <AnalysisTree/TaskManager.hpp>
+
 #include "TClonesArray.h"
 
 #include "FairRootManager.h"
@@ -10,58 +12,75 @@
 
 ClassImp(CbmSimTracksConverter)
 
-  void CbmSimTracksConverter::Init(std::map<std::string, void*>&) {
+  void CbmSimTracksConverter::Init() {
 
-  assert(!in_branches_.empty() && !out_branch_.empty() && out_config_
-         && out_tree_);
+  assert(!out_branch_.empty());
   auto* ioman    = FairRootManager::Instance();
-  cbm_mc_tracks_ = (TClonesArray*) ioman->GetObject(in_branches_[0].c_str());
+  cbm_mc_tracks_ = (TClonesArray*) ioman->GetObject("MCTrack");
 
-  AnalysisTree::BranchConfig SimTracksBranch(out_branch_,
-                                             AnalysisTree::DetType::kParticle);
-  SimTracksBranch.AddField<int>("mother_id");
-  out_config_->AddBranchConfig(std::move(SimTracksBranch));
-  sim_tracks_ = new AnalysisTree::Particles(out_config_->GetLastId());
-  out_tree_->Branch(
-    out_branch_.c_str(), "AnalysisTree::Particles", &sim_tracks_);
+  AnalysisTree::BranchConfig sim_particles_branch(
+    out_branch_, AnalysisTree::DetType::kParticle);
+  sim_particles_branch.AddField<int>("mother_id",
+                                     "id of mother particle, -1 for primaries");
+  sim_particles_branch.AddField<int>("cbmroot_id",
+                                     "track id in CbmRoot transport file");
+  sim_particles_branch.AddField<int>("geant_process_id", "");
+  sim_particles_branch.AddFields<int>(
+    {"n_hits_mvd", "n_hits_sts", "n_hits_trd"},
+    "Number of hits in the detector");
+
+  auto* man = AnalysisTree::TaskManager::GetInstance();
+  man->AddBranch(out_branch_, sim_tracks_, sim_particles_branch);
 }
 
 void CbmSimTracksConverter::Exec() {
   assert(cbm_mc_tracks_);
   out_indexes_map_.clear();
 
-  std::cout << "ReadMcTracks" << std::endl;
+  //  std::cout << "ReadMcTracks" << std::endl;
   sim_tracks_->ClearChannels();
+  auto* out_config_  = AnalysisTree::TaskManager::GetInstance()->GetConfig();
+  const auto& branch = out_config_->GetBranchConfig(out_branch_);
 
-  const int nMcTracks = cbm_mc_tracks_->GetEntries();
-  const int imother_id =
-    out_config_->GetBranchConfig(sim_tracks_->GetId()).GetFieldId("mother_id");
+  const int nMcTracks  = cbm_mc_tracks_->GetEntries();
+  const int imother_id = branch.GetFieldId("mother_id");
+  const int igeant_id  = branch.GetFieldId("geant_process_id");
+  const int in_hits    = branch.GetFieldId("n_hits_mvd");
+  const int icbm_id    = branch.GetFieldId("cbmroot_id");
+
+  //  std::cout << "cbm_mc_tracks_->GetEntries() = " << nMcTracks << std::endl;
+  //  std::cout << imother_id << "  " << igeant_id << "  " << in_hits << std::endl;
+
   sim_tracks_->Reserve(nMcTracks);
 
   for (int iMcTrack = 0; iMcTrack < nMcTracks; ++iMcTrack) {
     const auto* mctrack = (CbmMCTrack*) cbm_mc_tracks_->At(iMcTrack);
-    if (mctrack->GetStartZ() > 200.)
-      continue;  // to exclude shower in PSD etc //TODO check if better cut can
-                 // be applied.
+    if (mctrack->GetPdgCode() == 50000050) {  //Cherenkov
+      continue;
+    }
+    auto& track = sim_tracks_->AddChannel(branch);
 
-    auto* Track = sim_tracks_->AddChannel();
-    Track->Init(out_config_->GetBranchConfig(sim_tracks_->GetId()));
+    out_indexes_map_.insert(std::make_pair(iMcTrack, track.GetId()));
 
-    out_indexes_map_.insert(std::make_pair(iMcTrack, Track->GetId()));
-
-    Track->SetMomentum(mctrack->GetPx(), mctrack->GetPy(), mctrack->GetPz());
-    Track->SetMass(float(mctrack->GetMass()));
-    Track->SetPid(int(mctrack->GetPdgCode()));
+    track.SetMomentum(mctrack->GetPx(), mctrack->GetPy(), mctrack->GetPz());
+    track.SetMass(float(mctrack->GetMass()));
+    track.SetPid(int(mctrack->GetPdgCode()));
+    track.SetField(int(mctrack->GetGeantProcessId()), igeant_id);
+    track.SetField(int(mctrack->GetNPoints(ECbmModuleId::kMvd)), in_hits);
+    track.SetField(int(mctrack->GetNPoints(ECbmModuleId::kSts)), in_hits + 1);
+    track.SetField(int(mctrack->GetNPoints(ECbmModuleId::kTrd)), in_hits + 2);
+    track.SetField(int(mctrack->GetUniqueID()), icbm_id);
 
     if (mctrack->GetMotherId()
         == -1) {  // mother id should < than track id, so we can do it here
-      Track->SetField(int(-1), imother_id);
+      track.SetField(int(-1), imother_id);
     } else {
       auto p = out_indexes_map_.find(mctrack->GetMotherId());
       if (p == out_indexes_map_.end())  // match is not found
-        Track->SetField(int(-999), imother_id);
-      else
-        Track->SetField(int(p->second), imother_id);
+        track.SetField(int(-999), imother_id);
+      else {
+        track.SetField(int(p->second), imother_id);
+      }
     }
   }
 }

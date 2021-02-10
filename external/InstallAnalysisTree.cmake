@@ -1,11 +1,9 @@
-set(ANALYSISTREE_VERSION 78086bc3b1ea62054fcb2d56cc2b2f0002f14b2f)
+set(ANALYSISTREE_VERSION 9f49db8c1cd0cd1079a3f9267358a9a7362bde41)
 
 set(ANALYSISTREE_SRC_URL "https://github.com/HeavyIonAnalysis/AnalysisTree.git")
 set(ANALYSISTREE_DESTDIR "${CMAKE_BINARY_DIR}/external/ANALYSISTREE-prefix")
 
 list(APPEND ANALYSISTREE_LIBNAME "AnalysisTreeBase" "AnalysisTreeInfra")
-
-#set(ANALYSISTREE_LIBNAME "${CMAKE_SHARED_LIBRARY_PREFIX}AnalysisTreeBase${CMAKE_SHARED_LIBRARY_SUFFIX}" "${CMAKE_SHARED_LIBRARY_PREFIX}AnalysisTreeInfra${CMAKE_SHARED_LIBRARY_SUFFIX}")
 
 download_project_if_needed(PROJECT         AnalysisTree_source
         GIT_REPOSITORY  ${ANALYSISTREE_SRC_URL}
@@ -60,11 +58,6 @@ foreach(LIB_NAME ${ANALYSISTREE_LIBNAME})
         DESTINATION lib)
 endforeach(LIB_NAME)
 
-
-#Install(FILES ${CMAKE_BINARY_DIR}/lib/${CMAKE_SHARED_LIBRARY_PREFIX}AnalysisTree.rootmap
-#        ${CMAKE_BINARY_DIR}/lib/${CMAKE_SHARED_LIBRARY_PREFIX}AnalysisTree_rdict.pcm
-#        DESTINATION lib
-#        )
 Install(DIRECTORY  ${CMAKE_BINARY_DIR}/include/AnalysisTree
         DESTINATION include
        )

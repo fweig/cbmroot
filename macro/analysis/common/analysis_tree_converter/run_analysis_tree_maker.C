@@ -1,6 +1,5 @@
 
-void run_analysis_tree_maker(Int_t nEvents     = 2,
-                             TString dataSet   = "test",
+void run_analysis_tree_maker(TString dataSet   = "../../../run/test",
                              TString setupName = "sis100_electron") {
   const std::string system = "Au+Au";  // TODO can we read it automatically?
   const float beam_mom     = 12.;
@@ -95,13 +94,25 @@ void run_analysis_tree_maker(Int_t nEvents     = 2,
   }
   run->AddTask(l1);
 
+  // --- TRD pid tasks
+  if (setup->IsActive(ECbmModuleId::kTrd)) {
+
+    CbmTrdSetTracksPidLike* trdLI =
+      new CbmTrdSetTracksPidLike("TRDLikelihood", "TRDLikelihood");
+    trdLI->SetUseMCInfo(kTRUE);
+    trdLI->SetUseMomDependence(kTRUE);
+    run->AddTask(trdLI);
+    std::cout << "-I- : Added task " << trdLI->GetName() << std::endl;
+    //     ------------------------------------------------------------------------
+  }
+
   // AnalysisTree converter
   auto* man = new CbmConverterManager();
   man->SetSystem(system);
   man->SetBeamMomentum(beam_mom);
 
-  man->SetOutFileName(outFile);
-  man->SetOutTreeName("aTree");
+  man->SetOutputName(outFile, "rTree");
+  //  man->SetOutTreeName("aTree");
 
   man->AddTask(new CbmSimEventHeaderConverter("SimEventHeader"));
   man->AddTask(new CbmRecEventHeaderConverter("RecEventHeader"));
@@ -113,7 +124,9 @@ void run_analysis_tree_maker(Int_t nEvents     = 2,
   taskCbmStsTracksConverter->SetIsReproduceCbmKFPF();
   man->AddTask(taskCbmStsTracksConverter);
 
+  man->AddTask(new CbmRichRingsConverter("RichRings", "VtxTracks"));
   man->AddTask(new CbmTofHitsConverter("TofHits", "VtxTracks"));
+  man->AddTask(new CbmTrdTracksConverter("TrdTracks", "VtxTracks"));
   man->AddTask(new CbmPsdModulesConverter("PsdModules"));
 
   run->AddTask(man);
@@ -134,7 +147,7 @@ void run_analysis_tree_maker(Int_t nEvents     = 2,
   run->Init();
 
   std::cout << "Starting run" << std::endl;
-  run->Run(0, nEvents);
+  run->Run(0);
   // ------------------------------------------------------------------------
 
   timer.Stop();
@@ -143,6 +156,7 @@ void run_analysis_tree_maker(Int_t nEvents     = 2,
   std::cout << "Macro finished succesfully." << std::endl;
   std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
+
   printf("RealTime=%f seconds, CpuTime=%f seconds\n", rtime, ctime);
 
   // -----   CTest resource monitoring   ------------------------------------
@@ -166,5 +180,5 @@ void run_analysis_tree_maker(Int_t nEvents     = 2,
   //   Generate_CTest_Dependency_File(depFile);
   // ------------------------------------------------------------------------
 
-  RemoveGeoManager();
+  //  RemoveGeoManager();
 }

@@ -17,25 +17,13 @@ namespace AnalysisTree {
 class CbmStsTracksConverter final : public CbmConverterTask {
 
 public:
-  enum kInBranches {
-    eStsTracks,
-    ePrimiryVertex,
-    eSimTracks,
-    eNumberOfInputBranches
-  };
-
   explicit CbmStsTracksConverter(std::string out_branch_name,
                                  std::string match_to = "")
-    : CbmConverterTask(std::move(out_branch_name), std::move(match_to)) {
-    in_branches_.resize(eNumberOfInputBranches);
-    in_branches_.at(eStsTracks)     = "StsTrack";
-    in_branches_.at(ePrimiryVertex) = "PrimaryVertex.";
-    in_branches_.at(eSimTracks)     = "MCTrack";
-  }
+    : CbmConverterTask(std::move(out_branch_name), std::move(match_to)) {}
 
   ~CbmStsTracksConverter() final;
 
-  void Init(std::map<std::string, void*>&) final;
+  void Init() final;
   void Exec() final;
   void Finish() final {}
 
@@ -47,13 +35,14 @@ private:
   void MapTracks();
   void InitInput();
   float ExtrapolateToVertex(CbmStsTrack* sts_track,
-                            AnalysisTree::Track* track,
+                            AnalysisTree::Track& track,
                             int pdg);
-  void WriteKFInfo(AnalysisTree::Track* track,
+
+  void WriteKFInfo(AnalysisTree::Track& track,
                    const CbmStsTrack* sts_track,
                    bool is_good_track) const;
   bool IsGoodCovMatrix(const CbmStsTrack* sts_track) const;
-  int GetMcPid(const CbmTrackMatchNew* match, AnalysisTree::Track* track) const;
+  int GetMcPid(const CbmTrackMatchNew* match, AnalysisTree::Track& track) const;
 
   AnalysisTree::TrackDetector* vtx_tracks_ {
     nullptr};  ///< raw pointers are needed for TTree::Branch

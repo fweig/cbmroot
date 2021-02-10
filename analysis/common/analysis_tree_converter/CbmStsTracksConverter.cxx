@@ -1,12 +1,4 @@
-
-#include <cassert>
-#include <cmath>
-
-#include "TClonesArray.h"
-
-#include "FairRootManager.h"
-
-#include "AnalysisTree/Matching.hpp"
+#include "CbmStsTracksConverter.h"
 
 #include "CbmMCTrack.h"
 #include "CbmStsTrack.h"
@@ -16,7 +8,16 @@
 #include "L1Field.h"
 #include "ParticleFinder/CbmL1PFFitter.h"
 
-#include "CbmStsTracksConverter.h"
+#include "FairRootManager.h"
+
+#include "AnalysisTree/Matching.hpp"
+#include <AnalysisTree/TaskManager.hpp>
+
+#include "TClonesArray.h"
+
+#include <cassert>
+#include <cmath>
+
 
 ClassImp(CbmStsTracksConverter)
 
@@ -35,9 +36,74 @@ CbmStsTracksConverter::~CbmStsTracksConverter() {
   delete vtx_tracks_2_sim_;
 };
 
+void CbmStsTracksConverter::InitInput() {
+  auto* ioman = FairRootManager::Instance();
+
+  cbm_prim_vertex_ = (CbmVertex*) ioman->GetObject("PrimaryVertex.");
+  cbm_sts_tracks_  = (TClonesArray*) ioman->GetObject("StsTrack");
+  cbm_mc_tracks_   = (TClonesArray*) ioman->GetObject("MCTrack");
+  cbm_sts_match_   = (TClonesArray*) ioman->GetObject("StsTrackMatch");
+}
+
+void CbmStsTracksConverter::Init() {
+  InitInput();
+
+  AnalysisTree::BranchConfig vtx_tracks_config(out_branch_,
+                                               AnalysisTree::DetType::kTrack);
+  vtx_tracks_config.AddField<float>("chi2", "chi2 of the track fit");
+  vtx_tracks_config.AddField<float>("vtx_chi2",
+                                    "chi2 to to the primary vertex");
+  vtx_tracks_config.AddFields<float>(
+    {"dcax", "dcay", "dcaz"},
+    "not actuall Distance of Closest Approach, but extrapolated to z=z_vtx");
+  vtx_tracks_config.AddField<int>("ndf", "number degrees of freedom");
+  vtx_tracks_config.AddField<int>("q", "charge");
+  vtx_tracks_config.AddField<int>("nhits", "number of hits (total MVD+STS)");
+  vtx_tracks_config.AddField<int>("nhits_mvd", "number of hits in MVD");
+
+  if (is_write_kfinfo_) {
+    vtx_tracks_config.AddFields<float>({"x", "y", "z", "tx", "ty", "qp"},
+                                       "track parameters");
+    vtx_tracks_config.AddFields<float>(
+      {"cx0", "cx1", "cx2", "cy0", "cy1", "cy2", "cz0", "cz1", "cz2", "z0"},
+      "magnetic field approximation");
+    vtx_tracks_config.AddFields<float>({"cov1",
+                                        "cov2",
+                                        "cov3",
+                                        "cov4",
+                                        "cov5",
+                                        "cov6",
+                                        "cov7",
+                                        "cov8",
+                                        "cov9",
+                                        "cov10",
+                                        "cov11",
+                                        "cov12",
+                                        "cov13",
+                                        "cov14",
+                                        "cov15"},
+                                       "covarience matrix");
+
+    vtx_tracks_config.AddField<int>("mother_pdg",
+                                    "PDG code of mother particle");
+    vtx_tracks_config.AddField<int>("mc_pdg", "MC-true PDG code");
+    vtx_tracks_config.AddField<bool>("pass_cuts", "ask Oleksii");
+
+    ipar_        = vtx_tracks_config.GetFieldId("x");
+    imf_         = vtx_tracks_config.GetFieldId("cx0");
+    icov_        = vtx_tracks_config.GetFieldId("cov1");
+    imc_pdg_     = vtx_tracks_config.GetFieldId("mc_pdg");
+    imother_pdg_ = vtx_tracks_config.GetFieldId("mother_pdg");
+    ipasscuts_   = vtx_tracks_config.GetFieldId("pass_cuts");
+  }
+  auto* man = AnalysisTree::TaskManager::GetInstance();
+  man->AddBranch(out_branch_, vtx_tracks_, vtx_tracks_config);
+  man->AddMatching(out_branch_, match_to_, vtx_tracks_2_sim_);
+}
+
 // TODO misleading name, move field filling somewhere else?
 float CbmStsTracksConverter::ExtrapolateToVertex(CbmStsTrack* sts_track,
-                                                 AnalysisTree::Track* track,
+                                                 AnalysisTree::Track& track,
                                                  int pdg) {
 
   vector<CbmStsTrack> tracks = {*sts_track};
@@ -53,16 +119,16 @@ float CbmStsTracksConverter::ExtrapolateToVertex(CbmStsTrack* sts_track,
   *sts_track = tracks[0];
 
   if (is_write_kfinfo_) {
-    track->SetField(float(field.at(0).cx0[0]), imf_);
-    track->SetField(float(field.at(0).cx1[0]), imf_ + 1);
-    track->SetField(float(field.at(0).cx2[0]), imf_ + 2);
-    track->SetField(float(field.at(0).cy0[0]), imf_ + 3);
-    track->SetField(float(field.at(0).cy1[0]), imf_ + 4);
-    track->SetField(float(field.at(0).cy2[0]), imf_ + 5);
-    track->SetField(float(field.at(0).cz0[0]), imf_ + 6);
-    track->SetField(float(field.at(0).cz1[0]), imf_ + 7);
-    track->SetField(float(field.at(0).cz2[0]), imf_ + 8);
-    track->SetField(float(field.at(0).z0[0]), imf_ + 9);
+    track.SetField(float(field.at(0).cx0[0]), imf_);
+    track.SetField(float(field.at(0).cx1[0]), imf_ + 1);
+    track.SetField(float(field.at(0).cx2[0]), imf_ + 2);
+    track.SetField(float(field.at(0).cy0[0]), imf_ + 3);
+    track.SetField(float(field.at(0).cy1[0]), imf_ + 4);
+    track.SetField(float(field.at(0).cy2[0]), imf_ + 5);
+    track.SetField(float(field.at(0).cz0[0]), imf_ + 6);
+    track.SetField(float(field.at(0).cz1[0]), imf_ + 7);
+    track.SetField(float(field.at(0).cz2[0]), imf_ + 8);
+    track.SetField(float(field.at(0).z0[0]), imf_ + 9);
   }
 
   return chi2_to_vtx[0];
@@ -72,21 +138,16 @@ void CbmStsTracksConverter::ReadVertexTracks() {
   assert(cbm_prim_vertex_ && cbm_sts_tracks_);
 
   vtx_tracks_->ClearChannels();
+  auto* out_config_  = AnalysisTree::TaskManager::GetInstance()->GetConfig();
+  const auto& branch = out_config_->GetBranchConfig(out_branch_);
 
-  const int iq =
-    out_config_->GetBranchConfig(vtx_tracks_->GetId()).GetFieldId("q");
-  const int indf =
-    out_config_->GetBranchConfig(vtx_tracks_->GetId()).GetFieldId("ndf");
-  const int ichi2 =
-    out_config_->GetBranchConfig(vtx_tracks_->GetId()).GetFieldId("chi2");
-  const int inhits =
-    out_config_->GetBranchConfig(vtx_tracks_->GetId()).GetFieldId("nhits");
-  const int inhits_mvd =
-    out_config_->GetBranchConfig(vtx_tracks_->GetId()).GetFieldId("nhits_mvd");
-  const int idcax =
-    out_config_->GetBranchConfig(vtx_tracks_->GetId()).GetFieldId("dcax");
-  const int ivtx_chi2 =
-    out_config_->GetBranchConfig(vtx_tracks_->GetId()).GetFieldId("vtx_chi2");
+  const int iq         = branch.GetFieldId("q");
+  const int indf       = branch.GetFieldId("ndf");
+  const int ichi2      = branch.GetFieldId("chi2");
+  const int inhits     = branch.GetFieldId("nhits");
+  const int inhits_mvd = branch.GetFieldId("nhits_mvd");
+  const int idcax      = branch.GetFieldId("dcax");
+  const int ivtx_chi2  = branch.GetFieldId("vtx_chi2");
 
   const int n_sts_tracks = cbm_sts_tracks_->GetEntries();
   vtx_tracks_->Reserve(n_sts_tracks);
@@ -95,11 +156,9 @@ void CbmStsTracksConverter::ReadVertexTracks() {
     auto* sts_track = (CbmStsTrack*) cbm_sts_tracks_->At(i_track);
     if (!sts_track) { throw std::runtime_error("empty track!"); }
 
-    auto* track = vtx_tracks_->AddChannel();
-    track->Init(out_config_->GetBranchConfig(vtx_tracks_->GetId()));
+    auto& track = vtx_tracks_->AddChannel(branch);
 
     int pdg = GetMcPid((CbmTrackMatchNew*) cbm_sts_match_->At(i_track), track);
-
     bool is_good_track = IsGoodCovMatrix(sts_track);
 
     float chi2_vertex = ExtrapolateToVertex(sts_track, track, pdg);
@@ -108,46 +167,45 @@ void CbmStsTracksConverter::ReadVertexTracks() {
     trackParamFirst->Momentum(momRec);
     const Int_t q = trackParamFirst->GetQp() > 0 ? 1 : -1;
 
-    track->SetMomentum3(momRec);
-    track->SetField(int(q), iq);
-    track->SetField(int(sts_track->GetNDF()), indf);
-    track->SetField(float(sts_track->GetChiSq()), ichi2);
-    track->SetField(int(sts_track->GetNofHits()), inhits);
-    track->SetField(float(trackParamFirst->GetX() - cbm_prim_vertex_->GetX()),
-                    idcax);
-    track->SetField(float(trackParamFirst->GetY() - cbm_prim_vertex_->GetY()),
-                    idcax + 1);
-    track->SetField(float(trackParamFirst->GetZ() - cbm_prim_vertex_->GetZ()),
-                    idcax + 2);
-    track->SetField(int(sts_track->GetNofMvdHits()), inhits_mvd);
-    track->SetField(float(chi2_vertex), ivtx_chi2);
+    track.SetMomentum3(momRec);
+    track.SetField(int(q), iq);
+    track.SetField(int(sts_track->GetNDF()), indf);
+    track.SetField(float(sts_track->GetChiSq()), ichi2);
+    track.SetField(int(sts_track->GetNofHits()), inhits);
+    track.SetField(float(trackParamFirst->GetX() - cbm_prim_vertex_->GetX()),
+                   idcax);
+    track.SetField(float(trackParamFirst->GetY() - cbm_prim_vertex_->GetY()),
+                   idcax + 1);
+    track.SetField(float(trackParamFirst->GetZ() - cbm_prim_vertex_->GetZ()),
+                   idcax + 2);
+    track.SetField(int(sts_track->GetNofMvdHits()), inhits_mvd);
+    track.SetField(float(chi2_vertex), ivtx_chi2);
 
-    out_indexes_map_.insert(std::make_pair(i_track, track->GetId()));
+    out_indexes_map_.insert(std::make_pair(i_track, track.GetId()));
 
     if (is_write_kfinfo_) { WriteKFInfo(track, sts_track, is_good_track); }
   }
 }
 
-void CbmStsTracksConverter::WriteKFInfo(AnalysisTree::Track* track,
+void CbmStsTracksConverter::WriteKFInfo(AnalysisTree::Track& track,
                                         const CbmStsTrack* sts_track,
                                         bool is_good_track) const {
-  assert(track && sts_track);
+  assert(sts_track);
   const FairTrackParam* trackParamFirst = sts_track->GetParamFirst();
 
-  track->SetField(float(trackParamFirst->GetX()), ipar_);
-  track->SetField(float(trackParamFirst->GetY()), ipar_ + 1);
-  track->SetField(float(trackParamFirst->GetZ()), ipar_ + 2);
-  track->SetField(float(trackParamFirst->GetTx()), ipar_ + 3);
-  track->SetField(float(trackParamFirst->GetTy()), ipar_ + 4);
-  track->SetField(float(trackParamFirst->GetQp()), ipar_ + 5);
+  track.SetField(float(trackParamFirst->GetX()), ipar_);
+  track.SetField(float(trackParamFirst->GetY()), ipar_ + 1);
+  track.SetField(float(trackParamFirst->GetZ()), ipar_ + 2);
+  track.SetField(float(trackParamFirst->GetTx()), ipar_ + 3);
+  track.SetField(float(trackParamFirst->GetTy()), ipar_ + 4);
+  track.SetField(float(trackParamFirst->GetQp()), ipar_ + 5);
 
   for (Int_t i = 0, iCov = 0; i < 5; i++) {
     for (Int_t j = 0; j <= i; j++, iCov++) {
-      track->SetField(float(trackParamFirst->GetCovariance(i, j)),
-                      icov_ + iCov);
+      track.SetField(float(trackParamFirst->GetCovariance(i, j)), icov_ + iCov);
     }
   }
-  track->SetField(is_good_track, ipasscuts_);
+  track.SetField(is_good_track, ipasscuts_);
 }
 
 bool CbmStsTracksConverter::IsGoodCovMatrix(
@@ -188,7 +246,7 @@ bool CbmStsTracksConverter::IsGoodCovMatrix(
 }
 
 int CbmStsTracksConverter::GetMcPid(const CbmTrackMatchNew* match,
-                                    AnalysisTree::Track* track) const {
+                                    AnalysisTree::Track& track) const {
 
   if (!is_write_kfinfo_) { return -2; }
   //-----------PID as in MZ's
@@ -227,89 +285,16 @@ int CbmStsTracksConverter::GetMcPid(const CbmTrackMatchNew* match,
         pdgCode = mctrack->GetPdgCode();
       }
       if (mctrack->GetMotherId() > -1) {
-        track->SetField(
+        track.SetField(
           int(((CbmMCTrack*) cbm_mc_tracks_->At(mctrack->GetMotherId()))
                 ->GetPdgCode()),
           imother_pdg_);
       }
     }
   }
-  track->SetField(pdgCode, imc_pdg_);
+  track.SetField(pdgCode, imc_pdg_);
 
   return pdgCode;
-}
-
-void CbmStsTracksConverter::InitInput() {
-  auto* ioman = FairRootManager::Instance();
-
-  cbm_prim_vertex_ =
-    (CbmVertex*) ioman->GetObject(in_branches_.at(ePrimiryVertex).c_str());
-  cbm_sts_tracks_ =
-    (TClonesArray*) ioman->GetObject(in_branches_.at(eStsTracks).c_str());
-  cbm_mc_tracks_ =
-    (TClonesArray*) ioman->GetObject(in_branches_.at(eSimTracks).c_str());
-  cbm_sts_match_ = (TClonesArray*) ioman->GetObject("StsTrackMatch");
-}
-
-void CbmStsTracksConverter::Init(map<std::string, void*>& branches) {
-  InitInput();
-
-  AnalysisTree::BranchConfig vtx_tracks_config(out_branch_,
-                                               AnalysisTree::DetType::kTrack);
-  vtx_tracks_config.AddField<float>("chi2");
-  vtx_tracks_config.AddField<float>("vtx_chi2");
-  vtx_tracks_config.AddFields<float>({"dcax", "dcay", "dcaz"});
-  vtx_tracks_config.AddField<int>("ndf");
-  vtx_tracks_config.AddField<int>("q");
-  vtx_tracks_config.AddField<int>("nhits");
-  vtx_tracks_config.AddField<int>("nhits_mvd");
-
-  if (is_write_kfinfo_) {
-    vtx_tracks_config.AddFields<float>({"x", "y", "z", "tx", "ty", "qp"});
-    vtx_tracks_config.AddFields<float>(
-      {"cx0", "cx1", "cx2", "cy0", "cy1", "cy2", "cz0", "cz1", "cz2", "z0"});
-    vtx_tracks_config.AddFields<float>({"cov1",
-                                        "cov2",
-                                        "cov3",
-                                        "cov4",
-                                        "cov5",
-                                        "cov6",
-                                        "cov7",
-                                        "cov8",
-                                        "cov9",
-                                        "cov10",
-                                        "cov11",
-                                        "cov12",
-                                        "cov13",
-                                        "cov14",
-                                        "cov15"});
-
-    vtx_tracks_config.AddField<int>("mother_pdg");
-    vtx_tracks_config.AddField<int>("mc_pdg");
-    vtx_tracks_config.AddField<bool>("pass_cuts");
-
-    ipar_        = vtx_tracks_config.GetFieldId("x");
-    imf_         = vtx_tracks_config.GetFieldId("cx0");
-    icov_        = vtx_tracks_config.GetFieldId("cov1");
-    imc_pdg_     = vtx_tracks_config.GetFieldId("mc_pdg");
-    imother_pdg_ = vtx_tracks_config.GetFieldId("mother_pdg");
-    ipasscuts_   = vtx_tracks_config.GetFieldId("pass_cuts");
-  }
-
-  out_config_->AddBranchConfig(std::move(vtx_tracks_config));
-  vtx_tracks_       = new AnalysisTree::TrackDetector(out_config_->GetLastId());
-  vtx_tracks_2_sim_ = new AnalysisTree::Matching(
-    out_config_->GetLastId(), out_config_->GetBranchConfig(match_to_).GetId());
-
-  out_config_->AddMatch(vtx_tracks_2_sim_);
-
-  out_tree_->Branch(
-    out_branch_.c_str(), "AnalysisTree::TrackDetector", &vtx_tracks_);
-  out_tree_->Branch((out_branch_ + "2" + match_to_).c_str(),
-                    "AnalysisTree::Matching",
-                    &vtx_tracks_2_sim_);
-
-  branches.emplace(out_branch_, vtx_tracks_);
 }
 
 void CbmStsTracksConverter::MapTracks() {
