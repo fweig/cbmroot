@@ -203,8 +203,8 @@ void run_reco(TString input        = "",
                                  TString::ECaseCompare::kIgnoreCase)) {
       CbmMcbm2018EventBuilder* evBuildRaw = new CbmMcbm2018EventBuilder();
 
-      evBuildRaw->SetFixedTimeWindow(5500.);
-      evBuildRaw->SetTriggerMinNumberSts(50);
+      evBuildRaw->SetFixedTimeWindow(500.);
+      evBuildRaw->SetTriggerMinNumberSts(1000);
 
       evBuildRaw->SetUseBaseMuchDigi(kTRUE);
 
@@ -305,7 +305,7 @@ void run_reco(TString input        = "",
   }
   // ------------------------------------------------------------------------
 
-  /*
+
   // -----   Local reconstruction in MVD   ----------------------------------
   if (useMvd) {
 
@@ -497,7 +497,7 @@ void run_reco(TString input        = "",
 
   }  //? time-based reco
 
-*/
+
   // -----  Parameter database   --------------------------------------------
   std::cout << std::endl << std::endl;
   std::cout << "-I- " << myName << ": Set runtime DB" << std::endl;
