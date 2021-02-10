@@ -2,7 +2,7 @@ set(ANALYSISTREEQA_VERSION be56549d0ee90b628e1ec49131924a03982365d6)
 
 set(ANALYSISTREEQA_SRC_URL "https://github.com/HeavyIonAnalysis/AnalysisTreeQA.git")
 set(ANALYSISTREEQA_DESTDIR "${CMAKE_BINARY_DIR}/external/ANALYSISTREEQA-prefix")
-set(ANALYSISTREEQA_LIBNAME "${CMAKE_SHARED_LIBRARY_PREFIX}AnalysisTreeQA${CMAKE_STATIC_LIBRARY_SUFFIX}")
+set(ANALYSISTREEQA_LIBNAME "AnalysisTreeQA")
 
 download_project_if_needed(PROJECT         AnalysisTreeQA_source
         GIT_REPOSITORY  ${ANALYSISTREEQA_SRC_URL}
@@ -57,6 +57,6 @@ Install(DIRECTORY  ${CMAKE_BINARY_DIR}/include/AnalysisTreeQA
         DESTINATION include
         )
 
-Install(FILES {CMAKE_SOURCE_DIR}/macro/analysis/common/qa/run_analysistree_qa.C
+Install(FILES ${CMAKE_SOURCE_DIR}/macro/analysis/common/qa/run_analysistree_qa.C
         DESTINATION share/cbmroot/macro
         )

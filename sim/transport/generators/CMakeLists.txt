@@ -75,3 +75,8 @@ include_directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
 link_directories( ${LINK_DIRECTORIES})
 GENERATE_LIBRARY()
 # ---------------------------------------------------------
+
+
+Install(FILES  ${CMAKE_CURRENT_SOURCE_DIR}/pluto/Pdefines.h
+        DESTINATION include
+       )
