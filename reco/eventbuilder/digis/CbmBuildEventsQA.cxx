@@ -34,8 +34,51 @@ CbmBuildEventsQA::~CbmBuildEventsQA() {}
 // ===========================================================================
 
 
+// =====   Task initialisation   =============================================
+InitStatus CbmBuildEventsQA::Init() {
+
+  // --- Get FairRootManager instance
+  FairRootManager* ioman = FairRootManager::Instance();
+  assert(ioman);
+
+  // --- Get input array (CbmEvent)
+  fEvents = dynamic_cast<TClonesArray*>(ioman->GetObject("CbmEvent"));
+  if (nullptr == fEvents) {
+    LOG(fatal) << "CbmBuildEventsQA::Init"
+               << "No CbmEvent TClonesArray found!";
+  }
+
+  // --- DigiManager instance
+  fDigiMan = CbmDigiManager::Instance();
+  fDigiMan->Init();
+
+  // --- Check input data
+  for (ECbmModuleId system = ECbmModuleId::kMvd;
+       system < ECbmModuleId::kNofSystems;
+       ++system) {
+    if (fDigiMan->IsMatchPresent(system)) {
+      LOG(info) << GetName() << ": Found match branch for "
+                << CbmModuleList::GetModuleNameCaps(system);
+      fSystems.push_back(system);
+    }
+  }
+  if (fSystems.empty()) {
+    LOG(fatal) << GetName() << ": No match branch found!";
+    return kFATAL;
+  }
+
+  return kSUCCESS;
+}
+// ===========================================================================
+
+
 // =====   Task execution   ==================================================
-void CbmBuildEventsQA::Exec(Option_t*) {
+void CbmBuildEventsQA::Exec(Option_t*) { SurveyEvents(); }
+// ===========================================================================
+
+
+// =====   Event survey   ====================================================
+void CbmBuildEventsQA::SurveyEvents() {
 
   // --- Time and counters
   TStopwatch timer;
@@ -126,49 +169,8 @@ void CbmBuildEventsQA::Exec(Option_t*) {
 // ===========================================================================
 
 
-// =====   Task initialisation   =============================================
-InitStatus CbmBuildEventsQA::Init() {
-
-  // --- Get FairRootManager instance
-  FairRootManager* ioman = FairRootManager::Instance();
-  assert(ioman);
-
-  // --- Get input array (CbmEvent)
-  fEvents = dynamic_cast<TClonesArray*>(ioman->GetObject("CbmEvent"));
-  if (nullptr == fEvents) {
-    LOG(fatal) << "CbmBuildEventsQA::Init"
-               << "No CbmEvent TClonesArray found!";
-  }
-
-  // --- DigiManager instance
-  fDigiMan = CbmDigiManager::Instance();
-  fDigiMan->Init();
-
-  // --- Check input data
-  for (ECbmModuleId system = ECbmModuleId::kMvd;
-       system < ECbmModuleId::kNofSystems;
-       ++system) {
-    if (fDigiMan->IsMatchPresent(system)) {
-      LOG(info) << GetName() << ": Found match branch for "
-                << CbmModuleList::GetModuleNameCaps(system);
-      fSystems.push_back(system);
-    }
-  }
-  if (fSystems.empty()) {
-    LOG(fatal) << GetName() << ": No match branch found!";
-    return kFATAL;
-  }
-
-  return kSUCCESS;
-}
-// ===========================================================================
-
-
 // =====   Match event   =====================================================
 void CbmBuildEventsQA::MatchEvent(CbmEvent* event) {
-
-  // TODO: This functionality should later be moved to the class
-  // CbmMatchRecoToMC
 
   // --- Get event match object. If present, will be cleared first. If not,
   // --- it will be created.
@@ -184,25 +186,36 @@ void CbmBuildEventsQA::MatchEvent(CbmEvent* event) {
   //  LOG(info) << GetName() << ": Event " << event->GetNumber()
   //              << ", STS digis : " << event->GetNofData(ECbmDataType::kStsDigi);
 
-  // --- Loop over digis
-  Int_t iNbDigis = event->GetNofData(GetDigiType(fRefDetector));
-  for (Int_t iDigi = 0; iDigi < iNbDigis; iDigi++) {
-    Int_t index = event->GetIndex(GetDigiType(fRefDetector), iDigi);
-    const CbmMatch* digiMatch = fDigiMan->GetMatch(fRefDetector, index);
-    assert(digiMatch);
+  // --- Loop over all detector systems
+  for (ECbmModuleId& system : fSystems) {
 
-    // --- Update event match with digi links
-    // --- N.b.: The member "index" of CbmLink has here no meaning, since
-    // --- there is only one MC event per tree entry.
-    for (Int_t iLink = 0; iLink < digiMatch->GetNofLinks(); iLink++) {
-      Int_t file      = digiMatch->GetLink(iLink).GetFile();
-      Int_t entry     = digiMatch->GetLink(iLink).GetEntry();
-      Double_t weight = digiMatch->GetLink(iLink).GetWeight();
-      //     LOG(info) << "Adding link (weight, entry, file): " << weight << " "
-      //		<< entry << " " << file;
-      match->AddLink(weight, 0, entry, file);
-    }  //# links in digi
-  }    //#digis
+    //Skip if reference detectors exist and current system isn't one
+    if (!fRefDetectors.empty()
+        && std::find(fRefDetectors.begin(), fRefDetectors.end(), system)
+             == fRefDetectors.end()) {
+      continue;
+    }
+
+    // --- Loop over digis in event
+    Int_t iNbDigis = event->GetNofData(GetDigiType(system));
+    for (Int_t iDigi = 0; iDigi < iNbDigis; iDigi++) {
+      Int_t index               = event->GetIndex(GetDigiType(system), iDigi);
+      const CbmMatch* digiMatch = fDigiMan->GetMatch(system, index);
+      assert(digiMatch);
+
+      // --- Update event match with digi links
+      // --- N.b.: The member "index" of CbmLink has here no meaning, since
+      // --- there is only one MC event per tree entry.
+      for (Int_t iLink = 0; iLink < digiMatch->GetNofLinks(); iLink++) {
+        Int_t file      = digiMatch->GetLink(iLink).GetFile();
+        Int_t entry     = digiMatch->GetLink(iLink).GetEntry();
+        Double_t weight = digiMatch->GetLink(iLink).GetWeight();
+        //     LOG(info) << "Adding link (weight, entry, file): " << weight << " "
+        //		<< entry << " " << file;
+        match->AddLink(weight, 0, entry, file);
+      }  //# links in digi
+    }    //#digis
+  }
 }
 // ===========================================================================
 

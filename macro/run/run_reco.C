@@ -305,6 +305,7 @@ void run_reco(TString input        = "",
   }
   // ------------------------------------------------------------------------
 
+  /*
   // -----   Local reconstruction in MVD   ----------------------------------
   if (useMvd) {
 
@@ -496,6 +497,7 @@ void run_reco(TString input        = "",
 
   }  //? time-based reco
 
+*/
   // -----  Parameter database   --------------------------------------------
   std::cout << std::endl << std::endl;
   std::cout << "-I- " << myName << ": Set runtime DB" << std::endl;

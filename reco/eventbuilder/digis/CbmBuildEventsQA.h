@@ -34,6 +34,10 @@ public:
   /** Task execution **/
   virtual void Exec(Option_t* opt);
 
+  /** Add a reference detector **/
+  void AddRefDetector(ECbmModuleId RefDetector) {
+    fRefDetectors.push_back(RefDetector);
+  }
 
 private:
   CbmDigiManager* fDigiMan = nullptr;     //!
@@ -50,9 +54,12 @@ private:
 		 **/
   void MatchEvent(CbmEvent* event);
 
+  /** Check if digis in reco events belong to correct MC event **/
+  void SurveyEvents();
+
   ECbmDataType GetDigiType(ECbmModuleId system);
 
-  ECbmModuleId fRefDetector = ECbmModuleId::kSts;
+  std::vector<ECbmModuleId> fRefDetectors;  //  Detectors used for MC matching
 
   CbmBuildEventsQA(const CbmBuildEventsQA&);
   CbmBuildEventsQA& operator=(const CbmBuildEventsQA&);
