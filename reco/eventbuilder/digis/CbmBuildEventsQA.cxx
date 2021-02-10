@@ -50,6 +50,10 @@ void CbmBuildEventsQA::Exec(Option_t*) {
 
     // --- Match event to MC
     MatchEvent(event);
+    if (event->GetMatch()->GetNofLinks() < 1) {
+      LOG(warning) << "No links in this event match object, skipping the event";
+      continue;
+    }  // if (-1 == event->GetMatch()->GetNofLinks())
     Int_t mcEventNr = event->GetMatch()->GetMatchedLink().GetEntry();
     LOG(info) << GetName() << ": Event " << event->GetNumber()
               << ", data objects : " << event->GetNofData()
@@ -92,15 +96,22 @@ void CbmBuildEventsQA::Exec(Option_t*) {
       }    //# digis
 
       // --- QA output
-      LOG(info) << GetName() << ": Detector "
-                << CbmModuleList::GetModuleNameCaps(system)
-                << ", correct digis " << nDigiCorrect << " / " << nDigis
-                << " = " << 100. * Double_t(nDigiCorrect) / Double_t(nDigis)
-                << " %, correct digi links " << nLinksCorrect << " / " << nLinks
-                << " = " << 100. * Double_t(nLinksCorrect) / Double_t(nLinks)
-                << " % ";
-    }
-  }  //# events
+      if (0 < nDigis) {
+        LOG(info) << GetName() << ": Detector "
+                  << CbmModuleList::GetModuleNameCaps(system)
+                  << ", correct digis " << nDigiCorrect << " / " << nDigis
+                  << " = " << 100. * Double_t(nDigiCorrect) / Double_t(nDigis)
+                  << " %, correct digi links " << nLinksCorrect << " / "
+                  << nLinks << " = "
+                  << 100. * Double_t(nLinksCorrect) / Double_t(nLinks) << " % ";
+      } else {
+        LOG(info) << GetName() << ": Detector "
+                  << CbmModuleList::GetModuleNameCaps(system)
+                  << ", no digis in this event";
+
+      }  // else of if( 0 < nDigis )
+    }    // systems
+  }      //# events
 
   // Timer and counters
   fNofEntries++;
@@ -173,36 +184,25 @@ void CbmBuildEventsQA::MatchEvent(CbmEvent* event) {
   //  LOG(info) << GetName() << ": Event " << event->GetNumber()
   //              << ", STS digis : " << event->GetNofData(ECbmDataType::kStsDigi);
 
-  // --- Loop over all detector systems
-  for (ECbmModuleId& system : fSystems) {
+  // --- Loop over digis
+  Int_t iNbDigis = event->GetNofData(GetDigiType(fRefDetector));
+  for (Int_t iDigi = 0; iDigi < iNbDigis; iDigi++) {
+    Int_t index = event->GetIndex(GetDigiType(fRefDetector), iDigi);
+    const CbmMatch* digiMatch = fDigiMan->GetMatch(fRefDetector, index);
+    assert(digiMatch);
 
-    // --- Skip system if no data branch or no match match present
-    if (!fDigiMan->IsPresent(system)) continue;
-    if (!fDigiMan->IsMatchPresent(system)) continue;
-
-    //only use reference detector for matching to MC event
-    if (system != fRefDetector) continue;
-
-    // --- Loop over digis
-    for (Int_t iDigi = 0; iDigi < event->GetNofData(GetDigiType(system));
-         iDigi++) {
-      Int_t index               = event->GetIndex(GetDigiType(system), iDigi);
-      const CbmMatch* digiMatch = fDigiMan->GetMatch(system, index);
-      assert(digiMatch);
-
-      // --- Update event match with digi links
-      // --- N.b.: The member "index" of CbmLink has here no meaning, since
-      // --- there is only one MC event per tree entry.
-      for (Int_t iLink = 0; iLink < digiMatch->GetNofLinks(); iLink++) {
-        Int_t file      = digiMatch->GetLink(iLink).GetFile();
-        Int_t entry     = digiMatch->GetLink(iLink).GetEntry();
-        Double_t weight = digiMatch->GetLink(iLink).GetWeight();
-        //     LOG(info) << "Adding link (weight, entry, file): " << weight << " "
-        //		<< entry << " " << file;
-        match->AddLink(weight, 0, entry, file);
-      }  //# links in digi
-    }    //#digis
-  }
+    // --- Update event match with digi links
+    // --- N.b.: The member "index" of CbmLink has here no meaning, since
+    // --- there is only one MC event per tree entry.
+    for (Int_t iLink = 0; iLink < digiMatch->GetNofLinks(); iLink++) {
+      Int_t file      = digiMatch->GetLink(iLink).GetFile();
+      Int_t entry     = digiMatch->GetLink(iLink).GetEntry();
+      Double_t weight = digiMatch->GetLink(iLink).GetWeight();
+      //     LOG(info) << "Adding link (weight, entry, file): " << weight << " "
+      //		<< entry << " " << file;
+      match->AddLink(weight, 0, entry, file);
+    }  //# links in digi
+  }    //#digis
 }
 // ===========================================================================
 
