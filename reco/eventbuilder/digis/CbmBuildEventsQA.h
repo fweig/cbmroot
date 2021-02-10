@@ -54,9 +54,6 @@ private:
 		 **/
   void MatchEvent(CbmEvent* event);
 
-  /** Check if digis in reco events belong to correct MC event **/
-  void SurveyEvents();
-
   ECbmDataType GetDigiType(ECbmModuleId system);
 
   std::vector<ECbmModuleId> fRefDetectors;  //  Detectors used for MC matching
