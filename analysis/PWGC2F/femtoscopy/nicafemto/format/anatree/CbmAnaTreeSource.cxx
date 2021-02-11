@@ -104,6 +104,10 @@ Int_t CbmAnaTreeSource::ReadEvent(UInt_t unsignedInt) {
 void CbmAnaTreeSource::Close() {}
 
 void CbmAnaTreeSource::LoadConf(TString name) {
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   TFile* f = new TFile(name);
   // TTree *tree = (TTree*)f->Get("aTree");
   AnalysisTree::Configuration* conf =
@@ -154,6 +158,10 @@ void CbmAnaTreeSource::LoadConf(TString name) {
     fContainerSim->GetFieldIds().event_psi =
       conf->GetBranchConfig("SimEventHeader").GetFieldId("psi_RP");
   }
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 
   f->Close();
   delete f;
