@@ -536,11 +536,18 @@ void CbmFieldMap::WriteAsciiFile(const char* fileName) {
 void CbmFieldMap::WriteRootFile(const char* fileName, const char* mapName) {
 
   CbmFieldMapData* data = new CbmFieldMapData(mapName, *this);
-  TFile* oldFile        = gFile;
+
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   TFile* file           = new TFile(fileName, "RECREATE");
   data->Write();
   file->Close();
-  if (oldFile) oldFile->cd();
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 }
 // ------------------------------------------------------------------------
 
@@ -696,9 +703,9 @@ void CbmFieldMap::ReadAsciiFile(const char* fileName) {
 
 // -------------   Read field map from ROOT file (private)  ---------------
 void CbmFieldMap::ReadRootFile(const char* fileName, const char* mapName) {
-
-  // Store gFile pointer
-  TFile* oldFile = gFile;
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
 
   // Open root file
   LOG(info) << "CbmFieldMap: Reading field map from ROOT file " << fileName;
@@ -723,7 +730,10 @@ void CbmFieldMap::ReadRootFile(const char* fileName, const char* mapName) {
   // Close the root file and delete the data object
   file->Close();
   delete data;
-  if (oldFile) oldFile->cd();
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 }
 // ------------------------------------------------------------------------
 

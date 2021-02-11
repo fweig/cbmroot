@@ -158,9 +158,17 @@ Bool_t CbmUnigenGenerator::Init() {
   }
   LOG(INFO) << GetName() << ": Mode " << ss.str();
 
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
 
   // --- Try to open file
   fFile = new TFile(fFileName, "READ");
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
+
   if (!fFile->IsOpen()) {
     LOG(error) << GetName() << ": Could not open input file " << fFileName;
     return kFALSE;

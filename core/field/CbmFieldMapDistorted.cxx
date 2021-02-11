@@ -265,8 +265,10 @@ void CbmFieldMapDistorted::SetFromParent(FairField* field) {
 
 // -----------   Read Distortion Formulas from Distortion File   ------------------------------------------
 void CbmFieldMapDistorted::ReadDistortionInformation(const char* filename) {
-  TFile* filesave = gFile;
-  gFile           = 0;
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   if (filename) {
     if (strlen(filename)) { fDistortionFilename = filename; }
   }
@@ -299,13 +301,16 @@ void CbmFieldMapDistorted::ReadDistortionInformation(const char* filename) {
       }
     }
   }
-  gFile = filesave;
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 }
 
 // -----------   Write Distortion Formulas to Distortion File   ------------------------------------------
 void CbmFieldMapDistorted::WriteDistortionInformation(const char* filename) {
-  TFile* filesave = gFile;
-  gFile           = 0;
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
 
   if (filename) {
     if (strlen(filename)) { fDistortionFilename = filename; }
@@ -336,7 +341,9 @@ void CbmFieldMapDistorted::WriteDistortionInformation(const char* filename) {
       }
     }
   }
-  gFile = filesave;
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 }
 
 // ---------------Getter and Setter for Distortion Formulas------------------------------

@@ -181,6 +181,9 @@ void CbmRecoQa::FinishEvent() {
 // --- Finish Task
 // Save Data in File
 void CbmRecoQa::FinishTask() {
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
 
   std::string filename = outname + ".qa.hists.root";
   pullresfile          = new TFile(filename.c_str(), "Recreate");
@@ -196,6 +199,12 @@ void CbmRecoQa::FinishTask() {
     }
     gDirectory->cd("..");
   }
+
+  pullresfile->Close();
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 }
 
 // --- Write Data in Historgrams, depending on detectorw

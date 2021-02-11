@@ -182,16 +182,25 @@ void CbmBsField::CalculateMapFromBs(Int_t pNx, Int_t pNy, Int_t pNz) {
 
 void CbmBsField::writeBsRootfile(const char* name)  // Write Field Splined
 {
-  TFile* oldfile = gFile;
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   TFile* f       = new TFile(name, "RECREATE");
   this->Write();
   f->Close();
-  if (oldfile) oldfile->cd();
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 }
 
 void CbmBsField::readBsRootfile(const char* name)  // Read  Field Splined
 {
-  TFile* oldfile = gFile;
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   TFile* f       = new TFile(name, "READ");
   if (f->IsZombie()) {
     cout << "-E- CbmBsField::readBsRootfile:  can not read from file: " << endl;
@@ -219,7 +228,10 @@ void CbmBsField::readBsRootfile(const char* name)  // Read  Field Splined
   fZ = new TArrayF(*fnew->GetZ());
 
   f->Close();
-  if (oldfile) oldfile->cd();
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 
   UX1 = fX->GetArray();
   UX2 = fY->GetArray();
