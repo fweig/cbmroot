@@ -144,13 +144,18 @@ void CbmMuchSegmentSector::SegmentMuch() {
     printf("Station %i segmented\n", iStation + 1);
   }
 
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   // Save parameters
-  TFile* oldfile = gFile;
   TFile* f       = new TFile(fDigiFileName, "RECREATE");
   fStations->Write("stations", 1);
 
   f->Close();
-  gFile = oldfile;
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 
   DrawSegmentation();
 }

@@ -45,12 +45,18 @@ InitStatus CbmMuchHitProducerIdeal::Init() {
 
   // Initialize GeoScheme
   fGeoScheme          = CbmMuchGeoScheme::Instance();
-  TFile* oldfile      = gFile;
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   TFile* file         = new TFile(fDigiFile);
   TObjArray* stations = (TObjArray*) file->Get("stations");
   file->Close();
   file->Delete();
-  gFile = oldfile;
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
+
   fGeoScheme->Init(stations, fId);
   return kSUCCESS;
 }

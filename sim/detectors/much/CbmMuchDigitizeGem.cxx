@@ -2,8 +2,8 @@
  *@author Vikas Singhal <vikas@vecc.gov.in>
  *@since 15.01.2020
  *@version 4.0
- *@description: Using std::vector for digi and match containers. 
- *@author Ekata Nandy (ekata@vecc.gov.in) 
+ *@description: Using std::vector for digi and match containers.
+ *@author Ekata Nandy (ekata@vecc.gov.in)
  *@since 21.06.19 : RPC digitization parameters(for 3rd and 4th MUCH station) now have been implemented along with GEM param// eters (1st and 2nd station) @author Ekata Nandy (ekata@vecc.gov.in)
  *@description: ADC channels number is 32.GEM & RPC has different charge threshold value and dynamic range, so SetAdc has been changed acc// ordingly. ADC value starts from 1 to 32. ADC 0 has been excluded as it gives wrong x, y, t. @author Ekata Nandy
  *@author Vikas Singhal <vikas@vecc.gov.in>
@@ -378,7 +378,9 @@ InitStatus CbmMuchDigitizeGem::Init() {
 
 
   // Initialize GeoScheme
-  TFile* oldfile = gFile;
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
   TFile* file    = new TFile(fDigiFile);
   if (!file->IsOpen())
     LOG(fatal) << fName << ": parameter file " << fDigiFile
@@ -386,7 +388,9 @@ InitStatus CbmMuchDigitizeGem::Init() {
   TObjArray* stations = (TObjArray*) file->Get("stations");
   file->Close();
   file->Delete();
-  gFile = oldfile;
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
   fGeoScheme->Init(stations, fFlag);
 
 
@@ -808,11 +812,18 @@ void CbmMuchDigitizeGem::Finish() {
   LOG(info) << "=====================================";
 
   /*
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
   TFile *f1 =new TFile ("pri_el_info.root","RECREATE");
   hPriElAfterDriftpathgem->Write();
   hPriElAfterDriftpathrpc->Write();
   hadcGEM->Write();
   hadcRPC->Write();
+  f1->Close();
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
   */
   //if (fDaq)	ReadAndRegister(-1.);
 }

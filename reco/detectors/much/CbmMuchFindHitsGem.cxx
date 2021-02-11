@@ -1,6 +1,6 @@
 /*
  * CbmMuchFindHitsGem.cxx
- * 
+ *
  * Modified on 08/08/2019 : Hit reconstruction in Event (in time slice) and Time slice mode
  * Default is time slice (kCbmTimeSlice) and it will run in event mode (kCbmEvent) if find event branch in the tree
  * @authors Vikas Singhal and Ajit Kumar
@@ -78,13 +78,13 @@ InitStatus CbmMuchFindHitsGem::Init() {
 
   // fDigis will not be used now. Just for checking. Need to remove
   /*fDigis     = (TClonesArray*) ioman->GetObject("MuchDigi");
-  if (! fDigis) 
-    fDigis     = (TClonesArray*) ioman->GetObject("MuchBeamTimeDigi"); 
-  if (! fDigis) 
-    fDigis     = (TClonesArray*) ioman->GetObject("CbmMuchBeamTimeDigi"); 
-  if (! fDigis) 
-    fDigis     = (TClonesArray*) ioman->GetObject("CbmMuchDigi"); 
-  if (! fDigis) 
+  if (! fDigis)
+    fDigis     = (TClonesArray*) ioman->GetObject("MuchBeamTimeDigi");
+  if (! fDigis)
+    fDigis     = (TClonesArray*) ioman->GetObject("CbmMuchBeamTimeDigi");
+  if (! fDigis)
+    fDigis     = (TClonesArray*) ioman->GetObject("CbmMuchDigi");
+  if (! fDigis)
     LOG(info) << "MuchFindHitsGem: No MuchDigi or MuchBeamTimeDigi or CbmMuchDigi or CbmMuchBeamTimeDigi exist";
     */
 
@@ -117,12 +117,18 @@ InitStatus CbmMuchFindHitsGem::Init() {
                   IsOutputBranchPersistent("MuchPixelHit"));
 
   // Initialize GeoScheme
-  TFile* oldfile      = gFile;
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   TFile* file         = new TFile(fDigiFile);
   TObjArray* stations = (TObjArray*) file->Get("stations");
   file->Close();
   file->Delete();
-  gFile = oldfile;
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
+
   fGeoScheme->Init(stations, fFlag);
   return kSUCCESS;
 }

@@ -138,7 +138,16 @@ InitStatus CbmMuchHitFinderQa::Init() {
   // Reading Much Digis from CbmMuchDigiManager which are stored as vector
   fDigiManager = CbmDigiManager::Instance();
 
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   TFile* f            = new TFile(fGeoFileName, "R");
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
+
   TObjArray* stations = (TObjArray*) f->Get("stations");
   fGeoScheme->Init(stations, fFlag);
 
