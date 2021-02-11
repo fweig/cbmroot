@@ -52,7 +52,7 @@ BraceWrapping:
   IndentBraces:          false
   SplitEmptyFunction:    true
   SplitEmptyRecord:      true
-  SplitEmptyNamespace:   true 
+  SplitEmptyNamespace:   true
 
 BreakBeforeTernaryOperators: true
 BreakConstructorInitializers: BeforeComma
@@ -78,18 +78,24 @@ IncludeBlocks: Regroup
 IncludeCategories:
   - Regex:           '^("|<)Cbm'
     Priority:        1
-  - Regex:           '^("|<)Fair'
+  - Regex:           '^("|<).*slice'
     Priority:        2
-  - Regex:           '^("|<)T'
+  - Regex:           '^("|<)Fair'
     Priority:        3
-  - Regex:           '^("|<)boost'
+  - Regex:           '^("|<)Logger.h'
+    Priority:        3
+  - Regex:           '^("|<)T'
     Priority:        4
-  - Regex:           '^<.*[^\.h]>'
+  - Regex:           '^("|<)Rt'
+    Priority:        4
+  - Regex:           '^("|<)boost'
     Priority:        5
-  - Regex:           '^<.*>'
+  - Regex:           '^<.*[^\.h]>'
     Priority:        6
-  - Regex:           '.*'
+  - Regex:           '^<.*>'
     Priority:        7
+  - Regex:           '.*'
+    Priority:        8
 
 IndentCaseBlocks: false
 IndentCaseLabels: true
