@@ -7,7 +7,8 @@
 
 #include "CbmHistManager.h"  // for CbmHistManager
 
-#include <TFile.h>  // for TFile
+#include <TDirectory.h>  // for TDirectory, gDirectory
+#include <TFile.h>       // for TFile, gFile
 
 #include <cassert>  // for assert
 #include <fstream>  // for string, ofstream, stringstream
@@ -40,6 +41,10 @@ void CbmStudyReport::Create(const vector<string>& fileNames,
   Int_t nofStudies = fileNames.size();
   vector<TFile*> files(nofStudies);
   fHM.resize(nofStudies);
+
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   for (Int_t i = 0; i < nofStudies; i++) {
     fHM[i]   = new CbmHistManager();
     files[i] = new TFile(fileNames[i].c_str());
@@ -59,6 +64,9 @@ void CbmStudyReport::Create(const vector<string>& fileNames,
   //	}
   //	fHM.clear();
   //	files.clear();
+
+  gFile      = oldFile;
+  gDirectory = oldDir;
 }
 
 ClassImp(CbmStudyReport)

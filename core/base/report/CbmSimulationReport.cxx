@@ -9,14 +9,16 @@
 #include "CbmHistManager.h"  // for CbmHistManager
 
 #include <RtypesCore.h>  // for UInt_t
-#include <TFile.h>       // for TFile
+#include <TDirectory.h>  // for TDirectory, gDirectory
+#include <TFile.h>       // for TFile, gFile
 #include <TH1.h>         // for TH1
 #include <TH2.h>         // for TH2
 
+#include <fstream>  // for string, ofstream
+#include <string>   // for operator+
+#include <vector>   // for vector, __vector_base<>::value_type
+
 #include <assert.h>  // for assert
-#include <fstream>   // for string, ofstream
-#include <string>    // for operator+
-#include <vector>    // for vector, __vector_base<>::value_type
 
 using std::ofstream;
 using std::string;
@@ -38,12 +40,21 @@ void CbmSimulationReport::Create(const string& fileName,
                                  const string& outputDir) {
   assert(fHM == nullptr);
   fHM         = new CbmHistManager();
+
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   TFile* file = new TFile(fileName.c_str());
   fHM->ReadFromFile(file);
   SetOutputDir(outputDir);
   CreateReports();
   //   delete fHM;
   //   delete file;
+
+  // shouldn't the file be closed ????
+  //  file->Close();
+  gFile      = oldFile;
+  gDirectory = oldDir;
 }
 
 void CbmSimulationReport::DrawH1ByPattern(const string& histNamePattern) {
