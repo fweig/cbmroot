@@ -38,6 +38,10 @@ CbmAnaJpsiSuperEventReport::~CbmAnaJpsiSuperEventReport() {}
 void CbmAnaJpsiSuperEventReport::Create(const string& fileEventByEvent,
                                         const string& fileSuperEvent,
                                         const string& outputDir) {
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   fHMSuperEvent = new CbmHistManager();
   TFile* fileSE = new TFile(fileSuperEvent.c_str());
   fHMSuperEvent->ReadFromFile(fileSE);
@@ -48,6 +52,10 @@ void CbmAnaJpsiSuperEventReport::Create(const string& fileEventByEvent,
 
   SetOutputDir(outputDir);
   CreateReports();
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 }
 void CbmAnaJpsiSuperEventReport::Create() {
   //Out().precision(3);

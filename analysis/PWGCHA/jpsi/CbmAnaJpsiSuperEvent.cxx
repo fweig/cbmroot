@@ -58,8 +58,17 @@ void CbmAnaJpsiSuperEvent::Run() {
 
   Draw();
 
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   TFile* file = new TFile(fOutputFile.c_str(), "RECREATE");
   fHM->WriteToFile();
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
+
   file->Close();
 
   cout << "-I- Output file:" << fOutputFile << endl;
@@ -234,6 +243,11 @@ void CbmAnaJpsiSuperEvent::ReadCandidates() {
   fPlusCandidates.clear();
   cout << "-I- ReadCandidates" << endl;
   cout << "-I- fFileNames.size:" << fFileNames.size() << endl;
+
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   for (UInt_t iFile = 0; iFile < fFileNames.size(); iFile++) {
     cout << "-I- Reading file No " << iFile << " path:" << fFileNames[iFile]
          << endl;
@@ -278,6 +292,10 @@ void CbmAnaJpsiSuperEvent::ReadCandidates() {
     f->Close();
     delete f;
   }
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
+
   cout << "-I- fMinusCandidates.size:" << fMinusCandidates.size() << endl;
   cout << "-I- fPlusCandidates.size:" << fPlusCandidates.size() << endl;
   cout << "-I- number of events:" << fHM->H1("fh_se_event_number")->GetEntries()
