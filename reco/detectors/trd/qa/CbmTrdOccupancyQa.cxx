@@ -178,7 +178,12 @@ void CbmTrdOccupancyQa::Exec(Option_t*) {
   printf("TriggerThreshold: %.2E\n", fTriggerThreshold);
   printf("NeigbourReadout:%i\n", Int_t(fNeigbourReadout));
   //  Bool_t debug = false;
-  //TFile *outFile = new TFile("data/CbmTrdOccupancyQa.root","UPDATE","output of CbmTrdOccupancyQa");
+
+  // /// Save old global file and folder pointer to avoid messing with FairRoot
+  // TFile* oldFile     = gFile;
+  // TDirectory* oldDir = gDirectory;
+  // TFile *outFile = new TFile("data/CbmTrdOccupancyQa.root","UPDATE","output of CbmTrdOccupancyQa");
+
   TStopwatch timer;
   timer.Start();
   Int_t nEntries = CbmDigiManager::Instance()->GetNofDigis(ECbmModuleId::kTrd);
@@ -423,6 +428,10 @@ void CbmTrdOccupancyQa::CopyEvent2MemoryMap() {
   }
 }
 void CbmTrdOccupancyQa::SwitchToMergedFile() {
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   TString filename = "data/result.root";
   TFile* Target    = new TFile(filename, "READ");
   if (Target) {
@@ -440,11 +449,19 @@ void CbmTrdOccupancyQa::SwitchToMergedFile() {
   } else {
     cout << "No merged data/result.root found" << endl;
   }
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 }
 void CbmTrdOccupancyQa::CreateLayerView() {
   if (fPlotMergedResults) SwitchToMergedFile();
+
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile   = gFile;
   TString origpath = gDirectory->GetPath();
   printf("\n%s\n", origpath.Data());
+
   TString newpath = origpath;
   newpath.ReplaceAll("eds", "oc_qa");
   newpath.ReplaceAll(":/", "");
@@ -644,6 +661,9 @@ void CbmTrdOccupancyQa::CreateLayerView() {
   c->Close();
 
   tempFile->Close();
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile = oldFile;
   gDirectory->Cd(origpath);
   gDirectory->pwd();
 }
@@ -654,8 +674,11 @@ void CbmTrdOccupancyQa::SetTriggerThreshold(Double_t triggerthreshold) {
   fTriggerThreshold = triggerthreshold;
 }
 void CbmTrdOccupancyQa::SaveHistos2File() {
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile   = gFile;
   TString origpath = gDirectory->GetPath();
   printf("\n%s\n", origpath.Data());
+
   TString newpath = origpath;
   newpath.ReplaceAll("eds", "oc_qa");
   newpath.ReplaceAll(":/", "");
@@ -688,7 +711,7 @@ void CbmTrdOccupancyQa::SaveHistos2File() {
   }
   */
   /*
-    if (!gDirectory->Cd("Module2D")) 
+    if (!gDirectory->Cd("Module2D"))
     gDirectory->mkdir("Module2D");
     gDirectory->Cd("Module2D");
     for (fModuleOccupancyMapIt = fModuleOccupancyMap.begin();
@@ -719,6 +742,9 @@ void CbmTrdOccupancyQa::SaveHistos2File() {
   //outFile->Close();
 
   tempFile->Close();
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile = oldFile;
   gDirectory->Cd(origpath);
   gDirectory->pwd();
 }

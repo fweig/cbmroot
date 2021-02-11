@@ -64,6 +64,10 @@ Bool_t CbmTrdSetTracksPidLike::ReadData()
     fFileName = fTrdGas->GetFileName("Like");
   }
 
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   // Open ROOT file with the histograms
   TFile* histFile = new TFile(fFileName, "READ");
   if (!histFile || !histFile->IsOpen()) {
@@ -203,6 +207,10 @@ Bool_t CbmTrdSetTracksPidLike::ReadData()
 
     fHistdEdx->AddAt(hist, particle);
   }
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 
   /// clean up
   histFile->Close();

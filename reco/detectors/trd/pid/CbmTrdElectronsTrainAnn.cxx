@@ -196,11 +196,21 @@ void CbmTrdElectronsTrainAnn::Finish() {
   Draw();
 
   if (fOutputDir != "") { gSystem->mkdir(fOutputDir.c_str(), true); }
+
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   TFile* f =
     new TFile(string(fOutputDir + "/trd_elid_hist.root").c_str(), "RECREATE");
   for (unsigned int i = 0; i < fHists.size(); i++) {
     fHists[i]->Write();
   }
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
+
   f->Close();
 }
 
@@ -220,6 +230,10 @@ void CbmTrdElectronsTrainAnn::FillElossVectorReal() {
     Fatal("-E- CbmTrdElectronsTrainAnn::FillElossVectorReal()",
           "Set input file for beam data and histogram names!");
   }
+
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
 
   TFile* file     = new TFile(fBeamDataFile.c_str(), "READ");
   TH1F* hPion     = (TH1F*) file->Get(fBeamDataPiHist.c_str())->Clone();
@@ -244,6 +258,10 @@ void CbmTrdElectronsTrainAnn::FillElossVectorReal() {
       }
     }
   }
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 }
 
 void CbmTrdElectronsTrainAnn::FillElossVectorSim() {

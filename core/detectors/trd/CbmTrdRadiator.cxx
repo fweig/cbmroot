@@ -9,6 +9,7 @@
 
 #include <FairLogger.h>  // for Logger, LOG
 
+#include <TDirectory.h>  // for TDirectory
 #include <TFile.h>        // for TFile, gFile
 #include <TGeoManager.h>  // for TGeoManager, gGeoManager
 #include <TH1.h>          // for TH1D
@@ -317,6 +318,9 @@ void CbmTrdRadiator::Init()
 
     ProduceSpectra();
 
+    TFile* oldFile     = gFile;
+    TDirectory* oldDir = gDirectory;
+
     TFile* f1 = new TFile("TRhistos.root", "recreate");
 
     for (Int_t i = 0; i < fNMom; i++) {
@@ -324,6 +328,9 @@ void CbmTrdRadiator::Init()
     }
     f1->Close();
     f1->Delete();
+
+    gFile      = oldFile;
+    gDirectory = oldDir;
   }
 }
 

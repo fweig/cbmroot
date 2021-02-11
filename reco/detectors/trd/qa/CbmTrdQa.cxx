@@ -1125,8 +1125,8 @@ void CbmTrdQa::Exec(Option_t*) {
       Double_t trackLength = GetTrackLength(point);
       /*
 	TMath::Sqrt(
-	(point->GetXOut() - point->GetXIn()) * (point->GetXOut() - point->GetXIn()) + 
-	(point->GetYOut() - point->GetYIn()) * (point->GetYOut() - point->GetYIn()) + 
+	(point->GetXOut() - point->GetXIn()) * (point->GetXOut() - point->GetXIn()) +
+	(point->GetYOut() - point->GetYIn()) * (point->GetYOut() - point->GetYIn()) +
 	(point->GetZOut() - point->GetZIn()) * (point->GetZOut() - point->GetZIn())
 	);
       */
@@ -1729,8 +1729,11 @@ void CbmTrdQa::SetTriangularPads(Bool_t triangles) {
 
 
 void CbmTrdQa::SaveHistos() {
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile   = gFile;
   TString origpath = gDirectory->GetPath();
   printf("\n%s\n", origpath.Data());
+
   TString newpath = origpath;
   newpath.ReplaceAll("eds", "trd_qa");
   newpath.ReplaceAll(":/", "");
@@ -2000,6 +2003,9 @@ void CbmTrdQa::SaveHistos() {
   delete l;
   gDirectory->Cd("..");
   tempFile->Close();
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile = oldFile;
   gDirectory->Cd(origpath);
   gDirectory->pwd();
 }
@@ -2106,8 +2112,11 @@ void CbmTrdQa::CreateLayerView(std::map<Int_t, TH1*>& Map,
                                Double_t fmax,
                                Double_t fmin,
                                Bool_t logScale) {
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile   = gFile;
   TString origpath = gDirectory->GetPath();
   printf("\n%s\n", origpath.Data());
+
   TString newpath = origpath;
   newpath.ReplaceAll("eds", "trd_qa");
   newpath.ReplaceAll(":/", "");
@@ -2195,13 +2204,19 @@ void CbmTrdQa::CreateLayerView(std::map<Int_t, TH1*>& Map,
   gDirectory->Cd("..");
 
   tempFile->Close();
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile = oldFile;
   gDirectory->Cd(origpath);
   gDirectory->pwd();
 }
 
 void CbmTrdQa::CreateLayerView() {
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile   = gFile;
   TString origpath = gDirectory->GetPath();
   printf("\n%s\n", origpath.Data());
+
   TString newpath = origpath;
   newpath.ReplaceAll("eds", "trd_qa");
   newpath.ReplaceAll(":/", "");
@@ -3123,6 +3138,9 @@ void CbmTrdQa::CreateLayerView() {
   gDirectory->Cd("..");
 
   tempFile->Close();
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile = oldFile;
   gDirectory->Cd(origpath);
   gDirectory->pwd();
 }

@@ -138,7 +138,7 @@ InitStatus CbmTrdHitDensityQa::Init() {
     cout << "                             Task will be inactive" << endl;
     //return kERROR;
   }
-  /* 
+  /*
   TString origpath = gDirectory->GetPath();
   printf ("\n%s\n",origpath.Data());
   TString newpath = origpath;
@@ -327,7 +327,7 @@ void CbmTrdHitDensityQa::Exec(Option_t*) {
 	  fUsedDigiMap[neighbourAddress] = iDigi;
 	  }
 	  }
-	  if (iRow < fModuleDigi->GetNofRows()-1){ // Only cross like neighbour trigger 
+	  if (iRow < fModuleDigi->GetNofRows()-1){ // Only cross like neighbour trigger
 	  if (local_Row+1 > fModuleDigi->GetNofRowsInSector(iSec)-1)
 	  neighbourAddress = CbmTrdAddress::GetAddress(fLayer, CbmTrdAddress::GetModuleId(moduleAddress), iSec+1, 0, iCol);
 	  else
@@ -409,8 +409,12 @@ void CbmTrdHitDensityQa::Finish() {
   TString title, name;
   std::map<Int_t, TCanvas*> LayerMap;
   std::map<Int_t, TCanvas*>::iterator LayerMapIt;
+
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile   = gFile;
   TString origpath = gDirectory->GetPath();
   printf("\n%s\n", origpath.Data());
+
   TString newpath = origpath;
   printf("fPlotResults: %i\n", (Int_t) fPlotResults);
   if (fPlotResults) {
@@ -761,6 +765,9 @@ void CbmTrdHitDensityQa::Finish() {
 
   gDirectory->Cd("..");
   tempFile->Close();
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile = oldFile;
   gDirectory->Cd(origpath);
   gDirectory->pwd();
   delete util;

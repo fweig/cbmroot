@@ -84,7 +84,9 @@ CbmTrdModuleSimR::CbmTrdModuleSimR(Int_t mod, Int_t ly, Int_t rot)
   if (!fPulseSwitch && CbmTrdDigitizer::IsTimeBased()) fCollectTime = 200;
   SetNameTitle(Form("TrdSimR%d", mod), "Simulator for rectangular read-out.");
 
-  TFile* oldFile = gFile;
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
 
   TString dir      = getenv("VMCWORKDIR");
   TString filename = dir + "/parameters/trd/FeatureExtractionLookup.root";
@@ -93,7 +95,10 @@ CbmTrdModuleSimR::CbmTrdModuleSimR(Int_t mod, Int_t ly, Int_t rot)
   fDriftTime->SetDirectory(0);
   f->Close();
 
-  gFile   = oldFile;
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
+
   oldFile = nullptr;
   delete oldFile;
 

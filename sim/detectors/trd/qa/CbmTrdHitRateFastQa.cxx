@@ -252,8 +252,17 @@ void CbmTrdHitRateFastQa::Exec(Option_t*) {
 
   fStation = 0;
   fLayer   = 0;
+
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   tFile    = new TFile(
     "CbmTrdHitRateFastQa.root", "RECREATE", " ROOT file with histograms");
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 
   Char_t name[50];
   Char_t title[50];
@@ -1453,8 +1462,8 @@ Double_t CbmTrdHitRateFastQa::CalcHitRate(HitRateGeoPara2* GeoPara,
       r     = sqrt(pow(x / 1.5, 2) + pow(y, 2));
       alpha = atan(r / z) * 1000.;
       /* //Fit without errors
-	   HitRate += 
-	   exp(4.54156e00 + -8.47377e-03 * alpha) + 
+	   HitRate +=
+	   exp(4.54156e00 + -8.47377e-03 * alpha) +
 	   exp(2.40005e01 + -1.19541e-02 * alpha) /
 	   (z * z)
 	   ;

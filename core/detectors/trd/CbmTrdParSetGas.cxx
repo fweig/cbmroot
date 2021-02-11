@@ -34,11 +34,19 @@ Bool_t CbmTrdParSetGas::getParams(FairParamList* l) {
   if (!l->fill("RepoDrift", repo, 100)) return kFALSE;
   if (!l->fill("RepoPid", pid, 100)) return kFALSE;
 
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   TDirectory* cwd(gDirectory);
-  if (!TFile::Open(Form("%s/%s", gSystem->Getenv("VMCWORKDIR"), repo))) {
+
+  TFile* infile = TFile::Open(Form("%s/%s", gSystem->Getenv("VMCWORKDIR"), repo));
+  if (!infile->IsOpen()) {
     LOG(error) << "Missing TRD DriftMap Repository : " << repo;
+    gFile      = oldFile;
+    gDirectory = oldDir;
     return kFALSE;
-  } else {
+  }
+  else {
     LOG(debug) << "TRD DriftMap Repository : " << gFile->GetName();
     LOG(debug) << "TRD PID Repository : " << pid;
   }
@@ -72,7 +80,12 @@ Bool_t CbmTrdParSetGas::getParams(FairParamList* l) {
   }
   so->Delete();
   delete so;
-  gFile->Close();
+
+  infile->Close();
+  delete infile;
+
+  gFile      = oldFile;
+  gDirectory = oldDir;
 
   return kTRUE;
 }
