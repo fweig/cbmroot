@@ -1951,11 +1951,12 @@ void CbmMcbm2018MonitorMuch::Finish() {
 
 
 void CbmMcbm2018MonitorMuch::SaveAllHistos(TString sFileName) {
-  TDirectory* oldDir = NULL;
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   TFile* histoFile   = NULL;
   if ("" != sFileName) {
-    // Store current directory position to allow restore later
-    oldDir = gDirectory;
     // open separate histo file in recreate mode
     histoFile = new TFile(sFileName, "RECREATE");
     histoFile->cd();
@@ -2059,7 +2060,9 @@ void CbmMcbm2018MonitorMuch::SaveAllHistos(TString sFileName) {
   if ("" != sFileName) {
     // Restore original directory position
     histoFile->Close();
-    oldDir->cd();
+    /// Restore old global file and folder pointer to avoid messing with FairRoot
+    gFile      = oldFile;
+    gDirectory = oldDir;
   }  // if( "" != sFileName )
 }
 void CbmMcbm2018MonitorMuch::ResetAllHistos() {

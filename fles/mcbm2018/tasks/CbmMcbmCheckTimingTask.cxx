@@ -72,10 +72,12 @@ void CbmMcbmCheckTimingTask::SaveHistos() {
    std::vector< std::pair< TNamed *, std::string > > vHistos = fpAlgo->GetHistoVector();
 
    /// (Re-)Create ROOT file to store the histos
-   TDirectory * oldDir = NULL;
-   TFile * histoFile = NULL;
-   /// Store current directory position to allow restore later
-   oldDir = gDirectory;
+   TFile* histoFile   = nullptr;
+
+   /// Save old global file and folder pointer to avoid messing with FairRoot
+   TFile* oldFile     = gFile;
+   TDirectory* oldDir = gDirectory;
+
    /// open separate histo file in recreate mode
    histoFile = new TFile( fsOutFileName , "RECREATE");
    histoFile->cd();

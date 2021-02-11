@@ -197,11 +197,12 @@ Bool_t CbmMcbm2018MonitorTaskTof::SaveHistograms() {
   std::vector<std::pair<TCanvas*, std::string>> vCanvas =
     fMonitorAlgo->GetCanvasVector();
 
-  /// (Re-)Create ROOT file to store the histos
-  TDirectory* oldDir = NULL;
-  TFile* histoFile   = NULL;
-  // Store current directory position to allow restore later
-  oldDir = gDirectory;
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
+  TFile* histoFile = nullptr;
+
   // open separate histo file in recreate mode
   histoFile = new TFile(fsHistoFileName, "RECREATE");
 
@@ -232,8 +233,10 @@ Bool_t CbmMcbm2018MonitorTaskTof::SaveHistograms() {
     histoFile->cd();
   }  // for( UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto )
 
-  // Restore original directory position
-  oldDir->cd();
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
+
   histoFile->Close();
 
   return kTRUE;

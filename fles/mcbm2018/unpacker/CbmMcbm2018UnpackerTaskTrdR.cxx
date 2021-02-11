@@ -118,10 +118,12 @@ void CbmMcbm2018UnpackerTaskTrdR::Finish() {
       fUnpackerAlgo->GetHistoVector();
 
     /// (Re-)Create ROOT file to store the histos
-    TDirectory* oldDir = nullptr;
     TFile* histoFile   = nullptr;
-    // Store current directory position to allow restore later
-    oldDir = gDirectory;
+
+    /// Save old global file and folder pointer to avoid messing with FairRoot
+    TFile* oldFile     = gFile;
+    TDirectory* oldDir = gDirectory;
+
     // open separate histo file in recreate mode
     TString histoFileName = fMonitorHistoFileName;
     histoFile             = new TFile(histoFileName.Data(), "RECREATE");
@@ -136,8 +138,10 @@ void CbmMcbm2018UnpackerTaskTrdR::Finish() {
       vHistos[uHisto].first->Write();
       histoFile->cd();
     }
-    // Restore original directory position
-    oldDir->cd();
+    /// Restore old global file and folder pointer to avoid messing with FairRoot
+    gFile      = oldFile;
+    gDirectory = oldDir;
+
     histoFile->Close();
   }
 }

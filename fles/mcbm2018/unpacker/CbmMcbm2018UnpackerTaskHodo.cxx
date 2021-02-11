@@ -267,11 +267,12 @@ void CbmMcbm2018UnpackerTaskHodo::Finish() {
       fUnpackerAlgoSts->GetHistoVector();
     vHistos.insert(vHistos.end(), vHistosSts.begin(), vHistosSts.end());
 
-    /// (Re-)Create ROOT file to store the histos
-    TDirectory* oldDir = NULL;
-    TFile* histoFile   = NULL;
-    // Store current directory position to allow restore later
-    oldDir = gDirectory;
+    /// Save old global file and folder pointer to avoid messing with FairRoot
+    TFile* oldFile     = gFile;
+    TDirectory* oldDir = gDirectory;
+
+    TFile* histoFile = nullptr;
+
     // open separate histo file in recreate mode
     histoFile = new TFile("data/HistosUnpackerSts.root", "RECREATE");
     histoFile->cd();
@@ -289,8 +290,10 @@ void CbmMcbm2018UnpackerTaskHodo::Finish() {
       histoFile->cd();
     }  // for( UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto )
 
-    // Restore original directory position
-    oldDir->cd();
+    /// Restore old global file and folder pointer to avoid messing with FairRoot
+    gFile      = oldFile;
+    gDirectory = oldDir;
+
     histoFile->Close();
   }  // if( kTRUE == fbMonitorMode )
 }
