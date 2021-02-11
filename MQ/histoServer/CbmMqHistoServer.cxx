@@ -388,11 +388,13 @@ bool CbmMqHistoServer::PrepareCanvas(uint32_t uCanvIdx) {
 }
 
 bool CbmMqHistoServer::SaveHistograms() {
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   /// (Re-)Create ROOT file to store the histos
-  TDirectory* oldDir = NULL;
-  TFile* histoFile   = NULL;
-  // Store current directory position to allow restore later
-  oldDir = gDirectory;
+  TFile* histoFile = nullptr;
+
   // open separate histo file in recreate mode
   histoFile = new TFile(fsHistoFileName.data(), "RECREATE");
 
@@ -423,8 +425,10 @@ bool CbmMqHistoServer::SaveHistograms() {
     histoFile->cd();
   }  // for( UInt_t uHisto = 0; uHisto < fvCanvas.size(); ++uHisto )
 
-  // Restore original directory position
-  oldDir->cd();
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
+
   histoFile->Close();
 
   return true;
