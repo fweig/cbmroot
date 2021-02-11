@@ -1255,6 +1255,10 @@ Bool_t CbmTofAnaTestbeam::InitParameters() {
 Bool_t CbmTofAnaTestbeam::LoadCalParameter() {
   if (fCalParFileName.IsNull()) return kTRUE;
 
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   fCalParFile = new TFile(fCalParFileName, "");
   if (NULL == fCalParFile) {
     LOG(error) << "CbmTofAnaTestBeam::LoadCalParameter: "
@@ -1434,6 +1438,10 @@ Bool_t CbmTofAnaTestbeam::LoadCalParameter() {
     fhSelHitTupleResidualXYT_Width->SetBinContent(2, fdDYWidth);
     fhSelHitTupleResidualXYT_Width->SetBinContent(3, fdDTWidth);
   }
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 
   fCalParFile->Close();
   //    fhDTD4DT04D4Off->Draw();
@@ -7925,8 +7933,11 @@ Bool_t CbmTofAnaTestbeam::WriteHistos() {
 
   LOG(info) << "Write ./tofAnaTestBeam.hst.root, mode = " << fiCorMode;
 
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   // Write histogramms to the file
-  TDirectory* oldir = gDirectory;
   TFile* fHist      = new TFile(fCalOutFileName, "RECREATE");
   fHist->cd();
 
@@ -8251,7 +8262,9 @@ Bool_t CbmTofAnaTestbeam::WriteHistos() {
     fhXY04->Write();
     fhYX04->Write();
   }
-  gDirectory->cd(oldir->GetPath());
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 
   fHist->Close();
 

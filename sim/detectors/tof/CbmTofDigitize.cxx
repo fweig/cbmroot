@@ -1046,8 +1046,10 @@ Bool_t CbmTofDigitize::WriteHistos() {
     return kTRUE;
   }  // if( "" == fsHistoOutFilename )
 
-  TDirectory* oldir = gDirectory;
-  TFile* fHist      = new TFile(fsHistoOutFilename, "RECREATE");
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+  TFile* fHist       = new TFile(fsHistoOutFilename, "RECREATE");
 
   fHist->cd();
 
@@ -1093,7 +1095,9 @@ Bool_t CbmTofDigitize::WriteHistos() {
     fh1ClusterTotProb[iSmType]->Write();
   }
 
-  gDirectory->cd(oldir->GetPath());
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 
   fHist->Close();
 

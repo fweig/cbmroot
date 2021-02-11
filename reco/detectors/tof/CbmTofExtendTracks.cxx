@@ -265,7 +265,10 @@ Bool_t CbmTofExtendTracks::LoadCalParameter()
     fvZoff[i] = 0.;
 
   if (fCalParFileName.IsNull()) return kTRUE;
-  TDirectory* oldir = gDirectory;
+
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
 
   fCalParFile = new TFile(fCalParFileName, "");
   if (NULL == fCalParFile) {
@@ -287,7 +290,9 @@ Bool_t CbmTofExtendTracks::LoadCalParameter()
   TH1D* fhys = (TH1D*) gDirectory->FindObjectAny(Form("hExt_Ysig"));
   TH1D* fhzs = (TH1D*) gDirectory->FindObjectAny(Form("hExt_Zsig"));
 
-  gDirectory->cd(oldir->GetPath());
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 
   if (NULL != fht) {
     fhExt_Toff = (TH1D*) fht->Clone();
@@ -542,8 +547,9 @@ Bool_t CbmTofExtendTracks::WriteHistos()
 {
   if (fiCorMode < 0) return kTRUE;
   // Write calibration histogramms to the file
-  TDirectory* oldir = gDirectory;
-  TFile* fHist      = new TFile(fCalOutFileName, "RECREATE");
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+  TFile* fHist       = new TFile(fCalOutFileName, "RECREATE");
   fHist->cd();
 
   if (NULL != fhExt_Toff) fhExt_Toff->Write();
@@ -551,7 +557,9 @@ Bool_t CbmTofExtendTracks::WriteHistos()
   if (NULL != fhExt_Yoff) fhExt_Yoff->Write();
   if (NULL != fhExt_Zoff) fhExt_Zoff->Write();
 
-  gDirectory->cd(oldir->GetPath());
+  gFile      = oldFile;
+  gDirectory = oldDir;
+
   fHist->Close();
   return kTRUE;
 }
@@ -608,7 +616,7 @@ void CbmTofExtendTracks::ExecExtend(Option_t* /*opt*/, CbmEvent* tEvent)
   /*
   if (NULL != fvAllHitPointer )
   for(UInt_t iSt=0; iSt<fvAllHitPointer.size(); iSt++) {
-	for (UInt_t iHit=0; iHit<fvAllHitPointer[iSt].size(); iHit++) 
+	for (UInt_t iHit=0; iHit<fvAllHitPointer[iSt].size(); iHit++)
 	  delete(fvAllHitPointer[iSt][iHit]);
 	fvAllHitPointer[iSt].clear();
   }
@@ -1308,7 +1316,7 @@ void CbmTofExtendTracks::FillHistograms(CbmEvent* tEvent)
         LOG(info)<<"Got MuchCorI Tr "<<iTr
         		<<", St "<<iTrSt
         		<<", Hit "<< iHit <<", ind "<<fvMuchHitIndex[iSt][iHit]
-				<<", poi "<< tHit												  
+				<<", poi "<< tHit
 				<<", dx " << dDX
 				<<", dy " << dDY;
         */

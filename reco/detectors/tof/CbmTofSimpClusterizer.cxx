@@ -536,11 +536,10 @@ Bool_t CbmTofSimpClusterizer::InitCalibParameter() {
 
   LOG(info) << "CbmTofSimpClusterizer::InitCalibParameter: defaults set";
 
-  TDirectory* oldir =
-    gDirectory;  // <= To prevent histos from being sucked in by the param file of the TRootManager!
-  /*
-  gROOT->cd(); // <= To prevent histos from being sucked in by the param file of the TRootManager !
-  */
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  // <= To prevent histos from being sucked in by the param file of the TRootManager!
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
 
   if (0 < fCalMode) {
     LOG(info) << "CbmTofSimpClusterizer::InitCalibParameter: read histos from "
@@ -681,7 +680,7 @@ Bool_t CbmTofSimpClusterizer::InitCalibParameter() {
 
             // copy Histo to memory
             TDirectory* curdir = gDirectory;
-            gDirectory->cd(oldir->GetPath());
+            gDirectory->cd(oldDir->GetPath());
             TH1D* h1DelTof = (TH1D*) htmpDelTof->Clone(
               Form("cl_CorSmT%01d_sm%03d_rpc%03d_Trg%02d_DelTof",
                    iSmType,
@@ -689,8 +688,7 @@ Bool_t CbmTofSimpClusterizer::InitCalibParameter() {
                    iRpc,
                    iTrg));
 
-            LOG(info) << " copy histo " << h1DelTof->GetName()
-                      << " to directory " << oldir->GetName();
+            LOG(info) << " copy histo " << h1DelTof->GetName() << " to directory " << oldDir->GetName();
 
             gDirectory->cd(curdir->GetPath());
           }
@@ -698,9 +696,10 @@ Bool_t CbmTofSimpClusterizer::InitCalibParameter() {
     }
   }
   //   fCalParFile->Delete();
-  gDirectory->cd(
-    oldir
-      ->GetPath());  // <= To prevent histos from being sucked in by the param file of the TRootManager!
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  // <= To prevent histos from being sucked in by the param file of the TRootManager!
+  gFile      = oldFile;
+  gDirectory = oldDir;
   LOG(info) << "CbmTofSimpClusterizer::InitCalibParameter: initialization done";
   return kTRUE;
 }
@@ -1141,7 +1140,10 @@ Bool_t CbmTofSimpClusterizer::WriteHistos() {
     return kTRUE;
   }  // if( "" == fsHistoOutFilename )
 
-  TDirectory* oldir = gDirectory;
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   TFile* fHist      = new TFile(fsHistoOutFilename, "RECREATE");
 
   fHist->cd();
@@ -1176,7 +1178,9 @@ Bool_t CbmTofSimpClusterizer::WriteHistos() {
   fhNbSameSide->Write();
   fhNbDigiPerChan->Write();
 
-  gDirectory->cd(oldir->GetPath());
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 
   fHist->Close();
 

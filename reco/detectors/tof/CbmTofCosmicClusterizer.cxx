@@ -1,7 +1,7 @@
-/** @file CbmTofCosmicClusterizer.cxx 
- ** author nh  
+/** @file CbmTofCosmicClusterizer.cxx
+ ** author nh
  ** adopted from
- ** @file CbmTofSimpClusterizer.cxx 
+ ** @file CbmTofSimpClusterizer.cxx
  ** @author Pierre-Alain Loizeau <loizeau@physi.uni-heidelberg.de>
  ** @date 23.08.2013
  **/
@@ -524,11 +524,10 @@ Bool_t CbmTofCosmicClusterizer::InitCalibParameter() {
 
   LOG(info) << "CbmTofCosmicClusterizer::InitCalibParameter: defaults set";
 
-  TDirectory* oldir =
-    gDirectory;  // <= To prevent histos from being sucked in by the param file of the TRootManager!
-  /*
-  gROOT->cd(); // <= To prevent histos from being sucked in by the param file of the TRootManager !
-  */
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  // <= To prevent histos from being sucked in by the param file of the TRootManager!
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
 
   if (0 < fCalMode) {
     LOG(info)
@@ -558,7 +557,7 @@ Bool_t CbmTofCosmicClusterizer::InitCalibParameter() {
       // copy Histo to memory
       TDirectory* curdir = gDirectory;
       if (NULL != hSvel) {
-        gDirectory->cd(oldir->GetPath());
+        gDirectory->cd(oldDir->GetPath());
         // TProfile *hSvelmem = (TProfile *)hSvel->Clone();   (VF) not used
         gDirectory->cd(curdir->GetPath());
       } else {
@@ -569,7 +568,7 @@ Bool_t CbmTofCosmicClusterizer::InitCalibParameter() {
         TProfile* hFparcur = (TProfile*) gDirectory->FindObjectAny(
           Form("cl_SmT%01d_Fpar%1d", iSmType, iPar));
         if (NULL != hFparcur) {
-          gDirectory->cd(oldir->GetPath());
+          gDirectory->cd(oldDir->GetPath());
           // TProfile *hFparmem = (TProfile *)hFparcur->Clone();   (VF) not used
           gDirectory->cd(curdir->GetPath());
         }
@@ -727,7 +726,7 @@ Bool_t CbmTofCosmicClusterizer::InitCalibParameter() {
 
             // copy Histo to memory
             // TDirectory * curdir = gDirectory;
-            gDirectory->cd(oldir->GetPath());
+            gDirectory->cd(oldDir->GetPath());
             TH1D* h1DelTof = (TH1D*) htmpDelTof->Clone(
               Form("cl_CorSmT%01d_sm%03d_rpc%03d_Sel%02d_DelTof",
                    iSmType,
@@ -735,8 +734,7 @@ Bool_t CbmTofCosmicClusterizer::InitCalibParameter() {
                    iRpc,
                    iSel));
 
-            LOG(debug) << " copy histo " << h1DelTof->GetName()
-                       << " to directory " << oldir->GetName();
+            LOG(debug) << " copy histo " << h1DelTof->GetName() << " to directory " << oldDir->GetName();
 
             gDirectory->cd(curdir->GetPath());
           }
@@ -744,9 +742,10 @@ Bool_t CbmTofCosmicClusterizer::InitCalibParameter() {
     }
   }
   //   fCalParFile->Delete();
-  gDirectory->cd(
-    oldir
-      ->GetPath());  // <= To prevent histos from being sucked in by the param file of the TRootManager!
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  // <= To prevent histos from being sucked in by the param file of the TRootManager!
+  gFile      = oldFile;
+  gDirectory = oldDir;
   LOG(info)
     << "CbmTofCosmicClusterizer::InitCalibParameter: initialization done";
   return kTRUE;
@@ -904,10 +903,11 @@ Bool_t CbmTofCosmicClusterizer::DeleteGeometry() {
 /************************************************************************************/
 // Histogramming functions
 Bool_t CbmTofCosmicClusterizer::CreateHistos() {
-  TDirectory* oldir =
-    gDirectory;  // <= To prevent histos from being sucked in by the param file of the TRootManager!
-  gROOT
-    ->cd();  // <= To prevent histos from being sucked in by the param file of the TRootManager !
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  // <= To prevent histos from being sucked in by the param file of the TRootManager!
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   fhClustBuildTime =
     new TH1I("TofCosmicClus_ClustBuildTime",
              "Time needed to build clusters in each event; Time [s]",
@@ -1977,9 +1977,10 @@ Bool_t CbmTofCosmicClusterizer::CreateHistos() {
                500);
   }  // if( kTRUE == fDigiBdfPar->ClustUseTrackId() )
 
-  gDirectory->cd(
-    oldir
-      ->GetPath());  // <= To prevent histos from being sucked in by the param file of the TRootManager!
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  // <= To prevent histos from being sucked in by the param file of the TRootManager!
+  gFile      = oldFile;
+  gDirectory = oldDir;
 
   return kTRUE;
 }
@@ -3030,7 +3031,10 @@ Bool_t CbmTofCosmicClusterizer::FillHistos() {
 }
 
 Bool_t CbmTofCosmicClusterizer::WriteHistos() {
-  TDirectory* oldir = gDirectory;
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   TFile* fHist;
   fHist = new TFile(fOutHstFileName, "RECREATE");
   fHist->cd();
@@ -3989,7 +3993,7 @@ Bool_t CbmTofCosmicClusterizer::WriteHistos() {
 	  if (fSel2Addr == iSmAddr) {
 	    //if (fSel2Id == iSmType && fSel2Sm == iSm && fSel2Rpc == iRpc) {
 	    // don't shift reference counter on average
-            //TMean-=((TProfile *)hAvTOff_pfx)->GetBinContent(iSm+1); 
+            //TMean-=((TProfile *)hAvTOff_pfx)->GetBinContent(iSm+1);
           }
 	  */
 
@@ -4683,8 +4687,9 @@ Bool_t CbmTofCosmicClusterizer::WriteHistos() {
     }
   }
 
-
-  gDirectory->cd(oldir->GetPath());
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 
   fHist->Close();
 
@@ -5716,13 +5721,13 @@ Bool_t CbmTofCosmicClusterizer::BuildClusters() {
                         0.5, 0.5, 0.5);  // including positioning uncertainty
                                          /*
                                     TVector3 hitPosErr( fChannelInfo->GetSizex()/TMath::Sqrt(12.0),   // Single strips approximation
-                                       0.5, // Use generic value 
+                                       0.5, // Use generic value
                                        1.);
 
                                     */                                       // fDigiBdfPar->GetFeeTimeRes() * fDigiBdfPar->GetSigVel(iSmType,iRpc), // Use the electronics resolution
-                                       //fDigiBdfPar->GetNbGaps( iSmType, iRpc)*
-                                       //fDigiBdfPar->GetGapSize( iSmType, iRpc)/ //10.0 / // Change gap size in cm
-                                       //TMath::Sqrt(12.0) ); // Use full RPC thickness as "Channel" Z size
+                      //fDigiBdfPar->GetNbGaps( iSmType, iRpc)*
+                      //fDigiBdfPar->GetGapSize( iSmType, iRpc)/ //10.0 / // Change gap size in cm
+                      //TMath::Sqrt(12.0) ); // Use full RPC thickness as "Channel" Z size
 
                       // calc mean ch from dPosX=((Double_t)(-iNbCh/2 + iCh)+0.5)*fChannelInfo->GetSizex();
 
@@ -5981,7 +5986,7 @@ Bool_t CbmTofCosmicClusterizer::BuildClusters() {
                 0.5, 0.5, 0.5);  // including positioning uncertainty
                                  /*
                      TVector3 hitPosErr( fChannelInfo->GetSizex()/TMath::Sqrt(12.0),   // Single strips approximation
-                                       0.5, // Use generic value 
+                                       0.5, // Use generic value
                                        1.);
                      */
               //                fDigiBdfPar->GetFeeTimeRes() * fDigiBdfPar->GetSigVel(iSmType,iRpc), // Use the electronics resolution

@@ -333,7 +333,9 @@ Bool_t CbmTofDigiBdfPar::getParams(FairParamList* l) {
 }
 
 Bool_t CbmTofDigiBdfPar::LoadBeamtimeHistos() {
-  TDirectory* oldir = gDirectory;
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
 
   TFile* fBeamtimeInput = new TFile(fsBeamInputFile, "READ");
   if (kFALSE == fBeamtimeInput->IsOpen()) {
@@ -352,16 +354,19 @@ Bool_t CbmTofDigiBdfPar::LoadBeamtimeHistos() {
   if (0 == pInputRes) {
     LOG(error) << "CbmTofDigiBdfPar => Could not recover the Time Resolution "
                   "array from the beamtime data file.";
-    gDirectory->cd(oldir->GetPath());
     fBeamtimeInput->Close();
+    gFile      = oldFile;
+    gDirectory = oldDir;
     return kFALSE;
   }  // if( 0 == pInputEff)
   if (0 == pInputEff->GetSize() || 0 == pInputRes->GetSize()
       || pInputEff->GetSize() != pInputRes->GetSize()) {
     LOG(error) << "CbmTofDigiBdfPar => Efficiency or Time Resolution array "
                   "from the beamtime data file have wrong size.";
-    gDirectory->cd(oldir->GetPath());
     fBeamtimeInput->Close();
+    /// Restore old global file and folder pointer to avoid messing with FairRoot
+    gFile      = oldFile;
+    gDirectory = oldDir;
     return kFALSE;
   }  // if wrong array size
 
@@ -403,8 +408,10 @@ Bool_t CbmTofDigiBdfPar::LoadBeamtimeHistos() {
                       "histogram for Sm Type "
                    << iSmType << ", mapped to input type "
                    << fiSmTypeInpMapp[iSmType];
-        gDirectory->cd(oldir->GetPath());
         fBeamtimeInput->Close();
+        /// Restore old global file and folder pointer to avoid messing with FairRoot
+        gFile      = oldFile;
+        gDirectory = oldDir;
         return kFALSE;
       }  // if( 0 == pH1Temp )
       fh1ClusterSize[iSmType] =
@@ -418,8 +425,10 @@ Bool_t CbmTofDigiBdfPar::LoadBeamtimeHistos() {
                       "histogram for Sm Type "
                    << iSmType << ", mapped to input type "
                    << fiSmTypeInpMapp[iSmType];
-        gDirectory->cd(oldir->GetPath());
         fBeamtimeInput->Close();
+        /// Restore old global file and folder pointer to avoid messing with FairRoot
+        gFile      = oldFile;
+        gDirectory = oldDir;
         return kFALSE;
       }  // if( 0 == pH1Temp )
       fh1ClusterTot[iSmType] =
@@ -428,22 +437,28 @@ Bool_t CbmTofDigiBdfPar::LoadBeamtimeHistos() {
     else {
       LOG(error) << "CbmTofDigiBdfPar => Wrong mapping index for Sm Type "
                  << iSmType << ": Out of input boundaries";
-      gDirectory->cd(oldir->GetPath());
       fBeamtimeInput->Close();
+      /// Restore old global file and folder pointer to avoid messing with FairRoot
+      gFile      = oldFile;
+      gDirectory = oldDir;
       return kFALSE;
     }
 
   if (2 == fiClusterRadiusModel) {
     GetLandauParFromBeamDataFit();
   }  // if( 2 == fiClusterRadiusModel )
-  gDirectory->cd(oldir->GetPath());
   fBeamtimeInput->Close();
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 
   return kTRUE;
 }
 /************************************************************************************/
 Bool_t CbmTofDigiBdfPar::GetLandauParFromBeamDataFit() {
-  TDirectory* oldir = gDirectory;
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
 
   TFile* fSimInput =
     new TFile("RadToClustDist_0000_1000_0010_00025_05025_00025.root", "READ");
@@ -481,6 +496,9 @@ Bool_t CbmTofDigiBdfPar::GetLandauParFromBeamDataFit() {
                << " => Use default values from ASCII parameter file! Pointers: "
                << hFitR0All << " " << hFitSigInAll << " " << hFitR0CntAll << " "
                << hFitSigInCntAll << " ";
+    /// Restore old global file and folder pointer to avoid messing with FairRoot
+    gFile      = oldFile;
+    gDirectory = oldDir;
     return kFALSE;
   }  // if( 0 == hFitR0All || 0 == hFitSigInAll || 0 == hFitR0CntAll || 0 == hFitSigInCntAll )
 
@@ -525,7 +543,9 @@ Bool_t CbmTofDigiBdfPar::GetLandauParFromBeamDataFit() {
     }  // else of if( kTRUE == pResult->IsValid() )
   }    // for( Int_t iSmType = 0; iSmType < fiNbSmTypes; iSmType ++)
 
-  gDirectory->cd(oldir->GetPath());
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 
   return kTRUE;
 }

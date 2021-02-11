@@ -149,11 +149,10 @@ Bool_t CbmTofTBClusterizer::InitCalibParameter() {
 
   LOG(info) << "CbmTofSimpClusterizer::InitCalibParameter: defaults set";
 
-  TDirectory* oldir =
-    gDirectory;  // <= To prevent histos from being sucked in by the param file of the TRootManager!
-  /*
-  gROOT->cd(); // <= To prevent histos from being sucked in by the param file of the TRootManager !
-  */
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  // <= To prevent histos from being sucked in by the param file of the TRootManager!
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
 
 #if 0
   if(0<fCalMode){
@@ -185,7 +184,7 @@ Bool_t CbmTofTBClusterizer::InitCalibParameter() {
           TH2F *htempPos_pfx =(TH2F*) gDirectory->FindObjectAny( Form("cl_CorSmT%01d_sm%03d_rpc%03d_Pos_pfx",iSmType,iSm,iRpc));
           TH2F *htempTOff_pfx=(TH2F*) gDirectory->FindObjectAny( Form("cl_CorSmT%01d_sm%03d_rpc%03d_TOff_pfx",iSmType,iSm,iRpc));
           TH2F *htempTot_pfx =(TH2F*) gDirectory->FindObjectAny( Form("cl_CorSmT%01d_sm%03d_rpc%03d_Tot_pfx",iSmType,iSm,iRpc));
-          if(NULL != htempPos_pfx && NULL != htempTOff_pfx && NULL != htempTot_pfx)  
+          if(NULL != htempPos_pfx && NULL != htempTOff_pfx && NULL != htempTot_pfx)
           {
             Int_t iNbCh = fDigiBdfPar->GetNbChan( iSmType, iRpc );
             Int_t iNbinTot = htempTot_pfx->GetNbinsX();
@@ -196,13 +195,13 @@ Bool_t CbmTofTBClusterizer::InitCalibParameter() {
                 Double_t dTYOff=YMean/fvCPSigPropSpeed[iSmType][iRpc] ;
                 fvCPTOff[iSmType][iSm*iNbRpc+iRpc][iCh][0] += -dTYOff + TMean ;
                 fvCPTOff[iSmType][iSm*iNbRpc+iRpc][iCh][1] += +dTYOff + TMean ;
- 
+
                 Double_t TotMean=((TProfile *)htempTot_pfx)->GetBinContent(iCh+1);  //nh +1 empirical(?)
                 if(1<TotMean){
                   fvCPTotGain[iSmType][iSm*iNbRpc+iRpc][iCh][0] *= TTotMean / TotMean;
                   fvCPTotGain[iSmType][iSm*iNbRpc+iRpc][iCh][1] *= TTotMean / TotMean;
                 }
-                LOG(debug1)<<"CbmTofSimpClusterizer::InitCalibParameter:" 
+                LOG(debug1)<<"CbmTofSimpClusterizer::InitCalibParameter:"
                            <<" SmT "<< iSmType<<" Sm "<<iSm<<" Rpc "<<iRpc<<" Ch "<<iCh
                            <<": YMean "<<YMean<<", TMean "<< TMean
                            <<" -> " << fvCPTOff[iSmType][iSm*iNbRpc+iRpc][iCh][0]
@@ -211,15 +210,15 @@ Bool_t CbmTofTBClusterizer::InitCalibParameter() {
                            <<", NbinTot "<< iNbinTot
                            ;
 
-                TH1D *htempWalk0=(TH1D*)gDirectory->FindObjectAny( 
+                TH1D *htempWalk0=(TH1D*)gDirectory->FindObjectAny(
                                  Form("Cor_SmT%01d_sm%03d_rpc%03d_Ch%03d_S0_Walk_px", iSmType, iSm, iRpc, iCh ));
-                TH1D *htempWalk1=(TH1D*)gDirectory->FindObjectAny( 
+                TH1D *htempWalk1=(TH1D*)gDirectory->FindObjectAny(
                                  Form("Cor_SmT%01d_sm%03d_rpc%03d_Ch%03d_S1_Walk_px", iSmType, iSm, iRpc, iCh ));
-                if(NULL != htempWalk0 && NULL != htempWalk1 ) { // reinitialize Walk array 
+                if(NULL != htempWalk0 && NULL != htempWalk1 ) { // reinitialize Walk array
                   LOG(info)<<"Initialize Walk correction for "
                             <<Form(" SmT%01d_sm%03d_rpc%03d_Ch%03d",iSmType, iSm, iRpc, iCh)
                             ;
-                  if(htempWalk0->GetNbinsX() != nbClWalkBinX) 
+                  if(htempWalk0->GetNbinsX() != nbClWalkBinX)
                     LOG(error)<<"CbmTofSimpClusterizer::InitCalibParameter: Inconsistent Walk histograms"
                               ;
                    for( Int_t iBin = 0; iBin < nbClWalkBinX; iBin++ )
@@ -253,13 +252,13 @@ Bool_t CbmTofTBClusterizer::InitCalibParameter() {
 
            // copy Histo to memory
            TDirectory * curdir = gDirectory;
-           gDirectory->cd( oldir->GetPath() );
+           gDirectory->cd( oldDir->GetPath() );
            TH1D *h1DelTof=(TH1D *)htmpDelTof->Clone(Form("cl_CorSmT%01d_sm%03d_rpc%03d_Trg%02d_DelTof",iSmType,iSm,iRpc,iTrg));
 
            LOG(info)<<" copy histo "
                      <<h1DelTof->GetName()
                      <<" to directory "
-                    <<oldir->GetName()
+                    <<oldDir->GetName()
                     ;
 
            gDirectory->cd( curdir->GetPath() );
@@ -269,9 +268,10 @@ Bool_t CbmTofTBClusterizer::InitCalibParameter() {
   }
 #endif  //0
   //   fCalParFile->Delete();
-  gDirectory->cd(
-    oldir
-      ->GetPath());  // <= To prevent histos from being sucked in by the param file of the TRootManager!
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  // <= To prevent histos from being sucked in by the param file of the TRootManager!
+  gFile      = oldFile;
+  gDirectory = oldDir;
   LOG(info) << "CbmTofSimpClusterizer::InitCalibParameter: initialization done";
   return kTRUE;
 }
@@ -417,72 +417,72 @@ void CbmTofTBClusterizer::Exec(Option_t* option) {
              << ", event time " << dEventTime << " ns"
              << ", TOF digis: " << iNbTofDigi;
   /*map<pair<Int_t, Int_t>, list<Int_t> > tofPointDigiInds;
-   
+
    Int_t nofTofPoints = fTofPoints->GetEntries();
-   
+
    for(Int_t iDigInd = 0; iDigInd < iNbTofDigi; ++iDigInd)
    {
       CbmTofDigiExp* pDigi = static_cast<CbmTofDigiExp*> (fTofDigis->At(iDigInd));
       const CbmMatch* pMatch = pDigi->GetMatch();
       Int_t nofLinks = pMatch->GetNofLinks();
-      
+
       for (Int_t iLink = 0; iLink < nofLinks; ++iLink)
       {
          const CbmLink& link = pMatch->GetLink(iLink);
          Int_t tpi = link.GetIndex();
          Int_t tpe = link.GetEntry();
-         
+
          //if (tpi < nofTofPoints)
             tofPointDigiInds[pair<Int_t, Int_t> (tpe, tpi)].push_back(iDigInd);
       }
    }
-   
+
    for (map<pair<Int_t, Int_t>, list<Int_t> >::const_iterator i = tofPointDigiInds.begin(); i != tofPointDigiInds.end(); ++i)
    {
       //const CbmTofPoint* pTofPoint = static_cast<const CbmTofPoint*> (fTofPoints->At(i->first));
       const list<Int_t>& pointDigis = i->second;
       set<Int_t> firedChannels;
       map<Int_t, pair<Double_t, Double_t> > channelDigis;
-      
+
       for (list<Int_t>::const_iterator j = i->second.begin(); j != i->second.end(); ++j)
       {
          const CbmTofDigiExp* pTofDigi = static_cast<const CbmTofDigiExp*> (fTofDigis->At(*j));
          firedChannels.insert(pTofDigi->GetChannel());
-         
+
          if (0 == pTofDigi->GetSide())
             channelDigis[pTofDigi->GetChannel()].first = pTofDigi->GetTime();
          else
             channelDigis[pTofDigi->GetChannel()].second = pTofDigi->GetTime();
-         
+
          //Double_t deltaT = pTofDigi->GetTime() - pTofPoint->GetTime();
          //deltaTHisto->Fill(deltaT);
       }
-      
+
       Double_t minDigiTime = std::numeric_limits<Double_t>::max();
       Double_t maxDigiTime = std::numeric_limits<Double_t>::min();
-      
+
       for (map<Int_t, pair<Double_t, Double_t> >::iterator j = channelDigis.begin(); j != channelDigis.end(); ++j)
       {
          if (0 == j->second.first || 0 == j->second.second)
             continue;
-         
+
          Double_t channelDelta = TMath::Abs(j->second.first - j->second.second);
          deltaChannelTHisto->Fill(channelDelta);
          Double_t channelTime = (j->second.first + j->second.second) / 2;
-         
+
          if (channelTime < minDigiTime)
             minDigiTime = channelTime;
-         
+
          if (channelTime > maxDigiTime)
             maxDigiTime = channelTime;
       }
-      
+
       if (maxDigiTime > minDigiTime)
          deltaPointTHisto->Fill(maxDigiTime - minDigiTime);
-      
+
       nofChannelsTHisto->Fill(firedChannels.size());
    }
-   
+
    return;*/
 
   for (Int_t iDigInd = 0; iDigInd < iNbTofDigi; ++iDigInd) {
@@ -530,35 +530,35 @@ void CbmTofTBClusterizer::Exec(Option_t* option) {
     }
 
     // apply calibration vectors
-    /*pDigi->SetTime(pDigi->GetTime() - // calibrate Digi Time 
+    /*pDigi->SetTime(pDigi->GetTime() - // calibrate Digi Time
          fvCPTOff[pDigi->GetType()]
          [pDigi->GetSm() * fDigiBdfPar->GetNbRpc(pDigi->GetType()) + pDigi->GetRpc()]
          [pDigi->GetChannel()]
          [pDigi->GetSide()]);
 
-      pDigi->SetTot(pDigi->GetTot() * // calibrate Digi ToT 
+      pDigi->SetTot(pDigi->GetTot() * // calibrate Digi ToT
          fvCPTotGain[pDigi->GetType()]
          [pDigi->GetSm() * fDigiBdfPar->GetNbRpc(pDigi->GetType()) + pDigi->GetRpc()]
          [pDigi->GetChannel()]
          [pDigi->GetSide()]);
-      
-      // walk correction 
+
+      // walk correction
       Double_t dTotBinSize = (TOTMax - TOTMin) / 2. / nbClWalkBinX;
       Int_t iWx = (Int_t) ((pDigi->GetTot() - TOTMin / 2.) / dTotBinSize);
-      
+
       if (0 > iWx)
          iWx = 0;
-      
+
       if (iWx > nbClWalkBinX)
          iWx = nbClWalkBinX - 1;
-      
+
       Double_t dDTot = (pDigi->GetTot() - TOTMin / 2.) / dTotBinSize - (Double_t) iWx - 0.5;
       Double_t dWT = fvCPWalk[pDigi->GetType()]
          [pDigi->GetSm() * fDigiBdfPar->GetNbRpc(pDigi->GetType()) + pDigi->GetRpc()]
          [pDigi->GetChannel()]
          [pDigi->GetSide()]
          [iWx];
-      
+
       if (dDTot > 0)
       { // linear interpolation to next bin
          dWT += dDTot * (fvCPWalk[pDigi->GetType()]

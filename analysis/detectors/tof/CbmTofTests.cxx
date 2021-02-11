@@ -1074,8 +1074,11 @@ Bool_t CbmTofTests::FillHistos() {
 Bool_t CbmTofTests::WriteHistos() {
   // TODO: add sub-folders
 
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   // Write histogramms to the file
-  TDirectory* oldir = gDirectory;
   TFile* fHist      = new TFile("./tofTests.hst.root", "RECREATE");
   fHist->cd();
 
@@ -1136,7 +1139,9 @@ Bool_t CbmTofTests::WriteHistos() {
   fhTofEff->Write();
   fhTofMixing->Write();
 
-  gDirectory->cd(oldir->GetPath());
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 
   fHist->Close();
 

@@ -372,11 +372,17 @@ Bool_t CbmDeviceHitBuilderTof::InitRootOutput()
     rootMgr->WriteFolder();
     LOG(info) << "Initialized outTree with rootMgr at " << rootMgr;
     /*
+    /// Save old global file and folder pointer to avoid messing with FairRoot
+    TFile* oldFile     = gFile;
+    TDirectory* oldDir = gDirectory;
     fOutRootFile = new TFile(fOutRootFileName,"recreate");
     fRootEvent   = new TTree("CbmEvent","Cbm Event");
     fRootEvent->Branch("CbmDigi",fTofCalDigisColl);
     LOG(info)<<"Open Root Output file " << fOutRootFileName;
     fRootEvent->Write();
+    /// Restore old global file and folder pointer to avoid messing with FairRoot
+    gFile      = oldFile;
+    gDirectory = oldDir;
     */
   }
   return kTRUE;
@@ -558,22 +564,22 @@ bool CbmDeviceHitBuilderTof::HandleData(FairMQParts& parts, int /*index*/)
   const Int_t iNDigiIn=100;
   std::array<CbmTofDigi,iNDigiIn> *aTofDigi = static_cast<std::array<CbmTofDigi,iNDigiIn>*>(msg->GetData());
   for (int iDigi=0; iDigi<fiNDigiIn; iDigi++) {
-    LOG(info) << "#" << iDigi << " " <<(*aTofDigi)[iDigi].ToString();  
+    LOG(info) << "#" << iDigi << " " <<(*aTofDigi)[iDigi].ToString();
   }
-  
+
 
   pDigiIn=static_cast<CbmTofDigi*> (msg->GetData());
   CbmTofDigi*  pDigi=pDigiIn;
   CbmTofDigi  aTofDigi[fiNDigiIn];
- 
+
 
   for (int iDigi=0; iDigi<fiNDigiIn; iDigi++) {
-  //aTofDigi[iDigi] = *pDigi++; 
-    aTofDigi[iDigi] = *pDigi; 
-    fvDigiIn[iDigi] = *pDigi; 
-    LOG(info) << "#" << iDigi << " at "<<pDigi<< " " <<aTofDigi[iDigi].ToString();  
+  //aTofDigi[iDigi] = *pDigi++;
+    aTofDigi[iDigi] = *pDigi;
+    fvDigiIn[iDigi] = *pDigi;
+    LOG(info) << "#" << iDigi << " at "<<pDigi<< " " <<aTofDigi[iDigi].ToString();
     // LOG(info) << "#" << iDigi << " at "<<pDigi<< " " <<pDigi->ToString();   // does not work ???
-    pDigi++; 
+    pDigi++;
   }
   */
 
@@ -748,10 +754,10 @@ Bool_t CbmDeviceHitBuilderTof::InitCalibParameter()
   }
   LOG(info) << "defaults set";
 
-  TDirectory* oldir = gDirectory;  // <= To prevent histos from being sucked in by the param file of the TRootManager!
-  /*
-  gROOT->cd(); // <= To prevent histos from being sucked in by the param file of the TRootManager !
-  */
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  // <= To prevent histos from being sucked in by the param file of the TRootManager!
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
 
   if (0 < fCalMode) {
     fCalParFileName = fDigiBdfPar->GetCalibFileName();
@@ -780,7 +786,7 @@ Bool_t CbmDeviceHitBuilderTof::InitCalibParameter()
       // copy Histo to memory
       TDirectory* curdir = gDirectory;
       if (NULL != hSvel) {
-        gDirectory->cd(oldir->GetPath());
+        gDirectory->cd(oldDir->GetPath());
         //TProfile *hSvelmem =
         //(TProfile*) hSvel->Clone();
         gDirectory->cd(curdir->GetPath());
@@ -792,7 +798,7 @@ Bool_t CbmDeviceHitBuilderTof::InitCalibParameter()
       for (Int_t iPar = 0; iPar < 4; iPar++) {
         TProfile* hFparcur = (TProfile*) gDirectory->FindObjectAny(Form("cl_SmT%01d_Fpar%1d", iSmType, iPar));
         if (NULL != hFparcur) {
-          gDirectory->cd(oldir->GetPath());
+          gDirectory->cd(oldDir->GetPath());
           //TProfile *hFparmem =
           //(TProfile*) hFparcur->Clone();
           gDirectory->cd(curdir->GetPath());
@@ -890,19 +896,22 @@ Bool_t CbmDeviceHitBuilderTof::InitCalibParameter()
 
             // copy Histo to memory
             // TDirectory * curdir = gDirectory;
-            gDirectory->cd(oldir->GetPath());
+            gDirectory->cd(oldDir->GetPath());
             TH1D* h1DelTof =
               (TH1D*) htmpDelTof->Clone(Form("cl_CorSmT%01d_sm%03d_rpc%03d_Sel%02d_DelTof", iSmType, iSm, iRpc, iSel));
 
-            LOG(debug) << " copy histo " << h1DelTof->GetName() << " to directory " << oldir->GetName();
-
+            LOG(debug) << " copy histo " << h1DelTof->GetName() << " to directory " << oldDir->GetName();
             gDirectory->cd(curdir->GetPath());
           }
         }
     }
   }
   //   fCalParFile->Delete();
-  gDirectory->cd(oldir->GetPath());  // <= To prevent histos from being sucked in by the param file of the TRootManager!
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  // <= To prevent histos from being sucked in by the param file of the TRootManager!
+  gFile      = oldFile;
+  gDirectory = oldDir;
+
   LOG(info) << "InitCalibParameter: initialization done";
   return kTRUE;
 }
@@ -2086,8 +2095,8 @@ Bool_t CbmDeviceHitBuilderTof::BuildHits()
                       gGeoManager->LocalToMaster(hitpos_local, hitpos);
                       /*
 		      LOG(debug)<<
-			Form("LocalToMaster for node %p: (%6.1f,%6.1f,%6.1f) ->(%6.1f,%6.1f,%6.1f)", 
-			     cNode, hitpos_local[0], hitpos_local[1], hitpos_local[2], 
+			Form("LocalToMaster for node %p: (%6.1f,%6.1f,%6.1f) ->(%6.1f,%6.1f,%6.1f)",
+			     cNode, hitpos_local[0], hitpos_local[1], hitpos_local[2],
 			     hitpos[0], hitpos[1], hitpos[2]);
 		      */
                       TVector3 hitPos(hitpos[0], hitpos[1], hitpos[2]);
@@ -2098,9 +2107,9 @@ Bool_t CbmDeviceHitBuilderTof::BuildHits()
                       TVector3 hitPosErr(0.5, 0.5, 0.5);  // including positioning uncertainty
                       /*
 			TVector3 hitPosErr( fChannelInfo->GetSizex()/TMath::Sqrt(12.0),   // Single strips approximation
-			0.5, // Use generic value 
+			0.5, // Use generic value
 			1.);
-			
+
 		      */
                       //fDigiBdfPar->GetFeeTimeRes() * fDigiBdfPar->GetSigVel(iSmType,iRpc), // Use the electronics resolution
                       //fDigiBdfPar->GetNbGaps( iSmType, iRpc)*
@@ -2124,7 +2133,7 @@ Bool_t CbmDeviceHitBuilderTof::BuildHits()
 					fiNbHits,iNbChanInHit,iDetId,iChm,iLastChan,iRefId,
 					dWeightedTime,dWeightedPosY)
 				<<", DigiSize: "<<vDigiIndRef.size()
-				<<", DigiInds: ";		      
+				<<", DigiInds: ";
 		      for (UInt_t i=0; i<vDigiIndRef.size();i++){
 			LOG(debug)<<" "<<vDigiIndRef.at(i)<<"(M"<<fviClusterMul[iSmType][iSm][iRpc]<<")";
 		      }
@@ -2173,7 +2182,7 @@ Bool_t CbmDeviceHitBuilderTof::BuildHits()
                       //fviTrkMul[iSmType][iRpc].push_back( vPtsRef.size() );
                       fvdX[iSmType][iRpc].push_back(dWeightedPosX);
                       fvdY[iSmType][iRpc].push_back(dWeightedPosY);
-                      /*  no TofPoint available for data!  
+                      /*  no TofPoint available for data!
 			  fvdDifX[iSmType][iRpc].push_back( vPtsRef[0]->GetX() - dWeightedPosX);
 			  fvdDifY[iSmType][iRpc].push_back( vPtsRef[0]->GetY() - dWeightedPosY);
 			  fvdDifCh[iSmType][iRpc].push_back( fGeoHandler->GetCell( vPtsRef[0]->GetDetectorID() ) -1 -iLastChan );
@@ -2259,7 +2268,7 @@ Bool_t CbmDeviceHitBuilderTof::BuildHits()
           // and save it if it's the case
           if (0 < iNbChanInHit) {
             /*
-	    LOG(debug)<<"Process cluster " 
+	    LOG(debug)<<"Process cluster "
 		      <<iNbChanInHit;
 	    */
             // Check orientation to properly assign errors
@@ -2290,8 +2299,8 @@ Bool_t CbmDeviceHitBuilderTof::BuildHits()
               gGeoManager->LocalToMaster(hitpos_local, hitpos);
               /*
 	      LOG(debug)<<
-		Form(" LocalToMaster for V-node %p: (%6.1f,%6.1f,%6.1f) ->(%6.1f,%6.1f,%6.1f)", 
-		     cNode, hitpos_local[0], hitpos_local[1], hitpos_local[2], 
+		Form(" LocalToMaster for V-node %p: (%6.1f,%6.1f,%6.1f) ->(%6.1f,%6.1f,%6.1f)",
+		     cNode, hitpos_local[0], hitpos_local[1], hitpos_local[2],
 		     hitpos[0], hitpos[1], hitpos[2])
 		;
 	      */
@@ -2302,7 +2311,7 @@ Bool_t CbmDeviceHitBuilderTof::BuildHits()
               TVector3 hitPosErr(0.5, 0.5, 0.5);  // including positioning uncertainty
               /*
 		TVector3 hitPosErr( fChannelInfo->GetSizex()/TMath::Sqrt(12.0),   // Single strips approximation
-		0.5, // Use generic value 
+		0.5, // Use generic value
 		1.);
 	      */
               Int_t iChm = floor(dWeightedPosX / fChannelInfo->GetSizex()) + iNbCh / 2;
@@ -2313,10 +2322,10 @@ Bool_t CbmDeviceHitBuilderTof::BuildHits()
               //if(NULL != fTofPointsColl) iRefId = fTofPointsColl->IndexOf( vPtsRef[0] );
               /*
 	      LOG(debug)<<"Save V-Hit  "
-			<< Form(" %3d %3d 0x%08x %3d 0x%08x", // %3d %3d 
+			<< Form(" %3d %3d 0x%08x %3d 0x%08x", // %3d %3d
 				fiNbHits,iNbChanInHit,iDetId,iLastChan,iRefId) //vPtsRef.size(),vPtsRef[0])
 		//   dWeightedTime,dWeightedPosY)
-			<<", DigiSize: "<<vDigiIndRef.size();	      
+			<<", DigiSize: "<<vDigiIndRef.size();
 	      for (UInt_t i=0; i<vDigiIndRef.size();i++){
 		LOG(debug)<<"DigiIndRef "<<i<<" "<<vDigiIndRef.at(i)<<"(M"<<fviClusterMul[iSmType][iSm][iRpc]<<")";
 	      }
@@ -2622,7 +2631,7 @@ Bool_t CbmDeviceHitBuilderTof::AddNextChan(Int_t iSmType, Int_t iSm, Int_t iRpc,
   fviClusterMul[iSmType][iSm][iRpc]++;
   /*
   LOG(debug)<<"Save A-Hit "
-            << Form("%2d %2d 0x%08x %3d t %f, y %f ", 
+            << Form("%2d %2d 0x%08x %3d t %f, y %f ",
 		    fiNbHits,iNbChanInHit,iDetId,iLastChan,dLastTime,dLastPosY)
             <<", DigiSize: "<<vDigiIndRef.size();
   for (UInt_t i=0; i<vDigiIndRef.size();i++){
@@ -3315,9 +3324,9 @@ Bool_t CbmDeviceHitBuilderTof::FillHistos()
       gGeoManager->GetCurrentNode();
       gGeoManager->MasterToLocal(hitpos, hitpos_local);
       /*
-	LOG(debug1)<< Form(" MasterToLocal for %d, %d%d%d, node %p: (%6.1f,%6.1f,%6.1f) ->(%6.1f,%6.1f,%6.1f)", 
+	LOG(debug1)<< Form(" MasterToLocal for %d, %d%d%d, node %p: (%6.1f,%6.1f,%6.1f) ->(%6.1f,%6.1f,%6.1f)",
 		      iDetIndx, iSmType, iSm, iRpc,
-                 cNode, hitpos[0], hitpos[1], hitpos[2], 
+                 cNode, hitpos[0], hitpos[1], hitpos[2],
                  hitpos_local[0], hitpos_local[1], hitpos_local[2])
               ;
       */
@@ -3398,9 +3407,9 @@ Bool_t CbmDeviceHitBuilderTof::FillHistos()
           }
           /*
 	    LOG(debug1)<<" fhRpcCluTot:  Digi 0 "<<iDigInd0<<": Ch "<<pDig0->GetChannel()<<", Side "<<pDig0->GetSide()
-	               <<", StripSide "<<(Double_t)iCh*2.+pDig0->GetSide() 
+	               <<", StripSide "<<(Double_t)iCh*2.+pDig0->GetSide()
                        <<" Digi 1 "<<iDigInd1<<": Ch "<<pDig1->GetChannel()<<", Side "<<pDig1->GetSide()
-		       <<" , StripSide "<<(Double_t)iCh*2.+pDig1->GetSide() 
+		       <<" , StripSide "<<(Double_t)iCh*2.+pDig1->GetSide()
 		       <<", Tot0 " << pDig0->GetTot() <<", Tot1 "<<pDig1->GetTot();
 	  */
           fhRpcCluTot[iDetIndx]->Fill(pDig0->GetChannel() * 2. + pDig0->GetSide(), pDig0->GetTot());
@@ -3466,9 +3475,9 @@ Bool_t CbmDeviceHitBuilderTof::FillHistos()
           }  // end of Clustersize > 1 condition
           /*
 	    LOG(debug1)<<" fhTRpcCluTot: Digi 0 "<<iDigInd0<<": Ch "<<pDig0->GetChannel()<<", Side "<<pDig0->GetSide()
-		    <<", StripSide "<<(Double_t)iCh*2.+pDig0->GetSide() 
+		    <<", StripSide "<<(Double_t)iCh*2.+pDig0->GetSide()
                     <<" Digi 1 "<<iDigInd1<<": Ch "<<pDig1->GetChannel()<<", Side "<<pDig1->GetSide()
-		    <<", StripSide "<<(Double_t)iCh*2.+pDig1->GetSide() 
+		    <<", StripSide "<<(Double_t)iCh*2.+pDig1->GetSide()
 		    ;
 	  */
           for (Int_t iSel = 0; iSel < iNSel; iSel++)

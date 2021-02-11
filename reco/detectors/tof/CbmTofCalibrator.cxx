@@ -1,7 +1,7 @@
 /** @file CbmTofCalibrator.cxx
  ** @author nh
  ** @date 28.02.2020
- ** 
+ **
  **/
 
 // CBMroot classes and includes
@@ -358,7 +358,7 @@ void CbmTofCalibrator::FillCalHist(CbmTofTracklet* pTrk, Int_t iOpt, CbmEvent* t
                             fTrackletTools->GetTexpected(pTrk, iDetId, pHit) ,
                             fTofFindTracks->GetTOff(iDetId),
                             (1.-2.*tDigi0->GetSide())*hlocal_f[1]/fDigiBdfPar->GetSigVel(iSmType,iSm,iRpc),
-                            tDigi0->GetTime()-fTrackletTools->GetTexpected(pTrk, iDetId, pHit) 
+                            tDigi0->GetTime()-fTrackletTools->GetTexpected(pTrk, iDetId, pHit)
                             -(1.-2.*tDigi0->GetSide())*hlocal_f[1]/fDigiBdfPar->GetSigVel(iSmType,iSm,iRpc));
         */
 
@@ -387,6 +387,11 @@ Bool_t CbmTofCalibrator::UpdateCalHist(Int_t iOpt)
   // get current calibration histos
   LOG(info) << "CbmTofCalibrator:: update histos from "
             << "file " << CbmTofEventClusterizer::Instance()->GetCalParFileName() << " with option " << iOpt;
+
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   TFile* fCalParFile = new TFile(CbmTofEventClusterizer::Instance()->GetCalParFileName(), "");
   if (NULL == fCalParFile) {
     LOG(warn) << "Could not open TofClusterizer calibration file, abort Update ";
@@ -536,6 +541,12 @@ Bool_t CbmTofCalibrator::UpdateCalHist(Int_t iOpt)
     WriteHist(fCalParFileNew);
     fCalParFileNew->Close();
   }
+  fCalParFile->Close();
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
+
   return kTRUE;
 }
 

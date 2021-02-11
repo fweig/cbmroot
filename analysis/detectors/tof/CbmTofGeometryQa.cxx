@@ -1517,8 +1517,11 @@ Bool_t CbmTofGeometryQa::SetHistoFileName(TString sFilenameIn) {
 Bool_t CbmTofGeometryQa::WriteHistos() {
   // TODO: add sub-folders ?
 
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   // Write histogramms to the file
-  TDirectory* oldir = gDirectory;
   TFile* fHist      = new TFile(fsHistoOutFilename, "RECREATE");
   fHist->cd();
 
@@ -1625,7 +1628,9 @@ Bool_t CbmTofGeometryQa::WriteHistos() {
 
   fHist->cd();  // make the file root the current directory
 
-  gDirectory->cd(oldir->GetPath());
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 
   fHist->Close();
 

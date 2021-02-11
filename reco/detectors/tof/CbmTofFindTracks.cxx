@@ -357,6 +357,10 @@ Bool_t CbmTofFindTracks::LoadCalParameter() {
 
   if (fCalParFileName.IsNull()) return kTRUE;
 
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   fCalParFile = new TFile(fCalParFileName, "");
   if (NULL == fCalParFile) {
     LOG(error) << "CbmTofFindTracks::LoadCalParameter: "
@@ -375,7 +379,6 @@ Bool_t CbmTofFindTracks::LoadCalParameter() {
   TH1D* fhtmpWX = (TH1D*) gDirectory->FindObjectAny(Form("hPullX_Smt_Width"));
   TH1D* fhtmpWY = (TH1D*) gDirectory->FindObjectAny(Form("hPullY_Smt_Width"));
   TH1D* fhtmpWZ = (TH1D*) gDirectory->FindObjectAny(Form("hPullZ_Smt_Width"));
-
 
   gROOT->cd();
   if (NULL == fhtmp) {
@@ -561,6 +564,10 @@ Bool_t CbmTofFindTracks::LoadCalParameter() {
     }
   }
 
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
+
   return kTRUE;
 }
 //-------------------------------------------------------------------------------------------------
@@ -623,7 +630,9 @@ Bool_t CbmTofFindTracks::WriteHistos() {
                     fiCorMode);
 
   // Write histogramms to the file
-  TDirectory* oldir = gDirectory;
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
   TFile* fHist      = new TFile(fCalOutFileName, "RECREATE");
   fHist->cd();
   const Double_t RMSmin = 0.03;  // in ns
@@ -1063,7 +1072,10 @@ Bool_t CbmTofFindTracks::WriteHistos() {
     fhPullY_Smt_Width->Write();
     fhPullZ_Smt_Width->Write();
   }
-  gDirectory->cd(oldir->GetPath());
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
+
   fHist->Close();
 
   return kTRUE;

@@ -4621,7 +4621,11 @@ Bool_t CbmTofHitFinderQa::NormalizeMapHistos() {
   // Normalization of Cartesian coordinates maps
   if ("" != fsHistoInNormCartFilename) {
     // Open file and set folders properly to avoid creating objects in uncontrolled places
-    TDirectory* oldir = gDirectory;
+
+    /// Save old global file and folder pointer to avoid messing with FairRoot
+    TFile* oldFile     = gFile;
+    TDirectory* oldDir = gDirectory;
+
     TFile* fHistNorm  = new TFile(fsHistoInNormCartFilename, "READ");
     if (NULL == fHistNorm) {
       LOG(error)
@@ -4715,8 +4719,9 @@ Bool_t CbmTofHitFinderQa::NormalizeMapHistos() {
       fhHitMapMultTrkYZ->Divide(fhHitMapNormYZ);
     }  // if( NULL != fhHitMapNormYZ   )
 
-    // Go back to original folder, whereever it is
-    gDirectory->cd(oldir->GetPath());
+    /// Restore old global file and folder pointer to avoid messing with FairRoot
+    gFile      = oldFile;
+    gDirectory = oldDir;
 
     fHistNorm->Close();
   }  // if( "" != fsHistoInNormCartFilename )
@@ -4728,7 +4733,11 @@ Bool_t CbmTofHitFinderQa::NormalizeMapHistos() {
   // Normalization of Angular   coordinates maps
   if ("" != fsHistoInNormAngFilename) {
     // Open file and set folders properly to avoid creating objects in uncontrolled places
-    TDirectory* oldir = gDirectory;
+
+    /// Save old global file and folder pointer to avoid messing with FairRoot
+    TFile* oldFile     = gFile;
+    TDirectory* oldDir = gDirectory;
+
     TFile* fHistNorm  = new TFile(fsHistoInNormAngFilename, "READ");
     if (NULL == fHistNorm) {
       LOG(error)
@@ -4767,8 +4776,9 @@ Bool_t CbmTofHitFinderQa::NormalizeMapHistos() {
       fhHitMapMultTrkAng->Divide(fhHitMapNormAng);
     }
 
-    // Go back to original folder, whereever it is
-    gDirectory->cd(oldir->GetPath());
+    /// Restore old global file and folder pointer to avoid messing with FairRoot
+    gFile      = oldFile;
+    gDirectory = oldDir;
 
     fHistNorm->Close();
   }  // if( "" != fsHistoInNormAngFilename )
@@ -4780,7 +4790,11 @@ Bool_t CbmTofHitFinderQa::NormalizeMapHistos() {
   // Normalization of Spherical coordinates maps
   if ("" != fsHistoInNormSphFilename) {
     // Open file and set folders properly to avoid creating objects in uncontrolled places
-    TDirectory* oldir = gDirectory;
+
+    /// Save old global file and folder pointer to avoid messing with FairRoot
+    TFile* oldFile     = gFile;
+    TDirectory* oldDir = gDirectory;
+
     TFile* fHistNorm  = new TFile(fsHistoInNormSphFilename, "READ");
     if (NULL == fHistNorm) {
       LOG(error)
@@ -4819,8 +4833,9 @@ Bool_t CbmTofHitFinderQa::NormalizeMapHistos() {
       fhHitMapMultTrkSph->Divide(fhHitMapNormSph);
     }
 
-    // Go back to original folder, whereever it is
-    gDirectory->cd(oldir->GetPath());
+    /// Restore old global file and folder pointer to avoid messing with FairRoot
+    gFile      = oldFile;
+    gDirectory = oldDir;
 
     fHistNorm->Close();
   }  // if( "" != fsHistoInNormSphFilename )
@@ -4869,8 +4884,11 @@ Bool_t CbmTofHitFinderQa::SetHistoFileName(TString sFilenameIn) {
 Bool_t CbmTofHitFinderQa::WriteHistos() {
   // TODO: add sub-folders ?
 
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   // Write histogramms to the file
-  TDirectory* oldir = gDirectory;
   TFile* fHist      = new TFile(fsHistoOutFilename, "RECREATE");
   fHist->cd();
 
@@ -5169,7 +5187,9 @@ Bool_t CbmTofHitFinderQa::WriteHistos() {
   fHist->cd();  // make the file root the current directory
   fhPointMatchWeight->Write();
 
-  gDirectory->cd(oldir->GetPath());
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 
   fHist->Close();
 

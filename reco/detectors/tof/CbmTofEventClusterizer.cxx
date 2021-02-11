@@ -733,10 +733,10 @@ Bool_t CbmTofEventClusterizer::InitCalibParameter()
   }
   LOG(info) << "CbmTofEventClusterizer::InitCalibParameter: defaults set";
 
-  TDirectory* oldir = gDirectory;  // <= To prevent histos from being sucked in by the param file of the TRootManager!
-  /*
-	 gROOT->cd(); // <= To prevent histos from being sucked in by the param file of the TRootManager !
-	 */
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  // <= To prevent histos from being sucked in by the param file of the TRootManager!
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
 
   if (0 < fCalMode) {
     LOG(info) << "CbmTofEventClusterizer::InitCalibParameter: read histos from "
@@ -764,7 +764,7 @@ Bool_t CbmTofEventClusterizer::InitCalibParameter()
       // copy Histo to memory
       TDirectory* curdir = gDirectory;
       if (NULL != hSvel) {
-        gDirectory->cd(oldir->GetPath());
+        gDirectory->cd(oldDir->GetPath());
         // TProfile *hSvelmem = (TProfile *)hSvel->Clone();  (VF) not used
         gDirectory->cd(curdir->GetPath());
       }
@@ -775,7 +775,7 @@ Bool_t CbmTofEventClusterizer::InitCalibParameter()
       for (Int_t iPar = 0; iPar < 4; iPar++) {
         TProfile* hFparcur = (TProfile*) gDirectory->FindObjectAny(Form("cl_SmT%01d_Fpar%1d", iSmType, iPar));
         if (NULL != hFparcur) {
-          gDirectory->cd(oldir->GetPath());
+          gDirectory->cd(oldDir->GetPath());
           // TProfile *hFparmem = (TProfile *)hFparcur->Clone();  (VF) not used
           gDirectory->cd(curdir->GetPath());
         }
@@ -886,19 +886,22 @@ Bool_t CbmTofEventClusterizer::InitCalibParameter()
 
             // copy Histo to memory
             // TDirectory * curdir = gDirectory;
-            gDirectory->cd(oldir->GetPath());
+            gDirectory->cd(oldDir->GetPath());
             TH1D* h1DelTof =
               (TH1D*) htmpDelTof->Clone(Form("cl_CorSmT%01d_sm%03d_rpc%03d_Sel%02d_DelTof", iSmType, iSm, iRpc, iSel));
 
-            LOG(debug) << " copy histo " << h1DelTof->GetName() << " to directory " << oldir->GetName();
-
+            LOG(debug) << " copy histo " << h1DelTof->GetName() << " to directory " << oldDir->GetName();
             gDirectory->cd(curdir->GetPath());
           }
         }
     }
   }
   //   fCalParFile->Delete();
-  gDirectory->cd(oldir->GetPath());  // <= To prevent histos from being sucked in by the param file of the TRootManager!
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  // <= To prevent histos from being sucked in by the param file of the TRootManager!
+  gFile      = oldFile;
+  gDirectory = oldDir;
+
   LOG(info) << "CbmTofEventClusterizer::InitCalibParameter: initialization done";
   return kTRUE;
 }
@@ -2626,7 +2629,9 @@ Bool_t CbmTofEventClusterizer::FillHistos()
 Bool_t CbmTofEventClusterizer::WriteHistos()
 {
   if (fDutId < 0) return kTRUE;
-  TDirectory* oldir = gDirectory;
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
   TFile* fHist;
   fHist = new TFile(fOutHstFileName, "RECREATE");
   fHist->cd();
@@ -3944,7 +3949,9 @@ Bool_t CbmTofEventClusterizer::WriteHistos()
     }
   }
 
-  gDirectory->cd(oldir->GetPath());
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 
   fHist->Close();
 

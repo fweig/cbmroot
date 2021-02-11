@@ -1,7 +1,7 @@
-/** @file CbmTofTestBeamClusterizer.cxx 
- ** author nh  
+/** @file CbmTofTestBeamClusterizer.cxx
+ ** author nh
  ** adopted from
- ** @file CbmTofSimpClusterizer.cxx 
+ ** @file CbmTofSimpClusterizer.cxx
  ** @author Pierre-Alain Loizeau <loizeau@physi.uni-heidelberg.de>
  ** @date 23.08.2013
  **/
@@ -581,11 +581,10 @@ Bool_t CbmTofTestBeamClusterizer::InitCalibParameter() {
 
   LOG(info) << "CbmTofTestBeamClusterizer::InitCalibParameter: defaults set";
 
-  TDirectory* oldir =
-    gDirectory;  // <= To prevent histos from being sucked in by the param file of the TRootManager!
-  /*
-  gROOT->cd(); // <= To prevent histos from being sucked in by the param file of the TRootManager !
-  */
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  // <= To prevent histos from being sucked in by the param file of the TRootManager!
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
 
   if (0 < fCalMode) {
     LOG(info)
@@ -615,7 +614,7 @@ Bool_t CbmTofTestBeamClusterizer::InitCalibParameter() {
       // copy Histo to memory
       TDirectory* curdir = gDirectory;
       if (NULL != hSvel) {
-        gDirectory->cd(oldir->GetPath());
+        gDirectory->cd(oldDir->GetPath());
         // TProfile *hSvelmem = (TProfile *)hSvel->Clone();   (VF) not used
         gDirectory->cd(curdir->GetPath());
       } else {
@@ -626,7 +625,7 @@ Bool_t CbmTofTestBeamClusterizer::InitCalibParameter() {
         TProfile* hFparcur = (TProfile*) gDirectory->FindObjectAny(
           Form("cl_SmT%01d_Fpar%1d", iSmType, iPar));
         if (NULL != hFparcur) {
-          gDirectory->cd(oldir->GetPath());
+          gDirectory->cd(oldDir->GetPath());
           // TProfile *hFparmem = (TProfile *)hFparcur->Clone();   (VF) not used
           gDirectory->cd(curdir->GetPath());
         }
@@ -784,7 +783,7 @@ Bool_t CbmTofTestBeamClusterizer::InitCalibParameter() {
 
             // copy Histo to memory
             // TDirectory * curdir = gDirectory;
-            gDirectory->cd(oldir->GetPath());
+            gDirectory->cd(oldDir->GetPath());
             TH1D* h1DelTof = (TH1D*) htmpDelTof->Clone(
               Form("cl_CorSmT%01d_sm%03d_rpc%03d_Sel%02d_DelTof",
                    iSmType,
@@ -792,8 +791,7 @@ Bool_t CbmTofTestBeamClusterizer::InitCalibParameter() {
                    iRpc,
                    iSel));
 
-            LOG(debug) << " copy histo " << h1DelTof->GetName()
-                       << " to directory " << oldir->GetName();
+            LOG(debug) << " copy histo " << h1DelTof->GetName() << " to directory " << oldDir->GetName();
 
             gDirectory->cd(curdir->GetPath());
           }
@@ -801,9 +799,10 @@ Bool_t CbmTofTestBeamClusterizer::InitCalibParameter() {
     }
   }
   //   fCalParFile->Delete();
-  gDirectory->cd(
-    oldir
-      ->GetPath());  // <= To prevent histos from being sucked in by the param file of the TRootManager!
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  // <= To prevent histos from being sucked in by the param file of the TRootManager!
+  gFile      = oldFile;
+  gDirectory = oldDir;
   LOG(info)
     << "CbmTofTestBeamClusterizer::InitCalibParameter: initialization done";
   return kTRUE;
@@ -2361,7 +2360,7 @@ Bool_t CbmTofTestBeamClusterizer::FillHistos() {
       /*
     // find the best dTRef
     fTRefHits=0;
-    dTRef=0.;     // invalidate old value 
+    dTRef=0.;     // invalidate old value
     Double_t dRefChi2=dDoubleMax;
     for( Int_t iHitInd = 0; iHitInd < iNbTofHits; iHitInd++)
     {
@@ -2381,7 +2380,7 @@ Bool_t CbmTofTestBeamClusterizer::FillHistos() {
 	   }
 	 }
 	 if( dNT > 0)
-	 if( dDT2/dNT < dRefChi2 )  
+	 if( dDT2/dNT < dRefChi2 )
          {
 	    fTRefHits=1;
 	    dTRef = pHit->GetTime();
@@ -3074,7 +3073,9 @@ Bool_t CbmTofTestBeamClusterizer::FillHistos() {
 }
 
 Bool_t CbmTofTestBeamClusterizer::WriteHistos() {
-  TDirectory* oldir = gDirectory;
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
   TFile* fHist;
   fHist = new TFile(fOutHstFileName, "RECREATE");
   fHist->cd();
@@ -4698,8 +4699,9 @@ Bool_t CbmTofTestBeamClusterizer::WriteHistos() {
     }
   }
 
-
-  gDirectory->cd(oldir->GetPath());
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 
   fHist->Close();
 
@@ -5719,13 +5721,13 @@ Bool_t CbmTofTestBeamClusterizer::BuildClusters() {
                         0.5, 0.5, 0.5);  // including positioning uncertainty
                                          /*
                                     TVector3 hitPosErr( fChannelInfo->GetSizex()/TMath::Sqrt(12.0),   // Single strips approximation
-                                       0.5, // Use generic value 
+                                       0.5, // Use generic value
                                        1.);
 
                                     */                                       // fDigiBdfPar->GetFeeTimeRes() * fDigiBdfPar->GetSigVel(iSmType,iRpc), // Use the electronics resolution
-                                       //fDigiBdfPar->GetNbGaps( iSmType, iRpc)*
-                                       //fDigiBdfPar->GetGapSize( iSmType, iRpc)/ //10.0 / // Change gap size in cm
-                                       //TMath::Sqrt(12.0) ); // Use full RPC thickness as "Channel" Z size
+                      //fDigiBdfPar->GetNbGaps( iSmType, iRpc)*
+                      //fDigiBdfPar->GetGapSize( iSmType, iRpc)/ //10.0 / // Change gap size in cm
+                      //TMath::Sqrt(12.0) ); // Use full RPC thickness as "Channel" Z size
 
                       // Int_t iDetId = vPtsRef[0]->GetDetectorID();// detID = pt->GetDetectorID() <= from TofPoint
                       // calc mean ch from dPosX=((Double_t)(-iNbCh/2 + iCh)+0.5)*fChannelInfo->GetSizex();
@@ -5834,7 +5836,7 @@ Bool_t CbmTofTestBeamClusterizer::BuildClusters() {
                       fviTrkMul[iSmType][iRpc].push_back(vPtsRef.size());
                       fvdX[iSmType][iRpc].push_back(dWeightedPosX);
                       fvdY[iSmType][iRpc].push_back(dWeightedPosY);
-                      /*  no TofPoint available for data!  
+                      /*  no TofPoint available for data!
                                     fvdDifX[iSmType][iRpc].push_back( vPtsRef[0]->GetX() - dWeightedPosX);
                                     fvdDifY[iSmType][iRpc].push_back( vPtsRef[0]->GetY() - dWeightedPosY);
                                     fvdDifCh[iSmType][iRpc].push_back( fGeoHandler->GetCell( vPtsRef[0]->GetDetectorID() ) -1 -iLastChan );
@@ -6021,7 +6023,7 @@ Bool_t CbmTofTestBeamClusterizer::BuildClusters() {
                 0.5, 0.5, 0.5);  // including positioning uncertainty
                                  /*
                      TVector3 hitPosErr( fChannelInfo->GetSizex()/TMath::Sqrt(12.0),   // Single strips approximation
-                                       0.5, // Use generic value 
+                                       0.5, // Use generic value
                                        1.);
                      */
               //                fDigiBdfPar->GetFeeTimeRes() * fDigiBdfPar->GetSigVel(iSmType,iRpc), // Use the electronics resolution
