@@ -152,12 +152,18 @@ void CbmLitClusteringQa::Finish() {
 
 void CbmLitClusteringQa::InitMuchGeoScheme(const string& digiFileName) {
   if (fDet.GetDet(ECbmModuleId::kMuch) && fMuchDigiFileName != "") {
-    TFile* oldfile      = gFile;
+    /// Save old global file and folder pointer to avoid messing with FairRoot
+    TFile* oldFile     = gFile;
+    TDirectory* oldDir = gDirectory;
+
     TFile* file         = new TFile(digiFileName.c_str());
     TObjArray* stations = (TObjArray*) file->Get("stations");
     file->Close();
     file->Delete();
-    gFile = oldfile;
+
+    /// Restore old global file and folder pointer to avoid messing with FairRoot
+    gFile      = oldFile;
+    gDirectory = oldDir;
     CbmMuchGeoScheme::Instance()->Init(stations, 0);
   }
 }

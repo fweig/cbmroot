@@ -74,12 +74,19 @@ InitStatus CbmMuchClustering::Init() {
   std::cout << "CbmMuchClustering::Init" << std::endl;
 
   // Initialize GeoScheme
-  TFile* oldfile      = gFile;
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   TFile* file         = new TFile(fDigiFile);
   TObjArray* stations = (TObjArray*) file->Get("stations");
   file->Close();
   file->Delete();
-  gFile = oldfile;
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
+
   fScheme->Init(stations, 0);
   // Initialize arrays of objects
   ReadDataBranches();
