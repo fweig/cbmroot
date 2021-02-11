@@ -485,7 +485,10 @@ void CbmPsdMCbmQaReal::Finish() {
   }
 
   if (this->fDoWriteHistToFile) {
-    TDirectory* oldir = gDirectory;
+    /// Save old global file and folder pointer to avoid messing with FairRoot
+    TFile* oldFile     = gFile;
+    TDirectory* oldDir = gDirectory;
+
     std::string s     = fOutputDir + "/RecoHists.root";
     TFile* outFile    = new TFile(s.c_str(), "RECREATE");
     if (outFile->IsOpen()) {
@@ -494,7 +497,9 @@ void CbmPsdMCbmQaReal::Finish() {
       outFile->Close();
       std::cout << "Done!" << std::endl;
     }
-    gDirectory->cd(oldir->GetPath());
+    /// Restore old global file and folder pointer to avoid messing with FairRoot
+    gFile      = oldFile;
+    gDirectory = oldDir;
   }
 }
 
@@ -502,6 +507,10 @@ void CbmPsdMCbmQaReal::Finish() {
 void CbmPsdMCbmQaReal::DrawFromFile(const string& fileName,
                                     const string& outputDir) {
   fOutputDir = outputDir;
+
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
 
   if (fHM != nullptr) delete fHM;
 
@@ -511,6 +520,10 @@ void CbmPsdMCbmQaReal::DrawFromFile(const string& fileName,
   DrawHist();
 
   fHM->SaveCanvasToImage(fOutputDir);
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 }
 
 

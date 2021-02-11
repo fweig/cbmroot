@@ -71,6 +71,10 @@ void CbmPsdMC::ConstructGeometry() {
   }
 
   // --- Look for PSD volume and transformation matrix in geometry file
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   TFile* geoFile = new TFile(fgeoName);
   assert ( geoFile );
   TKey* key = nullptr;
@@ -122,9 +126,15 @@ void CbmPsdMC::ConstructGeometry() {
   for (Int_t i=0; i<psdVolume->GetNdaughters(); ++i)
     RegisterSensitiveVolumes(psdVolume->GetNode(i));
 //   RegisterSensitiveVolumes(psdVolume->GetNode(0));
-  
+
   LOG(debug) << GetName() << ": " << fNbOfSensitiveVol
              << " sensitive volumes";
+             *
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
+
+  geoFile->Close();
 */
 
   LOG(info) << "Importing PSD geometry from ROOT file " << fgeoName.Data();

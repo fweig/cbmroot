@@ -142,7 +142,7 @@ void CbmPsdHitProducer::Exec(Option_t* /*opt*/) {
 
   /*
   for (Int_t imod=0; imod<NPsdMod; imod++) //marina
-  {              
+  {
     if (edep[imod]>0.)
     {
       new ((*fHitArray)[fNHits]) CbmPsdHit(imod+1, edep[imod]);
@@ -160,9 +160,19 @@ void CbmPsdHitProducer::Exec(Option_t* /*opt*/) {
 // -------------------------------------------------------------------------
 void CbmPsdHitProducer::Finish() {
   cout << " CbmPsdHitProducer::Finish() " << endl;
+
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   TFile* outfile = new TFile("EdepHistos.root", "RECREATE");
   outfile->cd();
   fhModXNewEn->Write();
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
+
   //outfile->Close();                     //SELIM
 }
 
