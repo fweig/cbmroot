@@ -74,7 +74,10 @@ Int_t CbmMvdPileupManager::FillBuffer(TString fileName,
   fBuffer->Delete();
 
   TClonesArray* pointArray = NULL;
-  TFile* saveGFile         = gFile;
+
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
 
   TFile* bgfile = new TFile(fileName);
   if (!bgfile) {
@@ -113,7 +116,10 @@ Int_t CbmMvdPileupManager::FillBuffer(TString fileName,
   delete bgtree;
   bgfile->Close();
   delete bgfile;
-  saveGFile->cd();
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 
   return nBuffer;
 }
