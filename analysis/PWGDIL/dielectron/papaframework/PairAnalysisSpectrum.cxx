@@ -769,11 +769,20 @@ void PairAnalysisSpectrum::Write()
   ///
   /// write to output file
   ///
+
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   TFile* fout = new TFile("test.root", "RECREATE");
   fout->cd();
   //  fTree->Print();
   fTree->Write();
   fout->Close();
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 }
 
 //______________________________________________

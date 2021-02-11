@@ -59,6 +59,10 @@ void CbmAnaDielectronTaskDraw::DrawHistFromFile(const string& fileName,
 
   fCuts.SetDefaultCuts();
 
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   fHM         = new CbmHistManager();
   TFile* file = new TFile(fileName.c_str());
   fHM->ReadFromFile(file);
@@ -94,6 +98,10 @@ void CbmAnaDielectronTaskDraw::DrawHistFromFile(const string& fileName,
   DrawPmtXY();
   DrawMomLikeHist();
   SaveCanvasToImage();
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 }
 
 void CbmAnaDielectronTaskDraw::DrawMomLikeHist() {

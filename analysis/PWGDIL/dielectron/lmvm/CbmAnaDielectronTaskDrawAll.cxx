@@ -52,6 +52,10 @@ void CbmAnaDielectronTaskDrawAll::DrawHistosFromFile(
                               fileNamePhi,
                               fileNameOmegaDalitz};
 
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   fHM.resize(fNofSignals);
   for (int i = 0; i < fNofSignals; i++) {
     fHM[i] = new CbmHistManager();
@@ -84,6 +88,10 @@ void CbmAnaDielectronTaskDrawAll::DrawHistosFromFile(
   DrawSBgVsMinv();
   SaveHist();
   SaveCanvasToImage();
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 }
 
 
@@ -225,7 +233,7 @@ void CbmAnaDielectronTaskDrawAll::DrawMinv(CbmLmvmAnalysisSteps step) {
   if (fDrawQgp) sQgp->GetXaxis()->SetRangeUser(0, 2.);
   sPhi->GetXaxis()->SetRangeUser(0, 2.);
 
-  /*    
+  /*
     if (step == kMc) {
         DrawH1({coctail, sPi0, sEta, sOmegaDalitz, sOmega, sInmed, sQgp, sPhi},
                 {"", "", "", "", "", "", "", ""}, kLinear, kLog, false, 0.8, 0.8, 0.99, 0.99);

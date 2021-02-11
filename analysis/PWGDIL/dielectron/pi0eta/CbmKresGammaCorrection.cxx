@@ -46,6 +46,11 @@ void CbmKresGammaCorrection::Init(std::vector<std::vector<double>>& vect_all,
            (int) OA,
            (int) IM);  /// most recent files for conversion
   cout << "file is " << Correction_path << endl;
+
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   TFile* fcorrection = new TFile(
     Correction_path
       .c_str());  // file with almost ?? Mio photons, homogeneously distributed over interested region
@@ -109,6 +114,10 @@ void CbmKresGammaCorrection::Init(std::vector<std::vector<double>>& vect_all,
     }
     vect_onetwo.push_back(rapidity_column);
   }
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 }
 
 void CbmKresGammaCorrection::Finish() {

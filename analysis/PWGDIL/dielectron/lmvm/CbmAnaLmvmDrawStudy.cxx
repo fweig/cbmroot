@@ -40,6 +40,10 @@ void CbmAnaLmvmDrawStudy::DrawFromFile(const vector<string>& fileNames,
                                        const vector<string>& fileNamesMean,
                                        const vector<string>& studyNames,
                                        const string& outputDir) {
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   fOutputDir = outputDir;
 
   SetDefaultDrawStyle();
@@ -74,6 +78,10 @@ void CbmAnaLmvmDrawStudy::DrawFromFile(const vector<string>& fileNames,
   DrawDistributions("lmvm_study_source_pt_", "fh_source_pt_", kTtCut, kGamma);
 
   SaveCanvasToImage();
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 }
 
 TCanvas* CbmAnaLmvmDrawStudy::CreateCanvas(const string& name,
@@ -121,6 +129,10 @@ void CbmAnaLmvmDrawStudy::SetAnalysisStepLabels(TH1* h) {
 }
 
 void CbmAnaLmvmDrawStudy::DrawMinv() {
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   vector<TH1*> hPtCut, hTtCut;
   hPtCut.resize(fMeanFiles.size());
   hTtCut.resize(fMeanFiles.size());
@@ -160,6 +172,10 @@ void CbmAnaLmvmDrawStudy::DrawMinv() {
    for (int i = 0; i < fNofStudies; i++){
       hbg[i]->SetLineWidth(3.);
    */
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 }
 
 void CbmAnaLmvmDrawStudy::DrawNofBgTracks() {
