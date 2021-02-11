@@ -170,6 +170,11 @@ InitStatus CbmAnaDimuonAnalysis::Init() {
   if (fPlutoFileName != "") {
     if (fPlutoFileName.Contains("root")) {
       fParticles = new TClonesArray("PParticle", 100);
+
+      /// Save old global file and folder pointer to avoid messing with FairRoot
+      TFile* oldFile     = gFile;
+      TDirectory* oldDir = gDirectory;
+
       fPlutoFile = new TFile(fPlutoFileName.Data());
       fInputTree = (TTree*) fPlutoFile->Get("data");
       fInputTree->SetBranchAddress("Particles", &fParticles);
@@ -184,6 +189,10 @@ InitStatus CbmAnaDimuonAnalysis::Init() {
         YPt_pluto->Fill(
           Mom.Rapidity(), Mom.Pt(), 1. / (Double_t) fInputTree->GetEntries());
       }
+
+      /// Restore old global file and folder pointer to avoid messing with FairRoot
+      gFile      = oldFile;
+      gDirectory = oldDir;
     }
   }
 
@@ -499,6 +508,10 @@ InitStatus CbmAnaDimuonAnalysis::Init() {
   TString name = dir + "/parameters/much/TOF8gev_fitParam_sigma"
                  + std::to_string(fSigmaTofCut) + "." + fSetupName + ".root";
 
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   TFile* FF = new TFile(name);
 
   TTree* MinParamMu = (TTree*) FF->Get("MinParam");
@@ -512,6 +525,10 @@ InitStatus CbmAnaDimuonAnalysis::Init() {
   MaxParamMu->SetBranchAddress("p1", &p1max);
   MaxParamMu->SetBranchAddress("p2", &p2max);
   MaxParamMu->GetEntry(0);
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 
   if (fNeurons > 0)
     fFileAnnName = dir + "/parameters/much/muid_ann_" + std::to_string(fNeurons)
@@ -1267,6 +1284,10 @@ void CbmAnaDimuonAnalysis::Finish() {
 
   TString name;
 
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   if (fPlutoFileName != "") {
 
     if (fAnnCut > 0)
@@ -1417,6 +1438,11 @@ void CbmAnaDimuonAnalysis::Finish() {
 
   YPtM->Scale(1. / (Double_t) fEvent);
   YPtM->Write();
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
+
   f->Close();
 }
 // -------------------------------------------------------------------------
