@@ -561,6 +561,10 @@ InitStatus CbmL1::Init()
   CbmMuchGeoScheme* fGeoScheme = CbmMuchGeoScheme::Instance();
 
   if (fUseMUCH) {
+    /// Save old global file and folder pointer to avoid messing with FairRoot
+    TFile* oldFile     = gFile;
+    TDirectory* oldDir = gDirectory;
+
     TFile* file         = new TFile(fDigiFile);
     TObjArray* stations = (TObjArray*) file->Get("stations");
     fGeoScheme->Init(stations, 0);
@@ -569,6 +573,10 @@ InitStatus CbmL1::Init()
       int nLayers                   = station->GetNLayers();
       NMuchStations += nLayers;
     }
+
+    /// Restore old global file and folder pointer to avoid messing with FairRoot
+    gFile      = oldFile;
+    gDirectory = oldDir;
   }
 
   // count TRD stations
@@ -941,7 +949,9 @@ InitStatus CbmL1::Init()
   TString stationName = "Radiation Thickness [%], Station";
   if (fUseMVD) {
     if (fMvdMatBudgetFileName != "") {
-      TFile* oldfile = gFile;
+      /// Save old global file and folder pointer to avoid messing with FairRoot
+      TFile* oldFile     = gFile;
+      TDirectory* oldDir = gDirectory;
       TFile* rlFile  = new TFile(fMvdMatBudgetFileName);
       cout << "MVD Material budget file is " << fMvdMatBudgetFileName << ".\n";
       for (int j = 0, iSta = 0; iSta < algo->NMvdStations; iSta++, j++) {
@@ -974,7 +984,9 @@ InitStatus CbmL1::Init()
       }
       rlFile->Close();
       rlFile->Delete();
-      gFile = oldfile;
+      /// Restore old global file and folder pointer to avoid messing with FairRoot
+      gFile      = oldFile;
+      gDirectory = oldDir;
     }
     else {
       LOG(warn) << "No MVD material budget file is found. Homogenious budget "
@@ -990,7 +1002,9 @@ InitStatus CbmL1::Init()
     }
   }
   if (fStsMatBudgetFileName != "") {
-    TFile* oldfile = gFile;
+    /// Save old global file and folder pointer to avoid messing with FairRoot
+    TFile* oldFile     = gFile;
+    TDirectory* oldDir = gDirectory;
     TFile* rlFile  = new TFile(fStsMatBudgetFileName);
     cout << "STS Material budget file is " << fStsMatBudgetFileName << ".\n";
     for (int j = 1, iSta = algo->NMvdStations; iSta < (algo->NMvdStations + NStsStations); iSta++, j++) {
@@ -1018,7 +1032,9 @@ InitStatus CbmL1::Init()
     }
     rlFile->Close();
     rlFile->Delete();
-    gFile = oldfile;
+    /// Restore old global file and folder pointer to avoid messing with FairRoot
+    gFile      = oldFile;
+    gDirectory = oldDir;
   }
   else {
     LOG(warn) << "No STS material budget file is found. Homogenious budget "
@@ -1033,7 +1049,9 @@ InitStatus CbmL1::Init()
 
   if (fUseMUCH)
     if (fMuchMatBudgetFileName != "") {
-      TFile* oldfile = gFile;
+      /// Save old global file and folder pointer to avoid messing with FairRoot
+      TFile* oldFile     = gFile;
+      TDirectory* oldDir = gDirectory;
       TFile* rlFile  = new TFile(fMuchMatBudgetFileName);
       cout << "Much Material budget file is " << fMuchMatBudgetFileName << ".\n";
       for (int j = 1, iSta = (NStsStations + NMvdStations); iSta < (NStsStations + NMvdStations + NMuchStations);
@@ -1073,7 +1091,9 @@ InitStatus CbmL1::Init()
       }
       rlFile->Close();
       rlFile->Delete();
-      gFile = oldfile;
+      /// Restore old global file and folder pointer to avoid messing with FairRoot
+      gFile      = oldFile;
+      gDirectory = oldDir;
     }
     else {
       LOG(warn) << "No Much material budget file is found. Homogenious budget "
@@ -1088,7 +1108,9 @@ InitStatus CbmL1::Init()
 
   if (fUseTRD)
     if (fTrdMatBudgetFileName != "") {
-      TFile* oldfile = gFile;
+      /// Save old global file and folder pointer to avoid messing with FairRoot
+      TFile* oldFile     = gFile;
+      TDirectory* oldDir = gDirectory;
       TFile* rlFile  = new TFile(fTrdMatBudgetFileName);
       cout << "TRD Material budget file is " << fTrdMatBudgetFileName << ".\n";
       for (int j = 1, iSta = (NStsStations + NMvdStations + NMuchStations);
@@ -1128,7 +1150,9 @@ InitStatus CbmL1::Init()
       }
       rlFile->Close();
       rlFile->Delete();
-      gFile = oldfile;
+      /// Restore old global file and folder pointer to avoid messing with FairRoot
+      gFile      = oldFile;
+      gDirectory = oldDir;
     }
     else {
       LOG(warn) << "No TRD material budget file is found. Homogenious budget "
@@ -1144,7 +1168,9 @@ InitStatus CbmL1::Init()
 
   if (fUseTOF)
     if (fTofMatBudgetFileName != "") {
-      TFile* oldfile = gFile;
+      /// Save old global file and folder pointer to avoid messing with FairRoot
+      TFile* oldFile     = gFile;
+      TDirectory* oldDir = gDirectory;
       TFile* rlFile  = new TFile(fTofMatBudgetFileName);
       cout << "TOF Material budget file is " << fTofMatBudgetFileName << ".\n";
       for (int j = 1, iSta = (NStsStations + NMvdStations + NMuchStations + NTrdStations);
@@ -1184,7 +1210,9 @@ InitStatus CbmL1::Init()
       }
       rlFile->Close();
       rlFile->Delete();
-      gFile = oldfile;
+      /// Restore old global file and folder pointer to avoid messing with FairRoot
+      gFile      = oldFile;
+      gDirectory = oldDir;
     }
     else {
       LOG(warn) << "No TOF material budget file is found. Homogenious budget "

@@ -392,7 +392,7 @@ void CbmL1RichRingQa::Exec(Option_t* /*option*/) {
     AllRingsDown->Draw("*");
     // Draw N Hits for rings
     /*
-    TText* text1 = new TText( ArrRingX[i] - ArrRingR[i]/5 , ArrRingY[i] + ArrRingR[i]/5  , st.Data() ); 
+    TText* text1 = new TText( ArrRingX[i] - ArrRingR[i]/5 , ArrRingY[i] + ArrRingR[i]/5  , st.Data() );
     text1->SetTextAlign(12);
     text1->SetTextSize(0.01);
     text1->Draw();
@@ -663,7 +663,7 @@ void CbmL1RichRingQa::Exec(Option_t* /*option*/) {
        st1 += ring.NHits;
        st1 += "  P = ";
        st1 += ring.P;
-       TText* textMc1 = new TText( ring.x + ring.r/5 , -ring.y - ring.r/5 , st1.Data() ); 
+       TText* textMc1 = new TText( ring.x + ring.r/5 , -ring.y - ring.r/5 , st1.Data() );
        textMc1->SetTextAlign(12);
        textMc1->SetTextSize(0.01);
        textMc1->SetTextColor(1);
@@ -1132,14 +1132,18 @@ void CbmL1RichRingQa::Exec(Option_t* /*option*/) {
   }
 
   // Open output file and write histograms
-  TDirectory* curr = gDirectory;
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
   TFile* outfile   = new TFile("L1RingQaHisto.root", "RECREATE");
   outfile->cd();
   TIter hiter(listHisto);
   while (TObject* obj = hiter())
     obj->Write();
   outfile->Close();
-  curr->cd();
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 }
 
 void CbmL1RichRingQa::Finish() {
