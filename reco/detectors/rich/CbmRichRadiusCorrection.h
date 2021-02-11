@@ -65,7 +65,10 @@ private:
     string fileName = gSystem->Getenv("VMCWORKDIR");
     fileName += "/parameters/rich/radius_correction_map_compact.root";
 
-    TDirectory* current = gDirectory;
+    /// Save old global file and folder pointer to avoid messing with FairRoot
+    TFile* oldFile     = gFile;
+    TDirectory* oldDir = gDirectory;
+
     TFile* file         = new TFile(fileName.c_str(), "READ");
 
     if (NULL == file || !file->IsOpen()) {
@@ -83,7 +86,10 @@ private:
 
     file->Close();
     delete file;
-    current->cd();
+
+    /// Restore old global file and folder pointer to avoid messing with FairRoot
+    gFile      = oldFile;
+    gDirectory = oldDir;
   }
 
   static TH2D* fhMapAaxisXY;

@@ -105,7 +105,11 @@ void CbmHistManager::WriteToFile() {
 void CbmHistManager::WriteToFileNew(const string& str) {
   std::string histoName = "";
   map<string, TNamed*>::iterator it;
-  TDirectory* oldir = gDirectory;
+
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   TFile* fHist      = new TFile(str.c_str(), "RECREATE");
   fHist->cd();
 
@@ -134,7 +138,10 @@ void CbmHistManager::WriteToFileNew(const string& str) {
 
   fHist->cd();  // make the file root the current directory
 
-  gDirectory->cd(oldir->GetPath());
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
+
   fHist->Close();
 }
 

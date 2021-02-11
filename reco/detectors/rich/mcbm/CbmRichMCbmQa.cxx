@@ -394,17 +394,17 @@ void CbmRichMCbmQa::Exec(Option_t* /*option*/) {
         if (point == NULL) continue;
 
         Int_t mcTrackIdPoint = point->GetTrackID();
-      
+
         if (mcTrackIdPoint == NULL) continue;
         CbmMCTrack* mcTrack = (CbmMCTrack*)fMCTracks->At(mcTrackIdPoint);
         if (mcTrack == NULL) continue;
-       
-        
+
+
         Int_t pdg = TMath::Abs(mcTrack->GetPdgCode());
        // cout << "pdg: " << pdg << endl;
-        fHM->H2("fh_rich_points_xy")->Fill(point->GetX(), point->GetY());   
-        
-        
+        fHM->H2("fh_rich_points_xy")->Fill(point->GetX(), point->GetY());
+
+
         for(int iT = 0; iT < nofTofHits; iT++){
             CbmTofHit* tofHit = static_cast<CbmTofHit*>(fTofHits->At(iT));
             if(NULL == tofHit) continue;
@@ -418,18 +418,18 @@ void CbmRichMCbmQa::Exec(Option_t* /*option*/) {
             CbmMCTrack* mcTrackTof = (CbmMCTrack*)fMCTracks->At(mcTrackIdTofHit);
             if (NULL == mcTrackTof) continue;
 
-           
+
             Double_t time = tofHit->GetTime();
             Double_t timect = 0.2998*time;          //time in ns, timect in m
             Double_t trackLength = tofHit->GetR()/100;
             Double_t beta = trackLength/timect;
-            
-            
+
+
             if(mcTrackIdPoint == mcTrackIdTofHit){
                 fHM->H1("fh_beta_dis_all")->Fill(beta);
             }
         }
-     
+
         for(int iRing = 0; iRing < nofRichRings; iRing++){
             CbmRichRing* ring = static_cast<CbmRichRing*>(fRichRings->At(iRing));
             if (NULL == ring) continue;
@@ -437,11 +437,11 @@ void CbmRichMCbmQa::Exec(Option_t* /*option*/) {
             if (NULL == ringMatch) continue;
             Int_t mcTrackIdRing = ringMatch->GetMatchedLink().GetIndex();
             if (mcTrackIdRing < 0) continue;
-        
-        
+
+
             CbmMCTrack* mcTrackRing = (CbmMCTrack*)fMCTracks->At(mcTrackIdRing);
             if(mcTrackRing == NULL) continue;
-            
+
             if(mcTrackIdTofHit == mcTrackIdRing){
                // cout << "mcTrackIdTofHit: " << mcTrackIdTofHit << endl;
                // cout << "mcTrackIdRing: " << mcTrackIdRing << endl;
@@ -451,11 +451,11 @@ void CbmRichMCbmQa::Exec(Option_t* /*option*/) {
                     fHM->H2("fh_radius_beta")->Fill(beta, radius);
                     fHM->H1("fh_beta_dis_ring")->Fill(beta);
                     fHM->H2("fh_radius_momentum")->Fill(momTotal, radius);
-                    
+
                 }
             }
-        }              
-    }           
+        }
+    }
 
 */
 
@@ -469,17 +469,17 @@ void CbmRichMCbmQa::Exec(Option_t* /*option*/) {
         if (NULL == ringMatch) continue;
         Int_t mcTrackIdRing = ringMatch->GetMatchedLink().GetIndex();
         if (mcTrackIdRing < 0) continue;
-        
-        
+
+
         CbmMCTrack* mcTrackRing = (CbmMCTrack*)fMCTracks->At(mcTrackIdRing);
         if(mcTrackRing == NULL) continue;
         Double_t radius = ring->GetRadius();
-        
+
         Int_t motherId = mcTrackRing->GetMotherId();
        // Int_t pdg = TMath::Abs(mcTrackRing->GetPdgCode());
        // cout << "pdg" << pdg << endl;
-        
-      
+
+
         int nofHits = ring->GetNofHits();
         TVector3 vec1;
         mcTrackRing->GetMomentum(vec1);
@@ -492,7 +492,7 @@ void CbmRichMCbmQa::Exec(Option_t* /*option*/) {
         fHM->H1("fh_rich_ring_radius")->Fill(radius);
         //fHM->H2("fh_radius_momentum")->Fill(momTotal1, radius);
         cout << "richRingId: " << mcTrackIdRing << endl;
-        
+
         for (int iH = 0; iH < nofHits; iH++) {
             Int_t hitInd = ring->GetHit(iH);
             CbmRichHit* hit = (CbmRichHit*) fRichHits->At(hitInd);
@@ -503,10 +503,10 @@ void CbmRichMCbmQa::Exec(Option_t* /*option*/) {
             Double_t dR = radius - TMath::Sqrt( (cX - hitX)*( cX - hitX) + (cY - hitY)*(cY - hitY) );
             fHM->H1("fh_dR")->Fill(dR);
         }
-     
+
 
         for(int iT = 0; iT < nofTofHits; iT++){
-            
+
             CbmTofHit* tofHit = static_cast<CbmTofHit*>(fTofHits->At(iT));
             if(NULL == tofHit) continue;
             CbmTrackMatchNew* tofHitMatch = (CbmTrackMatchNew*) fTofHitMatches->At(iT);
@@ -526,10 +526,10 @@ void CbmRichMCbmQa::Exec(Option_t* /*option*/) {
             Double_t timect = 0.2998*time;          //time in ns, timect in m
             Double_t trackLength = tofHit->GetR()/100;
             Double_t beta = trackLength/timect;
-           
+
             Double_t mass2 = TMath::Power(momTotal, 2.) * (TMath::Power(1/beta, 2) - 1);     //m² = p²*((1/beta)²-1)
 
-            
+
             if(mcTrackIdTofHit == mcTrackIdRing){
                 //cout << "mcTrackIdTofHit: " << mcTrackIdTofHit << endl;
                 //cout << "mcTrackIdRing: " << mcTrackIdRing << endl;
@@ -539,10 +539,10 @@ void CbmRichMCbmQa::Exec(Option_t* /*option*/) {
                   //  fHM->H2("fh_radius_beta")->Fill(beta, radius);
                   //  fHM->H1("fh_beta_dis_ring")->Fill(beta);
                   //  fHM->H2("fh_radius_momentum")->Fill(momTotal, radius);
-                    
+
                 }
             }
-        }    
+        }
     }
     */
 }
@@ -746,6 +746,10 @@ void CbmRichMCbmQa::DrawFromFile(const string& fileName,
                                  const string& outputDir) {
   fOutputDir = outputDir;
 
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   if (fHM != nullptr) delete fHM;
 
   fHM         = new CbmHistManager();
@@ -755,6 +759,10 @@ void CbmRichMCbmQa::DrawFromFile(const string& fileName,
   DrawHist();
 
   fHM->SaveCanvasToImage(fOutputDir);
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 }
 
 

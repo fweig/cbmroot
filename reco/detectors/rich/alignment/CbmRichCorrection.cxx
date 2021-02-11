@@ -1541,10 +1541,18 @@ void CbmRichCorrection::DrawHistProjection() {
 }
 
 void CbmRichCorrection::DrawHistFromFile(TString fileName) {
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   fHM         = new CbmHistManager();
   TFile* file = new TFile(fileName, "READ");
   fHM->ReadFromFile(file);
   DrawHistProjection();
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 }
 
 void CbmRichCorrection::Finish() {

@@ -716,7 +716,10 @@ void CbmRichMCbmQaRichOnly::Finish() {
   }
 
   if (this->fDoWriteHistToFile) {
+    /// Save old global file and folder pointer to avoid messing with FairRoot
+    TFile* oldFile    = gFile;
     TDirectory* oldir = gDirectory;
+
     std::string s     = fOutputDir + "/RecoHists.root";
     TFile* outFile    = new TFile(s.c_str(), "RECREATE");
     if (outFile->IsOpen()) {
@@ -725,6 +728,8 @@ void CbmRichMCbmQaRichOnly::Finish() {
       outFile->Close();
       std::cout << "Done!" << std::endl;
     }
+    /// Restore old global file and folder pointer to avoid messing with FairRoot
+    gFile = oldFile;
     gDirectory->cd(oldir->GetPath());
   }
 }
@@ -734,6 +739,10 @@ void CbmRichMCbmQaRichOnly::DrawFromFile(const string& fileName,
                                          const string& outputDir) {
   fOutputDir = outputDir;
 
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   if (fHM != nullptr) delete fHM;
 
   fHM         = new CbmHistManager();
@@ -742,6 +751,10 @@ void CbmRichMCbmQaRichOnly::DrawFromFile(const string& fileName,
   DrawHist();
 
   fHM->SaveCanvasToImage(fOutputDir);
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 }
 
 bool CbmRichMCbmQaRichOnly::doToT(CbmRichHit* hit) {

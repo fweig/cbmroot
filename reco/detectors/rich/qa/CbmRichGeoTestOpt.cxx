@@ -70,12 +70,22 @@ CbmRichGeoTestOpt::H1MeanRms(CbmRichGeoTestOptFileEnum fileEnum,
                              const string& histName) {
   string path = GetFilePath(fileEnum, iFile);
   if (path == "") return make_pair(0., 0.);
+
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   TFile* file = new TFile(path.c_str(), "READ");
   if (file == nullptr) return make_pair(0., 0.);
   TH1D* hist = (TH1D*) file->Get(histName.c_str());
   if (hist == nullptr) return make_pair(0., 0.);
   double mean = hist->GetMean();
   double rms  = hist->GetRMS();
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
+
   file->Close();
   delete file;
   return make_pair(mean, rms);
@@ -87,6 +97,11 @@ CbmRichGeoTestOpt::H2ProjYMeanRms(CbmRichGeoTestOptFileEnum fileEnum,
                                   const string& histName) {
   string path = GetFilePath(fileEnum, iFile);
   if (path == "") return make_pair(0., 0.);
+
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   TFile* file = new TFile(path.c_str(), "READ");
   if (file == nullptr) return make_pair(0., 0.);
   TH2D* hist = (TH2D*) file->Get(histName.c_str());
@@ -94,6 +109,11 @@ CbmRichGeoTestOpt::H2ProjYMeanRms(CbmRichGeoTestOptFileEnum fileEnum,
   TH1D* py = hist->ProjectionY((histName + to_string(iFile) + "_py").c_str());
   double mean = py->GetMean();
   double rms  = py->GetRMS();
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
+
   file->Close();
   delete file;
   return make_pair(mean, rms);
@@ -104,11 +124,21 @@ double CbmRichGeoTestOpt::HEntries(CbmRichGeoTestOptFileEnum fileEnum,
                                    const string& histName) {
   string path = GetFilePath(fileEnum, iFile);
   if (path == "") return 0.;
+
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   TFile* file = new TFile(path.c_str(), "READ");
   if (file == nullptr) return 0.;
   TH1* hist = (TH1*) file->Get(histName.c_str());
   if (hist == nullptr) return 0.;
   double entries = hist->GetEntries();  //hist->Integral();
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
+
   file->Close();
   delete file;
   return entries;

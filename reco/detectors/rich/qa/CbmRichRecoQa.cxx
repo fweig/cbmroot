@@ -843,6 +843,10 @@ void CbmRichRecoQa::DrawFromFile(const string& fileName,
                                  const string& outputDir) {
   fOutputDir = outputDir;
 
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   if (fHM != nullptr) delete fHM;
 
   fHM         = new CbmHistManager();
@@ -852,6 +856,10 @@ void CbmRichRecoQa::DrawFromFile(const string& fileName,
   DrawHist();
 
   fHM->SaveCanvasToImage(fOutputDir);
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 }
 
 ClassImp(CbmRichRecoQa)

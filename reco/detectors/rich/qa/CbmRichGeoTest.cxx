@@ -1852,6 +1852,10 @@ void CbmRichGeoTest::DrawFromFile(const string& fileName,
                                   const string& outputDir) {
   fOutputDir = outputDir;
 
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   if (fHM != NULL) delete fHM;
 
   fHM         = new CbmHistManager();
@@ -1861,6 +1865,10 @@ void CbmRichGeoTest::DrawFromFile(const string& fileName,
   DrawHist();
 
   fHM->SaveCanvasToImage(fOutputDir, "png,eps");
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 }
 
 ClassImp(CbmRichGeoTest)
