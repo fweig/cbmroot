@@ -148,6 +148,11 @@ static bool GetHistoRMS(const char* name, Double_t& retVal) {
   sprintf(fileName, "%s.root", name);
   bool result    = false;
   TFile* curFile = TFile::CurrentFile();
+
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   TFile* f       = new TFile(fileName);
 
   if (!f->IsZombie()) {
@@ -158,6 +163,11 @@ static bool GetHistoRMS(const char* name, Double_t& retVal) {
 
   delete f;
   TFile::CurrentFile() = curFile;
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
+
   return result;
 }
 

@@ -36,6 +36,11 @@ static Double_t GetRMS(const char* name) {
   char fileName[128];
   sprintf(fileName, "%s.root", name);
   TFile* curFile = TFile::CurrentFile();
+
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   TFile* f       = new TFile(fileName);
 
   if (!f->IsZombie()) {
@@ -46,6 +51,11 @@ static Double_t GetRMS(const char* name) {
 
   delete f;
   TFile::CurrentFile() = curFile;
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
+
   return result;
 }
 

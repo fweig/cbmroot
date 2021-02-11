@@ -296,6 +296,11 @@ GetHistoRMS(const char* histoNameBase, Int_t histoNumber, scaltype& retVal) {
       sprintf(name, "%s/%s_%d.root", dir_name, histoNameBase, histoNumber);
 
     TFile* curFile = TFile::CurrentFile();
+
+    /// Save old global file and folder pointer to avoid messing with FairRoot
+    TFile* oldFile     = gFile;
+    TDirectory* oldDir = gDirectory;
+
     TFile* f       = new TFile(name);
 
     if (!f->IsZombie()) {
@@ -311,6 +316,10 @@ GetHistoRMS(const char* histoNameBase, Int_t histoNumber, scaltype& retVal) {
 
     delete f;
     TFile::CurrentFile() = curFile;
+
+    /// Restore old global file and folder pointer to avoid messing with FairRoot
+    gFile      = oldFile;
+    gDirectory = oldDir;
   }
   return result;
 }
@@ -328,6 +337,11 @@ static bool GetHistoCOV(const char* histoNameBase,
     sprintf(dir_name, "configuration.%s", lxFinderParticleType.Data());
     sprintf(name, "%s/%s_%d.root", dir_name, histoNameBase, histoNumber);
     TFile* curFile = TFile::CurrentFile();
+
+    /// Save old global file and folder pointer to avoid messing with FairRoot
+    TFile* oldFile     = gFile;
+    TDirectory* oldDir = gDirectory;
+
     TFile* f       = new TFile(name);
 
     if (!f->IsZombie()) {
@@ -339,6 +353,10 @@ static bool GetHistoCOV(const char* histoNameBase,
 
     delete f;
     TFile::CurrentFile() = curFile;
+
+    /// Restore old global file and folder pointer to avoid messing with FairRoot
+    gFile      = oldFile;
+    gDirectory = oldDir;
   }
   return result;
 }
