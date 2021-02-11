@@ -2890,7 +2890,17 @@ void CbmHadronAnalysis::CreateHistogramms() {
 InitStatus
 CbmHadronAnalysis::ReadPdfFile() {  // Open PDF file and get histogramms for PID
   if (fPdfFileName.IsNull()) return kSUCCESS;
+
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   TFile* pdfFile = new TFile(fPdfFileName);
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
+
   if (NULL == pdfFile) {
     cout << "-E- CbmHadronAnalysis::ReadPdfFile : "
          << "file " << fPdfFileName << " does not exist!" << endl;
@@ -2903,7 +2913,17 @@ CbmHadronAnalysis::ReadPdfFile() {  // Open PDF file and get histogramms for PID
 InitStatus CbmHadronAnalysis::
   ReadFlowFile() {  // Open file and get histogramms for RP corrections
   if (fFlowFileName.IsNull()) return kSUCCESS;
+
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   fflowFile = new TFile(fFlowFileName);
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
+
   if (NULL == fflowFile) {
     cout << "-E- CbmHadronAnalysis::ReadFlowFile : "
          << "file " << fFlowFileName << " does not exist!" << endl;
@@ -4089,7 +4109,7 @@ void CbmHadronAnalysis::ExecEvent(Option_t*) {
       /*
        for (Int_t iLink=0; iLink<digiMatch->GetNofLinks(); iLink+=2){  // loop over digis
            CbmLink L0 = digiMatch->GetLink(iLink);   //vDigish.at(ivDigInd);
-	   Int_t iDigInd0=L0.GetIndex(); 
+	   Int_t iDigInd0=L0.GetIndex();
            Int_t iDigInd1=(digiMatch->GetLink(iLink+1)).GetIndex(); //vDigish.at(ivDigInd+1);
            LOG(debug1)<<" " << iDigInd0<<", "<<iDigInd1;
 
@@ -4120,12 +4140,12 @@ void CbmHadronAnalysis::ExecEvent(Option_t*) {
     //cout << "<D-hit> k= " << k << endl;
     //cout << Form("HadronAnalysis:: hit %d, poi %d, MCt %d, Eff %d ",j,lp,k,TrackP[k]) << endl;
     /*
-      if(TofHit->GetX()<-90.) { //nh-debug 
+      if(TofHit->GetX()<-90.) { //nh-debug
 	LOG(INFO)  << Form(" Invalid Hit in ev %d: %6.1f, %6.1f, %6.1f, poi: %6.1f, %6.1f, %6.1f, pdg: %d",
 			   fEvents,TofHit->GetX(),TofHit->GetY(),TofHit->GetZ(),
 			   TofPoint->GetX(),TofPoint->GetY(),TofPoint->GetZ(),
-			   pdgCode); 
-	LOG(FATAL) << "<D-hit> j " << j << ", l " << l << ", k " << k << ", lp "; 
+			   pdgCode);
+	LOG(FATAL) << "<D-hit> j " << j << ", l " << l << ", k " << k << ", lp ";
       }
       */
     if (TrackP[k] == 0) {  // for efficiency
@@ -5836,15 +5856,15 @@ void CbmHadronAnalysis::ReconstructSecondaries() {
   static std::vector<std::list<std::vector<TVector3>>> fvDX;
 
   /*
-  Double_t fdDistPrimLim =1.5;  // Ext Parameter: Max Tof-Sts trans distance for primaries 
-  Double_t fdDistPrimLim2=0.3;  // Ext Parameter: Max Sts-Sts trans distance for primaries 
-  Double_t fdDistSecLim2=0.5;   // Ext Parameter: Max Sts-Sts trans distance from TOF direction for secondaries  
-  Double_t fdD0ProtLim=0.4;     // Ext Parameter: Min impact parameter for secondary proton 
+  Double_t fdDistPrimLim =1.5;  // Ext Parameter: Max Tof-Sts trans distance for primaries
+  Double_t fdDistPrimLim2=0.3;  // Ext Parameter: Max Sts-Sts trans distance for primaries
+  Double_t fdDistSecLim2=0.5;   // Ext Parameter: Max Sts-Sts trans distance from TOF direction for secondaries
+  Double_t fdD0ProtLim=0.4;     // Ext Parameter: Min impact parameter for secondary proton
   Double_t fdOpAngMin=0.01;     // Ext Parameter: Min opening angle for accepting pair
   Double_t fdDCALim=0.2;        // Ext Parameter: Max DCA for accepting pair
   Double_t fdVLenMax=25.;       // Ext Parameter: Max Lambda flight path length for accepting pair
-  Double_t fdDistTRD    = 10.;  // max accepted distance of Trd Hit from STS-TOF line 
-  Double_t fdTRDHmulMin =  0.;  // min associated Trd Hits to Track candidates 
+  Double_t fdDistTRD    = 10.;  // max accepted distance of Trd Hit from STS-TOF line
+  Double_t fdTRDHmulMin =  0.;  // min associated Trd Hits to Track candidates
   */
 
 
