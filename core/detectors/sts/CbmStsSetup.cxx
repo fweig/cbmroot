@@ -19,6 +19,7 @@
 #include <FairRun.h>     // for FairRun
 
 #include <TCollection.h>       // for TIter
+#include <TDirectory.h>        // for TDirectory, gDirectory
 #include <TFile.h>             // for TFile
 #include <TGeoManager.h>       // for TGeoManager, gGeoManager
 #include <TGeoMatrix.h>        // for TGeoHMatrix
@@ -33,6 +34,7 @@
 #include <cassert>   // for assert
 #include <iomanip>   // for setw, __iom_t6
 #include <iostream>  // for fstream, string, char_traits
+
 #include <string.h>  // for strcmp
 
 using namespace std;
@@ -375,10 +377,15 @@ Bool_t CbmStsSetup::ReadGeometry(const char* fileName) {
   // Exit if a TGeoManager is already present
   assert(!gGeoManager);
 
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   // --- Open geometry file
   TFile geoFile(fileName);
   if (!geoFile.IsOpen()) {
     LOG(fatal) << GetName() << ": Could not open geometry file " << fileName;
+    gFile      = oldFile;
+    gDirectory = oldDir;
     return kFALSE;
   }
 
@@ -402,6 +409,8 @@ Bool_t CbmStsSetup::ReadGeometry(const char* fileName) {
   }
   if (!topVolume) {
     LOG(fatal) << GetName() << ": No TOP volume in file!";
+    gFile      = oldFile;
+    gDirectory = oldDir;
     return kFALSE;
   }
   stsGeometry->SetTopVolume(topVolume);
@@ -423,6 +432,8 @@ Bool_t CbmStsSetup::ReadGeometry(const char* fileName) {
   }
   if (!sts) {
     LOG(error) << fName << ": No top STS node found in geometry!";
+    gFile      = oldFile;
+    gDirectory = oldDir;
     return kFALSE;
   }
 
@@ -446,6 +457,8 @@ Bool_t CbmStsSetup::ReadGeometry(const char* fileName) {
   // --- Recursively initialise daughter elements
   InitDaughters();
 
+  gFile      = oldFile;
+  gDirectory = oldDir;
   return kTRUE;
 }
 // -------------------------------------------------------------------------
