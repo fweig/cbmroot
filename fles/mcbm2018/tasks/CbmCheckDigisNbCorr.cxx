@@ -20,6 +20,7 @@
 #include "TH2.h"
 #include "THttpServer.h"
 #include "TProfile.h"
+#include <TDirectory.h>
 #include <TFile.h>
 
 #include "CbmMuchDigi.h"
@@ -698,7 +699,9 @@ void CbmCheckDigisNbCorr::Exec(Option_t* /*option*/) {
 void CbmCheckDigisNbCorr::Finish() { WriteHistos(); }
 
 void CbmCheckDigisNbCorr::WriteHistos() {
-  TFile* old     = gFile;
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   TFile* outfile = TFile::Open(fOutFileName, "RECREATE");
 
 
@@ -741,7 +744,8 @@ void CbmCheckDigisNbCorr::WriteHistos() {
   outfile->Close();
   delete outfile;
 
-  gFile = old;
+  gFile      = oldFile;
+  gDirectory = oldDir;
 }
 
 ClassImp(CbmCheckDigisNbCorr)

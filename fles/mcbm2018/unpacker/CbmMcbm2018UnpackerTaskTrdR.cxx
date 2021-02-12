@@ -117,12 +117,12 @@ void CbmMcbm2018UnpackerTaskTrdR::Finish() {
     std::vector<std::pair<TNamed*, std::string>> vHistos =
       fUnpackerAlgo->GetHistoVector();
 
-    /// (Re-)Create ROOT file to store the histos
-    TFile* histoFile   = nullptr;
-
     /// Save old global file and folder pointer to avoid messing with FairRoot
     TFile* oldFile     = gFile;
     TDirectory* oldDir = gDirectory;
+
+    /// (Re-)Create ROOT file to store the histos
+    TFile* histoFile = nullptr;
 
     // open separate histo file in recreate mode
     TString histoFileName = fMonitorHistoFileName;
@@ -138,6 +138,7 @@ void CbmMcbm2018UnpackerTaskTrdR::Finish() {
       vHistos[uHisto].first->Write();
       histoFile->cd();
     }
+
     /// Restore old global file and folder pointer to avoid messing with FairRoot
     gFile      = oldFile;
     gDirectory = oldDir;

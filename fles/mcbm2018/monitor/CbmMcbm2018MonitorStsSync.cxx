@@ -1897,10 +1897,11 @@ void CbmMcbm2018MonitorStsSync::SaveAllHistos(TString sFileName) {
   if ("" != sFileName) {
     // Restore original directory position
     histoFile->Close();
-    /// Restore old global file and folder pointer to avoid messing with FairRoot
-    gFile      = oldFile;
-    gDirectory = oldDir;
   }  // if( "" != sFileName )
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 }
 void CbmMcbm2018MonitorStsSync::SavePulserHistos(TString sFileName) {
   /// Save old global file and folder pointer to avoid messing with FairRoot
@@ -1931,10 +1932,11 @@ void CbmMcbm2018MonitorStsSync::SavePulserHistos(TString sFileName) {
   if ("" != sFileName) {
     // Restore original directory position
     histoFile->Close();
-    /// Restore old global file and folder pointer to avoid messing with FairRoot
-    gFile      = oldFile;
-    gDirectory = oldDir;
   }  // if( "" != sFileName )
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 }
 void CbmMcbm2018MonitorStsSync::ResetAllHistos() {
   LOG(info) << "Reseting all STS histograms.";

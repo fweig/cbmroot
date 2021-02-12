@@ -25,8 +25,8 @@
 #include "TH2.h"
 #include "THttpServer.h"
 #include "TProfile.h"
+#include <TDirectory.h>
 #include <TFile.h>
-
 
 #include <iomanip>
 #include <iostream>
@@ -510,7 +510,10 @@ void CbmMcbm2019CheckDtInDet::FillHistosPerDet(TH1* histoSameTime,
 void CbmMcbm2019CheckDtInDet::Finish() { WriteHistos(); }
 
 void CbmMcbm2019CheckDtInDet::WriteHistos() {
-  TFile* old     = gFile;
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
+
   TFile* outfile = TFile::Open(fOutFileName, "RECREATE");
 
   fT0T0SameTime->Write();
@@ -548,7 +551,8 @@ void CbmMcbm2019CheckDtInDet::WriteHistos() {
   outfile->Close();
   delete outfile;
 
-  gFile = old;
+  gFile      = oldFile;
+  gDirectory = oldDir;
 }
 
 ClassImp(CbmMcbm2019CheckDtInDet)

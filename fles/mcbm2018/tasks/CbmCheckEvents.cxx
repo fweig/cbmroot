@@ -24,6 +24,7 @@
 #include "TH2.h"
 #include "THttpServer.h"
 #include "TProfile.h"
+#include <TDirectory.h>
 #include <TFile.h>
 
 #include <iomanip>
@@ -264,7 +265,9 @@ void CbmCheckEvents::GetTimeDiffT0(CbmEvent* event, TH1* deltaT, TH1* size) {
 
 // ---- Finish --------------------------------------------------------
 void CbmCheckEvents::Finish() {
-  TFile* old     = gFile;
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   TFile* outfile = TFile::Open("test2.root", "RECREATE");
 
   fEventSize->Write();
@@ -287,7 +290,8 @@ void CbmCheckEvents::Finish() {
   outfile->Close();
   delete outfile;
 
-  gFile = old;
+  gFile      = oldFile;
+  gDirectory = oldDir;
 }
 
 ClassImp(CbmCheckEvents)

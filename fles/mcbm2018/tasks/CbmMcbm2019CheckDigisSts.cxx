@@ -18,6 +18,7 @@
 #include "TH1.h"
 #include "TH2.h"
 #include "THttpServer.h"
+#include <TDirectory.h>
 #include <TFile.h>
 
 #include <iomanip>
@@ -186,7 +187,9 @@ void CbmMcbm2019CheckDigisSts::Exec(Option_t* /*option*/) {
 void CbmMcbm2019CheckDigisSts::Finish() { WriteHistos(); }
 
 void CbmMcbm2019CheckDigisSts::WriteHistos() {
-  TFile* old     = gFile;
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   TFile* outfile = TFile::Open(fOutFileName, "RECREATE");
 
   fDigisPerAsicEvo->Write();
@@ -195,7 +198,8 @@ void CbmMcbm2019CheckDigisSts::WriteHistos() {
   outfile->Close();
   delete outfile;
 
-  gFile = old;
+  gFile      = oldFile;
+  gDirectory = oldDir;
 }
 
 ClassImp(CbmMcbm2019CheckDigisSts)

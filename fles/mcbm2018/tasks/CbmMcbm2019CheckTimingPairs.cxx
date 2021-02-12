@@ -19,8 +19,8 @@
 #include "TH2.h"
 #include "THttpServer.h"
 #include "TProfile.h"
+#include <TDirectory.h>
 #include <TFile.h>
-
 
 #include <iomanip>
 #include <iostream>
@@ -626,7 +626,9 @@ void CbmMcbm2019CheckTimingPairs::FillHistos(UInt_t uIndexT0,
 void CbmMcbm2019CheckTimingPairs::Finish() { WriteHistos(); }
 
 void CbmMcbm2019CheckTimingPairs::WriteHistos() {
-  TFile* old     = gFile;
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   TFile* outfile = TFile::Open(fOutFileName, "RECREATE");
 
   for (UInt_t uPair = 0; uPair < fhDtADtB.size(); ++uPair) {
@@ -636,7 +638,8 @@ void CbmMcbm2019CheckTimingPairs::WriteHistos() {
   outfile->Close();
   delete outfile;
 
-  gFile = old;
+  gFile      = oldFile;
+  gDirectory = oldDir;
 }
 
 ClassImp(CbmMcbm2019CheckTimingPairs)

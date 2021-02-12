@@ -25,8 +25,8 @@
 #include "TH2.h"
 #include "THttpServer.h"
 #include "TProfile.h"
+#include <TDirectory.h>
 #include <TFile.h>
-
 
 #include <iomanip>
 #include <iostream>
@@ -1113,7 +1113,9 @@ Int_t CbmMcbm2019CheckPulser::FillSystemOffsetHistos(TH1* histo,
 void CbmMcbm2019CheckPulser::Finish() { WriteHistos(); }
 
 void CbmMcbm2019CheckPulser::WriteHistos() {
-  TFile* old     = gFile;
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   TFile* outfile = TFile::Open(fOutFileName, "RECREATE");
 
   fT0StsDiff->Write();
@@ -1189,7 +1191,8 @@ void CbmMcbm2019CheckPulser::WriteHistos() {
   outfile->Close();
   delete outfile;
 
-  gFile = old;
+  gFile      = oldFile;
+  gDirectory = oldDir;
 }
 
 ClassImp(CbmMcbm2019CheckPulser)

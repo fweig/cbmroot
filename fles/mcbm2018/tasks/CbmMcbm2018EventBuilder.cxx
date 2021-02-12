@@ -15,6 +15,7 @@
 #include "TH1.h"
 #include "TH2.h"
 #include "THttpServer.h"
+#include <TDirectory.h>
 #include <TFile.h>
 
 #include "CbmMuchBeamTimeDigi.h"
@@ -649,7 +650,9 @@ void CbmMcbm2018EventBuilder::AddDigiToSorter(ECbmModuleId _system,
 // ---- Finish --------------------------------------------------------
 void CbmMcbm2018EventBuilder::Finish() {
   if (fFillHistos) {
-    TFile* old     = gFile;
+    TFile* oldFile     = gFile;
+    TDirectory* oldDir = gDirectory;
+
     TFile* outfile = TFile::Open(fOutFileName, "RECREATE");
 
     fDiffTime->Write();
@@ -670,7 +673,8 @@ void CbmMcbm2018EventBuilder::Finish() {
     outfile->Close();
     delete outfile;
 
-    gFile = old;
+    gFile      = oldFile;
+    gDirectory = oldDir;
   }
   LOG(info) << "Total errors: " << fErrors;
 }

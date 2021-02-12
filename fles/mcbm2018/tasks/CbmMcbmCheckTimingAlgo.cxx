@@ -23,6 +23,7 @@
 #include "TH1.h"
 #include "TH2.h"
 #include "THttpServer.h"
+#include <TDirectory.h>
 #include <TFile.h>
 
 #include <iomanip>
@@ -415,7 +416,9 @@ void CbmMcbmCheckTimingAlgo::Finish() {
 }
 
 void CbmMcbmCheckTimingAlgo::WriteHistos() {
-  TFile* old     = gFile;
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   TFile* outfile = TFile::Open(fOutFileName, "RECREATE");
 
   for (UInt_t uDetIdx = 0; uDetIdx < fvDets.size(); ++uDetIdx) {
@@ -435,7 +438,8 @@ void CbmMcbmCheckTimingAlgo::WriteHistos() {
   outfile->Close();
   delete outfile;
 
-  gFile = old;
+  gFile      = oldFile;
+  gDirectory = oldDir;
 }
 
 // ---- Finish --------------------------------------------------------

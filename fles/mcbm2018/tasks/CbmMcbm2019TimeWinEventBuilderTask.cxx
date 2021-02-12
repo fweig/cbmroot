@@ -17,6 +17,7 @@
 #include "TH1.h"
 #include "TH2.h"
 #include "THttpServer.h"
+#include <TDirectory.h>
 #include <TFile.h>
 
 // ---- Default constructor -------------------------------------------
@@ -127,11 +128,11 @@ void CbmMcbm2019TimeWinEventBuilderTask::SaveHistos() {
     histoFile->cd();
   }  // for( UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto )
 
+  histoFile->Close();
+
   /// Restore old global file and folder pointer to avoid messing with FairRoot
   gFile      = oldFile;
   gDirectory = oldDir;
-
-  histoFile->Close();
 }
 //----------------------------------------------------------------------
 void CbmMcbm2019TimeWinEventBuilderTask::SetFillHistos(Bool_t bFlag) {

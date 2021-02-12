@@ -1332,10 +1332,11 @@ void CbmMcbm2018MonitorMcbmRate::SaveAllHistos(TString sFileName) {
   if ("" != sFileName) {
     // Restore original directory position
     histoFile->Close();
-    /// Restore old global file and folder pointer to avoid messing with FairRoot
-    gFile      = oldFile;
-    gDirectory = oldDir;
   }  // if( "" != sFileName )
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 }
 void CbmMcbm2018MonitorMcbmRate::ResetAllHistos() {
   /****************** STS Sync ******************************************/

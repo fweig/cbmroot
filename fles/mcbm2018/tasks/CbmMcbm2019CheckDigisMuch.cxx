@@ -18,6 +18,7 @@
 #include "TH1.h"
 #include "TH2.h"
 #include "THttpServer.h"
+#include <TDirectory.h>
 #include <TFile.h>
 
 #include <iomanip>
@@ -199,7 +200,9 @@ void CbmMcbm2019CheckDigisMuch::Exec(Option_t* /*option*/) {
 void CbmMcbm2019CheckDigisMuch::Finish() { WriteHistos(); }
 
 void CbmMcbm2019CheckDigisMuch::WriteHistos() {
-  TFile* old     = gFile;
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
   TFile* outfile = TFile::Open(fOutFileName, "RECREATE");
 
   fDigisPerAsicEvo->Write();
@@ -209,7 +212,8 @@ void CbmMcbm2019CheckDigisMuch::WriteHistos() {
   outfile->Close();
   delete outfile;
 
-  gFile = old;
+  gFile      = oldFile;
+  gDirectory = oldDir;
 }
 
 ClassImp(CbmMcbm2019CheckDigisMuch)

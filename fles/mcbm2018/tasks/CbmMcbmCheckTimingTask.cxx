@@ -16,6 +16,7 @@
 #include "TH1.h"
 #include "TH2.h"
 #include "THttpServer.h"
+#include <TDirectory.h>
 #include <TFile.h>
 
 /// C/C++ headers
@@ -71,12 +72,12 @@ void CbmMcbmCheckTimingTask::SaveHistos() {
    /// Obtain vector of pointers on each histo from the algo (+ optionally desired folder)
    std::vector< std::pair< TNamed *, std::string > > vHistos = fpAlgo->GetHistoVector();
 
-   /// (Re-)Create ROOT file to store the histos
-   TFile* histoFile   = nullptr;
-
    /// Save old global file and folder pointer to avoid messing with FairRoot
    TFile* oldFile     = gFile;
    TDirectory* oldDir = gDirectory;
+
+   /// (Re-)Create ROOT file to store the histos
+   TFile* histoFile   = nullptr;
 
    /// open separate histo file in recreate mode
    histoFile = new TFile( fsOutFileName , "RECREATE");
@@ -98,8 +99,8 @@ void CbmMcbmCheckTimingTask::SaveHistos() {
    } // for( UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto )
 
   /// Restore original directory position
-  oldDir->cd();
-  histoFile->Close();
+  gFile      = oldFile;
+  gDirectory = oldDir;
 */
 }
 //----------------------------------------------------------------------
