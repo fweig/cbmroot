@@ -6,6 +6,7 @@
 #define CBMBUILDEVENTSQA_H 1
 
 #include "CbmDefs.h"
+
 #include <FairTask.h>
 
 class TClonesArray;
@@ -35,9 +36,7 @@ public:
   virtual void Exec(Option_t* opt);
 
   /** Add a reference detector **/
-  void AddRefDetector(ECbmModuleId RefDetector) {
-    fRefDetectors.push_back(RefDetector);
-  }
+  void AddRefDetector(ECbmModuleId RefDetector) { fRefDetectors.push_back(RefDetector); }
 
 private:
   CbmDigiManager* fDigiMan = nullptr;     //!

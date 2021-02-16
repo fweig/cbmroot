@@ -22,10 +22,11 @@
 #include "CbmTofDigi.h"
 #include "CbmTrdDigi.h"
 
+#include <tuple>
+
 #include <array>
 #include <map>
 #include <set>
-#include <tuple>
 #include <vector>
 
 class CbmDigiManager;
@@ -79,9 +80,7 @@ public:
 
   void SetTriggerWindow(ECbmModuleId det, Double_t dWinBeg, Double_t dWinEnd);
 
-  void SetTsParameters(Double_t dTsStartTime,
-                       Double_t dTsLength,
-                       Double_t dTsOverLength);
+  void SetTsParameters(Double_t dTsStartTime, Double_t dTsLength, Double_t dTsOverLength);
 
   void SetEventOverlapMode(EOverlapModeRaw mode);
   void SetIgnoreTsOverlap(Bool_t bFlagIn);

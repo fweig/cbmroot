@@ -30,6 +30,7 @@
 #include "CbmTofSimpClusterizer.h"
 #include "CbmTrdClusterFinder.h"
 #include "CbmTrdHitProducer.h"
+
 #include <FairFileSource.h>
 #include <FairMonitor.h>
 #include <FairParAsciiFileIo.h>
@@ -37,6 +38,7 @@
 #include <FairRunAna.h>
 #include <FairRuntimeDb.h>
 #include <FairSystemInfo.h>
+
 #include <TStopwatch.h>
 #endif
 
@@ -75,13 +77,9 @@
  ** from the ROOT prompt without user intervention.
  **
  **/
-void run_reco(TString input        = "",
-              Int_t nTimeSlices    = -1,
-              Int_t firstTimeSlice = 0,
-              TString output       = "",
-              TString sEvBuildRaw  = "",
-              TString setup        = "sis100_electron",
-              TString paramFile    = "") {
+void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice = 0, TString output = "",
+              TString sEvBuildRaw = "", TString setup = "sis100_electron", TString paramFile = "")
+{
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -93,7 +91,7 @@ void run_reco(TString input        = "",
 
 
   // -----   Environment   --------------------------------------------------
-  TString myName = "run_reco";  // this macro's name for screen output
+  TString myName = "run_reco";                     // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
   // ------------------------------------------------------------------------
 
@@ -146,21 +144,17 @@ void run_reco(TString input        = "",
     const Char_t* npar[4] = {"asic", "digi", "gas", "gain"};
     TObjString* trdParFile(NULL);
     for (Int_t i(0); i < 4; i++) {
-      trdParFile = new TObjString(srcDir + "/parameters/trd/trd_" + geoTag + "."
-                                  + npar[i] + ".par");
+      trdParFile = new TObjString(srcDir + "/parameters/trd/trd_" + geoTag + "." + npar[i] + ".par");
       parFileList->Add(trdParFile);
-      std::cout << "-I- " << myName << ": Using parameter file "
-                << trdParFile->GetString() << std::endl;
+      std::cout << "-I- " << myName << ": Using parameter file " << trdParFile->GetString() << std::endl;
     }
   }
 
   // - TOF digitisation parameters
   if (CbmSetup::Instance()->GetGeoTag(ECbmModuleId::kTof, geoTag)) {
-    TObjString* tofBdfFile =
-      new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
+    TObjString* tofBdfFile = new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
     parFileList->Add(tofBdfFile);
-    std::cout << "-I- " << myName << ": Using parameter file "
-              << tofBdfFile->GetString() << std::endl;
+    std::cout << "-I- " << myName << ": Using parameter file " << tofBdfFile->GetString() << std::endl;
   }
   // ------------------------------------------------------------------------
 
@@ -195,12 +189,10 @@ void run_reco(TString input        = "",
     if (sEvBuildRaw.EqualTo("Ideal", TString::ECaseCompare::kIgnoreCase)) {
       FairTask* evBuildRaw = new CbmBuildEventsIdeal();
       run->AddTask(evBuildRaw);
-      std::cout << "-I- " << myName << ": Added task " << evBuildRaw->GetName()
-                << std::endl;
+      std::cout << "-I- " << myName << ": Added task " << evBuildRaw->GetName() << std::endl;
       eventBased = kTRUE;
     }  //? Ideal raw event building
-    else if (sEvBuildRaw.EqualTo("Real2018",
-                                 TString::ECaseCompare::kIgnoreCase)) {
+    else if (sEvBuildRaw.EqualTo("Real2018", TString::ECaseCompare::kIgnoreCase)) {
       CbmMcbm2018EventBuilder* evBuildRaw = new CbmMcbm2018EventBuilder();
 
       evBuildRaw->SetFixedTimeWindow(500.);
@@ -209,13 +201,11 @@ void run_reco(TString input        = "",
       evBuildRaw->SetUseBaseMuchDigi(kTRUE);
 
       run->AddTask(evBuildRaw);
-      std::cout << "-I- " << myName << ": Added task " << evBuildRaw->GetName()
-                << std::endl;
+      std::cout << "-I- " << myName << ": Added task " << evBuildRaw->GetName() << std::endl;
       eventBased = kTRUE;
-    } else if (sEvBuildRaw.EqualTo("Real2019",
-                                   TString::ECaseCompare::kIgnoreCase)) {
-      CbmMcbm2019TimeWinEventBuilderTask* evBuildRaw =
-        new CbmMcbm2019TimeWinEventBuilderTask();
+    }
+    else if (sEvBuildRaw.EqualTo("Real2019", TString::ECaseCompare::kIgnoreCase)) {
+      CbmMcbm2019TimeWinEventBuilderTask* evBuildRaw = new CbmMcbm2019TimeWinEventBuilderTask();
 
       //Choose between NoOverlap, MergeOverlap, AllowOverlap
       evBuildRaw->SetEventOverlapMode(EOverlapMode::AllowOverlap);
@@ -228,8 +218,7 @@ void run_reco(TString input        = "",
       if (!useTrd) evBuildRaw->RemoveDetector(kEventBuilderDetTrd);
       if (!useSts) {
         std::cerr << "-E- " << myName << ": Sts must be present for raw event "
-                  << "building using ``Real2019'' option. Terminating macro."
-                  << std::endl;
+                  << "building using ``Real2019'' option. Terminating macro." << std::endl;
         return;
       }
       // Remove STS as it will be our reference
@@ -247,12 +236,10 @@ void run_reco(TString input        = "",
       evBuildRaw->SetTriggerWindow(ECbmModuleId::kSts, -500, 500);
 
       run->AddTask(evBuildRaw);
-      std::cout << "-I- " << myName << ": Added task " << evBuildRaw->GetName()
-                << std::endl;
+      std::cout << "-I- " << myName << ": Added task " << evBuildRaw->GetName() << std::endl;
       eventBased = kTRUE;
-
-    } else if (sEvBuildRaw.EqualTo("Real",
-                                   TString::ECaseCompare::kIgnoreCase)) {
+    }
+    else if (sEvBuildRaw.EqualTo("Real", TString::ECaseCompare::kIgnoreCase)) {
       CbmTaskBuildRawEvents* evBuildRaw = new CbmTaskBuildRawEvents();
 
       //Choose between NoOverlap, MergeOverlap, AllowOverlap
@@ -266,8 +253,7 @@ void run_reco(TString input        = "",
       if (!useTrd) evBuildRaw->RemoveDetector(kRawEventBuilderDetTrd);
       if (!useSts) {
         std::cerr << "-E- " << myName << ": Sts must be present for raw event "
-                  << "building using ``Real2019'' option. Terminating macro."
-                  << std::endl;
+                  << "building using ``Real2019'' option. Terminating macro." << std::endl;
         return;
       }
       // Remove STS as it will be our reference
@@ -285,14 +271,12 @@ void run_reco(TString input        = "",
       evBuildRaw->SetTriggerWindow(ECbmModuleId::kSts, -500, 500);
 
       run->AddTask(evBuildRaw);
-      std::cout << "-I- " << myName << ": Added task " << evBuildRaw->GetName()
-                << std::endl;
+      std::cout << "-I- " << myName << ": Added task " << evBuildRaw->GetName() << std::endl;
       eventBased = kTRUE;
     }  //? Real raw event building
     else {
       std::cerr << "-E- " << myName << ": Unknown option " << sEvBuildRaw
-                << " for raw event building! Terminating macro execution."
-                << std::endl;
+                << " for raw event building! Terminating macro execution." << std::endl;
       return;
     }
   }  //? event-based reco
@@ -309,16 +293,14 @@ void run_reco(TString input        = "",
   // -----   Local reconstruction in MVD   ----------------------------------
   if (useMvd) {
 
-    CbmMvdClusterfinder* mvdCluster =
-      new CbmMvdClusterfinder("MVD Cluster Finder", 0, 0);
+    CbmMvdClusterfinder* mvdCluster = new CbmMvdClusterfinder("MVD Cluster Finder", 0, 0);
     run->AddTask(mvdCluster);
     std::cout << "-I- : Added task " << mvdCluster->GetName() << std::endl;
 
     CbmMvdHitfinder* mvdHit = new CbmMvdHitfinder("MVD Hit Finder", 0, 0);
     mvdHit->UseClusterfinder(kTRUE);
     run->AddTask(mvdHit);
-    std::cout << "-I- " << myName << ": Added task " << mvdHit->GetName()
-              << std::endl;
+    std::cout << "-I- " << myName << ": Added task " << mvdHit->GetName() << std::endl;
   }
   // ------------------------------------------------------------------------
 
@@ -328,8 +310,7 @@ void run_reco(TString input        = "",
     CbmRecoSts* stsReco = new CbmRecoSts(kCbmRecoTimeslice);
     if (eventBased) stsReco->SetMode(kCbmRecoEvent);
     run->AddTask(stsReco);
-    std::cout << "-I- " << myName << ": Added task " << stsReco->GetName()
-              << std::endl;
+    std::cout << "-I- " << myName << ": Added task " << stsReco->GetName() << std::endl;
   }
   // ------------------------------------------------------------------------
 
@@ -338,8 +319,7 @@ void run_reco(TString input        = "",
   if (useRich) {
     CbmRichHitProducer* richHitProd = new CbmRichHitProducer();
     run->AddTask(richHitProd);
-    std::cout << "-I- " << myName << ": Added task " << richHitProd->GetName()
-              << std::endl;
+    std::cout << "-I- " << myName << ": Added task " << richHitProd->GetName() << std::endl;
   }
   // ------------------------------------------------------------------------
 
@@ -358,8 +338,8 @@ void run_reco(TString input        = "",
     // --- Hit finder for GEMs
     FairTask* muchReco = new CbmMuchFindHitsGem(parFile.Data(), muchFlag);
     run->AddTask(muchReco);
-    std::cout << "-I- " << myName << ": Added task " << muchReco->GetName()
-              << " with parameter file " << parFile << std::endl;
+    std::cout << "-I- " << myName << ": Added task " << muchReco->GetName() << " with parameter file " << parFile
+              << std::endl;
   }
   // ------------------------------------------------------------------------
 
@@ -369,34 +349,29 @@ void run_reco(TString input        = "",
 
     Double_t triggerThreshold       = 0.5e-6;  // SIS100
     CbmTrdClusterFinder* trdCluster = new CbmTrdClusterFinder();
-    if (eventBased)
-      trdCluster->SetTimeBased(kFALSE);
+    if (eventBased) trdCluster->SetTimeBased(kFALSE);
     else
       trdCluster->SetTimeBased(kTRUE);
     trdCluster->SetNeighbourEnable(true, false);
     trdCluster->SetMinimumChargeTH(triggerThreshold);
     trdCluster->SetRowMerger(true);
     run->AddTask(trdCluster);
-    std::cout << "-I- " << myName << ": Added task " << trdCluster->GetName()
-              << std::endl;
+    std::cout << "-I- " << myName << ": Added task " << trdCluster->GetName() << std::endl;
 
     CbmTrdHitProducer* trdHit = new CbmTrdHitProducer();
     run->AddTask(trdHit);
-    std::cout << "-I- " << myName << ": Added task " << trdHit->GetName()
-              << std::endl;
+    std::cout << "-I- " << myName << ": Added task " << trdHit->GetName() << std::endl;
   }
   // ------------------------------------------------------------------------
 
 
   // -----   Local reconstruction in TOF   ----------------------------------
   if (useTof) {
-    CbmTofSimpClusterizer* tofCluster =
-      new CbmTofSimpClusterizer("TOF Simple Clusterizer", 0);
+    CbmTofSimpClusterizer* tofCluster = new CbmTofSimpClusterizer("TOF Simple Clusterizer", 0);
     tofCluster->SetOutputBranchPersistent("TofHit", kTRUE);
     tofCluster->SetOutputBranchPersistent("TofDigiMatch", kTRUE);
     run->AddTask(tofCluster);
-    std::cout << "-I- " << myName << ": Added task " << tofCluster->GetName()
-              << std::endl;
+    std::cout << "-I- " << myName << ": Added task " << tofCluster->GetName() << std::endl;
   }
   // ------------------------------------------------------------------------
 
@@ -405,8 +380,7 @@ void run_reco(TString input        = "",
   if (usePsd) {
     CbmPsdHitProducer* psdHit = new CbmPsdHitProducer();
     run->AddTask(psdHit);
-    std::cout << "-I- " << myName << ": Added task " << psdHit->GetName()
-              << std::endl;
+    std::cout << "-I- " << myName << ": Added task " << psdHit->GetName() << std::endl;
   }
   // ------------------------------------------------------------------------
 
@@ -433,21 +407,18 @@ void run_reco(TString input        = "",
       l1->SetStsMaterialBudgetFileName(parFile.Data());
     }
     run->AddTask(l1);
-    std::cout << "-I- " << myName << ": Added task " << l1->GetName()
-              << std::endl;
+    std::cout << "-I- " << myName << ": Added task " << l1->GetName() << std::endl;
 
     CbmStsTrackFinder* stsTrackFinder = new CbmL1StsTrackFinder();
     if (eventBased) {
-      FairTask* stsFindTracks =
-        new CbmStsFindTracksEvents(stsTrackFinder, useMvd);
+      FairTask* stsFindTracks = new CbmStsFindTracksEvents(stsTrackFinder, useMvd);
       run->AddTask(stsFindTracks);
-      std::cout << "-I- " << myName << ": Added task "
-                << stsFindTracks->GetName() << std::endl;
-    } else {
+      std::cout << "-I- " << myName << ": Added task " << stsFindTracks->GetName() << std::endl;
+    }
+    else {
       FairTask* stsFindTracks = new CbmStsFindTracks(0, stsTrackFinder, useMvd);
       run->AddTask(stsFindTracks);
-      std::cout << "-I- " << myName << ": Added task "
-                << stsFindTracks->GetName() << std::endl;
+      std::cout << "-I- " << myName << ": Added task " << stsFindTracks->GetName() << std::endl;
     }
   }
   // ------------------------------------------------------------------------
@@ -465,8 +436,7 @@ void run_reco(TString input        = "",
     CbmPrimaryVertexFinder* pvFinder = new CbmPVFinderKF();
     CbmFindPrimaryVertex* findVertex = new CbmFindPrimaryVertex(pvFinder);
     run->AddTask(findVertex);
-    std::cout << "-I- " << myName << ": Added task " << findVertex->GetName()
-              << std::endl;
+    std::cout << "-I- " << myName << ": Added task " << findVertex->GetName() << std::endl;
     // ----------------------------------------------------------------------
 
 
@@ -549,8 +519,7 @@ void run_reco(TString input        = "",
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output file is    " << outFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   FairSystemInfo sysInfo;
   Float_t maxMemory = sysInfo.GetMaxMemory();
   std::cout << "<DartMeasurement name=\"MaxMemory\" type=\"numeric/double\">";

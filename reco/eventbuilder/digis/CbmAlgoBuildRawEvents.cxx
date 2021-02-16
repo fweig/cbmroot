@@ -16,6 +16,7 @@
 #include "CbmStsDigi.h"
 #include "CbmTofDigi.h"
 #include "CbmTrdDigi.h"
+
 #include "TimesliceMetaData.h"
 
 /// FAIRROOT headers
@@ -39,7 +40,8 @@ CbmAlgoBuildRawEvents::CbmAlgoBuildRawEvents() {}
 CbmAlgoBuildRawEvents::~CbmAlgoBuildRawEvents() {}
 
 // ---- Init -----------------------------------------------------------
-Bool_t CbmAlgoBuildRawEvents::InitAlgo() {
+Bool_t CbmAlgoBuildRawEvents::InitAlgo()
+{
   LOG(info) << "CbmAlgoBuildRawEvents::InitAlgo => Starting sequence";
 
   // Get a handle from the IO manager
@@ -51,26 +53,21 @@ Bool_t CbmAlgoBuildRawEvents::InitAlgo() {
   }  // if( kFALSE == CheckDataAvailable( fRefDet ) )
 
   /// Check if data for detectors in selection list are available
-  for (std::vector<RawEventBuilderDetector>::iterator det = fvDets.begin();
-       det != fvDets.end();
-       ++det) {
+  for (std::vector<RawEventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det) {
     if (kFALSE == CheckDataAvailable(*det)) {
-      LOG(fatal)
-        << "No digi input for one of selection detector, stopping there!";
+      LOG(fatal) << "No digi input for one of selection detector, stopping there!";
     }  // if( kFALSE == CheckDataAvailable( *det ) )
-  }  // for (std::vector<RawEventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det)
+  }    // for (std::vector<RawEventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det)
 
   /// Access the TS metadata to know TS start time if needed
   if (fdTsStartTime < 0 || fdTsLength < 0 || fdTsOverLength < 0) {
-    fTimeSliceMetaDataArray =
-      dynamic_cast<TClonesArray*>(ioman->GetObject("TimesliceMetaData"));
+    fTimeSliceMetaDataArray = dynamic_cast<TClonesArray*>(ioman->GetObject("TimesliceMetaData"));
     if (!fTimeSliceMetaDataArray) {
-      LOG(fatal)
-        << "No TS metadata input found"
-        << " => Please check in the unpacking macro if the following line was "
-           "present!"
-        << std::endl
-        << "source->SetWriteOutputFlag(kTRUE);  // For writing TS metadata";
+      LOG(fatal) << "No TS metadata input found"
+                 << " => Please check in the unpacking macro if the following line was "
+                    "present!"
+                 << std::endl
+                 << "source->SetWriteOutputFlag(kTRUE);  // For writing TS metadata";
     }  // if (!fTimeSliceMetaDataArray)
   }    // if ( fdTsStartTime < 0 || fdTsLength < 0 || fdTsOverLength < 0 )
 
@@ -82,7 +79,8 @@ Bool_t CbmAlgoBuildRawEvents::InitAlgo() {
 }
 
 // ---- ProcessTs ------------------------------------------------------
-void CbmAlgoBuildRawEvents::ProcessTs() {
+void CbmAlgoBuildRawEvents::ProcessTs()
+{
   LOG_IF(info, fuNrTs % 1000 == 0) << "Begin of TS " << fuNrTs;
 
   InitTs();
@@ -107,12 +105,12 @@ void CbmAlgoBuildRawEvents::ProcessTs() {
 
   fuNrTs++;
 }
-void CbmAlgoBuildRawEvents::ClearEventVector() {
+void CbmAlgoBuildRawEvents::ClearEventVector()
+{
   /// Need to delete the object the pointer points to first
   int counter = 0;
   for (CbmEvent* event : fEventVector) {
-    LOG(debug) << "Event " << counter << " has " << event->GetNofData()
-               << " digis";
+    LOG(debug) << "Event " << counter << " has " << event->GetNofData() << " digis";
     delete event;
     counter++;
   }  // for( CbmEvent* event: fEventVector)
@@ -120,44 +118,49 @@ void CbmAlgoBuildRawEvents::ClearEventVector() {
   fEventVector.clear();
 }
 // ---- Finish ---------------------------------------------------------
-void CbmAlgoBuildRawEvents::Finish() {
-  LOG(info) << "Total errors: " << fuErrors;
-}
+void CbmAlgoBuildRawEvents::Finish() { LOG(info) << "Total errors: " << fuErrors; }
 
 // ---------------------------------------------------------------------
-Bool_t CbmAlgoBuildRawEvents::CheckDataAvailable(RawEventBuilderDetector& det) {
+Bool_t CbmAlgoBuildRawEvents::CheckDataAvailable(RawEventBuilderDetector& det)
+{
 
   if (ECbmModuleId::kT0 == det.detId) {
     if (!fT0DigiVec) {
       LOG(info) << "No T0 digi input found.";
       return kFALSE;
     }
-  } else if (ECbmModuleId::kSts == det.detId) {
+  }
+  else if (ECbmModuleId::kSts == det.detId) {
     if (!fStsDigis) {
       LOG(info) << "No " << det.sName << " digi input found.";
       return kFALSE;
     }
-  } else if (ECbmModuleId::kMuch == det.detId) {
+  }
+  else if (ECbmModuleId::kMuch == det.detId) {
     if (!fMuchDigis && !fMuchBeamTimeDigis) {
       LOG(info) << "No " << det.sName << " digi input found.";
       return kFALSE;
     }
-  } else if (ECbmModuleId::kTrd == det.detId) {
+  }
+  else if (ECbmModuleId::kTrd == det.detId) {
     if (!fTrdDigis) {
       LOG(info) << "No " << det.sName << " digi input found.";
       return kFALSE;
     }
-  } else if (ECbmModuleId::kTof == det.detId) {
+  }
+  else if (ECbmModuleId::kTof == det.detId) {
     if (!fTofDigis) {
       LOG(info) << "No " << det.sName << " digi input found.";
       return kFALSE;
     }
-  } else if (ECbmModuleId::kRich == det.detId) {
+  }
+  else if (ECbmModuleId::kRich == det.detId) {
     if (!fRichDigis) {
       LOG(info) << "No " << det.sName << " digi input found.";
       return kFALSE;
     }
-  } else if (ECbmModuleId::kPsd == det.detId) {
+  }
+  else if (ECbmModuleId::kPsd == det.detId) {
     if (!fPsdDigis) {
       LOG(info) << "No " << det.sName << " digi input found.";
       return kFALSE;
@@ -166,21 +169,21 @@ Bool_t CbmAlgoBuildRawEvents::CheckDataAvailable(RawEventBuilderDetector& det) {
   return kTRUE;
 }
 // ---------------------------------------------------------------------
-void CbmAlgoBuildRawEvents::InitTs() {
+void CbmAlgoBuildRawEvents::InitTs()
+{
   /// Reset TS based variables (analysis per TS = no building over the border)
   /// Reference detector
   fRefDet.fuStartIndex = 0;
   fRefDet.fuEndIndex   = 0;
   /// Loop on detectors in selection list
-  for (std::vector<RawEventBuilderDetector>::iterator det = fvDets.begin();
-       det != fvDets.end();
-       ++det) {
+  for (std::vector<RawEventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det) {
     (*det).fuStartIndex = 0;
     (*det).fuEndIndex   = 0;
   }  // for (std::vector<RawEventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det)
 }
 
-void CbmAlgoBuildRawEvents::BuildEvents() {
+void CbmAlgoBuildRawEvents::BuildEvents()
+{
   /// Call LoopOnSeed with proper template argument
   switch (fRefDet.detId) {
     case ECbmModuleId::kSts: {
@@ -188,9 +191,7 @@ void CbmAlgoBuildRawEvents::BuildEvents() {
       break;
     }  // case ECbmModuleId::kSts:
     case ECbmModuleId::kMuch: {
-      if (fbUseMuchBeamtimeDigi) {
-        LoopOnSeeds<CbmMuchBeamTimeDigi>();
-      }  // if (fbUseMuchBeamtimeDigi)
+      if (fbUseMuchBeamtimeDigi) { LoopOnSeeds<CbmMuchBeamTimeDigi>(); }  // if (fbUseMuchBeamtimeDigi)
       else {
         LoopOnSeeds<CbmMuchDigi>();
       }  // else of if (fbUseMuchBeamtimeDigi)
@@ -218,22 +219,21 @@ void CbmAlgoBuildRawEvents::BuildEvents() {
     }  // case ECbmModuleId::kT0:
     default: {
       LOG(fatal) << "CbmAlgoBuildRawEvents::BuildEvents => "
-                 << "Trying to search event seeds with unsupported det: "
-                 << fRefDet.sName;
+                 << "Trying to search event seeds with unsupported det: " << fRefDet.sName;
       break;
     }  // default:
   }    // switch( *det )
 }
 
-UInt_t CbmAlgoBuildRawEvents::GetNofDigis(ECbmModuleId detId) {
+UInt_t CbmAlgoBuildRawEvents::GetNofDigis(ECbmModuleId detId)
+{
   switch (detId) {
     case ECbmModuleId::kSts: {
       return fStsDigis->size();
     }
     case ECbmModuleId::kMuch: {
-      if (fbUseMuchBeamtimeDigi) {
-        return fMuchBeamTimeDigis->size();
-      } else {
+      if (fbUseMuchBeamtimeDigi) { return fMuchBeamTimeDigis->size(); }
+      else {
         return fMuchDigis->size();
       }
     }
@@ -260,15 +260,15 @@ UInt_t CbmAlgoBuildRawEvents::GetNofDigis(ECbmModuleId detId) {
   }
 }
 
-bool CbmAlgoBuildRawEvents::DetIsPresent(ECbmModuleId detId) {
+bool CbmAlgoBuildRawEvents::DetIsPresent(ECbmModuleId detId)
+{
   switch (detId) {
     case ECbmModuleId::kSts: {
       return fStsDigis != nullptr;
     }
     case ECbmModuleId::kMuch: {
-      if (fbUseMuchBeamtimeDigi) {
-        return fMuchBeamTimeDigis != nullptr;
-      } else {
+      if (fbUseMuchBeamtimeDigi) { return fMuchBeamTimeDigis != nullptr; }
+      else {
         return fMuchDigis != nullptr;
       }
     }
@@ -296,43 +296,50 @@ bool CbmAlgoBuildRawEvents::DetIsPresent(ECbmModuleId detId) {
 }
 
 template<>
-const CbmStsDigi* CbmAlgoBuildRawEvents::GetDigi(UInt_t uDigi) {
+const CbmStsDigi* CbmAlgoBuildRawEvents::GetDigi(UInt_t uDigi)
+{
   return &((*fStsDigis)[uDigi]);
 }
 template<>
-const CbmMuchBeamTimeDigi* CbmAlgoBuildRawEvents::GetDigi(UInt_t uDigi) {
+const CbmMuchBeamTimeDigi* CbmAlgoBuildRawEvents::GetDigi(UInt_t uDigi)
+{
   return &((*fMuchBeamTimeDigis)[uDigi]);
 }
 template<>
-const CbmMuchDigi* CbmAlgoBuildRawEvents::GetDigi(UInt_t uDigi) {
+const CbmMuchDigi* CbmAlgoBuildRawEvents::GetDigi(UInt_t uDigi)
+{
   return &((*fMuchDigis)[uDigi]);
 }
 template<>
-const CbmTrdDigi* CbmAlgoBuildRawEvents::GetDigi(UInt_t uDigi) {
+const CbmTrdDigi* CbmAlgoBuildRawEvents::GetDigi(UInt_t uDigi)
+{
   return &((*fTrdDigis)[uDigi]);
 }
 template<>
-const CbmTofDigi* CbmAlgoBuildRawEvents::GetDigi(UInt_t uDigi) {
+const CbmTofDigi* CbmAlgoBuildRawEvents::GetDigi(UInt_t uDigi)
+{
   return &((*fTofDigis)[uDigi]);
 }
 template<>
-const CbmRichDigi* CbmAlgoBuildRawEvents::GetDigi(UInt_t uDigi) {
+const CbmRichDigi* CbmAlgoBuildRawEvents::GetDigi(UInt_t uDigi)
+{
   return &((*fRichDigis)[uDigi]);
 }
 template<>
-const CbmPsdDigi* CbmAlgoBuildRawEvents::GetDigi(UInt_t uDigi) {
+const CbmPsdDigi* CbmAlgoBuildRawEvents::GetDigi(UInt_t uDigi)
+{
   return &((*fPsdDigis)[uDigi]);
 }
 
 template<class DigiSeed>
-void CbmAlgoBuildRawEvents::LoopOnSeeds() {
+void CbmAlgoBuildRawEvents::LoopOnSeeds()
+{
   /// Access the TS metadata if needed to know TS start time and overlap size
   Double_t dTsStartTime  = fdTsStartTime;
   Double_t dOverlapStart = fdTsStartTime + fdTsLength;
   Double_t dOverlapSize  = fdTsOverLength;
   if (fdTsStartTime < 0 || fdTsLength < 0 || fdTsOverLength < 0) {
-    pTsMetaData =
-      dynamic_cast<TimesliceMetaData*>(fTimeSliceMetaDataArray->At(0));
+    pTsMetaData = dynamic_cast<TimesliceMetaData*>(fTimeSliceMetaDataArray->At(0));
     if (nullptr == pTsMetaData)
       LOG(fatal) << Form("CbmAlgoBuildRawEvents::LoopOnSeeds => "
                          "No TS metadata found for TS %6u.",
@@ -344,23 +351,17 @@ void CbmAlgoBuildRawEvents::LoopOnSeeds() {
   }  // if ( fdTsStartTime < 0 || fdTsLength < 0  || fdTsOverLength < 0 )
 
   /// Print warning in first TS if time window borders out of potential overlap
-  if ((0.0 < fdEarliestTimeWinBeg && dOverlapSize < fdLatestTimeWinEnd)
-      || (dOverlapSize < fdWidestTimeWinRange)) {
+  if ((0.0 < fdEarliestTimeWinBeg && dOverlapSize < fdLatestTimeWinEnd) || (dOverlapSize < fdWidestTimeWinRange)) {
     LOG(warning) << "CbmAlgoBuildRawEvents::LoopOnSeeds => "
                  << Form("Event window not fitting in TS overlap, risk of "
                          "incomplete events: %f %f %f %f",
-                         fdEarliestTimeWinBeg,
-                         fdLatestTimeWinEnd,
-                         fdWidestTimeWinRange,
-                         dOverlapSize);
+                         fdEarliestTimeWinBeg, fdLatestTimeWinEnd, fdWidestTimeWinRange, dOverlapSize);
   }  // if end of event window does not fit in overlap for a seed at edge of TS core
 
   /// Define an acceptance window for the seeds in order to use the overlap
   /// part of the TS to avoid incomplete events
-  Double_t dSeedWindowBeg =
-    dTsStartTime + (0.0 < fdEarliestTimeWinBeg ? 0.0 : -fdEarliestTimeWinBeg);
-  Double_t dSeedWindowEnd =
-    dOverlapStart + (0.0 < fdEarliestTimeWinBeg ? 0.0 : -fdEarliestTimeWinBeg);
+  Double_t dSeedWindowBeg = dTsStartTime + (0.0 < fdEarliestTimeWinBeg ? 0.0 : -fdEarliestTimeWinBeg);
+  Double_t dSeedWindowEnd = dOverlapStart + (0.0 < fdEarliestTimeWinBeg ? 0.0 : -fdEarliestTimeWinBeg);
   if (fbIgnoreTsOverlap) {
     dSeedWindowBeg = dTsStartTime;
     dSeedWindowEnd = dOverlapStart;
@@ -385,8 +386,7 @@ void CbmAlgoBuildRawEvents::LoopOnSeeds() {
                  << "T0 as reference detector but vector not found!";
   }  // if (ECbmModuleId::kT0 == fRefDet.detId)
   else {
-    UInt_t uNbRefDigis =
-      (0 < GetNofDigis(fRefDet.detId) ? GetNofDigis(fRefDet.detId) : 0);
+    UInt_t uNbRefDigis = (0 < GetNofDigis(fRefDet.detId) ? GetNofDigis(fRefDet.detId) : 0);
     /// Loop on size of vector
     for (UInt_t uDigi = 0; uDigi < uNbRefDigis; ++uDigi) {
       LOG(debug) << Form("Checking seed %6u / %6u", uDigi, uNbRefDigis);
@@ -396,9 +396,7 @@ void CbmAlgoBuildRawEvents::LoopOnSeeds() {
         Double_t dTime = pDigi->GetTime();
 
         /// Check if seed in acceptance window
-        if (dTime < dSeedWindowBeg) {
-          continue;
-        }  // if( dTime < dSeedWindowBeg )
+        if (dTime < dSeedWindowBeg) { continue; }  // if( dTime < dSeedWindowBeg )
         else if (dSeedWindowEnd < dTime) {
           break;
         }  // else if( dSeedWindowEnd < dTime )
@@ -407,15 +405,15 @@ void CbmAlgoBuildRawEvents::LoopOnSeeds() {
         CheckSeed(dTime, uDigi);
       }  // if( nullptr != pDigi )
     }    // for( UInt_t uDigi = 0; uDigi < uNbRefDigis; ++uDigi )
-  }  // else of if (ECbmModuleId::kT0 == fRefDet.detId) => Digi containers controlled by DigiManager
+  }      // else of if (ECbmModuleId::kT0 == fRefDet.detId) => Digi containers controlled by DigiManager
 }
 
-void CbmAlgoBuildRawEvents::CheckSeed(Double_t dSeedTime, UInt_t uSeedDigiIdx) {
+void CbmAlgoBuildRawEvents::CheckSeed(Double_t dSeedTime, UInt_t uSeedDigiIdx)
+{
   /// If previous event valid and event overlap not allowed, check if we are in overlap
   /// and react accordingly
   if (nullptr != fCurrentEvent
-      && (EOverlapModeRaw::AllowOverlap != fOverMode
-          || dSeedTime - fdPrevEvtTime < fRefDet.GetTimeWinRange())
+      && (EOverlapModeRaw::AllowOverlap != fOverMode || dSeedTime - fdPrevEvtTime < fRefDet.GetTimeWinRange())
       && dSeedTime - fdPrevEvtTime < fdWidestTimeWinRange) {
     /// Within overlap range
     switch (fOverMode) {
@@ -490,8 +488,7 @@ void CbmAlgoBuildRawEvents::CheckSeed(Double_t dSeedTime, UInt_t uSeedDigiIdx) {
       }  // case ECbmModuleId::kT0:
       default: {
         LOG(fatal) << "CbmAlgoBuildRawEvents::LoopOnSeeds => "
-                   << "Trying to search matches with unsupported det: "
-                   << fRefDet.sName << std::endl
+                   << "Trying to search matches with unsupported det: " << fRefDet.sName << std::endl
                    << "You may want to add support for it in the method.";
         break;
       }  // default:
@@ -505,9 +502,7 @@ void CbmAlgoBuildRawEvents::CheckSeed(Double_t dSeedTime, UInt_t uSeedDigiIdx) {
   }  // else of if( fdRefTimeWinBeg < fdRefTimeWinEnd )
 
   /// Search for matches for each detector in selection list
-  for (std::vector<RawEventBuilderDetector>::iterator det = fvDets.begin();
-       det != fvDets.end();
-       ++det) {
+  for (std::vector<RawEventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det) {
     switch ((*det).detId) {
       case ECbmModuleId::kSts: {
         SearchMatches<CbmStsDigi>(dSeedTime, *det);
@@ -544,13 +539,12 @@ void CbmAlgoBuildRawEvents::CheckSeed(Double_t dSeedTime, UInt_t uSeedDigiIdx) {
       }  // case ECbmModuleId::kT0:
       default: {
         LOG(fatal) << "CbmAlgoBuildRawEvents::LoopOnSeeds => "
-                   << "Trying to search matches with unsupported det: "
-                   << (*det).sName << std::endl
+                   << "Trying to search matches with unsupported det: " << (*det).sName << std::endl
                    << "You may want to add support for it in the method.";
         break;
       }  // default:
     }    // switch( *det )
-  }  // for( std::vector< RawEventBuilderDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
+  }      // for( std::vector< RawEventBuilderDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
 
   /// Check if event is filling trigger conditions and clear it if not
   if (HasTrigger(fCurrentEvent)) {
@@ -558,16 +552,13 @@ void CbmAlgoBuildRawEvents::CheckSeed(Double_t dSeedTime, UInt_t uSeedDigiIdx) {
 
     /// In case of NoOverlap or MergeOverlap, we can and should start checking the next window
     /// from end of current window in order to save CPU and avoid duplicating
-    if (EOverlapModeRaw::NoOverlap == fOverMode
-        || EOverlapModeRaw::MergeOverlap == fOverMode) {
+    if (EOverlapModeRaw::NoOverlap == fOverMode || EOverlapModeRaw::MergeOverlap == fOverMode) {
 
       /// Update reference detector
       fRefDet.fuStartIndex = fRefDet.fuEndIndex;
 
       /// Loop on selection detectors
-      for (std::vector<RawEventBuilderDetector>::iterator det = fvDets.begin();
-           det != fvDets.end();
-           ++det) {
+      for (std::vector<RawEventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det) {
         (*det).fuStartIndex = (*det).fuEndIndex;
       }  // for( std::vector< RawEventBuilderDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
     }    // If no overlap or merge overlap
@@ -580,8 +571,8 @@ void CbmAlgoBuildRawEvents::CheckSeed(Double_t dSeedTime, UInt_t uSeedDigiIdx) {
 }
 
 template<class DigiCheck>
-void CbmAlgoBuildRawEvents::SearchMatches(Double_t dSeedTime,
-                                          RawEventBuilderDetector& detMatch) {
+void CbmAlgoBuildRawEvents::SearchMatches(Double_t dSeedTime, RawEventBuilderDetector& detMatch)
+{
   /// This algo relies on time sorted vectors for the selected detectors
   UInt_t uLocalIndexStart = detMatch.fuStartIndex;
   UInt_t uLocalIndexEnd   = detMatch.fuStartIndex;
@@ -622,8 +613,7 @@ void CbmAlgoBuildRawEvents::SearchMatches(Double_t dSeedTime,
                  << "T0 as selection detector but vector not found!";
   }  // if( ECbmModuleId::kT0 == detMatch.detId )
   else {
-    UInt_t uNbSelDigis =
-      (0 < GetNofDigis(detMatch.detId) ? GetNofDigis(detMatch.detId) : 0);
+    UInt_t uNbSelDigis = (0 < GetNofDigis(detMatch.detId) ? GetNofDigis(detMatch.detId) : 0);
     /// Loop on size of vector
     for (UInt_t uDigi = detMatch.fuStartIndex; uDigi < uNbSelDigis; ++uDigi) {
       const DigiCheck* pDigi = GetDigi<DigiCheck>(uDigi);
@@ -632,11 +622,7 @@ void CbmAlgoBuildRawEvents::SearchMatches(Double_t dSeedTime,
         Double_t dTime     = pDigi->GetTime();
         Double_t dTimeDiff = dTime - dSeedTime;
 
-        LOG(debug4) << detMatch.sName
-                    << Form(" => Checking match %6u / %6u, dt %f",
-                            uDigi,
-                            uNbSelDigis,
-                            dTimeDiff);
+        LOG(debug4) << detMatch.sName << Form(" => Checking match %6u / %6u, dt %f", uDigi, uNbSelDigis, dTimeDiff);
 
         /// Check if within time window, update start/stop indices if needed
         if (dTimeDiff < detMatch.fdTimeWinBeg) {
@@ -665,21 +651,20 @@ void CbmAlgoBuildRawEvents::SearchMatches(Double_t dSeedTime,
   detMatch.fuEndIndex   = uLocalIndexEnd;
 }
 
-void CbmAlgoBuildRawEvents::AddDigiToEvent(RawEventBuilderDetector& det,
-                                           Int_t _entry) {
+void CbmAlgoBuildRawEvents::AddDigiToEvent(RawEventBuilderDetector& det, Int_t _entry)
+{
   fCurrentEvent->AddData(det.dataType, _entry);
 }
 
-Bool_t CbmAlgoBuildRawEvents::HasTrigger(CbmEvent* event) {
+Bool_t CbmAlgoBuildRawEvents::HasTrigger(CbmEvent* event)
+{
   /// Check first reference detector
   if (kFALSE == CheckTriggerConditions(event, fRefDet)) {
     return kFALSE;
   }  // if (kFALSE == CheckTriggerConditions(event, fRefDet) )
 
   /// Loop on selection detectors
-  for (std::vector<RawEventBuilderDetector>::iterator det = fvDets.begin();
-       det != fvDets.end();
-       ++det) {
+  for (std::vector<RawEventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det) {
     if (kFALSE == CheckTriggerConditions(event, *det)) return kFALSE;
   }  // for( std::vector< RawEventBuilderDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
 
@@ -687,9 +672,8 @@ Bool_t CbmAlgoBuildRawEvents::HasTrigger(CbmEvent* event) {
   return kTRUE;
 }
 
-Bool_t
-CbmAlgoBuildRawEvents::CheckTriggerConditions(CbmEvent* event,
-                                              RawEventBuilderDetector& det) {
+Bool_t CbmAlgoBuildRawEvents::CheckTriggerConditions(CbmEvent* event, RawEventBuilderDetector& det)
+{
   /// Check if both Trigger conditions disabled for this detector
   if (0 == det.fuTriggerMinDigis && det.fiTriggerMaxDigis < 0) {
     return kTRUE;
@@ -700,32 +684,30 @@ CbmAlgoBuildRawEvents::CheckTriggerConditions(CbmEvent* event,
     /// FIXME: special case to be removed once T0 supported by DigiManager
     if (!(fT0DigiVec)) {
       LOG(warning) << "Event does not have digis storage for T0"
-                   << " while the following trigger minimum are defined: "
-                   << det.fuTriggerMinDigis << " " << det.fiTriggerMaxDigis;
+                   << " while the following trigger minimum are defined: " << det.fuTriggerMinDigis << " "
+                   << det.fiTriggerMaxDigis;
       return kFALSE;
     }  // if( !(fT0DigiVec) )
   }    // if( ECbmDataType::kT0Digi == det.detId )
   else {
     if (!DetIsPresent(det.detId)) {
       LOG(warning) << "Event does not have digis storage for " << det.sName
-                   << " while the following trigger min/max are defined: "
-                   << det.fuTriggerMinDigis << " " << det.fiTriggerMaxDigis;
+                   << " while the following trigger min/max are defined: " << det.fuTriggerMinDigis << " "
+                   << det.fiTriggerMaxDigis;
       return kFALSE;
     }  // if( !fDigiMan->IsPresent( det ) )
   }    // else of if( ECbmDataType::kT0Digi == det )
 
   /// Check trigger rejection by minimal number or absence
   Int_t iNbDigis = event->GetNofData(det.dataType);
-  if ((-1 == iNbDigis)
-      || (static_cast<UInt_t>(iNbDigis) < det.fuTriggerMinDigis)) {
-    LOG(debug2) << "Event does not have enough digis: " << iNbDigis << " vs "
-                << det.fuTriggerMinDigis << " for " << det.sName;
+  if ((-1 == iNbDigis) || (static_cast<UInt_t>(iNbDigis) < det.fuTriggerMinDigis)) {
+    LOG(debug2) << "Event does not have enough digis: " << iNbDigis << " vs " << det.fuTriggerMinDigis << " for "
+                << det.sName;
     return kFALSE;
   }  // if((-1 == iNbDigis) || (static_cast<UInt_t>(iNbDigis) < det.fuTriggerMinDigis))
   /// Check trigger rejection by maximal number
   else if (0 < det.fiTriggerMaxDigis && det.fiTriggerMaxDigis < iNbDigis) {
-    LOG(debug2) << "Event Has too many digis: " << iNbDigis << " vs "
-                << det.fiTriggerMaxDigis << " for " << det.sName;
+    LOG(debug2) << "Event Has too many digis: " << iNbDigis << " vs " << det.fiTriggerMaxDigis << " for " << det.sName;
     return kFALSE;
   }  // else if( iNbDigis < det.fiTriggerMaxDigis )
   else {
@@ -733,7 +715,8 @@ CbmAlgoBuildRawEvents::CheckTriggerConditions(CbmEvent* event,
   }  // else of else if( iNbDigis < det.fiTriggerMaxDigis )
 }
 //----------------------------------------------------------------------
-void CbmAlgoBuildRawEvents::CreateHistograms() {
+void CbmAlgoBuildRawEvents::CreateHistograms()
+{
   /// FIXME: Disable clang formatting for histograms declaration for now
   /* clang-format off */
   fhEventTime = new TH1F("hEventTime",
@@ -787,13 +770,12 @@ void CbmAlgoBuildRawEvents::CreateHistograms() {
   /// FIXME: Re-enable clang formatting after histograms declaration
   /* clang-format on */
 }
-void CbmAlgoBuildRawEvents::FillHistos() {
+void CbmAlgoBuildRawEvents::FillHistos()
+{
   Double_t dPreEvtTime = -1.0;
   for (CbmEvent* evt : fEventVector) {
     fhEventTime->Fill(evt->GetStartTime() * 1e-9);
-    if (0.0 <= dPreEvtTime) {
-      fhEventDt->Fill(evt->GetStartTime() - dPreEvtTime);
-    }  // if( 0.0 <= dPreEvtTime )
+    if (0.0 <= dPreEvtTime) { fhEventDt->Fill(evt->GetStartTime() - dPreEvtTime); }  // if( 0.0 <= dPreEvtTime )
     fhEventSize->Fill(evt->GetNofData());
     fhNbDigiPerEvtTime->Fill(evt->GetStartTime() * 1e-9, evt->GetNofData());
 
@@ -801,22 +783,21 @@ void CbmAlgoBuildRawEvents::FillHistos() {
     for (UInt_t uDetIdx = 0; uDetIdx < fvDets.size(); ++uDetIdx) {
       if (nullptr == fvhNbDigiPerEvtTimeDet[uDetIdx]) continue;
 
-      fvhNbDigiPerEvtTimeDet[uDetIdx]->Fill(
-        evt->GetStartTime() * 1e-9, evt->GetNofData(fvDets[uDetIdx].dataType));
+      fvhNbDigiPerEvtTimeDet[uDetIdx]->Fill(evt->GetStartTime() * 1e-9, evt->GetNofData(fvDets[uDetIdx].dataType));
     }  // for( std::vector< RawEventBuilderDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
 
     dPreEvtTime = evt->GetStartTime();
   }  // for( CbmEvent * evt: fEventVector )
 }
-void CbmAlgoBuildRawEvents::ResetHistograms(Bool_t /*bResetTime*/) {
+void CbmAlgoBuildRawEvents::ResetHistograms(Bool_t /*bResetTime*/)
+{
   fhEventTime->Reset();
   fhEventDt->Reset();
   fhEventSize->Reset();
 
   fhNbDigiPerEvtTime->Reset();
   /// Loop on histograms
-  for (std::vector<TH2*>::iterator itHist = fvhNbDigiPerEvtTimeDet.begin();
-       itHist != fvhNbDigiPerEvtTimeDet.end();
+  for (std::vector<TH2*>::iterator itHist = fvhNbDigiPerEvtTimeDet.begin(); itHist != fvhNbDigiPerEvtTimeDet.end();
        ++itHist) {
     (*itHist)->Reset();
   }  // for( std::vector<TH2*>::iterator itHist = fvhNbDigiPerEvtTimeDet.begin(); itHist != fvhNbDigiPerEvtTimeDet.end(); ++itHist )
@@ -830,80 +811,56 @@ void CbmAlgoBuildRawEvents::ResetHistograms(Bool_t /*bResetTime*/) {
 */
 }
 //----------------------------------------------------------------------
-void CbmAlgoBuildRawEvents::SetReferenceDetector(ECbmModuleId refDet,
-                                                 ECbmDataType dataTypeIn,
-                                                 std::string sNameIn,
-                                                 UInt_t uTriggerMinDigisIn,
-                                                 Int_t iTriggerMaxDigisIn,
-                                                 Double_t fdTimeWinBegIn,
-                                                 Double_t fdTimeWinEndIn) {
+void CbmAlgoBuildRawEvents::SetReferenceDetector(ECbmModuleId refDet, ECbmDataType dataTypeIn, std::string sNameIn,
+                                                 UInt_t uTriggerMinDigisIn, Int_t iTriggerMaxDigisIn,
+                                                 Double_t fdTimeWinBegIn, Double_t fdTimeWinEndIn)
+{
 
   /// FIXME: Deprecated method to be removed later. For now create temp object.
-  SetReferenceDetector(RawEventBuilderDetector(refDet,
-                                               dataTypeIn,
-                                               sNameIn,
-                                               uTriggerMinDigisIn,
-                                               iTriggerMaxDigisIn,
-                                               fdTimeWinBegIn,
-                                               fdTimeWinEndIn));
+  SetReferenceDetector(RawEventBuilderDetector(refDet, dataTypeIn, sNameIn, uTriggerMinDigisIn, iTriggerMaxDigisIn,
+                                               fdTimeWinBegIn, fdTimeWinEndIn));
 }
-void CbmAlgoBuildRawEvents::AddDetector(ECbmModuleId selDet,
-                                        ECbmDataType dataTypeIn,
-                                        std::string sNameIn,
-                                        UInt_t uTriggerMinDigisIn,
-                                        Int_t iTriggerMaxDigisIn,
-                                        Double_t fdTimeWinBegIn,
-                                        Double_t fdTimeWinEndIn) {
+void CbmAlgoBuildRawEvents::AddDetector(ECbmModuleId selDet, ECbmDataType dataTypeIn, std::string sNameIn,
+                                        UInt_t uTriggerMinDigisIn, Int_t iTriggerMaxDigisIn, Double_t fdTimeWinBegIn,
+                                        Double_t fdTimeWinEndIn)
+{
 
   /// FIXME: Deprecated method to be removed later. For now create temp object.
-  AddDetector(RawEventBuilderDetector(selDet,
-                                      dataTypeIn,
-                                      sNameIn,
-                                      uTriggerMinDigisIn,
-                                      iTriggerMaxDigisIn,
-                                      fdTimeWinBegIn,
-                                      fdTimeWinEndIn));
+  AddDetector(RawEventBuilderDetector(selDet, dataTypeIn, sNameIn, uTriggerMinDigisIn, iTriggerMaxDigisIn,
+                                      fdTimeWinBegIn, fdTimeWinEndIn));
 }
 //----------------------------------------------------------------------
 //----------------------------------------------------------------------
-void CbmAlgoBuildRawEvents::SetReferenceDetector(
-  RawEventBuilderDetector refDetIn) {
+void CbmAlgoBuildRawEvents::SetReferenceDetector(RawEventBuilderDetector refDetIn)
+{
   /// Loop on selection detectors
-  for (std::vector<RawEventBuilderDetector>::iterator det = fvDets.begin();
-       det != fvDets.end();
-       ++det) {
+  for (std::vector<RawEventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det) {
     if ((*det) == refDetIn) {
       LOG(warning) << "CbmAlgoBuildRawEvents::SetReferenceDetector => "
                       "Reference detector already in selection detector list!"
                    << refDetIn.sName;
-      LOG(warning)
-        << "                                                         => "
-           "It will be automatically removed from selection detector list!";
-      LOG(warning)
-        << "                                                         => "
-           "Please also remember to update the selection windows to store "
-           "clusters!";
+      LOG(warning) << "                                                         => "
+                      "It will be automatically removed from selection detector list!";
+      LOG(warning) << "                                                         => "
+                      "Please also remember to update the selection windows to store "
+                      "clusters!";
       RemoveDetector(refDetIn);
     }  // if( (*det)  == refDetIn )
-  }  // for( std::vector< RawEventBuilderDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
+  }    // for( std::vector< RawEventBuilderDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
 
   if (fRefDet == refDetIn) {
-    LOG(warning)
-      << "CbmAlgoBuildRawEvents::SetReferenceDetector => "
-         "Doing nothing, identical reference detector already in use";
+    LOG(warning) << "CbmAlgoBuildRawEvents::SetReferenceDetector => "
+                    "Doing nothing, identical reference detector already in use";
   }  // if( fRefDet == refDetIn )
   else {
     LOG(info) << "CbmAlgoBuildRawEvents::SetReferenceDetector => "
-              << "Replacing " << fRefDet.sName << " with " << refDetIn.sName
-              << " as reference detector";
-    LOG(warning)
-      << "                                                         => "
-         "You may want to use AddDetector after this command to add in "
-         "selection "
-      << refDetIn.sName;
-    LOG(warning)
-      << "                                                         => "
-         "Please also remember to update the selection windows!";
+              << "Replacing " << fRefDet.sName << " with " << refDetIn.sName << " as reference detector";
+    LOG(warning) << "                                                         => "
+                    "You may want to use AddDetector after this command to add in "
+                    "selection "
+                 << refDetIn.sName;
+    LOG(warning) << "                                                         => "
+                    "Please also remember to update the selection windows!";
   }  // else of if( fRefDet == refDetIn )
   fRefDet = refDetIn;
 
@@ -912,7 +869,8 @@ void CbmAlgoBuildRawEvents::SetReferenceDetector(
   /// Update the variable storing the size if widest time window for overlap detection
   UpdateWidestTimeWinRange();
 }
-void CbmAlgoBuildRawEvents::AddDetector(RawEventBuilderDetector selDet) {
+void CbmAlgoBuildRawEvents::AddDetector(RawEventBuilderDetector selDet)
+{
   if (fRefDet == selDet) {
     LOG(fatal) << "CbmAlgoBuildRawEvents::AddDetector => Cannot "
                   "add the reference detector as selection detector!"
@@ -922,16 +880,14 @@ void CbmAlgoBuildRawEvents::AddDetector(RawEventBuilderDetector selDet) {
   }  // if( fRefDet == selDet )
 
   /// Loop on selection detectors
-  for (std::vector<RawEventBuilderDetector>::iterator det = fvDets.begin();
-       det != fvDets.end();
-       ++det) {
+  for (std::vector<RawEventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det) {
     if ((*det) == selDet) {
       LOG(warning) << "CbmAlgoBuildRawEvents::AddDetector => "
                       "Doing nothing, selection detector already in list!"
                    << selDet.sName;
       return;
     }  // if( (*det)  == selDet )
-  }  // for( std::vector< RawEventBuilderDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
+  }    // for( std::vector< RawEventBuilderDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
   fvDets.push_back(selDet);
 
   /// Update the variables storing the earliest and latest time window boundaries
@@ -939,86 +895,74 @@ void CbmAlgoBuildRawEvents::AddDetector(RawEventBuilderDetector selDet) {
   /// Update the variable storing the size if widest time window for overlap detection
   UpdateWidestTimeWinRange();
 }
-void CbmAlgoBuildRawEvents::RemoveDetector(RawEventBuilderDetector selDet) {
+void CbmAlgoBuildRawEvents::RemoveDetector(RawEventBuilderDetector selDet)
+{
   /// Loop on selection detectors
-  for (std::vector<RawEventBuilderDetector>::iterator det = fvDets.begin();
-       det != fvDets.end();
-       ++det) {
+  for (std::vector<RawEventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det) {
     if ((*det) == selDet) {
       fvDets.erase(det);
       return;
     }  // if( (*det)  == selDet )
-  }  // for( std::vector< RawEventBuilderDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
+  }    // for( std::vector< RawEventBuilderDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
   LOG(warning) << "CbmAlgoBuildRawEvents::RemoveDetector => Doing "
                   "nothing, selection detector not in list!"
                << selDet.sName;
 }
 //----------------------------------------------------------------------
-void CbmAlgoBuildRawEvents::SetTriggerMinNumber(ECbmModuleId selDet,
-                                                UInt_t uVal) {
+void CbmAlgoBuildRawEvents::SetTriggerMinNumber(ECbmModuleId selDet, UInt_t uVal)
+{
   /// Check first if reference detector
   if (fRefDet.detId == selDet) {
     fRefDet.fuTriggerMinDigis = uVal;
 
-    LOG(debug) << "Set Trigger min limit for " << fRefDet.sName << " to "
-               << uVal;
+    LOG(debug) << "Set Trigger min limit for " << fRefDet.sName << " to " << uVal;
 
     return;
   }  // if( fRefDet == selDet )
 
   /// Loop on selection detectors
-  for (std::vector<RawEventBuilderDetector>::iterator det = fvDets.begin();
-       det != fvDets.end();
-       ++det) {
+  for (std::vector<RawEventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det) {
     if ((*det).detId == selDet) {
       (*det).fuTriggerMinDigis = uVal;
 
-      LOG(debug) << "Set Trigger min limit for " << (*det).sName << " to "
-                 << uVal;
+      LOG(debug) << "Set Trigger min limit for " << (*det).sName << " to " << uVal;
 
       return;
     }  // if( (*det).detId  == selDet )
-  }  // for( std::vector< RawEventBuilderDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
+  }    // for( std::vector< RawEventBuilderDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
 
-  LOG(warning)
-    << "CbmAlgoBuildRawEvents::SetTriggerMinNumber => "
-       "Doing nothing, detector neither reference nor in selection list!"
-    << selDet;
+  LOG(warning) << "CbmAlgoBuildRawEvents::SetTriggerMinNumber => "
+                  "Doing nothing, detector neither reference nor in selection list!"
+               << selDet;
 }
-void CbmAlgoBuildRawEvents::SetTriggerMaxNumber(ECbmModuleId selDet,
-                                                Int_t iVal) {
+void CbmAlgoBuildRawEvents::SetTriggerMaxNumber(ECbmModuleId selDet, Int_t iVal)
+{
   /// Check first if reference detector
   if (fRefDet.detId == selDet) {
     fRefDet.fiTriggerMaxDigis = iVal;
 
-    LOG(debug) << "Set Trigger min limit for " << fRefDet.sName << " to "
-               << iVal;
+    LOG(debug) << "Set Trigger min limit for " << fRefDet.sName << " to " << iVal;
 
     return;
   }  // if( fRefDet == selDet )
 
   /// Loop on selection detectors
-  for (std::vector<RawEventBuilderDetector>::iterator det = fvDets.begin();
-       det != fvDets.end();
-       ++det) {
+  for (std::vector<RawEventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det) {
     if ((*det).detId == selDet) {
       (*det).fiTriggerMaxDigis = iVal;
 
-      LOG(debug) << "Set Trigger min limit for " << (*det).sName << " to "
-                 << iVal;
+      LOG(debug) << "Set Trigger min limit for " << (*det).sName << " to " << iVal;
 
       return;
     }  // if( (*det).detId  == selDet )
-  }  // for( std::vector< RawEventBuilderDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
+  }    // for( std::vector< RawEventBuilderDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
 
-  LOG(warning)
-    << "CbmAlgoBuildRawEvents::SetTriggerMaxNumber => "
-       "Doing nothing, detector neither reference nor in selection list!"
-    << selDet;
+  LOG(warning) << "CbmAlgoBuildRawEvents::SetTriggerMaxNumber => "
+                  "Doing nothing, detector neither reference nor in selection list!"
+               << selDet;
 }
-void CbmAlgoBuildRawEvents::SetTriggerWindow(ECbmModuleId selDet,
-                                             Double_t dWinBeg,
-                                             Double_t dWinEnd) {
+void CbmAlgoBuildRawEvents::SetTriggerWindow(ECbmModuleId selDet, Double_t dWinBeg, Double_t dWinEnd)
+{
   /// Check if valid time window: end strictly after beginning
   if (dWinEnd <= dWinBeg)
     LOG(fatal) << "CbmAlgoBuildRawEvents::SetTriggerWindow => "
@@ -1035,22 +979,19 @@ void CbmAlgoBuildRawEvents::SetTriggerWindow(ECbmModuleId selDet,
   }  // if( fRefDet == selDet )
 
   /// Loop on selection detectors
-  for (std::vector<RawEventBuilderDetector>::iterator det = fvDets.begin();
-       det != fvDets.end();
-       ++det) {
+  for (std::vector<RawEventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det) {
     if ((*det).detId == selDet) {
       (*det).fdTimeWinBeg = dWinBeg;
       (*det).fdTimeWinEnd = dWinEnd;
 
       bFound = kTRUE;
     }  // if( (*det).detId  == selDet )
-  }  // for( std::vector< RawEventBuilderDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
+  }    // for( std::vector< RawEventBuilderDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
 
   if (kFALSE == bFound) {
-    LOG(warning)
-      << "CbmAlgoBuildRawEvents::SetTriggerWindow => "
-         "Doing nothing, detector neither reference nor in selection list!"
-      << selDet;
+    LOG(warning) << "CbmAlgoBuildRawEvents::SetTriggerWindow => "
+                    "Doing nothing, detector neither reference nor in selection list!"
+                 << selDet;
   }  // if( kFALSE == bFound )
 
   /// Update the variables storing the earliest and latest time window boundaries
@@ -1058,29 +999,26 @@ void CbmAlgoBuildRawEvents::SetTriggerWindow(ECbmModuleId selDet,
   /// Update the variable storing the size if widest time window for overlap detection
   UpdateWidestTimeWinRange();
 }
-void CbmAlgoBuildRawEvents::UpdateTimeWinBoundariesExtrema() {
+void CbmAlgoBuildRawEvents::UpdateTimeWinBoundariesExtrema()
+{
   /// Initialize with reference detector
   fdEarliestTimeWinBeg = fRefDet.fdTimeWinBeg;
   fdLatestTimeWinEnd   = fRefDet.fdTimeWinEnd;
 
   /// Loop on selection detectors
-  for (std::vector<RawEventBuilderDetector>::iterator det = fvDets.begin();
-       det != fvDets.end();
-       ++det) {
+  for (std::vector<RawEventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det) {
     fdEarliestTimeWinBeg = std::min(fdEarliestTimeWinBeg, (*det).fdTimeWinBeg);
     fdLatestTimeWinEnd   = std::max(fdLatestTimeWinEnd, (*det).fdTimeWinEnd);
   }  // for( std::vector< RawEventBuilderDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
 }
-void CbmAlgoBuildRawEvents::UpdateWidestTimeWinRange() {
+void CbmAlgoBuildRawEvents::UpdateWidestTimeWinRange()
+{
   /// Initialize with reference detector
   fdWidestTimeWinRange = fRefDet.fdTimeWinEnd - fRefDet.fdTimeWinBeg;
 
   /// Loop on selection detectors
-  for (std::vector<RawEventBuilderDetector>::iterator det = fvDets.begin();
-       det != fvDets.end();
-       ++det) {
-    fdWidestTimeWinRange =
-      std::max(fdWidestTimeWinRange, (*det).fdTimeWinEnd - (*det).fdTimeWinBeg);
+  for (std::vector<RawEventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det) {
+    fdWidestTimeWinRange = std::max(fdWidestTimeWinRange, (*det).fdTimeWinEnd - (*det).fdTimeWinBeg);
   }  // for( std::vector< RawEventBuilderDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
 }
 //----------------------------------------------------------------------

@@ -23,13 +23,14 @@
 /// FAIRSOFT headers (geant, boost, ...)
 
 /// C/C++ headers
+#include <tuple>
+
+#include <boost/any.hpp>
+
 #include <array>
 #include <map>
 #include <set>
-#include <tuple>
 #include <vector>
-
-#include <boost/any.hpp>
 
 class TimesliceMetaData;
 class CbmEvent;
@@ -39,26 +40,26 @@ class TH2;
 class TNamed;
 class TCanvas;
 
-enum class EOverlapModeRaw { NoOverlap, MergeOverlap, AllowOverlap };
+enum class EOverlapModeRaw
+{
+  NoOverlap,
+  MergeOverlap,
+  AllowOverlap
+};
 
 class RawEventBuilderDetector {
 public:
   RawEventBuilderDetector() { ; }
-  RawEventBuilderDetector(ECbmModuleId detIdIn,
-                          ECbmDataType dataTypeIn,
-                          std::string sNameIn) {
+  RawEventBuilderDetector(ECbmModuleId detIdIn, ECbmDataType dataTypeIn, std::string sNameIn)
+  {
     detId    = detIdIn;
     dataType = dataTypeIn;
     sName    = sNameIn;
   }
-  RawEventBuilderDetector(ECbmModuleId detIdIn,
-                          ECbmDataType dataTypeIn,
-                          std::string sNameIn,
-                          UInt_t uTriggerMinDigisIn,
-                          Int_t iTriggerMaxDigisIn,
-                          Double_t fdTimeWinBegIn,
-                          Double_t fdTimeWinEndIn)
-    : RawEventBuilderDetector(detIdIn, dataTypeIn, sNameIn) {
+  RawEventBuilderDetector(ECbmModuleId detIdIn, ECbmDataType dataTypeIn, std::string sNameIn, UInt_t uTriggerMinDigisIn,
+                          Int_t iTriggerMaxDigisIn, Double_t fdTimeWinBegIn, Double_t fdTimeWinEndIn)
+    : RawEventBuilderDetector(detIdIn, dataTypeIn, sNameIn)
+  {
     fuTriggerMinDigis = uTriggerMinDigisIn;
     fiTriggerMaxDigis = iTriggerMaxDigisIn;
 
@@ -66,12 +67,8 @@ public:
     fdTimeWinEnd = fdTimeWinEndIn;
   }
 
-  bool operator==(const RawEventBuilderDetector& other) const {
-    return (other.detId == this->detId);
-  }
-  bool operator!=(const RawEventBuilderDetector& other) const {
-    return (other.detId != this->detId);
-  }
+  bool operator==(const RawEventBuilderDetector& other) const { return (other.detId == this->detId); }
+  bool operator!=(const RawEventBuilderDetector& other) const { return (other.detId != this->detId); }
 
   Double_t GetTimeWinRange() { return fdTimeWinEnd - fdTimeWinBeg; }
 
@@ -107,8 +104,7 @@ static const RawEventBuilderDetector kRawEventBuilderDetPsd =
   RawEventBuilderDetector(ECbmModuleId::kPsd, ECbmDataType::kPsdDigi, "Psd");
 static const RawEventBuilderDetector kRawEventBuilderDetT0 =
   RawEventBuilderDetector(ECbmModuleId::kT0, ECbmDataType::kT0Digi, "T0");
-static const RawEventBuilderDetector kRawEventBuilderDetUndef =
-  RawEventBuilderDetector();
+static const RawEventBuilderDetector kRawEventBuilderDetUndef = RawEventBuilderDetector();
 
 
 class CbmAlgoBuildRawEvents {
@@ -134,20 +130,11 @@ public:
   void SetFillHistos(Bool_t var) { fbFillHistos = var; }
   void ResetHistograms(Bool_t bResetTime = kTRUE);
 
-  void SetReferenceDetector(ECbmModuleId refDet,
-                            ECbmDataType dataTypeIn,
-                            std::string sNameIn,
-                            UInt_t uTriggerMinDigisIn = 0,
-                            Int_t iTriggerMaxDigisIn  = -1,
-                            Double_t fdTimeWinBegIn   = -100,
-                            Double_t fdTimeWinEndIn   = 100);
-  void AddDetector(ECbmModuleId selDet,
-                   ECbmDataType dataTypeIn,
-                   std::string sNameIn,
-                   UInt_t uTriggerMinDigisIn = 0,
-                   Int_t iTriggerMaxDigisIn  = -1,
-                   Double_t fdTimeWinBegIn   = -100,
-                   Double_t fdTimeWinEndIn   = 100);
+  void SetReferenceDetector(ECbmModuleId refDet, ECbmDataType dataTypeIn, std::string sNameIn,
+                            UInt_t uTriggerMinDigisIn = 0, Int_t iTriggerMaxDigisIn = -1,
+                            Double_t fdTimeWinBegIn = -100, Double_t fdTimeWinEndIn = 100);
+  void AddDetector(ECbmModuleId selDet, ECbmDataType dataTypeIn, std::string sNameIn, UInt_t uTriggerMinDigisIn = 0,
+                   Int_t iTriggerMaxDigisIn = -1, Double_t fdTimeWinBegIn = -100, Double_t fdTimeWinEndIn = 100);
 
   void SetReferenceDetector(RawEventBuilderDetector refDetIn);
   void AddDetector(RawEventBuilderDetector selDet);
@@ -156,12 +143,10 @@ public:
   void SetTriggerMinNumber(ECbmModuleId selDet, UInt_t uVal);
   void SetTriggerMaxNumber(ECbmModuleId selDet, Int_t iVal);
 
-  void
-  SetTriggerWindow(ECbmModuleId selDet, Double_t dWinBeg, Double_t dWinEnd);
+  void SetTriggerWindow(ECbmModuleId selDet, Double_t dWinBeg, Double_t dWinEnd);
 
-  void SetTsParameters(Double_t dTsStartTime,
-                       Double_t dTsLength,
-                       Double_t dTsOverLength) {
+  void SetTsParameters(Double_t dTsStartTime, Double_t dTsLength, Double_t dTsOverLength)
+  {
     fdTsStartTime  = dTsStartTime;
     fdTsLength     = dTsLength;
     fdTsOverLength = dTsOverLength;
@@ -169,46 +154,32 @@ public:
 
   /// Control flags
   void SetEventOverlapMode(EOverlapModeRaw mode) { fOverMode = mode; }
-  void SetIgnoreTsOverlap(Bool_t bFlagIn = kTRUE) {
-    fbIgnoreTsOverlap = bFlagIn;
-  }
+  void SetIgnoreTsOverlap(Bool_t bFlagIn = kTRUE) { fbIgnoreTsOverlap = bFlagIn; }
 
-  void ChangeMuchBeamtimeDigiFlag(Bool_t bFlagIn = kFALSE) {
-    fbUseMuchBeamtimeDigi = bFlagIn;
-  }
+  void ChangeMuchBeamtimeDigiFlag(Bool_t bFlagIn = kFALSE) { fbUseMuchBeamtimeDigi = bFlagIn; }
 
   /// For monitor algos
-  void AddHistoToVector(TNamed* pointer, std::string sFolder = "") {
-    fvpAllHistoPointers.push_back(
-      std::pair<TNamed*, std::string>(pointer, sFolder));
+  void AddHistoToVector(TNamed* pointer, std::string sFolder = "")
+  {
+    fvpAllHistoPointers.push_back(std::pair<TNamed*, std::string>(pointer, sFolder));
   }
-  std::vector<std::pair<TNamed*, std::string>> GetHistoVector() {
-    return fvpAllHistoPointers;
+  std::vector<std::pair<TNamed*, std::string>> GetHistoVector() { return fvpAllHistoPointers; }
+  void AddCanvasToVector(TCanvas* pointer, std::string sFolder = "")
+  {
+    fvpAllCanvasPointers.push_back(std::pair<TCanvas*, std::string>(pointer, sFolder));
   }
-  void AddCanvasToVector(TCanvas* pointer, std::string sFolder = "") {
-    fvpAllCanvasPointers.push_back(
-      std::pair<TCanvas*, std::string>(pointer, sFolder));
-  }
-  std::vector<std::pair<TCanvas*, std::string>> GetCanvasVector() {
-    return fvpAllCanvasPointers;
-  }
+  std::vector<std::pair<TCanvas*, std::string>> GetCanvasVector() { return fvpAllCanvasPointers; }
 
   /// Set digi containers
-  void SetT0Digis(const std::vector<CbmTofDigi>* T0DigiVec) {
-    fT0DigiVec = T0DigiVec;
-  }
+  void SetT0Digis(const std::vector<CbmTofDigi>* T0DigiVec) { fT0DigiVec = T0DigiVec; }
   void SetStsDigis(std::vector<CbmStsDigi>* StsDigis) { fStsDigis = StsDigis; }
-  void SetMuchDigis(std::vector<CbmMuchDigi>* MuchDigis) {
-    fMuchDigis = MuchDigis;
-  }
+  void SetMuchDigis(std::vector<CbmMuchDigi>* MuchDigis) { fMuchDigis = MuchDigis; }
   void SetTrdDigis(std::vector<CbmTrdDigi>* TrdDigis) { fTrdDigis = TrdDigis; }
   void SetTofDigis(std::vector<CbmTofDigi>* TofDigis) { fTofDigis = TofDigis; }
-  void SetRichDigis(std::vector<CbmRichDigi>* RichDigis) {
-    fRichDigis = RichDigis;
-  }
+  void SetRichDigis(std::vector<CbmRichDigi>* RichDigis) { fRichDigis = RichDigis; }
   void SetPsdDigis(std::vector<CbmPsdDigi>* PsdDigis) { fPsdDigis = PsdDigis; }
-  void
-  SetMuchBeamTimeDigis(std::vector<CbmMuchBeamTimeDigi>* MuchBeamTimeDigis) {
+  void SetMuchBeamTimeDigis(std::vector<CbmMuchBeamTimeDigi>* MuchBeamTimeDigis)
+  {
     fMuchBeamTimeDigis = MuchBeamTimeDigis;
   }
 
@@ -243,27 +214,20 @@ private:
 
   /// User parameters
   /// Control flags
-  Bool_t fbIgnoreTsOverlap = kFALSE;  //! Ignore data in Overlap part of the TS
-  Bool_t fbFillHistos {kTRUE};        //! Switch ON/OFF filling of histograms
+  Bool_t fbIgnoreTsOverlap = kFALSE;     //! Ignore data in Overlap part of the TS
+  Bool_t fbFillHistos {kTRUE};           //! Switch ON/OFF filling of histograms
   Bool_t fbUseMuchBeamtimeDigi = kTRUE;  //! Switch between MUCH digi classes
     /// Event building mode and detectors selection
   EOverlapModeRaw fOverMode {EOverlapModeRaw::AllowOverlap};
 
-  RawEventBuilderDetector fRefDet =
-    RawEventBuilderDetector(ECbmModuleId::kT0, ECbmDataType::kT0Digi, "T0");
+  RawEventBuilderDetector fRefDet             = RawEventBuilderDetector(ECbmModuleId::kT0, ECbmDataType::kT0Digi, "T0");
   std::vector<RawEventBuilderDetector> fvDets = {
     RawEventBuilderDetector(ECbmModuleId::kSts, ECbmDataType::kStsDigi, "kSts"),
-    RawEventBuilderDetector(ECbmModuleId::kMuch,
-                            ECbmDataType::kMuchDigi,
-                            "kMuch"),
+    RawEventBuilderDetector(ECbmModuleId::kMuch, ECbmDataType::kMuchDigi, "kMuch"),
     RawEventBuilderDetector(ECbmModuleId::kTrd, ECbmDataType::kTrdDigi, "kTrd"),
     RawEventBuilderDetector(ECbmModuleId::kTof, ECbmDataType::kTofDigi, "kTof"),
-    RawEventBuilderDetector(ECbmModuleId::kRich,
-                            ECbmDataType::kRichDigi,
-                            "kRich"),
-    RawEventBuilderDetector(ECbmModuleId::kPsd,
-                            ECbmDataType::kPsdDigi,
-                            "kPsd")};
+    RawEventBuilderDetector(ECbmModuleId::kRich, ECbmDataType::kRichDigi, "kRich"),
+    RawEventBuilderDetector(ECbmModuleId::kPsd, ECbmDataType::kPsdDigi, "kPsd")};
 
   Double_t fdEarliestTimeWinBeg = kdDefaultTimeWinBeg;
   Double_t fdLatestTimeWinEnd   = kdDefaultTimeWinEnd;
@@ -295,9 +259,8 @@ private:
   const Digi* GetDigi(UInt_t uDigi);
 
   /// Data ouptut
-  CbmEvent* fCurrentEvent =
-    nullptr;  //! pointer to the event which is currently build
-  std::vector<CbmEvent*> fEventVector = {};  //! vector with all created events
+  CbmEvent* fCurrentEvent             = nullptr;  //! pointer to the event which is currently build
+  std::vector<CbmEvent*> fEventVector = {};       //! vector with all created events
 
   /// Monitoring histograms
   /// => Pointers should be filled with TH1*, TH2*, TProfile*, ...
@@ -315,23 +278,19 @@ private:
   std::vector<std::pair<TCanvas*, std::string>>
     fvpAllCanvasPointers;  //! Vector of pointers to canvases + optional folder name
 
-  TH1* fhEventTime = nullptr;  //! histogram with the seed time of the events
-  TH1* fhEventDt =
-    nullptr;  //! histogram with the interval in seed time of consecutive events
-  TH1* fhEventSize =
-    nullptr;  //! histogram with the nb of all  digis in the event
-  TH2* fhNbDigiPerEvtTime =
-    nullptr;  //! histogram with the nb of all  digis per event vs seed time of the events
+  TH1* fhEventTime        = nullptr;  //! histogram with the seed time of the events
+  TH1* fhEventDt          = nullptr;  //! histogram with the interval in seed time of consecutive events
+  TH1* fhEventSize        = nullptr;  //! histogram with the nb of all  digis in the event
+  TH2* fhNbDigiPerEvtTime = nullptr;  //! histogram with the nb of all  digis per event vs seed time of the events
   std::vector<TH2*> fvhNbDigiPerEvtTimeDet =
     {};  //! histograms with the nb of digis in each detector per event vs seed time of the events
 
   /// Internal state variables
-  UInt_t fuCurEv         = 0;   //! Event Counter
-  UInt_t fuErrors        = 0;   //! Error Counter
-  UInt_t fuNrTs          = 0;   //! Timeslice Counter
-  Double_t fdPrevEvtTime = 0.;  //! Save previous time information
-  Double_t fdPrevEvtEndTime =
-    0.;  //! Save previous event last digi time information
+  UInt_t fuCurEv            = 0;   //! Event Counter
+  UInt_t fuErrors           = 0;   //! Error Counter
+  UInt_t fuNrTs             = 0;   //! Timeslice Counter
+  Double_t fdPrevEvtTime    = 0.;  //! Save previous time information
+  Double_t fdPrevEvtEndTime = 0.;  //! Save previous event last digi time information
 
   ClassDefNV(CbmAlgoBuildRawEvents, 1);
 };

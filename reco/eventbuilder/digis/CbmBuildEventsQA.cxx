@@ -11,10 +11,13 @@
 #include "CbmMatch.h"
 #include "CbmModuleList.h"
 #include "CbmStsDigi.h"
+
 #include "FairLogger.h"
 #include "FairRootManager.h"
+
 #include "TClonesArray.h"
 #include "TStopwatch.h"
+
 #include <cassert>
 #include <iomanip>
 #include <iostream>
@@ -24,8 +27,7 @@ using namespace std;
 
 
 // =====   Constructor   =====================================================
-CbmBuildEventsQA::CbmBuildEventsQA()
-  : FairTask("BuildEventsQA"), fEvents(NULL), fNofEntries(0) {}
+CbmBuildEventsQA::CbmBuildEventsQA() : FairTask("BuildEventsQA"), fEvents(NULL), fNofEntries(0) {}
 // ===========================================================================
 
 
@@ -35,7 +37,8 @@ CbmBuildEventsQA::~CbmBuildEventsQA() {}
 
 
 // =====   Task initialisation   =============================================
-InitStatus CbmBuildEventsQA::Init() {
+InitStatus CbmBuildEventsQA::Init()
+{
 
   // --- Get FairRootManager instance
   FairRootManager* ioman = FairRootManager::Instance();
@@ -53,12 +56,9 @@ InitStatus CbmBuildEventsQA::Init() {
   fDigiMan->Init();
 
   // --- Check input data
-  for (ECbmModuleId system = ECbmModuleId::kMvd;
-       system < ECbmModuleId::kNofSystems;
-       ++system) {
+  for (ECbmModuleId system = ECbmModuleId::kMvd; system < ECbmModuleId::kNofSystems; ++system) {
     if (fDigiMan->IsMatchPresent(system)) {
-      LOG(info) << GetName() << ": Found match branch for "
-                << CbmModuleList::GetModuleNameCaps(system);
+      LOG(info) << GetName() << ": Found match branch for " << CbmModuleList::GetModuleNameCaps(system);
       fSystems.push_back(system);
     }
   }
@@ -73,7 +73,8 @@ InitStatus CbmBuildEventsQA::Init() {
 
 
 // =====   Task execution   ==================================================
-void CbmBuildEventsQA::Exec(Option_t*) {
+void CbmBuildEventsQA::Exec(Option_t*)
+{
 
   // --- Time and counters
   TStopwatch timer;
@@ -92,10 +93,9 @@ void CbmBuildEventsQA::Exec(Option_t*) {
       continue;
     }  // if (-1 == event->GetMatch()->GetNofLinks())
     Int_t mcEventNr = event->GetMatch()->GetMatchedLink().GetEntry();
-    LOG(info) << GetName() << ": Event " << event->GetNumber()
-              << ", digis in event: " << event->GetNofData()
-              << ", links to MC events: " << event->GetMatch()->GetNofLinks()
-              << ", matched MC event number " << mcEventNr;
+    LOG(info) << GetName() << ": Event " << event->GetNumber() << ", digis in event: " << event->GetNofData()
+              << ", links to MC events: " << event->GetMatch()->GetNofLinks() << ", matched MC event number "
+              << mcEventNr;
 
     // --- Loop over all detector systems
     for (ECbmModuleId& system : fSystems) {
@@ -119,8 +119,7 @@ void CbmBuildEventsQA::Exec(Option_t*) {
 
         // --- Check MC event of digi match
         if (digiMatch->GetNofLinks()) {
-          if (digiMatch->GetMatchedLink().GetEntry() == mcEventNr)
-            nDigiCorrect++;
+          if (digiMatch->GetMatchedLink().GetEntry() == mcEventNr) nDigiCorrect++;
         }
 
         for (Int_t iLink = 0; iLink < digiMatch->GetNofLinks(); iLink++) {
@@ -142,30 +141,23 @@ void CbmBuildEventsQA::Exec(Option_t*) {
         assert(match);
         Int_t mcEvent = -1;
 
-        if (match->GetNofLinks()) {
-          mcEvent = match->GetMatchedLink().GetEntry();
-        }
+        if (match->GetNofLinks()) { mcEvent = match->GetMatchedLink().GetEntry(); }
         //digi belongs to current event
         if (mcEvent == mcEventNr) totEventDigis++;
       }
 
       // --- QA output
       if (0 < nDigis) {
-        LOG(info) << GetName() << ": Detector "
-                  << CbmModuleList::GetModuleNameCaps(system);
-        LOG(info) << "Correct digis " << nDigiCorrect << " / " << nDigis
-                  << " = " << 100. * Double_t(nDigiCorrect) / Double_t(nDigis)
-                  << " %";
-        LOG(info) << "Correct digi links " << nLinksCorrect << " / " << nLinks
-                  << " = " << 100. * Double_t(nLinksCorrect) / Double_t(nLinks)
-                  << " % ";
-        LOG(info) << "Digi percentage found " << nDigiCorrect << " / "
-                  << totEventDigis << " = "
-                  << 100. * Double_t(nDigiCorrect) / Double_t(totEventDigis)
-                  << " % ";
-      } else {
-        LOG(info) << GetName() << ": Detector "
-                  << CbmModuleList::GetModuleNameCaps(system)
+        LOG(info) << GetName() << ": Detector " << CbmModuleList::GetModuleNameCaps(system);
+        LOG(info) << "Correct digis " << nDigiCorrect << " / " << nDigis << " = "
+                  << 100. * Double_t(nDigiCorrect) / Double_t(nDigis) << " %";
+        LOG(info) << "Correct digi links " << nLinksCorrect << " / " << nLinks << " = "
+                  << 100. * Double_t(nLinksCorrect) / Double_t(nLinks) << " % ";
+        LOG(info) << "Digi percentage found " << nDigiCorrect << " / " << totEventDigis << " = "
+                  << 100. * Double_t(nDigiCorrect) / Double_t(totEventDigis) << " % ";
+      }
+      else {
+        LOG(info) << GetName() << ": Detector " << CbmModuleList::GetModuleNameCaps(system)
                   << ", no digis in this event";
 
       }  // else of if( 0 < nDigis )
@@ -177,15 +169,15 @@ void CbmBuildEventsQA::Exec(Option_t*) {
   timer.Stop();
 
   // --- Execution log
-  LOG(info) << "+ " << setw(20) << GetName() << ": Entry " << setw(6) << right
-            << fNofEntries << ", real time " << fixed << setprecision(6)
-            << timer.RealTime() << " s, events: " << fEvents->GetEntriesFast();
+  LOG(info) << "+ " << setw(20) << GetName() << ": Entry " << setw(6) << right << fNofEntries << ", real time " << fixed
+            << setprecision(6) << timer.RealTime() << " s, events: " << fEvents->GetEntriesFast();
 }
 // ===========================================================================
 
 
 // =====   Match event   =====================================================
-void CbmBuildEventsQA::MatchEvent(CbmEvent* event) {
+void CbmBuildEventsQA::MatchEvent(CbmEvent* event)
+{
 
   // --- Get event match object. If present, will be cleared first. If not,
   // --- it will be created.
@@ -194,7 +186,8 @@ void CbmBuildEventsQA::MatchEvent(CbmEvent* event) {
     LOG(info) << "No match data found in event. Creating new.";
     match = new CbmMatch();
     event->SetMatch(match);
-  } else {
+  }
+  else {
     LOG(info) << "Match data found in event. Clearing.";
     match->ClearLinks();
   }
@@ -206,8 +199,7 @@ void CbmBuildEventsQA::MatchEvent(CbmEvent* event) {
 
     //Skip if reference detectors are set and current system isn't one
     if (!fRefDetectors.empty()
-        && std::find(fRefDetectors.begin(), fRefDetectors.end(), system)
-             == fRefDetectors.end()) {
+        && std::find(fRefDetectors.begin(), fRefDetectors.end(), system) == fRefDetectors.end()) {
       continue;
     }
 
@@ -236,7 +228,8 @@ void CbmBuildEventsQA::MatchEvent(CbmEvent* event) {
 
 
 // =====  Get digi type  =====================================================
-ECbmDataType CbmBuildEventsQA::GetDigiType(ECbmModuleId system) {
+ECbmDataType CbmBuildEventsQA::GetDigiType(ECbmModuleId system)
+{
   switch (system) {
     case ECbmModuleId::kMvd: return ECbmDataType::kMvdDigi;
     case ECbmModuleId::kSts: return ECbmDataType::kStsDigi;
