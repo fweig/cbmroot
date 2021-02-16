@@ -221,9 +221,6 @@ void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice =
                   << "building using ``Real2019'' option. Terminating macro." << std::endl;
         return;
       }
-      // Remove STS as it will be our reference
-      evBuildRaw->RemoveDetector(kEventBuilderDetSts);
-
       // Set STS as reference detector
       evBuildRaw->SetReferenceDetector(kEventBuilderDetSts);
       evBuildRaw->SetTsParameters(0.0, 1.e7, 0.0);
@@ -256,9 +253,6 @@ void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice =
                   << "building using ``Real2019'' option. Terminating macro." << std::endl;
         return;
       }
-      // Remove STS as it will be our reference
-      evBuildRaw->RemoveDetector(kRawEventBuilderDetSts);
-
       // Set STS as reference detector
       evBuildRaw->SetReferenceDetector(kRawEventBuilderDetSts);
       evBuildRaw->SetTsParameters(0.0, 1.e7, 0.0);

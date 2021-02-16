@@ -49,22 +49,23 @@ enum class EOverlapModeRaw
 
 class RawEventBuilderDetector {
 public:
-  RawEventBuilderDetector() { ; }
+  RawEventBuilderDetector() = default;
+
   RawEventBuilderDetector(ECbmModuleId detIdIn, ECbmDataType dataTypeIn, std::string sNameIn)
+    : detId {detIdIn}
+    , dataType {dataTypeIn}
+    , sName {sNameIn}
   {
-    detId    = detIdIn;
-    dataType = dataTypeIn;
-    sName    = sNameIn;
   }
+
   RawEventBuilderDetector(ECbmModuleId detIdIn, ECbmDataType dataTypeIn, std::string sNameIn, UInt_t uTriggerMinDigisIn,
                           Int_t iTriggerMaxDigisIn, Double_t fdTimeWinBegIn, Double_t fdTimeWinEndIn)
     : RawEventBuilderDetector(detIdIn, dataTypeIn, sNameIn)
   {
     fuTriggerMinDigis = uTriggerMinDigisIn;
     fiTriggerMaxDigis = iTriggerMaxDigisIn;
-
-    fdTimeWinBeg = fdTimeWinBegIn;
-    fdTimeWinEnd = fdTimeWinEndIn;
+    fdTimeWinBeg      = fdTimeWinBegIn;
+    fdTimeWinEnd      = fdTimeWinEndIn;
   }
 
   bool operator==(const RawEventBuilderDetector& other) const { return (other.detId == this->detId); }
@@ -83,7 +84,6 @@ public:
   /// Selection Window
   Double_t fdTimeWinBeg = -100;
   Double_t fdTimeWinEnd = 100;
-
   /// Book-keeping variables
   UInt_t fuStartIndex = 0;
   UInt_t fuEndIndex   = 0;
@@ -110,13 +110,13 @@ static const RawEventBuilderDetector kRawEventBuilderDetUndef = RawEventBuilderD
 class CbmAlgoBuildRawEvents {
 public:
   /** Default constructor **/
-  CbmAlgoBuildRawEvents();
+  CbmAlgoBuildRawEvents() = default;
 
   CbmAlgoBuildRawEvents(const CbmAlgoBuildRawEvents&) = delete;
   CbmAlgoBuildRawEvents operator=(const CbmAlgoBuildRawEvents&) = delete;
 
   /** Destructor **/
-  ~CbmAlgoBuildRawEvents();
+  ~CbmAlgoBuildRawEvents() {};
 
   /** Initiliazation at the beginning of a run **/
   Bool_t InitAlgo();
@@ -142,7 +142,6 @@ public:
 
   void SetTriggerMinNumber(ECbmModuleId selDet, UInt_t uVal);
   void SetTriggerMaxNumber(ECbmModuleId selDet, Int_t iVal);
-
   void SetTriggerWindow(ECbmModuleId selDet, Double_t dWinBeg, Double_t dWinEnd);
 
   void SetTsParameters(Double_t dTsStartTime, Double_t dTsLength, Double_t dTsOverLength)
@@ -191,6 +190,7 @@ private:
   /// Internal methods
   Bool_t CheckDataAvailable(RawEventBuilderDetector& det);
   void InitTs();
+  void InitSeedWindow();
   void BuildEvents();
 
   void CreateHistograms();
@@ -199,7 +199,10 @@ private:
   template<class DigiSeed>
   void LoopOnSeeds();
   void CheckSeed(Double_t dSeedTime, UInt_t uSeedDigiIdx);
+  void CheckTriggerCondition(Double_t dSeedTime);
+
   template<class DigiCheck>
+  void SearchMatches(Double_t dSeedTime, RawEventBuilderDetector& detMatch);
   void SearchMatches(Double_t dSeedTime, RawEventBuilderDetector& detMatch);
   void AddDigiToEvent(RawEventBuilderDetector& det, Int_t uIdx);
   Bool_t HasTrigger(CbmEvent*);
@@ -232,6 +235,9 @@ private:
   Double_t fdEarliestTimeWinBeg = kdDefaultTimeWinBeg;
   Double_t fdLatestTimeWinEnd   = kdDefaultTimeWinEnd;
   Double_t fdWidestTimeWinRange = kdDefaultTimeWinEnd - kdDefaultTimeWinBeg;
+  ///Seed window
+  Double_t fdSeedWindowBeg = 0;
+  Double_t fdSeedWindowEnd = 0;
 
   Double_t fdTsStartTime  = -1;
   Double_t fdTsLength     = -1;

@@ -14,6 +14,7 @@
 /// FAIRSOFT headers (geant, boost, ...)
 
 /// C/C++ headers
+#include "CbmAlgoBuildRawEvents.h"
 #include "CbmMuchBeamTimeDigi.h"
 #include "CbmMuchDigi.h"
 #include "CbmPsdDigi.h"
@@ -30,7 +31,6 @@
 #include <vector>
 
 class CbmDigiManager;
-class CbmAlgoBuildRawEvents;
 class RawEventBuilderDetector;
 class TClonesArray;
 
@@ -47,17 +47,14 @@ public:
   /** Constructor with parameters (Optional) **/
   //  CbmTaskBuildRawEvents(Int_t verbose);
 
-
   /** Destructor **/
   ~CbmTaskBuildRawEvents();
-
 
   /** Initiliazation of task at the beginning of a run **/
   virtual InitStatus Init();
 
   /** ReInitiliazation of task when the runID changes **/
   virtual InitStatus ReInit();
-
 
   /** Executed for each event. **/
   virtual void Exec(Option_t*);
@@ -68,24 +65,55 @@ public:
   /** Finish task called at the end of the run **/
   virtual void Finish();
 
-  void SetFillHistos(Bool_t bFlag = kTRUE);
-  void SetOutFilename(TString sNameIn);
+  /** Setters **/
+  void SetOutFilename(TString sNameIn) { fsOutFileName = sNameIn; }
 
-  void SetReferenceDetector(RawEventBuilderDetector refDet);
-  void AddDetector(RawEventBuilderDetector selDet);
-  void RemoveDetector(RawEventBuilderDetector selDet);
-
-  void SetTriggerMinNumber(ECbmModuleId selDet, UInt_t uVal);
-  void SetTriggerMaxNumber(ECbmModuleId selDet, Int_t iVal);
-
-  void SetTriggerWindow(ECbmModuleId det, Double_t dWinBeg, Double_t dWinEnd);
-
-  void SetTsParameters(Double_t dTsStartTime, Double_t dTsLength, Double_t dTsOverLength);
-
-  void SetEventOverlapMode(EOverlapModeRaw mode);
-  void SetIgnoreTsOverlap(Bool_t bFlagIn);
-
-  void ChangeMuchBeamtimeDigiFlag(Bool_t bFlagIn = kFALSE);
+  void SetFillHistos(Bool_t bFlag = kTRUE)
+  {
+    fbFillHistos = bFlag;
+    if (nullptr != fpAlgo) fpAlgo->SetFillHistos(fbFillHistos);
+  }
+  void SetReferenceDetector(RawEventBuilderDetector refDet)
+  {
+    if (nullptr != fpAlgo) fpAlgo->SetReferenceDetector(refDet);
+  }
+  void AddDetector(RawEventBuilderDetector selDet)
+  {
+    if (nullptr != fpAlgo) fpAlgo->AddDetector(selDet);
+  }
+  void RemoveDetector(RawEventBuilderDetector selDet)
+  {
+    if (nullptr != fpAlgo) fpAlgo->RemoveDetector(selDet);
+  }
+  void SetTriggerMinNumber(ECbmModuleId selDet, UInt_t uVal)
+  {
+    if (nullptr != fpAlgo) fpAlgo->SetTriggerMinNumber(selDet, uVal);
+  }
+  void SetTriggerMaxNumber(ECbmModuleId selDet, Int_t iVal)
+  {
+    if (nullptr != fpAlgo) fpAlgo->SetTriggerMaxNumber(selDet, iVal);
+  }
+  void SetTriggerWindow(ECbmModuleId det, Double_t dWinBeg, Double_t dWinEnd)
+  {
+    if (nullptr != fpAlgo) fpAlgo->SetTriggerWindow(det, dWinBeg, dWinEnd);
+  }
+  void SetTsParameters(Double_t dTsStartTime, Double_t dTsLength, Double_t dTsOverLength)
+  {
+    if (nullptr != fpAlgo) fpAlgo->SetTsParameters(dTsStartTime, dTsLength, dTsOverLength);
+  }
+  void SetEventOverlapMode(EOverlapModeRaw mode)
+  {
+    if (nullptr != fpAlgo) fpAlgo->SetEventOverlapMode(mode);
+  }
+  void SetIgnoreTsOverlap(Bool_t bFlagIn)
+  {
+    if (nullptr != fpAlgo) fpAlgo->SetIgnoreTsOverlap(bFlagIn);
+  }
+  void ChangeMuchBeamtimeDigiFlag(Bool_t bFlagIn = kFALSE)
+  {
+    if (nullptr != fpAlgo) fpAlgo->ChangeMuchBeamtimeDigiFlag(bFlagIn);
+    fbUseMuchBeamtimeDigi = bFlagIn;
+  }
 
 private:
   void FillOutput();
