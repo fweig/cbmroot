@@ -130,6 +130,9 @@ Set(SRCS
 
    tasks/CbmMcbmCheckTimingAlgo.cxx
    tasks/CbmMcbmCheckTimingTask.cxx
+
+   tasks/CbmMcbmSpillFindAlgo.cxx
+   tasks/CbmMcbmSpillFindTask.cxx
 )
 
 If(_UINT8_T_EXIST)

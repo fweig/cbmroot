@@ -77,4 +77,7 @@
 #pragma link C++ class CbmMcbmCheckTimingAlgo + ;
 #pragma link C++ class CbmMcbmCheckTimingTask + ;
 
+#pragma link C++ class CbmMcbmSpillFindAlgo + ;
+#pragma link C++ class CbmMcbmSpillFindTask + ;
+
 #endif
