@@ -65,6 +65,20 @@ Bool_t CbmAlgoBuildRawEvents::InitAlgo()
   return kTRUE;
 }
 
+void CbmAlgoBuildRawEvents::Finish() { LOG(info) << "Total errors: " << fuErrors; }
+
+void CbmAlgoBuildRawEvents::ClearEventVector()
+{
+  /// Need to delete the object the pointer points to first
+  int counter = 0;
+  for (CbmEvent* event : fEventVector) {
+    LOG(debug) << "Event " << counter << " has " << event->GetNofData() << " digis";
+    delete event;
+    counter++;
+  }
+  fEventVector.clear();
+}
+
 void CbmAlgoBuildRawEvents::ProcessTs()
 {
   LOG_IF(info, fuNrTs % 1000 == 0) << "Begin of TS " << fuNrTs;
@@ -87,67 +101,6 @@ void CbmAlgoBuildRawEvents::ProcessTs()
   LOG(debug) << "Found " << fEventVector.size() << " triggered events";
   if (fbFillHistos) { FillHistos(); }
   fuNrTs++;
-}
-
-void CbmAlgoBuildRawEvents::ClearEventVector()
-{
-  /// Need to delete the object the pointer points to first
-  int counter = 0;
-  for (CbmEvent* event : fEventVector) {
-    LOG(debug) << "Event " << counter << " has " << event->GetNofData() << " digis";
-    delete event;
-    counter++;
-  }
-  fEventVector.clear();
-}
-
-void CbmAlgoBuildRawEvents::Finish() { LOG(info) << "Total errors: " << fuErrors; }
-
-Bool_t CbmAlgoBuildRawEvents::CheckDataAvailable(RawEventBuilderDetector& det)
-{
-  if (ECbmModuleId::kT0 == det.detId) {
-    if (!fT0DigiVec) {
-      LOG(info) << "No T0 digi input found.";
-      return kFALSE;
-    }
-  }
-  else if (ECbmModuleId::kSts == det.detId) {
-    if (!fStsDigis) {
-      LOG(info) << "No " << det.sName << " digi input found.";
-      return kFALSE;
-    }
-  }
-  else if (ECbmModuleId::kMuch == det.detId) {
-    if (!fMuchDigis && !fMuchBeamTimeDigis) {
-      LOG(info) << "No " << det.sName << " digi input found.";
-      return kFALSE;
-    }
-  }
-  else if (ECbmModuleId::kTrd == det.detId) {
-    if (!fTrdDigis) {
-      LOG(info) << "No " << det.sName << " digi input found.";
-      return kFALSE;
-    }
-  }
-  else if (ECbmModuleId::kTof == det.detId) {
-    if (!fTofDigis) {
-      LOG(info) << "No " << det.sName << " digi input found.";
-      return kFALSE;
-    }
-  }
-  else if (ECbmModuleId::kRich == det.detId) {
-    if (!fRichDigis) {
-      LOG(info) << "No " << det.sName << " digi input found.";
-      return kFALSE;
-    }
-  }
-  else if (ECbmModuleId::kPsd == det.detId) {
-    if (!fPsdDigis) {
-      LOG(info) << "No " << det.sName << " digi input found.";
-      return kFALSE;
-    }
-  }
-  return kTRUE;
 }
 
 void CbmAlgoBuildRawEvents::InitTs()
@@ -242,112 +195,6 @@ void CbmAlgoBuildRawEvents::BuildEvents()
       break;
     }
   }  // switch( *det )
-}
-
-UInt_t CbmAlgoBuildRawEvents::GetNofDigis(ECbmModuleId detId)
-{
-  switch (detId) {
-    case ECbmModuleId::kSts: {
-      return fStsDigis->size();
-    }
-    case ECbmModuleId::kMuch: {
-      if (fbUseMuchBeamtimeDigi) { return fMuchBeamTimeDigis->size(); }
-      else {
-        return fMuchDigis->size();
-      }
-    }
-    case ECbmModuleId::kTrd: {
-      return fTrdDigis->size();
-    }
-    case ECbmModuleId::kTof: {
-      return fTofDigis->size();
-    }
-    case ECbmModuleId::kRich: {
-      return fRichDigis->size();
-    }
-    case ECbmModuleId::kPsd: {
-      return fPsdDigis->size();
-    }
-    case ECbmModuleId::kT0: {
-      return fT0DigiVec->size();  //what to do here? Not in digi manager.
-    }
-    default: {
-      LOG(fatal) << "CbmAlgoBuildRawEvents::GetNofDigis => "
-                 << "Trying to get digi number with unsupported detector.";
-      return -1;
-    }
-  }
-}
-
-bool CbmAlgoBuildRawEvents::DetIsPresent(ECbmModuleId detId)
-{
-  switch (detId) {
-    case ECbmModuleId::kSts: {
-      return fStsDigis != nullptr;
-    }
-    case ECbmModuleId::kMuch: {
-      if (fbUseMuchBeamtimeDigi) { return fMuchBeamTimeDigis != nullptr; }
-      else {
-        return fMuchDigis != nullptr;
-      }
-    }
-    case ECbmModuleId::kTrd: {
-      return fTrdDigis != nullptr;
-    }
-    case ECbmModuleId::kTof: {
-      return fTofDigis != nullptr;
-    }
-    case ECbmModuleId::kRich: {
-      return fRichDigis != nullptr;
-    }
-    case ECbmModuleId::kPsd: {
-      return fPsdDigis != nullptr;
-    }
-    case ECbmModuleId::kT0: {
-      return fT0DigiVec != nullptr;  //what to do here? Not in digi manager.
-    }
-    default: {
-      LOG(fatal) << "CbmAlgoBuildRawEvents::GetNofDigis => "
-                 << "Trying to get digi number with unsupported detector.";
-      return -1;
-    }
-  }
-}
-
-template<>
-const CbmStsDigi* CbmAlgoBuildRawEvents::GetDigi(UInt_t uDigi)
-{
-  return &((*fStsDigis)[uDigi]);
-}
-template<>
-const CbmMuchBeamTimeDigi* CbmAlgoBuildRawEvents::GetDigi(UInt_t uDigi)
-{
-  return &((*fMuchBeamTimeDigis)[uDigi]);
-}
-template<>
-const CbmMuchDigi* CbmAlgoBuildRawEvents::GetDigi(UInt_t uDigi)
-{
-  return &((*fMuchDigis)[uDigi]);
-}
-template<>
-const CbmTrdDigi* CbmAlgoBuildRawEvents::GetDigi(UInt_t uDigi)
-{
-  return &((*fTrdDigis)[uDigi]);
-}
-template<>
-const CbmTofDigi* CbmAlgoBuildRawEvents::GetDigi(UInt_t uDigi)
-{
-  return &((*fTofDigis)[uDigi]);
-}
-template<>
-const CbmRichDigi* CbmAlgoBuildRawEvents::GetDigi(UInt_t uDigi)
-{
-  return &((*fRichDigis)[uDigi]);
-}
-template<>
-const CbmPsdDigi* CbmAlgoBuildRawEvents::GetDigi(UInt_t uDigi)
-{
-  return &((*fPsdDigis)[uDigi]);
 }
 
 template<class DigiSeed>
@@ -551,6 +398,11 @@ void CbmAlgoBuildRawEvents::SearchMatches(Double_t dSeedTime, RawEventBuilderDet
   detMatch.fuEndIndex   = uLocalIndexEnd;
 }
 
+void CbmAlgoBuildRawEvents::AddDigiToEvent(RawEventBuilderDetector& det, Int_t _entry)
+{
+  fCurrentEvent->AddData(det.dataType, _entry);
+}
+
 void CbmAlgoBuildRawEvents::CheckTriggerCondition(Double_t dSeedTime)
 {
   /// Check if event is filling trigger conditions and clear it if not
@@ -573,11 +425,6 @@ void CbmAlgoBuildRawEvents::CheckTriggerCondition(Double_t dSeedTime)
     delete fCurrentEvent;
     fCurrentEvent = nullptr;  /// delete does NOT set a pointer to nullptr...
   }
-}
-
-void CbmAlgoBuildRawEvents::AddDigiToEvent(RawEventBuilderDetector& det, Int_t _entry)
-{
-  fCurrentEvent->AddData(det.dataType, _entry);
 }
 
 Bool_t CbmAlgoBuildRawEvents::HasTrigger(CbmEvent* event)
@@ -633,6 +480,162 @@ Bool_t CbmAlgoBuildRawEvents::CheckTriggerConditions(CbmEvent* event, RawEventBu
     return kTRUE;
   }
 }
+
+//----------------------------------------------------------------------
+
+Bool_t CbmAlgoBuildRawEvents::CheckDataAvailable(RawEventBuilderDetector& det)
+{
+  if (ECbmModuleId::kT0 == det.detId) {
+    if (!fT0DigiVec) {
+      LOG(info) << "No T0 digi input found.";
+      return kFALSE;
+    }
+  }
+  else if (ECbmModuleId::kSts == det.detId) {
+    if (!fStsDigis) {
+      LOG(info) << "No " << det.sName << " digi input found.";
+      return kFALSE;
+    }
+  }
+  else if (ECbmModuleId::kMuch == det.detId) {
+    if (!fMuchDigis && !fMuchBeamTimeDigis) {
+      LOG(info) << "No " << det.sName << " digi input found.";
+      return kFALSE;
+    }
+  }
+  else if (ECbmModuleId::kTrd == det.detId) {
+    if (!fTrdDigis) {
+      LOG(info) << "No " << det.sName << " digi input found.";
+      return kFALSE;
+    }
+  }
+  else if (ECbmModuleId::kTof == det.detId) {
+    if (!fTofDigis) {
+      LOG(info) << "No " << det.sName << " digi input found.";
+      return kFALSE;
+    }
+  }
+  else if (ECbmModuleId::kRich == det.detId) {
+    if (!fRichDigis) {
+      LOG(info) << "No " << det.sName << " digi input found.";
+      return kFALSE;
+    }
+  }
+  else if (ECbmModuleId::kPsd == det.detId) {
+    if (!fPsdDigis) {
+      LOG(info) << "No " << det.sName << " digi input found.";
+      return kFALSE;
+    }
+  }
+  return kTRUE;
+}
+
+UInt_t CbmAlgoBuildRawEvents::GetNofDigis(ECbmModuleId detId)
+{
+  switch (detId) {
+    case ECbmModuleId::kSts: {
+      return fStsDigis->size();
+    }
+    case ECbmModuleId::kMuch: {
+      if (fbUseMuchBeamtimeDigi) { return fMuchBeamTimeDigis->size(); }
+      else {
+        return fMuchDigis->size();
+      }
+    }
+    case ECbmModuleId::kTrd: {
+      return fTrdDigis->size();
+    }
+    case ECbmModuleId::kTof: {
+      return fTofDigis->size();
+    }
+    case ECbmModuleId::kRich: {
+      return fRichDigis->size();
+    }
+    case ECbmModuleId::kPsd: {
+      return fPsdDigis->size();
+    }
+    case ECbmModuleId::kT0: {
+      return fT0DigiVec->size();  //what to do here? Not in digi manager.
+    }
+    default: {
+      LOG(fatal) << "CbmAlgoBuildRawEvents::GetNofDigis => "
+                 << "Trying to get digi number with unsupported detector.";
+      return -1;
+    }
+  }
+}
+
+bool CbmAlgoBuildRawEvents::DetIsPresent(ECbmModuleId detId)
+{
+  switch (detId) {
+    case ECbmModuleId::kSts: {
+      return fStsDigis != nullptr;
+    }
+    case ECbmModuleId::kMuch: {
+      if (fbUseMuchBeamtimeDigi) { return fMuchBeamTimeDigis != nullptr; }
+      else {
+        return fMuchDigis != nullptr;
+      }
+    }
+    case ECbmModuleId::kTrd: {
+      return fTrdDigis != nullptr;
+    }
+    case ECbmModuleId::kTof: {
+      return fTofDigis != nullptr;
+    }
+    case ECbmModuleId::kRich: {
+      return fRichDigis != nullptr;
+    }
+    case ECbmModuleId::kPsd: {
+      return fPsdDigis != nullptr;
+    }
+    case ECbmModuleId::kT0: {
+      return fT0DigiVec != nullptr;  //what to do here? Not in digi manager.
+    }
+    default: {
+      LOG(fatal) << "CbmAlgoBuildRawEvents::GetNofDigis => "
+                 << "Trying to get digi number with unsupported detector.";
+      return -1;
+    }
+  }
+}
+
+template<>
+const CbmStsDigi* CbmAlgoBuildRawEvents::GetDigi(UInt_t uDigi)
+{
+  return &((*fStsDigis)[uDigi]);
+}
+template<>
+const CbmMuchBeamTimeDigi* CbmAlgoBuildRawEvents::GetDigi(UInt_t uDigi)
+{
+  return &((*fMuchBeamTimeDigis)[uDigi]);
+}
+template<>
+const CbmMuchDigi* CbmAlgoBuildRawEvents::GetDigi(UInt_t uDigi)
+{
+  return &((*fMuchDigis)[uDigi]);
+}
+template<>
+const CbmTrdDigi* CbmAlgoBuildRawEvents::GetDigi(UInt_t uDigi)
+{
+  return &((*fTrdDigis)[uDigi]);
+}
+template<>
+const CbmTofDigi* CbmAlgoBuildRawEvents::GetDigi(UInt_t uDigi)
+{
+  return &((*fTofDigis)[uDigi]);
+}
+template<>
+const CbmRichDigi* CbmAlgoBuildRawEvents::GetDigi(UInt_t uDigi)
+{
+  return &((*fRichDigis)[uDigi]);
+}
+template<>
+const CbmPsdDigi* CbmAlgoBuildRawEvents::GetDigi(UInt_t uDigi)
+{
+  return &((*fPsdDigis)[uDigi]);
+}
+
 //----------------------------------------------------------------------
 void CbmAlgoBuildRawEvents::CreateHistograms()
 {
