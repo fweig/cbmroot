@@ -29,11 +29,10 @@ Bool_t unpack_tsa_mcbm(TString inFile       = "",
   TString runId   = TString::Format("%03u", uRunId);
   TString outFile = sOutDir + "/unp_mcbm_" + runId;
   TString parFile = sOutDir + "/unp_mcbm_params_" + runId;
-  if( 0 <= iSpillIndex )
-  {
-     outFile += TString::Format("_%02i", iSpillIndex);
-     parFile += TString::Format("_%02i", iSpillIndex);
-  } // if( 0 <= iSpillIndex )
+  if (0 <= iSpillIndex) {
+    outFile += TString::Format("_%02i", iSpillIndex);
+    parFile += TString::Format("_%02i", iSpillIndex);
+  }  // if( 0 <= iSpillIndex )
   outFile += ".root";
   parFile += ".root";
 
@@ -611,26 +610,33 @@ Bool_t unpack_tsa_mcbm(TString inFile       = "",
   source->AddUnpacker(unpacker_psd, 0x80, ECbmModuleId::kPsd);     // PSD
 
   source->UnpackSelectSpills(iSpillIndex * iSpillnumber, iSpillIndex * iSpillnumber + iSpillnumber - 1, uSpillLimType);
+  /// Disable clang formatting around vectors initialization by lists
+  /* clang-format off */
   switch (uRunId) {
     case 831: {
-      source->LoadTsListSpillBreakBegin(
-        std::vector< ULong64_t >( {    1,   933,  1941,  2949,  4349,  5357,  6365,  7373,  8773,  9781, 10789, 11801,
-                                   13197, 14209, 15217, 16225, 17625, 18633, 19645, 20653, 22053, 23061, 24069, 25077,
-                                   26473, 27481, 28493, 29501, 30897, 31905, 32913, 33921, 35321, 36329, 37337, 38345,
-                                   39745, 40753, 41761, 42769, 44169, 45177, 46185, 47193, 48593 } ));
-      source->LoadTsListSpillBreakMiddle(
-        std::vector< ULong64_t >( {  111,  1081,  2087,  3299,  4495,  5503,  6513,  7721,  8921,  9927, 10935, 12149,
-                                   13347, 14355, 15363, 16573, 17773, 18781, 19791, 21001, 22199, 23209, 24215, 25423,
-                                   26619, 27629, 28637, 29847, 31045, 32051, 33059, 34275, 35469, 36475, 37483, 38693,
-                                   39889, 40899, 41907, 43117, 44315, 45323, 46333, 47543, 48689 } ));
-      source->LoadTsListSpillBreakEnd(
-        std::vector< ULong64_t >( {   221,  1229,  2233,  3649,  4641,  5649,  6661,  8069,  9069, 10073, 11081, 12497,
-                                   13497, 14501, 15509, 16921, 17921, 18929, 19937, 21349, 22345, 23357, 24361, 25769,
-                                   26765, 27777, 28781, 30193, 31193, 32197, 33205, 34629, 35617, 36621, 37629, 39041,
-                                   40033, 41045, 42053, 43465, 44461, 45469, 46481, 47893, 48786 } ));
+      source->LoadTsListSpillBreakBegin(std::vector<ULong64_t>(
+        {    1,   933,  1941,  2949,  4349,  5357,  6365,  7373,  8773,  9781,
+         10789, 11801, 13197, 14209, 15217, 16225, 17625, 18633, 19645, 20653,
+         22053, 23061, 24069, 25077, 26473, 27481, 28493, 29501, 30897, 31905,
+         32913, 33921, 35321, 36329, 37337, 38345, 39745, 40753, 41761, 42769,
+         44169, 45177, 46185, 47193, 48593}));
+      source->LoadTsListSpillBreakMiddle(std::vector<ULong64_t>(
+        {  111,  1081,  2087,  3299,  4495,  5503,  6513,  7721,  8921,  9927,
+         10935, 12149, 13347, 14355, 15363, 16573, 17773, 18781, 19791, 21001,
+         22199, 23209, 24215, 25423, 26619, 27629, 28637, 29847, 31045, 32051,
+         33059, 34275, 35469, 36475, 37483, 38693, 39889, 40899, 41907, 43117,
+         44315, 45323, 46333, 47543, 48689}));
+      source->LoadTsListSpillBreakEnd(std::vector<ULong64_t>(
+        {  221, 1229,  2233,  3649,  4641,  5649,  6661,  8069,  9069,  10073,
+         11081, 12497, 13497, 14501, 15509, 16921, 17921, 18929, 19937, 21349,
+         22345, 23357, 24361, 25769, 26765, 27777, 28781, 30193, 31193, 32197,
+         33205, 34629, 35617, 36621, 37629, 39041, 40033, 41045, 42053, 43465,
+         44461, 45469, 46481, 47893, 48786}));
       break;
-    } // case 831
-  } // switch (uRunId)
+    }  // case 831
+  }    // switch (uRunId)
+  /// Re-enable clang formatting after vectors initialization by lists
+  /* clang-format on */
 
   // --- Event header
   FairEventHeader* event = new FairEventHeader();

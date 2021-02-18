@@ -7,12 +7,8 @@
 // In order to call later Finish, we make this global
 FairRunOnline* run = NULL;
 
-Bool_t find_spills(TString inFile       = "",
-                   UInt_t uRunId        = 0,
-                   TString sOutDir      = "data",
-                   TString sHostname        = "localhost",
-                   Int_t iServerHttpPort    = 8080,
-                   Int_t iServerRefreshRate = 100)
+Bool_t find_spills(TString inFile = "", UInt_t uRunId = 0, TString sOutDir = "data", TString sHostname = "localhost",
+                   Int_t iServerHttpPort = 8080, Int_t iServerRefreshRate = 100)
 {
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
 
@@ -49,18 +45,15 @@ Bool_t find_spills(TString inFile       = "",
   CbmMcbmSpillFindTask* spill_finder_t0 = new CbmMcbmSpillFindTask();
 
   spill_finder_t0->SetIgnoreOverlapMs();
-  if (0 < uRunId)
-    spill_finder_t0->SetHistoFilename( Form("data/HistosSpillFinder_%03u.root", uRunId));
-  spill_finder_t0->SetPulserTotLimits(180, 210);  // for runs  >  86
-  spill_finder_t0->SetSpillCheckIntervalSec( 0.05 ); // ~every 4 TS
-  spill_finder_t0->SetSpillThreshold( 40 ); // ~10 hits per TS
+  if (0 < uRunId) spill_finder_t0->SetHistoFilename(Form("data/HistosSpillFinder_%03u.root", uRunId));
+  spill_finder_t0->SetPulserTotLimits(180, 210);    // for runs  >  86
+  spill_finder_t0->SetSpillCheckIntervalSec(0.05);  // ~every 4 TS
+  spill_finder_t0->SetSpillThreshold(40);           // ~10 hits per TS
 
   // --- Source task
   CbmMcbm2018Source* source = new CbmMcbm2018Source();
 
-  if ("" != inFile) {
-    source->SetFileName(inFile);
-  }  // if( "" != inFile )
+  if ("" != inFile) { source->SetFileName(inFile); }  // if( "" != inFile )
   else {
     source->SetHostName(sHostname);
   }  // else of if( "" != inFile )
@@ -98,16 +91,14 @@ Bool_t find_spills(TString inFile       = "",
 
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
-            << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
 
   // --- End-of-run info
   Double_t rtime = timer.RealTime();
   Double_t ctime = timer.CpuTime();
   std::cout << std::endl << std::endl;
   std::cout << ">>> SpillFinder: Macro finished successfully." << std::endl;
-  std::cout << ">>> SpillFinder: Real time " << rtime << " s, CPU time " << ctime
-            << " s" << std::endl;
+  std::cout << ">>> SpillFinder: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

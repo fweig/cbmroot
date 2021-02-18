@@ -77,26 +77,31 @@ public:
     fuTsReduction = uTsReduction;
   }
 
-  void UnpackSingleSpill( Int_t uSpillIdx, UInt_t uSpillStart = 1 ) {
-     fiUnpSpillIdxStart = uSpillIdx;
-     fiUnpSpillIdxStop = uSpillIdx;
-     fuFlagSpillStart = uSpillStart;
+  void UnpackSingleSpill(Int_t uSpillIdx, UInt_t uSpillStart = 1)
+  {
+    fiUnpSpillIdxStart = uSpillIdx;
+    fiUnpSpillIdxStop  = uSpillIdx;
+    fuFlagSpillStart   = uSpillStart;
   }
 
-  void UnpackSelectSpills( Int_t uSpillIdxStart,  Int_t uSpillIdxStop, UInt_t uSpillStart = 1 ) {
-     fiUnpSpillIdxStart = uSpillIdxStart;
-     fiUnpSpillIdxStop = uSpillIdxStop;
-     fuFlagSpillStart = uSpillStart;
+  void UnpackSelectSpills(Int_t uSpillIdxStart, Int_t uSpillIdxStop, UInt_t uSpillStart = 1)
+  {
+    fiUnpSpillIdxStart = uSpillIdxStart;
+    fiUnpSpillIdxStop  = uSpillIdxStop;
+    fuFlagSpillStart   = uSpillStart;
   }
 
-  void LoadTsListSpillBreakBegin( std::vector< ULong64_t > vTsBeg ) {
-     fvuSpillBreakBegTs.assign( vTsBeg.begin(), vTsBeg.end() );
+  void LoadTsListSpillBreakBegin(std::vector<ULong64_t> vTsBeg)
+  {
+    fvuSpillBreakBegTs.assign(vTsBeg.begin(), vTsBeg.end());
   }
-  void LoadTsListSpillBreakEnd( std::vector< ULong64_t > vTsEnd ) {
-     fvuSpillBreakEndTs.assign( vTsEnd.begin(), vTsEnd.end() );
+  void LoadTsListSpillBreakEnd(std::vector<ULong64_t> vTsEnd)
+  {
+    fvuSpillBreakEndTs.assign(vTsEnd.begin(), vTsEnd.end());
   }
-  void LoadTsListSpillBreakMiddle( std::vector< ULong64_t > vTsMid ) {
-     fvuSpillBreakMidTs.assign( vTsMid.begin(), vTsMid.end() );
+  void LoadTsListSpillBreakMiddle(std::vector<ULong64_t> vTsMid)
+  {
+    fvuSpillBreakMidTs.assign(vTsMid.begin(), vTsMid.end());
   }
 
   void SetSubscriberHwm(UInt_t val = 1) { fuSubscriberHwm = val; }
@@ -133,9 +138,9 @@ private:
   UInt_t fuSpillBegTs      = 0;   //!
   UInt_t fuSpillEndTs      = 0;   //!
 
-  std::vector< ULong64_t > fvuSpillBreakBegTs = {};  //!
-  std::vector< ULong64_t > fvuSpillBreakEndTs = {};  //!
-  std::vector< ULong64_t > fvuSpillBreakMidTs = {};  //!
+  std::vector<ULong64_t> fvuSpillBreakBegTs = {};  //!
+  std::vector<ULong64_t> fvuSpillBreakEndTs = {};  //!
+  std::vector<ULong64_t> fvuSpillBreakMidTs = {};  //!
 
   std::unique_ptr<fles::TimesliceSource> fSource;  //!
 

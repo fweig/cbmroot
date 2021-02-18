@@ -118,74 +118,65 @@ Bool_t CbmMcbm2018Source::Init() {
                   fbWriteOutput);
 
   /// Single spill unpacking
-  if (0 <= fiUnpSpillIdxStart)
-  {
-    switch( fuFlagSpillStart )
-    {
-      case 0:
-      {
+  if (0 <= fiUnpSpillIdxStart) {
+    switch (fuFlagSpillStart) {
+      case 0: {
         /// 0 = Break begin
-        if( fvuSpillBreakBegTs.size() - 1 <= fiUnpSpillIdxStop )
-        {
+        if (fvuSpillBreakBegTs.size() - 1 <= fiUnpSpillIdxStop) {
           LOG(warning) << "Chosen last spill index larger than spills contained in chosen spill start vector: "
                        << fiUnpSpillIdxStop << " VS " << fvuSpillBreakBegTs.size() - 1;
-          if( fiUnpSpillIdxStart < fvuSpillBreakBegTs.size() - 1 )
-          {
-             fiUnpSpillIdxStop = fvuSpillBreakBegTs.size() - 2;
-             LOG(warning) << "Using last possible spill instead as final one";
-          } // if( fiUnpSpillIdxStart < fvuSpillBreakBegTs.size() - 1 )
-          else LOG(fatal) << "Start index also too large, exiting";
-        } // if( fvuSpillBreakBegTs.size() - 1 <= fiUnpSpillIdxStop )
+          if (fiUnpSpillIdxStart < fvuSpillBreakBegTs.size() - 1) {
+            fiUnpSpillIdxStop = fvuSpillBreakBegTs.size() - 2;
+            LOG(warning) << "Using last possible spill instead as final one";
+          }  // if( fiUnpSpillIdxStart < fvuSpillBreakBegTs.size() - 1 )
+          else
+            LOG(fatal) << "Start index also too large, exiting";
+        }  // if( fvuSpillBreakBegTs.size() - 1 <= fiUnpSpillIdxStop )
 
-        fuSpillBegTs = fvuSpillBreakBegTs[ fiUnpSpillIdxStart ];   //!
-        fuSpillEndTs = fvuSpillBreakBegTs[ fiUnpSpillIdxStop + 1 ];   //!
+        fuSpillBegTs = fvuSpillBreakBegTs[fiUnpSpillIdxStart];     //!
+        fuSpillEndTs = fvuSpillBreakBegTs[fiUnpSpillIdxStop + 1];  //!
         break;
       }
-      case 1:
-      {
+      case 1: {
         /// 1 = Break middle
-        if( fvuSpillBreakMidTs.size() - 1 <= fiUnpSpillIdxStop )
-        {
+        if (fvuSpillBreakMidTs.size() - 1 <= fiUnpSpillIdxStop) {
           LOG(warning) << "Chosen last spill index larger than spills contained in chosen spill start vector: "
                        << fiUnpSpillIdxStop << " VS " << fvuSpillBreakMidTs.size() - 1;
-          if( fiUnpSpillIdxStart < fvuSpillBreakMidTs.size() - 1 )
-          {
-             fiUnpSpillIdxStop = fvuSpillBreakMidTs.size() - 2;
-             LOG(warning) << "Using last possible spill instead as final one";
-          } // if( fiUnpSpillIdxStart < fvuSpillBreakMidTs.size() - 1 )
-          else LOG(fatal) << "Start index also too large, exiting";
-        } // if( fvuSpillBreakMidTs.size() - 1 <= fiUnpSpillIdxStop )
+          if (fiUnpSpillIdxStart < fvuSpillBreakMidTs.size() - 1) {
+            fiUnpSpillIdxStop = fvuSpillBreakMidTs.size() - 2;
+            LOG(warning) << "Using last possible spill instead as final one";
+          }  // if( fiUnpSpillIdxStart < fvuSpillBreakMidTs.size() - 1 )
+          else
+            LOG(fatal) << "Start index also too large, exiting";
+        }  // if( fvuSpillBreakMidTs.size() - 1 <= fiUnpSpillIdxStop )
 
-        fuSpillBegTs = fvuSpillBreakMidTs[ fiUnpSpillIdxStart ];   //!
-        fuSpillEndTs = fvuSpillBreakMidTs[ fiUnpSpillIdxStop + 1 ];   //!
+        fuSpillBegTs = fvuSpillBreakMidTs[fiUnpSpillIdxStart];     //!
+        fuSpillEndTs = fvuSpillBreakMidTs[fiUnpSpillIdxStop + 1];  //!
         break;
       }
-      case 2:
-      {
+      case 2: {
         /// 2 = Break end
-        if( fvuSpillBreakEndTs.size() - 1 <= fiUnpSpillIdxStop )
-        {
+        if (fvuSpillBreakEndTs.size() - 1 <= fiUnpSpillIdxStop) {
           LOG(warning) << "Chosen last spill index larger than spills contained in chosen spill start vector: "
                        << fiUnpSpillIdxStop << " VS " << fvuSpillBreakEndTs.size() - 1;
-          if( fiUnpSpillIdxStart < fvuSpillBreakEndTs.size() - 1 )
-          {
-             fiUnpSpillIdxStop = fvuSpillBreakEndTs.size() - 2;
-             LOG(warning) << "Using last possible spill instead as final one";
-          } // if( fiUnpSpillIdxStart < fvuSpillBreakEndTs.size() - 1 )
-          else LOG(fatal) << "Start index also too large, exiting";
-        } // if( fvuSpillBreakEndTs.size() - 1 <= fiUnpSpillIdxStop )
+          if (fiUnpSpillIdxStart < fvuSpillBreakEndTs.size() - 1) {
+            fiUnpSpillIdxStop = fvuSpillBreakEndTs.size() - 2;
+            LOG(warning) << "Using last possible spill instead as final one";
+          }  // if( fiUnpSpillIdxStart < fvuSpillBreakEndTs.size() - 1 )
+          else
+            LOG(fatal) << "Start index also too large, exiting";
+        }  // if( fvuSpillBreakEndTs.size() - 1 <= fiUnpSpillIdxStop )
 
-        fuSpillBegTs = fvuSpillBreakEndTs[ fiUnpSpillIdxStart ];   //!
-        fuSpillEndTs = fvuSpillBreakEndTs[ fiUnpSpillIdxStop + 1 ];   //!
+        fuSpillBegTs = fvuSpillBreakEndTs[fiUnpSpillIdxStart];     //!
+        fuSpillEndTs = fvuSpillBreakEndTs[fiUnpSpillIdxStop + 1];  //!
         break;
       }
-      default:
-      {
+      default: {
         LOG(fatal) << "Unknown spill start point option: " << fuFlagSpillStart;
         break;
       }
     }  // switch( fuFlagSpillStart )
-  }  // if (0 <= fiUnpSpillIdxStart)
+  }    // if (0 <= fiUnpSpillIdxStart)
 
   return kTRUE;
 }
@@ -328,40 +319,35 @@ Int_t CbmMcbm2018Source::FillBuffer() {
         auto msLength     = msDescB.idx - msDescA.idx;
         fTSLength         = msLength * nMsInTs;
         fTSOverlappLength = msLength * (ts.num_microslices(0) - nMsInTs);
-        LOG(info)
-            << "CbmMcbm2018Source::FillBuffer() - TS 1 - Calculated "
-            << "TimesliceMetaData information from microslices Metadata -> "
-            << "MS length found to be " << msLength << " ns, TS length "
-            << fTSLength << " ns, and TS overlap length "
-            << fTSOverlappLength << " ns";
-      } else {
+        LOG(info) << "CbmMcbm2018Source::FillBuffer() - TS 1 - Calculated "
+                  << "TimesliceMetaData information from microslices Metadata -> "
+                  << "MS length found to be " << msLength << " ns, TS length " << fTSLength
+                  << " ns, and TS overlap length " << fTSOverlappLength << " ns";
+      }
+      else {
         LOG(warning)
           << "CbmMcbm2018Source::FillBuffer() - TS 1 - Calculate "
              "TimesliceMetaData information - single microslice timeslices -> "
              "TS duration can not be calculated with the given method. Hence, "
              "TimesliceMetaData duration values are filled with 0";
       }
-    }        // if( 1 == fTSCounter )
+    }  // if( 1 == fTSCounter )
 
-    if (0 <= fiUnpSpillIdxStart )
-    {
-      if (tsIndex < fuSpillBegTs)
-      {
+    if (0 <= fiUnpSpillIdxStart) {
+      if (tsIndex < fuSpillBegTs) {
         /// Jump all TS until reaching the first TS in the spill we want to unpack
         continue;
-      } // if (tsIndex < fuSpillBegTs)
-      else if(fuSpillEndTs <= tsIndex)
-      {
+      }  // if (tsIndex < fuSpillBegTs)
+      else if (fuSpillEndTs <= tsIndex) {
         /// Stop when reaching the first TS in the next spill
         return 1;
-      } // else if
-    }  // if (0 <= fiUnpSpillIdxStart)
+      }  // else if
+    }    // if (0 <= fiUnpSpillIdxStart)
 
 
     /// Apply TS throttling as set by user (default = 1 => no throttling)
     if (0 == tsIndex % fuTsReduction) {
-      for (auto itUnp = fUnpackersToRun.begin(); itUnp != fUnpackersToRun.end();
-           ++itUnp) {
+      for (auto itUnp = fUnpackersToRun.begin(); itUnp != fUnpackersToRun.end(); ++itUnp) {
         (*itUnp)->DoUnpack(ts, 0);
       }  // for( auto itUnp = fUnpackersToRun.begin(); itUnp != fUnpackersToRun.end(); ++ itUnp )
     }    // if( 0 == tsIndex % fuTsReduction )

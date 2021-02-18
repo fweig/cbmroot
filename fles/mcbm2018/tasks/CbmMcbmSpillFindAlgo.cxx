@@ -36,9 +36,7 @@
 
 // -------------------------------------------------------------------------
 CbmMcbmSpillFindAlgo::CbmMcbmSpillFindAlgo() : CbmStar2019Algo() {}
-CbmMcbmSpillFindAlgo::~CbmMcbmSpillFindAlgo()
-{
-}
+CbmMcbmSpillFindAlgo::~CbmMcbmSpillFindAlgo() {}
 
 // -------------------------------------------------------------------------
 Bool_t CbmMcbmSpillFindAlgo::Init()
@@ -52,55 +50,54 @@ void CbmMcbmSpillFindAlgo::Finish()
 {
   /// If Spill is On, add a fake spill break to have the last spill
   /// If Spill is Off, add a fake spill break end so that all modes include last spill
-  if (fbSpillOn)
-  {
-    fvuSpillBreakBegTs.push_back( fulCurrentTsIdx + 1 );
-    fvuSpillBreakEndTs.push_back( fulCurrentTsIdx + 1 );
-  } // if (fbSpillOn)
-  else fvuSpillBreakEndTs.push_back( fulCurrentTsIdx + 1 );
+  if (fbSpillOn) {
+    fvuSpillBreakBegTs.push_back(fulCurrentTsIdx + 1);
+    fvuSpillBreakEndTs.push_back(fulCurrentTsIdx + 1);
+  }  // if (fbSpillOn)
+  else
+    fvuSpillBreakEndTs.push_back(fulCurrentTsIdx + 1);
 
   /// Fill the vector of spill break middle points
-  std::vector< ULong64_t >::iterator itBreakBeg = fvuSpillBreakBegTs.begin();
-  std::vector< ULong64_t >::iterator itBreakEnd = fvuSpillBreakEndTs.begin();
+  std::vector<ULong64_t>::iterator itBreakBeg = fvuSpillBreakBegTs.begin();
+  std::vector<ULong64_t>::iterator itBreakEnd = fvuSpillBreakEndTs.begin();
 
-  if( itBreakBeg != fvuSpillBreakBegTs.end() && itBreakEnd != fvuSpillBreakEndTs.end() && *itBreakEnd < *itBreakBeg ) {
+  if (itBreakBeg != fvuSpillBreakBegTs.end() && itBreakEnd != fvuSpillBreakEndTs.end() && *itBreakEnd < *itBreakBeg) {
     fvuSpillBreakMidTs.push_back((*itBreakEnd + fulFirstTsIdx) / 2);
     ++itBreakEnd;
   }  // if( itBreakBeg != fvuSpillBreakBegTs.end() && itBreakEnd != fvuSpillBreakEndTs.end() && *itBreakEnd < *itBreakBeg )
 
-  while( itBreakBeg != fvuSpillBreakBegTs.end() && itBreakEnd != fvuSpillBreakEndTs.end() ) {
+  while (itBreakBeg != fvuSpillBreakBegTs.end() && itBreakEnd != fvuSpillBreakEndTs.end()) {
     fvuSpillBreakMidTs.push_back((*itBreakBeg + *itBreakEnd) / 2);
     ++itBreakBeg;
     ++itBreakEnd;
   }  // while( itBreakBeg != fvuSpillBreakBegTs.end() && itBreakEnd != fvuSpillBreakEndTs.end() )
 
-  if( itBreakBeg != fvuSpillBreakBegTs.end() ) {
-   fvuSpillBreakMidTs.push_back((*itBreakBeg + fulCurrentTsIdx) / 2);
+  if (itBreakBeg != fvuSpillBreakBegTs.end()) {
+    fvuSpillBreakMidTs.push_back((*itBreakBeg + fulCurrentTsIdx) / 2);
     ++itBreakBeg;
-  } // if( itBreakBeg != fvuSpillBreakBegTs.end() )
+  }  // if( itBreakBeg != fvuSpillBreakBegTs.end() )
 
-  if( itBreakBeg != fvuSpillBreakBegTs.end() || itBreakEnd != fvuSpillBreakEndTs.end() ) {
-    LOG(warning) << "Size of spill breaks beginning or end did not match: "
-                 << fvuSpillBreakBegTs.size() << " VS " << fvuSpillBreakEndTs.size();
+  if (itBreakBeg != fvuSpillBreakBegTs.end() || itBreakEnd != fvuSpillBreakEndTs.end()) {
+    LOG(warning) << "Size of spill breaks beginning or end did not match: " << fvuSpillBreakBegTs.size() << " VS "
+                 << fvuSpillBreakEndTs.size();
   }  // if( itBreakBeg != fvuSpillBreakBegTs.end() || itBreakEnd != fvuSpillBreakEndTs.end() )
 
   LOG(info) << "**********************************************";
   LOG(info) << "TS index for beginning of spill breaks:";
   for (ULong64_t uBeg : fvuSpillBreakBegTs) {
-    LOG(info)<< Form( "%9llu", uBeg );
+    LOG(info) << Form("%9llu", uBeg);
   }  // for (ULong64_t uBeg : fvuSpillBreakBegTs)
   LOG(info) << "**********************************************";
   LOG(info) << "TS index for ending of spill breaks:";
   for (ULong64_t uEnd : fvuSpillBreakEndTs) {
-    LOG(info)<< Form( "%9llu", uEnd );
+    LOG(info) << Form("%9llu", uEnd);
   }  // for (ULong64_t uBeg : fvuSpillBreakBegTs)
   LOG(info) << "**********************************************";
   LOG(info) << "TS index for middle of spill breaks:";
   for (ULong64_t uMid : fvuSpillBreakMidTs) {
-    LOG(info)<< Form( "%9llu", uMid );
+    LOG(info) << Form("%9llu", uMid);
   }  // for (ULong64_t uBeg : fvuSpillBreakBegTs)
   LOG(info) << "**********************************************";
-
 }
 
 // -------------------------------------------------------------------------
@@ -186,8 +183,7 @@ Bool_t CbmMcbmSpillFindAlgo::ProcessTs(const fles::Timeslice& ts)
 {
   fulCurrentTsIdx = ts.index();
   fdTsStartTime   = static_cast<Double_t>(ts.descriptor(0, 0).idx);
-  if( fulCurrentTsIdx < fulFirstTsIdx )
-    fulFirstTsIdx = fulCurrentTsIdx;
+  if (fulCurrentTsIdx < fulFirstTsIdx) fulFirstTsIdx = fulCurrentTsIdx;
 
   /// Ignore First TS as first MS is typically corrupt
   if (0 == fulCurrentTsIdx) return kTRUE;
@@ -223,7 +219,7 @@ Bool_t CbmMcbmSpillFindAlgo::ProcessTs(const fles::Timeslice& ts)
         return kFALSE;
       }  // if( kFALSE == ProcessMs( ts, uMsCompIdx, fuMsIndex ) )
     }    // for( UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx )
-  }  // for( fuMsIndex = 0; fuMsIndex < uNbMsLoop; fuMsIndex ++ )
+  }      // for( fuMsIndex = 0; fuMsIndex < uNbMsLoop; fuMsIndex ++ )
 
   /// Fill plots if in monitor mode
   if (fbMonitorMode) {
@@ -309,30 +305,27 @@ Bool_t CbmMcbmSpillFindAlgo::ProcessMs(const fles::Timeslice& ts, size_t uMsComp
       if (fbSpillOn && fuCountsLastInterval < fuOffSpillCountLimit) {
         fbSpillOn = kFALSE;
         fuCurrentSpillIdx++;
-        fdStartTimeSpill   = fdMsTime;
-        if( 0 < fvuSpillBreakBegTs.size() )
-        {
-           fhSpillDuration->Fill( fulCurrentTsIdx - fvuSpillBreakBegTs.back() );
-        } // if( 0 < fvuSpillBreakBegTs.size() )
-        fvuSpillBreakBegTs.push_back( fulCurrentTsIdx );
+        fdStartTimeSpill = fdMsTime;
+        if (0 < fvuSpillBreakBegTs.size()) {
+          fhSpillDuration->Fill(fulCurrentTsIdx - fvuSpillBreakBegTs.back());
+        }  // if( 0 < fvuSpillBreakBegTs.size() )
+        fvuSpillBreakBegTs.push_back(fulCurrentTsIdx);
       }  // if( fbSpillOn && fuCountsLastInterval < fuOffSpillCountLimit )
       else if (!fbSpillOn && fuOffSpillCountLimit < fuCountsLastInterval) {
         fbSpillOn = kTRUE;
-        if( 0 < fvuSpillBreakBegTs.size() )
-        {
-           fhSpillBreakDuration->Fill( fuCurrentSpillIdx, fulCurrentTsIdx - fvuSpillBreakBegTs.back() );
-        } // if( 0 < fvuSpillBreakBegTs.size() )
-        if( 0 < fvuSpillBreakEndTs.size() )
-        {
-           fhHitsPerSpill->Fill( fuCurrentSpillIdx, fuCountsLastSpill );
-           fhSpillDuration->Fill( fuCurrentSpillIdx, fulCurrentTsIdx - fvuSpillBreakEndTs.back() );
-        } // if( 0 < fvuSpillBreakEndTs.size() )
-        fvuSpillBreakEndTs.push_back( fulCurrentTsIdx );
+        if (0 < fvuSpillBreakBegTs.size()) {
+          fhSpillBreakDuration->Fill(fuCurrentSpillIdx, fulCurrentTsIdx - fvuSpillBreakBegTs.back());
+        }  // if( 0 < fvuSpillBreakBegTs.size() )
+        if (0 < fvuSpillBreakEndTs.size()) {
+          fhHitsPerSpill->Fill(fuCurrentSpillIdx, fuCountsLastSpill);
+          fhSpillDuration->Fill(fuCurrentSpillIdx, fulCurrentTsIdx - fvuSpillBreakEndTs.back());
+        }  // if( 0 < fvuSpillBreakEndTs.size() )
+        fvuSpillBreakEndTs.push_back(fulCurrentTsIdx);
         fuCountsLastSpill = 0;
       }  // else if (fuOffSpillCountLimit < fuCountsLastInterval)
 
       fuCountsLastInterval = 0;
-      fdLastSecondTime   = fdMsTime;
+      fdLastSecondTime     = fdMsTime;
     }  // if( fdSpillCheckInterval < fdMsTime - fdLastSecondTime )
   }    // if( 0 == fuCurrDpbIdx )
 
@@ -361,9 +354,7 @@ Bool_t CbmMcbmSpillFindAlgo::ProcessMs(const fles::Timeslice& ts, size_t uMsComp
     uint64_t ulData = static_cast<uint64_t>(pInBuff[uIdx]);
 
     /// Catch the Epoch cycle block which is always the first 64b of the MS
-    if (0 == uIdx) {
-      continue;
-    }  // if( 0 == uIdx )
+    if (0 == uIdx) { continue; }  // if( 0 == uIdx )
 
     gdpbv100::Message mess(ulData);
     /// Get message type
@@ -395,7 +386,7 @@ Bool_t CbmMcbmSpillFindAlgo::ProcessMs(const fles::Timeslice& ts, size_t uMsComp
             fuCountsLastSpill++;
             ulNbHitsTs++;
           }  // if (0 != fuGet4Nr || uTot < fuMinTotPulser || fuMaxTotPulser < uTot) {
-        }  // else of if( getGdpbHitIs24b() )
+        }    // else of if( getGdpbHitIs24b() )
         break;
       }  // case gdpbv100::MSG_HIT:
       case gdpbv100::MSG_EPOCH: {
@@ -418,7 +409,7 @@ Bool_t CbmMcbmSpillFindAlgo::ProcessMs(const fles::Timeslice& ts, size_t uMsComp
                    << " not included in Get4 unpacker.";
     }  // switch( mess.getMessageType() )
   }    // for (uint32_t uIdx = 0; uIdx < uNbMessages; uIdx ++)
-  fhHitsEvo->Fill( fdTsStartTime*1e-9, ulNbHitsTs );
+  fhHitsEvo->Fill(fdTsStartTime * 1e-9, ulNbHitsTs);
 
   /// Fill histograms
   FillHistograms();
@@ -440,11 +431,11 @@ Bool_t CbmMcbmSpillFindAlgo::CreateHistograms()
   //   double * dBinsLog = GenerateLogBinArray( 4, 9, 1, iNbBinsLog );
 
   /*******************************************************************/
-  fhHitsEvo      = new TH1I("hHitsEvo", "Hit count evo; Time [s]; Hits Count []", fuHistoryHistoSize * 50, 0.,
-                            fuHistoryHistoSize);
-  fhHitsPerSpill = new TH1I("hHitsPerSpill", "Hit count per spill; Spill; Hits Count []", 2000, 0., 2000);
+  fhHitsEvo =
+    new TH1I("hHitsEvo", "Hit count evo; Time [s]; Hits Count []", fuHistoryHistoSize * 50, 0., fuHistoryHistoSize);
+  fhHitsPerSpill       = new TH1I("hHitsPerSpill", "Hit count per spill; Spill; Hits Count []", 2000, 0., 2000);
   fhSpillBreakDuration = new TH1I("hSpillBreakDuration", "Spill break duration; Spill; Duration [TS]", 2000, 0., 2000);
-  fhSpillDuration = new TH1I("hSpillDuration", "Spill duration; Spill; Duration [TS]", 2000, 0., 2000);
+  fhSpillDuration      = new TH1I("hSpillDuration", "Spill duration; Spill; Duration [TS]", 2000, 0., 2000);
 
   /// Add pointers to the vector with all histo for access by steering class
   AddHistoToVector(fhHitsEvo, sFolder);
@@ -463,7 +454,7 @@ Bool_t CbmMcbmSpillFindAlgo::CreateHistograms()
   Double_t h = 10;
 
   /*******************************************************************/
-/*
+  /*
   /// Map of hits over T0 detector and same vs time in run
   fcHitMaps = new TCanvas("cHitMaps", "Hit maps", w, h);
   fcHitMaps->Divide(2);
@@ -488,14 +479,10 @@ Bool_t CbmMcbmSpillFindAlgo::CreateHistograms()
 
   return kTRUE;
 }
-Bool_t CbmMcbmSpillFindAlgo::FillHistograms()
-{
-
-  return kTRUE;
-}
+Bool_t CbmMcbmSpillFindAlgo::FillHistograms() { return kTRUE; }
 Bool_t CbmMcbmSpillFindAlgo::ResetHistograms(Bool_t bResetTime)
 {
-  fuCurrentSpillIdx  = 0;
+  fuCurrentSpillIdx = 0;
   fhHitsEvo->Reset();
   fhHitsPerSpill->Reset();
   fhSpillBreakDuration->Reset();

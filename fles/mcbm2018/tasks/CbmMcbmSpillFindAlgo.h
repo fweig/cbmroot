@@ -88,9 +88,9 @@ private:
   UInt_t fuNrOfChannelsPerGdpb             = 0;   //! Number of channels per GDPB
 
   /// User settings: Data correction parameters
-  UInt_t   fuMinTotPulser       = 90;
-  UInt_t   fuMaxTotPulser       = 100;
-  UInt_t   fuOffSpillCountLimit = 100;
+  UInt_t fuMinTotPulser         = 90;
+  UInt_t fuMaxTotPulser         = 100;
+  UInt_t fuOffSpillCountLimit   = 100;
   Double_t fdSpillCheckInterval = 0.5;
 
   /// Constants
@@ -100,7 +100,7 @@ private:
 
   /// Running indices
   /// TS/MS info
-  ULong64_t fulFirstTsIdx   = 9999999999999; //! First TS index, forward point set ~30 years...
+  ULong64_t fulFirstTsIdx   = 9999999999999;  //! First TS index, forward point set ~30 years...
   ULong64_t fulCurrentTsIdx = 0;
   ULong64_t fulCurrentMsIdx = 0;
   Double_t fdTsStartTime    = -1.0;  //! Time in ns of current TS from the index of the first MS first component
@@ -115,25 +115,26 @@ private:
   UInt_t fuCurrDpbIdx         = 0;   //! Index of the DPB from which the MS currently unpacked is coming
   Int_t fiRunStartDateTimeSec = -1;  //! Start of run time since "epoch" in s, for the plots with date as X axis
   Int_t fiBinSizeDatePlots    = -1;  //! Bin size in s for the plots with date as X axis
-  UInt_t fuGet4Id = 0;  //! running number (0 to fuNrOfGet4PerGdpb) of the Get4 chip of a unique GDPB for current message
+  UInt_t fuGet4Id =
+    0;  //! running number (0 to fuNrOfGet4PerGdpb) of the Get4 chip of a unique GDPB for current message
   UInt_t fuGet4Nr = 0;  //! running number (0 to fuNrOfGet4) of the Get4 chip in the system for current message
 
   /// Starting state book-keeping
-  Double_t fdStartTime = -1.0; //! Time of first valid hit (epoch available), used as reference for evolution plots
-  Double_t fdStartTimeMsSz = 0.0; //! Time of first microslice, used as reference for evolution plots
+  Double_t fdStartTime     = -1.0;  //! Time of first valid hit (epoch available), used as reference for evolution plots
+  Double_t fdStartTimeMsSz = 0.0;   //! Time of first microslice, used as reference for evolution plots
   std::chrono::steady_clock::time_point ftStartTimeUnix = std::chrono::steady_clock::
-    now(); //! Time of run Start from UNIX system, used as reference for long evolution plots against reception time
+    now();  //! Time of run Start from UNIX system, used as reference for long evolution plots against reception time
 
   /// Spill detection
-  Bool_t fbSpillOn            = kTRUE;
-  UInt_t fuCurrentSpillIdx    = 0;
-  Double_t fdStartTimeSpill   = -1.0;
-  Double_t fdLastSecondTime   = -1.0;
-  UInt_t fuCountsLastInterval = 0;
-  UInt_t fuCountsLastSpill = 0;
-  std::vector< ULong64_t > fvuSpillBreakBegTs = {};
-  std::vector< ULong64_t > fvuSpillBreakEndTs = {};
-  std::vector< ULong64_t > fvuSpillBreakMidTs = {};
+  Bool_t fbSpillOn                          = kTRUE;
+  UInt_t fuCurrentSpillIdx                  = 0;
+  Double_t fdStartTimeSpill                 = -1.0;
+  Double_t fdLastSecondTime                 = -1.0;
+  UInt_t fuCountsLastInterval               = 0;
+  UInt_t fuCountsLastSpill                  = 0;
+  std::vector<ULong64_t> fvuSpillBreakBegTs = {};
+  std::vector<ULong64_t> fvuSpillBreakEndTs = {};
+  std::vector<ULong64_t> fvuSpillBreakMidTs = {};
 
   /// Histograms related variables
   UInt_t fuHistoryHistoSize = 3600; /** Size in seconds of the evolution histograms **/
