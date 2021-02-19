@@ -3,8 +3,10 @@
 
 #include <string>  // for string
 
-namespace Cbm {
-  namespace File {
+namespace Cbm
+{
+  namespace File
+  {
     /**
      * \brief Check if a the file exist and is a root file
      * \param[in] filename The filename of the file to be checked

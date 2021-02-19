@@ -9,10 +9,6 @@
 #include "FairLogger.h"
 #include "FairPrimaryGenerator.h"  // for FairPrimaryGenerator
 
-#include "PDataBase.h"    // for PDataBase
-#include "PParticle.h"    // for PParticle
-#include "PStaticData.h"  // for PStaticData
-
 #include "TArchiveFile.h"    // for TArchiveFile
 #include "TChain.h"          // for TChain
 #include "TClonesArray.h"    // for TClonesArray
@@ -21,7 +17,12 @@
 #include "TLorentzVector.h"  // for TLorentzVector
 #include "TTree.h"           // for TTree
 #include "TVector3.h"        // for TVector3
-#include <iosfwd>            // for ostream
+
+#include <iosfwd>  // for ostream
+
+#include "PDataBase.h"    // for PDataBase
+#include "PParticle.h"    // for PParticle
+#include "PStaticData.h"  // for PStaticData
 
 //#include <stddef.h>                     // for NULL
 #include <iostream>  // for operator<<, basic_ostream, etc
@@ -54,9 +55,9 @@ CbmPlutoGenerator::CbmPlutoGenerator(const Char_t* fileName)
   if (Cbm::File::IsRootFile(fileName)) {
     fInputChain->Add(fileName);
     fInputChain->SetBranchAddress("Particles", &fParticles);
-    LOG(info) << "CbmPlutoGenerator: Add file " << fileName
-              << " to input chain";
-  } else {
+    LOG(info) << "CbmPlutoGenerator: Add file " << fileName << " to input chain";
+  }
+  else {
     LOG(fatal) << "Problem opening file " << fileName;
   }
 }
@@ -77,7 +78,8 @@ CbmPlutoGenerator::CbmPlutoGenerator(std::vector<std::string> fileNames)
     if (Cbm::File::IsRootFile(name)) {
       fInputChain->Add(name.c_str());
       LOG(info) << "CbmPlutoGenerator: Add file " << name << " to input chain";
-    } else {
+    }
+    else {
       LOG(fatal) << "Problem opening file " << name;
     }
   }

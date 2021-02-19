@@ -5,6 +5,27 @@
 
 #include "CbmTransport.h"
 
+#include "CbmBeamProfile.h"
+#include "CbmEventGenerator.h"
+#include "CbmFieldMap.h"
+#include "CbmFieldPar.h"
+#include "CbmFileUtils.h"
+#include "CbmGeant3Settings.h"
+#include "CbmGeant4Settings.h"
+#include "CbmPlutoGenerator.h"
+#include "CbmSetup.h"
+#include "CbmStack.h"
+#include "CbmTarget.h"
+#include "CbmUnigenGenerator.h"
+
+#include "FairLogger.h"
+#include "FairMonitor.h"
+#include "FairParRootFileIo.h"
+#include "FairRunSim.h"
+#include "FairRuntimeDb.h"
+#include "FairSystemInfo.h"
+#include "FairUrqmdGenerator.h"
+
 #include "TDatabasePDG.h"
 #include "TG4RunConfiguration.h"
 #include "TGeant3.h"
@@ -18,34 +39,14 @@
 #include "TSystem.h"
 #include "TVector3.h"
 #include "TVirtualMC.h"
-#include <array>
+
 #include <boost/filesystem.hpp>
+
+#include <array>
 #include <cassert>
 #include <iostream>
 #include <sstream>
 #include <string>
-
-#include "FairLogger.h"
-#include "FairMonitor.h"
-#include "FairParRootFileIo.h"
-#include "FairRunSim.h"
-#include "FairRuntimeDb.h"
-#include "FairSystemInfo.h"
-#include "FairUrqmdGenerator.h"
-
-#include "CbmBeamProfile.h"
-#include "CbmEventGenerator.h"
-#include "CbmFieldMap.h"
-#include "CbmFieldPar.h"
-#include "CbmFileUtils.h"
-#include "CbmPlutoGenerator.h"
-#include "CbmSetup.h"
-#include "CbmStack.h"
-#include "CbmTarget.h"
-#include "CbmUnigenGenerator.h"
-
-#include "CbmGeant3Settings.h"
-#include "CbmGeant4Settings.h"
 
 using std::stringstream;
 
@@ -110,7 +111,8 @@ void CbmTransport::AddInput(const char* fileName, ECbmGenerator genType) {
       LOG(fatal) << GetName() << ": Input file " << fileName << " not found!";
       return;
     }
-  } else {
+  }
+  else {
     if (!Cbm::File::IsRootFile(fileName)) {
       LOG(fatal) << GetName() << ": Input file " << fileName << " not found!";
       return;

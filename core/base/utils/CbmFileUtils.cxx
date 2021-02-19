@@ -6,13 +6,17 @@
 #include "TFile.h"         // for TFile
 #include "TObjArray.h"
 
-#include <string>      // for string, find, substr
+#include <string>  // for string, find, substr
+
 #include <sys/stat.h>  // for stcuct stat
 
 
-namespace Cbm {
-  namespace File {
-    bool IsRootFile(std::string filename) {
+namespace Cbm
+{
+  namespace File
+  {
+    bool IsRootFile(std::string filename)
+    {
       // Currently plain root files and root files stored in a zip file are supported.
       // The destiction between the two is a "#" in the filename string  which separates the
       // name of the zip file from the name of the root file which is inside the zip file.
@@ -30,7 +34,8 @@ namespace Cbm {
       if (found != std::string::npos) {
         checkFilename = filename.substr(0, found);
         membername    = filename.substr(found + 1);
-      } else {
+      }
+      else {
         checkFilename = filename;
       }
 
@@ -40,9 +45,8 @@ namespace Cbm {
       // In case of a root file contained in a zip archive check if the zip file
       // exist
       struct stat buffer;
-      if (stat(checkFilename.c_str(), &buffer) == 0) {
-        wasfound = kTRUE;
-      } else {
+      if (stat(checkFilename.c_str(), &buffer) == 0) { wasfound = kTRUE; }
+      else {
         wasfound = kFALSE;
         LOG(error) << "Input File " << checkFilename << " not found";
       }
@@ -55,31 +59,33 @@ namespace Cbm {
           if (archive) {
             TObjArray* members = archive->GetMembers();
             if (members->FindObject(membername.c_str()) == 0) {
-              LOG(error) << "File " << membername << " not found in zipfile "
-                         << checkFilename;
+              LOG(error) << "File " << membername << " not found in zipfile " << checkFilename;
               wasfound = kFALSE;
-            } else {
-              LOG(info) << "File " << membername << " found in zipfile "
-                        << checkFilename;
+            }
+            else {
+              LOG(info) << "File " << membername << " found in zipfile " << checkFilename;
               wasfound = kTRUE;
             }
-          } else {
-            LOG(error) << "Zipfile " << checkFilename
-                       << " does not contain an archive";
+          }
+          else {
+            LOG(error) << "Zipfile " << checkFilename << " does not contain an archive";
             wasfound = kFALSE;
           }
           fzip->Close();
           delete fzip;
-        } else {
+        }
+        else {
           LOG(error) << "Could not open zipfile " << checkFilename;
           wasfound = kFALSE;
         }
-      } else {
+      }
+      else {
         TFile* rootfile = TFile::Open(checkFilename.c_str());
         if (rootfile->IsOpen()) {
           LOG(info) << "File " << checkFilename << " is a ROOT file.";
           wasfound = kTRUE;
-        } else {
+        }
+        else {
           LOG(error) << "File " << checkFilename << " is no ROOT file.";
           wasfound = kFALSE;
         }
