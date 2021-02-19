@@ -194,7 +194,7 @@ void CbmAlgoBuildRawEvents::BuildEvents()
                  << "Trying to search event seeds with unsupported det: " << fRefDet.sName;
       break;
     }
-  }  // switch( *det )
+  }
 }
 
 template<class DigiSeed>
@@ -211,7 +211,7 @@ void CbmAlgoBuildRawEvents::LoopOnSeeds()
     }
   }
   else {
-    const UInt_t uNbRefDigis = (0 < GetNofDigis(fRefDet.detId) ? GetNofDigis(fRefDet.detId) : 0);
+    const UInt_t uNbRefDigis = GetNofDigis(fRefDet.detId);
     /// Loop on size of vector
     for (UInt_t uDigi = 0; uDigi < uNbRefDigis; ++uDigi) {
       LOG(debug) << Form("Checking seed %6u / %6u", uDigi, uNbRefDigis);
@@ -367,7 +367,7 @@ void CbmAlgoBuildRawEvents::SearchMatches(Double_t dSeedTime, RawEventBuilderDet
     if (uLocalIndexEnd < uLocalIndexStart) uLocalIndexEnd = uNbSelDigis;
   }
   else {
-    const UInt_t uNbSelDigis = (0 < GetNofDigis(detMatch.detId) ? GetNofDigis(detMatch.detId) : 0);
+    const UInt_t uNbSelDigis = GetNofDigis(detMatch.detId);
     /// Loop on size of vector
     for (UInt_t uDigi = detMatch.fuStartIndex; uDigi < uNbSelDigis; ++uDigi) {
       const DigiCheck* pDigi   = GetDigi<DigiCheck>(uDigi);
@@ -445,22 +445,11 @@ Bool_t CbmAlgoBuildRawEvents::CheckTriggerConditions(CbmEvent* event, RawEventBu
   if (0 == det.fuTriggerMinDigis && det.fiTriggerMaxDigis < 0) { return kTRUE; }
 
   /// Check if detector present
-  if (ECbmModuleId::kT0 == det.detId) {
-    /// FIXME: special case to be removed once T0 supported by DigiManager
-    if (!(fT0DigiVec)) {
-      LOG(warning) << "Event does not have digis storage for T0"
-                   << " while the following trigger minimum are defined: " << det.fuTriggerMinDigis << " "
-                   << det.fiTriggerMaxDigis;
-      return kFALSE;
-    }
-  }
-  else {
-    if (!DetIsPresent(det.detId)) {
-      LOG(warning) << "Event does not have digis storage for " << det.sName
-                   << " while the following trigger min/max are defined: " << det.fuTriggerMinDigis << " "
-                   << det.fiTriggerMaxDigis;
-      return kFALSE;
-    }
+  if (!DetIsPresent(det.detId)) {
+    LOG(warning) << "Event does not have digis storage for " << det.sName
+                 << " while the following trigger min/max are defined: " << det.fuTriggerMinDigis << " "
+                 << det.fiTriggerMaxDigis;
+    return kFALSE;
   }
 
   /// Check trigger rejection by minimal number or absence

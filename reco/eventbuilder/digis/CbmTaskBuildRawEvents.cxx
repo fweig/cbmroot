@@ -118,6 +118,9 @@ InitStatus CbmTaskBuildRawEvents::ReInit() { return kSUCCESS; }
 void CbmTaskBuildRawEvents::Exec(Option_t* /*option*/)
 {
   LOG(debug2) << "CbmTaskBuildRawEvents::Exec => Starting sequence";
+  //Warning: Int_t must be used for the loop counters instead of UInt_t,
+  //as the digi manager can return -1, which would be casted to +1
+  //during comparison, leading to an error.
 
   //Read STS digis
   if (fDigiMan->IsPresent(ECbmModuleId::kSts)) {
