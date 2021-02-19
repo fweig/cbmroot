@@ -445,7 +445,7 @@ Bool_t CbmAlgoBuildRawEvents::CheckTriggerConditions(CbmEvent* event, RawEventBu
   if (0 == det.fuTriggerMinDigis && det.fiTriggerMaxDigis < 0) { return kTRUE; }
 
   /// Check if detector present
-  if (!DetIsPresent(det.detId)) {
+  if (!CheckDataAvailable(det.detId)) {
     LOG(warning) << "Event does not have digis storage for " << det.sName
                  << " while the following trigger min/max are defined: " << det.fuTriggerMinDigis << " "
                  << det.fiTriggerMaxDigis;
@@ -474,49 +474,46 @@ Bool_t CbmAlgoBuildRawEvents::CheckTriggerConditions(CbmEvent* event, RawEventBu
 
 Bool_t CbmAlgoBuildRawEvents::CheckDataAvailable(RawEventBuilderDetector& det)
 {
-  if (ECbmModuleId::kT0 == det.detId) {
-    if (!fT0DigiVec) {
-      LOG(info) << "No T0 digi input found.";
-      return kFALSE;
-    }
-  }
-  else if (ECbmModuleId::kSts == det.detId) {
-    if (!fStsDigis) {
-      LOG(info) << "No " << det.sName << " digi input found.";
-      return kFALSE;
-    }
-  }
-  else if (ECbmModuleId::kMuch == det.detId) {
-    if (!fMuchDigis && !fMuchBeamTimeDigis) {
-      LOG(info) << "No " << det.sName << " digi input found.";
-      return kFALSE;
-    }
-  }
-  else if (ECbmModuleId::kTrd == det.detId) {
-    if (!fTrdDigis) {
-      LOG(info) << "No " << det.sName << " digi input found.";
-      return kFALSE;
-    }
-  }
-  else if (ECbmModuleId::kTof == det.detId) {
-    if (!fTofDigis) {
-      LOG(info) << "No " << det.sName << " digi input found.";
-      return kFALSE;
-    }
-  }
-  else if (ECbmModuleId::kRich == det.detId) {
-    if (!fRichDigis) {
-      LOG(info) << "No " << det.sName << " digi input found.";
-      return kFALSE;
-    }
-  }
-  else if (ECbmModuleId::kPsd == det.detId) {
-    if (!fPsdDigis) {
-      LOG(info) << "No " << det.sName << " digi input found.";
-      return kFALSE;
-    }
+  if (!CheckDataAvailable(det.detId)) {
+    LOG(info) << "No " << det.sName << " digi input found.";
+    return kFALSE;
   }
   return kTRUE;
+}
+
+bool CbmAlgoBuildRawEvents::CheckDataAvailable(ECbmModuleId detId)
+{
+  switch (detId) {
+    case ECbmModuleId::kSts: {
+      return fStsDigis != nullptr;
+    }
+    case ECbmModuleId::kMuch: {
+      if (fbUseMuchBeamtimeDigi) { return fMuchBeamTimeDigis != nullptr; }
+      else {
+        return fMuchDigis != nullptr;
+      }
+    }
+    case ECbmModuleId::kTrd: {
+      return fTrdDigis != nullptr;
+    }
+    case ECbmModuleId::kTof: {
+      return fTofDigis != nullptr;
+    }
+    case ECbmModuleId::kRich: {
+      return fRichDigis != nullptr;
+    }
+    case ECbmModuleId::kPsd: {
+      return fPsdDigis != nullptr;
+    }
+    case ECbmModuleId::kT0: {
+      return fT0DigiVec != nullptr;
+    }
+    default: {
+      LOG(fatal) << "CbmAlgoBuildRawEvents::CheckDataAvailable => "
+                 << "Unsupported detector.";
+      return -1;
+    }
+  }
 }
 
 UInt_t CbmAlgoBuildRawEvents::GetNofDigis(ECbmModuleId detId)
@@ -545,41 +542,6 @@ UInt_t CbmAlgoBuildRawEvents::GetNofDigis(ECbmModuleId detId)
     }
     case ECbmModuleId::kT0: {
       return fT0DigiVec->size();  //what to do here? Not in digi manager.
-    }
-    default: {
-      LOG(fatal) << "CbmAlgoBuildRawEvents::GetNofDigis => "
-                 << "Trying to get digi number with unsupported detector.";
-      return -1;
-    }
-  }
-}
-
-bool CbmAlgoBuildRawEvents::DetIsPresent(ECbmModuleId detId)
-{
-  switch (detId) {
-    case ECbmModuleId::kSts: {
-      return fStsDigis != nullptr;
-    }
-    case ECbmModuleId::kMuch: {
-      if (fbUseMuchBeamtimeDigi) { return fMuchBeamTimeDigis != nullptr; }
-      else {
-        return fMuchDigis != nullptr;
-      }
-    }
-    case ECbmModuleId::kTrd: {
-      return fTrdDigis != nullptr;
-    }
-    case ECbmModuleId::kTof: {
-      return fTofDigis != nullptr;
-    }
-    case ECbmModuleId::kRich: {
-      return fRichDigis != nullptr;
-    }
-    case ECbmModuleId::kPsd: {
-      return fPsdDigis != nullptr;
-    }
-    case ECbmModuleId::kT0: {
-      return fT0DigiVec != nullptr;  //what to do here? Not in digi manager.
     }
     default: {
       LOG(fatal) << "CbmAlgoBuildRawEvents::GetNofDigis => "

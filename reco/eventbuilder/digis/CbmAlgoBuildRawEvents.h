@@ -259,7 +259,7 @@ private:
   const std::vector<CbmRichDigi>* fRichDigis                 = nullptr;
   const std::vector<CbmPsdDigi>* fPsdDigis                   = nullptr;
 
-  bool DetIsPresent(ECbmModuleId detId);
+  bool CheckDataAvailable(ECbmModuleId detId);
   UInt_t GetNofDigis(ECbmModuleId detId);
   template<class Digi>
   const Digi* GetDigi(UInt_t uDigi);
