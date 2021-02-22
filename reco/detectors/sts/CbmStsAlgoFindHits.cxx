@@ -116,7 +116,7 @@ Long64_t CbmStsAlgoFindHits::Exec(const vector<CbmStsCluster>& clustersF,
   fHits->clear();
   fTanStereoF = TMath::Tan(fStereoF * TMath::DegToRad());
   fTanStereoB = TMath::Tan(fStereoB * TMath::DegToRad());
-  fErrorFac   = 1. / (fTanStereoB - fTanStereoF) / (fTanStereoB - fTanStereoB);
+  fErrorFac   = 1. / (fTanStereoB - fTanStereoF) / (fTanStereoB - fTanStereoF);
   fDx         = Double_t(fNofStrips) * fPitch;
 
   // Determine the maximum cluster time errors
