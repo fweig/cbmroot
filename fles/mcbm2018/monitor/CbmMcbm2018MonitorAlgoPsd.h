@@ -56,16 +56,23 @@ public:
 
   Bool_t CreateHistograms();
   Bool_t FillHistograms();
-  Bool_t ResetHistograms();
+  Bool_t ResetHistograms(Bool_t bResetTime = kTRUE);
 
   inline void SetMonitorMode(Bool_t bFlagIn = kTRUE) {
     fbMonitorMode = bFlagIn;
   }
+  inline void SetMonitorChanMode(Bool_t bFlagIn = kTRUE) { fbMonitorChanMode = bFlagIn; }
+  inline void SetMonitorWfmMode(Bool_t bFlagIn = kTRUE) { fbMonitorWfmMode = bFlagIn; }
+  inline void SetMonitorFitMode(Bool_t bFlagIn = kTRUE) { fbMonitorFitMode = bFlagIn; }
   inline void SetHistoryHistoSize(UInt_t inHistorySizeSec = 1800) {
     fuHistoryHistoSize = inHistorySizeSec;
   }
   inline void SetChargeHistoArgs(std::vector<Int_t> inVec) {
     fviHistoChargeArgs = inVec;
+    kvuWfmRanges.clear();
+    for (uint8_t i = 0; i <= kuNbWfmRanges; ++i)
+      kvuWfmRanges.push_back(fviHistoChargeArgs.at(1)
+                             + i * (fviHistoChargeArgs.at(2) - fviHistoChargeArgs.at(1)) / kuNbWfmRanges);
   }
   inline void SetAmplHistoArgs(std::vector<Int_t> inVec) {
     fviHistoAmplArgs = inVec;
@@ -79,10 +86,14 @@ private:
   /// Control flags
   Bool_t
     fbMonitorMode;  //! Switch ON the filling of a minimal set of histograms
+  Bool_t fbMonitorChanMode;  //! Switch ON the filling channelwise histograms
+  Bool_t fbMonitorWfmMode;   //! Switch ON the filling waveforms histograms
+  Bool_t fbMonitorFitMode;   //! Switch ON the filling waveform fitting histograms
   Bool_t
     fbDebugMonitorMode;  //! Switch ON the filling of a additional set of histograms
   std::vector<Bool_t> fvbMaskedComponents;
   Bool_t fbFirstPackageError;
+  Bool_t fbPsdMissedData;
 
   /// Settings from parameter file
   CbmMcbm2018PsdPar* fUnpackPar;  //!
@@ -106,8 +117,6 @@ private:
   Double_t
     fdTsStartTime;  //! Time in ns of current TS from the index of the first MS first component
   Double_t
-    fdTsStopTimeCore;  //! End Time in ns of current TS Core from the index of the first MS first component
-  Double_t
     fdMsTime;  //! Start Time in ns of current MS from its index field in header
   Double_t
     fdPrevMsTime;  //! Start Time in ns of previous MS from its index field in header
@@ -120,21 +129,10 @@ private:
     fuCurrDpbId;  //! Temp holder until Current equipment ID is properly filled in MS
   UInt_t
     fuCurrDpbIdx;  //! Index of the DPB from which the MS currently unpacked is coming
-  Int_t
-    fiRunStartDateTimeSec;  //! Start of run time since "epoch" in s, for the plots with date as X axis
-  Int_t fiBinSizeDatePlots;  //! Bin size in s for the plots with date as X axis
-
-  /// Data format control: Current time references for each GDPB: merged epoch marker, epoch cycle, full epoch [fuNrOfGdpbs]
-  std::vector<ULong64_t> fvulCurrentEpoch;  //! Current epoch index, per DPB
-  std::vector<ULong64_t>
-    fvulCurrentEpochCycle;  //! Epoch cycle from the Ms Start message and Epoch counter flip
-  std::vector<ULong64_t> fvulCurrentEpochFull;  //! Epoch + Epoch Cycle
 
   /// Starting state book-keeping
   Double_t
     fdStartTime; /** Time of first valid hit (epoch available), used as reference for evolution plots**/
-  Double_t
-    fdStartTimeMsSz; /** Time of first microslice, used as reference for evolution plots**/
   std::chrono::steady_clock::time_point
     ftStartTimeUnix; /** Time of run Start from UNIX system, used as reference for long evolution plots against reception time **/
 
@@ -148,7 +146,6 @@ private:
     fviHistoZLArgs; /** ZeroLevel histogram arguments in adc counts **/
 
   /// Histograms
-  UInt_t fuReadEvtCnt;
   UInt_t fuMsgsCntInMs;
   UInt_t fuReadMsgsCntInMs;
   UInt_t fuLostMsgsCntInMs;
@@ -156,17 +153,11 @@ private:
 
   /// Channel rate plots
   std::vector<UInt_t> fvuHitCntChanMs;
-  std::vector<UInt_t> fvuErrorCntChanMs;
-  std::vector<UInt_t> fvuEvtLostCntChanMs;
-  std::vector<TH1*> fvhHitCntEvoChan;
-  std::vector<TH2*> fvhHitCntPerMsEvoChan;
   std::vector<TH1*> fvhHitChargeChan;
   std::vector<TH1*> fvhHitZeroLevelChan;
   std::vector<TH1*> fvhHitAmplChan;
   std::vector<TH1*> fvhHitChargeByWfmChan;
-  std::vector<TH2*> fvhHitChargeEvoChan;
   std::vector<TH1*> fvhHitWfmChan;
-  std::vector<TH1*> fvhHitFitWfmChan;
 
   static const UInt_t kuNbWfmRanges   = 8;
   static const UInt_t kuNbWfmExamples = 8;
@@ -181,25 +172,17 @@ private:
   Double_t fdStartTimeSpill;
   Double_t fdLastSecondTime;
   UInt_t fuCountsLastSecond;
-  static const UInt_t kuNbSpillPlots       = 5;
   static const UInt_t kuOffSpillCountLimit = 200;
 
   const UInt_t kuPsdChanMap[kuNbChanPsd] = {
     0};  // = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }; //! Map from electronics channel to PSD physical channel
-  TH1* fhChannelMap;
   TH1* fhHitChargeMap;
   TH1* fhHitMapEvo;
   TH2* fhChanHitMapEvo;
-  std::vector<TH1*> fvhChannelMapSpill;
-  TH1* fhHitsPerSpill;
 
   /// Global Rate
-  TH1* fhMsgsCntEvo;
-  TH1* fhReadMsgsCntEvo;
-  TH1* fhLostMsgsCntEvo;
-  TH1* fhReadEvtsCntEvo;
-
-  TH2* fhAdcTimeEvo;
+  TH1* fhMissedData;
+  TH1* fhAdcTime;
   TH2* fhMsLengthEvo;
 
   TH2* fhMsgsCntPerMsEvo;
@@ -208,6 +191,7 @@ private:
   TH2* fhReadEvtsCntPerMsEvo;
 
   /// Waveform fitting
+  std::vector<TH1*> fvhHitFitWfmChan;
   std::vector<TH2*> fvhFitHarmonic1Chan;
   std::vector<TH2*> fvhFitHarmonic2Chan;
   std::vector<TH2*> fvhFitQaChan;
@@ -218,9 +202,8 @@ private:
   TCanvas* fcChargesFPGA;
   TCanvas* fcChargesWfm;
   TCanvas* fcAmplitudes;
+  TCanvas* fcZeroLevels;
   TCanvas* fcGenCntsPerMs;
-  TCanvas* fcSpillCounts;
-  TCanvas* fcSpillCountsHori;
   TCanvas* fcWfmsAllChannels;
   std::vector<TCanvas*> fvcWfmsChan;
   TCanvas* fcPronyFit;

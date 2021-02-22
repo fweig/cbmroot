@@ -103,6 +103,9 @@ Bool_t CbmMcbm2018MonitorTaskPsd::InitContainers() {
 
   /// Transfer parameter values set from calling macro
   fMonitorAlgo->SetMonitorMode(fbMonitorMode);
+  fMonitorAlgo->SetMonitorChanMode(fbMonitorChanMode);
+  fMonitorAlgo->SetMonitorWfmMode(fbMonitorWfmMode);
+  fMonitorAlgo->SetMonitorFitMode(fbMonitorFitMode);
   fMonitorAlgo->SetHistoryHistoSize(fuHistoryHistoSize);
   fMonitorAlgo->SetChargeHistoArgs(fviHistoChargeArgs);
   fMonitorAlgo->SetAmplHistoArgs(fviHistoAmplArgs);

@@ -39,9 +39,13 @@ CbmMcbm2018MonitorAlgoPsd::CbmMcbm2018MonitorAlgoPsd()
   ,
   /// From the class itself
   fbMonitorMode(kFALSE)
+  , fbMonitorChanMode(kFALSE)
+  , fbMonitorWfmMode(kFALSE)
+  , fbMonitorFitMode(kFALSE)
   , fbDebugMonitorMode(kTRUE)
   , fvbMaskedComponents()
   , fbFirstPackageError(kTRUE)
+  , fbPsdMissedData(kFALSE)
   , fUnpackPar(nullptr)
   , fuNrOfGdpbs(0)
   , fGdpbIdIndexMap()
@@ -51,68 +55,47 @@ CbmMcbm2018MonitorAlgoPsd::CbmMcbm2018MonitorAlgoPsd()
   , fulCurrentTsIdx(0)
   , fulCurrentMsIdx(0)
   , fdTsStartTime(-1.0)
-  , fdTsStopTimeCore(-1.0)
   , fdMsTime(-1.0)
   , fdPrevMsTime(-1.0)
   , fuMsIndex(0)
   , fuCurrentEquipmentId(0)
   , fuCurrDpbId(0)
   , fuCurrDpbIdx(0)
-  , fiRunStartDateTimeSec(-1)
-  , fiBinSizeDatePlots(-1)
-  , fvulCurrentEpoch()
-  , fvulCurrentEpochCycle()
-  , fvulCurrentEpochFull()
   , fdStartTime(-1.0)
-  , fdStartTimeMsSz(0.0)
   , ftStartTimeUnix(std::chrono::steady_clock::now())
   , fuHistoryHistoSize(3600)
   , fviHistoChargeArgs(3, 0)
   , fviHistoAmplArgs(3, 0)
   , fviHistoZLArgs(3, 0)
-  , fuReadEvtCnt(0)
   , fuMsgsCntInMs(0)
   , fuReadMsgsCntInMs(0)
   , fuLostMsgsCntInMs(0)
   , fuReadEvtCntInMs(0)
-  , fvuHitCntChanMs(kuNbChanPsd, 0)
-  , fvuErrorCntChanMs(kuNbChanPsd, 0)
-  , fvuEvtLostCntChanMs(kuNbChanPsd, 0)
-  , fvhHitCntEvoChan(kuNbChanPsd, nullptr)
-  , fvhHitCntPerMsEvoChan(kuNbChanPsd, nullptr)
   , fvhHitChargeChan(kuNbChanPsd, nullptr)
   , fvhHitZeroLevelChan(kuNbChanPsd, nullptr)
   , fvhHitAmplChan(kuNbChanPsd, nullptr)
   , fvhHitChargeByWfmChan(kuNbChanPsd, nullptr)
-  , fvhHitChargeEvoChan(kuNbChanPsd, nullptr)
   , fvhHitWfmChan(kuNbChanPsd, nullptr)
-  , fvhHitFitWfmChan(kuNbChanPsd, nullptr)
   , kvuWfmRanges(kuNbWfmRanges, 0)
   , kvuWfmInRangeToChangeChan(kuNbChanPsd * kuNbWfmRanges, 0)
-  , fv3hHitWfmFlattenedChan(kuNbChanPsd * kuNbWfmRanges * kuNbWfmExamples,
-                            nullptr)
+  , fv3hHitWfmFlattenedChan(kuNbChanPsd * kuNbWfmRanges * kuNbWfmExamples, nullptr)
   , fbSpillOn(kTRUE)
   , fuCurrentSpillIdx(0)
   , fuCurrentSpillPlot(0)
   , fdStartTimeSpill(-1.0)
   , fdLastSecondTime(-1.0)
   , fuCountsLastSecond(0)
-  , fhChannelMap(nullptr)
   , fhHitChargeMap(nullptr)
   , fhHitMapEvo(nullptr)
   , fhChanHitMapEvo(nullptr)
-  , fvhChannelMapSpill()
-  , fhHitsPerSpill(nullptr)
-  , fhMsgsCntEvo(nullptr)
-  , fhReadMsgsCntEvo(nullptr)
-  , fhLostMsgsCntEvo(nullptr)
-  , fhReadEvtsCntEvo(nullptr)
-  , fhAdcTimeEvo(nullptr)
+  , fhMissedData(nullptr)
+  , fhAdcTime(nullptr)
   , fhMsLengthEvo(nullptr)
   , fhMsgsCntPerMsEvo(nullptr)
   , fhReadMsgsCntPerMsEvo(nullptr)
   , fhLostMsgsCntPerMsEvo(nullptr)
   , fhReadEvtsCntPerMsEvo(nullptr)
+  , fvhHitFitWfmChan(kuNbChanPsd, nullptr)
   , fvhFitHarmonic1Chan(kuNbChanPsd, nullptr)
   , fvhFitHarmonic2Chan(kuNbChanPsd, nullptr)
   , fvhFitQaChan(kuNbChanPsd, nullptr)
@@ -121,11 +104,12 @@ CbmMcbm2018MonitorAlgoPsd::CbmMcbm2018MonitorAlgoPsd()
   , fcChargesFPGA(nullptr)
   , fcChargesWfm(nullptr)
   , fcAmplitudes(nullptr)
+  , fcZeroLevels(nullptr)
   , fcGenCntsPerMs(nullptr)
-  , fcSpillCounts(nullptr)
-  , fcSpillCountsHori(nullptr)
   , fcWfmsAllChannels(nullptr)
-  , fvcWfmsChan(kuNbChanPsd, nullptr) {}
+  , fvcWfmsChan(kuNbChanPsd, nullptr)
+{
+}
 CbmMcbm2018MonitorAlgoPsd::~CbmMcbm2018MonitorAlgoPsd() {
   /// Clear buffers
 }
@@ -188,10 +172,6 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::InitParameters() {
               << fUnpackPar->GetGdpbId(i) << std::dec;
   }  // for( UInt_t i = 0; i < fuNrOfGdpbs; ++i )
 
-  /// Internal status initialization
-  fvulCurrentEpoch.resize(fuNrOfGdpbs, 0);
-  fvulCurrentEpochCycle.resize(fuNrOfGdpbs, 0);
-  fvulCurrentEpochFull.resize(fuNrOfGdpbs, 0);
 
   return kTRUE;
 }
@@ -239,10 +219,6 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessTs(const fles::Timeslice& ts) {
     if (kFALSE == fbIgnoreOverlapMs) fuNbMsLoop += fuNbOverMsPerTs;
     LOG(info) << "In each TS " << fuNbMsLoop << " MS will be looped over";
   }  // if( -1.0 == fdTsCoreSizeInNs )
-
-  /// Compute time of TS core end
-  fdTsStopTimeCore = fdTsStartTime + fdTsCoreSizeInNs;
-  //      LOG(info) << Form( "TS %5d Start %12f Stop %12f", fulCurrentTsIdx, fdTsStartTime, fdTsStopTimeCore );
 
   /// Loop over core microslices (and overlap ones if chosen)
   for (fuMsIndex = 0; fuMsIndex < fuNbMsLoop; fuMsIndex++) {
@@ -334,10 +310,7 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts,
       if (fbSpillOn && fuCountsLastSecond < kuOffSpillCountLimit) {
         fbSpillOn = kFALSE;
         fuCurrentSpillIdx++;
-        fuCurrentSpillPlot = (fuCurrentSpillPlot + 1) % kuNbSpillPlots;
         fdStartTimeSpill   = fdMsTime;
-        fvhChannelMapSpill[fuCurrentSpillPlot]->Reset();
-        fhHitsPerSpill->SetBinContent(fuCurrentSpillPlot + 1, 0);
       }  // if( fbSpillOn && fuCountsLastSecond < kuOffSpillCountLimit )
       else if (kuOffSpillCountLimit < fuCountsLastSecond)
         fbSpillOn = kTRUE;
@@ -384,13 +357,6 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts,
     }
   }
 
-  kvuWfmRanges.clear();
-  for (uint8_t i = 0; i <= kuNbWfmRanges; ++i)
-    kvuWfmRanges.push_back(
-      fviHistoChargeArgs.at(1)
-      + i * (fviHistoChargeArgs.at(2) - fviHistoChargeArgs.at(1))
-          / kuNbWfmRanges);
-
   PsdData::PsdGbtReader PsdReader(pInBuff);
   if (gLogger->IsLogNeeded(fair::Severity::debug))
     PsdReader.SetPrintOutMode(true);
@@ -406,11 +372,9 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts,
 
       if (ReadResult == 0) {
         fuCountsLastSecond++;
-        fhAdcTimeEvo->Fill(fdMsTime - fdStartTime, PsdReader.EvHdrAc.uAdcTime);
-        fuReadEvtCnt++;
+        fhAdcTime->Fill(PsdReader.EvHdrAc.uAdcTime);
         fuReadEvtCntInMs++;
-        fhHitsPerSpill->AddBinContent(fuCurrentSpillPlot + 1,
-                                      PsdReader.EvHdrAb.uHitsNumber);
+
         //hit loop
         for (int hit_iter = 0; hit_iter < PsdReader.EvHdrAb.uHitsNumber;
              hit_iter++) {
@@ -427,112 +391,94 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts,
             break;
           }
           //Hit header
-          fhChannelMap->Fill(uHitChannel);
           fhHitChargeMap->Fill(uHitChannel, uSignalCharge);
-          fvhChannelMapSpill[fuCurrentSpillPlot]->Fill(
-            uHitChannel);  //should be placed map(channel)
           fhHitMapEvo->Fill(uHitChannel, fdMsTime - fdStartTime);
           fhChanHitMapEvo->Fill(
             uHitChannel,
             fdMsTime - fdStartTime);  //should be placed map(channel)
 
-          fvhHitCntEvoChan[uHitChannel]->Fill(fdMsTime - fdStartTime);
-          fvuHitCntChanMs[uHitChannel]++;
+          if (fbMonitorChanMode) {
 
-          fvhHitChargeChan[uHitChannel]->Fill(uSignalCharge);
-          fvhHitZeroLevelChan[uHitChannel]->Fill(uZeroLevel);
-          fvhHitChargeEvoChan[uHitChannel]->Fill(fdMsTime - fdStartTime,
-                                                 uSignalCharge);
+            fvhHitChargeChan[uHitChannel]->Fill(uSignalCharge);
+            fvhHitZeroLevelChan[uHitChannel]->Fill(uZeroLevel);
 
-          //Hit data
-          uint16_t uHitAmlpitude = 0;
-          uint16_t uHitChargeWfm = 0;
-          fvhHitWfmChan[uHitChannel]->Reset();
-          fvhHitFitWfmChan[uHitChannel]->Reset();
-          for (UInt_t wfm_iter = 0; wfm_iter < uWfm.size(); wfm_iter++) {
-            if (uWfm.at(wfm_iter) > uHitAmlpitude)
-              uHitAmlpitude = uWfm.at(wfm_iter);
-            uHitChargeWfm += uWfm.at(wfm_iter) - uZeroLevel;
-            fvhHitWfmChan[uHitChannel]->Fill(wfm_iter, uWfm.at(wfm_iter));
-          }
-          fvhHitWfmChan[uHitChannel]->SetTitle(
-            Form("Waveform channel %03u charge %0u zero level %0u; Time [adc "
-                 "counts]; Amplitude [adc counts]",
-                 uHitChannel,
-                 uSignalCharge,
-                 uZeroLevel));
-          uHitAmlpitude -= uZeroLevel;
-          fvhHitAmplChan[uHitChannel]->Fill(uHitAmlpitude);
-          fvhHitChargeByWfmChan[uHitChannel]->Fill(uHitChargeWfm);
+            //Hit data
+            uint16_t uHitAmlpitude = 0;
+            UInt_t uHitChargeWfm   = 0;
+            if (fbMonitorWfmMode) fvhHitWfmChan[uHitChannel]->Reset();
+            if (fbMonitorFitMode) fvhHitFitWfmChan[uHitChannel]->Reset();
+            for (UInt_t wfm_iter = 0; wfm_iter < uWfm.size(); wfm_iter++) {
+              if (uWfm.at(wfm_iter) > uHitAmlpitude) uHitAmlpitude = uWfm.at(wfm_iter);
+              uHitChargeWfm += uWfm.at(wfm_iter) - uZeroLevel;
+              if (fbMonitorWfmMode) fvhHitWfmChan[uHitChannel]->Fill(wfm_iter, uWfm.at(wfm_iter));
+            }
+            uHitAmlpitude -= uZeroLevel;
+            fvhHitAmplChan[uHitChannel]->Fill(uHitAmlpitude);
+            fvhHitChargeByWfmChan[uHitChannel]->Fill(uHitChargeWfm);
 
-          for (uint8_t i = 0; i < kuNbWfmRanges; ++i) {
-            if (uSignalCharge > kvuWfmRanges.at(i)
-                && uSignalCharge < kvuWfmRanges.at(i + 1)) {
-              UInt_t uFlatIndexOfChange = i * kuNbChanPsd + uHitChannel;
+            if (fbMonitorWfmMode) {
+              fvhHitWfmChan[uHitChannel]->SetTitle(Form("Waveform channel %03u charge %0u zero level %0u; Time [adc "
+                                                        "counts]; Amplitude [adc counts]",
+                                                        uHitChannel, uSignalCharge, uZeroLevel));
+              for (uint8_t i = 0; i < kuNbWfmRanges; ++i) {
+                if (uSignalCharge > kvuWfmRanges.at(i) && uSignalCharge < kvuWfmRanges.at(i + 1)) {
+                  UInt_t uFlatIndexOfChange = i * kuNbChanPsd + uHitChannel;
 
-              UInt_t uWfmExampleIter =
-                kvuWfmInRangeToChangeChan.at(uFlatIndexOfChange);
-              UInt_t uFlatIndexHisto =
-                uWfmExampleIter * kuNbWfmRanges * kuNbChanPsd + i * kuNbChanPsd
-                + uHitChannel;
-              fv3hHitWfmFlattenedChan[uFlatIndexHisto]->Reset();
+                  UInt_t uWfmExampleIter = kvuWfmInRangeToChangeChan.at(uFlatIndexOfChange);
+                  UInt_t uFlatIndexHisto =
+                    uWfmExampleIter * kuNbWfmRanges * kuNbChanPsd + i * kuNbChanPsd + uHitChannel;
+                  fv3hHitWfmFlattenedChan[uFlatIndexHisto]->Reset();
 
-              for (UInt_t wfm_iter = 0; wfm_iter < uWfm.size(); wfm_iter++)
-                fv3hHitWfmFlattenedChan[uFlatIndexHisto]->Fill(
-                  wfm_iter, uWfm.at(wfm_iter));
-              fv3hHitWfmFlattenedChan[uFlatIndexHisto]->SetTitle(
-                Form("Waveform channel %03u charge %0u zero level %0u; Time "
-                     "[adc counts]; Amplitude [adc counts]",
-                     uHitChannel,
-                     uSignalCharge,
-                     uZeroLevel));
+                  for (UInt_t wfm_iter = 0; wfm_iter < uWfm.size(); wfm_iter++)
+                    fv3hHitWfmFlattenedChan[uFlatIndexHisto]->Fill(wfm_iter, uWfm.at(wfm_iter));
+                  fv3hHitWfmFlattenedChan[uFlatIndexHisto]->SetTitle(
+                    Form("Waveform channel %03u charge %0u zero level %0u; Time "
+                         "[adc counts]; Amplitude [adc counts]",
+                         uHitChannel, uSignalCharge, uZeroLevel));
 
-              kvuWfmInRangeToChangeChan.at(uFlatIndexOfChange)++;
-              if (kvuWfmInRangeToChangeChan.at(uFlatIndexOfChange)
-                  == kuNbWfmExamples)
-                kvuWfmInRangeToChangeChan.at(uFlatIndexOfChange) = 0;
+                  kvuWfmInRangeToChangeChan.at(uFlatIndexOfChange)++;
+                  if (kvuWfmInRangeToChangeChan.at(uFlatIndexOfChange) == kuNbWfmExamples)
+                    kvuWfmInRangeToChangeChan.at(uFlatIndexOfChange) = 0;
 
-            }  // if( uSignalCharge > kvuWfmRanges.at(i) && uSignalCharge < kvuWfmRanges.at(i+1) )
-          }    // for (uint8_t i=0; i<kuNbWfmRanges; ++i)
+                }  // if( uSignalCharge > kvuWfmRanges.at(i) && uSignalCharge < kvuWfmRanges.at(i+1) )
+              }    // for (uint8_t i=0; i<kuNbWfmRanges; ++i)
+            }      //if (fbMonitorWfmMode)
 
 
-          int gate_beg = 0;
-          int gate_end = 7;
-          PsdSignalFitting::PronyFitter Pfitter(2, 2, gate_beg, gate_end);
+            if (fbMonitorFitMode) {
+              int gate_beg = 0;
+              int gate_end = 7;
+              PsdSignalFitting::PronyFitter Pfitter(2, 2, gate_beg, gate_end);
 
-          Pfitter.SetDebugMode(0);
-          Pfitter.SetWaveform(uWfm, uZeroLevel);
-          int SignalBeg           = 2;
-          Int_t best_signal_begin = Pfitter.ChooseBestSignalBeginHarmonics(
-            SignalBeg - 1, SignalBeg + 1);
+              Pfitter.SetDebugMode(0);
+              Pfitter.SetWaveform(uWfm, uZeroLevel);
+              int SignalBeg           = 2;
+              Int_t best_signal_begin = Pfitter.ChooseBestSignalBeginHarmonics(SignalBeg - 1, SignalBeg + 1);
 
-          Pfitter.SetSignalBegin(best_signal_begin);
-          Pfitter.CalculateFitHarmonics();
-          Pfitter.CalculateFitAmplitudes();
+              Pfitter.SetSignalBegin(best_signal_begin);
+              Pfitter.CalculateFitHarmonics();
+              Pfitter.CalculateFitAmplitudes();
 
-          Float_t fit_integral = Pfitter.GetIntegral(gate_beg, gate_end);
-          Float_t fit_R2       = Pfitter.GetRSquare(gate_beg, gate_end);
+              Float_t fit_integral = Pfitter.GetIntegral(gate_beg, gate_end);
+              Float_t fit_R2       = Pfitter.GetRSquare(gate_beg, gate_end);
 
-          std::complex<float>* harmonics = Pfitter.GetHarmonics();
-          std::vector<uint16_t> uFitWfm  = Pfitter.GetFitWfm();
-          for (UInt_t wfm_iter = 0; wfm_iter < uFitWfm.size(); wfm_iter++) {
-            fvhHitFitWfmChan[uHitChannel]->Fill(wfm_iter, uFitWfm.at(wfm_iter));
-            fvhHitWfmChan[uHitChannel]->SetTitle(
-              Form("Waveform channel %03u charge %0u zero level %0u R2 %.5f; "
-                   "Time [adc counts]; Amplitude [adc counts]",
-                   uHitChannel,
-                   uSignalCharge,
-                   uZeroLevel,
-                   fit_R2));
-          }
+              std::complex<float>* harmonics = Pfitter.GetHarmonics();
+              std::vector<uint16_t> uFitWfm  = Pfitter.GetFitWfm();
+              for (UInt_t wfm_iter = 0; wfm_iter < uFitWfm.size(); wfm_iter++) {
+                fvhHitFitWfmChan[uHitChannel]->Fill(wfm_iter, uFitWfm.at(wfm_iter));
+                fvhHitWfmChan[uHitChannel]->SetTitle(Form("Waveform channel %03u charge %0u zero level %0u R2 %.5f; "
+                                                          "Time [adc counts]; Amplitude [adc counts]",
+                                                          uHitChannel, uSignalCharge, uZeroLevel, fit_R2));
+              }
 
-          fvhFitQaChan[uHitChannel]->Fill(fit_integral, fit_R2);
+              fvhFitQaChan[uHitChannel]->Fill(fit_integral, fit_R2);
 
-          if (fit_R2 > 0.02) continue;
-          fvhFitHarmonic1Chan[uHitChannel]->Fill(std::real(harmonics[1]),
-                                                 std::imag(harmonics[1]));
-          fvhFitHarmonic2Chan[uHitChannel]->Fill(std::real(harmonics[2]),
-                                                 std::imag(harmonics[2]));
+              if (fit_R2 > 0.02) continue;
+              fvhFitHarmonic1Chan[uHitChannel]->Fill(std::real(harmonics[1]), std::imag(harmonics[1]));
+              fvhFitHarmonic2Chan[uHitChannel]->Fill(std::real(harmonics[2]), std::imag(harmonics[2]));
+            }  //if (fbMonitorFitMode)
+          }    //if (fbMonitorChanMode)
+
         }  // for(int hit_iter = 0; hit_iter < PsdReader.EvHdrAb.uHitsNumber; hit_iter++)
 
       } else if (ReadResult == 1) {
@@ -556,6 +502,7 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts,
     }  // while(PsdReader.GetTotalGbtWordsRead()<uNbMessages)
 
     if (uNbMessages != PsdReader.GetTotalGbtWordsRead()) {
+      fbPsdMissedData = kTRUE;
       LOG(error) << "Wrong amount of messages read!"
                  << " in microslice " << uNbMessages << " by PsdReader "
                  << PsdReader.GetTotalGbtWordsRead();
@@ -577,13 +524,6 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts,
       LOG(error) << "Wrong MS index!"
                  << " in microslice " << fulCurrentMsIdx << " by PsdReader "
                  << PsdReader.EvHdrAb.ulMicroSlice << "\n";
-
-    fhMsgsCntEvo->AddBinContent(fdMsTime - fdStartTime, uNbMessages);
-    fhReadMsgsCntEvo->AddBinContent(fdMsTime - fdStartTime,
-                                    PsdReader.GetTotalGbtWordsRead());
-    fhLostMsgsCntEvo->AddBinContent(
-      fdMsTime - fdStartTime, uNbMessages - PsdReader.GetTotalGbtWordsRead());
-    fhReadEvtsCntEvo->AddBinContent(fdMsTime - fdStartTime, fuReadEvtCnt);
 
     fuMsgsCntInMs += uNbMessages;
     fuReadMsgsCntInMs += PsdReader.GetTotalGbtWordsRead();
@@ -613,14 +553,9 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::CreateHistograms() {
   /// Logarithmic bining
   uint32_t iNbBinsLog = 0;
   /// Parameters are NbDecadesLog, NbStepsDecade, NbSubStepsInStep
-  std::vector<double> dBinsLogVector = GenerateLogBinArray(4, 9, 1, iNbBinsLog);
+  std::vector<double> dBinsLogVector = GenerateLogBinArray(2, 3, 1, iNbBinsLog);
   double* dBinsLog                   = dBinsLogVector.data();
 
-  fhChannelMap = new TH1I("hChannelMap",
-                          "Map of hits in PSD detector; Chan; Hits Count []",
-                          kuNbChanPsd,
-                          0.,
-                          kuNbChanPsd);
   fhHitChargeMap =
     new TH2I("hHitChargeMap",
              "Map of hits charges in PSD detector; Chan; Charge [adc counts]",
@@ -648,56 +583,11 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::CreateHistograms() {
                              fuHistoryHistoSize,
                              0,
                              fuHistoryHistoSize);
-  for (UInt_t uSpill = 0; uSpill < kuNbSpillPlots; uSpill++) {
-    fvhChannelMapSpill.push_back(
-      new TH1I(Form("hChannelMapSpill%02u", uSpill),
-               Form("Map of hits in PSD detector in current spill %02u; Chan; "
-                    "Hits Count []",
-                    uSpill),
-               kuNbChanPsd,
-               0.,
-               kuNbChanPsd));
-  }  // for( UInt_t uSpill = 0; uSpill < kuNbSpillPlots; uSpill ++)
-  fhHitsPerSpill = new TH1I("hHitsPerSpill",
-                            "Hit count per spill; Spill; Hits Count []",
-                            kuNbSpillPlots,
-                            0,
-                            kuNbSpillPlots);
 
-  fhMsgsCntEvo     = new TH1I("hMsgsCntEvo",
-                          "Evolution of TotalMsgs counts vs time in run; Time "
-                          "in run [s]; Msgs Count []",
-                          fuHistoryHistoSize,
-                          0,
-                          fuHistoryHistoSize);
-  fhReadMsgsCntEvo = new TH1I("hReadMsgsCntEvo",
-                              "Evolution of ReadMsgs counts vs time in run; "
-                              "Time in run [s]; ReadMsgs Count []",
-                              fuHistoryHistoSize,
-                              0,
-                              fuHistoryHistoSize);
-  fhLostMsgsCntEvo = new TH1I("hLostMsgsCntEvo",
-                              "Evolution of LostMsgs counts vs time in run; "
-                              "Time in run [s]; LostMsgs Count []",
-                              fuHistoryHistoSize,
-                              0,
-                              fuHistoryHistoSize);
-  fhReadEvtsCntEvo = new TH1I("hReadEvtsCntEvo",
-                              "Evolution of ReadEvents counts vs time in run; "
-                              "Time in run [s]; ReadEvents Count []",
-                              fuHistoryHistoSize,
-                              0,
-                              fuHistoryHistoSize);
 
-  fhAdcTimeEvo = new TH2I(
-    "hAdcTimeEvo",
-    "Evolution of ADC time vs time in run; Time in run [s]; Adc time *12.5[ns]",
-    fuHistoryHistoSize,
-    0,
-    fuHistoryHistoSize,
-    500,
-    0,
-    9000);
+  fhMissedData = new TH1I("hMissedData", "PSD Missed data", 2, 0, 2);
+
+  fhAdcTime = new TH1I("hAdcTime", "ADC time; Adc time []", 100, 0, 160000);
 
   fhMsLengthEvo = new TH2I(
     "hMsLengthEvo",
@@ -736,31 +626,18 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::CreateHistograms() {
              fuHistoryHistoSize,
              iNbBinsLog,
              dBinsLog);
-  fhReadEvtsCntPerMsEvo =
-    new TH2I("hReadEvtCntPerMsEvo",
-             "Evolution of ReadEvents, per MS counts vs time in run; Time in "
-             "run [s]; ReadEvents Count/MS []; MS",
-             fuHistoryHistoSize,
-             0,
-             fuHistoryHistoSize,
-             iNbBinsLog,
-             dBinsLog);
+  fhReadEvtsCntPerMsEvo = new TH2I("hReadEvtCntPerMsEvo",
+                                   "Evolution of ReadEvents counts, per MS vs time in run; Time in "
+                                   "run [s]; ReadEvents Count/MS []; MS",
+                                   fuHistoryHistoSize, 0, fuHistoryHistoSize, iNbBinsLog, dBinsLog);
 
   /// Add pointers to the vector with all histo for access by steering class
-  AddHistoToVector(fhChannelMap, sFolder);
   AddHistoToVector(fhHitChargeMap, sFolder);
   AddHistoToVector(fhHitMapEvo, sFolder);
   AddHistoToVector(fhChanHitMapEvo, sFolder);
-  for (UInt_t uSpill = 0; uSpill < kuNbSpillPlots; uSpill++)
-    AddHistoToVector(fvhChannelMapSpill[uSpill], sFolder);
-  AddHistoToVector(fhHitsPerSpill, sFolder);
 
-  AddHistoToVector(fhMsgsCntEvo, sFolder);
-  AddHistoToVector(fhReadMsgsCntEvo, sFolder);
-  AddHistoToVector(fhLostMsgsCntEvo, sFolder);
-  AddHistoToVector(fhReadEvtsCntEvo, sFolder);
-
-  AddHistoToVector(fhAdcTimeEvo, sFolder);
+  AddHistoToVector(fhMissedData, sFolder);
+  AddHistoToVector(fhAdcTime, sFolder);
   AddHistoToVector(fhMsLengthEvo, sFolder);
 
   AddHistoToVector(fhMsgsCntPerMsEvo, sFolder);
@@ -769,163 +646,80 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::CreateHistograms() {
   AddHistoToVector(fhReadEvtsCntPerMsEvo, sFolder);
 
   /*******************************************************************/
-  for (UInt_t uChan = 0; uChan < kuNbChanPsd; ++uChan) {
-    fvhHitCntEvoChan[uChan] =
-      new TH1I(Form("hHitCntEvoChan%03u", uChan),
-               Form("Evolution of Hit counts vs time in run for channel %03u; "
-                    "Time in run [s]; Hits Count []",
-                    uChan),
-               fuHistoryHistoSize,
-               0,
-               fuHistoryHistoSize);
+  if (fbMonitorChanMode) {
 
-    fvhHitCntPerMsEvoChan[uChan] =
-      new TH2I(Form("hHitCntPerMsEvoChan%03u", uChan),
-               Form("Evolution of Hit counts per MS vs time in run for channel "
-                    "%03u; Time in run [s]; Hits Count/MS []; MS",
-                    uChan),
-               fuHistoryHistoSize,
-               0,
-               fuHistoryHistoSize,
-               iNbBinsLog,
-               dBinsLog);
+    for (UInt_t uChan = 0; uChan < kuNbChanPsd; ++uChan) {
+      fvhHitChargeChan[uChan] = new TH1I(Form("hHitChargeChan%03u", uChan),
+                                         Form("Hits charge distribution for channel %03u; Charge [adc counts]", uChan),
+                                         fviHistoChargeArgs.at(0), fviHistoChargeArgs.at(1), fviHistoChargeArgs.at(2));
 
-    fvhHitChargeChan[uChan] = new TH1I(
-      Form("hHitChargeChan%03u", uChan),
-      Form("Hits charge distribution for channel %03u; Charge [adc counts]",
-           uChan),
-      fviHistoChargeArgs.at(0),
-      fviHistoChargeArgs.at(1),
-      fviHistoChargeArgs.at(2));
+      fvhHitZeroLevelChan[uChan] =
+        new TH1I(Form("hHitZeroLevelChan%03u", uChan),
+                 Form("Hits zero level distribution for channel %03u; ZeroLevel [adc counts]", uChan),
+                 fviHistoZLArgs.at(0), fviHistoZLArgs.at(1), fviHistoZLArgs.at(2));
 
-    fvhHitZeroLevelChan[uChan] = new TH1I(
-      Form("hHitZeroLevelChan%03u", uChan),
-      Form(
-        "Hits zero level distribution for channel %03u; ZeroLevel [adc counts]",
-        uChan),
-      fviHistoZLArgs.at(0),
-      fviHistoZLArgs.at(1),
-      fviHistoZLArgs.at(2));
+      fvhHitAmplChan[uChan] =
+        new TH1I(Form("hHitAmplChan%03u", uChan),
+                 Form("Hits amplitude distribution for channel %03u; Amplitude [adc counts]", uChan),
+                 fviHistoAmplArgs.at(0), fviHistoAmplArgs.at(1), fviHistoAmplArgs.at(2));
 
-    fvhHitAmplChan[uChan] = new TH1I(
-      Form("hHitAmplChan%03u", uChan),
-      Form(
-        "Hits amplitude distribution for channel %03u; Amplitude [adc counts]",
-        uChan),
-      fviHistoAmplArgs.at(0),
-      fviHistoAmplArgs.at(1),
-      fviHistoAmplArgs.at(2));
+      fvhHitChargeByWfmChan[uChan] =
+        new TH1I(Form("hHitChargeByWfmChan%03u", uChan),
+                 Form("Hits charge by waveform distribution for channel %03u; "
+                      "Charge [adc counts]",
+                      uChan),
+                 fviHistoChargeArgs.at(0), fviHistoChargeArgs.at(1), fviHistoChargeArgs.at(2));
 
-    fvhHitChargeByWfmChan[uChan] =
-      new TH1I(Form("hHitChargeByWfmChan%03u", uChan),
-               Form("Hits charge by waveform distribution for channel %03u; "
-                    "Charge [adc counts]",
-                    uChan),
-               fviHistoChargeArgs.at(0),
-               fviHistoChargeArgs.at(1),
-               fviHistoChargeArgs.at(2));
+      AddHistoToVector(fvhHitChargeChan[uChan], sFolder);
+      AddHistoToVector(fvhHitZeroLevelChan[uChan], sFolder);
+      AddHistoToVector(fvhHitAmplChan[uChan], sFolder);
+      AddHistoToVector(fvhHitChargeByWfmChan[uChan], sFolder);
 
-    fvhHitChargeEvoChan[uChan] =
-      new TH2I(Form("hHitChargeEvoChan%03u", uChan),
-               Form("Evolution of Hit charge vs time in run for channel %03u; "
-                    "Time in run [s]; Charge [adc counts]",
-                    uChan),
-               fuHistoryHistoSize,
-               0,
-               fuHistoryHistoSize,
-               fviHistoChargeArgs.at(0),
-               fviHistoChargeArgs.at(1),
-               fviHistoChargeArgs.at(2));
+      if (fbMonitorWfmMode) {
+        fvhHitWfmChan[uChan] = new TH1I(Form("hHitWfmChan%03u", uChan), Form("HitWfmChan%03u", uChan), 8, 0, 8);
+        fvhHitWfmChan[uChan]->SetMarkerStyle(31);
+        fvhHitWfmChan[uChan]->SetMarkerSize(0.5);
 
-    fvhHitWfmChan[uChan] = new TH1I(
-      Form("hHitWfmChan%03u", uChan), Form("HitWfmChan%03u", uChan), 8, 0, 8);
-    fvhHitWfmChan[uChan]->SetMarkerStyle(31);
-    fvhHitWfmChan[uChan]->SetMarkerSize(0.5);
+        for (UInt_t uWfmRangeIter = 0; uWfmRangeIter < kuNbWfmRanges; uWfmRangeIter++) {
+          for (UInt_t uWfmExampleIter = 0; uWfmExampleIter < kuNbWfmExamples; uWfmExampleIter++) {
+            UInt_t uFlatIndex = uWfmExampleIter * kuNbWfmRanges * kuNbChanPsd + uWfmRangeIter * kuNbChanPsd + uChan;
+            fv3hHitWfmFlattenedChan[uFlatIndex] =
+              new TH1I(Form("hHitWfmChan%03uRange%02uExample%02u", uChan, uWfmRangeIter, uWfmExampleIter),
+                       Form("HitWfmChan%03uRange%02uExample%02u", uChan, uWfmRangeIter, uWfmExampleIter), 8, 0, 8);
 
-    fvhHitFitWfmChan[uChan] = new TH1I(Form("hHitFitWfmChan%03u", uChan),
-                                       Form("HitFitWfmChan%03u", uChan),
-                                       8,
-                                       0,
-                                       8);
-    fvhHitFitWfmChan[uChan]->SetLineColor(kRed);
-    fvhHitFitWfmChan[uChan]->SetLineWidth(2);
+          }  // for( UInt_t uWfmRangeIter = 0; uWfmRangeIter < kuNbWfmRanges; uWfmRangeIter ++)
+        }    // for( UInt_t uWfmExampleIter = 0; uWfmExampleIter < kuNbWfmExamples; uWfmExampleIter ++)
+      }      // if(fbMonitorWfmMode)
 
-    for (UInt_t uWfmRangeIter = 0; uWfmRangeIter < kuNbWfmRanges;
-         uWfmRangeIter++) {
-      for (UInt_t uWfmExampleIter = 0; uWfmExampleIter < kuNbWfmExamples;
-           uWfmExampleIter++) {
-        UInt_t uFlatIndex = uWfmExampleIter * kuNbWfmRanges * kuNbChanPsd
-                            + uWfmRangeIter * kuNbChanPsd + uChan;
-        fv3hHitWfmFlattenedChan[uFlatIndex] =
-          new TH1I(Form("hHitWfmChan%03uRange%02uExample%02u",
-                        uChan,
-                        uWfmRangeIter,
-                        uWfmExampleIter),
-                   Form("HitWfmChan%03uRange%02uExample%02u",
-                        uChan,
-                        uWfmRangeIter,
-                        uWfmExampleIter),
-                   8,
-                   0,
-                   8);
+      if (fbMonitorFitMode) {
 
-      }  // for( UInt_t uWfmRangeIter = 0; uWfmRangeIter < kuNbWfmRanges; uWfmRangeIter ++)
-    }  // for( UInt_t uWfmExampleIter = 0; uWfmExampleIter < kuNbWfmExamples; uWfmExampleIter ++)
+        fvhHitFitWfmChan[uChan] =
+          new TH1I(Form("hHitFitWfmChan%03u", uChan), Form("HitFitWfmChan%03u", uChan), 8, 0, 8);
+        fvhHitFitWfmChan[uChan]->SetLineColor(kRed);
+        fvhHitFitWfmChan[uChan]->SetLineWidth(2);
 
-    fvhFitHarmonic1Chan[uChan] = new TH2I(
-      Form("hFitHarmonic1Chan%03u", uChan),
-      Form(
-        "Waveform fit harmonic 1 for channel %03u; Real part []; Imag part []",
-        uChan),
-      400,
-      -2,
-      2,
-      200,
-      -1,
-      1);
-    fvhFitHarmonic1Chan[uChan]->SetMarkerColor(kRed);
+        fvhFitHarmonic1Chan[uChan] = new TH2I(
+          Form("hFitHarmonic1Chan%03u", uChan),
+          Form("Waveform fit harmonic 1 for channel %03u; Real part []; Imag part []", uChan), 400, -2, 2, 200, -1, 1);
+        fvhFitHarmonic1Chan[uChan]->SetMarkerColor(kRed);
 
-    fvhFitHarmonic2Chan[uChan] = new TH2I(
-      Form("hFitHarmonic2Chan%03u", uChan),
-      Form(
-        "Waveform fit harmonic 2 for channel %03u; Real part []; Imag part []",
-        uChan),
-      400,
-      -2,
-      2,
-      200,
-      -1,
-      1);
-    fvhFitHarmonic2Chan[uChan]->SetMarkerColor(kBlue);
+        fvhFitHarmonic2Chan[uChan] = new TH2I(
+          Form("hFitHarmonic2Chan%03u", uChan),
+          Form("Waveform fit harmonic 2 for channel %03u; Real part []; Imag part []", uChan), 400, -2, 2, 200, -1, 1);
+        fvhFitHarmonic2Chan[uChan]->SetMarkerColor(kBlue);
 
-    fvhFitQaChan[uChan] = new TH2I(
-      Form("hFitQaChan%03u", uChan),
-      Form("Waveform fit QA for channel %03u;  Integral [adc counts]; R2 []",
-           uChan),
-      fviHistoChargeArgs.at(0),
-      fviHistoChargeArgs.at(1),
-      fviHistoChargeArgs.at(2),
-      500,
-      0,
-      1);
+        fvhFitQaChan[uChan] = new TH2I(
+          Form("hFitQaChan%03u", uChan), Form("Waveform fit QA for channel %03u;  Integral [adc counts]; R2 []", uChan),
+          fviHistoChargeArgs.at(0), fviHistoChargeArgs.at(1), fviHistoChargeArgs.at(2), 500, 0, 1);
 
+        AddHistoToVector(fvhFitHarmonic1Chan[uChan], sFitFolder);
+        AddHistoToVector(fvhFitHarmonic2Chan[uChan], sFitFolder);
+        AddHistoToVector(fvhFitQaChan[uChan], sFitFolder);
 
-    /// Add pointers to the vector with all histo for access by steering class
-    AddHistoToVector(fvhHitCntEvoChan[uChan], sFolder);
-    AddHistoToVector(fvhHitCntPerMsEvoChan[uChan], sFolder);
-    AddHistoToVector(fvhHitChargeChan[uChan], sFolder);
-    AddHistoToVector(fvhHitZeroLevelChan[uChan], sFolder);
-    AddHistoToVector(fvhHitAmplChan[uChan], sFolder);
-    AddHistoToVector(fvhHitChargeByWfmChan[uChan], sFolder);
-    AddHistoToVector(fvhHitChargeEvoChan[uChan], sFolder);
+      }  // if(fbMonitorFitMode)
+    }    // for( UInt_t uChan = 0; uChan < kuNbChanPsd; ++uChan )
 
-    AddHistoToVector(fvhFitHarmonic1Chan[uChan], sFitFolder);
-    AddHistoToVector(fvhFitHarmonic2Chan[uChan], sFitFolder);
-    AddHistoToVector(fvhFitQaChan[uChan], sFitFolder);
-
-  }  // for( UInt_t uChan = 0; uChan < kuNbChanPsd; ++uChan )
-
-
+  }  // if (fbMonitorChanMode)
   /*******************************************************************/
 
   /// Canvases
@@ -940,16 +734,10 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::CreateHistograms() {
   fcHitMaps->cd(1);
   gPad->SetGridx();
   gPad->SetGridy();
-  gPad->SetLogy();
-  fhChannelMap->Draw();
-
-  fcHitMaps->cd(2);
-  gPad->SetGridx();
-  gPad->SetGridy();
   gPad->SetLogz();
   fhChanHitMapEvo->Draw("colz");
 
-  fcHitMaps->cd(3);
+  fcHitMaps->cd(2);
   gPad->SetGridx();
   gPad->SetGridy();
   gPad->SetLogz();
@@ -967,8 +755,8 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::CreateHistograms() {
   fcSummary->cd(1);
   gPad->SetGridx();
   gPad->SetGridy();
-  gPad->SetLogy();
-  fhChannelMap->Draw();
+  gPad->SetLogz();
+  fhHitChargeMap->Draw("colz");
 
   fcSummary->cd(2);
   gPad->SetGridx();
@@ -979,8 +767,8 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::CreateHistograms() {
   fcSummary->cd(3);
   gPad->SetGridx();
   gPad->SetGridy();
-  gPad->SetLogz();
-  fhHitChargeMap->Draw("colz");
+  gPad->SetLogy();
+  fhMissedData->Draw();
 
   fcSummary->cd(4);
   gPad->SetGridx();
@@ -990,51 +778,6 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::CreateHistograms() {
   fhMsLengthEvo->Draw("colz");
 
   AddCanvasToVector(fcSummary, "canvases");
-  /*******************************************************************/
-
-  /*******************************************************************/
-  /// Charge from FPGA all channels
-  fcChargesFPGA = new TCanvas(
-    "cChargesFPGA", "Charges spectra in all channels calculated by FPGA", w, h);
-  fcChargesFPGA->DivideSquare(kuNbChanPsd);
-
-  for (UInt_t uChan = 0; uChan < kuNbChanPsd; uChan++) {
-    fcChargesFPGA->cd(1 + uChan);
-    fvhHitChargeChan[uChan]->Draw();
-  }  // for( UInt_t uChan = 0; uChan < kuNbChanPsd; uChan ++)
-
-  AddCanvasToVector(fcChargesFPGA, "canvases");
-  /*******************************************************************/
-
-  /*******************************************************************/
-  /// Charge from Waveform all channels
-  fcChargesWfm =
-    new TCanvas("cChargesWfm",
-                "Charges spectra in all channels calculated over waveform",
-                w,
-                h);
-  fcChargesWfm->DivideSquare(kuNbChanPsd);
-
-  for (UInt_t uChan = 0; uChan < kuNbChanPsd; uChan++) {
-    fcChargesWfm->cd(1 + uChan);
-    fvhHitChargeByWfmChan[uChan]->Draw();
-  }  // for( UInt_t uChan = 0; uChan < kuNbChanPsd; uChan ++)
-
-  AddCanvasToVector(fcChargesWfm, "canvases");
-  /*******************************************************************/
-
-  /*******************************************************************/
-  /// Amplitudes all channels
-  fcAmplitudes =
-    new TCanvas("cAmplitudes", "Amplitude spectra in all channels", w, h);
-  fcAmplitudes->DivideSquare(kuNbChanPsd);
-
-  for (UInt_t uChan = 0; uChan < kuNbChanPsd; uChan++) {
-    fcAmplitudes->cd(1 + uChan);
-    fvhHitAmplChan[uChan]->Draw();
-  }  // for( UInt_t uChan = 0; uChan < kuNbChanPsd; uChan ++)
-
-  AddCanvasToVector(fcAmplitudes, "canvases");
   /*******************************************************************/
 
   /*******************************************************************/
@@ -1077,98 +820,133 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::CreateHistograms() {
   AddCanvasToVector(fcGenCntsPerMs, "canvases");
   /*******************************************************************/
 
-  /*******************************************************************/
-  /// General summary: Hit maps, Hit rate vs time in run, error fraction vs time un run
-  fcSpillCounts =
-    new TCanvas("cSpillCounts",
-                "Counts per spill, last 5 spills including current one",
-                w,
-                h);
-  fcSpillCounts->Divide(1, kuNbSpillPlots);
+  if (fbMonitorChanMode) {
 
-  for (UInt_t uSpill = 0; uSpill < kuNbSpillPlots; uSpill++) {
-    fcSpillCounts->cd(1 + uSpill);
-    gPad->SetGridx();
-    gPad->SetGridy();
-    fvhChannelMapSpill[uSpill]->Draw();
-  }  // for( UInt_t uSpill = 0; uSpill < kuNbSpillPlots; uSpill ++)
+    /*******************************************************************/
+    /// Charge from FPGA all channels
+    fcChargesFPGA = new TCanvas("cChargesFPGA", "Charges spectra in all channels calculated by FPGA", w, h);
+    fcChargesFPGA->DivideSquare(kuNbChanPsd);
 
-  AddCanvasToVector(fcSpillCounts, "canvases");
-  /*******************************************************************/
+    for (UInt_t uChan = 0; uChan < kuNbChanPsd; uChan++) {
+      fcChargesFPGA->cd(1 + uChan);
+      fvhHitChargeChan[uChan]->Draw();
+    }  // for( UInt_t uChan = 0; uChan < kuNbChanPsd; uChan ++)
 
-  /*******************************************************************/
-  /// General summary: Hit maps, Hit rate vs time in run, error fraction vs time un run
-  fcWfmsAllChannels = new TCanvas(
-    "cWfmsAllChannels", "Last waveforms in PSD fired channels", w, h);
-  fcWfmsAllChannels->DivideSquare(kuNbChanPsd);
+    AddCanvasToVector(fcChargesFPGA, "canvases");
+    /*******************************************************************/
 
-  for (UInt_t uChan = 0; uChan < kuNbChanPsd; uChan++) {
-    fcWfmsAllChannels->cd(1 + uChan);
-    fvhHitWfmChan[uChan]->Draw("HIST P");
-    fvhHitFitWfmChan[uChan]->Draw("L SAME");
-  }  // for( UInt_t uChan = 0; uChan < kuNbChanPsd; uChan ++)
+    /*******************************************************************/
+    /// Charge from Waveform all channels
+    fcChargesWfm = new TCanvas("cChargesWfm", "Charges spectra in all channels calculated over waveform", w, h);
+    fcChargesWfm->DivideSquare(kuNbChanPsd);
 
-  AddCanvasToVector(fcWfmsAllChannels, "waveforms");
-  /*******************************************************************/
+    for (UInt_t uChan = 0; uChan < kuNbChanPsd; uChan++) {
+      fcChargesWfm->cd(1 + uChan);
+      fvhHitChargeByWfmChan[uChan]->Draw();
+    }  // for( UInt_t uChan = 0; uChan < kuNbChanPsd; uChan ++)
 
-  /*******************************************************************/
-  /// General summary: Hit maps, Hit rate vs time in run, error fraction vs time un run
-  for (UInt_t uChan = 0; uChan < kuNbChanPsd; uChan++) {
-    fvcWfmsChan[uChan] =
-      new TCanvas(Form("cWfmsChan%03u", uChan),
-                  Form("Canvas with last waveforms in channel %03u", uChan),
-                  w,
-                  h);
-    fvcWfmsChan[uChan]->Divide(kuNbWfmExamples, kuNbWfmRanges);
-    UInt_t uHisto = 0;
+    AddCanvasToVector(fcChargesWfm, "canvases");
+    /*******************************************************************/
 
-    for (UInt_t uWfmRangeIter = 0; uWfmRangeIter < kuNbWfmRanges;
-         uWfmRangeIter++) {
-      for (UInt_t uWfmExampleIter = 0; uWfmExampleIter < kuNbWfmExamples;
-           uWfmExampleIter++) {
-        fvcWfmsChan[uChan]->cd(1 + uHisto);
-        UInt_t uFlatIndex = uWfmExampleIter * kuNbWfmRanges * kuNbChanPsd
-                            + uWfmRangeIter * kuNbChanPsd + uChan;
-        fv3hHitWfmFlattenedChan[uFlatIndex]->Draw("HIST LP");
-        uHisto++;
-      }  // for( UInt_t uWfmRangeIter = 0; uWfmRangeIter < kuNbWfmRanges; uWfmRangeIter ++)
-    }  // for( UInt_t uWfmExampleIter = 0; uWfmExampleIter < kuNbWfmExamples; uWfmExampleIter ++)
+    /*******************************************************************/
+    /// Amplitudes all channels
+    fcAmplitudes = new TCanvas("cAmplitudes", "Amplitude spectra in all channels", w, h);
+    fcAmplitudes->DivideSquare(kuNbChanPsd);
 
-    AddCanvasToVector(fvcWfmsChan[uChan], "waveforms");
-  }  // for( UInt_t uChan = 0; uChan < kuNbChanPsd; uChan ++)
+    for (UInt_t uChan = 0; uChan < kuNbChanPsd; uChan++) {
+      fcAmplitudes->cd(1 + uChan);
+      fvhHitAmplChan[uChan]->Draw();
+    }  // for( UInt_t uChan = 0; uChan < kuNbChanPsd; uChan ++)
 
-  /*******************************************************************/
+    AddCanvasToVector(fcAmplitudes, "canvases");
+    /*******************************************************************/
 
-  fcPronyFit = new TCanvas("cPronyFit", "Prony wfm fitting", w, h);
-  fcPronyFit->Divide(2);
+    /*******************************************************************/
+    /// ZeroLevels all channels
+    fcZeroLevels = new TCanvas("cZeroLevels", "Zero Level spectra in all channels", w, h);
+    fcZeroLevels->DivideSquare(kuNbChanPsd);
 
-  fcPronyFit->cd(1);
-  for (UInt_t uChan = 0; uChan < kuNbChanPsd; uChan++) {
-    fvhFitHarmonic1Chan[uChan]->Draw("same");
-    fvhFitHarmonic2Chan[uChan]->Draw("same");
-  }
+    for (UInt_t uChan = 0; uChan < kuNbChanPsd; uChan++) {
+      fcZeroLevels->cd(1 + uChan);
+      fvhHitZeroLevelChan[uChan]->Draw();
+    }  // for( UInt_t uChan = 0; uChan < kuNbChanPsd; uChan ++)
 
-  fcPronyFit->cd(2);
-  for (UInt_t uChan = 0; uChan < kuNbChanPsd; uChan++) {
-    fvhFitQaChan[uChan]->Draw("same");
-  }
+    AddCanvasToVector(fcZeroLevels, "canvases");
+    /*******************************************************************/
 
-  AddCanvasToVector(fcPronyFit, "PronyFit");
+    if (fbMonitorWfmMode) {
 
-  /*******************************************************************/
+      /*******************************************************************/
+      /// General summary: Hit maps, Hit rate vs time in run, error fraction vs time un run
+      fcWfmsAllChannels = new TCanvas("cWfmsAllChannels", "Last waveforms in PSD fired channels", w, h);
+      fcWfmsAllChannels->DivideSquare(kuNbChanPsd);
+
+      for (UInt_t uChan = 0; uChan < kuNbChanPsd; uChan++) {
+        fcWfmsAllChannels->cd(1 + uChan);
+        if (!fbMonitorFitMode) fvhHitWfmChan[uChan]->Draw("HIST LP");
+        if (fbMonitorFitMode) {
+          fvhHitWfmChan[uChan]->Draw("HIST P");
+          fvhHitFitWfmChan[uChan]->Draw("L SAME");
+        }
+      }  // for( UInt_t uChan = 0; uChan < kuNbChanPsd; uChan ++)
+
+      AddCanvasToVector(fcWfmsAllChannels, "waveforms");
+      /*******************************************************************/
+
+      /*******************************************************************/
+      /// General summary: Hit maps, Hit rate vs time in run, error fraction vs time un run
+      for (UInt_t uChan = 0; uChan < kuNbChanPsd; uChan++) {
+        fvcWfmsChan[uChan] =
+          new TCanvas(Form("cWfmsChan%03u", uChan), Form("Canvas with last waveforms in channel %03u", uChan), w, h);
+        fvcWfmsChan[uChan]->Divide(kuNbWfmExamples, kuNbWfmRanges);
+        UInt_t uHisto = 0;
+
+        for (UInt_t uWfmRangeIter = 0; uWfmRangeIter < kuNbWfmRanges; uWfmRangeIter++) {
+          for (UInt_t uWfmExampleIter = 0; uWfmExampleIter < kuNbWfmExamples; uWfmExampleIter++) {
+            fvcWfmsChan[uChan]->cd(1 + uHisto);
+            UInt_t uFlatIndex = uWfmExampleIter * kuNbWfmRanges * kuNbChanPsd + uWfmRangeIter * kuNbChanPsd + uChan;
+            fv3hHitWfmFlattenedChan[uFlatIndex]->Draw("HIST LP");
+            uHisto++;
+          }  // for( UInt_t uWfmRangeIter = 0; uWfmRangeIter < kuNbWfmRanges; uWfmRangeIter ++)
+        }    // for( UInt_t uWfmExampleIter = 0; uWfmExampleIter < kuNbWfmExamples; uWfmExampleIter ++)
+
+        AddCanvasToVector(fvcWfmsChan[uChan], "waveforms");
+      }  // for( UInt_t uChan = 0; uChan < kuNbChanPsd; uChan ++)
+
+      /*******************************************************************/
+
+    }  // if (fbMonitorWfmMode)
+
+    if (fbMonitorFitMode) {
+
+      fcPronyFit = new TCanvas("cPronyFit", "Prony wfm fitting", w, h);
+      fcPronyFit->Divide(2);
+
+      fcPronyFit->cd(1);
+      for (UInt_t uChan = 0; uChan < kuNbChanPsd; uChan++) {
+        fvhFitHarmonic1Chan[uChan]->Draw("same");
+        fvhFitHarmonic2Chan[uChan]->Draw("same");
+      }
+
+      fcPronyFit->cd(2);
+      for (UInt_t uChan = 0; uChan < kuNbChanPsd; uChan++) {
+        fvhFitQaChan[uChan]->Draw("same");
+      }
+
+      AddCanvasToVector(fcPronyFit, "PronyFit");
+
+      /*******************************************************************/
+
+    }  // if (fbMonitorFitMode)
+
+  }  // if (fbMonitorChanMode)
 
   return kTRUE;
 }
 
-Bool_t CbmMcbm2018MonitorAlgoPsd::FillHistograms() {
-
-  for (UInt_t uChan = 0; uChan < kuNbChanPsd; ++uChan) {
-    fvhHitCntPerMsEvoChan[uChan]->Fill(fdMsTime - fdStartTime,
-                                       fvuHitCntChanMs[uChan]);
-    fvuHitCntChanMs[uChan] = 0;
-
-  }  // for( UInt_t uChan = 0; uChan < kuNbChanPsd; ++uChan )
-
+Bool_t CbmMcbm2018MonitorAlgoPsd::FillHistograms()
+{
+  fhMissedData->Fill(fbPsdMissedData);
   fhMsgsCntPerMsEvo->Fill(fdMsTime - fdStartTime, fuMsgsCntInMs);
   fhReadMsgsCntPerMsEvo->Fill(fdMsTime - fdStartTime, fuReadMsgsCntInMs);
   fhLostMsgsCntPerMsEvo->Fill(fdMsTime - fdStartTime, fuLostMsgsCntInMs);
@@ -1181,47 +959,40 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::FillHistograms() {
   return kTRUE;
 }
 
-Bool_t CbmMcbm2018MonitorAlgoPsd::ResetHistograms() {
-  for (UInt_t uChan = 0; uChan < kuNbChanPsd; ++uChan) {
-    fvhHitCntEvoChan[uChan]->Reset();
-    fvhHitCntPerMsEvoChan[uChan]->Reset();
-    fvhHitChargeChan[uChan]->Reset();
-    fvhHitZeroLevelChan[uChan]->Reset();
-    fvhHitAmplChan[uChan]->Reset();
-    fvhHitChargeByWfmChan[uChan]->Reset();
-    fvhHitChargeEvoChan[uChan]->Reset();
-    fvhHitWfmChan[uChan]->Reset();
-    fvhHitFitWfmChan[uChan]->Reset();
+Bool_t CbmMcbm2018MonitorAlgoPsd::ResetHistograms(Bool_t bResetTime)
+{
 
-    fvhFitHarmonic1Chan[uChan]->Reset();
-    fvhFitHarmonic2Chan[uChan]->Reset();
-    fvhFitQaChan[uChan]->Reset();
-  }  // for( UInt_t uChan = 0; uChan < kuNbChanPsd; ++uChan )
+  if (fbMonitorChanMode) {
+    for (UInt_t uChan = 0; uChan < kuNbChanPsd; ++uChan) {
+      fvhHitChargeChan[uChan]->Reset();
+      fvhHitZeroLevelChan[uChan]->Reset();
+      fvhHitAmplChan[uChan]->Reset();
+      fvhHitChargeByWfmChan[uChan]->Reset();
+      if (fbMonitorWfmMode) fvhHitWfmChan[uChan]->Reset();
 
-  for (UInt_t uFlatIndex = 0;
-       uFlatIndex < kuNbChanPsd * kuNbWfmRanges * kuNbWfmExamples;
-       ++uFlatIndex)
-    fv3hHitWfmFlattenedChan[uFlatIndex]->Reset();
-  for (UInt_t uWfmIndex = 0; uWfmIndex < kuNbChanPsd * kuNbWfmRanges;
-       ++uWfmIndex)
-    kvuWfmInRangeToChangeChan[uWfmIndex] = 0;
+      if (fbMonitorFitMode) {
+        fvhHitFitWfmChan[uChan]->Reset();
+        fvhFitHarmonic1Chan[uChan]->Reset();
+        fvhFitHarmonic2Chan[uChan]->Reset();
+        fvhFitQaChan[uChan]->Reset();
+      }  // if (fbMonitorFitMode)
+    }    // for( UInt_t uChan = 0; uChan < kuNbChanPsd; ++uChan )
+  }      // if(fbMonitorChanMode)
+
+  if (fbMonitorWfmMode) {
+    for (UInt_t uFlatIndex = 0; uFlatIndex < kuNbChanPsd * kuNbWfmRanges * kuNbWfmExamples; ++uFlatIndex)
+      fv3hHitWfmFlattenedChan[uFlatIndex]->Reset();
+    for (UInt_t uWfmIndex = 0; uWfmIndex < kuNbChanPsd * kuNbWfmRanges; ++uWfmIndex)
+      kvuWfmInRangeToChangeChan[uWfmIndex] = 0;
+  }  // if(fbMonitorWfmMode)
 
   fuCurrentSpillIdx  = 0;
-  fuCurrentSpillPlot = 0;
-  fhChannelMap->Reset();
   fhHitChargeMap->Reset();
   fhHitMapEvo->Reset();
   fhChanHitMapEvo->Reset();
-  for (UInt_t uSpill = 0; uSpill < kuNbSpillPlots; uSpill++)
-    fvhChannelMapSpill[uSpill]->Reset();
-  fhHitsPerSpill->Reset();
 
-  fhMsgsCntEvo->Reset();
-  fhReadMsgsCntEvo->Reset();
-  fhLostMsgsCntEvo->Reset();
-  fhReadEvtsCntEvo->Reset();
-
-  fhAdcTimeEvo->Reset();
+  fhMissedData->Reset();
+  fhAdcTime->Reset();
   fhMsLengthEvo->Reset();
 
   fhMsgsCntPerMsEvo->Reset();
@@ -1229,8 +1000,10 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ResetHistograms() {
   fhLostMsgsCntPerMsEvo->Reset();
   fhReadEvtsCntPerMsEvo->Reset();
 
-  /// Also reset the Start time for the evolution plots!
-  fdStartTime = -1.0;
+  if (kTRUE == bResetTime) {
+    /// Also reset the Start time for the evolution plots!
+    fdStartTime = -1.0;
+  }  // if( kTRUE == bResetTime )
 
 
   return kTRUE;

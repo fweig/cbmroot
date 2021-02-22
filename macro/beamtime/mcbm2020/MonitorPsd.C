@@ -53,6 +53,9 @@ void MonitorPsd(TString inFile           = "",
   std::cout << std::endl;
   std::cout << ">>> MonitorPsd: Initialising..." << std::endl;
   CbmMcbm2018MonitorTaskPsd* monitor_psd = new CbmMcbm2018MonitorTaskPsd();
+  monitor_psd->SetMonitorChanMode(kFALSE);
+  monitor_psd->SetMonitorWfmMode(kFALSE);
+  monitor_psd->SetMonitorFitMode(kFALSE);
 
   monitor_psd->SetIgnoreOverlapMs();
   monitor_psd->SetHistoryHistoSize(3600);
