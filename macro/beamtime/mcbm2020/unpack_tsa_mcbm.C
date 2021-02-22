@@ -609,6 +609,8 @@ Bool_t unpack_tsa_mcbm(TString inFile       = "",
   source->AddUnpacker(unpacker_rich, 0x30, ECbmModuleId::kRich);   // RICH trb
   source->AddUnpacker(unpacker_psd, 0x80, ECbmModuleId::kPsd);     // PSD
 
+  /// Select a pre-identified spills block through block index + block length (in spills)
+  /// Also select where we split the spills: beginning, middle or end of the spill break
   source->UnpackSelectSpills(iSpillIndex * iSpillnumber, iSpillIndex * iSpillnumber + iSpillnumber - 1, uSpillLimType);
   /// Disable clang formatting around vectors initialization by lists
   /* clang-format off */

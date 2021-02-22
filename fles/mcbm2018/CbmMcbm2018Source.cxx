@@ -117,7 +117,13 @@ Bool_t CbmMcbm2018Source::Init() {
                   fTimeSliceMetaDataArray,
                   fbWriteOutput);
 
-  /// Single spill unpacking
+  /// Single spill or spills range unpacking
+  /// => Obtain the start and stop TS indices for the TS loop from user supplied vectors
+  /// => Three possibilities linked to output of CbmMcbmSpillFindAlgo,
+  ///    choice controlled by fuFlagSpillStart
+  ///    - Beginning of the spill break
+  ///    - Middle of the spill break
+  ///    - End of the spill break
   if (0 <= fiUnpSpillIdxStart) {
     switch (fuFlagSpillStart) {
       case 0: {
@@ -333,6 +339,7 @@ Int_t CbmMcbm2018Source::FillBuffer() {
       }
     }  // if( 1 == fTSCounter )
 
+    /// Single spill or spills range unpacking
     if (0 <= fiUnpSpillIdxStart) {
       if (tsIndex < fuSpillBegTs) {
         /// Jump all TS until reaching the first TS in the spill we want to unpack

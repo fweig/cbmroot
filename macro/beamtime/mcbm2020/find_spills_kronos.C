@@ -1,11 +1,9 @@
-/** @file MCBM DATA unpacking
- ** @author Florian Uhlig <f.uhlig@gsi.de>
- ** @date 20.06.2016
- ** Modified by P.-A. Loizeau
- ** @date 30.01.2019
- ** ROOT macro to read tsa files which have been produced with the new data transport
- ** Convert data into cbmroot format.
- ** Uses CbmMcbm2018Source as source task.
+/** @file MCBM spill detection with T0, wrapper for lustre runs
+ ** @author Pierre-Alain Loizeau <p.-a.loizeau@gsi.de>
+ ** @date 16.02.2021
+ ** ROOT macro to read tsa files which have been produced in mCBM and use the T0 detector to
+ ** find the spill breaks beginning, middle and end TS index
+ ** This wrapper macro provides all lustre paths + easy [0; n] run index mapping
  */
 #include "find_spills.C"
 
