@@ -113,6 +113,7 @@ InitStatus CbmTaskBuildRawEvents::Init()
     return kFATAL;
 }
 
+
 InitStatus CbmTaskBuildRawEvents::ReInit() { return kSUCCESS; }
 
 void CbmTaskBuildRawEvents::Exec(Option_t* /*option*/)
@@ -122,12 +123,16 @@ void CbmTaskBuildRawEvents::Exec(Option_t* /*option*/)
   //as the digi manager can return -1, which would be casted to +1
   //during comparison, leading to an error.
 
+  //Reset explicit seed times if set
+  if (fSeedTimeDet != kRawEventBuilderDetUndef) { fSeedTimes->clear(); }
+
   //Read STS digis
   if (fDigiMan->IsPresent(ECbmModuleId::kSts)) {
     fStsDigis->clear();
     for (Int_t i = 0; i < fDigiMan->GetNofDigis(ECbmModuleId::kSts); i++) {
       const CbmStsDigi* Digi = fDigiMan->Get<CbmStsDigi>(i);
       fStsDigis->push_back(*Digi);
+      if (fSeedTimeDet.detId == ECbmModuleId::kSts) { fSeedTimes->push_back(Digi->GetTime()); }
     }
     LOG(debug) << "Read: " << fStsDigis->size() << " STS digis.";
     LOG(debug) << "In DigiManager: " << fDigiMan->GetNofDigis(ECbmModuleId::kSts) << " STS digis.";
@@ -140,6 +145,7 @@ void CbmTaskBuildRawEvents::Exec(Option_t* /*option*/)
       for (Int_t i = 0; i < fDigiMan->GetNofDigis(ECbmModuleId::kMuch); i++) {
         const CbmMuchBeamTimeDigi* Digi = fDigiMan->Get<CbmMuchBeamTimeDigi>(i);
         fMuchBeamTimeDigis->push_back(*Digi);
+        if (fSeedTimeDet.detId == ECbmModuleId::kMuch) { fSeedTimes->push_back(Digi->GetTime()); }
       }
       LOG(debug) << "Read: " << fDigiMan->GetNofDigis(ECbmModuleId::kMuch) << " MUCH digis.";
       LOG(debug) << "In DigiManager: " << fMuchBeamTimeDigis->size() << " MUCH digis.";
@@ -149,6 +155,7 @@ void CbmTaskBuildRawEvents::Exec(Option_t* /*option*/)
       for (Int_t i = 0; i < fDigiMan->GetNofDigis(ECbmModuleId::kMuch); i++) {
         const CbmMuchDigi* Digi = fDigiMan->Get<CbmMuchDigi>(i);
         fMuchDigis->push_back(*Digi);
+        if (fSeedTimeDet.detId == ECbmModuleId::kMuch) { fSeedTimes->push_back(Digi->GetTime()); }
       }
       LOG(debug) << "Read: " << fDigiMan->GetNofDigis(ECbmModuleId::kMuch) << " MUCH digis.";
       LOG(debug) << "In DigiManager: " << fMuchDigis->size() << " MUCH digis.";
@@ -161,6 +168,7 @@ void CbmTaskBuildRawEvents::Exec(Option_t* /*option*/)
     for (Int_t i = 0; i < fDigiMan->GetNofDigis(ECbmModuleId::kTrd); i++) {
       const CbmTrdDigi* Digi = fDigiMan->Get<CbmTrdDigi>(i);
       fTrdDigis->push_back(*Digi);
+      if (fSeedTimeDet.detId == ECbmModuleId::kTrd) { fSeedTimes->push_back(Digi->GetTime()); }
     }
     LOG(debug) << "Read: " << fDigiMan->GetNofDigis(ECbmModuleId::kTrd) << " TRD digis.";
     LOG(debug) << "In DigiManager: " << fTrdDigis->size() << " TRD digis.";
@@ -172,6 +180,7 @@ void CbmTaskBuildRawEvents::Exec(Option_t* /*option*/)
     for (Int_t i = 0; i < fDigiMan->GetNofDigis(ECbmModuleId::kTof); i++) {
       const CbmTofDigi* Digi = fDigiMan->Get<CbmTofDigi>(i);
       fTofDigis->push_back(*Digi);
+      if (fSeedTimeDet.detId == ECbmModuleId::kTof) { fSeedTimes->push_back(Digi->GetTime()); }
     }
     LOG(debug) << "Read: " << fDigiMan->GetNofDigis(ECbmModuleId::kTof) << " TOF digis.";
     LOG(debug) << "In DigiManager: " << fTofDigis->size() << " TOF digis.";
@@ -183,6 +192,7 @@ void CbmTaskBuildRawEvents::Exec(Option_t* /*option*/)
     for (Int_t i = 0; i < fDigiMan->GetNofDigis(ECbmModuleId::kRich); i++) {
       const CbmRichDigi* Digi = fDigiMan->Get<CbmRichDigi>(i);
       fRichDigis->push_back(*Digi);
+      if (fSeedTimeDet.detId == ECbmModuleId::kRich) { fSeedTimes->push_back(Digi->GetTime()); }
     }
     LOG(debug) << "Read: " << fDigiMan->GetNofDigis(ECbmModuleId::kRich) << " RICH digis.";
     LOG(debug) << "In DigiManager: " << fRichDigis->size() << " RICH digis.";
@@ -194,10 +204,12 @@ void CbmTaskBuildRawEvents::Exec(Option_t* /*option*/)
     for (Int_t i = 0; i < fDigiMan->GetNofDigis(ECbmModuleId::kPsd); i++) {
       const CbmPsdDigi* Digi = fDigiMan->Get<CbmPsdDigi>(i);
       fPsdDigis->push_back(*Digi);
+      if (fSeedTimeDet.detId == ECbmModuleId::kPsd) { fSeedTimes->push_back(Digi->GetTime()); }
     }
     LOG(debug) << "Read: " << fDigiMan->GetNofDigis(ECbmModuleId::kPsd) << " PSD digis.";
     LOG(debug) << "In DigiManager: " << fPsdDigis->size() << " PSD digis.";
   }
+
   /// Call Algo ProcessTs method
   fpAlgo->ProcessTs();
 

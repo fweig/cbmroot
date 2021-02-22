@@ -151,6 +151,14 @@ public:
     fdTsOverLength = dTsOverLength;
   }
 
+  void SetSeedTimeWindow(Double_t timeWinBeg, Double_t timeWinEnd)
+  {
+    fdSeedTimeWinBeg = timeWinBeg;
+    fdSeedTimeWinEnd = timeWinEnd;
+    UpdateTimeWinBoundariesExtrema();
+    UpdateWidestTimeWinRange();
+  }
+
   /// Control flags
   void SetEventOverlapMode(EOverlapModeRaw mode) { fOverMode = mode; }
   void SetIgnoreTsOverlap(Bool_t bFlagIn = kTRUE) { fbIgnoreTsOverlap = bFlagIn; }
@@ -182,6 +190,8 @@ public:
     fMuchBeamTimeDigis = MuchBeamTimeDigis;
   }
 
+  void SetSeedTimes(std::vector<Double_t>* SeedTimes) { fSeedTimes = SeedTimes; }
+
   /// Data output access
   std::vector<CbmEvent*>& GetEventVector() { return fEventVector; }
   void ClearEventVector();
@@ -198,6 +208,7 @@ private:
 
   template<class DigiSeed>
   void LoopOnSeeds();
+
   void CheckSeed(Double_t dSeedTime, UInt_t uSeedDigiIdx);
   void CheckTriggerCondition(Double_t dSeedTime);
 
@@ -259,10 +270,17 @@ private:
   const std::vector<CbmRichDigi>* fRichDigis                 = nullptr;
   const std::vector<CbmPsdDigi>* fPsdDigis                   = nullptr;
 
+  // If explicit seed times are supplied.
+  const std::vector<Double_t>* fSeedTimes = nullptr;
+  Double_t fdSeedTimeWinBeg               = -100.0;
+  Double_t fdSeedTimeWinEnd               = 100.0;
+
   bool CheckDataAvailable(ECbmModuleId detId);
   UInt_t GetNofDigis(ECbmModuleId detId);
   template<class Digi>
   const Digi* GetDigi(UInt_t uDigi);
+
+  Double_t GetSeedTimeWinRange();
 
   /// Data ouptut
   CbmEvent* fCurrentEvent             = nullptr;  //! pointer to the event which is currently build

@@ -31,6 +31,9 @@
 #include "TH2.h"
 #include "THttpServer.h"
 
+template<>
+void CbmAlgoBuildRawEvents::LoopOnSeeds<Double_t>();
+
 Bool_t CbmAlgoBuildRawEvents::InitAlgo()
 {
   LOG(info) << "CbmAlgoBuildRawEvents::InitAlgo => Starting sequence";
@@ -38,8 +41,21 @@ Bool_t CbmAlgoBuildRawEvents::InitAlgo()
   // Get a handle from the IO manager
   FairRootManager* ioman = FairRootManager::Instance();
 
-  /// Check if reference detector data are available
-  if (kFALSE == CheckDataAvailable(fRefDet)) { LOG(fatal) << "No digi input for reference detector, stopping there!"; }
+  /// Check if reference detector is set and seed data are available,
+  /// otherwise look for explicit seed times
+  if (fRefDet.detId == ECbmModuleId::kNotExist) {
+    if (fSeedTimes == nullptr) {
+      LOG(fatal) << "No reference detector set and no seed times supplied, stopping there!";
+    }
+  }
+  else {
+    if (fSeedTimes != nullptr) {
+      LOG(fatal) << "Cannot have explicit seed times and reference detector, stopping there!";
+    }
+    if (kFALSE == CheckDataAvailable(fRefDet)) {
+      LOG(fatal) << "Reference detector set but no digi input found, stopping there!";
+    }
+  }
 
   /// Check if data for detectors in selection list are available
   for (std::vector<RawEventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det) {
@@ -106,9 +122,12 @@ void CbmAlgoBuildRawEvents::ProcessTs()
 void CbmAlgoBuildRawEvents::InitTs()
 {
   /// Reset TS based variables (analysis per TS = no building over the border)
+
   /// Reference detector
-  fRefDet.fuStartIndex = 0;
-  fRefDet.fuEndIndex   = 0;
+  if (fRefDet.detId != ECbmModuleId::kNotExist) {
+    fRefDet.fuStartIndex = 0;
+    fRefDet.fuEndIndex   = 0;
+  }
   /// Loop on detectors in selection list
   for (std::vector<RawEventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det) {
     (*det).fuStartIndex = 0;
@@ -189,11 +208,39 @@ void CbmAlgoBuildRawEvents::BuildEvents()
       LoopOnSeeds<CbmTofDigi>();
       break;
     }
+    case ECbmModuleId::kNotExist: {  //explicit seed times
+      LoopOnSeeds<Double_t>();
+      break;
+    }
     default: {
       LOG(fatal) << "CbmAlgoBuildRawEvents::BuildEvents => "
                  << "Trying to search event seeds with unsupported det: " << fRefDet.sName;
       break;
     }
+  }
+}
+
+template<>
+void CbmAlgoBuildRawEvents::LoopOnSeeds<Double_t>()
+{
+  if (ECbmModuleId::kNotExist == fRefDet.detId) {
+    const UInt_t uNbSeeds = fSeedTimes->size();
+    /// Loop on size of vector
+    for (UInt_t uSeed = 0; uSeed < uNbSeeds; ++uSeed) {
+      LOG(debug) << Form("Checking seed %6u / %6u", uSeed, uNbSeeds);
+      Double_t dTime = fSeedTimes->at(uSeed);
+
+      /// Check if seed in acceptance window (is this needed here?)
+      if (dTime < fdSeedWindowBeg) { continue; }
+      else if (fdSeedWindowEnd < dTime) {
+        break;
+      }
+      /// Check Seed and build event if needed
+      CheckSeed(dTime, uSeed);
+    }
+  }
+  else {
+    LOG(fatal) << "Trying to read explicit seeds while reference detector is set.";
   }
 }
 
@@ -229,12 +276,20 @@ void CbmAlgoBuildRawEvents::LoopOnSeeds()
   }
 }
 
+Double_t CbmAlgoBuildRawEvents::GetSeedTimeWinRange()
+{
+  if (ECbmModuleId::kNotExist != fRefDet.detId) { return fRefDet.GetTimeWinRange(); }
+  else {
+    return fdSeedTimeWinEnd - fdSeedTimeWinBeg;
+  }
+}
+
 void CbmAlgoBuildRawEvents::CheckSeed(Double_t dSeedTime, UInt_t uSeedDigiIdx)
 {
   /// If previous event valid and event overlap not allowed, check if we are in overlap
   /// and react accordingly
   if (nullptr != fCurrentEvent
-      && (EOverlapModeRaw::AllowOverlap != fOverMode || dSeedTime - fdPrevEvtTime < fRefDet.GetTimeWinRange())
+      && (EOverlapModeRaw::AllowOverlap != fOverMode || dSeedTime - fdPrevEvtTime < GetSeedTimeWinRange())
       && dSeedTime - fdPrevEvtTime < fdWidestTimeWinRange) {
     /// Within overlap range
     switch (fOverMode) {
@@ -270,15 +325,17 @@ void CbmAlgoBuildRawEvents::CheckSeed(Double_t dSeedTime, UInt_t uSeedDigiIdx)
     fCurrentEvent = new CbmEvent(fuCurEv, dSeedTime, 0.);
   }  // else of if( prev Event exists and mode forbiden overlap present )
 
-  /// If window open for reference detector, search for other reference Digis matching it
-  /// Otherwise only add the current seed
-  if (fRefDet.fdTimeWinBeg < fRefDet.fdTimeWinEnd) {
-    SearchMatches(dSeedTime, fRefDet);
-    /// Also add the seed if the window starts after the seed
-    if (0 < fRefDet.fdTimeWinBeg) AddDigiToEvent(fRefDet, uSeedDigiIdx);
-  }
-  else {
-    AddDigiToEvent(fRefDet, uSeedDigiIdx);
+  if (fRefDet.detId != ECbmModuleId::kNotExist) {
+    /// If window open for reference detector, search for other reference Digis matching it
+    /// Otherwise only add the current seed
+    if (fRefDet.fdTimeWinBeg < fRefDet.fdTimeWinEnd) {
+      SearchMatches(dSeedTime, fRefDet);
+      /// Also add the seed if the window starts after the seed
+      if (0 < fRefDet.fdTimeWinBeg) AddDigiToEvent(fRefDet, uSeedDigiIdx);
+    }
+    else {
+      AddDigiToEvent(fRefDet, uSeedDigiIdx);
+    }
   }
 
   /// Search for matches for each detector in selection list
@@ -413,7 +470,7 @@ void CbmAlgoBuildRawEvents::CheckTriggerCondition(Double_t dSeedTime)
     /// from end of current window in order to save CPU and avoid duplicating
     if (EOverlapModeRaw::NoOverlap == fOverMode || EOverlapModeRaw::MergeOverlap == fOverMode) {
       /// Update reference detector
-      fRefDet.fuStartIndex = fRefDet.fuEndIndex;
+      if (fRefDet.detId != ECbmModuleId::kNotExist) { fRefDet.fuStartIndex = fRefDet.fuEndIndex; }
       /// Loop on selection detectors
       for (std::vector<RawEventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det) {
         (*det).fuStartIndex = (*det).fuEndIndex;
@@ -430,7 +487,9 @@ void CbmAlgoBuildRawEvents::CheckTriggerCondition(Double_t dSeedTime)
 Bool_t CbmAlgoBuildRawEvents::HasTrigger(CbmEvent* event)
 {
   /// Check first reference detector
-  if (kFALSE == CheckTriggerConditions(event, fRefDet)) { return kFALSE; }
+  if (fRefDet.detId != ECbmModuleId::kNotExist) {
+    if (kFALSE == CheckTriggerConditions(event, fRefDet)) { return kFALSE; }
+  }
   /// Loop on selection detectors
   for (std::vector<RawEventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det) {
     if (kFALSE == CheckTriggerConditions(event, *det)) return kFALSE;
@@ -844,9 +903,15 @@ void CbmAlgoBuildRawEvents::SetTriggerWindow(ECbmModuleId selDet, Double_t dWinB
 
 void CbmAlgoBuildRawEvents::UpdateTimeWinBoundariesExtrema()
 {
-  /// Initialize with reference detector
-  fdEarliestTimeWinBeg = fRefDet.fdTimeWinBeg;
-  fdLatestTimeWinEnd   = fRefDet.fdTimeWinEnd;
+  /// Initialize with reference detector or explicit times
+  if (fRefDet.detId != ECbmModuleId::kNotExist) {
+    fdEarliestTimeWinBeg = fRefDet.fdTimeWinBeg;
+    fdLatestTimeWinEnd   = fRefDet.fdTimeWinEnd;
+  }
+  else {
+    fdEarliestTimeWinBeg = fdSeedTimeWinBeg;
+    fdLatestTimeWinEnd   = fdSeedTimeWinEnd;
+  }
 
   /// Loop on selection detectors
   for (std::vector<RawEventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det) {
@@ -858,7 +923,7 @@ void CbmAlgoBuildRawEvents::UpdateTimeWinBoundariesExtrema()
 void CbmAlgoBuildRawEvents::UpdateWidestTimeWinRange()
 {
   /// Initialize with reference detector
-  fdWidestTimeWinRange = fRefDet.fdTimeWinEnd - fRefDet.fdTimeWinBeg;
+  fdWidestTimeWinRange = GetSeedTimeWinRange();
 
   /// Loop on selection detectors
   for (std::vector<RawEventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det) {

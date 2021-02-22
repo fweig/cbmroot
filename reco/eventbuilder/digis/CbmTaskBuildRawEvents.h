@@ -114,6 +114,22 @@ public:
     if (nullptr != fpAlgo) fpAlgo->ChangeMuchBeamtimeDigiFlag(bFlagIn);
     fbUseMuchBeamtimeDigi = bFlagIn;
   }
+  void SetSeedTimeFiller(RawEventBuilderDetector seedDet)
+  {
+    fSeedTimeDet = seedDet;
+    if (fSeedTimeDet != kRawEventBuilderDetUndef) {
+      if (fSeedTimes == nullptr) { fSeedTimes = new std::vector<Double_t>; }
+    }
+    else {
+      if (fSeedTimes != nullptr) {
+        fSeedTimes->clear();
+        delete fSeedTimes;
+        fSeedTimes = nullptr;
+      }
+    }
+    fpAlgo->SetSeedTimes(fSeedTimes);
+  }
+  void SetSeedTimeWindow(Double_t beg, Double_t end) { fpAlgo->SetSeedTimeWindow(beg, end); }
 
 private:
   void FillOutput();
@@ -129,7 +145,11 @@ private:
   std::vector<CbmRichDigi>* fRichDigis                 = nullptr;
   std::vector<CbmPsdDigi>* fPsdDigis                   = nullptr;
 
+  std::vector<Double_t>* fSeedTimes = nullptr;
+
   Bool_t fbUseMuchBeamtimeDigi = kTRUE;  //! Switch between MUCH digi classes
+
+  RawEventBuilderDetector fSeedTimeDet = kRawEventBuilderDetUndef;
 
   CbmAlgoBuildRawEvents* fpAlgo = nullptr;
 
