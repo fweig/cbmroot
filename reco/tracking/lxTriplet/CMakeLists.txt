@@ -39,8 +39,6 @@ Set(SRCS
   LxTrackAna.cxx
 )
 
-find_package(OpenMP)
-
 Set(NO_DICT_SRCS
   LxCATriplets.cxx
   LxEff.cxx
@@ -48,10 +46,6 @@ Set(NO_DICT_SRCS
   LxTrackAnaSegments.cxx
   LxUtils.cxx
 )
-
-If (OPENMP_FOUND)
-  Set( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -mavx -fopenmp" )
-EndIf (OPENMP_FOUND)
 
 set(LINKDEF LxLinkDef.h)
 Set(LIBRARY_NAME LxTrackTripplet)

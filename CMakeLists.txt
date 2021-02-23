@@ -302,6 +302,13 @@ else(CBMROOT_MINIMAL)
       set(FairMQ_HAS_StateMachine FALSE)
     endif()
   endif()
+
+  # For the time being don't use OpenMP on APPLE
+  # There are runtime problems with L1 (Redmine #2028)
+  if(NOT APPLE)
+    find_package(OpenMP)
+  endif()
+
 endif(CBMROOT_MINIMAL)
 
 # set a variable which should be used in all CMakeLists.txt

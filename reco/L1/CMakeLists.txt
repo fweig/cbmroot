@@ -53,6 +53,19 @@ Set(SYSTEM_INCLUDE_DIRECTORIES
   ${KFParticle_INCLUDE_DIR}
 )
 
+# For the time being don't use OpenMP on APPLE
+# There are runtime problems with L1 (Redmine #2028)
+if(NOT APPLE)
+  if (OPENMP_FOUND)
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+    set(SYSTEM_INCLUDE_DIRECTORIES
+      ${SYSTEM_INCLUDE_DIRECTORIES}
+      ${OpenMP_CXX_INCLUDE_DIRS}
+    )
+  endif()
+endif()
+
 Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
 
 set(LINK_DIRECTORIES
@@ -62,6 +75,14 @@ ${ROOT_LIBRARY_DIR}
 ${FAIRROOT_LIBRARY_DIR}
 ${Boost_LIBRARY_DIRS}
 )
+
+if (OPENMP_FOUND AND APPLE)
+  get_filename_component(OpenMP_CXX_LIBRARY_DIR ${OpenMP_CXX_LIBRARIES} DIRECTORY)
+  Set(LINK_DIRECTORIES
+    ${LINK_DIRECTORIES}
+    ${OpenMP_CXX_LIBRARY_DIR}
+  )
+endif()
  
 link_directories( ${LINK_DIRECTORIES})
 
@@ -140,11 +161,6 @@ OffLineInterface/CbmL1StsTrackFinder.h
 
 
 
-find_package(OpenMP)
-if (OPENMP_FOUND)
-  set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-endif()
 
 If(APPLE)
   ADD_DEFINITIONS(-Wall -Wsign-promo -Wctor-dtor-privacy -Wreorder -Wno-deprecated -Wno-parentheses -DDO_TPCCATRACKER_EFF_PERFORMANCE -DNonhomogeneousField -DCBM -DUSE_TIMERS) #   -Weffc++ -Wnon-virtual-dtor -Woverloaded-virtual -Wold-style-cast : wait for other parts of cbmroot\root. 
@@ -162,17 +178,6 @@ If(APPLE)
     ADD_DEFINITIONS(-Wno-non-template-friend)
   EndIf()
 
-  if (OPENMP_FOUND)
-    Execute_Process(COMMAND clang++ -print-prog-name=clang++
-                  OUTPUT_VARIABLE _Exe)
-    Get_Filename_Component(link_directory ${_Exe} DIRECTORY)
-    Set(link_directory "${link_directory}/../lib") 
-    Set(LINK_DIRECTORIES
-      ${LINK_DIRECTORIES}
-      ${link_directory}
-    )
-    link_directories( ${LINK_DIRECTORIES})
-  endif()
 
 Else()
   
@@ -194,10 +199,16 @@ ENDIF (SSE_FOUND)
 
 set(LINKDEF L1LinkDef.h)
 Set(LIBRARY_NAME L1)
-Set(DEPENDENCIES
-    #Rich 
+if (OPENMP_FOUND AND APPLE)
+  Set(DEPENDENCIES
+    KF CbmMuchBase CbmTrdBase CbmStsBase CbmRecoBase CbmBase CbmData CbmRecoSts Base boost_regex ${OpenMP_CXX_LIBRARIES}
+#   KF CbmMuchBase CbmTrdBase CbmStsBase CbmRecoBase CbmBase CbmData CbmRecoSts Base boost_regex omp
+  )
+else()
+  Set(DEPENDENCIES
     KF CbmMuchBase CbmTrdBase CbmStsBase CbmRecoBase CbmBase CbmData CbmRecoSts Base boost_regex
-)
+  )
+endif()
 
 GENERATE_LIBRARY()
 
@@ -205,3 +216,12 @@ Install(FILES CbmL1Counters.h
               L1Algo/L1EventEfficiencies.h
         DESTINATION include
        )
+
+# Test to check if OpenMP is working on APPLE
+#set(EXE_NAME test_openmp)
+#set(SRCS test.cxx)
+#set(DEPENDENCIES
+#  ${DEPENDENCIES}
+#  omp
+#)
+#GENERATE_EXECUTABLE()

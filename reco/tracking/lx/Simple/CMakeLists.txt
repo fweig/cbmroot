@@ -39,8 +39,6 @@ Set(SRCS
   LxTrackAna.cxx
 )
 
-find_package(OpenMP)
-
 If (OPENMP_FOUND)
   Set(SRCS ${SRCS} LxParall.cxx)
 EndIf (OPENMP_FOUND)
