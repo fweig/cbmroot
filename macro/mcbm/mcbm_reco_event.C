@@ -13,9 +13,8 @@
 // --------------------------------------------------------------------------
 
 
-void mcbm_reco_event(Int_t nEvents         = 3,
-                     TString dataset       = "data/test",
-                     const char* setupName = "mcbm_beam_2020_03") {
+void mcbm_reco_event(Int_t nEvents = 3, TString dataset = "data/test", const char* setupName = "mcbm_beam_2020_03")
+{
   // ========================================================================
   //          Adjust this part according to your requirements
 

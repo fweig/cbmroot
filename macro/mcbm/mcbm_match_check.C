@@ -1,6 +1,5 @@
-void mcbm_match_check(Int_t nEvents      = 10,
-                      TString setup      = "mcbm_beam_2020_03",
-                      const char* output = "data/test") {
+void mcbm_match_check(Int_t nEvents = 10, TString setup = "mcbm_beam_2020_03", const char* output = "data/test")
+{
   TString dataset(output);
   TString InputFile = dataset + ".tra.root";
   TString DigiFile  = dataset + ".event.raw.root";
@@ -58,9 +57,7 @@ void mcbm_match_check(Int_t nEvents      = 10,
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output file is " << OutFile << std::endl;
   std::cout << "Parameter file is " << ParFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s"
-            << std::endl
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << std::endl << std::endl;
   // ------------------------------------------------------------------------
 
   // -----   Resource monitoring   ------------------------------------------

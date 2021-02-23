@@ -1,6 +1,5 @@
-void mcbm_hadron_analysis(Int_t nEvents      = 10,
-                          TString setup      = "mcbm_beam_2020_03",
-                          const char* output = "data/test") {
+void mcbm_hadron_analysis(Int_t nEvents = 10, TString setup = "mcbm_beam_2020_03", const char* output = "data/test")
+{
   TString dataset(output);
   TString InputFile = dataset + ".tra.root";
   TString DigiFile  = dataset + ".event.raw.root";
