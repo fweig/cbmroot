@@ -23,6 +23,7 @@
 #include "CbmStsHit.h"         // for CbmStsHit
 #include "CbmStsTrack.h"       // for CbmStsTrack
 #include "CbmTofDigi.h"        // for CbmTofDigi
+#include "CbmTofHit.h"         // for CbmTofHit
 #include "CbmTrack.h"          // for CbmTrack
 #include "CbmTrackMatchNew.h"  // for CbmTrackMatchNew
 
@@ -526,8 +527,12 @@ void CbmMatchRecoToMC::MatchHitsTof(const TClonesArray* HitDigiMatches,
       Int_t iDigiIdx = lDigi.GetIndex();
 
       if (iNbTofDigis <= iDigiIdx) {
-        LOG(error) << "CbmMatchRecoToMC::MatchHitsTof => Digi index from Hit #" << iHit
-                   << " is bigger than nb entries in Digis arrays => ignore it!!!";
+        LOG(error) << "CbmMatchRecoToMC::MatchHitsTof => Digi index from Hit #" << iHit << "/" << nofHits
+                   << " Digi " << iDigi << "/" << iNbDigisHit << " is bigger than nb entries in Digis arrays: "
+                   << iDigiIdx << " VS " << iNbTofDigis << " => ignore it!!!";
+        const CbmTofHit* pTofHit = static_cast<CbmTofHit*>(hits->At(iHit));
+        LOG(error) << "                                  Hit position: ( " << pTofHit->GetX() << " , "
+                   << pTofHit->GetY() << " , " << pTofHit->GetZ() << " ) ";
         continue;
       }  // if( iNbTofDigis <= iDigiIdx )
 
@@ -535,8 +540,11 @@ void CbmMatchRecoToMC::MatchHitsTof(const TClonesArray* HitDigiMatches,
       pMatchDigiPnt = fDigiManager->GetMatch(ECbmModuleId::kTof, iDigiIdx);
       Int_t iNbPointsDigi = pMatchDigiPnt->GetNofLinks();
       if (iNbPointsDigi <= 0) {
-        LOG(error) << "CbmMatchRecoToMC::MatchHitsTof => No entries in Digi to point match for Hit #" << iHit << ": "
-                   << iNbPointsDigi << " (digi index is " << iDigiIdx << "/" << iNbTofDigis << " => ignore it!!!";
+        LOG(error) << "CbmMatchRecoToMC::MatchHitsTof => No entries in Digi to point match for Hit #" << iHit << "/"
+                   << nofHits << " Digi " << iDigi << "/" << iNbDigisHit << ": " << iNbPointsDigi
+                   << " (digi index is " << iDigiIdx << "/" << iNbTofDigis << ") => ignore it!!!";
+        LOG(error) << "                                  Digi address: 0x" << std::setw(8) << std::hex
+                   << pTofDigi->GetAddress() << std::dec;
         continue;
       }  // if( iNbTofDigis <= iDigiIdx )
       CbmLink lTruePoint =
