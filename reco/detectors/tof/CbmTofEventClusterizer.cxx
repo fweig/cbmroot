@@ -1,9 +1,9 @@
-/** @file CbmTofEventClusterizer.cxx 
- ** @author nh  
+/** @file CbmTofEventClusterizer.cxx
+ ** @author nh
  ** @date 13.07.2018
  ** adopted from
- ** @file CbmTofTestBeamClusterizer.cxx 
- ** @file CbmTofSimpClusterizer.cxx 
+ ** @file CbmTofTestBeamClusterizer.cxx
+ ** @file CbmTofSimpClusterizer.cxx
  ** @author Pierre-Alain Loizeau <loizeau@physi.uni-heidelberg.de>
  ** @date 23.08.2013
  **/
@@ -5512,6 +5512,21 @@ Bool_t CbmTofEventClusterizer::BuildClusters() {
     LOG(warning) << "Too many digis in event " << fiNevtBuild;
     return kFALSE;
   }
+
+  LOG(info) << "Nb Raw digi at start: " << iNbTofDigi;
+  for (Int_t iDigInd = 0; iDigInd < iNbTofDigi; iDigInd++) {
+    //CbmTofDigi *pDigi = (CbmTofDigi*) fTofDigisColl->At( iDigInd );
+    CbmTofDigi* pDigi = &(fTofDigiVec.at(iDigInd));
+    Int_t iDetIndx    = fDigiBdfPar->GetDetInd(pDigi->GetAddress());
+
+    LOG(info) << "RawDigi" << iDigInd << " " << pDigi
+               << Form(" Address : 0x%08x ", pDigi->GetAddress()) << " SmT "
+               << pDigi->GetType() << " Sm " << pDigi->GetSm() << " Rpc "
+               << pDigi->GetRpc() << " Ch " << pDigi->GetChannel() << " S "
+               << pDigi->GetSide() << ", DetIndx " << iDetIndx << " : "
+               << pDigi->ToString();
+  } // for (Int_t iDigInd = 0; iDigInd < iNbTofDigi; iDigInd++)
+
   if (bAddBeamCounterSideDigi) {
     // Duplicate type "5" - digis
     // Int_t iNbDigi=iNbTofDigi;
@@ -5546,6 +5561,7 @@ Bool_t CbmTofEventClusterizer::BuildClusters() {
         fvMulDigi[iDetIndx][iCh]       = 0.;
       }
 
+    LOG(info) << "Nb Raw digi at start: " << fTofDigiVec.size();
     for (Int_t iDigInd = 0; iDigInd < iNbTofDigi; iDigInd++) {
       //CbmTofDigi *pDigi = (CbmTofDigi*) fTofDigisColl->At( iDigInd );
       CbmTofDigi* pDigi = &(fTofDigiVec.at(iDigInd));
@@ -5770,6 +5786,20 @@ Bool_t CbmTofEventClusterizer::BuildClusters() {
           fhRpcDigiDTMul[iDetIndx]->Fill(iCh, fvMulDigi[iDetIndx][iCh]);
       }
   }  // kTRUE end
+
+  LOG(info) << "Nb Raw digi at end: " << fTofDigiVec.size();
+  for (Int_t iDigInd = 0; iDigInd < fTofDigiVec.size(); iDigInd++) {
+    //CbmTofDigi *pDigi = (CbmTofDigi*) fTofDigisColl->At( iDigInd );
+    CbmTofDigi* pDigi = &(fTofDigiVec.at(iDigInd));
+    Int_t iDetIndx    = fDigiBdfPar->GetDetInd(pDigi->GetAddress());
+
+    LOG(info) << "RawDigi" << iDigInd << " " << pDigi
+               << Form(" Address : 0x%08x ", pDigi->GetAddress()) << " SmT "
+               << pDigi->GetType() << " Sm " << pDigi->GetSm() << " Rpc "
+               << pDigi->GetRpc() << " Ch " << pDigi->GetChannel() << " S "
+               << pDigi->GetSide() << ", DetIndx " << iDetIndx << " : "
+               << pDigi->ToString();
+  } // for (Int_t iDigInd = 0; iDigInd < iNbTofDigi; iDigInd++)
 
   // Calibrate RawDigis
   if (kTRUE) {
@@ -6425,12 +6455,17 @@ Bool_t CbmTofEventClusterizer::AddNextChan(Int_t iSmType,
   } else {
     pHit->Delete();
   }
+  TString sPrintout = "A - Inserted Hit and Match";
+  sPrintout += TString::Format( "#%4d (%5.1f %5.1f %5.1f) %7.3f %3lu : ",
+                                fiNbHits, hitPos.X(), hitPos.Y(), hitPos.Z(), dLastTime, vDigiIndRef.size());
   CbmMatch* digiMatch = new ((*fTofDigiMatchColl)[fiNbHits]) CbmMatch();
   for (size_t i = 0; i < vDigiIndRef.size(); i++) {
     Double_t dTot = (fTofCalDigiVec->at(vDigiIndRef.at(i))).GetTot();
     digiMatch->AddLink(
       CbmLink(dTot, vDigiIndRef.at(i), fiOutputTreeEntry, fiFileIndex));
+    sPrintout += TString::Format( "%3d ", vDigiIndRef.at(i) );
   }
+  LOG(info) << sPrintout;
   fiNbHits++;
   vDigiIndRef.clear();
 
@@ -7140,6 +7175,9 @@ Bool_t CbmTofEventClusterizer::BuildHits() {
                       } else {
                         pHit->Delete();
                       }
+                      TString sPrintout = "B - Inserted Hit and Match";
+                      sPrintout += TString::Format( "#%4d (%5.1f %5.1f %5.1f) %7.3f %3lu : ",
+                                fiNbHits, hitPos.X(), hitPos.Y(), hitPos.Z(), dLastTime, vDigiIndRef.size());
 
                       CbmMatch* digiMatch =
                         new ((*fTofDigiMatchColl)[fiNbHits]) CbmMatch();
@@ -7150,7 +7188,9 @@ Bool_t CbmTofEventClusterizer::BuildHits() {
                                                    vDigiIndRef.at(i),
                                                    fiOutputTreeEntry,
                                                    fiFileIndex));
+                        sPrintout += TString::Format( "%3d ", vDigiIndRef.at(i) );
                       }
+                      LOG(info) << sPrintout;
 
                       fiNbHits++;
                       // For Histogramming
@@ -7432,6 +7472,9 @@ Bool_t CbmTofEventClusterizer::BuildHits() {
               } else {
                 pHit->Delete();
               }
+              TString sPrintout = "C - Inserted Hit and Match";
+              sPrintout += TString::Format( "#%4d (%5.1f %5.1f %5.1f) %7.3f %3lu : ",
+                                fiNbHits, hitPos.X(), hitPos.Y(), hitPos.Z(), dLastTime, vDigiIndRef.size());
 
               CbmMatch* digiMatch =
                 new ((*fTofDigiMatchColl)[fiNbHits]) CbmMatch();
@@ -7440,7 +7483,9 @@ Bool_t CbmTofEventClusterizer::BuildHits() {
                 Double_t dTot = fTofCalDigiVec->at(vDigiIndRef.at(i)).GetTot();
                 digiMatch->AddLink(CbmLink(
                   dTot, vDigiIndRef.at(i), fiOutputTreeEntry, fiFileIndex));
+                sPrintout += TString::Format( "%3d ", vDigiIndRef.at(i) );
               }
+              LOG(info) << sPrintout;
 
               fiNbHits++;
               // For Histogramming
