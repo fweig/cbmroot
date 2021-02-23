@@ -28,7 +28,7 @@
  **/
 
 
-void mcbm_digi(Int_t nEvents            = 3,            // Number of events to process
+void mcbm_digi(Int_t nEvents            = 10,           // Number of events to process
                TString dataSet          = "data/test",  // Data set for file names
                Double_t eventRate       = 1.e7,         // Interaction rate [1/s]
                Double_t timeSliceLength = 1.e4,         // Length of time-slice [ns]
