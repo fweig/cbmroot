@@ -39,12 +39,12 @@ case $1 in
   check)
     echo "Checking if there are format changes required"
     git fetch $UPSTREAM
-    $GIT_CLANG_FORMAT_BIN --commit $BASE_COMMIT --diff $CHANGED_FILES --extensions h,hpp,c,C,cpp,cxx,tpl
+    $GIT_CLANG_FORMAT_BIN --binary $CLANG_FORMAT_BIN --commit $BASE_COMMIT --diff $CHANGED_FILES --extensions h,hpp,c,C,cpp,cxx,tpl
     ;;
 
   apply)
     echo "Applying required format changes"
-    $GIT_CLANG_FORMAT_BIN --verbose --commit $BASE_COMMIT $CHANGED_FILES --extensions h,hpp,c,C,cpp,cxx,tpl
+    $GIT_CLANG_FORMAT_BIN --binary $CLANG_FORMAT_BIN --verbose --commit $BASE_COMMIT $CHANGED_FILES --extensions h,hpp,c,C,cpp,cxx,tpl
     git status
     echo "Next step: git add "$CHANGED_FILES
     echo 'Then     : git commit -m"Apply clang-format"'
