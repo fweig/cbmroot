@@ -104,14 +104,12 @@ Int_t CbmTofGeoHandler::CheckGeometryVersion() {
         fTofId      = new CbmTofDetectorId_v12b();
         fGeoVersion = k12b;
         return fGeoVersion;
-      } else if ((TString(node->GetName()).Contains("v14"))
-                 || (TString(node->GetName()).Contains("v16a"))
-                 || (TString(node->GetName()).Contains("v16c"))
-                 || (TString(node->GetName()).Contains("v16d"))
-                 || (TString(node->GetName()).Contains("v16e"))
-                 || (TString(node->GetName()).Contains("v17a"))
-                 || (TString(node->GetName()).Contains("v17c"))
-                 || (TString(node->GetName()).Contains("v19"))) {
+      }
+      else if ((TString(node->GetName()).Contains("v14")) || (TString(node->GetName()).Contains("v16a"))
+               || (TString(node->GetName()).Contains("v16c")) || (TString(node->GetName()).Contains("v16d"))
+               || (TString(node->GetName()).Contains("v16e")) || (TString(node->GetName()).Contains("v17a"))
+               || (TString(node->GetName()).Contains("v17c")) || (TString(node->GetName()).Contains("v19"))
+               || ((TString(node->GetName()).Contains("v20a")) && (!(TString(node->GetName()).Contains("mcbm"))))) {
         LOG(info)
           << "CbmTofGeoHandler::CheckGeometryVersion: Found TOF geometry "
           << TString(node->GetName()) << ", treat as Id 14a   ";
@@ -129,9 +127,9 @@ Int_t CbmTofGeoHandler::CheckGeometryVersion() {
           fUseNodeName = kTRUE;
         }
         return fGeoVersion;
-      } else if ((TString(node->GetName()).Contains("v21"))
-                 || (TString(node->GetName()).Contains("v18"))
-                 || (TString(node->GetName()).Contains("v20"))) {
+      }
+      else if ((TString(node->GetName()).Contains("v21")) || (TString(node->GetName()).Contains("v18"))
+               || (TString(node->GetName()).Contains("v20"))) {
         LOG(info)
           << "CbmTofGeoHandler::CheckGeometryVersion: Found TOF geometry "
           << TString(node->GetName()) << ", treat as Id 21a   ";
@@ -139,7 +137,8 @@ Int_t CbmTofGeoHandler::CheckGeometryVersion() {
         fTofId      = new CbmTofDetectorId_v21a();
         fGeoVersion = k21a;
         return fGeoVersion;
-      } else {
+      }
+      else {
         LOG(fatal) << "Found an unknown TOF geometry.";
         fGeoVersion = -1;
         return fGeoVersion;

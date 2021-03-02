@@ -8,6 +8,7 @@
 // TOF Classes and includes
 #include "CbmTofAddress.h"          // in cbmdata/tof
 #include "CbmTofCell.h"             // in tof/TofData
+#include "CbmTofCreateDigiPar.h"
 #include "CbmTofDetectorId_v12b.h"  // in cbmdata/tof
 #include "CbmTofDetectorId_v14a.h"  // in cbmdata/tof
 #include "CbmTofDigi.h"             // in cbmdata/tof
@@ -437,6 +438,22 @@ Bool_t CbmTofSimpClusterizer::InitParameters() {
           << iGeoVersion;
         return kFALSE;
     }
+  }
+
+  LOG(info) << "=> Get the digi parameters for tof";
+  FairRunAna* ana     = FairRunAna::Instance();
+  FairRuntimeDb* rtdb = ana->GetRuntimeDb();
+
+  // create digitization parameters from geometry file
+  CbmTofCreateDigiPar* tofDigiPar = new CbmTofCreateDigiPar("TOF Digi Producer", "TOF task");
+  LOG(info) << "Create DigiPar ";
+  tofDigiPar->Init();
+
+  fDigiPar = (CbmTofDigiPar*) (rtdb->getContainer("CbmTofDigiPar"));
+  if (0 == fDigiPar) {
+    LOG(error) << "CbmTofSimpleClusterizer::InitParameters => Could not obtain "
+                  "the CbmTofDigiPar ";
+    return kFALSE;
   }
 
   fdParFeeTimeRes  = fDigiBdfPar->GetFeeTimeRes();

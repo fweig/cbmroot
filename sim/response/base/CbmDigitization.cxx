@@ -305,8 +305,6 @@ void CbmDigitization::DefaultInit() {
     AddParameterAsciiFile(parFile);
   }
   if (tofGeo.Length() > 0) {
-    parFile = srcDir + "/parameters/tof/tof_" + tofGeo + ".digi.par";
-    AddParameterAsciiFile(parFile);
     parFile = srcDir + "/parameters/tof/tof_" + tofGeo + ".digibdf.par";
     AddParameterAsciiFile(parFile);
   }
