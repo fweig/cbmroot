@@ -294,7 +294,6 @@ void recoSignal(Int_t nEvents         = 1000,
 
   // ---   STS track matching   ----------------------------------------------
   CbmMatchRecoToMC* matchTask2 = new CbmMatchRecoToMC();
-  if (setup->IsActive(kMvd)) matchTask2->SetIncludeMvdHitsInStsTrack(1);
   run->AddTask(matchTask2);
   // -------------------------------------------------------------------------
 

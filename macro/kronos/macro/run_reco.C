@@ -274,7 +274,6 @@ void run_reco(TString setupName, Int_t nEvents = 10) {
 
   // ---   STS track matching   ----------------------------------------------
   CbmMatchRecoToMC* matchTask2 = new CbmMatchRecoToMC();
-  if (setup->IsActive(kMvd)) matchTask2->SetIncludeMvdHitsInStsTrack(1);
   run->AddTask(matchTask2);
   // -------------------------------------------------------------------------
 

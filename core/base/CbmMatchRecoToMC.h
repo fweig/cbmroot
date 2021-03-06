@@ -50,8 +50,6 @@ public:
      */
   virtual void Finish();
 
-  void SetIncludeMvdHitsInStsTrack(Bool_t includeMvdHitsInStsTrack);
-
 private:
   /**
      * \brief Read and create data branches.
@@ -153,7 +151,7 @@ public:
 private:
   static Int_t fEventNumber;
 
-  Bool_t fIncludeMvdHitsInStsTrack = kFALSE;
+  Bool_t fIsMvdActive  = kTRUE;  // is the Mvd module active
   Bool_t fbDigiExpUsed = kTRUE;  // Usage of CbmTofDigiExp instead of CbmTofDigi
 
   CbmMCDataArray* fMCTracks    = nullptr;  //! Monte-Carlo tracks

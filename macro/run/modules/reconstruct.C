@@ -248,8 +248,6 @@ Bool_t reconstruct(Bool_t useMC = kFALSE, Bool_t searchPV = kTRUE) {
   // -----   Track matching  -----------------------------------------------
   if (useMC) {
     CbmMatchRecoToMC* match2 = new CbmMatchRecoToMC();
-    if (setup->IsActive(ECbmModuleId::kMvd))
-      match2->SetIncludeMvdHitsInStsTrack(1);
     run->AddTask(match2);
   }
   // -------------------------------------------------------------------------

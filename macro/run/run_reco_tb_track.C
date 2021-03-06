@@ -182,7 +182,6 @@ void run_reco_tb_track(TString dataSet = "test",
   if (useMC) {
     // ---   STS MC matching   ----------------------------------------------
     CbmMatchRecoToMC* matchTask = new CbmMatchRecoToMC();
-    matchTask->SetIncludeMvdHitsInStsTrack(0);
     run->AddTask(matchTask);
   }
 
