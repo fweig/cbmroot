@@ -516,8 +516,14 @@ void CbmMcbm2018MonitorAlgoTofPulser::ProcessHit(gdpbv100::FullMessage mess) {
   Double_t dHitTime = mess.GetFullTimeNs();
   //   Double_t dHitTot   = uTot;     // in bins
 
-  if (fuPulserChannel == uRemappedChanNrInFee && fuPulserMinTot < uTot
-      && uTot < fuPulserMaxTot) {
+  /// Hardcode TOT limits for the T0
+  if (0x90 == fuCurrentMsSysId) {
+    if ((0 == fuGet4Id / 2) && (185 < uTot && uTot < 190)) {
+      fvvbFeeHitFound[fuCurrDpbIdx][uFeeNr] = kTRUE;
+      fvvdFeeHits[fuCurrDpbIdx][uFeeNr]     = dHitTime;
+    }  // if( ( 0 == fuGet4Id / 2 ) && ( 185 < uTot && uTot < 190 ) )
+  }    // if( 0x90 == fuCurrentMsSysId )
+  else if (fuPulserChannel == uRemappedChanNrInFee && fuPulserMinTot < uTot && uTot < fuPulserMaxTot) {
     fvvbFeeHitFound[fuCurrDpbIdx][uFeeNr] = kTRUE;
     fvvdFeeHits[fuCurrDpbIdx][uFeeNr]     = dHitTime;
   }  // if( fuPulserChannel == uRemappedChanNrInFee && fuPulserMinTot < uTot && uTot < fuPulserMaxTot )
@@ -543,6 +549,8 @@ Bool_t CbmMcbm2018MonitorAlgoTofPulser::CreateHistograms() {
   std::cout << " Epo size " << gdpbv100::kdEpochInPs << std::endl;
   std::cout << " Epo size " << gdpbv100::kdEpochInNs << std::endl;
   /*******************************************************************/
+  /// FIXME: Disable clang formatting to keep readable histo creation
+  /* clang-format off */
   /// Internal plot per FEE pair
   fvvhFeePairPulserTimeDiff.resize(fuNrOfFeePerGdpb * fuNrOfGdpbs);
   for (UInt_t uFeeA = 0; uFeeA < fuNrOfFeePerGdpb * fuNrOfGdpbs; ++uFeeA) {
@@ -564,21 +572,11 @@ Bool_t CbmMcbm2018MonitorAlgoTofPulser::CreateHistograms() {
         if (-1 != fiGdpbIndex) uGdpbB = fiGdpbIndex;
         //            UInt_t uFeeIdB  = uFeeB - ( fuNrOfFeePerGdpb * uGdpbB );
         UInt_t uFeeIdB = uFeeIndexB - (3 * 6 * uGdpbB);
-        fvvhFeePairPulserTimeDiff[uFeeA][uFeeB] =
-          new TH1I(Form("hFeePairPulserTimeDiff_s%02u_f%1u_s%02u_f%1u",
-                        uGdpbA,
-                        uFeeIdA,
-                        uGdpbB,
-                        uFeeIdB),
-                   Form("Time difference for pulser on gDPB %02u FEE %1u and "
-                        "gDPB %02u FEE %1u; DeltaT [ps]; Counts",
-                        uGdpbA,
-                        uFeeIdA,
-                        uGdpbB,
-                        uFeeIdB),
-                   uNbBinsDt,
-                   dMinDt,
-                   dMaxDt);
+            fvvhFeePairPulserTimeDiff[ uFeeA ][ uFeeB ] = new TH1I(
+               Form("hFeePairPulserTimeDiff_s%02u_f%1u_s%02u_f%1u", uGdpbA, uFeeIdA, uGdpbB, uFeeIdB),
+               Form("Time difference for pulser on gDPB %02u FEE %1u and gDPB %02u FEE %1u; DeltaT [ps]; Counts",
+                     uGdpbA, uFeeIdA, uGdpbB, uFeeIdB ),
+                     uNbBinsDt, dMinDt, dMaxDt);
 
         AddHistoToVector(fvvhFeePairPulserTimeDiff[uFeeA][uFeeB],
                          Form("TofDt/s%03u", uFeeIndexA));
@@ -592,59 +590,33 @@ Bool_t CbmMcbm2018MonitorAlgoTofPulser::CreateHistograms() {
   UInt_t uTotalNbFee = fuNrOfFeePerGdpb * fuNrOfGdpbs;  /// Standard
   //   Double_t dGdpbMin = -0.5;
   //   Double_t dGdpbMax = fuNrOfGdpbs;
-  fhPulserTimeDiffMean = new TH2D(
-    "hPulserTimeDiffMean",
+   fhPulserTimeDiffMean = new TH2D( "hPulserTimeDiffMean",
     "Time difference Mean for each FEE pairs; FEE A; FEE B ; Mean [ps]",
-    uTotalNbFee - 1,
-    -0.5,
-    uTotalNbFee - 1.5,
-    uTotalNbFee - 1,
-    0.5,
-    uTotalNbFee - 0.5);
+         uTotalNbFee - 1, -0.5, uTotalNbFee - 1.5,
+         uTotalNbFee - 1,  0.5, uTotalNbFee - 0.5 );
 
-  fhPulserTimeDiffRms =
-    new TH2D("hPulserTimeDiffRms",
+   fhPulserTimeDiffRms = new TH2D( "hPulserTimeDiffRms",
              "Time difference RMS for each FEE pairs; FEE A; FEE B ; RMS [ps]",
-             uTotalNbFee - 1,
-             -0.5,
-             uTotalNbFee - 1.5,
-             uTotalNbFee - 1,
-             0.5,
-             uTotalNbFee - 0.5);
+         uTotalNbFee - 1, -0.5, uTotalNbFee - 1.5,
+         uTotalNbFee - 1,  0.5, uTotalNbFee - 0.5 );
 
-  fhPulserTimeDiffRmsZoom =
-    new TH2D("hPulserTimeDiffRmsZoom",
-             "Time difference RMS for each FEE pairs after zoom on peak; FEE "
-             "A; FEE B ; RMS [ps]",
-             uTotalNbFee - 1,
-             -0.5,
-             uTotalNbFee - 1.5,
-             uTotalNbFee - 1,
-             0.5,
-             uTotalNbFee - 0.5);
+   fhPulserTimeDiffRmsZoom = new TH2D( "hPulserTimeDiffRmsZoom",
+         "Time difference RMS for each FEE pairs after zoom on peak; FEE A; FEE B ; RMS [ps]",
+         uTotalNbFee - 1, -0.5, uTotalNbFee - 1.5,
+         uTotalNbFee - 1,  0.5, uTotalNbFee - 0.5 );
 
 
-  fhPulserRmsGdpbToRefEvo =
-    new TH2D("hPulserRmsGdpbToRefEvo",
-             "Evo. of Time difference RMS for selected FEE of each gDPb to the "
-             "1st; Time in run [s] A; gDPB ; RMS [ps]",
-             fuHistoryHistoSize,
-             0,
-             fuHistoryHistoSize,
-             fuNrOfGdpbs - 1,
-             0.5,
-             fuNrOfGdpbs - 0.5);
+   fhPulserRmsGdpbToRefEvo = new TH2D( "hPulserRmsGdpbToRefEvo",
+         "Evo. of Time difference RMS for selected FEE of each gDPb to the 1st; Time in run [s] A; gDPB ; RMS [ps]",
+         fuHistoryHistoSize, 0, fuHistoryHistoSize,
+         fuNrOfGdpbs - 1,  0.5, fuNrOfGdpbs - 0.5 );
 
-  fhPulserRmsGbtxToRefEvo =
-    new TH2D("hPulserTimeDiffRmsZoom",
-             "Evo. of Time difference RMS for selected FEE pairs of each GBTx "
-             "to the 1st in same gDPB; Time in run [s] A; FEE ; RMS [ps]",
-             fuHistoryHistoSize,
-             0,
-             fuHistoryHistoSize,
-             uTotalNbFee - 1,
-             0.5,
-             uTotalNbFee - 0.5);
+   fhPulserRmsGbtxToRefEvo = new TH2D( "hPulserTimeDiffRmsZoom",
+         "Evo. of Time difference RMS for selected FEE pairs of each GBTx to the 1st in same gDPB; Time in run [s] A; FEE ; RMS [ps]",
+         fuHistoryHistoSize, 0, fuHistoryHistoSize,
+         uTotalNbFee - 1,  0.5, uTotalNbFee - 0.5 );
+  /// FIXME: Re-enable clang formatting after histo creation
+  /* clang-format on */
 
   /// Add pointers to the vector with all histo for access by steering class
   AddHistoToVector(fhPulserTimeDiffMean, "Pulser");
@@ -679,16 +651,8 @@ Bool_t CbmMcbm2018MonitorAlgoTofPulser::CreateHistograms() {
 
   return kTRUE;
 }
-Bool_t CbmMcbm2018MonitorAlgoTofPulser::FillHistograms() {
-  /// Update the Mean and RMS plots only every N TS in last MS
-  /// => Need to be cleared before loop on pairs as we fill directly the value
-  if (1 == fulCurrentTsIdx % fuUpdateFreqTs
-      && fuNbCoreMsPerTs - 1 == fuMsIndex) {
-    fhPulserTimeDiffMean->Reset();
-    fhPulserTimeDiffRms->Reset();
-    fhPulserTimeDiffRmsZoom->Reset();
-  }  // if( 1 == fulCurrentTsIdx % fuUpdateFreqTs && fuNbCoreMsPerTs - 1 == fuMsIndex )
-
+Bool_t CbmMcbm2018MonitorAlgoTofPulser::FillHistograms()
+{
   for (UInt_t uFeeA = 0; uFeeA < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeA++) {
     UInt_t uGdpbA  = uFeeA / (fuNrOfFeePerGdpb);
     UInt_t uFeeIdA = uFeeA - (fuNrOfFeePerGdpb * uGdpbA);
@@ -708,39 +672,42 @@ Bool_t CbmMcbm2018MonitorAlgoTofPulser::FillHistograms() {
         1e3 * (fvvdFeeHits[uGdpbB][uFeeIdB] - fvvdFeeHits[uGdpbA][uFeeIdA]);
       if (TMath::Abs(dTimeDiff) < kdMaxDtPulserPs) {
         fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->Fill(dTimeDiff);
-      }  // f( TMath::Abs( dTimeDiff ) < kdMaxDtPulserPs )
+      }  // if( TMath::Abs( dTimeDiff ) < kdMaxDtPulserPs )
+    }    // for( UInt_t uFeeB = uFeeA + 1; uFeeB < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeB++)
 
-      /// Update the Mean and RMS plots only every N TS in last MS
-      if (1 == fulCurrentTsIdx % fuUpdateFreqTs
-          && fuNbCoreMsPerTs - 1 == fuMsIndex) {
+    /// Reset the flag for hit found in MS
+    fvvbFeeHitFound[uGdpbA][uFeeIdA] = kFALSE;
+  }  // for( UInt_t uFeeA = 0; uFeeA < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeA++)
+
+  /// Update the Mean and RMS plots only every N TS in last MS
+  if (1 == fulCurrentTsIdx % fuUpdateFreqTs && fuNbCoreMsPerTs - 1 == fuMsIndex) {
+    /// => Need to be cleared before loop on pairs as we fill directly the value
+    LOG(info) << Form("Reseting stats histos for update on TS %5llu MS %3u", fulCurrentTsIdx, fuMsIndex);
+    fhPulserTimeDiffMean->Reset();
+    fhPulserTimeDiffRms->Reset();
+    fhPulserTimeDiffRmsZoom->Reset();
+
+    for (UInt_t uFeeA = 0; uFeeA < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeA++) {
+      for (UInt_t uFeeB = uFeeA + 1; uFeeB < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeB++) {
+        if (0 == fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetEntries()) continue;
+
         /// Standard
         UInt_t uFeeIndexA = uFeeA;
         UInt_t uFeeIndexB = uFeeB;
-        fhPulserTimeDiffMean->Fill(
-          uFeeIndexA,
-          uFeeIndexB,
-          fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetMean());
-        fhPulserTimeDiffRms->Fill(
-          uFeeIndexA,
-          uFeeIndexB,
-          fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetRMS());
+        fhPulserTimeDiffMean->Fill(uFeeIndexA, uFeeIndexB, fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetMean());
+        fhPulserTimeDiffRms->Fill(uFeeIndexA, uFeeIndexB, fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetRMS());
 
         /// Read the peak position (bin with max counts) + total nb of entries
-        Int_t iBinWithMax =
-          fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetMaximumBin();
-        Double_t dNbCounts =
-          fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->Integral();
+        Int_t iBinWithMax  = fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetMaximumBin();
+        Double_t dNbCounts = fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->Integral();
 
         /// Zoom the X axis to +/- ZoomWidth around the peak position
-        Double_t dPeakPos =
-          fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetXaxis()->GetBinCenter(
-            iBinWithMax);
-        fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetXaxis()->SetRangeUser(
-          dPeakPos - kdFitZoomWidthPs, dPeakPos + kdFitZoomWidthPs);
+        Double_t dPeakPos = fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetXaxis()->GetBinCenter(iBinWithMax);
+        fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetXaxis()->SetRangeUser(dPeakPos - kdFitZoomWidthPs,
+                                                                          dPeakPos + kdFitZoomWidthPs);
 
         /// Read integral and check how much we lost due to the zoom (% loss allowed)
-        Double_t dZoomCounts =
-          fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->Integral();
+        Double_t dZoomCounts = fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->Integral();
 
         /// Fill new RMS after zoom into summary histo
         if ((dZoomCounts / dNbCounts) < 0.8) {
@@ -749,10 +716,7 @@ Bool_t CbmMcbm2018MonitorAlgoTofPulser::FillHistograms() {
           //                            << "more than 20% loss for FEE pair " << uFeeA << " and " << uFeeB << " !!! ";
         }  // if( ( dZoomCounts / dNbCounts ) < 0.8 )
         else
-          fhPulserTimeDiffRmsZoom->Fill(
-            uFeeIndexA,
-            uFeeIndexB,
-            fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetRMS());
+          fhPulserTimeDiffRmsZoom->Fill(uFeeIndexA, uFeeIndexB, fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetRMS());
 
         /// Restore original axis state
         fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetXaxis()->UnZoom();
@@ -762,42 +726,30 @@ Bool_t CbmMcbm2018MonitorAlgoTofPulser::FillHistograms() {
                       << Form( " %5.0f %f", fvvhFeePairPulserTimeDiff[ uFeeA ][ uFeeB ]->GetMean(),
                                             fvvhFeePairPulserTimeDiff[ uFeeA ][ uFeeB ]->GetRMS() );
 */
-      }  // if( 1 == fulCurrentTsIdx % fuUpdateFreqTs && fuNbCoreMsPerTs - 1 == fuMsIndex )
-    }  // for( UInt_t uFeeB = uFeeA + 1; uFeeB < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeB++)
-
-    /// Reset the flag for hit found in MS
-    fvvbFeeHitFound[uGdpbA][uFeeIdA] = kFALSE;
-  }  // for( UInt_t uFeeA = 0; uFeeA < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeA++)
+      }  // for( UInt_t uFeeB = uFeeA + 1; uFeeB < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeB++)
+    }    // for( UInt_t uFeeA = 0; uFeeA < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeA++)
+  }      // if( 1 == fulCurrentTsIdx % fuUpdateFreqTs && fuNbCoreMsPerTs - 1 == fuMsIndex )
 
   return kTRUE;
 }
-Bool_t CbmMcbm2018MonitorAlgoTofPulser::UpdateStats() {
+Bool_t CbmMcbm2018MonitorAlgoTofPulser::UpdateStats()
+{
+  LOG(info) << Form("Reseting stats histos for final update on TS %5llu MS %3u", fulCurrentTsIdx, fuMsIndex);
   fhPulserTimeDiffMean->Reset();
   fhPulserTimeDiffRms->Reset();
   fhPulserTimeDiffRmsZoom->Reset();
 
   for (UInt_t uFeeA = 0; uFeeA < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeA++) {
-    UInt_t uGdpbA  = uFeeA / (fuNrOfFeePerGdpb);
-    UInt_t uFeeIdA = uFeeA - (fuNrOfFeePerGdpb * uGdpbA);
-
-    for (UInt_t uFeeB = uFeeA + 1; uFeeB < fuNrOfFeePerGdpb * fuNrOfGdpbs;
-         uFeeB++) {
-      //         UInt_t uGdpbB   = uFeeB / ( fuNrOfFeePerGdpb );
-      //         UInt_t uFeeIdB  = uFeeB - ( fuNrOfFeePerGdpb * uGdpbB );
-
+    for (UInt_t uFeeB = uFeeA + 1; uFeeB < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeB++) {
       if (nullptr == fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]) continue;
+
+      if (0 == fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetEntries()) continue;
 
       /// Standard
       UInt_t uFeeIndexA = uFeeA;
       UInt_t uFeeIndexB = uFeeB;
-      fhPulserTimeDiffMean->Fill(
-        uFeeIndexA,
-        uFeeIndexB,
-        fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetMean());
-      fhPulserTimeDiffRms->Fill(
-        uFeeIndexA,
-        uFeeIndexB,
-        fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetRMS());
+      fhPulserTimeDiffMean->Fill(uFeeIndexA, uFeeIndexB, fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetMean());
+      fhPulserTimeDiffRms->Fill(uFeeIndexA, uFeeIndexB, fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetRMS());
 
       /// Read the peak position (bin with max counts) + total nb of entries
       Int_t iBinWithMax =
@@ -841,20 +793,18 @@ Bool_t CbmMcbm2018MonitorAlgoTofPulser::UpdateStats() {
                         fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->GetRMS());
 
     }  // for( UInt_t uFeeB = uFeeA + 1; uFeeB < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeB++)
-
-    /// Reset the flag for hit found in MS
-    fvvbFeeHitFound[uGdpbA][uFeeIdA] = kFALSE;
-  }  // for( UInt_t uFeeA = 0; uFeeA < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeA++)
+  }    // for( UInt_t uFeeA = 0; uFeeA < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeA++)
 
   return kTRUE;
 }
-Bool_t CbmMcbm2018MonitorAlgoTofPulser::ResetHistograms() {
+Bool_t CbmMcbm2018MonitorAlgoTofPulser::ResetHistograms()
+{
+  LOG(info) << Form("Reseting stats histos on TS %5llu MS %3u", fulCurrentTsIdx, fuMsIndex);
   for (UInt_t uFeeA = 0; uFeeA < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeA++) {
-    for (UInt_t uFeeB = uFeeA + 1; uFeeB < fuNrOfFeePerGdpb * fuNrOfGdpbs;
-         uFeeB++) {
+    for (UInt_t uFeeB = uFeeA + 1; uFeeB < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeB++) {
       fvvhFeePairPulserTimeDiff[uFeeA][uFeeB]->Reset();
     }  // for( UInt_t uFeeB = uFeeA + 1; uFeeB < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeB++)
-  }  // for( UInt_t uFeeA = 0; uFeeA < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeA++)
+  }    // for( UInt_t uFeeA = 0; uFeeA < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeA++)
   fhPulserTimeDiffMean->Reset();
   fhPulserTimeDiffRms->Reset();
   fhPulserTimeDiffRmsZoom->Reset();

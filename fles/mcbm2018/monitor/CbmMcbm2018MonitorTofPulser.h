@@ -22,6 +22,7 @@
 #include <map>
 #include <vector>
 
+class CbmDigi;
 class CbmMcbm2018TofPar;
 
 class TCanvas;
@@ -48,6 +49,8 @@ public:
   Bool_t InitContainers();
 
   Bool_t ReInitContainers();
+
+  void FillOutput(CbmDigi* digi);
 
   void SetMsLimitLevel(size_t uAcceptBoundaryPct = 100) {
     fuMsAcceptsPercent = uAcceptBoundaryPct;
@@ -86,6 +89,8 @@ public:
   }
 
   void UseDaqBuffer(Bool_t) {};
+
+  void UpdateNormedDnlInl();
 
 private:
   /// FLES containers
@@ -237,6 +242,10 @@ private:
   static const UInt_t kuNbRefFeeEvo          = 2;
   const UInt_t kuRefFeeEvoIdx[kuNbRefFeeEvo] = {0, 60};
   std::vector<std::vector<TProfile*>> fvvhPulserTimeDiffEvoFeeFee;
+
+  std::vector<TH2*> fhFeeFtDistribPerCh = {};
+  std::vector<TH2*> fhFeeFtNormDnl      = {};
+  std::vector<TH2*> fhFeeFtNormInl      = {};
 
   void CreateHistograms();
 

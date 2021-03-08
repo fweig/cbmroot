@@ -39,7 +39,6 @@ struct InitTaskError : std::runtime_error {
 
 using namespace std;
 
-Bool_t bMcbm2018MonitorTaskT0ResetHistos = kFALSE;
 
 CbmDeviceMonitorT0::CbmDeviceMonitorT0()
   : fbIgnoreOverlapMs {false}
@@ -51,6 +50,7 @@ CbmDeviceMonitorT0::CbmDeviceMonitorT0()
   , fuMinTotPulser {185}
   , fuMaxTotPulser {195}
   , fuOffSpillCountLimit {1000}
+  , fvuChanMap {0, 1, 2, 3, 4, 5, 6, 7}
   , fuPublishFreqTs {100}
   , fdMinPublishTime {0.5}
   , fdMaxPublishTime {5.0}
@@ -62,7 +62,9 @@ CbmDeviceMonitorT0::CbmDeviceMonitorT0()
   , fMonitorAlgo {new CbmMcbm2018MonitorAlgoT0()}
   , fArrayHisto {}
   , fvpsHistosFolder {}
-  , fvpsCanvasConfig {} {}
+  , fvpsCanvasConfig {}
+{
+}
 
 void CbmDeviceMonitorT0::InitTask() try {
   /// Read options from executable
@@ -72,6 +74,7 @@ void CbmDeviceMonitorT0::InitTask() try {
   fuMinTotPulser            = fConfig->GetValue<uint32_t>("PulsTotMin");
   fuMaxTotPulser            = fConfig->GetValue<uint32_t>("PulsTotMax");
   fuOffSpillCountLimit      = fConfig->GetValue<uint32_t>("SpillThr");
+  std::string sChanMap      = fConfig->GetValue<std::string>("ChanMap");
   fuPublishFreqTs           = fConfig->GetValue<uint32_t>("PubFreqTs");
   fdMinPublishTime          = fConfig->GetValue<double_t>("PubTimeMin");
   fdMaxPublishTime          = fConfig->GetValue<double_t>("PubTimeMax");
@@ -80,6 +83,23 @@ void CbmDeviceMonitorT0::InitTask() try {
   fsChannelNameHistosConfig = fConfig->GetValue<std::string>("ChNameHistCfg");
   fsChannelNameCanvasConfig = fConfig->GetValue<std::string>("ChNameCanvCfg");
   fsAllowedChannels[0]      = fsChannelNameDataInput;
+
+  UInt_t uChanIdx   = 0;
+  size_t charPosDel = sChanMap.find(',');
+  while (uChanIdx < fvuChanMap.size() && std::string::npos != charPosDel) {
+    LOG(info) << sChanMap.substr(0, charPosDel);
+    fvuChanMap[uChanIdx] = std::stoul(sChanMap.substr(0, charPosDel));
+    LOG(info) << fvuChanMap[uChanIdx];
+    sChanMap = sChanMap.substr(charPosDel + 1);
+    LOG(info) << sChanMap;
+    uChanIdx++;
+    charPosDel = sChanMap.find(',');
+  }  // while( uChanIdx < fvuChanMap.size() && std::string::npos != charPosDel )
+  if (uChanIdx < fvuChanMap.size()) {
+    LOG(info) << sChanMap;
+    fvuChanMap[uChanIdx] = std::stoul(sChanMap);
+    LOG(info) << fvuChanMap[uChanIdx];
+  }  // if( uChanIdx < fvuChanMap.size() )
 
   LOG(info) << "Histograms publication frequency in TS:    " << fuPublishFreqTs;
   LOG(info) << "Histograms publication min. interval in s: "
@@ -180,6 +200,9 @@ Bool_t CbmDeviceMonitorT0::InitContainers() {
   fMonitorAlgo->SetHistoryHistoSize(fuHistoryHistoSize);
   fMonitorAlgo->SetPulserTotLimits(fuMinTotPulser, fuMaxTotPulser);
   fMonitorAlgo->SetSpillThreshold(fuOffSpillCountLimit);
+  fMonitorAlgo->SetChannelMap(fvuChanMap[0], fvuChanMap[1], fvuChanMap[2], fvuChanMap[3], fvuChanMap[4], fvuChanMap[5],
+                              fvuChanMap[6], fvuChanMap[7]);
+
   //   fMonitorAlgo->AddMsComponentToList(0, 0x90);
 
   Bool_t initOK = fMonitorAlgo->InitContainers();
@@ -345,12 +368,6 @@ Bool_t CbmDeviceMonitorT0::DoUnpack(const fles::Timeslice& ts,
     }    // for( uint32_t uComp = 0; uComp < ts.num_components(); ++uComp )
     fbComponentsAddedToList = kTRUE;
   }  // if( kFALSE == fbComponentsAddedToList )
-
-  if (/* fbMonitorMode && */ bMcbm2018MonitorTaskT0ResetHistos) {
-    LOG(info) << "Reset T0 Monitor histos ";
-    fMonitorAlgo->ResetHistograms();
-    bMcbm2018MonitorTaskT0ResetHistos = kFALSE;
-  }  // if( fbMonitorMode && bMcbm2018MonitorTaskT0ResetHistos )
 
   if (kFALSE == fMonitorAlgo->ProcessTs(ts)) {
     LOG(error) << "Failed processing TS " << ts.index()

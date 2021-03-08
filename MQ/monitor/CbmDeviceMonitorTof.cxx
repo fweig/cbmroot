@@ -39,8 +39,6 @@ struct InitTaskError : std::runtime_error {
 
 using namespace std;
 
-Bool_t bMcbm2018MonitorTaskTofResetHistos = kFALSE;
-
 CbmDeviceMonitorTof::CbmDeviceMonitorTof()
   : fMonitorAlgo {new CbmMcbm2018MonitorAlgoTof()} {}
 
@@ -335,12 +333,6 @@ Bool_t CbmDeviceMonitorTof::DoUnpack(const fles::Timeslice& ts,
     }    // for( uint32_t uComp = 0; uComp < ts.num_components(); ++uComp )
     fbComponentsAddedToList = kTRUE;
   }  // if( kFALSE == fbComponentsAddedToList )
-
-  if (/* fbMonitorMode && */ bMcbm2018MonitorTaskTofResetHistos) {
-    LOG(info) << "Reset TOF Monitor histos ";
-    fMonitorAlgo->ResetHistograms();
-    bMcbm2018MonitorTaskTofResetHistos = kFALSE;
-  }  // if( fbMonitorMode && bMcbm2018MonitorTaskTofResetHistos )
 
   if (kFALSE == fMonitorAlgo->ProcessTs(ts)) {
     LOG(error) << "Failed processing TS " << ts.index()

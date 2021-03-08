@@ -398,6 +398,7 @@ Bool_t CbmMcbm2018MonitorAlgoT0::ProcessMs(const fles::Timeslice& ts,
           if (uTot < fuMinTotPulser || fuMaxTotPulser < uTot) {
             fhDpbMap->Fill(fuCurrDpbIdx);
             fhChannelMap->Fill(uChannelT0);
+            fhChanHitMap->Fill(fuDiamChanMap[uChannelT0]);
 
             fvhDpbMapSpill[fuCurrentSpillPlot]->Fill(fuCurrDpbIdx);
             fvhChannelMapSpill[fuCurrentSpillPlot]->Fill(
@@ -791,6 +792,8 @@ Bool_t CbmMcbm2018MonitorAlgoT0::CreateHistograms() {
                          256,
                          -0.5,
                          255.5);
+  fhChanHitMap    = new TH1D("fhChanHitMap", "Map of hits on T0 detector; Strip; Hits Count []", kuNbChanDiamond, -0.5,
+                          kuNbChanDiamond - 0.5);
   fhChanHitMapEvo = new TH2I("hChanHitMapEvo",
                              "Map of hits on T0 detector vs time in run; "
                              "Strip; Time in run [s]; Hits Count []",
@@ -939,6 +942,7 @@ Bool_t CbmMcbm2018MonitorAlgoT0::CreateHistograms() {
   AddHistoToVector(fhChannelMap, sFolder);
   AddHistoToVector(fhHitMapEvo, sFolder);
   AddHistoToVector(fhHitTotEvo, sFolder);
+  AddHistoToVector(fhChanHitMap, sFolder);
   AddHistoToVector(fhChanHitMapEvo, sFolder);
   for (UInt_t uSpill = 0; uSpill < kuNbSpillPlots; uSpill++) {
     AddHistoToVector(fvhDpbMapSpill[uSpill], sFolder);
@@ -1157,6 +1161,38 @@ Bool_t CbmMcbm2018MonitorAlgoT0::CreateHistograms() {
   fhErrorFractEvo->Draw("hist");
 
   AddCanvasToVector(fcSummary, "canvases");
+  /*******************************************************************/
+
+  /*******************************************************************/
+  /// General summary after mapping: Hit maps, Hit rate vs time in run, error fraction vs time un run
+  fcSummaryMap = new TCanvas("cSummaryMap", "Hit maps, Hit rate, Error fraction", w, h);
+  fcSummaryMap->Divide(2, 2);
+
+  fcSummaryMap->cd(1);
+  gPad->SetGridx();
+  gPad->SetGridy();
+  gPad->SetLogy();
+  fhChanHitMap->Draw();
+
+  fcSummaryMap->cd(2);
+  gPad->SetGridx();
+  gPad->SetGridy();
+  gPad->SetLogz();
+  fhChanHitMapEvo->Draw("colz");
+
+  fcSummaryMap->cd(3);
+  gPad->SetGridx();
+  gPad->SetGridy();
+  gPad->SetLogy();
+  fhHitCntEvo->Draw();
+
+  fcSummaryMap->cd(4);
+  gPad->SetGridx();
+  gPad->SetGridy();
+  gPad->SetLogz();
+  fhErrorFractEvo->Draw("hist");
+
+  AddCanvasToVector(fcSummaryMap, "canvases");
   /*******************************************************************/
 
   /*******************************************************************/

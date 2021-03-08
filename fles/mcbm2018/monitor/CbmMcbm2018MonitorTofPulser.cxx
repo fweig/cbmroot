@@ -45,6 +45,7 @@
 Bool_t bMcbmMoniTofPulserResetHistos       = kFALSE;
 Bool_t bMcbmMoniTofPulserSaveHistos        = kFALSE;
 Bool_t bMcbmMoniTofPulserUpdateZoomedFit   = kFALSE;
+Bool_t bMcbmMoniTofPulserUpdateDnlInl      = kFALSE;
 Bool_t bMcbmMoniTofPulserRawDataPrint      = kFALSE;
 Bool_t bMcbmMoniTofPulserPrintAllHitsEna   = kFALSE;
 Bool_t bMcbmMoniTofPulserPrintAllEpochsEna = kFALSE;
@@ -417,6 +418,9 @@ void CbmMcbm2018MonitorTofPulser::CreateHistograms() {
 
 
   /*******************************************************************/
+  /// FIXME: Disable clang formatting to keep readable histo creation
+  /* clang-format off */
+
   /// FEE pulser test channels
   fvhTimeDiffPulser.resize(fuNrOfFeePerGdpb * fuNrOfGdpbs);
   for (UInt_t uFeeA = 0; uFeeA < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeA++) {
@@ -429,19 +433,11 @@ void CbmMcbm2018MonitorTofPulser::CreateHistograms() {
         UInt_t uFeeIdB = uFeeB - (fuNrOfFeePerGdpb * uGdpbB);
         fvhTimeDiffPulser[uFeeA][uFeeB] =
           new TH1I(Form("hTimeDiffPulser_g%02u_f%1u_g%02u_f%1u",
-                        uGdpbA,
-                        uFeeIdA,
-                        uGdpbB,
-                        uFeeIdB),
+                        uGdpbA, uFeeIdA, uGdpbB, uFeeIdB),
                    Form("Time difference for pulser on gDPB %02u FEE %1u and "
                         "gDPB %02u FEE %1u; DeltaT [ps]; Counts",
-                        uGdpbA,
-                        uFeeIdA,
-                        uGdpbB,
-                        uFeeIdB),
-                   uNbBinsDt,
-                   dMinDt,
-                   dMaxDt);
+                        uGdpbA, uFeeIdA, uGdpbB, uFeeIdB),
+                   uNbBinsDt, dMinDt, dMaxDt);
       }  // if( uFeeA < uFeeB )
       else
         fvhTimeDiffPulser[uFeeA][uFeeB] = NULL;
@@ -452,45 +448,30 @@ void CbmMcbm2018MonitorTofPulser::CreateHistograms() {
   fhTimeMeanPulser = new TH2D(
     name.Data(),
     "Time difference Mean for each FEE pairs; FEE A; FEE B ; Mean [ps]",
-    fuNrOfFeePerGdpb * fuNrOfGdpbs - 1,
-    -0.5,
-    fuNrOfFeePerGdpb * fuNrOfGdpbs - 1.5,
-    fuNrOfFeePerGdpb * fuNrOfGdpbs - 1,
-    0.5,
-    fuNrOfFeePerGdpb * fuNrOfGdpbs - 0.5);
+    fuNrOfFeePerGdpb * fuNrOfGdpbs - 1, -0.5, fuNrOfFeePerGdpb * fuNrOfGdpbs - 1.5,
+    fuNrOfFeePerGdpb * fuNrOfGdpbs - 1,  0.5, fuNrOfFeePerGdpb * fuNrOfGdpbs - 0.5);
 
   name = "hTimeRmsPulser";
-  fhTimeRmsPulser =
-    new TH2D(name.Data(),
-             "Time difference RMS for each FEE pairs; FEE A; FEE B ; RMS [ps]",
-             fuNrOfFeePerGdpb * fuNrOfGdpbs - 1,
-             -0.5,
-             fuNrOfFeePerGdpb * fuNrOfGdpbs - 1.5,
-             fuNrOfFeePerGdpb * fuNrOfGdpbs - 1,
-             0.5,
-             fuNrOfFeePerGdpb * fuNrOfGdpbs - 0.5);
+  fhTimeRmsPulser = new TH2D(
+    name.Data(),
+    "Time difference RMS for each FEE pairs; FEE A; FEE B ; RMS [ps]",
+    fuNrOfFeePerGdpb * fuNrOfGdpbs - 1, -0.5, fuNrOfFeePerGdpb * fuNrOfGdpbs - 1.5,
+    fuNrOfFeePerGdpb * fuNrOfGdpbs - 1,  0.5, fuNrOfFeePerGdpb * fuNrOfGdpbs - 0.5);
 
   name                 = "hTimeRmsZoomFitPuls";
-  fhTimeRmsZoomFitPuls = new TH2D(name.Data(),
-                                  "Time difference RMS after zoom for each FEE "
-                                  "pairs; FEE A; FEE B ; RMS [ps]",
-                                  fuNrOfFeePerGdpb * fuNrOfGdpbs - 1,
-                                  -0.5,
-                                  fuNrOfFeePerGdpb * fuNrOfGdpbs - 1.5,
-                                  fuNrOfFeePerGdpb * fuNrOfGdpbs - 1,
-                                  0.5,
-                                  fuNrOfFeePerGdpb * fuNrOfGdpbs - 0.5);
+  fhTimeRmsZoomFitPuls = new TH2D(
+    name.Data(),
+    "Time difference RMS after zoom for each FEE "
+    "pairs; FEE A; FEE B ; RMS [ps]",
+    fuNrOfFeePerGdpb * fuNrOfGdpbs - 1, -0.5, fuNrOfFeePerGdpb * fuNrOfGdpbs - 1.5,
+    fuNrOfFeePerGdpb * fuNrOfGdpbs - 1, 0.5, fuNrOfFeePerGdpb * fuNrOfGdpbs - 0.5);
 
   name             = "hTimeResFitPuls";
-  fhTimeResFitPuls = new TH2D(name.Data(),
-                              "Time difference Res from fit for each FEE "
-                              "pairs; FEE A; FEE B ; Sigma [ps]",
-                              fuNrOfFeePerGdpb * fuNrOfGdpbs - 1,
-                              -0.5,
-                              fuNrOfFeePerGdpb * fuNrOfGdpbs - 1.5,
-                              fuNrOfFeePerGdpb * fuNrOfGdpbs - 1,
-                              0.5,
-                              fuNrOfFeePerGdpb * fuNrOfGdpbs - 0.5);
+  fhTimeResFitPuls = new TH2D(
+    name.Data(),
+    "Time difference Res from fit for each FEE pairs; FEE A; FEE B ; Sigma [ps]",
+    fuNrOfFeePerGdpb * fuNrOfGdpbs - 1, -0.5, fuNrOfFeePerGdpb * fuNrOfGdpbs - 1.5,
+    fuNrOfFeePerGdpb * fuNrOfGdpbs - 1,  0.5, fuNrOfFeePerGdpb * fuNrOfGdpbs - 0.5);
 
   fvhPulserTimeDiffEvoGbtxGbtx.resize(fuNrOfGdpbs * (kuNbGbtxPerGdpb - 1));
   fvvhPulserTimeDiffEvoGdpbGdpb.resize(fuNrOfGdpbs);
@@ -501,12 +482,8 @@ void CbmMcbm2018MonitorTofPulser::CreateHistograms() {
       name.Data(),
       Form("Pulser count per FEE in gDPB %02u; time in run [s]; dt [ps]",
            uGdpb),
-      fuHistoryHistoSize,
-      0,
-      fuHistoryHistoSize,
-      fuNrOfFeePerGdpb,
-      -0.5,
-      fuNrOfFeePerGdpb));
+      fuHistoryHistoSize, 0, fuHistoryHistoSize,
+      fuNrOfFeePerGdpb, -0.5, fuNrOfFeePerGdpb));
 
     for (UInt_t uGbtx = 0; uGbtx < kuNbGbtxPerGdpb - 1; ++uGbtx) {
       name = Form("hPulserTimeDiffEvoGdpb%02uGbtx00Gbtx%02u", uGdpb, uGbtx + 1);
@@ -516,9 +493,7 @@ void CbmMcbm2018MonitorTofPulser::CreateHistograms() {
                           "gDPB %02u vs GBTx %02u; time in run [s]; dt [ps]",
                           uGdpb,
                           uGbtx + 1),
-                     fuHistoryHistoSize,
-                     0,
-                     fuHistoryHistoSize);
+                     fuHistoryHistoSize, 0, fuHistoryHistoSize);
     }  // for( UInt_t uGbtx = 0; uGbtx < kuNbGbtxPerGdpb; ++uGbtx )
 
     fvvhPulserTimeDiffEvoGdpbGdpb[uGdpb].resize(fuNrOfGdpbs, NULL);
@@ -530,9 +505,7 @@ void CbmMcbm2018MonitorTofPulser::CreateHistograms() {
                           "gDPB %02u vs %02u; time in run [s]; dt [ps]",
                           uGdpb,
                           uGdpbB),
-                     fuHistoryHistoSize,
-                     0,
-                     fuHistoryHistoSize);
+                     fuHistoryHistoSize,  0, fuHistoryHistoSize);
     }  // for( UInt_t uGdpbB = uGdpb + 1; uGdpbB < fuNrOfGdpbs; ++uGdpbB )
   }    // for( UInt_t uGdpb = 0; uGdpb < fuNrOfGdpbs; ++uGdpb )
 
@@ -548,21 +521,40 @@ void CbmMcbm2018MonitorTofPulser::CreateHistograms() {
 
       fvvhPulserTimeDiffEvoFeeFee[uFeeRef][uFee] =
         new TProfile(Form("hTimeDiffEvoFeeFee_g%02u_f%02u_g%02u_f%02u",
-                          uGdpbRef,
-                          uFeeIdRef,
-                          uGdpb,
-                          uFeeId),
+                          uGdpbRef, uFeeIdRef, uGdpb, uFeeId),
                      Form("Time difference for pulser on gDPB %02u FEE %1u and "
                           "gDPB %02u FEE %02u; time in run [s]; DeltaT [ps]",
-                          uGdpbRef,
-                          uFeeIdRef,
-                          uGdpb,
-                          uFeeId),
-                     fuHistoryHistoSize / 2,
-                     0,
-                     fuHistoryHistoSize);
+                          uGdpbRef, uFeeIdRef, uGdpb, uFeeId),
+                     fuHistoryHistoSize / 2, 0, fuHistoryHistoSize);
     }  // for( UInt_t uFee = 0; uFee < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFee++)
   }    // for( UInt_t uFeeRef = 0; uFeeRef < kuNbRefFeeEvo; ++uFeeRef )
+
+   fhFeeFtDistribPerCh.resize( fuNrOfFeePerGdpb * fuNrOfGdpbs );
+   fhFeeFtNormDnl.resize( fuNrOfFeePerGdpb * fuNrOfGdpbs );
+   fhFeeFtNormInl.resize( fuNrOfFeePerGdpb * fuNrOfGdpbs );
+   for( UInt_t uFee = 0; uFee < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFee++)
+   {
+      UInt_t uGdpb  = uFee / ( fuNrOfFeePerGdpb );
+      UInt_t uFeeId = uFee - ( fuNrOfFeePerGdpb * uGdpb );
+      fhFeeFtDistribPerCh[ uFee ] = new TH2D(
+            Form( "hFeeFtDistribPerCh_g%02u_f%02u", uGdpb, uFeeId ),
+            Form( "FT distribution per channel for gDPB %02u FEE %02u", uGdpb, uFeeId ),
+            gdpbv100::kdFtBinsNb, 0, gdpbv100::kdFtBinsNb,
+            fuNrOfChannelsPerFee, -0.5, fuNrOfChannelsPerFee - 0.5 );
+      fhFeeFtNormDnl[ uFee ] = new TH2D(
+            Form( "hFeeFtNormDnl_g%02u_f%02u", uGdpb, uFeeId ),
+            Form( "Normalized DNL per channel for gDPB %02u FEE %02u", uGdpb, uFeeId ),
+            gdpbv100::kdFtBinsNb, 0, gdpbv100::kdFtBinsNb,
+            fuNrOfChannelsPerFee, -0.5, fuNrOfChannelsPerFee - 0.5 );
+      fhFeeFtNormInl[ uFee ] = new TH2D(
+            Form( "hFeeFtNormInl_g%02u_f%02u", uGdpb, uFeeId ),
+            Form( "Normalized INL per channel for gDPB %02u FEE %02u", uGdpb, uFeeId ),
+            gdpbv100::kdFtBinsNb, 0, gdpbv100::kdFtBinsNb,
+            fuNrOfChannelsPerFee, -0.5, fuNrOfChannelsPerFee - 0.5 );
+   } // for( UInt_t uFee = 0; uFee < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFee++)
+
+  /// FIXME: Re-enable clang formatting after histo creation
+  /* clang-format on */
 
   if (server) {
     for (UInt_t uFeeA = 0; uFeeA < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeA++)
@@ -591,6 +583,12 @@ void CbmMcbm2018MonitorTofPulser::CreateHistograms() {
                            fvvhPulserTimeDiffEvoGdpbGdpb[uGdpb][uGdpbB]);
     }  // for( UInt_t uGdpb = 0; uGdpb < fuNrOfGdpbs; ++uGdpb )
 
+    for (UInt_t uFee = 0; uFee < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFee++) {
+      server->Register("/DnlInl", fhFeeFtDistribPerCh[uFee]);
+      server->Register("/DnlInl", fhFeeFtNormDnl[uFee]);
+      server->Register("/DnlInl", fhFeeFtNormInl[uFee]);
+    }  // for( UInt_t uFee = 0; uFee < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFee++)
+
     server->RegisterCommand("/Reset_All_eTOF",
                             "bMcbmMoniTofPulserResetHistos=kTRUE");
     server->RegisterCommand("/Save_All_eTof",
@@ -607,6 +605,7 @@ void CbmMcbm2018MonitorTofPulser::CreateHistograms() {
     server->Restrict("/Reset_All_eTof", "allow=admin");
     server->Restrict("/Save_All_eTof", "allow=admin");
     server->Restrict("/Update_PulsFit", "allow=admin");
+    server->Restrict("/Update_DnlInl", "allow=admin");
     server->Restrict("/Print_Raw_Data", "allow=admin");
     server->Restrict("/Print_AllHits", "allow=admin");
     server->Restrict("/Print_AllEps", "allow=admin");
@@ -717,6 +716,10 @@ Bool_t CbmMcbm2018MonitorTofPulser::DoUnpack(const fles::Timeslice& ts,
   if (bMcbmMoniTofPulserUpdateZoomedFit) {
     UpdateZoomedFit();
     bMcbmMoniTofPulserUpdateZoomedFit = kFALSE;
+  }  // if (bMcbmMoniTofPulserUpdateZoomedFit)
+  if (bMcbmMoniTofPulserUpdateDnlInl) {
+    UpdateNormedDnlInl();
+    bMcbmMoniTofPulserUpdateDnlInl = kFALSE;
   }  // if (bMcbmMoniTofPulserUpdateZoomedFit)
   if (bMcbmMoniTofPulserRawDataPrint) {
     fuRawDataPrintMsgIdx           = 0;
@@ -1175,6 +1178,9 @@ void CbmMcbm2018MonitorTofPulser::FillHitInfo(gdpbv100::Message mess) {
   // => FTS = Fullt TS modulo 112
   uFts = mess.getGdpbHitFullTs() % 112;
 
+  /// FT/DNL/INL monitoring
+  fhFeeFtDistribPerCh[uFeeNrInSys]->Fill(uFts, uChannelNrInFee);
+
   // In Run rate evolution
   if (fdStartTime < 0) fdStartTime = dHitTime;
 
@@ -1588,9 +1594,14 @@ void CbmMcbm2018MonitorTofPulser::Finish() {
   /// Update zoomed RMS and pulser fit plots
   UpdateZoomedFit();
 
+  /// Update the DNL/INL plots
+  UpdateNormedDnlInl();
+
   SaveAllHistos(fsHistoFileFullname);
   //   SaveAllHistos();
 }
+
+void CbmMcbm2018MonitorTofPulser::FillOutput(CbmDigi* /*digi*/) {}
 
 void CbmMcbm2018MonitorTofPulser::SaveAllHistos(TString sFileName) {
   /// Save old global file and folder pointer to avoid messing with FairRoot
@@ -1641,6 +1652,16 @@ void CbmMcbm2018MonitorTofPulser::SaveAllHistos(TString sFileName) {
       fvvhPulserTimeDiffEvoFeeFee[uFeeRef][uFee]->Write();
     }  // for( UInt_t uFee = 0; uFee < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFee++)
   }    // for( UInt_t uFeeRef = 0; uFeeRef < kuNbRefFeeEvo; ++uFeeRef )
+
+  gDirectory->cd("..");
+
+  gDirectory->mkdir("TofDnlInl");
+  gDirectory->cd("TofDnlInl");
+  for (UInt_t uFee = 0; uFee < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFee++) {
+    fhFeeFtDistribPerCh[uFee]->Write();
+    fhFeeFtNormDnl[uFee]->Write();
+    fhFeeFtNormInl[uFee]->Write();
+  }  // for( UInt_t uFee = 0; uFee < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFee++)
 
   gDirectory->cd("..");
 
@@ -1703,6 +1724,12 @@ void CbmMcbm2018MonitorTofPulser::ResetAllHistos() {
       fvvhPulserTimeDiffEvoFeeFee[uFeeRef][uFee]->Reset();
     }  // for( UInt_t uFee = 0; uFee < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFee++)
   }    // for( UInt_t uFeeRef = 0; uFeeRef < kuNbRefFeeEvo; ++uFeeRef )
+
+  for (UInt_t uFee = 0; uFee < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFee++) {
+    fhFeeFtDistribPerCh[uFee]->Reset();
+    fhFeeFtNormDnl[uFee]->Reset();
+    fhFeeFtNormInl[uFee]->Reset();
+  }  // for( UInt_t uFee = 0; uFee < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFee++)
 
   for (UInt_t uLinks = 0; uLinks < fvhMsSzPerLink.size(); uLinks++) {
     if (NULL == fvhMsSzPerLink[uLinks]) continue;
@@ -1815,6 +1842,44 @@ void CbmMcbm2018MonitorTofPulser::UpdateZoomedFit() {
                << "please use SetFitZoomWidthPs, e.g. in macro, before trying "
                   "this update !!!";
   }  // else of if( 0.0 < fdFitZoomWidthPs )
+}
+void CbmMcbm2018MonitorTofPulser::UpdateNormedDnlInl()
+{
+  TDirectory* oldDir = gDirectory;
+
+  gROOT->cd();
+  UInt_t uHistoFeeIdx = 0;
+  TF1* constantVal    = new TF1("constant", "1", 0, gdpbv100::kdFtBinsNb);
+  for (UInt_t uFeeNrInSys = 0; uFeeNrInSys < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeNrInSys++) {
+    fhFeeFtNormDnl[uFeeNrInSys]->Reset();
+    fhFeeFtNormInl[uFeeNrInSys]->Reset();
+
+    for (UInt_t uChannel = 0; uChannel < fuNrOfChannelsPerFee; uChannel++) {
+      // Rising edge
+      TH1* pFtSelChSlice =
+        fhFeeFtDistribPerCh[uFeeNrInSys]->ProjectionX("temp_pFtSelChSlice", 1 + uChannel, 1 + uChannel);
+      if (0 < pFtSelChSlice->GetEntries()) {
+        Double_t dNormFactRise = pFtSelChSlice->GetEntries() / gdpbv100::kdFtBinsNb;
+        pFtSelChSlice->Scale(1.0 / dNormFactRise);
+        pFtSelChSlice->Add(constantVal, -1.);
+      }  // if( 0 < pFtSelChSliceRise->GetEntries() )
+
+      // INLs + storage
+      Double_t dDnl = 0.0;
+      Double_t dInl = 0.0;
+      for (UInt_t uFtBin = 0; uFtBin < gdpbv100::kdFtBinsNb; uFtBin++) {
+        dDnl = pFtSelChSlice->GetBinContent(1 + uFtBin);
+        dInl += dDnl;
+        fhFeeFtNormDnl[uFeeNrInSys]->Fill(uFtBin, uChannel, dDnl);
+        fhFeeFtNormInl[uFeeNrInSys]->Fill(uFtBin, uChannel, dInl);
+      }  // for( UInt_t uFtBin = 0; uFtBin < gdpbv100::kuFineCounterSize; uFtBin++)
+
+      delete pFtSelChSlice;
+    }  // for( UInt_t uChannel = 0; uChannel < fuNrOfChannelsPerFee; uChannel++ )
+  }    // for( UInt_t uFeeNrInSys = 0; uFeeNrInSys < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeNrInSys++ )
+  delete constantVal;
+
+  oldDir->cd();
 }
 
 ClassImp(CbmMcbm2018MonitorTofPulser)

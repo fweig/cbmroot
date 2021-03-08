@@ -23,6 +23,8 @@ void addCustomOptions(bpo::options_description& options) {
   options.add_options()("SpillThr",
                         bpo::value<uint32_t>()->default_value(1000),
                         "Hits Nb Thr for spill detection");
+  options.add_options()("ChanMap", bpo::value<std::string>()->default_value("0,1,2,3,4,5,6,7"),
+                        "Set T0 channel map e.g. 0,1,2,3,4,5,6,7");
   options.add_options()("PubFreqTs",
                         bpo::value<uint32_t>()->default_value(100),
                         "Histo publishing frequency in TS");

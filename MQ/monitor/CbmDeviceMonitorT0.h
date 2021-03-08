@@ -50,6 +50,7 @@ private:
   uint32_t fuMinTotPulser;
   uint32_t fuMaxTotPulser;
   uint32_t fuOffSpillCountLimit;
+  std::vector<uint32_t> fvuChanMap;
   uint32_t fuPublishFreqTs;
   double_t fdMinPublishTime;
   double_t fdMaxPublishTime;

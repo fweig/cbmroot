@@ -1,6 +1,8 @@
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startMQSamplerMonitor.sh.in ${CMAKE_BINARY_DIR}/bin/MQ/topologies/startMQSamplerMonitor.sh)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startMQSamplerT0Monitor2020.sh.in ${CMAKE_BINARY_DIR}/bin/MQ/topologies/startMQSamplerT0Monitor2020.sh)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startMQSamplerTofMonitor2020.sh.in ${CMAKE_BINARY_DIR}/bin/MQ/topologies/startMQSamplerTofMonitor2020.sh)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startMQSamplerT0Monitor2021.sh.in ${CMAKE_BINARY_DIR}/bin/MQ/topologies/startMQSamplerT0Monitor2021.sh)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startMQSamplerTofMonitor2021.sh.in ${CMAKE_BINARY_DIR}/bin/MQ/topologies/startMQSamplerTofMonitor2021.sh)
 
 set(INCLUDE_DIRECTORIES
     ${CMAKE_CURRENT_SOURCE_DIR}

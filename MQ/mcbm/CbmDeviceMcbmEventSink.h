@@ -43,6 +43,7 @@ class CbmUnpackedTimeslice {
   /// TODO: rename to CbmTsWithEvents
 public:
   CbmUnpackedTimeslice(FairMQParts& parts);
+  ~CbmUnpackedTimeslice();
 
   TimesliceMetaData fTsMetaData;
   std::vector<CbmTofDigi> fvDigiT0;

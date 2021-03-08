@@ -776,3 +776,16 @@ CbmUnpackedTimeslice::CbmUnpackedTimeslice(FairMQParts& parts)
     fEventsArray.AbsorbObjects(arrayEventsIn);
   }  // if( TString( tempObject->ClassName() ).EqualTo( "TClonesArray") )
 }
+
+CbmUnpackedTimeslice::~CbmUnpackedTimeslice()
+{
+  fvDigiT0.clear();
+  fvDigiSts.clear();
+  fvDigiMuch.clear();
+  fvDigiTrd.clear();
+  fvDigiTof.clear();
+  fvDigiRich.clear();
+  fvDigiPsd.clear();
+  //  fEventsArray.Clear("C");
+  fEventsArray.Delete();
+}

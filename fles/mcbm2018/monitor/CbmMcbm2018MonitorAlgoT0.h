@@ -219,6 +219,7 @@ private:
   TH1* fhChannelMap                    = nullptr;
   TH2* fhHitMapEvo                     = nullptr;
   TH2* fhHitTotEvo                     = nullptr;
+  TH1* fhChanHitMap                    = nullptr;
   TH2* fhChanHitMapEvo                 = nullptr;
   std::vector<TH1*> fvhDpbMapSpill     = {};
   std::vector<TH1*> fvhChannelMapSpill = {};
@@ -244,6 +245,7 @@ private:
 
   /// Canvases
   TCanvas* fcSummary            = nullptr;
+  TCanvas* fcSummaryMap         = nullptr;
   TCanvas* fcHitMaps            = nullptr;
   TCanvas* fcGenCntsPerMs       = nullptr;
   TCanvas* fcSpillCounts        = nullptr;

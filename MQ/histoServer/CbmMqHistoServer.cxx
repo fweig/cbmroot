@@ -29,10 +29,10 @@
 #include <boost/serialization/utility.hpp>
 
 std::mutex mtx;
-
+/*
 Bool_t bMqHistoServerResetHistos = kFALSE;
 Bool_t bMqHistoServerSaveHistos  = kFALSE;
-
+*/
 CbmMqHistoServer::CbmMqHistoServer()
   : FairMQDevice()
   , fsChannelNameHistosInput("histogram-in")
@@ -69,11 +69,11 @@ void CbmMqHistoServer::InitTask() {
   /// To avoid the server sucking all Histos from gROOT when no output file is used
   fServer->GetSniffer()->SetScanGlobalDir(kFALSE);
 
-  fServer->RegisterCommand("/Reset_Hist", "bMqHistoServerResetHistos=kTRUE");
-  fServer->RegisterCommand("/Save_Hist", "bMqHistoServerSaveHistos=kTRUE");
+  //fServer->RegisterCommand("/Reset_Hist", "bMqHistoServerResetHistos=kTRUE");
+  //fServer->RegisterCommand("/Save_Hist", "bMqHistoServerSaveHistos=kTRUE");
 
-  fServer->Restrict("/Reset_Moni_Hist", "allow=admin");
-  fServer->Restrict("/Save_Pulser_Hist", "allow=admin");
+  //fServer->Restrict("/Reset_Hist", "allow=admin");
+  //fServer->Restrict("/Save_Hist", "allow=admin");
 }
 
 bool CbmMqHistoServer::ReceiveData(FairMQMessagePtr& msg, int /*index*/) {
@@ -124,7 +124,7 @@ bool CbmMqHistoServer::ReceiveData(FairMQMessagePtr& msg, int /*index*/) {
   fNMessages += 1;
 
   if (nullptr != tempObject) delete tempObject;
-
+  /*
   /// TODO: control flags communication with histo server
   /// Idea: 1 req channel (per device or not mixup?), polling every N TS and/or M s
   if (bMqHistoServerResetHistos) {
@@ -140,7 +140,7 @@ bool CbmMqHistoServer::ReceiveData(FairMQMessagePtr& msg, int /*index*/) {
     SaveHistograms();
     bMqHistoServerSaveHistos = kFALSE;
   }  // if( bMqHistoServerSaveHistos )
-
+*/
   return true;
 }
 
