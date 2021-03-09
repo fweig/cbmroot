@@ -2,11 +2,12 @@
 #define _L1AlgoInputData_h
 
 #include "CbmL1Def.h"
-#include "L1StsHit.h"
 
 #include <fstream>
 #include <iostream>
 #include <vector>
+
+#include "L1StsHit.h"
 
 using std::istream;
 using std::vector;
@@ -14,11 +15,7 @@ using std::vector;
 class L1AlgoInputData {
 
 public:
-  L1AlgoInputData()
-    : vStsHits()
-    , NStsStrips(0)
-    , vStsZPos()
-    , vSFlag()
+  L1AlgoInputData() : vStsHits(), NStsStrips(0), vStsZPos(), vSFlag()
   //  MaxNStations(12)
 
   {
@@ -37,18 +34,12 @@ public:
   const THitI* GetStsHitsStopIndex() const { return StsHitsStopIndex; }
 
 
-  bool ReadHitsFromFile(const char work_dir[100],
-                        const int maxNEvent,
-                        const int iVerbose);
+  bool ReadHitsFromFile(const char work_dir[100], const int maxNEvent, const int iVerbose);
   //  void PrintHits();
 
   /// redefine new\delete for use alignment memmory
-  void* operator new(size_t size, void* ptr) {
-    return ::operator new(size, ptr);
-  }
-  void* operator new[](size_t size, void* ptr) {
-    return ::operator new(size, ptr);
-  }
+  void* operator new(size_t size, void* ptr) { return ::operator new(size, ptr); }
+  void* operator new[](size_t size, void* ptr) { return ::operator new(size, ptr); }
   void* operator new(size_t size) { return _mm_malloc(size, 16); }
   void* operator new[](size_t size) { return _mm_malloc(size, 16); }
   void operator delete(void* ptr, size_t) { _mm_free(ptr); }
@@ -58,12 +49,13 @@ public:
   const L1AlgoInputData& operator=(const L1AlgoInputData& a);
 
 
-  void Clear() {
+  void Clear()
+  {
 
     vStsHits.clear();
     NStsStrips = 0;
     vStsZPos.clear();
-    vSFlag.clear();
+    //vSFlag.clear();
 
     {
       for (int i = 0; i < MaxNStations + 1; ++i)
@@ -79,14 +71,15 @@ public:
   static istream& eatwhite(istream& is);  // skip spaces
                                           /// read data from data_algo.txt
   // data
-  enum { MaxNStations = 25 };
-  vector<L1StsHit>
-    vStsHits;  // hits as a combination of front-, backstrips and z-position
-  int NStsStrips;          // Number of strips in sts
-  vector<fscal> vStsZPos;  // all possible z-positions of hits
+  enum
+  {
+    MaxNStations = 25
+  };
+  vector<L1StsHit> vStsHits;  // hits as a combination of front-, backstrips and z-position
+  int NStsStrips;             // Number of strips in sts
+  vector<fscal> vStsZPos;     // all possible z-positions of hits
 
-  L1Vector<unsigned char>
-    vSFlag;  // information of hits station & using hits in tracks;
+  L1Vector<unsigned char> vSFlag;  // information of hits station & using hits in tracks;
 
   THitI StsHitsStartIndex[MaxNStations + 1],
     StsHitsStopIndex[MaxNStations + 1];  // station-bounders in vStsHits array

@@ -30,14 +30,7 @@ class CbmL1MCTrack;
 
 class CbmL1Track : public CbmL1TrackPar {
 public:
-  CbmL1Track()
-    : StsHits()
-    , nStations(0)
-    , index(0)
-    , fTrackTime(0.)
-    , hitMap()
-    , mcTracks()
-    , maxPurity(-1) {}
+  CbmL1Track() : StsHits(), nStations(0), index(0), fTrackTime(0.), hitMap(), mcTracks(), maxPurity(-1) {}
 
   int GetNOfHits() { return StsHits.size(); }
 
@@ -50,12 +43,8 @@ public:
   void SetMaxPurity(double maxPurity_) { maxPurity = maxPurity_; }
   double GetMaxPurity() { return maxPurity; }
 
-  static bool compareChi2(const CbmL1Track& a, const CbmL1Track& b) {
-    return (a.chi2 < b.chi2);
-  }
-  static bool comparePChi2(const CbmL1Track* a, const CbmL1Track* b) {
-    return (a->chi2 < b->chi2);
-  }
+  static bool compareChi2(const CbmL1Track& a, const CbmL1Track& b) { return (a.chi2 < b.chi2); }
+  static bool comparePChi2(const CbmL1Track* a, const CbmL1Track* b) { return (a->chi2 < b->chi2); }
 
 
   double Tpv[7], Cpv[21];
@@ -68,13 +57,11 @@ public:
 
   double fTrackTime;
 
-  map<int, int>
-    hitMap;  // how many hits from each mcTrack belong to current recoTrack
+  map<int, int> hitMap;  // how many hits from each mcTrack belong to current recoTrack
 private:
   // next members filled and used in Performance
-  vector<CbmL1MCTrack*>
-    mcTracks;        // array of assosiated recoTracks. Should be only one.
-  double maxPurity;  // maximum persent of hits, which belong to one mcTrack.
+  vector<CbmL1MCTrack*> mcTracks;  // array of assosiated recoTracks. Should be only one.
+  double maxPurity;                // maximum persent of hits, which belong to one mcTrack.
 };
 
 #endif

@@ -2,6 +2,9 @@
 #define L1Portion_H
 
 #include <vector>
+
+#include "L1TrackPar.h"
+
 using std::vector;
 // class for portions organization
 

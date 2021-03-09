@@ -15,6 +15,9 @@ public:
     , x(0.)
     , y(0.)
     , t(0.)
+    , f(0.)
+    , b(0.)
+    , ID(0.)
     , file(0)
     , event(0) {};
   CbmL1StsHit(int hitId_, int extIndex_, int Det_)
@@ -25,16 +28,19 @@ public:
     , x(0.)
     , y(0.)
     , t(0.)
+    , f(0.)
+    , b(0.)
+    , ID(0.)
     , file(0)
     , event(0) {};
 
-  int
-    hitId;  // index of L1StsHit in algo->vStsHits array. Should be equal to index of this in L1->vStsHits
+  int hitId;     // index of L1StsHit in algo->vStsHits array. Should be equal to index of this in L1->vStsHits
   int extIndex;  // index of hit in the TClonesArray array
   int Det;
   vector<int> mcPointIds;  // indices of CbmL1MCPoint in L1->vMCPoints array
   float x, y, t;
-
+  int f, b;
+  int ID;
   int file;
   int event;
 };

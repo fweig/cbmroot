@@ -26,24 +26,21 @@
 #include "CbmL1Vtx.h"
 
 //#include "L1Algo/L1Algo.h"
+#include "CbmEvent.h"
 #include "CbmL1MCPoint.h"
 #include "CbmL1MCTrack.h"
 #include "CbmL1StsHit.h"
-
-
-#include "FairDetector.h"
-#include "FairRootManager.h"
-#include "FairTask.h"
-
-#include "CbmEvent.h"
 #include "CbmMCTrack.h"
+#include "CbmMvdHit.h"
+#include "CbmMvdPoint.h"
 #include "CbmStsCluster.h"
 #include "CbmStsDigi.h"
 #include "CbmStsHit.h"
 #include "CbmStsPoint.h"
 
-#include "CbmMvdHit.h"
-#include "CbmMvdPoint.h"
+#include "FairDetector.h"
+#include "FairRootManager.h"
+#include "FairTask.h"
 
 //#include "CbmMCEventHeader.h"
 //#include "L1AlgoInputData.h"
@@ -90,6 +87,7 @@ class KFTopoPerformance;
 class CbmStsParSetSensor;
 class CbmStsParSetSensorCond;
 class CbmStsParSetModule;
+class CbmTofDigiBdfPar;
 
 class CbmL1HitStore {
 public:
@@ -140,30 +138,16 @@ public:
       * @param fSTAPDataMode_ - way to work with files for the standalone package: 0 - off , 1 - write, 2  - read data and work only with it, 3 - write and read (debug)
       * @param findParticleMode_ : 0 - don't run FindParticles; 1 - run, all MC particle is reco-able; 2 - run, MC particle is reco-able if created from reco-able tracks; 3 - run, MC particle is reco-able if created from reconstructed tracks
       */
-  CbmL1(const char* name,
-        Int_t iVerbose        = 1,
-        Int_t _fPerformance   = 0,
-        int fSTAPDataMode_    = 0,
-        TString fSTAPDataDir_ = "./",
-        int findParticleMode_ = 0);
+  CbmL1(const char* name, Int_t iVerbose = 1, Int_t _fPerformance = 0, int fSTAPDataMode_ = 0,
+        TString fSTAPDataDir_ = "./", int findParticleMode_ = 0);
 
   ~CbmL1(/*if (targetFieldSlice) delete;*/);
 
-  void SetStsMaterialBudgetFileName(TString fileName) {
-    fStsMatBudgetFileName = fileName;
-  }
-  void SetMvdMaterialBudgetFileName(TString fileName) {
-    fMvdMatBudgetFileName = fileName;
-  }
-  void SetMuchMaterialBudgetFileName(TString fileName) {
-    fMuchMatBudgetFileName = fileName;
-  }
-  void SetTrdMaterialBudgetFileName(TString fileName) {
-    fTrdMatBudgetFileName = fileName;
-  }
-  void SetTofMaterialBudgetFileName(TString fileName) {
-    fTofMatBudgetFileName = fileName;
-  }
+  void SetStsMaterialBudgetFileName(TString fileName) { fStsMatBudgetFileName = fileName; }
+  void SetMvdMaterialBudgetFileName(TString fileName) { fMvdMatBudgetFileName = fileName; }
+  void SetMuchMaterialBudgetFileName(TString fileName) { fMuchMatBudgetFileName = fileName; }
+  void SetTrdMaterialBudgetFileName(TString fileName) { fTrdMatBudgetFileName = fileName; }
+  void SetTofMaterialBudgetFileName(TString fileName) { fTofMatBudgetFileName = fileName; }
   void SetExtrapolateToTheEndOfSTS(bool b) { fExtrapolateToTheEndOfSTS = b; }
   void SetDataMode(int TimesliceMode) { fTimesliceMode = TimesliceMode; }
   void SetMuchPar(TString fileName) { fDigiFile = fileName; }
@@ -197,33 +181,30 @@ private:
   vector<CbmL1MCPoint> vMCPoints;
   int nMvdPoints;
   vector<int> vMCPoints_in_Time_Slice;
-  void
-  IdealTrackFinder();  // just copy all reconstructable MCTracks into RecoTracks.
+  void IdealTrackFinder();  // just copy all reconstructable MCTracks into RecoTracks.
 
   /// Read information about hits, mcPoints and mcTracks into L1 classes
-  void ReadEvent(L1AlgoInputData*, CbmEvent* event = NULL);
+
+  void ReadEvent(L1AlgoInputData* fData_, float& fTsStart, float& fTsLength, float& fTsOverlap, int& fFstHitinTs,
+                 bool& fnewTS, CbmEvent* event = NULL);
+
   bool ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int MVD);  // help procedure
   bool ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int MVD);
   //   static bool compareZ(const int &a, const int &b );
   //   bool compareZ(const int &a, const int &b );
   void Fill_vMCTracks();
   /// Input Performance
-  void HitMatch();  // Procedure for match hits and MCPoints.
-  void
-  FieldApproxCheck();  // Build histos with difference between Field map and approximated field
-  void
-  FieldIntegralCheck();  // Build 2D histo: dependence of the field integral on phi and theta
-  void
-  InputPerformance();  // Build histos about input data, like hit pulls, etc.
+  void HitMatch();            // Procedure for match hits and MCPoints.
+  void FieldApproxCheck();    // Build histos with difference between Field map and approximated field
+  void FieldIntegralCheck();  // Build 2D histo: dependence of the field integral on phi and theta
+  void InputPerformance();    // Build histos about input data, like hit pulls, etc.
   void TimeHist();
 
   /// Reconstruction Performance
-  void
-  TrackMatch();  // Procedure for match Reconstructed and MC Tracks. Should be called before Performances
+  void TrackMatch();  // Procedure for match Reconstructed and MC Tracks. Should be called before Performances
   void EfficienciesPerformance();  // calculate efficiencies
-  void
-  TrackFitPerformance();  // pulls & residuals. Can be called only after Performance()
-  void HistoPerformance();  // fill some histograms and calculate efficiencies
+  void TrackFitPerformance();      // pulls & residuals. Can be called only after Performance()
+  void HistoPerformance();         // fill some histograms and calculate efficiencies
 
   /// STandAlone Package service-functions
   void WriteSTAPGeoData(const vector<float>& geo);  // create geo_algo.dat
@@ -242,9 +223,8 @@ private:
   static void writedir2current(TObject* obj);       // help procedure
 
   int NStation, NMvdStations, NStsStations, NMuchStations, NTrdStations,
-    NTOFStation;  // number of detector stations (all\sts\mvd)
-  Int_t
-    fPerformance;  // 0 - w\o perf. 1 - L1-Efficiency definition. 2 - QA-Eff.definition
+    NTOFStation;       // number of detector stations (all\sts\mvd)
+  Int_t fPerformance;  // 0 - w\o perf. 1 - L1-Efficiency definition. 2 - QA-Eff.definition
   int
     fSTAPDataMode;  // way to work with file for standalone package. 0 (off) , 1 (write), 2 (read data and work only with it), 3 (debug - write and read)
   TString fSTAPDataDir;
@@ -313,6 +293,7 @@ private:
   TClonesArray* fTofHitDigiMatches;  // CbmMatches array
   TClonesArray* fTofHits;            // CbmMatches array
   CbmTofDigiPar* fDigiPar;
+  CbmTofDigiBdfPar* fTofDigiBdfPar;
 
 
   struct TH1FParameters {
@@ -333,7 +314,9 @@ private:
   //CbmMCEventHeader* fEvent;
   /// Used data = Repacked input data
   vector<CbmL1StsHit> vStsHits;  // hits with hit-mcpoint match information
-                                 //   vector<CbmL1MCPoint> vMCPoints;
+  //   vector<CbmL1MCPoint> vMCPoints;
+  vector<int> SortedIndex;
+  vector<int> StsIndex;
   vector<CbmL1MCTrack> vMCTracks;
   vector<int>
     vHitMCRef;  // indices of MCPoints in vMCPoints, indexed by index of hit in algo->vStsHits array. According to StsMatch. Used for IdealResponce
@@ -343,9 +326,7 @@ private:
   typedef std::map<Double_t, Int_t> DFEI2I;
   DFEI2I dFEI2vMCPoints;
   DFEI2I dFEI2vMCTracks;
-  inline Double_t dFEI(int file, int event, int idx) {
-    return (1000 * idx) + file + (0.0001 * event);
-  }
+  inline Double_t dFEI(int file, int event, int idx) { return (1000 * idx) + file + (0.0001 * event); }
   // DFEI2I::iterator map_it;
   L1AlgoInputData* fData;
 
