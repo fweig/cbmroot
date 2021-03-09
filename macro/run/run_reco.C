@@ -15,6 +15,7 @@
 #include "CbmL1.h"
 #include "CbmL1StsTrackFinder.h"
 #include "CbmLitFindGlobalTracks.h"
+#include "CbmMCDataManager.h"
 #include "CbmMuchFindHitsGem.h"
 #include "CbmMvdClusterfinder.h"
 #include "CbmMvdHitfinder.h"
@@ -54,6 +55,7 @@
  ** @param sEvBuildRaw    Option for raw event building
  ** @param setup          Name of predefined geometry setup
  ** @param paramFile      Parameter ROOT file (w/o extension .par.root)
+ ** @param useMC          Option to provide the trackfinder with MC information
  **
  ** This macro performs from the digis in a time-slice. It can be used
  ** for simulated data (result of run_digi.C) or real data after unpacking.
@@ -79,7 +81,7 @@
  **
  **/
 void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice = 0, TString output = "",
-              TString sEvBuildRaw = "", TString setup = "sis100_electron", TString paramFile = "")
+              TString sEvBuildRaw = "", TString setup = "sis100_electron", TString paramFile = "", Bool_t useMC = false)
 {
 
   // ========================================================================
@@ -90,7 +92,6 @@ void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice =
   TString logVerbosity = "LOW";
   // ------------------------------------------------------------------------
 
-
   // -----   Environment   --------------------------------------------------
   TString myName = "run_reco";                     // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
@@ -100,19 +101,15 @@ void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice =
   // -----   In- and output file names   ------------------------------------
   if (input.IsNull()) input = "test";
   TString rawFile = input + ".raw.root";
-  TString outFile = input + ".rec.root";
-  TString monFile = input + ".moni_reco.root";
+  TString traFile = input + ".tra.root";
   if (output.IsNull()) output = input;
-  outFile = output + ".reco.root";
-  monFile = output + ".moni_reco.root";
+  TString outFile = output + ".reco.root";
+  TString monFile = output + ".moni_reco.root";
   if (paramFile.IsNull()) paramFile = input;
   TString parFile = paramFile + ".par.root";
   std::cout << "Inputfile " << rawFile << std::endl;
   std::cout << "Outfile " << outFile << std::endl;
   std::cout << "Parfile " << parFile << std::endl;
-
-  // ------------------------------------------------------------------------
-
 
   // -----   Load the geometry setup   -------------------------------------
   std::cout << std::endl;
@@ -172,12 +169,20 @@ void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice =
   // -----   FairRunAna   ---------------------------------------------------
   FairRunAna* run             = new FairRunAna();
   FairFileSource* inputSource = new FairFileSource(rawFile);
+  if (useMC) { inputSource->AddFriend(traFile); }
   run->SetSource(inputSource);
   run->SetOutputFile(outFile);
   run->SetGenerateRunInfo(kTRUE);
   FairMonitor::GetMonitor()->EnableMonitor(kTRUE, monFile);
   // ------------------------------------------------------------------------
 
+  // -----   MCDataManager  -----------------------------------
+  if (useMC) {
+    CbmMCDataManager* mcManager = new CbmMCDataManager("MCDataManager", 0);
+    mcManager->AddFile(traFile);
+    run->AddTask(mcManager);
+  }
+  // ------------------------------------------------------------------------
 
   // -----   Logger settings   ----------------------------------------------
   FairLogger::GetLogger()->SetLogScreenLevel(logLevel.Data());
@@ -383,13 +388,21 @@ void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice =
     std::cout << "-I- " << myName << ": Added task " << psdHit->GetName() << std::endl;
   }
   // ------------------------------------------------------------------------
-
+  if (useMC) {
+    CbmMatchRecoToMC* match1 = new CbmMatchRecoToMC();
+    run->AddTask(match1);
+  }
 
   // -----   Track finding in STS (+ MVD)    --------------------------------
   if (useMvd || useSts) {
     CbmKF* kalman = new CbmKF();
     run->AddTask(kalman);
-    CbmL1* l1 = new CbmL1("L1", 0);
+    CbmL1* l1 = 0;
+    if (useMC) { l1 = new CbmL1("L1", 2, 3); }
+    else {
+      l1 = new CbmL1("L1", 0);
+    }
+    l1->SetDataMode(!eventBased);
 
     // --- Material budget file names
     TString mvdGeoTag;
@@ -501,7 +514,6 @@ void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice =
   gROOT->LoadMacro(registerLightIonsMacro);
   gROOT->ProcessLine("registerLightIons()");
   // ------------------------------------------------------------------------
-
 
   // -----   Start run   ----------------------------------------------------
   std::cout << std::endl << std::endl;
