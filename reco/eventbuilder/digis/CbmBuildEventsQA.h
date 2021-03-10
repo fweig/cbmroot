@@ -10,6 +10,7 @@
 #include <FairTask.h>
 
 class TClonesArray;
+class TH1F;
 class CbmDigiManager;
 class CbmEvent;
 
@@ -34,6 +35,7 @@ public:
 
   /** Task execution **/
   virtual void Exec(Option_t* opt);
+  void Finish();
 
   /** Add a reference detector **/
   void AddRefDetector(ECbmModuleId RefDetector) { fRefDetectors.push_back(RefDetector); }
@@ -44,9 +46,16 @@ private:
   TClonesArray* fEvents;                  ///< Input array (class CbmEvent)
   Int_t fNofEntries = 0;                  ///< Number of processed entries
 
+  TFolder* histFolder = nullptr;  /// subfolder for histograms
+  TFolder fOutFolder;             /// output folder with histos and canvases
+
   /** Task initialisation **/
   virtual InitStatus Init();
+  void DeInit();
 
+  /** Histograms **/
+  TH1F* fhCorrectDigiRatioAll = nullptr;  /// correct digis per event for all detectors
+  TH1F* fhFoundDigiRatioAll   = nullptr;  /// digis found per event for all detectors
 
   /** Match a reconstructed event to MC events+
 		 ** @param event Pointer to reconstructed event

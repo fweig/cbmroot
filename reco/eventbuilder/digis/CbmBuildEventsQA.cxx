@@ -16,6 +16,7 @@
 #include "FairRootManager.h"
 
 #include "TClonesArray.h"
+#include "TH1.h"
 #include "TStopwatch.h"
 
 #include <cassert>
@@ -27,18 +28,40 @@ using namespace std;
 
 
 // =====   Constructor   =====================================================
-CbmBuildEventsQA::CbmBuildEventsQA() : FairTask("BuildEventsQA"), fEvents(NULL), fNofEntries(0) {}
+CbmBuildEventsQA::CbmBuildEventsQA()
+  : FairTask("BuildEventsQA")
+  , fEvents(NULL)
+  , fNofEntries(0)
+  , fOutFolder("BuildEventsQA", "Build Events QA")
+{
+}
 // ===========================================================================
 
 
 // =====   Destructor   ======================================================
-CbmBuildEventsQA::~CbmBuildEventsQA() {}
+CbmBuildEventsQA::~CbmBuildEventsQA() { DeInit(); }
 // ===========================================================================
 
+// =====   De-initialisation   =============================================
+void CbmBuildEventsQA::DeInit()
+{
+  fOutFolder.Clear();
+  histFolder = nullptr;
+  SafeDelete(fhCorrectDigiRatioAll);
+  SafeDelete(fhFoundDigiRatioAll);
+}
 
 // =====   Task initialisation   =============================================
 InitStatus CbmBuildEventsQA::Init()
 {
+  DeInit();
+
+  // --- Init histograms
+  histFolder            = fOutFolder.AddFolder("hist", "Histogramms");
+  fhCorrectDigiRatioAll = new TH1F("fhCorrectDigiRatioAll", "\% correct digis per event", 1001, 0., 100.1);
+  fhFoundDigiRatioAll   = new TH1F("fhFoundDigiRatioAll", "\% found digis per event", 1001, 0., 100.1);
+  histFolder->Add(fhCorrectDigiRatioAll);
+  histFolder->Add(fhFoundDigiRatioAll);
 
   // --- Get FairRootManager instance
   FairRootManager* ioman = FairRootManager::Instance();
@@ -75,7 +98,6 @@ InitStatus CbmBuildEventsQA::Init()
 // =====   Task execution   ==================================================
 void CbmBuildEventsQA::Exec(Option_t*)
 {
-
   // --- Time and counters
   TStopwatch timer;
   timer.Start();
@@ -155,6 +177,9 @@ void CbmBuildEventsQA::Exec(Option_t*)
                   << 100. * Double_t(nLinksCorrect) / Double_t(nLinks) << " % ";
         LOG(info) << "Digi percentage found " << nDigiCorrect << " / " << totEventDigis << " = "
                   << 100. * Double_t(nDigiCorrect) / Double_t(totEventDigis) << " % ";
+
+        fhCorrectDigiRatioAll->Fill(100. * Double_t(nLinksCorrect) / Double_t(nLinks));
+        fhFoundDigiRatioAll->Fill(100. * Double_t(nDigiCorrect) / Double_t(totEventDigis));
       }
       else {
         LOG(info) << GetName() << ": Detector " << CbmModuleList::GetModuleNameCaps(system)
@@ -223,6 +248,22 @@ void CbmBuildEventsQA::MatchEvent(CbmEvent* event)
       }  //# links in digi
     }    //#digis
   }
+}
+// ===========================================================================
+
+
+// =====  Finish task  =======================================================
+void CbmBuildEventsQA::Finish()
+{
+  fhCorrectDigiRatioAll->DrawCopy("colz", "");
+  fhFoundDigiRatioAll->DrawCopy("colz", "");
+
+  if (!FairRootManager::Instance() || !FairRootManager::Instance()->GetSink()) {
+    LOG(error) << "No sink found";
+    return;
+  }
+  FairSink* sink = FairRootManager::Instance()->GetSink();
+  sink->WriteObject(&fOutFolder, nullptr);
 }
 // ===========================================================================
 
