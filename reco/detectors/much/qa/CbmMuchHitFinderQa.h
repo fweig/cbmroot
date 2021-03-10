@@ -7,6 +7,8 @@
 #ifndef CbmMuchHitFinderQa_H
 #define CbmMuchHitFinderQa_H
 
+#include "CbmLink.h"
+
 #include "FairTask.h"
 
 #include "TParameter.h"
@@ -24,6 +26,9 @@ class TClonesArray;
 class TH1D;
 class TH1I;
 class TMemberInspector;
+class CbmMCDataArray;
+class CbmMCDataManager;
+class CbmTimeSlice;
 
 class CbmMuchHitFinderQa : public FairTask {
 
@@ -56,12 +61,20 @@ private:
   void DeInit();
   void DrawCanvases();
 
+  // setup
+  FairRootManager* fManager    = nullptr;  //!
+  CbmMCDataManager* fMcManager = nullptr;  //!
+  CbmTimeSlice* fTimeSlice     = nullptr;  //!
+
+  //
   CbmMuchGeoScheme* fGeoScheme;
   TString fGeoFileName;
   TString fFileName;
-  Int_t fVerbose               = 0;
-  Int_t fFlag                  = 0;
-  TClonesArray* fPoints        = nullptr;
+  Int_t fVerbose = 0;
+  Int_t fFlag    = 0;
+
+  CbmMCDataArray* fMCTracks    = nullptr;
+  CbmMCDataArray* fPoints      = nullptr;
   CbmDigiManager* fDigiManager = nullptr;
 
   TFolder fOutFolder;   /// output folder with histos and canvases
@@ -69,7 +82,6 @@ private:
 
   TClonesArray* fClusters = nullptr;
   TClonesArray* fHits     = nullptr;
-  TClonesArray* fMCTracks = nullptr;
 
   Int_t fNstations = 0;
 
@@ -101,12 +113,12 @@ private:
   TParameter<int> fPointsOverCounted;
 
   /** Defines whether the point with the given index is signal point. **/
-  Bool_t IsSignalPoint(Int_t iPoint);
+  Bool_t IsSignalPoint(CbmLink pointLink);
 
   CbmMuchHitFinderQa(const CbmMuchHitFinderQa&);
   CbmMuchHitFinderQa& operator=(const CbmMuchHitFinderQa&);
 
-  ClassDef(CbmMuchHitFinderQa, 1)
+  ClassDef(CbmMuchHitFinderQa, 0)
 };
 
 #endif

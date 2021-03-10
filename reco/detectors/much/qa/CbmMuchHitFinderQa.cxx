@@ -11,6 +11,8 @@
 #include "CbmDefs.h"
 #include "CbmDigiManager.h"
 #include "CbmLink.h"
+#include "CbmMCDataArray.h"
+#include "CbmMCDataManager.h"
 #include "CbmMCTrack.h"
 #include "CbmMatch.h"
 #include "CbmMuchAddress.h"
@@ -21,6 +23,7 @@
 #include "CbmMuchPixelHit.h"
 #include "CbmMuchPoint.h"
 #include "CbmQaCanvas.h"
+#include "CbmTimeSlice.h"
 
 #include "FairRootManager.h"
 #include <FairSink.h>
@@ -46,8 +49,9 @@
 #include <algorithm>
 #include <iostream>
 #include <map>
-#include <stdio.h>
 #include <vector>
+
+#include <stdio.h>
 
 using std::cout;
 using std::endl;
@@ -129,10 +133,19 @@ void CbmMuchHitFinderQa::DeInit() {
 
 // -------------------------------------------------------------------------
 InitStatus CbmMuchHitFinderQa::Init() {
+
   DeInit();
-  FairRootManager* fManager = FairRootManager::Instance();
-  fMCTracks                 = (TClonesArray*) fManager->GetObject("MCTrack");
-  fPoints                   = (TClonesArray*) fManager->GetObject("MuchPoint");
+
+  fManager   = FairRootManager::Instance();
+  fMcManager = dynamic_cast<CbmMCDataManager*>(fManager->GetObject("MCDataManager"));
+
+  fTimeSlice = (CbmTimeSlice*) fManager->GetObject("TimeSlice.");
+
+  if (fMcManager) {
+    fMCTracks = fMcManager->InitBranch("MCTrack");
+    fPoints   = fMcManager->InitBranch("MuchPoint");
+  }
+
   fHits     = (TClonesArray*) fManager->GetObject("MuchPixelHit");
   fClusters = (TClonesArray*) fManager->GetObject("MuchCluster");
   // Reading Much Digis from CbmMuchDigiManager which are stored as vector
@@ -142,7 +155,7 @@ InitStatus CbmMuchHitFinderQa::Init() {
   TFile* oldFile     = gFile;
   TDirectory* oldDir = gDirectory;
 
-  TFile* f            = new TFile(fGeoFileName, "R");
+  TFile* f = new TFile(fGeoFileName, "R");
 
   /// Restore old global file and folder pointer to avoid messing with FairRoot
   gFile      = oldFile;
@@ -310,7 +323,8 @@ void CbmMuchHitFinderQa::Exec(Option_t*) {
 
 // -------------------------------------------------------------------------
 void CbmMuchHitFinderQa::FinishTask() {
-  printf("FinishTask\n");
+
+  if (fVerbose > 0) { printf(" CbmMuchHitFinderQa FinishTask\n"); }
 
   gStyle->SetPaperSize(20, 20);
 
@@ -318,11 +332,6 @@ void CbmMuchHitFinderQa::FinishTask() {
     fhPointsInCluster[i]->Scale(1. / fNevents.GetVal());
     fhDigisInCluster[i]->Scale(1. / fNevents.GetVal());
     fhHitsPerCluster[i]->Scale(1. / fNevents.GetVal());
-  }
-
-  if (fVerbose > 1) {
-    printf("===================================\n");
-    printf("PullsQa:\n");
   }
 
   std::vector<TH1D*> vResHistos;
@@ -337,18 +346,23 @@ void CbmMuchHitFinderQa::FinishTask() {
     TH1D* histo = vResHistos[i];
     histo->Sumw2();
     histo->Fit("gaus", "Q");
-    histo->GetFunction("gaus")->SetLineWidth(3);
-    histo->GetFunction("gaus")->SetLineColor(kRed);
+    auto f = histo->GetFunction("gaus");
+    if (f) {
+      f->SetLineWidth(3);
+      f->SetLineColor(kRed);
+    }
     // histo->SetStats(kTRUE);
   }
 
-  printf("===================================\n");
-  printf("StatisticsQa:\n");
-  printf("Total number of points: %i\n", fPointsTotal.GetVal());
-  printf("Points overcounted: %i\n", fPointsOverCounted.GetVal());
-  printf("Points undercounted: %i\n", fPointsUnderCounted.GetVal());
-  printf("Signal points: %i\n", fSignalPoints.GetVal());
-  printf("Signal hits: %i\n", fSignalHits.GetVal());
+  if (fVerbose > 0) {
+    printf("===================================\n");
+    printf("StatisticsQa:\n");
+    printf("Total number of points: %i\n", fPointsTotal.GetVal());
+    printf("Points overcounted: %i\n", fPointsOverCounted.GetVal());
+    printf("Points undercounted: %i\n", fPointsUnderCounted.GetVal());
+    printf("Signal points: %i\n", fSignalPoints.GetVal());
+    printf("Signal hits: %i\n", fSignalHits.GetVal());
+  }
 
   DrawCanvases();
 
@@ -505,7 +519,7 @@ void CbmMuchHitFinderQa::StatisticsQa() {
 // -------------------------------------------------------------------------
 void CbmMuchHitFinderQa::PullsQa() {
   Bool_t verbose = (fVerbose > 2);
-  // Filling residuals and pools for hits at the first layer
+  // Filling residuals and pulls for hits at the first layer
   for (Int_t i = 0; i < fHits->GetEntriesFast(); i++) {
     CbmMuchPixelHit* hit = (CbmMuchPixelHit*) fHits->At(i);
     // Select hits from the first station only
@@ -539,7 +553,7 @@ void CbmMuchHitFinderQa::PullsQa() {
     // Select hits with clusters formed by only one MC Point
     CbmMuchCluster* cluster = (CbmMuchCluster*) fClusters->At(clusterId);
     Bool_t point_unique     = 1;
-    Int_t pointId           = -1;
+    CbmLink link;
 
     for (Int_t digiId = 0; digiId < cluster->GetNofDigis(); digiId++) {
       Int_t index = cluster->GetDigi(digiId);
@@ -572,7 +586,7 @@ void CbmMuchHitFinderQa::PullsQa() {
         point_unique = 0;
         break;
       }
-      Int_t currentPointId = match->GetLink(0).GetIndex();
+      CbmLink currentLink = match->GetLink(0);
 
       CbmMuchModuleGem* module =
         (CbmMuchModuleGem*) fGeoScheme->GetModuleByDetId(digi->GetAddress());
@@ -581,11 +595,11 @@ void CbmMuchHitFinderQa::PullsQa() {
         return;
       }
       if (digiId == 0) {
-        pointId = currentPointId;
+        link = currentLink;
         continue;
       }
       // Not unique if mcPoint references differ for different digis
-      if (currentPointId != pointId) {
+      if (!(currentLink == link)) {
         point_unique = 0;
         break;
       }
@@ -597,8 +611,8 @@ void CbmMuchHitFinderQa::PullsQa() {
       continue;
     }
 
-    if (verbose) printf(" pointId=%i", pointId);
-    CbmMuchPoint* point = (CbmMuchPoint*) fPoints->At(pointId);
+    if (verbose) { printf(" file %i event %i pointId %i", link.GetFile(), link.GetEntry(), link.GetIndex()); }
+    CbmMuchPoint* point = (CbmMuchPoint*) fPoints->Get(link);
 
     Double_t xMC = 0.5 * (point->GetXIn() + point->GetXOut());
     Double_t yMC = 0.5 * (point->GetYIn() + point->GetYOut());
@@ -614,11 +628,11 @@ void CbmMuchHitFinderQa::PullsQa() {
     //    cout<<" Rec Hit time "<<tRC<<endl;
 
     if (dx < 1.e-10) {
-      printf("Anomalously small dx\n");
+      LOG(error) << "Anomalously small dx";
       continue;
     }
     if (dy < 1.e-10) {
-      printf("Anomalously small dy\n");
+      LOG(error) << "Anomalously small dy";
       continue;
     }
     fhPullX->Fill((xRC - xMC) / dx);
@@ -636,14 +650,25 @@ void CbmMuchHitFinderQa::PullsQa() {
 
 // -------------------------------------------------------------------------
 void CbmMuchHitFinderQa::ClusterDeconvQa() {
-  Int_t nPoints   = fPoints->GetEntriesFast();
-  Int_t nClusters = fClusters->GetEntriesFast();
-  vector<Int_t> pIndices;
-  vector<Int_t>::iterator it;
 
-  for (Int_t iPoint = 0; iPoint < nPoints; ++iPoint) {
-    if (IsSignalPoint(iPoint)) fSignalPoints.SetVal(fSignalPoints.GetVal() + 1);
+  Int_t nClusters = fClusters->GetEntriesFast();
+  vector<CbmLink> vPoints;
+
+  {
+    const CbmMatch& match = fTimeSlice->GetMatch();
+    for (int iLink = 0; iLink < match.GetNofLinks(); iLink++) {
+      CbmLink link    = match.GetLink(iLink);
+      int nMuchPoints = fPoints->Size(link);
+      for (Int_t iPoint = 0; iPoint < nMuchPoints; iPoint++) {
+        link.SetIndex(iPoint);
+        link.SetWeight(0.);
+        if (IsSignalPoint(link)) { fSignalPoints.SetVal(fSignalPoints.GetVal() + 1); }
+        vPoints.push_back(link);
+      }
+    }
   }
+
+  std::sort(vPoints.begin(), vPoints.end());
 
   for (Int_t iCluster = 0; iCluster < nClusters; ++iCluster) {
     CbmMuchCluster* cluster = (CbmMuchCluster*) fClusters->At(iCluster);
@@ -663,29 +688,27 @@ void CbmMuchHitFinderQa::ClusterDeconvQa() {
         return;
       }
       for (Int_t ip = 0; ip < match->GetNofLinks(); ++ip) {
-        Int_t iPoint = match->GetLink(ip).GetIndex();
-        it           = find(pIndices.begin(), pIndices.end(), iPoint);
-        if (it != pIndices.end()) continue;
-        pIndices.push_back(iPoint);
-        if (IsSignalPoint(iPoint)) fSignalHits.SetVal(fSignalHits.GetVal() + 1);
+        CbmLink pointLink = match->GetLink(ip);
+        auto it           = find(vPoints.begin(), vPoints.end(), pointLink);
+        assert(it != vPoints.end());
+        if (it->GetWeight() > 0.) continue;
+        it->SetWeight(1.);
+        if (IsSignalPoint(pointLink)) { fSignalHits.SetVal(fSignalHits.GetVal() + 1); }
       }
     }
   }
 }
 // -------------------------------------------------------------------------
 
-Bool_t CbmMuchHitFinderQa::IsSignalPoint(Int_t iPoint) {
-  Int_t nPoints       = fPoints->GetEntriesFast();
-  Int_t nTracks       = fMCTracks->GetEntriesFast();
-  CbmMuchPoint* point = (iPoint < 0 || iPoint > nPoints - 1)
-                          ? NULL
-                          : (CbmMuchPoint*) fPoints->At(iPoint);
+Bool_t CbmMuchHitFinderQa::IsSignalPoint(CbmLink pointLink)
+{
+
+  CbmMuchPoint* point = (CbmMuchPoint*) fPoints->Get(pointLink);
   if (!point) return kFALSE;
   Int_t iTrack      = point->GetTrackID();
-  CbmMCTrack* track = (iTrack < 0 || iTrack > nTracks - 1)
-                        ? NULL
-                        : (CbmMCTrack*) fMCTracks->At(iTrack);
+  CbmMCTrack* track = (CbmMCTrack*) fMCTracks->Get(pointLink.GetFile(), pointLink.GetEntry(), iTrack);
   if (!track) return kFALSE;
+
   if (iTrack != 0 && iTrack != 1)
     return kFALSE;  // Signal tracks must be fist ones
   // Verify if it is a signal muon

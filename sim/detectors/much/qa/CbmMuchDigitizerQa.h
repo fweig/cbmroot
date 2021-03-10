@@ -9,12 +9,17 @@
 #ifndef CbmMuchDigitizerQa_H
 #define CbmMuchDigitizerQa_H
 
+#include "CbmLink.h"
+#include "CbmMuchPointInfo.h"
+
 #include "FairTask.h"
+
+#include "TFolder.h"
 #include "TParameter.h"
-#include <Rtypes.h>
-#include <RtypesCore.h>
-#include <TFolder.h>
+
+#include <map>
 #include <vector>
+
 class TBuffer;
 class TClass;
 class TClonesArray;
@@ -28,6 +33,9 @@ class TH1F;
 class TH2F;
 class TVector2;
 class CbmMuchPad;
+class CbmMCDataArray;
+class CbmMCDataManager;
+class CbmTimeSlice;
 
 /// QA for the MUCH detector after a "digitization" step of the simulation.
 /// The class reimplements corresponding QA checks from old CbmMuchHitFinderQa class
@@ -85,17 +93,29 @@ private:
 
   TFolder* histFolder;  /// folder wich contains histogramms
 
+  // setup
+  FairRootManager* fManager    = nullptr;
+  CbmMCDataManager* fMcManager = nullptr;
+  CbmTimeSlice* fTimeSlice     = nullptr;
+
   // geometry
   CbmMuchGeoScheme* fGeoScheme = nullptr;
   Int_t fNstations             = 0;
   CbmDigiManager* fDigiManager = nullptr;
 
   // containers
-  TClonesArray* fPoints      = nullptr;
+  CbmMCDataArray* fPoints    = nullptr;
+  CbmMCDataArray* fMCTracks  = nullptr;
   TClonesArray* fDigis       = nullptr;
   TClonesArray* fDigiMatches = nullptr;
-  TClonesArray* fMCTracks    = nullptr;
-  TClonesArray* fPointInfos  = nullptr;  /// temporary additional information
+
+  std::map<CbmLink, CbmMuchPointInfo> fMcPointInfoMap = {};  //! map point link -> point info
+
+  CbmMuchPointInfo& getPointInfo(const CbmLink& link)
+  {
+    assert(fMcPointInfoMap.find(link) != fMcPointInfoMap.end());
+    return fMcPointInfoMap[link];
+  }
 
   TFolder fOutFolder;        /// output folder with histos and canvases
   TParameter<int> fNevents;  /// number of processed events

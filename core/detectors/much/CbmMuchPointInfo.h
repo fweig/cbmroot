@@ -31,14 +31,14 @@ public:
   }
   void Print(Option_t* = "") const;
 
-  Double_t GetKine() { return fKine; }
-  Double_t GetLength() { return fLength; }
-  Int_t GetPdgCode() { return fPdgCode; }
-  Int_t GetMotherPdg() { return fMotherPdg; }
-  Int_t GetCharge() { return fCharge; }
-  Int_t GetStationId() { return fStationId; }
-  Double_t GetArea() { return fS; }
-  Int_t GetNPads() { return fNPads; }
+  Double_t GetKine() const { return fKine; }
+  Double_t GetLength() const { return fLength; }
+  Int_t GetPdgCode() const { return fPdgCode; }
+  Int_t GetMotherPdg() const { return fMotherPdg; }
+  Int_t GetCharge() const { return fCharge; }
+  Int_t GetStationId() const { return fStationId; }
+  Double_t GetArea() const { return fS; }
+  Int_t GetNPads() const { return fNPads; }
 
 private:
   Double_t fKine;

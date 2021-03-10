@@ -16,6 +16,10 @@
 #include <RtypesCore.h>
 #include <TFolder.h>
 #include <vector>
+
+class CbmMCDataArray;
+class CbmMCDataManager;
+class CbmTimeSlice;
 class CbmMuchPoint;
 class CbmQaCanvas;
 class TBuffer;
@@ -73,9 +77,15 @@ private:
   /// geometry
   Int_t fNstations = 0;
 
+  // setup
+  FairRootManager* fManager    = nullptr;
+  CbmMCDataManager* fMcManager = nullptr;
+  CbmTimeSlice* fTimeSlice     = nullptr;
+
   /// containers
-  TClonesArray* fPoints   = nullptr;
-  TClonesArray* fMcTracks = nullptr;
+  CbmMCDataArray* fPoints   = nullptr;
+  CbmMCDataArray* fMcTracks = nullptr;
+
   ///
 
   TFolder* histFolder;       /// subfolder for histograms

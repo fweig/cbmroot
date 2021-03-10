@@ -33,9 +33,8 @@
 #include <TStopwatch.h>
 #endif
 
-void run_qa(Int_t nEvents   = 0,
-            TString dataset = "data/sis100_muon_jpsi_test",
-            TString setup   = "sis100_muon_jpsi") {
+void run_qa(TString dataset = "data/sis100_muon_jpsi_test", TString setup = "sis100_muon_jpsi", Int_t nEvents = -1)
+{
 
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -51,10 +50,10 @@ void run_qa(Int_t nEvents   = 0,
   // ------------------------------------------------------------------------
 
   // -----   In- and output file names   ------------------------------------
-  TString rawFile  = dataset + ".event.raw.root";
+  TString rawFile  = dataset + ".raw.root";
   TString traFile  = dataset + ".tra.root";
   TString parFile  = dataset + ".par.root";
-  TString recFile  = dataset + ".rec.root";
+  TString recFile  = dataset + ".reco.root";
   TString sinkFile = dataset + ".qa.root";
   // ------------------------------------------------------------------------
 
@@ -140,11 +139,15 @@ void run_qa(Int_t nEvents   = 0,
   FairMonitor::GetMonitor()->EnableMonitor(kTRUE, monitorFile);
   // ------------------------------------------------------------------------
 
-  // -----   MCDataManager (legacy mode)  -----------------------------------
-  CbmMCDataManager* mcManager = new CbmMCDataManager("MCDataManager", 1);
+  // -----   MCDataManager  -----------------------------------
+  CbmMCDataManager* mcManager = new CbmMCDataManager("MCDataManager", 0);
   mcManager->AddFile(traFile);
   run->AddTask(mcManager);
   // ------------------------------------------------------------------------
+
+  // ----- Match reco to MC ------
+  CbmMatchRecoToMC* matchTask = new CbmMatchRecoToMC();
+  run->AddTask(matchTask);
 
   // ----- MUCH QA  ---------------------------------
   if (CbmSetup::Instance()->IsActive(ECbmModuleId::kMuch)) {
@@ -152,6 +155,9 @@ void run_qa(Int_t nEvents   = 0,
     run->AddTask(new CbmMuchDigitizerQa());
     run->AddTask(new CbmMuchHitFinderQa());
   }
+
+  // ----- STS QA  ---------------------------------
+  if (CbmSetup::Instance()->IsActive(ECbmModuleId::kSts)) { run->AddTask(new CbmStsFindTracksQa()); }
   // ------------------------------------------------------------------------
 
   // -----  Parameter database   --------------------------------------------

@@ -8,6 +8,9 @@
 /// \date   21.10.2020
 
 #include "CbmMuchTransportQa.h"
+
+#include "CbmMCDataArray.h"
+#include "CbmMCDataManager.h"
 #include "CbmMCTrack.h"
 #include "CbmMuchAddress.h"
 #include "CbmMuchGeoScheme.h"
@@ -15,22 +18,26 @@
 #include "CbmMuchStation.h"
 #include "CbmQaCanvas.h"
 #include "CbmQaPie.h"
+#include "CbmTimeSlice.h"
+
+#include <FairRootManager.h>
+#include <FairSink.h>
+#include <FairTask.h>
+#include <Logger.h>
+
 #include "TClonesArray.h"
 #include "TDatabasePDG.h"
 #include "TH1.h"
 #include "TH2.h"
 #include "TLegend.h"
 #include "TStyle.h"
-#include <FairRootManager.h>
-#include <FairSink.h>
-#include <FairTask.h>
-#include <Logger.h>
 #include <TAxis.h>
 #include <TDirectory.h>
 #include <TMath.h>
 #include <TParameter.h>
 #include <TString.h>
 #include <TVector3.h>
+
 #include <vector>
 
 #define BINS_STA fNstations, 0, fNstations
@@ -118,16 +125,29 @@ InitStatus CbmMuchTransportQa::Init() {
   DeInit();
 
   TDirectory* oldDirectory = gDirectory;
-  FairRootManager* manager = FairRootManager::Instance();
-  fMcTracks                = (TClonesArray*) manager->GetObject("MCTrack");
-  fPoints                  = (TClonesArray*) manager->GetObject("MuchPoint");
-  fNstations               = CbmMuchGeoScheme::Instance()->GetNStations();
-  histFolder               = fOutFolder.AddFolder("hist", "Histogramms");
+  fManager                 = FairRootManager::Instance();
 
-  if (!manager) {
+  if (!fManager) {
     LOG(error) << "No FairRootManager found";
     return kERROR;
   }
+
+  fMcManager = dynamic_cast<CbmMCDataManager*>(fManager->GetObject("MCDataManager"));
+
+  fTimeSlice = (CbmTimeSlice*) fManager->GetObject("TimeSlice.");
+  if (!fTimeSlice) { LOG(error) << GetName() << ": No time slice found"; }
+
+  if (fMcManager) {
+    // Get MCTrack array
+    fMcTracks = fMcManager->InitBranch("MCTrack");
+
+    // Get StsPoint array
+    fPoints = fMcManager->InitBranch("MuchPoint");
+  }
+
+  fNstations = CbmMuchGeoScheme::Instance()->GetNStations();
+  histFolder = fOutFolder.AddFolder("hist", "Histogramms");
+
   if (!fMcTracks) {
     LOG(error) << "No MC tracks found";
     return kERROR;
@@ -357,45 +377,53 @@ void CbmMuchTransportQa::Exec(Option_t*) {
 
   fNevents.SetVal(fNevents.GetVal() + 1);
   LOG(debug) << "Event: " << fNevents.GetVal();
-  // bitmask tells which stations were crossed by mc track
-  std::vector<UInt_t> trackStaCross(fMcTracks->GetEntriesFast(), 0);
 
-  for (Int_t i = 0; i < fPoints->GetEntriesFast(); i++) {
+  const CbmMatch& sliceMatch = fTimeSlice->GetMatch();
 
-    CbmMuchPoint* point = (CbmMuchPoint*) fPoints->At(i);
-    Int_t stId    = CbmMuchAddress::GetStationIndex(point->GetDetectorID());
-    UInt_t stMask = (1 << stId);
-    Int_t trackId = point->GetTrackID();
-    if (!point) {
-      LOG(fatal) << "Much point " << i << " doesn't exist";
-      break;
-    }  // Check if the point corresponds to a certain  MC Track
-    if (trackId < 0 || trackId >= fMcTracks->GetEntriesFast()) {
-      LOG(fatal) << "Much point " << i << ": trackId " << trackId
-                 << " doesn't belong to [0," << fMcTracks->GetEntriesFast() - 1
-                 << "]";
-      break;
+  for (int iLink = 0; iLink < sliceMatch.GetNofLinks(); iLink++) {
+    const CbmLink& eventLink = sliceMatch.GetLink(iLink);
+    int nMuchPoints          = fPoints->Size(eventLink);
+    int nMcTracks            = fMcTracks->Size(eventLink);
+
+    // bitmask tells which stations were crossed by mc track
+    std::vector<UInt_t> trackStaCross(nMcTracks, 0);
+
+    for (Int_t ip = 0; ip < nMuchPoints; ip++) {
+      CbmLink pointLink = eventLink;
+      pointLink.SetIndex(ip);
+      CbmMuchPoint* point = (CbmMuchPoint*) fPoints->Get(pointLink);
+      Int_t stId          = CbmMuchAddress::GetStationIndex(point->GetDetectorID());
+      UInt_t stMask       = (1 << stId);
+      Int_t trackId       = point->GetTrackID();
+      if (!point) {
+        LOG(fatal) << "Much point " << ip << " doesn't exist";
+        break;
+      }  // Check if the point corresponds to a certain  MC Track
+      if (trackId < 0 || trackId >= nMcTracks) {
+        LOG(fatal) << "Much point " << ip << ": trackId " << trackId << " doesn't belong to [0," << nMcTracks - 1
+                   << "]";
+        break;
+      }
+      CbmLink trackLink = eventLink;
+      trackLink.SetIndex(trackId);
+      CbmMCTrack* mcTrack = (CbmMCTrack*) fMcTracks->Get(trackLink);
+      if (!mcTrack) {
+        LOG(fatal) << "MC track " << trackId << " doesn't exist";
+        break;
+      }
+
+      Int_t motherId = mcTrack->GetMotherId();
+      Int_t pdgCode  = mcTrack->GetPdgCode();
+      if (pdgCode == 22 ||  // photons
+          pdgCode == 2112)  // neutrons
+      {
+        continue;
+      }
+
+      if (!(trackStaCross[trackId] & stMask)) { FillCountingHistos(stId, motherId, pdgCode); }
+      trackStaCross[trackId] |= stMask;
+      Fill2dSpatialDistributionHistos(point, stId);
     }
-
-    CbmMCTrack* mcTrack = (CbmMCTrack*) fMcTracks->At(trackId);
-    if (!mcTrack) {
-      LOG(fatal) << "MC track " << trackId << " doesn't exist";
-      break;
-    }
-
-    Int_t motherId = mcTrack->GetMotherId();
-    Int_t pdgCode  = mcTrack->GetPdgCode();
-    if (pdgCode == 22 ||  // photons
-        pdgCode == 2112)  // neutrons
-    {
-      continue;
-    }
-
-    if (!(trackStaCross[trackId] & stMask)) {
-      FillCountingHistos(stId, motherId, pdgCode);
-    }
-    trackStaCross[trackId] |= stMask;
-    Fill2dSpatialDistributionHistos(point, stId);
   }
 }
 

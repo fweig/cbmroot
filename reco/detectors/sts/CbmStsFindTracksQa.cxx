@@ -21,16 +21,21 @@
 #include "FairRun.h"
 
 // Includes from CbmRoot
-#include "CbmEvent.h"
 #include "CbmMCDataArray.h"
 #include "CbmMCDataManager.h"
 #include "CbmMCTrack.h"
+#include "CbmMvdDetector.h"
+#include "CbmMvdHit.h"
+#include "CbmMvdPoint.h"
+#include "CbmMvdStationPar.h"
 #include "CbmStsHit.h"
 #include "CbmStsPoint.h"
 #include "CbmStsSetup.h"
 #include "CbmStsTrack.h"
+#include "CbmTimeSlice.h"
 #include "CbmTrackMatchNew.h"
 
+#include "FairRunAna.h"
 
 using std::fixed;
 using std::right;
@@ -39,125 +44,18 @@ using std::setw;
 
 
 // -----   Default constructor   -------------------------------------------
-CbmStsFindTracksQa::CbmStsFindTracksQa(Int_t iVerbose)
-  : FairTask("STSFindTracksQA", iVerbose)
-  , fHitMap()
-  , fMatchMap()
-  , fQualiMap()
-  , fEvents()
-  , fMCTracks(NULL)
-  , fStsPoints(NULL)
-  , fStsHits(NULL)
-  , fStsHitMatch(NULL)
-  , fStsTracks(NULL)
-  , fMatches(NULL)
-  , fLegacy(kFALSE)
-  , fTargetPos(0., 0., 0.)
-  , fSetup(NULL)
-  , fNStations(0)
-  , fMinStations(3)
-  , fQuota(0.7)
-  , fhMomAccAll(new TH1F())
-  , fhMomRecAll(new TH1F())
-  , fhMomEffAll(new TH1F())
-  , fhMomAccPrim(new TH1F())
-  , fhMomRecPrim(new TH1F())
-  , fhMomEffPrim(new TH1F())
-  , fhMomAccSec(new TH1F())
-  , fhMomRecSec(new TH1F())
-  , fhMomEffSec(new TH1F())
-  , fhNpAccAll(new TH1F())
-  , fhNpRecAll(new TH1F())
-  , fhNpEffAll(new TH1F())
-  , fhNpAccPrim(new TH1F())
-  , fhNpRecPrim(new TH1F())
-  , fhNpEffPrim(new TH1F())
-  , fhNpAccSec(new TH1F())
-  , fhNpRecSec(new TH1F())
-  , fhNpEffSec(new TH1F())
-  , fhZAccSec(new TH1F())
-  , fhZRecSec(new TH1F())
-  , fhZEffSec(new TH1F())
-  , fhNhClones(new TH1F())
-  , fhNhGhosts(new TH1F())
-  , fHistoList(new TList())
-  , fNAccAll(0)
-  , fNAccPrim(0)
-  , fNAccRef(0)
-  , fNAccSec(0)
-  , fNRecAll(0)
-  , fNRecPrim(0)
-  , fNRecRef(0)
-  , fNRecSec(0)
-  , fNGhosts(0)
-  , fNClones(0)
-  , fNEvents(0)
-  , fNEventsFailed(0)
-  , fTime(0.)
-  , fTimer() {}
+CbmStsFindTracksQa::CbmStsFindTracksQa(Int_t iVerbose) : FairTask("STSFindTracksQA", iVerbose) {}
 
 // -------------------------------------------------------------------------
 
 
 // -----   Standard constructor   ------------------------------------------
-CbmStsFindTracksQa::CbmStsFindTracksQa(Int_t minStations,
-                                       Double_t quota,
-                                       Int_t iVerbose)
+CbmStsFindTracksQa::CbmStsFindTracksQa(Int_t minStations, Double_t quota, Int_t iVerbose)
   : FairTask("STSFindTracksQA", iVerbose)
-  , fHitMap()
-  , fMatchMap()
-  , fQualiMap()
-  , fEvents(NULL)
-  , fMCTracks(NULL)
-  , fStsPoints(NULL)
-  , fStsHits(NULL)
-  , fStsHitMatch(NULL)
-  , fStsTracks(NULL)
-  , fMatches(NULL)
-  , fLegacy(kFALSE)
-  , fTargetPos(0., 0., 0.)
-  , fSetup(NULL)
-  , fNStations(0)
   , fMinStations(minStations)
   , fQuota(quota)
-  , fhMomAccAll(new TH1F())
-  , fhMomRecAll(new TH1F())
-  , fhMomEffAll(new TH1F())
-  , fhMomAccPrim(new TH1F())
-  , fhMomRecPrim(new TH1F())
-  , fhMomEffPrim(new TH1F())
-  , fhMomAccSec(new TH1F())
-  , fhMomRecSec(new TH1F())
-  , fhMomEffSec(new TH1F())
-  , fhNpAccAll(new TH1F())
-  , fhNpRecAll(new TH1F())
-  , fhNpEffAll(new TH1F())
-  , fhNpAccPrim(new TH1F())
-  , fhNpRecPrim(new TH1F())
-  , fhNpEffPrim(new TH1F())
-  , fhNpAccSec(new TH1F())
-  , fhNpRecSec(new TH1F())
-  , fhNpEffSec(new TH1F())
-  , fhZAccSec(new TH1F())
-  , fhZRecSec(new TH1F())
-  , fhZEffSec(new TH1F())
-  , fhNhClones(new TH1F())
-  , fhNhGhosts(new TH1F())
-  , fHistoList(new TList())
-  , fNAccAll(0)
-  , fNAccPrim(0)
-  , fNAccRef(0)
-  , fNAccSec(0)
-  , fNRecAll(0)
-  , fNRecPrim(0)
-  , fNRecRef(0)
-  , fNRecSec(0)
-  , fNGhosts(0)
-  , fNClones(0)
-  , fNEvents(0)
-  , fNEventsFailed(0)
-  , fTime(0.)
-  , fTimer() {}
+{
+}
 // -------------------------------------------------------------------------
 
 
@@ -173,174 +71,82 @@ CbmStsFindTracksQa::~CbmStsFindTracksQa() {
 // -----   Task execution   ------------------------------------------------
 void CbmStsFindTracksQa::Exec(Option_t* /*opt*/) {
 
-  // If there is an event branch: do the event loop
-  if (fEvents) {
-    Int_t nEvents = fEvents->GetEntriesFast();
-    LOG(debug) << GetName() << ": found time slice with " << nEvents
-               << " events.";
-
-    for (Int_t iEvent = 0; iEvent < nEvents; iEvent++) {
-      CbmEvent* event = dynamic_cast<CbmEvent*>(fEvents->At(iEvent));
-      assert(event);
-      ProcessEvent(event);
-    }
-  }
-
-  // If there is no event branch, process the entire tree
-  else {
-    ProcessEvent();
-  }
-}
-// -------------------------------------------------------------------------
-
-
-// -----   Public method SetParContainers   --------------------------------
-void CbmStsFindTracksQa::SetParContainers() {}
-// -------------------------------------------------------------------------
-
-
-// -----   Public method Init   --------------------------------------------
-InitStatus CbmStsFindTracksQa::Init() {
-
-  LOG(info) << "\n\n====================================================";
-  LOG(info) << GetName() << ": Initialising...";
-
-  // Get RootManager
-  FairRootManager* ioman = FairRootManager::Instance();
-  assert(ioman);
-
-  // Get STS setup
-  fSetup = CbmStsSetup::Instance();
-
-  // Get MCDataManager
-  CbmMCDataManager* mcManager =
-    dynamic_cast<CbmMCDataManager*>(ioman->GetObject("MCDataManager"));
-  assert(mcManager);
-
-  // Get MCTrack array
-  fMCTracks = mcManager->InitBranch("MCTrack");
-  assert(fMCTracks);
-
-  // Get StsPoint array
-  fStsPoints = mcManager->InitBranch("StsPoint");
-  assert(fStsPoints);
-
-  // Get Event array
-  fEvents = dynamic_cast<TClonesArray*>(ioman->GetObject("CbmEvent"));
-
-  // Get StsHit array
-  fStsHits = (TClonesArray*) ioman->GetObject("StsHit");
-  assert(fStsHits);
-
-  // Get StsHitMatch array
-  fStsHitMatch = (TClonesArray*) ioman->GetObject("StsHitMatch");
-  assert(fStsHitMatch);
-
-  // Get StsTrack array
-  fStsTracks = (TClonesArray*) ioman->GetObject("StsTrack");
-  assert(fStsTracks);
-
-  // Get StsTrackMatch array
-  fMatches = (TClonesArray*) ioman->GetObject("StsTrackMatch");
-  assert(fMatches);
-
-
-  // Get the geometry of target and STS
-  InitStatus geoStatus = GetGeometry();
-  if (geoStatus != kSUCCESS) {
-    LOG(error) << GetName() << "::Init: Error in reading geometry!";
-    return geoStatus;
-  }
-
-  // Create histograms
-  CreateHistos();
-  Reset();
-
-  // Output
-  LOG(info) << "   Number of STS stations : " << fNStations;
-  LOG(info) << "   Target position ( " << fTargetPos.X() << ", "
-            << fTargetPos.Y() << ", " << fTargetPos.Z() << ") cm";
-  LOG(info) << "   Minimum number of STS stations   : " << fMinStations;
-  LOG(info) << "   Matching quota               : " << fQuota;
-  LOG(info) << "====================================================";
-
-  return geoStatus;
-}
-// -------------------------------------------------------------------------
-
-
-// -----   Public method ReInit   ------------------------------------------
-InitStatus CbmStsFindTracksQa::ReInit() {
-
-  LOG(info) << "\n\n====================================================";
-  LOG(info) << GetName() << ": Re-initialising...";
-
-  // Get the geometry of target and STS
-  InitStatus geoStatus = GetGeometry();
-  if (geoStatus != kSUCCESS) {
-    LOG(error) << GetName() << "::Init: Error in reading geometry!";
-    return geoStatus;
-  }
-
-  // --- Screen log
-  LOG(info) << "   Number of STS stations : " << fNStations;
-  LOG(info) << "   Target position ( " << fTargetPos.X() << ", "
-            << fTargetPos.Y() << ", " << fTargetPos.Z() << ") cm";
-  LOG(info) << "   Minimum number of STS stations   : " << fMinStations;
-  LOG(info) << "   Matching quota               : " << fQuota;
-  LOG(info) << "====================================================";
-
-  return geoStatus;
-}
-// -------------------------------------------------------------------------
-
-
-// -----   Public method Exec   --------------------------------------------
-void CbmStsFindTracksQa::ProcessEvent(CbmEvent* event) {
-
-  // --- Event number. Note that the FairRun counting start with 1.
-  Int_t eventNumber =
-    (event ? event->GetNumber()
-           : FairRun::Instance()->GetEventHeader()->GetMCEntryNumber() - 1);
-
-  LOG(debug) << GetName() << ": Process event " << eventNumber;
+  LOG(debug) << GetName() << ": Process event ";
 
   // Timer
   fTimer.Start();
 
   // Eventwise counters
   //  Int_t nMCTracks = 0;
-  Int_t nTracks  = 0;
-  Int_t nGhosts  = 0;
-  Int_t nClones  = 0;
-  Int_t nAll     = 0;
-  Int_t nAcc     = 0;
-  Int_t nRecAll  = 0;
-  Int_t nPrim    = 0;
-  Int_t nRecPrim = 0;
-  Int_t nRef     = 0;
-  Int_t nRecRef  = 0;
-  Int_t nSec     = 0;
-  Int_t nRecSec  = 0;
+  Int_t nTracks     = 0;
+  Int_t nGhosts     = 0;
+  Int_t nClones     = 0;
+  Int_t nAll        = 0;
+  Int_t nAcc        = 0;
+  Int_t nRecAll     = 0;
+  Int_t nPrim       = 0;
+  Int_t nRecPrim    = 0;
+  Int_t nRef        = 0;
+  Int_t nRecRef     = 0;
+  Int_t nRefLong    = 0;
+  Int_t nRecRefLong = 0;
+  Int_t nSec        = 0;
+  Int_t nRecSec     = 0;
   TVector3 momentum;
   TVector3 vertex;
 
+  // check consistency
+  assert(fStsTracks->GetEntriesFast() == fStsTrackMatches->GetEntriesFast());
+
+  {
+    fMcTrackInfoMap.clear();
+    std::vector<CbmLink> events = fTimeSlice->GetMatch().GetLinks();
+    std::sort(events.begin(), events.end());
+    McTrackInfo info;
+    for (uint iLink = 0; iLink < events.size(); iLink++) {
+      CbmLink link    = events[iLink];
+      Int_t nMCTracks = fMCTracks->Size(link);
+      for (Int_t iTr = 0; iTr < nMCTracks; iTr++) {
+        link.SetIndex(iTr);
+        fMcTrackInfoMap.insert({link, info});
+      }
+    }
+  }
+
   // Fill hit and track maps
-  FillHitMap(event);
-  FillMatchMap(event, nTracks, nGhosts, nClones);
+  FillHitMap();
+  FillMatchMap(nTracks, nGhosts, nClones);
+
+  int nMcTracks = fMcTrackInfoMap.size();
 
   // Loop over MCTracks
-  Int_t nMcTracks = fMCTracks->Size(0, eventNumber);
-  for (Int_t mcTrackId = 0; mcTrackId < nMcTracks; mcTrackId++) {
-    CbmMCTrack* mcTrack =
-      dynamic_cast<CbmMCTrack*>(fMCTracks->Get(0, eventNumber, mcTrackId));
+  int iMcTrack = 0;
+  for (auto itTrack = fMcTrackInfoMap.begin(); itTrack != fMcTrackInfoMap.end(); ++itTrack, ++iMcTrack) {
+    const CbmLink& link = itTrack->first;
+    McTrackInfo& info   = itTrack->second;
+    CbmMCTrack* mcTrack = dynamic_cast<CbmMCTrack*>(fMCTracks->Get(link));
     assert(mcTrack);
 
     // Continue only for reconstructible tracks
     nAll++;
-    if (fHitMap.find(mcTrackId) == fHitMap.end()) continue;  // No hits
-    Int_t nStations = fHitMap[mcTrackId].size();
+    Int_t nStations = info.fHitMap.size();
     if (nStations < fMinStations) continue;  // Too few stations
+
+    int nContStations = 0;  // Number of continious stations
+    {
+      int istaprev = -1;
+      int len      = 0;
+      for (auto itSta = info.fHitMap.begin(); itSta != info.fHitMap.end(); itSta++) {
+        if (len == 0 || itSta->first == istaprev + 1) { len++; }
+        else {
+          len = 1;
+        }
+        if (nContStations < len) { nContStations = len; }
+        istaprev = itSta->first;
+      }
+    }
+    if (nContStations < fMinStations) continue;  // Too few stations
+
     nAcc++;
 
     // Check origin of MCTrack
@@ -363,6 +169,12 @@ void CbmStsFindTracksQa::ProcessEvent(CbmEvent* event) {
       nRef++;
     }
 
+    Bool_t isRefLong = kFALSE;
+    if (isRef && nContStations >= fStsNstations) {
+      isRefLong = kTRUE;
+      nRefLong++;
+    }
+
     // Fill histograms for reconstructible tracks
     fhMomAccAll->Fill(mom);
     fhNpAccAll->Fill(Double_t(nStations));
@@ -376,29 +188,26 @@ void CbmStsFindTracksQa::ProcessEvent(CbmEvent* event) {
     }
 
     // Get matched StsTrack
-    Int_t trackId  = -1;
-    Double_t quali = 0.;
+    Int_t trackId  = info.fStsTrackMatch;
+    Double_t quali = info.fQuali;
     //    Bool_t   isRec    = kFALSE;
-    if (fMatchMap.find(mcTrackId) != fMatchMap.end()) {
-      trackId = fMatchMap[mcTrackId];
+    if (trackId >= 0) {
       //      isRec = kTRUE;
       CbmStsTrack* stsTrack = (CbmStsTrack*) fStsTracks->At(trackId);
       assert(stsTrack);
-      quali = fQualiMap[mcTrackId];
       assert(quali >= fQuota);
-      CbmTrackMatchNew* match = (CbmTrackMatchNew*) fMatches->At(trackId);
+      CbmTrackMatchNew* match = (CbmTrackMatchNew*) fStsTrackMatches->At(trackId);
       assert(match);
       Int_t nTrue  = match->GetNofTrueHits();
       Int_t nWrong = match->GetNofWrongHits();
       //Int_t nFake  = match->GetNofFakeHits();
       Int_t nFake    = 0;
-      Int_t nAllHits = stsTrack->GetNofStsHits();
+      Int_t nAllHits = stsTrack->GetNofStsHits() + stsTrack->GetNofMvdHits();
+      if (!fIsMvdActive) { assert(stsTrack->GetNofMvdHits() == 0); }
       assert(nTrue + nWrong + nFake == nAllHits);
-
       // Verbose output
-      LOG(debug1) << GetName() << ": MCTrack " << mcTrackId << ", stations "
-                  << nStations << ", hits " << nAllHits << ", true hits "
-                  << nTrue;
+      LOG(debug1) << GetName() << ": MCTrack " << iMcTrack << ", stations " << nStations << ", hits " << nAllHits
+                  << ", true hits " << nTrue;
 
       // Fill histograms for reconstructed tracks
       nRecAll++;
@@ -408,24 +217,25 @@ void CbmStsFindTracksQa::ProcessEvent(CbmEvent* event) {
         nRecPrim++;
         fhMomRecPrim->Fill(mom);
         fhNpRecPrim->Fill(Double_t(nAllHits));
-        if (isRef) nRecRef++;
       } else {
         nRecSec++;
         fhMomRecSec->Fill(mom);
         fhNpRecSec->Fill(Double_t(nAllHits));
         fhZRecSec->Fill(vertex.Z());
       }
+      if (isRef) nRecRef++;
+      if (isRefLong) nRecRefLong++;
 
     }  // Match found in map?
 
   }  // Loop over MCTracks
 
-
   // Calculate efficiencies
-  Double_t effAll  = Double_t(nRecAll) / Double_t(nAcc);
-  Double_t effPrim = Double_t(nRecPrim) / Double_t(nPrim);
-  Double_t effRef  = Double_t(nRecRef) / Double_t(nRef);
-  Double_t effSec  = Double_t(nRecSec) / Double_t(nSec);
+  Double_t effAll     = Double_t(nRecAll) / Double_t(nAcc);
+  Double_t effPrim    = Double_t(nRecPrim) / Double_t(nPrim);
+  Double_t effRef     = Double_t(nRecRef) / Double_t(nRef);
+  Double_t effRefLong = Double_t(nRecRefLong) / Double_t(nRefLong);
+  Double_t effSec     = Double_t(nRecSec) / Double_t(nSec);
 
   fTimer.Stop();
 
@@ -446,6 +256,8 @@ void CbmStsFindTracksQa::ProcessEvent(CbmEvent* event) {
     LOG(debug) << "Reference  : reconstructible: " << nRef
                << ", reconstructed: " << nRecRef << ", efficiency "
                << effRef * 100. << "%";
+    LOG(debug) << "Reference long : reconstructible: " << nRefLong << ", reconstructed: " << nRecRefLong
+               << ", efficiency " << effRefLong * 100. << "%";
     LOG(debug) << "Non-vertex : reconstructible: " << nSec
                << ", reconstructed: " << nRecSec << ", efficiency "
                << effSec * 100. << "%";
@@ -457,18 +269,151 @@ void CbmStsFindTracksQa::ProcessEvent(CbmEvent* event) {
 
 
   // Increase counters
+  fNAll += nAll;
   fNAccAll += nAcc;
   fNAccPrim += nPrim;
   fNAccRef += nRef;
+  fNAccRefLong += nRefLong;
   fNAccSec += nSec;
   fNRecAll += nRecAll;
   fNRecPrim += nRecPrim;
   fNRecRef += nRecRef;
+  fNRecRefLong += nRecRefLong;
   fNRecSec += nRecSec;
   fNGhosts += nGhosts;
   fNClones += nClones;
   fNEvents++;
   fTime += fTimer.RealTime();
+}
+// -------------------------------------------------------------------------
+
+
+// -----   Public method SetParContainers   --------------------------------
+void CbmStsFindTracksQa::SetParContainers() {}
+// -------------------------------------------------------------------------
+
+
+// -----   Public method Init   --------------------------------------------
+InitStatus CbmStsFindTracksQa::Init()
+{
+
+  LOG(info) << "\n\n====================================================";
+  LOG(info) << GetName() << ": Initialising...";
+
+  // Get STS setup
+  fStsSetup = CbmStsSetup::Instance();
+  assert(fStsSetup);
+  if (!fStsSetup->IsInit()) { fStsSetup->Init(); }
+
+  fManager = FairRootManager::Instance();
+  assert(fManager);
+
+  fMcManager = dynamic_cast<CbmMCDataManager*>(fManager->GetObject("MCDataManager"));
+
+  assert(fMcManager);
+
+  fTimeSlice = static_cast<CbmTimeSlice*>(fManager->GetObject("TimeSlice."));
+
+  if (fTimeSlice == nullptr) { LOG(fatal) << "CbmStsFindTracksQa: No time slice object"; }
+
+  if (fMcManager) {
+    fMCTracks  = fMcManager->InitBranch("MCTrack");
+    fStsPoints = fMcManager->InitBranch("StsPoint");
+  }
+
+  assert(fMCTracks);
+  assert(fStsPoints);
+
+  // Get the geometry
+  InitStatus geoStatus = GetGeometry();
+  if (geoStatus != kSUCCESS) {
+    LOG(error) << GetName() << "::Init: Error in reading geometry!";
+    return geoStatus;
+  }
+
+  // MVD
+
+  fMvdPoints   = fMcManager->InitBranch("MvdPoint");
+  fMvdCluster  = (TClonesArray*) (fManager->GetObject("MvdCluster"));
+  fMvdHits     = (TClonesArray*) (fManager->GetObject("MvdHit"));
+  fMvdHitMatch = (TClonesArray*) fManager->GetObject("MvdHitMatch");
+
+  // Currently in the time-based mode MVD is present but not reconstructed
+  // TODO: remove the check once the reconstruction works
+  if (fIsMvdActive && !fMvdHits) {
+    LOG(warning) << "CbmStsFindTracksQa: MVD hits are missing, MVD will not be "
+                    "included to the STS track match";
+    fIsMvdActive = false;
+  }
+
+  if (fIsMvdActive) {
+    assert(fMvdPoints);
+    assert(fMvdCluster);
+    assert(fMvdHits);
+    assert(fMvdHitMatch);
+  }
+
+  // STS
+
+  // Get StsHit array
+  fStsHits = (TClonesArray*) fManager->GetObject("StsHit");
+  assert(fStsHits);
+
+  // Get StsHitMatch array
+  fStsHitMatch = (TClonesArray*) fManager->GetObject("StsHitMatch");
+  assert(fStsHitMatch);
+
+  // Get StsHitMatch array
+  fStsClusterMatch = (TClonesArray*) fManager->GetObject("StsClusterMatch");
+  assert(fStsClusterMatch);
+
+  // Get StsTrack array
+  fStsTracks = (TClonesArray*) fManager->GetObject("StsTrack");
+  assert(fStsTracks);
+
+  // Get StsTrackMatch array
+  fStsTrackMatches = (TClonesArray*) fManager->GetObject("StsTrackMatch");
+  assert(fStsTrackMatches);
+
+
+  // Create histograms
+  CreateHistos();
+  Reset();
+
+  // Output
+  LOG(info) << "   Number of STS stations : " << fStsNstations;
+  LOG(info) << "   Target position ( " << fTargetPos.X() << ", " << fTargetPos.Y() << ", " << fTargetPos.Z() << ") cm";
+  LOG(info) << "   Minimum number of STS stations   : " << fMinStations;
+  LOG(info) << "   Matching quota               : " << fQuota;
+  LOG(info) << "====================================================";
+
+  return geoStatus;
+}
+// -------------------------------------------------------------------------
+
+
+// -----   Public method ReInit   ------------------------------------------
+InitStatus CbmStsFindTracksQa::ReInit()
+{
+
+  LOG(info) << "\n\n====================================================";
+  LOG(info) << GetName() << ": Re-initialising...";
+
+  // Get the geometry of target and STS
+  InitStatus geoStatus = GetGeometry();
+  if (geoStatus != kSUCCESS) {
+    LOG(error) << GetName() << "::Init: Error in reading geometry!";
+    return geoStatus;
+  }
+
+  // --- Screen log
+  LOG(info) << "   Number of STS stations : " << fStsNstations;
+  LOG(info) << "   Target position ( " << fTargetPos.X() << ", " << fTargetPos.Y() << ", " << fTargetPos.Z() << ") cm";
+  LOG(info) << "   Minimum number of STS stations   : " << fMinStations;
+  LOG(info) << "   Matching quota               : " << fQuota;
+  LOG(info) << "====================================================";
+
+  return geoStatus;
 }
 // -------------------------------------------------------------------------
 
@@ -495,9 +440,10 @@ void CbmStsFindTracksQa::Finish() {
   Double_t effAll     = Double_t(fNRecAll) / Double_t(fNAccAll);
   Double_t effPrim    = Double_t(fNRecPrim) / Double_t(fNAccPrim);
   Double_t effRef     = Double_t(fNRecRef) / Double_t(fNAccRef);
+  Double_t effRefLong = Double_t(fNRecRefLong) / Double_t(fNAccRefLong);
   Double_t effSec     = Double_t(fNRecSec) / Double_t(fNAccSec);
-  Double_t rateGhosts = Double_t(fNGhosts) / Double_t(fNEvents);
-  Double_t rateClones = Double_t(fNClones) / Double_t(fNEvents);
+  Double_t rateGhosts = Double_t(fNGhosts) / Double_t(fNRecAll);
+  Double_t rateClones = Double_t(fNClones) / Double_t(fNRecAll);
 
   // Run summary to screen
   std::cout << std::endl;
@@ -510,34 +456,53 @@ void CbmStsFindTracksQa::Finish() {
             << fNRecPrim << "/" << fNAccPrim << ")";
   LOG(info) << "Eff. reference tracks : " << effRef * 100 << " % (" << fNRecRef
             << "/" << fNAccRef << ")";
+  LOG(info) << "Eff. reference long tracks : " << effRefLong * 100 << " % (" << fNRecRefLong << "/" << fNAccRefLong
+            << ")";
   LOG(info) << "Eff. secondary tracks : " << effSec * 100 << " % (" << fNRecSec
             << "/" << fNAccSec << ")";
-  LOG(info) << "Ghost rate            : " << rateGhosts << " per event";
-  LOG(info) << "Clone rate            : " << rateClones << " per event";
+  LOG(info) << "Ghost rate            : " << rateGhosts * 100 << " % (" << fNGhosts << "/" << fNRecAll << ")";
+  LOG(info) << "Clone rate            : " << rateClones * 100 << " % (" << fNClones << "/" << fNRecAll << ")";
+  LOG(info) << "mc tracks/event " << fNAll / fNEvents << " accepted " << fNRecAll / fNEvents;
   LOG(info) << "Time per event        : " << setprecision(6)
             << fTime / Double_t(fNEvents) << " s";
+
+  if (fMvdNstations > 0 && !fIsMvdActive) {
+    LOG(warning) << "CbmStsFindTracksQa: MVD hits are missing, MVD is not "
+                    "included to the STS track match";
+  }
+
   LOG(info) << "=====================================";
 
   // Write histos to output
+  /*
   gDirectory->mkdir("STSFindTracksQA");
   gDirectory->cd("STSFindTracksQA");
   TIter next(fHistoList);
   while (TH1* histo = ((TH1*) next()))
     histo->Write();
   gDirectory->cd("..");
+*/
+  FairSink* sink = FairRootManager::Instance()->GetSink();
+  sink->WriteObject(&fOutFolder, nullptr);
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Private method GetGeometry   ------------------------------------
 InitStatus CbmStsFindTracksQa::GetGeometry() {
-
   // Get target geometry
   GetTargetPosition();
-
-  fNStations = CbmStsSetup::Instance()->GetNofStations();
-
-
+  fMvdNstations = 0;
+  {
+    CbmMvdDetector* mvdDetector = CbmMvdDetector::Instance();
+    if (mvdDetector) {
+      CbmMvdStationPar* mvdStationPar = mvdDetector->GetParameterFile();
+      assert(mvdStationPar);
+      fMvdNstations = mvdStationPar->GetStationCount();
+    }
+  }
+  fIsMvdActive  = (fMvdNstations > 0);
+  fStsNstations = CbmStsSetup::Instance()->GetNofStations();
   return kSUCCESS;
 }
 // -------------------------------------------------------------------------
@@ -600,6 +565,8 @@ void CbmStsFindTracksQa::GetTargetPosition() {
 
 // -----   Private method CreateHistos   -----------------------------------
 void CbmStsFindTracksQa::CreateHistos() {
+
+  fOutFolder.Clear();
 
   // Histogram list
   fHistoList = new TList();
@@ -692,6 +659,11 @@ void CbmStsFindTracksQa::CreateHistos() {
     new TH1F("hNhGhosts", "number of hits for ghosts", nBinsNp, minNp, maxNp);
   fHistoList->Add(fhNhClones);
   fHistoList->Add(fhNhGhosts);
+
+  TIter next(fHistoList);
+  while (TH1* histo = ((TH1*) next())) {
+    fOutFolder.Add(histo);
+  }
 }
 // -------------------------------------------------------------------------
 
@@ -703,118 +675,144 @@ void CbmStsFindTracksQa::Reset() {
   while (TH1* histo = ((TH1*) next()))
     histo->Reset();
 
-  fNAccAll = fNAccPrim = fNAccRef = fNAccSec = 0;
-  fNRecAll = fNRecPrim = fNRecRef = fNRecSec = 0;
+  fNAccAll = fNAccPrim = fNAccRef = fNAccRefLong = fNAccSec = 0;
+  fNRecAll = fNRecPrim = fNRecRef = fNRecRefLong = fNRecSec = 0;
   fNGhosts = fNClones = fNEvents = 0;
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Private method FillHitMap   -------------------------------------
-void CbmStsFindTracksQa::FillHitMap(CbmEvent* event) {
-
-  // --- Event number. Note that the FairRun counting starts with 1.
-  Int_t eventNumber =
-    (event ? event->GetNumber()
-           : FairRun::Instance()->GetEventHeader()->GetMCEntryNumber() - 1);
+void CbmStsFindTracksQa::FillHitMap()
+{
 
   // --- Fill hit map ( mcTrack -> ( station -> number of hits ) )
-  fHitMap.clear();
-  Int_t nHits = (event ? event->GetNofData(ECbmDataType::kStsHit)
-                       : fStsHits->GetEntriesFast());
-  for (Int_t iHit = 0; iHit < nHits; iHit++) {
-    Int_t hitIndex =
-      (event ? event->GetIndex(ECbmDataType::kStsHit, iHit) : iHit);
-    CbmStsHit* hit     = (CbmStsHit*) fStsHits->At(hitIndex);
-    CbmMatch* hitMatch = (CbmMatch*) fStsHitMatch->At(hitIndex);
-    Int_t pointIndex   = hitMatch->GetMatchedLink().GetIndex();
-    assert(pointIndex >= 0);
-    CbmStsPoint* stsPoint =
-      dynamic_cast<CbmStsPoint*>(fStsPoints->Get(0, eventNumber, pointIndex));
-    assert(stsPoint);
-    Int_t mcTrackIndex = stsPoint->GetTrackID();
-    Int_t station      = fSetup->GetStationNumber(hit->GetAddress());
-    fHitMap[mcTrackIndex][station]++;
+
+  // pocess MVD hits
+
+  if (fIsMvdActive) {
+    assert(fMvdHits);
+    assert(fMvdHitMatch);
+    assert(fMvdPoints);
+    for (Int_t iHit = 0; iHit < fMvdHits->GetEntriesFast(); iHit++) {
+      CbmMvdHit* hit = (CbmMvdHit*) fMvdHits->At(iHit);
+      assert(hit);
+      Int_t station = hit->GetStationNr();
+      assert(station >= 0 && station < fMvdNstations);
+      const CbmMatch* match = (const CbmMatch*) fMvdHitMatch->At(iHit);
+      assert(match);
+      if (match->GetNofLinks() <= 0) continue;
+      CbmLink link    = match->GetMatchedLink();
+      CbmMvdPoint* pt = (CbmMvdPoint*) fMvdPoints->Get(link);
+      assert(pt);
+      link.SetIndex(pt->GetTrackID());
+      McTrackInfo& info = getMcTrackInfo(link);
+      info.fHitMap[station]++;
+    }
   }
-  LOG(debug) << GetName() << ": Filled hit map from " << nHits
-             << " STS hits for " << fHitMap.size() << " MCTracks.";
+
+  // pocess STS hits
+
+  for (Int_t iHit = 0; iHit < fStsHits->GetEntriesFast(); iHit++) {
+    CbmStsHit* hit = (CbmStsHit*) fStsHits->At(iHit);
+    assert(hit);
+
+    Int_t station = fStsSetup->GetStationNumber(hit->GetAddress());
+
+    // carefully check the hit match by looking at the strips from both sides
+
+    const CbmMatch* frontMatch = dynamic_cast<const CbmMatch*>(fStsClusterMatch->At(hit->GetFrontClusterId()));
+    assert(frontMatch);
+    if (frontMatch->GetNofLinks() <= 0) continue;
+
+    const CbmMatch* backMatch = dynamic_cast<const CbmMatch*>(fStsClusterMatch->At(hit->GetBackClusterId()));
+    assert(backMatch);
+    if (backMatch->GetNofLinks() <= 0) continue;
+
+    if (frontMatch->GetMatchedLink() == backMatch->GetMatchedLink()) {
+      CbmLink link    = frontMatch->GetMatchedLink();
+      CbmStsPoint* pt = (CbmStsPoint*) fStsPoints->Get(link);
+      assert(pt);
+      link.SetIndex(pt->GetTrackID());
+      McTrackInfo& info = getMcTrackInfo(link);
+      info.fHitMap[fMvdNstations + station]++;
+    }
+  }
+  LOG(debug) << GetName() << ": Filled hit map from " << fStsHits->GetEntriesFast() << " STS hits";
 }
 // -------------------------------------------------------------------------
 
 
 // ------   Private method FillMatchMap   ----------------------------------
-void CbmStsFindTracksQa::FillMatchMap(CbmEvent* event,
-                                      Int_t& nRec,
-                                      Int_t& nGhosts,
-                                      Int_t& nClones) {
+void CbmStsFindTracksQa::FillMatchMap(Int_t& nRec, Int_t& nGhosts, Int_t& nClones)
+{
 
   // Clear matching maps
-  fMatchMap.clear();
-  fQualiMap.clear();
+  for (auto it = fMcTrackInfoMap.begin(); it != fMcTrackInfoMap.end(); ++it) {
+    McTrackInfo& info      = it->second;
+    info.fStsTrackMatch    = -1;
+    info.fQuali            = 0.;
+    info.fMatchedNHitsAll  = 0;
+    info.fMatchedNHitsTrue = 0;
+  }
 
   // Loop over StsTracks. Check matched MCtrack and fill maps.
-  nGhosts       = 0;
-  nClones       = 0;
-  Int_t nTracks = (event ? event->GetNofData(ECbmDataType::kStsTrack)
-                         : fStsTracks->GetEntriesFast());
+  nGhosts = 0;
+  nClones = 0;
 
+  Int_t nTracks = fStsTracks->GetEntriesFast();
   for (Int_t iTrack = 0; iTrack < nTracks; iTrack++) {
 
     // --- StsTrack
-    Int_t trackIndex =
-      (event ? event->GetIndex(ECbmDataType::kStsTrack, iTrack) : iTrack);
-    CbmStsTrack* stsTrack = (CbmStsTrack*) fStsTracks->At(trackIndex);
+    CbmStsTrack* stsTrack = (CbmStsTrack*) fStsTracks->At(iTrack);
     assert(stsTrack);
     Int_t nHits = stsTrack->GetNofStsHits();
 
     // --- TrackMatch
-    CbmTrackMatchNew* match = (CbmTrackMatchNew*) fMatches->At(trackIndex);
+
+    assert(iTrack >= 0 && iTrack < fStsTrackMatches->GetEntriesFast());
+    CbmTrackMatchNew* match = (CbmTrackMatchNew*) fStsTrackMatches->At(iTrack);
     assert(match);
     Int_t nTrue = match->GetNofTrueHits();
 
-    // --- Matched MCTrack
-    Int_t mcTrackId = -1;
-    if (nTrue > 0) mcTrackId = match->GetMatchedLink().GetIndex();
-    if (mcTrackId < 0) {
+    // Check matching criterion (quota)
+    Double_t quali = Double_t(nTrue) / Double_t(nHits);
+
+    // Quality isn't good, it's a ghost
+
+    if (quali < fQuota) {
       fhNhGhosts->Fill(nHits);
       nGhosts++;
       continue;
     }
 
-    // Check matching criterion (quota)
-    Double_t quali = Double_t(nTrue) / Double_t(nHits);
-    if (quali >= fQuota) {
+    // Quality is good
 
-      // No previous match for this MCTrack
-      if (fMatchMap.find(mcTrackId) == fMatchMap.end()) {
-        fMatchMap[mcTrackId] = iTrack;
-        fQualiMap[mcTrackId] = quali;
-      }  //? no previous match
+    // --- Matched MCTrack
+    assert(match->GetNofLinks() > 0);
+    const CbmLink& link = match->GetMatchedLink();
+    assert(link.GetIndex() >= 0);
+    McTrackInfo& info = getMcTrackInfo(link);
 
-      // Previous match; take the better one
-      else {
-        if (fQualiMap[mcTrackId] < quali) {
-          CbmStsTrack* oldTrack =
-            (CbmStsTrack*) fStsTracks->At(fMatchMap[mcTrackId]);
-          fhNhClones->Fill(Double_t(oldTrack->GetNofStsHits()));
-          fMatchMap[mcTrackId] = iTrack;
-          fQualiMap[mcTrackId] = quali;
-        }  //? new track matches better to MCTrack
-
-        else
-          fhNhClones->Fill(nHits);
-        nClones++;
-      }  //? previous match found
-
-    }  //? true match ratio > quota
-
-    // If not matched, it's a ghost
-    else {
-      fhNhGhosts->Fill(nHits);
-      nGhosts++;
+    // previous match is better, this track is a clone
+    if ((quali < info.fQuali) || ((quali == info.fQuali) && (nTrue < info.fMatchedNHitsTrue))) {
+      fhNhClones->Fill(nHits);
+      nClones++;
+      continue;
     }
 
+    // this track is better than the old one
+    if (info.fMatchedNHitsAll > 0) {
+      fhNhClones->Fill(info.fMatchedNHitsAll);
+      nClones++;
+    }
+    info.fStsTrackMatch    = iTrack;
+    info.fQuali            = quali;
+    info.fMatchedNHitsAll  = nHits;
+    info.fMatchedNHitsTrue = nTrue;
+
   }  // Loop over StsTracks
+
   nRec = nTracks;
   LOG(debug) << GetName() << ": Filled match map for " << nRec
              << " STS tracks. Ghosts " << nGhosts << " Clones " << nClones;
