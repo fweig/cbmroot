@@ -54,8 +54,10 @@ private:
   void DeInit();
 
   /** Histograms **/
-  TH1F* fhCorrectDigiRatioAll = nullptr;  /// correct digis per event for all detectors
-  TH1F* fhFoundDigiRatioAll   = nullptr;  /// digis found per event for all detectors
+  TH1F* fhCorrectDigiRatioAll = nullptr;                  /// correct digis per event for all detectors
+  TH1F* fhFoundDigiRatioAll   = nullptr;                  /// digis found per event for all detectors
+  std::map<ECbmModuleId, TH1F*> fhMapSystemsCorrectDigi;  // histograms for subsystems
+  std::map<ECbmModuleId, TH1F*> fhMapSystemsFoundDigi;    // histograms for subsystems
 
   /** Match a reconstructed event to MC events+
 		 ** @param event Pointer to reconstructed event
