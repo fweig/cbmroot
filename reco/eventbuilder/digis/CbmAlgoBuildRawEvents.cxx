@@ -38,9 +38,6 @@ Bool_t CbmAlgoBuildRawEvents::InitAlgo()
 {
   LOG(info) << "CbmAlgoBuildRawEvents::InitAlgo => Starting sequence";
 
-  // Get a handle from the IO manager
-  FairRootManager* ioman = FairRootManager::Instance();
-
   /// Check if reference detector is set and seed data are available,
   /// otherwise look for explicit seed times
   if (fRefDet.detId == ECbmModuleId::kNotExist) {
@@ -66,7 +63,6 @@ Bool_t CbmAlgoBuildRawEvents::InitAlgo()
 
   /// Access the TS metadata to know TS start time if needed
   if (fdTsStartTime < 0 || fdTsLength < 0 || fdTsOverLength < 0) {
-    fTimeSliceMetaDataArray = dynamic_cast<TClonesArray*>(ioman->GetObject("TimesliceMetaData"));
     if (!fTimeSliceMetaDataArray) {
       LOG(fatal) << "No TS metadata input found"
                  << " => Please check in the unpacking macro if the following line was "
@@ -75,13 +71,13 @@ Bool_t CbmAlgoBuildRawEvents::InitAlgo()
                  << "source->SetWriteOutputFlag(kTRUE);  // For writing TS metadata";
     }
   }
-
   if (fbFillHistos) { CreateHistograms(); }
+
   LOG(info) << "CbmAlgoBuildRawEvents::InitAlgo => Done";
   return kTRUE;
 }
 
-void CbmAlgoBuildRawEvents::Finish() { LOG(info) << "Total errors: " << fuErrors; }
+void CbmAlgoBuildRawEvents::Finish() {}
 
 void CbmAlgoBuildRawEvents::ClearEventVector()
 {
@@ -143,7 +139,7 @@ void CbmAlgoBuildRawEvents::InitSeedWindow()
   Double_t dOverlapSize  = fdTsOverLength;
 
   if (fdTsStartTime < 0 || fdTsLength < 0 || fdTsOverLength < 0) {
-    pTsMetaData = dynamic_cast<TimesliceMetaData*>(fTimeSliceMetaDataArray->At(0));
+    const TimesliceMetaData* pTsMetaData = dynamic_cast<TimesliceMetaData*>(fTimeSliceMetaDataArray->At(0));
     if (nullptr == pTsMetaData)
       LOG(fatal) << Form("CbmAlgoBuildRawEvents::LoopOnSeeds => "
                          "No TS metadata found for TS %6u.",
@@ -649,14 +645,21 @@ const CbmPsdDigi* CbmAlgoBuildRawEvents::GetDigi(UInt_t uDigi)
 //----------------------------------------------------------------------
 void CbmAlgoBuildRawEvents::CreateHistograms()
 {
-  fhEventTime = new TH1F("hEventTime", "seed time of the events; Seed time [s]; Events", 60000, 0, 600);
+  fhEventTime = new TH1F("hEventTime", "seed time of the events; Seed time [s]; Events", 1000, 0, 0.001);
+  fhEventTime->SetCanExtend(TH1::kAllAxes);
+
   fhEventDt =
-    new TH1F("fhEventDt", "interval in seed time of consecutive events; Seed time [s]; Events", 2100, -100.5, 1999.5);
-  fhEventSize        = new TH1F("hEventSize", "nb of all  digis in the event; Nb Digis []; Events []", 10000, 0, 10000);
+    new TH1F("fhEventDt", "interval in seed time of consecutive events; Seed time [s]; Events", 1000, 0, 0.0001);
+  fhEventDt->SetCanExtend(TH1::kAllAxes);
+
+  fhEventSize = new TH1F("hEventSize", "nb of all  digis in the event; Nb Digis []; Events []", 1000, 0, 100);
+  fhEventSize->SetCanExtend(TH1::kAllAxes);
+
   fhNbDigiPerEvtTime = new TH2I("hNbDigiPerEvtTime",
                                 "nb of all  digis per event vs seed time of the events; Seed time "
                                 "[s]; Nb Digis []; Events []",
-                                600, 0, 600, 1000, 0, 10000);
+                                1000, 0, 0.001, 1000, 0, 100);
+  fhNbDigiPerEvtTime->SetCanExtend(TH2::kAllAxes);
 
   /// Loop on selection detectors
   for (std::vector<RawEventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det) {
@@ -665,18 +668,20 @@ void CbmAlgoBuildRawEvents::CreateHistograms()
       fvhNbDigiPerEvtTimeDet.push_back(nullptr);
       continue;
     }
-
-    fvhNbDigiPerEvtTimeDet.push_back(new TH2I(Form("hNbDigiPerEvtTime%s", (*det).sName.data()),
-                                              Form("nb of %s digis per event vs seed time of the events; Seed time "
-                                                   "[s]; Nb Digis []; Events []",
-                                                   (*det).sName.data()),
-                                              600, 0, 600, 4000, 0, 4000));
+    TH2I* hNbDigiPerEvtTimeDet = new TH2I(Form("hNbDigiPerEvtTime%s", (*det).sName.data()),
+                                          Form("nb of %s digis per event vs seed time of the events; Seed time "
+                                               "[s]; Nb Digis []; Events []",
+                                               (*det).sName.data()),
+                                          1000, 0, 0.001, 1000, 0, 100);
+    hNbDigiPerEvtTimeDet->SetCanExtend(TH2::kAllAxes);
+    fvhNbDigiPerEvtTimeDet.push_back(hNbDigiPerEvtTimeDet);
   }
 
   AddHistoToVector(fhEventTime, "evtbuild");
   AddHistoToVector(fhEventDt, "evtbuild");
   AddHistoToVector(fhEventSize, "evtbuild");
   AddHistoToVector(fhNbDigiPerEvtTime, "evtbuild");
+
   for (std::vector<TH2*>::iterator itHist = fvhNbDigiPerEvtTimeDet.begin(); itHist != fvhNbDigiPerEvtTimeDet.end();
        ++itHist) {
     if (nullptr != (*itHist)) { AddHistoToVector((*itHist), "evtbuild"); }
@@ -688,7 +693,8 @@ void CbmAlgoBuildRawEvents::FillHistos()
   Double_t dPreEvtTime = -1.0;
   for (CbmEvent* evt : fEventVector) {
     fhEventTime->Fill(evt->GetStartTime() * 1e-9);
-    if (0.0 <= dPreEvtTime) { fhEventDt->Fill(evt->GetStartTime() - dPreEvtTime); }
+    if (0.0 <= dPreEvtTime) { fhEventDt->Fill((evt->GetStartTime() - dPreEvtTime) * 1e-9); }
+
     fhEventSize->Fill(evt->GetNofData());
     fhNbDigiPerEvtTime->Fill(evt->GetStartTime() * 1e-9, evt->GetNofData());
 

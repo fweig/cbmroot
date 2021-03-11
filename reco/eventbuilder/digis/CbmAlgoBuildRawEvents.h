@@ -192,6 +192,12 @@ public:
 
   void SetSeedTimes(std::vector<Double_t>* SeedTimes) { fSeedTimes = SeedTimes; }
 
+  // TS metadata
+  void SetTimeSliceMetaDataArray(TClonesArray* TimeSliceMetaDataArray)
+  {
+    fTimeSliceMetaDataArray = TimeSliceMetaDataArray;
+  }
+
   /// Data output access
   std::vector<CbmEvent*>& GetEventVector() { return fEventVector; }
   void ClearEventVector();
@@ -255,11 +261,7 @@ private:
   Double_t fdTsOverLength = -1;
 
   /// Data input
-  /// FIXME: usage of CbmDigiManager in FairMq context?!?
-  ///        => Maybe by registering vector (or vector reference) to ioman in Device?
-  //CbmDigiManager* fDigiMan                  = nullptr;  //!
   TClonesArray* fTimeSliceMetaDataArray = nullptr;  //!
-  const TimesliceMetaData* pTsMetaData  = nullptr;
 
   const std::vector<CbmTofDigi>* fT0DigiVec                  = nullptr;
   const std::vector<CbmMuchDigi>* fMuchDigis                 = nullptr;
@@ -311,7 +313,6 @@ private:
 
   /// Internal state variables
   UInt_t fuCurEv            = 0;   //! Event Counter
-  UInt_t fuErrors           = 0;   //! Error Counter
   UInt_t fuNrTs             = 0;   //! Timeslice Counter
   Double_t fdPrevEvtTime    = 0.;  //! Save previous time information
   Double_t fdPrevEvtEndTime = 0.;  //! Save previous event last digi time information

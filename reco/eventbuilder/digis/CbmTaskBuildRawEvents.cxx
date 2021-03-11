@@ -138,6 +138,9 @@ InitStatus CbmTaskBuildRawEvents::Init()
   ioman->Register("CbmEvent", "Cbm_Event", fEvents, IsOutputBranchPersistent("CbmEvent"));
   if (!fEvents) LOG(fatal) << "Output branch was not created";
 
+  // Set timeslice meta data
+  fpAlgo->SetTimeSliceMetaDataArray(dynamic_cast<TClonesArray*>(ioman->GetObject("TimesliceMetaData")));
+
   /// Call Algo Init method
   if (kTRUE == fpAlgo->InitAlgo()) return kSUCCESS;
   else
