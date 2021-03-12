@@ -8,11 +8,11 @@
 #ifndef CbmCosy2019UnpackerTaskHodo_H
 #define CbmCosy2019UnpackerTaskHodo_H
 
-#include "Timeslice.hpp"
-
 #include "CbmErrorMessage.h"
 #include "CbmMcbmUnpack.h"
 #include "CbmStsDigi.h"
+
+#include "Timeslice.hpp"
 
 class CbmCosy2019UnpackerAlgoHodo;
 class CbmMcbm2018UnpackerAlgoSts;
@@ -28,8 +28,7 @@ public:
   CbmCosy2019UnpackerTaskHodo(UInt_t uNbSdpb = 1);
 
   CbmCosy2019UnpackerTaskHodo(const CbmCosy2019UnpackerTaskHodo&) = delete;
-  CbmCosy2019UnpackerTaskHodo
-  operator=(const CbmCosy2019UnpackerTaskHodo&) = delete;
+  CbmCosy2019UnpackerTaskHodo operator=(const CbmCosy2019UnpackerTaskHodo&) = delete;
 
   virtual ~CbmCosy2019UnpackerTaskHodo();
 
@@ -49,9 +48,7 @@ public:
   void AddMsComponentToList(size_t component, UShort_t usDetectorId);
   void SetNbMsInTs(size_t /*uCoreMsNb*/, size_t /*uOverlapMsNb*/) {};
 
-  inline void SetMonitorMode(Bool_t bFlagIn = kTRUE) {
-    fbMonitorMode = bFlagIn;
-  }
+  inline void SetMonitorMode(Bool_t bFlagIn = kTRUE) { fbMonitorMode = bFlagIn; }
   void SetIgnoreOverlapMs(Bool_t bFlagIn = kTRUE);
 
   void SetTimeOffsetNs(Double_t dOffsetIn = 0.0);
@@ -67,12 +64,9 @@ public:
 
 private:
   /// Control flags
-  Bool_t
-    fbMonitorMode;  //! Switch ON the filling of a minimal set of histograms
-  Bool_t
-    fbDebugMonitorMode;  //! Switch ON the filling of a additional set of histograms
-  Bool_t
-    fbWriteOutput;  //! If ON the output TClonesArray of digi is written to disk
+  Bool_t fbMonitorMode;       //! Switch ON the filling of a minimal set of histograms
+  Bool_t fbDebugMonitorMode;  //! Switch ON the filling of a additional set of histograms
+  Bool_t fbWriteOutput;       //! If ON the output TClonesArray of digi is written to disk
 
   /// Temporary storage of user parameters
   std::vector<FebChanMaskSts> fvChanMasks;

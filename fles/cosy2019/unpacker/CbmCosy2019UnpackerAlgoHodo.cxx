@@ -23,6 +23,7 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+
 #include <stdint.h>
 
 // -------------------------------------------------------------------------
@@ -72,8 +73,10 @@ CbmCosy2019UnpackerAlgoHodo::CbmCosy2019UnpackerAlgoHodo()
    fhEventNbPerTs( nullptr ),
    fcTimeToTrigRaw( nullptr )
 */
-{}
-CbmCosy2019UnpackerAlgoHodo::~CbmCosy2019UnpackerAlgoHodo() {
+{
+}
+CbmCosy2019UnpackerAlgoHodo::~CbmCosy2019UnpackerAlgoHodo()
+{
   /// Clear buffers
   fvmHitsInMs.clear();
   /*
@@ -85,53 +88,58 @@ CbmCosy2019UnpackerAlgoHodo::~CbmCosy2019UnpackerAlgoHodo() {
 }
 
 // -------------------------------------------------------------------------
-Bool_t CbmCosy2019UnpackerAlgoHodo::Init() {
+Bool_t CbmCosy2019UnpackerAlgoHodo::Init()
+{
   LOG(info) << "Initializing mCBM STS 2019 unpacker algo";
 
   return kTRUE;
 }
 void CbmCosy2019UnpackerAlgoHodo::Reset() {}
-void CbmCosy2019UnpackerAlgoHodo::Finish() {
+void CbmCosy2019UnpackerAlgoHodo::Finish()
+{
   /// Printout Goodbye message and stats
 
   /// Write Output histos
 }
 
 // -------------------------------------------------------------------------
-Bool_t CbmCosy2019UnpackerAlgoHodo::InitContainers() {
+Bool_t CbmCosy2019UnpackerAlgoHodo::InitContainers()
+{
   LOG(info) << "Init parameter containers for CbmCosy2019UnpackerAlgoHodo";
   Bool_t initOK = ReInitContainers();
 
   return initOK;
 }
-Bool_t CbmCosy2019UnpackerAlgoHodo::ReInitContainers() {
+Bool_t CbmCosy2019UnpackerAlgoHodo::ReInitContainers()
+{
   LOG(info) << "**********************************************";
   LOG(info) << "ReInit parameter containers for CbmCosy2019UnpackerAlgoHodo";
 
-  fUnpackPar =
-    (CbmCosy2019HodoPar*) fParCList->FindObject("CbmCosy2019HodoPar");
+  fUnpackPar = (CbmCosy2019HodoPar*) fParCList->FindObject("CbmCosy2019HodoPar");
   if (nullptr == fUnpackPar) return kFALSE;
 
   Bool_t initOK = InitParameters();
 
   return initOK;
 }
-TList* CbmCosy2019UnpackerAlgoHodo::GetParList() {
+TList* CbmCosy2019UnpackerAlgoHodo::GetParList()
+{
   if (nullptr == fParCList) fParCList = new TList();
   fUnpackPar = new CbmCosy2019HodoPar("CbmCosy2019HodoPar");
   fParCList->Add(fUnpackPar);
 
   return fParCList;
 }
-Bool_t CbmCosy2019UnpackerAlgoHodo::InitParameters() {
+Bool_t CbmCosy2019UnpackerAlgoHodo::InitParameters()
+{
   fuNbModules = fUnpackPar->GetNbOfModules();
   LOG(info) << "Nr. of STS Modules:    " << fuNbModules;
 
   fviModAddress.resize(fuNbModules);
   for (UInt_t uModIdx = 0; uModIdx < fuNbModules; ++uModIdx) {
     fviModAddress[uModIdx] = fUnpackPar->GetModuleAddress(uModIdx);
-    LOG(info) << "Module #" << std::setw(2) << uModIdx << " Address 0x"
-              << std::setw(8) << std::hex << fviModAddress[uModIdx] << std::dec;
+    LOG(info) << "Module #" << std::setw(2) << uModIdx << " Address 0x" << std::setw(8) << std::hex
+              << fviModAddress[uModIdx] << std::dec;
   }  // for( UInt_t uModIdx = 0; uModIdx < fuNbModules; ++uModIdx)
 
   fuNrOfDpbs = fUnpackPar->GetNrOfDpbs();
@@ -140,10 +148,8 @@ Bool_t CbmCosy2019UnpackerAlgoHodo::InitParameters() {
   fDpbIdIndexMap.clear();
   for (UInt_t uDpb = 0; uDpb < fuNrOfDpbs; ++uDpb) {
     fDpbIdIndexMap[fUnpackPar->GetDpbId(uDpb)] = uDpb;
-    LOG(info) << "Eq. ID for DPB #" << std::setw(2) << uDpb << " = 0x"
-              << std::setw(4) << std::hex << fUnpackPar->GetDpbId(uDpb)
-              << std::dec << " => "
-              << fDpbIdIndexMap[fUnpackPar->GetDpbId(uDpb)];
+    LOG(info) << "Eq. ID for DPB #" << std::setw(2) << uDpb << " = 0x" << std::setw(4) << std::hex
+              << fUnpackPar->GetDpbId(uDpb) << std::dec << " => " << fDpbIdIndexMap[fUnpackPar->GetDpbId(uDpb)];
   }  // for( UInt_t uDpb = 0; uDpb < fuNrOfDpbs; ++uDpb )
 
   fuNbFebs = fUnpackPar->GetNrOfFebs();
@@ -165,26 +171,19 @@ Bool_t CbmCosy2019UnpackerAlgoHodo::InitParameters() {
     fviFebModuleIdx[uDpb].resize(fUnpackPar->GetNbCrobsPerDpb());
     fvdFebAdcGain[uDpb].resize(fUnpackPar->GetNbCrobsPerDpb());
     fvdFebAdcOffs[uDpb].resize(fUnpackPar->GetNbCrobsPerDpb());
-    for (UInt_t uCrobIdx = 0; uCrobIdx < fUnpackPar->GetNbCrobsPerDpb();
-         ++uCrobIdx) {
-      fvbCrobActiveFlag[uDpb][uCrobIdx] =
-        fUnpackPar->IsCrobActive(uDpb, uCrobIdx);
+    for (UInt_t uCrobIdx = 0; uCrobIdx < fUnpackPar->GetNbCrobsPerDpb(); ++uCrobIdx) {
+      fvbCrobActiveFlag[uDpb][uCrobIdx] = fUnpackPar->IsCrobActive(uDpb, uCrobIdx);
 
       fviFebModuleIdx[uDpb][uCrobIdx].resize(fUnpackPar->GetNbFebsPerCrob());
       fvdFebAdcGain[uDpb][uCrobIdx].resize(fUnpackPar->GetNbFebsPerCrob(), 0.0);
       fvdFebAdcOffs[uDpb][uCrobIdx].resize(fUnpackPar->GetNbFebsPerCrob(), 0.0);
-      for (UInt_t uFebIdx = 0; uFebIdx < fUnpackPar->GetNbFebsPerCrob();
-           ++uFebIdx) {
-        fviFebModuleIdx[uDpb][uCrobIdx][uFebIdx] =
-          fUnpackPar->GetFebModuleIdx(uDpb, uCrobIdx, uFebIdx);
-        fvdFebAdcGain[uDpb][uCrobIdx][uFebIdx] =
-          fUnpackPar->GetFebAdcGain(uDpb, uCrobIdx, uFebIdx);
-        fvdFebAdcOffs[uDpb][uCrobIdx][uFebIdx] =
-          fUnpackPar->GetFebAdcOffset(uDpb, uCrobIdx, uFebIdx);
+      for (UInt_t uFebIdx = 0; uFebIdx < fUnpackPar->GetNbFebsPerCrob(); ++uFebIdx) {
+        fviFebModuleIdx[uDpb][uCrobIdx][uFebIdx] = fUnpackPar->GetFebModuleIdx(uDpb, uCrobIdx, uFebIdx);
+        fvdFebAdcGain[uDpb][uCrobIdx][uFebIdx]   = fUnpackPar->GetFebAdcGain(uDpb, uCrobIdx, uFebIdx);
+        fvdFebAdcOffs[uDpb][uCrobIdx][uFebIdx]   = fUnpackPar->GetFebAdcOffset(uDpb, uCrobIdx, uFebIdx);
 
         if (0 <= fviFebModuleIdx[uDpb][uCrobIdx][uFebIdx]
-            && static_cast<UInt_t>(fviFebModuleIdx[uDpb][uCrobIdx][uFebIdx])
-                 < fuNbModules) {
+            && static_cast<UInt_t>(fviFebModuleIdx[uDpb][uCrobIdx][uFebIdx]) < fuNbModules) {
 
           ///! FIXME: 1) Geometry is using front/back while we are using P/N !!!!
           ///!            => Assuming that front facing modules have connectors on right side
@@ -192,8 +191,7 @@ Bool_t CbmCosy2019UnpackerAlgoHodo::InitParameters() {
           ///!        2) No accessor/setter to change only the side field of an STS address
           ///!            => hardcode the shift
           ///!            +> The big is unused in the current scheme: the side is encoded in the Digi channel
-          fviFebAddress.push_back(
-            fviModAddress[fviFebModuleIdx[uDpb][uCrobIdx][uFebIdx]]);
+          fviFebAddress.push_back(fviModAddress[fviFebModuleIdx[uDpb][uCrobIdx][uFebIdx]]);
           fviFebModule.push_back(fviFebModuleIdx[uDpb][uCrobIdx][uFebIdx]);
         }  // FEB active and module index OK
         else if (-1 == fviFebModuleIdx[uDpb][uCrobIdx][uFebIdx]) {
@@ -201,47 +199,36 @@ Bool_t CbmCosy2019UnpackerAlgoHodo::InitParameters() {
           fviFebModule.push_back(-1);
         }  // Module index or type is set to inactive
         else {
-          LOG(fatal) << Form(
-            "Bad module Index for DPB #%02u CROB #%u FEB %02u: %d",
-            uDpb,
-            uCrobIdx,
-            uFebIdx,
-            fviFebModuleIdx[uDpb][uCrobIdx][uFebIdx]);
+          LOG(fatal) << Form("Bad module Index for DPB #%02u CROB #%u FEB %02u: %d", uDpb, uCrobIdx, uFebIdx,
+                             fviFebModuleIdx[uDpb][uCrobIdx][uFebIdx]);
         }  // Bad module index or type for this FEB
-      }  // for( UInt_t uFebIdx = 0; uFebIdx < fUnpackPar->GetNbFebsPerCrob(); ++ uFebIdx )
-    }  // for( UInt_t uCrobIdx = 0; uCrobIdx < fUnpackPar->GetNbCrobsPerDpb(); ++uCrobIdx )
-  }    // for( UInt_t uDpb = 0; uDpb < fuNrOfDpbs; ++uDpb )
+      }    // for( UInt_t uFebIdx = 0; uFebIdx < fUnpackPar->GetNbFebsPerCrob(); ++ uFebIdx )
+    }      // for( UInt_t uCrobIdx = 0; uCrobIdx < fUnpackPar->GetNbCrobsPerDpb(); ++uCrobIdx )
+  }        // for( UInt_t uDpb = 0; uDpb < fuNrOfDpbs; ++uDpb )
 
   for (UInt_t uDpb = 0; uDpb < fuNrOfDpbs; ++uDpb) {
     TString sPrintoutLine = Form("DPB #%02u CROB Active ?:       ", uDpb);
-    for (UInt_t uCrobIdx = 0; uCrobIdx < fUnpackPar->GetNbCrobsPerDpb();
-         ++uCrobIdx) {
-      sPrintoutLine +=
-        Form("%1u", (fvbCrobActiveFlag[uDpb][uCrobIdx] == kTRUE));
+    for (UInt_t uCrobIdx = 0; uCrobIdx < fUnpackPar->GetNbCrobsPerDpb(); ++uCrobIdx) {
+      sPrintoutLine += Form("%1u", (fvbCrobActiveFlag[uDpb][uCrobIdx] == kTRUE));
     }  // for( UInt_t uCrobIdx = 0; uCrobIdx < fUnpackPar->GetNbCrobsPerDpb(); ++uCrobIdx )
     LOG(info) << sPrintoutLine;
   }  // for( UInt_t uDpb = 0; uDpb < fuNrOfDpbs; ++uDpb )
 
   UInt_t uGlobalFebIdx = 0;
   for (UInt_t uDpb = 0; uDpb < fuNrOfDpbs; ++uDpb) {
-    for (UInt_t uCrobIdx = 0; uCrobIdx < fUnpackPar->GetNbCrobsPerDpb();
-         ++uCrobIdx) {
+    for (UInt_t uCrobIdx = 0; uCrobIdx < fUnpackPar->GetNbCrobsPerDpb(); ++uCrobIdx) {
       LOG(info) << Form("DPB #%02u CROB #%u:       ", uDpb, uCrobIdx);
-      for (UInt_t uFebIdx = 0; uFebIdx < fUnpackPar->GetNbFebsPerCrob();
-           ++uFebIdx) {
+      for (UInt_t uFebIdx = 0; uFebIdx < fUnpackPar->GetNbFebsPerCrob(); ++uFebIdx) {
         if (0 <= fviFebModuleIdx[uDpb][uCrobIdx][uFebIdx])
           LOG(info) << Form("      FEB #%02u (%02u): Mod. Idx = %03d (Addr. "
                             "0x%08x) ADC gain %4.0f e- ADC Offs %5.0f e-",
-                            uFebIdx,
-                            uGlobalFebIdx,
-                            fviFebModuleIdx[uDpb][uCrobIdx][uFebIdx],
-                            fviFebAddress[uGlobalFebIdx],
-                            fvdFebAdcGain[uDpb][uCrobIdx][uFebIdx],
+                            uFebIdx, uGlobalFebIdx, fviFebModuleIdx[uDpb][uCrobIdx][uFebIdx],
+                            fviFebAddress[uGlobalFebIdx], fvdFebAdcGain[uDpb][uCrobIdx][uFebIdx],
                             fvdFebAdcOffs[uDpb][uCrobIdx][uFebIdx]);
         uGlobalFebIdx++;
       }  // for( UInt_t uFebIdx = 0; uFebIdx < fUnpackPar->GetNbFebsPerCrob(); ++ uFebIdx )
-    }  // for( UInt_t uCrobIdx = 0; uCrobIdx < fUnpackPar->GetNbCrobsPerDpb(); ++uCrobIdx )
-  }    // for( UInt_t uDpb = 0; uDpb < fuNrOfDpbs; ++uDpb )
+    }    // for( UInt_t uCrobIdx = 0; uCrobIdx < fUnpackPar->GetNbCrobsPerDpb(); ++uCrobIdx )
+  }      // for( UInt_t uDpb = 0; uDpb < fuNrOfDpbs; ++uDpb )
 
   // Internal status initialization
   fvulCurrentTsMsb.resize(fuNrOfDpbs);
@@ -255,8 +242,8 @@ Bool_t CbmCosy2019UnpackerAlgoHodo::InitParameters() {
 }
 // -------------------------------------------------------------------------
 
-void CbmCosy2019UnpackerAlgoHodo::AddMsComponentToList(size_t component,
-                                                       UShort_t usDetectorId) {
+void CbmCosy2019UnpackerAlgoHodo::AddMsComponentToList(size_t component, UShort_t usDetectorId)
+{
   /// Check for duplicates and ignore if it is the case
   for (UInt_t uCompIdx = 0; uCompIdx < fvMsComponentsList.size(); ++uCompIdx)
     if (component == fvMsComponentsList[uCompIdx]) return;
@@ -264,13 +251,13 @@ void CbmCosy2019UnpackerAlgoHodo::AddMsComponentToList(size_t component,
   /// Add to list
   fvMsComponentsList.push_back(component);
 
-  LOG(info) << "CbmCosy2019UnpackerAlgoHodo::AddMsComponentToList => Component "
-            << component << " with detector ID 0x" << std::hex << usDetectorId
-            << std::dec << " added to list";
+  LOG(info) << "CbmCosy2019UnpackerAlgoHodo::AddMsComponentToList => Component " << component << " with detector ID 0x"
+            << std::hex << usDetectorId << std::dec << " added to list";
 }
 // -------------------------------------------------------------------------
 
-Bool_t CbmCosy2019UnpackerAlgoHodo::ProcessTs(const fles::Timeslice& ts) {
+Bool_t CbmCosy2019UnpackerAlgoHodo::ProcessTs(const fles::Timeslice& ts)
+{
   fulCurrentTsIdx = ts.index();
   fdTsStartTime   = static_cast<Double_t>(ts.descriptor(0, 0).idx);
 
@@ -283,10 +270,9 @@ Bool_t CbmCosy2019UnpackerAlgoHodo::ProcessTs(const fles::Timeslice& ts) {
     fuNbOverMsPerTs  = ts.num_microslices(0) - ts.num_core_microslices();
     fdTsCoreSizeInNs = fdMsSizeInNs * (fuNbCoreMsPerTs);
     fdTsFullSizeInNs = fdMsSizeInNs * (fuNbCoreMsPerTs + fuNbOverMsPerTs);
-    LOG(info) << "Timeslice parameters: each TS has " << fuNbCoreMsPerTs
-              << " Core MS and " << fuNbOverMsPerTs
-              << " Overlap MS, for a core duration of " << fdTsCoreSizeInNs
-              << " ns and a full duration of " << fdTsFullSizeInNs << " ns";
+    LOG(info) << "Timeslice parameters: each TS has " << fuNbCoreMsPerTs << " Core MS and " << fuNbOverMsPerTs
+              << " Overlap MS, for a core duration of " << fdTsCoreSizeInNs << " ns and a full duration of "
+              << fdTsFullSizeInNs << " ns";
 
     /// Ignore overlap ms if flag set by user
     fuNbMsLoop = fuNbCoreMsPerTs;
@@ -301,43 +287,37 @@ Bool_t CbmCosy2019UnpackerAlgoHodo::ProcessTs(const fles::Timeslice& ts) {
   /// Loop over core microslices (and overlap ones if chosen)
   for (fuMsIndex = 0; fuMsIndex < fuNbMsLoop; fuMsIndex++) {
     /// Loop over registered components
-    for (UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size();
-         ++uMsCompIdx) {
+    for (UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx) {
       UInt_t uMsComp = fvMsComponentsList[uMsCompIdx];
 
       if (kFALSE == ProcessMs(ts, uMsComp, fuMsIndex)) {
-        LOG(error) << "Failed to process ts " << fulCurrentTsIdx << " MS "
-                   << fuMsIndex << " for component " << uMsComp;
+        LOG(error) << "Failed to process ts " << fulCurrentTsIdx << " MS " << fuMsIndex << " for component " << uMsComp;
         return kFALSE;
       }  // if( kFALSE == ProcessMs( ts, uMsCompIdx, fuMsIndex ) )
-    }  // for( UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx )
+    }    // for( UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx )
 
     /// Sort the buffers of hits
     std::sort(fvmHitsInMs.begin(), fvmHitsInMs.end());
 
     /// Add the hits to the output buffer as Digis
-    for (auto itHitIn = fvmHitsInMs.begin(); itHitIn < fvmHitsInMs.end();
-         ++itHitIn) {
+    for (auto itHitIn = fvmHitsInMs.begin(); itHitIn < fvmHitsInMs.end(); ++itHitIn) {
       UInt_t uAsicIdx = itHitIn->GetAsic();
       UInt_t uFebIdx  = itHitIn->GetAsic() / fUnpackPar->GetNbAsicsPerFeb();
 
       /// Ignore unmapped Hits
       if (-1 == fviFebModule[uFebIdx]) continue;
 
-      UInt_t uChanInMod = fUnpackPar->GetChannelInModule(
-        fviFebModule[uFebIdx], itHitIn->GetChan());  // 0-63 = X, 64-127 = Y
+      UInt_t uChanInMod =
+        fUnpackPar->GetChannelInModule(fviFebModule[uFebIdx], itHitIn->GetChan());  // 0-63 = X, 64-127 = Y
 
-      Double_t dTimeInNs =
-        itHitIn->GetTs() * stsxyter::kdClockCycleNs - fdTimeOffsetNs;
-      if (uAsicIdx < fvdTimeOffsetNsAsics.size())
-        dTimeInNs -= fvdTimeOffsetNsAsics[uAsicIdx];
+      Double_t dTimeInNs = itHitIn->GetTs() * stsxyter::kdClockCycleNs - fdTimeOffsetNs;
+      if (uAsicIdx < fvdTimeOffsetNsAsics.size()) dTimeInNs -= fvdTimeOffsetNsAsics[uAsicIdx];
       ULong64_t ulTimeInNs = static_cast<ULong64_t>(dTimeInNs);
       /*
          LOG(info) << Form("Hit in ASIC %2u FEB %2u (Address %08x) Chan %3u Time %12u ",
                               uAsicIdx, uFebIdx, fviFebAddress[ uFebIdx ], uChanInMod, ulTimeInNs );
 */
-      fDigiVect.emplace_back(
-        fviFebAddress[uFebIdx], uChanInMod, ulTimeInNs, itHitIn->GetAdc());
+      fDigiVect.emplace_back(fviFebAddress[uFebIdx], uChanInMod, ulTimeInNs, itHitIn->GetAdc());
     }  // for( auto itHitIn = fvmHitsInMs.begin(); itHitIn < fvmHitsInMs.end(); ++itHitIn )
 
     /// Clear the buffer of hits
@@ -372,22 +352,19 @@ Bool_t CbmCosy2019UnpackerAlgoHodo::ProcessTs(const fles::Timeslice& ts) {
   return kTRUE;
 }
 
-Bool_t CbmCosy2019UnpackerAlgoHodo::ProcessMs(const fles::Timeslice& ts,
-                                              size_t uMsCompIdx,
-                                              size_t uMsIdx) {
-  auto msDescriptor    = ts.descriptor(uMsCompIdx, uMsIdx);
-  fuCurrentEquipmentId = msDescriptor.eq_id;
-  const uint8_t* msContent =
-    reinterpret_cast<const uint8_t*>(ts.content(uMsCompIdx, uMsIdx));
+Bool_t CbmCosy2019UnpackerAlgoHodo::ProcessMs(const fles::Timeslice& ts, size_t uMsCompIdx, size_t uMsIdx)
+{
+  auto msDescriptor        = ts.descriptor(uMsCompIdx, uMsIdx);
+  fuCurrentEquipmentId     = msDescriptor.eq_id;
+  const uint8_t* msContent = reinterpret_cast<const uint8_t*>(ts.content(uMsCompIdx, uMsIdx));
 
   uint32_t uSize  = msDescriptor.size;
   fulCurrentMsIdx = msDescriptor.idx;
   //   Double_t dMsTime = (1e-9) * static_cast<double>(fulCurrentMsIdx);
-  LOG(debug) << "Microslice: " << fulCurrentMsIdx << " from EqId " << std::hex
-             << fuCurrentEquipmentId << std::dec << " has size: " << uSize;
+  LOG(debug) << "Microslice: " << fulCurrentMsIdx << " from EqId " << std::hex << fuCurrentEquipmentId << std::dec
+             << " has size: " << uSize;
 
-  if (0 == fvbMaskedComponents.size())
-    fvbMaskedComponents.resize(ts.num_components(), kFALSE);
+  if (0 == fvbMaskedComponents.size()) fvbMaskedComponents.resize(ts.num_components(), kFALSE);
 
   fuCurrDpbId = static_cast<uint32_t>(fuCurrentEquipmentId & 0xFFFF);
   //   fuCurrDpbIdx = fDpbIdIndexMap[ fuCurrDpbId ];
@@ -396,8 +373,7 @@ Bool_t CbmCosy2019UnpackerAlgoHodo::ProcessMs(const fles::Timeslice& ts,
   auto it = fDpbIdIndexMap.find(fuCurrDpbId);
   if (it == fDpbIdIndexMap.end()) {
     if (kFALSE == fvbMaskedComponents[uMsCompIdx]) {
-      LOG(info)
-        << "---------------------------------------------------------------";
+      LOG(info) << "---------------------------------------------------------------";
       /*
           LOG(info) << "hi hv eqid flag si sv idx/start        crc      size     offset";
           LOG(info) << Form( "%02x %02x %04x %04x %02x %02x %016llx %08x %08x %016llx",
@@ -409,10 +385,9 @@ Bool_t CbmCosy2019UnpackerAlgoHodo::ProcessMs(const fles::Timeslice& ts,
 */
       LOG(info) << FormatMsHeaderPrintout(msDescriptor);
       //         LOG(info) << msDescriptor;
-      LOG(warning) << "Could not find the sDPB index for AFCK id 0x" << std::hex
-                   << fuCurrDpbId << std::dec << " in timeslice "
-                   << fulCurrentTsIdx << " in microslice " << uMsIdx
-                   << " component " << uMsCompIdx << "\n"
+      LOG(warning) << "Could not find the sDPB index for AFCK id 0x" << std::hex << fuCurrDpbId << std::dec
+                   << " in timeslice " << fulCurrentTsIdx << " in microslice " << uMsIdx << " component " << uMsCompIdx
+                   << "\n"
                    << "If valid this index has to be added in the HODO "
                       "parameter file in the DbpIdArray field";
       fvbMaskedComponents[uMsCompIdx] = kTRUE;
@@ -430,21 +405,17 @@ Bool_t CbmCosy2019UnpackerAlgoHodo::ProcessMs(const fles::Timeslice& ts,
     fuCurrDpbIdx = fDpbIdIndexMap[fuCurrDpbId];
 
   /** Check the current TS_MSb cycle and correct it if wrong **/
-  UInt_t uTsMsbCycleHeader = std::floor(
-    fulCurrentMsIdx / (stsxyter::kulTsCycleNbBins * stsxyter::kdClockCycleNs));
+  UInt_t uTsMsbCycleHeader = std::floor(fulCurrentMsIdx / (stsxyter::kulTsCycleNbBins * stsxyter::kdClockCycleNs));
 
   if (0 == uMsIdx) {
     fvuCurrentTsMsbCycle[fuCurrDpbIdx] = uTsMsbCycleHeader;
     fvulCurrentTsMsb[fuCurrDpbIdx]     = 0;
   }  // if( 0 == uMsIdx )
-  else if (uTsMsbCycleHeader != fvuCurrentTsMsbCycle[fuCurrDpbIdx]
-           && 4194303 != fvulCurrentTsMsb[fuCurrDpbIdx]) {
-    LOG(warning)
-      << "TS MSB cycle from MS header does not match current cycle from data "
-      << "for TS " << std::setw(12) << fulCurrentTsIdx << " MS "
-      << std::setw(12) << fulCurrentMsIdx << " MsInTs " << std::setw(3)
-      << uMsIdx << " ====> " << fvuCurrentTsMsbCycle[fuCurrDpbIdx] << " VS "
-      << uTsMsbCycleHeader;
+  else if (uTsMsbCycleHeader != fvuCurrentTsMsbCycle[fuCurrDpbIdx] && 4194303 != fvulCurrentTsMsb[fuCurrDpbIdx]) {
+    LOG(warning) << "TS MSB cycle from MS header does not match current cycle from data "
+                 << "for TS " << std::setw(12) << fulCurrentTsIdx << " MS " << std::setw(12) << fulCurrentMsIdx
+                 << " MsInTs " << std::setw(3) << uMsIdx << " ====> " << fvuCurrentTsMsbCycle[fuCurrDpbIdx] << " VS "
+                 << uTsMsbCycleHeader;
     fvuCurrentTsMsbCycle[fuCurrDpbIdx] = uTsMsbCycleHeader;
   }
 
@@ -454,12 +425,10 @@ Bool_t CbmCosy2019UnpackerAlgoHodo::ProcessMs(const fles::Timeslice& ts,
                << "contain only complete sDPB messages!";
 
   // Compute the number of complete messages in the input microslice buffer
-  uint32_t uNbMessages =
-    (uSize - (uSize % sizeof(stsxyter::Message))) / sizeof(stsxyter::Message);
+  uint32_t uNbMessages = (uSize - (uSize % sizeof(stsxyter::Message))) / sizeof(stsxyter::Message);
 
   // Prepare variables for the loop on contents
-  const stsxyter::Message* pMess =
-    reinterpret_cast<const stsxyter::Message*>(msContent);
+  const stsxyter::Message* pMess = reinterpret_cast<const stsxyter::Message*>(msContent);
   for (uint32_t uIdx = 0; uIdx < uNbMessages; uIdx++) {
 
     /// Get message type
@@ -480,15 +449,12 @@ Bool_t CbmCosy2019UnpackerAlgoHodo::ProcessMs(const fles::Timeslice& ts,
 
         if (-1 == uFebIdx) {
           LOG(warning) << "CbmCosy2019UnpackerAlgoHodo::DoUnpack => "
-                       << "Wrong elink Idx! Elink raw "
-                       << Form("%d remap %d", usElinkIdx, uFebIdx);
+                       << "Wrong elink Idx! Elink raw " << Form("%d remap %d", usElinkIdx, uFebIdx);
           continue;
         }  // if( -1 == uFebIdx )
 
-        UInt_t uAsicIdx =
-          (fuCurrDpbIdx * fUnpackPar->GetNbCrobsPerDpb() + uCrobIdx)
-            * fUnpackPar->GetNbAsicsPerCrob()
-          + fUnpackPar->ElinkIdxToAsicIdx(usElinkIdx);
+        UInt_t uAsicIdx = (fuCurrDpbIdx * fUnpackPar->GetNbCrobsPerDpb() + uCrobIdx) * fUnpackPar->GetNbAsicsPerCrob()
+                          + fUnpackPar->ElinkIdxToAsicIdx(usElinkIdx);
 
         ProcessHitInfo(pMess[uIdx], usElinkIdx, uAsicIdx, uMsIdx);
         break;
@@ -507,8 +473,7 @@ Bool_t CbmCosy2019UnpackerAlgoHodo::ProcessMs(const fles::Timeslice& ts,
 
         if (0 < uIdx)
           LOG(info) << "CbmCosy2019UnpackerAlgoHodo::DoUnpack => "
-                    << "EPOCH message at unexpected position in MS: message "
-                    << uIdx << " VS message 0 expected!";
+                    << "EPOCH message at unexpected position in MS: message " << uIdx << " VS message 0 expected!";
         break;
       }  // case stsxyter::MessType::TsMsb :
       case stsxyter::MessType::Status: {
@@ -539,10 +504,9 @@ Bool_t CbmCosy2019UnpackerAlgoHodo::ProcessMs(const fles::Timeslice& ts,
 }
 
 // -------------------------------------------------------------------------
-void CbmCosy2019UnpackerAlgoHodo::ProcessHitInfo(const stsxyter::Message& mess,
-                                                 const UShort_t& usElinkIdx,
-                                                 const UInt_t& uAsicIdx,
-                                                 const UInt_t& /*uMsIdx*/) {
+void CbmCosy2019UnpackerAlgoHodo::ProcessHitInfo(const stsxyter::Message& mess, const UShort_t& usElinkIdx,
+                                                 const UInt_t& uAsicIdx, const UInt_t& /*uMsIdx*/)
+{
   UShort_t usChan   = mess.GetHitChannel();
   UShort_t usRawAdc = mess.GetHitAdc();
   //   UShort_t usFullTs = mess.GetHitTimeFull();
@@ -581,16 +545,14 @@ void CbmCosy2019UnpackerAlgoHodo::ProcessHitInfo(const stsxyter::Message& mess,
   // Compute the Full time stamp
   // Use TS w/o overlap bits as they will anyway come from the TS_MSB
   Long64_t ulHitTime = usRawTs;
-  ulHitTime += static_cast<ULong64_t>(stsxyter::kuHitNbTsBins)
-                 * static_cast<ULong64_t>(fvulCurrentTsMsb[fuCurrDpbIdx])
-               + static_cast<ULong64_t>(stsxyter::kulTsCycleNbBins)
-                   * static_cast<ULong64_t>(fvuCurrentTsMsbCycle[fuCurrDpbIdx]);
+  ulHitTime +=
+    static_cast<ULong64_t>(stsxyter::kuHitNbTsBins) * static_cast<ULong64_t>(fvulCurrentTsMsb[fuCurrDpbIdx])
+    + static_cast<ULong64_t>(stsxyter::kulTsCycleNbBins) * static_cast<ULong64_t>(fvuCurrentTsMsbCycle[fuCurrDpbIdx]);
 
   // Convert the Hit time in bins to Hit time in ns
   Double_t dHitTimeNs = ulHitTime * stsxyter::kdClockCycleNs;
 
-  fvmHitsInMs.push_back(stsxyter::FinalHit(
-    ulHitTime, usRawAdc, uAsicIdx, usChan, fuCurrDpbIdx, uCrobIdx));
+  fvmHitsInMs.push_back(stsxyter::FinalHit(ulHitTime, usRawAdc, uAsicIdx, usChan, fuCurrDpbIdx, uCrobIdx));
 
   // Check Starting point of histos with time as X axis
   if (-1 == fdStartTime) fdStartTime = dHitTimeNs;
@@ -626,10 +588,8 @@ void CbmCosy2019UnpackerAlgoHodo::ProcessHitInfo(const stsxyter::Message& mess,
 */
 }
 
-void CbmCosy2019UnpackerAlgoHodo::ProcessTsMsbInfo(
-  const stsxyter::Message& mess,
-  UInt_t uMessIdx,
-  UInt_t uMsIdx) {
+void CbmCosy2019UnpackerAlgoHodo::ProcessTsMsbInfo(const stsxyter::Message& mess, UInt_t uMessIdx, UInt_t uMsIdx)
+{
   UInt_t uVal = mess.GetTsMsbVal();
 
   /*
@@ -651,24 +611,19 @@ void CbmCosy2019UnpackerAlgoHodo::ProcessTsMsbInfo(
   // Update Status counters
   if (uVal < fvulCurrentTsMsb[fuCurrDpbIdx]) {
 
-    LOG(info) << " TS " << std::setw(12) << fulCurrentTsIdx << " MS "
-              << std::setw(12) << fulCurrentMsIdx << " MS Idx " << std::setw(4)
-              << uMsIdx << " Msg Idx " << std::setw(5) << uMessIdx << " DPB "
-              << std::setw(2) << fuCurrDpbIdx << " Old TsMsb " << std::setw(5)
-              << fvulCurrentTsMsb[fuCurrDpbIdx] << " Old MsbCy " << std::setw(5)
-              << fvuCurrentTsMsbCycle[fuCurrDpbIdx] << " new TsMsb "
-              << std::setw(5) << uVal;
+    LOG(info) << " TS " << std::setw(12) << fulCurrentTsIdx << " MS " << std::setw(12) << fulCurrentMsIdx << " MS Idx "
+              << std::setw(4) << uMsIdx << " Msg Idx " << std::setw(5) << uMessIdx << " DPB " << std::setw(2)
+              << fuCurrDpbIdx << " Old TsMsb " << std::setw(5) << fvulCurrentTsMsb[fuCurrDpbIdx] << " Old MsbCy "
+              << std::setw(5) << fvuCurrentTsMsbCycle[fuCurrDpbIdx] << " new TsMsb " << std::setw(5) << uVal;
 
     fvuCurrentTsMsbCycle[fuCurrDpbIdx]++;
   }  // if( uVal < fvulCurrentTsMsb[fuCurrDpbIdx] )
-  if (uVal != fvulCurrentTsMsb[fuCurrDpbIdx] + 1 && 0 != uVal
-      && 4194303 != fvulCurrentTsMsb[fuCurrDpbIdx] && 1 != uMessIdx) {
+  if (uVal != fvulCurrentTsMsb[fuCurrDpbIdx] + 1 && 0 != uVal && 4194303 != fvulCurrentTsMsb[fuCurrDpbIdx]
+      && 1 != uMessIdx) {
     LOG(info) << "TS MSb Jump in "
-              << " TS " << std::setw(12) << fulCurrentTsIdx << " MS "
-              << std::setw(12) << fulCurrentMsIdx << " MS Idx " << std::setw(4)
-              << uMsIdx << " Msg Idx " << std::setw(5) << uMessIdx << " DPB "
-              << std::setw(2) << fuCurrDpbIdx << " => Old TsMsb "
-              << std::setw(5) << fvulCurrentTsMsb[fuCurrDpbIdx] << " new TsMsb "
+              << " TS " << std::setw(12) << fulCurrentTsIdx << " MS " << std::setw(12) << fulCurrentMsIdx << " MS Idx "
+              << std::setw(4) << uMsIdx << " Msg Idx " << std::setw(5) << uMessIdx << " DPB " << std::setw(2)
+              << fuCurrDpbIdx << " => Old TsMsb " << std::setw(5) << fvulCurrentTsMsb[fuCurrDpbIdx] << " new TsMsb "
               << std::setw(5) << uVal;
   }  // if( uVal + 1 != fvulCurrentTsMsb[fuCurrDpbIdx] && 4194303 != uVal && 0 != fvulCurrentTsMsb[fuCurrDpbIdx] )
   fvulCurrentTsMsb[fuCurrDpbIdx] = uVal;
@@ -689,8 +644,8 @@ void CbmCosy2019UnpackerAlgoHodo::ProcessTsMsbInfo(
 */
 }
 
-void CbmCosy2019UnpackerAlgoHodo::ProcessEpochInfo(
-  const stsxyter::Message& /*mess*/) {
+void CbmCosy2019UnpackerAlgoHodo::ProcessEpochInfo(const stsxyter::Message& /*mess*/)
+{
   //   UInt_t uVal    = mess.GetEpochVal();
   //   UInt_t uCurrentCycle = uVal % stsxyter::kulTsCycleNbBins;
 
@@ -704,8 +659,8 @@ void CbmCosy2019UnpackerAlgoHodo::ProcessEpochInfo(
 */
 }
 
-void CbmCosy2019UnpackerAlgoHodo::ProcessStatusInfo(
-  const stsxyter::Message& /*mess*/) {
+void CbmCosy2019UnpackerAlgoHodo::ProcessStatusInfo(const stsxyter::Message& /*mess*/)
+{
   /*
    UInt_t   uCrobIdx   = usElinkIdx / fUnpackPar->GetNbElinkPerCrob();
    Int_t   uFebIdx    = fUnpackPar->ElinkIdxToFebIdx( usElinkIdx );
@@ -729,28 +684,16 @@ void CbmCosy2019UnpackerAlgoHodo::ProcessStatusInfo(
 
 // -------------------------------------------------------------------------
 
-Bool_t CbmCosy2019UnpackerAlgoHodo::CreateHistograms() {
+Bool_t CbmCosy2019UnpackerAlgoHodo::CreateHistograms()
+{
   /// Create General unpacking histograms
   fhDigisTimeInRun =
-    new TH1I("hStsDigisTimeInRun",
-             "Digis Nb vs Time in Run; Time in run [s]; Digis Nb []",
-             36000,
-             0,
-             3600);
+    new TH1I("hStsDigisTimeInRun", "Digis Nb vs Time in Run; Time in run [s]; Digis Nb []", 36000, 0, 3600);
   AddHistoToVector(fhDigisTimeInRun, "");
 
-  fhVectorSize =
-    new TH1I("fhVectorSize",
-             "Size of the vector VS TS index; TS index; Size [bytes]",
-             10000,
-             0.,
-             10000.);
+  fhVectorSize = new TH1I("fhVectorSize", "Size of the vector VS TS index; TS index; Size [bytes]", 10000, 0., 10000.);
   fhVectorCapacity =
-    new TH1I("fhVectorCapacity",
-             "Size of the vector VS TS index; TS index; Size [bytes]",
-             10000,
-             0.,
-             10000.);
+    new TH1I("fhVectorCapacity", "Size of the vector VS TS index; TS index; Size [bytes]", 10000, 0., 10000.);
   AddHistoToVector(fhVectorSize, "");
   AddHistoToVector(fhVectorCapacity, "");
   /*
@@ -990,13 +933,15 @@ Bool_t CbmCosy2019UnpackerAlgoHodo::CreateHistograms() {
 */
   return kTRUE;
 }
-Bool_t CbmCosy2019UnpackerAlgoHodo::FillHistograms() {
+Bool_t CbmCosy2019UnpackerAlgoHodo::FillHistograms()
+{
   for (auto itHit = fDigiVect.begin(); itHit != fDigiVect.end(); ++itHit) {
     fhDigisTimeInRun->Fill(itHit->GetTime() * 1e-9);
   }  // for( auto itHit = fDigiVect.begin(); itHit != fDigiVect.end(); ++itHit)
   return kTRUE;
 }
-Bool_t CbmCosy2019UnpackerAlgoHodo::ResetHistograms() {
+Bool_t CbmCosy2019UnpackerAlgoHodo::ResetHistograms()
+{
   fhDigisTimeInRun->Reset();
   /*
    for( UInt_t uGdpb = 0; uGdpb < fuNrOfGdpbs; ++uGdpb )
@@ -1033,8 +978,8 @@ Bool_t CbmCosy2019UnpackerAlgoHodo::ResetHistograms() {
 }
 // -------------------------------------------------------------------------
 
-void CbmCosy2019UnpackerAlgoHodo::SetTimeOffsetNsAsic(UInt_t uAsicIdx,
-                                                      Double_t dOffsetIn) {
+void CbmCosy2019UnpackerAlgoHodo::SetTimeOffsetNsAsic(UInt_t uAsicIdx, Double_t dOffsetIn)
+{
   if (uAsicIdx >= fvdTimeOffsetNsAsics.size()) {
     fvdTimeOffsetNsAsics.resize(uAsicIdx + 1, 0.0);
   }  // if( uAsicIdx < fvdTimeOffsetNsAsics.size() )

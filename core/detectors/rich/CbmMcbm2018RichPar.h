@@ -12,8 +12,7 @@
 
 class CbmMcbm2018RichPar : public FairParGenericSet {
 public:
-  CbmMcbm2018RichPar(const char* name    = "CbmMcbm2018RichPar",
-                     const char* title   = "RICH unpacker parameters",
+  CbmMcbm2018RichPar(const char* name = "CbmMcbm2018RichPar", const char* title = "RICH unpacker parameters",
                      const char* context = "Default");
 
   virtual ~CbmMcbm2018RichPar();
@@ -33,7 +32,8 @@ public:
 	 * First argument is TDC ID (i.e. 0x7210)
 	 * TODO: test!
 	 */
-  Double_t GetToTshift(Int_t tdc, Int_t ch) const {
+  Double_t GetToTshift(Int_t tdc, Int_t ch) const
+  {
     Int_t tdcIdx = this->GetAddressIdx(tdc);
     return this->GetToTshift2(tdcIdx, ch);
   }
@@ -42,9 +42,7 @@ public:
 	 * First argument is TDC index (i.e. 0,1,2,...)
 	 * TODO: test!
 	 */
-  Double_t GetToTshift2(Int_t tdcIdx, Int_t ch) const {
-    return fToTshiftMap.at(tdcIdx * 33 + ch);
-  }
+  Double_t GetToTshift2(Int_t tdcIdx, Int_t ch) const { return fToTshiftMap.at(tdcIdx * 33 + ch); }
 
 private:  // Stored in the par file
   /**

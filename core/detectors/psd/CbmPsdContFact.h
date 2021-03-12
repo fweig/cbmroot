@@ -11,9 +11,9 @@
 #ifndef CBMPSDCONTFACT_H
 #define CBMPSDCONTFACT_H
 
-#include <Rtypes.h>  // for THashConsistencyHolder, ClassDef
-
 #include <FairContFact.h>  // for FairContFact
+
+#include <Rtypes.h>  // for THashConsistencyHolder, ClassDef
 
 class FairParIo;
 class FairParSet;

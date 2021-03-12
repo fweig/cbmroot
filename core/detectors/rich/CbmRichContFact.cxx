@@ -24,7 +24,8 @@ ClassImp(CbmRichContFact)
 
   static CbmRichContFact gCbmRichContFact;
 
-CbmRichContFact::CbmRichContFact() {
+CbmRichContFact::CbmRichContFact()
+{
   // Constructor (called when the library is loaded)
   fName  = "CbmRichContFact";
   fTitle = "Factory for parameter containers in libRichBase";
@@ -32,17 +33,18 @@ CbmRichContFact::CbmRichContFact() {
   FairRuntimeDb::instance()->addContFactory(this);
 }
 
-void CbmRichContFact::setAllContainers() {
+void CbmRichContFact::setAllContainers()
+{
   /** Creates the Container objects with all accepted contexts and adds them to
    *  the list of containers for the RichBase library.*/
 
-  FairContainer* beamPars = new FairContainer(
-    "CbmMcbm2018RichPar", "Rich at MCBM 2018 Unpack Parameters", "Default");
+  FairContainer* beamPars = new FairContainer("CbmMcbm2018RichPar", "Rich at MCBM 2018 Unpack Parameters", "Default");
   beamPars->addContext("Default");
   containers->Add(beamPars);
 }
 
-FairParSet* CbmRichContFact::createContainer(FairContainer* c) {
+FairParSet* CbmRichContFact::createContainer(FairContainer* c)
+{
   /** Calls the constructor of the corresponding parameter container.
    * For an actual context, which is not an empty string and not the default context
    * of this container, the name is concatinated with the context. */
@@ -50,8 +52,7 @@ FairParSet* CbmRichContFact::createContainer(FairContainer* c) {
   LOG(info) << " -I container name " << name;
   FairParSet* p = 0;
   if (strcmp(name, "CbmMcbm2018RichPar") == 0) {
-    p = new CbmMcbm2018RichPar(
-      c->getConcatName().Data(), c->GetTitle(), c->getContext());
+    p = new CbmMcbm2018RichPar(c->getConcatName().Data(), c->GetTitle(), c->getContext());
   }
 
   return p;

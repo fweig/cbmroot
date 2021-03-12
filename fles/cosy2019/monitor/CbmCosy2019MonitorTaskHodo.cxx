@@ -29,6 +29,7 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+
 #include <stdint.h>
 
 Bool_t bCosy2019MonitorTaskHodoResetHistos = kFALSE;
@@ -40,15 +41,15 @@ CbmCosy2019MonitorTaskHodo::CbmCosy2019MonitorTaskHodo(UInt_t /*uNbGdpb*/)
   , fulTsCounter(0)
   ,
   //    fHodoDigiCloneArray(),
-  fMonitorAlgo(nullptr) {
+  fMonitorAlgo(nullptr)
+{
   fMonitorAlgo = new CbmCosy2019MonitorAlgoHodo();
 }
 
-CbmCosy2019MonitorTaskHodo::~CbmCosy2019MonitorTaskHodo() {
-  delete fMonitorAlgo;
-}
+CbmCosy2019MonitorTaskHodo::~CbmCosy2019MonitorTaskHodo() { delete fMonitorAlgo; }
 
-Bool_t CbmCosy2019MonitorTaskHodo::Init() {
+Bool_t CbmCosy2019MonitorTaskHodo::Init()
+{
   LOG(info) << "CbmCosy2019MonitorTaskHodo::Init";
   LOG(info) << "Initializing mCBM Hodoscopes Monitor";
   /*
@@ -68,7 +69,8 @@ Bool_t CbmCosy2019MonitorTaskHodo::Init() {
   return kTRUE;
 }
 
-void CbmCosy2019MonitorTaskHodo::SetParContainers() {
+void CbmCosy2019MonitorTaskHodo::SetParContainers()
+{
   LOG(info) << "Setting parameter containers for " << GetName();
 
   TList* parCList = fMonitorAlgo->GetParList();
@@ -78,12 +80,11 @@ void CbmCosy2019MonitorTaskHodo::SetParContainers() {
     parCList->Remove(tempObj);
 
     std::string sParamName {tempObj->GetName()};
-    FairParGenericSet* newObj = dynamic_cast<FairParGenericSet*>(
-      FairRun::Instance()->GetRuntimeDb()->getContainer(sParamName.data()));
+    FairParGenericSet* newObj =
+      dynamic_cast<FairParGenericSet*>(FairRun::Instance()->GetRuntimeDb()->getContainer(sParamName.data()));
 
     if (nullptr == newObj) {
-      LOG(error) << "Failed to obtain parameter container " << sParamName
-                 << ", for parameter index " << iparC;
+      LOG(error) << "Failed to obtain parameter container " << sParamName << ", for parameter index " << iparC;
       return;
     }  // if( nullptr == newObj )
 
@@ -92,7 +93,8 @@ void CbmCosy2019MonitorTaskHodo::SetParContainers() {
   }  // for( Int_t iparC = 0; iparC < parCList->GetEntries(); ++iparC )
 }
 
-Bool_t CbmCosy2019MonitorTaskHodo::InitContainers() {
+Bool_t CbmCosy2019MonitorTaskHodo::InitContainers()
+{
   LOG(info) << "Init parameter containers for " << GetName();
 
   /// Control flags
@@ -120,28 +122,23 @@ Bool_t CbmCosy2019MonitorTaskHodo::InitContainers() {
   initOK &= fMonitorAlgo->CreateHistograms();
 
   /// Obtain vector of pointers on each histo from the algo (+ optionally desired folder)
-  std::vector<std::pair<TNamed*, std::string>> vHistos =
-    fMonitorAlgo->GetHistoVector();
-  std::vector<std::pair<TCanvas*, std::string>> vCanvas =
-    fMonitorAlgo->GetCanvasVector();
+  std::vector<std::pair<TNamed*, std::string>> vHistos  = fMonitorAlgo->GetHistoVector();
+  std::vector<std::pair<TCanvas*, std::string>> vCanvas = fMonitorAlgo->GetCanvasVector();
 
   /// Register the histos in the HTTP server
   THttpServer* server = FairRunOnline::Instance()->GetHttpServer();
   if (nullptr != server) {
     for (UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto) {
       if (nullptr != vHistos[uHisto].first)
-        server->Register(Form("/%s", vHistos[uHisto].second.data()),
-                         vHistos[uHisto].first);
+        server->Register(Form("/%s", vHistos[uHisto].second.data()), vHistos[uHisto].first);
     }  // for( UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto )
 
     for (UInt_t uCanvas = 0; uCanvas < vCanvas.size(); ++uCanvas) {
       if (nullptr != vCanvas[uCanvas].first)
-        server->Register(Form("/%s", vCanvas[uCanvas].second.data()),
-                         vCanvas[uCanvas].first);
+        server->Register(Form("/%s", vCanvas[uCanvas].second.data()), vCanvas[uCanvas].first);
     }  // for( UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto )
 
-    server->RegisterCommand("/Reset_MoniHodo_Hist",
-                            "bCosy2019MonitorTaskHodoResetHistos=kTRUE");
+    server->RegisterCommand("/Reset_MoniHodo_Hist", "bCosy2019MonitorTaskHodoResetHistos=kTRUE");
     server->Restrict("/Reset_MoniHodo_Hist", "allow=admin");
   }  // if( nullptr != server )
 
@@ -150,20 +147,21 @@ Bool_t CbmCosy2019MonitorTaskHodo::InitContainers() {
   return initOK;
 }
 
-Bool_t CbmCosy2019MonitorTaskHodo::ReInitContainers() {
+Bool_t CbmCosy2019MonitorTaskHodo::ReInitContainers()
+{
   LOG(info) << "ReInit parameter containers for " << GetName();
   Bool_t initOK = fMonitorAlgo->ReInitContainers();
 
   return initOK;
 }
 
-void CbmCosy2019MonitorTaskHodo::AddMsComponentToList(size_t component,
-                                                      UShort_t usDetectorId) {
+void CbmCosy2019MonitorTaskHodo::AddMsComponentToList(size_t component, UShort_t usDetectorId)
+{
   fMonitorAlgo->AddMsComponentToList(component, usDetectorId);
 }
 
-Bool_t CbmCosy2019MonitorTaskHodo::DoUnpack(const fles::Timeslice& ts,
-                                            size_t /*component*/) {
+Bool_t CbmCosy2019MonitorTaskHodo::DoUnpack(const fles::Timeslice& ts, size_t /*component*/)
+{
   if (fbMonitorMode && bCosy2019MonitorTaskHodoResetHistos) {
     LOG(info) << "Reset Hodoscopes monitor histos ";
     fMonitorAlgo->ResetHistograms();
@@ -171,8 +169,7 @@ Bool_t CbmCosy2019MonitorTaskHodo::DoUnpack(const fles::Timeslice& ts,
   }  // if( fbMonitorMode && bCosy2019MonitorTaskHodoResetHistos )
 
   if (kFALSE == fMonitorAlgo->ProcessTs(ts)) {
-    LOG(error) << "Failed processing TS " << ts.index()
-               << " in monitor algorithm class";
+    LOG(error) << "Failed processing TS " << ts.index() << " in monitor algorithm class";
     return kTRUE;
   }  // if( kFALSE == fMonitorAlgo->ProcessTs( ts ) )
      /*
@@ -192,8 +189,7 @@ Bool_t CbmCosy2019MonitorTaskHodo::DoUnpack(const fles::Timeslice& ts,
    vDigi.clear();
    fMonitorAlgo->ClearVector();
 */
-  if (0 == fulTsCounter % 10000)
-    LOG(info) << "Processed " << fulTsCounter << "TS";
+  if (0 == fulTsCounter % 10000) LOG(info) << "Processed " << fulTsCounter << "TS";
   fulTsCounter++;
 
   if (0 == fulTsCounter % 6000 && 0 < fulTsCounter) SaveHistograms();
@@ -201,23 +197,22 @@ Bool_t CbmCosy2019MonitorTaskHodo::DoUnpack(const fles::Timeslice& ts,
   return kTRUE;
 }
 
-void CbmCosy2019MonitorTaskHodo::Reset() {
+void CbmCosy2019MonitorTaskHodo::Reset()
+{
   //   fHodoDigiCloneArray->Clear();
 }
 
-void CbmCosy2019MonitorTaskHodo::Finish() {
+void CbmCosy2019MonitorTaskHodo::Finish()
+{
   /// If monitor mode enabled, trigger histos creation, obtain pointer on them and add them to the HTTP server
-  if (kTRUE == fbMonitorMode) {
-    SaveHistograms();
-  }  // if( kTRUE == fbMonitorMode )
+  if (kTRUE == fbMonitorMode) { SaveHistograms(); }  // if( kTRUE == fbMonitorMode )
 }
 
-Bool_t CbmCosy2019MonitorTaskHodo::SaveHistograms() {
+Bool_t CbmCosy2019MonitorTaskHodo::SaveHistograms()
+{
   /// Obtain vector of pointers on each histo from the algo (+ optionally desired folder)
-  std::vector<std::pair<TNamed*, std::string>> vHistos =
-    fMonitorAlgo->GetHistoVector();
-  std::vector<std::pair<TCanvas*, std::string>> vCanvas =
-    fMonitorAlgo->GetCanvasVector();
+  std::vector<std::pair<TNamed*, std::string>> vHistos  = fMonitorAlgo->GetHistoVector();
+  std::vector<std::pair<TCanvas*, std::string>> vCanvas = fMonitorAlgo->GetCanvasVector();
 
   /// Save old global file and folder pointer to avoid messing with FairRoot
   TFile* oldFile     = gFile;
@@ -266,30 +261,24 @@ Bool_t CbmCosy2019MonitorTaskHodo::SaveHistograms() {
   return kTRUE;
 }
 
-void CbmCosy2019MonitorTaskHodo::SetIgnoreOverlapMs(Bool_t bFlagIn) {
-  fMonitorAlgo->SetIgnoreOverlapMs(bFlagIn);
-}
+void CbmCosy2019MonitorTaskHodo::SetIgnoreOverlapMs(Bool_t bFlagIn) { fMonitorAlgo->SetIgnoreOverlapMs(bFlagIn); }
 
-void CbmCosy2019MonitorTaskHodo::SetTimeOffsetNs(Double_t dOffsetIn) {
-  fMonitorAlgo->SetTimeOffsetNs(dOffsetIn);
-}
-void CbmCosy2019MonitorTaskHodo::SetDpbId(UInt_t uDpbId) {
-  fMonitorAlgo->SetDpbId(uDpbId);
-}
-void CbmCosy2019MonitorTaskHodo::SetHodoElinkIdx(UInt_t uElinkHodoA,
-                                                 UInt_t uElinkHodoB) {
+void CbmCosy2019MonitorTaskHodo::SetTimeOffsetNs(Double_t dOffsetIn) { fMonitorAlgo->SetTimeOffsetNs(dOffsetIn); }
+void CbmCosy2019MonitorTaskHodo::SetDpbId(UInt_t uDpbId) { fMonitorAlgo->SetDpbId(uDpbId); }
+void CbmCosy2019MonitorTaskHodo::SetHodoElinkIdx(UInt_t uElinkHodoA, UInt_t uElinkHodoB)
+{
   fMonitorAlgo->SetHodoElinkIdx(uElinkHodoA, uElinkHodoB);
 }
-void CbmCosy2019MonitorTaskHodo::SetHodoSwapXY(Bool_t bSwapHodoA,
-                                               Bool_t bSwapHodoB) {
+void CbmCosy2019MonitorTaskHodo::SetHodoSwapXY(Bool_t bSwapHodoA, Bool_t bSwapHodoB)
+{
   fMonitorAlgo->SetHodoSwapXY(bSwapHodoA, bSwapHodoB);
 }
-void CbmCosy2019MonitorTaskHodo::SetHodoInvertX(Bool_t bInvHodoA,
-                                                Bool_t bInvHodoB) {
+void CbmCosy2019MonitorTaskHodo::SetHodoInvertX(Bool_t bInvHodoA, Bool_t bInvHodoB)
+{
   fMonitorAlgo->SetHodoInvertX(bInvHodoA, bInvHodoB);
 }
-void CbmCosy2019MonitorTaskHodo::SetHodoInvertY(Bool_t bInvHodoA,
-                                                Bool_t bInvHodoB) {
+void CbmCosy2019MonitorTaskHodo::SetHodoInvertY(Bool_t bInvHodoA, Bool_t bInvHodoB)
+{
   fMonitorAlgo->SetHodoInvertY(bInvHodoA, bInvHodoB);
 }
 

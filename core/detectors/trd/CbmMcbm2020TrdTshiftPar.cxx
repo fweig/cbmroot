@@ -28,10 +28,10 @@
 // #define CTAVM CbmTrdAnalysisVarManager // See comments in GetNevents() et al.
 // #define CTAH CbmTrdAnalysisHisto // See comments in GetNevents() et al.
 
-CbmMcbm2020TrdTshiftPar::CbmMcbm2020TrdTshiftPar(const char* name,
-                                                 const char* title,
-                                                 const char* context)
-  : FairParGenericSet(name, title, context), fNtimeslices(1) {
+CbmMcbm2020TrdTshiftPar::CbmMcbm2020TrdTshiftPar(const char* name, const char* title, const char* context)
+  : FairParGenericSet(name, title, context)
+  , fNtimeslices(1)
+{
   detName = "TRD";
 }
 
@@ -49,32 +49,30 @@ void CbmMcbm2020TrdTshiftPar::clear()
 void CbmMcbm2020TrdTshiftPar::printparams()
 
 {
-  std::cout << "CbmMcbm2020TrdTshiftPar::printparams() " << &fTimeshifts
-            << std::endl;
+  std::cout << "CbmMcbm2020TrdTshiftPar::printparams() " << &fTimeshifts << std::endl;
   size_t ntimeshifts = (fTimeshifts.GetSize() / (fgNchannels + 1));
-  std::cout << "ParSet has " << ntimeshifts << " timeshift changes stored"
-            << std::endl;
+  std::cout << "ParSet has " << ntimeshifts << " timeshift changes stored" << std::endl;
 
   for (size_t ishiftblock = 0; ishiftblock < ntimeshifts; ishiftblock++) {
-    std::cout << "Shiftblock of event "
-              << fTimeshifts[ishiftblock * (fgNchannels + 1)] << std::endl;
+    std::cout << "Shiftblock of event " << fTimeshifts[ishiftblock * (fgNchannels + 1)] << std::endl;
     for (size_t ichannel = 0; ichannel < fgNchannels; ichannel++) {
       if (ichannel % 6 == 0) std::cout << std::endl;
-      std::cout << " Ch " << ichannel << " shift "
-                << fTimeshifts[(ishiftblock * (fgNchannels + 1)) + ichannel];
+      std::cout << " Ch " << ichannel << " shift " << fTimeshifts[(ishiftblock * (fgNchannels + 1)) + ichannel];
     }
   }
 }
 
 // ---- putParams ----
-void CbmMcbm2020TrdTshiftPar::putParams(FairParamList* l) {
+void CbmMcbm2020TrdTshiftPar::putParams(FairParamList* l)
+{
   if (!l) return;
   l->add(pararraynames[0].data(), fNtimeslices);
   l->add(pararraynames[1].data(), fTimeshifts);
 }
 
 // ---- getParams ----
-Bool_t CbmMcbm2020TrdTshiftPar::getParams(FairParamList* l) {
+Bool_t CbmMcbm2020TrdTshiftPar::getParams(FairParamList* l)
+{
   if (!l) return kFALSE;
 
   if (!l->fill(pararraynames[0].data(), &fNtimeslices)) return kFALSE;
@@ -94,33 +92,28 @@ Bool_t CbmMcbm2020TrdTshiftPar::getParams(FairParamList* l) {
     if ((ientry - nthShift * (fgNchannels + 1)) == 0) {
       // Before starting the extraction of the next chain, emplace the previous chain to the map
       if (ientry != 0) {
-        auto tspair = std::pair<size_t, std::vector<Int_t>>(
-          itimeslice, fvecCurrentTimeshifts);
+        auto tspair = std::pair<size_t, std::vector<Int_t>>(itimeslice, fvecCurrentTimeshifts);
         fmapTimeshifts.emplace(tspair);
       }
       itimeslice = fTimeshifts[ientry];
       fvecCurrentTimeshifts.clear();
       fvecCurrentTimeshifts.resize(fgNchannels);
-
-    } else {
-      ichannel = ientry - 1 - nthShift * (fgNchannels + 1);
+    }
+    else {
+      ichannel                        = ientry - 1 - nthShift * (fgNchannels + 1);
       fvecCurrentTimeshifts[ichannel] = fTimeshifts[ientry];
     }
   }
   // Now we have to fill the blank spots in the map, since, we do not now if the timeslices are accessed in a completely ordered manor
-  for (itimeslice = 0;
-       itimeslice < static_cast<size_t>(std::abs(fNtimeslices[0]));
-       itimeslice++) {
+  for (itimeslice = 0; itimeslice < static_cast<size_t>(std::abs(fNtimeslices[0])); itimeslice++) {
     auto itspair = fmapTimeshifts.find(itimeslice);
 
-    if (itspair != fmapTimeshifts.end()) {
-      continue;
-    } else {
+    if (itspair != fmapTimeshifts.end()) { continue; }
+    else {
       // Get previous timeshift vector to add it also to the current pair
       itspair--;
 
-      auto newtspair =
-        std::pair<size_t, std::vector<Int_t>>(itimeslice, itspair->second);
+      auto newtspair = std::pair<size_t, std::vector<Int_t>>(itimeslice, itspair->second);
       fmapTimeshifts.emplace(newtspair);
     }
   }
@@ -128,8 +121,8 @@ Bool_t CbmMcbm2020TrdTshiftPar::getParams(FairParamList* l) {
 }
 
 // ---- GetTimeshifts ----
-bool CbmMcbm2020TrdTshiftPar::GetTimeshifts(
-  std::shared_ptr<TH2> timeshiftHisto) {
+bool CbmMcbm2020TrdTshiftPar::GetTimeshifts(std::shared_ptr<TH2> timeshiftHisto)
+{
 
   ///< Extract the timeshift values from a histo containing the information and write them to fTimeshifts.
 
@@ -148,9 +141,7 @@ bool CbmMcbm2020TrdTshiftPar::GetTimeshifts(
   fTimeshifts.Set(nentries);
 
   bool didChange = true;
-  for (size_t ievent = 1;
-       ievent < static_cast<size_t>(std::abs(fNtimeslices[0]));
-       ievent++) {
+  for (size_t ievent = 1; ievent < static_cast<size_t>(std::abs(fNtimeslices[0])); ievent++) {
     tsidx = timeshiftHisto->GetXaxis()->GetBinLowEdge(ievent);
     for (size_t ichannel = 0; ichannel < fgNchannels; ichannel++) {
       tshift = (Int_t) timeshiftHisto->GetBinContent(ievent, ichannel);
@@ -186,13 +177,15 @@ bool CbmMcbm2020TrdTshiftPar::GetTimeshifts(
 }
 
 // ---- GetTimeshiftsVec ----
-std::vector<Int_t> CbmMcbm2020TrdTshiftPar::GetTimeshiftsVec(size_t tsidx) {
+std::vector<Int_t> CbmMcbm2020TrdTshiftPar::GetTimeshiftsVec(size_t tsidx)
+{
   auto pair = fmapTimeshifts.find(tsidx);
   return pair->second;
 }
 
 // ---- GetNEvents ----
-double CbmMcbm2020TrdTshiftPar::GetNEvents(std::shared_ptr<TFile> mcbmanafile) {
+double CbmMcbm2020TrdTshiftPar::GetNEvents(std::shared_ptr<TFile> mcbmanafile)
+{
   ///< Extract the number of events from a mcbmana task output file, which has to contain the required histogram.
 
   TH1* histo = nullptr;
@@ -209,16 +202,15 @@ double CbmMcbm2020TrdTshiftPar::GetNEvents(std::shared_ptr<TFile> mcbmanafile) {
   std::string hpath = "FillStation-RunInfo/FullTrd/RunId_wNEvents-RunInfo";
   histo             = (TH1*) mcbmanafile->Get(hpath.data());
   if (!histo) {
-    LOG(fatal) << " CbmMcbm2020TrdTshiftPar::GetNEvents " << hpath.data()
-               << " not found in the file" << std::endl;
+    LOG(fatal) << " CbmMcbm2020TrdTshiftPar::GetNEvents " << hpath.data() << " not found in the file" << std::endl;
   }
   double nevents = histo->GetBinContent(histo->GetMaximumBin());
   return nevents;
 }
 
 // ---- GetCalibHisto ----
-std::shared_ptr<TH3>
-CbmMcbm2020TrdTshiftPar::GetCalibHisto(std::shared_ptr<TFile> mcbmanafile) {
+std::shared_ptr<TH3> CbmMcbm2020TrdTshiftPar::GetCalibHisto(std::shared_ptr<TFile> mcbmanafile)
+{
   ///< Extract the required base histogram from a mcbmana task output file.
   THnSparse* hsparse = nullptr;
 
@@ -228,21 +220,18 @@ CbmMcbm2020TrdTshiftPar::GetCalibHisto(std::shared_ptr<TFile> mcbmanafile) {
   // histo =
   //   (THnSparseD*) CTAH::GetHistoFromFile(varvec, fillstation, htype, mcbmanafile);
 
-  std::string hpath =
-    "FillStation-TrdT0Digi/FullTrd/"
-    "TsSourceTsIndex_DigiTrdChannel_DigiDtCorrSlice-TrdT0Digi";
+  std::string hpath = "FillStation-TrdT0Digi/FullTrd/"
+                      "TsSourceTsIndex_DigiTrdChannel_DigiDtCorrSlice-TrdT0Digi";
   hsparse = (THnSparse*) mcbmanafile->Get(hpath.data());
 
   if (!hsparse) {
-    LOG(fatal) << " CbmMcbm2020TrdTshiftPar::GetCalibHisto " << hpath.data()
-               << " not found in the file" << std::endl;
+    LOG(fatal) << " CbmMcbm2020TrdTshiftPar::GetCalibHisto " << hpath.data() << " not found in the file" << std::endl;
   }
 
   auto nevents = GetNEvents(mcbmanafile);
 
   // auto tsaxis = CTAH::GetVarAxis(hsparse, CTAVM::eVars::kTsSourceTsIndex);
-  auto tsaxis =
-    hsparse->GetAxis(0);  // For now we know that the TsIndex is on the X-Axis
+  auto tsaxis = hsparse->GetAxis(0);  // For now we know that the TsIndex is on the X-Axis
   tsaxis->SetRangeUser(0.0, (double) nevents);
   auto temphisto = hsparse->Projection(0, 1, 2);
   auto histo     = std::make_shared<TH3D>(*temphisto);
@@ -258,40 +247,29 @@ CbmMcbm2020TrdTshiftPar::GetCalibHisto(std::shared_ptr<TFile> mcbmanafile) {
 }
 
 // ---- GetCalibHisto ----
-std::shared_ptr<TH2>
-CbmMcbm2020TrdTshiftPar::GetCalibHisto(std::shared_ptr<TH3> calibbasehisto) {
+std::shared_ptr<TH2> CbmMcbm2020TrdTshiftPar::GetCalibHisto(std::shared_ptr<TH3> calibbasehisto)
+{
   ///< Extract the timeshiftHisto from the calibbase histogram. The calibbase histogram is a TH3* with the tsIdx, the module channels and the timeshifts on the axes.
 
   // Get the x-axis definitions
   size_t nevents    = calibbasehisto->GetNbinsX();
-  size_t firstTsIdx = calibbasehisto->GetXaxis()->GetBinLowEdge(
-    calibbasehisto->GetXaxis()->GetFirst());
-  size_t lastTsIdx = calibbasehisto->GetXaxis()->GetBinUpEdge(
-    calibbasehisto->GetXaxis()->GetLast());
+  size_t firstTsIdx = calibbasehisto->GetXaxis()->GetBinLowEdge(calibbasehisto->GetXaxis()->GetFirst());
+  size_t lastTsIdx  = calibbasehisto->GetXaxis()->GetBinUpEdge(calibbasehisto->GetXaxis()->GetLast());
 
   // Get the y-axis definitions
   size_t nchannels    = calibbasehisto->GetNbinsY();
-  size_t firstChannel = calibbasehisto->GetYaxis()->GetBinLowEdge(
-    calibbasehisto->GetYaxis()->GetFirst());
-  size_t lastChannel = calibbasehisto->GetYaxis()->GetBinUpEdge(
-    calibbasehisto->GetYaxis()->GetLast());
+  size_t firstChannel = calibbasehisto->GetYaxis()->GetBinLowEdge(calibbasehisto->GetYaxis()->GetFirst());
+  size_t lastChannel  = calibbasehisto->GetYaxis()->GetBinUpEdge(calibbasehisto->GetYaxis()->GetLast());
 
-  std::shared_ptr<TH2I> calibhisto = std::make_shared<TH2I>("calibhisto",
-                                                            "calibhisto",
-                                                            nevents,
-                                                            firstTsIdx,
-                                                            lastTsIdx,
-                                                            nchannels,
-                                                            firstChannel,
-                                                            lastChannel);
+  std::shared_ptr<TH2I> calibhisto = std::make_shared<TH2I>("calibhisto", "calibhisto", nevents, firstTsIdx, lastTsIdx,
+                                                            nchannels, firstChannel, lastChannel);
 
 
   for (size_t itsidx = 1; itsidx < nevents; itsidx++) {
     for (size_t ichannel = 1; ichannel < nchannels; ichannel++) {
-      auto dominantshift =
-        GetDominantShift(calibbasehisto, itsidx, ichannel) < 255
-          ? GetDominantShift(calibbasehisto, itsidx, ichannel)
-          : calibhisto->GetBinContent(itsidx - 1, ichannel);
+      auto dominantshift = GetDominantShift(calibbasehisto, itsidx, ichannel) < 255
+                             ? GetDominantShift(calibbasehisto, itsidx, ichannel)
+                             : calibhisto->GetBinContent(itsidx - 1, ichannel);
       if (itsidx - 1 == 0) dominantshift = 0;
       calibhisto->SetBinContent(itsidx, ichannel, dominantshift);
     }
@@ -300,12 +278,9 @@ CbmMcbm2020TrdTshiftPar::GetCalibHisto(std::shared_ptr<TH3> calibbasehisto) {
 }
 
 // ---- GetDominantShift ----
-Int_t CbmMcbm2020TrdTshiftPar::GetDominantShift(
-  std::shared_ptr<TH3> calibbasehisto,
-  size_t itsidx,
-  size_t ichannel) {
-  auto hdomshift =
-    calibbasehisto->ProjectionZ("domshift", itsidx, itsidx, ichannel, ichannel);
+Int_t CbmMcbm2020TrdTshiftPar::GetDominantShift(std::shared_ptr<TH3> calibbasehisto, size_t itsidx, size_t ichannel)
+{
+  auto hdomshift = calibbasehisto->ProjectionZ("domshift", itsidx, itsidx, ichannel, ichannel);
 
   // Scale histo to one
   hdomshift->Scale(1. / hdomshift->Integral());
@@ -325,8 +300,8 @@ Int_t CbmMcbm2020TrdTshiftPar::GetDominantShift(
 }
 
 // ---- FillTimeshiftArray ----
-bool CbmMcbm2020TrdTshiftPar::FillTimeshiftArray(
-  std::shared_ptr<TFile> mcbmanafile) {
+bool CbmMcbm2020TrdTshiftPar::FillTimeshiftArray(std::shared_ptr<TFile> mcbmanafile)
+{
   ///< Extract the timeshift values from a TAF output file that contains the required histograms and write them to fTimeshifts.
 
   auto calibbasehisto = GetCalibHisto(mcbmanafile);

@@ -71,9 +71,7 @@ void CbmTrdContFact::setAllContainers() {
   containers->Add(par);
 
   FairContainer* pTrd =
-    new FairContainer("CbmMcbm2020TrdTshiftPar",
-                      "TRD timeshift unpacker parameters mCbm 2020",
-                      "Default");
+    new FairContainer("CbmMcbm2020TrdTshiftPar", "TRD timeshift unpacker parameters mCbm 2020", "Default");
   pTrd->addContext("Default");
   containers->Add(pTrd);
 }
@@ -102,8 +100,7 @@ FairParSet* CbmTrdContFact::createContainer(FairContainer* c) {
     p = new CbmTrdParSetGeo(
       c->getConcatName().Data(), c->GetTitle(), c->getContext());
   else if (strcmp(name, "CbmMcbm2020TrdTshiftPar") == 0) {
-    p = new CbmMcbm2020TrdTshiftPar(
-      c->getConcatName().Data(), c->GetTitle(), c->getContext());
+    p = new CbmMcbm2020TrdTshiftPar(c->getConcatName().Data(), c->GetTitle(), c->getContext());
   }
 
   return p;

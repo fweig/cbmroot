@@ -47,8 +47,7 @@ void CbmMuchContFact::setAllContainers() {
   p2->addContext("TestNonDefaultContext");
   containers->Add(p2);
 
-  FairContainer* beamPars = new FairContainer(
-    "CbmMcbm2018MuchPar", "Much at MCBM 2018 Unpack Parameters", "Default");
+  FairContainer* beamPars = new FairContainer("CbmMcbm2018MuchPar", "Much at MCBM 2018 Unpack Parameters", "Default");
   beamPars->addContext("Default");
   containers->Add(beamPars);
 }
@@ -63,9 +62,9 @@ FairParSet* CbmMuchContFact::createContainer(FairContainer* c) {
   if (strcmp(name, "CbmGeoMuchPar") == 0) {
     p = new CbmGeoMuchPar(
       c->getConcatName().Data(), c->GetTitle(), c->getContext());
-  } else if (strcmp(name, "CbmMcbm2018MuchPar") == 0) {
-    p = new CbmMcbm2018MuchPar(
-      c->getConcatName().Data(), c->GetTitle(), c->getContext());
+  }
+  else if (strcmp(name, "CbmMcbm2018MuchPar") == 0) {
+    p = new CbmMcbm2018MuchPar(c->getConcatName().Data(), c->GetTitle(), c->getContext());
   }
 
   return p;

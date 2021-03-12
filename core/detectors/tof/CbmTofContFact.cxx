@@ -52,8 +52,7 @@ void CbmTofContFact::setAllContainers() {
 
   containers->Add(p2);
 
-  FairContainer* beamPars = new FairContainer(
-    "CbmMcbm2018TofPar", "TOF at MCBM 2018 Unpack Parameters", "Default");
+  FairContainer* beamPars = new FairContainer("CbmMcbm2018TofPar", "TOF at MCBM 2018 Unpack Parameters", "Default");
   beamPars->addContext("Default");
   containers->Add(beamPars);
 }
@@ -68,12 +67,13 @@ FairParSet* CbmTofContFact::createContainer(FairContainer* c) {
   if (strcmp(name, "CbmTofDigiPar") == 0) {
     p = new CbmTofDigiPar(
       c->getConcatName().Data(), c->GetTitle(), c->getContext());
-  } else if (strcmp(name, "CbmTofDigiBdfPar") == 0) {
+  }
+  else if (strcmp(name, "CbmTofDigiBdfPar") == 0) {
     p = new CbmTofDigiBdfPar(
       c->getConcatName().Data(), c->GetTitle(), c->getContext());
-  } else if (strcmp(name, "CbmMcbm2018TofPar") == 0) {
-    p = new CbmMcbm2018TofPar(
-      c->getConcatName().Data(), c->GetTitle(), c->getContext());
+  }
+  else if (strcmp(name, "CbmMcbm2018TofPar") == 0) {
+    p = new CbmMcbm2018TofPar(c->getConcatName().Data(), c->GetTitle(), c->getContext());
   }
 
   return p;

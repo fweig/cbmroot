@@ -20,8 +20,7 @@ class CbmMcbm2018PsdPar : public FairParGenericSet {
 
 public:
   /** Standard constructor **/
-  CbmMcbm2018PsdPar(const char* name    = "CbmMcbm2018PsdPar",
-                    const char* title   = "Psd unpacker parameters",
+  CbmMcbm2018PsdPar(const char* name = "CbmMcbm2018PsdPar", const char* title = "Psd unpacker parameters",
                     const char* context = "Default");
 
   /** Destructor **/
@@ -38,25 +37,15 @@ public:
   //static constexpr UInt_t GetNrOfChannelsPerFee()  { return kuNbChannelsPerFee; }
   static constexpr UInt_t GetNrOfFeePerGbtx() { return kuNbFeePerGbtx; }
   static constexpr UInt_t GetNrOfGbtxPerGdpb() { return kuNbGbtxPerGdpb; }
-  static constexpr UInt_t GetNrOfChannelsPerGbtx() {
-    return kuNbChannelsPerGbtx;
-  }
-  static constexpr UInt_t GetNrOfChannelsPerGdpb() {
-    return kuNbChannelsPerGdpb;
-  }
+  static constexpr UInt_t GetNrOfChannelsPerGbtx() { return kuNbChannelsPerGbtx; }
+  static constexpr UInt_t GetNrOfChannelsPerGdpb() { return kuNbChannelsPerGdpb; }
   static constexpr UInt_t GetNrOfFeePerGdpb() { return kuNbFeePerGdpb; }
-  inline UInt_t GetNumberOfChannels() {
-    return kuNbChannelsPerGdpb * fiNrOfGdpb;
-  }
+  inline UInt_t GetNumberOfChannels() { return kuNbChannelsPerGdpb * fiNrOfGdpb; }
 
   Int_t FeeChanToGbtChan(UInt_t uChannelInFee);
 
-  inline Bool_t GetMonitorMode() {
-    return (1 == fiMonitorMode ? kTRUE : kFALSE);
-  }
-  inline Bool_t GetDebugMonitorMode() {
-    return (1 == fiDebugMonitorMode ? kTRUE : kFALSE);
-  }
+  inline Bool_t GetMonitorMode() { return (1 == fiMonitorMode ? kTRUE : kFALSE); }
+  inline Bool_t GetDebugMonitorMode() { return (1 == fiDebugMonitorMode ? kTRUE : kFALSE); }
 
   inline Int_t GetNrOfGdpbs() { return fiNrOfGdpb; }
   inline Int_t GetGdpbId(Int_t i) { return fiGdpbIdArray[i]; }
@@ -79,23 +68,19 @@ private:
   /// Data format
   static const uint32_t kuBytesPerMessage = 8;
   /// Readout chain
-  static const uint32_t kuNbChannelsPerFee = 10;
-  static const uint32_t kuNbFeePerGbtx     = 1;
-  static const uint32_t kuNbGbtxPerGdpb    = 1;
-  static const uint32_t kuNbChannelsPerGbtx =
-    kuNbChannelsPerFee * kuNbFeePerGbtx;
-  static const uint32_t kuNbChannelsPerGdpb =
-    kuNbChannelsPerGbtx * kuNbGbtxPerGdpb;
-  static const uint32_t kuNbFeePerGdpb = kuNbFeePerGbtx * kuNbGbtxPerGdpb;
+  static const uint32_t kuNbChannelsPerFee  = 10;
+  static const uint32_t kuNbFeePerGbtx      = 1;
+  static const uint32_t kuNbGbtxPerGdpb     = 1;
+  static const uint32_t kuNbChannelsPerGbtx = kuNbChannelsPerFee * kuNbFeePerGbtx;
+  static const uint32_t kuNbChannelsPerGdpb = kuNbChannelsPerGbtx * kuNbGbtxPerGdpb;
+  static const uint32_t kuNbFeePerGdpb      = kuNbFeePerGbtx * kuNbGbtxPerGdpb;
   /// Mapping
-  const UInt_t kuFeeToGbt[kuNbChannelsPerFee] =
-    {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};  //! Map from Psd channel to Gbt channel
+  const UInt_t kuFeeToGbt[kuNbChannelsPerFee] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};  //! Map from Psd channel to Gbt channel
 
-  Int_t
-    fiMonitorMode;  // Enable histograms in event builder processes and algo, 0 = OFF / 1 = ON
+  Int_t fiMonitorMode;  // Enable histograms in event builder processes and algo, 0 = OFF / 1 = ON
   Int_t
     fiDebugMonitorMode;  // Enable extra debuging histos in bth event builder and monitor processes and algo, 0 = OFF / 1 = ON
-  Int_t fiNrOfGdpb;      // Total number of GDPBs
+  Int_t fiNrOfGdpb;       // Total number of GDPBs
   TArrayI fiGdpbIdArray;  // Array to hold the unique IDs for all Psd GDPBs
 
   Int_t fiNrOfFeesPerGdpb;     // Number of FEEs which are connected to one GDPB
@@ -103,13 +88,11 @@ private:
 
   Int_t fiNrOfGbtx;     // Total number of Gbtx links
   Int_t fiNrOfModules;  // Total number of Modules
-  TArrayI
-    fiModuleId;  // Module Identifier connected to Gbtx link, has to match geometry
+  TArrayI fiModuleId;   // Module Identifier connected to Gbtx link, has to match geometry
 
-  Int_t fiNbMsTot;      // Total number of MS per link in TS
-  Int_t fiNbMsOverlap;  // Number of overlap MS per TS
-  Double_t
-    fdSizeMsInNs;  // Size of the MS in ns, needed for MS border detection
+  Int_t fiNbMsTot;        // Total number of MS per link in TS
+  Int_t fiNbMsOverlap;    // Number of overlap MS per TS
+  Double_t fdSizeMsInNs;  // Size of the MS in ns, needed for MS border detection
 
   Double_t
     fdTsDeadtimePeriod;  // Period (ns) in the first MS of each TS where events with missing triggers should be built using the overlap MS of previous TS (overlap events)

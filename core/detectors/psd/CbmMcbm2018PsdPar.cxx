@@ -14,9 +14,7 @@
 #include "TString.h"
 
 // -----   Standard constructor   ------------------------------------------
-CbmMcbm2018PsdPar::CbmMcbm2018PsdPar(const char* name,
-                                     const char* title,
-                                     const char* context)
+CbmMcbm2018PsdPar::CbmMcbm2018PsdPar(const char* name, const char* title, const char* context)
   : FairParGenericSet(name, title, context)
   , fiMonitorMode(-1)
   , fiDebugMonitorMode(-1)
@@ -30,7 +28,8 @@ CbmMcbm2018PsdPar::CbmMcbm2018PsdPar(const char* name,
   , fiNbMsTot(0)
   , fiNbMsOverlap(0)
   , fdSizeMsInNs(0.0)
-  , fdTsDeadtimePeriod(0.0) {
+  , fdTsDeadtimePeriod(0.0)
+{
   detName = "Psd";
 }
 // -------------------------------------------------------------------------
@@ -42,7 +41,8 @@ CbmMcbm2018PsdPar::~CbmMcbm2018PsdPar() {}
 
 
 // -----   Public method clear   -------------------------------------------
-void CbmMcbm2018PsdPar::clear() {
+void CbmMcbm2018PsdPar::clear()
+{
   status = kFALSE;
   resetInputVersions();
 }
@@ -50,7 +50,8 @@ void CbmMcbm2018PsdPar::clear() {
 
 // -------------------------------------------------------------------------
 
-void CbmMcbm2018PsdPar::putParams(FairParamList* l) {
+void CbmMcbm2018PsdPar::putParams(FairParamList* l)
+{
   if (!l) return;
   l->add("NrOfGdpbs", fiNrOfGdpb);
   l->add("GdpbIdArray", fiGdpbIdArray);
@@ -67,7 +68,8 @@ void CbmMcbm2018PsdPar::putParams(FairParamList* l) {
 
 //------------------------------------------------------
 
-Bool_t CbmMcbm2018PsdPar::getParams(FairParamList* l) {
+Bool_t CbmMcbm2018PsdPar::getParams(FairParamList* l)
+{
 
   if (!l) return kFALSE;
 
@@ -96,14 +98,12 @@ Bool_t CbmMcbm2018PsdPar::getParams(FairParamList* l) {
   return kTRUE;
 }
 // -------------------------------------------------------------------------
-Int_t CbmMcbm2018PsdPar::FeeChanToGbtChan(UInt_t uChannelInFee) {
-  if (uChannelInFee < kuNbChannelsPerFee)
-    return kuFeeToGbt[uChannelInFee];
+Int_t CbmMcbm2018PsdPar::FeeChanToGbtChan(UInt_t uChannelInFee)
+{
+  if (uChannelInFee < kuNbChannelsPerFee) return kuFeeToGbt[uChannelInFee];
   else {
-    LOG(fatal) << "CbmMcbm2018PsdPar::FeeChanToGbtChan => Index out of bound, "
-               << uChannelInFee << " vs "
-               << static_cast<uint32_t>(kuNbChannelsPerFee)
-               << ", returning crazy value!";
+    LOG(fatal) << "CbmMcbm2018PsdPar::FeeChanToGbtChan => Index out of bound, " << uChannelInFee << " vs "
+               << static_cast<uint32_t>(kuNbChannelsPerFee) << ", returning crazy value!";
     return -1;
   }  // else of if( uChannelInFee < kuNbChannelsPerFee )
 }

@@ -16,23 +16,24 @@
 
 //#include "FairLogger.h" //TODO delete
 
-CbmMcbm2018RichPar::CbmMcbm2018RichPar(const char* name,
-                                       const char* title,
-                                       const char* context)
-  : FairParGenericSet(name, title, context) {
+CbmMcbm2018RichPar::CbmMcbm2018RichPar(const char* name, const char* title, const char* context)
+  : FairParGenericSet(name, title, context)
+{
   detName = "RICH";
 }
 
 CbmMcbm2018RichPar::~CbmMcbm2018RichPar() {}
 
-void CbmMcbm2018RichPar::putParams(FairParamList* l) {
+void CbmMcbm2018RichPar::putParams(FairParamList* l)
+{
   if (!l) return;
 
   l->add("TRBaddresses", fTRBaddresses);
   l->add("ToTshifts", fToTshifts);
 }
 
-Bool_t CbmMcbm2018RichPar::getParams(FairParamList* l) {
+Bool_t CbmMcbm2018RichPar::getParams(FairParamList* l)
+{
   if (!l) return kFALSE;
 
   if (!l->fill("TRBaddresses", &fTRBaddresses)) return kFALSE;
@@ -47,28 +48,29 @@ Bool_t CbmMcbm2018RichPar::getParams(FairParamList* l) {
   // Create a map from the lists imported from the par file
   for (Int_t i = 0; i < siz; i++) {
     for (Int_t ch = 0; ch <= 32; ch++) {
-      fToTshiftMap.insert(
-        std::pair<Int_t, Double_t>(i * 33 + ch, fToTshifts[i * 33 + ch]));
+      fToTshiftMap.insert(std::pair<Int_t, Double_t>(i * 33 + ch, fToTshifts[i * 33 + ch]));
     }
   }
 
   return kTRUE;
 }
 
-Int_t CbmMcbm2018RichPar::GetAddressIdx(Int_t addr) const {
+Int_t CbmMcbm2018RichPar::GetAddressIdx(Int_t addr) const
+{
   //TODO catch exception only for map
   try {
     Int_t idx = fTRBaddrMap.at(addr);
     return idx;
-  } catch (...) {
-    LOG(warning)
-      << "CbmMcbm2018RichPar::GetAddressIdx => Unknown TRB address 0x"
-      << std::hex << std::setw(4) << addr << ", probably corrupted data!";
+  }
+  catch (...) {
+    LOG(warning) << "CbmMcbm2018RichPar::GetAddressIdx => Unknown TRB address 0x" << std::hex << std::setw(4) << addr
+                 << ", probably corrupted data!";
     return -1;
   }
 }
 
-Int_t CbmMcbm2018RichPar::GetAddress(Int_t ind) const {
+Int_t CbmMcbm2018RichPar::GetAddress(Int_t ind) const
+{
   if (ind < 0 || ind >= fTRBaddresses.GetSize()) return -1;
   return fTRBaddresses[ind];
 }

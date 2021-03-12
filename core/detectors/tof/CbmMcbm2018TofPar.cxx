@@ -5,8 +5,6 @@
 
 #include "CbmMcbm2018TofPar.h"
 
-#include "gDpbMessv100.h"
-
 #include "FairDetParIo.h"
 #include "FairLogger.h"
 #include "FairParIo.h"
@@ -14,10 +12,10 @@
 
 #include "TString.h"
 
+#include "gDpbMessv100.h"
+
 // -----   Standard constructor   ------------------------------------------
-CbmMcbm2018TofPar::CbmMcbm2018TofPar(const char* name,
-                                     const char* title,
-                                     const char* context)
+CbmMcbm2018TofPar::CbmMcbm2018TofPar(const char* name, const char* title, const char* context)
   : FairParGenericSet(name, title, context)
   , fvdPadiThrCodeToValue(GetNrOfPadiThrCodes(), 0.0)
   , fiNrOfGdpb(-1)
@@ -37,7 +35,8 @@ CbmMcbm2018TofPar::CbmMcbm2018TofPar(const char* name,
   , fdStarTriggerDeadtime()
   , fdStarTriggerDelay()
   , fdStarTriggerWinSize()
-  , fdTsDeadtimePeriod(0.0) {
+  , fdTsDeadtimePeriod(0.0)
+{
   detName = "Tof";
 
   /// PADI threshold measures and extrapolated code to value map
@@ -46,18 +45,15 @@ CbmMcbm2018TofPar::CbmMcbm2018TofPar(const char* name,
 
     /// Linear extrapolation between measured points
     if (uPadiPoint + 1 < kuNbThrMeasPoints) {
-      UInt_t uNbSteps =
-        kuThrMeasCode[uPadiPoint + 1] - kuThrMeasCode[uPadiPoint];
-      Double_t dValStep =
-        (kdThrMeasVal[uPadiPoint + 1] - kdThrMeasVal[uPadiPoint]) / uNbSteps;
-      UInt_t uCode = kuThrMeasCode[uPadiPoint];
+      UInt_t uNbSteps   = kuThrMeasCode[uPadiPoint + 1] - kuThrMeasCode[uPadiPoint];
+      Double_t dValStep = (kdThrMeasVal[uPadiPoint + 1] - kdThrMeasVal[uPadiPoint]) / uNbSteps;
+      UInt_t uCode      = kuThrMeasCode[uPadiPoint];
       for (UInt_t uStep = 1; uStep < uNbSteps; ++uStep) {
         uCode++;
-        fvdPadiThrCodeToValue[uCode] =
-          kdThrMeasVal[uPadiPoint] + dValStep * uStep;
+        fvdPadiThrCodeToValue[uCode] = kdThrMeasVal[uPadiPoint] + dValStep * uStep;
       }  // for( UInt_t uStep = 1; uStep < uNbSteps; ++uStep)
     }    // if( uPadiPoint + 1 < kuNbThrMeasPoints )
-  }  // for( UInt_t uPadiPoint = 0; uPadiPoint < kuNbThrMeasPoints; ++uPadiPoint )
+  }      // for( UInt_t uPadiPoint = 0; uPadiPoint < kuNbThrMeasPoints; ++uPadiPoint )
 }
 // -------------------------------------------------------------------------
 
@@ -68,7 +64,8 @@ CbmMcbm2018TofPar::~CbmMcbm2018TofPar() {}
 
 
 // -----   Public method clear   -------------------------------------------
-void CbmMcbm2018TofPar::clear() {
+void CbmMcbm2018TofPar::clear()
+{
   status = kFALSE;
   resetInputVersions();
 }
@@ -76,7 +73,8 @@ void CbmMcbm2018TofPar::clear() {
 
 // -------------------------------------------------------------------------
 
-void CbmMcbm2018TofPar::putParams(FairParamList* l) {
+void CbmMcbm2018TofPar::putParams(FairParamList* l)
+{
   if (!l) return;
   l->add("NrOfGdpbs", fiNrOfGdpb);
   l->add("GdpbIdArray", fiGdpbIdArray);
@@ -100,7 +98,8 @@ void CbmMcbm2018TofPar::putParams(FairParamList* l) {
 
 //------------------------------------------------------
 
-Bool_t CbmMcbm2018TofPar::getParams(FairParamList* l) {
+Bool_t CbmMcbm2018TofPar::getParams(FairParamList* l)
+{
 
   if (!l) return kFALSE;
 
@@ -144,63 +143,54 @@ Bool_t CbmMcbm2018TofPar::getParams(FairParamList* l) {
   return kTRUE;
 }
 // -------------------------------------------------------------------------
-Int_t CbmMcbm2018TofPar::Get4ChanToPadiChan(UInt_t uChannelInFee) {
-  if (uChannelInFee < kuNbChannelsPerFee)
-    return kuGet4topadi[uChannelInFee];
+Int_t CbmMcbm2018TofPar::Get4ChanToPadiChan(UInt_t uChannelInFee)
+{
+  if (uChannelInFee < kuNbChannelsPerFee) return kuGet4topadi[uChannelInFee];
   else {
-    LOG(fatal)
-      << "CbmMcbm2018TofPar::Get4ChanToPadiChan => Index out of bound, "
-      << uChannelInFee << " vs " << static_cast<uint32_t>(kuNbChannelsPerFee)
-      << ", returning crazy value!";
+    LOG(fatal) << "CbmMcbm2018TofPar::Get4ChanToPadiChan => Index out of bound, " << uChannelInFee << " vs "
+               << static_cast<uint32_t>(kuNbChannelsPerFee) << ", returning crazy value!";
     return -1;
   }  // else of if( uChannelInFee < kuNbChannelsPerFee )
 }
-Int_t CbmMcbm2018TofPar::PadiChanToGet4Chan(UInt_t uChannelInFee) {
-  if (uChannelInFee < kuNbChannelsPerFee)
-    return kuPaditoget4[uChannelInFee];
+Int_t CbmMcbm2018TofPar::PadiChanToGet4Chan(UInt_t uChannelInFee)
+{
+  if (uChannelInFee < kuNbChannelsPerFee) return kuPaditoget4[uChannelInFee];
   else {
-    LOG(fatal)
-      << "CbmMcbm2018TofPar::PadiChanToGet4Chan => Index out of bound, "
-      << uChannelInFee << " vs " << static_cast<uint32_t>(kuNbChannelsPerFee)
-      << ", returning crazy value!";
+    LOG(fatal) << "CbmMcbm2018TofPar::PadiChanToGet4Chan => Index out of bound, " << uChannelInFee << " vs "
+               << static_cast<uint32_t>(kuNbChannelsPerFee) << ", returning crazy value!";
     return -1;
   }  // else of if( uChannelInFee < kuNbChannelsPerFee )
 }
 // -------------------------------------------------------------------------
-Int_t CbmMcbm2018TofPar::ElinkIdxToGet4Idx(UInt_t uElink) {
-  if (gdpbv100::kuChipIdMergedEpoch == uElink)
-    return uElink;
+Int_t CbmMcbm2018TofPar::ElinkIdxToGet4Idx(UInt_t uElink)
+{
+  if (gdpbv100::kuChipIdMergedEpoch == uElink) return uElink;
   else if (uElink < kuNbGet4PerGdpb)
-    return kuElinkToGet4[uElink % kuNbGet4PerGbtx]
-           + kuNbGet4PerGbtx * (uElink / kuNbGet4PerGbtx);
+    return kuElinkToGet4[uElink % kuNbGet4PerGbtx] + kuNbGet4PerGbtx * (uElink / kuNbGet4PerGbtx);
   else {
-    LOG(fatal) << "CbmMcbm2018TofPar::ElinkIdxToGet4Idx => Index out of bound, "
-               << uElink << " vs " << static_cast<uint32_t>(kuNbGet4PerGdpb)
-               << ", returning crazy value!";
+    LOG(fatal) << "CbmMcbm2018TofPar::ElinkIdxToGet4Idx => Index out of bound, " << uElink << " vs "
+               << static_cast<uint32_t>(kuNbGet4PerGdpb) << ", returning crazy value!";
     return -1;
   }  // else of if( uElink < kuNbGet4PerGbtx )
 }
-Int_t CbmMcbm2018TofPar::Get4IdxToElinkIdx(UInt_t uGet4) {
-  if (gdpbv100::kuChipIdMergedEpoch == uGet4)
-    return uGet4;
+Int_t CbmMcbm2018TofPar::Get4IdxToElinkIdx(UInt_t uGet4)
+{
+  if (gdpbv100::kuChipIdMergedEpoch == uGet4) return uGet4;
   else if (uGet4 < kuNbGet4PerGdpb)
-    return kuGet4ToElink[uGet4 % kuNbGet4PerGbtx]
-           + kuNbGet4PerGbtx * (uGet4 / kuNbGet4PerGbtx);
+    return kuGet4ToElink[uGet4 % kuNbGet4PerGbtx] + kuNbGet4PerGbtx * (uGet4 / kuNbGet4PerGbtx);
   else {
-    LOG(fatal) << "CbmMcbm2018TofPar::Get4IdxToElinkIdx => Index out of bound, "
-               << uGet4 << " vs " << static_cast<uint32_t>(kuNbGet4PerGdpb)
-               << ", returning crazy value!";
+    LOG(fatal) << "CbmMcbm2018TofPar::Get4IdxToElinkIdx => Index out of bound, " << uGet4 << " vs "
+               << static_cast<uint32_t>(kuNbGet4PerGdpb) << ", returning crazy value!";
     return -1;
   }  // else of if( uElink < kuNbGet4PerGbtx )
 }
 // -------------------------------------------------------------------------
-Double_t CbmMcbm2018TofPar::GetPadiThresholdVal(UInt_t uCode) {
-  if (uCode < GetNrOfPadiThrCodes())
-    return fvdPadiThrCodeToValue[uCode];
+Double_t CbmMcbm2018TofPar::GetPadiThresholdVal(UInt_t uCode)
+{
+  if (uCode < GetNrOfPadiThrCodes()) return fvdPadiThrCodeToValue[uCode];
   else {
-    LOG(error)
-      << "CbmStar2019TofPar::GetPadiThresholdVal => Code out of bound, "
-      << uCode << " vs " << GetNrOfPadiThrCodes() << ", returning crazy value!";
+    LOG(error) << "CbmStar2019TofPar::GetPadiThresholdVal => Code out of bound, " << uCode << " vs "
+               << GetNrOfPadiThrCodes() << ", returning crazy value!";
     return 1e9;
   }  // else of if( uCode < GetNrOfPadiThrCodes() )
 }

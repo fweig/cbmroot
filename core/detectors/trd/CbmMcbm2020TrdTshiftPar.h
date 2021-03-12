@@ -15,10 +15,9 @@
 
 class CbmMcbm2020TrdTshiftPar : public FairParGenericSet {
 public:
-  CbmMcbm2020TrdTshiftPar(
-    const char* name    = "CbmMcbm2020TrdTshiftPar",
-    const char* title   = "TRD timeshift unpacker parameters mCbm 2020",
-    const char* context = "Default");
+  CbmMcbm2020TrdTshiftPar(const char* name    = "CbmMcbm2020TrdTshiftPar",
+                          const char* title   = "TRD timeshift unpacker parameters mCbm 2020",
+                          const char* context = "Default");
 
   virtual ~CbmMcbm2020TrdTshiftPar();
 
@@ -40,9 +39,7 @@ public:
   std::vector<Int_t> GetTimeshiftsVec(size_t tsidx);
   ///< Return the timeshift vector for a given Timeslice Index. Works only if getParams() was run before
 
-  std::map<size_t, std::vector<Int_t>>* GetTimeshiftsMap() {
-    return &fmapTimeshifts;
-  }
+  std::map<size_t, std::vector<Int_t>>* GetTimeshiftsMap() { return &fmapTimeshifts; }
   ///< Return the timeshift map.
 
 
@@ -52,17 +49,14 @@ public:
   std::shared_ptr<TH2> GetCalibHisto(std::shared_ptr<TH3> calibbasehisto);
   ///< Extract the timeshiftHisto from the calibbase histogram. The calibbase histogram is a TH3* with the tsIdx, the module channels and the timeshifts on the axes.
 
-  Int_t GetDominantShift(std::shared_ptr<TH3> calibbasehisto,
-                         size_t itsidx,
-                         size_t ichannel);
+  Int_t GetDominantShift(std::shared_ptr<TH3> calibbasehisto, size_t itsidx, size_t ichannel);
   ///< Extract the dominant shift value from the calibbase histogram. For a give tsIdx and channel.
 
   bool FillTimeshiftArray(std::shared_ptr<TFile> mcbmanafile);
   ///< Extract the timeshift values from a TAF output file that contains the required histograms and write them to fTimeshifts.
 
 private:
-  const std::vector<std::string> pararraynames = {"nTimeslices",
-                                                  "TrdTimeshifts"};
+  const std::vector<std::string> pararraynames = {"nTimeslices", "TrdTimeshifts"};
   ///< Names of the parameter arrays
 
   const size_t fgNchannels = 768;

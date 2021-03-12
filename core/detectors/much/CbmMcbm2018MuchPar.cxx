@@ -17,9 +17,7 @@
 using namespace std;
 
 // -----   Standard constructor   ------------------------------------------
-CbmMcbm2018MuchPar::CbmMcbm2018MuchPar(const char* name,
-                                       const char* title,
-                                       const char* context)
+CbmMcbm2018MuchPar::CbmMcbm2018MuchPar(const char* name, const char* title, const char* context)
   : FairParGenericSet(name, title, context)
   , fuNrOfDpbs(0)
   , fiDbpIdArray()
@@ -33,7 +31,8 @@ CbmMcbm2018MuchPar::CbmMcbm2018MuchPar(const char* name,
   , fChannelsToPadXB()
   , fChannelsToPadYB()
   , fRealX()
-  , fRealPadSize() {
+  , fRealPadSize()
+{
   detName = "Much";
 }
 // -------------------------------------------------------------------------
@@ -45,7 +44,8 @@ CbmMcbm2018MuchPar::~CbmMcbm2018MuchPar() {}
 
 
 // -----   Public method clear   -------------------------------------------
-void CbmMcbm2018MuchPar::clear() {
+void CbmMcbm2018MuchPar::clear()
+{
   status = kFALSE;
   resetInputVersions();
 }
@@ -53,7 +53,8 @@ void CbmMcbm2018MuchPar::clear() {
 
 // -------------------------------------------------------------------------
 
-void CbmMcbm2018MuchPar::putParams(FairParamList* l) {
+void CbmMcbm2018MuchPar::putParams(FairParamList* l)
+{
   if (!l) return;
 
   l->add("NrOfDpbs", fuNrOfDpbs);
@@ -73,7 +74,8 @@ void CbmMcbm2018MuchPar::putParams(FairParamList* l) {
 
 // -------------------------------------------------------------------------
 
-Bool_t CbmMcbm2018MuchPar::getParams(FairParamList* l) {
+Bool_t CbmMcbm2018MuchPar::getParams(FairParamList* l)
+{
 
   if (!l) return kFALSE;
 
@@ -116,163 +118,144 @@ Bool_t CbmMcbm2018MuchPar::getParams(FairParamList* l) {
   return kTRUE;
 }
 // -------------------------------------------------------------------------
-Int_t CbmMcbm2018MuchPar::ElinkIdxToFebIdx(UInt_t uElink) {
+Int_t CbmMcbm2018MuchPar::ElinkIdxToFebIdx(UInt_t uElink)
+{
   //LOG(info) <<" uElink "<<uElink<<" kuNbElinksPerCrob "<<kuNbElinksPerCrob;
-  if (uElink < kuNbElinksPerCrob)
-    return kiCrobMapElinkFebIdx[uElink];
+  if (uElink < kuNbElinksPerCrob) return kiCrobMapElinkFebIdx[uElink];
   else {
-    LOG(warning)
-      << "CbmMcbm2018MuchPar::ElinkIdxToFebIdx => Index out of bound, "
-      << "returning crazy value!";
+    LOG(warning) << "CbmMcbm2018MuchPar::ElinkIdxToFebIdx => Index out of bound, "
+                 << "returning crazy value!";
     return -1;
   }  // else of if( uElink < kuNbElinksPerCrob )
 }
 // -------------------------------------------------------------------------
-UInt_t CbmMcbm2018MuchPar::ElinkIdxToAsicIdxFebMuch(UInt_t uElink) {
-  if (uElink < kuNbElinksPerCrob)
-    return kuCrobMapElinkFebMuch[uElink];
+UInt_t CbmMcbm2018MuchPar::ElinkIdxToAsicIdxFebMuch(UInt_t uElink)
+{
+  if (uElink < kuNbElinksPerCrob) return kuCrobMapElinkFebMuch[uElink];
   else {
-    LOG(warning)
-      << "CbmMcbm2018MuchPar::ElinkIdxToAsicIdxFebMuch => Index out of bound, "
-      << "returning crazy value!";
+    LOG(warning) << "CbmMcbm2018MuchPar::ElinkIdxToAsicIdxFebMuch => Index out of bound, "
+                 << "returning crazy value!";
     return 0xFFFF;
   }  // else of if( uElink < kuNbElinksPerCrob )
 }
 // -------------------------------------------------------------------------
-UInt_t CbmMcbm2018MuchPar::GetDpbId(UInt_t uDpbIdx) {
-  if (uDpbIdx < fuNrOfDpbs)
-    return fiDbpIdArray[uDpbIdx];
+UInt_t CbmMcbm2018MuchPar::GetDpbId(UInt_t uDpbIdx)
+{
+  if (uDpbIdx < fuNrOfDpbs) return fiDbpIdArray[uDpbIdx];
   else {
     LOG(warning) << "CbmMcbm2018MuchPar::GetDpbId => Index out of bound, "
                  << "returning crazy value!";
     return 0xFFFFFFFF;
   }  // else of if( uDpbIdx < fuNrOfDpbs )
 }
-Bool_t CbmMcbm2018MuchPar::IsCrobActive(UInt_t uDpbIdx, UInt_t uCrobIdx) {
+Bool_t CbmMcbm2018MuchPar::IsCrobActive(UInt_t uDpbIdx, UInt_t uCrobIdx)
+{
   if (uDpbIdx < fuNrOfDpbs) {
-    if (uCrobIdx < kuNbCrobsPerDpb)
-      return 0 < fiCrobActiveFlag[uDpbIdx * kuNbCrobsPerDpb + uCrobIdx]
-               ? kTRUE
-               : kFALSE;
+    if (uCrobIdx < kuNbCrobsPerDpb) return 0 < fiCrobActiveFlag[uDpbIdx * kuNbCrobsPerDpb + uCrobIdx] ? kTRUE : kFALSE;
     else {
-      LOG(warning)
-        << "CbmMcbm2018MuchPar::IsCrobActive => Crob Index out of bound, "
-        << "returning default inactive!";
+      LOG(warning) << "CbmMcbm2018MuchPar::IsCrobActive => Crob Index out of bound, "
+                   << "returning default inactive!";
       return kFALSE;
     }  // else of if( uCrobIdx < kuNbCrobsPerDpb )
   }    // if( uDpbIdx < fuNrOfDpbs )
   else {
-    LOG(warning)
-      << "CbmMcbm2018MuchPar::IsCrobActive => Dpb Index out of bound, "
-      << "returning default inactive!";
+    LOG(warning) << "CbmMcbm2018MuchPar::IsCrobActive => Dpb Index out of bound, "
+                 << "returning default inactive!";
     return kFALSE;
   }  // else of if( uDpbIdx < fuNrOfDpbs )
 }
-Bool_t CbmMcbm2018MuchPar::IsFebActive(UInt_t uFebInSystIdx) {
+Bool_t CbmMcbm2018MuchPar::IsFebActive(UInt_t uFebInSystIdx)
+{
 
   if (uFebInSystIdx < GetNrOfFebs()) {
     /// Always return true for now
     return kTRUE;
   }  // if( uFebInSystIdx < GetNrOfFebs() )
   else {
-    LOG(warning)
-      << "CbmMcbm2018MuchPar::IsFebActive => Feb Index out of bound, "
-      << "returning default inactive!";
+    LOG(warning) << "CbmMcbm2018MuchPar::IsFebActive => Feb Index out of bound, "
+                 << "returning default inactive!";
     return kFALSE;
   }  // else of if( uFebInSystIdx < GetNrOfFebs() )
 }
-Bool_t CbmMcbm2018MuchPar::IsFebActive(UInt_t uDpbIdx,
-                                       UInt_t uCrobIdx,
-                                       UInt_t uFebIdx) {
+Bool_t CbmMcbm2018MuchPar::IsFebActive(UInt_t uDpbIdx, UInt_t uCrobIdx, UInt_t uFebIdx)
+{
   if (uDpbIdx < fuNrOfDpbs) {
     if (uCrobIdx < kuNbCrobsPerDpb) {
       if (uFebIdx < kuNbFebsPerCrob) {
-        UInt_t uIdx =
-          (uDpbIdx * kuNbCrobsPerDpb + uCrobIdx) * kuNbFebsPerCrob + uFebIdx;
+        UInt_t uIdx = (uDpbIdx * kuNbCrobsPerDpb + uCrobIdx) * kuNbFebsPerCrob + uFebIdx;
         return IsFebActive(uIdx);
       }  // if( uFebIdx < kuNbFebsPerCrob )
       else {
-        LOG(warning)
-          << "CbmMcbm2018MuchPar::IsFebActive => Feb Index out of bound, "
-          << "returning default inactive!";
+        LOG(warning) << "CbmMcbm2018MuchPar::IsFebActive => Feb Index out of bound, "
+                     << "returning default inactive!";
         return kFALSE;
       }  // else of if( uFebIdx < kuNbCrobsPerDpb )
     }    // if( uCrobIdx < kuNbCrobsPerDpb )
     else {
-      LOG(warning)
-        << "CbmMcbm2018MuchPar::IsFebActive => Crob Index out of bound, "
-        << "returning default inactive!";
+      LOG(warning) << "CbmMcbm2018MuchPar::IsFebActive => Crob Index out of bound, "
+                   << "returning default inactive!";
       return kFALSE;
     }  // else of if( uCrobIdx < kuNbCrobsPerDpb )
   }    // if( uDpbIdx < fuNrOfDpbs )
   else {
-    LOG(warning)
-      << "CbmMcbm2018MuchPar::IsFebActive => Dpb Index out of bound, "
-      << "returning default inactive!";
+    LOG(warning) << "CbmMcbm2018MuchPar::IsFebActive => Dpb Index out of bound, "
+                 << "returning default inactive!";
     return kFALSE;
   }  // else of if( uDpbIdx < fuNrOfDpbs )
 }
-Short_t CbmMcbm2018MuchPar::GetPadXA(UShort_t febid, UShort_t channelid) {
-  if (fChannelsToPadXA.GetSize()
-      <= static_cast<Int_t>((febid * kuNbChanPerAsic) + channelid)) {
-    LOG(debug) << "CbmMcbm2018MuchPar::GetPadXA => Index out of bounds: "
-               << ((febid * kuNbChanPerAsic) + channelid) << " VS "
-               << fChannelsToPadXA.GetSize() << " (" << febid << " and "
-               << channelid << ")";
+Short_t CbmMcbm2018MuchPar::GetPadXA(UShort_t febid, UShort_t channelid)
+{
+  if (fChannelsToPadXA.GetSize() <= static_cast<Int_t>((febid * kuNbChanPerAsic) + channelid)) {
+    LOG(debug) << "CbmMcbm2018MuchPar::GetPadXA => Index out of bounds: " << ((febid * kuNbChanPerAsic) + channelid)
+               << " VS " << fChannelsToPadXA.GetSize() << " (" << febid << " and " << channelid << ")";
     return -2;
   }  // if( fChannelsToPadXA.GetSize () <= static_cast< Int_t >( (febid*kuNbChanPerAsic)+channelid ) )
 
 
   return fChannelsToPadXA[(febid * kuNbChanPerAsic) + channelid];
 }
-Short_t CbmMcbm2018MuchPar::GetPadYA(UShort_t febid, UShort_t channelid) {
-  if (fChannelsToPadXA.GetSize()
-      <= static_cast<Int_t>((febid * kuNbChanPerAsic) + channelid)) {
-    LOG(debug) << "CbmMcbm2018MuchPar::GetPadYA => Index out of bounds: "
-               << ((febid * kuNbChanPerAsic) + channelid) << " VS "
-               << fChannelsToPadYA.GetSize() << " (" << febid << " and "
-               << channelid << ")";
+Short_t CbmMcbm2018MuchPar::GetPadYA(UShort_t febid, UShort_t channelid)
+{
+  if (fChannelsToPadXA.GetSize() <= static_cast<Int_t>((febid * kuNbChanPerAsic) + channelid)) {
+    LOG(debug) << "CbmMcbm2018MuchPar::GetPadYA => Index out of bounds: " << ((febid * kuNbChanPerAsic) + channelid)
+               << " VS " << fChannelsToPadYA.GetSize() << " (" << febid << " and " << channelid << ")";
     return -2;
   }  // if( fChannelsToPadXA.GetSize () <= static_cast< Int_t >( (febid*kuNbChanPerAsic)+channelid ) )
 
   return fChannelsToPadYA[(febid * kuNbChanPerAsic) + channelid];
 }
 
-Short_t CbmMcbm2018MuchPar::GetPadXB(UShort_t febid, UShort_t channelid) {
-  if (fChannelsToPadXB.GetSize()
-      <= static_cast<Int_t>((febid * kuNbChanPerAsic) + channelid)) {
-    LOG(debug) << "CbmMcbm2018MuchPar::GetPadXB => Index out of bounds: "
-               << ((febid * kuNbChanPerAsic) + channelid) << " VS "
-               << fChannelsToPadXB.GetSize() << " (" << febid << " and "
-               << channelid << ")";
+Short_t CbmMcbm2018MuchPar::GetPadXB(UShort_t febid, UShort_t channelid)
+{
+  if (fChannelsToPadXB.GetSize() <= static_cast<Int_t>((febid * kuNbChanPerAsic) + channelid)) {
+    LOG(debug) << "CbmMcbm2018MuchPar::GetPadXB => Index out of bounds: " << ((febid * kuNbChanPerAsic) + channelid)
+               << " VS " << fChannelsToPadXB.GetSize() << " (" << febid << " and " << channelid << ")";
     return -2;
   }  // if( fChannelsToPadXB.GetSize () <= static_cast< Int_t >( (febid*kuNbChanPerAsic)+channelid ) )
 
 
   return fChannelsToPadXB[(febid * kuNbChanPerAsic) + channelid];
 }
-Short_t CbmMcbm2018MuchPar::GetPadYB(UShort_t febid, UShort_t channelid) {
-  if (fChannelsToPadXB.GetSize()
-      <= static_cast<Int_t>((febid * kuNbChanPerAsic) + channelid)) {
-    LOG(debug) << "CbmMcbm2018MuchPar::GetPadYB => Index out of bounds: "
-               << ((febid * kuNbChanPerAsic) + channelid) << " VS "
-               << fChannelsToPadYB.GetSize() << " (" << febid << " and "
-               << channelid << ")";
+Short_t CbmMcbm2018MuchPar::GetPadYB(UShort_t febid, UShort_t channelid)
+{
+  if (fChannelsToPadXB.GetSize() <= static_cast<Int_t>((febid * kuNbChanPerAsic) + channelid)) {
+    LOG(debug) << "CbmMcbm2018MuchPar::GetPadYB => Index out of bounds: " << ((febid * kuNbChanPerAsic) + channelid)
+               << " VS " << fChannelsToPadYB.GetSize() << " (" << febid << " and " << channelid << ")";
     return -2;
   }  // if( fChannelsToPadXB.GetSize () <= static_cast< Int_t >( (febid*kuNbChanPerAsic)+channelid ) )
 
   return fChannelsToPadYB[(febid * kuNbChanPerAsic) + channelid];
 }
 
-UInt_t CbmMcbm2018MuchPar::GetFebId(UInt_t uAsicIdx) {
+UInt_t CbmMcbm2018MuchPar::GetFebId(UInt_t uAsicIdx)
+{
   //LOG(info)<<" fnFebsIdsArrayGemA.GetSize() "<<fnFebsIdsArrayGemA.GetSize()<<" fnFebsIdsArrayGemB.GetSize()"<<fnFebsIdsArrayGemB.GetSize();
   if (uAsicIdx >= GetNrOfFebsInGemA()) {
     if ((uAsicIdx % GetNrOfFebsInGemA()) < GetNrOfFebsInGemB())
       return fnFebsIdsArrayGemB[uAsicIdx % GetNrOfFebsInGemA()];
     else {
-      LOG(error) << "CbmMcbm2018MuchPar::GetFebId => Index out of bounds: "
-                 << uAsicIdx << " VS " << GetNrOfFebsInGemA() << " and "
-                 << GetNrOfFebsInGemB() << " => Returning crazy value!!!";
+      LOG(error) << "CbmMcbm2018MuchPar::GetFebId => Index out of bounds: " << uAsicIdx << " VS " << GetNrOfFebsInGemA()
+                 << " and " << GetNrOfFebsInGemB() << " => Returning crazy value!!!";
       return 10000 * (GetNrOfFebsInGemA() + GetNrOfFebsInGemB());
     }  // else of if( ( uAsicIdx % GetNrOfFebsInGemA() ) < GetNrOfFebsInGemB() )
   }    // if(uAsicIdx >= GetNrOfFebsInGemA())
@@ -280,10 +263,10 @@ UInt_t CbmMcbm2018MuchPar::GetFebId(UInt_t uAsicIdx) {
     return fnFebsIdsArrayGemA[uAsicIdx];
 }
 
-UInt_t CbmMcbm2018MuchPar::GetModule(UInt_t uAsicIdx) {
+UInt_t CbmMcbm2018MuchPar::GetModule(UInt_t uAsicIdx)
+{
   if (uAsicIdx >= GetNrOfFebsInGemA()) {
-    if ((uAsicIdx % GetNrOfFebsInGemA()) < GetNrOfFebsInGemB())
-      return 1;
+    if ((uAsicIdx % GetNrOfFebsInGemA()) < GetNrOfFebsInGemB()) return 1;
     else
       return 2;
   }  // if(uAsicIdx >= GetNrOfFebsInGemA())
@@ -291,7 +274,8 @@ UInt_t CbmMcbm2018MuchPar::GetModule(UInt_t uAsicIdx) {
     return 0;
 }
 
-Double_t CbmMcbm2018MuchPar::GetRealX(Int_t SectorIndex) {
+Double_t CbmMcbm2018MuchPar::GetRealX(Int_t SectorIndex)
+{
 
   //LOG(info)<<" fChannelsToPadX.GetSize() "<<fChannelsToPadX.GetSize();
   if (SectorIndex < 0 || SectorIndex <= 97) {
@@ -302,7 +286,8 @@ Double_t CbmMcbm2018MuchPar::GetRealX(Int_t SectorIndex) {
   return fRealX[SectorIndex];
 }
 
-Double_t CbmMcbm2018MuchPar::GetRealPadSize(Int_t SectorIndex) {
+Double_t CbmMcbm2018MuchPar::GetRealPadSize(Int_t SectorIndex)
+{
 
   //LOG(info)<<" fChannelsToPadX.GetSize() "<<fChannelsToPadX.GetSize();
   if (SectorIndex < 0 || SectorIndex <= 97) {
@@ -313,23 +298,24 @@ Double_t CbmMcbm2018MuchPar::GetRealPadSize(Int_t SectorIndex) {
   return fRealPadSize[SectorIndex];
 }
 
-Double_t CbmMcbm2018MuchPar::GetRealX(Int_t Channel, Int_t Sector) {
+Double_t CbmMcbm2018MuchPar::GetRealX(Int_t Channel, Int_t Sector)
+{
   Int_t PadIndex = Channel + 97 * Sector;
   if (Channel < 0 || Sector < 0) return -2;
   if (fRealX.GetSize() <= PadIndex) {
-    LOG(info) << "CbmMcbm2018MuchPar::GetRealX => Index out of bounds: "
-              << Channel << " " << Sector << " " << PadIndex;
+    LOG(info) << "CbmMcbm2018MuchPar::GetRealX => Index out of bounds: " << Channel << " " << Sector << " " << PadIndex;
     return -1;
   }  // if( fRealX.Size() <= PadIndex )
 
   return fRealX[PadIndex];
 }
-Double_t CbmMcbm2018MuchPar::GetRealPadSize(Int_t Channel, Int_t Sector) {
+Double_t CbmMcbm2018MuchPar::GetRealPadSize(Int_t Channel, Int_t Sector)
+{
   Int_t PadIndex = Channel + 97 * Sector;
   if (Channel < 0 || Sector < 0) return -2;
   if (fRealPadSize.GetSize() <= PadIndex) {
-    LOG(info) << "CbmMcbm2018MuchPar::GetRealPadSize => Index out of bounds: "
-              << Channel << " " << Sector << " " << PadIndex;
+    LOG(info) << "CbmMcbm2018MuchPar::GetRealPadSize => Index out of bounds: " << Channel << " " << Sector << " "
+              << PadIndex;
     return -1;
   }  // if( fRealPadSize.Size() <= PadIndex )
 

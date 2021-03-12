@@ -28,6 +28,7 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+
 #include <stdint.h>
 
 // -------------------------------------------------------------------------
@@ -123,11 +124,8 @@ CbmCosy2019MonitorAlgoHodo::CbmCosy2019MonitorAlgoHodo()
   , fhPrevHitDtAsicsAB(nullptr)
   , fiTimeIntervalRateUpdate(-1)
   , fviTimeSecLastRateUpdate(kuNbHodos, 0)
-  , fvdChanCountsSinceLastRateUpdate(
-      kuNbHodos,
-      std::vector<Double_t>(kuNbChanPerAsic, 0.0))
-  , fdHodoChanLastTimeForDist(kuNbHodos,
-                              std::vector<Double_t>(kuNbChanPerAsic, 0.0))
+  , fvdChanCountsSinceLastRateUpdate(kuNbHodos, std::vector<Double_t>(kuNbChanPerAsic, 0.0))
+  , fdHodoChanLastTimeForDist(kuNbHodos, std::vector<Double_t>(kuNbChanPerAsic, 0.0))
   , fuPreviousHitAsic(0)
   , fvdPreviousHitTimePerAsic(2, 0.0)
   , fcSummary(nullptr)
@@ -137,33 +135,40 @@ CbmCosy2019MonitorAlgoHodo::CbmCosy2019MonitorAlgoHodo()
   , fcHodoFiberCoincAB(nullptr)
   , fcHodoFullCoinc(nullptr)
   , fcHodoFullCoincPos(nullptr)
-  , fcHodoPrevHitDt(nullptr) {}
-CbmCosy2019MonitorAlgoHodo::~CbmCosy2019MonitorAlgoHodo() {
+  , fcHodoPrevHitDt(nullptr)
+{
+}
+CbmCosy2019MonitorAlgoHodo::~CbmCosy2019MonitorAlgoHodo()
+{
   /// Clear buffers
   fvmHitsInMs.clear();
 }
 
 // -------------------------------------------------------------------------
-Bool_t CbmCosy2019MonitorAlgoHodo::Init() {
+Bool_t CbmCosy2019MonitorAlgoHodo::Init()
+{
   LOG(info) << "Initializing mCBM HODO 2019 monitor algo";
 
   return kTRUE;
 }
 void CbmCosy2019MonitorAlgoHodo::Reset() {}
-void CbmCosy2019MonitorAlgoHodo::Finish() {
+void CbmCosy2019MonitorAlgoHodo::Finish()
+{
   /// Printout Goodbye message and stats
 
   /// Write Output histos
 }
 
 // -------------------------------------------------------------------------
-Bool_t CbmCosy2019MonitorAlgoHodo::InitContainers() {
+Bool_t CbmCosy2019MonitorAlgoHodo::InitContainers()
+{
   LOG(info) << "Init parameter containers for CbmCosy2019MonitorAlgoHodo";
   Bool_t initOK = ReInitContainers();
 
   return initOK;
 }
-Bool_t CbmCosy2019MonitorAlgoHodo::ReInitContainers() {
+Bool_t CbmCosy2019MonitorAlgoHodo::ReInitContainers()
+{
   LOG(info) << "**********************************************";
   LOG(info) << "ReInit parameter containers for CbmCosy2019MonitorAlgoHodo";
   /*
@@ -175,7 +180,8 @@ Bool_t CbmCosy2019MonitorAlgoHodo::ReInitContainers() {
 
   return initOK;
 }
-TList* CbmCosy2019MonitorAlgoHodo::GetParList() {
+TList* CbmCosy2019MonitorAlgoHodo::GetParList()
+{
   if (nullptr == fParCList) fParCList = new TList();
   /*
    fUnpackPar = new CbmCosy2019HodoPar("CbmCosy2019HodoPar");
@@ -183,7 +189,8 @@ TList* CbmCosy2019MonitorAlgoHodo::GetParList() {
 */
   return fParCList;
 }
-Bool_t CbmCosy2019MonitorAlgoHodo::InitParameters() {
+Bool_t CbmCosy2019MonitorAlgoHodo::InitParameters()
+{
   /*
    fuNbModules   = fUnpackPar->GetNbOfModules();
    LOG(info) << "Nr. of STS Modules:    " << fuNbModules;
@@ -369,8 +376,8 @@ Bool_t CbmCosy2019MonitorAlgoHodo::InitParameters() {
 }
 // -------------------------------------------------------------------------
 
-void CbmCosy2019MonitorAlgoHodo::AddMsComponentToList(size_t component,
-                                                      UShort_t usDetectorId) {
+void CbmCosy2019MonitorAlgoHodo::AddMsComponentToList(size_t component, UShort_t usDetectorId)
+{
   /// Check for duplicates and ignore if it is the case
   for (UInt_t uCompIdx = 0; uCompIdx < fvMsComponentsList.size(); ++uCompIdx)
     if (component == fvMsComponentsList[uCompIdx]) return;
@@ -378,13 +385,13 @@ void CbmCosy2019MonitorAlgoHodo::AddMsComponentToList(size_t component,
   /// Add to list
   fvMsComponentsList.push_back(component);
 
-  LOG(info) << "CbmCosy2019MonitorAlgoHodo::AddMsComponentToList => Component "
-            << component << " with detector ID 0x" << std::hex << usDetectorId
-            << std::dec << " added to list";
+  LOG(info) << "CbmCosy2019MonitorAlgoHodo::AddMsComponentToList => Component " << component << " with detector ID 0x"
+            << std::hex << usDetectorId << std::dec << " added to list";
 }
 // -------------------------------------------------------------------------
 
-Bool_t CbmCosy2019MonitorAlgoHodo::ProcessTs(const fles::Timeslice& ts) {
+Bool_t CbmCosy2019MonitorAlgoHodo::ProcessTs(const fles::Timeslice& ts)
+{
   fulCurrentTsIdx = ts.index();
   fdTsStartTime   = static_cast<Double_t>(ts.descriptor(0, 0).idx);
 
@@ -397,10 +404,9 @@ Bool_t CbmCosy2019MonitorAlgoHodo::ProcessTs(const fles::Timeslice& ts) {
     fuNbOverMsPerTs  = ts.num_microslices(0) - ts.num_core_microslices();
     fdTsCoreSizeInNs = fdMsSizeInNs * (fuNbCoreMsPerTs);
     fdTsFullSizeInNs = fdMsSizeInNs * (fuNbCoreMsPerTs + fuNbOverMsPerTs);
-    LOG(info) << "Timeslice parameters: each TS has " << fuNbCoreMsPerTs
-              << " Core MS and " << fuNbOverMsPerTs
-              << " Overlap MS, for a core duration of " << fdTsCoreSizeInNs
-              << " ns and a full duration of " << fdTsFullSizeInNs << " ns";
+    LOG(info) << "Timeslice parameters: each TS has " << fuNbCoreMsPerTs << " Core MS and " << fuNbOverMsPerTs
+              << " Overlap MS, for a core duration of " << fdTsCoreSizeInNs << " ns and a full duration of "
+              << fdTsFullSizeInNs << " ns";
 
     /// Ignore overlap ms if flag set by user
     fuNbMsLoop = fuNbCoreMsPerTs;
@@ -415,16 +421,14 @@ Bool_t CbmCosy2019MonitorAlgoHodo::ProcessTs(const fles::Timeslice& ts) {
   /// Loop over core microslices (and overlap ones if chosen)
   for (fuMsIndex = 0; fuMsIndex < fuNbMsLoop; fuMsIndex++) {
     /// Loop over registered components
-    for (UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size();
-         ++uMsCompIdx) {
+    for (UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx) {
       UInt_t uMsComp = fvMsComponentsList[uMsCompIdx];
 
       if (kFALSE == ProcessMs(ts, uMsComp, fuMsIndex)) {
-        LOG(error) << "Failed to process ts " << fulCurrentTsIdx << " MS "
-                   << fuMsIndex << " for component " << uMsComp;
+        LOG(error) << "Failed to process ts " << fulCurrentTsIdx << " MS " << fuMsIndex << " for component " << uMsComp;
         return kFALSE;
       }  // if( kFALSE == ProcessMs( ts, uMsCompIdx, fuMsIndex ) )
-    }  // for( UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx )
+    }    // for( UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx )
 
     /// Sort the buffers of hits
     std::sort(fvmHitsInMs.begin(), fvmHitsInMs.end());
@@ -443,8 +447,7 @@ Bool_t CbmCosy2019MonitorAlgoHodo::ProcessTs(const fles::Timeslice& ts) {
 */
 
     if (kFALSE == FillHistograms()) {
-      LOG(error) << "Failed to fill histos in ts " << fulCurrentTsIdx << " MS "
-                 << fuMsIndex;
+      LOG(error) << "Failed to fill histos in ts " << fulCurrentTsIdx << " MS " << fuMsIndex;
       return kFALSE;
     }  // if( kFALSE == FillHistograms() )
 
@@ -459,31 +462,27 @@ Bool_t CbmCosy2019MonitorAlgoHodo::ProcessTs(const fles::Timeslice& ts) {
   return kTRUE;
 }
 
-Bool_t CbmCosy2019MonitorAlgoHodo::ProcessMs(const fles::Timeslice& ts,
-                                             size_t uMsCompIdx,
-                                             size_t uMsIdx) {
-  auto msDescriptor    = ts.descriptor(uMsCompIdx, uMsIdx);
-  fuCurrentEquipmentId = msDescriptor.eq_id;
-  const uint8_t* msContent =
-    reinterpret_cast<const uint8_t*>(ts.content(uMsCompIdx, uMsIdx));
+Bool_t CbmCosy2019MonitorAlgoHodo::ProcessMs(const fles::Timeslice& ts, size_t uMsCompIdx, size_t uMsIdx)
+{
+  auto msDescriptor        = ts.descriptor(uMsCompIdx, uMsIdx);
+  fuCurrentEquipmentId     = msDescriptor.eq_id;
+  const uint8_t* msContent = reinterpret_cast<const uint8_t*>(ts.content(uMsCompIdx, uMsIdx));
 
   uint32_t uSize  = msDescriptor.size;
   fulCurrentMsIdx = msDescriptor.idx;
 
   Double_t dMsTime = (1e-9) * static_cast<double>(fulCurrentMsIdx);
-  LOG(debug) << "Microslice: " << fulCurrentMsIdx << " from EqId " << std::hex
-             << fuCurrentEquipmentId << std::dec << " has size: " << uSize;
+  LOG(debug) << "Microslice: " << fulCurrentMsIdx << " from EqId " << std::hex << fuCurrentEquipmentId << std::dec
+             << " has size: " << uSize;
 
-  if (0 == fvbMaskedComponents.size())
-    fvbMaskedComponents.resize(ts.num_components(), kFALSE);
+  if (0 == fvbMaskedComponents.size()) fvbMaskedComponents.resize(ts.num_components(), kFALSE);
 
   fuCurrDpbId = static_cast<uint32_t>(fuCurrentEquipmentId & 0xFFFF);
 
   /// Check if this sDPB ID matches the one declared by the user
   if (fuDpbId != fuCurrDpbId) {
     if (kFALSE == fvbMaskedComponents[uMsCompIdx]) {
-      LOG(info)
-        << "---------------------------------------------------------------";
+      LOG(info) << "---------------------------------------------------------------";
       /*
           LOG(info) << "hi hv eqid flag si sv idx/start        crc      size     offset";
           LOG(info) << Form( "%02x %02x %04x %04x %02x %02x %016llx %08x %08x %016llx",
@@ -494,10 +493,9 @@ Bool_t CbmCosy2019MonitorAlgoHodo::ProcessMs(const fles::Timeslice& ts,
                             msDescriptor.size, msDescriptor.offset );
 */
       LOG(info) << FormatMsHeaderPrintout(msDescriptor);
-      LOG(warning) << "Could not find the sDPB index for AFCK id 0x" << std::hex
-                   << fuCurrDpbId << std::dec << " in timeslice "
-                   << fulCurrentTsIdx << " in microslice " << uMsIdx
-                   << " component " << uMsCompIdx << "\n"
+      LOG(warning) << "Could not find the sDPB index for AFCK id 0x" << std::hex << fuCurrDpbId << std::dec
+                   << " in timeslice " << fulCurrentTsIdx << " in microslice " << uMsIdx << " component " << uMsCompIdx
+                   << "\n"
                    << "If valid this index has to be added in the STS "
                       "parameter file in the DbpIdArray field";
       fvbMaskedComponents[uMsCompIdx] = kTRUE;
@@ -513,8 +511,7 @@ Bool_t CbmCosy2019MonitorAlgoHodo::ProcessMs(const fles::Timeslice& ts,
   }  // if( fuDpbId != fuCurrDpbId )
 
   /// Plots in [X/s] update
-  if (static_cast<Int_t>(fvdPrevMsTime[uMsCompIdx])
-      < static_cast<Int_t>(dMsTime)) {
+  if (static_cast<Int_t>(fvdPrevMsTime[uMsCompIdx]) < static_cast<Int_t>(dMsTime)) {
     /// "new second"
     for (UInt_t uHodoIdx = 0; uHodoIdx < kuNbHodos; ++uHodoIdx) {
       /// Ignore first interval is not clue how late the data taking was started
@@ -526,20 +523,17 @@ Bool_t CbmCosy2019MonitorAlgoHodo::ProcessMs(const fles::Timeslice& ts,
         continue;
       }  // if( 0 == fviTimeSecLastRateUpdate[ uHodoIdx ] )
 
-      Int_t iTimeInt =
-        static_cast<Int_t>(dMsTime) - fviTimeSecLastRateUpdate[uHodoIdx];
+      Int_t iTimeInt = static_cast<Int_t>(dMsTime) - fviTimeSecLastRateUpdate[uHodoIdx];
       if (fiTimeIntervalRateUpdate <= iTimeInt) {
         for (UInt_t uChan = 0; uChan < kuNbChanPerAsic; ++uChan) {
-          fhHodoChanHitRateProf[uHodoIdx]->Fill(
-            uChan,
-            fvdChanCountsSinceLastRateUpdate[uHodoIdx][uChan] / iTimeInt);
+          fhHodoChanHitRateProf[uHodoIdx]->Fill(uChan, fvdChanCountsSinceLastRateUpdate[uHodoIdx][uChan] / iTimeInt);
           fvdChanCountsSinceLastRateUpdate[uHodoIdx][uChan] = 0.0;
         }  // for( UInt_t uChan = 0; uChan < kuNbChanPerAsic; ++uChan )
 
         fviTimeSecLastRateUpdate[uHodoIdx] = static_cast<Int_t>(dMsTime);
       }  // if( fiTimeIntervalRateUpdate <= iTimeInt )
     }    // for( UInt_t uHodoIdx = 0; uHodoIdx < kuNbHodos; ++uHodoIdx )
-  }  // if( static_cast<Int_t>( fvdPrevMsTime[ uMsCompIdx ] ) < static_cast<Int_t>( dMsTime )  )
+  }      // if( static_cast<Int_t>( fvdPrevMsTime[ uMsCompIdx ] ) < static_cast<Int_t>( dMsTime )  )
   fvdPrevMsTime[uMsCompIdx] = dMsTime;
 
   /// Check Flags field of MS header
@@ -548,21 +542,17 @@ Bool_t CbmCosy2019MonitorAlgoHodo::ProcessMs(const fles::Timeslice& ts,
     fhHodoMsStatusFieldType->Fill(uBit, (uMsHeaderFlags >> uBit) & 0x1);
 
   /** Check the current TS_MSb cycle and correct it if wrong **/
-  UInt_t uTsMsbCycleHeader = std::floor(
-    fulCurrentMsIdx / (stsxyter::kulTsCycleNbBins * stsxyter::kdClockCycleNs));
+  UInt_t uTsMsbCycleHeader = std::floor(fulCurrentMsIdx / (stsxyter::kulTsCycleNbBins * stsxyter::kdClockCycleNs));
 
   if (0 == uMsIdx) {
     fvuCurrentTsMsbCycle = uTsMsbCycleHeader;
     fvulCurrentTsMsb     = 0;
   }  // if( 0 == uMsIdx )
-  else if (uTsMsbCycleHeader != fvuCurrentTsMsbCycle
-           && 4194303 != fvulCurrentTsMsb) {
-    LOG(warning)
-      << "TS MSB cycle from MS header does not match current cycle from data "
-      << "for TS " << std::setw(12) << fulCurrentTsIdx << " MS "
-      << std::setw(12) << fulCurrentMsIdx << " MsInTs " << std::setw(3)
-      << uMsIdx << " ====> " << fvuCurrentTsMsbCycle << " VS "
-      << uTsMsbCycleHeader;
+  else if (uTsMsbCycleHeader != fvuCurrentTsMsbCycle && 4194303 != fvulCurrentTsMsb) {
+    LOG(warning) << "TS MSB cycle from MS header does not match current cycle from data "
+                 << "for TS " << std::setw(12) << fulCurrentTsIdx << " MS " << std::setw(12) << fulCurrentMsIdx
+                 << " MsInTs " << std::setw(3) << uMsIdx << " ====> " << fvuCurrentTsMsbCycle << " VS "
+                 << uTsMsbCycleHeader;
     fvuCurrentTsMsbCycle = uTsMsbCycleHeader;
   }
 
@@ -572,8 +562,7 @@ Bool_t CbmCosy2019MonitorAlgoHodo::ProcessMs(const fles::Timeslice& ts,
                << "contain only complete nDPB messages!";
 
   // Compute the number of complete messages in the input microslice buffer
-  uint32_t uNbMessages =
-    (uSize - (uSize % kuBytesPerMessage)) / kuBytesPerMessage;
+  uint32_t uNbMessages = (uSize - (uSize % kuBytesPerMessage)) / kuBytesPerMessage;
 
   // Prepare variables for the loop on contents
   const uint32_t* pInBuff = reinterpret_cast<const uint32_t*>(msContent);
@@ -592,8 +581,7 @@ Bool_t CbmCosy2019MonitorAlgoHodo::ProcessMs(const fles::Timeslice& ts,
       case stsxyter::MessType::Hit: {
         // Extract the eLink and Asic indices => Should GO IN the fill method now that obly hits are link/asic specific!
         UShort_t usElinkIdx = mess.GetLinkIndex();
-        fhHodoMessTypePerElink->Fill(usElinkIdx,
-                                     static_cast<uint16_t>(typeMess));
+        fhHodoMessTypePerElink->Fill(usElinkIdx, static_cast<uint16_t>(typeMess));
 
         /// Remap from eLink index to Hodoscope index
         UInt_t uHodoIdx  = 0;
@@ -606,8 +594,7 @@ Bool_t CbmCosy2019MonitorAlgoHodo::ProcessMs(const fles::Timeslice& ts,
 
         if (bBadElink) {
           LOG(warning) << "CbmCosy2019MonitorAlgoHodo::DoUnpack => "
-                       << "Wrong elink Idx! Elink raw "
-                       << Form("%2d", usElinkIdx);
+                       << "Wrong elink Idx! Elink raw " << Form("%2d", usElinkIdx);
           continue;
         }  // if( bBadElink )
 
@@ -628,14 +615,12 @@ Bool_t CbmCosy2019MonitorAlgoHodo::ProcessMs(const fles::Timeslice& ts,
 
         if (0 < uIdx)
           LOG(info) << "CbmCosy2019MonitorAlgoHodo::DoUnpack => "
-                    << "EPOCH message at unexpected position in MS: message "
-                    << uIdx << " VS message 0 expected!";
+                    << "EPOCH message at unexpected position in MS: message " << uIdx << " VS message 0 expected!";
         break;
       }  // case stsxyter::MessType::TsMsb :
       case stsxyter::MessType::Status: {
         UShort_t usElinkIdx = mess.GetStatusLink();
-        fhHodoMessTypePerElink->Fill(usElinkIdx,
-                                     static_cast<uint16_t>(typeMess));
+        fhHodoMessTypePerElink->Fill(usElinkIdx, static_cast<uint16_t>(typeMess));
         ProcessStatusInfo(mess);
         break;
       }  // case stsxyter::MessType::Status
@@ -661,9 +646,9 @@ Bool_t CbmCosy2019MonitorAlgoHodo::ProcessMs(const fles::Timeslice& ts,
 }
 
 // -------------------------------------------------------------------------
-void CbmCosy2019MonitorAlgoHodo::ProcessHitInfo(stsxyter::Message mess,
-                                                const UInt_t& uHodoIdx,
-                                                const UInt_t& /*uMsIdx*/) {
+void CbmCosy2019MonitorAlgoHodo::ProcessHitInfo(stsxyter::Message mess, const UInt_t& uHodoIdx,
+                                                const UInt_t& /*uMsIdx*/)
+{
   UShort_t usChan   = mess.GetHitChannel();
   UShort_t usRawAdc = mess.GetHitAdc();
   //   UShort_t usTsOver = mess.GetHitTimeOver();
@@ -694,21 +679,17 @@ void CbmCosy2019MonitorAlgoHodo::ProcessHitInfo(stsxyter::Message mess,
   /// Compute the Full time stamp
   /// Use TS w/o overlap bits as they will anyway come from the TS_MSB
   Long64_t ulHitTime = usRawTs;
-  ulHitTime += static_cast<ULong64_t>(stsxyter::kuHitNbTsBins)
-                 * static_cast<ULong64_t>(fvulCurrentTsMsb)
-               + static_cast<ULong64_t>(stsxyter::kulTsCycleNbBins)
-                   * static_cast<ULong64_t>(fvuCurrentTsMsbCycle);
+  ulHitTime += static_cast<ULong64_t>(stsxyter::kuHitNbTsBins) * static_cast<ULong64_t>(fvulCurrentTsMsb)
+               + static_cast<ULong64_t>(stsxyter::kulTsCycleNbBins) * static_cast<ULong64_t>(fvuCurrentTsMsbCycle);
 
   /// Convert the Hit time in bins to Hit time in ns
   Double_t dHitTimeNs = ulHitTime * stsxyter::kdClockCycleNs;
 
   /// Data should already be time sorted in FW
-  fhHodoChanDistT[uHodoIdx]->Fill(
-    dHitTimeNs - fdHodoChanLastTimeForDist[uHodoIdx][usChan], usChan);
+  fhHodoChanDistT[uHodoIdx]->Fill(dHitTimeNs - fdHodoChanLastTimeForDist[uHodoIdx][usChan], usChan);
   fdHodoChanLastTimeForDist[uHodoIdx][usChan] = dHitTimeNs;
 
-  fvmHitsInMs.push_back(
-    stsxyter::FinalHit(ulHitTime, usRawAdc, uHodoIdx, uFiber, uAxis, 0));
+  fvmHitsInMs.push_back(stsxyter::FinalHit(ulHitTime, usRawAdc, uHodoIdx, uFiber, uAxis, 0));
 
   /// Check Starting point of histos with time as X axis
   if (-1 == fdStartTime) fdStartTime = dHitTimeNs;
@@ -726,20 +707,17 @@ void CbmCosy2019MonitorAlgoHodo::ProcessHitInfo(stsxyter::Message mess,
   }  // if( mess.IsHitMissedEvts() )
 }
 
-void CbmCosy2019MonitorAlgoHodo::ProcessTsMsbInfo(stsxyter::Message mess,
-                                                  UInt_t uMessIdx,
-                                                  UInt_t uMsIdx) {
+void CbmCosy2019MonitorAlgoHodo::ProcessTsMsbInfo(stsxyter::Message mess, UInt_t uMessIdx, UInt_t uMsIdx)
+{
   UInt_t uVal = mess.GetTsMsbVal();
 
   // Update Status counters
   if (uVal < fvulCurrentTsMsb) {
 
-    LOG(info) << " TS " << std::setw(12) << fulCurrentTsIdx << " MS "
-              << std::setw(12) << fulCurrentMsIdx << " MS Idx " << std::setw(4)
-              << uMsIdx << " Msg Idx " << std::setw(5) << uMessIdx
-              << " Old TsMsb " << std::setw(5) << fvulCurrentTsMsb
-              << " Old MsbCy " << std::setw(5) << fvuCurrentTsMsbCycle
-              << " new TsMsb " << std::setw(5) << uVal;
+    LOG(info) << " TS " << std::setw(12) << fulCurrentTsIdx << " MS " << std::setw(12) << fulCurrentMsIdx << " MS Idx "
+              << std::setw(4) << uMsIdx << " Msg Idx " << std::setw(5) << uMessIdx << " Old TsMsb " << std::setw(5)
+              << fvulCurrentTsMsb << " Old MsbCy " << std::setw(5) << fvuCurrentTsMsbCycle << " new TsMsb "
+              << std::setw(5) << uVal;
 
     fvuCurrentTsMsbCycle++;
   }  // if( uVal < fvulCurrentTsMsb )
@@ -747,11 +725,9 @@ void CbmCosy2019MonitorAlgoHodo::ProcessTsMsbInfo(stsxyter::Message mess,
       && 1 != uMessIdx)  // 1st TS MSB in MS always repat of last in prev MS
   {
     LOG(info) << "TS MSb Jump in "
-              << " TS " << std::setw(12) << fulCurrentTsIdx << " MS "
-              << std::setw(12) << fulCurrentMsIdx << " MS Idx " << std::setw(4)
-              << uMsIdx << " Msg Idx " << std::setw(5) << uMessIdx
-              << " => Old TsMsb " << std::setw(5) << fvulCurrentTsMsb
-              << " new TsMsb " << std::setw(5) << uVal;
+              << " TS " << std::setw(12) << fulCurrentTsIdx << " MS " << std::setw(12) << fulCurrentMsIdx << " MS Idx "
+              << std::setw(4) << uMsIdx << " Msg Idx " << std::setw(5) << uMessIdx << " => Old TsMsb " << std::setw(5)
+              << fvulCurrentTsMsb << " new TsMsb " << std::setw(5) << uVal;
   }  // if( uVal + 1 != fvulCurrentTsMsb && 4194303 != uVal && 0 != fvulCurrentTsMsb && 1 != uMessIdx )
   fvulCurrentTsMsb = uVal;
   /*
@@ -762,7 +738,8 @@ void CbmCosy2019MonitorAlgoHodo::ProcessTsMsbInfo(stsxyter::Message mess,
 */
 }
 
-void CbmCosy2019MonitorAlgoHodo::ProcessEpochInfo(stsxyter::Message /*mess*/) {
+void CbmCosy2019MonitorAlgoHodo::ProcessEpochInfo(stsxyter::Message /*mess*/)
+{
   //   UInt_t uVal    = mess.GetEpochVal();
   //   UInt_t uCurrentCycle = uVal % stsxyter::kulTsCycleNbBins;
 
@@ -774,7 +751,8 @@ void CbmCosy2019MonitorAlgoHodo::ProcessEpochInfo(stsxyter::Message /*mess*/) {
 */
 }
 
-void CbmCosy2019MonitorAlgoHodo::ProcessStatusInfo(stsxyter::Message /*mess*/) {
+void CbmCosy2019MonitorAlgoHodo::ProcessStatusInfo(stsxyter::Message /*mess*/)
+{
   /*
    UInt_t   uCrobIdx   = usElinkIdx / XXXX
    Int_t   uFebIdx    = XXXX
@@ -796,9 +774,9 @@ void CbmCosy2019MonitorAlgoHodo::ProcessStatusInfo(stsxyter::Message /*mess*/) {
 
 // -------------------------------------------------------------------------
 
-Bool_t CbmCosy2019MonitorAlgoHodo::CreateHistograms() {
-  fhHodoMessType =
-    new TH1I("hHodoMessType", "Nb of message for each type; Type", 6, 0., 6.);
+Bool_t CbmCosy2019MonitorAlgoHodo::CreateHistograms()
+{
+  fhHodoMessType = new TH1I("hHodoMessType", "Nb of message for each type; Type", 6, 0., 6.);
   fhHodoMessType->GetXaxis()->SetBinLabel(1, "Dummy");
   fhHodoMessType->GetXaxis()->SetBinLabel(2, "Hit");
   fhHodoMessType->GetXaxis()->SetBinLabel(3, "TsMsb");
@@ -806,15 +784,9 @@ Bool_t CbmCosy2019MonitorAlgoHodo::CreateHistograms() {
   fhHodoMessType->GetXaxis()->SetBinLabel(5, "Status");
   fhHodoMessType->GetXaxis()->SetBinLabel(6, "Empty");
 
-  fhHodoStatusMessType = new TH2I(
-    "hHodoStatusMessType",
-    "Nb of status message of each type for each DPB; ASIC; Status Type",
-    kuNbHodos,
-    0,
-    kuNbHodos,
-    16,
-    0.,
-    16.);
+  fhHodoStatusMessType =
+    new TH2I("hHodoStatusMessType", "Nb of status message of each type for each DPB; ASIC; Status Type", kuNbHodos, 0,
+             kuNbHodos, 16, 0., 16.);
   /*
    fhHodoStatusMessType->GetYaxis()->SetBinLabel( 1, "Dummy");
    fhHodoStatusMessType->GetYaxis()->SetBinLabel( 2, "Hit");
@@ -822,15 +794,9 @@ Bool_t CbmCosy2019MonitorAlgoHodo::CreateHistograms() {
    fhHodoStatusMessType->GetYaxis()->SetBinLabel( 4, "Epoch");
 */
 
-  fhHodoMsStatusFieldType = new TH2I(
-    "hHodoMsStatusFieldType",
-    "For each flag in the MS header, ON/OFF counts; Flag bit []; ON/OFF; MS []",
-    16,
-    -0.5,
-    15.5,
-    2,
-    -0.5,
-    1.5);
+  fhHodoMsStatusFieldType =
+    new TH2I("hHodoMsStatusFieldType", "For each flag in the MS header, ON/OFF counts; Flag bit []; ON/OFF; MS []", 16,
+             -0.5, 15.5, 2, -0.5, 1.5);
   /*
    fhHodoStatusMessType->GetYaxis()->SetBinLabel( 1, "Dummy");
    fhHodoStatusMessType->GetYaxis()->SetBinLabel( 2, "Hit");
@@ -838,15 +804,8 @@ Bool_t CbmCosy2019MonitorAlgoHodo::CreateHistograms() {
    fhHodoStatusMessType->GetYaxis()->SetBinLabel( 4, "Epoch");
 */
 
-  fhHodoMessTypePerElink =
-    new TH2I("hHodoMessTypePerElink",
-             "Nb of message of each type for each eLink; eLink; Type",
-             kuNbElinksDpb,
-             0,
-             kuNbElinksDpb,
-             6,
-             0.,
-             6.);
+  fhHodoMessTypePerElink = new TH2I("hHodoMessTypePerElink", "Nb of message of each type for each eLink; eLink; Type",
+                                    kuNbElinksDpb, 0, kuNbElinksDpb, 6, 0., 6.);
   fhHodoMessTypePerElink->GetYaxis()->SetBinLabel(1, "Dummy");
   fhHodoMessTypePerElink->GetYaxis()->SetBinLabel(2, "Hit");
   fhHodoMessTypePerElink->GetYaxis()->SetBinLabel(3, "TsMsb");
@@ -862,34 +821,23 @@ Bool_t CbmCosy2019MonitorAlgoHodo::CreateHistograms() {
   for (UInt_t uHodoIdx = 0; uHodoIdx < kuNbHodos; ++uHodoIdx) {
     /// Raw = ASIC channels
     /// Channel counts
-    fhHodoChanCntRaw[uHodoIdx] = new TH1I(
-      Form("hHodoChanCntRaw_%u", uHodoIdx),
-      Form("Hits Count per channel, Hodo #%u; Channel; Hits []", uHodoIdx),
-      kuNbChanPerAsic,
-      -0.5,
-      kuNbChanPerAsic - 0.5);
+    fhHodoChanCntRaw[uHodoIdx] = new TH1I(Form("hHodoChanCntRaw_%u", uHodoIdx),
+                                          Form("Hits Count per channel, Hodo #%u; Channel; Hits []", uHodoIdx),
+                                          kuNbChanPerAsic, -0.5, kuNbChanPerAsic - 0.5);
 
     /// Raw Adc Distribution
-    fhHodoChanAdcRaw[uHodoIdx] =
-      new TH2I(Form("hHodoChanAdcRaw_%u", uHodoIdx),
-               Form("Raw Adc distribution per channel, Hodo #%u; Channel []; "
-                    "Adc []; Hits []",
-                    uHodoIdx),
-               kuNbChanPerAsic,
-               -0.5,
-               kuNbChanPerAsic - 0.5,
-               stsxyter::kuHitNbAdcBins,
-               -0.5,
-               stsxyter::kuHitNbAdcBins - 0.5);
+    fhHodoChanAdcRaw[uHodoIdx] = new TH2I(Form("hHodoChanAdcRaw_%u", uHodoIdx),
+                                          Form("Raw Adc distribution per channel, Hodo #%u; Channel []; "
+                                               "Adc []; Hits []",
+                                               uHodoIdx),
+                                          kuNbChanPerAsic, -0.5, kuNbChanPerAsic - 0.5, stsxyter::kuHitNbAdcBins, -0.5,
+                                          stsxyter::kuHitNbAdcBins - 0.5);
 
     /// Raw Adc Distribution profile
-    fhHodoChanAdcRawProf[uHodoIdx] = new TProfile(
-      Form("hHodoChanAdcRawProf_%u", uHodoIdx),
-      Form("Raw Adc prodile per channel, Hodo #%u; Channel []; Adc []",
-           uHodoIdx),
-      kuNbChanPerAsic,
-      -0.5,
-      kuNbChanPerAsic - 0.5);
+    fhHodoChanAdcRawProf[uHodoIdx] =
+      new TProfile(Form("hHodoChanAdcRawProf_%u", uHodoIdx),
+                   Form("Raw Adc prodile per channel, Hodo #%u; Channel []; Adc []", uHodoIdx), kuNbChanPerAsic, -0.5,
+                   kuNbChanPerAsic - 0.5);
     /*
          /// Cal Adc Distribution
       fhHodoChanAdcCal[ uHodoIdx ] =  new TH2I( Form( "hHodoChanAdcCal_%u", uHodoIdx ),
@@ -903,79 +851,45 @@ Bool_t CbmCosy2019MonitorAlgoHodo::CreateHistograms() {
                                  kuNbChanPerAsic, -0.5, kuNbChanPerAsic - 0.5 );
 */
     /// Raw Ts Distribution
-    fhHodoChanRawTs[uHodoIdx] =
-      new TH2I(Form("hHodoChanRawTs_%u", uHodoIdx),
-               Form("Raw Timestamp distribution per channel, FEB #%03u; "
-                    "Channel []; Ts []; Hits []",
-                    uHodoIdx),
-               kuNbChanPerAsic,
-               -0.5,
-               kuNbChanPerAsic - 0.5,
-               stsxyter::kuHitNbTsBins,
-               -0.5,
-               stsxyter::kuHitNbTsBins - 0.5);
+    fhHodoChanRawTs[uHodoIdx] = new TH2I(Form("hHodoChanRawTs_%u", uHodoIdx),
+                                         Form("Raw Timestamp distribution per channel, FEB #%03u; "
+                                              "Channel []; Ts []; Hits []",
+                                              uHodoIdx),
+                                         kuNbChanPerAsic, -0.5, kuNbChanPerAsic - 0.5, stsxyter::kuHitNbTsBins, -0.5,
+                                         stsxyter::kuHitNbTsBins - 0.5);
 
     /// Missed event flag
-    fhHodoChanMissEvt[uHodoIdx] =
-      new TH2I(Form("hHodoChanMissEvt_%u", uHodoIdx),
-               Form("Missed Event flags per channel, Hodo #%u; Channel []; "
-                    "Miss Evt []; Hits []",
-                    uHodoIdx),
-               kuNbChanPerAsic,
-               -0.5,
-               kuNbChanPerAsic - 0.5,
-               2,
-               -0.5,
-               1.5);
+    fhHodoChanMissEvt[uHodoIdx] = new TH2I(Form("hHodoChanMissEvt_%u", uHodoIdx),
+                                           Form("Missed Event flags per channel, Hodo #%u; Channel []; "
+                                                "Miss Evt []; Hits []",
+                                                uHodoIdx),
+                                           kuNbChanPerAsic, -0.5, kuNbChanPerAsic - 0.5, 2, -0.5, 1.5);
 
     /// Missed event flag counts evolution
-    fhHodoChanMissEvtEvo[uHodoIdx] =
-      new TH2I(Form("hHodoChanMissEvtEvo_%u", uHodoIdx),
-               Form("Missed Evt flags per second & channel in Hodo #%u; Time "
-                    "[s]; Channel []; Missed Evt flags []",
-                    uHodoIdx),
-               1800,
-               0,
-               1800,
-               kuNbChanPerAsic,
-               -0.5,
-               kuNbChanPerAsic - 0.5);
+    fhHodoChanMissEvtEvo[uHodoIdx] = new TH2I(Form("hHodoChanMissEvtEvo_%u", uHodoIdx),
+                                              Form("Missed Evt flags per second & channel in Hodo #%u; Time "
+                                                   "[s]; Channel []; Missed Evt flags []",
+                                                   uHodoIdx),
+                                              1800, 0, 1800, kuNbChanPerAsic, -0.5, kuNbChanPerAsic - 0.5);
 
     /// Hit rates evo per channel
-    fhHodoChanHitRateEvo[uHodoIdx] = new TH2I(
-      Form("hHodoChanHitRateEvo_%u", uHodoIdx),
-      Form(
-        "Hits per second & channel in Hodo #%u; Time [s]; Channel []; Hits []",
-        uHodoIdx),
-      1800,
-      0,
-      1800,
-      kuNbChanPerAsic,
-      -0.5,
-      kuNbChanPerAsic - 0.5);
+    fhHodoChanHitRateEvo[uHodoIdx] =
+      new TH2I(Form("hHodoChanHitRateEvo_%u", uHodoIdx),
+               Form("Hits per second & channel in Hodo #%u; Time [s]; Channel []; Hits []", uHodoIdx), 1800, 0, 1800,
+               kuNbChanPerAsic, -0.5, kuNbChanPerAsic - 0.5);
 
     /// Hit rates profile per channel
-    fhHodoChanHitRateProf[uHodoIdx] = new TProfile(
-      Form("hHodoChanHitRateProf_%u", uHodoIdx),
-      Form(
-        "Hits per second for each channel in Hodo #%u; Channel []; Hits/s []",
-        uHodoIdx),
-      kuNbChanPerAsic,
-      -0.5,
-      kuNbChanPerAsic - 0.5);
+    fhHodoChanHitRateProf[uHodoIdx] =
+      new TProfile(Form("hHodoChanHitRateProf_%u", uHodoIdx),
+                   Form("Hits per second for each channel in Hodo #%u; Channel []; Hits/s []", uHodoIdx),
+                   kuNbChanPerAsic, -0.5, kuNbChanPerAsic - 0.5);
 
     /// Distance between hits on same channel
-    fhHodoChanDistT[uHodoIdx] =
-      new TH2I(Form("hHodoChanDistT_%u", uHodoIdx),
-               Form("Time distance between hits on same channel in Hodo #%u; "
-                    "Time difference [ns]; Channel []; ",
-                    uHodoIdx),
-               1000,
-               -0.5,
-               6250.0 - 0.5,
-               kuNbChanPerAsic,
-               -0.5,
-               kuNbChanPerAsic - 0.5);
+    fhHodoChanDistT[uHodoIdx] = new TH2I(Form("hHodoChanDistT_%u", uHodoIdx),
+                                         Form("Time distance between hits on same channel in Hodo #%u; "
+                                              "Time difference [ns]; Channel []; ",
+                                              uHodoIdx),
+                                         1000, -0.5, 6250.0 - 0.5, kuNbChanPerAsic, -0.5, kuNbChanPerAsic - 0.5);
 
     /// Remapped = Hodos fibers
     for (UInt_t uAxis = 0; uAxis < kuNbAxis; ++uAxis) {
@@ -983,50 +897,30 @@ Bool_t CbmCosy2019MonitorAlgoHodo::CreateHistograms() {
       /// Fibers counts
       fhHodoFiberCnt[uHodoIdx][uAxis] =
         new TH1I(Form("hHodoFiberCnt%c_%u", cAxisName, uHodoIdx),
-                 Form("Hits Count per Fiber, Hodo #%u Axis %c; Fiber; Hits []",
-                      uHodoIdx,
-                      cAxisName),
-                 kuNbChanPerAsic / 2,
-                 -0.5,
-                 kuNbChanPerAsic / 2 - 0.5);
+                 Form("Hits Count per Fiber, Hodo #%u Axis %c; Fiber; Hits []", uHodoIdx, cAxisName),
+                 kuNbChanPerAsic / 2, -0.5, kuNbChanPerAsic / 2 - 0.5);
 
       /// Fibers Adc Distribution
-      fhHodoFiberAdc[uHodoIdx][uAxis] =
-        new TH2I(Form("fhHodoFiberAdc%c_%u", cAxisName, uHodoIdx),
-                 Form("Raw Adc distribution per Fiber, Hodo #%u Axis %c; "
-                      "Channel []; Adc []; Hits []",
-                      uHodoIdx,
-                      cAxisName),
-                 kuNbChanPerAsic / 2,
-                 -0.5,
-                 kuNbChanPerAsic / 2 - 0.5,
-                 stsxyter::kuHitNbAdcBins,
-                 -0.5,
-                 stsxyter::kuHitNbAdcBins - 0.5);
+      fhHodoFiberAdc[uHodoIdx][uAxis] = new TH2I(Form("fhHodoFiberAdc%c_%u", cAxisName, uHodoIdx),
+                                                 Form("Raw Adc distribution per Fiber, Hodo #%u Axis %c; "
+                                                      "Channel []; Adc []; Hits []",
+                                                      uHodoIdx, cAxisName),
+                                                 kuNbChanPerAsic / 2, -0.5, kuNbChanPerAsic / 2 - 0.5,
+                                                 stsxyter::kuHitNbAdcBins, -0.5, stsxyter::kuHitNbAdcBins - 0.5);
 
       /// Fibers Adc Distribution profile
-      fhHodoFiberAdcProf[uHodoIdx][uAxis] = new TProfile(
-        Form("hHodoFiberAdcProf%c_%u", cAxisName, uHodoIdx),
-        Form("Raw Adc prodile per Fiber, Hodo #%u Axis %c; Channel []; Adc []",
-             uHodoIdx,
-             cAxisName),
-        kuNbChanPerAsic / 2,
-        -0.5,
-        kuNbChanPerAsic / 2 - 0.5);
+      fhHodoFiberAdcProf[uHodoIdx][uAxis] =
+        new TProfile(Form("hHodoFiberAdcProf%c_%u", cAxisName, uHodoIdx),
+                     Form("Raw Adc prodile per Fiber, Hodo #%u Axis %c; Channel []; Adc []", uHodoIdx, cAxisName),
+                     kuNbChanPerAsic / 2, -0.5, kuNbChanPerAsic / 2 - 0.5);
 
       /// Hit rates evo per fiber
       fhHodoFiberHitRateEvo[uHodoIdx][uAxis] =
         new TH2I(Form("hHodoFiberHitRateEvo%c_%u", cAxisName, uHodoIdx),
                  Form("Hits per second & Fiber in Hodo #%u Axis %c; Time [s]; "
                       "Channel []; Hits []",
-                      uHodoIdx,
-                      cAxisName),
-                 1800,
-                 0,
-                 1800,
-                 kuNbChanPerAsic / 2,
-                 -0.5,
-                 kuNbChanPerAsic / 2 - 0.5);
+                      uHodoIdx, cAxisName),
+                 1800, 0, 1800, kuNbChanPerAsic / 2, -0.5, kuNbChanPerAsic / 2 - 0.5);
 
       AddHistoToVector(fhHodoFiberCnt[uHodoIdx][uAxis], "Fibers");
       AddHistoToVector(fhHodoFiberAdc[uHodoIdx][uAxis], "Fibers");
@@ -1039,49 +933,31 @@ Bool_t CbmCosy2019MonitorAlgoHodo::CreateHistograms() {
 
     /// Coincidences in same Hodo between axis
     /// Map
-    fhHodoFiberCoincMapXY[uHodoIdx] =
-      new TH2I(Form("hHodoFiberCoincMapXY_%u", uHodoIdx),
-               Form("Map of coincident (X, Y) pairs in Hodo #%u; X [Fiber]; Y "
-                    "[Fiber]; Hits []",
-                    uHodoIdx),
-               kuNbChanPerAsic / 2,
-               -0.5,
-               kuNbChanPerAsic / 2 - 0.5,
-               kuNbChanPerAsic / 2,
-               -0.5,
-               kuNbChanPerAsic / 2 - 0.5);
+    fhHodoFiberCoincMapXY[uHodoIdx] = new TH2I(Form("hHodoFiberCoincMapXY_%u", uHodoIdx),
+                                               Form("Map of coincident (X, Y) pairs in Hodo #%u; X [Fiber]; Y "
+                                                    "[Fiber]; Hits []",
+                                                    uHodoIdx),
+                                               kuNbChanPerAsic / 2, -0.5, kuNbChanPerAsic / 2 - 0.5,
+                                               kuNbChanPerAsic / 2, -0.5, kuNbChanPerAsic / 2 - 0.5);
     /// Time diff
-    fhHodoFiberCoincTimeXY[uHodoIdx] =
-      new TH1I(Form("hHodoFiberCoincTimeXY_%u", uHodoIdx),
-               Form("Time difference of coincident (X, Y) pairs in Hodo #%u; "
-                    "t_Y - t_X [ns]; Hits []",
-                    uHodoIdx),
-               2 * fdTimeCoincLimit + 1,
-               -fdTimeCoincLimitNs,
-               fdTimeCoincLimitNs);
+    fhHodoFiberCoincTimeXY[uHodoIdx] = new TH1I(Form("hHodoFiberCoincTimeXY_%u", uHodoIdx),
+                                                Form("Time difference of coincident (X, Y) pairs in Hodo #%u; "
+                                                     "t_Y - t_X [ns]; Hits []",
+                                                     uHodoIdx),
+                                                2 * fdTimeCoincLimit + 1, -fdTimeCoincLimitNs, fdTimeCoincLimitNs);
     /// Walk
-    fhHodoFiberCoincWalkXY_X[uHodoIdx] =
-      new TH2I(Form("hHodoFiberCoincWalkXY_X_%u", uHodoIdx),
-               Form("Walk X of coincident (X, Y) pairs in Hodo #%u; ADC X "
-                    "[bin]; t_Y - t_X [ns]; Hits []",
-                    uHodoIdx),
-               stsxyter::kuHitNbAdcBins,
-               -0.5,
-               stsxyter::kuHitNbAdcBins - 0.5,
-               2 * fdTimeCoincLimit + 1,
-               -fdTimeCoincLimitNs,
-               fdTimeCoincLimitNs);
-    fhHodoFiberCoincWalkXY_Y[uHodoIdx] =
-      new TH2I(Form("hHodoFiberCoincWalkXY_Y_%u", uHodoIdx),
-               Form("Walk X of coincident (X, Y) pairs in Hodo #%u; ADC X "
-                    "[bin]; t_Y - t_X [ns]; Hits []",
-                    uHodoIdx),
-               stsxyter::kuHitNbAdcBins,
-               -0.5,
-               stsxyter::kuHitNbAdcBins - 0.5,
-               2 * fdTimeCoincLimit + 1,
-               -fdTimeCoincLimitNs,
-               fdTimeCoincLimitNs);
+    fhHodoFiberCoincWalkXY_X[uHodoIdx] = new TH2I(Form("hHodoFiberCoincWalkXY_X_%u", uHodoIdx),
+                                                  Form("Walk X of coincident (X, Y) pairs in Hodo #%u; ADC X "
+                                                       "[bin]; t_Y - t_X [ns]; Hits []",
+                                                       uHodoIdx),
+                                                  stsxyter::kuHitNbAdcBins, -0.5, stsxyter::kuHitNbAdcBins - 0.5,
+                                                  2 * fdTimeCoincLimit + 1, -fdTimeCoincLimitNs, fdTimeCoincLimitNs);
+    fhHodoFiberCoincWalkXY_Y[uHodoIdx] = new TH2I(Form("hHodoFiberCoincWalkXY_Y_%u", uHodoIdx),
+                                                  Form("Walk X of coincident (X, Y) pairs in Hodo #%u; ADC X "
+                                                       "[bin]; t_Y - t_X [ns]; Hits []",
+                                                       uHodoIdx),
+                                                  stsxyter::kuHitNbAdcBins, -0.5, stsxyter::kuHitNbAdcBins - 0.5,
+                                                  2 * fdTimeCoincLimit + 1, -fdTimeCoincLimitNs, fdTimeCoincLimitNs);
 
     AddHistoToVector(fhHodoChanCntRaw[uHodoIdx], "Raw");
     AddHistoToVector(fhHodoChanAdcRaw[uHodoIdx], "Raw");
@@ -1105,60 +981,32 @@ Bool_t CbmCosy2019MonitorAlgoHodo::CreateHistograms() {
     Char_t cOtherAxisName = (uAxis ? 'X' : 'Y');
     /// Coincidences in different Hodos between axis <= Valid only for kuNbHodos = 2 !!!
     /// Map Same axis
-    fhHodoFiberCoincMapSameAB[uAxis] =
-      new TH2I(Form("hHodoFiberCoincMapSameAB_%c%c", cAxisName, cAxisName),
-               Form("Map of coincident (%c, %c) pairs in Hodo A and B; %c_A "
-                    "[Fiber]; %c_B [Fiber]; Hits []",
-                    cAxisName,
-                    cAxisName,
-                    cAxisName,
-                    cAxisName),
-               kuNbChanPerAsic / 2,
-               -0.5,
-               kuNbChanPerAsic / 2 - 0.5,
-               kuNbChanPerAsic / 2,
-               -0.5,
-               kuNbChanPerAsic / 2 - 0.5);
+    fhHodoFiberCoincMapSameAB[uAxis] = new TH2I(Form("hHodoFiberCoincMapSameAB_%c%c", cAxisName, cAxisName),
+                                                Form("Map of coincident (%c, %c) pairs in Hodo A and B; %c_A "
+                                                     "[Fiber]; %c_B [Fiber]; Hits []",
+                                                     cAxisName, cAxisName, cAxisName, cAxisName),
+                                                kuNbChanPerAsic / 2, -0.5, kuNbChanPerAsic / 2 - 0.5,
+                                                kuNbChanPerAsic / 2, -0.5, kuNbChanPerAsic / 2 - 0.5);
     /// Time diff Same axis
-    fhHodoFiberCoincTimeSameAB[uAxis] =
-      new TH1I(Form("hHodoFiberCoincTimeSameAB_%c%c", cAxisName, cAxisName),
-               Form("Time difference of coincident (%c, %c) pairs in Hodo A "
-                    "and B; t_%c_B - t_%c_A [ns]; Hits []",
-                    cAxisName,
-                    cAxisName,
-                    cAxisName,
-                    cAxisName),
-               2 * fdTimeCoincLimit + 1,
-               -fdTimeCoincLimitNs,
-               fdTimeCoincLimitNs);
+    fhHodoFiberCoincTimeSameAB[uAxis] = new TH1I(Form("hHodoFiberCoincTimeSameAB_%c%c", cAxisName, cAxisName),
+                                                 Form("Time difference of coincident (%c, %c) pairs in Hodo A "
+                                                      "and B; t_%c_B - t_%c_A [ns]; Hits []",
+                                                      cAxisName, cAxisName, cAxisName, cAxisName),
+                                                 2 * fdTimeCoincLimit + 1, -fdTimeCoincLimitNs, fdTimeCoincLimitNs);
 
     /// Map different axis
-    fhHodoFiberCoincMapDiffAB[uAxis] =
-      new TH2I(Form("hHodoFiberCoincMapDiffAB_%c%c", cAxisName, cOtherAxisName),
-               Form("Map of coincident (%c, %c) pairs in Hodo A and B; %c_A "
-                    "[Fiber]; %c_B [Fiber]; Hits []",
-                    cAxisName,
-                    cOtherAxisName,
-                    cOtherAxisName,
-                    cAxisName),
-               kuNbChanPerAsic / 2,
-               -0.5,
-               kuNbChanPerAsic / 2 - 0.5,
-               kuNbChanPerAsic / 2,
-               -0.5,
-               kuNbChanPerAsic / 2 - 0.5);
+    fhHodoFiberCoincMapDiffAB[uAxis] = new TH2I(Form("hHodoFiberCoincMapDiffAB_%c%c", cAxisName, cOtherAxisName),
+                                                Form("Map of coincident (%c, %c) pairs in Hodo A and B; %c_A "
+                                                     "[Fiber]; %c_B [Fiber]; Hits []",
+                                                     cAxisName, cOtherAxisName, cOtherAxisName, cAxisName),
+                                                kuNbChanPerAsic / 2, -0.5, kuNbChanPerAsic / 2 - 0.5,
+                                                kuNbChanPerAsic / 2, -0.5, kuNbChanPerAsic / 2 - 0.5);
     /// Time diff different axis
-    fhHodoFiberCoincTimeDiffAB[uAxis] = new TH1I(
-      Form("hHodoFiberCoincTimeDiffAB_%c%c", cAxisName, cOtherAxisName),
-      Form("Time difference of coincident (%c, %c) pairs in Hodo A and B; "
-           "t_%c_B - t_%c_A [ns]; Hits []",
-           cAxisName,
-           cOtherAxisName,
-           cOtherAxisName,
-           cAxisName),
-      2 * fdTimeCoincLimit + 1,
-      -fdTimeCoincLimitNs,
-      fdTimeCoincLimitNs);
+    fhHodoFiberCoincTimeDiffAB[uAxis] = new TH1I(Form("hHodoFiberCoincTimeDiffAB_%c%c", cAxisName, cOtherAxisName),
+                                                 Form("Time difference of coincident (%c, %c) pairs in Hodo A and B; "
+                                                      "t_%c_B - t_%c_A [ns]; Hits []",
+                                                      cAxisName, cOtherAxisName, cOtherAxisName, cAxisName),
+                                                 2 * fdTimeCoincLimit + 1, -fdTimeCoincLimitNs, fdTimeCoincLimitNs);
 
     AddHistoToVector(fhHodoFiberCoincMapSameAB[uAxis], "Coinc");
     AddHistoToVector(fhHodoFiberCoincTimeSameAB[uAxis], "Coinc");
@@ -1168,76 +1016,47 @@ Bool_t CbmCosy2019MonitorAlgoHodo::CreateHistograms() {
 
   /// Full Coincidences between Hodos<= Valid only for kuNbHodos = 2 && kuNbAxis = 2
   /// Position on hodo A
-  fhHodoFullCoincPosA =
-    new TH2I("fhHodoFullCoincPosA",
-             "Position on Hodo A for coincident pairs in Hodo A and B;  X_A "
-             "[Fiber]; Y_A [Fiber]; Hits []",
-             kuNbChanPerAsic / 2,
-             -0.5,
-             kuNbChanPerAsic / 2 - 0.5,
-             kuNbChanPerAsic / 2,
-             -0.5,
-             kuNbChanPerAsic / 2 - 0.5);
+  fhHodoFullCoincPosA = new TH2I("fhHodoFullCoincPosA",
+                                 "Position on Hodo A for coincident pairs in Hodo A and B;  X_A "
+                                 "[Fiber]; Y_A [Fiber]; Hits []",
+                                 kuNbChanPerAsic / 2, -0.5, kuNbChanPerAsic / 2 - 0.5, kuNbChanPerAsic / 2, -0.5,
+                                 kuNbChanPerAsic / 2 - 0.5);
   /// Position on hodo B
-  fhHodoFullCoincPosB =
-    new TH2I("fhHodoFullCoincPosB",
-             "Position on Hodo B for coincident pairs in Hodo A and B;  X_B "
-             "[Fiber]; Y_B [Fiber]; Hits []",
-             kuNbChanPerAsic / 2,
-             -0.5,
-             kuNbChanPerAsic / 2 - 0.5,
-             kuNbChanPerAsic / 2,
-             -0.5,
-             kuNbChanPerAsic / 2 - 0.5);
+  fhHodoFullCoincPosB = new TH2I("fhHodoFullCoincPosB",
+                                 "Position on Hodo B for coincident pairs in Hodo A and B;  X_B "
+                                 "[Fiber]; Y_B [Fiber]; Hits []",
+                                 kuNbChanPerAsic / 2, -0.5, kuNbChanPerAsic / 2 - 0.5, kuNbChanPerAsic / 2, -0.5,
+                                 kuNbChanPerAsic / 2 - 0.5);
   /// Comp X axis
-  fhHodoFullCoincCompX =
-    new TH2I("hHodoFullCoincCompX",
-             "Comparison of X pos for coincident pairs in Hodo A and B;  X_A "
-             "[Fiber]; X_B [Fiber]; Hits []",
-             kuNbChanPerAsic / 2,
-             -0.5,
-             kuNbChanPerAsic / 2 - 0.5,
-             kuNbChanPerAsic / 2,
-             -0.5,
-             kuNbChanPerAsic / 2 - 0.5);
+  fhHodoFullCoincCompX = new TH2I("hHodoFullCoincCompX",
+                                  "Comparison of X pos for coincident pairs in Hodo A and B;  X_A "
+                                  "[Fiber]; X_B [Fiber]; Hits []",
+                                  kuNbChanPerAsic / 2, -0.5, kuNbChanPerAsic / 2 - 0.5, kuNbChanPerAsic / 2, -0.5,
+                                  kuNbChanPerAsic / 2 - 0.5);
   /// Comp Y axis
-  fhHodoFullCoincCompY =
-    new TH2I("hHodoFullCoincCompY",
-             "Comparison of Y pos for coincident pairs in Hodo A and B;  Y_A "
-             "[Fiber]; Y_B [Fiber]; Hits []",
-             kuNbChanPerAsic / 2,
-             -0.5,
-             kuNbChanPerAsic / 2 - 0.5,
-             kuNbChanPerAsic / 2,
-             -0.5,
-             kuNbChanPerAsic / 2 - 0.5);
+  fhHodoFullCoincCompY = new TH2I("hHodoFullCoincCompY",
+                                  "Comparison of Y pos for coincident pairs in Hodo A and B;  Y_A "
+                                  "[Fiber]; Y_B [Fiber]; Hits []",
+                                  kuNbChanPerAsic / 2, -0.5, kuNbChanPerAsic / 2 - 0.5, kuNbChanPerAsic / 2, -0.5,
+                                  kuNbChanPerAsic / 2 - 0.5);
 
   /// Residuals X vs Y ("alignment")
   fhHodoFullCoincResidualXY =
     new TH2I("hHodoFullCoincResidualXY",
              "X and Y residuals for coincident pairs in Hodo A and B; X_B - "
              "X_A [Fiber]; Y_B - Y_A [Fiber]; Hits []",
-             kuNbChanPerAsic + 1,
-             -1.0 * kuNbChanPerAsic / 2 - 0.5,
-             kuNbChanPerAsic / 2 + 0.5,
-             kuNbChanPerAsic + 1,
-             -1.0 * kuNbChanPerAsic / 2 - 0.5,
-             kuNbChanPerAsic / 2 + 0.5);
+             kuNbChanPerAsic + 1, -1.0 * kuNbChanPerAsic / 2 - 0.5, kuNbChanPerAsic / 2 + 0.5, kuNbChanPerAsic + 1,
+             -1.0 * kuNbChanPerAsic / 2 - 0.5, kuNbChanPerAsic / 2 + 0.5);
   /// Time diff different axis
-  fhHodoFullCoincTimeDiff =
-    new TH1I("hHodoFullCoincTimeDiff",
-             "Time difference of coincident pairs in Hodo A and B; (t_X_B + "
-             "t_Y_B)/2 - (t_X_A + t_Y_A)/2 [ns]; Hits []",
-             2 * fdTimeCoincLimit + 1,
-             -fdTimeCoincLimitNs,
-             fdTimeCoincLimitNs);
+  fhHodoFullCoincTimeDiff = new TH1I("hHodoFullCoincTimeDiff",
+                                     "Time difference of coincident pairs in Hodo A and B; (t_X_B + "
+                                     "t_Y_B)/2 - (t_X_A + t_Y_A)/2 [ns]; Hits []",
+                                     2 * fdTimeCoincLimit + 1, -fdTimeCoincLimitNs, fdTimeCoincLimitNs);
 
   fhHodoFullCoincRateEvo = new TH1I("fhHodoFullCoincRateEvo",
                                     "Evolution of the full coincidence rate; "
                                     "Time in run [s]; Full coincidences;",
-                                    1800,
-                                    -0.5,
-                                    1800 - 0.5);
+                                    1800, -0.5, 1800 - 0.5);
 
   AddHistoToVector(fhHodoFullCoincPosA, "FullCoinc");
   AddHistoToVector(fhHodoFullCoincPosB, "FullCoinc");
@@ -1254,63 +1073,38 @@ Bool_t CbmCosy2019MonitorAlgoHodo::CreateHistograms() {
         new TH2I(Form("hHodoFullCoincTimeWalk_%u%c", uHodoIdx, cAxisName),
                  Form("Time walk of coincident (A, B) pairs in Hodo #%u Axis "
                       "%c; ADC %u_%c [bin]; Time Diff <B> - <A> [ns]; Hits []",
-                      uHodoIdx,
-                      cAxisName,
-                      uHodoIdx,
-                      cAxisName),
-                 stsxyter::kuHitNbAdcBins,
-                 -0.5,
-                 stsxyter::kuHitNbAdcBins - 0.5,
-                 2 * fdTimeCoincLimit + 1,
-                 -fdTimeCoincLimitNs,
-                 fdTimeCoincLimitNs);
+                      uHodoIdx, cAxisName, uHodoIdx, cAxisName),
+                 stsxyter::kuHitNbAdcBins, -0.5, stsxyter::kuHitNbAdcBins - 0.5, 2 * fdTimeCoincLimit + 1,
+                 -fdTimeCoincLimitNs, fdTimeCoincLimitNs);
       AddHistoToVector(fhHodoFullCoincTimeWalk[uHodoIdx][uAxis], "Walk");
 
-      fhHodoFullCoincPosEvo[uHodoIdx][uAxis] = new TH2I(
-        Form("hHodoFullCoincPosEvo_%u%c", uHodoIdx, cAxisName),
-        Form("Time evolution of coincident (A, B) pairs position in Hodo #%u "
-             "Axis %c; Time in run [s]; Position %u_%c [Fiber]; Hits []",
-             uHodoIdx,
-             cAxisName,
-             uHodoIdx,
-             cAxisName),
-        2000,
-        -0.5,
-        1000 - 0.5,
-        kuNbChanPerAsic / 2,
-        -0.5,
-        kuNbChanPerAsic / 2 - 0.5);
+      fhHodoFullCoincPosEvo[uHodoIdx][uAxis] =
+        new TH2I(Form("hHodoFullCoincPosEvo_%u%c", uHodoIdx, cAxisName),
+                 Form("Time evolution of coincident (A, B) pairs position in Hodo #%u "
+                      "Axis %c; Time in run [s]; Position %u_%c [Fiber]; Hits []",
+                      uHodoIdx, cAxisName, uHodoIdx, cAxisName),
+                 2000, -0.5, 1000 - 0.5, kuNbChanPerAsic / 2, -0.5, kuNbChanPerAsic / 2 - 0.5);
       AddHistoToVector(fhHodoFullCoincPosEvo[uHodoIdx][uAxis], "FullCoinc");
     }  // for( UInt_t uAxis = 0; uAxis < kuNbAxis; ++uAxis )
   }    // for( UInt_t uHodoIdx = 0; uHodoIdx < kuNbHodos; ++uHodoIdx )
 
   /// Setup debugging
-  fhPrevHitDtAllAsics =
-    new TH1I("hPrevHitDtAllAsics",
-             "Time difference between current and previous hits in any ASIC; t "
-             "- t_prev [ns]; Hit pairs []",
-             10000,
-             0.0,
-             10000 * stsxyter::kdClockCycleNs);
-  fhPrevHitDtAsicA = new TH1I("hPrevHitDtAsicA",
+  fhPrevHitDtAllAsics = new TH1I("hPrevHitDtAllAsics",
+                                 "Time difference between current and previous hits in any ASIC; t "
+                                 "- t_prev [ns]; Hit pairs []",
+                                 10000, 0.0, 10000 * stsxyter::kdClockCycleNs);
+  fhPrevHitDtAsicA    = new TH1I("hPrevHitDtAsicA",
                               "Time difference between current and previous "
                               "hits in ASIC A; t - t_prev [ns]; Hit pairs []",
-                              10000,
-                              0.0,
-                              10000 * stsxyter::kdClockCycleNs);
-  fhPrevHitDtAsicB = new TH1I("hPrevHitDtAsicB",
+                              10000, 0.0, 10000 * stsxyter::kdClockCycleNs);
+  fhPrevHitDtAsicB    = new TH1I("hPrevHitDtAsicB",
                               "Time difference between current and previous "
                               "hits in ASIC B; t - t_prev [ns]; Hit pairs []",
-                              10000,
-                              0.0,
-                              10000 * stsxyter::kdClockCycleNs);
-  fhPrevHitDtAsicsAB =
-    new TH1I("hPrevHitDtAsicsAB",
-             "Time difference between current in ASIC A and previous hit in "
-             "ASIC B; t - t_prev [ns]; Hit pairs []",
-             10000,
-             0.0,
-             10000 * stsxyter::kdClockCycleNs);
+                              10000, 0.0, 10000 * stsxyter::kdClockCycleNs);
+  fhPrevHitDtAsicsAB  = new TH1I("hPrevHitDtAsicsAB",
+                                "Time difference between current in ASIC A and previous hit in "
+                                "ASIC B; t - t_prev [ns]; Hit pairs []",
+                                10000, 0.0, 10000 * stsxyter::kdClockCycleNs);
 
   AddHistoToVector(fhPrevHitDtAllAsics, "SetupDebugging");
   AddHistoToVector(fhPrevHitDtAsicA, "SetupDebugging");
@@ -1354,10 +1148,7 @@ Bool_t CbmCosy2019MonitorAlgoHodo::CreateHistograms() {
   for (UInt_t uHodoIdx = 0; uHodoIdx < kuNbHodos; ++uHodoIdx) {
     /// Distributions before fiber mapping per Hodo
     fcHodoSummaryRaw[uHodoIdx] =
-      new TCanvas(Form("cHodoSummaryRaw%u", uHodoIdx),
-                  Form("Raw Summary for Hodo %u", uHodoIdx),
-                  w,
-                  h);
+      new TCanvas(Form("cHodoSummaryRaw%u", uHodoIdx), Form("Raw Summary for Hodo %u", uHodoIdx), w, h);
     fcHodoSummaryRaw[uHodoIdx]->Divide(4, 2);
 
     fcHodoSummaryRaw[uHodoIdx]->cd(1);
@@ -1409,10 +1200,7 @@ Bool_t CbmCosy2019MonitorAlgoHodo::CreateHistograms() {
 
     /// Distributions after fiber mapping per Hodo and axis
     fcHodoSummaryFiber[uHodoIdx] =
-      new TCanvas(Form("cHodoSummaryFiber%u", uHodoIdx),
-                  Form("Fiber Summary for Hodo %u", uHodoIdx),
-                  w,
-                  h);
+      new TCanvas(Form("cHodoSummaryFiber%u", uHodoIdx), Form("Fiber Summary for Hodo %u", uHodoIdx), w, h);
     fcHodoSummaryFiber[uHodoIdx]->Divide(4, 2);
 
     for (UInt_t uAxis = 0; uAxis < kuNbAxis; ++uAxis) {
@@ -1444,8 +1232,7 @@ Bool_t CbmCosy2019MonitorAlgoHodo::CreateHistograms() {
     AddCanvasToVector(fcHodoSummaryFiber[uHodoIdx], "canvases");
   }  // for( UInt_t uHodoIdx = 0; uHodoIdx < kuNbHodos; ++uHodoIdx )
 
-  fcHodoFiberCoinc =
-    new TCanvas("fcHodoFiberCoinc", "X/Y coincidences in same hodoscope", w, h);
+  fcHodoFiberCoinc = new TCanvas("fcHodoFiberCoinc", "X/Y coincidences in same hodoscope", w, h);
   fcHodoFiberCoinc->Divide(4, 2);
 
   fcHodoFiberCoinc->cd(1);
@@ -1496,8 +1283,7 @@ Bool_t CbmCosy2019MonitorAlgoHodo::CreateHistograms() {
   gPad->SetLogz();
   fhHodoFiberCoincWalkXY_Y[1]->Draw("colz");
 
-  fcHodoFiberCoincAB = new TCanvas(
-    "fcHodoFiberCoincAB", "X/Y coincidences between hodoscopes", w, h);
+  fcHodoFiberCoincAB = new TCanvas("fcHodoFiberCoincAB", "X/Y coincidences between hodoscopes", w, h);
   fcHodoFiberCoincAB->Divide(4, 2);
 
   for (UInt_t uAxis = 0; uAxis < kuNbAxis; ++uAxis) {
@@ -1526,8 +1312,7 @@ Bool_t CbmCosy2019MonitorAlgoHodo::CreateHistograms() {
     fhHodoFiberCoincTimeDiffAB[uAxis]->Draw("hist");
   }  // for( UInt_t uAxis = 0; uAxis < kuNbAxis; ++uAxis )
 
-  fcHodoFullCoinc = new TCanvas(
-    "fcHodoFullCoinc", "Full coincidences between hodoscopes", w, h);
+  fcHodoFullCoinc = new TCanvas("fcHodoFullCoinc", "Full coincidences between hodoscopes", w, h);
   fcHodoFullCoinc->Divide(4, 2);
 
   fcHodoFullCoinc->cd(1);
@@ -1580,10 +1365,7 @@ Bool_t CbmCosy2019MonitorAlgoHodo::CreateHistograms() {
   fhHodoFullCoincTimeWalk[1][1]->Draw("colz");
 
   fcHodoFullCoincPos =
-    new TCanvas("fcHodoFullCoincPos",
-                "Hit Positions for Full coincidences between hodoscopes",
-                w,
-                h);
+    new TCanvas("fcHodoFullCoincPos", "Hit Positions for Full coincidences between hodoscopes", w, h);
   fcHodoFullCoincPos->Divide(2);
 
   fcHodoFullCoincPos->cd(1);
@@ -1599,10 +1381,7 @@ Bool_t CbmCosy2019MonitorAlgoHodo::CreateHistograms() {
   fhHodoFullCoincPosB->Draw("colz");
 
   fcHodoFullCoincPosEvo =
-    new TCanvas("fcHodoFullCoincPosEvo",
-                "Hit Positions Evo for Full coincidences between hodoscopes",
-                w,
-                h);
+    new TCanvas("fcHodoFullCoincPosEvo", "Hit Positions Evo for Full coincidences between hodoscopes", w, h);
   fcHodoFullCoincPosEvo->Divide(4);
 
   fcHodoFullCoincPosEvo->cd(1);
@@ -1629,11 +1408,7 @@ Bool_t CbmCosy2019MonitorAlgoHodo::CreateHistograms() {
   gPad->SetLogz();
   fhHodoFullCoincPosEvo[1][1]->Draw("colz");
 
-  fcHodoPrevHitDt =
-    new TCanvas("fcHodoPrevHitDt",
-                "Time difference between current and previous hits",
-                w,
-                h);
+  fcHodoPrevHitDt = new TCanvas("fcHodoPrevHitDt", "Time difference between current and previous hits", w, h);
   fcHodoPrevHitDt->Divide(2, 2);
 
   fcHodoPrevHitDt->cd(1);
@@ -1668,7 +1443,8 @@ Bool_t CbmCosy2019MonitorAlgoHodo::CreateHistograms() {
 
   return kTRUE;
 }
-Bool_t CbmCosy2019MonitorAlgoHodo::FillHistograms() {
+Bool_t CbmCosy2019MonitorAlgoHodo::FillHistograms()
+{
   /// Prepare storage variables
   std::vector<std::vector<stsxyter::FinalHit>> lastHitHodoAxis;
   std::vector<std::vector<Bool_t>> bHitFoundHodoAxis;
@@ -1687,10 +1463,8 @@ Bool_t CbmCosy2019MonitorAlgoHodo::FillHistograms() {
     //      UInt_t uFiber = fvmHitsInMs[ uHit ].GetChan();
 
     /// Setup debugging
-    Double_t dCurrentHitTime =
-      fvmHitsInMs[uHit].GetTs() * stsxyter::kdClockCycleNs;
-    fhPrevHitDtAllAsics->Fill(dCurrentHitTime
-                              - fvdPreviousHitTimePerAsic[fuPreviousHitAsic]);
+    Double_t dCurrentHitTime = fvmHitsInMs[uHit].GetTs() * stsxyter::kdClockCycleNs;
+    fhPrevHitDtAllAsics->Fill(dCurrentHitTime - fvdPreviousHitTimePerAsic[fuPreviousHitAsic]);
     if (0 == uHodo) {
       fhPrevHitDtAsicA->Fill(dCurrentHitTime - fvdPreviousHitTimePerAsic[0]);
       fhPrevHitDtAsicsAB->Fill(dCurrentHitTime - fvdPreviousHitTimePerAsic[1]);
@@ -1706,90 +1480,67 @@ Bool_t CbmCosy2019MonitorAlgoHodo::FillHistograms() {
 
     /// Coincidences in same Hodo <= !!!! WORKS ONLY FOR kuNbAxis = 2 !!!
     if (bHitFoundHodoAxis[uHodo][0] && bHitFoundHodoAxis[uHodo][1]) {
-      Double_t dTimeDiffAxis =
-        lastHitHodoAxis[uHodo][1].GetTs() * stsxyter::kdClockCycleNs
-        - lastHitHodoAxis[uHodo][0].GetTs() * stsxyter::kdClockCycleNs;
+      Double_t dTimeDiffAxis = lastHitHodoAxis[uHodo][1].GetTs() * stsxyter::kdClockCycleNs
+                               - lastHitHodoAxis[uHodo][0].GetTs() * stsxyter::kdClockCycleNs;
 
-      if (-fdTimeCoincLimitNs < dTimeDiffAxis
-          && dTimeDiffAxis < fdTimeCoincLimitNs) {
-        fhHodoFiberCoincMapXY[uHodo]->Fill(lastHitHodoAxis[uHodo][0].GetChan(),
-                                           lastHitHodoAxis[uHodo][1].GetChan());
+      if (-fdTimeCoincLimitNs < dTimeDiffAxis && dTimeDiffAxis < fdTimeCoincLimitNs) {
+        fhHodoFiberCoincMapXY[uHodo]->Fill(lastHitHodoAxis[uHodo][0].GetChan(), lastHitHodoAxis[uHodo][1].GetChan());
         fhHodoFiberCoincTimeXY[uHodo]->Fill(dTimeDiffAxis);
-        fhHodoFiberCoincWalkXY_X[uHodo]->Fill(
-          lastHitHodoAxis[uHodo][0].GetAdc(), dTimeDiffAxis);
-        fhHodoFiberCoincWalkXY_Y[uHodo]->Fill(
-          lastHitHodoAxis[uHodo][1].GetAdc(), dTimeDiffAxis);
+        fhHodoFiberCoincWalkXY_X[uHodo]->Fill(lastHitHodoAxis[uHodo][0].GetAdc(), dTimeDiffAxis);
+        fhHodoFiberCoincWalkXY_Y[uHodo]->Fill(lastHitHodoAxis[uHodo][1].GetAdc(), dTimeDiffAxis);
       }  // if( -fdTimeCoincLimitNs < dTimeDiffAxis && dTimeDiffAxis < fdTimeCoincLimitNs )
-    }  // if( bHitFoundHodoAxis[ uHodo ][ 0 ] && bHitFoundHodoAxis[ uHodo ][ 1 ] )
+    }    // if( bHitFoundHodoAxis[ uHodo ][ 0 ] && bHitFoundHodoAxis[ uHodo ][ 1 ] )
 
     /// Concidences between Hodos <= !!!! WORKS ONLY FOR kuNbHodos = 2 && kuNbAxis = 2 !!!
     if (bHitFoundHodoAxis[0][uAxis] && bHitFoundHodoAxis[1][uAxis]) {
-      Double_t dTimeDiffHodoSame =
-        lastHitHodoAxis[1][uAxis].GetTs() * stsxyter::kdClockCycleNs
-        - lastHitHodoAxis[0][uAxis].GetTs() * stsxyter::kdClockCycleNs;
+      Double_t dTimeDiffHodoSame = lastHitHodoAxis[1][uAxis].GetTs() * stsxyter::kdClockCycleNs
+                                   - lastHitHodoAxis[0][uAxis].GetTs() * stsxyter::kdClockCycleNs;
 
-      if (-fdTimeCoincLimitNs < dTimeDiffHodoSame
-          && dTimeDiffHodoSame < fdTimeCoincLimitNs) {
-        fhHodoFiberCoincMapSameAB[uAxis]->Fill(
-          lastHitHodoAxis[0][uAxis].GetChan(),
-          lastHitHodoAxis[1][uAxis].GetChan());
+      if (-fdTimeCoincLimitNs < dTimeDiffHodoSame && dTimeDiffHodoSame < fdTimeCoincLimitNs) {
+        fhHodoFiberCoincMapSameAB[uAxis]->Fill(lastHitHodoAxis[0][uAxis].GetChan(),
+                                               lastHitHodoAxis[1][uAxis].GetChan());
         fhHodoFiberCoincTimeSameAB[uAxis]->Fill(dTimeDiffHodoSame);
       }  // if( -fdTimeCoincLimitNs < dTimeDiffAxis && dTimeDiffAxis < fdTimeCoincLimitNs )
-    }  // if( bHitFoundHodoAxis[ 0 ][ uAxis ] && bHitFoundHodoAxis[ 1 ][ uAxis ] )
+    }    // if( bHitFoundHodoAxis[ 0 ][ uAxis ] && bHitFoundHodoAxis[ 1 ][ uAxis ] )
 
     UInt_t uAxisA = (uHodo ? !uAxis : uAxis);
     UInt_t uAxisB = (uHodo ? uAxis : !uAxis);
     if (bHitFoundHodoAxis[0][uAxisA] && bHitFoundHodoAxis[1][uAxisB]) {
-      Double_t dTimeDiffHodoDiff =
-        lastHitHodoAxis[1][uAxisB].GetTs() * stsxyter::kdClockCycleNs
-        - lastHitHodoAxis[0][uAxisA].GetTs() * stsxyter::kdClockCycleNs;
+      Double_t dTimeDiffHodoDiff = lastHitHodoAxis[1][uAxisB].GetTs() * stsxyter::kdClockCycleNs
+                                   - lastHitHodoAxis[0][uAxisA].GetTs() * stsxyter::kdClockCycleNs;
 
-      if (-fdTimeCoincLimitNs < dTimeDiffHodoDiff
-          && dTimeDiffHodoDiff < fdTimeCoincLimitNs) {
-        fhHodoFiberCoincMapDiffAB[uAxisA]->Fill(
-          lastHitHodoAxis[0][uAxisA].GetChan(),
-          lastHitHodoAxis[1][uAxisB].GetChan());
+      if (-fdTimeCoincLimitNs < dTimeDiffHodoDiff && dTimeDiffHodoDiff < fdTimeCoincLimitNs) {
+        fhHodoFiberCoincMapDiffAB[uAxisA]->Fill(lastHitHodoAxis[0][uAxisA].GetChan(),
+                                                lastHitHodoAxis[1][uAxisB].GetChan());
         fhHodoFiberCoincTimeDiffAB[uAxisA]->Fill(dTimeDiffHodoDiff);
       }  // if( -fdTimeCoincLimitNs < dTimeDiffAxis && dTimeDiffAxis < fdTimeCoincLimitNs )
     }
 
     /// Full Concidences between Hodos <= !!!! WORKS ONLY FOR kuNbHodos = 2 && kuNbAxis = 2 !!!
-    if (bHitFoundHodoAxis[0][0] && bHitFoundHodoAxis[0][1]
-        && bHitFoundHodoAxis[1][0] && bHitFoundHodoAxis[1][1]) {
-      Double_t dTimeDiffHodoA =
-        lastHitHodoAxis[0][1].GetTs() * stsxyter::kdClockCycleNs
-        - lastHitHodoAxis[0][0].GetTs() * stsxyter::kdClockCycleNs;
-      Double_t dTimeDiffHodoB =
-        lastHitHodoAxis[1][1].GetTs() * stsxyter::kdClockCycleNs
-        - lastHitHodoAxis[1][0].GetTs() * stsxyter::kdClockCycleNs;
-      Double_t dTimeDiffHodoAB =
-        (lastHitHodoAxis[1][1].GetTs() * stsxyter::kdClockCycleNs
-         + lastHitHodoAxis[1][0].GetTs() * stsxyter::kdClockCycleNs)
-          / 2.0
-        - (lastHitHodoAxis[0][1].GetTs() * stsxyter::kdClockCycleNs
-           + lastHitHodoAxis[0][0].GetTs() * stsxyter::kdClockCycleNs)
-            / 2.0;
-      Double_t dTimeHitHodoAB =
-        (lastHitHodoAxis[1][1].GetTs() * stsxyter::kdClockCycleNs
-         + lastHitHodoAxis[1][0].GetTs() * stsxyter::kdClockCycleNs
-         + lastHitHodoAxis[0][1].GetTs() * stsxyter::kdClockCycleNs
-         + lastHitHodoAxis[0][0].GetTs() * stsxyter::kdClockCycleNs)
-        / 4.0;
+    if (bHitFoundHodoAxis[0][0] && bHitFoundHodoAxis[0][1] && bHitFoundHodoAxis[1][0] && bHitFoundHodoAxis[1][1]) {
+      Double_t dTimeDiffHodoA = lastHitHodoAxis[0][1].GetTs() * stsxyter::kdClockCycleNs
+                                - lastHitHodoAxis[0][0].GetTs() * stsxyter::kdClockCycleNs;
+      Double_t dTimeDiffHodoB = lastHitHodoAxis[1][1].GetTs() * stsxyter::kdClockCycleNs
+                                - lastHitHodoAxis[1][0].GetTs() * stsxyter::kdClockCycleNs;
+      Double_t dTimeDiffHodoAB = (lastHitHodoAxis[1][1].GetTs() * stsxyter::kdClockCycleNs
+                                  + lastHitHodoAxis[1][0].GetTs() * stsxyter::kdClockCycleNs)
+                                   / 2.0
+                                 - (lastHitHodoAxis[0][1].GetTs() * stsxyter::kdClockCycleNs
+                                    + lastHitHodoAxis[0][0].GetTs() * stsxyter::kdClockCycleNs)
+                                     / 2.0;
+      Double_t dTimeHitHodoAB = (lastHitHodoAxis[1][1].GetTs() * stsxyter::kdClockCycleNs
+                                 + lastHitHodoAxis[1][0].GetTs() * stsxyter::kdClockCycleNs
+                                 + lastHitHodoAxis[0][1].GetTs() * stsxyter::kdClockCycleNs
+                                 + lastHitHodoAxis[0][0].GetTs() * stsxyter::kdClockCycleNs)
+                                / 4.0;
 
-      if (-fdTimeCoincLimitNs < dTimeDiffHodoA
-          && dTimeDiffHodoA < fdTimeCoincLimitNs
-          && -fdTimeCoincLimitNs < dTimeDiffHodoB
-          && dTimeDiffHodoB < fdTimeCoincLimitNs
-          && -fdTimeCoincLimitNs < dTimeDiffHodoAB
-          && dTimeDiffHodoAB < fdTimeCoincLimitNs) {
-        UInt_t uPosXA = fvbHodoSwapXY[0] ? lastHitHodoAxis[0][1].GetChan()
-                                         : lastHitHodoAxis[0][0].GetChan();
-        UInt_t uPosYA = fvbHodoSwapXY[0] ? lastHitHodoAxis[0][0].GetChan()
-                                         : lastHitHodoAxis[0][1].GetChan();
-        UInt_t uPosXB = fvbHodoSwapXY[1] ? lastHitHodoAxis[1][1].GetChan()
-                                         : lastHitHodoAxis[1][0].GetChan();
-        UInt_t uPosYB = fvbHodoSwapXY[1] ? lastHitHodoAxis[1][0].GetChan()
-                                         : lastHitHodoAxis[1][1].GetChan();
+      if (-fdTimeCoincLimitNs < dTimeDiffHodoA && dTimeDiffHodoA < fdTimeCoincLimitNs
+          && -fdTimeCoincLimitNs < dTimeDiffHodoB && dTimeDiffHodoB < fdTimeCoincLimitNs
+          && -fdTimeCoincLimitNs < dTimeDiffHodoAB && dTimeDiffHodoAB < fdTimeCoincLimitNs) {
+        UInt_t uPosXA = fvbHodoSwapXY[0] ? lastHitHodoAxis[0][1].GetChan() : lastHitHodoAxis[0][0].GetChan();
+        UInt_t uPosYA = fvbHodoSwapXY[0] ? lastHitHodoAxis[0][0].GetChan() : lastHitHodoAxis[0][1].GetChan();
+        UInt_t uPosXB = fvbHodoSwapXY[1] ? lastHitHodoAxis[1][1].GetChan() : lastHitHodoAxis[1][0].GetChan();
+        UInt_t uPosYB = fvbHodoSwapXY[1] ? lastHitHodoAxis[1][0].GetChan() : lastHitHodoAxis[1][1].GetChan();
 
         if (fvbHodoInvertX[0]) uPosXA = kuNbChanPerAsic / 2 - 1 - uPosXA;
         if (fvbHodoInvertY[0]) uPosYA = kuNbChanPerAsic / 2 - 1 - uPosYA;
@@ -1810,14 +1561,10 @@ Bool_t CbmCosy2019MonitorAlgoHodo::FillHistograms() {
         fhHodoFullCoincResidualXY->Fill(dResX, dResY);
         fhHodoFullCoincTimeDiff->Fill(dTimeDiffHodoAB);
 
-        fhHodoFullCoincTimeWalk[0][0]->Fill(lastHitHodoAxis[0][0].GetAdc(),
-                                            dTimeDiffHodoAB);
-        fhHodoFullCoincTimeWalk[0][1]->Fill(lastHitHodoAxis[0][1].GetAdc(),
-                                            dTimeDiffHodoAB);
-        fhHodoFullCoincTimeWalk[1][0]->Fill(lastHitHodoAxis[1][0].GetAdc(),
-                                            dTimeDiffHodoAB);
-        fhHodoFullCoincTimeWalk[1][1]->Fill(lastHitHodoAxis[1][1].GetAdc(),
-                                            dTimeDiffHodoAB);
+        fhHodoFullCoincTimeWalk[0][0]->Fill(lastHitHodoAxis[0][0].GetAdc(), dTimeDiffHodoAB);
+        fhHodoFullCoincTimeWalk[0][1]->Fill(lastHitHodoAxis[0][1].GetAdc(), dTimeDiffHodoAB);
+        fhHodoFullCoincTimeWalk[1][0]->Fill(lastHitHodoAxis[1][0].GetAdc(), dTimeDiffHodoAB);
+        fhHodoFullCoincTimeWalk[1][1]->Fill(lastHitHodoAxis[1][1].GetAdc(), dTimeDiffHodoAB);
 
         Double_t dTimeSinceStart = (dTimeHitHodoAB - fdStartTime) * 1e-9;
         fhHodoFullCoincRateEvo->Fill(dTimeSinceStart);
@@ -1853,7 +1600,8 @@ Bool_t CbmCosy2019MonitorAlgoHodo::FillHistograms() {
 
   return kTRUE;
 }
-Bool_t CbmCosy2019MonitorAlgoHodo::ResetHistograms() {
+Bool_t CbmCosy2019MonitorAlgoHodo::ResetHistograms()
+{
   fhHodoMessType->Reset();
   fhHodoStatusMessType->Reset();
   fhHodoMsStatusFieldType->Reset();

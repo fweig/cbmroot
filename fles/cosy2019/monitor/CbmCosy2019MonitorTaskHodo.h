@@ -8,9 +8,9 @@
 #ifndef CbmCosy2019MonitorTaskHodo_H
 #define CbmCosy2019MonitorTaskHodo_H
 
-#include "Timeslice.hpp"
-
 #include "CbmMcbmUnpack.h"
+
+#include "Timeslice.hpp"
 
 class CbmCosy2019MonitorAlgoHodo;
 
@@ -19,8 +19,7 @@ public:
   CbmCosy2019MonitorTaskHodo(UInt_t uNbSdpb = 1);
 
   CbmCosy2019MonitorTaskHodo(const CbmCosy2019MonitorTaskHodo&) = delete;
-  CbmCosy2019MonitorTaskHodo
-  operator=(const CbmCosy2019MonitorTaskHodo&) = delete;
+  CbmCosy2019MonitorTaskHodo operator=(const CbmCosy2019MonitorTaskHodo&) = delete;
 
   virtual ~CbmCosy2019MonitorTaskHodo();
 
@@ -40,9 +39,7 @@ public:
   void AddMsComponentToList(size_t component, UShort_t usDetectorId);
   void SetNbMsInTs(size_t /*uCoreMsNb*/, size_t /*uOverlapMsNb*/) {};
 
-  inline void SetMonitorMode(Bool_t bFlagIn = kTRUE) {
-    fbMonitorMode = bFlagIn;
-  }
+  inline void SetMonitorMode(Bool_t bFlagIn = kTRUE) { fbMonitorMode = bFlagIn; }
   void SetIgnoreOverlapMs(Bool_t bFlagIn = kTRUE);
   void SetDpbId(UInt_t uDpbId = 0x5b75);
   void SetHodoElinkIdx(UInt_t uElinkHodoA = 5, UInt_t uElinkHodoB = 10);
@@ -57,12 +54,9 @@ public:
 
 private:
   /// Control flags
-  Bool_t
-    fbMonitorMode;  //! Switch ON the filling of a minimal set of histograms
-  Bool_t
-    fbDebugMonitorMode;  //! Switch ON the filling of a additional set of histograms
-  Bool_t
-    fbWriteOutput;  //! If ON the output TClonesArray of digi is written to disk
+  Bool_t fbMonitorMode;       //! Switch ON the filling of a minimal set of histograms
+  Bool_t fbDebugMonitorMode;  //! Switch ON the filling of a additional set of histograms
+  Bool_t fbWriteOutput;       //! If ON the output TClonesArray of digi is written to disk
 
   /// Statistics & first TS rejection
   uint64_t fulTsCounter;
