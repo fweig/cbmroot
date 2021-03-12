@@ -2,6 +2,7 @@ stages:
   - checkRepository
   - checkFormat
   - build
+  - finalise
   - documentation
 
 RebaseCheck:
@@ -256,6 +257,22 @@ CbmRoot_Merge_realData:
     - pwd
     - cat Dart.cfg
     - $PWD/Dart.sh MergeRequest Dart.cfg
+
+InformCodeOwners:
+  stage: finalise
+  tags:
+    - CbmRoot_macosx
+  only:
+    refs:
+      - merge_requests
+    variables:
+      - $CI_MERGE_REQUEST_PROJECT_PATH == "computing/cbmroot" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"
+  script:
+    # Get the upstream repository manually. I did not find any other way to have it for
+    # comparison
+    - scripts/connect_upstream_repo.sh $CI_MERGE_REQUEST_PROJECT_URL
+    - git fetch upstream
+    - scripts/inform_codeowners.sh upstream
 
 pages:
   stage: documentation

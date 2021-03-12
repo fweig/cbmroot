@@ -1,0 +1,110 @@
+# Ending a path in a `/` will specify the code owners for every file
+# nested in that directory, on any level
+/          @f.uhlig @v.friese @p.-a.loizeau
+/cmake/    @f.uhlig
+/external/ @f.uhlig
+/scripts/  @f.uhlig @p.-a.loizeau
+
+# Cleanup and proper separation needed
+/MQ/    @f.uhlig @p.-a.loizeau
+/fles/  @f.uhlig @p.-a.loizeau
+/macro/ @f.uhlig @p.-a.loizeau
+
+/macro/C2F/      @i.selyuzhenkov
+/macro/analysis/ @i.selyuzhenkov
+/macro/KF/       @s.gorbunov @v.akishina
+
+# Core
+/core/             @f.uhlig @v.friese @p.-a.loizeau
+/core/qa/          @s.gorbunov
+/core/data/test/   @f.uhlig
+/core/data/raw/    @p.-a.loizeau
+/core/base/utils/  @f.uhlig @s.lebedev
+/core/base/report/ @s.lebedev
+/core/base/draw/   @s.lebedev
+
+# Simulation
+/sim/                    @f.uhlig @v.friese @p.-a.loizeau
+/sim/transport/geosetup/ @e.lavrik
+
+# Reco
+/reco/              @f.uhlig @v.friese @p.-a.loizeau
+/reco/littrack/     @s.lebedev @andrey.lebedev
+/reco/L1/           @s.gorbunov @v.akishina
+/reco/eventbuilder/ @d.smith
+/reco/KF/           @s.gorbunov @v.akishina
+
+# Analysis
+/analysis/                                 @i.selyuzhenkov
+/analysis/PWGC2F/femtoscopy/               @d.wielanek
+/analysis/common/                          @i.selyuzhenkov
+/analysis/PWGHAD/                          @i.selyuzhenkov
+/analysis/PWGCHA/                          @i.selyuzhenkov
+/analysis/PWGDIL/                          @i.selyuzhenkov
+/analysis/PWGDIL/dielectron/pi0eta/        @c.pauly
+/analysis/PWGDIL/dielectron/papaframework/ @praisig @ebechtel
+/analysis/PWGDIL/dielectron/lmvm/          @i.selyuzhenkov
+/analysis/PWGDIL/dielectron/conversion/    @c.pauly
+/analysis/PWGDIL/dimuon/                   @i.selyuzhenkov
+
+## Detectors
+
+# TRD
+/core/data/trd/       @praisig
+/core/data/test/trd/  @praisig
+/core/detectors/trd/  @praisig
+/macro/trd/           @praisig
+/sim/detectors/trd/   @praisig
+/reco/detectors/trd/  @praisig
+
+# PSD
+/analysis/detectors/psd/ @karpushkin_AT_inr.ru
+/core/data/psd/          @karpushkin_AT_inr.ru
+/core/data/test/psd/     @karpushkin_AT_inr.ru
+/core/detectors/psd/     @karpushkin_AT_inr.ru
+/macro/psd/              @karpushkin_AT_inr.ru
+/sim/detectors/psd/      @karpushkin_AT_inr.ru
+/reco/detectors/psd/     @karpushkin_AT_inr.ru
+
+# MUCH
+/core/data/much/         @v.singhal
+/core/data/test/much/    @v.singhal
+/core/detectors/much/    @v.singhal
+/macro/much/             @v.singhal
+/sim/detectors/much/     @v.singhal
+/reco/detectors/much/    @v.singhal
+
+# TOF
+/analysis/detectors/tof/ @n.herrmann @i.deppner
+/core/data/tof/          @n.herrmann @i.deppner
+/core/data/test/tof/     @n.herrmann @i.deppner
+/core/detectors/tof/     @n.herrmann @i.deppner
+/fles/star2019/          @n.herrmann @i.deppner
+/macro/tof/              @n.herrmann @i.deppner
+/sim/detectors/tof/      @n.herrmann @i.deppner
+/reco/detectors/tof/     @n.herrmann @i.deppner
+/MQ/eTOF/                @n.herrmann @i.deppner
+/MQ/hitbuilder/          @n.herrmann @i.deppner
+
+# RICH
+/core/data/rich/      @s.lebedev
+/core/data/test/rich/ @s.lebedev
+/core/detectors/rich/ @s.lebedev
+/macro/rich/          @s.lebedev
+/sim/detectors/rich/  @s.lebedev
+/reco/detectors/rich/ @s.lebedev
+
+# STS
+/analysis/detectors/sts/ @v.friese
+/core/data/sts/          @v.friese
+/core/data/test/sts/     @v.friese
+/core/detectors/sts/     @v.friese
+/macro/sts/              @v.friese
+/sim/detectors/sts/      @v.friese
+/reco/detectors/sts/     @v.friese
+/MQ/sts/                 @v.friese
+
+# MVD
+/core/data/mvd/ @c.muentz @m.deveaux
+/macro/mvd/     @c.muentz @m.deveaux
+/mvd/           @c.muentz @m.deveaux
