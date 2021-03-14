@@ -21,6 +21,12 @@ If(ProjectUpdated)
   Message("NicaFemto source directory was changed so build directory was deleted")
 EndIf()
 
+If(USE_DIFFERENT_COMPILER)
+  Set(EXTRA_ARGS "-DUSE_DIFFERENT_COMPILER=TRUE")
+Else()
+  Set(EXTRA_ARGS "")
+EndIf()
+
 ExternalProject_Add(NICAFEMTO
   BUILD_IN_SOURCE 0
   SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/NicaFemto
@@ -37,6 +43,7 @@ ExternalProject_Add(NICAFEMTO
              -DROOTSYS=${SIMPATH}
 	     -DJSROOT=${CMAKE_CURRENT_SOURCE_DIR}
              -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
+             "${EXTRA_ARGS}"
   INSTALL_COMMAND  ${CMAKE_COMMAND} --build . --target install
 )
 

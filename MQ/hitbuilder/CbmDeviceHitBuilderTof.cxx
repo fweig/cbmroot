@@ -259,8 +259,7 @@ void CbmDeviceHitBuilderTof::InitTask() try {
   InitRootOutput();
 } catch (InitTaskError& e) {
   LOG(error) << e.what();
-  //ChangeState(ERROR_FOUND);
-  ChangeState(fair::mq::Transition(ERROR_FOUND));
+  ChangeState(fair::mq::Transition::ErrorFound);
 }
 
 bool CbmDeviceHitBuilderTof::IsChannelNameAllowed(std::string channelName) {
@@ -453,8 +452,7 @@ Bool_t CbmDeviceHitBuilderTof::InitContainers() {
               iGeoVersion = fGeoHandler->Init(isSimulation);
               if (k21a > iGeoVersion) {
                 LOG(error) << "Incompatible geometry !!!";
-                //ChangeState(STOP);
-                ChangeState(fair::mq::Transition(STOP));
+                ChangeState(fair::mq::Transition::Stop);
               }
               switch (iGeoVersion) {
                 case k14a: fTofId = new CbmTofDetectorId_v14a(); break;
@@ -656,8 +654,7 @@ bool CbmDeviceHitBuilderTof::HandleData(FairMQParts& parts, int /*index*/) {
       WriteHistograms();
       fOutRootFile->Close();
       LOG(info) << "File closed after " << fdEvent << " events. ";
-      //ChangeState(STOP);
-      ChangeState(fair::mq::Transition(STOP));
+      ChangeState(fair::mq::Transition::Stop);
     }
   }
   if (!FillHistos())
@@ -700,12 +697,9 @@ bool CbmDeviceHitBuilderTof::HandleMessage(FairMQMessagePtr& msg,
     ChangeState(END);
     LOG(info) << "Current State: " <<  FairMQStateMachine::GetCurrentStateName();
     */
-    //    ChangeState(fair::mq::Transition(internal_READY));
-    //ChangeState(fair::mq::Transition(internal_DEVICE_READY));
-    //ChangeState(fair::mq::Transition(internal_IDLE));
-    ChangeState(fair::mq::Transition(STOP));
+    ChangeState(fair::mq::Transition::Stop);
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-    ChangeState(fair::mq::Transition(END));
+    ChangeState(fair::mq::Transition::End);
   }
 
   return true;
@@ -795,8 +789,7 @@ Bool_t CbmDeviceHitBuilderTof::InitCalibParameter() {
     if (NULL == fCalParFile) {
       LOG(error) << "InitCalibParameter: "
                  << "file " << fCalParFileName << " does not exist!";
-      //ChangeState(STOP);
-      ChangeState(fair::mq::Transition(STOP));
+      ChangeState(fair::mq::Transition::Stop);
     }
     /*
     gDirectory->Print();
@@ -2579,8 +2572,7 @@ Bool_t CbmDeviceHitBuilderTof::BuildHits() {
                                        fChannelInfo->GetY(),
                                        fChannelInfo->GetZ(),
                                        fNode);
-                    //ChangeState(STOP);
-                    ChangeState(fair::mq::Transition(STOP));
+                    ChangeState(fair::mq::Transition::Stop);
                   }
 
                   CbmTofDigi* xDigiA =
@@ -3419,8 +3411,7 @@ Bool_t CbmDeviceHitBuilderTof::AddNextChan(Int_t iSmType,
                        fChannelInfo->GetY(),
                        fChannelInfo->GetZ(),
                        cNode);
-    //ChangeState(STOP);
-    ChangeState(fair::mq::Transition(STOP));
+    ChangeState(fair::mq::Transition::Stop);
   }
 
   /*TGeoHMatrix* cMatrix = */ gGeoManager->GetCurrentMatrix();
@@ -3580,8 +3571,7 @@ Bool_t CbmDeviceHitBuilderTof::LoadGeometry() {
                          fChannelInfo->GetY(),
                          fChannelInfo->GetZ(),
                          fNode);
-      //ChangeState(STOP);
-      ChangeState(fair::mq::Transition(STOP));
+      ChangeState(fair::mq::Transition::Stop);
     }
     if (icell == 0) {
       TGeoHMatrix* cMatrix = gGeoManager->GetCurrentMatrix();

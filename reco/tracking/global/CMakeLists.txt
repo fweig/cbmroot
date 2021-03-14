@@ -41,6 +41,7 @@ Set(LINK_DIRECTORIES
   ${FAIRROOT_LIBRARY_DIR}
   ${Boost_LIBRARY_DIRS}
   ${KFParticle_LIB_DIR}
+  ${Vc_LIB_DIR}
 )
  
 Link_Directories( ${LINK_DIRECTORIES})

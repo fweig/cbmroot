@@ -8,6 +8,7 @@ download_project_if_needed(PROJECT         fles_ipc
                            GIT_TAG         "e2d20813a74561cf58661b077c046c0da1f28288"
                            GIT_STASH       TRUE
                            SOURCE_DIR      ${CMAKE_CURRENT_SOURCE_DIR}/ipc
+                           PATCH_COMMAND   "patch -p1 < ${CMAKE_CURRENT_SOURCE_DIR}/ipc.patch"
                            TEST_FILE       CMakeLists.txt
                            )
 

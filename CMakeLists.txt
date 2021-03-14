@@ -273,7 +273,7 @@ else(CBMROOT_MINIMAL)
   find_package(TBB)
   find_package(SSE)
 #  find_package(IWYU)
-  find_package(ZeroMQ)
+#  find_package(ZeroMQ)
 
   Set(Boost_NO_SYSTEM_PATHS TRUE)
   Set(Boost_NO_BOOST_CMAKE TRUE)
