@@ -9,6 +9,8 @@
 
 #include <FairTask.h>
 
+#include <TFolder.h>
+
 class TClonesArray;
 class TH1F;
 class CbmDigiManager;
