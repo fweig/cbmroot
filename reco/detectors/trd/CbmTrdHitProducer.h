@@ -15,7 +15,7 @@
 #include "CbmEvent.h"
 #include "CbmTrdCluster.h"
 
-#include "FairTask.h"
+#include <FairTask.h>
 
 #include <RtypesCore.h>
 #include <TClonesArray.h>
