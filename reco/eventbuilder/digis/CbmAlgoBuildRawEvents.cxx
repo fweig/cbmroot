@@ -20,16 +20,17 @@
 #include "TimesliceMetaData.h"
 
 /// FAIRROOT headers
-#include "FairLogger.h"
-#include "FairRootManager.h"
-#include "FairRunOnline.h"
+#include <FairLogger.h>
+#include <FairRootManager.h>
+#include <FairRunOnline.h>
 
 /// FAIRSOFT headers (geant, boost, ...)
-#include "TCanvas.h"
-#include "TClonesArray.h"
-#include "TH1.h"
-#include "TH2.h"
-#include "THttpServer.h"
+#include <TCanvas.h>
+#include <TClonesArray.h>
+#include <TFolder.h>
+#include <TH1.h>
+#include <TH2.h>
+#include <THttpServer.h>
 
 template<>
 void CbmAlgoBuildRawEvents::LoopOnSeeds<Double_t>();

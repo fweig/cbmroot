@@ -10,15 +10,16 @@
 #include "CbmDigiManager.h"
 #include "CbmEvent.h"
 
-#include "FairLogger.h"
-#include "FairRootManager.h"
-#include "FairRunOnline.h"
+#include <FairLogger.h>
+#include <FairRootManager.h>
+#include <FairRunOnline.h>
 
-#include "TClonesArray.h"
-#include "TH1.h"
-#include "TH2.h"
-#include "THttpServer.h"
+#include <TClonesArray.h>
 #include <TFile.h>
+#include <TFolder.h>
+#include <TH1.h>
+#include <TH2.h>
+#include <THttpServer.h>
 
 #include <iomanip>
 
@@ -388,7 +389,7 @@ void CbmTaskBuildRawEvents::SaveHistos()
       return;
     }
     FairSink* sink = FairRootManager::Instance()->GetSink();
-    sink->WriteObject(fpAlgo->GetOutFolder(), nullptr);
+    sink->WriteObject(dynamic_cast<TObject*>(fpAlgo->GetOutFolder()), nullptr);
   }
   else {
 
