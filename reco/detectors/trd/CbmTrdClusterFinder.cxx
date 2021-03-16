@@ -69,6 +69,7 @@ Bool_t CbmTrdClusterFinder::AddCluster(CbmTrdCluster* c)
 UInt_t CbmTrdClusterFinder::addDigisToModules()
 {
   UInt_t ndigis = static_cast<UInt_t>(std::abs(CbmDigiManager::Instance()->GetNofDigis(ECbmModuleId::kTrd)));
+  if (ndigis == 0) return 0;
   for (size_t idigi = 0; idigi < ndigis; idigi++) {
     addDigiToModule(idigi);
   }
@@ -79,6 +80,7 @@ UInt_t CbmTrdClusterFinder::addDigisToModules()
 UInt_t CbmTrdClusterFinder::addDigisToModules(CbmEvent* event)
 {
   UInt_t ndigis = static_cast<UInt_t>(std::abs(event->GetNofData(ECbmDataType::kTrdDigi)));
+  if (ndigis == 0) return 0;
   for (size_t idigi = 0; idigi < ndigis; idigi++) {
     auto digiindex = event->GetIndex(ECbmDataType::kTrdDigi, idigi);
     addDigiToModule(digiindex);
@@ -93,7 +95,7 @@ void CbmTrdClusterFinder::addDigiToModule(UInt_t digiIdx)
   CbmTrdModuleRec* mod = nullptr;
 
   const CbmTrdDigi* digi = CbmDigiManager::Instance()->Get<CbmTrdDigi>(digiIdx);
-
+  if (!digi) return;
   Int_t moduleAddress = digi->GetAddressModule();
 
   std::map<Int_t, CbmTrdModuleRec*>::iterator imod = fModules.find(moduleAddress);
