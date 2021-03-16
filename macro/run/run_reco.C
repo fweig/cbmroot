@@ -5,6 +5,7 @@
 
 
 // --- Includes needed for IDE
+#include <RtypesCore.h>
 #if !defined(__CLING__)
 #include "CbmBuildEventsFromTracksReal.h"
 #include "CbmBuildEventsIdeal.h"
@@ -349,6 +350,11 @@ void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice =
     trdCluster->SetNeighbourEnable(true, false);
     trdCluster->SetMinimumChargeTH(triggerThreshold);
     trdCluster->SetRowMerger(true);
+
+    // Uncomment if you want to use all available digis.
+    // In that case clusters hits will not be added to the CbmEvent
+    // trdCluster->SetUseOnlyEventDigis(kFALSE);
+
     run->AddTask(trdCluster);
     std::cout << "-I- " << myName << ": Added task " << trdCluster->GetName() << std::endl;
 

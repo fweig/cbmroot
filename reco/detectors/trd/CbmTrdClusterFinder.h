@@ -1,7 +1,22 @@
+/**
+ * @file CbmTrdClusterFinder.h
+ * @author Alexandru Bercuci
+ * @author Pascal Raisig (praisig@ikf.uni-frankfurt.de)
+ * @brief FairTask to produce TrdCluster objects from TrdHit objects
+ * @version 1.0
+ * @date 2021-03-16
+ * 
+ * 
+ */
+
 #ifndef CBMTRDCLUSTERFINDER_H
 #define CBMTRDCLUSTERFINDER_H
 
+#include "CbmEvent.h"
+
 #include "FairTask.h"
+
+#include <RtypesCore.h>
 
 #include <map>
 #include <set>
@@ -39,14 +54,16 @@ class CbmTrdClusterFinder : public FairTask {
   friend class CbmTrdModuleRecT;
 
 public:
-  enum CbmTrdRecDef {
-    kTime = 0,      ///< select Time based/Event by event reconstruction
-    kMultiHit,      ///< multi hit detection
-    kRowMerger,     ///< merge clusters over neighbour rows
-    kNeighbourCol,  ///< use neighbour trigger; column wise
-    kNeighbourRow,  ///< use neighbour trigger; row wise
-    kDumpClusters,  ///< write clustered digis to output
-    kFASP           ///< use FASP ASIC for triangular pad plane geometry
+  enum CbmTrdRecDef
+  {
+    kTime = 0,       ///< select Time based/Event by event reconstruction
+    kMultiHit,       ///< multi hit detection
+    kRowMerger,      ///< merge clusters over neighbour rows
+    kNeighbourCol,   ///< use neighbour trigger; column wise
+    kNeighbourRow,   ///< use neighbour trigger; row wise
+    kDumpClusters,   ///< write clustered digis to output
+    kFASP,           ///< use FASP ASIC for triangular pad plane geometry
+    kOnlyEventDigis  ///< use only digis connected to a CbmEvent
   };
 
   /**
@@ -67,6 +84,15 @@ public:
   static Bool_t HasRowMerger() { return TESTBIT(fgConfig, kRowMerger); }
   static Bool_t IsTimeBased() { return TESTBIT(fgConfig, kTime); }
 
+  /**
+   * @brief If true only digis connected ro a CbmEvent are processed
+   * Per default this is activated on construction, such that the user can 
+   * turn it off before Init(), where it will also be autmatically 
+   * deactivated if no CbmEvent branch is found.
+   * @return Bool_t 
+   */
+  static Bool_t UseOnlyEventDigis() { return TESTBIT(fgConfig, kOnlyEventDigis); }
+
   /** Initialisation **/
   //virtual InitStatus ReInit();
   virtual InitStatus Init();
@@ -79,22 +105,30 @@ public:
   virtual void Finish();
 
 
-  static void SetDumpClusters(Bool_t set = kTRUE) {
+  static void SetDumpClusters(Bool_t set = kTRUE)
+  {
     set ? SETBIT(fgConfig, kDumpClusters) : CLRBIT(fgConfig, kDumpClusters);
   }
-  static void SetRowMerger(Bool_t set = kTRUE) {
-    set ? SETBIT(fgConfig, kRowMerger) : CLRBIT(fgConfig, kRowMerger);
-  }
-  static void SetMultiHit(Bool_t set = kTRUE) {
-    set ? SETBIT(fgConfig, kMultiHit) : CLRBIT(fgConfig, kMultiHit);
-  }
-  static void SetNeighbourEnable(Bool_t col = kTRUE, Bool_t row = kFALSE) {
+  static void SetRowMerger(Bool_t set = kTRUE) { set ? SETBIT(fgConfig, kRowMerger) : CLRBIT(fgConfig, kRowMerger); }
+  static void SetMultiHit(Bool_t set = kTRUE) { set ? SETBIT(fgConfig, kMultiHit) : CLRBIT(fgConfig, kMultiHit); }
+  static void SetNeighbourEnable(Bool_t col = kTRUE, Bool_t row = kFALSE)
+  {
     col ? SETBIT(fgConfig, kNeighbourCol) : CLRBIT(fgConfig, kNeighbourCol);
     row ? SETBIT(fgConfig, kNeighbourRow) : CLRBIT(fgConfig, kNeighbourRow);
   }
   static void SetMinimumChargeTH(Float_t th) { fgMinimumChargeTH = th; }
-  static void SetTimeBased(Bool_t set = kTRUE) {
-    set ? SETBIT(fgConfig, kTime) : CLRBIT(fgConfig, kTime);
+  static void SetTimeBased(Bool_t set = kTRUE) { set ? SETBIT(fgConfig, kTime) : CLRBIT(fgConfig, kTime); }
+
+  /**
+   * @brief Set the Use Only Event Digis
+   * Per default this is activated on construction, such that the user can 
+   * turn it off before Init(), where it will also be autmatically 
+   * deactivated if no CbmEvent branch is found.
+   * @param set 
+   */
+  static void SetUseOnlyEventDigis(Bool_t set = kTRUE)
+  {
+    set ? SETBIT(fgConfig, kOnlyEventDigis) : CLRBIT(fgConfig, kOnlyEventDigis);
   }
 
 protected:
@@ -105,39 +139,76 @@ private:
   CbmTrdClusterFinder(const CbmTrdClusterFinder&);
   CbmTrdClusterFinder& operator=(const CbmTrdClusterFinder&);
 
-  Int_t AddClusters(TClonesArray* clusters, Bool_t moveOwner = kTRUE);
-  CbmTrdModuleRec* AddModule(const CbmTrdDigi* d);
+  Int_t AddClusters(TClonesArray* clusters, CbmEvent* event, Bool_t moveOwner = kTRUE);
 
-  static Int_t
-    fgConfig;  ///< Configuration map for the clusterizer. See CbmTrdRecDef for details
+  /**
+   * @brief Add all digis available from CbmDigiManager to the corresponding modules
+   * 
+   * @return UInt_t 
+   */
+  UInt_t addDigisToModules();
+
+  /**
+   * @brief Add all digis connected to the passed event to the corresponding modules
+   * 
+   * @param event 
+   * @return UInt_t 
+   */
+  UInt_t addDigisToModules(CbmEvent* event);
+
+  /**
+   * @brief Add the digi in the TrdDigi branch at the passed digiIdx to its corresponding module
+   * 
+   * @param digiIdx index in the std::vector
+   */
+  void addDigiToModule(UInt_t digiIdx);
+
+  /**
+   * @brief Call the clusterizer function of each module
+   * 
+   * @param ndigis 
+   * @param event 
+   */
+  void processDigisInModules(UInt_t ndigis, CbmEvent* event = nullptr);
+
+  /**
+   * @brief Adds the module corresponding to the address of the passed digi to the ModuleMap (fModules)
+   * 
+   * @param digi 
+   * @return CbmTrdModuleRec* 
+   */
+  CbmTrdModuleRec* AddModule(const CbmTrdDigi* digi);
+
+
+  static Int_t fgConfig;             ///< Configuration map for the clusterizer. See CbmTrdRecDef for details
   static Float_t fgMinimumChargeTH;  ///<
 
 
-  TClonesArray* fClusters; /** Output array of CbmTrdCluster **/
+  TClonesArray* fClusters = nullptr; /** Output array of CbmTrdCluster **/
 
-  std::map<Int_t, std::set<Int_t>> fDigiMap;    //! /** sector digis **/
-  std::map<Int_t, std::set<Int_t>> fModuleMap;  //! /** sector id per module **/
-
-  std::set<Int_t> fNeighbours;
-  std::map<Int_t, std::set<Int_t>>
-    fModDigiMap;  //std::map<Int_t ModuleID, std::vector<Int_t DigiID> >
-
-  std::map<Int_t, Int_t> fDigiRow;
-  std::map<Int_t, Int_t> fDigiCol;
-  std::map<Int_t, Double_t> fDigiCharge;
-
-  std::vector<std::set<Int_t>> fClusterBuffer;
-  std::map<Int_t, std::vector<std::set<Int_t>>> fModClusterDigiMap;
+  /** @brief Array connected to the CbmEvent branch */
+  TClonesArray* fEvents = nullptr;
 
   //==================================================================
-  std::map<Int_t, CbmTrdModuleRec*>
-    fModules;                  ///< list of modules being processed
-  CbmTrdParSetAsic* fAsicPar;  ///< parameter list for ASIC characterization
-  CbmTrdParSetGas* fGasPar;    ///< parameter list for HV status
-  CbmTrdParSetDigi* fDigiPar;  ///< parameter list for read-out geometry
-  CbmTrdParSetGain* fGainPar;  ///< parameter list for keV->ADC gain conversion
-  CbmTrdParSetGeo* fGeoPar;    ///< parameter list for modules geometry
+  std::map<Int_t, CbmTrdModuleRec*> fModules = {};       ///< list of modules being processed
+  CbmTrdParSetAsic* fAsicPar                 = nullptr;  ///< parameter list for ASIC characterization
+  CbmTrdParSetGas* fGasPar                   = nullptr;  ///< parameter list for HV status
+  CbmTrdParSetDigi* fDigiPar                 = nullptr;  ///< parameter list for read-out geometry
+  CbmTrdParSetGain* fGainPar                 = nullptr;  ///< parameter list for keV->ADC gain conversion
+  CbmTrdParSetGeo* fGeoPar                   = nullptr;  ///< parameter list for modules geometry
 
-  ClassDef(CbmTrdClusterFinder, 1);
+  /** @brief Number of processed events (without CbmEvent corresponds to nr of exec calls) */
+  UInt_t fNrEvents = 0;
+
+  /** @brief Number of digis as input for the hit production. */
+  UInt_t fNrDigis = 0;
+
+  /** @brief Number of produced clusters. */
+  UInt_t fNrClusters = 0;
+
+  /** @brief Total processing time [RealTime]. */
+  Float_t fProcessTime = 0;
+
+  ClassDef(CbmTrdClusterFinder, 2);
 };
 #endif

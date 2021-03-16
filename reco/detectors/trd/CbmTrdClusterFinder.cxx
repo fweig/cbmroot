@@ -1,6 +1,12 @@
 #include "CbmTrdClusterFinder.h"
 
+#include "CbmDefs.h"
 #include "CbmDigiManager.h"
+#include "CbmTrdCluster.h"
+#include "CbmTrdDigi.h"
+#include "CbmTrdGeoHandler.h"
+#include "CbmTrdModuleRecR.h"
+#include "CbmTrdModuleRecT.h"
 #include "CbmTrdParAsic.h"
 #include "CbmTrdParModDigi.h"
 #include "CbmTrdParModGain.h"
@@ -11,62 +17,34 @@
 #include "CbmTrdParSetGas.h"
 #include "CbmTrdParSetGeo.h"
 
-#include "CbmTrdCluster.h"
-#include "CbmTrdDigi.h"
-#include "CbmTrdGeoHandler.h"
-#include "CbmTrdModuleRecR.h"
-#include "CbmTrdModuleRecT.h"
-
 #include <FairLogger.h>
 #include <FairRootManager.h>
 #include <FairRunAna.h>
 #include <FairRuntimeDb.h>
 
+#include <RtypesCore.h>
 #include <TArray.h>
-#include <TBits.h>
 #include <TClonesArray.h>
 #include <TGeoPhysicalNode.h>
 #include <TStopwatch.h>
 // #include "TCanvas.h"
 // #include "TImage.h"
 
-#include <cmath>
 #include <iomanip>
 #include <iostream>
-using std::cout;
-using std::endl;
-using std::fabs;
-using std::setprecision;
+
+#include <cmath>
+
 
 Int_t CbmTrdClusterFinder::fgConfig            = 0;
 Float_t CbmTrdClusterFinder::fgMinimumChargeTH = .5e-06;
 //_____________________________________________________________________
-CbmTrdClusterFinder::CbmTrdClusterFinder()
-  : FairTask("TrdClusterFinder", 1)
-  , fClusters(NULL)
-  , fDigiMap()
-  , fModuleMap()
-  , fNeighbours()
-  , fModDigiMap()
-  , fDigiRow()
-  , fDigiCol()
-  , fDigiCharge()
-  , fClusterBuffer()
-  , fModClusterDigiMap()
-  ,
-  //=======================
-  fModules()
-  , fAsicPar(NULL)
-  , fGasPar(NULL)
-  , fDigiPar(NULL)
-  , fGainPar(NULL)
-  , fGeoPar(NULL)
-
-{}
+CbmTrdClusterFinder::CbmTrdClusterFinder() : FairTask("TrdClusterFinder", 1) { SetUseOnlyEventDigis(); }
 // --------------------------------------------------------------------
 
 // ---- Destructor ----------------------------------------------------
-CbmTrdClusterFinder::~CbmTrdClusterFinder() {
+CbmTrdClusterFinder::~CbmTrdClusterFinder()
+{
 
   if (fClusters) {
     fClusters->Clear("C");
@@ -80,87 +58,144 @@ CbmTrdClusterFinder::~CbmTrdClusterFinder() {
 }
 
 //_____________________________________________________________________
-Bool_t CbmTrdClusterFinder::AddCluster(CbmTrdCluster* c) {
+Bool_t CbmTrdClusterFinder::AddCluster(CbmTrdCluster* c)
+{
   Int_t ncl(fClusters->GetEntriesFast());
   new ((*fClusters)[ncl++]) CbmTrdCluster(*c);
   return kTRUE;
 }
 
+// ---- addDigisToModules ----
+UInt_t CbmTrdClusterFinder::addDigisToModules()
+{
+  UInt_t ndigis = static_cast<UInt_t>(std::abs(CbmDigiManager::Instance()->GetNofDigis(ECbmModuleId::kTrd)));
+  for (size_t idigi = 0; idigi < ndigis; idigi++) {
+    addDigiToModule(idigi);
+  }
+  return ndigis;
+}
+
+// ---- addDigisToModules ----
+UInt_t CbmTrdClusterFinder::addDigisToModules(CbmEvent* event)
+{
+  UInt_t ndigis = static_cast<UInt_t>(std::abs(event->GetNofData(ECbmDataType::kTrdDigi)));
+  for (size_t idigi = 0; idigi < ndigis; idigi++) {
+    auto digiindex = event->GetIndex(ECbmDataType::kTrdDigi, idigi);
+    addDigiToModule(digiindex);
+  }
+  return ndigis;
+}
+
+
+// ---- addDigiToModule ----
+void CbmTrdClusterFinder::addDigiToModule(UInt_t digiIdx)
+{
+  CbmTrdModuleRec* mod = nullptr;
+
+  const CbmTrdDigi* digi = CbmDigiManager::Instance()->Get<CbmTrdDigi>(digiIdx);
+
+  Int_t moduleAddress = digi->GetAddressModule();
+
+  std::map<Int_t, CbmTrdModuleRec*>::iterator imod = fModules.find(moduleAddress);
+  if (imod == fModules.end()) mod = AddModule(digi);
+  else
+    mod = imod->second;
+
+  mod->AddDigi(digi, digiIdx);
+}
+
+// ---- processDigisInModules ----
+void CbmTrdClusterFinder::processDigisInModules(UInt_t ndigis, CbmEvent* event)
+{
+  CbmTrdModuleRec* mod(NULL);
+  Int_t digiCounter(0), clsCounter(0);
+  for (std::map<Int_t, CbmTrdModuleRec*>::iterator imod = fModules.begin(); imod != fModules.end(); imod++) {
+    mod = imod->second;
+    digiCounter += mod->GetOverThreshold();
+    clsCounter += mod->FindClusters();
+    AddClusters(mod->GetClusters(), event, kTRUE);
+  }
+
+  // remove local data from all modules
+  for (std::map<Int_t, CbmTrdModuleRec*>::iterator imod = fModules.begin(); imod != fModules.end(); imod++)
+    imod->second->Clear("cls");
+
+  fNrDigis += ndigis;
+  fNrClusters += clsCounter;
+
+  LOG(debug) << GetName() << "::Exec : Digis    : " << ndigis << " / " << digiCounter << " above threshold ("
+             << 1e6 * fgMinimumChargeTH << " keV)";
+  LOG(debug) << GetName() << "::Exec : Clusters : " << clsCounter;
+}
+
 //____________________________________________________________________________________
-CbmTrdModuleRec* CbmTrdClusterFinder::AddModule(const CbmTrdDigi* digi) {
+CbmTrdModuleRec* CbmTrdClusterFinder::AddModule(const CbmTrdDigi* digi)
+{
   Int_t address = digi->GetAddressModule();
   CbmTrdModuleRec* module(NULL);
-  if (digi->GetType() == CbmTrdDigi::kFASP)
-    module = fModules[address] = new CbmTrdModuleRecT(address);
+  if (digi->GetType() == CbmTrdDigi::kFASP) module = fModules[address] = new CbmTrdModuleRecT(address);
   else
     module = fModules[address] = new CbmTrdModuleRecR(address);
 
   // try to load Geometry parameters for module
   const CbmTrdParModGeo* pGeo(NULL);
-  if (!fGeoPar
-      || !(pGeo = (const CbmTrdParModGeo*) fGeoPar->GetModulePar(address))) {
-    LOG(fatal) << GetName() << "::AddModule : No Geo params for module "
-               << address << ". Using default.";
-  } else
+  if (!fGeoPar || !(pGeo = (const CbmTrdParModGeo*) fGeoPar->GetModulePar(address))) {
+    LOG(fatal) << GetName() << "::AddModule : No Geo params for module " << address << ". Using default.";
+  }
+  else
     module->SetGeoPar(pGeo);
 
   // try to load read-out parameters for module
   const CbmTrdParModDigi* pDigi(NULL);
-  if (!fDigiPar
-      || !(pDigi = (const CbmTrdParModDigi*) fDigiPar->GetModulePar(address))) {
-    LOG(warn) << GetName() << "::AddModule : No Read-Out params for modAddress "
-              << address << ". Using default.";
-  } else
+  if (!fDigiPar || !(pDigi = (const CbmTrdParModDigi*) fDigiPar->GetModulePar(address))) {
+    LOG(warn) << GetName() << "::AddModule : No Read-Out params for modAddress " << address << ". Using default.";
+  }
+  else
     module->SetDigiPar(pDigi);
 
   // try to load ASIC parameters for module
   CbmTrdParSetAsic* pAsic(NULL);
-  if (!fAsicPar
-      || !(pAsic = (CbmTrdParSetAsic*) fAsicPar->GetModuleSet(address))) {
-    LOG(warn) << GetName() << "::AddModule : No ASIC params for modAddress "
-              << address << ". Using default.";
+  if (!fAsicPar || !(pAsic = (CbmTrdParSetAsic*) fAsicPar->GetModuleSet(address))) {
+    LOG(warn) << GetName() << "::AddModule : No ASIC params for modAddress " << address << ". Using default.";
     //    module->SetAsicPar(); // map ASIC channels to read-out channels - need ParModDigi already loaded
-  } else
+  }
+  else
     module->SetAsicPar(pAsic);
 
   // try to load Chamber parameters for module
   const CbmTrdParModGas* pChmb(NULL);
-  if (!fGasPar
-      || !(pChmb = (const CbmTrdParModGas*) fGasPar->GetModulePar(address))) {
-    LOG(warn) << GetName() << "::AddModule : No Gas params for modAddress "
-              << address << ". Using default.";
-  } else
+  if (!fGasPar || !(pChmb = (const CbmTrdParModGas*) fGasPar->GetModulePar(address))) {
+    LOG(warn) << GetName() << "::AddModule : No Gas params for modAddress " << address << ". Using default.";
+  }
+  else
     module->SetChmbPar(pChmb);
 
   // try to load Gain parameters for module
   if (digi->GetType() == CbmTrdDigi::kFASP) {
     const CbmTrdParModGain* pGain(NULL);
-    if (!fGainPar
-        || !(pGain =
-               (const CbmTrdParModGain*) fGainPar->GetModulePar(address))) {
+    if (!fGainPar || !(pGain = (const CbmTrdParModGain*) fGainPar->GetModulePar(address))) {
       //LOG(warn) << GetName() << "::AddModule : No Gain params for modAddress "<< address <<". Using default.";
-    } else
+    }
+    else
       module->SetGainPar(pGain);
   }
   return module;
 }
 
 //_____________________________________________________________________
-void CbmTrdClusterFinder::SetParContainers() {
-  fAsicPar = static_cast<CbmTrdParSetAsic*>(
-    FairRunAna::Instance()->GetRuntimeDb()->getContainer("CbmTrdParSetAsic"));
-  fGasPar = static_cast<CbmTrdParSetGas*>(
-    FairRunAna::Instance()->GetRuntimeDb()->getContainer("CbmTrdParSetGas"));
-  fDigiPar = static_cast<CbmTrdParSetDigi*>(
-    FairRunAna::Instance()->GetRuntimeDb()->getContainer("CbmTrdParSetDigi"));
-  fGainPar = static_cast<CbmTrdParSetGain*>(
-    FairRunAna::Instance()->GetRuntimeDb()->getContainer("CbmTrdParSetGain"));
+void CbmTrdClusterFinder::SetParContainers()
+{
+  fAsicPar = static_cast<CbmTrdParSetAsic*>(FairRunAna::Instance()->GetRuntimeDb()->getContainer("CbmTrdParSetAsic"));
+  fGasPar  = static_cast<CbmTrdParSetGas*>(FairRunAna::Instance()->GetRuntimeDb()->getContainer("CbmTrdParSetGas"));
+  fDigiPar = static_cast<CbmTrdParSetDigi*>(FairRunAna::Instance()->GetRuntimeDb()->getContainer("CbmTrdParSetDigi"));
+  fGainPar = static_cast<CbmTrdParSetGain*>(FairRunAna::Instance()->GetRuntimeDb()->getContainer("CbmTrdParSetGain"));
   // Get the full geometry information of the TRD modules
   fGeoPar = new CbmTrdParSetGeo();
 }
 
 //_____________________________________________________________________
-InitStatus CbmTrdClusterFinder::Init() {
+InitStatus CbmTrdClusterFinder::Init()
+{
 
   FairRootManager* ioman = FairRootManager::Instance();
 
@@ -169,16 +204,20 @@ InitStatus CbmTrdClusterFinder::Init() {
   if (!CbmDigiManager::Instance()->IsPresent(ECbmModuleId::kTrd)) LOG(fatal);
 
   fClusters = new TClonesArray("CbmTrdCluster", 100);
-  ioman->Register(
-    "TrdCluster", "TRD", fClusters, IsOutputBranchPersistent("TrdCluster"));
+  ioman->Register("TrdCluster", "TRD", fClusters, IsOutputBranchPersistent("TrdCluster"));
 
-  if (!IsTimeBased()
-      && nullptr == dynamic_cast<TClonesArray*>(ioman->GetObject("CbmEvent"))) {
+  // If not deactivated by the user, the clusterizer will look for the CbmEvent branch, to only use Digis connected to a CbmEvent. If no CbmEvent branch is found all digis in the TrdDigi branch are automatically used.
+  if (UseOnlyEventDigis()) {
+    fEvents = dynamic_cast<TClonesArray*>(ioman->GetObject("CbmEvent"));
+    if (fEvents == nullptr) { SetUseOnlyEventDigis(kFALSE); }
+  }
+  if (!IsTimeBased() && nullptr == dynamic_cast<TClonesArray*>(ioman->GetObject("CbmEvent"))) {
     LOG(warn) << GetName()
               << ": Event mode selected but no event array found! Run in "
                  "time-based mode.";
     SetTimeBased();
   }
+
   //   // Get the full geometry information of the detector gas layers and store
   //   // them with the CbmTrdModuleRec. This information can then be used for
   //   // transformation calculations
@@ -200,18 +239,20 @@ InitStatus CbmTrdClusterFinder::Init() {
   //   fDigiPar->Initialize();
 
   LOG(info) << "================ TRD Cluster Finder ===============";
-  LOG(info) << " Free streaming    : " << (IsTimeBased() ? "yes" : "no");
-  LOG(info) << " Multi hit detect  : " << (HasMultiHit() ? "yes" : "no");
-  LOG(info) << " Row merger        : " << (HasRowMerger() ? "yes" : "no");
-  LOG(info) << " c-Neighbour enable: " << (HasNeighbourCol() ? "yes" : "no");
-  LOG(info) << " r-Neighbour enable: " << (HasNeighbourRow() ? "yes" : "no");
-  LOG(info) << " Write clusters    : " << (HasDumpClusters() ? "yes" : "no");
+  LOG(info) << " Free streaming       : " << (IsTimeBased() ? "yes" : "no");
+  LOG(info) << " Multi hit detect     : " << (HasMultiHit() ? "yes" : "no");
+  LOG(info) << " Row merger           : " << (HasRowMerger() ? "yes" : "no");
+  LOG(info) << " c-Neighbour enable   : " << (HasNeighbourCol() ? "yes" : "no");
+  LOG(info) << " r-Neighbour enable   : " << (HasNeighbourRow() ? "yes" : "no");
+  LOG(info) << " Write clusters       : " << (HasDumpClusters() ? "yes" : "no");
+  LOG(info) << " Use only event digis : " << (UseOnlyEventDigis() ? "yes" : "no");
 
   return kSUCCESS;
 }
 
 //_____________________________________________________________________
-void CbmTrdClusterFinder::Exec(Option_t* /*option*/) {
+void CbmTrdClusterFinder::Exec(Option_t* /*option*/)
+{
   /**
 * Digis are sorted according to the moduleAddress. A combiId is calculted based
 * on the rowId and the colId to have a neighbouring criterion for digis within
@@ -229,63 +270,34 @@ void CbmTrdClusterFinder::Exec(Option_t* /*option*/) {
 
   TStopwatch timer;
   timer.Start();
+  UInt_t nDigis = 0;
 
-  //  Int_t nentries = fDigis->GetEntries();
-  //printf("processing %d entries\n", nentries);
-  CbmTrdModuleRec* mod(NULL);
-  Int_t nDigis = CbmDigiManager::Instance()->GetNofDigis(ECbmModuleId::kTrd);
-  for (Int_t iDigi = 0; iDigi < nDigis; iDigi++) {
-
-    const CbmTrdDigi* digi = CbmDigiManager::Instance()->Get<CbmTrdDigi>(iDigi);
-
-
-    //CbmTrdDigi *digi = (CbmTrdDigi*) fDigis->At(iDigi);
-    Int_t moduleAddress = digi->GetAddressModule();
-
-    std::map<Int_t, CbmTrdModuleRec*>::iterator imod =
-      fModules.find(moduleAddress);
-    if (imod == fModules.end())
-      mod = AddModule(digi);
-    else
-      mod = imod->second;
-    //    std::cout<<digi->GetTime()<<std::endl;
-
-    mod->AddDigi(digi, iDigi);
+  if (UseOnlyEventDigis()) {
+    for (auto eventobj : *fEvents) {
+      auto event = static_cast<CbmEvent*>(eventobj);
+      nDigis     = addDigisToModules(event);
+      processDigisInModules(nDigis, event);
+      fNrEvents++;
+    }
   }
 
-  Int_t digiCounter(0), clsCounter(0);
-  for (std::map<Int_t, CbmTrdModuleRec*>::iterator imod = fModules.begin();
-       imod != fModules.end();
-       imod++) {
-    mod = imod->second;
-    digiCounter += mod->GetOverThreshold();
-    clsCounter += mod->FindClusters();
-    AddClusters(mod->GetClusters(), kTRUE);
+  if (!UseOnlyEventDigis()) {
+    nDigis = addDigisToModules();
+    processDigisInModules(nDigis);
+    fNrEvents++;
   }
 
-  // remove local data from all modules
-  for (std::map<Int_t, CbmTrdModuleRec*>::iterator imod = fModules.begin();
-       imod != fModules.end();
-       imod++)
-    imod->second->Clear("cls");
 
   timer.Stop();
 
-  LOG(info) << GetName() << "::Exec : Digis    : " << nDigis << " / "
-            << digiCounter << " above threshold (" << 1e6 * fgMinimumChargeTH
-            << " keV)";
-  LOG(info) << GetName() << "::Exec : Clusters : " << clsCounter;
-  LOG(info) << GetName() << "::Exec : real time=" << timer.RealTime()
-            << " CPU time=" << timer.CpuTime();
+  LOG(debug) << GetName() << "::Exec : real time=" << timer.RealTime() << " CPU time=" << timer.CpuTime();
 
-  //   //cout << "  " << counterI << " (" << counterI*100.0/Float_t(counterJ) << "%)" <<  " are reconstructed with fRowClusterMerger" << endl;
-  //   //printf("   %4d modules (%6.3f%%) are reconstructed with fRowClusterMerger\n",counterI,counterI*100/Float_t(counterJ));
-  //   LOG(info) << "CbmTrdClusterFinder::Exec : RowClusterMerger are used " << fRowMergerCounter << " times";
+  fProcessTime += timer.RealTime();
 }
 
 //_____________________________________________________________________
-Int_t CbmTrdClusterFinder::AddClusters(TClonesArray* clusters,
-                                       Bool_t /* move*/) {
+Int_t CbmTrdClusterFinder::AddClusters(TClonesArray* clusters, CbmEvent* event, Bool_t /* move*/)
+{
   if (!clusters) return 0;
   CbmTrdCluster *cls(NULL), *clsSave(NULL);
   const CbmTrdDigi* digi(NULL);
@@ -310,7 +322,7 @@ Int_t CbmTrdClusterFinder::AddClusters(TClonesArray* clusters,
       cols.Clear();
       rows.Clear();
       for (Int_t id = 0; id < cls->GetNofDigis(); id++) {
-        digi = CbmDigiManager::Instance()->Get<CbmTrdDigi>(cls->GetDigi(id));
+        digi              = CbmDigiManager::Instance()->Get<CbmTrdDigi>(cls->GetDigi(id));
         Int_t digiChannel = digi->GetAddressChannel();
         Int_t colId       = digiChannel % ncols;
         Int_t globalRow   = digiChannel / ncols;
@@ -323,8 +335,9 @@ Int_t CbmTrdClusterFinder::AddClusters(TClonesArray* clusters,
       cls->SetNCols(cols.CountBits());
       cls->SetNRows(rows.CountBits());
     }
-    clsSave = new ((*fClusters)[ncl++])
-      CbmTrdCluster(*cls);  // TODO implement copy constructor
+    clsSave = new ((*fClusters)[ncl++]) CbmTrdCluster(*cls);  // TODO implement copy constructor
+    // In case we have an event branch and we did only use digis from within the event, add the cluster to the event. This allows the hit producer to identify wether or not to add the corresponding hit to the event.
+    if (event) event->AddData(ECbmDataType::kTrdCluster, ncl);
     clsSave->SetTrianglePads(cls->HasTrianglePads());
     if (cls->GetMatch() != NULL)
       delete cls;  //only the matches have pointers to allocated memory, so otherwise the clear does the trick
@@ -335,6 +348,22 @@ Int_t CbmTrdClusterFinder::AddClusters(TClonesArray* clusters,
 }
 
 //_____________________________________________________________________
-void CbmTrdClusterFinder::Finish() {}
+void CbmTrdClusterFinder::Finish()
+{
+  std::cout << std::endl;
+  LOG(info) << "=====================================";
+  LOG(info) << GetName() << ": Finish run";
+  LOG(info) << GetName() << ": Run summary ";
+  LOG(info) << GetName() << ": Processing time         : " << std::fixed << std::setprecision(3) << fProcessTime;
+  LOG(info) << GetName() << ": Nr of events            : " << fNrEvents;
+  LOG(info) << GetName() << ": Nr of input digis       : " << fNrDigis;
+  LOG(info) << GetName() << ": Nr of produced clusters : " << fNrClusters;
+  LOG(info) << GetName() << ": Nr of clusters / event  : " << std::fixed << std::setprecision(2)
+            << (fNrEvents > 0 ? fNrClusters / (Double_t) fNrEvents : 0);
+  LOG(info) << GetName() << ": Nr of digis / cluster   : " << std::fixed << std::setprecision(2)
+            << (fNrClusters > 0 ? fNrDigis / (Double_t) fNrClusters : 0);
+  LOG(info) << "=====================================";
+  std::cout << std::endl;
+}
 
 ClassImp(CbmTrdClusterFinder)
