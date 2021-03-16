@@ -645,6 +645,9 @@ const CbmPsdDigi* CbmAlgoBuildRawEvents::GetDigi(UInt_t uDigi)
 //----------------------------------------------------------------------
 void CbmAlgoBuildRawEvents::CreateHistograms()
 {
+  outFolder = new TFolder("AlgoBuildRawEventsHist", " AlgoBuildRawEvents Histos");
+  outFolder->Clear();
+
   fhEventTime = new TH1F("hEventTime", "seed time of the events; Seed time [s]; Events", 1000, 0, 0.001);
   fhEventTime->SetCanExtend(TH1::kAllAxes);
 
@@ -681,10 +684,17 @@ void CbmAlgoBuildRawEvents::CreateHistograms()
   AddHistoToVector(fhEventDt, "evtbuild");
   AddHistoToVector(fhEventSize, "evtbuild");
   AddHistoToVector(fhNbDigiPerEvtTime, "evtbuild");
+  outFolder->Add(fhEventTime);
+  outFolder->Add(fhEventDt);
+  outFolder->Add(fhEventSize);
+  outFolder->Add(fhNbDigiPerEvtTime);
 
   for (std::vector<TH2*>::iterator itHist = fvhNbDigiPerEvtTimeDet.begin(); itHist != fvhNbDigiPerEvtTimeDet.end();
        ++itHist) {
-    if (nullptr != (*itHist)) { AddHistoToVector((*itHist), "evtbuild"); }
+    if (nullptr != (*itHist)) {
+      AddHistoToVector((*itHist), "evtbuild");
+      outFolder->Add((*itHist));
+    }
   }
 }
 

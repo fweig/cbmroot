@@ -382,33 +382,44 @@ void CbmTaskBuildRawEvents::FillOutput()
 
 void CbmTaskBuildRawEvents::SaveHistos()
 {
-  /// Obtain vector of pointers on each histo from the algo (+ optionally desired folder)
-  std::vector<std::pair<TNamed*, std::string>> vHistos = fpAlgo->GetHistoVector();
-
-  /// (Re-)Create ROOT file to store the histos
-  TDirectory* oldDir = NULL;
-  TFile* histoFile   = NULL;
-  /// Store current directory position to allow restore later
-  oldDir = gDirectory;
-  /// open separate histo file in recreate mode
-  histoFile = new TFile(fsOutFileName, "RECREATE");
-  histoFile->cd();
-
-  /// Save all plots and create folders if needed
-  for (UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto) {
-    /// Make sure we end up in chosen folder
-    const TString sFolder = vHistos[uHisto].second.data();
-    if (nullptr == gDirectory->Get(sFolder)) gDirectory->mkdir(sFolder);
-    gDirectory->cd(sFolder);
-
-    /// Write plot
-    vHistos[uHisto].first->Write();
-    histoFile->cd();
+  if (fbWriteHistosToFairSink) {
+    if (!FairRootManager::Instance() || !FairRootManager::Instance()->GetSink()) {
+      LOG(error) << "No sink found";
+      return;
+    }
+    FairSink* sink = FairRootManager::Instance()->GetSink();
+    sink->WriteObject(fpAlgo->GetOutFolder(), nullptr);
   }
+  else {
 
-  /// Restore original directory position
-  oldDir->cd();
-  histoFile->Close();
+    /// Obtain vector of pointers on each histo from the algo (+ optionally desired folder)
+    std::vector<std::pair<TNamed*, std::string>> vHistos = fpAlgo->GetHistoVector();
+
+    /// (Re-)Create ROOT file to store the histos
+    TDirectory* oldDir = NULL;
+    TFile* histoFile   = NULL;
+    /// Store current directory position to allow restore later
+    oldDir = gDirectory;
+    /// open separate histo file in recreate mode
+    histoFile = new TFile(fsOutFileName, "RECREATE");
+    histoFile->cd();
+
+    /// Save all plots and create folders if needed
+    for (UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto) {
+      /// Make sure we end up in chosen folder
+      const TString sFolder = vHistos[uHisto].second.data();
+      if (nullptr == gDirectory->Get(sFolder)) gDirectory->mkdir(sFolder);
+      gDirectory->cd(sFolder);
+
+      /// Write plot
+      vHistos[uHisto].first->Write();
+      histoFile->cd();
+    }
+
+    /// Restore original directory position
+    oldDir->cd();
+    histoFile->Close();
+  }
 }
 
 

@@ -67,6 +67,7 @@ public:
 
   /** Setters **/
   void SetOutFilename(TString sNameIn) { fsOutFileName = sNameIn; }
+  void SetWriteHistosToFairSink(Bool_t var) { fbWriteHistosToFairSink = var; }
 
   void SetFillHistos(Bool_t bFlag = kTRUE)
   {
@@ -148,7 +149,8 @@ private:
 
   TClonesArray* fEvents = nullptr;  //! output container of CbmEvents
 
-  Bool_t fbFillHistos {kTRUE};  //! Switch ON/OFF filling of histograms
+  Bool_t fbFillHistos {kTRUE};             //! Switch ON/OFF filling of histograms
+  Bool_t fbWriteHistosToFairSink {kTRUE};  //! Write histos to FairRootManager instead of separate file
 
   /** Name of the histogram output file **/
   TString fsOutFileName {"data/HistosEvtWin.root"};

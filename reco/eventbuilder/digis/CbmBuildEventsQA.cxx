@@ -270,13 +270,6 @@ void CbmBuildEventsQA::MatchEvent(CbmEvent* event)
 void CbmBuildEventsQA::Finish()
 {
   //output histograms
-  fhCorrectDigiRatioAll->DrawCopy("colz", "");
-  fhFoundDigiRatioAll->DrawCopy("colz", "");
-  for (ECbmModuleId& system : fSystems) {
-    fhMapSystemsCorrectDigi[system]->DrawCopy("colz", "");
-    fhMapSystemsFoundDigi[system]->DrawCopy("colz", "");
-  }
-
   if (!FairRootManager::Instance() || !FairRootManager::Instance()->GetSink()) {
     LOG(error) << "No sink found";
     return;

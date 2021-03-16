@@ -198,6 +198,9 @@ public:
     fTimeSliceMetaDataArray = TimeSliceMetaDataArray;
   }
 
+  // Output folder for histograms
+  TFolder* GetOutFolder() { return outFolder; }
+
   /// Data output access
   std::vector<CbmEvent*>& GetEventVector() { return fEventVector; }
   void ClearEventVector();
@@ -227,6 +230,8 @@ private:
 
   void UpdateTimeWinBoundariesExtrema();
   void UpdateWidestTimeWinRange();
+
+  TFolder* outFolder;  // oputput folder to store histograms
 
   /// Constants
   static constexpr Double_t kdDefaultTimeWinBeg = -100.0;
