@@ -56,14 +56,15 @@ class CbmTrdClusterFinder : public FairTask {
 public:
   enum CbmTrdRecDef
   {
-    kTime = 0,       ///< select Time based/Event by event reconstruction
-    kMultiHit,       ///< multi hit detection
-    kRowMerger,      ///< merge clusters over neighbour rows
-    kNeighbourCol,   ///< use neighbour trigger; column wise
-    kNeighbourRow,   ///< use neighbour trigger; row wise
-    kDumpClusters,   ///< write clustered digis to output
-    kFASP,           ///< use FASP ASIC for triangular pad plane geometry
-    kOnlyEventDigis  ///< use only digis connected to a CbmEvent
+    kTime = 0,        ///< select Time based/Event by event reconstruction
+    kMultiHit,        ///< multi hit detection
+    kRowMerger,       ///< merge clusters over neighbour rows
+    kNeighbourCol,    ///< use neighbour trigger; column wise
+    kNeighbourRow,    ///< use neighbour trigger; row wise
+    kDumpClusters,    ///< write clustered digis to output
+    kFASP,            ///< use FASP ASIC for triangular pad plane geometry
+    kOnlyEventDigis,  ///< use only digis connected to a CbmEvent
+    kDebugStatements  ///< print out debug statements with LOG(info)
   };
 
   /**
@@ -83,6 +84,7 @@ public:
   static Bool_t HasNeighbourRow() { return TESTBIT(fgConfig, kNeighbourRow); }
   static Bool_t HasRowMerger() { return TESTBIT(fgConfig, kRowMerger); }
   static Bool_t IsTimeBased() { return TESTBIT(fgConfig, kTime); }
+  static Bool_t DoDebugPrintouts() { return TESTBIT(fgConfig, kDebugStatements); }
 
   /**
    * @brief If true only digis connected ro a CbmEvent are processed
@@ -118,6 +120,12 @@ public:
   }
   static void SetMinimumChargeTH(Float_t th) { fgMinimumChargeTH = th; }
   static void SetTimeBased(Bool_t set = kTRUE) { set ? SETBIT(fgConfig, kTime) : CLRBIT(fgConfig, kTime); }
+
+  static void SetDoDebugPrintouts(Bool_t set = kTRUE)
+  {
+    set ? SETBIT(fgConfig, kDebugStatements) : CLRBIT(fgConfig, kDebugStatements);
+  }
+
 
   /**
    * @brief Set the Use Only Event Digis

@@ -129,15 +129,17 @@ CbmTrdModuleRec* CbmTrdHitProducer::AddModule(Int_t address, TGeoPhysicalNode* n
 UInt_t CbmTrdHitProducer::processClusters()
 {
   Int_t nclusters = fClusters->GetEntries();
-  LOG(debug) << GetName() << "::Exec: "
-             << " Clusters : " << nclusters;
 
   for (Int_t icluster = 0; icluster < nclusters; icluster++) {
     processCluster(icluster);
   }
   auto nhits = addHits();
-  LOG(debug) << GetName() << "::Exec: "
-             << " Hits     : " << nhits;
+  if (CbmTrdClusterFinder::DoDebugPrintouts()) {
+    LOG(info) << GetName() << "::processClusters: "
+              << " Clusters : " << nclusters;
+    LOG(info) << GetName() << "::processClusters: "
+              << " Hits     : " << nhits;
+  }
   return nhits;
 }
 
@@ -145,16 +147,19 @@ UInt_t CbmTrdHitProducer::processClusters()
 UInt_t CbmTrdHitProducer::processClusters(CbmEvent* event)
 {
   Int_t nclusters = event->GetNofData(ECbmDataType::kTrdCluster);
-  LOG(debug) << GetName() << "::Exec : "
-             << " Clusters : " << nclusters;
 
   for (Int_t icluster = 0; icluster < nclusters; icluster++) {
     auto clusterIdx = event->GetIndex(ECbmDataType::kTrdCluster, icluster);
     processCluster(clusterIdx);
   }
   auto nhits = addHits(event);
-  LOG(debug) << GetName() << "::Exec : "
-             << " Hits     : " << nhits;
+
+  if (CbmTrdClusterFinder::DoDebugPrintouts()) {
+    LOG(info) << GetName() << "::processClusters: "
+              << " Clusters : " << nclusters;
+    LOG(info) << GetName() << "::processClusters: "
+              << " Hits     : " << nhits;
+  }
   return nhits;
 }
 
@@ -257,28 +262,44 @@ void CbmTrdHitProducer::Exec(Option_t*)
   fHits->Delete();
 
   TStopwatch timer;
-  timer.Start();
 
   UInt_t hitCounter = 0;
 
   if (CbmTrdClusterFinder::UseOnlyEventDigis()) {
     for (auto eventobj : *fEvents) {
+      timer.Start();
       hitCounter = 0;
       auto event = static_cast<CbmEvent*>(eventobj);
       if (!event) continue;
       hitCounter += processClusters(event);
       fNrEvents++;
+      timer.Stop();
+      if (CbmTrdClusterFinder::DoDebugPrintouts()) {
+        LOG(info) << GetName() << "::Exec : Event Nr: " << fNrEvents;
+        LOG(info) << GetName() << "::Exec : real time=" << timer.RealTime() << " CPU time=" << timer.CpuTime();
+      }
+      fProcessTime += timer.RealTime();
+      timer.Reset();
     }
   }
 
   if (!CbmTrdClusterFinder::UseOnlyEventDigis()) {
+    timer.Start();
     hitCounter = processClusters();
     fNrEvents++;
+    timer.Stop();
+    if (CbmTrdClusterFinder::DoDebugPrintouts()) {
+      LOG(info) << GetName() << "::Exec : Event Nr: " << fNrEvents;
+      LOG(info) << GetName() << "::Exec : real time=" << timer.RealTime() << " CPU time=" << timer.CpuTime();
+    }
+    fProcessTime += timer.RealTime();
+    timer.Reset();
   }
 
 
   timer.Stop();
-  LOG(debug) << GetName() << "::Exec: real time=" << timer.RealTime() << " CPU time=" << timer.CpuTime();
+  if (CbmTrdClusterFinder::DoDebugPrintouts())
+    LOG(info) << GetName() << "::Exec: real time=" << timer.RealTime() << " CPU time=" << timer.CpuTime();
   fProcessTime += timer.RealTime();
 }
 

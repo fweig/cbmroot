@@ -123,9 +123,11 @@ void CbmTrdClusterFinder::processDigisInModules(UInt_t ndigis, CbmEvent* event)
   fNrDigis += ndigis;
   fNrClusters += clsCounter;
 
-  LOG(debug) << GetName() << "::Exec : Digis    : " << ndigis << " / " << digiCounter << " above threshold ("
-             << 1e6 * fgMinimumChargeTH << " keV)";
-  LOG(debug) << GetName() << "::Exec : Clusters : " << clsCounter;
+  if (DoDebugPrintouts()) {
+    LOG(info) << GetName() << "::Exec : Digis    : " << ndigis << " / " << digiCounter << " above threshold ("
+              << 1e6 * fgMinimumChargeTH << " keV)";
+    LOG(info) << GetName() << "::Exec : Clusters : " << clsCounter;
+  }
 }
 
 //____________________________________________________________________________________
@@ -254,45 +256,53 @@ InitStatus CbmTrdClusterFinder::Init()
 void CbmTrdClusterFinder::Exec(Option_t* /*option*/)
 {
   /**
-* Digis are sorted according to the moduleAddress. A combiId is calculted based
-* on the rowId and the colId to have a neighbouring criterion for digis within
-* the same pad row. The digis of each module are sorted according to this combiId.
-* All sorted digis of one pad row are 'clustered' into rowCluster. For a new row
-* the rowClusters are compared to the rowClusters of the last row. If an overlap
-* is found they are marked to be parents(last row) and childrens(activ row)
-* (mergeRowCluster()). After this, the finale clusters are created. Therefor
-* walkCluster() walks along the list of marked parents and markes every visited
-* rowCluster to avoid multiple usage of one rowCluster. drawCluster() can be used to
-* get a visual output.
-*/
+  * Digis are sorted according to the moduleAddress. A combiId is calculted based
+  * on the rowId and the colId to have a neighbouring criterion for digis within
+  * the same pad row. The digis of each module are sorted according to this combiId.
+  * All sorted digis of one pad row are 'clustered' into rowCluster. For a new row
+  * the rowClusters are compared to the rowClusters of the last row. If an overlap
+  * is found they are marked to be parents(last row) and childrens(activ row)
+  * (mergeRowCluster()). After this, the finale clusters are created. Therefor
+  * walkCluster() walks along the list of marked parents and markes every visited
+  * rowCluster to avoid multiple usage of one rowCluster. drawCluster() can be used to
+  * get a visual output.
+  */
 
   fClusters->Delete();
 
   TStopwatch timer;
-  timer.Start();
   UInt_t nDigis = 0;
 
   if (UseOnlyEventDigis()) {
     for (auto eventobj : *fEvents) {
+      timer.Start();
       auto event = static_cast<CbmEvent*>(eventobj);
       nDigis     = addDigisToModules(event);
       processDigisInModules(nDigis, event);
       fNrEvents++;
+      timer.Stop();
+      if (DoDebugPrintouts()) {
+        LOG(info) << GetName() << "::Exec : Event Nr: " << fNrEvents;
+        LOG(info) << GetName() << "::Exec : real time=" << timer.RealTime() << " CPU time=" << timer.CpuTime();
+      }
+      fProcessTime += timer.RealTime();
+      timer.Reset();
     }
   }
 
   if (!UseOnlyEventDigis()) {
+    timer.Start();
     nDigis = addDigisToModules();
     processDigisInModules(nDigis);
     fNrEvents++;
+    timer.Stop();
+    if (DoDebugPrintouts()) {
+      LOG(info) << GetName() << "::Exec : Event Nr: " << fNrEvents;
+      LOG(info) << GetName() << "::Exec : real time=" << timer.RealTime() << " CPU time=" << timer.CpuTime();
+    }
+    fProcessTime += timer.RealTime();
+    timer.Reset();
   }
-
-
-  timer.Stop();
-
-  LOG(debug) << GetName() << "::Exec : real time=" << timer.RealTime() << " CPU time=" << timer.CpuTime();
-
-  fProcessTime += timer.RealTime();
 }
 
 //_____________________________________________________________________
