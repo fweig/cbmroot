@@ -376,7 +376,7 @@ void CbmStack::Print(Option_t*) const {
   LOG(debug) << "Number of primaries        = " << fNPrimaries;
   LOG(debug) << "Total number of particles  = " << fNParticles;
   LOG(debug) << "Number of tracks in output = " << fNTracks;
-  if (FairLogger::GetLogger()->IsLogNeeded(fair::Severity::debug1)) {
+  if (fair::Logger::Logging(fair::Severity::debug1)) {
     for (Int_t iTrack = 0; iTrack < fNTracks; iTrack++) {
       LOG(debug1) << "MCTrack " << iTrack
                   << ((CbmMCTrack*) fTracks->At(iTrack))->ToString();

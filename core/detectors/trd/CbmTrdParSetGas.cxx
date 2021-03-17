@@ -76,7 +76,7 @@ Bool_t CbmTrdParSetGas::getParams(FairParamList* l) {
     ((CbmTrdParModGas*) fModuleMap[moduleId[i]])->SetPidType(value[3]);
     ((CbmTrdParModGas*) fModuleMap[moduleId[i]])->SetFileName(pid);
 
-    //if ( FairLogger::GetLogger()->IsLogNeeded(DEBUG) ) fModuleMap[moduleId[i]]->Print();
+    //if (fair::Logger::Logging(fair::Severity::debug) fModuleMap[moduleId[i]]->Print();
   }
   so->Delete();
   delete so;

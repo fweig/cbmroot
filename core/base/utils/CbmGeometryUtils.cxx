@@ -145,7 +145,7 @@ namespace Cbm {
 
       TGeoVolume* module1 = TGeoVolume::Import(filename, fVolumeName.Data());
 
-      if (gLogger->IsLogNeeded(fair::Severity::debug)) {
+      if (fair::Logger::Logging(fair::Severity::debug)) {
         LOG(debug) << "Information about imported volume:";
         module1->Print();
         LOG(debug);

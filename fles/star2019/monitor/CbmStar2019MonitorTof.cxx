@@ -2049,10 +2049,10 @@ Bool_t CbmStar2019MonitorTof::DoUnpack(const fles::Timeslice& ts,
         gdpbv100::Message mess(ulData);
 
         if (fuRawDataPrintMsgIdx < fuRawDataPrintMsgNb
-            || gLogger->IsLogNeeded(fair::Severity::debug2)) {
+            || fair::Logger::Logging(fair::Severity::debug2)) {
           mess.printDataCout();
           fuRawDataPrintMsgIdx++;
-        }  // if( fuRawDataPrintMsgIdx < fuRawDataPrintMsgNb || gLogger->IsLogNeeded( fair::Severity::debug2 ) )
+        }
 
         // Increment counter for different message types
         // and fill the corresponding histogram
@@ -2444,7 +2444,7 @@ void CbmStar2019MonitorTof::ProcessEpochCycle(uint64_t ulCycleData) {
   uint64_t ulEpochCycleVal = ulCycleData & gdpbv100::kulEpochCycleFieldSz;
 
   if (fuRawDataPrintMsgIdx < fuRawDataPrintMsgNb
-      || gLogger->IsLogNeeded(fair::Severity::debug2)) {
+      || fair::Logger::Logging(fair::Severity::debug2)) {
     LOG(info) << "CbmMcbm2018MonitorTof::ProcessEpochCyle => "
               << Form(" TS %5lu MS %3lu In data 0x%016lX Cycle 0x%016lX",
                       fulCurrentTsIndex,
@@ -2452,7 +2452,7 @@ void CbmStar2019MonitorTof::ProcessEpochCycle(uint64_t ulCycleData) {
                       ulCycleData,
                       ulEpochCycleVal);
     fuRawDataPrintMsgIdx++;
-  }  // if( fuRawDataPrintMsgIdx < fuRawDataPrintMsgNb || gLogger->IsLogNeeded( fair::Severity::debug2 ) )
+  }
 
   for (uint32_t uGet4Index = 0; uGet4Index < fuNrOfGet4PerGdpb; uGet4Index++) {
     fuGet4Id = uGet4Index;

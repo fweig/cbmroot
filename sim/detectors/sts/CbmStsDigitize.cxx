@@ -173,7 +173,7 @@ void CbmStsDigitize::Exec(Option_t* /*opt*/)
   ResetCounters();
 
   // --- For debug: status of analogue buffers
-  if (gLogger->IsLogNeeded(fair::Severity::debug)) {
+  if (fair::Logger::Logging(fair::Severity::debug)) {
     std::cout << std::endl;
     LOG(debug) << GetName() << ": " << BufferStatus();
   }
@@ -199,7 +199,9 @@ void CbmStsDigitize::Exec(Option_t* /*opt*/)
   LOG(debug) << GetName() << ": " << fNofSignalsF + fNofSignalsB << " signals generated ( " << fNofSignalsF << " / "
              << fNofSignalsB << " )";
   // --- For debug: status of analogue buffers
-  if (gLogger->IsLogNeeded(fair::Severity::debug)) { LOG(debug) << GetName() << ": " << BufferStatus(); }
+  if (fair::Logger::Logging(fair::Severity::debug)) {
+    LOG(debug) << GetName() << ": " << BufferStatus();
+  }
 
   // --- Readout time: in stream mode the time of the current event.
   // --- Analogue buffers will be digitised for signals at times smaller than
@@ -212,7 +214,9 @@ void CbmStsDigitize::Exec(Option_t* /*opt*/)
   ProcessAnalogBuffers(readoutTime);
 
   // --- Check status of analogue module buffers
-  if (gLogger->IsLogNeeded(fair::Severity::debug)) { LOG(debug) << GetName() << ": " << BufferStatus(); }
+  if (fair::Logger::Logging(fair::Severity::debug)) {
+    LOG(debug) << GetName() << ": " << BufferStatus();
+  }
 
   // --- Event log
   LOG(info) << left << setw(15) << GetName() << "[" << fixed << setprecision(3) << fTimer.RealTime() << " s]"

@@ -117,7 +117,7 @@ void CbmPsdMC::ConstructGeometry() {
 
   // Add PSD to the geometry
   gGeoManager->GetTopVolume()->AddNode(psdVolume, 0, transformation);
-  if ( gLogger->IsLogNeeded(fair::Severity::debug) ) {
+  if (air::Logger::Logging(fair::Severity::debug)) {
     psdVolume->Print();
     transformation->Print();
   }

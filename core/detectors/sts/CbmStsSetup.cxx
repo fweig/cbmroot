@@ -265,7 +265,7 @@ Bool_t CbmStsSetup::Init(const char* geoFile) {
   Int_t nStations = CreateStations();
   LOG(info) << GetName() << ": Setup contains " << nStations
             << " stations objects.";
-  if (FairLogger::GetLogger()->IsLogNeeded(fair::Severity::debug)) {
+  if (fair::Logger::Logging(fair::Severity::debug)) {
     auto it = fStations.begin();
     while (it != fStations.end()) {
       LOG(debug) << "  " << it->second->ToString();

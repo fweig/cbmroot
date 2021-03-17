@@ -1084,7 +1084,7 @@ Bool_t CbmTofFindTracks::WriteHistos() {
 
 // -----   Public method Exec   --------------------------------------------
 void CbmTofFindTracks::Exec(Option_t* opt) {
-  if (gLogger->IsLogNeeded(fair::Severity::debug)) {
+  if (fair::Logger::Logging(fair::Severity::debug)) {
     fDigiBdfPar->printParams();
   }
   if (!fEventsColl) {

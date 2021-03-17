@@ -415,10 +415,10 @@ Bool_t CbmDeviceUnpackTofStar2018::DoUnpack(const fles::Timeslice& ts,
       ngdpb::Message mess(ulData);
 
       /*
-         if( gLogger->IsLogNeeded(fair::mq::logger::DEBUG) )
+         if(fair::Logger::Logging(fair::Severity::debug)
          {
             mess.printDataCout();
-         } // if( gLogger->IsLogNeeded(fair::mq::logger::DEBUG) )
+         }
 	 */
 
       // Increment counter for different message types

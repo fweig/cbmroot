@@ -680,13 +680,13 @@ Bool_t CbmStar2019EventBuilderEtofAlgo::ProcessMs(const fles::Timeslice& ts,
 void CbmStar2019EventBuilderEtofAlgo::ProcessEpochCycle(uint64_t ulCycleData) {
   ULong64_t ulEpochCycleVal = ulCycleData & gdpbv100::kulEpochCycleFieldSz;
   /*
-   if( fuRawDataPrintMsgIdx < fuRawDataPrintMsgNb || gLogger->IsLogNeeded( fair::Severity::debug2 ) )
+   if( fuRawDataPrintMsgIdx < fuRawDataPrintMsgNb || fair::Logger::Logging(fair::Severity::debug2) )
    {
       LOG(info) << "CbmMcbm2018MonitorTof::ProcessEpochCyle => "
                  << Form( " TS %5d MS %3d In data 0x%016X Cycle 0x%016X",
                            fulCurrentTsIndex, fuCurrentMs, ulCycleData, ulEpochCycleVal );
       fuRawDataPrintMsgIdx ++;
-   } // if( fuRawDataPrintMsgIdx < fuRawDataPrintMsgNb || gLogger->IsLogNeeded( fair::Severity::debug2 ) )
+   }
 */
   if (!(ulEpochCycleVal == fvulCurrentEpochCycle[fuGdpbNr]
         || ulEpochCycleVal == fvulCurrentEpochCycle[fuGdpbNr] + 1)) {
