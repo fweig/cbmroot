@@ -217,7 +217,9 @@ CbmDeviceHitBuilderTof::CbmDeviceHitBuilderTof()
   , fOutHstFileName("")
   , fOutRootFileName("")
   , fCalParFile(NULL)
-  , fOutRootFile(NULL) {}
+  , fOutRootFile(NULL)
+{
+}
 
 CbmDeviceHitBuilderTof::~CbmDeviceHitBuilderTof() {
   if (NULL != fOutRootFile) {

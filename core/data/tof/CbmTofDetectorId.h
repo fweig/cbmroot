@@ -29,12 +29,7 @@ public:
     , fCell(0)
     , fCounterType(0) {};
 
-  CbmTofDetectorInfo(Int_t detsystem,
-                     Int_t smtype,
-                     Int_t smodule,
-                     Int_t counter,
-                     Int_t gap,
-                     Int_t cell)
+  CbmTofDetectorInfo(Int_t detsystem, Int_t smtype, Int_t smodule, Int_t counter, Int_t gap, Int_t cell)
     : fDetectorSystem(detsystem)
     , fSMtype(smtype)
     , fSModule(smodule)
@@ -43,12 +38,7 @@ public:
     , fCell(cell)
     , fCounterType(0) {};
 
-  CbmTofDetectorInfo(ECbmModuleId detsystem,
-                     Int_t smtype,
-                     Int_t smodule,
-                     Int_t counter,
-                     Int_t gap,
-                     Int_t cell)
+  CbmTofDetectorInfo(ECbmModuleId detsystem, Int_t smtype, Int_t smodule, Int_t counter, Int_t gap, Int_t cell)
     : fDetectorSystem(ToIntegralType(detsystem))
     , fSMtype(smtype)
     , fSModule(smodule)

@@ -378,10 +378,8 @@ bool CbmDeviceMcbmEventSink::HandleData(FairMQParts& parts, int /*index*/) {
   else {
     LOG(debug) << "TS direct to storage";
     /// If not consecutive to last TS sent,
-    fmFullTsStorage.emplace_hint(
-      fmFullTsStorage.end(),
-      std::pair<uint64_t, CbmUnpackedTimeslice>(
-        fTsMetaData->GetIndex(), CbmUnpackedTimeslice(parts)));
+    fmFullTsStorage.emplace_hint(fmFullTsStorage.end(), std::pair<uint64_t, CbmUnpackedTimeslice>(
+                                                          fTsMetaData->GetIndex(), CbmUnpackedTimeslice(parts)));
   }  // else of if( fuPrevTsIndex + 1 == fTsMetaData->GetIndex() ||  ( 0 == fuPrevTsIndex && 0 == fulTsCounter && 0 == fTsMetaData->GetIndex() )
   LOG(debug) << "TS metadata checked";
 
