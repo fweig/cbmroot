@@ -72,7 +72,7 @@ using namespace std;
 static Int_t iMess                = 0;
 static Int_t iIndexDut            = 0;
 static Double_t StartAnalysisTime = 0.;
-const Double_t cLight             = 29.9792;  // in cm/ns
+//const Double_t cLight             = 29.9792;  // in cm/ns
 static FairRootManager* rootMgr   = NULL;
 static Int_t iRunId               = 1;
 
@@ -82,14 +82,12 @@ CbmDigiManager* fDigiMan;
 
 CbmDeviceHitBuilderTof::CbmDeviceHitBuilderTof()
   : fNumMessages(0)
-  , fDigi(nullptr)
   , fGeoMan(NULL)
   , fGeoHandler(new CbmTofGeoHandler())
   , fTofId(NULL)
   , fDigiPar(NULL)
   , fChannelInfo(NULL)
   , fDigiBdfPar(NULL)
-  , pDigiIn(NULL)
   , fiNDigiIn(0)
   , fvDigiIn()
   , fEventHeader()
@@ -109,7 +107,6 @@ CbmDeviceHitBuilderTof::CbmDeviceHitBuilderTof()
   , fdEvent(0)
   , fiMaxEvent(-1)
   , fiRunId(111)
-  , fbSwapChannelSides(kFALSE)
   , fiOutputTreeEntry(0)
   , fiFileIndex(0)
   , fStorDigi()
@@ -180,10 +177,7 @@ CbmDeviceHitBuilderTof::CbmDeviceHitBuilderTof()
   , fhTRpcCluMemMulDTLastHits()
   , fhSeldT()
   , dTRef(0.)
-  , fdTRefMax(0.)
   , fCalMode(0)
-  , fCalSel(0)
-  , fCalSmAddr(0)
   , fdCaldXdYMax(0.)
   , fiCluMulMax(0)
   , fTRefMode(0)
@@ -212,23 +206,18 @@ CbmDeviceHitBuilderTof::CbmDeviceHitBuilderTof()
   , fTRefDifMax(0.)
   , fTotMax(0.)
   , fTotMin(0.)
-  , fTotOff(0.)
   , fTotMean(0.)
   , fdDelTofMax(60.)
-  , fTotPreRange(0.)
   , fMaxTimeDist(0.)
   , fdChannelDeadtime(0.)
   , fdMemoryTime(0.)
-  , fdYFitMin(1.E6)
   , fEnableMatchPosScaling(kTRUE)
-  , fEnableAvWalk(kFALSE)
   , fbPs2Ns(kFALSE)
   , fCalParFileName("")
   , fOutHstFileName("")
   , fOutRootFileName("")
   , fCalParFile(NULL)
-  , fOutRootFile(NULL)
-  , fRootEvent(NULL) {}
+  , fOutRootFile(NULL) {}
 
 CbmDeviceHitBuilderTof::~CbmDeviceHitBuilderTof() {
   if (NULL != fOutRootFile) {
@@ -823,7 +812,7 @@ Bool_t CbmDeviceHitBuilderTof::InitCalibParameter() {
       if (NULL != hSvel) {
         gDirectory->cd(oldir->GetPath());
         //TProfile *hSvelmem =
-        (TProfile*) hSvel->Clone();
+        //(TProfile*) hSvel->Clone();
         gDirectory->cd(curdir->GetPath());
       } else {
         LOG(info) << "Svel histogram not found for module type " << iSmType;
@@ -835,7 +824,7 @@ Bool_t CbmDeviceHitBuilderTof::InitCalibParameter() {
         if (NULL != hFparcur) {
           gDirectory->cd(oldir->GetPath());
           //TProfile *hFparmem =
-          (TProfile*) hFparcur->Clone();
+          //(TProfile*) hFparcur->Clone();
           gDirectory->cd(curdir->GetPath());
         }
       }

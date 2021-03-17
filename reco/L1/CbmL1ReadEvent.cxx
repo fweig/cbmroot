@@ -78,7 +78,7 @@ struct TmpHit {  // used for sort Hits before writing in the normal arrays
 };
 
 /// Repack data from Clones Arrays to L1 arrays
-void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, float& TsOverlap, int& FstHitinTs,
+void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, float& /*TsOverlap*/, int& FstHitinTs,
                       bool& newTS, CbmEvent* event)
 {
   if (fVerbose >= 10) cout << "ReadEvent: start." << endl;

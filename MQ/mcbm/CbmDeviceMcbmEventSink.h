@@ -137,7 +137,6 @@ private:
   /// Data storage
   FairRunOnline* fpRun           = nullptr;
   FairRootManager* fpFairRootMgr = nullptr;
-  TFile* fpOutRootFile           = nullptr;
 
   /// Array of histograms to send to the histogram server
   TObjArray fArrayHisto = {};

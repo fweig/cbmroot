@@ -1232,7 +1232,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
   std::sort(SortStsHits.begin(), SortStsHits.end());
   StsIndex.resize(0);
 
-  for (int i = 0; i < SortStsHits.size(); i++) {
+  for (unsigned int i = 0; i < SortStsHits.size(); i++) {
     int j = SortStsHits[i].second;
     StsIndex.push_back(j);
   };
@@ -1484,7 +1484,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
       bool isInOverlap = 0;
 
 
-      for (int i = 0; i < StsHitsLocal.size(); i++) {
+      for (unsigned int i = 0; i < StsHitsLocal.size(); i++) {
         //      if ((*ih) > int(vStsHits.size() - 1)) {
         //         indd = 1;
         //         break;
@@ -1563,9 +1563,9 @@ void CbmL1::Reconstruct(CbmEvent* event)
   //     ReadSTAPPerfData();
   //   };
 
-  for (int iTrack = 0; iTrack < vRTracksCur.size(); iTrack++) {
+  for (unsigned int iTrack = 0; iTrack < vRTracksCur.size(); iTrack++) {
 
-    for (int iHit = 0; iHit < vRTracksCur[iTrack].StsHits.size(); iHit++)
+    for (unsigned int iHit = 0; iHit < vRTracksCur[iTrack].StsHits.size(); iHit++)
       if (fTimesliceMode) vRTracksCur[iTrack].StsHits[iHit] = SortedIndex[vRTracksCur[iTrack].StsHits[iHit]];
 
     vRTracks.push_back(vRTracksCur[iTrack]);

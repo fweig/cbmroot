@@ -381,7 +381,7 @@ bool CbmDeviceMcbmEventSink::HandleData(FairMQParts& parts, int /*index*/) {
     fmFullTsStorage.emplace_hint(
       fmFullTsStorage.end(),
       std::pair<uint64_t, CbmUnpackedTimeslice>(
-        fTsMetaData->GetIndex(), std::move(CbmUnpackedTimeslice(parts))));
+        fTsMetaData->GetIndex(), CbmUnpackedTimeslice(parts)));
   }  // else of if( fuPrevTsIndex + 1 == fTsMetaData->GetIndex() ||  ( 0 == fuPrevTsIndex && 0 == fulTsCounter && 0 == fTsMetaData->GetIndex() )
   LOG(debug) << "TS metadata checked";
 

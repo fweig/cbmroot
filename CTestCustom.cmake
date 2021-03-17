@@ -42,7 +42,6 @@ set(CTEST_CUSTOM_WARNING_EXCEPTION
 
         # -- warnings from our external packages
         "external/flib_dpb"
-#        "external/flib_dpb_20"
         "external/ipc" 
         "include/AnalysisTree"
 

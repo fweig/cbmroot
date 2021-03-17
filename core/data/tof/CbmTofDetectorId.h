@@ -40,7 +40,8 @@ public:
     , fSModule(smodule)
     , fCounter(counter)
     , fGap(gap)
-    , fCell(cell) {};
+    , fCell(cell)
+    , fCounterType(0) {};
 
   CbmTofDetectorInfo(ECbmModuleId detsystem,
                      Int_t smtype,
@@ -53,9 +54,8 @@ public:
     , fSModule(smodule)
     , fCounter(counter)
     , fGap(gap)
-    , fCell(cell) {
-    fCounterType = 0;
-  };
+    , fCell(cell)
+    , fCounterType(0) {};
 
   CbmTofDetectorInfo(ECbmModuleId detsystem,
                      Int_t smtype,

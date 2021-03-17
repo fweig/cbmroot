@@ -427,7 +427,7 @@ Bool_t CbmMcbmSpillFindAlgo::CreateHistograms()
   uint32_t iNbBinsLog = 0;
   /// Parameters are NbDecadesLog, NbStepsDecade, NbSubStepsInStep
   std::vector<double> dBinsLogVector = GenerateLogBinArray(4, 9, 1, iNbBinsLog);
-  double* dBinsLog                   = dBinsLogVector.data();
+  //double* dBinsLog                   = dBinsLogVector.data();
   //   double * dBinsLog = GenerateLogBinArray( 4, 9, 1, iNbBinsLog );
 
   /*******************************************************************/
@@ -450,8 +450,8 @@ Bool_t CbmMcbmSpillFindAlgo::CreateHistograms()
   /*******************************************************************/
 
   /// Canvases
-  Double_t w = 10;
-  Double_t h = 10;
+  //  Double_t w = 10;
+  //  Double_t h = 10;
 
   /*******************************************************************/
   /*

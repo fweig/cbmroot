@@ -113,7 +113,6 @@ private:
                                                "tofdigis",
                                                "tofhits",
                                                "syscmd"};
-  CbmTofDigi* fDigi;
 
   TGeoManager* fGeoMan;
   // ToF geometry variables
@@ -123,8 +122,6 @@ private:
   CbmTofCell* fChannelInfo;
   CbmTofDigiBdfPar* fDigiBdfPar;
   // Input variables
-  TClonesArray* fTofDigisColl;  // TOF Digis
-  CbmTofDigi* pDigiIn;
   Int_t fiNDigiIn;
   std::vector<CbmTofDigi> fvDigiIn;
   std::vector<int> fEventHeader;
@@ -133,10 +130,8 @@ private:
   // Output variables
   // TClonesArray* fTofCalDigisColl;      // Calibrated TOF Digis
   std::vector<CbmTofDigi>* fTofCalDigiVec    = nullptr;  // Calibrated TOF Digis
-  std::vector<CbmTofDigi>* fTofCalDigiVecOut = nullptr;  // Calibrated TOF Digis
   TClonesArray* fTofHitsColl;                            // TOF hits
   TClonesArray* fTofDigiMatchColl;                       // TOF Digi Links
-  TClonesArray* fTofCalDigisCollOut;                     // Calibrated TOF Digis
   TClonesArray* fTofHitsCollOut;                         // TOF hits
   TClonesArray* fTofDigiMatchCollOut;                    // TOF Digi Links
   Int_t fiNbHits;  // Index of the CbmTofHit TClonesArray
@@ -158,7 +153,6 @@ private:
   Int_t fiMaxEvent;
   Int_t fiRunId;
 
-  Bool_t fbSwapChannelSides;
   Int_t fiOutputTreeEntry;
   Int_t fiFileIndex;
 
@@ -264,10 +258,7 @@ private:
 
   // Calibration control variables
   Double_t dTRef;
-  Double_t fdTRefMax;
   Int_t fCalMode;
-  Int_t fCalSel;
-  Int_t fCalSmAddr;
   Double_t fdCaldXdYMax;
   Int_t fiCluMulMax;
   Int_t fTRefMode;
@@ -304,17 +295,13 @@ private:
   Double_t fTRefDifMax;
   Double_t fTotMax;
   Double_t fTotMin;
-  Double_t fTotOff;
   Double_t fTotMean;
   Double_t fdDelTofMax;
-  Double_t fTotPreRange;
   Double_t fMaxTimeDist;
   Double_t fdChannelDeadtime;
   Double_t fdMemoryTime;
-  Double_t fdYFitMin;
 
   Bool_t fEnableMatchPosScaling;
-  Bool_t fEnableAvWalk;
   Bool_t fbPs2Ns;  // convert input raw digis from ps to ns
 
   TString fCalParFileName;  // name of the file name with Calibration Parameters
@@ -323,7 +310,6 @@ private:
   TString fOutRootFileName;  // name of the output file name with Digis & Hits
   TFile* fCalParFile;        // pointer to Calibration Parameter file
   TFile* fOutRootFile;       // pointer to root output file
-  TTree* fRootEvent;         // pointer to root event tree
 };
 
 // special class to expose protected TMessage constructor

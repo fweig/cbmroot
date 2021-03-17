@@ -1848,7 +1848,6 @@ void CbmMcbm2018MonitorTofPulser::UpdateNormedDnlInl()
   TDirectory* oldDir = gDirectory;
 
   gROOT->cd();
-  UInt_t uHistoFeeIdx = 0;
   TF1* constantVal    = new TF1("constant", "1", 0, gdpbv100::kdFtBinsNb);
   for (UInt_t uFeeNrInSys = 0; uFeeNrInSys < fuNrOfFeePerGdpb * fuNrOfGdpbs; uFeeNrInSys++) {
     fhFeeFtNormDnl[uFeeNrInSys]->Reset();
