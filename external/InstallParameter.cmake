@@ -1,6 +1,6 @@
-set(PARAMETER_VERSION 68f0b16c6edace4faaa09f460682173772081976)
+set(PARAMETER_VERSION cd3fe7c92514188ed56c78dab5ce1baff77b41a7)
 
-set(PARAMETER_SRC_URL "https://git.cbm.gsi.de/CbmSoft/cbmroot_parameter.git")
+set(PARAMETER_SRC_URL "https://git.cbm.gsi.de/e.clerkin/cbmroot_parameter.git")
 
 download_project_if_needed(PROJECT         Parameter_source
                            GIT_REPOSITORY  ${PARAMETER_SRC_URL}
