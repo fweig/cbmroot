@@ -79,6 +79,7 @@ public:
     kMLA,      // pdg mass of lambdas
     kMPair,    // pdg mass of pair
     kEbeam,    // beam energy
+    kThermalScaling,    // scaling for uniform mass distributions
     kConstMax,
     // Hit specific variables
     kPosX = kConstMax,  // X position [cm]
@@ -196,6 +197,7 @@ public:
     kMuchChi2NDF,    // chi2/ndf MUCH
     // technical variables
     kRndmTrack,  // randomly created number (used to apply special selection cuts)
+    kPRes,  // momentum resolution
     kTrackMax,
 
     // Pair specific variables
@@ -220,8 +222,22 @@ public:
     kCos2PhiCS,  // Cosine of 2*phi in mother's rest frame in the Collins-Soper picture
     kCosTilPhiCS,  // Shifted phi depending on kThetaCS
     kPsiPair,      // phi in mother's rest frame in Collins-Soper picture
-    kStsMvdFirstDaughter,   // number of STS and MVD hits
+    kStsMvdFirstDaughter,   // number of STS and MVD hits of the first daughter particle
     kStsMvdSecondDaughter,  // number of STS and MVD hits
+    kStsMvdTrdFirstDaughter,   // number of STS and MVD hitsof the first daughter particle
+    kStsMvdTrdSecondDaughter,  // number of STS and MVD hits
+    kStsMvdRichFirstDaughter,   // number of STS and MVD hitsof the first daughter particle
+    kStsMvdRichSecondDaughter,  // number of STS and MVD hits
+    kStsFirstDaughter,   // number of STS hits of the first daughter particle
+    kStsSecondDaughter,  // number of STS hits of the second daughter particle
+    kMvdFirstDaughter,   // number of MVD hits of the first daughter particle
+    kMvdSecondDaughter,  // number of MVD hits of the second daughter particle
+    kTrdFirstDaughter,   // number of TRD hits of the first daughter particle
+    kTrdSecondDaughter,  // number of TRD hits of the second daughter particle
+    kRichFirstDaughter,   // number of RICH hits of the first daughter particle
+    kRichSecondDaughter,  // number of RICH hits of the second daughter particle
+    kStsHitDist, // distance to the closest hit in the first sts station
+    kMvdHitDist, // distance to the closest hit in the first mvd station
     kPhivPair,  // angle between ee plane and the magnetic field (can be useful for conversion rejection)
 
     kLegDist,         // distance of the legs
@@ -738,6 +754,10 @@ PairAnalysisVarManager::FillVarPairAnalysisTrack(const PairAnalysisTrack* track,
   // mc
   Fill(track->GetMCTrack(), values);  // this contains particle infos as well
 
+  if(track->GetMCTrack()){
+    values[kPRes] = TMath::Abs(values[kP]-track->GetMCTrack()->GetP())  / track->GetMCTrack()->GetP();
+  }
+  
   if (track->GetTrackMatch(
         ECbmModuleId::
           kTrd)) {  // track match specific (accessors via CbmTrackMatchNew)
@@ -1253,166 +1273,263 @@ PairAnalysisVarManager::FillVarPairAnalysisPair(const PairAnalysisPair* pair,
   /* values[kPdgCodeGrandMother]=-1; */
   values[kWeight] = pair->GetWeight();
 
+  if(pair->GetFirstDaughter()->GetMCTrack()){
+    PairAnalysisMC *mc = PairAnalysisMC::Instance();
+    if (!mc->HasMC()) return;
+    
+    // Set
+    CbmMCTrack* mother=0x0;
+    Int_t mLabel1 = pair->GetFirstDaughter()->GetMCTrack()->GetMotherId();
+    mother = mc->GetMCTrackFromMCEvent(mLabel1);
+    Int_t motherCode      = (mother ? mother->GetPdgCode() : -99999. );
+    Int_t secondMother      = -99999.;
+    Int_t mLabel2 = -1;
+    if(pair->GetSecondDaughter()->GetMCTrack()){
+      CbmMCTrack* sm=0x0;
+      mLabel2 = pair->GetSecondDaughter()->GetMCTrack()->GetMotherId();
+      sm = mc->GetMCTrackFromMCEvent(mLabel2);
+      secondMother     = (sm ? sm->GetPdgCode() : -99999. );
+    }
+
+    if( values[kThermalScaling] == 3){
+      Double_t mass[170] = {0.0195,0.0395,0.0595,0.0795,0.0995,0.1195,0.1395,0.1595,0.1795,0.1995,
+      			    0.2195,0.2395,0.2595,0.2795,0.2995,0.3195,0.3395,0.3595,0.3795,0.3995,
+      			    0.4195,0.4395,0.4595,0.4795,0.4995,0.5195,0.5395,0.5595,0.5795,0.5995,
+      			    0.6195,0.6395,0.6595,0.6795,0.6995,0.7195,0.7395,0.7595,0.7795,0.7995,
+      			    0.8195,0.8395,0.8595,0.8795,0.8995,0.9195,0.9395,0.9595,0.9795,0.9995,
+      			    1.0195,1.0395,1.0595,1.0795,1.0995,1.1195,1.1395,1.1595,1.1795,1.1995,
+      			    1.2195,1.2395,1.2595,1.2795,1.2995,1.3195,1.3395,1.3595,1.3795,1.3995,
+      			    1.4195,1.4395,1.4595,1.4795,1.4995,1.5195,1.5395,1.5595,1.5795,1.5995,
+      			    1.6195,1.6395,1.6595,1.6795,1.6995,1.7195,1.7395,1.7595,1.7795,1.7995,
+      			    1.8195,1.8395,1.8595,1.8795,1.8995,1.9195,1.9395,1.9595,1.9795,1.9995,
+      			    2.0195,2.0395,2.0595,2.0795,2.0995,2.1195,2.1395,2.1595,2.1795,2.1995,
+      			    2.2195,2.2395,2.2595,2.2795,2.2995,2.3195,2.3395,2.3595,2.3795,2.3995,
+      			    2.4195,2.4395,2.4595,2.4795,2.4995,2.5195,2.5395,2.5595,2.5795,2.5995,
+      			    2.6195,2.6395,2.6595,2.6795,2.6995,2.7195,2.7395,2.7595,2.7795,2.7995,
+      			    2.8195,2.8395,2.8595,2.8795,2.8995,2.9195,2.9395,2.9595,2.9795,2.9995,
+      			    3.0195,3.0395,3.0595,3.0795,3.0995,3.1195,3.1395,3.1595,3.1795,3.1995,
+      			    3.2195,3.2395,3.2595,3.2795,3.2995,3.3195,3.3395,3.3595,3.3795,3.3995};
+
+      if(motherCode == 99009011 || secondMother == 99009011){
+	//inmed 12AGeV
+	Double_t scale[170] = {41.706,18.918,11.465,8.4388,5.9176,4.9025,3.8087,3.0387,2.5856,2.1142,
+			       1.7603,1.5327,1.28,1.1579,1.0367,0.89355,0.81317,0.71582,0.65863,0.59678,
+			       0.53702,0.45378,0.41238,0.37502,0.33593,0.28791,0.26352,0.23939,0.21167,0.19479,
+			       0.19204,0.17492,0.15811,0.15479,0.14935,0.13803,0.1354,0.11993,0.1046,0.08226,
+			       0.073183,0.055433,0.043467,0.033975,0.028025,0.021504,0.016863,0.014108,0.01094,0.0088095,
+			       0.007324,0.0057162,0.0046817,0.0037459,0.0030017,0.0024459,0.0020671,0.0016089,0.0013754,0.0011223,
+			       0.00096256,0.00081647,0.00072656,0.00060776,0.00051243,0.00045705,0.00039636,0.00036259,0.00033248,0.0002953,
+			       0.00027328,0.00023776,0.00022163,0.00019852,0.000186,0.00016846,0.00015469,0.00014169,0.00013343,0.00011594,
+			       0.00010722,0.00010205,9.1907e-05,8.3718e-05,7.5457e-05,6.7192e-05,6.2202e-05,5.7372e-05,4.8314e-05,4.5502e-05,
+			       4.1334e-05,3.7429e-05,3.2131e-05,3.0103e-05,2.6125e-05,2.3601e-05,2.1167e-05,1.94e-05,1.7025e-05,1.5496e-05,
+			       1.3704e-05,1.1866e-05,1.1135e-05,9.8842e-06,8.9101e-06,7.9225e-06,7.0706e-06,6.3536e-06,5.3786e-06,4.7179e-06,
+			       4.2128e-06,4.0015e-06,3.4118e-06,3.1864e-06,2.734e-06,2.3844e-06,2.173e-06,1.8774e-06,1.6468e-06,1.501e-06,
+			       1.3597e-06,1.2113e-06,1.0384e-06,9.4105e-07,8.4223e-07,7.434e-07,6.5049e-07,5.8824e-07,5.3603e-07,4.6756e-07,
+			       4.1173e-07,3.5872e-07,3.2764e-07,2.9889e-07,2.5989e-07,2.219e-07,1.9468e-07,1.816e-07,1.5707e-07,1.3565e-07,
+			       1.2619e-07,1.0919e-07,1.0071e-07,8.4632e-08,7.6459e-08,6.829e-08,6.2046e-08,5.5335e-08,4.5937e-08,4.2426e-08,
+			       3.567e-08,3.4051e-08,2.9627e-08,2.5249e-08,2.2767e-08,2.1054e-08,1.7873e-08,1.574e-08,1.3713e-08,1.23e-08,
+			       1.1045e-08,9.5536e-09,8.5859e-09,7.7217e-09,6.9958e-09,6.0992e-09,5.3453e-09,4.7659e-09,4.3313e-09,3.6575e-09};
+	TSpline3 *weight = new TSpline3("inmedwghts",mass,scale,170);
+	Double_t corrw = weight->Eval(values[PairAnalysisVarManager::kM]);
+	values[kWeight]*=corrw;
+	delete weight;
+      }
+      if(motherCode == 99009111 || secondMother == 99009111){      
+	Double_t scale[170] = {39.496,17.961,11.024,8.2093,5.8331,4.8995,3.8612,3.1258,2.7006,2.2465,
+			       1.908,1.699,1.4435,1.3253,1.2059,1.049,0.96753,0.86685,0.81407,0.75959,
+			       0.70663,0.61951,0.58586,0.55534,0.51902,0.46377,0.4415,0.41412,0.37414,0.34883,
+			       0.34494,0.31141,0.2762,0.26331,0.24693,0.22286,0.21697,0.1972,0.1841,0.16097,
+			       0.16352,0.14345,0.13096,0.11911,0.11399,0.10111,0.0913,0.08764,0.077745,0.071417,
+			       0.067561,0.05987,0.055543,0.050193,0.045244,0.04128,0.03898,0.03365,0.031622,0.028217,
+			       0.026215,0.023919,0.022648,0.019915,0.017524,0.016145,0.014357,0.013362,0.012368,0.011036,
+			       0.010198,0.0088275,0.0081762,0.0072697,0.00675,0.0060424,0.0054788,0.0049588,0.0046174,0.0039685,
+			       0.00363,0.0034204,0.0030534,0.0027606,0.0024723,0.0021893,0.0020174,0.0018545,0.0015584,0.0014661,
+			       0.0013315,0.0012065,0.0010375,0.00097456,0.00084865,0.00076982,0.00069371,0.00063931,0.00056442,0.00051712,
+			       0.00046054,0.00040174,0.00037996,0.00034009,0.00030921,0.00027738,0.00024981,0.00022659,0.00019366,0.00017153,
+			       0.00015469,0.00014841,0.00012783,0.00012061,0.00010456,9.2145e-05,8.4856e-05,7.4087e-05,6.5675e-05,6.0496e-05,
+			       5.5386e-05,4.9865e-05,4.3202e-05,3.9571e-05,3.5821e-05,3.201e-05,2.8322e-05,2.5886e-05,2.384e-05,2.1016e-05,
+			       1.8703e-05,1.6467e-05,1.5199e-05,1.4011e-05,1.2311e-05,1.0621e-05,9.4155e-06,8.874e-06,7.7548e-06,6.7662e-06,
+			       6.3589e-06,5.5585e-06,5.1791e-06,4.3965e-06,4.012e-06,3.6195e-06,3.3215e-06,2.9918e-06,2.5084e-06,2.3397e-06,
+			       1.9865e-06,1.915e-06,1.6826e-06,1.448e-06,1.3183e-06,1.231e-06,1.0551e-06,9.3811e-07,8.2511e-07,7.4714e-07,
+			       6.7735e-07,5.9142e-07,5.3654e-07,4.8709e-07,4.4543e-07,3.9199e-07,3.4674e-07,3.1203e-07,2.862e-07,2.4391e-07};
+	TSpline3 *weight = new TSpline3("inmedwghts",mass,scale,170);
+	Double_t corrw = weight->Eval(values[PairAnalysisVarManager::kM]);
+	values[kWeight]*=corrw;
+	delete weight;
+      }
+    }    
+
+    //inmed 3.42AGeV
+    if(values[kThermalScaling] == 7){
+      if(motherCode == 99009011 || secondMother == 99009011){
+	Double_t mass[125] = {0.0195,0.0395,0.0595,0.0795,0.0995,0.1195,0.1395,0.1595,0.1795,0.1995,
+			      0.2195,0.2395,0.2595,0.2795,0.2995,0.3195,0.3395,0.3595,0.3795,0.3995,
+			      0.4195,0.4395,0.4595,0.4795,0.4995,0.5195,0.5395,0.5595,0.5795,0.5995,
+			      0.6195,0.6395,0.6595,0.6795,0.6995,0.7195,0.7395,0.7595,0.7795,0.7995,
+			      0.8195,0.8395,0.8595,0.8795,0.8995,0.9195,0.9395,0.9595,0.9795,0.9995,
+			      1.0195,1.0395,1.0595,1.0795,1.0995,1.1195,1.1395,1.1595,1.1795,1.1995,
+			      1.2195,1.2395,1.2595,1.2795,1.2995,1.3195,1.3395,1.3595,1.3795,1.3995,
+			      1.4195,1.4395,1.4595,1.4795,1.4995,1.5195,1.5395,1.5595,1.5795,1.5995,
+			      1.6195,1.6395,1.6595,1.6795,1.6995,1.7195,1.7395,1.7595,1.7795,1.7995,
+			      1.8195,1.8395,1.8595,1.8795,1.8995,1.9195,1.9395,1.9595,1.9795,1.9995,
+			      2.0195,2.0395,2.0595,2.0795,2.0995,2.1195,2.1395,2.1595,2.1795,2.1995,
+			      2.2195,2.2395,2.2595,2.2795,2.2995,2.3195,2.3395,2.3595,2.3795,2.3995,
+			      2.4195,2.4395,2.4595,2.4795,2.4995};
+
+	Double_t scale[125] = {28.6773,13.4566,8.3913,5.74418,4.17493,3.14912,2.43708,1.92407,1.54338,1.25305,
+			       1.02766,0.850101,0.713646,0.605398,0.516448,0.445862,0.385488,0.333449,0.288725,0.24875,
+			       0.213922,0.183566,0.157146,0.134313,0.1147,0.0980171,0.0839555,0.0724097,0.0630874,0.0554402,
+			       0.0492184,0.0442134,0.0401273,0.0367131,0.0336863,0.0308175,0.0278289,0.0244174,0.0206308,0.016819,
+			       0.013354,0.0104392,0.00810048,0.00626932,0.0048523,0.00376027,0.00291833,0.00226873,0.00176674,0.00137874,
+			       0.001079,0.000847372,0.000668582,0.000530747,0.000424646,0.000342751,0.000278383,0.000228662,0.000190229,0.000159555,
+			       0.00013539,0.000115883,0.000100173,8.7451e-05,7.6779e-05,6.78659e-05,6.0253e-05,5.37112e-05,4.80505e-05,4.30558e-05,
+			       3.86565e-05,3.47273e-05,3.11767e-05,2.79639e-05,2.50662e-05,2.24603e-05,2.01029e-05,1.79612e-05,1.60183e-05,1.42617e-05,
+			       1.26788e-05,1.1252e-05,9.96625e-06,8.81064e-06,7.7753e-06,6.85058e-06,6.02588e-06,5.29153e-06,4.63923e-06,4.06136e-06,
+			       3.55071e-06,3.1002e-06,2.70338e-06,2.35454e-06,2.04847e-06,1.78043e-06,1.54601e-06,1.34124e-06,1.16263e-06,1.00705e-06,
+			       8.71694e-07,7.54053e-07,6.51895e-07,5.63264e-07,4.86443e-07,4.19912e-07,3.6233e-07,3.12522e-07,2.69465e-07,2.32265e-07,
+			       2.00144e-07,1.72419e-07,1.48498e-07,1.27867e-07,1.10079e-07,9.47489e-08,8.15401e-08,7.01617e-08,6.03625e-08,5.19253e-08,
+			       4.46624e-08,3.84113e-08,3.3032e-08,2.84035e-08,2.44235e-08,};
+	TSpline3 *weight = new TSpline3("inmedwghts",mass,scale,125);
+	Double_t corrw = weight->Eval(values[PairAnalysisVarManager::kM]);
+	values[kWeight]*=corrw;
+	delete weight;
+      }
+    }//end thermal 7
+  }//end pair->GetMC ...
+
+  
 
   if (pair->GetFirstDaughter() && pair->GetFirstDaughter()->GetStsTrack()) {
     values[kStsMvdFirstDaughter] =
       pair->GetFirstDaughter()->GetStsTrack()->GetNofStsHits()
       + pair->GetFirstDaughter()->GetStsTrack()->GetNofMvdHits();
-    //    std::cout<<pair->GetFirstDaughter()->GetStsTrack()->GetNofMvdHits()<<std::endl;
   }
   if (pair->GetSecondDaughter() && pair->GetSecondDaughter()->GetStsTrack())
     values[kStsMvdSecondDaughter] =
       pair->GetSecondDaughter()->GetStsTrack()->GetNofStsHits()
       + pair->GetSecondDaughter()->GetStsTrack()->GetNofMvdHits();
 
+  
+  if (pair->GetFirstDaughter() && pair->GetFirstDaughter()->GetStsTrack()) {
+    values[kStsMvdFirstDaughter] =  pair->GetFirstDaughter()->GetStsTrack()->GetNofStsHits() + pair->GetFirstDaughter()->GetStsTrack()->GetNofMvdHits();
+    values[kStsFirstDaughter] =  pair->GetFirstDaughter()->GetStsTrack()->GetNofStsHits();
+    values[kMvdFirstDaughter] =  pair->GetFirstDaughter()->GetStsTrack()->GetNofMvdHits();
 
-  if (pair->GetFirstDaughter()->GetMCTrack()) {
-
-    PairAnalysisMC* mc = PairAnalysisMC::Instance();
-    if (!mc->HasMC()) return;
-
-    // Set
-    CbmMCTrack* mother = 0x0;
-    Int_t mLabel1      = pair->GetFirstDaughter()->GetMCTrack()->GetMotherId();
-    mother             = mc->GetMCTrackFromMCEvent(mLabel1);
-
-    Int_t motherCode = (mother ? mother->GetPdgCode() : -99999.);
-
-    Int_t secondMother = -99999.;
-    if (pair->GetSecondDaughter()->GetMCTrack()) {
-      CbmMCTrack* sm = 0x0;
-      Int_t mLabel2  = pair->GetSecondDaughter()->GetMCTrack()->GetMotherId();
-      sm             = mc->GetMCTrackFromMCEvent(mLabel2);
-      secondMother   = (sm ? sm->GetPdgCode() : -99999.);
-
-
-      //      std::cout<<pair->GetFirstDaughter()->GetMCTrack()->GetNPoints(ECbmModuleId::kSts)<<"    " << pair->GetSecondDaughter()->GetMCTrack()->GetNPoints(ECbmModuleId::kSts)<<std::endl;
-
-      /* if(mother){ */
-      /* 	if(  (pair->GetFirstDaughter()->GetMCTrack()->GetPdgCode() == 11 &&  pair->GetSecondDaughter()->GetMCTrack()->GetPdgCode() == -11) || */
-      /* 	     (pair->GetFirstDaughter()->GetMCTrack()->GetPdgCode() == -11 && pair->GetSecondDaughter()->GetMCTrack()->GetPdgCode() == 11) )      std::cout<<motherCode<<"    " << secondMother<<"   "<< pair->GetFirstDaughter()->GetMCTrack()->GetGeantProcessId()<<"   "<< pair->GetSecondDaughter()->GetMCTrack()->GetGeantProcessId()<<std::endl; */
-      /* } */
+    if(pair->GetFirstDaughter()->GetTrdTrack()){
+      values[kStsMvdTrdFirstDaughter] =  pair->GetFirstDaughter()->GetStsTrack()->GetNofStsHits() + pair->GetFirstDaughter()->GetStsTrack()->GetNofMvdHits() + pair->GetFirstDaughter()->GetTrdTrack()->GetNofHits();
+      values[kTrdFirstDaughter] =  pair->GetFirstDaughter()->GetTrdTrack()->GetNofHits();
     }
-
-    if (motherCode == 99009011 || secondMother == 99009011
-        || motherCode == 99009911 || secondMother == 99009911) {
-      //if (motherCode == 99009011 || secondMother == 99009011) {
-      Double_t mass[170] = {
-        0.0195, 0.0395, 0.0595, 0.0795, 0.0995, 0.1195, 0.1395, 0.1595, 0.1795,
-        0.1995, 0.2195, 0.2395, 0.2595, 0.2795, 0.2995, 0.3195, 0.3395, 0.3595,
-        0.3795, 0.3995, 0.4195, 0.4395, 0.4595, 0.4795, 0.4995, 0.5195, 0.5395,
-        0.5595, 0.5795, 0.5995, 0.6195, 0.6395, 0.6595, 0.6795, 0.6995, 0.7195,
-        0.7395, 0.7595, 0.7795, 0.7995, 0.8195, 0.8395, 0.8595, 0.8795, 0.8995,
-        0.9195, 0.9395, 0.9595, 0.9795, 0.9995, 1.0195, 1.0395, 1.0595, 1.0795,
-        1.0995, 1.1195, 1.1395, 1.1595, 1.1795, 1.1995, 1.2195, 1.2395, 1.2595,
-        1.2795, 1.2995, 1.3195, 1.3395, 1.3595, 1.3795, 1.3995, 1.4195, 1.4395,
-        1.4595, 1.4795, 1.4995, 1.5195, 1.5395, 1.5595, 1.5795, 1.5995, 1.6195,
-        1.6395, 1.6595, 1.6795, 1.6995, 1.7195, 1.7395, 1.7595, 1.7795, 1.7995,
-        1.8195, 1.8395, 1.8595, 1.8795, 1.8995, 1.9195, 1.9395, 1.9595, 1.9795,
-        1.9995, 2.0195, 2.0395, 2.0595, 2.0795, 2.0995, 2.1195, 2.1395, 2.1595,
-        2.1795, 2.1995, 2.2195, 2.2395, 2.2595, 2.2795, 2.2995, 2.3195, 2.3395,
-        2.3595, 2.3795, 2.3995, 2.4195, 2.4395, 2.4595, 2.4795, 2.4995, 2.5195,
-        2.5395, 2.5595, 2.5795, 2.5995, 2.6195, 2.6395, 2.6595, 2.6795, 2.6995,
-        2.7195, 2.7395, 2.7595, 2.7795, 2.7995, 2.8195, 2.8395, 2.8595, 2.8795,
-        2.8995, 2.9195, 2.9395, 2.9595, 2.9795, 2.9995, 3.0195, 3.0395, 3.0595,
-        3.0795, 3.0995, 3.1195, 3.1395, 3.1595, 3.1795, 3.1995, 3.2195, 3.2395,
-        3.2595, 3.2795, 3.2995, 3.3195, 3.3395, 3.3595, 3.3795, 3.3995};
-      Double_t scale[170] = {
-        41.706,     18.918,     11.465,     8.4388,     5.9176,     4.9025,
-        3.8087,     3.0387,     2.5856,     2.1142,     1.7603,     1.5327,
-        1.28,       1.1579,     1.0367,     0.89355,    0.81317,    0.71582,
-        0.65863,    0.59678,    0.53702,    0.45378,    0.41238,    0.37502,
-        0.33593,    0.28791,    0.26352,    0.23939,    0.21167,    0.19479,
-        0.19204,    0.17492,    0.15811,    0.15479,    0.14935,    0.13803,
-        0.1354,     0.11993,    0.1046,     0.08226,    0.073183,   0.055433,
-        0.043467,   0.033975,   0.028025,   0.021504,   0.016863,   0.014108,
-        0.01094,    0.0088095,  0.007324,   0.0057162,  0.0046817,  0.0037459,
-        0.0030017,  0.0024459,  0.0020671,  0.0016089,  0.0013754,  0.0011223,
-        0.00096256, 0.00081647, 0.00072656, 0.00060776, 0.00051243, 0.00045705,
-        0.00039636, 0.00036259, 0.00033248, 0.0002953,  0.00027328, 0.00023776,
-        0.00022163, 0.00019852, 0.000186,   0.00016846, 0.00015469, 0.00014169,
-        0.00013343, 0.00011594, 0.00010722, 0.00010205, 9.1907e-05, 8.3718e-05,
-        7.5457e-05, 6.7192e-05, 6.2202e-05, 5.7372e-05, 4.8314e-05, 4.5502e-05,
-        4.1334e-05, 3.7429e-05, 3.2131e-05, 3.0103e-05, 2.6125e-05, 2.3601e-05,
-        2.1167e-05, 1.94e-05,   1.7025e-05, 1.5496e-05, 1.3704e-05, 1.1866e-05,
-        1.1135e-05, 9.8842e-06, 8.9101e-06, 7.9225e-06, 7.0706e-06, 6.3536e-06,
-        5.3786e-06, 4.7179e-06, 4.2128e-06, 4.0015e-06, 3.4118e-06, 3.1864e-06,
-        2.734e-06,  2.3844e-06, 2.173e-06,  1.8774e-06, 1.6468e-06, 1.501e-06,
-        1.3597e-06, 1.2113e-06, 1.0384e-06, 9.4105e-07, 8.4223e-07, 7.434e-07,
-        6.5049e-07, 5.8824e-07, 5.3603e-07, 4.6756e-07, 4.1173e-07, 3.5872e-07,
-        3.2764e-07, 2.9889e-07, 2.5989e-07, 2.219e-07,  1.9468e-07, 1.816e-07,
-        1.5707e-07, 1.3565e-07, 1.2619e-07, 1.0919e-07, 1.0071e-07, 8.4632e-08,
-        7.6459e-08, 6.829e-08,  6.2046e-08, 5.5335e-08, 4.5937e-08, 4.2426e-08,
-        3.567e-08,  3.4051e-08, 2.9627e-08, 2.5249e-08, 2.2767e-08, 2.1054e-08,
-        1.7873e-08, 1.574e-08,  1.3713e-08, 1.23e-08,   1.1045e-08, 9.5536e-09,
-        8.5859e-09, 7.7217e-09, 6.9958e-09, 6.0992e-09, 5.3453e-09, 4.7659e-09,
-        4.3313e-09, 3.6575e-09};
-      TSpline3* weight = new TSpline3("inmedwghts", mass, scale, 170);
-      Double_t corrw   = weight->Eval(values[PairAnalysisVarManager::kM]);
-      values[kWeight] *= corrw;
-      delete weight;
+    else{
+      values[kStsMvdTrdFirstDaughter] =  0;
+      values[kTrdFirstDaughter] =  0;
     }
+    
+    if(pair->GetFirstDaughter()->GetRichRing()){
+      values[kStsMvdRichFirstDaughter] =  pair->GetFirstDaughter()->GetStsTrack()->GetNofStsHits() + pair->GetFirstDaughter()->GetStsTrack()->GetNofMvdHits() + 1;
+      values[kRichFirstDaughter]=  pair->GetFirstDaughter()->GetRichRing()->GetNofHits();
+    }
+    else{
+      values[kStsMvdRichFirstDaughter] =  0;
+      values[kRichFirstDaughter]=  0;
+    }
+  }
+  if (pair->GetSecondDaughter() && pair->GetSecondDaughter()->GetStsTrack()){
+    values[kStsMvdSecondDaughter] = pair->GetSecondDaughter()->GetStsTrack()->GetNofStsHits() + pair->GetSecondDaughter()->GetStsTrack()->GetNofMvdHits();
 
-    if (motherCode == 99009111 || secondMother == 99009111) {
-      //    if(motherCode == 99009911 || secondMother == 99009911){
-      Double_t mass[170] = {
-        0.0195, 0.0395, 0.0595, 0.0795, 0.0995, 0.1195, 0.1395, 0.1595, 0.1795,
-        0.1995, 0.2195, 0.2395, 0.2595, 0.2795, 0.2995, 0.3195, 0.3395, 0.3595,
-        0.3795, 0.3995, 0.4195, 0.4395, 0.4595, 0.4795, 0.4995, 0.5195, 0.5395,
-        0.5595, 0.5795, 0.5995, 0.6195, 0.6395, 0.6595, 0.6795, 0.6995, 0.7195,
-        0.7395, 0.7595, 0.7795, 0.7995, 0.8195, 0.8395, 0.8595, 0.8795, 0.8995,
-        0.9195, 0.9395, 0.9595, 0.9795, 0.9995, 1.0195, 1.0395, 1.0595, 1.0795,
-        1.0995, 1.1195, 1.1395, 1.1595, 1.1795, 1.1995, 1.2195, 1.2395, 1.2595,
-        1.2795, 1.2995, 1.3195, 1.3395, 1.3595, 1.3795, 1.3995, 1.4195, 1.4395,
-        1.4595, 1.4795, 1.4995, 1.5195, 1.5395, 1.5595, 1.5795, 1.5995, 1.6195,
-        1.6395, 1.6595, 1.6795, 1.6995, 1.7195, 1.7395, 1.7595, 1.7795, 1.7995,
-        1.8195, 1.8395, 1.8595, 1.8795, 1.8995, 1.9195, 1.9395, 1.9595, 1.9795,
-        1.9995, 2.0195, 2.0395, 2.0595, 2.0795, 2.0995, 2.1195, 2.1395, 2.1595,
-        2.1795, 2.1995, 2.2195, 2.2395, 2.2595, 2.2795, 2.2995, 2.3195, 2.3395,
-        2.3595, 2.3795, 2.3995, 2.4195, 2.4395, 2.4595, 2.4795, 2.4995, 2.5195,
-        2.5395, 2.5595, 2.5795, 2.5995, 2.6195, 2.6395, 2.6595, 2.6795, 2.6995,
-        2.7195, 2.7395, 2.7595, 2.7795, 2.7995, 2.8195, 2.8395, 2.8595, 2.8795,
-        2.8995, 2.9195, 2.9395, 2.9595, 2.9795, 2.9995, 3.0195, 3.0395, 3.0595,
-        3.0795, 3.0995, 3.1195, 3.1395, 3.1595, 3.1795, 3.1995, 3.2195, 3.2395,
-        3.2595, 3.2795, 3.2995, 3.3195, 3.3395, 3.3595, 3.3795, 3.3995};
-      Double_t scale[170] = {
-        39.496,     17.961,     11.024,     8.2093,     5.8331,     4.8995,
-        3.8612,     3.1258,     2.7006,     2.2465,     1.908,      1.699,
-        1.4435,     1.3253,     1.2059,     1.049,      0.96753,    0.86685,
-        0.81407,    0.75959,    0.70663,    0.61951,    0.58586,    0.55534,
-        0.51902,    0.46377,    0.4415,     0.41412,    0.37414,    0.34883,
-        0.34494,    0.31141,    0.2762,     0.26331,    0.24693,    0.22286,
-        0.21697,    0.1972,     0.1841,     0.16097,    0.16352,    0.14345,
-        0.13096,    0.11911,    0.11399,    0.10111,    0.0913,     0.08764,
-        0.077745,   0.071417,   0.067561,   0.05987,    0.055543,   0.050193,
-        0.045244,   0.04128,    0.03898,    0.03365,    0.031622,   0.028217,
-        0.026215,   0.023919,   0.022648,   0.019915,   0.017524,   0.016145,
-        0.014357,   0.013362,   0.012368,   0.011036,   0.010198,   0.0088275,
-        0.0081762,  0.0072697,  0.00675,    0.0060424,  0.0054788,  0.0049588,
-        0.0046174,  0.0039685,  0.00363,    0.0034204,  0.0030534,  0.0027606,
-        0.0024723,  0.0021893,  0.0020174,  0.0018545,  0.0015584,  0.0014661,
-        0.0013315,  0.0012065,  0.0010375,  0.00097456, 0.00084865, 0.00076982,
-        0.00069371, 0.00063931, 0.00056442, 0.00051712, 0.00046054, 0.00040174,
-        0.00037996, 0.00034009, 0.00030921, 0.00027738, 0.00024981, 0.00022659,
-        0.00019366, 0.00017153, 0.00015469, 0.00014841, 0.00012783, 0.00012061,
-        0.00010456, 9.2145e-05, 8.4856e-05, 7.4087e-05, 6.5675e-05, 6.0496e-05,
-        5.5386e-05, 4.9865e-05, 4.3202e-05, 3.9571e-05, 3.5821e-05, 3.201e-05,
-        2.8322e-05, 2.5886e-05, 2.384e-05,  2.1016e-05, 1.8703e-05, 1.6467e-05,
-        1.5199e-05, 1.4011e-05, 1.2311e-05, 1.0621e-05, 9.4155e-06, 8.874e-06,
-        7.7548e-06, 6.7662e-06, 6.3589e-06, 5.5585e-06, 5.1791e-06, 4.3965e-06,
-        4.012e-06,  3.6195e-06, 3.3215e-06, 2.9918e-06, 2.5084e-06, 2.3397e-06,
-        1.9865e-06, 1.915e-06,  1.6826e-06, 1.448e-06,  1.3183e-06, 1.231e-06,
-        1.0551e-06, 9.3811e-07, 8.2511e-07, 7.4714e-07, 6.7735e-07, 5.9142e-07,
-        5.3654e-07, 4.8709e-07, 4.4543e-07, 3.9199e-07, 3.4674e-07, 3.1203e-07,
-        2.862e-07,  2.4391e-07};
-      TSpline3* weight = new TSpline3("inmedwghts", mass, scale, 170);
-      Double_t corrw   = weight->Eval(values[PairAnalysisVarManager::kM]);
-      values[kWeight] *= corrw;
-      delete weight;
+
+    values[kStsSecondDaughter] =  pair->GetSecondDaughter()->GetStsTrack()->GetNofStsHits();
+    values[kMvdSecondDaughter] =  pair->GetSecondDaughter()->GetStsTrack()->GetNofMvdHits();
+
+    if(pair->GetSecondDaughter()->GetTrdTrack()){
+      values[kStsMvdTrdSecondDaughter] =  pair->GetSecondDaughter()->GetStsTrack()->GetNofStsHits() + pair->GetSecondDaughter()->GetStsTrack()->GetNofMvdHits() + pair->GetSecondDaughter()->GetTrdTrack()->GetNofHits();
+      values[kTrdSecondDaughter] =  pair->GetSecondDaughter()->GetTrdTrack()->GetNofHits();
+    }
+    else{
+      values[kStsMvdTrdSecondDaughter] =  0;
+      values[kTrdSecondDaughter] =  0;
+    }
+    
+    if(pair->GetSecondDaughter()->GetRichRing()){
+      values[kStsMvdRichSecondDaughter] =  pair->GetSecondDaughter()->GetStsTrack()->GetNofStsHits() + pair->GetSecondDaughter()->GetStsTrack()->GetNofMvdHits() + 1;
+      values[kRichSecondDaughter]=  pair->GetSecondDaughter()->GetRichRing()->GetNofHits();
+    }
+    else{
+      values[kStsMvdRichSecondDaughter] =  0;
+      values[kRichSecondDaughter]=  0;
     }
   }
 
+  
+  if(  pair->GetFirstDaughter() && pair->GetFirstDaughter()->GetStsTrack() && pair->GetSecondDaughter() && pair->GetSecondDaughter()->GetStsTrack() ){
+    
+    TClonesArray* hits            = fgEvent->GetHits(ECbmModuleId::kSts);
+    if (hits && pair->GetFirstDaughter()->GetStsTrack()->GetNofStsHits() > 0 && pair->GetSecondDaughter()->GetStsTrack()->GetNofStsHits() > 0) {
 
+      CbmStsHit* hitx=NULL;
+      CbmStsHit* hity=NULL;      
+      Double_t minStsA = 9999.;
+      if (hits) {
+	for (Int_t ihit = 0; ihit < pair->GetFirstDaughter()->GetStsTrack()->GetNofStsHits(); ihit++) {
+	  Int_t idx      = pair->GetFirstDaughter()->GetStsTrack()->GetStsHitIndex(ihit);
+	  CbmStsHit* hit = (CbmStsHit*) hits->At(idx);
+	  if (hit && minStsA > hit->GetZ()) { hitx = hit; minStsA = hit->GetZ();}
+	}
+      }
+      Double_t minStsB = 9999.;
+      if (hits) {
+	for (Int_t ihit = 0; ihit < pair->GetSecondDaughter()->GetStsTrack()->GetNofStsHits(); ihit++) {
+	  Int_t idx      = pair->GetSecondDaughter()->GetStsTrack()->GetStsHitIndex(ihit);
+	  CbmStsHit* hit = (CbmStsHit*) hits->At(idx);
+	  if (hit && minStsB > hit->GetZ()) { hity = hit; minStsB = hit->GetZ();}
+	}
+      }
+      if(hitx && hity && minStsA < 9999 && minStsB < 9999){
+	Double_t xdiff = hitx->GetX() - hity->GetX();
+	Double_t ydiff = hitx->GetY() - hity->GetY();
+	Double_t zdiff = hitx->GetZ() - hity->GetZ();
+	Double_t dist = TMath::Sqrt( xdiff * xdiff + ydiff * ydiff + zdiff * zdiff);
+	values[kStsHitDist] = dist;
+      }
+    }
+    else {
+      values[kStsHitDist] = -1;
+    }
+
+
+    hits            = fgEvent->GetHits(ECbmModuleId::kMvd);
+    if (hits && pair->GetFirstDaughter()->GetStsTrack()->GetNofMvdHits() > 0 && pair->GetSecondDaughter()->GetStsTrack()->GetNofMvdHits() > 0) {
+      CbmMvdHit* hitx=NULL;
+      CbmMvdHit* hity=NULL;      
+      Double_t minMvdA = 9999.;
+      if (hits) {
+	for (Int_t ihit = 0; ihit < pair->GetFirstDaughter()->GetStsTrack()->GetNofMvdHits(); ihit++) {
+	  Int_t idx      = pair->GetFirstDaughter()->GetStsTrack()->GetMvdHitIndex(ihit);
+	  CbmMvdHit* hit = (CbmMvdHit*) hits->At(idx);
+	  if (hit && minMvdA > hit->GetZ()) { hitx = hit; minMvdA = hit->GetZ();}
+	}
+      }
+      Double_t minMvdB = 9999.;
+      if (hits) {
+	for (Int_t ihit = 0; ihit < pair->GetSecondDaughter()->GetStsTrack()->GetNofMvdHits(); ihit++) {
+	  Int_t idx      = pair->GetSecondDaughter()->GetStsTrack()->GetMvdHitIndex(ihit);
+	  CbmMvdHit* hit = (CbmMvdHit*) hits->At(idx);
+	  if (hit && minMvdB > hit->GetZ()) { hity = hit; minMvdB = hit->GetZ();}
+	}
+      }
+      if(hitx && hity && minMvdA < 9999 && minMvdB < 9999){
+	Double_t xdiff = hitx->GetX() - hity->GetX();
+	Double_t ydiff = hitx->GetY() - hity->GetY();
+	Double_t zdiff = hitx->GetZ() - hity->GetZ();
+	Double_t dist = TMath::Sqrt( xdiff * xdiff + ydiff * ydiff + zdiff * zdiff);
+	values[kMvdHitDist] = dist;
+      }
+    }
+    else {
+      values[kMvdHitDist] = -1;
+    }        
+  }
+
+  
   Double_t thetaHE = 0;
   Double_t phiHE   = 0;
   Double_t thetaCS = 0;

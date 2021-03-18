@@ -69,6 +69,49 @@ AnalysisTaskMultiPairAnalysis::AnalysisTaskMultiPairAnalysis(const char* name)
 }
 
 //_________________________________________________________________________________
+AnalysisTaskMultiPairAnalysis::AnalysisTaskMultiPairAnalysis(const char *name,Int_t id) :
+  FairTask(name),
+  fMetaData(),
+  fListPairAnalysis(),
+  fListHistos(),
+  fTimer(),
+  fProcInfo()
+{
+  //
+  // Named Constructor
+  //
+  fMetaData.SetName(Form("PairAnalysisMetaData_%s",name));
+  fListHistos.SetName(Form("PairAnalysisHistos_%s",name));
+  fListPairAnalysis.SetOwner();
+  ((TList*)fMetaData.GetMetaData())->SetOwner();
+  fListHistos.SetOwner();
+  fId = id;
+}
+
+
+//_________________________________________________________________________________
+AnalysisTaskMultiPairAnalysis::AnalysisTaskMultiPairAnalysis(const char *name,Int_t id,Int_t scale) :
+  FairTask(name),
+  fMetaData(),
+  fListPairAnalysis(),
+  fListHistos(),
+  fTimer(),
+  fProcInfo()
+{
+  //
+  // Named Constructor
+  //
+  fMetaData.SetName(Form("PairAnalysisMetaData_%s",name));
+  fListHistos.SetName(Form("PairAnalysisHistos_%s",name));
+  fListPairAnalysis.SetOwner();
+  ((TList*)fMetaData.GetMetaData())->SetOwner();
+  fListHistos.SetOwner();
+  fId = id;
+  fThermalScaling = scale;
+}
+
+
+//_________________________________________________________________________________
 AnalysisTaskMultiPairAnalysis::~AnalysisTaskMultiPairAnalysis() {
   //
   // Destructor
@@ -140,13 +183,15 @@ InitStatus AnalysisTaskMultiPairAnalysis::Init() {
   // Init the input event
   fInputEvent = new PairAnalysisEvent();
   fInputEvent->SetInput(man);
-
+  fInputEvent->SetANNId(fId);
+  
   // Connect the MC event
   PairAnalysisMC::Instance()->ConnectMCEvent();
 
   // set the beam energy to the varmanager
   PairAnalysisVarManager::SetValue(PairAnalysisVarManager::kEbeam, fBeamEnergy);
-
+  PairAnalysisVarManager::SetValue(PairAnalysisVarManager::kThermalScaling, fThermalScaling);
+  
   // initialization time and memory
   gSystem->GetProcInfo(&fProcInfo);
   fprintf(stderr,

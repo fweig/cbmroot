@@ -30,6 +30,8 @@ class AnalysisTaskMultiPairAnalysis : public FairTask {
 public:
   AnalysisTaskMultiPairAnalysis();
   AnalysisTaskMultiPairAnalysis(const char* name);
+  AnalysisTaskMultiPairAnalysis(const char *name,Int_t id);
+  AnalysisTaskMultiPairAnalysis(const char *name,Int_t id,Int_t scale);
   virtual ~AnalysisTaskMultiPairAnalysis();
 
   virtual InitStatus Init();
@@ -58,7 +60,8 @@ protected:
     fListHistos;  //! List of histogram manager lists in the framework classes
 
   Double_t fBeamEnergy = 0.;  // beam energy in GeV (set by hand)
-
+  Int_t fThermalScaling = 0;  
+  
   AnalysisCuts* fEventFilter     = NULL;  // event filter
   PairAnalysisEvent* fInputEvent = NULL;  //! event handler
   Int_t fEventsTotal             = 0;     // total number of processed events
@@ -66,7 +69,8 @@ protected:
 
   TStopwatch fTimer;     //! stopwatch for cpu consumption
   ProcInfo_t fProcInfo;  //! memory usage
-
+  Int_t fId=0;
+  
   AnalysisTaskMultiPairAnalysis(const AnalysisTaskMultiPairAnalysis& c);
   AnalysisTaskMultiPairAnalysis&
   operator=(const AnalysisTaskMultiPairAnalysis& c);

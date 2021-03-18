@@ -30,6 +30,7 @@ public:
   virtual ~PairAnalysisEvent();
 
   void SetInput(FairRootManager* man);
+  void SetANNId(Int_t Id)   { fANNId=Id; }
   void Init();
 
 
@@ -109,7 +110,9 @@ private:
   TObjArray* fTracks;                // papa tracks
 
   Int_t fMultiMatch = 0;  // number of mutiple matched tracks
-
+  Bool_t        fANN=true;
+  Int_t         fANNId=1;
+  
   PairAnalysisEvent(const PairAnalysisEvent& event);
   PairAnalysisEvent& operator=(const PairAnalysisEvent& c);
 

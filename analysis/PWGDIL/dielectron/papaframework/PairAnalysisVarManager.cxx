@@ -46,6 +46,7 @@ ClassImp(PairAnalysisVarManager)
     {"MLA", "m_{#Lambda}", "(GeV/#it{c}^{2})"},
     {"MPair", "m_{pair}", "(GeV/#it{c}^{2})"},
     {"Ebeam", "#it{E}_{beam}", "(#it{A}GeV)"},
+    {"ThermalScaling", "", ""},
     // Hit specific variables
     {"PosX", "x_{hit}", "(cm)"},
     {"PosY", "y_{hit}", "(cm)"},
@@ -163,6 +164,7 @@ ClassImp(PairAnalysisVarManager)
     {"MUCHChi2NDF", "#chi^{2}/^{}N_{df}^{MUCH}", ""},
     // technical information
     {"RndmTrack", "P", ""},
+    {"PRes",                            "",                                                  ""},
 
     // Pair specific variables
     {"Chi2NDF", "#chi^{2}/^{}ndf", ""},
@@ -185,6 +187,20 @@ ClassImp(PairAnalysisVarManager)
     {"PsiPair", "#Psi^{pair}", "(rad.)"},
     {"StsMvdFirstDaughter", "", ""},
     {"StsMvdSecondDaughter", "", ""},
+    {"StsMvdTrdFirstDaughter", "", ""},
+    {"StsMvdTrdSecondDaughter", "", ""},
+    {"StsMvdRichFirstDaughter", "", ""},
+    {"StsMvdRichSecondDaughter", "", ""},
+    {"StsFirstDaughter", "", ""},
+    {"StsSecondDaughter", "", ""},
+    {"MvdFirstDaughter", "", ""},
+    {"MvdSecondDaughter", "", ""},
+    {"TrdFirstDaughter", "", ""},
+    {"TrdSecondDaughter", "", ""},
+    {"RichFirstDaughter", "", ""},
+    {"RichSecondDaughter", "", ""},
+    {"StsHitDist", "", ""},
+    {"MvdHitDist", "", ""},
     {"PhivPair", "#Phi_{v}^{pair}", "(rad.)"},
 
     {"LegDistance", "d^{legs}", "(cm)"},
