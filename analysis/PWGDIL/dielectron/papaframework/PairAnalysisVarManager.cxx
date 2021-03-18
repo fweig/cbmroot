@@ -125,6 +125,12 @@ ClassImp(PairAnalysisVarManager)
     // sts track information
     {"MVDhasEntr", "station^{MVD}_{first} entrance status", ""},
     {"MVDHits", "N_{hit}^{MVD}", ""},
+    {"MVDHitClosest", "", ""},
+    {"STSHitClosest", "", ""},
+    {"MVDHitClosestOpeningAngle", "", ""},
+    {"STSHitClosestOpeningAngle", "", ""},
+    {"MVDHitClosestMom", "MVDHitClosestMom", ""},
+    {"STSHitClosestMom", "STSHitClosestMom", ""},
     {"MVDFirstHitPosZ", "z_{first hit}^{MVD}", "(cm)"},
     {"MVDFirstExtX", "x_{first station}^{MVD}", "(cm)"},
     {"MVDFirstExtY", "y_{first station}^{MVD}", "(cm)"},

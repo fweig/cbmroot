@@ -159,6 +159,12 @@ public:
     // sts track information
     kMvdhasEntr,       // weather track enters first MVD station
     kMvdHits,          // number of MVD hits
+    kMvdHitClosest, 
+    kStsHitClosest, 
+    kMvdHitClosestOpeningAngle, 
+    kStsHitClosestOpeningAngle, 
+    kMvdHitClosestMom, 
+    kStsHitClosestMom,
     kMvdFirstHitPosZ,  // position of the first hit in the MVD (cm)
     kMvdFirstExtX,  // x-position of the extrapolated track at the first MVD station (cm)
     kMvdFirstExtY,  // y-position of the extrapolated track at the first MVD station (cm)
@@ -728,6 +734,120 @@ PairAnalysisVarManager::FillVarPairAnalysisTrack(const PairAnalysisTrack* track,
 
   values[kP] = track->P();
 
+  // Calculate first hit position for sts and mvd
+  Double_t minSts    = 9999.;
+  Int_t compIndex = 0;
+  Double_t xref = 0.;
+  Double_t yref = 0.;
+  Double_t zref = 0.;
+  TClonesArray* hits = fgEvent->GetHits(ECbmModuleId::kSts);
+  TObjArray* PaPaTracks = fgEvent->GetTracks();
+  CbmStsTrack* ststrack1 = (CbmStsTrack*) track->GetStsTrack();
+  if (hits /*&& Req(kStsFirstHitPosZ)*/) {
+    for (Int_t ihit = 0; ihit < ststrack1->GetNofStsHits(); ihit++) {
+      Int_t idx      = ststrack1->GetStsHitIndex(ihit);
+      if(idx > hits->GetEntriesFast()) continue;
+      CbmStsHit* hit = (CbmStsHit*) hits->At(idx);
+      if (hit && minSts > hit->GetZ()) {
+        minSts = hit->GetZ();
+  	xref = hit->GetX();
+  	yref = hit->GetY();
+  	zref = hit->GetZ();
+      }
+    }
+  }
+  Double_t minStsClosest = 9999.;
+  if (PaPaTracks && hits) {
+    for (Int_t iTracks = 0; iTracks < PaPaTracks->GetEntriesFast(); iTracks++) {
+      PairAnalysisTrack *ptrk = (PairAnalysisTrack*) PaPaTracks->At(iTracks);
+      if(!ptrk) continue;
+      CbmStsTrack* ststrack2 = (CbmStsTrack*) ptrk->GetStsTrack();
+      for (Int_t ihit = 0; ihit < ststrack2->GetNofStsHits(); ihit++) {
+  	Int_t idx      = ststrack2->GetStsHitIndex(ihit);
+  	if(idx > hits->GetEntriesFast() || idx < 0) continue;
+  	CbmStsHit* hit = (CbmStsHit*) hits->At(idx);
+  	Double_t xdiff = hit->GetX() - xref;
+  	Double_t ydiff = hit->GetY() - yref;
+  	Double_t zdiff = hit->GetZ() - zref;
+  	Double_t dist = TMath::Sqrt( xdiff * xdiff + ydiff * ydiff + zdiff * zdiff);
+  	if (hit && dist < minStsClosest && dist > 0.) {
+  	  minStsClosest = dist;
+  	  compIndex = iTracks;
+  	}
+      }
+    }
+    PairAnalysisTrack *ptrk = (PairAnalysisTrack*) PaPaTracks->At(compIndex);
+    PairAnalysisTrack* reftrack = new PairAnalysisTrack(*track);
+    if(ptrk && reftrack){
+      PairAnalysisPair* pair = new PairAnalysisPairLV();
+      if(pair){
+  	if(reftrack->PdgCode() < 1.e8 && ptrk->PdgCode() < 1.e8)  pair->SetTracks(reftrack, reftrack->PdgCode() , ptrk, ptrk->PdgCode()  );
+  	values[kStsHitClosestOpeningAngle] = pair->OpeningAngle();
+  	values[kStsHitClosestMom]          = TMath::Sqrt(ptrk->P() * reftrack->P() );
+	delete pair;
+      }
+      delete reftrack;
+    }
+  }
+
+  Double_t minMvd    = 9999.;
+  xref = 0.;
+  yref = 0.;
+  zref = 0.;
+  hits = fgEvent->GetHits(ECbmModuleId::kMvd);
+  CbmStsTrack* mvdtrack1 = (CbmStsTrack*) track->GetStsTrack();
+  if (hits) {
+    for (Int_t ihit = 0; ihit < mvdtrack1->GetNofMvdHits(); ihit++) {
+      Int_t idx      = mvdtrack1->GetMvdHitIndex(ihit);
+      if(idx > hits->GetEntriesFast()) continue;
+      CbmMvdHit* hit = (CbmMvdHit*) hits->At(idx);
+      if (hit && minMvd > hit->GetZ()) {
+        minMvd = hit->GetZ();
+  	xref = hit->GetX();
+  	yref = hit->GetY();
+  	zref = hit->GetZ();
+      }
+    }
+  }
+  Double_t minMvdClosest = 9999.;
+  if (PaPaTracks && hits) {
+    for (Int_t iTracks = 0; iTracks < PaPaTracks->GetEntriesFast(); iTracks++) {
+      PairAnalysisTrack *ptrk = (PairAnalysisTrack*) PaPaTracks->At(iTracks);
+      if(!ptrk) continue;
+      CbmStsTrack* mvdtrack2 = (CbmStsTrack*) ptrk->GetStsTrack();
+      for (Int_t ihit = 0; ihit < mvdtrack2->GetNofMvdHits(); ihit++) {
+  	Int_t idx      = mvdtrack2->GetMvdHitIndex(ihit);
+  	if(idx > hits->GetEntriesFast()) continue;
+  	CbmMvdHit* hit = (CbmMvdHit*) hits->At(idx);
+  	Double_t xdiff = hit->GetX() - xref;
+  	Double_t ydiff = hit->GetY() - yref;
+  	Double_t zdiff = hit->GetZ() - zref;
+  	Double_t dist = TMath::Sqrt( xdiff * xdiff + ydiff * ydiff + zdiff * zdiff);
+  	if (hit && dist < minMvdClosest && dist > 0.) {
+  	  minMvdClosest = dist;
+  	  compIndex = iTracks;
+  	}
+      }
+    }
+    PairAnalysisTrack *ptrk = (PairAnalysisTrack*) PaPaTracks->At(compIndex);
+    PairAnalysisTrack* reftrack = new PairAnalysisTrack(*track);
+    if(ptrk && reftrack){
+      PairAnalysisPair* pair = new PairAnalysisPairLV();
+      if(pair){
+  	if(reftrack->PdgCode() < 1.e8 && ptrk->PdgCode() < 1.e8)  pair->SetTracks(reftrack, reftrack->PdgCode() , ptrk, ptrk->PdgCode()  );
+  	values[kMvdHitClosestOpeningAngle] = pair->OpeningAngle();
+  	values[kMvdHitClosestMom]          = TMath::Sqrt(ptrk->P() * reftrack->P() );
+	delete pair;
+      }
+      delete reftrack;
+
+    }
+  }
+  
+  values[kStsHitClosest] = minStsClosest;
+  values[kMvdHitClosest] = minMvdClosest;
+
+  
   values[kRichDistance] =
     1.;  //CbmRichUtil::GetRingTrackDistance(track->GetGlobalIndex());
   values[kRichPidANN] = CbmRichElectronIdAnn::GetInstance().CalculateAnnValue(
