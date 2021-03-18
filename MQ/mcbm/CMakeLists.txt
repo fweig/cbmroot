@@ -1,5 +1,6 @@
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startMQMcbmPulserMonitor2020.sh.in ${CMAKE_BINARY_DIR}/bin/MQ/topologies/startMQMcbmPulserMonitor2020.sh)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startMQMcbmEvtBuilderWin2020.sh.in ${CMAKE_BINARY_DIR}/bin/MQ/topologies/startMQMcbmEvtBuilderWin2020.sh)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startMQBuildRawEvents.sh.in ${CMAKE_BINARY_DIR}/bin/MQ/topologies/startMQBuildRawEvents.sh)
 
 set(INCLUDE_DIRECTORIES
     ${CMAKE_CURRENT_SOURCE_DIR}
@@ -10,6 +11,7 @@ set(INCLUDE_DIRECTORIES
     ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/dataformat
     ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/commonMQ
     ${CBMROOT_SOURCE_DIR}/fles/flestools
+    ${CBMROOT_SOURCE_DIR}/reco/eventbuilder/digis
     ${CBMDATA_DIR}
     ${CBMDATA_DIR}/global
     ${CBMDATA_DIR}/raw
@@ -45,6 +47,7 @@ include_directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
 set(LINK_DIRECTORIES
   ${ROOT_LIBRARY_DIR}
   ${FAIRROOT_LIBRARY_DIR}
+  ${KFParticle_LIB_DIR}
   ${FAIRMQ_LIBRARY_DIR}
   ${Boost_LIBRARY_DIRS}
 )
@@ -115,6 +118,34 @@ set(DEPENDENCIES
 )
 #GENERATE_LIBRARY()
 GENERATE_EXECUTABLE()
+
+set(EXE_NAME BuildRawEvents)
+set(SRCS CbmDeviceBuildRawEvents.cxx runBuildRawEvents.cxx)
+
+set(DEPENDENCIES
+  ${DEPENDENCIES}
+  ${FAIR_LIBS}
+  ${BOOST_LIBS}
+  fles_ipc
+  KFParticle
+  CbmFlibMcbm2018
+  CbmFlibFlesTools
+  CbmEventBuilder
+  KF
+  L1
+  CbmBase
+  CbmData
+  CbmTofBase
+  CbmSimBase
+  Core
+  RIO
+  Net
+  Hist
+  RHTTP
+)
+#GENERATE_LIBRARY()
+GENERATE_EXECUTABLE()
+
 
 set(EXE_NAME McbmEventBuilderWin)
 set(SRCS CbmDeviceMcbmEventBuilderWin.cxx runMcbmEvtBuilderWin.cxx)
