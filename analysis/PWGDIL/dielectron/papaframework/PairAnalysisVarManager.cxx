@@ -33,8 +33,7 @@
 
 ClassImp(PairAnalysisVarManager)
 
-  const char* PairAnalysisVarManager::fgkParticleNames[PairAnalysisVarManager::
-                                                         kNMaxValuesMC][3] = {
+  const char* PairAnalysisVarManager::fgkParticleNames[PairAnalysisVarManager::kNMaxValuesMC][3] = {
     {"None", "", ""},
     // Constant information
     {"MEL", "m_{e}", "(GeV/#it{c}^{2})"},
@@ -88,9 +87,7 @@ ClassImp(PairAnalysisVarManager)
     {"M", "m_{inv}", "(GeV/#it{c}^{2})"},
     {"Charge", "q", "(e)"},
     {"Mt", "#it{m}_{T}", "(GeV/#it{c}^{2})"},
-    {"Chi2NDFtoVtx",
-     "#chi^{2}/^{}N_{df}^{track#leftrightarrowvtx}",
-     "(#sigma)"},
+    {"Chi2NDFtoVtx", "#chi^{2}/^{}N_{df}^{track#leftrightarrowvtx}", "(#sigma)"},
     {"ImpactParXY", "#it{dca}_{xy}", "(cm)"},
     {"ImpactParZ", "#it{dca}_{z}", "(cm)"},
     {"InclAngle", "#alpha_{incl}", "(rad.)"},
@@ -170,7 +167,7 @@ ClassImp(PairAnalysisVarManager)
     {"MUCHChi2NDF", "#chi^{2}/^{}N_{df}^{MUCH}", ""},
     // technical information
     {"RndmTrack", "P", ""},
-    {"PRes",                            "",                                                  ""},
+    {"PRes", "", ""},
 
     // Pair specific variables
     {"Chi2NDF", "#chi^{2}/^{}ndf", ""},
@@ -266,9 +263,8 @@ ClassImp(PairAnalysisVarManager)
     {"RvMC", "Sqrt(x_{vtx}^{2}_{MC}+y_{vtx}^{2}_{MC})", "(cm)"},
     {"ZvMC", "z_{vtx}^{MC}", "(cm)"},
     {"PhivMC", "#phi_{vtx}^{MC}", "(rad.)"},
-    {"ThetavMC",
-     "#theta_{vtx}^{MC}"
-     "(rad.)"},
+    {"ThetavMC", "#theta_{vtx}^{MC}"
+                 "(rad.)"},
     {"OneOverPtMC", "1/^{}#it{p}_{T}^{MC}", "(GeV/#it{c})^{-1}"},
     {"PhiMC", "#phi^{MC}", "(rad.)"},
     {"ThetaMC", "#theta^{MC}", "(rad.)"},
@@ -337,15 +333,14 @@ CbmKFVertex* PairAnalysisVarManager::fgKFVertex    = 0x0;
 CbmVertex* PairAnalysisVarManager::fgVertexMC      = 0x0;
 //CbmStsKFTrackFitter* PairAnalysisVarManager::fgKFFitter    = 0x0;
 //CbmL1PFFitter*  PairAnalysisVarManager::fgL1Fitter    = 0x0;
-TBits* PairAnalysisVarManager::fgFillMap   = 0x0;
-Int_t PairAnalysisVarManager::fgCurrentRun = -1;
-Double_t PairAnalysisVarManager::fgData[PairAnalysisVarManager::kNMaxValuesMC] =
-  {0.};
-TFormula* PairAnalysisVarManager::fgFormula[kNMaxValuesMC] = {0x0};
+TBits* PairAnalysisVarManager::fgFillMap                                       = 0x0;
+Int_t PairAnalysisVarManager::fgCurrentRun                                     = -1;
+Double_t PairAnalysisVarManager::fgData[PairAnalysisVarManager::kNMaxValuesMC] = {0.};
+TFormula* PairAnalysisVarManager::fgFormula[kNMaxValuesMC]                     = {0x0};
 
 //________________________________________________________________
-PairAnalysisVarManager::PairAnalysisVarManager()
-  : TNamed("PairAnalysisVarManager", "PairAnalysisVarManager") {
+PairAnalysisVarManager::PairAnalysisVarManager() : TNamed("PairAnalysisVarManager", "PairAnalysisVarManager")
+{
   //
   // Default constructor
   //
@@ -357,9 +352,8 @@ PairAnalysisVarManager::PairAnalysisVarManager()
 }
 
 //________________________________________________________________
-PairAnalysisVarManager::PairAnalysisVarManager(const char* name,
-                                               const char* title)
-  : TNamed(name, title) {
+PairAnalysisVarManager::PairAnalysisVarManager(const char* name, const char* title) : TNamed(name, title)
+{
   //
   // Named constructor
   //
@@ -371,7 +365,8 @@ PairAnalysisVarManager::PairAnalysisVarManager(const char* name,
 }
 
 //________________________________________________________________
-PairAnalysisVarManager::~PairAnalysisVarManager() {
+PairAnalysisVarManager::~PairAnalysisVarManager()
+{
   //
   // Default destructor
   //
@@ -381,7 +376,8 @@ PairAnalysisVarManager::~PairAnalysisVarManager() {
 }
 
 //________________________________________________________________
-UInt_t PairAnalysisVarManager::GetValueType(const char* valname) {
+UInt_t PairAnalysisVarManager::GetValueType(const char* valname)
+{
   //
   // Get value type by value name
   //
@@ -394,7 +390,8 @@ UInt_t PairAnalysisVarManager::GetValueType(const char* valname) {
 }
 
 //________________________________________________________________
-UInt_t PairAnalysisVarManager::GetValueTypeMC(UInt_t var) {
+UInt_t PairAnalysisVarManager::GetValueTypeMC(UInt_t var)
+{
   //
   // Get MC value type by standard value name
   //
