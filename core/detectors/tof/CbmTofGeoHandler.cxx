@@ -108,8 +108,7 @@ Int_t CbmTofGeoHandler::CheckGeometryVersion() {
       else if ((TString(node->GetName()).Contains("v14")) || (TString(node->GetName()).Contains("v16a"))
                || (TString(node->GetName()).Contains("v16c")) || (TString(node->GetName()).Contains("v16d"))
                || (TString(node->GetName()).Contains("v16e")) || (TString(node->GetName()).Contains("v17a"))
-               || (TString(node->GetName()).Contains("v17c")) || (TString(node->GetName()).Contains("v19"))
-               || ((TString(node->GetName()).Contains("v20a")) && (!(TString(node->GetName()).Contains("mcbm"))))) {
+               || (TString(node->GetName()).Contains("v17c")) || (TString(node->GetName()).Contains("v19"))) {
         LOG(info)
           << "CbmTofGeoHandler::CheckGeometryVersion: Found TOF geometry "
           << TString(node->GetName()) << ", treat as Id 14a   ";

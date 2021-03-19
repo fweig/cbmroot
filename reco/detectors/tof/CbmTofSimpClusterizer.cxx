@@ -11,6 +11,7 @@
 #include "CbmTofCreateDigiPar.h"
 #include "CbmTofDetectorId_v12b.h"  // in cbmdata/tof
 #include "CbmTofDetectorId_v14a.h"  // in cbmdata/tof
+#include "CbmTofDetectorId_v21a.h"  // in cbmdata/tof
 #include "CbmTofDigi.h"             // in cbmdata/tof
 #include "CbmTofDigiBdfPar.h"       // in tof/TofParam
 #include "CbmTofDigiPar.h"          // in tof/TofParam
@@ -432,6 +433,7 @@ Bool_t CbmTofSimpClusterizer::InitParameters() {
     switch (iGeoVersion) {
       case k12b: fTofId = new CbmTofDetectorId_v12b(); break;
       case k14a: fTofId = new CbmTofDetectorId_v14a(); break;
+      case k21a: fTofId = new CbmTofDetectorId_v21a(); break;
       default:
         LOG(error)
           << "CbmTofSimpClusterizer::InitParameters => Invalid geometry!!!"
