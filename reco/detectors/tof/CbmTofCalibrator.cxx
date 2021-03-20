@@ -540,17 +540,7 @@ Bool_t CbmTofCalibrator::UpdateCalHist(Int_t iOpt) {
           Double_t dDt   = hpT->GetBinContent(iBin + 1);
           Double_t dCorT = fhCorTOff[iDetIndx]->GetBinContent(iBin + 1);
           Double_t dCts  = hCalT->GetBinContent(iBin + 1);
-          if (iDetIndx == -1) {
-            LOG(info) << Form(
-              "Update %s: bin %02d, Cts: %d, Old %f, dev %f, beam %f, new %f",
-              fhCorTOff[iDetIndx]->GetName(),
-              iBin,
-              (Int_t) dCts,
-              dCorT,
-              dDt,
-              dBeamTOff,
-              dCorT - dDt);
-          }
+
           Double_t dDp   = hpP->GetBinContent(iBin + 1);
           Double_t dCorP = fhCorPos[iDetIndx]->GetBinContent(iBin + 1);
           if (dCts > MINCTS) {
@@ -562,8 +552,18 @@ Bool_t CbmTofCalibrator::UpdateCalHist(Int_t iOpt) {
             Double_t dBinSize = hpPy->GetBinWidth(1);
             dFLim             = TMath::Max(dFLim, 5. * dBinSize);
             TFitResultPtr fRes =
-              hpPy->Fit("gaus", "SQM0", "", dFMean - dFLim, dFMean + dFLim);
+              hpPy->Fit("gaus", "SQM", "", dFMean - dFLim, dFMean + dFLim);
             dDp = fRes->Parameter(1);  //overwrite mean
+
+            TH1* hpTy = (TH1*) fhCalTOff[iDetIndx]->ProjectionY(
+              Form("TOffPy_%d_%d", iDetIndx, iBin), iBin + 1, iBin + 1);
+            dFMean   = hpTy->GetBinCenter(hpTy->GetMaximumBin());
+            dFLim    = 0.5;  // CAUTION, fixed numeric value
+            dBinSize = hpTy->GetBinWidth(1);
+            dFLim    = TMath::Max(dFLim, 5. * dBinSize);
+            fRes = hpTy->Fit("gaus", "SQM", "", dFMean - dFLim, dFMean + dFLim);
+            dDt  = fRes->Parameter(1);  //overwrite mean
+
             // Double_t dDpRes = fRes->Parameter(2);
             if (iSmType == 5)  // do not shift beam counter in time
               fhCorTOff[iDetIndx]->SetBinContent(iBin + 1,
@@ -572,6 +572,18 @@ Bool_t CbmTofCalibrator::UpdateCalHist(Int_t iOpt) {
               fhCorTOff[iDetIndx]->SetBinContent(iBin + 1,
                                                  dCorT + dDt + dBeamTOff);
             if (0) fhCorPos[iDetIndx]->SetBinContent(iBin + 1, dCorP + dDp);
+
+            if (iDetIndx > -1) {
+              LOG(info) << Form(
+                "Update %s: bin %02d, Cts: %d, Old %6.3f, dev %6.3f, beam %6.3f, new %6.3f",
+                fhCorTOff[iDetIndx]->GetName(),
+                iBin,
+                (Int_t) dCts,
+                dCorT,
+                dDt,
+                dBeamTOff,
+                dCorT + dDt + dBeamTOff );
+            }
           }
         }
       } break;
