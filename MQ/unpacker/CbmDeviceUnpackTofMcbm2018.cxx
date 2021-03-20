@@ -6,9 +6,9 @@
  */
 
 #include "CbmDeviceUnpackTofMcbm2018.h"
+
 #include "CbmDefs.h"
 #include "CbmMQDefs.h"
-
 #include "CbmMcbm2018TofPar.h"
 #include "CbmMcbm2018UnpackerAlgoTof.h"
 //#include "CbmHistManager.h"
@@ -35,9 +35,8 @@
 
 #include <array>
 #include <iomanip>
-#include <string>
-
 #include <stdexcept>
+#include <string>
 struct InitTaskError : std::runtime_error {
   using std::runtime_error::runtime_error;
 };
@@ -117,15 +116,15 @@ CbmDeviceUnpackTofMcbm2018::CbmDeviceUnpackTofMcbm2018()
   , fviRpcSide()
   , fviRpcChUId()
   , fBuffer(CbmTbDaqBuffer::Instance())
-  , fUnpackerAlgo(nullptr) {
+  , fUnpackerAlgo(nullptr)
+{
   fUnpackerAlgo = new CbmMcbm2018UnpackerAlgoTof();
 }
 
-CbmDeviceUnpackTofMcbm2018::~CbmDeviceUnpackTofMcbm2018() {
-  delete fUnpackerAlgo;
-}
+CbmDeviceUnpackTofMcbm2018::~CbmDeviceUnpackTofMcbm2018() { delete fUnpackerAlgo; }
 
-void CbmDeviceUnpackTofMcbm2018::InitTask() try {
+void CbmDeviceUnpackTofMcbm2018::InitTask()
+try {
   // Get the information about created channels from the device
   // Check if the defined channels from the topology (by name)
   // are in the list of channels which are possible/allowed
@@ -140,15 +139,13 @@ void CbmDeviceUnpackTofMcbm2018::InitTask() try {
   LOG(info) << "Number of defined channels: " << noChannel;
   for (auto const& entry : fChannels) {
     LOG(info) << "Channel name: " << entry.first;
-    if (!IsChannelNameAllowed(entry.first))
-      throw InitTaskError("Channel name does not match.");
+    if (!IsChannelNameAllowed(entry.first)) throw InitTaskError("Channel name does not match.");
     if (entry.first == "syscmd") {
       OnData(entry.first, &CbmDeviceUnpackTofMcbm2018::HandleMessage);
       continue;
     }
     //if(entry.first != "tofdigis") OnData(entry.first, &CbmDeviceUnpackTofMcbm2018::HandleData);
-    if (entry.first != "tofdigis")
-      OnData(entry.first, &CbmDeviceUnpackTofMcbm2018::HandleParts);
+    if (entry.first != "tofdigis") OnData(entry.first, &CbmDeviceUnpackTofMcbm2018::HandleParts);
     else {
       fChannelsToSend[0].push_back(entry.first);
       LOG(info) << "Init to send data to channel " << fChannelsToSend[0][0];
@@ -174,8 +171,7 @@ void CbmDeviceUnpackTofMcbm2018::InitTask() try {
   Int_t iRefCtrType  = fConfig->GetValue<int64_t>("RefCtrType");
   Int_t iRefCtrId    = fConfig->GetValue<int64_t>("RefCtrId");
   if (iRefModType > -1)
-    fiAddrRef = CbmTofAddress::GetUniqueAddress(
-      iRefModId, iRefCtrId, 0, 0, iRefModType, iRefCtrType);
+    fiAddrRef = CbmTofAddress::GetUniqueAddress(iRefModId, iRefCtrId, 0, 0, iRefModType, iRefCtrType);
   LOG(info) << " Using Reference counter address 0x" << std::hex << fiAddrRef;
 
   //    Int_t iMaxAsicInactive = fConfig->GetValue<uint64_t>("MaxAsicInactive");
@@ -199,8 +195,7 @@ void CbmDeviceUnpackTofMcbm2018::InitTask() try {
           case 1:  // eTof modules
             if (iGbtx % 2 == 0)
               for (Int_t iRpc = 0; iRpc < fviNrOfRpc[iGbtx]; iRpc++) {
-                Int_t iAddr = CbmTofAddress::GetUniqueAddress(
-                  fviModuleId[iGbtx], iRpc, 0, 0, fviRpcType[iGbtx]);
+                Int_t iAddr = CbmTofAddress::GetUniqueAddress(fviModuleId[iGbtx], iRpc, 0, 0, fviRpcType[iGbtx]);
                 AddReqDigiAddr(iAddr);
               }
             break;
@@ -208,36 +203,31 @@ void CbmDeviceUnpackTofMcbm2018::InitTask() try {
           case 4:
           case 9:  // HD 2-RPC boxes
             for (Int_t iRpc = 0; iRpc < 2; iRpc++) {
-              Int_t iAddr = CbmTofAddress::GetUniqueAddress(
-                fviModuleId[iGbtx], iRpc, 0, 0, fviRpcType[iGbtx]);
+              Int_t iAddr = CbmTofAddress::GetUniqueAddress(fviModuleId[iGbtx], iRpc, 0, 0, fviRpcType[iGbtx]);
               AddReqDigiAddr(iAddr);
             }
             break;
           case 6:  // Buc box
             for (Int_t iRpc = 0; iRpc < 2; iRpc++) {
-              Int_t iAddr = CbmTofAddress::GetUniqueAddress(
-                fviModuleId[iGbtx], iRpc, 0, 0, fviRpcType[iGbtx]);
+              Int_t iAddr = CbmTofAddress::GetUniqueAddress(fviModuleId[iGbtx], iRpc, 0, 0, fviRpcType[iGbtx]);
               AddReqDigiAddr(iAddr);
             }
             break;
 
           case 7:  // CERN box
             for (Int_t iRpc = 0; iRpc < 1; iRpc++) {
-              Int_t iAddr = CbmTofAddress::GetUniqueAddress(
-                fviModuleId[iGbtx], iRpc, 0, 0, 7);
+              Int_t iAddr = CbmTofAddress::GetUniqueAddress(fviModuleId[iGbtx], iRpc, 0, 0, 7);
               AddReqDigiAddr(iAddr);
             }
             break;
           case 8:  // ceramics
             for (Int_t iRpc = 0; iRpc < 8; iRpc++) {
-              Int_t iAddr = CbmTofAddress::GetUniqueAddress(
-                fviModuleId[iGbtx], iRpc, 0, 0, fviRpcType[iGbtx]);
+              Int_t iAddr = CbmTofAddress::GetUniqueAddress(fviModuleId[iGbtx], iRpc, 0, 0, fviRpcType[iGbtx]);
               AddReqDigiAddr(iAddr);
             }
             break;
           case 5:  // add Diamond, single cell RPC
-            Int_t iAddr =
-              CbmTofAddress::GetUniqueAddress(fviModuleId[iGbtx], 0, 0, 0, 5);
+            Int_t iAddr = CbmTofAddress::GetUniqueAddress(fviModuleId[iGbtx], 0, 0, 0, 5);
             AddReqDigiAddr(iAddr);
             break;
         }
@@ -245,18 +235,18 @@ void CbmDeviceUnpackTofMcbm2018::InitTask() try {
     }
 
   LOG(info) << "ReqMode " << fiReqMode << " in " << fiReqTint << " ns "
-            << " with " << fiReqDigiAddr.size() << " detectors out of "
-            << fviNrOfRpc.size() << " GBTx, PulserMode " << fiPulserMode
-            << " with Mul " << fiPulMulMin << ", TotMin " << fiPulTotMin;
+            << " with " << fiReqDigiAddr.size() << " detectors out of " << fviNrOfRpc.size() << " GBTx, PulserMode "
+            << fiPulserMode << " with Mul " << fiPulMulMin << ", TotMin " << fiPulTotMin;
   LOG(info) << Form("ReqBeam 0x%08x", (uint) fiReqBeam);
-
-} catch (InitTaskError& e) {
+}
+catch (InitTaskError& e) {
   LOG(error) << e.what();
   // Wrapper defined in CbmMQDefs.h to support different FairMQ versions
   cbm::mq::ChangeState(this, cbm::mq::Transition::ErrorFound);
 }
 
-bool CbmDeviceUnpackTofMcbm2018::IsChannelNameAllowed(std::string channelName) {
+bool CbmDeviceUnpackTofMcbm2018::IsChannelNameAllowed(std::string channelName)
+{
   for (auto const& entry : fAllowedChannels) {
     LOG(info) << "Inspect " << entry;
     std::size_t pos1 = channelName.find(entry);
@@ -265,28 +255,24 @@ bool CbmDeviceUnpackTofMcbm2018::IsChannelNameAllowed(std::string channelName) {
         std::find(fAllowedChannels.begin(), fAllowedChannels.end(), entry);
       const vector<std::string>::size_type idx = pos - fAllowedChannels.begin();
       LOG(info) << "Found " << entry << " in " << channelName;
-      LOG(info) << "Channel name " << channelName
-                << " found in list of allowed channel names at position "
-                << idx;
+      LOG(info) << "Channel name " << channelName << " found in list of allowed channel names at position " << idx;
       return true;
     }
   }
-  LOG(info) << "Channel name " << channelName
-            << " not found in list of allowed channel names.";
+  LOG(info) << "Channel name " << channelName << " not found in list of allowed channel names.";
   LOG(error) << "Stop device.";
   return false;
 }
 
-Bool_t CbmDeviceUnpackTofMcbm2018::InitContainers() {
+Bool_t CbmDeviceUnpackTofMcbm2018::InitContainers()
+{
   LOG(info) << "Init parameter containers for CbmDeviceUnpackTofMcbm2018.";
   //  FairRuntimeDb* fRtdb = FairRuntimeDb::instance();
 
   // NewSimpleMessage creates a copy of the data and takes care of its destruction (after the transfer takes place).
   // Should only be used for small data because of the cost of an additional copy
   std::string message {"CbmMcbm2018TofPar,111"};
-  LOG(info)
-    << "Requesting parameter container CbmMcbm2018TofPar, sending message: "
-    << message;
+  LOG(info) << "Requesting parameter container CbmMcbm2018TofPar, sending message: " << message;
 
   FairMQMessagePtr req(NewSimpleMessage("CbmMcbm2018TofPar,111"));
   FairMQMessagePtr rep(NewMessage());
@@ -295,12 +281,11 @@ Bool_t CbmDeviceUnpackTofMcbm2018::InitContainers() {
     if (Receive(rep, "parameters") >= 0) {
       if (rep->GetSize() != 0) {
         CbmMQTMessage tmsg(rep->GetData(), rep->GetSize());
-        fUnpackPar =
-          dynamic_cast<CbmMcbm2018TofPar*>(tmsg.ReadObject(tmsg.GetClass()));
-        LOG(info) << "Received unpack parameter from parmq server: "
-                  << fUnpackPar;
+        fUnpackPar = dynamic_cast<CbmMcbm2018TofPar*>(tmsg.ReadObject(tmsg.GetClass()));
+        LOG(info) << "Received unpack parameter from parmq server: " << fUnpackPar;
         fUnpackPar->Print();
-      } else {
+      }
+      else {
         LOG(error) << "Received empty reply. Parameter not available";
       }
     }
@@ -330,13 +315,13 @@ Bool_t CbmDeviceUnpackTofMcbm2018::InitContainers() {
   return initOK;
 }
 
-void CbmDeviceUnpackTofMcbm2018::SetParContainers() {
+void CbmDeviceUnpackTofMcbm2018::SetParContainers()
+{
   FairRuntimeDb* fRtdb = FairRuntimeDb::instance();
 
   TList* fParCList = fUnpackerAlgo->GetParList();
 
-  LOG(info) << "Setting parameter containers for " << fParCList->GetEntries()
-            << " entries ";
+  LOG(info) << "Setting parameter containers for " << fParCList->GetEntries() << " entries ";
 
   for (Int_t iparC = 0; iparC < fParCList->GetEntries(); ++iparC) {
     FairParGenericSet* tempObj = (FairParGenericSet*) (fParCList->At(iparC));
@@ -344,13 +329,11 @@ void CbmDeviceUnpackTofMcbm2018::SetParContainers() {
 
     std::string sParamName {tempObj->GetName()};
 
-    FairParGenericSet* newObj =
-      dynamic_cast<FairParGenericSet*>(fRtdb->getContainer(sParamName.data()));
+    FairParGenericSet* newObj = dynamic_cast<FairParGenericSet*>(fRtdb->getContainer(sParamName.data()));
     LOG(info) << " - Get " << sParamName.data() << " at " << newObj;
     if (nullptr == newObj) {
 
-      LOG(error) << "Failed to obtain parameter container " << sParamName
-                 << ", for parameter index " << iparC;
+      LOG(error) << "Failed to obtain parameter container " << sParamName << ", for parameter index " << iparC;
       return;
     }  // if( nullptr == newObj )
     if (iparC == 0) {
@@ -362,12 +345,13 @@ void CbmDeviceUnpackTofMcbm2018::SetParContainers() {
   }  // for( Int_t iparC = 0; iparC < fParCList->GetEntries(); ++iparC )
 }
 
-void CbmDeviceUnpackTofMcbm2018::AddMsComponentToList(size_t component,
-                                                      UShort_t usDetectorId) {
+void CbmDeviceUnpackTofMcbm2018::AddMsComponentToList(size_t component, UShort_t usDetectorId)
+{
   fUnpackerAlgo->AddMsComponentToList(component, usDetectorId);
 }
 
-Bool_t CbmDeviceUnpackTofMcbm2018::ReInitContainers() {
+Bool_t CbmDeviceUnpackTofMcbm2018::ReInitContainers()
+{
   LOG(info) << "ReInit parameter containers for CbmDeviceUnpackMcbm2018TofPar.";
 
   fuNrOfGdpbs = fUnpackPar->GetNrOfGdpbs();
@@ -408,14 +392,12 @@ Bool_t CbmDeviceUnpackTofMcbm2018::ReInitContainers() {
    */
 
   UInt_t uGet4topadi[32] = {4,  3,  2,  1,  // provided by Jochen
-                            8,  7,  6,  5,  12, 11, 10, 9,  16, 15,
-                            14, 13, 20, 19, 18, 17, 24, 23, 22, 21,
-                            28, 27, 26, 25, 32, 31, 30, 29};
+                            8,  7,  6,  5,  12, 11, 10, 9,  16, 15, 14, 13, 20, 19,
+                            18, 17, 24, 23, 22, 21, 28, 27, 26, 25, 32, 31, 30, 29};
 
   UInt_t uPaditoget4[32] = {4,  3,  2,  1,  // provided by Jochen
-                            12, 11, 10, 9,  20, 19, 18, 17, 28, 27,
-                            26, 25, 32, 31, 30, 29, 8,  7,  6,  5,
-                            16, 15, 14, 13, 24, 23, 22, 21};
+                            12, 11, 10, 9, 20, 19, 18, 17, 28, 27, 26, 25, 32, 31,
+                            30, 29, 8,  7, 6,  5,  16, 15, 14, 13, 24, 23, 22, 21};
 
   for (UInt_t uChan = 0; uChan < fuNrOfChannelsPerFee; ++uChan) {
     fvuPadiToGet4[uChan] = uPaditoget4[uChan] - 1;
@@ -425,14 +407,12 @@ Bool_t CbmDeviceUnpackTofMcbm2018::ReInitContainers() {
   /// TODO: move these constants somewhere shared, e.g the parameter file
   fvuElinkToGet4.resize(kuNbGet4PerGbtx);
   fvuGet4ToElink.resize(kuNbGet4PerGbtx);
-  UInt_t kuElinkToGet4[kuNbGet4PerGbtx] = {
-    27, 2,  7,  3,  31, 26, 30, 1,  33, 37, 32, 13, 9,  14,
-    10, 15, 17, 21, 16, 35, 34, 38, 25, 24, 0,  6,  20, 23,
-    18, 22, 28, 4,  29, 5,  19, 36, 39, 8,  12, 11};
-  UInt_t kuGet4ToElink[kuNbGet4PerGbtx] = {
-    24, 7,  1,  3,  31, 33, 25, 2,  37, 12, 14, 39, 38, 11,
-    13, 15, 18, 16, 28, 34, 26, 17, 29, 27, 23, 22, 5,  0,
-    30, 32, 6,  4,  10, 8,  20, 19, 35, 9,  21, 36};
+  UInt_t kuElinkToGet4[kuNbGet4PerGbtx] = {27, 2,  7,  3,  31, 26, 30, 1,  33, 37, 32, 13, 9,  14,
+                                           10, 15, 17, 21, 16, 35, 34, 38, 25, 24, 0,  6,  20, 23,
+                                           18, 22, 28, 4,  29, 5,  19, 36, 39, 8,  12, 11};
+  UInt_t kuGet4ToElink[kuNbGet4PerGbtx] = {24, 7,  1,  3,  31, 33, 25, 2,  37, 12, 14, 39, 38, 11,
+                                           13, 15, 18, 16, 28, 34, 26, 17, 29, 27, 23, 22, 5,  0,
+                                           30, 32, 6,  4,  10, 8,  20, 19, 35, 9,  21, 36};
   for (UInt_t uLinkAsic = 0; uLinkAsic < kuNbGet4PerGbtx; ++uLinkAsic) {
     fvuElinkToGet4[uLinkAsic] = kuElinkToGet4[uLinkAsic];
     fvuGet4ToElink[uLinkAsic] = kuGet4ToElink[uLinkAsic];
@@ -474,12 +454,8 @@ Bool_t CbmDeviceUnpackTofMcbm2018::ReInitContainers() {
 
               if (fviRpcSide[iGbtx] == 0) iStrMap = 31 - iStr;
               if (fviModuleId[iGbtx] > -1)
-                fviRpcChUId[iCh] =
-                  CbmTofAddress::GetUniqueAddress(fviModuleId[iGbtx],
-                                                  iRpcMap,
-                                                  iStrMap,
-                                                  fviRpcSide[iGbtx],
-                                                  fviRpcType[iGbtx]);
+                fviRpcChUId[iCh] = CbmTofAddress::GetUniqueAddress(fviModuleId[iGbtx], iRpcMap, iStrMap,
+                                                                   fviRpcSide[iGbtx], fviRpcType[iGbtx]);
               else
                 fviRpcChUId[iCh] = 0;
               //	 LOG(debug)<<Form("Map Ch %d to Address 0x%08x",iCh,fviRpcChUId[iCh]);
@@ -504,12 +480,8 @@ Bool_t CbmDeviceUnpackTofMcbm2018::ReInitContainers() {
 
               if (fviRpcSide[iGbtx] == 0) iStrMap = 31 - iStr;
               if (fviModuleId[iGbtx] > -1)
-                fviRpcChUId[iCh] =
-                  CbmTofAddress::GetUniqueAddress(fviModuleId[iGbtx],
-                                                  iRpcMap,
-                                                  iStrMap,
-                                                  fviRpcSide[iGbtx],
-                                                  fviRpcType[iGbtx]);
+                fviRpcChUId[iCh] = CbmTofAddress::GetUniqueAddress(fviModuleId[iGbtx], iRpcMap, iStrMap,
+                                                                   fviRpcSide[iGbtx], fviRpcType[iGbtx]);
               else
                 fviRpcChUId[iCh] = 0;
               //	 LOG(DEBUG)<<Form("Map Ch %d to Address 0x%08x",iCh,fviRpcChUId[iCh]);
@@ -524,45 +496,42 @@ Bool_t CbmDeviceUnpackTofMcbm2018::ReInitContainers() {
       {
         LOG(info) << " Map diamond  at GBTX  -  iCh = " << iCh;
         for (UInt_t uFee = 0; uFee < fUnpackPar->GetNrOfFeePerGbtx(); ++uFee) {
-          for (UInt_t uCh = 0; uCh < fUnpackPar->GetNrOfChannelsPerFee();
-               ++uCh) {
+          for (UInt_t uCh = 0; uCh < fUnpackPar->GetNrOfChannelsPerFee(); ++uCh) {
             if (uFee < 4 && (0 == uCh % 4 || uCh < 4)) {
               //  if(  0 == uCh )  {
               fviRpcChUId[iCh] = CbmTofAddress::GetUniqueAddress(
-                fviModuleId[iGbtx],
-                0,
-                uFee * fUnpackPar->GetNrOfChannelsPerFee() / 4 + uCh / 4
-                  + 40 * fviRpcSide[iGbtx],
+                fviModuleId[iGbtx], 0,
+                uFee * fUnpackPar->GetNrOfChannelsPerFee() / 4 + uCh / 4 + 40 * fviRpcSide[iGbtx],
                 //                           0, uFee + 10 * fviRpcSide[iGbtx],
-                0,
-                fviRpcType[iGbtx]);
-              LOG(info) << Form(
-                "Map T0 Ch %d to Address 0x%08x", iCh, fviRpcChUId[iCh]);
-            } else
+                0, fviRpcType[iGbtx]);
+              LOG(info) << Form("Map T0 Ch %d to Address 0x%08x", iCh, fviRpcChUId[iCh]);
+            }
+            else
               fviRpcChUId[iCh] = 0;
 
             iCh++;
           }  // for( UInt_t uCh = 0; uCh < fUnpackPar->GetNrOfChannelsPerFee(); ++uCh )
-        }  // for( UInt_t uFee = 0; uFee < fUnpackPar->GetNrOfFeePerGbtx(); ++uFee )
+        }    // for( UInt_t uFee = 0; uFee < fUnpackPar->GetNrOfFeePerGbtx(); ++uFee )
       } break;
 
       case 78:  // cern-20-gap + ceramic module
       {
         LOG(info) << " Map CERN 20 gap  at GBTX  -  iCh = " << iCh;
+        // clang-format off
         const Int_t StrMap[32] = {0,  1,  2,  3,  4,  31, 5,  6,  7,  30, 8,
                                   9,  10, 29, 11, 12, 13, 14, 28, 15, 16, 17,
                                   18, 27, 26, 25, 24, 23, 22, 21, 20, 19};
-        Int_t iModuleId        = 0;
-        Int_t iModuleType      = 7;
-        Int_t iRpcMap          = 0;
+        // clang-format on
+        Int_t iModuleId   = 0;
+        Int_t iModuleType = 7;
+        Int_t iRpcMap     = 0;
         for (Int_t iFeet = 0; iFeet < 2; iFeet++) {
           for (Int_t iStr = 0; iStr < 32; iStr++) {
             Int_t iStrMap  = 31 - 12 - StrMap[iStr];
             Int_t iSideMap = iFeet;
 
             if (iStrMap < 20)
-              fviRpcChUId[iCh] = CbmTofAddress::GetUniqueAddress(
-                iModuleId, iRpcMap, iStrMap, iSideMap, iModuleType);
+              fviRpcChUId[iCh] = CbmTofAddress::GetUniqueAddress(iModuleId, iRpcMap, iStrMap, iSideMap, iModuleType);
             else
               fviRpcChUId[iCh] = 0;
             iCh++;
@@ -575,8 +544,7 @@ Bool_t CbmDeviceUnpackTofMcbm2018::ReInitContainers() {
         Int_t iModuleId   = 0;
         Int_t iModuleType = 8;
         for (Int_t iRpc = 0; iRpc < 8; iRpc++) {
-          fviRpcChUId[iCh] = CbmTofAddress::GetUniqueAddress(
-            iModuleId, 7 - iRpc, 0, 0, iModuleType);
+          fviRpcChUId[iCh] = CbmTofAddress::GetUniqueAddress(iModuleId, 7 - iRpc, 0, 0, iModuleType);
           iCh++;
         }
         iCh += (24 + 2 * 32);
@@ -616,11 +584,7 @@ Bool_t CbmDeviceUnpackTofMcbm2018::ReInitContainers() {
             }
             if (iSideMap > -1)
               fviRpcChUId[iCh] =
-                CbmTofAddress::GetUniqueAddress(fviModuleId[iGbtx],
-                                                iRpcMap,
-                                                iStrMap,
-                                                iSideMap,
-                                                fviRpcType[iGbtx]);
+                CbmTofAddress::GetUniqueAddress(fviModuleId[iGbtx], iRpcMap, iStrMap, iSideMap, fviRpcType[iGbtx]);
             else
               fviRpcChUId[iCh] = 0;
 
@@ -631,7 +595,7 @@ Bool_t CbmDeviceUnpackTofMcbm2018::ReInitContainers() {
 
       case 6:  // Buc box
       {
-        LOG(info) << " Map Buc box  at GBTX  -  iCh = " << iCh;
+        LOG(info) << " DevMap Buc box  at GBTX  -  iCh = " << iCh;
         const Int_t iRpc[5]  = {0, -1, 0, 1, 1};
         const Int_t iSide[5] = {1, -1, 0, 1, 0};
         for (Int_t iFeet = 0; iFeet < 5; iFeet++) {
@@ -669,11 +633,51 @@ Bool_t CbmDeviceUnpackTofMcbm2018::ReInitContainers() {
                 }
                 if (iFeet > 2) iModuleIdMap = 1;
               } break;
+              case 7: {
+                // clang-format off
+                const Int_t iChMap[160]={
+             	  127, 126,	125, 124,  12,  13,	 14,  15,	7,   6,	  5,   4,  28,	29,	 30,  31, 123, 122,	121, 120,	8,	 9,  10,  11, 107, 106,	105, 104, 108, 109,	110, 111,
+                   39,  38,	 37,  36,  52,	53,	 54,  55,  63,	62,	 61,  60, 128, 129,	130, 131,  43,	42,	 41,  40, 148, 149,	150, 151,  59,	58,	 57,  56, 132, 133,	134, 135,
+          		  139, 138,	137, 136, 140, 141, 142, 143,  99,	98,	 97,  96,  64,	65,	 66,  67, 103, 102,	101, 100,  84,	85,	 86,  87, 155, 154,	153, 152,  68,	69,	 70,  71,
+          		  159, 158,	157, 156, 144, 145,	146, 147,  47,	46,	 45,  44,  76,	77,	 78,  79,  51,	50,	 49,  48,  20,	21,	 22,  23,  35,	34,	 33,  32, 116, 117,	118, 119,
+          		   75,	74,	 73,  72,  92,	93,	 94,  95,  19,	18,	 17,  16,  80,	81,	 82,  83, 115, 114,	113, 112,  24,	25,	 26,  27,  91,	90,	 89,  88,	0,	 1,	 2,	3
+                };
+                // clang-format on
+                Int_t iInd = iFeet * 32 + iStr;
+                Int_t i    = 0;
+                for (; i < 160; i++)
+                  if (iInd == iChMap[i]) break;
+                iStrMap        = i % 32;
+                Int_t iFeetInd = (i - iStrMap) / 32;
+                switch (iFeet) {
+                  case 0:
+                    iRpcMap  = 0;
+                    iSideMap = 1;
+                    break;
+                  case 1:
+                    iRpcMap  = 1;
+                    iSideMap = 1;
+                    break;
+                  case 2:
+                    iRpcMap  = 1;
+                    iSideMap = 0;
+                    break;
+                  case 3:
+                    iRpcMap  = 0;
+                    iSideMap = 0;
+                    break;
+                  case 4: iSideMap = -1; break;
+                }
+                iModuleIdMap = fviModuleId[iGbtx];
+                LOG(info) << "Buc of GBTX " << iGbtx
+                          << Form(", Feet %1d, Str %2d, i %3d, FeetInd %1d, Rpc %1d, Side %1d, Str %2d ", iFeet, iStr,
+                                  i, iFeetInd, iRpcMap, iSideMap, iStrMap);
+              } break;
               default:;
             }
             if (iSideMap > -1)
-              fviRpcChUId[iCh] = CbmTofAddress::GetUniqueAddress(
-                iModuleIdMap, iRpcMap, iStrMap, iSideMap, fviRpcType[iGbtx]);
+              fviRpcChUId[iCh] =
+                CbmTofAddress::GetUniqueAddress(iModuleIdMap, iRpcMap, iStrMap, iSideMap, fviRpcType[iGbtx]);
             else
               fviRpcChUId[iCh] = 0;
 
@@ -687,77 +691,46 @@ Bool_t CbmDeviceUnpackTofMcbm2018::ReInitContainers() {
         iCh += 160;
         break;
 
-      default:
-        LOG(error) << "Invalid Type  specifier for Gbtx " << iGbtx << ": "
-                   << fviRpcType[iGbtx];
+      default: LOG(error) << "Invalid Type  specifier for Gbtx " << iGbtx << ": " << fviRpcType[iGbtx];
     }
   }
 
   for (UInt_t i = 0; i < uNrOfChannels; i = i + 8) {
     if (i % 64 == 0) LOG(info) << " Index " << i;
-    LOG(info) << Form("0x%08x 0x%08x 0x%08x 0x%08x 0x%08x 0x%08x 0x%08x 0x%08x",
-                      fviRpcChUId[i],
-                      fviRpcChUId[i + 1],
-                      fviRpcChUId[i + 2],
-                      fviRpcChUId[i + 3],
-                      fviRpcChUId[i + 4],
-                      fviRpcChUId[i + 5],
-                      fviRpcChUId[i + 6],
-                      fviRpcChUId[i + 7]);
+    LOG(info) << Form("0x%08x 0x%08x 0x%08x 0x%08x 0x%08x 0x%08x 0x%08x 0x%08x", fviRpcChUId[i], fviRpcChUId[i + 1],
+                      fviRpcChUId[i + 2], fviRpcChUId[i + 3], fviRpcChUId[i + 4], fviRpcChUId[i + 5],
+                      fviRpcChUId[i + 6], fviRpcChUId[i + 7]);
   }  // for( UInt_t i = 0; i < uNrOfChannels; ++i)
 
   return kTRUE;
 }
 
-void CbmDeviceUnpackTofMcbm2018::CreateHistograms() {
+void CbmDeviceUnpackTofMcbm2018::CreateHistograms()
+{
   LOG(info) << "create Histos for " << fuNrOfGdpbs << " gDPBs ";
 
   fhRawTDigEvT0 =
-    new TH1F(Form("Raw_TDig-EvT0"),
-             Form("Raw digi time difference to 1st digi ; time [ns]; cts"),
-             500,
-             0,
-             100.);
+    new TH1F(Form("Raw_TDig-EvT0"), Form("Raw digi time difference to 1st digi ; time [ns]; cts"), 500, 0, 100.);
   //   fHM->Add( Form("Raw_TDig-EvT0"), fhRawTDigEvT0);
 
   fhRawTDigRef0 =
-    new TH1F(Form("Raw_TDig-Ref0"),
-             Form("Raw digi time difference to Ref ; time [ns]; cts"),
-             6000,
-             -10000,
-             50000);
+    new TH1F(Form("Raw_TDig-Ref0"), Form("Raw digi time difference to Ref ; time [ns]; cts"), 6000, -10000, 50000);
   //   fHM->Add( Form("Raw_TDig-Ref0"), fhRawTDigRef0);
 
   fhRawTDigRef =
-    new TH1F(Form("Raw_TDig-Ref"),
-             Form("Raw digi time difference to Ref ; time [ns]; cts"),
-             6000,
-             -1000,
-             5000);
+    new TH1F(Form("Raw_TDig-Ref"), Form("Raw digi time difference to Ref ; time [ns]; cts"), 6000, -1000, 5000);
   //   fHM->Add( Form("Raw_TDig-Ref"), fhRawTDigRef);
 
-  fhRawTRefDig0 =
-    new TH1F(Form("Raw_TRef-Dig0"),
-             Form("Raw Ref time difference to last digi  ; time [ns]; cts"),
-             9999,
-             -50000,
-             50000);
+  fhRawTRefDig0 = new TH1F(Form("Raw_TRef-Dig0"), Form("Raw Ref time difference to last digi  ; time [ns]; cts"), 9999,
+                           -50000, 50000);
   //   fHM->Add( Form("Raw_TRef-Dig0"), fhRawTRefDig0);
 
   fhRawTRefDig1 =
-    new TH1F(Form("Raw_TRef-Dig1"),
-             Form("Raw Ref time difference to last digi  ; time [ns]; cts"),
-             9999,
-             -5000,
-             5000);
+    new TH1F(Form("Raw_TRef-Dig1"), Form("Raw Ref time difference to last digi  ; time [ns]; cts"), 9999, -5000, 5000);
   //   fHM->Add( Form("Raw_TRef-Dig1"), fhRawTRefDig1);
 
-  fhRawDigiLastDigi =
-    new TH1F(Form("Raw_Digi-LastDigi"),
-             Form("Raw Digi time difference to last digi  ; time [ns]; cts"),
-             9999,
-             -5000,
-             5000);
+  fhRawDigiLastDigi = new TH1F(Form("Raw_Digi-LastDigi"),
+                               Form("Raw Digi time difference to last digi  ; time [ns]; cts"), 9999, -5000, 5000);
   //                                 9999, -5000000, 5000000);
   //   fHM->Add( Form("Raw_Digi-LastDigi"), fhRawDigiLastDigi);
 
@@ -765,23 +738,13 @@ void CbmDeviceUnpackTofMcbm2018::CreateHistograms() {
   fhChCount.resize(fuNrOfGdpbs);
   fhChanCoinc.resize(fuNrOfGdpbs * fuNrOfFeePerGdpb / 2);
   for (UInt_t uGdpb = 0; uGdpb < fuNrOfGdpbs; uGdpb++) {
-    fhRawTotCh[uGdpb] =
-      new TH2F(Form("Raw_Tot_gDPB_%02u", uGdpb),
-               Form("Raw TOT gDPB %02u; channel; TOT [bin]", uGdpb),
-               fuNrOfChannelsPerGdpb,
-               0.,
-               fuNrOfChannelsPerGdpb,
-               256,
-               0.,
-               256.);
+    fhRawTotCh[uGdpb] = new TH2F(Form("Raw_Tot_gDPB_%02u", uGdpb), Form("Raw TOT gDPB %02u; channel; TOT [bin]", uGdpb),
+                                 fuNrOfChannelsPerGdpb, 0., fuNrOfChannelsPerGdpb, 256, 0., 256.);
     //      fHM->Add( Form("Raw_Tot_gDPB_%02u", uGdpb), fhRawTotCh[ uGdpb ]);
 
     fhChCount[uGdpb] =
-      new TH1I(Form("ChCount_gDPB_%02u", uGdpb),
-               Form("Channel counts gDPB %02u; channel; Hits", uGdpb),
-               fuNrOfChannelsPerGdpb,
-               0.,
-               fuNrOfChannelsPerGdpb);
+      new TH1I(Form("ChCount_gDPB_%02u", uGdpb), Form("Channel counts gDPB %02u; channel; Hits", uGdpb),
+               fuNrOfChannelsPerGdpb, 0., fuNrOfChannelsPerGdpb);
     //      fHM->Add( Form("ChCount_gDPB_%02u", uGdpb), fhChCount[ uGdpb ]);
     /*
 	for( UInt_t uLeftFeb = uGdpb*fuNrOfFebsPerGdpb / 2;
@@ -795,34 +758,20 @@ void CbmDeviceUnpackTofMcbm2018::CreateHistograms() {
 	} // for( UInt_t uLeftFeb = 0; uLeftFeb < fuNrOfFebsPerGdpb / 2; uLeftFeb ++ )
       */
     fhChanCoinc[uGdpb] =
-      new TH2F(Form("fhChanCoinc_%02u", uGdpb),
-               Form("Channels Coincidence %02u; Left; Right", uGdpb),
-               fuNrOfChannelsPerGdpb,
-               0.,
-               fuNrOfChannelsPerGdpb,
-               fuNrOfChannelsPerGdpb,
-               0.,
-               fuNrOfChannelsPerGdpb);
+      new TH2F(Form("fhChanCoinc_%02u", uGdpb), Form("Channels Coincidence %02u; Left; Right", uGdpb),
+               fuNrOfChannelsPerGdpb, 0., fuNrOfChannelsPerGdpb, fuNrOfChannelsPerGdpb, 0., fuNrOfChannelsPerGdpb);
   }  // for( UInt_t uGdpb = 0; uGdpb < fuMinNbGdpb; uGdpb ++)
-  fhDetChanCoinc = new TH2F("fhDetChanCoinc",
-                            "Det Channels Coincidence; Left; Right",
-                            32,
-                            0.,
-                            32,
-                            32,
-                            0.,
-                            32);
+  fhDetChanCoinc = new TH2F("fhDetChanCoinc", "Det Channels Coincidence; Left; Right", 32, 0., 32, 32, 0., 32);
 }
 
 // handler is called whenever a message arrives on "data", with a reference to the message and a sub-channel index (here 0)
-bool CbmDeviceUnpackTofMcbm2018::HandleData(FairMQMessagePtr& msg,
-                                            int /*index*/) {
+bool CbmDeviceUnpackTofMcbm2018::HandleData(FairMQMessagePtr& msg, int /*index*/)
+{
   // Don't do anything with the data
   // Maybe add an message counter which counts the incomming messages and add
   // an output
   fNumMessages++;
-  LOG(debug) << "Received message number " << fNumMessages << " with size "
-             << msg->GetSize();
+  LOG(debug) << "Received message number " << fNumMessages << " with size " << msg->GetSize();
 
   std::string msgStr(static_cast<char*>(msg->GetData()), msg->GetSize());
   std::istringstream iss(msgStr);
@@ -837,27 +786,24 @@ bool CbmDeviceUnpackTofMcbm2018::HandleData(FairMQMessagePtr& msg,
 
   BuildTint(0);
 
-  if (fNumMessages % 10000 == 0)
-    LOG(info) << "Processed " << fNumMessages << " time slices";
+  if (fNumMessages % 10000 == 0) LOG(info) << "Processed " << fNumMessages << " time slices";
 
   return true;
 }
 
-bool CbmDeviceUnpackTofMcbm2018::HandleParts(FairMQParts& parts,
-                                             int /*index*/) {
+bool CbmDeviceUnpackTofMcbm2018::HandleParts(FairMQParts& parts, int /*index*/)
+{
   // Don't do anything with the data
   // Maybe add an message counter which counts the incomming messages and add
   // an output
   fNumMessages++;
-  LOG(debug) << "Received message number " << fNumMessages << " with "
-             << parts.Size() << " parts";
+  LOG(debug) << "Received message number " << fNumMessages << " with " << parts.Size() << " parts";
 
   fles::StorableTimeslice ts {0};
 
   switch (fiSelectComponents) {
     case 0: {
-      std::string msgStr(static_cast<char*>(parts.At(0)->GetData()),
-                         (parts.At(0))->GetSize());
+      std::string msgStr(static_cast<char*>(parts.At(0)->GetData()), (parts.At(0))->GetSize());
       std::istringstream iss(msgStr);
       boost::archive::binary_iarchive inputArchive(iss);
       inputArchive >> ts;
@@ -877,8 +823,7 @@ bool CbmDeviceUnpackTofMcbm2018::HandleParts(FairMQParts& parts,
 
       uint ncomp = parts.Size();
       for (uint i = 0; i < ncomp; i++) {
-        std::string msgStr(static_cast<char*>(parts.At(i)->GetData()),
-                           (parts.At(i))->GetSize());
+        std::string msgStr(static_cast<char*>(parts.At(i)->GetData()), (parts.At(i))->GetSize());
         std::istringstream iss(msgStr);
         boost::archive::binary_iarchive inputArchive(iss);
         //fles::StorableTimeslice component{i};
@@ -886,8 +831,7 @@ bool CbmDeviceUnpackTofMcbm2018::HandleParts(FairMQParts& parts,
 
         //      CheckTimeslice(component);
         fUnpackerAlgo->AddMsComponentToList(0, 0x60);  // TOF data
-        LOG(debug) << "HandleParts message " << fNumMessages << " with indx "
-                   << component.index();
+        LOG(debug) << "HandleParts message " << fNumMessages << " with indx " << component.index();
         DoUnpack(component, 0);
       }
     } break;
@@ -896,14 +840,13 @@ bool CbmDeviceUnpackTofMcbm2018::HandleParts(FairMQParts& parts,
 
   BuildTint(0);
 
-  if (fNumMessages % 10000 == 0)
-    LOG(info) << "Processed " << fNumMessages << " time slices";
+  if (fNumMessages % 10000 == 0) LOG(info) << "Processed " << fNumMessages << " time slices";
 
   return true;
 }
 
-bool CbmDeviceUnpackTofMcbm2018::HandleMessage(FairMQMessagePtr& msg,
-                                               int /*index*/) {
+bool CbmDeviceUnpackTofMcbm2018::HandleMessage(FairMQMessagePtr& msg, int /*index*/)
+{
   const char* cmd    = (char*) (msg->GetData());
   const char cmda[4] = {*cmd};
   LOG(info) << "Handle message " << cmd << ", " << cmd[0];
@@ -926,15 +869,13 @@ bool CbmDeviceUnpackTofMcbm2018::HandleMessage(FairMQMessagePtr& msg,
   return true;
 }
 
-Bool_t CbmDeviceUnpackTofMcbm2018::DoUnpack(const fles::Timeslice& ts,
-                                            size_t component) {
-  LOG(debug) << "Timeslice " << ts.index() << " contains "
-             << ts.num_microslices(component) << " microslices of component "
-             << component;
+Bool_t CbmDeviceUnpackTofMcbm2018::DoUnpack(const fles::Timeslice& ts, size_t component)
+{
+  LOG(debug) << "Timeslice " << ts.index() << " contains " << ts.num_microslices(component)
+             << " microslices of component " << component;
 
   if (kFALSE == fUnpackerAlgo->ProcessTs(ts)) {
-    LOG(error) << "Failed processing TS " << ts.index()
-               << " in unpacker algorithm class";
+    LOG(error) << "Failed processing TS " << ts.index() << " in unpacker algorithm class";
     return kTRUE;
   }  // if( kFALSE == fUnpackerAlgo->ProcessTs( ts ) )
 
@@ -950,8 +891,7 @@ Bool_t CbmDeviceUnpackTofMcbm2018::DoUnpack(const fles::Timeslice& ts,
         });
    */
 
-  LOG(debug) << "Insert " << vDigi.size()
-             << " digis into DAQ buffer  with size " << fBuffer->GetSize();
+  LOG(debug) << "Insert " << vDigi.size() << " digis into DAQ buffer  with size " << fBuffer->GetSize();
 
   for (auto digi : vDigi) {
     // copy Digi for insertion into DAQ buffer
@@ -959,15 +899,10 @@ Bool_t CbmDeviceUnpackTofMcbm2018::DoUnpack(const fles::Timeslice& ts,
 
     //if( (fDigi->GetAddress() & 0x000F00F ) != fiAddrRef )  fDigi->SetTime(fDigi->GetTime()+fdToffTof); // shift all Tof Times for v14a geometries
     if ((fDigi->GetAddress() & 0x000780F) != fiAddrRef)
-      fDigi->SetTime(fDigi->GetTime()
-                     + fdToffTof);  // shift all Tof Times for V21a
+      fDigi->SetTime(fDigi->GetTime() + fdToffTof);  // shift all Tof Times for V21a
 
-    LOG(debug) << "BufferInsert digi "
-               << Form(
-                    "0x%08x at %012.2f", fDigi->GetAddress(), fDigi->GetTime())
-               << Form(", first %012.2f, last %012.2f, size %u",
-                       fBuffer->GetTimeFirst(),
-                       fBuffer->GetTimeLast(),
+    LOG(debug) << "BufferInsert digi " << Form("0x%08x at %012.2f", fDigi->GetAddress(), fDigi->GetTime())
+               << Form(", first %012.2f, last %012.2f, size %u", fBuffer->GetTimeFirst(), fBuffer->GetTimeLast(),
                        fBuffer->GetSize());
 
     fBuffer->InsertData<CbmTofDigi>(fDigi);
@@ -978,7 +913,8 @@ Bool_t CbmDeviceUnpackTofMcbm2018::DoUnpack(const fles::Timeslice& ts,
   return kTRUE;
 }
 
-void CbmDeviceUnpackTofMcbm2018::BuildTint(int iMode = 0) {
+void CbmDeviceUnpackTofMcbm2018::BuildTint(int iMode = 0)
+{
   // iMode - sending condition
   // 0 (default)- build time interval only if last buffer entry is older the start + TSLength
   // 1 (finish), empty buffer without checking
@@ -987,8 +923,7 @@ void CbmDeviceUnpackTofMcbm2018::BuildTint(int iMode = 0) {
   double fdMaxDeltaT = (double) fiReqTint;  // in ns
 
   LOG(debug) << "BuildTint: Buffer size " << fBuffer->GetSize() << ", DeltaT "
-             << (fBuffer->GetTimeLast() - fBuffer->GetTimeFirst()) / 1.E9
-             << " s";
+             << (fBuffer->GetTimeLast() - fBuffer->GetTimeFirst()) / 1.E9 << " s";
   CbmTbDaqBuffer::Data data;
   CbmTofDigi* digi;
 
@@ -1008,21 +943,16 @@ void CbmDeviceUnpackTofMcbm2018::BuildTint(int iMode = 0) {
 
     Double_t dTEnd    = digi->GetTime() + fdMaxDeltaT;
     Double_t dTEndMax = digi->GetTime() + 2 * fdMaxDeltaT;
-    LOG(debug) << Form(
-      "Next event at %f until %f, max %f ", digi->GetTime(), dTEnd, dTEndMax);
+    LOG(debug) << Form("Next event at %f until %f, max %f ", digi->GetTime(), dTEnd, dTEndMax);
 
     if (dTEnd > fTimeBufferLast) {
       LOG(warn) << Form("Remaining buffer < %f with %d entries is not "
                         "sufficient for digi ending at %f -> skipped ",
-                        fTimeBufferLast,
-                        fBuffer->GetSize(),
-                        dTEnd);
+                        fTimeBufferLast, fBuffer->GetSize(), dTEnd);
       return;
     }
 
-    LOG(debug) << "BuildTint0 with digi "
-               << Form(
-                    "0x%08x at %012.2f", digi->GetAddress(), digi->GetTime());
+    LOG(debug) << "BuildTint0 with digi " << Form("0x%08x at %012.2f", digi->GetAddress(), digi->GetTime());
 
     Bool_t bDet[fiReqDigiAddr.size()][2];
     for (UInt_t i = 0; i < fiReqDigiAddr.size(); i++)
@@ -1039,26 +969,33 @@ void CbmDeviceUnpackTofMcbm2018::BuildTint(int iMode = 0) {
     //const Int_t AddrMask=0x003FFFFF;
     const Int_t AddrMask = 0x001FFFFF;
     Bool_t bOut          = kFALSE;
+    Int_t iBucMul        = 0;
 
     while (data.second != ECbmModuleId::kNotExist) {  // build digi array
       digi = boost::any_cast<CbmTofDigi*>(data.first);
-      LOG(debug) << "GetNextData " << digi << ", " << data.second << ",  "
-                 << Form("%f %f", digi->GetTime(), dTEnd) << ", Mul " << nDigi;
+      LOG(debug) << "GetNextData " << digi << ", " << data.second << ",  " << Form("%f %f", digi->GetTime(), dTEnd)
+                 << ", Mul " << nDigi;
       assert(digi);
 
       if (nDigi == vdigi.size()) vdigi.resize(nDigi + 100);
       vdigi[nDigi++] = digi;
+
+      Int_t iAddr = digi->GetAddress() & AddrMask;
+      if (iAddr == 0x00003006 || iAddr == 0x0000b006) {
+        iBucMul++;
+        LOG(debug) << Form("Event %10d: BucMul %2d, addr 0x%08x, side %d, strip %2d, rpc %d", fEventHeader[0], iBucMul,
+                           digi->GetAddress(), (Int_t) digi->GetSide(), (Int_t) digi->GetChannel(),
+                           (Int_t) digi->GetRpc());
+      }
       for (UInt_t i = 0; i < fiReqDigiAddr.size(); i++)
         if ((digi->GetAddress() & AddrMask) == fiReqDigiAddr[i]) {
           Int_t j    = ((CbmTofDigi*) digi)->GetSide();
           bDet[i][j] = kTRUE;
           if (fiReqDigiAddr[i] == (Int_t) fiReqBeam) {
             bBeam = kTRUE;
-            LOG(debug) << "Found ReqBeam at index " << nDigi - 1 << ", req "
-                       << i;
+            LOG(debug) << "Found ReqBeam at index " << nDigi - 1 << ", req " << i;
           }
-          if ((UInt_t) fiReqDigiAddr[i] == fiAddrRef)
-            bDet[i][1] = kTRUE;  // diamond with pad readout
+          if ((UInt_t) fiReqDigiAddr[i] == fiAddrRef) bDet[i][1] = kTRUE;  // diamond with pad readout
           // if ( (fiReqDigiAddr[i] & 0x0000F00F ) == 0x00008006) bDet[i][1]=kTRUE; // ceramic with pad readout
           Int_t str = ((CbmTofDigi*) digi)->GetChannel();
 
@@ -1068,21 +1005,16 @@ void CbmDeviceUnpackTofMcbm2018::BuildTint(int iMode = 0) {
                 case 0:
                 case 1:
                   if (str == 31)
-                    if (digi->GetTot() > fiPulTotMin
-                        && digi->GetTot() < fiPulTotMax)
-                      bPul[i][0] = kTRUE;
+                    if (digi->GetTot() > fiPulTotMin && digi->GetTot() < fiPulTotMax) bPul[i][0] = kTRUE;
                   if (str == 0) bPul[i][1] = kFALSE;
-                  if (
-                    (UInt_t) fiReqDigiAddr[i]
-                    == fiAddrRef) {  //special mapping for MAr2019 diamond (T0)
+                  if ((UInt_t) fiReqDigiAddr[i] == fiAddrRef) {  //special mapping for MAr2019 diamond (T0)
                     if (str == 0) bPul[i][0] = kTRUE;
                     if (str == 40) bPul[i][1] = kTRUE;
                   }
                   break;
                 case 2:
                   if (str == 0)
-                    if (digi->GetTot() > fiPulTotMin
-                        && digi->GetTot() < fiPulTotMax) {
+                    if (digi->GetTot() > fiPulTotMin && digi->GetTot() < fiPulTotMax) {
                       bPul[i][0] = kTRUE;
                       if ((fiReqDigiAddr[i] & 0x000FF00F) == 0x00078006) {
                         bPul[i][1] = kTRUE;   // ceramic with pad readout
@@ -1100,16 +1032,12 @@ void CbmDeviceUnpackTofMcbm2018::BuildTint(int iMode = 0) {
                 case 1:
                   if (str == 31) bPul[i][0] = kFALSE;
                   if (str == 0)
-                    if (digi->GetTot() > fiPulTotMin
-                        && digi->GetTot() < fiPulTotMax)
-                      bPul[i][1] = kTRUE;
+                    if (digi->GetTot() > fiPulTotMin && digi->GetTot() < fiPulTotMax) bPul[i][1] = kTRUE;
                   break;
                 case 2:
                   if (str == 0) bPul[i][0] = kFALSE;
                   if (str == 31)
-                    if (digi->GetTot() > fiPulTotMin
-                        && digi->GetTot() < fiPulTotMax)
-                      bPul[i][1] = kTRUE;
+                    if (digi->GetTot() > fiPulTotMin && digi->GetTot() < fiPulTotMax) bPul[i][1] = kTRUE;
                   break;
                 default:;
               }
@@ -1119,8 +1047,7 @@ void CbmDeviceUnpackTofMcbm2018::BuildTint(int iMode = 0) {
         }
       //if(bOut) LOG(info)<<Form("Found 0x%08x, Req 0x%08x ", digi->GetAddress(), fiReqDigiAddr);
       if (dTEnd - digi->GetTime() < fdMaxDeltaT * 0.5) {
-        if (digi->GetTime() + fdMaxDeltaT * 0.5 < dTEndMax)
-          dTEnd = digi->GetTime() + fdMaxDeltaT * 0.5;
+        if (digi->GetTime() + fdMaxDeltaT * 0.5 < dTEndMax) dTEnd = digi->GetTime() + fdMaxDeltaT * 0.5;
         else
           dTEnd = dTEndMax;
       };
@@ -1134,18 +1061,17 @@ void CbmDeviceUnpackTofMcbm2018::BuildTint(int iMode = 0) {
       LOG(debug) << vdigi[iDigi]->ToString();
 
     UInt_t iDetMul = 0;
-    if (fiReqDigiAddr.size() == 0)
-      bOut = kTRUE;  // output everything
+    if (fiReqDigiAddr.size() == 0) bOut = kTRUE;  // output everything
     else {
       if (fiReqMode == 0) {  // check for presence of requested detectors
         for (UInt_t i = 0; i < fiReqDigiAddr.size(); i++)
-          if (bDet[i][0] == kFALSE || bDet[i][1] == kFALSE)
-            break;
+          if (bDet[i][0] == kFALSE || bDet[i][1] == kFALSE) break;
           else if (i == fiReqDigiAddr.size() - 1) {
             bOut    = kTRUE;
             iDetMul = i;
           }
-      } else {  // check for presence of any known detector
+      }
+      else {  // check for presence of any known detector
         for (UInt_t i = 0; i < fiReqDigiAddr.size(); i++)
           if (bDet[i][0] == kTRUE && bDet[i][1] == kTRUE) { iDetMul++; }
         if (iDetMul >= fiReqMode) { bOut = kTRUE; }
@@ -1153,8 +1079,8 @@ void CbmDeviceUnpackTofMcbm2018::BuildTint(int iMode = 0) {
     }
 
     if (bOut && fiReqDigiAddr.size() > 1) {
-      LOG(debug) << "Found Req coinc in event with " << nDigi << " digis in "
-                 << iDetMul << " detectors, dTEnd = " << dTEnd;
+      LOG(debug) << "Found Req coinc in event with " << nDigi << " digis in " << iDetMul
+                 << " detectors, dTEnd = " << dTEnd;
     }
 
     // determine Pulser status
@@ -1167,15 +1093,13 @@ void CbmDeviceUnpackTofMcbm2018::BuildTint(int iMode = 0) {
       LOG(debug) << "@Event " << fEventHeader[0] << ": iPulMul = " << iPulMul;
       bOut = kTRUE;
     }
-    LOG(debug) << "Process Ev " << fEventHeader[0]
-               << "  with iDetMul = " << iDetMul << ", iPulMul = " << iPulMul;
+    LOG(debug) << "Process Ev " << fEventHeader[0] << "  with iDetMul = " << iDetMul << ", iPulMul = " << iPulMul;
 
     fEventHeader[0]++;
 
     if ((Int_t) fiReqBeam > -1) {
-      if (bBeam) {
-        LOG(debug) << "Beam counter is present ";
-      } else {
+      if (bBeam) { LOG(debug) << "Beam counter is present "; }
+      else {
         LOG(debug) << "Beam counter is not present";
         bOut = kFALSE;  // request beam counter for event
       }
@@ -1198,7 +1122,8 @@ void CbmDeviceUnpackTofMcbm2018::BuildTint(int iMode = 0) {
 
       for (UInt_t iDigi = 0; iDigi < nDigi; iDigi++)
         delete vdigi[iDigi];
-    } else {
+    }
+    else {
       LOG(debug) << " BuildTint cleanup of " << nDigi << " digis";
       for (UInt_t iDigi = 0; iDigi < nDigi; iDigi++) {
         //	vdigi[iDigi]->Delete();
@@ -1210,12 +1135,11 @@ void CbmDeviceUnpackTofMcbm2018::BuildTint(int iMode = 0) {
   }
 }
 
-bool CbmDeviceUnpackTofMcbm2018::SendDigis(std::vector<CbmTofDigi*> vdigi,
-                                           int idx) {
-  LOG(debug) << "Send Digis for event " << fNumTint << " with size "
-             << vdigi.size() << Form(" at %p ", &vdigi);
-  LOG(debug) << "EventHeader: " << fEventHeader[0] << " " << fEventHeader[1]
-             << " " << fEventHeader[2] << " " << fEventHeader[3];
+bool CbmDeviceUnpackTofMcbm2018::SendDigis(std::vector<CbmTofDigi*> vdigi, int idx)
+{
+  LOG(debug) << "Send Digis for event " << fNumTint << " with size " << vdigi.size() << Form(" at %p ", &vdigi);
+  LOG(debug) << "EventHeader: " << fEventHeader[0] << " " << fEventHeader[1] << " " << fEventHeader[2] << " "
+             << fEventHeader[3];
 
   //  Int_t NDigi=vdigi.size();
 
@@ -1329,8 +1253,7 @@ bool CbmDeviceUnpackTofMcbm2018::SendDigis(std::vector<CbmTofDigi*> vdigi,
   // successfull transfer will return number of bytes
   // transfered (can be 0 if sending an empty message).
 
-  LOG(debug) << "Send data to channel " << idx << " "
-             << fChannelsToSend[idx][0];
+  LOG(debug) << "Send data to channel " << idx << " " << fChannelsToSend[idx][0];
 
 
   //  if (Send(msg, fChannelsToSend[idx][0]) < 0) {
@@ -1352,24 +1275,17 @@ bool CbmDeviceUnpackTofMcbm2018::SendDigis(std::vector<CbmTofDigi*> vdigi,
   return true;
 }
 
-void CbmDeviceUnpackTofMcbm2018::AddReqDigiAddr(Int_t iAddr) {
+void CbmDeviceUnpackTofMcbm2018::AddReqDigiAddr(Int_t iAddr)
+{
   UInt_t iNReq = fiReqDigiAddr.size();
   for (UInt_t i = 0; i < iNReq; i++)
-    if (fiReqDigiAddr[i] == iAddr)
-      return;  // det already present, avoid double counting
-  fiReqDigiAddr.resize(iNReq
-                       + 1);  // hopefully the old entries are preserved ...
+    if (fiReqDigiAddr[i] == iAddr) return;  // det already present, avoid double counting
+  fiReqDigiAddr.resize(iNReq + 1);          // hopefully the old entries are preserved ...
   fiReqDigiAddr[iNReq] = iAddr;
-  LOG(info) << Form("Request Digi Address 0x%08x ", iAddr);
+  LOG(info) << Form("Request Digi Address 0x%08x at index %d", iAddr, iNReq);
 }
 
-void CbmDeviceUnpackTofMcbm2018::SetIgnoreOverlapMs(Bool_t bFlagIn) {
-  fUnpackerAlgo->SetIgnoreOverlapMs(bFlagIn);
-}
+void CbmDeviceUnpackTofMcbm2018::SetIgnoreOverlapMs(Bool_t bFlagIn) { fUnpackerAlgo->SetIgnoreOverlapMs(bFlagIn); }
 
-void CbmDeviceUnpackTofMcbm2018::SetTimeOffsetNs(Double_t dOffsetIn) {
-  fUnpackerAlgo->SetTimeOffsetNs(dOffsetIn);
-}
-void CbmDeviceUnpackTofMcbm2018::SetDiamondDpbIdx(UInt_t uIdx) {
-  fUnpackerAlgo->SetDiamondDpbIdx(uIdx);
-}
+void CbmDeviceUnpackTofMcbm2018::SetTimeOffsetNs(Double_t dOffsetIn) { fUnpackerAlgo->SetTimeOffsetNs(dOffsetIn); }
+void CbmDeviceUnpackTofMcbm2018::SetDiamondDpbIdx(UInt_t uIdx) { fUnpackerAlgo->SetDiamondDpbIdx(uIdx); }

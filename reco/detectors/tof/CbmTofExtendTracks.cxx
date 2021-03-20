@@ -4,11 +4,11 @@
 // -------------------------------------------------------------------------
 
 #include "CbmTofExtendTracks.h"
-#include "CbmDefs.h"
-#include "CbmTofAddress.h"  // in cbmdata/tof
 
+#include "CbmDefs.h"
 #include "CbmEvent.h"
 #include "CbmMatch.h"
+#include "CbmTofAddress.h"  // in cbmdata/tof
 #include "CbmTofCalibrator.h"
 #include "CbmTofCell.h"             // in tof/TofData
 #include "CbmTofCreateDigiPar.h"    // in tof/TofTools
@@ -26,7 +26,6 @@
 #include "CbmTofTrackletParam.h"
 #include "CbmTofTrackletTools.h"
 #include "CbmVertex.h"
-#include "LKFMinuit.h"
 
 #include "FairLogger.h"
 #include "FairRootFileSink.h"
@@ -53,6 +52,8 @@
 #include <iostream>
 #include <vector>
 
+#include "LKFMinuit.h"
+
 using std::cout;
 using std::endl;
 using std::vector;
@@ -67,17 +68,15 @@ ClassImp(CbmTofExtendTracks);
 CbmTofExtendTracks* CbmTofExtendTracks::fInstance = 0;
 
 // -----   Default constructor   -------------------------------------------
-CbmTofExtendTracks::CbmTofExtendTracks()
-  : CbmTofExtendTracks::CbmTofExtendTracks("TofExtendTracks", "Main", NULL) {
+CbmTofExtendTracks::CbmTofExtendTracks() : CbmTofExtendTracks::CbmTofExtendTracks("TofExtendTracks", "Main", NULL)
+{
   if (!fInstance) fInstance = this;
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Standard constructor   ------------------------------------------
-CbmTofExtendTracks::CbmTofExtendTracks(const char* name,
-                                       const char* /*title*/,
-                                       CbmTofTrackFinder* finder)
+CbmTofExtendTracks::CbmTofExtendTracks(const char* name, const char* /*title*/, CbmTofTrackFinder* finder)
   : FairTask(name)
   , fFinder(finder)
   , fFitter(NULL)
@@ -162,21 +161,24 @@ CbmTofExtendTracks::CbmTofExtendTracks(const char* name,
   , fiStationUT(-1)
   , fiCutStationMaxHitMul(1000)
   , fiNTrkTofMax(1000)
-  , fiEvent(0) {
+  , fiEvent(0)
+{
   if (!fInstance) fInstance = this;
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Destructor   ----------------------------------------------------
-CbmTofExtendTracks::~CbmTofExtendTracks() {
+CbmTofExtendTracks::~CbmTofExtendTracks()
+{
   if (fInstance == this) fInstance = 0;
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Public method Init (abstract in base class)  --------------------
-InitStatus CbmTofExtendTracks::Init() {
+InitStatus CbmTofExtendTracks::Init()
+{
 
   fTrackletTools = new CbmTofTrackletTools();  // initialize tools
 
@@ -191,8 +193,7 @@ InitStatus CbmTofExtendTracks::Init() {
   ioman->InitSink();
 
   fEventsColl = dynamic_cast<TClonesArray*>(ioman->GetObject("Event"));
-  if (!fEventsColl)
-    fEventsColl = dynamic_cast<TClonesArray*>(ioman->GetObject("CbmEvent"));
+  if (!fEventsColl) fEventsColl = dynamic_cast<TClonesArray*>(ioman->GetObject("CbmEvent"));
   if (!fEventsColl) { LOG(fatal) << "CbmEvent not found in input file"; }
 
   // Get TOF hit Array
@@ -203,7 +204,8 @@ InitStatus CbmTofExtendTracks::Init() {
       LOG(fatal) << "-W- CbmTofExtendTracks::Init: No TofHit array!";
       return kERROR;
     }
-  } else {
+  }
+  else {
     LOG(info) << "-I- CbmTofExtendTracks::Init: TofCalHit array!";
   }
 
@@ -246,7 +248,8 @@ InitStatus CbmTofExtendTracks::Init() {
 }
 // -------------------------------------------------------------------------
 /************************************************************************************/
-Bool_t CbmTofExtendTracks::LoadCalParameter() {
+Bool_t CbmTofExtendTracks::LoadCalParameter()
+{
   UInt_t NSt = fMapStationZ.size();
   fvToff.resize(NSt);
   for (uint i = 0; i < NSt; i++)
@@ -344,7 +347,8 @@ Bool_t CbmTofExtendTracks::LoadCalParameter() {
 //-------------------------------------------------------------------------------------------------
 Bool_t CbmTofExtendTracks::InitParameters() { return kTRUE; }
 // -----  SetParContainers -------------------------------------------------
-void CbmTofExtendTracks::SetParContainers() {
+void CbmTofExtendTracks::SetParContainers()
+{
   /*
   FairRunAna* ana     = FairRunAna::Instance();
   FairRuntimeDb* rtdb = ana->GetRuntimeDb();
@@ -352,22 +356,20 @@ void CbmTofExtendTracks::SetParContainers() {
 }
 // -------------------------------------------------------------------------
 
-Bool_t CbmTofExtendTracks::UpdateCalHistos() {
+Bool_t CbmTofExtendTracks::UpdateCalHistos()
+{
   if (fiEvent <= NDefSetup) return kTRUE;
-
 
 
   while (fiCorMode > 0) {
     Int_t iCorMode = fiCorMode % 10;
     fiCorMode /= 10;
     Int_t iLev = fiCorSrc / 10;
-    LOG(info) << "UpdateCalHist on level " << iLev << " from src " << fiCorSrc
-              << " in mode " << iCorMode;
+    LOG(info) << "UpdateCalHist on level " << iLev << " from src " << fiCorSrc << " in mode " << iCorMode;
     switch (iCorMode) {
       case 0: {  // T
         TH2* hCorDT = NULL;
-        if (fiCorSrc % 10 == 0)
-          hCorDT = fhTrkStationDT[iLev];
+        if (fiCorSrc % 10 == 0) hCorDT = fhTrkStationDT[iLev];
         else
           hCorDT = fhTrkPullDT[iLev];
         if (NULL != hCorDT) {
@@ -381,18 +383,15 @@ Bool_t CbmTofExtendTracks::UpdateCalHistos() {
             LOG(warn) << "Created " << fhExt_Tsig->GetName();
           }
           for (Int_t ix = 0; ix < nx; ix++) {
-            Double_t dVal = fhExt_Toff->GetBinContent(ix + 1);
-            TH1D* hpy     = hCorDT->ProjectionY(
-              Form("%s_py%d", hCorDT->GetName(), ix), ix + 1, ix + 1, "");
+            Double_t dVal   = fhExt_Toff->GetBinContent(ix + 1);
+            TH1D* hpy       = hCorDT->ProjectionY(Form("%s_py%d", hCorDT->GetName(), ix), ix + 1, ix + 1, "");
             Double_t dFMean = 0.;
-            LOG(warn) << "TOff Entries for station " << ix << ": "
-                      << hpy->GetEntries();
+            LOG(warn) << "TOff Entries for station " << ix << ": " << hpy->GetEntries();
             if (hpy->GetEntries() > 100) {
               Int_t iBmax    = hpy->GetMaximumBin();
               TAxis* xaxis   = hpy->GetXaxis();
-              Double_t dMean = xaxis->GetBinCenter(
-                iBmax);  //X-value of bin with maximal content
-              Double_t dLim = 1. * hpy->GetRMS();
+              Double_t dMean = xaxis->GetBinCenter(iBmax);  //X-value of bin with maximal content
+              Double_t dLim  = 1. * hpy->GetRMS();
               //Double_t dLim = 5. * hpy->GetBinWidth(1);
               if (dLim > 0.) {
                 //TF1 * f = new TF1 ("f","gaus");
@@ -408,16 +407,16 @@ Bool_t CbmTofExtendTracks::UpdateCalHistos() {
                   dFMean = fRes->Parameter(1);
                   dVal -= dFMean;
                   fhExt_Tsig->SetBinContent(ix + 1, fRes->Parameter(2));
-                } else
+                }
+                else
                   dVal -= dMean;
-                LOG(warn) << "Update hExt_Toff Ind " << ix << ": Old "
-                          << fhExt_Toff->GetBinContent(ix + 1) << ", FitMean "
-                          << dFMean << " => " << dVal << ", width "
+                LOG(warn) << "Update hExt_Toff Ind " << ix << ": Old " << fhExt_Toff->GetBinContent(ix + 1)
+                          << ", FitMean " << dFMean << " => " << dVal << ", width "
                           << fhExt_Tsig->GetBinContent(ix + 1);
               }
-            } else {
-              LOG(warn) << "Update hExt_Toff " << ix
-                        << ": insufficient counts: " << hpy->GetEntries();
+            }
+            else {
+              LOG(warn) << "Update hExt_Toff " << ix << ": insufficient counts: " << hpy->GetEntries();
             }
             fhExt_Toff->SetBinContent(ix + 1, dVal);
           }
@@ -425,8 +424,7 @@ Bool_t CbmTofExtendTracks::UpdateCalHistos() {
       } break;
       case 1: {  // X
         TH2* hCorDX = NULL;
-        if (fiCorSrc % 10 == 0)
-          hCorDX = fhTrkStationDX[iLev];
+        if (fiCorSrc % 10 == 0) hCorDX = fhTrkStationDX[iLev];
         else
           hCorDX = fhTrkPullDX[iLev];
         if (NULL != hCorDX) {
@@ -440,17 +438,14 @@ Bool_t CbmTofExtendTracks::UpdateCalHistos() {
             LOG(warn) << "Created " << fhExt_Xsig->GetName();
           }
           for (Int_t ix = 0; ix < nx; ix++) {
-            Double_t dVal = fhExt_Xoff->GetBinContent(ix + 1);
-            TH1D* hpy     = hCorDX->ProjectionY(
-              Form("%s_py%d", hCorDX->GetName(), ix), ix + 1, ix + 1, "");
+            Double_t dVal   = fhExt_Xoff->GetBinContent(ix + 1);
+            TH1D* hpy       = hCorDX->ProjectionY(Form("%s_py%d", hCorDX->GetName(), ix), ix + 1, ix + 1, "");
             Double_t dFMean = 0.;
-            LOG(warn) << "XOff Entries for station " << ix << ": "
-                      << hpy->GetEntries();
+            LOG(warn) << "XOff Entries for station " << ix << ": " << hpy->GetEntries();
             if (hpy->GetEntries() > 100) {
               Int_t iBmax    = hpy->GetMaximumBin();
               TAxis* xaxis   = hpy->GetXaxis();
-              Double_t dMean = xaxis->GetBinCenter(
-                iBmax);  //X-value of bin with maximal content
+              Double_t dMean = xaxis->GetBinCenter(iBmax);  //X-value of bin with maximal content
               //Double_t dLim = 1. * hpy->GetRMS();
               Double_t dLim = 5. * hpy->GetBinWidth(1);
               if (dLim > 0.) {
@@ -466,16 +461,16 @@ Bool_t CbmTofExtendTracks::UpdateCalHistos() {
                   dFMean = fRes->Parameter(1);
                   dVal -= dFMean;
                   fhExt_Xsig->SetBinContent(ix + 1, fRes->Parameter(2));
-                } else
+                }
+                else
                   dVal -= dMean;
-                LOG(warn) << "Update hExt_Xoff Ind " << ix << ": Old "
-                          << fhExt_Xoff->GetBinContent(ix + 1) << ", FitMean "
-                          << dFMean << " => " << dVal << ", width "
+                LOG(warn) << "Update hExt_Xoff Ind " << ix << ": Old " << fhExt_Xoff->GetBinContent(ix + 1)
+                          << ", FitMean " << dFMean << " => " << dVal << ", width "
                           << fhExt_Xsig->GetBinContent(ix + 1);
               }
-            } else {
-              LOG(warn) << "Update hExt_Xoff " << ix
-                        << ": insufficient counts: " << hpy->GetEntries();
+            }
+            else {
+              LOG(warn) << "Update hExt_Xoff " << ix << ": insufficient counts: " << hpy->GetEntries();
             }
             fhExt_Xoff->SetBinContent(ix + 1, dVal);
           }
@@ -483,8 +478,7 @@ Bool_t CbmTofExtendTracks::UpdateCalHistos() {
       } break;
       case 2: {  // Y
         TH2* hCorDY = NULL;
-        if (fiCorSrc % 10 == 0)
-          hCorDY = fhTrkStationDY[iLev];
+        if (fiCorSrc % 10 == 0) hCorDY = fhTrkStationDY[iLev];
         else
           hCorDY = fhTrkPullDY[iLev];
         if (NULL != hCorDY) {
@@ -498,17 +492,14 @@ Bool_t CbmTofExtendTracks::UpdateCalHistos() {
             LOG(warn) << "Created " << fhExt_Ysig->GetName();
           }
           for (Int_t ix = 0; ix < nx; ix++) {
-            Double_t dVal = fhExt_Yoff->GetBinContent(ix + 1);
-            TH1D* hpy     = hCorDY->ProjectionY(
-              Form("%s_py%d", hCorDY->GetName(), ix), ix + 1, ix + 1, "");
+            Double_t dVal   = fhExt_Yoff->GetBinContent(ix + 1);
+            TH1D* hpy       = hCorDY->ProjectionY(Form("%s_py%d", hCorDY->GetName(), ix), ix + 1, ix + 1, "");
             Double_t dFMean = 0.;
-            LOG(warn) << "YOff Entries for station " << ix << ": "
-                      << hpy->GetEntries();
+            LOG(warn) << "YOff Entries for station " << ix << ": " << hpy->GetEntries();
             if (hpy->GetEntries() > 100) {
               Int_t iBmax    = hpy->GetMaximumBin();
               TAxis* xaxis   = hpy->GetXaxis();
-              Double_t dMean = xaxis->GetBinCenter(
-                iBmax);  //X-value of bin with maximal content
+              Double_t dMean = xaxis->GetBinCenter(iBmax);  //X-value of bin with maximal content
               //Double_t dLim = 1. * hpy->GetRMS();
               Double_t dLim = 5. * hpy->GetBinWidth(1);
               if (dLim > 0.) {
@@ -526,17 +517,17 @@ Bool_t CbmTofExtendTracks::UpdateCalHistos() {
                   dFMean = fRes->Parameter(1);
                   dVal -= dFMean;
                   fhExt_Ysig->SetBinContent(ix + 1, fRes->Parameter(2));
-                } else
+                }
+                else
                   dVal -= dMean;
 
-                LOG(warn) << "Update hExt_Yoff Ind " << ix << ": Old "
-                          << fhExt_Yoff->GetBinContent(ix + 1) << ", FitMean "
-                          << dFMean << " => " << dVal << ", width "
+                LOG(warn) << "Update hExt_Yoff Ind " << ix << ": Old " << fhExt_Yoff->GetBinContent(ix + 1)
+                          << ", FitMean " << dFMean << " => " << dVal << ", width "
                           << fhExt_Ysig->GetBinContent(ix + 1);
               }
-            } else {
-              LOG(warn) << "Update hExt_Yoff " << ix
-                        << ": insufficient counts: " << hpy->GetEntries();
+            }
+            else {
+              LOG(warn) << "Update hExt_Yoff " << ix << ": insufficient counts: " << hpy->GetEntries();
             }
             fhExt_Yoff->SetBinContent(ix + 1, dVal);
           }
@@ -547,7 +538,8 @@ Bool_t CbmTofExtendTracks::UpdateCalHistos() {
   }
   return kTRUE;
 }
-Bool_t CbmTofExtendTracks::WriteHistos() {
+Bool_t CbmTofExtendTracks::WriteHistos()
+{
   if (fiCorMode < 0) return kTRUE;
   // Write calibration histogramms to the file
   TDirectory* oldir = gDirectory;
@@ -566,31 +558,30 @@ Bool_t CbmTofExtendTracks::WriteHistos() {
 
 
 // -----   Public method Exec   --------------------------------------------
-void CbmTofExtendTracks::Exec(Option_t* opt) {
+void CbmTofExtendTracks::Exec(Option_t* opt)
+{
 
   if (!fEventsColl) {
     //    fTofHitArray = (TClonesArray*)fTofHitArrayIn->Clone();
     LOG(fatal) << "Analysis needs EventsColl ";
     // ExecExtend(opt);
-  } else {
-    LOG(info) << "ExtExec TS " << fiTS << " with "
-              << fEventsColl->GetEntriesFast() << " evts";
+  }
+  else {
+    LOG(info) << "ExtExec TS " << fiTS << " with " << fEventsColl->GetEntriesFast() << " evts";
     fiTS++;
     for (Int_t iEvent = 0; iEvent < fEventsColl->GetEntriesFast(); iEvent++) {
       CbmEvent* tEvent = dynamic_cast<CbmEvent*>(fEventsColl->At(iEvent));
-      LOG(info) << "Process TS event " << iEvent << " with "
-                << tEvent->GetNofData(ECbmDataType::kT0Hit) << " T0, "
-                << tEvent->GetNofData(ECbmDataType::kTofHit) << " TOF, "
-                << tEvent->GetNofData(ECbmDataType::kStsHit) << " STS, "
-                << tEvent->GetNofData(ECbmDataType::kMuchPixelHit)
-                << " MUCH hits";
+      LOG(info) << "Process TS event " << iEvent << " with " << tEvent->GetNofData(ECbmDataType::kT0Hit) << " T0, "
+                << tEvent->GetNofData(ECbmDataType::kTofHit) << " TOF, " << tEvent->GetNofData(ECbmDataType::kStsHit)
+                << " STS, " << tEvent->GetNofData(ECbmDataType::kMuchPixelHit) << " MUCH hits";
 
       ExecExtend(opt, tEvent);
     }
   }
 }
 
-void CbmTofExtendTracks::ExecExtend(Option_t* /*opt*/, CbmEvent* tEvent) {
+void CbmTofExtendTracks::ExecExtend(Option_t* /*opt*/, CbmEvent* tEvent)
+{
   fiEvent++;
   if (fiEvent == NDefSetup) CreateHistograms();
 
@@ -631,19 +622,11 @@ void CbmTofExtendTracks::ExecExtend(Option_t* /*opt*/, CbmEvent* tEvent) {
     iNbTofStations = 1;
     fvTofStationZ.resize(iNbTofStations);
     fvTofHitIndex.resize(iNbTofStations);
-    for (Int_t iHit = 0; iHit < tEvent->GetNofData(ECbmDataType::kTofHit);
-         iHit++) {
-      Int_t iHitIndex =
-        static_cast<Int_t>(tEvent->GetIndex(ECbmDataType::kTofHit, iHit));
+    for (Int_t iHit = 0; iHit < tEvent->GetNofData(ECbmDataType::kTofHit); iHit++) {
+      Int_t iHitIndex = static_cast<Int_t>(tEvent->GetIndex(ECbmDataType::kTofHit, iHit));
       CbmTofHit* tHit = dynamic_cast<CbmTofHit*>(fTofHitArrayIn->At(iHitIndex));
-      LOG(debug) << Form(
-        "Inspect Ev %d, TofHit %d, Ind %d at %6.1f in %lu (%u) stations",
-        fiEvent,
-        iHit,
-        iHitIndex,
-        tHit->GetZ(),
-        fvTofStationZ.size(),
-        iNbAllStations);
+      LOG(debug) << Form("Inspect Ev %d, TofHit %d, Ind %d at %6.1f in %lu (%u) stations", fiEvent, iHit, iHitIndex,
+                         tHit->GetZ(), fvTofStationZ.size(), iNbAllStations);
 
       Int_t iStZ    = (Int_t)(tHit->GetZ());
       itMapStationZ = fMapStationZ.find(iStZ);
@@ -654,30 +637,19 @@ void CbmTofExtendTracks::ExecExtend(Option_t* /*opt*/, CbmEvent* tEvent) {
           fvTofStationZ[iSt] = tHit->GetZ();
           fvTofHitIndex[iSt].resize(1);
           fvTofHitIndex[iSt][0] = iHitIndex;
-          LOG(debug) << Form(
-            "Ev %d, init TofSt %d, Mul %lu at z %8.1f from Ind %d",
-            fiEvent,
-            iSt,
-            fvTofHitIndex[iSt].size(),
-            fvTofStationZ[iSt],
-            iHitIndex);
+          LOG(debug) << Form("Ev %d, init TofSt %d, Mul %lu at z %8.1f from Ind %d", fiEvent, iSt,
+                             fvTofHitIndex[iSt].size(), fvTofStationZ[iSt], iHitIndex);
           break;
-        } else {
-          if (TMath::Abs(fvTofStationZ[iSt] - tHit->GetZ())
-              < STATION_TOF_ZWIDTH) {
+        }
+        else {
+          if (TMath::Abs(fvTofStationZ[iSt] - tHit->GetZ()) < STATION_TOF_ZWIDTH) {
             // update average z position of station
             fvTofStationZ[iSt] =
-              (fvTofStationZ[iSt] * fvTofHitIndex[iSt].size() + tHit->GetZ())
-              / (fvTofHitIndex[iSt].size() + 1);
+              (fvTofStationZ[iSt] * fvTofHitIndex[iSt].size() + tHit->GetZ()) / (fvTofHitIndex[iSt].size() + 1);
             fvTofHitIndex[iSt].resize(fvTofHitIndex[iSt].size() + 1);
             fvTofHitIndex[iSt][fvTofHitIndex[iSt].size() - 1] = iHitIndex;
-            LOG(debug) << Form(
-              "Ev %d, upd  TofSt %d, Mul %lu at z %8.1f from Ind %d",
-              fiEvent,
-              iSt,
-              fvTofHitIndex[iSt].size(),
-              fvTofStationZ[iSt],
-              iHitIndex);
+            LOG(debug) << Form("Ev %d, upd  TofSt %d, Mul %lu at z %8.1f from Ind %d", fiEvent, iSt,
+                               fvTofHitIndex[iSt].size(), fvTofStationZ[iSt], iHitIndex);
             break;
           }
         }
@@ -690,33 +662,23 @@ void CbmTofExtendTracks::ExecExtend(Option_t* /*opt*/, CbmEvent* tEvent) {
         fvTofStationZ[iSt] = tHit->GetZ();
         fvTofHitIndex[iSt].resize(1);
         fvTofHitIndex[iSt][0] = iHitIndex;
-        LOG(debug) << Form(
-          "Ev %d, add  TofSt %d (%d), Mul %lu  at z %8.1f from Ind %d",
-          fiEvent,
-          iSt,
-          iNbTofStations,
-          fvTofHitIndex[iSt].size(),
-          fvTofStationZ[iSt],
-          iHitIndex);
+        LOG(debug) << Form("Ev %d, add  TofSt %d (%d), Mul %lu  at z %8.1f from Ind %d", fiEvent, iSt, iNbTofStations,
+                           fvTofHitIndex[iSt].size(), fvTofStationZ[iSt], iHitIndex);
       }
       if (fiEvent < NDefSetup) {
         if (itMapStationZ == fMapStationZ.end()) {
-          LOG(debug) << "Insert new tracking station "
-                     << Int_t(ECbmModuleId::kTof) * 100 + iSt
-                     << " at z=" << iStZ;
+          LOG(debug) << "Insert new tracking station " << Int_t(ECbmModuleId::kTof) * 100 + iSt << " at z=" << iStZ;
           fMapStationZ[iStZ] = Int_t(ECbmModuleId::kTof) * 100 + iSt;
           itMapStationZ      = fMapStationZ.begin();
           Int_t iStId        = Int_t(ECbmModuleId::kTof) * 100;
           for (; itMapStationZ != fMapStationZ.end(); ++itMapStationZ) {
             Int_t iSysId = itMapStationZ->second / 100;
-            if (iSysId == Int_t(ECbmModuleId::kTof)) {
-              itMapStationZ->second = iStId++;
-            }
-            LOG(info) << "MapStationZ: " << itMapStationZ->first << " "
-                      << itMapStationZ->second;
+            if (iSysId == Int_t(ECbmModuleId::kTof)) { itMapStationZ->second = iStId++; }
+            LOG(info) << "MapStationZ: " << itMapStationZ->first << " " << itMapStationZ->second;
           }
         }
-      } else {  // Define Setup end
+      }
+      else {  // Define Setup end
         // sort hits into stations
         if (itMapStationZ != fMapStationZ.end()) {
           Int_t iAllSt = (itMapStationZ->second) % 100;
@@ -742,12 +704,9 @@ void CbmTofExtendTracks::ExecExtend(Option_t* /*opt*/, CbmEvent* tEvent) {
     fvStsStationZ.resize(iNbStsStations);
     fvStsHitIndex.resize(iNbStsStations);
 
-    for (Int_t iHit = 0; iHit < tEvent->GetNofData(ECbmDataType::kStsHit);
-         iHit++) {
-      Int_t iHitIndex =
-        static_cast<Int_t>(tEvent->GetIndex(ECbmDataType::kStsHit, iHit));
-      CbmPixelHit* tHit =
-        dynamic_cast<CbmPixelHit*>(fStsHitArrayIn->At(iHitIndex));
+    for (Int_t iHit = 0; iHit < tEvent->GetNofData(ECbmDataType::kStsHit); iHit++) {
+      Int_t iHitIndex   = static_cast<Int_t>(tEvent->GetIndex(ECbmDataType::kStsHit, iHit));
+      CbmPixelHit* tHit = dynamic_cast<CbmPixelHit*>(fStsHitArrayIn->At(iHitIndex));
 
       Int_t iStZ    = (Int_t)(tHit->GetZ());
       itMapStationZ = fMapStationZ.find(iStZ);
@@ -758,25 +717,18 @@ void CbmTofExtendTracks::ExecExtend(Option_t* /*opt*/, CbmEvent* tEvent) {
           fvStsStationZ[iSt] = tHit->GetZ();
           fvStsHitIndex[iSt].resize(1);
           fvStsHitIndex[iSt][0] = iHitIndex;
-          LOG(debug) << Form("Ev %d, init StsSt %d at z %8.1f from Ind %d",
-                             fiEvent,
-                             iSt,
-                             fvStsStationZ[iSt],
+          LOG(debug) << Form("Ev %d, init StsSt %d at z %8.1f from Ind %d", fiEvent, iSt, fvStsStationZ[iSt],
                              iHitIndex);
           break;
-        } else {
-          if (TMath::Abs(fvStsStationZ[iSt] - tHit->GetZ())
-              < STATION_STS_ZWIDTH) {
+        }
+        else {
+          if (TMath::Abs(fvStsStationZ[iSt] - tHit->GetZ()) < STATION_STS_ZWIDTH) {
             // update average z position of station
             fvStsStationZ[iSt] =
-              (fvStsStationZ[iSt] * fvStsHitIndex[iSt].size() + tHit->GetZ())
-              / (fvStsHitIndex[iSt].size() + 1);
+              (fvStsStationZ[iSt] * fvStsHitIndex[iSt].size() + tHit->GetZ()) / (fvStsHitIndex[iSt].size() + 1);
             fvStsHitIndex[iSt].resize(fvStsHitIndex[iSt].size() + 1);
             fvStsHitIndex[iSt][fvStsHitIndex[iSt].size() - 1] = iHitIndex;
-            LOG(debug) << Form("Ev %d, upd  StsSt %d at z %8.1f from Ind %d",
-                               fiEvent,
-                               iSt,
-                               fvStsStationZ[iSt],
+            LOG(debug) << Form("Ev %d, upd  StsSt %d at z %8.1f from Ind %d", fiEvent, iSt, fvStsStationZ[iSt],
                                iHitIndex);
             break;
           }
@@ -789,31 +741,23 @@ void CbmTofExtendTracks::ExecExtend(Option_t* /*opt*/, CbmEvent* tEvent) {
         fvStsStationZ[iSt] = tHit->GetZ();
         fvStsHitIndex[iSt].resize(fvStsHitIndex[iSt].size() + 1);
         fvStsHitIndex[iSt][fvStsHitIndex[iSt].size() - 1] = iHitIndex;
-        LOG(debug) << Form("Ev %d, add  StsSt %d (%d)  at z %8.1f from Ind %d",
-                           fiEvent,
-                           iSt,
-                           iNbStsStations,
-                           fvStsStationZ[iSt],
-                           iHitIndex);
+        LOG(debug) << Form("Ev %d, add  StsSt %d (%d)  at z %8.1f from Ind %d", fiEvent, iSt, iNbStsStations,
+                           fvStsStationZ[iSt], iHitIndex);
       }
       if (fiEvent < NDefSetup) {
         if (itMapStationZ == fMapStationZ.end()) {
-          LOG(debug) << "Insert new tracking station "
-                     << Int_t(ECbmModuleId::kSts) * 100 + iSt
-                     << " at z=" << iStZ;
+          LOG(debug) << "Insert new tracking station " << Int_t(ECbmModuleId::kSts) * 100 + iSt << " at z=" << iStZ;
           fMapStationZ[iStZ] = Int_t(ECbmModuleId::kSts) * 100 + iSt;
           itMapStationZ      = fMapStationZ.begin();
           Int_t iStId        = Int_t(ECbmModuleId::kSts) * 100;
           for (; itMapStationZ != fMapStationZ.end(); ++itMapStationZ) {
             Int_t iSysId = itMapStationZ->second / 100;
-            if (iSysId == Int_t(ECbmModuleId::kSts)) {
-              itMapStationZ->second = iStId++;
-            }
-            LOG(info) << "MapStationZ: " << itMapStationZ->first << " "
-                      << itMapStationZ->second;
+            if (iSysId == Int_t(ECbmModuleId::kSts)) { itMapStationZ->second = iStId++; }
+            LOG(info) << "MapStationZ: " << itMapStationZ->first << " " << itMapStationZ->second;
           }
         }
-      } else {  // Define Setup end
+      }
+      else {  // Define Setup end
         // sort hits into stations
         if (itMapStationZ != fMapStationZ.end()) {
           Int_t iAllSt = (itMapStationZ->second) % 100;
@@ -834,12 +778,9 @@ void CbmTofExtendTracks::ExecExtend(Option_t* /*opt*/, CbmEvent* tEvent) {
     iNbMuchStations = 1;
     fvMuchStationZ.resize(iNbMuchStations);
     fvMuchHitIndex.resize(iNbMuchStations);
-    for (Int_t iHit = 0; iHit < tEvent->GetNofData(ECbmDataType::kMuchPixelHit);
-         iHit++) {
-      Int_t iHitIndex =
-        static_cast<Int_t>(tEvent->GetIndex(ECbmDataType::kMuchPixelHit, iHit));
-      CbmPixelHit* tHit =
-        dynamic_cast<CbmPixelHit*>(fMuchHitArrayIn->At(iHitIndex));
+    for (Int_t iHit = 0; iHit < tEvent->GetNofData(ECbmDataType::kMuchPixelHit); iHit++) {
+      Int_t iHitIndex   = static_cast<Int_t>(tEvent->GetIndex(ECbmDataType::kMuchPixelHit, iHit));
+      CbmPixelHit* tHit = dynamic_cast<CbmPixelHit*>(fMuchHitArrayIn->At(iHitIndex));
 
       Int_t iStZ    = (Int_t)(tHit->GetZ());
       itMapStationZ = fMapStationZ.find(iStZ);
@@ -850,25 +791,18 @@ void CbmTofExtendTracks::ExecExtend(Option_t* /*opt*/, CbmEvent* tEvent) {
           fvMuchStationZ[iSt] = tHit->GetZ();
           fvMuchHitIndex[iSt].resize(1);
           fvMuchHitIndex[iSt][0] = iHitIndex;
-          LOG(info) << Form("Ev %d, init MuchSt %d at z %8.1f from Ind %d",
-                            fiEvent,
-                            iSt,
-                            fvMuchStationZ[iSt],
+          LOG(info) << Form("Ev %d, init MuchSt %d at z %8.1f from Ind %d", fiEvent, iSt, fvMuchStationZ[iSt],
                             iHitIndex);
           break;
-        } else {
-          if (TMath::Abs(fvMuchStationZ[iSt] - tHit->GetZ())
-              < STATION_MUCH_ZWIDTH) {
+        }
+        else {
+          if (TMath::Abs(fvMuchStationZ[iSt] - tHit->GetZ()) < STATION_MUCH_ZWIDTH) {
             // update average z position of station
             fvMuchStationZ[iSt] =
-              (fvMuchStationZ[iSt] * fvMuchHitIndex[iSt].size() + tHit->GetZ())
-              / (fvMuchHitIndex[iSt].size() + 1);
+              (fvMuchStationZ[iSt] * fvMuchHitIndex[iSt].size() + tHit->GetZ()) / (fvMuchHitIndex[iSt].size() + 1);
             fvMuchHitIndex[iSt].resize(fvMuchHitIndex[iSt].size() + 1);
             fvMuchHitIndex[iSt][fvMuchHitIndex[iSt].size() - 1] = iHitIndex;
-            LOG(debug) << Form("Ev %d, upd  MuchSt %d at z %8.1f from Ind %d",
-                               fiEvent,
-                               iSt,
-                               fvMuchStationZ[iSt],
+            LOG(debug) << Form("Ev %d, upd  MuchSt %d at z %8.1f from Ind %d", fiEvent, iSt, fvMuchStationZ[iSt],
                                iHitIndex);
             break;
           }
@@ -881,32 +815,24 @@ void CbmTofExtendTracks::ExecExtend(Option_t* /*opt*/, CbmEvent* tEvent) {
         fvMuchStationZ[iSt] = tHit->GetZ();
         fvMuchHitIndex[iSt].resize(fvMuchHitIndex[iSt].size() + 1);
         fvMuchHitIndex[iSt][fvMuchHitIndex[iSt].size() - 1] = iHitIndex;
-        LOG(debug) << Form("Ev %d, add  MuchSt %d (%d)  at z %8.1f from Ind %d",
-                           fiEvent,
-                           iSt,
-                           iNbMuchStations,
-                           fvMuchStationZ[iSt],
-                           iHitIndex);
+        LOG(debug) << Form("Ev %d, add  MuchSt %d (%d)  at z %8.1f from Ind %d", fiEvent, iSt, iNbMuchStations,
+                           fvMuchStationZ[iSt], iHitIndex);
       }
 
       if (fiEvent < NDefSetup) {
         if (itMapStationZ == fMapStationZ.end()) {
-          LOG(debug) << "Insert new tracking station "
-                     << Int_t(ECbmModuleId::kMuch) * 100 + iSt
-                     << " at z=" << iStZ;
+          LOG(debug) << "Insert new tracking station " << Int_t(ECbmModuleId::kMuch) * 100 + iSt << " at z=" << iStZ;
           fMapStationZ[iStZ] = Int_t(ECbmModuleId::kMuch) * 100 + iSt;
           itMapStationZ      = fMapStationZ.begin();
           Int_t iStId        = Int_t(ECbmModuleId::kMuch) * 100;
           for (; itMapStationZ != fMapStationZ.end(); ++itMapStationZ) {
             Int_t iSysId = itMapStationZ->second / 100;
-            if (iSysId == Int_t(ECbmModuleId::kMuch)) {
-              itMapStationZ->second = iStId++;
-            }
-            LOG(info) << "MapStationZ: " << itMapStationZ->first << " "
-                      << itMapStationZ->second;
+            if (iSysId == Int_t(ECbmModuleId::kMuch)) { itMapStationZ->second = iStId++; }
+            LOG(info) << "MapStationZ: " << itMapStationZ->first << " " << itMapStationZ->second;
           }
         }
-      } else {  // Define Setup end
+      }
+      else {  // Define Setup end
         // sort hits into stations
         if (itMapStationZ != fMapStationZ.end()) {
           Int_t iAllSt = (itMapStationZ->second) % 100;
@@ -928,12 +854,11 @@ void CbmTofExtendTracks::ExecExtend(Option_t* /*opt*/, CbmEvent* tEvent) {
 
           assert(iAllSt == fMapStationZ[(Int_t)(pHit->GetZ())] % 100);
 
-          LOG(info) << Form(
-            "Proc ev %d, MuchIn St %d, H %d, MpHit: ", fiEvent, iAllSt, iH)
-                    << tHit->ToString();
+          LOG(info) << Form("Proc ev %d, MuchIn St %d, H %d, MpHit: ", fiEvent, iAllSt, iH) << tHit->ToString();
 
           //delete(pHit);
-        } else {
+        }
+        else {
           LOG(warn) << "Undefined station for Much ";
         }
       }
@@ -945,12 +870,9 @@ void CbmTofExtendTracks::ExecExtend(Option_t* /*opt*/, CbmEvent* tEvent) {
     iNbRichStations = 1;
     fvRichStationZ.resize(iNbRichStations);
     fvRichHitIndex.resize(iNbRichStations);
-    for (Int_t iHit = 0; iHit < tEvent->GetNofData(ECbmDataType::kRichHit);
-         iHit++) {
-      Int_t iHitIndex =
-        static_cast<Int_t>(tEvent->GetIndex(ECbmDataType::kRichHit, iHit));
-      CbmPixelHit* tHit =
-        dynamic_cast<CbmPixelHit*>(fRichHitArrayIn->At(iHitIndex));
+    for (Int_t iHit = 0; iHit < tEvent->GetNofData(ECbmDataType::kRichHit); iHit++) {
+      Int_t iHitIndex   = static_cast<Int_t>(tEvent->GetIndex(ECbmDataType::kRichHit, iHit));
+      CbmPixelHit* tHit = dynamic_cast<CbmPixelHit*>(fRichHitArrayIn->At(iHitIndex));
 
       Int_t iStZ    = (Int_t)(tHit->GetZ());
       itMapStationZ = fMapStationZ.find(iStZ);
@@ -961,25 +883,18 @@ void CbmTofExtendTracks::ExecExtend(Option_t* /*opt*/, CbmEvent* tEvent) {
           fvRichStationZ[iSt] = tHit->GetZ();
           fvRichHitIndex[iSt].resize(1);
           fvRichHitIndex[iSt][0] = iHitIndex;
-          LOG(debug) << Form("Ev %d, init RichSt %d at z %8.1f from Ind %d",
-                             fiEvent,
-                             iSt,
-                             fvRichStationZ[iSt],
+          LOG(debug) << Form("Ev %d, init RichSt %d at z %8.1f from Ind %d", fiEvent, iSt, fvRichStationZ[iSt],
                              iHitIndex);
           break;
-        } else {
-          if (TMath::Abs(fvRichStationZ[iSt] - tHit->GetZ())
-              < STATION_RICH_ZWIDTH) {
+        }
+        else {
+          if (TMath::Abs(fvRichStationZ[iSt] - tHit->GetZ()) < STATION_RICH_ZWIDTH) {
             // update average z position of station
             fvRichStationZ[iSt] =
-              (fvRichStationZ[iSt] * fvRichHitIndex[iSt].size() + tHit->GetZ())
-              / (fvRichHitIndex[iSt].size() + 1);
+              (fvRichStationZ[iSt] * fvRichHitIndex[iSt].size() + tHit->GetZ()) / (fvRichHitIndex[iSt].size() + 1);
             fvRichHitIndex[iSt].resize(fvRichHitIndex[iSt].size() + 1);
             fvRichHitIndex[iSt][fvRichHitIndex[iSt].size() - 1] = iHitIndex;
-            LOG(debug) << Form("Ev %d, upd  RichSt %d at z %8.1f from Ind %d",
-                               fiEvent,
-                               iSt,
-                               fvRichStationZ[iSt],
+            LOG(debug) << Form("Ev %d, upd  RichSt %d at z %8.1f from Ind %d", fiEvent, iSt, fvRichStationZ[iSt],
                                iHitIndex);
             break;
           }
@@ -992,32 +907,24 @@ void CbmTofExtendTracks::ExecExtend(Option_t* /*opt*/, CbmEvent* tEvent) {
         fvRichStationZ[iSt] = tHit->GetZ();
         fvRichHitIndex[iSt].resize(fvRichHitIndex[iSt].size() + 1);
         fvRichHitIndex[iSt][fvRichHitIndex[iSt].size() - 1] = iHitIndex;
-        LOG(debug) << Form("Ev %d, add  RichSt %d (%d)  at z %8.1f from Ind %d",
-                           fiEvent,
-                           iSt,
-                           iNbRichStations,
-                           fvRichStationZ[iSt],
-                           iHitIndex);
+        LOG(debug) << Form("Ev %d, add  RichSt %d (%d)  at z %8.1f from Ind %d", fiEvent, iSt, iNbRichStations,
+                           fvRichStationZ[iSt], iHitIndex);
       }
 
       if (fiEvent < NDefSetup) {
         if (itMapStationZ == fMapStationZ.end()) {
-          LOG(debug) << "Insert new tracking station "
-                     << Int_t(ECbmModuleId::kRich) * 100 + iSt
-                     << " at z=" << iStZ;
+          LOG(debug) << "Insert new tracking station " << Int_t(ECbmModuleId::kRich) * 100 + iSt << " at z=" << iStZ;
           fMapStationZ[iStZ] = Int_t(ECbmModuleId::kRich) * 100 + iSt;
           itMapStationZ      = fMapStationZ.begin();
           Int_t iStId        = Int_t(ECbmModuleId::kRich) * 100;
           for (; itMapStationZ != fMapStationZ.end(); ++itMapStationZ) {
             Int_t iSysId = itMapStationZ->second / 100;
-            if (iSysId == Int_t(ECbmModuleId::kRich)) {
-              itMapStationZ->second = iStId++;
-            }
-            LOG(info) << "MapStationZ: " << itMapStationZ->first << " "
-                      << itMapStationZ->second;
+            if (iSysId == Int_t(ECbmModuleId::kRich)) { itMapStationZ->second = iStId++; }
+            LOG(info) << "MapStationZ: " << itMapStationZ->first << " " << itMapStationZ->second;
           }
         }
-      } else {  // Define Setup end
+      }
+      else {  // Define Setup end
         // sort hits into stations
         if (itMapStationZ != fMapStationZ.end()) {
           Int_t iAllSt = (itMapStationZ->second) % 100;
@@ -1059,10 +966,8 @@ void CbmTofExtendTracks::ExecExtend(Option_t* /*opt*/, CbmEvent* tEvent) {
   fvTrkCalHits.resize(iNTrks);
   fvTrkPar.clear();
   for (Int_t iTr = 0; iTr < iNTrks; iTr++) {
-    Int_t iTrkIndex =
-      static_cast<Int_t>(tEvent->GetIndex(ECbmDataType::kTofTrack, iTr));
-    CbmTofTracklet* pTrk =
-      dynamic_cast<CbmTofTracklet*>(fTofTrackArrayIn->At(iTrkIndex));
+    Int_t iTrkIndex      = static_cast<Int_t>(tEvent->GetIndex(ECbmDataType::kTofTrack, iTr));
+    CbmTofTracklet* pTrk = dynamic_cast<CbmTofTracklet*>(fTofTrackArrayIn->At(iTrkIndex));
     //CbmTofTrackletParam* pTrkPar=new CbmTofTrackletParam(*pTrk->GetTrackParameter());
     //fvTrkPar.push_back(pTrkPar);
     fvTrkPar.push_back((CbmTofTrackletParam*) (pTrk->GetTrackParameter()));
@@ -1076,18 +981,12 @@ void CbmTofExtendTracks::ExecExtend(Option_t* /*opt*/, CbmEvent* tEvent) {
       // apply recalibration if necessary
       fvTrkCalHits[iTr].push_back(dynamic_cast<CbmPixelHit*>(pHitIn));
 
-      LOG(debug) << Form(
-        "Added PixHit %d, ind %d: x %6.3f, y %6.3f, z %6.3f, t %9.2f "
-        ", dx %6.3f, dy %6.3f,  dz %6.3f ",
-        iHit,
-        pTrk->GetTofHitIndex(iHit),
-        (fvTrkCalHits[iTr][iHit])->GetX(),
-        (fvTrkCalHits[iTr][iHit])->GetY(),
-        (fvTrkCalHits[iTr][iHit])->GetZ(),
-        (fvTrkCalHits[iTr][iHit])->GetTime(),
-        (fvTrkCalHits[iTr][iHit])->GetDx(),
-        (fvTrkCalHits[iTr][iHit])->GetDy(),
-        (fvTrkCalHits[iTr][iHit])->GetDz());
+      LOG(debug) << Form("Added PixHit %d, ind %d: x %6.3f, y %6.3f, z %6.3f, t %9.2f "
+                         ", dx %6.3f, dy %6.3f,  dz %6.3f ",
+                         iHit, pTrk->GetTofHitIndex(iHit), (fvTrkCalHits[iTr][iHit])->GetX(),
+                         (fvTrkCalHits[iTr][iHit])->GetY(), (fvTrkCalHits[iTr][iHit])->GetZ(),
+                         (fvTrkCalHits[iTr][iHit])->GetTime(), (fvTrkCalHits[iTr][iHit])->GetDx(),
+                         (fvTrkCalHits[iTr][iHit])->GetDy(), (fvTrkCalHits[iTr][iHit])->GetDz());
     }
     Line3Dfit(fvTrkCalHits[iTr], fvTrkPar[iTr]);
     fvTrkPar[iTr]->SetTt(pTrk->GetTt());
@@ -1095,8 +994,7 @@ void CbmTofExtendTracks::ExecExtend(Option_t* /*opt*/, CbmEvent* tEvent) {
 
     // compare to input
     LOG(debug) << "CompareTrk " << iTr
-               << Form(": DTx %10.8f, DTy %10.8f",
-                       pTrk->GetTrackTx() - fvTrkPar[iTr]->GetTx(),
+               << Form(": DTx %10.8f, DTy %10.8f", pTrk->GetTrackTx() - fvTrkPar[iTr]->GetTx(),
                        pTrk->GetTrackTy() - fvTrkPar[iTr]->GetTy());
   }  // Tracklet loop end
   if (fiEvent > NDefSetup) {
@@ -1116,7 +1014,8 @@ void CbmTofExtendTracks::ExecExtend(Option_t* /*opt*/, CbmEvent* tEvent) {
 
 
 // -----   Public method Finish   ------------------------------------------
-void CbmTofExtendTracks::Finish() {
+void CbmTofExtendTracks::Finish()
+{
 
   UpdateCalHistos();
 
@@ -1139,89 +1038,32 @@ void CbmTofExtendTracks::Finish() {
 }
 // -------------------------------------------------------------------------
 
-void CbmTofExtendTracks::CreateHistograms() {
+void CbmTofExtendTracks::CreateHistograms()
+{
   if (fiEvent < NDefSetup) return;
-  TDirectory* oldir =
-    gDirectory;  // <= To prevent histos from being sucked in by the param file of the TRootManager!
-  gROOT
-    ->cd();  // <= To prevent histos from being sucked in by the param file of the TRootManager !
+  TDirectory* oldir = gDirectory;  // <= To prevent histos from being sucked in by the param file of the TRootManager!
+  gROOT->cd();                     // <= To prevent histos from being sucked in by the param file of the TRootManager !
 
   // define histos here
   // Correlation with Tof Tracklets
   //
   fhMulCorTrkTof =
-    new TH2F("hMulCorTrkTof",
-             Form("Multiplicity correlation ;  N_{Track}; N_{TofHits}"),
-             50,
-             0,
-             50,
-             150,
-             0,
-             150);
+    new TH2F("hMulCorTrkTof", Form("Multiplicity correlation ;  N_{Track}; N_{TofHits}"), 50, 0, 50, 150, 0, 150);
 
   fhMulCorTrkSts =
-    new TH2F("hMulCorTrkSts",
-             Form("Multiplicity correlation ;  N_{Track}; N_{StsHits}"),
-             50,
-             0,
-             50,
-             150,
-             0,
-             150);
+    new TH2F("hMulCorTrkSts", Form("Multiplicity correlation ;  N_{Track}; N_{StsHits}"), 50, 0, 50, 150, 0, 150);
   fhMulCorTrkMuch =
-    new TH2F("hMulCorTrkMuch",
-             Form("Multiplicity correlation ;  N_{Track}; N_{MuchHits}"),
-             50,
-             0,
-             50,
-             150,
-             0,
-             150);
+    new TH2F("hMulCorTrkMuch", Form("Multiplicity correlation ;  N_{Track}; N_{MuchHits}"), 50, 0, 50, 150, 0, 150);
   fhMulCorTrkRich =
-    new TH2F("hMulCorTrkRich",
-             Form("Multiplicity correlation ;  N_{Track}; N_{RichHits}"),
-             50,
-             0,
-             50,
-             150,
-             0,
-             150);
-  fhPosCorTrkTof =
-    new TH2F("hPosCorTrkTof",
-             Form("Tof position correlation ;  #DeltaX (cm); #DeltaY (cm)"),
-             100,
-             -10,
-             10,
-             100,
-             -10,
-             10);
-  fhPosCorTrkSts =
-    new TH2F("hPosCorTrkSts",
-             Form("Sts position correlation ;  #DeltaX (cm); #DeltaY (cm)"),
-             100,
-             -10,
-             10,
-             100,
-             -10,
-             10);
-  fhPosCorTrkMuch =
-    new TH2F("hPosCorTrkMuch",
-             Form("Much position correlation ;  #DeltaX (cm); #DeltaY (cm)"),
-             100,
-             -10,
-             10,
-             100,
-             -10,
-             10);
-  fhPosCorTrkRich =
-    new TH2F("hPosCorTrkRich",
-             Form("Rich position correlation ;  #DeltaX (cm); #DeltaY (cm)"),
-             100,
-             -10,
-             10,
-             100,
-             -10,
-             10);
+    new TH2F("hMulCorTrkRich", Form("Multiplicity correlation ;  N_{Track}; N_{RichHits}"), 50, 0, 50, 150, 0, 150);
+  fhPosCorTrkTof  = new TH2F("hPosCorTrkTof", Form("Tof position correlation ;  #DeltaX (cm); #DeltaY (cm)"), 100, -10,
+                            10, 100, -10, 10);
+  fhPosCorTrkSts  = new TH2F("hPosCorTrkSts", Form("Sts position correlation ;  #DeltaX (cm); #DeltaY (cm)"), 100, -10,
+                            10, 100, -10, 10);
+  fhPosCorTrkMuch = new TH2F("hPosCorTrkMuch", Form("Much position correlation ;  #DeltaX (cm); #DeltaY (cm)"), 100,
+                             -10, 10, 100, -10, 10);
+  fhPosCorTrkRich = new TH2F("hPosCorTrkRich", Form("Rich position correlation ;  #DeltaX (cm); #DeltaY (cm)"), 100,
+                             -10, 10, 100, -10, 10);
 
 
   // Correlation with extended tracks
@@ -1232,10 +1074,7 @@ void CbmTofExtendTracks::CreateHistograms() {
   for (; itMapStationZ != fMapStationZ.end(); ++itMapStationZ) {
     Int_t iSysId          = itMapStationZ->second / 100;
     itMapStationZ->second = iSysId * 100 + iStNum++;
-    LOG(info) << Form(" station %2d, z %3d, Id %4d ",
-                      iStNum,
-                      itMapStationZ->first,
-                      itMapStationZ->second);
+    LOG(info) << Form(" station %2d, z %3d, Id %4d ", iStNum, itMapStationZ->first, itMapStationZ->second);
   }
   UInt_t NSt = fMapStationZ.size();
 
@@ -1255,108 +1094,35 @@ void CbmTofExtendTracks::CreateHistograms() {
   fhExt_TrkSizChiSq.resize(NLev);
 
   for (Int_t iLev = 0; iLev < NLev; iLev++) {
-    fhExt_TrkSizVel[iLev]   = new TH2F(Form("hExt_TrkSizVel%d", iLev),
-                                     ";TrkSize;v (cm/ns)",
-                                     15,
-                                     0,
-                                     15,
-                                     100,
-                                     0.,
-                                     50.);
-    fhExt_TrkSizChiSq[iLev] = new TH2F(Form("hExt_TrkSizChiSq%d", iLev),
-                                       ";TrkSize;#chi^2",
-                                       15,
-                                       0,
-                                       15,
-                                       50,
-                                       0.,
-                                       5.);
+    fhExt_TrkSizVel[iLev]   = new TH2F(Form("hExt_TrkSizVel%d", iLev), ";TrkSize;v (cm/ns)", 15, 0, 15, 100, 0., 50.);
+    fhExt_TrkSizChiSq[iLev] = new TH2F(Form("hExt_TrkSizChiSq%d", iLev), ";TrkSize;#chi^2", 15, 0, 15, 50, 0., 5.);
 
-    fhTrkStationDX[iLev] =
-      new TH2F(Form("hTrkStationDX%d", iLev),
-               Form("TrkStationDX;  StationNr ; #DeltaX (cm)"),
-               NSt,
-               0,
-               NSt,
-               100,
-               -10.,
-               10.);
-    fhTrkStationDY[iLev] =
-      new TH2F(Form("hTrkStationDY%d", iLev),
-               Form("TrkStationDY;  StationNr ; #DeltaY (cm)"),
-               NSt,
-               0,
-               NSt,
-               100,
-               -10.,
-               10.);
-    fhTrkStationDZ[iLev] =
-      new TH2F(Form("hTrkStationDZ%d", iLev),
-               Form("TrkStationDZ;  StationNr ; #DeltaZ (cm)"),
-               NSt,
-               0,
-               NSt,
-               100,
-               -20.,
-               20.);
-    fhTrkStationDT[iLev] =
-      new TH2F(Form("hTrkStationDT%d", iLev),
-               Form("TrkStationDT;  StationNr ; #DeltaT (ns)"),
-               NSt,
-               0,
-               NSt,
-               100,
-               -50.,
-               50.);
+    fhTrkStationDX[iLev] = new TH2F(Form("hTrkStationDX%d", iLev), Form("TrkStationDX;  StationNr ; #DeltaX (cm)"), NSt,
+                                    0, NSt, 100, -10., 10.);
+    fhTrkStationDY[iLev] = new TH2F(Form("hTrkStationDY%d", iLev), Form("TrkStationDY;  StationNr ; #DeltaY (cm)"), NSt,
+                                    0, NSt, 100, -10., 10.);
+    fhTrkStationDZ[iLev] = new TH2F(Form("hTrkStationDZ%d", iLev), Form("TrkStationDZ;  StationNr ; #DeltaZ (cm)"), NSt,
+                                    0, NSt, 100, -20., 20.);
+    fhTrkStationDT[iLev] = new TH2F(Form("hTrkStationDT%d", iLev), Form("TrkStationDT;  StationNr ; #DeltaT (ns)"), NSt,
+                                    0, NSt, 100, -50., 50.);
     fhTrkStationNHits[iLev] =
-      new TH2F(Form("hTrkStationNHits%d", iLev),
-               Form("TrkStationNHits;  StationNr ; Number of Hits"),
-               NSt,
-               0,
-               NSt,
-               100,
-               0.,
-               100.);
+      new TH2F(Form("hTrkStationNHits%d", iLev), Form("TrkStationNHits;  StationNr ; Number of Hits"), NSt, 0, NSt, 100,
+               0., 100.);
 
-    fhTrkPullDX[iLev] = new TH2F(Form("hTrkPullDX%d", iLev),
-                                 Form("TrkPullDX;  StationNr ; #DeltaX (cm)"),
-                                 NSt,
-                                 0,
-                                 NSt,
-                                 100,
-                                 -10.,
-                                 10.);
-    fhTrkPullDY[iLev] = new TH2F(Form("hTrkPullDY%d", iLev),
-                                 Form("TrkPullDY;  StationNr ; #DeltaY (cm)"),
-                                 NSt,
-                                 0,
-                                 NSt,
-                                 100,
-                                 -10.,
-                                 10.);
-    fhTrkPullDT[iLev] = new TH2F(Form("hTrkPullDT%d", iLev),
-                                 Form("TrkPullDT;  StationNr ; #DeltaT (ns)"),
-                                 NSt,
-                                 0,
-                                 NSt,
-                                 100,
-                                 -50.,
-                                 50.);
+    fhTrkPullDX[iLev] =
+      new TH2F(Form("hTrkPullDX%d", iLev), Form("TrkPullDX;  StationNr ; #DeltaX (cm)"), NSt, 0, NSt, 100, -10., 10.);
+    fhTrkPullDY[iLev] =
+      new TH2F(Form("hTrkPullDY%d", iLev), Form("TrkPullDY;  StationNr ; #DeltaY (cm)"), NSt, 0, NSt, 100, -10., 10.);
+    fhTrkPullDT[iLev] =
+      new TH2F(Form("hTrkPullDT%d", iLev), Form("TrkPullDT;  StationNr ; #DeltaT (ns)"), NSt, 0, NSt, 100, -50., 50.);
 
     fhTrkStationDXDY[iLev].resize(NSt);
     for (UInt_t iSt = 0; iSt < NSt; iSt++) {
-      fhTrkStationDXDY[iLev][iSt] =
-        new TH2F(Form("hTrkPosCor%d_St%d", iLev, iSt),
-                 Form("Lev%d-St%d position correlation ;  "
-                      "#DeltaX (cm); #DeltaY (cm)",
-                      iLev,
-                      iSt),
-                 100,
-                 -10,
-                 10,
-                 100,
-                 -10,
-                 10);
+      fhTrkStationDXDY[iLev][iSt] = new TH2F(Form("hTrkPosCor%d_St%d", iLev, iSt),
+                                             Form("Lev%d-St%d position correlation ;  "
+                                                  "#DeltaX (cm); #DeltaY (cm)",
+                                                  iLev, iSt),
+                                             100, -10, 10, 100, -10, 10);
     }
   }
   if (fiStationUT > -1) {
@@ -1365,8 +1131,7 @@ void CbmTofExtendTracks::CreateHistograms() {
     for (Int_t iSt = 0; iSt < fiStationUT; iSt++)
       itMapStationZ++;
     dSUT_z = itMapStationZ->first;
-    LOG(info) << "Create SUT histos for station " << fiStationUT
-              << " at distance " << dSUT_z;
+    LOG(info) << "Create SUT histos for station " << fiStationUT << " at distance " << dSUT_z;
     const Double_t dSUT_RefDx = 0.15;
     const Double_t dSUT_RefDy = 0.3;
     const Double_t dNbinX     = 100;
@@ -1375,73 +1140,29 @@ void CbmTofExtendTracks::CreateHistograms() {
 
     Double_t dSUT_dx = dSUT_RefDx * dSUT_z;
     Double_t dSUT_dy = dSUT_RefDy * dSUT_z;
-    fhExtSutXY_Found = new TH2F(
-      "hExtSutXY_Found",
-      Form("StationUnderTest %d found hits ; X (cm); Y (cm)", fiStationUT),
-      dNbinX,
-      -dSUT_dx,
-      dSUT_dx,
-      dNbinY,
-      -dSUT_dy,
-      dSUT_dy);
-    fhExtSutXY_Missed = new TH2F(
-      "hExtSutXY_Missed",
-      Form("StationUnderTest %d missed hits ; X (cm); Y (cm)", fiStationUT),
-      dNbinX,
-      -dSUT_dx,
-      dSUT_dx,
-      dNbinY,
-      -dSUT_dy,
-      dSUT_dy);
-    fhExtSutXY_DX = new TH3F(
-      "hExtSutXY_DX",
-      Form("StationUnderTest %d #DeltaX ; X (cm); Y (cm); #DeltaX (cm)",
-           fiStationUT),
-      dNbinX,
-      -dSUT_dx,
-      dSUT_dx,
-      dNbinY,
-      -dSUT_dy,
-      dSUT_dy,
-      dNbinZ,
-      -10.,
-      10.);
-    fhExtSutXY_DY = new TH3F(
-      "hExtSutXY_DY",
-      Form("StationUnderTest %d #DeltaY ; X (cm); Y (cm); #DeltaY (cm)",
-           fiStationUT),
-      dNbinX,
-      -dSUT_dx,
-      dSUT_dx,
-      dNbinY,
-      -dSUT_dy,
-      dSUT_dy,
-      dNbinZ,
-      -10.,
-      10.);
-    fhExtSutXY_DT = new TH3F(
-      "hExtSutXY_DT",
-      Form("StationUnderTest %d #DeltaT ; X (cm); Y (cm); #DeltaT (ns)",
-           fiStationUT),
-      dNbinX,
-      -dSUT_dx,
-      dSUT_dx,
-      dNbinY,
-      -dSUT_dy,
-      dSUT_dy,
-      dNbinZ,
-      -50.,
-      50.);
+    fhExtSutXY_Found = new TH2F("hExtSutXY_Found", Form("StationUnderTest %d found hits ; X (cm); Y (cm)", fiStationUT),
+                                dNbinX, -dSUT_dx, dSUT_dx, dNbinY, -dSUT_dy, dSUT_dy);
+    fhExtSutXY_Missed =
+      new TH2F("hExtSutXY_Missed", Form("StationUnderTest %d missed hits ; X (cm); Y (cm)", fiStationUT), dNbinX,
+               -dSUT_dx, dSUT_dx, dNbinY, -dSUT_dy, dSUT_dy);
+    fhExtSutXY_DX =
+      new TH3F("hExtSutXY_DX", Form("StationUnderTest %d #DeltaX ; X (cm); Y (cm); #DeltaX (cm)", fiStationUT), dNbinX,
+               -dSUT_dx, dSUT_dx, dNbinY, -dSUT_dy, dSUT_dy, dNbinZ, -10., 10.);
+    fhExtSutXY_DY =
+      new TH3F("hExtSutXY_DY", Form("StationUnderTest %d #DeltaY ; X (cm); Y (cm); #DeltaY (cm)", fiStationUT), dNbinX,
+               -dSUT_dx, dSUT_dx, dNbinY, -dSUT_dy, dSUT_dy, dNbinZ, -10., 10.);
+    fhExtSutXY_DT =
+      new TH3F("hExtSutXY_DT", Form("StationUnderTest %d #DeltaT ; X (cm); Y (cm); #DeltaT (ns)", fiStationUT), dNbinX,
+               -dSUT_dx, dSUT_dx, dNbinY, -dSUT_dy, dSUT_dy, dNbinZ, -50., 50.);
   }  // StationUT end
 
-  gDirectory->cd(
-    oldir
-      ->GetPath());  // <= To prevent histos from being sucked in by the param file of the TRootManager!
+  gDirectory->cd(oldir->GetPath());  // <= To prevent histos from being sucked in by the param file of the TRootManager!
 
   LoadCalParameter();
 }
 
-void CbmTofExtendTracks::FindVertex() {
+void CbmTofExtendTracks::FindVertex()
+{
   fVTX_T            = 0.;  //reset
   fVTX_X            = 0.;
   fVTX_Y            = 0.;
@@ -1454,8 +1175,7 @@ void CbmTofExtendTracks::FindVertex() {
     if (NULL == pTrk) continue;
     Double_t w = pTrk->GetNofHits();
 
-    if (w > (Double_t)
-          fMinNofHits) {  // for further analysis request minimum number of hits
+    if (w > (Double_t) fMinNofHits) {  // for further analysis request minimum number of hits
       fVTXNorm += w;
       fVTX_T += w * pTrk->GetFitT(0.);
       fVTX_X += w * pTrk->GetFitX(0.);
@@ -1470,21 +1190,17 @@ void CbmTofExtendTracks::FindVertex() {
   }
   LOG(debug) << Form("CbmTofExtendTracks::FindVertex: N %3.0f, T %6.2f, "
                      "X=%6.2f, Y=%6.2f Z=%6.2f ",
-                     fVTXNorm,
-                     fVTX_T,
-                     fVTX_X,
-                     fVTX_Y,
-                     fVTX_Z);
+                     fVTXNorm, fVTX_T, fVTX_X, fVTX_Y, fVTX_Z);
 }
 
-void CbmTofExtendTracks::FillHistograms(CbmEvent* tEvent) {
+void CbmTofExtendTracks::FillHistograms(CbmEvent* tEvent)
+{
   // event selection: limit number of hits per added station
   Int_t iAddStations = fiAddStations;
   while (iAddStations > 0) {
     Int_t iAddNextStation = iAddStations % 100;
     iAddStations /= 100;
-    if ((Int_t) fvAllHitPointer[iAddNextStation].size() > fiCutStationMaxHitMul)
-      return;
+    if ((Int_t) fvAllHitPointer[iAddNextStation].size() > fiCutStationMaxHitMul) return;
   }
 
   // limit track multiplicity
@@ -1493,25 +1209,19 @@ void CbmTofExtendTracks::FillHistograms(CbmEvent* tEvent) {
 
   Int_t iLev = 0;
   //
-  fhMulCorTrkTof->Fill(tEvent->GetNofData(ECbmDataType::kTofTrack),
-                       tEvent->GetNofData(ECbmDataType::kTofHit));
+  fhMulCorTrkTof->Fill(tEvent->GetNofData(ECbmDataType::kTofTrack), tEvent->GetNofData(ECbmDataType::kTofHit));
 
-  fhMulCorTrkSts->Fill(tEvent->GetNofData(ECbmDataType::kTofTrack),
-                       tEvent->GetNofData(ECbmDataType::kStsHit));
+  fhMulCorTrkSts->Fill(tEvent->GetNofData(ECbmDataType::kTofTrack), tEvent->GetNofData(ECbmDataType::kStsHit));
 
-  fhMulCorTrkMuch->Fill(tEvent->GetNofData(ECbmDataType::kTofTrack),
-                        tEvent->GetNofData(ECbmDataType::kMuchPixelHit));
+  fhMulCorTrkMuch->Fill(tEvent->GetNofData(ECbmDataType::kTofTrack), tEvent->GetNofData(ECbmDataType::kMuchPixelHit));
 
-  fhMulCorTrkRich->Fill(tEvent->GetNofData(ECbmDataType::kTofTrack),
-                        tEvent->GetNofData(ECbmDataType::kRichHit));
+  fhMulCorTrkRich->Fill(tEvent->GetNofData(ECbmDataType::kTofTrack), tEvent->GetNofData(ECbmDataType::kRichHit));
 
 
   // correlation with TOF Tracklets
   for (Int_t iTr = 0; iTr < NTrkTof; iTr++) {
-    Int_t iTrkIndex =
-      static_cast<Int_t>(tEvent->GetIndex(ECbmDataType::kTofTrack, iTr));
-    CbmTofTracklet* tTrk =
-      dynamic_cast<CbmTofTracklet*>(fTofTrackArrayIn->At(iTrkIndex));
+    Int_t iTrkIndex      = static_cast<Int_t>(tEvent->GetIndex(ECbmDataType::kTofTrack, iTr));
+    CbmTofTracklet* tTrk = dynamic_cast<CbmTofTracklet*>(fTofTrackArrayIn->At(iTrkIndex));
 
     // tTrk->PrintInfo();
 
@@ -1520,15 +1230,10 @@ void CbmTofExtendTracks::FillHistograms(CbmEvent* tEvent) {
     // correlation with all TofHits
     for (UInt_t iSt = 0; iSt < fvTofHitIndex.size(); iSt++) {
       for (UInt_t iHit = 0; iHit < fvTofHitIndex[iSt].size(); iHit++) {
-        CbmTofHit* tHit = dynamic_cast<CbmTofHit*>(
-          fTofHitArrayIn->At(fvTofHitIndex[iSt][iHit]));
+        CbmTofHit* tHit = dynamic_cast<CbmTofHit*>(fTofHitArrayIn->At(fvTofHitIndex[iSt][iHit]));
         if (NULL == tHit) {
-          LOG(warn) << Form("Invalid TofHit %d(%lu) ind %d in station %d(%lu)",
-                            iHit,
-                            fvTofHitIndex[iSt].size(),
-                            fvTofHitIndex[iSt][iHit],
-                            iSt,
-                            fvTofHitIndex.size());
+          LOG(warn) << Form("Invalid TofHit %d(%lu) ind %d in station %d(%lu)", iHit, fvTofHitIndex[iSt].size(),
+                            fvTofHitIndex[iSt][iHit], iSt, fvTofHitIndex.size());
           assert(tHit);
         }
         Int_t iTrSt = fMapStationZ[(Int_t)(tHit->GetZ())] % 100;
@@ -1537,14 +1242,11 @@ void CbmTofExtendTracks::FillHistograms(CbmEvent* tEvent) {
           continue;
         }
 
-        Double_t dDX =
-          tHit->GetX() + fvXoff[iTrSt] - tTrk->GetFitX(tHit->GetZ());
+        Double_t dDX = tHit->GetX() + fvXoff[iTrSt] - tTrk->GetFitX(tHit->GetZ());
         if (TMath::Abs(dDX) > fdTrkCutDX) continue;
-        Double_t dDY =
-          tHit->GetY() + fvYoff[iTrSt] - tTrk->GetFitY(tHit->GetZ());
+        Double_t dDY = tHit->GetY() + fvYoff[iTrSt] - tTrk->GetFitY(tHit->GetZ());
         if (TMath::Abs(dDY) > fdTrkCutDY) continue;
-        Double_t dDT =
-          tHit->GetTime() + fvToff[iTrSt] - tTrk->GetFitT(tHit->GetZ());
+        Double_t dDT = tHit->GetTime() + fvToff[iTrSt] - tTrk->GetFitT(tHit->GetZ());
         if (TMath::Abs(dDT) > fdTrkCutDT) continue;
 
         fhPosCorTrkTof->Fill(dDX, dDY);
@@ -1552,35 +1254,26 @@ void CbmTofExtendTracks::FillHistograms(CbmEvent* tEvent) {
         fhTrkStationDX[iLev]->Fill(iTrSt, dDX);
         fhTrkStationDY[iLev]->Fill(iTrSt, dDY);
         fhTrkStationDT[iLev]->Fill(iTrSt, dDT);
-        fhTrkStationNHits[iLev]->Fill(iTrSt,
-                                      (Double_t) fvTofHitIndex[iSt].size());
+        fhTrkStationNHits[iLev]->Fill(iTrSt, (Double_t) fvTofHitIndex[iSt].size());
       }
     }  // Tof Station loop end
 
     // correlation with all StsHits
     for (UInt_t iSt = 0; iSt < fvStsHitIndex.size(); iSt++) {
       for (UInt_t iHit = 0; iHit < fvStsHitIndex[iSt].size(); iHit++) {
-        CbmPixelHit* tHit = dynamic_cast<CbmPixelHit*>(
-          fStsHitArrayIn->At(fvStsHitIndex[iSt][iHit]));
+        CbmPixelHit* tHit = dynamic_cast<CbmPixelHit*>(fStsHitArrayIn->At(fvStsHitIndex[iSt][iHit]));
         if (NULL == tHit) {
-          LOG(warn) << Form("Invalid StsHit %d(%lu) ind %d in station %d(%lu)",
-                            iHit,
-                            fvStsHitIndex[iSt].size(),
-                            fvStsHitIndex[iSt][iHit],
-                            iSt,
-                            fvStsHitIndex.size());
+          LOG(warn) << Form("Invalid StsHit %d(%lu) ind %d in station %d(%lu)", iHit, fvStsHitIndex[iSt].size(),
+                            fvStsHitIndex[iSt][iHit], iSt, fvStsHitIndex.size());
           assert(tHit);
         }
         Int_t iTrSt = fMapStationZ[(Int_t)(tHit->GetZ())] % 100;
 
-        Double_t dDX =
-          tHit->GetX() + fvXoff[iTrSt] - tTrk->GetFitX(tHit->GetZ());
+        Double_t dDX = tHit->GetX() + fvXoff[iTrSt] - tTrk->GetFitX(tHit->GetZ());
         if (TMath::Abs(dDX) > fdTrkCutDX) continue;
-        Double_t dDY =
-          tHit->GetY() + fvYoff[iTrSt] - tTrk->GetFitY(tHit->GetZ());
+        Double_t dDY = tHit->GetY() + fvYoff[iTrSt] - tTrk->GetFitY(tHit->GetZ());
         if (TMath::Abs(dDY) > fdTrkCutDY) continue;
-        Double_t dDT =
-          tHit->GetTime() + fvToff[iTrSt] - tTrk->GetFitT(tHit->GetZ());
+        Double_t dDT = tHit->GetTime() + fvToff[iTrSt] - tTrk->GetFitT(tHit->GetZ());
         if (TMath::Abs(dDT) > fdTrkCutDT) continue;
 
         fhPosCorTrkSts->Fill(dDX, dDY);
@@ -1588,39 +1281,28 @@ void CbmTofExtendTracks::FillHistograms(CbmEvent* tEvent) {
         fhTrkStationDX[iLev]->Fill(iTrSt, dDX);
         fhTrkStationDY[iLev]->Fill(iTrSt, dDY);
         fhTrkStationDT[iLev]->Fill(iTrSt, dDT);
-        fhTrkStationNHits[iLev]->Fill(iTrSt,
-                                      (Double_t) fvStsHitIndex[iSt].size());
+        fhTrkStationNHits[iLev]->Fill(iTrSt, (Double_t) fvStsHitIndex[iSt].size());
       }
     }  // Sts Station loop end
 
     // correlation with all MuchHits
     for (UInt_t iSt = 0; iSt < fvMuchHitIndex.size(); iSt++) {
       for (UInt_t iHit = 0; iHit < fvMuchHitIndex[iSt].size(); iHit++) {
-        CbmPixelHit* tHit = dynamic_cast<CbmPixelHit*>(
-          fMuchHitArrayIn->At(fvMuchHitIndex[iSt][iHit]));
+        CbmPixelHit* tHit = dynamic_cast<CbmPixelHit*>(fMuchHitArrayIn->At(fvMuchHitIndex[iSt][iHit]));
         if (NULL == tHit) {
-          LOG(warn) << Form("Invalid MuchHit %d(%lu) ind %d in station %d(%lu)",
-                            iHit,
-                            fvMuchHitIndex[iSt].size(),
-                            fvMuchHitIndex[iSt][iHit],
-                            iSt,
-                            fvMuchHitIndex.size());
+          LOG(warn) << Form("Invalid MuchHit %d(%lu) ind %d in station %d(%lu)", iHit, fvMuchHitIndex[iSt].size(),
+                            fvMuchHitIndex[iSt][iHit], iSt, fvMuchHitIndex.size());
           assert(tHit);
         }
         Int_t iTrSt = fMapStationZ[(Int_t)(tHit->GetZ())] % 100;
 
-        LOG(info) << Form(
-          "Proc ev %d, Trk %d, St %d, iLe%d MtHit: ", fiEvent, iTr, iTrSt, iLev)
-                  << tHit->ToString();
+        LOG(info) << Form("Proc ev %d, Trk %d, St %d, iLe%d MtHit: ", fiEvent, iTr, iTrSt, iLev) << tHit->ToString();
 
-        Double_t dDX =
-          tHit->GetX() + fvXoff[iTrSt] - tTrk->GetFitX(tHit->GetZ());
+        Double_t dDX = tHit->GetX() + fvXoff[iTrSt] - tTrk->GetFitX(tHit->GetZ());
         if (TMath::Abs(dDX) > fdTrkCutDX) continue;
-        Double_t dDY =
-          tHit->GetY() + fvYoff[iTrSt] - tTrk->GetFitY(tHit->GetZ());
+        Double_t dDY = tHit->GetY() + fvYoff[iTrSt] - tTrk->GetFitY(tHit->GetZ());
         if (TMath::Abs(dDY) > fdTrkCutDY) continue;
-        Double_t dDT =
-          tHit->GetTime() + fvToff[iTrSt] - tTrk->GetFitT(tHit->GetZ());
+        Double_t dDT = tHit->GetTime() + fvToff[iTrSt] - tTrk->GetFitT(tHit->GetZ());
         if (TMath::Abs(dDT) > fdTrkCutDT) continue;
         /*
         LOG(info)<<"Got MuchCorI Tr "<<iTr
@@ -1630,49 +1312,35 @@ void CbmTofExtendTracks::FillHistograms(CbmEvent* tEvent) {
 				<<", dx " << dDX
 				<<", dy " << dDY;
         */
-        LOG(info) << Form(
-          "Proc ev %d, Trk %d, St %d, iLe%d, DX %6.3f, dY %6.3f, MtHit: ",
-          fiEvent,
-          iTr,
-          iTrSt,
-          iLev,
-          dDX,
-          dDY) << tHit->ToString();
+        LOG(info) << Form("Proc ev %d, Trk %d, St %d, iLe%d, DX %6.3f, dY %6.3f, MtHit: ", fiEvent, iTr, iTrSt, iLev,
+                          dDX, dDY)
+                  << tHit->ToString();
 
         fhPosCorTrkMuch->Fill(dDX, dDY);
         // fill tracking station histos
         fhTrkStationDX[iLev]->Fill(iTrSt, dDX);
         fhTrkStationDY[iLev]->Fill(iTrSt, dDY);
         fhTrkStationDT[iLev]->Fill(iTrSt, dDT);
-        fhTrkStationNHits[iLev]->Fill(iTrSt,
-                                      (Double_t) fvMuchHitIndex[iSt].size());
+        fhTrkStationNHits[iLev]->Fill(iTrSt, (Double_t) fvMuchHitIndex[iSt].size());
       }
     }  // Much Station loop end
 
     // correlation with all RichHits
     for (UInt_t iSt = 0; iSt < fvRichHitIndex.size(); iSt++) {
       for (UInt_t iHit = 0; iHit < fvRichHitIndex[iSt].size(); iHit++) {
-        CbmPixelHit* tHit = dynamic_cast<CbmPixelHit*>(
-          fRichHitArrayIn->At(fvRichHitIndex[iSt][iHit]));
+        CbmPixelHit* tHit = dynamic_cast<CbmPixelHit*>(fRichHitArrayIn->At(fvRichHitIndex[iSt][iHit]));
         if (NULL == tHit) {
-          LOG(warn) << Form("Invalid RichHit %d(%lu) ind %d in station %d(%lu)",
-                            iHit,
-                            fvRichHitIndex[iSt].size(),
-                            fvRichHitIndex[iSt][iHit],
-                            iSt,
-                            fvRichHitIndex.size());
+          LOG(warn) << Form("Invalid RichHit %d(%lu) ind %d in station %d(%lu)", iHit, fvRichHitIndex[iSt].size(),
+                            fvRichHitIndex[iSt][iHit], iSt, fvRichHitIndex.size());
           assert(tHit);
         }
         Int_t iTrSt = fMapStationZ[(Int_t)(tHit->GetZ())] % 100;
 
-        Double_t dDX =
-          tHit->GetX() + fvXoff[iTrSt] - tTrk->GetFitX(tHit->GetZ());
+        Double_t dDX = tHit->GetX() + fvXoff[iTrSt] - tTrk->GetFitX(tHit->GetZ());
         if (TMath::Abs(dDX) > fdTrkCutDX) continue;
-        Double_t dDY =
-          tHit->GetY() + fvYoff[iTrSt] - tTrk->GetFitY(tHit->GetZ());
+        Double_t dDY = tHit->GetY() + fvYoff[iTrSt] - tTrk->GetFitY(tHit->GetZ());
         if (TMath::Abs(dDY) > fdTrkCutDY) continue;
-        Double_t dDT =
-          tHit->GetTime() + fvToff[iTrSt] - tTrk->GetFitT(tHit->GetZ());
+        Double_t dDT = tHit->GetTime() + fvToff[iTrSt] - tTrk->GetFitT(tHit->GetZ());
         if (TMath::Abs(dDT) > fdTrkCutDT) continue;
 
         fhPosCorTrkRich->Fill(dDX, dDY);
@@ -1680,8 +1348,7 @@ void CbmTofExtendTracks::FillHistograms(CbmEvent* tEvent) {
         fhTrkStationDX[iLev]->Fill(iTrSt, dDX);
         fhTrkStationDY[iLev]->Fill(iTrSt, dDY);
         fhTrkStationDT[iLev]->Fill(iTrSt, dDT);
-        fhTrkStationNHits[iLev]->Fill(iTrSt,
-                                      (Double_t) fvRichHitIndex[iSt].size());
+        fhTrkStationNHits[iLev]->Fill(iTrSt, (Double_t) fvRichHitIndex[iSt].size());
       }
     }  // Rich Station loop end
 
@@ -1699,9 +1366,7 @@ void CbmTofExtendTracks::FillHistograms(CbmEvent* tEvent) {
     // minimal number of TOF hits
     Int_t NTofHits = 0;
     for (UInt_t iH = 0; iH < fvTrkCalHits[iTr].size(); iH++) {
-      if (fMapStationZ[(Int_t)(fvTrkCalHits[iTr][iH]->GetZ())] / 100
-          == Int_t(ECbmModuleId::kTof))
-        NTofHits++;
+      if (fMapStationZ[(Int_t)(fvTrkCalHits[iTr][iH]->GetZ())] / 100 == Int_t(ECbmModuleId::kTof)) NTofHits++;
     }
     if (NTofHits < fiTrkHitsMin) continue;
     // contain requested stations
@@ -1717,8 +1382,7 @@ void CbmTofExtendTracks::FillHistograms(CbmEvent* tEvent) {
         //				 <<fMapStationZ[(Int_t)(fvTrkCalHits[iTr][iHit]->GetZ())]%100;
         iReqStations /= 100;
         for (; iHit > 0; iHit--)
-          if (iReqStation
-              == fMapStationZ[(Int_t)(fvTrkCalHits[iTr][iHit]->GetZ())] % 100) {
+          if (iReqStation == fMapStationZ[(Int_t)(fvTrkCalHits[iTr][iHit]->GetZ())] % 100) {
             //			  if (iReqStations ==0 )
             //				LOG(info)<<"Check tr "<<iTr<<" accepted for analysis";
             break;
@@ -1734,15 +1398,12 @@ void CbmTofExtendTracks::FillHistograms(CbmEvent* tEvent) {
 
     LOG(info) << "CheckIII accepted tr " << iTr << " with " << fiReqStations;
     for (UInt_t iHit = 0; iHit < fvTrkCalHits[iTr].size(); iHit++) {
-      LOG(info) << "  Hit " << iHit << ", station "
-                << fMapStationZ[(Int_t)(fvTrkCalHits[iTr][iHit]->GetZ())] % 100;
+      LOG(info) << "  Hit " << iHit << ", station " << fMapStationZ[(Int_t)(fvTrkCalHits[iTr][iHit]->GetZ())] % 100;
     }
 
-    fhExt_TrkSizChiSq[iLev]->Fill((Double_t) fvTrkCalHits[iTr].size(),
-                                  fvTrkPar[iTr]->GetChiSq());
+    fhExt_TrkSizChiSq[iLev]->Fill((Double_t) fvTrkCalHits[iTr].size(), fvTrkPar[iTr]->GetChiSq());
 
-    fhExt_TrkSizVel[iLev]->Fill((Double_t) fvTrkCalHits[iTr].size(),
-                                1. / (fvTrkPar[iTr]->GetTt()));
+    fhExt_TrkSizVel[iLev]->Fill((Double_t) fvTrkCalHits[iTr].size(), 1. / (fvTrkPar[iTr]->GetTt()));
 
     // Pulls
     CbmTofTrackletParam* tTrkPar = fvTrkPar[iTr];
@@ -1772,31 +1433,21 @@ void CbmTofExtendTracks::FillHistograms(CbmEvent* tEvent) {
       }
 
       // pulls against original tracklets
-      Int_t iTrkInd =
-        static_cast<Int_t>(tEvent->GetIndex(ECbmDataType::kTofTrack, iTr));
-      CbmTofTracklet* pTrk =
-        dynamic_cast<CbmTofTracklet*>(fTofTrackArrayIn->At(iTrkInd));
-      dDX = tHit->GetX() - pTrk->GetFitX(tHit->GetZ());
-      dDY = tHit->GetY() - pTrk->GetFitY(tHit->GetZ());
-      dDT = tHit->GetTime() - pTrk->GetFitT(tHit->GetZ());
+      Int_t iTrkInd        = static_cast<Int_t>(tEvent->GetIndex(ECbmDataType::kTofTrack, iTr));
+      CbmTofTracklet* pTrk = dynamic_cast<CbmTofTracklet*>(fTofTrackArrayIn->At(iTrkInd));
+      dDX                  = tHit->GetX() - pTrk->GetFitX(tHit->GetZ());
+      dDY                  = tHit->GetY() - pTrk->GetFitY(tHit->GetZ());
+      dDT                  = tHit->GetTime() - pTrk->GetFitT(tHit->GetZ());
       fhTrkPullDX[0]->Fill(iTrSt, dDX);
       fhTrkPullDY[0]->Fill(iTrSt, dDY);
       fhTrkPullDT[0]->Fill(iTrSt, dDT);
       fhTrkStationDXDY[0][iTrSt]->Fill(dDX, dDY);
-      LOG(info) << Form(
-        "Proc ev %d, Trk %d, St %d, Lev%d, DX %6.3f, dY %6.3f, MtHit: ",
-        fiEvent,
-        iTr,
-        iTrSt,
-        0,
-        dDX,
-        dDY) << tHit->ToString();
+      LOG(info) << Form("Proc ev %d, Trk %d, St %d, Lev%d, DX %6.3f, dY %6.3f, MtHit: ", fiEvent, iTr, iTrSt, 0, dDX,
+                        dDY)
+                << tHit->ToString();
     }  // fvTrkCalHits loop end
 
-    if (bSUT_Found == kFALSE) {
-      fhExtSutXY_Missed->Fill(GetFitX(dSUT_z, tTrkPar),
-                              GetFitY(dSUT_z, tTrkPar));
-    }
+    if (bSUT_Found == kFALSE) { fhExtSutXY_Missed->Fill(GetFitX(dSUT_z, tTrkPar), GetFitY(dSUT_z, tTrkPar)); }
 
     //Deviations to all hits in all stations
     for (UInt_t iSt = 0; iSt < NSt; iSt++) {
@@ -1818,21 +1469,15 @@ void CbmTofExtendTracks::FillHistograms(CbmEvent* tEvent) {
         Double_t dDT = tHit->GetTime() - GetFitT(tHit->GetZ(), tTrkPar);
         if (TMath::Abs(dDT) > fdTrkCutDT) continue;
 
-        LOG(info) << Form(
-          "Proc ev %d, Trk %d, St %d, Lev%d, DX %6.3f, dY %6.3f, MtHit: ",
-          fiEvent,
-          iTr,
-          iSt,
-          iLev,
-          dDX,
-          dDY) << tHit->ToString();
+        LOG(info) << Form("Proc ev %d, Trk %d, St %d, Lev%d, DX %6.3f, dY %6.3f, MtHit: ", fiEvent, iTr, iSt, iLev, dDX,
+                          dDY)
+                  << tHit->ToString();
 
         // fill tracking station histos
         fhTrkStationDX[iLev]->Fill(iSt, dDX);
         fhTrkStationDY[iLev]->Fill(iSt, dDY);
         fhTrkStationDT[iLev]->Fill(iSt, dDT);
-        fhTrkStationNHits[iLev]->Fill(iSt,
-                                      (Double_t) fvAllHitPointer[iSt].size());
+        fhTrkStationNHits[iLev]->Fill(iSt, (Double_t) fvAllHitPointer[iSt].size());
         fhTrkStationDXDY[iLev][iSt]->Fill(dDX, dDY);
       }
     }
@@ -1840,8 +1485,8 @@ void CbmTofExtendTracks::FillHistograms(CbmEvent* tEvent) {
 
 }  // FillHist end
 
-void CbmTofExtendTracks::Line3Dfit(std::vector<CbmPixelHit*> pHits,
-                                   CbmTofTrackletParam* pTrkPar) {
+void CbmTofExtendTracks::Line3Dfit(std::vector<CbmPixelHit*> pHits, CbmTofTrackletParam* pTrkPar)
+{
   TGraph2DErrors* gr = new TGraph2DErrors();
   // Fill the 2D graph
   // generate graph with the 3d points
@@ -1856,8 +1501,8 @@ void CbmTofExtendTracks::Line3Dfit(std::vector<CbmPixelHit*> pHits,
     dy = pHits[N]->GetDy();
     dz = pHits[N]->GetDz();  //FIXME
     gr->SetPointError(N, dx, dy, dz);
-    LOG(debug) << "Line3Dfit add N = " << N << ",\t" << x << ",\t" << y << ",\t"
-               << z << ",\t" << dx << ",\t" << dy << ",\t" << dz;
+    LOG(debug) << "Line3Dfit add N = " << N << ",\t" << x << ",\t" << y << ",\t" << z << ",\t" << dx << ",\t" << dy
+               << ",\t" << dz;
   }
   // fit the graph now
 
@@ -1866,21 +1511,16 @@ void CbmTofExtendTracks::Line3Dfit(std::vector<CbmPixelHit*> pHits,
   pStart[1]          = pTrkPar->GetTx();
   pStart[2]          = pTrkPar->GetY();
   pStart[3]          = pTrkPar->GetTy();
-  LOG(debug) << "Line3Dfit init: X0 " << pStart[0] << ", TX " << pStart[1]
-             << ", Y0 " << pStart[2] << ", TY " << pStart[3];
+  LOG(debug) << "Line3Dfit init: X0 " << pStart[0] << ", TX " << pStart[1] << ", Y0 " << pStart[2] << ", TY "
+             << pStart[3];
 
   fMinuit.DoFit(gr, pStart);
   //gr->Draw("err p0");
   gr->Delete();
   Double_t* dRes;
   dRes = fMinuit.GetParFit();
-  LOG(debug) << "Line3Dfit result(" << pHits.size() << ") " << gMinuit->fCstatu
-             << " : X0 "
-             << Form(" %7.4f, TX %7.4f, Y0 %7.4f, TY %7.4f, Chi2DoF %7.4f ",
-                     dRes[0],
-                     dRes[1],
-                     dRes[2],
-                     dRes[3],
+  LOG(debug) << "Line3Dfit result(" << pHits.size() << ") " << gMinuit->fCstatu << " : X0 "
+             << Form(" %7.4f, TX %7.4f, Y0 %7.4f, TY %7.4f, Chi2DoF %7.4f ", dRes[0], dRes[1], dRes[2], dRes[3],
                      fMinuit.GetChi2DoF());
 
   pTrkPar->SetX(dRes[0]);
@@ -1892,29 +1532,28 @@ void CbmTofExtendTracks::Line3Dfit(std::vector<CbmPixelHit*> pHits,
   pTrkPar->SetChiSq(fMinuit.GetChi2DoF());  // / (Double_t)pHits.size());
 }
 
-Double_t CbmTofExtendTracks::GetFitX(Double_t dZ,
-                                     CbmTofTrackletParam* fTrkPar) {
+Double_t CbmTofExtendTracks::GetFitX(Double_t dZ, CbmTofTrackletParam* fTrkPar)
+{
   return fTrkPar->GetX() + fTrkPar->GetTx() * (dZ - fTrkPar->GetZ());
 }
 
-Double_t CbmTofExtendTracks::GetFitY(Double_t dZ,
-                                     CbmTofTrackletParam* fTrkPar) {
+Double_t CbmTofExtendTracks::GetFitY(Double_t dZ, CbmTofTrackletParam* fTrkPar)
+{
   return fTrkPar->GetY() + fTrkPar->GetTy() * (dZ - fTrkPar->GetZ());
 }
 
-Double_t CbmTofExtendTracks::GetFitT(Double_t dZ,
-                                     CbmTofTrackletParam* fTrkPar) {
+Double_t CbmTofExtendTracks::GetFitT(Double_t dZ, CbmTofTrackletParam* fTrkPar)
+{
   return fTrkPar->GetT()
          + fTrkPar->GetTt() * (dZ - fTrkPar->GetZ())
-             * TMath::Sqrt(1. + fTrkPar->GetTx() * fTrkPar->GetTx()
-                           + fTrkPar->GetTy() * fTrkPar->GetTy());
+             * TMath::Sqrt(1. + fTrkPar->GetTx() * fTrkPar->GetTx() + fTrkPar->GetTy() * fTrkPar->GetTy());
 }
 
-void CbmTofExtendTracks::TrkAddStation(Int_t iStation) {
+void CbmTofExtendTracks::TrkAddStation(Int_t iStation)
+{
 
-  LOG(debug) << "Add " << fvAllHitPointer[iStation].size()
-             << " hits from station " << iStation << " to " << fvTrkPar.size()
-             << " tracks ";
+  LOG(debug) << "Add " << fvAllHitPointer[iStation].size() << " hits from station " << iStation << " to "
+             << fvTrkPar.size() << " tracks ";
 
   const Int_t NCand = 100;
   // tbd: get matching width from histos !!
@@ -1930,30 +1569,19 @@ void CbmTofExtendTracks::TrkAddStation(Int_t iStation) {
   for (UInt_t iTr = 0; iTr < NTr; iTr++) {
     for (UInt_t iHit = 0; iHit < fvAllHitPointer[iStation].size(); iHit++) {
       CbmPixelHit* tHit = fvAllHitPointer[iStation][iHit];
-      LOG(debug) << " Hit " << iHit << ": X " << tHit->GetX() << ", Y "
-                 << tHit->GetY() << ", Z " << tHit->GetZ() << ", T "
-                 << tHit->GetTime();
+      LOG(debug) << " Hit " << iHit << ": X " << tHit->GetX() << ", Y " << tHit->GetY() << ", Z " << tHit->GetZ()
+                 << ", T " << tHit->GetTime();
       Double_t MatchChi2 =
-        TMath::Power((tHit->GetX() + fvXoff[iStation]
-                      - GetFitX(tHit->GetZ(), fvTrkPar[iTr]))
-                       / tSIGX,
-                     2)
-        + TMath::Power((tHit->GetY() + fvYoff[iStation]
-                        - GetFitY(tHit->GetZ(), fvTrkPar[iTr]))
-                         / tSIGY,
-                       2);
-      TMath::Power((tHit->GetTime() + fvToff[iStation]
-                    - GetFitT(tHit->GetZ(), fvTrkPar[iTr]))
-                     / tSIGT,
-                   2);
+        TMath::Power((tHit->GetX() + fvXoff[iStation] - GetFitX(tHit->GetZ(), fvTrkPar[iTr])) / tSIGX, 2)
+        + TMath::Power((tHit->GetY() + fvYoff[iStation] - GetFitY(tHit->GetZ(), fvTrkPar[iTr])) / tSIGY, 2);
+      TMath::Power((tHit->GetTime() + fvToff[iStation] - GetFitT(tHit->GetZ(), fvTrkPar[iTr])) / tSIGT, 2);
       MatchChi2 /= 3.;
       LOG(debug) << "Match Tr " << iTr << ", Hit " << iHit << ": " << MatchChi2;
       if (MatchChi2 < fdChi2Max) {
         Int_t iCand = 0;
         for (; iCand < iMatch + 1; iCand++) {
           if (MatchChi2 < MatchChi2Min[iCand]) {
-            LOG(debug) << "Better Match found for iTr " << iTr << " Chi2 "
-                       << MatchChi2;
+            LOG(debug) << "Better Match found for iTr " << iTr << " Chi2 " << MatchChi2;
             for (Int_t i = iMatch - 1; i >= iCand; i--) {
               MatchChi2Min[i + 1] = MatchChi2Min[i];
               MatchHit[i + 1]     = MatchHit[i];
@@ -1967,8 +1595,8 @@ void CbmTofExtendTracks::TrkAddStation(Int_t iStation) {
         }  // end candidate loop
         iMatch++;
         if (iMatch == NCand) iMatch--;  // cutoff
-        LOG(debug) << "New Match " << iMatch << " stored as candidate " << iCand
-                   << " for Tr " << iTr << " with hit " << iHit;
+        LOG(debug) << "New Match " << iMatch << " stored as candidate " << iCand << " for Tr " << iTr << " with hit "
+                   << iHit;
       }
     }  // station hit loop end
   }    // track loop end
@@ -1988,8 +1616,7 @@ void CbmTofExtendTracks::TrkAddStation(Int_t iStation) {
       fvTrkCalHits[MatchTrk[iCand]].push_back(dynamic_cast<CbmPixelHit*>(tHit));
       // prevent match with other tracks
       for (Int_t i = iCand + 1; i < iMatch; i++) {
-        if (MatchHit[i] == MatchHit[iCand] || MatchTrk[i] == MatchTrk[iCand])
-          MatchHit[i] = -1;
+        if (MatchHit[i] == MatchHit[iCand] || MatchTrk[i] == MatchTrk[iCand]) MatchHit[i] = -1;
       }
       // refit track, update TrkPar
       fvTrkPar[MatchTrk[iCand]]->SetX(0.);

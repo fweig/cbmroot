@@ -26,8 +26,9 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <stdint.h>
 #include <vector>
+
+#include <stdint.h>
 
 
 static Int_t NMappingWarnings = 100;
@@ -109,8 +110,11 @@ CbmMcbm2018UnpackerAlgoTof::CbmMcbm2018UnpackerAlgoTof()
   , fhChCountRemap()
   , fvbChanThere()
   , fhChanCoinc()
-  , fhDetChanCoinc(nullptr) {}
-CbmMcbm2018UnpackerAlgoTof::~CbmMcbm2018UnpackerAlgoTof() {
+  , fhDetChanCoinc(nullptr)
+{
+}
+CbmMcbm2018UnpackerAlgoTof::~CbmMcbm2018UnpackerAlgoTof()
+{
   /// Clear buffers
   for (UInt_t uGdpb = 0; uGdpb < fuNrOfGdpbs; ++uGdpb) {
     fvvmEpSupprBuffer[uGdpb].clear();
@@ -120,13 +124,15 @@ CbmMcbm2018UnpackerAlgoTof::~CbmMcbm2018UnpackerAlgoTof() {
 }
 
 // -------------------------------------------------------------------------
-Bool_t CbmMcbm2018UnpackerAlgoTof::Init() {
+Bool_t CbmMcbm2018UnpackerAlgoTof::Init()
+{
   LOG(info) << "Initializing mCBM TOF 2019 unpacker algo";
 
   return kTRUE;
 }
 void CbmMcbm2018UnpackerAlgoTof::Reset() {}
-void CbmMcbm2018UnpackerAlgoTof::Finish() {
+void CbmMcbm2018UnpackerAlgoTof::Finish()
+{
   /*
    /// Printout Goodbye message and stats
   LOG(INFO)<<"<I> MS statistics - Good: " << fiMsGood <<", Bad: " << fiMsBad;
@@ -135,14 +141,16 @@ void CbmMcbm2018UnpackerAlgoTof::Finish() {
 }
 
 // -------------------------------------------------------------------------
-Bool_t CbmMcbm2018UnpackerAlgoTof::InitContainers() {
+Bool_t CbmMcbm2018UnpackerAlgoTof::InitContainers()
+{
   LOG(info) << "Init parameter containers for CbmMcbm2018UnpackerAlgoTof";
 
   Bool_t initOK = ReInitContainers();
 
   return initOK;
 }
-Bool_t CbmMcbm2018UnpackerAlgoTof::ReInitContainers() {
+Bool_t CbmMcbm2018UnpackerAlgoTof::ReInitContainers()
+{
   LOG(info) << "**********************************************";
   LOG(info) << "ReInit parameter containers for CbmMcbm2018UnpackerAlgoTof";
 
@@ -155,14 +163,16 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::ReInitContainers() {
 
   return initOK;
 }
-TList* CbmMcbm2018UnpackerAlgoTof::GetParList() {
+TList* CbmMcbm2018UnpackerAlgoTof::GetParList()
+{
   if (nullptr == fParCList) fParCList = new TList();
   fUnpackPar = new CbmMcbm2018TofPar("CbmMcbm2018TofPar");
   fParCList->Add(fUnpackPar);
 
   return fParCList;
 }
-Bool_t CbmMcbm2018UnpackerAlgoTof::InitParameters() {
+Bool_t CbmMcbm2018UnpackerAlgoTof::InitParameters()
+{
   LOG(INFO) << "InitParameters from " << fUnpackPar;
   fdMsSizeInNs = fUnpackPar->GetSizeMsInNs();
 
@@ -193,8 +203,7 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::InitParameters() {
   fGdpbIdIndexMap.clear();
   for (UInt_t i = 0; i < fuNrOfGdpbs; ++i) {
     fGdpbIdIndexMap[fUnpackPar->GetGdpbId(i)] = i;
-    LOG(info) << "GDPB Id of TOF  " << i << " : " << std::hex
-              << fUnpackPar->GetGdpbId(i) << std::dec;
+    LOG(info) << "GDPB Id of TOF  " << i << " : " << std::hex << fUnpackPar->GetGdpbId(i) << std::dec;
   }  // for( UInt_t i = 0; i < fuNrOfGdpbs; ++i )
 
   fuNrOfGbtx = fUnpackPar->GetNrOfGbtx();
@@ -223,8 +232,7 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::InitParameters() {
 
       case 0:                         // CBM modules
         if (fviRpcSide[iGbtx] < 2) {  // mTof modules
-          LOG(info) << " Map mTof box " << fviModuleId[iGbtx]
-                    << " at GBTX  -  iCh = " << iCh;
+          LOG(info) << " Map mTof box " << fviModuleId[iGbtx] << " at GBTX  -  iCh = " << iCh;
           const Int_t RpcMap[5] = {4, 2, 0, 3, 1};
           for (Int_t iRpc = 0; iRpc < fviNrOfRpc[iGbtx]; iRpc++) {
             Int_t iStrMax = 32;
@@ -236,12 +244,8 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::InitParameters() {
 
               if (fviRpcSide[iGbtx] == 0) iStrMap = 31 - iStr;
               if (fviModuleId[iGbtx] > -1)
-                fviRpcChUId[iCh] =
-                  CbmTofAddress::GetUniqueAddress(fviModuleId[iGbtx],
-                                                  iRpcMap,
-                                                  iStrMap,
-                                                  fviRpcSide[iGbtx],
-                                                  fviRpcType[iGbtx]);
+                fviRpcChUId[iCh] = CbmTofAddress::GetUniqueAddress(fviModuleId[iGbtx], iRpcMap, iStrMap,
+                                                                   fviRpcSide[iGbtx], fviRpcType[iGbtx]);
               else
                 fviRpcChUId[iCh] = 0;
               //	 LOG(debug)<<Form("Map Ch %d to Address 0x%08x",iCh,fviRpcChUId[iCh]);
@@ -253,8 +257,7 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::InitParameters() {
 
       case 1:                         // STAR eTOF  modules
         if (fviRpcSide[iGbtx] < 2) {  // mTof modules
-          LOG(info) << "Start eTOF module side " << fviRpcSide[iGbtx] << " at "
-                    << iCh;
+          LOG(info) << "Start eTOF module side " << fviRpcSide[iGbtx] << " at " << iCh;
           const Int_t RpcMap[3] = {0, 1, 2};
           for (Int_t iRpc = 0; iRpc < fviNrOfRpc[iGbtx]; iRpc++) {
             Int_t iStrMax = 32;
@@ -266,12 +269,8 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::InitParameters() {
 
               if (fviRpcSide[iGbtx] == 0) iStrMap = 31 - iStr;
               if (fviModuleId[iGbtx] > -1)
-                fviRpcChUId[iCh] =
-                  CbmTofAddress::GetUniqueAddress(fviModuleId[iGbtx],
-                                                  iRpcMap,
-                                                  iStrMap,
-                                                  fviRpcSide[iGbtx],
-                                                  fviRpcType[iGbtx]);
+                fviRpcChUId[iCh] = CbmTofAddress::GetUniqueAddress(fviModuleId[iGbtx], iRpcMap, iStrMap,
+                                                                   fviRpcSide[iGbtx], fviRpcType[iGbtx]);
               else
                 fviRpcChUId[iCh] = 0;
               //	 LOG(DEBUG)<<Form("Map Ch %d to Address 0x%08x",iCh,fviRpcChUId[iCh]);
@@ -286,8 +285,7 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::InitParameters() {
       case 5: {
         LOG(info) << " Map diamond  at GBTX  -  iCh = " << iCh;
         for (UInt_t uFee = 0; uFee < fUnpackPar->GetNrOfFeePerGbtx(); ++uFee) {
-          for (UInt_t uCh = 0; uCh < fUnpackPar->GetNrOfChannelsPerFee();
-               ++uCh) {
+          for (UInt_t uCh = 0; uCh < fUnpackPar->GetNrOfChannelsPerFee(); ++uCh) {
             /*
 	      if( uFee < 4 && 0 == uCh ) {
                   fviRpcChUId[ iCh ] = CbmTofAddress::GetUniqueAddress(
@@ -310,16 +308,11 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::InitParameters() {
                   /// => 1 T0 channel per GET4
                   /// => 1-2 eLinks per GET4 => GET4 ID = GET4 * 2 (+ 1)
                   UInt_t uChannelT0 = uCh / 8 + 4 * fviRpcSide[iGbtx];
-                  fviRpcChUId[iCh]  = CbmTofAddress::GetUniqueAddress(
-                    fviModuleId[iGbtx], 0, uChannelT0, 0, fviRpcType[iGbtx]);
+                  fviRpcChUId[iCh] =
+                    CbmTofAddress::GetUniqueAddress(fviModuleId[iGbtx], 0, uChannelT0, 0, fviRpcType[iGbtx]);
                   LOG(info) << Form("T0 channel: %u from GBTx %2u Fee %2u "
                                     "Channel %2u, indx %d address %08x",
-                                    uChannelT0,
-                                    iGbtx,
-                                    uFee,
-                                    uCh,
-                                    iCh,
-                                    fviRpcChUId[iCh]);
+                                    uChannelT0, iGbtx, uFee, uCh, iCh, fviRpcChUId[iCh]);
                   break;
                 }  // Valid T0 channel
                 default: {
@@ -330,26 +323,27 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::InitParameters() {
 
             iCh++;
           }  // for( UInt_t uCh = 0; uCh < fUnpackPar->GetNrOfChannelsPerFee(); ++uCh )
-        }  // for( UInt_t uFee = 0; uFee < fUnpackPar->GetNrOfFeePerGbtx(); ++uFee )
-      }  // if( 5 == fviRpcType[iGbtx] )
+        }    // for( UInt_t uFee = 0; uFee < fUnpackPar->GetNrOfFeePerGbtx(); ++uFee )
+      }      // if( 5 == fviRpcType[iGbtx] )
       break;
 
       case 78:  // cern-20-gap + ceramic module
       {
         LOG(info) << " Map CERN 20 gap  at GBTX  -  iCh = " << iCh;
+        // clang-format off
         const Int_t StrMap[32] = {0,  1,  2,  3,  4,  31, 5,  6,  7,  30, 8,
                                   9,  10, 29, 11, 12, 13, 14, 28, 15, 16, 17,
                                   18, 27, 26, 25, 24, 23, 22, 21, 20, 19};
-        Int_t iModuleId        = 0;
-        Int_t iModuleType      = 7;
-        Int_t iRpcMap          = 0;
+        // clang-format on
+        Int_t iModuleId   = 0;
+        Int_t iModuleType = 7;
+        Int_t iRpcMap     = 0;
         for (Int_t iFeet = 0; iFeet < 2; iFeet++) {
           for (Int_t iStr = 0; iStr < 32; iStr++) {
             Int_t iStrMap  = 31 - 12 - StrMap[iStr];
             Int_t iSideMap = iFeet;
             if (iStrMap < 20)
-              fviRpcChUId[iCh] = CbmTofAddress::GetUniqueAddress(
-                iModuleId, iRpcMap, iStrMap, iSideMap, iModuleType);
+              fviRpcChUId[iCh] = CbmTofAddress::GetUniqueAddress(iModuleId, iRpcMap, iStrMap, iSideMap, iModuleType);
             else
               fviRpcChUId[iCh] = 0;
             iCh++;
@@ -364,8 +358,7 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::InitParameters() {
         Int_t iModuleId   = 0;
         Int_t iModuleType = 8;
         for (Int_t iRpc = 0; iRpc < 8; iRpc++) {
-          fviRpcChUId[iCh] = CbmTofAddress::GetUniqueAddress(
-            iModuleId, 7 - iRpc, 0, 0, iModuleType);
+          fviRpcChUId[iCh] = CbmTofAddress::GetUniqueAddress(iModuleId, 7 - iRpc, 0, 0, iModuleType);
           iCh++;
         }
         iCh += (24 + 2 * 32);
@@ -378,8 +371,7 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::InitParameters() {
         [[fallthrough]];
       case 9:  // Star2 boxes
       {
-        LOG(info) << " Map Star2 box " << fviModuleId[iGbtx]
-                  << " at GBTX  -  iCh = " << iCh;
+        LOG(info) << " Map Star2 box " << fviModuleId[iGbtx] << " at GBTX  -  iCh = " << iCh;
         const Int_t iRpc[5]  = {1, -1, 1, 0, 0};
         const Int_t iSide[5] = {1, -1, 0, 1, 0};
         for (Int_t iFeet = 0; iFeet < 5; iFeet++) {
@@ -410,11 +402,7 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::InitParameters() {
             }
             if (iSideMap > -1)
               fviRpcChUId[iCh] =
-                CbmTofAddress::GetUniqueAddress(fviModuleId[iGbtx],
-                                                iRpcMap,
-                                                iStrMap,
-                                                iSideMap,
-                                                fviRpcType[iGbtx]);
+                CbmTofAddress::GetUniqueAddress(fviModuleId[iGbtx], iRpcMap, iStrMap, iSideMap, fviRpcType[iGbtx]);
             else
               fviRpcChUId[iCh] = 0;
             iCh++;
@@ -459,8 +447,7 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::InitParameters() {
                   case 0: iRpcMap = 0; break;
                   case 1: iRpcMap = 1; break;
                 }
-                if (iFeet % 2 == 1)
-                  iModuleIdMap = 1;
+                if (iFeet % 2 == 1) iModuleIdMap = 1;
                 else
                   iModuleIdMap = 0;
 
@@ -471,10 +458,52 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::InitParameters() {
                   case 2: iSideMap = 1; break;
                 }
               } break;
+
+              case 7: {
+                // clang-format off
+                const Int_t iChMap[160]={
+             	  127, 126,	125, 124,  12,  13,	 14,  15,	7,   6,	  5,   4,  28,	29,	 30,  31, 123, 122,	121, 120,	8,	 9,  10,  11, 107, 106,	105, 104, 108, 109,	110, 111,
+                   39,  38,	 37,  36,  52,	53,	 54,  55,  63,	62,	 61,  60, 128, 129,	130, 131,  43,	42,	 41,  40, 148, 149,	150, 151,  59,	58,	 57,  56, 132, 133,	134, 135,
+          		  139, 138,	137, 136, 140, 141, 142, 143,  99,	98,	 97,  96,  64,	65,	 66,  67, 103, 102,	101, 100,  84,	85,	 86,  87, 155, 154,	153, 152,  68,	69,	 70,  71,
+          		  159, 158,	157, 156, 144, 145,	146, 147,  47,	46,	 45,  44,  76,	77,	 78,  79,  51,	50,	 49,  48,  20,	21,	 22,  23,  35,	34,	 33,  32, 116, 117,	118, 119,
+          		   75,	74,	 73,  72,  92,	93,	 94,  95,  19,	18,	 17,  16,  80,	81,	 82,  83, 115, 114,	113, 112,  24,	25,	 26,  27,  91,	90,	 89,  88,	0,	 1,	  2,   3
+                };
+                // clang-format on
+                Int_t iInd = iFeet * 32 + iStr;
+                Int_t i    = 0;
+                for (; i < 160; i++)
+                  if (iInd == iChMap[i]) break;
+                iStrMap        = i % 32;
+                Int_t iFeetInd = (i - iStrMap) / 32;
+                switch (iFeet) {
+                  case 0:
+                    iRpcMap  = 0;
+                    iSideMap = 1;
+                    break;
+                  case 1:
+                    iRpcMap  = 1;
+                    iSideMap = 1;
+                    break;
+                  case 2:
+                    iRpcMap  = 0;
+                    iSideMap = 0;
+                    break;
+                  case 3:
+                    iRpcMap  = 1;
+                    iSideMap = 0;
+                    break;
+                  case 4: iSideMap = -1; break;
+                }
+                iModuleIdMap = fviModuleId[iGbtx];
+                LOG(info) << "Buc of GBTX " << iGbtx << " Ch " << iCh
+                          << Form(", Feet %1d, Str %2d, Ind %3d, i %3d, FeetInd %1d, Rpc %1d, Side %1d, Str %2d ",
+                                  iFeet, iStr, iInd, i, iFeetInd, iRpcMap, iSideMap, iStrMap);
+              } break;
+              default:;
             }
             if (iSideMap > -1)
-              fviRpcChUId[iCh] = CbmTofAddress::GetUniqueAddress(
-                iModuleIdMap, iRpcMap, iStrMap, iSideMap, fviRpcType[iGbtx]);
+              fviRpcChUId[iCh] =
+                CbmTofAddress::GetUniqueAddress(iModuleIdMap, iRpcMap, iStrMap, iSideMap, fviRpcType[iGbtx]);
             else
               fviRpcChUId[iCh] = 0;
 
@@ -494,8 +523,7 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::InitParameters() {
   TString sPrintout = "";
   for (UInt_t uCh = 0; uCh < uNrOfChannels; ++uCh) {
     if (0 == uCh % 8) sPrintout += "\n";
-    if (0 == uCh % fuNrOfChannelsPerGdpb)
-      sPrintout += Form("\n Gdpb %u\n", uCh / fuNrOfChannelsPerGdpb);
+    if (0 == uCh % fuNrOfChannelsPerGdpb) sPrintout += Form("\n Gdpb %u\n", uCh / fuNrOfChannelsPerGdpb);
     sPrintout += Form(" 0x%08x", fviRpcChUId[uCh]);
   }  // for( UInt_t i = 0; i < uNrOfChannels; ++i)
   LOG(info) << sPrintout;
@@ -559,8 +587,8 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::InitParameters() {
 }
 // -------------------------------------------------------------------------
 
-void CbmMcbm2018UnpackerAlgoTof::AddMsComponentToList(size_t component,
-                                                      UShort_t usDetectorId) {
+void CbmMcbm2018UnpackerAlgoTof::AddMsComponentToList(size_t component, UShort_t usDetectorId)
+{
   /// Check for duplicates and ignore if it is the case
   for (UInt_t uCompIdx = 0; uCompIdx < fvMsComponentsList.size(); ++uCompIdx)
     if (component == fvMsComponentsList[uCompIdx]) return;
@@ -568,13 +596,13 @@ void CbmMcbm2018UnpackerAlgoTof::AddMsComponentToList(size_t component,
   /// Add to list
   fvMsComponentsList.push_back(component);
 
-  LOG(info) << "CbmMcbm2018UnpackerAlgoTof::AddMsComponentToList => Component "
-            << component << " with detector ID 0x" << std::hex << usDetectorId
-            << std::dec << " added to list";
+  LOG(info) << "CbmMcbm2018UnpackerAlgoTof::AddMsComponentToList => Component " << component << " with detector ID 0x"
+            << std::hex << usDetectorId << std::dec << " added to list";
 }
 // -------------------------------------------------------------------------
 
-Bool_t CbmMcbm2018UnpackerAlgoTof::ProcessTs(const fles::Timeslice& ts) {
+Bool_t CbmMcbm2018UnpackerAlgoTof::ProcessTs(const fles::Timeslice& ts)
+{
   fulCurrentTsIdx = ts.index();
   fdTsStartTime   = static_cast<Double_t>(ts.descriptor(0, 0).idx);
   LOG(DEBUG) << "ProcessTs " << fulCurrentTsIdx;
@@ -588,10 +616,9 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::ProcessTs(const fles::Timeslice& ts) {
     fuNbOverMsPerTs  = ts.num_microslices(0) - ts.num_core_microslices();
     fdTsCoreSizeInNs = fdMsSizeInNs * (fuNbCoreMsPerTs);
     fdTsFullSizeInNs = fdMsSizeInNs * (fuNbCoreMsPerTs + fuNbOverMsPerTs);
-    LOG(info) << "Timeslice parameters: each TS has " << fuNbCoreMsPerTs
-              << " Core MS and " << fuNbOverMsPerTs
-              << " Overlap MS, for a core duration of " << fdTsCoreSizeInNs
-              << " ns and a full duration of " << fdTsFullSizeInNs << " ns";
+    LOG(info) << "Timeslice parameters: each TS has " << fuNbCoreMsPerTs << " Core MS and " << fuNbOverMsPerTs
+              << " Overlap MS, for a core duration of " << fdTsCoreSizeInNs << " ns and a full duration of "
+              << fdTsFullSizeInNs << " ns";
 
     /// Ignore overlap ms if flag set by user
     fuNbMsLoop = fuNbCoreMsPerTs;
@@ -606,17 +633,15 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::ProcessTs(const fles::Timeslice& ts) {
   /// Loop over core microslices (and overlap ones if chosen)
   for (fuMsIndex = 0; fuMsIndex < fuNbMsLoop; fuMsIndex++) {
     /// Loop over registered components
-    for (UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size();
-         ++uMsCompIdx) {
+    for (UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx) {
       UInt_t uMsComp = fvMsComponentsList[uMsCompIdx];
 
       if (kFALSE == ProcessMs(ts, uMsComp, fuMsIndex)) {
-        LOG(error) << "Failed to process ts " << fulCurrentTsIdx << " MS "
-                   << fuMsIndex << " for component " << uMsComp;
+        LOG(error) << "Failed to process ts " << fulCurrentTsIdx << " MS " << fuMsIndex << " for component " << uMsComp;
         return kFALSE;
       }  // if( kFALSE == ProcessMs( ts, uMsCompIdx, fuMsIndex ) )
-    }  // for( UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx )
-  }    // for( fuMsIndex = 0; fuMsIndex < uNbMsLoop; fuMsIndex ++ )
+    }    // for( UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx )
+  }      // for( fuMsIndex = 0; fuMsIndex < uNbMsLoop; fuMsIndex ++ )
 
   /// Fill plots if in monitor mode
   if (fbMonitorMode) {
@@ -645,31 +670,25 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::ProcessTs(const fles::Timeslice& ts) {
    }
 */
   /// Sort the buffers of hits due to the time offsets applied
-  sort(fDigiVect.begin(),
-       fDigiVect.end(),
-       [](const CbmTofDigi& a, const CbmTofDigi& b) -> bool {
-         return a.GetTime() < b.GetTime();
-       });
+  sort(fDigiVect.begin(), fDigiVect.end(),
+       [](const CbmTofDigi& a, const CbmTofDigi& b) -> bool { return a.GetTime() < b.GetTime(); });
 
   return kTRUE;
 }
 
-Bool_t CbmMcbm2018UnpackerAlgoTof::ProcessMs(const fles::Timeslice& ts,
-                                             size_t uMsCompIdx,
-                                             size_t uMsIdx) {
-  auto msDescriptor    = ts.descriptor(uMsCompIdx, uMsIdx);
-  fuCurrentEquipmentId = msDescriptor.eq_id;
-  const uint8_t* msContent =
-    reinterpret_cast<const uint8_t*>(ts.content(uMsCompIdx, uMsIdx));
+Bool_t CbmMcbm2018UnpackerAlgoTof::ProcessMs(const fles::Timeslice& ts, size_t uMsCompIdx, size_t uMsIdx)
+{
+  auto msDescriptor        = ts.descriptor(uMsCompIdx, uMsIdx);
+  fuCurrentEquipmentId     = msDescriptor.eq_id;
+  const uint8_t* msContent = reinterpret_cast<const uint8_t*>(ts.content(uMsCompIdx, uMsIdx));
 
   uint32_t uSize  = msDescriptor.size;
   fulCurrentMsIdx = msDescriptor.idx;
   //   Double_t dMsTime = (1e-9) * static_cast<double>(fulCurrentMsIdx);
-  LOG(debug) << "Microslice: " << fulCurrentMsIdx << " from EqId " << std::hex
-             << fuCurrentEquipmentId << std::dec << " has size: " << uSize;
+  LOG(debug) << "Microslice: " << fulCurrentMsIdx << " from EqId " << std::hex << fuCurrentEquipmentId << std::dec
+             << " has size: " << uSize;
 
-  if (0 == fvbMaskedComponents.size())
-    fvbMaskedComponents.resize(ts.num_components(), kFALSE);
+  if (0 == fvbMaskedComponents.size()) fvbMaskedComponents.resize(ts.num_components(), kFALSE);
 
   fuCurrDpbId = static_cast<uint32_t>(fuCurrentEquipmentId & 0xFFFF);
   //   fuCurrDpbIdx = fDpbIdIndexMap[ fuCurrDpbId ];
@@ -678,13 +697,11 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::ProcessMs(const fles::Timeslice& ts,
   auto it = fGdpbIdIndexMap.find(fuCurrDpbId);
   if (it == fGdpbIdIndexMap.end()) {
     if (kFALSE == fvbMaskedComponents[uMsCompIdx]) {
-      LOG(info)
-        << "---------------------------------------------------------------";
+      LOG(info) << "---------------------------------------------------------------";
       LOG(info) << FormatMsHeaderPrintout(msDescriptor);
-      LOG(warning) << "Could not find the gDPB index for AFCK id 0x" << std::hex
-                   << fuCurrDpbId << std::dec << " in timeslice "
-                   << fulCurrentTsIdx << " in microslice " << uMsIdx
-                   << " component " << uMsCompIdx << "\n"
+      LOG(warning) << "Could not find the gDPB index for AFCK id 0x" << std::hex << fuCurrDpbId << std::dec
+                   << " in timeslice " << fulCurrentTsIdx << " in microslice " << uMsIdx << " component " << uMsCompIdx
+                   << "\n"
                    << "If valid this index has to be added in the TOF "
                       "parameter file in the DbpIdArray field";
       fvbMaskedComponents[uMsCompIdx] = kTRUE;
@@ -708,15 +725,12 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::ProcessMs(const fles::Timeslice& ts,
                << "contain only complete gDPB messages!";
 
   // Compute the number of complete messages in the input microslice buffer
-  uint32_t uNbMessages =
-    (uSize - (uSize % sizeof(gdpbv100::Message))) / sizeof(gdpbv100::Message);
+  uint32_t uNbMessages = (uSize - (uSize % sizeof(gdpbv100::Message))) / sizeof(gdpbv100::Message);
 
   // Prepare variables for the loop on contents
-  Int_t messageType = -111;
-  const uint64_t* pInBuff =
-    reinterpret_cast<const uint64_t*>(msContent);  // for epoch cycle
-  const gdpbv100::Message* pMess =
-    reinterpret_cast<const gdpbv100::Message*>(pInBuff);
+  Int_t messageType              = -111;
+  const uint64_t* pInBuff        = reinterpret_cast<const uint64_t*>(msContent);  // for epoch cycle
+  const gdpbv100::Message* pMess = reinterpret_cast<const gdpbv100::Message*>(pInBuff);
   for (uint32_t uIdx = 0; uIdx < uNbMessages; uIdx++) {
     /// Catch the Epoch cycle block which is always the first 64b of the MS
     if (0 == uIdx) {
@@ -728,15 +742,12 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::ProcessMs(const fles::Timeslice& ts,
     messageType = pMess[uIdx].getMessageType();
 
     fuGet4Id = fUnpackPar->ElinkIdxToGet4Idx(pMess[uIdx].getGdpbGenChipId());
-    if (fuDiamondDpbIdx == fuCurrDpbIdx || 0x90 == fuCurrentMsSysId)
-      fuGet4Id = pMess[uIdx].getGdpbGenChipId();
+    if (fuDiamondDpbIdx == fuCurrDpbIdx || 0x90 == fuCurrentMsSysId) fuGet4Id = pMess[uIdx].getGdpbGenChipId();
     fuGet4Nr = (fuCurrDpbIdx * fuNrOfGet4PerGdpb) + fuGet4Id;
 
-    if (fuNrOfGet4PerGdpb <= fuGet4Id && !pMess[uIdx].isStarTrigger()
-        && (gdpbv100::kuChipIdMergedEpoch != fuGet4Id))
-      LOG(warning) << "Message with Get4 ID too high: " << fuGet4Id << " VS "
-                   << fuNrOfGet4PerGdpb << " for GdpbIdx " << fuCurrDpbIdx
-                   << " set in parameters.";
+    if (fuNrOfGet4PerGdpb <= fuGet4Id && !pMess[uIdx].isStarTrigger() && (gdpbv100::kuChipIdMergedEpoch != fuGet4Id))
+      LOG(warning) << "Message with Get4 ID too high: " << fuGet4Id << " VS " << fuNrOfGet4PerGdpb << " for GdpbIdx "
+                   << fuCurrDpbIdx << " set in parameters.";
 
     /*
          if( 1 == uIdx && gdpbv100::MSG_EPOCH != messageType )
@@ -758,10 +769,8 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::ProcessMs(const fles::Timeslice& ts,
     /// ===> Temporary solution: simply ignore these hits, may decrease efficiency
     /// ====> Not sufficient if more than one HIT is in wrong MS !!!
     if (1 == uIdx && gdpbv100::MSG_EPOCH != messageType) {
-      LOG(debug) << " CbmMcbm2018UnpackerAlgoTof ==> In timeslice "
-                 << fulCurrentTsIdx << " in microslice " << fuMsIndex
-                 << " component " << uMsCompIdx
-                 << " first message is not an epoch: type " << messageType
+      LOG(debug) << " CbmMcbm2018UnpackerAlgoTof ==> In timeslice " << fulCurrentTsIdx << " in microslice " << fuMsIndex
+                 << " component " << uMsCompIdx << " first message is not an epoch: type " << messageType
                  << " -> It will be ignored! ";
       continue;
     }  // if( 1 == uIdx && gdpbv100::MSG_EPOCH != messageType )
@@ -815,8 +824,7 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::ProcessMs(const fles::Timeslice& ts,
         break;
       }  // case gdpbv100::MSG_STAR_TRI_A-D
       default:
-        LOG(error) << "Message type " << std::hex << std::setw(2)
-                   << static_cast<uint16_t>(messageType)
+        LOG(error) << "Message type " << std::hex << std::setw(2) << static_cast<uint16_t>(messageType)
                    << " not included in Get4 unpacker.";
     }  // switch( mess.getMessageType() )
   }    // for (uint32_t uIdx = 0; uIdx < uNbMessages; uIdx ++)
@@ -832,34 +840,31 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::ProcessMs(const fles::Timeslice& ts,
 }
 
 // -------------------------------------------------------------------------
-void CbmMcbm2018UnpackerAlgoTof::ProcessEpochCycle(
-  const uint64_t& ulCycleData) {
+void CbmMcbm2018UnpackerAlgoTof::ProcessEpochCycle(const uint64_t& ulCycleData)
+{
   ULong64_t ulEpochCycleVal = ulCycleData & gdpbv100::kulEpochCycleFieldSz;
 
   if (!(ulEpochCycleVal == fvulCurrentEpochCycle[fuCurrDpbIdx]
         || ulEpochCycleVal == fvulCurrentEpochCycle[fuCurrDpbIdx] + 1)
       && 0 < fulCurrentMsIdx) {
     LOG(warning) << "CbmMcbm2018UnpackerAlgoTof::ProcessEpochCycle => "
-                 << " Missmatch in epoch cycles detected for Gdpb "
-                 << fuCurrDpbIdx
+                 << " Missmatch in epoch cycles detected for Gdpb " << fuCurrDpbIdx
                  << ", probably fake cycles due to epoch index corruption! "
-                 << Form(" Current cycle 0x%09llX New cycle 0x%09llX",
-                         fvulCurrentEpochCycle[fuCurrDpbIdx],
+                 << Form(" Current cycle 0x%09llX New cycle 0x%09llX", fvulCurrentEpochCycle[fuCurrDpbIdx],
                          ulEpochCycleVal);
   }  // if epoch cycle did not stay constant or increase by exactly 1, except if first MS of the TS
   if (ulEpochCycleVal != fvulCurrentEpochCycle[fuCurrDpbIdx]) {
     LOG(info) << "CbmMcbm2018UnpackerAlgoTof::ProcessEpochCycle   => "
               << " New epoch cycle for Gdpb " << fuCurrDpbIdx
-              << Form(": Current cycle 0x%09llX New cycle 0x%09llX",
-                      fvulCurrentEpochCycle[fuCurrDpbIdx],
+              << Form(": Current cycle 0x%09llX New cycle 0x%09llX", fvulCurrentEpochCycle[fuCurrDpbIdx],
                       ulEpochCycleVal);
   }  // if( ulEpochCycleVal != fvulCurrentEpochCycle[fuCurrDpbIdx] )
   fvulCurrentEpochCycle[fuCurrDpbIdx] = ulEpochCycleVal;
 
   return;
 }
-void CbmMcbm2018UnpackerAlgoTof::ProcessEpoch(const gdpbv100::Message& mess,
-                                              uint32_t /*uMesgIdx*/) {
+void CbmMcbm2018UnpackerAlgoTof::ProcessEpoch(const gdpbv100::Message& mess, uint32_t /*uMesgIdx*/)
+{
   ULong64_t ulEpochNr = mess.getGdpbEpEpochNb();
   /*
    if( (  6 == fulCurrentTsIdx && 2 == fuCurrDpbIdx ) ||
@@ -900,8 +905,7 @@ void CbmMcbm2018UnpackerAlgoTof::ProcessEpoch(const gdpbv100::Message& mess,
 */
   fvulCurrentEpoch[fuCurrDpbIdx] = ulEpochNr;
   fvulCurrentEpochFull[fuCurrDpbIdx] =
-    ulEpochNr
-    + (gdpbv100::kuEpochCounterSz + 1) * fvulCurrentEpochCycle[fuCurrDpbIdx];
+    ulEpochNr + (gdpbv100::kuEpochCounterSz + 1) * fvulCurrentEpochCycle[fuCurrDpbIdx];
 
   /*
    /// Re-align the epoch number of the message in case it will be used later:
@@ -913,21 +917,17 @@ void CbmMcbm2018UnpackerAlgoTof::ProcessEpoch(const gdpbv100::Message& mess,
   /// Process the corresponding messages buffer for current gDPB
   ProcessEpSupprBuffer();
 }
-void CbmMcbm2018UnpackerAlgoTof::ProcessEndOfMsEpoch() {
+void CbmMcbm2018UnpackerAlgoTof::ProcessEndOfMsEpoch()
+{
   /// Used to fake a "closing" epoch at the end of the MS
-  ULong64_t ulEpochNr =
-    (fvulCurrentEpoch[fuCurrDpbIdx] + 1) % gdpbv100::kuEpochCounterSz;
+  ULong64_t ulEpochNr = (fvulCurrentEpoch[fuCurrDpbIdx] + 1) % gdpbv100::kuEpochCounterSz;
 
-  if (0 < fvulCurrentEpoch[fuCurrDpbIdx]
-      && ulEpochNr < fvulCurrentEpoch[fuCurrDpbIdx]) {
+  if (0 < fvulCurrentEpoch[fuCurrDpbIdx] && ulEpochNr < fvulCurrentEpoch[fuCurrDpbIdx]) {
     LOG(info) << "CbmMcbm2018UnpackerAlgoTof::ProcessEndOfMsEpoch => "
               << " New epoch cycle for Gdpb " << fuCurrDpbIdx
-              << Form(": Current cycle 0x%09llX New cycle 0x%09llX",
-                      fvulCurrentEpochCycle[fuCurrDpbIdx],
+              << Form(": Current cycle 0x%09llX New cycle 0x%09llX", fvulCurrentEpochCycle[fuCurrDpbIdx],
                       fvulCurrentEpochCycle[fuCurrDpbIdx] + 1)
-              << Form("(old Ep %08llx new Ep %08llx)",
-                      fvulCurrentEpoch[fuCurrDpbIdx],
-                      ulEpochNr);
+              << Form("(old Ep %08llx new Ep %08llx)", fvulCurrentEpoch[fuCurrDpbIdx], ulEpochNr);
     fvulCurrentEpochCycle[fuCurrDpbIdx]++;
   }  // if( 0 < fvulCurrentEpoch[ fuCurrDpbIdx ] && ulEpochNr < fvulCurrentEpoch[ fuCurrDpbIdx ] )
      /*
@@ -935,14 +935,13 @@ void CbmMcbm2018UnpackerAlgoTof::ProcessEndOfMsEpoch() {
    fvulCurrentEpochFull[ fuCurrDpbIdx ] = ulEpochNr + ( gdpbv100::kuEpochCounterSz + 1 ) * fvulCurrentEpochCycle[ fuCurrDpbIdx ];
 */
   fvulCurrentEpochFull[fuCurrDpbIdx] =
-    ulEpochNr
-    + (gdpbv100::kuEpochCounterSz + 1) * fvulCurrentEpochCycle[fuCurrDpbIdx];
+    ulEpochNr + (gdpbv100::kuEpochCounterSz + 1) * fvulCurrentEpochCycle[fuCurrDpbIdx];
 
   /// Process the corresponding messages buffer for current gDPB
   ProcessEpSupprBuffer();
 }
-void CbmMcbm2018UnpackerAlgoTof::ProcessStarTrigger(
-  const gdpbv100::Message& mess) {
+void CbmMcbm2018UnpackerAlgoTof::ProcessStarTrigger(const gdpbv100::Message& mess)
+{
   Int_t iMsgIndex = mess.getStarTrigMsgIndex();
 
   switch (iMsgIndex) {
@@ -953,57 +952,43 @@ void CbmMcbm2018UnpackerAlgoTof::ProcessStarTrigger(
       break;
     case 2: fvulStarTsMid[fuCurrDpbIdx] = mess.getStarTsMidStarC(); break;
     case 3: {
-      ULong64_t ulNewGdpbTsFull =
-        (fvulGdpbTsMsb[fuCurrDpbIdx] << 24) + (fvulGdpbTsLsb[fuCurrDpbIdx]);
-      ULong64_t ulNewStarTsFull = (fvulStarTsMsb[fuCurrDpbIdx] << 48)
-                                  + (fvulStarTsMid[fuCurrDpbIdx] << 8)
-                                  + mess.getStarTsLsbStarD();
+      ULong64_t ulNewGdpbTsFull = (fvulGdpbTsMsb[fuCurrDpbIdx] << 24) + (fvulGdpbTsLsb[fuCurrDpbIdx]);
+      ULong64_t ulNewStarTsFull =
+        (fvulStarTsMsb[fuCurrDpbIdx] << 48) + (fvulStarTsMid[fuCurrDpbIdx] << 8) + mess.getStarTsLsbStarD();
       UInt_t uNewToken   = mess.getStarTokenStarD();
       UInt_t uNewDaqCmd  = mess.getStarDaqCmdStarD();
       UInt_t uNewTrigCmd = mess.getStarTrigCmdStarD();
 
-      if ((uNewToken == fvuStarTokenLast[fuCurrDpbIdx])
-          && (ulNewGdpbTsFull == fvulGdpbTsFullLast[fuCurrDpbIdx])
-          && (ulNewStarTsFull == fvulStarTsFullLast[fuCurrDpbIdx])
-          && (uNewDaqCmd == fvuStarDaqCmdLast[fuCurrDpbIdx])
+      if ((uNewToken == fvuStarTokenLast[fuCurrDpbIdx]) && (ulNewGdpbTsFull == fvulGdpbTsFullLast[fuCurrDpbIdx])
+          && (ulNewStarTsFull == fvulStarTsFullLast[fuCurrDpbIdx]) && (uNewDaqCmd == fvuStarDaqCmdLast[fuCurrDpbIdx])
           && (uNewTrigCmd == fvuStarTrigCmdLast[fuCurrDpbIdx])) {
         UInt_t uTrigWord = ((fvuStarTrigCmdLast[fuCurrDpbIdx] & 0x00F) << 16)
                            + ((fvuStarDaqCmdLast[fuCurrDpbIdx] & 0x00F) << 12)
                            + ((fvuStarTokenLast[fuCurrDpbIdx] & 0xFFF));
         LOG(warning) << "Possible error: identical STAR tokens found twice in "
                         "a row => ignore 2nd! "
-                     << " TS " << fulCurrentTsIdx << " gDBB #" << fuCurrDpbIdx
-                     << " "
+                     << " TS " << fulCurrentTsIdx << " gDBB #" << fuCurrDpbIdx << " "
                      << Form("token = %5u ", fvuStarTokenLast[fuCurrDpbIdx])
-                     << Form("gDPB ts  = %12llu ",
-                             fvulGdpbTsFullLast[fuCurrDpbIdx])
-                     << Form("STAR ts = %12llu ",
-                             fvulStarTsFullLast[fuCurrDpbIdx])
+                     << Form("gDPB ts  = %12llu ", fvulGdpbTsFullLast[fuCurrDpbIdx])
+                     << Form("STAR ts = %12llu ", fvulStarTsFullLast[fuCurrDpbIdx])
                      << Form("DAQ cmd = %2u ", fvuStarDaqCmdLast[fuCurrDpbIdx])
-                     << Form("TRG cmd = %2u ", fvuStarTrigCmdLast[fuCurrDpbIdx])
-                     << Form("TRG Wrd = %5x ", uTrigWord);
+                     << Form("TRG cmd = %2u ", fvuStarTrigCmdLast[fuCurrDpbIdx]) << Form("TRG Wrd = %5x ", uTrigWord);
         return;
       }  // if exactly same message repeated
 
       // GDPB TS counter reset detection
       if (ulNewGdpbTsFull < fvulGdpbTsFullLast[fuCurrDpbIdx])
-        LOG(debug) << "Probable reset of the GDPB TS: old = "
-                   << Form("%16llu", fvulGdpbTsFullLast[fuCurrDpbIdx])
-                   << " new = " << Form("%16llu", ulNewGdpbTsFull)
-                   << " Diff = -"
-                   << Form("%8llu",
-                           fvulGdpbTsFullLast[fuCurrDpbIdx] - ulNewGdpbTsFull)
-                   << " GDPB #" << Form("%2u", fuCurrDpbIdx);
+        LOG(debug) << "Probable reset of the GDPB TS: old = " << Form("%16llu", fvulGdpbTsFullLast[fuCurrDpbIdx])
+                   << " new = " << Form("%16llu", ulNewGdpbTsFull) << " Diff = -"
+                   << Form("%8llu", fvulGdpbTsFullLast[fuCurrDpbIdx] - ulNewGdpbTsFull) << " GDPB #"
+                   << Form("%2u", fuCurrDpbIdx);
 
       // STAR TS counter reset detection
       if (ulNewStarTsFull < fvulStarTsFullLast[fuCurrDpbIdx])
-        LOG(debug) << "Probable reset of the STAR TS: old = "
-                   << Form("%16llu", fvulStarTsFullLast[fuCurrDpbIdx])
-                   << " new = " << Form("%16llu", ulNewStarTsFull)
-                   << " Diff = -"
-                   << Form("%8llu",
-                           fvulStarTsFullLast[fuCurrDpbIdx] - ulNewStarTsFull)
-                   << " GDPB #" << Form("%2u", fuCurrDpbIdx);
+        LOG(debug) << "Probable reset of the STAR TS: old = " << Form("%16llu", fvulStarTsFullLast[fuCurrDpbIdx])
+                   << " new = " << Form("%16llu", ulNewStarTsFull) << " Diff = -"
+                   << Form("%8llu", fvulStarTsFullLast[fuCurrDpbIdx] - ulNewStarTsFull) << " GDPB #"
+                   << Form("%2u", fuCurrDpbIdx);
 
       /// Check needed to avoid double counting
       if (fulCurrentMsIdx < fuNbCoreMsPerTs) {
@@ -1039,13 +1024,14 @@ void CbmMcbm2018UnpackerAlgoTof::ProcessStarTrigger(
   }  // switch( iMsgIndex )
 }
 // -------------------------------------------------------------------------
-void CbmMcbm2018UnpackerAlgoTof::ProcessEpSupprBuffer() {
+void CbmMcbm2018UnpackerAlgoTof::ProcessEpSupprBuffer()
+{
   Int_t iBufferSize = fvvmEpSupprBuffer[fuCurrDpbIdx].size();
 
   if (0 == iBufferSize) return;
 
-  LOG(debug) << "Now processing stored messages for for gDPB " << fuCurrDpbIdx
-             << " with epoch number " << (fvulCurrentEpoch[fuCurrDpbIdx] - 1);
+  LOG(debug) << "Now processing stored messages for for gDPB " << fuCurrDpbIdx << " with epoch number "
+             << (fvulCurrentEpoch[fuCurrDpbIdx] - 1);
 
   /// Data are sorted between epochs, not inside => Epoch level ordering
   /// Sorting at lower bin precision level
@@ -1064,15 +1050,13 @@ void CbmMcbm2018UnpackerAlgoTof::ProcessEpSupprBuffer() {
   for (Int_t iMsgIdx = 0; iMsgIdx < iBufferSize; iMsgIdx++) {
     messageType = fvvmEpSupprBuffer[fuCurrDpbIdx][iMsgIdx].getMessageType();
 
-    fuGet4Id = fUnpackPar->ElinkIdxToGet4Idx(
-      fvvmEpSupprBuffer[fuCurrDpbIdx][iMsgIdx].getGdpbGenChipId());
+    fuGet4Id = fUnpackPar->ElinkIdxToGet4Idx(fvvmEpSupprBuffer[fuCurrDpbIdx][iMsgIdx].getGdpbGenChipId());
     if (fuDiamondDpbIdx == fuCurrDpbIdx || 0x90 == fuCurrentMsSysId)
       fuGet4Id = fvvmEpSupprBuffer[fuCurrDpbIdx][iMsgIdx].getGdpbGenChipId();
     fuGet4Nr = (fuCurrDpbIdx * fuNrOfGet4PerGdpb) + fuGet4Id;
 
     /// Store the full message in the proper buffer
-    gdpbv100::FullMessage fullMess(fvvmEpSupprBuffer[fuCurrDpbIdx][iMsgIdx],
-                                   ulCurEpochGdpbGet4);
+    gdpbv100::FullMessage fullMess(fvvmEpSupprBuffer[fuCurrDpbIdx][iMsgIdx], ulCurEpochGdpbGet4);
 
     /// Do other actions on it if needed
     switch (messageType) {
@@ -1096,16 +1080,22 @@ void CbmMcbm2018UnpackerAlgoTof::ProcessEpSupprBuffer() {
         /// Should never appear there
         break;
       default:
-        LOG(error) << "Message type " << std::hex << std::setw(2)
-                   << static_cast<uint16_t>(messageType)
+        LOG(error) << "Message type " << std::hex << std::setw(2) << static_cast<uint16_t>(messageType)
                    << " not included in Get4 unpacker.";
     }  // switch( mess.getMessageType() )
   }    // for( Int_t iMsgIdx = 0; iMsgIdx < iBufferSize; iMsgIdx++ )
 
   fvvmEpSupprBuffer[fuCurrDpbIdx].clear();
 }
+
+static gdpbv100::FullMessage messlast = *(new gdpbv100::FullMessage());
 // -------------------------------------------------------------------------
-void CbmMcbm2018UnpackerAlgoTof::ProcessHit(const gdpbv100::FullMessage& mess) {
+void CbmMcbm2018UnpackerAlgoTof::ProcessHit(const gdpbv100::FullMessage& mess)
+{
+
+  if (messlast == mess) return;
+  messlast = mess;
+
   UInt_t uChannel = mess.getGdpbHitChanId();
   UInt_t uTot     = mess.getGdpbHit32Tot();
 
@@ -1114,26 +1104,22 @@ void CbmMcbm2018UnpackerAlgoTof::ProcessHit(const gdpbv100::FullMessage& mess) {
   // => FTS = Fullt TS modulo 112
   //   UInt_t uFts     = mess.getGdpbHitFullTs() % 112;
 
-  UInt_t uChannelNr = fuGet4Id * fuNrOfChannelsPerGet4 + uChannel;
-  UInt_t uChannelNrInFee =
-    (fuGet4Id % fuNrOfGet4PerFee) * fuNrOfChannelsPerGet4 + uChannel;
+  UInt_t uChannelNr         = fuGet4Id * fuNrOfChannelsPerGet4 + uChannel;
+  UInt_t uChannelNrInFee    = (fuGet4Id % fuNrOfGet4PerFee) * fuNrOfChannelsPerGet4 + uChannel;
   UInt_t uFeeNr             = (fuGet4Id / fuNrOfGet4PerFee);
   UInt_t uFeeNrInSys        = fuCurrDpbIdx * fuNrOfFeePerGdpb + uFeeNr;
-  UInt_t uRemappedChannelNr = uFeeNr * fuNrOfChannelsPerFee
-                              + fUnpackPar->Get4ChanToPadiChan(uChannelNrInFee);
+  UInt_t uRemappedChannelNr = uFeeNr * fuNrOfChannelsPerFee + fUnpackPar->Get4ChanToPadiChan(uChannelNrInFee);
   //   UInt_t uGbtxNr            = (uFeeNr / fUnpackPar->GetNrOfFeePerGbtx());
   //   UInt_t uFeeInGbtx         = (uFeeNr % fUnpackPar->GetNrOfFeePerGbtx());
   //   UInt_t uGbtxNrInSys       = fuCurrDpbIdx * fUnpackPar->GetNrOfGbtxPerGdpb() + uGbtxNr;
 
   //   UInt_t uChanInSyst = fuCurrDpbIdx * fuNrOfChannelsPerGdpb + uChannelNr;
-  UInt_t uRemappedChannelNrInSys =
-    fuCurrDpbIdx * fuNrOfChannelsPerGdpb + uFeeNr * fuNrOfChannelsPerFee
-    + fUnpackPar->Get4ChanToPadiChan(uChannelNrInFee);
+  UInt_t uRemappedChannelNrInSys = fuCurrDpbIdx * fuNrOfChannelsPerGdpb + uFeeNr * fuNrOfChannelsPerFee
+                                   + fUnpackPar->Get4ChanToPadiChan(uChannelNrInFee);
   /// Diamond FEE have straight connection from Get4 to eLink and from PADI to GET4
   if (fuDiamondDpbIdx == fuCurrDpbIdx || 0x90 == fuCurrentMsSysId) {
-    uRemappedChannelNr = uChannelNr;
-    uRemappedChannelNrInSys =
-      fuCurrDpbIdx * fUnpackPar->GetNrOfChannelsPerGdpb() + uChannelNr;
+    uRemappedChannelNr      = uChannelNr;
+    uRemappedChannelNrInSys = fuCurrDpbIdx * fUnpackPar->GetNrOfChannelsPerGdpb() + uChannelNr;
   }  // if( fuDiamondDpbIdx == fuCurrDpbIdx || 0x90 == fuCurrentMsSysId )
 
   //   ULong_t  ulHitTime = mess.getMsgFullTime(  mess.getExtendedEpoch() );
@@ -1159,11 +1145,9 @@ void CbmMcbm2018UnpackerAlgoTof::ProcessHit(const gdpbv100::FullMessage& mess) {
    } // if( fUnpackPar->GetNumberOfChannels() < uChanUId )
 */
   if (fviRpcChUId.size() < uRemappedChannelNrInSys) {
-    LOG(fatal) << "Invalid mapping index " << uRemappedChannelNrInSys << " VS "
-               << fviRpcChUId.size() << ", from GdpbNr " << fuCurrDpbIdx
-               << ", Get4 " << fuGet4Id << ", Ch " << uChannel << ", ChNr "
-               << uChannelNr << ", ChNrIF " << uChannelNrInFee << ", FiS "
-               << uFeeNrInSys;
+    LOG(fatal) << "Invalid mapping index " << uRemappedChannelNrInSys << " VS " << fviRpcChUId.size()
+               << ", from GdpbNr " << fuCurrDpbIdx << ", Get4 " << fuGet4Id << ", Ch " << uChannel << ", ChNr "
+               << uChannelNr << ", ChNrIF " << uChannelNrInFee << ", FiS " << uFeeNrInSys;
     return;
   }  // if( fviRpcChUId.size() < uRemappedChannelNrInSys )
 
@@ -1183,54 +1167,46 @@ void CbmMcbm2018UnpackerAlgoTof::ProcessHit(const gdpbv100::FullMessage& mess) {
 
   if (0 == uChanUId) {
     if (0 < NMappingWarnings--)
-      LOG(warning) << "Unused data item at " << uRemappedChannelNrInSys
-                   << ", from GdpbNr " << fuCurrDpbIdx << ", Get4 " << fuGet4Id
-                   << ", Ch " << uChannel << ", ChNr " << uChannelNr
-                   << ", ChNrIF " << uChannelNrInFee << ", FiS " << uFeeNrInSys;
+      LOG(warning) << "Unused data item at " << uRemappedChannelNrInSys << ", from GdpbNr " << fuCurrDpbIdx << ", Get4 "
+                   << fuGet4Id << ", Ch " << uChannel << ", ChNr " << uChannelNr << ", ChNrIF " << uChannelNrInFee
+                   << ", FiS " << uFeeNrInSys;
     return;  // Hit not mapped to digi
   }
 
   /// Apply offset to T0 only to TOF digis
   if (0x90 != fuCurrentMsSysId) dHitTime -= fdTimeOffsetNs;
 
-  LOG(debug)
-    << Form("Insert 0x%08x digi with time ", uChanUId) << dHitTime
-    << Form(", Tot %4.0f", dHitTot)
-    //              << " into buffer with " << fBuffer->GetSize() << " data from "
-    //              << Form("%11.1f to %11.1f ", fBuffer->GetTimeFirst(), fBuffer->GetTimeLast())
+  LOG(debug) << Form("Insert 0x%08x digi with time ", uChanUId) << dHitTime
+             << Form(", Tot %4.0f", dHitTot)
+             //              << " into buffer with " << fBuffer->GetSize() << " data from "
+             //              << Form("%11.1f to %11.1f ", fBuffer->GetTimeFirst(), fBuffer->GetTimeLast())
 
-    << " at epoch " << mess.getExtendedEpoch();
+             << " at epoch " << mess.getExtendedEpoch();
 
   //   CbmTofDigi digi( uChanUId, dHitTime, dHitTot );
   //   fDigiVect.emplace_back( digi );
   fDigiVect.emplace_back(uChanUId, dHitTime, dHitTot);
 }
 // -------------------------------------------------------------------------
-void CbmMcbm2018UnpackerAlgoTof::ProcessSlCtrl(
-  const gdpbv100::FullMessage& /*mess*/) {}
+void CbmMcbm2018UnpackerAlgoTof::ProcessSlCtrl(const gdpbv100::FullMessage& /*mess*/) {}
 // -------------------------------------------------------------------------
-void CbmMcbm2018UnpackerAlgoTof::ProcessSysMess(
-  const gdpbv100::FullMessage& mess) {
+void CbmMcbm2018UnpackerAlgoTof::ProcessSysMess(const gdpbv100::FullMessage& mess)
+{
   switch (mess.getGdpbSysSubType()) {
     case gdpbv100::SYS_GET4_ERROR: {
       ProcessError(mess);
       break;
     }  // case gdpbv100::SYSMSG_GET4_EVENT
     case gdpbv100::SYS_GDPB_UNKWN: {
-      LOG(debug) << "Unknown GET4 message, data: " << std::hex << std::setw(8)
-                 << mess.getGdpbSysUnkwData() << std::dec
-                 << " Full message: " << std::hex << std::setw(16)
-                 << mess.getData() << std::dec;
+      LOG(debug) << "Unknown GET4 message, data: " << std::hex << std::setw(8) << mess.getGdpbSysUnkwData() << std::dec
+                 << " Full message: " << std::hex << std::setw(16) << mess.getData() << std::dec;
       break;
     }  // case gdpbv100::SYS_GDPB_UNKWN:
     case gdpbv100::SYS_GET4_SYNC_MISS: {
       if (mess.getGdpbSysFwErrResync())
-        LOG(info) << Form("GET4 Resynchronization: Get4:0x%04x ",
-                          mess.getGdpbGenChipId())
-                  << fuCurrDpbIdx;
+        LOG(info) << Form("GET4 Resynchronization: Get4:0x%04x ", mess.getGdpbGenChipId()) << fuCurrDpbIdx;
       else
-        LOG(info) << "GET4 synchronization pulse missing in gDPB "
-                  << fuCurrDpbIdx;
+        LOG(info) << "GET4 synchronization pulse missing in gDPB " << fuCurrDpbIdx;
       break;
     }  // case gdpbv100::SYS_GET4_SYNC_MISS:
     case gdpbv100::SYS_PATTERN: {
@@ -1243,8 +1219,8 @@ void CbmMcbm2018UnpackerAlgoTof::ProcessSysMess(
     }  // default
   }    // switch( mess.getGdpbSysSubType() )
 }
-void CbmMcbm2018UnpackerAlgoTof::ProcessError(
-  const gdpbv100::FullMessage& mess) {
+void CbmMcbm2018UnpackerAlgoTof::ProcessError(const gdpbv100::FullMessage& mess)
+{
   uint32_t uErrorType = mess.getGdpbSysErrData();
 
   switch (uErrorType) {
@@ -1285,19 +1261,15 @@ void CbmMcbm2018UnpackerAlgoTof::ProcessError(
   return;
 }
 
-void CbmMcbm2018UnpackerAlgoTof::ProcessPattern(
-  const gdpbv100::FullMessage& mess) {
+void CbmMcbm2018UnpackerAlgoTof::ProcessPattern(const gdpbv100::FullMessage& mess)
+{
   uint16_t usType   = mess.getGdpbSysPattType();
   uint16_t usIndex  = mess.getGdpbSysPattIndex();
   uint32_t uPattern = mess.getGdpbSysPattPattern();
 
   switch (usType) {
     case gdpbv100::PATT_MISSMATCH: {
-      LOG(debug) << Form(
-        "Missmatch pattern message => Type %u, Index %2d, Pattern 0x%08X",
-        usType,
-        usIndex,
-        uPattern);
+      LOG(debug) << Form("Missmatch pattern message => Type %u, Index %2d, Pattern 0x%08X", usType, usIndex, uPattern);
       /*
 	if(usIndex==7) {
 	  TString Tok;
@@ -1313,11 +1285,7 @@ void CbmMcbm2018UnpackerAlgoTof::ProcessPattern(
     }  // case gdpbv100::PATT_MISSMATCH:
 
     case gdpbv100::PATT_ENABLE: {
-      LOG(debug2) << Form(
-        "Enable pattern message => Type %d, Index %2d, Pattern 0x%08X",
-        usType,
-        usIndex,
-        uPattern);
+      LOG(debug2) << Form("Enable pattern message => Type %d, Index %2d, Pattern 0x%08X", usType, usIndex, uPattern);
       /*
          for( UInt_t uBit = 0; uBit < 32; ++uBit )
             if( ( uPattern >> uBit ) & 0x1 )
@@ -1330,11 +1298,7 @@ void CbmMcbm2018UnpackerAlgoTof::ProcessPattern(
     }  // case gdpbv100::PATT_ENABLE:
 
     case gdpbv100::PATT_RESYNC: {
-      LOG(debug) << Form(
-        "RESYNC pattern message => Type %d, Index %2d, Pattern 0x%08X",
-        usType,
-        usIndex,
-        uPattern);
+      LOG(debug) << Form("RESYNC pattern message => Type %d, Index %2d, Pattern 0x%08X", usType, usIndex, uPattern);
 
       break;
     }  // case gdpbv100::PATT_RESYNC:
@@ -1356,52 +1320,29 @@ void CbmMcbm2018UnpackerAlgoTof::ProcessPattern(
 }
 // -------------------------------------------------------------------------
 
-Bool_t CbmMcbm2018UnpackerAlgoTof::CreateHistograms() {
+Bool_t CbmMcbm2018UnpackerAlgoTof::CreateHistograms()
+{
   std::string sFolder = "Tof_Raw_gDPB";
 
   LOG(info) << "create Histos for " << fuNrOfGdpbs << " gDPBs ";
 
   fhRawTDigEvT0 =
-    new TH1F(Form("Raw_TDig-EvT0"),
-             Form("Raw digi time difference to 1st digi ; time [ns]; cts"),
-             500,
-             0,
-             100.);
+    new TH1F(Form("Raw_TDig-EvT0"), Form("Raw digi time difference to 1st digi ; time [ns]; cts"), 500, 0, 100.);
 
   fhRawTDigRef0 =
-    new TH1F(Form("Raw_TDig-Ref0"),
-             Form("Raw digi time difference to Ref ; time [ns]; cts"),
-             6000,
-             -10000,
-             50000);
+    new TH1F(Form("Raw_TDig-Ref0"), Form("Raw digi time difference to Ref ; time [ns]; cts"), 6000, -10000, 50000);
 
   fhRawTDigRef =
-    new TH1F(Form("Raw_TDig-Ref"),
-             Form("Raw digi time difference to Ref ; time [ns]; cts"),
-             6000,
-             -1000,
-             5000);
+    new TH1F(Form("Raw_TDig-Ref"), Form("Raw digi time difference to Ref ; time [ns]; cts"), 6000, -1000, 5000);
 
-  fhRawTRefDig0 =
-    new TH1F(Form("Raw_TRef-Dig0"),
-             Form("Raw Ref time difference to last digi  ; time [ns]; cts"),
-             9999,
-             -50000,
-             50000);
+  fhRawTRefDig0 = new TH1F(Form("Raw_TRef-Dig0"), Form("Raw Ref time difference to last digi  ; time [ns]; cts"), 9999,
+                           -50000, 50000);
 
   fhRawTRefDig1 =
-    new TH1F(Form("Raw_TRef-Dig1"),
-             Form("Raw Ref time difference to last digi  ; time [ns]; cts"),
-             9999,
-             -5000,
-             5000);
+    new TH1F(Form("Raw_TRef-Dig1"), Form("Raw Ref time difference to last digi  ; time [ns]; cts"), 9999, -5000, 5000);
 
-  fhRawDigiLastDigi =
-    new TH1F(Form("Raw_Digi-LastDigi"),
-             Form("Raw Digi time difference to last digi  ; time [ns]; cts"),
-             9999,
-             -5000,
-             5000);
+  fhRawDigiLastDigi = new TH1F(Form("Raw_Digi-LastDigi"),
+                               Form("Raw Digi time difference to last digi  ; time [ns]; cts"), 9999, -5000, 5000);
 
   /// Add pointers to the vector with all histo for access by steering class
   AddHistoToVector(fhRawTDigEvT0, sFolder);
@@ -1416,39 +1357,20 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::CreateHistograms() {
   fhChCountRemap.resize(fuNrOfGdpbs);
   fhChanCoinc.resize(fuNrOfGdpbs);
   for (UInt_t uGdpb = 0; uGdpb < fuNrOfGdpbs; uGdpb++) {
-    fhRawTotCh[uGdpb] =
-      new TH2F(Form("Raw_Tot_gDPB_%02u", uGdpb),
-               Form("Raw TOT gDPB %02u; channel; TOT [bin]", uGdpb),
-               fuNrOfGet4PerGdpb * 4,
-               0.,
-               fuNrOfGet4PerGdpb * 4,
-               256,
-               0.,
-               256.);
+    fhRawTotCh[uGdpb] = new TH2F(Form("Raw_Tot_gDPB_%02u", uGdpb), Form("Raw TOT gDPB %02u; channel; TOT [bin]", uGdpb),
+                                 fuNrOfGet4PerGdpb * 4, 0., fuNrOfGet4PerGdpb * 4, 256, 0., 256.);
 
     fhChCount[uGdpb] =
-      new TH1I(Form("ChCount_gDPB_%02u", uGdpb),
-               Form("Channel counts gDPB %02u; channel; Hits", uGdpb),
-               fuNrOfChannelsPerGdpb,
-               0.,
-               fuNrOfChannelsPerGdpb);
+      new TH1I(Form("ChCount_gDPB_%02u", uGdpb), Form("Channel counts gDPB %02u; channel; Hits", uGdpb),
+               fuNrOfChannelsPerGdpb, 0., fuNrOfChannelsPerGdpb);
 
-    fhChCountRemap[uGdpb] = new TH1I(
-      Form("ChCountRemap_gDPB_%02u", uGdpb),
-      Form("Remapped channel counts gDPB %02u; Remapped channel; Hits", uGdpb),
-      fuNrOfChannelsPerGdpb,
-      0.,
-      fuNrOfChannelsPerGdpb);
+    fhChCountRemap[uGdpb] = new TH1I(Form("ChCountRemap_gDPB_%02u", uGdpb),
+                                     Form("Remapped channel counts gDPB %02u; Remapped channel; Hits", uGdpb),
+                                     fuNrOfChannelsPerGdpb, 0., fuNrOfChannelsPerGdpb);
 
     fhChanCoinc[uGdpb] =
-      new TH2F(Form("fhChanCoinc_%02u", uGdpb),
-               Form("Channels Coincidence %02u; Left; Right", uGdpb),
-               fuNrOfChannelsPerGdpb,
-               0.,
-               fuNrOfChannelsPerGdpb,
-               fuNrOfChannelsPerGdpb,
-               0.,
-               fuNrOfChannelsPerGdpb);
+      new TH2F(Form("fhChanCoinc_%02u", uGdpb), Form("Channels Coincidence %02u; Left; Right", uGdpb),
+               fuNrOfChannelsPerGdpb, 0., fuNrOfChannelsPerGdpb, fuNrOfChannelsPerGdpb, 0., fuNrOfChannelsPerGdpb);
 
     /// Add pointers to the vector with all histo for access by steering class
     AddHistoToVector(fhRawTotCh[uGdpb], sFolder);
@@ -1457,18 +1379,9 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::CreateHistograms() {
     AddHistoToVector(fhChanCoinc[uGdpb], sFolder);
   }  // for( UInt_t uGdpb = 0; uGdpb < fuNrOfGdpbs; uGdpb ++)
 
-  fhVectorSize =
-    new TH1I("fhVectorSize",
-             "Size of the vector VS TS index; TS index; Size [bytes]",
-             10000,
-             0.,
-             10000.);
+  fhVectorSize = new TH1I("fhVectorSize", "Size of the vector VS TS index; TS index; Size [bytes]", 10000, 0., 10000.);
   fhVectorCapacity =
-    new TH1I("fhVectorCapacity",
-             "Size of the vector VS TS index; TS index; Size [bytes]",
-             10000,
-             0.,
-             10000.);
+    new TH1I("fhVectorCapacity", "Size of the vector VS TS index; TS index; Size [bytes]", 10000, 0., 10000.);
   AddHistoToVector(fhVectorSize, sFolder);
   AddHistoToVector(fhVectorCapacity, sFolder);
 
@@ -1526,7 +1439,8 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::CreateHistograms() {
 */
   return kTRUE;
 }
-Bool_t CbmMcbm2018UnpackerAlgoTof::FillHistograms() {
+Bool_t CbmMcbm2018UnpackerAlgoTof::FillHistograms()
+{
   /*
    UInt_t uNbEvents = fvEventsBuffer.size();
    fhEventNbPerTs->Fill( uNbEvents );
@@ -1553,7 +1467,8 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::FillHistograms() {
 */
   return kTRUE;
 }
-Bool_t CbmMcbm2018UnpackerAlgoTof::ResetHistograms() {
+Bool_t CbmMcbm2018UnpackerAlgoTof::ResetHistograms()
+{
   /*
    for( UInt_t uGdpb = 0; uGdpb < fuNrOfGdpbs; ++uGdpb )
    {

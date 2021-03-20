@@ -1,10 +1,6 @@
-void pl_all_CluRateRatio(Int_t iRef      = 500,
-                         Int_t iNSt      = 3,
-                         Double_t Tstart = 0.,
-                         Double_t Tend   = 800.,
-                         Int_t iMode     = 0,
-                         Int_t iOpt      = 0,
-                         Double_t THR    = 1.E5) {
+void pl_all_CluRateRatio(Int_t iRef = 500, Int_t iNSt = 3, Double_t Tstart = 0., Double_t Tend = 800., Int_t iMode = 0,
+                         Int_t iOpt = 0, Double_t THR = 1.E5)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   //  TCanvas *can = new TCanvas("can","can",48,55,700,900);
@@ -31,11 +27,9 @@ void pl_all_CluRateRatio(Int_t iRef      = 500,
   TH1* hRat;
   TH1* hDis;
   TH2* h2;
-  const Int_t iTSR[11] = {500, 41, 31, 900, 901, 910, 911, 600, 601, 800, 801};
-  const Double_t dArea[11] = {
-    1., 18., 44.0, 896., 896., 896., 896., 280., 280., 32., 4.};
-  const Double_t dDist[11] = {
-    1., 353., 532.5, 386., 416., 416., 445., 478., 485., 517., 543.};
+  const Int_t iTSR[11]     = {500, 41, 31, 900, 901, 910, 911, 600, 601, 800, 801};
+  const Double_t dArea[11] = {1., 18., 44.0, 896., 896., 896., 896., 280., 280., 32., 4.};
+  const Double_t dDist[11] = {1., 353., 532.5, 386., 416., 416., 445., 478., 485., 517., 543.};
 
   Int_t iCanv = 0;
   // if (h!=NULL) h->Delete();
@@ -54,12 +48,8 @@ void pl_all_CluRateRatio(Int_t iRef      = 500,
 
   gROOT->cd();
   switch (iMode) {
-    case 0:
-      hname = Form("cl_SmT%01d_sm%03d_rpc%03d_rate", iSmType, iSm, iRp);
-      break;
-    case 1:
-      hname = Form("cl_SmT%01d_sm%03d_rpc%03d_rate10s", iSmType, iSm, iRp);
-      break;
+    case 0: hname = Form("cl_SmT%01d_sm%03d_rpc%03d_rate", iSmType, iSm, iRp); break;
+    case 1: hname = Form("cl_SmT%01d_sm%03d_rpc%03d_rate10s", iSmType, iSm, iRp); break;
   }
   h = (TH1*) gROOT->FindObjectAny(hname);
   if (h != NULL) {
@@ -82,9 +72,24 @@ void pl_all_CluRateRatio(Int_t iRef      = 500,
     hRef->GetXaxis()->SetRangeUser(Tstart, Tend);
     hRef->Draw("histE");
     hRef->Sumw2();
-    //hRef->UseCurrentStyle();
+    Double_t RateMax = hRef->GetMaximum();
+    TH1F* hRefRate =
+      new TH1F("hRefRate", Form("Rate distribution; %s", hRef->GetYaxis()->GetTitle()), 100, 0., RateMax);
+    for (Int_t iBin = hRef->FindBin(Tstart); iBin < hRef->FindBin(Tend); iBin++)
+      hRefRate->Fill(hRef->GetBinContent(iBin));
+    //hRefRate->Sumw2();
+    Double_t RateAv  = hRefRate->GetMean(1);
+    Double_t RateRMS = hRefRate->GetStdDev(1);
+    cout << "Reference counter average rate " << RateAv << ", RMS " << RateRMS << endl;
+    gStyle->SetOptStat(1111);
+    TCanvas* can2 = new TCanvas("can2", "can2", 700, 56, 500, 500);
+    can2->cd(1);
+    hRefRate->Draw("histE");
+    hRefRate->UseCurrentStyle();
+    gPad->Update();
   }
 
+  can->cd(1);
   Int_t iCol = 1;
   for (Int_t iSt = 0; iSt < iNSt; iSt++) {
     iRp     = iTSR[iSt] % 10;
@@ -94,12 +99,8 @@ void pl_all_CluRateRatio(Int_t iRef      = 500,
 
     gROOT->cd();
     switch (iMode) {
-      case 0:
-        hname = Form("cl_SmT%01d_sm%03d_rpc%03d_rate", iSmType, iSm, iRp);
-        break;
-      case 1:
-        hname = Form("cl_SmT%01d_sm%03d_rpc%03d_rate10s", iSmType, iSm, iRp);
-        break;
+      case 0: hname = Form("cl_SmT%01d_sm%03d_rpc%03d_rate", iSmType, iSm, iRp); break;
+      case 1: hname = Form("cl_SmT%01d_sm%03d_rpc%03d_rate10s", iSmType, iSm, iRp); break;
     }
     h = (TH1*) gROOT->FindObjectAny(hname);
     if (h != NULL) {
@@ -124,7 +125,8 @@ void pl_all_CluRateRatio(Int_t iRef      = 500,
       if (iCol == 5) iCol++;  // skip yellow
       //h->UseCurrentStyle();
       //gPad->SetLogy();
-    } else {
+    }
+    else {
       cout << "Histogram " << hname << " not existing. " << endl;
     }
   }
@@ -141,12 +143,8 @@ void pl_all_CluRateRatio(Int_t iRef      = 500,
 
     gROOT->cd();
     switch (iMode) {
-      case 0:
-        hname = Form("cl_SmT%01d_sm%03d_rpc%03d_rate", iSmType, iSm, iRp);
-        break;
-      case 1:
-        hname = Form("cl_SmT%01d_sm%03d_rpc%03d_rate10s", iSmType, iSm, iRp);
-        break;
+      case 0: hname = Form("cl_SmT%01d_sm%03d_rpc%03d_rate", iSmType, iSm, iRp); break;
+      case 1: hname = Form("cl_SmT%01d_sm%03d_rpc%03d_rate10s", iSmType, iSm, iRp); break;
     }
     h = (TH1*) gROOT->FindObjectAny(hname);
     if (h != NULL) {
@@ -164,10 +162,7 @@ void pl_all_CluRateRatio(Int_t iRef      = 500,
           hRat->Divide(h, hRef, 1. / dArea[iSt], 1. / dArea[IndRef], "B");
           break;
         case 2:  //flux=rate/area*dist**2
-          hRat->Divide(h,
-                       hRef,
-                       dDist[iSt] * dDist[iSt] / dArea[iSt],
-                       dDist[IndRef] * dDist[IndRef] / dArea[IndRef],
+          hRat->Divide(h, hRef, dDist[iSt] * dDist[iSt] / dArea[iSt], dDist[IndRef] * dDist[IndRef] / dArea[IndRef],
                        "B");
           break;
         case 10: {
@@ -175,15 +170,15 @@ void pl_all_CluRateRatio(Int_t iRef      = 500,
           Double_t dErr = 0.;
           for (Int_t iBin = 0; iBin < h->GetNbinsX(); iBin++) {
             if (iBin < 100)
-              cout << "h " << h->GetName() << " bin " << iBin << ", cts "
-                   << hRef->GetBinContent(iBin + 1) << ", val " << dVal << endl;
+              cout << "h " << h->GetName() << " bin " << iBin << ", cts " << hRef->GetBinContent(iBin + 1) << ", val "
+                   << dVal << endl;
             if (hRef->GetBinContent(iBin + 1) > THR) {
               dVal = h->GetBinContent(iBin + 1) / hRef->GetBinContent(iBin + 1);
-              dErr =
-                TMath::Sqrt(TMath::Power(h->GetBinContent(iBin + 1), -0.5)
-                            + TMath::Power(hRef->GetBinContent(iBin + 1), -0.5))
-                * dVal;
-            } else {
+              dErr = TMath::Sqrt(TMath::Power(h->GetBinContent(iBin + 1), -0.5)
+                                 + TMath::Power(hRef->GetBinContent(iBin + 1), -0.5))
+                     * dVal;
+            }
+            else {
               dErr = 0.;
             }
             hRat->SetBinContent(iBin + 1, dVal);
@@ -195,7 +190,8 @@ void pl_all_CluRateRatio(Int_t iRef      = 500,
         hRat->SetMinimum(1.E-2);
         hRat->Draw("L E");
         hRat->GetXaxis()->SetRangeUser(Tstart, Tend);
-      } else
+      }
+      else
         hRat->Draw("L E SAME");
 
       hRat->SetLineColor(iCol++);
@@ -203,7 +199,8 @@ void pl_all_CluRateRatio(Int_t iRef      = 500,
 
       //h->UseCurrentStyle();
       gPad->SetLogy();
-    } else {
+    }
+    else {
       cout << "Histogram " << hname << " not existing. " << endl;
     }
     leg->Draw();
