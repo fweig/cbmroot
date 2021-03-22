@@ -17,6 +17,8 @@
 #include <vector>   // for vector
 
 #include "CbmDefs.h"  // for ECbmModuleId
+#include "CbmMatch.h"
+#include "CbmTofDigi.h"
 
 class CbmDigiManager;
 class CbmMCDataArray;
@@ -199,6 +201,8 @@ private:
 
   // TOF
   CbmMCDataArray* fTofPoints       = nullptr;  //! CbmTofPoint array
+  const std::vector<CbmTofDigi>* fTofDigis     = nullptr;  // TOF MC point matches
+  const std::vector<CbmMatch>*   fTofDigiMatch = nullptr;  // TOF MC point matches
   TClonesArray* fTofHits           = nullptr;  //! CbmTofHit array
   TClonesArray* fTofHitDigiMatches = nullptr;  //! Match Hit -> Digi [out]
   TClonesArray* fTofHitMatches     = nullptr;  //! Match Hit -> MC point [out]

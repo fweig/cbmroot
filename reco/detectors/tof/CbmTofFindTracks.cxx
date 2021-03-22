@@ -253,7 +253,7 @@ InitStatus CbmTofFindTracks::Init() {
   }
 
   // Get TOF DigiMatch Array
-  fTofMatchArrayIn = (TClonesArray*) ioman->GetObject("TofCalDigiMatch");
+  fTofMatchArrayIn = (TClonesArray*) ioman->GetObject("TofHitCalDigiMatch");
   if (!fTofMatchArrayIn) {
     LOG(fatal) << "CbmTofFindTracks::Init: No TofDigiMatch array!";
     return kERROR;
@@ -1956,7 +1956,7 @@ void CbmTofFindTracks::FillHistograms(CbmEvent* tEvent) {
           //if (0 == fMapStationRpcId[iSt]) pHit->SetTime(pTrk->GetT0());  // set time of fake hit, abandoned
           /*
           cout << " -D- CbmTofFindTracks::FillHistograms: "<< iSt <<", "
-            <<fMapStationRpcId[iSt]<<", "<< iH <<", "<< iH0 <<", "<<pHit->ToString() << endl; 
+            <<fMapStationRpcId[iSt]<<", "<< iH <<", "<< iH0 <<", "<<pHit->ToString() << endl;
           */
           Double_t dDZ =
             pHit->GetZ() - tPar->GetZ();  // z- Distance to reference point
@@ -2007,8 +2007,8 @@ void CbmTofFindTracks::FillHistograms(CbmEvent* tEvent) {
           fhPullY_Smt->Fill((Double_t) fMapRpcIdParInd[fMapStationRpcId[iSt]],
                             dDY);
           /*
-          fhPullT_Smt->Fill((Double_t)fMapRpcIdParInd[fMapStationRpcId[iSt]], fTrackletTools->GetTdif(pTrk,fMapStationRpcId[iSt], pHit) );  
-          fhPullX_Smt->Fill((Double_t)fMapRpcIdParInd[fMapStationRpcId[iSt]], fTrackletTools->GetXdif(pTrk,fMapStationRpcId[iSt], pHit) );  
+          fhPullT_Smt->Fill((Double_t)fMapRpcIdParInd[fMapStationRpcId[iSt]], fTrackletTools->GetTdif(pTrk,fMapStationRpcId[iSt], pHit) );
+          fhPullX_Smt->Fill((Double_t)fMapRpcIdParInd[fMapStationRpcId[iSt]], fTrackletTools->GetXdif(pTrk,fMapStationRpcId[iSt], pHit) );
           fhPullY_Smt->Fill((Double_t)fMapRpcIdParInd[fMapStationRpcId[iSt]], fTrackletTools->GetYdif(pTrk,fMapStationRpcId[iSt], pHit) );
           */
           fhPullZ_Smt->Fill((Double_t) fMapRpcIdParInd[fMapStationRpcId[iSt]],

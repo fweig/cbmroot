@@ -514,9 +514,8 @@ InitStatus CbmL1::Init()
       fTofHitDigiMatches = 0;
     }
     else {
-
       fTofPoints         = mcManager->InitBranch("TofPoint");
-      fTofHitDigiMatches = static_cast<TClonesArray*>(fManger->GetObject("TofHitMatch"));
+      fTofHitDigiMatches = static_cast<TClonesArray*>(fManger->GetObject("TofHitCalDigiMatch"));
     }
   }
   else {

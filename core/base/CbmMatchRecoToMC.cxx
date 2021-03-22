@@ -403,7 +403,7 @@ void CbmMatchRecoToMC::ReadAndCreateDataBranches() {
   /// FIXME: Temporary fix to catch all versions of the TOF Hit to Digi Match
   ///        array. To be removed after a full review of the TOF reco
   if (nullptr == fTofHitDigiMatches) {
-    fTofHitDigiMatches = static_cast<TClonesArray*>(ioman->GetObject("TofCalDigiMatch"));
+    fTofHitDigiMatches = static_cast<TClonesArray*>(ioman->GetObject("TofHitCalDigiMatch"));
     if (nullptr == fTofHitDigiMatches) {
       LOG(warning) << "CbmMatchRecoToMC::ReadAndCreateDataBranches()"
                    << " no TOF Hit to Digi array found!";
@@ -425,6 +425,29 @@ void CbmMatchRecoToMC::ReadAndCreateDataBranches() {
                       IsOutputBranchPersistent("TofHitMatch"));
     }
   }
+
+  /// FIXME: temporary hacks due to Digi array resizing and resorting in TOF clusterizer
+  fTofDigis = ioman->InitObjectAs<std::vector<CbmTofDigi> const *>("TofCalDigi");
+  if (nullptr == fTofDigis) {
+	    LOG(info) << "No calibrated tof digi vector in the input files => trying original vector";
+    fTofDigis = ioman->InitObjectAs<std::vector<CbmTofDigi> const *>("TofDigi");
+     if (nullptr == fTofDigis) {
+	    LOG(fatal) << "No original tof digi vector in the input files!";
+    }
+  }
+  else
+	    LOG(info) << "Found calibrated tof digi vector in one of the input files";
+
+  fTofDigiMatch = ioman->InitObjectAs<std::vector<CbmMatch> const *>("TofCalDigiMatch");
+  if (nullptr == fTofDigiMatch) {
+	    LOG(info) << "No calibrated tof digi to point match vector in the input files => trying original vector";
+    fTofDigiMatch = ioman->InitObjectAs<std::vector<CbmMatch> const *>("TofDigiMatch");
+     if (nullptr == fTofDigiMatch) {
+	    LOG(fatal) << "No original tof digi to point match vector in the input files!";
+    }
+  }
+  else
+	    LOG(info) << "Found calibrated tof digi to point match vector in one of the input files";
 }
 
 
@@ -512,10 +535,15 @@ void CbmMatchRecoToMC::MatchHitsTof(const TClonesArray* HitDigiMatches,
                                     TClonesArray* hitMatches) {
   if (!(HitDigiMatches && hits && hitMatches)) return;
 
-  Int_t iNbTofDigis = fDigiManager->GetNofDigis(ECbmModuleId::kTof);
+  Int_t iNbTofDigis = fTofDigis->size();
+  Int_t iNbTofDigiMatches = fTofDigiMatch->size();
+  if( iNbTofDigis != iNbTofDigiMatches )
+    LOG(fatal) << "CbmMatchRecoToMC::MatchHitsTof => Nb digis in vector not matching nb matches in vector: "
+               << iNbTofDigis << " VS " << iNbTofDigiMatches;
+
   Int_t nofHits     = hits->GetEntriesFast();
-  const CbmTofDigi* pTofDigi;
-  const CbmMatch* pMatchDigiPnt;
+  CbmTofDigi pTofDigi;
+  CbmMatch pMatchDigiPnt;
 
   for (Int_t iHit = 0; iHit < nofHits; iHit++) {
     CbmMatch* hitDigiMatch = static_cast<CbmMatch*>(HitDigiMatches->At(iHit));
@@ -536,27 +564,27 @@ void CbmMatchRecoToMC::MatchHitsTof(const TClonesArray* HitDigiMatches,
         continue;
       }  // if( iNbTofDigis <= iDigiIdx )
 
-      pTofDigi      = fDigiManager->Get<CbmTofDigi>(iDigiIdx);
-      pMatchDigiPnt = fDigiManager->GetMatch(ECbmModuleId::kTof, iDigiIdx);
-      Int_t iNbPointsDigi = pMatchDigiPnt->GetNofLinks();
+      pTofDigi      = fTofDigis->at(iDigiIdx);
+      pMatchDigiPnt = fTofDigiMatch->at(iDigiIdx);
+      Int_t iNbPointsDigi = pMatchDigiPnt.GetNofLinks();
       if (iNbPointsDigi <= 0) {
         LOG(error) << "CbmMatchRecoToMC::MatchHitsTof => No entries in Digi to point match for Hit #" << iHit << "/"
                    << nofHits << " Digi " << iDigi << "/" << iNbDigisHit << ": " << iNbPointsDigi
                    << " (digi index is " << iDigiIdx << "/" << iNbTofDigis << ") => ignore it!!!";
         LOG(error) << "                                  Digi address: 0x" << std::setw(8) << std::hex
-                   << pTofDigi->GetAddress() << std::dec;
+                   << pTofDigi.GetAddress() << std::dec;
         continue;
       }  // if( iNbTofDigis <= iDigiIdx )
       CbmLink lTruePoint =
-        pMatchDigiPnt->GetMatchedLink();  // Point generating the Digi
+        pMatchDigiPnt.GetMatchedLink();  // Point generating the Digi
       Int_t iTruePointIdx = lTruePoint.GetIndex();
       for (Int_t iPoint = 0; iPoint < iNbPointsDigi; iPoint++) {
-        CbmLink lPoint  = pMatchDigiPnt->GetLink(iPoint);
+        CbmLink lPoint  = pMatchDigiPnt.GetLink(iPoint);
         Int_t iPointIdx = lPoint.GetIndex();
 
         if (iPointIdx == iTruePointIdx)
           hitMatch->AddLink(
-            CbmLink(pTofDigi->GetTot(),
+            CbmLink(pTofDigi.GetTot(),
                     iPointIdx,
                     lPoint.GetEntry(),
                     lPoint.GetFile()));  // Point generating the Digi
