@@ -23,14 +23,15 @@ class TCollection;
 class PairAnalysisCutGroup : public AnalysisCuts {
 
 public:
-  enum class ETruthValues { kCompAND = kTRUE, kCompOR = kFALSE };
+  enum class ETruthValues
+  {
+    kCompAND = kTRUE,
+    kCompOR  = kFALSE
+  };
 
-  PairAnalysisCutGroup(
-    Bool_t compOperator = static_cast<Bool_t>(ETruthValues::kCompOR));
-  PairAnalysisCutGroup(
-    const char* name,
-    const char* title,
-    Bool_t compOperator = static_cast<Bool_t>(ETruthValues::kCompOR));
+  PairAnalysisCutGroup(Bool_t compOperator = static_cast<Bool_t>(ETruthValues::kCompOR));
+  PairAnalysisCutGroup(const char* name, const char* title,
+                       Bool_t compOperator = static_cast<Bool_t>(ETruthValues::kCompOR));
 
   virtual ~PairAnalysisCutGroup();
 

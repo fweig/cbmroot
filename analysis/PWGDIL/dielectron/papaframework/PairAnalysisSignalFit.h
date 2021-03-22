@@ -27,11 +27,9 @@ public:
   virtual ~PairAnalysisSignalFit();
 
   virtual void Process(TObjArray* const arrhist);
-  void ProcessFit(TObjArray* const arrhist);  // fit the SE +- distribution
-  void ProcessFitLS(
-    TObjArray* const arrhist);  // substract the fitted SE like-sign background
-  void ProcessFitEM(
-    TObjArray* const arrhist);  // substract the fitted ME like-sign background
+  void ProcessFit(TObjArray* const arrhist);    // fit the SE +- distribution
+  void ProcessFitLS(TObjArray* const arrhist);  // substract the fitted SE like-sign background
+  void ProcessFitEM(TObjArray* const arrhist);  // substract the fitted ME like-sign background
 
 
   virtual void Draw(const Option_t* option = "");

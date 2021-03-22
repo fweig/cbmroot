@@ -12,18 +12,20 @@
 ///////////////////////////////////////////////////////////////////////////
 
 
-#include <TDatabasePDG.h>
+#include "PairAnalysisPair.h"
 
 #include "CbmVertex.h"
 
-#include "PairAnalysisPair.h"
+#include <TDatabasePDG.h>
+
 #include "PairAnalysisTrack.h"
 
 ClassImp(PairAnalysisPair)
 
   Double_t PairAnalysisPair::fBeamEnergy = -1.;
 
-PairAnalysisPair::PairAnalysisPair() : PairAnalysisTrack(), fRefD1(), fRefD2() {
+PairAnalysisPair::PairAnalysisPair() : PairAnalysisTrack(), fRefD1(), fRefD2()
+{
   //
   // Default Constructor
   //
@@ -41,45 +43,39 @@ PairAnalysisPair::PairAnalysisPair(const PairAnalysisPair& pair)
   , fRefD2(pair.GetSecondDaughter())
   , fPid1(pair.GetFirstDaughterPid())
   , fPid2(pair.GetSecondDaughterPid())
-  , fKFUsage(pair.GetKFUsage()) {
+  , fKFUsage(pair.GetKFUsage())
+{
   //
   // Copy Constructor
   //
 }
 
 //______________________________________________
-PairAnalysisPair::PairAnalysisPair(Char_t type)
-  : fType(type), fRefD1(), fRefD2() {
+PairAnalysisPair::PairAnalysisPair(Char_t type) : fType(type), fRefD1(), fRefD2()
+{
   //
   // Constructor with type
   //
 }
 
 //______________________________________________
-PairAnalysisPair::~PairAnalysisPair() {
+PairAnalysisPair::~PairAnalysisPair()
+{
   //
   // Default Destructor
   //
 }
 
 //______________________________________________
-void PairAnalysisPair::GetThetaPhiCM(TLorentzVector& motherMom,
-                                     TLorentzVector& p1Mom,
-                                     TLorentzVector& p2Mom,
-                                     Double_t& thetaHE,
-                                     Double_t& phiHE,
-                                     Double_t& thetaCS,
-                                     Double_t& phiCS) const {
+void PairAnalysisPair::GetThetaPhiCM(TLorentzVector& motherMom, TLorentzVector& p1Mom, TLorentzVector& p2Mom,
+                                     Double_t& thetaHE, Double_t& phiHE, Double_t& thetaCS, Double_t& phiCS) const
+{
   //
   // Calculate theta and phi in helicity and Collins-Soper coordinate frame
   //
 
   const Double_t proMass = TDatabasePDG::Instance()->GetParticle(2212)->Mass();
-  TLorentzVector projMom(
-    0.,
-    0.,
-    fBeamEnergy,
-    TMath::Sqrt(fBeamEnergy * fBeamEnergy + proMass * proMass));
+  TLorentzVector projMom(0., 0., fBeamEnergy, TMath::Sqrt(fBeamEnergy * fBeamEnergy + proMass * proMass));
   TLorentzVector targMom(0., 0., 0., TMath::Sqrt(0. * 0 + proMass * proMass));
 
   // boost all the 4-mom vectors to the mother rest frame
@@ -100,22 +96,20 @@ void PairAnalysisPair::GetThetaPhiCM(TLorentzVector& motherMom,
   if (static_cast<PairAnalysisTrack*>(fRefD1.GetObject())->Charge() > 0) {
     thetaHE = zAxisHE.Dot((p1Mom.Vect()).Unit());
     thetaCS = zAxisCS.Dot((p1Mom.Vect()).Unit());
-    phiHE =
-      TMath::ATan2((p1Mom.Vect()).Dot(yAxis), (p1Mom.Vect()).Dot(xAxisHE));
-    phiCS =
-      TMath::ATan2((p1Mom.Vect()).Dot(yAxis), (p1Mom.Vect()).Dot(xAxisCS));
-  } else {
+    phiHE   = TMath::ATan2((p1Mom.Vect()).Dot(yAxis), (p1Mom.Vect()).Dot(xAxisHE));
+    phiCS   = TMath::ATan2((p1Mom.Vect()).Dot(yAxis), (p1Mom.Vect()).Dot(xAxisCS));
+  }
+  else {
     thetaHE = zAxisHE.Dot((p2Mom.Vect()).Unit());
     thetaCS = zAxisCS.Dot((p2Mom.Vect()).Unit());
-    phiHE =
-      TMath::ATan2((p2Mom.Vect()).Dot(yAxis), (p2Mom.Vect()).Dot(xAxisHE));
-    phiCS =
-      TMath::ATan2((p2Mom.Vect()).Dot(yAxis), (p2Mom.Vect()).Dot(xAxisCS));
+    phiHE   = TMath::ATan2((p2Mom.Vect()).Dot(yAxis), (p2Mom.Vect()).Dot(xAxisHE));
+    phiCS   = TMath::ATan2((p2Mom.Vect()).Dot(yAxis), (p2Mom.Vect()).Dot(xAxisCS));
   }
 }
 
 //______________________________________________
-Double_t PairAnalysisPair::GetCosPointingAngle(const CbmVertex* primVtx) const {
+Double_t PairAnalysisPair::GetCosPointingAngle(const CbmVertex* primVtx) const
+{
   //
   // Calculate the poiting angle of the pair to the primary vertex and take the cosine
   //
@@ -132,22 +126,22 @@ Double_t PairAnalysisPair::GetCosPointingAngle(const CbmVertex* primVtx) const {
 }
 
 //______________________________________________
-void PairAnalysisPair::GetDCA(const CbmVertex* primVtx,
-                              Double_t d0z0[2]) const {
+void PairAnalysisPair::GetDCA(const CbmVertex* primVtx, Double_t d0z0[2]) const
+{
   //
   // Calculate the dca of the mother with respect to the primary vertex
   //
   if (!primVtx) return;
 
-  d0z0[0] = TMath::Sqrt(TMath::Power(Xv() - primVtx->GetX(), 2)
-                        + TMath::Power(Yv() - primVtx->GetY(), 2));
+  d0z0[0] = TMath::Sqrt(TMath::Power(Xv() - primVtx->GetX(), 2) + TMath::Power(Yv() - primVtx->GetY(), 2));
 
   d0z0[1] = Zv() - primVtx->GetZ();
   return;
 }
 
 //______________________________________________
-void PairAnalysisPair::SetBeamEnergy(Double_t beamEbyHand) {
+void PairAnalysisPair::SetBeamEnergy(Double_t beamEbyHand)
+{
   //
   // set the beam energy by hand
   //

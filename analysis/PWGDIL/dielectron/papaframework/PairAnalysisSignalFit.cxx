@@ -121,8 +121,7 @@ ClassImp(PairAnalysisSignalFit)
 }
 
 //______________________________________________
-PairAnalysisSignalFit::PairAnalysisSignalFit(const char* name,
-                                             const char* title)
+PairAnalysisSignalFit::PairAnalysisSignalFit(const char* name, const char* title)
   : PairAnalysisSignalExt(name, title)  //,
 //  PairAnalysisFunction()
 {
@@ -132,7 +131,8 @@ PairAnalysisSignalFit::PairAnalysisSignalFit(const char* name,
 }
 
 //______________________________________________
-PairAnalysisSignalFit::~PairAnalysisSignalFit() {
+PairAnalysisSignalFit::~PairAnalysisSignalFit()
+{
   //
   // Default Destructor
   //
@@ -140,7 +140,8 @@ PairAnalysisSignalFit::~PairAnalysisSignalFit() {
 
 
 //______________________________________________
-void PairAnalysisSignalFit::Process(TObjArray* const arrhist) {
+void PairAnalysisSignalFit::Process(TObjArray* const arrhist)
+{
   //
   // Fit the invariant mass histograms and retrieve the signal and background
   //
@@ -163,7 +164,8 @@ void PairAnalysisSignalFit::Process(TObjArray* const arrhist) {
 }
 
 //______________________________________________
-void PairAnalysisSignalFit::ProcessFit(TObjArray* const arrhist) {
+void PairAnalysisSignalFit::ProcessFit(TObjArray* const arrhist)
+{
   //
   // Fit the +- invariant mass distribution only
   // Here we assume that the combined fit function is a sum of the signal and background functions
@@ -174,41 +176,27 @@ void PairAnalysisSignalFit::ProcessFit(TObjArray* const arrhist) {
   fHistDataPM->Sumw2();
   if (fRebin > 1) fHistDataPM->Rebin(fRebin);
 
-  fHistSignal     = new TH1F("HistSignal",
-                         "Fit substracted signal",
-                         fHistDataPM->GetXaxis()->GetNbins(),
-                         fHistDataPM->GetXaxis()->GetXmin(),
-                         fHistDataPM->GetXaxis()->GetXmax());
-  fHistBackground = new TH1F("HistBackground",
-                             "Fit contribution",
-                             fHistDataPM->GetXaxis()->GetNbins(),
-                             fHistDataPM->GetXaxis()->GetXmin(),
-                             fHistDataPM->GetXaxis()->GetXmax());
+  fHistSignal     = new TH1F("HistSignal", "Fit substracted signal", fHistDataPM->GetXaxis()->GetNbins(),
+                         fHistDataPM->GetXaxis()->GetXmin(), fHistDataPM->GetXaxis()->GetXmax());
+  fHistBackground = new TH1F("HistBackground", "Fit contribution", fHistDataPM->GetXaxis()->GetNbins(),
+                             fHistDataPM->GetXaxis()->GetXmin(), fHistDataPM->GetXaxis()->GetXmax());
 
   // the starting parameters of the fit function and their limits can be tuned
   // by the user in its macro
   fHistDataPM->Fit(fFuncSigBack, fFitOpt.Data(), "", fFitMin, fFitMax);
-  TFitResultPtr pmFitPtr =
-    fHistDataPM->Fit(fFuncSigBack, fFitOpt.Data(), "", fFitMin, fFitMax);
+  TFitResultPtr pmFitPtr = fHistDataPM->Fit(fFuncSigBack, fFitOpt.Data(), "", fFitMin, fFitMax);
   //TFitResult *pmFitResult = pmFitPtr.Get(); // used only with TF1Helper
   //fFuncBackground->SetParameters(fFuncSigBack->GetParameters());
   fFuncSignal->SetParameters(fFuncSigBack->GetParameters());
-  fFuncBackground->SetParameters(fFuncSigBack->GetParameters()
-                                 + fFuncSignal->GetNpar());
+  fFuncBackground->SetParameters(fFuncSigBack->GetParameters() + fFuncSignal->GetNpar());
 
   // fill the background spectrum
   fHistBackground->Eval(fFuncBackground);
   // set the error for the background histogram
   fHistBackground->Fit(fFuncBackground, "0qR", "", fFitMin, fFitMax);
-  Double_t inte = fFuncBackground->IntegralError(fIntMin, fIntMax)
-                  / fHistDataPM->GetBinWidth(1);
-  Double_t binte =
-    inte
-    / TMath::Sqrt(
-      (fHistDataPM->FindBin(fIntMax) - fHistDataPM->FindBin(fIntMin)) + 1);
-  for (Int_t iBin = fHistDataPM->FindBin(fIntMin);
-       iBin <= fHistDataPM->FindBin(fIntMax);
-       iBin++) {
+  Double_t inte  = fFuncBackground->IntegralError(fIntMin, fIntMax) / fHistDataPM->GetBinWidth(1);
+  Double_t binte = inte / TMath::Sqrt((fHistDataPM->FindBin(fIntMax) - fHistDataPM->FindBin(fIntMin)) + 1);
+  for (Int_t iBin = fHistDataPM->FindBin(fIntMin); iBin <= fHistDataPM->FindBin(fIntMax); iBin++) {
     fHistBackground->SetBinError(iBin, binte);
   }
 
@@ -222,8 +210,7 @@ void PairAnalysisSignalFit::ProcessFit(TObjArray* const arrhist) {
     Double_t error  = TMath::Sqrt(epm * epm + ebknd);
     // theres no signal extraction outside the fit region
     if (fHistDataPM->GetBinLowEdge(iBin) > fFitMax
-        || fHistDataPM->GetBinLowEdge(iBin) + fHistDataPM->GetBinWidth(iBin)
-             < fFitMin) {
+        || fHistDataPM->GetBinLowEdge(iBin) + fHistDataPM->GetBinWidth(iBin) < fFitMin) {
       signal = 0.0;
       error  = 0.0;
     }
@@ -233,25 +220,20 @@ void PairAnalysisSignalFit::ProcessFit(TObjArray* const arrhist) {
 
   if (fUseIntegral) {
     // signal
-    fValues(0) =
-      fFuncSignal->Integral(fIntMin, fIntMax) / fHistDataPM->GetBinWidth(1);
-    fErrors(0) = fFuncSignal->IntegralError(fIntMin, fIntMax)
-                 / fHistDataPM->GetBinWidth(1);
+    fValues(0) = fFuncSignal->Integral(fIntMin, fIntMax) / fHistDataPM->GetBinWidth(1);
+    fErrors(0) = fFuncSignal->IntegralError(fIntMin, fIntMax) / fHistDataPM->GetBinWidth(1);
     //    fErrors(0) = 0;
     // background
-    fValues(1) =
-      fFuncBackground->Integral(fIntMin, fIntMax) / fHistDataPM->GetBinWidth(1);
-    fErrors(1) = fFuncBackground->IntegralError(fIntMin, fIntMax)
-                 / fHistDataPM->GetBinWidth(1);
-  } else {
+    fValues(1) = fFuncBackground->Integral(fIntMin, fIntMax) / fHistDataPM->GetBinWidth(1);
+    fErrors(1) = fFuncBackground->IntegralError(fIntMin, fIntMax) / fHistDataPM->GetBinWidth(1);
+  }
+  else {
     // signal
-    fValues(0) = fHistSignal->IntegralAndError(
-      fHistSignal->FindBin(fIntMin), fHistSignal->FindBin(fIntMax), fErrors(0));
+    fValues(0) =
+      fHistSignal->IntegralAndError(fHistSignal->FindBin(fIntMin), fHistSignal->FindBin(fIntMax), fErrors(0));
     // background
-    fValues(1) =
-      fHistBackground->IntegralAndError(fHistBackground->FindBin(fIntMin),
-                                        fHistBackground->FindBin(fIntMax),
-                                        fErrors(1));
+    fValues(1) = fHistBackground->IntegralAndError(fHistBackground->FindBin(fIntMin), fHistBackground->FindBin(fIntMax),
+                                                   fErrors(1));
   }
   // S/B and significance
   SetSignificanceAndSOB();
@@ -267,7 +249,8 @@ void PairAnalysisSignalFit::ProcessFit(TObjArray* const arrhist) {
 }
 
 //______________________________________________
-void PairAnalysisSignalFit::ProcessFitLS(TObjArray* const arrhist) {
+void PairAnalysisSignalFit::ProcessFitLS(TObjArray* const arrhist)
+{
   //
   // Substract background using the like-sign spectrum
   //
@@ -283,16 +266,10 @@ void PairAnalysisSignalFit::ProcessFitLS(TObjArray* const arrhist) {
   fHistDataPM->Sumw2();
   fHistDataMM->Sumw2();
 
-  fHistSignal     = new TH1F("HistSignal",
-                         "Like-Sign substracted signal",
-                         fHistDataPM->GetXaxis()->GetNbins(),
-                         fHistDataPM->GetXaxis()->GetXmin(),
-                         fHistDataPM->GetXaxis()->GetXmax());
-  fHistBackground = new TH1F("HistBackground",
-                             "Like-sign contribution",
-                             fHistDataPM->GetXaxis()->GetNbins(),
-                             fHistDataPM->GetXaxis()->GetXmin(),
-                             fHistDataPM->GetXaxis()->GetXmax());
+  fHistSignal     = new TH1F("HistSignal", "Like-Sign substracted signal", fHistDataPM->GetXaxis()->GetNbins(),
+                         fHistDataPM->GetXaxis()->GetXmin(), fHistDataPM->GetXaxis()->GetXmax());
+  fHistBackground = new TH1F("HistBackground", "Like-sign contribution", fHistDataPM->GetXaxis()->GetNbins(),
+                             fHistDataPM->GetXaxis()->GetXmin(), fHistDataPM->GetXaxis()->GetXmax());
 
   // fit the +- mass distribution
   fHistDataPM->Fit(fFuncSigBack, fFitOpt.Data(), "", fFitMin, fFitMax);
@@ -324,8 +301,7 @@ void PairAnalysisSignalFit::ProcessFitLS(TObjArray* const arrhist) {
     Double_t background = 2.0 * TMath::Sqrt(pp * mm);
 
     // error propagation on the signal calculation above
-    Double_t esignal =
-      TMath::Sqrt(epm * epm + (mm / pp) * epp + (pp / mm) * emm);
+    Double_t esignal     = TMath::Sqrt(epm * epm + (mm / pp) * epp + (pp / mm) * emm);
     Double_t ebackground = TMath::Sqrt((mm / pp) * epp + (pp / mm) * emm);
     fHistSignal->SetBinContent(iBin, signal);
     fHistSignal->SetBinError(iBin, esignal);
@@ -334,13 +310,10 @@ void PairAnalysisSignalFit::ProcessFitLS(TObjArray* const arrhist) {
   }
 
   // signal
-  fValues(0) = fHistSignal->IntegralAndError(
-    fHistSignal->FindBin(fIntMin), fHistSignal->FindBin(fIntMax), fErrors(0));
+  fValues(0) = fHistSignal->IntegralAndError(fHistSignal->FindBin(fIntMin), fHistSignal->FindBin(fIntMax), fErrors(0));
   // background
   fValues(1) =
-    fHistBackground->IntegralAndError(fHistBackground->FindBin(fIntMin),
-                                      fHistBackground->FindBin(fIntMax),
-                                      fErrors(1));
+    fHistBackground->IntegralAndError(fHistBackground->FindBin(fIntMin), fHistBackground->FindBin(fIntMax), fErrors(1));
   // S/B and significance
   SetSignificanceAndSOB();
   fValues(4) = fFuncSigBack->GetParameter(fParMass);
@@ -353,17 +326,18 @@ void PairAnalysisSignalFit::ProcessFitLS(TObjArray* const arrhist) {
 }
 
 //______________________________________________
-void PairAnalysisSignalFit::ProcessFitEM(TObjArray* const arrhist) {
+void PairAnalysisSignalFit::ProcessFitEM(TObjArray* const arrhist)
+{
   //
   // Substract background with the event mixing technique
   //
   arrhist->GetEntries();  // just to avoid the unused parameter warning
-  Error("ProcessFitEM",
-        "Event mixing for background substraction method not yet implemented!");
+  Error("ProcessFitEM", "Event mixing for background substraction method not yet implemented!");
 }
 
 //______________________________________________
-void PairAnalysisSignalFit::Draw(const Option_t* option) {
+void PairAnalysisSignalFit::Draw(const Option_t* option)
+{
   //
   // Draw the fitted function
   //
@@ -387,9 +361,7 @@ void PairAnalysisSignalFit::Draw(const Option_t* option) {
   grBack->SetFillStyle(3001);
 
   grSig->SetPoint(0, grBack->GetX()[0], grBack->GetY()[0]);
-  grSig->SetPoint(grSig->GetN() - 1,
-                  grBack->GetX()[grBack->GetN() - 1],
-                  grBack->GetY()[grBack->GetN() - 1]);
+  grSig->SetPoint(grSig->GetN() - 1, grBack->GetX()[grBack->GetN() - 1], grBack->GetY()[grBack->GetN() - 1]);
 
   grBack->SetPoint(0, grBack->GetX()[0], 0.);
   grBack->SetPoint(grBack->GetN() - 1, grBack->GetX()[grBack->GetN() - 1], 0.);
@@ -401,10 +373,12 @@ void PairAnalysisSignalFit::Draw(const Option_t* option) {
     if (fHistDataPM) {
       fHistDataPM->Draw();
       grSig->Draw("f");
-    } else {
+    }
+    else {
       grSig->Draw("af");
     }
-  } else {
+  }
+  else {
     grSig->Draw("f");
   }
   if (fMethod == kFitted || fMethod == kFittedMC) grBack->Draw("f");
@@ -425,7 +399,8 @@ void PairAnalysisSignalFit::Draw(const Option_t* option) {
 }
 
 //______________________________________________
-void PairAnalysisSignalFit::Print(Option_t* /*option*/) const {
+void PairAnalysisSignalFit::Print(Option_t* /*option*/) const
+{
   //
   // Print the statistics
   //

@@ -11,6 +11,10 @@
 ///////////////////////////////////////////////////////////////////////////
 
 
+#include "PairAnalysisHelper.h"
+
+#include "CbmModuleList.h"
+
 #include <TDatabasePDG.h>
 #include <TError.h>
 #include <TF1.h>
@@ -29,15 +33,12 @@
 #include <TRandom.h>
 #include <TVectorD.h>
 
-
-#include "CbmModuleList.h"
-#include "PairAnalysisHelper.h"
 #include "PairAnalysisStyler.h"
 #include "PairAnalysisVarManager.h"
 
 //_____________________________________________________________________________
-TVectorD*
-PairAnalysisHelper::MakeLogBinning(Int_t nbinsX, Double_t xmin, Double_t xmax) {
+TVectorD* PairAnalysisHelper::MakeLogBinning(Int_t nbinsX, Double_t xmin, Double_t xmax)
+{
   //
   // Make logarithmic binning
   // the user has to delete the array afterwards!!!
@@ -45,9 +46,8 @@ PairAnalysisHelper::MakeLogBinning(Int_t nbinsX, Double_t xmin, Double_t xmax) {
 
   //check limits
   if (xmin < 1e-20 || xmax < 1e-20) {
-    Error("PairAnalysisHelper::MakeLogBinning",
-          "For Log binning xmin and xmax must be > 1e-20. Using linear binning "
-          "instead!");
+    Error("PairAnalysisHelper::MakeLogBinning", "For Log binning xmin and xmax must be > 1e-20. Using linear binning "
+                                                "instead!");
     return PairAnalysisHelper::MakeLinBinning(nbinsX, xmin, xmax);
   }
   if (xmax < xmin) {
@@ -66,8 +66,8 @@ PairAnalysisHelper::MakeLogBinning(Int_t nbinsX, Double_t xmin, Double_t xmax) {
 }
 
 //_____________________________________________________________________________
-TVectorD*
-PairAnalysisHelper::MakeLinBinning(Int_t nbinsX, Double_t xmin, Double_t xmax) {
+TVectorD* PairAnalysisHelper::MakeLinBinning(Int_t nbinsX, Double_t xmin, Double_t xmax)
+{
   //
   // Make linear binning
   // the user has to delete the array afterwards!!!
@@ -88,30 +88,28 @@ PairAnalysisHelper::MakeLinBinning(Int_t nbinsX, Double_t xmin, Double_t xmax) {
 }
 
 //_____________________________________________________________________________
-TVectorD* PairAnalysisHelper::MakeArbitraryBinning(const char* bins) {
+TVectorD* PairAnalysisHelper::MakeArbitraryBinning(const char* bins)
+{
   //
   // Make arbitrary binning, bins separated by a ','
   //
   TString limits(bins);
   if (limits.IsNull()) {
-    Error("PairAnalysisHelper::MakeArbitraryBinning",
-          "Bin Limit string is empty, cannot add the variable");
+    Error("PairAnalysisHelper::MakeArbitraryBinning", "Bin Limit string is empty, cannot add the variable");
     return 0x0;
   }
 
   TObjArray* arr = limits.Tokenize(",");
   Int_t nLimits  = arr->GetEntries();
   if (nLimits < 2) {
-    Error("PairAnalysisHelper::MakeArbitraryBinning",
-          "Need at leas 2 bin limits, cannot add the variable");
+    Error("PairAnalysisHelper::MakeArbitraryBinning", "Need at leas 2 bin limits, cannot add the variable");
     delete arr;
     return 0x0;
   }
 
   TVectorD* binLimits = new TVectorD(nLimits);
   for (Int_t iLim = 0; iLim < nLimits; ++iLim) {
-    (*binLimits)[iLim] =
-      (static_cast<TObjString*>(arr->At(iLim)))->GetString().Atof();
+    (*binLimits)[iLim] = (static_cast<TObjString*>(arr->At(iLim)))->GetString().Atof();
   }
 
   delete arr;
@@ -119,9 +117,8 @@ TVectorD* PairAnalysisHelper::MakeArbitraryBinning(const char* bins) {
 }
 
 //_____________________________________________________________________________
-TVectorD* PairAnalysisHelper::MakeGausBinning(Int_t nbinsX,
-                                              Double_t mean,
-                                              Double_t sigma) {
+TVectorD* PairAnalysisHelper::MakeGausBinning(Int_t nbinsX, Double_t mean, Double_t sigma)
+{
   //
   // Make gaussian binning
   // the user has to delete the array afterwards!!!
@@ -151,8 +148,7 @@ TVectorD* PairAnalysisHelper::MakeGausBinning(Int_t nbinsX,
 
     // current integral
     //    Double_t cint = g2.Integral(mean-5*sigma,xt,params,epsilon); //fast, but NOT root 6 (Integral(min,max,epsilon)) compatible
-    Double_t cint =
-      g2.Integral(mean - 5 * sigma, xt);  //,params,epsilon);   //slow
+    Double_t cint = g2.Integral(mean - 5 * sigma, xt);  //,params,epsilon);   //slow
     //    printf(" integral to %f:  %f , search limit: %f \n",xt,cint,lim);
 
     /// condition for bin limit
@@ -177,17 +173,16 @@ TVectorD* PairAnalysisHelper::MakeGausBinning(Int_t nbinsX,
 }
 
 //_____________________________________________________________________________
-TVectorD* PairAnalysisHelper::CombineBinning(TVectorD* low, TVectorD* high) {
+TVectorD* PairAnalysisHelper::CombineBinning(TVectorD* low, TVectorD* high)
+{
   //
   // Make a new combined binning of "low" and "high"
   // the user has to delete the returned array afterwards!!!
   //
 
   // fill final vector
-  Int_t lastEqualsFirst =
-    (Int_t)(TMath::Abs((*low)[low->GetNrows() - 1] - (*high)[0]) < 1.e-15);
-  TVectorD* binLim =
-    new TVectorD(low->GetNrows() + high->GetNrows() - lastEqualsFirst);
+  Int_t lastEqualsFirst = (Int_t)(TMath::Abs((*low)[low->GetNrows() - 1] - (*high)[0]) < 1.e-15);
+  TVectorD* binLim      = new TVectorD(low->GetNrows() + high->GetNrows() - lastEqualsFirst);
   for (Int_t i = 0; i < low->GetNrows(); i++)
     (*binLim)[i] = (*low)[i];
   for (Int_t i = 0; i < high->GetNrows() - lastEqualsFirst; i++)
@@ -200,7 +195,8 @@ TVectorD* PairAnalysisHelper::CombineBinning(TVectorD* low, TVectorD* high) {
 }
 
 //_____________________________________________________________________________
-TArrayD* PairAnalysisHelper::MakeStatBinLimits(TH1* h, Double_t stat) {
+TArrayD* PairAnalysisHelper::MakeStatBinLimits(TH1* h, Double_t stat)
+{
   //
   // get bin limits for stat. error less than 'stat'
   //
@@ -228,10 +224,9 @@ TArrayD* PairAnalysisHelper::MakeStatBinLimits(TH1* h, Double_t stat) {
     //  	   h->GetBinContent(i),h->Integral(),h->GetBinContent(i)/h->Integral(), h->GetBinError(i), TMath::Sqrt(h->GetBinContent(i)),h->GetBinError(i)/h->GetBinContent(i)*100, TMath::Sqrt(err)/cont*100);
 
     // check for new bin
-    if (
-      TMath::Sqrt(err) / cont <= stat
-      //	||   (h->GetBinContent(i)/h->Integral()) < 0.01
-      //	|| (h->GetBinContent(i)==0.0 && h->GetBinError(i)==0. && vEle==1)
+    if (TMath::Sqrt(err) / cont <= stat
+        //	||   (h->GetBinContent(i)/h->Integral()) < 0.01
+        //	|| (h->GetBinContent(i)==0.0 && h->GetBinError(i)==0. && vEle==1)
     ) {
       //      Printf("bin from %f to %f with err %f%%",from,to,TMath::Sqrt(err)/cont*100);
       err  = 0.0;
@@ -249,7 +244,8 @@ TArrayD* PairAnalysisHelper::MakeStatBinLimits(TH1* h, Double_t stat) {
 }
 
 //_____________________________________________________________________________
-TVectorD* PairAnalysisHelper::MakePdgBinning() {
+TVectorD* PairAnalysisHelper::MakePdgBinning()
+{
   //
   // Make arbitrary binning using defined PDG codes
   //
@@ -275,8 +271,8 @@ TVectorD* PairAnalysisHelper::MakePdgBinning() {
 }
 
 //_____________________________________________________________________________
-Double_t PairAnalysisHelper::EvalFormula(TFormula* form,
-                                         const Double_t* values) {
+Double_t PairAnalysisHelper::EvalFormula(TFormula* form, const Double_t* values)
+{
   //
   // evaluate return value for formula with current parameter values
   //
@@ -288,7 +284,8 @@ Double_t PairAnalysisHelper::EvalFormula(TFormula* form,
 }
 
 //_____________________________________________________________________________
-TString PairAnalysisHelper::GetFormulaTitle(TFormula* form) {
+TString PairAnalysisHelper::GetFormulaTitle(TFormula* form)
+{
   //
   // evaluate the formula in a readable way (for axis etc)
   //
@@ -305,21 +302,19 @@ TString PairAnalysisHelper::GetFormulaTitle(TFormula* form) {
   tform.ToLower();                  // lower cases (e.g. Cos -> cos)
   // replace parameter variables with proper labels
   for (Int_t j = 0; j < form->GetNpar(); j++)
-    tform.ReplaceAll(
-      Form("[%d]", j),
-      PairAnalysisVarManager::GetValueLabel((UInt_t) form->GetParameter(j)));
+    tform.ReplaceAll(Form("[%d]", j), PairAnalysisVarManager::GetValueLabel((UInt_t) form->GetParameter(j)));
   return (tform);
 }
 
 //_____________________________________________________________________________
-TString PairAnalysisHelper::GetFormulaName(TFormula* form) {
+TString PairAnalysisHelper::GetFormulaName(TFormula* form)
+{
   //
   // build formula key with parameter names
   //
   TString tform("f(");
   for (Int_t j = 0; j < form->GetNpar(); j++) {
-    tform +=
-      PairAnalysisVarManager::GetValueName((UInt_t) form->GetParameter(j));
+    tform += PairAnalysisVarManager::GetValueName((UInt_t) form->GetParameter(j));
     if (j != form->GetNpar() - 1) tform += ",";
   }
   tform += ")";
@@ -327,8 +322,8 @@ TString PairAnalysisHelper::GetFormulaName(TFormula* form) {
 }
 
 //_____________________________________________________________________________
-TFormula* PairAnalysisHelper::GetFormula(const char* name,
-                                         const char* formula) {
+TFormula* PairAnalysisHelper::GetFormula(const char* name, const char* formula)
+{
   //
   // build a TFormula object
   //
@@ -339,15 +334,15 @@ TFormula* PairAnalysisHelper::GetFormula(const char* name,
   if (form->Compile()) return 0x0;
   //set parameter/variable identifier
   for (Int_t i = 0; i < form->GetNpar(); i++) {
-    form->SetParName(
-      i, PairAnalysisVarManager::GetValueName(form->GetParameter(i)));
+    form->SetParName(i, PairAnalysisVarManager::GetValueName(form->GetParameter(i)));
     //    fUsedVars->SetBitNumber((Int_t)form->GetParameter(i),kTRUE);
   }
   return form;
 }
 
 //_____________________________________________________________________________
-void PairAnalysisHelper::SetPDGBinLabels(TH1* hist, Bool_t clean) {
+void PairAnalysisHelper::SetPDGBinLabels(TH1* hist, Bool_t clean)
+{
   //
   // build formula key with parameter names
   //
@@ -383,7 +378,8 @@ void PairAnalysisHelper::SetPDGBinLabels(TH1* hist, Bool_t clean) {
 }
 
 //_____________________________________________________________________________
-TString PairAnalysisHelper::GetPDGlabel(Int_t pdg) {
+TString PairAnalysisHelper::GetPDGlabel(Int_t pdg)
+{
   //
   // return the label in latex format corresponding to pdg code
   //
@@ -428,7 +424,8 @@ TString PairAnalysisHelper::GetPDGlabel(Int_t pdg) {
   if (name.Contains("anti")) {
     name.ReplaceAll("anti", "#bar{");
     name.Append("}");
-  } else if (name.Contains("_bar")) {
+  }
+  else if (name.Contains("_bar")) {
     name.ReplaceAll("_bar", "}");
     name.Prepend("#bar{");
   }
@@ -447,7 +444,8 @@ TString PairAnalysisHelper::GetPDGlabel(Int_t pdg) {
 }
 
 //_____________________________________________________________________________
-void PairAnalysisHelper::SetGEANTBinLabels(TH1* hist) {
+void PairAnalysisHelper::SetGEANTBinLabels(TH1* hist)
+{
   //
   // build formula key with parameter names
   //
@@ -465,7 +463,8 @@ void PairAnalysisHelper::SetGEANTBinLabels(TH1* hist) {
 
 
 //_____________________________________________________________________________
-TString PairAnalysisHelper::GetDetName(ECbmModuleId det) {
+TString PairAnalysisHelper::GetDetName(ECbmModuleId det)
+{
   //
   // get detector name
   //
@@ -477,7 +476,8 @@ TString PairAnalysisHelper::GetDetName(ECbmModuleId det) {
 }
 
 //_____________________________________________________________________________
-Double_t PairAnalysisHelper::GetContentMinimum(TH1* h, Bool_t inclErr) {
+Double_t PairAnalysisHelper::GetContentMinimum(TH1* h, Bool_t inclErr)
+{
   //
   // get minimum bin content of histogram (having entries)
   //
@@ -499,10 +499,7 @@ Double_t PairAnalysisHelper::GetContentMinimum(TH1* h, Bool_t inclErr) {
         if (gPad->GetLogy() && (value - error) <= 0.) continue;
         if (error > value * 0.9) continue;
         if (inclErr) value -= h->GetBinError(bin);
-        if (value < minimum
-            && TMath::Abs(h->GetBinError(bin) - 1.e-15) > 1.e-15) {
-          minimum = value;
-        }
+        if (value < minimum && TMath::Abs(h->GetBinError(bin) - 1.e-15) > 1.e-15) { minimum = value; }
       }
     }
   }
@@ -510,7 +507,8 @@ Double_t PairAnalysisHelper::GetContentMinimum(TH1* h, Bool_t inclErr) {
   return minimum;
 }
 
-Double_t PairAnalysisHelper::GetContentMaximum(TH1* h, Bool_t inclErr) {
+Double_t PairAnalysisHelper::GetContentMaximum(TH1* h, Bool_t inclErr)
+{
   //
   // get maximum bin content+error of histogram (having entries)
   //
@@ -529,16 +527,15 @@ Double_t PairAnalysisHelper::GetContentMaximum(TH1* h, Bool_t inclErr) {
         value = h->GetBinContent(bin);
         error = h->GetBinError(bin);
         if (inclErr) value += h->GetBinError(bin);
-        if (value > maximum && TMath::Abs(error - 1.e-15) > 1.e-15) {
-          maximum = value;
-        }
+        if (value > maximum && TMath::Abs(error - 1.e-15) > 1.e-15) { maximum = value; }
       }
     }
   }
   return maximum;
 }
 
-Double_t PairAnalysisHelper::GetQuantile(TH1* h1, Double_t p /*=0.5*/) {
+Double_t PairAnalysisHelper::GetQuantile(TH1* h1, Double_t p /*=0.5*/)
+{
   //
   // calculates the quantile of the bin contents, p=0.5 -> Median
   // useful functionallity for plotting 2D distibutions with some extreme outliers
@@ -556,16 +553,13 @@ Double_t PairAnalysisHelper::GetQuantile(TH1* h1, Double_t p /*=0.5*/) {
   Int_t nfilled = 0;
   for (Int_t i = 1; i <= nbins; i++) {
     h1->GetBinXYZ(i, xbin, ybin, zbin);
-    if (xbin < h1->GetXaxis()->GetFirst() || xbin > h1->GetXaxis()->GetLast())
-      continue;
-    if (ybin < h1->GetYaxis()->GetFirst() || ybin > h1->GetYaxis()->GetLast())
-      continue;
+    if (xbin < h1->GetXaxis()->GetFirst() || xbin > h1->GetXaxis()->GetLast()) continue;
+    if (ybin < h1->GetYaxis()->GetFirst() || ybin > h1->GetYaxis()->GetLast()) continue;
     Double_t con = h1->GetBinContent(i);
     Double_t err = h1->GetBinError(i);
     if (err != 0.0) {
       //      printf("bin%d %.f+-%.f \n",i,con,err);
-      val[nfilled] =
-        con + (h1->GetDimension() < 2 ? err : 0.0);  // w or w/o err?
+      val[nfilled] = con + (h1->GetDimension() < 2 ? err : 0.0);  // w or w/o err?
       nfilled++;
     }
   }
@@ -577,7 +571,8 @@ Double_t PairAnalysisHelper::GetQuantile(TH1* h1, Double_t p /*=0.5*/) {
   return val[idx[pos]];
 }
 
-void PairAnalysisHelper::NormalizeSlicesY(TH2* h) {
+void PairAnalysisHelper::NormalizeSlicesY(TH2* h)
+{
   //
   // normalize slices along Y in case of a 2D histogram
   //
@@ -594,7 +589,8 @@ void PairAnalysisHelper::NormalizeSlicesY(TH2* h) {
   delete hsum;
 }
 
-void PairAnalysisHelper::CumulateSlicesX(TH2* h, Bool_t reverse, Bool_t norm) {
+void PairAnalysisHelper::CumulateSlicesX(TH2* h, Bool_t reverse, Bool_t norm)
+{
   //
   // caluclate cumulative sum of bins (normalized to one)
   // for slices along X in case of a 2D histogram
@@ -616,7 +612,8 @@ void PairAnalysisHelper::CumulateSlicesX(TH2* h, Bool_t reverse, Bool_t norm) {
   }
 }
 
-void PairAnalysisHelper::Cumulate(TH1* h, Bool_t reverse, Bool_t norm) {
+void PairAnalysisHelper::Cumulate(TH1* h, Bool_t reverse, Bool_t norm)
+{
   //
   // caluclate cumulative sum of bins (normalized to one)
   //
@@ -636,15 +633,13 @@ void PairAnalysisHelper::Cumulate(TH1* h, Bool_t reverse, Bool_t norm) {
 }
 
 
-TObject* PairAnalysisHelper::FindObjectByTitle(TObjArray* arrhist,
-                                               TString ref) {
+TObject* PairAnalysisHelper::FindObjectByTitle(TObjArray* arrhist, TString ref)
+{
   //
   // shortcut to find a certain pair type object in array
   //
   for (Int_t i = 0; i < arrhist->GetEntriesFast(); i++) {
-    if (!ref.CompareTo(arrhist->UncheckedAt(i)->GetTitle())) {
-      return arrhist->UncheckedAt(i);
-    }
+    if (!ref.CompareTo(arrhist->UncheckedAt(i)->GetTitle())) { return arrhist->UncheckedAt(i); }
   }
   return 0x0;
 
@@ -654,7 +649,8 @@ TObject* PairAnalysisHelper::FindObjectByTitle(TObjArray* arrhist,
 
 
 //_____________________________________________________________________________
-Int_t PairAnalysisHelper::GetPrecision(Double_t value) {
+Int_t PairAnalysisHelper::GetPrecision(Double_t value)
+{
   //
   // computes the precision of a double
   // usefull for axis ranges etc
@@ -664,12 +660,11 @@ Int_t PairAnalysisHelper::GetPrecision(Double_t value) {
   value *= 1e6;
   while (!bfnd) {
     //    Printf(" value %f precision %d bfnd %d",TMath::Abs(value*TMath::Power(10,precision)), precision, bfnd);
-    bfnd =
-      ((TMath::Abs(value * TMath::Power(10, precision)) / 1e6
-        - TMath::Floor(TMath::Abs(value * TMath::Power(10, precision)) / 1e6))
-           != 0.0
-         ? kFALSE
-         : kTRUE);
+    bfnd = ((TMath::Abs(value * TMath::Power(10, precision)) / 1e6
+             - TMath::Floor(TMath::Abs(value * TMath::Power(10, precision)) / 1e6))
+                != 0.0
+              ? kFALSE
+              : kTRUE);
     if (!bfnd) precision++;
   }
 

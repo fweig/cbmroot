@@ -16,6 +16,8 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
+#include "PairAnalysisStyler.h"
+
 #include <TAttFill.h>
 #include <TAttLine.h>
 #include <TAttMarker.h>
@@ -34,10 +36,10 @@
 #include <TStyle.h>
 
 #include "PairAnalysisStyleDefs.h"
-#include "PairAnalysisStyler.h"
 
 //_____________________________________________________________________________
-void PairAnalysisStyler::SetStyle(TStyle* userStyle) {
+void PairAnalysisStyler::SetStyle(TStyle* userStyle)
+{
   //
   // set and load user defined style
   //
@@ -46,7 +48,8 @@ void PairAnalysisStyler::SetStyle(TStyle* userStyle) {
 }
 
 //_____________________________________________________________________________
-void PairAnalysisStyler::LoadStyle() {
+void PairAnalysisStyler::LoadStyle()
+{
   //
   // load style
   //
@@ -63,7 +66,8 @@ void PairAnalysisStyler::LoadStyle() {
   if (fUserDielStyle) {
     fUserDielStyle->cd();
     gROOT->ForceStyle();
-  } else {
+  }
+  else {
 
     Int_t font      = 42;
     Int_t bgrdcolor = 0;  // set to -1 for transparaent, will causes warnings
@@ -140,8 +144,7 @@ void PairAnalysisStyler::LoadStyle() {
 
     // For the statistics box:
     defaultSty->SetOptFile(0);
-    defaultSty->SetOptStat(
-      0);  // To display the mean and RMS:   SetOptStat("mr");
+    defaultSty->SetOptStat(0);  // To display the mean and RMS:   SetOptStat("mr");
     //  defaultSty->SetOptStat("n"); // only name
     defaultSty->SetStatColor(kWhite);
     defaultSty->SetStatFont(font);
@@ -169,8 +172,7 @@ void PairAnalysisStyler::LoadStyle() {
     // defaultSty->SetTitleY(0.985); // Set the position of the title box
     defaultSty->SetTitleStyle(kFEmpty);
     // defaultSty->SetTitleBorderSize(2);
-    defaultSty->SetPaintTextFormat(
-      ".3f");  // format if you plot with TEXT option
+    defaultSty->SetPaintTextFormat(".3f");  // format if you plot with TEXT option
 
     // for Paves and boxes
     //    defaultSty->SetFillColor(bgrdcolor); // this makes palettes unicolored
@@ -203,10 +205,8 @@ void PairAnalysisStyler::LoadStyle() {
     defaultSty->SetAxisColor(1, "XYZ");
     //    defaultSty->SetStripDecimals(kTRUE);
     //    defaultSty->SetTickLength(0.03, "XYZ");
-    defaultSty->SetNdivisions(
-      810, "XYZ");  //  defaultSty->SetNdivisions(505, "XYZ");
-    defaultSty->SetPadTickX(
-      1);  // To get tick marks on the opposite side of the frame
+    defaultSty->SetNdivisions(810, "XYZ");  //  defaultSty->SetNdivisions(505, "XYZ");
+    defaultSty->SetPadTickX(1);             // To get tick marks on the opposite side of the frame
     defaultSty->SetPadTickY(1);
 
     // Change for log plots:
@@ -259,7 +259,8 @@ void PairAnalysisStyler::LoadStyle() {
 }
 
 //_____________________________________________________________________________
-void PairAnalysisStyler::Style(TObject* obj, Int_t idx) {
+void PairAnalysisStyler::Style(TObject* obj, Int_t idx)
+{
   //
   // style object according to index
   //
@@ -289,27 +290,21 @@ void PairAnalysisStyler::Style(TObject* obj, Int_t idx) {
   // marker attributes
   if (obj->InheritsFrom(TAttMarker::Class())) {
     if (idx >= 100) {  // predefined styles
-      dynamic_cast<TAttMarker*>(obj)->SetMarkerSize(
-        fSze[idx - static_cast<Int_t>(Eidx::kRaw)]);
-      dynamic_cast<TAttMarker*>(obj)->SetMarkerStyle(
-        fMrk[idx - static_cast<Int_t>(Eidx::kRaw)]);
-      dynamic_cast<TAttMarker*>(obj)->SetMarkerColor(
-        fCol[idx - static_cast<Int_t>(Eidx::kRaw)]);
-    } else {
+      dynamic_cast<TAttMarker*>(obj)->SetMarkerSize(fSze[idx - static_cast<Int_t>(Eidx::kRaw)]);
+      dynamic_cast<TAttMarker*>(obj)->SetMarkerStyle(fMrk[idx - static_cast<Int_t>(Eidx::kRaw)]);
+      dynamic_cast<TAttMarker*>(obj)->SetMarkerColor(fCol[idx - static_cast<Int_t>(Eidx::kRaw)]);
+    }
+    else {
       dynamic_cast<TAttMarker*>(obj)->SetMarkerSize(1.5);
-      dynamic_cast<TAttMarker*>(obj)->SetMarkerStyle(
-        Marker[idx % static_cast<Int_t>(Estyle::kNMaxMarker)]);
-      dynamic_cast<TAttMarker*>(obj)->SetMarkerColor(
-        Color[idx % static_cast<Int_t>(Estyle::kNMaxColor)]);
-      if (idx >= static_cast<Int_t>(Estyle::kNMaxColor)
-          && idx < static_cast<Int_t>(Estyle::kNMaxColor) * 2) {
+      dynamic_cast<TAttMarker*>(obj)->SetMarkerStyle(Marker[idx % static_cast<Int_t>(Estyle::kNMaxMarker)]);
+      dynamic_cast<TAttMarker*>(obj)->SetMarkerColor(Color[idx % static_cast<Int_t>(Estyle::kNMaxColor)]);
+      if (idx >= static_cast<Int_t>(Estyle::kNMaxColor) && idx < static_cast<Int_t>(Estyle::kNMaxColor) * 2) {
         idx = idx % static_cast<Int_t>(Estyle::kNMaxColor);
-        dynamic_cast<TAttMarker*>(obj)->SetMarkerColor(
-          TColor::GetColorDark(Color[idx]));
-      } else if (idx >= static_cast<Int_t>(Estyle::kNMaxColor) * 2) {
+        dynamic_cast<TAttMarker*>(obj)->SetMarkerColor(TColor::GetColorDark(Color[idx]));
+      }
+      else if (idx >= static_cast<Int_t>(Estyle::kNMaxColor) * 2) {
         idx = idx % (2 * static_cast<Int_t>(Estyle::kNMaxColor));
-        dynamic_cast<TAttMarker*>(obj)->SetMarkerColor(
-          TColor::GetColorBright(Color[idx]));
+        dynamic_cast<TAttMarker*>(obj)->SetMarkerColor(TColor::GetColorBright(Color[idx]));
       }
     }
   }
@@ -318,27 +313,21 @@ void PairAnalysisStyler::Style(TObject* obj, Int_t idx) {
   if (obj->InheritsFrom(TAttLine::Class())) {
     //    printf("index %d for %s \n",idx,obj->GetName());
     if (idx >= 100) {  // predefined styles
-      dynamic_cast<TAttLine*>(obj)->SetLineWidth(
-        fWdt[idx - static_cast<Int_t>(Eidx::kRaw)]);
-      dynamic_cast<TAttLine*>(obj)->SetLineStyle(
-        fLne[idx - static_cast<Int_t>(Eidx::kRaw)]);
-      dynamic_cast<TAttLine*>(obj)->SetLineColor(
-        fCol[idx - static_cast<Int_t>(Eidx::kRaw)]);
-    } else {
+      dynamic_cast<TAttLine*>(obj)->SetLineWidth(fWdt[idx - static_cast<Int_t>(Eidx::kRaw)]);
+      dynamic_cast<TAttLine*>(obj)->SetLineStyle(fLne[idx - static_cast<Int_t>(Eidx::kRaw)]);
+      dynamic_cast<TAttLine*>(obj)->SetLineColor(fCol[idx - static_cast<Int_t>(Eidx::kRaw)]);
+    }
+    else {
       dynamic_cast<TAttLine*>(obj)->SetLineWidth(2);
-      dynamic_cast<TAttLine*>(obj)->SetLineStyle(
-        Line[idx % static_cast<Int_t>(Estyle::kNMaxLine)]);
-      dynamic_cast<TAttLine*>(obj)->SetLineColor(
-        Color[idx % static_cast<Int_t>(Estyle::kNMaxColor)]);
-      if (idx >= static_cast<Int_t>(Estyle::kNMaxColor)
-          && idx < static_cast<Int_t>(Estyle::kNMaxColor) * 2) {
+      dynamic_cast<TAttLine*>(obj)->SetLineStyle(Line[idx % static_cast<Int_t>(Estyle::kNMaxLine)]);
+      dynamic_cast<TAttLine*>(obj)->SetLineColor(Color[idx % static_cast<Int_t>(Estyle::kNMaxColor)]);
+      if (idx >= static_cast<Int_t>(Estyle::kNMaxColor) && idx < static_cast<Int_t>(Estyle::kNMaxColor) * 2) {
         idx = idx % static_cast<Int_t>(Estyle::kNMaxColor);
-        dynamic_cast<TAttLine*>(obj)->SetLineColor(
-          TColor::GetColorDark(Color[idx]));
-      } else if (idx >= static_cast<Int_t>(Estyle::kNMaxColor) * 2) {
+        dynamic_cast<TAttLine*>(obj)->SetLineColor(TColor::GetColorDark(Color[idx]));
+      }
+      else if (idx >= static_cast<Int_t>(Estyle::kNMaxColor) * 2) {
         idx = idx % (2 * static_cast<Int_t>(Estyle::kNMaxColor));
-        dynamic_cast<TAttLine*>(obj)->SetLineColor(
-          TColor::GetColorBright(Color[idx]));
+        dynamic_cast<TAttLine*>(obj)->SetLineColor(TColor::GetColorBright(Color[idx]));
       }
     }
   }
@@ -346,25 +335,19 @@ void PairAnalysisStyler::Style(TObject* obj, Int_t idx) {
   // fill attributes, only used if fill style is set (default: not)
   if (obj->InheritsFrom(TAttFill::Class())) {
     //    printf("fill style %d for index: %d \n",Fill[0],idx);
-    if (idx >= 100
-        && fFll[idx - static_cast<Int_t>(Eidx::kRaw)]
-             >= 0) {  // predefined styles
-      dynamic_cast<TAttFill*>(obj)->SetFillColor(
-        fCol[idx - static_cast<Int_t>(Eidx::kRaw)]);
-      dynamic_cast<TAttFill*>(obj)->SetFillStyle(
-        fFll[idx - static_cast<Int_t>(Eidx::kRaw)]);
-    } else if (Fill[0] >= 0) {
-      dynamic_cast<TAttFill*>(obj)->SetFillColor(
-        Color[idx % static_cast<Int_t>(Estyle::kNMaxColor)]);
-      if (idx >= static_cast<Int_t>(Estyle::kNMaxColor)
-          && idx < static_cast<Int_t>(Estyle::kNMaxColor) * 2) {
+    if (idx >= 100 && fFll[idx - static_cast<Int_t>(Eidx::kRaw)] >= 0) {  // predefined styles
+      dynamic_cast<TAttFill*>(obj)->SetFillColor(fCol[idx - static_cast<Int_t>(Eidx::kRaw)]);
+      dynamic_cast<TAttFill*>(obj)->SetFillStyle(fFll[idx - static_cast<Int_t>(Eidx::kRaw)]);
+    }
+    else if (Fill[0] >= 0) {
+      dynamic_cast<TAttFill*>(obj)->SetFillColor(Color[idx % static_cast<Int_t>(Estyle::kNMaxColor)]);
+      if (idx >= static_cast<Int_t>(Estyle::kNMaxColor) && idx < static_cast<Int_t>(Estyle::kNMaxColor) * 2) {
         idx = idx % static_cast<Int_t>(Estyle::kNMaxColor);
-        dynamic_cast<TAttFill*>(obj)->SetFillColor(
-          TColor::GetColorDark(Color[idx]));
-      } else if (idx >= static_cast<Int_t>(Estyle::kNMaxColor) * 2) {
+        dynamic_cast<TAttFill*>(obj)->SetFillColor(TColor::GetColorDark(Color[idx]));
+      }
+      else if (idx >= static_cast<Int_t>(Estyle::kNMaxColor) * 2) {
         idx = idx % (2 * static_cast<Int_t>(Estyle::kNMaxColor));
-        dynamic_cast<TAttFill*>(obj)->SetFillColor(
-          TColor::GetColorBright(Color[idx]));
+        dynamic_cast<TAttFill*>(obj)->SetFillColor(TColor::GetColorBright(Color[idx]));
       }
       dynamic_cast<TAttFill*>(obj)->SetFillStyle(Fill[0]);
     }
@@ -372,7 +355,8 @@ void PairAnalysisStyler::Style(TObject* obj, Int_t idx) {
 }
 
 //_____________________________________________________________________________
-void PairAnalysisStyler::SetForceLineStyle(Int_t line) {
+void PairAnalysisStyler::SetForceLineStyle(Int_t line)
+{
   //
   // force a certain line style
   //
@@ -382,7 +366,8 @@ void PairAnalysisStyler::SetForceLineStyle(Int_t line) {
 }
 
 //_____________________________________________________________________________
-void PairAnalysisStyler::SetForceColor(Int_t color) {
+void PairAnalysisStyler::SetForceColor(Int_t color)
+{
   //
   // force a certain color
   //
@@ -392,20 +377,20 @@ void PairAnalysisStyler::SetForceColor(Int_t color) {
 }
 
 //_____________________________________________________________________________
-void PairAnalysisStyler::SetForceFillStyle(Int_t fill) {
+void PairAnalysisStyler::SetForceFillStyle(Int_t fill)
+{
   //
   // force a certain color
   //
-  for (Int_t i = 0;
-       i < (static_cast<Int_t>(Eidx::kNidx) - static_cast<Int_t>(Eidx::kRaw));
-       i++) {
+  for (Int_t i = 0; i < (static_cast<Int_t>(Eidx::kNidx) - static_cast<Int_t>(Eidx::kRaw)); i++) {
     fFll[i] = fill;
   }
   Fill[0] = fill;
 }
 
 //_____________________________________________________________________________
-void PairAnalysisStyler::SetForceMarkerFillStyle(EfillMark fill) {
+void PairAnalysisStyler::SetForceMarkerFillStyle(EfillMark fill)
+{
   //
   // force a certain marker fill style
   //
@@ -460,13 +445,9 @@ void PairAnalysisStyler::SetForceMarkerFillStyle(EfillMark fill) {
 
 
 //_____________________________________________________________________________
-void PairAnalysisStyler::SetStyle(Eidx idx,
-                                  Int_t col,
-                                  Int_t marker,
-                                  Double_t size,
-                                  Int_t line,
-                                  Double_t width,
-                                  Int_t fill) {
+void PairAnalysisStyler::SetStyle(Eidx idx, Int_t col, Int_t marker, Double_t size, Int_t line, Double_t width,
+                                  Int_t fill)
+{
   //
   // change predefined style "idx" according to arguments
   //
@@ -483,7 +464,8 @@ void PairAnalysisStyler::SetStyle(Eidx idx,
 void PairAnalysisStyler::SetLegendAlign(UInt_t align) { fLegAlign = align; }
 
 //_____________________________________________________________________________
-void PairAnalysisStyler::SetLegendAttributes(TLegend* leg, Bool_t fill) {
+void PairAnalysisStyler::SetLegendAttributes(TLegend* leg, Bool_t fill)
+{
   //
   // set/update legend cooordinates according to alignement (stored in uniqueID)
   // and "fill" a legend with white background color
@@ -556,15 +538,16 @@ void PairAnalysisStyler::SetLegendAttributes(TLegend* leg, Bool_t fill) {
   if (fLegAlign == 12 || fLegAlign == 22) {  //top
     leg->SetY2(1. - gPad->GetTopMargin() - gStyle->GetTickLength("X"));
     leg->SetY1(leg->GetY2() - maxhgth);
-  } else {  // bottom
+  }
+  else {  // bottom
     leg->SetY1(0. + gPad->GetBottomMargin() + gStyle->GetTickLength("X"));
     leg->SetY2(leg->GetY1() + maxhgth);
   }
-  if (fLegAlign == 22 || fLegAlign == 21) {  //right
-    leg->SetX2(1. - gPad->GetRightMargin()
-               - gStyle->GetTickLength("Y") * 1.0);  //x2.0 ticklength
+  if (fLegAlign == 22 || fLegAlign == 21) {                                      //right
+    leg->SetX2(1. - gPad->GetRightMargin() - gStyle->GetTickLength("Y") * 1.0);  //x2.0 ticklength
     leg->SetX1(leg->GetX2() - maxwdth * 1.0 - symblwdth);
-  } else if (fLegAlign == 12 || fLegAlign == 11) {  //left
+  }
+  else if (fLegAlign == 12 || fLegAlign == 11) {  //left
     leg->SetX1(0. + gPad->GetLeftMargin() + gStyle->GetTickLength("Y"));
     leg->SetX2(leg->GetX1() + maxwdth * 1.0 + symblwdth);
   }
@@ -574,8 +557,7 @@ void PairAnalysisStyler::SetLegendAttributes(TLegend* leg, Bool_t fill) {
   leg->SetEntrySeparation(entrysep - 1.);
 
   // styling
-  if (fill)
-    leg->SetFillStyle(1001);  // solid
+  if (fill) leg->SetFillStyle(1001);  // solid
   else
     leg->SetFillStyle(kFEmpty);  // empty
   // leg->SetFillColorAlpha(gStyle->GetLegendFillColor(), 0.8);
@@ -585,7 +567,8 @@ void PairAnalysisStyler::SetLegendAttributes(TLegend* leg, Bool_t fill) {
   // printf(" y1 %f y2 %f \n",leg->GetY1(),leg->GetY2());
 }
 
-void PairAnalysisStyler::SetPalette(Epalette colors, Bool_t reverse) {
+void PairAnalysisStyler::SetPalette(Epalette colors, Bool_t reverse)
+{
   //
   // use own definition of color palettes for zaxis
   //
@@ -599,8 +582,7 @@ void PairAnalysisStyler::SetPalette(Epalette colors, Bool_t reverse) {
       Double_t red[NRGBs]   = {0.00, 0.00, 0.87, 1.00, 0.51};
       Double_t green[NRGBs] = {0.00, 0.81, 1.00, 0.20, 0.00};
       Double_t blue[NRGBs]  = {0.51, 1.00, 0.12, 0.00, 0.00};
-      if (reverse)
-        TColor::CreateGradientColorTable(NRGBs, stops, blue, green, red, NCont);
+      if (reverse) TColor::CreateGradientColorTable(NRGBs, stops, blue, green, red, NCont);
       else
         TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
       break;
@@ -609,8 +591,7 @@ void PairAnalysisStyler::SetPalette(Epalette colors, Bool_t reverse) {
       Double_t red[NRGBs]   = {0.00, 0.00, 0.87, 1.00, 0.36};
       Double_t green[NRGBs] = {0.20, 0.81, 1.00, 0.20, 0.00};
       Double_t blue[NRGBs]  = {0.00, 0.00, 0.00, 0.00, 0.00};
-      if (reverse)
-        TColor::CreateGradientColorTable(NRGBs, stops, green, red, blue, NCont);
+      if (reverse) TColor::CreateGradientColorTable(NRGBs, stops, green, red, blue, NCont);
       else
         TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
       break;
@@ -622,7 +603,8 @@ void PairAnalysisStyler::SetPalette(Epalette colors, Bool_t reverse) {
 }
 
 //_____________________________________________________________________________
-TH1* PairAnalysisStyler::GetFirstHistogram() {
+TH1* PairAnalysisStyler::GetFirstHistogram()
+{
   //
   // get the first histogram drawn on the pad
   // this can be modified in the usual way
@@ -636,18 +618,15 @@ TH1* PairAnalysisStyler::GetFirstHistogram() {
   TObject* obj;
   while ((obj = nextObj())) {
     if (obj->InheritsFrom(TH1::Class())) { return (static_cast<TH1*>(obj)); }
-    if (obj->InheritsFrom(TGraph::Class())) {
-      return (static_cast<TH1*>(static_cast<TGraph*>(obj)->GetHistogram()));
-    }
-    if (obj->InheritsFrom(THStack::Class())) {
-      return (static_cast<TH1*>(static_cast<THStack*>(obj)->GetHistogram()));
-    }
+    if (obj->InheritsFrom(TGraph::Class())) { return (static_cast<TH1*>(static_cast<TGraph*>(obj)->GetHistogram())); }
+    if (obj->InheritsFrom(THStack::Class())) { return (static_cast<TH1*>(static_cast<THStack*>(obj)->GetHistogram())); }
   }
   return 0x0;
 }
 
 //_____________________________________________________________________________
-TLegendEntry* PairAnalysisStyler::GetLegendEntry(Int_t idx) {
+TLegendEntry* PairAnalysisStyler::GetLegendEntry(Int_t idx)
+{
   //
   // TODO
   //

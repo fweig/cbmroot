@@ -28,9 +28,9 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-#include "PairAnalysisVarManager.h"
-
 #include "PairAnalysisCutCombi.h"
+
+#include "PairAnalysisVarManager.h"
 
 ClassImp(PairAnalysisCutCombi)
 
@@ -39,7 +39,8 @@ ClassImp(PairAnalysisCutCombi)
   , fNActiveCuts(0)
   , fActiveCutsMask(0)
   , fSelectedCutsMask(0)
-  , fCutType(ECutType::kAll) {
+  , fCutType(ECutType::kAll)
+{
   //
   // Default Constructor
   //
@@ -55,7 +56,8 @@ PairAnalysisCutCombi::PairAnalysisCutCombi(const char* name, const char* title)
   , fNActiveCuts(0)
   , fActiveCutsMask(0)
   , fSelectedCutsMask(0)
-  , fCutType(ECutType::kAll) {
+  , fCutType(ECutType::kAll)
+{
   //
   // Named Constructor
   //
@@ -66,7 +68,8 @@ PairAnalysisCutCombi::PairAnalysisCutCombi(const char* name, const char* title)
 }
 
 //______________________________________________
-PairAnalysisCutCombi::~PairAnalysisCutCombi() {
+PairAnalysisCutCombi::~PairAnalysisCutCombi()
+{
   //
   // Default Destructor
   //
@@ -77,7 +80,8 @@ PairAnalysisCutCombi::~PairAnalysisCutCombi() {
 }
 
 //______________________________________________
-void PairAnalysisCutCombi::AddCut(AnalysisCuts* cuts, AnalysisCuts* range) {
+void PairAnalysisCutCombi::AddCut(AnalysisCuts* cuts, AnalysisCuts* range)
+{
   //
   // add CutCombi cuts
   //
@@ -94,7 +98,8 @@ void PairAnalysisCutCombi::AddCut(AnalysisCuts* cuts, AnalysisCuts* range) {
 
 
 //______________________________________________
-Bool_t PairAnalysisCutCombi::IsSelected(TObject* track) {
+Bool_t PairAnalysisCutCombi::IsSelected(TObject* track)
+{
   //
   // make cut decision
   //
@@ -110,7 +115,8 @@ Bool_t PairAnalysisCutCombi::IsSelected(TObject* track) {
 }
 
 //________________________________________________________________________
-Bool_t PairAnalysisCutCombi::IsSelected(Double_t* const values) {
+Bool_t PairAnalysisCutCombi::IsSelected(Double_t* const values)
+{
   //
   // Make cut decision
   //
@@ -132,8 +138,7 @@ Bool_t PairAnalysisCutCombi::IsSelected(Double_t* const values) {
     if (!fCuts[iCut]->IsSelected(values)) CLRBIT(fSelectedCutsMask, iCut);
 
     // cut type and intermediate decision
-    if (fCutType == ECutType::kAll && !TESTBIT(fSelectedCutsMask, iCut))
-      return kFALSE;
+    if (fCutType == ECutType::kAll && !TESTBIT(fSelectedCutsMask, iCut)) return kFALSE;
   }
 
   // cut type and final decision
@@ -144,15 +149,15 @@ Bool_t PairAnalysisCutCombi::IsSelected(Double_t* const values) {
 }
 
 //________________________________________________________________________
-void PairAnalysisCutCombi::Print(const Option_t* /*option*/) const {
+void PairAnalysisCutCombi::Print(const Option_t* /*option*/) const
+{
   //
   // Print cuts and the range
   //
   printf("-----------------------------------------------------------------\n");
   printf("cut ranges for '%s'\n", GetTitle());
-  if (fCutType == ECutType::kAll) {
-    printf("All Cuts have to be fulfilled\n");
-  } else {
+  if (fCutType == ECutType::kAll) { printf("All Cuts have to be fulfilled\n"); }
+  else {
     printf("Any Cut has to be fulfilled\n");
   }
 

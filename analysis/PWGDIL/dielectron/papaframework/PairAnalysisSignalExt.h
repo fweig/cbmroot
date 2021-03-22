@@ -25,7 +25,8 @@ class TPaveText;
 class PairAnalysisSignalExt : public PairAnalysisFunction {
 
 public:
-  enum EBackgroundMethod {
+  enum EBackgroundMethod
+  {
     kFittedMC = 0,
     kFitted,
     kLikeSign,
@@ -39,7 +40,8 @@ public:
     kCocktail
   };
 
-  enum ESignalExtractionMethod {
+  enum ESignalExtractionMethod
+  {
     kBinCounting = 0,
     kMCScaledMax,
     kMCScaledInt,
@@ -49,7 +51,11 @@ public:
     kUserFunc
   };
 
-  enum EScalingMethod { kSclToRaw = 0, kSclToLikeSign };
+  enum EScalingMethod
+  {
+    kSclToRaw = 0,
+    kSclToLikeSign
+  };
 
   PairAnalysisSignalExt();
   PairAnalysisSignalExt(const char* name, const char* title);
@@ -59,26 +65,27 @@ public:
   //// Setter ////
   // signal
 
-  void SetMCSignalShape(TH1F* hist) {
+  void SetMCSignalShape(TH1F* hist)
+  {
     fgHistSimPM   = hist;
     fHistSignalMC = hist;
   }
-  void SetIntegralRange(Double_t min, Double_t max) {
+  void SetIntegralRange(Double_t min, Double_t max)
+  {
     fIntMin = min;
     fIntMax = max;
   }
-  void SetPlotRange(Double_t min, Double_t max) {
+  void SetPlotRange(Double_t min, Double_t max)
+  {
     fPlotMin = min;
     fPlotMax = max;
   }
   void SetRebin(Int_t factor) { fRebin = factor; }
   void SetStatRebin(Double_t stat) { fRebinStat = stat; }
   void SetRebin(TArrayD* limits) { fBinLimits = limits; }
-  void SetRebin(TVectorD* limits) {
-    fBinLimits = new TArrayD(limits->GetNrows() - 1, limits->GetMatrixArray());
-  }
-  void SetExtractionMethod(ESignalExtractionMethod method,
-                           PairAnalysisFunction* sigF = 0x0) {
+  void SetRebin(TVectorD* limits) { fBinLimits = new TArrayD(limits->GetNrows() - 1, limits->GetMatrixArray()); }
+  void SetExtractionMethod(ESignalExtractionMethod method, PairAnalysisFunction* sigF = 0x0)
+  {
     fPeakMethod = method;
     fExtrFunc   = sigF;
   }
@@ -88,18 +95,17 @@ public:
 
   void SetMethod(EBackgroundMethod method) { fMethod = method; }
   void SetNTrackRotations(Int_t iterations) { fNiterTR = iterations; }
-  void SetScaleBackgroundTo(EScalingMethod method,
-                            Double_t intMin,
-                            Double_t intMax,
-                            Double_t intMin2 = 0.,
-                            Double_t intMax2 = 0.) {
+  void SetScaleBackgroundTo(EScalingMethod method, Double_t intMin, Double_t intMax, Double_t intMin2 = 0.,
+                            Double_t intMax2 = 0.)
+  {
     fSclMethod = method;
     fScaleMin  = intMin;
     fScaleMax  = intMax;
     fScaleMin2 = intMin2;
     fScaleMax2 = intMax2;
   }
-  void SetCocktailContribution(TObjArray* arr, Bool_t subtract = kTRUE) {
+  void SetCocktailContribution(TObjArray* arr, Bool_t subtract = kTRUE)
+  {
     fArrCocktail   = arr;
     fCocktailSubtr = subtract;
   }
@@ -137,9 +143,7 @@ public:
   Double_t GetMassWidthError() const { return fErrors(5); }
   Double_t GetMatchChi2NDF() const { return fValues(6); }
   Double_t GetMatchChi2NDFError() const { return fErrors(6); }
-  static const char* GetValueName(Int_t i) {
-    return (i >= 0 && i < 7) ? fgkValueNames[i] : "";
-  }
+  static const char* GetValueName(Int_t i) { return (i >= 0 && i < 7) ? fgkValueNames[i] : ""; }
 
   // objects
 
@@ -154,23 +158,12 @@ public:
   TObject* GetPeakShape() const { return fgPeakShape; }
 
 
-  TObject* DescribePeakShape(ESignalExtractionMethod method = kMCFitted,
-                             Bool_t replaceValErr           = kFALSE,
-                             TH1F* mcShape                  = 0x0);
-  TPaveText* DrawStats(Double_t x1 = 0.,
-                       Double_t y1 = 0.,
-                       Double_t x2 = 0.,
-                       Double_t y2 = 0.,
+  TObject* DescribePeakShape(ESignalExtractionMethod method = kMCFitted, Bool_t replaceValErr = kFALSE,
+                             TH1F* mcShape = 0x0);
+  TPaveText* DrawStats(Double_t x1 = 0., Double_t y1 = 0., Double_t x2 = 0., Double_t y2 = 0.,
                        TString opt = "pRnbsSmrc");
-  Double_t ScaleHistograms(TH1* histRaw,
-                           TH1* histBackground,
-                           Double_t intMin,
-                           Double_t intMax);
-  Double_t ScaleHistograms(TH1* histRaw,
-                           TH1* histBackground,
-                           Double_t intMin,
-                           Double_t intMax,
-                           Double_t intMin2,
+  Double_t ScaleHistograms(TH1* histRaw, TH1* histBackground, Double_t intMin, Double_t intMax);
+  Double_t ScaleHistograms(TH1* histRaw, TH1* histBackground, Double_t intMin, Double_t intMax, Double_t intMin2,
                            Double_t intMax2);
 
   static TH1* MergeObjects(TH1* obj1, TH1* obj2, Double_t val = +1.);
@@ -197,11 +190,13 @@ public:
   TObject* FindObjectByTitle(TObjArray* arrhist, TString ref);
 
   // implemented to remove warnings
-  TObject* FindObject(const char*) const {
+  TObject* FindObject(const char*) const
+  {
     TObject* bla = new TObject();
     return bla;
   }
-  TObject* FindObject(const TObject*) const {
+  TObject* FindObject(const TObject*) const
+  {
     TObject* bla = new TObject();
     return bla;
   }
@@ -212,16 +207,14 @@ protected:
   TH1* fHistSignal        = NULL;  // histogram of pure signal
   TH1* fHistSB            = NULL;  // histogram of signal to bgrd
   TH1* fHistSgn           = NULL;  // histogram of significance
-  TH1* fHistBackground =
-    NULL;  // histogram of background (fitted=0, like-sign=1, event mixing=2)
-  TH1* fHistCocktail = NULL;  // histogram of cocktail
-  TH1* fHistDataPM   = NULL;  // histogram of selected +- pair candidates
-  TH1* fHistDataPP   = NULL;  // histogram of selected ++ pair candidates
-  TH1* fHistDataMM   = NULL;  // histogram of selected -- pair candidates
-  TH1* fHistDataME =
-    NULL;  // histogram of selected +- pair candidates from mixed event
-  TH1* fHistRfactor  = NULL;  // histogram of R factors
-  TH1* fHistSignalMC = NULL;  // histogram of signal MC shape
+  TH1* fHistBackground    = NULL;  // histogram of background (fitted=0, like-sign=1, event mixing=2)
+  TH1* fHistCocktail      = NULL;  // histogram of cocktail
+  TH1* fHistDataPM        = NULL;  // histogram of selected +- pair candidates
+  TH1* fHistDataPP        = NULL;  // histogram of selected ++ pair candidates
+  TH1* fHistDataMM        = NULL;  // histogram of selected -- pair candidates
+  TH1* fHistDataME        = NULL;  // histogram of selected +- pair candidates from mixed event
+  TH1* fHistRfactor       = NULL;  // histogram of R factors
+  TH1* fHistSignalMC      = NULL;  // histogram of signal MC shape
 
   TH1* fHistMixPM  = NULL;  // histogram of selected +- pair candidates
   TH1* fHistMixPP  = NULL;  // histogram of selected ++ pair candidates
@@ -248,19 +241,15 @@ protected:
   Double_t fScaleMax        = 0.;         // max for scaling
   Double_t fScaleMin2       = 0.;         // min2 for scaling
   Double_t fScaleMax2       = 0.;         // max2 for scaling
-  Int_t fNiterTR =
-    1;  // track rotation scale factor according to number of rotations
-  Double_t fScaleFactor = 1.;  // scale factor of histogram scaling
-  Bool_t fMixingCorr =
-    kFALSE;  // switch for bin by bin correction with R factor
-  Bool_t fCocktailSubtr = kFALSE;  // switch for cocktail subtraction
+  Int_t fNiterTR            = 1;          // track rotation scale factor according to number of rotations
+  Double_t fScaleFactor     = 1.;         // scale factor of histogram scaling
+  Bool_t fMixingCorr        = kFALSE;     // switch for bin by bin correction with R factor
+  Bool_t fCocktailSubtr     = kFALSE;     // switch for cocktail subtraction
 
-  PairAnalysisFunction* fExtrFunc = NULL;  // signal extraction function
-  ESignalExtractionMethod fPeakMethod =
-    kBinCounting;  // method for peak description and signal extraction
-  static TObject*
-    fgPeakShape;  // histogram or function used to describe the extracted signal
-  Bool_t fPeakIsTF1 = kFALSE;  // flag
+  PairAnalysisFunction* fExtrFunc     = NULL;          // signal extraction function
+  ESignalExtractionMethod fPeakMethod = kBinCounting;  // method for peak description and signal extraction
+  static TObject* fgPeakShape;                         // histogram or function used to describe the extracted signal
+  Bool_t fPeakIsTF1 = kFALSE;                          // flag
 
   Bool_t fProcessed = kFALSE;  // flag
   static TH1F* fgHistSimPM;    // simulated peak shape
@@ -269,9 +258,8 @@ protected:
   void SetSignificanceAndSOB();  // calculate the significance and S/B
   void SetFWHM();                // calculate the fwhm
 
-  static const char* fgkValueNames[7];  //value names
-  static const char*
-    fgkBackgroundMethodNames[11];  // background estimator names
+  static const char* fgkValueNames[7];              //value names
+  static const char* fgkBackgroundMethodNames[11];  // background estimator names
 
   PairAnalysisSignalExt(const PairAnalysisSignalExt& c);
   PairAnalysisSignalExt& operator=(const PairAnalysisSignalExt& c);
@@ -279,25 +267,22 @@ protected:
   ClassDef(PairAnalysisSignalExt, 3)  // Class for signal extraction
 };
 
-inline TObject*
-PairAnalysisSignalExt::FindObject(TObjArray* arrhist,
-                                  PairAnalysis::EPairType type) const {
+inline TObject* PairAnalysisSignalExt::FindObject(TObjArray* arrhist, PairAnalysis::EPairType type) const
+{
   //
   // shortcut to find a certain pair type object in array
   //
 
   //  return ( arrhist->FindObject(Form("Pair.%s",PairAnalysis::PairClassName(type))) );
-  TString ref =
-    Form("Pair.%s", PairAnalysis::PairClassName(static_cast<Int_t>(type)));
+  TString ref = Form("Pair.%s", PairAnalysis::PairClassName(static_cast<Int_t>(type)));
   for (Int_t i = 0; i < arrhist->GetEntriesFast(); i++) {
-    if (!ref.CompareTo(arrhist->UncheckedAt(i)->GetTitle()))
-      return arrhist->UncheckedAt(i);
+    if (!ref.CompareTo(arrhist->UncheckedAt(i)->GetTitle())) return arrhist->UncheckedAt(i);
   }
   return 0x0;
 }
 
-inline TObject* PairAnalysisSignalExt::FindObjectByTitle(TObjArray* arrhist,
-                                                         TString ref) {
+inline TObject* PairAnalysisSignalExt::FindObjectByTitle(TObjArray* arrhist, TString ref)
+{
   //
   // shortcut to find a certain pair type object in array
   //
@@ -305,14 +290,13 @@ inline TObject* PairAnalysisSignalExt::FindObjectByTitle(TObjArray* arrhist,
   //  return ( arrhist->FindObject(Form("Pair.%s",PairAnalysis::PairClassName(type))) );
   //  TString ref=Form("Pair.%s",PairAnalysis::PairClassName(type));
   for (Int_t i = 0; i < arrhist->GetEntriesFast(); i++) {
-    if (!ref.CompareTo(arrhist->UncheckedAt(i)->GetTitle())) {
-      return arrhist->UncheckedAt(i);
-    }
+    if (!ref.CompareTo(arrhist->UncheckedAt(i)->GetTitle())) { return arrhist->UncheckedAt(i); }
   }
   return 0x0;
 }
 
-inline void PairAnalysisSignalExt::SetSignificanceAndSOB() {
+inline void PairAnalysisSignalExt::SetSignificanceAndSOB()
+{
   //
   // Calculate S/B and significance
   //
@@ -321,25 +305,20 @@ inline void PairAnalysisSignalExt::SetSignificanceAndSOB() {
   fValues(3)      = (fValues(1) > 0 ? fValues(0) / fValues(1) : 0);
   Float_t epsSig  = (fValues(0) > 0 ? fErrors(0) / fValues(0) : 0);
   Float_t epsBknd = (fValues(1) > 0 ? fErrors(1) / fValues(1) : 0);
-  fErrors(3) = fValues(3) * TMath::Sqrt(epsSig * epsSig + epsBknd * epsBknd);
+  fErrors(3)      = fValues(3) * TMath::Sqrt(epsSig * epsSig + epsBknd * epsBknd);
   // Significance
-  fValues(2) = ((fValues(0) + fValues(1)) > 0
-                  ? fValues(0) / TMath::Sqrt(fValues(0) + fValues(1))
-                  : 0);
+  fValues(2) = ((fValues(0) + fValues(1)) > 0 ? fValues(0) / TMath::Sqrt(fValues(0) + fValues(1)) : 0);
   Float_t s  = (fValues(0) > 0 ? fValues(0) : 0);
   Float_t b  = fValues(1);
   Float_t se = fErrors(0);
   Float_t be = fErrors(1);
   // fErrors(2) = ((s+b)>0 ? TMath::Sqrt((s*(s+2*b)*(s+2*b)+b*s*s)/(4*TMath::Power(s+b,3))) : 0); // old implementation
   fErrors(2) =
-    ((s + b) > 0
-       ? fValues(2)
-           * TMath::Sqrt(be * be + TMath::Power(se * (s + 2 * b) / s, 2)) / 2
-           / (s + b)
-       : 0);
+    ((s + b) > 0 ? fValues(2) * TMath::Sqrt(be * be + TMath::Power(se * (s + 2 * b) / s, 2)) / 2 / (s + b) : 0);
 }
 
-inline void PairAnalysisSignalExt::SetFWHM() {
+inline void PairAnalysisSignalExt::SetFWHM()
+{
   //
   // calculate the full width at half maximum (fwhm)
   //
@@ -373,7 +352,8 @@ inline void PairAnalysisSignalExt::SetFWHM() {
     delete fit;
     delete pfit;
     delete mfit;
-  } else if (fgPeakShape->IsA() == TH1F::Class()) {
+  }
+  else if (fgPeakShape->IsA() == TH1F::Class()) {
     // th1 calculation
     TH1F* hist = (TH1F*) fgPeakShape->Clone("hist");
     Int_t bin1 = hist->FindFirstBinAbove(hist->GetMaximum() / 2);
@@ -384,9 +364,8 @@ inline void PairAnalysisSignalExt::SetFWHM() {
   }
 }
 
-inline void PairAnalysisSignalExt::FillSignificance(TH1* hfill,
-                                                    TObject* signal,
-                                                    TH1* hbgrd) {
+inline void PairAnalysisSignalExt::FillSignificance(TH1* hfill, TObject* signal, TH1* hbgrd)
+{
   ///
   /// fill significance histogram
   ///
@@ -402,8 +381,7 @@ inline void PairAnalysisSignalExt::FillSignificance(TH1* hfill,
   Double_t be = 0.;
   for (Int_t i = 1; i <= hfill->GetNbinsX(); i++) {
 
-    if (signal->IsA() == TF1::Class())
-      s = static_cast<TF1*>(signal)->Eval(hfill->GetBinCenter(i));
+    if (signal->IsA() == TF1::Class()) s = static_cast<TF1*>(signal)->Eval(hfill->GetBinCenter(i));
     else {
       s  = static_cast<TH1*>(signal)->GetBinContent(i);
       se = static_cast<TH1*>(signal)->GetBinError(i);
@@ -416,11 +394,7 @@ inline void PairAnalysisSignalExt::FillSignificance(TH1* hfill,
     //    printf("s %.3e b %.3e \t s/b: %.3e sgn %.3e \n",s,b,s/b,sgn);
     hfill->SetBinContent(i, sgn);
     hfill->SetBinError(
-      i,
-      ((s + b) > 0.
-         ? sgn * TMath::Sqrt(be * be + TMath::Power(se * (s + 2 * b) / s, 2))
-             / 2 / (s + b)
-         : 0));
+      i, ((s + b) > 0. ? sgn * TMath::Sqrt(be * be + TMath::Power(se * (s + 2 * b) / s, 2)) / 2 / (s + b) : 0));
   }
 }
 

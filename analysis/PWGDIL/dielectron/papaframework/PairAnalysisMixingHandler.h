@@ -25,14 +25,18 @@ class PairAnalysisEvent;
 
 class PairAnalysisMixingHandler : public TNamed {
 public:
-  enum class EMixType { kOSonly = 0, kOSandLS, kAll };
+  enum class EMixType
+  {
+    kOSonly = 0,
+    kOSandLS,
+    kAll
+  };
   PairAnalysisMixingHandler();
   PairAnalysisMixingHandler(const char* name, const char* title);
 
   virtual ~PairAnalysisMixingHandler();
 
-  void AddVariable(PairAnalysisVarManager::ValueTypes type,
-                   TVectorD* const bins);
+  void AddVariable(PairAnalysisVarManager::ValueTypes type, TVectorD* const bins);
 
   void SetDepth(UShort_t depth) { fDepth = depth; }
   UShort_t GetDepth() const { return fDepth; }
@@ -47,14 +51,13 @@ public:
   void Init(const PairAnalysis* papa = 0x0);
 
 private:
-  UShort_t fDepth = 10;  // Number of events per bin to keep in the ring buffer
+  UShort_t fDepth = 10;    // Number of events per bin to keep in the ring buffer
   TClonesArray fArrPools;  // Array of events in bins
   static const Int_t fMaxCuts = 10;
-  UShort_t fEventCuts[fMaxCuts];  // cut variables
-  TObjArray fAxes;                // Axis descriptions of the event binning
-  EMixType fMixType =
-    EMixType::kOSonly;      // which combinations to include in the mixing
-  TProcessID* fPID = NULL;  //! internal PID for references to buffered objects
+  UShort_t fEventCuts[fMaxCuts];          // cut variables
+  TObjArray fAxes;                        // Axis descriptions of the event binning
+  EMixType fMixType = EMixType::kOSonly;  // which combinations to include in the mixing
+  TProcessID* fPID  = NULL;               //! internal PID for references to buffered objects
 
   void DoMixing(TClonesArray& pool, PairAnalysis* papa);
 

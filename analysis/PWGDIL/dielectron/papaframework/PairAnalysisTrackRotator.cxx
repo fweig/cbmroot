@@ -15,24 +15,24 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
+#include "PairAnalysisTrackRotator.h"
+
 #include <TMath.h>
 #include <TRandom3.h>
-
-#include "PairAnalysisTrackRotator.h"
 
 ClassImp(PairAnalysisTrackRotator)
 
   PairAnalysisTrackRotator::PairAnalysisTrackRotator()
-  : PairAnalysisTrackRotator("TR", "TR") {
+  : PairAnalysisTrackRotator("TR", "TR")
+{
   //
   // Default Constructor
   //
 }
 
 //______________________________________________
-PairAnalysisTrackRotator::PairAnalysisTrackRotator(const char* name,
-                                                   const char* title)
-  : TNamed(name, title) {
+PairAnalysisTrackRotator::PairAnalysisTrackRotator(const char* name, const char* title) : TNamed(name, title)
+{
   //
   // Named Constructor
   //
@@ -40,7 +40,8 @@ PairAnalysisTrackRotator::PairAnalysisTrackRotator(const char* name,
 }
 
 //______________________________________________
-PairAnalysisTrackRotator::~PairAnalysisTrackRotator() {
+PairAnalysisTrackRotator::~PairAnalysisTrackRotator()
+{
   //
   // Default Destructor
   //

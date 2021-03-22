@@ -20,7 +20,11 @@ class PairAnalysisVarManager;
 class PairAnalysisCutCombi : public AnalysisCuts {
 public:
   // Whether all cut criteria have to be fulfilled of just any
-  enum class ECutType { kAll = 0, kAny };
+  enum class ECutType
+  {
+    kAll = 0,
+    kAny
+  };
 
   PairAnalysisCutCombi();
   PairAnalysisCutCombi(const char* name, const char* title);
@@ -55,9 +59,8 @@ private:
   UShort_t fNActiveCuts;   // number of acive cuts
   UInt_t fActiveCutsMask;  // mask of active cuts
 
-  UInt_t
-    fSelectedCutsMask;  // Maks of selected cuts, is available after calling IsSelected
-  ECutType fCutType;    // type of the cut: any, all
+  UInt_t fSelectedCutsMask;  // Maks of selected cuts, is available after calling IsSelected
+  ECutType fCutType;         // type of the cut: any, all
 
   AnalysisCuts* fRangeCuts[kNmaxCuts];  // cuts to select a range
   AnalysisCuts* fCuts[kNmaxCuts];       // where these cuts are applied

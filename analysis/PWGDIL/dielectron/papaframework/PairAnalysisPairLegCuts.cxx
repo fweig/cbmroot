@@ -17,29 +17,30 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
+#include "PairAnalysisPairLegCuts.h"
+
 #include <TList.h>
 
 #include "PairAnalysisPairLV.h"
 #include "PairAnalysisTrack.h"
 
-#include "PairAnalysisPairLegCuts.h"
-
 ClassImp(PairAnalysisPairLegCuts)
 
 
   PairAnalysisPairLegCuts::PairAnalysisPairLegCuts()
-  : PairAnalysisPairLegCuts("pairlegcut", "pairlegcut") {
+  : PairAnalysisPairLegCuts("pairlegcut", "pairlegcut")
+{
   //
   // Default contructor
   //
 }
 
 //________________________________________________________________________
-PairAnalysisPairLegCuts::PairAnalysisPairLegCuts(const char* name,
-                                                 const char* title)
+PairAnalysisPairLegCuts::PairAnalysisPairLegCuts(const char* name, const char* title)
   : AnalysisCuts(name, title)
   , fFilterLeg1("PairFilterLeg1", "PairFilterLeg1")
-  , fFilterLeg2("PairFilterLeg2", "PairFilterLeg2") {
+  , fFilterLeg2("PairFilterLeg2", "PairFilterLeg2")
+{
   //
   // Named contructor
   //
@@ -47,7 +48,8 @@ PairAnalysisPairLegCuts::PairAnalysisPairLegCuts(const char* name,
 
 
 //________________________________________________________________________
-Bool_t PairAnalysisPairLegCuts::IsSelected(TObject* track) {
+Bool_t PairAnalysisPairLegCuts::IsSelected(TObject* track)
+{
   //
   // check if cuts are fulfilled
   //
@@ -90,19 +92,17 @@ Bool_t PairAnalysisPairLegCuts::IsSelected(TObject* track) {
   }
 
   if (fCutType == kMixLegs) {
-    Bool_t isLeg1selectedMirror =
-      (fFilterLeg1.IsSelected(leg2) == selectedMaskLeg1);
-    Bool_t isLeg2selectedMirror =
-      (fFilterLeg2.IsSelected(leg1) == selectedMaskLeg2);
-    isSelected = (isLeg1selected && isLeg2selected)
-                 || (isLeg1selectedMirror && isLeg2selectedMirror);
+    Bool_t isLeg1selectedMirror = (fFilterLeg1.IsSelected(leg2) == selectedMaskLeg1);
+    Bool_t isLeg2selectedMirror = (fFilterLeg2.IsSelected(leg1) == selectedMaskLeg2);
+    isSelected                  = (isLeg1selected && isLeg2selected) || (isLeg1selectedMirror && isLeg2selectedMirror);
     SetSelected(isSelected);
   }
   return isSelected;
 }
 
 //________________________________________________________________________
-void PairAnalysisPairLegCuts::Print(const Option_t* /*option*/) const {
+void PairAnalysisPairLegCuts::Print(const Option_t* /*option*/) const
+{
   //
   // Print cuts and the range
   //
@@ -111,13 +111,8 @@ void PairAnalysisPairLegCuts::Print(const Option_t* /*option*/) const {
   switch (fCutType) {
     case kBothLegs: printf("Both legs have to fulfill the cuts\n"); break;
     case kAnyLeg: printf("Any leg have to fulfill the cuts\n"); break;
-    case kMixLegs:
-      printf(
-        "Leg1(leg2) has to fullfill the leg1(2)- or leg2(1)-cuts (mix mode)\n");
-      break;
-    case kOneLeg:
-      printf("Only one of legs is allowed to fulfill the cuts\n");
-      break;
+    case kMixLegs: printf("Leg1(leg2) has to fullfill the leg1(2)- or leg2(1)-cuts (mix mode)\n"); break;
+    case kOneLeg: printf("Only one of legs is allowed to fulfill the cuts\n"); break;
   }
 
   printf("Leg filter1: \n");

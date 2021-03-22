@@ -11,10 +11,10 @@
 //#                                                           #
 //#############################################################
 
+#include "CbmDefs.h"
+
 #include <TLorentzVector.h>
 #include <TNamed.h>
-
-#include "CbmDefs.h"
 //#include "CbmTrackMatchNew.h"
 
 class FairTrackParam;
@@ -38,20 +38,10 @@ class PairAnalysisTrack : public TNamed {
 public:
   PairAnalysisTrack();
   PairAnalysisTrack(const char* name, const char* title);
-  PairAnalysisTrack(CbmKFVertex* vtx,
-                    CbmGlobalTrack* gtrk,
-                    CbmStsTrack* ststrk,
-                    CbmMuchTrack* muchtrk,
-                    CbmTrdTrack* trdtrk,
-                    CbmRichRing* richring,
-                    CbmTofHit* tofhit,
-                    CbmMCTrack* mctrk,
-                    CbmTrackMatchNew* stsmatch,
-                    CbmTrackMatchNew* muchmatch,
-                    CbmTrackMatchNew* trdMatch,
-                    CbmTrackMatchNew* richMatch,
-                    FairTrackParam* richproj,
-                    Int_t gIndex);
+  PairAnalysisTrack(CbmKFVertex* vtx, CbmGlobalTrack* gtrk, CbmStsTrack* ststrk, CbmMuchTrack* muchtrk,
+                    CbmTrdTrack* trdtrk, CbmRichRing* richring, CbmTofHit* tofhit, CbmMCTrack* mctrk,
+                    CbmTrackMatchNew* stsmatch, CbmTrackMatchNew* muchmatch, CbmTrackMatchNew* trdMatch,
+                    CbmTrackMatchNew* richMatch, FairTrackParam* richproj, Int_t gIndex);
   PairAnalysisTrack(TParticle* fastTrk, CbmMCTrack* mctrk);
 
   virtual ~PairAnalysisTrack();

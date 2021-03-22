@@ -36,639 +36,232 @@
 #pragma link C++ class PairAnalysisHn + ;
 ///////1D
 //w/o weights
-#pragma link C++ function PairAnalysisHistos::AddHistogram(                    \
-  char*, TVectorD*, UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddHistogram(                    \
-  char*, TVectorD*, char*);
+#pragma link C++ function PairAnalysisHistos::AddHistogram(char*, TVectorD*, UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddHistogram(char*, TVectorD*, char*);
 //w/ weights
-#pragma link C++ function PairAnalysisHistos::AddHistogram(                    \
-  char*, TVectorD*, UInt_t, UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddHistogram(                    \
-  char*, TVectorD*, UInt_t, char*);
-#pragma link C++ function PairAnalysisHistos::AddHistogram(                    \
-  char*, TVectorD*, char*, UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddHistogram(                    \
-  char*, TVectorD*, char*, char*);
+#pragma link C++ function PairAnalysisHistos::AddHistogram(char*, TVectorD*, UInt_t, UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddHistogram(char*, TVectorD*, UInt_t, char*);
+#pragma link C++ function PairAnalysisHistos::AddHistogram(char*, TVectorD*, char*, UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddHistogram(char*, TVectorD*, char*, char*);
 // profs w/o weights
-#pragma link C++ function PairAnalysisHistos::AddProfile(                      \
-  char*, TVectorD*, UInt_t, UInt_t, TString);
-#pragma link C++ function PairAnalysisHistos::AddProfile(                      \
-  char*, TVectorD*, UInt_t, char*, TString);
-#pragma link C++ function PairAnalysisHistos::AddProfile(                      \
-  char*, TVectorD*, char*, UInt_t, TString);
-#pragma link C++ function PairAnalysisHistos::AddProfile(                      \
-  char*, TVectorD*, char*, char*, TString);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, UInt_t, UInt_t, TString);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, UInt_t, char*, TString);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, char*, UInt_t, TString);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, char*, char*, TString);
 //w/ weights
-#pragma link C++ function PairAnalysisHistos::AddProfile(                      \
-  char*, TVectorD*, UInt_t, UInt_t, TString, UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddProfile(                      \
-  char*, TVectorD*, UInt_t, char*, TString, UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddProfile(                      \
-  char*, TVectorD*, char*, UInt_t, TString, UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddProfile(                      \
-  char*, TVectorD*, char*, char*, TString, UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddProfile(                      \
-  char*, TVectorD*, UInt_t, UInt_t, TString, char*);
-#pragma link C++ function PairAnalysisHistos::AddProfile(                      \
-  char*, TVectorD*, UInt_t, char*, TString, char*);
-#pragma link C++ function PairAnalysisHistos::AddProfile(                      \
-  char*, TVectorD*, char*, UInt_t, TString, char*);
-#pragma link C++ function PairAnalysisHistos::AddProfile(                      \
-  char*, TVectorD*, char*, char*, TString, char*);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, UInt_t, UInt_t, TString, UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, UInt_t, char*, TString, UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, char*, UInt_t, TString, UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, char*, char*, TString, UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, UInt_t, UInt_t, TString, char*);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, UInt_t, char*, TString, char*);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, char*, UInt_t, TString, char*);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, char*, char*, TString, char*);
 ///////2D
 //w/o weights
-#pragma link C++ function PairAnalysisHistos::AddHistogram(                    \
-  char*, TVectorD*, UInt_t, TVectorD*, UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddHistogram(                    \
-  char*, TVectorD*, UInt_t, TVectorD*, char*);
-#pragma link C++ function PairAnalysisHistos::AddHistogram(                    \
-  char*, TVectorD*, char*, TVectorD*, UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddHistogram(                    \
-  char*, TVectorD*, char*, TVectorD*, char*);
+#pragma link C++ function PairAnalysisHistos::AddHistogram(char*, TVectorD*, UInt_t, TVectorD*, UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddHistogram(char*, TVectorD*, UInt_t, TVectorD*, char*);
+#pragma link C++ function PairAnalysisHistos::AddHistogram(char*, TVectorD*, char*, TVectorD*, UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddHistogram(char*, TVectorD*, char*, TVectorD*, char*);
 //w/ weights
-#pragma link C++ function PairAnalysisHistos::AddHistogram(                    \
-  char*, TVectorD*, UInt_t, TVectorD*, UInt_t, UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddHistogram(                    \
-  char*, TVectorD*, UInt_t, TVectorD*, UInt_t, char*);
-#pragma link C++ function PairAnalysisHistos::AddHistogram(                    \
-  char*, TVectorD*, UInt_t, TVectorD*, char*, UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddHistogram(                    \
-  char*, TVectorD*, UInt_t, TVectorD*, char*, char*);
-#pragma link C++ function PairAnalysisHistos::AddHistogram(                    \
-  char*, TVectorD*, char*, TVectorD*, UInt_t, UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddHistogram(                    \
-  char*, TVectorD*, char*, TVectorD*, UInt_t, char*);
-#pragma link C++ function PairAnalysisHistos::AddHistogram(                    \
-  char*, TVectorD*, char*, TVectorD*, char*, UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddHistogram(                    \
-  char*, TVectorD*, char*, TVectorD*, char*, char*);
+#pragma link C++ function PairAnalysisHistos::AddHistogram(char*, TVectorD*, UInt_t, TVectorD*, UInt_t, UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddHistogram(char*, TVectorD*, UInt_t, TVectorD*, UInt_t, char*);
+#pragma link C++ function PairAnalysisHistos::AddHistogram(char*, TVectorD*, UInt_t, TVectorD*, char*, UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddHistogram(char*, TVectorD*, UInt_t, TVectorD*, char*, char*);
+#pragma link C++ function PairAnalysisHistos::AddHistogram(char*, TVectorD*, char*, TVectorD*, UInt_t, UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddHistogram(char*, TVectorD*, char*, TVectorD*, UInt_t, char*);
+#pragma link C++ function PairAnalysisHistos::AddHistogram(char*, TVectorD*, char*, TVectorD*, char*, UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddHistogram(char*, TVectorD*, char*, TVectorD*, char*, char*);
 //profs w/o weights
-#pragma link C++ function PairAnalysisHistos::AddProfile(                      \
-  char*, TVectorD*, UInt_t, TVectorD*, UInt_t, UInt_t, TString);
-#pragma link C++ function PairAnalysisHistos::AddProfile(                      \
-  char*, TVectorD*, UInt_t, TVectorD*, UInt_t, char*, TString);
-#pragma link C++ function PairAnalysisHistos::AddProfile(                      \
-  char*, TVectorD*, UInt_t, TVectorD*, char*, UInt_t, TString);
-#pragma link C++ function PairAnalysisHistos::AddProfile(                      \
-  char*, TVectorD*, UInt_t, TVectorD*, char*, char*, TString);
-#pragma link C++ function PairAnalysisHistos::AddProfile(                      \
-  char*, TVectorD*, char*, TVectorD*, UInt_t, UInt_t, TString);
-#pragma link C++ function PairAnalysisHistos::AddProfile(                      \
-  char*, TVectorD*, char*, TVectorD*, UInt_t, char*, TString);
-#pragma link C++ function PairAnalysisHistos::AddProfile(                      \
-  char*, TVectorD*, char*, TVectorD*, char*, UInt_t, TString);
-#pragma link C++ function PairAnalysisHistos::AddProfile(                      \
-  char*, TVectorD*, char*, TVectorD*, char*, char*, TString);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, UInt_t, TVectorD*, UInt_t, UInt_t, TString);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, UInt_t, TVectorD*, UInt_t, char*, TString);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, UInt_t, TVectorD*, char*, UInt_t, TString);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, UInt_t, TVectorD*, char*, char*, TString);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, char*, TVectorD*, UInt_t, UInt_t, TString);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, char*, TVectorD*, UInt_t, char*, TString);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, char*, TVectorD*, char*, UInt_t, TString);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, char*, TVectorD*, char*, char*, TString);
 //w/ weights
-#pragma link C++ function PairAnalysisHistos::AddProfile(                      \
-  char*, TVectorD*, UInt_t, TVectorD*, UInt_t, UInt_t, TString, UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddProfile(                      \
-  char*, TVectorD*, UInt_t, TVectorD*, UInt_t, char*, TString, UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddProfile(                      \
-  char*, TVectorD*, UInt_t, TVectorD*, char*, UInt_t, TString, UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddProfile(                      \
-  char*, TVectorD*, UInt_t, TVectorD*, char*, char*, TString, UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddProfile(                      \
-  char*, TVectorD*, char*, TVectorD*, UInt_t, UInt_t, TString, UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddProfile(                      \
-  char*, TVectorD*, char*, TVectorD*, UInt_t, char*, TString, UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddProfile(                      \
-  char*, TVectorD*, char*, TVectorD*, char*, UInt_t, TString, UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddProfile(                      \
-  char*, TVectorD*, char*, TVectorD*, char*, char*, TString, UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddProfile(                      \
-  char*, TVectorD*, UInt_t, TVectorD*, UInt_t, UInt_t, TString, char*);
-#pragma link C++ function PairAnalysisHistos::AddProfile(                      \
-  char*, TVectorD*, UInt_t, TVectorD*, UInt_t, char*, TString, char*);
-#pragma link C++ function PairAnalysisHistos::AddProfile(                      \
-  char*, TVectorD*, UInt_t, TVectorD*, char*, UInt_t, TString, char*);
-#pragma link C++ function PairAnalysisHistos::AddProfile(                      \
-  char*, TVectorD*, UInt_t, TVectorD*, char*, char*, TString, char*);
-#pragma link C++ function PairAnalysisHistos::AddProfile(                      \
-  char*, TVectorD*, char*, TVectorD*, UInt_t, UInt_t, TString, char*);
-#pragma link C++ function PairAnalysisHistos::AddProfile(                      \
-  char*, TVectorD*, char*, TVectorD*, UInt_t, char*, TString, char*);
-#pragma link C++ function PairAnalysisHistos::AddProfile(                      \
-  char*, TVectorD*, char*, TVectorD*, char*, UInt_t, TString, char*);
-#pragma link C++ function PairAnalysisHistos::AddProfile(                      \
-  char*, TVectorD*, char*, TVectorD*, char*, char*, TString, char*);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, UInt_t, TVectorD*, UInt_t, UInt_t, TString, \
+                                                         UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, UInt_t, TVectorD*, UInt_t, char*, TString,  \
+                                                         UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, UInt_t, TVectorD*, char*, UInt_t, TString,  \
+                                                         UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, UInt_t, TVectorD*, char*, char*, TString,   \
+                                                         UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, char*, TVectorD*, UInt_t, UInt_t, TString,  \
+                                                         UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, char*, TVectorD*, UInt_t, char*, TString,   \
+                                                         UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, char*, TVectorD*, char*, UInt_t, TString,   \
+                                                         UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, char*, TVectorD*, char*, char*, TString,    \
+                                                         UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, UInt_t, TVectorD*, UInt_t, UInt_t, TString, \
+                                                         char*);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, UInt_t, TVectorD*, UInt_t, char*, TString,  \
+                                                         char*);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, UInt_t, TVectorD*, char*, UInt_t, TString,  \
+                                                         char*);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, UInt_t, TVectorD*, char*, char*, TString,   \
+                                                         char*);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, char*, TVectorD*, UInt_t, UInt_t, TString,  \
+                                                         char*);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, char*, TVectorD*, UInt_t, char*, TString,   \
+                                                         char*);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, char*, TVectorD*, char*, UInt_t, TString,   \
+                                                         char*);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, char*, TVectorD*, char*, char*, TString,    \
+                                                         char*);
 ////// 3D
 //w/o weights
-#pragma link C++ function PairAnalysisHistos::AddHistogram(                    \
-  char*, TVectorD*, UInt_t, TVectorD*, UInt_t, TVectorD*, UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddHistogram(                    \
-  char*, TVectorD*, UInt_t, TVectorD*, UInt_t, TVectorD*, char*);
-#pragma link C++ function PairAnalysisHistos::AddHistogram(                    \
-  char*, TVectorD*, UInt_t, TVectorD*, char*, TVectorD*, UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddHistogram(                    \
-  char*, TVectorD*, UInt_t, TVectorD*, char*, TVectorD*, char*);
-#pragma link C++ function PairAnalysisHistos::AddHistogram(                    \
-  char*, TVectorD*, char*, TVectorD*, UInt_t, TVectorD*, UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddHistogram(                    \
-  char*, TVectorD*, char*, TVectorD*, UInt_t, TVectorD*, char*);
-#pragma link C++ function PairAnalysisHistos::AddHistogram(                    \
-  char*, TVectorD*, char*, TVectorD*, char*, TVectorD*, UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddHistogram(                    \
-  char*, TVectorD*, char*, TVectorD*, char*, TVectorD*, char*);
+#pragma link C++ function PairAnalysisHistos::AddHistogram(char*, TVectorD*, UInt_t, TVectorD*, UInt_t, TVectorD*,     \
+                                                           UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddHistogram(char*, TVectorD*, UInt_t, TVectorD*, UInt_t, TVectorD*,     \
+                                                           char*);
+#pragma link C++ function PairAnalysisHistos::AddHistogram(char*, TVectorD*, UInt_t, TVectorD*, char*, TVectorD*,      \
+                                                           UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddHistogram(char*, TVectorD*, UInt_t, TVectorD*, char*, TVectorD*,      \
+                                                           char*);
+#pragma link C++ function PairAnalysisHistos::AddHistogram(char*, TVectorD*, char*, TVectorD*, UInt_t, TVectorD*,      \
+                                                           UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddHistogram(char*, TVectorD*, char*, TVectorD*, UInt_t, TVectorD*,      \
+                                                           char*);
+#pragma link C++ function PairAnalysisHistos::AddHistogram(char*, TVectorD*, char*, TVectorD*, char*, TVectorD*,       \
+                                                           UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddHistogram(char*, TVectorD*, char*, TVectorD*, char*, TVectorD*, char*);
 //w/ weights
-#pragma link C++ function PairAnalysisHistos::AddHistogram(                    \
-  char*, TVectorD*, UInt_t, TVectorD*, UInt_t, TVectorD*, UInt_t, UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddHistogram(                    \
-  char*, TVectorD*, UInt_t, TVectorD*, UInt_t, TVectorD*, char*, UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddHistogram(                    \
-  char*, TVectorD*, UInt_t, TVectorD*, char*, TVectorD*, UInt_t, UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddHistogram(                    \
-  char*, TVectorD*, UInt_t, TVectorD*, char*, TVectorD*, char*, UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddHistogram(                    \
-  char*, TVectorD*, char*, TVectorD*, UInt_t, TVectorD*, UInt_t, UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddHistogram(                    \
-  char*, TVectorD*, char*, TVectorD*, UInt_t, TVectorD*, char*, UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddHistogram(                    \
-  char*, TVectorD*, char*, TVectorD*, char*, TVectorD*, UInt_t, UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddHistogram(                    \
-  char*, TVectorD*, char*, TVectorD*, char*, TVectorD*, char*, UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddHistogram(                    \
-  char*, TVectorD*, UInt_t, TVectorD*, UInt_t, TVectorD*, UInt_t, char*);
-#pragma link C++ function PairAnalysisHistos::AddHistogram(                    \
-  char*, TVectorD*, UInt_t, TVectorD*, UInt_t, TVectorD*, char*, char*);
-#pragma link C++ function PairAnalysisHistos::AddHistogram(                    \
-  char*, TVectorD*, UInt_t, TVectorD*, char*, TVectorD*, UInt_t, char*);
-#pragma link C++ function PairAnalysisHistos::AddHistogram(                    \
-  char*, TVectorD*, UInt_t, TVectorD*, char*, TVectorD*, char*, char*);
-#pragma link C++ function PairAnalysisHistos::AddHistogram(                    \
-  char*, TVectorD*, char*, TVectorD*, UInt_t, TVectorD*, UInt_t, char*);
-#pragma link C++ function PairAnalysisHistos::AddHistogram(                    \
-  char*, TVectorD*, char*, TVectorD*, UInt_t, TVectorD*, char*, char*);
-#pragma link C++ function PairAnalysisHistos::AddHistogram(                    \
-  char*, TVectorD*, char*, TVectorD*, char*, TVectorD*, UInt_t, char*);
-#pragma link C++ function PairAnalysisHistos::AddHistogram(                    \
-  char*, TVectorD*, char*, TVectorD*, char*, TVectorD*, char*, char*);
+#pragma link C++ function PairAnalysisHistos::AddHistogram(char*, TVectorD*, UInt_t, TVectorD*, UInt_t, TVectorD*,     \
+                                                           UInt_t, UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddHistogram(char*, TVectorD*, UInt_t, TVectorD*, UInt_t, TVectorD*,     \
+                                                           char*, UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddHistogram(char*, TVectorD*, UInt_t, TVectorD*, char*, TVectorD*,      \
+                                                           UInt_t, UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddHistogram(char*, TVectorD*, UInt_t, TVectorD*, char*, TVectorD*,      \
+                                                           char*, UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddHistogram(char*, TVectorD*, char*, TVectorD*, UInt_t, TVectorD*,      \
+                                                           UInt_t, UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddHistogram(char*, TVectorD*, char*, TVectorD*, UInt_t, TVectorD*,      \
+                                                           char*, UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddHistogram(char*, TVectorD*, char*, TVectorD*, char*, TVectorD*,       \
+                                                           UInt_t, UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddHistogram(char*, TVectorD*, char*, TVectorD*, char*, TVectorD*,       \
+                                                           char*, UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddHistogram(char*, TVectorD*, UInt_t, TVectorD*, UInt_t, TVectorD*,     \
+                                                           UInt_t, char*);
+#pragma link C++ function PairAnalysisHistos::AddHistogram(char*, TVectorD*, UInt_t, TVectorD*, UInt_t, TVectorD*,     \
+                                                           char*, char*);
+#pragma link C++ function PairAnalysisHistos::AddHistogram(char*, TVectorD*, UInt_t, TVectorD*, char*, TVectorD*,      \
+                                                           UInt_t, char*);
+#pragma link C++ function PairAnalysisHistos::AddHistogram(char*, TVectorD*, UInt_t, TVectorD*, char*, TVectorD*,      \
+                                                           char*, char*);
+#pragma link C++ function PairAnalysisHistos::AddHistogram(char*, TVectorD*, char*, TVectorD*, UInt_t, TVectorD*,      \
+                                                           UInt_t, char*);
+#pragma link C++ function PairAnalysisHistos::AddHistogram(char*, TVectorD*, char*, TVectorD*, UInt_t, TVectorD*,      \
+                                                           char*, char*);
+#pragma link C++ function PairAnalysisHistos::AddHistogram(char*, TVectorD*, char*, TVectorD*, char*, TVectorD*,       \
+                                                           UInt_t, char*);
+#pragma link C++ function PairAnalysisHistos::AddHistogram(char*, TVectorD*, char*, TVectorD*, char*, TVectorD*,       \
+                                                           char*, char*);
 //profs w/o weights
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         UInt_t,               \
-                                                         TString);
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         UInt_t,               \
-                                                         TString);
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         UInt_t,               \
-                                                         TString);
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         UInt_t,               \
-                                                         TString);
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         UInt_t,               \
-                                                         TString);
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         UInt_t,               \
-                                                         TString);
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         UInt_t,               \
-                                                         TString);
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         UInt_t,               \
-                                                         TString);
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         char*,                \
-                                                         TString);
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         char*,                \
-                                                         TString);
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         char*,                \
-                                                         TString);
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         char*,                \
-                                                         TString);
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         char*,                \
-                                                         TString);
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         char*,                \
-                                                         TString);
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         char*,                \
-                                                         TString);
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         char*,                \
-                                                         TString);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, UInt_t, TVectorD*, UInt_t, TVectorD*,       \
+                                                         UInt_t, UInt_t, TString);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, UInt_t, TVectorD*, UInt_t, TVectorD*,       \
+                                                         char*, UInt_t, TString);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, UInt_t, TVectorD*, char*, TVectorD*,        \
+                                                         UInt_t, UInt_t, TString);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, UInt_t, TVectorD*, char*, TVectorD*, char*, \
+                                                         UInt_t, TString);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, char*, TVectorD*, UInt_t, TVectorD*,        \
+                                                         UInt_t, UInt_t, TString);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, char*, TVectorD*, UInt_t, TVectorD*, char*, \
+                                                         UInt_t, TString);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, char*, TVectorD*, char*, TVectorD*, UInt_t, \
+                                                         UInt_t, TString);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, char*, TVectorD*, char*, TVectorD*, char*,  \
+                                                         UInt_t, TString);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, UInt_t, TVectorD*, UInt_t, TVectorD*,       \
+                                                         UInt_t, char*, TString);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, UInt_t, TVectorD*, UInt_t, TVectorD*,       \
+                                                         char*, char*, TString);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, UInt_t, TVectorD*, char*, TVectorD*,        \
+                                                         UInt_t, char*, TString);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, UInt_t, TVectorD*, char*, TVectorD*, char*, \
+                                                         char*, TString);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, char*, TVectorD*, UInt_t, TVectorD*,        \
+                                                         UInt_t, char*, TString);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, char*, TVectorD*, UInt_t, TVectorD*, char*, \
+                                                         char*, TString);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, char*, TVectorD*, char*, TVectorD*, UInt_t, \
+                                                         char*, TString);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, char*, TVectorD*, char*, TVectorD*, char*,  \
+                                                         char*, TString);
 //w/ weights
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         UInt_t,               \
-                                                         TString,              \
-                                                         UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         UInt_t,               \
-                                                         TString,              \
-                                                         UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         UInt_t,               \
-                                                         TString,              \
-                                                         UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         UInt_t,               \
-                                                         TString,              \
-                                                         UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         UInt_t,               \
-                                                         TString,              \
-                                                         UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         UInt_t,               \
-                                                         TString,              \
-                                                         UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         UInt_t,               \
-                                                         TString,              \
-                                                         UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         UInt_t,               \
-                                                         TString,              \
-                                                         UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         char*,                \
-                                                         TString,              \
-                                                         UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         char*,                \
-                                                         TString,              \
-                                                         UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         char*,                \
-                                                         TString,              \
-                                                         UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         char*,                \
-                                                         TString,              \
-                                                         UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         char*,                \
-                                                         TString,              \
-                                                         UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         char*,                \
-                                                         TString,              \
-                                                         UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         char*,                \
-                                                         TString,              \
-                                                         UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         char*,                \
-                                                         TString,              \
-                                                         UInt_t);
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         UInt_t,               \
-                                                         TString,              \
-                                                         char*);
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         UInt_t,               \
-                                                         TString,              \
-                                                         char*);
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         UInt_t,               \
-                                                         TString,              \
-                                                         char*);
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         UInt_t,               \
-                                                         TString,              \
-                                                         char*);
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         UInt_t,               \
-                                                         TString,              \
-                                                         char*);
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         UInt_t,               \
-                                                         TString,              \
-                                                         char*);
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         UInt_t,               \
-                                                         TString,              \
-                                                         char*);
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         UInt_t,               \
-                                                         TString,              \
-                                                         char*);
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         char*,                \
-                                                         TString,              \
-                                                         char*);
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         char*,                \
-                                                         TString,              \
-                                                         char*);
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         char*,                \
-                                                         TString,              \
-                                                         char*);
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         char*,                \
-                                                         TString,              \
-                                                         char*);
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         char*,                \
-                                                         TString,              \
-                                                         char*);
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         char*,                \
-                                                         TString,              \
-                                                         char*);
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         UInt_t,               \
-                                                         char*,                \
-                                                         TString,              \
-                                                         char*);
-#pragma link C++ function PairAnalysisHistos::AddProfile(char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         TVectorD*,            \
-                                                         char*,                \
-                                                         char*,                \
-                                                         TString,              \
-                                                         char*);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, UInt_t, TVectorD*, UInt_t, TVectorD*,       \
+                                                         UInt_t, UInt_t, TString, UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, UInt_t, TVectorD*, UInt_t, TVectorD*,       \
+                                                         char*, UInt_t, TString, UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, UInt_t, TVectorD*, char*, TVectorD*,        \
+                                                         UInt_t, UInt_t, TString, UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, UInt_t, TVectorD*, char*, TVectorD*, char*, \
+                                                         UInt_t, TString, UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, char*, TVectorD*, UInt_t, TVectorD*,        \
+                                                         UInt_t, UInt_t, TString, UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, char*, TVectorD*, UInt_t, TVectorD*, char*, \
+                                                         UInt_t, TString, UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, char*, TVectorD*, char*, TVectorD*, UInt_t, \
+                                                         UInt_t, TString, UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, char*, TVectorD*, char*, TVectorD*, char*,  \
+                                                         UInt_t, TString, UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, UInt_t, TVectorD*, UInt_t, TVectorD*,       \
+                                                         UInt_t, char*, TString, UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, UInt_t, TVectorD*, UInt_t, TVectorD*,       \
+                                                         char*, char*, TString, UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, UInt_t, TVectorD*, char*, TVectorD*,        \
+                                                         UInt_t, char*, TString, UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, UInt_t, TVectorD*, char*, TVectorD*, char*, \
+                                                         char*, TString, UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, char*, TVectorD*, UInt_t, TVectorD*,        \
+                                                         UInt_t, char*, TString, UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, char*, TVectorD*, UInt_t, TVectorD*, char*, \
+                                                         char*, TString, UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, char*, TVectorD*, char*, TVectorD*, UInt_t, \
+                                                         char*, TString, UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, char*, TVectorD*, char*, TVectorD*, char*,  \
+                                                         char*, TString, UInt_t);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, UInt_t, TVectorD*, UInt_t, TVectorD*,       \
+                                                         UInt_t, UInt_t, TString, char*);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, UInt_t, TVectorD*, UInt_t, TVectorD*,       \
+                                                         char*, UInt_t, TString, char*);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, UInt_t, TVectorD*, char*, TVectorD*,        \
+                                                         UInt_t, UInt_t, TString, char*);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, UInt_t, TVectorD*, char*, TVectorD*, char*, \
+                                                         UInt_t, TString, char*);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, char*, TVectorD*, UInt_t, TVectorD*,        \
+                                                         UInt_t, UInt_t, TString, char*);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, char*, TVectorD*, UInt_t, TVectorD*, char*, \
+                                                         UInt_t, TString, char*);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, char*, TVectorD*, char*, TVectorD*, UInt_t, \
+                                                         UInt_t, TString, char*);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, char*, TVectorD*, char*, TVectorD*, char*,  \
+                                                         UInt_t, TString, char*);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, UInt_t, TVectorD*, UInt_t, TVectorD*,       \
+                                                         UInt_t, char*, TString, char*);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, UInt_t, TVectorD*, UInt_t, TVectorD*,       \
+                                                         char*, char*, TString, char*);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, UInt_t, TVectorD*, char*, TVectorD*,        \
+                                                         UInt_t, char*, TString, char*);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, UInt_t, TVectorD*, char*, TVectorD*, char*, \
+                                                         char*, TString, char*);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, char*, TVectorD*, UInt_t, TVectorD*,        \
+                                                         UInt_t, char*, TString, char*);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, char*, TVectorD*, UInt_t, TVectorD*, char*, \
+                                                         char*, TString, char*);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, char*, TVectorD*, char*, TVectorD*, UInt_t, \
+                                                         char*, TString, char*);
+#pragma link C++ function PairAnalysisHistos::AddProfile(char*, TVectorD*, char*, TVectorD*, char*, TVectorD*, char*,  \
+                                                         char*, TString, char*);
 
 //#pragma link C++ class PairAnalysisHistosHelper+;
 

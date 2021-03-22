@@ -20,30 +20,32 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
+#include "PairAnalysisMixingHandler.h"
+
 #include <TAxis.h>
 #include <TH1.h>
 #include <TVectorD.h>
 
-#include "PairAnalysisTrack.h"
-
 #include "PairAnalysis.h"
 #include "PairAnalysisMixedEvent.h"
-
-#include "PairAnalysisMixingHandler.h"
+#include "PairAnalysisTrack.h"
 
 ClassImp(PairAnalysisMixingHandler)
 
   PairAnalysisMixingHandler::PairAnalysisMixingHandler()
-  : PairAnalysisMixingHandler("ME", "ME") {
+  : PairAnalysisMixingHandler("ME", "ME")
+{
   //
   // Default Constructor
   //
 }
 
 //______________________________________________
-PairAnalysisMixingHandler::PairAnalysisMixingHandler(const char* name,
-                                                     const char* title)
-  : TNamed(name, title), fArrPools("TClonesArray"), fAxes(fMaxCuts) {
+PairAnalysisMixingHandler::PairAnalysisMixingHandler(const char* name, const char* title)
+  : TNamed(name, title)
+  , fArrPools("TClonesArray")
+  , fAxes(fMaxCuts)
+{
   //
   // Named Constructor
   //
@@ -54,7 +56,8 @@ PairAnalysisMixingHandler::PairAnalysisMixingHandler(const char* name,
 }
 
 //______________________________________________
-PairAnalysisMixingHandler::~PairAnalysisMixingHandler() {
+PairAnalysisMixingHandler::~PairAnalysisMixingHandler()
+{
   //
   // Default Destructor
   //
@@ -63,9 +66,8 @@ PairAnalysisMixingHandler::~PairAnalysisMixingHandler() {
 }
 
 //________________________________________________________________
-void PairAnalysisMixingHandler::AddVariable(
-  PairAnalysisVarManager::ValueTypes type,
-  TVectorD* const bins) {
+void PairAnalysisMixingHandler::AddVariable(PairAnalysisVarManager::ValueTypes type, TVectorD* const bins)
+{
   //
   // Add a variable to the mixing handler with arbitrary binning 'bins'
   //
@@ -79,16 +81,14 @@ void PairAnalysisMixingHandler::AddVariable(
 }
 
 //______________________________________________
-void PairAnalysisMixingHandler::Fill(const PairAnalysisEvent* /*ev*/,
-                                     PairAnalysis* papa) {
+void PairAnalysisMixingHandler::Fill(const PairAnalysisEvent* /*ev*/, PairAnalysis* papa)
+{
   //
   // fill event buffers and perform mixing if the pool depth is reached
   //
 
   //check if there are tracks available
-  if (papa->GetTrackArray(0)->GetEntriesFast() == 0
-      && papa->GetTrackArray(1)->GetEntriesFast() == 0)
-    return;
+  if (papa->GetTrackArray(0)->GetEntriesFast() == 0 && papa->GetTrackArray(1)->GetEntriesFast() == 0) return;
 
   TString dim;
   Int_t bin = FindBin(PairAnalysisVarManager::GetData(), &dim);
@@ -115,22 +115,23 @@ void PairAnalysisMixingHandler::Fill(const PairAnalysisEvent* /*ev*/,
     Info("Fill", "New pool at %d (%s)", bin, dim.Data());
     poolp = new (fArrPools[bin]) TClonesArray("PairAnalysisMixedEvent", fDepth);
     poolp->SetUniqueID(0);
-  } else {
+  }
+  else {
     // one count further in the ring buffer
     index1 = (poolp->GetUniqueID() + 1) % fDepth;
   }
 
   TClonesArray& pool = *poolp;
 
-  PairAnalysisMixedEvent* event =
-    static_cast<PairAnalysisMixedEvent*>(pool.At(index1));
+  PairAnalysisMixedEvent* event = static_cast<PairAnalysisMixedEvent*>(pool.At(index1));
   if (!event) {
     //    Info("Fill",Form("new event at %d: %d",bin,index1));
     event = new (pool[index1]) PairAnalysisMixedEvent();
     //    Int_t size = TMath::Max(papa->GetTrackArray(0)->GetEntriesFast(),papa->GetTrackArray(1)->GetEntriesFast()));
     event->Set();
     event->SetProcessID(fPID);
-  } else {
+  }
+  else {
     //    Info("Fill",Form("use event at %d: %d",bin,index1));
   }
 
@@ -143,8 +144,8 @@ void PairAnalysisMixingHandler::Fill(const PairAnalysisEvent* /*ev*/,
 }
 
 //______________________________________________
-void PairAnalysisMixingHandler::DoMixing(TClonesArray& pool,
-                                         PairAnalysis* papa) {
+void PairAnalysisMixingHandler::DoMixing(TClonesArray& pool, PairAnalysis* papa)
+{
   //
   // perform the mixing
   //
@@ -168,8 +169,7 @@ void PairAnalysisMixingHandler::DoMixing(TClonesArray& pool,
 
   //  for (Int_t i2=i1+1; i2<pool.GetEntriesFast(); ++i2){
   for (Int_t i1 = 0; i1 < pool.GetEntriesFast(); ++i1) {
-    const PairAnalysisMixedEvent* ev2 =
-      static_cast<PairAnalysisMixedEvent*>(pool.At(i1));
+    const PairAnalysisMixedEvent* ev2 = static_cast<PairAnalysisMixedEvent*>(pool.At(i1));
     // don't mix with itself
     if (!ev2) continue;
 
@@ -226,7 +226,8 @@ void PairAnalysisMixingHandler::DoMixing(TClonesArray& pool,
 }
 
 //______________________________________________
-void PairAnalysisMixingHandler::Init(const PairAnalysis* papa) {
+void PairAnalysisMixingHandler::Init(const PairAnalysis* papa)
+{
   //
   // initialise event buffers
   //
@@ -251,7 +252,8 @@ void PairAnalysisMixingHandler::Init(const PairAnalysis* papa) {
 }
 
 //______________________________________________
-Int_t PairAnalysisMixingHandler::GetNumberOfBins() const {
+Int_t PairAnalysisMixingHandler::GetNumberOfBins() const
+{
   //
   // return the number of bins this mixing handler has
   //
@@ -262,8 +264,8 @@ Int_t PairAnalysisMixingHandler::GetNumberOfBins() const {
 }
 
 //______________________________________________
-Int_t PairAnalysisMixingHandler::FindBin(const Double_t values[],
-                                         TString* dim) {
+Int_t PairAnalysisMixingHandler::FindBin(const Double_t values[], TString* dim)
+{
   //
   // bin bin in mixing stack described by 'values'
   // if the values are outside the binning range -1 is returned
@@ -285,11 +287,7 @@ Int_t PairAnalysisMixingHandler::FindBin(const Double_t values[],
 
     Int_t pos = TMath::BinarySearch(nRows, bins->GetMatrixArray(), val);
     bin += sizeAdd * pos;
-    if (dim)
-      (*dim) += Form("%s: %f (%d); ",
-                     PairAnalysisVarManager::GetValueName(fEventCuts[i]),
-                     val,
-                     pos);
+    if (dim) (*dim) += Form("%s: %f (%d); ", PairAnalysisVarManager::GetValueName(fEventCuts[i]), val, pos);
     sizeAdd *= (nRows - 1);
   }
 

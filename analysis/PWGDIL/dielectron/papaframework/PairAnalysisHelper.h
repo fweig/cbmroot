@@ -14,10 +14,10 @@
 ///////////////////////////////////////////////////////////////////////////////////////////
 
 
+#include "CbmDefs.h"
+
 #include <TArrayD.h>
 #include <TVectorDfwd.h>
-
-#include "CbmDefs.h"
 
 //class AliKFParticle;
 /* class AliVEvent; */
@@ -28,7 +28,8 @@ class TH1;
 class TH2;
 class TObjArray;
 
-namespace PairAnalysisHelper {
+namespace PairAnalysisHelper
+{
 
   TVectorD* MakeLogBinning(Int_t nbinsX, Double_t xmin, Double_t xmax);
   TVectorD* MakeLinBinning(Int_t nbinsX, Double_t xmin, Double_t xmax);

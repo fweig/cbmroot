@@ -23,7 +23,8 @@ class PairAnalysis : public TNamed {
 
   friend class PairAnalysisMixingHandler;  //mixing as friend class
 public:
-  enum class EPairType {
+  enum class EPairType
+  {
     kSEPP = 0,
     kSEPM,
     kSEMM,
@@ -35,9 +36,15 @@ public:
     kPairTypes
   };
   static constexpr Int_t fNTypes = static_cast<Int_t>(EPairType::kPairTypes);
-  enum class ELegType { kSEP, kSEM, kLegTypes };
+  enum class ELegType
+  {
+    kSEP,
+    kSEM,
+    kLegTypes
+  };
   static constexpr Int_t fLegTypes = static_cast<Int_t>(ELegType::kLegTypes);
-  enum class ECutType {
+  enum class ECutType
+  {
     kBothLegs = 0,
     kAnyLeg,
     kOneLeg
@@ -77,100 +84,68 @@ public:
   Bool_t DoProcessLS() { return fProcessLS; }
   void SetUseKF(Bool_t useKF = kTRUE) { fUseKF = useKF; }
 
-  const TObjArray* GetTrackArray(Int_t i) const {
-    return (i >= 0 && i < 4) ? &fTracks[i] : 0;
-  }
-  const TObjArray* GetPairArray(Int_t i) const {
-    return (i >= 0 && i < fNTypes)
-             ? static_cast<TObjArray*>(fPairCandidates->UncheckedAt(i))
-             : 0;
+  const TObjArray* GetTrackArray(Int_t i) const { return (i >= 0 && i < 4) ? &fTracks[i] : 0; }
+  const TObjArray* GetPairArray(Int_t i) const
+  {
+    return (i >= 0 && i < fNTypes) ? static_cast<TObjArray*>(fPairCandidates->UncheckedAt(i)) : 0;
   }
 
   TObjArray** GetPairArraysPointer() { return &fPairCandidates; }
   void SetPairArraysPointer(TObjArray* arr) { fPairCandidates = arr; }
 
   // outputs - hist array
-  void SetHistogramArray(PairAnalysisHF* const histoarray) {
-    fHistoArray = histoarray;
-  }
-  const TObjArray* GetHistogramArray() const {
-    return fHistoArray ? fHistoArray->GetHistArray() : 0x0;
-  }
-  const THashList* GetQAHistList() const {
-    return fQAmonitor ? fQAmonitor->GetQAHistList() : 0x0;
-  }
+  void SetHistogramArray(PairAnalysisHF* const histoarray) { fHistoArray = histoarray; }
+  const TObjArray* GetHistogramArray() const { return fHistoArray ? fHistoArray->GetHistArray() : 0x0; }
+  const THashList* GetQAHistList() const { return fQAmonitor ? fQAmonitor->GetQAHistList() : 0x0; }
   // outputs - histos
-  void SetHistogramManager(PairAnalysisHistos* const histos) {
-    fHistos = histos;
-  }
+  void SetHistogramManager(PairAnalysisHistos* const histos) { fHistos = histos; }
   PairAnalysisHistos* GetHistoManager() const { return fHistos; }
-  const THashList* GetHistogramList() const {
-    return fHistos ? fHistos->GetHistogramList() : 0x0;
-  }
+  const THashList* GetHistogramList() const { return fHistos ? fHistos->GetHistogramList() : 0x0; }
   // outputs - cut detailed histos
-  THashList* GetCutStepHistogramList() const {
-    return fCutStepHistos->GetSize() ? fCutStepHistos : 0x0;
-  }
+  THashList* GetCutStepHistogramList() const { return fCutStepHistos->GetSize() ? fCutStepHistos : 0x0; }
 
-  Bool_t HasCandidates() const {
-    return GetPairArray(1) ? GetPairArray(1)->GetEntriesFast() > 0 : 0;
-  }
-  Bool_t HasCandidatesTR() const {
-    return GetPairArray(7) ? GetPairArray(7)->GetEntriesFast() > 0 : 0;
-  }
-  Bool_t HasCandidatesLikeSign() const {
+  Bool_t HasCandidates() const { return GetPairArray(1) ? GetPairArray(1)->GetEntriesFast() > 0 : 0; }
+  Bool_t HasCandidatesTR() const { return GetPairArray(7) ? GetPairArray(7)->GetEntriesFast() > 0 : 0; }
+  Bool_t HasCandidatesLikeSign() const
+  {
     return (GetPairArray(0) && GetPairArray(2))
-             ? (GetPairArray(0)->GetEntriesFast() > 0
-                || GetPairArray(2)->GetEntriesFast() > 0)
+             ? (GetPairArray(0)->GetEntriesFast() > 0 || GetPairArray(2)->GetEntriesFast() > 0)
              : 0;
   }
 
   // prefilter
-  void SetPreFilterUnlikeOnly(Bool_t setValue = kTRUE) {
-    fPreFilterUnlikeOnly = setValue;
-  };
-  void SetPreFilterAllSigns(Bool_t setValue = kTRUE) {
-    fPreFilterAllSigns = setValue;
-  };
+  void SetPreFilterUnlikeOnly(Bool_t setValue = kTRUE) { fPreFilterUnlikeOnly = setValue; };
+  void SetPreFilterAllSigns(Bool_t setValue = kTRUE) { fPreFilterAllSigns = setValue; };
 
   // background estimator - track rotation
-  void SetTrackRotator(PairAnalysisTrackRotator* const rot) {
-    fTrackRotator = rot;
-  }
+  void SetTrackRotator(PairAnalysisTrackRotator* const rot) { fTrackRotator = rot; }
   PairAnalysisTrackRotator* GetTrackRotator() const { return fTrackRotator; }
   void SetStoreRotatedPairs(Bool_t storeTR) { fStoreRotatedPairs = storeTR; }
   // background estimator - mixed events
   void SetMixingHandler(PairAnalysisMixingHandler* mix) { fMixing = mix; }
   PairAnalysisMixingHandler* GetMixingHandler() const { return fMixing; }
 
-  void SetDontClearArrays(Bool_t dontClearArrays = kTRUE) {
-    fDontClearArrays = dontClearArrays;
-  }
+  void SetDontClearArrays(Bool_t dontClearArrays = kTRUE) { fDontClearArrays = dontClearArrays; }
   Bool_t DontClearArrays() const { return fDontClearArrays; }
 
   // mc specific
   void SetHasMC(Bool_t hasMC) { fHasMC = hasMC; }
   void AddSignalMC(PairAnalysisSignalMC* signal);
   void SetMotherPdg(Int_t pdgMother) { fPdgMother = pdgMother; }
-  void SetLegPdg(Int_t pdgLeg1, Int_t pdgLeg2) {
+  void SetLegPdg(Int_t pdgLeg1, Int_t pdgLeg2)
+  {
     fPdgLeg1 = pdgLeg1;
     fPdgLeg2 = pdgLeg2;
   }
-  void SetRefitWithMassAssump(Bool_t setValue = kTRUE) {
-    fRefitMassAssump = setValue;
-  }
+  void SetRefitWithMassAssump(Bool_t setValue = kTRUE) { fRefitMassAssump = setValue; }
   const TObjArray* GetMCSignals() const { return fSignalsMC; }
   Bool_t GetHasMC() const { return fHasMC; }
   Int_t GetMotherPdg() const { return fPdgMother; }
   Int_t GetLeg1Pdg() const { return fPdgLeg1; }
   Int_t GetLeg2Pdg() const { return fPdgLeg2; }
 
-  static const char* TrackClassName(Int_t i) {
-    return (i >= 0 && i < 2) ? fgkTrackClassNames[i] : "";
-  }
-  static const char* PairClassName(Int_t i) {
-    return (i >= 0 && i < 8) ? fgkPairClassNames[i] : "";
-  }
+  static const char* TrackClassName(Int_t i) { return (i >= 0 && i < 2) ? fgkTrackClassNames[i] : ""; }
+  static const char* PairClassName(Int_t i) { return (i >= 0 && i < 8) ? fgkPairClassNames[i] : ""; }
 
   Bool_t DoEventProcess() const { return fEventProcess; }
   void SetEventProcess(Bool_t setValue = kTRUE) { fEventProcess = setValue; }
@@ -184,26 +159,23 @@ private:
   AnalysisFilter fTrackFilter;        // leg cuts
   AnalysisFilter fPairPreFilterLegs;  // leg filter before pair prefilter cuts
   AnalysisFilter fPairPreFilter;      // pair prefilter cuts
-  AnalysisFilter fFinalTrackFilter;  // Leg filter after the pair prefilter cuts
-  AnalysisFilter fPairFilter;        // pair cuts
+  AnalysisFilter fFinalTrackFilter;   // Leg filter after the pair prefilter cuts
+  AnalysisFilter fPairFilter;         // pair cuts
 
   AnalysisFilter fTrackFilterMC;  // MCtruth leg cuts
   AnalysisFilter fPairFilterMC;   // MCtruth pair cuts
 
-  Int_t fPdgMother = 443;  // pdg code of mother tracks
-  Int_t fPdgLeg1   = 11;   // pdg code leg1
-  Int_t fPdgLeg2   = 11;   // pdg code leg2
-  Bool_t fRefitMassAssump =
-    kFALSE;  // wether refit under pdgleg mass assumption should be done
+  Int_t fPdgMother        = 443;     // pdg code of mother tracks
+  Int_t fPdgLeg1          = 11;      // pdg code leg1
+  Int_t fPdgLeg2          = 11;      // pdg code leg2
+  Bool_t fRefitMassAssump = kFALSE;  // wether refit under pdgleg mass assumption should be done
 
   TObjArray* fSignalsMC = NULL;  // array of PairAnalysisSignalMC
 
-  ECutType fCutType =
-    ECutType::kBothLegs;  // type of pairprefilterleg cut logic
-  Bool_t fNoPairing =
-    kFALSE;  // if to skip pairing, can be used for track QA only
-  Bool_t fProcessLS = kTRUE;   // do the like-sign pairing
-  Bool_t fUseKF     = kFALSE;  // use KF particle for pairing
+  ECutType fCutType = ECutType::kBothLegs;  // type of pairprefilterleg cut logic
+  Bool_t fNoPairing = kFALSE;               // if to skip pairing, can be used for track QA only
+  Bool_t fProcessLS = kTRUE;                // do the like-sign pairing
+  Bool_t fUseKF     = kFALSE;               // use KF particle for pairing
 
   THashList* fCutStepHistos   = NULL;  // list of histogram managers
   PairAnalysisHF* fHistoArray = NULL;  // matrix of histograms
@@ -224,23 +196,16 @@ private:
   PairAnalysisTrackRotator* fTrackRotator = NULL;  //Track rotator
   PairAnalysisMixingHandler* fMixing      = NULL;  // handler for event mixing
 
-  Bool_t fPreFilterUnlikeOnly =
-    kFALSE;  // Apply PreFilter either in +- or to ++/--/+- individually
-  Bool_t fPreFilterAllSigns =
-    kFALSE;  // Apply PreFilter find in  ++/--/+- and remove from all
-  Bool_t fHasMC =
-    kFALSE;  // If we run with MC, at the moment only needed in AOD
-  Bool_t fStoreRotatedPairs =
-    kFALSE;  // If the rotated pairs should be stored in the pair array
+  Bool_t fPreFilterUnlikeOnly = kFALSE;  // Apply PreFilter either in +- or to ++/--/+- individually
+  Bool_t fPreFilterAllSigns   = kFALSE;  // Apply PreFilter find in  ++/--/+- and remove from all
+  Bool_t fHasMC               = kFALSE;  // If we run with MC, at the moment only needed in AOD
+  Bool_t fStoreRotatedPairs   = kFALSE;  // If the rotated pairs should be stored in the pair array
   Bool_t fDontClearArrays =
     kFALSE;  // Don't clear the arrays at the end of the Process function, needed for external use of pair and tracks
   Bool_t fEventProcess = kTRUE;  // Process event (or pair array)
 
   void FillTrackArrays(PairAnalysisEvent* const ev);
-  void PairPreFilter(Int_t arr1,
-                     Int_t arr2,
-                     TObjArray& arrTracks1,
-                     TObjArray& arrTracks2);
+  void PairPreFilter(Int_t arr1, Int_t arr2, TObjArray& arrTracks1, TObjArray& arrTracks2);
   void FilterTrackArrays(TObjArray& arrTracks1, TObjArray& arrTracks2);
   void FillPairArrays(Int_t arr1, Int_t arr2);
   void FillPairArrayTR();
@@ -257,26 +222,15 @@ private:
 
   void ProcessMC();
 
-  void FillHistograms(const PairAnalysisEvent* ev,
-                      Bool_t pairInfoOnly = kFALSE);
+  void FillHistograms(const PairAnalysisEvent* ev, Bool_t pairInfoOnly = kFALSE);
   Bool_t FillMCHistograms(Int_t label1, Int_t label2, Int_t nSignal);
   void FillHistogramsMC(const PairAnalysisEvent* ev, PairAnalysisEvent* ev1);
-  void FillHistogramsPair(PairAnalysisPair* pair,
-                          Bool_t fromPreFilter = kFALSE);
+  void FillHistogramsPair(PairAnalysisPair* pair, Bool_t fromPreFilter = kFALSE);
   void FillHistogramsTracks(TObjArray** tracks);
-  void FillHistogramsHits(const PairAnalysisEvent* ev,
-                          TBits* fillMC,
-                          PairAnalysisTrack* track,
-                          Bool_t trackIsLeg,
+  void FillHistogramsHits(const PairAnalysisEvent* ev, TBits* fillMC, PairAnalysisTrack* track, Bool_t trackIsLeg,
                           Double_t* values);
-  void FillCutStepHistograms(AnalysisFilter* filter,
-                             UInt_t cutmask,
-                             PairAnalysisTrack* trk,
-                             const Double_t* values);
-  void FillCutStepHistogramsMC(AnalysisFilter* filter,
-                               UInt_t cutmask,
-                               Int_t label,
-                               const Double_t* values);
+  void FillCutStepHistograms(AnalysisFilter* filter, UInt_t cutmask, PairAnalysisTrack* trk, const Double_t* values);
+  void FillCutStepHistogramsMC(AnalysisFilter* filter, UInt_t cutmask, Int_t label, const Double_t* values);
 
   PairAnalysis(const PairAnalysis& c);
   PairAnalysis& operator=(const PairAnalysis& c);
@@ -284,7 +238,8 @@ private:
   ClassDef(PairAnalysis, 2);  //Steering class to process the data
 };
 
-inline Int_t PairAnalysis::GetPairIndex(Int_t arr1, Int_t arr2) const {
+inline Int_t PairAnalysis::GetPairIndex(Int_t arr1, Int_t arr2) const
+{
   //
   // get pair index
   //
@@ -299,7 +254,8 @@ inline Int_t PairAnalysis::GetPairIndex(Int_t arr1, Int_t arr2) const {
 }
 
 
-inline void PairAnalysis::InitPairCandidateArrays() {
+inline void PairAnalysis::InitPairCandidateArrays()
+{
   //
   // initialise all pair candidate arrays
   //
@@ -312,14 +268,16 @@ inline void PairAnalysis::InitPairCandidateArrays() {
   }
 }
 
-inline TObjArray* PairAnalysis::PairArray(Int_t i) {
+inline TObjArray* PairAnalysis::PairArray(Int_t i)
+{
   //
   // for internal use only: unchecked return of pair array for fast access
   //
   return static_cast<TObjArray*>(fPairCandidates->UncheckedAt(i));
 }
 
-inline void PairAnalysis::ClearArrays() {
+inline void PairAnalysis::ClearArrays()
+{
   //
   // Reset the Arrays
   //

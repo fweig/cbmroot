@@ -24,7 +24,8 @@ class TCollection;
 class PairAnalysisCutQA : public TNamed {
 
 public:
-  enum class ETypes {
+  enum class ETypes
+  {
     kEvent = 0,
     kTrack,
     kTrack2,

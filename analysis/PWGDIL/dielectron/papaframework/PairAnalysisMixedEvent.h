@@ -53,9 +53,7 @@ private:
   Int_t fNTracksP = 0;  //number of positive tracks
   Int_t fNTracksN = 0;  //number of negative tracks
 
-  Double_t
-    fEventData[PairAnalysisVarManager::
-                 kNMaxValuesMC];  // event informaion from the var manager
+  Double_t fEventData[PairAnalysisVarManager::kNMaxValuesMC];  // event informaion from the var manager
 
   TProcessID* fPID = NULL;  //! internal PID for references to buffered objects
   UInt_t fPIDIndex = 0;     //! index of PID

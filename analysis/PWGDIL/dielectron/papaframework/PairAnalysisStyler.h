@@ -20,22 +20,40 @@
 #include <TStyle.h>
 
 
-namespace PairAnalysisStyler {
+namespace PairAnalysisStyler
+{
 
-  enum class Eidx { kRaw = 100, kBgrd, kSig, kFit, kCocktail, kNidx };
-  enum class Epalette { kDefault = 0, kGoodBad };
-  enum class EfillMark { kOpenMarker = 1, kFullMarker, kDontCare };
-  enum class Estyle { kNMaxMarker = 13, kNMaxLine = 4, kNMaxColor = 17 };
+  enum class Eidx
+  {
+    kRaw = 100,
+    kBgrd,
+    kSig,
+    kFit,
+    kCocktail,
+    kNidx
+  };
+  enum class Epalette
+  {
+    kDefault = 0,
+    kGoodBad
+  };
+  enum class EfillMark
+  {
+    kOpenMarker = 1,
+    kFullMarker,
+    kDontCare
+  };
+  enum class Estyle
+  {
+    kNMaxMarker = 13,
+    kNMaxLine   = 4,
+    kNMaxColor  = 17
+  };
 
   void SetStyle(TStyle* userStyle);
 
-  void SetStyle(Eidx idx,
-                Int_t col      = kBlack,
-                Int_t marker   = kOpenCircle,
-                Double_t size  = 1.5,
-                Int_t line     = kSolid,
-                Double_t width = 2.,
-                Int_t fill     = kFEmpty);
+  void SetStyle(Eidx idx, Int_t col = kBlack, Int_t marker = kOpenCircle, Double_t size = 1.5, Int_t line = kSolid,
+                Double_t width = 2., Int_t fill = kFEmpty);
 
   void LoadStyle();
   void Style(TObject* obj, Int_t idx = 0);
@@ -45,8 +63,7 @@ namespace PairAnalysisStyler {
 
   void SetForceMarkerFillStyle(EfillMark fill);
 
-  void SetPalette(Epalette colors = Epalette::kDefault,
-                  Bool_t reverse  = kFALSE);
+  void SetPalette(Epalette colors = Epalette::kDefault, Bool_t reverse = kFALSE);
 
   void SetLegendAlign(UInt_t align);
   void SetLegendAttributes(TLegend* leg, Bool_t fill = kFALSE);

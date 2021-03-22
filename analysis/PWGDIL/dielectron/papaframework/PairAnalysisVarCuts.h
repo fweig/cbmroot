@@ -23,27 +23,21 @@
 class PairAnalysisVarCuts : public AnalysisCuts {
 public:
   // Whether all cut criteria have to be fulfilled of just any
-  enum class ECutType { kAll = 0, kAny };
+  enum class ECutType
+  {
+    kAll = 0,
+    kAny
+  };
 
   PairAnalysisVarCuts();
   PairAnalysisVarCuts(const char* name, const char* title);
   virtual ~PairAnalysisVarCuts();
   //TODO: make copy constructor and assignment operator public
 
-  void AddCut(PairAnalysisVarManager::ValueTypes type,
-              Double_t min,
-              Double_t max,
-              Bool_t excludeRange = kFALSE);
-  void AddCut(const char* formula,
-              Double_t min,
-              Double_t max,
-              Bool_t excludeRange = kFALSE);
-  void AddCut(PairAnalysisVarManager::ValueTypes type,
-              Double_t value,
-              Bool_t excludeRange = kFALSE);
-  void AddBitCut(PairAnalysisVarManager::ValueTypes type,
-                 UInt_t bit,
-                 Bool_t excludeRange = kFALSE);
+  void AddCut(PairAnalysisVarManager::ValueTypes type, Double_t min, Double_t max, Bool_t excludeRange = kFALSE);
+  void AddCut(const char* formula, Double_t min, Double_t max, Bool_t excludeRange = kFALSE);
+  void AddCut(PairAnalysisVarManager::ValueTypes type, Double_t value, Bool_t excludeRange = kFALSE);
+  void AddBitCut(PairAnalysisVarManager::ValueTypes type, UInt_t bit, Bool_t excludeRange = kFALSE);
 
   // setters
   void SetCutType(ECutType type) { fCutType = type; }
@@ -72,25 +66,19 @@ public:
 
 
 private:
-  TBits* fUsedVars;  // list of used variables
-  UShort_t fActiveCuts
-    [PairAnalysisVarManager::kNMaxValuesMC];  // list of activated cuts
-  UShort_t fNActiveCuts;                      // number of acive cuts
-  UInt_t fActiveCutsMask;                     // mask of active cuts
+  TBits* fUsedVars;                                             // list of used variables
+  UShort_t fActiveCuts[PairAnalysisVarManager::kNMaxValuesMC];  // list of activated cuts
+  UShort_t fNActiveCuts;                                        // number of acive cuts
+  UInt_t fActiveCutsMask;                                       // mask of active cuts
 
-  UInt_t
-    fSelectedCutsMask;  // Maks of selected cuts, is available after calling IsSelected
-  ECutType fCutType;    // type of the cut: any, all
+  UInt_t fSelectedCutsMask;  // Maks of selected cuts, is available after calling IsSelected
+  ECutType fCutType;         // type of the cut: any, all
 
-  Double_t fCutMin
-    [PairAnalysisVarManager::kNMaxValuesMC];  // minimum values for the cuts
-  Double_t fCutMax
-    [PairAnalysisVarManager::kNMaxValuesMC];  // maximum values for the cuts
-  Bool_t
-    fCutExclude[PairAnalysisVarManager::kNMaxValuesMC];   // inverse cut logic?
-  Bool_t fBitCut[PairAnalysisVarManager::kNMaxValuesMC];  // bit cut
-  TObject* fCutVar
-    [PairAnalysisVarManager::kNMaxValuesMC];  // used formula for variable
+  Double_t fCutMin[PairAnalysisVarManager::kNMaxValuesMC];    // minimum values for the cuts
+  Double_t fCutMax[PairAnalysisVarManager::kNMaxValuesMC];    // maximum values for the cuts
+  Bool_t fCutExclude[PairAnalysisVarManager::kNMaxValuesMC];  // inverse cut logic?
+  Bool_t fBitCut[PairAnalysisVarManager::kNMaxValuesMC];      // bit cut
+  TObject* fCutVar[PairAnalysisVarManager::kNMaxValuesMC];    // used formula for variable
 
   PairAnalysisVarCuts(const PairAnalysisVarCuts& c);
   PairAnalysisVarCuts& operator=(const PairAnalysisVarCuts& c);
@@ -103,9 +91,8 @@ private:
 //
 //Inline functions
 //
-inline void PairAnalysisVarCuts::AddCut(PairAnalysisVarManager::ValueTypes type,
-                                        Double_t value,
-                                        Bool_t excludeRange) {
+inline void PairAnalysisVarCuts::AddCut(PairAnalysisVarManager::ValueTypes type, Double_t value, Bool_t excludeRange)
+{
   //
   // Set cut in a small delta around value
   //

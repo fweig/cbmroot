@@ -30,13 +30,10 @@ public:
 
   PairAnalysisPair(Char_t type);
 
-  virtual void SetTracks(PairAnalysisTrack* const particle1,
-                         Int_t pid1,
-                         PairAnalysisTrack* const particle2,
+  virtual void SetTracks(PairAnalysisTrack* const particle1, Int_t pid1, PairAnalysisTrack* const particle2,
                          Int_t pid2) = 0;
 
-  virtual void SetMCTracks(const CbmMCTrack* const particle1,
-                           const CbmMCTrack* const particle2) = 0;
+  virtual void SetMCTracks(const CbmMCTrack* const particle1, const CbmMCTrack* const particle2) = 0;
 
   // kinematics
   virtual Double_t Px() const { return -999.; }
@@ -44,7 +41,8 @@ public:
   virtual Double_t Pz() const { return -999.; }
   virtual Double_t Pt() const { return -999.; }
   virtual Double_t P() const { return -999.; }
-  virtual Bool_t PxPyPz(Double_t p[3]) const {
+  virtual Bool_t PxPyPz(Double_t p[3]) const
+  {
     p[0] = Px();
     p[1] = Py();
     p[2] = Pz();
@@ -54,20 +52,17 @@ public:
   virtual Double_t Xv() const { return -999.; }
   virtual Double_t Yv() const { return -999.; }
   virtual Double_t Zv() const { return -999.; }
-  virtual Bool_t XvYvZv(Double_t x[3]) const {
+  virtual Bool_t XvYvZv(Double_t x[3]) const
+  {
     x[0] = Xv();
     x[1] = Yv();
     x[2] = Zv();
     return kTRUE;
   }
 
-  virtual Double_t OneOverPt() const {
-    return Pt() > 0. ? 1. / Pt() : 0.;
-  }  //TODO: check
+  virtual Double_t OneOverPt() const { return Pt() > 0. ? 1. / Pt() : 0.; }  //TODO: check
   virtual Double_t Phi() const { return -999.; }
-  virtual Double_t Theta() const {
-    return Pz() != 0 ? TMath::ATan(Pt() / Pz()) : 0.;
-  }  //TODO: check
+  virtual Double_t Theta() const { return Pz() != 0 ? TMath::ATan(Pt() / Pz()) : 0.; }  //TODO: check
 
 
   virtual Double_t E() const { return -999.; }
@@ -110,22 +105,12 @@ public:
   virtual Double_t DaughtersP() const { return -999.; }
 
   // calculate cos(theta*) and phi* in HE and CS pictures
-  virtual void GetThetaPhiCM(Double_t& thetaHE,
-                             Double_t& phiHE,
-                             Double_t& thetaCS,
-                             Double_t& phiCS) const = 0;
-  void GetThetaPhiCM(TLorentzVector& motherMom,
-                     TLorentzVector& p1Mom,
-                     TLorentzVector& p2Mom,
-                     Double_t& thetaHE,
-                     Double_t& phiHE,
-                     Double_t& thetaCS,
-                     Double_t& phiCS) const;
+  virtual void GetThetaPhiCM(Double_t& thetaHE, Double_t& phiHE, Double_t& thetaCS, Double_t& phiCS) const = 0;
+  void GetThetaPhiCM(TLorentzVector& motherMom, TLorentzVector& p1Mom, TLorentzVector& p2Mom, Double_t& thetaHE,
+                     Double_t& phiHE, Double_t& thetaCS, Double_t& phiCS) const;
 
-  virtual Double_t
-  PsiPair(Double_t MagField) const = 0;  //Angle cut w.r.t. to magnetic field
-  virtual Double_t PhivPair(
-    Double_t MagField) const = 0;  //Angle of ee plane w.r.t. to magnetic field
+  virtual Double_t PsiPair(Double_t MagField) const  = 0;  //Angle cut w.r.t. to magnetic field
+  virtual Double_t PhivPair(Double_t MagField) const = 0;  //Angle of ee plane w.r.t. to magnetic field
 
   virtual Double_t GetCosPointingAngle(const CbmVertex* primVtx) const /*= 0*/;
 
@@ -137,12 +122,8 @@ public:
   void SetRefFirstDaughter(PairAnalysisTrack* const track) { fRefD1 = track; }
   void SetRefSecondDaughter(PairAnalysisTrack* const track) { fRefD2 = track; }
 
-  PairAnalysisTrack* GetFirstDaughter() const {
-    return dynamic_cast<PairAnalysisTrack*>(fRefD1.GetObject());
-  }
-  PairAnalysisTrack* GetSecondDaughter() const {
-    return dynamic_cast<PairAnalysisTrack*>(fRefD2.GetObject());
-  }
+  PairAnalysisTrack* GetFirstDaughter() const { return dynamic_cast<PairAnalysisTrack*>(fRefD1.GetObject()); }
+  PairAnalysisTrack* GetSecondDaughter() const { return dynamic_cast<PairAnalysisTrack*>(fRefD2.GetObject()); }
   Int_t GetFirstDaughterPid() const { return fPid1; }
   Int_t GetSecondDaughterPid() const { return fPid2; }
 
@@ -153,8 +134,7 @@ public:
   Bool_t GetKFUsage() const { return fKFUsage; }
 
 protected:
-  Char_t fType =
-    -1;  // type of the pair e.g. like sign SE, unlike sign SE, ... see PairAnalysis
+  Char_t fType     = -1;        // type of the pair e.g. like sign SE, unlike sign SE, ... see PairAnalysis
   Short_t fCharge  = -1;        // charge
   Int_t fLabel     = -1;        // MC label
   Double_t fWeight = 1.;        // weighting factor

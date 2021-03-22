@@ -15,13 +15,11 @@
 #include <TString.h>
 #include <TVectorT.h>
 
+#include "PairAnalysis.h"
+#include "PairAnalysisFunction.h"
 #include "PairAnalysisHF.h"
 #include "PairAnalysisHistos.h"
-
-#include "PairAnalysisFunction.h"
 #include "PairAnalysisSignalExt.h"
-
-#include "PairAnalysis.h"
 
 class TList;
 class TObjArray;
@@ -50,16 +48,20 @@ public:
   PairAnalysisSignalExt* signal = NULL;  // Signal extraction
   Double_t sref                 = 0.;    // mc truth signal
   Double_t srefE                = 0.;    // mc truth signal error
-  ClassDef(
-    Extraction,
-    1)  // mini object that holds members of the PairAnalysisSpectrum TTree
+  ClassDef(Extraction,
+           1)  // mini object that holds members of the PairAnalysisSpectrum TTree
 };
 ClassImp(Extraction)
 
   class PairAnalysisSpectrum : public PairAnalysisFunction {
 
 public:
-  enum class ESystMethod { kBarlow = 0, kSystMax, kSystRMS };
+  enum class ESystMethod
+  {
+    kBarlow = 0,
+    kSystMax,
+    kSystRMS
+  };
 
   PairAnalysisSpectrum();
   PairAnalysisSpectrum(const char* name, const char* title);
@@ -68,26 +70,20 @@ public:
 
   // General Setter
 
-  void SetVariable(TString varType, TVectorD* const binLimits) {
+  void SetVariable(TString varType, TVectorD* const binLimits)
+  {
     fVar        = varType;
     fVarBinning = binLimits;
   }
   void SetSystMethod(ESystMethod mthd) { fSystMthd = mthd; }
 
   // Input
-  void AddInput(TObjArray* raw,
-                TString identifier,
-                TObjArray* mc    = NULL,
-                TObjArray* truth = NULL);
+  void AddInput(TObjArray* raw, TString identifier, TObjArray* mc = NULL, TObjArray* truth = NULL);
   void AddMCInput(PairAnalysisHistos* hf) { fMCInput.Add(hf); }
-  void AddExtractor(PairAnalysisSignalExt* sig) {
-    fExtractor.Add((PairAnalysisSignalExt*) sig->Clone());
-  }
+  void AddExtractor(PairAnalysisSignalExt* sig) { fExtractor.Add((PairAnalysisSignalExt*) sig->Clone()); }
 
   // Spectrum
-  virtual void DrawSpectrum(const char* varexp,
-                            const char* selection = "",
-                            Option_t* option      = "");
+  virtual void DrawSpectrum(const char* varexp, const char* selection = "", Option_t* option = "");
   Int_t Write(const char*, Int_t, Int_t) { return -1; }
   Int_t Write(const char*, Int_t, Int_t) const { return -1; }
 
@@ -107,16 +103,14 @@ private:
   TVectorD* fVarBinning = NULL;  // variable binning
 
   // calculation
-  ESystMethod fSystMthd =
-    ESystMethod::kSystMax;  // method for systematic uncertainty calculation
+  ESystMethod fSystMthd = ESystMethod::kSystMax;  // method for systematic uncertainty calculation
 
   // input
   TString fInputKeys[100];  // keys to identify the extraction
-  TList fRawInput;  // list of input objects for signals (HF, Ntuple, THnSparse)
-  TList fMCInput;   // list of input objects for mc (HF, Ntuple, THnSparse)
-  TList fMCTruth;   // list of input objects for mc truth
-  TList
-    fExtractor;  // list of input objects for signal extraction objects (Ext,Func)
+  TList fRawInput;          // list of input objects for signals (HF, Ntuple, THnSparse)
+  TList fMCInput;           // list of input objects for mc (HF, Ntuple, THnSparse)
+  TList fMCTruth;           // list of input objects for mc truth
+  TList fExtractor;         // list of input objects for signal extraction objects (Ext,Func)
 
   // output
   TTree* fTree            = NULL;  // tree output

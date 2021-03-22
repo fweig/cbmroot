@@ -9,25 +9,34 @@
 ////////////////////////////////////////////////////////////////////////
 
 #include "AnalysisCuts.h"
+
 #include <TObject.h>
 
 ClassImp(AnalysisCuts)
 
 
   AnalysisCuts::AnalysisCuts()
-  : TNamed("Cuts", ""), fFilterMask(0), fSelected(kFALSE) {
+  : TNamed("Cuts", "")
+  , fFilterMask(0)
+  , fSelected(kFALSE)
+{
   // Default constructor
 }
 
-AnalysisCuts::AnalysisCuts(const char* name, const char* title)
-  : TNamed(name, title), fFilterMask(0), fSelected(kFALSE) {
+AnalysisCuts::AnalysisCuts(const char* name, const char* title) : TNamed(name, title), fFilterMask(0), fSelected(kFALSE)
+{
   // Constructor
 }
 
 AnalysisCuts::AnalysisCuts(const AnalysisCuts& obj)
-  : TNamed(obj), fFilterMask(obj.fFilterMask), fSelected(obj.fSelected) {}
+  : TNamed(obj)
+  , fFilterMask(obj.fFilterMask)
+  , fSelected(obj.fSelected)
+{
+}
 
-AnalysisCuts& AnalysisCuts::operator=(const AnalysisCuts& obj) {
+AnalysisCuts& AnalysisCuts::operator=(const AnalysisCuts& obj)
+{
   // Assignment operator
   if (this != &obj) {
     TNamed::operator=(obj);

@@ -12,21 +12,26 @@
 ///////////////////////////////////////////////////////////////////////////
 
 
-#include <TDatabasePDG.h>
+#include "PairAnalysisPairLV.h"
 
 #include "CbmL1.h"
+#include "CbmMCTrack.h"
+
+#include <TDatabasePDG.h>
+
 #include "L1Algo.h"
 #include "L1Field.h"
-
-#include "CbmMCTrack.h"
 #include "PairAnalysisTrack.h"
-
-#include "PairAnalysisPairLV.h"
 
 ClassImp(PairAnalysisPairLV)
 
   PairAnalysisPairLV::PairAnalysisPairLV()
-  : PairAnalysisPair(), fPairPos(), fPair(), fD1(), fD2() {
+  : PairAnalysisPair()
+  , fPairPos()
+  , fPair()
+  , fD1()
+  , fD2()
+{
   //
   // Default Constructor
   //
@@ -34,23 +39,27 @@ ClassImp(PairAnalysisPairLV)
 
 //______________________________________________
 PairAnalysisPairLV::PairAnalysisPairLV(const PairAnalysisPair& pair)
-  : PairAnalysisPair(pair), fPairPos(), fPair(), fD1(), fD2() {
+  : PairAnalysisPair(pair)
+  , fPairPos()
+  , fPair()
+  , fD1()
+  , fD2()
+{
   //
   // Copy Constructor
   //
-  SetTracks(pair.GetFirstDaughter(),
-            pair.GetFirstDaughterPid(),
-            pair.GetSecondDaughter(),
-            pair.GetSecondDaughterPid());
+  SetTracks(pair.GetFirstDaughter(), pair.GetFirstDaughterPid(), pair.GetSecondDaughter(), pair.GetSecondDaughterPid());
 }
 
 //______________________________________________
-PairAnalysisPairLV::PairAnalysisPairLV(PairAnalysisTrack* const particle1,
-                                       Int_t pid1,
-                                       PairAnalysisTrack* const particle2,
-                                       Int_t pid2,
-                                       Char_t type)
-  : PairAnalysisPair(type), fPairPos(), fPair(), fD1(), fD2() {
+PairAnalysisPairLV::PairAnalysisPairLV(PairAnalysisTrack* const particle1, Int_t pid1,
+                                       PairAnalysisTrack* const particle2, Int_t pid2, Char_t type)
+  : PairAnalysisPair(type)
+  , fPairPos()
+  , fPair()
+  , fD1()
+  , fD2()
+{
   //
   // Constructor with tracks
   //
@@ -58,17 +67,17 @@ PairAnalysisPairLV::PairAnalysisPairLV(PairAnalysisTrack* const particle1,
 }
 
 //______________________________________________
-PairAnalysisPairLV::~PairAnalysisPairLV() {
+PairAnalysisPairLV::~PairAnalysisPairLV()
+{
   //
   // Default Destructor
   //
 }
 
 //______________________________________________
-void PairAnalysisPairLV::SetTracks(PairAnalysisTrack* const particle1,
-                                   Int_t pid1,
-                                   PairAnalysisTrack* const particle2,
-                                   Int_t pid2) {
+void PairAnalysisPairLV::SetTracks(PairAnalysisTrack* const particle1, Int_t pid1, PairAnalysisTrack* const particle2,
+                                   Int_t pid2)
+{
   //
   // set TLorentzVector daughters and pair
   // refParticle1 and 2 are the original tracks. In the case of track rotation
@@ -80,10 +89,8 @@ void PairAnalysisPairLV::SetTracks(PairAnalysisTrack* const particle1,
   // BUT what about mixed events or LS-pairs
   const Double_t mpid1 = TDatabasePDG::Instance()->GetParticle(pid1)->Mass();
   const Double_t mpid2 = TDatabasePDG::Instance()->GetParticle(pid2)->Mass();
-  const Double_t cpid1 =
-    TDatabasePDG::Instance()->GetParticle(pid1)->Charge() * 3;
-  const Double_t cpid2 =
-    TDatabasePDG::Instance()->GetParticle(pid2)->Charge() * 3;
+  const Double_t cpid1 = TDatabasePDG::Instance()->GetParticle(pid1)->Charge() * 3;
+  const Double_t cpid2 = TDatabasePDG::Instance()->GetParticle(pid2)->Charge() * 3;
 
   // match charge of track to pid and set mass accordingly
   fPid1       = pid1;
@@ -100,12 +107,10 @@ void PairAnalysisPairLV::SetTracks(PairAnalysisTrack* const particle1,
   }
 
   // Calculate Energy per particle by hand
-  Double_t e1 = TMath::Sqrt(m1 * m1 + particle1->Px() * particle1->Px()
-                            + particle1->Py() * particle1->Py()
+  Double_t e1 = TMath::Sqrt(m1 * m1 + particle1->Px() * particle1->Px() + particle1->Py() * particle1->Py()
                             + particle1->Pz() * particle1->Pz());
 
-  Double_t e2 = TMath::Sqrt(m2 * m2 + particle2->Px() * particle2->Px()
-                            + particle2->Py() * particle2->Py()
+  Double_t e2 = TMath::Sqrt(m2 * m2 + particle2->Px() * particle2->Px() + particle2->Py() * particle2->Py()
                             + particle2->Pz() * particle2->Pz());
 
   fRefD1 = particle1;
@@ -123,8 +128,8 @@ void PairAnalysisPairLV::SetTracks(PairAnalysisTrack* const particle1,
 }
 
 //______________________________________________
-void PairAnalysisPairLV::SetMCTracks(const CbmMCTrack* const particle1,
-                                     const CbmMCTrack* const particle2) {
+void PairAnalysisPairLV::SetMCTracks(const CbmMCTrack* const particle1, const CbmMCTrack* const particle2)
+{
   //
   // build MC pair from TLorentzVector daughters
   // no references are set
@@ -132,14 +137,8 @@ void PairAnalysisPairLV::SetMCTracks(const CbmMCTrack* const particle1,
   particle1->Get4Momentum(fD1);
   particle2->Get4Momentum(fD2);
   fPair = (fD1 + fD2);
-  TLorentzVector fD1Pos(particle1->GetStartX(),
-                        particle1->GetStartY(),
-                        particle1->GetStartZ(),
-                        particle1->GetStartT());
-  TLorentzVector fD2Pos(particle2->GetStartX(),
-                        particle2->GetStartY(),
-                        particle2->GetStartZ(),
-                        particle2->GetStartT());
+  TLorentzVector fD1Pos(particle1->GetStartX(), particle1->GetStartY(), particle1->GetStartZ(), particle1->GetStartT());
+  TLorentzVector fD2Pos(particle2->GetStartX(), particle2->GetStartY(), particle2->GetStartZ(), particle2->GetStartT());
   fPairPos = (fD1Pos + fD2Pos);
 }
 
@@ -151,10 +150,8 @@ void PairAnalysisPairLV::SetMCTracks(const CbmMCTrack* const particle1,
 // }
 
 //______________________________________________
-void PairAnalysisPairLV::GetThetaPhiCM(Double_t& thetaHE,
-                                       Double_t& phiHE,
-                                       Double_t& thetaCS,
-                                       Double_t& phiCS) const {
+void PairAnalysisPairLV::GetThetaPhiCM(Double_t& thetaHE, Double_t& phiHE, Double_t& thetaCS, Double_t& phiCS) const
+{
   //
   // Calculate theta and phi in helicity and Collins-Soper coordinate frame
   //
@@ -162,13 +159,13 @@ void PairAnalysisPairLV::GetThetaPhiCM(Double_t& thetaHE,
   TLorentzVector motherMom(fPair);
   TLorentzVector p1Mom(fD1);
   TLorentzVector p2Mom(fD2);
-  PairAnalysisPair::GetThetaPhiCM(
-    motherMom, p1Mom, p2Mom, thetaHE, phiHE, thetaCS, phiCS);
+  PairAnalysisPair::GetThetaPhiCM(motherMom, p1Mom, p2Mom, thetaHE, phiHE, thetaCS, phiCS);
 }
 
 
 //______________________________________________
-Double_t PairAnalysisPairLV::PsiPair(Double_t /*MagField*/) const {
+Double_t PairAnalysisPairLV::PsiPair(Double_t /*MagField*/) const
+{
   //Following idea to use opening of colinear pairs in magnetic field from e.g. PHENIX
   //to ID conversions. Adapted from AliTRDv0Info class
   //TODO: adapt and get magnetic field
@@ -191,10 +188,8 @@ Double_t PairAnalysisPairLV::PsiPair(Double_t /*MagField*/) const {
 
   Double_t deltat = 1.;
   //difference of angles of the two daughter tracks with z-axis
-  deltat =
-    TMath::ATan(m2[2] / (TMath::Sqrt(m2[0] * m2[0] + m2[1] * m2[1]) + 1.e-13))
-    - TMath::ATan(m1[2]
-                  / (TMath::Sqrt(m1[0] * m1[0] + m1[1] * m1[1]) + 1.e-13));
+  deltat = TMath::ATan(m2[2] / (TMath::Sqrt(m2[0] * m2[0] + m2[1] * m2[1]) + 1.e-13))
+           - TMath::ATan(m1[2] / (TMath::Sqrt(m1[0] * m1[0] + m1[1] * m1[1]) + 1.e-13));
 
   //  Double_t radiussum = TMath::Sqrt(x*x + y*y) + 50;//radius to which tracks shall be propagated
 
@@ -217,15 +212,10 @@ Double_t PairAnalysisPairLV::PsiPair(Double_t /*MagField*/) const {
   */
 
   // absolute momentum values
-  Double_t pEle =
-    TMath::Sqrt(mom2Prop[0] * mom2Prop[0] + mom2Prop[1] * mom2Prop[1]
-                + mom2Prop[2] * mom2Prop[2]);
-  Double_t pPos =
-    TMath::Sqrt(mom1Prop[0] * mom1Prop[0] + mom1Prop[1] * mom1Prop[1]
-                + mom1Prop[2] * mom1Prop[2]);
+  Double_t pEle = TMath::Sqrt(mom2Prop[0] * mom2Prop[0] + mom2Prop[1] * mom2Prop[1] + mom2Prop[2] * mom2Prop[2]);
+  Double_t pPos = TMath::Sqrt(mom1Prop[0] * mom1Prop[0] + mom1Prop[1] * mom1Prop[1] + mom1Prop[2] * mom1Prop[2]);
   //scalar product of propagated posit
-  Double_t scalarproduct = mom1Prop[0] * mom2Prop[0] + mom1Prop[1] * mom2Prop[1]
-                           + mom1Prop[2] * mom2Prop[2];
+  Double_t scalarproduct = mom1Prop[0] * mom2Prop[0] + mom1Prop[1] * mom2Prop[1] + mom1Prop[2] * mom2Prop[2];
   //Angle between propagated daughter tracks
   Double_t chipair = TMath::ACos(scalarproduct / (pEle * pPos));
 
@@ -235,12 +225,12 @@ Double_t PairAnalysisPairLV::PsiPair(Double_t /*MagField*/) const {
 }
 
 //______________________________________________
-Double_t PairAnalysisPairLV::GetArmAlpha() const {
+Double_t PairAnalysisPairLV::GetArmAlpha() const
+{
   //
   // Calculate the Armenteros-Podolanski Alpha
   //
-  Int_t qD1 =
-    dynamic_cast<PairAnalysisTrack*>(fRefD1.GetObject())->Charge() > 0;
+  Int_t qD1       = dynamic_cast<PairAnalysisTrack*>(fRefD1.GetObject())->Charge() > 0;
   TVector3 momNeg = (qD1 < 0 ? fD1.Vect() : fD2.Vect());
   TVector3 momPos = (qD1 < 0 ? fD2.Vect() : fD1.Vect());
   TVector3 momTot(Px(), Py(), Pz());
@@ -252,19 +242,20 @@ Double_t PairAnalysisPairLV::GetArmAlpha() const {
 }
 
 //______________________________________________
-Double_t PairAnalysisPairLV::GetArmPt() const {
+Double_t PairAnalysisPairLV::GetArmPt() const
+{
   //
   // Calculate the Armenteros-Podolanski Pt
   //
-  Int_t qD1 =
-    dynamic_cast<PairAnalysisTrack*>(fRefD1.GetObject())->Charge() > 0;
+  Int_t qD1       = dynamic_cast<PairAnalysisTrack*>(fRefD1.GetObject())->Charge() > 0;
   TVector3 momNeg = (qD1 < 0 ? fD1.Vect() : fD2.Vect());
   TVector3 momTot(Px(), Py(), Pz());
   return (momNeg.Perp(momTot));
 }
 
 //______________________________________________
-Double_t PairAnalysisPairLV::PhivPair(Double_t MagField) const {
+Double_t PairAnalysisPairLV::PhivPair(Double_t MagField) const
+{
   /// Following the idea to use opening of collinear pairs in magnetic field from e.g. PHENIX
   /// to identify conversions. Angle between ee plane and magnetic field is calculated (0 to pi).
   /// Due to tracking to the primary vertex, conversions with no intrinsic opening angle
@@ -276,8 +267,7 @@ Double_t PairAnalysisPairLV::PhivPair(Double_t MagField) const {
   /// To reach the same result as for ULS (~pi), the legs are flipped for LS.
   /// TODO: VALIDATE OBSERVABLE
   Int_t qD1 = 0;
-  if (fRefD1.GetObject())
-    qD1 = dynamic_cast<PairAnalysisTrack*>(fRefD1.GetObject())->Charge() > 0;
+  if (fRefD1.GetObject()) qD1 = dynamic_cast<PairAnalysisTrack*>(fRefD1.GetObject())->Charge() > 0;
   // TODO add mc charge (no fRefD1.GetObject())
   TVector3 p1;
   TVector3 p2;
@@ -288,7 +278,8 @@ Double_t PairAnalysisPairLV::PhivPair(Double_t MagField) const {
   if (MagField < 0) {
     p1 = (qD1 > 0 ? fD1.Vect() : fD2.Vect());
     p2 = (qD1 > 0 ? fD2.Vect() : fD1.Vect());
-  } else {
+  }
+  else {
     p2 = (qD1 > 0 ? fD1.Vect() : fD2.Vect());
     p1 = (qD1 > 0 ? fD2.Vect() : fD1.Vect());
   }
@@ -306,12 +297,9 @@ Double_t PairAnalysisPairLV::PhivPair(Double_t MagField) const {
   TVector3 w = u.Cross(vpm);
 
   // unit vector in xz-plane (perpendicular to B-field)
-  Double_t ax =
-    u.Pz() / TMath::Sqrt(u.Px() + u.Px() + u.Pz() + u.Pz());  // =sin(alpha_xz)
-  Double_t ay = 0.;                                           // by defintion
-  Double_t az =
-    u.Pz()
-    / TMath::Sqrt(u.Px() + u.Px() + u.Pz() + u.Pz());  // =cos(alpha_xz+180)
+  Double_t ax = u.Pz() / TMath::Sqrt(u.Px() + u.Px() + u.Pz() + u.Pz());  // =sin(alpha_xz)
+  Double_t ay = 0.;                                                       // by defintion
+  Double_t az = u.Pz() / TMath::Sqrt(u.Px() + u.Px() + u.Pz() + u.Pz());  // =cos(alpha_xz+180)
   TVector3 a(ax, ay, az);
 
   // measure angle between (wx,wy,wz) and (ax,ay,0). The angle between them
@@ -324,7 +312,8 @@ Double_t PairAnalysisPairLV::PhivPair(Double_t MagField) const {
 }
 
 //_______________________________________________
-void PairAnalysisPairLV::RotateTrack(PairAnalysisTrackRotator* rot) {
+void PairAnalysisPairLV::RotateTrack(PairAnalysisTrackRotator* rot)
+{
   //
   // Rotate one of the legs according to the track rotator settings
   //
@@ -339,24 +328,16 @@ void PairAnalysisPairLV::RotateTrack(PairAnalysisTrackRotator* rot) {
   //fD1.Print("");
   //fD2.Print("");
 
-  if (rot->GetRotationType()
-        == PairAnalysisTrackRotator::ERotationType::kRotatePositive
-      || (rot->GetRotationType()
-            == PairAnalysisTrackRotator::ERotationType::kRotateBothRandom
-          && rotCharge == 0)) {
-    if (first->Charge() > 0)
-      fD1.RotateZ(rotAngle);
+  if (rot->GetRotationType() == PairAnalysisTrackRotator::ERotationType::kRotatePositive
+      || (rot->GetRotationType() == PairAnalysisTrackRotator::ERotationType::kRotateBothRandom && rotCharge == 0)) {
+    if (first->Charge() > 0) fD1.RotateZ(rotAngle);
     else
       fD2.RotateZ(rotAngle);
   }
 
-  if (rot->GetRotationType()
-        == PairAnalysisTrackRotator::ERotationType::kRotateNegative
-      || (rot->GetRotationType()
-            == PairAnalysisTrackRotator::ERotationType::kRotateBothRandom
-          && rotCharge == 1)) {
-    if (first->Charge() > 0)
-      fD1.RotateZ(rotAngle);
+  if (rot->GetRotationType() == PairAnalysisTrackRotator::ERotationType::kRotateNegative
+      || (rot->GetRotationType() == PairAnalysisTrackRotator::ERotationType::kRotateBothRandom && rotCharge == 1)) {
+    if (first->Charge() > 0) fD1.RotateZ(rotAngle);
     else
       fD2.RotateZ(rotAngle);
   }

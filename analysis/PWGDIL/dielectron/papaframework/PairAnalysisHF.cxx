@@ -14,6 +14,10 @@ Detailed description
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
+#include "PairAnalysisHF.h"
+
+#include "CbmMCTrack.h"
+
 #include <TAxis.h>
 #include <TFile.h>
 #include <TH1.h>
@@ -30,18 +34,13 @@ Detailed description
 #include <TString.h>
 #include <TVectorD.h>
 
-#include "CbmMCTrack.h"
-
 #include "PairAnalysis.h"
 #include "PairAnalysisHelper.h"
+#include "PairAnalysisHistos.h"
 #include "PairAnalysisMC.h"
 #include "PairAnalysisPair.h"
 #include "PairAnalysisSignalMC.h"
 #include "PairAnalysisStyler.h"
-
-#include "PairAnalysisHF.h"
-#include "PairAnalysisHistos.h"
-
 #include "PairAnalysisTrack.h"
 
 ClassImp(PairAnalysisHF)
@@ -53,7 +52,8 @@ ClassImp(PairAnalysisHF)
   , fArrDielHistos()
   , fSignalsMC(0x0)
   , fVarCutType(new TBits(fMaxCuts))
-  , fAxes(fMaxCuts) {
+  , fAxes(fMaxCuts)
+{
   //
   // Default Constructor
   //
@@ -73,7 +73,8 @@ PairAnalysisHF::PairAnalysisHF(const char* name, const char* title)
   , fArrDielHistos()
   , fSignalsMC(0x0)
   , fVarCutType(new TBits(fMaxCuts))
-  , fAxes(fMaxCuts) {
+  , fAxes(fMaxCuts)
+{
   //
   // Named Constructor
   //
@@ -86,7 +87,8 @@ PairAnalysisHF::PairAnalysisHF(const char* name, const char* title)
 }
 
 //______________________________________________
-PairAnalysisHF::~PairAnalysisHF() {
+PairAnalysisHF::~PairAnalysisHF()
+{
   //
   // Default Destructor
   //
@@ -97,9 +99,8 @@ PairAnalysisHF::~PairAnalysisHF() {
 }
 
 //________________________________________________________________
-void PairAnalysisHF::AddCutVariable(PairAnalysisVarManager::ValueTypes type,
-                                    TVectorD* binLimits,
-                                    Bool_t leg) {
+void PairAnalysisHF::AddCutVariable(PairAnalysisVarManager::ValueTypes type, TVectorD* binLimits, Bool_t leg)
+{
   //
   // Add a variable to the histogram array with a vector
   // the TVectorD is assumed to be surplus after the creation and will be deleted!!!
@@ -119,7 +120,8 @@ void PairAnalysisHF::AddCutVariable(PairAnalysisVarManager::ValueTypes type,
 }
 
 //_____________________________________________________________________________
-void PairAnalysisHF::FillClass(const char* histClass, const Double_t* values) {
+void PairAnalysisHF::FillClass(const char* histClass, const Double_t* values)
+{
   //
   // Fill the histograms if cuts are passed
   //
@@ -131,15 +133,13 @@ void PairAnalysisHF::FillClass(const char* histClass, const Double_t* values) {
   //  printf("  --> %s \n",fArrDielHistos.UncheckedAt(cell)->GetName());
 
   // do NOT set the ownership otherwise you will delete all histos!!
-  SetHistogramList(*static_cast<THashList*>(fArrDielHistos.UncheckedAt(cell)),
-                   kFALSE);
+  SetHistogramList(*static_cast<THashList*>(fArrDielHistos.UncheckedAt(cell)), kFALSE);
   PairAnalysisHistos::FillClass(histClass, values);
 }
 
 //______________________________________________
-void PairAnalysisHF::ReadFromFile(const char* file,
-                                  const char* task,
-                                  const char* config) {
+void PairAnalysisHF::ReadFromFile(const char* file, const char* task, const char* config)
+{
   //
   // Read histos from file
   //
@@ -155,8 +155,7 @@ void PairAnalysisHF::ReadFromFile(const char* file,
     TList* list = dynamic_cast<TList*>(o);
     if (!list) continue;
     //////NEEDED?    else fList=list;
-    TObjArray* listCfg =
-      dynamic_cast<TObjArray*>(list->FindObject(Form("%s_HF", config)));
+    TObjArray* listCfg = dynamic_cast<TObjArray*>(list->FindObject(Form("%s_HF", config)));
     if (!listCfg) continue;
     ////    SetHistogramList(*listCfg);
     break;
@@ -167,9 +166,8 @@ void PairAnalysisHF::ReadFromFile(const char* file,
 }
 
 //______________________________________________
-void PairAnalysisHF::Fill(Int_t /*label1*/,
-                          Int_t /*label2*/,
-                          Int_t /*nSignal*/) {
+void PairAnalysisHF::Fill(Int_t /*label1*/, Int_t /*label2*/, Int_t /*nSignal*/)
+{
   return;  //TODO: OBSOLETE?
   /*
   //
@@ -217,8 +215,8 @@ void PairAnalysisHF::Fill(Int_t /*label1*/,
   */
 }
 //______________________________________________
-void PairAnalysisHF::Fill(Int_t /*pairIndex*/,
-                          const PairAnalysisPair* /*particle*/) {
+void PairAnalysisHF::Fill(Int_t /*pairIndex*/, const PairAnalysisPair* /*particle*/)
+{
   //
   // fill histograms for event, pair and daughter cuts and pair types
   //
@@ -268,10 +266,9 @@ void PairAnalysisHF::Fill(Int_t /*pairIndex*/,
 }
 
 //______________________________________________
-void PairAnalysisHF::Fill(Int_t /*index*/,
-                          Double_t* const /*valuesPair*/,
-                          Double_t* const /*valuesLeg1*/,
-                          Double_t* const /*valuesLeg2*/) {
+void PairAnalysisHF::Fill(Int_t /*index*/, Double_t* const /*valuesPair*/, Double_t* const /*valuesLeg1*/,
+                          Double_t* const /*valuesLeg2*/)
+{
   //
   // main fill function using index and values as input
   //
@@ -342,7 +339,8 @@ void PairAnalysisHF::Fill(Int_t /*index*/,
 }
 
 //______________________________________________
-void PairAnalysisHF::Init() {
+void PairAnalysisHF::Init()
+{
   //
   // initialise the HF array
   //
@@ -381,16 +379,13 @@ void PairAnalysisHF::Init() {
 
       // modify title of hashlist
       TString title = fArrDielHistos.UncheckedAt(icell)->GetName();
-      if (!ivar)
-        title = "";
+      if (!ivar) title = "";
       else
-        title += ":";  // delimiter for new variable
-      if (fVarCutType->TestBitNumber(ivar))
-        title += "Leg";  // for leg variable Identification
+        title += ":";                                        // delimiter for new variable
+      if (fVarCutType->TestBitNumber(ivar)) title += "Leg";  // for leg variable Identification
       title += PairAnalysisVarManager::GetValueName(fVarCuts[ivar]);
       title += Form("#%.2f#%.2f", lowEdge, upEdge);  // TODO: precision enough?
-      static_cast<THashList*>(fArrDielHistos.UncheckedAt(icell))
-        ->SetName(title.Data());
+      static_cast<THashList*>(fArrDielHistos.UncheckedAt(icell))->SetName(title.Data());
       ///      Debug(10,title.Data());
 
     }  // end: array of cells
@@ -407,7 +402,8 @@ void PairAnalysisHF::Init() {
 }
 
 //______________________________________________
-Int_t PairAnalysisHF::GetNumberOfBins() const {
+Int_t PairAnalysisHF::GetNumberOfBins() const
+{
   //
   // return the number of bins this histogram grid has
   //
@@ -418,7 +414,8 @@ Int_t PairAnalysisHF::GetNumberOfBins() const {
 }
 
 //______________________________________________
-Int_t PairAnalysisHF::FindCell(const Double_t* values) {
+Int_t PairAnalysisHF::FindCell(const Double_t* values)
+{
   //
   // cell described by 'values'
   // if the values are outside the binning range -1 is returned

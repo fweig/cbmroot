@@ -57,7 +57,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-#include <typeinfo>
+#include "PairAnalysisHistos.h"
 
 #include <TAxis.h>
 #include <TCanvas.h>
@@ -90,10 +90,10 @@
 #include <TString.h>
 #include <TVectorD.h>
 #include <TVirtualPS.h>
+#include <typeinfo>
 
 #include "PairAnalysis.h"
 #include "PairAnalysisHelper.h"
-#include "PairAnalysisHistos.h"
 #include "PairAnalysisMetaData.h"
 #include "PairAnalysisSignalMC.h"
 #include "PairAnalysisStyler.h"
@@ -110,7 +110,8 @@ ClassImp(PairAnalysisHistos)
   , fList(0x0)
   , fUsedVars(new TBits(PairAnalysisVarManager::kNMaxValues))
   , fReservedWords(new TString("Hit;Track;Pair"))
-  , fPrecision(Eprecision::kFloat) {
+  , fPrecision(Eprecision::kFloat)
+{
   //
   // Default constructor
   //
@@ -129,7 +130,8 @@ PairAnalysisHistos::PairAnalysisHistos(const char* name, const char* title)
   , fList(0x0)
   , fUsedVars(new TBits(PairAnalysisVarManager::kNMaxValues))
   , fReservedWords(new TString("Hit;Track;Pair"))
-  , fPrecision(Eprecision::kFloat) {
+  , fPrecision(Eprecision::kFloat)
+{
   //
   // TNamed constructor
   //
@@ -140,7 +142,8 @@ PairAnalysisHistos::PairAnalysisHistos(const char* name, const char* title)
 }
 
 //_____________________________________________________________________________
-PairAnalysisHistos::~PairAnalysisHistos() {
+PairAnalysisHistos::~PairAnalysisHistos()
+{
   //
   // Destructor
   //
@@ -152,11 +155,9 @@ PairAnalysisHistos::~PairAnalysisHistos() {
 }
 
 //_____________________________________________________________________________
-void PairAnalysisHistos::UserHistogram(const char* histClass,
-                                       Int_t ndim,
-                                       TObjArray* limits,
-                                       UInt_t* vars,
-                                       UInt_t valTypeW) {
+void PairAnalysisHistos::UserHistogram(const char* histClass, Int_t ndim, TObjArray* limits, UInt_t* vars,
+                                       UInt_t valTypeW)
+{
   //
   // Histogram creation n>3 dimension only with non-linear binning
   //
@@ -164,10 +165,7 @@ void PairAnalysisHistos::UserHistogram(const char* histClass,
   Bool_t isOk = kTRUE;
   isOk &= (ndim < 21 && ndim > 3);
   if (!isOk) {
-    Warning(
-      "UserHistogram",
-      "Array sizes should be between 3 and 20. Not adding Histogram to '%s'.",
-      histClass);
+    Warning("UserHistogram", "Array sizes should be between 3 and 20. Not adding Histogram to '%s'.", histClass);
     return;
   }
   isOk &= (ndim == limits->GetEntriesFast());
@@ -208,19 +206,15 @@ void PairAnalysisHistos::UserHistogram(const char* histClass,
     fUsedVars->SetBitNumber(valTypeW, kTRUE);
 
     Bool_t isReserved = fReservedWords->Contains(histClass);
-    if (isReserved)
-      UserHistogramReservedWords(histClass, hist);
+    if (isReserved) UserHistogramReservedWords(histClass, hist);
     else
       UserHistogram(histClass, hist);
   }
 }
 
 //_____________________________________________________________________________
-void PairAnalysisHistos::AddSparse(const char* histClass,
-                                   Int_t ndim,
-                                   TObjArray* limits,
-                                   UInt_t* vars,
-                                   UInt_t valTypeW) {
+void PairAnalysisHistos::AddSparse(const char* histClass, Int_t ndim, TObjArray* limits, UInt_t* vars, UInt_t valTypeW)
+{
   //
   // THnSparse creation with non-linear binning
   //
@@ -266,19 +260,16 @@ void PairAnalysisHistos::AddSparse(const char* histClass,
     fUsedVars->SetBitNumber(valTypeW, kTRUE);
 
     Bool_t isReserved = fReservedWords->Contains(histClass);
-    if (isReserved)
-      UserHistogramReservedWords(histClass, hist);
+    if (isReserved) UserHistogramReservedWords(histClass, hist);
     else
       UserHistogram(histClass, hist);
   }
 }
 
 //_____________________________________________________________________________
-void PairAnalysisHistos::AddSparse(const char* histClass,
-                                   Int_t ndim,
-                                   TObjArray* limits,
-                                   TFormula** vars,
-                                   UInt_t valTypeW) {
+void PairAnalysisHistos::AddSparse(const char* histClass, Int_t ndim, TObjArray* limits, TFormula** vars,
+                                   UInt_t valTypeW)
+{
   //
   // THnSparse creation with non-linear binning
   //
@@ -336,16 +327,15 @@ void PairAnalysisHistos::AddSparse(const char* histClass,
     fUsedVars->SetBitNumber(valTypeW, kTRUE);
 
     Bool_t isReserved = fReservedWords->Contains(histClass);
-    if (isReserved)
-      UserHistogramReservedWords(histClass, hist);
+    if (isReserved) UserHistogramReservedWords(histClass, hist);
     else
       UserHistogram(histClass, hist);
   }
 }
 
 //_____________________________________________________________________________
-TString PairAnalysisHistos::UserHistogram(const char* histClass,
-                                          TObject* hist) {
+TString PairAnalysisHistos::UserHistogram(const char* histClass, TObject* hist)
+{
   //
   // Add any type of user histogram
   //
@@ -372,18 +362,14 @@ TString PairAnalysisHistos::UserHistogram(const char* histClass,
     for (Int_t i = 0; i < 2; i++) {
       /// protection for changes of variable enum (in the postprocessing) --> use axistname indentification
       //      UInt_t valTypeFromTitle = 0;
-      if (!i)
-        valType[i] = PairAnalysisVarManager::GetValueType(
-          ((TH1*) hist)->GetXaxis()->GetName());
+      if (!i) valType[i] = PairAnalysisVarManager::GetValueType(((TH1*) hist)->GetXaxis()->GetName());
       else
-        valType[i] = PairAnalysisVarManager::GetValueType(
-          ((TH1*) hist)->GetYaxis()->GetName());
+        valType[i] = PairAnalysisVarManager::GetValueType(((TH1*) hist)->GetYaxis()->GetName());
       //Printf("SWITCH TO MC: before: %d %s, (via axis name %d) ---->",valType[i],PairAnalysisVarManager::GetValueName(valType[i]),valTypeFromTitle);
       valType[i] = PairAnalysisVarManager::GetValueTypeMC(valType[i]);
       // if theres no corresponding MCtruth variable, skip adding this histogram
       //      if(valType[i] < PairAnalysisVarManager::kNMaxValues && valType[i]>0) return hist->GetName();
-      if (valType[i] < PairAnalysisVarManager::kPairMax && valType[i] > 0)
-        return hist->GetName();
+      if (valType[i] < PairAnalysisVarManager::kPairMax && valType[i] > 0) return hist->GetName();
       // request filling of mc variable
       fUsedVars->SetBitNumber(valType[i], kTRUE);
       //      Printf("after: %d %s",valType[i],PairAnalysisVarManager::GetValueName(valType[i]));
@@ -396,11 +382,9 @@ TString PairAnalysisHistos::UserHistogram(const char* histClass,
       TFormula* f = 0;
       while ((f = dynamic_cast<TFormula*>(next()))) {
         for (Int_t i = 0; i < f->GetNpar(); i++) {
-          Int_t parMC =
-            PairAnalysisVarManager::GetValueTypeMC(f->GetParameter(i));
+          Int_t parMC = PairAnalysisVarManager::GetValueTypeMC(f->GetParameter(i));
           // if theres none corresponding MCtruth variable, skip adding this histogram
-          if (parMC < PairAnalysisVarManager::kNMaxValues)
-            return hist->GetName();
+          if (parMC < PairAnalysisVarManager::kNMaxValues) return hist->GetName();
           f->SetParameter(i, parMC);
           f->SetParName(i, PairAnalysisVarManager::GetValueName(parMC));
           fUsedVars->SetBitNumber(parMC, kTRUE);
@@ -409,7 +393,8 @@ TString PairAnalysisHistos::UserHistogram(const char* histClass,
       // change histogram key according to mctruth information
       AdaptNameTitle((TH1*) hist, histClass);
     }
-  } else {
+  }
+  else {
     StoreVariables(hist, valType);
     hist->SetUniqueID(valType[19]);  // store weighting variable
   }
@@ -423,12 +408,9 @@ TString PairAnalysisHistos::UserHistogram(const char* histClass,
 }
 
 //_____________________________________________________________________________
-TH1* PairAnalysisHistos::GetTHist(const char* histClass,
-                                  const char* name,
-                                  const char* title,
-                                  const TVectorD* const binsX,
-                                  const TVectorD* const binsY,
-                                  const TVectorD* const binsZ) {
+TH1* PairAnalysisHistos::GetTHist(const char* histClass, const char* name, const char* title,
+                                  const TVectorD* const binsX, const TVectorD* const binsY, const TVectorD* const binsZ)
+{
   //
   // retrieve n-dimensional Hist depending on arguments
   //
@@ -438,59 +420,32 @@ TH1* PairAnalysisHistos::GetTHist(const char* histClass,
   if (!isOk) return 0x0;
   switch (fPrecision) {
     case Eprecision::kFloat:
-      if (!binsY)
-        return (new TH1F(
-          name, title, binsX->GetNrows() - 1, binsX->GetMatrixArray()));
+      if (!binsY) return (new TH1F(name, title, binsX->GetNrows() - 1, binsX->GetMatrixArray()));
       else if (!binsZ)
-        return (new TH2F(name,
-                         title,
-                         binsX->GetNrows() - 1,
-                         binsX->GetMatrixArray(),
-                         binsY->GetNrows() - 1,
+        return (new TH2F(name, title, binsX->GetNrows() - 1, binsX->GetMatrixArray(), binsY->GetNrows() - 1,
                          binsY->GetMatrixArray()));
       else
-        return (new TH3F(name,
-                         title,
-                         binsX->GetNrows() - 1,
-                         binsX->GetMatrixArray(),
-                         binsY->GetNrows() - 1,
-                         binsY->GetMatrixArray(),
-                         binsZ->GetNrows() - 1,
-                         binsZ->GetMatrixArray()));
+        return (new TH3F(name, title, binsX->GetNrows() - 1, binsX->GetMatrixArray(), binsY->GetNrows() - 1,
+                         binsY->GetMatrixArray(), binsZ->GetNrows() - 1, binsZ->GetMatrixArray()));
       break;
     case Eprecision::kDouble:
-      if (!binsY)
-        return (new TH1D(
-          name, title, binsX->GetNrows() - 1, binsX->GetMatrixArray()));
+      if (!binsY) return (new TH1D(name, title, binsX->GetNrows() - 1, binsX->GetMatrixArray()));
       else if (!binsZ)
-        return (new TH2D(name,
-                         title,
-                         binsX->GetNrows() - 1,
-                         binsX->GetMatrixArray(),
-                         binsY->GetNrows() - 1,
+        return (new TH2D(name, title, binsX->GetNrows() - 1, binsX->GetMatrixArray(), binsY->GetNrows() - 1,
                          binsY->GetMatrixArray()));
       else
-        return (new TH3D(name,
-                         title,
-                         binsX->GetNrows() - 1,
-                         binsX->GetMatrixArray(),
-                         binsY->GetNrows() - 1,
-                         binsY->GetMatrixArray(),
-                         binsZ->GetNrows() - 1,
-                         binsZ->GetMatrixArray()));
+        return (new TH3D(name, title, binsX->GetNrows() - 1, binsX->GetMatrixArray(), binsY->GetNrows() - 1,
+                         binsY->GetMatrixArray(), binsZ->GetNrows() - 1, binsZ->GetMatrixArray()));
       break;
     default: return 0x0; break;
   }
 }
 
 //_____________________________________________________________________________
-TH1* PairAnalysisHistos::GetTProf(const char* histClass,
-                                  const char* name,
-                                  const char* title,
-                                  const TVectorD* const binsX,
-                                  const TVectorD* const binsY,
-                                  const TVectorD* const binsZ,
-                                  TString option) {
+TH1* PairAnalysisHistos::GetTProf(const char* histClass, const char* name, const char* title,
+                                  const TVectorD* const binsX, const TVectorD* const binsY, const TVectorD* const binsZ,
+                                  TString option)
+{
   //
   // retrieve n-dimensional profile histogram with error options depending on arguments
   //
@@ -505,48 +460,31 @@ TH1* PairAnalysisHistos::GetTProf(const char* histClass,
     TObjArray* arr = option.Tokenize(";");
     arr->SetOwner();
     opt = ((TObjString*) arr->At(0))->GetString();
-    if (arr->GetEntriesFast() > 1)
-      pmin = (((TObjString*) arr->At(1))->GetString()).Atof();
-    if (arr->GetEntriesFast() > 2)
-      pmax = (((TObjString*) arr->At(2))->GetString()).Atof();
+    if (arr->GetEntriesFast() > 1) pmin = (((TObjString*) arr->At(1))->GetString()).Atof();
+    if (arr->GetEntriesFast() > 2) pmax = (((TObjString*) arr->At(2))->GetString()).Atof();
     delete arr;
   }
   // build profile with error options and return it
   TH1* prof = 0x0;
   if (!binsY)
-    return (new TProfile(name,
-                         title,
-                         binsX->GetNrows() - 1,
-                         binsX->GetMatrixArray(),
-                         pmin,
-                         pmax,
-                         opt.Data()));
+    return (new TProfile(name, title, binsX->GetNrows() - 1, binsX->GetMatrixArray(), pmin, pmax, opt.Data()));
   else if (!binsZ) {
-    prof = new TProfile2D(name,
-                          title,
-                          binsX->GetNrows() - 1,
-                          binsX->GetMatrixArray(),
-                          binsY->GetNrows() - 1,
+    prof = new TProfile2D(name, title, binsX->GetNrows() - 1, binsX->GetMatrixArray(), binsY->GetNrows() - 1,
                           binsY->GetMatrixArray());
     ((TProfile2D*) prof)->BuildOptions(pmin, pmax, opt.Data());
     return prof;
-  } else {
-    prof = new TProfile3D(name,
-                          title,
-                          binsX->GetNrows() - 1,
-                          binsX->GetMatrixArray(),
-                          binsY->GetNrows() - 1,
-                          binsY->GetMatrixArray(),
-                          binsZ->GetNrows() - 1,
-                          binsZ->GetMatrixArray());
+  }
+  else {
+    prof = new TProfile3D(name, title, binsX->GetNrows() - 1, binsX->GetMatrixArray(), binsY->GetNrows() - 1,
+                          binsY->GetMatrixArray(), binsZ->GetNrows() - 1, binsZ->GetMatrixArray());
     ((TProfile3D*) prof)->BuildOptions(pmin, pmax, opt.Data());
     return prof;
   }
 }
 
 //_____________________________________________________________________________
-TFormula* PairAnalysisHistos::GetFormula(const char* name,
-                                         const char* formula) {
+TFormula* PairAnalysisHistos::GetFormula(const char* name, const char* formula)
+{
   //
   // build a TFormula object
   //
@@ -555,15 +493,15 @@ TFormula* PairAnalysisHistos::GetFormula(const char* name,
   if (form->Compile()) return 0x0;
   //set parameter/variable identifier
   for (Int_t i = 0; i < form->GetNpar(); i++) {
-    form->SetParName(
-      i, PairAnalysisVarManager::GetValueName(form->GetParameter(i)));
+    form->SetParName(i, PairAnalysisVarManager::GetValueName(form->GetParameter(i)));
     fUsedVars->SetBitNumber((Int_t) form->GetParameter(i), kTRUE);
   }
   return form;
 }
 
 //_____________________________________________________________________________
-void PairAnalysisHistos::AddClass(const char* histClass) {
+void PairAnalysisHistos::AddClass(const char* histClass)
+{
   //
   // Add a class of histograms
   // Several classes can be added by separating them by a ';' e.g. 'class1;class2;class3'
@@ -574,8 +512,7 @@ void PairAnalysisHistos::AddClass(const char* histClass) {
   TObject* o = 0;
   while ((o = next())) {
     if (fHistoList.FindObject(o->GetName())) {
-      Warning(
-        "AddClass", "Cannot create class '%s' it already exists.", histClass);
+      Warning("AddClass", "Cannot create class '%s' it already exists.", histClass);
       continue;
     }
     if (fReservedWords->Contains(o->GetName())) {
@@ -591,7 +528,8 @@ void PairAnalysisHistos::AddClass(const char* histClass) {
 }
 
 //_____________________________________________________________________________
-void PairAnalysisHistos::FillClass(TString histClass, const Double_t* values) {
+void PairAnalysisHistos::FillClass(TString histClass, const Double_t* values)
+{
   //
   // Fill class 'histClass' (by name)
   //
@@ -610,8 +548,8 @@ void PairAnalysisHistos::FillClass(TString histClass, const Double_t* values) {
 }
 
 //_____________________________________________________________________________
-void PairAnalysisHistos::UserHistogramReservedWords(const char* histClass,
-                                                    const TObject* hist) {
+void PairAnalysisHistos::UserHistogramReservedWords(const char* histClass, const TObject* hist)
+{
   //
   // Creation of histogram for all pair or track types
   //
@@ -625,8 +563,7 @@ void PairAnalysisHistos::UserHistogramReservedWords(const char* histClass,
       TObject* h = hist->Clone();
       // Tobject has no function SetDirectory, didn't we need this???
       //      h->SetDirectory(0);
-      if (h->InheritsFrom(TH1::Class()))
-        ((TH1*) h)->SetTitle(Form("%s %s", title.Data(), l->GetName()));
+      if (h->InheritsFrom(TH1::Class())) ((TH1*) h)->SetTitle(Form("%s %s", title.Data(), l->GetName()));
       else
         ((THnBase*) h)->SetTitle(Form("%s %s", title.Data(), l->GetName()));
 
@@ -639,7 +576,8 @@ void PairAnalysisHistos::UserHistogramReservedWords(const char* histClass,
 }
 
 //_____________________________________________________________________________
-void PairAnalysisHistos::DumpToFile(const char* file) {
+void PairAnalysisHistos::DumpToFile(const char* file)
+{
   //
   // Dump the histogram list to a newly created root file
   //
@@ -649,8 +587,8 @@ void PairAnalysisHistos::DumpToFile(const char* file) {
 }
 
 //_____________________________________________________________________________
-TObject* PairAnalysisHistos::GetHist(const char* histClass,
-                                     const char* name) const {
+TObject* PairAnalysisHistos::GetHist(const char* histClass, const char* name) const
+{
   //
   // return object 'name' in 'histClass'
   //
@@ -660,8 +598,8 @@ TObject* PairAnalysisHistos::GetHist(const char* histClass,
 }
 
 //_____________________________________________________________________________
-TH1* PairAnalysisHistos::GetHistogram(const char* histClass,
-                                      const char* name) const {
+TH1* PairAnalysisHistos::GetHistogram(const char* histClass, const char* name) const
+{
   //
   // return histogram 'name' in 'histClass'
   //
@@ -669,9 +607,8 @@ TH1* PairAnalysisHistos::GetHistogram(const char* histClass,
 }
 
 //_____________________________________________________________________________
-TObject* PairAnalysisHistos::GetHist(const char* cutClass,
-                                     const char* histClass,
-                                     const char* name) const {
+TObject* PairAnalysisHistos::GetHist(const char* cutClass, const char* histClass, const char* name) const
+{
   //
   // return object from list of list of histograms
   // this function is thought for retrieving histograms if a list of PairAnalysisHistos is set
@@ -686,9 +623,8 @@ TObject* PairAnalysisHistos::GetHist(const char* cutClass,
 }
 
 //_____________________________________________________________________________
-TH1* PairAnalysisHistos::GetHistogram(const char* cutClass,
-                                      const char* histClass,
-                                      const char* name) const {
+TH1* PairAnalysisHistos::GetHistogram(const char* cutClass, const char* histClass, const char* name) const
+{
   //
   // return histogram from list of list of histograms
   // this function is thought for retrieving histograms if a list of PairAnalysisHistos is set
@@ -697,7 +633,8 @@ TH1* PairAnalysisHistos::GetHistogram(const char* cutClass,
 }
 
 //_____________________________________________________________________________
-void PairAnalysisHistos::Draw(const Option_t* option) {
+void PairAnalysisHistos::Draw(const Option_t* option)
+{
   //
   // Draw histograms
   //
@@ -718,9 +655,7 @@ void PairAnalysisHistos::Draw(const Option_t* option) {
     currentOpt.Remove(TString::kBoth, ' ');
 
     testOpt = "classes=";
-    if (currentOpt.Contains(testOpt.Data())) {
-      drawClasses = currentOpt(testOpt.Length(), currentOpt.Length());
-    }
+    if (currentOpt.Contains(testOpt.Data())) { drawClasses = currentOpt(testOpt.Length(), currentOpt.Length()); }
   }
 
   delete arr;
@@ -731,9 +666,8 @@ void PairAnalysisHistos::Draw(const Option_t* option) {
   TCanvas* c = 0x0;
   if (gVirtualPS) {
     if (!gPad) {
-      Error("Draw",
-            "When writing to a file you have to create a canvas before opening "
-            "the file!!!");
+      Error("Draw", "When writing to a file you have to create a canvas before opening "
+                    "the file!!!");
       return;
     }
     c = gPad->GetCanvas();
@@ -746,8 +680,7 @@ void PairAnalysisHistos::Draw(const Option_t* option) {
   //   Bool_t first=kTRUE;
   while ((classTable = (THashList*) nextClass())) {
     //test classes option
-    if (!drawClasses.IsNull() && !drawClasses.Contains(classTable->GetName()))
-      continue;
+    if (!drawClasses.IsNull() && !drawClasses.Contains(classTable->GetName())) continue;
     //optimised division
     Int_t nPads = classTable->GetEntries();
     Int_t nCols = (Int_t) TMath::Ceil(TMath::Sqrt(nPads));
@@ -758,11 +691,10 @@ void PairAnalysisHistos::Draw(const Option_t* option) {
       TString canvasName;
       canvasName.Form("c%s_%s", GetName(), classTable->GetName());
       c = (TCanvas*) gROOT->FindObject(canvasName.Data());
-      if (!c)
-        c = new TCanvas(canvasName.Data(),
-                        Form("%s: %s", GetName(), classTable->GetName()));
+      if (!c) c = new TCanvas(canvasName.Data(), Form("%s: %s", GetName(), classTable->GetName()));
       c->Clear();
-    } else {
+    }
+    else {
       //       if (first){
       //         first=kFALSE;
       //         if (nPads>1) gVirtualPS->NewPage();
@@ -780,18 +712,9 @@ void PairAnalysisHistos::Draw(const Option_t* option) {
       TString drawOpt;
       if ((h->InheritsFrom(TH2::Class()))) drawOpt = "colz";
       if (nCols > 1 || nRows > 1) c->cd(++iPad);
-      if (TMath::Abs(h->GetXaxis()->GetBinWidth(1)
-                     - h->GetXaxis()->GetBinWidth(2))
-          > 1e-10)
-        gPad->SetLogx();
-      if (TMath::Abs(h->GetYaxis()->GetBinWidth(1)
-                     - h->GetYaxis()->GetBinWidth(2))
-          > 1e-10)
-        gPad->SetLogy();
-      if (TMath::Abs(h->GetZaxis()->GetBinWidth(1)
-                     - h->GetZaxis()->GetBinWidth(2))
-          > 1e-10)
-        gPad->SetLogz();
+      if (TMath::Abs(h->GetXaxis()->GetBinWidth(1) - h->GetXaxis()->GetBinWidth(2)) > 1e-10) gPad->SetLogx();
+      if (TMath::Abs(h->GetYaxis()->GetBinWidth(1) - h->GetYaxis()->GetBinWidth(2)) > 1e-10) gPad->SetLogy();
+      if (TMath::Abs(h->GetZaxis()->GetBinWidth(1) - h->GetZaxis()->GetBinWidth(2)) > 1e-10) gPad->SetLogz();
       TString histOpt = h->GetOption();
       histOpt.ToLower();
       if (histOpt.Contains("logx")) gPad->SetLogx();
@@ -808,7 +731,8 @@ void PairAnalysisHistos::Draw(const Option_t* option) {
 }
 
 //_____________________________________________________________________________
-void PairAnalysisHistos::Print(const Option_t* option) const {
+void PairAnalysisHistos::Print(const Option_t* option) const
+{
   //
   // Print classes and histograms
   //
@@ -818,7 +742,8 @@ void PairAnalysisHistos::Print(const Option_t* option) const {
 }
 
 //_____________________________________________________________________________
-void PairAnalysisHistos::PrintStructure() const {
+void PairAnalysisHistos::PrintStructure() const
+{
   //
   // Print classes and histograms in the class to stdout
   //
@@ -832,7 +757,8 @@ void PairAnalysisHistos::PrintStructure() const {
       while ((o = nextHist()))
         Printf("| ->%s\n", o->GetName());
     }
-  } else {
+  }
+  else {
     TIter nextCutClass(fList);
     THashList* cutClass = 0x0;
     while ((cutClass = (THashList*) nextCutClass())) {
@@ -853,8 +779,8 @@ void PairAnalysisHistos::PrintStructure() const {
 }
 
 //_____________________________________________________________________________
-void PairAnalysisHistos::SetHistogramList(THashList& list,
-                                          Bool_t setOwner /*=kTRUE*/) {
+void PairAnalysisHistos::SetHistogramList(THashList& list, Bool_t setOwner /*=kTRUE*/)
+{
   //
   // set histogram classes and histograms to this instance. It will take onwnership!
   //
@@ -871,14 +797,16 @@ void PairAnalysisHistos::SetHistogramList(THashList& list,
     list.SetOwner(kFALSE);
     fHistoList.SetOwner(kTRUE);
     fHistoList.SetName(list.GetName());
-  } else {
+  }
+  else {
     fHistoList.SetOwner(kFALSE);
     fHistoList.SetName(list.GetName());
   }
 }
 
 //_____________________________________________________________________________
-Bool_t PairAnalysisHistos::SetCutClass(const char* cutClass) {
+Bool_t PairAnalysisHistos::SetCutClass(const char* cutClass)
+{
   //
   // Assign histogram list according to cutClass
   //
@@ -894,8 +822,8 @@ Bool_t PairAnalysisHistos::SetCutClass(const char* cutClass) {
   return kTRUE;
 }
 //_____________________________________________________________________________
-Bool_t PairAnalysisHistos::IsHistogramOk(const char* histClass,
-                                         const char* name) {
+Bool_t PairAnalysisHistos::IsHistogramOk(const char* histClass, const char* name)
+{
   //
   // check whether the histogram class exists and the histogram itself does not exist yet
   //
@@ -908,10 +836,7 @@ Bool_t PairAnalysisHistos::IsHistogramOk(const char* histClass,
     return kFALSE;
   }
   if (GetHist(histClass, name)) {
-    Warning("IsHistogramOk",
-            "Cannot create histogram '%s' in class '%s': It already exists!",
-            name,
-            histClass);
+    Warning("IsHistogramOk", "Cannot create histogram '%s' in class '%s': It already exists!", name, histClass);
     return kFALSE;
   }
   return kTRUE;
@@ -927,9 +852,8 @@ Bool_t PairAnalysisHistos::IsHistogramOk(const char* histClass,
 // }
 
 //_____________________________________________________________________________
-void PairAnalysisHistos::ReadFromFile(const char* file,
-                                      const char* task,
-                                      const char* config) {
+void PairAnalysisHistos::ReadFromFile(const char* file, const char* task, const char* config)
+{
   //
   // Read histos from file
   //
@@ -941,16 +865,14 @@ void PairAnalysisHistos::ReadFromFile(const char* file,
     // check for meta data
     if (name.Contains(Form("PairAnalysisMetaData_%s", task))) {
       fMetaData = new PairAnalysisMetaData();
-      fMetaData->SetMetaData(*dynamic_cast<TList*>(f.Get(key->GetName())),
-                             kFALSE);
+      fMetaData->SetMetaData(*dynamic_cast<TList*>(f.Get(key->GetName())), kFALSE);
     }
     // check for histos
     if (!name.Contains(Form("PairAnalysisHistos_%s", task))) continue;
     if (!strlen(task) && !name.Contains(task)) continue;
     TObject* o  = f.Get(key->GetName());
     TList* list = dynamic_cast<TList*>(o);
-    if (!list)
-      continue;
+    if (!list) continue;
     else
       fList = list;
     THashList* listCfg = dynamic_cast<THashList*>(list->FindObject(config));
@@ -964,10 +886,8 @@ void PairAnalysisHistos::ReadFromFile(const char* file,
 }
 
 //_____________________________________________________________________________
-TObjArray* PairAnalysisHistos::DrawTaskSame(TString histName,
-                                            TString opt,
-                                            TString histClassDenom,
-                                            TString taskDenom) {
+TObjArray* PairAnalysisHistos::DrawTaskSame(TString histName, TString opt, TString histClassDenom, TString taskDenom)
+{
   ///
   /// Draw histograms of different tasks into the same canvas
   ///
@@ -1013,15 +933,13 @@ TObjArray* PairAnalysisHistos::DrawTaskSame(TString histName,
 
   /// find cut step lists if option 'cutstep' is active
   if (optCutStep) {
-    TString cutstepTask = fHistoList.GetName();
-    THashList* listCutStep =
-      dynamic_cast<THashList*>(fList->FindObject(cutstepTask));
+    TString cutstepTask    = fHistoList.GetName();
+    THashList* listCutStep = dynamic_cast<THashList*>(fList->FindObject(cutstepTask));
     if (listCutStep) fList = listCutStep;
   }
 
   /// find denominator list 'taskDenom'
-  THashList* listDenom =
-    dynamic_cast<THashList*>(fList->FindObject(taskDenom.Data()));
+  THashList* listDenom = dynamic_cast<THashList*>(fList->FindObject(taskDenom.Data()));
   if (listDenom) opt += "div";
 
   /// iterate over all tasks and their lists in the file
@@ -1050,8 +968,7 @@ TObjArray* PairAnalysisHistos::DrawTaskSame(TString histName,
         /// check if selection string contains reserved word
         /// if true ignore it for config selection
         for (Int_t ir = 0; ir < reservedWords->GetEntriesFast(); ir++) {
-          testIgnore =
-            raw.Contains(((TObjString*) reservedWords->At(ir))->GetString());
+          testIgnore = raw.Contains(((TObjString*) reservedWords->At(ir))->GetString());
           if (testIgnore) break;
         }
         if (testIgnore) continue;
@@ -1091,8 +1008,7 @@ TObjArray* PairAnalysisHistos::DrawTaskSame(TString histName,
 
     /// adapt name for legend
     SetName(listCfg->GetName());
-    arr->AddAll(
-      DrawSame(histName, (opt + "task").Data(), histClassDenom, listDenom));
+    arr->AddAll(DrawSame(histName, (opt + "task").Data(), histClassDenom, listDenom));
   }
 
   /// set legend name
@@ -1111,12 +1027,10 @@ TObjArray* PairAnalysisHistos::DrawTaskSame(TString histName,
       lent->SetLabel(lst.Data());
     }
 
-    if (!legendname.EqualTo("none"))
-      leg->SetHeader("");
+    if (!legendname.EqualTo("none")) leg->SetHeader("");
     else
       leg->SetHeader(legendname.Data());
-    PairAnalysisStyler::SetLegendAttributes(
-      leg);  // coordinates, margins, fillstyle, fontsize
+    PairAnalysisStyler::SetLegendAttributes(leg);  // coordinates, margins, fillstyle, fontsize
     leg->Draw();
   }
 
@@ -1129,10 +1043,8 @@ TObjArray* PairAnalysisHistos::DrawTaskSame(TString histName,
 }
 
 //_____________________________________________________________________________
-TObjArray* PairAnalysisHistos::DrawSame(TString histName,
-                                        TString option,
-                                        TString histClassDenom,
-                                        THashList* listDenom) {
+TObjArray* PairAnalysisHistos::DrawSame(TString histName, TString option, TString histClassDenom, THashList* listDenom)
+{
   ///
   /// Draw histograms with the same histName into a canvas
   ///
@@ -1184,10 +1096,7 @@ TObjArray* PairAnalysisHistos::DrawSame(TString histName,
   optString.ToLower();
   printf("Plot hist: '%s' class-denom/sel: '%s' \t listDenom: '%s' \t options: "
          "'%s' \n",
-         histName.Data(),
-         histClassDenom.Data(),
-         (listDenom ? listDenom->GetName() : ""),
-         optString.Data());
+         histName.Data(), histClassDenom.Data(), (listDenom ? listDenom->GetName() : ""), optString.Data());
   Bool_t optBack = optString.Contains("back");
   optString.ReplaceAll("back", "");
   Bool_t optGoff = optString.Contains("goff");
@@ -1270,8 +1179,7 @@ TObjArray* PairAnalysisHistos::DrawSame(TString histName,
   /// set rebinning
   Int_t rbn = 2;
   if (optRbn) {
-    TString rebin(
-      optString(optString.Index("rebin", 5, 0, TString::kExact) + 5));
+    TString rebin(optString(optString.Index("rebin", 5, 0, TString::kExact) + 5));
     if (rebin.IsDigit()) {
       rbn = rebin.Atoi();
       optString.ReplaceAll(rebin, "");
@@ -1283,10 +1191,8 @@ TObjArray* PairAnalysisHistos::DrawSame(TString histName,
   TArrayD* limits = NULL;
   Double_t stat   = 0.8;
   if (optRbnStat) {
-    TString rebin(
-      optString(optString.Index("stat", 4, 0, TString::kExact) + 4, 4));
-    if (!rebin.IsFloat())
-      rebin = optString(optString.Index("stat", 4, 0, TString::kExact) + 4, 3);
+    TString rebin(optString(optString.Index("stat", 4, 0, TString::kExact) + 4, 4));
+    if (!rebin.IsFloat()) rebin = optString(optString.Index("stat", 4, 0, TString::kExact) + 4, 3);
     if (rebin.IsFloat()) {
       stat = rebin.Atof();
       //    printf("rebinstat string: '%s' -> %f\n",rebin.Data(),stat);
@@ -1298,8 +1204,7 @@ TObjArray* PairAnalysisHistos::DrawSame(TString histName,
   /// set smoothing
   Int_t smth = 1;
   if (optSmooth) {
-    TString smooth(
-      optString(optString.Index("smooth", 6, 0, TString::kExact) + 6));
+    TString smooth(optString(optString.Index("smooth", 6, 0, TString::kExact) + 6));
     if (smooth.IsDigit()) {
       smth = smooth.Atoi();
       optString.ReplaceAll(smooth, "");
@@ -1326,7 +1231,8 @@ TObjArray* PairAnalysisHistos::DrawSame(TString histName,
       Warning("DrawSame", "Clear existing array %s", GetName());
       arr->ls();
       arr->Clear();
-    } else
+    }
+    else
       arr = new TObjArray();
     //    arr->SetName(Form("%s",histName.Data()));
     arr->SetName(GetName());
@@ -1343,10 +1249,7 @@ TObjArray* PairAnalysisHistos::DrawSame(TString histName,
   TCanvas* c = 0;
   if (optCan) {
     c = (TCanvas*) gROOT->FindObject(Form("c%s", histName.Data()));
-    if (!c) {
-      c = new TCanvas(Form("c%s", histName.Data()),
-                      Form("All '%s' histograms", histName.Data()));
-    }
+    if (!c) { c = new TCanvas(Form("c%s", histName.Data()), Form("All '%s' histograms", histName.Data())); }
     // c->Clear();
     c->cd();
   }
@@ -1371,11 +1274,10 @@ TObjArray* PairAnalysisHistos::DrawSame(TString histName,
     leg = new TLegend(0. + gPad->GetLeftMargin() + gStyle->GetTickLength("Y"),
                       0. + gPad->GetBottomMargin() + gStyle->GetTickLength("X"),
                       1. - gPad->GetRightMargin() + gStyle->GetTickLength("Y"),
-                      1. - gPad->GetTopMargin() + gStyle->GetTickLength("X"),
-                      GetName(),
-                      "nbNDC");
+                      1. - gPad->GetTopMargin() + gStyle->GetTickLength("X"), GetName(), "nbNDC");
     if (optTask && !optCutStep) leg->SetHeader("");
-  } else if (nobj) {
+  }
+  else if (nobj) {
     leg = (TLegend*) prim->FindObject("TPave");
     // leg->SetX1(0. + gPad->GetLeftMargin()  + gStyle->GetTickLength("Y"));
     // leg->SetY1(0. + gPad->GetBottomMargin()+ gStyle->GetTickLength("X"));
@@ -1412,15 +1314,10 @@ TObjArray* PairAnalysisHistos::DrawSame(TString histName,
     Info("DrawSame",
          "Search for hist: '%s' class-denom: '%s' select: '%s' \t ndel: %d \t "
          "for class: '%s'",
-         histName.Data(),
-         histClassDenom.Data(),
-         select.Data(),
-         ndel,
-         histClass.Data());
+         histName.Data(), histClassDenom.Data(), select.Data(), ndel, histClass.Data());
 
     /// check selections done via MC options 'onlyMC', 'noMC', 'noMCtrue', 'eff'
-    if ((optNoMC && ndel > 0) || (optEff && ndel < 1)
-        || (optNoMCtrue && histClass.Contains("_MCtruth"))
+    if ((optNoMC && ndel > 0) || (optEff && ndel < 1) || (optNoMCtrue && histClass.Contains("_MCtruth"))
         || (optOnlyMC && ndel < 1) || (optOnlyMCtrue && ndel < 2))
       continue;
 
@@ -1433,12 +1330,10 @@ TObjArray* PairAnalysisHistos::DrawSame(TString histName,
         srch.ReplaceAll("!", "");
         Bool_t optExclSel = !(srch.EqualTo(raw));  // exclude or not
         /// decision
-        if (!(!histClass.Contains(srch, TString::kIgnoreCase)) ^ (optExclSel))
-          pass = kTRUE;
+        if (!(!histClass.Contains(srch, TString::kIgnoreCase)) ^ (optExclSel)) pass = kTRUE;
         /// exact string found - direct decision (ignore other selections)
         if (histClass.EqualTo(srch, TString::kIgnoreCase)) {
-          pass =
-            !(!histClass.EqualTo(srch, TString::kIgnoreCase)) ^ (optExclSel);
+          pass = !(!histClass.EqualTo(srch, TString::kIgnoreCase)) ^ (optExclSel);
           break;
         }
       }
@@ -1458,17 +1353,12 @@ TObjArray* PairAnalysisHistos::DrawSame(TString histName,
     if (h->GetEntries() < 1.) continue;
 
     /// get histClassDenom for efficiency caluclation, e.g. the MCtruth (denominator)
-    if (optEff && !histClass.Contains("_MCtruth"))
-      histClassDenom = histClass + "_MCtruth";
-    Info("DrawSame",
-         " Hist found in histClass '%s' (search for denom '%s') ",
-         histClass.Data(),
-         histClassDenom.Data());
+    if (optEff && !histClass.Contains("_MCtruth")) histClassDenom = histClass + "_MCtruth";
+    Info("DrawSame", " Hist found in histClass '%s' (search for denom '%s') ", histClass.Data(), histClassDenom.Data());
 
     /// check if 'ratio' or 'eff' should be build
     if ((optEff || optRatio) /*&& !optTask*/
-        && (histClass.EqualTo(histClassDenom)
-            || !fHistoList.FindObject(histClassDenom.Data())))
+        && (histClass.EqualTo(histClassDenom) || !fHistoList.FindObject(histClassDenom.Data())))
       continue;  /// TODO: why  '!optTask' was needed?
     else if (!histClassDenom.IsNull())
       Info("DrawSame", " Denom histClass '%s' found ", histClassDenom.Data());
@@ -1478,37 +1368,28 @@ TObjArray* PairAnalysisHistos::DrawSame(TString histName,
 
     /// print normalisation option
     if (optRbn || optRbnStat)
-      Info("DrawSame",
-           " Rebin by %d, to <%.1f%% stat. uncertainty per bin",
-           (optRbn ? rbn : 0),
+      Info("DrawSame", " Rebin by %d, to <%.1f%% stat. uncertainty per bin", (optRbn ? rbn : 0),
            (optRbnStat ? stat * 100 : 0));
     if (optNormY || optNorm || optEvt)
-      Info("DrawSame",
-           " Normalize in y-axis,2D's only(%d), by int.(%d), by #events(%d)",
-           optNormY,
-           optNorm,
-           optEvt);
+      Info("DrawSame", " Normalize in y-axis,2D's only(%d), by int.(%d), by #events(%d)", optNormY, optNorm, optEvt);
     if (optSclMax) Info("DrawSame", " Scale to maximum(%d)", optSclMax);
     if (optCum)
       Info("DrawSame",
            " Cumulate sum of bins along x-axis, 1D's left-to-right(%d), "
            "right-to-left(%d)",
-           !optCumR,
-           optCumR);
+           !optCumR, optCumR);
 
     /// rebin, normalize, cumulate and scale spectra according to options 'rebinX','rebinStat','norm','normY','cum','cumR','events','sclMax'
     h->Sumw2();
-    if (optRbn && h->InheritsFrom(TH2::Class()))
-      h = ((TH2*) h)->RebinX(rbn, h->GetName());
+    if (optRbn && h->InheritsFrom(TH2::Class())) h = ((TH2*) h)->RebinX(rbn, h->GetName());
     else if (optRbn)
       h->Rebin(rbn);
-    if (optNormY && h->GetDimension() == 2 && !(h->GetSumOfWeights() == 0)
-        && !optCum)
+    if (optNormY && h->GetDimension() == 2 && !(h->GetSumOfWeights() == 0) && !optCum)
       PairAnalysisHelper::NormalizeSlicesY((TH2*) h);
     if (optRbnStat && h->GetDimension() == 1) {
       /// rebin until stat. uncertainty is lower than 'stat'
       limits = PairAnalysisHelper::MakeStatBinLimits(h, stat);
-      h = h->Rebin(limits->GetSize() - 1, h->GetName(), limits->GetArray());
+      h      = h->Rebin(limits->GetSize() - 1, h->GetName(), limits->GetArray());
       h->Scale(1., "width");
       //      delete limits;
     }
@@ -1521,8 +1402,7 @@ TObjArray* PairAnalysisHistos::DrawSame(TString histName,
     if (ytitle.Contains("{evt}")) optEvt = kFALSE;
 
     if (optNorm && !(h->GetSumOfWeights() == 0) && !optCum)
-      h = h->DrawNormalized(i > 0 ? (optString + "same").Data()
-                                  : optString.Data());
+      h = h->DrawNormalized(i > 0 ? (optString + "same").Data() : optString.Data());
     if (optEvt) h->Scale(1. / events);
     if (optSclMax) h->Scale(1. / h->GetBinContent(h->GetMaximumBin()));
 
@@ -1550,33 +1430,23 @@ TObjArray* PairAnalysisHistos::DrawSame(TString histName,
 
     /// Calculate ratios and Draw histograms
     if ((optEff || optRatio) && !optNorm && !optEvt && !optTask) {
-      Info("DrawSame",
-           " Calculate '%s' w/o normalisation and within the same task",
-           (optEff ? "efficiency" : "ratio"));
+      Info("DrawSame", " Calculate '%s' w/o normalisation and within the same task", (optEff ? "efficiency" : "ratio"));
       //	TString    clMC     = histClass+"_MCtruth";
-      THashList* clDenom =
-        (THashList*) fHistoList.FindObject(histClassDenom.Data());
-      TH1* hMC =
-        (TH1*)
-          h->Clone();  // needed to preserve the labeling of non-mc histogram
+      THashList* clDenom  = (THashList*) fHistoList.FindObject(histClassDenom.Data());
+      TH1* hMC            = (TH1*) h->Clone();  // needed to preserve the labeling of non-mc histogram
       TString histdenomMC = UserHistogram(histClassDenom.Data(), hMC);
       TH1* hdenom         = (TH1*) clDenom->FindObject(histdenomMC.Data());
       if (!hdenom) {
         Error("DrawSame", "Denominator object not found");
         continue;
       }
-      Info("DrawSame",
-           " Divide %s(#=%.3e) by %s(#=%.3e)",
-           h->GetName(),
-           h->GetEntries(),
-           hdenom->GetName(),
+      Info("DrawSame", " Divide %s(#=%.3e) by %s(#=%.3e)", h->GetName(), h->GetEntries(), hdenom->GetName(),
            hdenom->GetEntries());
       delete hMC;  //delete the surplus object
       // normalize and rebin only once
       hdenom->Sumw2();  //why is it crashing here
       if (optRbnStat && (optEff || !(i % 10))) {
-        hdenom = hdenom->Rebin(
-          limits->GetSize() - 1, hdenom->GetName(), limits->GetArray());
+        hdenom = hdenom->Rebin(limits->GetSize() - 1, hdenom->GetName(), limits->GetArray());
         hdenom->Scale(1., "width");
       }
       if (optRbn && (optEff || !(i % 10))) hdenom->RebinX(rbn);
@@ -1585,39 +1455,31 @@ TObjArray* PairAnalysisHistos::DrawSame(TString histName,
         Warning("DrawSame(eff/ratio)", "Division failed!!!!");
         continue;
       }
-    } else if (optTask && (optDiv || optEff || optRatio)) {
-      Info("DrawSame",
-           " Calculate '%s' using different tasks",
+    }
+    else if (optTask && (optDiv || optEff || optRatio)) {
+      Info("DrawSame", " Calculate '%s' using different tasks",
            (optEff ? "efficiency" : (optRatio ? "ratio" : "divison")));
       // denominators
       TH1* hdenom = 0x0;
       TH1* htden  = 0x0;
       if (optEff || optRatio) {
-        THashList* clDenom =
-          (THashList*) fHistoList.FindObject(histClassDenom.Data());
-        TH1* hMC =
-          (TH1*)
-            h->Clone();  // needed to preserve the labeling of non-mc histogram
+        THashList* clDenom  = (THashList*) fHistoList.FindObject(histClassDenom.Data());
+        TH1* hMC            = (TH1*) h->Clone();  // needed to preserve the labeling of non-mc histogram
         TString histdenomMC = UserHistogram(histClassDenom.Data(), hMC);
         //delete the surplus object
         delete hMC;
 
-        if (clDenom) {
-          hdenom = (TH1*) clDenom->FindObject(histdenomMC.Data());
-        }
+        if (clDenom) { hdenom = (TH1*) clDenom->FindObject(histdenomMC.Data()); }
 
         if (listDenom) {
-          THashList* clTaskDen =
-            (THashList*) listDenom->FindObject(histClassDenom.Data());
+          THashList* clTaskDen = (THashList*) listDenom->FindObject(histClassDenom.Data());
           if (clTaskDen) {
             //	  htden=(TH1*)clTaskDen->FindObject(hdenom->GetName());
             htden = (TH1*) clTaskDen->FindObject(histdenomMC.Data());
             Info("DrawSame",
                  "calculate eff/ratio using task-denom: '%s' class-denom: '%s' "
                  "hist-denom: '%s'",
-                 listDenom->GetName(),
-                 histClassDenom.Data(),
-                 histdenomMC.Data());
+                 listDenom->GetName(), histClassDenom.Data(), histdenomMC.Data());
             // keep only one of them, otherwise you might divide the same objects twice
             if (htden) hdenom = 0x0;
           }
@@ -1629,12 +1491,8 @@ TObjArray* PairAnalysisHistos::DrawSame(TString histName,
       // task ratio
       TH1* htnom = 0x0;
       if (optDiv && !optEff) {
-        Info("DrawSame",
-             " Search for '%s' in task '%s'",
-             histClass.Data(),
-             listDenom->GetName());
-        THashList* clTaskNom =
-          (THashList*) listDenom->FindObject(histClass.Data());
+        Info("DrawSame", " Search for '%s' in task '%s'", histClass.Data(), listDenom->GetName());
+        THashList* clTaskNom = (THashList*) listDenom->FindObject(histClass.Data());
         if (!clTaskNom) continue;
         htnom = (TH1*) clTaskNom->FindObject(histName.Data());
         if (!htnom) continue;
@@ -1658,18 +1516,15 @@ TObjArray* PairAnalysisHistos::DrawSame(TString histName,
       }
       if (optRbnStat) {
         if (hdenom && nbinsd > nbinsh) {
-          hdenom = hdenom->Rebin(
-            limits->GetSize() - 1, hdenom->GetName(), limits->GetArray());
+          hdenom = hdenom->Rebin(limits->GetSize() - 1, hdenom->GetName(), limits->GetArray());
           hdenom->Scale(1., "width");
         }
         if (htden && nbinstd > nbinsh) {
-          htden = htden->Rebin(
-            limits->GetSize() - 1, htden->GetName(), limits->GetArray());
+          htden = htden->Rebin(limits->GetSize() - 1, htden->GetName(), limits->GetArray());
           htden->Scale(1., "width");
         }
         if (htnom && nbinstn > nbinsh) {
-          htnom = htnom->Rebin(
-            limits->GetSize() - 1, htnom->GetName(), limits->GetArray());
+          htnom = htnom->Rebin(limits->GetSize() - 1, htnom->GetName(), limits->GetArray());
           htnom->Scale(1., "width");
         }
       }
@@ -1684,14 +1539,8 @@ TObjArray* PairAnalysisHistos::DrawSame(TString histName,
            "  Use nominator (%p,#=%.3e) and denominator 'same task & different "
            "class'(%p,#=%.3e), 'certain task & different class'(%p,#=%.3e), "
            "'certain task & same class'(%p,#=%.3e)",
-           h,
-           h->GetEntries(),
-           hdenom,
-           (hdenom ? hdenom->GetEntries() : 0),
-           htden,
-           (htden ? htden->GetEntries() : 0),
-           htnom,
-           (htnom ? htnom->GetEntries() : 0));
+           h, h->GetEntries(), hdenom, (hdenom ? hdenom->GetEntries() : 0), htden, (htden ? htden->GetEntries() : 0),
+           htnom, (htnom ? htnom->GetEntries() : 0));
       // Printf("h %p (bins%d) \t hdenom %p (bins%d) \t htdenom %p (bins%d) \t htnom %p (bins%d)",
       //        h,h->GetNbinsX(),hdenom,(hdenom?hdenom->GetNbinsX():0),
       //        htden,(htden?htden->GetNbinsX():0),htnom,(htnom?htnom->GetNbinsX():0));
@@ -1700,14 +1549,16 @@ TObjArray* PairAnalysisHistos::DrawSame(TString histName,
       if (hdenom && !h->Divide(hdenom)) {
         Warning("DrawSame(eff/ratio)", "h & denom division failed!!!!");
         continue;
-      } else if (htden && htnom && !i && !htnom->Divide(htden)) {
-        Warning("DrawSame(eff/ratio)",
-                "task-nom/task-denom division failed!!!!");
+      }
+      else if (htden && htnom && !i && !htnom->Divide(htden)) {
+        Warning("DrawSame(eff/ratio)", "task-nom/task-denom division failed!!!!");
         continue;
-      } else if (optDiv && htnom && !h->Divide(htnom)) {
+      }
+      else if (optDiv && htnom && !h->Divide(htnom)) {
         Warning("DrawSame(eff/ratio)", "h & task-nom division failed!!!!");
         continue;
-      } else if (htden && !h->Divide(htden)) {
+      }
+      else if (htden && !h->Divide(htden)) {
         Warning("DrawSame(eff/ratio)", "h & task-denom division failed!!!!");
         continue;
       }
@@ -1722,9 +1573,7 @@ TObjArray* PairAnalysisHistos::DrawSame(TString histName,
       Info("DrawSame", " Scale by 1/content");
       TH1* hOne = (TH1*) h->Clone("one");
       hOne->Reset("ICSE");
-      for (Int_t ib = 0; ib < (h->GetNbinsX() + 2) * (h->GetNbinsY() + 2)
-                                * (h->GetNbinsZ() + 2);
-           ib++)
+      for (Int_t ib = 0; ib < (h->GetNbinsX() + 2) * (h->GetNbinsY() + 2) * (h->GetNbinsZ() + 2); ib++)
         hOne->SetBinContent(ib, 1.);
       if (hOne->Divide(h)) h = hOne;
     }
@@ -1743,8 +1592,7 @@ TObjArray* PairAnalysisHistos::DrawSame(TString histName,
 
     /// style histograms if not done before
     /// take into account reset style option 'RstSty'
-    if (h->GetLineColor() == kBlack
-        && !optString.Contains("col")) {  // avoid color updates
+    if (h->GetLineColor() == kBlack && !optString.Contains("col")) {  // avoid color updates
       h->UseCurrentStyle();
       PairAnalysisStyler::Style(h, i - (optRstSty ? nobj : 0));
     }
@@ -1762,23 +1610,20 @@ TObjArray* PairAnalysisHistos::DrawSame(TString histName,
     if (optGoff) {
       if (optTask) h->SetTitle(Form("%s %s", GetName(), h->GetTitle()));
       arr->Add(h);
-    } else if (optStack) {
-      if (!hs)
-        hs = new THStack(
-          "hs",
-          Form(";%s;%s", h->GetXaxis()->GetTitle(), h->GetYaxis()->GetTitle()));
+    }
+    else if (optStack) {
+      if (!hs) hs = new THStack("hs", Form(";%s;%s", h->GetXaxis()->GetTitle(), h->GetYaxis()->GetTitle()));
       hs->Add(h);
-    } else {
+    }
+    else {
       optString.ReplaceAll(" ", "");
       Info("DrawSame", " Draw object with options: '%s'", optString.Data());
       //      h->Draw(i>0?(optString+"same").Data():optString.Data());
-      if (!optSlicesY) {
-        h->Draw(h != hFirst ? (optString + "same").Data() : optString.Data());
-      } else if (h->GetDimension() == 2) {
+      if (!optSlicesY) { h->Draw(h != hFirst ? (optString + "same").Data() : optString.Data()); }
+      else if (h->GetDimension() == 2) {
         // loop over all projections
         for (Int_t bin = 1; bin < h->GetNbinsX(); bin++) {
-          TH1* hp = ((TH2*) h)->ProjectionY(
-            Form("%s_%d", h->GetName(), bin), bin, bin, "e");
+          TH1* hp = ((TH2*) h)->ProjectionY(Form("%s_%d", h->GetName(), bin), bin, bin, "e");
           if (!hp) continue;
           Long64_t nentries = Long64_t(hp->GetEntries());
           if (nentries == 0) {
@@ -1790,8 +1635,7 @@ TObjArray* PairAnalysisHistos::DrawSame(TString histName,
           if (optRbnStat) {
             /// rebin until stat. uncertainty is lower than 'stat'
             limits = PairAnalysisHelper::MakeStatBinLimits(hp, stat);
-            hp     = hp->Rebin(
-              limits->GetSize() - 1, hp->GetName(), limits->GetArray());
+            hp     = hp->Rebin(limits->GetSize() - 1, hp->GetName(), limits->GetArray());
             hp->Scale(1., "width");
           }
           if (optCum) PairAnalysisHelper::Cumulate(hp, optCumR, optNorm);
@@ -1813,23 +1657,16 @@ TObjArray* PairAnalysisHistos::DrawSame(TString histName,
       TObjArray* reservedWords = fReservedWords->Tokenize(":;");
       for (Int_t ir = 0; ir < reservedWords->GetEntriesFast(); ir++) {
         //	  printf("histClass %s \t search for %s \n",histClass.Data(),((TObjString*)reservedWords->At(ir))->GetString().Data());
-        histClass.ReplaceAll(((TObjString*) reservedWords->At(ir))->GetString(),
-                             "");
-        ratioName.ReplaceAll(((TObjString*) reservedWords->At(ir))->GetString(),
-                             "");
-        divName.ReplaceAll(((TObjString*) reservedWords->At(ir))->GetString(),
-                           "");
+        histClass.ReplaceAll(((TObjString*) reservedWords->At(ir))->GetString(), "");
+        ratioName.ReplaceAll(((TObjString*) reservedWords->At(ir))->GetString(), "");
+        divName.ReplaceAll(((TObjString*) reservedWords->At(ir))->GetString(), "");
       }
       // change default signal names to titles
-      for (Int_t isig = 0; isig < static_cast<Int_t>(
-                             PairAnalysisSignalMC::EDefinedSignal::kNSignals);
-           isig++) {
+      for (Int_t isig = 0; isig < static_cast<Int_t>(PairAnalysisSignalMC::EDefinedSignal::kNSignals); isig++) {
         TString src = PairAnalysisSignalMC::fgkSignals[isig][0];
         TString rpl = PairAnalysisSignalMC::fgkSignals[isig][1];
         // avoid mc signal in header AND leg-entry
-        if (leg
-            && (rpl.EqualTo(leg->GetHeader()) || src.EqualTo(leg->GetHeader())))
-          rpl = "";
+        if (leg && (rpl.EqualTo(leg->GetHeader()) || src.EqualTo(leg->GetHeader()))) rpl = "";
         histClass.ReplaceAll(src, rpl);
         ratioName.ReplaceAll(src, rpl);
         divName.ReplaceAll(src, rpl);
@@ -1837,21 +1674,16 @@ TObjArray* PairAnalysisHistos::DrawSame(TString histName,
       //	printf("histClass %s \n",histClass.Data());
 
       // change MCtruth to MC
-      for (Int_t isig = 0; isig < static_cast<Int_t>(
-                             PairAnalysisSignalMC::EDefinedSignal::kNSignals);
-           isig++) {
+      for (Int_t isig = 0; isig < static_cast<Int_t>(PairAnalysisSignalMC::EDefinedSignal::kNSignals); isig++) {
         histClass.ReplaceAll("MCtruth", "MC");
         ratioName.ReplaceAll("MCtruth", "MC");
         divName.ReplaceAll("MCtruth", "MC");
       }
       // remove pairing name if it is a MC
       for (Int_t iptype = 0; iptype < PairAnalysis::fNTypes; iptype++) {
-        if (ndel > 0)
-          histClass.ReplaceAll(PairAnalysis::PairClassName(iptype), "");
-        if (ratioName.CountChar('_') > 0)
-          ratioName.ReplaceAll(PairAnalysis::PairClassName(iptype), "");
-        if (divName.CountChar('_') > 0)
-          divName.ReplaceAll(PairAnalysis::PairClassName(iptype), "");
+        if (ndel > 0) histClass.ReplaceAll(PairAnalysis::PairClassName(iptype), "");
+        if (ratioName.CountChar('_') > 0) ratioName.ReplaceAll(PairAnalysis::PairClassName(iptype), "");
+        if (divName.CountChar('_') > 0) divName.ReplaceAll(PairAnalysis::PairClassName(iptype), "");
       }
       // save Dalitz and Short underscore
       histClass.ReplaceAll("_{Dalitz}", "#{Dalitz}");
@@ -1893,18 +1725,12 @@ TObjArray* PairAnalysisHistos::DrawSame(TString histName,
       legOpt.ReplaceAll("z", "");
       legOpt.ReplaceAll("e", "");
       if (optTask) histClass.Prepend(Form("%s ", GetName()));
-      if ((optTask && optCutStep && i) || (optStack && (i - nobj)))
-        histClass.Prepend("+");
-      if (optDiv && !optOneOver)
-        histClass.ReplaceAll(GetName(),
-                             Form("%s/%s", GetName(), divName.Data()));
+      if ((optTask && optCutStep && i) || (optStack && (i - nobj))) histClass.Prepend("+");
+      if (optDiv && !optOneOver) histClass.ReplaceAll(GetName(), Form("%s/%s", GetName(), divName.Data()));
       if (optDiv && optOneOver) histClass.Prepend(Form("%s/", divName.Data()));
       if (optDet) {
-        for (ECbmModuleId idet = ECbmModuleId::kRef;
-             idet < ECbmModuleId::kNofSystems;
-             ++idet) {
-          if (histName.Contains(PairAnalysisHelper::GetDetName(idet)))
-            histClass = PairAnalysisHelper::GetDetName(idet);
+        for (ECbmModuleId idet = ECbmModuleId::kRef; idet < ECbmModuleId::kNofSystems; ++idet) {
+          if (histName.Contains(PairAnalysisHelper::GetDetName(idet))) histClass = PairAnalysisHelper::GetDetName(idet);
         }
       }
       //	else if(nobj)     histClass="";
@@ -1914,12 +1740,11 @@ TObjArray* PairAnalysisHistos::DrawSame(TString histName,
       if (optRmsY) histClass += Form(" RMS(y)=%.2e", h->GetRMS(2));
       histClass.ReplaceAll("e+00", "");
       // no entry for colored plots
-      if (optLeg && leg /*&& !legOpt.Contains("col")*/)
-        leg->AddEntry(h, histClass.Data(), legOpt.Data());
+      if (optLeg && leg /*&& !legOpt.Contains("col")*/) leg->AddEntry(h, histClass.Data(), legOpt.Data());
       //      if (leg) leg->AddEntry(h,classTable->GetName(),(optString+"L").Data());
       ++i;
-
-    } else if (nobj && leg)
+    }
+    else if (nobj && leg)
       leg->AddEntry(hFirst, "", "");
 
     //++i;
@@ -1933,8 +1758,7 @@ TObjArray* PairAnalysisHistos::DrawSame(TString histName,
   /// draw stack histogram
   if (optStack) {
     optString.ReplaceAll(" ", "");
-    Info(
-      "DrawSame", " Draw stacked object with options: '%s'", optString.Data());
+    Info("DrawSame", " Draw stacked object with options: '%s'", optString.Data());
     hs->Draw(nobj > 0 ? (optString + "same").Data() : optString.Data());
   }
 
@@ -1955,8 +1779,7 @@ TObjArray* PairAnalysisHistos::DrawSame(TString histName,
       if (obj->InheritsFrom(TH1::Class())) {
         TH1* h1 = static_cast<TH1*>(obj);
 
-        max = TMath::Max(
-          max, PairAnalysisHelper::GetContentMaximum(h1));  //h1->GetMaximum();
+        max             = TMath::Max(max, PairAnalysisHelper::GetContentMaximum(h1));  //h1->GetMaximum();
         Double_t tmpmax = max * (gPad->GetLogy() ? 5. : 1.1);
         if (optEff) tmpmax = 1.1;
         h1->SetMaximum(tmpmax);
@@ -1981,8 +1804,7 @@ TObjArray* PairAnalysisHistos::DrawSame(TString histName,
 
         /// automatically set log option labels
         if (gPad->GetLogy()
-            && (tmpmax / (tmpmin > 0. ? tmpmin : 1.)
-                  > TMath::Power(10., TGaxis::GetMaxDigits())
+            && (tmpmax / (tmpmin > 0. ? tmpmin : 1.) > TMath::Power(10., TGaxis::GetMaxDigits())
                 || tmpmin < TMath::Power(10., -TGaxis::GetMaxDigits())
                 || tmpmin > TMath::Power(10., +TGaxis::GetMaxDigits()))) {
           //      if(gPad->GetLogy() && tmpmax/(tmpmin>0.?tmpmin:1.) > TMath::Power(10.,TGaxis::GetMaxDigits())) {
@@ -1991,8 +1813,7 @@ TObjArray* PairAnalysisHistos::DrawSame(TString histName,
         }
         Double_t tmpXmin = h1->GetXaxis()->GetXmin();
         if (gPad->GetLogx()
-            && h1->GetXaxis()->GetXmax()
-                   / (TMath::Abs(tmpXmin) < 1.e-10 ? 1. : tmpXmin)
+            && h1->GetXaxis()->GetXmax() / (TMath::Abs(tmpXmin) < 1.e-10 ? 1. : tmpXmin)
                  > TMath::Power(10., TGaxis::GetMaxDigits())) {
           //	printf("Xaxis: max%f , min%f \t ratio %.3e >? %.3e \n",h1->GetXaxis()->GetXmax(),(TMath::Abs(tmpXmin)<1.e-10?1.:tmpXmin),
           //              h1->GetXaxis()->GetXmax()/(TMath::Abs(tmpXmin)<1.e-10?1.:tmpXmin),TMath::Power(10.,TGaxis::GetMaxDigits()));
@@ -2002,9 +1823,7 @@ TObjArray* PairAnalysisHistos::DrawSame(TString histName,
       }
     }
     /// draw only once the default metadata if option 'meta' is active
-    if (!nobj && optMeta && fMetaData && !gPad->GetPrimitive("meta")) {
-      fMetaData->DrawSame("");
-    }
+    if (!nobj && optMeta && fMetaData && !gPad->GetPrimitive("meta")) { fMetaData->DrawSame(""); }
 
     /// force legend to be drawn always on top, remove multiple versions of it
     /// they show up when one uses the 'task' draw option
@@ -2035,7 +1854,8 @@ TObjArray* PairAnalysisHistos::DrawSame(TString histName,
 }
 
 //_____________________________________________________________________________
-void PairAnalysisHistos::SetReservedWords(const char* words) {
+void PairAnalysisHistos::SetReservedWords(const char* words)
+{
   //
   // set reserved words
   //
@@ -2044,13 +1864,13 @@ void PairAnalysisHistos::SetReservedWords(const char* words) {
 }
 
 //_____________________________________________________________________________
-void PairAnalysisHistos::StoreVariables(TObject* obj, UInt_t valType[20]) {
+void PairAnalysisHistos::StoreVariables(TObject* obj, UInt_t valType[20])
+{
   //
   //
   //
   if (!obj) return;
-  if (obj->InheritsFrom(TH1::Class()))
-    StoreVariables(static_cast<TH1*>(obj), valType);
+  if (obj->InheritsFrom(TH1::Class())) StoreVariables(static_cast<TH1*>(obj), valType);
   else if (obj->InheritsFrom(THnBase::Class()))
     StoreVariables(static_cast<THnBase*>(obj), valType);
 
@@ -2059,7 +1879,8 @@ void PairAnalysisHistos::StoreVariables(TObject* obj, UInt_t valType[20]) {
 
 
 //_____________________________________________________________________________
-void PairAnalysisHistos::StoreVariables(TH1* obj, UInt_t valType[20]) {
+void PairAnalysisHistos::StoreVariables(TH1* obj, UInt_t valType[20])
+{
   //
   // store variables in the axis (special for TProfile3D)
   //
@@ -2067,8 +1888,7 @@ void PairAnalysisHistos::StoreVariables(TH1* obj, UInt_t valType[20]) {
   Int_t dim = obj->GetDimension();
 
   // dimension correction for profiles
-  if (obj->IsA() == TProfile::Class() || obj->IsA() == TProfile2D::Class()
-      || obj->IsA() == TProfile3D::Class()) {
+  if (obj->IsA() == TProfile::Class() || obj->IsA() == TProfile2D::Class() || obj->IsA() == TProfile3D::Class()) {
     dim++;
   }
 
@@ -2082,7 +1902,8 @@ void PairAnalysisHistos::StoreVariables(TH1* obj, UInt_t valType[20]) {
 }
 
 //_____________________________________________________________________________
-void PairAnalysisHistos::StoreVariables(THnBase* obj, UInt_t valType[20]) {
+void PairAnalysisHistos::StoreVariables(THnBase* obj, UInt_t valType[20])
+{
   //
   // store variables in the axis
   //
@@ -2091,32 +1912,28 @@ void PairAnalysisHistos::StoreVariables(THnBase* obj, UInt_t valType[20]) {
 
   // check for formulas and skip the rest if needed
   TList* list = obj->GetListOfFunctions();
-  if (obj->IsA() == PairAnalysisHn::Class())
-    list = (static_cast<PairAnalysisHn*>(obj))->GetListOfFunctions();
+  if (obj->IsA() == PairAnalysisHn::Class()) list = (static_cast<PairAnalysisHn*>(obj))->GetListOfFunctions();
   if (list && list->Last()) return;
 
   Int_t dim = obj->GetNdimensions();
 
   for (Int_t it = 0; it < dim; it++) {
     obj->GetAxis(it)->SetUniqueID(valType[it]);
-    obj->GetAxis(it)->SetName(
-      Form("%s", PairAnalysisVarManager::GetValueName(valType[it])));
-    obj->GetAxis(it)->SetTitle(
-      Form("%s %s",
-           PairAnalysisVarManager::GetValueLabel(valType[it]),
-           PairAnalysisVarManager::GetValueUnit(valType[it])));
+    obj->GetAxis(it)->SetName(Form("%s", PairAnalysisVarManager::GetValueName(valType[it])));
+    obj->GetAxis(it)->SetTitle(Form("%s %s", PairAnalysisVarManager::GetValueLabel(valType[it]),
+                                    PairAnalysisVarManager::GetValueUnit(valType[it])));
   }
   return;
 }
 
 //_____________________________________________________________________________
-void PairAnalysisHistos::FillValues(TObject* obj, const Double_t* values) {
+void PairAnalysisHistos::FillValues(TObject* obj, const Double_t* values)
+{
   //
   //
   //
   if (!obj) return;
-  if (obj->InheritsFrom(TH1::Class()))
-    FillValues(static_cast<TH1*>(obj), values);
+  if (obj->InheritsFrom(TH1::Class())) FillValues(static_cast<TH1*>(obj), values);
   else if (obj->InheritsFrom(THnBase::Class()))
     FillValues(static_cast<THnBase*>(obj), values);
 
@@ -2124,7 +1941,8 @@ void PairAnalysisHistos::FillValues(TObject* obj, const Double_t* values) {
 }
 
 //_____________________________________________________________________________
-void PairAnalysisHistos::FillValues(TH1* obj, const Double_t* values) {
+void PairAnalysisHistos::FillValues(TH1* obj, const Double_t* values)
+{
   //
   // fill values for TH1 inherted classes
   //
@@ -2133,14 +1951,11 @@ void PairAnalysisHistos::FillValues(TH1* obj, const Double_t* values) {
   Bool_t bprf = kFALSE;
   //  UInt_t nValues = (UInt_t) PairAnalysisVarManager::kNMaxValues;
   UInt_t valueTypes = obj->GetUniqueID();
-  if (valueTypes
-      == static_cast<UInt_t>(PairAnalysisHistos::Eoption::kNoAutoFill))
-    return;
+  if (valueTypes == static_cast<UInt_t>(PairAnalysisHistos::Eoption::kNoAutoFill)) return;
   Bool_t weight = (valueTypes != static_cast<UInt_t>(Eoption::kNoWeights));
 
   // check if tprofile
-  if (obj->IsA() == TProfile::Class() || obj->IsA() == TProfile2D::Class()
-      || obj->IsA() == TProfile3D::Class())
+  if (obj->IsA() == TProfile::Class() || obj->IsA() == TProfile2D::Class() || obj->IsA() == TProfile3D::Class())
     bprf = kTRUE;
 
   // TO BEAUTIFY: switch off manually weighting of profile3Ds
@@ -2159,20 +1974,16 @@ void PairAnalysisHistos::FillValues(TH1* obj, const Double_t* values) {
   UInt_t value1 = obj->GetXaxis()->GetUniqueID();
   UInt_t value2 = obj->GetYaxis()->GetUniqueID();
   UInt_t value3 = obj->GetZaxis()->GetUniqueID();
-  UInt_t value4 =
-    obj->GetUniqueID();  // get weighting/profile var stored in the unique ID
+  UInt_t value4 = obj->GetUniqueID();  // get weighting/profile var stored in the unique ID
 
-  Double_t fvals[4] = {
-    values[value1], values[value2], values[value3], values[value4]};
+  Double_t fvals[4] = {values[value1], values[value2], values[value3], values[value4]};
 
   // use formulas to update fill values
   if (xform) fvals[0] = PairAnalysisHelper::EvalFormula(xform, values);
   if (yform) fvals[1] = PairAnalysisHelper::EvalFormula(yform, values);
   if (zform) fvals[2] = PairAnalysisHelper::EvalFormula(zform, values);
   if (wform) fvals[3] = PairAnalysisHelper::EvalFormula(wform, values);
-  if (pform)
-    fvals[3] = PairAnalysisHelper::EvalFormula(
-      pform, values);  // weighting overwriting for Profile3D
+  if (pform) fvals[3] = PairAnalysisHelper::EvalFormula(pform, values);  // weighting overwriting for Profile3D
 
   /*
   // ask for inclusive trigger map variables
@@ -2184,38 +1995,29 @@ void PairAnalysisHistos::FillValues(TH1* obj, const Double_t* values) {
     */
   switch (dim) {
     case 1:
-      if (!bprf && !weight)
-        obj->Fill(fvals[0]);  // histograms
+      if (!bprf && !weight) obj->Fill(fvals[0]);  // histograms
       else if (!bprf && weight)
         obj->Fill(fvals[0], fvals[3]);  // weighted histograms
       else if (bprf && !weight)
         ((TProfile*) obj)->Fill(fvals[0], fvals[1]);  // profiles
       else
-        ((TProfile*) obj)
-          ->Fill(fvals[0], fvals[1], fvals[3]);  // weighted profiles
+        ((TProfile*) obj)->Fill(fvals[0], fvals[1], fvals[3]);  // weighted profiles
       break;
     case 2:
-      if (!bprf && !weight)
-        obj->Fill(fvals[0], fvals[1]);  // histograms
+      if (!bprf && !weight) obj->Fill(fvals[0], fvals[1]);  // histograms
       else if (!bprf && weight)
-        ((TH2*) obj)
-          ->Fill(fvals[0], fvals[1], fvals[3]);  // weighted histograms
+        ((TH2*) obj)->Fill(fvals[0], fvals[1], fvals[3]);  // weighted histograms
       else if (bprf && !weight)
         ((TProfile2D*) obj)->Fill(fvals[0], fvals[1], fvals[2]);  // profiles
       else
-        ((TProfile2D*) obj)
-          ->Fill(fvals[0], fvals[1], fvals[2], fvals[3]);  // weighted profiles
+        ((TProfile2D*) obj)->Fill(fvals[0], fvals[1], fvals[2], fvals[3]);  // weighted profiles
       break;
     case 3:
-      if (!bprf && !weight)
-        ((TH3*) obj)->Fill(fvals[0], fvals[1], fvals[2]);  // histograms
+      if (!bprf && !weight) ((TH3*) obj)->Fill(fvals[0], fvals[1], fvals[2]);  // histograms
       else if (!bprf && weight)
-        ((TH3*) obj)
-          ->Fill(
-            fvals[0], fvals[1], fvals[2], fvals[3]);  // weighted histograms
+        ((TH3*) obj)->Fill(fvals[0], fvals[1], fvals[2], fvals[3]);  // weighted histograms
       else if (bprf && !weight)
-        ((TProfile3D*) obj)
-          ->Fill(fvals[0], fvals[1], fvals[2], fvals[3]);  // profiles
+        ((TProfile3D*) obj)->Fill(fvals[0], fvals[1], fvals[2], fvals[3]);  // profiles
       else
         Printf(" WARNING: weighting NOT yet possible for TProfile3Ds !");
       break;
@@ -2260,20 +2062,19 @@ void PairAnalysisHistos::FillValues(TH1* obj, const Double_t* values) {
 }
 
 //_____________________________________________________________________________
-void PairAnalysisHistos::FillValues(THnBase* obj, const Double_t* values) {
+void PairAnalysisHistos::FillValues(THnBase* obj, const Double_t* values)
+{
   //
   // fill values for THn inherted classes
   //
 
   // skip if manual filling
   UInt_t value4 = obj->GetUniqueID();  // weighting variable if any
-  if (value4 == static_cast<UInt_t>(PairAnalysisHistos::Eoption::kNoAutoFill))
-    return;
+  if (value4 == static_cast<UInt_t>(PairAnalysisHistos::Eoption::kNoAutoFill)) return;
 
   // check for formulas and skip the rest if needed
   TList* list = obj->GetListOfFunctions();
-  if (obj->IsA() == PairAnalysisHn::Class())
-    list = (static_cast<PairAnalysisHn*>(obj))->GetListOfFunctions();
+  if (obj->IsA() == PairAnalysisHn::Class()) list = (static_cast<PairAnalysisHn*>(obj))->GetListOfFunctions();
   Bool_t useFormulas = (list && list->Last());
 
   //  do weighting
@@ -2289,14 +2090,14 @@ void PairAnalysisHistos::FillValues(THnBase* obj, const Double_t* values) {
       TString formName = Form("axis%dFormula", it);
       TFormula* form   = dynamic_cast<TFormula*>(list->FindObject(formName));
       fill[it]         = PairAnalysisHelper::EvalFormula(form, values);
-    } else {
+    }
+    else {
       fill[it] = values[obj->GetAxis(it)->GetUniqueID()];
     }
   }
 
   // fill object
-  if (!weight)
-    obj->Fill(fill);
+  if (!weight) obj->Fill(fill);
   else
     obj->Fill(fill, values[value4]);
 
@@ -2304,7 +2105,8 @@ void PairAnalysisHistos::FillValues(THnBase* obj, const Double_t* values) {
 }
 
 //_____________________________________________________________________________
-void PairAnalysisHistos::FillVarArray(TObject* obj, UInt_t* valType) {
+void PairAnalysisHistos::FillVarArray(TObject* obj, UInt_t* valType)
+{
   //
   // extract variables stored in the axis (special for TProfile3D)
   //
@@ -2316,10 +2118,9 @@ void PairAnalysisHistos::FillVarArray(TObject* obj, UInt_t* valType) {
     valType[0] = ((TH1*) obj)->GetXaxis()->GetUniqueID();
     valType[1] = ((TH1*) obj)->GetYaxis()->GetUniqueID();
     valType[2] = ((TH1*) obj)->GetZaxis()->GetUniqueID();
-    valType[3] =
-      ((TH1*) obj)
-        ->GetUniqueID();  // weighting(profile) var stored in unique ID
-  } else if (obj->InheritsFrom(THnBase::Class())) {
+    valType[3] = ((TH1*) obj)->GetUniqueID();  // weighting(profile) var stored in unique ID
+  }
+  else if (obj->InheritsFrom(THnBase::Class())) {
     for (Int_t it = 0; it < ((THn*) obj)->GetNdimensions(); it++)
       valType[it] = ((THn*) obj)->GetAxis(it)->GetUniqueID();
   }
@@ -2328,7 +2129,8 @@ void PairAnalysisHistos::FillVarArray(TObject* obj, UInt_t* valType) {
 }
 
 //_____________________________________________________________________________
-void PairAnalysisHistos::AdaptNameTitle(TH1* hist, const char* histClass) {
+void PairAnalysisHistos::AdaptNameTitle(TH1* hist, const char* histClass)
+{
 
   //
   // adapt name and title of the histogram
@@ -2348,8 +2150,7 @@ void PairAnalysisHistos::AdaptNameTitle(TH1* hist, const char* histClass) {
   Bool_t bname  = (currentName.IsNull());
   Bool_t btitle = (currentTitle.IsNull());
   Bool_t bprf   = kFALSE;
-  if (hist->IsA() == TProfile::Class() || hist->IsA() == TProfile2D::Class()
-      || hist->IsA() == TProfile3D::Class())
+  if (hist->IsA() == TProfile::Class() || hist->IsA() == TProfile2D::Class() || hist->IsA() == TProfile3D::Class())
     bprf = kTRUE;
 
   // tprofile options
@@ -2376,11 +2177,8 @@ void PairAnalysisHistos::AdaptNameTitle(TH1* hist, const char* histClass) {
     }
     if (option.Contains("s", TString::kIgnoreCase)) bStdOpt = kFALSE;
     if (pmin != pmax)
-      calcrange = Form("#cbar_{%+.*f}^{%+.*f}",
-                       PairAnalysisHelper::GetPrecision(pmin),
-                       pmin,
-                       PairAnalysisHelper::GetPrecision(pmax),
-                       pmax);
+      calcrange = Form("#cbar_{%+.*f}^{%+.*f}", PairAnalysisHelper::GetPrecision(pmin), pmin,
+                       PairAnalysisHelper::GetPrecision(pmax), pmax);
   }
 
   UInt_t varx   = hist->GetXaxis()->GetUniqueID();
@@ -2398,43 +2196,21 @@ void PairAnalysisHistos::AdaptNameTitle(TH1* hist, const char* histClass) {
     hist->GetYaxis()->SetName(PairAnalysisVarManager::GetValueName(vary));
     hist->GetZaxis()->SetName(PairAnalysisVarManager::GetValueName(varz));
     // adapt according to formula
-    TFormula* xform = dynamic_cast<TFormula*>(
-      hist->GetListOfFunctions()->FindObject("xFormula"));
-    TFormula* yform = dynamic_cast<TFormula*>(
-      hist->GetListOfFunctions()->FindObject("yFormula"));
-    TFormula* zform = dynamic_cast<TFormula*>(
-      hist->GetListOfFunctions()->FindObject("zFormula"));
-    TFormula* wform = dynamic_cast<TFormula*>(
-      hist->GetListOfFunctions()->FindObject("wFormula"));
-    if (xform) {
-      hist->GetXaxis()->SetName(
-        PairAnalysisHelper::GetFormulaName(xform).Data());
-    }
-    if (yform) {
-      hist->GetYaxis()->SetName(
-        PairAnalysisHelper::GetFormulaName(yform).Data());
-    }
-    if (zform) {
-      hist->GetZaxis()->SetName(
-        PairAnalysisHelper::GetFormulaName(zform).Data());
-    }
+    TFormula* xform = dynamic_cast<TFormula*>(hist->GetListOfFunctions()->FindObject("xFormula"));
+    TFormula* yform = dynamic_cast<TFormula*>(hist->GetListOfFunctions()->FindObject("yFormula"));
+    TFormula* zform = dynamic_cast<TFormula*>(hist->GetListOfFunctions()->FindObject("zFormula"));
+    TFormula* wform = dynamic_cast<TFormula*>(hist->GetListOfFunctions()->FindObject("wFormula"));
+    if (xform) { hist->GetXaxis()->SetName(PairAnalysisHelper::GetFormulaName(xform).Data()); }
+    if (yform) { hist->GetYaxis()->SetName(PairAnalysisHelper::GetFormulaName(yform).Data()); }
+    if (zform) { hist->GetZaxis()->SetName(PairAnalysisHelper::GetFormulaName(zform).Data()); }
     /////// set TITLE
     hist->GetXaxis()->SetTitle(PairAnalysisVarManager::GetValueLabel(varx));
     hist->GetYaxis()->SetTitle(PairAnalysisVarManager::GetValueLabel(vary));
     hist->GetZaxis()->SetTitle(PairAnalysisVarManager::GetValueLabel(varz));
     // adapt according to formula
-    if (xform) {
-      hist->GetXaxis()->SetTitle(
-        PairAnalysisHelper::GetFormulaTitle(xform).Data());
-    }
-    if (yform) {
-      hist->GetYaxis()->SetTitle(
-        PairAnalysisHelper::GetFormulaTitle(yform).Data());
-    }
-    if (zform) {
-      hist->GetZaxis()->SetTitle(
-        PairAnalysisHelper::GetFormulaTitle(zform).Data());
-    }
+    if (xform) { hist->GetXaxis()->SetTitle(PairAnalysisHelper::GetFormulaTitle(xform).Data()); }
+    if (yform) { hist->GetYaxis()->SetTitle(PairAnalysisHelper::GetFormulaTitle(yform).Data()); }
+    if (zform) { hist->GetZaxis()->SetTitle(PairAnalysisHelper::GetFormulaTitle(zform).Data()); }
     // profile axis
     if (bprf && dim < 3) {
       TAxis* ax = 0x0;
@@ -2450,17 +2226,11 @@ void PairAnalysisHistos::AdaptNameTitle(TH1* hist, const char* histClass) {
       ax->SetTitle(tit.Data());
     }
     // append the units for all axes (except formula)
-    tit = Form("%s %s",
-               hist->GetXaxis()->GetTitle(),
-               PairAnalysisVarManager::GetValueUnit(varx));
+    tit = Form("%s %s", hist->GetXaxis()->GetTitle(), PairAnalysisVarManager::GetValueUnit(varx));
     if (!xform) hist->GetXaxis()->SetTitle(tit.Data());
-    tit = Form("%s %s",
-               hist->GetYaxis()->GetTitle(),
-               PairAnalysisVarManager::GetValueUnit(vary));
+    tit = Form("%s %s", hist->GetYaxis()->GetTitle(), PairAnalysisVarManager::GetValueUnit(vary));
     if (!yform) hist->GetYaxis()->SetTitle(tit.Data());
-    tit = Form("%s %s",
-               hist->GetZaxis()->GetTitle(),
-               PairAnalysisVarManager::GetValueUnit(varz));
+    tit = Form("%s %s", hist->GetZaxis()->GetTitle(), PairAnalysisVarManager::GetValueUnit(varz));
     if (!zform) hist->GetZaxis()->SetTitle(tit.Data());
     // overwrite titles with hist class if needed
     if (!bprf) {
@@ -2479,50 +2249,32 @@ void PairAnalysisHistos::AdaptNameTitle(TH1* hist, const char* histClass) {
     }
 
     // create an unique name
-    TFormula* pform = dynamic_cast<TFormula*>(
-      hist->GetListOfFunctions()->FindObject("pFormula"));
+    TFormula* pform = dynamic_cast<TFormula*>(hist->GetListOfFunctions()->FindObject("pFormula"));
     if (bname) switch (dim) {
         case 3:
           currentName += Form("%s_", hist->GetXaxis()->GetName());
           currentName += Form("%s_", hist->GetYaxis()->GetName());
           currentName += Form("%s", hist->GetZaxis()->GetName());
           if (bprf && !pform)
-            currentName += Form("-%s%s",
-                                PairAnalysisVarManager::GetValueName(varp),
-                                (bStdOpt ? "avg" : "rms"));
+            currentName += Form("-%s%s", PairAnalysisVarManager::GetValueName(varp), (bStdOpt ? "avg" : "rms"));
           else if (bprf)
-            currentName +=
-              Form("-%s%s",
-                   PairAnalysisHelper::GetFormulaName(pform).Data(),
-                   (bStdOpt ? "avg" : "rms"));
-          if (weight && !bprf)
-            currentName +=
-              Form("-wght%s", PairAnalysisVarManager::GetValueName(varp));
+            currentName += Form("-%s%s", PairAnalysisHelper::GetFormulaName(pform).Data(), (bStdOpt ? "avg" : "rms"));
+          if (weight && !bprf) currentName += Form("-wght%s", PairAnalysisVarManager::GetValueName(varp));
           break;
         case 2:
           currentName += Form("%s_", hist->GetXaxis()->GetName());
           currentName += Form("%s", hist->GetYaxis()->GetName());
-          if (bprf)
-            currentName += Form(
-              "-%s%s", hist->GetZaxis()->GetName(), (bStdOpt ? "avg" : "rms"));
-          if (weight && !wform)
-            currentName +=
-              Form("-wght%s", PairAnalysisVarManager::GetValueName(varp));
+          if (bprf) currentName += Form("-%s%s", hist->GetZaxis()->GetName(), (bStdOpt ? "avg" : "rms"));
+          if (weight && !wform) currentName += Form("-wght%s", PairAnalysisVarManager::GetValueName(varp));
           else if (weight && wform)
-            currentName +=
-              Form("-wght%s", PairAnalysisHelper::GetFormulaName(wform).Data());
+            currentName += Form("-wght%s", PairAnalysisHelper::GetFormulaName(wform).Data());
           break;
         case 1:
           currentName += Form("%s", hist->GetXaxis()->GetName());
-          if (bprf)
-            currentName += Form(
-              "-%s%s", hist->GetYaxis()->GetName(), (bStdOpt ? "avg" : "rms"));
-          if (weight && !wform)
-            currentName +=
-              Form("-wght%s", PairAnalysisVarManager::GetValueName(varp));
+          if (bprf) currentName += Form("-%s%s", hist->GetYaxis()->GetName(), (bStdOpt ? "avg" : "rms"));
+          if (weight && !wform) currentName += Form("-wght%s", PairAnalysisVarManager::GetValueName(varp));
           else if (weight && wform)
-            currentName +=
-              Form("-wght%s", PairAnalysisHelper::GetFormulaName(wform).Data());
+            currentName += Form("-wght%s", PairAnalysisHelper::GetFormulaName(wform).Data());
           break;
       }
     // to differentiate btw. leg and pair histos
@@ -2534,7 +2286,8 @@ void PairAnalysisHistos::AdaptNameTitle(TH1* hist, const char* histClass) {
 
 
 //_____________________________________________________________________________
-void PairAnalysisHistos::AdaptNameTitle(THnBase* hist, const char* histClass) {
+void PairAnalysisHistos::AdaptNameTitle(THnBase* hist, const char* histClass)
+{
 
   //
   // adapt name and title of the histogram
@@ -2563,11 +2316,9 @@ void PairAnalysisHistos::AdaptNameTitle(THnBase* hist, const char* histClass) {
     for (Int_t it = 0; it < dim; it++) {
       TString formName = Form("axis%dFormula", it);
       TFormula* form   = dynamic_cast<TFormula*>(list->FindObject(formName));
-      hist->GetAxis(it)->SetName(
-        PairAnalysisHelper::GetFormulaName(form).Data());
+      hist->GetAxis(it)->SetName(PairAnalysisHelper::GetFormulaName(form).Data());
       // adapt according to formula
-      hist->GetAxis(it)->SetTitle(
-        PairAnalysisHelper::GetFormulaTitle(form).Data());
+      hist->GetAxis(it)->SetTitle(PairAnalysisHelper::GetFormulaTitle(form).Data());
     }
   }
 

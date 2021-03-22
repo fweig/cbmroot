@@ -10,12 +10,12 @@
 //#   Julian    Book,     Uni Ffm / Julian.Book@cern.ch       #
 //#                                                           #
 //#############################################################
+#include "CbmDefs.h"
+#include "CbmVertex.h"
+
 #include <TClonesArray.h>
 #include <TNamed.h>
 #include <TObjArray.h>
-
-#include "CbmDefs.h"
-#include "CbmVertex.h"
 
 class FairRootManager;
 class FairMCEventHeader;
@@ -30,19 +30,15 @@ public:
   virtual ~PairAnalysisEvent();
 
   void SetInput(FairRootManager* man);
-  void SetANNId(Int_t Id)   { fANNId=Id; }
+  void SetANNId(Int_t Id) { fANNId = Id; }
   void Init();
 
 
   // getters
   FairMCEventHeader* GetMCHeader() const { return fMCHeader; }
   CbmVertex* GetPrimaryVertex() const { return fPrimVertex; }
-  Int_t GetNumberOfTracks() const {
-    return (fTracks ? fTracks->GetEntriesFast() : -1);
-  }
-  Int_t GetNumberOfMCTracks() const {
-    return (fMCTracks ? fMCTracks->GetEntriesFast() : -1);
-  }
+  Int_t GetNumberOfTracks() const { return (fTracks ? fTracks->GetEntriesFast() : -1); }
+  Int_t GetNumberOfMCTracks() const { return (fMCTracks ? fMCTracks->GetEntriesFast() : -1); }
   Int_t GetNumberOfVageMatches() const { return fMultiMatch; }
   Int_t GetNumberOfMatches(ECbmModuleId det) const;
   Int_t GetNumberOfHits(ECbmModuleId det) const;
@@ -110,9 +106,9 @@ private:
   TObjArray* fTracks;                // papa tracks
 
   Int_t fMultiMatch = 0;  // number of mutiple matched tracks
-  Bool_t        fANN=true;
-  Int_t         fANNId=1;
-  
+  Bool_t fANN       = true;
+  Int_t fANNId      = 1;
+
   PairAnalysisEvent(const PairAnalysisEvent& event);
   PairAnalysisEvent& operator=(const PairAnalysisEvent& c);
 

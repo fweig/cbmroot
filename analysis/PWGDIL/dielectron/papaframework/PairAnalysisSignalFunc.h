@@ -29,17 +29,14 @@ public:
 
   // Setter
   void SetUseIntegral(Bool_t flag = kTRUE) { fUseIntegral = flag; };
-  void SetFitOption(const char* opt) {
+  void SetFitOption(const char* opt)
+  {
     fFitOpt = opt;
     fFitOpt.ToLower();
     if (!fFitOpt.Contains("s")) fFitOpt += "s";
   }
 
-  void SetFunction(TF1* const combined,
-                   TF1* const sig  = 0,
-                   TF1* const back = 0,
-                   Int_t parM      = 1,
-                   Int_t parMres   = 2);
+  void SetFunction(TF1* const combined, TF1* const sig = 0, TF1* const back = 0, Int_t parM = 1, Int_t parMres = 2);
   void SetDefaults(Int_t type);
 
   void CombineFunc(TF1* const peak = 0, TF1* const bgnd = 0);
@@ -48,7 +45,7 @@ public:
   Double_t PeakFunMC(const Double_t* x,
                      const Double_t* par);  // peak function from a mc histo
   Double_t PeakFunCB(const Double_t* x,
-                     const Double_t* par);  // crystal ball function
+                     const Double_t* par);                       // crystal ball function
   Double_t PeakFunGaus(const Double_t* x, const Double_t* par);  // gaussian
 
   // Getter
@@ -64,22 +61,18 @@ public:
 
 
 protected:
-  Double_t
-  PeakBgndFun(const Double_t* x,
-              const Double_t* par);  // combine any bgrd and any peak function
+  Double_t PeakBgndFun(const Double_t* x,
+                       const Double_t* par);  // combine any bgrd and any peak function
 
   TF1* fFuncSignal     = NULL;  // Function for the signal description
   TF1* fFuncBackground = NULL;  // Function for the background description
   TF1* fFuncSigBack    = NULL;  // Combined function signal plus background
 
-  Int_t fParMass =
-    1;  // the index of the parameter corresponding to the resonance mass
-  Int_t fParMassWidth =
-    2;  // the index of the parameter corresponding to the resonance mass width
+  Int_t fParMass      = 1;  // the index of the parameter corresponding to the resonance mass
+  Int_t fParMassWidth = 2;  // the index of the parameter corresponding to the resonance mass width
 
-  TString fFitOpt = "SMNQE";  // fit option used
-  Bool_t fUseIntegral =
-    kFALSE;  // use the integral of the fitted functions to extract signal and background
+  TString fFitOpt     = "SMNQE";  // fit option used
+  Bool_t fUseIntegral = kFALSE;   // use the integral of the fitted functions to extract signal and background
 
   Int_t fDof        = 0;  // degrees of freedom
   Double_t fChi2Dof = 0;  // chi2/dof of the fitted inv mass spectra

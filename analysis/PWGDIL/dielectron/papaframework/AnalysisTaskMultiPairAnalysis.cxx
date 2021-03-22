@@ -18,19 +18,20 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-#include "TSystem.h"
-#include <TChain.h>
-#include <TFile.h>
-#include <TH1D.h>
-#include <TStopwatch.h>
+#include "AnalysisTaskMultiPairAnalysis.h"
+
+#include "CbmRichElectronIdAnn.h"
 
 #include "FairBaseParSet.h"
 #include "FairRootManager.h"
 #include "FairRunAna.h"
 #include "FairRuntimeDb.h"
 
-
-#include "CbmRichElectronIdAnn.h"
+#include "TSystem.h"
+#include <TChain.h>
+#include <TFile.h>
+#include <TH1D.h>
+#include <TStopwatch.h>
 
 #include "PairAnalysis.h"
 #include "PairAnalysisEvent.h"
@@ -38,13 +39,12 @@
 #include "PairAnalysisMC.h"
 #include "PairAnalysisMetaData.h"
 
-#include "AnalysisTaskMultiPairAnalysis.h"
-
 ClassImp(AnalysisTaskMultiPairAnalysis)
 
   //_________________________________________________________________________________
   AnalysisTaskMultiPairAnalysis::AnalysisTaskMultiPairAnalysis()
-  : AnalysisTaskMultiPairAnalysis("name") {
+  : AnalysisTaskMultiPairAnalysis("name")
+{
   //
   // Constructor
   //
@@ -57,7 +57,8 @@ AnalysisTaskMultiPairAnalysis::AnalysisTaskMultiPairAnalysis(const char* name)
   , fListPairAnalysis()
   , fListHistos()
   , fTimer()
-  , fProcInfo() {
+  , fProcInfo()
+{
   //
   // Named Constructor
   //
@@ -69,50 +70,51 @@ AnalysisTaskMultiPairAnalysis::AnalysisTaskMultiPairAnalysis(const char* name)
 }
 
 //_________________________________________________________________________________
-AnalysisTaskMultiPairAnalysis::AnalysisTaskMultiPairAnalysis(const char *name,Int_t id) :
-  FairTask(name),
-  fMetaData(),
-  fListPairAnalysis(),
-  fListHistos(),
-  fTimer(),
-  fProcInfo()
+AnalysisTaskMultiPairAnalysis::AnalysisTaskMultiPairAnalysis(const char* name, Int_t id)
+  : FairTask(name)
+  , fMetaData()
+  , fListPairAnalysis()
+  , fListHistos()
+  , fTimer()
+  , fProcInfo()
 {
   //
   // Named Constructor
   //
-  fMetaData.SetName(Form("PairAnalysisMetaData_%s",name));
-  fListHistos.SetName(Form("PairAnalysisHistos_%s",name));
+  fMetaData.SetName(Form("PairAnalysisMetaData_%s", name));
+  fListHistos.SetName(Form("PairAnalysisHistos_%s", name));
   fListPairAnalysis.SetOwner();
-  ((TList*)fMetaData.GetMetaData())->SetOwner();
+  ((TList*) fMetaData.GetMetaData())->SetOwner();
   fListHistos.SetOwner();
   fId = id;
 }
 
 
 //_________________________________________________________________________________
-AnalysisTaskMultiPairAnalysis::AnalysisTaskMultiPairAnalysis(const char *name,Int_t id,Int_t scale) :
-  FairTask(name),
-  fMetaData(),
-  fListPairAnalysis(),
-  fListHistos(),
-  fTimer(),
-  fProcInfo()
+AnalysisTaskMultiPairAnalysis::AnalysisTaskMultiPairAnalysis(const char* name, Int_t id, Int_t scale)
+  : FairTask(name)
+  , fMetaData()
+  , fListPairAnalysis()
+  , fListHistos()
+  , fTimer()
+  , fProcInfo()
 {
   //
   // Named Constructor
   //
-  fMetaData.SetName(Form("PairAnalysisMetaData_%s",name));
-  fListHistos.SetName(Form("PairAnalysisHistos_%s",name));
+  fMetaData.SetName(Form("PairAnalysisMetaData_%s", name));
+  fListHistos.SetName(Form("PairAnalysisHistos_%s", name));
   fListPairAnalysis.SetOwner();
-  ((TList*)fMetaData.GetMetaData())->SetOwner();
+  ((TList*) fMetaData.GetMetaData())->SetOwner();
   fListHistos.SetOwner();
-  fId = id;
+  fId             = id;
   fThermalScaling = scale;
 }
 
 
 //_________________________________________________________________________________
-AnalysisTaskMultiPairAnalysis::~AnalysisTaskMultiPairAnalysis() {
+AnalysisTaskMultiPairAnalysis::~AnalysisTaskMultiPairAnalysis()
+{
   //
   // Destructor
   //
@@ -130,7 +132,8 @@ AnalysisTaskMultiPairAnalysis::~AnalysisTaskMultiPairAnalysis() {
 }
 
 //_________________________________________________________________________________
-InitStatus AnalysisTaskMultiPairAnalysis::Init() {
+InitStatus AnalysisTaskMultiPairAnalysis::Init()
+{
   //
   // Add all histogram manager histogram lists to the output TList
   //
@@ -141,8 +144,7 @@ InitStatus AnalysisTaskMultiPairAnalysis::Init() {
   //  Double_t beamEnergy=0.; /// TODO: replace all fBeamEnergy by beamEnergy in NOV16
   FairRuntimeDb* rtdb = FairRunAna::Instance()->GetRuntimeDb();
   if (rtdb) {
-    FairBaseParSet* par =
-      dynamic_cast<FairBaseParSet*>(rtdb->getContainer("FairBaseParSet"));
+    FairBaseParSet* par = dynamic_cast<FairBaseParSet*>(rtdb->getContainer("FairBaseParSet"));
     if (par) {
       Double_t parBeamMom = par->GetBeamMom();
       // if default values of FairBaseParSet(15.) or FairRunSim(0.) are stored take the one set by hand
@@ -164,50 +166,42 @@ InitStatus AnalysisTaskMultiPairAnalysis::Init() {
   PairAnalysis* papa = 0;
   while ((papa = static_cast<PairAnalysis*>(nextDie()))) {
     papa->Init();
-    if (papa->GetHistogramList())
-      fListHistos.Add(const_cast<THashList*>(papa->GetHistogramList()));
-    if (papa->GetHistogramArray())
-      fListHistos.Add(const_cast<TObjArray*>(papa->GetHistogramArray()));
-    if (papa->GetQAHistList())
-      fListHistos.Add(const_cast<THashList*>(papa->GetQAHistList()));
-    if (papa->GetCutStepHistogramList())
-      fListHistos.Add(static_cast<THashList*>(papa->GetCutStepHistogramList()));
+    if (papa->GetHistogramList()) fListHistos.Add(const_cast<THashList*>(papa->GetHistogramList()));
+    if (papa->GetHistogramArray()) fListHistos.Add(const_cast<TObjArray*>(papa->GetHistogramArray()));
+    if (papa->GetQAHistList()) fListHistos.Add(const_cast<THashList*>(papa->GetQAHistList()));
+    if (papa->GetCutStepHistogramList()) fListHistos.Add(static_cast<THashList*>(papa->GetCutStepHistogramList()));
   }
 
   // Get Instance of FairRoot manager
   FairRootManager* man = FairRootManager::Instance();
-  if (!man) {
-    Fatal("AnalysisTaskMultiPairAnalysis::Init", "No FairRootManager!");
-  }
+  if (!man) { Fatal("AnalysisTaskMultiPairAnalysis::Init", "No FairRootManager!"); }
 
   // Init the input event
   fInputEvent = new PairAnalysisEvent();
   fInputEvent->SetInput(man);
   fInputEvent->SetANNId(fId);
-  
+
   // Connect the MC event
   PairAnalysisMC::Instance()->ConnectMCEvent();
 
   // set the beam energy to the varmanager
   PairAnalysisVarManager::SetValue(PairAnalysisVarManager::kEbeam, fBeamEnergy);
   PairAnalysisVarManager::SetValue(PairAnalysisVarManager::kThermalScaling, fThermalScaling);
-  
+
   // initialization time and memory
   gSystem->GetProcInfo(&fProcInfo);
   fprintf(stderr,
           "AnalysisTaskMultiPairAnalysis::Init:"
           " Real time %fs, CPU time %fs, Memory %li MB(res.) %li MB(virt.) \n",
-          fTimer.RealTime(),
-          fTimer.CpuTime(),
-          fProcInfo.fMemResident / 1024,
-          fProcInfo.fMemVirtual / 1024);
+          fTimer.RealTime(), fTimer.CpuTime(), fProcInfo.fMemResident / 1024, fProcInfo.fMemVirtual / 1024);
   fTimer.Reset();
 
   return kSUCCESS;
 }
 
 //_________________________________________________________________________________
-void AnalysisTaskMultiPairAnalysis::Exec(Option_t*) {
+void AnalysisTaskMultiPairAnalysis::Exec(Option_t*)
+{
   //
   // Main loop. Called for every event
   //
@@ -222,22 +216,16 @@ void AnalysisTaskMultiPairAnalysis::Exec(Option_t*) {
   fEventsTotal++;
   if (!(fEventsTotal % 10)) {
     gSystem->GetProcInfo(&fProcInfo);
-    fprintf(
-      stderr,
-      "AnalysisTaskMultiPairAnalysis::Exec: Process %.3e events, CPU time "
-      "%.1fs, (%fs per event, eff %.3f), Memory %li MB(res.) %li MB(virt.) \n",
-      (Double_t) fEventsTotal,
-      fTimer.CpuTime(),
-      fTimer.CpuTime() / fEventsTotal,
-      fTimer.CpuTime() / fTimer.RealTime(),
-      fProcInfo.fMemResident / 1024,
-      fProcInfo.fMemVirtual / 1024);
+    fprintf(stderr,
+            "AnalysisTaskMultiPairAnalysis::Exec: Process %.3e events, CPU time "
+            "%.1fs, (%fs per event, eff %.3f), Memory %li MB(res.) %li MB(virt.) \n",
+            (Double_t) fEventsTotal, fTimer.CpuTime(), fTimer.CpuTime() / fEventsTotal,
+            fTimer.CpuTime() / fTimer.RealTime(), fProcInfo.fMemResident / 1024, fProcInfo.fMemVirtual / 1024);
     fTimer.Continue();
   }
 
   // initialize track arrays and some track based variables
-  fInputEvent
-    ->Init();  // NOTE: tracks are initialized with mass hypo PDG 11, and adapted later!
+  fInputEvent->Init();  // NOTE: tracks are initialized with mass hypo PDG 11, and adapted later!
   PairAnalysisVarManager::SetEvent(fInputEvent);
 
   // magnetic field
@@ -277,10 +265,9 @@ void AnalysisTaskMultiPairAnalysis::Exec(Option_t*) {
     if (papa->DoEventProcess()) {
       useInternal = papa->Process(fInputEvent);
       // input for internal train
-      if (papa->DontClearArrays()) {
-        fPairArray = (*(papa->GetPairArraysPointer()));
-      }
-    } else {
+      if (papa->DontClearArrays()) { fPairArray = (*(papa->GetPairArraysPointer())); }
+    }
+    else {
       // internal train
       if (useInternal) papa->Process(fPairArray);
     }
@@ -297,7 +284,8 @@ void AnalysisTaskMultiPairAnalysis::Exec(Option_t*) {
 }
 
 //_________________________________________________________________________________
-void AnalysisTaskMultiPairAnalysis::FinishTask() {
+void AnalysisTaskMultiPairAnalysis::FinishTask()
+{
   //
   // Write debug tree
   //
@@ -306,10 +294,8 @@ void AnalysisTaskMultiPairAnalysis::FinishTask() {
   fMetaData.FillMeta("events", fEventsSelected);
 
   // write output to file
-  fprintf(
-    stderr,
-    "AnalysisTaskMultiPairAnalysis::FinishTask - write histo list to %s \n",
-    FairRootManager::Instance()->GetOutFile()->GetName());
+  fprintf(stderr, "AnalysisTaskMultiPairAnalysis::FinishTask - write histo list to %s \n",
+          FairRootManager::Instance()->GetOutFile()->GetName());
   FairRootManager::Instance()->GetOutFile()->cd();
 
   fMetaData.GetMetaData()->Write(fMetaData.GetName(), TObject::kSingleKey);

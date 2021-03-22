@@ -13,15 +13,17 @@
 ///////////////////////////////////////////////////////////////////////////////////////////
 
 
+#include "PairAnalysisMC.h"
+
+#include "CbmMCTrack.h"
+
+#include "FairRootManager.h"
+
 #include <TClonesArray.h>
 #include <TMCProcess.h>
 #include <TPDGCode.h>
 #include <TParticle.h>
 
-#include "CbmMCTrack.h"
-#include "FairRootManager.h"
-
-#include "PairAnalysisMC.h"
 #include "PairAnalysisSignalMC.h"
 #include "PairAnalysisTrack.h"
 
@@ -31,7 +33,8 @@ ClassImp(PairAnalysisMC)
   PairAnalysisMC* PairAnalysisMC::fgInstance = 0x0;
 
 //____________________________________________________________
-PairAnalysisMC* PairAnalysisMC::Instance() {
+PairAnalysisMC* PairAnalysisMC::Instance()
+{
   //
   // return pointer to singleton implementation
   //
@@ -44,8 +47,8 @@ PairAnalysisMC* PairAnalysisMC::Instance() {
 }
 
 //____________________________________________________________
-PairAnalysisMC::PairAnalysisMC()
-  : fMCEvent(0x0), fHasMC(kFALSE), fMCArray(0x0) {
+PairAnalysisMC::PairAnalysisMC() : fMCEvent(0x0), fHasMC(kFALSE), fMCArray(0x0)
+{
   //
   // default constructor
   //
@@ -53,14 +56,16 @@ PairAnalysisMC::PairAnalysisMC()
 
 
 //____________________________________________________________
-PairAnalysisMC::~PairAnalysisMC() {
+PairAnalysisMC::~PairAnalysisMC()
+{
   //
   // default destructor
   //
 }
 
 //____________________________________________________________
-Int_t PairAnalysisMC::GetNMCTracks() {
+Int_t PairAnalysisMC::GetNMCTracks()
+{
   //
   //  return the number of generated tracks from MC event
   //
@@ -72,7 +77,8 @@ Int_t PairAnalysisMC::GetNMCTracks() {
 }
 
 //____________________________________________________________
-CbmMCTrack* PairAnalysisMC::GetMCTrackFromMCEvent(Int_t label) const {
+CbmMCTrack* PairAnalysisMC::GetMCTrackFromMCEvent(Int_t label) const
+{
   //
   // return MC track directly from MC event
   // used not only for tracks but for mothers as well, therefore do not use abs(label)
@@ -84,21 +90,18 @@ CbmMCTrack* PairAnalysisMC::GetMCTrackFromMCEvent(Int_t label) const {
   }
 
   if (label > fMCArray->GetEntriesFast()) {
-    Info("PairAnalysisMC::",
-         "track %d out of array size %d",
-         label,
-         fMCArray->GetEntriesFast());
+    Info("PairAnalysisMC::", "track %d out of array size %d", label, fMCArray->GetEntriesFast());
     return NULL;
   }
 
-  CbmMCTrack* track = static_cast<CbmMCTrack*>(
-    fMCArray->UncheckedAt(label));  //  tracks from MC event
+  CbmMCTrack* track = static_cast<CbmMCTrack*>(fMCArray->UncheckedAt(label));  //  tracks from MC event
   //  CbmMCTrack *track = static_cast<CbmMCTrack*>( fMCArray->At(label) ); //  tracks from MC event
   return track;
 }
 
 //____________________________________________________________
-Bool_t PairAnalysisMC::ConnectMCEvent() {
+Bool_t PairAnalysisMC::ConnectMCEvent()
+{
   //
   // connect MC array of tracks
   //
@@ -113,7 +116,8 @@ Bool_t PairAnalysisMC::ConnectMCEvent() {
   if (!fMCArray) {
     Error("PairAnalysisMC::Instance", "Initialization of MC object failed!");
     return kFALSE;
-  } else
+  }
+  else
     fHasMC = kTRUE;
   //  printf("PairAnalysisMC::ConnectMCEvent: size of mc array: %04d \n",fMCArray->GetSize());
   return kTRUE;
@@ -121,7 +125,8 @@ Bool_t PairAnalysisMC::ConnectMCEvent() {
 
 
 //____________________________________________________________
-CbmMCTrack* PairAnalysisMC::GetMCTrack(const PairAnalysisTrack* _track) {
+CbmMCTrack* PairAnalysisMC::GetMCTrack(const PairAnalysisTrack* _track)
+{
   //
   // return MC track
   //
@@ -129,7 +134,8 @@ CbmMCTrack* PairAnalysisMC::GetMCTrack(const PairAnalysisTrack* _track) {
 }
 
 //______________________________________________________________
-CbmMCTrack* PairAnalysisMC::GetMCTrackMother(const PairAnalysisTrack* _track) {
+CbmMCTrack* PairAnalysisMC::GetMCTrackMother(const PairAnalysisTrack* _track)
+{
   //
   // return MC track mother
   //
@@ -139,19 +145,20 @@ CbmMCTrack* PairAnalysisMC::GetMCTrackMother(const PairAnalysisTrack* _track) {
 }
 
 //____________________________________________________________
-CbmMCTrack* PairAnalysisMC::GetMCTrackMother(const CbmMCTrack* _particle) {
+CbmMCTrack* PairAnalysisMC::GetMCTrackMother(const CbmMCTrack* _particle)
+{
   //
   // return MC track mother
   //
   if (_particle->GetMotherId() < 0) return NULL;
-  CbmMCTrack* mcmother =
-    dynamic_cast<CbmMCTrack*>(fMCArray->At(_particle->GetMotherId()));
+  CbmMCTrack* mcmother = dynamic_cast<CbmMCTrack*>(fMCArray->At(_particle->GetMotherId()));
   return mcmother;
 }
 
 
 //________________________________________________________
-Int_t PairAnalysisMC::GetMotherPDG(const PairAnalysisTrack* _track) {
+Int_t PairAnalysisMC::GetMotherPDG(const PairAnalysisTrack* _track)
+{
   //
   // return PDG code of the mother track from the MC truth info
   //
@@ -161,7 +168,8 @@ Int_t PairAnalysisMC::GetMotherPDG(const PairAnalysisTrack* _track) {
 }
 
 //________________________________________________________
-Int_t PairAnalysisMC::GetMotherPDG(const CbmMCTrack* _track) {
+Int_t PairAnalysisMC::GetMotherPDG(const CbmMCTrack* _track)
+{
   //
   // return PDG code of the mother track from the MC truth info
   //
@@ -172,7 +180,8 @@ Int_t PairAnalysisMC::GetMotherPDG(const CbmMCTrack* _track) {
 }
 
 //____________________________________________________________
-Int_t PairAnalysisMC::NumberOfDaughters(const CbmMCTrack* particle) {
+Int_t PairAnalysisMC::NumberOfDaughters(const CbmMCTrack* particle)
+{
   //
   // returns the number of daughters
   //
@@ -183,9 +192,9 @@ Int_t PairAnalysisMC::NumberOfDaughters(const CbmMCTrack* particle) {
 }
 
 //____________________________________________________________
-Int_t PairAnalysisMC::GetLabelMotherWithPdg(const PairAnalysisTrack* particle1,
-                                            const PairAnalysisTrack* particle2,
-                                            Int_t pdgMother) {
+Int_t PairAnalysisMC::GetLabelMotherWithPdg(const PairAnalysisTrack* particle1, const PairAnalysisTrack* particle2,
+                                            Int_t pdgMother)
+{
   //
   // test if mother of particle 1 and 2 has pdgCode pdgMother and is the same;
   //
@@ -211,9 +220,8 @@ Int_t PairAnalysisMC::GetLabelMotherWithPdg(const PairAnalysisTrack* particle1,
 }
 
 //____________________________________________________________
-void PairAnalysisMC::GetDaughters(const TObject* /*mother*/,
-                                  CbmMCTrack*& d1,
-                                  CbmMCTrack*& d2) {
+void PairAnalysisMC::GetDaughters(const TObject* /*mother*/, CbmMCTrack*& d1, CbmMCTrack*& d2)
+{
   //
   // Get First two daughters of the mother
   // TODO: theres NO connection from mother to daughters
@@ -234,21 +242,22 @@ void PairAnalysisMC::GetDaughters(const TObject* /*mother*/,
 
 
 //________________________________________________________________________________
-Int_t PairAnalysisMC::GetMothersLabel(Int_t daughterLabel) const {
+Int_t PairAnalysisMC::GetMothersLabel(Int_t daughterLabel) const
+{
   //
   //  Get the label of the mother for particle with label daughterLabel
   //  NOTE: for tracks, the absolute label should be passed
   //
   if (daughterLabel < 0) return -1;
   if (!fMCArray) return -1;
-  if (GetMCTrackFromMCEvent(daughterLabel))
-    return (GetMCTrackFromMCEvent(daughterLabel))->GetMotherId();
+  if (GetMCTrackFromMCEvent(daughterLabel)) return (GetMCTrackFromMCEvent(daughterLabel))->GetMotherId();
   return -1;
 }
 
 
 //________________________________________________________________________________
-Int_t PairAnalysisMC::GetPdgFromLabel(Int_t label) const {
+Int_t PairAnalysisMC::GetPdgFromLabel(Int_t label) const
+{
   //
   //  Get particle code using the label from stack
   //  NOTE: for tracks, the absolute label should be passed
@@ -261,10 +270,9 @@ Int_t PairAnalysisMC::GetPdgFromLabel(Int_t label) const {
 
 
 //________________________________________________________________________________
-Bool_t PairAnalysisMC::ComparePDG(Int_t particlePDG,
-                                  Int_t requiredPDG,
-                                  Bool_t pdgExclusion,
-                                  Bool_t checkBothCharges) const {
+Bool_t PairAnalysisMC::ComparePDG(Int_t particlePDG, Int_t requiredPDG, Bool_t pdgExclusion,
+                                  Bool_t checkBothCharges) const
+{
   //
   //  Test the PDG codes of particles with the required ones
   //
@@ -276,237 +284,164 @@ Bool_t PairAnalysisMC::ComparePDG(Int_t particlePDG,
       result = kTRUE;  // PDG not required (any code will do fine)
       break;
     case 100:  // light flavoured mesons
-      if (checkBothCharges)
-        result =
-          TMath::Abs(particlePDG) >= 100 && TMath::Abs(particlePDG) <= 199;
+      if (checkBothCharges) result = TMath::Abs(particlePDG) >= 100 && TMath::Abs(particlePDG) <= 199;
       else {
         if (requiredPDG > 0) result = particlePDG >= 100 && particlePDG <= 199;
-        if (requiredPDG < 0)
-          result = particlePDG >= -199 && particlePDG <= -100;
+        if (requiredPDG < 0) result = particlePDG >= -199 && particlePDG <= -100;
       }
       break;
     case 1000:  // light flavoured baryons
-      if (checkBothCharges)
-        result =
-          TMath::Abs(particlePDG) >= 1000 && TMath::Abs(particlePDG) <= 1999;
+      if (checkBothCharges) result = TMath::Abs(particlePDG) >= 1000 && TMath::Abs(particlePDG) <= 1999;
       else {
-        if (requiredPDG > 0)
-          result = particlePDG >= 1000 && particlePDG <= 1999;
-        if (requiredPDG < 0)
-          result = particlePDG >= -1999 && particlePDG <= -1000;
+        if (requiredPDG > 0) result = particlePDG >= 1000 && particlePDG <= 1999;
+        if (requiredPDG < 0) result = particlePDG >= -1999 && particlePDG <= -1000;
       }
       break;
     case 200:  // light flavoured mesons
-      if (checkBothCharges)
-        result =
-          TMath::Abs(particlePDG) >= 200 && TMath::Abs(particlePDG) <= 299;
+      if (checkBothCharges) result = TMath::Abs(particlePDG) >= 200 && TMath::Abs(particlePDG) <= 299;
       else {
         if (requiredPDG > 0) result = particlePDG >= 200 && particlePDG <= 299;
-        if (requiredPDG < 0)
-          result = particlePDG >= -299 && particlePDG <= -200;
+        if (requiredPDG < 0) result = particlePDG >= -299 && particlePDG <= -200;
       }
       break;
     case 2000:  // light flavoured baryons
-      if (checkBothCharges)
-        result =
-          TMath::Abs(particlePDG) >= 2000 && TMath::Abs(particlePDG) <= 2999;
+      if (checkBothCharges) result = TMath::Abs(particlePDG) >= 2000 && TMath::Abs(particlePDG) <= 2999;
       else {
-        if (requiredPDG > 0)
-          result = particlePDG >= 2000 && particlePDG <= 2999;
-        if (requiredPDG < 0)
-          result = particlePDG >= -2999 && particlePDG <= -2000;
+        if (requiredPDG > 0) result = particlePDG >= 2000 && particlePDG <= 2999;
+        if (requiredPDG < 0) result = particlePDG >= -2999 && particlePDG <= -2000;
       }
       break;
     case 300:  // all strange mesons
-      if (checkBothCharges)
-        result =
-          TMath::Abs(particlePDG) >= 300 && TMath::Abs(particlePDG) <= 399;
+      if (checkBothCharges) result = TMath::Abs(particlePDG) >= 300 && TMath::Abs(particlePDG) <= 399;
       else {
         if (requiredPDG > 0) result = particlePDG >= 300 && particlePDG <= 399;
-        if (requiredPDG < 0)
-          result = particlePDG >= -399 && particlePDG <= -300;
+        if (requiredPDG < 0) result = particlePDG >= -399 && particlePDG <= -300;
       }
       break;
     case 3000:  // all strange baryons
-      if (checkBothCharges)
-        result =
-          TMath::Abs(particlePDG) >= 3000 && TMath::Abs(particlePDG) <= 3999;
+      if (checkBothCharges) result = TMath::Abs(particlePDG) >= 3000 && TMath::Abs(particlePDG) <= 3999;
       else {
-        if (requiredPDG > 0)
-          result = particlePDG >= 3000 && particlePDG <= 3999;
-        if (requiredPDG < 0)
-          result = particlePDG >= -3999 && particlePDG <= -3000;
+        if (requiredPDG > 0) result = particlePDG >= 3000 && particlePDG <= 3999;
+        if (requiredPDG < 0) result = particlePDG >= -3999 && particlePDG <= -3000;
       }
       break;
     case 400:  // all charmed mesons
-      if (checkBothCharges)
-        result =
-          TMath::Abs(particlePDG) >= 400 && TMath::Abs(particlePDG) <= 499;
+      if (checkBothCharges) result = TMath::Abs(particlePDG) >= 400 && TMath::Abs(particlePDG) <= 499;
       else {
         if (requiredPDG > 0) result = particlePDG >= 400 && particlePDG <= 499;
-        if (requiredPDG < 0)
-          result = particlePDG >= -499 && particlePDG <= -400;
+        if (requiredPDG < 0) result = particlePDG >= -499 && particlePDG <= -400;
       }
       break;
     case 401:  // open charm mesons
-      if (checkBothCharges)
-        result =
-          TMath::Abs(particlePDG) >= 400 && TMath::Abs(particlePDG) <= 439;
+      if (checkBothCharges) result = TMath::Abs(particlePDG) >= 400 && TMath::Abs(particlePDG) <= 439;
       else {
         if (requiredPDG > 0) result = particlePDG >= 400 && particlePDG <= 439;
-        if (requiredPDG < 0)
-          result = particlePDG >= -439 && particlePDG <= -400;
+        if (requiredPDG < 0) result = particlePDG >= -439 && particlePDG <= -400;
       }
       break;
     case 402:  // open charm mesons and baryons together
       if (checkBothCharges)
-        result =
-          (TMath::Abs(particlePDG) >= 400 && TMath::Abs(particlePDG) <= 439)
-          || (TMath::Abs(particlePDG) >= 4000
-              && TMath::Abs(particlePDG) <= 4399);
+        result = (TMath::Abs(particlePDG) >= 400 && TMath::Abs(particlePDG) <= 439)
+                 || (TMath::Abs(particlePDG) >= 4000 && TMath::Abs(particlePDG) <= 4399);
       else {
         if (requiredPDG > 0)
-          result = (particlePDG >= 400 && particlePDG <= 439)
-                   || (particlePDG >= 4000 && particlePDG <= 4399);
+          result = (particlePDG >= 400 && particlePDG <= 439) || (particlePDG >= 4000 && particlePDG <= 4399);
         if (requiredPDG < 0)
-          result = (particlePDG >= -439 && particlePDG <= -400)
-                   || (particlePDG >= -4399 && particlePDG <= -4000);
+          result = (particlePDG >= -439 && particlePDG <= -400) || (particlePDG >= -4399 && particlePDG <= -4000);
       }
       break;
     case 403:  // all charm hadrons
       if (checkBothCharges)
-        result =
-          (TMath::Abs(particlePDG) >= 400 && TMath::Abs(particlePDG) <= 499)
-          || (TMath::Abs(particlePDG) >= 4000
-              && TMath::Abs(particlePDG) <= 4999);
+        result = (TMath::Abs(particlePDG) >= 400 && TMath::Abs(particlePDG) <= 499)
+                 || (TMath::Abs(particlePDG) >= 4000 && TMath::Abs(particlePDG) <= 4999);
       else {
         if (requiredPDG > 0)
-          result = (particlePDG >= 400 && particlePDG <= 499)
-                   || (particlePDG >= 4000 && particlePDG <= 4999);
+          result = (particlePDG >= 400 && particlePDG <= 499) || (particlePDG >= 4000 && particlePDG <= 4999);
         if (requiredPDG < 0)
-          result = (particlePDG >= -499 && particlePDG <= -400)
-                   || (particlePDG >= -4999 && particlePDG <= -4000);
+          result = (particlePDG >= -499 && particlePDG <= -400) || (particlePDG >= -4999 && particlePDG <= -4000);
       }
       break;
     case 4000:  // all charmed baryons
-      if (checkBothCharges)
-        result =
-          TMath::Abs(particlePDG) >= 4000 && TMath::Abs(particlePDG) <= 4999;
+      if (checkBothCharges) result = TMath::Abs(particlePDG) >= 4000 && TMath::Abs(particlePDG) <= 4999;
       else {
-        if (requiredPDG > 0)
-          result = particlePDG >= 4000 && particlePDG <= 4999;
-        if (requiredPDG < 0)
-          result = particlePDG >= -4999 && particlePDG <= -4000;
+        if (requiredPDG > 0) result = particlePDG >= 4000 && particlePDG <= 4999;
+        if (requiredPDG < 0) result = particlePDG >= -4999 && particlePDG <= -4000;
       }
       break;
     case 4001:  // open charm baryons
-      if (checkBothCharges)
-        result =
-          TMath::Abs(particlePDG) >= 4000 && TMath::Abs(particlePDG) <= 4399;
+      if (checkBothCharges) result = TMath::Abs(particlePDG) >= 4000 && TMath::Abs(particlePDG) <= 4399;
       else {
-        if (requiredPDG > 0)
-          result = particlePDG >= 4000 && particlePDG <= 4399;
-        if (requiredPDG < 0)
-          result = particlePDG >= -4399 && particlePDG <= -4000;
+        if (requiredPDG > 0) result = particlePDG >= 4000 && particlePDG <= 4399;
+        if (requiredPDG < 0) result = particlePDG >= -4399 && particlePDG <= -4000;
       }
       break;
     case 500:  // all beauty mesons
-      if (checkBothCharges)
-        result =
-          TMath::Abs(particlePDG) >= 500 && TMath::Abs(particlePDG) <= 599;
+      if (checkBothCharges) result = TMath::Abs(particlePDG) >= 500 && TMath::Abs(particlePDG) <= 599;
       else {
         if (requiredPDG > 0) result = particlePDG >= 500 && particlePDG <= 599;
-        if (requiredPDG < 0)
-          result = particlePDG >= -599 && particlePDG <= -500;
+        if (requiredPDG < 0) result = particlePDG >= -599 && particlePDG <= -500;
       }
       break;
     case 501:  // open beauty mesons
-      if (checkBothCharges)
-        result =
-          TMath::Abs(particlePDG) >= 500 && TMath::Abs(particlePDG) <= 549;
+      if (checkBothCharges) result = TMath::Abs(particlePDG) >= 500 && TMath::Abs(particlePDG) <= 549;
       else {
         if (requiredPDG > 0) result = particlePDG >= 500 && particlePDG <= 549;
-        if (requiredPDG < 0)
-          result = particlePDG >= -549 && particlePDG <= -500;
+        if (requiredPDG < 0) result = particlePDG >= -549 && particlePDG <= -500;
       }
       break;
     case 502:  // open beauty mesons and baryons
       if (checkBothCharges)
-        result =
-          (TMath::Abs(particlePDG) >= 500 && TMath::Abs(particlePDG) <= 549)
-          || (TMath::Abs(particlePDG) >= 5000
-              && TMath::Abs(particlePDG) <= 5499);
+        result = (TMath::Abs(particlePDG) >= 500 && TMath::Abs(particlePDG) <= 549)
+                 || (TMath::Abs(particlePDG) >= 5000 && TMath::Abs(particlePDG) <= 5499);
       else {
         if (requiredPDG > 0)
-          result = (particlePDG >= 500 && particlePDG <= 549)
-                   || (particlePDG >= 5000 && particlePDG <= 5499);
+          result = (particlePDG >= 500 && particlePDG <= 549) || (particlePDG >= 5000 && particlePDG <= 5499);
         if (requiredPDG < 0)
-          result = (particlePDG >= -549 && particlePDG <= -500)
-                   || (particlePDG >= -5499 && particlePDG <= -5000);
+          result = (particlePDG >= -549 && particlePDG <= -500) || (particlePDG >= -5499 && particlePDG <= -5000);
       }
       break;
     case 503:  // all beauty hadrons
       if (checkBothCharges)
-        result =
-          (TMath::Abs(particlePDG) >= 500 && TMath::Abs(particlePDG) <= 599)
-          || (TMath::Abs(particlePDG) >= 5000
-              && TMath::Abs(particlePDG) <= 5999);
+        result = (TMath::Abs(particlePDG) >= 500 && TMath::Abs(particlePDG) <= 599)
+                 || (TMath::Abs(particlePDG) >= 5000 && TMath::Abs(particlePDG) <= 5999);
       else {
         if (requiredPDG > 0)
-          result = (particlePDG >= 500 && particlePDG <= 599)
-                   || (particlePDG >= 5000 && particlePDG <= 5999);
+          result = (particlePDG >= 500 && particlePDG <= 599) || (particlePDG >= 5000 && particlePDG <= 5999);
         if (requiredPDG < 0)
-          result = (particlePDG >= -599 && particlePDG <= -500)
-                   || (particlePDG >= -5999 && particlePDG <= -5000);
+          result = (particlePDG >= -599 && particlePDG <= -500) || (particlePDG >= -5999 && particlePDG <= -5000);
       }
       break;
     case 5000:  // all beauty baryons
-      if (checkBothCharges)
-        result =
-          TMath::Abs(particlePDG) >= 5000 && TMath::Abs(particlePDG) <= 5999;
+      if (checkBothCharges) result = TMath::Abs(particlePDG) >= 5000 && TMath::Abs(particlePDG) <= 5999;
       else {
-        if (requiredPDG > 0)
-          result = particlePDG >= 5000 && particlePDG <= 5999;
-        if (requiredPDG < 0)
-          result = particlePDG >= -5999 && particlePDG <= -5000;
+        if (requiredPDG > 0) result = particlePDG >= 5000 && particlePDG <= 5999;
+        if (requiredPDG < 0) result = particlePDG >= -5999 && particlePDG <= -5000;
       }
       break;
     case 5001:  // open beauty baryons
-      if (checkBothCharges)
-        result =
-          TMath::Abs(particlePDG) >= 5000 && TMath::Abs(particlePDG) <= 5499;
+      if (checkBothCharges) result = TMath::Abs(particlePDG) >= 5000 && TMath::Abs(particlePDG) <= 5499;
       else {
-        if (requiredPDG > 0)
-          result = particlePDG >= 5000 && particlePDG <= 5499;
-        if (requiredPDG < 0)
-          result = particlePDG >= -5499 && particlePDG <= -5000;
+        if (requiredPDG > 0) result = particlePDG >= 5000 && particlePDG <= 5499;
+        if (requiredPDG < 0) result = particlePDG >= -5499 && particlePDG <= -5000;
       }
       break;
     case 902:  // // open charm,beauty  mesons and baryons together
       if (checkBothCharges)
-        result =
-          (TMath::Abs(particlePDG) >= 400 && TMath::Abs(particlePDG) <= 439)
-          || (TMath::Abs(particlePDG) >= 4000
-              && TMath::Abs(particlePDG) <= 4399)
-          || (TMath::Abs(particlePDG) >= 500 && TMath::Abs(particlePDG) <= 549)
-          || (TMath::Abs(particlePDG) >= 5000
-              && TMath::Abs(particlePDG) <= 5499);
+        result = (TMath::Abs(particlePDG) >= 400 && TMath::Abs(particlePDG) <= 439)
+                 || (TMath::Abs(particlePDG) >= 4000 && TMath::Abs(particlePDG) <= 4399)
+                 || (TMath::Abs(particlePDG) >= 500 && TMath::Abs(particlePDG) <= 549)
+                 || (TMath::Abs(particlePDG) >= 5000 && TMath::Abs(particlePDG) <= 5499);
       else {
         if (requiredPDG > 0)
-          result = (particlePDG >= 400 && particlePDG <= 439)
-                   || (particlePDG >= 4000 && particlePDG <= 4399)
-                   || (particlePDG >= 500 && particlePDG <= 549)
-                   || (particlePDG >= 5000 && particlePDG <= 5499);
+          result = (particlePDG >= 400 && particlePDG <= 439) || (particlePDG >= 4000 && particlePDG <= 4399)
+                   || (particlePDG >= 500 && particlePDG <= 549) || (particlePDG >= 5000 && particlePDG <= 5499);
         if (requiredPDG < 0)
-          result = (particlePDG >= -439 && particlePDG <= -400)
-                   || (particlePDG >= -4399 && particlePDG <= -4000)
-                   || (particlePDG >= -549 && particlePDG <= -500)
-                   || (particlePDG >= -5499 && particlePDG <= -5000);
+          result = (particlePDG >= -439 && particlePDG <= -400) || (particlePDG >= -4399 && particlePDG <= -4000)
+                   || (particlePDG >= -549 && particlePDG <= -500) || (particlePDG >= -5499 && particlePDG <= -5000);
       }
       break;
     default:  // all specific cases
-      if (checkBothCharges)
-        result = (absRequiredPDG == TMath::Abs(particlePDG));
+      if (checkBothCharges) result = (absRequiredPDG == TMath::Abs(particlePDG));
       else
         result = (requiredPDG == particlePDG);
   }
@@ -516,31 +451,28 @@ Bool_t PairAnalysisMC::ComparePDG(Int_t particlePDG,
 }
 
 //________________________________________________________________________________
-Bool_t PairAnalysisMC::CheckGEANTProcess(Int_t label,
-                                         TMCProcess process) const {
+Bool_t PairAnalysisMC::CheckGEANTProcess(Int_t label, TMCProcess process) const
+{
   //
   //  Check the GEANT process for the particle
   //
   if (label < 0) return kFALSE;
 
   if (!fMCArray) return kFALSE;
-  UInt_t processID =
-    static_cast<CbmMCTrack*>(GetMCTrackFromMCEvent(label))->GetGeantProcessId();
+  UInt_t processID = static_cast<CbmMCTrack*>(GetMCTrackFromMCEvent(label))->GetGeantProcessId();
   //  printf("process: id %d --> %s \n",processID,TMCProcessName[processID]);
   return (process == processID);
 }
 
 //________________________________________________________________________________
-Bool_t PairAnalysisMC::CheckParticleSource(
-  Int_t label,
-  PairAnalysisSignalMC::ESource source) const {
+Bool_t PairAnalysisMC::CheckParticleSource(Int_t label, PairAnalysisSignalMC::ESource source) const
+{
   //
   //  Check the source for the particle
   //  NOTE: TODO: check and clarify different sources, UPDATE!
   //
 
-  UInt_t processID =
-    static_cast<CbmMCTrack*>(GetMCTrackFromMCEvent(label))->GetGeantProcessId();
+  UInt_t processID = static_cast<CbmMCTrack*>(GetMCTrackFromMCEvent(label))->GetGeantProcessId();
   //  printf("process: id %d --> %s \n",processID,TMCProcessName[processID]);
 
   switch (source) {
@@ -591,19 +523,16 @@ Bool_t PairAnalysisMC::CheckParticleSource(
 }
 
 //________________________________________________________________________________
-Bool_t PairAnalysisMC::CheckIsDalitz(
-  Int_t label,
-  const PairAnalysisSignalMC* const signalMC) const {
+Bool_t PairAnalysisMC::CheckIsDalitz(Int_t label, const PairAnalysisSignalMC* const signalMC) const
+{
   //
   // Check if the particle has a three body decay, one being a dalitz pdg
   // NOTE: no information on # of daugthers available in CbmMCTrack
 
   // loop over the MC tracks
   //  for(Int_t ipart=0; ipart<fMCArray->GetEntriesFast(); ++ipart) { // super slow
-  for (Int_t ipart = label; ipart < label + 5;
-       ++ipart) {  // embedded particles are sorted
-    CbmMCTrack* daughter =
-      static_cast<CbmMCTrack*>(GetMCTrackFromMCEvent(ipart));
+  for (Int_t ipart = label; ipart < label + 5; ++ipart) {  // embedded particles are sorted
+    CbmMCTrack* daughter = static_cast<CbmMCTrack*>(GetMCTrackFromMCEvent(ipart));
     if (!daughter) continue;
     if (daughter->GetPdgCode() != signalMC->GetDalitzPdg()) continue;
     if (daughter->GetMotherId() == label) return kTRUE;
@@ -612,33 +541,26 @@ Bool_t PairAnalysisMC::CheckIsDalitz(
 }
 
 //________________________________________________________________________________
-Bool_t PairAnalysisMC::CheckDalitzDecision(
-  Int_t mLabel,
-  const PairAnalysisSignalMC* const signalMC) const {
+Bool_t PairAnalysisMC::CheckDalitzDecision(Int_t mLabel, const PairAnalysisSignalMC* const signalMC) const
+{
   //
   // Check for the decision of the dalitz type request
   //
 
   if (!signalMC) return kFALSE;
 
-  if (signalMC->GetDalitz() == PairAnalysisSignalMC::EDalitz::kWhoCares)
-    return kTRUE;
+  if (signalMC->GetDalitz() == PairAnalysisSignalMC::EDalitz::kWhoCares) return kTRUE;
 
   Bool_t isDalitz = CheckIsDalitz(mLabel, signalMC);
-  if ((signalMC->GetDalitz() == PairAnalysisSignalMC::EDalitz::kIsDalitz)
-      && !isDalitz)
-    return kFALSE;
-  if ((signalMC->GetDalitz() == PairAnalysisSignalMC::EDalitz::kIsNotDalitz)
-      && isDalitz)
-    return kFALSE;
+  if ((signalMC->GetDalitz() == PairAnalysisSignalMC::EDalitz::kIsDalitz) && !isDalitz) return kFALSE;
+  if ((signalMC->GetDalitz() == PairAnalysisSignalMC::EDalitz::kIsNotDalitz) && isDalitz) return kFALSE;
 
   return kTRUE;
 }
 
 //________________________________________________________________________________
-Bool_t PairAnalysisMC::IsMCTruth(Int_t label,
-                                 PairAnalysisSignalMC* signalMC,
-                                 Int_t branch) const {
+Bool_t PairAnalysisMC::IsMCTruth(Int_t label, PairAnalysisSignalMC* signalMC, Int_t branch) const
+{
   //
   // Check if the particle corresponds to the MC truth in signalMC in the branch specified
   //
@@ -651,47 +573,37 @@ Bool_t PairAnalysisMC::IsMCTruth(Int_t label,
 
   CbmMCTrack* part = GetMCTrackFromMCEvent(label);
   if (!part) {
-    Error(
-      "PairAnalysisMC::", "Could not find MC particle with label %d", label);
+    Error("PairAnalysisMC::", "Could not find MC particle with label %d", label);
     return kFALSE;
   }
 
   // check geant process if set
-  if (signalMC->GetCheckGEANTProcess()
-      && !CheckGEANTProcess(label, signalMC->GetGEANTProcess()))
-    return kFALSE;
+  if (signalMC->GetCheckGEANTProcess() && !CheckGEANTProcess(label, signalMC->GetGEANTProcess())) return kFALSE;
 
 
   // check the LEG
-  if (!ComparePDG(part->GetPdgCode(),
-                  signalMC->GetLegPDG(branch),
-                  signalMC->GetLegPDGexclude(branch),
+  if (!ComparePDG(part->GetPdgCode(), signalMC->GetLegPDG(branch), signalMC->GetLegPDGexclude(branch),
                   signalMC->GetCheckBothChargesLegs(branch)))
     return kFALSE;
 
 
   // Check the source (primary, secondary, embedded) for the particle
-  if (!CheckParticleSource(label, signalMC->GetLegSource(branch)))
-    return kFALSE;
+  if (!CheckParticleSource(label, signalMC->GetLegSource(branch))) return kFALSE;
 
   // check the MOTHER
   CbmMCTrack* mcMother = 0x0;
   Int_t mLabel         = -1;
   if (signalMC->GetMotherPDG(branch) != 0
-      || signalMC->GetMotherSource(branch)
-           != PairAnalysisSignalMC::ESource::kDontCare) {
+      || signalMC->GetMotherSource(branch) != PairAnalysisSignalMC::ESource::kDontCare) {
     mLabel   = GetMothersLabel(label);
     mcMother = GetMCTrackFromMCEvent(mLabel);
 
     if (!mcMother && !signalMC->GetMotherPDGexclude(branch)) return kFALSE;
 
-    if (!ComparePDG((mcMother ? mcMother->GetPdgCode() : -99999),
-                    signalMC->GetMotherPDG(branch),
-                    signalMC->GetMotherPDGexclude(branch),
-                    signalMC->GetCheckBothChargesMothers(branch)))
+    if (!ComparePDG((mcMother ? mcMother->GetPdgCode() : -99999), signalMC->GetMotherPDG(branch),
+                    signalMC->GetMotherPDGexclude(branch), signalMC->GetCheckBothChargesMothers(branch)))
       return kFALSE;
-    if (!CheckParticleSource(mLabel, signalMC->GetMotherSource(branch)))
-      return kFALSE;
+    if (!CheckParticleSource(mLabel, signalMC->GetMotherSource(branch))) return kFALSE;
 
     //check for dalitz decay
     if (!CheckDalitzDecision(mLabel, signalMC)) return kFALSE;
@@ -701,22 +613,17 @@ Bool_t PairAnalysisMC::IsMCTruth(Int_t label,
   CbmMCTrack* mcGrandMother = 0x0;
   Int_t gmLabel             = -1;
   if (signalMC->GetGrandMotherPDG(branch) != 0
-      || signalMC->GetGrandMotherSource(branch)
-           != PairAnalysisSignalMC::ESource::kDontCare) {
+      || signalMC->GetGrandMotherSource(branch) != PairAnalysisSignalMC::ESource::kDontCare) {
     if (mcMother) {
       gmLabel       = GetMothersLabel(mLabel);
       mcGrandMother = GetMCTrackFromMCEvent(gmLabel);
     }
-    if (!mcGrandMother && !signalMC->GetGrandMotherPDGexclude(branch))
-      return kFALSE;
+    if (!mcGrandMother && !signalMC->GetGrandMotherPDGexclude(branch)) return kFALSE;
 
-    if (!ComparePDG((mcGrandMother ? mcGrandMother->GetPdgCode() : 0),
-                    signalMC->GetGrandMotherPDG(branch),
-                    signalMC->GetGrandMotherPDGexclude(branch),
-                    signalMC->GetCheckBothChargesGrandMothers(branch)))
+    if (!ComparePDG((mcGrandMother ? mcGrandMother->GetPdgCode() : 0), signalMC->GetGrandMotherPDG(branch),
+                    signalMC->GetGrandMotherPDGexclude(branch), signalMC->GetCheckBothChargesGrandMothers(branch)))
       return kFALSE;
-    if (!CheckParticleSource(gmLabel, signalMC->GetGrandMotherSource(branch)))
-      return kFALSE;
+    if (!CheckParticleSource(gmLabel, signalMC->GetGrandMotherSource(branch))) return kFALSE;
   }
 
   // check the GREAT GRANDMOTHER
@@ -729,12 +636,10 @@ Bool_t PairAnalysisMC::IsMCTruth(Int_t label,
       ggmLabel           = GetMothersLabel(gmLabel);
       mcGreatGrandMother = GetMCTrackFromMCEvent(ggmLabel);
     }
-    if (!mcGreatGrandMother && !signalMC->GetGreatGrandMotherPDGexclude(branch))
-      return kFALSE;
+    if (!mcGreatGrandMother && !signalMC->GetGreatGrandMotherPDGexclude(branch)) return kFALSE;
 
     if (!ComparePDG((mcGreatGrandMother ? mcGreatGrandMother->GetPdgCode() : 0),
-                    signalMC->GetGreatGrandMotherPDG(branch),
-                    signalMC->GetGreatGrandMotherPDGexclude(branch),
+                    signalMC->GetGreatGrandMotherPDG(branch), signalMC->GetGreatGrandMotherPDGexclude(branch),
                     signalMC->GetCheckBothChargesGreatGrandMothers(branch)))
       return kFALSE;
     //    if( !CheckParticleSource(gmLabel, signalMC->GetGreatGrandMotherSource(branch))) return kFALSE;
@@ -744,9 +649,8 @@ Bool_t PairAnalysisMC::IsMCTruth(Int_t label,
 }
 
 //________________________________________________________________________________
-Bool_t PairAnalysisMC::IsMCTruth(const PairAnalysisTrack* trk,
-                                 PairAnalysisSignalMC* signalMC,
-                                 Int_t branch) const {
+Bool_t PairAnalysisMC::IsMCTruth(const PairAnalysisTrack* trk, PairAnalysisSignalMC* signalMC, Int_t branch) const
+{
   //
   // Check if the particle corresponds to the MC truth in signalMC in the branch specified
   //
@@ -754,8 +658,8 @@ Bool_t PairAnalysisMC::IsMCTruth(const PairAnalysisTrack* trk,
 }
 
 //________________________________________________________________________________
-Bool_t PairAnalysisMC::IsMCTruth(const PairAnalysisPair* pair,
-                                 const PairAnalysisSignalMC* signalMC) const {
+Bool_t PairAnalysisMC::IsMCTruth(const PairAnalysisPair* pair, const PairAnalysisSignalMC* signalMC) const
+{
   //
   // Check if the pair corresponds to the MC truth in signalMC
   //
@@ -791,47 +695,35 @@ Bool_t PairAnalysisMC::IsMCTruth(const PairAnalysisPair* pair,
   // make direct(1-1 and 2-2) and cross(1-2 and 2-1) comparisons for the whole branch
   Bool_t directTerm = kTRUE;
   // daughters
-  directTerm = directTerm && mcD1
-               && ComparePDG(d1Pdg,
-                             signalMC->GetLegPDG(1),
-                             signalMC->GetLegPDGexclude(1),
-                             signalMC->GetCheckBothChargesLegs(1))
-               && CheckParticleSource(labelD1, signalMC->GetLegSource(1));
+  directTerm =
+    directTerm && mcD1
+    && ComparePDG(d1Pdg, signalMC->GetLegPDG(1), signalMC->GetLegPDGexclude(1), signalMC->GetCheckBothChargesLegs(1))
+    && CheckParticleSource(labelD1, signalMC->GetLegSource(1));
 
-  directTerm = directTerm && mcD2
-               && ComparePDG(d2Pdg,
-                             signalMC->GetLegPDG(2),
-                             signalMC->GetLegPDGexclude(2),
-                             signalMC->GetCheckBothChargesLegs(2))
-               && CheckParticleSource(labelD2, signalMC->GetLegSource(2));
+  directTerm =
+    directTerm && mcD2
+    && ComparePDG(d2Pdg, signalMC->GetLegPDG(2), signalMC->GetLegPDGexclude(2), signalMC->GetCheckBothChargesLegs(2))
+    && CheckParticleSource(labelD2, signalMC->GetLegSource(2));
 
   // mothers
   Int_t labelM1 = -1;
-  if (signalMC->GetMotherPDG(1) != 0
-      || signalMC->GetMotherSource(1)
-           != PairAnalysisSignalMC::ESource::kDontCare) {
+  if (signalMC->GetMotherPDG(1) != 0 || signalMC->GetMotherSource(1) != PairAnalysisSignalMC::ESource::kDontCare) {
     labelM1 = GetMothersLabel(labelD1);
     if (labelD1 > -1 && labelM1 > -1) mcM1 = GetMCTrackFromMCEvent(labelM1);
     directTerm = directTerm && (mcM1 || signalMC->GetMotherPDGexclude(1))
-                 && ComparePDG((mcM1 ? mcM1->GetPdgCode() : -99999),
-                               signalMC->GetMotherPDG(1),
-                               signalMC->GetMotherPDGexclude(1),
-                               signalMC->GetCheckBothChargesMothers(1))
+                 && ComparePDG((mcM1 ? mcM1->GetPdgCode() : -99999), signalMC->GetMotherPDG(1),
+                               signalMC->GetMotherPDGexclude(1), signalMC->GetCheckBothChargesMothers(1))
                  && CheckParticleSource(labelM1, signalMC->GetMotherSource(1))
                  && CheckDalitzDecision(labelM1, signalMC);
   }
 
   Int_t labelM2 = -1;
-  if (signalMC->GetMotherPDG(2) != 0
-      || signalMC->GetMotherSource(2)
-           != PairAnalysisSignalMC::ESource::kDontCare) {
+  if (signalMC->GetMotherPDG(2) != 0 || signalMC->GetMotherSource(2) != PairAnalysisSignalMC::ESource::kDontCare) {
     labelM2 = GetMothersLabel(labelD2);
     if (labelD2 > -1 && labelM2 > -1) mcM2 = GetMCTrackFromMCEvent(labelM2);
     directTerm = directTerm && (mcM2 || signalMC->GetMotherPDGexclude(2))
-                 && ComparePDG((mcM2 ? mcM2->GetPdgCode() : -99999),
-                               signalMC->GetMotherPDG(2),
-                               signalMC->GetMotherPDGexclude(2),
-                               signalMC->GetCheckBothChargesMothers(2))
+                 && ComparePDG((mcM2 ? mcM2->GetPdgCode() : -99999), signalMC->GetMotherPDG(2),
+                               signalMC->GetMotherPDGexclude(2), signalMC->GetCheckBothChargesMothers(2))
                  && CheckParticleSource(labelM2, signalMC->GetMotherSource(2))
                  && CheckDalitzDecision(labelM2, signalMC);
   }
@@ -839,188 +731,144 @@ Bool_t PairAnalysisMC::IsMCTruth(const PairAnalysisPair* pair,
   // grand-mothers
   Int_t labelG1 = -1;
   if (signalMC->GetGrandMotherPDG(1) != 0
-      || signalMC->GetGrandMotherSource(1)
-           != PairAnalysisSignalMC::ESource::kDontCare) {
+      || signalMC->GetGrandMotherSource(1) != PairAnalysisSignalMC::ESource::kDontCare) {
     labelG1 = GetMothersLabel(labelM1);
     if (mcM1 && labelG1 > -1) mcG1 = GetMCTrackFromMCEvent(labelG1);
-    directTerm =
-      directTerm && (mcG1 || signalMC->GetGrandMotherPDGexclude(1))
-      && ComparePDG((mcG1 ? mcG1->GetPdgCode() : 0),
-                    signalMC->GetGrandMotherPDG(1),
-                    signalMC->GetGrandMotherPDGexclude(1),
-                    signalMC->GetCheckBothChargesGrandMothers(1))
-      && CheckParticleSource(labelG1, signalMC->GetGrandMotherSource(1));
+    directTerm = directTerm && (mcG1 || signalMC->GetGrandMotherPDGexclude(1))
+                 && ComparePDG((mcG1 ? mcG1->GetPdgCode() : 0), signalMC->GetGrandMotherPDG(1),
+                               signalMC->GetGrandMotherPDGexclude(1), signalMC->GetCheckBothChargesGrandMothers(1))
+                 && CheckParticleSource(labelG1, signalMC->GetGrandMotherSource(1));
   }
 
   Int_t labelG2 = -1;
   if (signalMC->GetGrandMotherPDG(2) != 0
-      || signalMC->GetGrandMotherSource(2)
-           != PairAnalysisSignalMC::ESource::kDontCare) {
+      || signalMC->GetGrandMotherSource(2) != PairAnalysisSignalMC::ESource::kDontCare) {
     labelG2 = GetMothersLabel(labelM2);
     if (mcM2 && labelG2 > -1) mcG2 = GetMCTrackFromMCEvent(labelG2);
-    directTerm =
-      directTerm && (mcG2 || signalMC->GetGrandMotherPDGexclude(2))
-      && ComparePDG((mcG2 ? mcG2->GetPdgCode() : 0),
-                    signalMC->GetGrandMotherPDG(2),
-                    signalMC->GetGrandMotherPDGexclude(2),
-                    signalMC->GetCheckBothChargesGrandMothers(2))
-      && CheckParticleSource(labelG2, signalMC->GetGrandMotherSource(2));
+    directTerm = directTerm && (mcG2 || signalMC->GetGrandMotherPDGexclude(2))
+                 && ComparePDG((mcG2 ? mcG2->GetPdgCode() : 0), signalMC->GetGrandMotherPDG(2),
+                               signalMC->GetGrandMotherPDGexclude(2), signalMC->GetCheckBothChargesGrandMothers(2))
+                 && CheckParticleSource(labelG2, signalMC->GetGrandMotherSource(2));
   }
 
   // great grand-mothers
   Int_t labelGG1 = -1;
-  if (
-    signalMC->GetGreatGrandMotherPDG(1) != 0
-    /* || signalMC->GetGreatGrandMotherSource(1)!=PairAnalysisSignalMC::ESource::kDontCare*/) {
+  if (signalMC->GetGreatGrandMotherPDG(1) != 0
+      /* || signalMC->GetGreatGrandMotherSource(1)!=PairAnalysisSignalMC::ESource::kDontCare*/) {
     labelGG1 = GetMothersLabel(labelG1);
     if (mcG1 && labelGG1 > -1) mcGG1 = GetMCTrackFromMCEvent(labelGG1);
     directTerm =
       directTerm && (mcGG1 || signalMC->GetGreatGrandMotherPDGexclude(1))
-      && ComparePDG((mcGG1 ? mcGG1->GetPdgCode() : 0),
-                    signalMC->GetGreatGrandMotherPDG(1),
-                    signalMC->GetGreatGrandMotherPDGexclude(1),
-                    signalMC->GetCheckBothChargesGreatGrandMothers(1));
+      && ComparePDG((mcGG1 ? mcGG1->GetPdgCode() : 0), signalMC->GetGreatGrandMotherPDG(1),
+                    signalMC->GetGreatGrandMotherPDGexclude(1), signalMC->GetCheckBothChargesGreatGrandMothers(1));
     //                 && CheckParticleSource(labelGG1, signalMC->GetGreatGrandMotherSource(1));
   }
 
   Int_t labelGG2 = -1;
-  if (
-    signalMC->GetGreatGrandMotherPDG(2) != 0
-    /* || signalMC->GetGreatGrandMotherSource(2)!=PairAnalysisSignalMC::ESource::kDontCare*/) {
+  if (signalMC->GetGreatGrandMotherPDG(2) != 0
+      /* || signalMC->GetGreatGrandMotherSource(2)!=PairAnalysisSignalMC::ESource::kDontCare*/) {
     labelGG2 = GetMothersLabel(labelG2);
     if (mcG2 && labelGG2 > -1) mcGG2 = GetMCTrackFromMCEvent(labelGG2);
     directTerm =
       directTerm && (mcGG2 || signalMC->GetGreatGrandMotherPDGexclude(2))
-      && ComparePDG((mcGG2 ? mcGG2->GetPdgCode() : 0),
-                    signalMC->GetGreatGrandMotherPDG(2),
-                    signalMC->GetGreatGrandMotherPDGexclude(2),
-                    signalMC->GetCheckBothChargesGreatGrandMothers(2));
+      && ComparePDG((mcGG2 ? mcGG2->GetPdgCode() : 0), signalMC->GetGreatGrandMotherPDG(2),
+                    signalMC->GetGreatGrandMotherPDGexclude(2), signalMC->GetCheckBothChargesGreatGrandMothers(2));
     //                 && CheckParticleSource(labelG2, signalMC->GetGreatGrandMotherSource(2));
   }
 
   // Cross term
   Bool_t crossTerm = kTRUE;
   // daughters
-  crossTerm = crossTerm && mcD2
-              && ComparePDG(d2Pdg,
-                            signalMC->GetLegPDG(1),
-                            signalMC->GetLegPDGexclude(1),
-                            signalMC->GetCheckBothChargesLegs(1))
-              && CheckParticleSource(labelD2, signalMC->GetLegSource(1));
+  crossTerm =
+    crossTerm && mcD2
+    && ComparePDG(d2Pdg, signalMC->GetLegPDG(1), signalMC->GetLegPDGexclude(1), signalMC->GetCheckBothChargesLegs(1))
+    && CheckParticleSource(labelD2, signalMC->GetLegSource(1));
 
-  crossTerm = crossTerm && mcD1
-              && ComparePDG(d1Pdg,
-                            signalMC->GetLegPDG(2),
-                            signalMC->GetLegPDGexclude(2),
-                            signalMC->GetCheckBothChargesLegs(2))
-              && CheckParticleSource(labelD1, signalMC->GetLegSource(2));
+  crossTerm =
+    crossTerm && mcD1
+    && ComparePDG(d1Pdg, signalMC->GetLegPDG(2), signalMC->GetLegPDGexclude(2), signalMC->GetCheckBothChargesLegs(2))
+    && CheckParticleSource(labelD1, signalMC->GetLegSource(2));
 
   // mothers
-  if (signalMC->GetMotherPDG(1) != 0
-      || signalMC->GetMotherSource(1)
-           != PairAnalysisSignalMC::ESource::kDontCare) {
+  if (signalMC->GetMotherPDG(1) != 0 || signalMC->GetMotherSource(1) != PairAnalysisSignalMC::ESource::kDontCare) {
     if (!mcM2 && labelD2 > -1) {
       labelM2 = GetMothersLabel(labelD2);
       if (labelM2 > -1) mcM2 = GetMCTrackFromMCEvent(labelM2);
     }
     crossTerm = crossTerm && (mcM2 || signalMC->GetMotherPDGexclude(1))
-                && ComparePDG((mcM2 ? mcM2->GetPdgCode() : -99999),
-                              signalMC->GetMotherPDG(1),
-                              signalMC->GetMotherPDGexclude(1),
-                              signalMC->GetCheckBothChargesMothers(1))
-                && CheckParticleSource(labelM2, signalMC->GetMotherSource(1))
-                && CheckDalitzDecision(labelM2, signalMC);
+                && ComparePDG((mcM2 ? mcM2->GetPdgCode() : -99999), signalMC->GetMotherPDG(1),
+                              signalMC->GetMotherPDGexclude(1), signalMC->GetCheckBothChargesMothers(1))
+                && CheckParticleSource(labelM2, signalMC->GetMotherSource(1)) && CheckDalitzDecision(labelM2, signalMC);
   }
 
-  if (signalMC->GetMotherPDG(2) != 0
-      || signalMC->GetMotherSource(2)
-           != PairAnalysisSignalMC::ESource::kDontCare) {
+  if (signalMC->GetMotherPDG(2) != 0 || signalMC->GetMotherSource(2) != PairAnalysisSignalMC::ESource::kDontCare) {
     if (!mcM1 && labelD1 > -1) {
       labelM1 = GetMothersLabel(labelD1);
       if (labelM1 > -1) mcM1 = GetMCTrackFromMCEvent(labelM1);
     }
     crossTerm = crossTerm && (mcM1 || signalMC->GetMotherPDGexclude(2))
-                && ComparePDG((mcM1 ? mcM1->GetPdgCode() : -99999),
-                              signalMC->GetMotherPDG(2),
-                              signalMC->GetMotherPDGexclude(2),
-                              signalMC->GetCheckBothChargesMothers(2))
-                && CheckParticleSource(labelM1, signalMC->GetMotherSource(2))
-                && CheckDalitzDecision(labelM1, signalMC);
+                && ComparePDG((mcM1 ? mcM1->GetPdgCode() : -99999), signalMC->GetMotherPDG(2),
+                              signalMC->GetMotherPDGexclude(2), signalMC->GetCheckBothChargesMothers(2))
+                && CheckParticleSource(labelM1, signalMC->GetMotherSource(2)) && CheckDalitzDecision(labelM1, signalMC);
   }
 
   // grand-mothers
   if (signalMC->GetGrandMotherPDG(1) != 0
-      || signalMC->GetGrandMotherSource(1)
-           != PairAnalysisSignalMC::ESource::kDontCare) {
+      || signalMC->GetGrandMotherSource(1) != PairAnalysisSignalMC::ESource::kDontCare) {
     if (!mcG2 && mcM2) {
       labelG2 = GetMothersLabel(labelM2);
       if (labelG2 > -1) mcG2 = GetMCTrackFromMCEvent(labelG2);
     }
-    crossTerm =
-      crossTerm && (mcG2 || signalMC->GetGrandMotherPDGexclude(1))
-      && ComparePDG((mcG2 ? mcG2->GetPdgCode() : 0),
-                    signalMC->GetGrandMotherPDG(1),
-                    signalMC->GetGrandMotherPDGexclude(1),
-                    signalMC->GetCheckBothChargesGrandMothers(1))
-      && CheckParticleSource(labelG2, signalMC->GetGrandMotherSource(1));
+    crossTerm = crossTerm && (mcG2 || signalMC->GetGrandMotherPDGexclude(1))
+                && ComparePDG((mcG2 ? mcG2->GetPdgCode() : 0), signalMC->GetGrandMotherPDG(1),
+                              signalMC->GetGrandMotherPDGexclude(1), signalMC->GetCheckBothChargesGrandMothers(1))
+                && CheckParticleSource(labelG2, signalMC->GetGrandMotherSource(1));
   }
 
   if (signalMC->GetGrandMotherPDG(2) != 0
-      || signalMC->GetGrandMotherSource(2)
-           != PairAnalysisSignalMC::ESource::kDontCare) {
+      || signalMC->GetGrandMotherSource(2) != PairAnalysisSignalMC::ESource::kDontCare) {
     if (!mcG1 && mcM1) {
       labelG1 = GetMothersLabel(labelM1);
       if (labelG1 > -1) mcG1 = GetMCTrackFromMCEvent(labelG1);
     }
-    crossTerm =
-      crossTerm && (mcG1 || signalMC->GetGrandMotherPDGexclude(2))
-      && ComparePDG((mcG1 ? mcG1->GetPdgCode() : 0),
-                    signalMC->GetGrandMotherPDG(2),
-                    signalMC->GetGrandMotherPDGexclude(2),
-                    signalMC->GetCheckBothChargesGrandMothers(2))
-      && CheckParticleSource(labelG1, signalMC->GetGrandMotherSource(2));
+    crossTerm = crossTerm && (mcG1 || signalMC->GetGrandMotherPDGexclude(2))
+                && ComparePDG((mcG1 ? mcG1->GetPdgCode() : 0), signalMC->GetGrandMotherPDG(2),
+                              signalMC->GetGrandMotherPDGexclude(2), signalMC->GetCheckBothChargesGrandMothers(2))
+                && CheckParticleSource(labelG1, signalMC->GetGrandMotherSource(2));
   }
 
   // great grand-mothers
-  if (
-    signalMC->GetGreatGrandMotherPDG(1) != 0
-    /*|| signalMC->GetGreatGrandMotherSource(1)!=PairAnalysisSignalMC::ESource::kDontCare*/) {
+  if (signalMC->GetGreatGrandMotherPDG(1) != 0
+      /*|| signalMC->GetGreatGrandMotherSource(1)!=PairAnalysisSignalMC::ESource::kDontCare*/) {
     if (!mcGG2 && mcG2) {
       labelGG2 = GetMothersLabel(labelG2);
       if (labelGG2 > -1) mcGG2 = GetMCTrackFromMCEvent(labelGG2);
     }
     crossTerm =
       crossTerm && (mcGG2 || signalMC->GetGreatGrandMotherPDGexclude(1))
-      && ComparePDG((mcGG2 ? mcGG2->GetPdgCode() : 0),
-                    signalMC->GetGreatGrandMotherPDG(1),
-                    signalMC->GetGreatGrandMotherPDGexclude(1),
-                    signalMC->GetCheckBothChargesGreatGrandMothers(1));
+      && ComparePDG((mcGG2 ? mcGG2->GetPdgCode() : 0), signalMC->GetGreatGrandMotherPDG(1),
+                    signalMC->GetGreatGrandMotherPDGexclude(1), signalMC->GetCheckBothChargesGreatGrandMothers(1));
     //                && CheckParticleSource(labelG2, signalMC->GetGreatGrandMotherSource(1));
   }
 
-  if (
-    signalMC->GetGreatGrandMotherPDG(2) != 0
-    /* || signalMC->GetGreatGrandMotherSource(2)!=PairAnalysisSignalMC::ESource::kDontCare*/) {
+  if (signalMC->GetGreatGrandMotherPDG(2) != 0
+      /* || signalMC->GetGreatGrandMotherSource(2)!=PairAnalysisSignalMC::ESource::kDontCare*/) {
     if (!mcGG1 && mcG1) {
       labelGG1 = GetMothersLabel(labelG1);
       if (labelGG1 > -1) mcGG1 = GetMCTrackFromMCEvent(labelGG1);
     }
     crossTerm =
       crossTerm && (mcGG1 || signalMC->GetGreatGrandMotherPDGexclude(2))
-      && ComparePDG((mcGG1 ? mcGG1->GetPdgCode() : 0),
-                    signalMC->GetGreatGrandMotherPDG(2),
-                    signalMC->GetGreatGrandMotherPDGexclude(2),
-                    signalMC->GetCheckBothChargesGreatGrandMothers(2));
+      && ComparePDG((mcGG1 ? mcGG1->GetPdgCode() : 0), signalMC->GetGreatGrandMotherPDG(2),
+                    signalMC->GetGreatGrandMotherPDGexclude(2), signalMC->GetCheckBothChargesGreatGrandMothers(2));
     //                && CheckParticleSource(labelG1, signalMC->GetGreatGrandMotherSource(2));
   }
 
   Bool_t motherRelation = kTRUE;
-  if (signalMC->GetMothersRelation()
-      == PairAnalysisSignalMC::EBranchRelation::kSame) {
+  if (signalMC->GetMothersRelation() == PairAnalysisSignalMC::EBranchRelation::kSame) {
     motherRelation = motherRelation && HaveSameMother(pair);
   }
-  if (signalMC->GetMothersRelation()
-      == PairAnalysisSignalMC::EBranchRelation::kDifferent) {
+  if (signalMC->GetMothersRelation() == PairAnalysisSignalMC::EBranchRelation::kDifferent) {
     motherRelation = motherRelation && !HaveSameMother(pair);
   }
 
@@ -1029,7 +877,8 @@ Bool_t PairAnalysisMC::IsMCTruth(const PairAnalysisPair* pair,
 }
 
 //____________________________________________________________
-Bool_t PairAnalysisMC::HaveSameMother(const PairAnalysisPair* pair) const {
+Bool_t PairAnalysisMC::HaveSameMother(const PairAnalysisPair* pair) const
+{
   //
   // Check whether two particles have the same mother
   //
@@ -1044,14 +893,14 @@ Bool_t PairAnalysisMC::HaveSameMother(const PairAnalysisPair* pair) const {
 
   Int_t labelMother1 = mcDaughter1->GetMotherId();
   Int_t labelMother2 = mcDaughter2->GetMotherId();
-  Bool_t sameMother  = (labelMother1 > -1) && (labelMother2 > -1)
-                      && (labelMother1 == labelMother2);
+  Bool_t sameMother  = (labelMother1 > -1) && (labelMother2 > -1) && (labelMother1 == labelMother2);
 
   return sameMother;
 }
 
 //____________________________________________________________
-Bool_t PairAnalysisMC::IsPhysicalPrimary(Int_t label, UInt_t processID) const {
+Bool_t PairAnalysisMC::IsPhysicalPrimary(Int_t label, UInt_t processID) const
+{
 
   // initial state particle
   if (processID != kPPrimary) return kFALSE;
@@ -1102,8 +951,7 @@ Bool_t PairAnalysisMC::IsPhysicalPrimary(Int_t label, UInt_t processID) const {
   // Check if it comes from a pi0 decay
   if ((pdgMother == kPi0) && (processMother == kPPrimary)) return kTRUE;
   // Check if it this is a heavy flavor decay product
-  Int_t mfl =
-    Int_t(pdgMother / TMath::Power(10, Int_t(TMath::Log10(pdgMother))));
+  Int_t mfl = Int_t(pdgMother / TMath::Power(10, Int_t(TMath::Log10(pdgMother))));
   if (mfl < 4) return kFALSE;  // Light hadron
   // Heavy flavor hadron produced by generator
   if (processMother == kPPrimary) return kTRUE;
@@ -1113,37 +961,33 @@ Bool_t PairAnalysisMC::IsPhysicalPrimary(Int_t label, UInt_t processID) const {
     mother = GetMCTrackFromMCEvent(mLabel);
   }
   pdgMother = TMath::Abs(mother->GetPdgCode());
-  mfl = Int_t(pdgMother / TMath::Power(10, Int_t(TMath::Log10(pdgMother))));
+  mfl       = Int_t(pdgMother / TMath::Power(10, Int_t(TMath::Log10(pdgMother))));
   return (mfl < 4 ? kFALSE : kTRUE);
 }
 
 //____________________________________________________________
-Bool_t PairAnalysisMC::IsSecondaryFromWeakDecay(Int_t label,
-                                                UInt_t processID) const {
+Bool_t PairAnalysisMC::IsSecondaryFromWeakDecay(Int_t label, UInt_t processID) const
+{
   if (IsPhysicalPrimary(label, processID)) return kFALSE;
   if (processID != kPDecay) return kFALSE;
 
-  Float_t pdgMother =
-    (Float_t) TMath::Abs(GetPdgFromLabel(GetMothersLabel(label)));
+  Float_t pdgMother = (Float_t) TMath::Abs(GetPdgFromLabel(GetMothersLabel(label)));
   // mass fo the flavour
-  Int_t mfl =
-    Int_t(pdgMother / TMath::Power(10, Int_t(TMath::Log10(pdgMother))));
+  Int_t mfl = Int_t(pdgMother / TMath::Power(10, Int_t(TMath::Log10(pdgMother))));
   // mother has strangeness, pion+- or muon decay
-  if (mfl == 3 || pdgMother == 211 || pdgMother == 13)
-    return kTRUE;
+  if (mfl == 3 || pdgMother == 211 || pdgMother == 13) return kTRUE;
   else
     return kFALSE;
 }
 //____________________________________________________________
-Bool_t PairAnalysisMC::IsSecondaryFromMaterial(Int_t label,
-                                               UInt_t processID) const {
+Bool_t PairAnalysisMC::IsSecondaryFromMaterial(Int_t label, UInt_t processID) const
+{
   if (IsPhysicalPrimary(label, processID)) return kFALSE;
   if (IsSecondaryFromWeakDecay(label, processID)) return kFALSE;
 
   // Check if it is a non-stable product or one of the beams
   CbmMCTrack* mother = GetMCTrackFromMCEvent(GetMothersLabel(label));
-  if (!mother)
-    return kFALSE;
+  if (!mother) return kFALSE;
   else
     return kTRUE;
 }

@@ -21,17 +21,15 @@
 ///////////////////////////////////////////////////////////////////////////
 
 //#include <TObjArray.h>
-#include <vector>
-
-#include <TDatabasePDG.h>
-#include <TLorentzVector.h>
-#include <TParticle.h>
-#include <TParticlePDG.h>
-
-#include "FairTrackParam.h"
+#include "PairAnalysisTrack.h"
 
 #include "CbmGlobalTrack.h"
 #include "CbmKFVertex.h"
+#include "CbmL1PFFitter.h"
+#include "CbmLitConverterFairTrackParam.h"
+#include "CbmLitPtrTypes.h"
+#include "CbmLitToolFactory.h"
+#include "CbmLitTrackParam.h"
 #include "CbmMCTrack.h"
 #include "CbmMuchTrack.h"
 #include "CbmMvdDetector.h"
@@ -44,20 +42,24 @@
 #include "CbmTrackParam.h"
 #include "CbmTrdTrack.h"
 
-#include "CbmL1PFFitter.h"
+#include "FairTrackParam.h"
+
+#include <TDatabasePDG.h>
+#include <TLorentzVector.h>
+#include <TParticle.h>
+#include <TParticlePDG.h>
+
+#include <vector>
+
 #include "L1Field.h"
-
-#include "CbmLitConverterFairTrackParam.h"
-#include "CbmLitPtrTypes.h"
-#include "CbmLitToolFactory.h"
-#include "CbmLitTrackParam.h"
-
-#include "PairAnalysisTrack.h"
 
 ClassImp(PairAnalysisTrack)
 
   PairAnalysisTrack::PairAnalysisTrack()
-  : TNamed(), fMomentum(), fPosition() {
+  : TNamed()
+  , fMomentum()
+  , fPosition()
+{
   //
   // Default Constructor
   //
@@ -65,7 +67,10 @@ ClassImp(PairAnalysisTrack)
 
 //______________________________________________
 PairAnalysisTrack::PairAnalysisTrack(const char* name, const char* title)
-  : TNamed(name, title), fMomentum(), fPosition() {
+  : TNamed(name, title)
+  , fMomentum()
+  , fPosition()
+{
   //
   // Named Constructor
   //
@@ -79,7 +84,8 @@ PairAnalysisTrack::PairAnalysisTrack(TParticle* fastTrk, CbmMCTrack* mctrk)
   , fPosition()
   , fPdgCode(fastTrk->GetPdgCode())
   , fLabel(fastTrk->GetFirstMother())
-  , fFastTrack(kTRUE) {
+  , fFastTrack(kTRUE)
+{
   //
   // Constructor
   //
@@ -91,19 +97,10 @@ PairAnalysisTrack::PairAnalysisTrack(TParticle* fastTrk, CbmMCTrack* mctrk)
 }
 
 //______________________________________________
-PairAnalysisTrack::PairAnalysisTrack(CbmKFVertex* vtx,
-                                     CbmGlobalTrack* gtrk,
-                                     CbmStsTrack* ststrk,
-                                     CbmMuchTrack* muchtrk,
-                                     CbmTrdTrack* trdtrk,
-                                     CbmRichRing* richring,
-                                     CbmTofHit* tofhit,
-                                     CbmMCTrack* mctrk,
-                                     CbmTrackMatchNew* stsmatch,
-                                     CbmTrackMatchNew* muchmatch,
-                                     CbmTrackMatchNew* trdmatch,
-                                     CbmTrackMatchNew* richmatch,
-                                     FairTrackParam* richproj,
+PairAnalysisTrack::PairAnalysisTrack(CbmKFVertex* vtx, CbmGlobalTrack* gtrk, CbmStsTrack* ststrk, CbmMuchTrack* muchtrk,
+                                     CbmTrdTrack* trdtrk, CbmRichRing* richring, CbmTofHit* tofhit, CbmMCTrack* mctrk,
+                                     CbmTrackMatchNew* stsmatch, CbmTrackMatchNew* muchmatch,
+                                     CbmTrackMatchNew* trdmatch, CbmTrackMatchNew* richmatch, FairTrackParam* richproj,
                                      Int_t gIndex)
   : TNamed()
   , fPrimVertex(vtx)
@@ -122,27 +119,23 @@ PairAnalysisTrack::PairAnalysisTrack(CbmKFVertex* vtx,
   , fRichProj(richproj)
   , fMvdEntrance(new FairTrackParam())
   , fMomentum()
-  , fPosition() {
+  , fPosition()
+{
   //
   // Constructor
   //
-  Double_t m2 =
-    TMath::Power(TDatabasePDG::Instance()->GetParticle(11)->Mass(), 2);
+  Double_t m2 = TMath::Power(TDatabasePDG::Instance()->GetParticle(11)->Mass(), 2);
 
   /// check mvd entrance if mvd is in setup
   CbmMvdStationPar* mvdpar = CbmMvdDetector::Instance()->GetParameterFile();
   if (mvdpar && mvdpar->GetStationCount()) {
-    Double_t zMvd =
-      mvdpar->GetZPosition(0);  // z-position of the first mvd station
-    TrackExtrapolatorPtr fExtrapolator =
-      CbmLitToolFactory::CreateTrackExtrapolator("rk4");
+    Double_t zMvd                      = mvdpar->GetZPosition(0);  // z-position of the first mvd station
+    TrackExtrapolatorPtr fExtrapolator = CbmLitToolFactory::CreateTrackExtrapolator("rk4");
     CbmLitTrackParam litParamIn;
-    CbmLitConverterFairTrackParam::FairTrackParamToCbmLitTrackParam(
-      ststrk->GetParamFirst(), &litParamIn);
+    CbmLitConverterFairTrackParam::FairTrackParamToCbmLitTrackParam(ststrk->GetParamFirst(), &litParamIn);
     CbmLitTrackParam litParamOut;
     fExtrapolator->Extrapolate(&litParamIn, &litParamOut, zMvd, NULL);
-    CbmLitConverterFairTrackParam::CbmLitTrackParamToFairTrackParam(
-      &litParamOut, fMvdEntrance);
+    CbmLitConverterFairTrackParam::CbmLitTrackParamToFairTrackParam(&litParamOut, fMvdEntrance);
   }
 
   /// get parameters at primary vertex
@@ -150,11 +143,11 @@ PairAnalysisTrack::PairAnalysisTrack(CbmKFVertex* vtx,
   if (ppar) {
     fMomentum.SetPxPyPzE(ppar->GetPx(), ppar->GetPy(), ppar->GetPz(), 0.);
     fMomentum.SetE(TMath::Sqrt(fMomentum.Vect().Mag2() + m2));
-    fPosition.SetXYZM(
-      ppar->GetX(), ppar->GetY(), ppar->GetZ(), TMath::Sqrt(m2));
+    fPosition.SetXYZM(ppar->GetX(), ppar->GetY(), ppar->GetZ(), TMath::Sqrt(m2));
     fCharge = (ppar->GetQp() > 0. ? +1. : -1.);
     CalculateChi2Vtx();
-  } else {
+  }
+  else {
     Refit(211);
   }
 
@@ -186,7 +179,8 @@ PairAnalysisTrack::PairAnalysisTrack(const PairAnalysisTrack& track)
   , fPdgCode(track.PdgCode())
   , fLabel(track.GetLabel())
   , fWeight(track.GetWeight())
-  , fFastTrack(track.fFastTrack) {
+  , fFastTrack(track.fFastTrack)
+{
   //
   // Copy Constructor
   //
@@ -204,7 +198,8 @@ PairAnalysisTrack::PairAnalysisTrack(const PairAnalysisTrack& track)
 }
 
 //______________________________________________
-PairAnalysisTrack::~PairAnalysisTrack() {
+PairAnalysisTrack::~PairAnalysisTrack()
+{
   //
   // Default Destructor
   //
@@ -212,13 +207,13 @@ PairAnalysisTrack::~PairAnalysisTrack() {
 }
 
 //______________________________________________
-CbmTrackMatchNew* PairAnalysisTrack::GetTrackMatch(ECbmModuleId det) const {
+CbmTrackMatchNew* PairAnalysisTrack::GetTrackMatch(ECbmModuleId det) const
+{
   //
   // get track match depending on detector id
   //
   switch (det) {
-    case ECbmModuleId::kMvd:
-      return fStsTrackMatch;  // there is no mvd track, hit are associtaed to sts track
+    case ECbmModuleId::kMvd: return fStsTrackMatch;  // there is no mvd track, hit are associtaed to sts track
     case ECbmModuleId::kSts: return fStsTrackMatch;
     case ECbmModuleId::kTrd: return fTrdTrackMatch;
     case ECbmModuleId::kMuch: return fMuchTrackMatch;
@@ -228,13 +223,13 @@ CbmTrackMatchNew* PairAnalysisTrack::GetTrackMatch(ECbmModuleId det) const {
 }
 
 //______________________________________________
-CbmTrack* PairAnalysisTrack::GetTrack(ECbmModuleId det) const {
+CbmTrack* PairAnalysisTrack::GetTrack(ECbmModuleId det) const
+{
   //
   // get track depending on detector id
   //
   switch (det) {
-    case ECbmModuleId::kMvd:
-      return fStsTrack;  // there is no mvd track, hit are associtaed to sts track
+    case ECbmModuleId::kMvd: return fStsTrack;  // there is no mvd track, hit are associtaed to sts track
     case ECbmModuleId::kSts: return fStsTrack;
     case ECbmModuleId::kTrd: return fTrdTrack;
     case ECbmModuleId::kMuch: return fMuchTrack;
@@ -244,19 +239,16 @@ CbmTrack* PairAnalysisTrack::GetTrack(ECbmModuleId det) const {
 }
 
 //______________________________________________
-void PairAnalysisTrack::SetMassHypo(Int_t pdg1,
-                                    Int_t pdg2,
-                                    Bool_t refitMassAssump) {
+void PairAnalysisTrack::SetMassHypo(Int_t pdg1, Int_t pdg2, Bool_t refitMassAssump)
+{
   //
   // use charge, time and track length information to assign
   // the best guessed mass hypothesis
   //
   const Double_t mpdg1 = TDatabasePDG::Instance()->GetParticle(pdg1)->Mass();
   const Double_t mpdg2 = TDatabasePDG::Instance()->GetParticle(pdg2)->Mass();
-  const Double_t cpdg1 =
-    TDatabasePDG::Instance()->GetParticle(pdg1)->Charge() * 3;
-  const Double_t cpdg2 =
-    TDatabasePDG::Instance()->GetParticle(pdg2)->Charge() * 3;
+  const Double_t cpdg1 = TDatabasePDG::Instance()->GetParticle(pdg1)->Charge() * 3;
+  const Double_t cpdg2 = TDatabasePDG::Instance()->GetParticle(pdg2)->Charge() * 3;
 
   Double_t m2 = 0.;
   Int_t ppdg  = 0;  // prefered pdg
@@ -264,19 +256,18 @@ void PairAnalysisTrack::SetMassHypo(Int_t pdg1,
   if (fCharge * cpdg1 < 0) {
     m2   = mpdg2 * mpdg2;
     ppdg = pdg2;
-  } else if (fCharge * cpdg2 < 0) {
+  }
+  else if (fCharge * cpdg2 < 0) {
     m2   = mpdg1 * mpdg1;
     ppdg = pdg1;
-  } else
+  }
+  else
     Error("SetMassHypo", "via STS charge went wrong!");
 
   // use TOF time(ns) and track length(cm) if available
   if (fTofHit && kFALSE) {  //TODO: switched OFF!!
     m2 = fMomentum.Mag2()
-         * (TMath::Power((fTofHit->GetTime() * 1e-9 * TMath::C())
-                           / fGlblTrack->GetLength() / 100,
-                         2)
-            - 1);
+         * (TMath::Power((fTofHit->GetTime() * 1e-9 * TMath::C()) / fGlblTrack->GetLength() / 100, 2) - 1);
   }
 
   // refit (under pdg assumption if activated)
@@ -286,13 +277,14 @@ void PairAnalysisTrack::SetMassHypo(Int_t pdg1,
     if (ppar) {
       fMomentum.SetPxPyPzE(ppar->GetPx(), ppar->GetPy(), ppar->GetPz(), 0.);
       fMomentum.SetE(TMath::Sqrt(fMomentum.Vect().Mag2() + m2));
-      fPosition.SetXYZM(
-        ppar->GetX(), ppar->GetY(), ppar->GetZ(), TMath::Sqrt(m2));
+      fPosition.SetXYZM(ppar->GetX(), ppar->GetY(), ppar->GetZ(), TMath::Sqrt(m2));
       fCharge = (ppar->GetQp() > 0. ? +1. : -1.);
       CalculateChi2Vtx();
-    } else
+    }
+    else
       Refit(211);
-  } else {
+  }
+  else {
     Refit(ppdg);
     //    fMomentum.Print();
     /// set mass hypo
@@ -302,7 +294,8 @@ void PairAnalysisTrack::SetMassHypo(Int_t pdg1,
 }
 
 //______________________________________________
-void PairAnalysisTrack::Refit(Int_t pidHypo) {
+void PairAnalysisTrack::Refit(Int_t pidHypo)
+{
   //
   // refit the track under certain mass assumption using CbmL1PFFitter
   // to the primary vertex
@@ -348,15 +341,14 @@ void PairAnalysisTrack::Refit(Int_t pidHypo) {
 }
 
 //______________________________________________
-void PairAnalysisTrack::CalculateChi2Vtx() {
+void PairAnalysisTrack::CalculateChi2Vtx()
+{
   //
   // calculation according to CbmL1PFFitter::GetChiToVertex
   //
 
   // primary vertex
-  Double_t Cv[3] = {fPrimVertex->GetCovMatrix()[0],
-                    fPrimVertex->GetCovMatrix()[1],
-                    fPrimVertex->GetCovMatrix()[2]};
+  Double_t Cv[3] = {fPrimVertex->GetCovMatrix()[0], fPrimVertex->GetCovMatrix()[1], fPrimVertex->GetCovMatrix()[2]};
 
   // track params at prim vertex
   const CbmTrackParam* ppar = fGlblTrack->GetParamVertex();
@@ -366,20 +358,16 @@ void PairAnalysisTrack::CalculateChi2Vtx() {
   Double_t dy = ppar->GetY() - fPrimVertex->GetRefY();
 
 
-  Double_t c[3] = {ppar->GetCovariance(0, 0),
-                   ppar->GetCovariance(1, 0),
-                   ppar->GetCovariance(1, 1)};
+  Double_t c[3] = {ppar->GetCovariance(0, 0), ppar->GetCovariance(1, 0), ppar->GetCovariance(1, 1)};
   c[0] += Cv[0];
   c[1] += Cv[1];
   c[2] += Cv[2];
 
   Double_t d    = c[0] * c[2] - c[1] * c[1];
-  Double_t chi  = TMath::Sqrt(TMath::Abs(
-    0.5 * (dx * dx * c[0] - 2 * dx * dy * c[1] + dy * dy * c[2]) / d));
+  Double_t chi  = TMath::Sqrt(TMath::Abs(0.5 * (dx * dx * c[0] - 2 * dx * dy * c[1] + dy * dy * c[2]) / d));
   Bool_t isNull = (TMath::Abs(d) < 1.e-20);
 
-  if (isNull)
-    fChi2Vtx = -1.;
+  if (isNull) fChi2Vtx = -1.;
   else
     fChi2Vtx = chi;
 }

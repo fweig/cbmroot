@@ -18,18 +18,7 @@
 */
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
-#include <Rtypes.h>
-#include <TArrayS.h>
-#include <TMatrixFSym.h>
-#include <TObjArray.h>
-#include <TParticle.h>
-
-
-#include "FairMCPoint.h"
-#include "FairRootManager.h"
-#include "FairTrackParam.h"
-
-#include "FairMCEventHeader.h"
+#include "PairAnalysisEvent.h"
 
 #include "CbmGlobalTrack.h"
 #include "CbmKFVertex.h"
@@ -42,7 +31,17 @@
 #include "CbmTrdTrack.h"
 #include "CbmVertex.h"
 
-#include "PairAnalysisEvent.h"
+#include "FairMCEventHeader.h"
+#include "FairMCPoint.h"
+#include "FairRootManager.h"
+#include "FairTrackParam.h"
+
+#include <Rtypes.h>
+#include <TArrayS.h>
+#include <TMatrixFSym.h>
+#include <TObjArray.h>
+#include <TParticle.h>
+
 #include "PairAnalysisTrack.h"
 
 ClassImp(PairAnalysisEvent)
@@ -69,7 +68,8 @@ PairAnalysisEvent::PairAnalysisEvent(const char* name, const char* title)
 }
 
 //______________________________________________
-PairAnalysisEvent::~PairAnalysisEvent() {
+PairAnalysisEvent::~PairAnalysisEvent()
+{
   //
   // Default Destructor
   //
@@ -119,7 +119,8 @@ PairAnalysisEvent::~PairAnalysisEvent() {
 }
 
 //______________________________________________
-void PairAnalysisEvent::SetInput(FairRootManager* man) {
+void PairAnalysisEvent::SetInput(FairRootManager* man)
+{
   //
   // setup the track/hit branches
   //
@@ -133,9 +134,7 @@ void PairAnalysisEvent::SetInput(FairRootManager* man) {
   // The old name for the object is "PrimaryVertex" the new one
   // "PrimaryVertex." Check first for the new name
   fPrimVertex = dynamic_cast<CbmVertex*>(man->GetObject("PrimaryVertex."));
-  if (nullptr == fPrimVertex) {
-    fPrimVertex = dynamic_cast<CbmVertex*>(man->GetObject("PrimaryVertex"));
-  }
+  if (nullptr == fPrimVertex) { fPrimVertex = dynamic_cast<CbmVertex*>(man->GetObject("PrimaryVertex")); }
   // MC matches and tracks
   fMCHeader    = (FairMCEventHeader*) man->GetObject("MCEventHeader.");
   fMCTracks    = (TClonesArray*) man->GetObject("MCTrack");
@@ -152,8 +151,7 @@ void PairAnalysisEvent::SetInput(FairRootManager* man) {
   fRichHits      = (TClonesArray*) man->GetObject("RichHit");
   fTofHits       = (TClonesArray*) man->GetObject("TofHit");
   // hit matches (matches are accessed directly via CbmHit::GetMatch)
-  fMvdHitMatches =
-    (TClonesArray*) man->GetObject("MvdHitMatch");  //needed for mvd matching
+  fMvdHitMatches  = (TClonesArray*) man->GetObject("MvdHitMatch");  //needed for mvd matching
   fStsHitMatches  = (TClonesArray*) man->GetObject("StsHitMatch");
   fRichHitMatches = (TClonesArray*) man->GetObject("RichHitMatch");
   fTrdHitMatches  = (TClonesArray*) man->GetObject("TrdHitMatch");
@@ -178,7 +176,8 @@ void PairAnalysisEvent::SetInput(FairRootManager* man) {
 }
 
 //______________________________________________
-void PairAnalysisEvent::Init() {
+void PairAnalysisEvent::Init()
+{
   //
   // initialization of track arrays
   //
@@ -187,82 +186,37 @@ void PairAnalysisEvent::Init() {
 
   // DEBUG stuff
   if (0) {
-    fprintf(stderr,
-            "check %s: has %d points in %p \n",
-            "MVD",
-            GetNumberOfPoints(ECbmModuleId::kMvd),
+    fprintf(stderr, "check %s: has %d points in %p \n", "MVD", GetNumberOfPoints(ECbmModuleId::kMvd),
             GetPoints(ECbmModuleId::kMvd));
-    fprintf(stderr,
-            "check %s: has %d points in %p \n",
-            "STS",
-            GetNumberOfPoints(ECbmModuleId::kSts),
+    fprintf(stderr, "check %s: has %d points in %p \n", "STS", GetNumberOfPoints(ECbmModuleId::kSts),
             GetPoints(ECbmModuleId::kSts));
-    fprintf(stderr,
-            "check %s: has %d points in %p \n",
-            "RICH",
-            GetNumberOfPoints(ECbmModuleId::kRich),
+    fprintf(stderr, "check %s: has %d points in %p \n", "RICH", GetNumberOfPoints(ECbmModuleId::kRich),
             GetPoints(ECbmModuleId::kRich));
-    fprintf(stderr,
-            "check %s: has %d points in %p \n",
-            "TRD",
-            GetNumberOfPoints(ECbmModuleId::kTrd),
+    fprintf(stderr, "check %s: has %d points in %p \n", "TRD", GetNumberOfPoints(ECbmModuleId::kTrd),
             GetPoints(ECbmModuleId::kTrd));
-    fprintf(stderr,
-            "check %s: has %d points in %p \n",
-            "TOF",
-            GetNumberOfPoints(ECbmModuleId::kTof),
+    fprintf(stderr, "check %s: has %d points in %p \n", "TOF", GetNumberOfPoints(ECbmModuleId::kTof),
             GetPoints(ECbmModuleId::kTof));
 
-    fprintf(stderr,
-            "check %s: has %d hitMatches in %p \n",
-            "MVD",
-            GetNumberOfHitMatches(ECbmModuleId::kMvd),
+    fprintf(stderr, "check %s: has %d hitMatches in %p \n", "MVD", GetNumberOfHitMatches(ECbmModuleId::kMvd),
             GetHitMatches(ECbmModuleId::kMvd));
-    fprintf(stderr,
-            "check %s: has %d hitMatches in %p \n",
-            "STS",
-            GetNumberOfHitMatches(ECbmModuleId::kSts),
+    fprintf(stderr, "check %s: has %d hitMatches in %p \n", "STS", GetNumberOfHitMatches(ECbmModuleId::kSts),
             GetHitMatches(ECbmModuleId::kSts));
-    fprintf(stderr,
-            "check %s: has %d hitMatches in %p \n",
-            "RICH",
-            GetNumberOfHitMatches(ECbmModuleId::kRich),
+    fprintf(stderr, "check %s: has %d hitMatches in %p \n", "RICH", GetNumberOfHitMatches(ECbmModuleId::kRich),
             GetHitMatches(ECbmModuleId::kRich));
-    fprintf(stderr,
-            "check %s: has %d hitMatches in %p \n",
-            "TRD",
-            GetNumberOfHitMatches(ECbmModuleId::kTrd),
+    fprintf(stderr, "check %s: has %d hitMatches in %p \n", "TRD", GetNumberOfHitMatches(ECbmModuleId::kTrd),
             GetHitMatches(ECbmModuleId::kTrd));
-    fprintf(stderr,
-            "check %s: has %d hitMatches in %p \n",
-            "TOF",
-            GetNumberOfHitMatches(ECbmModuleId::kTof),
+    fprintf(stderr, "check %s: has %d hitMatches in %p \n", "TOF", GetNumberOfHitMatches(ECbmModuleId::kTof),
             GetHitMatches(ECbmModuleId::kTof));
 
-    fprintf(stderr,
-            "check %s: has %d hits in %p \n",
-            "MVD",
-            GetNumberOfHits(ECbmModuleId::kMvd),
+    fprintf(stderr, "check %s: has %d hits in %p \n", "MVD", GetNumberOfHits(ECbmModuleId::kMvd),
             GetHits(ECbmModuleId::kMvd));
-    fprintf(stderr,
-            "check %s: has %d hits in %p \n",
-            "STS",
-            GetNumberOfHits(ECbmModuleId::kSts),
+    fprintf(stderr, "check %s: has %d hits in %p \n", "STS", GetNumberOfHits(ECbmModuleId::kSts),
             GetHits(ECbmModuleId::kSts));
-    fprintf(stderr,
-            "check %s: has %d hits in %p \n",
-            "RICH",
-            GetNumberOfHits(ECbmModuleId::kRich),
+    fprintf(stderr, "check %s: has %d hits in %p \n", "RICH", GetNumberOfHits(ECbmModuleId::kRich),
             GetHits(ECbmModuleId::kRich));
-    fprintf(stderr,
-            "check %s: has %d hits in %p \n",
-            "TRD",
-            GetNumberOfHits(ECbmModuleId::kTrd),
+    fprintf(stderr, "check %s: has %d hits in %p \n", "TRD", GetNumberOfHits(ECbmModuleId::kTrd),
             GetHits(ECbmModuleId::kTrd));
-    fprintf(stderr,
-            "check %s: has %d hits in %p \n",
-            "TOF",
-            GetNumberOfHits(ECbmModuleId::kTof),
+    fprintf(stderr, "check %s: has %d hits in %p \n", "TOF", GetNumberOfHits(ECbmModuleId::kTof),
             GetHits(ECbmModuleId::kTof));
   }
 
@@ -270,27 +224,13 @@ void PairAnalysisEvent::Init() {
   CbmKFVertex* vtx = 0x0;
   if (!fPrimVertex && fMCHeader) {
     TMatrixFSym cov(3);
-    fPrimVertex = new CbmVertex("mcvtx",
-                                "mc vtx",
-                                fMCHeader->GetX(),
-                                fMCHeader->GetY(),
-                                fMCHeader->GetZ(),
-                                1.0,
-                                1,
-                                fMCHeader->GetNPrim(),
-                                cov);
-  } else if (!fPrimVertex && !fMCHeader) {
+    fPrimVertex = new CbmVertex("mcvtx", "mc vtx", fMCHeader->GetX(), fMCHeader->GetY(), fMCHeader->GetZ(), 1.0, 1,
+                                fMCHeader->GetNPrim(), cov);
+  }
+  else if (!fPrimVertex && !fMCHeader) {
     TMatrixFSym cov(3);
-    fPrimVertex = new CbmVertex("defaultvtx",
-                                "default vtx",
-                                0.,
-                                0.,
-                                0.,
-                                1.0,
-                                1,
-                                TMath::Max(fGlobalTracks->GetEntriesFast(),
-                                           fFastTracks->GetEntriesFast()),
-                                cov);
+    fPrimVertex = new CbmVertex("defaultvtx", "default vtx", 0., 0., 0., 1.0, 1,
+                                TMath::Max(fGlobalTracks->GetEntriesFast(), fFastTracks->GetEntriesFast()), cov);
   }
   if (fPrimVertex) vtx = new CbmKFVertex(*fPrimVertex);
 
@@ -298,11 +238,9 @@ void PairAnalysisEvent::Init() {
   if (fMCTracks) matches.Set(fMCTracks->GetEntriesFast());
 
   /// loop over all glbl tracks
-  for (Int_t i = 0; i < (fGlobalTracks ? fGlobalTracks->GetEntriesFast() : 0);
-       i++) {
+  for (Int_t i = 0; i < (fGlobalTracks ? fGlobalTracks->GetEntriesFast() : 0); i++) {
     // global track
-    CbmGlobalTrack* gtrk =
-      static_cast<CbmGlobalTrack*>(fGlobalTracks->UncheckedAt(i));
+    CbmGlobalTrack* gtrk = static_cast<CbmGlobalTrack*>(fGlobalTracks->UncheckedAt(i));
     if (!gtrk) continue;
 
     Int_t itrd  = gtrk->GetTrdTrackIndex();
@@ -313,89 +251,57 @@ void PairAnalysisEvent::Init() {
 
     // reconstructed tracks
     CbmTrdTrack* trdTrack = 0x0;
-    if (fTrdTracks && itrd >= 0)
-      trdTrack = static_cast<CbmTrdTrack*>(fTrdTracks->At(itrd));
+    if (fTrdTracks && itrd >= 0) trdTrack = static_cast<CbmTrdTrack*>(fTrdTracks->At(itrd));
     CbmStsTrack* stsTrack = 0x0;
-    if (fStsTracks && ists >= 0)
-      stsTrack = static_cast<CbmStsTrack*>(fStsTracks->At(ists));
+    if (fStsTracks && ists >= 0) stsTrack = static_cast<CbmStsTrack*>(fStsTracks->At(ists));
     CbmRichRing* richRing = 0x0;
-    if (fRichRings && irich >= 0)
-      richRing = static_cast<CbmRichRing*>(fRichRings->At(irich));
+    if (fRichRings && irich >= 0) richRing = static_cast<CbmRichRing*>(fRichRings->At(irich));
     CbmTofHit* tofHit = 0x0;
-    if (fTofHits && itof >= 0)
-      tofHit = static_cast<CbmTofHit*>(fTofHits->At(itof));
+    if (fTofHits && itof >= 0) tofHit = static_cast<CbmTofHit*>(fTofHits->At(itof));
     CbmMuchTrack* muchTrack = 0x0;
-    if (fMuchTracks && imuch >= 0)
-      muchTrack = static_cast<CbmMuchTrack*>(fMuchTracks->At(imuch));
+    if (fMuchTracks && imuch >= 0) muchTrack = static_cast<CbmMuchTrack*>(fMuchTracks->At(imuch));
 
     // track and TOFhit matches
     CbmTrackMatchNew* stsMatch = 0x0;
-    if (fStsMatches && stsTrack)
-      stsMatch = static_cast<CbmTrackMatchNew*>(fStsMatches->At(ists));
-    Int_t istsMC                = (stsMatch && stsMatch->GetNofHits() > 0
-                      ? stsMatch->GetMatchedLink().GetIndex()
-                      : -1);
+    if (fStsMatches && stsTrack) stsMatch = static_cast<CbmTrackMatchNew*>(fStsMatches->At(ists));
+    Int_t istsMC                = (stsMatch && stsMatch->GetNofHits() > 0 ? stsMatch->GetMatchedLink().GetIndex() : -1);
     CbmTrackMatchNew* muchMatch = 0x0;
-    if (fMuchMatches && muchTrack)
-      muchMatch = static_cast<CbmTrackMatchNew*>(fMuchMatches->At(imuch));
-    Int_t imuchMC              = (muchMatch && muchMatch->GetNofHits() > 0
-                       ? muchMatch->GetMatchedLink().GetIndex()
-                       : -1);
+    if (fMuchMatches && muchTrack) muchMatch = static_cast<CbmTrackMatchNew*>(fMuchMatches->At(imuch));
+    Int_t imuchMC = (muchMatch && muchMatch->GetNofHits() > 0 ? muchMatch->GetMatchedLink().GetIndex() : -1);
     CbmTrackMatchNew* trdMatch = 0x0;
-    if (fTrdMatches && trdTrack)
-      trdMatch = static_cast<CbmTrackMatchNew*>(fTrdMatches->At(itrd));
-    Int_t itrdMC = (trdMatch ? trdMatch->GetMatchedLink().GetIndex() : -1);
+    if (fTrdMatches && trdTrack) trdMatch = static_cast<CbmTrackMatchNew*>(fTrdMatches->At(itrd));
+    Int_t itrdMC                = (trdMatch ? trdMatch->GetMatchedLink().GetIndex() : -1);
     CbmTrackMatchNew* richMatch = 0x0;
-    if (fRichMatches && richRing)
-      richMatch = static_cast<CbmTrackMatchNew*>(fRichMatches->At(irich));
-    Int_t irichMC      = (richMatch && richMatch->GetNofHits() > 0
-                       ? richMatch->GetMatchedLink().GetIndex()
-                       : -1);
+    if (fRichMatches && richRing) richMatch = static_cast<CbmTrackMatchNew*>(fRichMatches->At(irich));
+    Int_t irichMC      = (richMatch && richMatch->GetNofHits() > 0 ? richMatch->GetMatchedLink().GetIndex() : -1);
     CbmMatch* tofMatch = 0x0;
     if (fTofHitMatches && tofHit)
-      tofMatch = static_cast<CbmMatch*>(
-        fTofHitMatches->At(itof));  //tofMatch = tofHit->GetMatch();
+      tofMatch = static_cast<CbmMatch*>(fTofHitMatches->At(itof));  //tofMatch = tofHit->GetMatch();
     FairMCPoint* tofPoint = 0x0;
     if (tofMatch && tofMatch->GetNofLinks() > 0)
-      tofPoint = static_cast<FairMCPoint*>(
-        fTofPoints->At(tofMatch->GetMatchedLink().GetIndex()));
+      tofPoint = static_cast<FairMCPoint*>(fTofPoints->At(tofMatch->GetMatchedLink().GetIndex()));
     Int_t itofMC = (tofPoint ? tofPoint->GetTrackID() : -1);
 
     Int_t imvdMC = GetMvdMatchingIndex(stsTrack);
 
     // rich projection
     FairTrackParam* richProj = 0x0;
-    if (fRichProjection)
-      richProj = static_cast<FairTrackParam*>(fRichProjection->At(i));
+    if (fRichProjection) richProj = static_cast<FairTrackParam*>(fRichProjection->At(i));
 
     // monte carlo track based on the STS match!!!
     Int_t iMC           = istsMC;
     CbmMCTrack* mcTrack = 0x0;
-    if (fMCTracks && iMC >= 0)
-      mcTrack = static_cast<CbmMCTrack*>(fMCTracks->At(iMC));
+    if (fMCTracks && iMC >= 0) mcTrack = static_cast<CbmMCTrack*>(fMCTracks->At(iMC));
     // increment position in matching array
     if (mcTrack && fMCTracks) matches[iMC]++;
 
     // build papa track
-    fTracks->AddAtAndExpand(new PairAnalysisTrack(vtx,
-                                                  gtrk,
-                                                  stsTrack,
-                                                  muchTrack,
-                                                  trdTrack,
-                                                  richRing,
-                                                  tofHit,
-                                                  mcTrack,
-                                                  stsMatch,
-                                                  muchMatch,
-                                                  trdMatch,
-                                                  richMatch,
-                                                  richProj,
-                                                  i),
+    fTracks->AddAtAndExpand(new PairAnalysisTrack(vtx, gtrk, stsTrack, muchTrack, trdTrack, richRing, tofHit, mcTrack,
+                                                  stsMatch, muchMatch, trdMatch, richMatch, richProj, i),
                             i);
 
     // set MC label and matching bits
-    PairAnalysisTrack* tr =
-      static_cast<PairAnalysisTrack*>(fTracks->UncheckedAt(i));
+    PairAnalysisTrack* tr = static_cast<PairAnalysisTrack*>(fTracks->UncheckedAt(i));
     if (iMC < 0) iMC = -999;  // STS tracks w/o MC matching
     tr->SetLabel(iMC);
     // NOTE: sts track matching might include mvd points
@@ -412,8 +318,7 @@ void PairAnalysisEvent::Init() {
   if (!fGlobalTracks || !fGlobalTracks->GetEntriesFast()) {
 
     // loop over all fast tracks
-    for (Int_t i = 0; i < (fFastTracks ? fFastTracks->GetEntriesFast() : 0);
-         i++) {
+    for (Int_t i = 0; i < (fFastTracks ? fFastTracks->GetEntriesFast() : 0); i++) {
       // fast(sim) track
       TParticle* ftrk = static_cast<TParticle*>(fFastTracks->UncheckedAt(i));
       if (!ftrk) continue;
@@ -421,8 +326,7 @@ void PairAnalysisEvent::Init() {
       // monte carlo track
       Int_t iMC           = ftrk->GetFirstMother();
       CbmMCTrack* mcTrack = 0x0;
-      if (fMCTracks && iMC >= 0)
-        mcTrack = static_cast<CbmMCTrack*>(fMCTracks->At(iMC));
+      if (fMCTracks && iMC >= 0) mcTrack = static_cast<CbmMCTrack*>(fMCTracks->At(iMC));
       // increment position in matching array
       if (mcTrack && fMCTracks) matches[iMC]++;
       // build papa track
@@ -436,76 +340,73 @@ void PairAnalysisEvent::Init() {
 
 
 //______________________________________________
-PairAnalysisTrack* PairAnalysisEvent::GetTrack(UInt_t pos) {
+PairAnalysisTrack* PairAnalysisEvent::GetTrack(UInt_t pos)
+{
   //
   // intialize the papa track and return it
   //
 
   // check intitialisation
-  if (fTracks->GetSize() < 0 || UInt_t(fTracks->GetSize()) <= pos
-      || !fTracks->UncheckedAt(pos))
-    Fatal("PairAnalysisEvent::GetTrack",
-          "Event initialisation failed somehow !!!");
+  if (fTracks->GetSize() < 0 || UInt_t(fTracks->GetSize()) <= pos || !fTracks->UncheckedAt(pos))
+    Fatal("PairAnalysisEvent::GetTrack", "Event initialisation failed somehow !!!");
 
   return static_cast<PairAnalysisTrack*>(fTracks->UncheckedAt(pos));
 }
 
 //______________________________________________
-Int_t PairAnalysisEvent::GetNumberOfMatches(ECbmModuleId det) const {
+Int_t PairAnalysisEvent::GetNumberOfMatches(ECbmModuleId det) const
+{
   //
   // number of track matches
   //
   switch (det) {
-    case ECbmModuleId::kSts:
-      return (fStsMatches ? fStsMatches->GetEntriesFast() : 0);
-    case ECbmModuleId::kMuch:
-      return (fMuchMatches ? fMuchMatches->GetEntriesFast() : 0);
-    case ECbmModuleId::kTrd:
-      return (fTrdMatches ? fTrdMatches->GetEntriesFast() : 0);
-    case ECbmModuleId::kRich:
-      return (fRichMatches ? fRichMatches->GetEntriesFast() : 0);
+    case ECbmModuleId::kSts: return (fStsMatches ? fStsMatches->GetEntriesFast() : 0);
+    case ECbmModuleId::kMuch: return (fMuchMatches ? fMuchMatches->GetEntriesFast() : 0);
+    case ECbmModuleId::kTrd: return (fTrdMatches ? fTrdMatches->GetEntriesFast() : 0);
+    case ECbmModuleId::kRich: return (fRichMatches ? fRichMatches->GetEntriesFast() : 0);
     default: return 0;
   }
 }
 
 //______________________________________________
-Int_t PairAnalysisEvent::GetNumberOfHitMatches(ECbmModuleId det) const {
+Int_t PairAnalysisEvent::GetNumberOfHitMatches(ECbmModuleId det) const
+{
   //
   // number of hit matches
   //
-  if (!GetHitMatches(det)) {
-    return 0;
-  } else {
+  if (!GetHitMatches(det)) { return 0; }
+  else {
     return (GetHitMatches(det)->GetEntriesFast());
   }
 }
 
 //______________________________________________
-Int_t PairAnalysisEvent::GetNumberOfHits(ECbmModuleId det) const {
+Int_t PairAnalysisEvent::GetNumberOfHits(ECbmModuleId det) const
+{
   //
   // number of reconstructed hits
   //
-  if (!GetHits(det)) {
-    return 0;
-  } else {
+  if (!GetHits(det)) { return 0; }
+  else {
     return (GetHits(det)->GetEntriesFast());
   }
 }
 
 //______________________________________________
-Int_t PairAnalysisEvent::GetNumberOfPoints(ECbmModuleId det) const {
+Int_t PairAnalysisEvent::GetNumberOfPoints(ECbmModuleId det) const
+{
   //
   // number of reconstructed hits
   //
-  if (!GetPoints(det)) {
-    return 0;
-  } else {
+  if (!GetPoints(det)) { return 0; }
+  else {
     return (GetPoints(det)->GetEntriesFast());
   }
 }
 
 //______________________________________________
-TClonesArray* PairAnalysisEvent::GetHits(ECbmModuleId det) const {
+TClonesArray* PairAnalysisEvent::GetHits(ECbmModuleId det) const
+{
   //
   // get hits array for certain detector
   //
@@ -522,7 +423,8 @@ TClonesArray* PairAnalysisEvent::GetHits(ECbmModuleId det) const {
 }
 
 //______________________________________________
-TClonesArray* PairAnalysisEvent::GetHitMatches(ECbmModuleId det) const {
+TClonesArray* PairAnalysisEvent::GetHitMatches(ECbmModuleId det) const
+{
   //
   // get hit matches array for certain detector
   //
@@ -539,7 +441,8 @@ TClonesArray* PairAnalysisEvent::GetHitMatches(ECbmModuleId det) const {
 }
 
 //______________________________________________
-TClonesArray* PairAnalysisEvent::GetPoints(ECbmModuleId det) const {
+TClonesArray* PairAnalysisEvent::GetPoints(ECbmModuleId det) const
+{
   //
   // get mc points array for certain detector
   //
@@ -555,7 +458,8 @@ TClonesArray* PairAnalysisEvent::GetPoints(ECbmModuleId det) const {
 }
 
 //______________________________________________
-TClonesArray* PairAnalysisEvent::GetCluster(ECbmModuleId det) const {
+TClonesArray* PairAnalysisEvent::GetCluster(ECbmModuleId det) const
+{
   //
   // get cluster array for certain detector
   //
@@ -571,7 +475,8 @@ TClonesArray* PairAnalysisEvent::GetCluster(ECbmModuleId det) const {
 }
 
 //______________________________________________
-void PairAnalysisEvent::Clear(Option_t* /*opt*/) {
+void PairAnalysisEvent::Clear(Option_t* /*opt*/)
+{
   //
   // clear arrays
   //
@@ -584,7 +489,8 @@ void PairAnalysisEvent::Clear(Option_t* /*opt*/) {
 }
 
 //______________________________________________
-Int_t PairAnalysisEvent::GetMvdMatchingIndex(CbmStsTrack* track) const {
+Int_t PairAnalysisEvent::GetMvdMatchingIndex(CbmStsTrack* track) const
+{
   //
   // calculate the standalone mvd mc matching
   //
@@ -595,22 +501,17 @@ Int_t PairAnalysisEvent::GetMvdMatchingIndex(CbmStsTrack* track) const {
 
   Int_t nofMvdHits = track->GetNofMvdHits();
   for (Int_t iHit = 0; iHit < nofMvdHits; iHit++) {
-    const CbmMatch* hitMatch =
-      static_cast<CbmMatch*>(fMvdHitMatches->At(track->GetMvdHitIndex(iHit)));
+    const CbmMatch* hitMatch = static_cast<CbmMatch*>(fMvdHitMatches->At(track->GetMvdHitIndex(iHit)));
     if (!hitMatch) continue;
     Int_t nofLinks = hitMatch->GetNofLinks();
     for (Int_t iLink = 0; iLink < nofLinks; iLink++) {
-      const CbmLink& link = hitMatch->GetLink(iLink);
-      const FairMCPoint* point =
-        static_cast<const FairMCPoint*>(fMvdPoints->At(link.GetIndex()));
+      const CbmLink& link      = hitMatch->GetLink(iLink);
+      const FairMCPoint* point = static_cast<const FairMCPoint*>(fMvdPoints->At(link.GetIndex()));
       if (NULL == point) continue;
-      trackMatch->AddLink(
-        CbmLink(1., point->GetTrackID(), link.GetEntry(), link.GetFile()));
+      trackMatch->AddLink(CbmLink(1., point->GetTrackID(), link.GetEntry(), link.GetFile()));
     }
   }
-  if (trackMatch->GetNofLinks()) {
-    idx = trackMatch->GetMatchedLink().GetIndex();
-  }
+  if (trackMatch->GetNofLinks()) { idx = trackMatch->GetMatchedLink().GetIndex(); }
 
   //delete surplus stuff
   delete trackMatch;

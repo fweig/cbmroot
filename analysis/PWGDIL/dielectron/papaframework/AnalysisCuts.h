@@ -30,8 +30,7 @@ public:
   virtual TObject* GetStatistics(Option_t*) const { return 0; }
 
 private:
-  UInt_t
-    fFilterMask;  // Mask to use one of the previous decisions inside a filter
+  UInt_t fFilterMask;         // Mask to use one of the previous decisions inside a filter
   Bool_t fSelected;           // Final decision on selction
   ClassDef(AnalysisCuts, 1);  // Base class for filter decisions
 };

@@ -23,7 +23,10 @@
 
 class PairAnalysisHF : public PairAnalysisHistos {
 public:
-  enum class Max { kMaxCuts = 20 };
+  enum class Max
+  {
+    kMaxCuts = 20
+  };
 
   PairAnalysisHF();
   PairAnalysisHF(const char* name, const char* title);
@@ -35,9 +38,7 @@ public:
   const TObjArray* GetHistArray() const { return &fArrDielHistos; }
 
   // functions to define the grid
-  void AddCutVariable(PairAnalysisVarManager::ValueTypes type,
-                      TVectorD* binLimits,
-                      Bool_t leg = kFALSE);
+  void AddCutVariable(PairAnalysisVarManager::ValueTypes type, TVectorD* binLimits, Bool_t leg = kFALSE);
 
   // functions to fill objects
   Int_t FindCell(const Double_t* values);
@@ -45,15 +46,10 @@ public:
   // TODO: check, remove, implement
   void Fill(Int_t pairIndex, const PairAnalysisPair* particle);
   void Fill(Int_t label1, Int_t label2, Int_t nSignal);
-  void Fill(Int_t Index,
-            Double_t* const valuesPair,
-            Double_t* const valuesLeg1,
-            Double_t* const valuesLeg2);
+  void Fill(Int_t Index, Double_t* const valuesPair, Double_t* const valuesLeg1, Double_t* const valuesLeg2);
 
   // functions to get and draw histograms
-  void ReadFromFile(const char* file   = "histos.root",
-                    const char* task   = "",
-                    const char* config = "");
+  void ReadFromFile(const char* file = "histos.root", const char* task = "", const char* config = "");
 
 private:
   TBits* fUsedVars;  // list of used variables

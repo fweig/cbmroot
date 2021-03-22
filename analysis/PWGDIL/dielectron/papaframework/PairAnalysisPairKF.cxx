@@ -8,52 +8,52 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-#include <TDatabasePDG.h>
-
-
-#include "CbmL1.h"
-#include "CbmL1PFFitter.h"
-#include "L1Algo.h"
-#include "L1Field.h"
+#include "PairAnalysisPairKF.h"
 
 #include "CbmKFParticleInterface.h"
 #include "CbmKFTrack.h"
-#include "KFParticle.h"
-
+#include "CbmL1.h"
+#include "CbmL1PFFitter.h"
 #include "CbmMCTrack.h"
 #include "CbmVertex.h"
-#include "PairAnalysisTrack.h"
 
-#include "PairAnalysisPairKF.h"
+#include <TDatabasePDG.h>
+
+#include "KFParticle.h"
+#include "L1Algo.h"
+#include "L1Field.h"
+#include "PairAnalysisTrack.h"
 
 ClassImp(PairAnalysisPairKF)
 
   PairAnalysisPairKF::PairAnalysisPairKF()
-  : PairAnalysisPair(), fPair(), fD1(), fD2() {
+  : PairAnalysisPair()
+  , fPair()
+  , fD1()
+  , fD2()
+{
   //
   // Default Constructor
   //
 }
 
 //______________________________________________
-PairAnalysisPairKF::PairAnalysisPairKF(const PairAnalysisPair& pair)
-  : PairAnalysisPair(pair), fPair(), fD1(), fD2() {
+PairAnalysisPairKF::PairAnalysisPairKF(const PairAnalysisPair& pair) : PairAnalysisPair(pair), fPair(), fD1(), fD2()
+{
   //
   // Copy Constructor
   //
-  SetTracks(pair.GetFirstDaughter(),
-            pair.GetFirstDaughterPid(),
-            pair.GetSecondDaughter(),
-            pair.GetSecondDaughterPid());
+  SetTracks(pair.GetFirstDaughter(), pair.GetFirstDaughterPid(), pair.GetSecondDaughter(), pair.GetSecondDaughterPid());
 }
 
 //______________________________________________
-PairAnalysisPairKF::PairAnalysisPairKF(PairAnalysisTrack* const particle1,
-                                       Int_t pid1,
-                                       PairAnalysisTrack* const particle2,
-                                       Int_t pid2,
-                                       Char_t type)
-  : PairAnalysisPair(type), fPair(), fD1(), fD2() {
+PairAnalysisPairKF::PairAnalysisPairKF(PairAnalysisTrack* const particle1, Int_t pid1,
+                                       PairAnalysisTrack* const particle2, Int_t pid2, Char_t type)
+  : PairAnalysisPair(type)
+  , fPair()
+  , fD1()
+  , fD2()
+{
   //
   // Constructor with tracks
   //
@@ -61,17 +61,17 @@ PairAnalysisPairKF::PairAnalysisPairKF(PairAnalysisTrack* const particle1,
 }
 
 //______________________________________________
-PairAnalysisPairKF::~PairAnalysisPairKF() {
+PairAnalysisPairKF::~PairAnalysisPairKF()
+{
   //
   // Default Destructor
   //
 }
 
 //______________________________________________
-void PairAnalysisPairKF::SetTracks(PairAnalysisTrack* const particle1,
-                                   Int_t pid1,
-                                   PairAnalysisTrack* const particle2,
-                                   Int_t pid2) {
+void PairAnalysisPairKF::SetTracks(PairAnalysisTrack* const particle1, Int_t pid1, PairAnalysisTrack* const particle2,
+                                   Int_t pid2)
+{
   //
   // set KF daughters and pair
   // refParticle1 and 2 are the original tracks. In the case of track rotation
@@ -81,10 +81,8 @@ void PairAnalysisPairKF::SetTracks(PairAnalysisTrack* const particle1,
   // BUT think about mixed events or LS-pairs
   //  const Double_t mpid1 = TDatabasePDG::Instance()->GetParticle(pid1)->Mass(); (FU) unused
   //  const Double_t mpid2 = TDatabasePDG::Instance()->GetParticle(pid2)->Mass(); (FU) unused
-  const Double_t cpid1 =
-    TDatabasePDG::Instance()->GetParticle(pid1)->Charge() * 3;
-  const Double_t cpid2 =
-    TDatabasePDG::Instance()->GetParticle(pid2)->Charge() * 3;
+  const Double_t cpid1 = TDatabasePDG::Instance()->GetParticle(pid1)->Charge() * 3;
+  const Double_t cpid2 = TDatabasePDG::Instance()->GetParticle(pid2)->Charge() * 3;
 
   // match charge of track to pid and set mass accordingly
   fPid1 = pid1;
@@ -104,10 +102,8 @@ void PairAnalysisPairKF::SetTracks(PairAnalysisTrack* const particle1,
   /// be carefull in Mixed events this does not work because STS hits are not there
   //// TODO: - write converter w/o refit, what about field coefficients
   ////       - OR store the KFparticle in the PapaTrack and use it here instead
-  CbmKFParticleInterface::SetKFParticleFromStsTrack(
-    particle1->GetStsTrack(), &fD1, fPid1, kTRUE);
-  CbmKFParticleInterface::SetKFParticleFromStsTrack(
-    particle2->GetStsTrack(), &fD2, fPid2, kTRUE);
+  CbmKFParticleInterface::SetKFParticleFromStsTrack(particle1->GetStsTrack(), &fD1, fPid1, kTRUE);
+  CbmKFParticleInterface::SetKFParticleFromStsTrack(particle2->GetStsTrack(), &fD2, fPid2, kTRUE);
 
   // references
   fRefD1 = particle1;
@@ -131,8 +127,8 @@ void PairAnalysisPairKF::SetTracks(PairAnalysisTrack* const particle1,
 }
 
 //______________________________________________
-void PairAnalysisPairKF::SetMCTracks(const CbmMCTrack* const particle1,
-                                     const CbmMCTrack* const particle2) {
+void PairAnalysisPairKF::SetMCTracks(const CbmMCTrack* const particle1, const CbmMCTrack* const particle2)
+{
   //
   // build MC pair from daughters
   // no references are set
@@ -170,10 +166,8 @@ void PairAnalysisPairKF::SetMCTracks(const CbmMCTrack* const particle1,
 }
 
 //______________________________________________
-void PairAnalysisPairKF::GetThetaPhiCM(Double_t& thetaHE,
-                                       Double_t& phiHE,
-                                       Double_t& thetaCS,
-                                       Double_t& phiCS) const {
+void PairAnalysisPairKF::GetThetaPhiCM(Double_t& thetaHE, Double_t& phiHE, Double_t& thetaCS, Double_t& phiCS) const
+{
   //
   // Calculate theta and phi in helicity and Collins-Soper coordinate frame
   //
@@ -187,26 +181,18 @@ void PairAnalysisPairKF::GetThetaPhiCM(Double_t& thetaHE,
   const Double_t d2Mass = TDatabasePDG::Instance()->GetParticle(fPid2)->Mass();
 
   // first & second daughter 4-mom
-  TLorentzVector p1Mom(
-    px1,
-    py1,
-    pz1,
-    TMath::Sqrt(px1 * px1 + py1 * py1 + pz1 * pz1 + d1Mass * d1Mass));
-  TLorentzVector p2Mom(
-    px2,
-    py2,
-    pz2,
-    TMath::Sqrt(px2 * px2 + py2 * py2 + pz2 * pz2 + d2Mass * d2Mass));
+  TLorentzVector p1Mom(px1, py1, pz1, TMath::Sqrt(px1 * px1 + py1 * py1 + pz1 * pz1 + d1Mass * d1Mass));
+  TLorentzVector p2Mom(px2, py2, pz2, TMath::Sqrt(px2 * px2 + py2 * py2 + pz2 * pz2 + d2Mass * d2Mass));
   // mother 4-momentum vector
   TLorentzVector motherMom = p1Mom + p2Mom;
 
-  PairAnalysisPair::GetThetaPhiCM(
-    motherMom, p1Mom, p2Mom, thetaHE, phiHE, thetaCS, phiCS);
+  PairAnalysisPair::GetThetaPhiCM(motherMom, p1Mom, p2Mom, thetaHE, phiHE, thetaCS, phiCS);
 }
 
 
 //______________________________________________
-Double_t PairAnalysisPairKF::PsiPair(Double_t /*MagField*/) const {
+Double_t PairAnalysisPairKF::PsiPair(Double_t /*MagField*/) const
+{
   return 0.; /*
   //Following idea to use opening of colinear pairs in magnetic field from e.g. PHENIX
   //to ID conversions. Adapted from TRDv0Info class
@@ -267,17 +253,16 @@ Double_t PairAnalysisPairKF::PsiPair(Double_t /*MagField*/) const {
 }
 
 //______________________________________________
-Double_t PairAnalysisPairKF::GetArmAlpha() const {
+Double_t PairAnalysisPairKF::GetArmAlpha() const
+{
   //
   // Calculate the Armenteros-Podolanski Alpha
   //
   Int_t qD1 = fD1.GetQ();
 
-  TVector3 momNeg((qD1 < 0 ? fD1.GetPx() : fD2.GetPx()),
-                  (qD1 < 0 ? fD1.GetPy() : fD2.GetPy()),
+  TVector3 momNeg((qD1 < 0 ? fD1.GetPx() : fD2.GetPx()), (qD1 < 0 ? fD1.GetPy() : fD2.GetPy()),
                   (qD1 < 0 ? fD1.GetPz() : fD2.GetPz()));
-  TVector3 momPos((qD1 < 0 ? fD2.GetPx() : fD1.GetPx()),
-                  (qD1 < 0 ? fD2.GetPy() : fD1.GetPy()),
+  TVector3 momPos((qD1 < 0 ? fD2.GetPx() : fD1.GetPx()), (qD1 < 0 ? fD2.GetPy() : fD1.GetPy()),
                   (qD1 < 0 ? fD2.GetPz() : fD1.GetPz()));
   TVector3 momTot(Px(), Py(), Pz());
 
@@ -288,14 +273,14 @@ Double_t PairAnalysisPairKF::GetArmAlpha() const {
 }
 
 //______________________________________________
-Double_t PairAnalysisPairKF::GetArmPt() const {
+Double_t PairAnalysisPairKF::GetArmPt() const
+{
   //
   // Calculate the Armenteros-Podolanski Pt
   //
   Int_t qD1 = fD1.GetQ();
 
-  TVector3 momNeg((qD1 < 0 ? fD1.GetPx() : fD2.GetPx()),
-                  (qD1 < 0 ? fD1.GetPy() : fD2.GetPy()),
+  TVector3 momNeg((qD1 < 0 ? fD1.GetPx() : fD2.GetPx()), (qD1 < 0 ? fD1.GetPy() : fD2.GetPy()),
                   (qD1 < 0 ? fD1.GetPz() : fD2.GetPz()));
   TVector3 momTot(Px(), Py(), Pz());
 
@@ -303,7 +288,8 @@ Double_t PairAnalysisPairKF::GetArmPt() const {
 }
 
 //______________________________________________
-Double_t PairAnalysisPairKF::PhivPair(Double_t MagField) const {
+Double_t PairAnalysisPairKF::PhivPair(Double_t MagField) const
+{
   //Following idea to use opening of colinear pairs in magnetic field from e.g. PHENIX
   //to ID conversions. Angle between ee plane and magnetic field is calculated.
 
@@ -320,7 +306,8 @@ Double_t PairAnalysisPairKF::PhivPair(Double_t MagField) const {
       px2 = fD2.GetPx();
       py2 = fD2.GetPy();
       pz2 = fD2.GetPz();
-    } else {
+    }
+    else {
       px1 = fD2.GetPx();
       py1 = fD2.GetPy();
       pz1 = fD2.GetPz();
@@ -329,7 +316,8 @@ Double_t PairAnalysisPairKF::PhivPair(Double_t MagField) const {
       py2 = fD1.GetPy();
       pz2 = fD1.GetPz();
     }
-  } else {
+  }
+  else {
     if (fD1.GetQ() > 0) {
       px1 = fD2.GetPx();
       py1 = fD2.GetPy();
@@ -338,7 +326,8 @@ Double_t PairAnalysisPairKF::PhivPair(Double_t MagField) const {
       px2 = fD1.GetPx();
       py2 = fD1.GetPy();
       pz2 = fD1.GetPz();
-    } else {
+    }
+    else {
       px1 = fD1.GetPx();
       py1 = fD1.GetPy();
       pz1 = fD1.GetPz();

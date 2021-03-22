@@ -62,43 +62,44 @@
 ///////////////////////////////////////////////////////////////////////////
 
 #include "PairAnalysisSignalMC.h"
+
 #include "PairAnalysisHelper.h"
 
 ClassImp(PairAnalysisSignalMC)
 
-  const char* PairAnalysisSignalMC::fgkSignals[static_cast<int>(
-    EDefinedSignal::kNSignals)][2] = {  //default signal names+titles
-    {"InclJpsi", "J/#psi (incl.)"},
-    {"NonRadJpsi", "J/#psi"},
-    {"RadJpsi", "J/#psi (rad.)"},
-    {"Psi2S", "#psi(2S)"},
-    {"Conversion", "#gamma#rightarrow e^{+}e^{-}"},
-    {"Rho0", "#rho^{0}"},
-    {"OmegaDalitz", "#omega_{Dalitz}"},
-    {"Omega", "#omega"},
-    {"Phi", "#phi"},
-    {"EtaDalitz", "#eta_{Dalitz}"},
-    {"Eta", "#eta"},
-    {"Pi0Dalitz", "#pi^{0}_{Dalitz}"},
-    {"Pi0Gamma", "#pi^{0}"},
-    {"Pi0", "#pi^{0}"},
-    {"K0Short", "K^{0}_{S}"},
-    {"Lambda", "#Lambda"},
-    {"InclElePM", "e^{+}e^{-} (incl.)"},
-    {"DeltaElectron", "#delta rays"},
-    {"PrimElectron", "e (prim.)"},
-    {"PrimMuon", "#mu (prim.)"},
-    {"PrimPion", "#pi (prim.)"},
-    {"PrimKaon", "K (prim.)"},
-    {"PrimProton", "p (prim.)"},
-    {"Deuteron", "d"},
-    {"Triton", "t"},
-    {"Helion", "^{3}He"},
-    {"Alpha", "^{4}He"}};
+  const char* PairAnalysisSignalMC::fgkSignals[static_cast<int>(EDefinedSignal::kNSignals)][2] =
+    {  //default signal names+titles
+      {"InclJpsi", "J/#psi (incl.)"},
+      {"NonRadJpsi", "J/#psi"},
+      {"RadJpsi", "J/#psi (rad.)"},
+      {"Psi2S", "#psi(2S)"},
+      {"Conversion", "#gamma#rightarrow e^{+}e^{-}"},
+      {"Rho0", "#rho^{0}"},
+      {"OmegaDalitz", "#omega_{Dalitz}"},
+      {"Omega", "#omega"},
+      {"Phi", "#phi"},
+      {"EtaDalitz", "#eta_{Dalitz}"},
+      {"Eta", "#eta"},
+      {"Pi0Dalitz", "#pi^{0}_{Dalitz}"},
+      {"Pi0Gamma", "#pi^{0}"},
+      {"Pi0", "#pi^{0}"},
+      {"K0Short", "K^{0}_{S}"},
+      {"Lambda", "#Lambda"},
+      {"InclElePM", "e^{+}e^{-} (incl.)"},
+      {"DeltaElectron", "#delta rays"},
+      {"PrimElectron", "e (prim.)"},
+      {"PrimMuon", "#mu (prim.)"},
+      {"PrimPion", "#pi (prim.)"},
+      {"PrimKaon", "K (prim.)"},
+      {"PrimProton", "p (prim.)"},
+      {"Deuteron", "d"},
+      {"Triton", "t"},
+      {"Helion", "^{3}He"},
+      {"Alpha", "^{4}He"}};
 
 //_________________________________________________________________________
-PairAnalysisSignalMC::PairAnalysisSignalMC()
-  : PairAnalysisSignalMC("PairAnalysisSignalMC", "PairAnalysisSignalMC") {
+PairAnalysisSignalMC::PairAnalysisSignalMC() : PairAnalysisSignalMC("PairAnalysisSignalMC", "PairAnalysisSignalMC")
+{
 
   //
   // Default constructor
@@ -107,9 +108,8 @@ PairAnalysisSignalMC::PairAnalysisSignalMC()
 
 
 //_________________________________________________________________________
-PairAnalysisSignalMC::PairAnalysisSignalMC(const Char_t* name,
-                                           const Char_t* title)
-  : TNamed(name, title) {
+PairAnalysisSignalMC::PairAnalysisSignalMC(const Char_t* name, const Char_t* title) : TNamed(name, title)
+{
 
   //
   // Named constructor
@@ -117,8 +117,8 @@ PairAnalysisSignalMC::PairAnalysisSignalMC(const Char_t* name,
 }
 
 //_________________________________________________________________________
-PairAnalysisSignalMC::PairAnalysisSignalMC(EDefinedSignal defaultSignal)
-  : PairAnalysisSignalMC() {
+PairAnalysisSignalMC::PairAnalysisSignalMC(EDefinedSignal defaultSignal) : PairAnalysisSignalMC()
+{
 
   //
   // Constructor with default signals
@@ -421,9 +421,7 @@ PairAnalysisSignalMC::PairAnalysisSignalMC(EDefinedSignal defaultSignal)
       fIsSingleParticle = kTRUE;
       break;
     default:
-      Error(
-        "PairAnalysisSignalMC",
-        "Signal NOT predefined! Either request it or configure on your own.");
+      Error("PairAnalysisSignalMC", "Signal NOT predefined! Either request it or configure on your own.");
       return;
       break;
   }
@@ -431,74 +429,53 @@ PairAnalysisSignalMC::PairAnalysisSignalMC(EDefinedSignal defaultSignal)
   //  Print();
 }
 
-void PairAnalysisSignalMC::Print(Option_t* /*option*/) const {
+void PairAnalysisSignalMC::Print(Option_t* /*option*/) const
+{
   //
   //
   //
   Printf("MC Signal: %s with title %s ", GetName(), GetTitle());
-  printf("\tPDGs leg1:  %s%s%d%s ",
-         (fLeg1Exclude ? "!" : ""),
-         (fCheckBothChargesLeg1 ? "|" : ""),
-         fLeg1,
+  printf("\tPDGs leg1:  %s%s%d%s ", (fLeg1Exclude ? "!" : ""), (fCheckBothChargesLeg1 ? "|" : ""), fLeg1,
          (fCheckBothChargesLeg1 ? "|" : ""));
   if (fMother1 != 0)
-    printf("<--- %s%s%d%s ",
-           (fMother1Exclude ? "!" : ""),
-           (fCheckBothChargesMother1 ? "|" : ""),
-           fMother1,
+    printf("<--- %s%s%d%s ", (fMother1Exclude ? "!" : ""), (fCheckBothChargesMother1 ? "|" : ""), fMother1,
            (fCheckBothChargesMother1 ? "|" : ""));
   if (fGrandMother1 != 0)
-    printf("<--- %s%s%d%s ",
-           (fGrandMother1Exclude ? "!" : ""),
-           (fCheckBothChargesGrandMother1 ? "|" : ""),
-           fGrandMother1,
-           (fCheckBothChargesGrandMother1 ? "|" : ""));
+    printf("<--- %s%s%d%s ", (fGrandMother1Exclude ? "!" : ""), (fCheckBothChargesGrandMother1 ? "|" : ""),
+           fGrandMother1, (fCheckBothChargesGrandMother1 ? "|" : ""));
   if (fGreatGrandMother1 != 0)
-    printf("<--- %s%s%d%s",
-           (fGreatGrandMother1Exclude ? "!" : ""),
-           (fCheckBothChargesGreatGrandMother1 ? "|" : ""),
-           fGreatGrandMother1,
-           (fCheckBothChargesGreatGrandMother1 ? "|" : ""));
+    printf("<--- %s%s%d%s", (fGreatGrandMother1Exclude ? "!" : ""), (fCheckBothChargesGreatGrandMother1 ? "|" : ""),
+           fGreatGrandMother1, (fCheckBothChargesGreatGrandMother1 ? "|" : ""));
   printf("\n");
   if (!fIsSingleParticle) {
     //    Printf("\t                     \t %s",(fDalitz)
     //    Printf("\t                     \t %s",(fMothersRelation)
-    printf("\tPDGs leg2:  %s%s%d%s ",
-           (fLeg2Exclude ? "!" : ""),
-           (fCheckBothChargesLeg2 ? "|" : ""),
-           fLeg2,
+    printf("\tPDGs leg2:  %s%s%d%s ", (fLeg2Exclude ? "!" : ""), (fCheckBothChargesLeg2 ? "|" : ""), fLeg2,
            (fCheckBothChargesLeg2 ? "|" : ""));
     if (fMother2 != 0)
-      printf("<--- %s%s%d%s ",
-             (fMother2Exclude ? "!" : ""),
-             (fCheckBothChargesMother2 ? "|" : ""),
-             fMother2,
+      printf("<--- %s%s%d%s ", (fMother2Exclude ? "!" : ""), (fCheckBothChargesMother2 ? "|" : ""), fMother2,
              (fCheckBothChargesMother2 ? "|" : ""));
     if (fGrandMother2 != 0)
-      printf("<--- %s%s%d%s ",
-             (fGrandMother2Exclude ? "!" : ""),
-             (fCheckBothChargesGrandMother2 ? "|" : ""),
-             fGrandMother2,
-             (fCheckBothChargesGrandMother2 ? "|" : ""));
+      printf("<--- %s%s%d%s ", (fGrandMother2Exclude ? "!" : ""), (fCheckBothChargesGrandMother2 ? "|" : ""),
+             fGrandMother2, (fCheckBothChargesGrandMother2 ? "|" : ""));
     if (fGreatGrandMother2 != 0)
-      printf("<--- %s%s%d%s",
-             (fGreatGrandMother2Exclude ? "!" : ""),
-             (fCheckBothChargesGreatGrandMother2 ? "|" : ""),
-             fGreatGrandMother2,
-             (fCheckBothChargesGreatGrandMother2 ? "|" : ""));
+      printf("<--- %s%s%d%s", (fGreatGrandMother2Exclude ? "!" : ""), (fCheckBothChargesGreatGrandMother2 ? "|" : ""),
+             fGreatGrandMother2, (fCheckBothChargesGreatGrandMother2 ? "|" : ""));
     printf("\n");
   }
 }
 
 
 //_________________________________________________________________________
-PairAnalysisSignalMC::~PairAnalysisSignalMC() {
+PairAnalysisSignalMC::~PairAnalysisSignalMC()
+{
   //
   //  Destructor
   //
 }
 
-Double_t PairAnalysisSignalMC::GetWeight(Double_t* const values) const {
+Double_t PairAnalysisSignalMC::GetWeight(Double_t* const values) const
+{
   // TODO: workaround to avoid zero weights
   if (fType == 0) return fWeight;
 

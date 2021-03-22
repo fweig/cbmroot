@@ -14,9 +14,10 @@
 //#                                                           #
 //#############################################################
 
-#include <KFParticle.h>
 #include <TLorentzVector.h>
 #include <TMath.h>
+
+#include <KFParticle.h>
 
 #include "PairAnalysisPair.h"
 #include "PairAnalysisTrack.h"
@@ -31,19 +32,12 @@ public:
   virtual ~PairAnalysisPairKF();
   PairAnalysisPairKF(const PairAnalysisPair& pair);
 
-  PairAnalysisPairKF(PairAnalysisTrack* const particle1,
-                     Int_t pid1,
-                     PairAnalysisTrack* const particle2,
-                     Int_t pid2,
+  PairAnalysisPairKF(PairAnalysisTrack* const particle1, Int_t pid1, PairAnalysisTrack* const particle2, Int_t pid2,
                      Char_t type);
 
-  void SetTracks(PairAnalysisTrack* const particle1,
-                 Int_t pid1,
-                 PairAnalysisTrack* const particle2,
-                 Int_t pid2);
+  void SetTracks(PairAnalysisTrack* const particle1, Int_t pid1, PairAnalysisTrack* const particle2, Int_t pid2);
 
-  void SetMCTracks(const CbmMCTrack* const particle1,
-                   const CbmMCTrack* const particle2);
+  void SetMCTracks(const CbmMCTrack* const particle1, const CbmMCTrack* const particle2);
 
   // kinematics
   virtual Double_t Px() const { return fPair.GetPx(); }
@@ -51,7 +45,8 @@ public:
   virtual Double_t Pz() const { return fPair.GetPz(); }
   virtual Double_t Pt() const { return fPair.GetPt(); }
   virtual Double_t P() const { return fPair.GetP(); }
-  virtual Bool_t PxPyPz(Double_t p[3]) const {
+  virtual Bool_t PxPyPz(Double_t p[3]) const
+  {
     p[0] = Px();
     p[1] = Py();
     p[2] = Pz();
@@ -61,27 +56,25 @@ public:
   virtual Double_t Xv() const { return fPair.GetX(); }
   virtual Double_t Yv() const { return fPair.GetY(); }
   virtual Double_t Zv() const { return fPair.GetZ(); }
-  virtual Bool_t XvYvZv(Double_t x[3]) const {
+  virtual Bool_t XvYvZv(Double_t x[3]) const
+  {
     x[0] = Xv();
     x[1] = Yv();
     x[2] = Zv();
     return kTRUE;
   }
 
-  virtual Double_t OneOverPt() const {
-    return Pt() > 0. ? 1. / Pt() : 0.;
-  }  //TODO: check
+  virtual Double_t OneOverPt() const { return Pt() > 0. ? 1. / Pt() : 0.; }  //TODO: check
   virtual Double_t Phi() const { return fPair.GetPhi(); }
-  virtual Double_t Theta() const {
-    return Pz() != 0 ? TMath::ATan(Pt() / Pz()) : 0.;
-  }  //TODO: check
+  virtual Double_t Theta() const { return Pz() != 0 ? TMath::ATan(Pt() / Pz()) : 0.; }  //TODO: check
 
 
   virtual Double_t E() const { return fPair.GetE(); }
   virtual Double_t M() const { return fPair.GetMass(); }
 
   virtual Double_t Eta() const { return fPair.GetEta(); }
-  virtual Double_t Y() const {
+  virtual Double_t Y() const
+  {
     if ((E() * E() - Px() * Px() - Py() * Py() - Pz() * Pz()) > 0.)
       return TLorentzVector(Px(), Py(), Pz(), E()).Rapidity();
     else
@@ -99,32 +92,19 @@ public:
   Double_t OpeningAngle() const { return fD1.GetAngle(fD2); }
   Double_t OpeningAngleXY() const { return fD1.GetAngleXY(fD2); }
   Double_t OpeningAngleRZ() const { return fD1.GetAngleRZ(fD2); }
-  Double_t DistanceDaughters() const {
-    return fD1.GetDistanceFromParticle(fD2);
-  }
-  Double_t DistanceDaughtersXY() const {
-    return fD1.GetDistanceFromParticleXY(fD2);
-  }
-  Double_t DeviationDaughters() const {
-    return fD1.GetDeviationFromParticle(fD2);
-  }
-  Double_t DeviationDaughtersXY() const {
-    return fD1.GetDeviationFromParticleXY(fD2);
-  }
+  Double_t DistanceDaughters() const { return fD1.GetDistanceFromParticle(fD2); }
+  Double_t DistanceDaughtersXY() const { return fD1.GetDistanceFromParticleXY(fD2); }
+  Double_t DeviationDaughters() const { return fD1.GetDeviationFromParticle(fD2); }
+  Double_t DeviationDaughtersXY() const { return fD1.GetDeviationFromParticleXY(fD2); }
   Double_t DeltaEta() const { return TMath::Abs(fD1.GetEta() - fD2.GetEta()); }
   Double_t DeltaPhi() const { return fD1.GetAngleXY(fD2); }
   Double_t DaughtersP() const { return fD1.GetP() * fD2.GetP(); }
 
   // calculate cos(theta*) and phi* in HE and CS pictures
-  void GetThetaPhiCM(Double_t& thetaHE,
-                     Double_t& phiHE,
-                     Double_t& thetaCS,
-                     Double_t& phiCS) const;
+  void GetThetaPhiCM(Double_t& thetaHE, Double_t& phiHE, Double_t& thetaCS, Double_t& phiCS) const;
 
-  Double_t
-  PsiPair(Double_t MagField) const;  //Angle cut w.r.t. to magnetic field
-  Double_t PhivPair(
-    Double_t MagField) const;  //Angle of ee plane w.r.t. to magnetic field
+  Double_t PsiPair(Double_t MagField) const;   //Angle cut w.r.t. to magnetic field
+  Double_t PhivPair(Double_t MagField) const;  //Angle of ee plane w.r.t. to magnetic field
 
   // TODO: replace by KFParticleBase functions?
   Double_t GetArmAlpha() const;

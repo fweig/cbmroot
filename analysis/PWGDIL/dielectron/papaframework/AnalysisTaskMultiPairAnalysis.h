@@ -10,13 +10,13 @@
 //#                                                   #
 //#####################################################
 
+#include "CbmRichElectronIdAnn.h"
+
+#include "FairTask.h"
+
 #include "TList.h"
 #include "TStopwatch.h"
 #include "TSystem.h"
-
-
-#include "CbmRichElectronIdAnn.h"
-#include "FairTask.h"
 
 #include "AnalysisCuts.h"
 #include "PairAnalysisEvent.h"
@@ -30,8 +30,8 @@ class AnalysisTaskMultiPairAnalysis : public FairTask {
 public:
   AnalysisTaskMultiPairAnalysis();
   AnalysisTaskMultiPairAnalysis(const char* name);
-  AnalysisTaskMultiPairAnalysis(const char *name,Int_t id);
-  AnalysisTaskMultiPairAnalysis(const char *name,Int_t id,Int_t scale);
+  AnalysisTaskMultiPairAnalysis(const char* name, Int_t id);
+  AnalysisTaskMultiPairAnalysis(const char* name, Int_t id, Int_t scale);
   virtual ~AnalysisTaskMultiPairAnalysis();
 
   virtual InitStatus Init();
@@ -40,28 +40,26 @@ public:
 
   void SetEventFilter(AnalysisCuts* const filter) { fEventFilter = filter; }
 
-  void AddPairAnalysis(PairAnalysis* const papa) {
+  void AddPairAnalysis(PairAnalysis* const papa)
+  {
     fListPairAnalysis.Add((TObject*) papa);
   }  //why cast to tobject????????
-  void SetBeamEnergy(Double_t beamEbyHand = -1.) {
+  void SetBeamEnergy(Double_t beamEbyHand = -1.)
+  {
     fBeamEnergy = beamEbyHand;
-    Warning(
-      "SetBeamEnergy",
-      "This function is only kept for backward compatibility!!! Value will be "
-      "overwritten, when parameter is availbale (>JUN16 release).");
+    Warning("SetBeamEnergy", "This function is only kept for backward compatibility!!! Value will be "
+                             "overwritten, when parameter is availbale (>JUN16 release).");
   }  // TODO: this should become obsolete in NOV16
 
 protected:
-  PairAnalysisMetaData
-    fMetaData;                   //! List of meta data in the framework classes
-  TObjArray* fPairArray = NULL;  //! output array
-  TList fListPairAnalysis;       //  List of papa framework instances
-  TList
-    fListHistos;  //! List of histogram manager lists in the framework classes
+  PairAnalysisMetaData fMetaData;  //! List of meta data in the framework classes
+  TObjArray* fPairArray = NULL;    //! output array
+  TList fListPairAnalysis;         //  List of papa framework instances
+  TList fListHistos;               //! List of histogram manager lists in the framework classes
 
-  Double_t fBeamEnergy = 0.;  // beam energy in GeV (set by hand)
-  Int_t fThermalScaling = 0;  
-  
+  Double_t fBeamEnergy  = 0.;  // beam energy in GeV (set by hand)
+  Int_t fThermalScaling = 0;
+
   AnalysisCuts* fEventFilter     = NULL;  // event filter
   PairAnalysisEvent* fInputEvent = NULL;  //! event handler
   Int_t fEventsTotal             = 0;     // total number of processed events
@@ -69,11 +67,10 @@ protected:
 
   TStopwatch fTimer;     //! stopwatch for cpu consumption
   ProcInfo_t fProcInfo;  //! memory usage
-  Int_t fId=0;
-  
+  Int_t fId = 0;
+
   AnalysisTaskMultiPairAnalysis(const AnalysisTaskMultiPairAnalysis& c);
-  AnalysisTaskMultiPairAnalysis&
-  operator=(const AnalysisTaskMultiPairAnalysis& c);
+  AnalysisTaskMultiPairAnalysis& operator=(const AnalysisTaskMultiPairAnalysis& c);
 
   ClassDef(AnalysisTaskMultiPairAnalysis,
            4);  //Analysis Task handling multiple instances of PairAnalysis

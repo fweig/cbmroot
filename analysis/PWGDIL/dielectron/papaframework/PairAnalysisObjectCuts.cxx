@@ -16,6 +16,8 @@
 ///////////////////////////////////////////////////////////////////////////
 
 
+#include "PairAnalysisObjectCuts.h"
+
 #include <TAxis.h>
 #include <TFormula.h>
 #include <TGraph.h>
@@ -23,23 +25,23 @@
 #include <TSpline.h>
 
 #include "PairAnalysisHelper.h"
-#include "PairAnalysisObjectCuts.h"
 
 ClassImp(PairAnalysisObjectCuts)
 
 
   PairAnalysisObjectCuts::PairAnalysisObjectCuts()
-  : PairAnalysisObjectCuts("objcuts", "objcuts") {
+  : PairAnalysisObjectCuts("objcuts", "objcuts")
+{
   //
   // Default costructor
   //
 }
 
 //________________________________________________________________________
-PairAnalysisObjectCuts::PairAnalysisObjectCuts(const char* name,
-                                               const char* title)
+PairAnalysisObjectCuts::PairAnalysisObjectCuts(const char* name, const char* title)
   : AnalysisCuts(name, title)
-  , fUsedVars(new TBits(PairAnalysisVarManager::kNMaxValuesMC)) {
+  , fUsedVars(new TBits(PairAnalysisVarManager::kNMaxValuesMC))
+{
   //
   // Named contructor
   //
@@ -54,7 +56,8 @@ PairAnalysisObjectCuts::PairAnalysisObjectCuts(const char* name,
 }
 
 //________________________________________________________________________
-PairAnalysisObjectCuts::~PairAnalysisObjectCuts() {
+PairAnalysisObjectCuts::~PairAnalysisObjectCuts()
+{
   //
   // Destructor
   //
@@ -68,7 +71,8 @@ PairAnalysisObjectCuts::~PairAnalysisObjectCuts() {
 }
 
 //________________________________________________________________________
-Bool_t PairAnalysisObjectCuts::IsSelected(Double_t* const values) {
+Bool_t PairAnalysisObjectCuts::IsSelected(Double_t* const values)
+{
   //
   // Make cut decision
   //
@@ -83,8 +87,7 @@ Bool_t PairAnalysisObjectCuts::IsSelected(Double_t* const values) {
 
     // variable you want to cut on
     Double_t compValue = 0.;
-    if (fVarFormula[iCut])
-      compValue = PairAnalysisHelper::EvalFormula(fVarFormula[iCut], values);
+    if (fVarFormula[iCut]) compValue = PairAnalysisHelper::EvalFormula(fVarFormula[iCut], values);
     else
       compValue = values[cut];
 
@@ -103,8 +106,7 @@ Bool_t PairAnalysisObjectCuts::IsSelected(Double_t* const values) {
         // get array of values for the corresponding dimensions using axis names
         for (Int_t idim = 0; idim < hn->GetNdimensions(); idim++) {
           vals[idim] = values[PairAnalysisVarManager::GetValueType(
-            hn->GetAxis(idim)
-              ->GetName())];  /// TODO: what about formulas in the axis
+            hn->GetAxis(idim)->GetName())];  /// TODO: what about formulas in the axis
         }
         // find bin for values (w/o creating it in case it is not filled)
         Long_t bin = hn->GetBin(vals, kFALSE);
@@ -118,27 +120,25 @@ Bool_t PairAnalysisObjectCuts::IsSelected(Double_t* const values) {
         // get array of values for the corresponding dimensions using axis names
         for (Int_t idim = 0; idim < hx->GetNdimensions(); idim++) {
           vals[idim] = values[PairAnalysisVarManager::GetValueType(
-            hx->GetAxis(idim)
-              ->GetName())];  /// TODO: what about formulas in the axis
+            hx->GetAxis(idim)->GetName())];  /// TODO: what about formulas in the axis
         }
         // find bin for values (w/o creating it in case it is not filled)
         Long_t bin = hx->GetBin(vals, kFALSE);
         if (bin > 0) cutMax = hx->GetBinContent(bin);
         delete[] vals;
       }
-
-    } else if ((fCutMin[iCut] && fCutMin[iCut]->IsA() == TFormula::Class())
-               || (fCutMax[iCut]
-                   && fCutMax[iCut]->IsA() == TFormula::Class())) {
+    }
+    else if ((fCutMin[iCut] && fCutMin[iCut]->IsA() == TFormula::Class())
+             || (fCutMax[iCut] && fCutMax[iCut]->IsA() == TFormula::Class())) {
       /// use formulas for the cut //
       TFormula* formN = static_cast<TFormula*>(fCutMin[iCut]);
       if (formN) cutMin = PairAnalysisHelper::EvalFormula(formN, values);
 
       TFormula* formM = static_cast<TFormula*>(fCutMax[iCut]);
       if (formM) cutMax = PairAnalysisHelper::EvalFormula(formM, values);
-
-    } else if ((fCutMin[iCut] && fCutMin[iCut]->IsA() == TGraph::Class())
-               || (fCutMax[iCut] && fCutMax[iCut]->IsA() == TGraph::Class())) {
+    }
+    else if ((fCutMin[iCut] && fCutMin[iCut]->IsA() == TGraph::Class())
+             || (fCutMax[iCut] && fCutMax[iCut]->IsA() == TGraph::Class())) {
       /// use graph for the cut //
       /// NOTE: binary search or a linear interpolation is used,
       ///       spline creation at each eval is too cpu expensive
@@ -166,19 +166,18 @@ Bool_t PairAnalysisObjectCuts::IsSelected(Double_t* const values) {
       cutMin    = graphN->GetY()[idx];
       idx       = TMath::BinarySearch(graphM->GetN(), graphM->GetX(), xval);
       cutMax    = graphM->GetY()[idx];
-
-    } else if ((fCutMin[iCut] && fCutMin[iCut]->IsA() == TSpline3::Class())
-               || (fCutMax[iCut]
-                   && fCutMax[iCut]->IsA() == TSpline3::Class())) {
+    }
+    else if ((fCutMin[iCut] && fCutMin[iCut]->IsA() == TSpline3::Class())
+             || (fCutMax[iCut] && fCutMax[iCut]->IsA() == TSpline3::Class())) {
       /// TODO: think about poper implementation, how to store the x-variable in the spline
       /// use spline for the cut //
       //      TSpline3 *splineN = static_cast<TSpline3*>(fCutMin[iCut]);
       //      if(splineN)  cutMin   = splineN->Eval(xval);
       //      TSpline3 *splineM = static_cast<TSpline3*>(fCutMax[iCut]);
       //      if(splineM)  cutMax   = splineM->Eval(xval);
-    } else {
-      Error("IsSelected:",
-            "Cut object not supported (this message should never appear)");
+    }
+    else {
+      Error("IsSelected:", "Cut object not supported (this message should never appear)");
       return kTRUE;
     }
 
@@ -187,8 +186,7 @@ Bool_t PairAnalysisObjectCuts::IsSelected(Double_t* const values) {
     if (TMath::IsNaN(cutMax)) cutMax = compValue - 1.;
 
     // apply cut
-    if (((compValue < cutMin) || (compValue > cutMax)) ^ fCutExclude[iCut])
-      CLRBIT(fSelectedCutsMask, iCut);
+    if (((compValue < cutMin) || (compValue > cutMax)) ^ fCutExclude[iCut]) CLRBIT(fSelectedCutsMask, iCut);
 
     // cut type and decision
     if (fCutType == ECutType::kAll && !TESTBIT(fSelectedCutsMask, iCut))
@@ -202,7 +200,8 @@ Bool_t PairAnalysisObjectCuts::IsSelected(Double_t* const values) {
 }
 
 //________________________________________________________________________
-Bool_t PairAnalysisObjectCuts::IsSelected(TObject* track) {
+Bool_t PairAnalysisObjectCuts::IsSelected(TObject* track)
+{
   //
   // Make cut decision
   //
@@ -221,17 +220,14 @@ Bool_t PairAnalysisObjectCuts::IsSelected(TObject* track) {
 }
 
 //________________________________________________________________________
-void PairAnalysisObjectCuts::AddCut(PairAnalysisVarManager::ValueTypes type,
-                                    const char* formulaMin,
-                                    const char* formulaMax,
-                                    Bool_t excludeRange) {
+void PairAnalysisObjectCuts::AddCut(PairAnalysisVarManager::ValueTypes type, const char* formulaMin,
+                                    const char* formulaMax, Bool_t excludeRange)
+{
   //
   // Set cut range and activate it
   //
-  fCutMin[fNActiveCuts] =
-    PairAnalysisHelper::GetFormula(formulaMin, formulaMin);
-  fCutMax[fNActiveCuts] =
-    PairAnalysisHelper::GetFormula(formulaMax, formulaMax);
+  fCutMin[fNActiveCuts]     = PairAnalysisHelper::GetFormula(formulaMin, formulaMin);
+  fCutMax[fNActiveCuts]     = PairAnalysisHelper::GetFormula(formulaMax, formulaMax);
   fCutExclude[fNActiveCuts] = excludeRange;
   SETBIT(fActiveCutsMask, fNActiveCuts);
   fActiveCuts[fNActiveCuts] = (UShort_t) type;
@@ -240,17 +236,14 @@ void PairAnalysisObjectCuts::AddCut(PairAnalysisVarManager::ValueTypes type,
 }
 
 //________________________________________________________________________
-void PairAnalysisObjectCuts::AddCut(const char* formula,
-                                    const char* formulaMin,
-                                    const char* formulaMax,
-                                    Bool_t excludeRange) {
+void PairAnalysisObjectCuts::AddCut(const char* formula, const char* formulaMin, const char* formulaMax,
+                                    Bool_t excludeRange)
+{
   //
   // Set cut range and activate it
   //
-  fCutMin[fNActiveCuts] =
-    PairAnalysisHelper::GetFormula(formulaMin, formulaMin);
-  fCutMax[fNActiveCuts] =
-    PairAnalysisHelper::GetFormula(formulaMax, formulaMax);
+  fCutMin[fNActiveCuts]     = PairAnalysisHelper::GetFormula(formulaMin, formulaMin);
+  fCutMax[fNActiveCuts]     = PairAnalysisHelper::GetFormula(formulaMax, formulaMax);
   fCutExclude[fNActiveCuts] = excludeRange;
   SETBIT(fActiveCutsMask, fNActiveCuts);
   fActiveCuts[fNActiveCuts] = (UShort_t) PairAnalysisVarManager::kNMaxValuesMC;
@@ -259,10 +252,9 @@ void PairAnalysisObjectCuts::AddCut(const char* formula,
 }
 
 //________________________________________________________________________
-void PairAnalysisObjectCuts::AddCut(PairAnalysisVarManager::ValueTypes type,
-                                    TGraph* const graphMin,
-                                    TGraph* const graphMax,
-                                    Bool_t excludeRange) {
+void PairAnalysisObjectCuts::AddCut(PairAnalysisVarManager::ValueTypes type, TGraph* const graphMin,
+                                    TGraph* const graphMax, Bool_t excludeRange)
+{
   //
   // Set cut range and activate it
   //
@@ -284,10 +276,9 @@ void PairAnalysisObjectCuts::AddCut(PairAnalysisVarManager::ValueTypes type,
 }
 
 //________________________________________________________________________
-void PairAnalysisObjectCuts::AddCut(const char* formula,
-                                    TGraph* const graphMin,
-                                    TGraph* const graphMax,
-                                    Bool_t excludeRange) {
+void PairAnalysisObjectCuts::AddCut(const char* formula, TGraph* const graphMin, TGraph* const graphMax,
+                                    Bool_t excludeRange)
+{
   //
   // Set cut range and activate it
   //
@@ -309,10 +300,9 @@ void PairAnalysisObjectCuts::AddCut(const char* formula,
 }
 
 //________________________________________________________________________
-void PairAnalysisObjectCuts::AddCut(PairAnalysisVarManager::ValueTypes type,
-                                    THnBase* const histMin,
-                                    THnBase* const histMax,
-                                    Bool_t excludeRange) {
+void PairAnalysisObjectCuts::AddCut(PairAnalysisVarManager::ValueTypes type, THnBase* const histMin,
+                                    THnBase* const histMax, Bool_t excludeRange)
+{
   //
   // Set cut range and activate it
   //
@@ -326,10 +316,9 @@ void PairAnalysisObjectCuts::AddCut(PairAnalysisVarManager::ValueTypes type,
 }
 
 //________________________________________________________________________
-void PairAnalysisObjectCuts::AddCut(const char* formula,
-                                    THnBase* const histMin,
-                                    THnBase* const histMax,
-                                    Bool_t excludeRange) {
+void PairAnalysisObjectCuts::AddCut(const char* formula, THnBase* const histMin, THnBase* const histMax,
+                                    Bool_t excludeRange)
+{
   //
   // Set cut range and activate it
   //
@@ -343,14 +332,14 @@ void PairAnalysisObjectCuts::AddCut(const char* formula,
 }
 
 //________________________________________________________________________
-void PairAnalysisObjectCuts::Print(const Option_t* /*option*/) const {
+void PairAnalysisObjectCuts::Print(const Option_t* /*option*/) const
+{
   //
   // Print cuts and the range
   //
   printf("cut ranges for '%s'\n", GetTitle());
-  if (fCutType == ECutType::kAll) {
-    printf("All Cuts have to be fulfilled\n");
-  } else {
+  if (fCutType == ECutType::kAll) { printf("All Cuts have to be fulfilled\n"); }
+  else {
     printf("Any Cut has to be fulfilled\n");
   }
 
@@ -374,11 +363,9 @@ void PairAnalysisObjectCuts::Print(const Option_t* /*option*/) const {
     Bool_t inverse = fCutExclude[iCut];
 
     // cut limits
-    Bool_t bCutGraph =
-      (fCutMin[iCut] && fCutMin[iCut]->IsA() == TGraph::Class());
-    Bool_t bCutForm =
-      (fCutMin[iCut] && fCutMin[iCut]->IsA() == TFormula::Class());
-    Bool_t bCutHn = (fCutMin[iCut] && fCutMin[iCut]->IsA() == THnBase::Class());
+    Bool_t bCutGraph = (fCutMin[iCut] && fCutMin[iCut]->IsA() == TGraph::Class());
+    Bool_t bCutForm  = (fCutMin[iCut] && fCutMin[iCut]->IsA() == TFormula::Class());
+    Bool_t bCutHn    = (fCutMin[iCut] && fCutMin[iCut]->IsA() == THnBase::Class());
     //    Bool_t bCutSpline = (fCutMin[iCut] && fCutMin[iCut]->IsA() == TSpline::Class());
 
     TString dep = "";
@@ -413,15 +400,9 @@ void PairAnalysisObjectCuts::Print(const Option_t* /*option*/) const {
     }
 
     // stdout
-    if (!inverse)
-      printf(
-        "Cut %02d: %s < %s < %s\n", iCut, dep.Data(), tit.Data(), dep.Data());
+    if (!inverse) printf("Cut %02d: %s < %s < %s\n", iCut, dep.Data(), tit.Data(), dep.Data());
     else
-      printf("Cut %02d: !(%s < %s < %s)\n",
-             iCut,
-             dep.Data(),
-             tit.Data(),
-             dep.Data());
+      printf("Cut %02d: !(%s < %s < %s)\n", iCut, dep.Data(), tit.Data(), dep.Data());
 
   }  //loop over cuts
 }
