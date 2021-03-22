@@ -2,6 +2,7 @@
 GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/mcbm/mcbm_transport.C)
 GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/mcbm/mcbm_digi.C)
 GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/mcbm/mcbm_reco_event.C)
+GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/mcbm/mcbm_match_check.C)
 GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/mcbm/mcbm_hadron_analysis.C)
 GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/mcbm/mcbm_check_overlaps.C)
 GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/mcbm/mcbm_qa.C)
@@ -36,7 +37,7 @@ ForEach(setup IN LISTS cbm_setup)
   Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
   Set(fixture_digi_event fixture_digi_event_${testname})
   set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_digi_event})
-  
+
   Set(testname mcbm_digi_event_${setup})
   Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/mcbm/mcbm_digi.sh ${NumEvents} \"data/${setup}_test\" 0. 0. 1)
   Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "300")
@@ -50,6 +51,14 @@ ForEach(setup IN LISTS cbm_setup)
   Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "300")
   Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
   set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_reco_event})
+  Set(fixture_match_check fixture_match_check_${testname})
+  set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_match_check})
+
+  Set(testname mcbm_match_check_${setup})
+  Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/mcbm/mcbm_match_check.sh ${NumEvents} \"${setup}\" \"data/${setup}_test\")
+  Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "300")
+  Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
+  set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_match_check})
   Set(fixture_hadron_analysis fixture_hadron_analysis_${testname})
   set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_hadron_analysis})
 
@@ -78,7 +87,7 @@ ForEach(setup IN LISTS cbm_setup)
   Set_Tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_qa_event_mc})
   Set(fixture_overlap fixture_overlap_${testname})
   set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_overlap})
- 
+
   #Set(testname mcbm_reco_${setup})
   #Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/mcbm/mcbm_reco.sh ${NumEvents} ${BeamAngle} \"${setup}\")
   #Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "600")
@@ -111,16 +120,16 @@ EndForEach(setup IN LISTS cbm_setup)
 # disable dev tests - #List(APPEND cbm_config 801101110 810000000 801000000 800100000 800010000 800001000 800000100 800000010 800000001)
 # disable dev tests - # test selected subsystems
 # disable dev tests - List(APPEND cbm_config 801101110 801000000 800100000 800010000 800001000 800000100 800000010 800000001)
-# disable dev tests - 
+# disable dev tests -
 # disable dev tests - ForEach(config IN LISTS cbm_config)
-# disable dev tests - 
+# disable dev tests -
 # disable dev tests -   Set(testname mcbm_mc_dev_${config})
 # disable dev tests -   Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/mcbm/mcbm_mc_dev.sh ${NumEvents} ${BeamAngle} \"sis18_mcbm_25deg_long_dev\" \"${config}\")
 # disable dev tests -   Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "30")
 # disable dev tests -   Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
-# disable dev tests -   
+# disable dev tests -
 # disable dev tests -   Set(dep_mc ${testname})
-# disable dev tests - 
+# disable dev tests -
 # disable dev tests -   Set(testname mcbm_reco_dev_${config})
 # disable dev tests -   Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/mcbm/mcbm_reco_dev.sh ${NumEvents} \"sis18_mcbm_25deg_long_dev\" \"${config}\")
 # disable dev tests -   Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "30")
@@ -128,9 +137,9 @@ EndForEach(setup IN LISTS cbm_setup)
 # disable dev tests -   Set_Tests_Properties(${testname} PROPERTIES DEPENDS ${dep_mc})
 # disable dev tests -   Set(_FileName_Dependency data/mcbm_mc_dev_${config}_ok)
 # disable dev tests -   Set_Tests_Properties(${testname} PROPERTIES REQUIRED_FILES ${_FileName_Dependency})
-# disable dev tests - 
+# disable dev tests -
 # disable dev tests -   Set(dep_reco ${testname})
-# disable dev tests - 
+# disable dev tests -
 # disable dev tests - #DE  Set(testname mcbm_overlap_${config})
 # disable dev tests - #DE  Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/mcbm/mcbm_check_overlaps.sh \"sis18_mcbm_25deg_long_dev\")
 # disable dev tests - #DE  Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "600")
@@ -138,12 +147,12 @@ EndForEach(setup IN LISTS cbm_setup)
 # disable dev tests - #DE  Set_Tests_Properties(${testname} PROPERTIES DEPENDS ${dep_mc})
 # disable dev tests - #DE  Set(_FileName_Dependency data/mcbm_mc_${config}_ok)
 # disable dev tests - #DE  Set_Tests_Properties(${testname} PROPERTIES REQUIRED_FILES ${_FileName_Dependency})
-# disable dev tests - 
+# disable dev tests -
 # disable dev tests - EndForEach(config IN LISTS cbm_config)
 # end of test CBM configs from geometry/config
 
-# disable dev tests - Install(FILES .rootrc mcbm_transport.C mcbm_reco.C mcbm_check_overlaps.C 
-Install(FILES .rootrc mcbm_transport.C mcbm_reco.C mcbm_check_overlaps.C 
+# disable dev tests - Install(FILES .rootrc mcbm_transport.C mcbm_reco.C mcbm_check_overlaps.C
+Install(FILES .rootrc mcbm_transport.C mcbm_reco.C mcbm_check_overlaps.C
         DESTINATION share/cbmroot/macro/mcbm
        )
 Install(DIRECTORY modules DESTINATION share/cbmroot/macro/mcbm)
