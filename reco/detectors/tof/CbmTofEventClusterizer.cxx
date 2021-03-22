@@ -337,7 +337,7 @@ void CbmTofEventClusterizer::SetParContainers() {
 }
 
 void CbmTofEventClusterizer::Exec(Option_t* option) {
-  fTofDigiPointMatchesOut->clear();
+  if (nullptr != fTofDigiPointMatchesOut) fTofDigiPointMatchesOut->clear();
 
   if (fTofCalDigiVecOut) fTofCalDigiVecOut->clear();
   if (fEventsColl) {
