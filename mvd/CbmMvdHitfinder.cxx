@@ -6,7 +6,7 @@
 #include "CbmMvdHitfinder.h"
 #include "CbmMvdPoint.h"
 #include "SensorDataSheets/CbmMvdMimosa26AHR.h"
-#include "plugins/tasks/CbmMvdSensorFindHitTask.h"
+//#include "plugins/tasks/CbmMvdSensorFindHitTask.h"
 #include "plugins/tasks/CbmMvdSensorHitfinderTask.h"
 #include "tools/CbmMvdGeoHandler.h"
 

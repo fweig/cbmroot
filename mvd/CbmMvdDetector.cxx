@@ -16,7 +16,7 @@
 #include "plugins/tasks/CbmMvdSensorDigiToHitTask.h"
 #include "plugins/tasks/CbmMvdSensorDigitizerTBTask.h"
 #include "plugins/tasks/CbmMvdSensorDigitizerTask.h"
-#include "plugins/tasks/CbmMvdSensorFindHitTask.h"
+//#include "plugins/tasks/CbmMvdSensorFindHitTask.h"
 #include "plugins/tasks/CbmMvdSensorHitfinderTask.h"  //khun
 #include "plugins/tasks/CbmMvdSensorTask.h"
 #include "tools/CbmMvdGeoHandler.h"
@@ -137,9 +137,9 @@ void CbmMvdDetector::AddSensor(TString clearName,
                                Double_t sensorStartTime,
                                Int_t stationNr) {
   /**
-   * 
-   * new sensor is registered in sensor array 
-   * 
+   *
+   * new sensor is registered in sensor array
+   *
    * **/
 
   TString myname;
@@ -185,7 +185,7 @@ void CbmMvdDetector::AddSensor(TString clearName,
 //-----------------------------------------------------------------------
 void CbmMvdDetector::AddPlugin(CbmMvdSensorPlugin* plugin) {
   /**
- * if there is a new buffer or task typ you have to insert it here 
+ * if there is a new buffer or task typ you have to insert it here
  * or you can't use it.
  */
   fSensorArrayFilled = kTRUE;
@@ -194,7 +194,7 @@ void CbmMvdDetector::AddPlugin(CbmMvdSensorPlugin* plugin) {
   Int_t nSensors                = fSensorArray->GetEntriesFast();
   const TString digitizername   = "CbmMvdSensorDigitizerTask";
   const TString digitizerTBname = "CbmMvdSensorDigitizerTBTask";
-  const TString findername      = "CbmMvdSensorFindHitTask";
+//  const TString findername      = "CbmMvdSensorFindHitTask";
   //const TString framename = "CbmMvdSensorFrameBuffer";
   //const TString trackingname = "CbmMvdSensorTrackingBuffer";
   const TString clustername   = "CbmMvdSensorClusterfinderTask";  //khun
@@ -222,12 +222,13 @@ void CbmMvdDetector::AddPlugin(CbmMvdSensorPlugin* plugin) {
         sensor->SetDigiPlugin(fPluginCount);
 
         //cout <<  "Adding Task CbmMvdSensorDigitizerTask at Sensor " << sensor->GetName() << endl;
-      } else if (plugin->ClassName() == findername) {
+/*      } else if (plugin->ClassName() == findername) {
         CbmMvdSensorFindHitTask* findTask = new CbmMvdSensorFindHitTask();
         sensor                            = (CbmMvdSensor*) fSensorArray->At(i);
         sensor->AddPlugin(findTask);
         sensor->SetHitPlugin(fPluginCount);
         // cout <<  "Adding Task CbmMvdSensorFindHitTask at Sensor " << sensor->GetName() << endl;
+*/
       }
 
       //Re-enable cluster and hit finder in addition to khun
@@ -278,9 +279,9 @@ void CbmMvdDetector::AddPlugin(CbmMvdSensorPlugin* plugin) {
 void CbmMvdDetector::Init() {
 
   /**
-   * 
+   *
    * Initialisation method
-   * 
+   *
    * **/
 
 
@@ -337,12 +338,12 @@ void CbmMvdDetector::SetProduceNoise() {
 //-----------------------------------------------------------------------
 void CbmMvdDetector::SendInput(TClonesArray* input) {
   /**
-   * 
-   * Sending event to sensors, 
-   * each sensor gets only his own points
-   * 
    *
-   * 
+   * Sending event to sensors,
+   * each sensor gets only his own points
+   *
+   *
+   *
    * **/
 
 
@@ -372,12 +373,12 @@ void CbmMvdDetector::SendInput(TClonesArray* input) {
 //-----------------------------------------------------------------------
 void CbmMvdDetector::SendInputDigis(CbmDigiManager* digiMan) {
   /**
-   * 
-   * Sending event to sensors, 
+   *
+   * Sending event to sensors,
    * each sensor gets only his own points
-   * 
-   * 
-   * 
+   *
+   *
+   *
    * **/
   assert(digiMan);
   assert(digiMan->IsPresent(ECbmModuleId::kMvd));
@@ -437,12 +438,12 @@ void CbmMvdDetector::SendInputDigis(TClonesArray* digis) {
 //-----------------------------------------------------------------------
 void CbmMvdDetector::SendInputDigisToHits(TClonesArray* digis) {
   /**
-   * 
-   * Sending event to sensors, 
+   *
+   * Sending event to sensors,
    * each sensor gets only his own points
-   * 
+   *
    * Version for DigiToHit
-   * 
+   *
    * **/
 
 
@@ -469,12 +470,12 @@ void CbmMvdDetector::SendInputDigisToHits(TClonesArray* digis) {
 void CbmMvdDetector::SendInputCluster(TClonesArray* clusters) {
 
   /**
-   * 
-   * Sending event to sensors, 
+   *
+   * Sending event to sensors,
    * each sensor gets only his own points
-   * 
-   * 
-   * 
+   *
+   *
+   *
    * **/
   CbmMvdCluster* cluster;
   Int_t nEntries = clusters->GetEntriesFast();
@@ -498,9 +499,9 @@ void CbmMvdDetector::SendInputCluster(TClonesArray* clusters) {
 //-----------------------------------------------------------------------
 void CbmMvdDetector::ExecChain() {
   /**
-   * 
+   *
    * method to execute plugin chain on sensors
-   * 
+   *
    * **/
 
   foutput->Clear();
@@ -526,9 +527,9 @@ void CbmMvdDetector::ExecChain() {
 //-----------------------------------------------------------------------
 void CbmMvdDetector::Exec(UInt_t nLevel) {
   /**
-   * 
+   *
    * execute spezific plugin on all sensors
-   * 
+   *
    * **/
 
   foutput->Clear();
@@ -552,9 +553,9 @@ void CbmMvdDetector::Exec(UInt_t nLevel) {
 void CbmMvdDetector::ExecFrom(UInt_t nLevel) {
 
   /**
-   * 
+   *
    * execute chain from a spezific plugin on all sensors
-   * 
+   *
    * **/
   foutput->Clear();
   fcurrentEvent->Clear();

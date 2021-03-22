@@ -1,5 +1,5 @@
 set(INCLUDE_DIRECTORIES
-  ${CMAKE_CURRENT_SOURCE_DIR} 
+  ${CMAKE_CURRENT_SOURCE_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}/tools
   ${CMAKE_CURRENT_SOURCE_DIR}/tools/readout
   ${CMAKE_CURRENT_SOURCE_DIR}/SensorDataSheets
@@ -13,7 +13,7 @@ set(INCLUDE_DIRECTORIES
   ${CBMDATA_DIR}/sts
   ${CBMDATA_DIR}/mvd
   ${CBMDATA_DIR}/global
-  ${CBMBASE_DIR} 
+  ${CBMBASE_DIR}
 
   ${CBMROOT_SOURCE_DIR}/sim/transport/base
 )
@@ -21,7 +21,7 @@ set(INCLUDE_DIRECTORIES
 include_directories(${INCLUDE_DIRECTORIES})
 
 set(SYSTEM_INCLUDE_DIRECTORIES
-  ${BASE_INCLUDE_DIRECTORIES} 
+  ${BASE_INCLUDE_DIRECTORIES}
 )
 
 include_directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
@@ -35,7 +35,7 @@ set(LINK_DIRECTORIES
 link_directories(${LINK_DIRECTORIES})
 
 set(SRCS
-  plugins/tasks/CbmMvdSensorTask.cxx 
+  plugins/tasks/CbmMvdSensorTask.cxx
   plugins/tasks/CbmMvdSensorDigitizerTask.cxx
   plugins/tasks/CbmMvdSensorDigitizerTBTask.cxx
 
@@ -52,30 +52,30 @@ set(SRCS
   SensorDataSheets/CbmMvdMimosa26AHR.cxx
   SensorDataSheets/CbmMvdMimosa34.cxx
   SensorDataSheets/CbmMvdMimosis.cxx
-  SensorDataSheets/CbmMvdSensorDataSheet.cxx  
+  SensorDataSheets/CbmMvdSensorDataSheet.cxx
 
   tools/CbmMvdGeoHandler.cxx
   tools/CbmMvdHelper.h
   tools/readout/CbmMvdReadoutSimple.cxx
   tools/readout/CbmMvdReadoutCluster.cxx
 
-  qa/CbmMvdQa.cxx 
+  qa/CbmMvdQa.cxx
 
-  CbmMvd.cxx 
- 
+  CbmMvd.cxx
+
   CbmMvdDigitizer.cxx
-  CbmMvdPileupManager.cxx  
+  CbmMvdPileupManager.cxx
   CbmMvdPixelCharge.cxx
   CbmMvdHitfinder.cxx  #OLD
-  CbmMvdStationPar.cxx 
+  CbmMvdStationPar.cxx
   CbmMvdDetector.cxx
-  CbmMvdSensor.cxx 
+  CbmMvdSensor.cxx
   CbmMvdDigiToHit.cxx
-  CbmMvdDigiToHitTB.cxx 
+  CbmMvdDigiToHitTB.cxx
 
 #OLD
   CbmMvdClusterfinder.cxx
-  CbmMvdClusterfinderTB.cxx 
+  CbmMvdClusterfinderTB.cxx
 ####
   CbmMvdReadout.cxx
 )
@@ -85,19 +85,19 @@ set(SRCS
 set(LINKDEF CbmMvdLinkDef.h)
 set(LIBRARY_NAME CbmMvd)
 set(DEPENDENCIES
-    CbmBase CbmData Base
+    CbmSimBase CbmBase CbmData Base
 )
 
 GENERATE_LIBRARY()
 
-Install(FILES tools/CbmMvdHelper.h 
+Install(FILES tools/CbmMvdHelper.h
               tools/CbmMvdGeoHandler.h
         DESTINATION include/mvd/tools
        )
-Install(FILES plugins/CbmMvdSensorPlugin.h 
+Install(FILES plugins/CbmMvdSensorPlugin.h
         DESTINATION include/mvd/plugins
        )
-Install(FILES SensorDataSheets/CbmMvdMimosa26AHR.h 
+Install(FILES SensorDataSheets/CbmMvdMimosa26AHR.h
               SensorDataSheets/CbmMvdSensorDataSheet.h
               SensorDataSheets/CbmMvdMimosa34.h
               SensorDataSheets/CbmMvdMimosis.h
@@ -112,7 +112,7 @@ Install(FILES plugins/tasks/CbmMvdSensorClusterfinderTask.h
               plugins/tasks/CbmMvdSensorDigitizerTask.h
               plugins/tasks/CbmMvdSensorDigitizerTBTask.h
               plugins/tasks/CbmMvdSensorDigiToHitTask.h
-              plugins/tasks/CbmMvdSensorFindHitTask.h
+#              plugins/tasks/CbmMvdSensorFindHitTask.h
               plugins/tasks/CbmMvdSensorHitfinderTask.h
               plugins/tasks/CbmMvdSensorTask.h
         DESTINATION include/mvd/plugins/tasks
