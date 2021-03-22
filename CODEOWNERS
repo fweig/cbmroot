@@ -12,11 +12,11 @@
 
 /macro/C2F/      @i.selyuzhenkov
 /macro/analysis/ @i.selyuzhenkov
-/macro/KF/       @s.gorbunov @v.akishina
+/macro/KF/       @se.gorbunov @v.akishina
 
 # Core
 /core/             @f.uhlig @v.friese @p.-a.loizeau
-/core/qa/          @s.gorbunov
+/core/qa/          @se.gorbunov
 /core/data/test/   @f.uhlig
 /core/data/raw/    @p.-a.loizeau
 /core/base/utils/  @f.uhlig @s.lebedev
@@ -30,9 +30,9 @@
 # Reco
 /reco/              @f.uhlig @v.friese @p.-a.loizeau
 /reco/littrack/     @s.lebedev @andrey.lebedev
-/reco/L1/           @s.gorbunov @v.akishina
+/reco/L1/           @se.gorbunov @v.akishina
 /reco/eventbuilder/ @d.smith
-/reco/KF/           @s.gorbunov @v.akishina
+/reco/KF/           @se.gorbunov @v.akishina
 
 # Analysis
 /analysis/                                 @i.selyuzhenkov

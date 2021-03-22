@@ -137,6 +137,10 @@ function generate_file_list() {
   fi
   echo "Upstream name is :" $UPSTREAM
 
+  # Rebase the MR to extract the changed files properly
+  # If upstream/master was changed while the pipline was running one would otherwise get
+  # a wrong list of files
+  git rebase $UPSTREAM/master
   BASE_COMMIT=$UPSTREAM/master
   CHANGED_FILES=$(git diff --name-only $BASE_COMMIT)
 }
