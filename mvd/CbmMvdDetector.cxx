@@ -194,7 +194,7 @@ void CbmMvdDetector::AddPlugin(CbmMvdSensorPlugin* plugin) {
   Int_t nSensors                = fSensorArray->GetEntriesFast();
   const TString digitizername   = "CbmMvdSensorDigitizerTask";
   const TString digitizerTBname = "CbmMvdSensorDigitizerTBTask";
-//  const TString findername      = "CbmMvdSensorFindHitTask";
+  //  const TString findername      = "CbmMvdSensorFindHitTask";
   //const TString framename = "CbmMvdSensorFrameBuffer";
   //const TString trackingname = "CbmMvdSensorTrackingBuffer";
   const TString clustername   = "CbmMvdSensorClusterfinderTask";  //khun
@@ -222,7 +222,7 @@ void CbmMvdDetector::AddPlugin(CbmMvdSensorPlugin* plugin) {
         sensor->SetDigiPlugin(fPluginCount);
 
         //cout <<  "Adding Task CbmMvdSensorDigitizerTask at Sensor " << sensor->GetName() << endl;
-/*      } else if (plugin->ClassName() == findername) {
+        /*      } else if (plugin->ClassName() == findername) {
         CbmMvdSensorFindHitTask* findTask = new CbmMvdSensorFindHitTask();
         sensor                            = (CbmMvdSensor*) fSensorArray->At(i);
         sensor->AddPlugin(findTask);
