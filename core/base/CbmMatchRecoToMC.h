@@ -8,17 +8,17 @@
 #ifndef CBMMATCHRECOTOMC_H_
 #define CBMMATCHRECOTOMC_H_
 
-#include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
-#include <RtypesCore.h>  // for Int_t, Bool_t, Option_t, kFALSE, kTRUE
-
-#include <FairTask.h>  // for FairTask, InitStatus
-
-#include <utility>  // for pair
-#include <vector>   // for vector
-
 #include "CbmDefs.h"  // for ECbmModuleId
 #include "CbmMatch.h"
 #include "CbmTofDigi.h"
+
+#include <FairTask.h>  // for FairTask, InitStatus
+
+#include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
+#include <RtypesCore.h>  // for Int_t, Bool_t, Option_t, kFALSE, kTRUE
+
+#include <utility>  // for pair
+#include <vector>   // for vector
 
 class CbmDigiManager;
 class CbmMCDataArray;
@@ -201,8 +201,8 @@ private:
 
   // TOF
   CbmMCDataArray* fTofPoints       = nullptr;  //! CbmTofPoint array
-  const std::vector<CbmTofDigi>* fTofDigis     = nullptr;  // TOF MC point matches
-  const std::vector<CbmMatch>*   fTofDigiMatch = nullptr;  // TOF MC point matches
+  const std::vector<CbmTofDigi>* fTofDigis   = nullptr;  // TOF MC point matches
+  const std::vector<CbmMatch>* fTofDigiMatch = nullptr;  // TOF MC point matches
   TClonesArray* fTofHits           = nullptr;  //! CbmTofHit array
   TClonesArray* fTofHitDigiMatches = nullptr;  //! Match Hit -> Digi [out]
   TClonesArray* fTofHitMatches     = nullptr;  //! Match Hit -> MC point [out]

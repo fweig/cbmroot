@@ -25,9 +25,9 @@ class CbmTofDigiBdfPar;
 class CbmTofCell;
 class CbmTofFindTracks;
 class CbmDigiManager;
+#include "CbmMatch.h"
 #include "CbmTofAddress.h"  // in cbmdata/tof
 #include "CbmTofDigi.h"
-#include "CbmMatch.h"
 
 class TTofCalibData;
 class TTrbHeader;
@@ -254,7 +254,7 @@ private:
   TTrbHeader* fTrbHeader;
 
   // Input variables
-  const std::vector<CbmMatch>* fTofDigiPointMatches=nullptr;  // TOF MC point matches
+  const std::vector<CbmMatch>* fTofDigiPointMatches = nullptr;  // TOF MC point matches
   //TClonesArray          * fTofDigisColl;     // TOF Digis
   std::vector<CbmTofDigi> fTofDigiVec {};               //! TOF Digis
   const std::vector<CbmTofDigi>* fT0DigiVec = nullptr;  //! T0 Digis
@@ -264,7 +264,7 @@ private:
   // Output variables
   Bool_t fbWriteHitsInOut;
   Bool_t fbWriteDigisInOut;
-  std::vector<CbmTofDigi>* fTofCalDigiVec = nullptr;                        //! // Calibrated TOF Digis
+  std::vector<CbmTofDigi>* fTofCalDigiVec = nullptr;  //! // Calibrated TOF Digis
   TClonesArray* fTofHitsColl;       // TOF hits
   TClonesArray* fTofDigiMatchColl;  // TOF Digi Links
   //TClonesArray          * fTofCalDigisCollOut;   // Calibrated TOF Digis
@@ -272,7 +272,7 @@ private:
     nullptr;                           //! // Calibrated TOF Digis
   TClonesArray* fTofHitsCollOut;       // TOF hits
   TClonesArray* fTofDigiMatchCollOut;  // TOF Digi Links
-  std::vector<CbmMatch>* fTofDigiPointMatchesOut = nullptr; // TOF Digi MC Point Matches
+  std::vector<CbmMatch>* fTofDigiPointMatchesOut = nullptr;  // TOF Digi MC Point Matches
   Int_t fiNbHits;                      // Index of the CbmTofHit TClonesArray
 
   // Generic

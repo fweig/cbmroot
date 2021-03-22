@@ -92,9 +92,7 @@ CbmTofEventClusterizer::CbmTofEventClusterizer()
   // if ( !fInstance ) fInstance = this;
 }
 
-CbmTofEventClusterizer::CbmTofEventClusterizer(const char* name,
-                                               Int_t verbose,
-                                               Bool_t writeDataInOut)
+CbmTofEventClusterizer::CbmTofEventClusterizer(const char* name, Int_t verbose, Bool_t writeDataInOut)
   : FairTask(TString(name), verbose)
   , fGeoHandler(new CbmTofGeoHandler())
   , fTofId(NULL)
@@ -271,7 +269,8 @@ CbmTofEventClusterizer::CbmTofEventClusterizer(const char* name,
   , fbSwapChannelSides(kFALSE)
   , fiOutputTreeEntry(0)
   , fiFileIndex(0)
-  , fbAlternativeBranchNames(kFALSE) {
+  , fbAlternativeBranchNames(kFALSE)
+{
   if (!fInstance) fInstance = this;
 }
 
@@ -511,11 +510,10 @@ Bool_t CbmTofEventClusterizer::RegisterInputs() {
     return kFALSE;
   }  // if( NULL == fTofDigisColl)
 
-  fTofDigiPointMatches = fManager->InitObjectAs<std::vector<CbmMatch> const *>("TofDigiMatch");
-  if (NULL == fTofDigiPointMatches)
-	    LOG(info) << "No tof digi to point matches in the input file";
+  fTofDigiPointMatches = fManager->InitObjectAs<std::vector<CbmMatch> const*>("TofDigiMatch");
+  if (NULL == fTofDigiPointMatches) LOG(info) << "No tof digi to point matches in the input file";
   else
-	    LOG(info) << "Found tof digi to point matches in the input file";
+    LOG(info) << "Found tof digi to point matches in the input file";
 
   fEventsColl = dynamic_cast<TClonesArray*>(fManager->GetObject("Event"));
   if (NULL == fEventsColl)
@@ -589,11 +587,10 @@ Bool_t CbmTofEventClusterizer::RegisterOutputs() {
     rootMgr->Register(
       tHitDigiMatchBranchName, "Tof", fTofDigiMatchColl, fbWriteHitsInOut);
 
-    if(NULL != fTofDigiPointMatches) {
+    if (NULL != fTofDigiPointMatches) {
       fTofDigiPointMatchesOut = new std::vector<CbmMatch>();
       rootMgr->RegisterAny("TofCalDigiMatch", fTofDigiPointMatchesOut, fbWriteDigisInOut);
     }
-
   } else {  // CbmEvent - mode
     //fTofCalDigisCollOut  = new TClonesArray("CbmTofDigi");
     fTofCalDigiVecOut    = new std::vector<CbmTofDigi>();
@@ -606,7 +603,7 @@ Bool_t CbmTofEventClusterizer::RegisterOutputs() {
     rootMgr->Register(
       tHitDigiMatchBranchName, "Tof", fTofDigiMatchCollOut, fbWriteHitsInOut);
 
-    if(NULL != fTofDigiPointMatches) {
+    if (NULL != fTofDigiPointMatches) {
       fTofDigiPointMatchesOut = new std::vector<CbmMatch>();
       rootMgr->RegisterAny("TofCalDigiMatch", fTofDigiPointMatchesOut, fbWriteDigisInOut);
     }
@@ -1408,19 +1405,12 @@ Bool_t CbmTofEventClusterizer::CreateHistos() {
       0,
       fDigiBdfPar->GetNbChan(iSmType, iRpcId));
 
-    fhRpcDigiMul[iDetIndx] = new TH2F(
-      Form("cl_SmT%01d_sm%03d_rpc%03d_DigiMul", iSmType, iSmId, iRpcId),
-      Form("Digi Multiplicity of Rpc #%03d in Sm %03d of type %d; strip #; "
-           "digi mul",
-           iRpcId,
-           iSmId,
-           iSmType),
-      fDigiBdfPar->GetNbChan(iSmType, iRpcId),
-      0,
-      fDigiBdfPar->GetNbChan(iSmType, iRpcId),
-      20,
-      0,
-      20.);
+    fhRpcDigiMul[iDetIndx] =
+      new TH2F(Form("cl_SmT%01d_sm%03d_rpc%03d_DigiMul", iSmType, iSmId, iRpcId),
+               Form("Digi Multiplicity of Rpc #%03d in Sm %03d of type %d; strip #; "
+                    "digi mul",
+                    iRpcId, iSmId, iSmType),
+               fDigiBdfPar->GetNbChan(iSmType, iRpcId), 0, fDigiBdfPar->GetNbChan(iSmType, iRpcId), 20, 0, 20.);
 
     fhRpcDigiStatus[iDetIndx] = new TH2F(
       Form("cl_SmT%01d_sm%03d_rpc%03d_DigiStatus", iSmType, iSmId, iRpcId),
@@ -1436,20 +1426,16 @@ Bool_t CbmTofEventClusterizer::CreateHistos() {
       0,
       10.);
 
-    const Int_t NLogbin=40;
-    Double_t edge[NLogbin+1];
-    for (Int_t i=0; i<NLogbin+1; i++) edge[i]=TMath::Power(2,i);
-    fhRpcDigiDTLD[iDetIndx] = new TH2F(
-      Form("cl_SmT%01d_sm%03d_rpc%03d_DigiDTLD", iSmType, iSmId, iRpcId),
-      Form("Time distance to last digi of Rpc #%03d in Sm %03d of type %d; "
-           "channel; t_{digi} - t_{previous digi} (ns)",
-           iRpcId,
-           iSmId,
-           iSmType),
-      fDigiBdfPar->GetNbChan(iSmType, iRpcId) * 2,
-      0,
-      fDigiBdfPar->GetNbChan(iSmType, iRpcId) * 2,
-      NLogbin, edge);
+    const Int_t NLogbin = 40;
+    Double_t edge[NLogbin + 1];
+    for (Int_t i = 0; i < NLogbin + 1; i++)
+      edge[i] = TMath::Power(2, i);
+    fhRpcDigiDTLD[iDetIndx] = new TH2F(Form("cl_SmT%01d_sm%03d_rpc%03d_DigiDTLD", iSmType, iSmId, iRpcId),
+                                       Form("Time distance to last digi of Rpc #%03d in Sm %03d of type %d; "
+                                            "channel; t_{digi} - t_{previous digi} (ns)",
+                                            iRpcId, iSmId, iSmType),
+                                       fDigiBdfPar->GetNbChan(iSmType, iRpcId) * 2, 0,
+                                       fDigiBdfPar->GetNbChan(iSmType, iRpcId) * 2, NLogbin, edge);
 
     fhRpcDigiDTFD[iDetIndx] = new TH2F(
       Form("cl_SmT%01d_sm%03d_rpc%03d_DigiDTFD", iSmType, iSmId, iRpcId),
@@ -1499,16 +1485,11 @@ Bool_t CbmTofEventClusterizer::CreateHistos() {
       0.,
       3600.);
 
-    fhRpcCluRate10s[iDetIndx] = new TH1D(
-      Form("cl_SmT%01d_sm%03d_rpc%03d_rate10s", iSmType, iSmId, iRpcId),
-      Form("            Clu rate of Rpc #%03d in Sm %03d of type %d in last "
-           "10s; Time (s); Counts per 100 #mus",
-           iRpcId,
-           iSmId,
-           iSmType),
-      100000,
-      0.,
-      10.);
+    fhRpcCluRate10s[iDetIndx] = new TH1D(Form("cl_SmT%01d_sm%03d_rpc%03d_rate10s", iSmType, iSmId, iRpcId),
+                                         Form("            Clu rate of Rpc #%03d in Sm %03d of type %d in last "
+                                              "10s; Time (s); Counts per 100 #mus",
+                                              iRpcId, iSmId, iSmType),
+                                         100000, 0., 10.);
 
     fhRpcDTLastHits[iDetIndx] = new TH1F(
       Form("cl_SmT%01d_sm%03d_rpc%03d_DTLastHits", iSmType, iSmId, iRpcId),
@@ -2463,7 +2444,7 @@ Bool_t CbmTofEventClusterizer::FillHistos() {
           StartAnalysisTime = pHit->GetTime();
           LOG(info) << "StartAnalysisTime set to " << StartAnalysisTime / 1.E9
                     << " s. ";
-          fdStartAna10s=StartAnalysisTime;
+          fdStartAna10s = StartAnalysisTime;
         }
         Int_t iDetId = (pHit->GetAddress() & DetMask);
 
@@ -5540,9 +5521,9 @@ Bool_t CbmTofEventClusterizer::BuildClusters() {
         LOG(debug) << "Duplicated digi " << fTofDigiVec.size()
                    << " with address 0x" << std::hex << pDigiN->GetAddress();
 
-        if( NULL != fTofDigiPointMatches ) { // copy MC Match Object
+        if (NULL != fTofDigiPointMatches) {  // copy MC Match Object
           const CbmMatch digiMatch = (CbmMatch) fTofDigiPointMatches->at(iDigInd);
-          ((std::vector<CbmMatch>*) fTofDigiPointMatches)->push_back((CbmMatch)digiMatch);
+          ((std::vector<CbmMatch>*) fTofDigiPointMatches)->push_back((CbmMatch) digiMatch);
         }
       }
     }
@@ -5596,12 +5577,10 @@ Bool_t CbmTofEventClusterizer::BuildClusters() {
         size_t iDigiCh = pDigi->GetChannel() * 2 + pDigi->GetSide();
         if (iDigiCh < fvTimeLastDigi[iDetIndx].size()) {
           if (fvTimeLastDigi[iDetIndx][iDigiCh] > 0) {
-            if (kTRUE) { // fdStartAna10s > 0.) {
-              //Double_t dTimeAna10s = (pDigi->GetTime() - fdStartAna10s) / 1.E9;
-              //if (dTimeAna10s < fdSpillDuration)
-                fhRpcDigiDTLD[iDetIndx]->Fill(
-                  iDigiCh,
-                  (pDigi->GetTime() - fvTimeLastDigi[iDetIndx][iDigiCh]) );
+            if (kTRUE) {  // fdStartAna10s > 0.) {
+                          //Double_t dTimeAna10s = (pDigi->GetTime() - fdStartAna10s) / 1.E9;
+                          //if (dTimeAna10s < fdSpillDuration)
+              fhRpcDigiDTLD[iDetIndx]->Fill(iDigiCh, (pDigi->GetTime() - fvTimeLastDigi[iDetIndx][iDigiCh]));
             }
           }
           fvTimeLastDigi[iDetIndx][iDigiCh] = pDigi->GetTime();
@@ -7720,10 +7699,10 @@ Bool_t CbmTofEventClusterizer::CalibRawDigis() {
   LOG(debug) << "CbmTofEventClusterizer::BuildClusters: Sort "
              << fTofCalDigiVec->size() << " calibrated digis ";
   if (iNbTofDigi > 1) {
-	  std::vector<CbmTofDigi>* tTofCalDigiVec=nullptr;
-	if(NULL != fTofDigiPointMatches) {  // temporary copy
-		tTofCalDigiVec=new std::vector<CbmTofDigi>(*fTofCalDigiVec);
-	}
+    std::vector<CbmTofDigi>* tTofCalDigiVec = nullptr;
+    if (NULL != fTofDigiPointMatches) {  // temporary copy
+      tTofCalDigiVec = new std::vector<CbmTofDigi>(*fTofCalDigiVec);
+    }
 
     //    fTofCalDigisColl->Sort(iNbTofDigi); // Time order again, in case modified by the calibration
     /// Sort the buffers of hits due to the time offsets applied
@@ -7743,29 +7722,29 @@ Bool_t CbmTofEventClusterizer::CalibRawDigis() {
       LOG(warning)
         << "CbmTofEventClusterizer::BuildClusters: Sorting not successful ";
 
-    if(NULL != fTofDigiPointMatches) {  // generate updated MC point Match Collection
-	  UInt_t iDigiOrg=0;
-      LOG(info)<<Form("Fill MC Point Matches for %3lu, %3lu digis ",fTofCalDigiVec->size(),tTofCalDigiVec->size());
-      for (UInt_t iDigi=0; iDigi<fTofCalDigiVec->size(); iDigi++){
+    if (NULL != fTofDigiPointMatches) {  // generate updated MC point Match Collection
+      UInt_t iDigiOrg = 0;
+      LOG(info) << Form("Fill MC Point Matches for %3lu, %3lu digis ", fTofCalDigiVec->size(), tTofCalDigiVec->size());
+      for (UInt_t iDigi = 0; iDigi < fTofCalDigiVec->size(); iDigi++) {
         // find original Digi
         CbmTofDigi* outDigi = &(fTofCalDigiVec->at(iDigi));
-        Bool_t bFound=kFALSE;
-        while ( !bFound ) {
-          for( ; iDigiOrg<tTofCalDigiVec->size(); iDigiOrg++) {
+        Bool_t bFound       = kFALSE;
+        while (!bFound) {
+          for (; iDigiOrg < tTofCalDigiVec->size(); iDigiOrg++) {
             CbmTofDigi* orgDigi = &(tTofCalDigiVec->at(iDigiOrg));
-          if ( outDigi->GetAddress() == orgDigi->GetAddress() ) {
+            if (outDigi->GetAddress() == orgDigi->GetAddress()) {
               CbmMatch digiMatch = (CbmMatch) fTofDigiPointMatches->at(iDigiOrg);
-              ((std::vector<CbmMatch>*) fTofDigiPointMatchesOut)->push_back((CbmMatch)digiMatch);
-              LOG(DEBUG)<<Form("Copy MC Point Match for 0x%08x, time %8.2f from %3d to %3d ",
-                  orgDigi->GetAddress(),outDigi->GetTime(),iDigiOrg,iDigi);
-              bFound=kTRUE;
+              ((std::vector<CbmMatch>*) fTofDigiPointMatchesOut)->push_back((CbmMatch) digiMatch);
+              LOG(DEBUG) << Form("Copy MC Point Match for 0x%08x, time %8.2f from %3d to %3d ", orgDigi->GetAddress(),
+                                 outDigi->GetTime(), iDigiOrg, iDigi);
+              bFound = kTRUE;
               break;
-          }
-          if ( iDigiOrg == tTofCalDigiVec->size()-1 ) iDigiOrg=0;
+            }
+            if (iDigiOrg == tTofCalDigiVec->size() - 1) iDigiOrg = 0;
           }
         }
       }
-      delete tTofCalDigiVec; // cleanup temporary vector
+      delete tTofCalDigiVec;  // cleanup temporary vector
     }
   }
 
