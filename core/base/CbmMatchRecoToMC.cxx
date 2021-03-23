@@ -38,6 +38,7 @@
 #include <boost/type_index/type_index_facade.hpp>  // for operator==
 
 #include <algorithm>  // for find
+#include <iomanip>    // for std::setw
 
 using std::pair;
 using std::vector;
