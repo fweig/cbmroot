@@ -20,6 +20,7 @@
 #include <TH1.h>
 #include <TH2.h>
 #include <THttpServer.h>
+#include <TStopwatch.h>
 
 #include <iomanip>
 
@@ -64,6 +65,11 @@ void CbmTaskBuildRawEvents::AddSeedTimeFillerToList(RawEventBuilderDetector seed
 
 InitStatus CbmTaskBuildRawEvents::Init()
 {
+  if (fbGetTimings) {
+    fTimer = new TStopwatch;
+    fTimer->Start();
+  }
+
   /// Get a handle from the IO manager
   FairRootManager* ioman = FairRootManager::Instance();
 
@@ -146,6 +152,8 @@ InitStatus CbmTaskBuildRawEvents::Init()
   if (kTRUE == fpAlgo->InitAlgo()) return kSUCCESS;
   else
     return kFATAL;
+
+  if (fTimer != nullptr) { fTimer->Stop(); }
 }
 
 
@@ -153,6 +161,7 @@ InitStatus CbmTaskBuildRawEvents::ReInit() { return kSUCCESS; }
 
 void CbmTaskBuildRawEvents::Exec(Option_t* /*option*/)
 {
+  if (fTimer != nullptr) { fTimer->Start(kFALSE); }
   LOG(debug2) << "CbmTaskBuildRawEvents::Exec => Starting sequence";
   //Warning: Int_t must be used for the loop counters instead of UInt_t,
   //as the digi manager can return -1, which would be casted to +1
@@ -258,6 +267,8 @@ void CbmTaskBuildRawEvents::Exec(Option_t* /*option*/)
   /// Save the resulting vector of events in TClonesArray
   FillOutput();
   LOG(debug2) << "CbmTaskBuildRawEvents::Exec => Done";
+
+  if (fTimer != nullptr) { fTimer->Stop(); }
 }
 
 void CbmTaskBuildRawEvents::FillSeedTimesFromDetList()
@@ -356,11 +367,22 @@ UInt_t CbmTaskBuildRawEvents::GetNofDigis(ECbmModuleId _system)
   return 0;
 }
 
+void CbmTaskBuildRawEvents::PrintTimings()
+{
+  if (fTimer == nullptr) { LOG(fatal) << "Trying to print timings but timer not set"; }
+  else {
+    Double_t rtime = fTimer->RealTime();
+    Double_t ctime = fTimer->CpuTime();
+    LOG(info) << "CbmTaskBuildRawEvents: Real time " << rtime << " s, CPU time " << ctime << " s";
+  }
+}
+
 void CbmTaskBuildRawEvents::Finish()
 {
   /// Call Algo finish method
   fpAlgo->Finish();
   if (fbFillHistos) { SaveHistos(); }
+  if (fbGetTimings) { PrintTimings(); }
 }
 
 void CbmTaskBuildRawEvents::FillOutput()

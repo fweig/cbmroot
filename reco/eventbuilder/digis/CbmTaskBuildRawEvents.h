@@ -33,6 +33,7 @@
 class CbmDigiManager;
 class RawEventBuilderDetector;
 class TClonesArray;
+class TStopwatch;
 
 enum class EOverlapModeRaw;
 
@@ -118,8 +119,10 @@ public:
   void SetTimings(Bool_t bFlagIn = kTRUE)
   {
     if (nullptr != fpAlgo) fpAlgo->SetTimings(bFlagIn);
+    fbGetTimings = bFlagIn;
   }
 
+  void PrintTimings();
   void SetSeedTimeFiller(RawEventBuilderDetector seedDet);
   void AddSeedTimeFillerToList(RawEventBuilderDetector seedDet);
   void DumpSeedTimesFromDetList();
@@ -150,12 +153,15 @@ private:
 
   void FillSeedTimesFromDetList();
 
+  TStopwatch* fTimer = nullptr;  //! is create when fbGetTimings is set before init
+
   CbmAlgoBuildRawEvents* fpAlgo = nullptr;
 
   TClonesArray* fEvents = nullptr;  //! output container of CbmEvents
 
   Bool_t fbFillHistos {kTRUE};             //! Switch ON/OFF filling of histograms
   Bool_t fbWriteHistosToFairSink {kTRUE};  //! Write histos to FairRootManager instead of separate file
+  Bool_t fbGetTimings = kFALSE;            //! Measure CPU time using stopwatch
 
   /** Name of the histogram output file **/
   TString fsOutFileName {"data/HistosEvtWin.root"};
