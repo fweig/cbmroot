@@ -404,14 +404,14 @@ void mcbm_event_ana(UInt_t uRunId         = 831,
   CbmTofExtendTracks* tofExtendTracks = new CbmTofExtendTracks("TofExtAna");
   tofExtendTracks->SetCalParFileName("TofExtTracksPar.root");
   tofExtendTracks->SetCalOutFileName("TofExtTracksOut.root");
-  tofExtendTracks->SetStationUT(2);
+  tofExtendTracks->SetStationUT(1);
   //iLev: 0 update alignment with deviation from original tracklet
   //iLev: 1 update alignment with deviation from extended and refitted tracklet
   tofExtendTracks->SetCorSrc(0);  // [iLev]0 - all hits, [ilev]1 - pulls,
   tofExtendTracks->SetCorMode(
     210);  // 2 - Y coordinate, 1 - X coordinat, 0 Time offset
   tofExtendTracks->SetTrkHitsMin(4);
-  tofExtendTracks->SetAddStations(2);
+  tofExtendTracks->SetAddStations(1);
   tofExtendTracks->SetReqStations(509);
   tofExtendTracks->SetCutDX(10.);
   tofExtendTracks->SetCutDY(10.);

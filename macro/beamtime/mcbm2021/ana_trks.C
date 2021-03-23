@@ -162,9 +162,9 @@ void ana_trks(Int_t nEvents = 10000, Int_t iSel = 1, Int_t iGenCor = 1, TString 
   //tofFindTracks->SetTtTarg(0.058);    // target value for Mar2020 double stack
   //tofFindTracks->SetTtTarg(0.055);  // target value Nov2019 (triple stack run 831)
   //tofFindTracks->SetTtTarg(0.048);  // target value Nov2019 (double stack run 714)
-  tofFindTracks->SetTtTarg(0.047);  // target value Mar2020, after T0 fix (full run 600)
+  //tofFindTracks->SetTtTarg(0.047);  // target value Mar2020, after T0 fix (full run 600)
   //  0.044);  // target value Mar2020, after T0 fix (double stack run 714)
-  //tofFindTracks->SetTtTarg(0.035);  // target value for inverse velocity, > 0.033 ns/cm!
+  tofFindTracks->SetTtTarg(0.035);             // target value for inverse velocity, > 0.033 ns/cm!
   tofFindTracks->SetCalParFileName(cTrkFile);  // Tracker parameter value file name
   tofFindTracks->SetBeamCounter(5, 0, 0);      // default beam counter
   tofFindTracks->SetR0Lim(20.);
@@ -196,7 +196,7 @@ void ana_trks(Int_t nEvents = 10000, Int_t iSel = 1, Int_t iGenCor = 1, TString 
       tofFindTracks->SetSIGT(dTsig);  // allow for variable deviations in ns
     }
       iMinNofHits   = 3;
-      iNStations    = 30;
+      iNStations    = 32;
       iNReqStations = 4;
       tofFindTracks->SetStation(0, 5, 0, 0);
       tofFindTracks->SetStation(1, 0, 2, 2);
@@ -228,8 +228,8 @@ void ana_trks(Int_t nEvents = 10000, Int_t iSel = 1, Int_t iGenCor = 1, TString 
       tofFindTracks->SetStation(27, 9, 1, 0);
       tofFindTracks->SetStation(28, 9, 0, 1);
       tofFindTracks->SetStation(29, 9, 1, 1);
-      //tofFindTracks->SetStation(28, 6, 0, 0);
-      //tofFindTracks->SetStation(29, 6, 0, 1);
+      tofFindTracks->SetStation(30, 6, 0, 0);
+      tofFindTracks->SetStation(31, 6, 0, 1);
       break;
 
     case 11:  // for calibration mode of 2-stack & test counters

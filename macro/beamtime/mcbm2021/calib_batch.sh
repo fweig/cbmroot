@@ -63,7 +63,7 @@ echo define root execution environment at I=$I for Run $RunId Mode $RunIdMode
 if [ -e /lustre/nyx ]; then
 source /lustre/nyx/cbm/users/nh/CBM/cbmroot/trunk/build6/config.sh 
 wdir=/lustre/nyx/cbm/users/nh/CBM/cbmroot/trunk/macro/beamtime/mcbm2021
-outdir=/lustre/nyx/cbm/users/nh/CBM/cbmroot/trunk/macro/beamtime/mcbm2021${RunId}
+outdir=/lustre/nyx/cbm/users/nh/CBM/cbmroot/trunk/macro/beamtime/mcbm2021/${RunId}
 else 
 wdir=`pwd`
 outdir=${wdir}/${RunId}

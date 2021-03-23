@@ -78,7 +78,6 @@ void unpack_tsa_mcbm_mfles(UInt_t uRunId   = 0,
   CbmMcbm2018UnpackerTaskTof* unpacker_tof = new CbmMcbm2018UnpackerTaskTof();
   CbmMcbm2018UnpackerTaskRich* unpacker_rich =
     new CbmMcbm2018UnpackerTaskRich();
-  CbmMcbm2018UnpackerTaskHodo* unpacker_hodo = new CbmMcbm2018UnpackerTaskHodo();
   CbmMcbm2018UnpackerTaskPsd* unpacker_psd = new CbmMcbm2018UnpackerTaskPsd();
 
   unpacker_sts->SetMonitorMode();
