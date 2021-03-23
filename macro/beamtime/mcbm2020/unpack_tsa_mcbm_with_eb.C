@@ -634,6 +634,7 @@ Bool_t unpack_tsa_mcbm_with_eb(TString inFile       = "",
   CbmTaskBuildRawEvents* eventBuilder = new CbmTaskBuildRawEvents();
 
   eventBuilder->SetFillHistos(kTRUE);
+  eventBuilder->SetTimings(kTRUE);  //activate for diagnostic runs
 
   eventBuilder->SetEventOverlapMode(EOverlapModeRaw::NoOverlap);
   //  eventBuilder->SetEventOverlapMode(EOverlapModeRaw::MergeOverlap);
@@ -743,9 +744,9 @@ Bool_t unpack_tsa_mcbm_with_eb(TString inFile       = "",
   Double_t rtime = timer.RealTime();
   Double_t ctime = timer.CpuTime();
   std::cout << std::endl << std::endl;
-  std::cout << ">>> unpack_tsa_mcbm: Macro finished successfully." << std::endl;
-  std::cout << ">>> unpack_tsa_mcbm: Output file is " << unpOutFile << std::endl;
-  std::cout << ">>> unpack_tsa_mcbm: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
+  std::cout << ">>> unpack_tsa_mcbm_with_eb: Macro finished successfully." << std::endl;
+  std::cout << ">>> unpack_tsa_mcbm_with_eb: Output file is " << unpOutFile << std::endl;
+  std::cout << ">>> unpack_tsa_mcbm_with_eb: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

@@ -38,6 +38,7 @@ class TClonesArray;
 class TH1;
 class TH2;
 class TNamed;
+class TStopwatch;
 class TCanvas;
 
 enum class EOverlapModeRaw
@@ -129,6 +130,10 @@ public:
 
   void SetFillHistos(Bool_t var) { fbFillHistos = var; }
   void ResetHistograms(Bool_t bResetTime = kTRUE);
+
+  /** stopwatch timing **/
+  void SetTimings(Bool_t var) { fbGetTimings = var; }
+  void PrintTimings();
 
   void SetReferenceDetector(ECbmModuleId refDet, ECbmDataType dataTypeIn, std::string sNameIn,
                             UInt_t uTriggerMinDigisIn = 0, Int_t iTriggerMaxDigisIn = -1,
@@ -239,11 +244,14 @@ private:
 
   /// User parameters
   /// Control flags
-  Bool_t fbIgnoreTsOverlap = kFALSE;     //! Ignore data in Overlap part of the TS
-  Bool_t fbFillHistos {kTRUE};           //! Switch ON/OFF filling of histograms
-  Bool_t fbUseMuchBeamtimeDigi = kTRUE;  //! Switch between MUCH digi classes
+  Bool_t fbIgnoreTsOverlap = kFALSE;      //! Ignore data in Overlap part of the TS
+  Bool_t fbFillHistos {kTRUE};            //! Switch ON/OFF filling of histograms
+  Bool_t fbUseMuchBeamtimeDigi = kTRUE;   //! Switch between MUCH digi classes
+  Bool_t fbGetTimings          = kFALSE;  //! Measure CPU time using stopwatch
     /// Event building mode and detectors selection
   EOverlapModeRaw fOverMode {EOverlapModeRaw::AllowOverlap};
+
+  TStopwatch* fTimer = nullptr;  //! is create when fbGetTimings is set before init
 
   RawEventBuilderDetector fRefDet             = RawEventBuilderDetector(ECbmModuleId::kT0, ECbmDataType::kT0Digi, "T0");
   std::vector<RawEventBuilderDetector> fvDets = {

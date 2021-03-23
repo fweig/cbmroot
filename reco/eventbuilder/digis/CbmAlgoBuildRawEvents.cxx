@@ -31,6 +31,7 @@
 #include <TH1.h>
 #include <TH2.h>
 #include <THttpServer.h>
+#include <TStopwatch.h>
 
 template<>
 void CbmAlgoBuildRawEvents::LoopOnSeeds<Double_t>();
@@ -38,6 +39,11 @@ void CbmAlgoBuildRawEvents::LoopOnSeeds<Double_t>();
 Bool_t CbmAlgoBuildRawEvents::InitAlgo()
 {
   LOG(info) << "CbmAlgoBuildRawEvents::InitAlgo => Starting sequence";
+
+  if (fbGetTimings) {
+    fTimer = new TStopwatch;
+    fTimer->Start();
+  }
 
   /// Check if reference detector is set and seed data are available,
   /// otherwise look for explicit seed times
@@ -73,12 +79,26 @@ Bool_t CbmAlgoBuildRawEvents::InitAlgo()
     }
   }
   if (fbFillHistos) { CreateHistograms(); }
+  if (fTimer != nullptr) { fTimer->Stop(); }
 
   LOG(info) << "CbmAlgoBuildRawEvents::InitAlgo => Done";
   return kTRUE;
 }
 
-void CbmAlgoBuildRawEvents::Finish() {}
+void CbmAlgoBuildRawEvents::Finish()
+{
+  if (fbGetTimings) { PrintTimings(); }
+}
+
+void CbmAlgoBuildRawEvents::PrintTimings()
+{
+  if (fTimer == nullptr) { LOG(fatal) << "Trying to print timings but timer not set"; }
+  else {
+    Double_t rtime = fTimer->RealTime();
+    Double_t ctime = fTimer->CpuTime();
+    LOG(info) << "CbmAlgoBuildRawEvents: Real time " << rtime << " s, CPU time " << ctime << " s";
+  }
+}
 
 void CbmAlgoBuildRawEvents::ClearEventVector()
 {
@@ -95,6 +115,7 @@ void CbmAlgoBuildRawEvents::ClearEventVector()
 void CbmAlgoBuildRawEvents::ProcessTs()
 {
   LOG_IF(info, fuNrTs % 1000 == 0) << "Begin of TS " << fuNrTs;
+  if (fTimer != nullptr) { fTimer->Start(kFALSE); }
   InitTs();
   InitSeedWindow();
   BuildEvents();
@@ -113,6 +134,8 @@ void CbmAlgoBuildRawEvents::ProcessTs()
 
   LOG(debug) << "Found " << fEventVector.size() << " triggered events";
   if (fbFillHistos) { FillHistos(); }
+  if (fTimer != nullptr) { fTimer->Stop(); }
+
   fuNrTs++;
 }
 

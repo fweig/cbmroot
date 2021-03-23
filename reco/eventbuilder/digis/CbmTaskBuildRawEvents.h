@@ -115,6 +115,11 @@ public:
     if (nullptr != fpAlgo) fpAlgo->ChangeMuchBeamtimeDigiFlag(bFlagIn);
     fbUseMuchBeamtimeDigi = bFlagIn;
   }
+  void SetTimings(Bool_t bFlagIn = kTRUE)
+  {
+    if (nullptr != fpAlgo) fpAlgo->SetTimings(bFlagIn);
+  }
+
   void SetSeedTimeFiller(RawEventBuilderDetector seedDet);
   void AddSeedTimeFillerToList(RawEventBuilderDetector seedDet);
   void DumpSeedTimesFromDetList();
