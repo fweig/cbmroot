@@ -20,7 +20,6 @@ void mcbm_reco_event(Int_t nEvents = 10, TString dataset = "data/test", const ch
 
   // --- Logger settings ----------------------------------------------------
   TString logLevel     = "INFO";
-  //TString logLevel     = "DEBUG";
   TString logVerbosity = "LOW";
   // ------------------------------------------------------------------------
 

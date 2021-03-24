@@ -540,8 +540,8 @@ void CbmMatchRecoToMC::MatchHitsTof(const TClonesArray* HitDigiMatches,
                << iNbTofDigis << " VS " << iNbTofDigiMatches;
 
   Int_t nofHits     = hits->GetEntriesFast();
-  CbmTofDigi pTofDigi;
-  CbmMatch pMatchDigiPnt;
+  CbmTofDigi digiTof;
+  CbmMatch matchDigiPnt;
 
   for (Int_t iHit = 0; iHit < nofHits; iHit++) {
     CbmMatch* hitDigiMatch = static_cast<CbmMatch*>(HitDigiMatches->At(iHit));
@@ -562,25 +562,25 @@ void CbmMatchRecoToMC::MatchHitsTof(const TClonesArray* HitDigiMatches,
         continue;
       }  // if( iNbTofDigis <= iDigiIdx )
 
-      pTofDigi            = fTofDigis->at(iDigiIdx);
-      pMatchDigiPnt       = fTofDigiMatch->at(iDigiIdx);
-      Int_t iNbPointsDigi = pMatchDigiPnt.GetNofLinks();
+      digiTof             = fTofDigis->at(iDigiIdx);
+      matchDigiPnt        = fTofDigiMatch->at(iDigiIdx);
+      Int_t iNbPointsDigi = matchDigiPnt.GetNofLinks();
       if (iNbPointsDigi <= 0) {
         LOG(error) << "CbmMatchRecoToMC::MatchHitsTof => No entries in Digi to point match for Hit #" << iHit << "/"
                    << nofHits << " Digi " << iDigi << "/" << iNbDigisHit << ": " << iNbPointsDigi << " (digi index is "
                    << iDigiIdx << "/" << iNbTofDigis << ") => ignore it!!!";
         LOG(error) << "                                  Digi address: 0x" << std::setw(8) << std::hex
-                   << pTofDigi.GetAddress() << std::dec;
+                   << digiTof.GetAddress() << std::dec;
         continue;
-      }                                                      // if( iNbTofDigis <= iDigiIdx )
-      CbmLink lTruePoint  = pMatchDigiPnt.GetMatchedLink();  // Point generating the Digi
+      }                                                     // if( iNbTofDigis <= iDigiIdx )
+      CbmLink lTruePoint  = matchDigiPnt.GetMatchedLink();  // Point generating the Digi
       Int_t iTruePointIdx = lTruePoint.GetIndex();
       for (Int_t iPoint = 0; iPoint < iNbPointsDigi; iPoint++) {
-        CbmLink lPoint  = pMatchDigiPnt.GetLink(iPoint);
+        CbmLink lPoint  = matchDigiPnt.GetLink(iPoint);
         Int_t iPointIdx = lPoint.GetIndex();
 
         if (iPointIdx == iTruePointIdx)
-          hitMatch->AddLink(CbmLink(pTofDigi.GetTot(), iPointIdx, lPoint.GetEntry(),
+          hitMatch->AddLink(CbmLink(digiTof.GetTot(), iPointIdx, lPoint.GetEntry(),
                                     lPoint.GetFile()));  // Point generating the Digi
         else
           hitMatch->AddLink(CbmLink(

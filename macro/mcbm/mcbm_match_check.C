@@ -7,7 +7,7 @@ void mcbm_match_check(Int_t nEvents = 10, TString setup = "mcbm_beam_2020_03", c
   TString ParFile   = dataset + ".par.root";
   TString OutFile   = dataset + ".match_check.root";
 
-  FairLogger::GetLogger()->SetLogScreenLevel("DEBUG");
+  FairLogger::GetLogger()->SetLogScreenLevel("INFO");
   FairLogger::GetLogger()->SetLogVerbosityLevel("HIGH");
 
   // -----   Timer   --------------------------------------------------------
