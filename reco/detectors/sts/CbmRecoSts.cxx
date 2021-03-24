@@ -20,6 +20,7 @@
 #include "CbmStsParSetSensorCond.h"
 #include "CbmStsParSim.h"
 #include "CbmStsRecoModule.h"
+#include "CbmStsRecoModuleOrtho.h"
 #include "CbmStsSetup.h"
 #include <FairField.h>
 #include <FairRun.h>
@@ -67,20 +68,25 @@ UInt_t CbmRecoSts::CreateModules() {
     assert(setupSensor);
     Int_t sensorAddress = Int_t(setupSensor->GetAddress());
 
+    // --- Parameter sets from database or user-defined
+    CbmStsParSetModule* modulePars = (fUserParSetModule ? fUserParSetModule : fParSetModule);
+    CbmStsParSetSensor* sensorPars = (fUserParSetSensor ? fUserParSetSensor : fParSetSensor);
+    CbmStsParSetSensorCond* sensorConds = (fUserParSetCond ? fUserParSetCond : fParSetCond);
+
     // --- Module parameters
     const CbmStsParModule& modPar =
       (fUserParModule ? *fUserParModule
-                      : fParSetModule->GetParModule(moduleAddress));
+                      : modulePars->GetParModule(moduleAddress));
 
     // --- Sensor parameters
     const CbmStsParSensor& sensPar =
       (fUserParSensor ? *fUserParSensor
-                      : fParSetSensor->GetParSensor(sensorAddress));
+                      : sensorPars->GetParSensor(sensorAddress));
 
     // --- Sensor conditions
     const CbmStsParSensorCond& sensCond =
       (fUserParSensorCond ? *fUserParSensorCond
-                          : fParSetCond->GetParSensor(sensorAddress));
+                          : sensorConds->GetParSensor(sensorAddress));
 
     // --- Calculate and set average Lorentz shift
     // --- This will be used in hit finding for correcting the position.
@@ -112,8 +118,9 @@ UInt_t CbmRecoSts::CreateModules() {
     }  //? Lorentz-shift correction
 
     // --- Create reco module
-    CbmStsRecoModule* recoModule =
-      new CbmStsRecoModule(setupModule, modPar, sensPar, lorentzF, lorentzB);
+    CbmStsRecoModule* recoModule = new CbmStsRecoModule(setupModule, modPar, sensPar,
+                                                        lorentzF, lorentzB);
+    assert(recoModule);
     auto result = fModules.insert({moduleAddress, recoModule});
     assert(result.second);
     fModuleIndex.push_back(recoModule);

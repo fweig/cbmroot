@@ -16,6 +16,7 @@
 #include "CbmStsAlgoAnaCluster.h"
 #include "CbmStsAlgoFindClusters.h"
 #include "CbmStsAlgoFindHits.h"
+#include "CbmStsAlgoFindHitsOrtho.h"
 #include "CbmStsDigi.h"
 #include "CbmStsModule.h"
 #include "CbmStsParSensor.h"
@@ -59,8 +60,8 @@ void CbmStsRecoModule::AddDigiToQueue(const CbmStsDigi* digi, Int_t digiIndex) {
   Int_t moduleAddress =
     CbmStsAddress::GetMotherAddress(digi->GetAddress(), kStsModule);
   assert(moduleAddress == fSetupModule->GetAddress());
-  assert(digi->GetChannel() < 2 * fNofStrips);
-  if (digi->GetChannel() < fNofStrips)
+  assert(digi->GetChannel() < fNofStripsF + fNofStripsB);
+  if (digi->GetChannel() < fNofStripsF)
     fDigisF.push_back({digi, digiIndex});
   else
     fDigisB.push_back({digi, digiIndex});
@@ -90,7 +91,7 @@ void CbmStsRecoModule::Reconstruct() {
   fClusterFinder->Exec(fDigisF,
                        fClustersF,
                        fSetupModule->GetAddress(),
-                       fNofStrips,
+                       fNofStripsF,
                        0,
                        fTimeCutDigiSig,
                        fTimeCutDigiAbs,
@@ -99,8 +100,8 @@ void CbmStsRecoModule::Reconstruct() {
   fClusterFinder->Exec(fDigisB,
                        fClustersB,
                        fSetupModule->GetAddress(),
-                       fNofStrips,
-                       fNofStrips,
+                       fNofStripsB,
+                       fNofStripsF,
                        fTimeCutDigiSig,
                        fTimeCutDigiAbs,
                        fConnectEdgeBack,
@@ -125,21 +126,28 @@ void CbmStsRecoModule::Reconstruct() {
             });
 
   // --- Perform hit finding
-  assert(fHitFinder);
-  fHitFinder->Exec(fClustersF,
-                   fClustersB,
-                   fHits,
-                   fSetupModule->GetAddress(),
-                   fTimeCutClusterSig,
-                   fTimeCutClusterAbs,
-                   fDyActive,
-                   fNofStrips,
-                   fStripPitch,
-                   fStereoFront,
-                   fStereoBack,
-                   fLorentzShiftF,
-                   fLorentzShiftB,
-                   fMatrix);
+  if (fHitFinder)  fHitFinder->Exec(fClustersF,
+                                    fClustersB,
+                                    fHits,
+                                    fSetupModule->GetAddress(),
+                                    fTimeCutClusterSig,
+                                    fTimeCutClusterAbs,
+                                    fDyActive,
+                                    fNofStripsF,
+                                    fStripPitchF,
+                                    fStereoFront,
+                                    fStereoBack,
+                                    fLorentzShiftF,
+                                    fLorentzShiftB,
+                                    fMatrix);
+  else if ( fHitFinderOrtho ) fHitFinderOrtho->Exec(fClustersF, fClustersB, fHits,
+                                                    fSetupModule->GetAddress(),
+                                                    fTimeCutClusterSig,
+                                                    fTimeCutClusterAbs,
+                                                    fNofStripsF, fNofStripsB,
+                                                    fStripPitchF, fStripPitchB,
+                                                    fLorentzShiftF, fLorentzShiftB,
+                                                    fMatrix);
 }
 // -------------------------------------------------------------------------
 
@@ -156,11 +164,11 @@ void CbmStsRecoModule::Reset() {
 void CbmStsRecoModule::Init() {
 
   // Reconstruction is currently implemented for double-sided strip
-  // sensor with the same number of strips and strip pitch on the
-  // front and on the back side.
+  // sensors (class DssdStereo or DssdOrtho)
 
   // --- Sensor class must be DssdStereo
-  assert(fParSensor->GetClass() == CbmStsSensorClass::kDssdStereo);
+  auto type = fParSensor->GetClass();
+  assert(type == CbmStsSensorClass::kDssdStereo || type == CbmStsSensorClass::kDssdOrtho);
 
   // --- Check for physical node of sensor
   assert(fSetupModule);
@@ -179,25 +187,36 @@ void CbmStsRecoModule::Init() {
   fMatrix = sensorNode->GetMatrix();
 
   // --- Number of strips must be the same on both sides
-  Int_t nStripsF = fParSensor->GetParInt(4);
-  Int_t nStripsB = fParSensor->GetParInt(5);
-  assert(nStripsF > 0 && nStripsF == nStripsB);
-  fNofStrips = nStripsF;
-
-  // --- Strip pitch must be the same on both sides
-  fStripPitch = fParSensor->GetPar(6);
-  assert(fStripPitch > 0. && fStripPitch == fParSensor->GetPar(7));
-
-  // --- Check that active size in x fits the geometrical extension
-  assert(Double_t(fNofStrips) * fStripPitch <= fParSensor->GetPar(0));
-
-  // --- Check that active size in y fits the geometrical extension
-  fDyActive = fParSensor->GetPar(3);
-  assert(fDyActive <= fParSensor->GetPar(1));
-
-  // --- Horizontal cross-connection for non-vanishing stereo angles
+  // --- Number of strips, strip pitch and stereo angle
+  fNofStripsF = fParSensor->GetParInt(4);
+  fNofStripsB = fParSensor->GetParInt(5);
+  fStripPitchF = fParSensor->GetPar(6);
+  fStripPitchB = fParSensor->GetPar(7);
   fStereoFront = fParSensor->GetPar(8);
   fStereoBack  = fParSensor->GetPar(9);
+  assert(fNofStripsF > 0);
+  assert(fNofStripsB > 0);
+  assert(fStripPitchF > 0.);
+  assert(fStripPitchB > 0.);
+
+  // --- For DssdStereo, number of strips and pitch must be the same on both sides
+  if ( type == CbmStsSensorClass::kDssdStereo ) {
+    assert ( fNofStripsB == fNofStripsF );
+    assert ( fStripPitchB == fStripPitchF );
+  }
+
+  // --- Check consistency with geometric extensions
+  if ( type == CbmStsSensorClass::kDssdStereo ) {
+    assert(Double_t(fNofStripsF) * fStripPitchF <= fParSensor->GetPar(0));
+    fDyActive = fParSensor->GetPar(3);
+    assert(fDyActive <= fParSensor->GetPar(1));
+  }
+  else if ( type == CbmStsSensorClass::kDssdOrtho ) {
+    assert(Double_t(fNofStripsF) * fStripPitchF <= fParSensor->GetPar(0));
+    assert(Double_t(fNofStripsB) * fStripPitchB <= fParSensor->GetPar(1));
+  }
+
+  // --- Horizontal cross-connection for non-vanishing stereo angles
   if (fStereoFront > 1.) fConnectEdgeFront = kTRUE;
   if (fStereoBack > 1.) fConnectEdgeBack = kTRUE;
 
@@ -207,9 +226,10 @@ void CbmStsRecoModule::Init() {
   fConnectEdgeBack  = kFALSE;
 
   // Algorithms
-  fClusterAna    = new CbmStsAlgoAnaCluster();
-  fClusterFinder = new CbmStsAlgoFindClusters();
-  fHitFinder     = new CbmStsAlgoFindHits();
+  fClusterAna     = new CbmStsAlgoAnaCluster();
+  fClusterFinder  = new CbmStsAlgoFindClusters();
+  if (type == CbmStsSensorClass::kDssdStereo) fHitFinder = new CbmStsAlgoFindHits();
+  else fHitFinderOrtho = new CbmStsAlgoFindHitsOrtho();
 
   // Name
   fName = fSetupModule->GetName();
@@ -220,7 +240,7 @@ void CbmStsRecoModule::Init() {
 // -----   Info to string  -------------------------------------------------
 std::string CbmStsRecoModule::ToString() const {
   std::stringstream ss;
-  ss << fSetupModule->ToString() << " Strips " << fNofStrips;
+  ss << fSetupModule->ToString() << " Strips " << fNofStripsF << " / " << fNofStripsB;
   return ss.str();
 }
 // -------------------------------------------------------------------------

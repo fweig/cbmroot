@@ -16,6 +16,7 @@ class TGeoHMatrix;
 class CbmStsAlgoAnaCluster;
 class CbmStsAlgoFindClusters;
 class CbmStsAlgoFindHits;
+class CbmStsAlgoFindHitsOrtho;
 class CbmStsHit;
 class CbmStsDigi;
 class CbmStsModule;
@@ -121,9 +122,10 @@ private:
 
 private:
   // --- Algorithms
-  CbmStsAlgoAnaCluster* fClusterAna      = nullptr;  //! ///< Algo
-  CbmStsAlgoFindClusters* fClusterFinder = nullptr;  //! ///< Algo
-  CbmStsAlgoFindHits* fHitFinder         = nullptr;  //! ///< Algo
+  CbmStsAlgoAnaCluster* fClusterAna        = nullptr;  //! ///< Algo
+  CbmStsAlgoFindClusters* fClusterFinder   = nullptr;  //! ///< Algo
+  CbmStsAlgoFindHits* fHitFinder           = nullptr;  //! ///< Algo
+  CbmStsAlgoFindHitsOrtho* fHitFinderOrtho = nullptr;  //! ///< Algo
   std::mutex fLock {};
 
   // --- Parameters
@@ -131,8 +133,10 @@ private:
   const CbmStsParModule* fParModule = nullptr;  //!
   const CbmStsParSensor* fParSensor = nullptr;  //!
   Double_t fDyActive                = 0.;       ///< Active sensor size in y
-  UInt_t fNofStrips                 = 0;        ///< Number of sensor strips
-  Double_t fStripPitch              = 0.;       ///< Sensor strip pitch [cm]
+  UInt_t fNofStripsF                = 0;        ///< Number of sensor strips front side
+  UInt_t fNofStripsB                = 0;        ///< Number of sensor strips back side
+  Double_t fStripPitchF             = 0.;       ///< Sensor strip pitch front side [cm]
+  Double_t fStripPitchB             = 0.;       ///< Sensor strip pitch back side [cm]
   Double_t fStereoFront   = 0.;       ///< Strip stereo angle front side [deg]
   Double_t fStereoBack    = 0.;       ///< Strip stereo angle back side [deg]
   TGeoHMatrix* fMatrix    = nullptr;  ///< Sensor position in global C.S. [cm]

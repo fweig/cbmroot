@@ -167,15 +167,30 @@ public:
   void UseModulePar(CbmStsParModule* modulePar) { fUserParModule = modulePar; }
 
 
-  /** @brief User-defined sensor parameters
-      ** @param parModule Sensor parameter object
+  /** @brief User-defined module parameter set
+     ** @param parModule Module parameter set object
+     **
+     ** If defined, this parameter set will be used instead of that found in the runtimeDb.
+     */
+  void UseModuleParSet(CbmStsParSetModule* moduleParSet) { fUserParSetModule = moduleParSet; }
+
+
+  /** @brief User-defined sensor condition parameters
+      ** @param parModule Sensor condition parameter object
       **
-      ** If defined, these parameters will be used for all sensors instead
+      ** If defined, these condition parameters will be used for all sensors instead
       ** of those found in the runtimeDb.
       */
   void UseSensorCond(CbmStsParSensorCond* sensorCond) {
     fUserParSensorCond = sensorCond;
   }
+
+  /** @brief User-defined module parameter set
+     ** @param parModule Module parameter set object
+     **
+     ** If defined, this parameter set will be used instead of that found in the runtimeDb.
+     */
+  void UseSensorCondSet(CbmStsParSetSensorCond* sensorCondSet) { fUserParSetCond = sensorCondSet; }
 
 
   /** @brief User-defined sensor parameters
@@ -185,6 +200,14 @@ public:
      ** of those found in the runtimeDb.
      */
   void UseSensorPar(CbmStsParSensor* sensorPar) { fUserParSensor = sensorPar; }
+
+
+  /** @brief User-defined module parameter set
+     ** @param parModule Module parameter set object
+     **
+     ** If defined, this parameter set will be used instead of that found in the runtimeDb.
+     */
+  void UseSensorParSet(CbmStsParSetSensor* sensorParSet) { fUserParSetSensor = sensorParSet; }
 
 
 private:
@@ -239,6 +262,11 @@ private:
   CbmStsParModule* fUserParModule         = nullptr;
   CbmStsParSensor* fUserParSensor         = nullptr;
   CbmStsParSensorCond* fUserParSensorCond = nullptr;
+
+  // --- User-defined parameter sets, not from database
+  CbmStsParSetModule* fUserParSetModule   = nullptr;
+  CbmStsParSetSensor* fUserParSetSensor   = nullptr;
+  CbmStsParSetSensorCond* fUserParSetCond = nullptr;
 
   // --- Settings
   ECbmRecoMode fMode           = kCbmRecoEvent;  ///< Time-slice or event

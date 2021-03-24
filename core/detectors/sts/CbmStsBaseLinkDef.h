@@ -21,4 +21,7 @@
 #pragma link C++ class CbmStsSetup + ;
 #pragma link C++ class CbmStsStation + ;
 
+#pragma link C++ enum CbmStsELoss;
+#pragma link C++ enum CbmStsSensorClass;
+
 #endif /* __CINT__ */
