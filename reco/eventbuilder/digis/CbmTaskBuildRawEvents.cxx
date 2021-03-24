@@ -68,6 +68,8 @@ InitStatus CbmTaskBuildRawEvents::Init()
   if (fbGetTimings) {
     fTimer = new TStopwatch;
     fTimer->Start();
+    fCopyTimer = new TStopwatch;
+    fCopyTimer->Reset();
   }
 
   /// Get a handle from the IO manager
@@ -148,12 +150,17 @@ InitStatus CbmTaskBuildRawEvents::Init()
   // Set timeslice meta data
   fpAlgo->SetTimeSliceMetaDataArray(dynamic_cast<TClonesArray*>(ioman->GetObject("TimesliceMetaData")));
 
+  if (fTimer != nullptr) {
+    fTimer->Stop();
+    Double_t rtime = fTimer->RealTime();
+    Double_t ctime = fTimer->CpuTime();
+    LOG(info) << "CbmTaskBuildRawEvents::Init(): Real time " << rtime << " s, CPU time " << ctime << " s";
+  }
+
   /// Call Algo Init method
   if (kTRUE == fpAlgo->InitAlgo()) return kSUCCESS;
   else
     return kFATAL;
-
-  if (fTimer != nullptr) { fTimer->Stop(); }
 }
 
 
@@ -162,6 +169,7 @@ InitStatus CbmTaskBuildRawEvents::ReInit() { return kSUCCESS; }
 void CbmTaskBuildRawEvents::Exec(Option_t* /*option*/)
 {
   if (fTimer != nullptr) { fTimer->Start(kFALSE); }
+
   LOG(debug2) << "CbmTaskBuildRawEvents::Exec => Starting sequence";
   //Warning: Int_t must be used for the loop counters instead of UInt_t,
   //as the digi manager can return -1, which would be casted to +1
@@ -173,6 +181,8 @@ void CbmTaskBuildRawEvents::Exec(Option_t* /*option*/)
 
   //Reset explicit seed times if set
   if (fSeedTimeDet != kRawEventBuilderDetUndef || fSeedTimeDetList.size() > 0) { fSeedTimes->clear(); }
+
+  if (fCopyTimer != nullptr) { fCopyTimer->Start(kFALSE); }
 
   //Read STS digis
   if (fDigiMan->IsPresent(ECbmModuleId::kSts)) {
@@ -257,6 +267,8 @@ void CbmTaskBuildRawEvents::Exec(Option_t* /*option*/)
     LOG(debug) << "Read: " << fDigiMan->GetNofDigis(ECbmModuleId::kPsd) << " PSD digis.";
     LOG(debug) << "In DigiManager: " << fPsdDigis->size() << " PSD digis.";
   }
+
+  if (fCopyTimer != nullptr) { fCopyTimer->Stop(); }
 
   if (fSeedTimeDetList.size() > 0) { FillSeedTimesFromDetList(); }
   //DumpSeedTimesFromDetList();
@@ -374,6 +386,12 @@ void CbmTaskBuildRawEvents::PrintTimings()
     Double_t rtime = fTimer->RealTime();
     Double_t ctime = fTimer->CpuTime();
     LOG(info) << "CbmTaskBuildRawEvents: Real time " << rtime << " s, CPU time " << ctime << " s";
+  }
+  if (fCopyTimer == nullptr) { LOG(fatal) << "Trying to print timings but timer not set"; }
+  else {
+    Double_t rtime = fCopyTimer->RealTime();
+    Double_t ctime = fCopyTimer->CpuTime();
+    LOG(info) << "CbmTaskBuildRawEvents (digi copy only): Real time " << rtime << " s, CPU time " << ctime << " s";
   }
 }
 

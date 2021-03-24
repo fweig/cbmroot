@@ -153,7 +153,8 @@ private:
 
   void FillSeedTimesFromDetList();
 
-  TStopwatch* fTimer = nullptr;  //! is create when fbGetTimings is set before init
+  TStopwatch* fTimer     = nullptr;  //! is created when fbGetTimings is set before init
+  TStopwatch* fCopyTimer = nullptr;  //! timing only for filling of std::vector<Digi> fields
 
   CbmAlgoBuildRawEvents* fpAlgo = nullptr;
 

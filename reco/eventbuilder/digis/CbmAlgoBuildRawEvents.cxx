@@ -79,7 +79,12 @@ Bool_t CbmAlgoBuildRawEvents::InitAlgo()
     }
   }
   if (fbFillHistos) { CreateHistograms(); }
-  if (fTimer != nullptr) { fTimer->Stop(); }
+  if (fTimer != nullptr) {
+    fTimer->Stop();
+    Double_t rtime = fTimer->RealTime();
+    Double_t ctime = fTimer->CpuTime();
+    LOG(info) << "CbmAlgoBuildRawEvents::Init(): Real time " << rtime << " s, CPU time " << ctime << " s";
+  }
 
   LOG(info) << "CbmAlgoBuildRawEvents::InitAlgo => Done";
   return kTRUE;
