@@ -5,14 +5,6 @@
 
 #include "CbmStsRecoModule.h"
 
-#include <TGeoBBox.h>
-#include <TGeoPhysicalNode.h>
-#include <TMath.h>
-
-#include <FairField.h>
-#include <FairLogger.h>
-#include <FairRun.h>
-
 #include "CbmStsAlgoAnaCluster.h"
 #include "CbmStsAlgoFindClusters.h"
 #include "CbmStsAlgoFindHits.h"
@@ -22,6 +14,14 @@
 #include "CbmStsParSensor.h"
 #include "CbmStsSensor.h"
 
+#include <FairField.h>
+#include <FairLogger.h>
+#include <FairRun.h>
+
+#include <TGeoBBox.h>
+#include <TGeoPhysicalNode.h>
+#include <TMath.h>
+
 using std::pair;
 
 
@@ -29,21 +29,21 @@ ClassImp(CbmStsRecoModule)
 
 
   // -----   Standard constructor   ------------------------------------------
-  CbmStsRecoModule::CbmStsRecoModule() {}
+  CbmStsRecoModule::CbmStsRecoModule()
+{
+}
 // -------------------------------------------------------------------------
 
 
 // -----   Default constructor   -------------------------------------------
-CbmStsRecoModule::CbmStsRecoModule(CbmStsModule* setupModule,
-                                   const CbmStsParModule& parModule,
-                                   const CbmStsParSensor& parSensor,
-                                   Double_t lorentzShiftF,
-                                   Double_t lorentzShiftB)
+CbmStsRecoModule::CbmStsRecoModule(CbmStsModule* setupModule, const CbmStsParModule& parModule,
+                                   const CbmStsParSensor& parSensor, Double_t lorentzShiftF, Double_t lorentzShiftB)
   : fSetupModule(setupModule)
   , fParModule(&parModule)
   , fParSensor(&parSensor)
   , fLorentzShiftF(lorentzShiftF)
-  , fLorentzShiftB(lorentzShiftB) {
+  , fLorentzShiftB(lorentzShiftB)
+{
   Init();
 }
 // -------------------------------------------------------------------------
@@ -55,14 +55,13 @@ CbmStsRecoModule::~CbmStsRecoModule() {}
 
 
 // ---------------   Add digi to queues   ----------------------------------
-void CbmStsRecoModule::AddDigiToQueue(const CbmStsDigi* digi, Int_t digiIndex) {
+void CbmStsRecoModule::AddDigiToQueue(const CbmStsDigi* digi, Int_t digiIndex)
+{
   fLock.lock();
-  Int_t moduleAddress =
-    CbmStsAddress::GetMotherAddress(digi->GetAddress(), kStsModule);
+  Int_t moduleAddress = CbmStsAddress::GetMotherAddress(digi->GetAddress(), kStsModule);
   assert(moduleAddress == fSetupModule->GetAddress());
   assert(digi->GetChannel() < fNofStripsF + fNofStripsB);
-  if (digi->GetChannel() < fNofStripsF)
-    fDigisF.push_back({digi, digiIndex});
+  if (digi->GetChannel() < fNofStripsF) fDigisF.push_back({digi, digiIndex});
   else
     fDigisB.push_back({digi, digiIndex});
   fLock.unlock();
@@ -71,41 +70,24 @@ void CbmStsRecoModule::AddDigiToQueue(const CbmStsDigi* digi, Int_t digiIndex) {
 
 
 // -----   Reconstruction   ------------------------------------------------
-void CbmStsRecoModule::Reconstruct() {
+void CbmStsRecoModule::Reconstruct()
+{
 
   // --- Sort the digi queues by digi time stamp
-  std::sort(fDigisF.begin(),
-            fDigisF.end(),
-            [](pair<const CbmStsDigi*, Int_t> digi1,
-               pair<const CbmStsDigi*, Int_t> digi2) {
+  std::sort(fDigisF.begin(), fDigisF.end(),
+            [](pair<const CbmStsDigi*, Int_t> digi1, pair<const CbmStsDigi*, Int_t> digi2) {
               return digi1.first->GetTime() < digi2.first->GetTime();
             });
-  std::sort(fDigisB.begin(),
-            fDigisB.end(),
-            [](pair<const CbmStsDigi*, Int_t> digi1,
-               pair<const CbmStsDigi*, Int_t> digi2) {
+  std::sort(fDigisB.begin(), fDigisB.end(),
+            [](pair<const CbmStsDigi*, Int_t> digi1, pair<const CbmStsDigi*, Int_t> digi2) {
               return digi1.first->GetTime() < digi2.first->GetTime();
             });
 
   // --- Perform cluster finding
-  fClusterFinder->Exec(fDigisF,
-                       fClustersF,
-                       fSetupModule->GetAddress(),
-                       fNofStripsF,
-                       0,
-                       fTimeCutDigiSig,
-                       fTimeCutDigiAbs,
-                       fConnectEdgeFront,
-                       fParModule);
-  fClusterFinder->Exec(fDigisB,
-                       fClustersB,
-                       fSetupModule->GetAddress(),
-                       fNofStripsB,
-                       fNofStripsF,
-                       fTimeCutDigiSig,
-                       fTimeCutDigiAbs,
-                       fConnectEdgeBack,
-                       fParModule);
+  fClusterFinder->Exec(fDigisF, fClustersF, fSetupModule->GetAddress(), fNofStripsF, 0, fTimeCutDigiSig,
+                       fTimeCutDigiAbs, fConnectEdgeFront, fParModule);
+  fClusterFinder->Exec(fDigisB, fClustersB, fSetupModule->GetAddress(), fNofStripsB, fNofStripsF, fTimeCutDigiSig,
+                       fTimeCutDigiAbs, fConnectEdgeBack, fParModule);
 
   // --- Perform cluster analysis
   for (auto& cluster : fClustersF)
@@ -114,46 +96,29 @@ void CbmStsRecoModule::Reconstruct() {
     fClusterAna->Exec(cluster, fParModule);
 
   // --- Sort clusters by time
-  std::sort(fClustersF.begin(),
-            fClustersF.end(),
-            [](const CbmStsCluster& cluster1, const CbmStsCluster& cluster2) {
-              return (cluster1.GetTime() < cluster2.GetTime());
-            });
-  std::sort(fClustersB.begin(),
-            fClustersB.end(),
-            [](const CbmStsCluster& cluster1, const CbmStsCluster& cluster2) {
-              return (cluster1.GetTime() < cluster2.GetTime());
-            });
+  std::sort(fClustersF.begin(), fClustersF.end(), [](const CbmStsCluster& cluster1, const CbmStsCluster& cluster2) {
+    return (cluster1.GetTime() < cluster2.GetTime());
+  });
+  std::sort(fClustersB.begin(), fClustersB.end(), [](const CbmStsCluster& cluster1, const CbmStsCluster& cluster2) {
+    return (cluster1.GetTime() < cluster2.GetTime());
+  });
 
   // --- Perform hit finding
-  if (fHitFinder)  fHitFinder->Exec(fClustersF,
-                                    fClustersB,
-                                    fHits,
-                                    fSetupModule->GetAddress(),
-                                    fTimeCutClusterSig,
-                                    fTimeCutClusterAbs,
-                                    fDyActive,
-                                    fNofStripsF,
-                                    fStripPitchF,
-                                    fStereoFront,
-                                    fStereoBack,
-                                    fLorentzShiftF,
-                                    fLorentzShiftB,
-                                    fMatrix);
-  else if ( fHitFinderOrtho ) fHitFinderOrtho->Exec(fClustersF, fClustersB, fHits,
-                                                    fSetupModule->GetAddress(),
-                                                    fTimeCutClusterSig,
-                                                    fTimeCutClusterAbs,
-                                                    fNofStripsF, fNofStripsB,
-                                                    fStripPitchF, fStripPitchB,
-                                                    fLorentzShiftF, fLorentzShiftB,
-                                                    fMatrix);
+  if (fHitFinder)
+    fHitFinder->Exec(fClustersF, fClustersB, fHits, fSetupModule->GetAddress(), fTimeCutClusterSig, fTimeCutClusterAbs,
+                     fDyActive, fNofStripsF, fStripPitchF, fStereoFront, fStereoBack, fLorentzShiftF, fLorentzShiftB,
+                     fMatrix);
+  else if (fHitFinderOrtho)
+    fHitFinderOrtho->Exec(fClustersF, fClustersB, fHits, fSetupModule->GetAddress(), fTimeCutClusterSig,
+                          fTimeCutClusterAbs, fNofStripsF, fNofStripsB, fStripPitchF, fStripPitchB, fLorentzShiftF,
+                          fLorentzShiftB, fMatrix);
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Reset before new time slice   -----------------------------------
-void CbmStsRecoModule::Reset() {
+void CbmStsRecoModule::Reset()
+{
   fDigisF.clear();
   fDigisB.clear();
 }
@@ -161,7 +126,8 @@ void CbmStsRecoModule::Reset() {
 
 
 // -----   Get the sensor parameters   -------------------------------------
-void CbmStsRecoModule::Init() {
+void CbmStsRecoModule::Init()
+{
 
   // Reconstruction is currently implemented for double-sided strip
   // sensors (class DssdStereo or DssdOrtho)
@@ -188,8 +154,8 @@ void CbmStsRecoModule::Init() {
 
   // --- Number of strips must be the same on both sides
   // --- Number of strips, strip pitch and stereo angle
-  fNofStripsF = fParSensor->GetParInt(4);
-  fNofStripsB = fParSensor->GetParInt(5);
+  fNofStripsF  = fParSensor->GetParInt(4);
+  fNofStripsB  = fParSensor->GetParInt(5);
   fStripPitchF = fParSensor->GetPar(6);
   fStripPitchB = fParSensor->GetPar(7);
   fStereoFront = fParSensor->GetPar(8);
@@ -200,18 +166,18 @@ void CbmStsRecoModule::Init() {
   assert(fStripPitchB > 0.);
 
   // --- For DssdStereo, number of strips and pitch must be the same on both sides
-  if ( type == CbmStsSensorClass::kDssdStereo ) {
-    assert ( fNofStripsB == fNofStripsF );
-    assert ( fStripPitchB == fStripPitchF );
+  if (type == CbmStsSensorClass::kDssdStereo) {
+    assert(fNofStripsB == fNofStripsF);
+    assert(fStripPitchB == fStripPitchF);
   }
 
   // --- Check consistency with geometric extensions
-  if ( type == CbmStsSensorClass::kDssdStereo ) {
+  if (type == CbmStsSensorClass::kDssdStereo) {
     assert(Double_t(fNofStripsF) * fStripPitchF <= fParSensor->GetPar(0));
     fDyActive = fParSensor->GetPar(3);
     assert(fDyActive <= fParSensor->GetPar(1));
   }
-  else if ( type == CbmStsSensorClass::kDssdOrtho ) {
+  else if (type == CbmStsSensorClass::kDssdOrtho) {
     assert(Double_t(fNofStripsF) * fStripPitchF <= fParSensor->GetPar(0));
     assert(Double_t(fNofStripsB) * fStripPitchB <= fParSensor->GetPar(1));
   }
@@ -226,10 +192,11 @@ void CbmStsRecoModule::Init() {
   fConnectEdgeBack  = kFALSE;
 
   // Algorithms
-  fClusterAna     = new CbmStsAlgoAnaCluster();
-  fClusterFinder  = new CbmStsAlgoFindClusters();
+  fClusterAna    = new CbmStsAlgoAnaCluster();
+  fClusterFinder = new CbmStsAlgoFindClusters();
   if (type == CbmStsSensorClass::kDssdStereo) fHitFinder = new CbmStsAlgoFindHits();
-  else fHitFinderOrtho = new CbmStsAlgoFindHitsOrtho();
+  else
+    fHitFinderOrtho = new CbmStsAlgoFindHitsOrtho();
 
   // Name
   fName = fSetupModule->GetName();
@@ -238,7 +205,8 @@ void CbmStsRecoModule::Init() {
 
 
 // -----   Info to string  -------------------------------------------------
-std::string CbmStsRecoModule::ToString() const {
+std::string CbmStsRecoModule::ToString() const
+{
   std::stringstream ss;
   ss << fSetupModule->ToString() << " Strips " << fNofStripsF << " / " << fNofStripsB;
   return ss.str();

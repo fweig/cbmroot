@@ -9,6 +9,7 @@
 
 
 #include <FairTask.h>
+
 #include <TStopwatch.h>
 
 
@@ -31,7 +32,11 @@ class CbmStsSetup;
 /** @enum ECbmMode
  ** @brief Time-slice or event-by-event mode
  **/
-enum ECbmRecoMode { kCbmRecoTimeslice, kCbmRecoEvent };
+enum ECbmRecoMode
+{
+  kCbmRecoTimeslice,
+  kCbmRecoEvent
+};
 
 
 /** @class CbmRecoSts
@@ -55,9 +60,7 @@ class CbmRecoSts : public FairTask {
 
 public:
   /** @brief Constructor **/
-  CbmRecoSts(ECbmRecoMode mode    = kCbmRecoTimeslice,
-             Bool_t writeClusters = kFALSE,
-             Bool_t runParallel   = kFALSE);
+  CbmRecoSts(ECbmRecoMode mode = kCbmRecoTimeslice, Bool_t writeClusters = kFALSE, Bool_t runParallel = kFALSE);
 
 
   /** @brief Copy constructor (disabled) **/
@@ -98,9 +101,7 @@ public:
      **
      ** Alternative to using SetMode.
      **/
-  void SetEventMode(Bool_t choice = kTRUE) {
-    fMode = (choice ? kCbmRecoEvent : kCbmRecoTimeslice);
-  }
+  void SetEventMode(Bool_t choice = kTRUE) { fMode = (choice ? kCbmRecoEvent : kCbmRecoTimeslice); }
 
 
   /** @brief Set execution mode
@@ -181,9 +182,7 @@ public:
       ** If defined, these condition parameters will be used for all sensors instead
       ** of those found in the runtimeDb.
       */
-  void UseSensorCond(CbmStsParSensorCond* sensorCond) {
-    fUserParSensorCond = sensorCond;
-  }
+  void UseSensorCond(CbmStsParSensorCond* sensorCond) { fUserParSensorCond = sensorCond; }
 
   /** @brief User-defined module parameter set
      ** @param parModule Module parameter set object
@@ -219,8 +218,7 @@ private:
      **
      ** The Lorentz shift will be corrected for in hit finding.
      **/
-  std::pair<Double_t, Double_t>
-  LorentzShift(const CbmStsParSensorCond& conditions, Double_t dZ, Double_t bY);
+  std::pair<Double_t, Double_t> LorentzShift(const CbmStsParSensorCond& conditions, Double_t dZ, Double_t bY);
 
 
   /** @brief Instantiate reconstruction modules
@@ -270,12 +268,12 @@ private:
 
   // --- Settings
   ECbmRecoMode fMode           = kCbmRecoEvent;  ///< Time-slice or event
-  Double_t fTimeCutDigisSig    = 3.;      ///< Time cut for cluster finding
-  Double_t fTimeCutDigisAbs    = -1.;     ///< Time cut for cluster finding [ns]
-  Double_t fTimeCutClustersSig = 4.;      ///< Time cut for hit finding
-  Double_t fTimeCutClustersAbs = -1.;     ///< Time cut for hit finding [ns]
-  Bool_t fWriteClusters        = kFALSE;  ///< Write clusters to tree
-  Bool_t fRunParallel          = kFALSE;  ///< Use OpenMP multithreading
+  Double_t fTimeCutDigisSig    = 3.;             ///< Time cut for cluster finding
+  Double_t fTimeCutDigisAbs    = -1.;            ///< Time cut for cluster finding [ns]
+  Double_t fTimeCutClustersSig = 4.;             ///< Time cut for hit finding
+  Double_t fTimeCutClustersAbs = -1.;            ///< Time cut for hit finding [ns]
+  Bool_t fWriteClusters        = kFALSE;         ///< Write clusters to tree
+  Bool_t fRunParallel          = kFALSE;         ///< Use OpenMP multithreading
 
   // --- Counters
   TStopwatch fTimer {};            //! ROOT timer

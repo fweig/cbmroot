@@ -9,7 +9,9 @@
 
 #include "CbmStsCluster.h"
 #include "CbmStsHit.h"
+
 #include <TNamed.h>
+
 #include <mutex>
 
 class TGeoHMatrix;
@@ -59,11 +61,8 @@ public:
      ** The Lorentz shift will be used to correct the hit position in
      ** hit finding.
      **/
-  CbmStsRecoModule(CbmStsModule* setupModule,
-                   const CbmStsParModule& parModule,
-                   const CbmStsParSensor& parSensor,
-                   Double_t lorentzShiftF,
-                   Double_t lorentzShiftB);
+  CbmStsRecoModule(CbmStsModule* setupModule, const CbmStsParModule& parModule, const CbmStsParSensor& parSensor,
+                   Double_t lorentzShiftF, Double_t lorentzShiftB);
 
 
   /** @brief Copy constructor (disabled) **/
@@ -137,11 +136,11 @@ private:
   UInt_t fNofStripsB                = 0;        ///< Number of sensor strips back side
   Double_t fStripPitchF             = 0.;       ///< Sensor strip pitch front side [cm]
   Double_t fStripPitchB             = 0.;       ///< Sensor strip pitch back side [cm]
-  Double_t fStereoFront   = 0.;       ///< Strip stereo angle front side [deg]
-  Double_t fStereoBack    = 0.;       ///< Strip stereo angle back side [deg]
-  TGeoHMatrix* fMatrix    = nullptr;  ///< Sensor position in global C.S. [cm]
-  Double_t fLorentzShiftF = 0.;       ///< Average Lorentz shift front side [cm|
-  Double_t fLorentzShiftB = 0.;       ///< Average Lorentz shift back side [cm|
+  Double_t fStereoFront             = 0.;       ///< Strip stereo angle front side [deg]
+  Double_t fStereoBack              = 0.;       ///< Strip stereo angle back side [deg]
+  TGeoHMatrix* fMatrix              = nullptr;  ///< Sensor position in global C.S. [cm]
+  Double_t fLorentzShiftF           = 0.;       ///< Average Lorentz shift front side [cm|
+  Double_t fLorentzShiftB           = 0.;       ///< Average Lorentz shift back side [cm|
 
   // --- Data
   std::vector<std::pair<const CbmStsDigi*, Long64_t>> fDigisF {};  //!
@@ -151,12 +150,12 @@ private:
   std::vector<CbmStsHit> fHits {};                                 //!
 
   // --- Settings
-  Double_t fTimeCutDigiSig = 3.;   ///< Time cut for cluster finding (in sigma)
-  Double_t fTimeCutDigiAbs = -1.;  ///< Time cut for cluster finding (in ns)
-  Double_t fTimeCutClusterSig = 4.;   ///< Time cut for hit finding (in ns)
-  Double_t fTimeCutClusterAbs = -1.;  ///< Time cut for hit finding (in sigma)
-  Bool_t fConnectEdgeFront = kFALSE;  ///< Round-the edge clustering front side
-  Bool_t fConnectEdgeBack  = kFALSE;  ///< Round-the edge clustering back side
+  Double_t fTimeCutDigiSig    = 3.;      ///< Time cut for cluster finding (in sigma)
+  Double_t fTimeCutDigiAbs    = -1.;     ///< Time cut for cluster finding (in ns)
+  Double_t fTimeCutClusterSig = 4.;      ///< Time cut for hit finding (in ns)
+  Double_t fTimeCutClusterAbs = -1.;     ///< Time cut for hit finding (in sigma)
+  Bool_t fConnectEdgeFront    = kFALSE;  ///< Round-the edge clustering front side
+  Bool_t fConnectEdgeBack     = kFALSE;  ///< Round-the edge clustering back side
 
 
   ClassDef(CbmStsRecoModule, 1);

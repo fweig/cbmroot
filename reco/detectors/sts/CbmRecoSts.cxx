@@ -5,11 +5,6 @@
 
 #include "CbmRecoSts.h"
 
-#include <TClonesArray.h>
-#include <TGeoBBox.h>
-#include <TGeoPhysicalNode.h>
-#include <iomanip>
-
 #include "CbmAddress.h"
 #include "CbmDigiManager.h"
 #include "CbmEvent.h"
@@ -22,9 +17,16 @@
 #include "CbmStsRecoModule.h"
 #include "CbmStsRecoModuleOrtho.h"
 #include "CbmStsSetup.h"
+
 #include <FairField.h>
 #include <FairRun.h>
 #include <FairRuntimeDb.h>
+
+#include <TClonesArray.h>
+#include <TGeoBBox.h>
+#include <TGeoPhysicalNode.h>
+
+#include <iomanip>
 
 using std::fixed;
 using std::left;
@@ -38,13 +40,13 @@ ClassImp(CbmRecoSts)
 
 
   // -----   Constructor   ---------------------------------------------------
-  CbmRecoSts::CbmRecoSts(ECbmRecoMode mode,
-                         Bool_t writeClusters,
-                         Bool_t runParallel)
+  CbmRecoSts::CbmRecoSts(ECbmRecoMode mode, Bool_t writeClusters, Bool_t runParallel)
   : FairTask("RecoSts", 1)
   , fMode(mode)
   , fWriteClusters(writeClusters)
-  , fRunParallel(runParallel) {}
+  , fRunParallel(runParallel)
+{
+}
 // -------------------------------------------------------------------------
 
 
@@ -54,7 +56,8 @@ CbmRecoSts::~CbmRecoSts() {}
 
 
 // -----   Initialise the cluster finding modules   ------------------------
-UInt_t CbmRecoSts::CreateModules() {
+UInt_t CbmRecoSts::CreateModules()
+{
 
   assert(fSetup);
   for (Int_t iModule = 0; iModule < fSetup->GetNofModules(); iModule++) {
@@ -69,24 +72,19 @@ UInt_t CbmRecoSts::CreateModules() {
     Int_t sensorAddress = Int_t(setupSensor->GetAddress());
 
     // --- Parameter sets from database or user-defined
-    CbmStsParSetModule* modulePars = (fUserParSetModule ? fUserParSetModule : fParSetModule);
-    CbmStsParSetSensor* sensorPars = (fUserParSetSensor ? fUserParSetSensor : fParSetSensor);
+    CbmStsParSetModule* modulePars      = (fUserParSetModule ? fUserParSetModule : fParSetModule);
+    CbmStsParSetSensor* sensorPars      = (fUserParSetSensor ? fUserParSetSensor : fParSetSensor);
     CbmStsParSetSensorCond* sensorConds = (fUserParSetCond ? fUserParSetCond : fParSetCond);
 
     // --- Module parameters
-    const CbmStsParModule& modPar =
-      (fUserParModule ? *fUserParModule
-                      : modulePars->GetParModule(moduleAddress));
+    const CbmStsParModule& modPar = (fUserParModule ? *fUserParModule : modulePars->GetParModule(moduleAddress));
 
     // --- Sensor parameters
-    const CbmStsParSensor& sensPar =
-      (fUserParSensor ? *fUserParSensor
-                      : sensorPars->GetParSensor(sensorAddress));
+    const CbmStsParSensor& sensPar = (fUserParSensor ? *fUserParSensor : sensorPars->GetParSensor(sensorAddress));
 
     // --- Sensor conditions
     const CbmStsParSensorCond& sensCond =
-      (fUserParSensorCond ? *fUserParSensorCond
-                          : sensorConds->GetParSensor(sensorAddress));
+      (fUserParSensorCond ? *fUserParSensorCond : sensorConds->GetParSensor(sensorAddress));
 
     // --- Calculate and set average Lorentz shift
     // --- This will be used in hit finding for correcting the position.
@@ -94,8 +92,7 @@ UInt_t CbmRecoSts::CreateModules() {
     Double_t lorentzB = 0.;
     if (fParSim->LorentzShift()) {
 
-      TGeoBBox* shape =
-        dynamic_cast<TGeoBBox*>(setupSensor->GetPnode()->GetShape());
+      TGeoBBox* shape = dynamic_cast<TGeoBBox*>(setupSensor->GetPnode()->GetShape());
       assert(shape);
       Double_t dZ = 2. * shape->GetDZ();  // Sensor thickness
 
@@ -118,8 +115,7 @@ UInt_t CbmRecoSts::CreateModules() {
     }  //? Lorentz-shift correction
 
     // --- Create reco module
-    CbmStsRecoModule* recoModule = new CbmStsRecoModule(setupModule, modPar, sensPar,
-                                                        lorentzF, lorentzB);
+    CbmStsRecoModule* recoModule = new CbmStsRecoModule(setupModule, modPar, sensPar, lorentzF, lorentzB);
     assert(recoModule);
     auto result = fModules.insert({moduleAddress, recoModule});
     assert(result.second);
@@ -132,7 +128,8 @@ UInt_t CbmRecoSts::CreateModules() {
 
 
 // -----   Task execution   ------------------------------------------------
-void CbmRecoSts::Exec(Option_t*) {
+void CbmRecoSts::Exec(Option_t*)
+{
 
   // --- Clear output array
   fHits->Delete();
@@ -147,8 +144,7 @@ void CbmRecoSts::Exec(Option_t*) {
   else {
     assert(fEvents);
     Int_t nEvents = fEvents->GetEntriesFast();
-    LOG(info) << setw(20) << left << GetName() << ": Processing time slice "
-              << fNofTimeslices << " with " << nEvents
+    LOG(info) << setw(20) << left << GetName() << ": Processing time slice " << fNofTimeslices << " with " << nEvents
               << (nEvents == 1 ? " event" : " events");
     for (Int_t iEvent = 0; iEvent < nEvents; iEvent++) {
       CbmEvent* event = dynamic_cast<CbmEvent*>(fEvents->At(iEvent));
@@ -163,7 +159,8 @@ void CbmRecoSts::Exec(Option_t*) {
 
 
 // -----   End-of-run action   ---------------------------------------------
-void CbmRecoSts::Finish() {
+void CbmRecoSts::Finish()
+{
 
   std::cout << std::endl;
   LOG(info) << "=====================================";
@@ -172,20 +169,14 @@ void CbmRecoSts::Finish() {
 
   // --- Time-slice mode
   if (fMode == kCbmRecoTimeslice) {
-    LOG(info) << "Digis / TSlice         : "
-              << fNofDigis / Double_t(fNofTimeslices);
-    LOG(info) << "Digis used / TSlice    : "
-              << fNofDigisUsed / Double_t(fNofTimeslices);
-    LOG(info) << "Digis ignored / TSlice : "
-              << fNofDigisIgnored / Double_t(fNofTimeslices);
-    LOG(info) << "Clusters / TSlice      : "
-              << fNofClusters / Double_t(fNofTimeslices);
-    LOG(info) << "Hits / TSlice          : "
-              << fNofHits / Double_t(fNofTimeslices);
+    LOG(info) << "Digis / TSlice         : " << fNofDigis / Double_t(fNofTimeslices);
+    LOG(info) << "Digis used / TSlice    : " << fNofDigisUsed / Double_t(fNofTimeslices);
+    LOG(info) << "Digis ignored / TSlice : " << fNofDigisIgnored / Double_t(fNofTimeslices);
+    LOG(info) << "Clusters / TSlice      : " << fNofClusters / Double_t(fNofTimeslices);
+    LOG(info) << "Hits / TSlice          : " << fNofHits / Double_t(fNofTimeslices);
     LOG(info) << "Digis per cluster      : " << fNofDigisUsed / fNofClusters;
     LOG(info) << "Clusters per hit       : " << fNofClusters / fNofHits;
-    LOG(info) << "Time per TSlice        : "
-              << fTimeTot / Double_t(fNofTimeslices) << " s ";
+    LOG(info) << "Time per TSlice        : " << fTimeTot / Double_t(fNofTimeslices) << " s ";
 
   }  //? time-slice mode
 
@@ -193,15 +184,11 @@ void CbmRecoSts::Finish() {
   else {
     LOG(info) << "Events                : " << fNofEvents;
     LOG(info) << "Digis / event         : " << fNofDigis / Double_t(fNofEvents);
-    LOG(info) << "Digis used / event    : "
-              << fNofDigisUsed / Double_t(fNofEvents);
-    LOG(info) << "Digis ignored / event : "
-              << fNofDigisIgnored / Double_t(fNofEvents);
-    LOG(info) << "Clusters / event      : "
-              << fNofClusters / Double_t(fNofEvents);
+    LOG(info) << "Digis used / event    : " << fNofDigisUsed / Double_t(fNofEvents);
+    LOG(info) << "Digis ignored / event : " << fNofDigisIgnored / Double_t(fNofEvents);
+    LOG(info) << "Clusters / event      : " << fNofClusters / Double_t(fNofEvents);
     LOG(info) << "Digis per cluster     : " << fNofDigisUsed / fNofClusters;
-    LOG(info) << "Time per event        : " << fTimeTot / Double_t(fNofEvents)
-              << " s ";
+    LOG(info) << "Time per event        : " << fTimeTot / Double_t(fNofEvents) << " s ";
   }  //? event mode
 
   fTimeTot /= Double_t(fNofEvents);
@@ -209,25 +196,22 @@ void CbmRecoSts::Finish() {
   fTime2 /= Double_t(fNofEvents);
   fTime3 /= Double_t(fNofEvents);
   fTime4 /= Double_t(fNofEvents);
-  LOG(info) << "Time Reset       : " << fixed << setprecision(1) << setw(6)
-            << 1000. * fTime1 << " ms (" << setprecision(1) << setw(4)
-            << 100. * fTime1 / fTimeTot << " %)";
-  LOG(info) << "Time Distribute  : " << fixed << setprecision(1) << setw(6)
-            << 1000. * fTime2 << " ms (" << setprecision(1)
-            << 100. * fTime2 / fTimeTot << " %)";
-  LOG(info) << "Time Reconstruct : " << fixed << setprecision(1) << setw(6)
-            << 1000. * fTime3 << " ms (" << setprecision(1) << setw(4)
-            << 100. * fTime3 / fTimeTot << " %)";
-  LOG(info) << "Time Output      : " << fixed << setprecision(1) << setw(6)
-            << 1000. * fTime4 << " ms (" << setprecision(1) << setw(4)
-            << 100. * fTime4 / fTimeTot << " %)";
+  LOG(info) << "Time Reset       : " << fixed << setprecision(1) << setw(6) << 1000. * fTime1 << " ms ("
+            << setprecision(1) << setw(4) << 100. * fTime1 / fTimeTot << " %)";
+  LOG(info) << "Time Distribute  : " << fixed << setprecision(1) << setw(6) << 1000. * fTime2 << " ms ("
+            << setprecision(1) << 100. * fTime2 / fTimeTot << " %)";
+  LOG(info) << "Time Reconstruct : " << fixed << setprecision(1) << setw(6) << 1000. * fTime3 << " ms ("
+            << setprecision(1) << setw(4) << 100. * fTime3 / fTimeTot << " %)";
+  LOG(info) << "Time Output      : " << fixed << setprecision(1) << setw(6) << 1000. * fTime4 << " ms ("
+            << setprecision(1) << setw(4) << 100. * fTime4 / fTimeTot << " %)";
   LOG(info) << "=====================================";
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Initialisation   ------------------------------------------------
-InitStatus CbmRecoSts::Init() {
+InitStatus CbmRecoSts::Init()
+{
 
   // --- Something for the screen
   std::cout << std::endl;
@@ -247,8 +231,7 @@ InitStatus CbmRecoSts::Init() {
     LOG(info) << GetName() << ": Using event-by-event mode";
     fEvents = dynamic_cast<TClonesArray*>(ioman->GetObject("CbmEvent"));
     if (nullptr == fEvents) {
-      LOG(warn) << GetName()
-                << ": Event mode selected but no event array found!";
+      LOG(warn) << GetName() << ": Event mode selected but no event array found!";
       return kFATAL;
     }  //? Event branch not present
   }    //? Event mode
@@ -256,20 +239,15 @@ InitStatus CbmRecoSts::Init() {
     LOG(info) << GetName() << ": Using time-based mode";
 
   // --- Check input array (StsDigis)
-  if (!fDigiManager->IsPresent(ECbmModuleId::kSts))
-    LOG(fatal) << GetName() << ": No StsDigi branch in input!";
+  if (!fDigiManager->IsPresent(ECbmModuleId::kSts)) LOG(fatal) << GetName() << ": No StsDigi branch in input!";
 
   // --- Register output array
   fClusters = new TClonesArray("CbmStsCluster", 1);
-  ioman->Register("StsCluster",
-                  "Clusters in STS",
-                  fClusters,
-                  IsOutputBranchPersistent("StsCluster"));
+  ioman->Register("StsCluster", "Clusters in STS", fClusters, IsOutputBranchPersistent("StsCluster"));
 
   // --- Register output array
   fHits = new TClonesArray("CbmStsHit", 1);
-  ioman->Register(
-    "StsHit", "Hits in STS", fHits, IsOutputBranchPersistent("StsHit"));
+  ioman->Register("StsHit", "Hits in STS", fHits, IsOutputBranchPersistent("StsHit"));
 
   // --- Simulation settings
   assert(fParSim);
@@ -306,10 +284,8 @@ InitStatus CbmRecoSts::Init() {
 
 
 // -----   Calculate the mean Lorentz shift in a sensor   ------------------
-std::pair<Double_t, Double_t>
-CbmRecoSts::LorentzShift(const CbmStsParSensorCond& conditions,
-                         Double_t dZ,
-                         Double_t bY) {
+std::pair<Double_t, Double_t> CbmRecoSts::LorentzShift(const CbmStsParSensorCond& conditions, Double_t dZ, Double_t bY)
+{
 
   Double_t vBias  = conditions.GetVbias();  // Bias voltage
   Double_t vFd    = conditions.GetVfd();    // Full-depletion voltage
@@ -340,7 +316,8 @@ CbmRecoSts::LorentzShift(const CbmStsParSensorCond& conditions,
 
 
 // -----   Process one time slice or event   -------------------------------
-void CbmRecoSts::ProcessData(CbmEvent* event) {
+void CbmRecoSts::ProcessData(CbmEvent* event)
+{
 
   // --- Reset all modules
   fTimer.Start();
@@ -358,16 +335,14 @@ void CbmRecoSts::ProcessData(CbmEvent* event) {
 
   // --- Number of input digis
   fTimer.Start();
-  Int_t nDigis = (event ? event->GetNofData(ECbmDataType::kStsDigi)
-                        : fDigiManager->GetNofDigis(ECbmModuleId::kSts));
+  Int_t nDigis = (event ? event->GetNofData(ECbmDataType::kStsDigi) : fDigiManager->GetNofDigis(ECbmModuleId::kSts));
 
 
   // --- Distribute digis to modules
   Int_t digiIndex = -1;
   //#pragma omp parallel for schedule(static) if(fParallelism_enabled)
   for (Int_t iDigi = 0; iDigi < nDigis; iDigi++) {
-    digiIndex =
-      (event ? event->GetIndex(ECbmDataType::kStsDigi, iDigi) : iDigi);
+    digiIndex              = (event ? event->GetIndex(ECbmDataType::kStsDigi, iDigi) : iDigi);
     const CbmStsDigi* digi = fDigiManager->Get<const CbmStsDigi>(digiIndex);
     assert(digi);
 
@@ -379,12 +354,10 @@ void CbmRecoSts::ProcessData(CbmEvent* event) {
     }
 
     // Get proper reco module
-    Int_t moduleAddress =
-      CbmStsAddress::GetMotherAddress(digi->GetAddress(), kStsModule);
-    auto it = fModules.find(moduleAddress);
+    Int_t moduleAddress = CbmStsAddress::GetMotherAddress(digi->GetAddress(), kStsModule);
+    auto it             = fModules.find(moduleAddress);
     if (it == fModules.end()) {
-      LOG(warn) << "Unknown module address: "
-                << CbmStsAddress::ToString(moduleAddress);
+      LOG(warn) << "Unknown module address: " << CbmStsAddress::ToString(moduleAddress);
       ;
     }
     assert(it != fModules.end());
@@ -418,9 +391,8 @@ void CbmRecoSts::ProcessData(CbmEvent* event) {
   ULong64_t offsetClustersB = 0;
   for (UInt_t it = 0; it < fModuleIndex.size(); it++) {
 
-    const vector<CbmStsCluster>& moduleClustersF =
-      fModuleIndex[it]->GetClustersF();
-    offsetClustersF = fClusters->GetEntriesFast();
+    const vector<CbmStsCluster>& moduleClustersF = fModuleIndex[it]->GetClustersF();
+    offsetClustersF                              = fClusters->GetEntriesFast();
     for (auto& cluster : moduleClustersF) {
       UInt_t index = fClusters->GetEntriesFast();
       new ((*fClusters)[index]) CbmStsCluster(cluster);
@@ -428,9 +400,8 @@ void CbmRecoSts::ProcessData(CbmEvent* event) {
       nClusters++;
     }  //# front-side clusters in module
 
-    const vector<CbmStsCluster>& moduleClustersB =
-      fModuleIndex[it]->GetClustersB();
-    offsetClustersB = fClusters->GetEntriesFast();
+    const vector<CbmStsCluster>& moduleClustersB = fModuleIndex[it]->GetClustersB();
+    offsetClustersB                              = fClusters->GetEntriesFast();
     for (auto& cluster : moduleClustersB) {
       UInt_t index = fClusters->GetEntriesFast();
       new ((*fClusters)[index]) CbmStsCluster(cluster);
@@ -467,32 +438,26 @@ void CbmRecoSts::ProcessData(CbmEvent* event) {
 
   // --- Screen log
   if (event) {
-    LOG(info) << setw(20) << left << GetName() << "[" << fixed
-              << setprecision(4) << realTime << " s] : Event " << right
-              << setw(6) << event->GetNumber() << ", digis: " << nDigis
-              << ", ignored: " << nDigisIgnored << ", clusters: " << nClusters
-              << ", hits " << nHits;
+    LOG(info) << setw(20) << left << GetName() << "[" << fixed << setprecision(4) << realTime << " s] : Event " << right
+              << setw(6) << event->GetNumber() << ", digis: " << nDigis << ", ignored: " << nDigisIgnored
+              << ", clusters: " << nClusters << ", hits " << nHits;
   }  //? event mode
   else {
-    LOG(info) << setw(20) << left << GetName() << "[" << fixed
-              << setprecision(4) << realTime << " s] : TSlice " << right
-              << setw(6) << fNofTimeslices << ", digis: " << nDigis
-              << ", ignored: " << nDigisIgnored << ", clusters: " << nClusters
-              << ", hits " << nHits;
+    LOG(info) << setw(20) << left << GetName() << "[" << fixed << setprecision(4) << realTime << " s] : TSlice "
+              << right << setw(6) << fNofTimeslices << ", digis: " << nDigis << ", ignored: " << nDigisIgnored
+              << ", clusters: " << nClusters << ", hits " << nHits;
   }
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Connect parameter container   -----------------------------------
-void CbmRecoSts::SetParContainers() {
+void CbmRecoSts::SetParContainers()
+{
   FairRuntimeDb* db = FairRun::Instance()->GetRuntimeDb();
-  fParSim = dynamic_cast<CbmStsParSim*>(db->getContainer("CbmStsParSim"));
-  fParSetModule =
-    dynamic_cast<CbmStsParSetModule*>(db->getContainer("CbmStsParSetModule"));
-  fParSetSensor =
-    dynamic_cast<CbmStsParSetSensor*>(db->getContainer("CbmStsParSetSensor"));
-  fParSetCond = dynamic_cast<CbmStsParSetSensorCond*>(
-    db->getContainer("CbmStsParSetSensorCond"));
+  fParSim           = dynamic_cast<CbmStsParSim*>(db->getContainer("CbmStsParSim"));
+  fParSetModule     = dynamic_cast<CbmStsParSetModule*>(db->getContainer("CbmStsParSetModule"));
+  fParSetSensor     = dynamic_cast<CbmStsParSetSensor*>(db->getContainer("CbmStsParSetSensor"));
+  fParSetCond       = dynamic_cast<CbmStsParSetSensorCond*>(db->getContainer("CbmStsParSetSensorCond"));
 }
 // -------------------------------------------------------------------------
