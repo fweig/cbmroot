@@ -15,7 +15,6 @@
 #include "CbmStsParSetSensorCond.h"
 #include "CbmStsParSim.h"
 #include "CbmStsRecoModule.h"
-#include "CbmStsRecoModuleOrtho.h"
 #include "CbmStsSetup.h"
 
 #include <FairField.h>
