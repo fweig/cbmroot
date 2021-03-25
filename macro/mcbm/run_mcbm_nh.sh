@@ -35,7 +35,7 @@ fi
 
 cMode=$5
 if [[ ${cMode} = "" ]]; then
-cMode="0E0"
+cMode="2T0"
 fi
 
 iStep=${cMode:0:1}
@@ -48,8 +48,8 @@ EvtRate=1.e6   # 1/s
 TSLength=1.e4  # ns 
 Tint=100.      # ns 
 ReqTofMul=2
-#NEvt=10      # for debugging
-NEvt=100000 # for production
+NEvt=10      # for debugging
+#NEvt=100000 # for production
 
 if [ "$iBase" = "T" ]; then 
  Timebased=kTRUE
@@ -112,7 +112,7 @@ else
 fi
 ## analysis 
 # for input from FLorian, use $extdir as 3. argument
-root -q -b 'mcbm_hadron_analysis.C('$NEvt',"'$RunId'","'$outdir'","'$outdir'","'${mcbmGeo}'",'$Timebased','$EvtRate','$TSLength','$Tint','$ReqTofMul','$iCut')'
+root -q -b 'mcbm_hadron_analysis_nh.C('$NEvt',"'$RunId'","'$outdir'","'$outdir'","'${mcbmGeo}'",'$Timebased','$EvtRate','$TSLength','$Tint','$ReqTofMul','$iCut')'
 
   
 mv -v slurm-${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.out ${outdir}/run_${RunId}.out

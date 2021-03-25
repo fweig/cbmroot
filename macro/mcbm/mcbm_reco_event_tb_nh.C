@@ -27,7 +27,7 @@ void mcbm_reco_event_tb_nh(
   //          Adjust this part according to your requirements
 
   // --- Logger settings ----------------------------------------------------
-  TString logLevel = "INFO";
+  TString logLevel = "DEBUG";
   //TString logVerbosity = "VERYHIGH";
   //TString logVerbosity = "HIGH";
   //TString logVerbosity = "MEDIUM";

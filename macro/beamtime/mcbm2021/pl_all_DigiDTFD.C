@@ -1,4 +1,5 @@
-void pl_all_DigiDTFD(Int_t iOpt = 0, Double_t dYmax = 0., Int_t iNDet = 2) {
+void pl_all_DigiDTFD(Int_t iOpt = 0, Double_t dYmax = 0., Int_t iNDet = 2)
+{
   Int_t iOpt1 = iOpt % 10;
   Int_t iOpt2 = (iOpt - iOpt1) / 10 % 10;
   Int_t iOpt3 = (iOpt - iOpt2 * 10 - iOpt1) / 100 % 10;
@@ -54,7 +55,8 @@ void pl_all_DigiDTFD(Int_t iOpt = 0, Double_t dYmax = 0., Int_t iNDet = 2) {
         iCanv++;
         gROOT->cd();
         iCol = 1;
-      } else {
+      }
+      else {
         if (iOpt3 == 4) {
           iCol = 1;
           if (iCh != iOpt4) continue;
@@ -70,15 +72,9 @@ void pl_all_DigiDTFD(Int_t iOpt = 0, Double_t dYmax = 0., Int_t iNDet = 2) {
 
         TString hname = "";
         switch (iOpt1) {
-          case 0:
-            hname =
-              Form("cl_SmT%01d_sm%03d_rpc%03d_DigiDTFD", iType[iCh], iSm, iRpc);
-            break;
+          case 0: hname = Form("cl_SmT%01d_sm%03d_rpc%03d_DigiDTFD", iType[iCh], iSm, iRpc); break;
 
-          case 1:
-            hname = Form(
-              "cl_SmT%01d_sm%03d_rpc%03d_DigiDTMul", iType[iCh], iSm, iRpc);
-            break;
+          case 1: hname = Form("cl_SmT%01d_sm%03d_rpc%03d_DigiDTMul", iType[iCh], iSm, iRpc); break;
 
           default:;
         }
@@ -104,11 +100,11 @@ void pl_all_DigiDTFD(Int_t iOpt = 0, Double_t dYmax = 0., Int_t iNDet = 2) {
                   if (iRpc == 0) {
                     if (dYmax > 0.) hp->SetMaximum(dYmax);
                     hp->Draw();
-                  } else
+                  }
+                  else
                     hp->Draw("same");
               }
-              cout << "plot " << hp->GetName() << " into canv " << iCanv
-                   << " with col " << iCol << endl;
+              cout << "plot " << hp->GetName() << " into canv " << iCanv << " with col " << iCol << endl;
               //gPad->SetLogy();
               break;
 
@@ -120,19 +116,15 @@ void pl_all_DigiDTFD(Int_t iOpt = 0, Double_t dYmax = 0., Int_t iNDet = 2) {
 
             case 3:
               for (Int_t iCh = 0; iCh < h2->GetNbinsX(); iCh++) {
-                if (iCh == 0)
-                  h2->ProjectionY(
-                      Form("%s_py%d", h2->GetName(), iCh), iCh + 1, iCh + 1)
-                    ->Draw();
+                if (iCh == 0) h2->ProjectionY(Form("%s_py%d", h2->GetName(), iCh), iCh + 1, iCh + 1)->Draw();
                 else {
-                  h2->ProjectionY(
-                      Form("%s_py%d", h2->GetName(), iCh), iCh + 1, iCh + 1)
-                    ->Draw("same");
+                  h2->ProjectionY(Form("%s_py%d", h2->GetName(), iCh), iCh + 1, iCh + 1)->Draw("same");
                 }
               }
               break;
           }
-        } else {
+        }
+        else {
           cout << "Histogram " << hname << " not existing. " << endl;
         }
       }

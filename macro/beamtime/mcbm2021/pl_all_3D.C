@@ -1,4 +1,5 @@
-void pl_all_3D(Int_t iOpt = 0, Int_t iSel = 0, Int_t iNSt = 4) {
+void pl_all_3D(Int_t iOpt = 0, Int_t iSel = 0, Int_t iNSt = 4)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   //  TCanvas *can = new TCanvas("can","can",48,55,700,900);
@@ -42,16 +43,13 @@ void pl_all_3D(Int_t iOpt = 0, Int_t iSel = 0, Int_t iNSt = 4) {
         can->cd(iCanv + 1);
         iCanv++;
         gROOT->cd();
-        TString hname = Form("cl_SmT%01d_sm%03d_rpc%03d_Sel%02d_Walk2",
-                             iType[iSt],
-                             iSm,
-                             iRp,
-                             iSel);
+        TString hname = Form("cl_SmT%01d_sm%03d_rpc%03d_Sel%02d_Walk2", iType[iSt], iSm, iRp, iSel);
         h             = (TH3*) gROOT->FindObjectAny(hname);
         if (h != NULL) {
           if (iOpt == 4 || iOpt == 5) { gPad->SetLogz(); }
           h->Project3D(cOpt)->Draw("colz");
-        } else {
+        }
+        else {
           cout << "Histogram " << hname << " not existing. " << endl;
         }
       }

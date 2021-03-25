@@ -77,7 +77,7 @@ void mcbm_digi_nh(Int_t nEvents      = 100,  // Number of events to process
   run.SetTimeSliceLength(timeSliceLength);
   run.SetEventMode(eventMode);
   run.SetProduceNoise(kFALSE);
-  run.SetCreateMatches(kFALSE);
+  run.SetCreateMatches(kTRUE);
 
   //run.Deactivate(ECbmModuleId::kSts);
   run.Deactivate(ECbmModuleId::kRich);

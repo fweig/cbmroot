@@ -10,11 +10,9 @@
 // In order to call later Finish, we make this global
 FairRunOnline* run = NULL;
 
-void unpack_tsa_mcbm(TString inFile  = "",
-                     UInt_t uRunId   = 0,
-                     UInt_t nrEvents = 0,
-                     TString outDir  = "data",
-                     TString inDir   = "") {
+void unpack_tsa_mcbm(TString inFile = "", UInt_t uRunId = 0, UInt_t nrEvents = 0, TString outDir = "data",
+                     TString inDir = "")
+{
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
 
   // --- Specify number of events to be produced.
@@ -53,28 +51,23 @@ void unpack_tsa_mcbm(TString inFile  = "",
 
   // ---- Trd ----
   TString geoTagTrd = "";
-  bool isActiveTrd =
-    (geoSetup->GetGeoTag(ECbmModuleId::kTrd, geoTagTrd)) ? true : false;
+  bool isActiveTrd  = (geoSetup->GetGeoTag(ECbmModuleId::kTrd, geoTagTrd)) ? true : false;
   if (!isActiveTrd) {
-    LOG(warning) << Form(
-      "TRD - parameter loading - Trd not found in CbmSetup(%s) -> parameters "
-      "can not be loaded correctly!",
-      geoSetupTag.data());
-  } else {
-    TString paramFilesTrd(
-      Form("%s/parameters/trd/trd_%s", srcDir.Data(), geoTagTrd.Data()));
+    LOG(warning) << Form("TRD - parameter loading - Trd not found in CbmSetup(%s) -> parameters "
+                         "can not be loaded correctly!",
+                         geoSetupTag.data());
+  }
+  else {
+    TString paramFilesTrd(Form("%s/parameters/trd/trd_%s", srcDir.Data(), geoTagTrd.Data()));
     std::vector<std::string> paramFilesVecTrd;
     CbmTrdParManager::GetParFileExtensions(&paramFilesVecTrd);
     for (auto parIt : paramFilesVecTrd) {
-      parFileList->Add(
-        new TObjString(Form("%s.%s.par", paramFilesTrd.Data(), parIt.data())));
+      parFileList->Add(new TObjString(Form("%s.%s.par", paramFilesTrd.Data(), parIt.data())));
     }
     // Add timeshift calibration, currently only available for run 831 others to come
     if (uRunId == 831)
-      parFileList->Add(new TObjString(Form(
-        "%s/parameters/trd/mcbm2020_special/CbmMcbm2020TrdTshiftPar_run%d.par",
-        srcDir.Data(),
-        uRunId)));
+      parFileList->Add(new TObjString(
+        Form("%s/parameters/trd/mcbm2020_special/CbmMcbm2020TrdTshiftPar_run%d.par", srcDir.Data(), uRunId)));
   }
 
   TString paramFileTof = paramDir + "mTofPar.par";
@@ -107,15 +100,12 @@ void unpack_tsa_mcbm(TString inFile  = "",
   std::cout << std::endl;
   std::cout << ">>> unpack_tsa: Initialising..." << std::endl;
 
-  CbmMcbm2018UnpackerTaskSts* unpacker_sts = new CbmMcbm2018UnpackerTaskSts();
-  CbmMcbm2018UnpackerTaskMuch* unpacker_much =
-    new CbmMcbm2018UnpackerTaskMuch();
-  CbmMcbm2018UnpackerTaskTrdR* unpacker_trdR =
-    new CbmMcbm2018UnpackerTaskTrdR();
-  CbmMcbm2018UnpackerTaskTof* unpacker_tof = new CbmMcbm2018UnpackerTaskTof();
-  CbmMcbm2018UnpackerTaskRich* unpacker_rich =
-    new CbmMcbm2018UnpackerTaskRich();
-  CbmMcbm2018UnpackerTaskPsd* unpacker_psd = new CbmMcbm2018UnpackerTaskPsd();
+  CbmMcbm2018UnpackerTaskSts* unpacker_sts   = new CbmMcbm2018UnpackerTaskSts();
+  CbmMcbm2018UnpackerTaskMuch* unpacker_much = new CbmMcbm2018UnpackerTaskMuch();
+  CbmMcbm2018UnpackerTaskTrdR* unpacker_trdR = new CbmMcbm2018UnpackerTaskTrdR();
+  CbmMcbm2018UnpackerTaskTof* unpacker_tof   = new CbmMcbm2018UnpackerTaskTof();
+  CbmMcbm2018UnpackerTaskRich* unpacker_rich = new CbmMcbm2018UnpackerTaskRich();
+  CbmMcbm2018UnpackerTaskPsd* unpacker_psd   = new CbmMcbm2018UnpackerTaskPsd();
 
   /*
  * Do not generate plots by default
@@ -581,14 +571,13 @@ void unpack_tsa_mcbm(TString inFile  = "",
 
   source->SetFileName(inFile);
 
-  source->AddUnpacker(unpacker_sts, 0x10, ECbmModuleId::kSts);    // STS xyter
-  source->AddUnpacker(unpacker_much, 0x50, ECbmModuleId::kMuch);  // MUCH xyter
-  if (isActiveTrd)
-    source->AddUnpacker(unpacker_trdR, 0x40, ECbmModuleId::kTrd);  // Trd
-  source->AddUnpacker(unpacker_tof, 0x60, ECbmModuleId::kTof);     // gDPB TOF
-  source->AddUnpacker(unpacker_tof, 0x90, ECbmModuleId::kTof);     // gDPB T0
-  source->AddUnpacker(unpacker_rich, 0x30, ECbmModuleId::kRich);   // RICH trb
-  source->AddUnpacker(unpacker_psd, 0x80, ECbmModuleId::kPsd);     // PSD
+  source->AddUnpacker(unpacker_sts, 0x10, ECbmModuleId::kSts);                    // STS xyter
+  source->AddUnpacker(unpacker_much, 0x50, ECbmModuleId::kMuch);                  // MUCH xyter
+  if (isActiveTrd) source->AddUnpacker(unpacker_trdR, 0x40, ECbmModuleId::kTrd);  // Trd
+  source->AddUnpacker(unpacker_tof, 0x60, ECbmModuleId::kTof);                    // gDPB TOF
+  source->AddUnpacker(unpacker_tof, 0x90, ECbmModuleId::kTof);                    // gDPB T0
+  source->AddUnpacker(unpacker_rich, 0x30, ECbmModuleId::kRich);                  // RICH trb
+  source->AddUnpacker(unpacker_psd, 0x80, ECbmModuleId::kPsd);                    // PSD
 
   // --- Event header
   FairEventHeader* event = new FairEventHeader();
@@ -624,15 +613,15 @@ void unpack_tsa_mcbm(TString inFile  = "",
   std::cout << ">>> unpack_tsa_mcbm: Starting run..." << std::endl;
   if (0 == nrEvents) {
     run->Run(nEvents, 0);  // run until end of input file
-  } else {
+  }
+  else {
     run->Run(0, nrEvents);  // process  N Events
   }
   run->Finish();
 
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
-            << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
 
   // --- End-of-run info
   Double_t rtime = timer.RealTime();
@@ -640,8 +629,7 @@ void unpack_tsa_mcbm(TString inFile  = "",
   std::cout << std::endl << std::endl;
   std::cout << ">>> unpack_tsa_mcbm: Macro finished successfully." << std::endl;
   std::cout << ">>> unpack_tsa_mcbm: Output file is " << outFile << std::endl;
-  std::cout << ">>> unpack_tsa_mcbm: Real time " << rtime << " s, CPU time "
-            << ctime << " s" << std::endl;
+  std::cout << ">>> unpack_tsa_mcbm: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests
