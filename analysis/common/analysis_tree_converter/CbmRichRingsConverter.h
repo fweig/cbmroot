@@ -7,14 +7,14 @@
 
 class TClonesArray;
 
-namespace AnalysisTree {
+namespace AnalysisTree
+{
   class Matching;
 }
 
 class CbmRichRingsConverter final : public CbmConverterTask {
 public:
-  explicit CbmRichRingsConverter(std::string out_branch_name,
-                                 std::string match_to = "")
+  explicit CbmRichRingsConverter(std::string out_branch_name, std::string match_to = "")
     : CbmConverterTask(std::move(out_branch_name), std::move(match_to)) {};
 
   ~CbmRichRingsConverter() final;

@@ -7,18 +7,25 @@
 
 class TClonesArray;
 
-namespace AnalysisTree {
+namespace AnalysisTree
+{
   class Matching;
 }
 
 class CbmTrdTracksConverter final : public CbmConverterTask {
 
-  enum kInBranches { kTrdTrack = 0, kGlobalTrack, kTrdHit };
+  enum kInBranches
+  {
+    kTrdTrack = 0,
+    kGlobalTrack,
+    kTrdHit
+  };
 
 public:
-  explicit CbmTrdTracksConverter(std::string out_branch_name,
-                                 std::string match_to = "")
-    : CbmConverterTask(std::move(out_branch_name), std::move(match_to)) {}
+  explicit CbmTrdTracksConverter(std::string out_branch_name, std::string match_to = "")
+    : CbmConverterTask(std::move(out_branch_name), std::move(match_to))
+  {
+  }
 
   ~CbmTrdTracksConverter() final;
 

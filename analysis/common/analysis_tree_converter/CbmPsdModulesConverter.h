@@ -1,16 +1,17 @@
 #ifndef ANALYSIS_TREE_PSDMODULESCONVERTER_H_
 #define ANALYSIS_TREE_PSDMODULESCONVERTER_H_
 
-#include "AnalysisTree/Detector.hpp"
 #include "CbmConverterTask.h"
+
+#include "AnalysisTree/Detector.hpp"
 
 class TClonesArray;
 
 class CbmPsdModulesConverter final : public CbmConverterTask {
 public:
-  explicit CbmPsdModulesConverter(std::string out_branch_name,
-                                  std::string match_to = "")
-    : CbmConverterTask(std::move(out_branch_name), std::move(match_to)) {
+  explicit CbmPsdModulesConverter(std::string out_branch_name, std::string match_to = "")
+    : CbmConverterTask(std::move(out_branch_name), std::move(match_to))
+  {
     out_branch_ = "PsdModules";
   };
 

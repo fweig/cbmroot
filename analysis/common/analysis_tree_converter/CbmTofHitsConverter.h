@@ -8,14 +8,14 @@
 class TClonesArray;
 class FairTrackParam;
 
-namespace AnalysisTree {
+namespace AnalysisTree
+{
   class Matching;
 }
 
 class CbmTofHitsConverter final : public CbmConverterTask {
 public:
-  explicit CbmTofHitsConverter(std::string out_branch_name,
-                               std::string match_to = "")
+  explicit CbmTofHitsConverter(std::string out_branch_name, std::string match_to = "")
     : CbmConverterTask(std::move(out_branch_name), std::move(match_to)) {};
 
   ~CbmTofHitsConverter() final;

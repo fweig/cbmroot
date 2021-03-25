@@ -1,17 +1,16 @@
 #ifndef ATKFParticleFinder_HH
 #define ATKFParticleFinder_HH
 
-#include <string>
-#include <utility>
-
 #include "TChain.h"
 #include "TFile.h"
 #include "TTree.h"
 
+#include <string>
+#include <utility>
+
 #include "AnalysisTree/Configuration.hpp"
 #include "AnalysisTree/Detector.hpp"
 #include "AnalysisTree/EventHeader.hpp"
-
 #include "CutsContainer.h"
 #include "KFParticleTopoReconstructor.h"
 

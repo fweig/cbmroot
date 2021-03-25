@@ -1,35 +1,38 @@
+#include "CbmConverterManager.h"
+
+#include "CbmConverterTask.h"
+
+#include "TGeoBBox.h"
+#include "TGeoManager.h"
+
 #include <iostream>
 
 #include "AnalysisTree/DataHeader.hpp"
 #include "AnalysisTree/TaskManager.hpp"
 
-#include "TGeoBBox.h"
-#include "TGeoManager.h"
-
-#include "CbmConverterManager.h"
-#include "CbmConverterTask.h"
-
 ClassImp(CbmConverterManager)
 
-  InitStatus CbmConverterManager::Init() {
+  InitStatus CbmConverterManager::Init()
+{
   task_manager_->Init();
   FillDataHeader();
   return kSUCCESS;
 }
 
-void CbmConverterManager::Exec(Option_t* /*opt*/) {
+void CbmConverterManager::Exec(Option_t* /*opt*/)
+{
   index_map_.clear();
 
   for (auto* task : tasks_) {
     task->SetIndexesMap(&index_map_);
     task->Exec();
-    index_map_.insert(
-      std::make_pair(task->GetOutputBranchName(), task->GetOutIndexesMap()));
+    index_map_.insert(std::make_pair(task->GetOutputBranchName(), task->GetOutIndexesMap()));
   }
   task_manager_->FillOutput();
 }
 
-void CbmConverterManager::Finish() {
+void CbmConverterManager::Finish()
+{
   TDirectory* curr   = gDirectory;  // TODO check why this is needed
   TFile* currentFile = gFile;
 
@@ -41,7 +44,8 @@ void CbmConverterManager::Finish() {
   gDirectory = curr;
 }
 
-void CbmConverterManager::FillDataHeader() {
+void CbmConverterManager::FillDataHeader()
+{
   // Force user to write data info //TODO is there a way to read it from a file automatically?
   assert(!system_.empty() && beam_mom_);
 
@@ -79,8 +83,7 @@ void CbmConverterManager::FillDataHeader() {
       double x  = translation.X();
       double y  = translation.Y();
 
-      std::cout << "mod" << modID << " : " << Form("(%.3f, %3f)", x, y)
-                << std::endl;
+      std::cout << "mod" << modID << " : " << Form("(%.3f, %3f)", x, y) << std::endl;
 
       auto* module = psd_mod_pos.AddChannel();
       module->SetPosition(x, y, frontFaceGlobal[2]);

@@ -1,23 +1,26 @@
+#include "CbmSimEventHeaderConverter.h"
+
 #include "FairMCEventHeader.h"
 #include "FairRootManager.h"
+
 #include "TClonesArray.h"
-#include "cassert"
-#include "iostream"
+
 #include <AnalysisTree/TaskManager.hpp>
 
-#include "CbmSimEventHeaderConverter.h"
+#include "cassert"
+#include "iostream"
 
 ClassImp(CbmSimEventHeaderConverter)
 
-  void CbmSimEventHeaderConverter::Init() {
+  void CbmSimEventHeaderConverter::Init()
+{
   assert(!out_branch_.empty());
   auto* ioman = FairRootManager::Instance();
   assert(ioman != nullptr);
   cbm_header_ = (FairMCEventHeader*) ioman->GetObject("MCEventHeader.");
 
   //  ***** SimEventHeader *******
-  AnalysisTree::BranchConfig SimEventHeaderBranch(
-    "SimEventHeader", AnalysisTree::DetType::kEventHeader);
+  AnalysisTree::BranchConfig SimEventHeaderBranch("SimEventHeader", AnalysisTree::DetType::kEventHeader);
   SimEventHeaderBranch.AddField<float>("psi_RP", "reaction plane orientation");
   SimEventHeaderBranch.AddField<float>("b", "fm, impact parameter");
   SimEventHeaderBranch.AddField<float>("time", "ns, event time");
@@ -29,25 +32,18 @@ ClassImp(CbmSimEventHeaderConverter)
   sim_event_header_->Init(SimEventHeaderBranch);
 }
 
-void CbmSimEventHeaderConverter::Exec() {
-  if (!cbm_header_) {
-    throw std::runtime_error(
-      "CbmSimEventHeaderConverter::Exec - ERROR! No fHeader!");
-  }
+void CbmSimEventHeaderConverter::Exec()
+{
+  if (!cbm_header_) { throw std::runtime_error("CbmSimEventHeaderConverter::Exec - ERROR! No fHeader!"); }
   auto* out_config_  = AnalysisTree::TaskManager::GetInstance()->GetConfig();
   const auto& branch = out_config_->GetBranchConfig(out_branch_);
 
   TVector3 pos {cbm_header_->GetX(), cbm_header_->GetY(), cbm_header_->GetZ()};
   sim_event_header_->SetVertexPosition3(pos);
 
-  sim_event_header_->SetField(float(cbm_header_->GetRotZ()),
-                              branch.GetFieldId("psi_RP"));
-  sim_event_header_->SetField(float(cbm_header_->GetB()),
-                              branch.GetFieldId("b"));
-  sim_event_header_->SetField(int(cbm_header_->GetEventID()),
-                              branch.GetFieldId("event_id"));
-  sim_event_header_->SetField(int(cbm_header_->GetRunID()),
-                              branch.GetFieldId("run_id"));
-  sim_event_header_->SetField(float(cbm_header_->GetT()),
-                              branch.GetFieldId("time"));
+  sim_event_header_->SetField(float(cbm_header_->GetRotZ()), branch.GetFieldId("psi_RP"));
+  sim_event_header_->SetField(float(cbm_header_->GetB()), branch.GetFieldId("b"));
+  sim_event_header_->SetField(int(cbm_header_->GetEventID()), branch.GetFieldId("event_id"));
+  sim_event_header_->SetField(int(cbm_header_->GetRunID()), branch.GetFieldId("run_id"));
+  sim_event_header_->SetField(float(cbm_header_->GetT()), branch.GetFieldId("time"));
 }

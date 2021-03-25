@@ -10,16 +10,18 @@ class CbmVertex;
 class CbmStsTrack;
 class CbmTrackMatchNew;
 
-namespace AnalysisTree {
+namespace AnalysisTree
+{
   class Matching;
 }
 
 class CbmStsTracksConverter final : public CbmConverterTask {
 
 public:
-  explicit CbmStsTracksConverter(std::string out_branch_name,
-                                 std::string match_to = "")
-    : CbmConverterTask(std::move(out_branch_name), std::move(match_to)) {}
+  explicit CbmStsTracksConverter(std::string out_branch_name, std::string match_to = "")
+    : CbmConverterTask(std::move(out_branch_name), std::move(match_to))
+  {
+  }
 
   ~CbmStsTracksConverter() final;
 
@@ -34,17 +36,13 @@ private:
   void ReadVertexTracks();
   void MapTracks();
   void InitInput();
-  float ExtrapolateToVertex(CbmStsTrack* sts_track,
-                            AnalysisTree::Track& track,
-                            int pdg);
+  float ExtrapolateToVertex(CbmStsTrack* sts_track, AnalysisTree::Track& track, int pdg);
 
-  void WriteKFInfo(AnalysisTree::Track& track,
-                   const CbmStsTrack* sts_track,
-                   bool is_good_track) const;
+  void WriteKFInfo(AnalysisTree::Track& track, const CbmStsTrack* sts_track, bool is_good_track) const;
   bool IsGoodCovMatrix(const CbmStsTrack* sts_track) const;
   int GetMcPid(const CbmTrackMatchNew* match, AnalysisTree::Track& track) const;
 
-  AnalysisTree::TrackDetector* vtx_tracks_ {nullptr};  ///< raw pointers are needed for TTree::Branch
+  AnalysisTree::TrackDetector* vtx_tracks_ {nullptr};   ///< raw pointers are needed for TTree::Branch
   AnalysisTree::Matching* vtx_tracks_2_sim_ {nullptr};  ///< raw pointers are needed for TTree::Branch
 
   CbmVertex* cbm_prim_vertex_ {nullptr};    ///< non-owning pointer

@@ -1,39 +1,36 @@
-#include <cassert>
-#include <vector>
+#include "CbmSimTracksConverter.h"
 
-#include <AnalysisTree/TaskManager.hpp>
-
-#include "TClonesArray.h"
+#include "CbmMCTrack.h"
 
 #include "FairRootManager.h"
 
-#include "CbmMCTrack.h"
-#include "CbmSimTracksConverter.h"
+#include "TClonesArray.h"
+
+#include <AnalysisTree/TaskManager.hpp>
+#include <cassert>
+#include <vector>
 
 ClassImp(CbmSimTracksConverter)
 
-  void CbmSimTracksConverter::Init() {
+  void CbmSimTracksConverter::Init()
+{
 
   assert(!out_branch_.empty());
   auto* ioman    = FairRootManager::Instance();
   cbm_mc_tracks_ = (TClonesArray*) ioman->GetObject("MCTrack");
 
-  AnalysisTree::BranchConfig sim_particles_branch(
-    out_branch_, AnalysisTree::DetType::kParticle);
-  sim_particles_branch.AddField<int>("mother_id",
-                                     "id of mother particle, -1 for primaries");
-  sim_particles_branch.AddField<int>("cbmroot_id",
-                                     "track id in CbmRoot transport file");
+  AnalysisTree::BranchConfig sim_particles_branch(out_branch_, AnalysisTree::DetType::kParticle);
+  sim_particles_branch.AddField<int>("mother_id", "id of mother particle, -1 for primaries");
+  sim_particles_branch.AddField<int>("cbmroot_id", "track id in CbmRoot transport file");
   sim_particles_branch.AddField<int>("geant_process_id", "");
-  sim_particles_branch.AddFields<int>(
-    {"n_hits_mvd", "n_hits_sts", "n_hits_trd"},
-    "Number of hits in the detector");
+  sim_particles_branch.AddFields<int>({"n_hits_mvd", "n_hits_sts", "n_hits_trd"}, "Number of hits in the detector");
 
   auto* man = AnalysisTree::TaskManager::GetInstance();
   man->AddBranch(out_branch_, sim_tracks_, sim_particles_branch);
 }
 
-void CbmSimTracksConverter::Exec() {
+void CbmSimTracksConverter::Exec()
+{
   assert(cbm_mc_tracks_);
   out_indexes_map_.clear();
 
@@ -68,9 +65,8 @@ void CbmSimTracksConverter::Exec() {
     track.SetField(int(mctrack->GetUniqueID()), icbm_id);
 
     // mother id should < than track id, so we can do it here
-    if (mctrack->GetMotherId() == -1) {
-      track.SetField(int(-1), imother_id);
-    } else {
+    if (mctrack->GetMotherId() == -1) { track.SetField(int(-1), imother_id); }
+    else {
       auto p = out_indexes_map_.find(mctrack->GetMotherId());
       if (p == out_indexes_map_.end())  // match is not found
         track.SetField(int(-999), imother_id);

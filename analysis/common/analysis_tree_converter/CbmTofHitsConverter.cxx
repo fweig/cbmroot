@@ -1,23 +1,24 @@
-#include <cassert>
-#include <vector>
+#include "CbmTofHitsConverter.h"
 
-#include "TClonesArray.h"
-
-#include <FairMCPoint.h>
-#include <FairRootManager.h>
-
-#include "AnalysisTree/Matching.hpp"
-
-#include <AnalysisTree/TaskManager.hpp>
 #include <CbmGlobalTrack.h>
 #include <CbmTofHit.h>
 #include <CbmTrackMatchNew.h>
 
-#include "CbmTofHitsConverter.h"
+#include <FairMCPoint.h>
+#include <FairRootManager.h>
+
+#include "TClonesArray.h"
+
+#include <AnalysisTree/TaskManager.hpp>
+#include <cassert>
+#include <vector>
+
+#include "AnalysisTree/Matching.hpp"
 
 ClassImp(CbmTofHitsConverter)
 
-  void CbmTofHitsConverter::Init() {
+  void CbmTofHitsConverter::Init()
+{
 
   assert(!out_branch_.empty());
   auto* ioman = FairRootManager::Instance();
@@ -29,8 +30,7 @@ ClassImp(CbmTofHitsConverter)
   //  cbm_mc_tracks_ = (TClonesArray*) ioman->GetObject("MCTrack");
   //  cbm_sts_match_ = (TClonesArray*) ioman->GetObject("StsTrackMatch");
 
-  AnalysisTree::BranchConfig tof_branch(out_branch_,
-                                        AnalysisTree::DetType::kHit);
+  AnalysisTree::BranchConfig tof_branch(out_branch_, AnalysisTree::DetType::kHit);
   tof_branch.AddField<float>("mass2", "Mass squared");
   tof_branch.AddField<float>("l", "Track lenght");
   tof_branch.AddField<float>("t", "ps(?), Measured time ");
@@ -44,8 +44,8 @@ ClassImp(CbmTofHitsConverter)
   man->AddMatching(match_to_, out_branch_, vtx_tracks_2_tof_);
 }
 
-void CbmTofHitsConverter::ExtrapolateStraightLine(FairTrackParam* params,
-                                                  float z) {
+void CbmTofHitsConverter::ExtrapolateStraightLine(FairTrackParam* params, float z)
+{
 
   const Float_t Tx    = params->GetTx();
   const Float_t Ty    = params->GetTy();
@@ -58,7 +58,8 @@ void CbmTofHitsConverter::ExtrapolateStraightLine(FairTrackParam* params,
   params->SetPosition({x, y, z});
 }
 
-void CbmTofHitsConverter::FillTofHits() {
+void CbmTofHitsConverter::FillTofHits()
+{
   assert(cbm_tof_hits_);
   tof_hits_->ClearChannels();
   vtx_tracks_2_tof_->Clear();
@@ -73,31 +74,25 @@ void CbmTofHitsConverter::FillTofHits() {
   const int i_l     = branch.GetFieldId("l");
 
   const auto it = indexes_map_->find(match_to_);
-  if (it == indexes_map_->end()) {
-    throw std::runtime_error(match_to_
-                             + " is not found to match with TOF hits");
-  }
+  if (it == indexes_map_->end()) { throw std::runtime_error(match_to_ + " is not found to match with TOF hits"); }
   auto rec_tracks_map = it->second;
 
   tof_hits_->Reserve(cbm_global_tracks_->GetEntries());
 
   for (Int_t igt = 0; igt < cbm_global_tracks_->GetEntries(); igt++) {
-    const auto* globalTrack =
-      static_cast<const CbmGlobalTrack*>(cbm_global_tracks_->At(igt));
+    const auto* globalTrack = static_cast<const CbmGlobalTrack*>(cbm_global_tracks_->At(igt));
     const Int_t tofHitIndex = globalTrack->GetTofHitIndex();
     if (tofHitIndex < 0) continue;
 
-    const auto* tofHit =
-      static_cast<const CbmTofHit*>(cbm_tof_hits_->At(tofHitIndex));
+    const auto* tofHit = static_cast<const CbmTofHit*>(cbm_tof_hits_->At(tofHitIndex));
 
     FairTrackParam param_last = *(globalTrack->GetParamLast());
     TVector3 p_tof;
     param_last.Momentum(p_tof);
 
-    const Float_t p = p_tof.Mag();
-    const Int_t q   = param_last.GetQp() > 0 ? 1 : -1;
-    const Float_t l =
-      globalTrack->GetLength();  // l is calculated by global tracking
+    const Float_t p    = p_tof.Mag();
+    const Int_t q      = param_last.GetQp() > 0 ? 1 : -1;
+    const Float_t l    = globalTrack->GetLength();  // l is calculated by global tracking
     const Float_t time = tofHit->GetTime();
     const Float_t beta = l / (time * 29.9792458);
     const Float_t m2   = p * p * (1. / (beta * beta) - 1.);
@@ -122,8 +117,7 @@ void CbmTofHitsConverter::FillTofHits() {
     if (rec_tracks_map.empty()) { continue; }
     const Int_t stsTrackIndex = globalTrack->GetStsTrackIndex();
     if (rec_tracks_map.find(stsTrackIndex) != rec_tracks_map.end()) {
-      vtx_tracks_2_tof_->AddMatch(rec_tracks_map.find(stsTrackIndex)->second,
-                                  hit.GetId());
+      vtx_tracks_2_tof_->AddMatch(rec_tracks_map.find(stsTrackIndex)->second, hit.GetId());
     }
 
     //    const auto* tofMatch =
@@ -153,7 +147,8 @@ void CbmTofHitsConverter::FillTofHits() {
 
 void CbmTofHitsConverter::Exec() { FillTofHits(); }
 
-CbmTofHitsConverter::~CbmTofHitsConverter() {
+CbmTofHitsConverter::~CbmTofHitsConverter()
+{
   delete tof_hits_;
   delete vtx_tracks_2_tof_;
 };

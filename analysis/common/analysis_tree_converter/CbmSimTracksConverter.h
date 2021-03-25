@@ -1,16 +1,15 @@
 #ifndef ANALYSIS_TREE_SIMTRACKSCONVERTER_H_
 #define ANALYSIS_TREE_SIMTRACKSCONVERTER_H_
 
-#include "AnalysisTree/Detector.hpp"
-
 #include "CbmConverterTask.h"
+
+#include "AnalysisTree/Detector.hpp"
 
 class TClonesArray;
 
 class CbmSimTracksConverter final : public CbmConverterTask {
 public:
-  explicit CbmSimTracksConverter(std::string out_branch_name,
-                                 std::string match_to = "")
+  explicit CbmSimTracksConverter(std::string out_branch_name, std::string match_to = "")
     : CbmConverterTask(std::move(out_branch_name), std::move(match_to)) {};
 
   ~CbmSimTracksConverter() final;
