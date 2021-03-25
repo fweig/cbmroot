@@ -73,7 +73,8 @@ void ana_trks(Int_t nEvents        = 10000,
     if (iRun < 690)
       TofGeo = "v20a_mcbm";
     else
-      TofGeo = "v20f_mcbm";
+      TofGeo = "v21a_mcbm";
+
     cout << "Geometry version " << TofGeo << endl;
 
     TObjString* tofDigiBdfFile = new TObjString(workDir + "/parameters/tof/tof_"

@@ -36,8 +36,8 @@ fi
 echo cCalSet = $cCalSet
 #iSet=0
 #lastOpt=''
-nEvi0=150000 # start value
-nEvi1=50000  # increment 
+nEvi0=50000 # start value965311965311
+nEvi1=50000 # increment 
 
 if [ -e /lustre ]; then
 source /lustre/cbm/users/nh/CBM/cbmroot/trunk/build/config.sh 
@@ -56,8 +56,8 @@ cp .rootrc ${cRun}
 cd ${cRun}
 
 # Global variables, for for-loops
-iRestart=0
-#iRestart=29
+#iRestart=0
+iRestart=33
 iStep=0
 iStepLast=0
 iCalSel0=0

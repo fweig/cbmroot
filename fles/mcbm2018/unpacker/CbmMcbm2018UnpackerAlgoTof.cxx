@@ -223,6 +223,8 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::InitParameters() {
 
       case 0:                         // CBM modules
         if (fviRpcSide[iGbtx] < 2) {  // mTof modules
+          LOG(info) << " Map mTof box " << fviModuleId[iGbtx]
+                    << " at GBTX  -  iCh = " << iCh;
           const Int_t RpcMap[5] = {4, 2, 0, 3, 1};
           for (Int_t iRpc = 0; iRpc < fviNrOfRpc[iGbtx]; iRpc++) {
             Int_t iStrMax = 32;
@@ -376,7 +378,8 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::InitParameters() {
         [[fallthrough]];
       case 9:  // Star2 boxes
       {
-        LOG(info) << " Map Star2 box  at GBTX  -  iCh = " << iCh;
+        LOG(info) << " Map Star2 box " << fviModuleId[iGbtx]
+                  << " at GBTX  -  iCh = " << iCh;
         const Int_t iRpc[5]  = {1, -1, 1, 0, 0};
         const Int_t iSide[5] = {1, -1, 0, 1, 0};
         for (Int_t iFeet = 0; iFeet < 5; iFeet++) {
@@ -732,7 +735,8 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::ProcessMs(const fles::Timeslice& ts,
     if (fuNrOfGet4PerGdpb <= fuGet4Id && !pMess[uIdx].isStarTrigger()
         && (gdpbv100::kuChipIdMergedEpoch != fuGet4Id))
       LOG(warning) << "Message with Get4 ID too high: " << fuGet4Id << " VS "
-                   << fuNrOfGet4PerGdpb << " set in parameters.";
+                   << fuNrOfGet4PerGdpb << " for GdpbIdx " << fuCurrDpbIdx
+                   << " set in parameters.";
 
     /*
          if( 1 == uIdx && gdpbv100::MSG_EPOCH != messageType )

@@ -5543,11 +5543,10 @@ Bool_t CbmTofEventClusterizer::BuildClusters() {
       Int_t iDetIndx    = fDigiBdfPar->GetDetInd(pDigi->GetAddress() & DetMask);
 
       LOG(debug) << "RawDigi" << iDigInd << " " << pDigi
-                 << Form(" Address : 0x%08x ", pDigi->GetAddress()) << " SmT "
-                 << pDigi->GetType() << " Sm " << pDigi->GetSm() << " Rpc "
-                 << pDigi->GetRpc() << " Ch " << pDigi->GetChannel() << " S "
-                 << pDigi->GetSide() << ", DetIndx " << iDetIndx << " : "
-                 << pDigi->ToString()
+                 << Form(" Address : 0x%08x ", pDigi->GetAddress()) << " TSRCS "
+                 << pDigi->GetType() << pDigi->GetSm() << pDigi->GetRpc()
+                 << pDigi->GetChannel() << pDigi->GetSide() << ", DetIndx "
+                 << iDetIndx << " : " << pDigi->ToString()
         //         <<" Time "<<pDigi->GetTime()
         //         <<" Tot " <<pDigi->GetTot()
         ;

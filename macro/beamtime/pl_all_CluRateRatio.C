@@ -31,7 +31,7 @@ void pl_all_CluRateRatio(Int_t iRef      = 500,
   TH1* hRat;
   TH1* hDis;
   TH2* h2;
-  const Int_t iTSR[11] = {500, 41, 31, 900, 901, 700, 921, 600, 601, 800, 801};
+  const Int_t iTSR[11] = {500, 41, 31, 900, 901, 910, 911, 600, 601, 800, 801};
   const Double_t dArea[11] = {
     1., 18., 44.0, 896., 896., 896., 896., 280., 280., 32., 4.};
   const Double_t dDist[11] = {
@@ -130,7 +130,9 @@ void pl_all_CluRateRatio(Int_t iRef      = 500,
   }
 
   can->cd(2);
-  iCol = 1;
+  iCol         = 1;
+  TLegend* leg = new TLegend(0.25, 0.7, 0.35, 0.95);
+  leg->SetTextSize(0.03);
   for (Int_t iSt = 0; iSt < iNSt; iSt++) {
     iRp     = iTSR[iSt] % 10;
     iSmType = (iTSR[iSt] - iRp) / 10;
@@ -153,6 +155,7 @@ void pl_all_CluRateRatio(Int_t iRef      = 500,
       hRat->SetName(Form("hRat_%d", iTSR[iSt]));
       hRat->SetTitle("ratio");
       hRat->GetYaxis()->SetTitle("ratio");
+      leg->AddEntry(hRat, Form("%d", iTSR[iSt]), "l");
       switch (iOpt) {
         case 0:  //rate
           hRat->Divide(h, hRef, 1., 1., "B");
@@ -203,6 +206,7 @@ void pl_all_CluRateRatio(Int_t iRef      = 500,
     } else {
       cout << "Histogram " << hname << " not existing. " << endl;
     }
+    leg->Draw();
   }
   can->SaveAs(Form("pl_all_CluRate.pdf"));
 }
