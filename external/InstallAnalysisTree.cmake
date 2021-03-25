@@ -1,4 +1,4 @@
-set(ANALYSISTREE_VERSION 9f49db8c1cd0cd1079a3f9267358a9a7362bde41)
+set(ANALYSISTREE_VERSION v2.1.0)
 
 set(ANALYSISTREE_SRC_URL "https://github.com/HeavyIonAnalysis/AnalysisTree.git")
 set(ANALYSISTREE_DESTDIR "${CMAKE_BINARY_DIR}/external/ANALYSISTREE-prefix")

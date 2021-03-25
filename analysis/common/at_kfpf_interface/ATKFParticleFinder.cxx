@@ -41,7 +41,7 @@ void ATKFParticleFinder::InitOutput(const std::string& file_name) {
   ParticlesRecoBranch.AddField<int>("daughter2id");
 
   out_config_.AddBranchConfig(ParticlesRecoBranch);
-  particles_reco_ = new AnalysisTree::Particles(out_config_.GetLastId());
+  particles_reco_ = new AnalysisTree::Particles(out_config_.GetBranchConfig("ParticlesReconstructed").GetId());
 
   out_tree_ = new TTree("aTree", "AnalysisTree ParticlesReco");
   out_tree_->Branch(
@@ -173,9 +173,7 @@ void ATKFParticleFinder::WriteCandidates(
   const KFParticleTopoReconstructor* eventTR) {
   particles_reco_->ClearChannels();
 
-  for (unsigned int iP = 0; iP < eventTR->GetParticles().size(); iP++) {
-    const KFParticle& particle = eventTR->GetParticles()[iP];
-
+  for (const auto & particle : eventTR->GetParticles()) {
     auto* particlerec = particles_reco_->AddChannel();
     particlerec->Init(out_config_.GetBranchConfig(particles_reco_->GetId()));
 
