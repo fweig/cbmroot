@@ -3,6 +3,9 @@
 
 #include "AnalysisTree/Task.hpp"
 
+#include <map>
+#include <string>
+
 class FairRootManager;
 
 class CbmConverterTask : public AnalysisTree::Task {

@@ -37,7 +37,6 @@ void CbmSimTracksConverter::Exec() {
   assert(cbm_mc_tracks_);
   out_indexes_map_.clear();
 
-  //  std::cout << "ReadMcTracks" << std::endl;
   sim_tracks_->ClearChannels();
   auto* out_config_  = AnalysisTree::TaskManager::GetInstance()->GetConfig();
   const auto& branch = out_config_->GetBranchConfig(out_branch_);
@@ -47,9 +46,6 @@ void CbmSimTracksConverter::Exec() {
   const int igeant_id  = branch.GetFieldId("geant_process_id");
   const int in_hits    = branch.GetFieldId("n_hits_mvd");
   const int icbm_id    = branch.GetFieldId("cbmroot_id");
-
-  //  std::cout << "cbm_mc_tracks_->GetEntries() = " << nMcTracks << std::endl;
-  //  std::cout << imother_id << "  " << igeant_id << "  " << in_hits << std::endl;
 
   sim_tracks_->Reserve(nMcTracks);
 
@@ -71,8 +67,8 @@ void CbmSimTracksConverter::Exec() {
     track.SetField(int(mctrack->GetNPoints(ECbmModuleId::kTrd)), in_hits + 2);
     track.SetField(int(mctrack->GetUniqueID()), icbm_id);
 
-    if (mctrack->GetMotherId()
-        == -1) {  // mother id should < than track id, so we can do it here
+    // mother id should < than track id, so we can do it here
+    if (mctrack->GetMotherId() == -1) {
       track.SetField(int(-1), imother_id);
     } else {
       auto p = out_indexes_map_.find(mctrack->GetMotherId());

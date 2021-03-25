@@ -10,7 +10,6 @@
 
 #include <AnalysisTree/TaskManager.hpp>
 #include <CbmGlobalTrack.h>
-#include <CbmTrackMatchNew.h>
 #include <rich/CbmRichRing.h>
 
 #include "CbmRichRingsConverter.h"

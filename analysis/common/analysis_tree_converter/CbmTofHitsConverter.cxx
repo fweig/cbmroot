@@ -10,7 +10,6 @@
 
 #include <AnalysisTree/TaskManager.hpp>
 #include <CbmGlobalTrack.h>
-#include <CbmMCTrack.h>
 #include <CbmTofHit.h>
 #include <CbmTrackMatchNew.h>
 

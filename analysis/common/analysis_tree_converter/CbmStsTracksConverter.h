@@ -44,10 +44,8 @@ private:
   bool IsGoodCovMatrix(const CbmStsTrack* sts_track) const;
   int GetMcPid(const CbmTrackMatchNew* match, AnalysisTree::Track& track) const;
 
-  AnalysisTree::TrackDetector* vtx_tracks_ {
-    nullptr};  ///< raw pointers are needed for TTree::Branch
-  AnalysisTree::Matching* vtx_tracks_2_sim_ {
-    nullptr};  ///< raw pointers are needed for TTree::Branch
+  AnalysisTree::TrackDetector* vtx_tracks_ {nullptr};  ///< raw pointers are needed for TTree::Branch
+  AnalysisTree::Matching* vtx_tracks_2_sim_ {nullptr};  ///< raw pointers are needed for TTree::Branch
 
   CbmVertex* cbm_prim_vertex_ {nullptr};    ///< non-owning pointer
   TClonesArray* cbm_mc_tracks_ {nullptr};   ///< non-owning pointer

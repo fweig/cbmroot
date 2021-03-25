@@ -6,7 +6,6 @@
 
 #include "FairRootManager.h"
 
-#include "AnalysisTree/DataHeader.hpp"
 #include "AnalysisTree/Detector.hpp"
 
 #include "CbmPsdHit.h"
@@ -60,7 +59,6 @@ void CbmPsdModulesConverter::Exec() {
   //  config_.GetBranchConfig(rec_event_header_->GetId() ).GetFieldId("Epsd"));
 }
 
-void CbmPsdModulesConverter::Finish() {
-  //  delete psd_modules_;
-}
+void CbmPsdModulesConverter::Finish() {}
+
 CbmPsdModulesConverter::~CbmPsdModulesConverter() { delete psd_modules_; };

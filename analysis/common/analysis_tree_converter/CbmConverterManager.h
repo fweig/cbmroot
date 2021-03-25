@@ -1,6 +1,8 @@
 #ifndef ANALYSIS_TREE_CONVERTERMANAGER_H_
 #define ANALYSIS_TREE_CONVERTERMANAGER_H_
 
+#include <utility>
+
 #include "FairTask.h"
 
 #include "AnalysisTree/TaskManager.hpp"
@@ -31,7 +33,7 @@ public:
   void SetBeamMomentum(float beam_mom) { beam_mom_ = beam_mom; }
 
   void SetOutputName(std::string file, std::string tree = "aTree") {
-    task_manager_->SetOutputName(file, tree);
+    task_manager_->SetOutputName(std::move(file), std::move(tree));
   }
 
 private:

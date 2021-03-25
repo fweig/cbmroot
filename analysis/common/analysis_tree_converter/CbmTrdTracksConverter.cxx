@@ -16,8 +16,6 @@
 #include <CbmTrdHit.h>
 #include <CbmTrdTrack.h>
 
-#include "CbmTrdTracksConverter.h"
-
 ClassImp(CbmTrdTracksConverter)
 
   void CbmTrdTracksConverter::Init() {
@@ -32,7 +30,7 @@ ClassImp(CbmTrdTracksConverter)
   AnalysisTree::BranchConfig trd_branch(out_branch_,
                                         AnalysisTree::DetType::kTrack);
   trd_branch.AddFields<float>(
-    {"energy_loss_0", "energy_loss_1", "energy_loss_2", "energy_loss_3"}, "Energy loss per TRD station");
+    {"energy_loss_0", "energy_loss_1", "energy_loss_2", "energy_loss_3"}, "keV(?), Energy loss per TRD station");
   trd_branch.AddFields<float>(
     {"pid_like_e", "pid_like_pi", "pid_like_k", "pid_like_p"}, "Probability to be a given particle specie");
   trd_branch.AddField<float>("chi2_ov_ndf", "chi2 divided by NDF of the track fit");

@@ -44,8 +44,6 @@ void CbmRecEventHeaderConverter::Exec() {
     return;
   }
 
-  //  std::cout << cbm_prim_vertex_->GetX() << " " << cbm_prim_vertex_->GetY() << " " << cbm_prim_vertex_->GetZ() << std::endl;
-
   rec_event_header_->SetVertexPosition3({cbm_prim_vertex_->GetX(),
                                          cbm_prim_vertex_->GetY(),
                                          cbm_prim_vertex_->GetZ()});
