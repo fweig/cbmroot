@@ -19,7 +19,7 @@ ClassImp(CbmSimEventHeaderConverter)
   AnalysisTree::BranchConfig SimEventHeaderBranch(
     "SimEventHeader", AnalysisTree::DetType::kEventHeader);
   SimEventHeaderBranch.AddField<float>("psi_RP", "reaction plane orientation");
-  SimEventHeaderBranch.AddField<float>("b", "impact parameter");
+  SimEventHeaderBranch.AddField<float>("b", "fm, impact parameter");
   SimEventHeaderBranch.AddField<float>("time", "ns, event time");
   SimEventHeaderBranch.AddField<int>("run_id", "run identifier");
   SimEventHeaderBranch.AddField<int>("event_id", "event identifier");

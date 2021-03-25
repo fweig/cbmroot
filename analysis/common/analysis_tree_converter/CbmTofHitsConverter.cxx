@@ -32,13 +32,13 @@ ClassImp(CbmTofHitsConverter)
 
   AnalysisTree::BranchConfig tof_branch(out_branch_,
                                         AnalysisTree::DetType::kHit);
-  tof_branch.AddField<float>("mass2");
-  tof_branch.AddField<float>("l");
-  tof_branch.AddField<float>("t");
-  tof_branch.AddField<float>("qp_tof");
-  tof_branch.AddFields<float>({"dx", "dy", "dz"});
-  tof_branch.AddField<int>("mc_pdg");
-  tof_branch.AddField<bool>("is_correct_match");
+  tof_branch.AddField<float>("mass2", "Mass squared");
+  tof_branch.AddField<float>("l", "Track lenght");
+  tof_branch.AddField<float>("t", "ps(?), Measured time ");
+  tof_branch.AddField<float>("qp_tof", "charge * momentum extrapoleted to TOF");
+  tof_branch.AddFields<float>({"dx", "dy", "dz"}, "Distance between TOF hit and extrapolated global track, cm");
+  tof_branch.AddField<int>("mc_pdg", "MC-true PDG code of particle with highest contribution to TOF hit");
+  tof_branch.AddField<bool>("is_correct_match", "is the matched track corresponds to MC-true track from TOF hit");
 
   auto* man = AnalysisTree::TaskManager::GetInstance();
   man->AddBranch(out_branch_, tof_hits_, tof_branch);

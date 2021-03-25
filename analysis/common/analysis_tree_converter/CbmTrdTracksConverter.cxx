@@ -32,12 +32,12 @@ ClassImp(CbmTrdTracksConverter)
   AnalysisTree::BranchConfig trd_branch(out_branch_,
                                         AnalysisTree::DetType::kTrack);
   trd_branch.AddFields<float>(
-    {"energy_loss_0", "energy_loss_1", "energy_loss_2", "energy_loss_3"});
+    {"energy_loss_0", "energy_loss_1", "energy_loss_2", "energy_loss_3"}, "Energy loss per TRD station");
   trd_branch.AddFields<float>(
-    {"pid_like_e", "pid_like_pi", "pid_like_k", "pid_like_p", "pid_like_mu"});
-  trd_branch.AddField<float>("chi2_ov_ndf");
-  trd_branch.AddFields<float>({"pT_out", "p_out"});
-  trd_branch.AddField<int>("n_hits");
+    {"pid_like_e", "pid_like_pi", "pid_like_k", "pid_like_p"}, "Probability to be a given particle specie");
+  trd_branch.AddField<float>("chi2_ov_ndf", "chi2 divided by NDF of the track fit");
+  trd_branch.AddFields<float>({"pT_out", "p_out"}, "Momentum at last point (?)");
+  trd_branch.AddField<int>("n_hits", "Number of hits");
 
   auto* man = AnalysisTree::TaskManager::GetInstance();
   man->AddBranch(out_branch_, trd_tracks_, trd_branch);
@@ -94,7 +94,7 @@ void CbmTrdTracksConverter::FillTrdTracks() {
     track.SetField(float(trd_track->GetPidLikePI()), i_pid_like + 1);
     track.SetField(float(trd_track->GetPidLikeKA()), i_pid_like + 2);
     track.SetField(float(trd_track->GetPidLikePR()), i_pid_like + 3);
-    track.SetField(float(trd_track->GetPidLikeMU()), i_pid_like + 4);
+//    track.SetField(float(trd_track->GetPidLikeMU()), i_pid_like + 4);
 
     track.SetField(float(trd_track->GetNDF() > 0.
                            ? trd_track->GetChiSq() / trd_track->GetNDF()
