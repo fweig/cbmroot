@@ -1,4 +1,5 @@
-int merge(char* input_list = "list.txt", char* output_file = "merged.root") {
+int merge(char* input_list = "list.txt", char* output_file = "merged.root")
+{
 
   /// set global debug level
   // gErrorIgnoreLevel = kInfo, kWarning, kError, kFatal;
@@ -30,15 +31,14 @@ int merge(char* input_list = "list.txt", char* output_file = "merged.root") {
   ///       was merge properly, you can savely ignore it (this results in job status FAILED)
   if (1) {
     /// selection/rejection of objects
-    FM->AddObjectNames(
-      "cbmout BranchList FileHeader cbmsim TimeBasedBranchList");
+    FM->AddObjectNames("cbmout BranchList FileHeader cbmsim TimeBasedBranchList");
 
     // Must add new merging flag on top of the the default ones
-    Int_t mode = TFileMerger::kAllIncremental
-                 | TFileMerger::kSkipListed;  /// skip ObjectNames
+    Int_t mode = TFileMerger::kAllIncremental | TFileMerger::kSkipListed;  /// skip ObjectNames
     //  TFileMerger::kAllIncremental | TFileMerger::kOnlyListed; /// merge only ObjectNames
     FM->PartialMerge(mode);
-  } else {
+  }
+  else {
     /// default merging
     FM->Merge();
   }
