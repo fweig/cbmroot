@@ -1,0 +1,449 @@
+ cl_SmT9_sm002_rpc001_Sel00_Walk2->Project3DProfile("yx")->Draw("colz")
+ cl_SmT6_sm000_rpc001_Sel00_Walk2->Project3DProfile("yx")->Draw("colz")
+ .x pl_all_3D.C(0,0,2)
+ .x pl_all_3D.C(0,0,2)
+ .x pl_all_3D.C(1,0,2)
+ .x pl_all_3D.C(2,0,2)
+ .x pl_XY_3D.C(4,0,0,1)
+.q
+.x load_hst.C("hst/HD_cosmic_2020-08-21.50.3.0.0_050_900921911_901_600921_911_1.1_3.5_trk021_CalHD_cosmic_2020-08-21.50.3.0.0_Ana.hst.root")
+ .x pl_XY_3D.C(4,0,0,1)
+ .x pl_XY_3D.C(0,0,0,1)
+ .x pl_XY_3D.C(1,0,0,1)
+ .x pl_XY_3D.C(2,0,0,1)
+ .x pl_XY_3D.C(2,1,0,1)
+ .x pl_XY_3D.C(3,1,0,1)
+ .x pl_XY_3D.C(5,1,0,1)
+ .x pl_XY_3D.C(5,0,0,1)
+ .x pl_XY_3D.C(5,2,0,1)
+ .x pl_XY_3D.C(5,3,0,1)
+ .x pl_XY_3D.C(5,4,0,1)
+ .x pl_XY_3D.C(5,5,0,1)
+ .x pl_XY_3D.C(5,3,0,1)
+ .x pl_XY_3D.C(5,2,0,1)
+ .x pl_XY_3D.C(5,2,1,1)
+ .x pl_XY_3D.C(5,2,1,0)
+ .x pl_XY_3D.C(5,2,0,0)
+ .x pl_XY_3D.C(5,0,0,0)
+ .x pl_XY_3D.C(5,1,0,0)
+ .x pl_XY_3D.C(5,1,0,0,1.)
+ .x pl_XY_3D.C(5,1,0,1,1.)
+ .x pl_XY_3D.C(5,1,0,0,1.)
+ .x pl_XY_3D.C(5,1,1,0,1.)
+ .x pl_XY_3D.C(5,1,0,0,1.)
+ .x pl_XY_3D.C(5,0,0,0,1.)
+ .x pl_XY_3D.C(5,0,0,0,0.3)
+ .x pl_XY_3D.C(5,1,0,0,0.3)
+ .x pl_XY_3D.C(5,2,0,0,0.3)
+ .x pl_XY_3D.C(5,2,0,0,0.2)
+ .x pl_XY_3D.C(5,2,1,0,0.2)
+ .x pl_XY_3D.C(5,2,0,0,0.2)
+ .x pl_XY_3D.C(5,2,0,1,0.2)
+.q
+.x load_hst.C("HD_cosmic_2020-08-21.50.3.0.0/tofClust_HD_cosmic_2020-08-21.50.3.0.0_set900921911.hst.root")
+.x pl_cor_walk.C(9,1,1)
+.x pl_cor_walk.C(6,0,1)
+.x pl_cor_walk.C(6,0,0)
+.ls
+Cor_SmT6_sm000_rpc000_Ch016_S1_Walk_px->Draw()
+.x pl_cor_walk.C(6,0,0)
+.q
+.x load_hst.C("hst/HD_cosmic_2020-08-21.50.3.0.0_050_900921911_901_911910_901_3.0_2.5_trk011_CalHD_cosmic_2020-08-21.50.3.0.0_Ana.hst.root")
+.x pl_trk_Walk.C 
+.x pl_trk_Walk.C 
+.x pl_trk_Walk.C 
+.x pl_trk_Walk.C 
+.x pl_trk_Walk.C 
+.x pl_trk_Walk.C 
+.x pl_trk_Walk.C 
+.x pl_trk_Walk.C (600)
+.x pl_trk_Walk.C (601)
+.x pl_trk_Walk.C (901)
+.x pl_trk_Walk.C (901,20)
+.x pl_trk_Walk.C (601,20)
+.x pl_trk_Walk.C (600,20)
+.x pl_trk_Walk.C (600,21)
+.ls
+cal_SmT6_sm000_rpc001_Ch009_S1_Walk->Draw("colz")
+cal_SmT6_sm000_rpc001_Ch009_S1_Walk_pfx271->Draw("same")
+.x pl_trk_Walk.C (601)
+cal_SmT6_sm000_rpc001_Ch009_S1_Walk.ls
+.ls
+cal_SmT6_sm000_rpc001_Ch021_S1_Walk_pfx211->Draw()
+cal_SmT6_sm000_rpc001_Ch009_S1_Walk->Draw("colz")
+cal_SmT6_sm000_rpc001_Ch009_S1_Walk_pfx91->Draw("same")
+.x pl_trk_Walk.C (921)
+.x pl_trk_Walk.C (921)
+.x pl_trk_Walk.C (921,20)
+.x pl_trk_Walk.C (921,21)
+.x pl_trk_Walk.C (921,20)
+cal_SmT6_sm000_rpc001_Ch015_S1_Walk->Draw("colz")
+cal_SmT6_sm000_rpc001_Ch015_S1_Walk->Draw("colz")
+cal_SmT6_sm000_rpc001_Ch015_S1_Walk->GetNbinsX()
+cal_SmT9_sm000_rpc001_Ch015_S1_Walk->Draw("colz")
+cal_SmT9_sm002_rpc001_Ch015_S1_Walk->Draw("colz")
+cal_SmT9_sm002_rpc001_Ch015_S0_Walk->Draw("colz")
+cal_SmT6_sm002_rpc001_Ch015_S0_Walk->Draw("colz")
+cal_SmT6_sm000_rpc001_Ch015_S0_Walk->Draw("colz")
+.x pl_trk_Walk.C (600)
+.x pl_trk_Walk.C (600,20)
+.q
+.x load_hst.C("hst/HD_cosmic_2020-08-21.50.3.0.0_050_900921911_901_911910_901_3.0_2.5_trk011_CalHD_cosmic_2020-08-21.50.3.0.0_Ana.hst.root")
+.x pl_trk_Walk.C (600)
+.x pl_trk_Walk.C (601)
+.x pl_trk_Walk.C (900)
+.x pl_trk_Walk.C (901)
+.x pl_trk_Walk.C (901,20)
+.x pl_trk_Walk.C (601,20)
+.x pl_pull_trk.C(6,0,1)
+.x pl_pull_trk.C(6,1,1)
+.x pl_pull_trk.C(6,3,1)
+.x pl_pull_trk.C(6,4,1)
+.x pl_trk_Walk.C (921,20)
+.ls
+cal_SmT9_sm000_rpc001_Ch027_S0_Walk->Draw("colz")
+cal_SmT9_sm000_rpc001_Ch027_S0_Walk->Draw("colz")
+cal_SmT6_sm000_rpc001_Ch027_S0_Walk->Draw("colz")
+.q
+.x ana_trks.C(2000000,911921,3,"HD_cosmic_2020-08-21.50.3.0.0","900921911_901",901,11,2.,4.0,50,"HD_cosmic_2020-08-21.50.3.0.0",1,1,900921911,1)
+.x pl_trk_Walk.C (600)
+.x pl_over_MatD4sel.C
+.x pl_calib_trk.C
+.x pl_over_trk.C(6)
+.x pl_trk_Walk.C (600,20)
+.q
+.x ana_trks.C(2000000,911921,3,"HD_cosmic_2020-08-21.50.3.0.0","900921911_901",901,11,2.,4.0,50,"HD_cosmic_2020-08-21.50.3.0.0",1,1,900921911,1)
+.x pl_over_MatD4sel.C
+.q
+.x ana_trks.C(2000000,911921,3,"HD_cosmic_2020-08-21.50.3.0.0","900921911_901",901,11,2.,4.0,50,"HD_cosmic_2020-08-21.50.3.0.0",1,1,900921911,1)
+.x pl_over_MatD4sel.C
+.x pl_trk_Walk.C (601,20)
+.x pl_trk_Walk.C (601)
+.x pl_trk_Walk.C (901)
+.q
+.x load_hst.C("HD_cosmic_2020-08-21.50.3.0.0/CluStatus900921911_901_Cal_HD_cosmic_2020-08-21.50.3.0.0.hst.root")
+.x pl_trk_Walk.C (901,200)
+.x pl_trk_Walk.C (601,200)
+.x pl_trk_Walk.C (601,201)
+.q
+.x ana_digi_cal.C(2000000,93,1,921,1,"HD_cosmic_2020-08-21.50.3.0.0",900921911,1,901,50,"HD_cosmic_2020-08-21.50.3.0.0")
+.x pl_trk_Walk.C (601,201)
+.ls
+cl_SmT6_sm000_rpc001_Ch005_S1_Walk->Draw("colz")
+cl_SmT6_sm000_rpc001_Ch005_S1_Walk->Draw("colz")
+.ls
+cl_SmT6_sm000_rpc001_Ch005_S1_Walk_pfx->Draw("same")
+cl_SmT6_sm000_rpc001_Ch005_S1_Walk_px->Draw()
+.! mv ./c1_n3.pdf ./walk601_5_1.pdf
+.q
+.x ana_trks.C(2000000,911921,3,"HD_cosmic_2020-08-21.50.3.0.0","900921911_901",901,11,2.,4.5,50,"HD_cosmic_2020-08-21.50.3.0.0",1,1,900921911,2)
+.x pl_trk_Walk.C (601,21)
+cal_SmT6_sm000_rpc001_Ch005_S1_Walk->Draw("colz")
+cal_SmT6_sm000_rpc001_Ch005_S1_Walk->Draw("colz")
+cal_SmT6_sm000_rpc001_Ch005_S1_Walk_px->Draw("colz")
+cal_SmT6_sm000_rpc001_Ch005_S1_Walk->Draw("colz")
+cal_SmT9_sm000_rpc001_Ch005_S1_Walk->Draw("colz")
+cal_SmT9_sm002_rpc001_Ch005_S1_Walk->Draw("colz")
+.ls 
+Cor_SmT9_sm002_rpc001_Ch005_S1_Walk->Draw("colz")
+Cor_SmT9_sm002_rpc001_Ch005_S1_Walk_px->Draw()
+.q
+.x load_hst.C("HD_cosmic_2020-08-21.50.3.0.0/CluStatus900921911_901_Cal_HD_cosmic_2020-08-21.50.3.0.0.hst.root")
+cp_SmT9_sm002_rpc001_Ch005_S1_Walk->Draw("colz")
+cl_SmT9_sm002_rpc001_Ch005_S1_Walk->Draw("colz")
+cl_SmT6_sm000_rpc001_Ch005_S1_Walk->Draw("colz")
+Cor_SmT6_sm000_rpc001_Ch005_S1_Walk->Draw("colz")
+cl_CorSmT6_sm000_rpc001_Ch005_S1_Walk->Draw("colz")
+.q
+.x load_hst.C("hst/HD_cosmic_2020-08-21.50.3.0.0_050_900921911_901_911921_901_2.0_4.0_trk011_CalHD_cosmic_2020-08-21.50.3.0.0_Ana.hst.root")
+.x pl_trk_walk.C (600)
+.x pl_trk_walk.C (601)
+.q
+.x load_hst.C("hst/HD_cosmic_2020-08-21.50.3.0.0_050_900921911_901_911921_901_2.0_4.0_trk011_CalHD_cosmic_2020-08-21.50.3.0.0_Ana.hst.root")
+.x pl_over_trk.C(6)
+.x pl_trk_walk.C (600)
+.x pl_all_Track2D.C (1)
+.x pl_all_Track2D.C (2)
+.x pl_all_Track2D.C (4)
+.x pl_trk_walk.C (600)
+.x pl_trk_walk.C (900)
+.x pl_trk_walk.C (900,1)
+.x pl_trk_walk.C (900,20)
+.x pl_trk_walk.C (901,1)
+.ls
+cal_SmT6_sm001_rpc001_Ch031_S1_Walk_pfx311->Draw()
+cal_SmT6_sm001_rpc001_Ch031_S1_Walk->Draw()
+.x pl_trk_walk.C (901,1)
+.x pl_trk_walk.C (900,1)
+cal_SmT900_sm000_rpc000_Ch029_S0_Walk->Draw()
+.q
+.x ana_trks.C(2000000,911921,3,"HD_cosmic_2020-08-21.50.3.0.0","900921911_901",901,11,2.,4.0,50,"HD_cosmic_2020-08-21.50.3.0.0",1,1,900921911,1)
+.x pl_all_Track2D.C (4)
+.x pl_trk_walk.C 
+.ls
+cal_SmT6_sm001_rpc000_Ch005_S1_Walk->Draw()
+cal_SmT6_sm000_rpc000_Ch005_S1_Walk->Draw("colz")
+cal_SmT6_sm000_rpc000_Ch005_S1_Walk->Draw("colz")
+cal_SmT6_sm000_rpc000_Ch005_S0_Walk->Draw("colz")
+cal_SmT6_sm000_rpc000_Ch005_S1_Walk->Draw("colz")
+cal_SmT6_sm000_rpc000_Ch006_S1_Walk->Draw("colz")
+cal_SmT6_sm000_rpc000_Ch006_S0_Walk->Draw("colz")
+cal_SmT6_sm000_rpc000_Ch005_S0_Walk->Draw("colz")
+cal_SmT6_sm000_rpc000_Ch006_S1_Walk->Draw("colz")
+cal_SmT6_sm000_rpc000_Ch005_S1_Walk->Draw("colz")
+.x pl_trk_walk.C(600,20) 
+.x pl_trk_walk.C(600,20) 
+.x pl_trk_Walk.C(600,20) 
+.x pl_trk_Walk.C(600,21) 
+cal_SmT6_sm000_rpc000_Ch006_S1_Walk->Draw("colz")
+TCanvas a
+cal_SmT6_sm000_rpc000_Ch006_S1_Walk->Draw("colz")
+cal_SmT6_sm000_rpc000_Ch007_S1_Walk->Draw("colz")
+cal_SmT6_sm000_rpc000_Ch008_S1_Walk->Draw("colz")
+cal_SmT6_sm000_rpc000_Ch009_S1_Walk->Draw("colz")
+cal_SmT6_sm000_rpc000_Ch009_S0_Walk->Draw("colz")
+.q
+TFile *_file0 = TFile::Open("HD_cosmic_2020-08-21.50.3.0.0/CluStatus900921911_901_Cal_HD_cosmic_2020-08-21.50.3.0.0.hst.root")
+.x load_hst.C("HD_cosmic_2020-08-21.50.3.0.0/CluStatus900921911_901_Cal_HD_cosmic_2020-08-21.50.3.0.0.hst.root")
+.L fit_ybox.h 
+.x pl_over_clu.C(6,0,0)
+.x pl_over_clu.C(6,0,1)
+.x pl_over_clu.C(6,0,0)
+.x pl_over_clu.C(9,0,0)
+.x pl_over_clu.C(9,0,1)
+.x pl_over_clu.C(9,1,1)
+.x pl_over_clu.C(9,2,1)
+.x pl_over_cluSel.C(9,2,1)
+.x pl_over_cluSel.C(1,9,2,1)
+.x pl_over_cluSel.C(1,6,0,1)
+.x pl_over_clu.C(6,0,1)
+.x pl_over_clu.C(6,0,0)
+.x pl_over_clu.C(6,0,1)
+.q
+.x load_hst.C("HD_cosmic_2020-08-21.50.3.0.0/Init14/CluStatus900921911_911_Cal_XXX.hst.root")
+.L fit_ybox.h
+.x pl_over_clu.C(6,0,0)
+.x pl_over_clu.C(6,0,1)
+.x pl_over_cluSel.C(1,6,0,1)
+.x pl_over_cluSel.C(0,6,0,1)
+.q
+.x ana_trks.C(100,911921,3,"HD_cosmic_2020-08-21.50.3.0.0","900921911_901",901,11,2.,4.0,50,"HD_cosmic_2020-08-21.50.3.0.0",1,1,900921911,1)
+.q
+.x ana_trks.C(100,911921,3,"HD_cosmic_2020-08-21.50.3.0.0","900921911_901",901,11,2.,4.0,50,"HD_cosmic_2020-08-21.50.3.0.0",1,1,900921911,1)
+.q
+.x ana_trks.C(100,911921,3,"HD_cosmic_2020-08-21.50.3.0.0","900921911_901",901,11,2.,4.0,50,"HD_cosmic_2020-08-21.50.3.0.0",1,1,900921911,1)
+.x ana_trks.C(100,911921,3,"HD_cosmic_2020-08-21.50.3.0.0","900921911_901",901,11,2.,4.0,50,"HD_cosmic_2020-08-21.50.3.0.0",1,1,900921911,1) | grep CMPY
+.q
+.x ana_trks.C(100,911921,3,"HD_cosmic_2020-08-21.50.3.0.0","900921911_901",901,11,2.,4.0,50,"HD_cosmic_2020-08-21.50.3.0.0",1,1,900921911,1)
+.q
+.x ana_trks.C(100,911921,3,"HD_cosmic_2020-08-21.50.3.0.0","900921911_901",901,11,2.,4.0,50,"HD_cosmic_2020-08-21.50.3.0.0",1,1,900921911,1)
+.q
+.x load_hst.C("HD_cosmic_2020-08-21.50.3.0.0/CluStatus900921911_901_Cal_HD_cosmic_2020-08-21.50.3.0.0.hst.root")
+.L fit_ybox.h
+.x pl_over_clu.C(6,0,0)
+.x pl_over_clu.C(6,0,1)
+.q
+.x load_hst.C("HD_cosmic_2020-08-21.50.3.0.0/CluStatus900921911_901_Cal_HD_cosmic_2020-08-21.50.3.0.0.hst.root")
+.x pl_trk_Walk.C 
+.x pl_all_Sel2D.C(1)
+.L fit_ybox.h 
+.x pl_over_clu.C(6,0,0
+.x pl_over_clu.C(6,0,0)
+.x pl_over_clu.C(6,0,1)
+.q
+.x load_hst.C("hst/HD_cosmic_2020-08-21.50.3.0.0_050_900921911_901_911921_901_2.0_3.0_trk011_CalHD_cosmic_2020-08-21.50.3.0.0_Ana.hst.root")
+.x pl_trk_Walk.C(600)
+.x pl_trk_Walk.C(601)
+.x pl_trk_Walk.C(601,20)
+.x pl_trk_Walk.C(601,21)
+.q
+.x load_hst.C("HD_cosmic_2020-08-21.50.3.0.0/HD_cosmic_2020-08-21.50.3.0.0_set900921911_93_1tofClust.hst.root")
+.x pl_cor_walk.C (6,0,0)
+.ls
+Cor_SmT6_sm000_rpc000_Ch005_S1_Walk_px->Draw()
+Cor_SmT6_sm000_rpc000_Ch000_S1_Walk_px->Draw()
+Cor_SmT6_sm000_rpc000_Ch000_S0_Walk_px->Draw()
+Cor_SmT6_sm000_rpc000_Ch001_S0_Walk_px->Draw()
+.q
+.x load_hst.C("HD_cosmic_2020-08-21.50.3.0.0/Init14/HD_cosmic_2020-08-21.50.3.0.0_set900921911_93_1tofClust.hst.root")
+Cor_SmT6_sm000_rpc000_Ch001_S0_Walk_px->Draw()
+.x pl_cor_walk.C (6,0,0)
+Cor_SmT6_sm000_rpc000_Ch000_S0_Walk_px->Draw()
+.q
+.x load_hst.C("HD_cosmic_2020-08-21.50.3.0.0/Init2/HD_cosmic_2020-08-21.50.3.0.0_set900921911_23_0tofClust.hst.root")
+Cor_SmT6_sm000_rpc000_Ch000_S0_Walk_px->Draw()
+.x pl_cor_walk.C (6,0,0)
+.q
+.x load_hst.C("HD_cosmic_2020-08-21.50.3.0.0/Init10/HD_cosmic_2020-08-21.50.3.0.0_set900921911_63_0tofClust.hst.root")
+.x pl_cor_walk.C (6,0,0)
+.q
+.x load_hst.C("HD_cosmic_2020-08-21.50.3.0.0/Init3/HD_cosmic_2020-08-21.50.3.0.0_set900921911_23_1tofClust.hst.root")
+.x pl_cor_walk.C (6,0,0)
+Cor_SmT6_sm000_rpc000_Ch000_S0_Walk_px->Draw()
+Cor_SmT6_sm000_rpc000_Ch000_S1_Walk_px->Draw()
+.q
+.x load_hst.C("HD_cosmic_2020-08-21.50.3.0.0/Init1/tofClust_HD_cosmic_2020-08-21.50.3.0.0_set900921911.hst.root")
+.x pl_cor_walk.C (6,0,0)
+.ls
+Cor_SmT6_sm000_rpc000_Ch000_S1_Walk_px->Draw()
+.q
+.x load_hst.C("HD_cosmic_2020-08-21.50.3.0.0/Init2/HD_cosmic_2020-08-21.50.3.0.0_set900921911_23_0tofClust.hst.root")
+Cor_SmT6_sm000_rpc000_Ch000_S1_Walk_px->Draw()
+.x pl_cor_walk.C (6,0,0)
+.q
+.x load_hst.C("HD_cosmic_2020-08-21.50.3.0.0/Init3/HD_cosmic_2020-08-21.50.3.0.0_set900921911_23_1tofClust.hst.root")
+.x pl_cor_walk.C (6,0,0)
+.x pl_cor_walk.C (6,0,1)
+.x pl_cor_walk.C (9,0,1)
+.x pl_cor_walk.C (9,0,0)
+.x pl_cor_walk.C (9,1,0)
+.x pl_cor_walk.C (9,2,0)
+.x pl_cor_walk.C (6,0,0)
+.q
+.x load_hst.C("hst/HD_cosmic_2020-08-21.50.3.0.0_050_900921911_901_911921_901_2.0_4.0_trk011_CalHD_cosmic_2020-08-21.50.3.0.0_Ana.hst.root")
+.x pl_all_Track2D.C (4)
+.ls
+.x pl_trk_Walk.C (600)
+.x pl_trk_Walk.C (921)
+.x pl_all_Track2D.C (4)
+.ls
+cal_SmT6_sm000_rpc000_Ch000_S0_Walk_pfx00->Draw()
+cal_SmT6_sm000_rpc000_Ch000_S0_Walk_pfx00->Draw("LP")
+cal_SmT6_sm000_rpc000_Ch000_S0_Walk_pfx00->Draw("CP")
+cal_SmT6_sm000_rpc000_Ch000_S0_Walk_pfx00->Draw("PL")
+cal_SmT6_sm000_rpc000_Ch000_S0_Walk_pfx00->Draw("L")
+cal_SmT6_sm000_rpc000_Ch000_S0_Walk_pfx00->Draw("L")
+cal_SmT6_sm000_rpc000_Ch000_S0_Walk_pfx00->Draw("LE")
+cal_SmT6_sm000_rpc000_Ch000_S0_Walk->Draw("LE")
+cal_SmT6_sm000_rpc000_Ch000_S0_Walk->ProfileX()->Draw("LP")
+.x pl_all_Track2D.C (4)
+.x pl_trk_Walk.C (601)
+.x pl_trk_Walk.C (601,20)
+.x pl_trk_Walk.C (921,20)
+.x pl_trk_Walk.C (921,1)
+.x pl_trk_Walk.C (921,1)
+.x pl_trk_Walk.C (921,20)
+.ls
+cal_SmT6_sm000_rpc001_Ch028_S1_Walk->Draw("colz")
+cal_SmT6_sm000_rpc001_Ch028_S1_Walk->Draw("colz")
+cal_SmT6_sm000_rpc000_Ch000_S0_Walk->Draw("colz")
+cal_SmT6_sm000_rpc000_Ch005_S0_Walk->Draw("colz")
+cal_SmT6_sm000_rpc000_Ch006_S0_Walk->Draw("colz")
+cal_SmT7_sm000_rpc000_Ch006_S0_Walk->Draw("colz")
+cal_SmT6_sm000_rpc000_Ch007_S0_Walk->Draw("colz")
+cal_SmT6_sm000_rpc000_Ch008_S0_Walk->Draw("colz")
+.q
+.x load_hst.C("HD_cosmic_2020-08-21.50.3.0.0/Init14/HD_cosmic_2020-08-21.50.3.0.0_set900921911_93_1tofClust.hst.root")
+.x pl_cor_walk.C (6,0,0)
+.q
+.x load_hst.C("HD_cosmic_2020-08-21.50.3.0.0/Init14/CluStatus900921911_911_Cal_XXX.hst.root")
+.x pl_all_2D.C(1)
+.x pl_all_2D.C(2)
+.x pl_all_2D.C(3)
+.L fit_ybox.h
+.x pl_over_clu.C(6,0,0)
+.x pl_over_clu.C(6,0,1)
+.x pl_over_clu.C(9,2,1)
+.q
+.x load_hst.C("HD_cosmic_2020-08-21.50.3.0.0/CluStatus900921911_901_Cal_HD_cosmic_2020-08-21.50.3.0.0.hst.root")
+.L fit_ybox.h
+.x pl_over_clu.C6,0,0)
+.x pl_over_clu.C(6,0,0)
+.x pl_over_clu.C(6,0,1)
+.x pl_over_clu.C(9,0,1)
+.x pl_over_clu.C(9,0,0)
+.x pl_over_clu.C(9,1,1)
+.x pl_over_clu.C(9,2,1)
+.q
+.x load_hst.C("hst/HD_cosmic_2020-08-21.50.3.0.0_050_900921911_901_911921_901_2.0_3.0_trk011_CalHD_cosmic_2020-08-21.50.3.0.0_Ana.hst.root")
+.x pl_trk_Walk.C(900)
+.x pl_trk_Walk.C(600)
+.x pl_trk_Walk.C(601)
+.x pl_trk_Walk.C(601,21)
+.x pl_trk_Walk.C(601,201)
+.x pl_trk_Walk.C(911,1)
+.x pl_trk_Walk.C(911,1)
+.x pl_trk_Walk.C(911,1)
+.x pl_trk_Walk.C(911,1,0.5)
+.x pl_trk_Walk.C(601,1,0.5)
+.x pl_trk_Walk.C(600,1,1.)
+.x pl_trk_Walk.C(600,21,1.)
+.x pl_trk_Walk.C(600,1,1.)
+.x pl_trk_Walk.C(601,1,1.)
+.x pl_trk_Walk.C(601,21,1.)
+.x pl_all_Track2D.C (4)
+.q
+.x load_hst.C("HD_cosmic_2020-08-21.50.3.0.0/HD_cosmic_2020-08-21.50.3.0.0_set900921911_93_1tofClust.hst.root")
+.x pl_cor_walk.C (6,0,0)
+.x pl_cor_walk.C (6,0,1)
+.x pl_cor_walk.C (9,0,1)
+.q
+.x load_hst.C("HD_cosmic_2020-08-21.50.3.0.0/HD_cosmic_2020-08-21.50.3.0.0_set900921911_93_1tofClust.hst.root")
+.x pl_over_cor.C(9,0,0)
+.x pl_over_cor.C(6,0,0)
+.x pl_over_cor.C(6,0,1)
+.q
+.x ana_trks.C(2000000,911921,3,"HD_cosmic_2020-08-21.50.3.0.0","900921911_901",901,11,2.,4.5,50,"HD_cosmic_2020-08-21.50.3.0.0",1,1,900921911,2)
+.q
+.x load_hst.C("New_HD_cosmic_2020-08-21.50.3.0.0_set900921911_93_1tofClust.hst.root")
+.x pl_over_cor.C(6,0,1)
+.x pl_cor_walk.C(6,0,1)
+.q
+.x load_hst.C("hst/HD_cosmic_2020-08-21.50.3.0.0_050_900921911_901_600921_911_1.1_3.5_trk021_CalHD_cosmic_2020-08-21.50.3.0.0_Ana.hst.root")
+.x pl_XY_trk.C(4)
+.x pl_XY_trk.C(5)
+.x pl_XY_trk.C(5,0.7,0.5)
+.q
+.x load_hst.C("hst/HD_cosmic_2020-08-21.50.3.0.0_050_900921911_901_601921_911_1.1_3.5_trk021_CalHD_cosmic_2020-08-21.50.3.0.0_Ana.hst.root")
+.x pl_XY_trk.C(5,0.7,0.5)
+.x pl_pull_trk.C(5,3,1)
+.x pl_pull_trk.C(5,4,1)
+.x pl_pull_trk.C(5,1,1)
+.x pl_pull_trk.C(5,0,1)
+.q
+.x load_hst.C("hst/HD_cosmic_2020-08-21.50.3.0.0_050_900921911_901_911921_901_1.1_3.5_trk003_CalHD_cosmic_2020-08-21.50.3.0.0_Ana.hst.root")
+.x pl_XY_trk.C(4)
+.x pl_XY_trk.C(4,0.7,0.5)
+.x pl_XY_trk.C(4,0.7,0.1)
+.x pl_XY_trk.C(4,0.7,0.01)
+.x pl_pull_trk.C(4,4,1)
+.x pl_trk_Walk.C(911)
+.x pl_trk_Walk.C(911,20)
+.x pl_over_trk.C
+.q
+.x load_hst.C("hst/HD_cosmic_2020-08-21.50.3.0.0_050_900921911_901_911921_901_1.1_3.5_trk003_CalHD_cosmic_2020-08-21.50.3.0.0_Ana.hst.root")
+.x pl_trk_XY.C(4)
+.x pl_XY_trk.C(4)
+.x pl_XY_trk.C(4,0.7,0.2)
+.x pl_over_trk(4)
+.x pl_over_trk.C(4)
+.x pl_Eff_XY.C(911)
+.x pl_Eff_XY.C(911,0.7)
+.x pl_Eff_XY.C(911,0.7,0.5)
+.x load_hst.C("hst/HD_cosmic_2020-08-21.50.3.0.0_050_900921911_901_911921_901_1.1_3.5_trk003_CalHD_cosmic_2020-08-21.50.3.0.0_Ana.hst.root")
+.x pl_Efficiency_XY.C 
+.x pl_Eff_TIR.C 
+.x pl_Eff_TIR.C (911)
+.ls
+.x pl_EvCluMul.C 
+.x pl_EvCluMul.C(911) 
+.q
+.x load_hst.C("hst/HD_cosmic_2020-08-21.50.3.0.0_050_900921911_901_601921_911_1.1_3.5_trk021_CalHD_cosmic_2020-08-21.50.3.0.0_Ana.hst.root")
+.x pl_XY_trk.C(5)
+.x pl_Eff_XY.C(601)
+.x pl_Eff_XY.C(601,0.5)
+.x pl_Eff_XY.C(601,0.5,0.2)
+.x pl_Eff_XY.C(601,0.5,1.,0.2)
+.x pl_Eff_XY.C(601,0.5,1.,0.3)
+.x pl_Eff_XY.C(601,0.5,1.,0.5)
+.x pl_pull_trk.C(5,4,1)
+.x pl_pull_trk.C(5,3,1)
+.x pl_pull_trk.C(5,0,1)
+.x pl_pull_trk.C(5,1,1)
+.x pl_pull_trk.C(5,2,1)
+.x pl_pull_trk.C(5,4,1)
+.q
+.x load_hst.C("hst/HD_cosmic_2020-08-27_12:44:34.50.3.0.0_050_900921911_901_911921_901_2.0_4.5_trk001_CalHD_cosmic_2020-08-27_12:44:34.50.3.0.0_Ana.hst.root")
+.x pl_trk_Walk.C(900)
+.x pl_trk_Walk.C(900,20)
+.q
