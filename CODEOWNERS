@@ -36,13 +36,13 @@
 
 # Analysis
 /analysis/                                 @i.selyuzhenkov
-/analysis/PWGC2F/femtoscopy/               @d.wielanek
+/analysis/PWGC2F/femtoscopy/               @wielanek_AT_if.pw.edu.pl
 /analysis/common/                          @i.selyuzhenkov
 /analysis/PWGHAD/                          @i.selyuzhenkov
 /analysis/PWGCHA/                          @i.selyuzhenkov
 /analysis/PWGDIL/                          @i.selyuzhenkov
 /analysis/PWGDIL/dielectron/pi0eta/        @c.pauly
-/analysis/PWGDIL/dielectron/papaframework/ @praisig @ebechtel
+/analysis/PWGDIL/dielectron/papaframework/ @praisig @ebechtel_AT_ikf.uni-frankfurt.de
 /analysis/PWGDIL/dielectron/lmvm/          @i.selyuzhenkov
 /analysis/PWGDIL/dielectron/conversion/    @c.pauly
 /analysis/PWGDIL/dimuon/                   @i.selyuzhenkov
