@@ -5,11 +5,11 @@
 // -------------------------------------------------------------------------
 #include "CbmTrdSetTracksPidLike.h"
 
+#include "CbmGlobalTrack.h"
 #include "CbmTrdGas.h"
 #include "CbmTrdHit.h"
 #include "CbmTrdTrack.h"
 
-#include "CbmGlobalTrack.h"
 #include "FairRootManager.h"
 
 #include "TClonesArray.h"
@@ -25,14 +25,12 @@
 #include <iostream>
 
 // -----   Default constructor   -------------------------------------------
-CbmTrdSetTracksPidLike::CbmTrdSetTracksPidLike()
-  : CbmTrdSetTracksPidLike("TrdPidLI", "TrdPidLI") {}
+CbmTrdSetTracksPidLike::CbmTrdSetTracksPidLike() : CbmTrdSetTracksPidLike("TrdPidLI", "TrdPidLI") {}
 // -------------------------------------------------------------------------
 
 
 // -----   Standard constructor   ------------------------------------------
-CbmTrdSetTracksPidLike::CbmTrdSetTracksPidLike(const char* name, const char*)
-  : FairTask(name) {}
+CbmTrdSetTracksPidLike::CbmTrdSetTracksPidLike(const char* name, const char*) : FairTask(name) {}
 // -------------------------------------------------------------------------
 
 
@@ -46,7 +44,8 @@ void CbmTrdSetTracksPidLike::SetParContainers() {}
 
 
 // -----  RaedData -------------------------------------------------
-Bool_t CbmTrdSetTracksPidLike::ReadData() {
+Bool_t CbmTrdSetTracksPidLike::ReadData()
+{
   //
   // Read the TRD dEdx histograms.
   //
@@ -70,7 +69,8 @@ Bool_t CbmTrdSetTracksPidLike::ReadData() {
   if (!histFile || !histFile->IsOpen()) {
     Error("ReadData", "Could not open input file: %s", fFileName.Data());
     return kFALSE;
-  } else {
+  }
+  else {
     Info("ReadData", "input file %s opened", fFileName.Data());
   }
 
@@ -81,15 +81,15 @@ Bool_t CbmTrdSetTracksPidLike::ReadData() {
 
   if (fMCinput) {  /// mc pid method
     if (fMomDep) {
-      std::vector<TString> histnames {"MC_electron_p_eloss",
-                                      "MC_pion_p_eloss",
-                                      "MC_kaon_p_eloss",
-                                      "MC_proton_p_eloss",
+      std::vector<TString> histnames {"MC_electron_p_eloss", "MC_pion_p_eloss", "MC_kaon_p_eloss", "MC_proton_p_eloss",
                                       "MC_muon_p_eloss"};
       inArr = new TObjArray(histnames.size());
       for (size_t i = 0; i < histnames.size(); i++) {
         h[i] = (TH2D*) histFile->Get(histnames[i]);
-        if (!h[i]) continue;
+        if (!h[i]) {
+          Info("ReadData", "no input histogram %s", histnames[i].Data());
+          continue;
+        }
 
         //set name and title
         h[i]->SetNameTitle(histnames[i], histnames[i]);
@@ -100,23 +100,22 @@ Bool_t CbmTrdSetTracksPidLike::ReadData() {
           for (Int_t y = 1; y <= h[i]->GetNbinsY(); y++)
             sum += h[i]->GetBinContent(x, y);
           for (Int_t y = 1; y <= h[i]->GetNbinsY(); y++)
-            if (sum > 0)
-              h[i]->SetBinContent(x, y, h[i]->GetBinContent(x, y) / sum);
+            if (sum > 0) h[i]->SetBinContent(x, y, h[i]->GetBinContent(x, y) / sum);
         }
 
         inArr->Add(h[i]);
       }
     }
     if (!fMomDep) {
-      std::vector<TString> histnames {"MC_electron_eloss",
-                                      "MC_pion_eloss",
-                                      "MC_kaon_eloss",
-                                      "MC_proton_eloss",
+      std::vector<TString> histnames {"MC_electron_eloss", "MC_pion_eloss", "MC_kaon_eloss", "MC_proton_eloss",
                                       "MC_muon_eloss"};
       inArr = new TObjArray(histnames.size());
       for (size_t i = 0; i < histnames.size(); i++) {
         h[i] = (TH2D*) histFile->Get(histnames[i]);
-        if (!h[i]) continue;
+        if (!h[i]) {
+          Info("ReadData", "no input histogram %s", histnames[i].Data());
+          continue;
+        }
 
         //set name and title
         h[i]->SetNameTitle(histnames[i], histnames[i]);
@@ -127,18 +126,19 @@ Bool_t CbmTrdSetTracksPidLike::ReadData() {
         inArr->Add(h[i]);
       }
     }
-  } else {  /// data driven method
+  }
+  else {  /// data driven method
     if (fMomDep) {
-      std::vector<TString> histnames {"ELE_electron_p_eloss",
-                                      "PIO_pion_p_eloss",
-                                      "ELE_kaon_p_eloss",
-                                      "ELE_proton_p_eloss",
-                                      "ELE_muon_p_eloss"};
+      std::vector<TString> histnames {"ELE_electron_p_eloss", "PIO_pion_p_eloss", "ELE_kaon_p_eloss",
+                                      "ELE_proton_p_eloss", "ELE_muon_p_eloss"};
       inArr = new TObjArray(histnames.size());
       for (size_t i = 0; i < histnames.size(); i++) {
         h[i] = (TH2D*) histFile->Get(histnames[i]);
         h[i]->SetNameTitle(histnames[i], histnames[i]);
-        if (!h[i]) continue;
+        if (!h[i]) {
+          Info("ReadData", "no input histogram %s", histnames[i].Data());
+          continue;
+        }
 
         //set name and title
         h[i]->SetNameTitle(histnames[i], histnames[i]);
@@ -149,23 +149,22 @@ Bool_t CbmTrdSetTracksPidLike::ReadData() {
           for (Int_t y = 1; y <= h[i]->GetNbinsY(); y++)
             sum += h[i]->GetBinContent(x, y);
           for (Int_t y = 1; y <= h[i]->GetNbinsY(); y++)
-            if (sum > 0)
-              h[i]->SetBinContent(x, y, h[i]->GetBinContent(x, y) / sum);
+            if (sum > 0) h[i]->SetBinContent(x, y, h[i]->GetBinContent(x, y) / sum);
         }
 
         inArr->Add(h[i]);
       }
     }
     if (!fMomDep) {
-      std::vector<TString> histnames {"ELE_electron_eloss",
-                                      "PIO_pion_eloss",
-                                      "ELE_kaon_eloss",
-                                      "ELE_proton_eloss",
+      std::vector<TString> histnames {"ELE_electron_eloss", "PIO_pion_eloss", "ELE_kaon_eloss", "ELE_proton_eloss",
                                       "ELE_muon_eloss"};
       inArr = new TObjArray(histnames.size());
       for (size_t i = 0; i < histnames.size(); i++) {
         h[i] = (TH2D*) histFile->Get(histnames[i]);
-        if (!h[i]) continue;
+        if (!h[i]) {
+          Info("ReadData", "no input histogram %s", histnames[i].Data());
+          continue;
+        }
 
         //set name and title
         h[i]->SetNameTitle(histnames[i], histnames[i]);
@@ -184,9 +183,10 @@ Bool_t CbmTrdSetTracksPidLike::ReadData() {
     TH1* hist    = (TH1*) inArr->At(i)->Clone();
     TString name = hist->GetTitle();
 
+    if (hist->GetEntries() < 1000) Info("ReadData", "input histogram is almost empty for %s", name.Data());
+
     // check particles
-    if (name.Contains("electron"))
-      particle = CbmTrdSetTracksPidLike::kElectron;
+    if (name.Contains("electron")) particle = CbmTrdSetTracksPidLike::kElectron;
     else if (name.Contains("pion"))
       particle = CbmTrdSetTracksPidLike::kPion;
     else if (name.Contains("kaon"))
@@ -199,10 +199,7 @@ Bool_t CbmTrdSetTracksPidLike::ReadData() {
       continue;
 
     // add to hist array
-    Info("ReadData",
-         "particle histogram %s added to array at %d",
-         name.Data(),
-         particle);
+    Info("ReadData", "particle histogram %s added to array at %d", name.Data(), particle);
 
     fHistdEdx->AddAt(hist, particle);
   }
@@ -216,7 +213,8 @@ Bool_t CbmTrdSetTracksPidLike::ReadData() {
 
 //_________________________________________________________________________
 // -----   Public method Init (abstract in base class)  --------------------
-InitStatus CbmTrdSetTracksPidLike::Init() {
+InitStatus CbmTrdSetTracksPidLike::Init()
+{
 
   //
   // Initalize data members
@@ -263,7 +261,8 @@ InitStatus CbmTrdSetTracksPidLike::Init() {
 
 
 // -----   Public method Exec   --------------------------------------------
-void CbmTrdSetTracksPidLike::Exec(Option_t*) {
+void CbmTrdSetTracksPidLike::Exec(Option_t*)
+{
 
   Double_t momentum;
   Double_t prob[fgkNParts];
@@ -292,8 +291,7 @@ void CbmTrdSetTracksPidLike::Exec(Option_t*) {
     }
 
     /// only trd tracks with mimimum 1 reconstructed point
-    if (pTrack->GetNofHits() < 1)
-      continue;
+    if (pTrack->GetNofHits() < 1) continue;
     else
       fNofTracks++;
 
@@ -306,9 +304,11 @@ void CbmTrdSetTracksPidLike::Exec(Option_t*) {
     /// Get the momentum from the first trd station
     if (TMath::Abs(pTrack->GetParamFirst()->GetQp()) > 0.) {
       momentum = TMath::Abs(1. / (pTrack->GetParamFirst()->GetQp()));
-    } else if (TMath::Abs(pTrack->GetParamLast()->GetQp()) > 0.) {
+    }
+    else if (TMath::Abs(pTrack->GetParamLast()->GetQp()) > 0.) {
       momentum = TMath::Abs(1. / (pTrack->GetParamLast()->GetQp()));
-    } else {
+    }
+    else {
       Warning("Exec", "Could not assign any momentum to the track, use p=0.");
       momentum = 0.;
     }
@@ -334,8 +334,7 @@ void CbmTrdSetTracksPidLike::Exec(Option_t*) {
 
     /// calculate denominator for reasonable probabilities
     for (Int_t iSpecies = 0; iSpecies < fgkNParts; iSpecies++) {
-      if (prob[iSpecies] >= 0. && prob[iSpecies] <= 1.)
-        probTotal += prob[iSpecies];
+      if (prob[iSpecies] >= 0. && prob[iSpecies] <= 1.) probTotal += prob[iSpecies];
     }
 
     /// normalize to 1
@@ -343,7 +342,8 @@ void CbmTrdSetTracksPidLike::Exec(Option_t*) {
       if (probTotal > 0) {
         //	std::cout<<iSpecies<<"   " << probTotal<<"   " << prob[iSpecies]<<std::endl;
         prob[iSpecies] /= probTotal;
-      } else {
+      }
+      else {
         prob[iSpecies] = -1.5;
       }
     }
@@ -361,9 +361,8 @@ void CbmTrdSetTracksPidLike::Exec(Option_t*) {
 }
 // -------------------------------------------------------------------------
 
-Double_t CbmTrdSetTracksPidLike::GetProbability(Int_t k,
-                                                Double_t mom,
-                                                Double_t dedx) const {
+Double_t CbmTrdSetTracksPidLike::GetProbability(Int_t k, Double_t mom, Double_t dedx) const
+{
   //
   // Gets the Probability of having dedx at a given momentum (mom)
   // and particle type k from the precalculated de/dx distributions
@@ -374,16 +373,10 @@ Double_t CbmTrdSetTracksPidLike::GetProbability(Int_t k,
 
   /// histogram has TRD momentum at inner point vs. dedx sinal [keV]
   TH1* hist = (TH1*) fHistdEdx->At(k);
-  if (!hist) {
-    Info("GetProbability", "no input histogram");
-    return -999.;
-  }
+  if (!hist) { return -999.; }
 
   /// check for entries/ non-empty histograms
-  if (hist->GetEntries() < 1000.) {
-    Info("GetProbability", "input histogram is almost empty");
-    return -999.;
-  }
+  if (hist->GetEntries() < 1000.) { return -999.; }
 
   Int_t ndim = hist->GetDimension();
 
@@ -395,17 +388,16 @@ Double_t CbmTrdSetTracksPidLike::GetProbability(Int_t k,
   Bool_t overflowX = (ndim == 1 ? (dedx > maxX) : (mom > maxX));
 
   /// use bin width of last bin (correct in case of logarithmic, arbitrary binnning)
-  Float_t binwidthY =
-    (ndim == 1 ? 0. : hist->GetYaxis()->GetBinWidth(hist->GetNbinsY()));
+  Float_t binwidthY = (ndim == 1 ? 0. : hist->GetYaxis()->GetBinWidth(hist->GetNbinsY()));
   Float_t binwidthX = hist->GetXaxis()->GetBinWidth(hist->GetNbinsX());
 
   /// find bin depending on overflow in X,Y
   Int_t bin = 0;
   if (ndim == 1) {  // 1-dimensional input histograms
     hist->FindBin((overflowX ? maxX - binwidthX : dedx));
-  } else {  // 2-dimensional input histograms
-    hist->FindBin((overflowX ? maxX - binwidthX : mom),
-                  (overflowY ? maxY - binwidthY : dedx));
+  }
+  else {  // 2-dimensional input histograms
+    hist->FindBin((overflowX ? maxX - binwidthX : mom), (overflowY ? maxY - binwidthY : dedx));
   }
 
   /// interpolate empty bins or overflow bins
@@ -413,13 +405,13 @@ Double_t CbmTrdSetTracksPidLike::GetProbability(Int_t k,
     Double_t con = -999.;
     if (ndim == 1) {  // 1-dimensional input histograms
       con = hist->Interpolate((overflowX ? maxX - binwidthX : dedx));
-    } else {  // 2-dimensional input histograms
-      con = ((TH2*) hist)
-              ->Interpolate((overflowX ? maxX - binwidthX : mom),
-                            (overflowY ? maxY - binwidthY : dedx));
+    }
+    else {  // 2-dimensional input histograms
+      con = ((TH2*) hist)->Interpolate((overflowX ? maxX - binwidthX : mom), (overflowY ? maxY - binwidthY : dedx));
     }
     return con;
-  } else {
+  }
+  else {
     return hist->GetBinContent(bin);
   }
 }
