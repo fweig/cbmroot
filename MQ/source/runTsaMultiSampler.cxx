@@ -42,19 +42,17 @@ void addCustomOptions(bpo::options_description& options) {
                         bpo::value<std::string>()->default_value(""),
                         "MQ channel name for commands to slaves");
 
-  options.add_options()("PubFreqTs", bpo::value<uint32_t>()->default_value(0),
-                        "Histo publishing frequency in TS");
+  options.add_options()("PubFreqTs", bpo::value<uint32_t>()->default_value(0), "Histo publishing frequency in TS");
   options.add_options()("PubTimeMin", bpo::value<double_t>()->default_value(1.0),
                         "Minimal time between two publishing");
   options.add_options()("PubTimeMax", bpo::value<double_t>()->default_value(10.0),
                         "Maximal time between two publishing");
-  options.add_options()("ChNameIn", bpo::value< std::string >()->default_value( "histogram-in" ),
+  options.add_options()("ChNameIn", bpo::value<std::string>()->default_value("histogram-in"),
                         "MQ channel name for histos");
-  options.add_options()("ChNameHistCfg", bpo::value< std::string >()->default_value( "histo-conf" ),
+  options.add_options()("ChNameHistCfg", bpo::value<std::string>()->default_value("histo-conf"),
                         "MQ channel name for histos config");
-  options.add_options()("ChNameCanvCfg", bpo::value< std::string >()->default_value( "canvas-conf" ),
+  options.add_options()("ChNameCanvCfg", bpo::value<std::string>()->default_value("canvas-conf"),
                         "MQ channel name for canvases config");
-
 }
 
 FairMQDevicePtr getDevice(const FairMQProgOptions& /*config*/) {

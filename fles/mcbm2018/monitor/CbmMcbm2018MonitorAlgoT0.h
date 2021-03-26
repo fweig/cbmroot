@@ -72,12 +72,8 @@ public:
   inline void SetSpillThreshold(UInt_t uCntLimit) {
     fuOffSpillCountLimit = uCntLimit;
   }
-  inline void SetSpillThresholdNonPulser(UInt_t uCntLimit) {
-    fuOffSpillCountLimitNonPulser = uCntLimit;
-  }
-  inline void SetSpillCheckInterval(Double_t dIntervalSec) {
-    fdSpillCheckInterval = dIntervalSec;
-  }
+  inline void SetSpillThresholdNonPulser(UInt_t uCntLimit) { fuOffSpillCountLimitNonPulser = uCntLimit; }
+  inline void SetSpillCheckInterval(Double_t dIntervalSec) { fdSpillCheckInterval = dIntervalSec; }
   inline void SetChannelMap(UInt_t uChan0,
                             UInt_t uChan1,
                             UInt_t uChan2,
@@ -122,7 +118,7 @@ private:
   UInt_t fuMaxTotPulser       = 100;
   UInt_t fuOffSpillCountLimit = 200;
   UInt_t fuOffSpillCountLimitNonPulser = 80;
-  Double_t fdSpillCheckInterval = 1.0;
+  Double_t fdSpillCheckInterval        = 1.0;
 
   /// Constants
   static const Int_t kiMaxNbFlibLinks   = 32;

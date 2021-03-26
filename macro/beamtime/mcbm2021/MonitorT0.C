@@ -10,12 +10,17 @@
 // In order to call later Finish, we make this global
 FairRunOnline* run = NULL;
 
+/// FIXME: Disable clang formatting to keep easy parameters overview
+/* clang-format off */
 void MonitorT0(TString inFile           = "",
                TString sHostname        = "cbmflesnode8:5558;cbmflesnode9:5559",
                Int_t iServerHttpPort    = 8080,
                Int_t iServerRefreshRate = 100,
                UInt_t uRunId            = 0,
                UInt_t nrEvents          = 0) {
+  /// FIXME: Re-enable clang formatting after parameters initial values setting
+  /* clang-format on */
+
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
 
   // --- Specify number of events to be produced.
@@ -52,17 +57,13 @@ void MonitorT0(TString inFile           = "",
 
   monitor_t0->SetIgnoreOverlapMs();
   monitor_t0->SetHistoryHistoSize(1800);
-  if (0 < uRunId)
-    monitor_t0->SetHistoFilename(
-      Form("data/HistosMonitorT0_%03u.root", uRunId));
+  if (0 < uRunId) monitor_t0->SetHistoFilename(Form("data/HistosMonitorT0_%03u.root", uRunId));
   monitor_t0->SetPulserTotLimits(180, 210);  // for runs  >  86
 
   // --- Source task
   CbmMcbm2018Source* source = new CbmMcbm2018Source();
 
-  if ("" != inFile) {
-    source->SetFileName(inFile);
-  }  // if( "" != inFile )
+  if ("" != inFile) { source->SetFileName(inFile); }  // if( "" != inFile )
   else {
     source->SetHostName(sHostname);
   }  // else of if( "" != inFile )
@@ -96,23 +97,22 @@ void MonitorT0(TString inFile           = "",
   std::cout << ">>> MonitorT0: Starting run..." << std::endl;
   if (0 == nrEvents) {
     run->Run(nEvents, 0);  // run until end of input file
-  } else {
+  }
+  else {
     run->Run(0, nrEvents);  // process  2000 Events
   }
   run->Finish();
 
   timer.Stop();
 
-  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices"
-            << std::endl;
+  std::cout << "Processed " << std::dec << source->GetTsCount() << " timeslices" << std::endl;
 
   // --- End-of-run info
   Double_t rtime = timer.RealTime();
   Double_t ctime = timer.CpuTime();
   std::cout << std::endl << std::endl;
   std::cout << ">>> MonitorT0: Macro finished successfully." << std::endl;
-  std::cout << ">>> MonitorT0: Real time " << rtime << " s, CPU time " << ctime
-            << " s" << std::endl;
+  std::cout << ">>> MonitorT0: Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
 
   /// --- Screen output for automatic tests

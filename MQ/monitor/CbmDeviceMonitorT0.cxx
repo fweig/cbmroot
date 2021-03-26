@@ -76,7 +76,7 @@ void CbmDeviceMonitorT0::InitTask() try {
   fuMaxTotPulser            = fConfig->GetValue<uint32_t>("PulsTotMax");
   fuOffSpillCountLimit      = fConfig->GetValue<uint32_t>("SpillThr");
   fuOffSpillCountLimitNonPulser = fConfig->GetValue<uint32_t>("SpillThrNonPuls");
-  fdSpillCheckInterval      = fConfig->GetValue<double>("SpillCheckInt");
+  fdSpillCheckInterval          = fConfig->GetValue<double>("SpillCheckInt");
   std::string sChanMap      = fConfig->GetValue<std::string>("ChanMap");
   fuPublishFreqTs           = fConfig->GetValue<uint32_t>("PubFreqTs");
   fdMinPublishTime          = fConfig->GetValue<double_t>("PubTimeMin");

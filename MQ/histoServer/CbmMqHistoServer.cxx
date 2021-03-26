@@ -5,18 +5,15 @@
  *              GNU Lesser General Public Licence (LGPL) version 3,             *
  *                  copied verbatim in the file "LICENSE"                       *
  ********************************************************************************/
-#include <mutex>
-
 #include "CbmMqHistoServer.h"
 
 #include "CbmFlesCanvasTools.h"
 
-#include "BoostSerializer.h"
 #include "FairLogger.h"
 #include "FairMQProgOptions.h"  // device->fConfig
-#include "RootSerializer.h"
 
 #include "TCanvas.h"
+#include "TEnv.h"
 #include "TFile.h"
 #include "TH1.h"
 #include "TH2.h"
@@ -26,9 +23,13 @@
 #include "TProfile.h"
 #include "TRootSniffer.h"
 #include "TSystem.h"
-#include "TEnv.h"
 
+#include "BoostSerializer.h"
 #include <boost/serialization/utility.hpp>
+
+#include <mutex>
+
+#include "RootSerializer.h"
 
 std::mutex mtx;
 /*
@@ -70,9 +71,8 @@ void CbmMqHistoServer::InitTask() {
   fServer = new THttpServer(Form("http:%u", fuHttpServerPort));
   /// To avoid the server sucking all Histos from gROOT when no output file is used
   fServer->GetSniffer()->SetScanGlobalDir(kFALSE);
-  const char *jsrootsys = gSystem->Getenv("JSROOTSYS");
-  if (!jsrootsys)
-    jsrootsys = gEnv->GetValue("HttpServ.JSRootPath", jsrootsys);
+  const char* jsrootsys = gSystem->Getenv("JSROOTSYS");
+  if (!jsrootsys) jsrootsys = gEnv->GetValue("HttpServ.JSRootPath", jsrootsys);
 
   LOG(info) << "JSROOT location: " << jsrootsys;
 

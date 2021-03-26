@@ -44,7 +44,8 @@ CbmMcbm2018MonitorTaskT0::CbmMcbm2018MonitorTaskT0()
   , fuOffSpillCountLimitNonPulser(80)
   , fdSpillCheckInterval(1.0)
   , fulTsCounter(0)
-  , fMonitorAlgo(nullptr) {
+  , fMonitorAlgo(nullptr)
+{
   fMonitorAlgo = new CbmMcbm2018MonitorAlgoT0();
 }
 

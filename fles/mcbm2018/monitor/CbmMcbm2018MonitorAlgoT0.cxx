@@ -320,15 +320,12 @@ Bool_t CbmMcbm2018MonitorAlgoT0::ProcessMs(const fles::Timeslice& ts,
       else if (fuOffSpillCountLimit < fuCountsLastInter)
         fbSpillOn = kTRUE;
 
-      LOG(debug) << Form( "%6llu %6.4f %9u %9u %2d",
-                         fulCurrentTsIdx, fdMsTime - fdLastInterTime,
-                         fuCountsLastInter,
-                         fuNonPulserCountsLastInter,
-                         fuCurrentSpillIdx);
+      LOG(debug) << Form("%6llu %6.4f %9u %9u %2d", fulCurrentTsIdx, fdMsTime - fdLastInterTime, fuCountsLastInter,
+                         fuNonPulserCountsLastInter, fuCurrentSpillIdx);
 
-      fuCountsLastInter = 0;
+      fuCountsLastInter          = 0;
       fuNonPulserCountsLastInter = 0;
-      fdLastInterTime   = fdMsTime;
+      fdLastInterTime            = fdMsTime;
     }  // if( fdSpillCheckInterval < fdMsTime - fdLastInterTime )
   }    // if( 0 == fuCurrDpbIdx )
 
