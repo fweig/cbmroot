@@ -72,6 +72,12 @@ public:
   inline void SetSpillThreshold(UInt_t uCntLimit) {
     fuOffSpillCountLimit = uCntLimit;
   }
+  inline void SetSpillThresholdNonPulser(UInt_t uCntLimit) {
+    fuOffSpillCountLimitNonPulser = uCntLimit;
+  }
+  inline void SetSpillCheckInterval(Double_t dIntervalSec) {
+    fdSpillCheckInterval = dIntervalSec;
+  }
   inline void SetChannelMap(UInt_t uChan0,
                             UInt_t uChan1,
                             UInt_t uChan2,
@@ -115,6 +121,8 @@ private:
   UInt_t fuMinTotPulser       = 90;
   UInt_t fuMaxTotPulser       = 100;
   UInt_t fuOffSpillCountLimit = 200;
+  UInt_t fuOffSpillCountLimitNonPulser = 80;
+  Double_t fdSpillCheckInterval = 1.0;
 
   /// Constants
   static const Int_t kiMaxNbFlibLinks   = 32;
@@ -169,6 +177,16 @@ private:
   std::vector<gdpbv100::FullMessage> fvmHitsInMs =
     {};  //! All hits (time in bins, TOT in bins, asic, channel) in last MS, sorted with "<" operator
 
+  /// Spill detection
+  Bool_t fbSpillOn                  = kTRUE;
+  UInt_t fuCurrentSpillIdx          = 0;
+  UInt_t fuCurrentSpillPlot         = 0;
+  Double_t fdStartTimeSpill         = -1.0;
+  Double_t fdLastInterTime          = -1.0;
+  UInt_t fuCountsLastInter          = 0;
+  UInt_t fuNonPulserCountsLastInter = 0;
+
+
   /// Histograms related variables
   UInt_t fuHistoryHistoSize =
     3600; /** Size in seconds of the evolution histograms **/
@@ -205,12 +223,6 @@ private:
   std::vector<TH2*> fvhEvtLostFractPerMsEvoChan =
     std::vector<TH2*>(kuNbChanDiamond, nullptr);
   /// Channels map
-  Bool_t fbSpillOn                   = kTRUE;
-  UInt_t fuCurrentSpillIdx           = 0;
-  UInt_t fuCurrentSpillPlot          = 0;
-  Double_t fdStartTimeSpill          = -1.0;
-  Double_t fdLastSecondTime          = -1.0;
-  UInt_t fuCountsLastSecond          = 0;
   static const UInt_t kuNbSpillPlots = 5;
   //      UInt_t  kuDiamChanMap[ kuNbChanDiamond ] = { 2, 3, 4, 5, 0, 1, 6, 7 }; //! Map from electronics channel to Diamond strip
   UInt_t fuDiamChanMap[kuNbChanDiamond] =

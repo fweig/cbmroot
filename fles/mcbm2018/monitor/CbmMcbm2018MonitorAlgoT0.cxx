@@ -306,22 +306,30 @@ Bool_t CbmMcbm2018MonitorAlgoT0::ProcessMs(const fles::Timeslice& ts,
   /// Spill Detection
   if (0 == fuCurrDpbIdx) {
     /// Check only every second
-    if (1.0 < fdMsTime - fdLastSecondTime) {
+    if (fdSpillCheckInterval < fdMsTime - fdLastInterTime) {
       /// Spill Off detection
-      if (fbSpillOn && fuCountsLastSecond < fuOffSpillCountLimit) {
+      if (fbSpillOn && fuCountsLastInter < fuOffSpillCountLimit
+          && fuNonPulserCountsLastInter < fuOffSpillCountLimitNonPulser) {
         fbSpillOn = kFALSE;
         fuCurrentSpillIdx++;
         fuCurrentSpillPlot = (fuCurrentSpillPlot + 1) % kuNbSpillPlots;
         fdStartTimeSpill   = fdMsTime;
         fvhDpbMapSpill[fuCurrentSpillPlot]->Reset();
         fvhChannelMapSpill[fuCurrentSpillPlot]->Reset();
-      }  // if( fbSpillOn && fuCountsLastSecond < fuOffSpillCountLimit )
-      else if (fuOffSpillCountLimit < fuCountsLastSecond)
+      }  // if( fbSpillOn && fuCountsLastInter < fuOffSpillCountLimit && same for non pulser)
+      else if (fuOffSpillCountLimit < fuCountsLastInter)
         fbSpillOn = kTRUE;
 
-      fuCountsLastSecond = 0;
-      fdLastSecondTime   = fdMsTime;
-    }  // if( 1 < fdMsTime - fdLastSecondTime )
+      LOG(debug) << Form( "%6llu %6.4f %9u %9u %2d",
+                         fulCurrentTsIdx, fdMsTime - fdLastInterTime,
+                         fuCountsLastInter,
+                         fuNonPulserCountsLastInter,
+                         fuCurrentSpillIdx);
+
+      fuCountsLastInter = 0;
+      fuNonPulserCountsLastInter = 0;
+      fdLastInterTime   = fdMsTime;
+    }  // if( fdSpillCheckInterval < fdMsTime - fdLastInterTime )
   }    // if( 0 == fuCurrDpbIdx )
 
   /// Save start time of first valid MS )
@@ -379,7 +387,7 @@ Bool_t CbmMcbm2018MonitorAlgoT0::ProcessMs(const fles::Timeslice& ts,
         }  // if( getGdpbHitIs24b() )
         else {
           /// Spill detection
-          fuCountsLastSecond++;
+          fuCountsLastInter++;
 
           fhErrorFractEvo->Fill(fdMsTime - fdStartTime, 0.0);
           fhLostEvtFractEvo->Fill(fdMsTime - fdStartTime, 0.0);
@@ -396,6 +404,8 @@ Bool_t CbmMcbm2018MonitorAlgoT0::ProcessMs(const fles::Timeslice& ts,
           /// Do not fill the pulser hits to keep counts low for channel 0
           UInt_t uTot = mess.getGdpbHit32Tot();
           if (uTot < fuMinTotPulser || fuMaxTotPulser < uTot) {
+            fuNonPulserCountsLastInter++;
+
             fhDpbMap->Fill(fuCurrDpbIdx);
             fhChannelMap->Fill(uChannelT0);
             fhChanHitMap->Fill(fuDiamChanMap[uChannelT0]);
@@ -1248,7 +1258,7 @@ Bool_t CbmMcbm2018MonitorAlgoT0::CreateHistograms() {
     fcSpillCounts->cd(1 + uSpill);
     gPad->SetGridx();
     gPad->SetGridy();
-    //      gPad->SetLogy();
+    gPad->SetLogy();
     //      fvhChannelMapSpill[ uSpill ]->SetStats( kTRUE );
     fvhChannelMapSpill[uSpill]->Draw();
     gPad->Update();
@@ -1393,8 +1403,6 @@ Bool_t CbmMcbm2018MonitorAlgoT0::ResetHistograms(Bool_t bResetTime) {
     fvhEvtLostFractPerMsEvoChan[uChan]->Reset();
   }  // for( UInt_t uChan = 0; uChan < kuNbChanDiamond; ++uChan )
 
-  fuCurrentSpillIdx  = 0;
-  fuCurrentSpillPlot = 0;
   fhDpbMap->Reset();
   fhChannelMap->Reset();
   fhHitMapEvo->Reset();
@@ -1424,6 +1432,9 @@ Bool_t CbmMcbm2018MonitorAlgoT0::ResetHistograms(Bool_t bResetTime) {
   if (kTRUE == bResetTime) {
     /// Also reset the Start time for the evolution plots!
     fdStartTime = -1.0;
+
+    fuCurrentSpillIdx  = 0;
+    fuCurrentSpillPlot = 0;
   }  // if( kTRUE == bResetTime )
 
   return kTRUE;

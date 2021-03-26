@@ -21,8 +21,14 @@ void addCustomOptions(bpo::options_description& options) {
                         bpo::value<uint32_t>()->default_value(195),
                         "Maximal TOT for pulser cut");
   options.add_options()("SpillThr",
-                        bpo::value<uint32_t>()->default_value(1000),
+                        bpo::value<uint32_t>()->default_value(25),
                         "Hits Nb Thr for spill detection");
+  options.add_options()("SpillThrNonPuls",
+                        bpo::value<uint32_t>()->default_value(10),
+                        "Non pulser Hits Nb Thr for spill detection");
+  options.add_options()("SpillCheckInt",
+                        bpo::value<double>()->default_value(0.128),
+                        "Interval in seconds between count checks for spill detection");
   options.add_options()("ChanMap", bpo::value<std::string>()->default_value("0,1,2,3,4,5,6,7"),
                         "Set T0 channel map e.g. 0,1,2,3,4,5,6,7");
   options.add_options()("PubFreqTs",

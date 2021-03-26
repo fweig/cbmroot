@@ -41,6 +41,8 @@ CbmMcbm2018MonitorTaskT0::CbmMcbm2018MonitorTaskT0()
   , fuMinTotPulser(90)
   , fuMaxTotPulser(100)
   , fuOffSpillCountLimit(200)
+  , fuOffSpillCountLimitNonPulser(80)
+  , fdSpillCheckInterval(1.0)
   , fulTsCounter(0)
   , fMonitorAlgo(nullptr) {
   fMonitorAlgo = new CbmMcbm2018MonitorAlgoT0();
@@ -105,6 +107,8 @@ Bool_t CbmMcbm2018MonitorTaskT0::InitContainers() {
   fMonitorAlgo->SetHistoryHistoSize(fuHistoryHistoSize);
   fMonitorAlgo->SetPulserTotLimits(fuMinTotPulser, fuMaxTotPulser);
   fMonitorAlgo->SetSpillThreshold(fuOffSpillCountLimit);
+  fMonitorAlgo->SetSpillThresholdNonPulser(fuOffSpillCountLimitNonPulser);
+  fMonitorAlgo->SetSpillCheckInterval(fdSpillCheckInterval);
 
   /// Histos creation, obtain pointer on them and add them to the HTTP server
   /// Trigger histo creation on all associated algos

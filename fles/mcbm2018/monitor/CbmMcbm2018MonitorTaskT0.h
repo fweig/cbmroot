@@ -55,6 +55,12 @@ public:
   inline void SetSpillThreshold(UInt_t uCntLimit) {
     fuOffSpillCountLimit = uCntLimit;
   }
+  inline void SetSpillThresholdNonPulser(UInt_t uCntLimit) {
+    fuOffSpillCountLimitNonPulser = uCntLimit;
+  }
+  inline void SetSpillCheckInterval(Double_t dIntervalSec) {
+    fdSpillCheckInterval = dIntervalSec;
+  }
   void SetChannelMap(UInt_t uChan0,
                      UInt_t uChan1,
                      UInt_t uChan2,
@@ -77,6 +83,8 @@ private:
   UInt_t fuMinTotPulser;
   UInt_t fuMaxTotPulser;
   UInt_t fuOffSpillCountLimit;
+  UInt_t fuOffSpillCountLimitNonPulser;
+  Double_t fdSpillCheckInterval;
 
   /// Statistics & first TS rejection
   uint64_t fulTsCounter;

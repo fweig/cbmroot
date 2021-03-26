@@ -6,7 +6,6 @@
  */
 
 #include "CbmDeviceMonitorT0.h"
-#include "CbmMQDefs.h"
 
 #include "CbmFlesCanvasTools.h"
 #include "CbmMcbm2018MonitorAlgoT0.h"
@@ -49,7 +48,9 @@ CbmDeviceMonitorT0::CbmDeviceMonitorT0()
   , fuHistoryHistoSize {3600}
   , fuMinTotPulser {185}
   , fuMaxTotPulser {195}
-  , fuOffSpillCountLimit {1000}
+  , fuOffSpillCountLimit {25}
+  , fuOffSpillCountLimitNonPulser {10}
+  , fdSpillCheckInterval {0.0128}
   , fvuChanMap {0, 1, 2, 3, 4, 5, 6, 7}
   , fuPublishFreqTs {100}
   , fdMinPublishTime {0.5}
@@ -74,6 +75,8 @@ void CbmDeviceMonitorT0::InitTask() try {
   fuMinTotPulser            = fConfig->GetValue<uint32_t>("PulsTotMin");
   fuMaxTotPulser            = fConfig->GetValue<uint32_t>("PulsTotMax");
   fuOffSpillCountLimit      = fConfig->GetValue<uint32_t>("SpillThr");
+  fuOffSpillCountLimitNonPulser = fConfig->GetValue<uint32_t>("SpillThrNonPuls");
+  fdSpillCheckInterval      = fConfig->GetValue<double>("SpillCheckInt");
   std::string sChanMap      = fConfig->GetValue<std::string>("ChanMap");
   fuPublishFreqTs           = fConfig->GetValue<uint32_t>("PubFreqTs");
   fdMinPublishTime          = fConfig->GetValue<double_t>("PubTimeMin");
@@ -130,8 +133,7 @@ void CbmDeviceMonitorT0::InitTask() try {
   InitContainers();
 } catch (InitTaskError& e) {
   LOG(error) << e.what();
-  // Wrapper defined in CbmMQDefs.h to support different FairMQ versions
-  cbm::mq::ChangeState(this, cbm::mq::Transition::ErrorFound);
+  ChangeState(fair::mq::Transition::ErrorFound);
 }
 
 bool CbmDeviceMonitorT0::IsChannelNameAllowed(std::string channelName) {
@@ -200,6 +202,8 @@ Bool_t CbmDeviceMonitorT0::InitContainers() {
   fMonitorAlgo->SetHistoryHistoSize(fuHistoryHistoSize);
   fMonitorAlgo->SetPulserTotLimits(fuMinTotPulser, fuMaxTotPulser);
   fMonitorAlgo->SetSpillThreshold(fuOffSpillCountLimit);
+  fMonitorAlgo->SetSpillThresholdNonPulser(fuOffSpillCountLimitNonPulser);
+  fMonitorAlgo->SetSpillCheckInterval(fdSpillCheckInterval);
   fMonitorAlgo->SetChannelMap(fvuChanMap[0], fvuChanMap[1], fvuChanMap[2], fvuChanMap[3], fvuChanMap[4], fvuChanMap[5],
                               fvuChanMap[6], fvuChanMap[7]);
 
