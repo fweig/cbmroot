@@ -73,7 +73,7 @@ CbmTrdDigitizer::CbmTrdDigitizer(CbmTrdRadiator* radiator)
   //  ,fGeoHandler(new CbmTrdGeoHandler())
   , fModuleMap()
   , fDigiMap() {
-  if (fRadiator == NULL) fRadiator = new CbmTrdRadiator(kTRUE, "K++");
+  if (fRadiator == NULL) fRadiator = new CbmTrdRadiator(kTRUE, "tdr18");
 }
 
 

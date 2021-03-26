@@ -43,8 +43,9 @@ CbmTrd::CbmTrd()
   , fPosIndex(0)
   , fTrdPoints(new TClonesArray("CbmTrdPoint"))
   , fGeoHandler(new CbmTrdGeoHandler())
-  , fUseGlobalPhysicsProcesses(kTRUE)
-  , fCombiTrans(nullptr) {
+  , fUseGlobalPhysicsProcesses(kFALSE)
+  , fCombiTrans(nullptr)
+{
   fVerboseLevel = 1;
 }
 // ----------------------------------------------------------------------------
@@ -63,15 +64,17 @@ CbmTrd::CbmTrd(const char* name, Bool_t active)
   , fPosIndex(0)
   , fTrdPoints(new TClonesArray("CbmTrdPoint"))
   , fGeoHandler(new CbmTrdGeoHandler())
-  , fUseGlobalPhysicsProcesses(kTRUE)
-  , fCombiTrans(nullptr) {
+  , fUseGlobalPhysicsProcesses(kFALSE)
+  , fCombiTrans(nullptr)
+{
   fVerboseLevel = 1;
 }
 // ----------------------------------------------------------------------------
 
 
 // -----   Destructor   -------------------------------------------------------
-CbmTrd::~CbmTrd() {
+CbmTrd::~CbmTrd()
+{
   if (fTrdPoints) {
     fTrdPoints->Delete();
     delete fTrdPoints;
@@ -82,7 +85,8 @@ CbmTrd::~CbmTrd() {
 
 
 // -----   Initialize   -------------------------------------------------------
-void CbmTrd::Initialize() {
+void CbmTrd::Initialize()
+{
   FairDetector::Initialize();
 
   // Initialize the CbmTrdGeoHandler helper class from the
@@ -94,7 +98,8 @@ void CbmTrd::Initialize() {
 
 
 // -----   SetSpecialPhysicsCuts   --------------------------------------------
-void CbmTrd::SetSpecialPhysicsCuts() {
+void CbmTrd::SetSpecialPhysicsCuts()
+{
   FairRun* fRun = FairRun::Instance();
 
   // Setting the properties for the TRDgas is only tested
@@ -135,12 +140,12 @@ void CbmTrd::SetSpecialPhysicsCuts() {
       trdgas->Print();
       LOG(fatal) << "Parameters from Virtual Montecarlo:";
       LOG(fatal) << "Name " << name << " Aeff=" << a << " Zeff=" << z;
-      Fatal("CbmTrd::SetSpecialPhysicsCuts",
-            "Material parameters different between TVirtualMC and TGeomanager");
+      Fatal("CbmTrd::SetSpecialPhysicsCuts", "Material parameters different between TVirtualMC and TGeomanager");
     }
 
     // Set new properties, physics cuts etc. for the TRDgas
     if (!fUseGlobalPhysicsProcesses) {
+      LOG(info) << "Using special parameters for TRDgas";
       gMC->Gstpar(matIdVMC, "STRA", 1.0);
       gMC->Gstpar(matIdVMC, "PAIR", 1.0);
       gMC->Gstpar(matIdVMC, "COMP", 1.0);
@@ -157,6 +162,9 @@ void CbmTrd::SetSpecialPhysicsCuts() {
       gMC->Gstpar(matIdVMC, "DRAY", 1.0);
       gMC->Gstpar(matIdVMC, "RAYL", 1.0);
     }
+    else
+      LOG(info) << "!! Using global parameters for TRDgas";
+
     // cut values
     gMC->Gstpar(matIdVMC, "CUTELE", 10.e-6);
     gMC->Gstpar(matIdVMC, "CUTGAM", 10.e-6);
@@ -174,7 +182,8 @@ void CbmTrd::SetSpecialPhysicsCuts() {
 
 
 // -----   Public method ProcessHits   ----------------------------------------
-Bool_t CbmTrd::ProcessHits(FairVolume*) {
+Bool_t CbmTrd::ProcessHits(FairVolume*)
+{
   // Set parameters at entrance of volume. Reset ELoss.
   if (gMC->IsTrackEntering()) {
     fELoss  = 0.;
@@ -188,8 +197,7 @@ Bool_t CbmTrd::ProcessHits(FairVolume*) {
   fELoss += gMC->Edep();
 
   // Create CbmTrdPoint at exit of active volume
-  if (gMC->IsTrackExiting() || gMC->IsTrackStop()
-      || gMC->IsTrackDisappeared()) {
+  if (gMC->IsTrackExiting() || gMC->IsTrackStop() || gMC->IsTrackDisappeared()) {
 
     gMC->TrackPosition(fPosOut);
     gMC->TrackMomentum(fMomOut);
@@ -201,15 +209,9 @@ Bool_t CbmTrd::ProcessHits(FairVolume*) {
 
     Int_t size = fTrdPoints->GetEntriesFast();
     new ((*fTrdPoints)[size])
-      CbmTrdPoint(trackId,
-                  moduleAddress,
-                  TVector3(fPosIn.X(), fPosIn.Y(), fPosIn.Z()),
-                  TVector3(fMomIn.Px(), fMomIn.Py(), fMomIn.Pz()),
-                  TVector3(fPosOut.X(), fPosOut.Y(), fPosOut.Z()),
-                  TVector3(fMomOut.Px(), fMomOut.Py(), fMomOut.Pz()),
-                  fTime,
-                  fLength,
-                  fELoss);
+      CbmTrdPoint(trackId, moduleAddress, TVector3(fPosIn.X(), fPosIn.Y(), fPosIn.Z()),
+                  TVector3(fMomIn.Px(), fMomIn.Py(), fMomIn.Pz()), TVector3(fPosOut.X(), fPosOut.Y(), fPosOut.Z()),
+                  TVector3(fMomOut.Px(), fMomOut.Py(), fMomOut.Pz()), fTime, fLength, fELoss);
 
     // Increment number of trd points in TParticle
     CbmStack* stack = (CbmStack*) gMC->GetStack();
@@ -224,7 +226,8 @@ Bool_t CbmTrd::ProcessHits(FairVolume*) {
 
 
 // -----   Public method EndOfEvent   -----------------------------------------
-void CbmTrd::EndOfEvent() {
+void CbmTrd::EndOfEvent()
+{
   if (fVerboseLevel) Print();
   fTrdPoints->Delete();
   fPosIndex = 0;
@@ -233,16 +236,14 @@ void CbmTrd::EndOfEvent() {
 
 
 // -----   Public method Register   -------------------------------------------
-void CbmTrd::Register() {
-  FairRootManager::Instance()->Register("TrdPoint", "Trd", fTrdPoints, kTRUE);
-}
+void CbmTrd::Register() { FairRootManager::Instance()->Register("TrdPoint", "Trd", fTrdPoints, kTRUE); }
 // ----------------------------------------------------------------------------
 
 
 // -----   Public method GetCollection   --------------------------------------
-TClonesArray* CbmTrd::GetCollection(Int_t iColl) const {
-  if (iColl == 0)
-    return fTrdPoints;
+TClonesArray* CbmTrd::GetCollection(Int_t iColl) const
+{
+  if (iColl == 0) return fTrdPoints;
   else
     return NULL;
 }
@@ -250,7 +251,8 @@ TClonesArray* CbmTrd::GetCollection(Int_t iColl) const {
 
 
 // -----   Public method Print   ----------------------------------------------
-void CbmTrd::Print(Option_t*) const {
+void CbmTrd::Print(Option_t*) const
+{
   Int_t nHits = fTrdPoints->GetEntriesFast();
   LOG(info) << fName << ": " << nHits << " points registered in this event.";
 
@@ -264,7 +266,8 @@ void CbmTrd::Print(Option_t*) const {
 
 
 // -----   Public method Reset   ----------------------------------------------
-void CbmTrd::Reset() {
+void CbmTrd::Reset()
+{
   fTrdPoints->Delete();
   ResetParameters();
 }
@@ -272,7 +275,8 @@ void CbmTrd::Reset() {
 
 
 // -----   Public method CopyClones   -----------------------------------------
-void CbmTrd::CopyClones(TClonesArray* cl1, TClonesArray* cl2, Int_t offset) {
+void CbmTrd::CopyClones(TClonesArray* cl1, TClonesArray* cl2, Int_t offset)
+{
   Int_t nEntries = cl1->GetEntriesFast();
   LOG(info) << "CbmTrd: " << nEntries << " entries to add.";
   TClonesArray& clref = *cl2;
@@ -289,34 +293,35 @@ void CbmTrd::CopyClones(TClonesArray* cl1, TClonesArray* cl2, Int_t offset) {
 
 
 // -----  ConstructGeometry  --------------------------------------------------
-void CbmTrd::ConstructGeometry() {
+void CbmTrd::ConstructGeometry()
+{
   TString fileName = GetGeometryFileName();
-  if (fileName.EndsWith(".root")) {
-    ConstructRootGeometry();
-  } else {
-    LOG(fatal) << "Geometry format of TRD file " << fileName.Data()
-               << " not supported.";
+  if (fileName.EndsWith(".root")) { ConstructRootGeometry(); }
+  else {
+    LOG(fatal) << "Geometry format of TRD file " << fileName.Data() << " not supported.";
   }
 }
 // ----------------------------------------------------------------------------
 
 //__________________________________________________________________________
-void CbmTrd::ConstructRootGeometry(TGeoMatrix*) {
+void CbmTrd::ConstructRootGeometry(TGeoMatrix*)
+{
   if (Cbm::GeometryUtils::IsNewGeometryFile(fgeoName)) {
     LOG(info) << "Importing TRD geometry from ROOT file " << fgeoName.Data();
     Cbm::GeometryUtils::ImportRootGeometry(fgeoName, this, fCombiTrans);
-  } else {
+  }
+  else {
     LOG(info) << "Constructing TRD geometry from ROOT file " << fgeoName.Data();
     FairModule::ConstructRootGeometry();
   }
 }
 
 // -----   CheckIfSensitive   -------------------------------------------------
-Bool_t CbmTrd::CheckIfSensitive(std::string name) {
+Bool_t CbmTrd::CheckIfSensitive(std::string name)
+{
   TString tsname = name;
   if (tsname.EqualTo("gas")) {
-    LOG(debug) << "CbmTrd::CheckIfSensitive: Register active volume: "
-               << tsname;
+    LOG(debug) << "CbmTrd::CheckIfSensitive: Register active volume: " << tsname;
     return kTRUE;
   }
   return kFALSE;
