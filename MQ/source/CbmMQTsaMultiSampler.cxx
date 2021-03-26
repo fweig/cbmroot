@@ -8,23 +8,29 @@
 
 #include "CbmMQTsaMultiSampler.h"
 
-#include "CbmMQDefs.h"
-//#include "CbmFlesCanvasTools.h"
+#include "CbmFlesCanvasTools.h"
 #include "CbmFormatDecHexPrintout.h"
 
 #include "FairMQLogger.h"
 #include "FairMQProgOptions.h"  // device->fConfig
-//#include "RootSerializer.h"
+#include "BoostSerializer.h"
+#include "RootSerializer.h"
 
 #include "TimesliceInputArchive.hpp"
 #include "TimesliceMultiInputArchive.hpp"
 #include "TimesliceMultiSubscriber.hpp"
 #include "TimesliceSubscriber.hpp"
 
+#include <TCanvas.h>
+#include <TH1F.h>
+#include <TH1I.h>
+#include <TProfile.h>
+
 #include <boost/algorithm/string.hpp>
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/regex.hpp>
+#include <boost/serialization/utility.hpp>
 
 namespace filesys = boost::filesystem;
 
@@ -58,7 +64,9 @@ CbmMQTsaMultiSampler::CbmMQTsaMultiSampler()
   , fTSCounter(0)
   , fMessageCounter(0)
   , fSource(nullptr)
-  , fTime() {}
+  , fTime()
+  , fLastPublishTime {std::chrono::system_clock::now()}
+{}
 
 void CbmMQTsaMultiSampler::InitTask() try {
   // Get the values from the command line options (via fConfig)
@@ -73,14 +81,13 @@ void CbmMQTsaMultiSampler::InitTask() try {
   fbSendTsPerChannel    = fConfig->GetValue<bool>("send-ts-per-channel");
   fsChannelNameMissedTs = fConfig->GetValue<std::string>("ChNameMissTs");
   fsChannelNameCommands = fConfig->GetValue<std::string>("ChNameCmds");
-  /*
-    fuPublishFreqTs        = fConfig->GetValue< uint32_t >( "PubFreqTs" );
-    fdMinPublishTime       = fConfig->GetValue< double_t >( "PubTimeMin" );
-    fdMaxPublishTime       = fConfig->GetValue< double_t >( "PubTimeMax" );
-    fsChannelNameHistosInput  = fConfig->GetValue< std::string >( "ChNameIn" );
-    fsChannelNameHistosConfig = fConfig->GetValue< std::string >( "ChNameHistCfg" );
-    fsChannelNameCanvasConfig = fConfig->GetValue< std::string >( "ChNameCanvCfg" );
-*/
+  fuPublishFreqTs        = fConfig->GetValue< uint32_t >( "PubFreqTs" );
+  fdMinPublishTime       = fConfig->GetValue< double_t >( "PubTimeMin" );
+  fdMaxPublishTime       = fConfig->GetValue< double_t >( "PubTimeMax" );
+  fsChannelNameHistosInput  = fConfig->GetValue< std::string >( "ChNameIn" );
+  fsChannelNameHistosConfig = fConfig->GetValue< std::string >( "ChNameHistCfg" );
+  fsChannelNameCanvasConfig = fConfig->GetValue< std::string >( "ChNameCanvCfg" );
+
   if (fbNoSplitTs) {
     if (fbSendTsPerSysId) {
       if (fbSendTsPerChannel) {
@@ -198,10 +205,12 @@ void CbmMQTsaMultiSampler::InitTask() try {
   LOG(info) << "Number of defined output channels: " << noChannel;
   for (auto const& entry : fChannels) {
     /// Catches and ignores the channels for missing TS indices and commands
-    if (entry.first == fsChannelNameMissedTs
-        || entry.first == fsChannelNameCommands) {
+    /// Same for the histogram channels
+    if (entry.first == fsChannelNameMissedTs || entry.first == fsChannelNameCommands
+        || ( 0 < fuPublishFreqTs && ( entry.first == fsChannelNameHistosInput ||
+             entry.first == fsChannelNameHistosConfig || entry.first == fsChannelNameCanvasConfig ) ) ) {
       continue;
-    }  // if( entry.first == fsChannelNameMissedTs || entry.first == fsChannelNameCommands )
+    }  // if( entry.first == fsChannelNameMissedTs || entry.first == fsChannelNameCommands || histo channels name)
 
     LOG(info) << "Channel name: " << entry.first;
     if (!IsChannelNameAllowed(entry.first))
@@ -252,23 +261,80 @@ void CbmMQTsaMultiSampler::InitTask() try {
   else if (fbSendTsPerChannel) {
     LOG(info) << "Sending components in separate TS per channel";
   }  // else if( fbSendTsPerSysId && fbSendTsPerSysId ) of if( fbNoSplitTs )
-     /*
-  LOG(info) << "Histograms publication frequency in TS:    " << fuPublishFreqTs;
-  LOG(info) << "Histograms publication min. interval in s: " << fdMinPublishTime;
-  LOG(info) << "Histograms publication max. interval in s: " << fdMaxPublishTime;
-*/
 
-  /*
-   /// Histos creation and obtain pointer on them
-      /// Trigger histo creation on all associated algos
-   initOK &= CreateHistograms();
+  if( 0 < fuPublishFreqTs ) {
+    LOG(info) << "Histograms publication frequency in TS:    " << fuPublishFreqTs;
+    LOG(info) << "Histograms publication min. interval in s: " << fdMinPublishTime;
+    LOG(info) << "Histograms publication max. interval in s: " << fdMaxPublishTime;
 
-   /// Add pointers to each histo in the histo array
-   /// Create histo config vector
-   /// ===> Use an std::vector< std::pair< std::string, std::string > > with < Histo name, Folder >
-   ///      and send it through a separate channel using the BoostSerializer
-   for( UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto )
-   {
+    /// Vector of pointers on each histo (+ optionally desired folder)
+    std::vector< std::pair< TNamed *, std::string > > vHistos = {};
+    /// Vector of pointers on each canvas (+ optionally desired folder)
+    std::vector< std::pair< TCanvas *, std::string > > vCanvases = {};
+
+    /// Histos creation and obtain pointer on them
+    fhTsRate       = new TH1I("TsRate", "TS rate; t [s]", 1800, 0., 1800.);
+    fhTsSize       = new TH1I("TsSize", "Size of TS; Size [MB]", 15000, 0., 15000.);
+    fhTsSizeEvo    = new TProfile( "TsSizeEvo", "Evolution of the TS Size; t [s]; Mean size [MB]", 1800, 0., 1800.);
+    fhTsMaxSizeEvo = new TH1F("TsMaxSizeEvo", "Evolution of maximal TS Size; t [s]; Max size [MB]", 1800, 0., 1800.);
+    fhMissedTS     = new TH1I("Missed_TS", "Missed TS", 2, 0., 2.);
+    fhMissedTSEvo  = new TProfile( "Missed_TS_Evo", "Missed TS evolution; t [s]", 1800, 0., 1800.);
+
+    /// Add histo pointers to the histo vector
+    vHistos.push_back( std::pair< TNamed *, std::string >( fhTsRate, "Sampler" ) );
+    vHistos.push_back( std::pair< TNamed *, std::string >( fhTsSize, "Sampler" ) );
+    vHistos.push_back( std::pair< TNamed *, std::string >( fhTsSizeEvo, "Sampler" ) );
+    vHistos.push_back( std::pair< TNamed *, std::string >( fhTsMaxSizeEvo, "Sampler" ) );
+    vHistos.push_back( std::pair< TNamed *, std::string >( fhMissedTS, "Sampler" ) );
+    vHistos.push_back( std::pair< TNamed *, std::string >( fhMissedTSEvo, "Sampler" ) );
+
+    /// Canvases creation
+    Double_t w = 10;
+    Double_t h = 10;
+    fcSummary = new TCanvas( "cSampSummary", "Sampler monitoring plots", w, h);
+    fcSummary->Divide(2, 3);
+
+    fcSummary->cd(1);
+    gPad->SetGridx();
+    gPad->SetGridy();
+    fhTsRate->Draw("hist");
+
+    fcSummary->cd(2);
+    gPad->SetGridx();
+    gPad->SetGridy();
+    gPad->SetLogx();
+    gPad->SetLogy();
+    fhTsSize->Draw("hist");
+
+    fcSummary->cd(3);
+    gPad->SetGridx();
+    gPad->SetGridy();
+    fhTsSizeEvo->Draw("hist");
+
+    fcSummary->cd(4);
+    gPad->SetGridx();
+    gPad->SetGridy();
+    fhTsMaxSizeEvo->Draw("hist");
+
+    fcSummary->cd(5);
+    gPad->SetGridx();
+    gPad->SetGridy();
+    fhMissedTS->Draw("hist");
+
+    fcSummary->cd(6);
+    gPad->SetGridx();
+    gPad->SetGridy();
+    fhMissedTSEvo->Draw("el");
+
+    /// Add canvas pointers to the canvas vector
+    vCanvases.push_back( std::pair< TCanvas *, std::string >( fcSummary, "canvases") );
+
+    /// Add pointers to each histo in the histo array
+    /// Create histo config vector
+    /// ===> Use an std::vector< std::pair< std::string, std::string > > with < Histo name, Folder >
+    ///      and send it through a separate channel using the BoostSerializer
+    for( UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto )
+    {
 //         LOG(info) << "Registering  " << vHistos[ uHisto ].first->GetName()
 //                   << " in " << vHistos[ uHisto ].second.data()
 //                   ;
@@ -284,19 +350,18 @@ void CbmMQTsaMultiSampler::InitTask() try {
       /// Send message to the common histogram config messages queue
       if( Send( messageHist, fsChannelNameHistosConfig ) < 0 )
       {
-         LOG(error) << "Problem sending histo config";
-         return false;
+         LOG(fatal) << "Problem sending histo config";
       } // if( Send( messageHist, fsChannelNameHistosConfig ) < 0 )
 
       LOG(info) << "Config of hist  " << psHistoConfig.first.data()
                 << " in folder " << psHistoConfig.second.data() ;
-   } // for( UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto )
+    } // for( UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto )
 
-   /// Create canvas config vector
-   /// ===> Use an std::vector< std::pair< std::string, std::string > > with < Canvas name, config >
-   ///      and send it through a separate channel using the BoostSerializer
-   for( UInt_t uCanv = 0; uCanv < vCanvases.size(); ++uCanv )
-   {
+    /// Create canvas config vector
+    /// ===> Use an std::vector< std::pair< std::string, std::string > > with < Canvas name, config >
+    ///      and send it through a separate channel using the BoostSerializer
+    for( UInt_t uCanv = 0; uCanv < vCanvases.size(); ++uCanv )
+    {
 //         LOG(info) << "Registering  " << vCanvases[ uCanv ].first->GetName()
 //                   << " in " << vCanvases[ uCanv ].second.data();
       std::string sCanvName = (vCanvases[ uCanv ].first)->GetName();
@@ -313,20 +378,18 @@ void CbmMQTsaMultiSampler::InitTask() try {
       /// Send message to the common canvas config messages queue
       if( Send( messageCan, fsChannelNameCanvasConfig ) < 0 )
       {
-         LOG(error) << "Problem sending canvas config";
-         return false;
+         LOG(fatal) << "Problem sending canvas config";
       } // if( Send( messageCan, fsChannelNameCanvasConfig ) < 0 )
 
       LOG(info) << "Config string of Canvas  " << psCanvConfig.first.data()
                 << " is " << psCanvConfig.second.data() ;
-   } //  for( UInt_t uCanv = 0; uCanv < vCanvases.size(); ++uCanv )
-*/
+    } //  for( UInt_t uCanv = 0; uCanv < vCanvases.size(); ++uCanv )
+  }   // if( 0 < fuPublishFreqTs )
 
   fTime = std::chrono::steady_clock::now();
 } catch (InitTaskError& e) {
   LOG(error) << e.what();
-  // Wrapper defined in CbmMQDefs.h to support different FairMQ versions
-  cbm::mq::ChangeState(this, cbm::mq::Transition::ErrorFound);
+  ChangeState(fair::mq::Transition::ErrorFound);
 }
 
 bool CbmMQTsaMultiSampler::IsChannelNameAllowed(std::string channelName) {
@@ -374,7 +437,6 @@ bool CbmMQTsaMultiSampler::IsChannelNameAllowed(std::string channelName) {
 
 bool CbmMQTsaMultiSampler::ConditionalRun() {
 
-
   auto timeslice = fSource->get();
   if (timeslice) {
     if (fTSCounter < fMaxTimeslices) {
@@ -382,6 +444,38 @@ bool CbmMQTsaMultiSampler::ConditionalRun() {
 
       const fles::Timeslice& ts = *timeslice;
       uint64_t uTsIndex         = ts.index();
+
+      if( 0 < fuPublishFreqTs ) {
+        uint64_t uTsTime = ts.descriptor(0, 0).idx;
+        if( 0 == fuStartTime ) {
+          fuStartTime = uTsTime;
+        } // if( 0 == fuStartTime )
+        fdTimeToStart = static_cast< double_t >(uTsTime - fuStartTime)/1e9;
+        uint64_t uSizeMb = 0;
+
+        for( uint64_t uComp = 0; uComp < ts.num_components(); ++uComp ) {
+          uSizeMb += ts.size_component( uComp ) / (1024 * 1024);
+        } // for( uint_t uComp = 0; uComp < ts.num_components(); ++uComp )
+
+
+        fhTsRate->Fill( fdTimeToStart );
+        fhTsSize->Fill( uSizeMb );
+        fhTsSizeEvo->Fill( fdTimeToStart, uSizeMb );
+
+        /// Fill max size per s (assumes the histo binning is 1 second!)
+        if( 0. == fdLastMaxTime ) {
+          fdLastMaxTime = fdTimeToStart;
+          fdTsMaxSize = uSizeMb;
+        } // if( 0. == fdLastMaxTime )
+        else if( 1. <= fdTimeToStart - fdLastMaxTime ) {
+          fhTsMaxSizeEvo->Fill( fdLastMaxTime, fdTsMaxSize );
+          fdLastMaxTime = fdTimeToStart;
+          fdTsMaxSize = uSizeMb;
+        } // else if if( 1 <= fdTimeToStart - fdLastMaxTime )
+        else if( fdTsMaxSize < uSizeMb ) {
+          fdTsMaxSize = uSizeMb;
+        } // else if( fdTsMaxSize < uSizeMb )
+      } // if( 0 < fuPublishFreqTs )
 
       /// Missed TS detection (only if output channel name defined by user)
       if ((uTsIndex != (fuPrevTsIndex + 1))
@@ -404,7 +498,18 @@ bool CbmMQTsaMultiSampler::ConditionalRun() {
 
           return false;
         }  // if( !SendMissedTsIdx( vulMissedIndices ) )
+
+        if( 0 < fuPublishFreqTs ) {
+          fhMissedTS->Fill(1, uTsIndex - fuPrevTsIndex);
+          fhMissedTSEvo->Fill(fdTimeToStart, 1, uTsIndex - fuPrevTsIndex);
+        } // if( 0 < fuPublishFreqTs )
+
       }  // if( ( uTsIndex != ( fuPrevTsIndex + 1 ) ) && ( 0 != fuPrevTsIndex && 0 != uTsIndex ) && "" != fsChannelNameMissedTs )
+      else if( 0 < fuPublishFreqTs ) {
+        fhMissedTS->Fill(0);
+        fhMissedTSEvo->Fill(fdTimeToStart, 0, 1);
+      } // else if( 0 < fuPublishFreqTs )
+
       fuPrevTsIndex = uTsIndex;
 
       if (fTSCounter % 10000 == 0) {
@@ -473,8 +578,23 @@ bool CbmMQTsaMultiSampler::ConditionalRun() {
           }  // if( !CreateAndSendComponent(ts, nrComp) )
         }  // for (unsigned int nrComp = 0; nrComp < ts.num_components(); ++nrComp)
       }  // else of if( fbSendTsPerSysId )
+
+      if( 0 < fuPublishFreqTs ) {
+        /// Send histograms periodically.
+        /// Use also runtime checker to trigger sending after M s if
+        /// processing too slow or delay sending if processing too fast
+        std::chrono::system_clock::time_point currentTime = std::chrono::system_clock::now();
+        std::chrono::duration<double_t> elapsedSeconds = currentTime - fLastPublishTime;
+        if ((fdMaxPublishTime < elapsedSeconds.count()) ||
+            (0 == fTSCounter % fuPublishFreqTs && fdMinPublishTime < elapsedSeconds.count())) {
+          SendHistograms();
+          fLastPublishTime = std::chrono::system_clock::now();
+        }  // if( ( fdMaxPublishTime < elapsedSeconds.count() ) || ( 0 == fTSCounter % fuPublishFreqTs && fdMinPublishTime < elapsedSeconds.count() ) )
+      } // if( 0 < fuPublishFreqTs )
+
       return true;
-    } else {
+    } // if (fTSCounter < fMaxTimeslices)
+    else {
       CalcRuntime();
 
       /// If command channel defined, send command to all "slaves"
@@ -489,8 +609,9 @@ bool CbmMQTsaMultiSampler::ConditionalRun() {
       }  // if( "" != fsChannelNameCommands )
 
       return false;
-    }
-  } else {
+    } // else of if (fTSCounter < fMaxTimeslices)
+  }   // if (timeslice)
+  else {
     CalcRuntime();
 
     /// If command channel defined, send command to all "slaves"
@@ -505,20 +626,7 @@ bool CbmMQTsaMultiSampler::ConditionalRun() {
     }  // if( "" != fsChannelNameCommands )
 
     return false;
-  }
-  /*
-   /// Send histograms each 100 time slices. Should be each ~1s
-   /// Use also runtime checker to trigger sending after M s if
-   /// processing too slow or delay sending if processing too fast
-   std::chrono::system_clock::time_point currentTime = std::chrono::system_clock::now();
-   std::chrono::duration<double_t> elapsedSeconds = currentTime - fLastPublishTime;
-   if( ( fdMaxPublishTime < elapsedSeconds.count() ) ||
-       ( 0 == fulNumMessages % fuPublishFreqTs && fdMinPublishTime < elapsedSeconds.count() ) )
-   {
-      SendHistograms();
-      fLastPublishTime = std::chrono::system_clock::now();
-   } // if( ( fdMaxPublishTime < elapsedSeconds.count() ) || ( 0 == fulNumMessages % fuPublishFreqTs && fdMinPublishTime < elapsedSeconds.count() ) )
-*/
+  } // else of if (timeslice)
 }
 
 bool CbmMQTsaMultiSampler::CreateAndSendComponent(const fles::Timeslice& ts,
@@ -892,26 +1000,37 @@ bool CbmMQTsaMultiSampler::SendCommand(std::string sCommand) {
   return true;
 }
 
-/*
 bool CbmMQTsaMultiSampler::SendHistograms()
 {
-   /// Serialize the array of histos into a single MQ message
-   FairMQMessagePtr message( NewMessage() );
-   Serialize<RootSerializer>( *message, &fArrayHisto );
+  /// Serialize the array of histos into a single MQ message
+  FairMQMessagePtr message( NewMessage() );
+  Serialize<RootSerializer>( *message, &fArrayHisto );
 
-   /// Send message to the common histogram messages queue
-   if( Send( message, fsChannelNameHistosInput ) < 0 )
-   {
-      LOG(error) << "Problem sending data";
-      return false;
-   } // if( Send( message, fsChannelNameHistosInput ) < 0 )
+  /// Send message to the common histogram messages queue
+  if( Send( message, fsChannelNameHistosInput ) < 0 )
+  {
+    LOG(error) << "Problem sending data";
+    return false;
+  } // if( Send( message, fsChannelNameHistosInput ) < 0 )
 
-   /// Reset the histograms after sending them (but do not reset the time)
-   ResetHistograms();
+  /// Reset the histograms after sending them (but do not reset the time)
+  ResetHistograms();
 
-   return true;
+  return true;
 }
-*/
+
+
+bool CbmMQTsaMultiSampler::ResetHistograms()
+{
+  fhTsRate->Reset();
+  fhTsSize->Reset();
+  fhTsSizeEvo->Reset();
+  fhTsMaxSizeEvo->Reset();
+  fhMissedTS->Reset();
+  fhMissedTSEvo->Reset();
+
+  return true;
+}
 
 CbmMQTsaMultiSampler::~CbmMQTsaMultiSampler() {}
 

@@ -87,6 +87,12 @@ set(DEPENDENCIES
   fles_ipc
   CbmMQBase
   CbmFlibFlesTools
+  Core
+  Gpad
+  Hist
+  Net
+  RHTTP
+  RIO
 )
 GENERATE_EXECUTABLE()
 
