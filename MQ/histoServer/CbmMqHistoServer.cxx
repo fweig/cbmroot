@@ -25,6 +25,8 @@
 #include "TObjArray.h"
 #include "TProfile.h"
 #include "TRootSniffer.h"
+#include "TSystem.h"
+#include "TEnv.h"
 
 #include <boost/serialization/utility.hpp>
 
@@ -68,6 +70,11 @@ void CbmMqHistoServer::InitTask() {
   fServer = new THttpServer(Form("http:%u", fuHttpServerPort));
   /// To avoid the server sucking all Histos from gROOT when no output file is used
   fServer->GetSniffer()->SetScanGlobalDir(kFALSE);
+  const char *jsrootsys = gSystem->Getenv("JSROOTSYS");
+  if (!jsrootsys)
+    jsrootsys = gEnv->GetValue("HttpServ.JSRootPath", jsrootsys);
+
+  LOG(info) << "JSROOT location: " << jsrootsys;
 
   //fServer->RegisterCommand("/Reset_Hist", "bMqHistoServerResetHistos=kTRUE");
   //fServer->RegisterCommand("/Save_Hist", "bMqHistoServerSaveHistos=kTRUE");
