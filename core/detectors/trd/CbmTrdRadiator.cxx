@@ -14,6 +14,7 @@
 #include <TH1.h>          // for TH1D
 #include <TMath.h>        // for Exp, Sqrt, Cos, Pi
 #include <TMathBase.h>    // for Abs
+#include <TObjString.h>   // for TObjString
 #include <TRandom.h>      // for TRandom
 #include <TRandom3.h>     // for gRandom
 #include <TVector3.h>     // for TVector3
