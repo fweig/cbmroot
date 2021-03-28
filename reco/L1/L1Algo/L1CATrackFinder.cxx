@@ -14,11 +14,11 @@
  *
  */
 
-#include "L1AddMaterial.h"
 #include "L1Algo.h"
 #include "L1Branch.h"
 #include "L1Extrapolation.h"
 #include "L1Filtration.h"
+#include "L1Fit.h"
 #include "L1HitPoint.h"
 #include "L1Track.h"
 #include "L1TrackPar.h"
@@ -141,6 +141,15 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
     l_B _fvecalignment;  // field for singlet creation
   L1FieldValue m_B,
     m_B_global _fvecalignment;  // field for the next extrapolations
+
+  L1Fit fit;
+
+  if ((isec != kAllPrimEIter) && (isec != kAllSecEIter)) {
+    fit.SetParticleMass(fDefaultMass);  // muon
+  }
+  else {
+    fit.SetParticleMass(0.000511f);  // electron
+  }
 
   for (int i1_V = 0; i1_V < n1_V; i1_V++) {
     L1TrackPar& T = T_1[i1_V];
@@ -308,23 +317,12 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
 
 
     for (int ista = 0; ista <= istal - 1; ista++) {
-      if ((isec != kAllPrimEIter) && (isec != kAllSecEIter)) {
 #ifdef USE_RL_TABLE
-        L1AddMaterial(T, fRadThick[ista].GetRadThick(T.x, T.y), MaxInvMom);
+      fit.L1AddMaterial(T, fRadThick[ista].GetRadThick(T.x, T.y), MaxInvMom, 1);
 #else
-        L1AddMaterial(T, vStations[ista].materialInfo, MaxInvMom);
+      fit.L1AddMaterial(T, vStations[ista].materialInfo, MaxInvMom, 1);
 #endif
-        if (ista == NMvdStations - 1) L1AddPipeMaterial(T, MaxInvMom);
-      }
-      else {
-#ifdef USE_RL_TABLE
-        L1AddMaterial(T, fRadThick[ista].GetRadThick(T.x, T.y), MaxInvMom, 1, 0.000511f * 0.000511f);
-
-#else
-        L1AddMaterial(T, vStations[ista].materialInfo, MaxInvMom, 1, 0.000511f * 0.000511f);
-#endif
-        if (ista == NMvdStations - 1) L1AddPipeMaterial(T, MaxInvMom, 1, 0.000511f * 0.000511f);
-      }
+      if (ista == NMvdStations - 1) fit.L1AddPipeMaterial(T, MaxInvMom, 1);
     }
 
     // add left hit
@@ -356,23 +354,13 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
 
     FilterTime(T, time, timeEr);
 
-    if ((isec != kAllPrimEIter) && (isec != kAllSecEIter)) {
 #ifdef USE_RL_TABLE
-      L1AddMaterial(T, fRadThick[istal].GetRadThick(T.x, T.y), MaxInvMom);
+    fit.L1AddMaterial(T, fRadThick[istal].GetRadThick(T.x, T.y), MaxInvMom, 1);
 #else
-      L1AddMaterial(T, stal.materialInfo, MaxInvMom);
+    fit.L1AddMaterial(T, stal.materialInfo, MaxInvMom, 1);
 #endif
-      if ((istam >= NMvdStations) && (istal <= NMvdStations - 1)) L1AddPipeMaterial(T, MaxInvMom);
-    }
-    else {
-#ifdef USE_RL_TABLE
-      L1AddMaterial(T, fRadThick[istal].GetRadThick(T.x, T.y), MaxInvMom, 1, 0.000511f * 0.000511f);
-#else
-      L1AddMaterial(T, stal.materialInfo, MaxInvMom, 1, 0.000511f * 0.000511f);
-#endif
-      if ((istam >= NMvdStations) && (istal <= NMvdStations - 1))
-        L1AddPipeMaterial(T, MaxInvMom, 1, 0.000511f * 0.000511f);
-    }
+    if ((istam >= NMvdStations) && (istal <= NMvdStations - 1)) { fit.L1AddPipeMaterial(T, MaxInvMom, 1); }
+
     fvec dz = zstam - T.z;
     L1ExtrapolateTime(T, dz);
 
@@ -572,6 +560,9 @@ inline void L1Algo::f30(  // input
   fvec fvec_0;
   L1TrackPar L1TrackPar_0;
 
+  L1Fit fit;
+  fit.SetParticleMass(fDefaultMass);
+
   Tindex n3_V = 0, n3_4 = 0;
 
   T_3.push_back(L1TrackPar_0);
@@ -669,23 +660,12 @@ inline void L1Algo::f30(  // input
 
       FilterTime(T2, timeM, timeMEr);
 
-      if ((isec != kAllPrimEIter) && (isec != kAllSecEIter)) {
 #ifdef USE_RL_TABLE
-        L1AddMaterial(T2, fRadThick[istam].GetRadThick(T2.x, T2.y), T2.qp);
+      fit.L1AddMaterial(T2, fRadThick[istam].GetRadThick(T2.x, T2.y), T2.qp, 1);
 #else
-        L1AddMaterial(T2, stam.materialInfo, T2.qp);
+      fit.L1AddMaterial(T2, stam.materialInfo, T2.qp, 1);
 #endif
-        if ((istar >= NMvdStations) && (istam <= NMvdStations - 1)) L1AddPipeMaterial(T2, T2.qp);
-      }
-      else {
-#ifdef USE_RL_TABLE
-        L1AddMaterial(T2, fRadThick[istam].GetRadThick(T2.x, T2.y), T2.qp, 1, 0.000511f * 0.000511f);
-#else
-        L1AddMaterial(T2, stam.materialInfo, T2.qp, 1, 0.000511f * 0.000511f);
-#endif
-        if ((istar >= NMvdStations) && (istam <= NMvdStations - 1))
-          L1AddPipeMaterial(T2, T2.qp, 1, 0.000511f * 0.000511f);
-      }
+      if ((istar >= NMvdStations) && (istam <= NMvdStations - 1)) { fit.L1AddPipeMaterial(T2, T2.qp, 1); }
 
       fvec dz2 = star.z - T2.z;
       L1ExtrapolateTime(T2, dz2);
@@ -925,6 +905,9 @@ inline void L1Algo::f32(  // input // TODO not updated after gaps introduction
   Tindex n3, int istal, nsL1::vector<L1TrackPar>::TSimd& T_3, vector<THitI>& hitsl_3, vector<THitI>& hitsm_3,
   vector<THitI>& hitsr_3, int nIterations)
 {
+  L1Fit fit;
+  fit.SetParticleMass(fDefaultMass);
+
   const int NHits = 3;  // triplets
 
   // prepare data
@@ -997,11 +980,11 @@ inline void L1Algo::f32(  // input // TODO not updated after gaps introduction
     for (int ih = 1; ih < NHits; ++ih) {
       L1Extrapolate(T, z[ih], T.qp, fld);
 #ifdef USE_RL_TABLE
-      L1AddMaterial(T, fRadThick[ista[ih]].GetRadThick(T.x, T.y), T.qp);
+      fit.L1AddMaterial(T, fRadThick[ista[ih]].GetRadThick(T.x, T.y), T.qp, 1);
 #else
-      L1AddMaterial(T, sta[ih].materialInfo, T.qp);
+      fit.L1AddMaterial(T, sta[ih].materialInfo, T.qp, 1);
 #endif
-      if (ista[ih] == NMvdStations - 1) L1AddPipeMaterial(T, T.qp);
+      if (ista[ih] == NMvdStations - 1) fit.L1AddPipeMaterial(T, T.qp, 1);
 
       L1Filter(T, sta[ih].frontInfo, u[ih]);
       L1Filter(T, sta[ih].backInfo, v[ih]);
@@ -1032,11 +1015,11 @@ inline void L1Algo::f32(  // input // TODO not updated after gaps introduction
       for (ih = NHits - 2; ih >= 0; ih--) {
         L1Extrapolate(T, z[ih], T.qp, fld);
 #ifdef USE_RL_TABLE
-        L1AddMaterial(T, fRadThick[ista[ih]].GetRadThick(T.x, T.y), T.qp);
+        fit.L1AddMaterial(T, fRadThick[ista[ih]].GetRadThick(T.x, T.y), T.qp, 1);
 #else
-        L1AddMaterial(T, sta[ih].materialInfo, T.qp);
+        fit.L1AddMaterial(T, sta[ih].materialInfo, T.qp, 1);
 #endif
-        if (ista[ih] == NMvdStations) L1AddPipeMaterial(T, T.qp);
+        if (ista[ih] == NMvdStations) fit.L1AddPipeMaterial(T, T.qp, 1);
 
         L1Filter(T, sta[ih].frontInfo, u[ih]);
         L1Filter(T, sta[ih].backInfo, v[ih]);
@@ -1063,11 +1046,11 @@ inline void L1Algo::f32(  // input // TODO not updated after gaps introduction
       for (ih = 1; ih < NHits; ++ih) {
         L1Extrapolate(T, z[ih], T.qp, fld);
 #ifdef USE_RL_TABLE
-        L1AddMaterial(T, fRadThick[ista[ih]].GetRadThick(T.x, T.y), T.qp);
+        fit.L1AddMaterial(T, fRadThick[ista[ih]].GetRadThick(T.x, T.y), T.qp, 1);
 #else
-        L1AddMaterial(T, sta[ih].materialInfo, T.qp);
+        fit.L1AddMaterial(T, sta[ih].materialInfo, T.qp, 1);
 #endif
-        if (ista[ih] == NMvdStations + 1) L1AddPipeMaterial(T, T.qp);
+        if (ista[ih] == NMvdStations + 1) fit.L1AddPipeMaterial(T, T.qp, 1);
 
         L1Filter(T, sta[ih].frontInfo, u[ih]);
         L1Filter(T, sta[ih].backInfo, v[ih]);

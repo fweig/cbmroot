@@ -244,8 +244,21 @@ public:
   L1Algo(const L1Algo&) = delete;
   L1Algo operator=(const L1Algo&) = delete;
 
+  /// set a default particle mass for the track fit
+  /// it is used during reconstruction
+  /// for the multiple scattering and energy loss estimation
+  void SetDefaultParticleMass(float mass) { fDefaultMass = mass; }
+
+  /// get default particle mass
+  float GetDefaultParticleMass() const { return fDefaultMass; }
+
+  /// get default particle mass squared
+  float GetDefaultParticleMass2() const { return fDefaultMass * fDefaultMass; }
+
   static const int nTh  = 1;
   static const int nSta = 25;
+
+  float fDefaultMass = 0.10565800;  // muon mass
 
   L1Vector<L1Triplet> TripletsLocal1[nSta][nTh];
   L1Vector<L1Branch> CandidatesTrack[nTh];

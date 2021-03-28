@@ -51,6 +51,10 @@ public:
    **/
   virtual Int_t FindTracks(CbmEvent* event);
 
+  /// set a default particle mass for the track fit
+  /// it is used during reconstruction
+  /// for the multiple scattering and energy loss estimation
+  void SetDefaultParticlePDG(int pdg = 13);  // muon
 
 private:
   /** Copy the tracks from the L1-internal format and array

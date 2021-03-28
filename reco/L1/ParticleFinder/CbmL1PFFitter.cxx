@@ -22,20 +22,21 @@
 #include "TClonesArray.h"
 
 //L1Algo tools
+#include "CbmKFVertex.h"
 #include "CbmL1Track.h"
-#include "L1AddMaterial.h"
+
+#include "FairRootManager.h"
+
+#include "TDatabasePDG.h"
+
+#include "KFParticleDatabase.h"
 #include "L1Algo.h"
 #include "L1Extrapolation.h"
 #include "L1Filtration.h"
+#include "L1Fit.h"
 #include "L1MaterialInfo.h"
 #include "L1Station.h"
 #include "L1TrackPar.h"
-
-#include "FairRootManager.h"
-#include "TDatabasePDG.h"
-
-#include "CbmKFVertex.h"
-#include "KFParticleDatabase.h"
 
 using std::vector;
 
@@ -96,6 +97,9 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo) {
   int nTracks_SIMD = fvecLen;
   L1TrackPar T;  // fitting parametr coresponding to current track
 
+  L1Fit fit;
+  fit.SetParticleMass(0.000511f);  // muon
+
   CbmStsTrack* t[fvecLen];
 
   int ista;
@@ -120,7 +124,7 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo) {
     Tracks[itrack].SetPidHypo(pidHypo[itrack]);
   }
 
-  fvec mass, mass2;
+  fvec mass = 0.000511f;
 
   for (unsigned short itrack = 0; itrack < N_vTracks; itrack += fvecLen) {
 
@@ -155,7 +159,8 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo) {
       //       mass[i] = TDatabasePDG::Instance()->GetParticle(pid)->Mass();
       mass[i] = KFParticleDatabase::Instance()->GetMass(pid);
     }
-    mass2 = mass * mass;
+    fit.SetParticleMass(mass);
+
     // get hits of current track
     for (i = 0; i < nHits; i++) {
       w[i] = ZERO;
@@ -247,24 +252,14 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo) {
 
       L1Extrapolate(T, z[i], qp0, fld, &w1);
       if (i == NMvdStations) {
-        L1AddPipeMaterial(T, qp0, wIn);
-        EnergyLossCorrection(T, mass2, PipeRadThick, qp0, fvec(-1.f), wIn);
+        fit.L1AddPipeMaterial(T, qp0, wIn);
+        fit.EnergyLossCorrection(T, fit.PipeRadThick, qp0, fvec(-1.f), wIn);
       }
 #ifdef USE_RL_TABLE
-      L1AddMaterial(T,
-                    CbmL1::Instance()->algo->fRadThick[i].GetRadThick(T.x, T.y),
-                    qp0,
-                    wIn,
-                    mass2);
-      EnergyLossCorrection(
-        T,
-        mass2,
-        CbmL1::Instance()->algo->fRadThick[i].GetRadThick(T.x, T.y),
-        qp0,
-        -1,
-        wIn);
+      fit.L1AddMaterial(T, CbmL1::Instance()->algo->fRadThick[i].GetRadThick(T.x, T.y), qp0, wIn);
+      fit.EnergyLossCorrection(T, CbmL1::Instance()->algo->fRadThick[i].GetRadThick(T.x, T.y), qp0, -1, wIn);
 #else
-      L1AddMaterial(T, sta[i].materialInfo, qp0, wIn, mass2);
+      fit.L1AddMaterial(T, sta[i].materialInfo, qp0, wIn);
 #endif
       L1Filter(T, sta[i].frontInfo, u[i], w1);
       L1Filter(T, sta[i].backInfo, v[i], w1);
@@ -332,24 +327,14 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo) {
 
       L1Extrapolate(T, z[i], qp0, fld, &w1);
       if (i == NMvdStations - 1) {
-        L1AddPipeMaterial(T, qp0, wIn);
-        EnergyLossCorrection(T, mass2, PipeRadThick, qp0, fvec(1.f), wIn);
+        fit.L1AddPipeMaterial(T, qp0, wIn);
+        fit.EnergyLossCorrection(T, fit.PipeRadThick, qp0, fvec(1.f), wIn);
       }
 #ifdef USE_RL_TABLE
-      L1AddMaterial(T,
-                    CbmL1::Instance()->algo->fRadThick[i].GetRadThick(T.x, T.y),
-                    qp0,
-                    wIn,
-                    mass2);
-      EnergyLossCorrection(
-        T,
-        mass2,
-        CbmL1::Instance()->algo->fRadThick[i].GetRadThick(T.x, T.y),
-        qp0,
-        1,
-        wIn);
+      fit.L1AddMaterial(T, CbmL1::Instance()->algo->fRadThick[i].GetRadThick(T.x, T.y), qp0, wIn);
+      fit.EnergyLossCorrection(T, CbmL1::Instance()->algo->fRadThick[i].GetRadThick(T.x, T.y), qp0, 1, wIn);
 #else
-      L1AddMaterial(T, sta[i].materialInfo, qp0, wIn, mass2);
+      fit.L1AddMaterial(T, sta[i].materialInfo, qp0, wIn);
 #endif
       L1Filter(T, sta[i].frontInfo, u[i], w1);
       L1Filter(T, sta[i].backInfo, v[i], w1);
@@ -409,6 +394,7 @@ void CbmL1PFFitter::GetChiToVertex(vector<CbmStsTrack>& Tracks,
 
   int nTracks_SIMD = fvecLen;
   L1TrackPar T;  // fitting parametr coresponding to current track
+  L1Fit fit;
 
   CbmStsTrack* t[fvecLen];
 
@@ -513,29 +499,18 @@ void CbmL1PFFitter::GetChiToVertex(vector<CbmStsTrack>& Tracks,
 
       L1Extrapolate(T, zSta[iSt], T.qp, fld, &w);
       if (iSt == NMvdStations - 1) {
-        L1AddPipeMaterial(T, T.qp, w, mass2);
-        EnergyLossCorrection(T, mass2, PipeRadThick, T.qp, fvec(1.f), w);
+        fit.L1AddPipeMaterial(T, T.qp, w);
+        fit.EnergyLossCorrection(T, fit.PipeRadThick, T.qp, fvec(1.f), w);
       }
-      L1AddMaterial(
-        T,
-        CbmL1::Instance()->algo->fRadThick[iSt].GetRadThick(T.x, T.y),
-        T.qp,
-        w,
-        mass2);
-      EnergyLossCorrection(
-        T,
-        mass2,
-        CbmL1::Instance()->algo->fRadThick[iSt].GetRadThick(T.x, T.y),
-        T.qp,
-        fvec(1.f),
-        w);
+      fit.L1AddMaterial(T, CbmL1::Instance()->algo->fRadThick[iSt].GetRadThick(T.x, T.y), T.qp, w);
+      fit.EnergyLossCorrection(T, CbmL1::Instance()->algo->fRadThick[iSt].GetRadThick(T.x, T.y), T.qp, fvec(1.f), w);
     }
     if (NMvdStations <= 0) {
-      L1AddPipeMaterial(T, T.qp, ONE, mass2);
-      EnergyLossCorrection(T, mass2, PipeRadThick, T.qp, fvec(1.f), ONE);
+      fit.L1AddPipeMaterial(T, T.qp, ONE);
+      fit.EnergyLossCorrection(T, fit.PipeRadThick, T.qp, fvec(1.f), ONE);
     }
     L1Extrapolate(T, primVtx.GetRefZ(), T.qp, fld);
-    L1AddTargetMaterial(T, T.qp);
+    fit.L1AddTargetMaterial(T, T.qp, 1);
 
     Double_t Cv[3] = {primVtx.GetCovMatrix()[0],
                       primVtx.GetCovMatrix()[1],

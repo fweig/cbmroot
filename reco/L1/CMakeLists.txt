@@ -124,7 +124,7 @@ L1Algo/L1TrackParFit.cxx
 L1Algo/L1Event.cxx
 L1Algo/L1EventMatch.cxx
 L1Algo/L1MCEvent.cxx
-
+L1Algo/L1Fit.cxx
 CbmL1MCTrack.cxx
 
 ParticleFinder/CbmL1PFFitter.cxx

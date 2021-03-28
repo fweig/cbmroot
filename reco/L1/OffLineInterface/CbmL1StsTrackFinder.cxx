@@ -15,20 +15,22 @@
  */
 #include "CbmL1StsTrackFinder.h"
 
-#include "L1Algo/L1Algo.h"
-
 #include "CbmEvent.h"
 #include "CbmKFMath.h"
 #include "CbmStsHit.h"
 #include "CbmStsTrack.h"
+
 #include "FairHit.h"
 #include "FairMCPoint.h"
 #include "FairRootManager.h"
 
 #include "TClonesArray.h"
+#include "TDatabasePDG.h"
 
 #include <iostream>
 #include <vector>
+
+#include "L1Algo/L1Algo.h"
 
 using std::cout;
 using std::endl;
@@ -134,5 +136,25 @@ Int_t CbmL1StsTrackFinder::FindTracks(CbmEvent* event) {
   int nTracks = CopyL1Tracks(event);
 
   return nTracks;
+}
+// -------------------------------------------------------------------------
+
+
+// -------------------------------------------------------------------------
+void SetDefaultParticlePDG(int pdg = 211)
+{
+  /// set a default particle mass for the track fit
+  /// it is used during reconstruction for the multiple scattering estimation
+  CbmL1* l1 = CbmL1::Instance();
+  if (!l1 || !l1->algo) {
+    LOG(fatal) << "L1 instance doesn't exist or is not initialised";
+    return;
+  }
+  auto* p = TDatabasePDG::Instance()->GetParticle(pdg);
+  if (!p) {
+    LOG(fatal) << "Particle with pdg " << pdg << " doesn't exist";
+    return;
+  }
+  l1->algo->SetDefaultParticleMass(p->Mass());
 }
 // -------------------------------------------------------------------------

@@ -1,14 +1,14 @@
-#include "L1AddMaterial.h"
+#include <iostream>
+
 #include "L1Algo.h"
 #include "L1Branch.h"
 #include "L1Extrapolation.h"
 #include "L1Filtration.h"
+#include "L1Fit.h"
 #include "L1HitArea.h"
 #include "L1HitPoint.h"
 #include "L1Track.h"
 #include "L1TrackPar.h"
-
-#include <iostream>
 
 // using namespace std;
 using std::cout;
@@ -28,6 +28,9 @@ void L1Algo::BranchFitterFast(const L1Branch& t,
                               const fvec qp0,
                               const bool initParams) {
   L1_assert(t.NHits >= 3);
+
+  L1Fit fit;
+  fit.SetParticleMass(GetDefaultParticleMass());
 
   // get hits of current track
   const std::vector<THitI>& hits =
@@ -138,11 +141,11 @@ void L1Algo::BranchFitterFast(const L1Branch& t,
 #endif
     L1ExtrapolateTime(T, dz);
 
-    L1AddMaterial(T, sta.materialInfo, qp0);
+    fit.L1AddMaterial(T, sta.materialInfo, qp0, 1);
     if ((step * ista <= step * (NMvdStations + (step + 1) / 2 - 1))
         && (step * ista_prev
             >= step * (NMvdStations + (step + 1) / 2 - 1 - step)))
-      L1AddPipeMaterial(T, qp0);
+      fit.L1AddPipeMaterial(T, qp0, 1);
 
     fvec u = hit.u;
     fvec v = hit.v;
@@ -204,6 +207,8 @@ void L1Algo::FindMoreHits(L1Branch& t,
   std::vector<THitI> newHits;
   newHits.clear();
   newHits.reserve(5);
+  L1Fit fit;
+  fit.SetParticleMass(GetDefaultParticleMass());
 
   const signed short int step =
     -2 * static_cast<int>(dir) + 1;  // increment for station index
@@ -338,7 +343,7 @@ void L1Algo::FindMoreHits(L1Branch& t,
     L1ExtrapolateTime(T, dz1);
 
     L1ExtrapolateLine(T, z);
-    L1AddMaterial(T, sta.materialInfo, qp0);
+    fit.L1AddMaterial(T, sta.materialInfo, qp0, 1);
 
     L1UMeasurementInfo info = sta.frontInfo;
 

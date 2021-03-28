@@ -1502,7 +1502,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
         StsHitsLocal.push_back(algo->vRecoHits[start_hit++]);
       }
 
-      t.mass        = 0.1395679;  // pion mass
+      t.mass        = algo->fDefaultMass;  // pion mass
       t.is_electron = 0;
 
       t.SetId(vRTracksCur.size());

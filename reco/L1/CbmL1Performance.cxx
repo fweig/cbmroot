@@ -13,33 +13,23 @@
  *
  *====================================================================
  */
-#include "CbmL1.h"
-
+#include "CbmKF.h"
+#include "CbmKFMath.h"
 #include "CbmKFTrack.h"  // for vertex pulls
+#include "CbmL1.h"
 #include "CbmL1Constants.h"
-#include "FairTrackParam.h"        // for vertex pulls
-#include "L1Algo/L1AddMaterial.h"  // for vertex pulls
-#include "L1Algo/L1Algo.h"
-#include "L1Algo/L1Extrapolation.h"  // for vertex pulls
-
+#include "CbmL1Counters.h"
+#include "CbmMatch.h"
 #include "CbmMuchPixelHit.h"
 #include "CbmMuchPoint.h"
-
+#include "CbmStsSetup.h"
+#include "CbmStsStation.h"
+#include "CbmTofHit.h"
+#include "CbmTofPoint.h"
 #include "CbmTrdHit.h"
 #include "CbmTrdPoint.h"
 
-#include "CbmTofHit.h"
-#include "CbmTofPoint.h"
-
-#include "CbmKF.h"
-#include "CbmKFMath.h"
-
-#include "CbmStsSetup.h"
-#include "CbmStsStation.h"
-
-#include "CbmMatch.h"
-
-#include "CbmL1Counters.h"
+#include "FairTrackParam.h"  // for vertex pulls
 
 #include <TFile.h>
 
@@ -47,6 +37,10 @@
 #include <list>
 #include <map>
 #include <vector>
+
+#include "L1Algo/L1Algo.h"
+#include "L1Algo/L1Extrapolation.h"  // for vertex pulls
+#include "L1Algo/L1Fit.h"            // for vertex pulls
 
 using std::cout;
 using std::endl;
@@ -1547,6 +1541,10 @@ void CbmL1::TrackFitPerformance() {
 
   static bool first_call = 1;
 
+  L1Fit fit;
+  fit.SetParticleMass(algo->GetDefaultParticleMass());
+
+
   if (first_call) {
     first_call = 0;
 
@@ -1861,9 +1859,8 @@ void CbmL1::TrackFitPerformance() {
                && (dir * (mc.z - algo->vStations[iSta].z[0]) > 0);
                iSta += dir) {
             //           cout << iSta << " " << dir << endl;
-            L1AddMaterial(trPar, algo->vStations[iSta].materialInfo, trPar.qp);
-            if (iSta + dir == NMvdStations - 1)
-              L1AddPipeMaterial(trPar, trPar.qp);
+            fit.L1AddMaterial(trPar, algo->vStations[iSta].materialInfo, trPar.qp, 1);
+            if (iSta + dir == NMvdStations - 1) fit.L1AddPipeMaterial(trPar, trPar.qp, 1);
           }
         }
         if (mc.z != trPar.z[0]) continue;
@@ -1941,21 +1938,13 @@ void CbmL1::TrackFitPerformance() {
               trPar.x - trPar.tx * dz, trPar.y - trPar.ty * dz, B[0]);
             fld.Set(B[0], z[0], B[1], z[1], B[2], z[2]);
 
-            fvec mass2 = 0.1395679f * 0.1395679f;
             L1Extrapolate(trPar, algo->vStations[iSta].z[0], trPar.qp, fld);
-            L1AddMaterial(trPar,
-                          algo->fRadThick[iSta].GetRadThick(trPar.x, trPar.y),
-                          trPar.qp);
-            EnergyLossCorrection(
-              trPar,
-              mass2,
-              algo->fRadThick[iSta].GetRadThick(trPar.x, trPar.y),
-              trPar.qp,
-              fvec(1.f));
+            fit.L1AddMaterial(trPar, algo->fRadThick[iSta].GetRadThick(trPar.x, trPar.y), trPar.qp, 1);
+            fit.EnergyLossCorrection(trPar, algo->fRadThick[iSta].GetRadThick(trPar.x, trPar.y), trPar.qp, fvec(1.f),
+                                     fvec(1.f));
             if (iSta + dir == NMvdStations - 1) {
-              L1AddPipeMaterial(trPar, trPar.qp);
-              EnergyLossCorrection(
-                trPar, mass2, PipeRadThick, trPar.qp, fvec(1.f));
+              fit.L1AddPipeMaterial(trPar, trPar.qp, 1);
+              fit.EnergyLossCorrection(trPar, fit.PipeRadThick, trPar.qp, fvec(1.f), fvec(1.f));
             }
             B[2] = B[1];
             z[2] = z[1];

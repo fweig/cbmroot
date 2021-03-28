@@ -1,13 +1,11 @@
 #ifndef L1TrackParFit_h
 #define L1TrackParFit_h
 
-#include "L1AddMaterial.h"
-#include "L1Field.h"
-#include "L1UMeasurementInfo.h"
-
-#include "L1TrackPar.h"
-
 #include "../CbmL1Def.h"
+#include "L1Field.h"
+#include "L1MaterialInfo.h"
+#include "L1TrackPar.h"
+#include "L1UMeasurementInfo.h"
 
 class L1TrackParFit {
 
@@ -16,6 +14,7 @@ public:
     C32, C33, C40, C41, C42, C43, C44, C50, C51, C52, C53, C54, C55, chi2, NDF;
   //  fvec n;
 
+  fvec fMass2 = 0.000511f * 0.000511f;  // muon mass
 
   L1TrackParFit()
     : fx(0)
@@ -87,6 +86,13 @@ public:
   void Print(int i = -1);
 
   //Fit functionality
+
+  /// set particle mass for the fit
+  void SetParticleMass(float mass) { fMass2 = mass * mass; }
+
+  /// get the particle mass squared
+  fvec GetParticleMass2() const { return fMass2; }
+
   void Filter(L1UMeasurementInfo& info, fvec u, fvec w = 1.);
   void Filter(fvec t0, fvec dt0, fvec w = 1.);
   void FilterNoP(L1UMeasurementInfo& info, fvec u, fvec w = 1.);
@@ -94,42 +100,16 @@ public:
   void ExtrapolateLine(fvec z_out, fvec* w = 0);
   void ExtrapolateLine1(fvec z_out, fvec* w = 0, fvec v = 0);
   void Compare(L1TrackPar& T);
-  void EnergyLossCorrection(const fvec& mass2,
-                            const fvec& radThick,
-                            fvec& qp0,
-                            fvec direction,
-                            fvec w = 1);
-  void L1AddMaterial(L1MaterialInfo& info,
-                     fvec qp0,
-                     fvec w     = 1,
-                     fvec mass2 = 0.1395679f * 0.1395679f);
-  void L1AddMaterial(fvec radThick,
-                     fvec qp0,
-                     fvec w     = 1,
-                     fvec mass2 = 0.1395679f * 0.1395679f);
-  void L1AddThickMaterial(fvec radThick,
-                          fvec qp0,
-                          fvec w           = 1,
-                          fvec mass2       = 0.1395679f * 0.1395679f,
-                          fvec thickness   = 0,
-                          bool fDownstream = 1);
-  void
-  L1AddPipeMaterial(fvec qp0, fvec w = 1, fvec mass2 = 0.1395679f * 0.1395679f);
-  void EnergyLossCorrectionIron(const fvec& mass2,
-                                const fvec& radThick,
-                                fvec& qp0,
-                                fvec direction,
-                                fvec w = 1);
-  void EnergyLossCorrectionCarbon(const fvec& mass2,
-                                  const fvec& radThick,
-                                  fvec& qp0,
-                                  fvec direction,
-                                  fvec w = 1);
-  void EnergyLossCorrectionAl(const fvec& mass2,
-                              const fvec& radThick,
-                              fvec& qp0,
-                              fvec direction,
-                              fvec w = 1);
+  void EnergyLossCorrection(const fvec& radThick, fvec& qp0, fvec direction, fvec w);
+  void L1AddMaterial(L1MaterialInfo& info, fvec qp0, fvec w = 1);
+
+  void L1AddMaterial(fvec radThick, fvec qp0, fvec w = 1);
+
+  void L1AddThickMaterial(fvec radThick, fvec qp0, fvec w, fvec thickness, bool fDownstream);
+  void L1AddPipeMaterial(fvec qp0, fvec w = 1);
+  void EnergyLossCorrectionIron(const fvec& radThick, fvec& qp0, fvec direction, fvec w = 1);
+  void EnergyLossCorrectionCarbon(const fvec& radThick, fvec& qp0, fvec direction, fvec w = 1);
+  void EnergyLossCorrectionAl(const fvec& radThick, fvec& qp0, fvec direction, fvec w = 1);
   // void L1Extrapolate
   // (
   // //  L1TrackParFit &T, // input track parameters (x,y,tx,ty,Q/p) and cov.matrix
