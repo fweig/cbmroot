@@ -208,7 +208,7 @@ void PairAnalysisHF::Fill(Int_t /*label1*/, Int_t /*label2*/, Int_t /*nSignal*/)
 
   // only OS at the moment
   if(part1->GetCharge()*part2->GetCharge()<0) {
-    Fill(istep+nSignal+fSignalsMC->GetEntries(), valuesPair,  valuesLeg1, valuesLeg2);
+    Fill(istep+nSignal+fSignalsMC->GetEntriesFast(), valuesPair,  valuesLeg1, valuesLeg2);
   }
 
   return;
@@ -247,7 +247,7 @@ void PairAnalysisHF::Fill(Int_t /*pairIndex*/, const PairAnalysisPair* /*particl
 
   // mc source steps (only OS SE pairs)
   if(fHasMC && fSignalsMC && pairIndex==PairAnalysis::kSEPM) {
-    for(Int_t i=0; i<fSignalsMC->GetEntries(); i++) {
+    for(Int_t i=0; i<fSignalsMC->GetEntriesFast(); i++) {
       ////////////      if(PairAnalysisMC::Instance()->IsMCTruth(particle, (PairAnalysisSignalMC*)fSignalsMC->At(i)))
 	Fill(istep+i, valuesPair,  valuesLeg1, valuesLeg2);
     }
@@ -258,7 +258,7 @@ void PairAnalysisHF::Fill(Int_t /*pairIndex*/, const PairAnalysisPair* /*particl
 
   // remove comments
   //// select correct step if we are looking at signals too
-  ////  if(fHasMC && fSignalsMC) pairIndex += ( fSignalsMC->GetEntries() * (fStepGenerated ? 2 : 1) );
+  ////  if(fHasMC && fSignalsMC) pairIndex += ( fSignalsMC->GetEntriesFast() * (fStepGenerated ? 2 : 1) );
   Fill(pairIndex, valuesPair,  valuesLeg1, valuesLeg2); 
 
   return;

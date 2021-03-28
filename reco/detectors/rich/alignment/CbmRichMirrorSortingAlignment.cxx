@@ -131,9 +131,9 @@ void CbmRichMirrorSortingAlignment::Exec(Option_t* Option) {
   TGeoNode* mirrNode;
   CbmRichPoint *mirrPoint, *refPlanePoint;
 
-  if (fRichRings->GetEntries() != 0) {
-    cout << "Nb of rings in evt = " << fRichRings->GetEntries() << endl << endl;
-    GetPmtNormal(fPmtPoints->GetEntries(), normalPMT, constantePMT);
+  if (fRichRings->GetEntriesFast() != 0) {
+    cout << "Nb of rings in evt = " << fRichRings->GetEntriesFast() << endl << endl;
+    GetPmtNormal(fPmtPoints->GetEntriesFast(), normalPMT, constantePMT);
     //cout << "Calculated normal vector to PMT plane = {" << normalPMT.at(0) << ", " << normalPMT.at(1) << ", " << normalPMT.at(2) << "} and constante d = " << constantePMT << endl;
 
     for (Int_t iGlobalTrack = 0; iGlobalTrack < fGlobalTracks->GetEntriesFast();
@@ -206,9 +206,9 @@ void CbmRichMirrorSortingAlignment::Exec(Option_t* Option) {
       Int_t trackMotherId = mcTrack->GetMotherId();
       Int_t pdg           = TMath::Abs(mcTrack->GetPdgCode());
       if (trackMotherId == -1) {
-        if (fMirrorPoints->GetEntries() > 0) {
+        if (fMirrorPoints->GetEntriesFast() > 0) {
           //loop on mirrorPoint and compare w/ TrackID->GetTrackId to get correct one
-          for (Int_t iMirrPt = 0; iMirrPt < fMirrorPoints->GetEntries();
+          for (Int_t iMirrPt = 0; iMirrPt < fMirrorPoints->GetEntriesFast();
                iMirrPt++) {
             mirrPoint = (CbmRichPoint*) fMirrorPoints->At(iMirrPt);
             if (mirrPoint == 0) { continue; }
@@ -252,7 +252,7 @@ void CbmRichMirrorSortingAlignment::Exec(Option_t* Option) {
                     "ideal = {"
                  << ptCIdeal.at(0) << ", " << ptCIdeal.at(1) << ", "
                  << ptCIdeal.at(2) << "}" << endl;
-            for (Int_t iRefPt = 0; iRefPt < fRefPlanePoints->GetEntries();
+            for (Int_t iRefPt = 0; iRefPt < fRefPlanePoints->GetEntriesFast();
                  iRefPt++) {
               refPlanePoint = (CbmRichPoint*) fRefPlanePoints->At(iRefPt);
               //cout << "Refl plane point track ID: " << refPlanePoint->GetTrackID() << endl;

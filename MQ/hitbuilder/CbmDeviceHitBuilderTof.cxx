@@ -1741,7 +1741,7 @@ Bool_t CbmDeviceHitBuilderTof::CalibRawDigis()
   }  // for( Int_t iDigInd = 0; iDigInd < nTofDigi; iDigInd++ )
 
   iNbTofDigi = fTofCalDigiVec->size();
-  //  fTofCalDigisColl->GetEntries();  // update because of added duplicted digis
+  //  fTofCalDigisColl->GetEntriesFast();  // update because of added duplicted digis
   LOG(debug) << "CbmTofHitBuilder: Sort " << fTofCalDigiVec->size() << " calibrated digis ";
   if (iNbTofDigi > 1) {
     //    fTofCalDigisColl->Sort(iNbTofDigi); // Time order again, in case modified by the calibration
@@ -2255,7 +2255,7 @@ Bool_t CbmDeviceHitBuilderTof::BuildHits()
                 fStorDigiInd[iSmType][iSm * iNbRpc + iRpc][iCh].clear();
               }  // for( Int_t iCh = 0; iCh < iNbCh; iCh++ )
               //LOG(debug2)<<"finished V-RPC"
-              //		  << Form(" %3d %3d %3d %d %f %fx",iSmType,iSm,iRpc,fTofHitsColl->GetEntries(),dLastPosX,dLastPosY);
+              //		  << Form(" %3d %3d %3d %d %f %fx",iSmType,iSm,iRpc,fTofHitsColl->GetEntriesFast(),dLastPosX,dLastPosY);
             }  // else of if( 1 == fDigiBdfPar->GetChanOrient( iSmType, iRpc ) )
           }    // if( 0 == iChType)
           else {
@@ -2980,7 +2980,7 @@ Bool_t CbmDeviceHitBuilderTof::SendAll() { return kTRUE; }
 
 Bool_t CbmDeviceHitBuilderTof::FillHistos()
 {
-  Int_t iNbTofHits = fTofHitsColl->GetEntries();
+  Int_t iNbTofHits = fTofHitsColl->GetEntriesFast();
   CbmTofHit* pHit;
   //gGeoManager->SetTopVolume( gGeoManager->FindVolumeFast("tof_v14a") );
   gGeoManager->CdTop();
@@ -3343,12 +3343,12 @@ Bool_t CbmDeviceHitBuilderTof::FillHistos()
       if (TMath::Abs(hitpos_local[1]) > fChannelInfo->GetSizey() * fPosYMaxScal) continue;
       /*
 	LOG(debug1)<<" TofDigiMatchColl entries:"
-                <<fTofDigiMatchColl->GetEntries()
+                <<fTofDigiMatchColl->GetEntriesFast()
                 ;
       */
-      if (iHitInd > fTofDigiMatchColl->GetEntries()) {
+      if (iHitInd > fTofDigiMatchColl->GetEntriesFast()) {
         LOG(error) << " Inconsistent DigiMatches for Hitind " << iHitInd
-                   << ", TClonesArraySize: " << fTofDigiMatchColl->GetEntries();
+                   << ", TClonesArraySize: " << fTofDigiMatchColl->GetEntriesFast();
       }
       CbmMatch* digiMatch = (CbmMatch*) fTofDigiMatchColl->At(iHitInd);
       /*

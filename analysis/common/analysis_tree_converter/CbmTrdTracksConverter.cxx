@@ -63,9 +63,9 @@ void CbmTrdTracksConverter::FillTrdTracks()
   if (it == indexes_map_->end()) { throw std::runtime_error(match_to_ + " is not found to match with TOF hits"); }
   auto rec_tracks_map = it->second;
 
-  trd_tracks_->Reserve(cbm_global_tracks_->GetEntries());
+  trd_tracks_->Reserve(cbm_global_tracks_->GetEntriesFast());
 
-  for (Int_t igt = 0; igt < cbm_global_tracks_->GetEntries(); igt++) {
+  for (Int_t igt = 0; igt < cbm_global_tracks_->GetEntriesFast(); igt++) {
     const auto* global_track = static_cast<const CbmGlobalTrack*>(cbm_global_tracks_->At(igt));
 
     Int_t itrd = global_track->GetTrdTrackIndex();

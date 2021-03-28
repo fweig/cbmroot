@@ -892,9 +892,9 @@ Bool_t CbmTofDigitize::FillHistos() {
      return kTRUE;
    }
 
-   Int_t nTofPoint = fTofPointsColl->GetEntries();
-   Int_t nTracks   = fMcTracksColl->GetEntries();
-  // Int_t nTofDigi  = fDigis->GetEntries();
+   Int_t nTofPoint = fTofPointsColl->GetEntriesFast();
+   Int_t nTracks   = fMcTracksColl->GetEntriesFast();
+  // Int_t nTofDigi  = fDigis->GetEntriesFast();
    Int_t iNbTofTracks     = 0;
    Double_t nTofFired  = 0;
    Double_t dProcessTime = fdDigitizeTime + fdMergeTime;
@@ -1511,8 +1511,8 @@ Bool_t CbmTofDigitize::DigitizeDirectClusterSize() {
   CbmTofPoint* pPoint;
   CbmMCTrack* pMcTrk;
 
-  Int_t nTofPoint = fTofPointsColl->GetEntries();
-  Int_t nMcTracks = fMcTracksColl->GetEntries();
+  Int_t nTofPoint = fTofPointsColl->GetEntriesFast();
+  Int_t nMcTracks = fMcTracksColl->GetEntriesFast();
 
   // Prepare the temporary storing of the Track/Point/Digi info
   if (kTRUE == fDigiBdfPar->UseOneGapPerTrk()) {
@@ -2098,8 +2098,8 @@ Bool_t CbmTofDigitize::DigitizeFlatDisc() {
   CbmTofPoint* pPoint;
   CbmMCTrack* pMcTrk;
 
-  Int_t nTofPoint = fTofPointsColl->GetEntries();
-  Int_t nMcTracks = fMcTracksColl->GetEntries();
+  Int_t nTofPoint = fTofPointsColl->GetEntriesFast();
+  Int_t nMcTracks = fMcTracksColl->GetEntriesFast();
 
   // Prepare the temporary storing of the Track/Point/Digi info
   if (kTRUE == fDigiBdfPar->UseOneGapPerTrk()) {
@@ -3137,8 +3137,8 @@ Bool_t CbmTofDigitize::DigitizeGaussCharge() {
   CbmTofPoint* pPoint;
   CbmMCTrack* pMcTrk;
 
-  Int_t nTofPoint = fTofPointsColl->GetEntries();
-  Int_t nMcTracks = fMcTracksColl->GetEntries();
+  Int_t nTofPoint = fTofPointsColl->GetEntriesFast();
+  Int_t nMcTracks = fMcTracksColl->GetEntriesFast();
 
   // Prepare the temporary storing of the Track/Point/Digi info
   if (kTRUE == fDigiBdfPar->UseOneGapPerTrk()) {

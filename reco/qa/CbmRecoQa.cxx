@@ -237,7 +237,7 @@ void CbmRecoQa::record(std::string decName, int decNum) {
       TVector3 mcPos(.0, .0, .0);
       TVector3 hitErr(.0, .0, .0);
 
-      int nEnt = listHits->GetEntries();
+      int nEnt = listHits->GetEntriesFast();
       if (verbosity > 2)
         LOG(info) << "CbmRecoQa for " << decName << " found " << nEnt
                   << " Hit Entries";
@@ -348,7 +348,7 @@ void CbmRecoQa::record(std::string decName, int decNum) {
       TVector3 mcPos(.0, .0, .0);
       TVector3 hitErr(.0, .0, .0);
 
-      int nEnt = listHits->GetEntries();
+      int nEnt = listHits->GetEntriesFast();
       if (verbosity > 2)
         LOG(info) << "CbmRecoQa for " << decName << " found " << nEnt
                   << " Hit Entries";
@@ -405,7 +405,7 @@ void CbmRecoQa::record(std::string decName, int decNum) {
       TVector3 mcPos(.0, .0, .0);
       TVector3 hitErr(.0, .0, .0);
 
-      int nEnt = listHits->GetEntries();
+      int nEnt = listHits->GetEntriesFast();
       if (verbosity > 2)
         LOG(info) << "CbmRecoQa for " << decName << " found " << nEnt
                   << " Hit Entries";

@@ -222,7 +222,7 @@ InitStatus CbmMuchSegmentManual::Init() {
   // Get MUCH geometry parameter container
   fStations = fGeoPar->GetStations();
   if (!fStations) Fatal("Init", "No input array of MUCH stations.");
-  if (fStations->GetEntries() != fNStations)
+  if (fStations->GetEntriesFast() != fNStations)
     Fatal("Init", "Incorrect number of stations.");
 
   if (fDebug) {
@@ -247,7 +247,7 @@ InitStatus CbmMuchSegmentManual::Init() {
 
 // -----   Public method SegmentMuch  --------------------------------------
 void CbmMuchSegmentManual::SegmentMuch() {
-  for (Int_t iStation = 0; iStation < fStations->GetEntries(); ++iStation) {
+  for (Int_t iStation = 0; iStation < fStations->GetEntriesFast(); ++iStation) {
     CbmMuchStation* station = (CbmMuchStation*) fStations->At(iStation);
 
     Int_t nLayers = station->GetNLayers();
@@ -691,7 +691,7 @@ void CbmMuchSegmentManual::Print(Option_t*) const {
   Int_t nTotStraws   = 0;
   printf("====================================================================="
          "============================\n");
-  for (Int_t iStation = 0; iStation < fStations->GetEntries(); ++iStation) {
+  for (Int_t iStation = 0; iStation < fStations->GetEntriesFast(); ++iStation) {
     CbmMuchStation* station = (CbmMuchStation*) fStations->At(iStation);
     Int_t nGems             = 0;
     Int_t nStraws           = 0;

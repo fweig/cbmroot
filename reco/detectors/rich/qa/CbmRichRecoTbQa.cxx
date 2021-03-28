@@ -255,8 +255,8 @@ void CbmRichRecoTbQa::Exec(Option_t* /*option*/) {
 
 void CbmRichRecoTbQa::Process() {
   Int_t nofRichDigis = fDigiMan->GetNofDigis(ECbmModuleId::kRich);
-  Int_t nofRichHits  = fRichHits->GetEntries();
-  Int_t nofRichRings = fRichRings->GetEntries();
+  Int_t nofRichHits  = fRichHits->GetEntriesFast();
+  Int_t nofRichRings = fRichRings->GetEntriesFast();
   fHM->H1("fhNofRichDigisPerTS")->Fill(nofRichDigis);
   fHM->H1("fhNofRichHitsPerTS")->Fill(nofRichHits);
   fHM->H1("fhNofRichRingsPerTS")->Fill(nofRichRings);

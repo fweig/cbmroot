@@ -122,7 +122,7 @@ void CbmMuchGeoScheme::Init(TObjArray* stations, Int_t flag) {
 
   if (!fInitialized) {
     fStations = stations;
-    //LOG(info) <<" enter ini loop  check"<<fStations->GetEntries()<<"    "<<stations->GetEntries();
+    //LOG(info) <<" enter ini loop  check"<<fStations->GetEntriesFast()<<"    "<<stations->GetEntriesFast();
     fGeoID       = flag;
     fInitialized = kTRUE;
   }
@@ -216,7 +216,7 @@ void CbmMuchGeoScheme::InitModules() {
 CbmMuchStation* CbmMuchGeoScheme::GetStation(Int_t iStation) const {
 
   if (!fStations) return nullptr;
-  Bool_t result = (iStation >= 0) || (iStation < fStations->GetEntries());
+  Bool_t result = (iStation >= 0) || (iStation < fStations->GetEntriesFast());
 
   return result ? (CbmMuchStation*) fStations->At(iStation) : nullptr;
 }

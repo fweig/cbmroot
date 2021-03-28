@@ -331,7 +331,7 @@ void PairAnalysis::ProcessMC()
 
   // signals to be studied
   if (!fSignalsMC) return;
-  Int_t nSignals = fSignalsMC->GetEntries();
+  Int_t nSignals = fSignalsMC->GetEntriesFast();
   if (!nSignals) return;
 
   //loop over all MC data and Fill the HF, CF containers and histograms if they exist

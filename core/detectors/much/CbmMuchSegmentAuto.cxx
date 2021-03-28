@@ -133,9 +133,9 @@ InitStatus CbmMuchSegmentAuto::Init() {
 
   fStations = fGeoPar->GetStations();
   if (!fStations) Fatal("Init", "No input array of MUCH stations.");
-  if (fNStations != fStations->GetEntries())
+  if (fNStations != fStations->GetEntriesFast())
     Fatal("Init", "Incorrect number of stations set.");
-  //fNStations = fStations->GetEntries();
+  //fNStations = fStations->GetEntriesFast();
   fHistHitDensity = new TH1D*[fNStations];
 
   for (Int_t i = 0; i < fNStations; i++) {
@@ -508,7 +508,7 @@ void CbmMuchSegmentAuto::Print(Option_t*) const {
   Int_t nTotStraws   = 0;
   printf("====================================================================="
          "============================\n");
-  for (Int_t iStation = 0; iStation < fStations->GetEntries(); ++iStation) {
+  for (Int_t iStation = 0; iStation < fStations->GetEntriesFast(); ++iStation) {
     CbmMuchStation* station = (CbmMuchStation*) fStations->At(iStation);
     Int_t nGems             = 0;
     Int_t nStraws           = 0;

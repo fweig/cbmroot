@@ -91,8 +91,8 @@ void CbmMuchHitProducerIdeal::Exec(Option_t*) {
   }
   eventNo++;
   LOG(info) << "CbmMuchHitProducerIdeal::Exec: eventNo=" << eventNo
-            << " nofPoints=" << fMuchPoints->GetEntries()
-            << " nofHits=" << fMuchPixelHits->GetEntries();
+            << " nofPoints=" << fMuchPoints->GetEntriesFast()
+            << " nofHits=" << fMuchPixelHits->GetEntriesFast();
 }
 
 void CbmMuchHitProducerIdeal::Finish() {}

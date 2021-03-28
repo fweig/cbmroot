@@ -267,9 +267,9 @@ void CbmTofCalibrator::FillCalHist(CbmTofTracklet* pTrk, Int_t iOpt, CbmEvent* t
     Int_t iEA  = pTrk->GetTofHitIndex(iHit);
     Int_t iTSA = fTofFindTracks->GetTofHitIndex(iEA);
 
-    if (iTSA > fTofDigiMatchColl->GetEntries()) {
+    if (iTSA > fTofDigiMatchColl->GetEntriesFast()) {
       LOG(error) << " Inconsistent DigiMatches for Hitind " << iTSA
-                 << ", TClonesArraySize: " << fTofDigiMatchColl->GetEntries();
+                 << ", TClonesArraySize: " << fTofDigiMatchColl->GetEntriesFast();
     }
     CbmMatch* digiMatch = (CbmMatch*) fTofDigiMatchColl->At(iTSA);
 

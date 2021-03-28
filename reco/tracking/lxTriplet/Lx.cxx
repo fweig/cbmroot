@@ -506,7 +506,7 @@ void LxFinderTriplet::Exec(Option_t*) {
   listRecoTracks->Clear();
 
   // Read MC tracks
-  Int_t nEnt = listMCTracks->GetEntries();
+  Int_t nEnt = listMCTracks->GetEntriesFast();
   cout << "There are: " << nEnt << " of MC tracks" << endl;
   LxMCTrack mcTrack;
 
@@ -540,7 +540,7 @@ void LxFinderTriplet::Exec(Option_t*) {
     MCTracks.push_back(mcTrack);
   }
 
-  nEnt = listStsPts->GetEntries();
+  nEnt = listStsPts->GetEntriesFast();
   cout << "There are: " << nEnt << " of STS MC points" << endl;
 
   for (int i = 0; i < nEnt; ++i) {
@@ -579,7 +579,7 @@ void LxFinderTriplet::Exec(Option_t*) {
     }
   }
 
-  nEnt = listMuchPts->GetEntries();
+  nEnt = listMuchPts->GetEntriesFast();
   cout << "There are: " << nEnt << " of MUCH MC points" << endl;
   LxMCPoint mcPoint;
 
@@ -732,7 +732,7 @@ void LxFinderTriplet::Exec(Option_t*) {
 #endif  //MAKE_HISTOS
 
   // Read MUCH pixel hits.
-  nEnt = muchPixelHits->GetEntries();
+  nEnt = muchPixelHits->GetEntriesFast();
   cout << "There are: " << nEnt << " of MUCH pixel hits" << endl;
 
   Double_t minXErr = 1000;
@@ -858,7 +858,7 @@ void LxFinderTriplet::Exec(Option_t*) {
   cout << "Execution duration 5 was: " << exeDuration << endl;
   caSpace.FitTracks();
   //cout << "maxReferencedPtsIndex=" << maxReferencedPtsIndex << " mcPtsCount=" << mcPtsCount << " GEF=" << listMuchPts->GetEntriesFast() << endl;
-  //cout << "Hits=" << muchPixelHits->GetEntries() << " clusters=" << listMuchClusters->GetEntries() << " digi ms=" << listMuchPixelDigiMatches->GetEntries() << endl;
+  //cout << "Hits=" << muchPixelHits->GetEntriesFast() << " clusters=" << listMuchClusters->GetEntriesFast() << " digi ms=" << listMuchPixelDigiMatches->GetEntriesFast() << endl;
   //sleep(3);
 
   /////////////////////////////////////////////////////////////////////////////////
@@ -866,7 +866,7 @@ void LxFinderTriplet::Exec(Option_t*) {
   /////////////////////////////////////////////////////////////////////////////////
 
   // STS-tracks fulfilling the limitations peculiar for muons are picked up in the loop below.
-  nEnt = listStsTracks->GetEntries();
+  nEnt = listStsTracks->GetEntriesFast();
 
   for (int i = 0; i < nEnt; ++i) {
     CbmStsTrack* stsTrack = LX_DYNAMIC_CAST<CbmStsTrack*>(listStsTracks->At(i));

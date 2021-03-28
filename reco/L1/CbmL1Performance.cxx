@@ -2407,7 +2407,7 @@ void CbmL1::InputPerformance() {
 
   map<unsigned int, unsigned int>::iterator it;
   Int_t nMC = -1;
-  if (listStsPts) { nMC = listStsPts->GetEntries(); }
+  if (listStsPts) { nMC = listStsPts->GetEntriesFast(); }
 
   if (listStsHits && listStsHitMatch) {
     for (unsigned int iH = 0; iH < vStsHits.size(); iH++) {
@@ -2508,7 +2508,7 @@ void CbmL1::InputPerformance() {
 
 
   if (listMvdHits && listMvdHitMatches) {
-    Int_t nEnt = listMvdHits->GetEntries();
+    Int_t nEnt = listMvdHits->GetEntriesFast();
     for (int j = 0; j < nEnt; j++) {
 
       CbmMvdHit* sh = L1_DYNAMIC_CAST<CbmMvdHit*>(listMvdHits->At(j));
@@ -2805,7 +2805,7 @@ void CbmL1::InputPerformance() {
 
   // strips   Not ended
   //   if( listCbmStsDigi ){
-  //     Int_t nEnt = listCbmStsDigi->GetEntries();
+  //     Int_t nEnt = listCbmStsDigi->GetEntriesFast();
   //     for (int j=0; j < nEnt; j++ ){
   //       CbmStsDigi *digi = (CbmStsDigi*) listCbmStsDigi->At(j);
   // //  = sh->GetNLinks(0);

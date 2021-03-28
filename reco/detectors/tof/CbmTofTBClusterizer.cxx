@@ -411,15 +411,15 @@ void CbmTofTBClusterizer::Exec(Option_t* option) {
   Double_t dMaxPairTimeDist  = 3.2;
   Double_t dMaxClustTimeDist = 0.2;
   Double_t dMaxSpaceDist     = fDigiBdfPar->GetMaxDistAlongCh();
-  Int_t iNbTofDigi           = fTofDigis->GetEntries();
+  Int_t iNbTofDigi           = fTofDigis->GetEntriesFast();
 
   LOG(debug) << GetName() << ": Input " << iInputNr << ", event " << iEventNr
              << ", event time " << dEventTime << " ns"
              << ", TOF digis: " << iNbTofDigi;
   /*map<pair<Int_t, Int_t>, list<Int_t> > tofPointDigiInds;
-
-   Int_t nofTofPoints = fTofPoints->GetEntries();
-
+   
+   Int_t nofTofPoints = fTofPoints->GetEntriesFast();
+   
    for(Int_t iDigInd = 0; iDigInd < iNbTofDigi; ++iDigInd)
    {
       CbmTofDigiExp* pDigi = static_cast<CbmTofDigiExp*> (fTofDigis->At(iDigInd));

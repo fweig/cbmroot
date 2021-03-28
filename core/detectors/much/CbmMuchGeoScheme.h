@@ -75,8 +75,8 @@ public:
     return CbmMuchAddress::GetElementId(address, kMuchLayerSide);
   }
 
-  //  fStations->GetEntries();
-  Int_t GetNStations() const { return fStations->GetEntries(); }
+  //  fStations->GetEntriesFast();
+  Int_t GetNStations() const { return fStations->GetEntriesFast(); }
   Int_t GetNAbsorbers() const { return fNabs; }
   TObjArray* GetStations() const { return fStations; }
   TObjArray* GetAbsorbers() const { return fAbsorbers; }

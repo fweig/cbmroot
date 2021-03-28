@@ -128,7 +128,7 @@ CbmTrdModuleRec* CbmTrdHitProducer::AddModule(Int_t address, TGeoPhysicalNode* n
 // ---- processCluster ----
 UInt_t CbmTrdHitProducer::processClusters()
 {
-  Int_t nclusters = fClusters->GetEntries();
+  Int_t nclusters = fClusters->GetEntriesFast();
 
   for (Int_t icluster = 0; icluster < nclusters; icluster++) {
     processCluster(icluster);

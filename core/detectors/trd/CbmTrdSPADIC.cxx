@@ -197,7 +197,7 @@ void CbmTrdSPADIC::Exec(Option_t*) {
     moduleDigiNotTriggerMap;  //<ModuleAddress, <combiId, digiId> >
   std::map<Int_t, std::list<std::pair<Int_t, Int_t>>>
     moduleDigiTriggerMap;  //<ModuleAddress, <combiId, digiId> >
-  Int_t nDigis = fDigis->GetEntries();
+  Int_t nDigis = fDigis->GetEntriesFast();
 
   TH1D* spadicPulse =
     new TH1D("spadicPulse",

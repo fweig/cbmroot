@@ -940,7 +940,7 @@ void CbmTrdQa::Exec(Option_t*) {
   std::map<Int_t, Int_t> McTrackNeighbourHitMap;
   // MC-points
   if (fP && fT) {
-    nEntries = fPoints->GetEntries();
+    nEntries = fPoints->GetEntriesFast();
     printf("%02i Points\n", nEntries);
 
     std::map<Int_t, Int_t> hasBeenUsedTrack;
@@ -1265,7 +1265,7 @@ void CbmTrdQa::Exec(Option_t*) {
 
   //Clusters
   if (fC) {
-    nEntries = fClusters->GetEntries();
+    nEntries = fClusters->GetEntriesFast();
     printf("%i\n", nEntries);
     for (Int_t iCluster = 0; iCluster < nEntries; iCluster++) {
       cluster         = (CbmTrdCluster*) fClusters->At(iCluster);
@@ -1309,7 +1309,7 @@ void CbmTrdQa::Exec(Option_t*) {
 
   //Hits
   if (fH) {
-    nEntries = fHits->GetEntries();
+    nEntries = fHits->GetEntriesFast();
     printf("%i Hits\n", nEntries);
     for (Int_t iHit = 0; iHit < nEntries; iHit++) {
       hit = (CbmTrdHit*) fHits->At(iHit);

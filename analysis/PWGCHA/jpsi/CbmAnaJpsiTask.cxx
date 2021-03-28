@@ -609,7 +609,7 @@ void CbmAnaJpsiTask::FillRichRingNofHits() {
 }
 
 void CbmAnaJpsiTask::MCPairs() {
-  Int_t nMcTracks = fMcTracks->GetEntries();
+  Int_t nMcTracks = fMcTracks->GetEntriesFast();
   for (Int_t i = 0; i < nMcTracks; i++) {
     CbmMCTrack* mctrack = (CbmMCTrack*) fMcTracks->At(i);
     Bool_t isMcGammaElectron =
@@ -902,7 +902,7 @@ void CbmAnaJpsiTask::IsRecoTrackAccepted(CbmAnaJpsiCandidate* cand) {
 }
 
 void CbmAnaJpsiTask::SingleParticleAcceptance() {
-  Int_t nMcTracks = fMcTracks->GetEntries();
+  Int_t nMcTracks = fMcTracks->GetEntriesFast();
   for (Int_t i = 0; i < nMcTracks; i++) {
     CbmMCTrack* mctrack = (CbmMCTrack*) fMcTracks->At(i);
     if (CbmAnaJpsiUtils::IsMcSignalElectron(mctrack)) {
@@ -920,7 +920,7 @@ void CbmAnaJpsiTask::SingleParticleAcceptance() {
 }
 
 void CbmAnaJpsiTask::PairMcAndAcceptance() {
-  Int_t nMcTracks = fMcTracks->GetEntries();
+  Int_t nMcTracks = fMcTracks->GetEntriesFast();
   for (Int_t iP = 0; iP < nMcTracks; iP++) {
     CbmMCTrack* mctrackP       = (CbmMCTrack*) fMcTracks->At(iP);
     Bool_t isMcSignalElectronP = CbmAnaJpsiUtils::IsMcSignalElectron(mctrackP);

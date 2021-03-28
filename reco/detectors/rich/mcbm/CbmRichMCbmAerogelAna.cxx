@@ -265,7 +265,7 @@ void CbmRichMCbmAerogelAna::Exec(Option_t* /*option*/) {
     }
   }
 
-  int nofRichHits = fRichHits->GetEntries();
+  int nofRichHits = fRichHits->GetEntriesFast();
   fHM->H1("fhNofRichHitsInTimeslice")->Fill(nofRichHits);
   fHM->H1("fhHitsInTimeslice")->Fill(fEventNum, nofRichHits);
   for (int iH = 0; iH < nofRichHits; iH++) {
@@ -292,7 +292,7 @@ void CbmRichMCbmAerogelAna::Exec(Option_t* /*option*/) {
       auto iRichHit = ev->GetIndex(ECbmDataType::kRichHit, j);
       evRichHitIndx.push_back(iRichHit);
 
-      int nofRichRings = fRichRings->GetEntries();
+      int nofRichRings = fRichRings->GetEntriesFast();
       for (int l = 0; l < nofRichRings; l++) {
         CbmRichRing* ring = static_cast<CbmRichRing*>(fRichRings->At(l));
         auto NofRingHits  = ring->GetNofHits();
@@ -362,7 +362,7 @@ void CbmRichMCbmAerogelAna::Exec(Option_t* /*option*/) {
 }
 
 void CbmRichMCbmAerogelAna::RichRings() {
-  int nofRichRings = fRichRings->GetEntries();
+  int nofRichRings = fRichRings->GetEntriesFast();
   //fHM->H1("fhNofRichRingsInTimeslice")->Fill(nofRichRings);
   for (int i = 0; i < nofRichRings; i++) {
     CbmRichRing* ring = static_cast<CbmRichRing*>(fRichRings->At(i));

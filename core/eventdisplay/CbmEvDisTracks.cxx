@@ -121,7 +121,7 @@ void CbmEvDisTracks::Exec(Option_t* option) {
 
     Reset();
 
-    LOG(debug4) << " CbmEvDisTracks:: NTrks " << fTrackList->GetEntries();
+    LOG(debug4) << " CbmEvDisTracks:: NTrks " << fTrackList->GetEntriesFast();
     Int_t TMul[10] = {10 * 0};  //FIXME - don't use constants in code
 
     for (Int_t iOpt = 0; iOpt < 2; iOpt++)

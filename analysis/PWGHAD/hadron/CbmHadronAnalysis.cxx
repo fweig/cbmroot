@@ -4113,7 +4113,7 @@ void CbmHadronAnalysis::ExecEvent(Option_t*) {
            Int_t iDigInd1=(digiMatch->GetLink(iLink+1)).GetIndex(); //vDigish.at(ivDigInd+1);
            LOG(debug1)<<" " << iDigInd0<<", "<<iDigInd1;
 
-           if (iDigInd0 < fTofDigisColl->GetEntries() && iDigInd1 < fTofDigisColl->GetEntries()){
+           if (iDigInd0 < fTofDigisColl->GetEntriesFast() && iDigInd1 < fTofDigisColl->GetEntriesFast()){
             CbmTofDigiExp *pDig0 = (CbmTofDigiExp*) (fTofDigisColl->At(iDigInd0));
             CbmTofDigiExp *pDig1 = (CbmTofDigiExp*) (fTofDigisColl->At(iDigInd1));
 	   }
@@ -4835,7 +4835,7 @@ void CbmHadronAnalysis::ExecEvent(Option_t*) {
         } else {  // NRIt>1; initialize from array
           if (NTHMUL[i] > 0) {
             Btt = IndTHMUL[i][0];
-            if (Btt < 0 || Btt > fTofTracks->GetEntries()) {
+            if (Btt < 0 || Btt > fTofTracks->GetEntriesFast()) {
               cout << "<E> invalid TofTrackIndex " << Btt << ", gt " << i
                    << ", NRIt " << NRIt << endl;
               Btt = -1;

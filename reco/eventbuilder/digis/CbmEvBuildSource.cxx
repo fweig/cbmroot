@@ -269,7 +269,7 @@ void CbmEvBuildSource::FillEvent(Int_t st, Int_t end) {
     digi = (CbmStsDigi*) fSlice->GetData(kSts, i);
     new ((*fSTSDigi)[fNSTSDigis]) CbmStsDigi(*digi);
     fNSTSDigis++;
-    //    cout << fSTSDigi->GetEntries() << " " << fNSTSDigis << endl;
+    //    cout << fSTSDigi->GetEntriesFast() << " " << fNSTSDigis << endl;
   }
   LOG(info) << "CbmEvBuildSource:	Event constructed. Digis used from "
             << st << " to " << end << ".";

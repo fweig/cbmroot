@@ -1093,7 +1093,7 @@ void CbmRichMCbmQaReal::Exec(Option_t* /*option*/) {
       CbmEvent* ev = static_cast<CbmEvent*>(fCbmEvent->At(0));
       /*if ((fDigiMan->GetNofDigis(ECbmModuleId::kRich)> 10) &&
              //(fDigiMan->GetNofDigis(ECbmModuleId::kSts) > 30) ||
-             //(fRichRings->GetEntries()> 0) ||
+             //(fRichRings->GetEntriesFast()> 0) ||
              (fDigiMan->GetNofDigis(ECbmModuleId::kTof) > 10)
             )*/
       if (ev != nullptr) {
@@ -1174,7 +1174,7 @@ void CbmRichMCbmQaReal::Exec(Option_t* /*option*/) {
       fHM->H1("fhRichDigisTimeLogZoom2")->Fill(digi->GetTime());
     }
 
-    int nofRichRings = fRichRings->GetEntries();
+    int nofRichRings = fRichRings->GetEntriesFast();
     for (int i = 0; i < nofRichRings; i++) {
       CbmRichRing* ring = static_cast<CbmRichRing*>(fRichRings->At(i));
       fHM->H1("fhRichRingsTimeLog")->Fill(ring->GetTime());
@@ -1218,7 +1218,7 @@ void CbmRichMCbmQaReal::Exec(Option_t* /*option*/) {
     }
   }
 
-  int nofRichHits = fRichHits->GetEntries();
+  int nofRichHits = fRichHits->GetEntriesFast();
   fHM->H1("fhNofRichHitsInTimeslice")->Fill(nofRichHits);
   fHM->H1("fhHitsInTimeslice")->Fill(fEventNum, nofRichHits);
 
@@ -1302,7 +1302,7 @@ void CbmRichMCbmQaReal::Exec(Option_t* /*option*/) {
       if (richHit->GetTime() < startTime) {
         startTime = richHit->GetTime(); /*flagRich = 1;*/
       }
-      int nofRichRings2 = fRichRings->GetEntries();
+      int nofRichRings2 = fRichRings->GetEntriesFast();
       for (int l = 0; l < nofRichRings2; l++) {
         CbmRichRing* ring = static_cast<CbmRichRing*>(fRichRings->At(l));
         auto NofRingHits  = ring->GetNofHits();
@@ -1770,7 +1770,7 @@ void CbmRichMCbmQaReal::Exec(Option_t* /*option*/) {
 }
 
 void CbmRichMCbmQaReal::RichRings() {
-  int nofRichRings = fRichRings->GetEntries();
+  int nofRichRings = fRichRings->GetEntriesFast();
   fHM->H1("fhNofRichRingsInTimeslice")->Fill(nofRichRings);
   for (int i = 0; i < nofRichRings; i++) {
     CbmRichRing* ring = static_cast<CbmRichRing*>(fRichRings->At(i));

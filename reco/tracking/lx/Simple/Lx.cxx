@@ -806,7 +806,7 @@ void LxFinder::Exec(Option_t* opt) {
 
 #ifdef MAKE_EFF_CALC
   // Read MC tracks
-  nEnt = listMCTracks->GetEntries();
+  nEnt = listMCTracks->GetEntriesFast();
   cout << "There are: " << nEnt << " of MC tracks" << endl;
   LxMCTrack mcTrack;
 
@@ -840,7 +840,7 @@ void LxFinder::Exec(Option_t* opt) {
     MCTracks.push_back(mcTrack);
   }
 
-  nEnt = listStsPts->GetEntries();
+  nEnt = listStsPts->GetEntriesFast();
   cout << "There are: " << nEnt << " of STS MC points" << endl;
 
   for (int i = 0; i < nEnt; ++i) {
@@ -879,7 +879,7 @@ void LxFinder::Exec(Option_t* opt) {
     }
   }
 
-  nEnt = listMuchPts->GetEntries();
+  nEnt = listMuchPts->GetEntriesFast();
   cout << "There are: " << nEnt << " of MUCH MC points" << endl;
   LxMCPoint mcPoint;
 
@@ -1069,7 +1069,7 @@ void LxFinder::Exec(Option_t* opt) {
     }
   } else  // (!parallMode)
   {
-    nEnt = muchPixelHits->GetEntries();
+    nEnt = muchPixelHits->GetEntriesFast();
     cout << "There are: " << nEnt << " of MUCH pixel hits" << endl;
 
     if (hitFileName != "") hitFile.StartEvent(nEnt);
@@ -1252,7 +1252,7 @@ void LxFinder::Exec(Option_t* opt) {
 
   //caSpace.FitTracks();
   //cout << "maxReferencedPtsIndex=" << maxReferencedPtsIndex << " mcPtsCount=" << mcPtsCount << " GEF=" << listMuchPts->GetEntriesFast() << endl;
-  //cout << "Hits=" << muchPixelHits->GetEntries() << " clusters=" << listMuchClusters->GetEntries() << " digi ms=" << listMuchPixelDigiMatches->GetEntries() << endl;
+  //cout << "Hits=" << muchPixelHits->GetEntriesFast() << " clusters=" << listMuchClusters->GetEntriesFast() << " digi ms=" << listMuchPixelDigiMatches->GetEntriesFast() << endl;
   //sleep(3);
 
   /////////////////////////////////////////////////////////////////////////////////
@@ -1261,7 +1261,7 @@ void LxFinder::Exec(Option_t* opt) {
 
   if (linkWithSts) {
     // STS-tracks fulfilling the limitations peculiar for muons are picked up in the loop below.
-    nEnt = listStsTracks->GetEntries();
+    nEnt = listStsTracks->GetEntriesFast();
 
     for (int i = 0; i < nEnt; ++i) {
       CbmStsTrack* stsTrack =

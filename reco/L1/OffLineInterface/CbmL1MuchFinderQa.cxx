@@ -157,10 +157,10 @@ void CbmL1MuchFinderQa::Exec(Option_t* /*option*/) {
   if (!fSTSTrackMatch) return;
   if (!fMCTracks) return;
 
-  int NHits       = fMuchHits->GetEntries();
-  int NStsTracks  = fStsTracks->GetEntries();
-  int NMuchTracks = fMuchTracks->GetEntries();
-  //int NMCTracks = fMCTracks->GetEntries();
+  int NHits       = fMuchHits->GetEntriesFast();
+  int NStsTracks  = fStsTracks->GetEntriesFast();
+  int NMuchTracks = fMuchTracks->GetEntriesFast();
+  //int NMCTracks = fMCTracks->GetEntriesFast();
 
   bool was_problem = 0;
 

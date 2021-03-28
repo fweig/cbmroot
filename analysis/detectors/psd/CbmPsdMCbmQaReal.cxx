@@ -272,7 +272,7 @@ void CbmPsdMCbmQaReal::Exec(Option_t* /*option*/) {
       }
     }
 
-    //     int nofT0Digis = fT0Digis->GetEntries();
+    //     int nofT0Digis = fT0Digis->GetEntriesFast();
     //     for (int i = 0; i < nofT0Digis; i++) {
     //         CbmDigi* digi = static_cast<CbmDigi*>(fT0Digis->At(i));
     //         fHM->H1("fhT0DigisTimeLog")->Fill(digi->GetTime() );
@@ -281,7 +281,7 @@ void CbmPsdMCbmQaReal::Exec(Option_t* /*option*/) {
     //     }
   }
 
-  int nofPsdHits = fPsdHits->GetEntries();
+  int nofPsdHits = fPsdHits->GetEntriesFast();
   fHM->H1("fhNofPsdHitsInTimeslice")->Fill(nofPsdHits);
   fHM->H1("fhHitsInTimeslice")->Fill(fEntryNum, nofPsdHits);
   for (int iH = 0; iH < nofPsdHits; iH++) {

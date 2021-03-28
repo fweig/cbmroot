@@ -214,7 +214,7 @@ void CbmTrdHitDensityQa::Exec(Option_t*) {
   const CbmTrdDigi* digi = NULL;
   CbmTrdCluster* cluster = NULL;
   if (NULL != fClusters && fNeighbourTrigger == true) {
-    Int_t nCluster = fClusters->GetEntries();
+    Int_t nCluster = fClusters->GetEntriesFast();
     for (Int_t iCluster = 0; iCluster < nCluster; iCluster++) {
       //cout << iCluster << endl;
       cluster = (CbmTrdCluster*) fClusters->At(

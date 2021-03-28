@@ -38,7 +38,7 @@ void CbmSimTracksConverter::Exec()
   auto* out_config_  = AnalysisTree::TaskManager::GetInstance()->GetConfig();
   const auto& branch = out_config_->GetBranchConfig(out_branch_);
 
-  const int nMcTracks  = cbm_mc_tracks_->GetEntries();
+  const int nMcTracks  = cbm_mc_tracks_->GetEntriesFast();
   const int imother_id = branch.GetFieldId("mother_id");
   const int igeant_id  = branch.GetFieldId("geant_process_id");
   const int in_hits    = branch.GetFieldId("n_hits_mvd");

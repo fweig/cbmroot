@@ -363,7 +363,7 @@ void CbmL1TrdTrackFinderSts::MoveOut() {
   // Move the tracks from temporary array to the output array
   vector<CbmTrdTrack*>::iterator iter;
   CbmTrdTrack* track;
-  Int_t nOut = fArrayTrdTrack->GetEntries();
+  Int_t nOut = fArrayTrdTrack->GetEntriesFast();
   for (iter = fvTrdTrack.begin(); iter != fvTrdTrack.end(); iter++) {
     track = *iter;
     if (0 == track->GetFlag()) {

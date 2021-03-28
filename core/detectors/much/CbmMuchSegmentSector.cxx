@@ -103,9 +103,9 @@ InitStatus CbmMuchSegmentSector::Init() {
 
   // Get MUCH geometry parameter container
   fStations = fGeoPar->GetStations();
-  // LOG(info)<<" Stations = "<<fStations->GetEntries()<<"     "<<fNStations;
+  // LOG(info)<<" Stations = "<<fStations->GetEntriesFast()<<"     "<<fNStations;
   if (!fStations) Fatal("Init", "No input array of MUCH stations.");
-  if (fStations->GetEntries() != fNStations)
+  if (fStations->GetEntriesFast() != fNStations)
     Fatal("Init", "Incorrect number of stations.");
 
   if (fDebug) {
@@ -126,7 +126,7 @@ InitStatus CbmMuchSegmentSector::Init() {
 
 // -----   Public method SegmentMuch  --------------------------------------
 void CbmMuchSegmentSector::SegmentMuch() {
-  for (Int_t iStation = 0; iStation < fStations->GetEntries(); ++iStation) {
+  for (Int_t iStation = 0; iStation < fStations->GetEntriesFast(); ++iStation) {
     CbmMuchStation* station = (CbmMuchStation*) fStations->At(iStation);
 
     Int_t nLayers = station->GetNLayers();

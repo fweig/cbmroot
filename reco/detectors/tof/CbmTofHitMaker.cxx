@@ -412,7 +412,7 @@ void CbmTofHitMaker::ExecEvent(Option_t* /*option*/) {
   fTofCalDigiVec->clear();
   fTofHitsColl->Clear("C");
   //fTofHitsColl->Delete();  // Computationally costly!, but hopefully safe
-  //for (Int_t i=0; i<fTofDigiMatchColl->GetEntries(); i++) ((CbmMatch *)(fTofDigiMatchColl->At(i)))->ClearLinks();  // FIXME, try to tamper memory leak (did not help)
+  //for (Int_t i=0; i<fTofDigiMatchColl->GetEntriesFast(); i++) ((CbmMatch *)(fTofDigiMatchColl->At(i)))->ClearLinks();  // FIXME, try to tamper memory leak (did not help)
   //fTofDigiMatchColl->Clear("C+L");  // leads to memory leak
   fTofDigiMatchColl->Delete();
   FairRootFileSink* bla =
@@ -1142,13 +1142,13 @@ Bool_t CbmTofHitMaker::BuildClusters() {
   fiNevtBuild++;
   LOG(debug)
     << "Build clusters from "
-    //            <<fTofDigisColl->GetEntries()<<" digis in event "<<fiNevtBuild;
+    //            <<fTofDigisColl->GetEntriesFast()<<" digis in event "<<fiNevtBuild;
     << fTofDigiVec.size() << " digis in event " << fiNevtBuild;
 
   fTRefHits = 0.;
 
   Int_t iNbTofDigi = fTofDigiVec.size();
-  //Int_t iNbTofDigi = fTofDigisColl->GetEntries();
+  //Int_t iNbTofDigi = fTofDigisColl->GetEntriesFast();
   if (iNbTofDigi > 100000) {
     LOG(warning) << "Too many digis in event " << fiNevtBuild;
     return kFALSE;
@@ -1178,7 +1178,7 @@ Bool_t CbmTofHitMaker::BuildClusters() {
       }
     }
     iNbTofDigi = fTofDigiVec.size();
-    //iNbTofDigi = fTofDigisColl->GetEntries(); // Update
+    //iNbTofDigi = fTofDigisColl->GetEntriesFast(); // Update
   }
 
   if (kTRUE) {
@@ -1237,7 +1237,7 @@ Bool_t CbmTofHitMaker::BuildClusters() {
     // Then loop over the digis array and store the Digis in separate vectors for
     // each RPC modules
 
-    //      iNbTofDigi = fTofCalDigisColl->GetEntries();
+    //      iNbTofDigi = fTofCalDigisColl->GetEntriesFast();
     iNbTofDigi = fTofCalDigiVec->size();
     for (Int_t iDigInd = 0; iDigInd < iNbTofDigi; iDigInd++) {
       //         pDigi = (CbmTofDigi*) fTofCalDigisColl->At( iDigInd );
@@ -1347,7 +1347,7 @@ Bool_t CbmTofHitMaker::MergeClusters() {
     return kFALSE;
   }
   // inspect hits
-  for (Int_t iHitInd = 0; iHitInd < fTofHitsColl->GetEntries(); iHitInd++) {
+  for (Int_t iHitInd = 0; iHitInd < fTofHitsColl->GetEntriesFast(); iHitInd++) {
     CbmTofHit* pHit = (CbmTofHit*) fTofHitsColl->At(iHitInd);
     if (NULL == pHit) continue;
 
@@ -1371,7 +1371,7 @@ Bool_t CbmTofHitMaker::MergeClusters() {
                          iRpc,
                          iCh,
                          iHitInd);
-      for (Int_t iHitInd2 = iHitInd + 1; iHitInd2 < fTofHitsColl->GetEntries();
+      for (Int_t iHitInd2 = iHitInd + 1; iHitInd2 < fTofHitsColl->GetEntriesFast();
            iHitInd2++) {
         CbmTofHit* pHit2 = (CbmTofHit*) fTofHitsColl->At(iHitInd2);
         if (NULL == pHit2) continue;
@@ -1416,7 +1416,7 @@ Bool_t CbmTofHitMaker::MergeClusters() {
                   CbmLink L0      = digiMatch->GetLink(iLink);
                   UInt_t iDigInd0 = L0.GetIndex();
                   UInt_t iDigInd1 = (digiMatch->GetLink(iLink + 1)).GetIndex();
-                  //                    if (iDigInd0 < fTofCalDigisColl->GetEntries() && iDigInd1 < fTofCalDigisColl->GetEntries()){
+                  //                    if (iDigInd0 < fTofCalDigisColl->GetEntriesFast() && iDigInd1 < fTofCalDigisColl->GetEntriesFast()){
                   if (iDigInd0 < fTofCalDigiVec->size()
                       && iDigInd1 < fTofCalDigiVec->size()) {
                     //                      CbmTofDigi *pDig0 = (CbmTofDigi*) (fTofCalDigisColl->At(iDigInd0));
@@ -1436,7 +1436,7 @@ Bool_t CbmTofHitMaker::MergeClusters() {
                   CbmLink L0      = digiMatch2->GetLink(iLink);
                   UInt_t iDigInd0 = L0.GetIndex();
                   UInt_t iDigInd1 = (digiMatch2->GetLink(iLink + 1)).GetIndex();
-                  //                    if (iDigInd0 < fTofCalDigisColl->GetEntries() && iDigInd1 < fTofCalDigisColl->GetEntries()){
+                  //                    if (iDigInd0 < fTofCalDigisColl->GetEntriesFast() && iDigInd1 < fTofCalDigisColl->GetEntriesFast()){
                   if (iDigInd0 < fTofCalDigiVec->size()
                       && iDigInd1 < fTofCalDigiVec->size()) {
                     //                      CbmTofDigi *pDig0 = (CbmTofDigi*) (fTofCalDigisColl->At(iDigInd0));
@@ -1462,7 +1462,7 @@ Bool_t CbmTofHitMaker::MergeClusters() {
                                    iRpc2,
                                    iCh2,
                                    iHitInd2,
-                                   fTofHitsColl->GetEntries())
+                                   fTofHitsColl->GetEntriesFast())
                            << Form(" DX %6.1f, DY %6.1f, DT %6.1f",
                                    xPos - xPos2,
                                    yPos - yPos2,
@@ -1483,10 +1483,10 @@ Bool_t CbmTofHitMaker::MergeClusters() {
                 fTofDigiMatchColl->Compress();
                 fTofHitsColl->Compress();
                 LOG(debug) << "MergeClusters: Compress TClonesArrays to "
-                           << fTofHitsColl->GetEntries() << ", "
-                           << fTofDigiMatchColl->GetEntries();
+                           << fTofHitsColl->GetEntriesFast() << ", "
+                           << fTofDigiMatchColl->GetEntriesFast();
                 /*
-								 for(Int_t i=iHitInd2; i<fTofHitsColl->GetEntries(); i++){ // update RefLinks
+								 for(Int_t i=iHitInd2; i<fTofHitsColl->GetEntriesFast(); i++){ // update RefLinks
 								 CbmTofHit *pHiti = (CbmTofHit*) fTofHitsColl->At( i );
 								 pHiti->SetRefId(i);
 								 }
@@ -2735,7 +2735,7 @@ Bool_t CbmTofHitMaker::BuildHits() {
                                   iSmType,
                                   iSm,
                                   iRpc,
-                                  fTofHitsColl->GetEntries(),
+                                  fTofHitsColl->GetEntriesFast(),
                                   dLastPosX,
                                   dLastPosY);
             }  // else of if( 1 == fDigiBdfPar->GetChanOrient( iSmType, iRpc ) )
@@ -3149,11 +3149,11 @@ Bool_t CbmTofHitMaker::CalibRawDigis() {
 
   }  // for( Int_t iDigInd = 0; iDigInd < nTofDigi; iDigInd++ )
 
-  //  iNbTofDigi = fTofCalDigisColl->GetEntries();  // update because of added duplicted digis
+  //  iNbTofDigi = fTofCalDigisColl->GetEntriesFast();  // update because of added duplicted digis
   iNbTofDigi =
     fTofCalDigiVec->size();  // update because of added duplicted digis
   //if(fTofCalDigisColl->IsSortable())
-  //    LOG(debug)<<"CbmTofHitMaker::BuildClusters: Sort "<<fTofCalDigisColl->GetEntries()<<" calibrated digis ";
+  //    LOG(debug)<<"CbmTofHitMaker::BuildClusters: Sort "<<fTofCalDigisColl->GetEntriesFast()<<" calibrated digis ";
   LOG(debug) << "CbmTofHitMaker::BuildClusters: Sort " << fTofCalDigiVec->size()
              << " calibrated digis ";
   if (iNbTofDigi > 1) {

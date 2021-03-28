@@ -182,9 +182,9 @@ void CbmTrdRecoQa::Exec(Option_t*) {
 
   Int_t nPoints(0), nDigis(0), nClusters(0), nHits(0);
   nDigis = CbmDigiManager::Instance()->GetNofDigis(ECbmModuleId::kTrd);
-  if (fClusters) nClusters = fClusters->GetEntries();
-  if (fMCPoints) nPoints = fMCPoints->GetEntries();
-  if (fHits) nHits = fHits->GetEntries();
+  if (fClusters) nClusters = fClusters->GetEntriesFast();
+  if (fMCPoints) nPoints = fMCPoints->GetEntriesFast();
+  if (fHits) nHits = fHits->GetEntriesFast();
 
   TH1D* digiMaxSpectrum =
     new TH1D("digiMaxSpectrum", "digiMaxSpectrum", 10000, 0, 1e-4);

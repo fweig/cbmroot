@@ -116,7 +116,7 @@ void CbmL1MuchFinder::Exec(Option_t* /*option*/) {
 
   vector<CbmL1MuchTrack> vTracks;
 
-  int NStsTracks = fStsTracks->GetEntries();
+  int NStsTracks = fStsTracks->GetEntriesFast();
 
   CbmL1MuchTrack Branches[MaxBranches];
 
@@ -244,7 +244,7 @@ void CbmL1MuchFinder::Exec(Option_t* /*option*/) {
     vpTracks.push_back(&(vTracks[i]));
   sort(vpTracks.begin(), vpTracks.end(), CbmL1MuchTrack::Compare);
 
-  int NOutTracks = fTrackCollection->GetEntries();
+  int NOutTracks = fTrackCollection->GetEntriesFast();
 
   for (int it = 0; it < NTracks; it++) {
     CbmL1MuchTrack& tr = *vpTracks[it];

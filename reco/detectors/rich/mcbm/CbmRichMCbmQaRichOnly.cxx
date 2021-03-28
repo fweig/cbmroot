@@ -300,7 +300,7 @@ void CbmRichMCbmQaRichOnly::Exec(Option_t* /*option*/) {
     }
   }
 
-  int nofRichHits = fRichHits->GetEntries();
+  int nofRichHits = fRichHits->GetEntriesFast();
   for (int iH = 0; iH < nofRichHits; iH++) {
     CbmRichHit* richHit = static_cast<CbmRichHit*>(fRichHits->At(iH));
     fHM->H2("fhRichHitXY")->Fill(richHit->GetX(), richHit->GetY());
@@ -336,7 +336,7 @@ void CbmRichMCbmQaRichOnly::Exec(Option_t* /*option*/) {
                        + (((richHit->GetAddress()) >> 24) & 0xF) * 9;
       pmtHits[pmtId]++;
 
-      int nofRichRings = fRichRings->GetEntries();
+      int nofRichRings = fRichRings->GetEntriesFast();
       for (int l = 0; l < nofRichRings; l++) {
         CbmRichRing* ring = static_cast<CbmRichRing*>(fRichRings->At(l));
 
@@ -405,7 +405,7 @@ void CbmRichMCbmQaRichOnly::Exec(Option_t* /*option*/) {
 }
 
 void CbmRichMCbmQaRichOnly::RichRings() {
-  int nofRichRings = fRichRings->GetEntries();
+  int nofRichRings = fRichRings->GetEntriesFast();
   for (int i = 0; i < nofRichRings; i++) {
     CbmRichRing* ring = static_cast<CbmRichRing*>(fRichRings->At(i));
     if (ring == nullptr) continue;

@@ -446,7 +446,7 @@ void CbmTofEventClusterizer::ExecEvent(Option_t* /*option*/)
   fTofCalDigiVec->clear();
   fTofHitsColl->Clear("C");
   //fTofHitsColl->Delete();  // Computationally costly!, but hopefully safe
-  //for (Int_t i=0; i<fTofDigiMatchColl->GetEntries(); i++) ((CbmMatch *)(fTofDigiMatchColl->At(i)))->ClearLinks();  // FIXME, try to tamper memory leak (did not help)
+  //for (Int_t i=0; i<fTofDigiMatchColl->GetEntriesFast(); i++) ((CbmMatch *)(fTofDigiMatchColl->At(i)))->ClearLinks();  // FIXME, try to tamper memory leak (did not help)
   //fTofDigiMatchColl->Clear("C+L");  // leads to memory leak
   fTofDigiMatchColl->Delete();
   FairRootFileSink* bla = (FairRootFileSink*) FairRootManager::Instance()->GetSink();
@@ -1714,7 +1714,7 @@ Bool_t CbmTofEventClusterizer::FillHistos()
 
   if (fDutId < 0) return kTRUE;
 
-  Int_t iNbTofHits = fTofHitsColl->GetEntries();
+  Int_t iNbTofHits = fTofHitsColl->GetEntriesFast();
   CbmTofHit* pHit;
   //gGeoManager->SetTopVolume( gGeoManager->FindVolumeFast("tof_v14a") );
   gGeoManager->CdTop();
@@ -1895,7 +1895,7 @@ Bool_t CbmTofEventClusterizer::FillHistos()
           for (Int_t iLink = 0; iLink < digiMatch->GetNofLinks(); iLink += 2) {  // loop over digis
             CbmLink L0      = digiMatch->GetLink(iLink);                         //vDigish.at(ivDigInd);
             UInt_t iDigInd0 = L0.GetIndex();
-            //           if (iDigInd0 < fTofCalDigisColl->GetEntries()){
+            //           if (iDigInd0 < fTofCalDigisColl->GetEntriesFast()){
             if (iDigInd0 < fTofCalDigiVec->size()) {
               //            CbmTofDigi *pDig0 = (CbmTofDigi*) (fTofCalDigisColl->At(iDigInd0));
               CbmTofDigi* pDig0 = &(fTofCalDigiVec->at(iDigInd0));
@@ -2199,11 +2199,11 @@ Bool_t CbmTofEventClusterizer::FillHistos()
       fhRpcCluPositionEvol[iDetIndx]->Fill(dTimeAna, hitpos_local[1]);
       //LOG(info) << "Fill TEvol at " << dTimeAna ;
 
-      LOG(debug1) << " TofDigiMatchColl entries:" << fTofDigiMatchColl->GetEntries();
+      LOG(debug1) << " TofDigiMatchColl entries:" << fTofDigiMatchColl->GetEntriesFast();
 
-      if (iHitInd > fTofDigiMatchColl->GetEntries()) {
+      if (iHitInd > fTofDigiMatchColl->GetEntriesFast()) {
         LOG(error) << " Inconsistent DigiMatches for Hitind " << iHitInd
-                   << ", TClonesArraySize: " << fTofDigiMatchColl->GetEntries();
+                   << ", TClonesArraySize: " << fTofDigiMatchColl->GetEntriesFast();
       }
 
       CbmMatch* digiMatch = (CbmMatch*) fTofDigiMatchColl->At(iHitInd);
@@ -2229,7 +2229,7 @@ Bool_t CbmTofEventClusterizer::FillHistos()
       for (Int_t iLink = 0; iLink < digiMatch->GetNofLinks(); iLink++) {  // loop over digis
         CbmLink L0      = digiMatch->GetLink(iLink);                      //vDigish.at(ivDigInd);
         UInt_t iDigInd0 = L0.GetIndex();
-        //         if (iDigInd0 < fTofCalDigisColl->GetEntries()){
+        //         if (iDigInd0 < fTofCalDigisColl->GetEntriesFast()){
         if (iDigInd0 < fTofCalDigiVec->size()) {
           CbmTofDigi* pDig0 = &(fTofCalDigiVec->at(iDigInd0));
           //         CbmTofDigi *pDig0 = (CbmTofDigi*) (fTofCalDigisColl->At(iDigInd0));
@@ -2252,7 +2252,7 @@ Bool_t CbmTofEventClusterizer::FillHistos()
         UInt_t iDigInd1 = (digiMatch->GetLink(iLink + 1)).GetIndex();  //vDigish.at(ivDigInd+1);
         //LOG(debug1)<<" " << iDigInd0<<", "<<iDigInd1;
 
-        //       if (iDigInd0 < fTofCalDigisColl->GetEntries() && iDigInd1 < fTofCalDigisColl->GetEntries()){
+        //       if (iDigInd0 < fTofCalDigisColl->GetEntriesFast() && iDigInd1 < fTofCalDigisColl->GetEntriesFast()){
         if (iDigInd0 < fTofCalDigiVec->size() && iDigInd1 < fTofCalDigiVec->size()) {
           //         CbmTofDigi *pDig0 = (CbmTofDigi*) (fTofCalDigisColl->At(iDigInd0));
           //         CbmTofDigi *pDig1 = (CbmTofDigi*) (fTofCalDigisColl->At(iDigInd1));
@@ -2493,7 +2493,7 @@ Bool_t CbmTofEventClusterizer::FillHistos()
           LOG(error) << "CbmTofEventClusterizer::FillHistos: invalid digi index " << iDetIndx << " digi0,1" << iDigInd0
                      << ", " << iDigInd1
                      << " - max:"
-                     //                       << fTofCalDigisColl->GetEntries()
+                     //                       << fTofCalDigisColl->GetEntriesFast()
                      << fTofCalDigiVec->size()
             //                       << " in event " << XXX
             ;
@@ -4005,13 +4005,13 @@ Bool_t CbmTofEventClusterizer::BuildClusters()
   }
   fiNevtBuild++;
   LOG(debug) << "Build clusters from "
-             //            <<fTofDigisColl->GetEntries()<<" digis in event "<<fiNevtBuild;
+             //            <<fTofDigisColl->GetEntriesFast()<<" digis in event "<<fiNevtBuild;
              << fTofDigiVec.size() << " digis in event " << fiNevtBuild;
 
   fTRefHits = 0.;
 
   Int_t iNbTofDigi = fTofDigiVec.size();
-  //Int_t iNbTofDigi = fTofDigisColl->GetEntries();
+  //Int_t iNbTofDigi = fTofDigisColl->GetEntriesFast();
   if (iNbTofDigi > 100000) {
     LOG(warning) << "Too many TOF digis in event " << fiNevtBuild;
     return kFALSE;
@@ -4240,7 +4240,7 @@ Bool_t CbmTofEventClusterizer::BuildClusters()
     // Then loop over the digis array and store the Digis in separate vectors for
     // each RPC modules
 
-    //      iNbTofDigi = fTofCalDigisColl->GetEntries();
+    //      iNbTofDigi = fTofCalDigisColl->GetEntriesFast();
     iNbTofDigi = fTofCalDigiVec->size();
     for (Int_t iDigInd = 0; iDigInd < iNbTofDigi; iDigInd++) {
       //         pDigi = (CbmTofDigi*) fTofCalDigisColl->At( iDigInd );
@@ -4325,7 +4325,7 @@ Bool_t CbmTofEventClusterizer::MergeClusters()
     return kFALSE;
   }
   // inspect hits
-  for (Int_t iHitInd = 0; iHitInd < fTofHitsColl->GetEntries(); iHitInd++) {
+  for (Int_t iHitInd = 0; iHitInd < fTofHitsColl->GetEntriesFast(); iHitInd++) {
     CbmTofHit* pHit = (CbmTofHit*) fTofHitsColl->At(iHitInd);
     if (NULL == pHit) continue;
 
@@ -4343,7 +4343,7 @@ Bool_t CbmTofEventClusterizer::MergeClusters()
       Int_t iCh    = CbmTofAddress::GetChannelId(iChId);
       LOG(debug) << "MergeClusters: Check for mergers in "
                  << Form(" SmT %d, Sm %d, Rpc %d, Ch %d - hit %d", iSmType, iSm, iRpc, iCh, iHitInd);
-      for (Int_t iHitInd2 = iHitInd + 1; iHitInd2 < fTofHitsColl->GetEntries(); iHitInd2++) {
+      for (Int_t iHitInd2 = iHitInd + 1; iHitInd2 < fTofHitsColl->GetEntriesFast(); iHitInd2++) {
         CbmTofHit* pHit2 = (CbmTofHit*) fTofHitsColl->At(iHitInd2);
         if (NULL == pHit2) continue;
         Int_t iDetId2  = (pHit2->GetAddress() & DetMask);
@@ -4375,7 +4375,7 @@ Bool_t CbmTofEventClusterizer::MergeClusters()
                   CbmLink L0      = digiMatch->GetLink(iLink);
                   UInt_t iDigInd0 = L0.GetIndex();
                   UInt_t iDigInd1 = (digiMatch->GetLink(iLink + 1)).GetIndex();
-                  //                    if (iDigInd0 < fTofCalDigisColl->GetEntries() && iDigInd1 < fTofCalDigisColl->GetEntries()){
+                  //                    if (iDigInd0 < fTofCalDigisColl->GetEntriesFast() && iDigInd1 < fTofCalDigisColl->GetEntriesFast()){
                   if (iDigInd0 < fTofCalDigiVec->size() && iDigInd1 < fTofCalDigiVec->size()) {
                     //                      CbmTofDigi *pDig0 = (CbmTofDigi*) (fTofCalDigisColl->At(iDigInd0));
                     //                      CbmTofDigi *pDig1 = (CbmTofDigi*) (fTofCalDigisColl->At(iDigInd1));
@@ -4392,7 +4392,7 @@ Bool_t CbmTofEventClusterizer::MergeClusters()
                   CbmLink L0      = digiMatch2->GetLink(iLink);
                   UInt_t iDigInd0 = L0.GetIndex();
                   UInt_t iDigInd1 = (digiMatch2->GetLink(iLink + 1)).GetIndex();
-                  //                    if (iDigInd0 < fTofCalDigisColl->GetEntries() && iDigInd1 < fTofCalDigisColl->GetEntries()){
+                  //                    if (iDigInd0 < fTofCalDigisColl->GetEntriesFast() && iDigInd1 < fTofCalDigisColl->GetEntriesFast()){
                   if (iDigInd0 < fTofCalDigiVec->size() && iDigInd1 < fTofCalDigiVec->size()) {
                     //                      CbmTofDigi *pDig0 = (CbmTofDigi*) (fTofCalDigisColl->At(iDigInd0));
                     //                      CbmTofDigi *pDig1 = (CbmTofDigi*) (fTofCalDigisColl->At(iDigInd1));
@@ -4406,7 +4406,7 @@ Bool_t CbmTofEventClusterizer::MergeClusters()
                 }
                 LOG(debug) << "MergeClusters: Found merger in neighbour "
                            << Form(" SmT %d, Sm %d, Rpc %d, Ch %d - hit %d(%d)", iSmType2, iSm2, iRpc2, iCh2, iHitInd2,
-                                   fTofHitsColl->GetEntries())
+                                   fTofHitsColl->GetEntriesFast())
                            << Form(" DX %6.1f, DY %6.1f, DT %6.1f", xPos - xPos2, yPos - yPos2, tof - tof2)
                            << Form(" Tots %6.1f - %6.1f", dTot, dTot2);
                 Double_t dTotSum = dTot + dTot2;
@@ -4423,10 +4423,10 @@ Bool_t CbmTofEventClusterizer::MergeClusters()
                 fTofDigiMatchColl->RemoveAt(iHitInd2);
                 fTofDigiMatchColl->Compress();
                 fTofHitsColl->Compress();
-                LOG(debug) << "MergeClusters: Compress TClonesArrays to " << fTofHitsColl->GetEntries() << ", "
-                           << fTofDigiMatchColl->GetEntries();
+                LOG(debug) << "MergeClusters: Compress TClonesArrays to " << fTofHitsColl->GetEntriesFast() << ", "
+                           << fTofDigiMatchColl->GetEntriesFast();
                 /*
-								 for(Int_t i=iHitInd2; i<fTofHitsColl->GetEntries(); i++){ // update RefLinks
+								 for(Int_t i=iHitInd2; i<fTofHitsColl->GetEntriesFast(); i++){ // update RefLinks
 								 CbmTofHit *pHiti = (CbmTofHit*) fTofHitsColl->At( i );
 								 pHiti->SetRefId(i);
 								 }
@@ -5363,7 +5363,7 @@ Bool_t CbmTofEventClusterizer::BuildHits()
                 fStorDigiInd[iSmType][iSm * iNbRpc + iRpc][iCh].clear();
               }  // for( Int_t iCh = 0; iCh < iNbCh; iCh++ )
               LOG(debug2) << "finished V-RPC"
-                          << Form(" %3d %3d %3d %d %f %fx", iSmType, iSm, iRpc, fTofHitsColl->GetEntries(), dLastPosX,
+                          << Form(" %3d %3d %3d %d %f %fx", iSmType, iSm, iRpc, fTofHitsColl->GetEntriesFast(), dLastPosX,
                                   dLastPosY);
             }  // else of if( 1 == fDigiBdfPar->GetChanOrient( iSmType, iRpc ) )
           }    // if( 0 == iChType)
@@ -5682,10 +5682,10 @@ Bool_t CbmTofEventClusterizer::CalibRawDigis()
 
   }  // for( Int_t iDigInd = 0; iDigInd < nTofDigi; iDigInd++ )
 
-  //  iNbTofDigi = fTofCalDigisColl->GetEntries();  // update because of added duplicted digis
+  //  iNbTofDigi = fTofCalDigisColl->GetEntriesFast();  // update because of added duplicted digis
   iNbTofDigi = fTofCalDigiVec->size();  // update because of added duplicted digis
   //if(fTofCalDigisColl->IsSortable())
-  //    LOG(debug)<<"CbmTofEventClusterizer::BuildClusters: Sort "<<fTofCalDigisColl->GetEntries()<<" calibrated digis ";
+  //    LOG(debug)<<"CbmTofEventClusterizer::BuildClusters: Sort "<<fTofCalDigisColl->GetEntriesFast()<<" calibrated digis ";
   LOG(debug) << "CbmTofEventClusterizer::BuildClusters: Sort " << fTofCalDigiVec->size() << " calibrated digis ";
   if (iNbTofDigi > 1) {
     std::vector<CbmTofDigi>* tTofCalDigiVec = nullptr;

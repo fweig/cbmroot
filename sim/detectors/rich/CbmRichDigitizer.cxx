@@ -138,7 +138,7 @@ void CbmRichDigitizer::Exec(Option_t* /*option*/) {
 }
 
 Int_t CbmRichDigitizer::ProcessMcEvent() {
-  Int_t nofRichPoints = fRichPoints->GetEntries();
+  Int_t nofRichPoints = fRichPoints->GetEntriesFast();
   LOG(debug) << fName << ": EventNum:" << fCurrentEvent
              << " InputNum:" << fCurrentInput
              << " EventTime:" << fCurrentEventTime
@@ -148,7 +148,7 @@ Int_t CbmRichDigitizer::ProcessMcEvent() {
     CbmRichPoint* point = (CbmRichPoint*) fRichPoints->At(j);
     ProcessPoint(point, j, fCurrentMCEntry, fCurrentInput);
   }
-  // cout << "nofDigis:" << fRichDigis->GetEntries() << endl;
+  // cout << "nofDigis:" << fRichDigis->GetEntriesFast() << endl;
 
   AddNoiseDigis(fCurrentMCEntry, fCurrentInput);
 
@@ -321,7 +321,7 @@ void CbmRichDigitizer::AddNoiseDigis(Int_t eventNum, Int_t inputNum) {
   Int_t nofPixels =
     CbmRichDigiMapManager::GetInstance().GetPixelAddresses().size();
   Double_t dT            = 50.;  //ns
-  Double_t nofRichPoints = fRichPoints->GetEntries();
+  Double_t nofRichPoints = fRichPoints->GetEntriesFast();
   Double_t nofNoiseDigis =
     nofRichPoints * nofPixels * dT * (fNoiseDigiRate / 1.e9);
 

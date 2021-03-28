@@ -124,10 +124,10 @@ void run_radius_correction() {
     CbmRichRingMatch* match = NULL;
     t->GetEntry(ievent);
     t1->GetEntry(ievent);
-    Int_t nofRings = fRichRings->GetEntries();
+    Int_t nofRings = fRichRings->GetEntriesFast();
     cout << "  nofRings = " << nofRings;
-    cout << "  nofMatches = " << fRichMatches->GetEntries();
-    cout << "  nofMCTracks = " << fMCTracks->GetEntries() << endl;
+    cout << "  nofMatches = " << fRichMatches->GetEntriesFast();
+    cout << "  nofMCTracks = " << fMCTracks->GetEntriesFast() << endl;
 
     for (Int_t iRing = 0; iRing < nofRings; iRing++) {
       ring = (CbmRichRing*) fRichRings->At(iRing);
@@ -137,7 +137,7 @@ void run_radius_correction() {
 
       Int_t trackId = match->GetMCTrackID();
       if (trackId == -1) continue;
-      if (trackId > fMCTracks->GetEntries()) continue;
+      if (trackId > fMCTracks->GetEntriesFast()) continue;
 
       CbmMCTrack* mcTrack = (CbmMCTrack*) fMCTracks->At(trackId);
       if (!mcTrack) continue;
@@ -236,7 +236,7 @@ void run_radius_correction() {
     //t1->GetEntry(ievent);
     t->GetEntry(ievent);
     t1->GetEntry(ievent);
-    Int_t nofRings = fRichRings->GetEntries();
+    Int_t nofRings = fRichRings->GetEntriesFast();
 
     for (Int_t iRing = 0; iRing < nofRings; iRing++) {
 
@@ -247,7 +247,7 @@ void run_radius_correction() {
 
       Int_t trackId = match->GetMCTrackID();
       if (trackId == -1) continue;
-      if (trackId > fMCTracks->GetEntries()) continue;
+      if (trackId > fMCTracks->GetEntriesFast()) continue;
 
       CbmMCTrack* mcTrack = (CbmMCTrack*) fMCTracks->At(trackId);
       if (!mcTrack) continue;

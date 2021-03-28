@@ -246,9 +246,9 @@ void CbmRichCorrection::Exec(Option_t* /*option*/) {
   //LOG(debug2) << "CbmRichCorrection : Event #" << fEventNum;
   cout << "CbmRichCorrection : Event #" << fEventNum << endl;
 
-  Int_t nofRingsInEvent = fRichRings->GetEntries();
-  Int_t nofMirrorPoints = fRichMirrorPoints->GetEntries();
-  Int_t nofHitsInEvent  = fRichHits->GetEntries();
+  Int_t nofRingsInEvent = fRichRings->GetEntriesFast();
+  Int_t nofMirrorPoints = fRichMirrorPoints->GetEntriesFast();
+  Int_t nofHitsInEvent  = fRichHits->GetEntriesFast();
   Int_t NofMCPoints     = fRichMCPoints->GetEntriesFast();
   Int_t NofMCTracks     = fMCTracks->GetEntriesFast();
   cout << "Nb of rings in evt = " << nofRingsInEvent
@@ -274,7 +274,7 @@ void CbmRichCorrection::ProjectionProducer() {
        << endl;
 
   Int_t NofMirrorPoints   = fRichMirrorPoints->GetEntriesFast();
-  Int_t NofRingsInEvent   = fRichRings->GetEntries();
+  Int_t NofRingsInEvent   = fRichRings->GetEntriesFast();
   Int_t NofGTracks        = fGlobalTracks->GetEntriesFast();
   Int_t NofRefPlanePoints = fRichRefPlanePoints->GetEntriesFast();
   Int_t NofPMTPoints      = fRichPoints->GetEntriesFast();

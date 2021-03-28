@@ -503,7 +503,7 @@ void LxTrackAna::FinishTask() {
 void LxTrackAna::Exec(Option_t*) {
   Clean();
 
-  Int_t nEnt = listMCTracks->GetEntries();
+  Int_t nEnt = listMCTracks->GetEntriesFast();
   cout << "There are: " << nEnt << " of MC tracks" << endl;
 
   for (Int_t i = 0; i < nEnt; ++i) {
@@ -519,7 +519,7 @@ void LxTrackAna::Exec(Option_t*) {
     allTracks.push_back(t);
   }
 
-  nEnt = listStsPts->GetEntries();
+  nEnt = listStsPts->GetEntriesFast();
   cout << "There are: " << nEnt << " of STS MC points" << endl;
 
   for (Int_t i = 0; i < nEnt; ++i) {
@@ -541,7 +541,7 @@ void LxTrackAna::Exec(Option_t*) {
     track->stsPoints[stationNr].push_back(point);
   }
 
-  nEnt = listMuchPts->GetEntries();
+  nEnt = listMuchPts->GetEntriesFast();
   cout << "There are: " << nEnt << " of MUCH MC points" << endl;
 
   for (Int_t i = 0; i < nEnt; ++i) {
@@ -569,7 +569,7 @@ void LxTrackAna::Exec(Option_t*) {
   }
 
   if (useHitsInStat) {
-    nEnt = listMuchPixelHits->GetEntries();
+    nEnt = listMuchPixelHits->GetEntriesFast();
     cout << "There are: " << nEnt << " of MUCH pixel hits" << endl;
 
     for (Int_t i = 0; i < nEnt; ++i) {
@@ -615,10 +615,10 @@ void LxTrackAna::Exec(Option_t*) {
       }
     }
 
-    nEnt = listMuchClusters->GetEntries();
+    nEnt = listMuchClusters->GetEntriesFast();
     cout << "There are: " << nEnt << " of MUCH clusters" << endl;
 
-    nEnt = listMuchPixelDigiMatches->GetEntries();
+    nEnt = listMuchPixelDigiMatches->GetEntriesFast();
     cout << "There are: " << nEnt << " of MUCH pixel digi matches" << endl;
   }  //if (useHitsInStat)
 

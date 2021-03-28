@@ -289,9 +289,9 @@ void CbmRichPMTMapping::Exec(Option_t* /*option*/) {
   //LOG(debug2) << "CbmRichPMTMapping : Event #" << fEventNum;
   cout << "CbmRichPMTMapping : Event #" << fEventNum << endl;
 
-  Int_t nofRingsInEvent = fRichRings->GetEntries();
-  Int_t nofMirrorPoints = fRichMirrorPoints->GetEntries();
-  Int_t nofHitsInEvent  = fRichHits->GetEntries();
+  Int_t nofRingsInEvent = fRichRings->GetEntriesFast();
+  Int_t nofMirrorPoints = fRichMirrorPoints->GetEntriesFast();
+  Int_t nofHitsInEvent  = fRichHits->GetEntriesFast();
   Int_t NofMCPoints     = fRichMCPoints->GetEntriesFast();
   Int_t NofMCTracks     = fMCTracks->GetEntriesFast();
   cout << "Nb of rings in evt = " << nofRingsInEvent
@@ -332,11 +332,11 @@ void CbmRichPMTMapping::MatchFinder() {
   cout << "//---------------------------------------- MATCH_FINDER Function "
           "----------------------------------------//"
        << endl;
-  Int_t NofMirrorPoints = fRichMirrorPoints->GetEntries();
-  Int_t NofRingsInEvent = fRichRings->GetEntries();
+  Int_t NofMirrorPoints = fRichMirrorPoints->GetEntriesFast();
+  Int_t NofRingsInEvent = fRichRings->GetEntriesFast();
   Int_t NofMCPoints     = fRichMCPoints->GetEntriesFast();
   Int_t NofMCTracks     = fMCTracks->GetEntriesFast();
-  //Int_t NofProjections = fRichProjections->GetEntries();
+  //Int_t NofProjections = fRichProjections->GetEntriesFast();
 
   Double_t x_Mirr = 0, y_Mirr = 0, z_Mirr = 0, x_PMT = 0, y_PMT = 0, z_PMT = 0;
   Double_t CenterX = 0, CenterY = 0;
@@ -460,7 +460,7 @@ void CbmRichPMTMapping::ProjectionProducer2() {
        << endl;
 
   Int_t NofMirrorPoints   = fRichMirrorPoints->GetEntriesFast();
-  Int_t NofRingsInEvent   = fRichRings->GetEntries();
+  Int_t NofRingsInEvent   = fRichRings->GetEntriesFast();
   Int_t NofGTracks        = fGlobalTracks->GetEntriesFast();
   Int_t NofRefPlanePoints = fRichRefPlanePoints->GetEntriesFast();
   Int_t NofPMTPoints      = fRichPoints->GetEntriesFast();
@@ -759,7 +759,7 @@ void CbmRichPMTMapping::ProjectionProducer() {
        << endl;
 
   Int_t NofMirrorPoints   = fRichMirrorPoints->GetEntriesFast();
-  Int_t NofRingsInEvent   = fRichRings->GetEntries();
+  Int_t NofRingsInEvent   = fRichRings->GetEntriesFast();
   Int_t NofGTracks        = fGlobalTracks->GetEntriesFast();
   Int_t NofRefPlanePoints = fRichRefPlanePoints->GetEntriesFast();
   Int_t NofPMTPoints      = fRichPoints->GetEntriesFast();
@@ -1500,8 +1500,8 @@ ClassImp(CbmRichPMTMapping)
 
   /* Old Code:
 Double_t x_PMT, y_PMT, z_PMT;
-Int_t nofMirrorPoints = fRichMirrorPoints->GetEntries();
-Int_t NofProjections = fRichProjections->GetEntries();
+Int_t nofMirrorPoints = fRichMirrorPoints->GetEntriesFast();
+Int_t NofProjections = fRichProjections->GetEntriesFast();
 cout << "Nb of Mirr_Pts: " << nofMirrorPoints << " and nb of Projections: " << NofProjections << endl;
 //FairVolume* vol;
 //vol->GetName();

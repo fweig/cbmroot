@@ -16,7 +16,7 @@ ClassImp(CbmPVFinderKF)
   Int_t CbmPVFinderKF::FindPrimaryVertex(TClonesArray* tracks,
                                          CbmVertex* vertex) {
 
-  Int_t NTracks = tracks->GetEntries();
+  Int_t NTracks = tracks->GetEntriesFast();
 
   CbmKFPrimaryVertexFinder Finder;
   CbmKFTrack* CloneArray = new CbmKFTrack[NTracks];

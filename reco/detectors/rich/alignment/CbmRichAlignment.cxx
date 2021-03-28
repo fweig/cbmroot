@@ -186,9 +186,9 @@ void CbmRichAlignment::Exec(Option_t* option) {
   //LOG(debug2) << "CbmRichAlignment : Event #" << fEventNum;
   cout << "CbmRichAlignment : Event #" << fEventNum << endl;
 
-  Int_t nofRingsInEvent = fRichRings->GetEntries();
-  Int_t nofMirrorPoints = fRichMirrorPoints->GetEntries();
-  Int_t nofHitsInEvent  = fRichHits->GetEntries();
+  Int_t nofRingsInEvent = fRichRings->GetEntriesFast();
+  Int_t nofMirrorPoints = fRichMirrorPoints->GetEntriesFast();
+  Int_t nofHitsInEvent  = fRichHits->GetEntriesFast();
   Int_t NofMCTracks     = fMCTracks->GetEntriesFast();
   //	Int_t NofMCPoints = fRichMCPoints->GetEntriesFast();
   cout << "Nb of rings in evt = " << nofRingsInEvent
@@ -213,7 +213,7 @@ void CbmRichAlignment::CalculateAnglesAndDrawDistrib() {
   Double_t trackX = 0., trackY = 0.;
   GetTrackPosition(trackX, trackY);
 
-  Int_t nofRingsInEvent = fRichRings->GetEntries();
+  Int_t nofRingsInEvent = fRichRings->GetEntriesFast();
   Float_t DistCenters, Theta_Ch, Theta_0, Angles_0;
   Float_t Pi    = 3.14159265;
   Float_t TwoPi = 2. * 3.14159265;
@@ -273,7 +273,7 @@ void CbmRichAlignment::CalculateAnglesAndDrawDistrib() {
 }
 
 void CbmRichAlignment::GetTrackPosition(Double_t& x, Double_t& y) {
-  Int_t NofProjections = fRichProjections->GetEntries();
+  Int_t NofProjections = fRichProjections->GetEntriesFast();
   //cout << "!!! NB PROJECTIONS !!! " << NofProjections << endl;
   for (Int_t iP = 0; iP < NofProjections; iP++) {
     FairTrackParam* pr = (FairTrackParam*) fRichProjections->At(iP);

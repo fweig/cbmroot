@@ -1286,7 +1286,7 @@ void CbmAnaDielectronTask::FillRichRingNofHits() {
 
 
 void CbmAnaDielectronTask::MCPairs() {
-  Int_t nMcTracks = fMCTracks->GetEntries();
+  Int_t nMcTracks = fMCTracks->GetEntriesFast();
   for (Int_t i = 0; i < nMcTracks; i++) {
     CbmMCTrack* mctrack = (CbmMCTrack*) fMCTracks->At(i);
     Int_t motherId      = mctrack->GetMotherId();
@@ -1400,7 +1400,7 @@ void CbmAnaDielectronTask::RichPmtXY() {
 }
 
 void CbmAnaDielectronTask::FillNofChargedParticlesPerEvent() {
-  Int_t nofMcTracks                 = fMCTracks->GetEntries();
+  Int_t nofMcTracks                 = fMCTracks->GetEntriesFast();
   Int_t nofChargedUrqmdParticles    = 0;
   Int_t nofChargedUrqmdParticlesAcc = 0;
   for (Int_t i = 0; i < nofMcTracks; i++) {
@@ -1435,7 +1435,7 @@ Bool_t CbmAnaDielectronTask::IsMcTrackAccepted(Int_t mcTrackInd) {
 }
 
 void CbmAnaDielectronTask::SingleParticleAcceptance() {
-  Int_t nMcTracks = fMCTracks->GetEntries();
+  Int_t nMcTracks = fMCTracks->GetEntriesFast();
   for (Int_t i = 0; i < nMcTracks; i++) {
     CbmMCTrack* mctrack = (CbmMCTrack*) fMCTracks->At(i);
     Int_t motherId      = mctrack->GetMotherId();
@@ -1472,7 +1472,7 @@ void CbmAnaDielectronTask::SingleParticleAcceptance() {
 }
 
 void CbmAnaDielectronTask::PairMcAndAcceptance() {
-  Int_t nMcTracks = fMCTracks->GetEntries();
+  Int_t nMcTracks = fMCTracks->GetEntriesFast();
   for (Int_t iP = 0; iP < nMcTracks; iP++) {
     CbmMCTrack* mctrackP = (CbmMCTrack*) fMCTracks->At(iP);
     //		Int_t motherIdP = mctrackP->GetMotherId();
@@ -1524,7 +1524,7 @@ void CbmAnaDielectronTask::PairMcAndAcceptance() {
 
 
 void CbmAnaDielectronTask::FillElPiMomHist() {
-  Int_t nMcTracks = fMCTracks->GetEntries();
+  Int_t nMcTracks = fMCTracks->GetEntriesFast();
   for (Int_t i = 0; i < nMcTracks; i++) {
     CbmMCTrack* mctrack = (CbmMCTrack*) fMCTracks->At(i);
     //       Int_t motherId = mctrack->GetMotherId();
@@ -2456,7 +2456,7 @@ void CbmAnaDielectronTask::IsElectron(Int_t globalTrackIndex,
   } else {
     // PID using MC information, a certain pi supression level can be set
     if (cand->fStsMcTrackId < 0
-        || cand->fStsMcTrackId >= fMCTracks->GetEntries()) {
+        || cand->fStsMcTrackId >= fMCTracks->GetEntriesFast()) {
       cand->fIsElectron = false;
     } else {
       CbmMCTrack* mcTrack = (CbmMCTrack*) fMCTracks->At(cand->fStsMcTrackId);

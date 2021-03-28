@@ -1299,7 +1299,7 @@ void CbmL1CATrdTrackFinderSA::TrdLayout() {
 
   TrdPar = L1_DYNAMIC_CAST<CbmGeoTrdPar*>(rtdb->findContainer("CbmGeoTrdPar"));
   TObjArray* Nodes = TrdPar->GetGeoSensitiveNodes();
-  for (Int_t i = 0; i < Nodes->GetEntries(); i++) {
+  for (Int_t i = 0; i < Nodes->GetEntriesFast(); i++) {
     FairGeoNode* node = dynamic_cast<FairGeoNode*>(Nodes->At(i));
     //FairGeoNode *node = (FairGeoNode*) Nodes->At(i);
     if (!node) continue;
@@ -1375,7 +1375,7 @@ void CbmL1CATrdTrackFinderSA::TrdLayout() {
     TrdPar = (CbmGeoTrdPar*) (rtdb->findContainer("CbmGeoTrdPar"));
     //TObjArray *Nodes = TrdPar->GetGeoSensitiveNodes();
     Nodes = TrdPar->GetGeoSensitiveNodes();
-    for( Int_t i=0;i<Nodes->GetEntries(); i++) {
+    for( Int_t i=0;i<Nodes->GetEntriesFast(); i++) {
     FairGeoNode *node = dynamic_cast<FairGeoNode*> (Nodes->At(i));
     if ( !node ) continue;
 

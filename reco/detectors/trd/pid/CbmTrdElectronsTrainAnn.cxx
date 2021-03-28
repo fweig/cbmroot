@@ -265,7 +265,7 @@ void CbmTrdElectronsTrainAnn::FillElossVectorReal() {
 }
 
 void CbmTrdElectronsTrainAnn::FillElossVectorSim() {
-  Int_t nofTrdTracks = fTrdTracks->GetEntries();
+  Int_t nofTrdTracks = fTrdTracks->GetEntriesFast();
   for (Int_t iTrdTrack = 0; iTrdTrack < nofTrdTracks; iTrdTrack++) {
     CbmTrdTrack* trdtrack = (CbmTrdTrack*) fTrdTracks->At(iTrdTrack);
     Int_t nHits           = trdtrack->GetNofHits();

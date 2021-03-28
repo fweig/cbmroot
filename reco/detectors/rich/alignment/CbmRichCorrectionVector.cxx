@@ -357,9 +357,9 @@ void CbmRichCorrectionVector::Exec(Option_t* /*option*/) {
   //LOG(debug2) << "CbmRichCorrectionVector : Event #" << fEventNum;
   cout << "CbmRichCorrectionVector : Event #" << fEventNum << endl;
 
-  Int_t nofRingsInEvent = fRichRings->GetEntries();
-  Int_t nofMirrorPoints = fRichMirrorPoints->GetEntries();
-  Int_t nofHitsInEvent  = fRichHits->GetEntries();
+  Int_t nofRingsInEvent = fRichRings->GetEntriesFast();
+  Int_t nofMirrorPoints = fRichMirrorPoints->GetEntriesFast();
+  Int_t nofHitsInEvent  = fRichHits->GetEntriesFast();
   Int_t NofMCPoints     = fRichMCPoints->GetEntriesFast();
   Int_t NofMCTracks     = fMCTracks->GetEntriesFast();
   cout << "Nb of rings in evt = " << nofRingsInEvent
@@ -399,7 +399,7 @@ void CbmRichCorrectionVector::CalculateAnglesAndDrawDistrib() {
   Double_t trackX = 0., trackY = 0.;
   GetTrackPosition(trackX, trackY);
 
-  Int_t nofRingsInEvent = fRichRings->GetEntries();
+  Int_t nofRingsInEvent = fRichRings->GetEntriesFast();
   Float_t DistCenters, Theta_Ch, Theta_0, Angles_0;
   Float_t Pi    = 3.14159265;
   Float_t TwoPi = 2. * 3.14159265;
@@ -459,7 +459,7 @@ void CbmRichCorrectionVector::CalculateAnglesAndDrawDistrib() {
 }
 
 void CbmRichCorrectionVector::GetTrackPosition(Double_t& x, Double_t& y) {
-  Int_t NofProjections = fRichProjections->GetEntries();
+  Int_t NofProjections = fRichProjections->GetEntriesFast();
   //cout << "!!! NB PROJECTIONS !!! " << NofProjections << endl;
   for (Int_t iP = 0; iP < NofProjections; iP++) {
     FairTrackParam* pr = (FairTrackParam*) fRichProjections->At(iP);
@@ -480,11 +480,11 @@ void CbmRichCorrectionVector::MatchFinder() {
   cout << "//---------------------------------------- MATCH_FINDER Function "
           "----------------------------------------//"
        << endl;
-  Int_t NofMirrorPoints = fRichMirrorPoints->GetEntries();
-  Int_t NofRingsInEvent = fRichRings->GetEntries();
+  Int_t NofMirrorPoints = fRichMirrorPoints->GetEntriesFast();
+  Int_t NofRingsInEvent = fRichRings->GetEntriesFast();
   Int_t NofMCPoints     = fRichMCPoints->GetEntriesFast();
   Int_t NofMCTracks     = fMCTracks->GetEntriesFast();
-  //Int_t NofProjections = fRichProjections->GetEntries();
+  //Int_t NofProjections = fRichProjections->GetEntriesFast();
 
   Double_t x_Mirr = 0, y_Mirr = 0, z_Mirr = 0, x_PMT = 0, y_PMT = 0, z_PMT = 0;
   Double_t CenterX = 0, CenterY = 0;
@@ -608,7 +608,7 @@ void CbmRichCorrectionVector::ProjectionProducer(TClonesArray* projectedPoint) {
        << endl;
 
   Int_t NofMirrorPoints   = fRichMirrorPoints->GetEntriesFast();
-  Int_t NofRingsInEvent   = fRichRings->GetEntries();
+  Int_t NofRingsInEvent   = fRichRings->GetEntriesFast();
   Int_t NofGTracks        = fGlobalTracks->GetEntriesFast();
   Int_t NofRefPlanePoints = fRichRefPlanePoints->GetEntriesFast();
   Int_t NofPMTPoints      = fRichPoints->GetEntriesFast();

@@ -77,9 +77,9 @@ void CbmTofHitsConverter::FillTofHits()
   if (it == indexes_map_->end()) { throw std::runtime_error(match_to_ + " is not found to match with TOF hits"); }
   auto rec_tracks_map = it->second;
 
-  tof_hits_->Reserve(cbm_global_tracks_->GetEntries());
+  tof_hits_->Reserve(cbm_global_tracks_->GetEntriesFast());
 
-  for (Int_t igt = 0; igt < cbm_global_tracks_->GetEntries(); igt++) {
+  for (Int_t igt = 0; igt < cbm_global_tracks_->GetEntriesFast(); igt++) {
     const auto* globalTrack = static_cast<const CbmGlobalTrack*>(cbm_global_tracks_->At(igt));
     const Int_t tofHitIndex = globalTrack->GetTofHitIndex();
     if (tofHitIndex < 0) continue;

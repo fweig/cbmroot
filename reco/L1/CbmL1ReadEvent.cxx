@@ -258,7 +258,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
       ToFPointsMatch.resize(0);
 
       if (fTofPoints) {
-        for (int j = 0; j < fTofHits->GetEntries(); j++) {
+        for (int j = 0; j < fTofHits->GetEntriesFast(); j++) {
 
           CbmTofHit* mh = L1_DYNAMIC_CAST<CbmTofHit*>(fTofHits->At(j));
 
@@ -368,7 +368,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
     int firstDetStrip = NStrips;
 
-    for (int j = 0; j < listMvdHits->GetEntries(); j++) {
+    for (int j = 0; j < listMvdHits->GetEntriesFast(); j++) {
       TmpHit th;
       {
         CbmMvdHit* mh = L1_DYNAMIC_CAST<CbmMvdHit*>(listMvdHits->At(j));
@@ -466,9 +466,11 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
   Int_t nEntSts = 0;
   if (listStsHits) {
 
-    if (fTimesliceMode) nEntSts = listStsHits->GetEntries();
-    else
-      nEntSts = (event ? event->GetNofData(ECbmDataType::kStsHit) : listStsHits->GetEntries());
+    if (fTimesliceMode){ 
+      nEntSts = listStsHits->GetEntriesFast();
+    } else {
+      nEntSts = (event ? event->GetNofData(ECbmDataType::kStsHit) : listStsHits->GetEntriesFast());
+    }
 
     int firstDetStrip = NStrips;
 
@@ -592,7 +594,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
   if (fMuchPixelHits) {
 
-    Int_t nEnt = fMuchPixelHits->GetEntries();
+    Int_t nEnt = fMuchPixelHits->GetEntriesFast();
 
     int firstDetStrip = NStrips;
 
@@ -701,7 +703,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
     int firstDetStrip = NStrips;
 
-    for (int j = 0; j < listTrdHits->GetEntries(); j++) {
+    for (int j = 0; j < listTrdHits->GetEntriesFast(); j++) {
       TmpHit th;
 
       CbmTrdHit* mh = L1_DYNAMIC_CAST<CbmTrdHit*>(listTrdHits->At(j));
@@ -792,7 +794,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
     int firstDetStrip = NStrips;
 
-    for (int j = 0; j < fTofHits->GetEntries(); j++) {
+    for (int j = 0; j < fTofHits->GetEntriesFast(); j++) {
       TmpHit th;
 
       CbmTofHit* mh = L1_DYNAMIC_CAST<CbmTofHit*>(fTofHits->At(j));

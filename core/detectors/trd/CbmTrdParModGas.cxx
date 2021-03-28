@@ -49,7 +49,7 @@ CbmTrdParModGas::CbmTrdParModGas(const char* title)
   TString name;
   //  Int_t val;
   TObjArray* so = s.Tokenize("/");
-  for (Int_t ie(0); ie < so->GetEntries(); ie += 2) {
+  for (Int_t ie(0); ie < so->GetEntriesFast(); ie += 2) {
     name = ((TObjString*) (*so)[ie])->String();
     if (name.EqualTo("Module"))
       fModuleId = ((TObjString*) (*so)[ie + 1])->String().Atoi();

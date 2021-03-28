@@ -459,8 +459,8 @@ void CbmStsFitPerformanceTask::Exec(Option_t* /*option*/) {
 
   if (0) {
     //    CbmKF &KF = *CbmKF::Instance();
-    int nStsHits = fStsHitArray->GetEntries();
-    int nMvdHits = fMvdHitArray->GetEntries();
+    int nStsHits = fStsHitArray->GetEntriesFast();
+    int nMvdHits = fMvdHitArray->GetEntriesFast();
     cout << "Mvd hit density..." << endl;
     for (int ih = 0; ih < nMvdHits; ih++) {
       if (ih % 100 == 0) cout << ih << endl;

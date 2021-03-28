@@ -1117,7 +1117,7 @@ void CbmTofFindTracks::Exec(Option_t* opt) {
       ExecFind(opt, tEvent);
 
       // --- In event-by-event mode: copy tracks to output array and register them to event
-      for (Int_t iTrk = 0; iTrk < fTrackArray->GetEntries(); iTrk++) {
+      for (Int_t iTrk = 0; iTrk < fTrackArray->GetEntriesFast(); iTrk++) {
         CbmTofTracklet* pTrk = (CbmTofTracklet*) fTrackArray->At(iTrk);
         new ((*fTrackArrayOut)[iNbTrks]) CbmTofTracklet(*pTrk);
         pTrk = (CbmTofTracklet*) fTrackArrayOut->At(iNbTrks);
@@ -1148,7 +1148,7 @@ void CbmTofFindTracks::ExecFind(Option_t* /*opt*/, CbmEvent* tEvent) {
   if (NULL != fTrackArray) fTrackArray->Delete();  // reset
 
   // recalibrate hits and count trackable hits
-  for (Int_t iHit = 0; iHit < fTofHitArray->GetEntries(); iHit++) {
+  for (Int_t iHit = 0; iHit < fTofHitArray->GetEntriesFast(); iHit++) {
     CbmTofHit* pHit = (CbmTofHit*) fTofHitArray->At(iHit);
     Int_t iDetId    = (pHit->GetAddress() & DetMask);
 
@@ -1269,7 +1269,7 @@ void CbmTofFindTracks::ExecFind(Option_t* /*opt*/, CbmEvent* tEvent) {
 
   CheckMaxHMul();
   // resort Hit array with respect to time, FIXME danger: links to digis become  invalid (???, check!!!)
-  // fTofHitArray->Sort(fTofHitArray->GetEntries());  // feature not available
+  // fTofHitArray->Sort(fTofHitArray->GetEntriesFast());  // feature not available
 
   if (fInspectEvent && fNTofStations > 1) {
     fStart.Set();
@@ -1811,7 +1811,7 @@ void CbmTofFindTracks::FindVertex() {
   fVTX_Z   = 0.;
   fVTXNorm = 0.;
 
-  for (Int_t iTrk = 0; iTrk < fTrackArray->GetEntries(); iTrk++) {
+  for (Int_t iTrk = 0; iTrk < fTrackArray->GetEntriesFast(); iTrk++) {
     CbmTofTracklet* pTrk = (CbmTofTracklet*) fTrackArray->At(iTrk);
     if (NULL == pTrk) continue;
     Double_t w = pTrk->GetNofHits();
@@ -1850,7 +1850,7 @@ void CbmTofFindTracks::FillHistograms(CbmEvent* tEvent) {
   // Locate reference ("beam counter") hit
   CbmTofHit* pRefHit  = NULL;
   Double_t RefMinTime = 1.E300;
-  for (Int_t iHit = 0; iHit < fTofHitArray->GetEntries();
+  for (Int_t iHit = 0; iHit < fTofHitArray->GetEntriesFast();
        iHit++) {  // loop over Hits
     CbmTofHit* pHit = (CbmTofHit*) fTofHitArray->At(iHit);
     Int_t iAddr     = (pHit->GetAddress() & DetMask);
@@ -1873,10 +1873,10 @@ void CbmTofFindTracks::FillHistograms(CbmEvent* tEvent) {
   HMul.resize(fNTofStations + 1);
   //  HMul.clear();
 
-  fhTrklMul->Fill(fTrackArray->GetEntries());
+  fhTrklMul->Fill(fTrackArray->GetEntriesFast());
 
   Int_t iTMul = 0;
-  for (Int_t iTrk = 0; iTrk < fTrackArray->GetEntries(); iTrk++) {
+  for (Int_t iTrk = 0; iTrk < fTrackArray->GetEntriesFast(); iTrk++) {
     CbmTofTracklet* pTrk = (CbmTofTracklet*) fTrackArray->At(iTrk);
     if (NULL == pTrk) continue;
     if (pTrk->GetNofHits() > fNTofStations) {
@@ -2332,7 +2332,7 @@ void CbmTofFindTracks::FillHistograms(CbmEvent* tEvent) {
               vhXY_MissedStation[iSt]->Fill(hitpos_local[0], hitpos_local[1]);
 
               // correlation analysis
-              for (Int_t iTrk1 = iTrk + 1; iTrk1 < fTrackArray->GetEntries();
+              for (Int_t iTrk1 = iTrk + 1; iTrk1 < fTrackArray->GetEntriesFast();
                    iTrk1++) {
                 CbmTofTracklet* pTrk1 =
                   (CbmTofTracklet*) fTrackArray->At(iTrk1);
@@ -2372,8 +2372,8 @@ void CbmTofFindTracks::FillHistograms(CbmEvent* tEvent) {
   if (HMul.size() > 5)
     fhTrklMul3D->Fill(
       HMul[fNTofStations], HMul[fNTofStations - 1], HMul[fNTofStations - 2]);
-  fhTrklMulNhits->Fill(fTofHitArray->GetEntries(), iTMul);
-  fhTrackingTimeNhits->Fill(fTofHitArray->GetEntries(), fdTrackingTime);
+  fhTrklMulNhits->Fill(fTofHitArray->GetEntriesFast(), iTMul);
+  fhTrackingTimeNhits->Fill(fTofHitArray->GetEntriesFast(), fdTrackingTime);
 
   // print info about special events
   if (0)
@@ -2382,20 +2382,20 @@ void CbmTofFindTracks::FillHistograms(CbmEvent* tEvent) {
         //if (HMul[fNTofStations]>0)
         //LOG(info)<<"Found "<<HMul[fNTofStations]<<" max length tracklets in event "<<fiEvent
         LOG(info) << "Found " << HMul[6] << " max length tracklets in event "
-                  << fiEvent << " within " << fTofHitArray->GetEntries()
+                  << fiEvent << " within " << fTofHitArray->GetEntriesFast()
                   << " hits ";
-        for (Int_t iTrk = 0; iTrk < fTrackArray->GetEntries(); iTrk++) {
+        for (Int_t iTrk = 0; iTrk < fTrackArray->GetEntriesFast(); iTrk++) {
           CbmTofTracklet* pTrk = (CbmTofTracklet*) fTrackArray->At(iTrk);
           if (NULL == pTrk) continue;
           pTrk->PrintInfo();
         }
       }
   if (1)
-    if (fTrackArray->GetEntries() > 25) {  // temporary
+    if (fTrackArray->GetEntriesFast() > 25) {  // temporary
       LOG(info) << "Found high track multiplicity of "
-                << fTrackArray->GetEntries() << " in event " << fiEvent
-                << " from " << fTofHitArray->GetEntries() << " hits ";
-      for (Int_t iTrk = 0; iTrk < fTrackArray->GetEntries(); iTrk++) {
+                << fTrackArray->GetEntriesFast() << " in event " << fiEvent
+                << " from " << fTofHitArray->GetEntriesFast() << " hits ";
+      for (Int_t iTrk = 0; iTrk < fTrackArray->GetEntriesFast(); iTrk++) {
         CbmTofTracklet* pTrk = (CbmTofTracklet*) fTrackArray->At(iTrk);
         if (NULL == pTrk) continue;
         pTrk->PrintInfo();
@@ -2406,15 +2406,15 @@ void CbmTofFindTracks::FillHistograms(CbmEvent* tEvent) {
     LOG(debug) << Form(
       "CbmTofFindTracks::FillHistograms NTrkl %d(%d) in event %d",
       iTMul,
-      fTrackArray->GetEntries(),
+      fTrackArray->GetEntriesFast(),
       fiEvent);
-    for (Int_t iTrk = 0; iTrk < fTrackArray->GetEntries(); iTrk++) {
+    for (Int_t iTrk = 0; iTrk < fTrackArray->GetEntriesFast(); iTrk++) {
       CbmTofTracklet* pTrk = (CbmTofTracklet*) fTrackArray->At(iTrk);
       if (NULL == pTrk) continue;
       if (
         pTrk->GetNofHits()
         > fMinNofHits) {  // for further analysis request min # of matched hits
-        for (Int_t iTrk1 = iTrk + 1; iTrk1 < fTrackArray->GetEntries();
+        for (Int_t iTrk1 = iTrk + 1; iTrk1 < fTrackArray->GetEntriesFast();
              iTrk1++) {
           CbmTofTracklet* pTrk1 = (CbmTofTracklet*) fTrackArray->At(iTrk1);
           if (NULL == pTrk1) continue;
@@ -2437,7 +2437,7 @@ void CbmTofFindTracks::FillHistograms(CbmEvent* tEvent) {
     if (HMul[uHMul] > 0) { fhTrklHMul->Fill(uHMul, HMul[uHMul]); }
   }
 
-  for (Int_t iHit = 0; iHit < fTofHitArray->GetEntries();
+  for (Int_t iHit = 0; iHit < fTofHitArray->GetEntriesFast();
        iHit++) {  // loop over Hits
     CbmTofHit* pHit = (CbmTofHit*) fTofHitArray->At(iHit);
     //    Int_t iSmType = CbmTofAddress::GetSmType( pHit->GetAddress() & DetMask ); (FU) not used
@@ -2451,7 +2451,7 @@ void CbmTofFindTracks::FillHistograms(CbmEvent* tEvent) {
   fhVTXNorm->Fill(fVTXNorm);
   if (fVTXNorm > 0.) {
     fhVTX_XY0->Fill(fVTX_X, fVTX_Y);
-    for (Int_t iTrk = 0; iTrk < fTrackArray->GetEntries(); iTrk++) {
+    for (Int_t iTrk = 0; iTrk < fTrackArray->GetEntriesFast(); iTrk++) {
       CbmTofTracklet* pTrk = (CbmTofTracklet*) fTrackArray->At(iTrk);
       if (NULL == pTrk) continue;
       if (Double_t w = pTrk->GetNofHits() > (Double_t) fMinNofHits) {
@@ -2465,7 +2465,7 @@ void CbmTofFindTracks::FillHistograms(CbmEvent* tEvent) {
     }
   }
   if (0 == fMapStationRpcId[0]) {  // Generated Pseudo TofHit at origin
-    fTofHitArray->RemoveAt(fTofHitArray->GetEntries() - 1);  // remove added hit
+    fTofHitArray->RemoveAt(fTofHitArray->GetEntriesFast() - 1);  // remove added hit
   }
 }
 
@@ -2577,7 +2577,7 @@ void CbmTofFindTracks::ResetStationsFired() {
 void CbmTofFindTracks::FillUHits() {
   // collect unused hits in active tracking stations
   Int_t iNbUHits = 0;
-  for (Int_t iHit = 0; iHit < fTofHitArray->GetEntries(); iHit++) {
+  for (Int_t iHit = 0; iHit < fTofHitArray->GetEntriesFast(); iHit++) {
     CbmTofHit* pHit = (CbmTofHit*) fTofHitArray->At(iHit);
     Int_t iAddr     = (pHit->GetAddress() & DetMask);
     if (pHit->GetFlag() < 100. && GetStationOfAddr(iAddr) < fNTofStations) {
@@ -2591,7 +2591,7 @@ Bool_t CbmTofFindTracks::CheckHit2Track(CbmTofHit* pHit) {
   Int_t iAddr = (pHit->GetAddress() & DetMask);
   Int_t iSt   = GetStationOfAddr(iAddr);
   if (iSt < 0 || iSt >= GetNofStations()) return kFALSE;
-  for (Int_t iTrk = 0; iTrk < fTrackArray->GetEntries(); iTrk++) {
+  for (Int_t iTrk = 0; iTrk < fTrackArray->GetEntriesFast(); iTrk++) {
     CbmTofTracklet* pTrk = (CbmTofTracklet*) fTrackArray->At(iTrk);
     if (NULL == pTrk) continue;
     Double_t dDX = pHit->GetX() - pTrk->GetFitX(pHit->GetZ());

@@ -1178,7 +1178,7 @@ void CbmTofExtendTracks::FindVertex()
   fVTXNorm          = 0.;
   Int_t fMinNofHits = 3;
 
-  for (Int_t iTrk = 0; iTrk < fTofTrackArrayIn->GetEntries(); iTrk++) {
+  for (Int_t iTrk = 0; iTrk < fTofTrackArrayIn->GetEntriesFast(); iTrk++) {
     CbmTofTracklet* pTrk = (CbmTofTracklet*) fTofTrackArrayIn->At(iTrk);
     if (NULL == pTrk) continue;
     Double_t w = pTrk->GetNofHits();

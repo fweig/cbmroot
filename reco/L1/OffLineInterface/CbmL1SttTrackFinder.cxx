@@ -351,7 +351,7 @@ void CbmL1SttTrackFinder::Exec(Option_t* /*option*/) {
     vpTracks.push_back(&(vTracks[i]));
   sort(vpTracks.begin(), vpTracks.end(), CbmL1SttTrack::Compare);
 
-  int NOutTracks = fTrackCollection->GetEntries();
+  int NOutTracks = fTrackCollection->GetEntriesFast();
 
   for (int it = 0; it < NTracks; ++it) {
     CbmL1SttTrack& tr = *vpTracks[it];

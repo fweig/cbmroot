@@ -4130,7 +4130,7 @@ Bool_t CbmTofAnaTestbeam::CreateHistos() {
 Bool_t CbmTofAnaTestbeam::FillHistos() {
   std::set<Int_t> DutHitSet;
 
-  for (Int_t iHitInd = 0; iHitInd < fTofHitsColl->GetEntries(); iHitInd++) {
+  for (Int_t iHitInd = 0; iHitInd < fTofHitsColl->GetEntriesFast(); iHitInd++) {
     CbmTofHit* pHit = (CbmTofHit*) fTofHitsColl->At(iHitInd);
     Int_t iDetId    = (pHit->GetAddress() & DetMask);
 
@@ -4228,7 +4228,7 @@ Bool_t CbmTofAnaTestbeam::FillHistos() {
   Int_t iNbTofHits, iNbTofTracks;
 
   //   iNbTofDigis   = fTofDigisColl->GetEntriesFast();
-  iNbTofHits = fTofHitsColl->GetEntries();
+  iNbTofHits = fTofHitsColl->GetEntriesFast();
 
   /*
    LOG(info)<<Form("CbmTofAnaTestbeam::FillHistos for %d digis and %d Tof hits",iNbTofDigis,iNbTofHits)
@@ -4434,7 +4434,7 @@ Bool_t CbmTofAnaTestbeam::FillHistos() {
   vector<CbmTofHit*> vDutHit;
   vector<CbmTofHit*> vRefHit;
 
-  iNbTofHits = fTofHitsColl->GetEntries();
+  iNbTofHits = fTofHitsColl->GetEntriesFast();
   for (Int_t iHitInd = 0; iHitInd < iNbTofHits; iHitInd++) {
     pHit = (CbmTofHit*) fTofHitsColl->At(iHitInd);
     if (NULL == pHit) continue;
@@ -5993,7 +5993,7 @@ Bool_t CbmTofAnaTestbeam::FillHistos() {
     Int_t iBestTrklFitIndex(-1);
     Double_t dBestTrklFitRedChiSq(1.E300);
 
-    iNbTofTracks = fTofTrackColl->GetEntries();
+    iNbTofTracks = fTofTrackColl->GetEntriesFast();
     fhTIS_Ntrk->Fill((dTAv - fdStartSpillTime) / 1.E9, (Double_t) iNbTofTracks);
 
     Int_t NStations = fFindTracks->GetNStations();
@@ -7063,7 +7063,7 @@ Bool_t CbmTofAnaTestbeam::FillHistos() {
   std::map<std::tuple<Int_t, Int_t, Int_t>, std::map<Int_t, Int_t>>
     CounterNCellHits;
 
-  for (Int_t iHit = 0; iHit < fTofHitsColl->GetEntries(); iHit++) {
+  for (Int_t iHit = 0; iHit < fTofHitsColl->GetEntriesFast(); iHit++) {
     CbmTofHit* tHit     = dynamic_cast<CbmTofHit*>(fTofHitsColl->At(iHit));
     Int_t iHitAddress   = tHit->GetAddress();
     Int_t iModuleType   = CbmTofAddress::GetSmType(iHitAddress);

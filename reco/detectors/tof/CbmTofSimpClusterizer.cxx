@@ -1038,10 +1038,10 @@ Bool_t CbmTofSimpClusterizer::CreateHistos() {
 Bool_t CbmTofSimpClusterizer::FillHistos() {
   fhClustBuildTime->Fill(fStop.GetSec() - fStart.GetSec()
                          + (fStop.GetNanoSec() - fStart.GetNanoSec()) / 1e9);
-  Int_t iNbTofHits = fTofHitsColl->GetEntries();
+  Int_t iNbTofHits = fTofHitsColl->GetEntriesFast();
 
   if (fbMcTrkMonitor && fMcTracksColl) {
-    Int_t iNbTracks = fMcTracksColl->GetEntries();
+    Int_t iNbTracks = fMcTracksColl->GetEntriesFast();
 
     // Trakcs Info
     Int_t iNbTofTracks     = 0;
@@ -2017,7 +2017,7 @@ Bool_t CbmTofSimpClusterizer::BuildClusters() {
                         iSmType,
                         iSm,
                         iRpc,
-                        fTofHitsColl->GetEntries());
+                        fTofHitsColl->GetEntriesFast());
             }  // else of if( 1 == fDigiBdfPar->GetChanOrient( iSmType, iRpc ) )
           }    // if( 0 == iChType)
           else {
