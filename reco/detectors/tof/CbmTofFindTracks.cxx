@@ -1850,8 +1850,7 @@ void CbmTofFindTracks::FillHistograms(CbmEvent* tEvent) {
   // Locate reference ("beam counter") hit
   CbmTofHit* pRefHit  = NULL;
   Double_t RefMinTime = 1.E300;
-  for (Int_t iHit = 0; iHit < fTofHitArray->GetEntriesFast();
-       iHit++) {  // loop over Hits
+  for (Int_t iHit = 0; iHit < fTofHitArray->GetEntriesFast(); iHit++) {  // loop over Hits
     CbmTofHit* pHit = (CbmTofHit*) fTofHitArray->At(iHit);
     Int_t iAddr     = (pHit->GetAddress() & DetMask);
     if (fiBeamCounter != -1) {
@@ -2332,8 +2331,7 @@ void CbmTofFindTracks::FillHistograms(CbmEvent* tEvent) {
               vhXY_MissedStation[iSt]->Fill(hitpos_local[0], hitpos_local[1]);
 
               // correlation analysis
-              for (Int_t iTrk1 = iTrk + 1; iTrk1 < fTrackArray->GetEntriesFast();
-                   iTrk1++) {
+              for (Int_t iTrk1 = iTrk + 1; iTrk1 < fTrackArray->GetEntriesFast(); iTrk1++) {
                 CbmTofTracklet* pTrk1 =
                   (CbmTofTracklet*) fTrackArray->At(iTrk1);
                 if (NULL == pTrk1 || pTrk == pTrk1) continue;
@@ -2381,9 +2379,8 @@ void CbmTofFindTracks::FillHistograms(CbmEvent* tEvent) {
       if (HMul[6] > 1) {  // temporary
         //if (HMul[fNTofStations]>0)
         //LOG(info)<<"Found "<<HMul[fNTofStations]<<" max length tracklets in event "<<fiEvent
-        LOG(info) << "Found " << HMul[6] << " max length tracklets in event "
-                  << fiEvent << " within " << fTofHitArray->GetEntriesFast()
-                  << " hits ";
+        LOG(info) << "Found " << HMul[6] << " max length tracklets in event " << fiEvent << " within "
+                  << fTofHitArray->GetEntriesFast() << " hits ";
         for (Int_t iTrk = 0; iTrk < fTrackArray->GetEntriesFast(); iTrk++) {
           CbmTofTracklet* pTrk = (CbmTofTracklet*) fTrackArray->At(iTrk);
           if (NULL == pTrk) continue;
@@ -2392,8 +2389,7 @@ void CbmTofFindTracks::FillHistograms(CbmEvent* tEvent) {
       }
   if (1)
     if (fTrackArray->GetEntriesFast() > 25) {  // temporary
-      LOG(info) << "Found high track multiplicity of "
-                << fTrackArray->GetEntriesFast() << " in event " << fiEvent
+      LOG(info) << "Found high track multiplicity of " << fTrackArray->GetEntriesFast() << " in event " << fiEvent
                 << " from " << fTofHitArray->GetEntriesFast() << " hits ";
       for (Int_t iTrk = 0; iTrk < fTrackArray->GetEntriesFast(); iTrk++) {
         CbmTofTracklet* pTrk = (CbmTofTracklet*) fTrackArray->At(iTrk);
@@ -2403,19 +2399,15 @@ void CbmTofFindTracks::FillHistograms(CbmEvent* tEvent) {
     }
 
   if (iTMul > 1) {
-    LOG(debug) << Form(
-      "CbmTofFindTracks::FillHistograms NTrkl %d(%d) in event %d",
-      iTMul,
-      fTrackArray->GetEntriesFast(),
-      fiEvent);
+    LOG(debug) << Form("CbmTofFindTracks::FillHistograms NTrkl %d(%d) in event %d", iTMul,
+                       fTrackArray->GetEntriesFast(), fiEvent);
     for (Int_t iTrk = 0; iTrk < fTrackArray->GetEntriesFast(); iTrk++) {
       CbmTofTracklet* pTrk = (CbmTofTracklet*) fTrackArray->At(iTrk);
       if (NULL == pTrk) continue;
       if (
         pTrk->GetNofHits()
         > fMinNofHits) {  // for further analysis request min # of matched hits
-        for (Int_t iTrk1 = iTrk + 1; iTrk1 < fTrackArray->GetEntriesFast();
-             iTrk1++) {
+        for (Int_t iTrk1 = iTrk + 1; iTrk1 < fTrackArray->GetEntriesFast(); iTrk1++) {
           CbmTofTracklet* pTrk1 = (CbmTofTracklet*) fTrackArray->At(iTrk1);
           if (NULL == pTrk1) continue;
           if (
@@ -2437,8 +2429,7 @@ void CbmTofFindTracks::FillHistograms(CbmEvent* tEvent) {
     if (HMul[uHMul] > 0) { fhTrklHMul->Fill(uHMul, HMul[uHMul]); }
   }
 
-  for (Int_t iHit = 0; iHit < fTofHitArray->GetEntriesFast();
-       iHit++) {  // loop over Hits
+  for (Int_t iHit = 0; iHit < fTofHitArray->GetEntriesFast(); iHit++) {  // loop over Hits
     CbmTofHit* pHit = (CbmTofHit*) fTofHitArray->At(iHit);
     //    Int_t iSmType = CbmTofAddress::GetSmType( pHit->GetAddress() & DetMask ); (FU) not used
     Int_t iAddr = (pHit->GetAddress() & DetMask);

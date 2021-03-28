@@ -208,8 +208,7 @@ void CbmRichMirrorSortingAlignment::Exec(Option_t* Option) {
       if (trackMotherId == -1) {
         if (fMirrorPoints->GetEntriesFast() > 0) {
           //loop on mirrorPoint and compare w/ TrackID->GetTrackId to get correct one
-          for (Int_t iMirrPt = 0; iMirrPt < fMirrorPoints->GetEntriesFast();
-               iMirrPt++) {
+          for (Int_t iMirrPt = 0; iMirrPt < fMirrorPoints->GetEntriesFast(); iMirrPt++) {
             mirrPoint = (CbmRichPoint*) fMirrorPoints->At(iMirrPt);
             if (mirrPoint == 0) { continue; }
             //cout << "Mirror point track ID: " << mirrPoint->GetTrackID() << endl;
@@ -252,8 +251,7 @@ void CbmRichMirrorSortingAlignment::Exec(Option_t* Option) {
                     "ideal = {"
                  << ptCIdeal.at(0) << ", " << ptCIdeal.at(1) << ", "
                  << ptCIdeal.at(2) << "}" << endl;
-            for (Int_t iRefPt = 0; iRefPt < fRefPlanePoints->GetEntriesFast();
-                 iRefPt++) {
+            for (Int_t iRefPt = 0; iRefPt < fRefPlanePoints->GetEntriesFast(); iRefPt++) {
               refPlanePoint = (CbmRichPoint*) fRefPlanePoints->At(iRefPt);
               //cout << "Refl plane point track ID: " << refPlanePoint->GetTrackID() << endl;
               if (refPlanePoint->GetTrackID() == mcRichTrackId) { break; }
@@ -274,7 +272,8 @@ void CbmRichMirrorSortingAlignment::Exec(Option_t* Option) {
                  << outPos.y() << ", " << outPos.z() << "}" << endl;
             mirrorObject->setExtrapHit(outPos.x(), outPos.y());
           }
-        } else {
+        }
+        else {
           cout << "No mirror points registered." << endl;
         }
       } else {
@@ -289,7 +288,8 @@ void CbmRichMirrorSortingAlignment::Exec(Option_t* Option) {
       //mirrNode->Clear();
       //gGeoManager->Clear();
     }
-  } else {
+  }
+  else {
     cout << "CbmRichMirrorSortingAlignment::Exec No rings in event were found."
          << endl;
   }

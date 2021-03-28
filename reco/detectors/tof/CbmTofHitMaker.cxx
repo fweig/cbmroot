@@ -1140,10 +1140,9 @@ Bool_t CbmTofHitMaker::BuildClusters() {
     return kFALSE;
   }
   fiNevtBuild++;
-  LOG(debug)
-    << "Build clusters from "
-    //            <<fTofDigisColl->GetEntriesFast()<<" digis in event "<<fiNevtBuild;
-    << fTofDigiVec.size() << " digis in event " << fiNevtBuild;
+  LOG(debug) << "Build clusters from "
+             //            <<fTofDigisColl->GetEntriesFast()<<" digis in event "<<fiNevtBuild;
+             << fTofDigiVec.size() << " digis in event " << fiNevtBuild;
 
   fTRefHits = 0.;
 
@@ -1371,8 +1370,7 @@ Bool_t CbmTofHitMaker::MergeClusters() {
                          iRpc,
                          iCh,
                          iHitInd);
-      for (Int_t iHitInd2 = iHitInd + 1; iHitInd2 < fTofHitsColl->GetEntriesFast();
-           iHitInd2++) {
+      for (Int_t iHitInd2 = iHitInd + 1; iHitInd2 < fTofHitsColl->GetEntriesFast(); iHitInd2++) {
         CbmTofHit* pHit2 = (CbmTofHit*) fTofHitsColl->At(iHitInd2);
         if (NULL == pHit2) continue;
         Int_t iDetId2  = (pHit2->GetAddress() & DetMask);
@@ -1456,17 +1454,9 @@ Bool_t CbmTofHitMaker::MergeClusters() {
                   }
                 }
                 LOG(debug) << "MergeClusters: Found merger in neighbour "
-                           << Form(" SmT %d, Sm %d, Rpc %d, Ch %d - hit %d(%d)",
-                                   iSmType2,
-                                   iSm2,
-                                   iRpc2,
-                                   iCh2,
-                                   iHitInd2,
+                           << Form(" SmT %d, Sm %d, Rpc %d, Ch %d - hit %d(%d)", iSmType2, iSm2, iRpc2, iCh2, iHitInd2,
                                    fTofHitsColl->GetEntriesFast())
-                           << Form(" DX %6.1f, DY %6.1f, DT %6.1f",
-                                   xPos - xPos2,
-                                   yPos - yPos2,
-                                   tof - tof2)
+                           << Form(" DX %6.1f, DY %6.1f, DT %6.1f", xPos - xPos2, yPos - yPos2, tof - tof2)
                            << Form(" Tots %6.1f - %6.1f", dTot, dTot2);
                 Double_t dTotSum = dTot + dTot2;
                 Double_t dxPosM  = (xPos * dTot + xPos2 * dTot2) / dTotSum;
@@ -1482,8 +1472,7 @@ Bool_t CbmTofHitMaker::MergeClusters() {
                 fTofDigiMatchColl->RemoveAt(iHitInd2);
                 fTofDigiMatchColl->Compress();
                 fTofHitsColl->Compress();
-                LOG(debug) << "MergeClusters: Compress TClonesArrays to "
-                           << fTofHitsColl->GetEntriesFast() << ", "
+                LOG(debug) << "MergeClusters: Compress TClonesArrays to " << fTofHitsColl->GetEntriesFast() << ", "
                            << fTofDigiMatchColl->GetEntriesFast();
                 /*
 								 for(Int_t i=iHitInd2; i<fTofHitsColl->GetEntriesFast(); i++){ // update RefLinks
@@ -2731,13 +2720,8 @@ Bool_t CbmTofHitMaker::BuildHits() {
                 fStorDigiInd[iSmType][iSm * iNbRpc + iRpc][iCh].clear();
               }  // for( Int_t iCh = 0; iCh < iNbCh; iCh++ )
               LOG(debug2) << "finished V-RPC"
-                          << Form(" %3d %3d %3d %d %f %fx",
-                                  iSmType,
-                                  iSm,
-                                  iRpc,
-                                  fTofHitsColl->GetEntriesFast(),
-                                  dLastPosX,
-                                  dLastPosY);
+                          << Form(" %3d %3d %3d %d %f %fx", iSmType, iSm, iRpc, fTofHitsColl->GetEntriesFast(),
+                                  dLastPosX, dLastPosY);
             }  // else of if( 1 == fDigiBdfPar->GetChanOrient( iSmType, iRpc ) )
           }    // if( 0 == iChType)
           else {

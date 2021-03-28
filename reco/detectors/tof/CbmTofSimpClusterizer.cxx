@@ -2011,13 +2011,8 @@ Bool_t CbmTofSimpClusterizer::BuildClusters() {
                 fStorDigiExp[iSmType][iSm * iNbRpc + iRpc][iCh].clear();
                 fStorDigiInd[iSmType][iSm * iNbRpc + iRpc][iCh].clear();
               }  // for( Int_t iCh = 0; iCh < iNbCh; iCh++ )
-              LOG(debug2)
-                << "CbmTofSimpClusterizer::BuildClusters: finished V-RPC"
-                << Form(" %3d %3d %3d %d",
-                        iSmType,
-                        iSm,
-                        iRpc,
-                        fTofHitsColl->GetEntriesFast());
+              LOG(debug2) << "CbmTofSimpClusterizer::BuildClusters: finished V-RPC"
+                          << Form(" %3d %3d %3d %d", iSmType, iSm, iRpc, fTofHitsColl->GetEntriesFast());
             }  // else of if( 1 == fDigiBdfPar->GetChanOrient( iSmType, iRpc ) )
           }    // if( 0 == iChType)
           else {

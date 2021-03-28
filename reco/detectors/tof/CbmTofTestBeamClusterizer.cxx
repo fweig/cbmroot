@@ -2503,8 +2503,7 @@ Bool_t CbmTofTestBeamClusterizer::FillHistos() {
 
       if (TMath::Abs(hitpos_local[1]) > fChannelInfo->GetSizey() * fPosYMaxScal)
         continue;
-      LOG(debug1) << " TofDigiMatchColl entries:"
-                  << fTofDigiMatchColl->GetEntriesFast();
+      LOG(debug1) << " TofDigiMatchColl entries:" << fTofDigiMatchColl->GetEntriesFast();
 
       if (iHitInd > fTofDigiMatchColl->GetEntriesFast()) {
         LOG(error) << " Inconsistent DigiMatches for Hitind " << iHitInd
@@ -2566,8 +2565,7 @@ Bool_t CbmTofTestBeamClusterizer::FillHistos() {
           (digiMatch->GetLink(iLink + 1)).GetIndex();  //vDigish.at(ivDigInd+1);
         //LOG(debug1)<<" " << iDigInd0<<", "<<iDigInd1;
 
-        if (iDigInd0 < fTofCalDigisColl->GetEntriesFast()
-            && iDigInd1 < fTofCalDigisColl->GetEntriesFast()) {
+        if (iDigInd0 < fTofCalDigisColl->GetEntriesFast() && iDigInd1 < fTofCalDigisColl->GetEntriesFast()) {
           CbmTofDigi* pDig0 = (CbmTofDigi*) (fTofCalDigisColl->At(iDigInd0));
           CbmTofDigi* pDig1 = (CbmTofDigi*) (fTofCalDigisColl->At(iDigInd1));
           if ((Int_t) pDig0->GetType() != iSmType) {
@@ -2916,11 +2914,10 @@ Bool_t CbmTofTestBeamClusterizer::FillHistos() {
                 }    // position condition end
               }      // Match condition end
             }        // closing of selector loop
-        } else {
-          LOG(error)
-            << "CbmTofTestBeamClusterizer::FillHistos: invalid digi index "
-            << iDetIndx << " digi0,1" << iDigInd0 << ", " << iDigInd1
-            << " - max:" << fTofCalDigisColl->GetEntriesFast()
+        }
+        else {
+          LOG(error) << "CbmTofTestBeamClusterizer::FillHistos: invalid digi index " << iDetIndx << " digi0,1"
+                     << iDigInd0 << ", " << iDigInd1 << " - max:" << fTofCalDigisColl->GetEntriesFast()
             //                       << " in event " << XXX
             ;
         }
@@ -4755,9 +4752,8 @@ Bool_t CbmTofTestBeamClusterizer::BuildClusters() {
     return kFALSE;
   }
   fiNevtBuild++;
-  LOG(debug) << "CbmTofTestBeamClusterizer::BuildClusters from "
-             << fTofDigisColl->GetEntriesFast() << " digis in event "
-             << fiNevtBuild;
+  LOG(debug) << "CbmTofTestBeamClusterizer::BuildClusters from " << fTofDigisColl->GetEntriesFast()
+             << " digis in event " << fiNevtBuild;
 
   fTRefHits = 0.;
 
@@ -5169,11 +5165,10 @@ Bool_t CbmTofTestBeamClusterizer::BuildClusters() {
       }
     }  // for( Int_t iDigInd = 0; iDigInd < nTofDigi; iDigInd++ )
 
-    iNbTofDigi = fTofCalDigisColl
-                   ->GetEntriesFast();  // update because of added duplicted digis
+    iNbTofDigi = fTofCalDigisColl->GetEntriesFast();  // update because of added duplicted digis
     if (fTofCalDigisColl->IsSortable())
-      LOG(debug) << "CbmTofTestBeamClusterizer::BuildClusters: Sort "
-                 << fTofCalDigisColl->GetEntriesFast() << " calibrated digis ";
+      LOG(debug) << "CbmTofTestBeamClusterizer::BuildClusters: Sort " << fTofCalDigisColl->GetEntriesFast()
+                 << " calibrated digis ";
     if (iNbTofDigi > 1) {
       fTofCalDigisColl->Sort(
         iNbTofDigi);  // Time order again, in case modified by the calibration
@@ -5958,13 +5953,8 @@ Bool_t CbmTofTestBeamClusterizer::BuildClusters() {
                 fStorDigiInd[iSmType][iSm * iNbRpc + iRpc][iCh].clear();
               }  // for( Int_t iCh = 0; iCh < iNbCh; iCh++ )
               LOG(debug2) << "finished V-RPC"
-                          << Form(" %3d %3d %3d %d %f %fx",
-                                  iSmType,
-                                  iSm,
-                                  iRpc,
-                                  fTofHitsColl->GetEntriesFast(),
-                                  dLastPosX,
-                                  dLastPosY);
+                          << Form(" %3d %3d %3d %d %f %fx", iSmType, iSm, iRpc, fTofHitsColl->GetEntriesFast(),
+                                  dLastPosX, dLastPosY);
             }  // else of if( 1 == fDigiBdfPar->GetChanOrient( iSmType, iRpc ) )
           }    // if( 0 == iChType)
           else {
@@ -6172,8 +6162,7 @@ Bool_t CbmTofTestBeamClusterizer::MergeClusters() {
                          iRpc,
                          iCh,
                          iHitInd);
-      for (Int_t iHitInd2 = iHitInd + 1; iHitInd2 < fTofHitsColl->GetEntriesFast();
-           iHitInd2++) {
+      for (Int_t iHitInd2 = iHitInd + 1; iHitInd2 < fTofHitsColl->GetEntriesFast(); iHitInd2++) {
         CbmTofHit* pHit2 = (CbmTofHit*) fTofHitsColl->At(iHitInd2);
         if (NULL == pHit2) continue;
         Int_t iDetId2  = (pHit2->GetAddress() & DetMask);
@@ -6218,8 +6207,7 @@ Bool_t CbmTofTestBeamClusterizer::MergeClusters() {
                   CbmLink L0     = digiMatch->GetLink(iLink);
                   Int_t iDigInd0 = L0.GetIndex();
                   Int_t iDigInd1 = (digiMatch->GetLink(iLink + 1)).GetIndex();
-                  if (iDigInd0 < fTofCalDigisColl->GetEntriesFast()
-                      && iDigInd1 < fTofCalDigisColl->GetEntriesFast()) {
+                  if (iDigInd0 < fTofCalDigisColl->GetEntriesFast() && iDigInd1 < fTofCalDigisColl->GetEntriesFast()) {
                     CbmTofDigi* pDig0 =
                       (CbmTofDigi*) (fTofCalDigisColl->At(iDigInd0));
                     CbmTofDigi* pDig1 =
@@ -6237,8 +6225,7 @@ Bool_t CbmTofTestBeamClusterizer::MergeClusters() {
                   CbmLink L0     = digiMatch2->GetLink(iLink);
                   Int_t iDigInd0 = L0.GetIndex();
                   Int_t iDigInd1 = (digiMatch2->GetLink(iLink + 1)).GetIndex();
-                  if (iDigInd0 < fTofCalDigisColl->GetEntriesFast()
-                      && iDigInd1 < fTofCalDigisColl->GetEntriesFast()) {
+                  if (iDigInd0 < fTofCalDigisColl->GetEntriesFast() && iDigInd1 < fTofCalDigisColl->GetEntriesFast()) {
                     CbmTofDigi* pDig0 =
                       (CbmTofDigi*) (fTofCalDigisColl->At(iDigInd0));
                     CbmTofDigi* pDig1 =
@@ -6256,17 +6243,9 @@ Bool_t CbmTofTestBeamClusterizer::MergeClusters() {
                   }
                 }
                 LOG(debug) << "MergeClusters: Found merger in neighbour "
-                           << Form(" SmT %d, Sm %d, Rpc %d, Ch %d - hit %d(%d)",
-                                   iSmType2,
-                                   iSm2,
-                                   iRpc2,
-                                   iCh2,
-                                   iHitInd2,
+                           << Form(" SmT %d, Sm %d, Rpc %d, Ch %d - hit %d(%d)", iSmType2, iSm2, iRpc2, iCh2, iHitInd2,
                                    fTofHitsColl->GetEntriesFast())
-                           << Form(" DX %6.1f, DY %6.1f, DT %6.1f",
-                                   xPos - xPos2,
-                                   yPos - yPos2,
-                                   tof - tof2)
+                           << Form(" DX %6.1f, DY %6.1f, DT %6.1f", xPos - xPos2, yPos - yPos2, tof - tof2)
                            << Form(" Tots %6.1f - %6.1f", dTot, dTot2);
                 Double_t dTotSum = dTot + dTot2;
                 Double_t dxPosM  = (xPos * dTot + xPos2 * dTot2) / dTotSum;
@@ -6282,8 +6261,7 @@ Bool_t CbmTofTestBeamClusterizer::MergeClusters() {
                 fTofDigiMatchColl->RemoveAt(iHitInd2);
                 fTofDigiMatchColl->Compress();
                 fTofHitsColl->Compress();
-                LOG(debug) << "MergeClusters: Compress TClonesArrays to "
-                           << fTofHitsColl->GetEntriesFast() << ", "
+                LOG(debug) << "MergeClusters: Compress TClonesArrays to " << fTofHitsColl->GetEntriesFast() << ", "
                            << fTofDigiMatchColl->GetEntriesFast();
                 /*
                   for(Int_t i=iHitInd2; i<fTofHitsColl->GetEntriesFast(); i++){ // update RefLinks

@@ -222,8 +222,7 @@ InitStatus CbmMuchSegmentManual::Init() {
   // Get MUCH geometry parameter container
   fStations = fGeoPar->GetStations();
   if (!fStations) Fatal("Init", "No input array of MUCH stations.");
-  if (fStations->GetEntriesFast() != fNStations)
-    Fatal("Init", "Incorrect number of stations.");
+  if (fStations->GetEntriesFast() != fNStations) Fatal("Init", "Incorrect number of stations.");
 
   if (fDebug) {
     for (Int_t iStation = 0; iStation < fNStations; ++iStation) {

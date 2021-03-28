@@ -466,9 +466,8 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
   Int_t nEntSts = 0;
   if (listStsHits) {
 
-    if (fTimesliceMode){ 
-      nEntSts = listStsHits->GetEntriesFast();
-    } else {
+    if (fTimesliceMode) { nEntSts = listStsHits->GetEntriesFast(); }
+    else {
       nEntSts = (event ? event->GetNofData(ECbmDataType::kStsHit) : listStsHits->GetEntriesFast());
     }
 

@@ -525,8 +525,7 @@ void CbmRichMirrorSortingCorrection::Exec(Option_t* Option) {
       if (trackMotherId == -1) {
         if (fMirrorPoints->GetEntriesFast() > 0) {
           //loop on mirrorPoint and compare w/ TrackID->GetTrackId to get correct one
-          for (Int_t iMirrPt = 0; iMirrPt < fMirrorPoints->GetEntriesFast();
-               iMirrPt++) {
+          for (Int_t iMirrPt = 0; iMirrPt < fMirrorPoints->GetEntriesFast(); iMirrPt++) {
             mirrPoint = (CbmRichPoint*) fMirrorPoints->At(iMirrPt);
             if (mirrPoint == 0) { continue; }
             //cout << "Mirror point track ID: " << mirrPoint->GetTrackID() << endl;
@@ -557,8 +556,7 @@ void CbmRichMirrorSortingCorrection::Exec(Option_t* Option) {
                     "ideal = {"
                  << ptCIdeal.at(0) << ", " << ptCIdeal.at(1) << ", "
                  << ptCIdeal.at(2) << "}" << endl;
-            for (Int_t iRefPt = 0; iRefPt < fRefPlanePoints->GetEntriesFast();
-                 iRefPt++) {
+            for (Int_t iRefPt = 0; iRefPt < fRefPlanePoints->GetEntriesFast(); iRefPt++) {
               refPlanePoint = (CbmRichPoint*) fRefPlanePoints->At(iRefPt);
               //cout << "Refl plane point track ID: " << refPlanePoint->GetTrackID() << endl;
               if (refPlanePoint->GetTrackID() == mcRichTrackId) { break; }
@@ -655,7 +653,8 @@ void CbmRichMirrorSortingCorrection::Exec(Option_t* Option) {
                  << endl;
             FillRingTrackDistanceCorr(ring, pTrack, mcTrack2);
           }
-        } else {
+        }
+        else {
           cout << "No mirror points registered." << endl;
         }
       } else {
@@ -663,7 +662,8 @@ void CbmRichMirrorSortingCorrection::Exec(Option_t* Option) {
       }
       //ComputeAngles();
     }
-  } else {
+  }
+  else {
     cout << "CbmRichMirrorSortingCorrection::Exec No rings in event were found."
          << endl;
   }

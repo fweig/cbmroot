@@ -5363,8 +5363,8 @@ Bool_t CbmTofEventClusterizer::BuildHits()
                 fStorDigiInd[iSmType][iSm * iNbRpc + iRpc][iCh].clear();
               }  // for( Int_t iCh = 0; iCh < iNbCh; iCh++ )
               LOG(debug2) << "finished V-RPC"
-                          << Form(" %3d %3d %3d %d %f %fx", iSmType, iSm, iRpc, fTofHitsColl->GetEntriesFast(), dLastPosX,
-                                  dLastPosY);
+                          << Form(" %3d %3d %3d %d %f %fx", iSmType, iSm, iRpc, fTofHitsColl->GetEntriesFast(),
+                                  dLastPosX, dLastPosY);
             }  // else of if( 1 == fDigiBdfPar->GetChanOrient( iSmType, iRpc ) )
           }    // if( 0 == iChType)
           else {

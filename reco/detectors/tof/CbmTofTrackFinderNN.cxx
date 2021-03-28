@@ -161,8 +161,7 @@ Int_t CbmTofTrackFinderNN::DoFind(TClonesArray* fTofHits,
 
   //  fvTrkMap.resize(fHits->GetEntriesFast());
   fvTrkVec.resize(fHits->GetEntriesFast());
-  LOG(debug2) << "<I> TrkMap/Vec resized for " << fHits->GetEntriesFast()
-              << " entries ";
+  LOG(debug2) << "<I> TrkMap/Vec resized for " << fHits->GetEntriesFast() << " entries ";
   //  for (Int_t iHit=0; iHit<fHits->GetEntriesFast(); iHit++) { fvTrkMap[iHit].clear();}
   for (Int_t iHit = 0; iHit < fHits->GetEntriesFast(); iHit++) {
     fvTrkVec[iHit].clear();
@@ -181,8 +180,7 @@ Int_t CbmTofTrackFinderNN::DoFind(TClonesArray* fTofHits,
     while (iSt1
            < fFindTracks->GetNofStations() - fFindTracks->GetMinNofHits() + 1) {
       iSt1++;
-      for (Int_t iHit = 0; iHit < fHits->GetEntriesFast();
-           iHit++) {  // loop over Hits
+      for (Int_t iHit = 0; iHit < fHits->GetEntriesFast(); iHit++) {  // loop over Hits
         CbmTofHit* pHit = (CbmTofHit*) fHits->At(iHit);
         Int_t iAddr     = (pHit->GetAddress() & DetMask);
         // Int_t iSmType = CbmTofAddress::GetSmType( iAddr );   (VF) not used
@@ -260,8 +258,7 @@ Int_t CbmTofTrackFinderNN::DoFind(TClonesArray* fTofHits,
           }
 
           if (TMath::Abs(hitpos_local[1]) < dSizey * fPosYMaxScal)
-            for (Int_t iHit1 = 0; iHit1 < fHits->GetEntriesFast();
-                 iHit1++)  // loop over all Hits (order unknown)
+            for (Int_t iHit1 = 0; iHit1 < fHits->GetEntriesFast(); iHit1++)  // loop over all Hits (order unknown)
             {
               if (HitUsed(iHit1) == 1) continue;  // skip used Hits
               CbmTofHit* pHit1 = (CbmTofHit*) fHits->At(iHit1);
@@ -426,8 +423,7 @@ Int_t CbmTofTrackFinderNN::DoFind(TClonesArray* fTofHits,
                               fFindTracks->GetAddrOfStation(iDet));
           if (NULL == pTrk) continue;
 
-          for (Int_t iHit = 0; iHit < fHits->GetEntriesFast();
-               iHit++) {                       // loop over Hits
+          for (Int_t iHit = 0; iHit < fHits->GetEntriesFast(); iHit++) {  // loop over Hits
             if (HitUsed(iHit) == 1) continue;  // skip used Hits
             CbmTofHit* pHit = (CbmTofHit*) fHits->At(iHit);
             Int_t iAddr     = (pHit->GetAddress() & DetMask);
@@ -820,8 +816,7 @@ void CbmTofTrackFinderNN::TrklSeed(Int_t iHit) {
   if (iDet == fFindTracks->GetNofStations())
     return;                                       // hit not in tracking setup
   for (Int_t iDet1 = 0; iDet1 < iDet; iDet1++) {  // build new seeds
-    for (Int_t iHit1 = 0; iHit1 < fHits->GetEntriesFast();
-         iHit1++) {  // loop over previous Hits
+    for (Int_t iHit1 = 0; iHit1 < fHits->GetEntriesFast(); iHit1++) {  // loop over previous Hits
       CbmTofHit* pHit1 = (CbmTofHit*) fHits->At(iHit1);
       // Int_t iSmType1 = CbmTofAddress::GetSmType( pHit1->GetAddress() & DetMask );   (VF) not used
       Int_t iAddr1 = (pHit1->GetAddress() & DetMask);

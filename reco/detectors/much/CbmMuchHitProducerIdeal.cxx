@@ -90,8 +90,7 @@ void CbmMuchHitProducerIdeal::Exec(Option_t*) {
       CbmMuchPixelHit(address, hitPos, hitPosErr, 0, iPoint, planeId);
   }
   eventNo++;
-  LOG(info) << "CbmMuchHitProducerIdeal::Exec: eventNo=" << eventNo
-            << " nofPoints=" << fMuchPoints->GetEntriesFast()
+  LOG(info) << "CbmMuchHitProducerIdeal::Exec: eventNo=" << eventNo << " nofPoints=" << fMuchPoints->GetEntriesFast()
             << " nofHits=" << fMuchPixelHits->GetEntriesFast();
 }
 
