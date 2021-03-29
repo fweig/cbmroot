@@ -901,17 +901,16 @@ void L1TrackParFit::L1AddMaterial(L1MaterialInfo& info, fvec qp0, fvec w)
 
 void L1TrackParFit::EnergyLossCorrection(const fvec& radThick, fvec& qp0, fvec direction, fvec w)
 {
-  const fvec& p2 = 1.f / (fqp * fqp);
-  const fvec& E2 = fMass2 + p2;
+  const fvec p2 = 1.f / (fqp * fqp);
+  const fvec E2 = fMass2 + p2;
 
-  const fvec& bethe = L1Fit::ApproximateBetheBloch(p2 / fMass2);
+  const fvec bethe = L1Fit::ApproximateBetheBloch(p2 / fMass2);
 
   fvec tr = sqrt(fvec(1.f) + ftx * ftx + fty * fty);
 
-  const fvec& dE = bethe * radThick * tr * 2.33f * 9.34961f;
+  const fvec dE = bethe * radThick * tr * 2.33f * 9.34961f;
 
-  const fvec& E2Corrected =
-    (sqrt(E2) + direction * dE) * (sqrt(E2) + direction * dE);
+  const fvec E2Corrected = (sqrt(E2) + direction * dE) * (sqrt(E2) + direction * dE);
   fvec corr = sqrt(p2 / (E2Corrected - fMass2));
   fvec init = fvec(!(corr == corr)) | fvec(w < 1);
   corr      = fvec(fvec(1.f) & init) + fvec(corr & fvec(!(init)));
@@ -928,8 +927,8 @@ void L1TrackParFit::EnergyLossCorrection(const fvec& radThick, fvec& qp0, fvec d
 
 void L1TrackParFit::EnergyLossCorrectionIron(const fvec& radThick, fvec& qp0, fvec direction, fvec w)
 {
-  const fvec& p2 = 1.f / (qp0 * qp0);
-  const fvec& E2 = fMass2 + p2;
+  const fvec p2 = 1.f / (qp0 * qp0);
+  const fvec E2 = fMass2 + p2;
 
   int atomicZ   = 26;
   float atomicA = 55.845f;
@@ -942,15 +941,14 @@ void L1TrackParFit::EnergyLossCorrectionIron(const fvec& radThick, fvec& qp0, fv
   else
     i = (9.76 * atomicZ + 58.8 * std::pow(atomicZ, -0.19)) * 1.e-9;
 
-  const fvec& bethe = L1Fit::ApproximateBetheBloch(p2 / fMass2, rho, 0.20, 3.00, i, atomicZ / atomicA);
+  const fvec bethe = L1Fit::ApproximateBetheBloch(p2 / fMass2, rho, 0.20, 3.00, i, atomicZ / atomicA);
 
   fvec tr = sqrt(fvec(1.f) + ftx * ftx + fty * fty);
 
 
   fvec dE = bethe * radThick * tr * radLen * rho;
 
-  const fvec& E2Corrected =
-    (sqrt(E2) + direction * dE) * (sqrt(E2) + direction * dE);
+  const fvec E2Corrected = (sqrt(E2) + direction * dE) * (sqrt(E2) + direction * dE);
   fvec corr = sqrt(p2 / (E2Corrected - fMass2));
   fvec init = fvec(!(corr == corr)) | fvec(w < 1);
   corr      = fvec(fvec(1.f) & init) + fvec(corr & fvec(!(init)));
@@ -995,8 +993,8 @@ void L1TrackParFit::EnergyLossCorrectionIron(const fvec& radThick, fvec& qp0, fv
 
 void L1TrackParFit::EnergyLossCorrectionCarbon(const fvec& radThick, fvec& qp0, fvec direction, fvec w)
 {
-  const fvec& p2 = 1.f / (qp0 * qp0);
-  const fvec& E2 = fMass2 + p2;
+  const fvec p2 = 1.f / (qp0 * qp0);
+  const fvec E2 = fMass2 + p2;
 
   int atomicZ   = 6;
   float atomicA = 12.011f;
@@ -1009,15 +1007,14 @@ void L1TrackParFit::EnergyLossCorrectionCarbon(const fvec& radThick, fvec& qp0, 
   else
     i = (9.76 * atomicZ + 58.8 * std::pow(atomicZ, -0.19)) * 1.e-9;
 
-  const fvec& bethe = L1Fit::ApproximateBetheBloch(p2 / fMass2, rho, 0.20, 3.00, i, atomicZ / atomicA);
+  const fvec bethe = L1Fit::ApproximateBetheBloch(p2 / fMass2, rho, 0.20, 3.00, i, atomicZ / atomicA);
 
   fvec tr = sqrt(fvec(1.f) + ftx * ftx + fty * fty);
 
 
   fvec dE = bethe * radThick * tr * radLen * rho;
 
-  const fvec& E2Corrected =
-    (sqrt(E2) + direction * dE) * (sqrt(E2) + direction * dE);
+  const fvec E2Corrected = (sqrt(E2) + direction * dE) * (sqrt(E2) + direction * dE);
   fvec corr = sqrt(p2 / (E2Corrected - fMass2));
   fvec init = fvec(!(corr == corr)) | fvec(w < 1);
   corr      = fvec(fvec(1.f) & init) + fvec(corr & fvec(!(init)));
@@ -1062,8 +1059,8 @@ void L1TrackParFit::EnergyLossCorrectionCarbon(const fvec& radThick, fvec& qp0, 
 
 void L1TrackParFit::EnergyLossCorrectionAl(const fvec& radThick, fvec& qp0, fvec direction, fvec w)
 {
-  const fvec& p2 = 1.f / (qp0 * qp0);
-  const fvec& E2 = fMass2 + p2;
+  const fvec p2 = 1.f / (qp0 * qp0);
+  const fvec E2 = fMass2 + p2;
 
   int atomicZ   = 13;
   float atomicA = 26.981f;
@@ -1076,15 +1073,14 @@ void L1TrackParFit::EnergyLossCorrectionAl(const fvec& radThick, fvec& qp0, fvec
   else
     i = (9.76 * atomicZ + 58.8 * std::pow(atomicZ, -0.19)) * 1.e-9;
 
-  const fvec& bethe = L1Fit::ApproximateBetheBloch(p2 / fMass2, rho, 0.20, 3.00, i, atomicZ / atomicA);
+  const fvec bethe = L1Fit::ApproximateBetheBloch(p2 / fMass2, rho, 0.20, 3.00, i, atomicZ / atomicA);
 
   fvec tr = sqrt(fvec(1.f) + ftx * ftx + fty * fty);
 
 
   fvec dE = bethe * radThick * tr * radLen * rho;
 
-  const fvec& E2Corrected =
-    (sqrt(E2) + direction * dE) * (sqrt(E2) + direction * dE);
+  const fvec E2Corrected = (sqrt(E2) + direction * dE) * (sqrt(E2) + direction * dE);
   fvec corr = sqrt(p2 / (E2Corrected - fMass2));
   fvec init = fvec(!(corr == corr)) | fvec(w < 1);
   corr      = fvec(fvec(1.f) & init) + fvec(corr & fvec(!(init)));

@@ -164,7 +164,7 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
     fvec zl          = zPos_l[i1_V];
     fvec& time       = HitTime_l[i1_V];
     fvec& timeEr     = HitTimeEr[i1_V];
-    const fvec& dzli = 1. / (zl - targZ);
+    const fvec dzli  = 1. / (zl - targZ);
 
     fvec dx1, dy1, dxy1 = 0;
 
@@ -174,8 +174,8 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
 
     StripsToCoor(u, v, xl, yl, stal);
 
-    const fvec& tx = (xl - targX) * dzli;
-    const fvec& ty = (yl - targY) * dzli;
+    const fvec tx = (xl - targX) * dzli;
+    const fvec ty = (yl - targY) * dzli;
 
     // estimate field for singlet creation
     int istac = istal / 2;  // "center" station
@@ -402,12 +402,12 @@ inline void L1Algo::f20(  // input
 
     const int n2Saved = n2;
 
-    const fvec& Pick_m22 =
+    const fvec Pick_m22 =
       (DOUBLET_CHI2_CUT - T1.chi2);  // if make it bigger the found hits will be rejected later because of the chi2 cut.
     // Pick_m22 is not used, search for mean squared, 2nd version
 
     // -- collect possible doublets --
-    const fscal& iz        = 1 / T1.z[i1_4];
+    const fscal iz         = 1 / T1.z[i1_4];
     const float& timeError = T1.C55[i1_4];
     const float& time      = T1.t[i1_4];
 
@@ -439,7 +439,7 @@ inline void L1Algo::f20(  // input
       if ((Event[i1_V][i1_4] != hitm.n)) continue;
 #endif
       // - check whether hit belong to the window ( track position +\- errors ) -
-      const fscal& zm   = hitm.Z();
+      const fscal zm    = hitm.Z();
       L1TrackPar T1_new = T1;
       fvec dz           = fvec(zm) - T1.z;
 
@@ -467,7 +467,7 @@ inline void L1Algo::f20(  // input
 
       StripsToCoor(hitm.U(), hitm.V(), xm, ym, stam);
 
-      const fscal& dY = ym[i1_4] - y[i1_4];
+      const fscal dY = ym[i1_4] - y[i1_4];
 
       if (dY * dY > dy_est2 && dY < 0) continue;
 
@@ -483,7 +483,7 @@ inline void L1Algo::f20(  // input
         dx_est2 = Pick_m22[i1_4] * fabs(C00[i1_4] + dxm[0] * dxm[0]);
       }
 
-      const fscal& dX = xm[i1_4] - x[i1_4];
+      const fscal dX = xm[i1_4] - x[i1_4];
       if (dX * dX > dx_est2) continue;
 
       // check chi2
@@ -688,7 +688,7 @@ inline void L1Algo::f30(  // input
           continue;
         if (T2.C00[i2_4] < 0 || T2.C11[i2_4] < 0 || T2.C22[i2_4] < 0 || T2.C33[i2_4] < 0) continue;
 
-        const fvec& Pick_r22   = (TRIPLET_CHI2_CUT - T2.chi2);
+        const fvec Pick_r22    = (TRIPLET_CHI2_CUT - T2.chi2);
         const float& timeError = T2.C55[i2_4];
         const float& time      = T2.t[i2_4];
 
@@ -697,7 +697,7 @@ inline void L1Algo::f30(  // input
 #ifdef DO_NOT_SELECT_TRIPLETS
         if (isec == TRACKS_FROM_TRIPLETS_ITERATION) Pick_r22 = Pick_r2 + 1;
 #endif
-        const fscal& iz = 1 / T2.z[i2_4];
+        const fscal iz = 1 / T2.z[i2_4];
         L1HitAreaTime area(vGridTime[&star - vStations], T2.x[i2_4] * iz, T2.y[i2_4] * iz,
                            (sqrt(Pick_r22 * (T2.C00 + stam.XYInfo.C00)) + MaxDZ * fabs(T2.tx))[i2_4] * iz,
                            (sqrt(Pick_r22 * (T2.C11 + stam.XYInfo.C11)) + MaxDZ * fabs(T2.ty))[i2_4] * iz, time,
@@ -723,8 +723,8 @@ inline void L1Algo::f30(  // input
 #ifdef USE_EVENT_NUMBER
           if ((T2.n[i2_4] != hitr.n)) continue;
 #endif
-          const fscal& zr = hitr.Z();
-          //  const fscal& yr = hitr.Y();
+          const fscal zr = hitr.Z();
+          //  const fscal yr = hitr.Y();
 
           fvec xr, yr = 0;
 
@@ -756,8 +756,8 @@ inline void L1Algo::f30(  // input
             dy_est2 = (Pick_r22[i2_4] * (fabs(C11[i2_4] + dyr[0] * dyr[0])));
           }
 
-          const fscal& dY  = yr[i2_4] - y[i2_4];
-          const fscal& dY2 = dY * dY;
+          const fscal dY  = yr[i2_4] - y[i2_4];
+          const fscal dY2 = dY * dY;
           if (dY2 > dy_est2 && dY2 < 0) continue;  // if (yr < y_minus_new[i2_4]) continue;
 
           // check upper boundary
@@ -774,7 +774,7 @@ inline void L1Algo::f30(  // input
             dx_est2 = (Pick_r22[i2_4] * (fabs(C00[i2_4] + dxr[0] * dxr[0])));
           }
 
-          const fscal& dX = xr[i2_4] - x[i2_4];
+          const fscal dX = xr[i2_4] - x[i2_4];
           if (dX * dX > dx_est2) continue;
           // check chi2  // not effective
           fvec C10;
@@ -2636,8 +2636,8 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
       if ((new_trip.GetMHit() != curr_trip->GetRHit())) continue;
       if ((new_trip.GetLHit() != curr_trip->GetMHit())) continue;
 
-      const fscal& qp1 = curr_trip->GetQp();
-      const fscal& qp2 = new_trip.GetQp();
+      const fscal qp1  = curr_trip->GetQp();
+      const fscal qp2  = new_trip.GetQp();
       fscal dqp        = fabs(qp1 - qp2);
       fscal Cqp        = curr_trip->Cqp;
       Cqp += new_trip.Cqp;
