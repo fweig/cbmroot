@@ -208,20 +208,6 @@ inline fvec L1Fit::ApproximateBetheBloch(const fvec& bg2, const fvec& kp0, const
 }
 
 
-inline float L1Fit::CalcQpAfterEloss(float qp, float eloss, float mass2)
-{
-
-  float p    = fabs(1. / qp);
-  float E    = sqrt(p * p + mass2);
-  float q    = (qp > 0) ? 1. : -1.;
-  float Enew = E + eloss;
-  // float pnew = (Enew > sqrt(fMass2)) ? std::sqrt(Enew * Enew - fMass2) : 0.;
-  float pnew = std::sqrt(Enew * Enew - mass2);
-  // if (pnew!=0)
-  return q / pnew;
-  // else { return 1e5; }
-}
-
 inline void L1Fit::EnergyLossCorrection(L1TrackPar& T, const fvec& radThick, fvec& qp0, fvec direction, fvec w)
 {
   const fvec p2 = 1.f / (T.qp * T.qp);
@@ -317,7 +303,7 @@ inline void L1Fit::EnergyLossCorrectionAl(L1TrackPar& T, const fvec& radThick, f
   fvec EMASS = 0.511 * 1e-3;  // GeV
 
   fvec BETA  = P / sqrt(E2);
-  fvec GAMMA = sqrt(E2) / sqrt(fMass2);
+  fvec GAMMA = sqrt(E2) / fMass;
 
   // Calculate xi factor (KeV).
   fvec XI = (153.5 * Z * STEP * RHO) / (A * BETA * BETA);
@@ -325,7 +311,7 @@ inline void L1Fit::EnergyLossCorrectionAl(L1TrackPar& T, const fvec& radThick, f
   // Maximum energy transfer to atomic electron (KeV).
   fvec ETA   = BETA * GAMMA;
   fvec ETASQ = ETA * ETA;
-  fvec RATIO = EMASS / sqrt(fMass2);
+  fvec RATIO = EMASS / fMass;
   fvec F1    = 2. * EMASS * ETASQ;
   fvec F2    = 1. + 2. * RATIO * GAMMA + RATIO * RATIO;
   fvec EMAX  = 1e6 * F1 / F2;
@@ -402,7 +388,7 @@ inline void L1Fit::EnergyLossCorrectionCarbon(L1TrackPar& T, const fvec& radThic
   fvec EMASS = 0.511 * 1e-3;  // GeV
 
   fvec BETA  = P / sqrt(E2Corrected);
-  fvec GAMMA = sqrt(E2) / sqrt(fMass2);
+  fvec GAMMA = sqrt(E2) / fMass;
 
   // Calculate xi factor (KeV).
   fvec XI = (153.5 * Z * STEP * RHO) / (A * BETA * BETA);
@@ -410,7 +396,7 @@ inline void L1Fit::EnergyLossCorrectionCarbon(L1TrackPar& T, const fvec& radThic
   // Maximum energy transfer to atomic electron (KeV).
   fvec ETA   = BETA * GAMMA;
   fvec ETASQ = ETA * ETA;
-  fvec RATIO = EMASS / sqrt(fMass2);
+  fvec RATIO = EMASS / fMass;
   fvec F1    = 2. * EMASS * ETASQ;
   fvec F2    = 1. + 2. * RATIO * GAMMA + RATIO * RATIO;
   fvec EMAX  = 1e6 * F1 / F2;
@@ -486,7 +472,7 @@ inline void L1Fit::EnergyLossCorrectionIron(L1TrackPar& T, const fvec& radThick,
   fvec EMASS = 0.511 * 1e-3;  // GeV
 
   fvec BETA  = P / sqrt(E2Corrected);
-  fvec GAMMA = sqrt(E2) / sqrt(fMass2);
+  fvec GAMMA = sqrt(E2) / fMass;
 
   // Calculate xi factor (KeV).
   fvec XI = (153.5 * Z * STEP * RHO) / (A * BETA * BETA);
@@ -494,7 +480,7 @@ inline void L1Fit::EnergyLossCorrectionIron(L1TrackPar& T, const fvec& radThick,
   // Maximum energy transfer to atomic electron (KeV).
   fvec ETA   = BETA * GAMMA;
   fvec ETASQ = ETA * ETA;
-  fvec RATIO = EMASS / sqrt(fMass2);
+  fvec RATIO = EMASS / fMass;
   fvec F1    = 2. * EMASS * ETASQ;
   fvec F2    = 1. + 2. * RATIO * GAMMA + RATIO * RATIO;
   fvec EMAX  = 1e6 * F1 / F2;

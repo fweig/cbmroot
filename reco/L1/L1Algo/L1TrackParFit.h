@@ -14,7 +14,8 @@ public:
     C32, C33, C40, C41, C42, C43, C44, C50, C51, C52, C53, C54, C55, chi2, NDF;
   //  fvec n;
 
-  fvec fMass2 = 0.000511f * 0.000511f;  // muon mass
+  fvec fMass  = 0.10565800;     // muon mass
+  fvec fMass2 = fMass * fMass;  // mass squared
 
   L1TrackParFit()
     : fx(0)
@@ -88,7 +89,14 @@ public:
   //Fit functionality
 
   /// set particle mass for the fit
-  void SetParticleMass(float mass) { fMass2 = mass * mass; }
+  void SetParticleMass(float mass)
+  {
+    fMass  = mass;
+    fMass2 = mass * mass;
+  }
+
+  /// get the particle mass
+  fvec GetParticleMass() const { return fMass; }
 
   /// get the particle mass squared
   fvec GetParticleMass2() const { return fMass2; }

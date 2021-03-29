@@ -966,7 +966,7 @@ void L1TrackParFit::EnergyLossCorrectionIron(const fvec& radThick, fvec& qp0, fv
   fvec EMASS = 0.511 * 1e-3;  // GeV
 
   fvec BETA  = P / sqrt(E2Corrected);
-  fvec GAMMA = sqrt(E2Corrected) / sqrt(fMass2);
+  fvec GAMMA = sqrt(E2Corrected) / fMass;
 
   // Calculate xi factor (KeV).
   fvec XI = (153.5 * Z * STEP * RHO) / (A * BETA * BETA);
@@ -974,7 +974,7 @@ void L1TrackParFit::EnergyLossCorrectionIron(const fvec& radThick, fvec& qp0, fv
   // Maximum energy transfer to atomic electron (KeV).
   fvec ETA   = BETA * GAMMA;
   fvec ETASQ = ETA * ETA;
-  fvec RATIO = EMASS / sqrt(fMass2);
+  fvec RATIO = EMASS / fMass;
   fvec F1    = 2. * EMASS * ETASQ;
   fvec F2    = 1. + 2. * RATIO * GAMMA + RATIO * RATIO;
   fvec EMAX  = 1e6 * F1 / F2;
@@ -1033,7 +1033,7 @@ void L1TrackParFit::EnergyLossCorrectionCarbon(const fvec& radThick, fvec& qp0, 
   fvec EMASS = 0.511 * 1e-3;  // GeV
 
   fvec BETA  = P / sqrt(E2Corrected);
-  fvec GAMMA = sqrt(E2Corrected) / sqrt(fMass2);
+  fvec GAMMA = sqrt(E2Corrected) / fMass;
 
   // Calculate xi factor (KeV).
   fvec XI = (153.5 * Z * STEP * RHO) / (A * BETA * BETA);
@@ -1041,7 +1041,7 @@ void L1TrackParFit::EnergyLossCorrectionCarbon(const fvec& radThick, fvec& qp0, 
   // Maximum energy transfer to atomic electron (KeV).
   fvec ETA   = BETA * GAMMA;
   fvec ETASQ = ETA * ETA;
-  fvec RATIO = EMASS / sqrt(fMass2);
+  fvec RATIO = EMASS / fMass;
   fvec F1    = 2. * EMASS * ETASQ;
   fvec F2    = 1. + 2. * RATIO * GAMMA + RATIO * RATIO;
   fvec EMAX  = 1e6 * F1 / F2;
@@ -1100,7 +1100,7 @@ void L1TrackParFit::EnergyLossCorrectionAl(const fvec& radThick, fvec& qp0, fvec
   fvec EMASS = 0.511 * 1e-3;  // GeV
 
   fvec BETA  = P / sqrt(E2Corrected);
-  fvec GAMMA = sqrt(E2Corrected) / sqrt(fMass2);
+  fvec GAMMA = sqrt(E2Corrected) / fMass;
 
   // Calculate xi factor (KeV).
   fvec XI = (153.5 * Z * STEP * RHO) / (A * BETA * BETA);
@@ -1108,7 +1108,7 @@ void L1TrackParFit::EnergyLossCorrectionAl(const fvec& radThick, fvec& qp0, fvec
   // Maximum energy transfer to atomic electron (KeV).
   fvec ETA   = BETA * GAMMA;
   fvec ETASQ = ETA * ETA;
-  fvec RATIO = EMASS / sqrt(fMass2);
+  fvec RATIO = EMASS / fMass;
   fvec F1    = 2. * EMASS * ETASQ;
   fvec F2    = 1. + 2. * RATIO * GAMMA + RATIO * RATIO;
   fvec EMAX  = 1e6 * F1 / F2;
