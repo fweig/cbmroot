@@ -2127,7 +2127,7 @@ void CbmL1CATrdTrackFinderSA::CreateTracks(
       trdTrackFitterKF->DoFit(*ivTempTrdTrackCand);
       //       Double_t mX = (*ivTempTrdTrackCand)->GetParamLast()->GetX();
       //       Double_t mY = (*ivTempTrdTrackCand)->GetParamLast()->GetY();
-      //       Double_t mXY = sqrt(pow(mX,2)+pow(mY,2));
+      //       Double_t mXY = sqrt(mX*mX+mY*mY);
       //       Double_t mChi2 = (*ivTempTrdTrackCand)->GetChi2();
       //       (*ivTempTrdTrackCand)->SetChi2(mChi2*mX2);
       //cout <<"Chi2: "<< (*ivTempTrdTrackCand)->GetChi2() << endl;
@@ -2602,7 +2602,7 @@ void CbmL1CATrdTrackFinderSA::CreateSpacePoints(
         // 	 x = A_X + t*(B_X-A_X);
         // 	 y = A_Y + t*(B_Y-A_Y);
 
-        // 	//SPlength = sqrt(pow(B_Y-A_Y,2)+pow(B_Y-A_Y,2));
+        // 	//SPlength = sqrt(2*(B_Y-A_Y)*(B_Y-A_Y));
         // 	 if(Station == 1){
         // 	   if(A_mcTrID == B_mcTrID){
         // 	     noMCOverlapsAB++;
@@ -2855,12 +2855,12 @@ Double_t CbmL1CATrdTrackFinderSA::Fit(
   //   for(int i = 0; i < 4; i++){
   //     y = fabs(pHit[t1+2]->Y())-fabs(pHit[t1]->Y());
   //     z = (pHit[t1+2]->Z())-(pHit[t1]->Z());
-  //     length1 += sqrt(pow(y,2) + pow(z,2));
+  //     length1 += sqrt(y*y + z*z);
   //     t1+=2;
 
   //     x = fabs(pHit[t2+2]->X())-fabs(pHit[t2]->X());
   //     z = (pHit[t2+2]->Z())-(pHit[t2]->Z());
-  //     length2 += sqrt(pow(x,2) + pow(z,2));
+  //     length2 += sqrt(x*x + z*z);
   //     t2+=2;
   //   }
 
@@ -2929,7 +2929,7 @@ Double_t CbmL1CATrdTrackFinderSA::Fit(
     dist2 = fabs(yS2 - y2);
 
     //chi2 += (dist2+dist1)/2;
-    chi2 += sqrt(pow(dist2, 2) + pow(dist1, 2));
+    chi2 += sqrt(dist1 * dist1 + dist2 * dist2);
   }
   return chi2;
 }
@@ -3052,14 +3052,18 @@ Double_t CbmL1CATrdTrackFinderSA::FitLSM(Int_t M[]) {
   }
 
   for (int i = 0; i < 12; i += 2) {
-    sumYiYav_ZiZAv += ((pHit[i]->GetY()) - yAv) * ((pHit[i]->GetZ()) - zAvy);
-    sumYiYav += pow((pHit[i]->GetY()) - yAv, 2);
-    sumZiZav_y += pow((pHit[i]->GetZ()) - zAvy, 2);
+    Double_t dy = pHit[i]->GetY() - yAv;
+    Double_t dz = pHit[i]->GetZ() - zAvy;
+    sumYiYav_ZiZAv += dy * dz;
+    sumYiYav += dy * dy;
+    sumZiZav_y += dz * dz;
   }
   for (int i = 1; i < 12; i += 2) {
-    sumXiXav_ZiZAv += ((pHit[i]->GetX()) - xAv) * ((pHit[i]->GetZ()) - zAvx);
-    sumXiXav += pow((pHit[i]->GetX()) - xAv, 2);
-    sumZiZav_x += pow((pHit[i]->GetZ()) - zAvx, 2);
+    Double_t dx = pHit[i]->GetX() - xAv;
+    Double_t dz = pHit[i]->GetZ() - zAvx;
+    sumXiXav_ZiZAv += dx * dz;
+    sumXiXav += dx * dx;
+    sumZiZav_x += dz * dz;
   }
 
   bY = sumYiYav_ZiZAv / sumYiYav;

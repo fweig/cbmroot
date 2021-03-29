@@ -49,12 +49,12 @@ inline fvec L1Fit::BetheBlochIron(const float qp)
 inline fvec L1Fit::BetheBlochCarbon(const float qp)
 {
 
-  float K = 0.000307075;  // GeV * g^-1 * cm^2
+  constexpr float K = 0.000307075;  // GeV * g^-1 * cm^2
   float z = (qp > 0.) ? 1 : -1.;
-  float Z = 6;
-  float A = 12.011;
+  constexpr float Z = 6;
+  constexpr float A = 12.011;
 
-  float M       = 0.10565f;
+  constexpr float M = 0.10565f;
   float p       = fabs(1. / qp);  //GeV
   float E       = sqrt(M * M + p * p);
   float beta    = p / E;
@@ -62,17 +62,17 @@ inline fvec L1Fit::BetheBlochCarbon(const float qp)
   float gamma   = E / M;
   float gammaSq = gamma * gamma;
 
-  float I = 16 * std::pow(6, 0.9) * 1e-9;  // GeV  mean excitation energy in eV
+  constexpr float I = 16 * std::pow(6, 0.9) * 1e-9;  // GeV  mean excitation energy in eV
 
-  float me    = 0.000511;  // GeV
-  float ratio = me / M;
+  constexpr float me    = 0.000511;  // GeV
+  constexpr float ratio = me / M;
   float Tmax  = (2 * me * betaSq * gammaSq) / (1 + 2 * gamma * ratio + ratio * ratio);
 
   // density correction
   float dc = 0.;
   if (p > 0.5) {  // for particles above 1 Gev
-    float rho = 2.265;
-    float hwp = 28.816 * sqrt(rho * Z / A) * 1e-9;  // GeV
+    constexpr float rho = 2.265;
+    constexpr float hwp = 28.816 * sqrt(rho * Z / A) * 1e-9;  // GeV
     dc        = log(hwp / I) + log(beta * gamma) - 0.5;
   }
 
@@ -82,12 +82,12 @@ inline fvec L1Fit::BetheBlochCarbon(const float qp)
 inline fvec L1Fit::BetheBlochAl(const float qp)
 {
 
-  float K = 0.000307075;  // GeV * g^-1 * cm^2
+  constexpr float K = 0.000307075;  // GeV * g^-1 * cm^2
   float z = (qp > 0.) ? 1 : -1.;
-  float Z = 13;
-  float A = 26.981;
+  constexpr float Z = 13;
+  constexpr float A = 26.981;
 
-  float M       = 0.10565f;
+  constexpr float M = 0.10565f;
   float p       = fabs(1. / qp);  //GeV
   float E       = sqrt(M * M + p * p);
   float beta    = p / E;
@@ -95,17 +95,17 @@ inline fvec L1Fit::BetheBlochAl(const float qp)
   float gamma   = E / M;
   float gammaSq = gamma * gamma;
 
-  float I = 16 * std::pow(6, 0.9) * 1e-9;  // GeV  mean excitation energy in eV
+  constexpr float I = 16 * std::pow(6, 0.9) * 1e-9;  // GeV  mean excitation energy in eV
 
-  float me    = 0.000511;  // GeV
-  float ratio = me / M;
+  constexpr float me    = 0.000511;  // GeV
+  constexpr float ratio = me / M;
   float Tmax  = (2 * me * betaSq * gammaSq) / (1 + 2 * gamma * ratio + ratio * ratio);
 
   // density correction
   float dc = 0.;
   if (p > 0.5) {  // for particles above 1 Gev
-    float rho = 2.70;
-    float hwp = 28.816 * sqrt(rho * Z / A) * 1e-9;  // GeV
+    constexpr float rho = 2.70;
+    constexpr float hwp = 28.816 * sqrt(rho * Z / A) * 1e-9;  // GeV
     dc        = log(hwp / I) + log(beta * gamma) - 0.5;
   }
 
@@ -134,13 +134,13 @@ inline fvec L1Fit::ApproximateBetheBloch(const fvec& bg2)
   const fvec kp3 = 173e-9f;
   const fvec kp4 = 0.49848f;
 
-  const float mK   = 0.307075e-3f;  // [GeV*cm^2/g]
-  const float _2me = 1.022e-3f;     // [GeV/c^2]
-  const fvec& rho  = kp0;
-  const fvec x0    = kp1 * 2.303f;
-  const fvec x1    = kp2 * 2.303f;
-  const fvec& mI   = kp3;
-  const fvec& mZA  = kp4;
+  constexpr float mK   = 0.307075e-3f;  // [GeV*cm^2/g]
+  constexpr float _2me = 1.022e-3f;     // [GeV/c^2]
+  const fvec rho       = kp0;
+  const fvec x0        = kp1 * 2.303f;
+  const fvec x1        = kp2 * 2.303f;
+  const fvec mI        = kp3;
+  const fvec mZA       = kp4;
   const fvec maxT  = _2me * bg2;  // neglecting the electron mass
 
   //*** Density effect
@@ -182,8 +182,8 @@ inline fvec L1Fit::ApproximateBetheBloch(const fvec& bg2, const fvec& kp0, const
   //   const fvec &kp3 = 173e-9f;
   //   const fvec &kp4 = 0.49848f;
 
-  const float mK   = 0.307075e-3f;  // [GeV*cm^2/g]
-  const float _2me = 1.022e-3f;     // [GeV/c^2]
+  constexpr float mK   = 0.307075e-3f;  // [GeV*cm^2/g]
+  constexpr float _2me = 1.022e-3f;     // [GeV/c^2]
   const fvec& rho  = kp0;
   const fvec x0    = kp1 * 2.303f;
   const fvec x1    = kp2 * 2.303f;
@@ -267,10 +267,10 @@ inline void L1Fit::EnergyLossCorrectionAl(L1TrackPar& T, const fvec& radThick, f
 
   fvec qp = T.qp;
 
-  int atomicZ   = 13;
-  float atomicA = 26.981f;
-  float rho     = 2.70f;
-  float radLen  = 2.265f;
+  constexpr int atomicZ   = 13;
+  constexpr float atomicA = 26.981f;
+  constexpr float rho     = 2.70f;
+  constexpr float radLen  = 2.265f;
 
   //   int atomicZ = 18;
   //   float atomicA = 39.95;
@@ -332,7 +332,8 @@ inline void L1Fit::EnergyLossCorrectionAl(L1TrackPar& T, const fvec& radThick, f
 
   fvec DEDX2 = XI * EMAX * (1. - (BETA * BETA / 2.)) * 1e-12;
 
-  fvec SDEDX = ((E2) *DEDX2) / std::pow(P, 6);
+  float P2   = P * P;
+  fvec SDEDX = ((E2) *DEDX2) / (P2 * P2 * P2);
 
 
   //   T.C40 *= corr;
@@ -358,10 +359,10 @@ inline void L1Fit::EnergyLossCorrectionCarbon(L1TrackPar& T, const fvec& radThic
   fvec qp = T.qp;
 
 
-  int atomicZ   = 6;
-  float atomicA = 12.011f;
-  float rho     = 2.265;
-  float radLen  = 18.76f;
+  constexpr int atomicZ   = 6;
+  constexpr float atomicA = 12.011f;
+  constexpr float rho     = 2.265;
+  constexpr float radLen  = 18.76f;
 
   fvec i;
   if (atomicZ < 13) i = (12. * atomicZ + 7.) * 1.e-9;
@@ -416,7 +417,8 @@ inline void L1Fit::EnergyLossCorrectionCarbon(L1TrackPar& T, const fvec& radThic
 
   fvec DEDX2 = XI * EMAX * (1. - (BETA * BETA / 2.)) * 1e-12;
 
-  fvec SDEDX = ((E2) *DEDX2) / std::pow(P, 6);
+  float P2   = P * P;
+  fvec SDEDX = ((E2) *DEDX2) / (P2 * P2 * P2);
 
   //    fvec dqp = CalcQpAfterEloss(qp[0], (direction*dE)[0], fMass2[0]);
   //      qp0   =    dqp;
@@ -445,10 +447,10 @@ inline void L1Fit::EnergyLossCorrectionIron(L1TrackPar& T, const fvec& radThick,
 
   fvec qp = T.qp;
 
-  int atomicZ   = 26;
-  float atomicA = 55.845f;
-  float rho     = 7.87;
-  float radLen  = 1.758f;
+  constexpr int atomicZ   = 26;
+  constexpr float atomicA = 55.845f;
+  constexpr float rho     = 7.87;
+  constexpr float radLen  = 1.758f;
 
   fvec i;
   if (atomicZ < 13) i = (12. * atomicZ + 7.) * 1.e-9;
@@ -499,7 +501,8 @@ inline void L1Fit::EnergyLossCorrectionIron(L1TrackPar& T, const fvec& radThick,
 
   fvec DEDX2 = XI * EMAX * (1. - (BETA * BETA / 2.)) * 1e-12;
 
-  fvec SDEDX = ((E2) *DEDX2) / std::pow(P, 6);
+  float P2   = P * P;
+  fvec SDEDX = ((E2) *DEDX2) / (P2 * P2 * P2);
 
   //   T.C40 *= corr;
   //   T.C41 *= corr;

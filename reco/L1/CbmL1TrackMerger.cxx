@@ -273,15 +273,13 @@ Int_t CbmL1TrackMerger::MergeImPlane(TClonesArray* stsTracks,
       kfTrack.Extrapolate(trdTrack->GetParamFirst()->GetZ());
 
       // Fill histogramms
+      Double_t tx = kfTrack.GetTrack()[2];
+      Double_t ty = kfTrack.GetTrack()[3];
       dx  = kfTrack.GetTrack()[0] - trdTrack->GetParamFirst()->GetX();
       dy  = kfTrack.GetTrack()[1] - trdTrack->GetParamFirst()->GetY();
-      dtx = kfTrack.GetTrack()[2] - trdTrack->GetParamFirst()->GetTx();
-      dty = kfTrack.GetTrack()[3] - trdTrack->GetParamFirst()->GetTy();
-      theta =
-        180. / TMath::Pi()
-        * TMath::ACos(1.
-                      / TMath::Sqrt(1 + TMath::Power(kfTrack.GetTrack()[2], 2)
-                                    + TMath::Power(kfTrack.GetTrack()[3], 2)));
+      dtx         = tx - trdTrack->GetParamFirst()->GetTx();
+      dty         = ty - trdTrack->GetParamFirst()->GetTy();
+      theta       = 180. / TMath::Pi() * TMath::ACos(1. / TMath::Sqrt(1 + tx * tx + ty * ty));
       if (stsTrackM->GetMCTrackId() == trdTrackM->GetMCTrackId()) {
         fh_dx_true->Fill(dx, theta);
       } else {

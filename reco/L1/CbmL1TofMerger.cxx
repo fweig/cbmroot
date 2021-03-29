@@ -240,9 +240,9 @@ Double_t CbmL1TofMerger::GetChi2ToHit(CbmKFTrack& track,
   // Get chi2 from the track extrapolation to the TOF hit
   Double_t dx = track.GetTrack()[0] - tofHit->GetX();
   Double_t dy = track.GetTrack()[1] - tofHit->GetY();
-  /*    Double_t c0 = track.GetCovMatrix()[0] + TMath::Power(tofHit->GetDx(),2);
+  /*    Double_t c0 = track.GetCovMatrix()[0] + tofHit->GetDx()*tofHit->GetDx();
     Double_t c1 = track.GetCovMatrix()[1];
-    Double_t c2 = track.GetCovMatrix()[2] + TMath::Power(tofHit->GetDy(),2);
+    Double_t c2 = track.GetCovMatrix()[2] + tofHit->GetDy()*tofHit->GetDy();
     Double_t chi2 = 0.5*(dx*dx*c0-2*dx*dy*c1+dy*dy*c2)/(c0*c2-c1*c1);*/
   Double_t chi2 = TMath::Sqrt(dx * dx + dy * dy);
   return chi2;

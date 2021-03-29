@@ -729,11 +729,11 @@ Double_t CbmL1TrdTrackFinderSts::GetChi2Hit(CbmKFTrack& track,
            / (c0 * c2 - c1 * c1);
   } else if (pHit->GetDx() < pHit->GetDy()) {
     Double_t dx = track.GetTrack()[0] - pHit->GetX();
-    Double_t c0 = track.GetCovMatrix()[0] + TMath::Power(pHit->GetDx(), 2);
+    Double_t c0 = track.GetCovMatrix()[0] + pHit->GetDx() * pHit->GetDx();
     chi2        = dx * dx / c0;
   } else {
     Double_t dy = track.GetTrack()[1] - pHit->GetY();
-    Double_t c2 = track.GetCovMatrix()[2] + TMath::Power(pHit->GetDy(), 2);
+    Double_t c2 = track.GetCovMatrix()[2] + pHit->GetDy() * pHit->GetDy();
     chi2        = dy * dy / c2;
   }
   return chi2;

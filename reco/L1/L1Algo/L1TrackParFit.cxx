@@ -930,10 +930,10 @@ void L1TrackParFit::EnergyLossCorrectionIron(const fvec& radThick, fvec& qp0, fv
   const fvec p2 = 1.f / (qp0 * qp0);
   const fvec E2 = fMass2 + p2;
 
-  int atomicZ   = 26;
-  float atomicA = 55.845f;
-  float rho     = 7.87;
-  float radLen  = 1.758f;
+  constexpr int atomicZ   = 26;
+  constexpr float atomicA = 55.845f;
+  constexpr float rho     = 7.87;
+  constexpr float radLen  = 1.758f;
 
   fvec i;
   if (atomicZ < 13)
@@ -981,7 +981,8 @@ void L1TrackParFit::EnergyLossCorrectionIron(const fvec& radThick, fvec& qp0, fv
 
   fvec DEDX2 = XI * EMAX * (1. - (BETA * BETA / 2.)) * 1e-12;
 
-  fvec SDEDX = ((E2) *DEDX2) / std::pow(P, 6);
+  float P2   = P * P;
+  fvec SDEDX = ((E2) *DEDX2) / (P2 * P2 * P2);
 
   //   T.C40 *= corr;
   //   T.C41 *= corr;
@@ -996,10 +997,10 @@ void L1TrackParFit::EnergyLossCorrectionCarbon(const fvec& radThick, fvec& qp0, 
   const fvec p2 = 1.f / (qp0 * qp0);
   const fvec E2 = fMass2 + p2;
 
-  int atomicZ   = 6;
-  float atomicA = 12.011f;
-  float rho     = 2.265;
-  float radLen  = 18.76f;
+  constexpr int atomicZ   = 6;
+  constexpr float atomicA = 12.011f;
+  constexpr float rho     = 2.265;
+  constexpr float radLen  = 18.76f;
 
   fvec i;
   if (atomicZ < 13)
@@ -1047,7 +1048,8 @@ void L1TrackParFit::EnergyLossCorrectionCarbon(const fvec& radThick, fvec& qp0, 
 
   fvec DEDX2 = XI * EMAX * (1. - (BETA * BETA / 2.)) * 1e-12;
 
-  fvec SDEDX = ((E2) *DEDX2) / std::pow(P, 6);
+  float P2   = P * P;
+  fvec SDEDX = ((E2) *DEDX2) / (P2 * P2 * P2);
 
   //   T.C40 *= corr;
   //   T.C41 *= corr;
@@ -1062,10 +1064,10 @@ void L1TrackParFit::EnergyLossCorrectionAl(const fvec& radThick, fvec& qp0, fvec
   const fvec p2 = 1.f / (qp0 * qp0);
   const fvec E2 = fMass2 + p2;
 
-  int atomicZ   = 13;
-  float atomicA = 26.981f;
-  float rho     = 2.70f;
-  float radLen  = 2.265f;
+  constexpr int atomicZ   = 13;
+  constexpr float atomicA = 26.981f;
+  constexpr float rho     = 2.70f;
+  constexpr float radLen  = 2.265f;
 
   fvec i;
   if (atomicZ < 13)
@@ -1113,7 +1115,8 @@ void L1TrackParFit::EnergyLossCorrectionAl(const fvec& radThick, fvec& qp0, fvec
 
   fvec DEDX2 = XI * EMAX * (1. - (BETA * BETA / 2.)) * 1e-12;
 
-  fvec SDEDX = ((E2) *DEDX2) / std::pow(P, 6);
+  float P2   = P * P;
+  fvec SDEDX = ((E2) *DEDX2) / (P2 * P2 * P2);
 
   //   T.C40 *= corr;
   //   T.C41 *= corr;
