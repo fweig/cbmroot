@@ -523,7 +523,7 @@ Bool_t CbmTofHitMaker::RegisterOutputs() {
     tHitDigiMatchBranchName = "ATofDigiMatch";
   } else {
     tHitBranchName          = "TofHit";
-    tHitDigiMatchBranchName = "TofCalDigiMatch";
+    tHitDigiMatchBranchName = "TofHitCalDigiMatch";
   }
 
   if (NULL == fEventsColl) {

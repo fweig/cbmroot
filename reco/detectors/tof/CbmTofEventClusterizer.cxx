@@ -5710,7 +5710,7 @@ Bool_t CbmTofEventClusterizer::CalibRawDigis()
             if (outDigi->GetAddress() == orgDigi->GetAddress()) {
               CbmMatch digiMatch = (CbmMatch) fTofDigiPointMatches->at(iDigiOrg);
               ((std::vector<CbmMatch>*) fTofDigiPointMatchesOut)->push_back((CbmMatch) digiMatch);
-              LOG(DEBUG) << Form("Copy MC Point Match for 0x%08x, time %8.2f from %3d to %3d ", orgDigi->GetAddress(),
+              LOG(debug) << Form("Copy MC Point Match for 0x%08x, time %8.2f from %3d to %3d ", orgDigi->GetAddress(),
                                  outDigi->GetTime(), iDigiOrg, iDigi);
               bFound = kTRUE;
               break;

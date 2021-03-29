@@ -2986,9 +2986,9 @@ InitStatus CbmHadronAnalysis::Init() {
    } // if( NULL == fTofDigis)
 */
 
-  fTofDigiMatchColl = (TClonesArray*) rootMgr->GetObject("TofCalDigiMatch");
+  fTofDigiMatchColl = (TClonesArray*) rootMgr->GetObject("TofHitCalDigiMatch");
   if (NULL == fTofDigiMatchColl) {
-    cout << "-I- CbmHadronAnalysis::Init : no TOF CalDigiMatch array!" << endl;
+    cout << "-I- CbmHadronAnalysis::Init : no TOF HitCalDigiMatch array!" << endl;
     fTofDigiMatchColl = (TClonesArray*) rootMgr->GetObject("TofDigiMatch");
     if (NULL == fTofDigiMatchColl) {
       cout << "-I- CbmHadronAnalysis::Init : no TOF digiMatch array!" << endl;

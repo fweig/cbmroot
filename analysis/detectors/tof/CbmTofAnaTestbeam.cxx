@@ -727,9 +727,9 @@ Bool_t CbmTofAnaTestbeam::LoadGeometry() {
     Int_t smodule = CbmTofAddress::GetSmId(cellId);
     Int_t module  = CbmTofAddress::GetRpcId(cellId);
     /*
-     LOG(debug3) <<Form(" Id 0x%08x ",cellId) 
-		<< "  got cell " << smtype << ", " << smodule << ", " << module 
-		<< ", x-size "<< fChannelInfo->GetSizex() 
+     LOG(debug3) <<Form(" Id 0x%08x ",cellId)
+		<< "  got cell " << smtype << ", " << smodule << ", " << module
+		<< ", x-size "<< fChannelInfo->GetSizex()
 		<< ", y-size "<< fChannelInfo->GetSizey()
 		;
      */
@@ -982,7 +982,7 @@ Bool_t CbmTofAnaTestbeam::RegisterInputs() {
       return kFALSE;
     }  // if( NULL == fTofHitsColl)
 
-    fTofDigiMatchColl = (TClonesArray*) fManager->GetObject("TofCalDigiMatch");
+    fTofDigiMatchColl = (TClonesArray*) fManager->GetObject("TofHitCalDigiMatch");
     if (NULL == fTofDigiMatchColl) {
       LOG(error) << "CbmTofAnaTestbeam::RegisterInputs => Could not get the "
                     "Match TClonesArray!!!";
@@ -1153,7 +1153,7 @@ Bool_t CbmTofAnaTestbeam::RegisterInputs() {
     fTofDigiMatchCollIn = (TClonesArray*) fManager->GetObject("TofDigiMatch");
     if (NULL == fTofDigiMatchCollIn) {
       fTofDigiMatchCollIn =
-        (TClonesArray*) fManager->GetObject("TofCalDigiMatch");
+        (TClonesArray*) fManager->GetObject("TofHitCalDigiMatch");
       if (NULL == fTofDigiMatchCollIn) {
         LOG(error) << "CbmTofAnaTestbeam::RegisterInputs => Could not get the "
                       "Match TClonesArray!!!";
@@ -1222,7 +1222,7 @@ Bool_t CbmTofAnaTestbeam::InitParameters() {
    if( 0 == fMbsMappingPar )
    {
       LOG(error)<<"CbmTofAnaTestBeam::InitParameters => Could not obtain the TMbsMappingTofPar ";
-      return kFALSE; 
+      return kFALSE;
    }
    */
   rtdb->initContainers(ana->GetRunId());
@@ -4369,7 +4369,7 @@ Bool_t CbmTofAnaTestbeam::FillHistos() {
       Int_t iChId = pHit->GetAddress();
       fChannelInfo = fDigiPar->GetCell( iChId );
       Int_t iSmType=CbmTofAddress::GetSmType( iDetId );
-      
+
       if(NULL == fChannelInfo){
         LOG(debug) << Form("CbmTofAnaTestbeam::FillHistos: NULL Channel Pointer for ChId 0x%08x ",iChId)
 		   ;
@@ -4497,7 +4497,7 @@ Bool_t CbmTofAnaTestbeam::FillHistos() {
           fChannelInfo2 = fDigiPar->GetCell(iChId2);
 
           if (fiMrpcRefAddr == iDetId2
-              /* 
+              /*
 	            fiMrpcRef  == CbmTofAddress::GetSmType( iDetId2 )
 	       && fiMrpcRefSm  == CbmTofAddress::GetSmId( iDetId2 )
 	       && fiMrpcRefRpc == CbmTofAddress::GetRpcId( iDetId2 )
@@ -5955,9 +5955,9 @@ Bool_t CbmTofAnaTestbeam::FillHistos() {
   Double_t hitpos[3], hitpos_local[3];
 
   // DDDDDD for verifying storage concept
-  /* 
+  /*
      if(fFindTracks != NULL && fdMemoryTime > 0.) {
-       // everything else done -> update hit memory to latest hits 
+       // everything else done -> update hit memory to latest hits
        for( Int_t iHitInd = 0; iHitInd < iNbTofHits; iHitInd++)
        {
 	 pHit = (CbmTofHit*) fTofHitsColl->At( iHitInd );
@@ -5973,7 +5973,7 @@ Bool_t CbmTofAnaTestbeam::FillHistos() {
 	 Int_t iBin = fhLHTime[iDet]->FindBin( hitpos_local[0], hitpos_local[1] );
          fhLHTime[iDet]->SetBinContent(iBin,pHit->GetTime()-2.);
 	 LOG(debug) << Form("Store hit 0x%08x at x %6.3f, y %6.3f, bin %d, time %f in det Id 0x%08x, #%d from x %6.3f, y %6.3f",
-			    pHit->GetAddress(),hitpos_local[0],hitpos_local[1], iBin, 
+			    pHit->GetAddress(),hitpos_local[0],hitpos_local[1], iBin,
 	                    pHit->GetTime(), iDetId, iDet, hitpos[0],hitpos[1] )
 		    ;
        }
@@ -6062,7 +6062,7 @@ Bool_t CbmTofAnaTestbeam::FillHistos() {
           }
 
           /*
-	 if (pTrk->GetNofHits() < NStations - 1) continue;  
+	 if (pTrk->GetNofHits() < NStations - 1) continue;
 
 	 // Calculate positions and time in Dut plane
 	 Double_t dXex=pTrk->GetFitX(dDutzPos);
@@ -6102,14 +6102,14 @@ Bool_t CbmTofAnaTestbeam::FillHistos() {
                if(it->first > dChi) {
 		  vTrkMap[i].insert(--it,std::pair<Double_t, Int_t>(dChi,iTrk));
 		  break;
-		}	
+		}
 	      }
 	    }
 	    else{
 	      vTrkMap[i].insert(std::pair<Double_t, Int_t>(dChi,iTrk));
 	    }
 
-	  }  // end of Chi condition 
+	  }  // end of Chi condition
 	  if(vTrkMap[i].size()>0)
 	  LOG(debug1)<<Form(" TrkMap[%d]: best %d, %6.4f ",i,vTrkMap[i].begin()->second,vTrkMap[i].begin()->first)
 		    ;
@@ -6117,13 +6117,13 @@ Bool_t CbmTofAnaTestbeam::FillHistos() {
 	 if(vHitMap[iTrk].size()>0)
 	 LOG(debug)<<Form(" HitMap[%d]: best %d, %6.4f ",iTrk,vHitMap[iTrk].begin()->second,vHitMap[iTrk].begin()->first)
 		   ;
-       } // tracklet loop end 
+       } // tracklet loop end
 
        // inspect assignment results
        Int_t iCheck = 1;
        while(iCheck-- > 0)
        for(Int_t iHit=0; static_cast<UInt_t>(iHit)<vDutHit.size(); iHit++) {
-	 if(vTrkMap[iHit].size()>0){ 
+	 if(vTrkMap[iHit].size()>0){
 	   Int_t iTrk=vTrkMap[iHit].begin()->second;     // hit was assigned best to track iTrk
 	   if(vHitMap[iTrk].begin()->second == iHit) {   // unique/consistent assignment
 	     LOG(debug)<<Form(" Hit %d -> HitMap[%d]: uni %d, %6.4f ",
@@ -6399,7 +6399,7 @@ Bool_t CbmTofAnaTestbeam::FillHistos() {
                 dDelTLH = TMath::Log10(pTrk->GetFitT(dDutzPos) - dTLH);
               /*
 	       LOG(info)<< "Got LHTime NbinsX: "<<iNbinsX
-	       << ", Bin "<<iBin<<", Row "<<iRow<<", Col "<<iCol 
+	       << ", Bin "<<iBin<<", Row "<<iRow<<", Col "<<iCol
 	       << ": TLH "<<dTLH<<", "<<dTLLH
 	       ;
 	     */
@@ -6871,7 +6871,7 @@ Bool_t CbmTofAnaTestbeam::FillHistos() {
               /*
 	       if( pHit->GetTime()- dTLH > 10.) // debugging check
 	       LOG(info)<< Form("invalid time distance for event %d, hit address 0x%08x",
-	       fEvents, pHit->GetAddress()) 
+	       fEvents, pHit->GetAddress())
 	       ;
 	     */
             }

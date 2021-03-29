@@ -94,8 +94,8 @@ InitStatus CbmTofCalibrator::Init()
   if (NULL == fTofFindTracks) { LOG(warn) << "CbmTofCalibrator: no access to tof tracker "; }
 
   // Get Access to MatchCollection
-  fTofDigiMatchColl = (TClonesArray*) fManager->GetObject("TofCalDigiMatch");
-  if (NULL == fTofDigiMatchColl) fTofDigiMatchColl = (TClonesArray*) fManager->GetObject("TofDigiMatch");
+  fTofDigiMatchColl = (TClonesArray*) fManager->GetObject("TofHitCalDigiMatch");
+  if (NULL == fTofDigiMatchColl) fTofDigiMatchColl = (TClonesArray*) fManager->GetObject("TofHitDigiMatch");
 
   if (NULL == fTofDigiMatchColl) {
     LOG(error) << "CbmTofCalibrator: no access to DigiMatch ";
