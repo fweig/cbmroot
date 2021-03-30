@@ -62,7 +62,7 @@ inline fvec L1Fit::BetheBlochCarbon(const float qp)
   float gamma   = E / M;
   float gammaSq = gamma * gamma;
 
-  constexpr float I = 16 * std::pow(6, 0.9) * 1e-9;  // GeV  mean excitation energy in eV
+  const float I = 16 * std::pow(6, 0.9) * 1e-9;  // GeV  mean excitation energy in eV
 
   constexpr float me    = 0.000511;  // GeV
   constexpr float ratio = me / M;
@@ -72,7 +72,7 @@ inline fvec L1Fit::BetheBlochCarbon(const float qp)
   float dc = 0.;
   if (p > 0.5) {  // for particles above 1 Gev
     constexpr float rho = 2.265;
-    constexpr float hwp = 28.816 * sqrt(rho * Z / A) * 1e-9;  // GeV
+    const float hwp     = 28.816 * sqrt(rho * Z / A) * 1e-9;  // GeV
     dc        = log(hwp / I) + log(beta * gamma) - 0.5;
   }
 
@@ -95,7 +95,7 @@ inline fvec L1Fit::BetheBlochAl(const float qp)
   float gamma   = E / M;
   float gammaSq = gamma * gamma;
 
-  constexpr float I = 16 * std::pow(6, 0.9) * 1e-9;  // GeV  mean excitation energy in eV
+  const float I = 16 * std::pow(6, 0.9) * 1e-9;  // GeV  mean excitation energy in eV
 
   constexpr float me    = 0.000511;  // GeV
   constexpr float ratio = me / M;
@@ -105,7 +105,7 @@ inline fvec L1Fit::BetheBlochAl(const float qp)
   float dc = 0.;
   if (p > 0.5) {  // for particles above 1 Gev
     constexpr float rho = 2.70;
-    constexpr float hwp = 28.816 * sqrt(rho * Z / A) * 1e-9;  // GeV
+    const float hwp     = 28.816 * sqrt(rho * Z / A) * 1e-9;  // GeV
     dc        = log(hwp / I) + log(beta * gamma) - 0.5;
   }
 
@@ -480,7 +480,7 @@ inline void L1Fit::EnergyLossCorrectionIron(L1TrackPar& T, const fvec& radThick,
   // Maximum energy transfer to atomic electron (KeV).
   fvec ETA   = BETA * GAMMA;
   fvec ETASQ = ETA * ETA;
-  fvec RATIO = EMASS / fMass;
+  fvec RATIO = EMASS / sqrt(fMass2);
   fvec F1    = 2. * EMASS * ETASQ;
   fvec F2    = 1. + 2. * RATIO * GAMMA + RATIO * RATIO;
   fvec EMAX  = 1e6 * F1 / F2;
