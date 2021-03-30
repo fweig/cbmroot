@@ -1152,8 +1152,7 @@ Bool_t CbmTofAnaTestbeam::RegisterInputs() {
 
     fTofDigiMatchCollIn = (TClonesArray*) fManager->GetObject("TofDigiMatch");
     if (NULL == fTofDigiMatchCollIn) {
-      fTofDigiMatchCollIn =
-        (TClonesArray*) fManager->GetObject("TofHitCalDigiMatch");
+      fTofDigiMatchCollIn = (TClonesArray*) fManager->GetObject("TofHitCalDigiMatch");
       if (NULL == fTofDigiMatchCollIn) {
         LOG(error) << "CbmTofAnaTestbeam::RegisterInputs => Could not get the "
                       "Match TClonesArray!!!";
@@ -4602,7 +4601,7 @@ Bool_t CbmTofAnaTestbeam::FillHistos() {
                 break;
               }
             }
-          }  //fiMrpcRef condition end
+          }                                              //fiMrpcRef condition end
           if (2 == CbmTofAddress::GetSmType(iDetId2)) {  // Plastic
             Int_t iSm = CbmTofAddress::GetSmId(iDetId2);
             if (iSm < 2) {
