@@ -33,6 +33,7 @@
 #include "TGeant4.h"
 #include "TGeoManager.h"
 #include "TPythia6Decayer.h"
+#include "TRandom.h"
 #include "TROOT.h"
 #include "TStopwatch.h"
 #include "TString.h"
@@ -468,6 +469,9 @@ void CbmTransport::Run(Int_t nEvents) {
 
   // --- Timer
   TStopwatch timer;
+
+  // --- Set the global random seed
+  gRandom->SetSeed(fRandomSeed);
 
   // --- Check presence of required requisites
   if (fOutFileName.IsNull())

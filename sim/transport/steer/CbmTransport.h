@@ -304,6 +304,16 @@ public:
                            Double_t phiMax = 2. * TMath::Pi());
 
 
+    /** @brief Set global random seed value
+     ** @param seedValue
+     **
+     ** This function allows to set the global seed value used
+     ** by ROOTs random number generator TRandom
+     **/
+  void SetRandomSeed(const ULong_t seedValue) {
+    fRandomSeed = seedValue;
+  }
+
   /** @brief Enable smearing of event vertex in x and y.
      ** @param choice  If kTRUE(default), smearing is enabled.
      **
@@ -381,6 +391,8 @@ private:
   CbmGeant3Settings* fGeant3Settings {nullptr};  //!
   CbmGeant4Settings* fGeant4Settings {nullptr};  //!
 
+  ULong_t fRandomSeed {0};
+
   /** @brief Event generator initialisation **/
   void InitEventGenerator();
 
@@ -403,7 +415,7 @@ private:
   /** @brief Create and register the setup modules **/
   void RegisterSetup();
 
-  ClassDef(CbmTransport, 3);
+  ClassDef(CbmTransport, 4);
 };
 
 #endif /* CBMTRANSPORT_H */
