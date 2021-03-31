@@ -304,15 +304,13 @@ public:
                            Double_t phiMax = 2. * TMath::Pi());
 
 
-    /** @brief Set global random seed value
+  /** @brief Set global random seed value
      ** @param seedValue
      **
      ** This function allows to set the global seed value used
      ** by ROOTs random number generator TRandom
      **/
-  void SetRandomSeed(const ULong_t seedValue) {
-    fRandomSeed = seedValue;
-  }
+  void SetRandomSeed(const ULong_t seedValue) { fRandomSeed = seedValue; }
 
   /** @brief Enable smearing of event vertex in x and y.
      ** @param choice  If kTRUE(default), smearing is enabled.
