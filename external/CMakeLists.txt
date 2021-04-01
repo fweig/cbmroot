@@ -9,7 +9,7 @@ Option(DOWNLOAD_EXTERNALS "Download the code from the external repositories." ON
 if(DOWNLOAD_EXTERNALS)
   download_project_if_needed(PROJECT         cppzmq
                              GIT_REPOSITORY  "https://github.com/zeromq/cppzmq/"
-                             GIT_TAG         "05a0256d0eeea8063690fde6a156e14b70ed2280"
+                             GIT_TAG         "4f111562e7ce23d53bda53748d934ca523d650d7"
                              SOURCE_DIR      ${CMAKE_CURRENT_SOURCE_DIR}/cppzmq
                              TEST_FILE       zmq.hpp
                             )
@@ -34,7 +34,7 @@ else()
   # Define targets which are needed by CbmRoot but are not available
   # whithout the external packages
   add_library(ANALYSISTREE SHARED IMPORTED GLOBAL)
-#  add_library(ANALYSISTREEQA SHARED IMPORTED GLOBAL)
+  add_library(ANALYSISTREEQA SHARED IMPORTED GLOBAL)
   add_library(NICAFEMTO SHARED IMPORTED GLOBAL)
   add_library(KFPARTICLE SHARED IMPORTED GLOBAL)
 endif()

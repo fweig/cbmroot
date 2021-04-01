@@ -5,20 +5,11 @@
 
 download_project_if_needed(PROJECT         fles_ipc
                            GIT_REPOSITORY  "https://github.com/cbm-fles/flesnet"
-                           GIT_TAG         "e2d20813a74561cf58661b077c046c0da1f28288"
+                           GIT_TAG         "92ff50ead204d0acb4fccd9cbb9876817d077528"
                            GIT_STASH       TRUE
                            SOURCE_DIR      ${CMAKE_CURRENT_SOURCE_DIR}/ipc
-                           PATCH_COMMAND   "patch -p1 < ${CMAKE_CURRENT_SOURCE_DIR}/ipc.patch"
                            TEST_FILE       CMakeLists.txt
                            )
-
-
-configure_file(Timeslice.hpp ${CMAKE_CURRENT_SOURCE_DIR}/ipc/lib/fles_ipc/Timeslice.hpp COPYONLY)
-configure_file(TimesliceMultiInputArchive.hpp ${CMAKE_CURRENT_SOURCE_DIR}/ipc/lib/fles_ipc/TimesliceMultiInputArchive.hpp COPYONLY)
-configure_file(TimesliceMultiInputArchive.cpp ${CMAKE_CURRENT_SOURCE_DIR}/ipc/lib/fles_ipc/TimesliceMultiInputArchive.cpp COPYONLY)
-configure_file(TimesliceMultiSubscriber.hpp ${CMAKE_CURRENT_SOURCE_DIR}/ipc/lib/fles_ipc/TimesliceMultiSubscriber.hpp COPYONLY)
-configure_file(TimesliceMultiSubscriber.cpp ${CMAKE_CURRENT_SOURCE_DIR}/ipc/lib/fles_ipc/TimesliceMultiSubscriber.cpp COPYONLY)
-
 
 # Create the logging library
 add_library(fles_logging SHARED ipc/lib/logging/log.cpp ipc/lib/logging/log.hpp)

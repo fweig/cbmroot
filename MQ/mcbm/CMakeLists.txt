@@ -45,6 +45,7 @@ include_directories(${INCLUDE_DIRECTORIES})
 include_directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
 
 set(LINK_DIRECTORIES
+  ${Vc_LIB_DIR}
   ${ROOT_LIBRARY_DIR}
   ${FAIRROOT_LIBRARY_DIR}
   ${KFParticle_LIB_DIR}
