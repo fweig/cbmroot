@@ -200,7 +200,7 @@ Bool_t mcbm_build_and_reco(UInt_t uRunId        = 831,
   // ASIC params: #ADC channels, dyn. range, threshold, time resol., dead time,
   // noise RMS, zero-threshold crossing rate
   auto parAsic =
-    new CbmStsParAsic(32, 75000., 3000., 5., 800., 1000., 3.9789e-3);
+    new CbmStsParAsic(128, 32, 75000., 3000., 5., 800., 1000., 3.9789e-3);
 
   // Module params: number of channels, number of channels per ASIC
   auto parMod = new CbmStsParModule(2048, 128);
