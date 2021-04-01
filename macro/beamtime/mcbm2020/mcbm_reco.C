@@ -23,7 +23,7 @@ Bool_t mcbm_reco(UInt_t uRunId        = 831,
 
 
   // -----   Environment   --------------------------------------------------
-  TString myName   = "mcbm_reco";  // this macro's name for screen output
+  TString myName   = "mcbm_reco";                    // this macro's name for screen output
   TString srcDir   = gSystem->Getenv("VMCWORKDIR");  // top source directory
   TString paramDir = srcDir + "/macro/beamtime/mcbm2020/";
   TString parDir   = srcDir + "/parameters";
@@ -66,9 +66,8 @@ Bool_t mcbm_reco(UInt_t uRunId        = 831,
   // --- Load the geometry setup ----
   // This is currently only required by the TRD (parameters)
   std::string geoSetupTag = "mcbm_beam_2020_03";
-  TString geoFile =
-    paramDir + geoSetupTag.data() + ".geo.root";  // Created in sim. run
-  CbmSetup* geoSetup = CbmSetup::Instance();
+  TString geoFile         = paramDir + geoSetupTag.data() + ".geo.root";  // Created in sim. run
+  CbmSetup* geoSetup      = CbmSetup::Instance();
   geoSetup->LoadSetup(geoSetupTag.data());
   TList* parFileList = new TList();
   // ------------------------------------------------------------------------
@@ -105,10 +104,8 @@ Bool_t mcbm_reco(UInt_t uRunId        = 831,
 
   // -----   Local reconstruction in MUCH   ---------------------------------
   Int_t flag = 1;
-  TString muchDigiFile(
-    parDir + "/much/much_v19c_mcbm_digi_sector.root");  // MUCH digi file
-  CbmMuchFindHitsGem* muchFindHits =
-    new CbmMuchFindHitsGem(muchDigiFile.Data(), flag);
+  TString muchDigiFile(parDir + "/much/much_v19c_mcbm_digi_sector.root");  // MUCH digi file
+  CbmMuchFindHitsGem* muchFindHits = new CbmMuchFindHitsGem(muchDigiFile.Data(), flag);
   muchFindHits->SetBeamTimeDigi(kTRUE);
   run->AddTask(muchFindHits);
   std::cout << "-I- : Added task " << muchFindHits->GetName() << std::endl;
@@ -122,8 +119,7 @@ Bool_t mcbm_reco(UInt_t uRunId        = 831,
 
   // ASIC params: #ADC channels, dyn. range, threshold, time resol., dead time,
   // noise RMS, zero-threshold crossing rate
-  auto parAsic =
-    new CbmStsParAsic(128, 32, 75000., 3000., 5., 800., 1000., 3.9789e-3);
+  auto parAsic = new CbmStsParAsic(128, 32, 75000., 3000., 5., 800., 1000., 3.9789e-3);
 
   // Module params: number of channels, number of channels per ASIC
   auto parMod = new CbmStsParModule(2048, 128);
@@ -159,21 +155,18 @@ Bool_t mcbm_reco(UInt_t uRunId        = 831,
   // For now, it is enough to load the default ascii parameters
   // if no root file is existing from the unpacking process.
   TString geoTagTrd = "";
-  bool isActiveTrd =
-    (geoSetup->GetGeoTag(ECbmModuleId::kTrd, geoTagTrd)) ? true : false;
+  bool isActiveTrd  = (geoSetup->GetGeoTag(ECbmModuleId::kTrd, geoTagTrd)) ? true : false;
   if (!isActiveTrd) {
-    LOG(warning) << Form(
-      "TRD - parameter loading - Trd not found in CbmSetup(%s) -> parameters "
-      "can not be loaded correctly!",
-      geoSetupTag.data());
-  } else {
-    TString paramFilesTrd(
-      Form("%s/parameters/trd/trd_%s", srcDir.Data(), geoTagTrd.Data()));
+    LOG(warning) << Form("TRD - parameter loading - Trd not found in CbmSetup(%s) -> parameters "
+                         "can not be loaded correctly!",
+                         geoSetupTag.data());
+  }
+  else {
+    TString paramFilesTrd(Form("%s/parameters/trd/trd_%s", srcDir.Data(), geoTagTrd.Data()));
     std::vector<std::string> paramFilesVecTrd;
     CbmTrdParManager::GetParFileExtensions(&paramFilesVecTrd);
     for (auto parIt : paramFilesVecTrd) {
-      parFileList->Add(
-        new TObjString(Form("%s.%s.par", paramFilesTrd.Data(), parIt.data())));
+      parFileList->Add(new TObjString(Form("%s.%s.par", paramFilesTrd.Data(), parIt.data())));
     }
   }
   // -- end trd parameters
@@ -205,20 +198,13 @@ Bool_t mcbm_reco(UInt_t uRunId        = 831,
   TString cCalId     = "831.50.3.0";
   Int_t iCalSet      = 12022500;  // calibration settings
 
-  TObjString* tofBdfFile =
-    new TObjString(parDir + "/tof/tof_" + TofGeoTag + ".digibdf.par");
+  TObjString* tofBdfFile = new TObjString(parDir + "/tof/tof_" + TofGeoTag + ".digibdf.par");
   parFileList->Add(tofBdfFile);
-  std::cout << "-I- Using parameter file " << tofBdfFile->GetString()
-            << std::endl;
+  std::cout << "-I- Using parameter file " << tofBdfFile->GetString() << std::endl;
 
-  CbmTofEventClusterizer* tofCluster =
-    new CbmTofEventClusterizer("TOF Event Clusterizer", 0, 1);
-  TString cFname = parDir + "/tof/"
-                   + Form("%s_set%09d_%02d_%01dtofClust.hst.root",
-                          cCalId.Data(),
-                          iCalSet,
-                          calMode,
-                          calSel);
+  CbmTofEventClusterizer* tofCluster = new CbmTofEventClusterizer("TOF Event Clusterizer", 0, 1);
+  TString cFname =
+    parDir + "/tof/" + Form("%s_set%09d_%02d_%01dtofClust.hst.root", cCalId.Data(), iCalSet, calMode, calSel);
   tofCluster->SetCalParFileName(cFname);
   tofCluster->SetCalMode(calMode);
   tofCluster->SetCalSel(calSel);
@@ -232,8 +218,7 @@ Bool_t mcbm_reco(UInt_t uRunId        = 831,
   CbmRichMCbmHitProducer* hitProdRich = new CbmRichMCbmHitProducer();
   hitProdRich->setToTLimits(23.7, 30.0);
   hitProdRich->applyToTCut();
-  TString sRichMapFile =
-    srcDir + "/macro/rich/mcbm/beamtime/mRICH_Mapping_vert_20190318_elView.geo";
+  TString sRichMapFile = srcDir + "/macro/rich/mcbm/beamtime/mRICH_Mapping_vert_20190318_elView.geo";
   hitProdRich->SetMappingFile(sRichMapFile.Data());
   run->AddTask(hitProdRich);
   // ------------------------------------------------------------------------
@@ -292,8 +277,7 @@ Bool_t mcbm_reco(UInt_t uRunId        = 831,
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFileOut << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
   // ------------------------------------------------------------------------
 

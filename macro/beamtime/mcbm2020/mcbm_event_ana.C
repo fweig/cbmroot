@@ -24,7 +24,7 @@ void mcbm_event_ana(UInt_t uRunId         = 831,
   // ------------------------------------------------------------------------
 
   // -----   Environment   --------------------------------------------------
-  TString myName   = "mcbm_event_ana";  // this macro's name for screen output
+  TString myName   = "mcbm_event_ana";               // this macro's name for screen output
   TString srcDir   = gSystem->Getenv("VMCWORKDIR");  // top source directory
   TString paramDir = srcDir + "/macro/beamtime/mcbm2020/";
   TString parDir   = srcDir + "/parameters";
@@ -114,10 +114,8 @@ void mcbm_event_ana(UInt_t uRunId         = 831,
 
   // -----   Local reconstruction in MUCH   ---------------------------------
   Int_t flag = 1;
-  TString muchDigiFile(
-    parDir + "/much/much_v19c_mcbm_digi_sector.root");  // MUCH digi file
-  CbmMuchFindHitsGem* muchFindHits =
-    new CbmMuchFindHitsGem(muchDigiFile.Data(), flag);
+  TString muchDigiFile(parDir + "/much/much_v19c_mcbm_digi_sector.root");  // MUCH digi file
+  CbmMuchFindHitsGem* muchFindHits = new CbmMuchFindHitsGem(muchDigiFile.Data(), flag);
   muchFindHits->SetBeamTimeDigi(kTRUE);
   //  run->AddTask(muchFindHits);
   std::cout << "-I- : Added task " << muchFindHits->GetName() << std::endl;
@@ -133,8 +131,7 @@ void mcbm_event_ana(UInt_t uRunId         = 831,
 
   // ASIC params: #ADC channels, dyn. range, threshold, time resol., dead time,
   // noise RMS, zero-threshold crossing rate
-  auto parAsic =
-    new CbmStsParAsic(128, 32, 75000., 3000., 5., 800., 1000., 3.9789e-3);
+  auto parAsic = new CbmStsParAsic(128, 32, 75000., 3000., 5., 800., 1000., 3.9789e-3);
 
   // Module params: number of channels, number of channels per ASIC
   auto parMod = new CbmStsParModule(2048, 128);
@@ -182,20 +179,13 @@ void mcbm_event_ana(UInt_t uRunId         = 831,
   TString cCalId     = "831.50.3.0";
   Int_t iCalSet      = 12022500;  // calibration settings
 
-  TObjString* tofBdfFile =
-    new TObjString(parDir + "/tof/tof_" + TofGeoTag + ".digibdf.par");
+  TObjString* tofBdfFile = new TObjString(parDir + "/tof/tof_" + TofGeoTag + ".digibdf.par");
   parFileList->Add(tofBdfFile);
-  std::cout << "-I- Using parameter file " << tofBdfFile->GetString()
-            << std::endl;
+  std::cout << "-I- Using parameter file " << tofBdfFile->GetString() << std::endl;
 
-  CbmTofEventClusterizer* tofCluster =
-    new CbmTofEventClusterizer("TOF Event Clusterizer", 0, 1);
-  TString cFname = parDir + "/tof/"
-                   + Form("%s_set%09d_%02d_%01dtofClust.hst.root",
-                          cCalId.Data(),
-                          iCalSet,
-                          calMode,
-                          calSel);
+  CbmTofEventClusterizer* tofCluster = new CbmTofEventClusterizer("TOF Event Clusterizer", 0, 1);
+  TString cFname =
+    parDir + "/tof/" + Form("%s_set%09d_%02d_%01dtofClust.hst.root", cCalId.Data(), iCalSet, calMode, calSel);
   tofCluster->SetCalParFileName(cFname);
   tofCluster->SetCalMode(calMode);
   tofCluster->SetCalSel(calSel);
@@ -209,50 +199,42 @@ void mcbm_event_ana(UInt_t uRunId         = 831,
   Int_t iTrackMode = 2;
   switch (iTrackMode) {
     case 2: {
-      Int_t iGenCor      = 1;
-      Double_t dScalFac  = 1.;
-      Double_t dChi2Lim2 = 3.5;
-      TString cTrkFile =
-        parDir + "/tof/" + Form("%s_tofFindTracks.hst.root", cCalId.Data());
+      Int_t iGenCor        = 1;
+      Double_t dScalFac    = 1.;
+      Double_t dChi2Lim2   = 3.5;
+      TString cTrkFile     = parDir + "/tof/" + Form("%s_tofFindTracks.hst.root", cCalId.Data());
       Int_t iTrackingSetup = 1;
       Int_t iCalOpt        = 0;
 
       CbmTofTrackFinder* tofTrackFinder = new CbmTofTrackFinderNN();
       tofTrackFinder->SetMaxTofTimeDifference(0.2);  // in ns/cm
       tofTrackFinder->SetTxLIM(0.3);                 // max slope dx/dz
-      tofTrackFinder->SetTyLIM(0.3);  // max dev from mean slope dy/dz
-      tofTrackFinder->SetTyMean(0.);  // mean slope dy/dz
+      tofTrackFinder->SetTyLIM(0.3);                 // max dev from mean slope dy/dz
+      tofTrackFinder->SetTyMean(0.);                 // mean slope dy/dz
       CbmTofTrackFitter* tofTrackFitter = new CbmTofTrackFitterKF(0, 211);
       TFitter* MyFit                    = new TFitter(1);  // initialize Minuit
       tofTrackFinder->SetFitter(tofTrackFitter);
 
-      CbmTofFindTracks* tofFindTracks =
-        new CbmTofFindTracks("TOF Track Finder");
+      CbmTofFindTracks* tofFindTracks = new CbmTofFindTracks("TOF Track Finder");
       tofFindTracks->UseFinder(tofTrackFinder);
       tofFindTracks->UseFitter(tofTrackFitter);
       tofFindTracks->SetCalOpt(iCalOpt);
       // 1 - update offsets, 2 - update walk, 0 - bypass
-      tofFindTracks->SetCorMode(
-        iGenCor);  // valid options: 0,1,2,3,4,5,6, 10 - 19
-      tofFindTracks->SetTtTarg(
-        0.065);  // target value for Mar2020 triple stack -> betapeak ~ 0.95
+      tofFindTracks->SetCorMode(iGenCor);  // valid options: 0,1,2,3,4,5,6, 10 - 19
+      tofFindTracks->SetTtTarg(0.065);     // target value for Mar2020 triple stack -> betapeak ~ 0.95
       //tofFindTracks->SetTtTarg(0.041);  // target value for inverse velocity, > 0.033 ns/cm!
       //tofFindTracks->SetTtTarg(0.035);  // target value for inverse velocity, > 0.033 ns/cm!
-      tofFindTracks->SetCalParFileName(
-        cTrkFile);  // Tracker parameter value file name
-      tofFindTracks->SetBeamCounter(5, 0, 0);  // default beam counter
-      tofFindTracks->SetStationMaxHMul(
-        30);  // Max Hit Multiplicity in any used station
+      tofFindTracks->SetCalParFileName(cTrkFile);  // Tracker parameter value file name
+      tofFindTracks->SetBeamCounter(5, 0, 0);      // default beam counter
+      tofFindTracks->SetStationMaxHMul(30);        // Max Hit Multiplicity in any used station
 
-      tofFindTracks->SetT0MAX(dScalFac);  // in ns
-      tofFindTracks->SetSIGT(0.08);       // default in ns
-      tofFindTracks->SetSIGX(0.3);        // default in cm
-      tofFindTracks->SetSIGY(0.45);       // default in cm
-      tofFindTracks->SetSIGZ(0.05);       // default in cm
-      tofFindTracks->SetUseSigCalib(
-        kFALSE);  // ignore resolutions in CalPar file
-      tofTrackFinder->SetSIGLIM(dChi2Lim2
-                                * 2.);  // matching window in multiples of chi2
+      tofFindTracks->SetT0MAX(dScalFac);           // in ns
+      tofFindTracks->SetSIGT(0.08);                // default in ns
+      tofFindTracks->SetSIGX(0.3);                 // default in cm
+      tofFindTracks->SetSIGY(0.45);                // default in cm
+      tofFindTracks->SetSIGZ(0.05);                // default in cm
+      tofFindTracks->SetUseSigCalib(kFALSE);       // ignore resolutions in CalPar file
+      tofTrackFinder->SetSIGLIM(dChi2Lim2 * 2.);   // matching window in multiples of chi2
       tofTrackFinder->SetChiMaxAccept(dChi2Lim2);  // max tracklet chi2
 
       Int_t iMinNofHits   = -1;
@@ -382,8 +364,7 @@ void mcbm_event_ana(UInt_t uRunId         = 831,
   CbmRichMCbmHitProducer* hitProdRich = new CbmRichMCbmHitProducer();
   hitProdRich->setToTLimits(23.7, 30.0);
   hitProdRich->applyToTCut();
-  TString sRichMapFile =
-    srcDir + "/macro/rich/mcbm/beamtime/mRICH_Mapping_vert_20190318_elView.geo";
+  TString sRichMapFile = srcDir + "/macro/rich/mcbm/beamtime/mRICH_Mapping_vert_20190318_elView.geo";
   hitProdRich->SetMappingFile(sRichMapFile.Data());
   //  run->AddTask(hitProdRich);
   // ------------------------------------------------------------------------
@@ -407,9 +388,8 @@ void mcbm_event_ana(UInt_t uRunId         = 831,
   tofExtendTracks->SetStationUT(1);
   //iLev: 0 update alignment with deviation from original tracklet
   //iLev: 1 update alignment with deviation from extended and refitted tracklet
-  tofExtendTracks->SetCorSrc(0);  // [iLev]0 - all hits, [ilev]1 - pulls,
-  tofExtendTracks->SetCorMode(
-    210);  // 2 - Y coordinate, 1 - X coordinat, 0 Time offset
+  tofExtendTracks->SetCorSrc(0);     // [iLev]0 - all hits, [ilev]1 - pulls,
+  tofExtendTracks->SetCorMode(210);  // 2 - Y coordinate, 1 - X coordinat, 0 Time offset
   tofExtendTracks->SetTrkHitsMin(4);
   tofExtendTracks->SetAddStations(1);
   tofExtendTracks->SetReqStations(509);
@@ -462,8 +442,7 @@ void mcbm_event_ana(UInt_t uRunId         = 831,
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output file is " << outFile << std::endl;
   std::cout << "Parameter file is " << parFileOut << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
   // ------------------------------------------------------------------------
 
