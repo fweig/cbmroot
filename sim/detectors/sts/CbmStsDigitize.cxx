@@ -40,12 +40,6 @@
 
 // Includes from STS
 #include "CbmStsModule.h"
-#include "CbmStsParSensorCond.h"
-#include "CbmStsPhysics.h"
-#include "CbmStsSensor.h"
-#include "CbmStsSetup.h"
-#include "CbmStsSimSensorFactory.h"
-
 #include "CbmStsParAsic.h"
 #include "CbmStsParModule.h"
 #include "CbmStsParSensor.h"
@@ -54,6 +48,10 @@
 #include "CbmStsParSetSensor.h"
 #include "CbmStsParSetSensorCond.h"
 #include "CbmStsParSim.h"
+#include "CbmStsPhysics.h"
+#include "CbmStsSensor.h"
+#include "CbmStsSetup.h"
+#include "CbmStsSimSensorFactory.h"
 
 using std::fixed;
 using std::left;
@@ -85,7 +83,8 @@ CbmStsDigitize::CbmStsDigitize()
   , fModuleParameterFile()
   , fTimePointLast(-1.)
   , fTimeDigiFirst(-1.)
-  , fTimeDigiLast(-1.) {
+  , fTimeDigiLast(-1.)
+{
   ResetCounters();
   SetGlobalDefaults();
 }
@@ -98,7 +97,8 @@ CbmStsDigitize::~CbmStsDigitize() {}
 
 
 // -----   Content of analogue buffers   -----------------------------------
-Int_t CbmStsDigitize::BufferSize() const {
+Int_t CbmStsDigitize::BufferSize() const
+{
   Int_t nSignals = 0;
   Int_t nSigModule;
   Double_t t1Module;
@@ -115,7 +115,8 @@ Int_t CbmStsDigitize::BufferSize() const {
 
 
 // -----   Print the status of the analogue buffers   ----------------------
-string CbmStsDigitize::BufferStatus() const {
+string CbmStsDigitize::BufferStatus() const
+{
 
   Int_t nSignals = 0;
   Double_t t1    = -1;
@@ -135,34 +136,28 @@ string CbmStsDigitize::BufferStatus() const {
   }    //# modules in setup
 
   std::stringstream ss;
-  ss << nSignals << (nSignals == 1 ? " signal " : " signals ")
-     << "in analogue buffers";
-  if (nSignals)
-    ss << " ( from " << fixed << setprecision(3) << t1 << " ns to " << t2
-       << " ns )";
+  ss << nSignals << (nSignals == 1 ? " signal " : " signals ") << "in analogue buffers";
+  if (nSignals) ss << " ( from " << fixed << setprecision(3) << t1 << " ns to " << t2 << " ns )";
   return ss.str();
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Create a digi object   ------------------------------------------
-void CbmStsDigitize::CreateDigi(Int_t address,
-                                UShort_t channel,
-                                Long64_t time,
-                                UShort_t adc,
-                                const CbmMatch& match) {
+void CbmStsDigitize::CreateDigi(Int_t address, UShort_t channel, Long64_t time, UShort_t adc, const CbmMatch& match)
+{
 
   // Update times of first and last digi
-  fTimeDigiFirst =
-    fNofDigis ? TMath::Min(fTimeDigiFirst, Double_t(time)) : time;
-  fTimeDigiLast = TMath::Max(fTimeDigiLast, Double_t(time));
+  fTimeDigiFirst = fNofDigis ? TMath::Min(fTimeDigiFirst, Double_t(time)) : time;
+  fTimeDigiLast  = TMath::Max(fTimeDigiLast, Double_t(time));
 
   // Create digi and (if required) match and send them to DAQ
   CbmStsDigi* digi = new CbmStsDigi(address, channel, time, adc);
   if (fCreateMatches) {
     CbmMatch* digiMatch = new CbmMatch(match);
     SendData(digi, digiMatch);
-  } else
+  }
+  else
     SendData(digi);
   fNofDigis++;
 }
@@ -170,7 +165,8 @@ void CbmStsDigitize::CreateDigi(Int_t address,
 
 
 // -----   Task execution   ------------------------------------------------
-void CbmStsDigitize::Exec(Option_t* /*opt*/) {
+void CbmStsDigitize::Exec(Option_t* /*opt*/)
+{
 
   // --- Start timer and reset counters
   fTimer.Start();
@@ -194,20 +190,16 @@ void CbmStsDigitize::Exec(Option_t* /*opt*/) {
     for (auto& entry : fModules)
       nNoise += entry.second->GenerateNoise(tNoiseStart, tNoiseEnd);
     fNofNoiseTot += Double_t(nNoise);
-    LOG(info) << "+ " << setw(20) << GetName() << ": Generated  " << nNoise
-              << " noise signals from t = " << tNoiseStart << " ns to "
-              << tNoiseEnd << " ns";
+    LOG(info) << "+ " << setw(20) << GetName() << ": Generated  " << nNoise << " noise signals from t = " << tNoiseStart
+              << " ns to " << tNoiseEnd << " ns";
   }
 
   // --- Analogue response: Process the input array of StsPoints
   ProcessMCEvent();
-  LOG(debug) << GetName() << ": " << fNofSignalsF + fNofSignalsB
-             << " signals generated ( " << fNofSignalsF << " / " << fNofSignalsB
-             << " )";
+  LOG(debug) << GetName() << ": " << fNofSignalsF + fNofSignalsB << " signals generated ( " << fNofSignalsF << " / "
+             << fNofSignalsB << " )";
   // --- For debug: status of analogue buffers
-  if (gLogger->IsLogNeeded(fair::Severity::debug)) {
-    LOG(debug) << GetName() << ": " << BufferStatus();
-  }
+  if (gLogger->IsLogNeeded(fair::Severity::debug)) { LOG(debug) << GetName() << ": " << BufferStatus(); }
 
   // --- Readout time: in stream mode the time of the current event.
   // --- Analogue buffers will be digitised for signals at times smaller than
@@ -220,16 +212,12 @@ void CbmStsDigitize::Exec(Option_t* /*opt*/) {
   ProcessAnalogBuffers(readoutTime);
 
   // --- Check status of analogue module buffers
-  if (gLogger->IsLogNeeded(fair::Severity::debug)) {
-    LOG(debug) << GetName() << ": " << BufferStatus();
-  }
+  if (gLogger->IsLogNeeded(fair::Severity::debug)) { LOG(debug) << GetName() << ": " << BufferStatus(); }
 
   // --- Event log
-  LOG(info) << left << setw(15) << GetName() << "[" << fixed << setprecision(3)
-            << fTimer.RealTime() << " s]"
-            << " Points: processed " << fNofPointsProc << ", ignored "
-            << fNofPointsIgno << ", signals: " << fNofSignalsF << " / "
-            << fNofSignalsB << ", digis: " << fNofDigis;
+  LOG(info) << left << setw(15) << GetName() << "[" << fixed << setprecision(3) << fTimer.RealTime() << " s]"
+            << " Points: processed " << fNofPointsProc << ", ignored " << fNofPointsIgno
+            << ", signals: " << fNofSignalsF << " / " << fNofSignalsB << ", digis: " << fNofDigis;
 
   // --- Counters
   fTimer.Stop();
@@ -245,7 +233,8 @@ void CbmStsDigitize::Exec(Option_t* /*opt*/) {
 
 
 // -----   Finish run    ---------------------------------------------------
-void CbmStsDigitize::Finish() {
+void CbmStsDigitize::Finish()
+{
 
   // --- Start timer and reset counters
   fTimer.Start();
@@ -273,11 +262,9 @@ void CbmStsDigitize::Finish() {
 
     // --- Screen output
     stringstream ss;
-    ss << GetName() << ": " << fNofDigis
-       << (fNofDigis == 1 ? " digi " : " digis ") << "created and sent to DAQ ";
+    ss << GetName() << ": " << fNofDigis << (fNofDigis == 1 ? " digi " : " digis ") << "created and sent to DAQ ";
     if (fNofDigis)
-      ss << "( from " << fixed << setprecision(3) << fTimeDigiFirst << " ns to "
-         << fTimeDigiLast << " ns )";
+      ss << "( from " << fixed << setprecision(3) << fTimeDigiFirst << " ns to " << fTimeDigiLast << " ns )";
     LOG(info) << ss.str();
     LOG(info) << GetName() << ": " << BufferStatus();
   }
@@ -294,46 +281,37 @@ void CbmStsDigitize::Finish() {
   LOG(info) << "=====================================";
   LOG(info) << GetName() << ": Run summary";
   LOG(info) << "Events processed       : " << fNofEvents;
-  LOG(info) << "Points processed / evt : " << fixed << setprecision(1)
-            << fNofPointsProcTot / Double_t(fNofEvents);
-  LOG(info) << "Points ignored / evt   : " << fixed << setprecision(1)
-            << fNofPointsIgnoTot / Double_t(fNofEvents);
-  LOG(info) << "Signals / event        : "
-            << fNofSignalsFTot / Double_t(fNofEvents) << " / "
+  LOG(info) << "Points processed / evt : " << fixed << setprecision(1) << fNofPointsProcTot / Double_t(fNofEvents);
+  LOG(info) << "Points ignored / evt   : " << fixed << setprecision(1) << fNofPointsIgnoTot / Double_t(fNofEvents);
+  LOG(info) << "Signals / event        : " << fNofSignalsFTot / Double_t(fNofEvents) << " / "
             << fNofSignalsBTot / Double_t(fNofEvents);
-  LOG(info) << "StsDigi / event        : "
-            << fNofDigisTot / Double_t(fNofEvents);
-  LOG(info) << "Digis per point        : " << setprecision(6)
-            << fNofDigisTot / fNofPointsProcTot;
-  LOG(info) << "Digis per signal       : "
-            << fNofDigisTot / (fNofSignalsFTot + fNofSignalsBTot);
-  LOG(info) << "Noise digis / event    : "
-            << fNofNoiseTot / Double_t(fNofEvents);
+  LOG(info) << "StsDigi / event        : " << fNofDigisTot / Double_t(fNofEvents);
+  LOG(info) << "Digis per point        : " << setprecision(6) << fNofDigisTot / fNofPointsProcTot;
+  LOG(info) << "Digis per signal       : " << fNofDigisTot / (fNofSignalsFTot + fNofSignalsBTot);
+  LOG(info) << "Noise digis / event    : " << fNofNoiseTot / Double_t(fNofEvents);
   LOG(info) << "Noise fraction         : " << fNofNoiseTot / fNofDigisTot;
-  LOG(info) << "Real time per event    : " << fTimeTot / Double_t(fNofEvents)
-            << " s";
+  LOG(info) << "Real time per event    : " << fTimeTot / Double_t(fNofEvents) << " s";
   LOG(info) << "=====================================";
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Get parameter container from runtime DB   -----------------------
-void CbmStsDigitize::SetParContainers() {
+void CbmStsDigitize::SetParContainers()
+{
   assert(FairRunAna::Instance());
   FairRuntimeDb* rtdb = FairRunAna::Instance()->GetRuntimeDb();
-  fParSim = static_cast<CbmStsParSim*>(rtdb->getContainer("CbmStsParSim"));
-  fParSetModule =
-    static_cast<CbmStsParSetModule*>(rtdb->getContainer("CbmStsParSetModule"));
-  fParSetSensor =
-    static_cast<CbmStsParSetSensor*>(rtdb->getContainer("CbmStsParSetSensor"));
-  fParSetCond = static_cast<CbmStsParSetSensorCond*>(
-    rtdb->getContainer("CbmStsParSetSensorCond"));
+  fParSim             = static_cast<CbmStsParSim*>(rtdb->getContainer("CbmStsParSim"));
+  fParSetModule       = static_cast<CbmStsParSetModule*>(rtdb->getContainer("CbmStsParSetModule"));
+  fParSetSensor       = static_cast<CbmStsParSetSensor*>(rtdb->getContainer("CbmStsParSetSensor"));
+  fParSetCond         = static_cast<CbmStsParSetSensorCond*>(rtdb->getContainer("CbmStsParSetSensorCond"));
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Initialisation    -----------------------------------------------
-InitStatus CbmStsDigitize::Init() {
+InitStatus CbmStsDigitize::Init()
+{
 
   // Screen output
   std::cout << std::endl;
@@ -387,7 +365,8 @@ InitStatus CbmStsDigitize::Init() {
 
 
 // -----   Instantiation of modules   --------------------------------------
-UInt_t CbmStsDigitize::InitModules() {
+UInt_t CbmStsDigitize::InitModules()
+{
 
   UInt_t nModules = 0;
   fModules.clear();
@@ -410,7 +389,8 @@ UInt_t CbmStsDigitize::InitModules() {
 
 
 // -----   Initialise parameters   -----------------------------------------
-void CbmStsDigitize::InitParams() {
+void CbmStsDigitize::InitParams()
+{
 
   // --- The parameter containers are completely initialised here.
   // --- Any contents possibly obtained from the runtimeDb are ignored
@@ -443,13 +423,10 @@ void CbmStsDigitize::InitParams() {
     fParSetModule->SetParModule(address, *fUserParModule);
   }
   UInt_t deactivated = 0;
-  if ( fUserFracDeadChan > 0. ) {
-     deactivated = fParSetModule->DeactivateRandomChannels(fUserFracDeadChan);
-  }
+  if (fUserFracDeadChan > 0.) { deactivated = fParSetModule->DeactivateRandomChannels(fUserFracDeadChan); }
   fParSetModule->setChanged();
   fParSetModule->setInputVersion(-2, 1);
-  LOG(info) << "--- Using global ASIC parameters: \n       "
-            << fUserParAsic->ToString();
+  LOG(info) << "--- Using global ASIC parameters: \n       " << fUserParAsic->ToString();
   LOG(info) << "--- Module parameters: " << fParSetModule->ToString();
   LOG(info) << "--- Deactive channels: " << deactivated << " " << fUserFracDeadChan;
 
@@ -462,7 +439,7 @@ void CbmStsDigitize::InitParams() {
   for (Int_t iSensor = 0; iSensor < fSetup->GetNofSensors(); iSensor++) {
     CbmStsSensor* sensor = fSetup->GetSensor(iSensor);
     UInt_t address       = sensor->GetAddress();
-    TGeoBBox* box = dynamic_cast<TGeoBBox*>(sensor->GetPnode()->GetShape());
+    TGeoBBox* box        = dynamic_cast<TGeoBBox*>(sensor->GetPnode()->GetShape());
     assert(box);
     Double_t lX = 2. * box->GetDX();
     Double_t lY = 2. * box->GetDY();
@@ -478,16 +455,14 @@ void CbmStsDigitize::InitParams() {
     Double_t nStripsB = dX / pitchB;
 
     // The stereo sensors with 6.2092 cm width have 1024 strips à 58 mum.
-    if (fUserParSensor->GetClass() == CbmStsSensorClass::kDssdStereo
-        && TMath::Abs(lX - 6.2092) < 0.0001
+    if (fUserParSensor->GetClass() == CbmStsSensorClass::kDssdStereo && TMath::Abs(lX - 6.2092) < 0.0001
         && TMath::Abs(pitchF - 0.0058) < 0.0001) {
       nStripsF = 1024.;
       nStripsB = 1024.;
     }
 
     // Same for sensors with 6.2000 cm width
-    if (fUserParSensor->GetClass() == CbmStsSensorClass::kDssdStereo
-        && TMath::Abs(lX - 6.2) < 0.0001
+    if (fUserParSensor->GetClass() == CbmStsSensorClass::kDssdStereo && TMath::Abs(lX - 6.2) < 0.0001
         && TMath::Abs(pitchF - 0.0058) < 0.0001) {
       nStripsF = 1024.;
       nStripsB = 1024.;
@@ -523,7 +498,8 @@ void CbmStsDigitize::InitParams() {
 
 
 // -----   Instantiation of sensors   --------------------------------------
-UInt_t CbmStsDigitize::InitSensors() {
+UInt_t CbmStsDigitize::InitSensors()
+{
 
   UInt_t nSensors = 0;
   fSensors.clear();
@@ -548,8 +524,7 @@ UInt_t CbmStsDigitize::InitSensors() {
     const CbmStsParSensor& sensorPar = fParSetSensor->GetParSensor(sensAddress);
 
     // --- Create simulation sensor accordoing to its class
-    auto result = fSensors.insert(
-      std::make_pair(sensAddress, fSensorFactory->CreateSensor(sensorPar)));
+    auto result = fSensors.insert(std::make_pair(sensAddress, fSensorFactory->CreateSensor(sensorPar)));
     assert(result.second);  // If false, sensor was already in map
     auto& sensor = result.first->second;
     assert(sensor);  // Valid sensor pointer
@@ -595,7 +570,8 @@ UInt_t CbmStsDigitize::InitSensors() {
 
 
 // -----   Initialisation of setup    --------------------------------------
-void CbmStsDigitize::InitSetup() {
+void CbmStsDigitize::InitSetup()
+{
 
   // Initialise the STS setup interface from TGeoManager
   fSetup = CbmStsSetup::Instance();
@@ -613,7 +589,8 @@ void CbmStsDigitize::InitSetup() {
 
 
 // -----   Process the analogue buffers of all modules   -------------------
-void CbmStsDigitize::ProcessAnalogBuffers(Double_t readoutTime) {
+void CbmStsDigitize::ProcessAnalogBuffers(Double_t readoutTime)
+{
 
   // --- Process analogue buffers of all modules
   for (auto& it : fModules)
@@ -623,13 +600,14 @@ void CbmStsDigitize::ProcessAnalogBuffers(Double_t readoutTime) {
 
 
 // -----   Process points from MC event    ---------------------------------
-void CbmStsDigitize::ProcessMCEvent() {
+void CbmStsDigitize::ProcessMCEvent()
+{
 
   // --- Loop over all StsPoints and execute the ProcessPoint method
   assert(fPoints);
   for (Int_t iPoint = 0; iPoint < fPoints->GetEntriesFast(); iPoint++) {
     const CbmStsPoint* point = (const CbmStsPoint*) fPoints->At(iPoint);
-    CbmLink* link = new CbmLink(1., iPoint, fCurrentMCEntry, fCurrentInput);
+    CbmLink* link            = new CbmLink(1., iPoint, fCurrentMCEntry, fCurrentInput);
 
     // --- Ignore points from secondaries if the respective flag is set
     if (fParSim->OnlyPrimaries()) {
@@ -653,9 +631,8 @@ void CbmStsDigitize::ProcessMCEvent() {
 
 
 // -----  Process a StsPoint   ---------------------------------------------
-void CbmStsDigitize::ProcessPoint(const CbmStsPoint* point,
-                                  Double_t eventTime,
-                                  CbmLink* link) {
+void CbmStsDigitize::ProcessPoint(const CbmStsPoint* point, Double_t eventTime, CbmLink* link)
+{
 
   // --- Get the sensor the point is in
   UInt_t address = static_cast<UInt_t>(point->GetDetectorID());
@@ -667,8 +644,8 @@ void CbmStsDigitize::ProcessPoint(const CbmStsPoint* point,
   // --- Statistics
   Int_t nSignalsF = status / 1000;
   Int_t nSignalsB = status - 1000 * nSignalsF;
-  LOG(debug2) << GetName() << ": Produced signals: " << nSignalsF + nSignalsB
-              << " ( " << nSignalsF << " / " << nSignalsB << " )";
+  LOG(debug2) << GetName() << ": Produced signals: " << nSignalsF + nSignalsB << " ( " << nSignalsF << " / "
+              << nSignalsB << " )";
   fNofSignalsF += nSignalsF;
   fNofSignalsB += nSignalsB;
 }
@@ -676,7 +653,8 @@ void CbmStsDigitize::ProcessPoint(const CbmStsPoint* point,
 
 
 // -----   Private method ReInit   -----------------------------------------
-InitStatus CbmStsDigitize::ReInit() {
+InitStatus CbmStsDigitize::ReInit()
+{
 
   fSetup = CbmStsSetup::Instance();
 
@@ -686,7 +664,8 @@ InitStatus CbmStsDigitize::ReInit() {
 
 
 // -----   Reset event counters   ------------------------------------------
-void CbmStsDigitize::ResetCounters() {
+void CbmStsDigitize::ResetCounters()
+{
   fTimeDigiFirst = fTimeDigiLast = -1.;
   fNofPointsProc                 = 0;
   fNofPointsIgno                 = 0;
@@ -698,7 +677,8 @@ void CbmStsDigitize::ResetCounters() {
 
 
 // -----   Global default values for parameters   --------------------------
-void CbmStsDigitize::SetGlobalDefaults() {
+void CbmStsDigitize::SetGlobalDefaults()
+{
 
   // The global default values cannot be directly stored in the parameter
   // containers, since these are not yet initialised from the database.
@@ -737,8 +717,7 @@ void CbmStsDigitize::SetGlobalDefaults() {
   Double_t deadTime  = 800.;       // Channel dead time [ns]
   Double_t noiseRms  = 1000.;      // RMS of noise [e]
   Double_t znr       = 3.9789e-3;  // Zero-crossing noise rate [1/ns]
-  fUserParAsic       = new CbmStsParAsic(nAsicChannels, nAdc, dynRange, threshold,
-                                         timeResol, deadTime, noiseRms, znr);
+  fUserParAsic       = new CbmStsParAsic(nAsicChannels, nAdc, dynRange, threshold, timeResol, deadTime, noiseRms, znr);
   // --- Sensor parameters
   // --- Here, only the default pitch and stereo angles are defined. The
   // --- other parameters are extracted from the geometry.
@@ -762,34 +741,28 @@ void CbmStsDigitize::SetGlobalDefaults() {
   Double_t temperature = 268.;  // Temperature
   Double_t cCoupling   = 17.5;  // Coupling capacitance [pF]
   Double_t cInterstrip = 1.;    // Inter-strip capacitance
-  fUserParCond =
-    new CbmStsParSensorCond(vFd, vBias, temperature, cCoupling, cInterstrip);
+  fUserParCond         = new CbmStsParSensorCond(vFd, vBias, temperature, cCoupling, cInterstrip);
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Set the global module parameters   ------------------------------
-void CbmStsDigitize::SetGlobalAsicParams(UShort_t nChannels,
-                                         UShort_t nAdc,
-                                         Double_t dynRange,
-                                         Double_t threshold,
-                                         Double_t timeResolution,
-                                         Double_t deadTime,
-                                         Double_t noise,
-                                         Double_t zeroNoiseRate) {
+void CbmStsDigitize::SetGlobalAsicParams(UShort_t nChannels, UShort_t nAdc, Double_t dynRange, Double_t threshold,
+                                         Double_t timeResolution, Double_t deadTime, Double_t noise,
+                                         Double_t zeroNoiseRate)
+{
   assert(!fIsInitialised);
   assert(nAdc > 0);
   if (fUserParAsic) delete fUserParAsic;
-  fUserParAsic = new CbmStsParAsic(nChannels, nAdc, dynRange, threshold,
-                                   timeResolution, deadTime, noise,
-                                   zeroNoiseRate);
+  fUserParAsic =
+    new CbmStsParAsic(nChannels, nAdc, dynRange, threshold, timeResolution, deadTime, noise, zeroNoiseRate);
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Set the global module parameters   ------------------------------
-void CbmStsDigitize::SetGlobalModuleParams(UInt_t nChannels,
-                                           UInt_t nAsicChannels) {
+void CbmStsDigitize::SetGlobalModuleParams(UInt_t nChannels, UInt_t nAsicChannels)
+{
   assert(!fIsInitialised);
 
   if (fUserParModule) delete fUserParModule;
@@ -799,22 +772,20 @@ void CbmStsDigitize::SetGlobalModuleParams(UInt_t nChannels,
 
 
 // -----   Set the global sensor conditions   ------------------------------
-void CbmStsDigitize::SetGlobalSensorConditions(Double_t vFd,
-                                               Double_t vBias,
-                                               Double_t temperature,
-                                               Double_t cCoupling,
-                                               Double_t cInterstrip) {
+void CbmStsDigitize::SetGlobalSensorConditions(Double_t vFd, Double_t vBias, Double_t temperature, Double_t cCoupling,
+                                               Double_t cInterstrip)
+{
   assert(!fIsInitialised);
 
   if (fUserParCond) delete fUserParCond;
-  fUserParCond =
-    new CbmStsParSensorCond(vFd, vBias, temperature, cCoupling, cInterstrip);
+  fUserParCond = new CbmStsParSensorCond(vFd, vBias, temperature, cCoupling, cInterstrip);
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Set sensor parameter file   -------------------------------------
-void CbmStsDigitize::SetModuleParameterFile(const char* fileName) {
+void CbmStsDigitize::SetModuleParameterFile(const char* fileName)
+{
 
   assert(!fIsInitialised);
   fModuleParameterFile = fileName;
@@ -823,28 +794,26 @@ void CbmStsDigitize::SetModuleParameterFile(const char* fileName) {
 
 
 // -----   Set physical processes for the analogue response  ---------------
-void CbmStsDigitize::SetProcesses(CbmStsELoss eLossModel,
-                                  Bool_t useLorentzShift,
-                                  Bool_t useDiffusion,
-                                  Bool_t useCrossTalk) {
+void CbmStsDigitize::SetProcesses(CbmStsELoss eLossModel, Bool_t useLorentzShift, Bool_t useDiffusion,
+                                  Bool_t useCrossTalk)
+{
   if (fIsInitialised) {
     LOG(error) << GetName() << ": physics processes must be set before "
                << "initialisation! Statement will have no effect.";
     return;
   }
 
-  fParSim->SetProcesses(
-    eLossModel, useLorentzShift, useDiffusion, useCrossTalk);
+  fParSim->SetProcesses(eLossModel, useLorentzShift, useDiffusion, useCrossTalk);
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Set sensor condition file   -------------------------------------
-void CbmStsDigitize::SetSensorConditionFile(const char* fileName) {
+void CbmStsDigitize::SetSensorConditionFile(const char* fileName)
+{
 
   if (fIsInitialised) {
-    LOG(fatal) << GetName()
-               << ": sensor conditions must be set before initialisation!";
+    LOG(fatal) << GetName() << ": sensor conditions must be set before initialisation!";
     return;
   }
   fSensorConditionFile = fileName;
@@ -853,11 +822,11 @@ void CbmStsDigitize::SetSensorConditionFile(const char* fileName) {
 
 
 // -----   Set sensor parameter file   -------------------------------------
-void CbmStsDigitize::SetSensorParameterFile(const char* fileName) {
+void CbmStsDigitize::SetSensorParameterFile(const char* fileName)
+{
 
   if (fIsInitialised) {
-    LOG(fatal) << GetName()
-               << ": sensor parameters must be set before initialisation!";
+    LOG(fatal) << GetName() << ": sensor parameters must be set before initialisation!";
     return;
   }
   fSensorParameterFile = fileName;
@@ -866,9 +835,7 @@ void CbmStsDigitize::SetSensorParameterFile(const char* fileName) {
 
 
 // -----   Usage of primary tracks only   ----------------------------------
-void CbmStsDigitize::UseOnlyPrimaries(Bool_t flag) {
-  fUserParSim->SetOnlyPrimaries(flag);
-}
+void CbmStsDigitize::UseOnlyPrimaries(Bool_t flag) { fUserParSim->SetOnlyPrimaries(flag); }
 // -------------------------------------------------------------------------
 
 ClassImp(CbmStsDigitize)

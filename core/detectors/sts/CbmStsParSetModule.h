@@ -7,15 +7,15 @@
 #ifndef CBMSTSPARSETMODULE_H
 #define CBMSTSPARSETMODULE_H 1
 
-#include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
-#include <RtypesCore.h>  // for UInt_t, Bool_t, kFALSE, kTRUE
+#include "CbmStsParModule.h"  // for CbmStsParModule
 
 #include <FairParGenericSet.h>  // for FairParGenericSet
 
+#include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
+#include <RtypesCore.h>  // for UInt_t, Bool_t, kFALSE, kTRUE
+
 #include <map>     // for map
 #include <string>  // for string
-
-#include "CbmStsParModule.h"  // for CbmStsParModule
 
 class FairParamList;
 
@@ -35,8 +35,7 @@ public:
      ** @param title Parameter container factory name
      ** @param context  No idea
      **/
-  CbmStsParSetModule(const char* name    = "CbmParSetModule",
-                     const char* title   = "STS parameters",
+  CbmStsParSetModule(const char* name = "CbmParSetModule", const char* title = "STS parameters",
                      const char* context = "Default");
 
 
@@ -104,7 +103,8 @@ public:
   /** @brief Set global parameters (for all modules)
      ** @param conditions  Module parameter object
      **/
-  void SetGlobalPar(const CbmStsParModule& params) {
+  void SetGlobalPar(const CbmStsParModule& params)
+  {
     fGlobalParams = params;
     fUseGlobal    = kTRUE;
   }

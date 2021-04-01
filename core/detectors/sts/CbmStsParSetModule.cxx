@@ -16,10 +16,10 @@
 ClassImp(CbmStsParSetModule)
 
   // -----   Constructor   ----------------------------------------------------
-  CbmStsParSetModule::CbmStsParSetModule(const char* name,
-                                         const char* title,
-                                         const char* context)
-  : FairParGenericSet(name, title, context) {}
+  CbmStsParSetModule::CbmStsParSetModule(const char* name, const char* title, const char* context)
+  : FairParGenericSet(name, title, context)
+{
+}
 // --------------------------------------------------------------------------
 
 
@@ -29,7 +29,8 @@ CbmStsParSetModule::~CbmStsParSetModule() {}
 
 
 // -----   Reset   ----------------------------------------------------------
-void CbmStsParSetModule::clear() {
+void CbmStsParSetModule::clear()
+{
   fUseGlobal = kFALSE;
   fParams.clear();
   status = kFALSE;
@@ -39,10 +40,11 @@ void CbmStsParSetModule::clear() {
 
 
 // -----   Randomly deactivate channels   -----------------------------------
-UInt_t CbmStsParSetModule::DeactivateRandomChannels(Double_t fraction) {
-  if ( fraction <= 0. ) return 0;
+UInt_t CbmStsParSetModule::DeactivateRandomChannels(Double_t fraction)
+{
+  if (fraction <= 0.) return 0;
   UInt_t nDeactivated = 0;
-  for ( auto& entry : fParams ) {
+  for (auto& entry : fParams) {
     nDeactivated += entry.second.DeactivateRandomChannels(fraction);
   }
   return nDeactivated;
@@ -51,7 +53,8 @@ UInt_t CbmStsParSetModule::DeactivateRandomChannels(Double_t fraction) {
 
 
 // -----   Read parameters from ASCII file   --------------------------------
-Bool_t CbmStsParSetModule::getParams(FairParamList*) {
+Bool_t CbmStsParSetModule::getParams(FairParamList*)
+{
   LOG(fatal) << GetName() << ": ASCII input is not defined!";
   return kFALSE;
 }
@@ -59,7 +62,8 @@ Bool_t CbmStsParSetModule::getParams(FairParamList*) {
 
 
 // -----   Get condition parameters of a module   ---------------------------
-const CbmStsParModule& CbmStsParSetModule::GetParModule(UInt_t address) {
+const CbmStsParModule& CbmStsParSetModule::GetParModule(UInt_t address)
+{
   if (fUseGlobal) return fGlobalParams;
   assert(fParams.count(address));
   return fParams[address];
@@ -68,31 +72,26 @@ const CbmStsParModule& CbmStsParSetModule::GetParModule(UInt_t address) {
 
 
 // -----   Write parameters from ASCII file   -------------------------------
-void CbmStsParSetModule::putParams(FairParamList*) {
-  LOG(fatal) << GetName() << ": ASCII output is not defined!";
-}
+void CbmStsParSetModule::putParams(FairParamList*) { LOG(fatal) << GetName() << ": ASCII output is not defined!"; }
 // --------------------------------------------------------------------------
 
 
 // -----   Set module parameters   ------------------------------------------
-void CbmStsParSetModule::SetParModule(UInt_t address,
-                                      const CbmStsParModule& par) {
-  if (fParams.count(address))
-    LOG(fatal) << GetName() << ": Replacing parameters for sensor address "
-               << address;
+void CbmStsParSetModule::SetParModule(UInt_t address, const CbmStsParModule& par)
+{
+  if (fParams.count(address)) LOG(fatal) << GetName() << ": Replacing parameters for sensor address " << address;
   fParams[address] = par;
 }
 // --------------------------------------------------------------------------
 
 
 // -----   Info to string   ------------------------------------------------
-std::string CbmStsParSetModule::ToString() const {
+std::string CbmStsParSetModule::ToString() const
+{
   std::stringstream ss;
-  if (fUseGlobal)
-    ss << "(Global) " << fGlobalParams.ToString();
+  if (fUseGlobal) ss << "(Global) " << fGlobalParams.ToString();
   else {
-    if (fParams.empty())
-      ss << "Empty";
+    if (fParams.empty()) ss << "Empty";
     else
       ss << "Parameters for " << fParams.size() << " sensors";
   }

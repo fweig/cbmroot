@@ -6,13 +6,13 @@
 #ifndef CBMSTSPARMODULE_H
 #define CBMSTSPARMODULE_H 1
 
+#include "CbmStsParAsic.h"  // for CbmStsParAsic
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDefNV
 #include <RtypesCore.h>  // for UInt_t
 
 #include <string>  // for string
 #include <vector>  // for vector
-
-#include "CbmStsParAsic.h"  // for CbmStsParAsic
 
 /** @class CbmStsParModule
  ** @brief Parameters for one STS module

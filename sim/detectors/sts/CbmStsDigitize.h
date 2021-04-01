@@ -6,9 +6,6 @@
 #ifndef CBMSTSDIGITIZE_H
 #define CBMSTSDIGITIZE_H 1
 
-#include "TStopwatch.h"
-#include <map>
-
 #include "CbmDefs.h"
 #include "CbmDigitize.h"
 #include "CbmMatch.h"
@@ -17,6 +14,10 @@
 #include "CbmStsPhysics.h"
 #include "CbmStsSimModule.h"
 #include "CbmStsSimSensor.h"
+
+#include "TStopwatch.h"
+
+#include <map>
 
 class TClonesArray;
 class CbmStsPoint;
@@ -64,11 +65,7 @@ public:
    ** @param adc       Digitised charge [ADC channels]
    ** @param match    MC Match object
    **/
-  void CreateDigi(Int_t address,
-                  UShort_t channel,
-                  Long64_t time,
-                  UShort_t adc,
-                  const CbmMatch& match);
+  void CreateDigi(Int_t address, UShort_t channel, Long64_t time, UShort_t adc, const CbmMatch& match);
 
 
   /** @brief Detector system ID
@@ -127,14 +124,8 @@ public:
    **
    ** These parameters will be applied to all ASICS in all modules.
    **/
-  void SetGlobalAsicParams(UShort_t nChannels,
-                           UShort_t nAdc,
-                           Double_t dynRange,
-                           Double_t threshold,
-                           Double_t timeResolution,
-                           Double_t deadTime,
-                           Double_t noise,
-                           Double_t zeroNoiseRate);
+  void SetGlobalAsicParams(UShort_t nChannels, UShort_t nAdc, Double_t dynRange, Double_t threshold,
+                           Double_t timeResolution, Double_t deadTime, Double_t noise, Double_t zeroNoiseRate);
 
 
   /** @brief Set global fraction of dead channels
@@ -143,9 +134,7 @@ public:
    ** If this number is different from zero, in each ASIC a number of
    ** channels corresponding to this fraction are deactivated.
    **/
-  void SetGlobalFracDeadChannels(Double_t fraction) {
-    fUserFracDeadChan = fraction;
-  }
+  void SetGlobalFracDeadChannels(Double_t fraction) { fUserFracDeadChan = fraction; }
 
 
   /** @brief Set the global module parameters
@@ -167,10 +156,7 @@ public:
    ** These parameters will be applied to all sensors when no
    ** condition file is specified.
    **/
-  void SetGlobalSensorConditions(Double_t vDep,
-                                 Double_t vBias,
-                                 Double_t temperature,
-                                 Double_t cCoupling,
+  void SetGlobalSensorConditions(Double_t vDep, Double_t vBias, Double_t temperature, Double_t cCoupling,
                                  Double_t cInterstrip);
 
 
@@ -191,10 +177,8 @@ public:
    **
    ** Changing the physics flags is only allowed before Init() is called.
    **/
-  void SetProcesses(CbmStsELoss eLossModel,
-                    Bool_t useLorentzShift = kTRUE,
-                    Bool_t useDiffusion    = kTRUE,
-                    Bool_t useCrossTalk    = kTRUE);
+  void SetProcesses(CbmStsELoss eLossModel, Bool_t useLorentzShift = kTRUE, Bool_t useDiffusion = kTRUE,
+                    Bool_t useCrossTalk = kTRUE);
 
 
   /** @brief Set the file name with sensor conditions
@@ -249,9 +233,9 @@ private:
   //std::map<Int_t, CbmStsDigitizeParameters*> fModuleParameterMap; ///< Individual module parameter map
   CbmStsSetup* fSetup;                               //! STS setup interface
   CbmStsSimSensorFactory* fSensorFactory = nullptr;  //! Sensor factory
-  TClonesArray* fPoints;  ///< Input array of CbmStsPoint
-  TClonesArray* fTracks;  ///< Input array of CbmMCTrack
-  TStopwatch fTimer;      ///< ROOT timer
+  TClonesArray* fPoints;                             ///< Input array of CbmStsPoint
+  TClonesArray* fTracks;                             ///< Input array of CbmMCTrack
+  TStopwatch fTimer;                                 ///< ROOT timer
 
   /** Map of modules. Key is the address. **/
   std::map<UInt_t, CbmStsSimModule*> fModules {};
@@ -265,8 +249,8 @@ private:
   CbmStsParModule* fUserParModule   = nullptr;  ///< User defined, global
   CbmStsParSensor* fUserParSensor   = nullptr;  ///< User defined, global
   CbmStsParSensorCond* fUserParCond = nullptr;  ///< User defined, global
-  Double_t fUserDinactive = 0.;  ///< Size of inactive sensor border [cm]
-  Double_t fUserFracDeadChan = 0.; ///< Fraction of inactive ASIC channels
+  Double_t fUserDinactive           = 0.;       ///< Size of inactive sensor border [cm]
+  Double_t fUserFracDeadChan        = 0.;       ///< Fraction of inactive ASIC channels
 
   // --- Module and sensor parameters for runtime DB output
   CbmStsParSim* fParSim               = nullptr;  ///< Simulation settings
@@ -361,9 +345,7 @@ private:
    ** @param point  Pointer to CbmStsPoint to be processed
    ** @param link   Link to MCPoint
    **/
-  void ProcessPoint(const CbmStsPoint* point,
-                    Double_t eventTime = 0.,
-                    CbmLink* link      = NULL);
+  void ProcessPoint(const CbmStsPoint* point, Double_t eventTime = 0., CbmLink* link = NULL);
 
 
   /** @brief Reset event counters **/

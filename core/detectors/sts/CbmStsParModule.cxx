@@ -17,19 +17,21 @@ ClassImp(CbmStsParModule)
 
   // -----   Constructor   ---------------------------------------------------
   CbmStsParModule::CbmStsParModule(UInt_t nChannels, UInt_t nAsicChannels)
-  : fNofChannels(nChannels), fNofAsicChannels(nAsicChannels) {
-  UInt_t nAsics = (nChannels % nAsicChannels ? nChannels / nAsicChannels + 1
-                                             : nChannels / nAsicChannels);
+  : fNofChannels(nChannels)
+  , fNofAsicChannels(nAsicChannels)
+{
+  UInt_t nAsics = (nChannels % nAsicChannels ? nChannels / nAsicChannels + 1 : nChannels / nAsicChannels);
   fAsicPars.resize(nAsics);
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Randomly deactivate channels   ----------------------------------
-UInt_t CbmStsParModule::DeactivateRandomChannels(Double_t fraction) {
-  if ( fraction <= 0. ) return 0;
+UInt_t CbmStsParModule::DeactivateRandomChannels(Double_t fraction)
+{
+  if (fraction <= 0.) return 0;
   UInt_t nDeactivated = 0;
-  for ( auto& asic : fAsicPars ) {
+  for (auto& asic : fAsicPars) {
     nDeactivated += asic.DeactivateRandomChannels(fraction);
   }
   return nDeactivated;
@@ -38,7 +40,8 @@ UInt_t CbmStsParModule::DeactivateRandomChannels(Double_t fraction) {
 
 
 // -----   Get ASIC parameters   -------------------------------------------
-const CbmStsParAsic& CbmStsParModule::GetParAsic(UInt_t channel) const {
+const CbmStsParAsic& CbmStsParModule::GetParAsic(UInt_t channel) const
+{
   assert(!fAsicPars.empty());
   assert(channel < fNofChannels);
   UInt_t nAsic = channel / fNofAsicChannels;
@@ -49,7 +52,8 @@ const CbmStsParAsic& CbmStsParModule::GetParAsic(UInt_t channel) const {
 
 
 // -----   Check for a channel being active   ------------------------------
-Bool_t CbmStsParModule::IsChannelActive(UInt_t channel) const {
+Bool_t CbmStsParModule::IsChannelActive(UInt_t channel) const
+{
   const CbmStsParAsic& parAsic = GetParAsic(channel);
   UShort_t asicChannel         = channel % fNofAsicChannels;
   return parAsic.IsChannelActive(asicChannel);
@@ -58,7 +62,8 @@ Bool_t CbmStsParModule::IsChannelActive(UInt_t channel) const {
 
 
 // -----   Set parameters for all ASICs   ----------------------------------
-void CbmStsParModule::SetAllAsics(const CbmStsParAsic& asicPar) {
+void CbmStsParModule::SetAllAsics(const CbmStsParAsic& asicPar)
+{
   assert(asicPar.GetNofChannels() == fNofAsicChannels);
   for (auto& par : fAsicPars) {
     par = asicPar;
@@ -69,10 +74,10 @@ void CbmStsParModule::SetAllAsics(const CbmStsParAsic& asicPar) {
 
 
 // -----   String output   -------------------------------------------------
-string CbmStsParModule::ToString() const {
+string CbmStsParModule::ToString() const
+{
   stringstream ss;
-  ss << "Channels " << fNofChannels << " | ASICS " << GetNofAsics()
-     << " | Channels per ASIC " << fNofAsicChannels;
+  ss << "Channels " << fNofChannels << " | ASICS " << GetNofAsics() << " | Channels per ASIC " << fNofAsicChannels;
   return ss.str();
 }
 // -------------------------------------------------------------------------

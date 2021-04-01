@@ -39,14 +39,8 @@ public:
      ** @param noise   Noise RMS [e]
      ** @param znr   Zero-crossing noise rate [1/ns]
      **/
-  CbmStsParAsic(UShort_t nChannels,
-                UShort_t nAdc,
-                Double_t dynRange,
-                Double_t threshold,
-                Double_t timeResol,
-                Double_t deadTime,
-                Double_t noise,
-                Double_t znr);
+  CbmStsParAsic(UShort_t nChannels, UShort_t nAdc, Double_t dynRange, Double_t threshold, Double_t timeResol,
+                Double_t deadTime, Double_t noise, Double_t znr);
 
 
   /** @brief Copy constructor (disabled) **/
@@ -73,7 +67,8 @@ public:
      ** @param adc ADC channel
      ** @return Mean charge in ADC channel [e]
      */
-  Double_t AdcToCharge(UShort_t adc) const {
+  Double_t AdcToCharge(UShort_t adc) const
+  {
     return fThreshold + fDynRange / Double_t(fNofAdc) * (Double_t(adc) + 0.5);
   }
 
@@ -169,9 +164,7 @@ public:
      ** @param channel  Channel number within ASIC
      ** @return True if the channel is active
      **/
-  Bool_t IsChannelActive(UShort_t channel) const {
-    return fDeadChannels.find(channel) == fDeadChannels.end();
-  }
+  Bool_t IsChannelActive(UShort_t channel) const { return fDeadChannels.find(channel) == fDeadChannels.end(); }
 
 
   /** @brief Set parameters
@@ -185,15 +178,8 @@ public:
      ** @param zeroNoiseRate    Zero-crossing noise rate
      ** @param deadChannels     Set of dead channels
      **/
-  void Set(UShort_t nChannels,
-           UShort_t nAdc,
-           Double_t dynRange,
-           Double_t threshold,
-           Double_t timeResol,
-           Double_t deadTime,
-           Double_t noise,
-           Double_t zeroNoiseRate,
-           std::set<UShort_t> deadChannels = {});
+  void Set(UShort_t nChannels, UShort_t nAdc, Double_t dynRange, Double_t threshold, Double_t timeResol,
+           Double_t deadTime, Double_t noise, Double_t zeroNoiseRate, std::set<UShort_t> deadChannels = {});
 
 
   /** @brief Info to string **/
