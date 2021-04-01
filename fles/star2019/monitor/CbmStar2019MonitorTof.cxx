@@ -6,15 +6,15 @@
 // -----------------------------------------------------------------------------
 
 #include "CbmStar2019MonitorTof.h"
-#include "CbmStar2019TofPar.h"
 
 #include "CbmHistManager.h"
+#include "CbmStar2019TofPar.h"
 
-#include <Logger.h>
 #include "FairRootManager.h"
 #include "FairRun.h"
 #include "FairRunOnline.h"
 #include "FairRuntimeDb.h"
+#include <Logger.h>
 
 #include "Rtypes.h"
 #include "TCanvas.h"
@@ -36,6 +36,7 @@
 #include <ctime>
 #include <iomanip>
 #include <iostream>
+
 #include <stdint.h>
 
 Bool_t bMcbmMoniTofResetHistos       = kFALSE;
@@ -2048,8 +2049,7 @@ Bool_t CbmStar2019MonitorTof::DoUnpack(const fles::Timeslice& ts,
 
         gdpbv100::Message mess(ulData);
 
-        if (fuRawDataPrintMsgIdx < fuRawDataPrintMsgNb
-            || fair::Logger::Logging(fair::Severity::debug2)) {
+        if (fuRawDataPrintMsgIdx < fuRawDataPrintMsgNb || fair::Logger::Logging(fair::Severity::debug2)) {
           mess.printDataCout();
           fuRawDataPrintMsgIdx++;
         }
@@ -2443,8 +2443,7 @@ Bool_t CbmStar2019MonitorTof::DoUnpack(const fles::Timeslice& ts,
 void CbmStar2019MonitorTof::ProcessEpochCycle(uint64_t ulCycleData) {
   uint64_t ulEpochCycleVal = ulCycleData & gdpbv100::kulEpochCycleFieldSz;
 
-  if (fuRawDataPrintMsgIdx < fuRawDataPrintMsgNb
-      || fair::Logger::Logging(fair::Severity::debug2)) {
+  if (fuRawDataPrintMsgIdx < fuRawDataPrintMsgNb || fair::Logger::Logging(fair::Severity::debug2)) {
     LOG(info) << "CbmMcbm2018MonitorTof::ProcessEpochCyle => "
               << Form(" TS %5lu MS %3lu In data 0x%016lX Cycle 0x%016lX",
                       fulCurrentTsIndex,

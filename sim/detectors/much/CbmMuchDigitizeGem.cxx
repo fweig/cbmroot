@@ -40,12 +40,12 @@
 
 // Includes from base
 #include "FairEventHeader.h"
-#include <Logger.h>
 #include "FairMCEventHeader.h"
 #include "FairMCPoint.h"
 #include "FairRootManager.h"
 #include "FairRunAna.h"
 #include "FairRunSim.h"
+#include <Logger.h>
 
 // Includes from Cbm
 #include "CbmMCTrack.h"

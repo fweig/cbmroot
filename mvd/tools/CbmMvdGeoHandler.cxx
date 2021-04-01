@@ -6,6 +6,8 @@
 
 #include "CbmMvdGeoHandler.h"
 
+#include "CbmMvdDetector.h"
+#include "CbmMvdStationPar.h"
 
 #include <Logger.h>
 
@@ -17,14 +19,11 @@
 #include "TString.h"
 #include "TVirtualMC.h"
 
-#include "CbmMvdDetector.h"
-#include "CbmMvdStationPar.h"
+#include <cstdlib>
 
 #include "SensorDataSheets/CbmMvdMimosa26AHR.h"
 #include "SensorDataSheets/CbmMvdMimosa34.h"
 #include "SensorDataSheets/CbmMvdMimosis.h"
-
-#include <cstdlib>
 using std::atoi;
 
 

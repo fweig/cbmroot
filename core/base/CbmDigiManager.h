@@ -7,22 +7,23 @@
 #ifndef CBMDIGIMANAGER_H
 #define CBMDIGIMANAGER_H 1
 
+#include "CbmDefs.h"            // for ECbmModuleId
+#include "CbmDigiBranchBase.h"  // for CbmDigiBranchBase
+
+#include <FairTask.h>  // for InitStatus
+#include <Logger.h>    // for LOG
+
 #include <Rtypes.h>      // for THashConsistencyHolder, Cla...
 #include <RtypesCore.h>  // for UInt_t, Bool_t, Int_t, kTRUE
-
-#include <Logger.h>  // for LOG
-#include <FairTask.h>    // for InitStatus
 
 #include <boost/any.hpp>                  // for any_cast, bad_any_cast (ptr...
 #include <boost/exception/exception.hpp>  // for clone_impl, error_info_inje...
 
-#include <assert.h>  // for assert
-#include <iosfwd>    // for string
-#include <map>       // for map, map<>::mapped_type
-#include <vector>    // for vector
+#include <iosfwd>  // for string
+#include <map>     // for map, map<>::mapped_type
+#include <vector>  // for vector
 
-#include "CbmDefs.h"            // for ECbmModuleId
-#include "CbmDigiBranchBase.h"  // for CbmDigiBranchBase
+#include <assert.h>  // for assert
 
 class CbmMatch;
 

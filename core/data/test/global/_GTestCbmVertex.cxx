@@ -5,10 +5,10 @@
 #include <TMatrixTSym.h>
 #include <TVector3.h>
 
+#include <regex>
+
 #include <gtest/gtest-spi.h>
 #include <gtest/gtest.h>
-
-#include <regex>
 
 #include "../compareVertex.h"
 

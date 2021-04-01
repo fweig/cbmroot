@@ -11,12 +11,12 @@
 //#include "CbmCosy2019HodoPar.h"
 //#include "CbmHodoDigi.h"
 
-#include <Logger.h>
 #include "FairParGenericSet.h"
 #include "FairRootManager.h"
 #include "FairRun.h"
 #include "FairRunOnline.h"
 #include "FairRuntimeDb.h"
+#include <Logger.h>
 
 #include "TCanvas.h"
 #include "THttpServer.h"

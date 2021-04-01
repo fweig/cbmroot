@@ -10,9 +10,9 @@
 #include "CbmDigiManager.h"
 #include "CbmFlesHistosTools.h"
 
-#include <Logger.h>
 #include "FairRootManager.h"
 #include "FairRunOnline.h"
+#include <Logger.h>
 
 #include "TClonesArray.h"
 #include "TH1.h"
@@ -21,10 +21,10 @@
 #include "TProfile.h"
 #include <TDirectory.h>
 #include <TFile.h>
+#include <type_traits>
 
 #include <iomanip>
 #include <iostream>
-#include <type_traits>
 using std::fixed;
 using std::setprecision;
 

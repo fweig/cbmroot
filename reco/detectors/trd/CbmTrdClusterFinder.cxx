@@ -17,7 +17,6 @@
 #include "CbmTrdParSetGas.h"
 #include "CbmTrdParSetGeo.h"
 
-
 #include <FairRootManager.h>
 #include <FairRunAna.h>
 #include <FairRuntimeDb.h>

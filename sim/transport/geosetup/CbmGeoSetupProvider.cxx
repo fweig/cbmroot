@@ -5,10 +5,6 @@
 
 #include "geosetup/CbmGeoSetupProvider.h"
 
-#include <Logger.h>
-#include "FairModule.h"
-#include "FairRunSim.h"
-
 #include "CbmCave.h"
 #include "CbmDefs.h"
 #include "CbmMagnet.h"
@@ -20,6 +16,10 @@
 #include "CbmTarget.h"
 #include "CbmTof.h"
 #include "CbmTrd.h"
+
+#include "FairModule.h"
+#include "FairRunSim.h"
+#include <Logger.h>
 //#include "CbmEcal.h"
 #include "CbmPsdMC.h"
 //#include "CbmShield.h"

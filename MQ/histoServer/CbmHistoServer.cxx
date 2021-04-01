@@ -10,12 +10,13 @@
 #include "CbmHistoServer.h"
 //#include "CbmHistoCanvasDrawer.h"
 #include <Logger.h>
-#include "RootSerializer.h"
 
 #include "TH1.h"
 #include "THttpServer.h"
 #include "TMessage.h"
 #include "TObjArray.h"
+
+#include "RootSerializer.h"
 
 std::mutex mtx;
 

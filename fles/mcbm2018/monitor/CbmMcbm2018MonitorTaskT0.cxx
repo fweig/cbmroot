@@ -10,12 +10,12 @@
 #include "CbmMcbm2018MonitorAlgoT0.h"
 #include "CbmMcbm2018TofPar.h"
 
-#include <Logger.h>
 #include "FairParGenericSet.h"
 #include "FairRootManager.h"
 #include "FairRun.h"
 #include "FairRunOnline.h"
 #include "FairRuntimeDb.h"
+#include <Logger.h>
 
 #include "TCanvas.h"
 #include "THttpServer.h"
@@ -28,6 +28,7 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+
 #include <stdint.h>
 
 Bool_t bMcbm2018MonitorTaskT0ResetHistos = kFALSE;

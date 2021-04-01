@@ -3,27 +3,29 @@
  * \author Andrey Lebedev <andrey.lebedev@gsi.de>
  * \date 2013
  **/
-#include <Logger.h>
+#include "CbmLitFindGlobalTracksParallel.h"
 
 #include "CbmGlobalTrack.h"
-#include "CbmLitFindGlobalTracksParallel.h"
 #include "CbmStsTrack.h"
 #include "CbmTrack.h"
 #include "cbm/base/CbmLitTrackingGeometryConstructor.h"
 #include "cbm/utils/CbmLitConverterParallel.h"
-#include "parallel/LitDetectorLayout.h"
-#include "parallel/LitScalPixelHit.h"
-#include "parallel/LitScalTrack.h"
-#include "parallel/LitTrackFinderNN.h"
-#include "std/utils/CbmLitMemoryManagment.h"
+
+#include <Logger.h>
 
 #include "TClonesArray.h"
+
+#include <boost/assign/list_of.hpp>
 
 #include <algorithm>
 #include <iostream>
 #include <set>
 
-#include <boost/assign/list_of.hpp>
+#include "parallel/LitDetectorLayout.h"
+#include "parallel/LitScalPixelHit.h"
+#include "parallel/LitScalTrack.h"
+#include "parallel/LitTrackFinderNN.h"
+#include "std/utils/CbmLitMemoryManagment.h"
 
 using boost::assign::list_of;
 using std::cout;

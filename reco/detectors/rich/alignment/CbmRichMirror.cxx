@@ -1,7 +1,8 @@
 // ---------- Original Headers ---------- //
 #include "CbmRichMirror.h"
-#include <Logger.h>
+
 #include "FairRootManager.h"
+#include <Logger.h>
 
 
 ClassImp(CbmRichMirror)

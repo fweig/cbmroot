@@ -10,11 +10,11 @@
 #include "CbmHistManager.h"
 #include "CbmStar2019TofPar.h"
 
-#include <Logger.h>
 #include "FairRootManager.h"
 #include "FairRun.h"
 #include "FairRunOnline.h"
 #include "FairRuntimeDb.h"
+#include <Logger.h>
 
 #include "TCanvas.h"
 #include "TH1.h"
@@ -27,6 +27,7 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+
 #include <stdint.h>
 
 // -------------------------------------------------------------------------

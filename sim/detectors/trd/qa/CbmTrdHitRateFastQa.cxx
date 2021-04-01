@@ -9,13 +9,12 @@
 #include "CbmTrdParSetDigi.h"
 #include "CbmTrdParSetGeo.h"
 #include "CbmTrdRadiator.h"
-
 #include "CbmTrdUtils.h"
 
-#include <Logger.h>
 #include "FairRootManager.h"
 #include "FairRunAna.h"
 #include "FairRuntimeDb.h"
+#include <Logger.h>
 
 #include "TBox.h"
 #include "TCanvas.h"
@@ -31,11 +30,13 @@
 #include "TStyle.h"
 #include <TFile.h>
 
-#include "Riostream.h"
-#include <cmath>
 #include <fstream>
 #include <iostream>
 #include <vector>
+
+#include <cmath>
+
+#include "Riostream.h"
 
 #define winsize 6000  // 1500 // 5500 // 6000
 

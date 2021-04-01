@@ -15,10 +15,10 @@
 #include "L1Field.h"
 
 //KF Particle headers
+#include <Logger.h>
+
 #include "KFPTrackVector.h"
 #include "KFParticleTopoReconstructor.h"
-
-#include <Logger.h>
 
 //ROOT headers
 #include "TClonesArray.h"  //to get arrays from the FairRootManager

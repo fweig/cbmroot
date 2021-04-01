@@ -1,6 +1,8 @@
 #include "CbmRichMirrorSortingCorrection.h"
-#include <Logger.h>
+
 #include "FairRootManager.h"
+#include <Logger.h>
+
 #include "alignment/CbmRichMirror.h"
 
 // ----- PART 1 ----- //

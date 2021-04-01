@@ -4,7 +4,9 @@
 // -------------------------------------------------------------------------
 
 #include "CbmMvdSensorClusterfinderTask.h"
+
 #include <Logger.h>
+
 #include "TClonesArray.h"
 #include "TObjArray.h"
 

@@ -5,17 +5,17 @@
 
 #include "geosetup/CbmGeoSetupRepoProvider.h"
 
-#include <fstream>
-#include <regex>
+#include "CbmDefs.h"
 
-#include <boost/algorithm/string.hpp>
+#include <Logger.h>
 
 #include "TSystem.h"
 #include "TSystemDirectory.h"
 
-#include <Logger.h>
+#include <boost/algorithm/string.hpp>
 
-#include "CbmDefs.h"
+#include <fstream>
+#include <regex>
 
 ClassImp(CbmGeoSetupRepoProvider);
 

@@ -11,9 +11,9 @@
 #include "CbmMuchAddress.h"    // for CbmMuchAddress, kMuchChannel
 #include "CbmMuchPadRadial.h"  // for CbmMuchPadRadial
 
-#include <TMath.h>  // for Ceil, Floor, Pi, TwoPi
-
 #include <Logger.h>  // for Logger, LOG
+
+#include <TMath.h>  // for Ceil, Floor, Pi, TwoPi
 
 #include <vector>  // for vector
 

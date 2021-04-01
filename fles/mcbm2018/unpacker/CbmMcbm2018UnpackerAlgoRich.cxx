@@ -60,10 +60,10 @@ fullTimeCorr = (T - AZ0R) - (AC2R-AC0R) + MSidx
 #include "CbmMcbm2018UnpackerAlgoRich.h"
 
 // ROOT
+#include <Logger.h>
+
 #include <TCanvas.h>
 #include <TList.h>
-
-#include <Logger.h>
 
 // CbmRoot
 #include "CbmMcbm2018RichPar.h"

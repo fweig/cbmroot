@@ -5,10 +5,10 @@
 // -------------------------------------------------------------------------
 
 #include "CbmTofFindTracks.h"
-#include "CbmTofAddress.h"  // in cbmdata/tof
 
 #include "CbmEvent.h"
 #include "CbmMatch.h"
+#include "CbmTofAddress.h"  // in cbmdata/tof
 #include "CbmTofCalibrator.h"
 #include "CbmTofCell.h"             // in tof/TofData
 #include "CbmTofCreateDigiPar.h"    // in tof/TofTools
@@ -26,10 +26,10 @@
 #include "CbmTofTrackletTools.h"
 #include "CbmVertex.h"
 
-#include <Logger.h>
 #include "FairRootManager.h"
 #include "FairRunAna.h"
 #include "FairRuntimeDb.h"
+#include <Logger.h>
 
 #include "TClonesArray.h"
 #include "TDirectory.h"
@@ -1084,9 +1084,7 @@ Bool_t CbmTofFindTracks::WriteHistos() {
 
 // -----   Public method Exec   --------------------------------------------
 void CbmTofFindTracks::Exec(Option_t* opt) {
-  if (fair::Logger::Logging(fair::Severity::debug)) {
-    fDigiBdfPar->printParams();
-  }
+  if (fair::Logger::Logging(fair::Severity::debug)) { fDigiBdfPar->printParams(); }
   if (!fEventsColl) {
     //    fTofHitArray = (TClonesArray*)fTofHitArrayIn->Clone();
     fTofHitArray = (TClonesArray*) fTofHitArrayIn;

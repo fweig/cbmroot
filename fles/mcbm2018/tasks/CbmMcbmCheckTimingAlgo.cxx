@@ -16,9 +16,9 @@
 #include "CbmTofDigi.h"
 #include "CbmTrdDigi.h"
 
-#include <Logger.h>
 #include "FairRootManager.h"
 #include "FairRunOnline.h"
+#include <Logger.h>
 
 #include "TH1.h"
 #include "TH2.h"

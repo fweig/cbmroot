@@ -10,9 +10,9 @@
 #include "CbmStsParSetSensorCond.h"  // for CbmStsParSetSensorCond
 #include "CbmStsParSim.h"            // for CbmStsParSim
 
-#include <Logger.h>  // for Logger, LOG
 #include <FairParSet.h>     // for FairParSet
 #include <FairRuntimeDb.h>  // for FairRuntimeDb
+#include <Logger.h>         // for Logger, LOG
 
 #include <TList.h>    // for TList
 #include <TString.h>  // for TString

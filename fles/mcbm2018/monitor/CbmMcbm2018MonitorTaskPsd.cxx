@@ -11,12 +11,12 @@
 #include "CbmMcbm2018MonitorAlgoPsd.h"
 #include "CbmMcbm2018PsdPar.h"
 
-#include <Logger.h>
 #include "FairParGenericSet.h"
 #include "FairRootManager.h"
 #include "FairRun.h"
 #include "FairRunOnline.h"
 #include "FairRuntimeDb.h"
+#include <Logger.h>
 
 #include "TCanvas.h"
 #include "THttpServer.h"
@@ -29,6 +29,7 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+
 #include <stdint.h>
 
 Bool_t bMcbm2018MonitorTaskPsdResetHistos = kFALSE;

@@ -5,14 +5,14 @@
 
 #include "CbmStar2019TofPar.h"
 
-#include "gDpbMessv100.h"
-
 #include "FairDetParIo.h"
-#include <Logger.h>
 #include "FairParIo.h"
 #include "FairParamList.h"
+#include <Logger.h>
 
 #include "TString.h"
+
+#include "gDpbMessv100.h"
 
 // -----   Standard constructor   ------------------------------------------
 CbmStar2019TofPar::CbmStar2019TofPar(const char* name,

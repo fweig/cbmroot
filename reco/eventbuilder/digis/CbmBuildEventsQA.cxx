@@ -12,8 +12,8 @@
 #include "CbmModuleList.h"
 #include "CbmStsDigi.h"
 
-#include <Logger.h>
 #include "FairRootManager.h"
+#include <Logger.h>
 
 #include "TClonesArray.h"
 #include "TH1.h"

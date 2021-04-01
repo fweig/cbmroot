@@ -6,12 +6,15 @@
 **/
 
 #include "CbmRichElectronIdAnn.h"
+
 #include "CbmGlobalTrack.h"
 #include "CbmRichGeoManager.h"
 #include "CbmRichRing.h"
 #include "CbmRichUtil.h"
-#include <Logger.h>
+
 #include "FairRootManager.h"
+#include <Logger.h>
+
 #include "TClonesArray.h"
 #include "TMath.h"
 #include "TMultiLayerPerceptron.h"

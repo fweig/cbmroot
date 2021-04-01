@@ -8,10 +8,13 @@
 #include "CbmEvent.h"
 #include "CbmStsDigi.h"
 #include "CbmStsHit.h"
-#include <Logger.h>
+
 #include "FairRootManager.h"
+#include <Logger.h>
+
 #include "TClonesArray.h"
 #include "TStopwatch.h"
+
 #include <cassert>
 #include <iomanip>
 #include <iostream>

@@ -2,20 +2,20 @@
 // -----                CbmStsHitProducerTaskIdeal source file             -----
 // -----                  Created 10/01/06  by V. Friese               -----
 // -------------------------------------------------------------------------
-#include <iostream>
+#include "CbmStsHitProducerTaskIdeal.h"
 
-#include "TClonesArray.h"
+#include "CbmStsHit.h"
+#include "CbmStsPoint.h"
+#include "CbmTrdParSetGas.h"
 
-#include <Logger.h>
 #include "FairRootManager.h"
 #include "FairRunAna.h"
 #include "FairRuntimeDb.h"
+#include <Logger.h>
 
-#include "CbmStsHit.h"
-#include "CbmStsHitProducerTaskIdeal.h"
-#include "CbmStsPoint.h"
+#include "TClonesArray.h"
 
-#include "CbmTrdParSetGas.h"
+#include <iostream>
 
 using std::cout;
 using std::endl;

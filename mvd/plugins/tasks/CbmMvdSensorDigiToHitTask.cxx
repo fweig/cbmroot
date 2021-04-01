@@ -5,18 +5,18 @@
 
 
 #include "CbmMvdSensorDigiToHitTask.h"
-#include "TClonesArray.h"
 
 #include <Logger.h>
-#include "TObjArray.h"
-#include <cstring>
 
 #include "TArrayD.h"
+#include "TClonesArray.h"
 #include "TGeoManager.h"
 #include "TGeoTube.h"
 #include "TObjArray.h"
 #include "TRefArray.h"
 #include <TMatrixD.h>
+
+#include <cstring>
 
 
 using std::cout;

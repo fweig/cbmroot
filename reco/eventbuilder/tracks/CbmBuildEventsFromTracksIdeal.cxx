@@ -6,23 +6,25 @@
 #include "CbmBuildEventsFromTracksIdeal.h"
 
 #include "CbmEvent.h"
-#include "CbmStsDigi.h"
-#include "CbmStsHit.h"
-#include "CbmStsTrack.h"
-#include <Logger.h>
-#include "FairRootManager.h"
-#include "TClonesArray.h"
-#include "TStopwatch.h"
-#include <cassert>
-#include <iomanip>
-#include <iostream>
-#include <map>
-
 #include "CbmMCDataArray.h"
 #include "CbmMCDataManager.h"
 #include "CbmMCEventList.h"
 #include "CbmMCTrack.h"
+#include "CbmStsDigi.h"
+#include "CbmStsHit.h"
+#include "CbmStsTrack.h"
 #include "CbmTrackMatchNew.h"
+
+#include "FairRootManager.h"
+#include <Logger.h>
+
+#include "TClonesArray.h"
+#include "TStopwatch.h"
+
+#include <cassert>
+#include <iomanip>
+#include <iostream>
+#include <map>
 
 using namespace std;
 

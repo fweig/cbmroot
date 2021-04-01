@@ -1,12 +1,12 @@
 #ifndef CBMMUCHADDRESS_H
 #define CBMMUCHADDRESS_H 1
 
-#include <Rtypes.h>      // for ClassDef
-#include <RtypesCore.h>  // for Int_t, UInt_t
+#include "CbmAddress.h"  // for CbmAddress
 
 #include <Logger.h>  // for Logger, LOG
 
-#include "CbmAddress.h"  // for CbmAddress
+#include <Rtypes.h>      // for ClassDef
+#include <RtypesCore.h>  // for Int_t, UInt_t
 
 /** Enumerator for MUCH element levels
  ** If this is changed, the initialisation of the static members

@@ -5,21 +5,12 @@
 
 #include "CbmBuildEventsIdealNew.h"
 
-#include <Logger.h>
-#include <FairRootManager.h>
-#include <TClonesArray.h>
-#include <TStopwatch.h>
-#include <cassert>
-#include <iomanip>
-#include <iostream>
-
 #include "CbmDigiManager.h"
 #include "CbmEvent.h"
 #include "CbmEventStore.h"
 #include "CbmLink.h"
 #include "CbmMatch.h"
 #include "CbmModuleList.h"
-
 #include "CbmMuchDigi.h"
 #include "CbmMvdDigi.h"
 #include "CbmPsdDigi.h"
@@ -27,6 +18,16 @@
 #include "CbmStsDigi.h"
 #include "CbmTofDigi.h"
 #include "CbmTrdDigi.h"
+
+#include <FairRootManager.h>
+#include <Logger.h>
+
+#include <TClonesArray.h>
+#include <TStopwatch.h>
+
+#include <cassert>
+#include <iomanip>
+#include <iostream>
 
 using namespace std;
 

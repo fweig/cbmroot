@@ -11,12 +11,12 @@
 #include "CbmMcbm2018StsPar.h"
 #include "CbmStsDigi.h"
 
-#include <Logger.h>
 #include "FairParGenericSet.h"
 #include "FairRootManager.h"
 #include "FairRun.h"
 #include "FairRunOnline.h"
 #include "FairRuntimeDb.h"
+#include <Logger.h>
 
 #include <iomanip>
 

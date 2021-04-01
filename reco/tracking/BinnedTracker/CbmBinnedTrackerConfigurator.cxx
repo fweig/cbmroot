@@ -5,11 +5,14 @@
  */
 
 #include "CbmBinnedTrackerConfigurator.h"
+
 #include "CbmMCDataManager.h"
 #include "CbmStsSetup.h"
-#include <Logger.h>
+
 #include "FairRunAna.h"
 #include "FairRuntimeDb.h"
+#include <Logger.h>
+
 #include "GeoReader.h"
 
 CbmBinnedTrackerConfigurator::CbmBinnedTrackerConfigurator(bool useAllDetectors)

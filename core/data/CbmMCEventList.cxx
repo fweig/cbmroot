@@ -12,8 +12,9 @@
 #include <algorithm>  // for lower_bound, sort
 #include <cassert>    // for assert
 #include <iostream>   // for operator<<, basic_ostream, stringstream
-#include <string.h>   // for strcmp, size_t
 #include <string>     // for char_traits
+
+#include <string.h>  // for strcmp, size_t
 
 using std::lower_bound;
 using std::string;

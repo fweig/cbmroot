@@ -16,11 +16,11 @@
 #include "CbmMcbm2018StsPar.h"
 
 // FairRoot
-#include <Logger.h>
 #include "FairRootManager.h"
 #include "FairRun.h"
 #include "FairRunOnline.h"
 #include "FairRuntimeDb.h"
+#include <Logger.h>
 
 // Root
 #include "TClonesArray.h"

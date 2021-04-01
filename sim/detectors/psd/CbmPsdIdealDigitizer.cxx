@@ -2,18 +2,19 @@
 // -----                CbmPsdIdealDigitizer source file             -----
 // -----                  Created 15/05/12  by     Alla & SELIM & FLORIAN               -----
 // -------------------------------------------------------------------------
-#include <iostream>
-#include <map>
-
-#include "TClonesArray.h"
-
-#include <Logger.h>
-#include "FairRootManager.h"
+#include "CbmPsdIdealDigitizer.h"
 
 #include "CbmPsdDigi.h"
-#include "CbmPsdIdealDigitizer.h"
 #include "CbmPsdPoint.h"
+
+#include "FairRootManager.h"
+#include <Logger.h>
+
+#include "TClonesArray.h"
 #include "TMath.h"
+
+#include <iostream>
+#include <map>
 
 using std::cout;
 using std::endl;

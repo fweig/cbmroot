@@ -4,13 +4,17 @@
 
 // Includes from MVD
 #include "CbmMvdDigitizerTB.h"
+
 #include "CbmMvdDetector.h"
 #include "CbmMvdPoint.h"
-#include <Logger.h>
+
 #include "FairModule.h"
 #include "FairRootManager.h"
-#include "plugins/tasks/CbmMvdSensorDigitizerTBTask.h"
+#include <Logger.h>
+
 #include "tools/CbmMvdGeoHandler.h"
+
+#include "plugins/tasks/CbmMvdSensorDigitizerTBTask.h"
 
 // Includes from ROOT
 #include "TClonesArray.h"

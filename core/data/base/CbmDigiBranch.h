@@ -3,15 +3,16 @@
  ** @since 4 June 2019
  **/
 
-#include <vector>
-
-#include <Logger.h>
-#include <FairRootManager.h>
-#include <TClonesArray.h>
-
 #include "CbmDefs.h"
 #include "CbmDigiBranchBase.h"
 #include "CbmMatch.h"
+
+#include <FairRootManager.h>
+#include <Logger.h>
+
+#include <TClonesArray.h>
+
+#include <vector>
 
 /** @brief Class template for CBM digi branches
  ** @author V. Friese <v.friese@gsi.de>

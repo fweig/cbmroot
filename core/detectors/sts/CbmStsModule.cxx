@@ -15,9 +15,10 @@
 #include <TGeoNode.h>          // for TGeoNode
 #include <TGeoPhysicalNode.h>  // for TGeoPhysicalNode
 
+#include <ostream>  // for operator<<, basic_ostream, stringstream
+#include <string>   // for string
+
 #include <assert.h>  // for assert
-#include <ostream>   // for operator<<, basic_ostream, stringstream
-#include <string>    // for string
 
 using namespace std;
 

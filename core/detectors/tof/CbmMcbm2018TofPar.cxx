@@ -6,9 +6,9 @@
 #include "CbmMcbm2018TofPar.h"
 
 #include "FairDetParIo.h"
-#include <Logger.h>
 #include "FairParIo.h"
 #include "FairParamList.h"
+#include <Logger.h>
 
 #include "TString.h"
 

@@ -6,15 +6,15 @@
 // -----------------------------------------------------------------------------
 
 #include "CbmStar2019TofFeeThr.h"
-#include "CbmStar2019TofPar.h"
 
 #include "CbmHistManager.h"
+#include "CbmStar2019TofPar.h"
 
-#include <Logger.h>
 #include "FairRootManager.h"
 #include "FairRun.h"
 #include "FairRunOnline.h"
 #include "FairRuntimeDb.h"
+#include <Logger.h>
 
 #include "Rtypes.h"
 #include "TCanvas.h"
@@ -36,6 +36,7 @@
 #include <ctime>
 #include <iomanip>
 #include <iostream>
+
 #include <stdint.h>
 
 Bool_t bStar2019TofFeeThrResetHistos = kFALSE;

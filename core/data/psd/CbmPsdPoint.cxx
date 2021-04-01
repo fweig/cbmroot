@@ -5,8 +5,8 @@
 
 #include "CbmPsdPoint.h"
 
-#include <Logger.h>   // for Logger, LOG
 #include <FairMCPoint.h>  // for FairMCPoint
+#include <Logger.h>       // for Logger, LOG
 
 #include <sstream>  // for stringstream
 

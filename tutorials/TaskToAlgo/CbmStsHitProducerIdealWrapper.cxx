@@ -2,20 +2,20 @@
 // -----                CbmStsHitProducerIdealWrapper source file             -----
 // -----                  Created 10/01/06  by V. Friese               -----
 // -------------------------------------------------------------------------
-#include <iostream>
+#include "CbmStsHitProducerIdealWrapper.h"
 
-#include "TClonesArray.h"
+#include "CbmStsHit.h"
+#include "CbmTrdParSetGas.h"
 
-#include <Logger.h>
 #include "FairParGenericSet.h"
 #include "FairRootManager.h"
 #include "FairRun.h"
 #include "FairRuntimeDb.h"
+#include <Logger.h>
 
-#include "CbmStsHit.h"
-#include "CbmStsHitProducerIdealWrapper.h"
+#include "TClonesArray.h"
 
-#include "CbmTrdParSetGas.h"
+#include <iostream>
 
 using std::cout;
 using std::endl;

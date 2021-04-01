@@ -14,10 +14,11 @@
 
 // FAIR classes and includes
 #include "FairEventManager.h"  // for FairEventManager
-#include <Logger.h>
 #include "FairRootManager.h"
 #include "FairRunAna.h"
 #include "FairRuntimeDb.h"
+#include <Logger.h>
+
 #include "TEveManager.h"  // for TEveManager, gEve
 
 // CBMroot classes and includes

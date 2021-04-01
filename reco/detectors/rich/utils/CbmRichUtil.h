@@ -3,13 +3,16 @@
 #define RICH_CbmRichUtil
 
 #include "CbmGlobalTrack.h"
-#include <Logger.h>
+
 #include "FairRootManager.h"
 #include "FairTrackParam.h"
+#include <Logger.h>
+
 #include "TCanvas.h"
 #include "TClonesArray.h"
 #include "TH2.h"
 #include "TObject.h"
+
 #include <string>
 
 using namespace std;

@@ -11,10 +11,10 @@
 #include "CbmTimeSlice.h"     // for CbmTimeSlice, CbmTimeSlice::kEvent
 
 #include <FairEventHeader.h>  // for FairEventHeader
-#include <Logger.h>           // for Logger, LOG, Severity, Severity::debug
 #include <FairRootManager.h>  // for FairRootManager
 #include <FairRunAna.h>       // for FairRunAna
 #include <FairTask.h>         // for FairTask, InitStatus, kSUCCESS
+#include <Logger.h>           // for Logger, LOG, Severity, Severity::debug
 
 #include <TGenericClassInfo.h>  // for TGenericClassInfo
 #include <TStopwatch.h>         // for TStopwatch

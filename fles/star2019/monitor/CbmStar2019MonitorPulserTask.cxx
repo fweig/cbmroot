@@ -10,12 +10,12 @@
 #include "CbmStar2019MonitorPulserAlgo.h"
 #include "CbmStar2019TofPar.h"
 
-#include <Logger.h>
 #include "FairParGenericSet.h"
 #include "FairRootManager.h"
 #include "FairRun.h"
 #include "FairRunOnline.h"
 #include "FairRuntimeDb.h"
+#include <Logger.h>
 
 #include "TCanvas.h"
 #include "TClonesArray.h"
@@ -28,6 +28,7 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+
 #include <stdint.h>
 
 Bool_t bStar2019MonitorPulserTaskResetHistos = kFALSE;

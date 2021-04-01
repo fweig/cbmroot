@@ -6,8 +6,8 @@
 #include "CbmTrdPoint.h"
 //#include "CbmTrdMCQaReport.h"
 
-#include <Logger.h>
 #include "FairRootManager.h"
+#include <Logger.h>
 
 #include "TClonesArray.h"
 #include "TF1.h"

@@ -5,6 +5,7 @@
  */
 
 #include "CbmGlobalTrackingTask.h"
+
 #include "CbmGlobalTrack.h"
 #include "CbmKFParticleInterface.h"
 #include "CbmKFStsHit.h"
@@ -12,7 +13,9 @@
 #include "CbmStsCluster.h"
 #include "CbmStsHit.h"
 #include "CbmStsTrack.h"
+
 #include <Logger.h>
+
 #include "TH1F.h"
 
 #include <iostream>

@@ -6,11 +6,11 @@
 
 #include "CbmKFTofHit.h"
 #include "CbmKFTrack.h"
-
 #include "CbmTofHit.h"
 #include "CbmTofTracklet.h"
-#include <Logger.h>
+
 #include "FairRootManager.h"
+#include <Logger.h>
 
 #include "TClonesArray.h"
 

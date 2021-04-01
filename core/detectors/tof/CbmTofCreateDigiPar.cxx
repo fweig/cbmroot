@@ -4,11 +4,11 @@
 #include "CbmTofDigiPar.h"     // for CbmTofDigiPar
 #include "CbmTofGeoHandler.h"  // for CbmTofGeoHandler, k07a, k12b, k14a
 
-#include <Logger.h>       // for LOG, Logger
 #include <FairRootManager.h>  // for FairRootManager
 #include <FairRunAna.h>       // for FairRunAna
 #include <FairRuntimeDb.h>    // for FairRuntimeDb
 #include <FairTask.h>         // for FairTask, InitStatus, kSUCCESS
+#include <Logger.h>           // for LOG, Logger
 
 #include <TArrayD.h>      // for TArrayD
 #include <TArrayI.h>      // for TArrayI

@@ -6,6 +6,7 @@
 #include "CbmStsPhysics.h"
 
 #include "CbmStsDefs.h"  // for CbmSts, kProtonMass, kSiCharge, kSiDe...
+#include "CbmStsPhysics.h"
 
 #include <Logger.h>  // for Logger, LOG
 
@@ -18,10 +19,9 @@
 
 #include <fstream>  // for ifstream, basic_istream, right
 #include <iomanip>  // for setw, __iom_t6
-#include <math.h>   // for log, sqrt
 #include <utility>  // for pair
 
-#include "CbmStsPhysics.h"
+#include <math.h>  // for log, sqrt
 
 using std::ifstream;
 using std::map;

@@ -5,6 +5,7 @@
  */
 
 #include "LxTBTrdTask.h"
+
 #include "CbmCluster.h"
 #include "CbmGlobalTrack.h"
 #include "CbmMCDataManager.h"
@@ -13,15 +14,17 @@
 #include "CbmTrdHit.h"
 #include "CbmTrdPoint.h"
 #include "CbmTrdTrack.h"
+
 #include <Logger.h>
-#include "LxTBTask.h"
+
 #include "TClonesArray.h"
 #include "TGeoBBox.h"
 #include "TGeoManager.h"
 #include "TH1F.h"
 #include "TMath.h"
-
 #include <TFile.h>
+
+#include "LxTBTask.h"
 
 using std::cout;
 using std::endl;

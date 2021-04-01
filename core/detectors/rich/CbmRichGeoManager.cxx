@@ -22,13 +22,13 @@
 #include <TString.h>      // for TString, operator==
 #include <TVector3.h>     // for TVector3
 
-
 #include <algorithm>  // for sort
 #include <map>        // for map, __map_iterator, map<>::iterator
-#include <stddef.h>   // for size_t
 #include <string>     // for operator<, operator+
 #include <utility>    // for pair
 #include <vector>     // for vector
+
+#include <stddef.h>  // for size_t
 
 using namespace std;
 

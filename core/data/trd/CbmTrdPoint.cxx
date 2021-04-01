@@ -5,8 +5,8 @@
 
 #include "CbmTrdPoint.h"
 
-#include <Logger.h>   // for Logger, LOG
 #include <FairMCPoint.h>  // for FairMCPoint
+#include <Logger.h>       // for Logger, LOG
 
 #include <TVector3.h>  // for TVector3
 

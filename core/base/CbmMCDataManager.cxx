@@ -3,9 +3,9 @@
 #include "CbmMCDataArray.h"   // for CbmMCDataArray
 #include "CbmMCDataObject.h"  // for CbmMCDataObject
 
-#include <Logger.h>
 #include <FairRootManager.h>  // for FairRootManager
 #include <FairTask.h>         // for FairTask, InitStatus, kFATAL, kSUCCESS
+#include <Logger.h>
 
 #include <utility>  // for pair
 

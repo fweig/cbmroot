@@ -7,21 +7,22 @@
 #ifndef CBMEVENTSTORE_H
 #define CBMEVENTSTORE_H 1
 
+#include "CbmDefs.h"           // for kNofSystems
+#include "CbmDigiContainer.h"  // for CbmDigiContainer
+#include "CbmDigiVector.h"     // for CbmDigiVector
+
+#include <Logger.h>  // for LOG
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for UInt_t, Bool_t, kFALSE, kTRUE
 #include <TObjArray.h>   // for TObjArray
 #include <TObject.h>     // for TObject
 
-#include <Logger.h>  // for LOG
-
 #include <boost/any.hpp>  // for any_cast
 
-#include <assert.h>  // for assert
-#include <string>    // for string
+#include <string>  // for string
 
-#include "CbmDefs.h"           // for kNofSystems
-#include "CbmDigiContainer.h"  // for CbmDigiContainer
-#include "CbmDigiVector.h"     // for CbmDigiVector
+#include <assert.h>  // for assert
 
 class CbmMatch;
 

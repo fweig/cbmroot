@@ -27,10 +27,10 @@
 #include "CbmTrack.h"          // for CbmTrack
 #include "CbmTrackMatchNew.h"  // for CbmTrackMatchNew
 
-#include <Logger.h>       // for LOG, Logger
 #include <FairMCPoint.h>      // for FairMCPoint
 #include <FairRootManager.h>  // for FairRootManager
 #include <FairTask.h>         // for FairTask, InitStatus
+#include <Logger.h>           // for LOG, Logger
 
 #include <TClonesArray.h>  // for TClonesArray
 

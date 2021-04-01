@@ -6,23 +6,22 @@
 #ifndef CBMDIGITIZE_H
 #define CBMDIGITIZE_H 1
 
+#include "CbmDaq.h"
+#include "CbmDigitizeBase.h"
+#include "CbmMatch.h"
+#include "CbmTimeSlice.h"
+
+#include <FairTask.h>
+#include <Logger.h>  // for LOG
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Double_t, Bool_t, ULong64_t, kFALSE, kTRUE
-
-
-#include <Logger.h>  // for LOG
-#include <FairTask.h>
 
 #include <map>
 #include <memory>
 #include <sstream>
 #include <string>
 #include <utility>
-
-#include "CbmDaq.h"
-#include "CbmDigitizeBase.h"
-#include "CbmMatch.h"
-#include "CbmTimeSlice.h"
 
 
 /** @class CbmDigitize

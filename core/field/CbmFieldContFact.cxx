@@ -7,8 +7,8 @@
 #include "CbmFieldPar.h"  // for CbmFieldPar
 
 #include <FairContFact.h>   // for FairContainer
-#include <Logger.h>     // for LOG, Logger
 #include <FairRuntimeDb.h>  // for FairRuntimeDb
+#include <Logger.h>         // for LOG, Logger
 
 #include <TList.h>    // for TList
 #include <TString.h>  // for TString

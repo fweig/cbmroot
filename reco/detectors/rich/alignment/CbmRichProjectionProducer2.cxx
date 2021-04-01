@@ -1,9 +1,11 @@
 // ---------- Original Headers ---------- //
 #include "CbmRichProjectionProducer2.h"
-#include <Logger.h>
-#include "FairRootManager.h"
 
 #include "CbmRichHit.h"
+
+#include "FairRootManager.h"
+#include <Logger.h>
+
 #include "TClonesArray.h"
 
 // ---------- Included Headers ---------- //

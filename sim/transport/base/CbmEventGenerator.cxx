@@ -8,8 +8,8 @@
 #include "CbmBeam.h"
 
 #include <FairGenericStack.h>
-#include <Logger.h>
 #include <FairMCEventHeader.h>
+#include <Logger.h>
 
 #include <TMath.h>
 #include <TRandom.h>

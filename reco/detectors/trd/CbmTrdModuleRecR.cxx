@@ -1,5 +1,6 @@
 #include "CbmTrdModuleRecR.h"
 
+#include "CbmDigiManager.h"
 #include "CbmTrdAddress.h"
 #include "CbmTrdCluster.h"
 #include "CbmTrdClusterFinder.h"
@@ -8,16 +9,16 @@
 #include "CbmTrdParModDigi.h"
 #include "CbmTrdParSetDigi.h"
 
+#include <Logger.h>
+
 #include "TGeoMatrix.h"
 #include <TCanvas.h>
 #include <TClonesArray.h>
 #include <TH2F.h>
 #include <TImage.h>
 #include <TVector3.h>
-#include <iostream>
 
-#include "CbmDigiManager.h"
-#include <Logger.h>
+#include <iostream>
 
 constexpr Double_t CbmTrdModuleRecR::kxVar_Value[2][5];
 constexpr Double_t CbmTrdModuleRecR::kyVar_Value[2][5];

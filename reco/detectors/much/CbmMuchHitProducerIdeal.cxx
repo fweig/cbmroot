@@ -5,11 +5,13 @@
  */
 
 #include "CbmMuchHitProducerIdeal.h"
+
 #include "CbmMuchGeoScheme.h"
 #include "CbmMuchPixelHit.h"
 #include "CbmMuchPoint.h"
-#include <Logger.h>
+
 #include "FairRootManager.h"
+#include <Logger.h>
 
 #include "TClonesArray.h"
 #include "TFile.h"

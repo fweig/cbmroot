@@ -7,17 +7,6 @@
  ********************************************************************************/
 #include "CbmMcbm2018EventBuilder.h"
 
-#include <Logger.h>
-#include "FairRootManager.h"
-#include "FairRunOnline.h"
-
-#include "TClonesArray.h"
-#include "TH1.h"
-#include "TH2.h"
-#include "THttpServer.h"
-#include <TDirectory.h>
-#include <TFile.h>
-
 #include "CbmMuchBeamTimeDigi.h"
 #include "CbmMuchDigi.h"
 #include "CbmPsdDigi.h"
@@ -25,6 +14,17 @@
 #include "CbmStsDigi.h"
 #include "CbmTofDigi.h"
 #include "CbmTrdDigi.h"
+
+#include "FairRootManager.h"
+#include "FairRunOnline.h"
+#include <Logger.h>
+
+#include "TClonesArray.h"
+#include "TH1.h"
+#include "TH2.h"
+#include "THttpServer.h"
+#include <TDirectory.h>
+#include <TFile.h>
 
 #include <iomanip>
 using std::fixed;

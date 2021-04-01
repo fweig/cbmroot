@@ -5,16 +5,16 @@
 
 #include "CbmStsSimSensorDssdStereo.h"
 
-#include <TGeoBBox.h>
-#include <TGeoPhysicalNode.h>
-#include <TMath.h>
-
-#include <Logger.h>
-
 #include "CbmStsElement.h"
 #include "CbmStsParSensorCond.h"
 #include "CbmStsParSim.h"
 #include "CbmStsPhysics.h"
+
+#include <Logger.h>
+
+#include <TGeoBBox.h>
+#include <TGeoPhysicalNode.h>
+#include <TMath.h>
 
 
 using std::stringstream;

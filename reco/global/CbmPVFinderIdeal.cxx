@@ -4,11 +4,11 @@
 // -------------------------------------------------------------------------
 #include "CbmPVFinderIdeal.h"
 
+#include "CbmMCTrack.h"
 #include "CbmVertex.h"
 
-#include "CbmMCTrack.h"
-#include <Logger.h>
 #include "FairRootManager.h"
+#include <Logger.h>
 
 #include "TClonesArray.h"
 #include "TMatrixTSym.h"

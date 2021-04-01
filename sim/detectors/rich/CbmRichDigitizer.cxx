@@ -6,6 +6,7 @@
 **/
 
 #include "CbmRichDigitizer.h"
+
 #include "CbmLink.h"
 #include "CbmMCTrack.h"
 #include "CbmMatch.h"
@@ -14,14 +15,17 @@
 #include "CbmRichDigiMapManager.h"
 #include "CbmRichGeoManager.h"
 #include "CbmRichPoint.h"
+
 #include "FairEventHeader.h"
-#include <Logger.h>
 #include "FairRunAna.h"
 #include "FairRunSim.h"
+#include <Logger.h>
+
 #include "TClonesArray.h"
 #include "TGeoManager.h"
 #include "TRandom.h"
 #include "TStopwatch.h"
+
 #include <cassert>
 #include <iomanip>
 #include <iostream>

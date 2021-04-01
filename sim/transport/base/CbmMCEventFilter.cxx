@@ -6,6 +6,7 @@
 #include "CbmMCEventFilter.h"
 
 #include <Logger.h>
+
 #include <cassert>
 #include <iostream>
 #include <sstream>

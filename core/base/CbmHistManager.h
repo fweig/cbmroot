@@ -8,6 +8,8 @@
 #ifndef CBMHISTMANAGER_H_
 #define CBMHISTMANAGER_H_
 
+#include <Logger.h>  // for Logger, LOG
+
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Double_t, Int_t, Bool_t, Option_t
 #include <TCanvas.h>     // iwyu: keep for RootCling
@@ -20,8 +22,6 @@
 #include <TObject.h>     // for TObject
 #include <TProfile.h>    // for TProfile
 #include <TProfile2D.h>  // for TProfile2D
-
-#include <Logger.h>  // for Logger, LOG
 
 #include <cassert>  // for assert
 #include <map>      // for map, __map_const_iterator, operator!=

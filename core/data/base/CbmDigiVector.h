@@ -8,11 +8,12 @@
 #define CBMDIGIVECTOR_H 1
 
 
-#include <Logger.h>
-#include <vector>
-
 #include "CbmDigiContainer.h"
 #include "CbmMatch.h"
+
+#include <Logger.h>
+
+#include <vector>
 
 /** @class CbmDigiVector
  ** @brief std::vector implementation of CbmDigiContainer

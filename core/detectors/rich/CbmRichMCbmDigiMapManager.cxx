@@ -19,9 +19,10 @@
 #include <TString.h>      // for TString
 
 #include <iostream>  // for string, operator<<, basic_ostream
-#include <stddef.h>  // for size_t
 #include <string>    // for operator<, stoul
 #include <utility>   // for pair
+
+#include <stddef.h>  // for size_t
 
 using namespace std;
 

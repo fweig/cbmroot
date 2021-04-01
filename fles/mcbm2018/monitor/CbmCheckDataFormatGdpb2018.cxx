@@ -6,17 +6,16 @@
 // -----------------------------------------------------------------------------
 
 #include "CbmCheckDataFormatGdpb2018.h"
-#include "CbmMcbm2018TofPar.h"
 
 #include "CbmFormatMsHeaderPrintout.h"
-
 #include "CbmHistManager.h"
+#include "CbmMcbm2018TofPar.h"
 
-#include <Logger.h>
 #include "FairRootManager.h"
 #include "FairRun.h"
 #include "FairRunOnline.h"
 #include "FairRuntimeDb.h"
+#include <Logger.h>
 
 #include "Rtypes.h"
 #include "TCanvas.h"
@@ -39,6 +38,7 @@
 #include <ctime>
 #include <iomanip>
 #include <iostream>
+
 #include <stdint.h>
 
 Bool_t bCheckFormatGdpbResetHistos = kFALSE;

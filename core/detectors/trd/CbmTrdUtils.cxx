@@ -25,8 +25,9 @@
 #include <TProfile.h>   // for TProfile
 
 #include <iostream>  // for operator<<, cout, ostream, basic_ostream
-#include <stdio.h>   // for printf
 #include <utility>   // for pair
+
+#include <stdio.h>  // for printf
 
 using std::cout;
 using std::endl;

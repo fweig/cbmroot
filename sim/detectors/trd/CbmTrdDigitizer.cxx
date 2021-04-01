@@ -3,6 +3,7 @@
 #include "CbmMCTrack.h"
 #include "CbmMatch.h"
 #include "CbmTrdAddress.h"
+#include "CbmTrdCheckUtil.h"
 #include "CbmTrdDigi.h"
 #include "CbmTrdGeoHandler.h"
 #include "CbmTrdModuleSim.h"
@@ -21,25 +22,25 @@
 #include "CbmTrdParSetGeo.h"
 #include "CbmTrdPoint.h"
 #include "CbmTrdRadiator.h"
+#include "CbmTrdRawToDigiR.h"
 
 #include <FairBaseParSet.h>
 #include <FairEventHeader.h>
-#include <Logger.h>
 #include <FairRootManager.h>
 #include <FairRunAna.h>
 #include <FairRunSim.h>
 #include <FairRuntimeDb.h>
+#include <Logger.h>
 
-#include "CbmTrdCheckUtil.h"
-#include "CbmTrdRawToDigiR.h"
 #include <TClonesArray.h>
 #include <TRandom.h>
 #include <TStopwatch.h>
 #include <TVector3.h>
 
-#include <cmath>
 #include <iomanip>
 #include <iostream>
+
+#include <cmath>
 using std::cout;
 using std::endl;
 using std::make_pair;

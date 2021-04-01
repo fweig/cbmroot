@@ -9,9 +9,10 @@
 #include "CbmRichGeoManager.h"
 #include "CbmRichHit.h"
 #include "CbmRichPoint.h"
-#include <Logger.h>
-#include "TClonesArray.h"
 
+#include <Logger.h>
+
+#include "TClonesArray.h"
 
 #include <iostream>
 

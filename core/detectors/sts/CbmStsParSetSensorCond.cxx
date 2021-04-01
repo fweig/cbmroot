@@ -11,10 +11,11 @@
 #include <TString.h>  // for TString, operator<<, operator+, ope...
 #include <TSystem.h>  // for TSystem, gSystem
 
+#include <sstream>  // for operator<<, fstream, stringstream
+#include <string>   // for char_traits
+#include <utility>  // for pair
+
 #include <assert.h>  // for assert
-#include <sstream>   // for operator<<, fstream, stringstream
-#include <string>    // for char_traits
-#include <utility>   // for pair
 
 using std::string;
 

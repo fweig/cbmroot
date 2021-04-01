@@ -7,13 +7,17 @@
  *		Warsaw University of Technology, Faculty of Physics
  */
 #include "NicaUnigenSource.h"
-#include <Logger.h>
+
 #include "FairRootManager.h"
-#include "UEvent.h"
-#include "UParticle.h"
+#include <Logger.h>
+
 #include <TBranch.h>
+
 #include <fstream>
 #include <iostream>
+
+#include "UEvent.h"
+#include "UParticle.h"
 
 NicaUnigenSource::NicaUnigenSource()
   : fUnigenChain(NULL), fFileName("data.root"), fEvent(NULL) {}

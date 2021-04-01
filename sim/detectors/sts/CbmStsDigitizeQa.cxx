@@ -17,17 +17,16 @@
 #include "CbmStsParSetModule.h"
 #include "CbmStsParSim.h"
 
-#include <Logger.h>
 #include "FairMCPoint.h"
 #include "FairRootManager.h"
 #include "FairRun.h"
 #include "FairRuntimeDb.h"
-
-#include "TGeoMatrix.h"
-#include "TGeoPhysicalNode.h"
+#include <Logger.h>
 
 #include "TClonesArray.h"
 #include "TF1.h"
+#include "TGeoMatrix.h"
+#include "TGeoPhysicalNode.h"
 #include "TH1.h"
 #include "TH1D.h"
 #include "TH2.h"

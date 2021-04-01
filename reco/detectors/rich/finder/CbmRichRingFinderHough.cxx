@@ -13,6 +13,7 @@
 #include "CbmRichRing.h"
 
 #include <Logger.h>
+
 #include "TClonesArray.h"
 #include "TStopwatch.h"
 

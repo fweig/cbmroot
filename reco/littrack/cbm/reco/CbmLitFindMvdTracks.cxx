@@ -5,6 +5,19 @@
  * \date 2011
  */
 #include "CbmLitFindMvdTracks.h"
+
+#include "CbmStsTrack.h"
+
+#include "FairHit.h"
+#include "FairRunAna.h"
+#include "FairRuntimeDb.h"
+#include <Logger.h>
+
+#include "TClonesArray.h"
+
+#include <algorithm>
+#include <iostream>
+
 #include "base/CbmLitToolFactory.h"
 #include "base/CbmLitTrackingGeometryConstructor.h"
 #include "data/CbmLitHit.h"
@@ -15,17 +28,6 @@
 #include "utils/CbmLitConverter.h"
 #include "utils/CbmLitConverterFairTrackParam.h"
 #include "utils/CbmLitMemoryManagment.h"
-
-#include "CbmStsTrack.h"
-#include "FairHit.h"
-#include <Logger.h>
-#include "FairRunAna.h"
-#include "FairRuntimeDb.h"
-
-#include "TClonesArray.h"
-
-#include <algorithm>
-#include <iostream>
 
 CbmLitFindMvdTracks::CbmLitFindMvdTracks()
   : fStsTracks(NULL)

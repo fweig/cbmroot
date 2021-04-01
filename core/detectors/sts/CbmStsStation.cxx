@@ -21,9 +21,10 @@
 #include <TNamed.h>            // for TNamed
 
 #include <cassert>  // for assert
-#include <math.h>   // for atan2
 #include <sstream>  // for operator<<, basic_ostream, stringstream
 #include <string>   // for char_traits
+
+#include <math.h>  // for atan2
 
 using std::string;
 using std::stringstream;

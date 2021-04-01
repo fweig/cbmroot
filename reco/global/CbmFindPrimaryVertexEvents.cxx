@@ -6,13 +6,15 @@
 
 #include "CbmFindPrimaryVertexEvents.h"
 
-
 #include "CbmEvent.h"
 #include "CbmPrimaryVertexFinder.h"
 #include "CbmVertex.h"
-#include <Logger.h>
+
 #include "FairRootManager.h"
+#include <Logger.h>
+
 #include "TClonesArray.h"
+
 #include <cassert>
 #include <iomanip>
 #include <iostream>

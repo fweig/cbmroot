@@ -10,10 +10,10 @@
 #include "CbmTrdParSetDigi.h"  // for CbmTrdParSetDigi
 
 #include <FairEventManager.h>  // for FairEventManager
-#include <Logger.h>        // for Logger, LOG
 #include <FairRootManager.h>   // for FairRootManager
 #include <FairRunAna.h>        // for FairRunAna
 #include <FairRuntimeDb.h>     // for FairRuntimeDb
+#include <Logger.h>            // for Logger, LOG
 
 #include <TClonesArray.h>  // for TClonesArray
 #include <TEveBoxSet.h>    // for TEveBoxSet, TEveBoxSet::kBT_AABox

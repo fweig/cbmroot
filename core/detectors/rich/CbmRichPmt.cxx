@@ -12,13 +12,14 @@
 #include "CbmRichRecGeoPar.h"   // for CbmRichRecGeoPar
 
 #include <Logger.h>  // for LOG, Logger
-#include <TAxis.h>       // for TAxis
-#include <TRandom.h>     // for TRandom, gRandom
 
-#include <TGraph.h>  // for TGraph
+#include <TAxis.h>    // for TAxis
+#include <TGraph.h>   // for TGraph
+#include <TRandom.h>  // for TRandom, gRandom
+
+#include <utility>  // for pair
 
 #include <stddef.h>  // for size_t
-#include <utility>   // for pair
 
 using namespace std;
 

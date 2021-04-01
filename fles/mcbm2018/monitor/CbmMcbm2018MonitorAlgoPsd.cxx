@@ -12,11 +12,11 @@
 #include "CbmFormatMsHeaderPrintout.h"
 #include "CbmMcbm2018PsdPar.h"
 
-#include <Logger.h>
 #include "FairRootManager.h"
 #include "FairRun.h"
 #include "FairRunOnline.h"
 #include "FairRuntimeDb.h"
+#include <Logger.h>
 
 #include "TCanvas.h"
 #include "TGraph.h"
@@ -31,6 +31,7 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+
 #include <stdint.h>
 
 // -------------------------------------------------------------------------
@@ -358,8 +359,7 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts,
   }
 
   PsdData::PsdGbtReader PsdReader(pInBuff);
-  if (fair::Logger::Logging(fair::Severity::debug))
-    PsdReader.SetPrintOutMode(true);
+  if (fair::Logger::Logging(fair::Severity::debug)) PsdReader.SetPrintOutMode(true);
   if (uSize > 0) {
     while (PsdReader.GetTotalGbtWordsRead() < uNbMessages) {
       int ReadResult = PsdReader.ReadEventFles();

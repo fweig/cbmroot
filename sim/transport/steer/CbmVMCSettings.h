@@ -13,9 +13,9 @@
  ** @since 21.01.2020
  **/
 
-#include <TObject.h>
-
 #include <Logger.h>
+
+#include <TObject.h>
 
 template<typename T>
 void CheckValueInRange(const T& value,

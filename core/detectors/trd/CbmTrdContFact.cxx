@@ -18,8 +18,8 @@
 #include "CbmTrdParSetGeo.h"          // for CbmTrdParSetGeo
 
 #include <FairContFact.h>   // for FairContainer
-#include <Logger.h>     // for Logger, LOG
 #include <FairRuntimeDb.h>  // for FairRuntimeDb
+#include <Logger.h>         // for Logger, LOG
 
 #include <TList.h>    // for TList
 #include <TString.h>  // for TString

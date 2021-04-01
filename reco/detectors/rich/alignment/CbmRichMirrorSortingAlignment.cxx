@@ -1,6 +1,7 @@
 #include "CbmRichMirrorSortingAlignment.h"
-#include <Logger.h>
+
 #include "FairRootManager.h"
+#include <Logger.h>
 
 // ----- PART 1 ----- //
 #include "CbmGlobalTrack.h"

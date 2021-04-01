@@ -30,12 +30,12 @@
 #include <TObject.h>       // for TObject
 #include <TVector3.h>      // for TVector3
 
-
 #include <cassert>    // for assert
-#include <math.h>     // for sqrt
 #include <stdexcept>  // for out_of_range
 #include <utility>    // for pair
 #include <vector>
+
+#include <math.h>  // for sqrt
 
 using std::vector;
 

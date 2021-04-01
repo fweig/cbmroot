@@ -8,19 +8,22 @@
 
 #include "CbmUnigenGenerator.h"
 
-#include <Logger.h>
 #include "FairMCEventHeader.h"
 #include "FairPrimaryGenerator.h"
 #include "FairRunSim.h"
+#include <Logger.h>
+
 #include "TFile.h"
 #include "TRandom.h"
 #include "TTree.h"
 #include "TVector3.h"
+
+#include <cassert>
+#include <sstream>
+
 #include "UEvent.h"
 #include "UParticle.h"
 #include "URun.h"
-#include <cassert>
-#include <sstream>
 
 
 // -----   Constructor   ----------------------------------------------------

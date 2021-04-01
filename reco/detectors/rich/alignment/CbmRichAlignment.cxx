@@ -1,13 +1,14 @@
 // ---------- Original Headers ---------- //
 #include "CbmRichAlignment.h"
-#include <Logger.h>
-#include "FairRootManager.h"
-
-#include "TClonesArray.h"
 
 #include "CbmDrawHist.h"
 #include "CbmRichHit.h"
+
+#include "FairRootManager.h"
+#include <Logger.h>
+
 #include "TCanvas.h"
+#include "TClonesArray.h"
 #include "TF1.h"
 #include "TH1D.h"
 #include "TH2D.h"

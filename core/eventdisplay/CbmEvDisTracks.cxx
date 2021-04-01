@@ -13,9 +13,9 @@
 #include "CbmTofTracklet.h"  // for CbmTofTracklet
 
 #include <FairEventManager.h>  // for FairEventManager
-#include <Logger.h>        // for LOG, Logger
 #include <FairRootManager.h>   // for FairRootManager
 #include <FairTask.h>          // for FairTask, InitStatus, kERROR, kSUCCESS
+#include <Logger.h>            // for LOG, Logger
 
 #include <Rtypes.h>               // for ClassImp
 #include <TClonesArray.h>         // for TClonesArray

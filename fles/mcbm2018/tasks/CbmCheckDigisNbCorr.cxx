@@ -9,11 +9,16 @@
 
 #include "CbmDigiManager.h"
 #include "CbmMuchBeamTimeDigi.h"
+#include "CbmMuchDigi.h"
+#include "CbmRichDigi.h"
+#include "CbmStsDigi.h"
+#include "CbmTofDigi.h"
+
 #include "TimesliceMetaData.h"
 
-#include <Logger.h>
 #include "FairRootManager.h"
 #include "FairRunOnline.h"
+#include <Logger.h>
 
 #include "TClonesArray.h"
 #include "TH1.h"
@@ -22,11 +27,6 @@
 #include "TProfile.h"
 #include <TDirectory.h>
 #include <TFile.h>
-
-#include "CbmMuchDigi.h"
-#include "CbmRichDigi.h"
-#include "CbmStsDigi.h"
-#include "CbmTofDigi.h"
 
 #include <iomanip>
 using std::fixed;

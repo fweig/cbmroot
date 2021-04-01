@@ -5,12 +5,15 @@
  */
 
 #include "CbmBinnedTrackerTask.h"
+
 #include "CbmMuchTrack.h"
 #include "CbmStsTrack.h"
 #include "CbmTrdTrack.h"
-#include <Logger.h>
+
 #include "FairRunAna.h"
 #include "FairRuntimeDb.h"
+#include <Logger.h>
+
 #include "GeoReader.h"
 #include "global/CbmGlobalTrack.h"
 

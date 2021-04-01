@@ -8,8 +8,8 @@
 #include "CbmMcbm2018RichPar.h"
 
 // FairRoot
-#include <Logger.h>
 #include "FairParamList.h"
+#include <Logger.h>
 
 // C/C++
 #include <iomanip>

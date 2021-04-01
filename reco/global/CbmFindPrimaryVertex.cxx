@@ -7,8 +7,8 @@
 #include "CbmPrimaryVertexFinder.h"
 #include "CbmVertex.h"
 
-#include <Logger.h>
 #include "FairRootManager.h"
+#include <Logger.h>
 
 #include "TClonesArray.h"
 

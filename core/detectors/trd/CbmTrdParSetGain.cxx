@@ -1,7 +1,7 @@
 #include "CbmTrdParSetGain.h"
 
-#include <Logger.h>     // for LOG, Logger
 #include <FairParamList.h>  // for FairParamList
+#include <Logger.h>         // for LOG, Logger
 
 #include <TArrayI.h>  // for TArrayI
 

@@ -16,11 +16,11 @@
 #include "FairGeoMedia.h"
 #include "FairGeoNode.h"
 #include "FairGeoVolume.h"
-#include <Logger.h>
 #include "FairRootManager.h"
 #include "FairRun.h"
 #include "FairRuntimeDb.h"
 #include "FairVolume.h"
+#include <Logger.h>
 
 #include "TClonesArray.h"
 #include "TGeoManager.h"

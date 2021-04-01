@@ -7,9 +7,9 @@
 
 #include "CbmRichRingFitterEllipseMinuit.h"
 
-#include "Minuit2/Minuit2Minimizer.h"
-
 #include <Logger.h>
+
+#include "Minuit2/Minuit2Minimizer.h"
 
 using std::cout;
 using std::endl;

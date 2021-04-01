@@ -3,8 +3,8 @@
  **/
 #include "CbmMCDataArray.h"
 
-#include <Logger.h>       // for Logger, LOG
 #include <FairRootManager.h>  // for FairRootManager
+#include <Logger.h>           // for Logger, LOG
 
 #include <TChain.h>        // for TChain
 #include <TClonesArray.h>  // for TClonesArray

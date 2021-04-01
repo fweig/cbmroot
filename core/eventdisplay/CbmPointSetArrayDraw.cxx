@@ -10,9 +10,9 @@
 #include "CbmTofHit.h"         // for CbmTofHit
 
 #include <FairEventManager.h>  // for FairEventManager
-#include <Logger.h>        // for LOG, Logger
 #include <FairRootManager.h>   // for FairRootManager
 #include <FairTask.h>          // for FairTask, InitStatus, kSUCCESS
+#include <Logger.h>            // for LOG, Logger
 
 #include <Rtypes.h>             // for kRed, ClassImp
 #include <TClonesArray.h>       // for TClonesArray

@@ -13,12 +13,13 @@
 #include "CbmTrdPoint.h"
 #include "CbmTrdUtils.h"
 
-#include <Logger.h>
 #include "FairRootManager.h"
 #include "FairRunAna.h"
 #include "FairRuntimeDb.h"
+#include <Logger.h>
 
 #include "TArray.h"
+#include "TCanvas.h"
 #include "TClonesArray.h"
 #include "TColor.h"
 #include "TDatime.h"
@@ -28,12 +29,10 @@
 #include "TH2D.h"
 #include "TH2F.h"
 #include "TH2I.h"
-#include "TMath.h"
-
-#include "TCanvas.h"
 #include "TImage.h"
 #include "TLegend.h"
 #include "TLine.h"
+#include "TMath.h"
 #include "TProfile.h"
 #include "TStopwatch.h"
 #include <TFile.h>

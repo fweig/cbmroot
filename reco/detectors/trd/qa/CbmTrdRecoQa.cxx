@@ -5,24 +5,22 @@
 
 #include "CbmTrdRecoQa.h"
 
+#include "CbmDigiManager.h"
 #include "CbmMCTrack.h"
 #include "CbmTrdCluster.h"
 #include "CbmTrdDigi.h"
+#include "CbmTrdGeoHandler.h"
 #include "CbmTrdHit.h"
-#include "CbmTrdPoint.h"
-
-#include "CbmMCTrack.h"
 #include "CbmTrdParModDigi.h"
 #include "CbmTrdParSetDigi.h"
+#include "CbmTrdPoint.h"
+#include "CbmTrdUtils.h"
 
-#include <Logger.h>
 #include "FairRootManager.h"
 #include "FairRunAna.h"
 #include "FairRuntimeDb.h"
+#include <Logger.h>
 
-#include "CbmDigiManager.h"
-#include "CbmTrdGeoHandler.h"
-#include "CbmTrdUtils.h"
 #include "TCanvas.h"
 #include "TClonesArray.h"
 #include "TColor.h"
@@ -40,7 +38,6 @@
 #include "TPolyLine.h"
 #include "TStopwatch.h"
 #include "TVector3.h"
-
 
 #include <iostream>
 

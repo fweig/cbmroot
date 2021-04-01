@@ -24,20 +24,20 @@
 //#include "CbmL1RichENNRingFinderParallel.h"
 //#include "prototype/CbmRichProtRingFinderHough.h"
 
+#include "CbmGlobalTrack.h"
+#include "CbmRichConverter.h"
 #include "CbmRichRingFitterCOP.h"
 #include "CbmRichRingFitterCircle.h"
 #include "CbmRichRingFitterEllipseMinuit.h"
 #include "CbmRichRingFitterEllipseTau.h"
 #include "CbmRichRingFitterRobustCOP.h"
 #include "CbmRichRingFitterTAU.h"
-
 #include "CbmRichRingTrackAssignClosestD.h"
 
-#include "CbmGlobalTrack.h"
-#include "CbmRichConverter.h"
 #include "FairHit.h"
-#include <Logger.h>
 #include "FairRootManager.h"
+#include <Logger.h>
+
 #include "TClonesArray.h"
 
 #include <iostream>

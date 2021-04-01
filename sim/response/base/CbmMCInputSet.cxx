@@ -5,8 +5,9 @@
 
 #include "CbmMCInputSet.h"
 
-#include <Logger.h>
 #include "FairRootManager.h"
+#include <Logger.h>
+
 #include <cassert>
 
 

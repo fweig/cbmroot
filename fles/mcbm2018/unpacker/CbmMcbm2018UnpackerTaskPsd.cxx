@@ -11,12 +11,12 @@
 #include "CbmMcbm2018PsdPar.h"
 #include "CbmMcbm2018UnpackerAlgoPsd.h"
 
-#include <Logger.h>
 #include "FairParGenericSet.h"
 #include "FairRootManager.h"
 #include "FairRun.h"
 #include "FairRunOnline.h"
 #include "FairRuntimeDb.h"
+#include <Logger.h>
 
 #include "TClonesArray.h"
 #include "TH1.h"
@@ -29,6 +29,7 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+
 #include <stdint.h>
 
 Bool_t bMcbm2018UnpackerTaskPsdResetHistos = kFALSE;

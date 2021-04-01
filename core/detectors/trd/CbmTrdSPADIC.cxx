@@ -6,11 +6,11 @@
 #include "CbmTrdParModDigi.h"  // for CbmTrdParModDigi
 #include "CbmTrdParSetDigi.h"  // for CbmTrdParSetDigi
 
-#include <Logger.h>       // for LOG, Logger
 #include <FairRootManager.h>  // for FairRootManager
 #include <FairRunAna.h>       // for FairRunAna
 #include <FairRuntimeDb.h>    // for FairRuntimeDb
 #include <FairTask.h>         // for FairTask, InitStatus, kSUCCESS
+#include <Logger.h>           // for LOG, Logger
 
 #include <TAxis.h>              // for TAxis
 #include <TCanvas.h>            // for TCanvas
@@ -18,11 +18,12 @@
 #include <TGenericClassInfo.h>  // for TGenericClassInfo
 #include <TH1.h>                // for TH1D
 
-#include <cmath>    // for pow, exp
 #include <list>     // for list, list<>::iterator, operator!=
 #include <map>      // for map, operator!=, map<>::iterator, __m...
-#include <stdio.h>  // for printf
 #include <utility>  // for pair, make_pair
+
+#include <cmath>    // for pow, exp
+#include <stdio.h>  // for printf
 
 CbmTrdSPADIC::CbmTrdSPADIC()
   : FairTask("TrdSPADIC", 1)

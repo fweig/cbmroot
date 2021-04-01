@@ -29,8 +29,10 @@
 #include "CbmRichRing.h"
 #include "CbmStsTrack.h"
 #include "CbmTrackMatchNew.h"
-#include <Logger.h>
+
 #include "FairRootManager.h"
+#include <Logger.h>
+
 #include "L1Field.h"
 
 

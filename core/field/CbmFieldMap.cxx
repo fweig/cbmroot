@@ -9,16 +9,17 @@
 #include "CbmFieldMapData.h"     // for CbmFieldMapData
 #include "CbmFieldPar.h"         // for CbmFieldPar
 
-#include <FairField.h>   // for FairField
-#include <Logger.h>  // for LOG, Logger
+#include <FairField.h>  // for FairField
+#include <Logger.h>     // for LOG, Logger
 
 #include <TArrayF.h>  // for TArrayF
 #include <TFile.h>    // for TFile, gFile
 #include <TMath.h>    // for Nint
 
-#include <assert.h>  // for assert
 #include <iomanip>   // for operator<<, setw
 #include <iostream>  // for operator<<, basic_ostream, endl, ost...
+
+#include <assert.h>  // for assert
 #include <stdlib.h>  // for div, div_t, getenv, exit
 
 using std::cerr;

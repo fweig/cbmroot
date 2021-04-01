@@ -1,7 +1,7 @@
 #include "CbmGeant4Settings.h"
 
-#include <Logger.h>
 #include <FairRunSim.h>
+#include <Logger.h>
 
 #include <TGeant4.h>
 #include <TPythia6Decayer.h>

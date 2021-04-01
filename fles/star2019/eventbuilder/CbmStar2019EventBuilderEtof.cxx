@@ -10,12 +10,12 @@
 #include "CbmStar2019EventBuilderEtofAlgo.h"
 #include "CbmStar2019TofPar.h"
 
-#include <Logger.h>
 #include "FairParGenericSet.h"
 #include "FairRootManager.h"
 #include "FairRun.h"
 #include "FairRunOnline.h"
 #include "FairRuntimeDb.h"
+#include <Logger.h>
 
 #include "TCanvas.h"
 #include "TH2.h"
@@ -29,6 +29,7 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+
 #include <stdint.h>
 
 Bool_t bStarEtof2019EventBuilderResetHistos = kFALSE;

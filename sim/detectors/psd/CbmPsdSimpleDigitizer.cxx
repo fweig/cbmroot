@@ -3,21 +3,22 @@
 // -----                  Created 15/05/12  by  Alla & SELIM & FLORIAN -----
 // -----                 Modified 17/03/18  by  Sergey Morozov         -----
 // -------------------------------------------------------------------------
+#include "CbmPsdSimpleDigitizer.h"
+
+#include "CbmPsdDigi.h"
+#include "CbmPsdPoint.h"
+
+#include "FairRootManager.h"
+#include <Logger.h>
+
+#include "TClonesArray.h"
+#include "TMath.h"
+#include "TStopwatch.h"
+
 #include <cassert>
 #include <iomanip>
 #include <iostream>
 #include <map>
-
-#include "TClonesArray.h"
-
-#include <Logger.h>
-#include "FairRootManager.h"
-
-#include "CbmPsdDigi.h"
-#include "CbmPsdPoint.h"
-#include "CbmPsdSimpleDigitizer.h"
-#include "TMath.h"
-#include "TStopwatch.h"
 
 using std::cout;
 using std::endl;

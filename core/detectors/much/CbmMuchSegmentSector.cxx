@@ -17,9 +17,9 @@
 #include "CbmMuchSectorRadial.h"     // for CbmMuchSectorRadial
 #include "CbmMuchStation.h"          // for CbmMuchStation
 
-#include <Logger.h>     // for LOG
 #include <FairRuntimeDb.h>  // for FairRuntimeDb
 #include <FairTask.h>       // for FairTask, InitStatus, kSUCCESS
+#include <Logger.h>         // for LOG
 
 #include <TArc.h>       // for TArc
 #include <TCanvas.h>    // for TCanvas
@@ -29,10 +29,11 @@
 #include <TSystem.h>    // for TSystem, gSystem
 #include <TVector3.h>   // for TVector3
 
+#include <vector>  // for vector
+
 #include <math.h>    // for sqrt
 #include <stdio.h>   // for printf, fprintf, fclose
 #include <string.h>  // for strcat, strlen, strncpy
-#include <vector>    // for vector
 
 using std::ifstream;
 using std::string;

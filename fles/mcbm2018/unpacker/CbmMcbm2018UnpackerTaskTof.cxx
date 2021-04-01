@@ -10,12 +10,12 @@
 #include "CbmMcbm2018TofPar.h"
 #include "CbmMcbm2018UnpackerAlgoTof.h"
 
-#include <Logger.h>
 #include "FairParGenericSet.h"
 #include "FairRootManager.h"
 #include "FairRun.h"
 #include "FairRunOnline.h"
 #include "FairRuntimeDb.h"
+#include <Logger.h>
 
 #include "TClonesArray.h"
 #include "TH1.h"
@@ -28,6 +28,7 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+
 #include <stdint.h>
 
 Bool_t bMcbm2018UnpackerTaskTofResetHistos = kFALSE;

@@ -24,12 +24,12 @@
 
 // FAIR classes and includes
 #include "FairEventHeader.h"
-#include <Logger.h>
 #include "FairMCEventHeader.h"
 #include "FairRootManager.h"
 #include "FairRunAna.h"
 #include "FairRunSim.h"
 #include "FairRuntimeDb.h"
+#include <Logger.h>
 
 // CBM includes
 #include "CbmLink.h"

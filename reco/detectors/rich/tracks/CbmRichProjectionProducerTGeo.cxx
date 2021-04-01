@@ -8,6 +8,8 @@
 #include "CbmRichProjectionProducerTGeo.h"
 
 #include "CbmMCTrack.h"
+#include "CbmRichGeoManager.h"
+
 #include "FairGeoNode.h"
 #include "FairGeoTransform.h"
 #include "FairGeoVector.h"
@@ -16,18 +18,18 @@
 #include "FairRunAna.h"
 #include "FairRuntimeDb.h"
 #include "FairTrackParam.h"
-#include "TGeoManager.h"
-
-#include "CbmRichGeoManager.h"
-#include "TClonesArray.h"
-#include "TMatrixFSym.h"
-#include "TVector3.h"
-#include "utils/CbmRichNavigationUtil.h"
-
 #include <Logger.h>
 
-#include <cmath>
+#include "TClonesArray.h"
+#include "TGeoManager.h"
+#include "TMatrixFSym.h"
+#include "TVector3.h"
+
 #include <iostream>
+
+#include <cmath>
+
+#include "utils/CbmRichNavigationUtil.h"
 
 using std::cout;
 using std::endl;

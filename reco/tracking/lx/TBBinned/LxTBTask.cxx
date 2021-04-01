@@ -5,6 +5,7 @@
  */
 
 #include "LxTBTask.h"
+
 #include "CbmCluster.h"
 #include "CbmMCDataManager.h"
 #include "CbmMCTrack.h"
@@ -12,8 +13,9 @@
 #include "CbmMuchGeoScheme.h"
 #include "CbmMuchPixelHit.h"
 #include "CbmTrdHit.h"
+
 #include <Logger.h>
-#include "LxTBTieTracks.h"
+
 #include "TClonesArray.h"
 #include "TDatabasePDG.h"
 #include "TGeoArb8.h"
@@ -22,8 +24,11 @@
 #include "TMath.h"
 #include "TParticlePDG.h"
 #include "TRandom3.h"
+
 #include <map>
 #include <set>
+
+#include "LxTBTieTracks.h"
 
 #ifdef LXTB_QA
 #include "CbmStsHit.h"

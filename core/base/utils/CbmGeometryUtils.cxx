@@ -4,13 +4,13 @@
 #include <FairGeoInterface.h>  // for FairGeoInterface
 #include <FairGeoLoader.h>     // for FairGeoLoader
 #include <FairGeoMedia.h>      // for FairGeoMedia
-#include <Logger.h>            // for LOG, Logger, Severity, Severity::debug
 #include <FairModule.h>        // for FairModule
-#include <TFile.h>             // for TFile, gFile
+#include <Logger.h>            // for LOG, Logger, Severity, Severity::debug
 
 #include <RtypesCore.h>    // for Bool_t, Int_t, kTRUE, kFALSE
 #include <TCollection.h>   // for TIter
 #include <TDirectory.h>    // for gDirectory, TDirectory (ptr only)
+#include <TFile.h>         // for TFile, gFile
 #include <TGeoManager.h>   // for TGeoManager, gGeoManager
 #include <TGeoMaterial.h>  // for TGeoMaterial
 #include <TGeoMatrix.h>    // for TGeoMatrix
@@ -23,7 +23,8 @@
 #include <TObject.h>       // for TObject
 #include <TString.h>       // for TString, operator<, operator<<
 
-#include <map>       // for map
+#include <map>  // for map
+
 #include <string.h>  // for strcmp
 
 

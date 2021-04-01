@@ -4,11 +4,11 @@
 // -------------------------------------------------------------------------
 #include "CbmMvdPoint.h"
 
-#include <Logger.h>            // for Logger, LOG
 #include <FairMCEventHeader.h>     // for FairMCEventHeader
 #include <FairMCPoint.h>           // for FairMCPoint
 #include <FairPrimaryGenerator.h>  // for FairPrimaryGenerator
 #include <FairRunSim.h>            // for FairRunSim
+#include <Logger.h>                // for Logger, LOG
 
 #include <TVector3.h>  // for TVector3
 

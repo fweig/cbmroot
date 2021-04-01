@@ -5,17 +5,17 @@
 
 #include "CbmBuildEventsSimple.h"
 
-#include "TClonesArray.h"
-#include "TStopwatch.h"
-
-#include <Logger.h>
-#include "FairRootManager.h"
-
 #include "CbmEvent.h"
 #include "CbmLink.h"
 #include "CbmMatch.h"
 #include "CbmStsAddress.h"
 #include "CbmStsDigi.h"
+
+#include "FairRootManager.h"
+#include <Logger.h>
+
+#include "TClonesArray.h"
+#include "TStopwatch.h"
 
 #include <cassert>
 #include <iomanip>

@@ -1,5 +1,8 @@
 #include "CbmTrdModuleSimT.h"
 
+#include "CbmDigitizeBase.h"
+#include "CbmMatch.h"
+#include "CbmTimeSlice.h"
 #include "CbmTrdAddress.h"
 #include "CbmTrdDigi.h"
 #include "CbmTrdDigitizer.h"
@@ -13,12 +16,8 @@
 #include "CbmTrdRadiator.h"
 #include "CbmTrdTrianglePRF.h"
 
-#include "CbmDigitizeBase.h"
-#include "CbmMatch.h"
-#include "CbmTimeSlice.h"
-
-#include <Logger.h>
 #include <FairRootManager.h>
+#include <Logger.h>
 
 #include <TGeoManager.h>
 #include <TMath.h>

@@ -18,12 +18,14 @@
 #include "CbmRichRing.h"
 #include "CbmStsTrack.h"
 #include "CbmTrackMatchNew.h"
-#include <Logger.h>
+
 #include "FairRootManager.h"
-#include "L1Field.h"
+#include <Logger.h>
 
 #include <algorithm>
 #include <map>
+
+#include "L1Field.h"
 
 
 using namespace std;

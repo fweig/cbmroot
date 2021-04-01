@@ -11,13 +11,14 @@
 #ifndef CBM_RICH_REC_GEO_PAR
 #define CBM_RICH_REC_GEO_PAR
 
+#include <Logger.h>  // for LOG
+
 #include <RtypesCore.h>  // for Double_t, Bool_t
 #include <TMath.h>       // for Pi, Abs, IsNaN, Min, Max
 #include <TVector3.h>    // for TVector3
 
-#include <Logger.h>  // for LOG
-#include <map>           // for map
-#include <string>        // for string
+#include <map>     // for map
+#include <string>  // for string
 
 enum CbmRichGeometryType {
   CbmRichGeometryTypeNotDefined  = 0,

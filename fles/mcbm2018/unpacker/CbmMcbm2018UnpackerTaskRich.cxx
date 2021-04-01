@@ -16,12 +16,12 @@
 #include <TROOT.h>
 
 // FairRoot
-#include <Logger.h>
 #include <FairParGenericSet.h>
 #include <FairRootManager.h>
 #include <FairRun.h>
 #include <FairRunOnline.h>
 #include <FairRuntimeDb.h>
+#include <Logger.h>
 
 // CbmRoot
 #include "CbmMcbm2018RichPar.h"

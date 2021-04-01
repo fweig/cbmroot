@@ -13,11 +13,12 @@
 
 // Includes from base
 #include "CbmMCTrack.h"
+
 #include "FairGeoNode.h"
-#include <Logger.h>
 #include "FairRootManager.h"
 #include "FairRunAna.h"
 #include "FairRuntimeDb.h"
+#include <Logger.h>
 
 // Includes from ROOT
 #include "TArrayD.h"

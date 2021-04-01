@@ -14,9 +14,9 @@
 #include "CbmStsSensor.h"            // for CbmStsSensor
 #include "CbmStsStation.h"           // for CbmStsStation
 
-#include <FairField.h>   // for FairField
-#include <Logger.h>  // for FairLogger
-#include <FairRun.h>     // for FairRun
+#include <FairField.h>  // for FairField
+#include <FairRun.h>    // for FairRun
+#include <Logger.h>     // for FairLogger
 
 #include <TCollection.h>       // for TIter
 #include <TDirectory.h>        // for TDirectory, gDirectory

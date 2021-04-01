@@ -21,12 +21,12 @@
 #define CBMMVDDETECTORID_H 1
 
 
-#include <Rtypes.h>      // for ClassDef
-#include <RtypesCore.h>  // for Int_t
+#include "CbmDefs.h"  // for ECbmModuleId::kMvd
 
 #include <Logger.h>  // for LOG
 
-#include "CbmDefs.h"  // for ECbmModuleId::kMvd
+#include <Rtypes.h>      // for ClassDef
+#include <RtypesCore.h>  // for Int_t
 
 
 class CbmMvdDetectorId {

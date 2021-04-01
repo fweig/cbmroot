@@ -2,8 +2,8 @@
 
 #include "CbmTrdDefs.h"  // for eCbmTrdModuleTypes, eCbmTrdModuleType...
 
-#include <Logger.h>     // for Logger, LOG
 #include <FairParamList.h>  // for FairParamList
+#include <Logger.h>         // for Logger, LOG
 
 #include <TArrayI.h>  // for TArrayI
 #include <TString.h>  // for Form

@@ -5,17 +5,18 @@
 #include "CbmTrdParMod.h"     // for CbmTrdParMod
 #include "CbmTrdParSpadic.h"  // for CbmTrdParSpadic, NSPADICCH
 
-#include <Logger.h>     // for Logger, LOG
 #include <FairParamList.h>  // for FairParamList
+#include <Logger.h>         // for Logger, LOG
 
 #include <TArrayI.h>            // for TArrayI
 #include <TGenericClassInfo.h>  // for TGenericClassInfo
 #include <TString.h>            // for Form
 
+#include <utility>  // for pair
+
 #include <stdint.h>  // for uint64_t
 #include <stdio.h>   // for printf
 #include <string.h>  // for strcmp
-#include <utility>   // for pair
 
 using std::map;
 //_______________________________________________________________________________

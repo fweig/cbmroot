@@ -2,9 +2,10 @@
 
 #include "CbmMuchPixelHit.h"
 #include "CbmStsTrack.h"
-#include <Logger.h>
+
 #include "FairRootManager.h"
 #include "FairTrackParam.h"
+#include <Logger.h>
 
 #include "TClonesArray.h"
 

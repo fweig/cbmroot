@@ -22,10 +22,10 @@
 
 
 // FAIR classes and includes
-#include <Logger.h>
 #include "FairRootManager.h"
 #include "FairRunAna.h"
 #include "FairRuntimeDb.h"
+#include <Logger.h>
 
 // ROOT Classes and includes
 #include "Riostream.h"

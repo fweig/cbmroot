@@ -1,11 +1,12 @@
 #include "CbmMcbm2018UnpackerTaskTrdR.h"
+
 #include "CbmMcbm2018UnpackerAlgoTrdR.h"
 
-#include <Logger.h>
 #include "FairRootManager.h"
 #include "FairRun.h"
 #include "FairRunOnline.h"
 #include "FairRuntimeDb.h"
+#include <Logger.h>
 
 #include <TFile.h>
 #include <THttpServer.h>

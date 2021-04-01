@@ -9,9 +9,8 @@
 
 #include "CbmFlesCanvasTools.h"
 
-#include "BoostSerializer.h"
-#include <Logger.h>
 #include "FairMQProgOptions.h"  // device->fConfig
+#include <Logger.h>
 
 #include "TCanvas.h"
 #include "TEnv.h"

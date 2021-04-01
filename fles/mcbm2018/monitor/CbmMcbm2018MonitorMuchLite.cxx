@@ -17,11 +17,11 @@
 #include "CbmMcbm2018MuchPar.h"
 
 // FairRoot
-#include <Logger.h>
 #include "FairRootManager.h"
 #include "FairRun.h"
 #include "FairRunOnline.h"
 #include "FairRuntimeDb.h"
+#include <Logger.h>
 
 // Root
 #include "TClonesArray.h"

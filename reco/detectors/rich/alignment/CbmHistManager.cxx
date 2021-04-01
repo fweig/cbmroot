@@ -6,7 +6,6 @@
  */
 
 #include "CbmHistManager.h"
-#include "utils/CbmUtils.h"
 
 #include <Logger.h>
 
@@ -22,13 +21,16 @@
 #include "TProfile.h"
 #include "TProfile2D.h"
 
-#include <algorithm>
 #include <boost/regex.hpp>
+
+#include <algorithm>
 #include <cassert>
 #include <iostream>
 #include <map>
 #include <string>
 #include <vector>
+
+#include "utils/CbmUtils.h"
 
 using std::exception;
 using std::map;

@@ -21,9 +21,9 @@
 #include "CbmDigiManager.h"
 
 /// FAIRROOT headers
-#include <Logger.h>
 #include "FairRootManager.h"
 #include "FairRunOnline.h"
+#include <Logger.h>
 
 /// FAIRSOFT headers (geant, boost, ...)
 #include "TCanvas.h"

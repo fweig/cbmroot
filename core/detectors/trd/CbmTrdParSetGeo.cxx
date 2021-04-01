@@ -12,8 +12,9 @@
 #include <TString.h>            // for operator+, TString, Form, TString::kI...
 
 #include <map>      // for map, map<>::const_iterator, operator!=
-#include <stdio.h>  // for printf
 #include <utility>  // for pair
+
+#include <stdio.h>  // for printf
 
 //________________________________________________________________________________________
 CbmTrdParSetGeo::CbmTrdParSetGeo(const char* name,

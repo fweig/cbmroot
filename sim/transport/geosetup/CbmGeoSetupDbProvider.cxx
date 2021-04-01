@@ -5,16 +5,16 @@
 
 #include "geosetup/CbmGeoSetupDbProvider.h"
 
-#include <iostream>
+#include "CbmDefs.h"
+
+#include <Logger.h>
 
 #include "TSQLResult.h"
 #include "TSQLRow.h"
 #include "TSQLiteServer.h"
-
-#include <Logger.h>
 #include "TSystem.h"
 
-#include "CbmDefs.h"
+#include <iostream>
 
 ClassImp(CbmGeoSetupDbProvider);
 

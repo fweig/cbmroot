@@ -10,9 +10,9 @@
 #include "CbmDigiManager.h"
 #include "CbmMuchBeamTimeDigi.h"
 
-#include <Logger.h>
 #include "FairRootManager.h"
 #include "FairRunOnline.h"
+#include <Logger.h>
 
 #include "TClonesArray.h"
 #include "TH1.h"

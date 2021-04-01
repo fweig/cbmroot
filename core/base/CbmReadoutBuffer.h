@@ -8,11 +8,13 @@
 #ifndef CBMREADOUTBUFFER_H
 #define CBMREADOUTBUFFER_H 1
 
-#include <Logger.h>
 #include <FairRootManager.h>
 #include <FairWriteoutBuffer.h>
+#include <Logger.h>
+
 #include <TClonesArray.h>
 #include <TObject.h>
+
 #include <cassert>
 #include <map>
 #include <vector>

@@ -2,22 +2,22 @@
 // -----                CbmPsdHitProducer source file             -----
 // -----                  Created 15/05/12  by     Alla & SELIM               -----
 // -------------------------------------------------------------------------
-#include <fstream>
-#include <iostream>
-#include <map>
+#include "CbmPsdHitProducer.h"
+
+#include "CbmDigiManager.h"
+#include "CbmPsdDigi.h"
+#include "CbmPsdHit.h"
+
+#include "FairRootManager.h"
+#include <Logger.h>
 
 #include "TClonesArray.h"
 #include "TMath.h"
 #include <TFile.h>
 
-#include "FairRootManager.h"
-
-#include "CbmDigiManager.h"
-#include "CbmPsdDigi.h"
-#include "CbmPsdHit.h"
-#include "CbmPsdHitProducer.h"
-
-#include <Logger.h>
+#include <fstream>
+#include <iostream>
+#include <map>
 
 using std::cout;
 using std::endl;

@@ -4,10 +4,10 @@
  **/
 #include "CbmStsElement.h"
 
-#include <Logger.h>  // for Logger, LOG
-
 #include "CbmStsModule.h"  // for CbmStsModule
 #include "CbmStsSetup.h"   // for CbmStsSetup
+
+#include <Logger.h>  // for Logger, LOG
 
 #include <TGeoManager.h>       // for gGeoManager
 #include <TGeoNode.h>          // for TGeoNode

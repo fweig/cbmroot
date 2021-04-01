@@ -14,11 +14,12 @@
 #include <TNamed.h>   // for TNamed
 #include <TString.h>  // for operator<<
 
+#include <iomanip>  // for operator<<, setprecision
+#include <sstream>  // for operator<<, basic_ostream, stringstream
+#include <string>   // for char_traits
+#include <utility>  // for pair
+
 #include <assert.h>  // for assert
-#include <iomanip>   // for operator<<, setprecision
-#include <sstream>   // for operator<<, basic_ostream, stringstream
-#include <string>    // for char_traits
-#include <utility>   // for pair
 
 using std::fixed;
 using std::setprecision;

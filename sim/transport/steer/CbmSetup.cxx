@@ -5,23 +5,26 @@
 
 
 #include "CbmSetup.h"
+
 #include "CbmAddress.h"
 #include "CbmFieldMap.h"
+#include "CbmFieldMapData.h"
 #include "CbmFieldMapSym2.h"
 #include "CbmFieldMapSym3.h"
-#include <Logger.h>
+
 #include "FairModule.h"
 #include "FairRunSim.h"
+#include <Logger.h>
+
 #include "TFile.h"
 #include "TGeoMatrix.h"
 #include "TGeoNode.h"
 #include "TGeoVolume.h"
 #include "TKey.h"
 #include "TSystem.h"
+
 #include <iomanip>
 #include <sstream>
-
-#include "CbmFieldMapData.h"
 
 using std::string;
 using std::stringstream;

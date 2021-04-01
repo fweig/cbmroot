@@ -6,9 +6,9 @@
 #include "CbmCosy2019HodoPar.h"
 
 #include "FairDetParIo.h"
-#include <Logger.h>
 #include "FairParIo.h"
 #include "FairParamList.h"
+#include <Logger.h>
 
 #include "TMath.h"
 #include "TString.h"

@@ -6,8 +6,8 @@
 
 #include "CbmFileUtils.h"
 
-#include <Logger.h>
 #include "FairPrimaryGenerator.h"  // for FairPrimaryGenerator
+#include <Logger.h>
 
 #include "TArchiveFile.h"    // for TArchiveFile
 #include "TChain.h"          // for TChain

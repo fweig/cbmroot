@@ -1,17 +1,16 @@
 #include "CbmEvBuildSource.h"
 
-#include "TChain.h"
-#include "TClonesArray.h"
-
-#include "FairEventHeader.h"
-#include <Logger.h>
-#include "FairRootManager.h"
-
 #include "CbmDigi.h"
-#include "CbmTimeSlice.h"
-
 #include "CbmStsAddress.h"
 #include "CbmStsDigi.h"
+#include "CbmTimeSlice.h"
+
+#include "FairEventHeader.h"
+#include "FairRootManager.h"
+#include <Logger.h>
+
+#include "TChain.h"
+#include "TClonesArray.h"
 
 #include <iostream>
 

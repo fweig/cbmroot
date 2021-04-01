@@ -1,4 +1,5 @@
 #include "CbmTrdModuleRecT.h"
+
 #include "CbmTrdCluster.h"
 #include "CbmTrdDigi.h"
 #include "CbmTrdFASP.h"
@@ -7,10 +8,9 @@
 
 #include <Logger.h>
 
-#include <TGeoPhysicalNode.h>
-
 #include <TClonesArray.h>
 #include <TF1.h>
+#include <TGeoPhysicalNode.h>
 #include <TGraphErrors.h>
 
 #include <iostream>

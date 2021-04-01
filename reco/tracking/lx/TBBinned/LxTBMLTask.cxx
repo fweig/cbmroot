@@ -5,6 +5,7 @@
  */
 
 #include "LxTBMLTask.h"
+
 #include "CbmCluster.h"
 #include "CbmMCDataManager.h"
 #include "CbmMCTrack.h"
@@ -12,10 +13,9 @@
 #include "CbmMuchGeoScheme.h"
 #include "CbmMuchPixelHit.h"
 #include "CbmMuchPoint.h"
+
 #include <Logger.h>
-#include "LxTBMatEffs.h"
-#include "Simple/LxCA.h"
-#include "Simple/LxSettings.h"
+
 #include "TClonesArray.h"
 #include "TDatabasePDG.h"
 #include "TGeoArb8.h"
@@ -25,6 +25,10 @@
 #include "TH1F.h"
 #include "TMath.h"
 #include "TRandom3.h"
+
+#include "LxTBMatEffs.h"
+#include "Simple/LxCA.h"
+#include "Simple/LxSettings.h"
 
 #ifdef __MACH__
 #include <mach/mach_time.h>

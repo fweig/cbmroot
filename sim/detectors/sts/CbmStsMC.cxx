@@ -7,6 +7,14 @@
 
 #include "CbmStsMC.h"
 
+#include "CbmGeometryUtils.h"
+#include "CbmStack.h"
+#include "CbmStsElement.h"
+#include "CbmStsPoint.h"
+#include "CbmStsSetup.h"
+
+#include <Logger.h>
+
 #include "TGeoBBox.h"
 #include "TGeoManager.h"
 #include "TGeoPhysicalNode.h"
@@ -15,14 +23,6 @@
 #include "TVector3.h"
 #include "TVirtualMC.h"
 #include <TFile.h>
-
-#include <Logger.h>
-
-#include "CbmGeometryUtils.h"
-#include "CbmStack.h"
-#include "CbmStsElement.h"
-#include "CbmStsPoint.h"
-#include "CbmStsSetup.h"
 
 using std::map;
 using std::pair;

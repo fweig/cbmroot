@@ -17,8 +17,8 @@
 
 // Includes from FairRoot
 #include "FairEventHeader.h"
-#include <Logger.h>
 #include "FairRun.h"
+#include <Logger.h>
 
 // Includes from CbmRoot
 #include "CbmMCDataArray.h"

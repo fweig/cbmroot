@@ -3,9 +3,28 @@
  ** @since Jun 2019
  **/
 
-#include <iostream>
-#include <string>
-#include <vector>
+#include "CbmRecoQa.h"
+
+#include "CbmHit.h"
+#include "CbmLink.h"
+#include "CbmMCDataArray.h"
+#include "CbmMatch.h"
+#include "CbmMuchPixelHit.h"
+#include "CbmMuchPoint.h"
+#include "CbmMvdHit.h"
+#include "CbmMvdPoint.h"
+#include "CbmStsDigi.h"
+#include "CbmStsHit.h"
+#include "CbmStsPoint.h"
+#include "CbmTofHit.h"
+#include "CbmTofPoint.h"
+#include "CbmTrdHit.h"
+#include "CbmTrdPoint.h"
+
+#include "FairDetector.h"
+#include "FairMCPoint.h"
+#include "FairTask.h"
+#include <Logger.h>
 
 #include "TClonesArray.h"
 #include "TFile.h"
@@ -17,32 +36,9 @@
 #include "TTask.h"
 #include "TVector3.h"
 
-#include "CbmMuchPixelHit.h"
-#include "CbmMuchPoint.h"
-
-#include "CbmTrdHit.h"
-#include "CbmTrdPoint.h"
-
-#include "CbmTofHit.h"
-#include "CbmTofPoint.h"
-
-#include "FairDetector.h"
-#include <Logger.h>
-#include "FairMCPoint.h"
-#include "FairTask.h"
-
-#include "CbmStsDigi.h"
-#include "CbmStsHit.h"
-#include "CbmStsPoint.h"
-
-#include "CbmMvdHit.h"
-#include "CbmMvdPoint.h"
-
-#include "CbmHit.h"
-#include "CbmLink.h"
-#include "CbmMCDataArray.h"
-#include "CbmMatch.h"
-#include "CbmRecoQa.h"
+#include <iostream>
+#include <string>
+#include <vector>
 
 CbmRecoQa* CbmRecoQa::instance = 0;
 

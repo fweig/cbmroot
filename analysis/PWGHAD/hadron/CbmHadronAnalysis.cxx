@@ -5,16 +5,6 @@
 #include <iostream>
 using namespace std;
 
-#include "TClonesArray.h"
-#include "TFile.h"
-#include "TH1.h"
-#include "TH1F.h"
-#include "TH2F.h"
-#include "TMath.h"
-#include "TROOT.h"
-#include "TRandom.h"
-#include "TString.h"
-
 #include "CbmCluster.h"
 #include "CbmDigiManager.h"
 #include "CbmEvent.h"
@@ -42,11 +32,22 @@ using namespace std;
 #include "CbmTrdHit.h"
 #include "CbmTrdPoint.h"
 #include "CbmVertex.h"
-#include <Logger.h>
+
 #include "FairMCEventHeader.h"
 #include "FairMCPoint.h"
 #include "FairRootManager.h"
 #include "FairRunAna.h"
+#include <Logger.h>
+
+#include "TClonesArray.h"
+#include "TFile.h"
+#include "TH1.h"
+#include "TH1F.h"
+#include "TH2F.h"
+#include "TMath.h"
+#include "TROOT.h"
+#include "TRandom.h"
+#include "TString.h"
 
 CbmDigiManager* fDigiMan;   // TOF Input Digis
 TClonesArray* fEventsColl;  // CBMEvents (time based)

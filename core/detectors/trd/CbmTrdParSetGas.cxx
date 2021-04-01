@@ -2,8 +2,8 @@
 
 #include "CbmTrdParModGas.h"  // for CbmTrdParModGas
 
-#include <Logger.h>     // for Logger, LOG
 #include <FairParamList.h>  // for FairParamList
+#include <Logger.h>         // for Logger, LOG
 
 #include <TArrayI.h>            // for TArrayI
 #include <TDirectory.h>         // for TDirectory (ptr only), gDirectory

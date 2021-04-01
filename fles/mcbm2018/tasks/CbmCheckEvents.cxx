@@ -15,9 +15,9 @@
 #include "CbmStsDigi.h"
 #include "CbmTofDigi.h"
 
-#include <Logger.h>
 #include "FairRootManager.h"
 #include "FairRunOnline.h"
+#include <Logger.h>
 
 #include "TClonesArray.h"
 #include "TH1.h"
@@ -26,9 +26,9 @@
 #include "TProfile.h"
 #include <TDirectory.h>
 #include <TFile.h>
+#include <typeinfo>
 
 #include <iomanip>
-#include <typeinfo>
 
 using std::fixed;
 using std::setprecision;

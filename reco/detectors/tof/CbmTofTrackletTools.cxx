@@ -5,9 +5,9 @@
  **/
 
 #include "CbmTofTrackletTools.h"
+
 #include "CbmTofHit.h"
 #include "CbmTofTracklet.h"
-#include "LKFMinuit.h"
 
 #include <Logger.h>
 
@@ -16,6 +16,8 @@
 #include "TMatrixD.h"
 #include "TMatrixFSymfwd.h"  // for TMatrixFSym
 #include "TVectorD.h"
+
+#include "LKFMinuit.h"
 
 using std::vector;
 LKFMinuit fMinuit;

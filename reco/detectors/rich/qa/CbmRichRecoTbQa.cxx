@@ -1,20 +1,12 @@
 #include "CbmRichRecoTbQa.h"
-#include "TCanvas.h"
-#include "TClonesArray.h"
-#include "TEllipse.h"
-#include "TF1.h"
-#include "TH1.h"
-#include "TH1D.h"
-#include "TMCProcess.h"
-#include "TMarker.h"
-#include "TStyle.h"
-#include <TFile.h>
 
 #include "CbmDigiManager.h"
 #include "CbmDrawHist.h"
 #include "CbmGlobalTrack.h"
+#include "CbmHistManager.h"
 #include "CbmMCDataArray.h"
 #include "CbmMCDataManager.h"
+#include "CbmMCEventList.h"
 #include "CbmMCTrack.h"
 #include "CbmMatchRecoToMC.h"
 #include "CbmRichDigi.h"
@@ -27,23 +19,30 @@
 #include "CbmStsPoint.h"
 #include "CbmTrackMatchNew.h"
 #include "CbmUtils.h"
-#include "FairMCPoint.h"
-#include "FairTrackParam.h"
-#include "elid/CbmLitGlobalElectronId.h"
 
 #include "FairEventHeader.h"
-#include <Logger.h>
+#include "FairMCPoint.h"
 #include "FairRunAna.h"
 #include "FairRunSim.h"
+#include "FairTrackParam.h"
+#include <Logger.h>
 
-#include "CbmHistManager.h"
-#include "CbmUtils.h"
+#include "TCanvas.h"
+#include "TClonesArray.h"
+#include "TEllipse.h"
+#include "TF1.h"
+#include "TH1.h"
+#include "TH1D.h"
+#include "TMCProcess.h"
+#include "TMarker.h"
+#include "TStyle.h"
+#include <TFile.h>
 
 #include <iostream>
 #include <sstream>
 #include <string>
 
-#include "CbmMCEventList.h"
+#include "elid/CbmLitGlobalElectronId.h"
 
 using namespace std;
 

@@ -15,16 +15,19 @@
 #include "CbmStsDigitize.h"
 #include "CbmTofDigitize.h"
 #include "CbmTrdDigitizer.h"
+
 #include "FairFileSource.h"
-#include <Logger.h>
 #include "FairMCEventHeader.h"
 #include "FairMonitor.h"
 #include "FairParAsciiFileIo.h"
 #include "FairParRootFileIo.h"
 #include "FairRuntimeDb.h"
+#include <Logger.h>
+
 #include "TClonesArray.h"
 #include "TGeoManager.h"
 #include "TROOT.h"
+
 #include <cassert>
 
 

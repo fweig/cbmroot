@@ -6,9 +6,6 @@
 
 #include "CbmGlobalTrackingQA.h"
 
-#include <Logger.h>
-#include <map>
-
 #include "CbmDigiManager.h"
 #include "CbmGlobalTrack.h"
 #include "CbmMCDataManager.h"
@@ -19,6 +16,10 @@
 #include "CbmStsPoint.h"
 #include "CbmStsTrack.h"
 #include "CbmTofPoint.h"
+
+#include <Logger.h>
+
+#include <map>
 
 using std::cout;
 using std::endl;

@@ -17,10 +17,10 @@
 #include <TGeoVolume.h>   // for TGeoVolume
 #include <TRandom.h>      // for TRandom, gRandom
 
+#include <string>   // for operator<, stoul
+#include <utility>  // for pair
 
 #include <stddef.h>  // for size_t
-#include <string>    // for operator<, stoul
-#include <utility>   // for pair
 
 using namespace std;
 

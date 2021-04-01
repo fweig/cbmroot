@@ -7,19 +7,19 @@
 #ifndef CBMSTSSETUP_H
 #define CBMSTSSETUP_H 1
 
-#include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
-#include <RtypesCore.h>  // for Int_t, Double_t, Bool_t, UInt_t, UChar_t
+#include "CbmStsElement.h"  // for CbmStsElement
+#include "CbmStsSensor.h"   // for CbmStsSensor
 
 #include <Logger.h>  // for LOG
+
+#include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
+#include <RtypesCore.h>  // for Int_t, Double_t, Bool_t, UInt_t, UChar_t
 
 #include <map>      // for map, __map_const_iterator, operator!=
 #include <set>      // for set
 #include <string>   // for string
 #include <utility>  // for pair
 #include <vector>   // for vector
-
-#include "CbmStsElement.h"  // for CbmStsElement
-#include "CbmStsSensor.h"   // for CbmStsSensor
 
 class CbmStsModule;
 class CbmStsParSetModule;
