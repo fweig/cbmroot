@@ -2635,402 +2635,552 @@ Bool_t CbmTofEventClusterizer::WriteHistos()
   TFile* fHist;
   fHist = new TFile(fOutHstFileName, "RECREATE");
   fHist->cd();
-  //   fhClustBuildTime->Write();
+  Double_t TBeamRefMean = 0.;  // weighted mean of all BeamRef counter channels
+  for (Int_t iFindT0 = 0; iFindT0 < 2; iFindT0++)
+    for (Int_t iDetIndx = 0; iDetIndx < fDigiBdfPar->GetNbDet(); iDetIndx++) {
+      if (NULL == fhRpcCluMul[iDetIndx]) continue;
 
-  for (Int_t iDetIndx = 0; iDetIndx < fDigiBdfPar->GetNbDet(); iDetIndx++) {
-    if (NULL == fhRpcCluMul[iDetIndx]) continue;
-    //     fhRpcCluMul[iDetIndx]->Write();
-    //     fhRpcCluRate[iDetIndx]->Write();
-    //     fhRpcCluPosition[iDetIndx]->Write();
-    //     fhRpcCluDelPos[iDetIndx]->Write();
-    //     fhRpcCluTOff[iDetIndx]->Write();
-    //     fhRpcCluDelTOff[iDetIndx]->Write();
-    //     fhRpcCluTrms[iDetIndx]->Write();
-    //     fhRpcCluTot[iDetIndx]->Write();
-    //     fhRpcCluAvWalk[iDetIndx]->Write();
-    //     fhRpcCluAvLnWalk[iDetIndx]->Write();
-    //     fhRpcDTLastHits[iDetIndx]->Write();
-    //     fhRpcDTLastHits_Tot[iDetIndx]->Write();
-    //     fhRpcDTLastHits_CluSize[iDetIndx]->Write();
+      Int_t iUniqueId = fDigiBdfPar->GetDetUId(iDetIndx);
 
-    LOG(debug) << "Write triggered Histos for Det Ind " << iDetIndx
-               << Form(", UID 0x%08x", fDigiBdfPar->GetDetUId(iDetIndx));
-    for (Int_t iSel = 0; iSel < iNSel; iSel++) {  // Save trigger selected histos
-      if (NULL == fhTRpcCluMul[iDetIndx][iSel]) continue;
-      //       fhTRpcCluMul[iDetIndx][iSel]->Write();
-      //       fhTRpcCluPosition[iDetIndx][iSel]->Write();
-      //       fhTRpcCluTOff[iDetIndx][iSel]->Write();
-      //       fhTRpcCluTot[iDetIndx][iSel]->Write();
-      //       fhTRpcCluAvWalk[iDetIndx][iSel]->Write();
-    }
+      if (iFindT0 == 0 && fiBeamRefAddr != iUniqueId) continue;
 
-    Int_t iUniqueId = fDigiBdfPar->GetDetUId(iDetIndx);
-    Int_t iSmAddr   = iUniqueId & SelMask;
-    Int_t iSmType   = CbmTofAddress::GetSmType(iUniqueId);
-    Int_t iSm       = CbmTofAddress::GetSmId(iUniqueId);
-    Int_t iRpc      = CbmTofAddress::GetRpcId(iUniqueId);
-    fCalSmAddr &= SelMask;
+      Int_t iSmAddr = iUniqueId & SelMask;
+      Int_t iSmType = CbmTofAddress::GetSmType(iUniqueId);
+      Int_t iSm     = CbmTofAddress::GetSmId(iUniqueId);
+      Int_t iRpc    = CbmTofAddress::GetRpcId(iUniqueId);
+      fCalSmAddr &= SelMask;
 
-    Int_t iNent = 0;
-    if (fCalSel > -1) {
-      if (NULL == fhTRpcCluAvWalk[iDetIndx][fCalSel]) continue;
-      iNent = (Int_t) fhTRpcCluAvWalk[iDetIndx][fCalSel]->GetEntries();
-    }
-    else {
-      if (NULL == fhRpcCluAvWalk[iDetIndx]) continue;
-      iNent = (Int_t) fhRpcCluAvWalk[iDetIndx]->GetEntries();
-    }
-    if (0 == iNent) {
-      LOG(debug) << "WriteHistos: No entries in Walk histos for "
-                 << "Smtype" << iSmType << ", Sm " << iSm << ", Rpc " << iRpc;
-      // continue;
-    }
+      Int_t iNent = 0;
+      if (fCalSel > -1) {
+        if (NULL == fhTRpcCluAvWalk[iDetIndx][fCalSel]) continue;
+        iNent = (Int_t) fhTRpcCluAvWalk[iDetIndx][fCalSel]->GetEntries();
+      }
+      else {
+        if (NULL == fhRpcCluAvWalk[iDetIndx]) continue;
+        iNent = (Int_t) fhRpcCluAvWalk[iDetIndx]->GetEntries();
+      }
+      if (0 == iNent) {
+        LOG(debug) << "WriteHistos: No entries in Walk histos for "
+                   << "Smtype" << iSmType << ", Sm " << iSm << ", Rpc " << iRpc;
+        // continue;
+      }
 
-    //     if(-1<fCalSmAddr && fcalType != iSmAddr) continue;
-    TH2* htempPos           = NULL;
-    TProfile* htempPos_pfx  = NULL;
-    TH1* htempPos_py        = NULL;
-    TProfile* htempTOff_pfx = NULL;
-    TH1* htempTOff_px       = NULL;
-    TProfile* hAvPos_pfx    = NULL;
-    TProfile* hAvTOff_pfx   = NULL;
-    TH2* htempTOff          = NULL;  // -> Comment to remove warning because set but never used
-    TH2* htempTot           = NULL;
-    TProfile* htempTot_pfx  = NULL;
-    TH1* htempTot_Mean      = NULL;
-    TH1* htempTot_Off       = NULL;
+      //     if(-1<fCalSmAddr && fcalType != iSmAddr) continue;
+      TH2* htempPos           = NULL;
+      TProfile* htempPos_pfx  = NULL;
+      TH1* htempPos_py        = NULL;
+      TProfile* htempTOff_pfx = NULL;
+      TH1* htempTOff_px       = NULL;
+      TProfile* hAvPos_pfx    = NULL;
+      TProfile* hAvTOff_pfx   = NULL;
+      TH2* htempTOff          = NULL;  // -> Comment to remove warning because set but never used
+      TH2* htempTot           = NULL;
+      TProfile* htempTot_pfx  = NULL;
+      TH1* htempTot_Mean      = NULL;
+      TH1* htempTot_Off       = NULL;
 
-    if (-1 < fCalSel) {
-      htempPos     = fhRpcCluPosition[iDetIndx];  // use untriggered distributions for position
-      htempPos_pfx = fhRpcCluPosition[iDetIndx]->ProfileX("_pfx", 1, fhRpcCluPosition[iDetIndx]->GetNbinsY());
-      //htempPos      = fhTRpcCluPosition[iDetIndx][fCalSel];
-      //htempPos_pfx  = fhTRpcCluPosition[iDetIndx][fCalSel]->ProfileX("_pfx",1,fhTRpcCluPosition[iDetIndx][fCalSel]->GetNbinsY());
-      htempTOff = fhTRpcCluTOff[iDetIndx][fCalSel];
-      if (fIdMode == 1) htempTOff = fhTRpcCluTofOff[iDetIndx][fCalSel];  //DEV! for init_calib_all
-      htempTOff_pfx = htempTOff->ProfileX("_pfx", 1, fhTRpcCluTOff[iDetIndx][fCalSel]->GetNbinsY());
-      htempTOff_px  = htempTOff->ProjectionX("_px", 1, fhTRpcCluTOff[iDetIndx][fCalSel]->GetNbinsY());
-      for (Int_t iCh = 0; iCh < htempTOff->GetNbinsX(); iCh++) {  // use peak value to prevent out of update range
-        TH1* htempTOff_py = htempTOff->ProjectionY("_py", iCh + 1, iCh + 1);
-        Double_t Ymax     = htempTOff_py->GetMaximum();
-        if (Ymax > 0.) {
-          Int_t iBmax       = htempTOff_py->GetMaximumBin();
-          Double_t dTOffmax = htempTOff_py->GetXaxis()->GetBinCenter(iBmax);
-          if (TMath::Abs(dTOffmax) > 0.3 * htempTOff_py->GetXaxis()->GetXmax()) {
-            LOG(debug) << "Use Maximum of TOff in ch " << iCh << " of histo " << htempTOff->GetName() << ": "
-                       << dTOffmax << ", " << htempTOff_py->GetXaxis()->GetXmax() << " instead of "
-                       << htempTOff_pfx->GetBinContent(iCh + 1);
-            htempTOff_pfx->SetBinContent(iCh + 1, dTOffmax);
-            htempTOff_pfx->SetBinEntries(iCh + 1, 1);
+      if (-1 < fCalSel) {
+        htempPos     = fhRpcCluPosition[iDetIndx];  // use untriggered distributions for position
+        htempPos_pfx = fhRpcCluPosition[iDetIndx]->ProfileX("_pfx", 1, fhRpcCluPosition[iDetIndx]->GetNbinsY());
+        //htempPos      = fhTRpcCluPosition[iDetIndx][fCalSel];
+        //htempPos_pfx  = fhTRpcCluPosition[iDetIndx][fCalSel]->ProfileX("_pfx",1,fhTRpcCluPosition[iDetIndx][fCalSel]->GetNbinsY());
+        htempTOff = fhTRpcCluTOff[iDetIndx][fCalSel];
+        if (fIdMode == 1) htempTOff = fhTRpcCluTofOff[iDetIndx][fCalSel];  //DEV! for init_calib_all
+        htempTOff_pfx = htempTOff->ProfileX("_pfx", 1, fhTRpcCluTOff[iDetIndx][fCalSel]->GetNbinsY());
+        htempTOff_px  = htempTOff->ProjectionX("_px", 1, fhTRpcCluTOff[iDetIndx][fCalSel]->GetNbinsY());
+        for (Int_t iCh = 0; iCh < htempTOff->GetNbinsX(); iCh++) {  // use peak value to prevent out of update range
+          TH1* htempTOff_py = htempTOff->ProjectionY("_py", iCh + 1, iCh + 1);
+          Double_t Ymax     = htempTOff_py->GetMaximum();
+          if (Ymax > 0.) {
+            Int_t iBmax       = htempTOff_py->GetMaximumBin();
+            Double_t dTOffmax = htempTOff_py->GetXaxis()->GetBinCenter(iBmax);
+            if (TMath::Abs(dTOffmax) > 0.3 * htempTOff_py->GetXaxis()->GetXmax()) {
+              LOG(debug) << "Use Maximum of TOff in ch " << iCh << " of histo " << htempTOff->GetName() << ": "
+                         << dTOffmax << ", " << htempTOff_py->GetXaxis()->GetXmax() << " instead of "
+                         << htempTOff_pfx->GetBinContent(iCh + 1);
+              htempTOff_pfx->SetBinContent(iCh + 1, dTOffmax);
+              htempTOff_pfx->SetBinEntries(iCh + 1, 1);
+            }
           }
         }
+        htempTot = fhTRpcCluTot[iDetIndx][fCalSel];
+        htempTot_pfx =
+          fhTRpcCluTot[iDetIndx][fCalSel]->ProfileX("_pfx", 1, fhTRpcCluTot[iDetIndx][fCalSel]->GetNbinsY());
+        hAvPos_pfx =
+          fhTSmCluPosition[iSmType][fCalSel]->ProfileX("_pfx", 1, fhTSmCluPosition[iSmType][fCalSel]->GetNbinsY());
+        hAvTOff_pfx =
+          fhTSmCluTOff[iSmType][fCalSel]->ProfileX("_pfx", 1, fhTSmCluTOff[iSmType][fCalSel]->GetNbinsY(), "s");
       }
-      htempTot     = fhTRpcCluTot[iDetIndx][fCalSel];
-      htempTot_pfx = fhTRpcCluTot[iDetIndx][fCalSel]->ProfileX("_pfx", 1, fhTRpcCluTot[iDetIndx][fCalSel]->GetNbinsY());
-      hAvPos_pfx =
-        fhTSmCluPosition[iSmType][fCalSel]->ProfileX("_pfx", 1, fhTSmCluPosition[iSmType][fCalSel]->GetNbinsY());
-      hAvTOff_pfx =
-        fhTSmCluTOff[iSmType][fCalSel]->ProfileX("_pfx", 1, fhTSmCluTOff[iSmType][fCalSel]->GetNbinsY(), "s");
-    }
-    else  // all triggers
-    {
-      htempPos     = fhRpcCluPosition[iDetIndx];
-      htempTot     = fhRpcCluTot[iDetIndx];
-      htempTot_pfx = fhRpcCluTot[iDetIndx]->ProfileX("_pfx", 1, fhRpcCluTot[iDetIndx]->GetNbinsY());
-      hAvPos_pfx   = fhSmCluPosition[iSmType]->ProfileX("_pfx", 1, fhSmCluPosition[iSmType]->GetNbinsY());
-      hAvTOff_pfx  = fhSmCluTOff[iSmType]->ProfileX("_pfx", 1, fhSmCluTOff[iSmType]->GetNbinsY());
-      switch (fCalSel) {
-        case -1:  // take corrections from untriggered distributions
-          htempPos_pfx = fhRpcCluPosition[iDetIndx]->ProfileX("_pfx", 1, fhRpcCluPosition[iDetIndx]->GetNbinsY());
-          //       htempTOff     = fhRpcCluTOff[iDetIndx]; // -> Comment to remove warning because set but never used
-          htempTOff_pfx = fhRpcCluTOff[iDetIndx]->ProfileX("_pfx", 1, fhRpcCluTOff[iDetIndx]->GetNbinsY(), "s");
-          htempTOff_px  = fhRpcCluTOff[iDetIndx]->ProjectionX("_px", 1, fhRpcCluTOff[iDetIndx]->GetNbinsY());
-          break;
-
-        case -2:  //take corrections from Cluster deviations
-          htempPos_pfx = fhRpcCluDelPos[iDetIndx]->ProfileX("_pfx", 1, fhRpcCluDelPos[iDetIndx]->GetNbinsY());
-          //         htempTOff     = fhRpcCluDelTOff[iDetIndx]; // -> Comment to remove warning because set but never used
-          htempTOff_pfx = fhRpcCluDelTOff[iDetIndx]->ProfileX("_pfx", 1, fhRpcCluDelTOff[iDetIndx]->GetNbinsY());
-          htempTOff_px  = fhRpcCluDelTOff[iDetIndx]->ProjectionX("_px", 1, fhRpcCluDelTOff[iDetIndx]->GetNbinsY());
-          break;
-
-        case -3:  // take corrections from deviations to matched trigger hit
-          htempPos_pfx = fhRpcCluDelMatPos[iDetIndx]->ProfileX("_pfx", 1, fhRpcCluDelMatPos[iDetIndx]->GetNbinsY());
-          //           htempTOff     = fhRpcCluDelMatTOff[iDetIndx]; // -> Comment to remove warning because set but never used
-          htempTOff_pfx = fhRpcCluDelMatTOff[iDetIndx]->ProfileX("_pfx", 1, fhRpcCluDelMatTOff[iDetIndx]->GetNbinsY());
-          htempTOff_px = fhRpcCluDelMatTOff[iDetIndx]->ProjectionX("_px", 1, fhRpcCluDelMatTOff[iDetIndx]->GetNbinsY());
-          break;
-
-        case -4:  // shift all detectors without match requirement to beam counter times
-        {
-          Int_t iCalSel = 0;
-          htempPos_pfx  = fhTRpcCluPosition[iDetIndx][iCalSel]->ProfileX(
-            "_pfx", 1, fhTRpcCluPosition[iDetIndx][iCalSel]->GetNbinsY());
-          htempTOff_pfx =
-            fhTRpcCluTOff[iDetIndx][iCalSel]->ProfileX("_pfx", 1, fhTRpcCluTofOff[iDetIndx][iCalSel]->GetNbinsY(), "s");
-          htempTOff_px =
-            fhTRpcCluTofOff[iDetIndx][iCalSel]->ProjectionX("_px", 1, fhTRpcCluTofOff[iDetIndx][iCalSel]->GetNbinsY());
-        } break;
-
-        case -5:  // shift all detectors without match requirement to beam counter times
-        {
-          Int_t iCalSel = 1;
-          htempPos_pfx  = fhTRpcCluPosition[iDetIndx][iCalSel]->ProfileX(
-            "_pfx", 1, fhTRpcCluPosition[iDetIndx][iCalSel]->GetNbinsY());
-          htempTOff_pfx =
-            fhTRpcCluTOff[iDetIndx][iCalSel]->ProfileX("_pfx", 1, fhTRpcCluTofOff[iDetIndx][iCalSel]->GetNbinsY(), "s");
-          htempTOff_px =
-            fhTRpcCluTofOff[iDetIndx][iCalSel]->ProjectionX("_px", 1, fhTRpcCluTofOff[iDetIndx][iCalSel]->GetNbinsY());
-        } break;
-      }
-    }
-
-    if (NULL == htempPos_pfx) {
-      LOG(debug) << "WriteHistos: Projections not available, continue ";
-      continue;
-    }
-
-    htempTot_Mean = htempTot_pfx->ProjectionX("_Mean");
-    htempTot_Off  = htempTot_pfx->ProjectionX("_Off");
-
-    htempPos_pfx->SetName(Form("cl_CorSmT%01d_sm%03d_rpc%03d_Pos_pfx", iSmType, iSm, iRpc));
-    htempTOff_pfx->SetName(Form("cl_CorSmT%01d_sm%03d_rpc%03d_TOff_pfx", iSmType, iSm, iRpc));
-    htempTot_pfx->SetName(Form("cl_CorSmT%01d_sm%03d_rpc%03d_Tot_pfx", iSmType, iSm, iRpc));
-    htempTot_Mean->SetName(Form("cl_CorSmT%01d_sm%03d_rpc%03d_Tot_Mean", iSmType, iSm, iRpc));
-    htempTot_Off->SetName(Form("cl_CorSmT%01d_sm%03d_rpc%03d_Tot_Off", iSmType, iSm, iRpc));
-    hAvPos_pfx->SetName(Form("cl_CorSmT%01d_Pos_pfx", iSmType));
-    hAvTOff_pfx->SetName(Form("cl_CorSmT%01d_TOff_pfx", iSmType));
-
-    switch (fCalMode % 10) {
-      case 0: {                 // Initialize
-        htempTot_Off->Reset();  // prepare TotOffset histo
-        TH1* hbins[200];
-        Int_t nbins = htempTot->GetNbinsX();
-        for (int i = 0; i < nbins; i++) {
-          hbins[i] = htempTot->ProjectionY(Form("bin%d", i + 1), i + 1, i + 1);
-          /*         Double_t Ymax=hbins[i]->GetMaximum();*/
-          Int_t iBmax   = hbins[i]->GetMaximumBin();
-          TAxis* xaxis  = hbins[i]->GetXaxis();
-          Double_t Xmax = xaxis->GetBinCenter(iBmax);
-          Double_t XOff = Xmax - fTotPreRange;
-          XOff          = (Double_t)(Int_t) XOff;
-          if (XOff < 0) XOff = 0;
-          htempTot_Off->SetBinContent(i + 1, XOff);
-          Double_t Xmean = htempTot_Mean->GetBinContent(i + 1);
-          if (Xmean < XOff) {
-            LOG(warning) << "Inconsistent  Tot numbers for "
-                         << Form("SmT%01d_sm%03d_rpc%03d bin%d: mean %f, Off %f", iSmType, iSm, iRpc, i, Xmean, XOff);
-          }
-          htempTot_Mean->SetBinContent(i + 1, (Xmean - XOff));
-          if (htempTot_Mean->GetBinContent(i + 1) != (Xmean - XOff))
-            LOG(warning) << "Tot numbers not stored properly for "
-                         << Form("SmT%01d_sm%03d_rpc%03d bin%d: mean %f, target %f", iSmType, iSm, iRpc, i,
-                                 htempTot_Mean->GetBinContent(i + 1), Xmean - XOff);
-        }
-        htempPos_pfx->Write();
-        htempTOff_pfx->Write();
-        //       htempTot_pfx->Write();
-        htempTot_Mean->Write();
-        htempTot_Off->Write();
-      } break;
-
-      case 1:  //save offsets, update walks
+      else  // all triggers
       {
-        Int_t iNbRpc = fDigiBdfPar->GetNbRpc(iSmType);
-        Int_t iNbCh  = fDigiBdfPar->GetNbChan(iSmType, iRpc);
-        LOG(debug) << "WriteHistos: restore Offsets and Gains and save Walk for "
-                   << "Smtype" << iSmType << ", Sm " << iSm << ", Rpc " << iRpc
-                   << " and calSmAddr = " << Form(" 0x%08x ", TMath::Abs(fCalSmAddr));
-        htempPos_pfx->Reset();  //reset to restore means of original histos
-        htempTOff_pfx->Reset();
-        htempTot_Mean->Reset();
-        htempTot_Off->Reset();
-        for (Int_t iCh = 0; iCh < iNbCh; iCh++) {
-          Double_t YMean =
-            fDigiBdfPar->GetSigVel(iSmType, iSm, iRpc) * 0.5
-            * (fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1] - fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0]);
-          Double_t TMean =
-            0.5 * (fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1] + fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0]);
-          htempPos_pfx->Fill(iCh, YMean);
-          if (((TProfile*) htempPos_pfx)->GetBinContent(iCh + 1) != YMean) {
-            LOG(error) << "WriteHistos: restore unsuccessful! ch " << iCh << " got " << htempPos_pfx->GetBinContent(iCh)
-                       << "," << htempPos_pfx->GetBinContent(iCh + 1) << "," << htempPos_pfx->GetBinContent(iCh + 2)
-                       << ", expected " << YMean;
-          }
-          htempTOff_pfx->Fill(iCh, TMean);
+        htempPos     = fhRpcCluPosition[iDetIndx];
+        htempTot     = fhRpcCluTot[iDetIndx];
+        htempTot_pfx = fhRpcCluTot[iDetIndx]->ProfileX("_pfx", 1, fhRpcCluTot[iDetIndx]->GetNbinsY());
+        hAvPos_pfx   = fhSmCluPosition[iSmType]->ProfileX("_pfx", 1, fhSmCluPosition[iSmType]->GetNbinsY());
+        hAvTOff_pfx  = fhSmCluTOff[iSmType]->ProfileX("_pfx", 1, fhSmCluTOff[iSmType]->GetNbinsY());
+        switch (fCalSel) {
+          case -1:  // take corrections from untriggered distributions
+            htempPos_pfx = fhRpcCluPosition[iDetIndx]->ProfileX("_pfx", 1, fhRpcCluPosition[iDetIndx]->GetNbinsY());
+            //       htempTOff     = fhRpcCluTOff[iDetIndx]; // -> Comment to remove warning because set but never used
+            htempTOff_pfx = fhRpcCluTOff[iDetIndx]->ProfileX("_pfx", 1, fhRpcCluTOff[iDetIndx]->GetNbinsY(), "s");
+            htempTOff_px  = fhRpcCluTOff[iDetIndx]->ProjectionX("_px", 1, fhRpcCluTOff[iDetIndx]->GetNbinsY());
+            break;
 
-          for (Int_t iSide = 0; iSide < 2; iSide++) {
-            htempTot_Mean->SetBinContent(
-              iCh * 2 + 1 + iSide,
-              fdTTotMean / fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][iSide]);  //nh +1 empirical(?)
-            htempTot_Off->SetBinContent(iCh * 2 + 1 + iSide, fvCPTotOff[iSmType][iSm * iNbRpc + iRpc][iCh][iSide]);
-          }
+          case -2:  //take corrections from Cluster deviations
+            htempPos_pfx = fhRpcCluDelPos[iDetIndx]->ProfileX("_pfx", 1, fhRpcCluDelPos[iDetIndx]->GetNbinsY());
+            //         htempTOff     = fhRpcCluDelTOff[iDetIndx]; // -> Comment to remove warning because set but never used
+            htempTOff_pfx = fhRpcCluDelTOff[iDetIndx]->ProfileX("_pfx", 1, fhRpcCluDelTOff[iDetIndx]->GetNbinsY());
+            htempTOff_px  = fhRpcCluDelTOff[iDetIndx]->ProjectionX("_px", 1, fhRpcCluDelTOff[iDetIndx]->GetNbinsY());
+            break;
+
+          case -3:  // take corrections from deviations to matched trigger hit
+            htempPos_pfx = fhRpcCluDelMatPos[iDetIndx]->ProfileX("_pfx", 1, fhRpcCluDelMatPos[iDetIndx]->GetNbinsY());
+            //           htempTOff     = fhRpcCluDelMatTOff[iDetIndx]; // -> Comment to remove warning because set but never used
+            htempTOff_pfx =
+              fhRpcCluDelMatTOff[iDetIndx]->ProfileX("_pfx", 1, fhRpcCluDelMatTOff[iDetIndx]->GetNbinsY());
+            htempTOff_px =
+              fhRpcCluDelMatTOff[iDetIndx]->ProjectionX("_px", 1, fhRpcCluDelMatTOff[iDetIndx]->GetNbinsY());
+            break;
+
+          case -4:  // shift all detectors without match requirement to beam counter times
+          {
+            Int_t iCalSel = 0;
+            htempPos_pfx  = fhTRpcCluPosition[iDetIndx][iCalSel]->ProfileX(
+              "_pfx", 1, fhTRpcCluPosition[iDetIndx][iCalSel]->GetNbinsY());
+            htempTOff_pfx = fhTRpcCluTOff[iDetIndx][iCalSel]->ProfileX(
+              "_pfx", 1, fhTRpcCluTofOff[iDetIndx][iCalSel]->GetNbinsY(), "s");
+            htempTOff_px = fhTRpcCluTofOff[iDetIndx][iCalSel]->ProjectionX(
+              "_px", 1, fhTRpcCluTofOff[iDetIndx][iCalSel]->GetNbinsY());
+          } break;
+
+          case -5:  // shift all detectors without match requirement to beam counter times
+          {
+            Int_t iCalSel = 1;
+            htempPos_pfx  = fhTRpcCluPosition[iDetIndx][iCalSel]->ProfileX(
+              "_pfx", 1, fhTRpcCluPosition[iDetIndx][iCalSel]->GetNbinsY());
+            htempTOff_pfx = fhTRpcCluTOff[iDetIndx][iCalSel]->ProfileX(
+              "_pfx", 1, fhTRpcCluTofOff[iDetIndx][iCalSel]->GetNbinsY(), "s");
+            htempTOff_px = fhTRpcCluTofOff[iDetIndx][iCalSel]->ProjectionX(
+              "_px", 1, fhTRpcCluTofOff[iDetIndx][iCalSel]->GetNbinsY());
+          } break;
         }
+      }
 
-        LOG(debug1) << " Offset, gain restoring done ... ";
-        htempPos_pfx->Write();
-        htempTOff_pfx->Write();
-        //        htempTot_pfx->Write();
-        htempTot_Mean->Write();
-        htempTot_Off->Write();
+      if (NULL == htempPos_pfx) {
+        LOG(debug) << "WriteHistos: Projections not available, continue ";
+        continue;
+      }
 
-        for (Int_t iSel = 0; iSel < iNSel; iSel++) {
-          // Store DelTof corrections
-          TDirectory* curdir = gDirectory;
-          gROOT->cd();  //
-          TH1D* hCorDelTof = (TH1D*) gDirectory->FindObjectAny(
-            Form("cl_CorSmT%01d_sm%03d_rpc%03d_Sel%02d_DelTof", iSmType, iSm, iRpc, iSel));
-          gDirectory->cd(curdir->GetPath());
-          if (NULL != hCorDelTof) {
-            TH1D* hCorDelTofout =
-              (TH1D*) hCorDelTof->Clone(Form("cl_CorSmT%01d_sm%03d_rpc%03d_Sel%02d_DelTof", iSmType, iSm, iRpc, iSel));
-            hCorDelTofout->Write();
+      htempTot_Mean = htempTot_pfx->ProjectionX("_Mean");
+      htempTot_Off  = htempTot_pfx->ProjectionX("_Off");
+
+      htempPos_pfx->SetName(Form("cl_CorSmT%01d_sm%03d_rpc%03d_Pos_pfx", iSmType, iSm, iRpc));
+      htempTOff_pfx->SetName(Form("cl_CorSmT%01d_sm%03d_rpc%03d_TOff_pfx", iSmType, iSm, iRpc));
+      htempTot_pfx->SetName(Form("cl_CorSmT%01d_sm%03d_rpc%03d_Tot_pfx", iSmType, iSm, iRpc));
+      htempTot_Mean->SetName(Form("cl_CorSmT%01d_sm%03d_rpc%03d_Tot_Mean", iSmType, iSm, iRpc));
+      htempTot_Off->SetName(Form("cl_CorSmT%01d_sm%03d_rpc%03d_Tot_Off", iSmType, iSm, iRpc));
+      hAvPos_pfx->SetName(Form("cl_CorSmT%01d_Pos_pfx", iSmType));
+      hAvTOff_pfx->SetName(Form("cl_CorSmT%01d_TOff_pfx", iSmType));
+
+      switch (fCalMode % 10) {
+        case 0: {                 // Initialize
+          htempTot_Off->Reset();  // prepare TotOffset histo
+          TH1* hbins[200];
+          Int_t nbins = htempTot->GetNbinsX();
+          for (int i = 0; i < nbins; i++) {
+            hbins[i] = htempTot->ProjectionY(Form("bin%d", i + 1), i + 1, i + 1);
+            /*         Double_t Ymax=hbins[i]->GetMaximum();*/
+            Int_t iBmax   = hbins[i]->GetMaximumBin();
+            TAxis* xaxis  = hbins[i]->GetXaxis();
+            Double_t Xmax = xaxis->GetBinCenter(iBmax);
+            Double_t XOff = Xmax - fTotPreRange;
+            XOff          = (Double_t)(Int_t) XOff;
+            if (XOff < 0) XOff = 0;
+            htempTot_Off->SetBinContent(i + 1, XOff);
+            Double_t Xmean = htempTot_Mean->GetBinContent(i + 1);
+            if (Xmean < XOff) {
+              LOG(warning) << "Inconsistent  Tot numbers for "
+                           << Form("SmT%01d_sm%03d_rpc%03d bin%d: mean %f, Off %f", iSmType, iSm, iRpc, i, Xmean, XOff);
+            }
+            htempTot_Mean->SetBinContent(i + 1, (Xmean - XOff));
+            if (htempTot_Mean->GetBinContent(i + 1) != (Xmean - XOff))
+              LOG(warning) << "Tot numbers not stored properly for "
+                           << Form("SmT%01d_sm%03d_rpc%03d bin%d: mean %f, target %f", iSmType, iSm, iRpc, i,
+                                   htempTot_Mean->GetBinContent(i + 1), Xmean - XOff);
           }
-          else {
-            LOG(debug) << " No CorDelTof histo "
-                       << Form("cl_CorSmT%01d_sm%03d_rpc%03d_Sel%02d_DelTof", iSmType, iSm, iRpc, iSel);
-          }
-        }
+          htempPos_pfx->Write();
+          htempTOff_pfx->Write();
+          //       htempTot_pfx->Write();
+          htempTot_Mean->Write();
+          htempTot_Off->Write();
+        } break;
 
-        if ((fCalSmAddr < 0 && TMath::Abs(fCalSmAddr) != iSmAddr)
-            || fCalSmAddr == iSmAddr)  // select detectors for determination of walk correction
+        case 1:  //save offsets, update walks
         {
-
-          LOG(debug) << "WriteHistos: restore Offsets and Gains and update Walk for "
-                     << "Smtype" << iSmType << ", Sm " << iSm << ", Rpc " << iRpc << " with "
-                     << fDigiBdfPar->GetNbChan(iSmType, iRpc) << " channels";
-          for (Int_t iCh = 0; iCh < fDigiBdfPar->GetNbChan(iSmType, iRpc); iCh++) {
-            TH2* h2tmp0;
-            TH2* h2tmp1;
-            if (!fEnableAvWalk) {
-              if (-1 < fCalSel) {
-                h2tmp0 = fhTRpcCluWalk[iDetIndx][fCalSel][iCh][0];
-                h2tmp1 = fhTRpcCluWalk[iDetIndx][fCalSel][iCh][1];
-              }
-              else {  // take correction from deviation within clusters
-                h2tmp0 = fhRpcCluWalk[iDetIndx][iCh][0];
-                h2tmp1 = fhRpcCluWalk[iDetIndx][iCh][1];
-              }
+          Int_t iNbRpc = fDigiBdfPar->GetNbRpc(iSmType);
+          Int_t iNbCh  = fDigiBdfPar->GetNbChan(iSmType, iRpc);
+          LOG(debug) << "WriteHistos: restore Offsets and Gains and save Walk for "
+                     << "Smtype" << iSmType << ", Sm " << iSm << ", Rpc " << iRpc
+                     << " and calSmAddr = " << Form(" 0x%08x ", TMath::Abs(fCalSmAddr));
+          htempPos_pfx->Reset();  //reset to restore means of original histos
+          htempTOff_pfx->Reset();
+          htempTot_Mean->Reset();
+          htempTot_Off->Reset();
+          for (Int_t iCh = 0; iCh < iNbCh; iCh++) {
+            Double_t YMean =
+              fDigiBdfPar->GetSigVel(iSmType, iSm, iRpc) * 0.5
+              * (fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1] - fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0]);
+            Double_t TMean =
+              0.5 * (fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1] + fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0]);
+            htempPos_pfx->Fill(iCh, YMean);
+            if (((TProfile*) htempPos_pfx)->GetBinContent(iCh + 1) != YMean) {
+              LOG(error) << "WriteHistos: restore unsuccessful! ch " << iCh << " got "
+                         << htempPos_pfx->GetBinContent(iCh) << "," << htempPos_pfx->GetBinContent(iCh + 1) << ","
+                         << htempPos_pfx->GetBinContent(iCh + 2) << ", expected " << YMean;
             }
-            else {  // go for averages (low statistics)
-              if (-1 < fCalSel) {
-                h2tmp0 = fhTRpcCluAvWalk[iDetIndx][fCalSel];
-                h2tmp1 = fhTRpcCluAvWalk[iDetIndx][fCalSel];
-              }
-              else {  // take correction from deviation within clusters
-                h2tmp0 = fhRpcCluAvWalk[iDetIndx];
-                h2tmp1 = fhRpcCluAvWalk[iDetIndx];
-              }
+            htempTOff_pfx->Fill(iCh, TMean);
+
+            for (Int_t iSide = 0; iSide < 2; iSide++) {
+              htempTot_Mean->SetBinContent(
+                iCh * 2 + 1 + iSide,
+                fdTTotMean / fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][iSide]);  //nh +1 empirical(?)
+              htempTot_Off->SetBinContent(iCh * 2 + 1 + iSide, fvCPTotOff[iSmType][iSm * iNbRpc + iRpc][iCh][iSide]);
             }
-            if (NULL == h2tmp0) {
-              LOG(debug) << Form("WriteHistos: Walk histo not available for "
-                                 "SmT %d, Sm %d, Rpc %d, Ch %d",
-                                 iSmType, iSm, iRpc, iCh);
-              continue;
+          }
+
+          LOG(debug1) << " Offset, gain restoring done ... ";
+          htempPos_pfx->Write();
+          htempTOff_pfx->Write();
+          //        htempTot_pfx->Write();
+          htempTot_Mean->Write();
+          htempTot_Off->Write();
+
+          for (Int_t iSel = 0; iSel < iNSel; iSel++) {
+            // Store DelTof corrections
+            TDirectory* curdir = gDirectory;
+            gROOT->cd();  //
+            TH1D* hCorDelTof = (TH1D*) gDirectory->FindObjectAny(
+              Form("cl_CorSmT%01d_sm%03d_rpc%03d_Sel%02d_DelTof", iSmType, iSm, iRpc, iSel));
+            gDirectory->cd(curdir->GetPath());
+            if (NULL != hCorDelTof) {
+              TH1D* hCorDelTofout = (TH1D*) hCorDelTof->Clone(
+                Form("cl_CorSmT%01d_sm%03d_rpc%03d_Sel%02d_DelTof", iSmType, iSm, iRpc, iSel));
+              hCorDelTofout->Write();
             }
-            Int_t iNEntries = h2tmp0->GetEntries();
-            if (iCh == 0)  // condition to print message only once
-              LOG(debug) << Form(" Update Walk correction for SmT %d, Sm %d, "
-                                 "Rpc %d, Ch %d, Sel%d: Entries %d",
-                                 iSmType, iSm, iRpc, iCh, fCalSel, iNEntries);
+            else {
+              LOG(debug) << " No CorDelTof histo "
+                         << Form("cl_CorSmT%01d_sm%03d_rpc%03d_Sel%02d_DelTof", iSmType, iSm, iRpc, iSel);
+            }
+          }
 
-            //         h2tmp0->Write();
-            //         h2tmp1->Write();
-            if (-1 < iNEntries) {  // always done
-              TProfile* htmp0  = h2tmp0->ProfileX("_pfx", 1, h2tmp0->GetNbinsY());
-              TProfile* htmp1  = h2tmp1->ProfileX("_pfx", 1, h2tmp1->GetNbinsY());
-              TH1D* h1tmp0     = h2tmp0->ProjectionX("_px", 1, h2tmp0->GetNbinsY());
-              TH1D* h1tmp1     = h2tmp1->ProjectionX("_px", 1, h2tmp1->GetNbinsY());
-              TH1D* h1ytmp0    = h2tmp0->ProjectionY("_py", 1,
-                                                  nbClWalkBinX);  // preserve means
-              TH1D* h1ytmp1    = h2tmp1->ProjectionY("_py", 1, nbClWalkBinX);
-              Double_t dWMean0 = h1ytmp0->GetMean();
-              Double_t dWMean1 = h1ytmp1->GetMean();
-              Double_t dWMean  = 0.5 * (dWMean0 + dWMean1);
-              Int_t iWalkUpd   = 2;  // Walk update mode flag
-              //if(5==iSmType || 8==iSmType || 2==iSmType) iWalkUpd=0; // keep both sides consistent for diamonds and pads
-              if (5 == iSmType || 8 == iSmType)
-                iWalkUpd = 0;  // keep both sides consistent for diamonds and pads (Cern2016)
-              for (Int_t iWx = 0; iWx < nbClWalkBinX; iWx++) {
-                switch (iWalkUpd) {
-                  case 0:
-                    if (h1tmp0->GetBinContent(iWx + 1) > WalkNHmin && h1tmp1->GetBinContent(iWx + 1) > WalkNHmin) {
-                      // preserve y - position (difference) on average
-                      Double_t dWcor =
-                        (((TProfile*) htmp0)->GetBinContent(iWx + 1) + ((TProfile*) htmp1)->GetBinContent(iWx + 1))
-                        * 0.5;
-                      fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][0][iWx] += dWcor - dWMean;
-                      fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][1][iWx] += dWcor - dWMean;
-                      LOG(debug) << Form("Walk for TSR %d%d%d%d Tot %d set to %f", iSmType, iSm, iRpc, iCh, iWx,
-                                         fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][0][iWx]);
-                    }
-                    break;
-                  case 1:
-                    if (h1tmp0->GetBinContent(iWx + 1) > WalkNHmin && h1tmp1->GetBinContent(iWx + 1) > WalkNHmin) {
-                      Double_t dWcor0 = ((TProfile*) htmp0)->GetBinContent(iWx + 1) - dWMean0;
-                      Double_t dWcor1 = ((TProfile*) htmp1)->GetBinContent(iWx + 1) - dWMean1;
-                      Double_t dWcor  = 0.5 * (dWcor0 + dWcor1);
-                      fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][0][iWx] += dWcor;  //-dWMean0;
-                      fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][1][iWx] += dWcor;  //-dWMean1;
+          if ((fCalSmAddr < 0 && TMath::Abs(fCalSmAddr) != iSmAddr)
+              || fCalSmAddr == iSmAddr)  // select detectors for determination of walk correction
+          {
 
-                      if (iCh == 0 && iSmType == 9 && iSm == 0 && h1tmp0->GetBinContent(iWx + 1) > WalkNHmin)
-                        LOG(debug) << "Update Walk Sm = " << iSm << "(" << iNbRpc << "), Rpc " << iRpc << ", Bin "
-                                   << iWx << ", " << h1tmp0->GetBinContent(iWx + 1)
-                                   << " cts: " << fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][0][iWx] << " + "
-                                   << ((TProfile*) htmp0)->GetBinContent(iWx + 1) << " - " << dWMean0 << " -> "
-                                   << dWcor - dWMean0 << ", S1: " << fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][1][iWx]
-                                   << " + " << ((TProfile*) htmp1)->GetBinContent(iWx + 1) << " - " << dWMean1 << " -> "
-                                   << dWcor - dWMean1;
-                    }
-                    break;
-                  case 2:
-                    if (h1tmp0->GetBinContent(iWx + 1) > WalkNHmin && h1tmp1->GetBinContent(iWx + 1) > WalkNHmin) {
-                      Double_t dWcor0 = ((TProfile*) htmp0)->GetBinContent(iWx + 1) - dWMean0;
-                      Double_t dWcor1 = ((TProfile*) htmp1)->GetBinContent(iWx + 1) - dWMean1;
-                      //Double_t dWcor = 0.5*(dWcor0 + dWcor1);
-                      fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][0][iWx] += dWcor0;
-                      fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][1][iWx] += dWcor1;
-                    }
-                    break;
-
-                  default:;
+            LOG(debug) << "WriteHistos: restore Offsets and Gains and update Walk for "
+                       << "Smtype" << iSmType << ", Sm " << iSm << ", Rpc " << iRpc << " with "
+                       << fDigiBdfPar->GetNbChan(iSmType, iRpc) << " channels";
+            for (Int_t iCh = 0; iCh < fDigiBdfPar->GetNbChan(iSmType, iRpc); iCh++) {
+              TH2* h2tmp0;
+              TH2* h2tmp1;
+              if (!fEnableAvWalk) {
+                if (-1 < fCalSel) {
+                  h2tmp0 = fhTRpcCluWalk[iDetIndx][fCalSel][iCh][0];
+                  h2tmp1 = fhTRpcCluWalk[iDetIndx][fCalSel][iCh][1];
+                }
+                else {  // take correction from deviation within clusters
+                  h2tmp0 = fhRpcCluWalk[iDetIndx][iCh][0];
+                  h2tmp1 = fhRpcCluWalk[iDetIndx][iCh][1];
                 }
               }
-              h1tmp0->Reset();
-              h1tmp1->Reset();
+              else {  // go for averages (low statistics)
+                if (-1 < fCalSel) {
+                  h2tmp0 = fhTRpcCluAvWalk[iDetIndx][fCalSel];
+                  h2tmp1 = fhTRpcCluAvWalk[iDetIndx][fCalSel];
+                }
+                else {  // take correction from deviation within clusters
+                  h2tmp0 = fhRpcCluAvWalk[iDetIndx];
+                  h2tmp1 = fhRpcCluAvWalk[iDetIndx];
+                }
+              }
+              if (NULL == h2tmp0) {
+                LOG(debug) << Form("WriteHistos: Walk histo not available for "
+                                   "SmT %d, Sm %d, Rpc %d, Ch %d",
+                                   iSmType, iSm, iRpc, iCh);
+                continue;
+              }
+              Int_t iNEntries = h2tmp0->GetEntries();
+              if (iCh == 0)  // condition to print message only once
+                LOG(debug) << Form(" Update Walk correction for SmT %d, Sm %d, "
+                                   "Rpc %d, Ch %d, Sel%d: Entries %d",
+                                   iSmType, iSm, iRpc, iCh, fCalSel, iNEntries);
+
+              //         h2tmp0->Write();
+              //         h2tmp1->Write();
+              if (-1 < iNEntries) {  // always done
+                TProfile* htmp0  = h2tmp0->ProfileX("_pfx", 1, h2tmp0->GetNbinsY());
+                TProfile* htmp1  = h2tmp1->ProfileX("_pfx", 1, h2tmp1->GetNbinsY());
+                TH1D* h1tmp0     = h2tmp0->ProjectionX("_px", 1, h2tmp0->GetNbinsY());
+                TH1D* h1tmp1     = h2tmp1->ProjectionX("_px", 1, h2tmp1->GetNbinsY());
+                TH1D* h1ytmp0    = h2tmp0->ProjectionY("_py", 1,
+                                                    nbClWalkBinX);  // preserve means
+                TH1D* h1ytmp1    = h2tmp1->ProjectionY("_py", 1, nbClWalkBinX);
+                Double_t dWMean0 = h1ytmp0->GetMean();
+                Double_t dWMean1 = h1ytmp1->GetMean();
+                Double_t dWMean  = 0.5 * (dWMean0 + dWMean1);
+                Int_t iWalkUpd   = 2;  // Walk update mode flag
+                //if(5==iSmType || 8==iSmType || 2==iSmType) iWalkUpd=0; // keep both sides consistent for diamonds and pads
+                if (5 == iSmType || 8 == iSmType)
+                  iWalkUpd = 0;  // keep both sides consistent for diamonds and pads (Cern2016)
+                for (Int_t iWx = 0; iWx < nbClWalkBinX; iWx++) {
+                  switch (iWalkUpd) {
+                    case 0:
+                      if (h1tmp0->GetBinContent(iWx + 1) > WalkNHmin && h1tmp1->GetBinContent(iWx + 1) > WalkNHmin) {
+                        // preserve y - position (difference) on average
+                        Double_t dWcor =
+                          (((TProfile*) htmp0)->GetBinContent(iWx + 1) + ((TProfile*) htmp1)->GetBinContent(iWx + 1))
+                          * 0.5;
+                        fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][0][iWx] += dWcor - dWMean;
+                        fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][1][iWx] += dWcor - dWMean;
+                        LOG(debug) << Form("Walk for TSR %d%d%d%d Tot %d set to %f", iSmType, iSm, iRpc, iCh, iWx,
+                                           fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][0][iWx]);
+                      }
+                      break;
+                    case 1:
+                      if (h1tmp0->GetBinContent(iWx + 1) > WalkNHmin && h1tmp1->GetBinContent(iWx + 1) > WalkNHmin) {
+                        Double_t dWcor0 = ((TProfile*) htmp0)->GetBinContent(iWx + 1) - dWMean0;
+                        Double_t dWcor1 = ((TProfile*) htmp1)->GetBinContent(iWx + 1) - dWMean1;
+                        Double_t dWcor  = 0.5 * (dWcor0 + dWcor1);
+                        fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][0][iWx] += dWcor;  //-dWMean0;
+                        fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][1][iWx] += dWcor;  //-dWMean1;
+
+                        if (iCh == 0 && iSmType == 9 && iSm == 0 && h1tmp0->GetBinContent(iWx + 1) > WalkNHmin)
+                          LOG(debug) << "Update Walk Sm = " << iSm << "(" << iNbRpc << "), Rpc " << iRpc << ", Bin "
+                                     << iWx << ", " << h1tmp0->GetBinContent(iWx + 1)
+                                     << " cts: " << fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][0][iWx] << " + "
+                                     << ((TProfile*) htmp0)->GetBinContent(iWx + 1) << " - " << dWMean0 << " -> "
+                                     << dWcor - dWMean0
+                                     << ", S1: " << fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][1][iWx] << " + "
+                                     << ((TProfile*) htmp1)->GetBinContent(iWx + 1) << " - " << dWMean1 << " -> "
+                                     << dWcor - dWMean1;
+                      }
+                      break;
+                    case 2:
+                      if (h1tmp0->GetBinContent(iWx + 1) > WalkNHmin && h1tmp1->GetBinContent(iWx + 1) > WalkNHmin) {
+                        Double_t dWcor0 = ((TProfile*) htmp0)->GetBinContent(iWx + 1) - dWMean0;
+                        Double_t dWcor1 = ((TProfile*) htmp1)->GetBinContent(iWx + 1) - dWMean1;
+                        //Double_t dWcor = 0.5*(dWcor0 + dWcor1);
+                        fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][0][iWx] += dWcor0;
+                        fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][1][iWx] += dWcor1;
+                      }
+                      break;
+
+                    default:;
+                  }
+                }
+                h1tmp0->Reset();
+                h1tmp1->Reset();
+                for (Int_t iWx = 0; iWx < nbClWalkBinX; iWx++) {
+                  h1tmp0->SetBinContent(iWx + 1, fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][0][iWx]);
+                  h1tmp1->SetBinContent(iWx + 1, fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][1][iWx]);
+                  Int_t iTry = 3;
+                  while (iTry-- > 0
+                         && h1tmp0->GetBinContent(iWx + 1) != fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][0][iWx]) {
+                    h1tmp0->SetBinContent(iWx + 1, fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][0][iWx]);
+                  }
+                  if (iTry == 0)
+                    LOG(error) << "writing not successful for " << h1tmp0->GetName() << ", attempts left: " << iTry
+                               << ", iWx " << iWx << ", got " << h1tmp0->GetBinContent(iWx + 1) << ", expected "
+                               << fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][0][iWx];
+                  iTry = 3;
+                  while (iTry-- > 0
+                         && h1tmp1->GetBinContent(iWx + 1) != fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][1][iWx]) {
+                    h1tmp1->SetBinContent(iWx + 1, fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][1][iWx]);
+                  }
+                  if (iTry == 0)
+                    LOG(error) << "writing not successful for " << h1tmp1->GetName() << ", attempts left: " << iTry
+                               << ", iWx " << iWx << ", got " << h1tmp1->GetBinContent(iWx + 1) << ", expected "
+                               << fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][1][iWx];
+                }
+
+                h1tmp0->SetName(Form("Cor_SmT%01d_sm%03d_rpc%03d_Ch%03d_S0_Walk_px", iSmType, iSm, iRpc, iCh));
+                h1tmp0->Smooth(iNWalkSmooth);
+                h1tmp0->Write();
+                h1tmp1->SetName(Form("Cor_SmT%01d_sm%03d_rpc%03d_Ch%03d_S1_Walk_px", iSmType, iSm, iRpc, iCh));
+                h1tmp1->Smooth(iNWalkSmooth);
+                h1tmp1->Write();
+              }
+            }
+          }
+          else {  // preserve whatever is there for fCalSmAddr !
+            for (Int_t iCh = 0; iCh < fDigiBdfPar->GetNbChan(iSmType, iRpc); iCh++)  // restore old values
+            {
+              // TProfile *htmp0 = fhRpcCluWalk[iDetIndx][iCh][0]->ProfileX("_pfx",1,nbClWalkBinY);  (VF) not used
+              // TProfile *htmp1 = fhRpcCluWalk[iDetIndx][iCh][1]->ProfileX("_pfx",1,nbClWalkBinY);  (VF) not used
+              TH1D* h1tmp0 = fhRpcCluWalk[iDetIndx][iCh][0]->ProjectionX("_px", 1, nbClWalkBinY);
+              TH1D* h1tmp1 = fhRpcCluWalk[iDetIndx][iCh][1]->ProjectionX("_px", 1, nbClWalkBinY);
               for (Int_t iWx = 0; iWx < nbClWalkBinX; iWx++) {
                 h1tmp0->SetBinContent(iWx + 1, fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][0][iWx]);
                 h1tmp1->SetBinContent(iWx + 1, fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][1][iWx]);
-                Int_t iTry = 3;
-                while (iTry-- > 0
-                       && h1tmp0->GetBinContent(iWx + 1) != fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][0][iWx]) {
-                  h1tmp0->SetBinContent(iWx + 1, fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][0][iWx]);
-                }
-                if (iTry == 0)
-                  LOG(error) << "writing not successful for " << h1tmp0->GetName() << ", attempts left: " << iTry
-                             << ", iWx " << iWx << ", got " << h1tmp0->GetBinContent(iWx + 1) << ", expected "
+                if (h1tmp0->GetBinContent(iWx + 1) != fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][0][iWx]) {
+                  LOG(error) << "WriteHistos: restore unsuccessful! iWx " << iWx << " got "
+                             << h1tmp0->GetBinContent(iWx + 1) << ", expected "
                              << fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][0][iWx];
-                iTry = 3;
-                while (iTry-- > 0
-                       && h1tmp1->GetBinContent(iWx + 1) != fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][1][iWx]) {
-                  h1tmp1->SetBinContent(iWx + 1, fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][1][iWx]);
                 }
-                if (iTry == 0)
-                  LOG(error) << "writing not successful for " << h1tmp1->GetName() << ", attempts left: " << iTry
-                             << ", iWx " << iWx << ", got " << h1tmp1->GetBinContent(iWx + 1) << ", expected "
-                             << fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][1][iWx];
               }
-
               h1tmp0->SetName(Form("Cor_SmT%01d_sm%03d_rpc%03d_Ch%03d_S0_Walk_px", iSmType, iSm, iRpc, iCh));
-              h1tmp0->Smooth(iNWalkSmooth);
+              //          htmp0->Write();
               h1tmp0->Write();
               h1tmp1->SetName(Form("Cor_SmT%01d_sm%03d_rpc%03d_Ch%03d_S1_Walk_px", iSmType, iSm, iRpc, iCh));
-              h1tmp1->Smooth(iNWalkSmooth);
+              //          htmp1->Write();
               h1tmp1->Write();
             }
           }
-        }
-        else {  // preserve whatever is there for fCalSmAddr !
-          for (Int_t iCh = 0; iCh < fDigiBdfPar->GetNbChan(iSmType, iRpc); iCh++)  // restore old values
+        } break;
+
+        case 2:  //update time offsets from positions and times with Sm averages, save walks and DELTOF
+        {
+          Int_t iNbRpc = fDigiBdfPar->GetNbRpc(iSmType);
+          Int_t iNbCh  = fDigiBdfPar->GetNbChan(iSmType, iRpc);
+
+          if ((fCalSmAddr < 0) || (fCalSmAddr != iSmAddr)) {  // select detectors for updating offsets
+            LOG(debug) << "WriteHistos: (case 2) update Offsets and keep Gains, "
+                          "Walk and DELTOF for "
+                       << Form(" 0x%08x ", TMath::Abs(fCalSmAddr)) << "Smtype" << iSmType << ", Sm " << iSm << ", Rpc "
+                       << iRpc;
+            Int_t iB        = iSm * iNbRpc + iRpc;
+            Double_t dVscal = 1.;
+            if (0)  //NULL != fhSmCluSvel[iSmType])
+              dVscal = fhSmCluSvel[iSmType]->GetBinContent(iSm * iNbRpc + iRpc + 1);
+            if (dVscal == 0.) dVscal = 1.;
+
+            Double_t YMean = ((TProfile*) hAvPos_pfx)->GetBinContent(iB + 1);  //nh +1 empirical(?)
+            htempPos_py    = htempPos->ProjectionY(Form("%s_py", htempPos->GetName()), 1, iNbCh);
+            if (htempPos_py->GetEntries() > fdYFitMin && fPosYMaxScal < 1.1) {
+              LOG(debug1) << Form("Determine YMean in %s by fit to %d entries", htempPos->GetName(),
+                                  (Int_t) htempPos_py->GetEntries());
+              CbmTofDetectorInfo xDetInfo(ECbmModuleId::kTof, iSmType, iSm, iRpc, 0, 0);
+              Int_t iChId  = fTofId->SetDetectorInfo(xDetInfo);
+              fChannelInfo = fDigiPar->GetCell(iChId);
+              if (NULL == fChannelInfo) {
+                LOG(warning) << Form("invalid ChannelInfo for 0x%08x", iChId);
+                continue;
+              }
+              fit_ybox(htempPos_py, fChannelInfo->GetSizey());
+              TF1* ff = htempPos_py->GetFunction("YBox");
+              if (NULL != ff) {
+                LOG(info) << "FRes YBox " << htempPos_py->GetEntries() << " entries in TSR " << iSmType << iSm << iRpc
+                          << ", chi2 " << ff->GetChisquare() / ff->GetNDF()
+                          << Form(", striplen (%5.2f), %4.2f: %7.2f +/- %5.2f, pos "
+                                  "res %5.2f +/- %5.2f at y_cen = %5.2f +/- %5.2f",
+                                  fChannelInfo->GetSizey(), dVscal, 2. * ff->GetParameter(1), 2. * ff->GetParError(1),
+                                  ff->GetParameter(2), ff->GetParError(2), ff->GetParameter(3), ff->GetParError(3));
+
+                if (TMath::Abs(fChannelInfo->GetSizey() - 2. * ff->GetParameter(1)) / fChannelInfo->GetSizey() < 0.2
+                    && TMath::Abs(ff->GetParError(1) / ff->GetParameter(1)) < 0.2)
+                //	 &&  ff->GetChisquare() < 500.)   //FIXME - constants!
+                {
+                  if (TMath::Abs(ff->GetParameter(3) - YMean) < 0.5 * fChannelInfo->GetSizey()) {
+                    YMean       = ff->GetParameter(3);
+                    Double_t dV = dVscal * fChannelInfo->GetSizey() / (2. * ff->GetParameter(1));
+                    fhSmCluSvel[iSmType]->Fill((Double_t)(iSm * iNbRpc + iRpc), dV);
+                  }
+                }
+              }
+            }
+
+            TH1* hAvTOff_py   = fhSmCluTOff[iSmType]->ProjectionY("_py", iB + 1, iB + 1);
+            Double_t Ymax     = hAvTOff_py->GetMaximum();
+            Double_t dTOffmax = 0.;
+            if (Ymax > 0.) {
+              Int_t iBmax = hAvTOff_py->GetMaximumBin();
+              dTOffmax    = hAvTOff_py->GetXaxis()->GetBinCenter(iBmax);
+            }
+            Double_t TMean = ((TProfile*) hAvTOff_pfx)->GetBinContent(iB + 1);
+            if (TMath::Abs(dTOffmax - TMean) > 2. * TMean) {
+              TMean = dTOffmax;
+              LOG(debug) << "Use peak position for TOff of TSR " << iSmType << iSm << iRpc << ", B= " << iB << ": "
+                         << TMean;
+            }
+            Double_t TWidth = ((TProfile*) hAvTOff_pfx)->GetBinError(iB + 1);
+            Double_t dTYOff = YMean / fDigiBdfPar->GetSigVel(iSmType, iSm, iRpc);
+
+            if (fiBeamRefAddr == iUniqueId) TMean = 0.;  // don't shift reference counter
+            LOG(debug) << Form("<ICor> Correct TSR %d%d%d by TMean=%8.2f, "
+                               "TYOff=%8.2f, TWidth=%8.2f, ",
+                               iSmType, iSm, iRpc, TMean, dTYOff, TWidth);
+
+            for (Int_t iCh = 0; iCh < iNbCh; iCh++)  // update Offset and Gain
+            {
+              fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0] += -dTYOff + TMean;
+              fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1] += +dTYOff + TMean;
+
+              LOG(debug) << "FillCalHist:"
+                         << " SmT " << iSmType << " Sm " << iSm << " Rpc " << iRpc << " Ch " << iCh << ": YMean "
+                         << YMean << ", TMean " << TMean << " -> "
+                         << Form(" %f, %f, %f, %f ", fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0],
+                                 fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1],
+                                 fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][0],
+                                 fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][1]);
+            }  // for( Int_t iCh = 0; iCh < iNbCh; iCh++ )
+          }
+          htempPos_pfx->Reset();  //reset to store new values
+          htempTOff_pfx->Reset();
+          htempTot_Mean->Reset();
+          htempTot_Off->Reset();
+          for (Int_t iCh = 0; iCh < iNbCh; iCh++)  // store new values
+          {
+            Double_t YMean =
+              fDigiBdfPar->GetSigVel(iSmType, iSm, iRpc) * 0.5
+              * (fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1] - fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0]);
+            Double_t TMean =
+              0.5 * (fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1] + fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0]);
+            htempPos_pfx->Fill(iCh, YMean);
+            if (((TProfile*) htempPos_pfx)->GetBinContent(iCh + 1) != YMean) {
+              LOG(error) << "WriteHistos: restore unsuccessful! ch " << iCh << " got "
+                         << htempPos_pfx->GetBinContent(iCh) << "," << htempPos_pfx->GetBinContent(iCh + 1) << ","
+                         << htempPos_pfx->GetBinContent(iCh + 2) << ", expected " << YMean;
+            }
+            htempTOff_pfx->Fill(iCh, TMean);
+
+            for (Int_t iSide = 0; iSide < 2; iSide++) {
+              htempTot_Mean->SetBinContent(
+                iCh * 2 + 1 + iSide,
+                fdTTotMean / fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][iSide]);  //nh +1 empirical(?)
+              htempTot_Off->SetBinContent(iCh * 2 + 1 + iSide, fvCPTotOff[iSmType][iSm * iNbRpc + iRpc][iCh][iSide]);
+            }
+          }  // for( Int_t iCh = 0; iCh < iNbCh; iCh++ )
+
+          LOG(debug1) << " Updating done ... write to file ";
+          htempPos_pfx->Write();
+          htempTOff_pfx->Write();
+          //        htempTot_pfx->Write();
+          htempTot_Mean->Write();
+          htempTot_Off->Write();
+
+          // store old DELTOF histos
+          LOG(debug) << " Copy old DelTof histos from " << gDirectory->GetName() << " to file ";
+
+          for (Int_t iSel = 0; iSel < iNSel; iSel++) {
+            // Store DelTof corrections
+            TDirectory* curdir = gDirectory;
+            gROOT->cd();  //
+            TH1D* hCorDelTof = (TH1D*) gDirectory->FindObjectAny(
+              Form("cl_CorSmT%01d_sm%03d_rpc%03d_Sel%02d_DelTof", iSmType, iSm, iRpc, iSel));
+            gDirectory->cd(curdir->GetPath());
+            if (NULL != hCorDelTof) {
+              TH1D* hCorDelTofout = (TH1D*) hCorDelTof->Clone(
+                Form("cl_CorSmT%01d_sm%03d_rpc%03d_Sel%02d_DelTof", iSmType, iSm, iRpc, iSel));
+              hCorDelTofout->Write();
+            }
+            else {
+              LOG(debug) << " No CorDelTof histo "
+                         << Form("cl_CorSmT%01d_sm%03d_rpc%03d_Sel%02d_DelTof", iSmType, iSm, iRpc, iSel);
+            }
+          }
+
+          // store walk histos
+          for (Int_t iCh = 0; iCh < iNbCh; iCh++)  // store new values
           {
             // TProfile *htmp0 = fhRpcCluWalk[iDetIndx][iCh][0]->ProfileX("_pfx",1,nbClWalkBinY);  (VF) not used
             // TProfile *htmp1 = fhRpcCluWalk[iDetIndx][iCh][1]->ProfileX("_pfx",1,nbClWalkBinY);  (VF) not used
@@ -3052,407 +3202,561 @@ Bool_t CbmTofEventClusterizer::WriteHistos()
             //          htmp1->Write();
             h1tmp1->Write();
           }
-        }
-      } break;
+        } break;
 
-      case 2:  //update time offsets from positions and times with Sm averages, save walks and DELTOF
-      {
-        Int_t iNbRpc = fDigiBdfPar->GetNbRpc(iSmType);
-        Int_t iNbCh  = fDigiBdfPar->GetNbChan(iSmType, iRpc);
-
-        if ((fCalSmAddr < 0) || (fCalSmAddr != iSmAddr)) {  // select detectors for updating offsets
-          LOG(debug) << "WriteHistos: (case 2) update Offsets and keep Gains, "
-                        "Walk and DELTOF for "
-                     << Form(" 0x%08x ", TMath::Abs(fCalSmAddr)) << "Smtype" << iSmType << ", Sm " << iSm << ", Rpc "
-                     << iRpc;
-          Int_t iB        = iSm * iNbRpc + iRpc;
-          Double_t dVscal = 1.;
-          if (0)  //NULL != fhSmCluSvel[iSmType])
-            dVscal = fhSmCluSvel[iSmType]->GetBinContent(iSm * iNbRpc + iRpc + 1);
-          if (dVscal == 0.) dVscal = 1.;
-
-          Double_t YMean = ((TProfile*) hAvPos_pfx)->GetBinContent(iB + 1);  //nh +1 empirical(?)
-          htempPos_py    = htempPos->ProjectionY(Form("%s_py", htempPos->GetName()), 1, iNbCh);
-          if (htempPos_py->GetEntries() > fdYFitMin && fPosYMaxScal < 1.1) {
-            LOG(debug1) << Form("Determine YMean in %s by fit to %d entries", htempPos->GetName(),
-                                (Int_t) htempPos_py->GetEntries());
-            CbmTofDetectorInfo xDetInfo(ECbmModuleId::kTof, iSmType, iSm, iRpc, 0, 0);
-            Int_t iChId  = fTofId->SetDetectorInfo(xDetInfo);
-            fChannelInfo = fDigiPar->GetCell(iChId);
-            if (NULL == fChannelInfo) {
-              LOG(warning) << Form("invalid ChannelInfo for 0x%08x", iChId);
-              continue;
-            }
-            fit_ybox(htempPos_py, fChannelInfo->GetSizey());
-            TF1* ff = htempPos_py->GetFunction("YBox");
-            if (NULL != ff) {
-              LOG(info) << "FRes YBox " << htempPos_py->GetEntries() << " entries in TSR " << iSmType << iSm << iRpc
-                        << ", chi2 " << ff->GetChisquare() / ff->GetNDF()
-                        << Form(", striplen (%5.2f), %4.2f: %7.2f +/- %5.2f, pos "
-                                "res %5.2f +/- %5.2f at y_cen = %5.2f +/- %5.2f",
-                                fChannelInfo->GetSizey(), dVscal, 2. * ff->GetParameter(1), 2. * ff->GetParError(1),
-                                ff->GetParameter(2), ff->GetParError(2), ff->GetParameter(3), ff->GetParError(3));
-
-              if (TMath::Abs(fChannelInfo->GetSizey() - 2. * ff->GetParameter(1)) / fChannelInfo->GetSizey() < 0.2
-                  && TMath::Abs(ff->GetParError(1) / ff->GetParameter(1)) < 0.2)
-              //	 &&  ff->GetChisquare() < 500.)   //FIXME - constants!
-              {
-                if (TMath::Abs(ff->GetParameter(3) - YMean) < 0.5 * fChannelInfo->GetSizey()) {
-                  YMean       = ff->GetParameter(3);
-                  Double_t dV = dVscal * fChannelInfo->GetSizey() / (2. * ff->GetParameter(1));
-                  fhSmCluSvel[iSmType]->Fill((Double_t)(iSm * iNbRpc + iRpc), dV);
-                }
-              }
-            }
-          }
-
-          TH1* hAvTOff_py   = fhSmCluTOff[iSmType]->ProjectionY("_py", iB + 1, iB + 1);
-          Double_t Ymax     = hAvTOff_py->GetMaximum();
-          Double_t dTOffmax = 0.;
-          if (Ymax > 0.) {
-            Int_t iBmax = hAvTOff_py->GetMaximumBin();
-            dTOffmax    = hAvTOff_py->GetXaxis()->GetBinCenter(iBmax);
-          }
-          Double_t TMean = ((TProfile*) hAvTOff_pfx)->GetBinContent(iB + 1);
-          if (TMath::Abs(dTOffmax - TMean) > 2. * TMean) {
-            TMean = dTOffmax;
-            LOG(debug) << "Use peak position for TOff of TSR " << iSmType << iSm << iRpc << ", B= " << iB << ": "
-                       << TMean;
-          }
-          Double_t TWidth = ((TProfile*) hAvTOff_pfx)->GetBinError(iB + 1);
-          Double_t dTYOff = YMean / fDigiBdfPar->GetSigVel(iSmType, iSm, iRpc);
-
-          if (fiBeamRefAddr == iUniqueId) TMean = 0.;  // don't shift reference counter
-          LOG(debug) << Form("<ICor> Correct TSR %d%d%d by TMean=%8.2f, "
-                             "TYOff=%8.2f, TWidth=%8.2f, ",
-                             iSmType, iSm, iRpc, TMean, dTYOff, TWidth);
-
-          for (Int_t iCh = 0; iCh < iNbCh; iCh++)  // update Offset and Gain
-          {
-            fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0] += -dTYOff + TMean;
-            fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1] += +dTYOff + TMean;
-
-            LOG(debug) << "FillCalHist:"
-                       << " SmT " << iSmType << " Sm " << iSm << " Rpc " << iRpc << " Ch " << iCh << ": YMean " << YMean
-                       << ", TMean " << TMean << " -> "
-                       << Form(" %f, %f, %f, %f ", fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0],
-                               fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1],
-                               fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][0],
-                               fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][1]);
-          }  // for( Int_t iCh = 0; iCh < iNbCh; iCh++ )
-        }
-        htempPos_pfx->Reset();  //reset to store new values
-        htempTOff_pfx->Reset();
-        htempTot_Mean->Reset();
-        htempTot_Off->Reset();
-        for (Int_t iCh = 0; iCh < iNbCh; iCh++)  // store new values
+        case 3:  //update offsets, gains, save walks and DELTOF
         {
-          Double_t YMean =
-            fDigiBdfPar->GetSigVel(iSmType, iSm, iRpc) * 0.5
-            * (fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1] - fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0]);
-          Double_t TMean =
-            0.5 * (fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1] + fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0]);
-          htempPos_pfx->Fill(iCh, YMean);
-          if (((TProfile*) htempPos_pfx)->GetBinContent(iCh + 1) != YMean) {
-            LOG(error) << "WriteHistos: restore unsuccessful! ch " << iCh << " got " << htempPos_pfx->GetBinContent(iCh)
-                       << "," << htempPos_pfx->GetBinContent(iCh + 1) << "," << htempPos_pfx->GetBinContent(iCh + 2)
-                       << ", expected " << YMean;
-          }
-          htempTOff_pfx->Fill(iCh, TMean);
-
-          for (Int_t iSide = 0; iSide < 2; iSide++) {
-            htempTot_Mean->SetBinContent(
-              iCh * 2 + 1 + iSide,
-              fdTTotMean / fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][iSide]);  //nh +1 empirical(?)
-            htempTot_Off->SetBinContent(iCh * 2 + 1 + iSide, fvCPTotOff[iSmType][iSm * iNbRpc + iRpc][iCh][iSide]);
-          }
-        }  // for( Int_t iCh = 0; iCh < iNbCh; iCh++ )
-
-        LOG(debug1) << " Updating done ... write to file ";
-        htempPos_pfx->Write();
-        htempTOff_pfx->Write();
-        //        htempTot_pfx->Write();
-        htempTot_Mean->Write();
-        htempTot_Off->Write();
-
-        // store old DELTOF histos
-        LOG(debug) << " Copy old DelTof histos from " << gDirectory->GetName() << " to file ";
-
-        for (Int_t iSel = 0; iSel < iNSel; iSel++) {
-          // Store DelTof corrections
-          TDirectory* curdir = gDirectory;
-          gROOT->cd();  //
-          TH1D* hCorDelTof = (TH1D*) gDirectory->FindObjectAny(
-            Form("cl_CorSmT%01d_sm%03d_rpc%03d_Sel%02d_DelTof", iSmType, iSm, iRpc, iSel));
-          gDirectory->cd(curdir->GetPath());
-          if (NULL != hCorDelTof) {
-            TH1D* hCorDelTofout =
-              (TH1D*) hCorDelTof->Clone(Form("cl_CorSmT%01d_sm%03d_rpc%03d_Sel%02d_DelTof", iSmType, iSm, iRpc, iSel));
-            hCorDelTofout->Write();
-          }
-          else {
-            LOG(debug) << " No CorDelTof histo "
-                       << Form("cl_CorSmT%01d_sm%03d_rpc%03d_Sel%02d_DelTof", iSmType, iSm, iRpc, iSel);
-          }
-        }
-
-        // store walk histos
-        for (Int_t iCh = 0; iCh < iNbCh; iCh++)  // store new values
-        {
-          // TProfile *htmp0 = fhRpcCluWalk[iDetIndx][iCh][0]->ProfileX("_pfx",1,nbClWalkBinY);  (VF) not used
-          // TProfile *htmp1 = fhRpcCluWalk[iDetIndx][iCh][1]->ProfileX("_pfx",1,nbClWalkBinY);  (VF) not used
-          TH1D* h1tmp0 = fhRpcCluWalk[iDetIndx][iCh][0]->ProjectionX("_px", 1, nbClWalkBinY);
-          TH1D* h1tmp1 = fhRpcCluWalk[iDetIndx][iCh][1]->ProjectionX("_px", 1, nbClWalkBinY);
-          for (Int_t iWx = 0; iWx < nbClWalkBinX; iWx++) {
-            h1tmp0->SetBinContent(iWx + 1, fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][0][iWx]);
-            h1tmp1->SetBinContent(iWx + 1, fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][1][iWx]);
-            if (h1tmp0->GetBinContent(iWx + 1) != fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][0][iWx]) {
-              LOG(error) << "WriteHistos: restore unsuccessful! iWx " << iWx << " got "
-                         << h1tmp0->GetBinContent(iWx + 1) << ", expected "
-                         << fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][0][iWx];
-            }
-          }
-          h1tmp0->SetName(Form("Cor_SmT%01d_sm%03d_rpc%03d_Ch%03d_S0_Walk_px", iSmType, iSm, iRpc, iCh));
-          //          htmp0->Write();
-          h1tmp0->Write();
-          h1tmp1->SetName(Form("Cor_SmT%01d_sm%03d_rpc%03d_Ch%03d_S1_Walk_px", iSmType, iSm, iRpc, iCh));
-          //          htmp1->Write();
-          h1tmp1->Write();
-        }
-      } break;
-
-      case 3:  //update offsets, gains, save walks and DELTOF
-      {
-        Int_t iNbRpc = fDigiBdfPar->GetNbRpc(iSmType);
-        Int_t iNbCh  = fDigiBdfPar->GetNbChan(iSmType, iRpc);
-        if ((fCalSmAddr < 0) || (fCalSmAddr != iSmAddr)) {  // select detectors for updating offsets
-          LOG(info) << "WriteHistos (calMode==3): update Offsets and Gains, "
-                       "keep Walk and DelTof for "
-                    << Form("Addr 0x%08x ", TMath::Abs(fCalSmAddr)) << "Smtype" << iSmType << ", Sm " << iSm << ", Rpc "
-                    << iRpc << " with " << iNbCh << " channels "
-                    << " using selector " << fCalSel;
-          /*
+          Int_t iNbRpc = fDigiBdfPar->GetNbRpc(iSmType);
+          Int_t iNbCh  = fDigiBdfPar->GetNbChan(iSmType, iRpc);
+          if ((fCalSmAddr < 0) || (fCalSmAddr != iSmAddr)) {  // select detectors for updating offsets
+            LOG(info) << "WriteHistos (calMode==3): update Offsets and Gains, "
+                         "keep Walk and DelTof for "
+                      << Form("Addr 0x%08x ", TMath::Abs(fCalSmAddr)) << "Smtype" << iSmType << ", Sm " << iSm
+                      << ", Rpc " << iRpc << " with " << iNbCh << " channels "
+                      << " using selector " << fCalSel;
+            /*
 				 Double_t dTRefMean=0.;
 				 if (5 == iSmType && fTRefMode%10 == iSm){   // reference counter
 				 dTRefMean=htempTOff->GetMean(2);
 				 }
 				 */
-          Double_t dVscal = 1.;
-          Double_t dVW    = 1.;
-          if (0)  // NULL != fhSmCluSvel[iSmType])
-          {
-            dVscal = fhSmCluSvel[iSmType]->GetBinContent(iSm * iNbRpc + iRpc + 1);
-            if (dVscal == 0.) dVscal = 1.;
-            dVW = fhSmCluSvel[iSmType]->GetBinEffectiveEntries(iSm * iNbRpc + iRpc + 1);
-            dVW *= 50.;  //(Double_t)iNbCh;
-            if (dVW < 0.1) dVW = 0.1;
-          }
-
-          // determine average values
-          htempPos_py        = htempPos->ProjectionY(Form("%s_py", htempPos->GetName()), 1, iNbCh);
-          Double_t dYMeanAv  = 0.;
-          Double_t dYMeanFit = 0.;
-          Double_t dYLenFit  = 0.;
-          if (htempPos_py->GetEntries() > fdYFitMin && fPosYMaxScal < 1.1) {
-            dYMeanAv = htempPos_py->GetMean();
-            LOG(debug1) << Form("Determine YMeanAv in %s by fit to %d entries", htempPos->GetName(),
-                                (Int_t) htempPos_py->GetEntries());
-            CbmTofDetectorInfo xDetInfo(ECbmModuleId::kTof, iSmType, iSm, iRpc, 0, 0);
-            Int_t iChId  = fTofId->SetDetectorInfo(xDetInfo);
-            fChannelInfo = fDigiPar->GetCell(iChId);
-            if (NULL == fChannelInfo) {
-              LOG(warning) << Form("invalid ChannelInfo for 0x%08x", iChId);
-              continue;
+            Double_t dVscal = 1.;
+            Double_t dVW    = 1.;
+            if (0)  // NULL != fhSmCluSvel[iSmType])
+            {
+              dVscal = fhSmCluSvel[iSmType]->GetBinContent(iSm * iNbRpc + iRpc + 1);
+              if (dVscal == 0.) dVscal = 1.;
+              dVW = fhSmCluSvel[iSmType]->GetBinEffectiveEntries(iSm * iNbRpc + iRpc + 1);
+              dVW *= 50.;  //(Double_t)iNbCh;
+              if (dVW < 0.1) dVW = 0.1;
             }
-            fit_ybox(htempPos_py, fChannelInfo->GetSizey());
-            TF1* ff = htempPos_py->GetFunction("YBox");
-            if (NULL != ff) {
-              if (TMath::Abs(fChannelInfo->GetSizey() - 2. * ff->GetParameter(1)) / fChannelInfo->GetSizey() < 0.2
-                  && TMath::Abs(ff->GetParError(1) / ff->GetParameter(1)) < 0.2) {
-                Double_t dV = dVscal * fChannelInfo->GetSizey() / (2. * ff->GetParameter(1));
-                LOG(info) << "FAvRes YBox " << htempPos_py->GetEntries() << " entries in TSR " << iSmType << iSm << iRpc
-                          << ", stat: " << gMinuit->fCstatu
-                          << Form(", chi2 %6.2f, striplen (%5.2f): "
-                                  "%7.2f+/-%5.2f, pos res "
-                                  "%5.2f+/-%5.2f at y_cen = %5.2f+/-%5.2f",
-                                  ff->GetChisquare() / ff->GetNDF(), fChannelInfo->GetSizey(), 2. * ff->GetParameter(1),
-                                  2. * ff->GetParError(1), ff->GetParameter(2), ff->GetParError(2), ff->GetParameter(3),
-                                  ff->GetParError(3));
-                if (TMath::Abs(ff->GetParameter(3) - dYMeanAv) < 0.5 * fChannelInfo->GetSizey()) {
-                  dYMeanFit = ff->GetParameter(3);
-                  dYLenFit  = 2. * ff->GetParameter(1);
-                  fhSmCluSvel[iSmType]->Fill((Double_t)(iSm * iNbRpc + iRpc), dV, dVW);
-                  for (Int_t iPar = 0; iPar < 4; iPar++)
-                    fhSmCluFpar[iSmType][iPar]->Fill((Double_t)(iSm * iNbRpc + iRpc), ff->GetParameter(2 + iPar));
+
+            // determine average values
+            htempPos_py        = htempPos->ProjectionY(Form("%s_py", htempPos->GetName()), 1, iNbCh);
+            Double_t dYMeanAv  = 0.;
+            Double_t dYMeanFit = 0.;
+            Double_t dYLenFit  = 0.;
+            if (htempPos_py->GetEntries() > fdYFitMin && fPosYMaxScal < 1.1) {
+              dYMeanAv = htempPos_py->GetMean();
+              LOG(debug1) << Form("Determine YMeanAv in %s by fit to %d entries", htempPos->GetName(),
+                                  (Int_t) htempPos_py->GetEntries());
+              CbmTofDetectorInfo xDetInfo(ECbmModuleId::kTof, iSmType, iSm, iRpc, 0, 0);
+              Int_t iChId  = fTofId->SetDetectorInfo(xDetInfo);
+              fChannelInfo = fDigiPar->GetCell(iChId);
+              if (NULL == fChannelInfo) {
+                LOG(warning) << Form("invalid ChannelInfo for 0x%08x", iChId);
+                continue;
+              }
+              fit_ybox(htempPos_py, fChannelInfo->GetSizey());
+              TF1* ff = htempPos_py->GetFunction("YBox");
+              if (NULL != ff) {
+                if (TMath::Abs(fChannelInfo->GetSizey() - 2. * ff->GetParameter(1)) / fChannelInfo->GetSizey() < 0.2
+                    && TMath::Abs(ff->GetParError(1) / ff->GetParameter(1)) < 0.2) {
+                  Double_t dV = dVscal * fChannelInfo->GetSizey() / (2. * ff->GetParameter(1));
+                  LOG(info) << "FAvRes YBox " << htempPos_py->GetEntries() << " entries in TSR " << iSmType << iSm
+                            << iRpc << ", stat: " << gMinuit->fCstatu
+                            << Form(", chi2 %6.2f, striplen (%5.2f): "
+                                    "%7.2f+/-%5.2f, pos res "
+                                    "%5.2f+/-%5.2f at y_cen = %5.2f+/-%5.2f",
+                                    ff->GetChisquare() / ff->GetNDF(), fChannelInfo->GetSizey(),
+                                    2. * ff->GetParameter(1), 2. * ff->GetParError(1), ff->GetParameter(2),
+                                    ff->GetParError(2), ff->GetParameter(3), ff->GetParError(3));
+                  if (TMath::Abs(ff->GetParameter(3) - dYMeanAv) < 0.5 * fChannelInfo->GetSizey()) {
+                    dYMeanFit = ff->GetParameter(3);
+                    dYLenFit  = 2. * ff->GetParameter(1);
+                    fhSmCluSvel[iSmType]->Fill((Double_t)(iSm * iNbRpc + iRpc), dV, dVW);
+                    for (Int_t iPar = 0; iPar < 4; iPar++)
+                      fhSmCluFpar[iSmType][iPar]->Fill((Double_t)(iSm * iNbRpc + iRpc), ff->GetParameter(2 + iPar));
+                  }
+                }
+                else {
+                  LOG(info) << "FAvBad YBox " << htempPos_py->GetEntries() << " entries in " << iSmType << iSm << iRpc
+                            << ", chi2 " << ff->GetChisquare()
+                            << Form(", striplen (%5.2f), %4.2f: %7.2f +/- %5.2f, pos res "
+                                    "%5.2f +/- %5.2f at y_cen = %5.2f +/- %5.2f",
+                                    fChannelInfo->GetSizey(), dVscal, 2. * ff->GetParameter(1), 2. * ff->GetParError(1),
+                                    ff->GetParameter(2), ff->GetParError(2), ff->GetParameter(3), ff->GetParError(3));
                 }
               }
               else {
-                LOG(info) << "FAvBad YBox " << htempPos_py->GetEntries() << " entries in " << iSmType << iSm << iRpc
-                          << ", chi2 " << ff->GetChisquare()
-                          << Form(", striplen (%5.2f), %4.2f: %7.2f +/- %5.2f, pos res "
-                                  "%5.2f +/- %5.2f at y_cen = %5.2f +/- %5.2f",
-                                  fChannelInfo->GetSizey(), dVscal, 2. * ff->GetParameter(1), 2. * ff->GetParError(1),
-                                  ff->GetParameter(2), ff->GetParError(2), ff->GetParameter(3), ff->GetParError(3));
+                LOG(info) << "FAvFailed for TSR " << iSmType << iSm << iRpc;
               }
             }
-            else {
-              LOG(info) << "FAvFailed for TSR " << iSmType << iSm << iRpc;
-            }
-          }
-          Double_t dYShift = dYMeanFit - dYMeanAv;
-          Double_t TWMean  = 0.;  // weighted mean of all BeamRef counter channels
-          LOG(info) << Form("CalibY for TSR %d%d%d: DY %5.2f, Fit %5.2f, Av %5.2f ", iSmType, iSm, iRpc, dYShift,
-                            dYMeanFit, dYMeanAv);
-          for (Int_t iCh = 0; iCh < iNbCh; iCh++)  // update Offset and Gain
-          {
-            Double_t YMean = ((TProfile*) htempPos_pfx)->GetBinContent(iCh + 1);  //set default
-            YMean += dYShift;
+            Double_t dYShift = dYMeanFit - dYMeanAv;
+            LOG(info) << Form("CalibY for TSR %d%d%d: DY %5.2f, Fit %5.2f, Av %5.2f ", iSmType, iSm, iRpc, dYShift,
+                              dYMeanFit, dYMeanAv);
+            for (Int_t iCh = 0; iCh < iNbCh; iCh++)  // update Offset and Gain
+            {
+              Double_t YMean = ((TProfile*) htempPos_pfx)->GetBinContent(iCh + 1);  //set default
+              YMean += dYShift;
 
-            if (fPosYMaxScal < 1.1) {  //disable by adding "-" sign
-              htempPos_py = htempPos->ProjectionY(Form("%s_py%02d", htempPos->GetName(), iCh), iCh + 1, iCh + 1);
-              if (htempPos_py->GetEntries() > fdYFitMin) {
-                LOG(debug1) << Form("Determine YMean in %s of channel %d by "
-                                    "length fit with %6.3f to %d entries",
-                                    htempPos->GetName(), iCh, dYLenFit, (Int_t) htempPos_py->GetEntries());
-                CbmTofDetectorInfo xDetInfo(ECbmModuleId::kTof, iSmType, iSm, iRpc, 0, iCh);
-                Int_t iChId  = fTofId->SetDetectorInfo(xDetInfo);
-                fChannelInfo = fDigiPar->GetCell(iChId);
-                if (NULL == fChannelInfo) {
-                  LOG(warning) << Form("invalid ChannelInfo for 0x%08x", iChId);
-                  continue;
-                }
-                Double_t fp[4] = {1., 3 * 0.};  // initialize fit parameter
-                if (0)
-                  for (Int_t iPar = 2; iPar < 4; iPar++)
-                    if (NULL != fhSmCluFpar[iSmType][iPar])
-                      fp[iPar] = fhSmCluFpar[iSmType][iPar]->GetBinContent(iSm * iNbRpc + iRpc + 1);
-                //LOG(info) << Form("Call yFit with %6.3f, %6.3f, %6.3f, %6.3f",fp[0],fp[1],fp[2],fp[3])
-                //           ;
-                Double_t* fpp = &fp[0];
-                fit_ybox(htempPos_py, dYLenFit, fpp);
-                TF1* ff = htempPos_py->GetFunction("YBox");
-                if (NULL != ff) {
-                  LOG(debug1) << Form("FitPar1 %6.3f Err %6.3f, Par3 %6.3f Err %6.3f ", ff->GetParameter(1),
-                                      ff->GetParError(1), ff->GetParameter(3), ff->GetParError(3));
-                  if (TMath::Abs(fChannelInfo->GetSizey() - 2. * ff->GetParameter(1)) / fChannelInfo->GetSizey() < 0.1
-                      && TMath::Abs(ff->GetParError(1) / ff->GetParameter(1)) < 0.05)
-                  //&&  ff->GetChisquare() < 200.)   //FIXME - constants!
-                  {
-                    if (TMath::Abs(ff->GetParameter(3) - dYMeanFit) < 0.5 * fChannelInfo->GetSizey()) {
-                      YMean       = ff->GetParameter(3);
-                      Double_t dV = dVscal * fChannelInfo->GetSizey() / (2. * ff->GetParameter(1));
-                      fhSmCluSvel[iSmType]->Fill((Double_t)(iSm * iNbRpc + iRpc), dV, dVW);
-                      LOG(info) << "FRes YBox " << htempPos_py->GetEntries() << " entries in TSRC " << iSmType << iSm
-                                << iRpc << iCh << ", chi2 " << ff->GetChisquare()
-                                << Form(", striplen (%5.2f), %4.2f -> %4.2f,  "
-                                        "%4.1f: %7.2f+/-%5.2f, pos res "
-                                        "%5.2f+/-%5.2f at y_cen = %5.2f+/-%5.2f",
-                                        fChannelInfo->GetSizey(), dVscal, dV, dVW, 2. * ff->GetParameter(1),
-                                        2. * ff->GetParError(1), ff->GetParameter(2), ff->GetParError(2),
-                                        ff->GetParameter(3), ff->GetParError(3));
-                      for (Int_t iPar = 0; iPar < 4; iPar++)
-                        fhSmCluFpar[iSmType][iPar]->Fill((Double_t)(iSm * iNbRpc + iRpc), ff->GetParameter(2 + iPar));
-                    }
+              if (fPosYMaxScal < 1.1) {  //disable by adding "-" sign
+                htempPos_py = htempPos->ProjectionY(Form("%s_py%02d", htempPos->GetName(), iCh), iCh + 1, iCh + 1);
+                if (htempPos_py->GetEntries() > fdYFitMin) {
+                  LOG(debug1) << Form("Determine YMean in %s of channel %d by "
+                                      "length fit with %6.3f to %d entries",
+                                      htempPos->GetName(), iCh, dYLenFit, (Int_t) htempPos_py->GetEntries());
+                  CbmTofDetectorInfo xDetInfo(ECbmModuleId::kTof, iSmType, iSm, iRpc, 0, iCh);
+                  Int_t iChId  = fTofId->SetDetectorInfo(xDetInfo);
+                  fChannelInfo = fDigiPar->GetCell(iChId);
+                  if (NULL == fChannelInfo) {
+                    LOG(warning) << Form("invalid ChannelInfo for 0x%08x", iChId);
+                    continue;
                   }
-                  else {
-                    YMean = dYMeanFit;  // no new info available
-                    LOG(info) << "FBad YBox " << htempPos_py->GetEntries() << " entries in TSRC " << iSmType << iSm
-                              << iRpc << iCh << ", chi2 " << ff->GetChisquare()
-                              << Form(", striplen (%5.2f), %4.2f: %7.2f +/- %5.2f, pos "
-                                      "res %5.2f +/- %5.2f at y_cen = %5.2f +/- %5.2f",
-                                      fChannelInfo->GetSizey(), dVscal, 2. * ff->GetParameter(1),
-                                      2. * ff->GetParError(1), ff->GetParameter(2), ff->GetParError(2),
-                                      ff->GetParameter(3), ff->GetParError(3));
-                  }
-                }
-              }
-            }  // ybox - fit end
-
-            Double_t TMean = ((TProfile*) htempTOff_pfx)->GetBinContent(iCh + 1);
-            if (kTRUE) {  // fit gaussian around most abundant bin
-              TH1* hTy = (TH1*) htempTOff->ProjectionY(Form("%s_py%d", htempTOff->GetName(), iCh), iCh + 1, iCh + 1);
-              if (hTy->GetEntries() > WalkNHmin) {
-                Double_t dFMean    = hTy->GetBinCenter(hTy->GetMaximumBin());
-                Double_t dFLim     = 2.0;  // CAUTION, fixed numeric value
-                Double_t dBinSize  = hTy->GetBinWidth(1);
-                dFLim              = TMath::Max(dFLim, 5. * dBinSize);
-                TFitResultPtr fRes = hTy->Fit("gaus", "SQM0", "", dFMean - dFLim, dFMean + dFLim);
-                if (TMath::Abs(TMean - fRes->Parameter(1)) > 5.)
-                  LOG(warn) << "CalibF "
-                            << Form("TSRC %d%d%d%d gaus %8.2f %8.2f %8.2f for "
-                                    "TM %8.2f, YM %6.2f",
-                                    iSmType, iSm, iRpc, iCh, fRes->Parameter(0), fRes->Parameter(1), fRes->Parameter(2),
-                                    TMean, YMean);
-                TMean = fRes->Parameter(1);  //overwrite mean
-              }
-            }
-            Double_t dTYOff = YMean / fDigiBdfPar->GetSigVel(iSmType, iSm, iRpc);
-
-            if (fiBeamRefAddr == iUniqueId) {
-              // don't shift time of reference counter on average
-              if (iCh == 0) {
-                Double_t dW = 0.;
-                for (Int_t iRefCh = 0; iRefCh < iNbCh; iRefCh++) {
-                  Double_t dWCh = ((TH1*) htempTOff_px)->GetBinContent(iRefCh + 1);
-                  if (0 < dWCh) {
-                    dW += dWCh;
-                    if (dWCh > WalkNHmin) {
-                      TH1* hTy           = (TH1*) htempTOff->ProjectionY(Form("%s_py%d", htempTOff->GetName(), iRefCh),
-                                                               iRefCh + 1, iRefCh + 1);
-                      Double_t dFMean    = hTy->GetBinCenter(hTy->GetMaximumBin());
-                      Double_t dFLim     = 0.5;  // CAUTION, fixed numeric value
-                      Double_t dBinSize  = hTy->GetBinWidth(1);
-                      dFLim              = TMath::Max(dFLim, 5. * dBinSize);
-                      TFitResultPtr fRes = hTy->Fit("gaus", "SQM0", "", dFMean - dFLim, dFMean + dFLim);
-                      LOG(info) << "CalibC "
-                                << Form(" TSRC %d%d%d%d gaus %8.2f %8.2f %8.2f ", iSmType, iSm, iRpc, iRefCh,
-                                        fRes->Parameter(0), fRes->Parameter(1), fRes->Parameter(2));
-                      TWMean += fRes->Parameter(1) * dWCh;  //overwrite mean
+                  Double_t fp[4] = {1., 3 * 0.};  // initialize fit parameter
+                  if (0)
+                    for (Int_t iPar = 2; iPar < 4; iPar++)
+                      if (NULL != fhSmCluFpar[iSmType][iPar])
+                        fp[iPar] = fhSmCluFpar[iSmType][iPar]->GetBinContent(iSm * iNbRpc + iRpc + 1);
+                  //LOG(info) << Form("Call yFit with %6.3f, %6.3f, %6.3f, %6.3f",fp[0],fp[1],fp[2],fp[3])
+                  //           ;
+                  Double_t* fpp = &fp[0];
+                  fit_ybox(htempPos_py, dYLenFit, fpp);
+                  TF1* ff = htempPos_py->GetFunction("YBox");
+                  if (NULL != ff) {
+                    LOG(debug1) << Form("FitPar1 %6.3f Err %6.3f, Par3 %6.3f Err %6.3f ", ff->GetParameter(1),
+                                        ff->GetParError(1), ff->GetParameter(3), ff->GetParError(3));
+                    if (TMath::Abs(fChannelInfo->GetSizey() - 2. * ff->GetParameter(1)) / fChannelInfo->GetSizey() < 0.1
+                        && TMath::Abs(ff->GetParError(1) / ff->GetParameter(1)) < 0.05)
+                    //&&  ff->GetChisquare() < 200.)   //FIXME - constants!
+                    {
+                      if (TMath::Abs(ff->GetParameter(3) - dYMeanFit) < 0.5 * fChannelInfo->GetSizey()) {
+                        YMean       = ff->GetParameter(3);
+                        Double_t dV = dVscal * fChannelInfo->GetSizey() / (2. * ff->GetParameter(1));
+                        fhSmCluSvel[iSmType]->Fill((Double_t)(iSm * iNbRpc + iRpc), dV, dVW);
+                        LOG(info) << "FRes YBox " << htempPos_py->GetEntries() << " entries in TSRC " << iSmType << iSm
+                                  << iRpc << iCh << ", chi2 " << ff->GetChisquare()
+                                  << Form(", striplen (%5.2f), %4.2f -> %4.2f,  "
+                                          "%4.1f: %7.2f+/-%5.2f, pos res "
+                                          "%5.2f+/-%5.2f at y_cen = %5.2f+/-%5.2f",
+                                          fChannelInfo->GetSizey(), dVscal, dV, dVW, 2. * ff->GetParameter(1),
+                                          2. * ff->GetParError(1), ff->GetParameter(2), ff->GetParError(2),
+                                          ff->GetParameter(3), ff->GetParError(3));
+                        for (Int_t iPar = 0; iPar < 4; iPar++)
+                          fhSmCluFpar[iSmType][iPar]->Fill((Double_t)(iSm * iNbRpc + iRpc), ff->GetParameter(2 + iPar));
+                      }
                     }
                     else {
-                      TWMean += ((TProfile*) htempTOff_pfx)->GetBinContent(iRefCh + 1) * dWCh;
+                      YMean = dYMeanFit;  // no new info available
+                      LOG(info) << "FBad YBox " << htempPos_py->GetEntries() << " entries in TSRC " << iSmType << iSm
+                                << iRpc << iCh << ", chi2 " << ff->GetChisquare()
+                                << Form(", striplen (%5.2f), %4.2f: %7.2f +/- %5.2f, pos "
+                                        "res %5.2f +/- %5.2f at y_cen = %5.2f +/- %5.2f",
+                                        fChannelInfo->GetSizey(), dVscal, 2. * ff->GetParameter(1),
+                                        2. * ff->GetParError(1), ff->GetParameter(2), ff->GetParError(2),
+                                        ff->GetParameter(3), ff->GetParError(3));
                     }
-                    TWMean += dWCh *  // enforce <offset>=0
-                              fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0];
                   }
                 }
-                if (dW > 0.) TWMean /= dW;
-                else
-                  TWMean = 0.;
-              }
-              if (htempTOff_px->GetBinContent(iCh + 1) > 0.)
-                LOG(info) << Form("CalibA %d,%2d,%2d: TSRC %d%d%d%d, hits %6.0f, TM %8.3f , "
-                                  "TAV  %8.3f, TWM %8.3f, TOff %8.3f,  TOffnew  %8.3f, ",
-                                  fCalMode, fCalSel, fTRefMode, iSmType, iSm, iRpc, iCh,
-                                  htempTOff_px->GetBinContent(iCh + 1), TMean,
-                                  ((TProfile*) hAvTOff_pfx)->GetBinContent(iSm * iNbRpc + iRpc + 1), TWMean,
-                                  fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0],
-                                  fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0] + TMean - TWMean);
-              //            TMean-=((TProfile *)hAvTOff_pfx)->GetBinContent(iSm*iNbRpc+iRpc+1);
-              TMean -= TWMean;
-            }  // beam counter end
+              }  // ybox - fit end
 
-            if (htempTOff_px->GetBinContent(iCh + 1) > WalkNHmin) {
-              Double_t dOff0 = fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0];
-              Double_t dOff1 = fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1];
-              fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0] += -dTYOff + TMean;
-              fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1] += +dTYOff + TMean;
-              //if(iSmType==0 && iSm==4 && iRpc==2 && iCh==26)
-              LOG(info) << Form("CalibB %d,%2d,%2d: TSRC %d%d%d%d, hits %6.0f, YM %6.3f"
-                                ", dTY %6.3f, TM %8.3f, Off %8.3f,%8.3f -> %8.3f,%8.3f ",
-                                fCalMode, fCalSel, fTRefMode, iSmType, iSm, iRpc, iCh,
-                                htempTOff_px->GetBinContent(iCh + 1), YMean, dTYOff, TMean, dOff0, dOff1,
-                                fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0],
-                                fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1]);
-            }
-            /*
+              Double_t TMean = ((TProfile*) htempTOff_pfx)->GetBinContent(iCh + 1);
+              if (kTRUE) {  // fit gaussian around most abundant bin
+                TH1* hTy = (TH1*) htempTOff->ProjectionY(Form("%s_py%d", htempTOff->GetName(), iCh), iCh + 1, iCh + 1);
+                if (hTy->GetEntries() > WalkNHmin) {
+                  Double_t dFMean    = hTy->GetBinCenter(hTy->GetMaximumBin());
+                  Double_t dFLim     = 2.0;  // CAUTION, fixed numeric value
+                  Double_t dBinSize  = hTy->GetBinWidth(1);
+                  dFLim              = TMath::Max(dFLim, 5. * dBinSize);
+                  TFitResultPtr fRes = hTy->Fit("gaus", "SQM0", "", dFMean - dFLim, dFMean + dFLim);
+                  if (TMath::Abs(TMean - fRes->Parameter(1)) > 5.)
+                    LOG(warn) << "CalibF "
+                              << Form("TSRC %d%d%d%d gaus %8.2f %8.2f %8.2f for "
+                                      "TM %8.2f, YM %6.2f",
+                                      iSmType, iSm, iRpc, iCh, fRes->Parameter(0), fRes->Parameter(1),
+                                      fRes->Parameter(2), TMean, YMean);
+                  TMean = fRes->Parameter(1);  //overwrite mean
+                }
+              }
+              Double_t dTYOff = YMean / fDigiBdfPar->GetSigVel(iSmType, iSm, iRpc);
+
+              if (fiBeamRefAddr == iUniqueId) {
+                // don't shift time of reference counter on average
+                if (iCh == 0) {
+                  Double_t dW = 0.;
+                  for (Int_t iRefCh = 0; iRefCh < iNbCh; iRefCh++) {
+                    Double_t dWCh = ((TH1*) htempTOff_px)->GetBinContent(iRefCh + 1);
+                    if (0 < dWCh) {
+                      dW += dWCh;
+                      if (dWCh > WalkNHmin) {
+                        TH1* hTy          = (TH1*) htempTOff->ProjectionY(Form("%s_py%d", htempTOff->GetName(), iRefCh),
+                                                                 iRefCh + 1, iRefCh + 1);
+                        Double_t dFMean   = hTy->GetBinCenter(hTy->GetMaximumBin());
+                        Double_t dFLim    = 0.5;  // CAUTION, fixed numeric value
+                        Double_t dBinSize = hTy->GetBinWidth(1);
+                        dFLim             = TMath::Max(dFLim, 5. * dBinSize);
+                        TFitResultPtr fRes = hTy->Fit("gaus", "SQM0", "", dFMean - dFLim, dFMean + dFLim);
+                        LOG(info) << "CalibC "
+                                  << Form(" TSRC %d%d%d%d gaus %8.2f %8.2f %8.2f ", iSmType, iSm, iRpc, iRefCh,
+                                          fRes->Parameter(0), fRes->Parameter(1), fRes->Parameter(2));
+                        TBeamRefMean += fRes->Parameter(1) * dWCh;  //overwrite mean
+                      }
+                      else {
+                        TBeamRefMean += ((TProfile*) htempTOff_pfx)->GetBinContent(iRefCh + 1) * dWCh;
+                      }
+                      TBeamRefMean += dWCh *  // enforce <offset>=0
+                                      fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0];
+                    }
+                  }
+                  if (dW > 0.) {
+                    TBeamRefMean /= dW;
+                    // TBD apply offset all other detectors since beam counter will not be shifted
+                    LOG(info) << "<I> T0 shift all offsets by " << TBeamRefMean;
+                  }
+                  else
+                    TBeamRefMean = 0.;
+                }
+                if (htempTOff_px->GetBinContent(iCh + 1) > 0.)
+                  LOG(info) << Form("CalibA %d,%2d,%2d: TSRC %d%d%d%d, hits %6.0f, TM %8.3f , "
+                                    "TAV  %8.3f, TWM %8.3f, TOff %8.3f,  TOffnew  %8.3f, ",
+                                    fCalMode, fCalSel, fTRefMode, iSmType, iSm, iRpc, iCh,
+                                    htempTOff_px->GetBinContent(iCh + 1), TMean,
+                                    ((TProfile*) hAvTOff_pfx)->GetBinContent(iSm * iNbRpc + iRpc + 1), TBeamRefMean,
+                                    fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0],
+                                    fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0] + TMean - TBeamRefMean);
+                //            TMean-=((TProfile *)hAvTOff_pfx)->GetBinContent(iSm*iNbRpc+iRpc+1);
+                TMean -= TBeamRefMean;
+              }  // beam counter end
+              else {
+                TMean += TBeamRefMean;
+              }
+              if (htempTOff_px->GetBinContent(iCh + 1) > WalkNHmin) {
+                Double_t dOff0 = fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0];
+                Double_t dOff1 = fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1];
+                fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0] += -dTYOff + TMean;
+                fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1] += +dTYOff + TMean;
+                //if(iSmType==0 && iSm==4 && iRpc==2 && iCh==26)
+                LOG(info) << Form("CalibB %d,%2d,%2d: TSRC %d%d%d%d, hits %6.0f, YM %6.3f"
+                                  ", dTY %6.3f, TM %8.3f, Off %8.3f,%8.3f -> %8.3f,%8.3f ",
+                                  fCalMode, fCalSel, fTRefMode, iSmType, iSm, iRpc, iCh,
+                                  htempTOff_px->GetBinContent(iCh + 1), YMean, dTYOff, TMean, dOff0, dOff1,
+                                  fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0],
+                                  fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1]);
+              }
+              /*
 					 Double_t TotMean=((TProfile *)htempTot_pfx)->GetBinContent(iCh+1);
 					 if(0.001 < TotMean){
 					 fvCPTotGain[iSmType][iSm*iNbRpc+iRpc][iCh][0] *= fdTTotMean / TotMean;
 					 fvCPTotGain[iSmType][iSm*iNbRpc+iRpc][iCh][1] *= fdTTotMean / TotMean;
 					 }
 					 */
-            if (fCalMode < 90)  // keep digi TOT calibration in last step
+              if (fCalMode < 90)  // keep digi TOT calibration in last step
+                for (Int_t iSide = 0; iSide < 2; iSide++) {
+                  Int_t ib  = iCh * 2 + 1 + iSide;
+                  TH1* hbin = htempTot->ProjectionY(Form("bin%d", ib), ib, ib);
+                  if (100 > hbin->GetEntries()) continue;  //request min number of entries
+                  /*            Double_t Ymax=hbin->GetMaximum();*/
+                  Int_t iBmax   = hbin->GetMaximumBin();
+                  TAxis* xaxis  = hbin->GetXaxis();
+                  Double_t Xmax = xaxis->GetBinCenter(iBmax) / fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][iSide];
+                  Double_t XOff = Xmax - fTotPreRange;
+                  if (0) {  //TMath::Abs(XOff - fvCPTotOff[iSmType][iSm*iNbRpc+iRpc][iCh][iSide])>100){
+                    LOG(warning) << "XOff changed for "
+                                 << Form("SmT%01d_sm%03d_rpc%03d_Side%d: XOff %f, old %f", iSmType, iSm, iRpc, iSide,
+                                         XOff, fvCPTotOff[iSmType][iSm * iNbRpc + iRpc][iCh][iSide]);
+                  }
+                  //            Double_t TotMean=htempTot_Mean->GetBinContent(ib);
+                  Double_t TotMean = hbin->GetMean();
+                  if (15 == iSmType) {
+                    LOG(warning) << "Gain for "
+                                 << Form("SmT%01d_sm%03d_rpc%03d_Side%d: TotMean %f, prof %f, "
+                                         "gain %f, modg %f ",
+                                         iSmType, iSm, iRpc, iSide, TotMean, htempTot_Mean->GetBinContent(ib),
+                                         fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][iSide], fdTTotMean / TotMean);
+                  }
+                  if (0.001 < TotMean) {
+                    fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][iSide] *= fdTTotMean / TotMean;
+                  }
+                }
+              if (5 == iSmType
+                  && fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0]
+                       != fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1]) {  // diamond
+                LOG(warning) << "CbmTofEventClusterizer::FillCalHist:"
+                             << " SmT " << iSmType << " Sm " << iSm << " Rpc " << iRpc << " Ch " << iCh << ": YMean "
+                             << YMean << ", TMean " << TMean << " -> "
+                             << Form(" %f %f %f %f ", fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0],
+                                     fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1],
+                                     fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][0],
+                                     fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][1]);
+                Double_t dTOff =
+                  0.5
+                  * (fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0] + fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1]);
+                Double_t dGain = 0.5
+                                 * (fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][0]
+                                    + fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][1]);
+                fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0]    = dTOff;
+                fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1]    = dTOff;
+                fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][0] = dGain;
+                fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][1] = dGain;
+              }  // diamond warning end
+            }    // for( Int_t iCh = 0; iCh < iNbCh; iCh++ )
+          }      // iSmType selection condition
+
+          htempPos_pfx->Reset();  //reset to store new values
+          htempTOff_pfx->Reset();
+          htempTot_Mean->Reset();
+          htempTot_Off->Reset();
+
+          Double_t TOff0_mean = 0.;
+          Double_t TOff1_mean = 0.;
+          for (Int_t iCh = 0; iCh < iNbCh; iCh++)  // determine means
+          {
+            TOff0_mean += fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0];
+            TOff1_mean += fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1];
+          }
+          TOff0_mean /= (Double_t) iNbCh;
+          TOff1_mean /= (Double_t) iNbCh;
+
+          const Double_t TMaxDev = htempTOff->GetYaxis()->GetXmax();
+          for (Int_t iCh = 0; iCh < iNbCh; iCh++)  // remove outlyers
+          {
+            if (TMath::Abs(TOff0_mean - fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0]) > TMaxDev)
+              fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0] = TOff0_mean;
+            if (TMath::Abs(TOff1_mean - fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1]) > TMaxDev)
+              fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1] = TOff1_mean;
+          }
+
+          for (Int_t iCh = 0; iCh < iNbCh; iCh++)  // store new values
+          {
+            Double_t YMean =
+              fDigiBdfPar->GetSigVel(iSmType, iSm, iRpc) * 0.5
+              * (fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1] - fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0]);
+            Double_t TMean =
+              0.5 * (fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1] + fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0]);
+            htempPos_pfx->Fill(iCh, YMean);
+            if (((TProfile*) htempPos_pfx)->GetBinContent(iCh + 1) != YMean) {
+              LOG(error) << "WriteHistos: restore unsuccessful! ch " << iCh << " got "
+                         << htempPos_pfx->GetBinContent(iCh) << "," << htempPos_pfx->GetBinContent(iCh + 1) << ","
+                         << htempPos_pfx->GetBinContent(iCh + 2) << ", expected " << YMean;
+            }
+            htempTOff_pfx->Fill(iCh, TMean);
+
+            LOG(debug) << Form("CalibU %d,%2d,%2d: TSRC %d%d%d%d, hits %6.0f, YM %6.3f"
+                               ", TM %8.3f, OffM %8.3f,%8.3f ",
+                               fCalMode, fCalSel, fTRefMode, iSmType, iSm, iRpc, iCh,
+                               htempTOff_px->GetBinContent(iCh + 1), YMean, TMean, TOff0_mean, TOff1_mean);
+
+            for (Int_t iSide = 0; iSide < 2; iSide++) {
+              htempTot_Mean->SetBinContent(iCh * 2 + 1 + iSide,
+                                           fdTTotMean / fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][iSide]);
+              htempTot_Off->SetBinContent(iCh * 2 + 1 + iSide, fvCPTotOff[iSmType][iSm * iNbRpc + iRpc][iCh][iSide]);
+            }
+            //         htempTot_pfx->Fill(iCh,fdTTotMean/fvCPTotGain[iSmType][iSm*iNbRpc+iRpc][iCh][1]);
+          }  // for( Int_t iCh = 0; iCh < iNbCh; iCh++ )
+
+          LOG(debug1) << " Updating done ... write to file ";
+          htempPos_pfx->Write();
+          htempTOff_pfx->Write();
+          //        htempTot_pfx->Write();
+          htempTot_Mean->Write();
+          htempTot_Off->Write();
+
+          // store old DELTOF histos
+          LOG(debug) << " Copy old DelTof histos from " << gDirectory->GetName() << " to file ";
+
+          for (Int_t iSel = 0; iSel < iNSel; iSel++) {
+            // Store DelTof corrections
+            TDirectory* curdir = gDirectory;
+            gROOT->cd();  //
+            TH1D* hCorDelTof = (TH1D*) gDirectory->FindObjectAny(
+              Form("cl_CorSmT%01d_sm%03d_rpc%03d_Sel%02d_DelTof", iSmType, iSm, iRpc, iSel));
+            gDirectory->cd(curdir->GetPath());
+            if (NULL != hCorDelTof) {
+              TH1D* hCorDelTofout = (TH1D*) hCorDelTof->Clone(
+                Form("cl_CorSmT%01d_sm%03d_rpc%03d_Sel%02d_DelTof", iSmType, iSm, iRpc, iSel));
+              hCorDelTofout->Write();
+            }
+            else {
+              LOG(debug) << " No CorDelTof histo "
+                         << Form("cl_CorSmT%01d_sm%03d_rpc%03d_Sel%02d_DelTof", iSmType, iSm, iRpc, iSel);
+            }
+          }
+
+          LOG(debug) << " Store old walk histos to file ";
+          // store walk histos
+          for (Int_t iCh = 0; iCh < iNbCh; iCh++)  // restore old values
+          {
+            if (NULL == fhRpcCluWalk[iDetIndx][iCh][0]) break;
+            // TProfile *htmp0 = fhRpcCluWalk[iDetIndx][iCh][0]->ProfileX("_pfx",1,nbClWalkBinY);  (VF) not used
+            // TProfile *htmp1 = fhRpcCluWalk[iDetIndx][iCh][1]->ProfileX("_pfx",1,nbClWalkBinY);  (VF) not used
+            TH1D* h1tmp0 = fhRpcCluWalk[iDetIndx][iCh][0]->ProjectionX("_px", 1, nbClWalkBinY);
+            TH1D* h1tmp1 = fhRpcCluWalk[iDetIndx][iCh][1]->ProjectionX("_px", 1, nbClWalkBinY);
+            for (Int_t iWx = 0; iWx < nbClWalkBinX; iWx++) {
+              h1tmp0->SetBinContent(iWx + 1, fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][0][iWx]);
+              h1tmp1->SetBinContent(iWx + 1, fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][1][iWx]);
+              if (h1tmp0->GetBinContent(iWx + 1) != fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][0][iWx]) {
+                LOG(error) << "WriteHistos: restore unsuccessful! iWx " << iWx << " got "
+                           << h1tmp0->GetBinContent(iWx + 1) << ", expected "
+                           << fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][0][iWx];
+              }
+            }
+            h1tmp0->SetName(Form("Cor_SmT%01d_sm%03d_rpc%03d_Ch%03d_S0_Walk_px", iSmType, iSm, iRpc, iCh));
+            //          htmp0->Write();
+            h1tmp0->Write();
+            h1tmp1->SetName(Form("Cor_SmT%01d_sm%03d_rpc%03d_Ch%03d_S1_Walk_px", iSmType, iSm, iRpc, iCh));
+            //          htmp1->Write();
+            h1tmp1->Write();
+          }
+        } break;
+        case 4:  //update DelTof, save offsets, gains and walks
+        {
+          Int_t iNbRpc = fDigiBdfPar->GetNbRpc(iSmType);
+          Int_t iNbCh  = fDigiBdfPar->GetNbChan(iSmType, iRpc);
+          LOG(debug) << "WriteHistos: restore Offsets, Gains and Walk, save DelTof for "
+                     << "Smtype" << iSmType << ", Sm " << iSm << ", Rpc " << iRpc;
+          htempPos_pfx->Reset();  //reset to restore mean of original histos
+          htempTOff_pfx->Reset();
+          htempTot_Mean->Reset();
+          htempTot_Off->Reset();
+          for (Int_t iCh = 0; iCh < iNbCh; iCh++) {
+            Double_t YMean =
+              fDigiBdfPar->GetSigVel(iSmType, iSm, iRpc) * 0.5
+              * (fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1] - fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0]);
+            Double_t TMean =
+              0.5 * (fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1] + fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0]);
+            htempPos_pfx->Fill(iCh, YMean);
+            if (((TProfile*) htempPos_pfx)->GetBinContent(iCh + 1) != YMean) {
+              LOG(error) << "WriteHistos: restore unsuccessful! ch " << iCh << " got "
+                         << htempPos_pfx->GetBinContent(iCh) << "," << htempPos_pfx->GetBinContent(iCh + 1) << ","
+                         << htempPos_pfx->GetBinContent(iCh + 2) << ", expected " << YMean;
+            }
+            htempTOff_pfx->Fill(iCh, TMean);
+
+            for (Int_t iSide = 0; iSide < 2; iSide++) {
+              htempTot_Mean->SetBinContent(
+                iCh * 2 + 1 + iSide,
+                fdTTotMean / fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][iSide]);  //nh +1 empirical(?)
+              htempTot_Off->SetBinContent(iCh * 2 + 1 + iSide, fvCPTotOff[iSmType][iSm * iNbRpc + iRpc][iCh][iSide]);
+            }
+          }
+
+          LOG(debug1) << " Restoring of Offsets and Gains done ... ";
+          htempPos_pfx->Write();
+          htempTOff_pfx->Write();
+          //        htempTot_pfx->Write();
+          htempTot_Mean->Write();
+          htempTot_Off->Write();
+
+          // restore walk histos
+          for (Int_t iCh = 0; iCh < iNbCh; iCh++)  // restore old values
+          {
+            if (NULL == fhRpcCluWalk[iDetIndx][iCh][0]) break;
+            // TProfile *htmp0 = fhRpcCluWalk[iDetIndx][iCh][0]->ProfileX("_pfx",1,nbClWalkBinY);  (VF) not used
+            // TProfile *htmp1 = fhRpcCluWalk[iDetIndx][iCh][1]->ProfileX("_pfx",1,nbClWalkBinY);  (VF) not used
+            TH1D* h1tmp0 = fhRpcCluWalk[iDetIndx][iCh][0]->ProjectionX("_px", 1, nbClWalkBinY);
+            TH1D* h1tmp1 = fhRpcCluWalk[iDetIndx][iCh][1]->ProjectionX("_px", 1, nbClWalkBinY);
+            for (Int_t iWx = 0; iWx < nbClWalkBinX; iWx++) {
+              h1tmp0->SetBinContent(iWx + 1, fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][0][iWx]);
+              h1tmp1->SetBinContent(iWx + 1, fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][1][iWx]);
+              if (h1tmp0->GetBinContent(iWx + 1) != fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][0][iWx]) {
+                LOG(error) << "WriteHistos: restore unsuccessful! iWx " << iWx << " got "
+                           << h1tmp0->GetBinContent(iWx + 1) << ", expected "
+                           << fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][0][iWx];
+              }
+            }
+            h1tmp0->SetName(Form("Cor_SmT%01d_sm%03d_rpc%03d_Ch%03d_S0_Walk_px", iSmType, iSm, iRpc, iCh));
+            //          htmp0->Write();
+            h1tmp0->Write();
+            h1tmp1->SetName(Form("Cor_SmT%01d_sm%03d_rpc%03d_Ch%03d_S1_Walk_px", iSmType, iSm, iRpc, iCh));
+            //          htmp1->Write();
+            h1tmp1->Write();
+          }
+
+          // generate/update DelTof corrections
+          if ((fCalSmAddr < 0 && -fCalSmAddr != iSmAddr)
+              || (fCalSmAddr == iSmAddr))  // select detectors for determination of DelTof correction
+          {
+            if (fiBeamRefAddr == iSmAddr) continue;  // no DelTof correction for Diamonds
+
+            for (Int_t iSel = 0; iSel < iNSel; iSel++) {
+              TH2* h2tmp = fhTRpcCluDelTof[iDetIndx][iSel];
+              if (NULL == h2tmp) {
+                LOG(debug) << Form("WriteHistos:  histo not available for SmT %d, Sm %d, Rpc %d", iSmType, iSm, iRpc);
+                break;
+              }
+              Int_t iNEntries = h2tmp->GetEntries();
+
+              //          h2tmp->Write();
+              TProfile* htmp = h2tmp->ProfileX("_pfx", 1, h2tmp->GetNbinsY());
+              TH1D* h1tmp    = h2tmp->ProjectionX("_px", 1, h2tmp->GetNbinsY());
+              /*          TH1D *h1ytmp   = h2tmp->ProjectionY("_py",1,h2tmp->GetNbinsX());*/
+              Double_t dDelMean =
+                0.;  //h1ytmp->GetMean();// inspect normalization, interferes with mode 3 for diamonds, nh, 10.01.2015 (?)
+              Double_t dNEntriesSum = 0.;
+              for (Int_t iBx = 0; iBx < nbClDelTofBinX; iBx++) {
+                Double_t dNEntries = h1tmp->GetBinContent(iBx + 1);
+                if (dNEntries > WalkNHmin)  // modify, request sufficient # of entries
+                  fvCPDelTof[iSmType][iSm * iNbRpc + iRpc][iBx][iSel] += ((TProfile*) htmp)->GetBinContent(iBx + 1);
+                dDelMean += fvCPDelTof[iSmType][iSm * iNbRpc + iRpc][iBx][iSel] * dNEntries;
+                dNEntriesSum += dNEntries;
+              }
+              dDelMean /= dNEntriesSum;
+
+              LOG(debug) << Form(" Update DelTof correction for SmT %d, Sm %d, "
+                                 "Rpc %d, Sel%d: Entries %d, Mean shift %6.1f",
+                                 iSmType, iSm, iRpc, iSel, iNEntries, dDelMean);
+
+              for (Int_t iBx = 0; iBx < nbClDelTofBinX; iBx++) {
+                h1tmp->SetBinContent(iBx + 1, fvCPDelTof[iSmType][iSm * iNbRpc + iRpc][iBx][iSel] - dDelMean);
+                //h1tmp->SetBinContent(iBx+1,fvCPDelTof[iSmType][iSm*iNbRpc+iRpc][iBx][iSel]);
+              }
+              h1tmp->SetName(Form("cl_CorSmT%01d_sm%03d_rpc%03d_Sel%02d_DelTof", iSmType, iSm, iRpc, iSel));
+              h1tmp->Write();
+            }
+          }
+          else {  // copy existing histograms
+            for (Int_t iSel = 0; iSel < iNSel; iSel++) {
+              // Store DelTof corrections
+              TDirectory* curdir = gDirectory;
+              gROOT->cd();  //
+              TH1D* hCorDelTof = (TH1D*) gDirectory->FindObjectAny(
+                Form("cl_CorSmT%01d_sm%03d_rpc%03d_Sel%02d_DelTof", iSmType, iSm, iRpc, iSel));
+              gDirectory->cd(curdir->GetPath());
+              if (NULL != hCorDelTof) {
+                TH1D* hCorDelTofout = (TH1D*) hCorDelTof->Clone(
+                  Form("cl_CorSmT%01d_sm%03d_rpc%03d_Sel%02d_DelTof", iSmType, iSm, iRpc, iSel));
+                LOG(debug) << " Save existing CorDelTof histo "
+                           << Form("cl_CorSmT%01d_sm%03d_rpc%03d_Sel%02d_DelTof", iSmType, iSm, iRpc, iSel);
+                hCorDelTofout->Write();
+              }
+              else {
+                LOG(debug) << " No CorDelTof histo "
+                           << Form("cl_CorSmT%01d_sm%03d_rpc%03d_Sel%02d_DelTof", iSmType, iSm, iRpc, iSel);
+              }
+            }
+          }
+        } break;
+        case 5:  //update offsets (from positions only), gains, save walks and DELTOF
+        {
+          Int_t iNbRpc = fDigiBdfPar->GetNbRpc(iSmType);
+          Int_t iNbCh  = fDigiBdfPar->GetNbChan(iSmType, iRpc);
+          if ((fCalSmAddr < 0) || (fCalSmAddr != iSmAddr)) {  // select detectors for updating offsets
+            LOG(debug) << "WriteHistos (calMode==5): update Offsets and Gains, "
+                          "keep Walk and DelTof for "
+                       << "Smtype" << iSmType << ", Sm " << iSm << ", Rpc " << iRpc << " with " << iNbCh << " channels "
+                       << " using selector " << fCalSel;
+
+            for (Int_t iCh = 0; iCh < iNbCh; iCh++)  // update Offset and Gain
+            {
+              Double_t YMean  = ((TProfile*) htempPos_pfx)->GetBinContent(iCh + 1);  //nh +1 empirical(?)
+              Double_t TMean  = 0.;
+              Double_t dTYOff = YMean / fDigiBdfPar->GetSigVel(iSmType, iSm, iRpc);
+
+              if (htempTOff_px->GetBinContent(iCh + 1) > WalkNHmin) {
+                fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0] += -dTYOff + TMean;
+                fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1] += +dTYOff + TMean;
+              }
+              LOG(debug3) << Form("Calib: TSRC %d%d%d%d, hits %6.0f, new Off %8.0f,%8.0f ", iSmType, iSm, iRpc, iCh,
+                                  htempTOff_px->GetBinContent(iCh + 1), fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0],
+                                  fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1]);
+
+              /*
+					 Double_t TotMean=((TProfile *)htempTot_pfx)->GetBinContent(iCh+1);  //nh +1 empirical(!)
+					 if(0.001 < TotMean){
+					 fvCPTotGain[iSmType][iSm*iNbRpc+iRpc][iCh][0] *= fdTTotMean / TotMean;
+					 fvCPTotGain[iSmType][iSm*iNbRpc+iRpc][iCh][1] *= fdTTotMean / TotMean;
+					 }
+					 */
               for (Int_t iSide = 0; iSide < 2; iSide++) {
                 Int_t ib  = iCh * 2 + 1 + iSide;
                 TH1* hbin = htempTot->ProjectionY(Form("bin%d", ib), ib, ib);
@@ -3478,242 +3782,67 @@ Bool_t CbmTofEventClusterizer::WriteHistos()
                 }
                 if (0.001 < TotMean) { fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][iSide] *= fdTTotMean / TotMean; }
               }
-            if (5 == iSmType
-                && fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0]
-                     != fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1]) {  // diamond
-              LOG(warning) << "CbmTofEventClusterizer::FillCalHist:"
-                           << " SmT " << iSmType << " Sm " << iSm << " Rpc " << iRpc << " Ch " << iCh << ": YMean "
-                           << YMean << ", TMean " << TMean << " -> "
-                           << Form(" %f %f %f %f ", fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0],
-                                   fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1],
-                                   fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][0],
-                                   fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][1]);
-              Double_t dTOff =
-                0.5 * (fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0] + fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1]);
-              Double_t dGain = 0.5
-                               * (fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][0]
-                                  + fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][1]);
-              fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0]    = dTOff;
-              fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1]    = dTOff;
-              fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][0] = dGain;
-              fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][1] = dGain;
-            }  // diamond warning end
-          }    // for( Int_t iCh = 0; iCh < iNbCh; iCh++ )
-        }      // iSmType selection condition
+              if (5 == iSmType
+                  && fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0]
+                       != fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1]) {  // diamond
+                LOG(warning) << "CbmTofEventClusterizer::FillCalHist:"
+                             << " SmT " << iSmType << " Sm " << iSm << " Rpc " << iRpc << " Ch " << iCh << ": YMean "
+                             << YMean << ", TMean " << TMean << " -> "
+                             << Form(" %f %f %f %f ", fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0],
+                                     fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1],
+                                     fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][0],
+                                     fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][1]);
+                Double_t dTOff =
+                  0.5
+                  * (fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0] + fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1]);
+                Double_t dGain = 0.5
+                                 * (fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][0]
+                                    + fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][1]);
+                fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0]    = dTOff;
+                fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1]    = dTOff;
+                fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][0] = dGain;
+                fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][1] = dGain;
+              }  // diamond warning end
+            }    // for( Int_t iCh = 0; iCh < iNbCh; iCh++ )
+          }      // iSmType selection condition
 
-        htempPos_pfx->Reset();  //reset to store new values
-        htempTOff_pfx->Reset();
-        htempTot_Mean->Reset();
-        htempTot_Off->Reset();
-
-        Double_t TOff0_mean = 0.;
-        Double_t TOff1_mean = 0.;
-        for (Int_t iCh = 0; iCh < iNbCh; iCh++)  // determine means
-        {
-          TOff0_mean += fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0];
-          TOff1_mean += fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1];
-        }
-        TOff0_mean /= (Double_t) iNbCh;
-        TOff1_mean /= (Double_t) iNbCh;
-
-        const Double_t TMaxDev = htempTOff->GetYaxis()->GetXmax();
-        for (Int_t iCh = 0; iCh < iNbCh; iCh++)  // remove outlyers
-        {
-          if (TMath::Abs(TOff0_mean - fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0]) > TMaxDev)
-            fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0] = TOff0_mean;
-          if (TMath::Abs(TOff1_mean - fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1]) > TMaxDev)
-            fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1] = TOff1_mean;
-        }
-
-        for (Int_t iCh = 0; iCh < iNbCh; iCh++)  // store new values
-        {
-          Double_t YMean =
-            fDigiBdfPar->GetSigVel(iSmType, iSm, iRpc) * 0.5
-            * (fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1] - fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0]);
-          Double_t TMean =
-            0.5 * (fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1] + fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0]);
-          htempPos_pfx->Fill(iCh, YMean);
-          if (((TProfile*) htempPos_pfx)->GetBinContent(iCh + 1) != YMean) {
-            LOG(error) << "WriteHistos: restore unsuccessful! ch " << iCh << " got " << htempPos_pfx->GetBinContent(iCh)
-                       << "," << htempPos_pfx->GetBinContent(iCh + 1) << "," << htempPos_pfx->GetBinContent(iCh + 2)
-                       << ", expected " << YMean;
-          }
-          htempTOff_pfx->Fill(iCh, TMean);
-
-          LOG(debug) << Form("CalibU %d,%2d,%2d: TSRC %d%d%d%d, hits %6.0f, YM %6.3f"
-                             ", TM %8.3f, OffM %8.3f,%8.3f ",
-                             fCalMode, fCalSel, fTRefMode, iSmType, iSm, iRpc, iCh,
-                             htempTOff_px->GetBinContent(iCh + 1), YMean, TMean, TOff0_mean, TOff1_mean);
-
-          for (Int_t iSide = 0; iSide < 2; iSide++) {
-            htempTot_Mean->SetBinContent(iCh * 2 + 1 + iSide,
-                                         fdTTotMean / fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][iSide]);
-            htempTot_Off->SetBinContent(iCh * 2 + 1 + iSide, fvCPTotOff[iSmType][iSm * iNbRpc + iRpc][iCh][iSide]);
-          }
-          //         htempTot_pfx->Fill(iCh,fdTTotMean/fvCPTotGain[iSmType][iSm*iNbRpc+iRpc][iCh][1]);
-        }  // for( Int_t iCh = 0; iCh < iNbCh; iCh++ )
-
-        LOG(debug1) << " Updating done ... write to file ";
-        htempPos_pfx->Write();
-        htempTOff_pfx->Write();
-        //        htempTot_pfx->Write();
-        htempTot_Mean->Write();
-        htempTot_Off->Write();
-
-        // store old DELTOF histos
-        LOG(debug) << " Copy old DelTof histos from " << gDirectory->GetName() << " to file ";
-
-        for (Int_t iSel = 0; iSel < iNSel; iSel++) {
-          // Store DelTof corrections
-          TDirectory* curdir = gDirectory;
-          gROOT->cd();  //
-          TH1D* hCorDelTof = (TH1D*) gDirectory->FindObjectAny(
-            Form("cl_CorSmT%01d_sm%03d_rpc%03d_Sel%02d_DelTof", iSmType, iSm, iRpc, iSel));
-          gDirectory->cd(curdir->GetPath());
-          if (NULL != hCorDelTof) {
-            TH1D* hCorDelTofout =
-              (TH1D*) hCorDelTof->Clone(Form("cl_CorSmT%01d_sm%03d_rpc%03d_Sel%02d_DelTof", iSmType, iSm, iRpc, iSel));
-            hCorDelTofout->Write();
-          }
-          else {
-            LOG(debug) << " No CorDelTof histo "
-                       << Form("cl_CorSmT%01d_sm%03d_rpc%03d_Sel%02d_DelTof", iSmType, iSm, iRpc, iSel);
-          }
-        }
-
-        LOG(debug) << " Store old walk histos to file ";
-        // store walk histos
-        for (Int_t iCh = 0; iCh < iNbCh; iCh++)  // restore old values
-        {
-          if (NULL == fhRpcCluWalk[iDetIndx][iCh][0]) break;
-          // TProfile *htmp0 = fhRpcCluWalk[iDetIndx][iCh][0]->ProfileX("_pfx",1,nbClWalkBinY);  (VF) not used
-          // TProfile *htmp1 = fhRpcCluWalk[iDetIndx][iCh][1]->ProfileX("_pfx",1,nbClWalkBinY);  (VF) not used
-          TH1D* h1tmp0 = fhRpcCluWalk[iDetIndx][iCh][0]->ProjectionX("_px", 1, nbClWalkBinY);
-          TH1D* h1tmp1 = fhRpcCluWalk[iDetIndx][iCh][1]->ProjectionX("_px", 1, nbClWalkBinY);
-          for (Int_t iWx = 0; iWx < nbClWalkBinX; iWx++) {
-            h1tmp0->SetBinContent(iWx + 1, fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][0][iWx]);
-            h1tmp1->SetBinContent(iWx + 1, fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][1][iWx]);
-            if (h1tmp0->GetBinContent(iWx + 1) != fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][0][iWx]) {
-              LOG(error) << "WriteHistos: restore unsuccessful! iWx " << iWx << " got "
-                         << h1tmp0->GetBinContent(iWx + 1) << ", expected "
-                         << fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][0][iWx];
+          htempPos_pfx->Reset();  //reset to store new values
+          htempTOff_pfx->Reset();
+          htempTot_Mean->Reset();
+          htempTot_Off->Reset();
+          for (Int_t iCh = 0; iCh < iNbCh; iCh++)  // store new values
+          {
+            Double_t YMean =
+              fDigiBdfPar->GetSigVel(iSmType, iSm, iRpc) * 0.5
+              * (fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1] - fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0]);
+            Double_t TMean =
+              0.5 * (fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1] + fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0]);
+            htempPos_pfx->Fill(iCh, YMean);
+            if (((TProfile*) htempPos_pfx)->GetBinContent(iCh + 1) != YMean) {
+              LOG(error) << "WriteHistos: restore unsuccessful! ch " << iCh << " got "
+                         << htempPos_pfx->GetBinContent(iCh) << "," << htempPos_pfx->GetBinContent(iCh + 1) << ","
+                         << htempPos_pfx->GetBinContent(iCh + 2) << ", expected " << YMean;
             }
-          }
-          h1tmp0->SetName(Form("Cor_SmT%01d_sm%03d_rpc%03d_Ch%03d_S0_Walk_px", iSmType, iSm, iRpc, iCh));
-          //          htmp0->Write();
-          h1tmp0->Write();
-          h1tmp1->SetName(Form("Cor_SmT%01d_sm%03d_rpc%03d_Ch%03d_S1_Walk_px", iSmType, iSm, iRpc, iCh));
-          //          htmp1->Write();
-          h1tmp1->Write();
-        }
-      } break;
-      case 4:  //update DelTof, save offsets, gains and walks
-      {
-        Int_t iNbRpc = fDigiBdfPar->GetNbRpc(iSmType);
-        Int_t iNbCh  = fDigiBdfPar->GetNbChan(iSmType, iRpc);
-        LOG(debug) << "WriteHistos: restore Offsets, Gains and Walk, save DelTof for "
-                   << "Smtype" << iSmType << ", Sm " << iSm << ", Rpc " << iRpc;
-        htempPos_pfx->Reset();  //reset to restore mean of original histos
-        htempTOff_pfx->Reset();
-        htempTot_Mean->Reset();
-        htempTot_Off->Reset();
-        for (Int_t iCh = 0; iCh < iNbCh; iCh++) {
-          Double_t YMean =
-            fDigiBdfPar->GetSigVel(iSmType, iSm, iRpc) * 0.5
-            * (fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1] - fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0]);
-          Double_t TMean =
-            0.5 * (fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1] + fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0]);
-          htempPos_pfx->Fill(iCh, YMean);
-          if (((TProfile*) htempPos_pfx)->GetBinContent(iCh + 1) != YMean) {
-            LOG(error) << "WriteHistos: restore unsuccessful! ch " << iCh << " got " << htempPos_pfx->GetBinContent(iCh)
-                       << "," << htempPos_pfx->GetBinContent(iCh + 1) << "," << htempPos_pfx->GetBinContent(iCh + 2)
-                       << ", expected " << YMean;
-          }
-          htempTOff_pfx->Fill(iCh, TMean);
+            htempTOff_pfx->Fill(iCh, TMean);
 
-          for (Int_t iSide = 0; iSide < 2; iSide++) {
-            htempTot_Mean->SetBinContent(
-              iCh * 2 + 1 + iSide,
-              fdTTotMean / fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][iSide]);  //nh +1 empirical(?)
-            htempTot_Off->SetBinContent(iCh * 2 + 1 + iSide, fvCPTotOff[iSmType][iSm * iNbRpc + iRpc][iCh][iSide]);
-          }
-        }
-
-        LOG(debug1) << " Restoring of Offsets and Gains done ... ";
-        htempPos_pfx->Write();
-        htempTOff_pfx->Write();
-        //        htempTot_pfx->Write();
-        htempTot_Mean->Write();
-        htempTot_Off->Write();
-
-        // restore walk histos
-        for (Int_t iCh = 0; iCh < iNbCh; iCh++)  // restore old values
-        {
-          if (NULL == fhRpcCluWalk[iDetIndx][iCh][0]) break;
-          // TProfile *htmp0 = fhRpcCluWalk[iDetIndx][iCh][0]->ProfileX("_pfx",1,nbClWalkBinY);  (VF) not used
-          // TProfile *htmp1 = fhRpcCluWalk[iDetIndx][iCh][1]->ProfileX("_pfx",1,nbClWalkBinY);  (VF) not used
-          TH1D* h1tmp0 = fhRpcCluWalk[iDetIndx][iCh][0]->ProjectionX("_px", 1, nbClWalkBinY);
-          TH1D* h1tmp1 = fhRpcCluWalk[iDetIndx][iCh][1]->ProjectionX("_px", 1, nbClWalkBinY);
-          for (Int_t iWx = 0; iWx < nbClWalkBinX; iWx++) {
-            h1tmp0->SetBinContent(iWx + 1, fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][0][iWx]);
-            h1tmp1->SetBinContent(iWx + 1, fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][1][iWx]);
-            if (h1tmp0->GetBinContent(iWx + 1) != fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][0][iWx]) {
-              LOG(error) << "WriteHistos: restore unsuccessful! iWx " << iWx << " got "
-                         << h1tmp0->GetBinContent(iWx + 1) << ", expected "
-                         << fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][0][iWx];
+            for (Int_t iSide = 0; iSide < 2; iSide++) {
+              htempTot_Mean->SetBinContent(iCh * 2 + 1 + iSide,
+                                           fdTTotMean / fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][iSide]);
+              htempTot_Off->SetBinContent(iCh * 2 + 1 + iSide, fvCPTotOff[iSmType][iSm * iNbRpc + iRpc][iCh][iSide]);
             }
-          }
-          h1tmp0->SetName(Form("Cor_SmT%01d_sm%03d_rpc%03d_Ch%03d_S0_Walk_px", iSmType, iSm, iRpc, iCh));
-          //          htmp0->Write();
-          h1tmp0->Write();
-          h1tmp1->SetName(Form("Cor_SmT%01d_sm%03d_rpc%03d_Ch%03d_S1_Walk_px", iSmType, iSm, iRpc, iCh));
-          //          htmp1->Write();
-          h1tmp1->Write();
-        }
+            //         htempTot_pfx->Fill(iCh,fdTTotMean/fvCPTotGain[iSmType][iSm*iNbRpc+iRpc][iCh][1]);
+          }  // for( Int_t iCh = 0; iCh < iNbCh; iCh++ )
 
-        // generate/update DelTof corrections
-        if ((fCalSmAddr < 0 && -fCalSmAddr != iSmAddr)
-            || (fCalSmAddr == iSmAddr))  // select detectors for determination of DelTof correction
-        {
-          if (fiBeamRefAddr == iSmAddr) continue;  // no DelTof correction for Diamonds
+          LOG(debug1) << " Updating done ... write to file ";
+          htempPos_pfx->Write();
+          htempTOff_pfx->Write();
+          //        htempTot_pfx->Write();
+          htempTot_Mean->Write();
+          htempTot_Off->Write();
 
-          for (Int_t iSel = 0; iSel < iNSel; iSel++) {
-            TH2* h2tmp = fhTRpcCluDelTof[iDetIndx][iSel];
-            if (NULL == h2tmp) {
-              LOG(debug) << Form("WriteHistos:  histo not available for SmT %d, Sm %d, Rpc %d", iSmType, iSm, iRpc);
-              break;
-            }
-            Int_t iNEntries = h2tmp->GetEntries();
+          // store old DELTOF histos
+          LOG(debug) << " Copy old DelTof histos from " << gDirectory->GetName() << " to file ";
 
-            //          h2tmp->Write();
-            TProfile* htmp = h2tmp->ProfileX("_pfx", 1, h2tmp->GetNbinsY());
-            TH1D* h1tmp    = h2tmp->ProjectionX("_px", 1, h2tmp->GetNbinsY());
-            /*          TH1D *h1ytmp   = h2tmp->ProjectionY("_py",1,h2tmp->GetNbinsX());*/
-            Double_t dDelMean =
-              0.;  //h1ytmp->GetMean();// inspect normalization, interferes with mode 3 for diamonds, nh, 10.01.2015 (?)
-            Double_t dNEntriesSum = 0.;
-            for (Int_t iBx = 0; iBx < nbClDelTofBinX; iBx++) {
-              Double_t dNEntries = h1tmp->GetBinContent(iBx + 1);
-              if (dNEntries > WalkNHmin)  // modify, request sufficient # of entries
-                fvCPDelTof[iSmType][iSm * iNbRpc + iRpc][iBx][iSel] += ((TProfile*) htmp)->GetBinContent(iBx + 1);
-              dDelMean += fvCPDelTof[iSmType][iSm * iNbRpc + iRpc][iBx][iSel] * dNEntries;
-              dNEntriesSum += dNEntries;
-            }
-            dDelMean /= dNEntriesSum;
-
-            LOG(debug) << Form(" Update DelTof correction for SmT %d, Sm %d, "
-                               "Rpc %d, Sel%d: Entries %d, Mean shift %6.1f",
-                               iSmType, iSm, iRpc, iSel, iNEntries, dDelMean);
-
-            for (Int_t iBx = 0; iBx < nbClDelTofBinX; iBx++) {
-              h1tmp->SetBinContent(iBx + 1, fvCPDelTof[iSmType][iSm * iNbRpc + iRpc][iBx][iSel] - dDelMean);
-              //h1tmp->SetBinContent(iBx+1,fvCPDelTof[iSmType][iSm*iNbRpc+iRpc][iBx][iSel]);
-            }
-            h1tmp->SetName(Form("cl_CorSmT%01d_sm%03d_rpc%03d_Sel%02d_DelTof", iSmType, iSm, iRpc, iSel));
-            h1tmp->Write();
-          }
-        }
-        else {  // copy existing histograms
           for (Int_t iSel = 0; iSel < iNSel; iSel++) {
             // Store DelTof corrections
             TDirectory* curdir = gDirectory;
@@ -3724,8 +3853,6 @@ Bool_t CbmTofEventClusterizer::WriteHistos()
             if (NULL != hCorDelTof) {
               TH1D* hCorDelTofout = (TH1D*) hCorDelTof->Clone(
                 Form("cl_CorSmT%01d_sm%03d_rpc%03d_Sel%02d_DelTof", iSmType, iSm, iRpc, iSel));
-              LOG(debug) << " Save existing CorDelTof histo "
-                         << Form("cl_CorSmT%01d_sm%03d_rpc%03d_Sel%02d_DelTof", iSmType, iSm, iRpc, iSel);
               hCorDelTofout->Write();
             }
             else {
@@ -3733,172 +3860,37 @@ Bool_t CbmTofEventClusterizer::WriteHistos()
                          << Form("cl_CorSmT%01d_sm%03d_rpc%03d_Sel%02d_DelTof", iSmType, iSm, iRpc, iSel);
             }
           }
-        }
-      } break;
-      case 5:  //update offsets (from positions only), gains, save walks and DELTOF
-      {
-        Int_t iNbRpc = fDigiBdfPar->GetNbRpc(iSmType);
-        Int_t iNbCh  = fDigiBdfPar->GetNbChan(iSmType, iRpc);
-        if ((fCalSmAddr < 0) || (fCalSmAddr != iSmAddr)) {  // select detectors for updating offsets
-          LOG(debug) << "WriteHistos (calMode==5): update Offsets and Gains, "
-                        "keep Walk and DelTof for "
-                     << "Smtype" << iSmType << ", Sm " << iSm << ", Rpc " << iRpc << " with " << iNbCh << " channels "
-                     << " using selector " << fCalSel;
 
-          for (Int_t iCh = 0; iCh < iNbCh; iCh++)  // update Offset and Gain
+          LOG(debug) << " Store old walk histos to file ";
+          // store walk histos
+          for (Int_t iCh = 0; iCh < iNbCh; iCh++)  // restore old values
           {
-            Double_t YMean  = ((TProfile*) htempPos_pfx)->GetBinContent(iCh + 1);  //nh +1 empirical(?)
-            Double_t TMean  = 0.;
-            Double_t dTYOff = YMean / fDigiBdfPar->GetSigVel(iSmType, iSm, iRpc);
-
-            if (htempTOff_px->GetBinContent(iCh + 1) > WalkNHmin) {
-              fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0] += -dTYOff + TMean;
-              fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1] += +dTYOff + TMean;
-            }
-            LOG(debug3) << Form("Calib: TSRC %d%d%d%d, hits %6.0f, new Off %8.0f,%8.0f ", iSmType, iSm, iRpc, iCh,
-                                htempTOff_px->GetBinContent(iCh + 1), fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0],
-                                fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1]);
-
-            /*
-					 Double_t TotMean=((TProfile *)htempTot_pfx)->GetBinContent(iCh+1);  //nh +1 empirical(!)
-					 if(0.001 < TotMean){
-					 fvCPTotGain[iSmType][iSm*iNbRpc+iRpc][iCh][0] *= fdTTotMean / TotMean;
-					 fvCPTotGain[iSmType][iSm*iNbRpc+iRpc][iCh][1] *= fdTTotMean / TotMean;
-					 }
-					 */
-            for (Int_t iSide = 0; iSide < 2; iSide++) {
-              Int_t ib  = iCh * 2 + 1 + iSide;
-              TH1* hbin = htempTot->ProjectionY(Form("bin%d", ib), ib, ib);
-              if (100 > hbin->GetEntries()) continue;  //request min number of entries
-              /*            Double_t Ymax=hbin->GetMaximum();*/
-              Int_t iBmax   = hbin->GetMaximumBin();
-              TAxis* xaxis  = hbin->GetXaxis();
-              Double_t Xmax = xaxis->GetBinCenter(iBmax) / fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][iSide];
-              Double_t XOff = Xmax - fTotPreRange;
-              if (0) {  //TMath::Abs(XOff - fvCPTotOff[iSmType][iSm*iNbRpc+iRpc][iCh][iSide])>100){
-                LOG(warning) << "XOff changed for "
-                             << Form("SmT%01d_sm%03d_rpc%03d_Side%d: XOff %f, old %f", iSmType, iSm, iRpc, iSide, XOff,
-                                     fvCPTotOff[iSmType][iSm * iNbRpc + iRpc][iCh][iSide]);
+            if (NULL == fhRpcCluWalk[iDetIndx][iCh][0]) break;
+            // TProfile *htmp0 = fhRpcCluWalk[iDetIndx][iCh][0]->ProfileX("_pfx",1,nbClWalkBinY);  (VF) not used
+            // TProfile *htmp1 = fhRpcCluWalk[iDetIndx][iCh][1]->ProfileX("_pfx",1,nbClWalkBinY);  (VF) not used
+            TH1D* h1tmp0 = fhRpcCluWalk[iDetIndx][iCh][0]->ProjectionX("_px", 1, nbClWalkBinY);
+            TH1D* h1tmp1 = fhRpcCluWalk[iDetIndx][iCh][1]->ProjectionX("_px", 1, nbClWalkBinY);
+            for (Int_t iWx = 0; iWx < nbClWalkBinX; iWx++) {
+              h1tmp0->SetBinContent(iWx + 1, fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][0][iWx]);
+              h1tmp1->SetBinContent(iWx + 1, fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][1][iWx]);
+              if (h1tmp0->GetBinContent(iWx + 1) != fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][0][iWx]) {
+                LOG(error) << "WriteHistos: restore unsuccessful! iWx " << iWx << " got "
+                           << h1tmp0->GetBinContent(iWx + 1) << ", expected "
+                           << fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][0][iWx];
               }
-              //            Double_t TotMean=htempTot_Mean->GetBinContent(ib);
-              Double_t TotMean = hbin->GetMean();
-              if (15 == iSmType) {
-                LOG(warning) << "Gain for "
-                             << Form("SmT%01d_sm%03d_rpc%03d_Side%d: TotMean %f, prof %f, "
-                                     "gain %f, modg %f ",
-                                     iSmType, iSm, iRpc, iSide, TotMean, htempTot_Mean->GetBinContent(ib),
-                                     fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][iSide], fdTTotMean / TotMean);
-              }
-              if (0.001 < TotMean) { fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][iSide] *= fdTTotMean / TotMean; }
             }
-            if (5 == iSmType
-                && fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0]
-                     != fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1]) {  // diamond
-              LOG(warning) << "CbmTofEventClusterizer::FillCalHist:"
-                           << " SmT " << iSmType << " Sm " << iSm << " Rpc " << iRpc << " Ch " << iCh << ": YMean "
-                           << YMean << ", TMean " << TMean << " -> "
-                           << Form(" %f %f %f %f ", fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0],
-                                   fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1],
-                                   fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][0],
-                                   fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][1]);
-              Double_t dTOff =
-                0.5 * (fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0] + fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1]);
-              Double_t dGain = 0.5
-                               * (fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][0]
-                                  + fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][1]);
-              fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0]    = dTOff;
-              fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1]    = dTOff;
-              fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][0] = dGain;
-              fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][1] = dGain;
-            }  // diamond warning end
-          }    // for( Int_t iCh = 0; iCh < iNbCh; iCh++ )
-        }      // iSmType selection condition
-
-        htempPos_pfx->Reset();  //reset to store new values
-        htempTOff_pfx->Reset();
-        htempTot_Mean->Reset();
-        htempTot_Off->Reset();
-        for (Int_t iCh = 0; iCh < iNbCh; iCh++)  // store new values
-        {
-          Double_t YMean =
-            fDigiBdfPar->GetSigVel(iSmType, iSm, iRpc) * 0.5
-            * (fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1] - fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0]);
-          Double_t TMean =
-            0.5 * (fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][1] + fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0]);
-          htempPos_pfx->Fill(iCh, YMean);
-          if (((TProfile*) htempPos_pfx)->GetBinContent(iCh + 1) != YMean) {
-            LOG(error) << "WriteHistos: restore unsuccessful! ch " << iCh << " got " << htempPos_pfx->GetBinContent(iCh)
-                       << "," << htempPos_pfx->GetBinContent(iCh + 1) << "," << htempPos_pfx->GetBinContent(iCh + 2)
-                       << ", expected " << YMean;
+            h1tmp0->SetName(Form("Cor_SmT%01d_sm%03d_rpc%03d_Ch%03d_S0_Walk_px", iSmType, iSm, iRpc, iCh));
+            //          htmp0->Write();
+            h1tmp0->Write();
+            h1tmp1->SetName(Form("Cor_SmT%01d_sm%03d_rpc%03d_Ch%03d_S1_Walk_px", iSmType, iSm, iRpc, iCh));
+            //          htmp1->Write();
+            h1tmp1->Write();
           }
-          htempTOff_pfx->Fill(iCh, TMean);
+        } break;
 
-          for (Int_t iSide = 0; iSide < 2; iSide++) {
-            htempTot_Mean->SetBinContent(iCh * 2 + 1 + iSide,
-                                         fdTTotMean / fvCPTotGain[iSmType][iSm * iNbRpc + iRpc][iCh][iSide]);
-            htempTot_Off->SetBinContent(iCh * 2 + 1 + iSide, fvCPTotOff[iSmType][iSm * iNbRpc + iRpc][iCh][iSide]);
-          }
-          //         htempTot_pfx->Fill(iCh,fdTTotMean/fvCPTotGain[iSmType][iSm*iNbRpc+iRpc][iCh][1]);
-        }  // for( Int_t iCh = 0; iCh < iNbCh; iCh++ )
-
-        LOG(debug1) << " Updating done ... write to file ";
-        htempPos_pfx->Write();
-        htempTOff_pfx->Write();
-        //        htempTot_pfx->Write();
-        htempTot_Mean->Write();
-        htempTot_Off->Write();
-
-        // store old DELTOF histos
-        LOG(debug) << " Copy old DelTof histos from " << gDirectory->GetName() << " to file ";
-
-        for (Int_t iSel = 0; iSel < iNSel; iSel++) {
-          // Store DelTof corrections
-          TDirectory* curdir = gDirectory;
-          gROOT->cd();  //
-          TH1D* hCorDelTof = (TH1D*) gDirectory->FindObjectAny(
-            Form("cl_CorSmT%01d_sm%03d_rpc%03d_Sel%02d_DelTof", iSmType, iSm, iRpc, iSel));
-          gDirectory->cd(curdir->GetPath());
-          if (NULL != hCorDelTof) {
-            TH1D* hCorDelTofout =
-              (TH1D*) hCorDelTof->Clone(Form("cl_CorSmT%01d_sm%03d_rpc%03d_Sel%02d_DelTof", iSmType, iSm, iRpc, iSel));
-            hCorDelTofout->Write();
-          }
-          else {
-            LOG(debug) << " No CorDelTof histo "
-                       << Form("cl_CorSmT%01d_sm%03d_rpc%03d_Sel%02d_DelTof", iSmType, iSm, iRpc, iSel);
-          }
-        }
-
-        LOG(debug) << " Store old walk histos to file ";
-        // store walk histos
-        for (Int_t iCh = 0; iCh < iNbCh; iCh++)  // restore old values
-        {
-          if (NULL == fhRpcCluWalk[iDetIndx][iCh][0]) break;
-          // TProfile *htmp0 = fhRpcCluWalk[iDetIndx][iCh][0]->ProfileX("_pfx",1,nbClWalkBinY);  (VF) not used
-          // TProfile *htmp1 = fhRpcCluWalk[iDetIndx][iCh][1]->ProfileX("_pfx",1,nbClWalkBinY);  (VF) not used
-          TH1D* h1tmp0 = fhRpcCluWalk[iDetIndx][iCh][0]->ProjectionX("_px", 1, nbClWalkBinY);
-          TH1D* h1tmp1 = fhRpcCluWalk[iDetIndx][iCh][1]->ProjectionX("_px", 1, nbClWalkBinY);
-          for (Int_t iWx = 0; iWx < nbClWalkBinX; iWx++) {
-            h1tmp0->SetBinContent(iWx + 1, fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][0][iWx]);
-            h1tmp1->SetBinContent(iWx + 1, fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][1][iWx]);
-            if (h1tmp0->GetBinContent(iWx + 1) != fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][0][iWx]) {
-              LOG(error) << "WriteHistos: restore unsuccessful! iWx " << iWx << " got "
-                         << h1tmp0->GetBinContent(iWx + 1) << ", expected "
-                         << fvCPWalk[iSmType][iSm * iNbRpc + iRpc][iCh][0][iWx];
-            }
-          }
-          h1tmp0->SetName(Form("Cor_SmT%01d_sm%03d_rpc%03d_Ch%03d_S0_Walk_px", iSmType, iSm, iRpc, iCh));
-          //          htmp0->Write();
-          h1tmp0->Write();
-          h1tmp1->SetName(Form("Cor_SmT%01d_sm%03d_rpc%03d_Ch%03d_S1_Walk_px", iSmType, iSm, iRpc, iCh));
-          //          htmp1->Write();
-          h1tmp1->Write();
-        }
-      } break;
-
-      default: LOG(debug) << "WriteHistos: update mode " << fCalMode << " not yet implemented";
+        default: LOG(debug) << "WriteHistos: update mode " << fCalMode << " not yet implemented";
+      }
     }
-  }
 
   //   fhCluMulCorDutSel->Write();
 
