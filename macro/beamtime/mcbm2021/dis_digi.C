@@ -7,7 +7,8 @@ void dis_digi(Int_t nEvents = 100, Int_t calMode = 93, Int_t calSel = 1, Int_t c
   Int_t iVerbose = 1;
   if (cCalId == "") cCalId = cFileId;
   TString FId = cFileId;
-  TString cRun(FId(0, 3));
+  Int_t iNLen = FId.First(".");
+  TString cRun(FId(0, iNLen));
   Int_t iRun = cRun.Atoi();
   cout << "dis_digi for Run " << iRun << endl;
 
@@ -396,6 +397,21 @@ void dis_digi(Int_t nEvents = 100, Int_t calMode = 93, Int_t calSel = 1, Int_t c
       tofFindTracks->SetStation(29, 9, 1, 1);
       //tofFindTracks->SetStation(28, 6, 0, 0);
       //tofFindTracks->SetStation(29, 6, 0, 1);
+      break;
+
+    case 11:  // for calibration mode of 2-stack & test counters
+      iMinNofHits   = 4;
+      iNStations    = 9;
+      iNReqStations = 5;
+      tofFindTracks->SetStation(0, 5, 0, 0);
+      tofFindTracks->SetStation(1, 0, 4, 1);
+      tofFindTracks->SetStation(2, 0, 3, 1);
+      tofFindTracks->SetStation(3, 0, 4, 0);
+      tofFindTracks->SetStation(4, 0, 3, 2);
+      tofFindTracks->SetStation(5, 9, 0, 0);
+      tofFindTracks->SetStation(6, 9, 1, 0);
+      tofFindTracks->SetStation(7, 9, 0, 1);
+      tofFindTracks->SetStation(8, 9, 1, 1);
       break;
 
     case 2:

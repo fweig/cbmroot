@@ -656,17 +656,6 @@ Bool_t CbmTofEventClusterizer::InitParameters()
   if (fOutHstFileName == "") { fOutHstFileName = "./tofEventClust.hst.root"; }
 
   LOG(info) << " Hst Output filename = " << fOutHstFileName;
-  /*
-	 if(fiBeamRefAddr == 0) {  // initialize defaults of sep14
-	 fiBeamRefType  = 5;
-	 fiBeamRefSm    = 1;
-	 fiBeamRefDet   = 0;
-	 fiBeamAddRefMul= 0;
-	 }
-	 if(fSelId == 0) {  // initialize defaults of sep14
-	 fSelId=4;
-	 }
-	 */
 
   LOG(info) << "<I>  BeamRefType = " << fiBeamRefType << ", Sm " << fiBeamRefSm << ", Det " << fiBeamRefDet
             << ", MulMax " << fiBeamRefMulMax;
@@ -3349,24 +3338,28 @@ Bool_t CbmTofEventClusterizer::WriteHistos()
               if (kTRUE) {  // fit gaussian around most abundant bin
                 TH1* hTy = (TH1*) htempTOff->ProjectionY(Form("%s_py%d", htempTOff->GetName(), iCh), iCh + 1, iCh + 1);
                 if (hTy->GetEntries() > WalkNHmin) {
-                  Double_t dFMean    = hTy->GetBinCenter(hTy->GetMaximumBin());
-                  Double_t dFLim     = 2.0;  // CAUTION, fixed numeric value
-                  Double_t dBinSize  = hTy->GetBinWidth(1);
-                  dFLim              = TMath::Max(dFLim, 5. * dBinSize);
-                  TFitResultPtr fRes = hTy->Fit("gaus", "SQM0", "", dFMean - dFLim, dFMean + dFLim);
-                  if (TMath::Abs(TMean - fRes->Parameter(1)) > 5.)
-                    LOG(warn) << "CalibF "
-                              << Form("TSRC %d%d%d%d gaus %8.2f %8.2f %8.2f for "
-                                      "TM %8.2f, YM %6.2f",
-                                      iSmType, iSm, iRpc, iCh, fRes->Parameter(0), fRes->Parameter(1),
-                                      fRes->Parameter(2), TMean, YMean);
-                  TMean = fRes->Parameter(1);  //overwrite mean
+                  Double_t dNPeak = hTy->GetBinContent(hTy->GetMaximumBin());
+                  if (dNPeak > WalkNHmin * 0.5) {
+                    Double_t dFMean    = hTy->GetBinCenter(hTy->GetMaximumBin());
+                    Double_t dFLim     = 2.0;  // CAUTION, fixed numeric value
+                    Double_t dBinSize  = hTy->GetBinWidth(1);
+                    dFLim              = TMath::Max(dFLim, 5. * dBinSize);
+                    TFitResultPtr fRes = hTy->Fit("gaus", "SQM", "", dFMean - dFLim, dFMean + dFLim);
+                    if (TMath::Abs(TMean - fRes->Parameter(1)) > 5.)
+                      LOG(warn) << "CalibF "
+                                << Form("TSRC %d%d%d%d gaus %8.2f %8.2f %8.2f for "
+                                        "TM %8.2f, YM %6.2f",
+                                        iSmType, iSm, iRpc, iCh, fRes->Parameter(0), fRes->Parameter(1),
+                                        fRes->Parameter(2), TMean, YMean);
+                    TMean = fRes->Parameter(1);  //overwrite mean
+                  }
                 }
               }
               Double_t dTYOff = YMean / fDigiBdfPar->GetSigVel(iSmType, iSm, iRpc);
 
               if (fiBeamRefAddr == iUniqueId) {
                 if (iFindT0 == 1) continue;  // action already done
+                Double_t dTWidth = 0;
                 // don't shift time of reference counter on average
                 if (iCh == 0) {
                   Double_t dW = 0.;
@@ -3381,14 +3374,16 @@ Bool_t CbmTofEventClusterizer::WriteHistos()
                         Double_t dFLim    = 0.5;  // CAUTION, fixed numeric value
                         Double_t dBinSize = hTy->GetBinWidth(1);
                         dFLim             = TMath::Max(dFLim, 5. * dBinSize);
-                        TFitResultPtr fRes = hTy->Fit("gaus", "SQM0", "", dFMean - dFLim, dFMean + dFLim);
+                        TFitResultPtr fRes = hTy->Fit("gaus", "SQM", "", dFMean - dFLim, dFMean + dFLim);
                         LOG(debug) << "CalibC "
                                    << Form(" TSRC %d%d%d%d gaus %8.2f %8.2f %8.2f ", iSmType, iSm, iRpc, iRefCh,
                                            fRes->Parameter(0), fRes->Parameter(1), fRes->Parameter(2));
                         TBeamRefMean += fRes->Parameter(1) * dWCh;  //overwrite mean
+                        dTWidth += fRes->Parameter(2) * dWCh;       //calculate width
                       }
                       else {
                         TBeamRefMean += ((TProfile*) htempTOff_pfx)->GetBinContent(iRefCh + 1) * dWCh;
+                        dTWidth += ((TProfile*) htempTOff_pfx)->GetBinError(iRefCh + 1) * dWCh;
                       }
                       TBeamRefMean += dWCh *  // enforce <offset>=0
                                       fvCPTOff[iSmType][iSm * iNbRpc + iRpc][iCh][0];
@@ -3396,8 +3391,9 @@ Bool_t CbmTofEventClusterizer::WriteHistos()
                   }
                   if (dW > 0.) {
                     TBeamRefMean /= dW;
+                    dTWidth /= dW;
                     // TBD apply offset all other detectors since beam counter will not be shifted
-                    LOG(info) << "<I> T0 shift all offsets by " << TBeamRefMean;
+                    LOG(info) << "<I> T0 shift all offsets by " << TBeamRefMean << ", AvWidth " << dTWidth;
                   }
                   else
                     TBeamRefMean = 0.;
