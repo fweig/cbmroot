@@ -5247,7 +5247,6 @@ Bool_t CbmTofAnaTestbeam::FillHistos() {
         }
         if (iM0 == iNbMatchedHits) {
           LOG(debug) << Form("no valid match in %d hits for Addr 0x%08x found ",
-                             iNbMatchedHits,
                              pHitRef->GetAddress());
           if (fair::Logger::Logging(fair::Severity::debug1)) LOG(fatal) << "Check for consistency!";
           return 0;
@@ -7937,7 +7936,7 @@ Bool_t CbmTofAnaTestbeam::WriteHistos() {
   TDirectory* oldDir = gDirectory;
 
   // Write histogramms to the file
-  TFile* fHist      = new TFile(fCalOutFileName, "RECREATE");
+  TFile* fHist = new TFile(fCalOutFileName, "RECREATE");
   fHist->cd();
 
   switch (fiCorMode) {
@@ -8171,7 +8170,7 @@ Bool_t CbmTofAnaTestbeam::WriteHistos() {
         if (hResidualT->GetEntries() > 100.) {
           Double_t dRMS = TMath::Abs(hResidualT->GetRMS());
           /*
-	         TFitResultPtr tFitResult = hResidualT->Fit("gaus", "QS");
+	         TFitResultPtr tFitResult = hResidualT->Fit("gaus", "SQM");
 	         dRMS = tFitResult->Parameter(2);
 */
           fhSelTypeNNResidualT_Width->SetBinContent(iSelType + 1, dRMS);
@@ -8180,7 +8179,7 @@ Bool_t CbmTofAnaTestbeam::WriteHistos() {
         if (hResidualX->GetEntries() > 100.) {
           Double_t dRMS = TMath::Abs(hResidualX->GetRMS());
           /*
-	         TFitResultPtr tFitResult = hResidualX->Fit("gaus", "QS");
+	         TFitResultPtr tFitResult = hResidualX->Fit("gaus", "SQM");
 	         dRMS = tFitResult->Parameter(2);
 */
           fhSelTypeNNResidualX_Width->SetBinContent(iSelType + 1, dRMS);
@@ -8189,7 +8188,7 @@ Bool_t CbmTofAnaTestbeam::WriteHistos() {
         if (hResidualY->GetEntries() > 100.) {
           Double_t dRMS = TMath::Abs(hResidualY->GetRMS());
           /*
-	         TFitResultPtr tFitResult = hResidualY->Fit("gaus", "QS");
+	         TFitResultPtr tFitResult = hResidualY->Fit("gaus", "SQM");
 	         dRMS = tFitResult->Parameter(2);
 */
           fhSelTypeNNResidualY_Width->SetBinContent(iSelType + 1, dRMS);

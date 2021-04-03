@@ -414,7 +414,7 @@ Bool_t CbmTofCalibrator::UpdateCalHist(Int_t iOpt)
       Double_t dFLim     = 0.5;  // CAUTION, fixed numeric value
       Double_t dBinSize  = hBy->GetBinWidth(1);
       dFLim              = TMath::Max(dFLim, 5. * dBinSize);
-      TFitResultPtr fRes = hBy->Fit("gaus", "SQM0", "", dFMean - dFLim, dFMean + dFLim);
+      TFitResultPtr fRes = hBy->Fit("gaus", "SQM", "", dFMean - dFLim, dFMean + dFLim);
       dBeamTOff          = fRes->Parameter(1);  //overwrite mean
       LOG(info) << "Found beam counter with average TOff = " << dBeamTOff;
     }
