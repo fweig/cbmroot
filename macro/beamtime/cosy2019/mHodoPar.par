@@ -1,8 +1,8 @@
 ##############################################################################
-# Class:   CbmMcbm2018HodoPar
+# Class:   CbmCosy2019HodoPar
 # Context: For mHODO testing
 ##############################################################################
-[CbmMcbm2018HodoPar]
+[CbmCosy2019HodoPar]
 //----------------------------------------------------------------------------
 // Total number of STS modules in the setup
 NbModules: Int_t 2
@@ -21,7 +21,7 @@ ModSwapXY: Int_t \
          0           0
 // Flag telling if channels on X axis should be inverted (original axis, not swapped one!)
 ModInvertX: Int_t \
-         1           1
+         0           0
 // Flag telling if channels on Y axis should be inverted (original axis, not swapped one!)
 ModInvertY: Int_t \
          0           0

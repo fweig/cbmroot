@@ -9,6 +9,7 @@
 
 #pragma link C++ class CbmCosy2019UnpackerAlgoHodo;
 #pragma link C++ class CbmCosy2019UnpackerTaskHodo + ;
+#pragma link C++ class CbmStsCoincHodo;
 
 #pragma link C++ class CbmCosy2019MonitorAlgoHodo;
 #pragma link C++ class CbmCosy2019MonitorTaskHodo;

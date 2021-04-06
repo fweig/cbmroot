@@ -52,7 +52,8 @@ Set(SRCS
 
    unpacker/CbmCosy2019UnpackerAlgoHodo.cxx
    unpacker/CbmCosy2019UnpackerTaskHodo.cxx
-
+   unpacker/CbmStsCoincHodo.cxx
+   
    monitor/CbmCosy2019MonitorAlgoHodo.cxx
    monitor/CbmCosy2019MonitorTaskHodo.cxx
 )

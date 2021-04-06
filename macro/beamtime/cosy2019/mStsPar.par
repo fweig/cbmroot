@@ -32,7 +32,7 @@ FebModuleIdx: Int_t \
  -1  0  0 -1 -1
 // STS module side for each FEB, [ NbDpb * kuNbCrobPerDpb * kuNbFebsPerCrob ], 0 = P, 1 = N, -1 if inactive
 FebModuleSide: Int_t \
-  0  0  1  0  1
+ -1  0  1  -1  -1
 // ADC Gain in e-/ADC bin for each FEB, [ NbDpb * kuNbCrobPerDpb * kuNbFebsPerCrob ]
 FebAdcGain: Double_t \
      1.0     1.0     1.0     1.0     1.0

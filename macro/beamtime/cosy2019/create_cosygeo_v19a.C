@@ -489,7 +489,7 @@ void create_cosygeo_v19a(
     if (2 == iStation) {
       /// Rotate STS station to horizontal position
       TGeoRotation* rot = new TGeoRotation();
-      rot->RotateZ(90.);
+      rot->RotateZ(-90.);
 
       /// Shift the station to pick a module under test
       //      Double_t dShiftX = -3.1;
