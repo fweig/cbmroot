@@ -1,7 +1,5 @@
-void pl_pull_trk(Int_t NSt   = 8,
-                 Int_t iVar  = 0,
-                 Int_t iFit  = 0,
-                 Int_t iDrop = -1) {
+void pl_pull_trk(Int_t NSt = 8, Int_t iVar = 0, Int_t iFit = 0, Int_t iDrop = -1)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   TCanvas* can = new TCanvas("can", "can", 50, 0, 800, 800);
@@ -10,12 +8,14 @@ void pl_pull_trk(Int_t NSt   = 8,
     case 6:
     case 5:
     case 4: can->Divide(3, 3); break;
+    case 9: can->Divide(3, 4); break;
     case 18: can->Divide(4, 5); break;
     default: can->Divide(4, 4); ;
   }
   gPad->SetFillColor(0);
   gStyle->SetPalette(1);
   gStyle->SetOptStat(kTRUE);
+  gStyle->SetOptFit(kTRUE);
 
   gROOT->cd();
   gROOT->SetDirLevel(1);
@@ -57,12 +57,12 @@ void pl_pull_trk(Int_t NSt   = 8,
       gPad->SetLogy();
       gPad->SetGridx();
       if (iFit > 0) {
-        Double_t dFMean   = h1->GetMean();
-        Double_t dFLim    = 3.0 * h1->GetRMS();
-        Double_t dBinSize = h1->GetBinWidth(1);
-        dFLim             = TMath::Max(dFLim, 5. * dBinSize);
-        TFitResultPtr fRes =
-          h1->Fit("gaus", "S", "", dFMean - dFLim, dFMean + dFLim);
+        //Double_t dFMean   = h1->GetMean();
+        Double_t dFMean    = h1->GetBinCenter(h1->GetMaximumBin());
+        Double_t dFLim     = 2.0 * h1->GetRMS();
+        Double_t dBinSize  = h1->GetBinWidth(1);
+        dFLim              = TMath::Max(dFLim, 5. * dBinSize);
+        TFitResultPtr fRes = h1->Fit("gaus", "SQM", "", dFMean - dFLim, dFMean + dFLim);
         //cout << " fRes = "<< fRes <<endl;
         if (-1 == fRes) continue;
         if (iDrop == iSt) {  // drop station from deconvolution
@@ -78,7 +78,8 @@ void pl_pull_trk(Int_t NSt   = 8,
         //vSig[iIndSt]=TMath::Max(20.,vSig[iSt]);
         iIndSt++;
       }
-    } else {
+    }
+    else {
       cout << hname << " not found" << endl;
     }
   }
@@ -124,9 +125,8 @@ void pl_pull_trk(Int_t NSt   = 8,
   TMatrixD a(iIndSt, iIndSt);
   for (Int_t i = 0; i < iIndSt; i++)
     for (Int_t j = 0; j < iIndSt; j++) {
-      if (i == j) {
-        a[i][j] = 1;
-      } else {
+      if (i == j) { a[i][j] = 1; }
+      else {
         a[i][j] = 1. / val;
       }
     }
@@ -169,14 +169,8 @@ void pl_pull_trk(Int_t NSt   = 8,
   grr->Draw("APLE");
 
   for (Int_t i = 0; i < iIndSt; i++)
-    cout << Form(
-      "GMean %6.3f +/- %6.5f, GSig: %6.3f +/- %6.5f => ResC %d: %6.3f ",
-      vMean[i],
-      vMeanErr[i],
-      vSig[i],
-      vSigErr[i],
-      i,
-      vRes[i])
+    cout << Form("GMean %6.3f +/- %6.5f, GSig: %6.3f +/- %6.5f => ResC %d: %6.3f ", vMean[i], vMeanErr[i], vSig[i],
+                 vSigErr[i], i, vRes[i])
          << endl;
 
   cout << "Res-summary " << iVar << ": Nall, sigs = " << Nall;

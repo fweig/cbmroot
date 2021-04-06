@@ -76,8 +76,9 @@ static Double_t dTLEvt        = 0.;
 static Int_t iNSpill          = 0;
 static Int_t iNbTs            = 0;
 
-const Double_t fdSpillDuration = 2.;   // in seconds
-const Double_t fdSpillBreak    = 0.9;  // in seconds
+const Double_t fdSpillDuration = 2.;    // in seconds
+const Double_t fdSpillBreak    = 0.9;   // in seconds
+const Double_t dTimeRes        = 0.08;  // in ns
 
 static Bool_t bAddBeamCounterSideDigi = kTRUE;
 static TRandom3* fRndm                = new TRandom3();
@@ -4712,6 +4713,7 @@ Bool_t CbmTofEventClusterizer::AddNextChan(Int_t iSmType, Int_t iSm, Int_t iRpc,
                                   vDigiIndRef.size(),  // number of linked digis =  2*CluSize
                                   //vPtsRef.size(), // flag  = number of TofPoints generating the cluster
                                   Int_t(dLastTotS * 10.));  //channel -> Tot
+  pHit->SetTimeError(dTimeRes);
   // output hit
   new ((*fTofHitsColl)[fiNbHits]) CbmTofHit(*pHit);
   if (fdMemoryTime > 0.) {  // memorize hit
@@ -5226,6 +5228,8 @@ Bool_t CbmTofEventClusterizer::BuildHits()
                                       vDigiIndRef.size(),  // number of linked digis =  2*CluSize
                                       //vPtsRef.size(), // flag  = number of TofPoints generating the cluster
                                       Int_t(dWeightsSum * 10.));  //channel -> Tot
+                      pHit->SetTimeError(dTimeRes);
+
                       //0) ; //channel
                       // output hit
                       new ((*fTofHitsColl)[fiNbHits]) CbmTofHit(*pHit);
@@ -5453,6 +5457,7 @@ Bool_t CbmTofEventClusterizer::BuildHits()
                                               vDigiIndRef.size(),  // number of linked digis =  2*CluSize
                                               //vPtsRef.size(), // flag  = number of TofPoints generating the cluster
                                               Int_t(dWeightsSum * 10.));  //channel -> Tot
+              pHit->SetTimeError(dTimeRes);
               //                0) ; //channel
               //                vDigiIndRef);
               // output hit

@@ -139,8 +139,8 @@ Bool_t CbmTofCalibrator::CreateCalHist()
   LOG(info) << "Define Calibrator histos for " << iNbDet << " detectors ";
 
   fhCalR0  = new TH1D("hCalR0", "Tracklet distance to nominal vertex; R_0 [cm]", 100, 0., 0.5);
-  fhCalDX0 = new TH1D("hCalDX0", "Tracklet distance to nominal vertex; #DeltaX_0 [cm]", 100, -0.5, 0.5);
-  fhCalDY0 = new TH1D("hCalDY0", "Tracklet distance to nominal vertex; #DeltaY_0 [cm]", 100, -0.5, 0.5);
+  fhCalDX0 = new TH1D("hCalDX0", "Tracklet distance to nominal vertex; #DeltaX_0 [cm]", 100, -1.5, 1.5);
+  fhCalDY0 = new TH1D("hCalDY0", "Tracklet distance to nominal vertex; #DeltaY_0 [cm]", 100, -1.5, 1.5);
 
   fhCalPosition.resize(iNbDet);
   fhCalPos.resize(iNbDet);

@@ -431,7 +431,7 @@ Bool_t CbmTofFindTracks::LoadCalParameter()
       new TH1F(Form("hPullT_Smt_Off"), Form("Tracklet PullT vs RpcInd ; RpcInd ; #DeltaT (ns)"), nSmt, 0, nSmt);
 
     // Initialize Parameter
-    if (fiCorMode == 3)  // hidden option, FIXME
+    if (fiCorMode <= 3)  // hidden option, FIXME
       for (Int_t iDet = 0; iDet < nSmt; iDet++) {
         std::map<Int_t, Int_t>::iterator it;
         //it = fMapRpcIdParInd.find(iDet);
@@ -650,14 +650,14 @@ Bool_t CbmTofFindTracks::WriteHistos()
             Double_t dLim      = 1.5 * hTOff1DY->GetRMS();
             TFitResultPtr fRes = hTOff1DY->Fit("gaus", "SQM", "", dMean - dLim, dMean + dLim);
             Int_t iFitStatus   = fRes;
-            if (iFitStatus == 0) {  // check validity of fit
-              dFMean = fRes->Parameter(1);
-              dVal += hTOff1D->GetBinContent(ix + 1);  //revert default correction
-              dVal -= dFMean;
-            }
-            LOG(info) << "Update hPullT_Smt_Off Ind " << ix << ": Old " << fhPullT_Smt_Off->GetBinContent(ix + 1)
-                      << ", Pull " << htmp1D->GetBinContent(ix + 1) << ", Dev@Peak " << hTOff1D->GetBinContent(ix + 1)
-                      << ", FitMean " << dFMean << " -> " << dVal;
+            //if (iFitStatus == 0) {  // check validity of fit
+            dFMean = fRes->Parameter(1);
+            dVal += hTOff1D->GetBinContent(ix + 1);  //revert default correction
+            dVal -= dFMean;
+            //}
+            LOG(info) << "Update hPullT_Smt_Off Ind " << ix << ", stat " << iFitStatus << ": Old "
+                      << fhPullT_Smt_Off->GetBinContent(ix + 1) << ", Pull " << htmp1D->GetBinContent(ix + 1)
+                      << ", Dev@Peak " << hTOff1D->GetBinContent(ix + 1) << ", FitMean " << dFMean << " -> " << dVal;
           }
           else {
             LOG(debug1) << "Update hPullT_Smt_Off " << ix << ": insufficient counts: " << hTOff1DY->GetEntries();
@@ -1253,8 +1253,8 @@ void CbmTofFindTracks::CreateHistograms()
   fhPullZ_Smt = new TH2F(Form("hPullZ_Smt"), Form("Tracklet ResiZ vs RpcInd ; RpcInd ; #DeltaZ (cm)"), nSmt, 0, nSmt,
                          100, -DZ0MAX, DZ0MAX);
 
-  fhTOff_Smt =
-    new TH2F(Form("hTOff_Smt"), Form("Tracklet TOff; RpcInd ; TOff (ns)"), nSmt, 0, nSmt, 501, -fT0MAX, fT0MAX);
+  fhTOff_Smt   = new TH2F(Form("hTOff_Smt"), Form("Tracklet TOff; RpcInd ; #DeltaTOff (ns)"), nSmt, 0, nSmt, 501,
+                        -fT0MAX * 20, fT0MAX * 20);
   fhTOff_HMul2 = new TH2F(Form("hTOff_HMul2"), Form("Tracklet TOff(HMul2); RpcInd ; TOff (ns)"), nSmt, 0, nSmt, 500,
                           -fT0MAX, fT0MAX);
 

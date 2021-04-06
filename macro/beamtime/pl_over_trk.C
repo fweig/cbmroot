@@ -1,4 +1,5 @@
-void pl_over_trk(Int_t NSt = 4) {
+void pl_over_trk(Int_t NSt = 4)
+{
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   TCanvas* can = new TCanvas("can", "can", 50, 0, 800, 800);
@@ -26,7 +27,8 @@ void pl_over_trk(Int_t NSt = 4) {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -37,7 +39,8 @@ void pl_over_trk(Int_t NSt = 4) {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -48,7 +51,8 @@ void pl_over_trk(Int_t NSt = 4) {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -59,7 +63,8 @@ void pl_over_trk(Int_t NSt = 4) {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -74,12 +79,14 @@ void pl_over_trk(Int_t NSt = 4) {
         h1->Draw("");
         h1->SetMinimum(0.5);
         gPad->SetLogy();
-      } else {
+      }
+      else {
         h1->Draw("same");
       }
       if (iCol == 5 || iCol == 10) iCol++;
       h1->SetLineColor(iCol++);
-    } else {
+    }
+    else {
       cout << hname << " not found" << endl;
     }
   }
@@ -95,12 +102,14 @@ void pl_over_trk(Int_t NSt = 4) {
         h1->Draw("");
         h1->SetMinimum(0.5);
         gPad->SetLogy();
-      } else {
+      }
+      else {
         h1->Draw("same");
       }
       if (iCol == 5 || iCol == 10) iCol++;
       h1->SetLineColor(iCol++);
-    } else {
+    }
+    else {
       cout << hname << " not found" << endl;
     }
   }
@@ -116,12 +125,14 @@ void pl_over_trk(Int_t NSt = 4) {
         h1->Draw("");
         h1->SetMinimum(0.5);
         gPad->SetLogy();
-      } else {
+      }
+      else {
         h1->Draw("same");
       }
       if (iCol == 5 || iCol == 10) iCol++;
       h1->SetLineColor(iCol++);
-    } else {
+    }
+    else {
       cout << hname << " not found" << endl;
     }
   }
@@ -137,12 +148,14 @@ void pl_over_trk(Int_t NSt = 4) {
         h1->Draw("");
         h1->SetMinimum(0.5);
         gPad->SetLogy();
-      } else {
+      }
+      else {
         h1->Draw("same");
       }
       if (iCol == 5 || iCol == 10) iCol++;
       h1->SetLineColor(iCol++);
-    } else {
+    }
+    else {
       cout << hname << " not found" << endl;
     }
   }
@@ -154,7 +167,8 @@ void pl_over_trk(Int_t NSt = 4) {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -165,7 +179,8 @@ void pl_over_trk(Int_t NSt = 4) {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -176,7 +191,8 @@ void pl_over_trk(Int_t NSt = 4) {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -187,7 +203,8 @@ void pl_over_trk(Int_t NSt = 4) {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -206,13 +223,20 @@ void pl_over_trk(Int_t NSt = 4) {
   hname = Form("hCalDX0");
   h1    = (TH1*) gROOT->FindObjectAny(hname);
   if (h1 != NULL) {
-    h1->Draw("");
-    gPad->SetLogy();
     hname    = Form("hCalDY0");
     TH1* h1y = (TH1*) gROOT->FindObjectAny(hname);
+
+    Double_t dYmax = TMath::Max(h1->GetMaximum(), h1y->GetMaximum());
+    dYmax *= 1.1;
+    h1->SetMaximum(dYmax);
+
+    h1->Draw("");
+    gPad->SetLogy();
+
     h1y->SetLineColor(2);
     h1y->Draw("same");
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
 
@@ -225,7 +249,8 @@ void pl_over_trk(Int_t NSt = 4) {
     h1->SetMinimum(0.1 * h1->GetMaximum());
     gPad->SetLogy();
     hAll = (TH1*) h1->Clone();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
   hname = Form("hUsedHitsStation");
@@ -238,8 +263,8 @@ void pl_over_trk(Int_t NSt = 4) {
 
     can->cd(15);
     hEff->Draw();
-
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
   can->cd(16);
@@ -249,7 +274,8 @@ void pl_over_trk(Int_t NSt = 4) {
   if (h2 != NULL) {
     h2->Draw("colz");
     gPad->SetLogz();
-  } else {
+  }
+  else {
     cout << hname << " not found" << endl;
   }
   can->SaveAs("pl_over_trk.pdf");
