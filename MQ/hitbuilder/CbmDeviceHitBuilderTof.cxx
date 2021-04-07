@@ -1480,7 +1480,7 @@ Bool_t CbmDeviceHitBuilderTof::InspectRawDigis()
     for (Int_t iDigI2 = 0; iDigI2 < iNbTofDigi; iDigI2++) {
       CbmTofDigi* pDigi2 = &fvDigiIn[iDigI2];
       if (pDigi->GetAddress() != pDigi2->GetAddress())
-        if ( pDigi->GetType() == 6  && pDigi2->GetType() == 6)
+        if (pDigi->GetType() == 6 && pDigi2->GetType() == 6)
           fhBucDigiCor->Fill(pDigi->GetRpc() * 64 + pDigi->GetChannel() * 2 + pDigi->GetSide(),
                              pDigi2->GetRpc() * 64 + pDigi2->GetChannel() * 2 + pDigi2->GetSide());
 
