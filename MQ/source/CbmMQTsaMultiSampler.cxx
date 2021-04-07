@@ -262,123 +262,6 @@ try {
     LOG(info) << "Sending components in separate TS per channel";
   }  // else if( fbSendTsPerSysId && fbSendTsPerSysId ) of if( fbNoSplitTs )
 
-  if (0 < fuPublishFreqTs) {
-    LOG(info) << "Histograms publication frequency in TS:    " << fuPublishFreqTs;
-    LOG(info) << "Histograms publication min. interval in s: " << fdMinPublishTime;
-    LOG(info) << "Histograms publication max. interval in s: " << fdMaxPublishTime;
-
-    /// Vector of pointers on each histo (+ optionally desired folder)
-    std::vector<std::pair<TNamed*, std::string>> vHistos = {};
-    /// Vector of pointers on each canvas (+ optionally desired folder)
-    std::vector<std::pair<TCanvas*, std::string>> vCanvases = {};
-
-    /// Histos creation and obtain pointer on them
-    fhTsRate       = new TH1I("TsRate", "TS rate; t [s]", 1800, 0., 1800.);
-    fhTsSize       = new TH1I("TsSize", "Size of TS; Size [MB]", 15000, 0., 15000.);
-    fhTsSizeEvo    = new TProfile("TsSizeEvo", "Evolution of the TS Size; t [s]; Mean size [MB]", 1800, 0., 1800.);
-    fhTsMaxSizeEvo = new TH1F("TsMaxSizeEvo", "Evolution of maximal TS Size; t [s]; Max size [MB]", 1800, 0., 1800.);
-    fhMissedTS     = new TH1I("Missed_TS", "Missed TS", 2, 0., 2.);
-    fhMissedTSEvo  = new TProfile("Missed_TS_Evo", "Missed TS evolution; t [s]", 1800, 0., 1800.);
-
-    /// Add histo pointers to the histo vector
-    vHistos.push_back(std::pair<TNamed*, std::string>(fhTsRate, "Sampler"));
-    vHistos.push_back(std::pair<TNamed*, std::string>(fhTsSize, "Sampler"));
-    vHistos.push_back(std::pair<TNamed*, std::string>(fhTsSizeEvo, "Sampler"));
-    vHistos.push_back(std::pair<TNamed*, std::string>(fhTsMaxSizeEvo, "Sampler"));
-    vHistos.push_back(std::pair<TNamed*, std::string>(fhMissedTS, "Sampler"));
-    vHistos.push_back(std::pair<TNamed*, std::string>(fhMissedTSEvo, "Sampler"));
-
-    /// Canvases creation
-    Double_t w = 10;
-    Double_t h = 10;
-    fcSummary  = new TCanvas("cSampSummary", "Sampler monitoring plots", w, h);
-    fcSummary->Divide(2, 3);
-
-    fcSummary->cd(1);
-    gPad->SetGridx();
-    gPad->SetGridy();
-    fhTsRate->Draw("hist");
-
-    fcSummary->cd(2);
-    gPad->SetGridx();
-    gPad->SetGridy();
-    gPad->SetLogx();
-    gPad->SetLogy();
-    fhTsSize->Draw("hist");
-
-    fcSummary->cd(3);
-    gPad->SetGridx();
-    gPad->SetGridy();
-    fhTsSizeEvo->Draw("hist");
-
-    fcSummary->cd(4);
-    gPad->SetGridx();
-    gPad->SetGridy();
-    fhTsMaxSizeEvo->Draw("hist");
-
-    fcSummary->cd(5);
-    gPad->SetGridx();
-    gPad->SetGridy();
-    fhMissedTS->Draw("hist");
-
-    fcSummary->cd(6);
-    gPad->SetGridx();
-    gPad->SetGridy();
-    fhMissedTSEvo->Draw("el");
-
-    /// Add canvas pointers to the canvas vector
-    vCanvases.push_back(std::pair<TCanvas*, std::string>(fcSummary, "canvases"));
-
-    /// Add pointers to each histo in the histo array
-    /// Create histo config vector
-    /// ===> Use an std::vector< std::pair< std::string, std::string > > with < Histo name, Folder >
-    ///      and send it through a separate channel using the BoostSerializer
-    for (UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto) {
-      //         LOG(info) << "Registering  " << vHistos[ uHisto ].first->GetName()
-      //                   << " in " << vHistos[ uHisto ].second.data()
-      //                   ;
-      fArrayHisto.Add(vHistos[uHisto].first);
-      std::pair<std::string, std::string> psHistoConfig(vHistos[uHisto].first->GetName(), vHistos[uHisto].second);
-      fvpsHistosFolder.push_back(psHistoConfig);
-
-      /// Serialize the vector of histo config into a single MQ message
-      FairMQMessagePtr messageHist(NewMessage());
-      Serialize<BoostSerializer<std::pair<std::string, std::string>>>(*messageHist, psHistoConfig);
-
-      /// Send message to the common histogram config messages queue
-      if (Send(messageHist, fsChannelNameHistosConfig) < 0) {
-        LOG(fatal) << "Problem sending histo config";
-      }  // if( Send( messageHist, fsChannelNameHistosConfig ) < 0 )
-
-      LOG(info) << "Config of hist  " << psHistoConfig.first.data() << " in folder " << psHistoConfig.second.data();
-    }  // for( UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto )
-
-    /// Create canvas config vector
-    /// ===> Use an std::vector< std::pair< std::string, std::string > > with < Canvas name, config >
-    ///      and send it through a separate channel using the BoostSerializer
-    for (UInt_t uCanv = 0; uCanv < vCanvases.size(); ++uCanv) {
-      //         LOG(info) << "Registering  " << vCanvases[ uCanv ].first->GetName()
-      //                   << " in " << vCanvases[ uCanv ].second.data();
-      std::string sCanvName = (vCanvases[uCanv].first)->GetName();
-      std::string sCanvConf = GenerateCanvasConfigString(vCanvases[uCanv].first);
-
-      std::pair<std::string, std::string> psCanvConfig(sCanvName, sCanvConf);
-
-      fvpsCanvasConfig.push_back(psCanvConfig);
-
-      /// Serialize the vector of canvas config into a single MQ message
-      FairMQMessagePtr messageCan(NewMessage());
-      Serialize<BoostSerializer<std::pair<std::string, std::string>>>(*messageCan, psCanvConfig);
-
-      /// Send message to the common canvas config messages queue
-      if (Send(messageCan, fsChannelNameCanvasConfig) < 0) {
-        LOG(fatal) << "Problem sending canvas config";
-      }  // if( Send( messageCan, fsChannelNameCanvasConfig ) < 0 )
-
-      LOG(info) << "Config string of Canvas  " << psCanvConfig.first.data() << " is " << psCanvConfig.second.data();
-    }  //  for( UInt_t uCanv = 0; uCanv < vCanvases.size(); ++uCanv )
-  }    // if( 0 < fuPublishFreqTs )
-
   fTime = std::chrono::steady_clock::now();
 }
 catch (InitTaskError& e) {
@@ -427,8 +310,136 @@ bool CbmMQTsaMultiSampler::IsChannelNameAllowed(std::string channelName)
   return false;
 }
 
+bool CbmMQTsaMultiSampler::InitHistograms()
+{
+  LOG(info) << "Histograms publication frequency in TS:    " << fuPublishFreqTs;
+  LOG(info) << "Histograms publication min. interval in s: " << fdMinPublishTime;
+  LOG(info) << "Histograms publication max. interval in s: " << fdMaxPublishTime;
+
+  /// Vector of pointers on each histo (+ optionally desired folder)
+  std::vector<std::pair<TNamed*, std::string>> vHistos = {};
+  /// Vector of pointers on each canvas (+ optionally desired folder)
+  std::vector<std::pair<TCanvas*, std::string>> vCanvases = {};
+
+  /// Histos creation and obtain pointer on them
+  fhTsRate       = new TH1I("TsRate", "TS rate; t [s]", 1800, 0., 1800.);
+  fhTsSize       = new TH1I("TsSize", "Size of TS; Size [MB]", 15000, 0., 15000.);
+  fhTsSizeEvo    = new TProfile("TsSizeEvo", "Evolution of the TS Size; t [s]; Mean size [MB]", 1800, 0., 1800.);
+  fhTsMaxSizeEvo = new TH1F("TsMaxSizeEvo", "Evolution of maximal TS Size; t [s]; Max size [MB]", 1800, 0., 1800.);
+  fhMissedTS     = new TH1I("Missed_TS", "Missed TS", 2, 0., 2.);
+  fhMissedTSEvo  = new TProfile("Missed_TS_Evo", "Missed TS evolution; t [s]", 1800, 0., 1800.);
+
+  /// Add histo pointers to the histo vector
+  vHistos.push_back(std::pair<TNamed*, std::string>(fhTsRate, "Sampler"));
+  vHistos.push_back(std::pair<TNamed*, std::string>(fhTsSize, "Sampler"));
+  vHistos.push_back(std::pair<TNamed*, std::string>(fhTsSizeEvo, "Sampler"));
+  vHistos.push_back(std::pair<TNamed*, std::string>(fhTsMaxSizeEvo, "Sampler"));
+  vHistos.push_back(std::pair<TNamed*, std::string>(fhMissedTS, "Sampler"));
+  vHistos.push_back(std::pair<TNamed*, std::string>(fhMissedTSEvo, "Sampler"));
+
+  /// Canvases creation
+  Double_t w = 10;
+  Double_t h = 10;
+  fcSummary  = new TCanvas("cSampSummary", "Sampler monitoring plots", w, h);
+  fcSummary->Divide(2, 3);
+
+  fcSummary->cd(1);
+  gPad->SetGridx();
+  gPad->SetGridy();
+  fhTsRate->Draw("hist");
+
+  fcSummary->cd(2);
+  gPad->SetGridx();
+  gPad->SetGridy();
+  gPad->SetLogx();
+  gPad->SetLogy();
+  fhTsSize->Draw("hist");
+
+  fcSummary->cd(3);
+  gPad->SetGridx();
+  gPad->SetGridy();
+  fhTsSizeEvo->Draw("hist");
+
+  fcSummary->cd(4);
+  gPad->SetGridx();
+  gPad->SetGridy();
+  fhTsMaxSizeEvo->Draw("hist");
+
+  fcSummary->cd(5);
+  gPad->SetGridx();
+  gPad->SetGridy();
+  fhMissedTS->Draw("hist");
+
+  fcSummary->cd(6);
+  gPad->SetGridx();
+  gPad->SetGridy();
+  fhMissedTSEvo->Draw("el");
+
+  /// Add canvas pointers to the canvas vector
+  vCanvases.push_back(std::pair<TCanvas*, std::string>(fcSummary, "canvases"));
+
+  /// Add pointers to each histo in the histo array
+  /// Create histo config vector
+  /// ===> Use an std::vector< std::pair< std::string, std::string > > with < Histo name, Folder >
+  ///      and send it through a separate channel using the BoostSerializer
+  for (UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto) {
+    //         LOG(info) << "Registering  " << vHistos[ uHisto ].first->GetName()
+    //                   << " in " << vHistos[ uHisto ].second.data()
+    //                   ;
+    fArrayHisto.Add( vHistos[ uHisto ].first );
+    std::pair< std::string, std::string > psHistoConfig( vHistos[ uHisto ].first->GetName(),
+                                                         vHistos[ uHisto ].second );
+    fvpsHistosFolder.push_back( psHistoConfig );
+
+    /// Serialize the vector of histo config into a single MQ message
+    FairMQMessagePtr messageHist( NewMessage() );
+    Serialize< BoostSerializer < std::pair< std::string, std::string > > >( *messageHist, psHistoConfig );
+
+    /// Send message to the common histogram config messages queue
+    if( Send( messageHist, fsChannelNameHistosConfig ) < 0 )
+    {
+      LOG(fatal) << "Problem sending histo config";
+    } // if( Send( messageHist, fsChannelNameHistosConfig ) < 0 )
+
+    LOG(info) << "Config of hist  " << psHistoConfig.first.data()
+              << " in folder " << psHistoConfig.second.data() ;
+  }  // for( UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto )
+
+  /// Create canvas config vector
+  /// ===> Use an std::vector< std::pair< std::string, std::string > > with < Canvas name, config >
+  ///      and send it through a separate channel using the BoostSerializer
+  for (UInt_t uCanv = 0; uCanv < vCanvases.size(); ++uCanv) {
+    //         LOG(info) << "Registering  " << vCanvases[ uCanv ].first->GetName()
+    //                   << " in " << vCanvases[ uCanv ].second.data();
+    std::string sCanvName = (vCanvases[ uCanv ].first)->GetName();
+    std::string sCanvConf = GenerateCanvasConfigString( vCanvases[ uCanv ].first );
+
+    std::pair< std::string, std::string > psCanvConfig( sCanvName, sCanvConf );
+
+    fvpsCanvasConfig.push_back( psCanvConfig );
+
+    /// Serialize the vector of canvas config into a single MQ message
+    FairMQMessagePtr messageCan( NewMessage() );
+    Serialize< BoostSerializer < std::pair< std::string, std::string > > >( *messageCan, psCanvConfig );
+
+    /// Send message to the common canvas config messages queue
+    if( Send( messageCan, fsChannelNameCanvasConfig ) < 0 )
+    {
+      LOG(fatal) << "Problem sending canvas config";
+    } // if( Send( messageCan, fsChannelNameCanvasConfig ) < 0 )
+
+    LOG(info) << "Config string of Canvas  " << psCanvConfig.first.data()
+              << " is " << psCanvConfig.second.data() ;
+  }  //  for( UInt_t uCanv = 0; uCanv < vCanvases.size(); ++uCanv )
+
+  return true;
+}
+
 bool CbmMQTsaMultiSampler::ConditionalRun()
 {
+  if (0 < fuPublishFreqTs && 0 == fTSCounter) {
+    InitHistograms();
+  } // if( 0 < fuPublishFreqTs )
 
   auto timeslice = fSource->get();
   if (timeslice) {

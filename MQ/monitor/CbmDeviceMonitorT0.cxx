@@ -132,7 +132,6 @@ try {
       OnData(entry.first, &CbmDeviceMonitorT0::HandleData);
     }  // if( entry.first.find( "ts" )
   }    // for( auto const &entry : fChannels )
-  InitContainers();
 }
 catch (InitTaskError& e) {
   LOG(error) << e.what();
@@ -157,7 +156,7 @@ bool CbmDeviceMonitorT0::IsChannelNameAllowed(std::string channelName)
   return false;
 }
 
-Bool_t CbmDeviceMonitorT0::InitContainers()
+bool CbmDeviceMonitorT0::InitContainers()
 {
   LOG(info) << "Init parameter containers for CbmDeviceMonitorT0.";
 
@@ -211,11 +210,13 @@ Bool_t CbmDeviceMonitorT0::InitContainers()
 
   Bool_t initOK = fMonitorAlgo->InitContainers();
 
-  //   Bool_t initOK = fMonitorAlgo->ReInitContainers();
+  return initOK;
+}
 
+bool CbmDeviceMonitorT0::InitHistograms() {
   /// Histos creation and obtain pointer on them
   /// Trigger histo creation on all associated algos
-  initOK &= fMonitorAlgo->CreateHistograms();
+  bool initOK = fMonitorAlgo->CreateHistograms();
 
   /// Obtain vector of pointers on each histo from the algo (+ optionally desired folder)
   std::vector<std::pair<TNamed*, std::string>> vHistos = fMonitorAlgo->GetHistoVector();
@@ -280,6 +281,16 @@ Bool_t CbmDeviceMonitorT0::InitContainers()
 // handler is called whenever a message arrives on "data", with a reference to the message and a sub-channel index (here 0)
 bool CbmDeviceMonitorT0::HandleData(FairMQMessagePtr& msg, int /*index*/)
 {
+
+  if( 0 == fulNumMessages) try {
+     InitContainers();
+  } catch (InitTaskError& e) {
+     LOG(error) << e.what();
+     ChangeState(fair::mq::Transition::ErrorFound);
+  }
+
+  if( 0 == fulNumMessages) InitHistograms();
+
   fulNumMessages++;
   LOG(debug) << "Received message number " << fulNumMessages << " with size " << msg->GetSize();
 

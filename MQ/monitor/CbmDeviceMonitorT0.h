@@ -84,8 +84,9 @@ private:
   std::vector<std::pair<std::string, std::string>> fvpsCanvasConfig;
 
   bool IsChannelNameAllowed(std::string channelName);
-  Bool_t InitContainers();
-  Bool_t DoUnpack(const fles::Timeslice& ts, size_t component);
+  bool InitContainers();
+  bool InitHistograms();
+  bool DoUnpack(const fles::Timeslice& ts, size_t component);
   void Finish();
   bool SendHistograms();
 };
