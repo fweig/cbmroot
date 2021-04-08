@@ -5246,8 +5246,7 @@ Bool_t CbmTofAnaTestbeam::FillHistos() {
           }
         }
         if (iM0 == iNbMatchedHits) {
-          LOG(debug) << Form("no valid match in %d hits for Addr 0x%08x found ", iNbMatchedHits,
-                             pHitRef->GetAddress());
+          LOG(debug) << Form("no valid match in %d hits for Addr 0x%08x found ", iNbMatchedHits, pHitRef->GetAddress());
           if (fair::Logger::Logging(fair::Severity::debug1)) LOG(fatal) << "Check for consistency!";
           return 0;
         }
