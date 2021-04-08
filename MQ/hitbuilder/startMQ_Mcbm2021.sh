@@ -38,7 +38,7 @@ _pultotmax=500
 _puldetref=16 # TSR=032
 
 #_tofftof=0.  
-_tofftof=-30. 
+_tofftof=-35. 
 
 if [[ $_reqmod -eq 1 ]]; then
   _iUnp=1
@@ -152,7 +152,7 @@ UNPACKER+=" --channel-config name=syscmd,type=sub,method=connect,rateLogging=0,t
 UNPACKER+=" --severity  INFO" 
 UNPACKER+=" --SelectComponents 1"
 #UNPACKER+=" --ReqBeam      20486" # diamond -> 0x00005006 v14a
-#UNPACKER+=" --ReqBeam      10246" # diamond -> 0x00002806 v21a 
+UNPACKER+=" --ReqBeam      10246" # diamond -> 0x00002806 v21a 
 if  [[ $_reqmod -lt 1 ]]; then
     UNPACKER+=" --ReqMode 0"
     case $_reqmod in

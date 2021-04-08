@@ -78,7 +78,7 @@ source ./init_cal_all.sh ${RunIdMode} ${CalSet} ${Deadtime}
 
 cd  ${wdir}
 #echo execute: ./iter_calib.sh ${RunIdMode} ${CalSet} ${Sel2} ${Deadtime}
-#source ./iter_calib.sh ${RunIdMode} ${CalSet} ${Sel2} ${Deadtime}
+#source ./iter_calib.sh ${RunIdMode} ${CalSet} ${Sel2} ${Deadtime} 
 
 cd  ${wdir}
 echo execute: ./gen_hits.sh ${RunIdMode} ${CalSet} ${Sel2} ${Deadtime}
