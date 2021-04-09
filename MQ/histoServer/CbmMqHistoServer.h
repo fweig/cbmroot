@@ -37,6 +37,8 @@ protected:
 
   bool ReceiveCanvasConfig(FairMQMessagePtr& msg, int index);
 
+  bool ReceiveConfigAndData(FairMQParts& msg, int index);
+
   virtual void PreRun();
 
   virtual void PostRun();

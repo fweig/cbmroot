@@ -50,8 +50,6 @@ private:
   /// User settings parameters
   std::string fsChannelNameDataInput    = "tofcomponent";
   std::string fsChannelNameHistosInput  = "histogram-in";
-  std::string fsChannelNameHistosConfig = "histo-conf";
-  std::string fsChannelNameCanvasConfig = "canvas-conf";
   uint32_t fuHistoryHistoSize           = 3600;
   uint32_t fuMinTotPulser               = 185;
   uint32_t fuMaxTotPulser               = 195;
@@ -82,11 +80,15 @@ private:
   /// Format of Can config is "NbPadX(U);NbPadY(U);ConfigPad1(s);....;ConfigPadXY(s)"
   /// Format of Pad config is "GrixX(b),GridY(b),LogX(b),LogY(b),LogZ(b),HistoName(s),DrawOptions(s)"
   std::vector<std::pair<std::string, std::string>> fvpsCanvasConfig = {};
+  /// Flag indicating whether the histograms and canvases configurations were already published
+  bool fbConfigSent = false;
 
   bool IsChannelNameAllowed(std::string channelName);
-  Bool_t InitContainers();
+  bool InitContainers();
+  bool InitHistograms();
   Bool_t DoUnpack(const fles::Timeslice& ts, size_t component);
   void Finish();
+  bool SendHistoConfAndData();
   bool SendHistograms();
 };
 

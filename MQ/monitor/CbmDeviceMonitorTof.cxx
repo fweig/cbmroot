@@ -63,8 +63,6 @@ try {
   fdMaxPublishTime          = fConfig->GetValue<double_t>("PubTimeMax");
   fsChannelNameDataInput    = fConfig->GetValue<std::string>("TsNameIn");
   fsChannelNameHistosInput  = fConfig->GetValue<std::string>("ChNameIn");
-  fsChannelNameHistosConfig = fConfig->GetValue<std::string>("ChNameHistCfg");
-  fsChannelNameCanvasConfig = fConfig->GetValue<std::string>("ChNameCanvCfg");
   fsAllowedChannels[0]      = fsChannelNameDataInput;
 
   LOG(info) << "Histograms publication frequency in TS:    " << fuPublishFreqTs;
@@ -93,7 +91,6 @@ try {
       OnData(entry.first, &CbmDeviceMonitorTof::HandleData);
     }  // if( std::string::npos != entry.first.find( fsChannelNameDataInput ) )
   }    // for( auto const &entry : fChannels )
-  InitContainers();
 }
 catch (InitTaskError& e) {
   LOG(error) << e.what();
@@ -168,11 +165,14 @@ Bool_t CbmDeviceMonitorTof::InitContainers()
 
   Bool_t initOK = fMonitorAlgo->InitContainers();
 
-  //   Bool_t initOK = fMonitorAlgo->ReInitContainers();
+  return initOK;
+}
 
+bool CbmDeviceMonitorTof::InitHistograms()
+{
   /// Histos creation and obtain pointer on them
   /// Trigger histo creation on all associated algos
-  initOK &= fMonitorAlgo->CreateHistograms();
+  bool initOK = fMonitorAlgo->CreateHistograms();
 
   /// Obtain vector of pointers on each histo from the algo (+ optionally desired folder)
   std::vector<std::pair<TNamed*, std::string>> vHistos = fMonitorAlgo->GetHistoVector();
@@ -191,16 +191,6 @@ Bool_t CbmDeviceMonitorTof::InitContainers()
     std::pair<std::string, std::string> psHistoConfig(vHistos[uHisto].first->GetName(), vHistos[uHisto].second);
     fvpsHistosFolder.push_back(psHistoConfig);
 
-    /// Serialize the vector of histo config into a single MQ message
-    FairMQMessagePtr messageHist(NewMessage());
-    Serialize<BoostSerializer<std::pair<std::string, std::string>>>(*messageHist, psHistoConfig);
-
-    /// Send message to the common histogram config messages queue
-    if (Send(messageHist, fsChannelNameHistosConfig) < 0) {
-      LOG(error) << "Problem sending histo config";
-      return false;
-    }  // if( Send( messageHist, fsChannelNameHistosConfig ) < 0 )
-
     LOG(info) << "Config of hist  " << psHistoConfig.first.data() << " in folder " << psHistoConfig.second.data();
   }  // for( UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto )
 
@@ -217,16 +207,6 @@ Bool_t CbmDeviceMonitorTof::InitContainers()
 
     fvpsCanvasConfig.push_back(psCanvConfig);
 
-    /// Serialize the vector of canvas config into a single MQ message
-    FairMQMessagePtr messageCan(NewMessage());
-    Serialize<BoostSerializer<std::pair<std::string, std::string>>>(*messageCan, psCanvConfig);
-
-    /// Send message to the common canvas config messages queue
-    if (Send(messageCan, fsChannelNameCanvasConfig) < 0) {
-      LOG(error) << "Problem sending canvas config";
-      return false;
-    }  // if( Send( messageCan, fsChannelNameCanvasConfig ) < 0 )
-
     LOG(info) << "Config string of Canvas  " << psCanvConfig.first.data() << " is " << psCanvConfig.second.data();
   }  //  for( UInt_t uCanv = 0; uCanv < vCanvases.size(); ++uCanv )
 
@@ -237,6 +217,15 @@ Bool_t CbmDeviceMonitorTof::InitContainers()
 // handler is called whenever a message arrives on "data", with a reference to the message and a sub-channel index (here 0)
 bool CbmDeviceMonitorTof::HandleData(FairMQMessagePtr& msg, int /*index*/)
 {
+  if( 0 == fulNumMessages) try {
+     InitContainers();
+  } catch (InitTaskError& e) {
+     LOG(error) << e.what();
+     ChangeState(fair::mq::Transition::ErrorFound);
+  }
+
+  if( 0 == fulNumMessages) InitHistograms();
+
   fulNumMessages++;
   LOG(debug) << "Received message number " << fulNumMessages << " with size " << msg->GetSize();
 
@@ -260,9 +249,57 @@ bool CbmDeviceMonitorTof::HandleData(FairMQMessagePtr& msg, int /*index*/)
   std::chrono::duration<double_t> elapsedSeconds    = currentTime - fLastPublishTime;
   if ((fdMaxPublishTime < elapsedSeconds.count())
       || (0 == fulNumMessages % fuPublishFreqTs && fdMinPublishTime < elapsedSeconds.count())) {
-    SendHistograms();
+    if (!fbConfigSent) {
+      fbConfigSent = SendHistoConfAndData();
+    } // if( !fbConfigSent )
+    else SendHistograms();
+
     fLastPublishTime = std::chrono::system_clock::now();
   }  // if( ( fdMaxPublishTime < elapsedSeconds.count() ) || ( 0 == fulNumMessages % fuPublishFreqTs && fdMinPublishTime < elapsedSeconds.count() ) )
+
+  return true;
+}
+
+bool CbmDeviceMonitorTof::SendHistoConfAndData()
+{
+  /// Prepare multiparts message and header
+  std::pair<uint32_t, uint32_t> pairHeader( fvpsHistosFolder.size(), fvpsCanvasConfig.size() );
+  FairMQMessagePtr messageHeader(NewMessage());
+  Serialize< BoostSerializer< std::pair< uint32_t, uint32_t > > >(*messageHeader, pairHeader);
+
+  FairMQParts partsOut;
+  partsOut.AddPart(std::move(messageHeader));
+
+  for (UInt_t uHisto = 0; uHisto < fvpsHistosFolder.size(); ++uHisto) {
+    /// Serialize the vector of histo config into a single MQ message
+    FairMQMessagePtr messageHist(NewMessage());
+    Serialize<BoostSerializer<std::pair<std::string, std::string>>>(*messageHist, fvpsHistosFolder[uHisto]);
+
+    partsOut.AddPart(std::move(messageHist));
+  } // for (UInt_t uHisto = 0; uHisto < fvpsHistosFolder.size(); ++uHisto)
+
+  for (UInt_t uCanv = 0; uCanv < fvpsCanvasConfig.size(); ++uCanv) {
+    /// Serialize the vector of canvas config into a single MQ message
+    FairMQMessagePtr messageCan(NewMessage());
+    Serialize<BoostSerializer<std::pair<std::string, std::string>>>(*messageCan, fvpsCanvasConfig[uCanv]);
+
+    partsOut.AddPart(std::move(messageCan));
+  } // for (UInt_t uCanv = 0; uCanv < fvpsCanvasConfig.size(); ++uCanv)
+
+  /// Serialize the array of histos into a single MQ message
+  FairMQMessagePtr msgHistos(NewMessage());
+  Serialize<RootSerializer>(*msgHistos, &fArrayHisto);
+
+  partsOut.AddPart(std::move(msgHistos));
+
+  /// Send the multi-parts message to the common histogram messages queue
+  if (Send(partsOut, fsChannelNameHistosInput) < 0) {
+    LOG(error) << "CbmDeviceMonitorTof::SendHistoConfAndData => Problem sending data";
+    return false;
+  }  // if( Send( partsOut, fsChannelNameHistosInput ) < 0 )
+
+  /// Reset the histograms after sending them (but do not reset the time)
+  fMonitorAlgo->ResetHistograms(kFALSE);
 
   return true;
 }
@@ -272,24 +309,6 @@ bool CbmDeviceMonitorTof::SendHistograms()
   /// Serialize the array of histos into a single MQ message
   FairMQMessagePtr message(NewMessage());
   Serialize<RootSerializer>(*message, &fArrayHisto);
-
-  // test code to check if deserialization works
-  /*
-  TObject* tempObject = nullptr;
-  Deserialize<RootDeserializer>(*message, tempObject);
-
-  if (TString(tempObject->ClassName()).EqualTo("TObjArray")) {
-   TObjArray* arrayHisto = static_cast<TObjArray*>(tempObject);
-   LOG(info) << "Array contains " << arrayHisto->GetEntriesFast()
-             << " entries";
-    for (Int_t i = 0; i < arrayHisto->GetEntriesFast(); i++) {
-      TObject* obj = arrayHisto->At(i);
-      LOG(info) << obj->GetName();
-      TH1* histogram = static_cast<TH1*>(obj);
-      LOG(info) << histogram->GetNbinsX();
-    }
-  }
-*/
 
   /// Send message to the common histogram messages queue
   if (Send(message, fsChannelNameHistosInput) < 0) {
