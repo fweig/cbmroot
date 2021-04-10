@@ -1254,7 +1254,7 @@ void CbmTofFindTracks::CreateHistograms()
                          100, -DZ0MAX, DZ0MAX);
 
   fhTOff_Smt   = new TH2F(Form("hTOff_Smt"), Form("Tracklet TOff; RpcInd ; #DeltaTOff (ns)"), nSmt, 0, nSmt, 501,
-                        -fT0MAX * 20, fT0MAX * 20);
+                        -fT0MAX * 5, fT0MAX * 5);
   fhTOff_HMul2 = new TH2F(Form("hTOff_HMul2"), Form("Tracklet TOff(HMul2); RpcInd ; TOff (ns)"), nSmt, 0, nSmt, 500,
                           -fT0MAX, fT0MAX);
 

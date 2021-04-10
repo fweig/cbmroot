@@ -153,6 +153,7 @@ CbmTofEventClusterizer::CbmTofEventClusterizer(const char* name, Int_t verbose, 
   , fhRpcDigiDTLD()
   , fhRpcDigiDTFD()
   , fhRpcDigiDTMul()
+  , fhRpcDigiRate()
   , fhRpcCluMul()
   , fhRpcCluRate()
   , fhRpcCluRate10s()
@@ -1177,6 +1178,7 @@ Bool_t CbmTofEventClusterizer::CreateHistos()
   fhRpcDigiDTLD.resize(iNbDet);
   fhRpcDigiDTFD.resize(iNbDet);
   fhRpcDigiDTMul.resize(iNbDet);
+  fhRpcDigiRate.resize(iNbDet);
   fhRpcCluMul.resize(iNbDet);
   fhRpcCluRate.resize(iNbDet);
   fhRpcCluRate10s.resize(iNbDet);
@@ -1268,6 +1270,10 @@ Bool_t CbmTofEventClusterizer::CreateHistos()
                                              iRpcId, iSmId, iSmType),
                                         fDigiBdfPar->GetNbChan(iSmType, iRpcId) * 2, 0,
                                         fDigiBdfPar->GetNbChan(iSmType, iRpcId) * 2, 20., 0.5, 20.5);
+    fhRpcDigiRate[iDetIndx] =
+      new TH1D(Form("cl_SmT%01d_sm%03d_rpc%03d_digirate", iSmType, iSmId, iRpcId),
+               Form("Digi rate of Rpc #%03d in Sm %03d of type %d; Time (s); Rate (Hz)", iRpcId, iSmId, iSmType), 36000.,
+               0., 3600.);
 
     fhRpcCluMul[iDetIndx] =
       new TH1F(Form("cl_SmT%01d_sm%03d_rpc%03d_Mul", iSmType, iSmId, iRpcId),
@@ -4070,6 +4076,11 @@ Bool_t CbmTofEventClusterizer::BuildClusters()
         }
         else
           break;
+
+        if (StartAnalysisTime > 0) {
+          Double_t dTimeAna = (pDigi->GetTime() - StartAnalysisTime) / 1.E9;
+          fhRpcDigiRate[iDetIndx]->Fill(dTimeAna, 1. / fhRpcDigiRate[iDetIndx]->GetBinWidth(1));
+        }
 
         size_t iDigiCh = pDigi->GetChannel() * 2 + pDigi->GetSide();
         if (iDigiCh < fvTimeLastDigi[iDetIndx].size()) {

@@ -163,8 +163,9 @@ void ana_trks(Int_t nEvents = 10000, Int_t iSel = 1, Int_t iGenCor = 1, TString 
   //tofFindTracks->SetTtTarg(0.055);  // target value Nov2019 (triple stack run 831)
   //tofFindTracks->SetTtTarg(0.048);  // target value Nov2019 (double stack run 714)
   //tofFindTracks->SetTtTarg(0.047);  // target value Mar2020, after T0 fix (full run 600)
-  //  0.044);  // target value Mar2020, after T0 fix (double stack run 714)
-  tofFindTracks->SetTtTarg(0.035);             // target value for inverse velocity, > 0.033 ns/cm!
+    tofFindTracks->SetTtTarg(0.058);  // target value Mar2021, after T0 fix (double stack run 1058)
+  //tofFindTracks->SetTtTarg(0.038);  // target value Mar2021, after T0 fix (double stack run 1051)
+  //tofFindTracks->SetTtTarg(0.035);             // target value for inverse velocity, > 0.033 ns/cm!
   tofFindTracks->SetCalParFileName(cTrkFile);  // Tracker parameter value file name
   tofFindTracks->SetBeamCounter(5, 0, 0);      // default beam counter
   tofFindTracks->SetR0Lim(20.);
@@ -236,15 +237,15 @@ void ana_trks(Int_t nEvents = 10000, Int_t iSel = 1, Int_t iGenCor = 1, TString 
       iMinNofHits   = 4;
       iNStations    = 9;
       iNReqStations = 5;
-      tofFindTracks->SetStation(0, 5, 0, 0);
-      tofFindTracks->SetStation(1, 0, 4, 1);
-      tofFindTracks->SetStation(2, 0, 3, 1);
-      tofFindTracks->SetStation(3, 0, 4, 0);
-      tofFindTracks->SetStation(4, 0, 3, 2);
-      tofFindTracks->SetStation(5, 9, 0, 0);
-      tofFindTracks->SetStation(6, 9, 1, 0);
-      tofFindTracks->SetStation(7, 9, 0, 1);
-      tofFindTracks->SetStation(8, 9, 1, 1);
+      tofFindTracks->SetStation(0, 0, 4, 1);
+      tofFindTracks->SetStation(1, 9, 0, 0);
+      tofFindTracks->SetStation(2, 9, 1, 0);
+      tofFindTracks->SetStation(3, 9, 0, 1);
+      tofFindTracks->SetStation(4, 9, 1, 1);
+      tofFindTracks->SetStation(5, 0, 3, 1);
+      tofFindTracks->SetStation(6, 0, 4, 0);
+      tofFindTracks->SetStation(7, 0, 3, 2);
+      tofFindTracks->SetStation(8, 5, 0, 0);
       break;
 
     case 2:

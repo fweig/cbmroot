@@ -63,7 +63,7 @@ fi
 Nevt=$7
 if [[ ${Nevt} = "" ]]; then
     echo use all events
-    Nevt=-1
+    Nevt=500000
 fi
 
 echo gen_hits for $cRun with iDut=$iDut, iRef=$iRef, iSet=$iCalSet, iSel2=$iSel2, iBRef=$iBRef, Deadtime=$Deadtime, CalFile=$CalFile

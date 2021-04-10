@@ -304,6 +304,7 @@ private:
   std::vector<TH2*> fhRpcDigiDTLD;                           //[nbDet]
   std::vector<TH2*> fhRpcDigiDTFD;                           //[nbDet]
   std::vector<TH2*> fhRpcDigiDTMul;                          //[nbDet]
+  std::vector<TH1*> fhRpcDigiRate;                            //[nbDet]
   std::vector<TH1*> fhRpcCluMul;                             //[nbDet]
   std::vector<TH1*> fhRpcCluRate;                            //[nbDet]
   std::vector<TH1*> fhRpcCluRate10s;                         //[nbDet]

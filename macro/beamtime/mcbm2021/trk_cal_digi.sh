@@ -108,7 +108,8 @@ if [[ $iShLev = "" ]]; then
   dDTRMSres=100000
   dL0DTRMSres=100000
 # get initial digi calibration 
-  cp -v  ./I*/${CalFile}  .
+# cp -v  ./I*/${CalFile}  .
+  cp -v ${CalFile}  IniTrk_${CalFile}
 # get latest tracker offsets
 # cp -v ../${cRun}_tofFindTracks.hst.root .
 else
@@ -159,7 +160,7 @@ while [[ $dDTres -gt 0 ]]; do
     cd $wdir/$cRun
     echo Current loop with Iter $iIter, CalAct $iCalAct and CalOpt $iCalOpt
     if [[ $iCalOpt = 1 ]] || [[ $iCalAct -gt 1 ]]; then 
-      root -b -q '../ana_digi_cal.C('$nEvt',93,1,'$iRef',1,"'$cRun'",'$iCalSet',1,'$iSel2','$Deadtime',"'$CalIdMode'") '
+      root -b -q '../ana_digi_cal_all.C('$nEvt',93,1,'$iRef',1,"'$cRun'",'$iCalSet',1,'$iSel2','$Deadtime',"'$CalIdMode'") '
       # update calibration parameter file, will only be active in next iteration 
       if [[ $iIter = -10 ]] && [[ $iCalOpt = 1 ]]; then  # exploratory option when iIter set to 0 
         echo Update Calibration file from ana_digi_cal
@@ -168,8 +169,8 @@ while [[ $dDTres -gt 0 ]]; do
         echo 20000 > TOffAvRMS.res
       else
         root -b -q '../ana_trks.C('$nEvt','$iSel','$iGenCor',"'$cRun'","'$cCalSet2'",'$iSel2','$iTraSetup','$fRange1','$fRange2','$Deadtime',"'$CalIdMode'",1,1,'$iCalSet','$iCalAct')'
-      #root -l 'ana_trksi.C(-1,10,1,"385.50.5.0","000014500_020",20,1,1.90,7.60,50,"385.50.5.0",1,1)'
-  
+        #root -l 'ana_trksi.C(-1,10,1,"385.50.5.0","000014500_020",20,1,1.90,7.60,50,"385.50.5.0",1,1)'
+        #exit 0 # for debugging
         cp -v New_${CalFile} ${CalFile}  
       fi
       (( iIter   += 1 ))

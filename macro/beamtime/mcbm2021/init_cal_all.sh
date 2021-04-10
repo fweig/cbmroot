@@ -56,9 +56,9 @@ cp .rootrc ${cRun}
 cd ${cRun}
 
 # Global variables, for for-loops
-iRestart=0   
-#iRestart=1  # use copied calibration file with walk corrections 
-#iRestart=33
+#iRestart=0   
+iRestart=1  # use copied calibration file with walk corrections 
+#iRestart=37
 iStep=0
 iStepLast=0
 iCalSel0=0

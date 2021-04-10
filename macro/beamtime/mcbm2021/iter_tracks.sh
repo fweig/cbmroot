@@ -123,7 +123,7 @@ fi
 
 # correction modes: 2 - TOff from Tt, 3 - Pull t, 4 - x, 5 - y, 6 - z, >10 - Pull t of individual stations 
 #for iCal in 3 2 10 11 12 13 14 15 4 5; do
-for iCal in 3 4 5; do
+for iCal in 2 3 4 5; do
 #for iCal in 3 2 4; do
 #for iCal in 3 2 ; do
 #for iCal in 2 ; do
