@@ -50,6 +50,7 @@ void pl_all_CluRateRatio(Int_t iRef = 500, Int_t iNSt = 3, Double_t Tstart = 0.,
   switch (iMode) {
     case 0: hname = Form("cl_SmT%01d_sm%03d_rpc%03d_rate", iSmType, iSm, iRp); break;
     case 1: hname = Form("cl_SmT%01d_sm%03d_rpc%03d_rate10s", iSmType, iSm, iRp); break;
+    case 2: hname = Form("cl_SmT%01d_sm%03d_rpc%03d_digirate", iSmType, iSm, iRp); break;
   }
   h = (TH1*) gROOT->FindObjectAny(hname);
   if (h != NULL) {
@@ -101,6 +102,7 @@ void pl_all_CluRateRatio(Int_t iRef = 500, Int_t iNSt = 3, Double_t Tstart = 0.,
     switch (iMode) {
       case 0: hname = Form("cl_SmT%01d_sm%03d_rpc%03d_rate", iSmType, iSm, iRp); break;
       case 1: hname = Form("cl_SmT%01d_sm%03d_rpc%03d_rate10s", iSmType, iSm, iRp); break;
+      case 2: hname = Form("cl_SmT%01d_sm%03d_rpc%03d_digirate", iSmType, iSm, iRp); break;
     }
     h = (TH1*) gROOT->FindObjectAny(hname);
     if (h != NULL) {
@@ -145,6 +147,7 @@ void pl_all_CluRateRatio(Int_t iRef = 500, Int_t iNSt = 3, Double_t Tstart = 0.,
     switch (iMode) {
       case 0: hname = Form("cl_SmT%01d_sm%03d_rpc%03d_rate", iSmType, iSm, iRp); break;
       case 1: hname = Form("cl_SmT%01d_sm%03d_rpc%03d_rate10s", iSmType, iSm, iRp); break;
+      case 2: hname = Form("cl_SmT%01d_sm%03d_rpc%03d_digirate", iSmType, iSm, iRp); break;
     }
     h = (TH1*) gROOT->FindObjectAny(hname);
     if (h != NULL) {
@@ -188,6 +191,7 @@ void pl_all_CluRateRatio(Int_t iRef = 500, Int_t iNSt = 3, Double_t Tstart = 0.,
       }
       if (iSt == 0) {
         hRat->SetMinimum(1.E-2);
+        hRat->SetMaximum(2.);
         hRat->Draw("L E");
         hRat->GetXaxis()->SetRangeUser(Tstart, Tend);
       }
@@ -198,7 +202,7 @@ void pl_all_CluRateRatio(Int_t iRef = 500, Int_t iNSt = 3, Double_t Tstart = 0.,
       if (iCol == 5) iCol++;  // skip yellow
 
       //h->UseCurrentStyle();
-      gPad->SetLogy();
+      //gPad->SetLogy();
     }
     else {
       cout << "Histogram " << hname << " not existing. " << endl;
