@@ -8,6 +8,7 @@ download_project_if_needed(PROJECT         fles_ipc
                            GIT_TAG         "92ff50ead204d0acb4fccd9cbb9876817d077528"
                            GIT_STASH       TRUE
                            SOURCE_DIR      ${CMAKE_CURRENT_SOURCE_DIR}/ipc
+                           PATCH_COMMAND   "patch -p1 < ${CMAKE_CURRENT_SOURCE_DIR}/TimesliceMultiSubscriber_init.patch"
                            TEST_FILE       CMakeLists.txt
                            )
 

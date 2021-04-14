@@ -1,0 +1,31 @@
+diff --git a/lib/fles_ipc/TimesliceMultiSubscriber.cpp b/lib/fles_ipc/TimesliceMultiSubscriber.cpp
+index 1668a8c..24952c9 100644
+--- a/lib/fles_ipc/TimesliceMultiSubscriber.cpp
++++ b/lib/fles_ipc/TimesliceMultiSubscriber.cpp
+@@ -26,7 +26,7 @@ TimesliceMultiSubscriber::TimesliceMultiSubscriber(
+     L_(fatal) << "No server defined";
+     exit(1);
+   }
+-  InitTimesliceSubscriber();
++//  InitTimesliceSubscriber();
+ }
+ 
+ void TimesliceMultiSubscriber::CreateHostPortFileList(std::string inputString) {
+diff --git a/lib/fles_ipc/TimesliceMultiSubscriber.hpp b/lib/fles_ipc/TimesliceMultiSubscriber.hpp
+index ed8e0d7..539a6e8 100644
+--- a/lib/fles_ipc/TimesliceMultiSubscriber.hpp
++++ b/lib/fles_ipc/TimesliceMultiSubscriber.hpp
+@@ -42,10 +42,11 @@ public:
+ 
+   bool eos() const override { return sortedSource_.empty(); }
+ 
++  void InitTimesliceSubscriber();
++
+ private:
+   Timeslice* do_get() override;
+ 
+-  void InitTimesliceSubscriber();
+   void CreateHostPortFileList(std::string /*inputString*/);
+   std::unique_ptr<Timeslice> GetNextTimeslice();
+ 
+

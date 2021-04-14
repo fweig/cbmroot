@@ -71,6 +71,10 @@ Bool_t CbmMcbm2018Source::Init()
     fileList.pop_back();  // Remove the last ;
     fSource.reset(new fles::TimesliceMultiSubscriber(fileList, fuSubscriberHwm));
 
+    /// Initialize the Multisubscriber
+    /// (This restores the original behavior after modifications needed to make the MQ version
+    dynamic_cast< fles::TimesliceMultiSubscriber *>(fSource.get())->InitTimesliceSubscriber();
+
     if (!fSource) { LOG(fatal) << "Could not connect to publisher."; }
   }
   else {
@@ -276,15 +280,15 @@ Int_t CbmMcbm2018Source::FillBuffer()
     auto tsIndex              = ts.index();
     if ((tsIndex != (fTSNumber + 1)) && (fTSNumber != 0)) {
       LOG(debug) << "Missed Timeslices. Old TS Number was " << fTSNumber << " New TS Number is " << tsIndex;
-      fHistoMissedTS->Fill(1, tsIndex - fTSNumber);
-      fHistoMissedTSEvo->Fill(tsIndex, 1, tsIndex - fTSNumber);
+      fHistoMissedTS->Fill(1, tsIndex - fTSNumber - 1);
+      fHistoMissedTSEvo->Fill(tsIndex, 1, tsIndex - fTSNumber - 1);
       fNofTSSinceLastTS = tsIndex - fTSNumber;
     }
     else {
-      fHistoMissedTS->Fill(0);
-      fHistoMissedTSEvo->Fill(tsIndex, 0, 1);
       fNofTSSinceLastTS = 1;
     }
+    fHistoMissedTS->Fill(0);
+    fHistoMissedTSEvo->Fill(tsIndex, 0, 1);
     fTSNumber = tsIndex;
 
     if (0 == fTSNumber % 1000) { LOG(info) << "Reading Timeslice " << fTSNumber; }

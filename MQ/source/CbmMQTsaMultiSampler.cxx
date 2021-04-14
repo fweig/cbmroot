@@ -326,7 +326,7 @@ bool CbmMQTsaMultiSampler::InitHistograms()
   fhTsSize       = new TH1I("TsSize", "Size of TS; Size [MB]", 15000, 0., 15000.);
   fhTsSizeEvo    = new TProfile("TsSizeEvo", "Evolution of the TS Size; t [s]; Mean size [MB]", 1800, 0., 1800.);
   fhTsMaxSizeEvo = new TH1F("TsMaxSizeEvo", "Evolution of maximal TS Size; t [s]; Max size [MB]", 1800, 0., 1800.);
-  fhMissedTS     = new TH1I("Missed_TS", "Missed TS", 2, 0., 2.);
+  fhMissedTS     = new TH1I("Missed_TS", "Missed TS", 2, -0.5, 1.5);
   fhMissedTSEvo  = new TProfile("Missed_TS_Evo", "Missed TS evolution; t [s]", 1800, 0., 1800.);
 
   /// Add histo pointers to the histo vector
@@ -441,6 +441,12 @@ bool CbmMQTsaMultiSampler::ConditionalRun()
     InitHistograms();
   } // if( 0 < fuPublishFreqTs )
 
+  /// initialize the source (connect to emitter, ...)
+  if( 0 == fTSCounter && nullptr != dynamic_cast< fles::TimesliceMultiSubscriber *>(fSource) )
+  {
+    dynamic_cast< fles::TimesliceMultiSubscriber *>(fSource)->InitTimesliceSubscriber();
+  } // if( 0 == fTSCounter && nullptr != dynamic_cast< fles::TimesliceMultiSubscriber >(fSource) )
+
   auto timeslice = fSource->get();
   if (timeslice) {
     if (fTSCounter < fMaxTimeslices) {
@@ -480,31 +486,36 @@ bool CbmMQTsaMultiSampler::ConditionalRun()
       }    // if( 0 < fuPublishFreqTs )
 
       /// Missed TS detection (only if output channel name defined by user)
-      if ((uTsIndex != (fuPrevTsIndex + 1)) && (0 != fuPrevTsIndex && 0 != uTsIndex) && "" != fsChannelNameMissedTs) {
-        LOG(debug) << "Missed Timeslices. Old TS Index was " << fuPrevTsIndex << " New TS Index is " << uTsIndex;
-        /// Add missing TS indices to a vector and send it in appropriate channel
-        std::vector<uint64_t> vulMissedIndices;
-        for (uint64_t ulMiss = fuPrevTsIndex + 1; ulMiss < uTsIndex; ++ulMiss) {
-          vulMissedIndices.emplace_back(ulMiss);
-        }  // for( uint64_t ulMiss = fuPrevTsIndex + 1; ulMiss < uTsIndex; ++ulMiss )
-        if (!SendMissedTsIdx(vulMissedIndices)) {
-          /// If command channel defined, send command to all "slaves"
-          if ("" != fsChannelNameCommands) {
-            /// Wait 1 s before sending a STOP to let all slaves finish processing previous data
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-            SendCommand("STOP");
-          }  // if( "" != fsChannelNameCommands )
+      if ((uTsIndex != (fuPrevTsIndex + 1)) && (0 != fuPrevTsIndex && 0 != uTsIndex)) {
+        LOG(info) << "Missed Timeslices. Old TS Index was " << fuPrevTsIndex << " New TS Index is " << uTsIndex
+                  << " diff is " << uTsIndex - fuPrevTsIndex << " Missing are " << uTsIndex - fuPrevTsIndex - 1;
 
-          return false;
-        }  // if( !SendMissedTsIdx( vulMissedIndices ) )
+        if( "" != fsChannelNameMissedTs ) {
+          /// Add missing TS indices to a vector and send it in appropriate channel
+          std::vector<uint64_t> vulMissedIndices;
+          for (uint64_t ulMiss = fuPrevTsIndex + 1; ulMiss < uTsIndex; ++ulMiss) {
+            vulMissedIndices.emplace_back(ulMiss);
+          }  // for( uint64_t ulMiss = fuPrevTsIndex + 1; ulMiss < uTsIndex; ++ulMiss )
+          if (!SendMissedTsIdx(vulMissedIndices)) {
+            /// If command channel defined, send command to all "slaves"
+            if ("" != fsChannelNameCommands) {
+              /// Wait 1 s before sending a STOP to let all slaves finish processing previous data
+              std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+              SendCommand("STOP");
+            }  // if( "" != fsChannelNameCommands )
+
+            return false;
+          }  // if( !SendMissedTsIdx( vulMissedIndices ) )
+        } // if( "" != fsChannelNameMissedTs )
 
         if (0 < fuPublishFreqTs) {
-          fhMissedTS->Fill(1, uTsIndex - fuPrevTsIndex);
-          fhMissedTSEvo->Fill(fdTimeToStart, 1, uTsIndex - fuPrevTsIndex);
+          fhMissedTS->Fill(1, uTsIndex - fuPrevTsIndex - 1);
+          fhMissedTSEvo->Fill(fdTimeToStart, 1, uTsIndex - fuPrevTsIndex - 1);
         }  // if( 0 < fuPublishFreqTs )
 
-      }  // if( ( uTsIndex != ( fuPrevTsIndex + 1 ) ) && ( 0 != fuPrevTsIndex && 0 != uTsIndex ) && "" != fsChannelNameMissedTs )
-      else if (0 < fuPublishFreqTs) {
+      }  // if( ( uTsIndex != ( fuPrevTsIndex + 1 ) ) && ( 0 != fuPrevTsIndex && 0 != uTsIndex ) )
+
+      if (0 < fuPublishFreqTs) {
         fhMissedTS->Fill(0);
         fhMissedTSEvo->Fill(fdTimeToStart, 0, 1);
       }  // else if( 0 < fuPublishFreqTs )
