@@ -13,6 +13,7 @@ CbmTransport.cxx
 CbmVMCSettings.cxx
 CbmGeant3Settings.cxx
 CbmGeant4Settings.cxx
+CbmTransportConfig.cxx
 )
 # ---------------------------------------------------------
 
@@ -34,6 +35,7 @@ ${CBMROOT_SOURCE_DIR}/sim/transport/steer
 ${CBMROOT_SOURCE_DIR}/sim/transport/geosetup
 ${CBMDATA_DIR}
 ${CBMBASE_DIR}/utils
+${CBMROOT_SOURCE_DIR}/core/config
 )
 
 set(SYSTEM_INCLUDE_DIRECTORIES

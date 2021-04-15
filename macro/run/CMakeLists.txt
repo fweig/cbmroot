@@ -1,5 +1,7 @@
 # =====   Generate the needed shell scripts   ================================
 GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_tra_file.C)
+GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_transport_json_config.C)
+GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_digi_json_config.C)
 GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_tra_beam.C)
 GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_digi.C)
 GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_reco.C)
@@ -108,6 +110,30 @@ foreach(setup IN LISTS cbm_setup)
   	RESOURCE_LOCK beamParDb_${setup}
   )
 
+  # --- Test run_transport_json_config
+  # --- Transport run using run_transport_json_config.C
+  set(testname run_transport_json_config)
+  add_test(${testname} ${MACRO_DIR}/run_transport_json_config.sh)
+  set_tests_properties(${testname} PROPERTIES
+  	TIMEOUT ${timeOutTime}
+  	PASS_REGULAR_EXPRESSION "Macro finished successfully"
+  	FIXTURES_REQUIRED cleanup
+  	FIXTURES_SETUP fixt_digi_json_config
+  	RESOURCE_LOCK json_config_ParDb
+  )
+
+  # --- Test run_digi_json_config
+  # --- Digitization run with using run_digi_json_config.C
+  set(testname run_digi_json_config)
+  add_test(${testname} ${MACRO_DIR}/run_digi_json_config.sh)
+  set_tests_properties(${testname} PROPERTIES
+  	TIMEOUT ${timeOutTime}
+  	PASS_REGULAR_EXPRESSION "Macro finished successfully"
+  	FIXTURES_REQUIRED fixt_digi_json_config
+  	FIXTURES_SETUP fixt_reco_json_config
+  	RESOURCE_LOCK json_config_ParDb
+  )
+
   # --- Test run_digi_ev
   # --- Detector response simulation, event-by-event, using run_digi.C
   set(testname run_${sname}_digi_ev)
@@ -209,7 +235,7 @@ endforeach(setup IN LISTS cbm_setup)
 
 
 
-Install(FILES .rootrc run_transport.C run_digi.C run_reco_event.C check_overlaps.C
+Install(FILES .rootrc run_transport.C run_transport_json_config.C run_digi_json_config.C config.json run_digi.C run_reco_event.C check_overlaps.C
         DESTINATION share/cbmroot/macro/run
        )
 Install(DIRECTORY modules DESTINATION share/cbmroot/macro/run)

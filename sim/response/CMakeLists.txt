@@ -14,12 +14,15 @@ base/CbmDigitizeInfo.cxx
 base/CbmMCInput.cxx
 base/CbmMCInputSet.cxx
 base/CbmRunAna.cxx
+base/CbmDigitizationConfig.cxx
 )
 # ---------------------------------------------------------
 
 
 # ----  Include directories -------------------------------
 set(INCLUDE_DIRECTORIES
+${CBMROOT_SOURCE_DIR}/core/config
+
 ${CBMROOT_SOURCE_DIR}/sim/response
 ${CBMROOT_SOURCE_DIR}/sim/response/base
 
