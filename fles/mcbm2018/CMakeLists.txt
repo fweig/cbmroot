@@ -91,6 +91,8 @@ Set(SRCS
    monitor/CbmMcbm2018MonitorSts.cxx
    monitor/CbmMcbm2018MonitorMuch.cxx
    monitor/CbmMcbm2018MonitorMuchLite.cxx
+   monitor/CbmMcbm2018MonitorAlgoMuchLite.cxx
+   monitor/CbmMcbm2018MonitorTaskMuchLite.cxx
 #   monitor/CbmMcbm2018MonitorTrd.cxx
    monitor/CbmMcbm2018MonitorTof.cxx
    monitor/CbmMcbm2018MonitorTofPulser.cxx

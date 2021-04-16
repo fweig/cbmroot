@@ -53,11 +53,14 @@ void MonitorMuchBinning(TString inFile = "", TString sHostname = "en02", Int_t n
   std::cout << ">>> Cern2017Monitor: Initialising..." << std::endl;
 
   // MUCH Gem Monitor
-  //  CbmMcbm2018MonitorMuch* monitorMuch = new CbmMcbm2018MonitorMuch();
-  CbmMcbm2018MonitorMuchLite* monitorMuch = new CbmMcbm2018MonitorMuchLite();
+  // CbmMcbm2018MonitorMuch* monitorMuch = new CbmMcbm2018MonitorMuch();
+  CbmMcbm2018MonitorTaskMuchLite* monitorMuch = new CbmMcbm2018MonitorTaskMuchLite();
+  // Below Older Direct Much Monitoring Class 
+  // CbmMcbm2018MonitorMuchLite* monitorMuch = new CbmMcbm2018MonitorMuchLite();
   monitorMuch->SetHistoFileName(sHistoFile);
   //  monitorSts->SetPrintMessage();
-  monitorMuch->SetMsOverlap(1);
+  // Below function not implemented for Task and Algo based MUCH Monitor.
+  // monitorMuch->SetMsOverlap(1);
   //  monitorMuch->SetEnableCoincidenceMaps( kFALSE );
   //  monitorSts->SetLongDurationLimits( 3600, 10 );
   //  monitorSts->SetLongDurationLimits( 7200, 60 );
