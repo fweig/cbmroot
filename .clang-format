@@ -78,6 +78,8 @@ IncludeBlocks: Regroup
 IncludeCategories:
   - Regex:           '^("|<)Cbm'
     Priority:        1
+  - Regex:           '^("|<).*/Cbm'
+    Priority:        1
   - Regex:           '^("|<).*slice'
     Priority:        2
   - Regex:           '^("|<)Fair'
