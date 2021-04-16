@@ -16,6 +16,7 @@
 #include "FairRunOnline.h"
 
 #include "TClonesArray.h"
+#include "TFile.h"
 #include "TH1.h"
 #include "TH2.h"
 #include "TH3.h"

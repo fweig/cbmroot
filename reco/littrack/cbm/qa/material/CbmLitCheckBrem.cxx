@@ -12,10 +12,13 @@
 #include "TPad.h"
 #include "TStyle.h"
 
-#include <cmath>
 #include <cstdlib>
+#include <iostream>
 
-CbmLitCheckBrem::CbmLitCheckBrem() : fMat("iron") {
+#include <cmath>
+
+CbmLitCheckBrem::CbmLitCheckBrem() : fMat("iron")
+{
   fNofMom = 10;
   fMom.resize(fNofMom);
   fMom[0] = 0.05;  // GeV
@@ -94,7 +97,8 @@ CbmLitCheckBrem::CbmLitCheckBrem() : fMat("iron") {
 
 CbmLitCheckBrem::~CbmLitCheckBrem() {}
 
-void CbmLitCheckBrem::Check() {
+void CbmLitCheckBrem::Check()
+{
   gStyle->SetCanvasColor(kWhite);
   gStyle->SetFrameFillColor(kWhite);
   gStyle->SetPadColor(kWhite);
@@ -107,7 +111,8 @@ void CbmLitCheckBrem::Check() {
   DrawGraphs();
 }
 
-void CbmLitCheckBrem::DrawGraphs() {
+void CbmLitCheckBrem::DrawGraphs()
+{
   TCanvas* c1 = new TCanvas("brem_loss", "c1", 800, 800);
   c1->SetGrid();
 
@@ -166,7 +171,8 @@ void CbmLitCheckBrem::DrawGraphs() {
   c1->SaveAs("brem_loss.svg");
 }
 
-void CbmLitCheckBrem::FillGraphs() {
+void CbmLitCheckBrem::FillGraphs()
+{
   for (Int_t i = 0; i < fNofMom; i++) {
     Double_t p = fMom[i];
 
@@ -175,20 +181,20 @@ void CbmLitCheckBrem::FillGraphs() {
       //       Double_t brem_calc = p / (m.fX0);
       //       Double_t Z2 = (m.fZ*m.fZ);
       //       Double_t X0 = 1./(m.fA * 716.408) * (Z2 * (std::log(184.15/std::pow(Z, 1./3.)) ) + Z*)
-      Double_t X0 =
-        (716.4 * m.fA) / (m.fZ * (m.fZ + 1) * std::log(287. / std::sqrt(m.fZ)));
+      Double_t X0 = (716.4 * m.fA) / (m.fZ * (m.fZ + 1) * std::log(287. / std::sqrt(m.fZ)));
       std::cout << "X0=" << m.fX0 * m.fRho << " X0calc=" << X0 << std::endl;
       Double_t brem_calc = p / X0;
       fCalc[j]->SetPoint(i, p, brem_calc);
 
-      Double_t brem_table = (6.022045e23 / m.fA) * 5.794661e-28 * (m.fZ * m.fZ)
-                            * (p + 0.000511) * m.fPHIRAD[i];  // * m.fRho;
+      Double_t brem_table =
+        (6.022045e23 / m.fA) * 5.794661e-28 * (m.fZ * m.fZ) * (p + 0.000511) * m.fPHIRAD[i];  // * m.fRho;
       fTable[j]->SetPoint(i, p, brem_table);
     }
   }
 }
 
-void CbmLitCheckBrem::CreateGraphs() {
+void CbmLitCheckBrem::CreateGraphs()
+{
   for (int i = 0; i < fNofMaterials; i++) {
     fTable[i] = new TGraph();
     fCalc[i]  = new TGraph();

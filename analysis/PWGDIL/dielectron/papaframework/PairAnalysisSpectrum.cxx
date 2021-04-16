@@ -56,6 +56,7 @@
 #include <TGraphErrors.h>
 #include <TH1.h>
 #include <TList.h>
+#include <TObjString.h>
 #include <TPad.h>
 #include <TPaveText.h>
 #include <TProfile.h>

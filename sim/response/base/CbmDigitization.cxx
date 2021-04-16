@@ -26,6 +26,7 @@
 
 #include "TClonesArray.h"
 #include "TGeoManager.h"
+#include "TObjString.h"
 #include "TROOT.h"
 
 #include <cassert>
