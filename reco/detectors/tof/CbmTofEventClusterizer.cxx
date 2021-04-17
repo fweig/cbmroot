@@ -965,9 +965,11 @@ Bool_t CbmTofEventClusterizer::LoadGeometry()
       Int_t iUCellId = CbmTofAddress::GetUniqueAddress(iSmId, iRpcId, ++iCell, 0, iSmType);
       fChannelInfo   = fDigiPar->GetCell(iUCellId);
       if (NULL == fChannelInfo) break;
-      LOG(debug3) << " Cell " << iCell << Form(" 0x%08x ", iUCellId) << Form(", fCh 0x%p ", fChannelInfo)
-                  << ", x: " << fChannelInfo->GetX() << ", y: " << fChannelInfo->GetY()
-                  << ", z: " << fChannelInfo->GetZ();
+      LOG(debug3) << " Cell " << iCell << Form(" 0x%08x ", iUCellId) << Form(", fCh %p ", fChannelInfo) << ", TSRC "
+                  << iSmType << iSmId << iRpcId << iCell << ", x: " << fChannelInfo->GetX()
+                  << ", y: " << fChannelInfo->GetY() << ", z: " << fChannelInfo->GetZ()
+                  << ", dy: " << fChannelInfo->GetSizey();
+      if (iCell > 100) { LOG(fatal) << "Too many cells " << fDigiPar->GetNrOfModules(); }
     }
   }
 
