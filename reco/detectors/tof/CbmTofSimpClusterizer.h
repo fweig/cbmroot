@@ -23,6 +23,7 @@ class CbmTofDigiPar;
 class CbmTofDigiBdfPar;
 class CbmTofCell;
 class CbmDigiManager;
+class CbmEvent;
 
 // FAIR classes and includes
 #include "FairTask.h"
@@ -77,9 +78,7 @@ public:
   inline void SetCalMode(Int_t iMode) { fCalMode = iMode; }
   inline void SetCalTrg(Int_t iTrg) { fCalTrg = iTrg; }
   inline void SetCalSmType(Int_t iCalSmType) { fCalSmType = iCalSmType; }
-  inline void SetCaldXdYMax(Double_t dCaldXdYMax) {
-    fdCaldXdYMax = dCaldXdYMax;
-  }
+  inline void SetCaldXdYMax(Double_t dCaldXdYMax) { fdCaldXdYMax = dCaldXdYMax; }
   inline void SetTRefId(Int_t Id) { fTRefMode = Id; }
   inline void SetTRefDifMax(Double_t TRefMax) { fTRefDifMax = TRefMax; }
   inline void SetdTRefMax(Double_t dTRefMax) { fdTRefMax = dTRefMax; }
@@ -88,14 +87,10 @@ public:
   inline void SetTotMin(Double_t TOTMin) { fTotMin = TOTMin; }
   inline void SetOutTimeFactor(Double_t val) { fOutTimeFactor = val; }
 
-  inline void SetCalParFileName(TString CalParFileName) {
-    fCalParFileName = CalParFileName;
-  }
+  inline void SetCalParFileName(TString CalParFileName) { fCalParFileName = CalParFileName; }
   Bool_t SetHistoFileName(TString sFilenameIn = "./tofSimpClust.hst.root");
 
-  void UseMcTrackMonitoring(Bool_t bMcTrkMonitor = kTRUE) {
-    fbMcTrkMonitor = bMcTrkMonitor;
-  }
+  void UseMcTrackMonitoring(Bool_t bMcTrkMonitor = kTRUE) { fbMcTrkMonitor = bMcTrkMonitor; }
 
 protected:
 private:
@@ -143,7 +138,7 @@ private:
   /**
        ** @brief Build clusters out of ToF Digis and store the resulting info in a TofHit.
        **/
-  Bool_t BuildClusters();
+  std::pair<Int_t, Int_t> BuildClusters(CbmEvent* event);
 
   /**
        ** @brief Retrieve event info from run manager to properly fill the CbmLink objects.
@@ -163,6 +158,7 @@ private:
   TClonesArray* fTofPointsColl;  // TOF MC points
   TClonesArray* fMcTracksColl;   // MC tracks
   CbmDigiManager* fDigiMan;
+  TClonesArray* fEvents = nullptr;
 
   // Output variables
   TClonesArray* fTofHitsColl;       // TOF hits
@@ -173,32 +169,22 @@ private:
   Int_t fVerbose;
 
   // Intermediate storage variables
-  std::vector<std::vector<std::vector<std::vector<CbmTofDigi*>>>>
-    fStorDigiExp;  //[nbType][nbSm*nbRpc][nbCh][nDigis]
-  std::vector<std::vector<std::vector<std::vector<Int_t>>>>
-    fStorDigiInd;  //[nbType][nbSm*nbRpc][nbCh][nDigis]
+  std::vector<std::vector<std::vector<std::vector<CbmTofDigi*>>>> fStorDigiExp;  //[nbType][nbSm*nbRpc][nbCh][nDigis]
+  std::vector<std::vector<std::vector<std::vector<Int_t>>>> fStorDigiInd;        //[nbType][nbSm*nbRpc][nbCh][nDigis]
   /*
       std::vector< std::vector< std::vector< std::vector< std::vector< CbmTofDigi* > > > > >
                fStorDigi; //[nbType][nbSm][nbRpc][nbCh][nDigis]
       std::vector< std::vector< std::vector< std::vector< std::vector< CbmTofDigiExp* > > > > >
                fStorDigiExp; //[nbType][nbSm][nbRpc][nbCh][nDigis]
       */
-  std::vector<std::vector<std::vector<Int_t>>>
-    fviClusterMul;  //[nbType][nbSm][nbRpc]
-  std::vector<std::vector<std::vector<Int_t>>>
-    fviClusterSize;  //[nbType][nbRpc][nClusters]
-  std::vector<std::vector<std::vector<Int_t>>>
-    fviTrkMul;  //[nbType][nbRpc][nClusters]
-  std::vector<std::vector<std::vector<Double_t>>>
-    fvdX;  //[nbType][nbRpc][nClusters]
-  std::vector<std::vector<std::vector<Double_t>>>
-    fvdY;  //[nbType][nbRpc][nClusters]
-  std::vector<std::vector<std::vector<Double_t>>>
-    fvdDifX;  //[nbType][nbRpc][nClusters]
-  std::vector<std::vector<std::vector<Double_t>>>
-    fvdDifY;  //[nbType][nbRpc][nClusters]
-  std::vector<std::vector<std::vector<Double_t>>>
-    fvdDifCh;  //[nbType][nbRpc][nClusters]
+  std::vector<std::vector<std::vector<Int_t>>> fviClusterMul;   //[nbType][nbSm][nbRpc]
+  std::vector<std::vector<std::vector<Int_t>>> fviClusterSize;  //[nbType][nbRpc][nClusters]
+  std::vector<std::vector<std::vector<Int_t>>> fviTrkMul;       //[nbType][nbRpc][nClusters]
+  std::vector<std::vector<std::vector<Double_t>>> fvdX;         //[nbType][nbRpc][nClusters]
+  std::vector<std::vector<std::vector<Double_t>>> fvdY;         //[nbType][nbRpc][nClusters]
+  std::vector<std::vector<std::vector<Double_t>>> fvdDifX;      //[nbType][nbRpc][nClusters]
+  std::vector<std::vector<std::vector<Double_t>>> fvdDifY;      //[nbType][nbRpc][nClusters]
+  std::vector<std::vector<std::vector<Double_t>>> fvdDifCh;     //[nbType][nbRpc][nClusters]
 
   // Output file name and path
   TString fsHistoOutFilename;
@@ -225,38 +211,33 @@ private:
   TH2* fhChDifDifX;
   TH2* fhChDifDifY;
 
-  std::vector<TH2*> fhRpcDigiCor;       //[nbDet]
-  std::vector<TH1*> fhRpcCluMul;        //[nbDet]
-  std::vector<TH1*> fhRpcSigPropSpeed;  //[nbDet]
-  std::vector<TH2*> fhRpcCluPosition;   //[nbDet]
-  std::vector<TH2*> fhRpcCluTOff;       //[nbDet]
-  std::vector<TH2*> fhRpcCluTrms;       //[nbDet]
-  std::vector<TH2*> fhRpcCluTot;        // [nbDet]
-  std::vector<TH2*> fhRpcCluSize;       // [nbDet]
-  std::vector<TH2*> fhRpcCluAvWalk;     // [nbDet]
-  std::vector<std::vector<std::vector<TH2*>>>
-    fhRpcCluWalk;  // [nbDet][nbCh][nSide]
+  std::vector<TH2*> fhRpcDigiCor;                            //[nbDet]
+  std::vector<TH1*> fhRpcCluMul;                             //[nbDet]
+  std::vector<TH1*> fhRpcSigPropSpeed;                       //[nbDet]
+  std::vector<TH2*> fhRpcCluPosition;                        //[nbDet]
+  std::vector<TH2*> fhRpcCluTOff;                            //[nbDet]
+  std::vector<TH2*> fhRpcCluTrms;                            //[nbDet]
+  std::vector<TH2*> fhRpcCluTot;                             // [nbDet]
+  std::vector<TH2*> fhRpcCluSize;                            // [nbDet]
+  std::vector<TH2*> fhRpcCluAvWalk;                          // [nbDet]
+  std::vector<std::vector<std::vector<TH2*>>> fhRpcCluWalk;  // [nbDet][nbCh][nSide]
 
-  std::vector<std::vector<TH1*>> fhTRpcCluMul;       // [nbDet][nbTrg]
-  std::vector<std::vector<TH2*>> fhTRpcCluPosition;  // [nbDet][nbTrg]
-  std::vector<std::vector<TH2*>> fhTRpcCluTOff;      // [nbDet][nbTrg]
-  std::vector<std::vector<TH2*>> fhTRpcCluTot;       // [nbDet][nbTrg]
-  std::vector<std::vector<TH2*>> fhTRpcCluSize;      // [nbDet][nbTrg]
-  std::vector<std::vector<TH2*>> fhTRpcCluAvWalk;    // [nbDet][nbTrg]
-  std::vector<std::vector<TH2*>> fhTRpcCluDelTof;    // [nbDet][nbTrg]
-  std::vector<std::vector<TH2*>> fhTRpcCludXdY;      // [nbDet][nbTrg]
-  std::vector<std::vector<std::vector<std::vector<TH2*>>>>
-    fhTRpcCluWalk;  // [nbDet][nbTrg][nbCh][nSide]
+  std::vector<std::vector<TH1*>> fhTRpcCluMul;                             // [nbDet][nbTrg]
+  std::vector<std::vector<TH2*>> fhTRpcCluPosition;                        // [nbDet][nbTrg]
+  std::vector<std::vector<TH2*>> fhTRpcCluTOff;                            // [nbDet][nbTrg]
+  std::vector<std::vector<TH2*>> fhTRpcCluTot;                             // [nbDet][nbTrg]
+  std::vector<std::vector<TH2*>> fhTRpcCluSize;                            // [nbDet][nbTrg]
+  std::vector<std::vector<TH2*>> fhTRpcCluAvWalk;                          // [nbDet][nbTrg]
+  std::vector<std::vector<TH2*>> fhTRpcCluDelTof;                          // [nbDet][nbTrg]
+  std::vector<std::vector<TH2*>> fhTRpcCludXdY;                            // [nbDet][nbTrg]
+  std::vector<std::vector<std::vector<std::vector<TH2*>>>> fhTRpcCluWalk;  // [nbDet][nbTrg][nbCh][nSide]
 
   std::vector<TH1*> fhTrgdT;  //[nbTrg]
 
-  std::vector<std::vector<Double_t>> fvCPSigPropSpeed;  //[nSMT][nRpc]
-  std::vector<std::vector<std::vector<std::vector<Double_t>>>>
-    fvCPDelTof;  //[nSMT][nRpc][nbClDelTofBinX][nbTrg]
-  std::vector<std::vector<std::vector<std::vector<Double_t>>>>
-    fvCPTOff;  //[nSMT][nRpc][nCh][nbSide]
-  std::vector<std::vector<std::vector<std::vector<Double_t>>>>
-    fvCPTotGain;  //[nSMT][nRpc][nCh][nbSide]
+  std::vector<std::vector<Double_t>> fvCPSigPropSpeed;                       //[nSMT][nRpc]
+  std::vector<std::vector<std::vector<std::vector<Double_t>>>> fvCPDelTof;   //[nSMT][nRpc][nbClDelTofBinX][nbTrg]
+  std::vector<std::vector<std::vector<std::vector<Double_t>>>> fvCPTOff;     //[nSMT][nRpc][nCh][nbSide]
+  std::vector<std::vector<std::vector<std::vector<Double_t>>>> fvCPTotGain;  //[nSMT][nRpc][nCh][nbSide]
   std::vector<std::vector<std::vector<std::vector<std::vector<Double_t>>>>>
     fvCPWalk;  //[nSMT][nRpc][nCh][nbSide][nbWalkBins]
 
@@ -270,11 +251,13 @@ private:
   TTimeStamp fStop;
 
   // --- Run counters
-  TStopwatch fTimer;       ///< ROOT timer
-  Int_t fiNofEvents;       ///< Total number of events processed
-  Double_t fdNofDigisTot;  ///< Total number of Tof Digis processed
-  Double_t fdNofHitsTot;   ///< Total number of hits produced
-  Double_t fdTimeTot;      ///< Total execution time
+  TStopwatch fTimer;           ///< ROOT timer
+  Int_t fiNofTs = 0;           ///< Number of processed timeslices
+  Int_t fiNofEvents;           ///< Total number of events processed
+  Double_t fNofDigisAll  = 0;  ///< Total number of TOF digis in input
+  Double_t fNofDigisUsed = 0;  ///< Total number of Tof Digis processed
+  Double_t fdNofHitsTot;       ///< Total number of hits produced
+  Double_t fdTimeTot;          ///< Total execution time
 
   // Calib
   Double_t dTRef;
