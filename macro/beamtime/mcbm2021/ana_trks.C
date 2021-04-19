@@ -163,7 +163,7 @@ void ana_trks(Int_t nEvents = 10000, Int_t iSel = 1, Int_t iGenCor = 1, TString 
   //tofFindTracks->SetTtTarg(0.055);  // target value Nov2019 (triple stack run 831)
   //tofFindTracks->SetTtTarg(0.048);  // target value Nov2019 (double stack run 714)
   //tofFindTracks->SetTtTarg(0.047);  // target value Mar2020, after T0 fix (full run 600)
-    tofFindTracks->SetTtTarg(0.058);  // target value Mar2021, after T0 fix (double stack run 1058)
+    tofFindTracks->SetTtTarg(0.042);  // target value Mar2021, after T0 fix (double stack run 1058)
   //tofFindTracks->SetTtTarg(0.038);  // target value Mar2021, after T0 fix (double stack run 1051)
   //tofFindTracks->SetTtTarg(0.035);             // target value for inverse velocity, > 0.033 ns/cm!
   tofFindTracks->SetCalParFileName(cTrkFile);  // Tracker parameter value file name

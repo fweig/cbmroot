@@ -1215,10 +1215,10 @@ Bool_t CbmTofEventClusterizer::CreateHistos()
       LOG(warning) << "No DigiPar for Det " << Form("0x%08x", iUCellId);
       continue;
     }
-    LOG(info) << "DetIndx " << iDetIndx << ", SmType " << iSmType << ", SmId " << iSmId << ", RpcId " << iRpcId
-              << " => UniqueId " << Form("(0x%08x, 0x%08x)", iUniqueId, iUCellId) << ", dx " << fChannelInfo->GetSizex()
-              << ", dy " << fChannelInfo->GetSizey() << ", z " << fChannelInfo->GetZ()
-              << Form(" ChPoi: %p ", fChannelInfo) << ", nbCh " << fDigiBdfPar->GetNbChan(iSmType, 0);
+    LOG(debug) << "DetIndx " << iDetIndx << ", SmType " << iSmType << ", SmId " << iSmId << ", RpcId " << iRpcId
+               << " => UniqueId " << Form("(0x%08x, 0x%08x)", iUniqueId, iUCellId) << ", dx "
+               << fChannelInfo->GetSizex() << ", dy " << fChannelInfo->GetSizey() << ", z " << fChannelInfo->GetZ()
+               << Form(" ChPoi: %p ", fChannelInfo) << ", nbCh " << fDigiBdfPar->GetNbChan(iSmType, 0);
 
     // check access to all channel infos
     for (Int_t iCh = 0; iCh < fDigiBdfPar->GetNbChan(iSmType, iRpcId); iCh++) {
