@@ -3342,6 +3342,7 @@ Bool_t CbmTofEventClusterizer::WriteHistos()
                                           fChannelInfo->GetSizey(), dVscal, dV, dVW, 2. * ff->GetParameter(1),
                                           2. * ff->GetParError(1), ff->GetParameter(2), ff->GetParError(2),
                                           ff->GetParameter(3), ff->GetParError(3));
+
                         for (Int_t iPar = 0; iPar < 4; iPar++)
                           fhSmCluFpar[iSmType][iPar]->Fill((Double_t)(iSm * iNbRpc + iRpc), ff->GetParameter(2 + iPar));
                       }

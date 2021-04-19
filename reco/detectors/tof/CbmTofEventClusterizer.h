@@ -246,18 +246,18 @@ private:
   Bool_t fbWriteHitsInOut;
   Bool_t fbWriteDigisInOut;
   std::vector<CbmTofDigi>* fTofCalDigiVec = nullptr;  //! // Calibrated TOF Digis
-  TClonesArray* fTofHitsColl;       // TOF hits
-  TClonesArray* fTofDigiMatchColl;  // TOF Digi Links
+  TClonesArray* fTofHitsColl;                         // TOF hits
+  TClonesArray* fTofDigiMatchColl;                    // TOF Digi Links
   //TClonesArray          * fTofCalDigisCollOut;   // Calibrated TOF Digis
-  std::vector<CbmTofDigi>* fTofCalDigiVecOut =
-    nullptr;                           //! // Calibrated TOF Digis
-  TClonesArray* fTofHitsCollOut;       // TOF hits
-  TClonesArray* fTofDigiMatchCollOut;  // TOF Digi Links
+  std::vector<CbmTofDigi>* fTofCalDigiVecOut = nullptr;      //! // Calibrated TOF Digis
+  TClonesArray* fTofHitsCollOut;                             // TOF hits
+  TClonesArray* fTofDigiMatchCollOut;                        // TOF Digi Links
   std::vector<CbmMatch>* fTofDigiPointMatchesOut = nullptr;  // TOF Digi MC Point Matches
-  Int_t fiNbHits;                      // Index of the CbmTofHit TClonesArray
+  Int_t fiNbHits;                                            // Index of the CbmTofHit TClonesArray
 
   // Generic
   Int_t fVerbose;
+
 
   // Intermediate storage variables
   std::vector<std::vector<std::vector<std::vector<CbmTofDigi*>>>> fStorDigi;  //[nbType][nbSm*nbRpc][nbCh][nDigis]
@@ -304,7 +304,7 @@ private:
   std::vector<TH2*> fhRpcDigiDTLD;                           //[nbDet]
   std::vector<TH2*> fhRpcDigiDTFD;                           //[nbDet]
   std::vector<TH2*> fhRpcDigiDTMul;                          //[nbDet]
-  std::vector<TH1*> fhRpcDigiRate;                            //[nbDet]
+  std::vector<TH1*> fhRpcDigiRate;                           //[nbDet]
   std::vector<TH1*> fhRpcCluMul;                             //[nbDet]
   std::vector<TH1*> fhRpcCluRate;                            //[nbDet]
   std::vector<TH1*> fhRpcCluRate10s;                         //[nbDet]
