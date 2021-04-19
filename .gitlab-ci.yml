@@ -26,7 +26,7 @@ RebaseCheck:
     - scripts/connect_upstream_repo.sh $CI_MERGE_REQUEST_PROJECT_URL
     - git fetch upstream
     - hash1=$(git show-ref upstream/master | cut -f1 -d' ')
-    - hash2=$(git merge-base upstream/master origin/$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME)
+    - hash2=$(git merge-base upstream/master HEAD)
     - echo "${hash1}"
     - echo "${hash2}"
     - if [ "${hash1}" = "${hash2}" ]; then
