@@ -3399,7 +3399,7 @@ Bool_t CbmTofEventClusterizer::WriteHistos()
                         TH1* hTy          = (TH1*) htempTOff->ProjectionY(Form("%s_py%d", htempTOff->GetName(), iRefCh),
                                                                  iRefCh + 1, iRefCh + 1);
                         Double_t dFMean   = hTy->GetBinCenter(hTy->GetMaximumBin());
-                        Double_t dFLim    = 1.;  // CAUTION, fixed numeric value
+                        Double_t dFLim     = 1.;  // CAUTION, fixed numeric value
                         Double_t dBinSize = hTy->GetBinWidth(1);
                         dFLim             = TMath::Max(dFLim, 5. * dBinSize);
                         TFitResultPtr fRes = hTy->Fit("gaus", "SQM", "", dFMean - dFLim, dFMean + dFLim);
