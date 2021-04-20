@@ -72,7 +72,7 @@ public:
   void SetRichOffsetSearchRange(Int_t val = 1000) { fRichOffsetRange = val; }
 
   void SetPsdOffsetSearchRange(Int_t val = 1000) { fPsdOffsetRange = val; }
-
+  void SetNrTsForFit(Int_t val = 200) { fNrTsForFit = val; } 
   inline void SetT0PulserTotLimits(UInt_t uMin, UInt_t uMax) {
     fuMinTotPulserT0 = uMin;
     fuMaxTotPulserT0 = uMax;
@@ -126,7 +126,7 @@ private:
   Int_t CalcNrBins(Int_t);
   void CreateHistos();
   void WriteHistos();
-
+  void FitPeaks();
 
   /** Input array from previous already existing data level **/
   CbmDigiManager* fDigiMan = nullptr;  //!
@@ -134,6 +134,39 @@ private:
   /** T0 is not included in CbmDigiManager, so add it explicitly here **/
   const std::vector<CbmTofDigi>* fT0DigiVec = nullptr;  //!
   TClonesArray* fT0DigiArr                  = nullptr;  //!
+
+  
+    /** Peak position of time difference histograms **/
+  Double_t trd_peak_pos;
+  Double_t sts_peak_pos;
+  Double_t much_peak_pos;
+  Double_t tof_peak_pos;
+  Double_t rich_peak_pos;
+  Double_t psd_peak_pos;
+
+  /** Peak position of time difference histograms with TOF coincidence**/
+  Double_t trd_coin_peak_pos;
+  Double_t sts_coin_peak_pos;
+  Double_t much_coin_peak_pos;
+  Double_t rich_coin_peak_pos;
+  Double_t psd_coin_peak_pos;
+
+  /** Average height of bins **/
+  Double_t trd_average;
+  Double_t sts_average;
+  Double_t much_average;
+  Double_t tof_average;
+  Double_t rich_average;
+  Double_t psd_average;
+
+  /** Typical width from Gauss **/
+  Double_t trd_width0_ns;
+  Double_t sts_width0_ns;
+  Double_t much_width0_ns;
+  Double_t tof_width0_ns;
+  Double_t rich_width0_ns;
+  Double_t psd_width0_ns;
+  
 
   /// Variables to store the previous digi time
   Double_t fPrevTimeT0   = 0.;
@@ -187,7 +220,7 @@ private:
   Int_t fTofOffsetRange  = 1000;
   Int_t fRichOffsetRange = 1000;
   Int_t fPsdOffsetRange  = 1000;
-
+  Int_t fNrTsForFit = 100;
   Int_t fBinWidth = 1;
 
   TH1* fT0StsDiff  = nullptr;
