@@ -24,7 +24,7 @@ void check_timing(TString fileName,
 
   FairFileSource* inputSource = new FairFileSource(fileName);
   fRun->SetSource(inputSource);
-
+  fRun->SetSink(new FairRootFileSink( "DummyFile.root" )); //Added AR
   // Define output file for FairMonitor histograms
   //  TString monitorFile{outFile};
   //  monitorFile.ReplaceAll("qa","qa.monitor");
