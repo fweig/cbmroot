@@ -151,9 +151,10 @@ public:
 
   void SetTsParameters(Double_t dTsStartTime, Double_t dTsLength, Double_t dTsOverLength)
   {
-    fdTsStartTime  = dTsStartTime;
-    fdTsLength     = dTsLength;
-    fdTsOverLength = dTsOverLength;
+    fdTsStartTime   = dTsStartTime;
+    fdTsLength      = dTsLength;
+    fdTsOverLength  = dTsOverLength;
+    fbUseTsMetaData = kFALSE;
   }
 
   void SetSeedTimeWindow(Double_t timeWinBeg, Double_t timeWinEnd)
@@ -248,6 +249,7 @@ private:
   Bool_t fbFillHistos {kTRUE};            //! Switch ON/OFF filling of histograms
   Bool_t fbUseMuchBeamtimeDigi = kTRUE;   //! Switch between MUCH digi classes
   Bool_t fbGetTimings          = kFALSE;  //! Measure CPU time using stopwatch
+  Bool_t fbUseTsMetaData       = kTRUE;   //! Read Ts Parameters from input tree
     /// Event building mode and detectors selection
   EOverlapModeRaw fOverMode {EOverlapModeRaw::AllowOverlap};
 

@@ -69,7 +69,7 @@ Bool_t CbmAlgoBuildRawEvents::InitAlgo()
   }
 
   /// Access the TS metadata to know TS start time if needed
-  if (fdTsStartTime < 0 || fdTsLength < 0 || fdTsOverLength < 0) {
+  if (fbUseTsMetaData) {
     if (!fTimeSliceMetaDataArray) {
       LOG(fatal) << "No TS metadata input found"
                  << " => Please check in the unpacking macro if the following line was "
@@ -167,7 +167,7 @@ void CbmAlgoBuildRawEvents::InitSeedWindow()
   Double_t dOverlapStart = fdTsStartTime + fdTsLength;
   Double_t dOverlapSize  = fdTsOverLength;
 
-  if (fdTsStartTime < 0 || fdTsLength < 0 || fdTsOverLength < 0) {
+  if (fbUseTsMetaData) {
     const TimesliceMetaData* pTsMetaData = dynamic_cast<TimesliceMetaData*>(fTimeSliceMetaDataArray->At(0));
     if (nullptr == pTsMetaData)
       LOG(fatal) << Form("CbmAlgoBuildRawEvents::LoopOnSeeds => "
