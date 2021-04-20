@@ -218,7 +218,6 @@ CbmRoot_Merge_macosx:
     - echo "export BUILDDIR=$PWD/build" >> Dart.cfg
     - echo "export SOURCEDIR=$PWD" >> Dart.cfg
     - echo "export NCPU=4" >> Dart.cfg
-    - echo "export PATH=\$SIMPATH/bin:$PATH" >> Dart.cfg
     - ls
     - pwd
     - cat Dart.cfg
@@ -252,7 +251,7 @@ CbmRoot_Merge_realData:
     - echo "export BUILDDIR=$PWD/build" >> Dart.cfg
     - echo "export SOURCEDIR=$PWD" >> Dart.cfg
     - echo "export NCPU=16" >> Dart.cfg
-    - echo "export PATH=\$SIMPATH/bin:$PATH" >> Dart.cfg
+    - echo "export PATH=/opt/cmake/3.20.1/bin:$PATH" >> Dart.cfg
     - ls
     - pwd
     - cat Dart.cfg

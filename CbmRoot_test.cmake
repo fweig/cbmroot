@@ -85,7 +85,11 @@ EndIf()
 
 Ctest_Start($ENV{ctest_model})
 
+unset(repeat)
 If($ENV{ctest_model} MATCHES Continuous)
+  if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.17)
+    set(repeat REPEAT UNTIL_PASS:2)
+  endif()
   set(ENV{ctest_model} Nightly)
 EndIf()
 
@@ -111,6 +115,7 @@ If(NOT _RETVAL)
 
   Ctest_Test(BUILD "${CTEST_BINARY_DIRECTORY}"
              PARALLEL_LEVEL $ENV{number_of_processors}
+             ${repeat}
              RETURN_VALUE _ctest_test_ret_val
             )
 
