@@ -25,7 +25,7 @@ void mcbm_reco_event(Int_t nEvents = 10, TString dataset = "data/test", const ch
 
 
   // -----   Environment   --------------------------------------------------
-  TString myName = "mcbm_reco";  // this macro's name for screen output
+  TString myName = "mcbm_reco";                    // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
   // ------------------------------------------------------------------------
 
@@ -60,20 +60,16 @@ void mcbm_reco_event(Int_t nEvents = 10, TString dataset = "data/test", const ch
 
   // - TRD digitisation parameters
   if (setup->GetGeoTag(ECbmModuleId::kTrd, geoTag)) {
-    TObjString* trdFile =
-      new TObjString(srcDir + "/parameters/trd/trd_" + geoTag + ".digi.par");
+    TObjString* trdFile = new TObjString(srcDir + "/parameters/trd/trd_" + geoTag + ".digi.par");
     parFileList->Add(trdFile);
-    std::cout << "-I- " << myName << ": Using parameter file "
-              << trdFile->GetString() << std::endl;
+    std::cout << "-I- " << myName << ": Using parameter file " << trdFile->GetString() << std::endl;
   }
 
   // - TOF digitisation parameters
   if (setup->GetGeoTag(ECbmModuleId::kTof, geoTag)) {
-    TObjString* tofBdfFile =
-      new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
+    TObjString* tofBdfFile = new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
     parFileList->Add(tofBdfFile);
-    std::cout << "-I- " << myName << ": Using parameter file "
-              << tofBdfFile->GetString() << std::endl;
+    std::cout << "-I- " << myName << ": Using parameter file " << tofBdfFile->GetString() << std::endl;
   }
   // ------------------------------------------------------------------------
 
@@ -94,8 +90,7 @@ void mcbm_reco_event(Int_t nEvents = 10, TString dataset = "data/test", const ch
 
   // -----   Input file   ---------------------------------------------------
   std::cout << std::endl;
-  std::cout << "-I- " << myName << ": Using input file " << rawFile
-            << std::endl;
+  std::cout << "-I- " << myName << ": Using input file " << rawFile << std::endl;
   // ------------------------------------------------------------------------
 
 
@@ -103,6 +98,7 @@ void mcbm_reco_event(Int_t nEvents = 10, TString dataset = "data/test", const ch
   FairRunAna* run = new FairRunAna();
 
   FairFileSource* inputSource = new FairFileSource(rawFile);
+
   run->SetSource(inputSource);
 
   run->SetOutputFile(recFile);
@@ -110,7 +106,6 @@ void mcbm_reco_event(Int_t nEvents = 10, TString dataset = "data/test", const ch
   Bool_t hasFairMonitor = kFALSE;  //Has_Fair_Monitor();
   if (hasFairMonitor) FairMonitor::GetMonitor()->EnableMonitor(kTRUE);
   // ------------------------------------------------------------------------
-
 
   // -----   Logger settings   ----------------------------------------------
   FairLogger::GetLogger()->SetLogScreenLevel(logLevel.Data());
@@ -121,17 +116,14 @@ void mcbm_reco_event(Int_t nEvents = 10, TString dataset = "data/test", const ch
   // -----   Local reconstruction in MVD   ----------------------------------
   if (setup->IsActive(ECbmModuleId::kMvd)) {
 
-    CbmMvdClusterfinder* mvdCluster =
-      new CbmMvdClusterfinder("MVD Cluster Finder", 0, 0);
+    CbmMvdClusterfinder* mvdCluster = new CbmMvdClusterfinder("MVD Cluster Finder", 0, 0);
     run->AddTask(mvdCluster);
-    std::cout << "-I- " << myName << ": Added task " << mvdCluster->GetName()
-              << std::endl;
+    std::cout << "-I- " << myName << ": Added task " << mvdCluster->GetName() << std::endl;
 
     CbmMvdHitfinder* mvdHit = new CbmMvdHitfinder("MVD Hit Finder", 0, 0);
     mvdHit->UseClusterfinder(kTRUE);
     run->AddTask(mvdHit);
-    std::cout << "-I- " << myName << ": Added task " << mvdHit->GetName()
-              << std::endl;
+    std::cout << "-I- " << myName << ": Added task " << mvdHit->GetName() << std::endl;
   }
   // ------------------------------------------------------------------------
 
@@ -159,13 +151,12 @@ void mcbm_reco_event(Int_t nEvents = 10, TString dataset = "data/test", const ch
 
     if (muchFlag) {
       std::cout << geoTag << std::endl;
-      parFile =
-        parFile + "/parameters/much/much_" + geoTag + "_digi_sector.root";
+      parFile = parFile + "/parameters/much/much_" + geoTag + "_digi_sector.root";
       std::cout << "Using parameter file " << parFile << std::endl;
-    } else {
+    }
+    else {
       std::cout << geoTag(0, 4) << std::endl;
-      parFile =
-        parFile + "/parameters/much/much_" + geoTag(0, 4) + "_digi_sector.root";
+      parFile = parFile + "/parameters/much/much_" + geoTag(0, 4) + "_digi_sector.root";
       std::cout << "Using parameter file " << parFile << std::endl;
     }
 
@@ -173,8 +164,7 @@ void mcbm_reco_event(Int_t nEvents = 10, TString dataset = "data/test", const ch
     // --- Hit finder for GEMs
     FairTask* muchHitGem = new CbmMuchFindHitsGem(parFile.Data(), muchFlag);
     run->AddTask(muchHitGem);
-    std::cout << "-I- " << myName << ": Added task " << muchHitGem->GetName()
-              << FairLogger::endl;
+    std::cout << "-I- " << myName << ": Added task " << muchHitGem->GetName() << FairLogger::endl;
   }
   // ------------------------------------------------------------------------
 
@@ -182,21 +172,19 @@ void mcbm_reco_event(Int_t nEvents = 10, TString dataset = "data/test", const ch
   // -----   Local reconstruction in TRD   ----------------------------------
   if (setup->IsActive(ECbmModuleId::kTrd)) {
 
-    Double_t triggerThreshold = 0.5e-6;  // SIS100
-    Bool_t triangularPads     = false;  // Bucharest triangular pad-plane layout
+    Double_t triggerThreshold       = 0.5e-6;  // SIS100
+    Bool_t triangularPads           = false;   // Bucharest triangular pad-plane layout
     CbmTrdClusterFinder* trdCluster = new CbmTrdClusterFinder();
     trdCluster->SetNeighbourEnable(true);
     trdCluster->SetMinimumChargeTH(triggerThreshold);
     trdCluster->SetNeighbourEnable(false);
     trdCluster->SetRowMerger(true);
     run->AddTask(trdCluster);
-    std::cout << "-I- " << myName << ": Added task " << trdCluster->GetName()
-              << std::endl;
+    std::cout << "-I- " << myName << ": Added task " << trdCluster->GetName() << std::endl;
 
     CbmTrdHitProducer* trdHit = new CbmTrdHitProducer();
     run->AddTask(trdHit);
-    std::cout << "-I- " << myName << ": Added task " << trdHit->GetName()
-              << std::endl;
+    std::cout << "-I- " << myName << ": Added task " << trdHit->GetName() << std::endl;
   }
   // ---------------------------------------------------------------------------
   // TOF defaults
@@ -214,27 +202,21 @@ void mcbm_reco_event(Int_t nEvents = 10, TString dataset = "data/test", const ch
   if (setup->IsActive(ECbmModuleId::kTof)) {
     switch (iTofCluMode) {
       case 1: {
-        CbmTofEventClusterizer* tofCluster =
-          new CbmTofEventClusterizer("TOF Event Clusterizer", 0, 1);
+        CbmTofEventClusterizer* tofCluster = new CbmTofEventClusterizer("TOF Event Clusterizer", 0, 1);
 
         tofCluster->SetCalMode(calMode);
         tofCluster->SetCalSel(calSel);
-        tofCluster->SetCaldXdYMax(3.);  // geometrical matching window in cm
-        tofCluster->SetCalCluMulMax(
-          5.);  // Max Counter Cluster Multiplicity for filling calib histos
-        tofCluster->SetCalRpc(calSm);  // select detector for calibration update
-        tofCluster->SetTRefId(
-          RefSel);                   // reference trigger for offset calculation
-        tofCluster->SetTotMax(20.);  // Tot upper limit for walk corection
-        tofCluster->SetTotMin(
-          0.01);  //(12000.);  // Tot lower limit for walk correction
-        tofCluster->SetTotPreRange(
-          5.);  // effective lower Tot limit  in ns from peak position
-        tofCluster->SetTotMean(5.);       // Tot calibration target value in ns
-        tofCluster->SetMaxTimeDist(1.0);  // default cluster range in ns
-        tofCluster->SetDelTofMax(
-          5.);  // acceptance range for cluster distance in ns (!)
-        tofCluster->SetSel2MulMax(3);  // limit Multiplicity in 2nd selector
+        tofCluster->SetCaldXdYMax(3.);              // geometrical matching window in cm
+        tofCluster->SetCalCluMulMax(5.);            // Max Counter Cluster Multiplicity for filling calib histos
+        tofCluster->SetCalRpc(calSm);               // select detector for calibration update
+        tofCluster->SetTRefId(RefSel);              // reference trigger for offset calculation
+        tofCluster->SetTotMax(20.);                 // Tot upper limit for walk corection
+        tofCluster->SetTotMin(0.01);                //(12000.);  // Tot lower limit for walk correction
+        tofCluster->SetTotPreRange(5.);             // effective lower Tot limit  in ns from peak position
+        tofCluster->SetTotMean(5.);                 // Tot calibration target value in ns
+        tofCluster->SetMaxTimeDist(1.0);            // default cluster range in ns
+        tofCluster->SetDelTofMax(5.);               // acceptance range for cluster distance in ns (!)
+        tofCluster->SetSel2MulMax(3);               // limit Multiplicity in 2nd selector
         tofCluster->SetChannelDeadtime(dDeadtime);  // artificial deadtime in ns
         tofCluster->SetEnableAvWalk(kFALSE);
         //tofCluster->SetEnableMatchPosScaling(kFALSE); // turn off projection to nominal target
@@ -244,17 +226,14 @@ void mcbm_reco_event(Int_t nEvents = 10, TString dataset = "data/test", const ch
         tofCluster->SetTRefDifMax(2.0);  // in ns
         tofCluster->PosYMaxScal(0.75);   //in % of length
         run->AddTask(tofCluster);
-        std::cout << "-I- " << myName << ": Added task "
-                  << tofCluster->GetName() << std::endl;
+        std::cout << "-I- " << myName << ": Added task " << tofCluster->GetName() << std::endl;
       } break;
       default: {
-        CbmTofSimpClusterizer* tofCluster =
-          new CbmTofSimpClusterizer("TOF Simple Clusterizer", 0);
+        CbmTofSimpClusterizer* tofCluster = new CbmTofSimpClusterizer("TOF Simple Clusterizer", 0);
         tofCluster->SetOutputBranchPersistent("TofHit", kTRUE);
         tofCluster->SetOutputBranchPersistent("TofDigiMatch", kTRUE);
         run->AddTask(tofCluster);
-        std::cout << "-I- " << myName << ": Added task "
-                  << tofCluster->GetName() << std::endl;
+        std::cout << "-I- " << myName << ": Added task " << tofCluster->GetName() << std::endl;
       }
     }
   }
@@ -275,35 +254,28 @@ void mcbm_reco_event(Int_t nEvents = 10, TString dataset = "data/test", const ch
       CbmTofTrackFinder* tofTrackFinder = new CbmTofTrackFinderNN();
       tofTrackFinder->SetMaxTofTimeDifference(0.2);  // in ns/cm
       tofTrackFinder->SetTxLIM(0.3);                 // max slope dx/dz
-      tofTrackFinder->SetTyLIM(0.3);  // max dev from mean slope dy/dz
-      tofTrackFinder->SetTyMean(0.);  // mean slope dy/dz
+      tofTrackFinder->SetTyLIM(0.3);                 // max dev from mean slope dy/dz
+      tofTrackFinder->SetTyMean(0.);                 // mean slope dy/dz
       CbmTofTrackFitter* tofTrackFitter = new CbmTofTrackFitterKF(0, 211);
       TFitter* MyFit                    = new TFitter(1);  // initialize Minuit
       tofTrackFinder->SetFitter(tofTrackFitter);
-      CbmTofFindTracks* tofFindTracks =
-        new CbmTofFindTracks("TOF Track Finder");
+      CbmTofFindTracks* tofFindTracks = new CbmTofFindTracks("TOF Track Finder");
       tofFindTracks->UseFinder(tofTrackFinder);
       tofFindTracks->UseFitter(tofTrackFitter);
-      tofFindTracks->SetCorMode(
-        iGenCor);  // valid options: 0,1,2,3,4,5,6, 10 - 19
-      tofFindTracks->SetTtTarg(
-        0.041);  // target value for inverse velocity, > 0.033 ns/cm!
+      tofFindTracks->SetCorMode(iGenCor);  // valid options: 0,1,2,3,4,5,6, 10 - 19
+      tofFindTracks->SetTtTarg(0.041);     // target value for inverse velocity, > 0.033 ns/cm!
       //tofFindTracks->SetTtTarg(0.035);                // target value for inverse velocity, > 0.033 ns/cm!
-      tofFindTracks->SetCalParFileName(
-        cTrkFile);  // Tracker parameter value file name
-      tofFindTracks->SetBeamCounter(5, 0, 0);  // default beam counter
-      tofFindTracks->SetStationMaxHMul(
-        30);  // Max Hit Multiplicity in any used station
+      tofFindTracks->SetCalParFileName(cTrkFile);  // Tracker parameter value file name
+      tofFindTracks->SetBeamCounter(5, 0, 0);      // default beam counter
+      tofFindTracks->SetStationMaxHMul(30);        // Max Hit Multiplicity in any used station
 
-      tofFindTracks->SetT0MAX(dScalFac);  // in ns
-      tofFindTracks->SetSIGT(0.08);       // default in ns
-      tofFindTracks->SetSIGX(0.3);        // default in cm
-      tofFindTracks->SetSIGY(0.45);       // default in cm
-      tofFindTracks->SetSIGZ(0.05);       // default in cm
-      tofFindTracks->SetUseSigCalib(
-        kFALSE);  // ignore resolutions in CalPar file
-      tofTrackFinder->SetSIGLIM(dChi2Lim2
-                                * 2.);  // matching window in multiples of chi2
+      tofFindTracks->SetT0MAX(dScalFac);           // in ns
+      tofFindTracks->SetSIGT(0.08);                // default in ns
+      tofFindTracks->SetSIGX(0.3);                 // default in cm
+      tofFindTracks->SetSIGY(0.45);                // default in cm
+      tofFindTracks->SetSIGZ(0.05);                // default in cm
+      tofFindTracks->SetUseSigCalib(kFALSE);       // ignore resolutions in CalPar file
+      tofTrackFinder->SetSIGLIM(dChi2Lim2 * 2.);   // matching window in multiples of chi2
       tofTrackFinder->SetChiMaxAccept(dChi2Lim2);  // max tracklet chi2
 
       Int_t iMinNofHits   = -1;
@@ -316,7 +288,7 @@ void mcbm_reco_event(Int_t nEvents = 10, TString dataset = "data/test", const ch
           tofFindTracks->SetStation(0, 5, 0, 0);  // Diamond
           break;
         case 1:  // for calibration mode of full setup
-          iMinNofHits   = 3;
+          iMinNofHits = 3;
           //          iNStations    = 39;
           iNStations    = 26;
           iNReqStations = 3;
@@ -369,16 +341,84 @@ void mcbm_reco_event(Int_t nEvents = 10, TString dataset = "data/test", const ch
       tofFindTracks->SetNStations(iNStations);
       tofFindTracks->SetNReqStations(iNReqStations);
       tofFindTracks->PrintSetup();
-      run->AddTask(tofFindTracks);
+      // run->AddTask(tofFindTracks);
     } break;
     default: {
-      CbmBinnedTrackerTask* trackerTask =
-        new CbmBinnedTrackerTask(kTRUE, beamWidthX, beamWidthY);
+      CbmBinnedTrackerTask* trackerTask = new CbmBinnedTrackerTask(kTRUE, beamWidthX, beamWidthY);
       trackerTask->SetUse(ECbmModuleId::kTrd, kFALSE);
-      run->AddTask(trackerTask);
+      // run->AddTask(trackerTask);
     }
   }
   // ------------------------------------------------------------------------
+
+
+  // ------------------------------------------------------------------------
+  // --------   L1 CA Track Finder    ---------------------------------------
+
+  CbmKF* kalman = new CbmKF();
+  run->AddTask(kalman);
+  CbmL1* l1 = new CbmL1();
+
+  l1->SetmCBMmode(1);
+  l1->SetUseHitErrors(1);
+
+  // --- Material budget file names
+  TString mvdGeoTag;
+  if (setup->GetGeoTag(ECbmModuleId::kMvd, mvdGeoTag)) {
+    TString parFile = gSystem->Getenv("VMCWORKDIR");
+    parFile         = parFile + "/parameters/mvd/mvd_matbudget_" + mvdGeoTag + ".root";
+    std::cout << "Using material budget file " << parFile << std::endl;
+    l1->SetMvdMaterialBudgetFileName(parFile.Data());
+  }
+  TString stsGeoTag;
+  if (setup->GetGeoTag(ECbmModuleId::kSts, stsGeoTag)) {
+    TString parFile = gSystem->Getenv("VMCWORKDIR");
+    parFile         = parFile + "/parameters/sts/sts_matbudget_v19a.root";
+    std::cout << "Using material budget file " << parFile << std::endl;
+    l1->SetStsMaterialBudgetFileName(parFile.Data());
+  }
+
+  TString muchGeoTag;
+  if (setup->GetGeoTag(ECbmModuleId::kMuch, muchGeoTag)) {
+
+    // --- Parameter file name
+    TString geoTag;
+    setup->GetGeoTag(ECbmModuleId::kMuch, geoTag);
+    Int_t muchFlag = 0;
+    if (geoTag.Contains("mcbm")) muchFlag = 1;
+
+    TString parFile = gSystem->Getenv("VMCWORKDIR");
+    parFile         = parFile + "/parameters/much/much_" + geoTag(0, 4) + "_digi_sector.root";
+    std::cout << "L1: Using parameter file " << parFile << std::endl;
+    l1->SetMuchPar(parFile);
+
+    TString parFile2 = gSystem->Getenv("VMCWORKDIR");
+    parFile2         = parFile2 + "/parameters/much/much_matbudget_v20a_mcbm.root ";
+    std::cout << "Using material budget file " << parFile2 << std::endl;
+    l1->SetMuchMaterialBudgetFileName(parFile2.Data());
+  }
+
+  TString trdGeoTag;
+  if (setup->GetGeoTag(ECbmModuleId::kTrd, trdGeoTag)) {
+    TString parFile = gSystem->Getenv("VMCWORKDIR");
+    parFile         = parFile + "/parameters/trd/trd_matbudget_v20a_mcbm.root";
+    std::cout << "Using material budget file " << parFile << std::endl;
+    l1->SetTrdMaterialBudgetFileName(parFile.Data());
+  }
+
+  TString tofGeoTag;
+  if (setup->GetGeoTag(ECbmModuleId::kTof, tofGeoTag)) {
+    TString parFile = gSystem->Getenv("VMCWORKDIR");
+    parFile         = parFile + "/parameters/tof/tof_matbudget_v20f_mcbm.root";
+    std::cout << "Using material budget file " << parFile << std::endl;
+    l1->SetTofMaterialBudgetFileName(parFile.Data());
+  }
+
+  run->AddTask(l1);
+
+  CbmStsTrackFinder* stsTrackFinder = new CbmL1StsTrackFinder();
+  FairTask* stsFindTracks           = new CbmStsFindTracksEvents(stsTrackFinder);
+  run->AddTask(stsFindTracks);
 
 
   // -----  Parameter database   --------------------------------------------
@@ -423,8 +463,7 @@ void mcbm_reco_event(Int_t nEvents = 10, TString dataset = "data/test", const ch
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Output file is " << recFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s"
-            << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
   std::cout << std::endl;
   std::cout << " Test passed" << std::endl;
   std::cout << " All ok " << std::endl;

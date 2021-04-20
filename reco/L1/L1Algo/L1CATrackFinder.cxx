@@ -75,7 +75,7 @@ inline void L1Algo::f10(  // input
   // output
   fvec* u_front_l, fvec* u_back_l, fvec* zPos_l, THitI* hitsl, fvec* HitTime_l, fvec* HitTimeEr,
   // comment unused parameters, FU, 18.01.21
-  fvec* /*Event_l*/, fvec* /*d_x*/, fvec* /*d_y*/, fvec* /*d_xy*/, fvec* d_u, fvec* d_v)
+  fvec* Event_l, fvec* /*d_x*/, fvec* /*d_y*/, fvec* /*d_xy*/, fvec* d_u, fvec* d_v)
 {
   const Tindex& end_lh = start_lh + n1_l;
 
@@ -161,10 +161,10 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
     fvec& u = u_front_l[i1_V];
     fvec& v = u_back_l[i1_V];
     fvec xl, yl;  // left(1-st) hit coor
-    fvec zl          = zPos_l[i1_V];
-    fvec& time       = HitTime_l[i1_V];
-    fvec& timeEr     = HitTimeEr[i1_V];
-    const fvec dzli  = 1. / (zl - targZ);
+    fvec zl         = zPos_l[i1_V];
+    fvec& time      = HitTime_l[i1_V];
+    fvec& timeEr    = HitTimeEr[i1_V];
+    const fvec dzli = 1. / (zl - targZ);
 
     fvec dx1, dy1, dxy1 = 0;
 
@@ -224,6 +224,7 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
     if ((isec == kAllSecIter) || (isec == kAllSecEIter) || (isec == kAllSecJumpIter)) T.NDF = 0;
     T.tx = tx;
     T.ty = ty;
+    T.t  = time;
 
     T.qp  = 0.;
     T.C20 = T.C21 = 0;
@@ -231,10 +232,10 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
     T.C40 = T.C41 = T.C42 = T.C43 = 0;
     T.C50 = T.C51 = T.C52 = T.C53 = T.C54 = 0;
     T.C22 = T.C33 = MaxSlope * MaxSlope / 9.;
-    T.C44         = MaxInvMom / 3. * MaxInvMom / 3.;
-    T.C55         = timeEr * timeEr;
+    if (fGlobal || fmCBMmode) T.C22 = T.C33 = 10;
+    T.C44 = MaxInvMom / 3. * MaxInvMom / 3.;
+    T.C55 = timeEr * timeEr;
 
-    T.t = time;
 
     // #define BEGIN_FROM_TARGET
 #ifndef BEGIN_FROM_TARGET  // the best now
@@ -276,6 +277,7 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
         L1FilterXY(T, targX, targY, TargetXYInfo);
       }
     }
+
 
     else
 
@@ -352,16 +354,17 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
 
 #endif
 
-    FilterTime(T, time, timeEr);
 
 #ifdef USE_RL_TABLE
-    fit.L1AddMaterial(T, fRadThick[istal].GetRadThick(T.x, T.y), MaxInvMom, 1);
+    if (!fmCBMmode) fit.L1AddMaterial(T, fRadThick[istal].GetRadThick(T.x, T.y), MaxInvMom, 1);
+    if (fGlobal || fmCBMmode)
+      fit.L1AddThickMaterial(T, fRadThick[istal].GetRadThick(T.x, T.y), MaxInvMom, 1, stal.materialInfo.thick, 1);
 #else
     fit.L1AddMaterial(T, stal.materialInfo, MaxInvMom, 1);
 #endif
     if ((istam >= NMvdStations) && (istal <= NMvdStations - 1)) { fit.L1AddPipeMaterial(T, MaxInvMom, 1); }
 
-    fvec dz = zstam - T.z;
+    fvec dz = zstam - zl;
     L1ExtrapolateTime(T, dz);
 
     if (fGlobal || fmCBMmode)
@@ -411,6 +414,7 @@ inline void L1Algo::f20(  // input
     const float& timeError = T1.C55[i1_4];
     const float& time      = T1.t[i1_4];
 
+
     L1HitAreaTime areaTime(vGridTime[&stam - vStations], T1.x[i1_4] * iz, T1.y[i1_4] * iz,
                            (sqrt(Pick_m22 * (T1.C00 + stam.XYInfo.C00)) + MaxDZ * fabs(T1.tx))[i1_4] * iz,
                            (sqrt(Pick_m22 * (T1.C11 + stam.XYInfo.C11)) + MaxDZ * fabs(T1.ty))[i1_4] * iz, time,
@@ -433,17 +437,17 @@ inline void L1Algo::f20(  // input
 
       // check y-boundaries
       if (fabs(time - hitm.time) > sqrt(timeError + hitm.timeEr * hitm.timeEr) * 5) continue;
-      if (fabs(time - hitm.time) > 100) continue;
+      if (fabs(time - hitm.time) > 30) continue;
 
 #ifdef USE_EVENT_NUMBER
       if ((Event[i1_V][i1_4] != hitm.n)) continue;
 #endif
       // - check whether hit belong to the window ( track position +\- errors ) -
-      const fscal zm    = hitm.Z();
-      L1TrackPar T1_new = T1;
-      fvec dz           = fvec(zm) - T1.z;
+      const fscal zm = hitm.Z();
+      //       L1TrackPar T1_new = T1;
+      //       fvec dz           = fvec(zm) - T1.z;
+      // L1ExtrapolateTime(T1, dz);
 
-      L1ExtrapolateTime(T1_new, dz);
 
       //       if (fabs(T1_new.t[i1_4]-hitm.time)>sqrt(T1_new.C55[i1_4]+hitm.timeEr*hitm.timeEr)*4) continue;
       //       if (fabs(T1_new.t[i1_4]-hitm.time)>sqrt(2.9*2.9)*5) continue;
@@ -484,12 +488,14 @@ inline void L1Algo::f20(  // input
       }
 
       const fscal dX = xm[i1_4] - x[i1_4];
+
       if (dX * dX > dx_est2) continue;
 
       // check chi2
       fvec C10;
       L1ExtrapolateC10Line(T1, zm, C10);
       fvec chi2 = T1.chi2;
+
 
       L1UMeasurementInfo info = stam.frontInfo;
 
@@ -500,7 +506,7 @@ inline void L1Algo::f20(  // input
       if (isec != TRACKS_FROM_TRIPLETS_ITERATION)
 #endif
         if (chi2[i1_4] > DOUBLET_CHI2_CUT) continue;
-          //   T1.t[i1_4] = hitm.time;
+      T1.t[i1_4] = hitm.time;
 
 #ifdef USE_EVENT_NUMBER
       T1.n[i1_4] = hitm.n;
@@ -512,7 +518,8 @@ inline void L1Algo::f20(  // input
 
       L1FilterChi2(info, x, y, C00, C10, C11, chi2, hitm.V());
 
-      FilterTime(T1_new, hitm.time, hitm.timeEr);
+      // FilterTime(T1, hitm.time, hitm.timeEr);
+
 
 #ifdef DO_NOT_SELECT_TRIPLETS
       if (isec != TRACKS_FROM_TRIPLETS_ITERATION)
@@ -635,6 +642,7 @@ inline void L1Algo::f30(  // input
       // add middle hit
       L1ExtrapolateLine(T2, zPos_2);
 
+
       L1UMeasurementInfo info = stam.frontInfo;
 
       if (fUseHitErrors) info.sigma2 = du2 * du2;
@@ -647,6 +655,7 @@ inline void L1Algo::f30(  // input
       else
         L1Filter(T2, info, u_front_2);
 
+
       info = stam.backInfo;
       if (fUseHitErrors) info.sigma2 = dv2 * dv2;
 
@@ -658,10 +667,13 @@ inline void L1Algo::f30(  // input
       else
         L1Filter(T2, info, u_back_2);
 
-      FilterTime(T2, timeM, timeMEr);
 
+      FilterTime(T2, timeM, timeMEr);
 #ifdef USE_RL_TABLE
-      fit.L1AddMaterial(T2, fRadThick[istam].GetRadThick(T2.x, T2.y), T2.qp, 1);
+      if (!fmCBMmode) fit.L1AddMaterial(T2, fRadThick[istam].GetRadThick(T2.x, T2.y), T2.qp, 1);
+
+      if (fGlobal || fmCBMmode)
+        fit.L1AddThickMaterial(T2, fRadThick[istam].GetRadThick(T2.x, T2.y), T2.qp, 1, stam.materialInfo.thick, 1);
 #else
       fit.L1AddMaterial(T2, stam.materialInfo, T2.qp, 1);
 #endif
@@ -669,6 +681,7 @@ inline void L1Algo::f30(  // input
 
       fvec dz2 = star.z - T2.z;
       L1ExtrapolateTime(T2, dz2);
+
       // extrapolate to the right hit station
 
       if (fGlobal || fmCBMmode)
@@ -683,10 +696,10 @@ inline void L1Algo::f30(  // input
 
       // ---- Find the triplets(right hit). Reformat data in the portion of triplets. ----
       for (Tindex i2_4 = 0; i2_4 < n2_4; ++i2_4) {
-        if (T2.C00[i2_4] < 0 || T2.C11[i2_4] < 0 || T2.C22[i2_4] < 0 || T2.C33[i2_4] < 0 || T2.C44[i2_4] < 0
-            || T2.C55[i2_4] < 0)
-          continue;
-        if (T2.C00[i2_4] < 0 || T2.C11[i2_4] < 0 || T2.C22[i2_4] < 0 || T2.C33[i2_4] < 0) continue;
+        if (!fGlobal || !fmCBMmode)
+          if (T2.C44[i2_4] < 0) continue;
+        if (T2.C00[i2_4] < 0 || T2.C11[i2_4] < 0 || T2.C22[i2_4] < 0 || T2.C33[i2_4] < 0 || T2.C55[i2_4] < 0) continue;
+
 
         const fvec Pick_r22    = (TRIPLET_CHI2_CUT - T2.chi2);
         const float& timeError = T2.C55[i2_4];
@@ -702,6 +715,7 @@ inline void L1Algo::f30(  // input
                            (sqrt(Pick_r22 * (T2.C00 + stam.XYInfo.C00)) + MaxDZ * fabs(T2.tx))[i2_4] * iz,
                            (sqrt(Pick_r22 * (T2.C11 + stam.XYInfo.C11)) + MaxDZ * fabs(T2.ty))[i2_4] * iz, time,
                            sqrt(timeError) * 5);
+
 
         THitI irh = 0;
         int irh1  = -1;
@@ -730,14 +744,17 @@ inline void L1Algo::f30(  // input
 
           StripsToCoor(hitr.U(), hitr.V(), xr, yr, star);
 
-          fvec dz3 = zr - T2.z;
-          L1ExtrapolateTime(T2, dz3);
+          L1TrackPar T_cur = T2;
 
 
-          if (fabs(T2.t[i2_4] - hitr.time) > sqrt(T2.C55[i2_4] + hitr.timeEr) * 5) continue;
-          if (fabs(T2.t[i2_4] - hitr.time) > 100) continue;
-          //
-          //           if (fabs(T2.t[i2_4]-hitr.time)>sqrt(2.9*2.9)*5) continue;
+          fvec dz3 = zr - T_cur.z;
+          L1ExtrapolateTime(T_cur, dz3);
+
+          L1ExtrapolateLine(T_cur, zr);
+
+          if (fabs(T_cur.t[i2_4] - hitr.time) > sqrt(T_cur.C55[i2_4] + hitr.timeEr) * 5) continue;
+          if (fabs(T_cur.t[i2_4] - hitr.time) > 30) continue;
+
 
           // - check whether hit belong to the window ( track position +\- errors ) -
           // check lower boundary
@@ -764,7 +781,9 @@ inline void L1Algo::f30(  // input
           if (dY2 > dy_est2) continue;  // if (yr > y_plus_new [i2_4] ) continue;
           // check x-boundaries
           fvec x, C00;
+
           L1ExtrapolateXC00Line(T2, zr, x, C00);
+
 
           fscal dx_est2 = (Pick_r22[i2_4] * (fabs(C00[i2_4] + star.XYInfo.C00[i2_4])));
 
@@ -775,6 +794,7 @@ inline void L1Algo::f30(  // input
           }
 
           const fscal dX = xr[i2_4] - x[i2_4];
+
           if (dX * dX > dx_est2) continue;
           // check chi2  // not effective
           fvec C10;
@@ -792,18 +812,15 @@ inline void L1Algo::f30(  // input
 
           L1FilterChi2(info, x, y, C00, C10, C11, chi2, hitr.V());
 
-          L1TrackPar T = T2;
+          FilterTime(T_cur, hitr.time, hitr.timeEr);
 
-          FilterTime(T, hitr.time, hitr.timeEr);
+
 #ifdef DO_NOT_SELECT_TRIPLETS
           if (isec != TRACKS_FROM_TRIPLETS_ITERATION)
 #endif
 
-            if (fGlobal || fmCBMmode)
-              if (chi2[i2_4] > TRIPLET_CHI2_CUT || C00[i2_4] < 0 || C11[i2_4] < 0) continue;
-              else if (chi2[i2_4] > TRIPLET_CHI2_CUT || C00[i2_4] < 0 || C11[i2_4] < 0 || T.C55[i2_4] < 0)
-                continue;  // chi2_triplet < CHI2_CUT
-
+            if (chi2[i2_4] > TRIPLET_CHI2_CUT || C00[i2_4] < 0 || C11[i2_4] < 0 || T_cur.C55[i2_4] < 0)
+              continue;  // chi2_triplet < CHI2_CUT
 
           // pack triplet
           L1TrackPar& T3 = T_3[n3_V];
@@ -825,6 +842,7 @@ inline void L1Algo::f30(  // input
           timeER[n3_V][n3_4]  = hitr.timeEr;
 
           n3++;
+
           n3_V = n3 / fvecLen;
           n3_4 = n3 % fvecLen;
 
@@ -863,11 +881,12 @@ inline void L1Algo::f31(  // input
   nsL1::vector<L1TrackPar>::TSimd& T_3)
 {
   for (Tindex i3_V = 0; i3_V < n3_V; ++i3_V) {
-    fvec dz = z_Pos[i3_V] - T_3[i3_V].z;
 
+    fvec dz = z_Pos[i3_V] - T_3[i3_V].z;
 
     L1ExtrapolateTime(T_3[i3_V], dz);
     L1ExtrapolateLine(T_3[i3_V], z_Pos[i3_V]);
+
 
     L1UMeasurementInfo info = star.frontInfo;
 
@@ -895,7 +914,7 @@ inline void L1Algo::f31(  // input
     else
       L1Filter(T_3[i3_V], info, u_back_[i3_V]);
 
-    FilterTime(T_3[i3_V], timeR[i3_V], timeER[i3_V]);
+    //  FilterTime(T_3[i3_V], timeR[i3_V], timeER[i3_V]);
   }
 }
 
@@ -1708,7 +1727,7 @@ void L1Algo::CATrackFinder()
 
   for (int iS = 0; iS < NStations; ++iS) {
 
-    vGridTime[iS].BuildBins(-1, 1, -0.6, 0.6, starttime, lasttime, xStep, yStep, (lasttime - starttime + 1) / 30);
+    vGridTime[iS].BuildBins(-1, 1, -0.6, 0.6, starttime, lasttime, xStep, yStep, (lasttime - starttime + 1));
 
     vGridTime[iS].StoreHits(StsHitsUnusedStopIndex[iS] - StsHitsUnusedStartIndex[iS],
                             &((*vStsHits)[StsHitsUnusedStartIndex[iS]]), iS, *this, StsHitsUnusedStartIndex[iS],
@@ -1730,8 +1749,9 @@ void L1Algo::CATrackFinder()
 #ifdef _OPENMP
 #pragma omp parallel for schedule(dynamic, 5)
 #endif
-    for (THitI ih = StsHitsStartIndex[ista]; ih < StsHitsStopIndex[ista]; ++ih)
+    for (THitI ih = StsHitsStartIndex[ista]; ih < StsHitsStopIndex[ista]; ++ih) {
       CreateHitPoint(vStsDontUsedHits_Buf[ih], ista, vStsDontUsedHitsxy_B[ih]);
+    }
   }
 
 #ifdef COUNTERS
@@ -1750,7 +1770,7 @@ void L1Algo::CATrackFinder()
   for (isec = 0; isec < fNFindIterations; ++isec)  // all finder
   {
     if (fmCBMmode)
-      if (isec != 0) continue;
+      if (isec > 1) continue;
 
     n_g1.assign(n_g1.size(), Portion);
 
@@ -1816,7 +1836,7 @@ void L1Algo::CATrackFinder()
         // if ( (isec == kFastPrimIter) )
         //   PickNeighbour = 0.5; // TODO understand why works with 0.2
 
-        MaxInvMom = 1.0 / 0.5;  // max considered q/p
+        if (fmCBMmode) MaxInvMom = 1.5 / 0.1;  // max considered q/p
         if ((isec == kAllPrimJumpIter) || (isec == kAllSecIter) || (isec == kAllSecJumpIter)) MaxInvMom = 1.0 / 0.1;
         if ((isec == kAllPrimIter) || (isec == kAllPrimEIter) || (isec == kAllSecEIter)) MaxInvMom = 1. / 0.05;
 
@@ -2078,9 +2098,6 @@ void L1Algo::CATrackFinder()
     unsigned char curr_L = 1;
     int ndf              = 1;
 
-    vStripToTrack.assign(vStripToTrack.size(), -1);
-    vStripToTrackB.assign(vStripToTrackB.size(), -1);
-
 
     // collect consequtive: the longest tracks, shorter, more shorter and so on
     for (int ilev = NStations - 3; ilev >= min_level; ilev--) {
@@ -2092,8 +2109,12 @@ void L1Algo::CATrackFinder()
 
       const unsigned char min_best_l = (ilev > min_level) ? ilev + 2 : min_level + 3;  // loose maximum
 
+
       for (int i = 0; i < fNThreads; ++i)
         numberCandidateThread[i] = 0;
+
+      vStripToTrack.assign(vStripToTrack.size(), -1);
+      vStripToTrackB.assign(vStripToTrackB.size(), -1);
 
       for (int istaF = FIRSTCASTATION; istaF <= NStations - 3 - ilev; ++istaF) {
 
@@ -2116,7 +2137,7 @@ void L1Algo::CATrackFinder()
               continue;
 
 
-              // ghost supression !!!
+//               ghost supression !!!
 #ifndef FIND_GAPED_TRACKS
             if (/*(isec == kFastPrimIter) ||*/ (isec == kAllPrimIter) || (isec == kAllPrimEIter)
                 || (isec == kAllSecIter) || (isec == kAllSecEIter) || (isec == kAllSecJumpIter)) {
@@ -2162,7 +2183,7 @@ void L1Algo::CATrackFinder()
             CAFindTrack(istaF, best_tr, best_L, best_chi2, &first_trip, (curr_tr), curr_L, curr_chi2, min_best_l,
                         new_tr);  /// reqursive func to build a tree of possible track-candidates and choose the best
 
-            //  if ( best_L < min_best_l ) continue;
+            //              if ( best_L < min_best_l ) continue;
             if (best_L < ilev + 2) continue;  // lose maximum one hit
 
             if (best_L < min_level + 3) continue;  // should find all hits for min_level
@@ -2171,15 +2192,15 @@ void L1Algo::CATrackFinder()
             best_chi2 = best_chi2 / ndf;  //normalize
 
 #ifndef TRACKS_FROM_TRIPLETS
-            if (fGhostSuppression) {
-              if (best_L == 3) {
-                // if( isec == kAllSecIter ) continue; // too /*short*/ secondary track
-                if (((isec == kAllSecIter) || (isec == kAllSecEIter) || (isec == kAllSecJumpIter)) && (istaF != 0))
-                  continue;  // too /*short*/ non-MAPS track
-                if ((isec != kAllSecIter) && (isec != kAllSecEIter) && (isec != kAllSecJumpIter) && (best_chi2 > 5.0))
-                  continue;
-              }
-            }
+//             if (fGhostSuppression) {
+//               if (best_L == 3) {
+//                 // if( isec == kAllSecIter ) continue; // too /*short*/ secondary track
+//                 if (((isec == kAllSecIter) || (isec == kAllSecEIter) || (isec == kAllSecJumpIter)) && (istaF != 0))
+//                   continue;  // too /*short*/ non-MAPS track
+//                 if ((isec != kAllSecIter) && (isec != kAllSecEIter) && (isec != kAllSecJumpIter) && (best_chi2 > 5.0))
+//                   continue;
+//               }
+//             }
 #endif
             best_tr.Set(istaF, best_L, best_chi2, first_trip.GetQpOrig());
             L1Branch& tr = CandidatesTrack[thread_num][numberCandidateThread[thread_num]];
@@ -2195,7 +2216,6 @@ void L1Algo::CATrackFinder()
 #ifdef _OPENMP
               omp_set_lock(&hitToBestTrackB[h.b]);
 #endif
-
               int& strip1 = (vStripToTrackB)[h.b];
 
               if (strip1 != -1) {
@@ -2248,9 +2268,7 @@ void L1Algo::CATrackFinder()
 #endif
               }
             }
-
             if (check) numberCandidateThread[thread_num]++;
-
           }  // itrip
         }
       }
@@ -2283,7 +2301,10 @@ void L1Algo::CATrackFinder()
               }
             }
 
-            if (tr.NHits < 3) check = 0;
+            if (fmCBMmode)
+              if (tr.NHits <= 3) check = 0;
+              else if (tr.NHits < 3)
+                check = 0;
 
             if (check) {
 #ifdef EXTEND_TRACKS
@@ -2583,7 +2604,7 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
     }
 
     //if( curr_L < min_best_l - 1 ) return; // suppouse that only one hit can be added by extender
-    if (curr_chi2 > TRACK_CHI2_CUT * (curr_L * 2 - 5)) return;
+    if (curr_chi2 > TRACK_CHI2_CUT * (curr_L * 2 - 4.0)) return;
 
     if (fmCBMmode)
       if (curr_chi2 > TRACK_CHI2_CUT * (curr_L * 2 - 5.0)) return;
@@ -2636,10 +2657,10 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
       if ((new_trip.GetMHit() != curr_trip->GetRHit())) continue;
       if ((new_trip.GetLHit() != curr_trip->GetMHit())) continue;
 
-      const fscal qp1  = curr_trip->GetQp();
-      const fscal qp2  = new_trip.GetQp();
-      fscal dqp        = fabs(qp1 - qp2);
-      fscal Cqp        = curr_trip->Cqp;
+      const fscal qp1 = curr_trip->GetQp();
+      const fscal qp2 = new_trip.GetQp();
+      fscal dqp       = fabs(qp1 - qp2);
+      fscal Cqp       = curr_trip->Cqp;
       Cqp += new_trip.Cqp;
 
       if (!fmCBMmode)
@@ -2659,8 +2680,8 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
       Cty += new_trip.Cty;
 
       if (fGlobal || fmCBMmode) {
-        if (dty > PickNeighbour * Cty) continue;
-        if (dtx > PickNeighbour * Ctx) continue;
+        if (dty > 6 * Cty) continue;
+        if (dtx > 7 * Ctx) continue;
       }
 
 

@@ -374,14 +374,14 @@ InitStatus CbmL1::Init()
   fUseTOF  = 0;
 
   if (fmCBMmode) {
-    fUseMUCH = 1;
+    fUseMUCH = 0;
     fUseTRD  = 1;
     fUseTOF  = 1;
   }
 
 
   if (fGlobalMode) {
-    fUseMUCH = 1;
+    fUseMUCH = 0;
     fUseTRD  = 1;
     fUseTOF  = 1;
   }
@@ -515,7 +515,7 @@ InitStatus CbmL1::Init()
     }
     else {
       fTofPoints         = mcManager->InitBranch("TofPoint");
-      fTofHitDigiMatches = static_cast<TClonesArray*>(fManger->GetObject("TofHitCalDigiMatch"));
+      fTofHitDigiMatches = static_cast<TClonesArray*>(fManger->GetObject("TofHitMatch"));
     }
   }
   else {
@@ -625,7 +625,7 @@ InitStatus CbmL1::Init()
       }
     }
 
-    if (fUseTOF) NTOFStation = fTofDigiBdfPar->GetNbTrackingStations();
+    if (fUseTOF) NTOFStation = 3;//fTofDigiBdfPar->GetNbTrackingStations();
 
     for (int i = 0; i < (maxTofStation + 1); i++)
       Z_pos[i] = Z_pos[i] / NHits[i];
@@ -835,12 +835,9 @@ InitStatus CbmL1::Init()
 
       geo.push_back(4);
 
-      if (ist == (NMvdStations + NStsStations + NTrdStations + NMuchStations + 0)) geo.push_back(245);
-      if (ist == (NMvdStations + NStsStations + NTrdStations + NMuchStations + 1)) geo.push_back(249);
-      if (ist == (NMvdStations + NStsStations + NTrdStations + NMuchStations + 2)) geo.push_back(261);
-      if (ist == (NMvdStations + NStsStations + NTrdStations + NMuchStations + 3)) geo.push_back(266);
-      if (ist == (NMvdStations + NStsStations + NTrdStations + NMuchStations + 4)) geo.push_back(278);
-      if (ist == (NMvdStations + NStsStations + NTrdStations + NMuchStations + 5)) geo.push_back(283);
+    if (ist == (NMvdStations + NStsStations + NTrdStations + NMuchStations + 0)) geo.push_back(247);
+    if (ist == (NMvdStations + NStsStations + NTrdStations + NMuchStations + 1)) geo.push_back(264);
+    if (ist == (NMvdStations + NStsStations + NTrdStations + NMuchStations + 2)) geo.push_back(280);
 
       geo.push_back(10);  /// TODO: add Tof width dz
       geo.push_back(0);
