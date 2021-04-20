@@ -148,10 +148,10 @@ void CbmPsdHitProducer::Exec(Option_t* /*opt*/)
   if (fEvents)
     LOG(info) << std::setw(20) << std::left << GetName() << fixed << setprecision(2) << " [" << timer.RealTime() * 1000.
               << " ms] TS " << fNofTs << ", events " << nEvents << ", digis " << nDigis << " / " << nDigisAll
-              << ", hits " << fNofHits;
+              << ", hits " << nHits;
   else
     LOG(info) << std::setw(20) << std::left << GetName() << fixed << setprecision(2) << " [" << timer.RealTime() * 1000.
-              << " ms] TS " << fNofTs << ", digis " << nDigis << " / " << nDigisAll << ", hits " << fNofHits;
+              << " ms] TS " << fNofTs << ", digis " << nDigis << " / " << nDigisAll << ", hits " << nHits;
   fNofTs++;
   fNofEvents += nEvents;
   fNofDigis += nDigis;

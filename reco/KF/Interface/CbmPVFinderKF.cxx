@@ -1,11 +1,12 @@
 #include "CbmPVFinderKF.h"
 
+#include "CbmEvent.h"
 #include "CbmKFPrimaryVertexFinder.h"
 #include "CbmKFTrack.h"
 #include "CbmKFVertex.h"
-
-#include "CbmEvent.h"
 #include "CbmStsTrack.h"
+
+#include <FairLogger.h>
 
 #include "TClonesArray.h"
 
@@ -13,8 +14,8 @@
 
 ClassImp(CbmPVFinderKF)
 
-  Int_t CbmPVFinderKF::FindPrimaryVertex(TClonesArray* tracks,
-                                         CbmVertex* vertex) {
+  Int_t CbmPVFinderKF::FindPrimaryVertex(TClonesArray* tracks, CbmVertex* vertex)
+{
 
   Int_t NTracks = tracks->GetEntriesFast();
 
@@ -25,8 +26,7 @@ ClassImp(CbmPVFinderKF)
     Int_t NHits     = st->GetNofHits();
     if (NHits < 4) continue;
     if (st->GetFlag()) continue;
-    if (st->GetChiSq() < 0. || st->GetChiSq() > 3.5 * 3.5 * st->GetNDF())
-      continue;
+    if (st->GetChiSq() < 0. || st->GetChiSq() > 3.5 * 3.5 * st->GetNDF()) continue;
     CbmKFTrack& T = CloneArray[i];
     T.SetStsTrack(*st);
     if (!finite(T.GetTrack()[0]) || !finite(T.GetCovMatrix()[0])) continue;
@@ -36,12 +36,13 @@ ClassImp(CbmPVFinderKF)
   Finder.Fit(v);
   v.GetVertex(*vertex);
   delete[] CloneArray;
-  return 0;
+  return vertex->GetNTracks();
 }
 
 
 // ----   Find vertex for one event   ---------------------------------------
-Int_t CbmPVFinderKF::FindEventVertex(CbmEvent* event, TClonesArray* tracks) {
+Int_t CbmPVFinderKF::FindEventVertex(CbmEvent* event, TClonesArray* tracks)
+{
 
   assert(event);
   CbmKFPrimaryVertexFinder vFinder;
@@ -50,7 +51,9 @@ Int_t CbmPVFinderKF::FindEventVertex(CbmEvent* event, TClonesArray* tracks) {
   CbmVertex* vertex = event->GetVertex();
 
   // Copy input tracks to KF tracks
-  Int_t nTracks          = event->GetNofData(ECbmDataType::kStsTrack);
+  Int_t nTracks = event->GetNofData(ECbmDataType::kStsTrack);
+  if (nTracks <= 0) return 0;
+
   CbmKFTrack* trackArray = new CbmKFTrack[nTracks];
   for (Int_t iTrack = 0; iTrack < nTracks; iTrack++) {
     Int_t trackIndex   = event->GetIndex(ECbmDataType::kStsTrack, iTrack);
@@ -63,8 +66,7 @@ Int_t CbmPVFinderKF::FindEventVertex(CbmEvent* event, TClonesArray* tracks) {
       continue;
     CbmKFTrack& kTrack = trackArray[iTrack];
     kTrack.SetStsTrack(*track);
-    if (!finite(kTrack.GetTrack()[0]) || !finite(kTrack.GetCovMatrix()[0]))
-      continue;
+    if (!finite(kTrack.GetTrack()[0]) || !finite(kTrack.GetCovMatrix()[0])) continue;
     vFinder.AddTrack(&kTrack);
   }
 
@@ -76,6 +78,6 @@ Int_t CbmPVFinderKF::FindEventVertex(CbmEvent* event, TClonesArray* tracks) {
   v.GetVertex(*vertex);
 
   delete[] trackArray;
-  return 0;
+  return vertex->GetNTracks();
 }
 // --------------------------------------------------------------------------

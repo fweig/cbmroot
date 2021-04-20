@@ -21,7 +21,9 @@
 
 
 #include "CbmVertex.h"
+
 #include "FairTask.h"
+
 #include "TStopwatch.h"
 
 class TClonesArray;
@@ -47,9 +49,7 @@ public:
    *@param title     Title of task
    *@param pvFinder  Pointer to vertex finder concrete object
    **/
-  CbmFindPrimaryVertex(const char* name,
-                       const char* title,
-                       CbmPrimaryVertexFinder* pvFinder);
+  CbmFindPrimaryVertex(const char* name, const char* title, CbmPrimaryVertexFinder* pvFinder);
 
 
   /** Destructor **/
@@ -71,11 +71,15 @@ public:
 private:
   TStopwatch fTimer;
   CbmPrimaryVertexFinder* fFinder;
+  TClonesArray* fEvents = nullptr;
   TClonesArray* fTracks;
   CbmVertex* fPrimVert;
 
-  Int_t fNofEvents;   ///< Total number of events processed
-  Double_t fTimeTot;  ///< Total execution time [s]
+  Int_t fNofTs            = 0;   ///< Number of processed timeslices
+  Int_t fNofEvents        = 0;   ///< Number of processed events
+  Double_t fNofTracks     = 0;   ///< Number of input tracks
+  Double_t fNofTracksUsed = 0.;  ///< Number of tracks used for vertex finding
+  Double_t fTimeTot       = 0.;  ///< Total execution time [s]
 
   CbmFindPrimaryVertex(const CbmFindPrimaryVertex&);
   CbmFindPrimaryVertex& operator=(const CbmFindPrimaryVertex&);

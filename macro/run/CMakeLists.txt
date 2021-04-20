@@ -164,23 +164,53 @@ foreach(setup IN LISTS cbm_setup)
  	RESOURCE_LOCK collParDb_${setup}
   )
 
-  # --- Test run_reco_ev
+  # --- Test run_reco_ev_ideal
   # --- Event-by-event reconstruction from event-based simulation
-  set(testname run_${sname}_reco_ev)
+  # --- Ideal raw event builder
+  set(testname run_${sname}_reco_ev_ideal)
   add_test(${testname} ${MACRODIR}/run_reco.sh
-  	\"data/${sname}_ev\" -1 0 \"\" \"Ideal\" \"${setup}\" \"data/${sname}_coll\")
+  	\"data/${sname}_ev\" -1 0 \"data/${sname}_eb_eb_ideal\" \"Ideal\" \"${setup}\" \"data/${sname}_coll\")
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"
 	FIXTURES_REQUIRED fixt_reco_ev_${setup}
  	RESOURCE_LOCK collParDb_${setup}
   )
-
-  # --- Test run_reco_ts_eb
-  # --- Event-by-event reconstruction from time-based simulation
-  set(testname run_${sname}_reco_ts_eb)
+  
+  # --- Test run_reco_ev_real
+  # --- Event-by-event reconstruction from event-based simulation
+  # --- Real raw event builder
+  set(testname run_${sname}_reco_ev_real)
   add_test(${testname} ${MACRODIR}/run_reco.sh
-  	\"data/${sname}_ts\" -1 0 \"data/${sname}_ts_eb\" \"Ideal\" \"${setup}\"
+    \"data/${sname}_ev\" -1 0 \"data/${sname}_eb_eb_real\" \"Real\" \"${setup}\"
+    \"data/${sname}_coll\")
+  set_tests_properties(${testname} PROPERTIES
+    TIMEOUT ${timeOutTime}
+    PASS_REGULAR_EXPRESSION "Macro finished successfully"
+    FIXTURES_REQUIRED fixt_reco_ev_${setup}
+    RESOURCE_LOCK collParDb_${setup}
+  )
+
+  # --- Test run_reco_ts_eb_ideal
+  # --- Event-by-event reconstruction from time-based simulation
+  # --- Ideal raw event builder
+  set(testname run_${sname}_reco_ts_eb_ideal)
+  add_test(${testname} ${MACRODIR}/run_reco.sh
+  	\"data/${sname}_ts\" -1 0 \"data/${sname}_ts_eb_ideal\" \"Ideal\" \"${setup}\"
+  	\"data/${sname}_coll\")
+  set_tests_properties(${testname} PROPERTIES
+  	TIMEOUT ${timeOutTime}
+  	PASS_REGULAR_EXPRESSION "Macro finished successfully"
+	FIXTURES_REQUIRED fixt_reco_ts_${setup}
+ 	RESOURCE_LOCK collParDb_${setup}
+  )
+  
+  # --- Test run_reco_ts_eb_real
+  # --- Event-by-event reconstruction from time-based simulation
+  # --- Real raw event builder
+  set(testname run_${sname}_reco_ts_eb_real)
+  add_test(${testname} ${MACRODIR}/run_reco.sh
+  	\"data/${sname}_ts\" -1 0 \"data/${sname}_ts_eb_real\" \"Real\" \"${setup}\"
   	\"data/${sname}_coll\")
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}
@@ -200,32 +230,6 @@ foreach(setup IN LISTS cbm_setup)
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"
 	FIXTURES_REQUIRED fixt_reco_ts_${setup}
  	RESOURCE_LOCK collParDb_${setup}
-  )
-
-  # --- Test run_reco_ev_real
-  # --- Event-by-event reconstruction from event-based simulation
-  set(testname run_${sname}_reco_ev_real)
-  add_test(${testname} ${MACRODIR}/run_reco.sh
-    \"data/${sname}_ev\" -1 0 \"data/${sname}_eb_eb_real\" \"Real\" \"${setup}\"
-    \"data/${sname}_coll\")
-  set_tests_properties(${testname} PROPERTIES
-    TIMEOUT ${timeOutTime}
-    PASS_REGULAR_EXPRESSION "Macro finished successfully"
-    FIXTURES_REQUIRED fixt_reco_ev_${setup}
-    RESOURCE_LOCK collParDb_${setup}
-  )
-
-  # --- Test run_reco_ts_eb_real
-  # --- Event-by-event reconstruction from time-based simulation
-  set(testname run_${sname}_reco_ts_eb_real)
-  add_test(${testname} ${MACRODIR}/run_reco.sh
-    \"data/${sname}_ts\" -1 0 \"data/${sname}_ts_eb_real\" \"Real\" \"${setup}\"
-    \"data/${sname}_coll\")
-  set_tests_properties(${testname} PROPERTIES
-    TIMEOUT ${timeOutTime}
-    PASS_REGULAR_EXPRESSION "Macro finished successfully"
-    FIXTURES_REQUIRED fixt_reco_ts_${setup}
-    RESOURCE_LOCK collParDb_${setup}
   )
 
 endforeach(setup IN LISTS cbm_setup)

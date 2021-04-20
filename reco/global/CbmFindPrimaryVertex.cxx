@@ -4,6 +4,7 @@
 // -------------------------------------------------------------------------
 #include "CbmFindPrimaryVertex.h"
 
+#include "CbmEvent.h"
 #include "CbmPrimaryVertexFinder.h"
 #include "CbmVertex.h"
 
@@ -25,7 +26,8 @@ CbmFindPrimaryVertex::CbmFindPrimaryVertex()
   , fTracks(nullptr)
   , fPrimVert(nullptr)
   , fNofEvents(0)
-  , fTimeTot(0.) {
+  , fTimeTot(0.)
+{
   fName = "FindPrimaryVertex";
 }
 // -------------------------------------------------------------------------
@@ -39,23 +41,24 @@ CbmFindPrimaryVertex::CbmFindPrimaryVertex(CbmPrimaryVertexFinder* pvFinder)
   , fTracks(nullptr)
   , fPrimVert(nullptr)
   , fNofEvents(0)
-  , fTimeTot(0.) {
+  , fTimeTot(0.)
+{
   fName = "FindPrimaryVertex";
 }
 // -------------------------------------------------------------------------
 
 
 // -----  Constructor with name and title  ---------------------------------
-CbmFindPrimaryVertex::CbmFindPrimaryVertex(const char* name,
-                                           const char*,
-                                           CbmPrimaryVertexFinder* finder)
+CbmFindPrimaryVertex::CbmFindPrimaryVertex(const char* name, const char*, CbmPrimaryVertexFinder* finder)
   : FairTask(name)
   , fTimer()
   , fFinder(finder)
   , fTracks(nullptr)
   , fPrimVert(nullptr)
   , fNofEvents(0)
-  , fTimeTot(0.) {}
+  , fTimeTot(0.)
+{
+}
 // -------------------------------------------------------------------------
 
 
@@ -65,7 +68,8 @@ CbmFindPrimaryVertex::~CbmFindPrimaryVertex() {}
 
 
 // -----   Public method Init   --------------------------------------------
-InitStatus CbmFindPrimaryVertex::Init() {
+InitStatus CbmFindPrimaryVertex::Init()
+{
 
   // Check for vertex finder
   if (!fFinder) {
@@ -89,13 +93,24 @@ InitStatus CbmFindPrimaryVertex::Init() {
     return kERROR;
   }
 
-  // Create and register CbmVertex object
-  fPrimVert = new CbmVertex("Primary Vertex", "Global");
-  ioman->Register("PrimaryVertex.",
-                  "Global",
-                  fPrimVert,
-                  IsOutputBranchPersistent("PrimaryVertex"));
+  // Get CbmEvent array
+  fEvents = dynamic_cast<TClonesArray*>(ioman->GetObject("Event"));
+  if (fEvents) LOG(info) << GetName() << ": Found Event branch; run event-by-event";
+  else {
+    fEvents = dynamic_cast<TClonesArray*>(ioman->GetObject("CbmEvent"));
+    if (fEvents) LOG(info) << GetName() << ": Found CbmEvent branch; run event-by-event";
+    else {
+      LOG(info) << GetName() << ": No event branch found! Run in time-based mode.";
+      LOG(warning) << GetName() << "*** The primary vertex finder is not designed to find mutiple vertices.";
+      LOG(warning) << GetName() << "*** Running it on an entire time slice will not produce sensible results.";
+    }
+  }
 
+  // Create and register CbmVertex object
+  if (!fEvents) {
+    fPrimVert = new CbmVertex("Primary Vertex", "Global");
+    ioman->Register("PrimaryVertex.", "Global", fPrimVert, IsOutputBranchPersistent("PrimaryVertex"));
+  }
 
   // Call the Init method of the vertex finder
   fFinder->Init();
@@ -106,43 +121,75 @@ InitStatus CbmFindPrimaryVertex::Init() {
 
 
 // -----   Public method Exec   --------------------------------------------
-void CbmFindPrimaryVertex::Exec(Option_t*) {
+void CbmFindPrimaryVertex::Exec(Option_t*)
+{
 
-  // Event number
-  Int_t iEvent = fNofEvents;
+  // Timer
+  TStopwatch timer;
+  timer.Start();
 
-  // Reset primary vertex
-  fTimer.Start();
-  fPrimVert->Reset();
+  // Local variables
+  Int_t nEvents     = 0;
+  Int_t nTracks     = fTracks->GetEntriesFast();
+  Int_t nTracksUsed = 0;
+  Int_t result      = 0;
 
-  // Call find method of vertex finder
-  Int_t iFind = fFinder->FindPrimaryVertex(fTracks, fPrimVert);
-  if (iFind)
-    cout << "-W- CbmFindPrimaryVertex::Exec: "
-         << "Vertex finder returned " << iFind << endl;
+  // Time-based mode: process entire track array
+  if (!fEvents) {
+    fPrimVert->Reset();
+    nTracksUsed = fFinder->FindPrimaryVertex(fTracks, fPrimVert);
+  }
 
-  // --- Event log
-  fTimer.Stop();
-  fNofEvents++;
-  fTimeTot += fTimer.RealTime();
-  LOG(info) << "+ " << setw(20) << GetName() << ": Event " << setw(6) << right
-            << iEvent << ", real time " << fixed << setprecision(6)
-            << fTimer.RealTime()
-            << " s, tracks used: " << fPrimVert->GetNTracks();
-  LOG(debug) << fPrimVert->ToString();
+  // Event-based mode
+  else {
+    nEvents = fEvents->GetEntriesFast();
+    for (Int_t iEvent = 0; iEvent < nEvents; iEvent++) {
+      CbmEvent* event = dynamic_cast<CbmEvent*>(fEvents->At(iEvent));
+      assert(event);
+      result = fFinder->FindEventVertex(event, fTracks);
+      LOG(debug) << GetName() << ": Event " << iEvent << " " << event->GetVertex()->ToString();
+      nTracksUsed += result;
+    }
+  }
+
+  // Log to screen
+  timer.Stop();
+  if (fEvents)
+    LOG(info) << std::setw(20) << std::left << GetName() << fixed << setprecision(2) << " [" << timer.RealTime() * 1000.
+              << " ms]: TS " << fNofTs << ", events " << nEvents << ", tracks used " << nTracksUsed << " / " << nTracks;
+  else
+    LOG(info) << std::setw(20) << std::left << GetName() << fixed << setprecision(2) << " [" << timer.RealTime() * 1000.
+              << " ms] TS " << fNofTs << ", vertex " << fPrimVert->ToString() << ", tracks used " << nTracksUsed
+              << " / " << nTracks;
+
+  // Counters
+  fNofTs++;
+  fNofEvents += nEvents;
+  fNofTracks += nTracks;
+  fNofTracksUsed += nTracksUsed;
+  fTimeTot += timer.RealTime();
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Public method Finish   ------------------------------------------
-void CbmFindPrimaryVertex::Finish() {
-  fPrimVert->Reset();
+void CbmFindPrimaryVertex::Finish()
+{
+
   std::cout << std::endl;
   LOG(info) << "=====================================";
   LOG(info) << GetName() << ": Run summary";
-  LOG(info) << "Events processed   : " << fNofEvents;
-  LOG(info) << "Time per event     : " << setprecision(6)
-            << fTimeTot / Double_t(fNofEvents) << " s ";
+  LOG(info) << "Time slices         : " << fNofTs;
+  LOG(info) << "Tracks/ TS          : " << fixed << setprecision(2) << fNofTracks / Double_t(fNofTs);
+  LOG(info) << "Used Tracks / TS    : " << fixed << setprecision(2) << fNofTracksUsed / Double_t(fNofTs);
+  LOG(info) << "Time  / TS          : " << fixed << setprecision(2) << 1000. * fTimeTot / Double_t(fNofTs) << " ms";
+  if (fEvents) {
+    LOG(info) << "Events              : " << fNofEvents;
+    LOG(info) << "Events / TS         : " << fixed << setprecision(2) << Double_t(fNofEvents) / Double_t(fNofTs);
+    LOG(info) << "Tracks  / event     : " << fixed << setprecision(2) << Double_t(fNofTracks) / Double_t(fNofEvents);
+    LOG(info) << "Used tracks / event : " << fixed << setprecision(2)
+              << Double_t(fNofTracksUsed) / Double_t(fNofEvents);
+  }
   LOG(info) << "=====================================";
 }
 // -------------------------------------------------------------------------

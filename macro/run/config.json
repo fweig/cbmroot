@@ -98,7 +98,7 @@
        "treeAccessMode": "random"}
     ],
     "output": {
-      "path": "test",
+      "path": "data/test_json",
       "overwrite": false
     },
     "geometry": {
