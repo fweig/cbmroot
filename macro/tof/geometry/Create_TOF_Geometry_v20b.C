@@ -1,10 +1,14 @@
 ///
-/// \file Create_TOF_Geometry_v13_4x.C
+/// \file Create_TOF_Geometry_v20b.C
 /// \brief Generates TOF geometry in Root format.
 ///
 
 // Changelog
 //
+// 2020-04-19 - FU - The change are the same ones introduced with 723791eafb1810b6e1e067e067907420668056de
+//                   in the file Create_TOF_Geometry_v20a.C to fix a problem with the geometry.
+//                   Since it was decided not to change an existing geometry the macro Create_TOF_Geometry_v20a.C
+//                   was reverted back to the previous version and a new macro was created.
 // 2020-10-19 - EC - prepare tof_v20_1{e,h,m} geometry (Placement Corrected) SIS 100 electron: TOF_Z_Front =  703 cm
 // 2020-09-29 - FU - Change as per commit 4408f9a9d3d66809f48c9091cda52c0f9c542165
 // 2017-10-18 - PAL- Fix the overlaps in the support structure => v16c
@@ -50,9 +54,9 @@
 #include <sstream>
 
 // Name of geometry version and output file
-//const TString geoVersion = "tof_v20a_1m";  // SIS 100, 7.62m
-const TString geoVersion = "tof_v20a_1h";  // SIS 100 hadron, 4.5 m
-//const TString geoVersion = "tof_v20a_1e";  // SIS 100 hadron, 4.5 m
+//const TString geoVersion = "tof_v20b_1m";  // SIS 100, 7.62m
+const TString geoVersion = "tof_v20b_1h";  // SIS 100 hadron, 4.5 m
+//const TString geoVersion = "tof_v20b_1e";  // SIS 100 hadron, 4.5 m
 //const TString geoVersion = "tof_v16e_1h";  // SIS 100 hadron, 4.5 m
 //const TString geoVersion = "tof_v16e_1e";     // SIS 100 electron, 6 m
 //const TString geoVersion = "tof_v16e_1m";     // SIS 100 muon, 6.8 m
@@ -62,9 +66,9 @@ const TString FileNameSim  = geoVersion + ".geo.root";
 const TString FileNameGeo  = geoVersion + "_geo.root";
 const TString FileNameInfo = geoVersion + ".geo.info";
 
-const Double_t TOF_Z_Corr = ("tof_v20a_1e" == geoVersion ? 800 :                        // SIS 100 electron
-                               ("tof_v20a_1h" == geoVersion ? 800 :                     // SIS 100 hadron
-                                  ("tof_v20a_1m" == geoVersion ? 859 :                  // SIS 100 muon
+const Double_t TOF_Z_Corr = ("tof_v20b_1e" == geoVersion ? 800 :                        // SIS 100 electron
+                               ("tof_v20b_1h" == geoVersion ? 800 :                     // SIS 100 hadron
+                                  ("tof_v20b_1m" == geoVersion ? 859 :                  // SIS 100 muon
                                      ("tof_v16e_1h" == geoVersion ? 546.485 :           // SIS 100 hadron
                                         ("tof_v16e_1e" == geoVersion ? 696.485 :        // SIS 100 electron
                                            ("tof_v16e_1m" == geoVersion ? 776.485 :     // SIS 100 muon
@@ -75,9 +79,9 @@ const Double_t TOF_Z_Corr = ("tof_v20a_1e" == geoVersion ? 800 :                
 
 
 // TOF_Z_Front corresponds to front cover of outer super module towers
-const Double_t TOF_Z_Front = ("tof_v20a_1m" == geoVersion ? (762 - TOF_Z_Corr) :                    // SIS 100 muon
-                                ("tof_v20a_1e" == geoVersion ? (703 - TOF_Z_Corr) :                 // SIS 100 electron
-                                   ("tof_v20a_1h" == geoVersion ? (703 - TOF_Z_Corr) :              // SIS 100 hadron
+const Double_t TOF_Z_Front = ("tof_v20b_1m" == geoVersion ? (762 - TOF_Z_Corr) :                    // SIS 100 muon
+                                ("tof_v20b_1e" == geoVersion ? (703 - TOF_Z_Corr) :                 // SIS 100 electron
+                                   ("tof_v20b_1h" == geoVersion ? (703 - TOF_Z_Corr) :              // SIS 100 hadron
                                       ("tof_v16e_1h" == geoVersion ? (450 - TOF_Z_Corr) :           // SIS 100 hadron
                                          ("tof_v16e_1e" == geoVersion ? (600 - TOF_Z_Corr) :        // SIS 100 electron
                                             ("tof_v16e_1m" == geoVersion ? (680 - TOF_Z_Corr) :     // SIS 100 muon
@@ -127,7 +131,7 @@ const Double_t GasGap_Z[NumberOfDifferentCounterTypes] = {0.025, 0.025, 0.025, 0
 
 const Int_t NumberOfGaps[NumberOfDifferentCounterTypes] = {8, 8, 8, 8};
 //const Int_t NumberOfGaps[NumberOfDifferentCounterTypes] = {1,1,1,1}; //deb
-const Int_t NumberOfReadoutStrips[NumberOfDifferentCounterTypes] = {32, 32, 64, 64};
+const Int_t NumberOfReadoutStrips[NumberOfDifferentCounterTypes] = {32, 32, 32, 32};
 //const Int_t NumberOfReadoutStrips[NumberOfDifferentCounterTypes] = {1,1,1,1}; //deb
 
 const Double_t SingleStackStartPosition_Z[NumberOfDifferentCounterTypes] = {-0.6, -0.6, -0.6, -0.6};
@@ -372,8 +376,8 @@ const Double_t Inner_Module_First_Y_Position            = 16.;
 const Double_t Inner_Module_Last_Y_Position             = 480.;
 const Double_t Inner_Module_X_Offset                    = 2.;
 const Int_t Inner_Module_NTypes                         = 3;
-const Double_t Inner_Module_Types[Inner_Module_NTypes]  = {4., 3., 0.};
-const Double_t Inner_Module_Number[Inner_Module_NTypes] = {2., 2., 6.};  //V13_3a
+const Double_t Inner_Module_Types[Inner_Module_NTypes]  = {4., 5., 6.};
+const Double_t Inner_Module_Number[Inner_Module_NTypes] = {2., 2., 4.};  //V13_3a
 //const Double_t Inner_Module_Number[Inner_Module_NTypes] = {0.,0.,0.}; //debugging
 
 const Double_t InnerSide_Module_X_Offset                    = 51.;
@@ -423,7 +427,7 @@ void position_tof_modules_m(Int_t, Int_t);
 void dump_info_file();
 void read_module_positions();
 
-void Create_TOF_Geometry_v20a()
+void Create_TOF_Geometry_v20b()
 {
   // Load the necessary FairRoot libraries
   //  gROOT->LoadMacro("$VMCWORKDIR/gconfig/basiclibs.C");
@@ -1369,7 +1373,7 @@ void position_tof_modules_m(Int_t ModType1, Int_t ModType2)
       Double_t xPos = xPosModm[jm][i];
       Double_t yPos = yPosModm[jm][i];
       Double_t zPos = zPosModm[jm][i] + InnerWall_Z_PositionShift;
-      cout << "Place Mod Type " << j << " at x " << xPos << ", y " << yPos << ", z " << zPos << ", Flip "
+      cout << "Place Mod " << i << " of Type " << j << " at x " << xPos << ", y " << yPos << ", z " << zPos << ", Flip "
            << FlipModm[jm][i] << endl;
 
       module_trans = new TGeoTranslation("", xPos, yPos, zPos);
