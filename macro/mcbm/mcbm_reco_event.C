@@ -395,7 +395,7 @@ void mcbm_reco_event(Int_t nEvents = 10, TString dataset = "data/test", const ch
       l1->SetMuchPar(parFile);
 
       TString parFile2 = gSystem->Getenv("VMCWORKDIR");
-      parFile2         = parFile2 + "/parameters/much/much_matbudget_v20a_mcbm.root ";
+      parFile2         = parFile2 + "/parameters/much/much_matbudget_" + geoTag + "_mcbm.root ";
       std::cout << "Using material budget file " << parFile2 << std::endl;
       l1->SetMuchMaterialBudgetFileName(parFile2.Data());
     }
@@ -403,7 +403,7 @@ void mcbm_reco_event(Int_t nEvents = 10, TString dataset = "data/test", const ch
     TString trdGeoTag;
     if (setup->GetGeoTag(ECbmModuleId::kTrd, trdGeoTag)) {
       TString parFile = gSystem->Getenv("VMCWORKDIR");
-      parFile         = parFile + "/parameters/trd/trd_matbudget_v20a_mcbm.root";
+      parFile         = parFile + "/parameters/trd/trd_matbudget_" + trdGeoTag + "_mcbm.root";
       std::cout << "Using material budget file " << parFile << std::endl;
       l1->SetTrdMaterialBudgetFileName(parFile.Data());
     }
@@ -411,7 +411,7 @@ void mcbm_reco_event(Int_t nEvents = 10, TString dataset = "data/test", const ch
     TString tofGeoTag;
     if (setup->GetGeoTag(ECbmModuleId::kTof, tofGeoTag)) {
       TString parFile = gSystem->Getenv("VMCWORKDIR");
-      parFile         = parFile + "/parameters/tof/tof_matbudget_v20f_mcbm.root";
+      parFile         = parFile + "/parameters/tof/tof_matbudget_" + tofGeoTag + "_mcbm.root";
       std::cout << "Using material budget file " << parFile << std::endl;
       l1->SetTofMaterialBudgetFileName(parFile.Data());
     }
