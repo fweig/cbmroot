@@ -117,6 +117,9 @@ private:
   CbmTrdParSetGain* fGainPar                 = nullptr;  ///< parameter list for keV->ADC gain conversion
   CbmTrdParSetGeo* fGeoPar                   = nullptr;  ///< parameter list for modules geometry
 
+  /** @brief Number of processed time slices */
+  UInt_t fNrTs = 0;
+
   /** @brief Number of processed events (without CbmEvent corresponds to nr of exec calls) */
   UInt_t fNrEvents = 0;
 

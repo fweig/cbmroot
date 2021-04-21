@@ -24,7 +24,18 @@
 
 #include <iomanip>
 
-CbmTaskBuildRawEvents::CbmTaskBuildRawEvents() : FairTask("CbmTaskBuildRawEvents")
+using std::cout;
+using std::endl;
+using std::fixed;
+using std::left;
+using std::pair;
+using std::right;
+using std::setprecision;
+using std::setw;
+using std::stringstream;
+
+
+CbmTaskBuildRawEvents::CbmTaskBuildRawEvents() : FairTask("BuildRawEvents")
 {
   /// Create Algo. To be made generic/switchable when more event building algo are available!
   fpAlgo = new CbmAlgoBuildRawEvents();
@@ -169,6 +180,8 @@ InitStatus CbmTaskBuildRawEvents::ReInit() { return kSUCCESS; }
 void CbmTaskBuildRawEvents::Exec(Option_t* /*option*/)
 {
   if (fTimer != nullptr) { fTimer->Start(kFALSE); }
+  TStopwatch timer;
+  timer.Start();
 
   LOG(debug2) << "CbmTaskBuildRawEvents::Exec => Starting sequence";
   //Warning: Int_t must be used for the loop counters instead of UInt_t,
@@ -281,6 +294,18 @@ void CbmTaskBuildRawEvents::Exec(Option_t* /*option*/)
   LOG(debug2) << "CbmTaskBuildRawEvents::Exec => Done";
 
   if (fTimer != nullptr) { fTimer->Stop(); }
+
+  // --- Timeslice log and statistics
+  timer.Stop();
+  stringstream logOut;
+  logOut << setw(20) << left << GetName() << " [";
+  logOut << fixed << setw(8) << setprecision(1) << right << timer.RealTime() * 1000. << " ms] ";
+  logOut << "TS " << fNofTs;
+  if (fEvents) logOut << ", events " << fEvents->GetEntriesFast();
+  LOG(info) << logOut.str();
+  fNofTs++;
+  fNofEvents += fEvents->GetEntriesFast();
+  fTime += timer.RealTime();
 }
 
 void CbmTaskBuildRawEvents::FillSeedTimesFromDetList()
@@ -401,6 +426,14 @@ void CbmTaskBuildRawEvents::Finish()
   fpAlgo->Finish();
   if (fbFillHistos) { SaveHistos(); }
   if (fbGetTimings) { PrintTimings(); }
+
+  std::cout << std::endl;
+  LOG(info) << "=====================================";
+  LOG(info) << GetName() << ": Run summary";
+  LOG(info) << "Time slices          : " << fNofTs;
+  LOG(info) << "Events               : " << fNofEvents;
+  LOG(info) << "Time  / TS           : " << fixed << setprecision(2) << 1000. * fTime / Double_t(fNofTs) << " ms";
+  LOG(info) << "=====================================";
 }
 
 void CbmTaskBuildRawEvents::FillOutput()

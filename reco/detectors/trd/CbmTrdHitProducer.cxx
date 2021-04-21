@@ -32,6 +32,14 @@
 
 #include <iomanip>
 #include <map>
+
+using std::fixed;
+using std::left;
+using std::right;
+using std::setprecision;
+using std::setw;
+using std::stringstream;
+
 //____________________________________________________________________________________
 CbmTrdHitProducer::CbmTrdHitProducer() : FairTask("TrdHitProducer") {}
 
@@ -262,8 +270,12 @@ void CbmTrdHitProducer::Exec(Option_t*)
   fHits->Delete();
 
   TStopwatch timer;
+  TStopwatch timerTs;
+  timerTs.Start();
 
-  UInt_t hitCounter = 0;
+  Long64_t nClusters = fClusters->GetEntriesFast();
+  UInt_t hitCounter  = 0;
+  UInt_t nEvents     = 0;
 
   if (CbmTrdClusterFinder::UseOnlyEventDigis()) {
     for (auto eventobj : *fEvents) {
@@ -273,6 +285,7 @@ void CbmTrdHitProducer::Exec(Option_t*)
       if (!event) continue;
       hitCounter += processClusters(event);
       fNrEvents++;
+      nEvents++;
       timer.Stop();
       if (CbmTrdClusterFinder::DoDebugPrintouts()) {
         LOG(info) << GetName() << "::Exec : Event Nr: " << fNrEvents;
@@ -298,9 +311,19 @@ void CbmTrdHitProducer::Exec(Option_t*)
 
 
   timer.Stop();
+  timerTs.Stop();
   if (CbmTrdClusterFinder::DoDebugPrintouts())
     LOG(info) << GetName() << "::Exec: real time=" << timer.RealTime() << " CPU time=" << timer.CpuTime();
   fProcessTime += timer.RealTime();
+
+  stringstream logOut;
+  logOut << setw(20) << left << GetName() << " [";
+  logOut << fixed << setw(8) << setprecision(1) << right << timerTs.RealTime() * 1000. << " ms] ";
+  logOut << "TS " << fNrTs;
+  if (CbmTrdClusterFinder::UseOnlyEventDigis()) logOut << ", events " << nEvents;
+  logOut << ", clusters " << nClusters << ", hits " << hitCounter;
+  LOG(info) << logOut.str();
+  fNrTs++;
 }
 
 //____________________________________________________________________________________

@@ -9,7 +9,9 @@
 
 
 #include "CbmStsTrackFinder.h"
+
 #include "FairTask.h"
+
 #include "TStopwatch.h"
 
 
@@ -35,8 +37,7 @@ public:
    ** @param finder  Track finder engine. Default: Ideal track finder.
    ** @param useMvd  Include MVD hits in track finding. Default kFALSE.
    **/
-  CbmStsFindTracksEvents(CbmStsTrackFinder* finder = NULL,
-                         Bool_t useMvd             = kFALSE);
+  CbmStsFindTracksEvents(CbmStsTrackFinder* finder = NULL, Bool_t useMvd = kFALSE);
 
 
   /** Destructor **/
@@ -62,7 +63,8 @@ public:
   /** Set track finding engine
    ** @param finder  Pointer to track finding engine
    **/
-  void UseFinder(CbmStsTrackFinder* finder) {
+  void UseFinder(CbmStsTrackFinder* finder)
+  {
     if (fFinder) delete fFinder;
     fFinder = finder;
   };
@@ -76,6 +78,7 @@ private:
   TClonesArray* fStsHits;      //! Input array of STS hits
   TClonesArray* fTracks;       //! Output array of CbmStsTracks
   TStopwatch fTimer;           //! Timer
+  Int_t fNofTs = 0;            ///< Number of processed timeslices
   Int_t fNofEvents;            ///< Number of events with success
   Double_t fNofHits;           ///< Number of hits
   Double_t fNofTracks;         ///< Number of tracks created
@@ -90,8 +93,11 @@ private:
   virtual void Finish();
 
 
-  /** Process one event **/
-  void ProcessEvent(CbmEvent* event);
+  /** @brief Process one event or timeslice
+   ** @param event Pointer to event object. If null, entire timeslice is processed.
+   ** @return Number of input hits and output tracks
+   **/
+  std::pair<UInt_t, UInt_t> ProcessEvent(CbmEvent* event);
 
 
   /** Prevent usage of copy constructor and assignment operator **/

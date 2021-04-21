@@ -11,6 +11,7 @@
 #define CBM_RICH_HIT_PRODUCER
 
 #include "CbmRichRecGeoPar.h"
+
 #include "FairTask.h"
 
 #include <TClonesArray.h>  // for ROOTCLING
@@ -62,7 +63,7 @@ public:
   /**
      * Processblock of data either event-by-event or CbmEvent
      */
-  void ProcessData(CbmEvent* event);
+  Int_t ProcessData(CbmEvent* event);
 
   /**
      * Process RichDigi. CbmEvent can be NULL.
@@ -73,15 +74,19 @@ public:
 
 
 private:
-  CbmDigiManager* fDigiMan;  //!
-  TClonesArray* fRichHits;   // RICH hits
-  TClonesArray* fCbmEvents;  // CbmEvent for time-based simulations
+  CbmDigiManager* fDigiMan = nullptr;  //!
+  TClonesArray* fRichHits  = nullptr;  // RICH hits
+  TClonesArray* fCbmEvents = nullptr;  // CbmEvent for time-based simulations
 
-  Int_t fEventNum;  // event number
+  Int_t fNofTs           = 0;   // number of timeslices
+  Int_t fNofEvents       = 0;   // number of events
+  Long64_t fNofDigisAll  = 0;   // all digis in input
+  Long64_t fNofDigisUsed = 0;   // digis used for hit finding
+  Double_t fTime         = 0.;  // processing time
 
-  Bool_t fRotationNeeded;
+  Bool_t fRotationNeeded = kTRUE;
 
-  Double_t fHitError;
+  Double_t fHitError = 0.6 / sqrt(12);
 
   /**
      * \brief Add hit to the output array (and) CbmEvent if it is not NULL.

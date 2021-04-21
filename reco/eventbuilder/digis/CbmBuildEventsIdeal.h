@@ -9,7 +9,9 @@
 
 
 #include "CbmDefs.h"
+
 #include <FairTask.h>
+
 #include <vector>
 
 class TClonesArray;
@@ -46,6 +48,9 @@ public:
   /** @brief Task execution **/
   virtual void Exec(Option_t* opt);
 
+  /** @brief Finish timeslice **/
+  virtual void Finish();
+
   /** @brief Assignment operator (disabled) **/
   CbmBuildEventsIdeal& operator=(const CbmBuildEventsIdeal&) = delete;
 
@@ -62,8 +67,13 @@ private:  // methods
 private:                                  // members
   CbmDigiManager* fDigiMan = nullptr;     //!
   std::vector<ECbmModuleId> fSystems {};  //  List of detector systems
-  TClonesArray* fEvents = nullptr;        //! Output array (class CbmEvent)
-  Int_t fNofEntries     = 0;              //  Number of processed time slices
+  TClonesArray* fEvents   = nullptr;      //! Output array (class CbmEvent)
+  Int_t fNofEntries       = 0;            //  Number of processed time slices
+  Long64_t fNofEvents     = 0;
+  Double_t fNofDigisTotal = 0.;
+  Double_t fNofDigisAmbig = 0.;
+  Double_t fNofDigisNoise = 0.;
+  Double_t fTime          = 0.;
 
 
   ClassDef(CbmBuildEventsIdeal, 3);

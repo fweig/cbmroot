@@ -35,6 +35,13 @@
 
 #include <cmath>
 
+using std::fixed;
+using std::left;
+using std::right;
+using std::setprecision;
+using std::setw;
+using std::stringstream;
+
 
 Int_t CbmTrdClusterFinder::fgConfig            = 0;
 Float_t CbmTrdClusterFinder::fgMinimumChargeTH = .5e-06;
@@ -273,7 +280,12 @@ void CbmTrdClusterFinder::Exec(Option_t* /*option*/)
   fClusters->Delete();
 
   TStopwatch timer;
-  UInt_t nDigis = 0;
+  TStopwatch timerTs;
+  timerTs.Start();
+  Long64_t nDigisAll  = CbmDigiManager::Instance()->GetNofDigis(ECbmModuleId::kTrd);
+  Long64_t nDigisUsed = 0;
+  UInt_t nDigis       = 0;
+  UInt_t nEvents      = 0;
 
   if (UseOnlyEventDigis()) {
     for (auto eventobj : *fEvents) {
@@ -282,6 +294,8 @@ void CbmTrdClusterFinder::Exec(Option_t* /*option*/)
       nDigis     = addDigisToModules(event);
       processDigisInModules(nDigis, event);
       fNrEvents++;
+      nEvents++;
+      nDigisUsed += nDigis;
       timer.Stop();
       if (DoDebugPrintouts()) {
         LOG(info) << GetName() << "::Exec : Event Nr: " << fNrEvents;
@@ -297,6 +311,7 @@ void CbmTrdClusterFinder::Exec(Option_t* /*option*/)
     nDigis = addDigisToModules();
     processDigisInModules(nDigis);
     fNrEvents++;
+    nDigisUsed = nDigis;
     timer.Stop();
     if (DoDebugPrintouts()) {
       LOG(info) << GetName() << "::Exec : Event Nr: " << fNrEvents;
@@ -305,6 +320,16 @@ void CbmTrdClusterFinder::Exec(Option_t* /*option*/)
     fProcessTime += timer.RealTime();
     timer.Reset();
   }
+
+  timerTs.Stop();
+  stringstream logOut;
+  logOut << setw(20) << left << GetName() << " [";
+  logOut << fixed << setw(8) << setprecision(1) << right << timerTs.RealTime() * 1000. << " ms] ";
+  logOut << "TS " << fNrTs;
+  if (UseOnlyEventDigis()) logOut << ", events " << nEvents;
+  logOut << ", digis " << nDigisUsed << " / " << nDigisAll;
+  LOG(info) << logOut.str();
+  fNrTs++;
 }
 
 //_____________________________________________________________________

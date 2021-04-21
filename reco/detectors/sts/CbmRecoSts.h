@@ -275,20 +275,33 @@ private:
   Bool_t fWriteClusters        = kFALSE;         ///< Write clusters to tree
   Bool_t fRunParallel          = kFALSE;         ///< Use OpenMP multithreading
 
-  // --- Counters
-  TStopwatch fTimer {};            //! ROOT timer
-  Int_t fNofTimeslices      = 0;   ///< Number of time slices processed
-  Int_t fNofEvents          = 0;   ///< Number of events processed
-  Double_t fNofDigis        = 0;   ///< Total number of digis processed
-  Double_t fNofDigisUsed    = 0;   ///< Total number of used digis
-  Double_t fNofDigisIgnored = 0;   ///< Total number of ignored digis
-  Double_t fNofClusters     = 0;   ///< Total number of clusters produced
-  Double_t fNofHits         = 0;   ///< Total number of clusters produced
+  // --- Timeslice counters
+  Long64_t fNofDigis        = 0;   ///< Total number of digis processed
+  Long64_t fNofDigisUsed    = 0;   ///< Total number of used digis
+  Long64_t fNofDigisIgnored = 0;   ///< Total number of ignored digis
+  Long64_t fNofClusters     = 0;   ///< Total number of clusters produced
+  Long64_t fNofHits         = 0;   ///< Total number of clusters produced
   Double_t fTimeTot         = 0.;  ///< Total execution time
   Double_t fTime1           = 0.;  ///< Time for resetting modules
   Double_t fTime2           = 0.;  ///< Time for distributing data
   Double_t fTime3           = 0.;  ///< Time for reconstruction
   Double_t fTime4           = 0.;  ///< Time for output results
+
+  // --- Run counters
+  TStopwatch fTimer {};               //! ROOT timer
+  Int_t fNofTs                 = 0;   ///< Number of time slices processed
+  Int_t fNofEvents             = 0;   ///< Number of events processed
+  Double_t fNofDigisRun        = 0;   ///< Total number of digis processed
+  Double_t fNofDigisUsedRun    = 0;   ///< Total number of used digis
+  Double_t fNofDigisIgnoredRun = 0;   ///< Total number of ignored digis
+  Double_t fNofClustersRun     = 0;   ///< Total number of clusters produced
+  Double_t fNofHitsRun         = 0;   ///< Total number of clusters produced
+  Double_t fTimeRun            = 0.;  ///< Total execution time
+  Double_t fTime1Run           = 0.;  ///< Time for resetting modules
+  Double_t fTime2Run           = 0.;  ///< Time for distributing data
+  Double_t fTime3Run           = 0.;  ///< Time for reconstruction
+  Double_t fTime4Run           = 0.;  ///< Time for output results
+
 
   // --- Reconstruction modules
   std::map<UInt_t, CbmStsRecoModule*> fModules {};  //!

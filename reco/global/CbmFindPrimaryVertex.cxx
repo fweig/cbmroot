@@ -154,13 +154,13 @@ void CbmFindPrimaryVertex::Exec(Option_t*)
 
   // Log to screen
   timer.Stop();
-  if (fEvents)
-    LOG(info) << std::setw(20) << std::left << GetName() << fixed << setprecision(2) << " [" << timer.RealTime() * 1000.
-              << " ms]: TS " << fNofTs << ", events " << nEvents << ", tracks used " << nTracksUsed << " / " << nTracks;
-  else
-    LOG(info) << std::setw(20) << std::left << GetName() << fixed << setprecision(2) << " [" << timer.RealTime() * 1000.
-              << " ms] TS " << fNofTs << ", vertex " << fPrimVert->ToString() << ", tracks used " << nTracksUsed
-              << " / " << nTracks;
+  stringstream logOut;
+  logOut << setw(20) << left << GetName() << " [";
+  logOut << fixed << setw(8) << setprecision(1) << right << timer.RealTime() * 1000. << " ms] ";
+  logOut << "TS " << fNofTs;
+  if (fEvents) logOut << ", events " << nEvents;
+  logOut << ", tracks used " << nTracksUsed << " / " << nTracks;
+  LOG(info) << logOut.str();
 
   // Counters
   fNofTs++;

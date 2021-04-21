@@ -32,6 +32,7 @@ using std::left;
 using std::right;
 using std::setprecision;
 using std::setw;
+using std::stringstream;
 using std::vector;
 
 
@@ -130,11 +131,29 @@ UInt_t CbmRecoSts::CreateModules()
 void CbmRecoSts::Exec(Option_t*)
 {
 
-  // --- Clear output array
+  // --- Time
+  TStopwatch timer;
+  timer.Start();
+
+  // --- Clear hit output array
   fHits->Delete();
 
-  // --- Reset output array
+  // --- Reset cluster output array
   fClusters->Delete();
+
+  // --- Local variables
+  Int_t nEvents    = 0;
+  fNofDigis        = 0;
+  fNofDigisUsed    = 0;
+  fNofDigisIgnored = 0;
+  fNofClusters     = 0;
+  fNofHits         = 0;
+  fTimeTot         = 0.;
+  fTime1           = 0.;
+  fTime2           = 0.;
+  fTime3           = 0.;
+  fTime4           = 0.;
+  CbmEvent* event  = nullptr;
 
   // --- Time-slice mode: process entire array
   if (fMode == kCbmRecoTimeslice) ProcessData(nullptr);
@@ -142,17 +161,39 @@ void CbmRecoSts::Exec(Option_t*)
   // --- Event mode: loop over events
   else {
     assert(fEvents);
-    Int_t nEvents = fEvents->GetEntriesFast();
-    LOG(info) << setw(20) << left << GetName() << ": Processing time slice " << fNofTimeslices << " with " << nEvents
-              << (nEvents == 1 ? " event" : " events");
+    nEvents = fEvents->GetEntriesFast();
+    LOG(debug) << setw(20) << left << GetName() << ": Processing time slice " << fNofTs << " with " << nEvents
+               << (nEvents == 1 ? " event" : " events");
     for (Int_t iEvent = 0; iEvent < nEvents; iEvent++) {
-      CbmEvent* event = dynamic_cast<CbmEvent*>(fEvents->At(iEvent));
+      event = dynamic_cast<CbmEvent*>(fEvents->At(iEvent));
       assert(event);
       ProcessData(event);
     }  //# events
   }    //? event mode
 
-  fNofTimeslices++;
+  // --- Timeslice log
+  timer.Stop();
+  stringstream logOut;
+  logOut << setw(20) << left << GetName() << " [";
+  logOut << fixed << setw(8) << setprecision(1) << right << timer.RealTime() * 1000. << " ms] ";
+  logOut << "TS " << fNofTs;
+  if (fEvents) logOut << ", events " << nEvents;
+  logOut << ", digis " << fNofDigisUsed << " / " << fNofDigis;
+  logOut << ", clusters " << fNofClusters << ", hits " << fNofHits;
+  LOG(info) << logOut.str();
+
+  // --- Update run counters
+  fNofTs++;
+  fNofEvents += nEvents;
+  fNofDigisRun += fNofDigis;
+  fNofDigisUsedRun += fNofDigisUsed;
+  fNofClustersRun += fNofClusters;
+  fNofHitsRun += fNofHits;
+  fTimeRun += fTimeTot;
+  fTime1Run += fTime1;
+  fTime2Run += fTime2;
+  fTime3Run += fTime3;
+  fTime4Run += fTime4;
 }
 // -------------------------------------------------------------------------
 
@@ -162,47 +203,34 @@ void CbmRecoSts::Finish()
 {
 
   std::cout << std::endl;
+  Double_t digiCluster = Double_t(fNofDigisUsed) / Double_t(fNofClusters);
+  Double_t clusterHit  = Double_t(fNofClusters) / Double_t(fNofHits);
   LOG(info) << "=====================================";
   LOG(info) << GetName() << ": Run summary";
-  LOG(info) << "Time slices            : " << fNofTimeslices;
+  LOG(info) << "Time slices            : " << fNofTs;
+  if (fMode == kCbmRecoEvent) LOG(info) << "Events                 : " << fNofEvents;
+  LOG(info) << "Digis / TSlice         : " << fixed << setprecision(2) << fNofDigisRun / Double_t(fNofTs);
+  LOG(info) << "Digis used / TSlice    : " << fixed << setprecision(2) << fNofDigisUsed / Double_t(fNofTs);
+  LOG(info) << "Digis ignored / TSlice : " << fixed << setprecision(2) << fNofDigisIgnored / Double_t(fNofTs);
+  LOG(info) << "Clusters / TSlice      : " << fixed << setprecision(2) << fNofClusters / Double_t(fNofTs);
+  LOG(info) << "Hits / TSlice          : " << fixed << setprecision(2) << fNofHits / Double_t(fNofTs);
+  LOG(info) << "Digis per cluster      : " << fixed << setprecision(2) << digiCluster;
+  LOG(info) << "Clusters per hit       : " << fixed << setprecision(2) << clusterHit;
+  LOG(info) << "Time per TSlice        : " << fixed << setprecision(2) << 1000. * fTimeRun / Double_t(fNofTs) << " s ";
 
-  // --- Time-slice mode
-  if (fMode == kCbmRecoTimeslice) {
-    LOG(info) << "Digis / TSlice         : " << fNofDigis / Double_t(fNofTimeslices);
-    LOG(info) << "Digis used / TSlice    : " << fNofDigisUsed / Double_t(fNofTimeslices);
-    LOG(info) << "Digis ignored / TSlice : " << fNofDigisIgnored / Double_t(fNofTimeslices);
-    LOG(info) << "Clusters / TSlice      : " << fNofClusters / Double_t(fNofTimeslices);
-    LOG(info) << "Hits / TSlice          : " << fNofHits / Double_t(fNofTimeslices);
-    LOG(info) << "Digis per cluster      : " << fNofDigisUsed / fNofClusters;
-    LOG(info) << "Clusters per hit       : " << fNofClusters / fNofHits;
-    LOG(info) << "Time per TSlice        : " << fTimeTot / Double_t(fNofTimeslices) << " s ";
-
-  }  //? time-slice mode
-
-  // --- Event-by-event mode
-  else {
-    LOG(info) << "Events                : " << fNofEvents;
-    LOG(info) << "Digis / event         : " << fNofDigis / Double_t(fNofEvents);
-    LOG(info) << "Digis used / event    : " << fNofDigisUsed / Double_t(fNofEvents);
-    LOG(info) << "Digis ignored / event : " << fNofDigisIgnored / Double_t(fNofEvents);
-    LOG(info) << "Clusters / event      : " << fNofClusters / Double_t(fNofEvents);
-    LOG(info) << "Digis per cluster     : " << fNofDigisUsed / fNofClusters;
-    LOG(info) << "Time per event        : " << fTimeTot / Double_t(fNofEvents) << " s ";
-  }  //? event mode
-
-  fTimeTot /= Double_t(fNofEvents);
-  fTime1 /= Double_t(fNofEvents);
-  fTime2 /= Double_t(fNofEvents);
-  fTime3 /= Double_t(fNofEvents);
-  fTime4 /= Double_t(fNofEvents);
-  LOG(info) << "Time Reset       : " << fixed << setprecision(1) << setw(6) << 1000. * fTime1 << " ms ("
-            << setprecision(1) << setw(4) << 100. * fTime1 / fTimeTot << " %)";
-  LOG(info) << "Time Distribute  : " << fixed << setprecision(1) << setw(6) << 1000. * fTime2 << " ms ("
-            << setprecision(1) << 100. * fTime2 / fTimeTot << " %)";
-  LOG(info) << "Time Reconstruct : " << fixed << setprecision(1) << setw(6) << 1000. * fTime3 << " ms ("
-            << setprecision(1) << setw(4) << 100. * fTime3 / fTimeTot << " %)";
-  LOG(info) << "Time Output      : " << fixed << setprecision(1) << setw(6) << 1000. * fTime4 << " ms ("
-            << setprecision(1) << setw(4) << 100. * fTime4 / fTimeTot << " %)";
+  fTimeRun /= Double_t(fNofEvents);
+  fTime1Run /= Double_t(fNofEvents);
+  fTime2Run /= Double_t(fNofEvents);
+  fTime3Run /= Double_t(fNofEvents);
+  fTime4Run /= Double_t(fNofEvents);
+  LOG(info) << "Time Reset       : " << fixed << setprecision(1) << setw(6) << 1000. * fTime1Run << " ms ("
+            << setprecision(1) << setw(4) << 100. * fTime1Run / fTimeRun << " %)";
+  LOG(info) << "Time Distribute  : " << fixed << setprecision(1) << setw(6) << 1000. * fTime2Run << " ms ("
+            << setprecision(1) << 100. * fTime2Run / fTimeRun << " %)";
+  LOG(info) << "Time Reconstruct : " << fixed << setprecision(1) << setw(6) << 1000. * fTime3Run << " ms ("
+            << setprecision(1) << setw(4) << 100. * fTime3Run / fTimeRun << " %)";
+  LOG(info) << "Time Output      : " << fixed << setprecision(1) << setw(6) << 1000. * fTime4Run << " ms ("
+            << setprecision(1) << setw(4) << 100. * fTime4Run / fTimeRun << " %)";
   LOG(info) << "=====================================";
 }
 // -------------------------------------------------------------------------
@@ -320,7 +348,6 @@ void CbmRecoSts::ProcessData(CbmEvent* event)
 
   // --- Reset all modules
   fTimer.Start();
-  Int_t nDigisGood    = 0;
   Int_t nDigisIgnored = 0;
   Int_t nClusters     = 0;
   Int_t nHits         = 0;
@@ -423,9 +450,8 @@ void CbmRecoSts::ProcessData(CbmEvent* event)
 
   // --- Bookkeeping
   Double_t realTime = time1 + time2 + time3 + time4;
-  fNofEvents++;
   fNofDigis += nDigis;
-  fNofDigisUsed += nDigisGood;
+  fNofDigisUsed += nDigis - nDigisIgnored;
   fNofDigisIgnored += nDigisIgnored;
   fNofClusters += nClusters;
   fNofHits += nHits;
@@ -437,14 +463,14 @@ void CbmRecoSts::ProcessData(CbmEvent* event)
 
   // --- Screen log
   if (event) {
-    LOG(info) << setw(20) << left << GetName() << "[" << fixed << setprecision(4) << realTime << " s] : Event " << right
-              << setw(6) << event->GetNumber() << ", digis: " << nDigis << ", ignored: " << nDigisIgnored
-              << ", clusters: " << nClusters << ", hits " << nHits;
+    LOG(debug) << setw(20) << left << GetName() << "[" << fixed << setprecision(4) << realTime << " s] : Event "
+               << right << setw(6) << event->GetNumber() << ", digis: " << nDigis << ", ignored: " << nDigisIgnored
+               << ", clusters: " << nClusters << ", hits " << nHits;
   }  //? event mode
   else {
-    LOG(info) << setw(20) << left << GetName() << "[" << fixed << setprecision(4) << realTime << " s] : TSlice "
-              << right << setw(6) << fNofTimeslices << ", digis: " << nDigis << ", ignored: " << nDigisIgnored
-              << ", clusters: " << nClusters << ", hits " << nHits;
+    LOG(debug) << setw(20) << left << GetName() << "[" << fixed << setprecision(4) << realTime << " s] : TSlice "
+               << right << setw(6) << fNofTs << ", digis: " << nDigis << ", ignored: " << nDigisIgnored
+               << ", clusters: " << nClusters << ", hits " << nHits;
   }
 }
 // -------------------------------------------------------------------------

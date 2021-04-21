@@ -19,112 +19,122 @@
 #include <Logger.h>
 
 #include "TClonesArray.h"
+#include <TStopwatch.h>
 
+#include <iomanip>
 #include <iostream>
 
 using namespace std;
 
 
-CbmRichHitProducer::CbmRichHitProducer()
-  : FairTask("CbmRichHitProducer")
-  , fDigiMan(nullptr)
-  , fRichHits(NULL)
-  , fCbmEvents(NULL)
-  , fEventNum(0)
-  , fRotationNeeded(true)
-  , fHitError(0.6 / sqrt(12.))
+CbmRichHitProducer::CbmRichHitProducer() : FairTask("CbmRichHitProducer") {}
 
-{}
-
-CbmRichHitProducer::~CbmRichHitProducer() {
+CbmRichHitProducer::~CbmRichHitProducer()
+{
   FairRootManager* manager = FairRootManager::Instance();
   manager->Write();
 }
 
 void CbmRichHitProducer::SetParContainers() {}
 
-InitStatus CbmRichHitProducer::Init() {
+InitStatus CbmRichHitProducer::Init()
+{
   FairRootManager* manager = FairRootManager::Instance();
 
   fCbmEvents = dynamic_cast<TClonesArray*>(manager->GetObject("CbmEvent"));
-  if (fCbmEvents == nullptr) {
-    LOG(info) << ": CbmEvent NOT found \n \n \n";
-  } else {
+  if (fCbmEvents == nullptr) { LOG(info) << ": CbmEvent NOT found \n \n \n"; }
+  else {
     LOG(info) << ": CbmEvent found \n \n \n";
   }
 
   fDigiMan = CbmDigiManager::Instance();
   fDigiMan->Init();
-  if (!fDigiMan->IsPresent(ECbmModuleId::kRich)) {
-    Fatal("CbmRichHitProducer::Init", "No RichDigi array!");
-  }
+  if (!fDigiMan->IsPresent(ECbmModuleId::kRich)) { Fatal("CbmRichHitProducer::Init", "No RichDigi array!"); }
 
   fRichHits = new TClonesArray("CbmRichHit");
-  manager->Register(
-    "RichHit", "RICH", fRichHits, IsOutputBranchPersistent("RichHit"));
+  manager->Register("RichHit", "RICH", fRichHits, IsOutputBranchPersistent("RichHit"));
+
+  CbmRichDigiMapManager::GetInstance();
 
   return kSUCCESS;
 }
 
-void CbmRichHitProducer::Exec(Option_t* /*option*/) {
-  fEventNum++;
-  LOG(info) << "CbmRichHitProducer Event (or TimeSlice) " << fEventNum;
+void CbmRichHitProducer::Exec(Option_t* /*option*/)
+{
 
+  TStopwatch timer;
+  timer.Start();
+  Int_t nDigisAll  = fDigiMan->GetNofDigis(ECbmModuleId::kRich);
+  Int_t nDigisUsed = 0;
+  Int_t nEvents    = 0;
+  Int_t result     = 0;
   fRichHits->Delete();
 
-  // if CbmEvent does not exist then process standard event.
-  // if CbmEvent exists then proceed all events in time slice.
-  Int_t nUnits = (fCbmEvents != nullptr) ? fCbmEvents->GetEntriesFast() : 1;
+  // Time-slice processing
+  if (fCbmEvents == nullptr) nDigisUsed = ProcessData(nullptr);
 
-  for (Int_t iUnit = 0; iUnit < nUnits; iUnit++) {
-    CbmEvent* event = (fCbmEvents != nullptr)
-                        ? static_cast<CbmEvent*>(fCbmEvents->At(iUnit))
-                        : nullptr;
-    ProcessData(event);
+  // Event processing
+  else {
+    nEvents = fCbmEvents->GetEntriesFast();
+    for (Int_t iEvent = 0; iEvent < nEvents; iEvent++) {
+      CbmEvent* event = static_cast<CbmEvent*>(fCbmEvents->At(iEvent));
+      result          = ProcessData(event);
+      nDigisUsed += result;
+    }
   }
+
+  timer.Stop();
+  stringstream logOut;
+  logOut << setw(20) << left << GetName() << " [";
+  logOut << fixed << setw(8) << setprecision(1) << right << timer.RealTime() * 1000. << " ms] ";
+  logOut << "TS " << fNofTs;
+  if (fCbmEvents != nullptr) logOut << ", events " << nEvents;
+  logOut << ", digis " << nDigisUsed << " / " << nDigisAll;
+  LOG(info) << logOut.str();
+  fNofTs++;
+  fNofDigisAll += nDigisAll;
+  fNofDigisUsed += nDigisUsed;
+  fTime += timer.RealTime();
 }
 
-void CbmRichHitProducer::ProcessData(CbmEvent* event) {
+Int_t CbmRichHitProducer::ProcessData(CbmEvent* event)
+{
+  Int_t nDigis = 0;
   if (event != NULL) {
-    LOG(info) << "CbmRichHitProducer CbmEvent mode. CbmEvent # "
-              << event->GetNumber();
     Int_t nofDigis = event->GetNofData(ECbmDataType::kRichDigi);
-    LOG(info) << "nofDigis: " << nofDigis;
-
+    LOG(debug) << GetName() << ": Event mode. Event # " << event->GetNumber() << ", digis: " << nofDigis;
     for (Int_t iDigi = 0; iDigi < nofDigis; iDigi++) {
       Int_t digiIndex = event->GetIndex(ECbmDataType::kRichDigi, iDigi);
       ProcessDigi(event, digiIndex);
     }
-
-  } else {
-    for (Int_t iDigi = 0; iDigi < fDigiMan->GetNofDigis(ECbmModuleId::kRich);
-         iDigi++) {
+    nDigis = nofDigis;
+  }
+  else {
+    nDigis = fDigiMan->GetNofDigis(ECbmModuleId::kRich);
+    for (Int_t iDigi = 0; iDigi < fDigiMan->GetNofDigis(ECbmModuleId::kRich); iDigi++) {
       ProcessDigi(event, iDigi);
     }
   }
+  return nDigis;
 }
 
-void CbmRichHitProducer::ProcessDigi(CbmEvent* event, Int_t digiIndex) {
+void CbmRichHitProducer::ProcessDigi(CbmEvent* event, Int_t digiIndex)
+{
   const CbmRichDigi* digi = fDigiMan->Get<CbmRichDigi>(digiIndex);
   if (digi == nullptr) return;
   if (digi->GetAddress() < 0) return;
-  CbmRichPixelData* data =
-    CbmRichDigiMapManager::GetInstance().GetPixelDataByAddress(
-      digi->GetAddress());
+  CbmRichPixelData* data = CbmRichDigiMapManager::GetInstance().GetPixelDataByAddress(digi->GetAddress());
   TVector3 posPoint;
   posPoint.SetXYZ(data->fX, data->fY, data->fZ);
   TVector3 detPoint;
 
-  CbmRichGeoManager::GetInstance().RotatePoint(
-    &posPoint, &detPoint, !fRotationNeeded);
+  CbmRichGeoManager::GetInstance().RotatePoint(&posPoint, &detPoint, !fRotationNeeded);
   AddHit(event, detPoint, digi->GetTime(), digiIndex);
 }
 
 
-void CbmRichHitProducer::AddHit(CbmEvent* event,
-                                TVector3& posHit,
-                                Double_t time,
-                                Int_t index) {
+void CbmRichHitProducer::AddHit(CbmEvent* event, TVector3& posHit, Double_t time, Int_t index)
+{
   Int_t nofHits = fRichHits->GetEntriesFast();
   new ((*fRichHits)[nofHits]) CbmRichHit();
   CbmRichHit* hit = (CbmRichHit*) fRichHits->At(nofHits);
@@ -137,7 +147,19 @@ void CbmRichHitProducer::AddHit(CbmEvent* event,
   if (event != NULL) { event->AddData(ECbmDataType::kRichHit, nofHits); }
 }
 
-void CbmRichHitProducer::Finish() { fRichHits->Clear(); }
+void CbmRichHitProducer::Finish()
+{
+  fRichHits->Clear();
+  std::cout << std::endl;
+  LOG(info) << "=====================================";
+  LOG(info) << GetName() << ": Run summary";
+  LOG(info) << "Time slices     : " << fNofTs;
+  if (fCbmEvents) LOG(info) << "Events          : " << fNofEvents;
+  LOG(info) << "Digis      / TS : " << fixed << setprecision(2) << Double_t(fNofDigisAll) / Double_t(fNofTs);
+  LOG(info) << "Used digis / TS : " << fixed << setprecision(2) << Double_t(fNofDigisUsed) / Double_t(fNofTs);
+  LOG(info) << "Time       / TS : " << fixed << setprecision(2) << 1000. * fTime / Double_t(fNofTs) << " ms";
+  LOG(info) << "=====================================\n";
+}
 
 
 ClassImp(CbmRichHitProducer)

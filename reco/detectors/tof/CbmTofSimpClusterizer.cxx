@@ -51,12 +51,15 @@
 
 // C++ Classes and includes
 #include <iomanip>
+#include <iostream>
 
 using std::fixed;
 using std::left;
 using std::pair;
+using std::right;
 using std::setprecision;
 using std::setw;
+using std::stringstream;
 
 // const Int_t DetMask = 4194303;  (VF) not used
 const Int_t nbClWalkBinX = 20;
@@ -373,14 +376,14 @@ void CbmTofSimpClusterizer::Exec(Option_t* /*option*/)
   fTimer.Stop();
 
   // --- Timeslice log
-  if (fEvents)
-    LOG(info) << std::setw(20) << std::left << GetName() << fixed << setprecision(2) << " ["
-              << fTimer.RealTime() * 1000. << " ms] TS " << fiNofTs << ", events " << nEvents << ", digis " << nDigis
-              << " / " << nDigisAll << ", hits " << nHits;
-  else
-    LOG(info) << std::setw(20) << std::left << GetName() << fixed << setprecision(2) << " ["
-              << fTimer.RealTime() * 1000. << " ms] TS " << fiNofTs << ", digis " << nDigis << " / " << nDigisAll
-              << ", hits " << nHits;
+  stringstream logOut;
+  logOut << setw(20) << left << GetName() << " [";
+  logOut << fixed << setw(8) << setprecision(1) << right << fTimer.RealTime() * 1000. << " ms] ";
+  logOut << "TS " << fiNofTs;
+  if (fEvents) logOut << ", events " << nEvents;
+  logOut << ", digis " << nDigis << " / " << nDigisAll;
+  logOut << ", hits " << nHits;
+  LOG(info) << logOut.str();
 
 
   // --- Update Counters

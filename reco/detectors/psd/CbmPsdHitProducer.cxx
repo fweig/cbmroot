@@ -27,12 +27,14 @@ using std::endl;
 using std::fixed;
 using std::left;
 using std::pair;
+using std::right;
 using std::setprecision;
 using std::setw;
+using std::stringstream;
 
 
 // -----   Default constructor   -------------------------------------------
-CbmPsdHitProducer::CbmPsdHitProducer() : FairTask("Ideal Psd Hit Producer", 1), fXi(), fYi() {}
+CbmPsdHitProducer::CbmPsdHitProducer() : FairTask("PsdHitProducer", 1), fXi(), fYi() {}
 // -------------------------------------------------------------------------
 
 
@@ -145,13 +147,14 @@ void CbmPsdHitProducer::Exec(Option_t* /*opt*/)
 
   // --- Timeslice log and statistics
   timer.Stop();
-  if (fEvents)
-    LOG(info) << std::setw(20) << std::left << GetName() << fixed << setprecision(2) << " [" << timer.RealTime() * 1000.
-              << " ms] TS " << fNofTs << ", events " << nEvents << ", digis " << nDigis << " / " << nDigisAll
-              << ", hits " << nHits;
-  else
-    LOG(info) << std::setw(20) << std::left << GetName() << fixed << setprecision(2) << " [" << timer.RealTime() * 1000.
-              << " ms] TS " << fNofTs << ", digis " << nDigis << " / " << nDigisAll << ", hits " << nHits;
+  stringstream logOut;
+  logOut << setw(20) << left << GetName() << " [";
+  logOut << fixed << setw(8) << setprecision(1) << right << timer.RealTime() * 1000. << " ms] ";
+  logOut << "TS " << fNofTs;
+  if (fEvents) logOut << ", events " << nEvents;
+  logOut << ", digis " << nDigis << " / " << nDigisAll;
+  logOut << ", hits " << nHits;
+  LOG(info) << logOut.str();
   fNofTs++;
   fNofEvents += nEvents;
   fNofDigis += nDigis;

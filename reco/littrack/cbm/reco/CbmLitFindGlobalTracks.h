@@ -17,13 +17,13 @@
 #ifndef CBMLITFINDGLOBALTRACKS_H_
 #define CBMLITFINDGLOBALTRACKS_H_
 
-#include "FairTask.h"
-
 #include "CbmVertex.h"
 #include "base/CbmLitDetectorSetup.h"
 #include "base/CbmLitPtrTypes.h"
 #include "base/CbmLitTypes.h"
 #include "data/CbmLitHit.h"
+
+#include "FairTask.h"
 
 #include "TStopwatch.h"
 
@@ -69,9 +69,7 @@ public:
   virtual void SetParContainers();
 
   /* Setters */
-  void SetTrackingType(const string& trackingType) {
-    fTrackingType = trackingType;
-  }
+  void SetTrackingType(const string& trackingType) { fTrackingType = trackingType; }
   void SetMergerType(const string& mergerType) { fMergerType = mergerType; }
   void SetFitterType(const string& fitterType) { fFitterType = fitterType; }
 
@@ -184,7 +182,16 @@ private:
   TStopwatch fTrackingWatch;  // stopwatch for tracking
   TStopwatch fMergerWatch;    // stopwatch for merger
 
-  Int_t fEventNo;  // event counter
+  // counters
+  Long64_t fNofTs        = 0;   // timeslice counter
+  Long64_t fNofEvents    = 0;   // event counter
+  Long64_t fNofStsTracks = 0;   // STS tracks
+  Long64_t fNofMuchHits  = 0;   // MUCH hits
+  Long64_t fNofTrdHits   = 0;   // TRD hits
+  Long64_t fNofTofHits   = 0;   // TOF hits
+  Long64_t fNofGlbTracks = 0;   // Global tracks
+  Double_t fTime         = 0.;  // Processing time
+  Long64_t fEventNo;            // event counter (old)
 
   CbmLitFindGlobalTracks(const CbmLitFindGlobalTracks&);
   CbmLitFindGlobalTracks& operator=(const CbmLitFindGlobalTracks&);

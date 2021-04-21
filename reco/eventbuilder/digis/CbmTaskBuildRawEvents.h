@@ -167,6 +167,10 @@ private:
   /** Name of the histogram output file **/
   TString fsOutFileName {"data/HistosEvtWin.root"};
 
+  Int_t fNofTs        = 0;
+  Long64_t fNofEvents = 0;
+  Double_t fTime      = 0.;
+
   ClassDef(CbmTaskBuildRawEvents, 1);
 };
 
