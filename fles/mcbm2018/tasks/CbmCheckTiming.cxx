@@ -530,8 +530,10 @@ void CbmCheckTiming::Exec(Option_t* /*option*/) {
 
   if (fCheckTimeOrdering) CheckTimeOrder();
   if (fCheckInterSystemOffset) CheckInterSystemOffset();
-  if (0 < fNrTs && 0 == fNrTs % fNrTsForFit) LOG(info) << "Fitting  peaks for number of TS = " << fNrTs;
-  if (0 < fNrTs && 0 == fNrTs % fNrTsForFit) FitPeaks(); //Added AR
+  if ((0 < fNrTs) && (fNrTsForFit > 0) && (0 == fNrTs % fNrTsForFit)){
+    LOG(info) << "Fitting  peaks for number of TS = " << fNrTs;
+    FitPeaks();
+  }
   if (0 < fNrTs && 0 == fNrTs % 2000) WriteHistos();
   
   fNrTs++;
@@ -1073,6 +1075,7 @@ void CbmCheckTiming::Finish() {
     LOG(info) << "Total number of Psd out of order digis: " << fNrOfPsdErrors;
     LOG(info) << "Total number of Psd digis: " << fNrOfPsdDigis;
   }
+  FitPeaks();
   WriteHistos();
 
   LOG(info) << Form("Checked %6d Timeslices", fNrTs);
@@ -1099,49 +1102,35 @@ psd_coin_peak_pos = fSelT0PsdDiff->GetMaximumBin()*fSelT0PsdDiff->GetBinWidth(1)
 
 LOG(info) <<  "STS entries = "  <<  fT0StsDiff->GetEntries();
 LOG(info) << "STS-T0 entries if T0 in coincidence with TOF ... " << fSelT0StsDiff->GetEntries();
-//LOG(info) << "            ";
 LOG(info) << "MUCH entries = "  <<  fT0MuchDiff->GetEntries();
 LOG(info) << "MUCH-T0 entries if T0 in coincidence with TOF ... " << fSelT0MuchDiff->GetEntries();
-//LOG(info) << "            ";
 LOG(info) << "TRD entries = "  <<  fT0TrdDiff->GetEntries();
 LOG(info) << "TRD-T0 entries if T0 in coincidence with TOF ... " << fSelT0TrdDiff->GetEntries();
-//LOG(info) << "            ";
 LOG(info) << "TOF entries = "  <<  fT0TofDiff->GetEntries();
-//LOG(info) << "            ";
 LOG(info) << "RICH entries = "  <<  fT0RichDiff->GetEntries();
 LOG(info) << "RICH-T0 entries if T0 in coincidence with TOF ... " << fSelT0RichDiff->GetEntries();
-//LOG(info) << "            ";
 LOG(info) << "PSD entries = "  <<  fT0PsdDiff->GetEntries();
 LOG(info) << "PSD-T0 entries if T0 in coincidence with TOF ... " << fSelT0PsdDiff->GetEntries();
-//LOG(info) << "            ";
-LOG(info) << "            ";
 LOG(info) << "STS peak position [ns] = "<< sts_peak_pos;
 LOG(info) << "STS peak position [ns] if T0 in coincidence with TOF ... "<< sts_coin_peak_pos;
-//LOG(info) << "            ";
 LOG(info) << "MUCH peak position [ns] = "<< much_peak_pos;
 LOG(info) << "MUCH peak position [ns] if T0 in coincidence with TOF ... "<< much_coin_peak_pos;
-//LOG(info) << "            ";
 LOG(info) << "TRD peak position [ns] = "<< trd_peak_pos;
 LOG(info) << "TRD peak position [ns] if T0 in coincidence with TOF ... "<< trd_coin_peak_pos;
-//LOG(info) << "            ";
 LOG(info) << "TOF peak position [ns] = "<< tof_peak_pos;
-//LOG(info) << "            ";
 LOG(info) << "RICH peak position [ns] = "<< rich_peak_pos;
 LOG(info) << "RICH peak position [ns] if T0 in coincidence with TOF ... "<< rich_coin_peak_pos;
-//LOG(info) << "            ";
 LOG(info) << "PSD peak position [ns] = "<< psd_peak_pos;
 LOG(info) << "PSD peak position [ns] if T0 in coincidence with TOF ... "<< psd_coin_peak_pos;
 LOG(info) << "            ";
 
 //Average height of bins...
 trd_average = fT0TrdDiff->Integral()/(fT0TrdDiff->GetNbinsX());
-sts_average = fT0StsDiff->Integral()/(fT0StsDiff->GetNbinsX()); //works
+sts_average = fT0StsDiff->Integral()/(fT0StsDiff->GetNbinsX());
 much_average = fT0MuchDiff->Integral()/(fT0MuchDiff->GetNbinsX());
 tof_average = fT0TofDiff->Integral()/(fT0TofDiff->GetNbinsX());
 rich_average = fT0RichDiff->Integral()/(fT0RichDiff->GetNbinsX());
 psd_average = fT0PsdDiff->Integral()/(fT0PsdDiff->GetNbinsX());
-
-//LOG(info) << "STS average peak height = "<< sts_average;
 
 //Typical width in ns for Gauss
 trd_width0_ns = 120;
@@ -1153,7 +1142,6 @@ psd_width0_ns = 20;
 
 //TRD
 if(trd_average > 0){
-//TCanvas* canvas_trd = new TCanvas ("canvas_trd");
    TF1 *gs_trd = new TF1("gs_trd", "gaus(0)+pol0(3)", trd_peak_pos-2*trd_width0_ns, trd_peak_pos+2*trd_width0_ns);
    gs_trd->SetParameters(0.7*trd_average, trd_peak_pos, trd_width0_ns, trd_average);
    fT0TrdDiff->Fit("gs_trd","R");
@@ -1163,8 +1151,6 @@ if(trd_average > 0){
                 fitresult_trd->GetParameter(1) << ",  "  <<
                 fitresult_trd->GetParameter(2);
    LOG(info)<< "TRD signal/background (p0/p3) " << (fitresult_trd->GetParameter(0))/(fitresult_trd->GetParameter(3));
-//LOG(info)<< "TRD chi2 per DOF= " << (fitresult_trd->GetChisquare())/(fitresult_trd->GetNDF());
-//    fT0TrdDiff->Draw();
 }
 
 //STS
@@ -1231,9 +1217,7 @@ if(psd_average > 0){
                 fitresult_psd->GetParameter(2);
    LOG(info)<< "PSD signal/background (p0/p3) " << (fitresult_psd->GetParameter(0))/(fitresult_psd->GetParameter(3));
 }
-
-
-} //end FitPeaks()
+}
 
 
 
