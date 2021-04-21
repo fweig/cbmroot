@@ -40,7 +40,7 @@ void check_timing(TString fileName,
   timeChecker->SetRichOffsetSearchRange(1000);
   timeChecker->SetPsdOffsetSearchRange(10000);
   timeChecker->SetT0PulserTotLimits(185, 191);
-  timeChecker->SetNrTsForFit(0);
+  timeChecker->SetNrTsForFit(-1); //Positive values: iterative peak fitting 
   if (0 < uRunId)
     timeChecker->SetOutFilename(
       Form("%sHistosTimeCheck_%03u.root", outDir.Data(), uRunId));
