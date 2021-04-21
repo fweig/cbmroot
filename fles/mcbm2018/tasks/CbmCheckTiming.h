@@ -159,7 +159,7 @@ private:
   Double_t rich_average;
   Double_t psd_average;
 
-  /** Typical width from Gauss **/
+  /** Typical width for Gaussian peaks**/
   Double_t trd_width0_ns;
   Double_t sts_width0_ns;
   Double_t much_width0_ns;
@@ -220,7 +220,7 @@ private:
   Int_t fTofOffsetRange  = 1000;
   Int_t fRichOffsetRange = 1000;
   Int_t fPsdOffsetRange  = 1000;
-  Int_t fNrTsForFit = 100;
+  Int_t fNrTsForFit = 200;
   Int_t fBinWidth = 1;
 
   TH1* fT0StsDiff  = nullptr;
