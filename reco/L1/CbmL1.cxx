@@ -625,7 +625,7 @@ InitStatus CbmL1::Init()
       }
     }
 
-    if (fUseTOF) NTOFStation = 3;//fTofDigiBdfPar->GetNbTrackingStations();
+    if (fUseTOF) NTOFStation = 3;  //fTofDigiBdfPar->GetNbTrackingStations();
 
     for (int i = 0; i < (maxTofStation + 1); i++)
       Z_pos[i] = Z_pos[i] / NHits[i];
@@ -835,9 +835,9 @@ InitStatus CbmL1::Init()
 
       geo.push_back(4);
 
-    if (ist == (NMvdStations + NStsStations + NTrdStations + NMuchStations + 0)) geo.push_back(247);
-    if (ist == (NMvdStations + NStsStations + NTrdStations + NMuchStations + 1)) geo.push_back(264);
-    if (ist == (NMvdStations + NStsStations + NTrdStations + NMuchStations + 2)) geo.push_back(280);
+      if (ist == (NMvdStations + NStsStations + NTrdStations + NMuchStations + 0)) geo.push_back(247);
+      if (ist == (NMvdStations + NStsStations + NTrdStations + NMuchStations + 1)) geo.push_back(264);
+      if (ist == (NMvdStations + NStsStations + NTrdStations + NMuchStations + 2)) geo.push_back(280);
 
       geo.push_back(10);  /// TODO: add Tof width dz
       geo.push_back(0);
@@ -949,7 +949,7 @@ InitStatus CbmL1::Init()
       /// Save old global file and folder pointer to avoid messing with FairRoot
       TFile* oldFile     = gFile;
       TDirectory* oldDir = gDirectory;
-      TFile* rlFile  = new TFile(fMvdMatBudgetFileName);
+      TFile* rlFile      = new TFile(fMvdMatBudgetFileName);
       cout << "MVD Material budget file is " << fMvdMatBudgetFileName << ".\n";
       for (int j = 0, iSta = 0; iSta < algo->NMvdStations; iSta++, j++) {
         TString stationNameMvd = stationName;
@@ -1002,7 +1002,7 @@ InitStatus CbmL1::Init()
     /// Save old global file and folder pointer to avoid messing with FairRoot
     TFile* oldFile     = gFile;
     TDirectory* oldDir = gDirectory;
-    TFile* rlFile  = new TFile(fStsMatBudgetFileName);
+    TFile* rlFile      = new TFile(fStsMatBudgetFileName);
     cout << "STS Material budget file is " << fStsMatBudgetFileName << ".\n";
     for (int j = 1, iSta = algo->NMvdStations; iSta < (algo->NMvdStations + NStsStations); iSta++, j++) {
       TString stationNameSts = stationName;
@@ -1049,7 +1049,7 @@ InitStatus CbmL1::Init()
       /// Save old global file and folder pointer to avoid messing with FairRoot
       TFile* oldFile     = gFile;
       TDirectory* oldDir = gDirectory;
-      TFile* rlFile  = new TFile(fMuchMatBudgetFileName);
+      TFile* rlFile      = new TFile(fMuchMatBudgetFileName);
       cout << "Much Material budget file is " << fMuchMatBudgetFileName << ".\n";
       for (int j = 1, iSta = (NStsStations + NMvdStations); iSta < (NStsStations + NMvdStations + NMuchStations);
            iSta++, j++) {
@@ -1108,7 +1108,7 @@ InitStatus CbmL1::Init()
       /// Save old global file and folder pointer to avoid messing with FairRoot
       TFile* oldFile     = gFile;
       TDirectory* oldDir = gDirectory;
-      TFile* rlFile  = new TFile(fTrdMatBudgetFileName);
+      TFile* rlFile      = new TFile(fTrdMatBudgetFileName);
       cout << "TRD Material budget file is " << fTrdMatBudgetFileName << ".\n";
       for (int j = 1, iSta = (NStsStations + NMvdStations + NMuchStations);
            iSta < (NStsStations + NMvdStations + NMuchStations + NTrdStations); iSta++, j++) {
@@ -1168,7 +1168,7 @@ InitStatus CbmL1::Init()
       /// Save old global file and folder pointer to avoid messing with FairRoot
       TFile* oldFile     = gFile;
       TDirectory* oldDir = gDirectory;
-      TFile* rlFile  = new TFile(fTofMatBudgetFileName);
+      TFile* rlFile      = new TFile(fTofMatBudgetFileName);
       cout << "TOF Material budget file is " << fTofMatBudgetFileName << ".\n";
       for (int j = 1, iSta = (NStsStations + NMvdStations + NMuchStations + NTrdStations);
            iSta < (NStsStations + NMvdStations + NMuchStations + NTrdStations + NTOFStation); iSta++, j++) {

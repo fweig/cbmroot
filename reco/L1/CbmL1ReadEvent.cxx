@@ -259,12 +259,12 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
       if (fTofPoints) {
         for (int j = 0; j < fTofHits->GetEntriesFast(); j++) {
-        
-          CbmLink* link   = 0;
+
+          CbmLink* link = 0;
 
           CbmTofHit* mh = L1_DYNAMIC_CAST<CbmTofHit*>(fTofHits->At(j));
-          
-          if( 0x00202806 == mh->GetAddress() || 0x00002806 == mh->GetAddress() ) {
+
+          if (0x00202806 == mh->GetAddress() || 0x00002806 == mh->GetAddress()) {
             ToFPointsMatch.push_back(link);
             continue;
           }
@@ -273,8 +273,8 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
           if (matchHitMatch->GetNofLinks() > 0) {
 
-            link   = (CbmLink*) &matchHitMatch->GetLink(0);
-            
+            link = (CbmLink*) &matchHitMatch->GetLink(0);
+
             CbmTofPoint* pt = (CbmTofPoint*) fTofPoints->Get(link->GetFile(), link->GetEntry(), link->GetIndex());
 
             for (int iLink = 1; iLink < matchHitMatch->GetNofLinks(); iLink++) {
@@ -306,8 +306,8 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
           CbmL1MCPoint MC;
 
           MC.event = iEvent;
-          
-          if (ToFPointsMatch[iMC]==0) continue;
+
+          if (ToFPointsMatch[iMC] == 0) continue;
 
           int eventNr = ToFPointsMatch[iMC]->GetEntry();
 
@@ -473,7 +473,6 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
   if (fVerbose >= 10) cout << "ReadEvent: mvd hits are gotten." << endl;
 
 
-
   Int_t nEntSts = 0;
   if (listStsHits) {
 
@@ -601,7 +600,6 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
     }  // for j
   }    // if listStsHits
-  
 
 
   if (fMuchPixelHits) {
@@ -618,7 +616,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
         th.ExtIndex = j;
         th.Det      = 2;
-        th.id = j + nMvdHits + nStsHits;
+        th.id       = j + nMvdHits + nStsHits;
 
 
         Int_t stationNumber = CbmMuchGeoScheme::GetStationIndex(mh->GetAddress());
@@ -722,7 +720,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
       CbmTrdHit* mh = L1_DYNAMIC_CAST<CbmTrdHit*>(listTrdHits->At(j));
       th.ExtIndex   = j;
       th.Det        = 3;
-      
+
       th.id = j + nMvdHits + nStsHits + nMuchHits;
 
       th.iStation = NMvdStations + mh->GetPlaneId() + NStsStations + NMuchStations;
@@ -813,24 +811,23 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
       TmpHit th;
 
       CbmTofHit* mh = L1_DYNAMIC_CAST<CbmTofHit*>(fTofHits->At(j));
-      
-      
-      
-      th.ExtIndex   = j;
-      th.Det        = 4;
-      
+
+
+      th.ExtIndex = j;
+      th.Det      = 4;
+
       th.id = j + nMvdHits + nStsHits + nMuchHits + nTrdHits;
-      
-      if( 0x00202806 == mh->GetAddress() || 0x00002806 == mh->GetAddress() ) continue;
-      
+
+      if (0x00202806 == mh->GetAddress() || 0x00002806 == mh->GetAddress()) continue;
+
       int sttof = -1;
-      
-      if (fTofDigiBdfPar->GetTrackingStation(mh)==0) sttof = 0;
-      if (fTofDigiBdfPar->GetTrackingStation(mh)==1) sttof = 0;
-      if (fTofDigiBdfPar->GetTrackingStation(mh)==2) sttof = 1;
-      if (fTofDigiBdfPar->GetTrackingStation(mh)==3) sttof = 1;
-      if (fTofDigiBdfPar->GetTrackingStation(mh)==4) sttof = 2;
-      if (fTofDigiBdfPar->GetTrackingStation(mh)==5) sttof = 2;
+
+      if (fTofDigiBdfPar->GetTrackingStation(mh) == 0) sttof = 0;
+      if (fTofDigiBdfPar->GetTrackingStation(mh) == 1) sttof = 0;
+      if (fTofDigiBdfPar->GetTrackingStation(mh) == 2) sttof = 1;
+      if (fTofDigiBdfPar->GetTrackingStation(mh) == 3) sttof = 1;
+      if (fTofDigiBdfPar->GetTrackingStation(mh) == 4) sttof = 2;
+      if (fTofDigiBdfPar->GetTrackingStation(mh) == 5) sttof = 2;
 
       th.iStation = sttof + NMvdStations + NStsStations + NMuchStations + NTrdStations;
 
@@ -869,7 +866,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
       if (fPerformance) {
 
-        if (ToFPointsMatch[j]==0) continue;
+        if (ToFPointsMatch[j] == 0) continue;
 
         //  th.iMC = j+nMvdPoints+nStsPoints+nTrdPoints+nMuchPoints;
 
@@ -906,8 +903,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
   }    // if listTofHits
 
   if (fVerbose >= 10) cout << "ReadEvent: sts hits are gotten." << endl;
-  
-  
+
 
   // sort hits
   int nHits = nMvdHits + nStsHits + nMuchHits + nTrdHits + nTofHits;
@@ -1069,7 +1065,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
     if (fData_->StsHitsStartIndex[i] == static_cast<THitI>(-1))
       fData_->StsHitsStartIndex[i] = fData_->StsHitsStopIndex[i];
   }
-  
+
 
   if (fVerbose >= 10) cout << "ReadEvent: mvd and sts are saved." << endl;
 

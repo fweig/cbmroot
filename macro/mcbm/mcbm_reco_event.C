@@ -355,70 +355,73 @@ void mcbm_reco_event(Int_t nEvents = 10, TString dataset = "data/test", const ch
   // ------------------------------------------------------------------------
   // --------   L1 CA Track Finder    ---------------------------------------
 
-  CbmKF* kalman = new CbmKF();
-  run->AddTask(kalman);
-  CbmL1* l1 = new CbmL1();
+  if (setupName == "mcbm_beam_2020_03") {
 
-  l1->SetmCBMmode(1);
-  l1->SetUseHitErrors(1);
+    CbmKF* kalman = new CbmKF();
+    run->AddTask(kalman);
+    CbmL1* l1 = new CbmL1();
 
-  // --- Material budget file names
-  TString mvdGeoTag;
-  if (setup->GetGeoTag(ECbmModuleId::kMvd, mvdGeoTag)) {
-    TString parFile = gSystem->Getenv("VMCWORKDIR");
-    parFile         = parFile + "/parameters/mvd/mvd_matbudget_" + mvdGeoTag + ".root";
-    std::cout << "Using material budget file " << parFile << std::endl;
-    l1->SetMvdMaterialBudgetFileName(parFile.Data());
+    l1->SetmCBMmode(1);
+    l1->SetUseHitErrors(1);
+
+    // --- Material budget file names
+    TString mvdGeoTag;
+    if (setup->GetGeoTag(ECbmModuleId::kMvd, mvdGeoTag)) {
+      TString parFile = gSystem->Getenv("VMCWORKDIR");
+      parFile         = parFile + "/parameters/mvd/mvd_matbudget_" + mvdGeoTag + ".root";
+      std::cout << "Using material budget file " << parFile << std::endl;
+      l1->SetMvdMaterialBudgetFileName(parFile.Data());
+    }
+    TString stsGeoTag;
+    if (setup->GetGeoTag(ECbmModuleId::kSts, stsGeoTag)) {
+      TString parFile = gSystem->Getenv("VMCWORKDIR");
+      parFile         = parFile + "/parameters/sts/sts_matbudget_v19a.root";
+      std::cout << "Using material budget file " << parFile << std::endl;
+      l1->SetStsMaterialBudgetFileName(parFile.Data());
+    }
+
+    TString muchGeoTag;
+    if (setup->GetGeoTag(ECbmModuleId::kMuch, muchGeoTag)) {
+
+      // --- Parameter file name
+      TString geoTag;
+      setup->GetGeoTag(ECbmModuleId::kMuch, geoTag);
+      Int_t muchFlag = 0;
+      if (geoTag.Contains("mcbm")) muchFlag = 1;
+
+      TString parFile = gSystem->Getenv("VMCWORKDIR");
+      parFile         = parFile + "/parameters/much/much_" + geoTag(0, 4) + "_digi_sector.root";
+      std::cout << "L1: Using parameter file " << parFile << std::endl;
+      l1->SetMuchPar(parFile);
+
+      TString parFile2 = gSystem->Getenv("VMCWORKDIR");
+      parFile2         = parFile2 + "/parameters/much/much_matbudget_v20a_mcbm.root ";
+      std::cout << "Using material budget file " << parFile2 << std::endl;
+      l1->SetMuchMaterialBudgetFileName(parFile2.Data());
+    }
+
+    TString trdGeoTag;
+    if (setup->GetGeoTag(ECbmModuleId::kTrd, trdGeoTag)) {
+      TString parFile = gSystem->Getenv("VMCWORKDIR");
+      parFile         = parFile + "/parameters/trd/trd_matbudget_v20a_mcbm.root";
+      std::cout << "Using material budget file " << parFile << std::endl;
+      l1->SetTrdMaterialBudgetFileName(parFile.Data());
+    }
+
+    TString tofGeoTag;
+    if (setup->GetGeoTag(ECbmModuleId::kTof, tofGeoTag)) {
+      TString parFile = gSystem->Getenv("VMCWORKDIR");
+      parFile         = parFile + "/parameters/tof/tof_matbudget_v20f_mcbm.root";
+      std::cout << "Using material budget file " << parFile << std::endl;
+      l1->SetTofMaterialBudgetFileName(parFile.Data());
+    }
+
+    run->AddTask(l1);
+
+    //   CbmStsTrackFinder* stsTrackFinder = new CbmL1StsTrackFinder();
+    //   FairTask* stsFindTracks           = new CbmStsFindTracksEvents(stsTrackFinder);
+    //   run->AddTask(stsFindTracks);
   }
-  TString stsGeoTag;
-  if (setup->GetGeoTag(ECbmModuleId::kSts, stsGeoTag)) {
-    TString parFile = gSystem->Getenv("VMCWORKDIR");
-    parFile         = parFile + "/parameters/sts/sts_matbudget_v19a.root";
-    std::cout << "Using material budget file " << parFile << std::endl;
-    l1->SetStsMaterialBudgetFileName(parFile.Data());
-  }
-
-  TString muchGeoTag;
-  if (setup->GetGeoTag(ECbmModuleId::kMuch, muchGeoTag)) {
-
-    // --- Parameter file name
-    TString geoTag;
-    setup->GetGeoTag(ECbmModuleId::kMuch, geoTag);
-    Int_t muchFlag = 0;
-    if (geoTag.Contains("mcbm")) muchFlag = 1;
-
-    TString parFile = gSystem->Getenv("VMCWORKDIR");
-    parFile         = parFile + "/parameters/much/much_" + geoTag(0, 4) + "_digi_sector.root";
-    std::cout << "L1: Using parameter file " << parFile << std::endl;
-    l1->SetMuchPar(parFile);
-
-    TString parFile2 = gSystem->Getenv("VMCWORKDIR");
-    parFile2         = parFile2 + "/parameters/much/much_matbudget_v20a_mcbm.root ";
-    std::cout << "Using material budget file " << parFile2 << std::endl;
-    l1->SetMuchMaterialBudgetFileName(parFile2.Data());
-  }
-
-  TString trdGeoTag;
-  if (setup->GetGeoTag(ECbmModuleId::kTrd, trdGeoTag)) {
-    TString parFile = gSystem->Getenv("VMCWORKDIR");
-    parFile         = parFile + "/parameters/trd/trd_matbudget_v20a_mcbm.root";
-    std::cout << "Using material budget file " << parFile << std::endl;
-    l1->SetTrdMaterialBudgetFileName(parFile.Data());
-  }
-
-  TString tofGeoTag;
-  if (setup->GetGeoTag(ECbmModuleId::kTof, tofGeoTag)) {
-    TString parFile = gSystem->Getenv("VMCWORKDIR");
-    parFile         = parFile + "/parameters/tof/tof_matbudget_v20f_mcbm.root";
-    std::cout << "Using material budget file " << parFile << std::endl;
-    l1->SetTofMaterialBudgetFileName(parFile.Data());
-  }
-
-  run->AddTask(l1);
-
-  CbmStsTrackFinder* stsTrackFinder = new CbmL1StsTrackFinder();
-  FairTask* stsFindTracks           = new CbmStsFindTracksEvents(stsTrackFinder);
-  run->AddTask(stsFindTracks);
 
 
   // -----  Parameter database   --------------------------------------------
