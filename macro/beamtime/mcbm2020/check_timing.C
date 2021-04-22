@@ -28,7 +28,7 @@ void check_timing(TString fileName,
   // Define output file for FairMonitor histograms
   //  TString monitorFile{outFile};
   //  monitorFile.ReplaceAll("qa","qa.monitor");
-  FairMonitor::GetMonitor()->EnableMonitor(kTRUE);
+  //  FairMonitor::GetMonitor()->EnableMonitor(kTRUE);
   // ------------------------------------------------------------------------
 
   CbmCheckTiming* timeChecker = new CbmCheckTiming();
