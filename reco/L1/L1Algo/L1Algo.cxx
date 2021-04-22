@@ -199,8 +199,8 @@ void L1Algo::SetData(const vector<L1StsHit>& StsHits_, int nStsStrips_, const ve
   hitToBestTrackF.resize(NhitsGlobal * 2);
   hitToBestTrackB.resize(NhitsGlobal * 2);
 #endif
-  vStripToTrack.resize(NhitsGlobal * 2);
-  vStripToTrackB.resize(NhitsGlobal * 2);
+  vStripToTrack.resize(NStsStrips);
+  vStripToTrackB.resize(NStsStrips);
 
   TripForHit[0].resize(nHits);
   TripForHit[1].resize(nHits);
