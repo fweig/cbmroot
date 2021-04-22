@@ -72,7 +72,15 @@ public:
   void SetRichOffsetSearchRange(Int_t val = 1000) { fRichOffsetRange = val; }
 
   void SetPsdOffsetSearchRange(Int_t val = 1000) { fPsdOffsetRange = val; }
-  void SetNrTsForFit(Int_t val = 200) { fNrTsForFit = val; } 
+
+  void SetNrTsForFit(Int_t val = 200) { fNrTsForFit = val; }
+  void SetTrdPeakWidthNs(Double_t val = 120.) { fTrdPeakWidthNs = val; }
+  void SetStsPeakWidthNs(Double_t val = 30.) { fStsPeakWidthNs = val; }
+  void SetMuchPeakWidthNs(Double_t val = 100.) { fMuchPeakWidthNs = val; }
+  void SetTofPeakWidthNs(Double_t val = 20.) { fTofPeakWidthNs = val; }
+  void SetRichPeakWidthNs(Double_t val = 40.) { fRichPeakWidthNs = val; }
+  void SetPsdPeakWidthNs(Double_t val = 20.) { fPsdPeakWidthNs = val; }
+
   inline void SetT0PulserTotLimits(UInt_t uMin, UInt_t uMax) {
     fuMinTotPulserT0 = uMin;
     fuMaxTotPulserT0 = uMax;
@@ -135,8 +143,7 @@ private:
   const std::vector<CbmTofDigi>* fT0DigiVec = nullptr;  //!
   TClonesArray* fT0DigiArr                  = nullptr;  //!
 
-  
-    /** Peak position of time difference histograms **/
+  /** Peak position of time difference histograms **/
   Double_t trd_peak_pos;
   Double_t sts_peak_pos;
   Double_t much_peak_pos;
@@ -166,7 +173,6 @@ private:
   Double_t tof_width0_ns;
   Double_t rich_width0_ns;
   Double_t psd_width0_ns;
-  
 
   /// Variables to store the previous digi time
   Double_t fPrevTimeT0   = 0.;
@@ -220,7 +226,15 @@ private:
   Int_t fTofOffsetRange  = 1000;
   Int_t fRichOffsetRange = 1000;
   Int_t fPsdOffsetRange  = 1000;
-  Int_t fNrTsForFit = 200;
+
+  Int_t fNrTsForFit         = 200;
+  Double_t fTrdPeakWidthNs  = 120.;
+  Double_t fStsPeakWidthNs  = 30.;
+  Double_t fMuchPeakWidthNs = 100.;
+  Double_t fTofPeakWidthNs  = 20.;
+  Double_t fRichPeakWidthNs = 40.;
+  Double_t fPsdPeakWidthNs  = 20.;
+
   Int_t fBinWidth = 1;
 
   TH1* fT0StsDiff  = nullptr;

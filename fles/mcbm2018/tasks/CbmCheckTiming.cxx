@@ -21,9 +21,9 @@
 #include "FairRunOnline.h"
 
 #include "TClonesArray.h"
+#include "TF1.h"
 #include "TH1.h"
 #include "TH2.h"
-#include "TF1.h"
 #include "THttpServer.h"
 #include <TFile.h>
 
@@ -530,12 +530,11 @@ void CbmCheckTiming::Exec(Option_t* /*option*/) {
 
   if (fCheckTimeOrdering) CheckTimeOrder();
   if (fCheckInterSystemOffset) CheckInterSystemOffset();
-  if ((0 < fNrTs) && (fNrTsForFit > 0) && (0 == fNrTs % fNrTsForFit)){
+  if ((0 < fNrTs) && (fNrTsForFit > 0) && (0 == fNrTs % fNrTsForFit)) {
     LOG(info) << "Fitting peaks for number of TS = " << fNrTs;
     FitPeaks();
   }
   if (0 < fNrTs && 0 == fNrTs % 2000) WriteHistos();
-  
   fNrTs++;
 }
 
@@ -1082,24 +1081,30 @@ void CbmCheckTiming::Finish() {
 }
 
 
-void CbmCheckTiming::FitPeaks() {
+void CbmCheckTiming::FitPeaks()
+{
   // Peak positions for differences wrt T0
-  trd_peak_pos = fT0TrdDiff->GetMaximumBin()*fT0TrdDiff->GetBinWidth(1)+fT0TrdDiff->GetXaxis()->GetXmin();
-  sts_peak_pos = fT0StsDiff->GetMaximumBin()*fT0StsDiff->GetBinWidth(1)+fT0StsDiff->GetXaxis()->GetXmin();
-  much_peak_pos = fT0MuchDiff->GetMaximumBin()*fT0MuchDiff->GetBinWidth(1)+fT0MuchDiff->GetXaxis()->GetXmin();
-  tof_peak_pos = fT0TofDiff->GetMaximumBin()*fT0TofDiff->GetBinWidth(1)+fT0TofDiff->GetXaxis()->GetXmin();
-  rich_peak_pos = fT0RichDiff->GetMaximumBin()*fT0RichDiff->GetBinWidth(1)+fT0RichDiff->GetXaxis()->GetXmin();
-  psd_peak_pos = fT0PsdDiff->GetMaximumBin()*fT0PsdDiff->GetBinWidth(1)+fT0PsdDiff->GetXaxis()->GetXmin();
+  trd_peak_pos  = fT0TrdDiff->GetMaximumBin() * fT0TrdDiff->GetBinWidth(1) + fT0TrdDiff->GetXaxis()->GetXmin();
+  sts_peak_pos  = fT0StsDiff->GetMaximumBin() * fT0StsDiff->GetBinWidth(1) + fT0StsDiff->GetXaxis()->GetXmin();
+  much_peak_pos = fT0MuchDiff->GetMaximumBin() * fT0MuchDiff->GetBinWidth(1) + fT0MuchDiff->GetXaxis()->GetXmin();
+  tof_peak_pos  = fT0TofDiff->GetMaximumBin() * fT0TofDiff->GetBinWidth(1) + fT0TofDiff->GetXaxis()->GetXmin();
+  rich_peak_pos = fT0RichDiff->GetMaximumBin() * fT0RichDiff->GetBinWidth(1) + fT0RichDiff->GetXaxis()->GetXmin();
+  psd_peak_pos  = fT0PsdDiff->GetMaximumBin() * fT0PsdDiff->GetBinWidth(1) + fT0PsdDiff->GetXaxis()->GetXmin();
 
   // Peak positions for differences wrt T0 if coincidence with TOF
-  trd_coin_peak_pos = fSelT0TrdDiff->GetMaximumBin()*fSelT0TrdDiff->GetBinWidth(1)+fSelT0TrdDiff->GetXaxis()->GetXmin();
-  sts_coin_peak_pos = fSelT0StsDiff->GetMaximumBin()*fSelT0StsDiff->GetBinWidth(1)+fSelT0StsDiff->GetXaxis()->GetXmin();
-  much_coin_peak_pos = fSelT0MuchDiff->GetMaximumBin()*fSelT0MuchDiff->GetBinWidth(1)+fSelT0MuchDiff->GetXaxis()->GetXmin();
+  trd_coin_peak_pos =
+    fSelT0TrdDiff->GetMaximumBin() * fSelT0TrdDiff->GetBinWidth(1) + fSelT0TrdDiff->GetXaxis()->GetXmin();
+  sts_coin_peak_pos =
+    fSelT0StsDiff->GetMaximumBin() * fSelT0StsDiff->GetBinWidth(1) + fSelT0StsDiff->GetXaxis()->GetXmin();
+  much_coin_peak_pos =
+    fSelT0MuchDiff->GetMaximumBin() * fSelT0MuchDiff->GetBinWidth(1) + fSelT0MuchDiff->GetXaxis()->GetXmin();
   //tof_coin_peak_pos = fT0TofDiff->GetMaximumBin()*fT0TofDiff->GetBinWidth(1)+fT0TofDiff->GetXaxis()->GetXmin();
-  rich_coin_peak_pos = fSelT0RichDiff->GetMaximumBin()*fSelT0RichDiff->GetBinWidth(1)+fSelT0RichDiff->GetXaxis()->GetXmin();
-  psd_coin_peak_pos = fSelT0PsdDiff->GetMaximumBin()*fSelT0PsdDiff->GetBinWidth(1)+fSelT0PsdDiff->GetXaxis()->GetXmin();
+  rich_coin_peak_pos =
+    fSelT0RichDiff->GetMaximumBin() * fSelT0RichDiff->GetBinWidth(1) + fSelT0RichDiff->GetXaxis()->GetXmin();
+  psd_coin_peak_pos =
+    fSelT0PsdDiff->GetMaximumBin() * fSelT0PsdDiff->GetBinWidth(1) + fSelT0PsdDiff->GetXaxis()->GetXmin();
 
-  LOG(info) <<  "STS entries = " << fT0StsDiff->GetEntries();
+  LOG(info) << "STS entries = " << fT0StsDiff->GetEntries();
   LOG(info) << "STS-T0 entries if T0 in coincidence with TOF = " << fSelT0StsDiff->GetEntries();
   LOG(info) << "MUCH entries = " << fT0MuchDiff->GetEntries();
   LOG(info) << "MUCH-T0 entries if T0 in coincidence with TOF = " << fSelT0MuchDiff->GetEntries();
@@ -1108,7 +1113,7 @@ void CbmCheckTiming::FitPeaks() {
   LOG(info) << "TOF entries = " << fT0TofDiff->GetEntries();
   LOG(info) << "RICH entries = " << fT0RichDiff->GetEntries();
   LOG(info) << "RICH-T0 entries if T0 in coincidence with TOF = " << fSelT0RichDiff->GetEntries();
-  LOG(info) << "PSD entries = "  <<  fT0PsdDiff->GetEntries();
+  LOG(info) << "PSD entries = " << fT0PsdDiff->GetEntries();
   LOG(info) << "PSD-T0 entries if T0 in coincidence with TOF = " << fSelT0PsdDiff->GetEntries();
   LOG(info) << "STS peak position [ns] = " << sts_peak_pos;
   LOG(info) << "STS peak position [ns] if T0 in coincidence with TOF = " << sts_coin_peak_pos;
@@ -1123,106 +1128,91 @@ void CbmCheckTiming::FitPeaks() {
   LOG(info) << "PSD peak position [ns] if T0 in coincidence with TOF = " << psd_coin_peak_pos;
 
   //Average height of bins...
-  trd_average = fT0TrdDiff->Integral()/(fT0TrdDiff->GetNbinsX());
-  sts_average = fT0StsDiff->Integral()/(fT0StsDiff->GetNbinsX());
-  much_average = fT0MuchDiff->Integral()/(fT0MuchDiff->GetNbinsX());
-  tof_average = fT0TofDiff->Integral()/(fT0TofDiff->GetNbinsX());
-  rich_average = fT0RichDiff->Integral()/(fT0RichDiff->GetNbinsX());
-  psd_average = fT0PsdDiff->Integral()/(fT0PsdDiff->GetNbinsX());
-
-  //Typical width in ns for Gauss
-  trd_width0_ns = 120;
-  sts_width0_ns = 30;
-  much_width0_ns = 100;
-  tof_width0_ns = 20;
-  rich_width0_ns = 40;
-  psd_width0_ns = 20;
+  trd_average  = fT0TrdDiff->Integral() / (fT0TrdDiff->GetNbinsX());
+  sts_average  = fT0StsDiff->Integral() / (fT0StsDiff->GetNbinsX());
+  much_average = fT0MuchDiff->Integral() / (fT0MuchDiff->GetNbinsX());
+  tof_average  = fT0TofDiff->Integral() / (fT0TofDiff->GetNbinsX());
+  rich_average = fT0RichDiff->Integral() / (fT0RichDiff->GetNbinsX());
+  psd_average  = fT0PsdDiff->Integral() / (fT0PsdDiff->GetNbinsX());
 
   //TRD
-  if(trd_average > 0){
-    TF1 *gs_trd = new TF1("gs_trd", "gaus(0)+pol0(3)", trd_peak_pos-2*trd_width0_ns, trd_peak_pos+2*trd_width0_ns);
-    gs_trd->SetParameters(0.7*trd_average, trd_peak_pos, trd_width0_ns, trd_average);
-    fT0TrdDiff->Fit("gs_trd","R");
-    TF1 *fitresult_trd = fT0TrdDiff->GetFunction("gs_trd");
-    LOG(info) << "TRD parameters from Gauss fit = " <<
-           fitresult_trd->GetParameter(0) << ",  "  <<
-           fitresult_trd->GetParameter(1) << ",  "  <<
-           fitresult_trd->GetParameter(2);
-    LOG(info)<< "TRD signal/background (p0/p3) = " <<
-      (fitresult_trd->GetParameter(0))/(fitresult_trd->GetParameter(3));
+  if (trd_average > 0) {
+    TF1* gs_trd =
+      new TF1("gs_trd", "gaus(0)+pol0(3)", trd_peak_pos - 2 * fTrdPeakWidthNs, trd_peak_pos + 2 * fTrdPeakWidthNs);
+    gs_trd->SetParameters(0.7 * trd_average, trd_peak_pos, fTrdPeakWidthNs, trd_average);
+    fT0TrdDiff->Fit("gs_trd", "R");
+    TF1* fitresult_trd = fT0TrdDiff->GetFunction("gs_trd");
+    LOG(info) << "TRD parameters from Gauss fit = " << fitresult_trd->GetParameter(0) << ",  "
+              << fitresult_trd->GetParameter(1) << ",  " << fitresult_trd->GetParameter(2);
+    LOG(info) << "TRD signal/background (p0/p3) = "
+              << (fitresult_trd->GetParameter(0)) / (fitresult_trd->GetParameter(3));
   }
 
   //STS
-  if(sts_average > 0){
-    TF1 *gs_sts = new TF1("gs_sts", "gaus(0)+pol0(3)", sts_peak_pos-2*sts_width0_ns, sts_peak_pos+2*sts_width0_ns);
-    gs_sts->SetParameters(sts_average, sts_peak_pos, sts_width0_ns, sts_average);
-    fT0StsDiff->Fit("gs_sts","R");
-    TF1 *fitresult_sts = fT0StsDiff->GetFunction("gs_sts");
-    LOG(info) << "STS parameters from Gauss fit = " <<
-           fitresult_sts->GetParameter(0) << ",  "  <<
-           fitresult_sts->GetParameter(1) << ",  "  <<
-           fitresult_sts->GetParameter(2);
-    LOG(info)<< "STS signal/background (p0/p3) = " <<
-      (fitresult_sts->GetParameter(0))/(fitresult_sts->GetParameter(3));
+  if (sts_average > 0) {
+    TF1* gs_sts =
+      new TF1("gs_sts", "gaus(0)+pol0(3)", sts_peak_pos - 2 * fStsPeakWidthNs, sts_peak_pos + 2 * fStsPeakWidthNs);
+    gs_sts->SetParameters(sts_average, sts_peak_pos, fStsPeakWidthNs, sts_average);
+    fT0StsDiff->Fit("gs_sts", "R");
+    TF1* fitresult_sts = fT0StsDiff->GetFunction("gs_sts");
+    LOG(info) << "STS parameters from Gauss fit = " << fitresult_sts->GetParameter(0) << ",  "
+              << fitresult_sts->GetParameter(1) << ",  " << fitresult_sts->GetParameter(2);
+    LOG(info) << "STS signal/background (p0/p3) = "
+              << (fitresult_sts->GetParameter(0)) / (fitresult_sts->GetParameter(3));
   }
 
   //MUCH
-  if(much_average > 0){
-    TF1 *gs_much = new TF1("gs_much", "gaus(0)+pol0(3)", much_peak_pos-2*much_width0_ns, much_peak_pos+2*much_width0_ns);
-    gs_much->SetParameters(much_average, much_peak_pos, much_width0_ns, much_average);
-    fT0MuchDiff->Fit("gs_much","R");
-    TF1 *fitresult_much = fT0MuchDiff->GetFunction("gs_much");
-    LOG(info) << "MUCH parameters from Gauss fit = " <<
-           fitresult_much->GetParameter(0) << ",  "  <<
-           fitresult_much->GetParameter(1) << ",  "  <<
-           fitresult_much->GetParameter(2);
-    LOG(info)<< "MUCH signal/background (p0/p3) = " <<
-      (fitresult_much->GetParameter(0))/(fitresult_much->GetParameter(3));
+  if (much_average > 0) {
+    TF1* gs_much =
+      new TF1("gs_much", "gaus(0)+pol0(3)", much_peak_pos - 2 * fMuchPeakWidthNs, much_peak_pos + 2 * fMuchPeakWidthNs);
+    gs_much->SetParameters(much_average, much_peak_pos, fMuchPeakWidthNs, much_average);
+    fT0MuchDiff->Fit("gs_much", "R");
+    TF1* fitresult_much = fT0MuchDiff->GetFunction("gs_much");
+    LOG(info) << "MUCH parameters from Gauss fit = " << fitresult_much->GetParameter(0) << ",  "
+              << fitresult_much->GetParameter(1) << ",  " << fitresult_much->GetParameter(2);
+    LOG(info) << "MUCH signal/background (p0/p3) = "
+              << (fitresult_much->GetParameter(0)) / (fitresult_much->GetParameter(3));
   }
 
   //TOF
-  if(tof_average > 0){
-    TF1 *gs_tof = new TF1("gs_tof", "gaus(0)+pol0(3)", tof_peak_pos-2*tof_width0_ns, tof_peak_pos+2*tof_width0_ns);
-    gs_tof->SetParameters(tof_average, tof_peak_pos, tof_width0_ns, tof_average);
-    fT0TofDiff->Fit("gs_tof","R");
-    TF1 *fitresult_tof = fT0TofDiff->GetFunction("gs_tof");
-    LOG(info) << "TOF parameters from Gauss fit = " <<
-           fitresult_tof->GetParameter(0) << ",  "  <<
-           fitresult_tof->GetParameter(1) << ",  "  <<
-           fitresult_tof->GetParameter(2);
-    LOG(info)<< "TOF signal/background (p0/p3) = " <<
-      (fitresult_tof->GetParameter(0))/(fitresult_tof->GetParameter(3));
+  if (tof_average > 0) {
+    TF1* gs_tof =
+      new TF1("gs_tof", "gaus(0)+pol0(3)", tof_peak_pos - 2 * fTofPeakWidthNs, tof_peak_pos + 2 * fTofPeakWidthNs);
+    gs_tof->SetParameters(tof_average, tof_peak_pos, fTofPeakWidthNs, tof_average);
+    fT0TofDiff->Fit("gs_tof", "R");
+    TF1* fitresult_tof = fT0TofDiff->GetFunction("gs_tof");
+    LOG(info) << "TOF parameters from Gauss fit = " << fitresult_tof->GetParameter(0) << ",  "
+              << fitresult_tof->GetParameter(1) << ",  " << fitresult_tof->GetParameter(2);
+    LOG(info) << "TOF signal/background (p0/p3) = "
+              << (fitresult_tof->GetParameter(0)) / (fitresult_tof->GetParameter(3));
   }
 
   //RICH
-  if(rich_average > 0){
-    TF1 *gs_rich = new TF1("gs_rich", "gaus(0)+pol0(3)", rich_peak_pos-2*rich_width0_ns, rich_peak_pos+2*rich_width0_ns);
-    gs_rich->SetParameters(0.5*rich_average, rich_peak_pos, rich_width0_ns, rich_average);
-    fT0RichDiff->Fit("gs_rich","R");
-    TF1 *fitresult_rich = fT0RichDiff->GetFunction("gs_rich");
-    LOG(info) << "RICH parameters from Gauss fit = " <<
-           fitresult_rich->GetParameter(0) << ",  "  <<
-           fitresult_rich->GetParameter(1) << ",  "  <<
-           fitresult_rich->GetParameter(2);
-    LOG(info)<< "RICH signal/background (p0/p3) = " <<
-      (fitresult_rich->GetParameter(0))/(fitresult_rich->GetParameter(3));
+  if (rich_average > 0) {
+    TF1* gs_rich =
+      new TF1("gs_rich", "gaus(0)+pol0(3)", rich_peak_pos - 2 * fRichPeakWidthNs, rich_peak_pos + 2 * fRichPeakWidthNs);
+    gs_rich->SetParameters(0.5 * rich_average, rich_peak_pos, fRichPeakWidthNs, rich_average);
+    fT0RichDiff->Fit("gs_rich", "R");
+    TF1* fitresult_rich = fT0RichDiff->GetFunction("gs_rich");
+    LOG(info) << "RICH parameters from Gauss fit = " << fitresult_rich->GetParameter(0) << ",  "
+              << fitresult_rich->GetParameter(1) << ",  " << fitresult_rich->GetParameter(2);
+    LOG(info) << "RICH signal/background (p0/p3) = "
+              << (fitresult_rich->GetParameter(0)) / (fitresult_rich->GetParameter(3));
   }
 
   //PSD
-  if(psd_average > 0){
-    TF1 *gs_psd = new TF1("gs_psd", "gaus(0)+pol0(3)", psd_peak_pos-2*psd_width0_ns, psd_peak_pos+2*psd_width0_ns);
-    gs_psd->SetParameters(psd_average, psd_peak_pos, psd_width0_ns, psd_average);
-    fT0PsdDiff->Fit("gs_psd","R");
-    TF1 *fitresult_psd = fT0PsdDiff->GetFunction("gs_psd");
-    LOG(info) << "PSD parameters from Gauss fit = " <<
-           fitresult_psd->GetParameter(0) << ",  "  <<
-           fitresult_psd->GetParameter(1) << ",  "  <<
-           fitresult_psd->GetParameter(2);
-    LOG(info)<< "PSD signal/background (p0/p3) = " <<
-      (fitresult_psd->GetParameter(0))/(fitresult_psd->GetParameter(3));
+  if (psd_average > 0) {
+    TF1* gs_psd =
+      new TF1("gs_psd", "gaus(0)+pol0(3)", psd_peak_pos - 2 * fPsdPeakWidthNs, psd_peak_pos + 2 * fPsdPeakWidthNs);
+    gs_psd->SetParameters(psd_average, psd_peak_pos, fPsdPeakWidthNs, psd_average);
+    fT0PsdDiff->Fit("gs_psd", "R");
+    TF1* fitresult_psd = fT0PsdDiff->GetFunction("gs_psd");
+    LOG(info) << "PSD parameters from Gauss fit = " << fitresult_psd->GetParameter(0) << ",  "
+              << fitresult_psd->GetParameter(1) << ",  " << fitresult_psd->GetParameter(2);
+    LOG(info) << "PSD signal/background (p0/p3) = "
+              << (fitresult_psd->GetParameter(0)) / (fitresult_psd->GetParameter(3));
   }
 }
-
 
 void CbmCheckTiming::WriteHistos() {
   TFile* old     = gFile;

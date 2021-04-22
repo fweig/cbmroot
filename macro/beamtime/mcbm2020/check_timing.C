@@ -24,7 +24,7 @@ void check_timing(TString fileName,
 
   FairFileSource* inputSource = new FairFileSource(fileName);
   fRun->SetSource(inputSource);
-  fRun->SetSink(new FairRootFileSink( "SinkFile.root" ));
+  fRun->SetSink(new FairRootFileSink("SinkFile.root"));
   // Define output file for FairMonitor histograms
   //  TString monitorFile{outFile};
   //  monitorFile.ReplaceAll("qa","qa.monitor");
@@ -40,7 +40,7 @@ void check_timing(TString fileName,
   timeChecker->SetRichOffsetSearchRange(1000);
   timeChecker->SetPsdOffsetSearchRange(10000);
   timeChecker->SetT0PulserTotLimits(185, 191);
-  timeChecker->SetNrTsForFit(-1); //Positive values: iterative peak fitting 
+  timeChecker->SetNrTsForFit(-1);  //Positive values: iterative peak fitting
   if (0 < uRunId)
     timeChecker->SetOutFilename(
       Form("%sHistosTimeCheck_%03u.root", outDir.Data(), uRunId));
