@@ -273,17 +273,16 @@ void CbmTrdHitProducer::Exec(Option_t*)
   TStopwatch timerTs;
   timerTs.Start();
 
-  Long64_t nClusters = fClusters->GetEntriesFast();
-  UInt_t hitCounter  = 0;
-  UInt_t nEvents     = 0;
+  Long64_t nClusters  = fClusters->GetEntriesFast();
+  UInt_t hitCounterTs = 0;
+  UInt_t nEvents      = 0;
 
   if (CbmTrdClusterFinder::UseOnlyEventDigis()) {
     for (auto eventobj : *fEvents) {
       timer.Start();
-      hitCounter = 0;
       auto event = static_cast<CbmEvent*>(eventobj);
       if (!event) continue;
-      hitCounter += processClusters(event);
+      hitCounterTs += processClusters(event);
       fNrEvents++;
       nEvents++;
       timer.Stop();
@@ -298,7 +297,7 @@ void CbmTrdHitProducer::Exec(Option_t*)
 
   if (!CbmTrdClusterFinder::UseOnlyEventDigis()) {
     timer.Start();
-    hitCounter = processClusters();
+    hitCounterTs = processClusters();
     fNrEvents++;
     timer.Stop();
     if (CbmTrdClusterFinder::DoDebugPrintouts()) {
@@ -321,7 +320,7 @@ void CbmTrdHitProducer::Exec(Option_t*)
   logOut << fixed << setw(8) << setprecision(1) << right << timerTs.RealTime() * 1000. << " ms] ";
   logOut << "TS " << fNrTs;
   if (CbmTrdClusterFinder::UseOnlyEventDigis()) logOut << ", events " << nEvents;
-  logOut << ", clusters " << nClusters << ", hits " << hitCounter;
+  logOut << ", clusters " << nClusters << ", hits " << hitCounterTs;
   LOG(info) << logOut.str();
   fNrTs++;
 }
