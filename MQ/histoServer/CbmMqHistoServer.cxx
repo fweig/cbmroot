@@ -219,49 +219,45 @@ bool CbmMqHistoServer::ReceiveCanvasConfig(FairMQMessagePtr& msg, int /*index*/)
 bool CbmMqHistoServer::ReceiveConfigAndData(FairMQParts& parts, int /*index*/)
 {
   /// Reject anything but a at least Header + Histo Config + Canvas Config + Histo Data
-  if( parts.Size() < 4 )
-  {
-    if( 1 == parts.Size() )
-    {
+  if (parts.Size() < 4) {
+    if (1 == parts.Size()) {
       /// PAL, 09/04/2021, Debug message catching missed method overlad/polymorphism:
       /// contrary to my expectation, if 2 method bound to same channel, one with FairMQMessagePtr and one with
       /// FairMQParts, all messages go to multipart version and  FairMQMessagePtr is converted to size 1 FairMQParts
       LOG(debug) << "CbmMqHistoServer::ReceiveConfigAndData => only 1 parts found in input, "
-                   << "assuming data only message routed to wrong method!";
-      return ReceiveData( parts.At(0), 0 );
-    } // if( 1 == parts.Size() )
+                 << "assuming data only message routed to wrong method!";
+      return ReceiveData(parts.At(0), 0);
+    }  // if( 1 == parts.Size() )
     LOG(fatal) << "CbmMqHistoServer::ReceiveConfigAndData => Wrong number of parts: " << parts.Size()
                << " instead of at least 4 (Header + Histo Config + Canvas config + Data)!";
-  } // if( parts.Size() < 4 )
+  }  // if( parts.Size() < 4 )
 
-  LOG(info) << "CbmMqHistoServer::ReceiveConfigAndData => Received composed message with "
-            << parts.Size() << " parts";
+  LOG(info) << "CbmMqHistoServer::ReceiveConfigAndData => Received composed message with " << parts.Size() << " parts";
 
   /// Header contains a pair of
   std::pair<uint32_t, uint32_t> pairHeader;
-  Deserialize<BoostSerializer<std::pair<uint32_t, uint32_t>>>(*parts.At(0),pairHeader);
+  Deserialize<BoostSerializer<std::pair<uint32_t, uint32_t>>>(*parts.At(0), pairHeader);
 
   LOG(info) << "CbmMqHistoServer::ReceiveConfigAndData => Received configuration for " << pairHeader.first
             << " histos and " << pairHeader.second << " canvases";
 
-  if( parts.Size() != 1 + pairHeader.first + pairHeader.second + 1 )
-  {
+  if (parts.Size() != 1 + pairHeader.first + pairHeader.second + 1) {
     LOG(fatal) << "CbmMqHistoServer::ReceiveConfigAndData => Number of parts not matching header: " << parts.Size()
                << " instead of " << 1 + pairHeader.first + pairHeader.second + 1;
-  } // if( parts.Size() != 1 + pairHeader.first + pairHeader.second )
+  }  // if( parts.Size() != 1 + pairHeader.first + pairHeader.second )
 
   /// Decode parts for histograms configuration
   for (uint32_t uHisto = 0; uHisto < pairHeader.first; ++uHisto) {
-    ReceiveHistoConfig( parts.At(1 + uHisto), 0 );
-  } // for (UInt_t uHisto = 0; uHisto < pairHeader.first; ++uHisto)
+    ReceiveHistoConfig(parts.At(1 + uHisto), 0);
+  }  // for (UInt_t uHisto = 0; uHisto < pairHeader.first; ++uHisto)
 
   /// Decode parts for histograms configuration
   for (uint32_t uCanv = 0; uCanv < pairHeader.second; ++uCanv) {
-    ReceiveCanvasConfig( parts.At(1 + pairHeader.first + uCanv), 0 );
-  } // for (UInt_t uCanv = 0; uCanv < pairHeader.second; ++uCanv)
+    ReceiveCanvasConfig(parts.At(1 + pairHeader.first + uCanv), 0);
+  }  // for (UInt_t uCanv = 0; uCanv < pairHeader.second; ++uCanv)
 
   /// Decode the histograms data now that the configuration is loaded
-  ReceiveData( parts.At(1 + pairHeader.first + pairHeader.second), 0 );
+  ReceiveData(parts.At(1 + pairHeader.first + pairHeader.second), 0);
 
   return true;
 }

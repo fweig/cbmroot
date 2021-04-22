@@ -386,23 +386,20 @@ bool CbmMQTsaMultiSampler::InitHistograms()
     //         LOG(info) << "Registering  " << vHistos[ uHisto ].first->GetName()
     //                   << " in " << vHistos[ uHisto ].second.data()
     //                   ;
-    fArrayHisto.Add( vHistos[ uHisto ].first );
-    std::pair< std::string, std::string > psHistoConfig( vHistos[ uHisto ].first->GetName(),
-                                                         vHistos[ uHisto ].second );
-    fvpsHistosFolder.push_back( psHistoConfig );
+    fArrayHisto.Add(vHistos[uHisto].first);
+    std::pair<std::string, std::string> psHistoConfig(vHistos[uHisto].first->GetName(), vHistos[uHisto].second);
+    fvpsHistosFolder.push_back(psHistoConfig);
 
     /// Serialize the vector of histo config into a single MQ message
-    FairMQMessagePtr messageHist( NewMessage() );
-    Serialize< BoostSerializer < std::pair< std::string, std::string > > >( *messageHist, psHistoConfig );
+    FairMQMessagePtr messageHist(NewMessage());
+    Serialize<BoostSerializer<std::pair<std::string, std::string>>>(*messageHist, psHistoConfig);
 
     /// Send message to the common histogram config messages queue
-    if( Send( messageHist, fsChannelNameHistosConfig ) < 0 )
-    {
+    if (Send(messageHist, fsChannelNameHistosConfig) < 0) {
       LOG(fatal) << "Problem sending histo config";
-    } // if( Send( messageHist, fsChannelNameHistosConfig ) < 0 )
+    }  // if( Send( messageHist, fsChannelNameHistosConfig ) < 0 )
 
-    LOG(info) << "Config of hist  " << psHistoConfig.first.data()
-              << " in folder " << psHistoConfig.second.data() ;
+    LOG(info) << "Config of hist  " << psHistoConfig.first.data() << " in folder " << psHistoConfig.second.data();
   }  // for( UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto )
 
   /// Create canvas config vector
@@ -411,25 +408,23 @@ bool CbmMQTsaMultiSampler::InitHistograms()
   for (UInt_t uCanv = 0; uCanv < vCanvases.size(); ++uCanv) {
     //         LOG(info) << "Registering  " << vCanvases[ uCanv ].first->GetName()
     //                   << " in " << vCanvases[ uCanv ].second.data();
-    std::string sCanvName = (vCanvases[ uCanv ].first)->GetName();
-    std::string sCanvConf = GenerateCanvasConfigString( vCanvases[ uCanv ].first );
+    std::string sCanvName = (vCanvases[uCanv].first)->GetName();
+    std::string sCanvConf = GenerateCanvasConfigString(vCanvases[uCanv].first);
 
-    std::pair< std::string, std::string > psCanvConfig( sCanvName, sCanvConf );
+    std::pair<std::string, std::string> psCanvConfig(sCanvName, sCanvConf);
 
-    fvpsCanvasConfig.push_back( psCanvConfig );
+    fvpsCanvasConfig.push_back(psCanvConfig);
 
     /// Serialize the vector of canvas config into a single MQ message
-    FairMQMessagePtr messageCan( NewMessage() );
-    Serialize< BoostSerializer < std::pair< std::string, std::string > > >( *messageCan, psCanvConfig );
+    FairMQMessagePtr messageCan(NewMessage());
+    Serialize<BoostSerializer<std::pair<std::string, std::string>>>(*messageCan, psCanvConfig);
 
     /// Send message to the common canvas config messages queue
-    if( Send( messageCan, fsChannelNameCanvasConfig ) < 0 )
-    {
+    if (Send(messageCan, fsChannelNameCanvasConfig) < 0) {
       LOG(fatal) << "Problem sending canvas config";
-    } // if( Send( messageCan, fsChannelNameCanvasConfig ) < 0 )
+    }  // if( Send( messageCan, fsChannelNameCanvasConfig ) < 0 )
 
-    LOG(info) << "Config string of Canvas  " << psCanvConfig.first.data()
-              << " is " << psCanvConfig.second.data() ;
+    LOG(info) << "Config string of Canvas  " << psCanvConfig.first.data() << " is " << psCanvConfig.second.data();
   }  //  for( UInt_t uCanv = 0; uCanv < vCanvases.size(); ++uCanv )
 
   return true;
@@ -437,15 +432,12 @@ bool CbmMQTsaMultiSampler::InitHistograms()
 
 bool CbmMQTsaMultiSampler::ConditionalRun()
 {
-  if (0 < fuPublishFreqTs && 0 == fTSCounter) {
-    InitHistograms();
-  } // if( 0 < fuPublishFreqTs )
+  if (0 < fuPublishFreqTs && 0 == fTSCounter) { InitHistograms(); }  // if( 0 < fuPublishFreqTs )
 
   /// initialize the source (connect to emitter, ...)
-  if( 0 == fTSCounter && nullptr != dynamic_cast< fles::TimesliceMultiSubscriber *>(fSource) )
-  {
-    dynamic_cast< fles::TimesliceMultiSubscriber *>(fSource)->InitTimesliceSubscriber();
-  } // if( 0 == fTSCounter && nullptr != dynamic_cast< fles::TimesliceMultiSubscriber >(fSource) )
+  if (0 == fTSCounter && nullptr != dynamic_cast<fles::TimesliceMultiSubscriber*>(fSource)) {
+    dynamic_cast<fles::TimesliceMultiSubscriber*>(fSource)->InitTimesliceSubscriber();
+  }  // if( 0 == fTSCounter && nullptr != dynamic_cast< fles::TimesliceMultiSubscriber >(fSource) )
 
   auto timeslice = fSource->get();
   if (timeslice) {
@@ -490,7 +482,7 @@ bool CbmMQTsaMultiSampler::ConditionalRun()
         LOG(info) << "Missed Timeslices. Old TS Index was " << fuPrevTsIndex << " New TS Index is " << uTsIndex
                   << " diff is " << uTsIndex - fuPrevTsIndex << " Missing are " << uTsIndex - fuPrevTsIndex - 1;
 
-        if( "" != fsChannelNameMissedTs ) {
+        if ("" != fsChannelNameMissedTs) {
           /// Add missing TS indices to a vector and send it in appropriate channel
           std::vector<uint64_t> vulMissedIndices;
           for (uint64_t ulMiss = fuPrevTsIndex + 1; ulMiss < uTsIndex; ++ulMiss) {
@@ -506,7 +498,7 @@ bool CbmMQTsaMultiSampler::ConditionalRun()
 
             return false;
           }  // if( !SendMissedTsIdx( vulMissedIndices ) )
-        } // if( "" != fsChannelNameMissedTs )
+        }    // if( "" != fsChannelNameMissedTs )
 
         if (0 < fuPublishFreqTs) {
           fhMissedTS->Fill(1, uTsIndex - fuPrevTsIndex - 1);

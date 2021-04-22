@@ -73,7 +73,7 @@ Bool_t CbmMcbm2018Source::Init()
 
     /// Initialize the Multisubscriber
     /// (This restores the original behavior after modifications needed to make the MQ version
-    dynamic_cast< fles::TimesliceMultiSubscriber *>(fSource.get())->InitTimesliceSubscriber();
+    dynamic_cast<fles::TimesliceMultiSubscriber*>(fSource.get())->InitTimesliceSubscriber();
 
     if (!fSource) { LOG(fatal) << "Could not connect to publisher."; }
   }
