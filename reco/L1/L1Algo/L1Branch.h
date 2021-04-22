@@ -32,7 +32,8 @@ struct L1Branch {
     , NHits(0)
     , chi2(0)
     , CandIndex(0)
-    , StsHits() {
+    , StsHits("L1Branch::StsHits")
+  {
     //  L1Branch():Momentum(0),chi2(0),NHits(0),Lengtha(0),ista(0) , StsHits(){
     StsHits.resize(12);
   }

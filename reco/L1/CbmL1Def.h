@@ -65,10 +65,12 @@ typedef int index_type;
 template<typename T>
 class L1Vector : public std::vector<T> {
 public:
-  L1Vector() : std::vector<T>(), fSize(0) {};
-  L1Vector(const unsigned int n) : std::vector<T>(n), fSize(0) {};
-  L1Vector(const unsigned int n, const unsigned int value)
-    : std::vector<T>(n, value), fSize(0) {};
+  L1Vector(const char* name = "no name") : std::vector<T>(), fSize(0), fName(name) {};
+  L1Vector(const char* name, const unsigned int n) : std::vector<T>(n), fSize(0), fName(name) {};
+  L1Vector(const char* name, const unsigned int n, const unsigned int value)
+    : std::vector<T>(n, value)
+    , fSize(0)
+    , fName(name) {};
 
 
   unsigned int Size() const { return fSize; }  // Size() return number
@@ -106,8 +108,8 @@ public:
 #ifdef _OPENMP
 #pragma omp critical
 #endif
-      std::vector<T>::resize(index + 1);
-      std::cout << "Warning: L1Vector autoresize to " << index + 1 << std::endl;
+      std::vector<T>::resize((index + 1) * 2);
+      std::cout << "Warning: L1Vector " << fName << " autoresize to " << (index + 1) * 2 << std::endl;
     }
     if (index >= fSize) fSize = index + 1;
 
@@ -119,8 +121,16 @@ public:
     return std::vector<T>::operator[](index);
   }
 
+  const char* getName()
+  {
+    std::string s = " L1Vector<";
+    s += fName + "> ";
+    return s.data();
+  }
+
 private:
   unsigned int fSize;
+  std::string fName;
 };
 
 #endif  // CbmL1Def_h

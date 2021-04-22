@@ -77,15 +77,15 @@ class L1Algo {
 public:
   //  L1Algo(int nThreads=7):
   L1Algo(int nThreads = 1, int TypicalSize = 200000)
-    : n_g1()
-    , FirstHit()
-    , LastHit()
-    , FirstHitIndex()
-    , LastHitIndex()
-    , Neighbour()
-    , TrackChi2()
-    , vRecoHitsNew()
-    , vTracksNew()
+    : n_g1("L1Algo::n_g1")
+    , FirstHit("L1Algo::FirstHit")
+    , LastHit("L1Algo::LastHit")
+    , FirstHitIndex("L1Algo::FirstHitIndex")
+    , LastHitIndex("L1Algo::LastHitIndex")
+    , Neighbour("L1Algo::Neighbour")
+    , TrackChi2("L1Algo::TrackChi2")
+    , vRecoHitsNew("L1Algo::vRecoHitsNew")
+    , vTracksNew("L1Algo::vTracksNew")
     , NStations(0)
     ,  // number of all detector stations
     NMvdStations(0)
@@ -100,9 +100,9 @@ public:
     , vSFlag(0)  // information of hits station & using hits in tracks(),
     , CATime(0)
     ,  // time of trackfinding
-    vTracks(40000)
+    vTracks("L1Algo::vTracks", 40000)
     ,  // reconstructed tracks
-    vRecoHits(400000)
+    vRecoHits("L1Algo::vRecoHits", 400000)
     ,  // packed hits of reconstructed tracks
     StsHitsStartIndex(nullptr)
     , StsHitsStopIndex(nullptr)
@@ -120,12 +120,12 @@ public:
     ,
 
 #ifdef _OPENMP
-    hitToBestTrackF(TypicalSize * 2)
-    , hitToBestTrackB(TypicalSize * 2)
+    hitToBestTrackF("L1Algo::hitToBestTrackF", TypicalSize * 2)
+    , hitToBestTrackB("L1Algo::hitToBestTrackB", TypicalSize * 2)
     ,
 #endif
-    vStripToTrack(TypicalSize * 2)
-    , vStripToTrackB(TypicalSize * 2)
+    vStripToTrack("L1Algo::vStripToTrack", TypicalSize * 4)
+    , vStripToTrackB("L1Algo::vStripToTrackB", TypicalSize * 4)
     ,
     //sh (),
     fNThreads(nThreads)
