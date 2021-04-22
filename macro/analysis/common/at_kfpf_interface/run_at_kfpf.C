@@ -1,6 +1,5 @@
-void run_at_kfpf(int nEntries               = -1,
-                 const std::string& dataset = "test",
-                 const std::string& ATTree  = "rTree") {
+void run_at_kfpf(int nEntries = -1, const std::string& dataset = "test", const std::string& ATTree = "rTree")
+{
   ATKFParticleFinder man;
   const std::string ATFile = dataset + ".analysistree.root";
   man.InitInput(ATFile.c_str(), ATTree.c_str());
