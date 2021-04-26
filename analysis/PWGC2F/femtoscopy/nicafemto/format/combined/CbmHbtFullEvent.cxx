@@ -7,13 +7,13 @@
  *		Warsaw University of Technology, Faculty of Physics
  */
 #include "CbmHbtFullEvent.h"
+
 #include "CbmHbtEvent.h"
 #include "CbmHbtFullEvent.h"
 
-#include "NicaCbmATMCEvent.h"
+#include "NicaCbmMCEvent.h"
 
-CbmHbtFullEvent::CbmHbtFullEvent()
-  : NicaComplexEvent(new CbmHbtEvent(), new NicaCbmATMCEvent()) {}
+CbmHbtFullEvent::CbmHbtFullEvent() : NicaComplexEvent(new CbmHbtEvent(), new NicaCbmMCEvent()) {}
 
 CbmHbtFullEvent::~CbmHbtFullEvent() {}
 

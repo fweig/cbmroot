@@ -11,13 +11,8 @@ ${NICA_CBM_FORMAT}
 ${KF_HEADERS}
 ${NICA_CBM}/helpers
 ${NICA_CBM}/cuts
-${NICA_CBM}/cuts/rawcuts/trackcuts
-${NICA_CBM}/cuts/rawcuts/paircuts
-${NICA_CBM}/cuts/rawcuts
-${NICA_CBM}/cuts/commoncuts/pair
-${NICA_CBM}/cuts/commoncuts/track
-${NICA_CBM}/cuts/anatreecuts/pair
-${NICA_CBM}/cuts/anatreecuts/track
+${NICA_CBM}/cuts/pair
+${NICA_CBM}/cuts/track
 )
 
 Set(SYSTEM_INCLUDE_DIRECTORIES
@@ -41,21 +36,14 @@ Link_Directories(${LINK_DIRECTORIES})
 
 # List of source files
 set(SRCS
-    rawcuts/paircuts/CbmAvXYCut.cxx
-    rawcuts/paircuts/CbmSailorCowboyCut.cxx
-    rawcuts/trackcuts/CbmHasTofTrackCut.cxx
-    rawcuts/trackcuts/CbmMCPointsCuts.cxx
-    rawcuts/trackcuts/CbmStsFarDetectorHit.cxx
-    rawcuts/trackcuts/CbmStsStationsCut.cxx
-    rawcuts/trackcuts/CbmStsTrackHitsCut.cxx
-    rawcuts/trackcuts/CbmTofTrackCuts.cxx
-    commoncuts/pair/CbmDeltaPhiDeltaThetaCut.cxx
-    commoncuts/pair/CbmStsExitSepCut.cxx
-    commoncuts/track/CbmTofM2PolyCut.cxx
-    anatreecuts/pair/CbmBasicFemtoPairCut.cxx
-    anatreecuts/track/CbmBasicTrackCuts.cxx
-    anatreecuts/track/CbmNHitsCut.cxx
-    anatreecuts/track/CbmTofCut.cxx
+    pair/CbmBasicFemtoPairCut.cxx
+    pair/CbmDeltaPhiDeltaThetaCut.cxx
+    pair/CbmStsExitSepCut.cxx
+    
+    track/CbmBasicTrackCuts.cxx
+    track/CbmNHitsCut.cxx
+    track/CbmTofCut.cxx
+    track/CbmTofM2PolyCut.cxx
 )
 
 Set(HEADERS )

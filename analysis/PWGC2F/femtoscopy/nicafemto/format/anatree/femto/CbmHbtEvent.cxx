@@ -9,26 +9,27 @@
 #include "CbmHbtEvent.h"
 
 #include "CbmHbtTrack.h"
-#include "NicaCbmATEvent.h"
+
+#include "NicaCbmEvent.h"
 
 CbmHbtEvent::CbmHbtEvent() : NicaExpEvent("CbmHbtTrack") {}
 
-Bool_t CbmHbtEvent::IsCompatible(const NicaEvent* non_buffered) const {
-  if (non_buffered->InheritsFrom("NicaCbmATEvent")) return kTRUE;
+Bool_t CbmHbtEvent::IsCompatible(const NicaEvent* non_buffered) const
+{
+  if (non_buffered->InheritsFrom("NicaCbmEvent")) return kTRUE;
   return kFALSE;
 }
 
-void CbmHbtEvent::ShallowCopyTracks(NicaEvent* event) {
+void CbmHbtEvent::ShallowCopyTracks(NicaEvent* event)
+{
   fTracks->Clear();
   fTotalTracksNo = event->GetTotalTrackNo();
   fTracks->ExpandCreateFast(fTotalTracksNo);
   for (int i = 0; i < fTotalTracksNo; i++) {
-    NicaCbmATTrack* from = (NicaCbmATTrack*) event->GetTrack(i);
-    CbmHbtTrack* to      = (CbmHbtTrack*) fTracks->UncheckedAt(i);
+    NicaCbmTrack* from = (NicaCbmTrack*) event->GetTrack(i);
+    CbmHbtTrack* to    = (CbmHbtTrack*) fTracks->UncheckedAt(i);
+    to->ResetTrack(i, this);
     to->CopyData(from);
-    from->SetEvent(this);
-    to->GetLink()->ClearLinks();
-    to->GetLink()->SetLink(0, i);
   }
 }
 

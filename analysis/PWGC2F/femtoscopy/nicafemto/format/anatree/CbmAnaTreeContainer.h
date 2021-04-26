@@ -14,7 +14,6 @@
 #include "AnalysisTree/Detector.hpp"
 #include "AnalysisTree/EventHeader.hpp"
 #include "AnalysisTree/Matching.hpp"
-//#include "Matching.hpp"
 
 class TChain;
 
@@ -23,7 +22,7 @@ struct AnaTreeRecoIds {
   Int_t vtx_dcax, vtx_dcay, vtx_dcaz;
   Int_t vtx_vtxchi2, vtx_chi2;
   Int_t vtx_q, vtx_nhits, vtx_mvdhits;
-
+  Int_t vtx_x, vtx_cx0, vtx_cov1;
   Int_t tof_mass2;
 };
 
@@ -43,13 +42,14 @@ public:
     , fTofHits(nullptr)
     , fVtx2Mc(nullptr) {};
   Bool_t ConnectToTree(TChain* tree);
-  AnalysisTree::EventHeader* GetEventHeader() const { return fEvent; };
-  AnalysisTree::TrackDetector* GetVtxTracks() const { return fVtxTracks; };
-  AnalysisTree::HitDetector* GetTofHits() const { return fTofHits; };
-  AnalysisTree::Matching* GetVtx2ToFMatch() const { return fVtx2Tof; };
-  AnalysisTree::Matching* GetVtx2Sim() const { return fVtx2Mc; };
-  AnaTreeRecoIds& GetFieldIds() { return fVtxIds; }
-  virtual ~CbmAnaTreeRecoSourceContainer() {
+  inline AnalysisTree::EventHeader* GetEventHeader() const { return fEvent; };
+  inline AnalysisTree::TrackDetector* GetVtxTracks() const { return fVtxTracks; };
+  inline AnalysisTree::HitDetector* GetTofHits() const { return fTofHits; };
+  inline AnalysisTree::Matching* GetVtx2ToFMatch() const { return fVtx2Tof; };
+  inline AnalysisTree::Matching* GetVtx2Sim() const { return fVtx2Mc; };
+  inline AnaTreeRecoIds& GetFieldIds() { return fVtxIds; }
+  virtual ~CbmAnaTreeRecoSourceContainer()
+  {
     if (fEvent) {
       delete fEvent;
       delete fVtxTracks;
@@ -66,6 +66,7 @@ struct AnaTreeMcIds {
   Int_t pdg, motherId, mass;
   Int_t event_b;
   Int_t event_psi;
+  Int_t freezX, freezY, freezZ, freezT;
 };
 
 class CbmAnaTreeMcSourceContainer : public TNamed {
@@ -76,10 +77,11 @@ class CbmAnaTreeMcSourceContainer : public TNamed {
 public:
   CbmAnaTreeMcSourceContainer() : fEvent(nullptr), fParticles(nullptr) {};
   Bool_t ConnectToTree(TChain* tree);
-  AnaTreeMcIds& GetFieldIds() { return fIds; };
-  AnalysisTree::EventHeader* GetEventHeader() const { return fEvent; };
-  AnalysisTree::Particles* GetParticles() const { return fParticles; };
-  virtual ~CbmAnaTreeMcSourceContainer() {
+  inline AnaTreeMcIds& GetFieldIds() { return fIds; };
+  inline AnalysisTree::EventHeader* GetEventHeader() const { return fEvent; };
+  inline AnalysisTree::Particles* GetParticles() const { return fParticles; };
+  virtual ~CbmAnaTreeMcSourceContainer()
+  {
     if (fEvent) {
       delete fEvent;
       delete fParticles;

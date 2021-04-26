@@ -11,11 +11,16 @@
 
 #include "NicaDataFormatManager.h"
 
-namespace NicaCbmFormats {
+namespace NicaCbmFormats
+{
 
-  enum class ECbmFormatType { kCbmRoot, kAnaTree, kHbt, kUnknown };
-  ECbmFormatType GetFormatType(Int_t task_id,
-                               ENicaFormatDepth depht = ENicaFormatDepth::kAll);
+  enum class ECbmFormatType
+  {
+    kAnaTree,
+    kHbt,
+    kUnknown
+  };
+  ECbmFormatType GetFormatType(Int_t task_id, ENicaFormatDepth depht = ENicaFormatDepth::kAll);
 
 }  // namespace NicaCbmFormats
 

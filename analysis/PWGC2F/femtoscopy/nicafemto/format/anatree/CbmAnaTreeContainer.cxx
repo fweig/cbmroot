@@ -7,10 +7,13 @@
  *		Warsaw University of Technology, Faculty of Physics
  */
 #include "CbmAnaTreeContainer.h"
-#include "AnalysisTree/Matching.hpp"
+
 #include <TChain.h>
 
-Bool_t CbmAnaTreeRecoSourceContainer::ConnectToTree(TChain* tree) {
+#include "AnalysisTree/Matching.hpp"
+
+Bool_t CbmAnaTreeRecoSourceContainer::ConnectToTree(TChain* tree)
+{
   fEvent     = new AnalysisTree::EventHeader();
   fVtxTracks = new AnalysisTree::TrackDetector();
   fTofHits   = new AnalysisTree::HitDetector();
@@ -35,7 +38,8 @@ Bool_t CbmAnaTreeRecoSourceContainer::ConnectToTree(TChain* tree) {
   return kTRUE;
 }
 
-Bool_t CbmAnaTreeMcSourceContainer::ConnectToTree(TChain* tree) {
+Bool_t CbmAnaTreeMcSourceContainer::ConnectToTree(TChain* tree)
+{
   fEvent     = new AnalysisTree::EventHeader();
   fParticles = new AnalysisTree::Particles();
   if (tree->GetBranch("SimEventHeader") == nullptr) return kFALSE;

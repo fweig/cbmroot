@@ -8,21 +8,20 @@
  */
 
 #include "NicaCbmFormatTypes.h"
+
 #include "NicaDataFormatManager.h"
 #include "NicaEvent.h"
 #include "NicaStd.h"
 
 
-namespace NicaCbmFormats {
+namespace NicaCbmFormats
+{
 
-  ECbmFormatType GetFormatType(Int_t task_id, ENicaFormatDepth depth) {
-    const NicaEvent* ev =
-      NicaDataFormatManager::Instance()->GetFormat(task_id, depth);
-    if (ev->InheritsFrom("NicaCbmEvent")) {
-      return ECbmFormatType::kCbmRoot;
-    } else if (ev->InheritsFrom("NicaCbmATEvent")) {
-      return ECbmFormatType::kAnaTree;
-    } else if (ev->InheritsFrom("CbmHbtEvent")) {
+  ECbmFormatType GetFormatType(Int_t task_id, ENicaFormatDepth depth)
+  {
+    const NicaEvent* ev = NicaDataFormatManager::Instance()->GetFormat(task_id, depth);
+    if (ev->InheritsFrom("NicaCbmEvent")) { return ECbmFormatType::kAnaTree; }
+    else if (ev->InheritsFrom("CbmHbtEvent")) {
       return ECbmFormatType::kHbt;
     }
     return ECbmFormatType::kUnknown;

@@ -8,7 +8,6 @@
  */
 
 #ifndef __CLING__
-
 #include "NicaAnaFile.h"
 #include "NicaFemto1DCF.h"
 #include "NicaFemtoCorrFuncKt.h"

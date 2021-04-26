@@ -34,10 +34,7 @@ public:
   void SetSystem(const std::string& system) { system_ = system; }
   void SetBeamMomentum(float beam_mom) { beam_mom_ = beam_mom; }
 
-  void SetOutputName(std::string file, std::string tree = "aTree")
-  {
-    task_manager_->SetOutputName(std::move(file), std::move(tree));
-  }
+  void SetOutputName(std::string file, std::string tree = "rTree") { task_manager_->SetOutputName(file, tree); }
 
 private:
   void FillDataHeader();

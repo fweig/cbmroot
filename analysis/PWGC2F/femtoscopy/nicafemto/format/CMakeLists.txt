@@ -37,32 +37,11 @@ Link_Directories(${LINK_DIRECTORIES})
 # List of source files
 set(SRCS
 
+
 NicaCbmFormatTypes.cxx
 
-combined/NicaCbmGlobalMCEvent.cxx
-combined/NicaCbmATFullEvent.cxx
+combined/NicaCbmFullEvent.cxx
 combined/CbmHbtFullEvent.cxx
-
-full/NicaCbmEvent.cxx
-full/NicaCbmEventInterface.cxx
-full/NicaCbmTrack.cxx
-full/NicaCbmTrackInterface.cxx
-
-mc/NicaCbmMCEvent.cxx
-mc/NicaCbmMCEventInterface.cxx
-mc/NicaCbmMCTrack.cxx
-mc/NicaCbmMCTrackInterface.cxx
-
-global/NicaCbmGlobalEvent.cxx
-global/NicaCbmGlobalEventInterface.cxx
-global/NicaCbmGlobalTrack.cxx
-global/NicaCbmGlobalTrackInterface.cxx
-
-
-matched/NicaCbmMatchedEvent.cxx
-matched/NicaCbmMatchedEventInterface.cxx
-matched/NicaCbmMatchedTrack.cxx
-matched/NicaCbmMatchedTrackInterface.cxx
 
 unigen/NicaGeneratorReadUnigen.cxx
 unigen/NicaGeneratorWriteUnigen.cxx
@@ -72,14 +51,14 @@ unigen/NicaUnigenEventInterface.cxx
 unigen/NicaUnigenTrack.cxx
 unigen/NicaUnigenTrackInterface.cxx
 
-anatree/mc/NicaCbmATMCEvent.cxx
-anatree/mc/NicaCbmATMCEventInterface.cxx
-anatree/mc/NicaCbmATMCTrack.cxx
-anatree/mc/NicaCbmATMCTrackInterface.cxx
-anatree/reco/NicaCbmATEvent.cxx
-anatree/reco/NicaCbmATEventInterface.cxx
-anatree/reco/NicaCbmATTrack.cxx
-anatree/reco/NicaCbmATTrackInterface.cxx
+anatree/mc/NicaCbmMCEvent.cxx
+anatree/mc/NicaCbmMCEventInterface.cxx
+anatree/mc/NicaCbmMCTrack.cxx
+anatree/mc/NicaCbmMCTrackInterface.cxx
+anatree/reco/NicaCbmEvent.cxx
+anatree/reco/NicaCbmEventInterface.cxx
+anatree/reco/NicaCbmTrack.cxx
+anatree/reco/NicaCbmTrackInterface.cxx
 anatree/femto/CbmHbtTrack.cxx
 anatree/femto/CbmHbtEvent.cxx
 anatree/CbmAnaTreeContainer.cxx

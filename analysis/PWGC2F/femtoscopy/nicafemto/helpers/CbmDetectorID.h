@@ -9,7 +9,7 @@
 #ifndef CBMROOT_NICA_CBM_HELPERS_CBMDETECTORID_H_
 #define CBMROOT_NICA_CBM_HELPERS_CBMDETECTORID_H_
 
-#include "NicaDetectorID.h"
+#include "NicaDataFormat.h"
 
 namespace NicaCbmDetectorID {
   const UInt_t kTOF  = NicaDetectorID::kTOF;

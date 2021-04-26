@@ -7,14 +7,15 @@
  *		Warsaw University of Technology, Faculty of Physics
  */
 #include "NicaUnigenEventInterface.h"
+
 #include "FairRootManager.h"
+
 #include "NicaUnigenTrackInterface.h"
 
-NicaUnigenEventInterface::NicaUnigenEventInterface() : fEvent(NULL) {
-  fEvent = new UEvent();
-}
+NicaUnigenEventInterface::NicaUnigenEventInterface() : fEvent(NULL) { fEvent = new UEvent(); }
 
-void NicaUnigenEventInterface::Compress(Int_t* map, Int_t map_size) {
+void NicaUnigenEventInterface::Compress(Int_t* map, Int_t map_size)
+{
   Int_t track_pos = 0;
   for (int i = 0; i < map_size; i++) {
     Int_t good_track = map[i];
@@ -25,7 +26,8 @@ void NicaUnigenEventInterface::Compress(Int_t* map, Int_t map_size) {
   }
 }
 
-void NicaUnigenEventInterface::CopyData(NicaEventInterface* s) {
+void NicaUnigenEventInterface::CopyData(NicaEventInterface* s)
+{
 #ifdef UNIGEN_OLD
   CopyUnigen(((NicaUnigenEventInterface*) s)->fEvent, fEvent);
 #else
@@ -33,9 +35,8 @@ void NicaUnigenEventInterface::CopyData(NicaEventInterface* s) {
 #endif
 }
 
-void NicaUnigenEventInterface::CopyAndCompress(NicaEventInterface* s,
-                                               Int_t* map,
-                                               Int_t map_size) {
+void NicaUnigenEventInterface::CopyAndCompress(NicaEventInterface* s, Int_t* map, Int_t map_size)
+{
   NicaUnigenEventInterface* ev = (NicaUnigenEventInterface*) s;
   fEvent->SetB(ev->fEvent->GetB());
   fEvent->SetPhi(ev->fEvent->GetPhi());
@@ -55,7 +56,8 @@ void NicaUnigenEventInterface::CopyAndCompress(NicaEventInterface* s,
   }
 }
 
-void NicaUnigenEventInterface::ConnectToTree() {
+void NicaUnigenEventInterface::ConnectToTree()
+{
   FairRootManager* manager = FairRootManager::Instance();
   if (CanDeleteEvent()) {
     if (fEvent) delete fEvent;
@@ -63,7 +65,8 @@ void NicaUnigenEventInterface::ConnectToTree() {
   fEvent = (UEvent*) manager->GetObject("UEvent.");
 }
 
-void NicaUnigenEventInterface::Boost(Double_t vx, Double_t vy, Double_t vz) {
+void NicaUnigenEventInterface::Boost(Double_t vx, Double_t vy, Double_t vz)
+{
   for (int i = 0; i < fEvent->GetNpa(); i++) {
     UParticle* p       = fEvent->GetParticle(i);
     TLorentzVector mom = p->GetMomentum();
@@ -75,28 +78,29 @@ void NicaUnigenEventInterface::Boost(Double_t vx, Double_t vy, Double_t vz) {
   }
 }
 
-NicaUnigenEventInterface::~NicaUnigenEventInterface() {
+NicaUnigenEventInterface::~NicaUnigenEventInterface()
+{
   if (CanDeleteEvent()) {
     if (fEvent) delete fEvent;
   }
 }
 
-NicaTrackInterface* NicaUnigenEventInterface::GetTrackInterface() const {
-  return new NicaUnigenTrackInterface();
-}
+NicaTrackInterface* NicaUnigenEventInterface::GetTrackInterface() const { return new NicaUnigenTrackInterface(); }
 
-void NicaUnigenEventInterface::Register(Bool_t write) {
+void NicaUnigenEventInterface::Register(Bool_t write)
+{
   if (fEvent == NULL) fEvent = new UEvent();
   FairRootManager* manager = FairRootManager::Instance();
   manager->Register("Event", "", (TNamed*) fEvent, write);
 }
 
-void NicaUnigenEventInterface::FillTrackInterface(NicaTrackInterface* track,
-                                                  Int_t index) {
+void NicaUnigenEventInterface::FillTrackInterface(NicaTrackInterface* track, Int_t index)
+{
   track->SetRawTrack(fEvent->GetParticle(index));
 }
 #ifdef UNIGEN_OLD
-void NicaUnigenEventInterface::CopyUnigen(UEvent* from, UEvent* to) {
+void NicaUnigenEventInterface::CopyUnigen(UEvent* from, UEvent* to)
+{
   to->GetParticleList()->Clear();
   to->SetB(from->GetB());
   to->SetPhi(from->GetPhi());

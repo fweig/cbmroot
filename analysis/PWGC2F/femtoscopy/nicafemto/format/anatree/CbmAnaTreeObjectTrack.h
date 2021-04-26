@@ -9,10 +9,11 @@
 #ifndef CBMROOT_ANALYSIS_PWGC2F_FEMTOSCOPY_NICAFEMTO_FORMAT_ANATREE_CBMANATREEOBJECTTRACK_H_
 #define CBMROOT_ANALYSIS_PWGC2F_FEMTOSCOPY_NICAFEMTO_FORMAT_ANATREE_CBMANATREEOBJECTTRACK_H_
 
+#include <TObject.h>
+
 #include "AnalysisTree/Detector.hpp"
 #include "AnalysisTree/Hit.hpp"
 #include "AnalysisTree/Particle.hpp"
-#include <TObject.h>
 
 class CbmAnaTreeObjectTrack : public TObject {
   AnalysisTree::Particle* fTreeParticle;

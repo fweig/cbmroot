@@ -39,6 +39,7 @@ Set(INCLUDE_DIRECTORIES
   ${CBMROOT_SOURCE_DIR}/reco/L1/ParticleFinder
   ${KFParticle_INCLUDE_DIR}
   ${AnalysisTree_INCLUDE_DIR}
+  ${CBMROOT_SOURCE_DIR}/sim/transport/generators/unigen
 )
 
 Include_Directories (${INCLUDE_DIRECTORIES})
@@ -81,6 +82,7 @@ Set(DEPENDENCIES
 	CbmBase 
 	KF 
 	L1 
+	CbmSimGenerators
 	Vc.a)
 Set(DEFINITIONS -DDO_TPCCATRACKER_EFF_PERFORMANCE -DNonhomogeneousField -DCBM -DUSE_TIMERS)
 

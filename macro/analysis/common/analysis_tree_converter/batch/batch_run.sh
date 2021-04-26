@@ -36,4 +36,5 @@ cp $MACRO_DIR/run_analysis_tree_maker.C ./
 root -l -q -b "run_transport.C($N_EVENTS, \"$SETUP\", \"$DATA_SET\", \"$INPUT_FILE\")" >& log_tr_$INDEX.txt
 root -l -q -b "run_digi.C(\"$DATA_SET\", $N_EVENTS, \"$DATA_SET\", -1)" >& log_digi_$INDEX.txt
 root -l -q -b "run_reco_event.C($N_EVENTS, \"$DATA_SET\", \"$SETUP\")" >& log_reco_$INDEX.txt
-root -l -q -b "run_analysis_tree_maker.C(\"$DATA_SET\", \"$SETUP\")" >& log_$INDEX.txt
+root -l -q -b "run_analysis_tree_maker.C(\"$DATA_SET\", \"$SETUP\",\"$INPUT_FILE\")" >& log_$INDEX.txt
+

@@ -2,13 +2,24 @@
 
 #include "CbmMCTrack.h"
 
+#include "FairLogger.h"
+#include "FairMCEventHeader.h"
 #include "FairRootManager.h"
 
-#include "TClonesArray.h"
+#include <TClonesArray.h>
+#include <TDirectory.h>
+#include <TFile.h>
+#include <TRandom.h>
+#include <TString.h>
+#include <TTree.h>
 
-#include <AnalysisTree/TaskManager.hpp>
 #include <cassert>
 #include <vector>
+
+#include "AnalysisTree/TaskManager.hpp"
+#include "UEvent.h"
+#include "UParticle.h"
+#include "URun.h"
 
 ClassImp(CbmSimTracksConverter)
 
@@ -16,8 +27,11 @@ ClassImp(CbmSimTracksConverter)
 {
 
   assert(!out_branch_.empty());
-  auto* ioman    = FairRootManager::Instance();
+  auto* ioman = FairRootManager::Instance();
+
+
   cbm_mc_tracks_ = (TClonesArray*) ioman->GetObject("MCTrack");
+  cbm_header_    = (FairMCEventHeader*) ioman->GetObject(fEventHeaderBranch);
 
   AnalysisTree::BranchConfig sim_particles_branch(out_branch_, AnalysisTree::DetType::kParticle);
   sim_particles_branch.AddField<int>("mother_id", "id of mother particle, -1 for primaries");
@@ -25,6 +39,40 @@ ClassImp(CbmSimTracksConverter)
   sim_particles_branch.AddField<int>("geant_process_id", "");
   sim_particles_branch.AddFields<int>({"n_hits_mvd", "n_hits_sts", "n_hits_trd"}, "Number of hits in the detector");
 
+  //TDirectory* currentDir = gDirectory;
+  if (fUnigenFile.Length() > 0) {
+    fFile = new TFile(fUnigenFile, "READ");
+    fFile->Print();
+    if (fFile->IsOpen()) {
+      fTree = (TTree*) fFile->Get("events");
+      if (fTree) fUseUnigen = kTRUE;
+      fTree->SetBranchAddress("event", &fUnigenEvent);
+      URun* run = dynamic_cast<URun*>(fFile->Get("run"));
+      if (run == nullptr) {
+        LOG(error) << "CbmSimTracksConverter: No run description in urqmd file!";
+        delete fFile;
+        fFile      = nullptr;
+        fUseUnigen = kFALSE;
+      }
+      else {
+        Double_t mProt = 0.938272;
+        Double_t pTarg = run->GetPTarg();  // target momentum per nucleon
+        Double_t pProj = run->GetPProj();  // projectile momentum per nucleon
+        Double_t eTarg = TMath::Sqrt(pProj * pProj + mProt * mProt);
+        fBetaCM        = pTarg / eTarg;
+      }
+    }
+  }
+  else {
+    LOG(info) << "lack of unigen file" << fUnigenFile;
+  }
+
+  if (fUseUnigen) {
+    sim_particles_branch.AddField<float>("xfreez", "x freezout coordinate fm/c");
+    sim_particles_branch.AddField<float>("yfreez", "y freezout coordinate fm/c");
+    sim_particles_branch.AddField<float>("zfreez", "z freezout coordinate fm/c");
+    sim_particles_branch.AddField<float>("tfreez", "t freezout coordinate fm/c");
+  }
   auto* man = AnalysisTree::TaskManager::GetInstance();
   man->AddBranch(out_branch_, sim_tracks_, sim_particles_branch);
 }
@@ -34,6 +82,12 @@ void CbmSimTracksConverter::Exec()
   assert(cbm_mc_tracks_);
   out_indexes_map_.clear();
 
+  if (fUseUnigen) {
+    fTree->GetEntry(fEntry++);
+    const Double_t unigen_phi = fUnigenEvent->GetPhi();
+    const Double_t mc_phi     = cbm_header_->GetRotZ();
+    fDeltaPhi                 = mc_phi - unigen_phi;
+  }
   sim_tracks_->ClearChannels();
   auto* out_config_  = AnalysisTree::TaskManager::GetInstance()->GetConfig();
   const auto& branch = out_config_->GetBranchConfig(out_branch_);
@@ -45,6 +99,15 @@ void CbmSimTracksConverter::Exec()
   const int icbm_id    = branch.GetFieldId("cbmroot_id");
 
   sim_tracks_->Reserve(nMcTracks);
+  int freezX = 0, freezY = 0, freezZ = 0, freezT = 0;
+  if (fUseUnigen) {
+    freezX = out_config_->GetBranchConfig(sim_tracks_->GetId()).GetFieldId("xfreez");
+    freezY = out_config_->GetBranchConfig(sim_tracks_->GetId()).GetFieldId("yfreez");
+    freezZ = out_config_->GetBranchConfig(sim_tracks_->GetId()).GetFieldId("zfreez");
+    freezT = out_config_->GetBranchConfig(sim_tracks_->GetId()).GetFieldId("tfreez");
+  }
+
+  const Double_t nsTofmc = 1. / (0.3356 * 1E-15);
 
   for (int iMcTrack = 0; iMcTrack < nMcTracks; ++iMcTrack) {
     const auto* mctrack = (CbmMCTrack*) cbm_mc_tracks_->At(iMcTrack);
@@ -74,6 +137,44 @@ void CbmSimTracksConverter::Exec()
         track.SetField(int(p->second), imother_id);
       }
     }
+    if (fUseUnigen) {
+      if (mctrack->GetMotherId() == -1) {          // is primary
+        if (iMcTrack >= fUnigenEvent->GetNpa()) {  // skip embedded (?) tracks
+          track.SetField(float(gRandom->Gaus(0, 200)), freezX);
+          track.SetField(float(gRandom->Gaus(0, 200)), freezY);
+          track.SetField(float(gRandom->Gaus(0, 200)), freezZ);
+          track.SetField(float(gRandom->Gaus(0, 200)), freezT);
+        }
+        else {
+          UParticle* p            = fUnigenEvent->GetParticle(iMcTrack);
+          TLorentzVector boostedX = p->GetPosition();
+          boostedX.Boost(0, 0, -fBetaCM);
+          boostedX.RotateZ(fDeltaPhi);
+          track.SetField(float(boostedX.X()), freezX);
+          track.SetField(float(boostedX.Y()), freezY);
+          track.SetField(float(boostedX.Z()), freezZ);
+          track.SetField(float(boostedX.T()), freezT);
+        }
+      }
+      else {
+        Double_t x = mctrack->GetStartX() - cbm_header_->GetX();
+        Double_t y = mctrack->GetStartY() - cbm_header_->GetY();
+        Double_t z = mctrack->GetStartZ() - cbm_header_->GetZ();
+        Double_t t = mctrack->GetStartT() - cbm_header_->GetT();
+
+        track.SetField(float(x * 1.E+13), freezX);
+        track.SetField(float(y * 1.E+13), freezY);
+        track.SetField(float(z * 1.E+13), freezZ);
+        track.SetField(float(t * nsTofmc), freezT);
+      }
+    }
   }
 }
-CbmSimTracksConverter::~CbmSimTracksConverter() { delete sim_tracks_; };
+CbmSimTracksConverter::~CbmSimTracksConverter()
+{
+  delete sim_tracks_;
+  if (fFile) {
+    // fFile->Close();
+    // delete fFile;
+  }
+};

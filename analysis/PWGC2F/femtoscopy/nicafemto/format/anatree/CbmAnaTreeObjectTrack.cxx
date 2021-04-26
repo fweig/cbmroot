@@ -8,18 +8,19 @@
  */
 #include "CbmAnaTreeObjectTrack.h"
 
-CbmAnaTreeObjectTrack::CbmAnaTreeObjectTrack()
-  : fTreeParticle(nullptr), fTreeTrack(nullptr), fTreeHit(nullptr) {}
+CbmAnaTreeObjectTrack::CbmAnaTreeObjectTrack() : fTreeParticle(nullptr), fTreeTrack(nullptr), fTreeHit(nullptr) {}
 
 CbmAnaTreeObjectTrack::~CbmAnaTreeObjectTrack() {}
 
 CbmAnaTreeObjectTrack::CbmAnaTreeObjectTrack(const CbmAnaTreeObjectTrack& other)
   : fTreeParticle(other.fTreeParticle)
   , fTreeTrack(other.fTreeTrack)
-  , fTreeHit(other.fTreeTrack) {}
+  , fTreeHit(other.fTreeTrack)
+{
+}
 
-CbmAnaTreeObjectTrack& CbmAnaTreeObjectTrack::
-operator=(const CbmAnaTreeObjectTrack& other) {
+CbmAnaTreeObjectTrack& CbmAnaTreeObjectTrack::operator=(const CbmAnaTreeObjectTrack& other)
+{
   if (this == &other) return *this;
   fTreeParticle = other.fTreeParticle;
   fTreeTrack    = other.fTreeTrack;

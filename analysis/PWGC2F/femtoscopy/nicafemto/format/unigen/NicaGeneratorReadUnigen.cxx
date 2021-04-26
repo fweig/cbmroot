@@ -9,13 +9,14 @@
 
 #include "NicaGeneratorReadUnigen.h"
 
+#include <TString.h>
+
 #include "NicaGeneratorParametersArray.h"
 #include "NicaGeneratorRead.h"
 
-#include <TString.h>
 
-
-Int_t NicaGeneratorReadUnigen::ReadEvent() {
+Int_t NicaGeneratorReadUnigen::ReadEvent()
+{
   Int_t status = NicaGeneratorReadTree::ReadEvent();
   if (status != EventOk()) return status;
   fEventParameters->SetInt(fInEvent->GetEventNr(), fEventNr_Id);
@@ -48,7 +49,8 @@ Int_t NicaGeneratorReadUnigen::ReadEvent() {
   return EventOk();
 }
 
-Int_t NicaGeneratorReadUnigen::Reopen() {
+Int_t NicaGeneratorReadUnigen::Reopen()
+{
   Int_t stat = NicaGeneratorReadTree::Reopen();
   if (stat != FileOk()) { return stat; }
   if (fInEvent == NULL) fInEvent = new UEvent();
@@ -57,8 +59,7 @@ Int_t NicaGeneratorReadUnigen::Reopen() {
   return FileOk();
 }
 
-NicaGeneratorReadUnigen::NicaGeneratorReadUnigen(TString name,
-                                                 Bool_t multi_mode)
+NicaGeneratorReadUnigen::NicaGeneratorReadUnigen(TString name, Bool_t multi_mode)
   : NicaGeneratorReadTree(name, "events", "event", multi_mode)
   , fInEvent(NULL)
   , fStatus_Id(0)
@@ -75,11 +76,13 @@ NicaGeneratorReadUnigen::NicaGeneratorReadUnigen(TString name,
   , fWeight_Id(0)
   , fENes_Id(0)
   , fEStepNr_Id(0)
-  , fEStepT_Id(0) {
+  , fEStepT_Id(0)
+{
   fInEvent = new UEvent();
 }
 
-void NicaGeneratorReadUnigen::CheckParameters() {
+void NicaGeneratorReadUnigen::CheckParameters()
+{
   NicaGeneratorRead::CheckParameters();
   fStatus_Id      = CheckParameter("status");
   fParent_Id      = CheckParameter("parent");

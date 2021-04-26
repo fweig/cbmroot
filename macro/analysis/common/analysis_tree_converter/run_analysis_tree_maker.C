@@ -1,6 +1,7 @@
 
-void run_analysis_tree_maker(TString dataSet   = "../../../run/test",
-                             TString setupName = "sis100_electron") {
+void run_analysis_tree_maker(TString dataSet = "../../../run/test", TString setupName = "sis100_electron",
+                             TString unigenFile = "")
+{
   const std::string system = "Au+Au";  // TODO can we read it automatically?
   const float beam_mom     = 12.;
 
@@ -15,13 +16,13 @@ void run_analysis_tree_maker(TString dataSet   = "../../../run/test",
   // ------------------------------------------------------------------------
 
   // -----   In- and output file names   ------------------------------------
-  TString traFile = dataSet + ".tra.root";
-  TString rawFile = dataSet + ".event.raw.root";
-  TString recFile = dataSet + ".rec.root";
-  TString geoFile = dataSet + ".geo.root";
-  TString parFile = dataSet + ".par.root";
-  const std::string outFile =
-    dataSet.Data() + std::string(".analysistree.root");
+  TString traFile           = dataSet + ".tra.root";
+  TString rawFile           = dataSet + ".event.raw.root";
+  TString recFile           = dataSet + ".rec.root";
+  TString geoFile           = dataSet + ".geo.root";
+  TString parFile           = dataSet + ".par.root";
+  const std::string outFile = dataSet.Data() + std::string(".analysistree.root");
+  if (unigenFile.Length() == 0) { unigenFile = srcDir + "/input/urqmd.auau.10gev.centr.root"; }
   // ------------------------------------------------------------------------
 
   // -----   Remove old CTest runtime dependency file  ----------------------
@@ -32,8 +33,7 @@ void run_analysis_tree_maker(TString dataSet   = "../../../run/test",
 
   // -----   Load the geometry setup   -------------------------------------
   std::cout << std::endl;
-  const TString setupFile =
-    srcDir + "/geometry/setup/setup_" + setupName + ".C";
+  const TString setupFile  = srcDir + "/geometry/setup/setup_" + setupName + ".C";
   const TString setupFunct = "setup_" + setupName + "()";
 
   std::cout << "-I- " << myName << ": Loading macro " << setupFile << std::endl;
@@ -51,9 +51,9 @@ void run_analysis_tree_maker(TString dataSet   = "../../../run/test",
   auto* parFileList = new TList();
 
   std::cout << "-I- " << myName << ": Using raw file " << rawFile << std::endl;
-  std::cout << "-I- " << myName << ": Using parameter file " << parFile
-            << std::endl;
+  std::cout << "-I- " << myName << ": Using parameter file " << parFile << std::endl;
   std::cout << "-I- " << myName << ": Using reco file " << recFile << std::endl;
+  if (unigenFile.Length() > 0) std::cout << "-I- " << myName << ": Using unigen file " << unigenFile << std::endl;
 
   // -----   Reconstruction run   -------------------------------------------
   auto* run         = new FairRunAna();
@@ -82,14 +82,12 @@ void run_analysis_tree_maker(TString dataSet   = "../../../run/test",
   auto* l1 = new CbmL1("CbmL1", 1, 3);
   if (setup->IsActive(ECbmModuleId::kMvd)) {
     setup->GetGeoTag(ECbmModuleId::kMvd, geoTag);
-    const TString mvdMatBudgetFileName =
-      srcDir + "/parameters/mvd/mvd_matbudget_" + geoTag + ".root";
+    const TString mvdMatBudgetFileName = srcDir + "/parameters/mvd/mvd_matbudget_" + geoTag + ".root";
     l1->SetMvdMaterialBudgetFileName(mvdMatBudgetFileName.Data());
   }
   if (setup->IsActive(ECbmModuleId::kSts)) {
     setup->GetGeoTag(ECbmModuleId::kSts, geoTag);
-    const TString stsMatBudgetFileName =
-      srcDir + "/parameters/sts/sts_matbudget_" + geoTag + ".root";
+    const TString stsMatBudgetFileName = srcDir + "/parameters/sts/sts_matbudget_" + geoTag + ".root";
     l1->SetStsMaterialBudgetFileName(stsMatBudgetFileName.Data());
   }
   run->AddTask(l1);
@@ -97,8 +95,7 @@ void run_analysis_tree_maker(TString dataSet   = "../../../run/test",
   // --- TRD pid tasks
   if (setup->IsActive(ECbmModuleId::kTrd)) {
 
-    CbmTrdSetTracksPidLike* trdLI =
-      new CbmTrdSetTracksPidLike("TRDLikelihood", "TRDLikelihood");
+    CbmTrdSetTracksPidLike* trdLI = new CbmTrdSetTracksPidLike("TRDLikelihood", "TRDLikelihood");
     trdLI->SetUseMCInfo(kTRUE);
     trdLI->SetUseMomDependence(kTRUE);
     run->AddTask(trdLI);
@@ -116,10 +113,9 @@ void run_analysis_tree_maker(TString dataSet   = "../../../run/test",
 
   man->AddTask(new CbmSimEventHeaderConverter("SimEventHeader"));
   man->AddTask(new CbmRecEventHeaderConverter("RecEventHeader"));
-  man->AddTask(new CbmSimTracksConverter("SimParticles"));
+  man->AddTask(new CbmSimTracksConverter("SimParticles", "", unigenFile.Data()));
 
-  CbmStsTracksConverter* taskCbmStsTracksConverter =
-    new CbmStsTracksConverter("VtxTracks", "SimParticles");
+  CbmStsTracksConverter* taskCbmStsTracksConverter = new CbmStsTracksConverter("VtxTracks", "SimParticles");
   taskCbmStsTracksConverter->SetIsWriteKFInfo();
   taskCbmStsTracksConverter->SetIsReproduceCbmKFPF();
   man->AddTask(taskCbmStsTracksConverter);

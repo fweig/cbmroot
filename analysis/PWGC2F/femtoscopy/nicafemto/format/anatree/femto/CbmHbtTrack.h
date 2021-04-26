@@ -10,8 +10,10 @@
 #define CBMHBTTRACK_H_
 
 #include "CbmHelix.h"
-#include "NicaExpTrack.h"
+
 #include <TVector3.h>
+
+#include "NicaExpTrack.h"
 
 
 class CbmHbtTrack : public NicaExpTrack {

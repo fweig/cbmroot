@@ -1,3 +1,4 @@
+
 /*
  * hbt_anatree.C
  *
@@ -10,12 +11,6 @@
  * example macro for pi-pi analysis
  */
 #ifndef __CLING__
-#include <FairLogger.h>
-#include <FairRunAna.h>
-#include <RtypesCore.h>
-#include <TString.h>
-#include <iostream>
-
 #include "CbmAnaTreeSource.h"
 #include "CbmBasicFemtoPairCut.h"
 #include "CbmBasicTrackCuts.h"
@@ -27,10 +22,23 @@
 #include "CbmStsExitSepCut.h"
 #include "CbmStsTrackHitsCut.h"
 #include "CbmTofTrackCuts.h"
+#include "data/CbmDefs.h"
+
 #include "FairFileSource.h"
 #include "FairParRootFileIo.h"
-#include "NicaCbmATFullEvent.h"
+#include <FairLogger.h>
+#include <FairRunAna.h>
+
+#include "TFile.h"
+#include <RtypesCore.h>
+#include <TStopwatch.h>
+#include <TString.h>
+#include <TTimer.h>
+
+#include <iostream>
+
 #include "NicaCbmFirstTask.h"
+#include "NicaCbmFullEvent.h"
 #include "NicaCbmGlobalMCEvent.h"
 #include "NicaCbmMCEvent.h"
 #include "NicaCut.h"
@@ -64,11 +72,6 @@
 #include "NicaTrackPtCut.h"
 #include "NicaTrackPzCut.h"
 #include "NicaTwoTrackFemtoQinvCut.h"
-#include "TFile.h"
-#include <TStopwatch.h>
-#include <TTimer.h>
-
-#include "data/CbmDefs.h"
 using namespace std;
 #endif
 
@@ -78,11 +81,11 @@ using namespace std;
 
 #define KRONOS
 
-void SetEventCut(NicaEventAna* task) {
+void SetEventCut(NicaEventAna* task)
+{
   NicaEventVertexCut vtx;
   task->AddCut(vtx, "im");
-  NicaCutMonitorXY vtxM(
-    vtx.CutName("im"), vtx.Z(), vtx.CutName("im"), vtx.Rt());
+  NicaCutMonitorXY vtxM(vtx.CutName("im"), vtx.Z(), vtx.CutName("im"), vtx.Rt());
   vtxM.SetXaxis(100, 0, 1);
   vtxM.SetYaxis(200, 0, 2);
   task->AddCutMonitor(vtxM);
@@ -97,7 +100,8 @@ void SetEventCut(NicaEventAna* task) {
   task->AddCutMonitor(phiM);
   task->AddCutMonitor(bM);
 }
-void SetTrackCuts(NicaEventAna* task, Bool_t mc = kTRUE) {
+void SetTrackCuts(NicaEventAna* task, Bool_t mc = kTRUE)
+{
   CbmBasicTrackCuts basic;
   basic.SetCharge(-1);
   basic.SetM2(-0.1, 0.1);
@@ -110,7 +114,8 @@ void SetTrackCuts(NicaEventAna* task, Bool_t mc = kTRUE) {
   if (mc) { task->AddCut(pid, "im"); }
 }
 
-void SetPairCuts(NicaTwoTrackAna* task) {
+void SetPairCuts(NicaTwoTrackAna* task)
+{
   CbmBasicFemtoPairCut combinedCut;
   combinedCut.SetR(25);
   combinedCut.SetDeltaPhiStarCut(-0.01, 0.01);
@@ -122,9 +127,8 @@ void SetPairCuts(NicaTwoTrackAna* task) {
   task->AddCutsAndMonitors(combinedCut);
 }
 
-void hbt_anatree(
-  TString inFile  = "/media/daniel/WD/anatree/1.analysistree.root",
-  TString outFile = "test2.root") {
+void hbt_anatree(TString inFile = "/media/daniel/WD/anatree/1.analysistree.root", TString outFile = "test2.root")
+{
   FairRunAna* ana = new FairRunAna();
   //  inFile = "/home/daniel/temp/00001.mini.root";
   FairSource* source = new CbmAnaTreeSource(inFile);
@@ -137,8 +141,7 @@ void hbt_anatree(
   log->SetLogVerbosityLevel("high");
 
   NicaFemtoBasicAna* task = new NicaFemtoBasicAna();
-  task->SetCorrFctn(NicaFemtoCorrFuncKt(
-    NicaFemto1DCF("cf", 100, 0, 1, ENicaFemtoKinematics::kLCMS), {0, 10}));
+  task->SetCorrFctn(NicaFemtoCorrFuncKt(NicaFemto1DCF("cf", 100, 0, 1, ENicaFemtoKinematics::kLCMS), {0, 10}));
   task->SetOption(NicaTwoTrackAna::BackgroundOptionMixed());
   task->SetWeight(NicaFemtoWeightGenerator());
   task->SetPdg(211);
@@ -148,11 +151,11 @@ void hbt_anatree(
    * speed up analysis by using compression and special HBT format
    * the sts exit distance and phi* are calculated once per track
    */
-  task->SetFormat(new NicaCbmATFullEvent(), ENicaFormatDepth::kNonBuffered);
+  task->SetFormat(new NicaCbmFullEvent(), ENicaFormatDepth::kNonBuffered);
   task->SetFormat(new CbmHbtFullEvent(), ENicaFormatDepth::kBuffered);
   task->SetFormatOption(NicaEventAna::EFormatOption::kCompress);
 #else
-  task->SetFormat(new NicaCbmATFullEvent());
+  task->SetFormat(new NicaCbmFullEvent());
 #endif
   SetEventCut(task);
   SetTrackCuts(task);

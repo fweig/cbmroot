@@ -11,13 +11,17 @@
 /**
  *class  only for reading pure unigen files
  */
-#include "FairFileSource.h"
+
+
+#include <FairFileSource.h>
+
 #include <TChain.h>
 
 #include "UEvent.h"
+
 class NicaUnigenSource : public FairSource {
   TChain* fUnigenChain;
-  TString fFileName;
+  std::vector<TString> fFileName;
   UEvent* fEvent;
 
 public:
@@ -35,6 +39,7 @@ public:
 	 * @param source
 	 */
   NicaUnigenSource(const NicaUnigenSource& source) = delete;
+  void AddFile(TString name) { fFileName.push_back(name); };
   NicaUnigenSource& operator=(const NicaUnigenSource&) = delete;
   virtual void Boost(Double_t vx, Double_t vy, Double_t vz);
   virtual ~NicaUnigenSource();

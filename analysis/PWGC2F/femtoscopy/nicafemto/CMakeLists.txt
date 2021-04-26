@@ -28,17 +28,11 @@ set(NICA_CBM_FORMAT
 	${CBMDATA_DIR}/mvd
 	${NICA_CBM}/format
 	${NICA_CBM}/format/combined
-	${NICA_CBM}/format/full
-	${NICA_CBM}/format/global
-	${NICA_CBM}/format/matched
-	${NICA_CBM}/format/mc
 	${NICA_CBM}/format/anatree
 	${NICA_CBM}/format/anatree/reco
 	${NICA_CBM}/format/anatree/mc
 	${NICA_CBM}/format/anatree/femto
 	${NICA_CBM}/format/unigen
-	${NICA_CBM}/format/hits
-	${NICA_CBM}/format/matched_hits
 )
 
 set(NICAFEMTO_CUTS

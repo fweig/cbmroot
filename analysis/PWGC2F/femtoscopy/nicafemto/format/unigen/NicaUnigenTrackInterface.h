@@ -18,7 +18,8 @@ class NicaUnigenTrackInterface : public NicaMCTrackInterface {
 public:
   NicaUnigenTrackInterface();
   void SetID(Int_t id) { ((UParticle*) fRawObject)->SetUniqueID(id); };
-  void SetPxPyPzE(Double_t px, Double_t py, Double_t pz, Double_t e) {
+  void SetPxPyPzE(Double_t px, Double_t py, Double_t pz, Double_t e)
+  {
     ((UParticle*) fRawObject)->SetMomentum(px, py, pz, e);
   };
   void SetStatus(Int_t stat) { ((UParticle*) fRawObject)->SetStatus(stat); };

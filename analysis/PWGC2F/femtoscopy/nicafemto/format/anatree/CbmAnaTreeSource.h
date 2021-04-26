@@ -13,7 +13,9 @@
  */
 
 #include <FairSource.h>
+
 #include <TString.h>
+
 
 class CbmAnaTreeMcSourceContainer;
 class CbmAnaTreeRecoSourceContainer;
@@ -21,6 +23,7 @@ class TChain;
 
 class CbmAnaTreeSource : public FairSource {
   Int_t fNFiles;
+  TString fTreeName;
   TChain* fChain;
   TString* fFileName;  //[fNFiles]
   CbmAnaTreeRecoSourceContainer* fContainerReco;
@@ -37,8 +40,9 @@ public:
   /**
 	 * main constructor
 	 * @param inFile unigen file
+	 * @param treename name of the tree with data
 	 */
-  CbmAnaTreeSource(TString inFile);
+  CbmAnaTreeSource(TString inFile, TString treeName = "rTree");
   /**
 	 * copy constructor
 	 * @param source
@@ -54,15 +58,14 @@ public:
   virtual Bool_t ActivateObject(TObject**, const char*) { return kFALSE; }
   virtual Source_Type GetSourceType() { return kFILE; };
   virtual void SetParUnpackers() {};
+  virtual Bool_t SpecifyRunId() { return kTRUE; };
   virtual Bool_t InitUnpackers() { return kTRUE; };
   virtual Bool_t ReInitUnpackers() { return kTRUE; };
   virtual Int_t CheckMaxEventNo(Int_t = 0);
   virtual void ReadBranchEvent(const char* /*BrName*/) {};
   virtual void ReadBranchEvent(const char* /*BrName*/, Int_t /*Event*/) {};
   virtual void FillEventHeader(FairEventHeader* /*feh*/) {};
-  CbmAnaTreeRecoSourceContainer* GetRecoContainer() const {
-    return fContainerReco;
-  };
+  CbmAnaTreeRecoSourceContainer* GetRecoContainer() const { return fContainerReco; };
   CbmAnaTreeMcSourceContainer* GetSimContainer() const { return fContainerSim; }
   void SetRunId(Int_t runId) { fRunId = runId; }
   ClassDef(CbmAnaTreeSource, 1)

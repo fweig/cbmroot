@@ -8,7 +8,7 @@
  */
 #include "NicaUnigenSource.h"
 
-#include "FairRootManager.h"
+#include <FairRootManager.h>
 #include <Logger.h>
 
 #include <TBranch.h>
@@ -19,31 +19,34 @@
 #include "UEvent.h"
 #include "UParticle.h"
 
-NicaUnigenSource::NicaUnigenSource()
-  : fUnigenChain(NULL), fFileName("data.root"), fEvent(NULL) {}
 
-NicaUnigenSource::NicaUnigenSource(TString inFile)
-  : fUnigenChain(NULL), fFileName(inFile), fEvent(NULL) {}
+NicaUnigenSource::NicaUnigenSource() : fUnigenChain(NULL), fEvent(NULL) {}
 
-NicaUnigenSource::~NicaUnigenSource() {
+NicaUnigenSource::NicaUnigenSource(TString inFile) : fUnigenChain(NULL), fEvent(NULL) { fFileName.push_back(inFile); }
+
+NicaUnigenSource::~NicaUnigenSource()
+{
   if (fUnigenChain) delete fUnigenChain;
 }
 
-Bool_t NicaUnigenSource::Init() {
+Bool_t NicaUnigenSource::Init()
+{
   FairRootManager* mngr = FairRootManager::Instance();
   fUnigenChain          = new TChain("events");
-  if (fFileName.EndsWith(".root")) {
-    LOG(debug) << "NicaUnigenSource: opening single file" << fFileName;
-    fUnigenChain->Add(fFileName);
-  } else {  // this is long list
+  if (fFileName[0].EndsWith(".root")) {
+    for (auto i : fFileName) {
+      LOG(debug) << "NicaUnigenSource: opening single file" << i;
+      fUnigenChain->Add(i);
+    }
+  }
+  else {  // this is long list
     std::ifstream list;
-    list.open(fFileName);
+    list.open(fFileName[0]);
     do {
       TString temp;
       list >> temp;
-      if (temp.Length() > 1) {
-        fUnigenChain->Add(temp);
-      } else {
+      if (temp.Length() > 1) { fUnigenChain->Add(temp); }
+      else {
         break;
       }
       LOG(debug) << "Adding file " << temp << " to chain";
@@ -56,7 +59,8 @@ Bool_t NicaUnigenSource::Init() {
     fUnigenChain->Print();
     fUnigenChain->SetBranchStatus("event", 1);
     fUnigenChain->SetBranchAddress("event", &fEvent);
-  } else {
+  }
+  else {
     std::cout << "Event read II" << std::endl;
     fUnigenChain->SetBranchStatus("UEvent.", 1);
     fUnigenChain->SetBranchAddress("UEvent.", &fEvent);
@@ -66,7 +70,8 @@ Bool_t NicaUnigenSource::Init() {
   return kTRUE;
 }
 
-Int_t NicaUnigenSource::ReadEvent(UInt_t unsignedInt) {
+Int_t NicaUnigenSource::ReadEvent(UInt_t unsignedInt)
+{
   //std::cout<<"READING EVENT " <<unsignedInt<<std::endl;
   fUnigenChain->GetEntry(unsignedInt);
   // std::cout<<"xxx"<<std::endl;
@@ -75,7 +80,8 @@ Int_t NicaUnigenSource::ReadEvent(UInt_t unsignedInt) {
 
 void NicaUnigenSource::Close() {}
 
-void NicaUnigenSource::Boost(Double_t vx, Double_t vy, Double_t vz) {
+void NicaUnigenSource::Boost(Double_t vx, Double_t vy, Double_t vz)
+{
   for (int i = 0; i < fEvent->GetNpa(); i++) {
     UParticle* p       = fEvent->GetParticle(i);
     TLorentzVector mom = p->GetMomentum();
@@ -87,6 +93,4 @@ void NicaUnigenSource::Boost(Double_t vx, Double_t vy, Double_t vz) {
   }
 }
 
-Int_t NicaUnigenSource::CheckMaxEventNo(Int_t /*int1*/) {
-  return fUnigenChain->GetEntries();
-}
+Int_t NicaUnigenSource::CheckMaxEventNo(Int_t /*int1*/) { return fUnigenChain->GetEntries(); }
