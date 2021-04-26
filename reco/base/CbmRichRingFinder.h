@@ -27,13 +27,14 @@
 #include "TObject.h"
 
 class TClonesArray;
+class CbmEvent;
 
 
 class CbmRichRingFinder : public TObject {
 
 public:
   /** Default constructor **/
-  CbmRichRingFinder() : TObject(), fVerbose(0) {};
+  CbmRichRingFinder() {};
 
 
   /** Destructor **/
@@ -50,24 +51,14 @@ public:
    ** Task: Read the hit array and fill the ring array,
    ** pointers to which are given as arguments
    **
+   *@param event        CbmEvent for time-based mode, if event==nullptr then event-by-event mode.
    *@param rHitArray    Array of RICH hits
    *@param rProjArray   Array of projected tracks (for track based finders)
    *@param rRingArray   Array of CbmRichRing
    *@value Number of rings created
    **/
-  virtual Int_t DoFind(TClonesArray* rHitArray,
-                       TClonesArray* rProjArray,
+  virtual Int_t DoFind(CbmEvent* event, TClonesArray* rHitArray, TClonesArray* rProjArray,
                        TClonesArray* rRingArray) = 0;
-
-
-  /** Set verbosity 
-   *@param verbose   Verbosity level
-   **/
-  void SetVerbose(Int_t verbose) { fVerbose = verbose; };
-
-
-protected:
-  Int_t fVerbose;  // Verbosity level
 
 private:
   CbmRichRingFinder(const CbmRichRingFinder&);

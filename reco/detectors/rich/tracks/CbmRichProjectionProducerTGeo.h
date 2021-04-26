@@ -11,6 +11,7 @@
 #ifndef CBM_RICH_PROJECTION_PRODUCER_TGEO
 #define CBM_RICH_PROJECTION_PRODUCER_TGEO
 #include "CbmRichProjectionProducerBase.h"
+
 #include "TObject.h"
 #include "TVector3.h"
 
@@ -52,14 +53,12 @@ public:
      * \brief Execute task.
      * \param[out] richProj Output array of created projections.
      */
-  virtual void DoProjection(TClonesArray* richProj);
+  virtual void DoProjection(CbmEvent* event, TClonesArray* richProj);
 
 
 private:
-  TClonesArray* fTrackParams;  // Starting points&directions
-
-  int fNHits;     // Number of hits
-  int fEventNum;  // number of events
+  TClonesArray* fTrackParams = nullptr;
+  int fEventNum              = 0;
 
   /**
      * \brief Copy constructor.
@@ -69,8 +68,7 @@ private:
   /**
      * \brief Assignment operator.
      */
-  CbmRichProjectionProducerTGeo&
-  operator=(const CbmRichProjectionProducerTGeo&);
+  CbmRichProjectionProducerTGeo& operator=(const CbmRichProjectionProducerTGeo&);
 };
 
 #endif

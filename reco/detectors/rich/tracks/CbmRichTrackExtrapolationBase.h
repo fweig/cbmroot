@@ -11,6 +11,7 @@
 #define CBM_RICH_TRACK_EXTRAPOLATION_BASE
 
 class TClonesArray;
+class CbmEvent;
 
 class CbmRichTrackExtrapolationBase {
 public:
@@ -36,8 +37,7 @@ public:
     * \param[out] extrapolatedTrackParams Output array of track parameters.
     * \param[in] z Z coordinate to which track will be extrapolated.
     */
-  virtual void DoExtrapolation(TClonesArray* globalTracks,
-                               TClonesArray* extrapolatedTrackParams,
+  virtual void DoExtrapolation(CbmEvent* event, TClonesArray* globalTracks, TClonesArray* extrapolatedTrackParams,
                                double z) = 0;
 
 private:
@@ -49,8 +49,7 @@ private:
   /**
     * \brief Assignment operator.
     */
-  CbmRichTrackExtrapolationBase&
-  operator=(const CbmRichTrackExtrapolationBase&);
+  CbmRichTrackExtrapolationBase& operator=(const CbmRichTrackExtrapolationBase&);
 };
 
 #endif

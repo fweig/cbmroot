@@ -7,14 +7,15 @@
 
 //#include "../L1/L1Algo/L1Types.h"
 #include "CbmRichRingFinderHoughSimd.h"
-#include "../L1/L1Algo/vectors/P4_F32vec4.h"
+
 #include <emmintrin.h>
+
+#include "../L1/L1Algo/vectors/P4_F32vec4.h"
 
 CbmRichRingFinderHoughSimd::CbmRichRingFinderHoughSimd() {}
 
-void CbmRichRingFinderHoughSimd::HoughTransformGroup(unsigned short int indmin,
-                                                     unsigned short int indmax,
-                                                     Int_t iPart) {
+void CbmRichRingFinderHoughSimd::HoughTransformGroup(unsigned short int indmin, unsigned short int indmax, Int_t iPart)
+{
   //	Float_t r12, r13, r23;
   //    Float_t rx0, rx1, rx2, ry0, ry1,ry2; //rx[3], ry[3];//, x[3], y[3];
   //Float_t xc, yc, r;
@@ -66,10 +67,8 @@ void CbmRichRingFinderHoughSimd::HoughTransformGroup(unsigned short int indmin,
     iH13 = hitIndPart[iHit1 + 2];
     iH14 = hitIndPart[iHit1 + 3];
 
-    iH1X =
-      fvec(fData[iH11]->fX, fData[iH12]->fX, fData[iH13]->fX, fData[iH14]->fX);
-    iH1Y =
-      fvec(fData[iH11]->fY, fData[iH12]->fY, fData[iH13]->fY, fData[iH14]->fY);
+    iH1X = fvec(fData[iH11]->fX, fData[iH12]->fX, fData[iH13]->fX, fData[iH14]->fX);
+    iH1Y = fvec(fData[iH11]->fY, fData[iH12]->fY, fData[iH13]->fY, fData[iH14]->fY);
 
     for (unsigned short int iHit2 = iHit1 + 1; iHit2 < nofHits; iHit2++) {
       iH2  = hitIndPart[iHit2];
@@ -80,16 +79,12 @@ void CbmRichRingFinderHoughSimd::HoughTransformGroup(unsigned short int indmin,
       rx0 = iH1X - iH2X;  //rx12
       ry0 = iH1Y - iH2Y;  //ry12
       r12 = rx0 * rx0 + ry0 * ry0;
-      if (_mm_comineq_ss(_mm_cmpgt_ss(r12, fMinDistanceSqv), fvec0) == 1)
-        continue;
-      if (_mm_comineq_ss(_mm_cmplt_ss(r12, fMaxDistanceSqv), fvec0) == 1)
-        continue;
+      if (_mm_comineq_ss(_mm_cmpgt_ss(r12, fMinDistanceSqv), fvec0) == 1) continue;
+      if (_mm_comineq_ss(_mm_cmplt_ss(r12, fMaxDistanceSqv), fvec0) == 1) continue;
 
 
-      t10 = fvec(fData[iH11]->fX2plusY2 - fData[iH2]->fX2plusY2,
-                 fData[iH12]->fX2plusY2 - fData[iH2]->fX2plusY2,
-                 fData[iH13]->fX2plusY2 - fData[iH2]->fX2plusY2,
-                 fData[iH14]->fX2plusY2 - fData[iH2]->fX2plusY2);
+      t10 = fvec(fData[iH11]->fX2plusY2 - fData[iH2]->fX2plusY2, fData[iH12]->fX2plusY2 - fData[iH2]->fX2plusY2,
+                 fData[iH13]->fX2plusY2 - fData[iH2]->fX2plusY2, fData[iH14]->fX2plusY2 - fData[iH2]->fX2plusY2);
       for (unsigned short int iHit3 = iHit2 + 1; iHit3 < nofHits; iHit3++) {
         //iH3 = hitIndPart[iHit3];
         h3 = fDataV[hitIndPart[iHit3]];
@@ -100,18 +95,14 @@ void CbmRichRingFinderHoughSimd::HoughTransformGroup(unsigned short int indmin,
         rx1 = iH1X - iH3X;  //rx13
         ry1 = iH1Y - iH3Y;  //ry13
         r13 = rx1 * rx1 + ry1 * ry1;
-        if (_mm_comineq_ss(_mm_cmpgt_ss(r13, fMinDistanceSqv), fvec0) == 1)
-          continue;
-        if (_mm_comineq_ss(_mm_cmplt_ss(r13, fMaxDistanceSqv), fvec0) == 1)
-          continue;
+        if (_mm_comineq_ss(_mm_cmpgt_ss(r13, fMinDistanceSqv), fvec0) == 1) continue;
+        if (_mm_comineq_ss(_mm_cmplt_ss(r13, fMaxDistanceSqv), fvec0) == 1) continue;
 
         rx2 = iH2X - h3.fX;  //rx23
         ry2 = iH2Y - h3.fY;  //ry23
         r23 = rx2 * rx2 + ry2 * ry2;
-        if (_mm_comineq_ss(_mm_cmpgt_ss(r23, fMinDistanceSqv), fvec0) == 1)
-          continue;
-        if (_mm_comineq_ss(_mm_cmplt_ss(r23, fMaxDistanceSqv), fvec0) == 1)
-          continue;
+        if (_mm_comineq_ss(_mm_cmpgt_ss(r23, fMinDistanceSqv), fvec0) == 1) continue;
+        if (_mm_comineq_ss(_mm_cmplt_ss(r23, fMaxDistanceSqv), fvec0) == 1) continue;
 
         t19 = fvec05 / (rx2 * ry0 - rx0 * ry2);
 
@@ -151,25 +142,21 @@ void CbmRichRingFinderHoughSimd::HoughTransformGroup(unsigned short int indmin,
         indXY = (int*) &indXYv;
         intR  = (int*) &intRv;
 
-        if (intR[0] > 9 && intR[0] < fNofBinsR && indXY[0] > -1
-            && indXY[0] < fNofBinsXY) {
+        if (intR[0] > 9 && intR[0] < fNofBinsR && indXY[0] > -1 && indXY[0] < fNofBinsXY) {
           fHist[indXY[0]]++;
           fHistR[intR[0]]++;
         }
-        if (intR[1] > 9 && intR[1] < fNofBinsR && indXY[1] > -1
-            && indXY[1] < fNofBinsXY) {
+        if (intR[1] > 9 && intR[1] < fNofBinsR && indXY[1] > -1 && indXY[1] < fNofBinsXY) {
           fHist[indXY[1]]++;
           fHistR[intR[1]]++;
         }
 
-        if (intR[2] > 9 && intR[2] < fNofBinsR && indXY[2] > -1
-            && indXY[2] < fNofBinsXY) {
+        if (intR[2] > 9 && intR[2] < fNofBinsR && indXY[2] > -1 && indXY[2] < fNofBinsXY) {
           fHist[indXY[2]]++;
           fHistR[intR[2]]++;
         }
 
-        if (intR[3] > 9 && intR[3] < fNofBinsR && indXY[3] > -1
-            && indXY[3] < fNofBinsXY) {
+        if (intR[3] > 9 && intR[3] < fNofBinsR && indXY[3] > -1 && indXY[3] < fNofBinsXY) {
           fHist[indXY[3]]++;
           fHistR[intR[3]]++;
         }
@@ -179,7 +166,8 @@ void CbmRichRingFinderHoughSimd::HoughTransformGroup(unsigned short int indmin,
 }
 
 
-void CbmRichRingFinderHoughSimd::HoughTransformReconstruction() {
+void CbmRichRingFinderHoughSimd::HoughTransformReconstruction()
+{
   Int_t indmin, indmax;
   Float_t x0, y0;
 

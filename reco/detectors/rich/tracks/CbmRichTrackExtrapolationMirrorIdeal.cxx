@@ -7,14 +7,16 @@
 
 #include "CbmRichTrackExtrapolationMirrorIdeal.h"
 
-#include "CbmRichPoint.h"
-
+#include "CbmEvent.h"
 #include "CbmGlobalTrack.h"
 #include "CbmMCTrack.h"
+#include "CbmRichPoint.h"
 #include "CbmStsTrack.h"
 #include "CbmTrackMatchNew.h"
+
 #include "FairRootManager.h"
 #include "FairTrackParam.h"
+#include <Logger.h>
 
 #include "TClonesArray.h"
 #include "TMatrixFSym.h"
@@ -24,96 +26,79 @@
 using std::cout;
 using std::endl;
 
-CbmRichTrackExtrapolationMirrorIdeal::CbmRichTrackExtrapolationMirrorIdeal()
-  : fRichMirrorPoints(NULL)
-  , fMcTracks(NULL)
-  , fSTSArray(NULL)
-  , fTrackMatchArray(NULL) {}
+CbmRichTrackExtrapolationMirrorIdeal::CbmRichTrackExtrapolationMirrorIdeal() {}
 
 CbmRichTrackExtrapolationMirrorIdeal::~CbmRichTrackExtrapolationMirrorIdeal() {}
 
-void CbmRichTrackExtrapolationMirrorIdeal::Init() {
-  FairRootManager* ioman = FairRootManager::Instance();
-  if (NULL == ioman) {
-    Fatal("CbmRichTrackExtrapolationMirrorIdeal::Init",
-          "RootManager not instantised!");
-  }
+void CbmRichTrackExtrapolationMirrorIdeal::Init()
+{
+  FairRootManager* manager = FairRootManager::Instance();
+  if (manager == nullptr) LOG(fatal) << "CbmRichTrackExtrapolationMirrorIdeal::Init(): FairRootManager is nullptr.";
 
-  fMcTracks = (TClonesArray*) ioman->GetObject("MCTrack");
-  if (NULL == fMcTracks) {
-    Fatal("CbmRichTrackExtrapolationMirrorIdeal::Init", "No MCTrack array!");
-  }
+  fMcTracks = (TClonesArray*) manager->GetObject("MCTrack");
+  if (fMcTracks == nullptr) LOG(fatal) << "CbmRichTrackExtrapolationMirrorIdeal::Init(): No MCTrack array.";
 
-  fRichMirrorPoints = (TClonesArray*) ioman->GetObject("RichMirrorPoint");
-  if (NULL == fRichMirrorPoints) {
-    Fatal("CbmRichTrackExtrapolationMirrorIdeal::Init",
-          "No RichMirrorPoint array!");
-  }
+  fRichMirrorPoints = (TClonesArray*) manager->GetObject("RichMirrorPoint");
+  if (fRichMirrorPoints == nullptr)
+    LOG(fatal) << "CbmRichTrackExtrapolationMirrorIdeal::Init(): No RichMirrorPoint array.";
 
-  fSTSArray = (TClonesArray*) ioman->GetObject("StsTrack");
-  if (NULL == fSTSArray) {
-    Fatal("CbmRichTrackExtrapolationMirrorIdeal::Init", "No StsTrack array!");
-  }
+  fStsTracks = (TClonesArray*) manager->GetObject("StsTrack");
+  if (fStsTracks == nullptr) LOG(fatal) << "CbmRichTrackExtrapolationMirrorIdeal::Init(): No StsTrack array.";
 
-  fTrackMatchArray = (TClonesArray*) ioman->GetObject("StsTrackMatch");
-  if (NULL == fTrackMatchArray) {
-    Fatal("CbmRichTrackExtrapolationMirrorIdeal::Init",
-          "No StsTrackMatch array!");
-  }
+  fStsTrackMatches = (TClonesArray*) manager->GetObject("StsTrackMatch");
+  if (fStsTrackMatches == nullptr)
+    LOG(fatal) << "CbmRichTrackExtrapolationMirrorIdeal::Init(): No StsTrackMatch array.";
 }
 
-void CbmRichTrackExtrapolationMirrorIdeal::DoExtrapolation(
-  TClonesArray* globalTracks,
-  TClonesArray* extrapolatedTrackParams,
-  double /*z*/) {
-  if (NULL == extrapolatedTrackParams) {
-    cout << "-E- CbmRichTrackExtrapolationMirrorIdeal::DoExtrapolate: "
-            "TrackParam Array missing!"
-         << endl;
+void CbmRichTrackExtrapolationMirrorIdeal::DoExtrapolation(CbmEvent* event, TClonesArray* globalTracks,
+                                                           TClonesArray* extrapolatedTrackParams, double /*z*/)
+{
+
+  if (event != nullptr) {
+    LOG(fatal) << "CbmRichTrackExtrapolationMirrorIdeal::DoExtrapolation(): CbmEvent is not nullptr. "
+                  "This class does not support time-based mode. Please switch to event-by-event mode.";
+  }
+
+  if (extrapolatedTrackParams == nullptr) {
+    LOG(error) << "CbmRichTrackExtrapolationMirrorIdeal::DoExtrapolation(): extrapolatedTrackParams missing!";
     return;
   }
 
-  if (NULL == globalTracks) {
-    cout << "-E- CbmRichTrackExtrapolationMirrorIdeal::DoExtrapolate: Global "
-            "Track Array missing!"
-         << endl;
+  if (globalTracks == nullptr) {
+    LOG(error) << "CbmRichTrackExtrapolationMirrorIdeal::DoExtrapolation(): globalTracks missing!";
     return;
   }
 
-  Double_t tx, ty, qp;
   Double_t charge = 1.;
   TMatrixFSym covMat(5);
   for (Int_t i = 0; i < 5; i++)
     for (Int_t j = 0; j <= i; j++)
       covMat(i, j) = 0;
-  covMat(0, 0) = covMat(1, 1) = covMat(2, 2) = covMat(3, 3) = covMat(4, 4) =
-    1.e-4;
+  covMat(0, 0) = covMat(1, 1) = covMat(2, 2) = covMat(3, 3) = covMat(4, 4) = 1.e-4;
 
   TVector3 pos, mom;
-  Int_t nTracks = globalTracks->GetEntriesFast();
-  for (Int_t iTrack = 0; iTrack < nTracks; iTrack++) {
-    CbmGlobalTrack* gTrack = (CbmGlobalTrack*) globalTracks->At(iTrack);
-    new ((*extrapolatedTrackParams)[iTrack])
-      FairTrackParam(0., 0., 0., 0., 0., 0., covMat);
-    Int_t idSTS = gTrack->GetStsTrackIndex();
+  Int_t nofGlobalTracks = globalTracks->GetEntriesFast();
+  for (Int_t iT = 0; iT < nofGlobalTracks; iT++) {
+    CbmGlobalTrack* gTrack = static_cast<CbmGlobalTrack*>(globalTracks->At(iT));
+    new ((*extrapolatedTrackParams)[iT]) FairTrackParam(0., 0., 0., 0., 0., 0., covMat);
 
-    if (idSTS < 0) continue;
-    CbmStsTrack* pSTStr = (CbmStsTrack*) fSTSArray->At(idSTS);
-    if (NULL == pSTStr) continue;
-    CbmTrackMatchNew* pTrackMatch =
-      (CbmTrackMatchNew*) fTrackMatchArray->At(idSTS);
-    if (NULL == pTrackMatch) continue;
-    Int_t iMCmatch = pTrackMatch->GetMatchedLink().GetIndex();
-    for (Int_t ii = 0; ii < fRichMirrorPoints->GetEntriesFast(); ii++) {
-      CbmRichPoint* pMirror = (CbmRichPoint*) fRichMirrorPoints->At(ii);
-      if (pMirror->GetTrackID() == iMCmatch) {
+    Int_t stsInd = gTrack->GetStsTrackIndex();
+    if (stsInd < 0) continue;
+    CbmStsTrack* stsTrack = static_cast<CbmStsTrack*>(fStsTracks->At(stsInd));
+    if (stsTrack == nullptr) continue;
+    CbmTrackMatchNew* stsTrackMatch = static_cast<CbmTrackMatchNew*>(fStsTrackMatches->At(stsInd));
+    if (stsTrackMatch == nullptr) continue;
+    Int_t stsMcInd = stsTrackMatch->GetMatchedLink().GetIndex();
+    for (Int_t iM = 0; iM < fRichMirrorPoints->GetEntriesFast(); iM++) {
+      CbmRichPoint* pMirror = static_cast<CbmRichPoint*>(fRichMirrorPoints->At(iM));
+      if (pMirror->GetTrackID() == stsMcInd) {
         pMirror->Momentum(mom);
         pMirror->Position(pos);
-        tx = mom.Px() / mom.Pz();
-        ty = mom.Py() / mom.Pz();
-        qp = charge / mom.Mag();
+        Double_t tx = mom.Px() / mom.Pz();
+        Double_t ty = mom.Py() / mom.Pz();
+        Double_t qp = charge / mom.Mag();
         FairTrackParam richtrack(pos.X(), pos.Y(), pos.Z(), tx, ty, qp, covMat);
-        *(FairTrackParam*) (extrapolatedTrackParams->At(iTrack)) = richtrack;
+        *(FairTrackParam*) (extrapolatedTrackParams->At(iT)) = richtrack;
       }
     }
   }

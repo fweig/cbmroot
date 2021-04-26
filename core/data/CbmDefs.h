@@ -9,9 +9,9 @@
 #define CBMDEFS_H 1
 
 #include <RtypesCore.h>  // for Double_t
+#include <type_traits>   // for underlying_type
 
-#include <iostream>     // for ostream
-#include <type_traits>  // for underlying_type
+#include <iostream>  // for ostream
 
 // Convert an element of enum class to its underlying intergral type
 // since with C++11 the return type can't be deduced automatically it has
@@ -21,8 +21,8 @@
 // E.g. ToIntegralType(ECbmModuleId::KSts) should be evaluated at compile
 // time and should not affect the run time performance at all
 template<typename T>
-constexpr auto ToIntegralType(T enumerator) ->
-  typename std::underlying_type<T>::type {
+constexpr auto ToIntegralType(T enumerator) -> typename std::underlying_type<T>::type
+{
   return static_cast<typename std::underlying_type<T>::type>(enumerator);
 }
 
@@ -30,7 +30,8 @@ constexpr auto ToIntegralType(T enumerator) ->
  ** or passive (magnet, beam pipe, target etc.)
  ** In order to loop over all detectors, loop until kNofSystems.
  **/
-enum class ECbmModuleId {
+enum class ECbmModuleId
+{
   kRef        = 0,   ///< Reference plane
   kMvd        = 1,   ///< Micro-Vertex Detector
   kSts        = 2,   ///< Silicon Tracking System
@@ -73,7 +74,8 @@ std::ostream& operator<<(std::ostream&, const ECbmModuleId&);
 
 
 /** Enumerator for CBM data types **/
-enum class ECbmDataType {
+enum class ECbmDataType
+{
   kUnknown  = -1,
   kMCTrack  = 0,
   kMvdPoint = ToIntegralType(ECbmModuleId::kMvd) * 100,
@@ -88,7 +90,9 @@ enum class ECbmDataType {
   kRichPoint = ToIntegralType(ECbmModuleId::kRich) * 100,
   kRichDigi,
   kRichHit,
-  kRichRing,  // RICH
+  kRichRing,
+  kRichTrackParamZ,
+  kRichTrackProjection,  // RICH
   kMuchPoint = ToIntegralType(ECbmModuleId::kMuch) * 100,
   kMuchDigi,
   kMuchCluster,
@@ -127,7 +131,12 @@ std::ostream& operator<<(std::ostream&, const ECbmDataType&);
  **           to first entry
  ** kRandom:  Random choice of entries between first and last one.
  **/
-enum class ECbmTreeAccess { kRegular, kRepeat, kRandom };
+enum class ECbmTreeAccess
+{
+  kRegular,
+  kRepeat,
+  kRandom
+};
 
 
 /** Global functions for particle masses **/

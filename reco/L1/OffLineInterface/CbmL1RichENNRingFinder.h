@@ -51,9 +51,7 @@ public:
    **
    *@value Number of tracks created
    **/
-  Int_t DoFind(TClonesArray* hitArray,
-               TClonesArray* projArray,
-               TClonesArray* ringArray);
+  Int_t DoFind(CbmEvent* event, TClonesArray* hitArray, TClonesArray* projArray, TClonesArray* ringArray);
 
 private:
   CbmL1RichENNRingFinderParallel* finder;

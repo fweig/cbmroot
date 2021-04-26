@@ -34,62 +34,50 @@
 using namespace std;
 
 
-CbmRichRingFinderIdeal::CbmRichRingFinderIdeal()
-  : CbmRichRingFinder()
-  , fRichPoints(NULL)
-  , fMcTracks(NULL)
-  , fEventList(NULL)
-  , fDigiMan(nullptr) {}
+CbmRichRingFinderIdeal::CbmRichRingFinderIdeal() {}
 
 CbmRichRingFinderIdeal::~CbmRichRingFinderIdeal() {}
 
-void CbmRichRingFinderIdeal::Init() {
-  FairRootManager* ioman = FairRootManager::Instance();
-  if (NULL == ioman) {
-    Fatal("CbmRichRingFinderIdeal::Init", "RootManager is NULL!");
-  }
+void CbmRichRingFinderIdeal::Init()
+{
+  FairRootManager* manager = FairRootManager::Instance();
+  if (nullptr == manager) LOG(fatal) << "CbmRichRingFinderIdeal::Init(): FairRootManager is nullptr.";
 
-  CbmMCDataManager* mcManager =
-    (CbmMCDataManager*) ioman->GetObject("MCDataManager");
-  if (mcManager == nullptr)
-    LOG(fatal) << "CbmRichRingFinderIdeal::Init() NULL MCDataManager.";
+  CbmMCDataManager* mcManager = (CbmMCDataManager*) manager->GetObject("MCDataManager");
+  if (mcManager == nullptr) LOG(fatal) << "CbmRichRingFinderIdeal::Init(): MCDataManager is nullptr.";
 
   fDigiMan = CbmDigiManager::Instance();
   fDigiMan->Init();
-  if (!fDigiMan->IsPresent(ECbmModuleId::kRich)) {
-    Fatal("CbmRichHitProducer::Init", "No RichDigi array!");
-  }
-  if (!fDigiMan->IsMatchPresent(ECbmModuleId::kRich)) {
-    Fatal("CbmRichHitProducer::Init", "No RichMatchDigi array!");
-  }
+  if (!fDigiMan->IsPresent(ECbmModuleId::kRich)) LOG(fatal) << "CbmRichRingFinderIdeal::Init(): No RichDigi.";
+
+  if (!fDigiMan->IsMatchPresent(ECbmModuleId::kRich)) LOG(fatal) << "CbmRichRingFinderIdeal::Init(): No RichMatchDigi.";
 
   fMcTracks = mcManager->InitBranch("MCTrack");
-  if (NULL == fMcTracks) {
-    LOG(fatal) << "CbmRichRingFinderIdeal::Init No MCTrack!";
-  }
+  if (fMcTracks == nullptr) LOG(fatal) << "CbmRichRingFinderIdeal::Init(): No MCTrack.";
 
   fRichPoints = mcManager->InitBranch("RichPoint");
-  if (NULL == fRichPoints) {
-    LOG(fatal) << "CbmRichRingFinderIdeal::Init No RichPoint!";
-  }
+  if (fRichPoints == nullptr) LOG(fatal) << "CbmRichRingFinderIdeal::Init(): No RichPoint!";
 
-  fEventList = (CbmMCEventList*) ioman->GetObject("MCEventList.");
-  if (NULL == fEventList) {
-    LOG(fatal) << "CbmRichRingFinderIdeal::Init No MCEventList!";
-  }
+  fEventList = (CbmMCEventList*) manager->GetObject("MCEventList.");
+  if (fEventList == nullptr) LOG(fatal) << "CbmRichRingFinderIdeal::Init(): No MCEventList.";
 }
 
-Int_t CbmRichRingFinderIdeal::DoFind(TClonesArray* hitArray,
-                                     TClonesArray* /*projArray*/,
-                                     TClonesArray* ringArray) {
-  if (NULL == hitArray) {
-    cout << "-E- CbmRichRingFinderIdeal::DoFind, RichHit array missing!"
-         << endl;
+Int_t CbmRichRingFinderIdeal::DoFind(CbmEvent* event, TClonesArray* hitArray, TClonesArray* /*projArray*/,
+                                     TClonesArray* ringArray)
+{
+
+  if (event != nullptr) {
+    LOG(fatal) << "CbmRichRingFinderIdeal::DoFind(): CbmEvent is not nullptr. "
+                  "This class does not support time-based mode. Please switch to event-by-event mode.";
+  }
+
+  if (hitArray == nullptr) {
+    LOG(error) << "CbmRichRingFinderIdeal::DoFind(), hitArray is nullptr.";
     return -1;
   }
 
-  if (NULL == ringArray) {
-    cout << "-E- CbmRichRingFinderIdeal::DoFind, Ring array missing!" << endl;
+  if (ringArray == nullptr) {
+    LOG(error) << "CbmRichRingFinderIdeal::DoFind(): ringArray is nullptr.";
     return -1;
   }
 
@@ -98,11 +86,10 @@ Int_t CbmRichRingFinderIdeal::DoFind(TClonesArray* hitArray,
   Int_t nofRichHits = hitArray->GetEntriesFast();
   for (Int_t iHit = 0; iHit < nofRichHits; iHit++) {
     const CbmRichHit* richHit = static_cast<CbmRichHit*>(hitArray->At(iHit));
-    if (NULL == richHit) continue;
+    if (richHit == nullptr) continue;
     Int_t eventId = GetEventIdForRichHit(richHit);
     vector<pair<Int_t, Int_t>> motherIds =
-      CbmMatchRecoToMC::GetMcTrackMotherIdsForRichHit(
-        fDigiMan, richHit, fRichPoints, fMcTracks, eventId);
+      CbmMatchRecoToMC::GetMcTrackMotherIdsForRichHit(fDigiMan, richHit, fRichPoints, fMcTracks, eventId);
     for (UInt_t i = 0; i < motherIds.size(); i++) {
       hitMap[motherIds[i]]++;
     }
@@ -119,9 +106,8 @@ Int_t CbmRichRingFinderIdeal::DoFind(TClonesArray* hitArray,
     // Create RichRings for McTracks
     Int_t nofMcTracks = fMcTracks->Size(fileId, eventId);
     for (Int_t iT = 0; iT < nofMcTracks; iT++) {
-      const CbmMCTrack* mcTrack =
-        static_cast<CbmMCTrack*>(fMcTracks->Get(fileId, eventId, iT));
-      if (NULL == mcTrack) continue;
+      const CbmMCTrack* mcTrack = static_cast<CbmMCTrack*>(fMcTracks->Get(fileId, eventId, iT));
+      if (mcTrack == nullptr) continue;
       pair<Int_t, Int_t> val = std::make_pair(eventId, iT);
       if (hitMap[val] <= 0) continue;
       new ((*ringArray)[nofRings]) CbmRichRing();
@@ -132,35 +118,32 @@ Int_t CbmRichRingFinderIdeal::DoFind(TClonesArray* hitArray,
   // Loop over RichHits. Get corresponding MCPoint and MCTrack index
   for (Int_t iHit = 0; iHit < nofRichHits; iHit++) {
     const CbmRichHit* richHit = static_cast<CbmRichHit*>(hitArray->At(iHit));
-    if (NULL == richHit) continue;
+    if (richHit == nullptr) continue;
     Int_t eventId = GetEventIdForRichHit(richHit);
 
     vector<pair<Int_t, Int_t>> motherIds =
-      CbmMatchRecoToMC::GetMcTrackMotherIdsForRichHit(
-        fDigiMan, richHit, fRichPoints, fMcTracks, eventId);
+      CbmMatchRecoToMC::GetMcTrackMotherIdsForRichHit(fDigiMan, richHit, fRichPoints, fMcTracks, eventId);
 
     for (UInt_t i = 0; i < motherIds.size(); i++) {
       if (ringMap.find(motherIds[i]) == ringMap.end()) continue;
       Int_t ringIndex   = ringMap[motherIds[i]];
       CbmRichRing* ring = (CbmRichRing*) ringArray->At(ringIndex);
-      if (NULL == ring) continue;
+      if (ring == nullptr) continue;
 
       ring->AddHit(iHit);  // attach the hit to the ring
     }
   }
 
-  LOG(info) << "-I- CbmRichRingFinderIdeal nofRings:" << nofRings;
-
   return nofRings;
 }
 
 
-Int_t CbmRichRingFinderIdeal::GetEventIdForRichHit(const CbmRichHit* richHit) {
-  if (richHit == NULL) return -1;
+Int_t CbmRichRingFinderIdeal::GetEventIdForRichHit(const CbmRichHit* richHit)
+{
+  if (richHit == nullptr) return -1;
   Int_t digiIndex = richHit->GetRefId();
   if (digiIndex < 0) return -1;
-  const CbmMatch* digiMatch =
-    fDigiMan->GetMatch(ECbmModuleId::kRich, digiIndex);
+  const CbmMatch* digiMatch = fDigiMan->GetMatch(ECbmModuleId::kRich, digiIndex);
   if (NULL == digiMatch) return -1;
   return digiMatch->GetMatchedLink().GetEntry();
 }

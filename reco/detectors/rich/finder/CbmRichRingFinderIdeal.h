@@ -12,6 +12,7 @@
 #define CBM_RICH_RING_FINDER_IDEAL
 
 #include "CbmRichRingFinder.h"
+
 #include <vector>
 
 using namespace std;
@@ -20,14 +21,9 @@ class CbmRichHit;
 class CbmMCDataArray;
 class CbmMCEventList;
 class CbmDigiManager;
+class CbmEvent;
 
 class CbmRichRingFinderIdeal : public CbmRichRingFinder {
-private:
-  CbmMCDataArray* fRichPoints;
-  CbmMCDataArray* fMcTracks;
-  CbmMCEventList* fEventList;
-  CbmDigiManager* fDigiMan;
-
 
 public:
   /**
@@ -48,11 +44,14 @@ public:
   /**
      * Inherited from CbmRichRingFinder.
      */
-  virtual int DoFind(TClonesArray* hitArray,
-                     TClonesArray* projArray,
-                     TClonesArray* ringArray);
+  virtual int DoFind(CbmEvent* event, TClonesArray* hitArray, TClonesArray* projArray, TClonesArray* ringArray);
 
 private:
+  CbmMCDataArray* fRichPoints = nullptr;
+  CbmMCDataArray* fMcTracks   = nullptr;
+  CbmMCEventList* fEventList  = nullptr;
+  CbmDigiManager* fDigiMan    = nullptr;
+
   /**
      * \ brief Return evnetId from digiMatch corresponding to rich hit.
      */

@@ -11,6 +11,7 @@
 #define CBM_RICH_PROJECTION_PRODUCER_BASE
 
 class TClonesArray;
+class CbmEvent;
 
 /**
 * \class CbmRichProjectionProducerBase
@@ -42,7 +43,7 @@ public:
     * Creates track projections onto the photodetector plane.
     * \param[out] richProj Array of track projections onto the photodetector plane.
     **/
-  virtual void DoProjection(TClonesArray* richProj) = 0;
+  virtual void DoProjection(CbmEvent* event, TClonesArray* richProj) = 0;
 
 private:
   /**
@@ -53,8 +54,7 @@ private:
   /**
     * \brief Assignment operator.
     */
-  CbmRichProjectionProducerBase&
-  operator=(const CbmRichProjectionProducerBase&);
+  CbmRichProjectionProducerBase& operator=(const CbmRichProjectionProducerBase&);
 };
 
 #endif

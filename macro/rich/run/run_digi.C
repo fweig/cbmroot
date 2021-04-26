@@ -1,11 +1,8 @@
-void run_digi(
-  const string& mcFile =
-    "/Users/slebedev/Development/cbm/data/sim/rich/reco/mc.00000.root",
-  const string& parFile =
-    "/Users/slebedev/Development/cbm/data/sim/rich/reco/param.00000.root",
-  const string& digiFile =
-    "/Users/slebedev/Development/cbm/data/sim/rich/reco/digi.00000.root",
-  int nEvents = 10) {
+void run_digi(const string& traFile  = "/Users/slebedev/Development/cbm/data/sim/rich/reco/tra.00000.root",
+              const string& parFile  = "/Users/slebedev/Development/cbm/data/sim/rich/reco/par.00000.root",
+              const string& digiFile = "/Users/slebedev/Development/cbm/data/sim/rich/reco/raw.00000.root",
+              int nEvents            = 3)
+{
   TTree::SetMaxTreeSize(90000000000);
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
   FairLogger::GetLogger()->SetLogVerbosityLevel("LOW");
@@ -21,11 +18,12 @@ void run_digi(
   timer.Start();
 
   CbmDigitization run;
-  run.AddInput(mcFile.c_str(), eventRate);
+  run.AddInput(traFile.c_str(), eventRate);
   run.SetOutputFile(digiFile.c_str(), overwrite);
   run.SetParameterRootFile(parFile.c_str());
   run.SetTimeSliceLength(timeSliceLength);
   run.SetEventMode(eventMode);
+  run.SetProduceNoise(false);
   run.SetMonitorFile("");
 
   CbmRichDigitizer* richDigitizer = new CbmRichDigitizer();
@@ -39,7 +37,6 @@ void run_digi(
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "Digi file is " << digiFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
-  std::cout << "Real time " << timer.RealTime() << " s, CPU time "
-            << timer.CpuTime() << " s" << std::endl;
+  std::cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime() << " s" << std::endl;
   std::cout << "Test passed" << std::endl << "All ok" << std::endl;
 }

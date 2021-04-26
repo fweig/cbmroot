@@ -7,13 +7,15 @@
 
 #include "CbmRichRingTrackAssignClosestD.h"
 
-#include "CbmRichRing.h"
-
+#include "CbmEvent.h"
 #include "CbmGlobalTrack.h"
 #include "CbmMCTrack.h"
+#include "CbmRichRing.h"
 #include "CbmTrdTrack.h"
+
 #include "FairRootManager.h"
 #include "FairTrackParam.h"
+#include <Logger.h>
 
 #include "TClonesArray.h"
 
@@ -25,51 +27,50 @@ using std::cout;
 using std::endl;
 using std::vector;
 
-CbmRichRingTrackAssignClosestD::CbmRichRingTrackAssignClosestD()
-  : fGlobalTracks(NULL)
-  , fTrdTracks(NULL)
-  , fTrdAnnCut(-0.5)
-  , fUseTrd(false)
-  , fAlgorithmType(RingTrack) {}
+CbmRichRingTrackAssignClosestD::CbmRichRingTrackAssignClosestD() {}
 
 CbmRichRingTrackAssignClosestD::~CbmRichRingTrackAssignClosestD() {}
 
-void CbmRichRingTrackAssignClosestD::Init() {
-  FairRootManager* ioman = FairRootManager::Instance();
-  if (NULL == ioman) {
-    Fatal("CbmRichRingTrackAssignClosestD::Init",
-          "RootManager not instantised!");
-  }
+void CbmRichRingTrackAssignClosestD::Init()
+{
+  FairRootManager* manager = FairRootManager::Instance();
+  if (nullptr == manager) LOG(fatal) << "CbmRichRingTrackAssignClosestD::Init(): FairRootManager is nullptr.";
 
-  fGlobalTracks = (TClonesArray*) ioman->GetObject("GlobalTrack");
-  if (NULL == fGlobalTracks) {
-    Fatal("CbmRichRingTrackAssignClosestD::Init", "No GlobalTrack array!");
-  }
+  fGlobalTracks = (TClonesArray*) manager->GetObject("GlobalTrack");
+  if (fGlobalTracks == nullptr) LOG(fatal) << "CbmRichRingTrackAssignClosestD::Init(): No GlobalTrack.";
 
-  fTrdTracks = (TClonesArray*) ioman->GetObject("TrdTrack");
+  fTrdTracks = (TClonesArray*) manager->GetObject("TrdTrack");
   //if (NULL == fTrdTracks) {Fatal("CbmRichRingTrackAssignClosestD::Init", "No TrdTrack array!");}
 }
 
-void CbmRichRingTrackAssignClosestD::DoAssign(TClonesArray* rings,
-                                              TClonesArray* richProj) {
-  if (fAlgorithmType == RingTrack) {
-    DoAssignRingTrack(rings, richProj);
-  }  // RingTrack algorithm
+void CbmRichRingTrackAssignClosestD::DoAssign(CbmEvent* event, TClonesArray* rings, TClonesArray* richProj)
+{
+  fEventNum++;
+  if (fAlgorithmType == RingTrack) { DoAssignRingTrack(event, rings, richProj); }  // RingTrack algorithm
 
   else if (fAlgorithmType == TrackRing) {
-    DoAssignTrackRing(rings, richProj);
+    DoAssignTrackRing(event, rings, richProj);
   }  // TrackRing
 
   else if (fAlgorithmType == Combined) {
-    DoAssignRingTrack(rings, richProj);
-    DoAssignTrackRing(rings, richProj);
+    DoAssignRingTrack(event, rings, richProj);
+    DoAssignTrackRing(event, rings, richProj);
   }  // Combined
+
+  Int_t nofTracks = event ? event->GetNofData(ECbmDataType::kRichTrackProjection) : richProj->GetEntriesFast();
+  Int_t nofRings  = event ? event->GetNofData(ECbmDataType::kRichRing) : rings->GetEntriesFast();
+  LOG(info) << "CbmRichRingTrackAssignClosestD::DoAssign(): Event:" << fEventNum << " rings:" << nofRings
+            << " ringsInTS:" << rings->GetEntriesFast() << " tracks:" << nofTracks
+            << " tracksInTS:" << richProj->GetEntriesFast();
 }
 
-void CbmRichRingTrackAssignClosestD::DoAssignRingTrack(TClonesArray* rings,
-                                                       TClonesArray* richProj) {
-  Int_t nofTracks = richProj->GetEntriesFast();
-  Int_t nofRings  = rings->GetEntriesFast();
+void CbmRichRingTrackAssignClosestD::DoAssignRingTrack(CbmEvent* event, TClonesArray* rings, TClonesArray* richProj)
+{
+
+  const Int_t nofTracks = event ? event->GetNofData(ECbmDataType::kRichTrackProjection) : richProj->GetEntriesFast();
+  const Int_t nofRings  = event ? event->GetNofData(ECbmDataType::kRichRing) : rings->GetEntriesFast();
+  if (nofTracks <= 0 || nofRings <= 0) return;
+
   vector<Int_t> trackIndex;
   vector<Double_t> trackDist;
   trackIndex.resize(nofRings);
@@ -80,40 +81,42 @@ void CbmRichRingTrackAssignClosestD::DoAssignRingTrack(TClonesArray* rings,
   }
 
   for (Int_t iIter = 0; iIter < 4; iIter++) {
-    for (Int_t iRing = 0; iRing < nofRings; iRing++) {
-      if (trackIndex[iRing] != -1) continue;
-      CbmRichRing* pRing = (CbmRichRing*) rings->At(iRing);
-      if (NULL == pRing) continue;
-      if (pRing->GetNofHits() < fMinNofHitsInRing) continue;
+    for (Int_t iR0 = 0; iR0 < nofRings; iR0++) {
+      Int_t iR = event ? event->GetIndex(ECbmDataType::kRichRing, iR0) : iR0;
 
-      Double_t xRing  = pRing->GetCenterX();
-      Double_t yRing  = pRing->GetCenterY();
+      if (trackIndex[iR] != -1) continue;
+      CbmRichRing* ring = static_cast<CbmRichRing*>(rings->At(iR));
+      if (ring == nullptr) continue;
+      if (ring->GetNofHits() < fMinNofHitsInRing) continue;
+
+      Double_t xRing  = ring->GetCenterX();
+      Double_t yRing  = ring->GetCenterY();
       Double_t rMin   = 999.;
       Int_t iTrackMin = -1;
 
-      for (Int_t iTrack = 0; iTrack < nofTracks; iTrack++) {
-        vector<Int_t>::iterator it =
-          find(trackIndex.begin(), trackIndex.end(), iTrack);
+      for (Int_t iT0 = 0; iT0 < nofTracks; iT0++) {
+        Int_t iT = event ? event->GetIndex(ECbmDataType::kRichTrackProjection, iT0) : iT0;
+
+        vector<Int_t>::iterator it = find(trackIndex.begin(), trackIndex.end(), iT);
         if (it != trackIndex.end()) continue;
 
-        FairTrackParam* pTrack = (FairTrackParam*) richProj->At(iTrack);
-        Double_t xTrack        = pTrack->GetX();
-        Double_t yTrack        = pTrack->GetY();
+        FairTrackParam* track = static_cast<FairTrackParam*>(richProj->At(iT));
+        Double_t xTrack       = track->GetX();
+        Double_t yTrack       = track->GetY();
         // no projection onto the photodetector plane
         if (xTrack == 0 && yTrack == 0) continue;
 
-        if (fUseTrd && fTrdTracks != NULL && !IsTrdElectron(iTrack)) continue;
+        if (fUseTrd && fTrdTracks != nullptr && !IsTrdElectron(iT)) continue;
 
-        Double_t dist = TMath::Sqrt((xRing - xTrack) * (xRing - xTrack)
-                                    + (yRing - yTrack) * (yRing - yTrack));
+        Double_t dist = TMath::Sqrt((xRing - xTrack) * (xRing - xTrack) + (yRing - yTrack) * (yRing - yTrack));
 
         if (dist < rMin) {
           rMin      = dist;
-          iTrackMin = iTrack;
+          iTrackMin = iT;
         }
       }  // loop tracks
-      trackIndex[iRing] = iTrackMin;
-      trackDist[iRing]  = rMin;
+      trackIndex[iR] = iTrackMin;
+      trackDist[iR]  = rMin;
     }  //loop rings
 
     for (UInt_t i1 = 0; i1 < trackIndex.size(); i1++) {
@@ -123,7 +126,8 @@ void CbmRichRingTrackAssignClosestD::DoAssignRingTrack(TClonesArray* rings,
           if (trackDist[i1] >= trackDist[i2]) {
             trackDist[i1]  = 999.;
             trackIndex[i1] = -1;
-          } else {
+          }
+          else {
             trackDist[i2]  = 999.;
             trackIndex[i2] = -1;
           }
@@ -142,35 +146,36 @@ void CbmRichRingTrackAssignClosestD::DoAssignRingTrack(TClonesArray* rings,
   }
 }
 
-void CbmRichRingTrackAssignClosestD::DoAssignTrackRing(TClonesArray* rings,
-                                                       TClonesArray* richProj) {
-  Int_t nofTracks = richProj->GetEntriesFast();
-  Int_t nofRings  = rings->GetEntriesFast();
-
-  for (Int_t iTrack = 0; iTrack < nofTracks; iTrack++) {
-    CbmGlobalTrack* gTrack = (CbmGlobalTrack*) fGlobalTracks->At(iTrack);
+void CbmRichRingTrackAssignClosestD::DoAssignTrackRing(CbmEvent* event, TClonesArray* rings, TClonesArray* richProj)
+{
+  const Int_t nofTracks = event ? event->GetNofData(ECbmDataType::kRichTrackProjection) : richProj->GetEntriesFast();
+  const Int_t nofRings  = event ? event->GetNofData(ECbmDataType::kRichRing) : rings->GetEntriesFast();
+  if (nofTracks <= 0 || nofRings <= 0) return;
+  for (Int_t iT0 = 0; iT0 < nofTracks; iT0++) {
+    Int_t iT               = event ? event->GetIndex(ECbmDataType::kRichTrackProjection, iT0) : iT0;
+    CbmGlobalTrack* gTrack = static_cast<CbmGlobalTrack*>(fGlobalTracks->At(iT));
     // track already has rich segment
-    if (gTrack == NULL || gTrack->GetRichRingIndex() >= 0) continue;
+    if (gTrack == nullptr || gTrack->GetRichRingIndex() >= 0) continue;
 
-    FairTrackParam* pTrack = (FairTrackParam*) richProj->At(iTrack);
-    Double_t xTrack        = pTrack->GetX();
-    Double_t yTrack        = pTrack->GetY();
+    FairTrackParam* track = static_cast<FairTrackParam*>(richProj->At(iT));
+    Double_t xTrack       = track->GetX();
+    Double_t yTrack       = track->GetY();
     if (xTrack == 0 && yTrack == 0) continue;
-    if (fUseTrd && fTrdTracks != NULL && !IsTrdElectron(iTrack)) continue;
+    if (fUseTrd && fTrdTracks != nullptr && !IsTrdElectron(iT)) continue;
     Double_t rMin  = 999.;
     Int_t iRingMin = -1;
-    for (Int_t iRing = 0; iRing < nofRings; iRing++) {
-      CbmRichRing* pRing = (CbmRichRing*) rings->At(iRing);
-      if (NULL == pRing) continue;
-      if (pRing->GetNofHits() < fMinNofHitsInRing) continue;
+    for (Int_t iR0 = 0; iR0 < nofRings; iR0++) {
+      Int_t iR          = event ? event->GetIndex(ECbmDataType::kRichRing, iR0) : iR0;
+      CbmRichRing* ring = static_cast<CbmRichRing*>(rings->At(iR));
+      if (ring == nullptr) continue;
+      if (ring->GetNofHits() < fMinNofHitsInRing) continue;
 
-      Double_t xRing = pRing->GetCenterX();
-      Double_t yRing = pRing->GetCenterY();
-      Double_t dist  = TMath::Sqrt((xRing - xTrack) * (xRing - xTrack)
-                                  + (yRing - yTrack) * (yRing - yTrack));
+      Double_t xRing = ring->GetCenterX();
+      Double_t yRing = ring->GetCenterY();
+      Double_t dist  = TMath::Sqrt((xRing - xTrack) * (xRing - xTrack) + (yRing - yTrack) * (yRing - yTrack));
       if (dist < rMin) {
         rMin     = dist;
-        iRingMin = iRing;
+        iRingMin = iR;
       }
     }  // loop rings
     if (iRingMin < 0) continue;
@@ -179,11 +184,12 @@ void CbmRichRingTrackAssignClosestD::DoAssignTrackRing(TClonesArray* rings,
   }  //loop tracks
 }
 
-Bool_t CbmRichRingTrackAssignClosestD::IsTrdElectron(Int_t iTrack) {
-  CbmGlobalTrack* gTrack = (CbmGlobalTrack*) fGlobalTracks->At(iTrack);
+Bool_t CbmRichRingTrackAssignClosestD::IsTrdElectron(Int_t iTrack)
+{
+  CbmGlobalTrack* gTrack = static_cast<CbmGlobalTrack*>(fGlobalTracks->At(iTrack));
   Int_t trdIndex         = gTrack->GetTrdTrackIndex();
   if (trdIndex == -1) return false;
-  CbmTrdTrack* trdTrack = (CbmTrdTrack*) fTrdTracks->At(trdIndex);
+  CbmTrdTrack* trdTrack = static_cast<CbmTrdTrack*>(fTrdTracks->At(trdIndex));
   if (NULL == trdTrack) return false;
 
   if (trdTrack->GetPidANN() > fTrdAnnCut) { return true; }

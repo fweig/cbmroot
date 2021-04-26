@@ -11,6 +11,7 @@
 #define CBM_RICH_RING_TRACK_ASSIGN_BASE
 
 class TClonesArray;
+class CbmEvent;
 
 /**
 * \class CbmRichRingTrackAssignBase
@@ -25,7 +26,7 @@ public:
   /**
     * brief Standard constructor.
     */
-  CbmRichRingTrackAssignBase() : fMaxDistance(999.), fMinNofHitsInRing(1) {}
+  CbmRichRingTrackAssignBase() {}
 
   /**
     * \brief Destructor.
@@ -43,12 +44,11 @@ public:
     * \param[in] rings Array of RICH rings.
     * \param[in] richProj Array of track projections onto the photodetector plane.
     **/
-  virtual void DoAssign(TClonesArray* rings, TClonesArray* richProj) = 0;
+  virtual void DoAssign(CbmEvent* event, TClonesArray* rings, TClonesArray* richProj) = 0;
 
 protected:
-  double
-    fMaxDistance;  // max. distance between ring center and track extrapolation
-  int fMinNofHitsInRing;  // min number of hits per ring
+  double fMaxDistance   = 999.;  // max. distance between ring center and track extrapolation
+  int fMinNofHitsInRing = 1;     // min number of hits per ring
 
 private:
   /**

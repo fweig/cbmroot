@@ -5,6 +5,7 @@
 #include "FairTrackParam.h"
 #include <Logger.h>
 
+#include "TGeoManager.h"
 #include "TObject.h"
 #include "TVector3.h"
 
@@ -12,9 +13,8 @@
 class CbmRichNavigationUtil {
 
 public:
-  static string FindIntersection(const FairTrackParam* par,
-                                 TVector3& crossPoint,
-                                 const string& volumeName) {
+  static string FindIntersection(const FairTrackParam* par, TVector3& crossPoint, const string& volumeName)
+  {
     TVector3 dirCos, pos;
     pos.SetXYZ(par->GetX(), par->GetY(), par->GetZ());
     Double_t nx, ny, nz;
@@ -24,13 +24,11 @@ public:
     return FindIntersection(dirCos, pos, crossPoint, volumeName);
   }
 
-  static string FindIntersection(const TVector3& dirCos,
-                                 const TVector3& pos,
-                                 TVector3& crossPoint,
-                                 const string& volumeName) {
+  static string FindIntersection(const TVector3& dirCos, const TVector3& pos, TVector3& crossPoint,
+                                 const string& volumeName)
+  {
     //  if (volumeName == "pmt_pixel")cout << "InitTrack: " << pos.X() << " " <<  pos.Y() << " " << pos.Z() << " " << dirCos.X() << " " << dirCos.Y()<< " " << dirCos.Z() << endl;
-    gGeoManager->InitTrack(
-      pos.X(), pos.Y(), pos.Z(), dirCos.X(), dirCos.Y(), dirCos.Z());
+    gGeoManager->InitTrack(pos.X(), pos.Y(), pos.Z(), dirCos.X(), dirCos.Y(), dirCos.Z());
 
     if (gGeoManager->IsOutside()) { return string(""); }
 
@@ -60,8 +58,7 @@ public:
         return string("");
       }
       // Check for NaN values
-      if (std::isnan(gGeoManager->GetCurrentPoint()[0])
-          || std::isnan(gGeoManager->GetCurrentPoint()[1])
+      if (std::isnan(gGeoManager->GetCurrentPoint()[0]) || std::isnan(gGeoManager->GetCurrentPoint()[1])
           || std::isnan(gGeoManager->GetCurrentPoint()[2])) {
         // if (volumeName == "pmt_pixel")std::cout << "Error! CbmRichNavigationUtil::FindIntersections: NaN values.\n";
         gGeoManager->PopDummy();
@@ -75,14 +72,10 @@ public:
     return string("");
   }
 
-  static void GetDirCos(const FairTrackParam* par,
-                        Double_t& nx,
-                        Double_t& ny,
-                        Double_t& nz) {
-    Double_t p =
-      (std::abs(par->GetQp()) != 0.) ? 1. / std::abs(par->GetQp()) : 1.e20;
-    Double_t pz = std::sqrt(
-      p * p / (par->GetTx() * par->GetTx() + par->GetTy() * par->GetTy() + 1));
+  static void GetDirCos(const FairTrackParam* par, Double_t& nx, Double_t& ny, Double_t& nz)
+  {
+    Double_t p    = (std::abs(par->GetQp()) != 0.) ? 1. / std::abs(par->GetQp()) : 1.e20;
+    Double_t pz   = std::sqrt(p * p / (par->GetTx() * par->GetTx() + par->GetTy() * par->GetTy() + 1));
     Double_t px   = par->GetTx() * pz;
     Double_t py   = par->GetTy() * pz;
     TVector3 unit = TVector3(px, py, pz).Unit();

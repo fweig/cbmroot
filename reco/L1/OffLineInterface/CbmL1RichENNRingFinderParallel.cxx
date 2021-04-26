@@ -19,17 +19,20 @@
 // CBM includes
 #include "CbmL1RichENNRingFinderParallel.h"
 
+#include "CbmEvent.h"
 #include "CbmRichHit.h"
 #include "CbmRichRing.h"
 
 #include "TClonesArray.h"
 #include "TStopwatch.h"
 
-#include "assert.h"
 #include <algorithm>
-#include <cmath>
 #include <iostream>
 #include <vector>
+
+#include <cmath>
+
+#include "assert.h"
 
 using std::cout;
 using std::endl;
@@ -38,9 +41,8 @@ using std::ios;
 using std::sqrt;
 using std::vector;
 
-CbmL1RichENNRingFinderParallel::CbmL1RichENNRingFinderParallel(Int_t verbose)
-  : fRecoTime(0), fNEvents(0) {
-  fVerbose = verbose;
+CbmL1RichENNRingFinderParallel::CbmL1RichENNRingFinderParallel(Int_t verbose) : fRecoTime(0), fNEvents(0)
+{
 #ifdef PRINT_TIMING
   TString name_tmp[NTimers] = {
 
@@ -69,9 +71,9 @@ CbmL1RichENNRingFinderParallel::~CbmL1RichENNRingFinderParallel() {}
 
 void CbmL1RichENNRingFinderParallel::Init() {}
 
-Int_t CbmL1RichENNRingFinderParallel::DoFind(TClonesArray* HitArray,
-                                             TClonesArray* /*ProjArray*/,
-                                             TClonesArray* RingArray) {
+Int_t CbmL1RichENNRingFinderParallel::DoFind(CbmEvent* event, TClonesArray* HitArray, TClonesArray* /*ProjArray*/,
+                                             TClonesArray* RingArray)
+{
   if (!RingArray || !HitArray) return 0;
 
   RingArray->Clear();
@@ -87,9 +89,9 @@ Int_t CbmL1RichENNRingFinderParallel::DoFind(TClonesArray* HitArray,
   vector<ENNRingHit> Up;
   vector<ENNRingHit> Down;
 
-  const Int_t nhits = HitArray->GetEntriesFast();
-
-  for (Int_t i = 0; i < nhits; ++i) {
+  const Int_t nhits = event ? event->GetNofData(ECbmDataType::kRichHit) : HitArray->GetEntriesFast();
+  for (Int_t i0 = 0; i0 < nhits; ++i0) {
+    Int_t i         = event ? event->GetIndex(ECbmDataType::kRichHit, i0) : i0;
     CbmRichHit* hit = L1_DYNAMIC_CAST<CbmRichHit*>(HitArray->At(i));
     if (!hit) continue;
     ENNRingHit tmp;
@@ -97,9 +99,8 @@ Int_t CbmL1RichENNRingFinderParallel::DoFind(TClonesArray* HitArray,
     tmp.y        = hit->GetY();
     tmp.outIndex = i;
     tmp.quality  = 0;
-    if (tmp.y > 0.) {
-      Up.push_back(tmp);
-    } else {
+    if (tmp.y > 0.) { Up.push_back(tmp); }
+    else {
       Down.push_back(tmp);
     }
   }
@@ -178,6 +179,7 @@ Int_t CbmL1RichENNRingFinderParallel::DoFind(TClonesArray* HitArray,
   for (vector<ENNRing>::iterator i = R.begin(); i != R.end(); ++i) {
     if (!i->on) continue;
     new ((*RingArray)[NRings]) CbmRichRing();
+    if (event != nullptr) event->AddData(ECbmDataType::kRichRing, NRings);
     CbmRichRing* ring = L1_DYNAMIC_CAST<CbmRichRing*>(RingArray->At(NRings));
     NRings++;
     ring->SetCenterX(i->x);
@@ -186,8 +188,7 @@ Int_t CbmL1RichENNRingFinderParallel::DoFind(TClonesArray* HitArray,
     ring->SetChi2(i->chi2);
     const THitIndex NHits = i->localIHits.size();
     for (THitIndex j = 0; j < NHits; j++) {
-      if (i->y > 0.)
-        ring->AddHit(outIndicesUp[i->localIHits[j]]);
+      if (i->y > 0.) ring->AddHit(outIndicesUp[i->localIHits[j]]);
       else
         ring->AddHit(outIndicesDown[i->localIHits[j]]);
     }
@@ -201,8 +202,8 @@ Int_t CbmL1RichENNRingFinderParallel::DoFind(TClonesArray* HitArray,
   cout.setf(ios::fixed);
   cout.setf(ios::showpoint);
   cout.precision(4);
-  cout << "L1ENN Reco time stat/this [ms]  : " << fRecoTime * 1000. / fNEvents
-       << "/" << timer.RealTime() * 1000. << endl;
+  cout << "L1ENN Reco time stat/this [ms]  : " << fRecoTime * 1000. / fNEvents << "/" << timer.RealTime() * 1000.
+       << endl;
 
 #ifdef PRINT_TIMING
   static float timeStat[NTimers];
@@ -221,23 +222,18 @@ Int_t CbmL1RichENNRingFinderParallel::DoFind(TClonesArray* HitArray,
   for (int i = 0; i < NTimers; i++) {
     timeStat[i] += fTimers[i].RealTime();
     cout.width(30);
-    cout << fTimersNames[i] << " timer = " << timeStat[i] * 1000. / fNEvents
-         << " / " << fTimers[i].RealTime() * 1000. << " | "
-         << timeStat[i] / timeStat[1] * 100 << endl;
+    cout << fTimersNames[i] << " timer = " << timeStat[i] * 1000. / fNEvents << " / " << fTimers[i].RealTime() * 1000.
+         << " | " << timeStat[i] / timeStat[1] * 100 << endl;
   }
 #endif  // PRINT_TIMING
   return NRings;
 }
 
 
-void CbmL1RichENNRingFinderParallel::ENNRingFinder(
-  const int NHits,
-  nsL1vector<ENNHitV>::TSimd& HitsV,
-  vector<ENNRing>& Rings,
-  float HitSize,
-  THitIndex MinRingHits,
-  fvec /*RMin*/,
-  fvec RMax) {
+void CbmL1RichENNRingFinderParallel::ENNRingFinder(const int NHits, nsL1vector<ENNHitV>::TSimd& HitsV,
+                                                   vector<ENNRing>& Rings, float HitSize, THitIndex MinRingHits,
+                                                   fvec /*RMin*/, fvec RMax)
+{
 #ifdef PRINT_TIMING
   GetTimer("All").Start(0);
 #endif  // PRINT_TIMING
@@ -289,8 +285,7 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(
 
   THitIndex i_mains[fvecLen] = {0};
 
-  THitIndex i_main_array
-    [NHits];  // need for proceed in paralled almost independent areas
+  THitIndex i_main_array[NHits];  // need for proceed in paralled almost independent areas
   for (THitIndex i = 0; i < NHits; i++) {
     i_main_array[i] = i;  // TODO
   }
@@ -315,8 +310,7 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(
       const THitIndex i_main = i_main_array[ii_main];
       const int i_main_4 = i_main % fvecLen, i_main_V = i_main / fvecLen;
       ENNHitV* i = &HitsV[i_main_V];
-      if (i->quality[i_main_4] >= StartHitMaxQuality)
-        continue;  // already found hit
+      if (i->quality[i_main_4] >= StartHitMaxQuality) continue;  // already found hit
 
       i_mains[i_4] = i_main;
 
@@ -328,8 +322,7 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(
       // for( int j = ileft[i_4]; j < iright[i_4]; ++j ){
       while ((HitsV[ileft / fvecLen].x[ileft % fvecLen] < left))
         ++ileft;  // TODO SIMDize
-      while ((iright < NHits)
-             && (HitsV[iright / fvecLen].x[ileft % fvecLen] < right))
+      while ((iright < NHits) && (HitsV[iright / fvecLen].x[ileft % fvecLen] < right))
         ++iright;
 
       for (int j = ileft; j < iright; ++j) {
@@ -347,10 +340,8 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(
         if (sHit.lr2[i_4] > AreaSize2) continue;
         if (ISUNLIKELY(j == i_main)) continue;
 
-        if (sHit.quality[i_4]
-            >= SearchHitMaxQuality) {  // CHECKME do we really need PickUpArea
-          PickUpArea[static_cast<int>(PickUpAreaSize[i_4]++)].CopyHit(
-            HitsV[j_V], j_4, i_4);
+        if (sHit.quality[i_4] >= SearchHitMaxQuality) {  // CHECKME do we really need PickUpArea
+          PickUpArea[static_cast<int>(PickUpAreaSize[i_4]++)].CopyHit(HitsV[j_V], j_4, i_4);
           continue;
         }
 
@@ -367,12 +358,8 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(
     int MaxPickUpAreaSize = 0;
     for (int i_4 = 0; i_4 < fvecLen; i_4++) {
       iHit.CopyHit(HitsV[i_mains[i_4] / fvecLen], i_mains[i_4] % fvecLen, i_4);
-      MaxSearchAreaSize = (MaxSearchAreaSize < SearchAreaSize[i_4])
-                            ? int(SearchAreaSize[i_4])
-                            : MaxSearchAreaSize;
-      MaxPickUpAreaSize = (MaxPickUpAreaSize < PickUpAreaSize[i_4])
-                            ? int(PickUpAreaSize[i_4])
-                            : MaxPickUpAreaSize;
+      MaxSearchAreaSize = (MaxSearchAreaSize < SearchAreaSize[i_4]) ? int(SearchAreaSize[i_4]) : MaxSearchAreaSize;
+      MaxPickUpAreaSize = (MaxPickUpAreaSize < PickUpAreaSize[i_4]) ? int(PickUpAreaSize[i_4]) : MaxPickUpAreaSize;
     }
 #ifdef PRINT_TIMING
     GetTimer("Ring finding: Prepare data").Stop();
@@ -381,9 +368,8 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(
 
 #ifdef PRINT_TIMING
     GetTimer("Ring finding: Init of param").Start(0);
-#endif  // PRINT_TIMING
-    for (int isa = 0; isa < MaxSearchAreaSize;
-         isa++) {  // TODO don't work w\o this because of nan in wights
+#endif
+    for (int isa = 0; isa < MaxSearchAreaSize; isa++) {  // TODO don't work w\o this because of nan in wights
       ENNSearchHitV& sHit = SearchArea[isa];
       const fvec validHit = (fvec(isa) < SearchAreaSize) & validRing;
       sHit.lx             = if3(validHit, sHit.lx, 0);
@@ -453,13 +439,10 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(
         const fvec d        = fabs(sqrt(dx * dx + dy * dy) - R);
         const fvec dSq      = d * d;
         sHit.on_ring        = (d <= HitSize) & validHit;
-        const fvec dp =
-          if3(sHit.on_ring, -1, fabs(sHit.C + sHit.Cx * X + sHit.Cy * Y));
-        Dmax = if3(((dp <= Dcut) & (dp > Dmax)), dp, Dmax);
+        const fvec dp       = if3(sHit.on_ring, -1, fabs(sHit.C + sHit.Cx * X + sHit.Cy * Y));
+        Dmax                = if3(((dp <= Dcut) & (dp > Dmax)), dp, Dmax);
 
-        fvec w = if3((sHit.on_ring),
-                     1. / (HitSizeSq_v + fabs(dSq)),
-                     1. / (1.e-5 + fabs(dSq)));
+        fvec w = if3((sHit.on_ring), 1. / (HitSizeSq_v + fabs(dSq)), 1. / (1.e-5 + fabs(dSq)));
         w      = if3((dp <= Dcut) & validHit, w, 0);
         S0 += w * sHit.S0;
         S1 += w * sHit.S1;
@@ -507,8 +490,8 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(
       R = sqrt(R2);
     }  // end of the final fit
 
-    validRing = !((NRingHits < MinRingHits_v) | (R2 > R2MaxCut)
-                  | (R2 < R2MinCut));  // ghost suppresion // TODO constants
+    validRing =
+      !((NRingHits < MinRingHits_v) | (R2 > R2MaxCut) | (R2 < R2MinCut));  // ghost suppresion // TODO constants
 //    cout << validRing << endl;
 #ifdef PRINT_TIMING
     GetTimer("Ring finding: Final fit").Stop();
@@ -612,8 +595,7 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(
       ring.localIHits.push_back(static_cast<THitIndex>(iHit.localIndex[i_4]));
       ring.NHits = 1;
       ring.chi2  = 0;
-      vector<THitIndex>
-        Shadow;  // save hit indices of hits, which's quality will be changed
+      vector<THitIndex> Shadow;  // save hit indices of hits, which's quality will be changed
       Shadow.reserve(15);
       Shadow.push_back(static_cast<THitIndex>(iHit.localIndex[i_4]));
       for (THitIndex ih = 0; ih < SearchAreaSize[i_4]; ih++) {
@@ -625,8 +607,7 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(
           ring.chi2 += d * d;
           ring.localIHits.push_back(int(sHit.localIndex[i_4]));
           ring.NHits++;
-          if (d <= ShadowSize)
-            Shadow.push_back(static_cast<THitIndex>(sHit.localIndex[i_4]));
+          if (d <= ShadowSize) Shadow.push_back(static_cast<THitIndex>(sHit.localIndex[i_4]));
         }
       }
       for (int ipu = 0; ipu < PickUpAreaSize[i_4]; ipu++) {
@@ -636,11 +617,9 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(
         const float d  = fabs(sqrt(dx * dx + dy * dy) - ring.r);
         if (ISLIKELY(d <= HitSize)) {
           ring.chi2 += d * d;
-          ring.localIHits.push_back(
-            static_cast<THitIndex>(puHit.localIndex[i_4]));
+          ring.localIHits.push_back(static_cast<THitIndex>(puHit.localIndex[i_4]));
           ring.NHits++;
-          if (d <= ShadowSize)
-            Shadow.push_back(static_cast<THitIndex>(puHit.localIndex[i_4]));
+          if (d <= ShadowSize) Shadow.push_back(static_cast<THitIndex>(puHit.localIndex[i_4]));
         }
       }
       if (ISUNLIKELY(ring.NHits < MinRingHits)) {
@@ -661,8 +640,7 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(
         const THitIndex ih_4 = ih % fvecLen;
         ENNHitV& hitV        = HitsV[ih / fvecLen];
 
-        hitV.quality[ih_4] =
-          (hitV.quality[ih_4] < quality) ? quality : hitV.quality[ih_4];
+        hitV.quality[ih_4] = (hitV.quality[ih_4] < quality) ? quality : hitV.quality[ih_4];
         //        shHit->quality = if3( shHit->quality < quality, quality, shHit->quality );
       }
     }  // i_4
@@ -701,9 +679,8 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(
     for (iR j = i + 1; j != Rend; ++j) {
       if (j->skip) continue;
 
-      float dist = j->r + i->r + HitSize2[0];
-      float distCentr =
-        sqrt((j->x - i->x) * (j->x - i->x) + (j->y - i->y) * (j->y - i->y));
+      float dist      = j->r + i->r + HitSize2[0];
+      float distCentr = sqrt((j->x - i->x) * (j->x - i->x) + (j->y - i->y) * (j->y - i->y));
       if (distCentr > dist) continue;
       Int_t NOverlaped = 0;
 
@@ -772,8 +749,7 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(
         shit.S4[0]  = shit.ly[0] * lr2;
         shit.C[0]   = -lr * 0.5;
         float w;
-        if (lr > 1.E-4)
-          w = 1. / lr;
+        if (lr > 1.E-4) w = 1. / lr;
         else
           w = 1.;
         shit.Cx[0] = w * shit.lx[0];
@@ -801,7 +777,8 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(
           if (shit.on_ring[0]) {
             n++;
             w = 1;
-          } else {
+          }
+          else {
             float dp = fabs(shit.C[0] + shit.Cx[0] * X + shit.Cy[0] * Y);
             if (dp > Dcut) continue;
             if (dp > Dmax) Dmax = dp;
@@ -874,8 +851,7 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(
         i->skip = 1;
         continue;
       }
-      i->chi2 =
-        i->chi2 / ((i->localIHits.size() - 3) * HitSize * HitSize);  //.3/.3;
+      i->chi2 = i->chi2 / ((i->localIHits.size() - 3) * HitSize * HitSize);  //.3/.3;
     }
   }
 
@@ -896,8 +872,7 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(
       for (iR j = i + 1; j != Rend; ++j) {
         if (i->skip) continue;
         float dist = j->r + best->r + HitSize2[0];
-        if (fabs(j->x - best->x) > dist || fabs(j->y - best->y) > dist)
-          continue;
+        if (fabs(j->x - best->x) > dist || fabs(j->y - best->y) > dist) continue;
         j->NOwn              = 0;
         const THitIndex maxJ = j->localIHits.size();
         for (THitIndex m = 0; m < maxJ; m++) {
@@ -908,7 +883,8 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(
       }
       i->on   = 1;
       i->skip = 1;
-    } else
+    }
+    else
       i->skip = 1;
   }
 #else   // NEW_SELECTION
@@ -931,17 +907,13 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(
       //                                 ( ir->NHits < 10 && ir->NOwn < 1.00*ir->NHits ) ||
       //                                 ( ir->NOwn  < .60*ir->NHits ) );
       if (ir->skip) continue;  // faster with if
-      const bool skip = ((ir->NOwn < 1.0 * MinRingHits)
-                         || (ir->NHits < 10 && ir->NOwn < 1.00 * ir->NHits)
+      const bool skip     = ((ir->NOwn < 1.0 * MinRingHits) || (ir->NHits < 10 && ir->NOwn < 1.00 * ir->NHits)
                          || (ir->NOwn < .60 * ir->NHits));
-      ir->skip        = skip;
-      const bool isBetter =
-        !skip
-        & ((ir->NOwn > 1.2 * bestOwn)
-           || (ir->NOwn >= 1. * bestOwn && ir->chi2 < bestChi2));
-      bestOwn  = (isBetter) ? ir->NOwn : bestOwn;  //Hits;
-      bestChi2 = (isBetter) ? ir->chi2 : bestChi2;
-      best     = (isBetter) ? ir : best;
+      ir->skip            = skip;
+      const bool isBetter = !skip & ((ir->NOwn > 1.2 * bestOwn) || (ir->NOwn >= 1. * bestOwn && ir->chi2 < bestChi2));
+      bestOwn             = (isBetter) ? ir->NOwn : bestOwn;  //Hits;
+      bestChi2            = (isBetter) ? ir->chi2 : bestChi2;
+      best                = (isBetter) ? ir : best;
     }
     if (best == Rend) break;
     best->skip                = 1;
@@ -954,8 +926,7 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(
     for (iR ir = Rbeg; ir != Rend; ++ir) {
       if (ir->skip) continue;
       float dist = ir->r + best->r + HitSize2[0];
-      if (fabs(ir->x - best->x) > dist || fabs(ir->y - best->y) > dist)
-        continue;
+      if (fabs(ir->x - best->x) > dist || fabs(ir->y - best->y) > dist) continue;
       ir->NOwn                 = 0;
       const THitIndex NHitsCur = ir->localIHits.size();
       for (THitIndex iih = 0; iih < NHitsCur; iih++) {
@@ -972,7 +943,8 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(
 #endif  // PRINT_TIMING
 }
 
-TStopwatch& CbmL1RichENNRingFinderParallel::GetTimer(TString t) {
+TStopwatch& CbmL1RichENNRingFinderParallel::GetTimer(TString t)
+{
   int i = 0;
   for (; (i < NTimers) && (fTimersNames[i] != t); i++)
     ;

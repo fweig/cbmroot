@@ -46,15 +46,13 @@ public:
   /**
     * \brief Inherited from CbmRichTrackExtrapolationBase.
     */
-  virtual void DoExtrapolation(TClonesArray* globalTracks,
-                               TClonesArray* extrapolatedTrackParams,
+  virtual void DoExtrapolation(CbmEvent* event, TClonesArray* globalTracks, TClonesArray* extrapolatedTrackParams,
                                double z);
 
 private:
-  TClonesArray* fRefPlanePoints;
-  TClonesArray* fMcTracks;
-  TClonesArray* fStsTracks;
-  TClonesArray* fStsTrackMatches;
+  TClonesArray* fRefPlanePoints  = nullptr;
+  TClonesArray* fStsTracks       = nullptr;
+  TClonesArray* fStsTrackMatches = nullptr;
 
   /**
     * \brief Copy constructor.
@@ -64,8 +62,7 @@ private:
   /**
     * \brief Assignment operator.
     */
-  CbmRichTrackExtrapolationIdeal&
-  operator=(const CbmRichTrackExtrapolationIdeal&);
+  CbmRichTrackExtrapolationIdeal& operator=(const CbmRichTrackExtrapolationIdeal&);
 };
 
 #endif

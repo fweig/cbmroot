@@ -11,6 +11,7 @@
 #define CBM_RICH_RING_FINDER_HOUGH
 
 #include "CbmRichRingFinder.h"
+
 #include <vector>
 
 class CbmRichRingFinderHoughImpl;
@@ -32,18 +33,6 @@ using std::vector;
 * \date 2008
 **/
 class CbmRichRingFinderHough : public CbmRichRingFinder {
-protected:
-  Int_t fNEvent;     // event number
-  Int_t fRingCount;  // number of found rings
-
-// choose between serial and SIMD implementation of the ring finder
-#ifdef HOUGH_SERIAL
-  CbmRichRingFinderHoughImpl* fHTImpl;
-#endif
-
-#ifdef HOUGH_SIMD
-  CbmRichRingFinderHoughSimd* fHTImpl;
-#endif
 
 public:
   /**
@@ -64,22 +53,30 @@ public:
   /**
 	 * \brief Inherited from CbmRichRingFinder.
 	 */
-  virtual Int_t DoFind(TClonesArray* rHitArray,
-                       TClonesArray* rProjArray,
-                       TClonesArray* rRingArray);
+  virtual Int_t DoFind(CbmEvent* event, TClonesArray* rHitArray, TClonesArray* rProjArray, TClonesArray* rRingArray);
 
   void SetUseAnnSelect(bool use) { fUseAnnSelect = use; }
 
 private:
-  bool fUseAnnSelect;
+  Int_t fEventNum      = 0;
+  Bool_t fUseAnnSelect = true;
+
+// choose between serial and SIMD implementation of the ring finder
+#ifdef HOUGH_SERIAL
+  CbmRichRingFinderHoughImpl* fHTImpl = nullptr;
+#endif
+
+#ifdef HOUGH_SIMD
+  CbmRichRingFinderHoughSimd* fHTImpl = nullptr;
+#endif
+
   /**
 	 * \brief Add found rings to the output TClonesArray.
 	 * \param[out] rRingArray Output array of CbmRichRing.
 	 * \param[in] rHitArray  Array of CbmRichHit.
 	 * \param[in] rings Found rings.
 	 */
-  void AddRingsToOutputArray(TClonesArray* rRingArray,
-                             TClonesArray* rHitArray,
+  void AddRingsToOutputArray(CbmEvent* event, TClonesArray* rRingArray, TClonesArray* rHitArray,
                              const vector<CbmRichRingLight*>& rings);
 
   /**

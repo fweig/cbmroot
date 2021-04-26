@@ -6,14 +6,16 @@
  **/
 #include "CbmRichTrackExtrapolationLittrack.h"
 
+#include "CbmEvent.h"
+#include "CbmGlobalTrack.h"
+#include "CbmStsTrack.h"
 #include "cbm/base/CbmLitToolFactory.h"
 #include "cbm/utils/CbmLitConverterFairTrackParam.h"
 #include "propagation/CbmLitTGeoTrackPropagator.h"
 
-#include "CbmGlobalTrack.h"
-#include "CbmStsTrack.h"
 #include "FairRootManager.h"
 #include "FairTrackParam.h"
+#include <Logger.h>
 
 #include "TClonesArray.h"
 
@@ -22,66 +24,56 @@
 using std::cout;
 using std::endl;
 
-CbmRichTrackExtrapolationLittrack::CbmRichTrackExtrapolationLittrack()
-  : CbmRichTrackExtrapolationBase(), fStsTracks(0), fLitPropagator() {}
+CbmRichTrackExtrapolationLittrack::CbmRichTrackExtrapolationLittrack() {}
 
 CbmRichTrackExtrapolationLittrack::~CbmRichTrackExtrapolationLittrack() {}
 
-void CbmRichTrackExtrapolationLittrack::Init() {
-  FairRootManager* ioman = FairRootManager::Instance();
-  if (NULL == ioman) {
-    Fatal("CbmRichTrackExtrapolationLittrack::Init",
-          "RootManager not instantised!");
-  }
+void CbmRichTrackExtrapolationLittrack::Init()
+{
+  FairRootManager* manager = FairRootManager::Instance();
+  if (manager == nullptr) LOG(fatal) << "CbmRichTrackExtrapolationLittrack::Init(): FairRootManager is nullptr.";
 
-  fStsTracks = (TClonesArray*) ioman->GetObject("StsTrack");
-  if (NULL == fStsTracks) {
-    Fatal("CbmRichTrackExtrapolationLittrack::Init", "No StsTrack array!");
-  }
+  fStsTracks = (TClonesArray*) manager->GetObject("StsTrack");
+  if (fStsTracks == nullptr) LOG(fatal) << "CbmRichTrackExtrapolationLittrack::Init(): No StsTrack array.";
 
   fLitPropagator = CbmLitToolFactory::CreateTrackPropagator("lit");
 }
 
-void CbmRichTrackExtrapolationLittrack::DoExtrapolation(
-  TClonesArray* globalTracks,
-  TClonesArray* extrapolatedTrackParams,
-  double z) {
-  cout << "CbmRichTrackExtrapolationLittrack::DoExtrapolation" << endl;
-  if (NULL == extrapolatedTrackParams) {
-    cout << "-E- CbmRichTrackExtrapolationLittrack::DoExtrapolate: "
-            "TrackParamArray missing!"
-         << endl;
+void CbmRichTrackExtrapolationLittrack::DoExtrapolation(CbmEvent* event, TClonesArray* globalTracks,
+                                                        TClonesArray* extrapolatedTrackParams, double z)
+{
+  if (extrapolatedTrackParams == nullptr) {
+    LOG(error) << "CbmRichTrackExtrapolationLittrack::DoExtrapolation(): extrapolatedTrackParams is nullptr.";
     return;
   }
 
-  if (NULL == globalTracks) {
-    cout << "-E- CbmRichTrackExtrapolationLittrack::DoExtrapolate: Track Array "
-            "missing!"
-         << endl;
+  if (globalTracks == nullptr) {
+    LOG(error) << "CbmRichTrackExtrapolationLittrack::DoExtrapolation(): globalTracks is nullptr.";
     return;
   }
 
-  Int_t nTracks = globalTracks->GetEntriesFast();
-  for (Int_t iTrack = 0; iTrack < nTracks; iTrack++) {
-    CbmGlobalTrack* gTrack = (CbmGlobalTrack*) globalTracks->At(iTrack);
-    new ((*extrapolatedTrackParams)[iTrack]) FairTrackParam();
-    Int_t idSTS = gTrack->GetStsTrackIndex();
-    if (idSTS < 0) continue;
-    CbmStsTrack* pSTStr = (CbmStsTrack*) fStsTracks->At(idSTS);
-    if (NULL == pSTStr) continue;
+  Int_t nofGlobalTracks = event ? event->GetNofData(ECbmDataType::kGlobalTrack) : globalTracks->GetEntriesFast();
+  for (Int_t iT0 = 0; iT0 < nofGlobalTracks; iT0++) {
+    Int_t iT               = event ? event->GetIndex(ECbmDataType::kGlobalTrack, iT0) : iT0;
+    CbmGlobalTrack* gTrack = static_cast<CbmGlobalTrack*>(globalTracks->At(iT));
+    new ((*extrapolatedTrackParams)[iT]) FairTrackParam();
+    if (event != nullptr) event->AddData(ECbmDataType::kRichTrackParamZ, iT);
+
+    Int_t stsInd = gTrack->GetStsTrackIndex();
+    if (stsInd < 0) continue;
+    CbmStsTrack* stsTrack = static_cast<CbmStsTrack*>(fStsTracks->At(stsInd));
+    if (stsTrack == nullptr) continue;
 
     CbmLitTrackParam litInParam, litOutParam;
-    CbmLitConverterFairTrackParam::FairTrackParamToCbmLitTrackParam(
-      pSTStr->GetParamLast(), &litInParam);
+    CbmLitConverterFairTrackParam::FairTrackParamToCbmLitTrackParam(stsTrack->GetParamLast(), &litInParam);
     std::vector<litfloat> F(25);
     litfloat length = 0;
 
     fLitPropagator->Propagate(&litInParam, &litOutParam, z, 11, &F, &length);
 
     FairTrackParam outParam;
-    CbmLitConverterFairTrackParam::CbmLitTrackParamToFairTrackParam(
-      &litOutParam, &outParam);
+    CbmLitConverterFairTrackParam::CbmLitTrackParamToFairTrackParam(&litOutParam, &outParam);
 
-    *(FairTrackParam*) (extrapolatedTrackParams->At(iTrack)) = outParam;
+    *(FairTrackParam*) (extrapolatedTrackParams->At(iT)) = outParam;
   }
 }

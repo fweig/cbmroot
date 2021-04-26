@@ -7,13 +7,16 @@
 
 #include "CbmRichTrackExtrapolationIdeal.h"
 
+#include "CbmEvent.h"
 #include "CbmGlobalTrack.h"
 #include "CbmMCTrack.h"
 #include "CbmRichPoint.h"
 #include "CbmStsTrack.h"
 #include "CbmTrackMatchNew.h"
+
 #include "FairRootManager.h"
 #include "FairTrackParam.h"
+#include <Logger.h>
 
 #include "TClonesArray.h"
 #include "TMatrixFSym.h"
@@ -23,95 +26,76 @@
 using std::cout;
 using std::endl;
 
-CbmRichTrackExtrapolationIdeal::CbmRichTrackExtrapolationIdeal()
-  : fRefPlanePoints(NULL)
-  , fMcTracks(NULL)
-  , fStsTracks(NULL)
-  , fStsTrackMatches(NULL) {}
+CbmRichTrackExtrapolationIdeal::CbmRichTrackExtrapolationIdeal() {}
 
 CbmRichTrackExtrapolationIdeal::~CbmRichTrackExtrapolationIdeal() {}
 
-void CbmRichTrackExtrapolationIdeal::Init() {
-  FairRootManager* ioman = FairRootManager::Instance();
-  if (NULL == ioman) {
-    Fatal("CbmRichTrackExtrapolationIdeal::Init",
-          "RootManager not instantised!");
-  }
+void CbmRichTrackExtrapolationIdeal::Init()
+{
+  FairRootManager* manager = FairRootManager::Instance();
+  if (manager = nullptr) LOG(fatal) << "CbmRichTrackExtrapolationIdeal::Init(): FairRootManager is nullptr.";
 
-  fMcTracks = (TClonesArray*) ioman->GetObject("MCTrack");
-  if (NULL == fMcTracks) {
-    Fatal("CbmRichTrackExtrapolationIdeal::Init", "No MCTrack array!");
-  }
+  fRefPlanePoints = (TClonesArray*) manager->GetObject("RefPlanePoint");
+  if (fRefPlanePoints = nullptr) LOG(fatal) << "CbmRichTrackExtrapolationIdeal::Init(): No RefPlanePoint array.";
 
-  fRefPlanePoints = (TClonesArray*) ioman->GetObject("RefPlanePoint");
-  if (NULL == fRefPlanePoints) {
-    Fatal("CbmRichTrackExtrapolationIdeal::Init", "No RefPlanePoint array!");
-  }
+  fStsTracks = (TClonesArray*) manager->GetObject("StsTrack");
+  if (fStsTracks = nullptr) LOG(fatal) << "CbmRichTrackExtrapolationIdeal::Init(): No StsTrack array.";
 
-  fStsTracks = (TClonesArray*) ioman->GetObject("StsTrack");
-  if (NULL == fStsTracks) {
-    Fatal("CbmRichTrackExtrapolationIdeal::Init", "No StsTrack array!");
-  }
-
-  fStsTrackMatches = (TClonesArray*) ioman->GetObject("StsTrackMatch");
-  if (NULL == fStsTrackMatches) {
-    Fatal("CbmRichTrackExtrapolationIdeal::Init", "No StsTrackMatch array!");
-  }
+  fStsTrackMatches = (TClonesArray*) manager->GetObject("StsTrackMatch");
+  if (fStsTrackMatches = nullptr) LOG(fatal) << "CbmRichTrackExtrapolationIdeal::Init(): No StsTrackMatch array.";
 }
 
-void CbmRichTrackExtrapolationIdeal::DoExtrapolation(
-  TClonesArray* globalTracks,
-  TClonesArray* extrapolatedTrackParams,
-  double /*z*/) {
-  if (NULL == extrapolatedTrackParams) {
-    cout << "-E- CbmRichTrackExtrapolationIdeal::DoExtrapolate: TrackParam "
-            "Array missing!"
-         << endl;
+void CbmRichTrackExtrapolationIdeal::DoExtrapolation(CbmEvent* event, TClonesArray* globalTracks,
+                                                     TClonesArray* extrapolatedTrackParams, double /*z*/)
+{
+
+  if (event != nullptr) {
+    LOG(fatal) << "CbmRichTrackExtrapolationIdeal::DoExtrapolation(): CbmEvent is not nullptr. "
+                  "This class does not support time-based mode. Please switch to event-by-event mode.";
+  }
+
+  if (extrapolatedTrackParams == nullptr) {
+    LOG(error) << "CbmRichTrackExtrapolationIdeal::DoExtrapolation(): extrapolatedTrackParams missing!";
     return;
   }
 
-  if (NULL == globalTracks) {
-    cout << "-E- CbmRichTrackExtrapolationIdeal::DoExtrapolate: Global Track "
-            "Array missing! "
-         << endl;
+  if (globalTracks == nullptr) {
+    LOG(error) << "CbmRichTrackExtrapolationIdeal::DoExtrapolation(): globalTracks missing!";
     return;
   }
 
-  // some default variables
-  Double_t tx, ty, qp;
   Double_t charge = 1.;
   TMatrixFSym covMat(5);
   for (Int_t i = 0; i < 5; i++)
     for (Int_t j = 0; j <= i; j++)
       covMat(i, j) = 0;
-  covMat(0, 0) = covMat(1, 1) = covMat(2, 2) = covMat(3, 3) = covMat(4, 4) =
-    1.e-4;
+  covMat(0, 0) = covMat(1, 1) = covMat(2, 2) = covMat(3, 3) = covMat(4, 4) = 1.e-4;
 
   TVector3 pos, mom;
-  Int_t nTracks = globalTracks->GetEntriesFast();
-  for (Int_t iTrack = 0; iTrack < nTracks; iTrack++) {
-    CbmGlobalTrack* gTrack = (CbmGlobalTrack*) globalTracks->At(iTrack);
-    new ((*extrapolatedTrackParams)[iTrack])
-      FairTrackParam(0., 0., 0., 0., 0., 0., covMat);
-    Int_t idSTS = gTrack->GetStsTrackIndex();
-    if (idSTS < 0) continue;
-    CbmStsTrack* pSTStr = (CbmStsTrack*) fStsTracks->At(idSTS);
-    if (NULL == pSTStr) continue;
-    CbmTrackMatchNew* pTrackMatch =
-      (CbmTrackMatchNew*) fStsTrackMatches->At(idSTS);
-    if (NULL == pTrackMatch) continue;
-    Int_t iMCmatch = pTrackMatch->GetMatchedLink().GetIndex();
-    for (Int_t ii = 0; ii < fRefPlanePoints->GetEntriesFast(); ii++) {
-      CbmRichPoint* pRefPlane = (CbmRichPoint*) fRefPlanePoints->At(ii);
-      if (pRefPlane->GetTrackID() == iMCmatch) {
-        pRefPlane->Momentum(mom);
-        pRefPlane->Position(pos);
-        tx = mom.Px() / mom.Pz();
-        ty = mom.Py() / mom.Pz();
-        qp = charge / mom.Mag();
+  Int_t nofGlobalTracks = globalTracks->GetEntriesFast();
+  for (Int_t iT = 0; iT < nofGlobalTracks; iT++) {
+    CbmGlobalTrack* gTrack = static_cast<CbmGlobalTrack*>(globalTracks->At(iT));
+    new ((*extrapolatedTrackParams)[iT]) FairTrackParam(0., 0., 0., 0., 0., 0., covMat);
+
+    Int_t stsInd = gTrack->GetStsTrackIndex();
+    if (stsInd < 0) continue;
+    CbmStsTrack* stsTrack = static_cast<CbmStsTrack*>(fStsTracks->At(stsInd));
+    if (stsTrack == nullptr) continue;
+    CbmTrackMatchNew* stsTrackMatch = static_cast<CbmTrackMatchNew*>(fStsTrackMatches->At(stsInd));
+    if (stsTrackMatch == nullptr) continue;
+    Int_t stsMcInd = stsTrackMatch->GetMatchedLink().GetIndex();
+
+    for (Int_t iR = 0; iR < fRefPlanePoints->GetEntriesFast(); iR++) {
+      CbmRichPoint* refPlanePoint = static_cast<CbmRichPoint*>(fRefPlanePoints->At(iR));
+      if (refPlanePoint->GetTrackID() == stsMcInd) {
+        refPlanePoint->Momentum(mom);
+        refPlanePoint->Position(pos);
+        Double_t tx = mom.Px() / mom.Pz();
+        Double_t ty = mom.Py() / mom.Pz();
+        Double_t qp = charge / mom.Mag();
         FairTrackParam richtrack(pos.X(), pos.Y(), pos.Z(), tx, ty, qp, covMat);
-        *(FairTrackParam*) (extrapolatedTrackParams->At(iTrack)) = richtrack;
-      }  // select MCPoint to that track
-    }    // loop MCPoints
-  }      // loop tracks
+        *(FairTrackParam*) (extrapolatedTrackParams->At(iT)) = richtrack;
+      }
+    }
+  }
 }

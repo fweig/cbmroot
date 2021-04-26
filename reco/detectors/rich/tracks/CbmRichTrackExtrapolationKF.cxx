@@ -6,52 +6,47 @@
  **/
 #include "CbmRichTrackExtrapolationKF.h"
 
-#include "CbmStsKFTrackFitter.h"
-
+#include "CbmEvent.h"
 #include "CbmGlobalTrack.h"
+#include "CbmStsKFTrackFitter.h"
 #include "CbmStsTrack.h"
+
 #include "FairRootManager.h"
 #include "FairTrackParam.h"
+#include <Logger.h>
 
 #include "TClonesArray.h"
 #include "TMatrixFSym.h"
 
 #include <iostream>
 
+
 using std::cout;
 using std::endl;
 
-CbmRichTrackExtrapolationKF::CbmRichTrackExtrapolationKF() : fStsTracks(0) {}
+CbmRichTrackExtrapolationKF::CbmRichTrackExtrapolationKF() {}
 
 CbmRichTrackExtrapolationKF::~CbmRichTrackExtrapolationKF() {}
 
-void CbmRichTrackExtrapolationKF::Init() {
-  FairRootManager* ioman = FairRootManager::Instance();
-  if (NULL == ioman) {
-    Fatal("CbmRichTrackExtrapolationKF::Init", "RootManager not instantised!");
-  }
+void CbmRichTrackExtrapolationKF::Init()
+{
+  FairRootManager* manager = FairRootManager::Instance();
+  if (manager == nullptr) LOG(fatal) << "CbmRichTrackExtrapolationKF::Init(): FairRootManager is nullptr.";
 
-  fStsTracks = (TClonesArray*) ioman->GetObject("StsTrack");
-  if (NULL == fStsTracks) {
-    Fatal("CbmRichTrackExtrapolationKF::Init", "No StsTrack array!");
-  }
+  fStsTracks = (TClonesArray*) manager->GetObject("StsTrack");
+  if (fStsTracks == nullptr) LOG(fatal) << "CbmRichTrackExtrapolationKF::Init(): No StsTrack array.";
 }
 
-void CbmRichTrackExtrapolationKF::DoExtrapolation(
-  TClonesArray* globalTracks,
-  TClonesArray* extrapolatedTrackParams,
-  double z) {
-  if (NULL == extrapolatedTrackParams) {
-    cout << "-E- CbmRichTrackExtrapolationKF::DoExtrapolate: TrackParamArray "
-            "missing!"
-         << endl;
+void CbmRichTrackExtrapolationKF::DoExtrapolation(CbmEvent* event, TClonesArray* globalTracks,
+                                                  TClonesArray* extrapolatedTrackParams, double z)
+{
+  if (extrapolatedTrackParams == nullptr) {
+    LOG(error) << "CbmRichTrackExtrapolationKF::DoExtrapolation(): extrapolatedTrackParams is nullptr.";
     return;
   }
 
-  if (NULL == globalTracks) {
-    cout
-      << "-E- CbmRichTrackExtrapolationKF::DoExtrapolate: Track Array missing!"
-      << endl;
+  if (globalTracks == nullptr) {
+    LOG(error) << "CbmRichTrackExtrapolationKF::DoExtrapolation(): globalTracks is nullptr.";
     return;
   }
 
@@ -59,26 +54,25 @@ void CbmRichTrackExtrapolationKF::DoExtrapolation(
   for (Int_t i = 0; i < 5; i++)
     for (Int_t j = 0; j <= i; j++)
       covMat(i, j) = 0;
-  covMat(0, 0) = covMat(1, 1) = covMat(2, 2) = covMat(3, 3) = covMat(4, 4) =
-    1.e-4;
+  covMat(0, 0) = covMat(1, 1) = covMat(2, 2) = covMat(3, 3) = covMat(4, 4) = 1.e-4;
 
   TVector3 pos, mom;
+  Int_t nofGlobalTracks = event ? event->GetNofData(ECbmDataType::kGlobalTrack) : globalTracks->GetEntriesFast();
+  for (Int_t iT0 = 0; iT0 < nofGlobalTracks; iT0++) {
+    Int_t iT               = event ? event->GetIndex(ECbmDataType::kGlobalTrack, iT0) : iT0;
+    CbmGlobalTrack* gTrack = static_cast<CbmGlobalTrack*>(globalTracks->At(iT));
+    new ((*extrapolatedTrackParams)[iT]) FairTrackParam(0., 0., 0., 0., 0., 0., covMat);
+    if (event != nullptr) event->AddData(ECbmDataType::kRichTrackParamZ, iT);
 
-  Int_t nTracks = globalTracks->GetEntriesFast();
-  cout << "bmRichTrackExtrapolationKF nofGlobalTracks:" << nTracks << endl;
-  for (Int_t iTrack = 0; iTrack < nTracks; iTrack++) {
-    CbmGlobalTrack* gTrack = (CbmGlobalTrack*) globalTracks->At(iTrack);
-    new ((*extrapolatedTrackParams)[iTrack])
-      FairTrackParam(0., 0., 0., 0., 0., 0., covMat);
-    Int_t idSTS = gTrack->GetStsTrackIndex();
-    if (idSTS < 0) continue;
-    CbmStsTrack* pSTStr = (CbmStsTrack*) fStsTracks->At(idSTS);
-    if (NULL == pSTStr) continue;
+    Int_t stsInd = gTrack->GetStsTrackIndex();
+    if (stsInd < 0) continue;
+    CbmStsTrack* stsTrack = static_cast<CbmStsTrack*>(fStsTracks->At(stsInd));
+    if (stsTrack == nullptr) continue;
     CbmStsKFTrackFitter KF;
     FairTrackParam ExTrack;
 
-    KF.Extrapolate(pSTStr, z, &ExTrack);
+    KF.Extrapolate(stsTrack, z, &ExTrack);
 
-    *(FairTrackParam*) (extrapolatedTrackParams->At(iTrack)) = ExTrack;
+    *(FairTrackParam*) (extrapolatedTrackParams->At(iT)) = ExTrack;
   }
 }

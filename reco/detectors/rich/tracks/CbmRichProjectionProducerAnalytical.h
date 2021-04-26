@@ -11,6 +11,7 @@
 #ifndef CBM_RICH_PROJECTION_PRODUCER_ANALYTICAL
 #define CBM_RICH_PROJECTION_PRODUCER_ANALYTICAL
 #include "CbmRichProjectionProducerBase.h"
+
 #include "TObject.h"
 #include "TVector3.h"
 
@@ -31,8 +32,7 @@ class FairTrackParam;
  * \author S.Lebedev (initial version by P.Stolpovsky in 2005)
  * \date 2016
  **/
-class CbmRichProjectionProducerAnalytical :
-  public CbmRichProjectionProducerBase {
+class CbmRichProjectionProducerAnalytical : public CbmRichProjectionProducerBase {
 public:
   /**
      * \brief Standard constructor.
@@ -53,40 +53,32 @@ public:
      * \brief Execute task.
      * \param[out] richProj Output array of created projections.
      */
-  virtual void DoProjection(TClonesArray* richProj);
+  virtual void DoProjection(CbmEvent* event, TClonesArray* richProj);
 
-  void GetPmtIntersectionPointTwoWings(const TVector3* centerP,
-                                       const TVector3* crossP,
-                                       const TVector3* ref,
+  void GetPmtIntersectionPointTwoWings(const TVector3* centerP, const TVector3* crossP, const TVector3* ref,
                                        TVector3* outPoint);
 
   /*
      * Find the intersection point with cylindrical PMT plane.
      *
      */
-  void GetPmtIntersectionPointCyl(const TVector3* centerP,
-                                  const TVector3* crossP,
-                                  const TVector3* ref,
+  void GetPmtIntersectionPointCyl(const TVector3* centerP, const TVector3* crossP, const TVector3* ref,
                                   TVector3* outPoint);
 
 
 private:
-  TClonesArray* fTrackParams;  // Starting points&directions
-
-  int fNHits;     // Number of hits
-  int fEventNum;  // number of events
+  TClonesArray* fTrackParams = nullptr;
+  int fEventNum              = 0;
 
   /**
      * \brief Copy constructor.
      */
-  CbmRichProjectionProducerAnalytical(
-    const CbmRichProjectionProducerAnalytical&);
+  CbmRichProjectionProducerAnalytical(const CbmRichProjectionProducerAnalytical&);
 
   /**
      * \brief Assignment operator.
      */
-  CbmRichProjectionProducerAnalytical&
-  operator=(const CbmRichProjectionProducerAnalytical&);
+  CbmRichProjectionProducerAnalytical& operator=(const CbmRichProjectionProducerAnalytical&);
 };
 
 #endif

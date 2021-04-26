@@ -14,7 +14,8 @@
 
 class TClonesArray;
 
-enum CbmRichRingTrackAssignClosestDAlgorithmEnum {
+enum CbmRichRingTrackAssignClosestDAlgorithmEnum
+{
   TrackRing,
   RingTrack,
   Combined
@@ -48,25 +49,26 @@ public:
   /**
 	 * \brief Inherited from CbmRichRingTrackAssignBase.
 	 */
-  void DoAssign(TClonesArray* rings, TClonesArray* richProj);
+  void DoAssign(CbmEvent* event, TClonesArray* rings, TClonesArray* richProj);
 
   /**
 	 * \brief Implementation of the ring-track version of the algorithm.
 	 */
-  void DoAssignRingTrack(TClonesArray* rings, TClonesArray* richProj);
+  void DoAssignRingTrack(CbmEvent* event, TClonesArray* rings, TClonesArray* richProj);
 
   /**
 	 * \brief Implementation of the track-ring version of the algorithm.
 	 */
-  void DoAssignTrackRing(TClonesArray* rings, TClonesArray* richProj);
+  void DoAssignTrackRing(CbmEvent* event, TClonesArray* rings, TClonesArray* richProj);
 
 private:
-  TClonesArray* fGlobalTracks;
-  TClonesArray* fTrdTracks;
+  TClonesArray* fGlobalTracks = nullptr;
+  TClonesArray* fTrdTracks    = nullptr;
 
-  double fTrdAnnCut;  // ANN cut for electron identification in TRD
-  bool fUseTrd;  // if true electron identification in TRD will be performed
-  CbmRichRingTrackAssignClosestDAlgorithmEnum fAlgorithmType;
+  double fTrdAnnCut = -0.5;   // ANN cut for electron identification in TRD
+  bool fUseTrd      = false;  // if true electron identification in TRD will be used
+  CbmRichRingTrackAssignClosestDAlgorithmEnum fAlgorithmType = RingTrack;
+  int fEventNum                                              = 0;
 
   /**
     * \brief Check if global track was identified as electron in the TRD detector.
@@ -83,8 +85,7 @@ private:
   /**
    * \brief Assignment operator.
    */
-  CbmRichRingTrackAssignClosestD&
-  operator=(const CbmRichRingTrackAssignClosestD&);
+  CbmRichRingTrackAssignClosestD& operator=(const CbmRichRingTrackAssignClosestD&);
 };
 
 #endif

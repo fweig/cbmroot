@@ -33,8 +33,7 @@ class CbmRichRingSelectAnn;
 class CbmRichRingFinderHoughImpl {
 
 protected:
-  static const unsigned short MAX_NOF_HITS =
-    65000;  // maximum number of hits in RICH detector
+  static const unsigned short MAX_NOF_HITS = 65000;  // maximum number of hits in RICH detector
 
   // parameters of the Hough Transform algorithm
   unsigned short fNofParts;  // number of groups of hits for HT
@@ -54,12 +53,10 @@ protected:
   unsigned short fNofBinsY;   // number of bins in Y direction
   unsigned short fNofBinsXY;  // fNofBinsX*fNofBinsY
 
-  unsigned short
-    fHTCut;  // cut number of entries in maximum bin of XY histogram
+  unsigned short fHTCut;  // cut number of entries in maximum bin of XY histogram
 
   unsigned short fNofBinsR;  // number of bins in radius histogram
-  unsigned short
-    fHTCutR;  // cut number of entries in maximum bin of Radius histogram
+  unsigned short fHTCutR;    // cut number of entries in maximum bin of Radius histogram
 
   unsigned short fMinNofHitsInArea;  // minimum number of hits in the local area
 
@@ -78,11 +75,10 @@ protected:
 
   bool fUseAnnSelect;
 
-  vector<CbmRichHoughHit> fData;  // Rich hits
-  vector<unsigned short> fHist;   // XY histogram
-  vector<unsigned short> fHistR;  // Radius histogram
-  vector<vector<unsigned int>>
-    fHitInd;  // store hit indexes for different group of hits
+  vector<CbmRichHoughHit> fData;          // Rich hits
+  vector<unsigned short> fHist;           // XY histogram
+  vector<unsigned short> fHistR;          // Radius histogram
+  vector<vector<unsigned int>> fHitInd;   // store hit indexes for different group of hits
   vector<CbmRichRingLight*> fFoundRings;  // collect found rings
   CbmRichRingFitterCOP* fFitCOP;          // COP ring fitter
   CbmRichRingSelectAnn* fANNSelect;       // ANN selection criteria
@@ -113,8 +109,7 @@ public:
 	 * @param[out] yc Y coordinate of the ring center.
 	 * @param[out] r Ring radius.
 	 */
-  void
-  CalculateRingParameters(float x[], float y[], float* xc, float* yc, float* r);
+  void CalculateRingParameters(float x[], float y[], float* xc, float* yc, float* r);
 
   /**
 	 * \brief Run HT for each hit.
@@ -128,8 +123,7 @@ public:
 	 * \param[out] indmin Minimum index of the hit in local area.
 	 * \param[out] indmax Maximum index of the hit in local area.
 	 */
-  virtual void
-  DefineLocalAreaAndHits(float x0, float y0, int* indmin, int* indmax);
+  virtual void DefineLocalAreaAndHits(float x0, float y0, int* indmin, int* indmax);
 
   /**
 	 * \brief Run HoughTransformGroup for each group of hits.
@@ -144,8 +138,7 @@ public:
     * \param[in] indmax Maximum index of the hit in local area.
     * \param[in] iPart Index of the hit group.
     */
-  virtual void
-  HoughTransformGroup(unsigned int indmin, unsigned int indmax, int iPart);
+  virtual void HoughTransformGroup(unsigned int indmin, unsigned int indmax, int iPart);
 
   /**
 	 * \brief Find peak in the HT histograms.
@@ -194,7 +187,8 @@ public:
 	 * \brief Set array of hits.
 	 * \param[in] data Array of hits.
 	 */
-  void SetData(const vector<CbmRichHoughHit>& data) {
+  void SetData(const vector<CbmRichHoughHit>& data)
+  {
     fData.clear();
     fData = data;
   }

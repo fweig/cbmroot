@@ -44,13 +44,12 @@ public:
   /**
    * \brief Inherited from CbmRichRingTrackAssignBase.
    */
-  virtual void DoAssign(TClonesArray* rings, TClonesArray* richProj);
+  virtual void DoAssign(CbmEvent* event, TClonesArray* rings, TClonesArray* richProj);
 
 private:
-  TClonesArray* fMcTracks;
-  TClonesArray* fGlobalTracks;
-  TClonesArray* fRingMatches;
-  TClonesArray* fStsTrackMatches;
+  TClonesArray* fGlobalTracks    = nullptr;
+  TClonesArray* fRingMatches     = nullptr;
+  TClonesArray* fStsTrackMatches = nullptr;
 
   /**
     * \brief Copy constructor.

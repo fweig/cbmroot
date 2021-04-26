@@ -6,9 +6,11 @@
 **/
 
 #include "CbmRichRingFinderHough.h"
+
 #include "CbmRichRingFinderHoughImpl.h"
 //#include "CbmRichRingFinderHoughSimd.h"
 //#include "../../littrack/utils/CbmLitMemoryManagment.h"
+#include "CbmEvent.h"
 #include "CbmRichHit.h"
 #include "CbmRichRing.h"
 
@@ -24,7 +26,7 @@ using std::endl;
 using std::vector;
 
 CbmRichRingFinderHough::CbmRichRingFinderHough()
-  : fNEvent(0), fRingCount(0), fHTImpl(NULL), fUseAnnSelect(true) {
+{
 #ifdef HOUGH_SERIAL
   fHTImpl = new CbmRichRingFinderHoughImpl();
 #endif
@@ -34,54 +36,52 @@ CbmRichRingFinderHough::CbmRichRingFinderHough()
 #endif
 }
 
-void CbmRichRingFinderHough::Init() {
+void CbmRichRingFinderHough::Init()
+{
   fHTImpl->SetUseAnnSelect(fUseAnnSelect);
   fHTImpl->Init();
 }
 
 CbmRichRingFinderHough::~CbmRichRingFinderHough() { delete fHTImpl; }
 
-Int_t CbmRichRingFinderHough::DoFind(TClonesArray* rHitArray,
-                                     TClonesArray* /*rProjArray*/,
-                                     TClonesArray* rRingArray) {
+Int_t CbmRichRingFinderHough::DoFind(CbmEvent* event, TClonesArray* rHitArray, TClonesArray* /*rProjArray*/,
+                                     TClonesArray* rRingArray)
+{
   TStopwatch timer;
   timer.Start();
-  fNEvent++;
-  LOG(info) << "-I- CbmRichRingFinderHough  Event/Timeslice no. " << fNEvent;
+  fEventNum++;
 
   vector<CbmRichHoughHit> UpH;
   vector<CbmRichHoughHit> DownH;
-  fRingCount = 0;
 
-  if (NULL == rHitArray) {
-    LOG(error) << "-E- CbmRichRingFinderHough::DoFind: Hit array missing!"
-               << rHitArray;
-    return -1;
-  }
-  const Int_t nhits = rHitArray->GetEntriesFast();
-  if (nhits <= 0) {
-    LOG(error) << "-E- CbmRichRingFinderHough::DoFind: No hits in this event!";
+  if (rHitArray == nullptr) {
+    LOG(error) << "CbmRichRingFinderHough::DoFind(): Hit array is nullptr.";
     return -1;
   }
 
-  UpH.reserve(nhits / 2);
-  DownH.reserve(nhits / 2);
+  const Int_t nofRichHits = event ? event->GetNofData(ECbmDataType::kRichHit) : rHitArray->GetEntriesFast();
+  if (nofRichHits <= 0) {
+    LOG(debug) << "CbmRichRingFinderHough::DoFind(): No RICH hits in this event.";
+    return -1;
+  }
+
+  UpH.reserve(nofRichHits / 2);
+  DownH.reserve(nofRichHits / 2);
 
   // convert CbmRichHit to CbmRichHoughHit and
   // sort hits according to the photodetector (up or down)
-  for (Int_t iHit = 0; iHit < nhits; iHit++) {
-    CbmRichHit* hit = static_cast<CbmRichHit*>(rHitArray->At(iHit));
-    if (hit) {
+  for (Int_t iH0 = 0; iH0 < nofRichHits; iH0++) {
+    Int_t iH        = event ? event->GetIndex(ECbmDataType::kRichHit, iH0) : iH0;
+    CbmRichHit* hit = static_cast<CbmRichHit*>(rHitArray->At(iH));
+    if (hit != nullptr) {
       CbmRichHoughHit tempPoint;
-      tempPoint.fHit.fX  = hit->GetX();
-      tempPoint.fHit.fY  = hit->GetY();
-      tempPoint.fHit.fId = iHit;
-      tempPoint.fX2plusY2 =
-        hit->GetX() * hit->GetX() + hit->GetY() * hit->GetY();
-      tempPoint.fTime   = hit->GetTime();
-      tempPoint.fIsUsed = false;
-      if (hit->GetY() >= 0)
-        UpH.push_back(tempPoint);
+      tempPoint.fHit.fX   = hit->GetX();
+      tempPoint.fHit.fY   = hit->GetY();
+      tempPoint.fHit.fId  = iH;
+      tempPoint.fX2plusY2 = hit->GetX() * hit->GetX() + hit->GetY() * hit->GetY();
+      tempPoint.fTime     = hit->GetTime();
+      tempPoint.fIsUsed   = false;
+      if (hit->GetY() >= 0) UpH.push_back(tempPoint);
       else
         DownH.push_back(tempPoint);
     }
@@ -91,12 +91,10 @@ Int_t CbmRichRingFinderHough::DoFind(TClonesArray* rHitArray,
   Double_t dt1 = timer.RealTime();
 
   timer.Start();
-  LOG(debug) << "-I- CbmRichRingFinderHough nofHits Up:" << UpH.size();
 
   fHTImpl->SetData(UpH);
   fHTImpl->DoFind();
-  if (rRingArray != NULL)
-    AddRingsToOutputArray(rRingArray, rHitArray, fHTImpl->GetFoundRings());
+  if (rRingArray != nullptr) AddRingsToOutputArray(event, rRingArray, rHitArray, fHTImpl->GetFoundRings());
   //for_each(UpH.begin(), UpH.end(), DeleteObject());
   UpH.clear();
 
@@ -104,29 +102,26 @@ Int_t CbmRichRingFinderHough::DoFind(TClonesArray* rHitArray,
   Double_t dt2 = timer.RealTime();
 
   timer.Start();
-  LOG(debug) << "-I- CbmRichRingFinderHough nofHits Down:" << DownH.size();
   fHTImpl->SetData(DownH);
   fHTImpl->DoFind();
-  if (rRingArray != NULL)
-    AddRingsToOutputArray(rRingArray, rHitArray, fHTImpl->GetFoundRings());
+  if (rRingArray != nullptr) AddRingsToOutputArray(event, rRingArray, rHitArray, fHTImpl->GetFoundRings());
   //for_each(DownH.begin(), DownH.end(), DeleteObject());
   DownH.clear();
   timer.Stop();
   Double_t dt3 = timer.RealTime();
 
-  LOG(info) << "CbmRichRingFinderHough. Number of found rings "
-            << rRingArray->GetEntriesFast();
-
-  LOG(info) << "time1:" << dt1 << " time2:" << dt2 << " time3:" << dt3
-            << " total:" << dt1 + dt2 + dt3;
+  int nofFoundRings = event ? event->GetNofData(ECbmDataType::kRichRing) : rRingArray->GetEntriesFast();
+  LOG(info) << "CbmRichRingFinderHough::DoFind(): Event:" << fEventNum << " hits:" << nofRichHits
+            << " rings:" << nofFoundRings << " ringsInTS:" << rRingArray->GetEntriesFast()
+            << " Time:" << dt1 + dt2 + dt3;
 
   return 1;
 }
 
-void CbmRichRingFinderHough::AddRingsToOutputArray(
-  TClonesArray* rRingArray,
-  TClonesArray* rHitArray,
-  const vector<CbmRichRingLight*>& rings) {
+void CbmRichRingFinderHough::AddRingsToOutputArray(CbmEvent* event, TClonesArray* rRingArray, TClonesArray* rHitArray,
+                                                   const vector<CbmRichRingLight*>& rings)
+{
+
   for (UInt_t iRing = 0; iRing < rings.size(); iRing++) {
     if (rings[iRing]->GetRecFlag() == -1) continue;
     CbmRichRing* r    = new CbmRichRing();
@@ -143,7 +138,8 @@ void CbmRichRingFinderHough::AddRingsToOutputArray(
       }
     }
     r->SetTime(ringTime / (double) ringCounter);
-    new ((*rRingArray)[fRingCount]) CbmRichRing(*r);
-    fRingCount++;
+    int nofRings = rRingArray->GetEntriesFast();
+    new ((*rRingArray)[nofRings]) CbmRichRing(*r);
+    if (event != nullptr) event->AddData(ECbmDataType::kRichRing, nofRings);
   }
 }

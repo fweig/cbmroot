@@ -20,6 +20,7 @@ class CbmRichRingFitterBase;
 class CbmRichTrackExtrapolationBase;
 class CbmRichProjectionProducerBase;
 class CbmRichRingTrackAssignBase;
+class CbmEvent;
 
 using std::string;
 
@@ -79,7 +80,8 @@ public:
     */
   void SetZTrackExtrapolation(Double_t z) { fZTrackExtrapolation = z; }
 
-  void UseMCbmSetup() {
+  void UseMCbmSetup()
+  {
     this->SetRunExtrapolation(false);
     this->SetRunProjection(false);
     this->SetRunTrackAssign(false);
@@ -87,39 +89,41 @@ public:
   }
 
 private:
-  TClonesArray* fRichHits;
-  TClonesArray* fRichRings;
-  TClonesArray* fRichProjections;
-  TClonesArray* fRichTrackParamZ;
-  TClonesArray* fGlobalTracks;
+  TClonesArray* fRichHits        = nullptr;
+  TClonesArray* fRichRings       = nullptr;
+  TClonesArray* fRichProjections = nullptr;
+  TClonesArray* fRichTrackParamZ = nullptr;
+  TClonesArray* fGlobalTracks    = nullptr;
+  TClonesArray* fCbmEvents       = nullptr;
 
-  CbmRichRingFinder* fRingFinder;      // pointer to ring finder algorithm
-  CbmRichRingFitterBase* fRingFitter;  // pointer to ring fitting algorithm
-  CbmRichTrackExtrapolationBase*
-    fTrackExtrapolation;  // pointer to track extrapolation algorithm
-  CbmRichProjectionProducerBase*
-    fProjectionProducer;  // pointer to projection producer
-  CbmRichRingTrackAssignBase*
-    fRingTrackAssign;  // pointer to track assignment algorithm
+  Int_t fEventNum = 0;  // event or timeslice counter
 
-  // What do you wan to run.
-  bool fRunExtrapolation;
-  bool fRunProjection;
-  bool fRunFinder;
-  bool fRunFitter;
-  bool fRunTrackAssign;
+  // pointers to the algorithms
+  CbmRichRingFinder* fRingFinder                     = nullptr;
+  CbmRichRingFitterBase* fRingFitter                 = nullptr;
+  CbmRichTrackExtrapolationBase* fTrackExtrapolation = nullptr;
+  CbmRichProjectionProducerBase* fProjectionProducer = nullptr;
+  CbmRichRingTrackAssignBase* fRingTrackAssign       = nullptr;
 
-  bool fUseHTAnnSelect;
+  // What do you want to run.
+  bool fRunExtrapolation = true;
+  bool fRunProjection    = true;
+  bool fRunFinder        = true;
+  bool fRunFitter        = true;
+  bool fRunTrackAssign   = true;
+
+  // Run ring-candidate selection algorithm based on ANN
+  bool fUseHTAnnSelect = true;
 
   // Algorithm names for each step of reconstruction.
-  string fExtrapolationName;  // name of extrapolation algorithm
-  string fProjectionName;     // name of track projection algorithm
-  string fFinderName;         // name of ring finder algorithm
-  string fFitterName;         // name of ring fitter algorithm
-  string fTrackAssignName;    // name of track-ring matching algorithm
+  string fExtrapolationName = "littrack";
+  string fProjectionName    = "analytical";
+  string fFinderName        = "hough";
+  string fFitterName        = "ellipse_tau";
+  string fTrackAssignName   = "closest_distance";
 
-  Double_t
-    fZTrackExtrapolation;  // Z coordinate to which one wants to extrapolate STS tracks
+  // Z coordinate where STS tracks will be extrapolated.
+  Double_t fZTrackExtrapolation = 260.;
 
   /**
     * \brief
@@ -149,27 +153,32 @@ private:
   /**
     * \brief
     */
-  void RunExtrapolation();
+  void ProcessData(CbmEvent* event);
 
   /**
     * \brief
     */
-  void RunProjection();
+  void RunExtrapolation(CbmEvent* event);
 
   /**
     * \brief
     */
-  void RunFinder();
+  void RunProjection(CbmEvent* event);
 
   /**
     * \brief
     */
-  void RunFitter();
+  void RunFinder(CbmEvent* event);
 
   /**
     * \brief
     */
-  void RunTrackAssign();
+  void RunFitter(CbmEvent* event);
+
+  /**
+    * \brief
+    */
+  void RunTrackAssign(CbmEvent* event);
 
   /**
     * \brief Copy constructor.

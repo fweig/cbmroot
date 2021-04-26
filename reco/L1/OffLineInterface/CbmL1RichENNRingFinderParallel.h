@@ -43,9 +43,7 @@ class CbmL1RichENNRingFinderParallel : public CbmRichRingFinder {
     int quality;           // quality of the best ring with this hit
     THitIndex localIndex;  // index in local copy of Clone array
 
-    static bool Compare(const ENNHit& h1, const ENNHit& h2) {
-      return (h1.x < h2.x);
-    };
+    static bool Compare(const ENNHit& h1, const ENNHit& h2) { return (h1.x < h2.x); };
   };
 
 
@@ -62,13 +60,15 @@ class CbmL1RichENNRingFinderParallel : public CbmRichRingFinder {
     fvec x, y;        // coordinates
     fvec quality;     // quality of the best ring with this hit
     fvec localIndex;  // index in local copy of Clone array
-    void CopyHit(ENNHit& a, int i) {
+    void CopyHit(ENNHit& a, int i)
+    {
       localIndex[i] = a.localIndex;
       x[i]          = a.x;
       y[i]          = a.y;
       quality[i]    = a.quality;
     }
-    void CopyHit(ENNHitV& a, int j, int i) {
+    void CopyHit(ENNHitV& a, int j, int i)
+    {
       localIndex[i] = a.localIndex[j];
       x[i]          = a.x[j];
       y[i]          = a.y[j];
@@ -81,11 +81,13 @@ class CbmL1RichENNRingFinderParallel : public CbmRichRingFinder {
 
     fvec outIndex;  // index in local copy of Clone array
 
-    void CopyHit(ENNRingHit& a, int i) {
+    void CopyHit(ENNRingHit& a, int i)
+    {
       outIndex[i] = a.outIndex;
       ENNHitV::CopyHit(a, i);
     }
-    void CopyHit(ENNRingHitV& a, int j, int i) {
+    void CopyHit(ENNRingHitV& a, int j, int i)
+    {
       outIndex[i] = a.outIndex[j];
       ENNHitV::CopyHit(a, j, i);
     };
@@ -144,9 +146,9 @@ class CbmL1RichENNRingFinderParallel : public CbmRichRingFinder {
     bool skip;                          // skip the ring during selection
     std::vector<THitIndex> localIHits;  // indexes of hits in local array
 
-    static bool CompareENNHRings(const ENNRing& r1, const ENNRing& r2) {
-      if (r1.NHits != r2.NHits)
-        return (r1.NHits > r2.NHits);
+    static bool CompareENNHRings(const ENNRing& r1, const ENNRing& r2)
+    {
+      if (r1.NHits != r2.NHits) return (r1.NHits > r2.NHits);
       else
         return (r1.chi2 < r2.chi2);
     };
@@ -172,13 +174,8 @@ class CbmL1RichENNRingFinderParallel : public CbmRichRingFinder {
   };
 
 
-  void ENNRingFinder(const int NHits,
-                     nsL1vector<ENNHitV>::TSimd& HitsV,
-                     std::vector<ENNRing>& Rings,
-                     float HitSize         = 1.,
-                     THitIndex MinRingHits = 5,
-                     fvec RMin             = 2.,
-                     fvec RMax             = 6.);
+  void ENNRingFinder(const int NHits, nsL1vector<ENNHitV>::TSimd& HitsV, std::vector<ENNRing>& Rings,
+                     float HitSize = 1., THitIndex MinRingHits = 5, fvec RMin = 2., fvec RMax = 6.);
 
 public:
   /** Standard constructor **/
@@ -198,15 +195,16 @@ public:
    **
    *@value Number of tracks created
    **/
-  Int_t DoFind(TClonesArray* hitArray,
-               TClonesArray* projArray,
-               TClonesArray* ringArray);
+  Int_t DoFind(CbmEvent* event, TClonesArray* hitArray, TClonesArray* projArray, TClonesArray* ringArray);
 
 private:
   Float_t fRecoTime;
   Int_t fNEvents;
 
-  enum { NTimers = 11 };
+  enum
+  {
+    NTimers = 11
+  };
   TStopwatch fTimers[NTimers];    // timers for different parts of algorithm
   TString fTimersNames[NTimers];  // names which are correspond to the timers.
   TStopwatch& GetTimer(TString t);

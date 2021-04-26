@@ -50,13 +50,12 @@ public:
   /**
      * \brief Inherited from CbmRichTrackExtrapolationBase.
      */
-  virtual void DoExtrapolation(TClonesArray* globalTracks,
-                               TClonesArray* extrapolatedTrackParams,
+  virtual void DoExtrapolation(CbmEvent* event, TClonesArray* globalTracks, TClonesArray* extrapolatedTrackParams,
                                double z);
 
 private:
-  TClonesArray* fStsTracks;
-  TrackPropagatorPtr fLitPropagator;
+  TClonesArray* fStsTracks          = nullptr;
+  TrackPropagatorPtr fLitPropagator = nullptr;
 
 private:
   /**
