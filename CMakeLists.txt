@@ -266,7 +266,7 @@ else(CBMROOT_MINIMAL)
     endif()
   endif()
 
-  find_package(GEANT3 REQUIRED)
+  find_package2(GEANT3 REQUIRED)
   find_package(GEANT4)
   find_package(GEANT4DATA)
   find_package(GEANT4VMC)
