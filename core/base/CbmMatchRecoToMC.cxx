@@ -433,19 +433,21 @@ void CbmMatchRecoToMC::ReadAndCreateDataBranches() {
   if (nullptr == fTofDigis) {
     LOG(info) << "No calibrated tof digi vector in the input files => trying original vector";
     fTofDigis = ioman->InitObjectAs<std::vector<CbmTofDigi> const*>("TofDigi");
-    if (nullptr == fTofDigis) { LOG(fatal) << "No original tof digi vector in the input files!"; }
+    if (nullptr == fTofDigis) { LOG(info) << "No original tof digi vector in the input files! Ignore TOF!"; }
   }
   else
     LOG(info) << "Found calibrated tof digi vector in one of the input files";
 
-  fTofDigiMatch = ioman->InitObjectAs<std::vector<CbmMatch> const*>("TofCalDigiMatch");
-  if (nullptr == fTofDigiMatch) {
-    LOG(info) << "No calibrated tof digi to point match vector in the input files => trying original vector";
-    fTofDigiMatch = ioman->InitObjectAs<std::vector<CbmMatch> const*>("TofDigiMatch");
-    if (nullptr == fTofDigiMatch) { LOG(fatal) << "No original tof digi to point match vector in the input files!"; }
+  if (nullptr != fTofDigis) {
+    fTofDigiMatch = ioman->InitObjectAs<std::vector<CbmMatch> const*>("TofCalDigiMatch");
+    if (nullptr == fTofDigiMatch) {
+      LOG(info) << "No calibrated tof digi to point match vector in the input files => trying original vector";
+      fTofDigiMatch = ioman->InitObjectAs<std::vector<CbmMatch> const*>("TofDigiMatch");
+      if (nullptr == fTofDigiMatch) { LOG(fatal) << "No original tof digi to point match vector in the input files!"; }
+    }
+    else
+      LOG(info) << "Found calibrated tof digi to point match vector in one of the input files";
   }
-  else
-    LOG(info) << "Found calibrated tof digi to point match vector in one of the input files";
 }
 
 
