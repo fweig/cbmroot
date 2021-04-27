@@ -506,7 +506,7 @@ inline void L1Algo::f20(  // input
       if (isec != TRACKS_FROM_TRIPLETS_ITERATION)
 #endif
         if (chi2[i1_4] > DOUBLET_CHI2_CUT) continue;
-      T1.t[i1_4] = hitm.time;
+          //       T1.t[i1_4] = hitm.time;
 
 #ifdef USE_EVENT_NUMBER
       T1.n[i1_4] = hitm.n;
@@ -913,6 +913,8 @@ inline void L1Algo::f31(  // input
     }
     else
       L1Filter(T_3[i3_V], info, u_back_[i3_V]);
+
+    if (!fmCBMmode) FilterTime(T_3[i3_V], timeR[i3_V], timeER[i3_V]);
 
     //  FilterTime(T_3[i3_V], timeR[i3_V], timeER[i3_V]);
   }
@@ -1836,6 +1838,8 @@ void L1Algo::CATrackFinder()
         // if ( (isec == kFastPrimIter) )
         //   PickNeighbour = 0.5; // TODO understand why works with 0.2
 
+        MaxInvMom = 1.0 / 0.5;  // max considered q/p
+
         if (fmCBMmode) MaxInvMom = 1.5 / 0.1;  // max considered q/p
         if ((isec == kAllPrimJumpIter) || (isec == kAllSecIter) || (isec == kAllSecJumpIter)) MaxInvMom = 1.0 / 0.1;
         if ((isec == kAllPrimIter) || (isec == kAllPrimEIter) || (isec == kAllSecEIter)) MaxInvMom = 1. / 0.05;
@@ -2192,15 +2196,15 @@ void L1Algo::CATrackFinder()
             best_chi2 = best_chi2 / ndf;  //normalize
 
 #ifndef TRACKS_FROM_TRIPLETS
-//             if (fGhostSuppression) {
-//               if (best_L == 3) {
-//                 // if( isec == kAllSecIter ) continue; // too /*short*/ secondary track
-//                 if (((isec == kAllSecIter) || (isec == kAllSecEIter) || (isec == kAllSecJumpIter)) && (istaF != 0))
-//                   continue;  // too /*short*/ non-MAPS track
-//                 if ((isec != kAllSecIter) && (isec != kAllSecEIter) && (isec != kAllSecJumpIter) && (best_chi2 > 5.0))
-//                   continue;
-//               }
-//             }
+            if (fGhostSuppression) {
+              if (best_L == 3) {
+                // if( isec == kAllSecIter ) continue; // too /*short*/ secondary track
+                if (((isec == kAllSecIter) || (isec == kAllSecEIter) || (isec == kAllSecJumpIter)) && (istaF != 0))
+                  continue;  // too /*short*/ non-MAPS track
+                if ((isec != kAllSecIter) && (isec != kAllSecEIter) && (isec != kAllSecJumpIter) && (best_chi2 > 5.0))
+                  continue;
+              }
+            }
 #endif
             best_tr.Set(istaF, best_L, best_chi2, first_trip.GetQpOrig());
             L1Branch& tr = CandidatesTrack[thread_num][numberCandidateThread[thread_num]];
@@ -2604,10 +2608,8 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
     }
 
     //if( curr_L < min_best_l - 1 ) return; // suppouse that only one hit can be added by extender
-    if (curr_chi2 > TRACK_CHI2_CUT * (curr_L * 2 - 4.0)) return;
+    if (curr_chi2 > TRACK_CHI2_CUT * (curr_L * 2 - 5.0)) return;
 
-    if (fmCBMmode)
-      if (curr_chi2 > TRACK_CHI2_CUT * (curr_L * 2 - 5.0)) return;
 
     //       // try to find more hits
     // #ifdef EXTEND_TRACKS
