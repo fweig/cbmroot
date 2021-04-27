@@ -37,7 +37,7 @@ public:
     SetLogLevel(tree);
     auto moduleTree {tree.get_child_optional(Config_t::GetModuleTag())};
     if (!moduleTree) {
-      LOG(error) << "CbmConfig: module tag is not correct!\n";
+      LOG(error) << "CbmConfig: module tag not found:" << Config_t::GetModuleTag();
       return false;
     }
     if (!Validate(moduleTree.get())) return false;

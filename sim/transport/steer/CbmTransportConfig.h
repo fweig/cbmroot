@@ -3,6 +3,7 @@
 #include "CbmConfigBase.h"
 
 class CbmTransport;
+class CbmSetup;
 
 class CbmTransportConfig : public CbmConfigBase<CbmTransportConfig, CbmTransport> {
 
@@ -18,6 +19,8 @@ public:
   static bool SetBeamProfile(CbmTransport& obj, const pt::ptree& moduleTree);
   static bool SetTransportParameters(CbmTransport& obj, const pt::ptree& moduleTree);
   static bool SetGeometry(CbmTransport& obj, const pt::ptree& moduleTree);
+  static bool SetGeometry(CbmSetup* setup, const pt::ptree& moduleTree);
+  static bool SetStackFilter(CbmTransport& obj, const pt::ptree& moduleTree);
 
   ClassDef(CbmTransportConfig, 1);
 };

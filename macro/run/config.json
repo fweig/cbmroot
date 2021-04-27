@@ -72,6 +72,11 @@
         "psd":      "v20a",
         "platform": "v13a"
       }
+    },
+    "stackFilter": {
+      "storeAllPrimaries": true,
+      "storeAllMothers": true,
+      "storeAllDecays": true
     }
   },
   

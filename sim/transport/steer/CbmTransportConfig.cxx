@@ -64,7 +64,10 @@ CbmTransportConfig::TagSet_t CbmTransportConfig::GetValidationTags()
           "geometry.subsystems.psd",
           "geometry.subsystems.hodo",
           "geometry.subsystems.shield",
-          "geometry.subsystems.platform"};
+          "geometry.subsystems.platform",
+          "stackFilter.storeAllPrimaries",
+          "stackFilter.storeAllMothers",
+          "stackFilter.storeAllDecays"};
 }
 
 CbmTransportConfig::TagSet_t CbmTransportConfig::GetAcceptedGenerators() { return {"unigen", "pluto", "beam"}; }
@@ -260,6 +263,11 @@ bool CbmTransportConfig::SetTransportParameters(CbmTransport& obj, const pt::ptr
 
 bool CbmTransportConfig::SetGeometry(CbmTransport& obj, const pt::ptree& moduleTree)
 {
+  return SetGeometry(obj.GetSetup(), moduleTree);
+};
+
+bool CbmTransportConfig::SetGeometry(CbmSetup* setup, const pt::ptree& moduleTree)
+{
   auto geometry = moduleTree.get_child_optional("geometry");
   if (!geometry) {
     LOG(error) << "CbmTransportConfig: geometry settings missing!";
@@ -267,9 +275,8 @@ bool CbmTransportConfig::SetGeometry(CbmTransport& obj, const pt::ptree& moduleT
   }
   auto geometryTree = geometry.get();
   auto baseSetup    = geometryTree.get_optional<string>("baseSetup");
-  if (baseSetup) obj.LoadSetup(baseSetup.get().c_str());
+  if (baseSetup) setup->LoadSetup(baseSetup.get().c_str());
 
-  auto setup      = obj.GetSetup();
   auto fieldTag   = geometryTree.get_optional<string>("magneticField.tag");
   auto fieldScale = geometryTree.get_optional<float>("magneticField.scale");
   auto fieldX     = geometryTree.get_optional<float>("magneticField.position.x");
@@ -297,10 +304,25 @@ bool CbmTransportConfig::SetGeometry(CbmTransport& obj, const pt::ptree& moduleT
   return true;
 }
 
+bool CbmTransportConfig::SetStackFilter(CbmTransport& obj, const pt::ptree& moduleTree)
+{
+  auto stackFilterSettings = moduleTree.get_child_optional("stackFilter");
+  if (!stackFilterSettings) return true;
+  auto settingsTree      = stackFilterSettings.get();
+  auto& filter           = obj.GetStackFilter();
+  auto storeAllPrimaries = settingsTree.get_optional<bool>("storeAllPrimaries");
+  auto storeAllMothers   = settingsTree.get_optional<bool>("storeAllMothers");
+  auto storeAllDecays    = settingsTree.get_optional<bool>("storeAllDecays");
+  if (storeAllPrimaries) filter->SetStoreAllPrimaries(storeAllPrimaries.get());
+  if (storeAllMothers) filter->SetStoreAllPrimaries(storeAllMothers.get());
+  if (storeAllDecays) filter->SetStoreAllPrimaries(storeAllDecays.get());
+  return true;
+}
+
 bool CbmTransportConfig::LoadImpl(CbmTransport& obj, const pt::ptree& moduleTree)
 {
   return SetIO(obj, moduleTree) && SetTarget(obj, moduleTree) && SetBeamProfile(obj, moduleTree)
-         && SetTransportParameters(obj, moduleTree) && SetGeometry(obj, moduleTree);
+         && SetTransportParameters(obj, moduleTree) && SetGeometry(obj, moduleTree) && SetStackFilter(obj, moduleTree);
 }
 
 ClassImp(CbmTransportConfig)

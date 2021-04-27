@@ -34,3 +34,7 @@ set(CBMDETECTORBASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/detectors PARENT_SCOPE)
 If(GTEST_FOUND)
   add_subdirectory(data/test)
 EndIf()
+
+Install(FILES  ${CMAKE_CURRENT_SOURCE_DIR}/config/CbmConfigBase.h
+        DESTINATION include
+       )
