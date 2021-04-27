@@ -33,7 +33,8 @@ void run_analysis_tree_maker(TString dataSet = "../../../run/test", TString setu
 
   // -----   Load the geometry setup   -------------------------------------
   std::cout << std::endl;
-  const TString setupFile  = srcDir + "/geometry/setup/setup_" + setupName + ".C";
+  const TString setupFile =
+    srcDir + "/geometry/setup/setup_" + setupName + ".C";
   const TString setupFunct = "setup_" + setupName + "()";
 
   std::cout << "-I- " << myName << ": Loading macro " << setupFile << std::endl;
@@ -51,7 +52,8 @@ void run_analysis_tree_maker(TString dataSet = "../../../run/test", TString setu
   auto* parFileList = new TList();
 
   std::cout << "-I- " << myName << ": Using raw file " << rawFile << std::endl;
-  std::cout << "-I- " << myName << ": Using parameter file " << parFile << std::endl;
+  std::cout << "-I- " << myName << ": Using parameter file " << parFile
+            << std::endl;
   std::cout << "-I- " << myName << ": Using reco file " << recFile << std::endl;
   if (unigenFile.Length() > 0) std::cout << "-I- " << myName << ": Using unigen file " << unigenFile << std::endl;
 
@@ -82,12 +84,14 @@ void run_analysis_tree_maker(TString dataSet = "../../../run/test", TString setu
   auto* l1 = new CbmL1("CbmL1", 1, 3);
   if (setup->IsActive(ECbmModuleId::kMvd)) {
     setup->GetGeoTag(ECbmModuleId::kMvd, geoTag);
-    const TString mvdMatBudgetFileName = srcDir + "/parameters/mvd/mvd_matbudget_" + geoTag + ".root";
+    const TString mvdMatBudgetFileName =
+      srcDir + "/parameters/mvd/mvd_matbudget_" + geoTag + ".root";
     l1->SetMvdMaterialBudgetFileName(mvdMatBudgetFileName.Data());
   }
   if (setup->IsActive(ECbmModuleId::kSts)) {
     setup->GetGeoTag(ECbmModuleId::kSts, geoTag);
-    const TString stsMatBudgetFileName = srcDir + "/parameters/sts/sts_matbudget_" + geoTag + ".root";
+    const TString stsMatBudgetFileName =
+      srcDir + "/parameters/sts/sts_matbudget_" + geoTag + ".root";
     l1->SetStsMaterialBudgetFileName(stsMatBudgetFileName.Data());
   }
   run->AddTask(l1);
@@ -95,7 +99,8 @@ void run_analysis_tree_maker(TString dataSet = "../../../run/test", TString setu
   // --- TRD pid tasks
   if (setup->IsActive(ECbmModuleId::kTrd)) {
 
-    CbmTrdSetTracksPidLike* trdLI = new CbmTrdSetTracksPidLike("TRDLikelihood", "TRDLikelihood");
+    CbmTrdSetTracksPidLike* trdLI =
+      new CbmTrdSetTracksPidLike("TRDLikelihood", "TRDLikelihood");
     trdLI->SetUseMCInfo(kTRUE);
     trdLI->SetUseMomDependence(kTRUE);
     run->AddTask(trdLI);
@@ -113,9 +118,10 @@ void run_analysis_tree_maker(TString dataSet = "../../../run/test", TString setu
 
   man->AddTask(new CbmSimEventHeaderConverter("SimEventHeader"));
   man->AddTask(new CbmRecEventHeaderConverter("RecEventHeader"));
-  man->AddTask(new CbmSimTracksConverter("SimParticles", "", unigenFile.Data()));
+  man->AddTask(new CbmSimTracksConverter("SimParticles"));
 
-  CbmStsTracksConverter* taskCbmStsTracksConverter = new CbmStsTracksConverter("VtxTracks", "SimParticles");
+  CbmStsTracksConverter* taskCbmStsTracksConverter =
+    new CbmStsTracksConverter("VtxTracks", "SimParticles");
   taskCbmStsTracksConverter->SetIsWriteKFInfo();
   taskCbmStsTracksConverter->SetIsReproduceCbmKFPF();
   man->AddTask(taskCbmStsTracksConverter);

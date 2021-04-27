@@ -79,10 +79,10 @@ void TrdTracksQA(QA::Task& task)
   AddTrackQA(&task, trd_tracks);
   AddTracksMatchQA(&task, trd_tracks, rec_tracks);
 
-  task.AddH1({"TRD energy loss in 1st station, keV", {trd_tracks, "energy_loss_0"}, {gNbins, 0, 1}});
-  task.AddH1({"TRD energy loss in 2nd station", {trd_tracks, "energy_loss_1"}, {gNbins, 0, 1}});
-  task.AddH1({"TRD energy loss in 3rd station", {trd_tracks, "energy_loss_2"}, {gNbins, 0, 1}});
-  task.AddH1({"TRD energy loss in 4th station", {trd_tracks, "energy_loss_3"}, {gNbins, 0, 1}});
+  task.AddH1({"TRD energy loss in 1st station, keV", {trd_tracks, "energy_loss_0"}, {gNbins, 0, 50}});
+  task.AddH1({"TRD energy loss in 2nd station", {trd_tracks, "energy_loss_1"}, {gNbins, 0, 50}});
+  task.AddH1({"TRD energy loss in 3rd station", {trd_tracks, "energy_loss_2"}, {gNbins, 0, 50}});
+  task.AddH1({"TRD energy loss in 4th station", {trd_tracks, "energy_loss_3"}, {gNbins, 0, 50}});
 
   task.AddH1({"Number of hits in TRD", {trd_tracks, "n_hits"}, {6, 0, 6}});
 
@@ -151,25 +151,23 @@ void TofHitsQA(QA::Task& task)
              {"sign(q)*p TOF, GeV/c", {tof_hits, "qp_tof"}, {gNbins, -10, 10}});
 
   SimpleCut sc_protons = EqualsCut("SimParticles.pid", 2212);
-  SimpleCut sc_prim = EqualsCut("SimParticles.mother_id", -1);
+  SimpleCut sc_prim    = EqualsCut("SimParticles.mother_id", -1);
 
-  auto prim = new Cuts("mc_primary", {sc_prim});
-  auto protons = new Cuts("mc_protons", {sc_protons});
+  auto prim         = new Cuts("mc_primary", {sc_prim});
+  auto protons      = new Cuts("mc_protons", {sc_protons});
   auto prim_protons = new Cuts("mc_primary_protons", {sc_protons, sc_prim});
-  auto prim_pions = new Cuts("mc_primary_pions_pos", {EqualsCut("SimParticles.pid", 211), sc_prim});
-  auto prim_kaons = new Cuts("mc_primary_kaons_pos", {EqualsCut("SimParticles.pid", 321), sc_prim});
+  auto prim_pions   = new Cuts("mc_primary_pions_pos", {EqualsCut("SimParticles.pid", 211), sc_prim});
+  auto prim_kaons   = new Cuts("mc_primary_kaons_pos", {EqualsCut("SimParticles.pid", 321), sc_prim});
 
   std::vector<Cuts*> cuts = {nullptr, prim, protons, prim_protons, prim_pions, prim_kaons};
 
-  for(auto cut : cuts){
-    task.AddH2({"p_{MC}, GeV/c", {"SimParticles", "p"}, {250, 0, 10}},{"m^{2}, GeV^{2}/c^{2}", {"TofHits", "mass2"}, {500, -1, 2}}, cut);
+  for (auto cut : cuts) {
+    task.AddH2({"p_{MC}, GeV/c", {"SimParticles", "p"}, {250, 0, 10}},
+               {"m^{2}, GeV^{2}/c^{2}", {"TofHits", "mass2"}, {500, -1, 2}}, cut);
   }
 }
 
-void SimParticlesQA(QA::Task& task)
-{
-  AddParticleQA(&task, sim_particles);
-}
+void SimParticlesQA(QA::Task& task) { AddParticleQA(&task, sim_particles); }
 
 void SimEventHeaderQA(QA::Task& task)
 {
