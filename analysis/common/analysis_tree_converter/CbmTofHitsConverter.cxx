@@ -1,6 +1,7 @@
 #include "CbmTofHitsConverter.h"
 
 #include <CbmGlobalTrack.h>
+#include <CbmMCTrack.h>
 #include <CbmTofHit.h>
 #include <CbmTrackMatchNew.h>
 
@@ -15,20 +16,18 @@
 
 #include "AnalysisTree/Matching.hpp"
 
-ClassImp(CbmTofHitsConverter)
+ClassImp(CbmTofHitsConverter);
 
-  void CbmTofHitsConverter::Init()
+void CbmTofHitsConverter::Init()
 {
-
   assert(!out_branch_.empty());
   auto* ioman = FairRootManager::Instance();
 
   cbm_tof_hits_      = (TClonesArray*) ioman->GetObject("TofHit");
   cbm_global_tracks_ = (TClonesArray*) ioman->GetObject("GlobalTrack");
-  //  cbm_tof_match_ = (TClonesArray*) ioman->GetObject("TofHitMatch");
-  //  cbm_tof_points_ = (TClonesArray*) ioman->GetObject("TofPoint");
-  //  cbm_mc_tracks_ = (TClonesArray*) ioman->GetObject("MCTrack");
-  //  cbm_sts_match_ = (TClonesArray*) ioman->GetObject("StsTrackMatch");
+  cbm_tof_match_     = (TClonesArray*) ioman->GetObject("TofHitMatch");
+  cbm_tof_points_    = (TClonesArray*) ioman->GetObject("TofPoint");
+  cbm_mc_tracks_     = (TClonesArray*) ioman->GetObject("MCTrack");
 
   AnalysisTree::BranchConfig tof_branch(out_branch_, AnalysisTree::DetType::kHit);
   tof_branch.AddField<float>("mass2", "Mass squared");
@@ -37,16 +36,15 @@ ClassImp(CbmTofHitsConverter)
   tof_branch.AddField<float>("qp_tof", "charge * momentum extrapoleted to TOF");
   tof_branch.AddFields<float>({"dx", "dy", "dz"}, "Distance between TOF hit and extrapolated global track, cm");
   tof_branch.AddField<int>("mc_pdg", "MC-true PDG code of particle with highest contribution to TOF hit");
-  tof_branch.AddField<bool>("is_correct_match", "is the matched track corresponds to MC-true track from TOF hit");
 
   auto* man = AnalysisTree::TaskManager::GetInstance();
   man->AddBranch(out_branch_, tof_hits_, tof_branch);
   man->AddMatching(match_to_, out_branch_, vtx_tracks_2_tof_);
+  man->AddMatching(out_branch_, mc_tracks_, tof_hits_2_mc_tracks_);
 }
 
 void CbmTofHitsConverter::ExtrapolateStraightLine(FairTrackParam* params, float z)
 {
-
   const Float_t Tx    = params->GetTx();
   const Float_t Ty    = params->GetTy();
   const Float_t old_z = params->GetZ();
@@ -58,11 +56,13 @@ void CbmTofHitsConverter::ExtrapolateStraightLine(FairTrackParam* params, float 
   params->SetPosition({x, y, z});
 }
 
+
 void CbmTofHitsConverter::FillTofHits()
 {
   assert(cbm_tof_hits_);
   tof_hits_->ClearChannels();
   vtx_tracks_2_tof_->Clear();
+  tof_hits_2_mc_tracks_->Clear();
 
   auto* out_config_  = AnalysisTree::TaskManager::GetInstance()->GetConfig();
   const auto& branch = out_config_->GetBranchConfig(out_branch_);
@@ -73,9 +73,8 @@ void CbmTofHitsConverter::FillTofHits()
   const int i_t     = branch.GetFieldId("t");
   const int i_l     = branch.GetFieldId("l");
 
-  const auto it = indexes_map_->find(match_to_);
-  if (it == indexes_map_->end()) { throw std::runtime_error(match_to_ + " is not found to match with TOF hits"); }
-  auto rec_tracks_map = it->second;
+  auto rec_tracks_map = GetMatchMap(match_to_);
+  auto sim_tracks_map = GetMatchMap(mc_tracks_);
 
   tof_hits_->Reserve(cbm_global_tracks_->GetEntriesFast());
 
@@ -120,28 +119,19 @@ void CbmTofHitsConverter::FillTofHits()
       vtx_tracks_2_tof_->AddMatch(rec_tracks_map.find(stsTrackIndex)->second, hit.GetId());
     }
 
-    //    const auto* tofMatch =
-    //    dynamic_cast<CbmMatch*>(cbm_tof_match_->At(tofHitIndex)); if(tofMatch
-    //    != nullptr && tofMatch->GetNofLinks()>0) {
-    //
-    //    const auto* tofPoint = dynamic_cast<FairMCPoint*>(
-    //    cbm_tof_points_->At(tofMatch->GetMatchedLink().GetIndex()) );
-    //
-    //    Int_t itofMC = (tofPoint ? tofPoint->GetTrackID() : -1 );
-    //    if(itofMC >= 0){
-    //      const auto* mc_track = dynamic_cast<const
-    //      CbmMCTrack*>(cbm_mc_tracks_->At(itofMC));
-    //      hit.SetField(mc_track->GetPdgCode(), i_pdg);
-    //
-    //      const Int_t stsTrackIndex = globalTrack->GetStsTrackIndex();
-    //      if(stsTrackIndex<0) return;
-    //
-    //      auto* match = (CbmTrackMatchNew*) cbm_sts_match_->At(stsTrackIndex);
-    //      if(match == nullptr || match->GetNofLinks() == 0) continue;
-    //      const int mc_id_sts = match->GetMatchedLink().GetIndex();
-    //      hit.SetField( bool(mc_id_sts == itofMC), i_is_correct);
-    //    }
-    //  }
+    const auto* tofMatch = dynamic_cast<CbmMatch*>(cbm_tof_match_->At(tofHitIndex));
+    if (tofMatch && tofMatch->GetNofLinks() > 0) {
+      const auto* tofPoint = dynamic_cast<FairMCPoint*>(cbm_tof_points_->At(tofMatch->GetMatchedLink().GetIndex()));
+      if (!tofPoint) { throw std::runtime_error("no TOF point"); }
+
+      Int_t mc_track_id = tofPoint->GetTrackID();
+      if (mc_track_id >= 0) {
+        auto it = sim_tracks_map.find(mc_track_id);
+        if (it != sim_tracks_map.end()) {  // match is found
+          tof_hits_2_mc_tracks_->AddMatch(hit.GetId(), it->second);
+        }
+      }
+    }
   }
 }
 

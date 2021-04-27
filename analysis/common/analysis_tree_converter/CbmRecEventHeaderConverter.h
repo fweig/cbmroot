@@ -7,6 +7,7 @@
 
 class FairMCEventHeader;
 class CbmVertex;
+class TClonesArray;
 
 class CbmRecEventHeaderConverter final : public CbmConverterTask {
 public:
@@ -18,10 +19,14 @@ public:
   void Finish() final { delete rec_event_header_; };
 
 private:
+  float GetPsdEnergy();
+
   AnalysisTree::EventHeader* rec_event_header_ {nullptr};
 
-  FairMCEventHeader* cbm_header_ {nullptr};
-  CbmVertex* cbm_prim_vertex_ {nullptr};
+  TClonesArray* cbm_psd_hits_ {nullptr};
+  TClonesArray* cbm_sts_tracks_ {nullptr};   ///< non-owning pointer
+  FairMCEventHeader* cbm_header_ {nullptr};  ///< non-owning pointer
+  CbmVertex* cbm_prim_vertex_ {nullptr};     ///< non-owning pointer
 
   ClassDef(CbmRecEventHeaderConverter, 1)
 };

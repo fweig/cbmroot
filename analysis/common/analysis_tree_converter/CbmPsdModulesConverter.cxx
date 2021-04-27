@@ -56,8 +56,6 @@ void CbmPsdModulesConverter::Exec()
     module.SetSignal(hit->GetEdep());
     psd_energy += hit->GetEdep();
   }
-  //  rec_event_header_ -> SetField(psd_energy,
-  //  config_.GetBranchConfig(rec_event_header_->GetId() ).GetFieldId("Epsd"));
 }
 
 void CbmPsdModulesConverter::Finish() {}

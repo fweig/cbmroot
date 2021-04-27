@@ -52,8 +52,7 @@ void CbmTrdTracksConverter::FillTrdTracks()
   auto* out_config_  = AnalysisTree::TaskManager::GetInstance()->GetConfig();
   const auto& branch = out_config_->GetBranchConfig(out_branch_);
 
-  const int i_e_loss_i = branch.GetFieldId("energy_loss_0");
-  //  const int i_ann = branch.GetFieldId("pid_ann");
+  const int i_e_loss_i    = branch.GetFieldId("energy_loss_0");
   const int i_pid_like    = branch.GetFieldId("pid_like_e");
   const int i_chi2_ov_ndf = branch.GetFieldId("chi2_ov_ndf");
   const int i_pT_out      = branch.GetFieldId("pT_out");
@@ -72,8 +71,6 @@ void CbmTrdTracksConverter::FillTrdTracks()
     if (itrd < 0) continue;
 
     auto trd_track = static_cast<CbmTrdTrack*>(cbm_trd_tracks_->At(itrd));
-    //    auto trd_match = static_cast<CbmTrackMatchNew*>(cbm_trd_tracks_->At(itrd));
-    //    Int_t itrdMC   = (trd_match ? trd_match->GetMatchedLink().GetIndex() : -1);
 
     auto& track = trd_tracks_->AddChannel(branch);
     TVector3 mom, mom_last;
@@ -82,14 +79,11 @@ void CbmTrdTracksConverter::FillTrdTracks()
 
     track.SetMomentum3(mom);
     track.SetField(int(trd_track->GetNofHits()), i_n_hits);
-    //    track.SetField(float(trd_track->GetPidANN()), i_ann);
-    //    track.SetField(float(trd_track->GetPidWkn()), i_ann+1);
 
     track.SetField(float(trd_track->GetPidLikeEL()), i_pid_like);
     track.SetField(float(trd_track->GetPidLikePI()), i_pid_like + 1);
     track.SetField(float(trd_track->GetPidLikeKA()), i_pid_like + 2);
     track.SetField(float(trd_track->GetPidLikePR()), i_pid_like + 3);
-    //    track.SetField(float(trd_track->GetPidLikeMU()), i_pid_like + 4);
 
     track.SetField(float(trd_track->GetNDF() > 0. ? trd_track->GetChiSq() / trd_track->GetNDF() : -999.),
                    i_chi2_ov_ndf);

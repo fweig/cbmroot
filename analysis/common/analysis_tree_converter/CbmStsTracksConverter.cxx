@@ -4,6 +4,8 @@
 #include "CbmStsTrack.h"
 #include "CbmTrackMatchNew.h"
 #include "CbmVertex.h"
+#include "Interface/CbmKFVertex.h"
+#include "ParticleFinder/CbmL1PFFitter.h"
 
 #include "FairRootManager.h"
 
@@ -15,9 +17,7 @@
 #include <cmath>
 
 #include "AnalysisTree/Matching.hpp"
-#include "Interface/CbmKFVertex.h"
 #include "L1Field.h"
-#include "ParticleFinder/CbmL1PFFitter.h"
 
 
 ClassImp(CbmStsTracksConverter)
@@ -90,7 +90,6 @@ void CbmStsTracksConverter::Init()
 // TODO misleading name, move field filling somewhere else?
 float CbmStsTracksConverter::ExtrapolateToVertex(CbmStsTrack* sts_track, AnalysisTree::Track& track, int pdg)
 {
-
   vector<CbmStsTrack> tracks = {*sts_track};
   CbmL1PFFitter fitter;
   vector<float> chi2_to_vtx;

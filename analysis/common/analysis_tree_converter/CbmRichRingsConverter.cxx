@@ -1,6 +1,7 @@
 #include "CbmRichRingsConverter.h"
 
 #include <CbmGlobalTrack.h>
+#include <rich/CbmRichRing.h>
 
 #include <FairMCPoint.h>
 #include <FairRootManager.h>
@@ -10,8 +11,6 @@
 #include <AnalysisTree/TaskManager.hpp>
 #include <cassert>
 #include <vector>
-
-#include <rich/CbmRichRing.h>
 
 #include "AnalysisTree/Matching.hpp"
 
