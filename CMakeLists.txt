@@ -41,7 +41,6 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
 
 #set(CMAKE_PREFIX_PATH "$ENV{SIMPATH}/share/cmake/ZeroMQ" ${CMAKE_PREFIX_PATH})
 set(CMAKE_PREFIX_PATH $ENV{SIMPATH} ${CMAKE_PREFIX_PATH})
-
 set(CMAKE_INSTALL_LIBDIR lib)
 
 # Check if the compiler support specific C++11 features
@@ -266,7 +265,15 @@ else(CBMROOT_MINIMAL)
     endif()
   endif()
 
-  find_package2(GEANT3 REQUIRED)
+  find_package2(PUBLIC Geant3 REQUIRED)
+  if(Geant3_FOUND)
+    Message("Geant3 was found")
+    Set(Geant3_LIBRARY_DIR ${Geant3_DIR}/${Geant3_CMAKE_INSTALL_LIBDIR})
+    FIND_PATH(Geant3_SYSTEM_DIR NAMES data PATHS
+              ${Geant3_DIR}/../../share/geant3
+              NO_DEFAULT_PATH)
+  endif()
+
   find_package(GEANT4)
   find_package(GEANT4DATA)
   find_package(GEANT4VMC)
@@ -318,7 +325,7 @@ SetBasicVariables()
 # Add the Geant3 include directory such that ROOT can find TGeant3.h
 # Has to be done after calling SetBasicVariables, otherwise the value
 # is overwritten
-SET(ROOT_INCLUDE_PATH ${ROOT_INCLUDE_PATH} "${GEANT3_INCLUDE_DIR}")
+SET(ROOT_INCLUDE_PATH ${ROOT_INCLUDE_PATH} "${Geant3_INCLUDE_DIRS}")
 
 Set(BASE_INCLUDE_DIRECTORIES
 ${BASE_INCLUDE_DIRECTORIES}
