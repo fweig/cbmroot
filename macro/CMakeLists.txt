@@ -3,7 +3,6 @@ add_subdirectory(run)
 add_subdirectory(mcbm)
 add_subdirectory(mvd)
 add_subdirectory(much)
-add_subdirectory(tof)
 add_subdirectory(beamtime)
 add_subdirectory(include)
  
