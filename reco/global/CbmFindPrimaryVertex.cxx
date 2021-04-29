@@ -107,10 +107,14 @@ InitStatus CbmFindPrimaryVertex::Init()
   }
 
   // Create and register CbmVertex object
-  if (!fEvents) {
-    fPrimVert = new CbmVertex("Primary Vertex", "Global");
-    ioman->Register("PrimaryVertex.", "Global", fPrimVert, IsOutputBranchPersistent("PrimaryVertex"));
-  }
+  // if (!fEvents) {
+  // TODO: This is here for legacy, since many analysis tasks use the vertex branch instead
+  // of retrieving the vertex from the event object. It shall be removed after the all analysis tasks
+  // are adjusted. Neither in event-based nor in time-based reconstruction a branch with a single
+  // vertex object makes sense.
+  fPrimVert = new CbmVertex("Primary Vertex", "Global");
+  ioman->Register("PrimaryVertex.", "Global", fPrimVert, IsOutputBranchPersistent("PrimaryVertex"));
+  // }
 
   // Call the Init method of the vertex finder
   fFinder->Init();
@@ -142,6 +146,7 @@ void CbmFindPrimaryVertex::Exec(Option_t*)
 
   // Event-based mode
   else {
+    fPrimVert->Reset();  // TODO: Legacy
     nEvents = fEvents->GetEntriesFast();
     for (Int_t iEvent = 0; iEvent < nEvents; iEvent++) {
       CbmEvent* event = dynamic_cast<CbmEvent*>(fEvents->At(iEvent));
@@ -149,6 +154,9 @@ void CbmFindPrimaryVertex::Exec(Option_t*)
       result = fFinder->FindEventVertex(event, fTracks);
       LOG(debug) << GetName() << ": Event " << iEvent << " " << event->GetVertex()->ToString();
       nTracksUsed += result;
+
+      // Legacy: copy event vertex object to event branch
+      if (iEvent == 0) *fPrimVert = *(event->GetVertex());
     }
   }
 
