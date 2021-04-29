@@ -121,11 +121,11 @@ public:
     return std::vector<T>::operator[](index);
   }
 
-  const char* getName()
+  std::string getName()
   {
     std::string s = " L1Vector<";
     s += fName + "> ";
-    return s.data();
+    return s;
   }
 
 private:
