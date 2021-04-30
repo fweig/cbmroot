@@ -75,3 +75,8 @@ EndIf()
 
 
 GENERATE_LIBRARY()
+
+# Install header files
+install(FILES ipc/lib/logging/log.hpp DESTINATION include)
+file(GLOB_RECURSE IPC_HEADERS ipc/lib/fles_ipc/*.hpp)
+install(FILES ${IPC_HEADERS} DESTINATION include)

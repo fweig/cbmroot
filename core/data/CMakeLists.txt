@@ -50,7 +50,7 @@ set(SRCS
   CbmLink.cxx
   CbmMatch.cxx
   CbmTrackMatchNew.cxx
-  
+
   base/CbmDigiBranchBase.cxx
   base/CbmDigiContainer.cxx
 
@@ -137,8 +137,8 @@ set(DEPENDENCIES Base)
 GENERATE_LIBRARY()
 
 # Install file which has no corresponding source file
-Install(FILES 
+Install(FILES
         CbmDefs.h rich/CbmRichRingLight.h base/CbmDigiVector.h
-        raw/bitmask_operators.hpp raw/PsdGbtDataFormat.h
+        raw/bitmask_operators.hpp raw/StsXyterFinalHit.h raw/PsdGbtDataFormat.h
         DESTINATION include
        )

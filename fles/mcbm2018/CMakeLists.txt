@@ -58,7 +58,6 @@ Link_Directories(
 )
 
 Set(SRCS
-
    CbmMcbmUnpack.cxx
    CbmMcbm2018Source.cxx
    CbmMcbm2018MsCrcCheck.cxx
@@ -137,3 +136,6 @@ Set(DEPENDENCIES
 )
 
 GENERATE_LIBRARY()
+
+# Install file which has no corresponding source file
+install(FILES commonMQ/CbmStar2019Algo.h DESTINATION include)

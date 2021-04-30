@@ -13,6 +13,8 @@ if(DOWNLOAD_EXTERNALS)
                              SOURCE_DIR      ${CMAKE_CURRENT_SOURCE_DIR}/cppzmq
                              TEST_FILE       zmq.hpp
                             )
+  # Install header files
+  install(FILES cppzmq/zmq.hpp DESTINATION include)
 
 
   Set(IPC_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/ipc/ipc/lib/fles_ipc PARENT_SCOPE)
