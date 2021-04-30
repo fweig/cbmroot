@@ -40,6 +40,7 @@
 
 #include "TClonesArray.h"
 
+#include <iomanip>
 #include <iostream>
 
 using std::cout;
@@ -98,22 +99,36 @@ InitStatus CbmRichReconstruction::Init()
 
 void CbmRichReconstruction::Exec(Option_t* /*opt*/)
 {
+  TStopwatch timer;
+  timer.Start();
   if (fRichTrackParamZ != nullptr) fRichTrackParamZ->Delete();
   if (fRichProjections != nullptr) fRichProjections->Delete();
   if (fRichRings != nullptr) fRichRings->Delete();
 
+  fNofTs++;
+
   if (fCbmEvents == nullptr) {
-    LOG(info) << "CbmRichReconstruction: Event " << ++fEventNum;
+    fNofEvents++;
     ProcessData(nullptr);
   }
   else {
     int nEvents = fCbmEvents->GetEntriesFast();
-    LOG(info) << "CbmRichReconstruction: Timeslice " << ++fEventNum << " with " << nEvents << " events";
+    fNofEvents += nEvents;
     for (Int_t iEvent = 0; iEvent < nEvents; iEvent++) {
       CbmEvent* event = static_cast<CbmEvent*>(fCbmEvents->At(iEvent));
       ProcessData(event);
     }
   }
+  timer.Stop();
+  fCalcTime += timer.RealTime();
+  fTotalNofHits += fRichHits->GetEntriesFast();
+  fTotalNofRings += fRichRings->GetEntriesFast();
+  fTotalNofTrackProj += (fRichProjections ? fRichProjections->GetEntriesFast() : 0);
+
+  LOG(info) << setw(20) << left << GetName() << "[" << fixed << setw(8) << setprecision(1) << right
+            << timer.RealTime() * 1000. << " ms] "
+            << "TS " << fNofTs << ", hits " << fRichHits->GetEntriesFast() << ", rings " << fRichRings->GetEntriesFast()
+            << ", trackProj " << (fRichProjections ? fRichProjections->GetEntriesFast() : 0);
 }
 
 void CbmRichReconstruction::ProcessData(CbmEvent* event)
@@ -249,6 +264,24 @@ void CbmRichReconstruction::RunTrackAssign(CbmEvent* event)
   fRingTrackAssign->DoAssign(event, fRichRings, fRichProjections);
 }
 
-void CbmRichReconstruction::Finish() {}
+void CbmRichReconstruction::Finish()
+{
+
+  std::cout << std::endl;
+  LOG(info) << "=====================================";
+  LOG(info) << GetName() << ": Run summary";
+  LOG(info) << "Time slices     : " << fNofTs;
+  LOG(info) << "Events          : " << fNofEvents;
+  LOG(info) << "Events / TS     : " << fixed << setprecision(2) << fNofEvents / (Double_t) fNofTs;
+  LOG(info) << "Hits / TS       : " << fixed << setprecision(2) << fTotalNofHits / (Double_t) fNofTs;
+  LOG(info) << "Ring / TS       : " << fixed << setprecision(2) << fTotalNofRings / (Double_t) fNofTs;
+  LOG(info) << "TrackProj / TS  : " << fixed << setprecision(2) << fTotalNofTrackProj / (Double_t) fNofTs;
+  LOG(info) << "Time / TS       : " << fixed << setprecision(2) << 1000. * fCalcTime / Double_t(fNofTs) << " ms";
+  LOG(info) << "Hits / ev       : " << fixed << setprecision(2) << fTotalNofHits / (Double_t) fNofEvents;
+  LOG(info) << "Ring / ev       : " << fixed << setprecision(2) << fTotalNofRings / (Double_t) fNofEvents;
+  LOG(info) << "TrackProj / ev  : " << fixed << setprecision(2) << fTotalNofTrackProj / (Double_t) fNofEvents;
+  LOG(info) << "Time / ev       : " << fixed << setprecision(2) << 1000. * fCalcTime / Double_t(fNofEvents) << " ms";
+  LOG(info) << "=====================================\n";
+}
 
 ClassImp(CbmRichReconstruction)

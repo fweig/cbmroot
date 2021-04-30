@@ -96,7 +96,13 @@ private:
   TClonesArray* fGlobalTracks    = nullptr;
   TClonesArray* fCbmEvents       = nullptr;
 
-  Int_t fEventNum = 0;  // event or timeslice counter
+  Int_t fNofTs             = 0;
+  Int_t fNofEvents         = 0;
+  Double_t fCalcTime       = 0.;
+  Int_t fTotalNofHits      = 0;
+  Int_t fTotalNofRings     = 0;
+  Int_t fTotalNofTrackProj = 0;
+
 
   // pointers to the algorithms
   CbmRichRingFinder* fRingFinder                     = nullptr;

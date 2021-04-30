@@ -33,16 +33,16 @@ CbmRichTrackExtrapolationIdeal::~CbmRichTrackExtrapolationIdeal() {}
 void CbmRichTrackExtrapolationIdeal::Init()
 {
   FairRootManager* manager = FairRootManager::Instance();
-  if (manager = nullptr) LOG(fatal) << "CbmRichTrackExtrapolationIdeal::Init(): FairRootManager is nullptr.";
+  if (manager == nullptr) LOG(fatal) << "CbmRichTrackExtrapolationIdeal::Init(): FairRootManager is nullptr.";
 
   fRefPlanePoints = (TClonesArray*) manager->GetObject("RefPlanePoint");
-  if (fRefPlanePoints = nullptr) LOG(fatal) << "CbmRichTrackExtrapolationIdeal::Init(): No RefPlanePoint array.";
+  if (fRefPlanePoints == nullptr) LOG(fatal) << "CbmRichTrackExtrapolationIdeal::Init(): No RefPlanePoint array.";
 
   fStsTracks = (TClonesArray*) manager->GetObject("StsTrack");
-  if (fStsTracks = nullptr) LOG(fatal) << "CbmRichTrackExtrapolationIdeal::Init(): No StsTrack array.";
+  if (fStsTracks == nullptr) LOG(fatal) << "CbmRichTrackExtrapolationIdeal::Init(): No StsTrack array.";
 
   fStsTrackMatches = (TClonesArray*) manager->GetObject("StsTrackMatch");
-  if (fStsTrackMatches = nullptr) LOG(fatal) << "CbmRichTrackExtrapolationIdeal::Init(): No StsTrackMatch array.";
+  if (fStsTrackMatches == nullptr) LOG(fatal) << "CbmRichTrackExtrapolationIdeal::Init(): No StsTrackMatch array.";
 }
 
 void CbmRichTrackExtrapolationIdeal::DoExtrapolation(CbmEvent* event, TClonesArray* globalTracks,

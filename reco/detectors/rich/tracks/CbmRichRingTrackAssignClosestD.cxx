@@ -59,9 +59,9 @@ void CbmRichRingTrackAssignClosestD::DoAssign(CbmEvent* event, TClonesArray* rin
 
   Int_t nofTracks = event ? event->GetNofData(ECbmDataType::kRichTrackProjection) : richProj->GetEntriesFast();
   Int_t nofRings  = event ? event->GetNofData(ECbmDataType::kRichRing) : rings->GetEntriesFast();
-  LOG(info) << "CbmRichRingTrackAssignClosestD::DoAssign(): Event:" << fEventNum << " rings:" << nofRings
-            << " ringsInTS:" << rings->GetEntriesFast() << " tracks:" << nofTracks
-            << " tracksInTS:" << richProj->GetEntriesFast();
+  LOG(debug) << "CbmRichRingTrackAssignClosestD::DoAssign(): Event:" << fEventNum << " rings:" << nofRings
+             << " ringsInTS:" << rings->GetEntriesFast() << " tracks:" << nofTracks
+             << " tracksInTS:" << richProj->GetEntriesFast();
 }
 
 void CbmRichRingTrackAssignClosestD::DoAssignRingTrack(CbmEvent* event, TClonesArray* rings, TClonesArray* richProj)

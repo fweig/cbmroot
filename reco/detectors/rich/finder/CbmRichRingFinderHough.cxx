@@ -111,9 +111,9 @@ Int_t CbmRichRingFinderHough::DoFind(CbmEvent* event, TClonesArray* rHitArray, T
   Double_t dt3 = timer.RealTime();
 
   int nofFoundRings = event ? event->GetNofData(ECbmDataType::kRichRing) : rRingArray->GetEntriesFast();
-  LOG(info) << "CbmRichRingFinderHough::DoFind(): Event:" << fEventNum << " hits:" << nofRichHits
-            << " rings:" << nofFoundRings << " ringsInTS:" << rRingArray->GetEntriesFast()
-            << " Time:" << dt1 + dt2 + dt3;
+  LOG(debug) << "CbmRichRingFinderHough::DoFind(): Event:" << fEventNum << " hits:" << nofRichHits
+             << " rings:" << nofFoundRings << " ringsInTS:" << rRingArray->GetEntriesFast()
+             << " Time:" << dt1 + dt2 + dt3;
 
   return 1;
 }
