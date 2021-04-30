@@ -28,3 +28,7 @@ SET_TESTS_PROPERTIES(mvd_qa4_reco PROPERTIES TIMEOUT "300")
 SET_TESTS_PROPERTIES(mvd_qa4_reco PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
 set_tests_properties(mvd_qa4_reco PROPERTIES FIXTURES_REQUIRED fixture_mvd_qa4_reco)
 
+Install(FILES mvd_qa1_transUrqmd.C mvd_qa2_transDelta.C mvd_qa3_digitize.C mvd_qa4_reco.C
+        DESTINATION share/cbmroot/macro/mvd
+       )
+Install(CODE "FILE(MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX}/share/cbmroot/macro/mvd/data)")

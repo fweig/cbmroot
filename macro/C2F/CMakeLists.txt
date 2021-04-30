@@ -92,9 +92,5 @@ EndIf()
   EndForEach(setup IN LISTS cbm_setup)
   # end of test CBM setups from geometry/setup
 
-Install(FILES .rootrc c2f_transport.C 
-        DESTINATION share/cbmroot/macro/c2f
-       )
-Install(CODE "FILE(MAKE_DIRECTORY \${CMAKE_INSTALL_PREFIX}/share/cbmroot/macro/run/data)")
-
-
+# Installation of macros is done in macro/CMakeLists.txt to install the
+# macros even if the tests are not executed

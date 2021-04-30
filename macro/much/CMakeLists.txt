@@ -42,13 +42,10 @@ SET_TESTS_PROPERTIES(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "TestPassed;
 set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED fixture_much_ana)
 
 
-#Install(FILES .rootrc setup_much_test.C 
-#        DESTINATION share/cbmroot/macro/much
-#       )
-#Install(FILES data/jpsi.root
-#              data/much_digi_sector_4station.seg
-#        DESTINATION share/cbmroot/macro/much/data
-#       )
+Install(FILES .rootrc run_transport.C run_ana.C
+        DESTINATION share/cbmroot/macro/much
+       )
 
-#Install(CODE "FILE(MAKE_DIRECTORY
-#${CMAKE_INSTALL_PREFIX}/share/cbmroot/macro/much/data)")
+Install(DIRECTORY data
+        DESTINATION share/cbmroot/macro/much
+       )

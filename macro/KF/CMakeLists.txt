@@ -153,10 +153,5 @@ ForEach(iSignal RANGE 16)
  
 EndForEach(iSignal)
 
-
-#Install(FILES .rootrc 
-#               DecayConfig.C registerGeantDecays.C registerLightIons.C registerPythiaDecays.C
-#               kf_kfparticle.C kf_thermal_signal_generator.C  kf_transport.C
-#        DESTINATION share/cbmroot/macro/KF
-#       )
-#Install(CODE "FILE(MAKE_DIRECTORY \${CMAKE_INSTALL_PREFIX}/share/cbmroot/macro/KF/data)")
+# Installation of macros is done in macro/CMakeLists.txt to install the
+# macros even if the tests are not executed

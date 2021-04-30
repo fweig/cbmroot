@@ -152,7 +152,8 @@ EndForEach(setup IN LISTS cbm_setup)
 # end of test CBM configs from geometry/config
 
 # disable dev tests - Install(FILES .rootrc mcbm_transport.C mcbm_reco.C mcbm_check_overlaps.C
-Install(FILES .rootrc mcbm_transport.C mcbm_reco.C mcbm_check_overlaps.C
+Install(FILES .rootrc mcbm_transport.C mcbm_digi.C mcbm_reco_event.C mcbm_check_overlaps.C
+              mcbm_match_check.C mcbm_hadron_analysis.C mcbm_qa.C
         DESTINATION share/cbmroot/macro/mcbm
        )
 Install(DIRECTORY modules DESTINATION share/cbmroot/macro/mcbm)

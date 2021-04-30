@@ -72,7 +72,5 @@ If( ($ENV{ctest_model} MATCHES Nightly) OR ($ENV{ctest_model} MATCHES Weekly) )
   # end of test CBM setups from geometry/setup
 EndIf()
 
-Install(FILES .rootrc dimuon_transport.C 
-        DESTINATION share/cbmroot/macro/dimuon
-       )
-Install(CODE "FILE(MAKE_DIRECTORY \${CMAKE_INSTALL_PREFIX}/share/cbmroot/macro/run/data)")
+# Installation of macros is done in macro/CMakeLists.txt to install the
+# macros even if the tests are not executed

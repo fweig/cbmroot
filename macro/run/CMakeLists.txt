@@ -235,12 +235,8 @@ foreach(setup IN LISTS cbm_setup)
 endforeach(setup IN LISTS cbm_setup)
 # ============================================================================
 
-
-
-
-
-Install(FILES .rootrc run_transport.C run_transport_json_config.C run_digi_json_config.C config.json run_digi.C run_reco_event.C check_overlaps.C
+Install(FILES .rootrc run_tra_file.C run_tra_beam.C run_transport_json_config.C run_digi_json_config.C config.json
+              run_digi.C run_reco.C run_tests.sh
         DESTINATION share/cbmroot/macro/run
        )
-Install(DIRECTORY modules DESTINATION share/cbmroot/macro/run)
 Install(CODE "FILE(MAKE_DIRECTORY \${CMAKE_INSTALL_PREFIX}/share/cbmroot/macro/run/data)")
