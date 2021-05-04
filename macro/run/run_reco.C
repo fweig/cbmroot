@@ -9,6 +9,7 @@
 #if !defined(__CLING__)
 #include "CbmBuildEventsFromTracksReal.h"
 #include "CbmBuildEventsIdeal.h"
+#include "CbmBuildEventsQa.h"
 #include "CbmDefs.h"
 #include "CbmFindPrimaryVertex.h"
 #include "CbmKF.h"
@@ -16,6 +17,7 @@
 #include "CbmL1StsTrackFinder.h"
 #include "CbmLitFindGlobalTracks.h"
 #include "CbmMCDataManager.h"
+#include "CbmMatchRecoToMC.h"
 #include "CbmMuchFindHitsGem.h"
 #include "CbmMvdClusterfinder.h"
 #include "CbmMvdHitfinder.h"
@@ -29,6 +31,7 @@
 #include "CbmStsFindTracks.h"
 #include "CbmStsFindTracksEvents.h"
 #include "CbmStsTrackFinder.h"
+#include "CbmTaskBuildRawEvents.h"
 #include "CbmTofSimpClusterizer.h"
 #include "CbmTrdClusterFinder.h"
 #include "CbmTrdHitProducer.h"
@@ -198,50 +201,6 @@ void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice =
       std::cout << "-I- " << myName << ": Added task " << evBuildRaw->GetName() << std::endl;
       eventBased = kTRUE;
     }  //? Ideal raw event building
-    else if (sEvBuildRaw.EqualTo("Real2018", TString::ECaseCompare::kIgnoreCase)) {
-      CbmMcbm2018EventBuilder* evBuildRaw = new CbmMcbm2018EventBuilder();
-
-      evBuildRaw->SetFixedTimeWindow(500.);
-      evBuildRaw->SetTriggerMinNumberSts(1000);
-
-      evBuildRaw->SetUseBaseMuchDigi(kTRUE);
-
-      run->AddTask(evBuildRaw);
-      std::cout << "-I- " << myName << ": Added task " << evBuildRaw->GetName() << std::endl;
-      eventBased = kTRUE;
-    }
-    else if (sEvBuildRaw.EqualTo("Real2019", TString::ECaseCompare::kIgnoreCase)) {
-      CbmMcbm2019TimeWinEventBuilderTask* evBuildRaw = new CbmMcbm2019TimeWinEventBuilderTask();
-
-      //Choose between NoOverlap, MergeOverlap, AllowOverlap
-      evBuildRaw->SetEventOverlapMode(EOverlapMode::AllowOverlap);
-
-      // Remove detectors where digis not found
-      if (!useRich) evBuildRaw->RemoveDetector(kEventBuilderDetRich);
-      if (!useMuch) evBuildRaw->RemoveDetector(kEventBuilderDetMuch);
-      if (!usePsd) evBuildRaw->RemoveDetector(kEventBuilderDetPsd);
-      if (!useTof) evBuildRaw->RemoveDetector(kEventBuilderDetTof);
-      if (!useTrd) evBuildRaw->RemoveDetector(kEventBuilderDetTrd);
-      if (!useSts) {
-        std::cerr << "-E- " << myName << ": Sts must be present for raw event "
-                  << "building using ``Real2019'' option. Terminating macro." << std::endl;
-        return;
-      }
-      // Set STS as reference detector
-      evBuildRaw->SetReferenceDetector(kEventBuilderDetSts);
-      evBuildRaw->SetTsParameters(0.0, 1.e7, 0.0);
-
-      // Use CbmMuchDigi instead of CbmMuchBeamtimeDigi
-      evBuildRaw->ChangeMuchBeamtimeDigiFlag(kFALSE);
-
-      evBuildRaw->SetTriggerMinNumber(ECbmModuleId::kSts, 1000);
-      evBuildRaw->SetTriggerMaxNumber(ECbmModuleId::kSts, -1);
-      evBuildRaw->SetTriggerWindow(ECbmModuleId::kSts, -500, 500);
-
-      run->AddTask(evBuildRaw);
-      std::cout << "-I- " << myName << ": Added task " << evBuildRaw->GetName() << std::endl;
-      eventBased = kTRUE;
-    }
     else if (sEvBuildRaw.EqualTo("Real", TString::ECaseCompare::kIgnoreCase)) {
       CbmTaskBuildRawEvents* evBuildRaw = new CbmTaskBuildRawEvents();
 
@@ -281,6 +240,7 @@ void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice =
     }
   }  //? event-based reco
   // ------------------------------------------------------------------------
+
 
   // ----------- QA for raw event builder -----------------------------------
   if (eventBased && useMC) {
