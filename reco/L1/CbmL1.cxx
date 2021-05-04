@@ -611,7 +611,7 @@ InitStatus CbmL1::Init()
   if (fUseTOF) {
 
     if (fTofHits) {
-      for (int j = 0; j < fTofHits->GetEntries(); j++) {
+      for (int j = 0; j < fTofHits->GetEntriesFast(); j++) {
 
         CbmTofHit* mh = L1_DYNAMIC_CAST<CbmTofHit*>(fTofHits->At(j));
         St            = fTofDigiBdfPar->GetNbTrackingStations();
@@ -1244,7 +1244,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
   int FstHitinTs  = 0;      // 1st hit index in TS
 
   /// sort input hits by time
-  for (Int_t j = 0; j < listStsHits->GetEntries(); j++) {
+  for (Int_t j = 0; j < listStsHits->GetEntriesFast(); j++) {
     CbmStsHit* sh = L1_DYNAMIC_CAST<CbmStsHit*>(listStsHits->At(j));
     double t      = sh->GetTime();
     if (t < start_t) start_t = t;
@@ -1308,7 +1308,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
       fData->ReadHitsFromFile(fSTAPDataDir.Data(), 1, fVerbose);
 
       algo->SetData(fData->GetStsHits(), fData->GetNStsStrips(), fData->GetStsZPos(), fData->GetSFlag(),
-                    fData->GetStsHitsStartIndex(), fData->GetStsHitsStopIndex(), listStsHits->GetEntries());
+                    fData->GetStsHitsStartIndex(), fData->GetStsHitsStopIndex(), listStsHits->GetEntriesFast());
     }
     else
       ReadEvent(fData, TsStart, TsLength, TsOverlap, FstHitinTs, newTS, event);
@@ -1546,7 +1546,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
     }
 
 
-    for (int i = 0; i < listStsHits->GetEntries(); i++) {
+    for (int i = 0; i < listStsHits->GetEntriesFast(); i++) {
 
       CbmStsHit* sh = L1_DYNAMIC_CAST<CbmStsHit*>(listStsHits->At(StsIndex[i]));
       float time    = sh->GetTime();
