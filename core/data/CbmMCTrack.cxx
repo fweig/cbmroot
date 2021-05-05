@@ -33,21 +33,15 @@ CbmMCTrack::CbmMCTrack()
   , fStartY(0.)
   , fStartZ(0.)
   , fStartT(0.)
-  , fNPoints(0) {}
+  , fNPoints(0)
+{
+}
 // -------------------------------------------------------------------------
 
 
 // -----   Standard constructor   ------------------------------------------
-CbmMCTrack::CbmMCTrack(Int_t pdgCode,
-                       Int_t motherId,
-                       Double_t px,
-                       Double_t py,
-                       Double_t pz,
-                       Double_t x,
-                       Double_t y,
-                       Double_t z,
-                       Double_t t,
-                       Int_t nPoints = 0)
+CbmMCTrack::CbmMCTrack(Int_t pdgCode, Int_t motherId, Double_t px, Double_t py, Double_t pz, Double_t x, Double_t y,
+                       Double_t z, Double_t t, Int_t nPoints = 0)
   : TObject()
   , fProcessId(kPNoProcess)
   , fPdgCode(pdgCode)
@@ -60,7 +54,8 @@ CbmMCTrack::CbmMCTrack(Int_t pdgCode,
   , fStartY(y)
   , fStartZ(z)
   , fStartT(t)
-  , fNPoints(0) {
+  , fNPoints(0)
+{
   if (nPoints >= 0) fNPoints = nPoints;
   //  else              fNPoints = 0;
 }
@@ -81,7 +76,8 @@ CbmMCTrack::CbmMCTrack(const CbmMCTrack& track)
   , fStartY(track.fStartY)
   , fStartZ(track.fStartZ)
   , fStartT(track.fStartT)
-  , fNPoints(track.fNPoints) {
+  , fNPoints(track.fNPoints)
+{
   //  *this = track;
 }
 // -------------------------------------------------------------------------
@@ -101,7 +97,9 @@ CbmMCTrack::CbmMCTrack(TParticle* part)
   , fStartY(part->Vy())
   , fStartZ(part->Vz())
   , fStartT(part->T() * 1e09)
-  , fNPoints(0) {}
+  , fNPoints(0)
+{
+}
 // -------------------------------------------------------------------------
 
 
@@ -111,7 +109,8 @@ CbmMCTrack::~CbmMCTrack() {}
 
 
 // -----   Public method GetMass   -----------------------------------------
-Double_t CbmMCTrack::GetMass() const {
+Double_t CbmMCTrack::GetMass() const
+{
 
   if (TDatabasePDG::Instance()) {
     TParticlePDG* particle = TDatabasePDG::Instance()->GetParticle(fPdgCode);
@@ -132,8 +131,10 @@ Double_t CbmMCTrack::GetMass() const {
       return 0.;
 
     // Unknown particle type
-    else
-      LOG(fatal) << "CbmMCTrack: Unknown PDG code " << fPdgCode;
+    else {
+      LOG(error) << "CbmMCTrack: Unknown PDG code " << fPdgCode;
+      return 0.;
+    }
   }  //? Instance of TDatabasePDG
 
   LOG(fatal) << "CbmMCTrack: No TDatabasePDG";
@@ -143,7 +144,8 @@ Double_t CbmMCTrack::GetMass() const {
 
 
 // -----   Public method GetCharge   ---------------------------------------
-Double_t CbmMCTrack::GetCharge() const {
+Double_t CbmMCTrack::GetCharge() const
+{
 
   if (TDatabasePDG::Instance()) {
     TParticlePDG* particle = TDatabasePDG::Instance()->GetParticle(fPdgCode);
@@ -163,8 +165,10 @@ Double_t CbmMCTrack::GetCharge() const {
       return 0.;
 
     // Unknown particle type
-    else
-      LOG(fatal) << "CbmMCTrack: Unknown PDG code " << fPdgCode;
+    else {
+      LOG(error) << "CbmMCTrack: Unknown PDG code " << fPdgCode;
+      return 0.;
+    }
   }  //? Instance of TDatabasePDG
 
   LOG(fatal) << "CbmMCTrack: No TDatabasePDG";
@@ -174,7 +178,8 @@ Double_t CbmMCTrack::GetCharge() const {
 
 
 // -----   Public method GetRapidity   -------------------------------------
-Double_t CbmMCTrack::GetRapidity() const {
+Double_t CbmMCTrack::GetRapidity() const
+{
   Double_t e = GetEnergy();
   Double_t y = 0.5 * TMath::Log((e + fPz) / (e - fPz));
   return y;
@@ -183,9 +188,9 @@ Double_t CbmMCTrack::GetRapidity() const {
 
 
 // -----   Public method GetNPoints   --------------------------------------
-Int_t CbmMCTrack::GetNPoints(ECbmModuleId detId) const {
-  if (detId == ECbmModuleId::kRef)
-    return (fNPoints & 1);
+Int_t CbmMCTrack::GetNPoints(ECbmModuleId detId) const
+{
+  if (detId == ECbmModuleId::kRef) return (fNPoints & 1);
   else if (detId == ECbmModuleId::kMvd)
     return ((fNPoints & (7 << 1)) >> 1);
   else if (detId == ECbmModuleId::kSts)
@@ -211,75 +216,67 @@ Int_t CbmMCTrack::GetNPoints(ECbmModuleId detId) const {
 
 
 // -----   Public method SetNPoints   --------------------------------------
-void CbmMCTrack::SetNPoints(ECbmModuleId iDet, Int_t nPoints) {
+void CbmMCTrack::SetNPoints(ECbmModuleId iDet, Int_t nPoints)
+{
 
   if (iDet == ECbmModuleId::kRef) {
-    if (nPoints < 0)
-      nPoints = 0;
+    if (nPoints < 0) nPoints = 0;
     else if (nPoints > 1)
       nPoints = 1;
     fNPoints = (fNPoints & (~1)) | nPoints;
   }
 
   else if (iDet == ECbmModuleId::kMvd) {
-    if (nPoints < 0)
-      nPoints = 0;
+    if (nPoints < 0) nPoints = 0;
     else if (nPoints > 7)
       nPoints = 7;
     fNPoints = (fNPoints & (~(7 << 1))) | (nPoints << 1);
   }
 
   else if (iDet == ECbmModuleId::kSts) {
-    if (nPoints < 0)
-      nPoints = 0;
+    if (nPoints < 0) nPoints = 0;
     else if (nPoints > 31)
       nPoints = 31;
     fNPoints = (fNPoints & (~(31 << 4))) | (nPoints << 4);
   }
 
   else if (iDet == ECbmModuleId::kRich) {
-    if (nPoints < 0)
-      nPoints = 0;
+    if (nPoints < 0) nPoints = 0;
     else if (nPoints > 1)
       nPoints = 1;
     fNPoints = (fNPoints & (~(1 << 9))) | (nPoints << 9);
   }
 
   else if (iDet == ECbmModuleId::kMuch) {
-    if (nPoints < 0)
-      nPoints = 0;
+    if (nPoints < 0) nPoints = 0;
     else if (nPoints > 31)
       nPoints = 31;
     fNPoints = (fNPoints & (~(31 << 10))) | (nPoints << 10);
   }
 
   else if (iDet == ECbmModuleId::kTrd) {
-    if (nPoints < 0)
-      nPoints = 0;
+    if (nPoints < 0) nPoints = 0;
     else if (nPoints > 31)
       nPoints = 31;
     fNPoints = (fNPoints & (~(31 << 15))) | (nPoints << 15);
   }
 
   else if (iDet == ECbmModuleId::kTof) {
-    if (nPoints < 0)
-      nPoints = 0;
+    if (nPoints < 0) nPoints = 0;
     else if (nPoints > 15)
       nPoints = 15;
     fNPoints = (fNPoints & (~(15 << 20))) | (nPoints << 20);
   }
 
   else if (iDet == ECbmModuleId::kEcal) {
-    if (nPoints < 0)
-      nPoints = 0;
+    if (nPoints < 0) nPoints = 0;
     else if (nPoints > 1)
       nPoints = 1;
     fNPoints = (fNPoints & (~(1 << 24))) | (nPoints << 24);
   }
 
   else if (iDet == ECbmModuleId::kPsd) {
-    if (nPoints < 0)
-      nPoints = 0;
+    if (nPoints < 0) nPoints = 0;
     else if (nPoints > 1)
       nPoints = 1;
     fNPoints = (fNPoints & (~(1 << 25))) | (nPoints << 25);
@@ -292,19 +289,15 @@ void CbmMCTrack::SetNPoints(ECbmModuleId iDet, Int_t nPoints) {
 
 
 // -----   String output   -------------------------------------------------
-std::string CbmMCTrack::ToString() const {
+std::string CbmMCTrack::ToString() const
+{
   stringstream ss;
-  ss << "MCTrack: mother  " << fMotherId << ", GeantProcess "
-     << TMCProcessName[fProcessId] << ", Type " << fPdgCode << ", momentum ("
-     << fPx << ", " << fPy << ", " << fPz << ") GeV" << std::endl;
-  ss << "       Ref " << GetNPoints(ECbmModuleId::kRef) << ", MVD "
-     << GetNPoints(ECbmModuleId::kMvd) << ", STS "
-     << GetNPoints(ECbmModuleId::kSts) << ", RICH "
-     << GetNPoints(ECbmModuleId::kRich) << ", MUCH "
-     << GetNPoints(ECbmModuleId::kMuch) << ", TRD "
-     << GetNPoints(ECbmModuleId::kTrd) << ", TOF "
-     << GetNPoints(ECbmModuleId::kTof) << ", ECAL "
-     << GetNPoints(ECbmModuleId::kEcal) << ", PSD "
+  ss << "MCTrack: mother  " << fMotherId << ", GeantProcess " << TMCProcessName[fProcessId] << ", Type " << fPdgCode
+     << ", momentum (" << fPx << ", " << fPy << ", " << fPz << ") GeV" << std::endl;
+  ss << "       Ref " << GetNPoints(ECbmModuleId::kRef) << ", MVD " << GetNPoints(ECbmModuleId::kMvd) << ", STS "
+     << GetNPoints(ECbmModuleId::kSts) << ", RICH " << GetNPoints(ECbmModuleId::kRich) << ", MUCH "
+     << GetNPoints(ECbmModuleId::kMuch) << ", TRD " << GetNPoints(ECbmModuleId::kTrd) << ", TOF "
+     << GetNPoints(ECbmModuleId::kTof) << ", ECAL " << GetNPoints(ECbmModuleId::kEcal) << ", PSD "
      << GetNPoints(ECbmModuleId::kPsd) << std::endl;
   return ss.str();
 }
