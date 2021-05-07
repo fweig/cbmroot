@@ -451,7 +451,7 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(const int NHits, nsL1vector<E
         S4 += w * sHit.S4;
       }
 
-    } while (NotEmpty(Dmax > fvec(0.)));
+    } while (NotEmptyFvec(Dmax > fvec(0.)));
 
 
 #ifdef PRINT_TIMING
@@ -501,7 +501,7 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(const int NHits, nsL1vector<E
 #ifdef PRINT_TIMING
     GetTimer("Ring finding: Store ring").Start(0);
 #endif  // PRINT_TIMING
-    if (ISUNLIKELY(Empty(validRing))) continue;
+    if (ISUNLIKELY(EmptyFvec(validRing))) continue;
 
       ///////////
 #if 0   // TODO 1

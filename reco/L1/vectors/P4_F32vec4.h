@@ -163,8 +163,8 @@ public:
 
 #define if3(a, b, c) ((a) & (b)) | ((!(a)) & (c))  // analog (a) ? b : c
 
-#define NotEmpty(a) bool((a)[0]) | bool((a)[1]) | bool((a)[2]) | bool((a)[3])
-#define Empty(a) !(bool((a)[0]) | bool((a)[1]) | bool((a)[2]) | bool((a)[3]))
+#define NotEmptyFvec(a) bool((a)[0]) | bool((a)[1]) | bool((a)[2]) | bool((a)[3])
+#define EmptyFvec(a) !(bool((a)[0]) | bool((a)[1]) | bool((a)[2]) | bool((a)[3]))
   // bool NotEmpty(const F32vec4 &a) { return a[0]||a[1]||a[2]||a[3]; }
   // bool    Empty(const F32vec4 &a) { return !(a[0]||a[1]||a[2]||a[3]); } // optimize
   friend F32vec4 bool2int(const F32vec4& a) {  // mask returned

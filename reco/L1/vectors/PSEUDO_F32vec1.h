@@ -112,8 +112,8 @@ public:
     return z;
   }
 
-#define NotEmpty(a) bool((a)[0])
-#define Empty(a) !(bool((a)[0]))
+#define NotEmptyFvec(a) bool((a)[0])
+#define EmptyFvec(a) !(bool((a)[0]))
   friend F32vec1 bool2int(const F32vec1& a) {  // mask returned
     return if3(a, 1, 0);
   }
