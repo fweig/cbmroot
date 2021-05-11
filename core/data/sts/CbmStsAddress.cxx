@@ -19,6 +19,7 @@
 namespace CbmStsAddress
 {
 
+  // clang-format off
   // -----    Definition of address bit field   ------------------------------
   const uint16_t kBits[kCurrentVersion + 1][kStsNofLevels] = {
 
@@ -66,7 +67,7 @@ namespace CbmStsAddress
     {(1 << kBits[1][0]) - 1, (1 << kBits[1][1]) - 1, (1 << kBits[1][2]) - 1, (1 << kBits[1][3]) - 1,
      (1 << kBits[1][4]) - 1, (1 << kBits[1][5]) - 1, (1 << kBits[1][6]) - 1}};
   // -------------------------------------------------------------------------
-
+  // clang-format on
 
 }  // Namespace CbmStsAddress
 

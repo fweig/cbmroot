@@ -4,6 +4,7 @@
 
 /** @file CbmStsDigi.h
  ** @author V.Friese <v.friese@gsi.de>
+ ** @author Felix Weiglhofer <weiglhofer@fias.uni-frankfurt.de>
  ** @since 28.08.2006
  ** @version 6
  **/
@@ -13,6 +14,7 @@
 #define CBMSTSDIGI_H 1
 
 #include "CbmDefs.h"  // for ECbmModuleId::kSts
+#include "CbmStsAddress.h"
 
 #ifndef NO_ROOT
 #include <Rtypes.h>  // for ClassDef
@@ -45,23 +47,20 @@ public:
    ** @param  time     Measurement time [ns]
    ** @param  charge   Charge [ADC units]
    **/
-  CbmStsDigi(int32_t address, int32_t channel, uint64_t time, uint16_t charge)
-    : fTime(time)
-    , fAddress(address)
-    , fChannel(channel)
-    , fCharge(charge)
+  CbmStsDigi(int32_t address, int32_t channel, uint32_t time, uint16_t charge)
   {
+    PackAddressAndTime(address, time);
+    PackChannelAndCharge(channel, charge);
   }
 
 
   /** Destructor **/
   ~CbmStsDigi() {};
 
-
   /** Unique detector element address  (see CbmStsAddress)
    ** @value Unique address of readout channel
    **/
-  int32_t GetAddress() const { return fAddress; }
+  int32_t GetAddress() const { return UnpackAddress(); }
 
 
   /** @brief Get the desired name of the branch for this obj in the cbm output tree  (static)
@@ -73,7 +72,7 @@ public:
   /** @brief Channel number in module
    ** @value Channel number
    **/
-  uint16_t GetChannel() const { return fChannel; }
+  uint16_t GetChannel() const { return UnpackChannel(); }
 
 
   /** @brief Class name (static)
@@ -85,7 +84,7 @@ public:
   /** Charge
    ** @value Charge [ADC units]
    **/
-  double GetCharge() const { return double(fCharge); }
+  double GetCharge() const { return static_cast<double>(UnpackCharge()); }
 
 
   /** System ID (static)
@@ -97,16 +96,15 @@ public:
   /** Time of measurement
    ** @value Time [ns]
    **/
-  double GetTime() const { return double(fTime); }
+  double GetTime() const { return static_cast<double>(UnpackTime()); }
 
 
   template<class Archive>
   void serialize(Archive& ar, const unsigned int /*version*/)
   {
     ar& fTime;
+    ar& fChannelAndCharge;
     ar& fAddress;
-    ar& fChannel;
-    ar& fCharge;
   }
 
 
@@ -115,10 +113,29 @@ public:
    **/
   void SetTime(double dNewTime)
   {
-    // Future versions of StsDigi won't be able to store negative timestamps.
-    assert(dNewTime >= 0);
-    fTime = dNewTime;
+    // StsDigi is not able to store negative timestamps.
+    assert(dNewTime >= 0 && dNewTime <= kMaxTimestamp);
+    PackTime(dNewTime);
   }
+
+  void SetChannel(uint16_t channel) { PackChannelAndCharge(channel, UnpackCharge()); }
+
+  void SetCharge(uint16_t charge) { PackChannelAndCharge(UnpackChannel(), charge); }
+
+  void SetAddress(int32_t address) { PackAddressAndTime(address, UnpackTime()); }
+
+
+  /** Set new channel and charge.
+   **
+   ** Slightly more efficient than calling both individual setters.
+   **/
+  void SetChannelAndCharge(uint16_t channel, uint16_t charge) { PackChannelAndCharge(channel, charge); }
+
+  /** Set new address and time at once.
+   **
+   ** Slightly more efficient than calling both individual setters.
+   **/
+  void SetAddressAndTime(int32_t address, uint32_t time) { PackAddressAndTime(address, time); }
 
 
   /** String output **/
@@ -128,14 +145,37 @@ public:
 private:
   friend class boost::serialization::access;
 
-  int64_t fTime     = 0.;  ///< Time [ns]
-  int32_t fAddress  = 0;   ///< Unique element address
-  uint16_t fChannel = 0;   ///< Channel number
-  uint16_t fCharge  = 0;   ///< Charge [ADC units]
 
+  static constexpr int kNumAdcBits              = 5;
+  static constexpr uint32_t kAdcMask            = (1u << kNumAdcBits) - 1u;
+  static constexpr int kNumLowerAddrBits        = 16;
+  static constexpr int kNumTimestampBits        = 31;
+  static constexpr uint32_t kTimestampMask      = (1u << kNumTimestampBits) - 1u;
+  static constexpr uint32_t kMaxTimestamp       = kTimestampMask;
+  static constexpr uint32_t kTimeAddressBitMask = ~kTimestampMask;
+
+  uint32_t fTime             = 0;  ///< Time [ns] in lower 31 bits, highest bit is the 17th address bit.
+  uint16_t fChannelAndCharge = 0;  ///< Channel number (lower 11 bits) and charge [ADC Units] in upper 5 bits.
+  uint16_t fAddress          = 0;  ///< Unique element address (lower 16 bits of 17)
+
+
+  void PackTime(uint32_t newTime) { fTime = (fTime & kTimeAddressBitMask) | (newTime & kTimestampMask); }
+  uint32_t UnpackTime() const { return fTime & kTimestampMask; }
+
+
+  void PackChannelAndCharge(uint16_t channel, uint16_t charge)
+  {
+    fChannelAndCharge = (channel << kNumAdcBits) | charge;
+  }
+  uint16_t UnpackChannel() const { return fChannelAndCharge >> kNumAdcBits; }
+  uint16_t UnpackCharge() const { return fChannelAndCharge & kAdcMask; }
+
+
+  void PackAddressAndTime(int32_t address, uint32_t time);
+  int32_t UnpackAddress() const;
 
 #ifndef NO_ROOT
-  ClassDefNV(CbmStsDigi, 7);
+  ClassDefNV(CbmStsDigi, 8);
 #endif
 };
 

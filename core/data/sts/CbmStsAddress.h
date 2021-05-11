@@ -108,8 +108,8 @@ namespace CbmStsAddress
    ** @param address Unique element address
    ** @value Version number
    **
-   ** The version is encoded in the last 6 bits (58 to 63).
-   ** The maximal number of versions is 64.
+   ** The version is encoded in the last 4 bits (28 to 31).
+   ** The maximal number of versions is 16.
    **/
   uint32_t GetVersion(int32_t address);
 
@@ -122,6 +122,20 @@ namespace CbmStsAddress
    ** @return New address
    **/
   int32_t SetElementId(int32_t address, int32_t level, uint32_t newId);
+
+
+  /** @brief Strip address to contain only unit, (half)ladder and module.
+   ** @param address Full address
+   ** @return 17 bit address that can be stored in a Digi
+   **/
+  int32_t PackDigiAddress(int32_t address);
+
+
+  /** @brief Add version and system to compressed address that's stored in a digi
+   ** @param digiAddress Compressed address from digi
+   ** @return Full address
+   **/
+  int32_t UnpackDigiAddress(int32_t digiAddress);
 
 
   /** @brief Strip address to contain only unit, (half)ladder and module.

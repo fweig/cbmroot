@@ -131,9 +131,18 @@
 #pragma link C++ class CbmDigiVector < CbmPsdDsp> + ;
 #pragma link C++ class vector < CbmEventStore> + ;
 
-#pragma read sourceClass = "CbmTofDigi" version = "[1-2]" targetClass = "CbmTofDigi" source =                          \
-  "UInt_t fuAddress" target = "fuAddress" include = "Logger.h" code =                                                  \
-    "{ UInt_t system = (onfile.fuAddress >> 0) & ((1 << 4) - 1); \
+#pragma read sourceClass="CbmStsDigi" version="[7]" targetClass="CbmStsDigi" \
+    source="Long64_t fTime; Int_t fAddress; UShort_t fChannel; UShort_t fCharge" \
+    target="" \
+    include="Logger.h" \
+    code="{ newObj->SetAddressAndTime(onfile.fAddress, onfile.fTime); \
+            newObj->SetChannelAndCharge(onfile.fChannel, onfile.fCharge); \
+          }"
+
+#pragma read sourceClass="CbmTofDigi" version="[1-2]" targetClass="CbmTofDigi" \
+   source="UInt_t fuAddress" target="fuAddress" \
+   include="Logger.h" \
+   code="{ UInt_t system = (onfile.fuAddress >> 0) & ((1 << 4) - 1); \
            UInt_t smId = (onfile.fuAddress >> 4) & ((1 << 8) - 1); \
            UInt_t smType = (onfile.fuAddress >> 12) & ((1 << 4) - 1); \
            UInt_t rpcId = (onfile.fuAddress >> 16) & ((1 << 7) - 1); \
