@@ -1,21 +1,10 @@
 #ifndef CBMLITCONVERTER_H_
 #define CBMLITCONVERTER_H_
 
-#include "base/CbmLitEnums.h"
-#include "base/CbmLitTypes.h"
-
-#include "data/CbmLitFitNode.h"
-#include "data/CbmLitHit.h"
-#include "data/CbmLitPixelHit.h"
-#include "data/CbmLitStripHit.h"
-#include "data/CbmLitTofTrack.h"
-#include "data/CbmLitTrack.h"
-#include "data/CbmLitTrackParam.h"
-
-#include "CbmLitConverterFairTrackParam.h"
-
 #include "CbmEvent.h"
+#include "CbmGlobalTrack.h"
 #include "CbmHit.h"
+#include "CbmLitConverterFairTrackParam.h"
 #include "CbmMuchGeoScheme.h"
 #include "CbmMuchTrack.h"
 #include "CbmMvdHit.h"
@@ -24,31 +13,37 @@
 #include "CbmStsTrack.h"
 #include "CbmTofTrack.h"
 #include "CbmTrack.h"
-#include "CbmTrdTrack.h"
-#include "FairTrackParam.h"
-
-#include "CbmGlobalTrack.h"
 #include "CbmTrdAddress.h"
+#include "CbmTrdTrack.h"
 #include "CbmVertex.h"
+#include "base/CbmLitEnums.h"
+#include "base/CbmLitTypes.h"
+#include "data/CbmLitFitNode.h"
+#include "data/CbmLitHit.h"
+#include "data/CbmLitPixelHit.h"
+#include "data/CbmLitStripHit.h"
+#include "data/CbmLitTofTrack.h"
+#include "data/CbmLitTrack.h"
+#include "data/CbmLitTrackParam.h"
+
+#include "FairRootManager.h"
+#include "FairTrackParam.h"
 
 #include "TClonesArray.h"
 
-#include "FairRootManager.h"
-
 #include <cassert>
-#include <cmath>
 #include <iostream>
 #include <set>
+
+#include <cmath>
 
 
 class CbmLitConverter {
 public:
-  static void CbmPixelHitToCbmLitPixelHit(const CbmPixelHit* hit,
-                                          Int_t index,
-                                          CbmLitPixelHit* litHit) {
-    assert(hit->GetType() == kTRDHIT || hit->GetType() == kMUCHPIXELHIT
-           || hit->GetType() == kTOFHIT || hit->GetType() == kMVDHIT
-           || hit->GetType() == kSTSHIT || hit->GetType() == kPIXELHIT);
+  static void CbmPixelHitToCbmLitPixelHit(const CbmPixelHit* hit, Int_t index, CbmLitPixelHit* litHit)
+  {
+    assert(hit->GetType() == kTRDHIT || hit->GetType() == kMUCHPIXELHIT || hit->GetType() == kTOFHIT
+           || hit->GetType() == kMVDHIT || hit->GetType() == kSTSHIT || hit->GetType() == kPIXELHIT);
 
     litHit->SetX(hit->GetX());
     litHit->SetY(hit->GetY());
@@ -63,25 +58,23 @@ public:
     litHit->SetDz(hit->GetDz());
     litHit->SetDxy(hit->GetDxy());
 
-    if (hit->GetTimeError() > 0)
-      litHit->SetDt(hit->GetTimeError());
+    if (hit->GetTimeError() > 0) litHit->SetDt(hit->GetTimeError());
     else
       litHit->SetDt(100);
 
     litHit->SetRefId(index);
 
-    if (hit->GetType() == kTRDHIT) {
-      litHit->SetDetectorId(kLITTRD, hit->GetPlaneId());
-    } else if (hit->GetType() == kMUCHPIXELHIT) {
+    if (hit->GetType() == kTRDHIT) { litHit->SetDetectorId(kLITTRD, hit->GetPlaneId()); }
+    else if (hit->GetType() == kMUCHPIXELHIT) {
       litHit->SetDetectorId(kLITMUCH, (hit->GetPlaneId() - 1) / 2);
-    } else if (hit->GetType() == kTOFHIT) {
+    }
+    else if (hit->GetType() == kTOFHIT) {
       litHit->SetDetectorId(kLITTOF, 0);
     }
   }
 
-  static void CbmMvdHitToCbmLitPixelHit(const CbmMvdHit* hit,
-                                        Int_t index,
-                                        CbmLitPixelHit* litHit) {
+  static void CbmMvdHitToCbmLitPixelHit(const CbmMvdHit* hit, Int_t index, CbmLitPixelHit* litHit)
+  {
     litHit->SetX(hit->GetX());
     litHit->SetY(hit->GetY());
     litHit->SetZ(hit->GetZ());
@@ -96,8 +89,8 @@ public:
     litHit->SetDetectorId(kLITMVD, hit->GetStationNr());
   }
 
-  static void CbmStsTrackToCbmLitTrack(const CbmStsTrack* stsTrack,
-                                       CbmLitTrack* litTrack) {
+  static void CbmStsTrackToCbmLitTrack(const CbmStsTrack* stsTrack, CbmLitTrack* litTrack)
+  {
     // TODO note that hits are not copied now
 
     litTrack->SetQuality(kLITGOOD);
@@ -107,16 +100,11 @@ public:
     CbmLitTrackParam paramFirst, paramLast;
     //TODO remove this const typecasting
     CbmTrackParam cbmParamFirst;
-    cbmParamFirst.Set(*stsTrack->GetParamFirst(),
-                      stsTrack->GetTime(),
-                      stsTrack->GetTimeError());
-    CbmLitConverterFairTrackParam::FairTrackParamToCbmLitTrackParam(
-      &cbmParamFirst, &paramFirst);
+    cbmParamFirst.Set(*stsTrack->GetParamFirst(), stsTrack->GetTime(), stsTrack->GetTimeError());
+    CbmLitConverterFairTrackParam::FairTrackParamToCbmLitTrackParam(&cbmParamFirst, &paramFirst);
     CbmTrackParam cbmParamLast;
-    cbmParamLast.Set(
-      *stsTrack->GetParamLast(), stsTrack->GetTime(), stsTrack->GetTimeError());
-    CbmLitConverterFairTrackParam::FairTrackParamToCbmLitTrackParam(
-      &cbmParamLast, &paramLast);
+    cbmParamLast.Set(*stsTrack->GetParamLast(), stsTrack->GetTime(), stsTrack->GetTimeError());
+    CbmLitConverterFairTrackParam::FairTrackParamToCbmLitTrackParam(&cbmParamLast, &paramLast);
     Double_t firstTime;
     Double_t lastTime;
     GetStsTrackTimes(stsTrack, firstTime, lastTime);
@@ -126,13 +114,11 @@ public:
     litTrack->SetParamLast(&paramLast);
   }
 
-  static void CbmTrackToCbmLitTrack(const CbmTrack* track,
-                                    const HitPtrVector& lhits,
-                                    CbmLitTrack* ltrack) {
+  static void CbmTrackToCbmLitTrack(const CbmTrack* track, const HitPtrVector& lhits, CbmLitTrack* ltrack)
+  {
     for (Int_t iHit = 0; iHit < track->GetNofHits(); iHit++) {
       // Now we convert only pixel hits
-      if (track->GetHitType(iHit) != kPIXELHIT
-          && track->GetHitType(iHit) != kTRDHIT
+      if (track->GetHitType(iHit) != kPIXELHIT && track->GetHitType(iHit) != kTRDHIT
           && track->GetHitType(iHit) != kMUCHPIXELHIT)
         continue;
       Int_t hitId = track->GetHitIndex(iHit);
@@ -147,22 +133,18 @@ public:
     ltrack->SetPDG(track->GetPidHypo());
     CbmLitTrackParam paramFirst, paramLast;
     CbmTrackParam cbmParamFirst;
-    cbmParamFirst.Set(
-      *track->GetParamFirst(), track->GetTime(), track->GetTimeError());
-    CbmLitConverterFairTrackParam::FairTrackParamToCbmLitTrackParam(
-      &cbmParamFirst, &paramFirst);
+    cbmParamFirst.Set(*track->GetParamFirst(), track->GetTime(), track->GetTimeError());
+    CbmLitConverterFairTrackParam::FairTrackParamToCbmLitTrackParam(&cbmParamFirst, &paramFirst);
     CbmTrackParam cbmParamLast;
-    cbmParamLast.Set(
-      *track->GetParamLast(), track->GetTime(), track->GetTimeError());
-    CbmLitConverterFairTrackParam::FairTrackParamToCbmLitTrackParam(
-      &cbmParamLast, &paramLast);
+    cbmParamLast.Set(*track->GetParamLast(), track->GetTime(), track->GetTimeError());
+    CbmLitConverterFairTrackParam::FairTrackParamToCbmLitTrackParam(&cbmParamLast, &paramLast);
     ltrack->SetParamFirst(&paramFirst);
     ltrack->SetParamLast(&paramLast);
   }
 
-  static void CbmTrackArrayToCbmLitTrackArray(const TClonesArray* tracks,
-                                              const HitPtrVector& lhits,
-                                              TrackPtrVector& ltracks) {
+  static void CbmTrackArrayToCbmLitTrackArray(const TClonesArray* tracks, const HitPtrVector& lhits,
+                                              TrackPtrVector& ltracks)
+  {
     Int_t nofTracks = tracks->GetEntriesFast();
     for (Int_t iTrack = 0; iTrack < nofTracks; iTrack++) {
       const CbmTrack* track = static_cast<const CbmTrack*>(tracks->At(iTrack));
@@ -172,9 +154,8 @@ public:
     }
   }
 
-  static void CbmLitTrackToCbmTrack(const CbmLitTrack* litTrack,
-                                    CbmTrack* track,
-                                    LitSystemId systemId) {
+  static void CbmLitTrackToCbmTrack(const CbmLitTrack* litTrack, CbmTrack* track, LitSystemId systemId)
+  {
     Double_t chiSq = 0.;
     Int_t ndf      = 0;
     Int_t firstHit = -1;
@@ -189,7 +170,8 @@ public:
       if (det == kLITMUCH && type == kLITPIXELHIT) {
         ndf += 2;
         track->AddHit(hit->GetRefId(), kMUCHPIXELHIT);
-      } else if (det == kLITTRD) {
+      }
+      else if (det == kLITTRD) {
         ndf += 2;
         track->AddHit(hit->GetRefId(), kTRDHIT);
       }
@@ -203,31 +185,25 @@ public:
     track->SetPreviousTrackId(litTrack->GetPreviousTrackId());
     track->SetFlag(litTrack->GetQuality());
     FairTrackParam parLast, parFirst;
-    CbmLitConverterFairTrackParam::CbmLitTrackParamToFairTrackParam(
-      litTrack->GetFitNode(lastHit)->GetUpdatedParam(), &parLast);
-    CbmLitConverterFairTrackParam::CbmLitTrackParamToFairTrackParam(
-      litTrack->GetFitNode(firstHit)->GetUpdatedParam(), &parFirst);
+    CbmLitConverterFairTrackParam::CbmLitTrackParamToFairTrackParam(litTrack->GetFitNode(lastHit)->GetUpdatedParam(),
+                                                                    &parLast);
+    CbmLitConverterFairTrackParam::CbmLitTrackParamToFairTrackParam(litTrack->GetFitNode(firstHit)->GetUpdatedParam(),
+                                                                    &parFirst);
     track->SetParamLast(&parLast);
     track->SetParamFirst(&parFirst);
   }
 
-  static void
-  LitTrackVectorToGlobalTrackArray(CbmEvent* event,
-                                   const TrackPtrVector& litTracks,
-                                   const TofTrackPtrVector& litTofTracks,
-                                   TClonesArray* globalTracks,
-                                   TClonesArray* stsTracks,
-                                   TClonesArray* trdTracks,
-                                   TClonesArray* muchTracks,
-                                   TClonesArray* tofTracks) {
+  static void LitTrackVectorToGlobalTrackArray(CbmEvent* event, const TrackPtrVector& litTracks,
+                                               const TofTrackPtrVector& litTofTracks, TClonesArray* globalTracks,
+                                               TClonesArray* stsTracks, TClonesArray* trdTracks,
+                                               TClonesArray* muchTracks, TClonesArray* tofTracks)
+  {
     // Loop over STS tracks and create GlobalTrack for each StsTrack
     Int_t globalTrackNo = globalTracks->GetEntriesFast();
-    Int_t nofStsTracks  = event ? event->GetNofData(ECbmDataType::kStsTrack)
-                               : stsTracks->GetEntriesFast();
+    Int_t nofStsTracks  = event ? event->GetNofData(ECbmDataType::kStsTrack) : stsTracks->GetEntriesFast();
     for (Int_t i = 0; i < nofStsTracks; i++) {
-      Int_t iTrack = event ? event->GetIndex(ECbmDataType::kStsTrack, i) : i;
-      CbmGlobalTrack* globalTrack =
-        new ((*globalTracks)[globalTrackNo++]) CbmGlobalTrack();
+      Int_t iTrack                = event ? event->GetIndex(ECbmDataType::kStsTrack, i) : i;
+      CbmGlobalTrack* globalTrack = new ((*globalTracks)[globalTrackNo++]) CbmGlobalTrack();
       globalTrack->SetStsTrackIndex(i);
 
       if (event) event->AddData(ECbmDataType::kGlobalTrack, iTrack);
@@ -242,8 +218,7 @@ public:
 
       if (litTrack->GetQuality() == kLITBAD) { continue; }
       if (litTrack->GetNofHits() < 1) { continue; }
-      if (static_cast<size_t>(litTrack->GetNofHits())
-          != litTrack->GetFitNodes().size()) {
+      if (static_cast<size_t>(litTrack->GetNofHits()) != litTrack->GetFitNodes().size()) {
         LOG(ERROR) << "CbmLitConverter::LitTrackVectorToGlobalTrackArray: "
                       "unequal number of hits and fit nodes"
                    << std::endl
@@ -251,25 +226,19 @@ public:
         continue;
       }
 
-      CbmGlobalTrack* globalTrack = static_cast<CbmGlobalTrack*>(
-        globalTracks->At(litTrack->GetPreviousTrackId()));
+      CbmGlobalTrack* globalTrack = static_cast<CbmGlobalTrack*>(globalTracks->At(litTrack->GetPreviousTrackId()));
 
       // Set last parameter of the CbmGlobal track to be last parameter of CbmLitTrack
       FairTrackParam parLast;
-      CbmLitConverterFairTrackParam::CbmLitTrackParamToFairTrackParam(
-        litTrack->GetParamLast(), &parLast);
+      CbmLitConverterFairTrackParam::CbmLitTrackParamToFairTrackParam(litTrack->GetParamLast(), &parLast);
       globalTrack->SetParamLast(&parLast);
 
       Bool_t isCreateMuchTrack = false, isCreateTrdTrack = false;
       for (Int_t iHit = 0; iHit < litTrack->GetNofHits(); iHit++) {
         const CbmLitHit* thisHit = litTrack->GetHit(iHit);
         LitSystemId thisDetId    = thisHit->GetSystem();
-        if (thisDetId == kLITMUCH && muchTracks != NULL) {
-          isCreateMuchTrack = true;
-        }
-        if (thisDetId == kLITTRD && trdTracks != NULL) {
-          isCreateTrdTrack = true;
-        }
+        if (thisDetId == kLITMUCH && muchTracks != NULL) { isCreateMuchTrack = true; }
+        if (thisDetId == kLITTRD && trdTracks != NULL) { isCreateTrdTrack = true; }
       }
       if (isCreateTrdTrack) {
         CbmTrdTrack* track = new ((*trdTracks)[trdTrackNo]) CbmTrdTrack();
@@ -293,31 +262,29 @@ public:
 
     for (size_t iTrack = 0; iTrack < litTofTracks.size(); iTrack++) {
       const CbmLitTofTrack* litTofTrack = litTofTracks[iTrack];
-      CbmTofTrack* track  = new ((*tofTracks)[tofTrackNo++]) CbmTofTrack();
+      CbmTofTrack* track                = new ((*tofTracks)[tofTrackNo]) CbmTofTrack();
+      if (event) event->AddData(ECbmDataType::kTofTrack, tofTrackNo);
+      tofTrackNo++;
       Int_t globalTrackId = litTofTrack->GetTrack()->GetPreviousTrackId();
       Int_t tofHitId      = litTofTrack->GetHit()->GetRefId();
       track->SetTofHitIndex(tofHitId);
       track->SetTrackIndex(globalTrackId);
       track->SetDistance(litTofTrack->GetDistance());
       FairTrackParam par;
-      CbmLitConverterFairTrackParam::CbmLitTrackParamToFairTrackParam(
-        litTofTrack->GetTrackParam(), &par);
+      CbmLitConverterFairTrackParam::CbmLitTrackParamToFairTrackParam(litTofTrack->GetTrackParam(), &par);
       track->SetTrackParameter(&par);
 
-      CbmGlobalTrack* globalTrack =
-        static_cast<CbmGlobalTrack*>(globalTracks->At(globalTrackId));
+      CbmGlobalTrack* globalTrack = static_cast<CbmGlobalTrack*>(globalTracks->At(globalTrackId));
       globalTrack->SetTofHitIndex(tofHitId);
 
       if (event) event->AddData(ECbmDataType::kTofHit, tofHitId);
     }
   }
 
-  static void HitArrayToHitVector(CbmEvent* event,
-                                  ECbmDataType hitDataType,
-                                  const TClonesArray* hits,
-                                  HitPtrVector& litHits) {
-    Int_t nofHits =
-      event ? event->GetNofData(hitDataType) : hits->GetEntriesFast();
+  static void HitArrayToHitVector(CbmEvent* event, ECbmDataType hitDataType, const TClonesArray* hits,
+                                  HitPtrVector& litHits)
+  {
+    Int_t nofHits = event ? event->GetNofData(hitDataType) : hits->GetEntriesFast();
     for (Int_t i = 0; i < nofHits; ++i) {
       Int_t iHit  = event ? event->GetIndex(hitDataType, i) : i;
       CbmHit* hit = (CbmHit*) hits->At(iHit);
@@ -329,8 +296,8 @@ public:
     }
   }
 
-  static void MvdHitArrayToHitVector(const TClonesArray* hits,
-                                     HitPtrVector& litHits) {
+  static void MvdHitArrayToHitVector(const TClonesArray* hits, HitPtrVector& litHits)
+  {
     Int_t nofHits = hits->GetEntriesFast();
     for (Int_t iHit = 0; iHit < nofHits; iHit++) {
       CbmMvdHit* hit = static_cast<CbmMvdHit*>(hits->At(iHit));
@@ -341,13 +308,11 @@ public:
     }
   }
 
-  static void StsTrackArrayToTrackVector(CbmEvent* event,
-                                         const TClonesArray* tracks,
-                                         TrackPtrVector& litTracks) {
-    Int_t nofTracks = event ? event->GetNofData(ECbmDataType::kStsTrack)
-                            : tracks->GetEntriesFast();
+  static void StsTrackArrayToTrackVector(CbmEvent* event, const TClonesArray* tracks, TrackPtrVector& litTracks)
+  {
+    Int_t nofTracks = event ? event->GetNofData(ECbmDataType::kStsTrack) : tracks->GetEntriesFast();
     for (Int_t i = 0; i < nofTracks; ++i) {
-      Int_t iTrack = event ? event->GetIndex(ECbmDataType::kStsTrack, i) : i;
+      Int_t iTrack       = event ? event->GetIndex(ECbmDataType::kStsTrack, i) : i;
       CbmStsTrack* track = (CbmStsTrack*) tracks->At(iTrack);
       if (track == NULL) { continue; }
       if (track->GetParamLast()->GetQp() == 0) { continue; }
@@ -359,9 +324,8 @@ public:
     }
   }
 
-  static void GetStsTrackTimes(const CbmStsTrack* track,
-                               Double_t& firstTime,
-                               Double_t& lastTime) {
+  static void GetStsTrackTimes(const CbmStsTrack* track, Double_t& firstTime, Double_t& lastTime)
+  {
     static FairRootManager* ioman = 0;
     static CbmVertex* primVertex  = 0;
     static TClonesArray* stsHits  = 0;
@@ -391,15 +355,11 @@ public:
     CbmLitTrackParam paramFirst;
     CbmLitTrackParam paramLast;
     CbmTrackParam cbmParamFirst;
-    cbmParamFirst.Set(
-      *track->GetParamFirst(), track->GetTime(), track->GetTimeError());
-    CbmLitConverterFairTrackParam::FairTrackParamToCbmLitTrackParam(
-      &cbmParamFirst, &paramFirst);
+    cbmParamFirst.Set(*track->GetParamFirst(), track->GetTime(), track->GetTimeError());
+    CbmLitConverterFairTrackParam::FairTrackParamToCbmLitTrackParam(&cbmParamFirst, &paramFirst);
     CbmTrackParam cbmParamLast;
-    cbmParamLast.Set(
-      *track->GetParamLast(), track->GetTime(), track->GetTimeError());
-    CbmLitConverterFairTrackParam::FairTrackParamToCbmLitTrackParam(
-      &cbmParamLast, &paramLast);
+    cbmParamLast.Set(*track->GetParamLast(), track->GetTime(), track->GetTimeError());
+    CbmLitConverterFairTrackParam::FairTrackParamToCbmLitTrackParam(&cbmParamLast, &paramLast);
 
     Double_t x = paramFirst.GetX();
     Double_t y = paramFirst.GetY();
@@ -409,10 +369,8 @@ public:
     Double_t deltaTFirst = 0;
 
     if (propagator->Propagate(&par, zVert, pdg) == kLITERROR)
-      deltaTFirst =
-        -TMath::Sqrt(TMath::Power(x - xVert, 2) + TMath::Power(y - yVert, 2)
-                     + TMath::Power(z - zVert, 2))
-        / CbmLitTrackParam::fSpeedOfLight;
+      deltaTFirst = -TMath::Sqrt(TMath::Power(x - xVert, 2) + TMath::Power(y - yVert, 2) + TMath::Power(z - zVert, 2))
+                    / CbmLitTrackParam::fSpeedOfLight;
     else
       deltaTFirst = par.GetTime() - paramFirst.GetTime();
 
@@ -431,22 +389,18 @@ public:
       //HitType hitType = track->GetHitType(i);
       HitType hitType = (i < nofMvdHits) ? kMVDHIT : kSTSHIT;
       //Int_t hitInd = track->GetHitIndex(i);
-      Int_t hitInd = (i < nofMvdHits) ? track->GetMvdHitIndex(i)
-                                      : track->GetStsHitIndex(i - nofMvdHits);
-      CbmPixelHit* hit = static_cast<CbmPixelHit*>(
-        kMVDHIT == hitType ? mvdHits->At(hitInd) : stsHits->At(hitInd));
+      Int_t hitInd     = (i < nofMvdHits) ? track->GetMvdHitIndex(i) : track->GetStsHitIndex(i - nofMvdHits);
+      CbmPixelHit* hit = static_cast<CbmPixelHit*>(kMVDHIT == hitType ? mvdHits->At(hitInd) : stsHits->At(hitInd));
 
-      if (i == nofHits - 1)
-        z = paramLast.GetZ();
+      if (i == nofHits - 1) z = paramLast.GetZ();
       else
         z = hit->GetZ();
 
       if (propagator->Propagate(&par, z, pdg) == kLITERROR) {
-        deltaTLast =
-          TMath::Sqrt(TMath::Power(paramLast.GetX() - paramFirst.GetX(), 2)
-                      + TMath::Power(paramLast.GetY() - paramFirst.GetY(), 2)
-                      + TMath::Power(paramLast.GetZ() - paramFirst.GetZ(), 2))
-          / CbmLitTrackParam::fSpeedOfLight;
+        deltaTLast = TMath::Sqrt(TMath::Power(paramLast.GetX() - paramFirst.GetX(), 2)
+                                 + TMath::Power(paramLast.GetY() - paramFirst.GetY(), 2)
+                                 + TMath::Power(paramLast.GetZ() - paramFirst.GetZ(), 2))
+                     / CbmLitTrackParam::fSpeedOfLight;
         break;
       }
 
@@ -456,8 +410,7 @@ public:
       filter->Update(&par, &litHit, chi);
     }
 
-    if (0 == deltaTLast)
-      lastTime = par.GetTime();
+    if (0 == deltaTLast) lastTime = par.GetTime();
     else
       lastTime = firstTime + deltaTLast;
   }
