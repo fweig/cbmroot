@@ -1,4 +1,8 @@
 #!/bin/bash
+# Copyright (C) 2014 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by David Emschermann
+
 #
 ##   a sim job with 1000 events runs for about 03:30 h
 #

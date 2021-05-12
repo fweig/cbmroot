@@ -1,3 +1,7 @@
+# Copyright (C) 2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by David Emschermann
+
 #
 # create TRD geometry from patch file
 #

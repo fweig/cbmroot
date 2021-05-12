@@ -1,4 +1,8 @@
 #!/bin/sh
+# Copyright (C) 2012 Justus-Liebig-Universitaet Giessen, Giessen
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Elena Lebedeva
+
 
 # get parameters of the script
 outdir=${1}

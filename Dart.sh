@@ -1,4 +1,8 @@
 #!/bin/bash
+# Copyright (C) 2007 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Florian Uhlig
+
 
 function print_example(){
 echo "##################################################################"

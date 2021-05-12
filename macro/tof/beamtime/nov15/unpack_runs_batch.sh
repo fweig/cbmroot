@@ -1,4 +1,8 @@
 #!/bin/bash
+# Copyright (C) 2017 Physikalisches Institut, Universitaet Heidelberg, Heidelberg
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Christian Simon
+
 #SBATCH --time=0-15:00:00
 #SBATCH --mem-per-cpu=2048
 #SBATCH --cpus-per-task=1

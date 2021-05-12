@@ -1,4 +1,8 @@
 #!/bin/bash
+# Copyright (C) 2016 Justus-Liebig-Universitaet Giessen, Giessen
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Julian Book
+
 
 # indir need to be simulation directory with a subdirectory structure that contains the individual simulation runs (typically numbers)
 indir=/home/$USER/sim/test/

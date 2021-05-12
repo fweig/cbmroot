@@ -1,4 +1,8 @@
 #!/bin/bash
+# Copyright (C) 2019 Justus-Liebig-Universitaet Giessen, Giessen
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Jordan Bendarouach
+
 
 XXXXX=$(printf "%05d" "$SLURM_ARRAY_TASK_ID")
 FLAG=1

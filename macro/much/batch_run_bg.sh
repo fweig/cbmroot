@@ -1,4 +1,8 @@
 #!/bin/bash
+# Copyright (C) 2019 Facility for Antiproton and Ion Research in Europe, Darmstadt
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Anna Senger
+
 #SBATCH --output %j.out
 
 cbmroot_dir=$1

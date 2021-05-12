@@ -1,4 +1,8 @@
 #!/bin/bash
+# Copyright (C) 2012 Institut fuer Kernphysik, Westfaelische Wilhelms-Universitaet Muenster, Muenster
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Cyrano Bergmann
+
 # NEVENTS can be between 1 and 500
 NEVENTS=500
 # NURQMD can be between 0 and 199

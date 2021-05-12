@@ -1,4 +1,8 @@
 #!/bin/bash
+# Copyright (C) 2017 Facility for Antiproton and Ion Research in Europe, Darmstadt
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Pierre-Alain Loizeau
+
 #SBATCH -J unpack
 #SBATCH -D /lustre/nyx/cbm/users/nh/CBM/cbmroot/trunk/macro/beamtime/cern2016
 #SBATCH --time=8:00:00

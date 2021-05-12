@@ -1,4 +1,8 @@
 #!/bin/sh
+# Copyright (C) 2014 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by David Emschermann
+
 
 #----------------------------------------------------------------------------------
 # // 2014-07-04 - DE - script executed upon cdash tests  

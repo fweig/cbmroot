@@ -1,3 +1,7 @@
+# Copyright (C) 2016 PI-UHd,GSI
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Norbert Herrmann
+
 rm all.*.par out/*.out.root out/*.params.root  out/*.hst.root
 
 root -b -q 'rates_unpacking.C("/hera/cbm/users/tofGsiApr14/cern-nov15_mbs_rates/mbs/", "rates_2015_11_26_18_21")'

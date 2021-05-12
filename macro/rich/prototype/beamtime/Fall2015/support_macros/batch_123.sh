@@ -1,4 +1,8 @@
 #!/bin/bash
+# Copyright (C) 2015 Justus-Liebig-Universitaet Giessen, Giessen
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Egor Ovcharenko
+
 
 #./run_rings_test.sh "off" "G1"
 ./run_rings_test2.sh "on" "G1"

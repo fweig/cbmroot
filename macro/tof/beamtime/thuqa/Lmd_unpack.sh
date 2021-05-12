@@ -1,4 +1,8 @@
 #!/bin/bash
+# Copyright (C) 2015 Physikalisches Institut, Universitaet Heidelberg, Heidelberg
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Philipp Weidenkaff
+
 # shell script to unpack files automatically
 #Use for TSU strip counter also 
 #char* cRun="CbmTofQa_28May1635_mrpc1_000_mrpc2_200_mrpc3_200_nb"

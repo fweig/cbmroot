@@ -1,3 +1,7 @@
+# Copyright (C) 2017 Facility for Antiproton and Ion Research in Europe, Darmstadt
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Pierre-Alain Loizeau
+
 # shell script to iterate clusterizer calibrations 
 cRun=$1
 

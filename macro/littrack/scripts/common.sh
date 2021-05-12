@@ -1,4 +1,8 @@
 #!/bin/sh
+# Copyright (C) 2010 GSI/JINR-LIT
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Andrey Lebedev
+
 
 # Function sets simulation parameters
 function set_simulation_parameters() {

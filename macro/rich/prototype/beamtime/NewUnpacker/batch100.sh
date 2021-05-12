@@ -1,4 +1,8 @@
 #!/bin/sh
+# Copyright (C) 2015 Justus-Liebig-Universitaet Giessen, Giessen
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Egor Ovcharenko
+
 
 export SCRIPT=yes
 

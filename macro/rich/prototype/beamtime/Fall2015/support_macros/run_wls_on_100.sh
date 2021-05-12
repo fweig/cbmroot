@@ -1,4 +1,8 @@
 #!/bin/bash
+# Copyright (C) 2015 Justus-Liebig-Universitaet Giessen, Giessen
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Egor Ovcharenko
+
 PREFIX="/store/cbm_rich_data_2014/WLS/WLS_on/nonstretched/"
 SUFFIX="offset00100/"
 

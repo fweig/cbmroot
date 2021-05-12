@@ -1,4 +1,8 @@
 #!/bin/bash
+# Copyright (C) 2017 PI-UHd,GSI
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Norbert Herrmann
+
 #SBATCH -J run_mcbm
 #SBATCH -D /lustre/cbm/users/nh/CBM/cbmroot/trunk/macro/mcbm
 #SBATCH --time=8:00:00

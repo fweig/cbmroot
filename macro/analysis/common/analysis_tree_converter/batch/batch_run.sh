@@ -1,4 +1,8 @@
 #!/bin/bash
+# Copyright (C) 2020 Physikalisches Institut, Eberhard Karls Universität Tübingen, Tübingen
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Viktor Klochkov
+
 #SBATCH -J CbmAnalysisTree
 #SBATCH -o out/%j.out.log
 #SBATCH -e error/%j.err.log

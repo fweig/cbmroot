@@ -1,4 +1,8 @@
 #!/bin/sh
+# Copyright (C) 2018 Justus-Liebig-Universitaet Giessen, Giessen
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Gregor Pitsch
+
 
 #inmed, qgp, rho0, omegaepem, omegadalitz, phi
 

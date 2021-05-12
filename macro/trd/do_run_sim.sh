@@ -1,4 +1,8 @@
 #!/bin/bash
+# Copyright (C) 2014 Institut fuer Kernphysik, Westfaelische Wilhelms-Universitaet Muenster, Muenster
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Cyrano Bergmann
+
 nThreads=0
 maxThreads=0
 nEvents=1000

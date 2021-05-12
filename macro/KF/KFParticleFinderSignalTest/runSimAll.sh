@@ -1,3 +1,7 @@
+# Copyright (C) 2014 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Maxim Zyzak
+
 # #!
 # run simulation and tracks reconstruction
 

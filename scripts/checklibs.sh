@@ -1,4 +1,7 @@
-#/!bin/bash
+#!bin/bash
+# Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Florian Uhlig
 
 # check if the libraries have the proper dependencies
 # load a single library in root and check the return value

@@ -1,4 +1,8 @@
 #!/bin/bash
+# Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Florian Uhlig
+
 
 CLANG_FORMAT_BIN=${FAIRROOT_CLANG_FORMAT_BIN:-clang-format}
 

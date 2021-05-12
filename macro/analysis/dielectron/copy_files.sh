@@ -1,4 +1,8 @@
 #####!/bin/sh
+# Copyright (C) 2012 UGiessen,JINR-LIT
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Semen Lebedev
+
 
 #mainDirFrom=/lustre/nyx/cbm/users/slebedev/cbm/data/lmvm/agagtest/3.5gev/
 #mainDirTo=/u/slebedev/Baykal/lmvm/agagtest/3.5gev/

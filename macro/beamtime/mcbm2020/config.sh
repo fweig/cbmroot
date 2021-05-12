@@ -1,4 +1,8 @@
 #!/bin/bash
+# Copyright (C) 2020 Facility for Antiproton and Ion Research in Europe, Darmstadt
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Pierre-Alain Loizeau
+
 
 export Linux_Flavour_="Ubuntu 18.04.2 LTS"
 export System_="x86_64"

@@ -1,4 +1,8 @@
 #!/bin/bash
+# Copyright (C) 2012 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by David Emschermann
+
 #
 # create for a list of geometries in root format
 # the corresponding trd digitization parameters

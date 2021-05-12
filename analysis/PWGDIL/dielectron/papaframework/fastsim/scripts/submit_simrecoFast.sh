@@ -1,4 +1,8 @@
 #!/bin/bash
+# Copyright (C) 2016 Justus-Liebig-Universitaet Giessen, Giessen
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Julian Book
+
 
 ## test train or batch submission
 TEST=1

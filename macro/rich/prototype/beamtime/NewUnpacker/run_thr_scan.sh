@@ -1,4 +1,8 @@
 #!/bin/bash
+# Copyright (C) 2015 Justus-Liebig-Universitaet Giessen, Giessen
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Egor Ovcharenko
+
 
 INPUT_ROOT_FOLDER=/store/Wuppertal_data_jul2015/threshold_scan_1/
 

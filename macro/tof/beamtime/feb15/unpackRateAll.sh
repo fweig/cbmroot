@@ -1,3 +1,7 @@
+# Copyright (C) 2015 Facility for Antiproton and Ion Research in Europe, Darmstadt
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Pierre-Alain Loizeau
+
 rm all.*.par out/*.out.root out/*.params.root  out/*.hst.root
 
 root -b -q 'rates_unpacking.C("/home/nh7/trbnas/cern-feb15/ratesMbs/", "rates_2015_02_27_2311")'

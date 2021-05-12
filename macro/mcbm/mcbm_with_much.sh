@@ -1,3 +1,7 @@
+# Copyright (C) 2017 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by David Emschermann
+
 #
 ##   modify cbmMuch.cxx to include mMUCH
 #

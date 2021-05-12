@@ -1,4 +1,8 @@
 #!/bin/bash
+# Copyright (C) 2021 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Etienne Bechtel
+
 
 LOCATION=/lustre/nyx
 

@@ -1,4 +1,8 @@
 #!/bin/sh
+# Copyright (C) 2019 Justus-Liebig-Universitaet Giessen, Giessen
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Jordan Bendarouach
+
 
 #Macro will be running via script
 export SCRIPT=yes

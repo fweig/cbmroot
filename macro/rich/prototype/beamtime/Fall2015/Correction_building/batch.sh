@@ -1,4 +1,8 @@
 #!/bin/bash
+# Copyright (C) 2015 Justus-Liebig-Universitaet Giessen, Giessen
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Egor Ovcharenko
+
 
 root -l -b -q "FilterMultiPeak.C(\"sum_rings_WLS_off_G1_corr.root\", \"pictures_rings_WLS_off_corr\")" > filtering_rings_WLS_off_corr_.txt
 grep "GOOD" filtering_rings_WLS_off_corr_.txt > filtering_rings_WLS_off_corr.txt

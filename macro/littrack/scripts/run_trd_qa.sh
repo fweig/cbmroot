@@ -1,4 +1,8 @@
 #!/bin/sh
+# Copyright (C) 2011 GSI/JINR-LIT
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Andrey Lebedev
+
 
 xterm -hold -e ". ./trd_qa.sh trd_v13p_1e trd/trd_v13p_1e.geo.root $VMCWORKDIR/parameters/trd/trd_v13p_1e.digi.par 3 8gev"&
 xterm -hold -e ". ./trd_qa.sh trd_v13p_3e trd/trd_v13p_3e.geo.root $VMCWORKDIR/parameters/trd/trd_v13p_3e.digi.par 6 25gev"&

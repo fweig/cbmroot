@@ -1,4 +1,8 @@
 #!/bin/bash
+# Copyright (C) 2019 PI-UHd,GSI
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Norbert Herrmann
+
 #SBATCH -J calib
 #SBATCH -D /lustre/nyx/cbm/users/nh/CBM/cbmroot/trunk/macro/beamtime/mcbm2018
 #SBATCH --time=6-00:00:00

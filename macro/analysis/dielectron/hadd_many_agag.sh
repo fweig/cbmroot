@@ -1,3 +1,7 @@
+# Copyright (C) 2018 Justus-Liebig-Universitaet Giessen, Giessen
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Gregor Pitsch
+
 fileSizeLimit=50000
 nofEventsInFile=10000
 

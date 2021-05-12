@@ -1,3 +1,7 @@
+# Copyright (C) 2015 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by David Emschermann
+
 #
 ##   create mcbm_sim.C from patch file
 #

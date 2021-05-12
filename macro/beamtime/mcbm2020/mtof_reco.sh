@@ -1,4 +1,8 @@
 #!/bin/bash
+# Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Florian Uhlig
+
 # shell script to reconstruct mcbm mtof data
 #SBATCH -J mtof_reco
 #SBATCH -D /lustre/cbm/users/nh/CBM/cbmroot/trunk/macro/beamtime/mcbm2020

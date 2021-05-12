@@ -1,4 +1,7 @@
 #!/bin/bash
+# Copyright (C) 2015 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by David Emschermann
 #
 ## semi-automated script installing of FairSoft, FairRoot and CbmRoot
 #

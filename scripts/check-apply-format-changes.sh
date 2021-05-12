@@ -1,4 +1,8 @@
 #!/bin/bash
+# Copyright (C) 2020 Facility for Antiproton and Ion Research in Europe, Darmstadt
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Pierre-Alain Loizeau
+
 
 if [[ $# -ne 1 ]]; then
   echo "Missing argument! please call this script with either the check or apply argument:"

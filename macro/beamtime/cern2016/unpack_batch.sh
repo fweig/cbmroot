@@ -1,4 +1,8 @@
 #!/bin/bash
+# Copyright (C) 2016 PI-UHd,GSI
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Norbert Herrmann
+
 #SBATCH -J unpack
 #SBATCH -D /lustre/nyx/cbm/users/nh/CBM/cbmroot/trunk/macro/beamtime/cern2016
 #SBATCH --time=8:00:00

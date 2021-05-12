@@ -1,4 +1,8 @@
 #!/bin/bash
+# Copyright (C) 2019 Justus-Liebig-Universitaet Giessen, Giessen
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Jordan Bendarouach
+
 
 BATCH=Batch_6		# Batch_3: e- only ; Batch_4: e+ only ; Batch_5: e- and e+
 NBTASK=0012

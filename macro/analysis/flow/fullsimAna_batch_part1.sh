@@ -1,3 +1,7 @@
+# Copyright (C) 2014 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Selim Seddiki
+
 #$ -wd /tmp 
 #$ -j y
 

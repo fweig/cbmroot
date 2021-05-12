@@ -1,4 +1,8 @@
 #!/bin/bash
+# Copyright (C) 2017 Physikalisches Institut, Universitaet Heidelberg, Heidelberg
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Christian Simon
+
 # To run this script in stand-alone mode one needs to provide a ROOT environment
 # and to specify an output directory 'outdir'.
 #

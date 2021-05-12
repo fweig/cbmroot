@@ -1,4 +1,8 @@
 #!/bin/bash
+# Copyright (C) 2019 Justus-Liebig-Universitaet Giessen, Giessen
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Jordan Bendarouach
+
 
 input_dir_1=/lustre/nyx/cbm/users/jbendar/Sim_Outputs/Ring_Track_VS_Position/Batch_5
 input_dir_2=Misaligned_3mrad_

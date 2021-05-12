@@ -1,4 +1,8 @@
 #!/bin/bash
+# Copyright (C) 2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Maxim Zyzak
+
 #SBATCH -J CbmSim
 #SBATCH -o out/%j.out.log
 #SBATCH -e error/%j.err.log

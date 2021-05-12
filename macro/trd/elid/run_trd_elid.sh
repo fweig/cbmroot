@@ -1,3 +1,7 @@
+# Copyright (C) 2013 UGiessen,JINR-LIT
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Semen Lebedev
+
 export MY_BUILD_DIR=/Users/slebedev/Development/cbm/trunk/build/
 export SCRIPT=yes
 

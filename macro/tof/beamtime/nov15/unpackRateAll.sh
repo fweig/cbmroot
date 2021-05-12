@@ -1,3 +1,7 @@
+# Copyright (C) 2015 Facility for Antiproton and Ion Research in Europe, Darmstadt
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Pierre-Alain Loizeau
+
 rm all_*.par out/*.out.root out/*.params.root  out/*.hst.root
 
 root -b -q 'rates_unpacking.C("/lustre/nyx/cbm/prod/beamtime/2015/11/cern/mbs_rates/mbs/", "rates_2015_11_26_18_21")'

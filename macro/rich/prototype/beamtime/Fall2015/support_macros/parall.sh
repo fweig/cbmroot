@@ -1,4 +1,8 @@
 #!/bin/bash
+# Copyright (C) 2015 Justus-Liebig-Universitaet Giessen, Giessen
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Egor Ovcharenko
+
 NUM=0
 QUEUE=""
 MAX_NPROC=2 # default

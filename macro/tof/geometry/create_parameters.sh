@@ -1,4 +1,8 @@
 #!/bin/bash
+# Copyright (C) 2017 Physikalisches Institut, Universitaet Heidelberg, Heidelberg
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Christian Simon
+
 
 if [ -z "$1" ]; then
   echo 'no geometry version specified'

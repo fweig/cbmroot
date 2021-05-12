@@ -1,4 +1,8 @@
 #!/bin/sh
+# Copyright (C) 2011 GSI/JINR-LIT
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Andrey Lebedev
+
 
 # Pathes and parameters
 test_dir=/data.local2/andrey/tests/cdash_tests

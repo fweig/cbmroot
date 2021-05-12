@@ -1,3 +1,7 @@
+# Copyright (C) 2013 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by David Emschermann
+
 ## plot only 1 pad size per module, no rows in sector
 # root -l -b -q plot_pad_size_in_layer.C++\(\"trd.v13/trd_v13p_3e.digi.par\"\)
 #

@@ -1,4 +1,8 @@
 #!/bin/bash
+# Copyright (C) 2019 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Etienne Bechtel
+
 
 ## split level: defines number of files per jobs
 split_level=1;

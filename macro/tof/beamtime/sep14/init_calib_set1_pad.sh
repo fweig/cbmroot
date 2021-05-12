@@ -1,3 +1,7 @@
+# Copyright (C) 2015 Physikalisches Institut, Universitaet Heidelberg, Heidelberg
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Christian Simon
+
 # shell script to generate clusterizer calibrations 
 #cRun='MbsTrbSun1205_tsu'
 cRun='MbsTrbSun1555_tsu'

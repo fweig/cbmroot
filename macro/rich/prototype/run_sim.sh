@@ -1,4 +1,8 @@
 =#!/bin/sh
+# Copyright (C) 2013 UGiessen,JINR-LIT
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Semen Lebedev
+
 
 #Macro will be running via script
 export SCRIPT=yes

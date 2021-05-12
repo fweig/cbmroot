@@ -1,4 +1,8 @@
 #!/bin/bash
+# Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Florian Uhlig
+
 #SBATCH -J run_mcbm
 #SBATCH -D /lustre/cbm/users/nh/CBM/cbmroot/trunk/macro/mcbm
 #SBATCH --time=8:00:00

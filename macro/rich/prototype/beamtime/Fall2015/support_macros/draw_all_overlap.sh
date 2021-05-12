@@ -1,4 +1,8 @@
 #!/bin/bash
+# Copyright (C) 2015 Justus-Liebig-Universitaet Giessen, Giessen
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Egor Ovcharenko
+
 
 FILE_WLS_OFF=output/sum_WLS_off.root
 FILE_WLS_ON=output/sum_WLS_on.root

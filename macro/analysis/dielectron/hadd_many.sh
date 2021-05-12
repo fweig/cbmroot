@@ -1,3 +1,7 @@
+# Copyright (C) 2016 UGiessen,JINR-LIT
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Semen Lebedev
+
 fileSizeLimit=50000
 nofEventsInFile=1000
 

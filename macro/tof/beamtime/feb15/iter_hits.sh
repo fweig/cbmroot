@@ -1,4 +1,8 @@
 #!/bin/bash
+# Copyright (C) 2015 Physikalisches Institut, Universitaet Heidelberg, Heidelberg
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Philipp Weidenkaff
+
 # shell script to iterate Analyzer histograms
 cRun='CernSps05Mar0041'
 #cRun='CernSps02Mar2227_hdref_200_hdp2_220_thupad_170_thustrip_23c_bucref_160_buc2013_160_ustc_220_diam_020_nb_up'

@@ -1,4 +1,8 @@
 #####!/bin/sh
+# Copyright (C) 2018 Justus-Liebig-Universitaet Giessen, Giessen
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Gregor Pitsch
+
 
 #mainDirFrom=/lustre/nyx/cbm/users/slebedev/cbm/data/lmvm/agagtest/3.5gev/
 #mainDirTo=/u/slebedev/Baykal/lmvm/agagtest/3.5gev/

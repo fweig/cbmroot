@@ -1,4 +1,8 @@
 #!/bin/bash
+# Copyright (C) 2016 Justus-Liebig-Universitaet Giessen, Giessen
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Julian Book
+
 
 ## split level: defines number of files per jobs
 split_level=10;

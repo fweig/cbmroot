@@ -1,4 +1,8 @@
 #!/bin/bash
+# Copyright (C) 2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Florian Uhlig
+
 # shell script to iterate tracklet calibration histograms
 #SBATCH -J track
 #SBATCH -D /lustre/nyx/cbm/users/nh/CBM/cbmroot/trunk/macro/beamtime/mcbm2020

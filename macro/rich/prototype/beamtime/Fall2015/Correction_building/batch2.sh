@@ -1,4 +1,8 @@
 #!/bin/bash
+# Copyright (C) 2015 Justus-Liebig-Universitaet Giessen, Giessen
+# SPDX-License-Identifier: GPL-3.0-only
+# First commited by Egor Ovcharenko
+
 
 root -l -b -q "buildDeltaTable.C(\"filtering_laser_WLS_off.txt\", \"alphas_laser_WLS_off.root\", \"pictures_laser_WLS_off\")" > table_laser_WLS_off.txt
 root -l -b -q "buildDeltaTable.C(\"filtering_laser_WLS_on.txt\", \"alphas_laser_WLS_on.root\", \"pictures_laser_WLS_on\")" > table_laser_WLS_on.txt
