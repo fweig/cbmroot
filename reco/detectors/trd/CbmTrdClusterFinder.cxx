@@ -372,9 +372,10 @@ Int_t CbmTrdClusterFinder::AddClusters(TClonesArray* clusters, CbmEvent* event, 
       cls->SetNCols(cols.CountBits());
       cls->SetNRows(rows.CountBits());
     }
-    clsSave = new ((*fClusters)[ncl++]) CbmTrdCluster(*cls);  // TODO implement copy constructor
+    clsSave = new ((*fClusters)[ncl]) CbmTrdCluster(*cls);  // TODO implement copy constructor
     // In case we have an event branch and we did only use digis from within the event, add the cluster to the event. This allows the hit producer to identify wether or not to add the corresponding hit to the event.
     if (event) event->AddData(ECbmDataType::kTrdCluster, ncl);
+    ncl++;
     clsSave->SetTrianglePads(cls->HasTrianglePads());
     if (cls->GetMatch() != NULL)
       delete cls;  //only the matches have pointers to allocated memory, so otherwise the clear does the trick
