@@ -290,7 +290,7 @@ void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice =
     // --- Parameter file name
     TString geoTag;
     geo->GetGeoTag(ECbmModuleId::kMuch, geoTag);
-    Int_t muchFlag  = (geoTag.Contains("mcbm") ? 0 : 1);
+    Int_t muchFlag  = (geoTag.Contains("mcbm") ? 1 : 0);
     TString parFile = gSystem->Getenv("VMCWORKDIR");
     parFile += "/parameters/much/much_" + geoTag(0, 4) + "_digi_sector.root";
     std::cout << "Using parameter file " << parFile << std::endl;
