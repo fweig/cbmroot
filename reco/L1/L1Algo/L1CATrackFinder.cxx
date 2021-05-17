@@ -532,12 +532,6 @@ inline void L1Algo::f20(  // input
 #endif  // DOUB_PERFORMANCE
       hitsm_2.push_back(imh);
 
-      TripForHit[0][hitsl_1[i1] + StsHitsUnusedStartIndex[&stam - vStations - 1]] = 0;
-      TripForHit[1][hitsl_1[i1] + StsHitsUnusedStartIndex[&stam - vStations - 1]] = 0;
-
-      TripForHit[0][hitsl_1[i1] + StsHitsUnusedStartIndex[&stam - vStations - 2]] = 0;
-      TripForHit[1][hitsl_1[i1] + StsHitsUnusedStartIndex[&stam - vStations - 2]] = 0;
-
       if (n2 > 8000) return;
 
       n2++;
@@ -1776,8 +1770,11 @@ void L1Algo::CATrackFinder()
 
     n_g1.assign(n_g1.size(), Portion);
 
+    TripForHit[0].assign(nDontUsedHits, 0);
+    TripForHit[1].assign(nDontUsedHits, 0);
+
     for (int n = 0; n < nTh; n++)
-      for (int j = 0; j < 12; j++)
+      for (int j = 0; j < NStations; j++)
         nTripletsThread[j][n] = 0;
 
         /// isec - number of current iterations, fNFindIterations - number of all iterations

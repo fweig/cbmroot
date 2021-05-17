@@ -15,7 +15,7 @@ class L1AlgoDraw;
 //#define XXX               // time debug
 //#define COUNTERS          // diff counters (hits, doublets, ... )
 
-//#define MERGE_CLONES
+#define MERGE_CLONES
 // #define TRACKS_FROM_TRIPLETS_ITERATION kAllPrimIter
 
 //#define HitErrors
