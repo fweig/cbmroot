@@ -605,7 +605,7 @@ void CbmMuchFindHitsGem::CreateHits(CbmMuchCluster* cluster, Int_t iCluster, Cbm
   Int_t iHit = fHits->GetEntriesFast();
 
   //------------------------------Added by O. Singh 11.12.2017 for mCbm ---------------------------
-  Double_t tX = 18.5, tY = 80.5;
+  Double_t tX = 18.5, tY = 80.0;
   nX = x + tX;  // Ajit + OS + Apar -> For miniMUCH setup in March 2019
   nY = y + tY;  // Ajit + OS + Apar -> For miniMUCH setup in March 2019
   nZ = z;
