@@ -55,7 +55,7 @@ void MonitorMuchBinning(TString inFile = "", TString sHostname = "en02", Int_t n
   // MUCH Gem Monitor
   // CbmMcbm2018MonitorMuch* monitorMuch = new CbmMcbm2018MonitorMuch();
   CbmMcbm2018MonitorTaskMuchLite* monitorMuch = new CbmMcbm2018MonitorTaskMuchLite();
-  // Below Older Direct Much Monitoring Class 
+  // Below Older Direct Much Monitoring Class
   // CbmMcbm2018MonitorMuchLite* monitorMuch = new CbmMcbm2018MonitorMuchLite();
   monitorMuch->SetHistoFileName(sHistoFile);
   //  monitorSts->SetPrintMessage();
