@@ -5,6 +5,7 @@
 #include "CbmMatch.h"
 
 #include "compareMatch.h"
+#include "gtest/gtest.h"
 
 void compareClusterDataMembers(CbmCluster& test, Int_t vectorsize, std::vector<Int_t> indices, Int_t address,
                                CbmMatch* match)

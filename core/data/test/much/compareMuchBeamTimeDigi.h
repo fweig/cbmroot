@@ -2,6 +2,7 @@
 #define COMPAREMUCHBEAMTIMEDIGI_H 1
 
 #include "compareMuchDigi.h"
+#include "gtest/gtest.h"
 
 void compareMuchBeamTimeDigiDataMembers(CbmMuchBeamTimeDigi& test, Int_t address, ECbmModuleId systemid, ULong64_t time,
                                         Int_t charge, Int_t padx, Int_t pady, Int_t rocid, Int_t nxid, Int_t nxch,

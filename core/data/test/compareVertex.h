@@ -1,3 +1,5 @@
+#include "gtest/gtest.h"
+
 void compareVertexDataMembers(CbmVertex& test, Double_t x, Double_t y, Double_t z, Double_t chi2, Int_t ndf,
                               Int_t ntracks, Double_t* cov)
 {

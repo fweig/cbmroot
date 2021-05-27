@@ -1,6 +1,8 @@
 #ifndef COMPARERICHDIGI_H
 #define COMPARERICHDIGI_H 1
 
+#include "gtest/gtest.h"
+
 void compareRichDigiDataMembers(CbmRichDigi& test, Int_t address, ECbmModuleId systemid, Double_t time, Double_t tot)
 {
   Int_t retValInt {-222};

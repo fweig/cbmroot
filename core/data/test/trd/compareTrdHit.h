@@ -2,7 +2,7 @@
 #define COMPARETRDHIT_H 1
 
 #include "comparePixelHit.h"
-
+#include "gtest/gtest.h"
 
 void compareTrdHitDataMembers(CbmTrdHit& test, HitType type, Double_t z, Double_t dz, Int_t refid, Int_t address,
                               CbmMatch* match, Double_t time, Double_t errortime, Double_t x, Double_t dx, Double_t y,

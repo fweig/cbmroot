@@ -5,6 +5,7 @@
 #include "CbmMatch.h"
 
 #include "compareMatch.h"
+#include "gtest/gtest.h"
 
 void compareHitDataMembers(CbmHit& test, HitType type, Double_t z, Double_t dz, Int_t refid, Int_t address,
                            CbmMatch* match, Double_t time, Double_t errortime)

@@ -14,6 +14,8 @@
 #include "CbmMCTrack.h"
 #include "CbmStsTrack.h"
 
+#include "TClonesArray.h"
+#include "TDatabasePDG.h"
 #include "TMCProcess.h"
 
 class CbmLmvmUtils {

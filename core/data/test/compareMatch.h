@@ -4,6 +4,8 @@
 #include "CbmLink.h"
 #include "CbmMatch.h"
 
+#include "gtest/gtest.h"
+
 void compareMatchDataMembers(CbmMatch& testMatch, Int_t noflinks, Double_t weight)
 {
   Int_t linkLength {-111};

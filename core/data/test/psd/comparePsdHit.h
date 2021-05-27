@@ -1,6 +1,8 @@
 #ifndef COMPAREPSDHIT_H
 #define COMPAREPSDHIT_H 1
 
+#include "gtest/gtest.h"
+
 void comparePsdHitDataMembers(CbmPsdHit& test, Int_t moduleid, Double_t edep)
 {
   Int_t retValInt {-222};

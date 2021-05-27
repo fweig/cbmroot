@@ -3,6 +3,8 @@
 
 #include "CbmLink.h"
 
+#include "gtest/gtest.h"
+
 void compareLinkDataMembers(CbmLink& test, Int_t file, Int_t entry, Int_t index, Double_t weight)
 {
   Int_t intRetVal {-111};

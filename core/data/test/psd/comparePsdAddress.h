@@ -1,6 +1,8 @@
 #ifndef COMPAREPSDDIGI_H
 #define COMPAREPSDDIGI_H 1
 
+#include "gtest/gtest.h"
+
 void comparePsdAddressDataMembers(Int_t address, ECbmModuleId systemid, Int_t moduleid, Int_t sectionid)
 {
   Int_t retValInt {-222};

@@ -5,6 +5,8 @@
 
 #include <TVector3.h>
 
+#include "gtest/gtest.h"
+
 void compareFairMCPointDataMembers(FairMCPoint& test, Int_t trackID, Int_t detID, TVector3 pos, TVector3 mom,
                                    Double_t tof, Double_t length, Double_t eloss, Int_t eventid)
 {

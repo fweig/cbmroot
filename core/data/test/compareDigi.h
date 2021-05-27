@@ -1,6 +1,8 @@
 #ifndef COMPAREDIGI_H
 #define COMPAREDIGI_H 1
 
+#include "gtest/gtest.h"
+
 void compareDigiDataMembers(CbmTestDigi& test, Int_t address, Double_t charge, Int_t systemid, Double_t time)
 {
   Int_t retValInt {-222};

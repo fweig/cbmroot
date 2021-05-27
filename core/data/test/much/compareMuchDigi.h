@@ -1,6 +1,8 @@
 #ifndef COMPAREMUCHDIGI_H
 #define COMPAREMUCHDIGI_H 1
 
+#include "gtest/gtest.h"
+
 void compareMuchDigiDataMembers(CbmMuchDigi& test, Int_t address, ECbmModuleId systemid, ULong64_t time, Int_t charge)
 {
   Int_t retValInt {-222};

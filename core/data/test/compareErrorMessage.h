@@ -3,6 +3,8 @@
 
 #include "CbmErrorMessage.h"
 
+#include "gtest/gtest.h"
+
 void compareErrorMessageDataMembers(CbmErrorMessage& test, ECbmModuleId sysId, Double_t dTime, UInt_t uAddress,
                                     UInt_t uFlags, UInt_t uPayload)
 {

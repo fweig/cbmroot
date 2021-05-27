@@ -1,6 +1,8 @@
 #ifndef COMPARESTSDIGI_H
 #define COMPARESTSDIGI_H 1
 
+#include "gtest/gtest.h"
+
 void compareStsDigiDataMembers(CbmStsDigi& test, Int_t address, UShort_t charge, UShort_t channel,
                                ECbmModuleId systemid, Long64_t time)
 {

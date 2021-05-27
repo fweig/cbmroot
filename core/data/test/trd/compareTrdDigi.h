@@ -1,6 +1,8 @@
 #ifndef COMPARETRDDIGI_H
 #define COMPARETRDDIGI_H 1
 
+#include "gtest/gtest.h"
+
 void compareTrdDigiDataMembers(CbmTrdDigi& test, Int_t padChNr, ECbmModuleId systemid, ULong64_t time, Double_t charge)
 {
   Int_t retValInt {-222};

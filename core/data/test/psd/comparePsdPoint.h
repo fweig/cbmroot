@@ -2,6 +2,7 @@
 #define COMPAREPSDPOINT_H 1
 
 #include "compareFairMCPoint.h"
+#include "gtest/gtest.h"
 
 void comparePsdPointDataMembers(CbmPsdPoint& test, Int_t trackID, Int_t detID, TVector3 pos, TVector3 mom, Double_t tof,
                                 Double_t length, Double_t eLoss, Int_t moduleid, Int_t eventid)
